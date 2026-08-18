@@ -1,58 +1,39 @@
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["hdr","sla-callout","metrics","ticket-tabs"]}}
-{"op":"add","path":"/elements/hdr","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center"},"children":["hdr-text","new-ticket"]}}
-{"op":"add","path":"/elements/hdr-text","value":{"type":"CardHeader","props":{"title":"Good morning, Priya","subtitle":"Support queue snapshot · Tuesday, 09:15"},"children":[]}}
-{"op":"add","path":"/elements/new-ticket","value":{"type":"DialogBlock","props":{"triggerLabel":"+ New ticket","title":"Open a new ticket","description":"Log an incoming request as a ticket in the queue.","content":["nt-form"],"triggerVariant":"default"},"children":[]}}
-{"op":"add","path":"/elements/nt-form","value":{"type":"Form","props":{"name":"newTicket","buttons":"nt-buttons","fields":["f-subject","f-priority","f-desc"]},"children":[]}}
-{"op":"add","path":"/elements/f-subject","value":{"type":"FormControl","props":{"label":"Subject","input":"nt-subject","hint":"Short summary of the issue"},"children":[]}}
-{"op":"add","path":"/elements/nt-subject","value":{"type":"Input","props":{"name":"subject","placeholder":"e.g. Cannot log in to the dashboard","value":{"$bindState":"/newTicket/subject"}},"children":[]}}
-{"op":"add","path":"/elements/f-priority","value":{"type":"FormControl","props":{"label":"Priority","input":"nt-priority"},"children":[]}}
-{"op":"add","path":"/elements/nt-priority","value":{"type":"Select","props":{"name":"priority","placeholder":"Pick a priority","items":["opt-high","opt-medium","opt-low"],"value":{"$bindState":"/newTicket/priority"}},"children":[]}}
-{"op":"add","path":"/elements/opt-high","value":{"type":"SelectItem","props":{"value":"High","label":"High"},"children":[]}}
-{"op":"add","path":"/elements/opt-medium","value":{"type":"SelectItem","props":{"value":"Medium","label":"Medium"},"children":[]}}
-{"op":"add","path":"/elements/opt-low","value":{"type":"SelectItem","props":{"value":"Low","label":"Low"},"children":[]}}
-{"op":"add","path":"/elements/f-desc","value":{"type":"FormControl","props":{"label":"Description","input":"nt-desc"},"children":[]}}
-{"op":"add","path":"/elements/nt-desc","value":{"type":"TextArea","props":{"name":"description","placeholder":"Steps to reproduce, customer impact, links to logs…","rows":4,"value":{"$bindState":"/newTicket/description"}},"children":[]}}
-{"op":"add","path":"/elements/nt-buttons","value":{"type":"Buttons","props":{"buttons":["nt-create"],"direction":"row"},"children":[]}}
-{"op":"add","path":"/elements/nt-create","value":{"type":"Button","props":{"label":"Create ticket","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/tickets","value":{"id":"$id","subject":{"$state":"/newTicket/subject"},"requester":"Support lead","priority":{"$state":"/newTicket/priority"},"priorityVariant":"neutral","status":"Open","statusVariant":"info","opened":"Just now"},"clearStatePath":"/newTicket/subject"}}},"children":[]}}
-{"op":"add","path":"/state/newTicket","value":{"subject":"","priority":"High","description":""}}
-{"op":"add","path":"/elements/sla-callout","value":{"type":"TextCallout","props":{"variant":"warning","title":"SLA watch","description":"2 tickets will breach the 1-hour first-response SLA within the next 20 minutes."},"children":[]}}
-{"op":"add","path":"/elements/metrics","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m"},"children":["metric-open","metric-response"]}}
-{"op":"add","path":"/elements/metric-open","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["mo-label","mo-value","mo-sub"]}}
-{"op":"add","path":"/elements/mo-label","value":{"type":"TextContent","props":{"text":"Open tickets","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/mo-value","value":{"type":"TextContent","props":{"text":{"$template":"${/metrics/openCount}"},"size":"large-heavy"},"children":[]}}
-{"op":"add","path":"/elements/mo-sub","value":{"type":"TextContent","props":{"text":"3 more than yesterday at this time","size":"small"},"children":[]}}
-{"op":"add","path":"/state/metrics","value":{"openCount":24,"avgFirstResponse":"7m 42s"}}
-{"op":"add","path":"/elements/metric-response","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["mr-label","mr-value","mr-sub"]}}
-{"op":"add","path":"/elements/mr-label","value":{"type":"TextContent","props":{"text":"Avg first-response time","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/mr-value","value":{"type":"TextContent","props":{"text":{"$template":"${/metrics/avgFirstResponse}"},"size":"large-heavy"},"children":[]}}
-{"op":"add","path":"/elements/mr-sub","value":{"type":"TextContent","props":{"text":"Target < 8 min · on track today","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/ticket-tabs","value":{"type":"Tabs","props":{"items":["tab-all","tab-high"]},"children":[]}}
-{"op":"add","path":"/elements/tab-all","value":{"type":"TabItem","props":{"value":"all","trigger":"Recent tickets","content":["list-all"]},"children":[]}}
-{"op":"add","path":"/elements/list-all","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/tickets","key":"id"},"children":["ticket-all"]}}
-{"op":"add","path":"/elements/ticket-all","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center"},"children":["ta-left","ta-tags"]}}
-{"op":"add","path":"/elements/ta-left","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["ta-subject","ta-meta"]}}
-{"op":"add","path":"/elements/ta-subject","value":{"type":"TextContent","props":{"text":{"$item":"subject"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/ta-meta","value":{"type":"TextContent","props":{"text":{"$template":"${id} · ${requester} · opened ${opened}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/ta-tags","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"xs"},"children":["ta-prio","ta-status"]}}
-{"op":"add","path":"/elements/ta-prio","value":{"type":"Tag","props":{"text":{"$item":"priority"},"variant":{"$item":"priorityVariant"},"size":"sm"},"children":[]}}
-{"op":"add","path":"/elements/ta-status","value":{"type":"Tag","props":{"text":{"$item":"status"},"variant":{"$item":"statusVariant"},"size":"sm"},"children":[]}}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"gap":"l"},"children":["header","kpis","controls","ticketList","newTicket"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Support Morning Briefing","subtitle":"Wednesday, 8:00 AM — Queue overview"}}}
+{"op":"add","path":"/elements/kpis","value":{"type":"Card","props":{"direction":"row","gap":"m","variant":"sunk"},"children":["kpiOpen","kpiFrt"]}}
+{"op":"add","path":"/elements/kpiOpen","value":{"type":"Card","props":{"gap":"xs"},"children":["kpiOpenLabel","kpiOpenValue"]}}
+{"op":"add","path":"/elements/kpiOpenLabel","value":{"type":"TextContent","props":{"text":"Open tickets","size":"small"}}}
+{"op":"add","path":"/elements/kpiOpenValue","value":{"type":"TextContent","props":{"text":{"$state":"/metrics/openCount"},"size":"large-heavy"}}}
+{"op":"add","path":"/state/metrics/openCount","value":23}
+{"op":"add","path":"/elements/kpiFrt","value":{"type":"Card","props":{"gap":"xs"},"children":["kpiFrtLabel","kpiFrtValue"]}}
+{"op":"add","path":"/elements/kpiFrtLabel","value":{"type":"TextContent","props":{"text":"Avg first-response time","size":"small"}}}
+{"op":"add","path":"/elements/kpiFrtValue","value":{"type":"TextContent","props":{"text":{"$state":"/metrics/avgFirstResponse"},"size":"large-heavy"}}}
+{"op":"add","path":"/state/metrics/avgFirstResponse","value":"42 min"}
+{"op":"add","path":"/elements/controls","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","variant":"clear"},"children":["listTitle","filterBtn"]}}
+{"op":"add","path":"/elements/listTitle","value":{"type":"Heading","props":{"text":"Most recent tickets","level":"h3"}}}
+{"op":"add","path":"/elements/filterBtn","value":{"type":"Button","props":{"label":{"$cond":{"$state":"/highOnly"},"$then":"Show all tickets","$else":"High priority only"},"variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/highOnly","value":{"$cond":{"$state":"/highOnly"},"$then":false,"$else":true}}}},"children":[]}}
+{"op":"add","path":"/state/highOnly","value":false}
+{"op":"add","path":"/elements/ticketList","value":{"type":"Card","props":{"gap":"s","variant":"clear"},"repeat":{"statePath":"/tickets","key":"id"},"children":["ticketRow"]}}
+{"op":"add","path":"/elements/ticketRow","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","variant":"sunk"},"visible":{"$or":[{"$state":"/highOnly","not":true},{"$item":"priority","eq":"High"}]},"children":["ticketInfo","ticketTag"]}}
+{"op":"add","path":"/elements/ticketInfo","value":{"type":"Card","props":{"gap":"xs","variant":"clear"},"children":["ticketTitle","ticketMeta"]}}
+{"op":"add","path":"/elements/ticketTitle","value":{"type":"TextContent","props":{"text":{"$item":"subject"},"size":"small-heavy"}}}
+{"op":"add","path":"/elements/ticketMeta","value":{"type":"TextContent","props":{"text":{"$template":"${id} · ${requester} · ${time}"},"size":"small"}}}
+{"op":"add","path":"/elements/ticketTag","value":{"type":"Tag","props":{"text":{"$item":"priority"},"variant":{"$cond":{"$item":"priority","eq":"High"},"$then":"danger","$else":"neutral"}},"children":[]}}
 {"op":"add","path":"/state/tickets","value":[]}
-{"op":"add","path":"/state/tickets/0","value":{"id":"T-4821","subject":"Payment failed at checkout","requester":"Marina K.","priority":"High","priorityVariant":"danger","status":"Open","statusVariant":"info","opened":"6 min ago"}}
-{"op":"add","path":"/state/tickets/1","value":{"id":"T-4819","subject":"Dashboard shows wrong totals","requester":"Omar F.","priority":"High","priorityVariant":"danger","status":"Open","statusVariant":"info","opened":"14 min ago"}}
-{"op":"add","path":"/state/tickets/2","value":{"id":"T-4817","subject":"Add user export to CSV","requester":"Lena P.","priority":"Medium","priorityVariant":"warning","status":"Open","statusVariant":"info","opened":"32 min ago"}}
-{"op":"add","path":"/state/tickets/3","value":{"id":"T-4814","subject":"SSO login loops on mobile","requester":"Diego S.","priority":"High","priorityVariant":"danger","status":"In progress","statusVariant":"warning","opened":"48 min ago"}}
-{"op":"add","path":"/state/tickets/4","value":{"id":"T-4811","subject":"Update billing email address","requester":"Sofia N.","priority":"Low","priorityVariant":"neutral","status":"Waiting","statusVariant":"neutral","opened":"1 h ago"}}
-{"op":"add","path":"/elements/tab-high","value":{"type":"TabItem","props":{"value":"high","trigger":"High priority only","content":["list-high"]},"children":[]}}
-{"op":"add","path":"/elements/list-high","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/highTickets","key":"id"},"children":["ticket-high"]}}
-{"op":"add","path":"/elements/ticket-high","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center"},"children":["th-left","th-tags"]}}
-{"op":"add","path":"/elements/th-left","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["th-subject","th-meta"]}}
-{"op":"add","path":"/elements/th-subject","value":{"type":"TextContent","props":{"text":{"$item":"subject"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/th-meta","value":{"type":"TextContent","props":{"text":{"$template":"${id} · ${requester} · opened ${opened}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/th-tags","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"xs"},"children":["th-prio","th-status"]}}
-{"op":"add","path":"/elements/th-prio","value":{"type":"Tag","props":{"text":{"$item":"priority"},"variant":{"$item":"priorityVariant"},"size":"sm"},"children":[]}}
-{"op":"add","path":"/elements/th-status","value":{"type":"Tag","props":{"text":{"$item":"status"},"variant":{"$item":"statusVariant"},"size":"sm"},"children":[]}}
-{"op":"add","path":"/state/highTickets","value":[]}
-{"op":"add","path":"/state/highTickets/0","value":{"id":"T-4821","subject":"Payment failed at checkout","requester":"Marina K.","priority":"High","priorityVariant":"danger","status":"Open","statusVariant":"info","opened":"6 min ago"}}
-{"op":"add","path":"/state/highTickets/1","value":{"id":"T-4819","subject":"Dashboard shows wrong totals","requester":"Omar F.","priority":"High","priorityVariant":"danger","status":"Open","statusVariant":"info","opened":"14 min ago"}}
-{"op":"add","path":"/state/highTickets/2","value":{"id":"T-4814","subject":"SSO login loops on mobile","requester":"Diego S.","priority":"High","priorityVariant":"danger","status":"In progress","statusVariant":"warning","opened":"48 min ago"}}
+{"op":"add","path":"/state/tickets/0","value":{"id":"#4821","subject":"Login fails with SSO after password reset","requester":"M. Chen","time":"7:52 AM","priority":"High"}}
+{"op":"add","path":"/state/tickets/1","value":{"id":"#4820","subject":"Invoice PDF missing line items","requester":"A. Patel","time":"7:31 AM","priority":"Medium"}}
+{"op":"add","path":"/state/tickets/2","value":{"id":"#4819","subject":"API rate limit hit on production key","requester":"D. Okafor","time":"7:12 AM","priority":"High"}}
+{"op":"add","path":"/state/tickets/3","value":{"id":"#4818","subject":"Dark mode toggle not persisting","requester":"S. Rivera","time":"6:58 AM","priority":"Low"}}
+{"op":"add","path":"/state/tickets/4","value":{"id":"#4817","subject":"Export to CSV times out on large reports","requester":"J. Novak","time":"6:40 AM","priority":"High"}}
+{"op":"add","path":"/elements/newTicket","value":{"type":"Card","props":{"gap":"s"},"children":["newTitle","newForm"]}}
+{"op":"add","path":"/elements/newTitle","value":{"type":"Heading","props":{"text":"Open a new ticket","level":"h3"}}}
+{"op":"add","path":"/elements/newForm","value":{"type":"Card","props":{"gap":"s","variant":"sunk"},"children":["subjectInput","prioritySelect","createBtn"]}}
+{"op":"add","path":"/elements/subjectInput","value":{"type":"Input","props":{"name":"subject","placeholder":"Ticket subject…","value":{"$bindState":"/newTicket/subject"}},"children":[]}}
+{"op":"add","path":"/state/newTicket/subject","value":""}
+{"op":"add","path":"/elements/prioritySelect","value":{"type":"Select","props":{"name":"priority","items":["priHigh","priMedium","priLow"],"placeholder":"Priority","value":{"$bindState":"/newTicket/priority"}},"children":[]}}
+{"op":"add","path":"/state/newTicket/priority","value":""}
+{"op":"add","path":"/elements/priHigh","value":{"type":"SelectItem","props":{"value":"High","label":"High"}}}
+{"op":"add","path":"/elements/priMedium","value":{"type":"SelectItem","props":{"value":"Medium","label":"Medium"}}}
+{"op":"add","path":"/elements/priLow","value":{"type":"SelectItem","props":{"value":"Low","label":"Low"}}}
+{"op":"add","path":"/elements/createBtn","value":{"type":"Button","props":{"label":"Create ticket","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/tickets","value":{"id":"$id","subject":{"$state":"/newTicket/subject"},"requester":"You","time":"now","priority":{"$state":"/newTicket/priority"}},"clearStatePath":"/newTicket/subject"}}},"children":[]}}

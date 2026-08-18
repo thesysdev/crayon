@@ -1,71 +1,81 @@
-{"op":"add","path":"/root","value":"main-container"}
-{"op":"add","path":"/elements/main-container","value":{"type":"Card","props":{"direction":"column","gap":"l","variant":"clear"},"children":["header-card","filter-card","metrics-grid","incidents-card","charts-row","slow-endpoints-card","threshold-card"]}}
-{"op":"add","path":"/elements/header-card","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","variant":"card"},"children":["header-info","status-badge"]}}
-{"op":"add","path":"/elements/header-info","value":{"type":"Card","props":{"direction":"column","gap":"xs","variant":"clear"},"children":["title-text","subtitle-text"]}}
-{"op":"add","path":"/elements/title-text","value":{"type":"Heading","props":{"level":"h2","text":"On-Call Service Health Dashboard"}}}
-{"op":"add","path":"/elements/subtitle-text","value":{"type":"TextContent","props":{"size":"small","text":"Production Infrastructure Monitoring • Real-time Status"}}}
-{"op":"add","path":"/elements/status-badge","value":{"type":"Tag","props":{"icon":"activity","size":"lg","text":"Degraded State","variant":"warning"}}}
-{"op":"add","path":"/elements/filter-card","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center","variant":"sunk"},"children":["filter-label","region-select"]}}
-{"op":"add","path":"/elements/filter-label","value":{"type":"TextContent","props":{"size":"small-heavy","text":"Filter Region:"}}}
-{"op":"add","path":"/elements/region-select","value":{"type":"Select","props":{"items":["opt-all","opt-us-east","opt-us-west","opt-eu-west","opt-ap-south"],"name":"regionSelect","value":{"$bindState":"/selectedRegion"}},"children":[]}}
-{"op":"add","path":"/elements/opt-all","value":{"type":"SelectItem","props":{"label":"All Regions (Global)","value":"all"}}}
-{"op":"add","path":"/elements/opt-us-east","value":{"type":"SelectItem","props":{"label":"US East (N. Virginia)","value":"us-east"}}}
-{"op":"add","path":"/elements/opt-us-west","value":{"type":"SelectItem","props":{"label":"US West (Oregon)","value":"us-west"}}}
-{"op":"add","path":"/elements/opt-eu-west","value":{"type":"SelectItem","props":{"label":"EU West (Ireland)","value":"eu-west"}}}
-{"op":"add","path":"/elements/opt-ap-south","value":{"type":"SelectItem","props":{"label":"AP South (Tokyo)","value":"ap-south"}}}
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"gap":"l"},"children":["header","region-card","kpi-grid","incidents-card","charts-card","endpoints-card","alert-config-card"]}}
+{"op":"add","path":"/elements/header","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","variant":"clear"},"children":["header-text","status-badge"]}}
+{"op":"add","path":"/elements/header-text","value":{"type":"CardHeader","props":{"title":"Service Health Dashboard","subtitle":"Core API Gateway & Microservices Infrastructure"}}}
+{"op":"add","path":"/elements/status-badge","value":{"type":"Badge","props":{"text":"Degraded Performance","variant":"destructive"}}}
+
+{"op":"add","path":"/elements/region-card","value":{"type":"Card","props":{"direction":"row","align":"center","gap":"m","variant":"sunk"},"children":["region-label","region-select"]}}
+{"op":"add","path":"/elements/region-label","value":{"type":"Label","props":{"text":"Filter by Region:"}}}
+{"op":"add","path":"/elements/region-select","value":{"type":"Select","props":{"name":"region","value":{"$bindState":"/selectedRegion"},"items":["opt-all","opt-us-east","opt-us-west","opt-eu-west","opt-ap-south"],"placeholder":"Select Region","size":"small"}}}
+{"op":"add","path":"/elements/opt-all","value":{"type":"SelectItem","props":{"value":"all","label":"Global (All Regions)"}}}
+{"op":"add","path":"/elements/opt-us-east","value":{"type":"SelectItem","props":{"value":"us-east-1","label":"US East (N. Virginia)"}}}
+{"op":"add","path":"/elements/opt-us-west","value":{"type":"SelectItem","props":{"value":"us-west-2","label":"US West (Oregon)"}}}
+{"op":"add","path":"/elements/opt-eu-west","value":{"type":"SelectItem","props":{"value":"eu-west-1","label":"EU West (Ireland)"}}}
+{"op":"add","path":"/elements/opt-ap-south","value":{"type":"SelectItem","props":{"value":"ap-south-1","label":"AP South (Mumbai)"}}}
+
 {"op":"add","path":"/state/selectedRegion","value":"all"}
-{"op":"add","path":"/elements/metrics-grid","value":{"type":"Card","props":{"direction":"row","gap":"m","variant":"clear"},"children":["uptime-card","error-rate-card","active-incidents-card"]}}
-{"op":"add","path":"/elements/uptime-card","value":{"type":"Card","props":{"direction":"column","gap":"xs","variant":"card"},"children":["uptime-title","uptime-value","uptime-progress"]}}
-{"op":"add","path":"/elements/uptime-title","value":{"type":"TextContent","props":{"size":"small-heavy","text":"Quarterly Uptime (Q3)"}}}
-{"op":"add","path":"/elements/uptime-value","value":{"type":"Heading","props":{"level":"h3","text":{"$template":"${/metrics/uptimeQuarter}%"}}}}
-{"op":"add","path":"/elements/uptime-progress","value":{"type":"Progress","props":{"label":"SLA Target: 99.90%","value":{"$state":"/metrics/uptimeQuarter"}}}}
-{"op":"add","path":"/elements/error-rate-card","value":{"type":"Card","props":{"direction":"column","gap":"xs","variant":"card"},"children":["error-title","error-value","error-tag"]}}
-{"op":"add","path":"/elements/error-title","value":{"type":"TextContent","props":{"size":"small-heavy","text":"Current Error Rate"}}}
-{"op":"add","path":"/elements/error-value","value":{"type":"Heading","props":{"level":"h3","text":{"$template":"${/metrics/errorRateNow}%"}}}}
-{"op":"add","path":"/elements/error-tag","value":{"type":"Tag","props":{"size":"sm","text":"Above threshold (0.50%)","variant":"danger"}}}
-{"op":"add","path":"/elements/active-incidents-card","value":{"type":"Card","props":{"direction":"column","gap":"xs","variant":"card"},"children":["incidents-summary-title","incidents-summary-value","incidents-summary-tag"]}}
-{"op":"add","path":"/elements/incidents-summary-title","value":{"type":"TextContent","props":{"size":"small-heavy","text":"Open Incidents"}}}
-{"op":"add","path":"/elements/incidents-summary-value","value":{"type":"Heading","props":{"level":"h3","text":{"$template":"${/metrics/openIncidentsCount} Active"}}}}
-{"op":"add","path":"/elements/incidents-summary-tag","value":{"type":"Tag","props":{"size":"sm","text":"1 Critical • 1 Major","variant":"warning"}}}
-{"op":"add","path":"/state/metrics","value":{"errorRateNow":0.84,"openIncidentsCount":2,"uptimeQuarter":99.94}}
-{"op":"add","path":"/elements/incidents-card","value":{"type":"Card","props":{"direction":"column","gap":"m","variant":"card"},"children":["incidents-header","incidents-list"]}}
-{"op":"add","path":"/elements/incidents-header","value":{"type":"CardHeader","props":{"subtitle":"Active unresolved operational events requiring on-call attention","title":"Open Incidents & Acknowledgement"}}}
-{"op":"add","path":"/elements/incidents-list","value":{"type":"Card","props":{"direction":"column","gap":"s","variant":"clear"},"repeat":{"key":"id","statePath":"/incidents"},"children":["incident-item-card"]}}
-{"op":"add","path":"/elements/incident-item-card","value":{"type":"Card","props":{"align":"center","direction":"row","justify":"between","variant":"sunk"},"children":["incident-left","incident-ack-button"]}}
-{"op":"add","path":"/elements/incident-left","value":{"type":"Card","props":{"align":"center","direction":"row","gap":"m","variant":"clear"},"children":["incident-severity-tag","incident-details"]}}
-{"op":"add","path":"/elements/incident-severity-tag","value":{"type":"Tag","props":{"size":"md","text":{"$item":"severity"},"variant":{"$cond":{"$item":"isCritical"},"$else":"warning","$then":"danger"}}}}
-{"op":"add","path":"/elements/incident-details","value":{"type":"Card","props":{"direction":"column","gap":"none","variant":"clear"},"children":["incident-title","incident-meta"]}}
-{"op":"add","path":"/elements/incident-title","value":{"type":"TextContent","props":{"size":"default","text":{"$item":"title"}}}}
-{"op":"add","path":"/elements/incident-meta","value":{"type":"TextContent","props":{"size":"small","text":{"$template":"ID: ${id} • Region: ${region} • Opened: ${timeAgo} • Status: ${status}"}}}}
-{"op":"add","path":"/elements/incident-ack-button","value":{"type":"Button","props":{"label":{"$cond":{"$item":"acknowledged"},"$else":"Acknowledge Incident","$then":"Acknowledged ✓"},"size":"small","variant":{"$cond":{"$item":"acknowledged"},"$else":"primary","$then":"secondary"}},"on":{"press":{"action":"setState","params":{"statePath":{"$template":"/incidents/${$index}/acknowledged"},"value":true}}}}}
+
+{"op":"add","path":"/elements/kpi-grid","value":{"type":"Card","props":{"direction":"row","gap":"m"},"children":["kpi-uptime","kpi-error-rate","kpi-ack-status"]}}
+{"op":"add","path":"/elements/kpi-uptime","value":{"type":"Card","props":{"variant":"sunk","gap":"xs"},"children":["uptime-title","uptime-val","uptime-sub"]}}
+{"op":"add","path":"/elements/uptime-title","value":{"type":"Label","props":{"text":"1. Uptime (This Quarter)"}}}
+{"op":"add","path":"/elements/uptime-val","value":{"type":"Heading","props":{"text":"99.94%","level":"h2"}}}
+{"op":"add","path":"/elements/uptime-sub","value":{"type":"Tag","props":{"text":"SLA Target: 99.90%","variant":"success","size":"sm"}}}
+
+{"op":"add","path":"/elements/kpi-error-rate","value":{"type":"Card","props":{"variant":"sunk","gap":"xs"},"children":["error-title","error-val","error-sub"]}}
+{"op":"add","path":"/elements/error-title","value":{"type":"Label","props":{"text":"3. Current Error Rate"}}}
+{"op":"add","path":"/elements/error-val","value":{"type":"Heading","props":{"text":"1.82%","level":"h2"}}}
+{"op":"add","path":"/elements/error-sub","value":{"type":"Tag","props":{"text":"+0.45% past hr","variant":"danger","size":"sm"}}}
+
+{"op":"add","path":"/elements/kpi-ack-status","value":{"type":"Card","props":{"variant":"sunk","gap":"xs"},"children":["ack-title","ack-val","ack-sub"]}}
+{"op":"add","path":"/elements/ack-title","value":{"type":"Label","props":{"text":"Active Incidents Status"}}}
+{"op":"add","path":"/elements/ack-val","value":{"type":"Heading","props":{"text":"2 Open","level":"h2"}}}
+{"op":"add","path":"/elements/ack-sub","value":{"type":"Tag","props":{"text":"1 Unacknowledged","variant":"warning","size":"sm"}}}
+
+{"op":"add","path":"/elements/incidents-card","value":{"type":"Card","props":{"gap":"m"},"children":["incidents-header","incidents-list"]}}
+{"op":"add","path":"/elements/incidents-header","value":{"type":"CardHeader","props":{"title":"4 & 8. Open Incidents & Acknowledgement","subtitle":"Real-time active alerts requiring response"}}}
+{"op":"add","path":"/elements/incidents-list","value":{"type":"Card","props":{"gap":"s","variant":"clear"},"repeat":{"statePath":"/incidents","key":"id"},"children":["incident-item"]}}
+
+{"op":"add","path":"/elements/incident-item","value":{"type":"Card","props":{"direction":"row","align":"center","justify":"between","variant":"sunk"},"children":["incident-info","incident-actions"]}}
+{"op":"add","path":"/elements/incident-info","value":{"type":"Card","props":{"direction":"row","align":"center","gap":"m","variant":"clear"},"children":["incident-sev","incident-text"]}}
+{"op":"add","path":"/elements/incident-sev","value":{"type":"Tag","props":{"text":{"$item":"severity"},"variant":{"$cond":{"$item":"isSev1"},"$then":"danger","$else":"warning"},"size":"md"}}}
+{"op":"add","path":"/elements/incident-text","value":{"type":"Card","props":{"gap":"none","variant":"clear"},"children":["incident-title","incident-meta"]}}
+{"op":"add","path":"/elements/incident-title","value":{"type":"TextContent","props":{"text":{"$item":"title"},"size":"small-heavy"}}}
+{"op":"add","path":"/elements/incident-meta","value":{"type":"TextContent","props":{"text":{"$template":"ID: ${id} | Region: ${region} | Triggered: ${time}"},"size":"small"}}}
+
+{"op":"add","path":"/elements/incident-actions","value":{"type":"Card","props":{"direction":"row","align":"center","gap":"s","variant":"clear"},"children":["ack-badge","ack-button"]}}
+{"op":"add","path":"/elements/ack-badge","value":{"type":"Badge","props":{"text":"Acknowledged","variant":"secondary"},"visible":{"$item":"acknowledged"}}}
+{"op":"add","path":"/elements/ack-button","value":{"type":"Button","props":{"label":"Acknowledge","size":"small","variant":"primary"},"visible":{"$item":"acknowledged","not":true},"on":{"press":{"action":"setState","params":{"statePath":{"$template":"/incidents/${$index}/acknowledged"},"value":true}}}}}
+
 {"op":"add","path":"/state/incidents","value":[]}
-{"op":"add","path":"/state/incidents/0","value":{"acknowledged":false,"id":"INC-8492","isCritical":true,"region":"us-east","severity":"SEV-1","status":"Investigating","timeAgo":"14m ago","title":"Database Read Replica Latency Spike"}}
-{"op":"add","path":"/state/incidents/1","value":{"acknowledged":false,"id":"INC-8489","isCritical":false,"region":"eu-west","severity":"SEV-2","status":"Identified","timeAgo":"42m ago","title":"Payment Gateway Timeout Rate High"}}
-{"op":"add","path":"/elements/charts-row","value":{"type":"Card","props":{"direction":"column","gap":"m","variant":"card"},"children":["charts-header","charts-container"]}}
-{"op":"add","path":"/elements/charts-header","value":{"type":"CardHeader","props":{"subtitle":"Historical trend for the last 24 hours across primary clusters","title":"CPU & Memory Usage (Past 24 Hours)"}}}
-{"op":"add","path":"/elements/charts-container","value":{"type":"LineChart","props":{"labels":["00:00","04:00","08:00","12:00","16:00","20:00","24:00"],"series":["series-cpu","series-mem"],"variant":"natural","xLabel":"Time (UTC)","yLabel":"Usage (%)"}}}
-{"op":"add","path":"/elements/series-cpu","value":{"type":"Series","props":{"category":"CPU Usage (%)","values":[42,38,65,88,74,62,55]}}}
-{"op":"add","path":"/elements/series-mem","value":{"type":"Series","props":{"category":"Memory Usage (%)","values":[60,62,68,75,82,79,71]}}}
-{"op":"add","path":"/elements/slow-endpoints-card","value":{"type":"Card","props":{"direction":"column","gap":"m","variant":"card"},"children":["slow-header","slow-table"]}}
-{"op":"add","path":"/elements/slow-header","value":{"type":"CardHeader","props":{"subtitle":"Ranked by p99 response duration over the selected timeframe","title":"Top 5 Slowest Endpoints"}}}
-{"op":"add","path":"/elements/slow-table","value":{"type":"Table","props":{"columns":["col-endpoint","col-method","col-p99","col-p95","col-rpm"]}}}
-{"op":"add","path":"/elements/col-endpoint","value":{"type":"Col","props":{"data":["/api/v2/reports/generate","/api/v1/checkout/process","/api/v2/analytics/query","/api/v1/users/export","/api/v1/search/aggregate"],"label":"Endpoint Path","type":"string"}}}
-{"op":"add","path":"/elements/col-method","value":{"type":"Col","props":{"data":["POST","POST","GET","GET","POST"],"label":"Method","type":"string"}}}
-{"op":"add","path":"/elements/col-p99","value":{"type":"Col","props":{"data":["1,840 ms","1,250 ms","980 ms","840 ms","760 ms"],"label":"p99 Latency","type":"string"}}}
-{"op":"add","path":"/elements/col-p95","value":{"type":"Col","props":{"data":["1,120 ms","810 ms","640 ms","520 ms","490 ms"],"label":"p95 Latency","type":"string"}}}
-{"op":"add","path":"/elements/col-rpm","value":{"type":"Col","props":{"data":["450 rpm","3,200 rpm","1,100 rpm","120 rpm","5,400 rpm"],"label":"Throughput","type":"string"}}}
-{"op":"add","path":"/elements/threshold-card","value":{"type":"Card","props":{"direction":"column","gap":"m","variant":"card"},"children":["threshold-header","threshold-form-card"]}}
-{"op":"add","path":"/elements/threshold-header","value":{"type":"CardHeader","props":{"subtitle":"Configure automatic paging triggers for error rates and latency anomalies","title":"Alert Threshold Settings"}}}
-{"op":"add","path":"/elements/threshold-form-card","value":{"type":"Card","props":{"direction":"column","gap":"m","variant":"sunk"},"children":["threshold-slider-control","threshold-metric-control","save-threshold-btn","alert-banner"]}}
-{"op":"add","path":"/elements/threshold-slider-control","value":{"type":"FormControl","props":{"hint":"Triggers PagerDuty when error rate stays above this limit for > 2 mins","input":"threshold-slider","label":"Error Rate Alert Threshold (%)"}}}
-{"op":"add","path":"/elements/threshold-slider","value":{"type":"Slider","props":{"defaultValue":[0.5],"max":5,"min":0.1,"name":"thresholdSlider","step":0.1,"value":{"$bindState":"/alertThresholdVal"},"variant":"continuous"}}}
-{"op":"add","path":"/state/alertThresholdVal","value":[0.5]}
-{"op":"add","path":"/elements/threshold-metric-control","value":{"type":"FormControl","props":{"hint":"Select metric type to apply threshold updates","input":"threshold-metric-select","label":"Target Metric"}}}
-{"op":"add","path":"/elements/threshold-metric-select","value":{"type":"Select","props":{"items":["metric-opt-error","metric-opt-latency","metric-opt-cpu"],"name":"metricSelect","value":{"$bindState":"/selectedMetric"}},"children":[]}}
-{"op":"add","path":"/elements/metric-opt-error","value":{"type":"SelectItem","props":{"label":"HTTP 5xx Error Rate (%)","value":"error_rate"}}}
-{"op":"add","path":"/elements/metric-opt-latency","value":{"type":"SelectItem","props":{"label":"p99 Latency (ms)","value":"p99_latency"}}}
-{"op":"add","path":"/elements/metric-opt-cpu","value":{"type":"SelectItem","props":{"label":"CPU Utilization (%)","value":"cpu_util"}}}
-{"op":"add","path":"/state/selectedMetric","value":"error_rate"}
-{"op":"add","path":"/elements/save-threshold-btn","value":{"type":"Button","props":{"label":"Update Alert Threshold","size":"medium","variant":"primary"},"on":{"press":{"action":"setState","params":{"statePath":"/thresholdSaved","value":true}}}}}
-{"op":"add","path":"/state/thresholdSaved","value":false}
-{"op":"add","path":"/elements/alert-banner","value":{"type":"Alert","props":{"description":"Alerting rules updated successfully in PagerDuty and Prometheus configs.","title":"Threshold Updated","variant":"success"},"visible":{"$state":"/thresholdSaved"}}}
+{"op":"add","path":"/state/incidents/0","value":{"id":"INC-8492","title":"High Latency on Auth Validation Endpoint","severity":"SEV-1","isSev1":true,"region":"us-east-1","time":"12 mins ago","acknowledged":false}}
+{"op":"add","path":"/state/incidents/1","value":{"id":"INC-8488","title":"Database Connection Pool Exhaustion","severity":"SEV-2","isSev1":false,"region":"eu-west-1","time":"45 mins ago","acknowledged":true}}
+
+{"op":"add","path":"/elements/charts-card","value":{"type":"Card","props":{"gap":"m"},"children":["charts-header","cpu-mem-chart"]}}
+{"op":"add","path":"/elements/charts-header","value":{"type":"CardHeader","props":{"title":"2. CPU & Memory Usage (Past 24 Hours)","subtitle":"Average utilization across active clusters"}}}
+{"op":"add","path":"/elements/cpu-mem-chart","value":{"type":"LineChart","props":{"labels":["00:00","04:00","08:00","12:00","16:00","20:00","24:00"],"series":["series-cpu","series-mem"],"variant":"natural","xLabel":"Time","yLabel":"Usage (%)"}}}
+{"op":"add","path":"/elements/series-cpu","value":{"type":"Series","props":{"category":"CPU Usage (%)","values":[42,38,65,88,76,82,69]}}}
+{"op":"add","path":"/elements/series-mem","value":{"type":"Series","props":{"category":"Memory Usage (%)","values":[60,61,68,74,79,81,78]}}}
+
+{"op":"add","path":"/elements/endpoints-card","value":{"type":"Card","props":{"gap":"m"},"children":["endpoints-header","endpoints-chart"]}}
+{"op":"add","path":"/elements/endpoints-header","value":{"type":"CardHeader","props":{"title":"6. Top 5 Slowest Endpoints","subtitle":"p99 Latency (milliseconds)"}}}
+{"op":"add","path":"/elements/endpoints-chart","value":{"type":"HorizontalBarChart","props":{"labels":["POST /v1/auth/token","POST /v2/reports/generate","GET /v1/users/export","PUT /v1/media/upload","GET /v2/analytics/query"],"series":["series-latency"],"xLabel":"Latency (ms)"}}}
+{"op":"add","path":"/elements/series-latency","value":{"type":"Series","props":{"category":"p99 Latency (ms)","values":[850,620,540,480,410]}}}
+
+{"op":"add","path":"/elements/alert-config-card","value":{"type":"Card","props":{"gap":"m"},"children":["alert-header","alert-callout","alert-form"]}}
+{"op":"add","path":"/elements/alert-header","value":{"type":"CardHeader","props":{"title":"7. Set Alert Threshold","subtitle":"Configure dynamic triggers for on-call page escalation"}}}
+{"op":"add","path":"/elements/alert-callout","value":{"type":"Callout","props":{"variant":"info","title":"Threshold Configuration","description":"Updating this threshold will apply immediately across all region routing rules for on-call notification triggers."}}}
+
+{"op":"add","path":"/elements/alert-form","value":{"type":"Card","props":{"direction":"row","align":"end","gap":"m","variant":"sunk"},"children":["metric-control","threshold-control","save-button"]}}
+
+{"op":"add","path":"/elements/metric-control","value":{"type":"FormControl","props":{"label":"Metric Target","input":"metric-select"}}}
+{"op":"add","path":"/elements/metric-select","value":{"type":"Select","props":{"name":"alertMetric","value":{"$bindState":"/alertForm/metric"},"items":["m-err","m-cpu","m-lat"],"size":"medium"}}}
+{"op":"add","path":"/elements/m-err","value":{"type":"SelectItem","props":{"value":"error_rate","label":"Error Rate (%)"}}}
+{"op":"add","path":"/elements/m-cpu","value":{"type":"SelectItem","props":{"value":"cpu_usage","label":"CPU Usage (%)"}}}
+{"op":"add","path":"/elements/m-lat","value":{"type":"SelectItem","props":{"value":"latency","label":"p99 Latency (ms)"}}}
+
+{"op":"add","path":"/elements/threshold-control","value":{"type":"FormControl","props":{"label":"Threshold Value","hint":"Trigger alert when exceeded","input":"threshold-input"}}}
+{"op":"add","path":"/elements/threshold-input","value":{"type":"Input","props":{"name":"alertValue","type":"number","value":{"$bindState":"/alertForm/value"},"placeholder":"e.g. 5.0"}}}
+
+{"op":"add","path":"/elements/save-button","value":{"type":"Button","props":{"label":"Update Threshold","variant":"primary"},"on":{"press":{"action":"setState","params":{"statePath":"/alertForm/saved","value":true}}}}}
+
+{"op":"add","path":"/state/alertForm","value":{"metric":"error_rate","value":"2.5","saved":false}}

@@ -1,23 +1,106 @@
-Here's a personal focus view covering all three items: the urgent task + deadline, its status, and a "Mark Done" action.
+Here's a personal focus view for your single most urgent task — deadline, status, and a one-tap "mark done" action:
 
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"focus-view","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#4F46E5","agentDisplayName":"Focus"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"focus-view","components":[
-{"id":"root","component":"Card","variant":"card","direction":"column","gap":"m","children":["header","urgentTag","taskTitle","deadline","sep1","statusRow","sep2","doneBtn"]},
-{"id":"header","component":"CardHeader","title":"Today's Focus","subtitle":"Your single most urgent task"},
-{"id":"urgentTag","component":"Tag","text":"Most Urgent","variant":"danger","size":"md"},
-{"id":"taskTitle","component":"Heading","text":"Submit Q3 budget report to Finance","level":"h2"},
-{"id":"deadline","component":"TextContent","text":"**Deadline:** Today, 5:00 PM (in 3 hours)","size":"large-heavy"},
-{"id":"sep1","component":"Separator","orientation":"horizontal"},
-{"id":"statusRow","component":"Card","variant":"sunk","direction":"row","gap":"s","align":"center","children":["statusLabel","statusBadge"]},
-{"id":"statusLabel","component":"TextContent","text":"Current status:"},
-{"id":"statusBadge","component":"Badge","text":"In Progress — 70% complete","variant":"secondary"},
-{"id":"sep2","component":"Separator","orientation":"horizontal"},
-{"id":"doneBtn","component":"Button","label":"✓ Mark as Done","variant":"primary","size":"large","action":[{"event":"markDone","taskId":"q3-budget-report"}]}
-]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "urgentTag",
+          "taskTitle",
+          "deadline",
+          "statusRow",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Focus Mode",
+        "subtitle": "Your single most urgent task right now"
+      },
+      {
+        "id": "urgentTag",
+        "component": "Tag",
+        "text": "Most Urgent",
+        "icon": "flame",
+        "variant": "danger",
+        "size": "md"
+      },
+      {
+        "id": "taskTitle",
+        "component": "Heading",
+        "text": "Submit quarterly tax filing",
+        "level": "h2"
+      },
+      {
+        "id": "deadline",
+        "component": "Alert",
+        "title": "Deadline: Today, 5:00 PM",
+        "description": "Less than 4 hours remaining — penalties apply if late.",
+        "variant": "warning"
+      },
+      {
+        "id": "statusRow",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "align": "center",
+        "justify": "between",
+        "children": [
+          "statusLabel",
+          "statusBadge"
+        ]
+      },
+      {
+        "id": "statusLabel",
+        "component": "TextContent",
+        "text": "**Current status**",
+        "size": "default"
+      },
+      {
+        "id": "statusBadge",
+        "component": "Badge",
+        "text": "In Progress",
+        "variant": "secondary"
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": [
+          "doneBtn"
+        ]
+      },
+      {
+        "id": "doneBtn",
+        "component": "Button",
+        "label": "Mark as Done",
+        "variant": "primary",
+        "size": "large"
+      }
+    ]
+  }
+}
 </a2ui-json>
 
-The screen shows: **(1)** the urgent task "Submit Q3 budget report" with its 5:00 PM deadline, **(2)** its current status badge ("In Progress — 70% complete"), and **(3)** a prominent "Mark as Done" button. Want me to add a progress bar or a reschedule option?
+This covers all three requirements:
+1. **Most urgent task + deadline** — "Submit quarterly tax filing" with a warning alert showing "Today, 5:00 PM"
+2. **Current status** — "In Progress" badge in a status row
+3. **Mark done** — a prominent primary "Mark as Done" button
+
+Want me to add a progress bar or a confirmation dialog before marking it complete?

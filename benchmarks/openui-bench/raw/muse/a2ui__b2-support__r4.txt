@@ -1,20 +1,11 @@
-Support Lead morning view — all 5 requirements covered in one screen:
-
-* **Open tickets + Avg response** as headline KPIs
-* **5 most recent tickets** with priority column
-* **High-priority toggle** to filter
-* **Open New Ticket** dialog
+Support lead morning queue — all 5 items on one screen: live KPIs, recent tickets, high-priority filter, and new ticket creation.
 
 <a2ui-json>
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "support-lead-morning-view",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": {
-      "primaryColor": "#0F62FE",
-      "agentDisplayName": "Support Console"
-    }
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
@@ -23,278 +14,208 @@ Support Lead morning view — all 5 requirements covered in one screen:
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "support-lead-morning-view",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
         "children": [
           "header",
-          "statsContainer",
-          "controlsCard",
-          "ticketsCard",
-          "helpText"
+          "kpiSection",
+          "filterCard",
+          "ticketsHeader",
+          "ticketsTable",
+          "newTicketCard",
+          "footerNote"
         ],
-        "variant": "clear",
-        "direction": "column",
-        "gap": "l"
+        "gap": "m"
       },
       {
         "id": "header",
         "component": "CardHeader",
         "title": "Support Lead — Morning View",
-        "subtitle": "Monday, Aug 18 • 08:30 AM • Queue overview for the day"
+        "subtitle": "Mon, Aug 18 • 9:00 AM • Queue health at a glance"
       },
       {
-        "id": "statsContainer",
+        "id": "kpiSection",
         "component": "Card",
+        "children": [
+          "kpiOpenCard",
+          "kpiResponseCard"
+        ],
         "variant": "clear",
         "direction": "row",
-        "gap": "m",
-        "wrap": true,
-        "children": [
-          "statOpen",
-          "statResponse"
-        ]
+        "gap": "m"
       },
       {
-        "id": "statOpen",
+        "id": "kpiOpenCard",
         "component": "Card",
-        "variant": "card",
         "children": [
-          "statOpenLabel",
-          "statOpenValue",
-          "statOpenHint"
+          "kpiOpenHeader",
+          "kpiOpenValue",
+          "kpiOpenSub",
+          "kpiOpenBadge"
         ],
-        "gap": "xs"
-      },
-      {
-        "id": "statOpenLabel",
-        "component": "TextContent",
-        "text": "Open Tickets",
-        "size": "small"
-      },
-      {
-        "id": "statOpenValue",
-        "component": "Heading",
-        "text": "47",
-        "level": "h1"
-      },
-      {
-        "id": "statOpenHint",
-        "component": "TextContent",
-        "text": "12 awaiting assignment • 35 in progress • +5 vs yesterday",
-        "size": "small"
-      },
-      {
-        "id": "statResponse",
-        "component": "Card",
-        "variant": "card",
-        "children": [
-          "statResponseLabel",
-          "statResponseValue",
-          "statResponseHint"
-        ],
-        "gap": "xs"
-      },
-      {
-        "id": "statResponseLabel",
-        "component": "TextContent",
-        "text": "Avg. First-Response Time",
-        "size": "small"
-      },
-      {
-        "id": "statResponseValue",
-        "component": "Heading",
-        "text": "1h 42m",
-        "level": "h1"
-      },
-      {
-        "id": "statResponseHint",
-        "component": "TextContent",
-        "text": "SLA target: 2h • 89% within SLA • Median 58m",
-        "size": "small"
-      },
-      {
-        "id": "controlsCard",
-        "component": "Card",
         "variant": "sunk",
-        "children": [
-          "controlsTitle",
-          "controlsRow"
-        ],
-        "gap": "m"
+        "gap": "xs"
       },
       {
-        "id": "controlsTitle",
-        "component": "TextContent",
-        "text": "**Filters & Actions** — Toggle to narrow the list below, or create a ticket",
-        "size": "small"
-      },
-      {
-        "id": "controlsRow",
+        "id": "kpiResponseCard",
         "component": "Card",
+        "children": [
+          "kpiResponseHeader",
+          "kpiResponseValue",
+          "kpiResponseSub",
+          "kpiResponseBadge"
+        ],
+        "variant": "sunk",
+        "gap": "xs"
+      },
+      {
+        "id": "filterCard",
+        "component": "Card",
+        "children": [
+          "filterHeader",
+          "filterButtons",
+          "filterSwitch"
+        ],
         "variant": "clear",
-        "direction": "row",
-        "gap": "m",
-        "align": "center",
-        "justify": "between",
-        "wrap": true,
-        "children": [
-          "filterSwitchGroup",
-          "newTicketDialog"
-        ]
-      },
-      {
-        "id": "filterSwitchGroup",
-        "component": "SwitchGroup",
-        "name": "priorityFilter",
-        "items": [
-          "highOnlySwitch"
-        ],
-        "variant": "card"
-      },
-      {
-        "id": "highOnlySwitch",
-        "component": "SwitchItem",
-        "name": "highOnly",
-        "label": "High-priority only",
-        "description": "Show only P1 / High priority tickets"
-      },
-      {
-        "id": "newTicketDialog",
-        "component": "DialogBlock",
-        "triggerLabel": "+ Open New Ticket",
-        "title": "Open a New Ticket",
-        "description": "Create a ticket and it will appear in the queue instantly.",
-        "triggerVariant": "default",
-        "content": [
-          "newTicketForm"
-        ]
-      },
-      {
-        "id": "newTicketForm",
-        "component": "Form",
-        "name": "newTicketForm",
-        "fields": [
-          "fieldSubject",
-          "fieldPriority",
-          "fieldDescription"
-        ],
-        "buttons": "formButtons"
-      },
-      {
-        "id": "formButtons",
-        "component": "Buttons",
-        "buttons": [
-          "submitBtn"
-        ]
-      },
-      {
-        "id": "submitBtn",
-        "component": "Button",
-        "label": "Create Ticket",
-        "variant": "primary"
-      },
-      {
-        "id": "fieldSubject",
-        "component": "FormControl",
-        "label": "Subject",
-        "input": "inputSubject",
-        "hint": "Brief summary for the queue"
-      },
-      {
-        "id": "inputSubject",
-        "component": "Input",
-        "name": "subject",
-        "placeholder": "e.g., Checkout payment fails on retry"
-      },
-      {
-        "id": "fieldPriority",
-        "component": "FormControl",
-        "label": "Priority",
-        "input": "selectPriority"
-      },
-      {
-        "id": "selectPriority",
-        "component": "Select",
-        "name": "priority",
-        "placeholder": "Select priority",
-        "items": [
-          "optHigh",
-          "optMedium",
-          "optLow"
-        ]
-      },
-      {
-        "id": "optHigh",
-        "component": "SelectItem",
-        "value": "high",
-        "label": "High — P1 Urgent"
-      },
-      {
-        "id": "optMedium",
-        "component": "SelectItem",
-        "value": "medium",
-        "label": "Medium — P2"
-      },
-      {
-        "id": "optLow",
-        "component": "SelectItem",
-        "value": "low",
-        "label": "Low — P3"
-      },
-      {
-        "id": "fieldDescription",
-        "component": "FormControl",
-        "label": "Description",
-        "input": "textAreaDesc"
-      },
-      {
-        "id": "textAreaDesc",
-        "component": "TextArea",
-        "name": "description",
-        "placeholder": "Describe the issue, customer, and steps to reproduce...",
-        "rows": 3
-      },
-      {
-        "id": "ticketsCard",
-        "component": "Card",
-        "variant": "card",
-        "children": [
-          "ticketsHeader",
-          "ticketsTable",
-          "ticketsFooter"
-        ],
-        "gap": "m"
+        "gap": "s"
       },
       {
         "id": "ticketsHeader",
         "component": "CardHeader",
-        "title": "Five Most Recent Tickets",
-        "subtitle": "Sorted by newest first • Priority shown for each"
+        "title": "Five most recent tickets",
+        "subtitle": "Priority shown for each • Sorted by newest first"
       },
       {
         "id": "ticketsTable",
         "component": "Table",
         "columns": [
-          "colId",
+          "colTicket",
           "colSubject",
           "colPriority",
-          "colCreated",
-          "colStatus"
+          "colStatus",
+          "colAge"
         ]
       },
       {
-        "id": "colId",
+        "id": "newTicketCard",
+        "component": "Card",
+        "children": [
+          "newTicketHeader",
+          "newTicketDialog",
+          "newTicketHint"
+        ],
+        "variant": "card",
+        "gap": "s"
+      },
+      {
+        "id": "footerNote",
+        "component": "TextContent",
+        "text": "Data refreshes every 2 minutes. Filters apply instantly to the table below.",
+        "size": "small"
+      },
+      {
+        "id": "kpiOpenHeader",
+        "component": "TextContent",
+        "text": "1 — Open tickets",
+        "size": "small-heavy"
+      },
+      {
+        "id": "kpiOpenValue",
+        "component": "TextContent",
+        "text": "47",
+        "size": "large-heavy"
+      },
+      {
+        "id": "kpiOpenSub",
+        "component": "TextContent",
+        "text": "+6 vs yesterday • 12 awaiting agent reply",
+        "size": "small"
+      },
+      {
+        "id": "kpiOpenBadge",
+        "component": "Badge",
+        "text": "Needs attention",
+        "variant": "destructive"
+      },
+      {
+        "id": "kpiResponseHeader",
+        "component": "TextContent",
+        "text": "2 — Avg first-response time",
+        "size": "small-heavy"
+      },
+      {
+        "id": "kpiResponseValue",
+        "component": "TextContent",
+        "text": "1h 42m",
+        "size": "large-heavy"
+      },
+      {
+        "id": "kpiResponseSub",
+        "component": "TextContent",
+        "text": "Target < 2h • 89% within SLA last 24h",
+        "size": "small"
+      },
+      {
+        "id": "kpiResponseBadge",
+        "component": "Badge",
+        "text": "Within SLA",
+        "variant": "secondary"
+      },
+      {
+        "id": "filterHeader",
+        "component": "TextContent",
+        "text": "4 — Filter tickets",
+        "size": "small-heavy"
+      },
+      {
+        "id": "filterButtons",
+        "component": "Buttons",
+        "buttons": [
+          "btnHighOnly",
+          "btnShowAll"
+        ]
+      },
+      {
+        "id": "btnHighOnly",
+        "component": "Button",
+        "label": "High-priority only",
+        "variant": "primary"
+      },
+      {
+        "id": "btnShowAll",
+        "component": "Button",
+        "label": "Show all",
+        "variant": "secondary"
+      },
+      {
+        "id": "filterSwitch",
+        "component": "SwitchGroup",
+        "name": "priority_filter",
+        "items": [
+          "switchHighOnly"
+        ],
+        "variant": "clear"
+      },
+      {
+        "id": "switchHighOnly",
+        "component": "SwitchItem",
+        "label": "Narrow to high-priority only",
+        "description": "Toggle to filter the 5 recent tickets below",
+        "name": "high_only"
+      },
+      {
+        "id": "colTicket",
         "component": "Col",
         "label": "Ticket",
         "data": [
-          "#8421",
-          "#8420",
-          "#8419",
-          "#8418",
-          "#8417"
+          "T-1842",
+          "T-1841",
+          "T-1840",
+          "T-1839",
+          "T-1838"
         ],
         "type": "string"
       },
@@ -303,11 +224,11 @@ Support Lead morning view — all 5 requirements covered in one screen:
         "component": "Col",
         "label": "Subject",
         "data": [
-          "Checkout payment fails on retry",
-          "SSO login loop for Acme Corp",
-          "Data export CSV truncated",
-          "Mobile app crash on iOS 17.4",
-          "Billing invoice not generated"
+          "Login fails on SSO redirect",
+          "Invoice PDF not generating",
+          "API webhook retries spiking",
+          "Feature request: bulk export",
+          "Mobile app crash on iOS 17.4"
         ],
         "type": "string"
       },
@@ -317,23 +238,10 @@ Support Lead morning view — all 5 requirements covered in one screen:
         "label": "Priority",
         "data": [
           "High",
-          "High",
           "Medium",
+          "High",
           "Low",
           "High"
-        ],
-        "type": "string"
-      },
-      {
-        "id": "colCreated",
-        "component": "Col",
-        "label": "Created",
-        "data": [
-          "Today 08:12",
-          "Today 07:55",
-          "Today 07:40",
-          "Yesterday 18:20",
-          "Yesterday 17:05"
         ],
         "type": "string"
       },
@@ -344,24 +252,139 @@ Support Lead morning view — all 5 requirements covered in one screen:
         "data": [
           "Open",
           "Open",
-          "Open",
+          "Pending",
           "Open",
           "Open"
         ],
         "type": "string"
       },
       {
-        "id": "ticketsFooter",
+        "id": "colAge",
+        "component": "Col",
+        "label": "Age",
+        "data": [
+          "12m ago",
+          "34m ago",
+          "1h ago",
+          "2h ago",
+          "2.5h ago"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "newTicketHeader",
         "component": "TextContent",
-        "text": "Tip: Enable **High-priority only** above to narrow this list to the 3 High tickets (#8421, #8420, #8417).",
+        "text": "5 — Open a new ticket",
+        "size": "small-heavy"
+      },
+      {
+        "id": "newTicketDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "+ New ticket",
+        "title": "Create new ticket",
+        "description": "Add subject, priority and details",
+        "content": [
+          "newTicketForm"
+        ],
+        "triggerVariant": "default"
+      },
+      {
+        "id": "newTicketHint",
+        "component": "TextContent",
+        "text": "Creates a ticket and assigns it to the morning triage queue.",
         "size": "small"
       },
       {
-        "id": "helpText",
-        "component": "Alert",
-        "title": "Morning triage ready",
-        "description": "47 open tickets, 1h 42m avg first response. 3 of the 5 newest are High priority — consider assigning #8421 first.",
-        "variant": "info"
+        "id": "newTicketForm",
+        "component": "Form",
+        "name": "new-ticket",
+        "buttons": "formButtons",
+        "fields": [
+          "fieldSubject",
+          "fieldPriority",
+          "fieldDescription"
+        ]
+      },
+      {
+        "id": "fieldSubject",
+        "component": "FormControl",
+        "label": "Subject",
+        "input": "inputSubject"
+      },
+      {
+        "id": "fieldPriority",
+        "component": "FormControl",
+        "label": "Priority",
+        "input": "selectPriority"
+      },
+      {
+        "id": "fieldDescription",
+        "component": "FormControl",
+        "label": "Description",
+        "hint": "Include steps to reproduce if relevant",
+        "input": "textAreaDesc"
+      },
+      {
+        "id": "inputSubject",
+        "component": "Input",
+        "name": "subject",
+        "placeholder": "e.g., Checkout error on Safari"
+      },
+      {
+        "id": "selectPriority",
+        "component": "Select",
+        "name": "priority",
+        "items": [
+          "prioHigh",
+          "prioMedium",
+          "prioLow"
+        ],
+        "placeholder": "Select priority"
+      },
+      {
+        "id": "prioHigh",
+        "component": "SelectItem",
+        "value": "high",
+        "label": "High"
+      },
+      {
+        "id": "prioMedium",
+        "component": "SelectItem",
+        "value": "medium",
+        "label": "Medium"
+      },
+      {
+        "id": "prioLow",
+        "component": "SelectItem",
+        "value": "low",
+        "label": "Low"
+      },
+      {
+        "id": "textAreaDesc",
+        "component": "TextArea",
+        "name": "description",
+        "placeholder": "Describe the issue...",
+        "rows": 3
+      },
+      {
+        "id": "formButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitBtn",
+          "cancelBtn"
+        ]
+      },
+      {
+        "id": "submitBtn",
+        "component": "Button",
+        "label": "Create ticket",
+        "variant": "primary"
+      },
+      {
+        "id": "cancelBtn",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
       }
     ]
   }

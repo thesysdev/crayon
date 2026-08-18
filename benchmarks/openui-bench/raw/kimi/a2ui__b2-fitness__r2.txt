@@ -1,58 +1,329 @@
-Here's your fitness daily summary screen covering all four items: steps vs. goal, calories burned, the past week's workouts, and a workout logging form.
+Here's a fitness daily summary screen covering all four items: step progress vs. goal, calories burned, a weekly workout chart, and a workout logging form.
 
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"fitness-summary","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#22C55E","agentDisplayName":"FitTrack"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"fitness-summary","components":[
-{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["header","stepsCard","calCard","weekCard","logCard"]},
-{"id":"header","component":"CardHeader","title":"Today's Summary","subtitle":"Tuesday, your daily fitness overview"},
-
-{"id":"stepsCard","component":"Card","variant":"card","direction":"column","gap":"s","children":["stepsHeader","stepsProgress","stepsText"]},
-{"id":"stepsHeader","component":"CardHeader","title":"Steps","subtitle":"Daily goal: 10,000"},
-{"id":"stepsProgress","component":"Progress","value":72,"label":"7,234 / 10,000 steps"},
-{"id":"stepsText","component":"TextContent","text":"You're **72%** of the way there — about 2,766 steps to go. A 25-minute walk would close the gap.","size":"small"},
-
-{"id":"calCard","component":"Card","variant":"card","direction":"column","gap":"s","children":["calHeader","calChart","calText"]},
-{"id":"calHeader","component":"CardHeader","title":"Calories Burned","subtitle":"Total today"},
-{"id":"calChart","component":"RadialChart","labels":["Active","Resting"],"values":[420,1450]},
-{"id":"calText","component":"TextContent","text":"**1,870 kcal** total — 420 kcal from activity, 1,450 kcal resting.","size":"small"},
-
-{"id":"weekCard","component":"Card","variant":"card","direction":"column","gap":"s","children":["weekHeader","weekChart","weekSeries"]},
-{"id":"weekHeader","component":"CardHeader","title":"Workouts This Week","subtitle":"Minutes of exercise per day"},
-{"id":"weekChart","component":"BarChart","labels":["Wed","Thu","Fri","Sat","Sun","Mon","Tue"],"series":["weekSeries"],"variant":"grouped","xLabel":"Day","yLabel":"Minutes"},
-{"id":"weekSeries","component":"Series","category":"Workout minutes","values":[45,0,30,60,20,40,35]},
-
-{"id":"logCard","component":"Card","variant":"card","direction":"column","gap":"s","children":["logHeader","logForm"]},
-{"id":"logHeader","component":"CardHeader","title":"Log a New Workout"},
-{"id":"logForm","component":"Form","name":"logWorkout","buttons":"logButtons","fields":["typeControl","durationControl","intensityControl","notesControl"]},
-{"id":"typeControl","component":"FormControl","label":"Workout type","input":"typeSelect"},
-{"id":"typeSelect","component":"Select","name":"workoutType","placeholder":"Choose a workout","items":["typeRun","typeBike","typeSwim","typeLift","typeYoga"],"rules":[{"required":true}]},
-{"id":"typeRun","component":"SelectItem","value":"run","label":"Running"},
-{"id":"typeBike","component":"SelectItem","value":"bike","label":"Cycling"},
-{"id":"typeSwim","component":"SelectItem","value":"swim","label":"Swimming"},
-{"id":"typeLift","component":"SelectItem","value":"lift","label":"Strength Training"},
-{"id":"typeYoga","component":"SelectItem","value":"yoga","label":"Yoga"},
-{"id":"durationControl","component":"FormControl","label":"Duration (minutes)","input":"durationInput","hint":"How long was your session?"},
-{"id":"durationInput","component":"Input","name":"duration","type":"number","placeholder":"e.g. 30","rules":[{"required":true}]},
-{"id":"intensityControl","component":"FormControl","label":"Intensity","input":"intensityRadio"},
-{"id":"intensityRadio","component":"RadioGroup","name":"intensity","items":["intLow","intMed","intHigh"],"defaultValue":"medium"},
-{"id":"intLow","component":"RadioItem","label":"Low","description":"Easy pace, could hold a conversation","value":"low"},
-{"id":"intMed","component":"RadioItem","label":"Medium","description":"Moderate effort, slightly breathless","value":"medium"},
-{"id":"intHigh","component":"RadioItem","label":"High","description":"Hard effort, near max","value":"high"},
-{"id":"notesControl","component":"FormControl","label":"Notes (optional)","input":"notesArea"},
-{"id":"notesArea","component":"TextArea","name":"notes","placeholder":"How did it feel? Any PRs?","rows":3},
-{"id":"logButtons","component":"Buttons","buttons":["logSubmit","logCancel"]},
-{"id":"logSubmit","component":"Button","label":"Log Workout","variant":"primary"},
-{"id":"logCancel","component":"Button","label":"Cancel","variant":"tertiary"}
-]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "statusBadge",
+          "stepsSection",
+          "calSection",
+          "weekSection",
+          "logSection"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Daily Summary",
+        "subtitle": "Today · Tuesday, June 10"
+      },
+      {
+        "id": "statusBadge",
+        "component": "Badge",
+        "text": "4 workouts this week",
+        "variant": "secondary"
+      },
+      {
+        "id": "stepsSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "stepsTitle",
+          "stepsValue",
+          "stepsProgress",
+          "stepsHint"
+        ]
+      },
+      {
+        "id": "stepsTitle",
+        "component": "TextContent",
+        "text": "Steps",
+        "size": "small-heavy"
+      },
+      {
+        "id": "stepsValue",
+        "component": "TextContent",
+        "text": "8,432 / 10,000",
+        "size": "large-heavy"
+      },
+      {
+        "id": "stepsProgress",
+        "component": "Progress",
+        "value": 84,
+        "label": "84% of daily goal"
+      },
+      {
+        "id": "stepsHint",
+        "component": "TextContent",
+        "text": "1,568 steps to go — roughly a 15-minute walk",
+        "size": "small"
+      },
+      {
+        "id": "calSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "calTitle",
+          "calValue",
+          "calBreakdown"
+        ]
+      },
+      {
+        "id": "calTitle",
+        "component": "TextContent",
+        "text": "Calories burned",
+        "size": "small-heavy"
+      },
+      {
+        "id": "calValue",
+        "component": "TextContent",
+        "text": "612 kcal",
+        "size": "large-heavy"
+      },
+      {
+        "id": "calBreakdown",
+        "component": "SingleStackedBarChart",
+        "labels": [
+          "Active",
+          "Resting"
+        ],
+        "values": [
+          420,
+          192
+        ]
+      },
+      {
+        "id": "weekSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "weekTitle",
+          "weekChart"
+        ]
+      },
+      {
+        "id": "weekTitle",
+        "component": "TextContent",
+        "text": "Workouts — past 7 days",
+        "size": "small-heavy"
+      },
+      {
+        "id": "weekChart",
+        "component": "BarChart",
+        "labels": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat",
+          "Sun"
+        ],
+        "series": [
+          "weekSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Day",
+        "yLabel": "Minutes"
+      },
+      {
+        "id": "weekSeries",
+        "component": "Series",
+        "category": "Workout minutes",
+        "values": [
+          30,
+          0,
+          45,
+          20,
+          60,
+          0,
+          35
+        ]
+      },
+      {
+        "id": "logSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "logHeader",
+          "logForm"
+        ]
+      },
+      {
+        "id": "logHeader",
+        "component": "CardHeader",
+        "title": "Log a workout",
+        "subtitle": "Record a new activity"
+      },
+      {
+        "id": "logForm",
+        "component": "Form",
+        "name": "log-workout",
+        "buttons": "logButtons",
+        "fields": [
+          "typeControl",
+          "durationControl",
+          "intensityControl",
+          "dateControl"
+        ]
+      },
+      {
+        "id": "typeControl",
+        "component": "FormControl",
+        "label": "Workout type",
+        "input": "typeSelect"
+      },
+      {
+        "id": "typeSelect",
+        "component": "Select",
+        "name": "type",
+        "items": [
+          "typeRun",
+          "typeRide",
+          "typeSwim",
+          "typeStrength",
+          "typeYoga"
+        ],
+        "placeholder": "Choose an activity"
+      },
+      {
+        "id": "typeRun",
+        "component": "SelectItem",
+        "value": "run",
+        "label": "Run"
+      },
+      {
+        "id": "typeRide",
+        "component": "SelectItem",
+        "value": "ride",
+        "label": "Bike ride"
+      },
+      {
+        "id": "typeSwim",
+        "component": "SelectItem",
+        "value": "swim",
+        "label": "Swim"
+      },
+      {
+        "id": "typeStrength",
+        "component": "SelectItem",
+        "value": "strength",
+        "label": "Strength training"
+      },
+      {
+        "id": "typeYoga",
+        "component": "SelectItem",
+        "value": "yoga",
+        "label": "Yoga"
+      },
+      {
+        "id": "durationControl",
+        "component": "FormControl",
+        "label": "Duration (minutes)",
+        "input": "durationInput",
+        "hint": "Total active time"
+      },
+      {
+        "id": "durationInput",
+        "component": "Input",
+        "name": "duration",
+        "type": "number",
+        "placeholder": "30"
+      },
+      {
+        "id": "intensityControl",
+        "component": "FormControl",
+        "label": "Intensity",
+        "input": "intensityRadio"
+      },
+      {
+        "id": "intensityRadio",
+        "component": "RadioGroup",
+        "name": "intensity",
+        "items": [
+          "intLow",
+          "intMed",
+          "intHigh"
+        ]
+      },
+      {
+        "id": "intLow",
+        "component": "RadioItem",
+        "label": "Low",
+        "description": "Easy pace, can hold a conversation",
+        "value": "low"
+      },
+      {
+        "id": "intMed",
+        "component": "RadioItem",
+        "label": "Moderate",
+        "description": "Steady effort, slightly breathless",
+        "value": "moderate"
+      },
+      {
+        "id": "intHigh",
+        "component": "RadioItem",
+        "label": "High",
+        "description": "Hard effort, near max",
+        "value": "high"
+      },
+      {
+        "id": "dateControl",
+        "component": "FormControl",
+        "label": "Date",
+        "input": "datePicker"
+      },
+      {
+        "id": "datePicker",
+        "component": "DatePicker",
+        "name": "date",
+        "mode": "single"
+      },
+      {
+        "id": "logButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitBtn",
+          "clearBtn"
+        ]
+      },
+      {
+        "id": "submitBtn",
+        "component": "Button",
+        "label": "Log workout",
+        "variant": "primary"
+      },
+      {
+        "id": "clearBtn",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
 </a2ui-json>
 
-The screen includes:
-1. **Steps** — a progress bar showing 7,234 of 10,000 steps (72%) with guidance on closing the gap.
-2. **Calories** — a radial chart splitting active (420 kcal) vs. resting (1,450 kcal) burn.
-3. **Past week** — a bar chart of workout minutes per day, so rest days and trends are easy to spot.
-4. **Log workout** — a form with workout type, duration, intensity, and optional notes.
+This single screen covers all four requirements:
 
-Want me to add heart-rate stats, a streak tracker, or weekly goal rings next?
+1. **Steps vs. goal** — a progress bar at 84% with "8,432 / 10,000" and a hint showing remaining steps.
+2. **Calories burned** — a prominent "612 kcal" figure with a stacked bar splitting active (420) vs. resting (192) burn.
+3. **Past week of workouts** — a bar chart of workout minutes for Mon–Sun, plus a badge summarizing "4 workouts this week".
+4. **Log a new workout** — a form with activity type, duration, intensity, and date, with a primary "Log workout" button.

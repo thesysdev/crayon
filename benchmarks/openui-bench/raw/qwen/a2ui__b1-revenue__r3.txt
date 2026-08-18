@@ -1,99 +1,109 @@
-Here's a mid-morning check-in screen for the shop owner:
+Here's a mid-morning check-in screen for the shop owner showing today's revenue and how it stacks up against yesterday at the same time.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "shop-morning-checkin",
-      "catalogId": "thesys.dev:c1-openui"
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "shop-morning-checkin",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "children": ["header", "revenue-section", "separator", "comparison-section", "progress-section", "callout"],
-          "direction": "column",
-          "gap": "m"
-        },
-        {
-          "id": "header",
-          "component": "CardHeader",
-          "title": "☀️ Mid-Morning Check-in",
-          "subtitle": "As of 10:30 AM"
-        },
-        {
-          "id": "revenue-section",
-          "component": "Card",
-          "variant": "sunk",
-          "children": ["revenue-label", "revenue-value"],
-          "direction": "column",
-          "gap": "xs"
-        },
-        {
-          "id": "revenue-label",
-          "component": "TextContent",
-          "text": "Revenue Today",
-          "size": "small"
-        },
-        {
-          "id": "revenue-value",
-          "component": "TextContent",
-          "text": "**$1,247.50**",
-          "size": "large-heavy"
-        },
-        {
-          "id": "separator",
-          "component": "Separator",
-          "orientation": "horizontal"
-        },
-        {
-          "id": "comparison-section",
-          "component": "Card",
-          "variant": "sunk",
-          "children": ["comparison-label", "comparison-value"],
-          "direction": "column",
-          "gap": "xs"
-        },
-        {
-          "id": "comparison-label",
-          "component": "TextContent",
-          "text": "Same Time Yesterday",
-          "size": "small"
-        },
-        {
-          "id": "comparison-value",
-          "component": "TextContent",
-          "text": "$1,103.00",
-          "size": "default"
-        },
-        {
-          "id": "progress-section",
-          "component": "Progress",
-          "value": 113,
-          "label": "Today vs. Yesterday at 10:30 AM"
-        },
-        {
-          "id": "callout",
-          "component": "Callout",
-          "variant": "success",
-          "title": "+$144.50 ahead of yesterday",
-          "description": "You're up 13.1% compared to the same time yesterday. Great pace!"
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-This screen gives the shop owner a quick, at-a-glance view:
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "revenueToday",
+          "comparison",
+          "chart",
+          "summary"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Mid-Morning Check-in",
+        "subtitle": "As of 10:30 AM"
+      },
+      {
+        "id": "revenueToday",
+        "component": "TextContent",
+        "text": "**$1,247.50** earned so far today",
+        "size": "large-heavy"
+      },
+      {
+        "id": "comparison",
+        "component": "Alert",
+        "title": "Ahead of yesterday",
+        "description": "At this same time yesterday you had $1,082.00 — you're up $165.50 (+15.3%)",
+        "variant": "success"
+      },
+      {
+        "id": "chart",
+        "component": "BarChart",
+        "labels": [
+          "Yesterday 10:30 AM",
+          "Today 10:30 AM"
+        ],
+        "series": [
+          "revenueSeries"
+        ],
+        "variant": "grouped",
+        "yLabel": "Revenue ($)"
+      },
+      {
+        "id": "revenueSeries",
+        "component": "Series",
+        "category": "Revenue",
+        "values": [
+          1082,
+          1247.5
+        ]
+      },
+      {
+        "id": "summary",
+        "component": "Table",
+        "columns": [
+          "metricCol",
+          "valueCol"
+        ]
+      },
+      {
+        "id": "metricCol",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Today (so far)",
+          "Yesterday (same time)",
+          "Difference",
+          "% Change"
+        ]
+      },
+      {
+        "id": "valueCol",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "$1,247.50",
+          "$1,082.00",
+          "+$165.50",
+          "+15.3%"
+        ]
+      }
+    ]
+  }
+}
+</a2ui-json>
 
-1. **Revenue so far today** — displayed prominently as **$1,247.50** in a sunken card for emphasis.
-2. **Comparison with yesterday at the same time** — shows yesterday's figure ($1,103.00), a progress bar visualizing today's pace relative to yesterday, and a green success callout highlighting the +13.1% uplift (+$144.50).
+This gives the shop owner an at-a-glance view with:
 
-The layout is designed to be scannable in just a few seconds during a busy morning.
+1. **Today's revenue** — displayed prominently at the top ($1,247.50).
+2. **Comparison with yesterday at the same time** — shown via a success alert callout, a side-by-side bar chart, and a summary table breaking down the exact difference (+$165.50 / +15.3%).

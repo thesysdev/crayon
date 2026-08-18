@@ -1,49 +1,177 @@
 Here's a support lead's morning dashboard covering all five requirements:
 
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"support-dashboard","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#2563EB","agentDisplayName":"Support Ops"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"support-dashboard","components":[
-{"id":"root","component":"Card","direction":"column","gap":"l","children":["header","statsRow","controls","ticketsCard"]},
-{"id":"header","component":"CardHeader","title":"Support Morning Briefing","subtitle":"Wednesday, June 12 — Queue overview for your shift"},
-{"id":"statsRow","component":"Card","variant":"clear","direction":"row","gap":"m","children":["stat1","stat2"]},
-{"id":"stat1","component":"Card","variant":"sunk","direction":"column","gap":"xs","weight":1,"children":["stat1Label","stat1Value"]},
-{"id":"stat1Label","component":"TextContent","text":"Open tickets","size":"small"},
-{"id":"stat1Value","component":"Heading","text":"42","level":"h2"},
-{"id":"stat2","component":"Card","variant":"sunk","direction":"column","gap":"xs","weight":1,"children":["stat2Label","stat2Value"]},
-{"id":"stat2Label","component":"TextContent","text":"Avg. first-response time","size":"small"},
-{"id":"stat2Value","component":"Heading","text":"18 min","level":"h2"},
-{"id":"controls","component":"Card","variant":"clear","direction":"row","justify":"between","align":"center","children":["filterSwitch","newTicketDialog"]},
-{"id":"filterSwitch","component":"SwitchGroup","name":"priorityFilter","variant":"clear","items":["filterSwitchItem"]},
-{"id":"filterSwitchItem","component":"SwitchItem","name":"highOnly","label":"High priority only","description":"Narrow the list to urgent tickets","defaultChecked":false},
-{"id":"newTicketDialog","component":"DialogBlock","triggerLabel":"+ New ticket","title":"Open a new ticket","description":"Fill in the details to add a ticket to the queue.","content":["newTicketForm"],"triggerVariant":"default"},
-{"id":"newTicketForm","component":"Form","name":"newTicket","fields":["fSubject","fPriority","fDesc"],"buttons":"formButtons"},
-{"id":"fSubject","component":"FormControl","label":"Subject","input":"subjectInput"},
-{"id":"subjectInput","component":"Input","name":"subject","placeholder":"Short summary of the issue","rules":["required"]},
-{"id":"fPriority","component":"FormControl","label":"Priority","input":"prioritySelect"},
-{"id":"prioritySelect","component":"Select","name":"priority","placeholder":"Select priority","items":["piHigh","piMed","piLow"]},
-{"id":"piHigh","component":"SelectItem","value":"high","label":"High"},
-{"id":"piMed","component":"SelectItem","value":"medium","label":"Medium"},
-{"id":"piLow","component":"SelectItem","value":"low","label":"Low"},
-{"id":"fDesc","component":"FormControl","label":"Description","input":"descInput"},
-{"id":"descInput","component":"TextArea","name":"description","placeholder":"Describe the issue…","rows":4},
-{"id":"formButtons","component":"Buttons","buttons":["submitBtn"]},
-{"id":"submitBtn","component":"Button","label":"Create ticket","variant":"primary"},
-{"id":"ticketsCard","component":"Card","variant":"card","direction":"column","gap":"m","children":["ticketsHeader","ticketsTable"]},
-{"id":"ticketsHeader","component":"CardHeader","title":"5 most recent tickets"},
-{"id":"ticketsTable","component":"Table","columns":["colId","colSubject","colPriority","colAge"]},
-{"id":"colId","component":"Col","label":"Ticket","data":["#4821","#4820","#4819","#4818","#4817"]},
-{"id":"colSubject","component":"Col","label":"Subject","data":["Payment gateway timeout on checkout","Login loop after password reset","Invoice PDF missing line items","Mobile app crashes on launch","Feature request: dark mode"]},
-{"id":"colPriority","component":"Col","label":"Priority","data":["High","High","Medium","High","Low"]},
-{"id":"colAge","component":"Col","label":"Opened","data":["4 min ago","22 min ago","41 min ago","1 h ago","2 h ago"]}
-]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "alert",
+          "kpis",
+          "filterBar",
+          "ticketTable",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Support Morning View",
+        "subtitle": "Queue snapshot as of 8:00 AM"
+      },
+      {
+        "id": "alert",
+        "component": "Alert",
+        "title": "3 high-priority tickets waiting",
+        "description": "Two of them are past the 1-hour first-response SLA",
+        "variant": "warning"
+      },
+      {
+        "id": "kpis",
+        "component": "Table",
+        "columns": [
+          "kpiName",
+          "kpiValue"
+        ]
+      },
+      {
+        "id": "kpiName",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Open tickets",
+          "Avg first-response time"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "42",
+          "38 min"
+        ]
+      },
+      {
+        "id": "filterBar",
+        "component": "SwitchGroup",
+        "name": "filters",
+        "items": [
+          "highOnly"
+        ],
+        "variant": "clear"
+      },
+      {
+        "id": "highOnly",
+        "component": "SwitchItem",
+        "name": "high_priority_only",
+        "label": "High priority only",
+        "description": "Narrow the ticket list to high-priority items",
+        "defaultChecked": false
+      },
+      {
+        "id": "ticketTable",
+        "component": "Table",
+        "columns": [
+          "colId",
+          "colSubject",
+          "colPriority",
+          "colAge"
+        ]
+      },
+      {
+        "id": "colId",
+        "component": "Col",
+        "label": "Ticket",
+        "data": [
+          "#4821",
+          "#4820",
+          "#4819",
+          "#4818",
+          "#4817"
+        ]
+      },
+      {
+        "id": "colSubject",
+        "component": "Col",
+        "label": "Subject",
+        "data": [
+          "Payment failing at checkout",
+          "Cannot log in after password reset",
+          "Invoice shows wrong tax amount",
+          "Feature request: export to PDF",
+          "Mobile app crashes on launch"
+        ]
+      },
+      {
+        "id": "colPriority",
+        "component": "Col",
+        "label": "Priority",
+        "data": [
+          "High",
+          "High",
+          "Medium",
+          "Low",
+          "High"
+        ]
+      },
+      {
+        "id": "colAge",
+        "component": "Col",
+        "label": "Age",
+        "data": [
+          "12 min",
+          "47 min",
+          "1 h 5 min",
+          "2 h 20 min",
+          "3 h 10 min"
+        ]
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": [
+          "newTicketBtn",
+          "refreshBtn"
+        ]
+      },
+      {
+        "id": "newTicketBtn",
+        "component": "Button",
+        "label": "Open new ticket",
+        "variant": "primary"
+      },
+      {
+        "id": "refreshBtn",
+        "component": "Button",
+        "label": "Refresh queue",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
 </a2ui-json>
 
-All five items are covered:
-1. **Open tickets** — stat card showing **42**
-2. **Avg first-response time** — stat card showing **18 min**
-3. **Five most recent tickets** — table with subject, priority, and age for each
-4. **High-priority filter** — the "High priority only" toggle above the table
-5. **New ticket** — the "+ New ticket" button opens a dialog with a subject/priority/description form
+This covers each requirement:
+1. **Open tickets** — KPI table shows 42 open
+2. **Avg first-response time** — shown alongside as 38 min
+3. **Five most recent tickets with priority** — the ticket table lists #4821–#4817 with a Priority column
+4. **Narrow to high-priority only** — the "High priority only" switch filters the list
+5. **Open a new ticket** — the primary "Open new ticket" button
+
+The warning alert also flags that 3 high-priority tickets are waiting, two of which are past the 1-hour SLA — a useful morning heads-up. Want me to add a per-rep workload breakdown or an SLA breach trend chart?

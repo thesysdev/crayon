@@ -1,25 +1,33 @@
 {"op":"add","path":"/root","value":"delivery-screen"}
-{"op":"add","path":"/elements/delivery-screen","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["delivery-header","status-card","eta-card","problem-card"]}}
-{"op":"add","path":"/elements/delivery-header","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["delivery-title","tracking-text"]}}
-{"op":"add","path":"/elements/delivery-title","value":{"type":"Heading","props":{"text":"Track your delivery","level":"h1"},"children":[]}}
-{"op":"add","path":"/elements/tracking-text","value":{"type":"TextContent","props":{"text":{"$template":"Tracking number: ${/delivery/trackingNumber}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/state/delivery","value":{"trackingNumber":"1Z84X29A0392847612","status":"Out for delivery","location":"With your local courier in Seattle, WA","estimatedDate":"Today, August 18","estimatedWindow":"Expected between 2:00 PM and 6:00 PM","lastUpdated":"Updated 18 minutes ago","problemDescription":""}}
-{"op":"add","path":"/elements/status-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["status-header","status-badge","location-heading","location-text","updated-text"]}}
-{"op":"add","path":"/elements/status-header","value":{"type":"CardHeader","props":{"title":"Where your package is now","subtitle":"Latest delivery update"},"children":[]}}
-{"op":"add","path":"/elements/status-badge","value":{"type":"Badge","props":{"text":{"$state":"/delivery/status"},"variant":"secondary"},"children":[]}}
-{"op":"add","path":"/elements/location-heading","value":{"type":"Heading","props":{"text":"Current location","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/location-text","value":{"type":"TextContent","props":{"text":{"$state":"/delivery/location"},"size":"large-heavy"},"children":[]}}
-{"op":"add","path":"/elements/updated-text","value":{"type":"TextContent","props":{"text":{"$state":"/delivery/lastUpdated"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/eta-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["eta-header","eta-date","eta-window"]}}
-{"op":"add","path":"/elements/eta-header","value":{"type":"CardHeader","props":{"title":"Estimated delivery","subtitle":"Your package is on its way"},"children":[]}}
-{"op":"add","path":"/elements/eta-date","value":{"type":"Heading","props":{"text":{"$state":"/delivery/estimatedDate"},"level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/eta-window","value":{"type":"TextContent","props":{"text":{"$state":"/delivery/estimatedWindow"},"size":"default"},"children":[]}}
-{"op":"add","path":"/elements/problem-card","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"m"},"children":["problem-header","problem-callout","problem-form"]}}
-{"op":"add","path":"/elements/problem-header","value":{"type":"Heading","props":{"text":"Need help with this delivery?","level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/problem-callout","value":{"type":"TextCallout","props":{"variant":"info","title":"Report a delivery problem","description":"Tell us what went wrong and our support team will review your report."},"children":[]}}
-{"op":"add","path":"/elements/problem-form","value":{"type":"Form","props":{"name":"delivery-problem","buttons":"report-buttons","fields":["problem-description-control"]},"children":[]}}
-{"op":"add","path":"/elements/problem-description-control","value":{"type":"FormControl","props":{"label":"What happened?","hint":"Include helpful details such as a missed delivery, damaged package, or incorrect location.","input":"problem-description-input"},"children":[]}}
-{"op":"add","path":"/elements/problem-description-input","value":{"type":"TextArea","props":{"name":"problemDescription","placeholder":"Describe the delivery problem...","rows":4,"value":{"$bindState":"/delivery/problemDescription"}},"children":[]}}
-{"op":"add","path":"/elements/report-buttons","value":{"type":"Buttons","props":{"buttons":["submit-report-button"],"direction":"row"},"children":[]}}
-{"op":"add","path":"/elements/submit-report-button","value":{"type":"Button","props":{"label":"Report problem","variant":"primary","type":"normal","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/reportSubmitted","value":true}}},"children":[]}}
-{"op":"add","path":"/state/reportSubmitted","value":false}
+{"op":"add","path":"/elements/delivery-screen","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["delivery-header","current-location","delivery-estimate","delivery-details","problem-section"]}}
+{"op":"add","path":"/elements/delivery-header","value":{"type":"CardHeader","props":{"title":"Track your delivery","subtitle":{"$template":"Order ${/delivery/orderNumber} · Tracking ${/delivery/trackingNumber}"}},"children":[]}
+{"op":"add","path":"/state/delivery","value":{"orderNumber":"#10482","trackingNumber":"1Z84X29A039214","status":"Out for delivery","location":"Downtown delivery hub","estimatedDate":"Today, August 18","estimatedWindow":"2:00 PM – 5:00 PM","recipient":"Jordan Lee","address":"1427 Maple Street, Apt 5B, Portland, OR 97205"}}
+{"op":"add","path":"/elements/current-location","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["location-label","location-status","location-copy","location-progress"]}}
+{"op":"add","path":"/elements/location-label","value":{"type":"Badge","props":{"text":"Current location","variant":"secondary"},"children":[]}
+{"op":"add","path":"/elements/location-status","value":{"type":"Heading","props":{"text":{"$state":"/delivery/status"},"level":"h2"},"children":[]}
+{"op":"add","path":"/elements/location-copy","value":{"type":"TextContent","props":{"text":{"$template":"Your package is at ${/delivery/location} and is on its way to you."},"size":"default"},"children":[]}
+{"op":"add","path":"/elements/location-progress","value":{"type":"Progress","props":{"value":82,"label":"82% of the delivery journey complete"},"children":[]}
+{"op":"add","path":"/elements/delivery-estimate","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["estimate-heading","estimate-date","estimate-window"]}}
+{"op":"add","path":"/elements/estimate-heading","value":{"type":"TextContent","props":{"text":"Estimated delivery","size":"small-heavy"},"children":[]}
+{"op":"add","path":"/elements/estimate-date","value":{"type":"Heading","props":{"text":{"$state":"/delivery/estimatedDate"},"level":"h2"},"children":[]}
+{"op":"add","path":"/elements/estimate-window","value":{"type":"TextContent","props":{"text":{"$template":"Expected between ${/delivery/estimatedWindow}"},"size":"default"},"children":[]}
+{"op":"add","path":"/elements/delivery-details","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["details-heading","recipient-text","address-text"]}}
+{"op":"add","path":"/elements/details-heading","value":{"type":"TextContent","props":{"text":"Delivery details","size":"small-heavy"},"children":[]}
+{"op":"add","path":"/elements/recipient-text","value":{"type":"TextContent","props":{"text":{"$template":"Delivering to: ${/delivery/recipient}"},"size":"default"},"children":[]}
+{"op":"add","path":"/elements/address-text","value":{"type":"TextContent","props":{"text":{"$state":"/delivery/address"},"size":"small"},"children":[]}
+{"op":"add","path":"/elements/problem-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["problem-heading","problem-copy","report-problem"]}}
+{"op":"add","path":"/elements/problem-heading","value":{"type":"Heading","props":{"text":"Need help with this delivery?","level":"h3"},"children":[]}
+{"op":"add","path":"/elements/problem-copy","value":{"type":"TextContent","props":{"text":"Report a delay, damaged package, missing delivery, or another issue so our support team can help.","size":"default"},"children":[]}
+{"op":"add","path":"/elements/report-problem","value":{"type":"DialogBlock","props":{"triggerLabel":"Report a delivery problem","title":"Report a problem","description":"Tell us what happened and we’ll help resolve it.","content":["problem-form"],"triggerVariant":"destructive"},"children":[]}
+{"op":"add","path":"/elements/problem-form","value":{"type":"Form","props":{"name":"delivery-problem","buttons":"problem-buttons","fields":["issue-field","details-field"]},"children":[]}
+{"op":"add","path":"/elements/issue-field","value":{"type":"FormControl","props":{"label":"What is the issue?","input":"issue-select"},"children":[]}
+{"op":"add","path":"/elements/issue-select","value":{"type":"Select","props":{"name":"issue","items":["issue-delay","issue-missing","issue-damaged","issue-address"],"placeholder":"Select an issue","value":{"$bindState":"/report/issue"}},"children":[]}
+{"op":"add","path":"/state/report","value":{"issue":"","details":"","submitted":false}}
+{"op":"add","path":"/elements/issue-delay","value":{"type":"SelectItem","props":{"value":"delayed","label":"Delivery is delayed"},"children":[]}
+{"op":"add","path":"/elements/issue-missing","value":{"type":"SelectItem","props":{"value":"missing","label":"Package is missing"},"children":[]}
+{"op":"add","path":"/elements/issue-damaged","value":{"type":"SelectItem","props":{"value":"damaged","label":"Package is damaged"},"children":[]}
+{"op":"add","path":"/elements/issue-address","value":{"type":"SelectItem","props":{"value":"address","label":"Wrong delivery address"},"children":[]}
+{"op":"add","path":"/elements/details-field","value":{"type":"FormControl","props":{"label":"Additional details","input":"details-input","hint":"Include anything that may help us investigate."},"children":[]}
+{"op":"add","path":"/elements/details-input","value":{"type":"TextArea","props":{"name":"details","placeholder":"Describe the delivery problem","rows":4,"value":{"$bindState":"/report/details"}},"children":[]}
+{"op":"add","path":"/elements/problem-buttons","value":{"type":"Buttons","props":{"buttons":["submit-report"],"direction":"row"},"children":[]}
+{"op":"add","path":"/elements/submit-report","value":{"type":"Button","props":{"label":"Submit report","variant":"primary","action":[]},"on":{"press":{"action":"setState","params":{"statePath":"/report/submitted","value":true}}},"children":[]}

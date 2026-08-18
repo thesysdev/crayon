@@ -2,12 +2,8 @@
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "marketing-weekly-dashboard",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": {
-      "primaryColor": "#2563EB",
-      "agentDisplayName": "Marketing Dashboard"
-    }
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
@@ -16,62 +12,51 @@
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "marketing-weekly-dashboard",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "l",
         "children": [
           "header",
-          "dateAndExport",
-          "summaryRow",
-          "performanceRow",
-          "detailRow"
-        ]
+          "controls",
+          "visitorTrend",
+          "conversionRate",
+          "trafficSources",
+          "campaigns",
+          "subscriberGrowth",
+          "exportActions"
+        ],
+        "gap": "l"
       },
       {
         "id": "header",
+        "component": "CardHeader",
+        "title": "Marketing Weekly Dashboard",
+        "subtitle": "Performance summary for the current reporting period"
+      },
+      {
+        "id": "controls",
         "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "xs",
         "children": [
-          "dashboardTitle",
-          "dashboardSubtitle"
-        ]
-      },
-      {
-        "id": "dashboardTitle",
-        "component": "Heading",
-        "text": "Weekly Marketing Dashboard",
-        "level": "h1"
-      },
-      {
-        "id": "dashboardSubtitle",
-        "component": "TextContent",
-        "text": "Performance overview for the week ending August 18, 2026.",
-        "size": "default"
-      },
-      {
-        "id": "dateAndExport",
-        "component": "Card",
-        "variant": "clear",
+          "dateRangeLabel",
+          "dateRange"
+        ],
         "direction": "row",
-        "gap": "m",
-        "align": "end",
+        "align": "center",
         "justify": "between",
-        "children": [
-          "dateControl",
-          "exportButton"
-        ]
+        "variant": "sunk"
       },
       {
-        "id": "dateControl",
+        "id": "dateRangeLabel",
+        "component": "TextContent",
+        "text": "Reporting date range",
+        "size": "small-heavy"
+      },
+      {
+        "id": "dateRange",
         "component": "DatePicker",
-        "name": "reportDateRange",
+        "name": "reporting_date_range",
         "mode": "range",
         "value": [
           "2026-07-20",
@@ -79,169 +64,16 @@
         ]
       },
       {
-        "id": "exportButton",
-        "component": "Button",
-        "label": "Export report",
-        "variant": "secondary",
-        "size": "medium",
-        "action": [
-          {
-            "type": "export",
-            "format": "csv",
-            "report": "weekly-marketing-dashboard"
-          }
-        ]
-      },
-      {
-        "id": "summaryRow",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "gap": "m",
-        "align": "stretch",
-        "children": [
-          "visitorsCard",
-          "conversionCard",
-          "subscribersCard"
-        ]
-      },
-      {
-        "id": "visitorsCard",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "children": [
-          "visitorsHeader",
-          "visitorsValue",
-          "visitorsTrend"
-        ],
-        "weight": 1
-      },
-      {
-        "id": "visitorsHeader",
-        "component": "CardHeader",
-        "title": "Site visitors",
-        "subtitle": "Last 30 days"
-      },
-      {
-        "id": "visitorsValue",
-        "component": "Heading",
-        "text": "128,450",
-        "level": "h2"
-      },
-      {
-        "id": "visitorsTrend",
-        "component": "TextContent",
-        "text": "↑ 12.4% compared with the previous 30 days",
-        "size": "small"
-      },
-      {
-        "id": "conversionCard",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "children": [
-          "conversionHeader",
-          "conversionValue",
-          "conversionTrend"
-        ],
-        "weight": 1
-      },
-      {
-        "id": "conversionHeader",
-        "component": "CardHeader",
-        "title": "Conversion rate",
-        "subtitle": "Visitor-to-lead conversion"
-      },
-      {
-        "id": "conversionValue",
-        "component": "Heading",
-        "text": "4.82%",
-        "level": "h2"
-      },
-      {
-        "id": "conversionTrend",
-        "component": "TextContent",
-        "text": "↑ 0.6 percentage points week over week",
-        "size": "small"
-      },
-      {
-        "id": "subscribersCard",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "children": [
-          "subscribersHeader",
-          "subscribersValue",
-          "subscribersTrend"
-        ],
-        "weight": 1
-      },
-      {
-        "id": "subscribersHeader",
-        "component": "CardHeader",
-        "title": "Email subscriber growth",
-        "subtitle": "This month"
-      },
-      {
-        "id": "subscribersValue",
-        "component": "Heading",
-        "text": "+2,184",
-        "level": "h2"
-      },
-      {
-        "id": "subscribersTrend",
-        "component": "TextContent",
-        "text": "8.1% growth · 29,140 total subscribers",
-        "size": "small"
-      },
-      {
-        "id": "performanceRow",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "gap": "m",
-        "align": "stretch",
-        "children": [
-          "visitorsChartCard",
-          "bestCampaignCard"
-        ]
-      },
-      {
-        "id": "visitorsChartCard",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "visitorsChartHeader",
-          "visitorsLineChart"
-        ],
-        "weight": 2
-      },
-      {
-        "id": "visitorsChartHeader",
-        "component": "CardHeader",
-        "title": "Site visitors over the last 30 days",
-        "subtitle": "Daily sessions"
-      },
-      {
-        "id": "visitorsLineChart",
+        "id": "visitorTrend",
         "component": "LineChart",
         "labels": [
           "Jul 20",
-          "Jul 23",
-          "Jul 26",
-          "Jul 29",
+          "Jul 24",
+          "Jul 28",
           "Aug 1",
-          "Aug 4",
-          "Aug 7",
-          "Aug 10",
+          "Aug 5",
+          "Aug 9",
           "Aug 13",
-          "Aug 16",
           "Aug 18"
         ],
         "series": [
@@ -249,217 +81,224 @@
         ],
         "variant": "natural",
         "xLabel": "Date",
-        "yLabel": "Visitors"
+        "yLabel": "Site visitors"
       },
       {
         "id": "visitorSeries",
         "component": "Series",
-        "category": "Visitors",
+        "category": "Site visitors",
         "values": [
-          3420,
-          3680,
-          3910,
-          4070,
+          2840,
+          3160,
+          2980,
+          3470,
           3890,
-          4250,
-          4440,
-          4310,
-          4620,
-          4890,
-          5120
+          4120,
+          4380,
+          4690
         ]
       },
       {
-        "id": "bestCampaignCard",
+        "id": "conversionRate",
         "component": "Card",
-        "variant": "sunk",
-        "direction": "column",
-        "gap": "m",
         "children": [
-          "bestCampaignBadge",
-          "bestCampaignHeader",
-          "bestCampaignName",
-          "bestCampaignDetails",
-          "bestCampaignCallout"
+          "conversionHeader",
+          "conversionValue",
+          "conversionNote"
         ],
-        "weight": 1
+        "variant": "sunk",
+        "gap": "s"
       },
       {
-        "id": "bestCampaignBadge",
-        "component": "Badge",
-        "text": "Top performer",
-        "variant": "default"
-      },
-      {
-        "id": "bestCampaignHeader",
-        "component": "CardHeader",
-        "title": "Best performing campaign",
-        "subtitle": "Highest return on ad spend"
-      },
-      {
-        "id": "bestCampaignName",
-        "component": "Heading",
-        "text": "Summer Product Launch",
-        "level": "h3"
-      },
-      {
-        "id": "bestCampaignDetails",
+        "id": "conversionHeader",
         "component": "TextContent",
-        "text": "**6.8× ROAS** · 1,246 conversions · $18,420 revenue",
-        "size": "default"
+        "text": "Conversion rate",
+        "size": "small-heavy"
       },
       {
-        "id": "bestCampaignCallout",
-        "component": "Callout",
-        "variant": "success",
-        "title": "Campaign is exceeding target",
-        "description": "ROAS is 36% above the 5× goal. Consider increasing budget while performance remains strong."
+        "id": "conversionValue",
+        "component": "Heading",
+        "text": "4.8%",
+        "level": "h2"
       },
       {
-        "id": "detailRow",
+        "id": "conversionNote",
+        "component": "TextContent",
+        "text": "Up 0.6 percentage points compared with the previous 30 days.",
+        "size": "small"
+      },
+      {
+        "id": "trafficSources",
         "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "gap": "m",
-        "align": "stretch",
-        "children": [
-          "trafficSourcesCard",
-          "campaignsCard"
-        ]
-      },
-      {
-        "id": "trafficSourcesCard",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
         "children": [
           "trafficSourcesHeader",
-          "trafficSourcesChart",
-          "trafficSourcesNote"
+          "trafficSourceTable"
         ],
-        "weight": 1
+        "gap": "m"
       },
       {
         "id": "trafficSourcesHeader",
         "component": "CardHeader",
         "title": "Top traffic sources",
-        "subtitle": "Share of total visitors"
+        "subtitle": "Share of total site visitors"
       },
       {
-        "id": "trafficSourcesChart",
-        "component": "HorizontalBarChart",
-        "labels": [
-          "Organic Search",
-          "Paid Search",
-          "Direct",
-          "Email",
-          "Social"
-        ],
-        "series": [
-          "trafficShareSeries"
-        ],
-        "variant": "grouped",
-        "xLabel": "Share of traffic",
-        "yLabel": "Source"
-      },
-      {
-        "id": "trafficShareSeries",
-        "component": "Series",
-        "category": "Traffic share (%)",
-        "values": [
-          38,
-          24,
-          18,
-          12,
-          8
+        "id": "trafficSourceTable",
+        "component": "Table",
+        "columns": [
+          "trafficSourceName",
+          "trafficSourceShare"
         ]
       },
       {
-        "id": "trafficSourcesNote",
-        "component": "TextContent",
-        "text": "Organic Search leads with **38%** of all site visitors.",
-        "size": "small"
+        "id": "trafficSourceName",
+        "component": "Col",
+        "label": "Source",
+        "data": [
+          "Organic Search",
+          "Paid Search",
+          "Email",
+          "Social",
+          "Referral"
+        ]
       },
       {
-        "id": "campaignsCard",
+        "id": "trafficSourceShare",
+        "component": "Col",
+        "label": "Share",
+        "data": [
+          "38%",
+          "24%",
+          "17%",
+          "12%",
+          "9%"
+        ]
+      },
+      {
+        "id": "campaigns",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
         "children": [
           "campaignsHeader",
-          "campaignsTable"
+          "bestCampaign",
+          "campaignTable"
         ],
-        "weight": 1
+        "gap": "m"
       },
       {
         "id": "campaignsHeader",
         "component": "CardHeader",
         "title": "Running campaigns",
-        "subtitle": "Active campaign spend"
+        "subtitle": "Active campaign spend and performance"
       },
       {
-        "id": "campaignsTable",
+        "id": "bestCampaign",
+        "component": "Alert",
+        "title": "Best performing campaign: Summer Product Launch",
+        "description": "Generated 428 conversions at a 6.4% conversion rate, with $8,450 in spend.",
+        "variant": "success"
+      },
+      {
+        "id": "campaignTable",
         "component": "Table",
         "columns": [
-          "campaignNameCol",
-          "campaignChannelCol",
-          "campaignSpendCol",
-          "campaignStatusCol"
+          "campaignName",
+          "campaignStatus",
+          "campaignSpend",
+          "campaignConversions"
         ]
       },
       {
-        "id": "campaignNameCol",
+        "id": "campaignName",
         "component": "Col",
         "label": "Campaign",
         "data": [
           "Summer Product Launch",
           "Retargeting Always-On",
-          "Newsletter Growth",
-          "Brand Awareness Video",
-          "Back-to-School Promo"
-        ],
-        "type": "string"
+          "Q3 Webinar Series",
+          "Newsletter Acquisition"
+        ]
       },
       {
-        "id": "campaignChannelCol",
-        "component": "Col",
-        "label": "Channel",
-        "data": [
-          "Paid Search",
-          "Display",
-          "Email",
-          "Social",
-          "Paid Social"
-        ],
-        "type": "string"
-      },
-      {
-        "id": "campaignSpendCol",
-        "component": "Col",
-        "label": "Spend",
-        "data": [
-          "$2,710",
-          "$1,940",
-          "$860",
-          "$1,520",
-          "$1,180"
-        ],
-        "type": "string"
-      },
-      {
-        "id": "campaignStatusCol",
+        "id": "campaignStatus",
         "component": "Col",
         "label": "Status",
         "data": [
           "Active",
           "Active",
           "Active",
-          "Active",
           "Active"
+        ]
+      },
+      {
+        "id": "campaignSpend",
+        "component": "Col",
+        "label": "Spend",
+        "data": [
+          "$8,450",
+          "$5,920",
+          "$3,180",
+          "$2,760"
+        ]
+      },
+      {
+        "id": "campaignConversions",
+        "component": "Col",
+        "label": "Conversions",
+        "data": [
+          "428",
+          "251",
+          "167",
+          "123"
+        ]
+      },
+      {
+        "id": "subscriberGrowth",
+        "component": "Card",
+        "children": [
+          "subscriberHeader",
+          "subscriberValue",
+          "subscriberProgress",
+          "subscriberNote"
         ],
-        "type": "string"
+        "variant": "sunk",
+        "gap": "s"
+      },
+      {
+        "id": "subscriberHeader",
+        "component": "TextContent",
+        "text": "Email subscriber growth this month",
+        "size": "small-heavy"
+      },
+      {
+        "id": "subscriberValue",
+        "component": "Heading",
+        "text": "+1,284 subscribers",
+        "level": "h2"
+      },
+      {
+        "id": "subscriberProgress",
+        "component": "Progress",
+        "value": 86,
+        "label": "86% of monthly goal"
+      },
+      {
+        "id": "subscriberNote",
+        "component": "TextContent",
+        "text": "Total email audience: 42,610 subscribers.",
+        "size": "small"
+      },
+      {
+        "id": "exportActions",
+        "component": "Buttons",
+        "buttons": [
+          "exportReportButton"
+        ]
+      },
+      {
+        "id": "exportReportButton",
+        "component": "Button",
+        "label": "Export report",
+        "variant": "secondary"
       }
     ]
   }

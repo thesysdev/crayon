@@ -1,123 +1,83 @@
-A complete cafe menu screen covering all 5 requirements — drinks, food, today's special, veg filter, and hours.
+A cozy single-screen cafe menu with drinks, food, today's special, veg filter and hours:
 
 <a2ui-json>
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "cafe-menu-surface",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": {
-      "primaryColor": "#8B5A2B",
-      "agentDisplayName": "Milo & Bean Café"
-    }
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
+
 <a2ui-json>
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "cafe-menu-surface",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "m",
         "children": [
           "header",
-          "hoursCard",
           "specialCallout",
-          "filterCard",
+          "vegFilterCard",
           "menuTabs",
-          "footerText"
-        ]
+          "hoursCard",
+          "footer"
+        ],
+        "gap": "m"
       },
       {
         "id": "header",
         "component": "CardHeader",
-        "title": "Milo & Bean Café",
-        "subtitle": "Freshly brewed • Locally sourced • Since 2018"
-      },
-      {
-        "id": "hoursCard",
-        "component": "Card",
-        "variant": "sunk",
-        "direction": "column",
-        "gap": "s",
-        "children": [
-          "hoursHeading",
-          "hoursText",
-          "hoursBadges"
-        ]
-      },
-      {
-        "id": "hoursHeading",
-        "component": "Heading",
-        "text": "Opening Hours",
-        "level": "h3"
-      },
-      {
-        "id": "hoursText",
-        "component": "TextContent",
-        "text": "**Mon – Fri:** 7:00 AM – 4:00 PM\n**Saturday:** 8:00 AM – 3:00 PM\n**Sunday:** 8:00 AM – 3:00 PM\n*Kitchen closes 30 mins before closing*",
-        "size": "default"
-      },
-      {
-        "id": "hoursBadges",
-        "component": "TagBlock",
-        "tags": [
-          "📍 24 Market Lane",
-          "🟢 Open Today • 7AM - 4PM",
-          "☎️ (555) 014-8820"
-        ]
+        "title": "Milo & Bean — Cafe Menu",
+        "subtitle": "Fresh brews • Homemade bakes • All day comfort"
       },
       {
         "id": "specialCallout",
         "component": "Callout",
-        "variant": "warning",
-        "title": "⭐ Today's Special — Miso Mushroom Toast",
-        "description": "Roasted shiitake & oyster mushrooms, miso butter, poached egg, chives on toasted sourdough. $14.00 • Vegetarian • Chef's pick! Only until 2PM."
+        "variant": "success",
+        "title": "Today's Special — Pumpkin Spice Cold Brew + Almond Croissant",
+        "description": "$8.50 for the pair (save $2.00) • Available until 3pm today only. Our signature cold brew with house pumpkin spice + buttery almond croissant."
       },
       {
-        "id": "filterCard",
+        "id": "vegFilterCard",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "children": [
-          "filterHeading",
-          "filterSwitchGroup",
-          "filterHint"
-        ]
-      },
-      {
-        "id": "filterHeading",
-        "component": "Heading",
-        "text": "Dietary Filter",
-        "level": "h4"
-      },
-      {
-        "id": "filterSwitchGroup",
-        "component": "SwitchGroup",
-        "name": "dietFilter",
         "variant": "sunk",
-        "items": [
-          "filterSwitchItem"
+        "children": [
+          "vegFilterText",
+          "vegSwitchGroup",
+          "vegHint"
         ]
       },
       {
-        "id": "filterSwitchItem",
-        "component": "SwitchItem",
-        "label": "Show vegetarian items only 🌱",
-        "description": "Toggle to filter both Drinks & Food to vegetarian / vegan options",
-        "name": "vegOnly"
+        "id": "vegFilterText",
+        "component": "TextContent",
+        "text": "Dietary filter",
+        "size": "small-heavy"
       },
       {
-        "id": "filterHint",
+        "id": "vegSwitchGroup",
+        "component": "SwitchGroup",
+        "name": "diet_filter",
+        "items": [
+          "vegToggle"
+        ],
+        "variant": "card"
+      },
+      {
+        "id": "vegToggle",
+        "component": "SwitchItem",
+        "label": "Show vegetarian items only",
+        "description": "Hides meat & fish dishes from the menu below",
+        "name": "vegetarian_only"
+      },
+      {
+        "id": "vegHint",
         "component": "TextContent",
-        "text": "Look for 🌱 Vegetarian  and  🌿 Vegan  tags. When the switch is ON, only tagged items are shown.",
+        "text": "Look for **V** in the menu • Toggle on to highlight vegetarian-friendly drinks & food",
         "size": "small"
       },
       {
@@ -132,7 +92,7 @@ A complete cafe menu screen covering all 5 requirements — drinks, food, today'
         "id": "tabDrinks",
         "component": "TabItem",
         "value": "drinks",
-        "trigger": "☕ Drinks",
+        "trigger": "Drinks",
         "content": [
           "drinksTable",
           "drinksLegend"
@@ -142,7 +102,7 @@ A complete cafe menu screen covering all 5 requirements — drinks, food, today'
         "id": "tabFood",
         "component": "TabItem",
         "value": "food",
-        "trigger": "🥐 Food",
+        "trigger": "Food",
         "content": [
           "foodTable",
           "foodLegend"
@@ -152,120 +112,184 @@ A complete cafe menu screen covering all 5 requirements — drinks, food, today'
         "id": "drinksTable",
         "component": "Table",
         "columns": [
-          "colDrinkName",
-          "colDrinkPrice",
-          "colDrinkDiet"
+          "drinkNameCol",
+          "drinkPriceCol",
+          "drinkVegCol"
         ]
       },
       {
-        "id": "colDrinkName",
+        "id": "drinkNameCol",
         "component": "Col",
         "label": "Drink",
-        "type": "string",
         "data": [
+          "Espresso",
+          "Americano",
           "Flat White",
-          "Oat Milk Latte",
-          "Cold Brew (12oz)",
+          "Cappuccino",
+          "Pumpkin Spice Cold Brew ★",
           "Matcha Latte",
-          "Hot Chocolate",
+          "Chai Latte",
           "Fresh Orange Juice"
-        ]
+        ],
+        "type": "string"
       },
       {
-        "id": "colDrinkPrice",
+        "id": "drinkPriceCol",
         "component": "Col",
         "label": "Price",
-        "type": "string",
         "data": [
-          "$4.50",
+          "$3.50",
+          "$4.00",
+          "$4.75",
+          "$4.75",
+          "$5.50",
+          "$5.25",
           "$5.00",
-          "$4.80",
-          "$5.20",
-          "$4.90",
-          "$4.00"
-        ]
+          "$4.50"
+        ],
+        "type": "string"
       },
       {
-        "id": "colDrinkDiet",
+        "id": "drinkVegCol",
         "component": "Col",
-        "label": "Diet",
-        "type": "string",
+        "label": " ",
         "data": [
-          "Vegetarian 🌱",
-          "Vegan 🌿",
-          "Vegan 🌿",
-          "Vegetarian 🌱",
-          "Vegetarian 🌱",
-          "Vegan 🌿"
-        ]
+          "V",
+          "V",
+          "V",
+          "V",
+          "V ★ Special",
+          "V",
+          "V",
+          "V"
+        ],
+        "type": "string"
       },
       {
         "id": "drinksLegend",
         "component": "TextContent",
-        "text": "All drinks available iced +$0.50 • Oat / Soy / Almond milk no extra charge",
+        "text": "★ = Today's Special • V = Vegetarian • Oat / Soy / Almond milk +$0.50",
         "size": "small"
       },
       {
         "id": "foodTable",
         "component": "Table",
         "columns": [
-          "colFoodName",
-          "colFoodPrice",
-          "colFoodDiet"
+          "foodNameCol",
+          "foodPriceCol",
+          "foodVegCol"
         ]
       },
       {
-        "id": "colFoodName",
+        "id": "foodNameCol",
         "component": "Col",
         "label": "Food",
-        "type": "string",
         "data": [
-          "★ Miso Mushroom Toast — TODAY'S SPECIAL",
-          "Avocado Toast w/ feta & dukkah",
+          "Almond Croissant ★",
+          "Avocado Toast w/ feta",
           "Bacon & Egg Roll",
-          "Granola Bowl w/ seasonal fruit",
+          "Veggie Quiche (spinach & feta)",
           "Chicken Pesto Panini",
-          "Tomato Soup + Sourdough"
-        ]
+          "Tomato Basil Soup",
+          "Blueberry Muffin",
+          "Ham & Cheese Croissant"
+        ],
+        "type": "string"
       },
       {
-        "id": "colFoodPrice",
+        "id": "foodPriceCol",
         "component": "Col",
         "label": "Price",
-        "type": "string",
         "data": [
-          "$14.00",
-          "$12.50",
-          "$11.00",
-          "$10.50",
-          "$13.50",
-          "$9.50"
-        ]
+          "$4.50",
+          "$9.50",
+          "$8.50",
+          "$7.50",
+          "$10.00",
+          "$6.50",
+          "$3.75",
+          "$6.00"
+        ],
+        "type": "string"
       },
       {
-        "id": "colFoodDiet",
+        "id": "foodVegCol",
         "component": "Col",
-        "label": "Diet",
-        "type": "string",
+        "label": " ",
         "data": [
-          "Vegetarian 🌱",
-          "Vegetarian 🌱",
-          "—",
-          "Vegetarian 🌱",
-          "—",
-          "Vegan 🌿"
-        ]
+          "V ★ Special",
+          "V",
+          "",
+          "V",
+          "",
+          "V",
+          "V",
+          ""
+        ],
+        "type": "string"
       },
       {
         "id": "foodLegend",
         "component": "TextContent",
-        "text": "★ = Today's Special  •  🌱 Vegetarian  •  🌿 Vegan  •  Add poached egg +$2.00",
+        "text": "★ = Today's Special • V = Vegetarian • All food made fresh daily. Ask about gluten-free options.",
         "size": "small"
       },
       {
-        "id": "footerText",
+        "id": "hoursCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "hoursHeader",
+          "hoursTable",
+          "hoursNote"
+        ]
+      },
+      {
+        "id": "hoursHeader",
+        "component": "CardHeader",
+        "title": "Opening Hours",
+        "subtitle": "123 Bean Street • (555) 014-2828"
+      },
+      {
+        "id": "hoursTable",
+        "component": "Table",
+        "columns": [
+          "hoursDayCol",
+          "hoursTimeCol"
+        ]
+      },
+      {
+        "id": "hoursDayCol",
+        "component": "Col",
+        "label": "Day",
+        "data": [
+          "Monday - Friday",
+          "Saturday",
+          "Sunday"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "hoursTimeCol",
+        "component": "Col",
+        "label": "Hours",
+        "data": [
+          "7:00 AM – 5:00 PM",
+          "8:00 AM – 5:00 PM",
+          "8:00 AM – 4:00 PM"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "hoursNote",
         "component": "TextContent",
-        "text": "All prices include GST. Please inform staff of allergies. 🌱 = Vegetarian  🌿 = Vegan",
+        "text": "Kitchen closes 30 mins before closing. Last coffee order 15 mins before close.",
+        "size": "small"
+      },
+      {
+        "id": "footer",
+        "component": "TextContent",
+        "text": "Toggle **Show vegetarian items only** to filter the menu • Tap Drinks / Food tabs to switch categories",
         "size": "small"
       }
     ]

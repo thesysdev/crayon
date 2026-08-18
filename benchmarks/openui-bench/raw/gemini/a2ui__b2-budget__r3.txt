@@ -1,15 +1,11 @@
-Here is a complete personal budget dashboard interface that covers all your requested features: budget progress, category breakdown, highlighted largest expense, month switcher, and an expense addition form.
+Here is a complete UI screen for your personal budget check, including monthly overview, breakdown by category, top expense highlight, month selector, and a form to add new expenses.
 
 <a2ui-json>
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "personal-budget-dashboard",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": {
-      "primaryColor": "#10B981",
-      "agentDisplayName": "Personal Finance Tracker"
-    }
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
@@ -18,374 +14,385 @@ Here is a complete personal budget dashboard interface that covers all your requ
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "personal-budget-dashboard",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "variant": "card",
         "direction": "column",
         "gap": "l",
         "children": [
-          "header-card",
-          "budget-overview-card",
-          "highlight-card",
-          "tabs-card"
+          "header",
+          "monthSelector",
+          "budgetOverview",
+          "largestExpenseAlert",
+          "categoryTabs",
+          "addExpenseDrawer"
         ]
       },
       {
-        "id": "header-card",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "align": "center",
-        "justify": "between",
-        "children": [
-          "header-title",
-          "month-selector-control"
-        ]
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Personal Budget Tracker",
+        "subtitle": "Track monthly spending, analyze categories, and log transactions."
       },
       {
-        "id": "header-title",
-        "component": "Heading",
-        "level": "h2",
-        "text": "Personal Budget Overview"
-      },
-      {
-        "id": "month-selector-control",
+        "id": "monthSelector",
         "component": "FormControl",
-        "label": "Select Month",
-        "input": "month-select"
+        "label": "Selected Month",
+        "input": "monthSelect",
+        "hint": "Switch months to view historical budget performance"
       },
       {
-        "id": "month-select",
+        "id": "monthSelect",
         "component": "Select",
-        "name": "month_select",
-        "value": "oct_2023",
-        "size": "small",
+        "name": "month",
+        "value": "2023-10",
+        "placeholder": "Select month",
         "items": [
-          "month-opt-aug",
-          "month-opt-sep",
-          "month-opt-oct"
+          "monthAug",
+          "monthSep",
+          "monthOct",
+          "monthNov"
         ]
       },
       {
-        "id": "month-opt-aug",
+        "id": "monthAug",
         "component": "SelectItem",
-        "value": "aug_2023",
+        "value": "2023-08",
         "label": "August 2023"
       },
       {
-        "id": "month-opt-sep",
+        "id": "monthSep",
         "component": "SelectItem",
-        "value": "sep_2023",
+        "value": "2023-09",
         "label": "September 2023"
       },
       {
-        "id": "month-opt-oct",
+        "id": "monthOct",
         "component": "SelectItem",
-        "value": "oct_2023",
+        "value": "2023-10",
         "label": "October 2023 (Current)"
       },
       {
-        "id": "budget-overview-card",
+        "id": "monthNov",
+        "component": "SelectItem",
+        "value": "2023-11",
+        "label": "November 2023"
+      },
+      {
+        "id": "budgetOverview",
         "component": "Card",
         "variant": "sunk",
         "direction": "column",
         "gap": "m",
         "children": [
-          "budget-header",
-          "budget-progress",
-          "budget-details-text"
+          "budgetHeader",
+          "budgetProgress",
+          "kpiTable"
         ]
       },
       {
-        "id": "budget-header",
-        "component": "CardHeader",
-        "title": "Monthly Spending Limit",
-        "subtitle": "Track your total expenditure against your set monthly target."
+        "id": "budgetHeader",
+        "component": "Heading",
+        "text": "October 2023 Monthly Budget",
+        "level": "h3"
       },
       {
-        "id": "budget-progress",
+        "id": "budgetProgress",
         "component": "Progress",
-        "value": 72.5,
-        "label": "72.5% of $4,000 Budget Used"
+        "value": 82,
+        "label": "Spent $3,280 of $4,000 budget (82%)"
       },
       {
-        "id": "budget-details-text",
-        "component": "TextContent",
-        "text": "**Total Spent:** $2,900.00 / **Budget:** $4,000.00  \n*Remaining:* **$1,100.00**",
-        "size": "default"
-      },
-      {
-        "id": "highlight-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "children": [
-          "highlight-callout"
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": [
+          "colMetric",
+          "colValue"
         ]
       },
       {
-        "id": "highlight-callout",
-        "component": "Callout",
-        "variant": "warning",
-        "title": "Largest Expense Highlight",
-        "description": "Monthly Rent / Housing Payment: $1,450.00 (Accounts for 50% of total monthly spend)"
-      },
-      {
-        "id": "tabs-card",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "main-tabs"
+        "id": "colMetric",
+        "component": "Col",
+        "label": "Summary Metric",
+        "data": [
+          "Total Budget",
+          "Total Spent",
+          "Remaining Budget",
+          "Daily Average Spent"
         ]
       },
       {
-        "id": "main-tabs",
+        "id": "colValue",
+        "component": "Col",
+        "label": "Amount ($)",
+        "data": [
+          "$4,000.00",
+          "$3,280.00",
+          "$720.00",
+          "$105.80"
+        ]
+      },
+      {
+        "id": "largestExpenseAlert",
+        "component": "Alert",
+        "title": "Largest Single Expense",
+        "description": "Monthly Rent & Lease payment: $1,450.00 on Oct 1st (44.2% of total monthly spend)",
+        "variant": "warning"
+      },
+      {
+        "id": "categoryTabs",
         "component": "Tabs",
         "items": [
-          "tab-breakdown",
-          "tab-add-expense"
+          "tabChart",
+          "tabList"
         ]
       },
       {
-        "id": "tab-breakdown",
+        "id": "tabChart",
         "component": "TabItem",
-        "value": "breakdown",
-        "trigger": "Category Breakdown",
+        "value": "chart",
+        "trigger": "Category Chart",
         "content": [
-          "breakdown-card"
+          "chartHeader",
+          "categoryPieChart"
         ]
       },
       {
-        "id": "breakdown-card",
-        "component": "Card",
-        "variant": "sunk",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "pie-chart-breakdown",
-          "separator-breakdown",
-          "table-breakdown"
-        ]
+        "id": "chartHeader",
+        "component": "Heading",
+        "text": "Spending Breakdown by Category",
+        "level": "h4"
       },
       {
-        "id": "pie-chart-breakdown",
+        "id": "categoryPieChart",
         "component": "PieChart",
         "variant": "donut",
-        "appearance": "circular",
         "labels": [
           "Housing & Rent",
           "Groceries & Food",
           "Utilities & Bills",
           "Transportation",
-          "Entertainment & Leisure"
+          "Entertainment",
+          "Shopping"
         ],
         "values": [
           1450,
           620,
           310,
           240,
+          380,
           280
         ]
       },
       {
-        "id": "separator-breakdown",
-        "component": "Separator",
-        "orientation": "horizontal",
-        "decorative": true
-      },
-      {
-        "id": "table-breakdown",
-        "component": "Table",
-        "columns": [
-          "col-category",
-          "col-amount",
-          "col-percentage"
+        "id": "tabList",
+        "component": "TabItem",
+        "value": "list",
+        "trigger": "Category Table",
+        "content": [
+          "categoryTable"
         ]
       },
       {
-        "id": "col-category",
+        "id": "categoryTable",
+        "component": "Table",
+        "columns": [
+          "catName",
+          "catBudget",
+          "catSpent",
+          "catStatus"
+        ]
+      },
+      {
+        "id": "catName",
         "component": "Col",
         "label": "Category",
-        "type": "string",
         "data": [
           "Housing & Rent",
           "Groceries & Food",
           "Utilities & Bills",
           "Transportation",
-          "Entertainment & Leisure"
+          "Entertainment",
+          "Shopping"
         ]
       },
       {
-        "id": "col-amount",
+        "id": "catBudget",
         "component": "Col",
-        "label": "Amount Spent ($)",
-        "type": "number",
+        "label": "Budgeted",
         "data": [
-          1450,
-          620,
-          310,
-          240,
-          280
+          "$1,450",
+          "$600",
+          "$350",
+          "$300",
+          "$400",
+          "$300"
         ]
       },
       {
-        "id": "col-percentage",
+        "id": "catSpent",
         "component": "Col",
-        "label": "% of Total",
-        "type": "string",
+        "label": "Spent",
         "data": [
-          "50.0%",
-          "21.4%",
-          "10.7%",
-          "8.3%",
-          "9.6%"
+          "$1,450",
+          "$620",
+          "$310",
+          "$240",
+          "$380",
+          "$280"
         ]
       },
       {
-        "id": "tab-add-expense",
-        "component": "TabItem",
-        "value": "add-expense",
-        "trigger": "Add Expense",
+        "id": "catStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "On Budget",
+          "Over Budget",
+          "Under Budget",
+          "Under Budget",
+          "Under Budget",
+          "Under Budget"
+        ]
+      },
+      {
+        "id": "addExpenseDrawer",
+        "component": "DrawerBlock",
+        "triggerLabel": "+ Add New Expense",
+        "title": "Log Expense",
+        "description": "Enter transaction details to add to this month's budget.",
         "content": [
-          "add-expense-form-card"
+          "addExpenseForm"
         ]
       },
       {
-        "id": "add-expense-form-card",
-        "component": "Card",
-        "variant": "sunk",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "expense-form"
-        ]
-      },
-      {
-        "id": "expense-form",
+        "id": "addExpenseForm",
         "component": "Form",
-        "name": "add_expense_form",
+        "name": "addExpense",
+        "buttons": "formButtons",
         "fields": [
-          "field-title",
-          "field-amount",
-          "field-category",
-          "field-date"
-        ],
-        "buttons": "form-buttons-group"
+          "amountField",
+          "categoryField",
+          "descriptionField",
+          "dateField"
+        ]
       },
       {
-        "id": "field-title",
-        "component": "FormControl",
-        "label": "Expense Description",
-        "hint": "E.g., Grocery shopping, Gas refill",
-        "input": "input-title"
-      },
-      {
-        "id": "input-title",
-        "component": "Input",
-        "name": "expense_title",
-        "type": "text",
-        "placeholder": "Enter description..."
-      },
-      {
-        "id": "field-amount",
+        "id": "amountField",
         "component": "FormControl",
         "label": "Amount ($)",
-        "input": "input-amount"
+        "input": "amountInput"
       },
       {
-        "id": "input-amount",
+        "id": "amountInput",
         "component": "Input",
-        "name": "expense_amount",
-        "type": "number",
-        "placeholder": "0.00"
+        "name": "amount",
+        "placeholder": "0.00",
+        "type": "number"
       },
       {
-        "id": "field-category",
+        "id": "categoryField",
         "component": "FormControl",
         "label": "Category",
-        "input": "select-category"
+        "input": "categorySelect"
       },
       {
-        "id": "select-category",
+        "id": "categorySelect",
         "component": "Select",
-        "name": "expense_category",
-        "placeholder": "Select category...",
+        "name": "category",
+        "placeholder": "Select a category",
         "items": [
-          "cat-opt-housing",
-          "cat-opt-groceries",
-          "cat-opt-utilities",
-          "cat-opt-transport",
-          "cat-opt-entertainment"
+          "catOptHousing",
+          "catOptFood",
+          "catOptUtils",
+          "catOptTrans",
+          "catOptEnt",
+          "catOptShop"
         ]
       },
       {
-        "id": "cat-opt-housing",
+        "id": "catOptHousing",
         "component": "SelectItem",
         "value": "housing",
         "label": "Housing & Rent"
       },
       {
-        "id": "cat-opt-groceries",
+        "id": "catOptFood",
         "component": "SelectItem",
         "value": "groceries",
         "label": "Groceries & Food"
       },
       {
-        "id": "cat-opt-utilities",
+        "id": "catOptUtils",
         "component": "SelectItem",
         "value": "utilities",
         "label": "Utilities & Bills"
       },
       {
-        "id": "cat-opt-transport",
+        "id": "catOptTrans",
         "component": "SelectItem",
         "value": "transportation",
         "label": "Transportation"
       },
       {
-        "id": "cat-opt-entertainment",
+        "id": "catOptEnt",
         "component": "SelectItem",
         "value": "entertainment",
-        "label": "Entertainment & Leisure"
+        "label": "Entertainment"
       },
       {
-        "id": "field-date",
+        "id": "catOptShop",
+        "component": "SelectItem",
+        "value": "shopping",
+        "label": "Shopping"
+      },
+      {
+        "id": "descriptionField",
         "component": "FormControl",
-        "label": "Date of Expense",
-        "input": "input-date"
+        "label": "Description",
+        "input": "descInput",
+        "hint": "Merchant or item description"
       },
       {
-        "id": "input-date",
+        "id": "descInput",
+        "component": "Input",
+        "name": "description",
+        "placeholder": "e.g., Whole Foods Grocery Run",
+        "type": "text"
+      },
+      {
+        "id": "dateField",
+        "component": "FormControl",
+        "label": "Date",
+        "input": "dateInput"
+      },
+      {
+        "id": "dateInput",
         "component": "DatePicker",
-        "name": "expense_date",
+        "name": "expenseDate",
         "mode": "single"
       },
       {
-        "id": "form-buttons-group",
+        "id": "formButtons",
         "component": "Buttons",
-        "direction": "row",
         "buttons": [
-          "submit-expense-btn"
+          "submitExpenseBtn",
+          "cancelExpenseBtn"
         ]
       },
       {
-        "id": "submit-expense-btn",
+        "id": "submitExpenseBtn",
         "component": "Button",
-        "label": "Add Expense",
-        "variant": "primary",
-        "type": "normal",
-        "size": "medium",
-        "action": [
-          {
-            "event": "submit_expense"
-          }
-        ]
+        "label": "Save Expense",
+        "variant": "primary"
+      },
+      {
+        "id": "cancelExpenseBtn",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
       }
     ]
   }

@@ -1,724 +1,943 @@
-Here's a single-screen hospital operations command view, organized into tabs so everything fits cleanly. It covers all 12 items: occupancy, ER wait, 14-day admissions, department census, on-shift staff, critical alerts, discharge queue, OR schedule, low supplies, an incident form, a date picker to review other days, and a transfer request form.
+Here's your hospital operations command view — a single screen covering all 12 items: capacity/ER metrics, trends, rosters, alerts, plus working dialogs for incidents and transfers, and a date picker to change the view day.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "hospital-ops-command",
-      "catalogId": "thesys.dev:c1-openui",
-      "theme": {
-        "primaryColor": "#0F6B6E",
-        "agentDisplayName": "Hospital Ops"
-      }
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "hospital-ops-command",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "column",
-          "gap": "l",
-          "children": ["hdr", "dateCard", "mainTabs"]
-        },
-        {
-          "id": "hdr",
-          "component": "CardHeader",
-          "title": "St. Mercy General — Operations Command",
-          "subtitle": "Live status · Updated 2 min ago"
-        },
-        {
-          "id": "dateCard",
-          "component": "Card",
-          "variant": "card",
-          "direction": "row",
-          "align": "center",
-          "justify": "between",
-          "gap": "m",
-          "children": ["dateLabel", "viewDate"]
-        },
-        {
-          "id": "dateLabel",
-          "component": "Label",
-          "text": "View another day:"
-        },
-        {
-          "id": "viewDate",
-          "component": "DatePicker",
-          "name": "viewDate",
-          "mode": "single"
-        },
-        {
-          "id": "mainTabs",
-          "component": "Tabs",
-          "items": ["tabOverview", "tabPatients", "tabStaffOr", "tabOps"]
-        },
-        {
-          "id": "tabOverview",
-          "component": "TabItem",
-          "value": "overview",
-          "trigger": "Overview",
-          "content": ["kpiCard", "occCard", "admCard", "deptCard"]
-        },
-        {
-          "id": "kpiCard",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "m",
-          "children": ["erKpi", "occKpi"]
-        },
-        {
-          "id": "erKpi",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "xs",
-          "weight": 1,
-          "children": ["erLabel", "erValue", "erBadge"]
-        },
-        {
-          "id": "erLabel",
-          "component": "Label",
-          "text": "Current ER Wait"
-        },
-        {
-          "id": "erValue",
-          "component": "TextContent",
-          "text": "42 min",
-          "size": "large-heavy"
-        },
-        {
-          "id": "erBadge",
-          "component": "Badge",
-          "text": "2 ambulances inbound",
-          "variant": "destructive"
-        },
-        {
-          "id": "occKpi",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "xs",
-          "weight": 1,
-          "children": ["occLabel", "occValue", "occProgress"]
-        },
-        {
-          "id": "occLabel",
-          "component": "Label",
-          "text": "Bed Occupancy"
-        },
-        {
-          "id": "occValue",
-          "component": "TextContent",
-          "text": "412 / 478 beds",
-          "size": "large-heavy"
-        },
-        {
-          "id": "occProgress",
-          "component": "Progress",
-          "value": 86,
-          "label": "86% occupied"
-        },
-        {
-          "id": "occCard",
-          "component": "Card",
-          "variant": "card",
-          "gap": "s",
-          "children": ["occHeader", "occStack"]
-        },
-        {
-          "id": "occHeader",
-          "component": "CardHeader",
-          "title": "Bed Status — All Units",
-          "subtitle": "478 total beds across 8 units"
-        },
-        {
-          "id": "occStack",
-          "component": "SingleStackedBarChart",
-          "labels": ["Occupied", "Available", "Cleaning", "Reserved"],
-          "values": [412, 42, 14, 10]
-        },
-        {
-          "id": "admCard",
-          "component": "Card",
-          "variant": "card",
-          "gap": "s",
-          "children": ["admHeader", "admChart"]
-        },
-        {
-          "id": "admHeader",
-          "component": "CardHeader",
-          "title": "Admissions — Past 14 Days",
-          "subtitle": "Daily admissions, hospital-wide"
-        },
-        {
-          "id": "admChart",
-          "component": "LineChart",
-          "labels": ["Nov 18", "Nov 19", "Nov 20", "Nov 21", "Nov 22", "Nov 23", "Nov 24", "Nov 25", "Nov 26", "Nov 27", "Nov 28", "Nov 29", "Nov 30", "Dec 1"],
-          "series": ["admSeries"],
-          "variant": "natural",
-          "xLabel": "Date",
-          "yLabel": "Admissions"
-        },
-        {
-          "id": "admSeries",
-          "component": "Series",
-          "category": "Admissions",
-          "values": [32, 28, 35, 31, 29, 26, 24, 30, 34, 38, 33, 36, 41, 37]
-        },
-        {
-          "id": "deptCard",
-          "component": "Card",
-          "variant": "card",
-          "gap": "s",
-          "children": ["deptHeader", "deptChart"]
-        },
-        {
-          "id": "deptHeader",
-          "component": "CardHeader",
-          "title": "Patients per Department",
-          "subtitle": "Current census by department"
-        },
-        {
-          "id": "deptChart",
-          "component": "BarChart",
-          "labels": ["Emergency", "Cardiology", "Oncology", "Pediatrics", "Orthopedics", "Neurology", "ICU", "Maternity"],
-          "series": ["deptSeries"],
-          "xLabel": "Department",
-          "yLabel": "Patients"
-        },
-        {
-          "id": "deptSeries",
-          "component": "Series",
-          "category": "Patients",
-          "values": [48, 36, 22, 18, 27, 15, 12, 20]
-        },
-        {
-          "id": "tabPatients",
-          "component": "TabItem",
-          "value": "patients",
-          "trigger": "Patients",
-          "content": ["critCard", "dischCard"]
-        },
-        {
-          "id": "critCard",
-          "component": "Card",
-          "variant": "card",
-          "gap": "m",
-          "children": ["critHeader", "crit1", "crit2", "crit3"]
-        },
-        {
-          "id": "critHeader",
-          "component": "CardHeader",
-          "title": "Critical Patients — Active Alerts",
-          "subtitle": "3 patients require immediate attention"
-        },
-        {
-          "id": "crit1",
-          "component": "Alert",
-          "variant": "destructive",
-          "title": "ICU Bed 7 — J. Alvarez",
-          "description": "Post-op respiratory distress. Ventilated, SpO2 88%. Rapid response team notified."
-        },
-        {
-          "id": "crit2",
-          "component": "Alert",
-          "variant": "destructive",
-          "title": "ICU Bed 3 — M. Chen",
-          "description": "Septic shock, on vasopressors. Lactate rising. Hourly labs ordered."
-        },
-        {
-          "id": "crit3",
-          "component": "Alert",
-          "variant": "warning",
-          "title": "ER Bay 2 — Unassigned (F, 64)",
-          "description": "Suspected STEMI. Awaiting cath lab — ETA 20 min."
-        },
-        {
-          "id": "dischCard",
-          "component": "Card",
-          "variant": "card",
-          "gap": "m",
-          "children": ["dischHeader", "dischList"]
-        },
-        {
-          "id": "dischHeader",
-          "component": "CardHeader",
-          "title": "Ready for Discharge",
-          "subtitle": "6 patients cleared today"
-        },
-        {
-          "id": "dischList",
-          "component": "ListBlock",
-          "items": ["d1", "d2", "d3", "d4", "d5", "d6"]
-        },
-        {
-          "id": "d1",
-          "component": "ListItem",
-          "title": "R. Okafor",
-          "subtitle": "Room 412 · Cardiology — meds reconciled",
-          "actionLabel": "Notify transport"
-        },
-        {
-          "id": "d2",
-          "component": "ListItem",
-          "title": "S. Patel",
-          "subtitle": "Room 318 · Orthopedics — awaiting wheelchair",
-          "actionLabel": "Notify transport"
-        },
-        {
-          "id": "d3",
-          "component": "ListItem",
-          "title": "L. Gomez",
-          "subtitle": "Room 220 · Maternity — newborn check pending",
-          "actionLabel": "Confirm"
-        },
-        {
-          "id": "d4",
-          "component": "ListItem",
-          "title": "T. Nguyen",
-          "subtitle": "Room 515 · Neurology — paperwork complete",
-          "actionLabel": "Notify transport"
-        },
-        {
-          "id": "d5",
-          "component": "ListItem",
-          "title": "A. Rossi",
-          "subtitle": "Room 610 · Oncology — home care arranged",
-          "actionLabel": "Confirm"
-        },
-        {
-          "id": "d6",
-          "component": "ListItem",
-          "title": "K. Dubois",
-          "subtitle": "Room 214 · General Surgery — cleared by Dr. Hahn",
-          "actionLabel": "Notify transport"
-        },
-        {
-          "id": "tabStaffOr",
-          "component": "TabItem",
-          "value": "staff",
-          "trigger": "Staff & OR",
-          "content": ["staffCard", "orCard"]
-        },
-        {
-          "id": "staffCard",
-          "component": "Card",
-          "variant": "card",
-          "gap": "s",
-          "children": ["staffHeader", "staffTable"]
-        },
-        {
-          "id": "staffHeader",
-          "component": "CardHeader",
-          "title": "Staff On Shift",
-          "subtitle": "Day shift · 7:00 AM – 7:00 PM"
-        },
-        {
-          "id": "staffTable",
-          "component": "Table",
-          "columns": ["cName", "cRole", "cUnit"]
-        },
-        {
-          "id": "cName",
-          "component": "Col",
-          "label": "Name",
-          "type": "string",
-          "data": ["Dr. E. Warren", "Dr. R. Kapoor", "N. Osei, RN", "J. Park, RN", "M. Silva, RN", "Dr. T. Ahmed", "L. Fontaine, RT", "D. Brooks, PharmD"]
-        },
-        {
-          "id": "cRole",
-          "component": "Col",
-          "label": "Role",
-          "type": "string",
-          "data": ["Attending Physician", "Surgeon", "Charge Nurse", "ICU Nurse", "ER Nurse", "Anesthesiologist", "Respiratory Therapist", "Pharmacist"]
-        },
-        {
-          "id": "cUnit",
-          "component": "Col",
-          "label": "Unit",
-          "type": "string",
-          "data": ["Emergency", "OR", "ICU", "ICU", "Emergency", "OR", "Respiratory", "Pharmacy"]
-        },
-        {
-          "id": "orCard",
-          "component": "Card",
-          "variant": "card",
-          "gap": "s",
-          "children": ["orHeader", "orTable"]
-        },
-        {
-          "id": "orHeader",
-          "component": "CardHeader",
-          "title": "Today's Operating Room Bookings",
-          "subtitle": "6 scheduled · 2 completed"
-        },
-        {
-          "id": "orTable",
-          "component": "Table",
-          "columns": ["orTime", "orProc", "orSurg", "orRoom", "orStatus"]
-        },
-        {
-          "id": "orTime",
-          "component": "Col",
-          "label": "Time",
-          "type": "string",
-          "data": ["07:30", "09:00", "11:30", "13:00", "15:30", "17:00"]
-        },
-        {
-          "id": "orProc",
-          "component": "Col",
-          "label": "Procedure",
-          "type": "string",
-          "data": ["CABG", "Appendectomy", "Total knee replacement", "Craniotomy (tumor resection)", "C-section", "Cholecystectomy"]
-        },
-        {
-          "id": "orSurg",
-          "component": "Col",
-          "label": "Surgeon",
-          "type": "string",
-          "data": ["Dr. Kapoor", "Dr. Hahn", "Dr. Ellis", "Dr. Osei-Bonsu", "Dr. Marin", "Dr. Hahn"]
-        },
-        {
-          "id": "orRoom",
-          "component": "Col",
-          "label": "Room",
-          "type": "string",
-          "data": ["OR-1", "OR-3", "OR-2", "OR-4", "L&D-1", "OR-3"]
-        },
-        {
-          "id": "orStatus",
-          "component": "Col",
-          "label": "Status",
-          "type": "string",
-          "data": ["Completed", "Completed", "In progress", "Delayed 30 min", "Scheduled", "Scheduled"]
-        },
-        {
-          "id": "tabOps",
-          "component": "TabItem",
-          "value": "ops",
-          "trigger": "Supplies & Actions",
-          "content": ["supCard", "incCard", "transCard"]
-        },
-        {
-          "id": "supCard",
-          "component": "Card",
-          "variant": "card",
-          "gap": "m",
-          "children": ["supHeader", "supAlert", "supList"]
-        },
-        {
-          "id": "supHeader",
-          "component": "CardHeader",
-          "title": "Supplies Running Low",
-          "subtitle": "Below reorder threshold"
-        },
-        {
-          "id": "supAlert",
-          "component": "Alert",
-          "variant": "warning",
-          "title": "4 items below threshold",
-          "description": "Central supply notified. Auto-reorder pending approval."
-        },
-        {
-          "id": "supList",
-          "component": "ListBlock",
-          "items": ["s1", "s2", "s3", "s4"]
-        },
-        {
-          "id": "s1",
-          "component": "ListItem",
-          "title": "N95 respirators",
-          "subtitle": "120 left · threshold 500",
-          "actionLabel": "Reorder"
-        },
-        {
-          "id": "s2",
-          "component": "ListItem",
-          "title": "IV saline 1L bags",
-          "subtitle": "80 left · threshold 300",
-          "actionLabel": "Reorder"
-        },
-        {
-          "id": "s3",
-          "component": "ListItem",
-          "title": "Surgical gloves (M)",
-          "subtitle": "2 boxes · threshold 20",
-          "actionLabel": "Reorder"
-        },
-        {
-          "id": "s4",
-          "component": "ListItem",
-          "title": "Blood type O−",
-          "subtitle": "6 units · threshold 15",
-          "actionLabel": "Request from blood bank"
-        },
-        {
-          "id": "incCard",
-          "component": "Card",
-          "variant": "card",
-          "gap": "m",
-          "children": ["incHeader", "incForm"]
-        },
-        {
-          "id": "incHeader",
-          "component": "CardHeader",
-          "title": "File an Incident",
-          "subtitle": "Report a safety or operational incident"
-        },
-        {
-          "id": "incForm",
-          "component": "Form",
-          "name": "incidentReport",
-          "buttons": "incButtons",
-          "fields": ["incTypeFC", "incLocFC", "incDetFC"]
-        },
-        {
-          "id": "incTypeFC",
-          "component": "FormControl",
-          "label": "Incident type",
-          "input": "incType"
-        },
-        {
-          "id": "incType",
-          "component": "Select",
-          "name": "type",
-          "placeholder": "Select incident type",
-          "items": ["incT1", "incT2", "incT3", "incT4", "incT5"]
-        },
-        {
-          "id": "incT1",
-          "component": "SelectItem",
-          "value": "fall",
-          "label": "Patient fall"
-        },
-        {
-          "id": "incT2",
-          "component": "SelectItem",
-          "value": "medication",
-          "label": "Medication error"
-        },
-        {
-          "id": "incT3",
-          "component": "SelectItem",
-          "value": "equipment",
-          "label": "Equipment failure"
-        },
-        {
-          "id": "incT4",
-          "component": "SelectItem",
-          "value": "security",
-          "label": "Security / safety"
-        },
-        {
-          "id": "incT5",
-          "component": "SelectItem",
-          "value": "other",
-          "label": "Other"
-        },
-        {
-          "id": "incLocFC",
-          "component": "FormControl",
-          "label": "Location",
-          "input": "incLoc"
-        },
-        {
-          "id": "incLoc",
-          "component": "Input",
-          "name": "location",
-          "type": "text",
-          "placeholder": "e.g., Ward 4 · Room 412"
-        },
-        {
-          "id": "incDetFC",
-          "component": "FormControl",
-          "label": "Details",
-          "input": "incDet"
-        },
-        {
-          "id": "incDet",
-          "component": "TextArea",
-          "name": "details",
-          "rows": 3,
-          "placeholder": "Describe what happened…"
-        },
-        {
-          "id": "incButtons",
-          "component": "Buttons",
-          "buttons": ["incSubmit", "incClear"]
-        },
-        {
-          "id": "incSubmit",
-          "component": "Button",
-          "label": "Submit Incident",
-          "variant": "primary"
-        },
-        {
-          "id": "incClear",
-          "component": "Button",
-          "label": "Clear",
-          "variant": "tertiary"
-        },
-        {
-          "id": "transCard",
-          "component": "Card",
-          "variant": "card",
-          "gap": "m",
-          "children": ["transHeader", "transForm"]
-        },
-        {
-          "id": "transHeader",
-          "component": "CardHeader",
-          "title": "Request Patient Transfer",
-          "subtitle": "Move a patient between units or facilities"
-        },
-        {
-          "id": "transForm",
-          "component": "Form",
-          "name": "transferRequest",
-          "buttons": "transButtons",
-          "fields": ["tPatFC", "tFromFC", "tToFC", "tReasonFC"]
-        },
-        {
-          "id": "tPatFC",
-          "component": "FormControl",
-          "label": "Patient name / ID",
-          "input": "tPat"
-        },
-        {
-          "id": "tPat",
-          "component": "Input",
-          "name": "patient",
-          "type": "text",
-          "placeholder": "e.g., J. Doe · MRN 0045123"
-        },
-        {
-          "id": "tFromFC",
-          "component": "FormControl",
-          "label": "From unit",
-          "input": "tFrom"
-        },
-        {
-          "id": "tFrom",
-          "component": "Select",
-          "name": "fromUnit",
-          "placeholder": "Current unit",
-          "items": ["tf1", "tf2", "tf3", "tf4"]
-        },
-        {
-          "id": "tf1",
-          "component": "SelectItem",
-          "value": "er",
-          "label": "Emergency (ER)"
-        },
-        {
-          "id": "tf2",
-          "component": "SelectItem",
-          "value": "icu",
-          "label": "ICU"
-        },
-        {
-          "id": "tf3",
-          "component": "SelectItem",
-          "value": "ward4",
-          "label": "Ward 4 — Med/Surg"
-        },
-        {
-          "id": "tf4",
-          "component": "SelectItem",
-          "value": "pacu",
-          "label": "OR Recovery (PACU)"
-        },
-        {
-          "id": "tToFC",
-          "component": "FormControl",
-          "label": "To unit",
-          "input": "tTo"
-        },
-        {
-          "id": "tTo",
-          "component": "Select",
-          "name": "toUnit",
-          "placeholder": "Destination unit",
-          "items": ["tt1", "tt2", "tt3", "tt4"]
-        },
-        {
-          "id": "tt1",
-          "component": "SelectItem",
-          "value": "icu",
-          "label": "ICU"
-        },
-        {
-          "id": "tt2",
-          "component": "SelectItem",
-          "value": "sdu",
-          "label": "Step-down (SDU)"
-        },
-        {
-          "id": "tt3",
-          "component": "SelectItem",
-          "value": "ward4",
-          "label": "Ward 4 — Med/Surg"
-        },
-        {
-          "id": "tt4",
-          "component": "SelectItem",
-          "value": "external",
-          "label": "External facility"
-        },
-        {
-          "id": "tReasonFC",
-          "component": "FormControl",
-          "label": "Clinical reason",
-          "input": "tReason"
-        },
-        {
-          "id": "tReason",
-          "component": "TextArea",
-          "name": "reason",
-          "rows": 2,
-          "placeholder": "Reason for transfer…"
-        },
-        {
-          "id": "transButtons",
-          "component": "Buttons",
-          "buttons": ["tSubmit", "tCancel"]
-        },
-        {
-          "id": "tSubmit",
-          "component": "Button",
-          "label": "Request Transfer",
-          "variant": "primary"
-        },
-        {
-          "id": "tCancel",
-          "component": "Button",
-          "label": "Cancel",
-          "variant": "tertiary"
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-**Where each item lives:**
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "gap": "l",
+        "children": [
+          "header",
+          "controlsRow",
+          "critHeading",
+          "critAlert1",
+          "critAlert2",
+          "critAlert3",
+          "capHeading",
+          "kpiLabel",
+          "kpiTable",
+          "occLabel",
+          "occupancyChart",
+          "admHeading",
+          "admissionsChart",
+          "deptHeading",
+          "deptChart",
+          "staffHeading",
+          "staffTable",
+          "disHeading",
+          "disTable",
+          "orHeading",
+          "orTable",
+          "supHeading",
+          "supTable"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Hospital Operations Command Center",
+        "subtitle": "General Hospital — Tuesday, March 12 · Day shift 07:00–19:00"
+      },
+      {
+        "id": "controlsRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "align": "end",
+        "wrap": true,
+        "children": [
+          "viewDateForm",
+          "incidentDialog",
+          "transferDialog"
+        ]
+      },
+      {
+        "id": "viewDateForm",
+        "component": "Form",
+        "name": "view-date",
+        "fields": [
+          "viewDateControl"
+        ],
+        "buttons": "viewDateButtons"
+      },
+      {
+        "id": "viewDateControl",
+        "component": "FormControl",
+        "label": "View another day",
+        "input": "viewDatePicker",
+        "hint": "Metrics above update to the selected date"
+      },
+      {
+        "id": "viewDatePicker",
+        "component": "DatePicker",
+        "name": "view_date",
+        "mode": "single",
+        "value": [
+          "2025-03-12"
+        ]
+      },
+      {
+        "id": "viewDateButtons",
+        "component": "Buttons",
+        "buttons": [
+          "applyDateBtn"
+        ]
+      },
+      {
+        "id": "applyDateBtn",
+        "component": "Button",
+        "label": "Apply date",
+        "variant": "secondary"
+      },
+      {
+        "id": "incidentDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "File an Incident",
+        "triggerVariant": "secondary",
+        "title": "File an Incident Report",
+        "description": "Reports go to Risk Management and the unit supervisor.",
+        "content": [
+          "incidentForm"
+        ]
+      },
+      {
+        "id": "incidentForm",
+        "component": "Form",
+        "name": "incident-report",
+        "fields": [
+          "incTypeCtrl",
+          "incLocationCtrl",
+          "incSeverityCtrl",
+          "incDescCtrl"
+        ],
+        "buttons": "incidentButtons"
+      },
+      {
+        "id": "incTypeCtrl",
+        "component": "FormControl",
+        "label": "Incident type",
+        "input": "incTypeSelect"
+      },
+      {
+        "id": "incTypeSelect",
+        "component": "Select",
+        "name": "incident_type",
+        "placeholder": "Select a type",
+        "items": [
+          "incTypeMed",
+          "incTypeFall",
+          "incTypeSec",
+          "incTypeEquip",
+          "incTypeOther"
+        ]
+      },
+      {
+        "id": "incTypeMed",
+        "component": "SelectItem",
+        "value": "medication_error",
+        "label": "Medication error"
+      },
+      {
+        "id": "incTypeFall",
+        "component": "SelectItem",
+        "value": "patient_fall",
+        "label": "Patient fall"
+      },
+      {
+        "id": "incTypeSec",
+        "component": "SelectItem",
+        "value": "security",
+        "label": "Security / safety"
+      },
+      {
+        "id": "incTypeEquip",
+        "component": "SelectItem",
+        "value": "equipment",
+        "label": "Equipment failure"
+      },
+      {
+        "id": "incTypeOther",
+        "component": "SelectItem",
+        "value": "other",
+        "label": "Other"
+      },
+      {
+        "id": "incLocationCtrl",
+        "component": "FormControl",
+        "label": "Location",
+        "input": "incLocationInput"
+      },
+      {
+        "id": "incLocationInput",
+        "component": "Input",
+        "name": "location",
+        "placeholder": "e.g., Ward 3B, Room 312"
+      },
+      {
+        "id": "incSeverityCtrl",
+        "component": "FormControl",
+        "label": "Severity",
+        "input": "incSeverityRadio"
+      },
+      {
+        "id": "incSeverityRadio",
+        "component": "RadioGroup",
+        "name": "severity",
+        "defaultValue": "moderate",
+        "items": [
+          "sevLow",
+          "sevMod",
+          "sevHigh"
+        ]
+      },
+      {
+        "id": "sevLow",
+        "component": "RadioItem",
+        "label": "Low",
+        "description": "No patient harm",
+        "value": "low"
+      },
+      {
+        "id": "sevMod",
+        "component": "RadioItem",
+        "label": "Moderate",
+        "description": "Minor harm or near miss",
+        "value": "moderate"
+      },
+      {
+        "id": "sevHigh",
+        "component": "RadioItem",
+        "label": "High",
+        "description": "Serious harm or immediate risk",
+        "value": "high"
+      },
+      {
+        "id": "incDescCtrl",
+        "component": "FormControl",
+        "label": "Description",
+        "input": "incDescArea",
+        "hint": "What happened, who was involved, immediate actions taken"
+      },
+      {
+        "id": "incDescArea",
+        "component": "TextArea",
+        "name": "description",
+        "placeholder": "Describe the incident…",
+        "rows": 4
+      },
+      {
+        "id": "incidentButtons",
+        "component": "Buttons",
+        "buttons": [
+          "incSubmit",
+          "incCancel"
+        ]
+      },
+      {
+        "id": "incSubmit",
+        "component": "Button",
+        "label": "Submit incident",
+        "variant": "primary"
+      },
+      {
+        "id": "incCancel",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      },
+      {
+        "id": "transferDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Request Patient Transfer",
+        "title": "Request a Patient Transfer",
+        "description": "Routed to the bed manager and receiving unit charge nurse.",
+        "content": [
+          "transferForm"
+        ]
+      },
+      {
+        "id": "transferForm",
+        "component": "Form",
+        "name": "transfer-request",
+        "fields": [
+          "trPatientCtrl",
+          "trFromCtrl",
+          "trToCtrl",
+          "trPriorityCtrl",
+          "trReasonCtrl"
+        ],
+        "buttons": "transferButtons"
+      },
+      {
+        "id": "trPatientCtrl",
+        "component": "FormControl",
+        "label": "Patient",
+        "input": "trPatientInput"
+      },
+      {
+        "id": "trPatientInput",
+        "component": "Input",
+        "name": "patient",
+        "placeholder": "Name or MRN"
+      },
+      {
+        "id": "trFromCtrl",
+        "component": "FormControl",
+        "label": "From unit",
+        "input": "trFromSelect"
+      },
+      {
+        "id": "trFromSelect",
+        "component": "Select",
+        "name": "from_unit",
+        "placeholder": "Current unit",
+        "items": [
+          "fromICU",
+          "fromER",
+          "fromMedSurg",
+          "fromStepDown",
+          "fromPeds",
+          "fromMaternity"
+        ]
+      },
+      {
+        "id": "fromICU",
+        "component": "SelectItem",
+        "value": "icu",
+        "label": "ICU"
+      },
+      {
+        "id": "fromER",
+        "component": "SelectItem",
+        "value": "er",
+        "label": "Emergency"
+      },
+      {
+        "id": "fromMedSurg",
+        "component": "SelectItem",
+        "value": "med_surg",
+        "label": "Med-Surg"
+      },
+      {
+        "id": "fromStepDown",
+        "component": "SelectItem",
+        "value": "step_down",
+        "label": "Step-Down"
+      },
+      {
+        "id": "fromPeds",
+        "component": "SelectItem",
+        "value": "pediatrics",
+        "label": "Pediatrics"
+      },
+      {
+        "id": "fromMaternity",
+        "component": "SelectItem",
+        "value": "maternity",
+        "label": "Maternity"
+      },
+      {
+        "id": "trToCtrl",
+        "component": "FormControl",
+        "label": "To unit",
+        "input": "trToSelect"
+      },
+      {
+        "id": "trToSelect",
+        "component": "Select",
+        "name": "to_unit",
+        "placeholder": "Receiving unit",
+        "items": [
+          "toICU",
+          "toER",
+          "toMedSurg",
+          "toStepDown",
+          "toPeds",
+          "toMaternity"
+        ]
+      },
+      {
+        "id": "toICU",
+        "component": "SelectItem",
+        "value": "icu",
+        "label": "ICU"
+      },
+      {
+        "id": "toER",
+        "component": "SelectItem",
+        "value": "er",
+        "label": "Emergency"
+      },
+      {
+        "id": "toMedSurg",
+        "component": "SelectItem",
+        "value": "med_surg",
+        "label": "Med-Surg"
+      },
+      {
+        "id": "toStepDown",
+        "component": "SelectItem",
+        "value": "step_down",
+        "label": "Step-Down"
+      },
+      {
+        "id": "toPeds",
+        "component": "SelectItem",
+        "value": "pediatrics",
+        "label": "Pediatrics"
+      },
+      {
+        "id": "toMaternity",
+        "component": "SelectItem",
+        "value": "maternity",
+        "label": "Maternity"
+      },
+      {
+        "id": "trPriorityCtrl",
+        "component": "FormControl",
+        "label": "Priority",
+        "input": "trPriorityRadio"
+      },
+      {
+        "id": "trPriorityRadio",
+        "component": "RadioGroup",
+        "name": "priority",
+        "defaultValue": "routine",
+        "items": [
+          "priRoutine",
+          "priUrgent",
+          "priEmergent"
+        ]
+      },
+      {
+        "id": "priRoutine",
+        "component": "RadioItem",
+        "label": "Routine",
+        "description": "Within 24 hours",
+        "value": "routine"
+      },
+      {
+        "id": "priUrgent",
+        "component": "RadioItem",
+        "label": "Urgent",
+        "description": "Within 2 hours",
+        "value": "urgent"
+      },
+      {
+        "id": "priEmergent",
+        "component": "RadioItem",
+        "label": "Emergent",
+        "description": "Immediate, escorted",
+        "value": "emergent"
+      },
+      {
+        "id": "trReasonCtrl",
+        "component": "FormControl",
+        "label": "Clinical reason",
+        "input": "trReasonArea"
+      },
+      {
+        "id": "trReasonArea",
+        "component": "TextArea",
+        "name": "reason",
+        "placeholder": "Reason for level-of-care change…",
+        "rows": 3
+      },
+      {
+        "id": "transferButtons",
+        "component": "Buttons",
+        "buttons": [
+          "trSubmit",
+          "trCancel"
+        ]
+      },
+      {
+        "id": "trSubmit",
+        "component": "Button",
+        "label": "Submit transfer request",
+        "variant": "primary"
+      },
+      {
+        "id": "trCancel",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      },
+      {
+        "id": "critHeading",
+        "component": "Heading",
+        "text": "Critical Patients",
+        "level": "h2"
+      },
+      {
+        "id": "critAlert1",
+        "component": "Alert",
+        "variant": "destructive",
+        "title": "ICU-04 — M. Alvarez, 67",
+        "description": "Post-op sepsis; on vasopressors. Rapid response team at bedside."
+      },
+      {
+        "id": "critAlert2",
+        "component": "Alert",
+        "variant": "destructive",
+        "title": "ER-12 — J. Okafor, 58",
+        "description": "STEMI confirmed; cath lab activated, team ETA 10 min."
+      },
+      {
+        "id": "critAlert3",
+        "component": "Alert",
+        "variant": "warning",
+        "title": "Peds-02 — S. Chen, 6",
+        "description": "Respiratory distress; intubated 30 min ago, awaiting PICU bed."
+      },
+      {
+        "id": "capHeading",
+        "component": "Heading",
+        "text": "Capacity & Flow",
+        "level": "h2"
+      },
+      {
+        "id": "kpiLabel",
+        "component": "Label",
+        "text": "Key metrics — occupancy and ER status"
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": [
+          "kpiMetric",
+          "kpiValue"
+        ]
+      },
+      {
+        "id": "kpiMetric",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Overall bed occupancy",
+          "Current ER wait",
+          "ER patients waiting",
+          "Available staffed beds",
+          "Admissions so far today",
+          "Expected discharges today"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "82% (246 / 300)",
+          "42 min",
+          "18",
+          "54",
+          "34",
+          "21"
+        ]
+      },
+      {
+        "id": "occLabel",
+        "component": "Label",
+        "text": "Bed occupancy by unit (%)"
+      },
+      {
+        "id": "occupancyChart",
+        "component": "RadialChart",
+        "labels": [
+          "ICU",
+          "Med-Surg",
+          "Emergency",
+          "Pediatrics",
+          "Maternity"
+        ],
+        "values": [
+          92,
+          78,
+          85,
+          64,
+          71
+        ]
+      },
+      {
+        "id": "admHeading",
+        "component": "Heading",
+        "text": "Admissions — Past 14 Days",
+        "level": "h2"
+      },
+      {
+        "id": "admissionsChart",
+        "component": "AreaChart",
+        "variant": "natural",
+        "xLabel": "Day",
+        "yLabel": "Admissions",
+        "labels": [
+          "Feb 27",
+          "Feb 28",
+          "Mar 1",
+          "Mar 2",
+          "Mar 3",
+          "Mar 4",
+          "Mar 5",
+          "Mar 6",
+          "Mar 7",
+          "Mar 8",
+          "Mar 9",
+          "Mar 10",
+          "Mar 11",
+          "Mar 12"
+        ],
+        "series": [
+          "admSeries"
+        ]
+      },
+      {
+        "id": "admSeries",
+        "component": "Series",
+        "category": "Daily admissions",
+        "values": [
+          31,
+          28,
+          35,
+          42,
+          39,
+          33,
+          27,
+          30,
+          36,
+          44,
+          41,
+          37,
+          29,
+          34
+        ]
+      },
+      {
+        "id": "deptHeading",
+        "component": "Heading",
+        "text": "Patients per Department",
+        "level": "h2"
+      },
+      {
+        "id": "deptChart",
+        "component": "HorizontalBarChart",
+        "variant": "grouped",
+        "xLabel": "Patients",
+        "yLabel": "Department",
+        "labels": [
+          "General Medicine",
+          "Cardiology",
+          "Oncology",
+          "Orthopedics",
+          "Neurology",
+          "Pediatrics"
+        ],
+        "series": [
+          "deptSeries"
+        ]
+      },
+      {
+        "id": "deptSeries",
+        "component": "Series",
+        "category": "Current inpatients",
+        "values": [
+          62,
+          48,
+          36,
+          29,
+          24,
+          18
+        ]
+      },
+      {
+        "id": "staffHeading",
+        "component": "Heading",
+        "text": "Staff On Shift — Day Shift (07:00–19:00)",
+        "level": "h2"
+      },
+      {
+        "id": "staffTable",
+        "component": "Table",
+        "columns": [
+          "staffName",
+          "staffRole",
+          "staffUnit"
+        ]
+      },
+      {
+        "id": "staffName",
+        "component": "Col",
+        "label": "Name",
+        "data": [
+          "Dr. R. Patel",
+          "Dr. L. Nguyen",
+          "S. Gomez",
+          "T. Brooks",
+          "K. Ali",
+          "M. Ferreira",
+          "D. Shaw",
+          "J. Kim"
+        ]
+      },
+      {
+        "id": "staffRole",
+        "component": "Col",
+        "label": "Role",
+        "data": [
+          "Attending Physician",
+          "Hospitalist",
+          "Charge Nurse (RN)",
+          "ER Nurse (RN)",
+          "Med-Surg Nurse (RN)",
+          "Pharmacist (PharmD)",
+          "Respiratory Therapist",
+          "Paramedic (EMT-P)"
+        ]
+      },
+      {
+        "id": "staffUnit",
+        "component": "Col",
+        "label": "Unit",
+        "data": [
+          "Emergency",
+          "Med-Surg",
+          "ICU",
+          "Emergency",
+          "Med-Surg",
+          "Pharmacy",
+          "Respiratory",
+          "ER Triage"
+        ]
+      },
+      {
+        "id": "disHeading",
+        "component": "Heading",
+        "text": "Patients Ready for Discharge",
+        "level": "h2"
+      },
+      {
+        "id": "disTable",
+        "component": "Table",
+        "columns": [
+          "disPat",
+          "disRoom",
+          "disDept",
+          "disStatus"
+        ]
+      },
+      {
+        "id": "disPat",
+        "component": "Col",
+        "label": "Patient",
+        "data": [
+          "E. Thompson",
+          "R. Gutierrez",
+          "H. Wallace",
+          "A. Novak",
+          "T. Osei"
+        ]
+      },
+      {
+        "id": "disRoom",
+        "component": "Col",
+        "label": "Room",
+        "data": [
+          "4B-12",
+          "3A-08",
+          "5C-21",
+          "4B-15",
+          "2D-04"
+        ]
+      },
+      {
+        "id": "disDept",
+        "component": "Col",
+        "label": "Department",
+        "data": [
+          "Cardiology",
+          "Orthopedics",
+          "General Medicine",
+          "Neurology",
+          "Pediatrics"
+        ]
+      },
+      {
+        "id": "disStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Awaiting transport",
+          "Pharmacy pending",
+          "Paperwork complete",
+          "Awaiting family pickup",
+          "Transport confirmed"
+        ]
+      },
+      {
+        "id": "orHeading",
+        "component": "Heading",
+        "text": "Today's Operating Room Bookings",
+        "level": "h2"
+      },
+      {
+        "id": "orTable",
+        "component": "Table",
+        "columns": [
+          "orTime",
+          "orRoom",
+          "orProc",
+          "orSurgeon",
+          "orStatus"
+        ]
+      },
+      {
+        "id": "orTime",
+        "component": "Col",
+        "label": "Time",
+        "data": [
+          "07:30",
+          "08:00",
+          "10:30",
+          "12:00",
+          "14:00",
+          "15:30"
+        ]
+      },
+      {
+        "id": "orRoom",
+        "component": "Col",
+        "label": "Room",
+        "data": [
+          "OR-1",
+          "OR-3",
+          "OR-2",
+          "OR-4",
+          "OR-1",
+          "OR-3"
+        ]
+      },
+      {
+        "id": "orProc",
+        "component": "Col",
+        "label": "Procedure",
+        "data": [
+          "Coronary artery bypass (CABG)",
+          "Total knee replacement",
+          "Laparoscopic cholecystectomy",
+          "Spinal fusion L4-L5",
+          "Cataract extraction",
+          "Appendectomy"
+        ]
+      },
+      {
+        "id": "orSurgeon",
+        "component": "Col",
+        "label": "Surgeon",
+        "data": [
+          "Dr. E. Vance",
+          "Dr. P. Rao",
+          "Dr. A. Morales",
+          "Dr. K. Tanaka",
+          "Dr. N. Bell",
+          "Dr. E. Vance"
+        ]
+      },
+      {
+        "id": "orStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "In progress",
+          "In progress",
+          "Scheduled",
+          "Scheduled",
+          "Scheduled",
+          "Tentative"
+        ]
+      },
+      {
+        "id": "supHeading",
+        "component": "Heading",
+        "text": "Supplies Running Low",
+        "level": "h2"
+      },
+      {
+        "id": "supTable",
+        "component": "Table",
+        "columns": [
+          "supItem",
+          "supStock",
+          "supPar",
+          "supStatus"
+        ]
+      },
+      {
+        "id": "supItem",
+        "component": "Col",
+        "label": "Item",
+        "data": [
+          "IV saline 0.9% 1L",
+          "Nitrile gloves (M)",
+          "Insulin glargine pens",
+          "Blood collection tubes (EDTA)",
+          "N95 respirators"
+        ]
+      },
+      {
+        "id": "supStock",
+        "component": "Col",
+        "label": "On hand",
+        "type": "number",
+        "data": [
+          84,
+          1200,
+          26,
+          340,
+          410
+        ]
+      },
+      {
+        "id": "supPar",
+        "component": "Col",
+        "label": "Par level",
+        "type": "number",
+        "data": [
+          200,
+          5000,
+          100,
+          1000,
+          900
+        ]
+      },
+      {
+        "id": "supStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Critical — expedite",
+          "Reorder placed",
+          "Critical — expedite",
+          "Reorder placed",
+          "Low — monitoring"
+        ]
+      }
+    ]
+  }
+}
+</a2ui-json>
 
-1. **Bed occupancy** — KPI card (412/478, 86% progress bar) plus a stacked breakdown of occupied/available/cleaning/reserved beds.
-2. **Current ER wait** — KPI card showing 42 min with an inbound-ambulance badge.
-3. **Admissions (2 weeks)** — line chart of the last 14 days.
-4. **Patients per department** — bar chart of census across 8 departments.
-5. **Staff on shift** — table with each person's name, role, and unit.
-6. **Critical patients** — destructive/warning alerts calling out each patient, bed, and status.
-7. **Ready for discharge** — list of 6 cleared patients with transport actions.
-8. **OR bookings** — table of today's procedures with time, surgeon, room, and status.
-9. **Low supplies** — warning alert plus a list with reorder actions.
-10. **File an incident** — form with type, location, and details fields.
-11. **View another day** — date picker pinned at the top of the screen.
-12. **Request transfer** — form with patient, from/to units, and clinical reason.
+Coverage of all 12 items: (1) bed occupancy — KPI table + radial chart by unit; (2) current ER wait — KPI table (42 min, 18 waiting); (3) 14-day admissions — area chart; (4) patients per department — horizontal bar chart; (5) staff on shift — table with name, role, unit; (6) critical patients — three prominent alerts at top; (7) ready for discharge — table with status; (8) OR bookings — today's schedule table; (9) low supplies — table with on-hand vs. par levels; (10) incident filing — dialog with type, location, severity, description; (11) view another day — date picker with apply; (12) patient transfer — dialog with patient, from/to units, priority, and reason.

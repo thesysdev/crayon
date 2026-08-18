@@ -1,115 +1,99 @@
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","metrics","tabs"]}}
-{"op":"add","path":"/elements/header","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center"},"children":["title","hub-select"]}}
-{"op":"add","path":"/elements/title","value":{"type":"Heading","props":{"text":"Hub Operations Desk","level":"h1"}}}
-{"op":"add","path":"/elements/hub-select","value":{"type":"Select","props":{"name":"hub","items":["hub-atl","hub-ord","hub-dfw","hub-den"],"value":{"$bindState":"/currentHub"},"size":"medium"},"children":["hub-atl","hub-ord","hub-dfw","hub-den"]}}
-{"op":"add","path":"/elements/hub-atl","value":{"type":"SelectItem","props":{"value":"ATL","label":"ATL — Atlanta"}}}
-{"op":"add","path":"/elements/hub-ord","value":{"type":"SelectItem","props":{"value":"ORD","label":"ORD — Chicago O'Hare"}}}
-{"op":"add","path":"/elements/hub-dfw","value":{"type":"SelectItem","props":{"value":"DFW","label":"DFW — Dallas/Fort Worth"}}}
-{"op":"add","path":"/elements/hub-den","value":{"type":"SelectItem","props":{"value":"DEN","label":"DEN — Denver"}}}
-{"op":"add","path":"/state/currentHub","value":"ATL"}
-
-{"op":"add","path":"/elements/metrics","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"children":["m-otp","m-load","m-turn","m-cancel"]}}
-{"op":"add","path":"/elements/m-otp","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["m-otp-label","m-otp-prog","m-otp-note"]}}
-{"op":"add","path":"/elements/m-otp-label","value":{"type":"Heading","props":{"text":"On-Time Performance Today","level":"h4"}}}
-{"op":"add","path":"/elements/m-otp-prog","value":{"type":"Progress","props":{"value":{"$state":"/metrics/otp"},"label":{"$template":"${/metrics/otp}% on time"}}}}
-{"op":"add","path":"/elements/m-otp-note","value":{"type":"TextContent","props":{"text":"Target: 82% · Trending up vs. yesterday","size":"small"}}}
-{"op":"add","path":"/state/metrics","value":{"otp":78,"load":84,"turn":41,"cancel":6}}
-
-{"op":"add","path":"/elements/m-load","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["m-load-label","m-load-val","m-load-prog"]}}
-{"op":"add","path":"/elements/m-load-label","value":{"type":"Heading","props":{"text":"Avg Passenger Load Today","level":"h4"}}}
-{"op":"add","path":"/elements/m-load-val","value":{"type":"TextContent","props":{"text":{"$template":"${/metrics/load}% seats filled"},"size":"large-heavy"}}}
-{"op":"add","path":"/elements/m-load-prog","value":{"type":"Progress","props":{"value":{"$state":"/metrics/load"}}}}
-
-{"op":"add","path":"/elements/m-turn","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["m-turn-label","m-turn-val","m-turn-note"]}}
-{"op":"add","path":"/elements/m-turn-label","value":{"type":"Heading","props":{"text":"Avg Turnaround Time","level":"h4"}}}
-{"op":"add","path":"/elements/m-turn-val","value":{"type":"TextContent","props":{"text":{"$template":"${/metrics/turn} min"},"size":"large-heavy"}}}
-{"op":"add","path":"/elements/m-turn-note","value":{"type":"TextContent","props":{"text":"Standard target: 45 min","size":"small"}}}
-
-{"op":"add","path":"/elements/m-cancel","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["m-cancel-label","m-cancel-val","m-cancel-note"]}}
-{"op":"add","path":"/elements/m-cancel-label","value":{"type":"Heading","props":{"text":"Cancellations Today","level":"h4"}}}
-{"op":"add","path":"/elements/m-cancel-val","value":{"type":"TextContent","props":{"text":{"$template":"${/metrics/cancel} flights"},"size":"large-heavy"}}}
-{"op":"add","path":"/elements/m-cancel-note","value":{"type":"Badge","props":{"text":"3 weather · 2 crew · 1 mechanical","variant":"destructive"}}}
-
-{"op":"add","path":"/elements/tabs","value":{"type":"Tabs","props":{"items":["tab-flights","tab-ops","tab-crew","tab-connections"]},"children":["tab-flights","tab-ops","tab-crew","tab-connections"]}}
-
-{"op":"add","path":"/elements/tab-flights","value":{"type":"TabItem","props":{"value":"flights","trigger":"Flights","content":["flights-section","delayed-section"]}}}
-{"op":"add","path":"/elements/flights-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["flights-head","flights-list"]}}
-{"op":"add","path":"/elements/flights-head","value":{"type":"Heading","props":{"text":"Departures & Arrivals","level":"h3"}}}
-{"op":"add","path":"/elements/flights-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"repeat":{"statePath":"/flights","key":"id"},"children":["flight-row"]}}
-{"op":"add","path":"/elements/flight-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center","gap":"m"},"children":["flight-num","flight-route","flight-gate","flight-status"]}}
-{"op":"add","path":"/elements/flight-num","value":{"type":"TextContent","props":{"text":{"$template":"**${flightNo}**"},"size":"default"}}}
-{"op":"add","path":"/elements/flight-route","value":{"type":"TextContent","props":{"text":{"$template":"${route}"},"size":"small"}}}
-{"op":"add","path":"/elements/flight-gate","value":{"type":"Tag","props":{"text":{"$template":"Gate ${gate}"},"size":"sm","variant":"info"}}}
-{"op":"add","path":"/elements/flight-status","value":{"type":"Tag","props":{"text":{"$item":"status"},"size":"sm","variant":{"$item":"statusVariant"}}}}
-{"op":"add","path":"/state/flights","value":[]}
-{"op":"add","path":"/state/flights/0","value":{"id":"1","flightNo":"DL1420","route":"ATL → LGA","gate":"B12","status":"On Time","statusVariant":"success"}}
-{"op":"add","path":"/state/flights/1","value":{"id":"2","flightNo":"DL885","route":"ATL → LAX","gate":"A7","status":"Delayed","statusVariant":"warning"}}
-{"op":"add","path":"/state/flights/2","value":{"id":"3","flightNo":"DL2201","route":"MCO → ATL","gate":"C22","status":"Boarding","statusVariant":"info"}}
-{"op":"add","path":"/state/flights/3","value":{"id":"4","flightNo":"DL640","route":"ATL → SEA","gate":"E15","status":"Cancelled","statusVariant":"danger"}}
-{"op":"add","path":"/state/flights/4","value":{"id":"5","flightNo":"DL119","route":"ATL → BOS","gate":"B34","status":"On Time","statusVariant":"success"}}
-{"op":"add","path":"/state/flights/5","value":{"id":"6","flightNo":"DL777","route":"DFW → ATL","gate":"D9","status":"Delayed","statusVariant":"warning"}}
-
-{"op":"add","path":"/elements/delayed-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["delayed-head","delayed-list"]}}
-{"op":"add","path":"/elements/delayed-head","value":{"type":"Heading","props":{"text":"Delayed Flights","level":"h3"}}}
-{"op":"add","path":"/elements/delayed-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"repeat":{"statePath":"/delayed","key":"id"},"children":["delayed-row"]}}
-{"op":"add","path":"/elements/delayed-row","value":{"type":"Alert","props":{"title":{"$template":"${flightNo} · ${route} — ${delay} late"},"description":{"$template":"Gate ${gate} · Reason: ${reason} · New ETD ${newEtd}"},"variant":"warning"}}}
-{"op":"add","path":"/state/delayed","value":[]}
-{"op":"add","path":"/state/delayed/0","value":{"id":"1","flightNo":"DL885","route":"ATL → LAX","gate":"A7","delay":"55 min","reason":"Late inbound aircraft","newEtd":"14:35"}}
-{"op":"add","path":"/state/delayed/1","value":{"id":"2","flightNo":"DL777","route":"DFW → ATL","gate":"D9","delay":"40 min","reason":"Weather at origin","newEtd":"15:10"}}
-{"op":"add","path":"/state/delayed/2","value":{"id":"3","flightNo":"DL1533","route":"ATL → MIA","gate":"T4","delay":"25 min","reason":"Crew rest","newEtd":"13:50"}}
-
-{"op":"add","path":"/elements/tab-ops","value":{"type":"TabItem","props":{"value":"ops","trigger":"Ops & Weather","content":["gate-section","weather-section"]}}}
-{"op":"add","path":"/elements/gate-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["gate-head","gate-list"]}}
-{"op":"add","path":"/elements/gate-head","value":{"type":"Heading","props":{"text":"Recent Gate Changes","level":"h3"}}}
-{"op":"add","path":"/elements/gate-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"repeat":{"statePath":"/gateChanges","key":"id"},"children":["gate-row"]}}
-{"op":"add","path":"/elements/gate-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["gate-info","gate-time"]}}
-{"op":"add","path":"/elements/gate-info","value":{"type":"TextContent","props":{"text":{"$template":"**${flightNo}** moved ${from} → ${to}"},"size":"default"}}}
-{"op":"add","path":"/elements/gate-time","value":{"type":"Badge","props":{"text":{"$template":"${time}"},"variant":"outline"}}}
-{"op":"add","path":"/state/gateChanges","value":[]}
-{"op":"add","path":"/state/gateChanges/0","value":{"id":"1","flightNo":"DL2201","from":"C18","to":"C22","time":"12:04"}}
-{"op":"add","path":"/state/gateChanges/1","value":{"id":"2","flightNo":"DL885","from":"A3","to":"A7","time":"11:47"}}
-{"op":"add","path":"/state/gateChanges/2","value":{"id":"3","flightNo":"DL119","from":"B30","to":"B34","time":"11:20"}}
-
-{"op":"add","path":"/elements/weather-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["weather-head","weather-list"]}}
-{"op":"add","path":"/elements/weather-head","value":{"type":"Heading","props":{"text":"Weather Advisories at Hub","level":"h3"}}}
-{"op":"add","path":"/elements/weather-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"repeat":{"statePath":"/weather","key":"id"},"children":["weather-row"]}}
-{"op":"add","path":"/elements/weather-row","value":{"type":"Callout","props":{"title":{"$item":"title"},"description":{"$item":"description"},"variant":{"$item":"variant"}}}}
-{"op":"add","path":"/state/weather","value":[]}
-{"op":"add","path":"/state/weather/0","value":{"id":"1","title":"Thunderstorms 15:00–18:00","description":"Ground stop possible on north runways. Expect arrival holds.","variant":"warning"}}
-{"op":"add","path":"/state/weather/1","value":{"id":"2","title":"Low visibility this morning","description":"CAT II approaches in effect until 13:00. Cleared as fog lifts.","variant":"info"}}
-{"op":"add","path":"/state/weather/2","value":{"id":"3","title":"Gusty crosswinds","description":"Sustained 22kt gusting 35kt on runway 27R.","variant":"warning"}}
-
-{"op":"add","path":"/elements/tab-crew","value":{"type":"TabItem","props":{"value":"crew","trigger":"Crew","content":["crew-section"]}}}
-{"op":"add","path":"/elements/crew-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["crew-head","crew-list"]}}
-{"op":"add","path":"/elements/crew-head","value":{"type":"Heading","props":{"text":"Crews Available for Reassignment","level":"h3"}}}
-{"op":"add","path":"/elements/crew-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"repeat":{"statePath":"/crews","key":"id"},"children":["crew-row"]}}
-{"op":"add","path":"/elements/crew-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center","gap":"m"},"children":["crew-info","crew-qual","crew-assign"]}}
-{"op":"add","path":"/elements/crew-info","value":{"type":"TextContent","props":{"text":{"$template":"**${name}** · ${role} · avail ${availUntil}"},"size":"default"}}}
-{"op":"add","path":"/elements/crew-qual","value":{"type":"Tag","props":{"text":{"$item":"qual"},"size":"sm","variant":"success"}}}
-{"op":"add","path":"/elements/crew-assign","value":{"type":"Button","props":{"label":"Assign","variant":"secondary","size":"small"}}}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","kpis","weather","delayed","flights","gatechanges","crews","connections","rebook"]}}
+{"op":"add","path":"/elements/header","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center"},"children":["headerTitle","hubSelect"]}}
+{"op":"add","path":"/elements/headerTitle","value":{"type":"CardHeader","props":{"title":"Hub Operations Desk","subtitle":{"$template":"Active hub: ${/hub} — Live status"}}}}
+{"op":"add","path":"/state/hub","value":"ATL — Atlanta"}
+{"op":"add","path":"/elements/hubSelect","value":{"type":"Select","props":{"name":"hub","placeholder":"Select hub","value":{"$bindState":"/hub"},"items":["hubATL","hubDFW","hubORD","hubDEN"]}}}
+{"op":"add","path":"/elements/hubATL","value":{"type":"SelectItem","props":{"value":"ATL — Atlanta","label":"ATL — Atlanta"}}}
+{"op":"add","path":"/elements/hubDFW","value":{"type":"SelectItem","props":{"value":"DFW — Dallas","label":"DFW — Dallas"}}}
+{"op":"add","path":"/elements/hubORD","value":{"type":"SelectItem","props":{"value":"ORD — Chicago","label":"ORD — Chicago"}}}
+{"op":"add","path":"/elements/hubDEN","value":{"type":"SelectItem","props":{"value":"DEN — Denver","label":"DEN — Denver"}}}
+{"op":"add","path":"/elements/kpis","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"children":["kpiOTP","kpiLoad","kpiTurn","kpiCancel"]}}
+{"op":"add","path":"/elements/kpiOTP","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["kpiOTPlabel","kpiOTPval","kpiOTPbar"]}}
+{"op":"add","path":"/elements/kpiOTPlabel","value":{"type":"TextContent","props":{"text":"On-Time Performance (Today)","size":"small-heavy"}}}
+{"op":"add","path":"/elements/kpiOTPval","value":{"type":"Heading","props":{"text":"82.4%","level":"h2"}}}
+{"op":"add","path":"/elements/kpiOTPbar","value":{"type":"Progress","props":{"value":82,"label":"Target 85%"}}}
+{"op":"add","path":"/elements/kpiLoad","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["kpiLoadlabel","kpiLoadval","kpiLoadbar"]}}
+{"op":"add","path":"/elements/kpiLoadlabel","value":{"type":"TextContent","props":{"text":"Avg Passenger Load (Today)","size":"small-heavy"}}}
+{"op":"add","path":"/elements/kpiLoadval","value":{"type":"Heading","props":{"text":"88.1%","level":"h2"}}}
+{"op":"add","path":"/elements/kpiLoadbar","value":{"type":"Progress","props":{"value":88,"label":"Load factor"}}}
+{"op":"add","path":"/elements/kpiTurn","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["kpiTurnlabel","kpiTurnval","kpiTurnsub"]}}
+{"op":"add","path":"/elements/kpiTurnlabel","value":{"type":"TextContent","props":{"text":"Avg Turnaround Time","size":"small-heavy"}}}
+{"op":"add","path":"/elements/kpiTurnval","value":{"type":"Heading","props":{"text":"47 min","level":"h2"}}}
+{"op":"add","path":"/elements/kpiTurnsub","value":{"type":"Badge","props":{"text":"+4 min vs target","variant":"destructive"}}}
+{"op":"add","path":"/elements/kpiCancel","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["kpiCancellabel","kpiCancelval","kpiCancelsub"]}}
+{"op":"add","path":"/elements/kpiCancellabel","value":{"type":"TextContent","props":{"text":"Cancellations (Today)","size":"small-heavy"}}}
+{"op":"add","path":"/elements/kpiCancelval","value":{"type":"Heading","props":{"text":"6","level":"h2"}}}
+{"op":"add","path":"/elements/kpiCancelsub","value":{"type":"Badge","props":{"text":"3 weather / 2 crew / 1 mech","variant":"outline"}}}
+{"op":"add","path":"/elements/weather","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["weatherHead","weatherList"]}}
+{"op":"add","path":"/elements/weatherHead","value":{"type":"Heading","props":{"text":"Weather Advisories at Hub","level":"h3"}}}
+{"op":"add","path":"/elements/weatherList","value":{"type":"Card","props":{"direction":"column","gap":"s"},"repeat":{"statePath":"/advisories","key":"id"},"children":["weatherItem"]}}
+{"op":"add","path":"/elements/weatherItem","value":{"type":"Alert","props":{"title":{"$item":"title"},"description":{"$item":"detail"},"variant":{"$item":"variant"}}}}
+{"op":"add","path":"/state/advisories","value":[]}
+{"op":"add","path":"/state/advisories/0","value":{"id":"w1","title":"Thunderstorms 14:00–17:00","detail":"Ground stop possible on east runways. Expect arrival delays.","variant":"warning"}}
+{"op":"add","path":"/state/advisories/1","value":{"id":"w2","title":"Low ceiling / reduced visibility","detail":"CAT II approaches in effect. Spacing increased.","variant":"info"}}
+{"op":"add","path":"/state/advisories/2","value":{"id":"w3","title":"High crosswinds gusting 32kt","detail":"Runway 27R closed for departures until further notice.","variant":"destructive"}}
+{"op":"add","path":"/elements/delayed","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["delayedHead","delayedList"]}}
+{"op":"add","path":"/elements/delayedHead","value":{"type":"Heading","props":{"text":"Delayed Flights","level":"h3"}}}
+{"op":"add","path":"/elements/delayedList","value":{"type":"Card","props":{"direction":"column","gap":"s"},"repeat":{"statePath":"/delayedFlights","key":"id"},"children":["delayedItem"]}}
+{"op":"add","path":"/elements/delayedItem","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["delayedInfo","delayedTag"]}}
+{"op":"add","path":"/elements/delayedInfo","value":{"type":"TextContent","props":{"text":{"$template":"**${flight}** ${route} · Gate ${gate} — delayed ${delay}"}}}}
+{"op":"add","path":"/elements/delayedTag","value":{"type":"Tag","props":{"text":{"$item":"reason"},"variant":"danger","size":"sm"}}}
+{"op":"add","path":"/state/delayedFlights","value":[]}
+{"op":"add","path":"/state/delayedFlights/0","value":{"id":"d1","flight":"DL482","route":"ATL→JFK","gate":"B14","delay":"1h 25m","reason":"Weather"}}
+{"op":"add","path":"/state/delayedFlights/1","value":{"id":"d2","flight":"DL1197","route":"ATL→MIA","gate":"A7","delay":"45m","reason":"Late inbound"}}
+{"op":"add","path":"/state/delayedFlights/2","value":{"id":"d3","flight":"DL733","route":"ATL→ORD","gate":"C22","delay":"2h 10m","reason":"Crew"}}
+{"op":"add","path":"/elements/flights","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["flightsHead","flightsTable"]}}
+{"op":"add","path":"/elements/flightsHead","value":{"type":"Heading","props":{"text":"All Flights","level":"h3"}}}
+{"op":"add","path":"/elements/flightsTable","value":{"type":"Table","props":{"columns":["colNum","colRoute","colGate","colStatus"]}}}
+{"op":"add","path":"/elements/colNum","value":{"type":"Col","props":{"label":"Flight","data":["DL482","DL1197","DL733","DL204","DL556","DL889","DL310"]}}}
+{"op":"add","path":"/elements/colRoute","value":{"type":"Col","props":{"label":"Route","data":["ATL→JFK","ATL→MIA","ATL→ORD","ATL→LAX","ATL→BOS","ATL→SEA","ATL→DEN"]}}}
+{"op":"add","path":"/elements/colGate","value":{"type":"Col","props":{"label":"Gate","data":["B14","A7","C22","D5","B21","A12","C9"]}}}
+{"op":"add","path":"/elements/colStatus","value":{"type":"Col","props":{"label":"Status","data":["Delayed","Delayed","Delayed","On Time","Boarding","On Time","Cancelled"]}}}
+{"op":"add","path":"/elements/gatechanges","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["gcHead","gcList"]}}
+{"op":"add","path":"/elements/gcHead","value":{"type":"Heading","props":{"text":"Recent Gate Changes","level":"h3"}}}
+{"op":"add","path":"/elements/gcList","value":{"type":"ListBlock","props":{"items":["gc0","gc1","gc2"]}}}
+{"op":"add","path":"/elements/gc0","value":{"type":"ListItem","props":{"title":"DL204 → LAX","subtitle":"Gate D5 → D11 · 09:42"}}}
+{"op":"add","path":"/elements/gc1","value":{"type":"ListItem","props":{"title":"DL556 → BOS","subtitle":"Gate B21 → B18 · 09:31"}}}
+{"op":"add","path":"/elements/gc2","value":{"type":"ListItem","props":{"title":"DL889 → SEA","subtitle":"Gate A12 → A4 · 09:15"}}}
+{"op":"add","path":"/elements/crews","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["crewsHead","crewsList"]}}
+{"op":"add","path":"/elements/crewsHead","value":{"type":"Heading","props":{"text":"Crews Available for Reassignment","level":"h3"}}}
+{"op":"add","path":"/elements/crewsList","value":{"type":"Card","props":{"direction":"column","gap":"s"},"repeat":{"statePath":"/crews","key":"id"},"children":["crewItem"]}}
+{"op":"add","path":"/elements/crewItem","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["crewInfo","crewTag"]}}
+{"op":"add","path":"/elements/crewInfo","value":{"type":"TextContent","props":{"text":{"$template":"**${name}** · ${role} · Duty left ${dutyLeft}"}}}}
+{"op":"add","path":"/elements/crewTag","value":{"type":"Tag","props":{"text":{"$item":"base"},"variant":"success","size":"sm"}}}
 {"op":"add","path":"/state/crews","value":[]}
-{"op":"add","path":"/state/crews/0","value":{"id":"1","name":"Capt. R. Alvarez","role":"Captain","availUntil":"16:00","qual":"B737"}}
-{"op":"add","path":"/state/crews/1","value":{"id":"2","name":"FO J. Nguyen","role":"First Officer","availUntil":"18:30","qual":"A320"}}
-{"op":"add","path":"/state/crews/2","value":{"id":"3","name":"FA Team Delta-4","role":"Cabin Crew","availUntil":"20:00","qual":"Widebody"}}
-
-{"op":"add","path":"/elements/tab-connections","value":{"type":"TabItem","props":{"value":"connections","trigger":"Connections","content":["conn-section","rebook-section"]}}}
-{"op":"add","path":"/elements/conn-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["conn-head","conn-list"]}}
-{"op":"add","path":"/elements/conn-head","value":{"type":"Heading","props":{"text":"Connections at Risk","level":"h3"}}}
-{"op":"add","path":"/elements/conn-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"repeat":{"statePath":"/connections","key":"id"},"children":["conn-row"]}}
-{"op":"add","path":"/elements/conn-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center","gap":"m"},"children":["conn-info","conn-mct","conn-pax","conn-rebook"]}}
-{"op":"add","path":"/elements/conn-info","value":{"type":"TextContent","props":{"text":{"$template":"**${pax}** · ${inbound} → ${outbound}"},"size":"default"}}}
-{"op":"add","path":"/elements/conn-mct","value":{"type":"Tag","props":{"text":{"$template":"${connMin} min"},"size":"sm","variant":"danger"}}}
-{"op":"add","path":"/elements/conn-pax","value":{"type":"Badge","props":{"text":{"$template":"${count} pax"},"variant":"secondary"}}}
-{"op":"add","path":"/elements/conn-rebook","value":{"type":"Button","props":{"label":"Rebook","variant":"primary","size":"small"},"on":{"press":{"action":"pushState","params":{"statePath":"/rebooked","value":{"id":"$id","pax":{"$item":"pax"},"note":"Rebooked to next available flight"}}}}}}
+{"op":"add","path":"/state/crews/0","value":{"id":"c1","name":"Crew 7 (Capt. Reyes)","role":"B737 Flight Crew","dutyLeft":"6h 20m","base":"ATL"}}
+{"op":"add","path":"/state/crews/1","value":{"id":"c2","name":"Crew 12 (Capt. Nguyen)","role":"A320 Flight Crew","dutyLeft":"4h 05m","base":"ATL"}}
+{"op":"add","path":"/state/crews/2","value":{"id":"c3","name":"Cabin Team D","role":"4x Flight Attendants","dutyLeft":"7h 50m","base":"ATL"}}
+{"op":"add","path":"/elements/connections","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["connHead","connList"]}}
+{"op":"add","path":"/elements/connHead","value":{"type":"Heading","props":{"text":"Connections at Risk","level":"h3"}}}
+{"op":"add","path":"/elements/connList","value":{"type":"Card","props":{"direction":"column","gap":"s"},"repeat":{"statePath":"/connections","key":"id"},"children":["connItem"]}}
+{"op":"add","path":"/elements/connItem","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["connInfo","connTag"]}}
+{"op":"add","path":"/elements/connInfo","value":{"type":"TextContent","props":{"text":{"$template":"**${pax}** pax · ${inbound} → ${outbound} · Layover ${layover}"}}}}
+{"op":"add","path":"/elements/connTag","value":{"type":"Tag","props":{"text":{"$item":"risk"},"variant":"warning","size":"sm"}}}
 {"op":"add","path":"/state/connections","value":[]}
-{"op":"add","path":"/state/connections/0","value":{"id":"1","pax":"J. Smith +2","inbound":"DL777 (arr B12)","outbound":"DL119 (dep B34)","connMin":18,"count":3}}
-{"op":"add","path":"/state/connections/1","value":{"id":"2","pax":"M. Okafor","inbound":"DL885 (arr A7)","outbound":"DL1420 (dep B12)","connMin":22,"count":1}}
-{"op":"add","path":"/state/connections/2","value":{"id":"3","pax":"Grp Torres","inbound":"DL2201 (arr C22)","outbound":"DL640 (dep E15)","connMin":12,"count":5}}
-
-{"op":"add","path":"/elements/rebook-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["rebook-head","rebook-list","rebook-empty"]}}
-{"op":"add","path":"/elements/rebook-head","value":{"type":"Heading","props":{"text":"Rebooked Passengers","level":"h3"}}}
-{"op":"add","path":"/elements/rebook-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"repeat":{"statePath":"/rebooked","key":"id"},"children":["rebook-row"]}}
-{"op":"add","path":"/elements/rebook-row","value":{"type":"Alert","props":{"title":{"$template":"${pax}"},"description":{"$template":"${note}"},"variant":"success"}}}
-{"op":"add","path":"/elements/rebook-empty","value":{"type":"TextContent","props":{"text":"No passengers rebooked yet. Use Rebook buttons above.","size":"small"},"visible":{"$state":"/rebooked/0","not":true}}}
-{"op":"add","path":"/state/rebooked","value":[]}
+{"op":"add","path":"/state/connections/0","value":{"id":"x1","pax":"12","inbound":"DL482","outbound":"DL220 (LHR)","layover":"18m","risk":"High risk"}}
+{"op":"add","path":"/state/connections/1","value":{"id":"x2","pax":"4","inbound":"DL733","outbound":"DL901 (CDG)","layover":"25m","risk":"At risk"}}
+{"op":"add","path":"/state/connections/2","value":{"id":"x3","pax":"8","inbound":"DL1197","outbound":"DL155 (SFO)","layover":"12m","risk":"High risk"}}
+{"op":"add","path":"/elements/rebook","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["rebookHead","rebookActions"]}}
+{"op":"add","path":"/elements/rebookHead","value":{"type":"Heading","props":{"text":"Rebook Affected Passengers","level":"h3"}}}
+{"op":"add","path":"/elements/rebookActions","value":{"type":"Buttons","props":{"buttons":["rebookAuto","rebookManual"],"direction":"row"}}}
+{"op":"add","path":"/elements/rebookAuto","value":{"type":"DialogBlock","props":{"triggerLabel":"Auto-Rebook At-Risk Pax","title":"Auto-Rebook Passengers","description":"Confirm automatic rebooking on next available connections.","content":["rebookForm"],"triggerVariant":"default"}}}
+{"op":"add","path":"/elements/rebookForm","value":{"type":"Form","props":{"name":"rebook","buttons":"rebookFormBtns","fields":["rebookFlight","rebookPax","rebookOption"]}}}
+{"op":"add","path":"/elements/rebookFlight","value":{"type":"FormControl","props":{"label":"Affected flight","input":"rebookFlightSel"}}}
+{"op":"add","path":"/elements/rebookFlightSel","value":{"type":"Select","props":{"name":"flight","placeholder":"Select flight","items":["rbf1","rbf2","rbf3"]}}}
+{"op":"add","path":"/elements/rbf1","value":{"type":"SelectItem","props":{"value":"DL482","label":"DL482 — ATL→JFK"}}}
+{"op":"add","path":"/elements/rbf2","value":{"type":"SelectItem","props":{"value":"DL733","label":"DL733 — ATL→ORD"}}}
+{"op":"add","path":"/elements/rbf3","value":{"type":"SelectItem","props":{"value":"DL1197","label":"DL1197 — ATL→MIA"}}}
+{"op":"add","path":"/elements/rebookPax","value":{"type":"FormControl","props":{"label":"Passengers to rebook","input":"rebookPaxInput"}}}
+{"op":"add","path":"/elements/rebookPaxInput","value":{"type":"Input","props":{"name":"pax","type":"number","placeholder":"12"}}}
+{"op":"add","path":"/elements/rebookOption","value":{"type":"FormControl","props":{"label":"Rebooking option","input":"rebookOptRadio"}}}
+{"op":"add","path":"/elements/rebookOptRadio","value":{"type":"RadioGroup","props":{"name":"option","items":["rbo1","rbo2","rbo3"],"defaultValue":"next"}}}
+{"op":"add","path":"/elements/rbo1","value":{"type":"RadioItem","props":{"label":"Next available flight","description":"Same route, earliest departure","value":"next"}}}
+{"op":"add","path":"/elements/rbo2","value":{"type":"RadioItem","props":{"label":"Partner airline","description":"Rebook via interline agreement","value":"partner"}}}
+{"op":"add","path":"/elements/rbo3","value":{"type":"RadioItem","props":{"label":"Alternate hub routing","description":"Reroute through another hub","value":"alt"}}}
+{"op":"add","path":"/elements/rebookFormBtns","value":{"type":"Buttons","props":{"buttons":["rebookConfirm","rebookCancel"]}}}
+{"op":"add","path":"/elements/rebookConfirm","value":{"type":"Button","props":{"label":"Confirm Rebooking","variant":"primary"}}}
+{"op":"add","path":"/elements/rebookCancel","value":{"type":"Button","props":{"label":"Cancel","variant":"tertiary"}}}
+{"op":"add","path":"/elements/rebookManual","value":{"type":"Button","props":{"label":"Manual Rebooking Desk","variant":"secondary"}}}

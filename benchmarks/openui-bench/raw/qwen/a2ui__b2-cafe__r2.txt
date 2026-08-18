@@ -1,291 +1,374 @@
 
 
-Here's a complete cafe menu screen covering all five requirements:
-
-1. **Drinks with prices** — "Full Menu" tab → Drinks table
-2. **Food with prices** — "Full Menu" tab → Food table
-3. **Today's special called out** — dedicated callout banner at the top
-4. **Vegetarian-items-only view** — the "🌱 Vegetarian" tab shows only vegetarian drinks and food
-5. **Opening hours** — table at the bottom of the screen
+Here's a complete café menu screen — drinks and food tables with prices, a callout for today's special, a "Vegetarian only" tab that filters both sections, and opening hours at the bottom.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "cafe-menu-screen",
-      "catalogId": "thesys.dev:c1-openui",
-      "theme": { "primaryColor": "#B5651D" }
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "cafe-menu-screen",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "direction": "column",
-          "gap": "m",
-          "children": ["header", "specialCallout", "menuTabs", "hoursHeading", "hoursTable", "footerNote"]
-        },
-        {
-          "id": "header",
-          "component": "CardHeader",
-          "title": "☕ The Roasted Bean",
-          "subtitle": "Coffee · Kitchen · Bakery"
-        },
-        {
-          "id": "specialCallout",
-          "component": "Callout",
-          "variant": "info",
-          "title": "⭐ Today's Special",
-          "description": "Pumpkin Spice Latte + Blueberry Muffin combo for just $6.50 — save $1.75! Dine in or take away, until 3 PM."
-        },
-        {
-          "id": "menuTabs",
-          "component": "Tabs",
-          "items": ["tabAll", "tabVeg"]
-        },
-        {
-          "id": "tabAll",
-          "component": "TabItem",
-          "value": "all",
-          "trigger": "☕ Full Menu",
-          "content": ["drinksHeading", "drinksTable", "foodHeading", "foodTable", "menuLegend"]
-        },
-        {
-          "id": "drinksHeading",
-          "component": "Heading",
-          "text": "Drinks",
-          "level": "h2"
-        },
-        {
-          "id": "drinksTable",
-          "component": "Table",
-          "columns": ["drinkNameCol", "drinkDescCol", "drinkPriceCol"]
-        },
-        {
-          "id": "drinkNameCol",
-          "component": "Col",
-          "label": "Drink",
-          "type": "string",
-          "data": [
-            "Espresso 🌱",
-            "Cappuccino 🌱",
-            "Caffè Latte 🌱",
-            "Flat White 🌱",
-            "Mocha 🌱",
-            "Hot Chocolate 🌱",
-            "Matcha Latte 🌱",
-            "Chai Latte 🌱",
-            "Fresh Orange Juice 🌱",
-            "Sipping Bone Broth"
-          ]
-        },
-        {
-          "id": "drinkDescCol",
-          "component": "Col",
-          "label": "Notes",
-          "type": "string",
-          "data": [
-            "Double shot, rich crema",
-            "Classic foam art",
-            "Silky steamed milk",
-            "Strong & velvety",
-            "Belgian chocolate + espresso",
-            "Optional whipped cream",
-            "Stone-ground green tea",
-            "Spiced black tea",
-            "Squeezed daily",
-            "Rosemary & black pepper"
-          ]
-        },
-        {
-          "id": "drinkPriceCol",
-          "component": "Col",
-          "label": "Price",
-          "type": "string",
-          "data": ["$3.00", "$4.25", "$4.50", "$4.25", "$4.75", "$3.95", "$5.00", "$4.50", "$4.00", "$4.50"]
-        },
-        {
-          "id": "foodHeading",
-          "component": "Heading",
-          "text": "Food",
-          "level": "h2"
-        },
-        {
-          "id": "foodTable",
-          "component": "Table",
-          "columns": ["foodNameCol", "foodDescCol", "foodPriceCol"]
-        },
-        {
-          "id": "foodNameCol",
-          "component": "Col",
-          "label": "Item",
-          "type": "string",
-          "data": [
-            "Butter Croissant 🌱",
-            "Blueberry Muffin 🌱",
-            "Avocado Toast 🌱",
-            "Margherita Panini 🌱",
-            "Caprese Salad 🌱",
-            "Chocolate Brownie 🌱",
-            "Ham & Gruyère Toastie",
-            "Bacon & Egg Roll",
-            "Grilled Chicken Wrap"
-          ]
-        },
-        {
-          "id": "foodDescCol",
-          "component": "Col",
-          "label": "Notes",
-          "type": "string",
-          "data": [
-            "Baked fresh daily",
-            "Streusel topping",
-            "Sourdough, chili flakes, lime",
-            "Mozzarella, tomato, basil",
-            "Buffalo mozzarella, balsamic glaze",
-            "Warm, fudgy center",
-            "Sourdough, dijon butter",
-            "Brioche, tomato relish",
-            "Herb aioli, rocket"
-          ]
-        },
-        {
-          "id": "foodPriceCol",
-          "component": "Col",
-          "label": "Price",
-          "type": "string",
-          "data": ["$3.50", "$3.75", "$8.50", "$9.00", "$8.75", "$4.25", "$7.50", "$8.00", "$9.50"]
-        },
-        {
-          "id": "menuLegend",
-          "component": "TagBlock",
-          "tags": ["🌱 = Vegetarian", "Prices include tax"]
-        },
-        {
-          "id": "tabVeg",
-          "component": "TabItem",
-          "value": "veg",
-          "trigger": "🌱 Vegetarian",
-          "content": ["vegNote", "vegDrinksHeading", "vegDrinksTable", "vegFoodHeading", "vegFoodTable"]
-        },
-        {
-          "id": "vegNote",
-          "component": "TextCallout",
-          "variant": "success",
-          "title": "Vegetarian items only",
-          "description": "This view hides every non-vegetarian item from the full menu."
-        },
-        {
-          "id": "vegDrinksHeading",
-          "component": "Heading",
-          "text": "Vegetarian Drinks",
-          "level": "h3"
-        },
-        {
-          "id": "vegDrinksTable",
-          "component": "Table",
-          "columns": ["vegDrinkNameCol", "vegDrinkPriceCol"]
-        },
-        {
-          "id": "vegDrinkNameCol",
-          "component": "Col",
-          "label": "Drink",
-          "type": "string",
-          "data": [
-            "Espresso 🌱",
-            "Cappuccino 🌱",
-            "Caffè Latte 🌱",
-            "Flat White 🌱",
-            "Mocha 🌱",
-            "Hot Chocolate 🌱",
-            "Matcha Latte 🌱",
-            "Chai Latte 🌱",
-            "Fresh Orange Juice 🌱"
-          ]
-        },
-        {
-          "id": "vegDrinkPriceCol",
-          "component": "Col",
-          "label": "Price",
-          "type": "string",
-          "data": ["$3.00", "$4.25", "$4.50", "$4.25", "$4.75", "$3.95", "$5.00", "$4.50", "$4.00"]
-        },
-        {
-          "id": "vegFoodHeading",
-          "component": "Heading",
-          "text": "Vegetarian Food",
-          "level": "h3"
-        },
-        {
-          "id": "vegFoodTable",
-          "component": "Table",
-          "columns": ["vegFoodNameCol", "vegFoodPriceCol"]
-        },
-        {
-          "id": "vegFoodNameCol",
-          "component": "Col",
-          "label": "Item",
-          "type": "string",
-          "data": [
-            "Butter Croissant 🌱",
-            "Blueberry Muffin 🌱",
-            "Avocado Toast 🌱",
-            "Margherita Panini 🌱",
-            "Caprese Salad 🌱",
-            "Chocolate Brownie 🌱"
-          ]
-        },
-        {
-          "id": "vegFoodPriceCol",
-          "component": "Col",
-          "label": "Price",
-          "type": "string",
-          "data": ["$3.50", "$3.75", "$8.50", "$9.00", "$8.75", "$4.25"]
-        },
-        {
-          "id": "hoursHeading",
-          "component": "Heading",
-          "text": "🕒 Opening Hours",
-          "level": "h2"
-        },
-        {
-          "id": "hoursTable",
-          "component": "Table",
-          "columns": ["dayCol", "hoursCol"]
-        },
-        {
-          "id": "dayCol",
-          "component": "Col",
-          "label": "Day",
-          "type": "string",
-          "data": ["Monday – Friday", "Saturday", "Sunday"]
-        },
-        {
-          "id": "hoursCol",
-          "component": "Col",
-          "label": "Hours",
-          "type": "string",
-          "data": ["6:30 AM – 6:00 PM", "7:00 AM – 5:00 PM", "8:00 AM – 3:00 PM"]
-        },
-        {
-          "id": "footerNote",
-          "component": "TextContent",
-          "size": "small",
-          "text": "🥛 Oat, soy & almond milk available (+$0.50) · Free Wi-Fi · Kitchen closes 30 minutes before closing time"
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-Notes on the design:
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "special",
+          "menuTabs",
+          "divider",
+          "hoursHeading",
+          "hoursTable",
+          "hoursNote",
+          "legend"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Sunrise Café",
+        "subtitle": "Fresh coffee · Warm food · Good vibes"
+      },
+      {
+        "id": "special",
+        "component": "Callout",
+        "variant": "success",
+        "title": "Today's Special — $11.90",
+        "description": "Caprese Panini with any regular drink (save up to $2.20). Vegetarian · available until 2 PM or while supplies last."
+      },
+      {
+        "id": "menuTabs",
+        "component": "Tabs",
+        "items": [
+          "fullTab",
+          "vegTab"
+        ]
+      },
+      {
+        "id": "fullTab",
+        "component": "TabItem",
+        "value": "full",
+        "trigger": "Full menu",
+        "content": [
+          "drinksHeading",
+          "drinksTable",
+          "foodHeading",
+          "foodTable"
+        ]
+      },
+      {
+        "id": "vegTab",
+        "component": "TabItem",
+        "value": "veg",
+        "trigger": "Vegetarian only",
+        "content": [
+          "vegNote",
+          "vegDrinksHeading",
+          "vegDrinksTable",
+          "vegFoodHeading",
+          "vegFoodTable"
+        ]
+      },
+      {
+        "id": "drinksHeading",
+        "component": "Heading",
+        "text": "Drinks",
+        "level": "h3"
+      },
+      {
+        "id": "drinksTable",
+        "component": "Table",
+        "columns": [
+          "drinkItemCol",
+          "drinkPriceCol",
+          "drinkDietCol"
+        ]
+      },
+      {
+        "id": "drinkItemCol",
+        "component": "Col",
+        "label": "Drink",
+        "data": [
+          "Espresso",
+          "Cappuccino",
+          "Flat White",
+          "Café Latte",
+          "Mocha",
+          "Chai Latte",
+          "Hot Chocolate",
+          "Iced Americano",
+          "Matcha Latte",
+          "Fresh Orange Juice"
+        ]
+      },
+      {
+        "id": "drinkPriceCol",
+        "component": "Col",
+        "label": "Price",
+        "data": [
+          "$3.00",
+          "$4.20",
+          "$4.50",
+          "$4.50",
+          "$5.00",
+          "$4.60",
+          "$4.00",
+          "$4.00",
+          "$5.20",
+          "$4.80"
+        ]
+      },
+      {
+        "id": "drinkDietCol",
+        "component": "Col",
+        "label": "Diet",
+        "data": [
+          "V",
+          "V",
+          "V",
+          "V",
+          "V",
+          "V",
+          "V",
+          "V",
+          "V",
+          "V"
+        ]
+      },
+      {
+        "id": "foodHeading",
+        "component": "Heading",
+        "text": "Food",
+        "level": "h3"
+      },
+      {
+        "id": "foodTable",
+        "component": "Table",
+        "columns": [
+          "foodItemCol",
+          "foodPriceCol",
+          "foodDietCol"
+        ]
+      },
+      {
+        "id": "foodItemCol",
+        "component": "Col",
+        "label": "Item",
+        "data": [
+          "Butter Croissant",
+          "Almond Croissant",
+          "Blueberry Muffin",
+          "Banana Bread",
+          "Avocado Toast",
+          "Caprese Panini",
+          "Greek Yogurt Parfait",
+          "Ham & Cheese Toastie",
+          "Chicken Pesto Panini",
+          "Bacon & Egg Bagel"
+        ]
+      },
+      {
+        "id": "foodPriceCol",
+        "component": "Col",
+        "label": "Price",
+        "data": [
+          "$3.50",
+          "$4.20",
+          "$3.80",
+          "$4.00",
+          "$8.50",
+          "$8.90",
+          "$6.50",
+          "$7.80",
+          "$9.50",
+          "$8.20"
+        ]
+      },
+      {
+        "id": "foodDietCol",
+        "component": "Col",
+        "label": "Diet",
+        "data": [
+          "V",
+          "V",
+          "V",
+          "V",
+          "V",
+          "V",
+          "V",
+          "—",
+          "—",
+          "—"
+        ]
+      },
+      {
+        "id": "vegNote",
+        "component": "TextCallout",
+        "variant": "info",
+        "title": "Vegetarian view",
+        "description": "Meat items are hidden. All of our drinks are vegetarian."
+      },
+      {
+        "id": "vegDrinksHeading",
+        "component": "Heading",
+        "text": "Drinks",
+        "level": "h3"
+      },
+      {
+        "id": "vegDrinksTable",
+        "component": "Table",
+        "columns": [
+          "vegDrinkItemCol",
+          "vegDrinkPriceCol"
+        ]
+      },
+      {
+        "id": "vegDrinkItemCol",
+        "component": "Col",
+        "label": "Drink",
+        "data": [
+          "Espresso",
+          "Cappuccino",
+          "Flat White",
+          "Café Latte",
+          "Mocha",
+          "Chai Latte",
+          "Hot Chocolate",
+          "Iced Americano",
+          "Matcha Latte",
+          "Fresh Orange Juice"
+        ]
+      },
+      {
+        "id": "vegDrinkPriceCol",
+        "component": "Col",
+        "label": "Price",
+        "data": [
+          "$3.00",
+          "$4.20",
+          "$4.50",
+          "$4.50",
+          "$5.00",
+          "$4.60",
+          "$4.00",
+          "$4.00",
+          "$5.20",
+          "$4.80"
+        ]
+      },
+      {
+        "id": "vegFoodHeading",
+        "component": "Heading",
+        "text": "Food",
+        "level": "h3"
+      },
+      {
+        "id": "vegFoodTable",
+        "component": "Table",
+        "columns": [
+          "vegFoodItemCol",
+          "vegFoodPriceCol"
+        ]
+      },
+      {
+        "id": "vegFoodItemCol",
+        "component": "Col",
+        "label": "Item",
+        "data": [
+          "Butter Croissant",
+          "Almond Croissant",
+          "Blueberry Muffin",
+          "Banana Bread",
+          "Avocado Toast",
+          "Caprese Panini",
+          "Greek Yogurt Parfait"
+        ]
+      },
+      {
+        "id": "vegFoodPriceCol",
+        "component": "Col",
+        "label": "Price",
+        "data": [
+          "$3.50",
+          "$4.20",
+          "$3.80",
+          "$4.00",
+          "$8.50",
+          "$8.90",
+          "$6.50"
+        ]
+      },
+      {
+        "id": "divider",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "hoursHeading",
+        "component": "Heading",
+        "text": "Opening Hours",
+        "level": "h3"
+      },
+      {
+        "id": "hoursTable",
+        "component": "Table",
+        "columns": [
+          "dayCol",
+          "hoursCol"
+        ]
+      },
+      {
+        "id": "dayCol",
+        "component": "Col",
+        "label": "Day",
+        "data": [
+          "Monday – Friday",
+          "Saturday",
+          "Sunday",
+          "Public Holidays"
+        ]
+      },
+      {
+        "id": "hoursCol",
+        "component": "Col",
+        "label": "Hours",
+        "data": [
+          "7:00 AM – 6:00 PM",
+          "8:00 AM – 5:00 PM",
+          "8:00 AM – 3:00 PM",
+          "9:00 AM – 2:00 PM"
+        ]
+      },
+      {
+        "id": "hoursNote",
+        "component": "TextContent",
+        "text": "Kitchen closes 30 minutes before closing time.",
+        "size": "small"
+      },
+      {
+        "id": "legend",
+        "component": "TagBlock",
+        "tags": [
+          "V = Vegetarian",
+          "Prices include tax",
+          "Oat, soy & almond milk +$0.60"
+        ]
+      }
+    ]
+  }
+}
+</a2ui-json>
 
-- **Special call-out**: The `Callout` banner sits directly under the header so it's the first thing customers see. The combo pricing is consistent with the menu items ($4.50 latte + $3.75 muffin → $6.50, save $1.75).
-- **Vegetarian filter**: The tab switcher gives an instant, no-input way to see vegetarian-only items — the vegetarian tab excludes the Bone Broth, Ham Toastie, Bacon Roll, and Chicken Wrap, and shows a confirmation note. 🌱 badges in the full menu make it easy to spot vegetarian items without switching tabs.
-- **Extensible**: Prices and hours live in simple column data arrays, so updating the menu later is just a data change.
+Everything requested is covered: drinks and food each have priced tables, today's special is highlighted in a green callout, the "Vegetarian only" tab shows filtered versions of both sections, and opening hours are listed at the bottom. Want me to adjust prices, items, or the café branding?

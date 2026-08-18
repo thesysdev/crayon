@@ -4,12 +4,8 @@ Here's your morning weather brief for Bengaluru:
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "weather-brief",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": {
-      "primaryColor": "#1E88E5",
-      "agentDisplayName": "Morning Weather Brief"
-    }
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
@@ -18,31 +14,136 @@ Here's your morning weather brief for Bengaluru:
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "weather-brief",
+    "surfaceId": "main",
     "components": [
-      { "id": "root", "component": "Card", "variant": "card", "direction": "column", "gap": "m", "children": ["header", "currentCard", "sunCard", "outlookCard"] },
-      { "id": "header", "component": "CardHeader", "title": "🌤️ Morning Weather Brief — Bengaluru", "subtitle": "Today, Tuesday · Updated 7:00 AM IST" },
-
-      { "id": "currentCard", "component": "Card", "variant": "sunk", "direction": "column", "gap": "s", "children": ["currentTitle", "currentTemp", "currentDetails"] },
-      { "id": "currentTitle", "component": "TextContent", "text": "**Right Now in Bengaluru**", "size": "large-heavy" },
-      { "id": "currentTemp", "component": "TextContent", "text": "# 24°C — Partly Cloudy ⛅", "size": "large" },
-      { "id": "currentDetails", "component": "TextContent", "text": "Feels like 26°C · Humidity 68% · Wind 12 km/h W · A pleasant, mild morning with light cloud cover expected to clear by noon.", "size": "default" },
-
-      { "id": "sunCard", "component": "Card", "variant": "clear", "direction": "row", "gap": "l", "children": ["sunrise", "sunset"] },
-      { "id": "sunrise", "component": "Callout", "variant": "warning", "title": "🌅 Sunrise", "description": "6:12 AM" },
-      { "id": "sunset", "component": "Callout", "variant": "info", "title": "🌇 Sunset", "description": "6:38 PM" },
-
-      { "id": "outlookCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["outlookTitle", "outlookTable"] },
-      { "id": "outlookTitle", "component": "TextContent", "text": "**3-Day Outlook**", "size": "large-heavy" },
-      { "id": "outlookTable", "component": "Table", "columns": ["colDay", "colCond", "colHigh", "colLow", "colRain"] },
-      { "id": "colDay", "component": "Col", "label": "Day", "data": ["Wednesday", "Thursday", "Friday"] },
-      { "id": "colCond", "component": "Col", "label": "Conditions", "data": ["☀️ Sunny", "⛅ Partly Cloudy", "🌦️ Light Showers"] },
-      { "id": "colHigh", "component": "Col", "label": "High (°C)", "data": [29, 28, 26], "type": "number" },
-      { "id": "colLow", "component": "Col", "label": "Low (°C)", "data": [19, 20, 20], "type": "number" },
-      { "id": "colRain", "component": "Col", "label": "Rain Chance", "data": ["5%", "15%", "60%"] }
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "currentBadge",
+          "currentTemp",
+          "currentDetails",
+          "sep1",
+          "outlookTitle",
+          "outlookTable",
+          "sep2",
+          "sunTitle",
+          "sunTable"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Bengaluru Morning Brief",
+        "subtitle": "Wednesday, 7:00 AM IST"
+      },
+      {
+        "id": "currentBadge",
+        "component": "Badge",
+        "text": "Pleasant morning",
+        "variant": "secondary"
+      },
+      {
+        "id": "currentTemp",
+        "component": "TextContent",
+        "text": "**22°C** — Partly Cloudy",
+        "size": "large-heavy"
+      },
+      {
+        "id": "currentDetails",
+        "component": "TextContent",
+        "text": "Feels like 24°C · Humidity 68% · Wind 12 km/h NE · AQI: Moderate",
+        "size": "small"
+      },
+      {
+        "id": "sep1",
+        "component": "Separator"
+      },
+      {
+        "id": "outlookTitle",
+        "component": "TextContent",
+        "text": "**Next 3 Days**",
+        "size": "small-heavy"
+      },
+      {
+        "id": "outlookTable",
+        "component": "Table",
+        "columns": [
+          "dayCol",
+          "condCol",
+          "tempCol"
+        ]
+      },
+      {
+        "id": "dayCol",
+        "component": "Col",
+        "label": "Day",
+        "data": [
+          "Thursday",
+          "Friday",
+          "Saturday"
+        ]
+      },
+      {
+        "id": "condCol",
+        "component": "Col",
+        "label": "Conditions",
+        "data": [
+          "Mostly sunny",
+          "Scattered showers",
+          "Partly cloudy"
+        ]
+      },
+      {
+        "id": "tempCol",
+        "component": "Col",
+        "label": "High / Low",
+        "data": [
+          "29°C / 20°C",
+          "27°C / 19°C",
+          "28°C / 20°C"
+        ]
+      },
+      {
+        "id": "sep2",
+        "component": "Separator"
+      },
+      {
+        "id": "sunTitle",
+        "component": "TextContent",
+        "text": "**Sun Times**",
+        "size": "small-heavy"
+      },
+      {
+        "id": "sunTable",
+        "component": "Table",
+        "columns": [
+          "sunEventCol",
+          "sunTimeCol"
+        ]
+      },
+      {
+        "id": "sunEventCol",
+        "component": "Col",
+        "label": "Event",
+        "data": [
+          "Sunrise",
+          "Sunset"
+        ]
+      },
+      {
+        "id": "sunTimeCol",
+        "component": "Col",
+        "label": "Time (IST)",
+        "data": [
+          "6:32 AM",
+          "6:05 PM"
+        ]
+      }
     ]
   }
 }
 </a2ui-json>
 
-**Summary:** It's a pleasant 24°C and partly cloudy in Bengaluru right now. The next three days stay warm with highs of 26–29°C, though Friday brings a 60% chance of light showers — worth carrying an umbrella. Sunrise was at 6:12 AM and sunset is at 6:38 PM.
+This brief covers all three items: current conditions (22°C, partly cloudy with humidity and wind), a 3-day outlook table, and today's sunrise/sunset times. Want me to add a rain-probability chart or an hourly forecast?

@@ -1,15 +1,11 @@
-Here is a complete cafe menu interface that includes full drink and food listings, today's special callout, a toggle switch for vegetarian filtering, and opening hours.
+I have created a clean, interactive menu screen for the cafe featuring drinks, food, today's special, dietary filters, and opening hours.
 
 <a2ui-json>
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "cafe_menu_surface",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": {
-      "primaryColor": "#16a34a",
-      "agentDisplayName": "Artisan Cafe"
-    }
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
@@ -18,311 +14,172 @@ Here is a complete cafe menu interface that includes full drink and food listing
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "cafe_menu_surface",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "l",
-        "children": [
-          "header_card",
-          "special_callout",
-          "filter_card",
-          "menu_tabs",
-          "hours_card"
-        ]
-      },
-      {
-        "id": "header_card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "header_title",
-          "header_subtitle"
-        ]
-      },
-      {
-        "id": "header_title",
-        "component": "Heading",
-        "level": "h1",
-        "text": "☕ The Corner Roast Cafe"
-      },
-      {
-        "id": "header_subtitle",
-        "component": "TextContent",
-        "text": "Freshly brewed coffee, artisanal tea, and local organic kitchen bites.",
-        "size": "default"
-      },
-      {
-        "id": "special_callout",
-        "component": "Callout",
-        "variant": "success",
-        "title": "🌟 Today's Special: Pistachio Matcha Latte & Avocado Sourdough Smash",
-        "description": "Pair our ceremonial grade pistachio matcha with avocado, whipped ricotta, chili flakes, and poached eggs on toasted sourdough for $14.50!"
-      },
-      {
-        "id": "filter_card",
-        "component": "Card",
-        "variant": "sunk",
-        "direction": "row",
-        "align": "center",
-        "justify": "between",
         "gap": "m",
         "children": [
-          "veg_switch_group",
-          "veg_badge"
+          "header",
+          "openingHoursAlert",
+          "specialCallout",
+          "dietaryFilter",
+          "menuTabs"
         ]
       },
       {
-        "id": "veg_switch_group",
+        "id": "header",
+        "component": "CardHeader",
+        "title": "The Daily Grind Cafe",
+        "subtitle": "Artisanal Coffee & Fresh Eats"
+      },
+      {
+        "id": "openingHoursAlert",
+        "component": "Alert",
+        "title": "Opening Hours",
+        "description": "Mon - Fri: 7:00 AM - 6:00 PM | Sat - Sun: 8:00 AM - 5:00 PM",
+        "variant": "info"
+      },
+      {
+        "id": "specialCallout",
+        "component": "Callout",
+        "title": "Today's Special: Honey Lavender Cold Brew",
+        "description": "House-made lavender syrup, organic blossom honey, and smooth slow-steeped cold brew topped with oat milk foam. — $6.50",
+        "variant": "success"
+      },
+      {
+        "id": "dietaryFilter",
         "component": "SwitchGroup",
-        "name": "dietary_filter",
-        "variant": "clear",
+        "name": "dietary_preferences",
         "items": [
-          "veg_switch_item"
-        ]
+          "vegSwitch"
+        ],
+        "variant": "card"
       },
       {
-        "id": "veg_switch_item",
+        "id": "vegSwitch",
         "component": "SwitchItem",
         "name": "veg_only",
-        "label": "🌱 Show Vegetarian Items Only",
-        "description": "Filter drinks and food options to show only vegetarian dishes",
+        "label": "Vegetarian Items Only",
+        "description": "Filter menu to show only vegetarian-friendly options",
         "defaultChecked": false
       },
       {
-        "id": "veg_badge",
-        "component": "Badge",
-        "text": "Dietary Friendly",
-        "variant": "outline"
-      },
-      {
-        "id": "menu_tabs",
+        "id": "menuTabs",
         "component": "Tabs",
         "items": [
-          "drinks_tab",
-          "food_tab"
+          "drinksTab",
+          "foodTab"
         ]
       },
       {
-        "id": "drinks_tab",
+        "id": "drinksTab",
         "component": "TabItem",
         "value": "drinks",
-        "trigger": "☕ Drinks Menu",
+        "trigger": "Drinks",
         "content": [
-          "drinks_table_card"
+          "drinksTable"
         ]
       },
       {
-        "id": "drinks_table_card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "drinks_table"
-        ]
-      },
-      {
-        "id": "drinks_table",
+        "id": "drinksTable",
         "component": "Table",
         "columns": [
-          "col_drink_item",
-          "col_drink_desc",
-          "col_drink_tags",
-          "col_drink_price"
+          "drinkNameCol",
+          "drinkPriceCol",
+          "drinkTagCol"
         ]
       },
       {
-        "id": "col_drink_item",
+        "id": "drinkNameCol",
         "component": "Col",
-        "label": "Drink",
-        "type": "string",
+        "label": "Item",
         "data": [
-          "Espresso / Americano",
-          "Pistachio Matcha Latte (Special)",
-          "Oat Milk Vanilla Latte",
-          "Cold Brew Nitro",
-          "Chai Tea Latte",
+          "Espresso",
+          "Cappuccino",
+          "Iced Matcha Latte",
+          "Oat Milk Chai Latte",
           "Fresh Orange Juice"
         ]
       },
       {
-        "id": "col_drink_desc",
-        "component": "Col",
-        "label": "Description",
-        "type": "string",
-        "data": [
-          "Double shot of rich house blend",
-          "Ceremonial matcha with sweet pistachio cream",
-          "Espresso with steamed oat milk & Madagascar vanilla",
-          "Steeped 18 hours, infused with nitrogen",
-          "Spiced black tea brewed with honey & almond milk",
-          "100% freshly squeezed Valencia oranges"
-        ]
-      },
-      {
-        "id": "col_drink_tags",
-        "component": "Col",
-        "label": "Dietary",
-        "type": "string",
-        "data": [
-          "🌱 Vegetarian / Vegan",
-          "🌱 Vegetarian",
-          "🌱 Vegetarian / Vegan",
-          "🌱 Vegetarian / Vegan",
-          "🌱 Vegetarian",
-          "🌱 Vegetarian / Vegan"
-        ]
-      },
-      {
-        "id": "col_drink_price",
+        "id": "drinkPriceCol",
         "component": "Col",
         "label": "Price",
-        "type": "string",
         "data": [
           "$3.50",
-          "$6.50",
-          "$5.25",
-          "$5.00",
           "$4.75",
-          "$4.50"
+          "$5.50",
+          "$5.25",
+          "$4.00"
         ]
       },
       {
-        "id": "food_tab",
-        "component": "TabItem",
-        "value": "food",
-        "trigger": "🥐 Food & Eats",
-        "content": [
-          "food_table_card"
-        ]
-      },
-      {
-        "id": "food_table_card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "food_table"
-        ]
-      },
-      {
-        "id": "food_table",
-        "component": "Table",
-        "columns": [
-          "col_food_item",
-          "col_food_desc",
-          "col_food_tags",
-          "col_food_price"
-        ]
-      },
-      {
-        "id": "col_food_item",
-        "component": "Col",
-        "label": "Item",
-        "type": "string",
-        "data": [
-          "Avocado Sourdough Smash (Special)",
-          "Smoked Salmon Bagel",
-          "Mediterranean Veggie Toast",
-          "Classic Bacon & Egg Brioche",
-          "Wild Mushroom & Truffle Panini",
-          "Berry Granola Bowl"
-        ]
-      },
-      {
-        "id": "col_food_desc",
-        "component": "Col",
-        "label": "Description",
-        "type": "string",
-        "data": [
-          "Whipped ricotta, chili flakes, poached eggs",
-          "Cream cheese, capers, dill, red onion on toasted bagel",
-          "Hummus, roasted peppers, feta & cucumber slices",
-          "Crispy bacon, fried egg, cheddar, chipotle mayo",
-          "Sauteed mushrooms, mozzarella, truffle oil on ciabatta",
-          "Greek yogurt, house honey granola, fresh berries"
-        ]
-      },
-      {
-        "id": "col_food_tags",
+        "id": "drinkTagCol",
         "component": "Col",
         "label": "Dietary",
-        "type": "string",
         "data": [
-          "🌱 Vegetarian",
-          "Non-Veg",
-          "🌱 Vegetarian",
-          "Non-Veg",
-          "🌱 Vegetarian",
-          "🌱 Vegetarian"
+          "Vegetarian",
+          "Vegetarian",
+          "Vegetarian",
+          "Vegetarian",
+          "Vegetarian"
         ]
       },
       {
-        "id": "col_food_price",
+        "id": "foodTab",
+        "component": "TabItem",
+        "value": "food",
+        "trigger": "Food",
+        "content": [
+          "foodTable"
+        ]
+      },
+      {
+        "id": "foodTable",
+        "component": "Table",
+        "columns": [
+          "foodNameCol",
+          "foodPriceCol",
+          "foodTagCol"
+        ]
+      },
+      {
+        "id": "foodNameCol",
+        "component": "Col",
+        "label": "Item",
+        "data": [
+          "Avocado Toast on Sourdough",
+          "Classic BLT Sandwich",
+          "Spinach & Feta Quiche",
+          "Smoked Salmon Bagel",
+          "Almond Croissant"
+        ]
+      },
+      {
+        "id": "foodPriceCol",
         "component": "Col",
         "label": "Price",
-        "type": "string",
         "data": [
           "$9.50",
           "$11.00",
           "$8.75",
-          "$9.00",
-          "$10.50",
-          "$7.50"
+          "$12.50",
+          "$4.50"
         ]
       },
       {
-        "id": "hours_card",
-        "component": "Card",
-        "variant": "sunk",
-        "direction": "column",
-        "gap": "s",
-        "children": [
-          "hours_title",
-          "hours_separator",
-          "hours_accordion"
+        "id": "foodTagCol",
+        "component": "Col",
+        "label": "Dietary",
+        "data": [
+          "Vegetarian",
+          "Contains Meat",
+          "Vegetarian",
+          "Contains Fish",
+          "Vegetarian"
         ]
-      },
-      {
-        "id": "hours_title",
-        "component": "Heading",
-        "level": "h3",
-        "text": "🕒 Opening Hours & Location"
-      },
-      {
-        "id": "hours_separator",
-        "component": "Separator",
-        "orientation": "horizontal",
-        "decorative": true
-      },
-      {
-        "id": "hours_accordion",
-        "component": "Accordion",
-        "items": [
-          "hours_acc_item"
-        ]
-      },
-      {
-        "id": "hours_acc_item",
-        "component": "AccordionItem",
-        "value": "hours_detail",
-        "trigger": "View Weekly Schedule & Kitchen Hours",
-        "content": [
-          "hours_text_content"
-        ]
-      },
-      {
-        "id": "hours_text_content",
-        "component": "TextContent",
-        "text": "**Monday – Friday:** 6:30 AM – 6:00 PM  \n**Saturday – Sunday:** 7:30 AM – 5:00 PM  \n\n*Note: Hot kitchen items served until 3:00 PM daily. Coffee and pastries available all day.*",
-        "size": "default"
       }
     ]
   }

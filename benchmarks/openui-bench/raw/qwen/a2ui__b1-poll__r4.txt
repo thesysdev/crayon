@@ -1,81 +1,99 @@
 
 
-Here's a team lunch poll screen with the question and three restaurant options to vote on:
+Here's a team lunch poll with the question and three restaurant choices:
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "team-lunch-poll",
-      "catalogId": "thesys.dev:c1-openui"
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "team-lunch-poll",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "children": ["poll-heading", "poll-description", "poll-radio-group", "poll-submit-btn"],
-          "direction": "column",
-          "gap": "m"
-        },
-        {
-          "id": "poll-heading",
-          "component": "Heading",
-          "text": "🍽️ Team Lunch Poll",
-          "level": "h2"
-        },
-        {
-          "id": "poll-description",
-          "component": "TextContent",
-          "text": "Where should we go for lunch on Friday?",
-          "size": "large"
-        },
-        {
-          "id": "poll-radio-group",
-          "component": "RadioGroup",
-          "name": "restaurant_choice",
-          "items": ["option-pizza", "option-sushi", "option-burger"]
-        },
-        {
-          "id": "option-pizza",
-          "component": "RadioItem",
-          "label": "Pizza Palace",
-          "description": "Wood-fired pizzas & fresh salads",
-          "value": "pizza_palace"
-        },
-        {
-          "id": "option-sushi",
-          "component": "RadioItem",
-          "label": "Sushi Spot",
-          "description": "Sushi rolls, ramen & poke bowls",
-          "value": "sushi_spot"
-        },
-        {
-          "id": "option-burger",
-          "component": "RadioItem",
-          "label": "Burger Barn",
-          "description": "Gourmet burgers, fries & shakes",
-          "value": "burger_barn"
-        },
-        {
-          "id": "poll-submit-btn",
-          "component": "Button",
-          "label": "Cast My Vote",
-          "variant": "primary",
-          "size": "large"
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-This poll screen includes:
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "pollForm"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Where should we go for lunch on Friday?",
+        "subtitle": "Cast your vote below"
+      },
+      {
+        "id": "pollForm",
+        "component": "Form",
+        "name": "lunch-poll",
+        "fields": [
+          "restaurantField"
+        ],
+        "buttons": "formButtons"
+      },
+      {
+        "id": "restaurantField",
+        "component": "FormControl",
+        "label": "Pick a restaurant",
+        "input": "restaurantRadio"
+      },
+      {
+        "id": "restaurantRadio",
+        "component": "RadioGroup",
+        "name": "restaurant",
+        "items": [
+          "optItalian",
+          "optMexican",
+          "optSushi"
+        ]
+      },
+      {
+        "id": "optItalian",
+        "component": "RadioItem",
+        "label": "Bella's Trattoria",
+        "description": "Italian — pasta, pizza & tiramisu",
+        "value": "bellas-trattoria"
+      },
+      {
+        "id": "optMexican",
+        "component": "RadioItem",
+        "label": "El Fuego Cantina",
+        "description": "Mexican — tacos, burritos & margaritas",
+        "value": "el-fuego-cantina"
+      },
+      {
+        "id": "optSushi",
+        "component": "RadioItem",
+        "label": "Sakura Sushi Bar",
+        "description": "Japanese — sushi rolls, ramen & gyoza",
+        "value": "sakura-sushi-bar"
+      },
+      {
+        "id": "formButtons",
+        "component": "Buttons",
+        "buttons": [
+          "voteBtn"
+        ]
+      },
+      {
+        "id": "voteBtn",
+        "component": "Button",
+        "label": "Submit my vote",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>
 
-1. **The question** — "Where should we go for lunch on Friday?" displayed prominently as large text beneath the heading.
-2. **Three restaurant options** — Pizza Palace, Sushi Spot, and Burger Barn, each with a short description, presented as radio buttons so the user can select one and submit their vote with the "Cast My Vote" button.
+The poll presents the Friday lunch question prominently in the header and lets each team member pick one of three restaurants — an Italian trattoria, a Mexican cantina, or a sushi bar — then submit their vote with a single button.

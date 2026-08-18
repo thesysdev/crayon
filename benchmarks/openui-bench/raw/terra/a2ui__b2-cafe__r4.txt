@@ -2,12 +2,8 @@
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "cafe-menu",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": {
-      "primaryColor": "#7A4B2A",
-      "agentDisplayName": "Café Menu"
-    }
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
@@ -16,256 +12,188 @@
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "cafe-menu",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "l",
         "children": [
           "header",
+          "vegFilter",
           "special",
-          "veg_filter",
-          "menu_tabs",
-          "hours"
-        ]
+          "drinksHeading",
+          "drinksTable",
+          "foodHeading",
+          "foodTable",
+          "hoursHeading",
+          "hoursTable"
+        ],
+        "gap": "l"
       },
       {
         "id": "header",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "title",
-          "subtitle"
-        ]
+        "component": "CardHeader",
+        "title": "Juniper Café",
+        "subtitle": "Fresh coffee, comforting food, and good company"
       },
       {
-        "id": "title",
-        "component": "Heading",
-        "text": "Juniper Café",
-        "level": "h1"
+        "id": "vegFilter",
+        "component": "SwitchGroup",
+        "name": "vegetarian_only",
+        "items": [
+          "vegOnlySwitch"
+        ],
+        "variant": "sunk"
       },
       {
-        "id": "subtitle",
-        "component": "TextContent",
-        "text": "Fresh coffee, comforting food, and a little something sweet.",
-        "size": "default"
+        "id": "vegOnlySwitch",
+        "component": "SwitchItem",
+        "name": "vegetarian_only",
+        "label": "Vegetarian items only",
+        "description": "Show dishes made without meat or fish"
       },
       {
         "id": "special",
         "component": "Callout",
         "variant": "success",
-        "title": "Today’s Special — Roasted Veggie Panini · $12",
-        "description": "Grilled sourdough with roasted zucchini, peppers, pesto, mozzarella, and a side salad. Vegetarian."
+        "title": "Today's Special: Roasted Vegetable Focaccia — $12",
+        "description": "Warm focaccia with roasted seasonal vegetables, pesto, mozzarella, and a side salad. Vegetarian."
       },
       {
-        "id": "veg_filter",
-        "component": "SwitchGroup",
-        "name": "vegetarian_only",
-        "variant": "sunk",
-        "value": [],
-        "items": [
-          "veg_filter_item"
-        ]
-      },
-      {
-        "id": "veg_filter_item",
-        "component": "SwitchItem",
-        "name": "vegetarian_only",
-        "label": "Show vegetarian items only",
-        "description": "Filter the menu to meat-free choices.",
-        "defaultChecked": false
-      },
-      {
-        "id": "menu_tabs",
-        "component": "Tabs",
-        "items": [
-          "drinks_tab",
-          "food_tab"
-        ]
-      },
-      {
-        "id": "drinks_tab",
-        "component": "TabItem",
-        "value": "drinks",
-        "trigger": "Drinks",
-        "content": [
-          "drinks_heading",
-          "drinks_table"
-        ]
-      },
-      {
-        "id": "drinks_heading",
+        "id": "drinksHeading",
         "component": "Heading",
         "text": "Drinks",
         "level": "h2"
       },
       {
-        "id": "drinks_table",
+        "id": "drinksTable",
         "component": "Table",
         "columns": [
-          "drink_name_col",
-          "drink_description_col",
-          "drink_price_col",
-          "drink_veg_col"
+          "drinkNameCol",
+          "drinkDescriptionCol",
+          "drinkPriceCol"
         ]
       },
       {
-        "id": "drink_name_col",
+        "id": "drinkNameCol",
         "component": "Col",
         "label": "Drink",
         "data": [
           "Espresso",
           "Cappuccino",
-          "Iced Vanilla Latte",
-          "Matcha Latte",
+          "Iced Latte",
+          "House Chai",
           "Fresh Orange Juice"
-        ],
-        "type": "string"
-      },
-      {
-        "id": "drink_description_col",
-        "component": "Col",
-        "label": "Description",
-        "data": [
-          "Double shot, bold and smooth",
-          "Espresso with steamed milk foam",
-          "Cold brew espresso, milk, vanilla",
-          "Ceremonial matcha with your choice of milk",
-          "Pressed daily"
-        ],
-        "type": "string"
-      },
-      {
-        "id": "drink_price_col",
-        "component": "Col",
-        "label": "Price",
-        "data": [
-          "$3.50",
-          "$4.75",
-          "$5.50",
-          "$5.25",
-          "$4.00"
-        ],
-        "type": "string"
-      },
-      {
-        "id": "drink_veg_col",
-        "component": "Col",
-        "label": "Vegetarian",
-        "data": [
-          "Yes",
-          "Yes",
-          "Yes",
-          "Yes",
-          "Yes"
-        ],
-        "type": "string"
-      },
-      {
-        "id": "food_tab",
-        "component": "TabItem",
-        "value": "food",
-        "trigger": "Food",
-        "content": [
-          "food_heading",
-          "food_table"
         ]
       },
       {
-        "id": "food_heading",
+        "id": "drinkDescriptionCol",
+        "component": "Col",
+        "label": "Description",
+        "data": [
+          "Double shot of espresso",
+          "Espresso, steamed milk, and foam",
+          "Espresso, milk, and ice",
+          "Spiced tea with steamed milk",
+          "Pressed to order"
+        ]
+      },
+      {
+        "id": "drinkPriceCol",
+        "component": "Col",
+        "label": "Price",
+        "data": [
+          "$3",
+          "$4.50",
+          "$5",
+          "$4.50",
+          "$5.50"
+        ]
+      },
+      {
+        "id": "foodHeading",
         "component": "Heading",
         "text": "Food",
         "level": "h2"
       },
       {
-        "id": "food_table",
+        "id": "foodTable",
         "component": "Table",
         "columns": [
-          "food_name_col",
-          "food_description_col",
-          "food_price_col",
-          "food_veg_col"
+          "foodNameCol",
+          "foodDescriptionCol",
+          "foodPriceCol"
         ]
       },
       {
-        "id": "food_name_col",
+        "id": "foodNameCol",
         "component": "Col",
-        "label": "Food",
+        "label": "Dish",
         "data": [
-          "Roasted Veggie Panini",
+          "Avocado Toast (V)",
+          "Roasted Vegetable Focaccia (V)",
           "Turkey & Swiss Croissant",
-          "Avocado Toast",
-          "Tomato Basil Soup",
-          "Blueberry Muffin"
-        ],
-        "type": "string"
+          "Tomato Soup (V)",
+          "Chocolate Chip Cookie (V)"
+        ]
       },
       {
-        "id": "food_description_col",
+        "id": "foodDescriptionCol",
         "component": "Col",
         "label": "Description",
         "data": [
-          "Zucchini, peppers, pesto, mozzarella",
-          "Roasted turkey, Swiss, cranberry aioli",
-          "Sourdough, avocado, chili flakes, lemon",
+          "Sourdough, avocado, chili flakes, and lemon",
+          "Today's special with side salad",
+          "Roasted turkey, Swiss, and Dijon",
           "Served with toasted sourdough",
-          "Baked fresh this morning"
-        ],
-        "type": "string"
-      },
-      {
-        "id": "food_price_col",
-        "component": "Col",
-        "label": "Price",
-        "data": [
-          "$12.00",
-          "$11.50",
-          "$9.50",
-          "$7.00",
-          "$4.25"
-        ],
-        "type": "string"
-      },
-      {
-        "id": "food_veg_col",
-        "component": "Col",
-        "label": "Vegetarian",
-        "data": [
-          "Yes",
-          "No",
-          "Yes",
-          "Yes",
-          "Yes"
-        ],
-        "type": "string"
-      },
-      {
-        "id": "hours",
-        "component": "Card",
-        "variant": "sunk",
-        "direction": "column",
-        "gap": "s",
-        "children": [
-          "hours_title",
-          "hours_text"
+          "Baked in-house daily"
         ]
       },
       {
-        "id": "hours_title",
-        "component": "Heading",
-        "text": "Opening Hours",
-        "level": "h3"
+        "id": "foodPriceCol",
+        "component": "Col",
+        "label": "Price",
+        "data": [
+          "$9",
+          "$12",
+          "$11",
+          "$7",
+          "$3.50"
+        ]
       },
       {
-        "id": "hours_text",
-        "component": "TextContent",
-        "text": "**Mon–Fri:** 7:00 AM – 6:00 PM  \n**Sat–Sun:** 8:00 AM – 4:00 PM",
-        "size": "default"
+        "id": "hoursHeading",
+        "component": "Heading",
+        "text": "Opening Hours",
+        "level": "h2"
+      },
+      {
+        "id": "hoursTable",
+        "component": "Table",
+        "columns": [
+          "dayCol",
+          "hoursCol"
+        ]
+      },
+      {
+        "id": "dayCol",
+        "component": "Col",
+        "label": "Day",
+        "data": [
+          "Monday–Friday",
+          "Saturday",
+          "Sunday"
+        ]
+      },
+      {
+        "id": "hoursCol",
+        "component": "Col",
+        "label": "Hours",
+        "data": [
+          "7:00 AM – 6:00 PM",
+          "8:00 AM – 5:00 PM",
+          "8:00 AM – 3:00 PM"
+        ]
       }
     ]
   }

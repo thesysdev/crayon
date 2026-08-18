@@ -1,27 +1,121 @@
 Here's a mid-morning check-in screen for the shop owner:
 
 <a2ui-json>
-{"version": "v0.9", "createSurface": {"surfaceId": "shop-morning", "catalogId": "thesys.dev:c1-openui", "theme": {"primaryColor": "#2E7D32", "agentDisplayName": "Shop Dashboard"}}}
-</a2ui-json>
-<a2ui-json>
-{"version": "v0.9", "updateComponents": {"surfaceId": "shop-morning", "components": [
-{"id": "root", "component": "Card", "variant": "clear", "direction": "column", "gap": "m", "children": ["header", "revenueCard", "compareCard", "note"]},
-{"id": "header", "component": "CardHeader", "title": "Good Morning, Shop Owner ☀️", "subtitle": "Mid-morning check-in · Today, 10:45 AM"},
-{"id": "revenueCard", "component": "Card", "variant": "card", "direction": "column", "gap": "xs", "children": ["revHeader", "revText", "revProgress"]},
-{"id": "revHeader", "component": "CardHeader", "title": "Revenue So Far Today"},
-{"id": "revText", "component": "TextContent", "text": "## $1,284.50\nFrom 42 transactions · Last sale 6 min ago", "size": "large-heavy"},
-{"id": "revProgress", "component": "Progress", "value": 58, "label": "58% of an average full day"},
-{"id": "compareCard", "component": "Card", "variant": "sunk", "direction": "column", "gap": "s", "children": ["cmpHeader", "cmpText", "cmpTags", "cmpChart", "seriesToday", "seriesYesterday"]},
-{"id": "cmpHeader", "component": "CardHeader", "title": "vs. Same Time Yesterday", "subtitle": "Comparison as of 10:45 AM"},
-{"id": "cmpText", "component": "TextContent", "text": "**Today: $1,284.50** · Yesterday: $1,062.10 — you're **up $222.40 (+20.9%)** compared to the same time yesterday."},
-{"id": "cmpTags", "component": "TagBlock", "tags": ["📈 +20.9% vs yesterday", "🧾 +9 more transactions", "🛒 Basket size +$1.80"]},
-{"id": "cmpChart", "component": "BarChart", "labels": ["9 AM", "10 AM", "11 AM (so far)"], "series": ["seriesToday", "seriesYesterday"], "variant": "grouped", "xLabel": "Hour", "yLabel": "Revenue ($)"},
-{"id": "seriesToday", "component": "Series", "category": "Today", "values": [420.0, 515.5, 349.0]},
-{"id": "seriesYesterday", "component": "Series", "category": "Yesterday", "values": [390.25, 448.1, 223.75]},
-{"id": "note", "component": "Callout", "variant": "success", "title": "Strong morning", "description": "Sales are pacing above yesterday. Weekday mornings typically peak again around noon — consider restocking top sellers before lunch."}
-]}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
-This screen covers both items:
-1. **Revenue so far today** — $1,284.50 with transaction count and progress vs. an average day.
-2. **Comparison with the same time yesterday** — dollar and percentage difference, plus a side-by-side hourly bar chart of today vs. yesterday.
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "statusBadge",
+          "revenueTable",
+          "trendChart",
+          "note"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Mid-Morning Check-In",
+        "subtitle": "Today so far (as of 10:30 AM)"
+      },
+      {
+        "id": "statusBadge",
+        "component": "Badge",
+        "text": "Ahead of yesterday",
+        "variant": "secondary"
+      },
+      {
+        "id": "revenueTable",
+        "component": "Table",
+        "columns": [
+          "metricCol",
+          "valueCol"
+        ]
+      },
+      {
+        "id": "metricCol",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Revenue today (so far)",
+          "Same time yesterday",
+          "Difference"
+        ]
+      },
+      {
+        "id": "valueCol",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "$1,240",
+          "$1,050",
+          "+$190 (+18%)"
+        ]
+      },
+      {
+        "id": "trendChart",
+        "component": "LineChart",
+        "labels": [
+          "8 AM",
+          "9 AM",
+          "10 AM",
+          "10:30 AM"
+        ],
+        "series": [
+          "todaySeries",
+          "yesterdaySeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Time",
+        "yLabel": "Cumulative revenue (USD)"
+      },
+      {
+        "id": "todaySeries",
+        "component": "Series",
+        "category": "Today",
+        "values": [
+          320,
+          680,
+          1050,
+          1240
+        ]
+      },
+      {
+        "id": "yesterdaySeries",
+        "component": "Series",
+        "category": "Yesterday",
+        "values": [
+          280,
+          590,
+          920,
+          1050
+        ]
+      },
+      {
+        "id": "note",
+        "component": "Alert",
+        "title": "Strong morning",
+        "description": "Sales are pacing 18% above yesterday at this hour, driven mostly by the breakfast rush.",
+        "variant": "success"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This covers both items: **(1)** revenue so far today ($1,240) shown in the table, and **(2)** comparison with the same time yesterday ($1,050, +18%) shown both in the table and as side-by-side trend lines.

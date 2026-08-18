@@ -1,26 +1,34 @@
-{"op":"add","path":"/root","value":"main-card"}
-{"op":"add","path":"/elements/main-card","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","alert-banner","meeting-details","attendees-section","actions-card"]}}
-{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Up Next on Your Calendar","subtitle":"Today's Schedule & Quick Actions"}}}
-{"op":"add","path":"/elements/alert-banner","value":{"type":"Alert","props":{"title":"Meeting Starts in 10 Minutes","description":"Q3 Product Roadmap Review is starting shortly.","variant":"info"}}}
-{"op":"add","path":"/elements/meeting-details","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"m"},"children":["meeting-title","meeting-time","meeting-desc"]}}
-{"op":"add","path":"/elements/meeting-title","value":{"type":"Heading","props":{"text":{"$state":"/nextMeeting/title"},"level":"h2"}}}
-{"op":"add","path":"/state/nextMeeting","value":{"title":"Q3 Product Roadmap Review","startTime":"10:00 AM","endTime":"11:00 AM","location":"Google Meet / Conf Room 4B","description":"Quarterly planning alignment across Product, Design, and Engineering teams. Please review the proposal draft before joining."}}
-{"op":"add","path":"/elements/meeting-time","value":{"type":"TextContent","props":{"text":{"$template":"🕒 **${/nextMeeting/startTime} - ${/nextMeeting/endTime}**  •  📍 ${/nextMeeting/location}"},"size":"large-heavy"}}}
-{"op":"add","path":"/elements/meeting-desc","value":{"type":"TextContent","props":{"text":{"$state":"/nextMeeting/description"},"size":"default"}}}
-{"op":"add","path":"/elements/attendees-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["attendees-heading","attendees-list"]}}
-{"op":"add","path":"/elements/attendees-heading","value":{"type":"Heading","props":{"text":"Attendees (4)","level":"h3"}}}
-{"op":"add","path":"/elements/attendees-list","value":{"type":"Card","props":{"direction":"column","gap":"s"},"repeat":{"statePath":"/attendees","key":"id"},"children":["attendee-item"]}}
-{"op":"add","path":"/elements/attendee-item","value":{"type":"Card","props":{"variant":"clear","direction":"row","align":"center","gap":"m"},"children":["attendee-avatar","attendee-info","attendee-status"]}}
-{"op":"add","path":"/elements/attendee-avatar","value":{"type":"Avatar","props":{"src":{"$item":"avatar"},"fallback":{"$item":"initials"}}}}
-{"op":"add","path":"/elements/attendee-info","value":{"type":"TextContent","props":{"text":{"$template":"**${name}**\n*${role}*"},"size":"default"}}}
-{"op":"add","path":"/elements/attendee-status","value":{"type":"Badge","props":{"text":{"$item":"status"},"variant":{"$cond":{"$state":{"$template":"/attendees/${$index}/status"},"eq":"Accepted"},"$then":"default","$else":"secondary"}}}}
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"gap":"l"},"children":["banner","next-meeting-card","attendees-card","actions-card"]}}
+{"op":"add","path":"/elements/banner","value":{"type":"CardHeader","props":{"title":"Upcoming Calendar","subtitle":"Here is your immediate next scheduled event"}}}
+
+{"op":"add","path":"/elements/next-meeting-card","value":{"type":"Card","props":{"variant":"sunk","gap":"s"},"children":["meeting-status-row","meeting-title","meeting-time-row","meeting-location"]}}
+{"op":"add","path":"/elements/meeting-status-row","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center"},"children":["meeting-badge","countdown-tag"]}}
+{"op":"add","path":"/elements/meeting-badge","value":{"type":"Badge","props":{"text":"Up Next","variant":"default"}}}
+{"op":"add","path":"/elements/countdown-tag","value":{"type":"Tag","props":{"text":"Starts in 10 mins","variant":"warning","icon":"clock"}}}
+{"op":"add","path":"/elements/meeting-title","value":{"type":"Heading","props":{"text":{"$state":"/meeting/title"},"level":"h2"}}}
+{"op":"add","path":"/elements/meeting-time-row","value":{"type":"TextContent","props":{"text":{"$template":"📅 **${/meeting/date}**  •  ⏰ **${/meeting/startTime} - ${/meeting/endTime}** (${/meeting/timezone})"},"size":"default"}}}
+{"op":"add","path":"/elements/meeting-location","value":{"type":"TextContent","props":{"text":{"$template":"📍 **Location:** ${/meeting/location}"},"size":"small"}}}
+
+{"op":"add","path":"/state/meeting","value":{"title":"Q3 Product Roadmap & Architecture Sync","date":"Today, Oct 24","startTime":"10:00 AM","endTime":"11:00 AM","timezone":"PST","location":"Google Meet","joinUrl":"https://meet.google.com/abc-defg-hij"}}
+
+{"op":"add","path":"/elements/attendees-card","value":{"type":"Card","props":{"variant":"card","gap":"m"},"children":["attendees-header","attendees-list"]}}
+{"op":"add","path":"/elements/attendees-header","value":{"type":"CardHeader","props":{"title":"Attendees (4)","subtitle":"People expected in this call"}}}
+{"op":"add","path":"/elements/attendees-list","value":{"type":"Card","props":{"gap":"s"},"repeat":{"statePath":"/attendees","key":"id"},"children":["attendee-item"]}}
+{"op":"add","path":"/elements/attendee-item","value":{"type":"ListItem","props":{"title":{"$item":"name"},"subtitle":{"$template":"${role} • ${status}"},"actionLabel":{"$item":"response"}}}}
+
 {"op":"add","path":"/state/attendees","value":[]}
-{"op":"add","path":"/state/attendees/0","value":{"id":"1","name":"Sarah Chen","role":"Product Lead","initials":"SC","status":"Accepted","avatar":"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80"}}
-{"op":"add","path":"/state/attendees/1","value":{"id":"2","name":"Alex Rivera","role":"Tech Lead","initials":"AR","status":"Accepted","avatar":"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80"}}
-{"op":"add","path":"/state/attendees/2","value":{"id":"3","name":"Elena Rostova","role":"UX Designer","initials":"ER","status":"Accepted","avatar":"https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&auto=format&fit=crop&q=80"}}
-{"op":"add","path":"/state/attendees/3","value":{"id":"4","name":"Marcus Vance","role":"Engineering Director","initials":"MV","status":"Tentative","avatar":"https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80"}}
-{"op":"add","path":"/elements/actions-card","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center"},"children":["join-button-group","copy-link-button"]}}
-{"op":"add","path":"/elements/join-button-group","value":{"type":"Buttons","props":{"buttons":["join-btn"]}}}
-{"op":"add","path":"/elements/join-btn","value":{"type":"Button","props":{"label":"Join Call Now","variant":"primary","size":"large"},"on":{"press":{"action":"setState","params":{"statePath":"/joinedCall","value":true}}}}}
-{"op":"add","path":"/elements/copy-link-button","value":{"type":"Button","props":{"label":"Copy Invite Link","variant":"secondary","size":"medium"}}}
-{"op":"add","path":"/state/joinedCall","value":false}
+{"op":"add","path":"/state/attendees/0","value":{"id":"1","name":"Sarah Chen","role":"Product Host","status":"sarah.chen@company.com","response":"Accepted"}}
+{"op":"add","path":"/state/attendees/1","value":{"id":"2","name":"Alex Rivera","role":"Tech Lead","status":"alex.rivera@company.com","response":"Accepted"}}
+{"op":"add","path":"/state/attendees/2","value":{"id":"3","name":"Jessica Taylor","role":"UX Designer","status":"jessica.t@company.com","response":"Accepted"}}
+{"op":"add","path":"/state/attendees/3","value":{"id":"4","name":"Michael Scott","role":"Engineering Manager","status":"michael.s@company.com","response":"Tentative"}}
+
+{"op":"add","path":"/elements/actions-card","value":{"type":"Card","props":{"direction":"column","gap":"m","align":"stretch"},"children":["join-alert","action-buttons"]}}
+{"op":"add","path":"/elements/join-alert","value":{"type":"Alert","props":{"title":"Meeting is ready","description":" Room audio and video standard check complete. Click below to enter.","variant":"info"}}}
+{"op":"add","path":"/elements/action-buttons","value":{"type":"Buttons","props":{"buttons":["join-btn","decline-btn"],"direction":"row"}}}
+{"op":"add","path":"/elements/join-btn","value":{"type":"Button","props":{"label":"Join Video Call Now","variant":"primary","size":"large"},"on":{"press":{"action":"setState","params":{"statePath":"/joined","value":true}}}}}
+{"op":"add","path":"/elements/decline-btn","value":{"type":"Button","props":{"label":"Send Running Late Note","variant":"secondary","size":"large"}}}
+
+{"op":"add","path":"/elements/joined-toast","value":{"type":"Callout","props":{"variant":"success","title":"Connecting...","description":"Redirecting you to Google Meet meeting room."},"visible":{"$state":"/joined"}}}
+{"op":"add","path":"/elements/main/children","value":["banner","next-meeting-card","attendees-card","actions-card","joined-toast"]}
+{"op":"add","path":"/state/joined","value":false}

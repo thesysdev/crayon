@@ -1,9 +1,891 @@
-I have created an operations room dashboard UI for your streaming service that covers all 16 required monitoring and control features.
+Here is an operational control room interface designed for managing streaming service health, performance, title management, and audience analytics.
 
 <a2ui-json>
-{"createSurface":{"catalogId":"thesys.dev:c1-openui","surfaceId":"ops-room-dashboard","theme":{"agentDisplayName":"Streaming Operations Command","primaryColor":"#E50914"}},"version":"v0.9"}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"updateComponents":{"components":[{"children":["ops-header","region-filter-card","kpi-summary-card","ops-tabs","actions-card"],"component":"Card","direction":"column","gap":"l","id":"root","variant":"clear"},{"children":["header-text","status-badge"],"component":"Card","direction":"row","id":"ops-header","justify":"between","variant":"clear"},{"component":"Heading","id":"header-text","level":"h2","text":"🎬 Global Streaming Operations Room"},{"component":"Badge","id":"status-badge","text":"LIVE MONITORING","variant":"destructive"},{"children":["region-form-control"],"component":"Card","direction":"column","gap":"xs","id":"region-filter-card","variant":"sunk"},{"hint":"Applies regional focus across real-time telemetry (Item 14)","input":"region-select","component":"FormControl","id":"region-form-control","label":"🎯 Focus Region"},{"items":["reg-all","reg-na","reg-eu","reg-apac","reg-latam"],"component":"Select","id":"region-select","name":"region_focus","placeholder":"Select Region","value":"all"},{"component":"SelectItem","id":"reg-all","label":"Global (All Regions)","value":"all"},{"component":"SelectItem","id":"reg-na","label":"North America (NA-EAST / NA-WEST)","value":"na"},{"component":"SelectItem","id":"reg-eu","label":"Europe (EU-CENTRAL / EU-WEST)","value":"eu"},{"component":"SelectItem","id":"reg-apac","label":"Asia Pacific (APAC-SOUTH / APAC-EAST)","value":"apac"},{"component":"SelectItem","id":"reg-latam","label":"Latin America (LATAM-SOUTH)","value":"latam"},{"children":["kpi-viewers","kpi-buffering","kpi-ctr","kpi-zero-search"],"component":"Card","direction":"row","gap":"m","id":"kpi-summary-card","variant":"card"},{"children":["kpi-viewers-title","kpi-viewers-val","kpi-viewers-sub"],"component":"Card","direction":"column","gap":"xs","id":"kpi-viewers","variant":"clear"},{"component":"TextContent","id":"kpi-viewers-title","size":"small-heavy","text":"1. Concurrent Viewers Now"},{"component":"Heading","id":"kpi-viewers-val","level":"h2","text":"4,829,104"},{"component":"Tag","id":"kpi-viewers-sub","text":"▲ +12.4% vs peak avg","variant":"success"},{"children":["kpi-buffering-title","kpi-buffering-val","kpi-buffering-sub"],"component":"Card","direction":"column","gap":"xs","id":"kpi-buffering","variant":"clear"},{"component":"TextContent","id":"kpi-buffering-title","size":"small-heavy","text":"6. Global Buffering Rate"},{"component":"Heading","id":"kpi-buffering-val","level":"h2","text":"0.24%"},{"component":"Tag","id":"kpi-buffering-sub","text":"SLA Target: < 0.50%","variant":"success"},{"children":["kpi-ctr-title","kpi-ctr-val","kpi-ctr-sub"],"component":"Card","direction":"column","gap":"xs","id":"kpi-ctr","variant":"clear"},{"component":"TextContent","id":"kpi-ctr-title","size":"small-heavy","text":"10. Recs Click Rate"},{"component":"Heading","id":"kpi-ctr-val","level":"h2","text":"38.6%"},{"component":"Tag","id":"kpi-ctr-sub","text":"Home Row CTR","variant":"info"},{"children":["kpi-zero-search-title","kpi-zero-search-val","kpi-zero-search-sub"],"component":"Card","direction":"column","gap":"xs","id":"kpi-zero-search","variant":"clear"},{"component":"TextContent","id":"kpi-zero-search-title","size":"small-heavy","text":"11. Zero-Playback Searches"},{"component":"Heading","id":"kpi-zero-search-val","level":"h2","text":"6.1%"},{"component":"Tag","id":"kpi-zero-search-sub","text":"▼ -1.2% this week","variant":"neutral"},{"items":["tab-content","tab-subscribers","tab-infrastructure","tab-business"],"component":"Tabs","id":"ops-tabs"},{"content":["tab-content-card"],"component":"TabItem","id":"tab-content","trigger":"Content & Catalog","value":"content"},{"children":["top-titles-header","top-titles-chart","sep-1","genre-header","genre-chart","sep-2","licenses-header","licenses-table"],"component":"Card","direction":"column","gap":"m","id":"tab-content-card","variant":"card"},{"component":"CardHeader","id":"top-titles-header","subtitle":"Hours viewed during current active broadcast window","title":"2. Most-Watched Titles (Hours Watched)"},{"labels":["Cyber Neon 2088","The Last Horizon","Shadows of Tokyo","Chef's Table: Alpine","Space Fleet S3"],"series":["series-top-titles"],"component":"HorizontalBarChart","id":"top-titles-chart","xLabel":"Million Hours Watched"},{"category":"Hours Watched","values":[42.5,38.2,29.1,18.7,14.3],"component":"Series","id":"series-top-titles"},{"component":"Separator","id":"sep-1","orientation":"horizontal"},{"component":"CardHeader","id":"genre-header","subtitle":"Total viewing hours distribution by primary content category","title":"5. Performance by Genre"},{"labels":["Drama","Sci-Fi","Action","Documentary","Comedy","Animation"],"series":["series-genre-hours"],"component":"BarChart","id":"genre-chart","yLabel":"Million Hours"},{"category":"Hours Watched","values":[120,95,82,45,38,24],"component":"Series","id":"series-genre-hours"},{"component":"Separator","id":"sep-2","orientation":"horizontal"},{"component":"CardHeader","id":"licenses-header","subtitle":"Titles requiring renewal or removal in the next 30 days","title":"9. Licenses Expiring Soon"},{"columns":["lic-col-title","lic-col-region","lic-col-days","lic-col-status"],"component":"Table","id":"licenses-table"},{"data":["Gundam Wing Chronicles","Bakers Championship S2","Indie Film Showcase","Metro Runner","Nordic Noir S1"],"label":"Title","type":"string","component":"Col","id":"lic-col-title"},{"data":["Global","NA / EU","APAC","LATAM","EU"],"label":"Licensed Region","type":"string","component":"Col","id":"lic-col-region"},{"data":[4,12,18,22,29],"label":"Days Remaining","type":"number","component":"Col","id":"lic-col-days"},{"data":["Urgent Renewal","Pending Approval","Reviewing","Negotiating","Auto-Renew"],"label":"Status","type":"string","component":"Col","id":"lic-col-status"},{"content":["tab-sub-card"],"component":"TabItem","id":"tab-subscribers","trigger":"Subscribers & Growth","value":"subscribers"},{"children":["watchtime-header","watchtime-chart","sep-sub-1","sub-growth-header","sub-growth-chart"],"component":"Card","direction":"column","gap":"m","id":"tab-sub-card","variant":"card"},{"component":"CardHeader","id":"watchtime-header","subtitle":"Aggregated daily stream time across all user profiles","title":"3. Watch Time Over Past Month"},{"labels":["W1","W2","W3","W4"],"series":["series-watchtime"],"component":"LineChart","id":"watchtime-chart","variant":"natural","xLabel":"Week","yLabel":"Million Hours"},{"category":"Watch Hours","values":[310,345,390,425],"component":"Series","id":"series-watchtime"},{"component":"Separator","id":"sep-sub-1","orientation":"horizontal"},{"component":"CardHeader","id":"sub-growth-header","subtitle":"Weekly comparison of new signups vs lost memberships","title":"4. New Subscribers vs Cancellations"},{"labels":["Week 1","Week 2","Week 3","Week 4"],"series":["series-new-subs","series-cancels"],"component":"BarChart","id":"sub-growth-chart","variant":"grouped","yLabel":"Users"},{"category":"New Subscribers","values":[145000,162000,189000,210000],"component":"Series","id":"series-new-subs"},{"category":"Cancellations","values":[32000,29000,35000,31000],"component":"Series","id":"series-cancels"},{"content":["tab-infra-card"],"component":"TabItem","id":"tab-infrastructure","trigger":"Delivery & Infra","value":"infrastructure"},{"children":["health-header","health-table","sep-infra-1","flags-header","flags-group"],"component":"Card","direction":"column","gap":"m","id":"tab-infra-card","variant":"card"},{"component":"CardHeader","id":"health-header","subtitle":"CDN throughput, latency, and cache hit metrics","title":"7. Delivery Health by Region"},{"columns":["cdn-col-region","cdn-col-latency","cdn-col-cache","cdn-col-status"],"component":"Table","id":"health-table"},{"data":["NA-East","NA-West","EU-Central","EU-West","APAC-South","LATAM-South"],"label":"CDN Edge Region","type":"string","component":"Col","id":"cdn-col-region"},{"data":["14ms","18ms","22ms","25ms","48ms","38ms"],"label":"Avg Latency","type":"string","component":"Col","id":"cdn-col-latency"},{"data":["98.4%","97.9%","98.1%","96.8%","94.2%","95.6%"],"label":"Cache Hit Ratio","type":"string","component":"Col","id":"cdn-col-cache"},{"data":["Healthy","Healthy","Healthy","Healthy","Degraded","Healthy"],"label":"Status","type":"string","component":"Col","id":"cdn-col-status"},{"component":"Separator","id":"sep-infra-1","orientation":"horizontal"},{"component":"CardHeader","id":"flags-header","subtitle":"Active system toggles and runtime deployment controls","title":"15. Feature Flags & System State"},{"items":["flag-1","flag-2","flag-3","flag-4"],"component":"SwitchGroup","id":"flags-group","name":"feature_flags","variant":"sunk"},{"defaultChecked":true,"description":"Enables AV1 stream profile for 4K desktop streams","label":"AV1 Codec Pipeline","name":"flag_av1","component":"SwitchItem","id":"flag-1"},{"defaultChecked":true,"description":"Uses Transformer-based user interest model for home feed","label":"v2 Recommendation Algorithm","name":"flag_recs_v2","component":"SwitchItem","id":"flag-2"},{"defaultChecked":false,"description":"Forces high bitrates during peak grid congestions","label":"Low Latency Live Mode","name":"flag_live_mode","component":"SwitchItem","id":"flag-3"},{"defaultChecked":true,"description":"Displays dynamic regional promotional banners","label":"Promotional Banner Slot A","name":"flag_promo_slot","component":"SwitchItem","id":"flag-4"},{"content":["tab-biz-card"],"component":"TabItem","id":"tab-business","trigger":"Revenue & Devices","value":"business"},{"children":["rev-header","rev-chart","sep-biz-1","dev-header","dev-chart"],"component":"Card","direction":"column","gap":"m","id":"tab-biz-card","variant":"card"},{"component":"CardHeader","id":"rev-header","subtitle":"Monthly Recurring Revenue breakdown by active plan tier","title":"12. Revenue Split by Plan"},{"appearance":"semiCircular","labels":["Premium (4K)","Standard (1080p)","Basic with Ads"],"component":"PieChart","id":"rev-chart","values":[52,33,15],"variant":"donut"},{"component":"Separator","id":"sep-biz-1","orientation":"horizontal"},{"component":"CardHeader","id":"dev-header","subtitle":"Active playback sessions by client ecosystem","title":"13. Viewing Split by Device"},{"labels":["Smart TV","Mobile","Desktop","Streaming Stick","Gaming Consoles"],"component":"RadialChart","id":"dev-chart","values":[45,28,12,10,5]},{"children":["promote-header","promote-form"],"component":"Card","direction":"column","gap":"m","id":"actions-card","variant":"sunk"},{"component":"CardHeader","id":"promote-header","subtitle":"Override dynamic feed to push a featured title globally or in targeted region","title":"16. Promote Title on Home Screen"},{"buttons":"promote-btn-group","fields":["promote-title-fc","promote-banner-fc"],"name":"promote_title_form","component":"Form","id":"promote-form"},{"hint":"Select movie or show from approved catalog","input":"promote-title-select","component":"FormControl","id":"promote-title-fc","label":"Select Title"},{"items":["opt-1","opt-2","opt-3","opt-4"],"component":"Select","id":"promote-title-select","name":"title_id","placeholder":"Choose catalog title...","value":"opt-1"},{"component":"SelectItem","id":"opt-1","label":"Cyber Neon 2088 (Season 2 Launch)","value":"title_cyber_neon"},{"component":"SelectItem","id":"opt-2","label":"The Last Horizon (Exclusive Movie)","value":"title_last_horizon"},{"component":"SelectItem","id":"opt-3","label":"Chef's Table: Alpine (Docuseries)","value":"title_chefs_table"},{"component":"SelectItem","id":"opt-4 academic","label":"Releases Coming This Month: Quantum Rift","value":"title_quantum_rift"},{"hint":"Location and priority placement on subscriber homepages","input":"promote-banner-select","component":"FormControl","id":"promote-banner-fc","label":"Promotion Slot"},{"items":["slot-hero","slot-trending","slot-popup"],"component":"Select","id":"promote-banner-select","name":"banner_slot","placeholder":"Select Placement Slot","value":"slot-hero"},{"component":"SelectItem","id":"slot-hero","label":"Hero Carousel Billboard (Top Priority)","value":"hero"},{"component":"SelectItem","id":"slot-trending","label":"#1 Trending Banner Badge","value":"trending"},{"component":"SelectItem","id":"slot-popup","label":"In-App Takeover Modal","value":"takeover"},{"buttons":["btn-submit-promote"],"component":"Buttons","id":"promote-btn-group"},{"action":["promote_title_action"],"component":"Button","id":"btn-submit-promote","label":"Publish Promotion to Home Screen","variant":"primary"}],"surfaceId":"ops-room-dashboard"}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "header",
+          "globalAlert",
+          "regionFilterCard",
+          "mainTabs"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "StreamOps Command Center",
+        "subtitle": "Real-time Operations & Media Intelligence Desk"
+      },
+      {
+        "id": "globalAlert",
+        "component": "Alert",
+        "title": "System Status: Operational",
+        "description": "Global CDN health is optimal. Current buffering rate (0.28%) is within green threshold (<0.5%).",
+        "variant": "success"
+      },
+      {
+        "id": "regionFilterCard",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "align": "center",
+        "gap": "m",
+        "children": [
+          "regionFilterControl"
+        ]
+      },
+      {
+        "id": "regionFilterControl",
+        "component": "FormControl",
+        "label": "Focus Region Filter (Requirement #14)",
+        "hint": "Filter all operational metrics and delivery health views by target territory",
+        "input": "regionSelect"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region_filter",
+        "placeholder": "All Regions (Global)",
+        "items": [
+          "regGlobal",
+          "regNA",
+          "regEU",
+          "regAPAC",
+          "regLATAM"
+        ]
+      },
+      {
+        "id": "regGlobal",
+        "component": "SelectItem",
+        "value": "global",
+        "label": "Global (All Regions)"
+      },
+      {
+        "id": "regNA",
+        "component": "SelectItem",
+        "value": "na",
+        "label": "North America (NA)"
+      },
+      {
+        "id": "regEU",
+        "component": "SelectItem",
+        "value": "eu",
+        "label": "Europe & MEA (EMEA)"
+      },
+      {
+        "id": "regAPAC",
+        "component": "SelectItem",
+        "value": "apac",
+        "label": "Asia Pacific (APAC)"
+      },
+      {
+        "id": "regLATAM",
+        "component": "SelectItem",
+        "value": "latam",
+        "label": "Latin America (LATAM)"
+      },
+      {
+        "id": "mainTabs",
+        "component": "Tabs",
+        "items": [
+          "tabOverview",
+          "tabContentHealth",
+          "tabEngagement",
+          "tabOpsControl"
+        ]
+      },
+      {
+        "id": "tabOverview",
+        "component": "TabItem",
+        "value": "overview",
+        "trigger": "1. Live & Delivery Overview",
+        "content": [
+          "liveOverviewCard",
+          "deliveryHealthCard"
+        ]
+      },
+      {
+        "id": "liveOverviewCard",
+        "component": "Card",
+        "gap": "s",
+        "children": [
+          "liveHeader",
+          "liveBadge",
+          "watchTimeChart"
+        ]
+      },
+      {
+        "id": "liveHeader",
+        "component": "CardHeader",
+        "title": "Viewers Watching Right Now & Monthly Watch Time Trend",
+        "subtitle": "Requirement #1 (Viewers watching now) & Requirement #3 (Watch time over past month)"
+      },
+      {
+        "id": "liveBadge",
+        "component": "Badge",
+        "text": "1,428,910 Concurrent Viewers Active Now",
+        "variant": "default"
+      },
+      {
+        "id": "watchTimeChart",
+        "component": "AreaChart",
+        "xLabel": "Past 30 Days",
+        "yLabel": "Hours Watched (Millions)",
+        "labels": [
+          "Day 1",
+          "Day 5",
+          "Day 10",
+          "Day 15",
+          "Day 20",
+          "Day 25",
+          "Day 30"
+        ],
+        "series": [
+          "watchTimeSeries"
+        ]
+      },
+      {
+        "id": "watchTimeSeries",
+        "component": "Series",
+        "category": "Watch Time (M Hours)",
+        "values": [
+          12.4,
+          14.1,
+          13.8,
+          18.2,
+          16.5,
+          19.0,
+          21.4
+        ]
+      },
+      {
+        "id": "deliveryHealthCard",
+        "component": "Card",
+        "gap": "s",
+        "children": [
+          "deliveryHeader",
+          "bufferProgress",
+          "regionHealthTable"
+        ]
+      },
+      {
+        "id": "deliveryHeader",
+        "component": "CardHeader",
+        "title": "QoE & Network Health",
+        "subtitle": "Requirement #6 (Buffering Rate) & Requirement #7 (Delivery Health by Region)"
+      },
+      {
+        "id": "bufferProgress",
+        "component": "Progress",
+        "value": 0.28,
+        "label": "Global Buffering Rate: 0.28% (Target < 0.50%)"
+      },
+      {
+        "id": "regionHealthTable",
+        "component": "Table",
+        "columns": [
+          "regColName",
+          "regColTraffic",
+          "regColLatency",
+          "regColBuffer",
+          "regColStatus"
+        ]
+      },
+      {
+        "id": "regColName",
+        "component": "Col",
+        "label": "Region",
+        "data": [
+          "North America",
+          "Europe",
+          "Asia Pacific",
+          "Latin America"
+        ]
+      },
+      {
+        "id": "regColTraffic",
+        "component": "Col",
+        "label": "Edge Traffic",
+        "data": [
+          "482 Gbps",
+          "390 Gbps",
+          "210 Gbps",
+          "145 Gbps"
+        ]
+      },
+      {
+        "id": "regColLatency",
+        "component": "Col",
+        "label": "Avg Latency",
+        "data": [
+          "24 ms",
+          "31 ms",
+          "58 ms",
+          "42 ms"
+        ]
+      },
+      {
+        "id": "regColBuffer",
+        "component": "Col",
+        "label": "Buffering %",
+        "data": [
+          "0.19%",
+          "0.24%",
+          "0.41%",
+          "0.35%"
+        ]
+      },
+      {
+        "id": "regColStatus",
+        "component": "Col",
+        "label": "Health Status",
+        "data": [
+          "Optimal",
+          "Optimal",
+          "Warning (High Load)",
+          "Optimal"
+        ]
+      },
+      {
+        "id": "tabContentHealth",
+        "component": "TabItem",
+        "value": "content",
+        "trigger": "2. Catalog & Content Performance",
+        "content": [
+          "topTitlesCard",
+          "genreCard",
+          "scheduleCard"
+        ]
+      },
+      {
+        "id": "topTitlesCard",
+        "component": "Card",
+        "children": [
+          "topTitlesHeader",
+          "topTitlesChart"
+        ]
+      },
+      {
+        "id": "topTitlesHeader",
+        "component": "CardHeader",
+        "title": "Most-Watched Titles",
+        "subtitle": "Requirement #2: Hours watched per title (Last 7 Days)"
+      },
+      {
+        "id": "topTitlesChart",
+        "component": "HorizontalBarChart",
+        "xLabel": "Hours Watched (Millions)",
+        "yLabel": "Title",
+        "labels": [
+          "Cyber Odyssey (Season 2)",
+          "Shadows in Tokyo",
+          "The Chef's Table: Global",
+          "Galactic Frontier",
+          "Love & Laughter"
+        ],
+        "series": [
+          "topTitlesSeries"
+        ]
+      },
+      {
+        "id": "topTitlesSeries",
+        "component": "Series",
+        "category": "Hours Watched (M)",
+        "values": [
+          42.5,
+          31.2,
+          24.8,
+          19.3,
+          15.1
+        ]
+      },
+      {
+        "id": "genreCard",
+        "component": "Card",
+        "children": [
+          "genreHeader",
+          "genreChart"
+        ]
+      },
+      {
+        "id": "genreHeader",
+        "component": "CardHeader",
+        "title": "Performance by Genre",
+        "subtitle": "Requirement #5: Multi-variable comparison across key streaming genres"
+      },
+      {
+        "id": "genreChart",
+        "component": "RadarChart",
+        "labels": [
+          "Sci-Fi",
+          "Drama",
+          "Comedy",
+          "Documentary",
+          "Action",
+          "Thriller"
+        ],
+        "series": [
+          "genreShareSeries",
+          "genreCompletionSeries"
+        ]
+      },
+      {
+        "id": "genreShareSeries",
+        "component": "Series",
+        "category": "Viewer Share (%)",
+        "values": [
+          85,
+          90,
+          65,
+          50,
+          78,
+          82
+        ]
+      },
+      {
+        "id": "genreCompletionSeries",
+        "component": "Series",
+        "category": "Completion Rate (%)",
+        "values": [
+          78,
+          84,
+          72,
+          60,
+          69,
+          75
+        ]
+      },
+      {
+        "id": "scheduleCard",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "releasesSubCard",
+          "expiringSubCard"
+        ]
+      },
+      {
+        "id": "releasesSubCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "releasesHeader",
+          "releasesTable"
+        ]
+      },
+      {
+        "id": "releasesHeader",
+        "component": "CardHeader",
+        "title": "Releases Coming This Month",
+        "subtitle": "Requirement #8"
+      },
+      {
+        "id": "releasesTable",
+        "component": "Table",
+        "columns": [
+          "relColTitle",
+          "relColDate",
+          "relColType"
+        ]
+      },
+      {
+        "id": "relColTitle",
+        "component": "Col",
+        "label": "Title",
+        "data": [
+          "Neon Horizon (S1)",
+          "Deep Blue Mystery",
+          "The Last Symphony"
+        ]
+      },
+      {
+        "id": "relColDate",
+        "component": "Col",
+        "label": "Release Date",
+        "data": [
+          "Nov 14",
+          "Nov 20",
+          "Nov 28"
+        ]
+      },
+      {
+        "id": "relColType",
+        "component": "Col",
+        "label": "Type",
+        "data": [
+          "Original Series",
+          "Documentary",
+          "Movie Premiere"
+        ]
+      },
+      {
+        "id": "expiringSubCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "expiringHeader",
+          "expiringTable"
+        ]
+      },
+      {
+        "id": "expiringHeader",
+        "component": "CardHeader",
+        "title": "Licenses Expiring Soon",
+        "subtitle": "Requirement #9"
+      },
+      {
+        "id": "expiringTable",
+        "component": "Table",
+        "columns": [
+          "expColTitle",
+          "expColDays",
+          "expColStatus"
+        ]
+      },
+      {
+        "id": "expColTitle",
+        "component": "Col",
+        "label": "Title",
+        "data": [
+          "Classic Action Blockbuster",
+          "Retro Sitcom (S1-S6)",
+          "Indie Award Winner"
+        ]
+      },
+      {
+        "id": "expColDays",
+        "component": "Col",
+        "label": "Expires In",
+        "data": [
+          "4 Days",
+          "12 Days",
+          "18 Days"
+        ]
+      },
+      {
+        "id": "expColStatus",
+        "component": "Col",
+        "label": "Renewal Status",
+        "data": [
+          "In Negotiation",
+          "Pending Renewal",
+          "Dropping"
+        ]
+      },
+      {
+        "id": "tabEngagement",
+        "component": "TabItem",
+        "value": "engagement",
+        "trigger": "3. Search, Discovery & Subscriptions",
+        "content": [
+          "discoveryCard",
+          "subscriberCard"
+        ]
+      },
+      {
+        "id": "discoveryCard",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "discoveryHeader",
+          "recoProgress",
+          "failedSearchesAlert",
+          "failedSearchesTable"
+        ]
+      },
+      {
+        "id": "discoveryHeader",
+        "component": "CardHeader",
+        "title": "Search & Recommendation Performance",
+        "subtitle": "Requirement #10 (Recommendation CTR) & Requirement #11 (Searches without Playback)"
+      },
+      {
+        "id": "recoProgress",
+        "component": "Progress",
+        "value": 34.2,
+        "label": "Recommendation Click-Through Rate: 34.2% (+2.4% vs last week)"
+      },
+      {
+        "id": "failedSearchesAlert",
+        "component": "Alert",
+        "title": "Zero-Playback Search Warning",
+        "description": "21.4% of total searches ended without a playback event. Top missing queries are highlighted below.",
+        "variant": "warning"
+      },
+      {
+        "id": "failedSearchesTable",
+        "component": "Table",
+        "columns": [
+          "searchColQuery",
+          "searchColVolume",
+          "searchColNoPlayRate"
+        ]
+      },
+      {
+        "id": "searchColQuery",
+        "component": "Col",
+        "label": "Search Query",
+        "data": [
+          "Interstellar 2",
+          "Anime Fantasy 2024",
+          "Live Sports Football",
+          "4K Nature Documentaries"
+        ]
+      },
+      {
+        "id": "searchColVolume",
+        "component": "Col",
+        "label": "Monthly Volume",
+        "data": [
+          "142,500",
+          "98,200",
+          "84,100",
+          "62,300"
+        ]
+      },
+      {
+        "id": "searchColNoPlayRate",
+        "component": "Col",
+        "label": "No-Playback Rate",
+        "data": [
+          "94.1%",
+          "78.5%",
+          "88.2%",
+          "61.0%"
+        ]
+      },
+      {
+        "id": "subscriberCard",
+        "component": "Card",
+        "children": [
+          "subscriberHeader",
+          "subChart"
+        ]
+      },
+      {
+        "id": "subscriberHeader",
+        "component": "CardHeader",
+        "title": "Subscriber Dynamics",
+        "subtitle": "Requirement #4: New Subscribers vs. Cancellations (Weekly)"
+      },
+      {
+        "id": "subChart",
+        "component": "BarChart",
+        "xLabel": "Week",
+        "yLabel": "Subscribers",
+        "variant": "grouped",
+        "labels": [
+          "Week 1",
+          "Week 2",
+          "Week 3",
+          "Week 4"
+        ],
+        "series": [
+          "newSubSeries",
+          "cancelSubSeries"
+        ]
+      },
+      {
+        "id": "newSubSeries",
+        "component": "Series",
+        "category": "New Subscribers",
+        "values": [
+          48200,
+          52100,
+          61000,
+          58400
+        ]
+      },
+      {
+        "id": "cancelSubSeries",
+        "component": "Series",
+        "category": "Cancellations",
+        "values": [
+          12400,
+          11800,
+          14200,
+          13100
+        ]
+      },
+      {
+        "id": "tabOpsControl",
+        "component": "TabItem",
+        "value": "ops_control",
+        "trigger": "4. Platform Splits & Admin Controls",
+        "content": [
+          "splitsCard",
+          "promotionCard",
+          "featureFlagsCard"
+        ]
+      },
+      {
+        "id": "splitsCard",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "revenueSplitSubCard",
+          "deviceSplitSubCard"
+        ]
+      },
+      {
+        "id": "revenueSplitSubCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "revHeader",
+          "revPieChart"
+        ]
+      },
+      {
+        "id": "revHeader",
+        "component": "CardHeader",
+        "title": "Revenue Split by Plan",
+        "subtitle": "Requirement #12"
+      },
+      {
+        "id": "revPieChart",
+        "component": "PieChart",
+        "variant": "donut",
+        "labels": [
+          "Ad-Supported Basic",
+          "Standard HD",
+          "Premium 4K HDR"
+        ],
+        "values": [
+          28,
+          44,
+          28
+        ]
+      },
+      {
+        "id": "deviceSplitSubCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "deviceHeader",
+          "devicePieChart"
+        ]
+      },
+      {
+        "id": "deviceHeader",
+        "component": "CardHeader",
+        "title": "Viewing Split by Device",
+        "subtitle": "Requirement #13"
+      },
+      {
+        "id": "devicePieChart",
+        "component": "PieChart",
+        "variant": "pie",
+        "labels": [
+          "Smart TV / Living Room",
+          "Mobile (iOS & Android)",
+          "Web Browser",
+          "Tablet"
+        ],
+        "values": [
+          58,
+          22,
+          14,
+          6
+        ]
+      },
+      {
+        "id": "promotionCard",
+        "component": "Card",
+        "children": [
+          "promoHeader",
+          "promoForm"
+        ]
+      },
+      {
+        "id": "promoHeader",
+        "component": "CardHeader",
+        "title": "Promote a Title on Home Screen",
+        "subtitle": "Requirement #16: Override home hero banner for target audiences"
+      },
+      {
+        "id": "promoForm",
+        "component": "Form",
+        "name": "promote_title_form",
+        "buttons": "promoButtons",
+        "fields": [
+          "promoTitleControl",
+          "promoSlotControl",
+          "promoTargetControl"
+        ]
+      },
+      {
+        "id": "promoTitleControl",
+        "component": "FormControl",
+        "label": "Select Title to Promote",
+        "input": "promoTitleSelect"
+      },
+      {
+        "id": "promoTitleSelect",
+        "component": "Select",
+        "name": "promo_title",
+        "placeholder": "Choose title...",
+        "items": [
+          "p1",
+          "p2",
+          "p3"
+        ]
+      },
+      {
+        "id": "p1",
+        "component": "SelectItem",
+        "value": "cyber_odyssey",
+        "label": "Cyber Odyssey (Season 2)"
+      },
+      {
+        "id": "p2",
+        "component": "SelectItem",
+        "value": "neon_horizon",
+        "label": "Neon Horizon (S1 Premiere)"
+      },
+      {
+        "id": "p3",
+        "component": "SelectItem",
+        "value": "shadows_tokyo",
+        "label": "Shadows in Tokyo"
+      },
+      {
+        "id": "promoSlotControl",
+        "component": "FormControl",
+        "label": "Hero Slot Position",
+        "input": "promoSlotSelect"
+      },
+      {
+        "id": "promoSlotSelect",
+        "component": "Select",
+        "name": "promo_slot",
+        "placeholder": "Select slot...",
+        "items": [
+          "slotMain",
+          "slotSecondary"
+        ]
+      },
+      {
+        "id": "slotMain",
+        "component": "SelectItem",
+        "value": "hero_1",
+        "label": "Slot 1 (Main Hero Banner)"
+      },
+      {
+        "id": "slotSecondary",
+        "component": "SelectItem",
+        "value": "hero_2",
+        "label": "Slot 2 (Featured Carousel)"
+      },
+      {
+        "id": "promoTargetControl",
+        "component": "FormControl",
+        "label": "Target Audience Segment",
+        "input": "promoTargetInput"
+      },
+      {
+        "id": "promoTargetInput",
+        "component": "Input",
+        "name": "promo_target",
+        "placeholder": "e.g. All Users, Returning Sci-Fi Fans"
+      },
+      {
+        "id": "promoButtons",
+        "component": "Buttons",
+        "buttons": [
+          "btnPublishPromo",
+          "btnClearPromo"
+        ]
+      },
+      {
+        "id": "btnPublishPromo",
+        "component": "Button",
+        "label": "Promote Title Now",
+        "variant": "primary"
+      },
+      {
+        "id": "btnClearPromo",
+        "component": "Button",
+        "label": "Reset Form",
+        "variant": "tertiary"
+      },
+      {
+        "id": "featureFlagsCard",
+        "component": "Card",
+        "children": [
+          "ffHeader",
+          "ffSwitchGroup"
+        ]
+      },
+      {
+        "id": "ffHeader",
+        "component": "CardHeader",
+        "title": "Platform Feature Flags",
+        "subtitle": "Requirement #15: Operational state controls for active client configurations"
+      },
+      {
+        "id": "ffSwitchGroup",
+        "component": "SwitchGroup",
+        "name": "feature_flags",
+        "items": [
+          "ff1",
+          "ff2",
+          "ff3",
+          "ff4"
+        ]
+      },
+      {
+        "id": "ff1",
+        "component": "SwitchItem",
+        "name": "ff_av1_codec",
+        "label": "AV1 Codec Auto-Switching",
+        "description": "Enable AV1 stream fallback for mobile clients",
+        "defaultChecked": true
+      },
+      {
+        "id": "ff2",
+        "component": "SwitchItem",
+        "name": "ff_live_chat",
+        "label": "Live Broadcast Chat Overlay",
+        "description": "Interactive real-time chat on sporting events",
+        "defaultChecked": false
+      },
+      {
+        "id": "ff3",
+        "component": "SwitchItem",
+        "name": "ff_4k_hdr10plus",
+        "label": "HDR10+ Dynamic Profile Delivery",
+        "description": "Serve HDR10+ metadata to supported Smart TVs",
+        "defaultChecked": true
+      },
+      {
+        "id": "ff4",
+        "component": "SwitchItem",
+        "name": "ff_reco_v3",
+        "label": "Recommendation Engine v3.2 (Neural)",
+        "description": "New deep-learning vector retrieval for homepage recommendations",
+        "defaultChecked": true
+      }
+    ]
+  }
+}
 </a2ui-json>

@@ -1,20 +1,20 @@
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","amount-card","details","payment","note"]}}
-{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Invoice #INV-2024-0142","subtitle":"From Jordan Rivera — Design & Development"}}}
-{"op":"add","path":"/elements/amount-card","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs","align":"center"},"children":["amount-label","amount-value","amount-status"]}}
-{"op":"add","path":"/elements/amount-label","value":{"type":"TextContent","props":{"text":"Amount Due","size":"small-heavy"}}}
-{"op":"add","path":"/elements/amount-value","value":{"type":"Heading","props":{"text":{"$template":"${/invoice/currency} ${/invoice/amount}"},"level":"h1"}}}
-{"op":"add","path":"/elements/amount-status","value":{"type":"Badge","props":{"text":{"$state":"/invoice/status"},"variant":"destructive"}}}
-{"op":"add","path":"/state/invoice","value":{"currency":"USD","amount":"3,250.00","status":"Unpaid","dueDate":"April 30, 2024","daysLeft":"12"}}
-{"op":"add","path":"/elements/details","value":{"type":"Card","props":{"variant":"card","direction":"row","gap":"m","justify":"between"},"children":["due-block","issued-block"]}}
-{"op":"add","path":"/elements/due-block","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["due-label","due-value","due-days"]}}
-{"op":"add","path":"/elements/due-label","value":{"type":"TextContent","props":{"text":"Due Date","size":"small-heavy"}}}
-{"op":"add","path":"/elements/due-value","value":{"type":"TextContent","props":{"text":{"$state":"/invoice/dueDate"},"size":"large-heavy"}}}
-{"op":"add","path":"/elements/due-days","value":{"type":"Tag","props":{"text":{"$template":"${/invoice/daysLeft} days left"},"variant":"warning","size":"sm"}}}
-{"op":"add","path":"/elements/issued-block","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["issued-label","issued-value"]}}
-{"op":"add","path":"/elements/issued-label","value":{"type":"TextContent","props":{"text":"Issued On","size":"small-heavy"}}}
-{"op":"add","path":"/elements/issued-value","value":{"type":"TextContent","props":{"text":"April 16, 2024","size":"large-heavy"}}}
-{"op":"add","path":"/elements/payment","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"children":["pay-btn","pay-methods"]}}
-{"op":"add","path":"/elements/pay-btn","value":{"type":"Button","props":{"label":{"$template":"Pay ${/invoice/currency} ${/invoice/amount} Now"},"variant":"primary","size":"large"},"on":{"press":{"action":"setState","params":{"statePath":"/invoice/status","value":"Processing…"}}}}}
-{"op":"add","path":"/elements/pay-methods","value":{"type":"TextContent","props":{"text":"Secure payment via card, bank transfer, or PayPal.","size":"small"}}}
-{"op":"add","path":"/elements/note","value":{"type":"TextCallout","props":{"variant":"info","title":"Payment Terms","description":"Payment is due within 15 days of issue. A 2% late fee applies after the due date."}}}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","amountCard","dueCard","lineItems","payCard"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Invoice #INV-2024-0142","subtitle":"From Jordan Rivera · Freelance Design"}}}
+{"op":"add","path":"/state/invoice","value":{"amount":"4,250.00","currency":"USD","amountLabel":"$4,250.00 USD","dueDate":"June 30, 2025","status":"Unpaid"}}
+{"op":"add","path":"/elements/amountCard","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs","align":"start"},"children":["amountLabelText","amountValue","amountStatus"]}}
+{"op":"add","path":"/elements/amountLabelText","value":{"type":"TextContent","props":{"text":"Amount Due","size":"small-heavy"}}}
+{"op":"add","path":"/elements/amountValue","value":{"type":"Heading","props":{"text":{"$template":"${/invoice/amountLabel}"},"level":"h1"}}}
+{"op":"add","path":"/elements/amountStatus","value":{"type":"Badge","props":{"text":{"$state":"/invoice/status"},"variant":"destructive"}}}
+{"op":"add","path":"/elements/dueCard","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"center","justify":"between"},"children":["dueLabel","dueTag"]}}
+{"op":"add","path":"/elements/dueLabel","value":{"type":"TextContent","props":{"text":"**Due Date**","size":"default"}}}
+{"op":"add","path":"/elements/dueTag","value":{"type":"Tag","props":{"text":{"$state":"/invoice/dueDate"},"icon":"calendar","variant":"warning","size":"md"}}}
+{"op":"add","path":"/elements/lineItems","value":{"type":"Table","props":{"columns":["descCol","amtCol"]}}}
+{"op":"add","path":"/elements/descCol","value":{"type":"Col","props":{"label":"Description","data":["Brand identity design","Landing page mockups","Revisions & handoff"]}}}
+{"op":"add","path":"/elements/amtCol","value":{"type":"Col","props":{"label":"Amount","type":"string","data":["$2,000.00","$1,750.00","$500.00"]}}}
+{"op":"add","path":"/elements/payCard","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["paySummary","payBtn","payNote","paySuccess"]}}
+{"op":"add","path":"/elements/paySummary","value":{"type":"TextContent","props":{"text":{"$template":"Total due: **${/invoice/amountLabel}** by ${/invoice/dueDate}"},"size":"default"}}}
+{"op":"add","path":"/elements/payBtn","value":{"type":"Button","props":{"label":"Pay Now — $4,250.00","variant":"primary","size":"large"},"on":{"press":{"action":"setState","params":{"statePath":"/paid","value":true}}}}}
+{"op":"add","path":"/state/paid","value":false}
+{"op":"add","path":"/elements/payNote","value":{"type":"TextContent","props":{"text":"Secure payment via card, bank transfer, or PayPal.","size":"small"}}}
+{"op":"add","path":"/elements/paySuccess","value":{"type":"Callout","props":{"variant":"success","title":"Payment received","description":"Thank you! Your payment of $4,250.00 USD has been processed."},"visible":{"$state":"/paid"},"children":[]}}

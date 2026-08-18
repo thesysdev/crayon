@@ -1,39 +1,29 @@
-
-
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["header","threshold-section","search-section","items-list","reorder-summary"]}}
-{"op":"add","path":"/elements/header","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["title","subtitle"]}}
-{"op":"add","path":"/elements/title","value":{"type":"Heading","props":{"text":"⚠️ Low Inventory Alert","level":"h1"},"children":[]}}
-{"op":"add","path":"/elements/subtitle","value":{"type":"TextContent","props":{"text":"The following items have fallen below the reorder threshold and need attention.","size":"default"},"children":[]}}
-{"op":"add","path":"/elements/threshold-section","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between"},"children":["threshold-info","threshold-value"]}}
-{"op":"add","path":"/elements/threshold-info","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"none"},"children":["threshold-label","threshold-desc"]}}
-{"op":"add","path":"/elements/threshold-label","value":{"type":"TextContent","props":{"text":"Reorder Threshold","size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/threshold-desc","value":{"type":"TextContent","props":{"text":"Items below this unit count trigger a warning","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/threshold-value","value":{"type":"Tag","props":{"text":{"$template":"${/threshold} units"},"variant":"warning","size":"lg"},"children":[]}}
-{"op":"add","path":"/state/threshold","value":10}
-{"op":"add","path":"/elements/search-section","value":{"type":"FormControl","props":{"label":"Search Items","hint":"Filter by name, SKU, or category"},"children":["search-input"]}}
-{"op":"add","path":"/elements/search-input","value":{"type":"Input","props":{"name":"search","placeholder":"e.g. Wireless Mouse, SKU-1042…","type":"text","value":{"$bindState":"/searchQuery"}},"children":[]}}
-{"op":"add","path":"/state/searchQuery","value":""}
-{"op":"add","path":"/elements/items-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/items","key":"id"},"children":["item-row"]}}
-{"op":"add","path":"/elements/item-row","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center","justify":"between"},"children":["item-details","stock-level","reorder-btn"]}}
-{"op":"add","path":"/elements/item-details","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"none"},"children":["item-name","item-meta"]}}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"gap":"m"},"children":["header","threshold-alert","search-section","items-list","reorder-summary"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"⚠️ Low Inventory Alert","subtitle":"Items below reorder threshold require attention"}}}
+{"op":"add","path":"/elements/threshold-alert","value":{"type":"Alert","props":{"title":"Warning Threshold: 20 units","description":"Any item with 20 or fewer remaining units triggers this alert. Review and reorder promptly to avoid stockouts.","variant":"warning"}}}
+{"op":"add","path":"/elements/search-section","value":{"type":"FormControl","props":{"label":"Search items","input":"search-input","hint":"Filter by name or SKU"}}}
+{"op":"add","path":"/elements/search-input","value":{"type":"Input","props":{"name":"search","placeholder":"e.g. Wireless Mouse or SKU-1042","type":"text","value":{"$bindState":"/searchText"}},"children":[]}}
+{"op":"add","path":"/state/searchText","value":""}
+{"op":"add","path":"/elements/items-list","value":{"type":"Card","props":{"variant":"clear","gap":"s"},"repeat":{"statePath":"/items","key":"id"},"children":["item-card"]}}
+{"op":"add","path":"/elements/item-card","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","gap":"m"},"children":["item-info","item-actions"]}}
+{"op":"add","path":"/elements/item-info","value":{"type":"Card","props":{"variant":"clear","gap":"xs"},"children":["item-name","item-meta","item-progress"]}}
 {"op":"add","path":"/elements/item-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"default"},"children":[]}}
-{"op":"add","path":"/elements/item-meta","value":{"type":"TextContent","props":{"text":{"$template":"${sku} · ${category}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/stock-level","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs","align":"end"},"children":["units-label","stock-bar"]}}
-{"op":"add","path":"/elements/units-label","value":{"type":"TextContent","props":{"text":{"$template":"${remaining} left"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/stock-bar","value":{"type":"Progress","props":{"value":{"$item":"remaining"},"label":{"$template":"of ${/threshold} threshold"}},"children":[]}}
-{"op":"add","path":"/elements/reorder-btn","value":{"type":"Button","props":{"label":"Reorder","variant":"primary","size":"small"},"on":{"press":{"action":"pushState","params":{"statePath":"/reorderQueue","value":{"id":"$id","itemName":{"$item":"name"},"sku":{"$item":"sku"},"quantity":{"$item":"remaining"},"requestedAt":"now"}}}},"children":[]}}
+{"op":"add","path":"/elements/item-meta","value":{"type":"TextContent","props":{"text":{"$template":"SKU: ${sku} · ${remaining} units left · Category: ${category}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/item-progress","value":{"type":"Progress","props":{"value":{"$item":"remaining"},"label":{"$template":"${remaining} / ${threshold} units"}},"children":[]}}
+{"op":"add","path":"/elements/item-actions","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs","align":"end"},"children":["reorder-btn","item-badge"]}}
+{"op":"add","path":"/elements/reorder-btn","value":{"type":"Button","props":{"label":"Reorder","variant":"primary","size":"small"},"on":{"press":{"action":"pushState","params":{"statePath":"/reorderQueue","value":{"id":"$id","itemId":{"$item":"id"},"itemName":{"$item":"name"},"quantity":{"$item":"reorderQty"},"timestamp":"now"}}}},"children":[]}}
+{"op":"add","path":"/elements/item-badge","value":{"type":"Badge","props":{"text":{"$item":"status"},"variant":"destructive"},"children":[]}}
 {"op":"add","path":"/state/items","value":[]}
-{"op":"add","path":"/state/items/0","value":{"id":"1","name":"Wireless Mouse MX-300","sku":"SKU-1042","category":"Electronics","remaining":3}}
-{"op":"add","path":"/state/items/1","value":{"id":"2","name":"USB-C Charging Cable 2m","sku":"SKU-2210","category":"Accessories","remaining":5}}
-{"op":"add","path":"/state/items/2","value":{"id":"3","name":"Mechanical Keyboard K87","sku":"SKU-0871","category":"Electronics","remaining":2}}
-{"op":"add","path":"/state/items/3","value":{"id":"4","name":"Laptop Stand Aluminum","sku":"SKU-3305","category":"Furniture","remaining":7}}
-{"op":"add","path":"/state/items/4","value":{"id":"5","name":"Noise-Cancelling Earbuds Pro","sku":"SKU-4418","category":"Audio","remaining":4}}
-{"op":"add","path":"/state/items/5","value":{"id":"6","name":"Webcam HD 1080p","sku":"SKU-1190","category":"Electronics","remaining":1}}
-{"op":"add","path":"/elements/reorder-summary","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["reorder-header","reorder-list"]}}
-{"op":"add","path":"/elements/reorder-header","value":{"type":"CardHeader","props":{"title":"Reorder Queue","subtitle":"Items queued for restocking"}}}
-{"op":"add","path":"/elements/reorder-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"repeat":{"statePath":"/reorderQueue","key":"id"},"children":["reorder-item"]}}
-{"op":"add","path":"/elements/reorder-item","value":{"type":"Card","props":{"direction":"row","gap":"s","align":"center","justify":"between"},"children":["reorder-item-name","reorder-item-badge"]}}
+{"op":"add","path":"/state/items/0","value":{"id":"1","name":"Wireless Mouse MX-300","sku":"SKU-1042","remaining":4,"threshold":20,"category":"Electronics","status":"Critical","reorderQty":50}}
+{"op":"add","path":"/state/items/1","value":{"id":"2","name":"USB-C Charging Cable 2m","sku":"SKU-2210","remaining":7,"threshold":20,"category":"Accessories","status":"Critical","reorderQty":100}}
+{"op":"add","path":"/state/items/2","value":{"id":"3","name":"Mechanical Keyboard K87","sku":"SKU-0873","remaining":12,"threshold":20,"category":"Electronics","status":"Low","reorderQty":30}}
+{"op":"add","path":"/state/items/3","value":{"id":"4","name":"Laptop Stand Aluminum","sku":"SKU-3391","remaining":15,"threshold":20,"category":"Furniture","status":"Low","reorderQty":25}}
+{"op":"add","path":"/state/items/4","value":{"id":"5","name":"27\" Monitor IPS Panel","sku":"SKU-4450","remaining":18,"threshold":20,"category":"Electronics","status":"Low","reorderQty":15}}
+{"op":"add","path":"/elements/reorder-summary","value":{"type":"Card","props":{"variant":"sunk","gap":"s"},"children":["reorder-header","reorder-list"]}}
+{"op":"add","path":"/elements/reorder-header","value":{"type":"TextContent","props":{"text":"📦 Reorder Queue","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/reorder-list","value":{"type":"Card","props":{"variant":"clear","gap":"xs"},"repeat":{"statePath":"/reorderQueue","key":"id"},"children":["reorder-item"]}}
+{"op":"add","path":"/elements/reorder-item","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center"},"children":["reorder-item-name","reorder-item-qty"]}}
 {"op":"add","path":"/elements/reorder-item-name","value":{"type":"TextContent","props":{"text":{"$item":"itemName"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/reorder-item-badge","value":{"type":"Badge","props":{"text":"Queued","variant":"secondary"},"children":[]}}
+{"op":"add","path":"/elements/reorder-item-qty","value":{"type":"Badge","props":{"text":{"$template":"Qty: ${quantity}"},"variant":"secondary"},"children":[]}}
 {"op":"add","path":"/state/reorderQueue","value":[]}

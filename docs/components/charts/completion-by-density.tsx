@@ -50,7 +50,7 @@ export function CompletionByDensity() {
   return (
     <Chart
       title="Completion rate by screen complexity"
-      sub="The more a brief asks for, the less every format delivers. OpenUI and A2UI track each other closely at every size; json-render falls fastest and furthest."
+      sub="The more a brief asks for, the less every format delivers. OpenUI and A2UI stay close, with A2UI holding up better on the densest screens; json-render falls fastest."
       note={
         <>
           {BRIEFS} briefs in 5 bands (10/10/10/8/8), averaged over {MODELS.length}{" "}

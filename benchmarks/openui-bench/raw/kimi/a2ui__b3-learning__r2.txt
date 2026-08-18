@@ -1,72 +1,394 @@
-Here's a training analytics dashboard covering all eight items:
+Here's a complete analytics screen for the training platform, covering all eight requirements.
 
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"training-analytics","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#4F46E5","agentDisplayName":"Training Analytics"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"training-analytics","components":[
-{"id":"root","component":"Card","direction":"column","gap":"l","children":["header","cohortBar","statsRow","chartsRow","tablesRow","messageCard","followups"]},
-{"id":"header","component":"CardHeader","title":"Training Platform Analytics","subtitle":"Overview of learner activity, performance, and engagement"},
-{"id":"cohortBar","component":"Card","direction":"row","gap":"m","align":"center","children":["cohortLabel","cohortSelect"]},
-{"id":"cohortLabel","component":"TextContent","text":"**Filter by cohort:**","size":"small-heavy"},
-{"id":"cohortSelect","component":"Select","name":"cohort","placeholder":"All cohorts","items":["ci1","ci2","ci3","ci4"]},
-{"id":"ci1","component":"SelectItem","value":"all","label":"All cohorts"},
-{"id":"ci2","component":"SelectItem","value":"jan2025","label":"January 2025 cohort"},
-{"id":"ci3","component":"SelectItem","value":"feb2025","label":"February 2025 cohort"},
-{"id":"ci4","component":"SelectItem","value":"mar2025","label":"March 2025 cohort"},
-{"id":"statsRow","component":"Card","direction":"row","gap":"m","children":["stat1","stat2","stat3"]},
-{"id":"stat1","component":"Card","direction":"column","gap":"xs","children":["stat1h","stat1v","stat1s"],"weight":1},
-{"id":"stat1h","component":"TextContent","text":"Active Learners This Week","size":"small"},
-{"id":"stat1v","component":"TextContent","text":"1,284","size":"large-heavy"},
-{"id":"stat1s","component":"TextContent","text":"▲ 8% vs last week","size":"small"},
-{"id":"stat2","component":"Card","direction":"column","gap":"xs","children":["stat2h","stat2v","stat2p"],"weight":1},
-{"id":"stat2h","component":"TextContent","text":"Course Completion Rate","size":"small"},
-{"id":"stat2v","component":"TextContent","text":"72%","size":"large-heavy"},
-{"id":"stat2p","component":"Progress","value":72,"label":"Completion"},
-{"id":"stat3","component":"Card","direction":"column","gap":"xs","children":["stat3h","stat3v","stat3p"],"weight":1},
-{"id":"stat3h","component":"TextContent","text":"Average Quiz Score","size":"small"},
-{"id":"stat3v","component":"TextContent","text":"81 / 100","size":"large-heavy"},
-{"id":"stat3p","component":"Progress","value":81,"label":"Avg score"},
-{"id":"chartsRow","component":"Card","direction":"column","gap":"m","children":["engHeader","engChart","engS1"]},
-{"id":"engHeader","component":"CardHeader","title":"Engagement — Past 8 Weeks","subtitle":"Weekly active learners"},
-{"id":"engChart","component":"LineChart","labels":["W1","W2","W3","W4","W5","W6","W7","W8"],"series":["engS1"],"variant":"natural","xLabel":"Week","yLabel":"Active learners"},
-{"id":"engS1","component":"Series","category":"Active learners","values":[980,1040,1110,1060,1180,1230,1195,1284]},
-{"id":"tablesRow","component":"Card","direction":"row","gap":"m","children":["rankCard","riskCard"]},
-{"id":"rankCard","component":"Card","direction":"column","gap":"m","children":["rankHeader","rankChart","rankS1"],"weight":1},
-{"id":"rankHeader","component":"CardHeader","title":"Courses Ranked by Enrollment"},
-{"id":"rankChart","component":"HorizontalBarChart","labels":["Intro to Python","Data Viz Basics","Project Mgmt 101","UX Fundamentals","SQL for Analysts"],"series":["rankS1"],"xLabel":"Enrollments"},
-{"id":"rankS1","component":"Series","category":"Enrollments","values":[542,431,388,342,296]},
-{"id":"riskCard","component":"Card","direction":"column","gap":"m","children":["riskHeader","riskTable","rc1","rc2","rc3"],"weight":1},
-{"id":"riskHeader","component":"CardHeader","title":"Learners at Risk of Dropping Out","subtitle":"No activity in 10+ days or quiz score below 50%"},
-{"id":"riskTable","component":"Table","columns":["rc1","rc2","rc3"]},
-{"id":"rc1","component":"Col","label":"Learner","data":["A. Nguyen","B. Okafor","C. Ramirez","D. Kim","E. Silva"]},
-{"id":"rc2","component":"Col","label":"Last active (days)","data":[14,11,18,10,21],"type":"number"},
-{"id":"rc3","component":"Col","label":"Avg quiz %","data":[42,48,35,51,29],"type":"number"},
-{"id":"messageCard","component":"Card","direction":"column","gap":"m","children":["msgHeader","msgForm"]},
-{"id":"msgHeader","component":"CardHeader","title":"Message a Cohort","subtitle":"Send an announcement or nudge to a selected cohort"},
-{"id":"msgForm","component":"Form","name":"messageCohort","fields":["mf1","mf2"],"buttons":"msgButtons"},
-{"id":"mf1","component":"FormControl","label":"Cohort","input":"msgCohort"},
-{"id":"msgCohort","component":"Select","name":"targetCohort","placeholder":"Choose a cohort","items":["mi1","mi2","mi3"]},
-{"id":"mi1","component":"SelectItem","value":"jan2025","label":"January 2025 cohort"},
-{"id":"mi2","component":"SelectItem","value":"feb2025","label":"February 2025 cohort"},
-{"id":"mi3","component":"SelectItem","value":"mar2025","label":"March 2025 cohort"},
-{"id":"mf2","component":"FormControl","label":"Message","input":"msgBody","hint":"This will be sent to all learners in the cohort."},
-{"id":"msgBody","component":"TextArea","name":"message","placeholder":"Type your message...","rows":4},
-{"id":"msgButtons","component":"Buttons","buttons":["sendBtn"]},
-{"id":"sendBtn","component":"Button","label":"Send Message","variant":"primary"},
-{"id":"followups","component":"FollowUpBlock","items":["fu1","fu2"]},
-{"id":"fu1","component":"FollowUpItem","text":"Show details for the at-risk learners"},
-{"id":"fu2","component":"FollowUpItem","text":"Compare cohorts side by side"}
-]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "cohortFilter",
+          "kpiTable",
+          "engagementChart",
+          "enrollmentChart",
+          "riskAlert",
+          "riskTable",
+          "messageCard"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Training Analytics",
+        "subtitle": "Platform overview — updated today"
+      },
+      {
+        "id": "cohortFilter",
+        "component": "Form",
+        "name": "cohort-filter",
+        "buttons": "filterButtons",
+        "fields": [
+          "cohortField"
+        ]
+      },
+      {
+        "id": "cohortField",
+        "component": "FormControl",
+        "label": "Narrow to cohort",
+        "input": "cohortSelect",
+        "hint": "Filters every metric on this screen"
+      },
+      {
+        "id": "cohortSelect",
+        "component": "Select",
+        "name": "cohort",
+        "placeholder": "All cohorts",
+        "items": [
+          "cohortAll",
+          "cohortJan",
+          "cohortMar",
+          "cohortJun"
+        ]
+      },
+      {
+        "id": "cohortAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All cohorts"
+      },
+      {
+        "id": "cohortJan",
+        "component": "SelectItem",
+        "value": "jan-2025",
+        "label": "January 2025 cohort"
+      },
+      {
+        "id": "cohortMar",
+        "component": "SelectItem",
+        "value": "mar-2025",
+        "label": "March 2025 cohort"
+      },
+      {
+        "id": "cohortJun",
+        "component": "SelectItem",
+        "value": "jun-2025",
+        "label": "June 2025 cohort"
+      },
+      {
+        "id": "filterButtons",
+        "component": "Buttons",
+        "buttons": [
+          "applyFilterBtn"
+        ]
+      },
+      {
+        "id": "applyFilterBtn",
+        "component": "Button",
+        "label": "Apply filter",
+        "variant": "primary"
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": [
+          "kpiName",
+          "kpiValue",
+          "kpiTrend"
+        ]
+      },
+      {
+        "id": "kpiName",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Active learners this week",
+          "Course completion rate",
+          "Average quiz score"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "1,248",
+          "72%",
+          "81 / 100"
+        ]
+      },
+      {
+        "id": "kpiTrend",
+        "component": "Col",
+        "label": "vs. last week",
+        "data": [
+          "+6.2%",
+          "+1.8 pts",
+          "-0.9 pts"
+        ]
+      },
+      {
+        "id": "engagementChart",
+        "component": "LineChart",
+        "labels": [
+          "W1",
+          "W2",
+          "W3",
+          "W4",
+          "W5",
+          "W6",
+          "W7",
+          "W8"
+        ],
+        "series": [
+          "engagementSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Week",
+        "yLabel": "Weekly active learners"
+      },
+      {
+        "id": "engagementSeries",
+        "component": "Series",
+        "category": "Engagement (past 8 weeks)",
+        "values": [
+          980,
+          1045,
+          1110,
+          1075,
+          1160,
+          1205,
+          1180,
+          1248
+        ]
+      },
+      {
+        "id": "enrollmentChart",
+        "component": "HorizontalBarChart",
+        "labels": [
+          "Data Science Fundamentals",
+          "Leadership Essentials",
+          "Advanced Python",
+          "Cloud Architecture",
+          "Agile Project Management"
+        ],
+        "series": [
+          "enrollmentSeries"
+        ],
+        "xLabel": "Enrolled learners",
+        "yLabel": "Course (ranked)"
+      },
+      {
+        "id": "enrollmentSeries",
+        "component": "Series",
+        "category": "Enrollment",
+        "values": [
+          842,
+          690,
+          512,
+          388,
+          274
+        ]
+      },
+      {
+        "id": "riskAlert",
+        "component": "Alert",
+        "title": "Learners at risk",
+        "description": "23 learners have had no activity for 10+ days and are at risk of dropping out",
+        "variant": "warning"
+      },
+      {
+        "id": "riskTable",
+        "component": "Table",
+        "columns": [
+          "riskName",
+          "riskCourse",
+          "riskDays"
+        ]
+      },
+      {
+        "id": "riskName",
+        "component": "Col",
+        "label": "Learner",
+        "data": [
+          "A. Okafor",
+          "M. Chen",
+          "S. Patel",
+          "L. Garcia",
+          "J. Kim"
+        ]
+      },
+      {
+        "id": "riskCourse",
+        "component": "Col",
+        "label": "Course",
+        "data": [
+          "Advanced Python",
+          "Data Science Fundamentals",
+          "Cloud Architecture",
+          "Agile Project Management",
+          "Leadership Essentials"
+        ]
+      },
+      {
+        "id": "riskDays",
+        "component": "Col",
+        "label": "Days inactive",
+        "data": [
+          "21",
+          "17",
+          "14",
+          "12",
+          "10"
+        ]
+      },
+      {
+        "id": "messageCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "messageHeader",
+          "messageForm"
+        ]
+      },
+      {
+        "id": "messageHeader",
+        "component": "CardHeader",
+        "title": "Message a cohort",
+        "subtitle": "Send an announcement or nudge to learners"
+      },
+      {
+        "id": "messageForm",
+        "component": "Form",
+        "name": "cohort-message",
+        "buttons": "messageButtons",
+        "fields": [
+          "msgCohortField",
+          "msgSubjectField",
+          "msgBodyField"
+        ]
+      },
+      {
+        "id": "msgCohortField",
+        "component": "FormControl",
+        "label": "Recipient cohort",
+        "input": "msgCohortSelect"
+      },
+      {
+        "id": "msgCohortSelect",
+        "component": "Select",
+        "name": "message_cohort",
+        "placeholder": "Choose a cohort",
+        "items": [
+          "msgCohortAll",
+          "msgCohortJan",
+          "msgCohortMar",
+          "msgCohortJun",
+          "msgCohortRisk"
+        ]
+      },
+      {
+        "id": "msgCohortAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All cohorts"
+      },
+      {
+        "id": "msgCohortJan",
+        "component": "SelectItem",
+        "value": "jan-2025",
+        "label": "January 2025 cohort"
+      },
+      {
+        "id": "msgCohortMar",
+        "component": "SelectItem",
+        "value": "mar-2025",
+        "label": "March 2025 cohort"
+      },
+      {
+        "id": "msgCohortJun",
+        "component": "SelectItem",
+        "value": "jun-2025",
+        "label": "June 2025 cohort"
+      },
+      {
+        "id": "msgCohortRisk",
+        "component": "SelectItem",
+        "value": "at-risk",
+        "label": "At-risk learners only"
+      },
+      {
+        "id": "msgSubjectField",
+        "component": "FormControl",
+        "label": "Subject",
+        "input": "msgSubjectInput"
+      },
+      {
+        "id": "msgSubjectInput",
+        "component": "Input",
+        "name": "subject",
+        "placeholder": "e.g. Keep going — you're almost there!"
+      },
+      {
+        "id": "msgBodyField",
+        "component": "FormControl",
+        "label": "Message",
+        "input": "msgBodyInput"
+      },
+      {
+        "id": "msgBodyInput",
+        "component": "TextArea",
+        "name": "body",
+        "placeholder": "Write your message to the cohort...",
+        "rows": 4
+      },
+      {
+        "id": "messageButtons",
+        "component": "Buttons",
+        "buttons": [
+          "sendMsgBtn",
+          "cancelMsgBtn"
+        ]
+      },
+      {
+        "id": "sendMsgBtn",
+        "component": "Button",
+        "label": "Send message",
+        "variant": "primary"
+      },
+      {
+        "id": "cancelMsgBtn",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
 </a2ui-json>
 
-The dashboard covers all eight requirements:
-1. **Active learners this week** — stat card (1,284, +8%)
-2. **Course completion rate** — stat card with progress bar (72%)
-3. **Average quiz score** — stat card (81/100)
-4. **Courses ranked by enrollment** — horizontal bar chart
-5. **Learners at risk** — table with last-active days and quiz scores
-6. **Cohort filter** — dropdown to narrow the view to one cohort
-7. **8-week engagement** — line chart of weekly active learners
-8. **Message a cohort** — form with cohort selector, message field, and send button
+All eight items are covered:
+
+1. **Active learners this week** — KPI table (1,248, +6.2% vs. last week)
+2. **Course completion rate** — KPI table (72%)
+3. **Average quiz score** — KPI table (81/100)
+4. **Courses ranked by enrollment** — horizontal bar chart, sorted descending
+5. **Learners at risk** — warning alert plus a table of the most inactive learners
+6. **Narrow to one cohort** — cohort selector with an "Apply filter" button
+7. **Engagement over 8 weeks** — line chart (W1–W8)
+8. **Message a cohort** — form with recipient cohort (including an "at-risk learners" option), subject, and body
+
+Want me to wire the cohort filter to a data model so the charts react live, or add a per-cohort drill-down view?

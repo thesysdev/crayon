@@ -1,15 +1,11 @@
-Here's a remote async standup dashboard covering all five requirements:
+Here's a single-screen async standup board covering all five requirements.
 
 <a2ui-json>
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "standup-surface",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": {
-      "primaryColor": "#4F46E5",
-      "agentDisplayName": "Async Standup"
-    }
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
@@ -18,222 +14,221 @@ Here's a remote async standup dashboard covering all five requirements:
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "standup-surface",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "l",
-        "children": ["header-card", "blocked-card", "missing-card", "post-form"]
+        "children": [
+          "header",
+          "dateBadge",
+          "missingAlert",
+          "blockedAlert",
+          "updatesTable",
+          "separator1",
+          "postHeader",
+          "postForm"
+        ]
       },
       {
-        "id": "header-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "children": ["standup-header", "date-text", "progress-missing"]
-      },
-      {
-        "id": "standup-header",
+        "id": "header",
         "component": "CardHeader",
-        "title": "🌅 Daily Async Standup",
-        "subtitle": "Team Phoenix — 7 members"
+        "title": "Async Standup — Team Phoenix",
+        "subtitle": "Daily check-ins, no meeting required"
       },
       {
-        "id": "date-text",
-        "component": "TextContent",
-        "text": "**Today's date:** Tuesday, March 12, 2025",
-        "size": "default"
+        "id": "dateBadge",
+        "component": "Badge",
+        "text": "Today: Tuesday, June 10, 2025",
+        "variant": "secondary"
       },
       {
-        "id": "progress-missing",
-        "component": "Progress",
-        "value": 57,
-        "label": "2 of 7 updates still missing"
-      },
-      {
-        "id": "blocked-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "children": ["blocked-header", "blocked-list"]
-      },
-      {
-        "id": "blocked-header",
-        "component": "CardHeader",
-        "title": "🚧 Blocked Teammates",
-        "subtitle": "2 people need help today"
-      },
-      {
-        "id": "blocked-list",
-        "component": "ListBlock",
-        "variant": "number",
-        "items": ["blocked-item-1", "blocked-item-2"]
-      },
-      {
-        "id": "blocked-item-1",
-        "component": "ListItem",
-        "title": "Sara Kim — Backend",
-        "subtitle": "🔴 BLOCKED: Waiting on API keys from the payments vendor; billing integration on hold since yesterday."
-      },
-      {
-        "id": "blocked-item-2",
-        "component": "ListItem",
-        "title": "Diego Torres — QA",
-        "subtitle": "🔴 BLOCKED: Staging environment is down; cannot run the release regression suite."
-      },
-      {
-        "id": "missing-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "children": ["missing-alert", "updates-header", "updates-list"]
-      },
-      {
-        "id": "missing-alert",
+        "id": "missingAlert",
         "component": "Alert",
-        "variant": "warning",
-        "title": "2 updates still missing",
-        "description": "Waiting on: Priya Nair (Design) and Alex Chen (DevOps). Reminder ping scheduled for 3 PM."
+        "title": "3 updates still missing",
+        "description": "Waiting on Priya, Tom, and Alex to post their standup",
+        "variant": "warning"
       },
       {
-        "id": "updates-header",
+        "id": "blockedAlert",
+        "component": "Alert",
+        "title": "2 teammates blocked",
+        "description": "Sam is blocked on API access credentials. Maria is blocked on design review sign-off.",
+        "variant": "destructive"
+      },
+      {
+        "id": "updatesTable",
+        "component": "Table",
+        "columns": [
+          "colName",
+          "colStatus",
+          "colUpdate"
+        ]
+      },
+      {
+        "id": "colName",
+        "component": "Col",
+        "label": "Teammate",
+        "data": [
+          "Sam",
+          "Maria",
+          "Jordan",
+          "Lena",
+          "Priya",
+          "Tom",
+          "Alex"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "🚫 Blocked",
+          "🚫 Blocked",
+          "✅ On track",
+          "✅ On track",
+          "⏳ Missing",
+          "⏳ Missing",
+          "⏳ Missing"
+        ]
+      },
+      {
+        "id": "colUpdate",
+        "component": "Col",
+        "label": "Today's Update",
+        "data": [
+          "Finished auth refactor; blocked on API access credentials to test integration",
+          "Completed onboarding flow mocks; blocked waiting on design review sign-off",
+          "Shipped search v2 to staging, starting on filters today",
+          "Fixed 3 crash reports; pairing with Jordan on filters this afternoon",
+          "—",
+          "—",
+          "—"
+        ]
+      },
+      {
+        "id": "separator1",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "postHeader",
         "component": "CardHeader",
-        "title": "✅ Today's Status Updates",
-        "subtitle": "5 of 7 teammates have posted"
+        "title": "Post your update",
+        "subtitle": "Share what you did, what's next, and any blockers"
       },
       {
-        "id": "updates-list",
-        "component": "ListBlock",
-        "variant": "number",
-        "items": ["upd-1", "upd-2", "upd-3", "upd-4", "upd-5"]
-      },
-      {
-        "id": "upd-1",
-        "component": "ListItem",
-        "title": "Maya Johnson — Frontend",
-        "subtitle": "Yesterday: Finished the new onboarding flow. Today: Wiring up analytics events. No blockers. ✅"
-      },
-      {
-        "id": "upd-2",
-        "component": "ListItem",
-        "title": "Sara Kim — Backend",
-        "subtitle": "Yesterday: Billing schema migration done. Today: Payments integration — blocked on vendor API keys. 🚧"
-      },
-      {
-        "id": "upd-3",
-        "component": "ListItem",
-        "title": "Diego Torres — QA",
-        "subtitle": "Yesterday: Smoke tests passed on v2.4. Today: Regression suite — blocked by staging outage. 🚧"
-      },
-      {
-        "id": "upd-4",
-        "component": "ListItem",
-        "title": "Liam O'Connor — Full-stack",
-        "subtitle": "Yesterday: Fixed auth token refresh bug. Today: Code reviews + pair with Maya on analytics. No blockers. ✅"
-      },
-      {
-        "id": "upd-5",
-        "component": "ListItem",
-        "title": "Fatima Al-Sayed — PM",
-        "subtitle": "Yesterday: Sprint retro + roadmap draft. Today: Stakeholder sync at 2 PM. No blockers. ✅"
-      },
-      {
-        "id": "post-form",
+        "id": "postForm",
         "component": "Form",
-        "name": "post-update",
-        "fields": ["field-yesterday", "field-today", "field-blocked"],
-        "buttons": "form-buttons"
+        "name": "standup-update",
+        "buttons": "formButtons",
+        "fields": [
+          "nameField",
+          "updateField",
+          "blockedField"
+        ]
       },
       {
-        "id": "field-yesterday",
+        "id": "nameField",
         "component": "FormControl",
-        "label": "Post your update — Yesterday",
-        "input": "input-yesterday",
-        "hint": "What did you complete yesterday?"
+        "label": "Your name",
+        "input": "nameSelect"
       },
       {
-        "id": "input-yesterday",
-        "component": "TextArea",
-        "name": "yesterday",
-        "placeholder": "e.g., Finished the dashboard refactor...",
-        "rows": 2
+        "id": "nameSelect",
+        "component": "Select",
+        "name": "teammate",
+        "items": [
+          "optPriya",
+          "optTom",
+          "optAlex"
+        ],
+        "placeholder": "Who are you?"
       },
       {
-        "id": "field-today",
+        "id": "optPriya",
+        "component": "SelectItem",
+        "value": "priya",
+        "label": "Priya"
+      },
+      {
+        "id": "optTom",
+        "component": "SelectItem",
+        "value": "tom",
+        "label": "Tom"
+      },
+      {
+        "id": "optAlex",
+        "component": "SelectItem",
+        "value": "alex",
+        "label": "Alex"
+      },
+      {
+        "id": "updateField",
         "component": "FormControl",
-        "label": "Today",
-        "input": "input-today",
-        "hint": "What are you working on today?"
+        "label": "Your update",
+        "input": "updateInput",
+        "hint": "Yesterday, today, blockers"
       },
       {
-        "id": "input-today",
+        "id": "updateInput",
         "component": "TextArea",
-        "name": "today",
-        "placeholder": "e.g., Starting the search feature...",
-        "rows": 2
+        "name": "update",
+        "placeholder": "Yesterday I… Today I will… Blockers: …",
+        "rows": 4
       },
       {
-        "id": "field-blocked",
+        "id": "blockedField",
         "component": "FormControl",
         "label": "Are you blocked?",
-        "input": "input-blocked"
+        "input": "blockedRadio"
       },
       {
-        "id": "input-blocked",
+        "id": "blockedRadio",
         "component": "RadioGroup",
         "name": "blocked",
-        "defaultValue": "no",
-        "items": ["radio-no", "radio-yes"]
+        "items": [
+          "blockedNo",
+          "blockedYes"
+        ],
+        "defaultValue": "no"
       },
       {
-        "id": "radio-no",
+        "id": "blockedNo",
         "component": "RadioItem",
-        "label": "No blockers",
-        "description": "I'm good to go",
+        "label": "No",
+        "description": "On track, nothing in my way",
         "value": "no"
       },
       {
-        "id": "radio-yes",
+        "id": "blockedYes",
         "component": "RadioItem",
-        "label": "Yes, I'm blocked",
-        "description": "I need help from the team",
+        "label": "Yes",
+        "description": "I need help — flag me as blocked",
         "value": "yes"
       },
       {
-        "id": "form-buttons",
+        "id": "formButtons",
         "component": "Buttons",
-        "direction": "row",
-        "buttons": ["btn-submit", "btn-clear"]
+        "buttons": [
+          "submitBtn"
+        ]
       },
       {
-        "id": "btn-submit",
+        "id": "submitBtn",
         "component": "Button",
-        "label": "Post My Update",
-        "variant": "primary",
-        "size": "medium"
-      },
-      {
-        "id": "btn-clear",
-        "component": "Button",
-        "label": "Clear",
-        "variant": "tertiary",
-        "size": "medium"
+        "label": "Post update",
+        "variant": "primary"
       }
     ]
   }
 }
 </a2ui-json>
 
-This single screen covers all five requirements:
-
-1. **Teammates with today's status** — A list showing each of the 5 teammates who posted, with their yesterday/today/blocker summaries.
-2. **Blocked called out** — A dedicated "🚧 Blocked Teammates" card highlighting Sara and Diego with their specific blockers.
-3. **Today's date** — Displayed prominently in the header card (Tuesday, March 12, 2025).
-4. **Post your own update** — A form with yesterday/today text areas, a blocked radio toggle, and submit button.
-5. **Missing updates** — A warning alert ("2 updates still missing") naming who hasn't posted, plus a progress bar showing 5 of 7 submitted.
+This screen covers everything:
+1. **Teammates + status** — a table listing all 7 members with their update (or "—" if missing)
+2. **Blocked callout** — a destructive alert naming Sam and Maria with their blockers
+3. **Today's date** — shown in a badge under the header
+4. **Post your own update** — a form with name picker, update text, and a blocked yes/no toggle
+5. **Missing count** — a warning alert showing 3 updates still outstanding, with names

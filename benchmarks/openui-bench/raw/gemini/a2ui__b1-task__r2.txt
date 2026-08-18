@@ -1,193 +1,133 @@
-I have created a dedicated personal focus view centered entirely around your top priority task.
+Here is a personal focus view designed to help you concentrate on your single most urgent task.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "personal-focus-view",
-      "catalogId": "thesys.dev:c1-openui",
-      "theme": {
-        "primaryColor": "#6366F1",
-        "agentDisplayName": "Focus Assistant"
-      }
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "personal-focus-view",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "l",
-          "children": [
-            "header",
-            "alert-banner",
-            "task-card",
-            "action-form"
-          ]
-        },
-        {
-          "id": "header",
-          "component": "CardHeader",
-          "title": "Current Focus",
-          "subtitle": "Single-task execution view to eliminate distractions"
-        },
-        {
-          "id": "alert-banner",
-          "component": "Alert",
-          "variant": "destructive",
-          "title": "High Priority Task Requires Attention",
-          "description": "This task is approaching its deadline. Focus on completing this item before moving on."
-        },
-        {
-          "id": "task-card",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "task-tags",
-            "task-heading",
-            "task-description",
-            "task-separator",
-            "task-details-list"
-          ]
-        },
-        {
-          "id": "task-tags",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "s",
-          "children": [
-            "urgent-tag",
-            "status-badge"
-          ]
-        },
-        {
-          "id": "urgent-tag",
-          "component": "Tag",
-          "text": "Most Urgent",
-          "variant": "danger",
-          "size": "md"
-        },
-        {
-          "id": "status-badge",
-          "component": "Badge",
-          "text": "In Progress",
-          "variant": "default"
-        },
-        {
-          "id": "task-heading",
-          "component": "Heading",
-          "level": "h2",
-          "text": "Finalize Q3 Financial Report & Executive Deck"
-        },
-        {
-          "id": "task-description",
-          "component": "TextContent",
-          "text": "Complete the detailed revenue reconciliation, update the quarterly forecast charts, and compile the final summary slide deck for tomorrow morning's leadership meeting.",
-          "size": "default"
-        },
-        {
-          "id": "task-separator",
-          "component": "Separator",
-          "orientation": "horizontal",
-          "decorative": true
-        },
-        {
-          "id": "task-details-list",
-          "component": "ListBlock",
-          "variant": "number",
-          "items": [
-            "item-deadline",
-            "item-status",
-            "item-project"
-          ]
-        },
-        {
-          "id": "item-deadline",
-          "component": "ListItem",
-          "title": "Deadline: Today at 5:00 PM (In 2 Hours)",
-          "subtitle": "Strict due time — required for pre-meeting distribution"
-        },
-        {
-          "id": "item-status",
-          "component": "ListItem",
-          "title": "Current Status: In Progress (80% Complete)",
-          "subtitle": "Financial data verified; final slide review pending"
-        },
-        {
-          "id": "item-project",
-          "component": "ListItem",
-          "title": "Project: Q3 Executive Briefings",
-          "subtitle": "Assigned by Operations Team"
-        },
-        {
-          "id": "action-form",
-          "component": "Form",
-          "name": "complete-task-form",
-          "fields": [
-            "notes-control"
-          ],
-          "buttons": "form-buttons"
-        },
-        {
-          "id": "notes-control",
-          "component": "FormControl",
-          "label": "Completion Notes (Optional)",
-          "input": "completion-notes",
-          "hint": "Add any relevant links or final thoughts before closing this task."
-        },
-        {
-          "id": "completion-notes",
-          "component": "TextArea",
-          "name": "completionNotes",
-          "placeholder": "e.g., Updated deck attached in Drive and sent to team...",
-          "rows": 2
-        },
-        {
-          "id": "form-buttons",
-          "component": "Buttons",
-          "direction": "row",
-          "buttons": [
-            "mark-done-btn",
-            "snooze-btn"
-          ]
-        },
-        {
-          "id": "mark-done-btn",
-          "component": "Button",
-          "label": "Mark Task as Done",
-          "variant": "primary",
-          "size": "large",
-          "action": [
-            {
-              "type": "submit",
-              "status": "completed"
-            }
-          ]
-        },
-        {
-          "id": "snooze-btn",
-          "component": "Button",
-          "label": "Remind Me in 30m",
-          "variant": "tertiary",
-          "size": "large",
-          "action": [
-            {
-              "type": "snooze",
-              "minutes": 30
-            }
-          ]
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "alertBanner",
+          "taskCard",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Focus Mode",
+        "subtitle": "Your top priority task for today"
+      },
+      {
+        "id": "alertBanner",
+        "component": "Alert",
+        "variant": "warning",
+        "title": "High Priority",
+        "description": "Due today in 2 hours. Complete this before moving to other tasks."
+      },
+      {
+        "id": "taskCard",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "taskTitle",
+          "taskMeta",
+          "taskDescription",
+          "separator",
+          "progressSection"
+        ]
+      },
+      {
+        "id": "taskTitle",
+        "component": "Heading",
+        "level": "h2",
+        "text": "Finalize Q3 Financial Report & Executive Deck"
+      },
+      {
+        "id": "taskMeta",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "s",
+        "align": "center",
+        "children": [
+          "statusBadge",
+          "deadlineTag"
+        ]
+      },
+      {
+        "id": "statusBadge",
+        "component": "Badge",
+        "text": "In Progress",
+        "variant": "default"
+      },
+      {
+        "id": "deadlineTag",
+        "component": "Tag",
+        "text": "Deadline: Today, 5:00 PM",
+        "variant": "warning",
+        "size": "sm"
+      },
+      {
+        "id": "taskDescription",
+        "component": "TextContent",
+        "size": "default",
+        "text": "Compile final revenue figures from the accounting portal, update the slide presentation, and submit to the leadership team for review."
+      },
+      {
+        "id": "separator",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "progressSection",
+        "component": "Progress",
+        "value": 75,
+        "label": "Task completion: 75%"
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": [
+          "completeBtn",
+          "snoozeBtn"
+        ]
+      },
+      {
+        "id": "completeBtn",
+        "component": "Button",
+        "label": "Mark as Completed",
+        "variant": "primary",
+        "size": "large"
+      },
+      {
+        "id": "snoozeBtn",
+        "component": "Button",
+        "label": "Snooze 30m",
+        "variant": "secondary",
+        "size": "large"
+      }
+    ]
+  }
+}
 </a2ui-json>

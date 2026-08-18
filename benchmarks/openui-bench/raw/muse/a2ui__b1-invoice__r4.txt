@@ -1,5 +1,193 @@
-Single-screen invoice view for your client — amount, currency, due date and one-tap payment.
+Here's a clean, client-facing invoice screen with amount, due date, and instant payment:
 
-<a2ui-json>{"version":"v0.9","createSurface":{"surfaceId":"freelancer-invoice-001","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#0F766E","agentDisplayName":"Freelance Invoices"},"sendDataModel":false}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
 
-<a2ui-json>{"version":"v0.9","updateComponents":{"surfaceId":"freelancer-invoice-001","components":[{"component":"Card","id":"root","children":["header","amountCard","detailsCard","paySection","footerNote"],"direction":"column","gap":"m"},{"component":"CardHeader","id":"header","title":"Invoice #INV-2024-1847","subtitle":"From: Acme Design Studio  •  To: Morgan Consulting Ltd."},{"component":"Card","id":"amountCard","children":["amountLabel","amountValue","currencyRow","statusBadge"],"variant":"card","direction":"column","gap":"s"},{"component":"Card","id":"detailsCard","children":["dueDateHeader","dueDateText","dueDateCallout","separator1","termsText"],"variant":"sunk","direction":"column","gap":"s"},{"component":"Card","id":"paySection","children":["payButton","secureNote","paymentMethods"],"variant":"clear","direction":"column","gap":"s","align":"center"},{"component":"TextContent","id":"footerNote","text":"Questions? Reply to this invoice or contact **hello@acmedesign.studio** • Invoice issued Dec 3, 2025","size":"small"},{"component":"Label","id":"amountLabel","text":"AMOUNT DUE"},{"component":"Heading","id":"amountValue","text":"$2,450.00","level":"h1"},{"component":"Card","id":"currencyRow","children":["currencyTag","currencyText"],"variant":"clear","direction":"row","gap":"s","align":"center"},{"component":"Badge","id":"statusBadge","text":"● Unpaid — Due in 3 days","variant":"destructive"},{"component":"TextContent","id":"dueDateHeader","text":"Due Date","size":"small-heavy"},{"component":"Heading","id":"dueDateText","text":"December 12, 2025","level":"h3"},{"component":"Callout","id":"dueDateCallout","variant":"warning","title":"Payment due in 3 days","description":"Net 14 terms • Please pay by 11:59 PM EST on Dec 12 to avoid late fee."},{"component":"Separator","id":"separator1","orientation":"horizontal","decorative":true},{"component":"TextContent","id":"termsText","text":"Payment terms: Net 14 • Late fee 1.5% monthly after due date","size":"small"},{"component":"Button","id":"payButton","label":"Pay Now — $2,450.00 USD","variant":"primary","size":"large"},{"component":"TextContent","id":"secureNote","text":"🔒 Secure payment via Stripe • Encrypted & PCI compliant","size":"small"},{"component":"TagBlock","id":"paymentMethods","tags":["Visa","Mastercard","Amex","ACH Transfer","Wire"]},{"component":"Tag","id":"currencyTag","text":"USD","variant":"info","size":"md"},{"component":"TextContent","id":"currencyText","text":"United States Dollar • All amounts in USD","size":"small"}]}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "statusRow",
+          "amountCard",
+          "dueAlert",
+          "itemsTable",
+          "payCard",
+          "footerText"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Invoice #FL-2024-0847",
+        "subtitle": "Alex Morgan — Freelance Brand Designer • Bill to: Acme Co."
+      },
+      {
+        "id": "statusRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "justify": "between",
+        "align": "center",
+        "children": [
+          "statusBadge",
+          "issuedText"
+        ]
+      },
+      {
+        "id": "statusBadge",
+        "component": "Badge",
+        "text": "Unpaid • Due in 7 days",
+        "variant": "destructive"
+      },
+      {
+        "id": "issuedText",
+        "component": "TextContent",
+        "text": "Issued: Aug 12, 2026 • Payment terms: Net 14",
+        "size": "small"
+      },
+      {
+        "id": "amountCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "amountLabel",
+          "amountValue",
+          "amountSub"
+        ]
+      },
+      {
+        "id": "amountLabel",
+        "component": "TextContent",
+        "text": "AMOUNT DUE",
+        "size": "small"
+      },
+      {
+        "id": "amountValue",
+        "component": "Heading",
+        "text": "$2,850.00 USD",
+        "level": "h1"
+      },
+      {
+        "id": "amountSub",
+        "component": "TextContent",
+        "text": "Currency: United States Dollar (USD) • Includes 0% tax • No partial payments",
+        "size": "small"
+      },
+      {
+        "id": "dueAlert",
+        "component": "Alert",
+        "title": "Due Date: August 25, 2026",
+        "description": "Please pay by Monday, Aug 25, 2026 at 11:59 PM ET to avoid a 1.5% late fee. 7 days remaining.",
+        "variant": "warning"
+      },
+      {
+        "id": "itemsTable",
+        "component": "Table",
+        "columns": [
+          "colDesc",
+          "colQty",
+          "colRate",
+          "colAmount"
+        ]
+      },
+      {
+        "id": "colDesc",
+        "component": "Col",
+        "label": "Description",
+        "data": [
+          "Brand Identity Refresh",
+          "Website Landing Page Design",
+          "Revisions & Asset Export"
+        ]
+      },
+      {
+        "id": "colQty",
+        "component": "Col",
+        "label": "Qty / Hrs",
+        "data": [
+          "1",
+          "18 hrs",
+          "4 hrs"
+        ]
+      },
+      {
+        "id": "colRate",
+        "component": "Col",
+        "label": "Rate",
+        "data": [
+          "$1,200.00",
+          "$75.00/hr",
+          "$75.00/hr"
+        ]
+      },
+      {
+        "id": "colAmount",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "$1,200.00",
+          "$1,350.00",
+          "$300.00"
+        ]
+      },
+      {
+        "id": "payCard",
+        "component": "Card",
+        "children": [
+          "payHeader",
+          "payButtons"
+        ]
+      },
+      {
+        "id": "payHeader",
+        "component": "CardHeader",
+        "title": "Pay now",
+        "subtitle": "Secure payment via card or bank transfer • Receipt sent automatically"
+      },
+      {
+        "id": "payButtons",
+        "component": "Buttons",
+        "buttons": [
+          "payNowBtn",
+          "downloadBtn"
+        ]
+      },
+      {
+        "id": "payNowBtn",
+        "component": "Button",
+        "label": "Pay $2,850.00 USD Now",
+        "variant": "primary",
+        "size": "large"
+      },
+      {
+        "id": "downloadBtn",
+        "component": "Button",
+        "label": "Download PDF",
+        "variant": "secondary"
+      },
+      {
+        "id": "footerText",
+        "component": "TextContent",
+        "text": "Questions? Contact alex@morgan.design • ACH: **** 4821 • Card, Apple Pay & Google Pay accepted",
+        "size": "small"
+      }
+    ]
+  }
+}
+</a2ui-json>

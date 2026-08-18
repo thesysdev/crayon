@@ -1,6 +1,445 @@
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"service-health-oncall","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#2563EB","agentDisplayName":"Service Health"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#2563EB",
+      "agentDisplayName": "Service Health"
+    }
+  }
+}
 </a2ui-json>
+
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"service-health-oncall","components":[{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["header","region-form","metrics-row","usage-card","incidents-card","endpoints-card","threshold-form"]},{"id":"header","component":"Card","variant":"clear","direction":"column","gap":"xs","children":["title","subtitle"]},{"id":"title","component":"Heading","text":"Service Health · On-call","level":"h1"},{"id":"subtitle","component":"TextContent","text":"Production telemetry · Updated just now","size":"small"},{"id":"region-form","component":"Form","name":"region_filter","fields":["region-control"],"buttons":"region-buttons"},{"id":"region-control","component":"FormControl","label":"Region","input":"region-select","hint":"Narrow all health metrics to one region."},{"id":"region-select","component":"Select","name":"region","items":["region-all","region-use1","region-usw2","region-euw1","region-apse1"],"value":"all","size":"medium"},{"id":"region-all","component":"SelectItem","value":"all","label":"All regions"},{"id":"region-use1","component":"SelectItem","value":"us-east-1","label":"US East (N. Virginia)"},{"id":"region-usw2","component":"SelectItem","value":"us-west-2","label":"US West (Oregon)"},{"id":"region-euw1","component":"SelectItem","value":"eu-west-1","label":"EU West (Ireland)"},{"id":"region-apse1","component":"SelectItem","value":"ap-southeast-1","label":"Asia Pacific (Singapore)"},{"id":"region-buttons","component":"Buttons","buttons":["apply-region"],"direction":"row"},{"id":"apply-region","component":"Button","label":"Apply region","variant":"secondary","size":"small","action":[{"event":"filter_region"}]},{"id":"metrics-row","component":"Card","variant":"clear","direction":"row","gap":"m","align":"stretch","children":["uptime-card","error-card"]},{"id":"uptime-card","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["uptime-label","uptime-value","uptime-progress"]},{"id":"uptime-label","component":"TextContent","text":"Uptime this quarter","size":"small-heavy"},{"id":"uptime-value","component":"Heading","text":"99.982%","level":"h2"},{"id":"uptime-progress","component":"Progress","value":99.982,"label":"Quarterly uptime"},{"id":"error-card","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["error-label","error-value","error-status"]},{"id":"error-label","component":"TextContent","text":"Error rate right now","size":"small-heavy"},{"id":"error-value","component":"Heading","text":"1.24%","level":"h2"},{"id":"error-status","component":"Badge","text":"Elevated · +0.38% vs 1h avg","variant":"destructive"},{"id":"usage-card","component":"Card","variant":"card","direction":"column","gap":"m","children":["usage-header","usage-chart"]},{"id":"usage-header","component":"CardHeader","title":"Resource usage · Past 24 hours","subtitle":"Hourly average utilization"},{"id":"usage-chart","component":"LineChart","labels":["00:00","02:00","04:00","06:00","08:00","10:00","12:00","14:00","16:00","18:00","20:00","22:00","Now"],"series":["cpu-series","memory-series"],"variant":"natural","xLabel":"Time","yLabel":"Utilization (%)"},{"id":"cpu-series","component":"Series","category":"CPU","values":[42,38,35,39,51,64,72,68,61,75,69,58,63]},{"id":"memory-series","component":"Series","category":"Memory","values":[57,56,55,58,61,65,67,70,72,74,73,71,72]},{"id":"incidents-card","component":"Card","variant":"card","direction":"column","gap":"m","children":["incidents-header","incidents-alert","incidents-table","ack-form"]},{"id":"incidents-header","component":"CardHeader","title":"Open incidents","subtitle":"3 incidents require attention"},{"id":"incidents-alert","component":"Alert","title":"Active production impact","description":"INC-4821 is causing elevated checkout errors in US East.","variant":"warning"},{"id":"incidents-table","component":"Table","columns":["incident-id-col","incident-severity-col","incident-summary-col","incident-age-col"]},{"id":"incident-id-col","component":"Col","label":"Incident","data":["INC-4821","INC-4817","INC-4809"],"type":"string"},{"id":"incident-severity-col","component":"Col","label":"Severity","data":["SEV-1 Critical","SEV-2 High","SEV-3 Moderate"],"type":"string"},{"id":"incident-summary-col","component":"Col","label":"Summary","data":["Checkout 5xx spike","Search latency degradation","Delayed webhook delivery"],"type":"string"},{"id":"incident-age-col","component":"Col","label":"Open for","data":["18 min","47 min","2 hr 14 min"],"type":"string"},{"id":"ack-form","component":"Form","name":"acknowledge_incident","fields":["ack-incident-control","ack-note-control"],"buttons":"ack-buttons"},{"id":"ack-incident-control","component":"FormControl","label":"Acknowledge incident","input":"ack-incident-select","hint":"Select the incident you are taking ownership of."},{"id":"ack-incident-select","component":"Select","name":"incident_id","items":["ack-inc-4821","ack-inc-4817","ack-inc-4809"],"placeholder":"Choose an open incident","size":"medium"},{"id":"ack-inc-4821","component":"SelectItem","value":"INC-4821","label":"INC-4821 · SEV-1 Critical"},{"id":"ack-inc-4817","component":"SelectItem","value":"INC-4817","label":"INC-4817 · SEV-2 High"},{"id":"ack-inc-4809","component":"SelectItem","value":"INC-4809","label":"INC-4809 · SEV-3 Moderate"},{"id":"ack-note-control","component":"FormControl","label":"Acknowledgement note","input":"ack-note","hint":"Optional handoff or investigation note."},{"id":"ack-note","component":"Input","name":"ack_note","type":"text","placeholder":"e.g. Investigating recent deploy"},{"id":"ack-buttons","component":"Buttons","buttons":["ack-button"],"direction":"row"},{"id":"ack-button","component":"Button","label":"Acknowledge incident","variant":"primary","size":"medium","action":[{"event":"acknowledge_incident"}]},{"id":"endpoints-card","component":"Card","variant":"card","direction":"column","gap":"m","children":["endpoints-header","endpoints-chart"]},{"id":"endpoints-header","component":"CardHeader","title":"Five slowest endpoints","subtitle":"Current p95 response latency"},{"id":"endpoints-chart","component":"HorizontalBarChart","labels":["POST /v1/checkout","GET /v1/search","POST /v1/reports/export","GET /v1/orders/:id","PATCH /v1/customers/:id"],"series":["latency-series"],"variant":"grouped","xLabel":"Latency (ms)","yLabel":"Endpoint"},{"id":"latency-series","component":"Series","category":"p95 latency (ms)","values":[1840,1320,1095,870,745]},{"id":"threshold-form","component":"Form","name":"alert_threshold","fields":["threshold-control","threshold-scope-control"],"buttons":"threshold-buttons"},{"id":"threshold-control","component":"FormControl","label":"Error-rate alert threshold","input":"threshold-slider","hint":"Trigger an alert when the live error rate exceeds this percentage."},{"id":"threshold-slider","component":"Slider","name":"error_rate_threshold","variant":"discrete","min":0.5,"max":10,"step":0.5,"defaultValue":[2],"value":[2],"label":"2.0%"},{"id":"threshold-scope-control","component":"FormControl","label":"Apply threshold to","input":"threshold-scope","hint":"Uses the active region filter when set to selected region."},{"id":"threshold-scope","component":"RadioGroup","name":"threshold_scope","items":["scope-all","scope-selected"],"defaultValue":"selected","value":"selected"},{"id":"scope-all","component":"RadioItem","label":"All regions","description":"Alert on aggregate service error rate.","value":"all"},{"id":"scope-selected","component":"RadioItem","label":"Selected region","description":"Alert only for the region selected above.","value":"selected"},{"id":"threshold-buttons","component":"Buttons","buttons":["save-threshold"],"direction":"row"},{"id":"save-threshold","component":"Button","label":"Save alert threshold","variant":"primary","size":"medium","action":[{"event":"save_alert_threshold"}]}]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "regionForm",
+          "healthSummary",
+          "usageSection",
+          "incidentsSection",
+          "endpointsSection",
+          "thresholdSection"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Service health",
+        "subtitle": "On-call view · Updated just now"
+      },
+      {
+        "id": "regionForm",
+        "component": "Form",
+        "name": "region-filter",
+        "buttons": "regionButtons",
+        "fields": [
+          "regionControl"
+        ]
+      },
+      {
+        "id": "regionButtons",
+        "component": "Buttons",
+        "buttons": [
+          "applyRegionButton"
+        ]
+      },
+      {
+        "id": "applyRegionButton",
+        "component": "Button",
+        "label": "Apply region",
+        "variant": "secondary",
+        "size": "small"
+      },
+      {
+        "id": "regionControl",
+        "component": "FormControl",
+        "label": "Region",
+        "input": "regionSelect",
+        "hint": "Narrow every metric and incident to one region"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region",
+        "items": [
+          "regionAll",
+          "regionUSEast",
+          "regionUSWest",
+          "regionEUWest",
+          "regionAPSE"
+        ],
+        "value": "all",
+        "size": "medium"
+      },
+      {
+        "id": "regionAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All regions"
+      },
+      {
+        "id": "regionUSEast",
+        "component": "SelectItem",
+        "value": "us-east-1",
+        "label": "US East (us-east-1)"
+      },
+      {
+        "id": "regionUSWest",
+        "component": "SelectItem",
+        "value": "us-west-2",
+        "label": "US West (us-west-2)"
+      },
+      {
+        "id": "regionEUWest",
+        "component": "SelectItem",
+        "value": "eu-west-1",
+        "label": "EU West (eu-west-1)"
+      },
+      {
+        "id": "regionAPSE",
+        "component": "SelectItem",
+        "value": "ap-southeast-1",
+        "label": "Asia Pacific (ap-southeast-1)"
+      },
+      {
+        "id": "healthSummary",
+        "component": "Card",
+        "children": [
+          "summaryHeading",
+          "summaryTable",
+          "summaryMetricCol",
+          "summaryValueCol",
+          "summaryStatusCol"
+        ],
+        "variant": "sunk",
+        "gap": "m"
+      },
+      {
+        "id": "summaryHeading",
+        "component": "Heading",
+        "text": "Current health",
+        "level": "h2"
+      },
+      {
+        "id": "summaryTable",
+        "component": "Table",
+        "columns": [
+          "summaryMetricCol",
+          "summaryValueCol",
+          "summaryStatusCol"
+        ]
+      },
+      {
+        "id": "summaryMetricCol",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Uptime this quarter",
+          "Error rate right now"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "summaryValueCol",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "99.982%",
+          "1.84%"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "summaryStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Within SLO",
+          "Elevated"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "usageSection",
+        "component": "Card",
+        "children": [
+          "usageHeader",
+          "usageChart",
+          "cpuSeries",
+          "memorySeries"
+        ],
+        "variant": "clear",
+        "gap": "m"
+      },
+      {
+        "id": "usageHeader",
+        "component": "CardHeader",
+        "title": "CPU and memory usage",
+        "subtitle": "Past 24 hours · Percent utilization"
+      },
+      {
+        "id": "usageChart",
+        "component": "LineChart",
+        "labels": [
+          "00:00",
+          "03:00",
+          "06:00",
+          "09:00",
+          "12:00",
+          "15:00",
+          "18:00",
+          "21:00",
+          "Now"
+        ],
+        "series": [
+          "cpuSeries",
+          "memorySeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Time",
+        "yLabel": "Usage (%)"
+      },
+      {
+        "id": "cpuSeries",
+        "component": "Series",
+        "category": "CPU",
+        "values": [
+          38,
+          34,
+          41,
+          57,
+          63,
+          69,
+          74,
+          61,
+          67
+        ]
+      },
+      {
+        "id": "memorySeries",
+        "component": "Series",
+        "category": "Memory",
+        "values": [
+          56,
+          55,
+          58,
+          61,
+          64,
+          66,
+          71,
+          70,
+          73
+        ]
+      },
+      {
+        "id": "incidentsSection",
+        "component": "Card",
+        "children": [
+          "incidentsHeader",
+          "incidentsAlert",
+          "incidentList",
+          "incidentOne",
+          "incidentTwo",
+          "incidentThree",
+          "acknowledgeDialog"
+        ],
+        "variant": "clear",
+        "gap": "m"
+      },
+      {
+        "id": "incidentsHeader",
+        "component": "CardHeader",
+        "title": "Open incidents",
+        "subtitle": "3 incidents require attention"
+      },
+      {
+        "id": "incidentsAlert",
+        "component": "Alert",
+        "title": "SEV-1 active",
+        "description": "Checkout errors are elevated in us-east-1.",
+        "variant": "destructive"
+      },
+      {
+        "id": "incidentList",
+        "component": "ListBlock",
+        "items": [
+          "incidentOne",
+          "incidentTwo",
+          "incidentThree"
+        ],
+        "variant": "number"
+      },
+      {
+        "id": "incidentOne",
+        "component": "ListItem",
+        "title": "SEV-1 · Checkout error spike",
+        "subtitle": "us-east-1 · Open 18 minutes · Unacknowledged",
+        "actionLabel": "Acknowledge below"
+      },
+      {
+        "id": "incidentTwo",
+        "component": "ListItem",
+        "title": "SEV-2 · Search latency degradation",
+        "subtitle": "eu-west-1 · Open 47 minutes · Acknowledged by M. Chen"
+      },
+      {
+        "id": "incidentThree",
+        "component": "ListItem",
+        "title": "SEV-3 · Delayed webhook delivery",
+        "subtitle": "us-west-2 · Open 1 hour 12 minutes · Unacknowledged",
+        "actionLabel": "Acknowledge below"
+      },
+      {
+        "id": "acknowledgeDialog",
+        "component": "AlertDialogBlock",
+        "triggerLabel": "Acknowledge an incident",
+        "title": "Acknowledge selected incident?",
+        "description": "This records you as the responder and notifies the on-call channel.",
+        "confirmLabel": "Acknowledge",
+        "cancelLabel": "Cancel",
+        "triggerVariant": "default"
+      },
+      {
+        "id": "endpointsSection",
+        "component": "Card",
+        "children": [
+          "endpointsHeader",
+          "endpointsTable",
+          "endpointRankCol",
+          "endpointPathCol",
+          "endpointLatencyCol"
+        ],
+        "variant": "clear",
+        "gap": "m"
+      },
+      {
+        "id": "endpointsHeader",
+        "component": "CardHeader",
+        "title": "Five slowest endpoints",
+        "subtitle": "Current p95 latency"
+      },
+      {
+        "id": "endpointsTable",
+        "component": "Table",
+        "columns": [
+          "endpointRankCol",
+          "endpointPathCol",
+          "endpointLatencyCol"
+        ]
+      },
+      {
+        "id": "endpointRankCol",
+        "component": "Col",
+        "label": "Rank",
+        "data": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "type": "number"
+      },
+      {
+        "id": "endpointPathCol",
+        "component": "Col",
+        "label": "Endpoint",
+        "data": [
+          "POST /v1/checkout",
+          "GET /v1/search",
+          "POST /v1/reports/export",
+          "GET /v1/orders/:id",
+          "POST /v1/webhooks"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "endpointLatencyCol",
+        "component": "Col",
+        "label": "p95 latency",
+        "data": [
+          "2,840 ms",
+          "1,920 ms",
+          "1,470 ms",
+          "1,180 ms",
+          "940 ms"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "thresholdSection",
+        "component": "Card",
+        "children": [
+          "thresholdHeader",
+          "thresholdForm",
+          "thresholdButtons",
+          "saveThresholdButton",
+          "thresholdControl",
+          "thresholdSlider"
+        ],
+        "variant": "sunk",
+        "gap": "m"
+      },
+      {
+        "id": "thresholdHeader",
+        "component": "CardHeader",
+        "title": "Alert threshold",
+        "subtitle": "Set the error-rate level that triggers an alert"
+      },
+      {
+        "id": "thresholdForm",
+        "component": "Form",
+        "name": "alert-threshold",
+        "buttons": "thresholdButtons",
+        "fields": [
+          "thresholdControl"
+        ]
+      },
+      {
+        "id": "thresholdButtons",
+        "component": "Buttons",
+        "buttons": [
+          "saveThresholdButton"
+        ]
+      },
+      {
+        "id": "saveThresholdButton",
+        "component": "Button",
+        "label": "Save threshold",
+        "variant": "primary"
+      },
+      {
+        "id": "thresholdControl",
+        "component": "FormControl",
+        "label": "Error-rate threshold",
+        "input": "thresholdSlider",
+        "hint": "Current setting: 2.0%"
+      },
+      {
+        "id": "thresholdSlider",
+        "component": "Slider",
+        "name": "error_rate_threshold",
+        "variant": "discrete",
+        "min": 0.5,
+        "max": 10,
+        "step": 0.5,
+        "defaultValue": [
+          2
+        ],
+        "label": "Error rate (%)"
+      }
+    ]
+  }
+}
 </a2ui-json>

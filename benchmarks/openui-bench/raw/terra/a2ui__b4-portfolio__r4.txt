@@ -2,7 +2,7 @@
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "pmo-portfolio-review",
+    "surfaceId": "main",
     "catalogId": "thesys.dev:c1-openui",
     "theme": {
       "primaryColor": "#2563EB",
@@ -16,149 +16,134 @@
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "pmo-portfolio-review",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
         "variant": "clear",
-        "direction": "column",
         "gap": "l",
         "children": [
           "header",
-          "portfolio-summary",
-          "active-projects-card",
-          "mid-row",
-          "analytics-row",
-          "risks-card",
-          "upcoming-card",
-          "blocked-card",
-          "footer-actions"
+          "portfolioHealth",
+          "reviewActions",
+          "projectsSection",
+          "milestonesSection",
+          "budgetSection",
+          "teamSection",
+          "risksSection",
+          "deadlinesSection",
+          "paceSection",
+          "blockedSection",
+          "archiveProject"
         ]
       },
       {
         "id": "header",
+        "component": "CardHeader",
+        "title": "Project Portfolio Review",
+        "subtitle": "Q3 2026 • Portfolio status, delivery outlook, and resourcing"
+      },
+      {
+        "id": "portfolioHealth",
+        "component": "Alert",
+        "title": "Portfolio health: At risk",
+        "description": "6 active projects are underway; 2 are at risk due to overdue milestones and capacity constraints.",
+        "variant": "warning"
+      },
+      {
+        "id": "reviewActions",
         "component": "Card",
-        "variant": "clear",
         "direction": "row",
-        "align": "center",
-        "justify": "between",
         "gap": "m",
+        "align": "center",
         "children": [
-          "header-copy",
-          "header-actions"
+          "quarterField",
+          "exportReview"
         ]
       },
       {
-        "id": "header-copy",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "page-title",
-          "page-subtitle"
+        "id": "quarterField",
+        "component": "FormControl",
+        "label": "Review quarter",
+        "input": "quarterSelect"
+      },
+      {
+        "id": "quarterSelect",
+        "component": "Select",
+        "name": "quarter",
+        "placeholder": "Select quarter",
+        "value": "2026-q3",
+        "items": [
+          "q2",
+          "q3",
+          "q4"
         ]
       },
       {
-        "id": "page-title",
-        "component": "Heading",
-        "text": "Project Portfolio Review",
-        "level": "h1"
+        "id": "q2",
+        "component": "SelectItem",
+        "value": "2026-q2",
+        "label": "Q2 2026"
       },
       {
-        "id": "page-subtitle",
-        "component": "TextContent",
-        "text": "Executive delivery, capacity, budget, and risk review",
-        "size": "default"
+        "id": "q3",
+        "component": "SelectItem",
+        "value": "2026-q3",
+        "label": "Q3 2026"
       },
       {
-        "id": "header-actions",
-        "component": "Buttons",
-        "direction": "row",
-        "buttons": [
-          "quarter-select-button",
-          "export-button"
-        ]
+        "id": "q4",
+        "component": "SelectItem",
+        "value": "2026-q4",
+        "label": "Q4 2026"
       },
       {
-        "id": "quarter-select-button",
-        "component": "Button",
-        "label": "Q3 2026 ▾",
-        "variant": "secondary",
-        "size": "medium",
-        "action": [
-          {
-            "type": "selectQuarter",
-            "currentQuarter": "Q3 2026"
-          }
-        ]
-      },
-      {
-        "id": "export-button",
+        "id": "exportReview",
         "component": "Button",
         "label": "Export review",
-        "variant": "primary",
-        "size": "medium",
-        "action": [
-          {
-            "type": "export",
-            "format": "pdf"
-          }
-        ]
+        "variant": "secondary"
       },
       {
-        "id": "portfolio-summary",
-        "component": "Callout",
-        "variant": "info",
-        "title": "Portfolio health: Watch",
-        "description": "6 active projects: 3 are on track, 2 need attention, and 1 is at risk due to delivery blockers and a budget variance."
-      },
-      {
-        "id": "active-projects-card",
+        "id": "projectsSection",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
         "gap": "m",
         "children": [
-          "active-projects-header",
-          "active-projects-table"
+          "projectsHeading",
+          "projectsTable"
         ]
       },
       {
-        "id": "active-projects-header",
-        "component": "CardHeader",
-        "title": "Active projects",
-        "subtitle": "Owner, deadline, health, budget, and actions"
+        "id": "projectsHeading",
+        "component": "Heading",
+        "text": "Active projects",
+        "level": "h2"
       },
       {
-        "id": "active-projects-table",
+        "id": "projectsTable",
         "component": "Table",
         "columns": [
-          "project-col",
-          "owner-col",
-          "deadline-col",
-          "health-col",
-          "budget-col",
-          "project-action-col"
+          "projectNameCol",
+          "projectOwnerCol",
+          "projectDeadlineCol",
+          "projectHealthCol"
         ]
       },
       {
-        "id": "project-col",
+        "id": "projectNameCol",
         "component": "Col",
         "label": "Project",
         "data": [
-          "Customer Portal Refresh",
+          "Customer Portal",
           "ERP Modernization",
-          "Mobile Payments",
-          "Data Platform Foundation",
-          "Security Compliance",
-          "CRM Consolidation"
-        ],
-        "type": "string"
+          "Mobile Checkout",
+          "Data Platform",
+          "Security Remediation",
+          "APAC Launch"
+        ]
       },
       {
-        "id": "owner-col",
+        "id": "projectOwnerCol",
         "component": "Col",
         "label": "Owner",
         "data": [
@@ -166,518 +151,603 @@
           "Daniel Ortiz",
           "Priya Shah",
           "Noah Williams",
-          "Ava Thompson",
-          "Leo Martin"
-        ],
-        "type": "string"
+          "Elena Rossi",
+          "Marcus Lee"
+        ]
       },
       {
-        "id": "deadline-col",
+        "id": "projectDeadlineCol",
         "component": "Col",
         "label": "Deadline",
         "data": [
+          "Sep 12, 2026",
+          "Oct 30, 2026",
+          "Sep 05, 2026",
+          "Nov 18, 2026",
           "Aug 28, 2026",
-          "Sep 30, 2026",
-          "Aug 24, 2026",
-          "Oct 16, 2026",
-          "Sep 11, 2026",
-          "Sep 18, 2026"
-        ],
-        "type": "string"
+          "Sep 30, 2026"
+        ]
       },
       {
-        "id": "health-col",
+        "id": "projectHealthCol",
         "component": "Col",
         "label": "Health",
         "data": [
           "On track",
           "At risk",
-          "Needs attention",
+          "At risk",
           "On track",
-          "On track",
-          "Needs attention"
-        ],
-        "type": "string"
+          "Critical",
+          "On track"
+        ]
       },
       {
-        "id": "budget-col",
+        "id": "milestonesSection",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "milestonesHeading",
+          "overdueAlert",
+          "overdueMilestones"
+        ]
+      },
+      {
+        "id": "milestonesHeading",
+        "component": "Heading",
+        "text": "Overdue milestones",
+        "level": "h2"
+      },
+      {
+        "id": "overdueAlert",
+        "component": "Alert",
+        "title": "3 milestones overdue",
+        "description": "Two overdue milestones are blocking downstream delivery work.",
+        "variant": "destructive"
+      },
+      {
+        "id": "overdueMilestones",
+        "component": "Table",
+        "columns": [
+          "milestoneProjectCol",
+          "milestoneNameCol",
+          "milestoneDueCol",
+          "milestoneImpactCol"
+        ]
+      },
+      {
+        "id": "milestoneProjectCol",
         "component": "Col",
-        "label": "Budget spent / allocation",
+        "label": "Project",
         "data": [
-          "$420k / $600k (70%)",
-          "$1.05m / $1.20m (88%)",
-          "$310k / $400k (78%)",
-          "$185k / $500k (37%)",
-          "$220k / $300k (73%)",
-          "$275k / $350k (79%)"
-        ],
-        "type": "string"
+          "Security Remediation",
+          "ERP Modernization",
+          "Mobile Checkout"
+        ]
       },
       {
-        "id": "project-action-col",
+        "id": "milestoneNameCol",
         "component": "Col",
-        "label": "Action",
+        "label": "Milestone",
         "data": [
-          "Request people",
-          "Request people",
-          "Request people",
-          "Request people",
-          "Request people",
-          "Request people"
-        ],
-        "type": "action"
+          "Penetration test sign-off",
+          "Data migration rehearsal",
+          "Payment provider certification"
+        ]
       },
       {
-        "id": "mid-row",
+        "id": "milestoneDueCol",
+        "component": "Col",
+        "label": "Due",
+        "data": [
+          "Aug 14, 2026",
+          "Aug 18, 2026",
+          "Aug 20, 2026"
+        ]
+      },
+      {
+        "id": "milestoneImpactCol",
+        "component": "Col",
+        "label": "Impact",
+        "data": [
+          "Release blocked",
+          "Schedule risk",
+          "Launch dependency"
+        ]
+      },
+      {
+        "id": "budgetSection",
         "component": "Card",
-        "variant": "clear",
-        "direction": "row",
         "gap": "m",
-        "align": "stretch",
         "children": [
-          "overdue-card",
-          "utilization-card"
+          "budgetHeading",
+          "budgetTable"
         ]
       },
       {
-        "id": "overdue-card",
+        "id": "budgetHeading",
+        "component": "Heading",
+        "text": "Budget spent vs. allocation",
+        "level": "h2"
+      },
+      {
+        "id": "budgetTable",
+        "component": "Table",
+        "columns": [
+          "budgetProjectCol",
+          "allocatedBudgetCol",
+          "spentBudgetCol",
+          "budgetRemainingCol"
+        ]
+      },
+      {
+        "id": "budgetProjectCol",
+        "component": "Col",
+        "label": "Project",
+        "data": [
+          "Customer Portal",
+          "ERP Modernization",
+          "Mobile Checkout",
+          "Data Platform",
+          "Security Remediation",
+          "APAC Launch"
+        ]
+      },
+      {
+        "id": "allocatedBudgetCol",
+        "component": "Col",
+        "label": "Allocation",
+        "data": [
+          "$420,000",
+          "$1,200,000",
+          "$350,000",
+          "$780,000",
+          "$260,000",
+          "$500,000"
+        ]
+      },
+      {
+        "id": "spentBudgetCol",
+        "component": "Col",
+        "label": "Spent",
+        "data": [
+          "$294,000",
+          "$1,032,000",
+          "$301,000",
+          "$468,000",
+          "$247,000",
+          "$225,000"
+        ]
+      },
+      {
+        "id": "budgetRemainingCol",
+        "component": "Col",
+        "label": "Remaining",
+        "data": [
+          "$126,000",
+          "$168,000",
+          "$49,000",
+          "$312,000",
+          "$13,000",
+          "$275,000"
+        ]
+      },
+      {
+        "id": "teamSection",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
         "gap": "m",
-        "weight": 1,
         "children": [
-          "overdue-header",
-          "overdue-list"
+          "teamHeading",
+          "teamUtilization"
         ]
       },
       {
-        "id": "overdue-header",
-        "component": "CardHeader",
-        "title": "Overdue milestones",
-        "subtitle": "3 milestones require escalation"
+        "id": "teamHeading",
+        "component": "Heading",
+        "text": "Team utilization",
+        "level": "h2"
       },
       {
-        "id": "overdue-list",
-        "component": "ListBlock",
-        "variant": "number",
-        "items": [
-          "overdue-1",
-          "overdue-2",
-          "overdue-3"
-        ]
-      },
-      {
-        "id": "overdue-1",
-        "component": "ListItem",
-        "title": "ERP Modernization — Data migration sign-off",
-        "subtitle": "12 days overdue · Owner: Daniel Ortiz"
-      },
-      {
-        "id": "overdue-2",
-        "component": "ListItem",
-        "title": "Mobile Payments — PCI test completion",
-        "subtitle": "5 days overdue · Owner: Priya Shah"
-      },
-      {
-        "id": "overdue-3",
-        "component": "ListItem",
-        "title": "CRM Consolidation — Sales workflow approval",
-        "subtitle": "3 days overdue · Owner: Leo Martin"
-      },
-      {
-        "id": "utilization-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "weight": 1,
-        "children": [
-          "utilization-header",
-          "utilization-chart",
-          "utilization-note"
-        ]
-      },
-      {
-        "id": "utilization-header",
-        "component": "CardHeader",
-        "title": "Team utilization",
-        "subtitle": "Current delivery capacity by function"
-      },
-      {
-        "id": "utilization-chart",
+        "id": "teamUtilization",
         "component": "HorizontalBarChart",
         "labels": [
-          "Engineering",
           "Product",
+          "Engineering",
           "Design",
           "QA",
-          "Data"
+          "Data",
+          "Security"
         ],
         "series": [
-          "utilization-series"
+          "utilizationSeries"
         ],
         "variant": "grouped",
         "xLabel": "Utilization %",
         "yLabel": "Team"
       },
       {
-        "id": "utilization-series",
+        "id": "utilizationSeries",
         "component": "Series",
-        "category": "Utilization",
+        "category": "Allocated capacity",
         "values": [
-          92,
-          84,
-          76,
-          89,
-          68
-        ]
-      },
-      {
-        "id": "utilization-note",
-        "component": "TextContent",
-        "text": "Engineering is above the 90% sustainable-capacity threshold.",
-        "size": "small"
-      },
-      {
-        "id": "analytics-row",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "gap": "m",
-        "align": "stretch",
-        "children": [
-          "budget-card",
-          "delivery-pace-card"
-        ]
-      },
-      {
-        "id": "budget-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "weight": 1,
-        "children": [
-          "budget-header",
-          "budget-chart"
-        ]
-      },
-      {
-        "id": "budget-header",
-        "component": "CardHeader",
-        "title": "Budget spent by project",
-        "subtitle": "Spend as a percentage of approved allocation"
-      },
-      {
-        "id": "budget-chart",
-        "component": "BarChart",
-        "labels": [
-          "Portal",
-          "ERP",
-          "Payments",
-          "Data",
-          "Security",
-          "CRM"
-        ],
-        "series": [
-          "budget-spend-series"
-        ],
-        "variant": "grouped",
-        "xLabel": "Project",
-        "yLabel": "% allocated budget spent"
-      },
-      {
-        "id": "budget-spend-series",
-        "component": "Series",
-        "category": "Budget spent",
-        "values": [
-          70,
           88,
-          78,
-          37,
-          73,
-          79
+          96,
+          82,
+          91,
+          76,
+          104
         ]
       },
       {
-        "id": "delivery-pace-card",
+        "id": "risksSection",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "weight": 1,
-        "children": [
-          "delivery-pace-header",
-          "delivery-pace-chart"
-        ]
-      },
-      {
-        "id": "delivery-pace-header",
-        "component": "CardHeader",
-        "title": "Delivery pace",
-        "subtitle": "Completed story points across the past six sprints"
-      },
-      {
-        "id": "delivery-pace-chart",
-        "component": "LineChart",
-        "labels": [
-          "Sprint 18",
-          "Sprint 19",
-          "Sprint 20",
-          "Sprint 21",
-          "Sprint 22",
-          "Sprint 23"
-        ],
-        "series": [
-          "delivery-pace-series"
-        ],
-        "variant": "linear",
-        "xLabel": "Sprint",
-        "yLabel": "Story points completed"
-      },
-      {
-        "id": "delivery-pace-series",
-        "component": "Series",
-        "category": "Portfolio velocity",
-        "values": [
-          182,
-          195,
-          188,
-          207,
-          214,
-          201
-        ]
-      },
-      {
-        "id": "risks-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
         "gap": "m",
         "children": [
-          "risks-header",
-          "risks-table"
+          "risksHeading",
+          "risksTable"
         ]
       },
       {
-        "id": "risks-header",
-        "component": "CardHeader",
-        "title": "Portfolio risks",
-        "subtitle": "Open risks and severity by project"
+        "id": "risksHeading",
+        "component": "Heading",
+        "text": "Top portfolio risks",
+        "level": "h2"
       },
       {
-        "id": "risks-table",
+        "id": "risksTable",
         "component": "Table",
         "columns": [
-          "risk-project-col",
-          "risk-description-col",
-          "risk-severity-col",
-          "risk-owner-col"
+          "riskProjectCol",
+          "riskDescriptionCol",
+          "riskSeverityCol",
+          "riskOwnerCol"
         ]
       },
       {
-        "id": "risk-project-col",
+        "id": "riskProjectCol",
         "component": "Col",
         "label": "Project",
         "data": [
+          "Security Remediation",
           "ERP Modernization",
-          "Mobile Payments",
-          "CRM Consolidation",
-          "Customer Portal Refresh"
-        ],
-        "type": "string"
+          "Mobile Checkout",
+          "APAC Launch"
+        ]
       },
       {
-        "id": "risk-description-col",
+        "id": "riskDescriptionCol",
         "component": "Col",
         "label": "Risk",
         "data": [
-          "Migration vendor capacity may delay cutover",
-          "External security review is not scheduled",
-          "Sales leadership decision is pending",
-          "Accessibility remediation may exceed estimate"
-        ],
-        "type": "string"
+          "Vendor remediation may miss compliance deadline",
+          "Legacy data quality issues may delay migration",
+          "Payment provider certification remains incomplete",
+          "Local regulatory review is pending"
+        ]
       },
       {
-        "id": "risk-severity-col",
+        "id": "riskSeverityCol",
         "component": "Col",
         "label": "Severity",
         "data": [
           "Critical",
           "High",
-          "Medium",
+          "High",
           "Medium"
-        ],
-        "type": "string"
+        ]
       },
       {
-        "id": "risk-owner-col",
+        "id": "riskOwnerCol",
         "component": "Col",
         "label": "Owner",
         "data": [
+          "Elena Rossi",
           "Daniel Ortiz",
           "Priya Shah",
-          "Leo Martin",
-          "Maya Chen"
+          "Marcus Lee"
+        ]
+      },
+      {
+        "id": "deadlinesSection",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "deadlinesHeading",
+          "upcomingDeadlines"
+        ]
+      },
+      {
+        "id": "deadlinesHeading",
+        "component": "Heading",
+        "text": "Deadlines in the next two weeks",
+        "level": "h2"
+      },
+      {
+        "id": "upcomingDeadlines",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "deadlineOne",
+          "deadlineTwo",
+          "deadlineThree",
+          "deadlineFour"
+        ]
+      },
+      {
+        "id": "deadlineOne",
+        "component": "ListItem",
+        "title": "Aug 28 — Security Remediation: compliance evidence package",
+        "subtitle": "Owner: Elena Rossi • 10 days remaining"
+      },
+      {
+        "id": "deadlineTwo",
+        "component": "ListItem",
+        "title": "Sep 05 — Mobile Checkout: production launch readiness",
+        "subtitle": "Owner: Priya Shah • 18 days remaining"
+      },
+      {
+        "id": "deadlineThree",
+        "component": "ListItem",
+        "title": "Sep 08 — Customer Portal: UAT exit",
+        "subtitle": "Owner: Maya Chen • 21 days remaining"
+      },
+      {
+        "id": "deadlineFour",
+        "component": "ListItem",
+        "title": "Sep 12 — Customer Portal: release to production",
+        "subtitle": "Owner: Maya Chen • 25 days remaining"
+      },
+      {
+        "id": "paceSection",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "paceHeading",
+          "deliveryPace"
+        ]
+      },
+      {
+        "id": "paceHeading",
+        "component": "Heading",
+        "text": "Delivery pace — past six sprints",
+        "level": "h2"
+      },
+      {
+        "id": "deliveryPace",
+        "component": "LineChart",
+        "labels": [
+          "Sprint 14",
+          "Sprint 15",
+          "Sprint 16",
+          "Sprint 17",
+          "Sprint 18",
+          "Sprint 19"
         ],
-        "type": "string"
+        "series": [
+          "completedWorkSeries",
+          "plannedWorkSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Sprint",
+        "yLabel": "Story points"
       },
       {
-        "id": "upcoming-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "upcoming-header",
-          "upcoming-list"
+        "id": "completedWorkSeries",
+        "component": "Series",
+        "category": "Completed",
+        "values": [
+          184,
+          201,
+          193,
+          217,
+          209,
+          226
         ]
       },
       {
-        "id": "upcoming-header",
-        "component": "CardHeader",
-        "title": "Deadlines in the next two weeks",
-        "subtitle": "Aug 18–Sep 1, 2026"
+        "id": "plannedWorkSeries",
+        "component": "Series",
+        "category": "Planned",
+        "values": [
+          200,
+          205,
+          205,
+          220,
+          220,
+          230
+        ]
       },
       {
-        "id": "upcoming-list",
-        "component": "ListBlock",
-        "variant": "number",
+        "id": "blockedSection",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "blockedHeading",
+          "blockedItems"
+        ]
+      },
+      {
+        "id": "blockedHeading",
+        "component": "Heading",
+        "text": "Blocked work items",
+        "level": "h2"
+      },
+      {
+        "id": "blockedItems",
+        "component": "Table",
+        "columns": [
+          "blockedProjectCol",
+          "blockedItemCol",
+          "blockedReasonCol",
+          "blockedDaysCol"
+        ]
+      },
+      {
+        "id": "blockedProjectCol",
+        "component": "Col",
+        "label": "Project",
+        "data": [
+          "ERP Modernization",
+          "Mobile Checkout",
+          "Security Remediation",
+          "Data Platform"
+        ]
+      },
+      {
+        "id": "blockedItemCol",
+        "component": "Col",
+        "label": "Work item",
+        "data": [
+          "Migrate customer master records",
+          "Complete payment gateway integration",
+          "Close critical vulnerability findings",
+          "Provision analytics production environment"
+        ]
+      },
+      {
+        "id": "blockedReasonCol",
+        "component": "Col",
+        "label": "Blocker",
+        "data": [
+          "Source data defects",
+          "External provider certification",
+          "Vendor patch delivery",
+          "Cloud security approval"
+        ]
+      },
+      {
+        "id": "blockedDaysCol",
+        "component": "Col",
+        "label": "Blocked",
+        "data": [
+          "9 days",
+          "7 days",
+          "12 days",
+          "4 days"
+        ]
+      },
+      {
+        "id": "archiveProject",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "archiveHeading",
+          "archiveForm"
+        ]
+      },
+      {
+        "id": "archiveHeading",
+        "component": "Heading",
+        "text": "Portfolio actions",
+        "level": "h2"
+      },
+      {
+        "id": "archiveForm",
+        "component": "Form",
+        "name": "portfolio-actions",
+        "fields": [
+          "resourceProjectField",
+          "resourceRequestField",
+          "archiveProjectField"
+        ],
+        "buttons": "portfolioActionButtons"
+      },
+      {
+        "id": "resourceProjectField",
+        "component": "FormControl",
+        "label": "Project needing people",
+        "input": "resourceProjectSelect"
+      },
+      {
+        "id": "resourceProjectSelect",
+        "component": "Select",
+        "name": "resource_project",
+        "placeholder": "Choose a project",
         "items": [
-          "upcoming-1",
-          "upcoming-2",
-          "upcoming-3",
-          "upcoming-4"
+          "resourceErp",
+          "resourceMobile",
+          "resourceSecurity"
         ]
       },
       {
-        "id": "upcoming-1",
-        "component": "ListItem",
-        "title": "Aug 21 — Mobile Payments: UAT exit",
-        "subtitle": "Owner: Priya Shah"
+        "id": "resourceErp",
+        "component": "SelectItem",
+        "value": "erp-modernization",
+        "label": "ERP Modernization"
       },
       {
-        "id": "upcoming-2",
-        "component": "ListItem",
-        "title": "Aug 24 — Customer Portal Refresh: Content freeze",
-        "subtitle": "Owner: Maya Chen"
+        "id": "resourceMobile",
+        "component": "SelectItem",
+        "value": "mobile-checkout",
+        "label": "Mobile Checkout"
       },
       {
-        "id": "upcoming-3",
-        "component": "ListItem",
-        "title": "Aug 28 — Customer Portal Refresh: Production launch",
-        "subtitle": "Owner: Maya Chen"
+        "id": "resourceSecurity",
+        "component": "SelectItem",
+        "value": "security-remediation",
+        "label": "Security Remediation"
       },
       {
-        "id": "upcoming-4",
-        "component": "ListItem",
-        "title": "Sep 1 — Security Compliance: Evidence package",
-        "subtitle": "Owner: Ava Thompson"
+        "id": "resourceRequestField",
+        "component": "FormControl",
+        "label": "Resourcing request",
+        "input": "resourceRequestInput",
+        "hint": "Describe role, headcount, and duration."
       },
       {
-        "id": "blocked-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "blocked-header",
-          "blocked-list"
-        ]
+        "id": "resourceRequestInput",
+        "component": "TextArea",
+        "name": "resource_request",
+        "placeholder": "Example: Request 2 backend engineers for 8 weeks.",
+        "rows": 3
       },
       {
-        "id": "blocked-header",
-        "component": "CardHeader",
-        "title": "Blocked work items",
-        "subtitle": "7 items blocked across 4 projects"
+        "id": "archiveProjectField",
+        "component": "FormControl",
+        "label": "Finished project to archive",
+        "input": "archiveProjectSelect"
       },
       {
-        "id": "blocked-list",
-        "component": "ListBlock",
-        "variant": "number",
+        "id": "archiveProjectSelect",
+        "component": "Select",
+        "name": "archive_project",
+        "placeholder": "Choose a completed project",
         "items": [
-          "blocked-1",
-          "blocked-2",
-          "blocked-3",
-          "blocked-4"
+          "archiveBrand",
+          "archiveIdentity"
         ]
       },
       {
-        "id": "blocked-1",
-        "component": "ListItem",
-        "title": "ERP-482 — Reconcile legacy customer records",
-        "subtitle": "Blocked by source-data access · ERP Modernization"
+        "id": "archiveBrand",
+        "component": "SelectItem",
+        "value": "brand-refresh",
+        "label": "Brand Refresh — completed"
       },
       {
-        "id": "blocked-2",
-        "component": "ListItem",
-        "title": "PAY-219 — Complete penetration-test remediation",
-        "subtitle": "Blocked by security vendor availability · Mobile Payments"
+        "id": "archiveIdentity",
+        "component": "SelectItem",
+        "value": "identity-upgrade",
+        "label": "Identity Upgrade — completed"
       },
       {
-        "id": "blocked-3",
-        "component": "ListItem",
-        "title": "CRM-107 — Configure territory routing",
-        "subtitle": "Blocked by sales operations decision · CRM Consolidation"
-      },
-      {
-        "id": "blocked-4",
-        "component": "ListItem",
-        "title": "PORT-311 — Finalize accessibility audit fixes",
-        "subtitle": "Blocked by specialist design review · Customer Portal Refresh"
-      },
-      {
-        "id": "footer-actions",
-        "component": "Card",
-        "variant": "sunk",
-        "direction": "row",
-        "align": "center",
-        "justify": "between",
-        "gap": "m",
-        "children": [
-          "footer-copy",
-          "footer-buttons"
-        ]
-      },
-      {
-        "id": "footer-copy",
-        "component": "TextContent",
-        "text": "Need to rebalance capacity or close completed work?",
-        "size": "default"
-      },
-      {
-        "id": "footer-buttons",
+        "id": "portfolioActionButtons",
         "component": "Buttons",
-        "direction": "row",
         "buttons": [
-          "request-people-button",
-          "archive-project-button"
+          "requestPeopleButton",
+          "archiveButton"
         ]
       },
       {
-        "id": "request-people-button",
+        "id": "requestPeopleButton",
         "component": "Button",
-        "label": "Request more people",
-        "variant": "primary",
-        "size": "medium",
-        "action": [
-          {
-            "type": "requestStaffing",
-            "project": "ERP Modernization"
-          }
-        ]
+        "label": "Request additional people",
+        "variant": "primary"
       },
       {
-        "id": "archive-project-button",
-        "component": "AlertDialogBlock",
-        "triggerLabel": "Archive finished project",
-        "title": "Archive a finished project",
-        "description": "Select a completed project to remove it from active portfolio reporting. Archived projects remain available in historical reports.",
-        "confirmLabel": "Archive project",
-        "cancelLabel": "Cancel",
-        "triggerVariant": "outline"
+        "id": "archiveButton",
+        "component": "Button",
+        "label": "Archive finished project",
+        "variant": "secondary",
+        "type": "destructive"
       }
     ]
   }

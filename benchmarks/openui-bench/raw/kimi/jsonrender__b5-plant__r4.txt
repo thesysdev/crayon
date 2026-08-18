@@ -1,127 +1,137 @@
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["header-row","andon-section","kpis-row","lines-section","focus-panel","charts-row-1","charts-row-2","ops-row","safety-row","wo-section","maint-section","footer"]}}
-{"op":"add","path":"/elements/header-row","value":{"type":"Card","props":{"variant":"card","direction":"row","justify":"between","align":"center"},"children":["header-text","export-dialog"]}}
-{"op":"add","path":"/elements/header-text","value":{"type":"CardHeader","props":{"title":"Factory Floor Supervisor Console","subtitle":"Plant 2 · Line status live · Shift B"},"children":[]}}
-{"op":"add","path":"/elements/export-dialog","value":{"type":"DialogBlock","props":{"triggerLabel":"Export Shift Report","title":"Export Shift Report","description":"Generate the end-of-shift report including OEE, output, defects and downtime.","triggerVariant":"default"},"content":["export-note","export-btn"],"children":[]}}
-{"op":"add","path":"/elements/export-note","value":{"type":"TextContent","props":{"text":"The report will include all KPIs, line performance, quality holds and open work orders for the current shift."},"children":[]}}
-{"op":"add","path":"/elements/export-btn","value":{"type":"Button","props":{"label":"Download PDF","variant":"primary"},"on":{"press":{"action":"setState","params":{"statePath":"/exported","value":true}}},"children":[]}}
-{"op":"add","path":"/elements/andon-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["andon-header","andon-list"]}}
-{"op":"add","path":"/elements/andon-header","value":{"type":"Heading","props":{"text":"Live Andon Alerts","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/andon-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/andon","key":"id"},"children":["andon-item"]}}
-{"op":"add","path":"/elements/andon-item","value":{"type":"Callout","props":{"variant":{"$item":"level"},"title":{"$template":"${line} — ${title}"},"description":{"$template":"${detail} · raised ${time}"}},"children":[]}}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"gap":"l"},"children":["header","andonList","kpiRow","focusCard","linesCard","chartsRow1","chartsRow2","maintCard","inventoryCard","deliveriesCard","workOrdersCard","holdsCard","exportRow"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Factory Floor Supervisor Console","subtitle":"Plant 2 — Shift B — Live overview"}}}
+
+{"op":"add","path":"/elements/andonList","value":{"type":"Card","props":{"variant":"sunk","gap":"s"},"repeat":{"statePath":"/andon","key":"id"},"children":["andonItem"]}}
 {"op":"add","path":"/state/andon","value":[]}
-{"op":"add","path":"/state/andon/0","value":{"id":"a1","line":"Line 2","title":"Torque tool fault","detail":"Station 4 nutrunner offline, maintenance paged","time":"14:02","level":"error"}}
-{"op":"add","path":"/state/andon/1","value":{"id":"a2","line":"Line 1","title":"Material low","detail":"Resin hopper below 20%, refill requested","time":"13:47","level":"warning"}}
-{"op":"add","path":"/state/andon/2","value":{"id":"a3","line":"Line 3","title":"Quality check passed","detail":"First-article inspection cleared after changeover","time":"13:15","level":"success"}}
-{"op":"add","path":"/elements/kpis-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"l","wrap":true},"children":["kpi-oee","kpi-output","kpi-energy","kpi-safety"]}}
-{"op":"add","path":"/elements/kpi-oee","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["kpi-oee-title","kpi-oee-prog"]}}
-{"op":"add","path":"/elements/kpi-oee-title","value":{"type":"CardHeader","props":{"title":"Overall Equipment Effectiveness","subtitle":"Availability 92% · Performance 88% · Quality 97%"},"children":[]}}
-{"op":"add","path":"/elements/kpi-oee-prog","value":{"type":"Progress","props":{"value":{"$state":"/oee"},"label":{"$template":"OEE: ${/oee}%"}},"children":[]}}
+{"op":"add","path":"/state/andon/0","value":{"id":"a1","level":"error","msg":"Line 3 — Torque station fault, line stopped"}}
+{"op":"add","path":"/state/andon/1","value":{"id":"a2","level":"warning","msg":"Line 1 — Material low: resin hopper < 15%"}}
+{"op":"add","path":"/state/andon/2","value":{"id":"a3","level":"info","msg":"Line 2 — Changeover completed, resuming rate"}}
+{"op":"add","path":"/elements/andonItem","value":{"type":"Alert","props":{"title":{"$item":"level"},"description":{"$item":"msg"},"variant":{"$cond":{"$item":"level","eq":"error"},"$then":"destructive","$else":{"$cond":{"$item":"level","eq":"warning"},"$then":"warning","$else":"info"}}},"children":[]}}
+
+{"op":"add","path":"/elements/kpiRow","value":{"type":"Card","props":{"direction":"row","gap":"l","wrap":true},"children":["oeeBox","unitsBox","safetyBox","energyBox"]}}
+{"op":"add","path":"/elements/oeeBox","value":{"type":"Card","props":{"variant":"sunk","gap":"s"},"children":["oeeLabel","oeeProg"]}}
+{"op":"add","path":"/elements/oeeLabel","value":{"type":"TextContent","props":{"text":"**OEE** — Overall Equipment Effectiveness","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/oeeProg","value":{"type":"Progress","props":{"value":{"$state":"/oee"},"label":{"$template":"${/oee}% OEE"}},"children":[]}}
 {"op":"add","path":"/state/oee","value":78}
-{"op":"add","path":"/elements/kpi-output","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["kpi-out-title","kpi-out-prog"]}}
-{"op":"add","path":"/elements/kpi-out-title","value":{"type":"CardHeader","props":{"title":"Units Produced vs Target","subtitle":{"$template":"${/unitsProduced} of ${/unitsTarget} units today"}},"children":[]}}
-{"op":"add","path":"/elements/kpi-out-prog","value":{"type":"Progress","props":{"value":{"$state":"/unitsPct"},"label":{"$template":"${/unitsPct}% of daily target"}},"children":[]}}
-{"op":"add","path":"/state/unitsProduced","value":1640}
-{"op":"add","path":"/state/unitsTarget","value":2000}
-{"op":"add","path":"/state/unitsPct","value":82}
-{"op":"add","path":"/elements/kpi-energy","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["kpi-energy-title","kpi-energy-prog"]}}
-{"op":"add","path":"/elements/kpi-energy-title","value":{"type":"CardHeader","props":{"title":"Energy Use Today","subtitle":"Budget 6,500 kWh per day"},"children":[]}}
-{"op":"add","path":"/elements/kpi-energy-prog","value":{"type":"Progress","props":{"value":{"$state":"/energyPct"},"label":{"$template":"${/energyKwh} kWh used (${/energyPct}% of budget)"}},"children":[]}}
-{"op":"add","path":"/state/energyKwh","value":4225}
-{"op":"add","path":"/state/energyPct","value":65}
-{"op":"add","path":"/elements/kpi-safety","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["kpi-safety-title","kpi-safety-text"]}}
-{"op":"add","path":"/elements/kpi-safety-title","value":{"type":"CardHeader","props":{"title":"Safety","subtitle":"Incidents year to date"},"children":[]}}
-{"op":"add","path":"/elements/kpi-safety-text","value":{"type":"TextContent","props":{"size":"large-heavy","text":{"$template":"${/safetyIncidents} incidents · ${/daysSinceIncident} days since last"}},"children":[]}}
-{"op":"add","path":"/state/safetyIncidents","value":3}
-{"op":"add","path":"/state/daysSinceIncident","value":47}
-{"op":"add","path":"/elements/lines-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["lines-header","lines-list"]}}
-{"op":"add","path":"/elements/lines-header","value":{"type":"Heading","props":{"text":"Production Lines (tap a line to focus)","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/lines-list","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","wrap":true},"repeat":{"statePath":"/lines","key":"id"},"children":["line-card"]}}
-{"op":"add","path":"/elements/line-card","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"on":{"press":{"action":"setState","params":{"statePath":"/focusLine","value":{"$item":"name"}}}},"children":["line-name","line-rate","line-status"]}}
-{"op":"add","path":"/elements/line-name","value":{"type":"TextContent","props":{"size":"small-heavy","text":{"$item":"name"}},"children":[]}}
-{"op":"add","path":"/elements/line-rate","value":{"type":"TextContent","props":{"text":{"$template":"${rate} units/hr"}},"children":[]}}
-{"op":"add","path":"/elements/line-status","value":{"type":"Tag","props":{"text":{"$item":"status"},"variant":{"$cond":{"$item":"status","eq":"Running"},"$then":"success","$else":"warning"}},"children":[]}}
-{"op":"add","path":"/state/lines","value":[]}
-{"op":"add","path":"/state/lines/0","value":{"id":"l1","name":"Line 1","rate":142,"status":"Running","supervisor":"A. Novak","product":"Bracket AX-9","oee":84}}
-{"op":"add","path":"/state/lines/1","value":{"id":"l2","name":"Line 2","rate":0,"status":"Down","supervisor":"J. Okafor","product":"Housing R-2","oee":61}}
-{"op":"add","path":"/state/lines/2","value":{"id":"l3","name":"Line 3","rate":118,"status":"Running","supervisor":"M. Haddad","product":"Panel C-7","oee":79}}
-{"op":"add","path":"/state/lines/3","value":{"id":"l4","name":"Line 4","rate":96,"status":"Changeover","supervisor":"L. Brandt","product":"Frame K-1","oee":72}}
-{"op":"add","path":"/elements/focus-panel","value":{"type":"Card","props":{"variant":"card","direction":"row","gap":"m","align":"center","justify":"between"},"visible":{"$state":"/focusLine"},"children":["focus-text","focus-clear"]}}
-{"op":"add","path":"/elements/focus-text","value":{"type":"TextContent","props":{"size":"small-heavy","text":{"$template":"Focused on ${/focusLine} — showing line detail view"}},"children":[]}}
-{"op":"add","path":"/elements/focus-clear","value":{"type":"Button","props":{"label":"Clear focus","variant":"tertiary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/focusLine","value":""}}},"children":[]}}
+{"op":"add","path":"/elements/unitsBox","value":{"type":"Card","props":{"variant":"sunk","gap":"s"},"children":["unitsLabel","unitsProg"]}}
+{"op":"add","path":"/elements/unitsLabel","value":{"type":"TextContent","props":{"text":"**Units Produced vs Target**","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/unitsProg","value":{"type":"Progress","props":{"value":{"$state":"/unitsPct"},"label":{"$template":"${/unitsProduced} / ${/unitsTarget} units"}},"children":[]}}
+{"op":"add","path":"/state/unitsProduced","value":1840}
+{"op":"add","path":"/state/unitsTarget","value":2200}
+{"op":"add","path":"/state/unitsPct","value":84}
+{"op":"add","path":"/elements/safetyBox","value":{"type":"Card","props":{"variant":"sunk","gap":"s"},"children":["safetyLabel","safetyText"]}}
+{"op":"add","path":"/elements/safetyLabel","value":{"type":"TextContent","props":{"text":"**Safety**","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/safetyText","value":{"type":"TextContent","props":{"text":{"$template":"${/safetyIncidents} incidents YTD — ${/daysSinceIncident} days since last incident"},"children":[]}}
+{"op":"add","path":"/state/safetyIncidents","value":4}
+{"op":"add","path":"/state/daysSinceIncident","value":63}
+{"op":"add","path":"/elements/energyBox","value":{"type":"Card","props":{"variant":"sunk","gap":"s"},"children":["energyLabel","energyProg"]}}
+{"op":"add","path":"/elements/energyLabel","value":{"type":"TextContent","props":{"text":"**Energy Use Today**","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/energyProg","value":{"type":"Progress","props":{"value":{"$state":"/energyPct"},"label":{"$template":"${/energyUsed} / ${/energyBudget} kWh"}},"children":[]}}
+{"op":"add","path":"/state/energyUsed","value":4120}
+{"op":"add","path":"/state/energyBudget","value":5000}
+{"op":"add","path":"/state/energyPct","value":82}
+
+{"op":"add","path":"/elements/focusCard","value":{"type":"Card","props":{"gap":"s"},"children":["focusLabel","focusButtons","focusStatus"]}}
+{"op":"add","path":"/elements/focusLabel","value":{"type":"TextContent","props":{"text":"**Focus on a line** — tap to isolate one production line","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/focusButtons","value":{"type":"Buttons","props":{"buttons":["focusAll","focusL1","focusL2","focusL3","focusL4"]}}}
+{"op":"add","path":"/elements/focusAll","value":{"type":"Button","props":{"label":"All Lines","variant":"secondary"},"on":{"press":{"action":"setState","params":{"statePath":"/focusLine","value":""}}},"children":[]}}
+{"op":"add","path":"/elements/focusL1","value":{"type":"Button","props":{"label":"Line 1","variant":"tertiary"},"on":{"press":{"action":"setState","params":{"statePath":"/focusLine","value":"Line 1"}}},"children":[]}}
+{"op":"add","path":"/elements/focusL2","value":{"type":"Button","props":{"label":"Line 2","variant":"tertiary"},"on":{"press":{"action":"setState","params":{"statePath":"/focusLine","value":"Line 2"}}},"children":[]}}
+{"op":"add","path":"/elements/focusL3","value":{"type":"Button","props":{"label":"Line 3","variant":"tertiary"},"on":{"press":{"action":"setState","params":{"statePath":"/focusLine","value":"Line 3"}}},"children":[]}}
+{"op":"add","path":"/elements/focusL4","value":{"type":"Button","props":{"label":"Line 4","variant":"tertiary"},"on":{"press":{"action":"setState","params":{"statePath":"/focusLine","value":"Line 4"}}},"children":[]}}
 {"op":"add","path":"/state/focusLine","value":""}
-{"op":"add","path":"/elements/charts-row-1","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"l","wrap":true},"children":["defect-card","downtime-card"]}}
-{"op":"add","path":"/elements/defect-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["defect-title","defect-chart"]}}
-{"op":"add","path":"/elements/defect-title","value":{"type":"CardHeader","props":{"title":"Defect Rate — Past 4 Weeks","subtitle":"Percent defective per week"},"children":[]}}
-{"op":"add","path":"/elements/defect-chart","value":{"type":"LineChart","props":{"labels":["Wk 1","Wk 2","Wk 3","Wk 4"],"series":["defect-series"],"variant":"natural","yLabel":"Defect %"},"children":[]}}
-{"op":"add","path":"/elements/defect-series","value":{"type":"Series","props":{"category":"Defect rate","values":[3.1,2.7,2.9,2.2]},"children":[]}}
-{"op":"add","path":"/elements/downtime-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["downtime-title","downtime-chart"]}}
-{"op":"add","path":"/elements/downtime-title","value":{"type":"CardHeader","props":{"title":"Downtime by Cause","subtitle":"Minutes this week"},"children":[]}}
-{"op":"add","path":"/elements/downtime-chart","value":{"type":"PieChart","props":{"labels":["Mechanical","Changeover","Material shortage","Planned maintenance","Other"],"values":[210,140,95,180,45],"variant":"donut"},"children":[]}}
-{"op":"add","path":"/elements/charts-row-2","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"l","wrap":true},"children":["shift-card","stock-card"]}}
-{"op":"add","path":"/elements/shift-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["shift-title","shift-chart"]}}
-{"op":"add","path":"/elements/shift-title","value":{"type":"CardHeader","props":{"title":"Shift Output Comparison","subtitle":"Units per line per shift"},"children":[]}}
-{"op":"add","path":"/elements/shift-chart","value":{"type":"BarChart","props":{"labels":["Line 1","Line 2","Line 3","Line 4"],"series":["shift-a","shift-b","shift-c"],"variant":"grouped","yLabel":"Units"},"children":[]}}
-{"op":"add","path":"/elements/shift-a","value":{"type":"Series","props":{"category":"Shift A","values":[520,430,480,390]},"children":[]}}
-{"op":"add","path":"/elements/shift-b","value":{"type":"Series","props":{"category":"Shift B","values":[560,410,505,420]},"children":[]}}
-{"op":"add","path":"/elements/shift-c","value":{"type":"Series","props":{"category":"Shift C","values":[495,380,460,375]},"children":[]}}
-{"op":"add","path":"/elements/stock-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["stock-title","stock-steel","stock-resin","stock-pack"]}}
-{"op":"add","path":"/elements/stock-title","value":{"type":"CardHeader","props":{"title":"Raw Material Stock","subtitle":"Percent of storage capacity"},"children":[]}}
-{"op":"add","path":"/elements/stock-steel","value":{"type":"Progress","props":{"value":{"$state":"/stock/steel"},"label":{"$template":"Steel — ${/stock/steel}%"}},"children":[]}}
-{"op":"add","path":"/elements/stock-resin","value":{"type":"Progress","props":{"value":{"$state":"/stock/resin"},"label":{"$template":"Resin — ${/stock/resin}%"}},"children":[]}}
-{"op":"add","path":"/elements/stock-pack","value":{"type":"Progress","props":{"value":{"$state":"/stock/packaging"},"label":{"$template":"Packaging — ${/stock/packaging}%"}},"children":[]}}
-{"op":"add","path":"/state/stock","value":{"steel":68,"resin":19,"packaging":54}}
-{"op":"add","path":"/elements/ops-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"l","wrap":true},"children":["maint-due-card","deliveries-card","hold-card"]}}
-{"op":"add","path":"/elements/maint-due-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["maint-due-title","maint-due-list"]}}
-{"op":"add","path":"/elements/maint-due-title","value":{"type":"CardHeader","props":{"title":"Machines Due for Maintenance","subtitle":"Next 14 days"},"children":[]}}
-{"op":"add","path":"/elements/maint-due-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"repeat":{"statePath":"/maintenanceDue","key":"id"},"children":["maint-due-item"]}}
-{"op":"add","path":"/elements/maint-due-item","value":{"type":"ListItem","props":{"title":{"$item":"machine"},"subtitle":{"$template":"Due ${due} · ${task}"}},"children":[]}}
-{"op":"add","path":"/elements/maint-due-wrap","value":{"type":"ListBlock","props":{"items":["x"]},"children":[]}}
-{"op":"add","path":"/state/maintenanceDue","value":[]}
-{"op":"add","path":"/state/maintenanceDue/0","value":{"id":"m1","machine":"Press P-12","due":"Tomorrow","task":"Hydraulic seal replacement"}}
-{"op":"add","path":"/state/maintenanceDue/1","value":{"id":"m2","machine":"CNC C-04","due":"In 4 days","task":"Spindle calibration"}}
-{"op":"add","path":"/state/maintenanceDue/2","value":{"id":"m3","machine":"Conveyor V-7","due":"In 9 days","task":"Belt tension & lubrication"}}
-{"op":"add","path":"/elements/deliveries-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["deliveries-title","deliveries-list"]}}
-{"op":"add","path":"/elements/deliveries-title","value":{"type":"CardHeader","props":{"title":"Supplier Deliveries This Week","subtitle":"Inbound dock schedule"},"children":[]}}
-{"op":"add","path":"/elements/deliveries-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"repeat":{"statePath":"/deliveries","key":"id"},"children":["deliveries-item"]}}
-{"op":"add","path":"/elements/deliveries-item","value":{"type":"ListItem","props":{"title":{"$template":"${supplier} — ${material}"},"subtitle":{"$template":"${day} · ${qty}"}},"children":[]}}
+{"op":"add","path":"/elements/focusStatus","value":{"type":"Callout","props":{"variant":"info","title":"Line focus active","description":{"$template":"Showing only ${/focusLine}. Tap 'All Lines' to reset."}},"visible":{"$state":"/focusLine"},"children":[]}}
+
+{"op":"add","path":"/elements/linesCard","value":{"type":"Card","props":{"gap":"s"},"children":["linesHeader","linesList"]}}
+{"op":"add","path":"/elements/linesHeader","value":{"type":"CardHeader","props":{"title":"Production Lines","subtitle":"Current rate and status per line"}}}
+{"op":"add","path":"/elements/linesList","value":{"type":"Card","props":{"variant":"clear","gap":"s"},"repeat":{"statePath":"/lines","key":"id"},"children":["lineItem"]}}
+{"op":"add","path":"/state/lines","value":[]}
+{"op":"add","path":"/state/lines/0","value":{"id":"l1","name":"Line 1","rate":"142 u/hr","target":"150 u/hr","status":"Running"}}
+{"op":"add","path":"/state/lines/1","value":{"id":"l2","name":"Line 2","rate":"138 u/hr","target":"140 u/hr","status":"Running"}}
+{"op":"add","path":"/state/lines/2","value":{"id":"l3","name":"Line 3","rate":"0 u/hr","target":"160 u/hr","status":"Stopped"}}
+{"op":"add","path":"/state/lines/3","value":{"id":"l4","name":"Line 4","rate":"96 u/hr","target":"110 u/hr","status":"Changeover"}}
+{"op":"add","path":"/elements/lineItem","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"visible":{"$or":[{"$state":"/focusLine","not":true},{"$state":"/focusLine","eq":{"$item":"name"}}]},"children":["lineName","lineRate","lineStatus"]}}
+{"op":"add","path":"/elements/lineName","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/lineRate","value":{"type":"TextContent","props":{"text":{"$template":"${rate} (target ${target})"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/lineStatus","value":{"type":"Badge","props":{"text":{"$item":"status"},"variant":{"$cond":{"$item":"status","eq":"Running"},"$then":"secondary","$else":{"$cond":{"$item":"status","eq":"Stopped"},"$then":"destructive","$else":"outline"}}},"children":[]}}
+
+{"op":"add","path":"/elements/chartsRow1","value":{"type":"Card","props":{"gap":"m"},"children":["defectHeader","defectChart","downtimeHeader","downtimeChart"]}}
+{"op":"add","path":"/elements/defectHeader","value":{"type":"CardHeader","props":{"title":"Defect Rate — Past 30 Days","subtitle":"Percent of units failing inspection"}}}
+{"op":"add","path":"/elements/defectChart","value":{"type":"LineChart","props":{"labels":["W1","W2","W3","W4"],"series":["defectSeries"],"variant":"natural","xLabel":"Week","yLabel":"Defect %"}}}
+{"op":"add","path":"/elements/defectSeries","value":{"type":"Series","props":{"category":"Defect rate","values":[2.4,2.1,2.8,1.9]}}}
+{"op":"add","path":"/elements/downtimeHeader","value":{"type":"CardHeader","props":{"title":"Downtime by Cause","subtitle":"Hours this week"}}}
+{"op":"add","path":"/elements/downtimeChart","value":{"type":"PieChart","props":{"labels":["Mechanical","Material shortage","Changeover","Quality hold","Planned maintenance"],"values":[9.5,6.2,4.8,2.1,5.0],"variant":"donut"}}}
+
+{"op":"add","path":"/elements/chartsRow2","value":{"type":"Card","props":{"gap":"m"},"children":["shiftHeader","shiftChart","energyHeader2","energyChart"]}}
+{"op":"add","path":"/elements/shiftHeader","value":{"type":"CardHeader","props":{"title":"Shift Output Comparison","subtitle":"Units produced per shift, last 5 days"}}}
+{"op":"add","path":"/elements/shiftChart","value":{"type":"BarChart","props":{"labels":["Mon","Tue","Wed","Thu","Fri"],"series":["shiftA","shiftB","shiftC"],"variant":"grouped","xLabel":"Day","yLabel":"Units"}}}
+{"op":"add","path":"/elements/shiftA","value":{"type":"Series","props":{"category":"Shift A","values":[2100,2240,1980,2300,2150]}}}
+{"op":"add","path":"/elements/shiftB","value":{"type":"Series","props":{"category":"Shift B","values":[1950,2080,2210,1840,2050]}}}
+{"op":"add","path":"/elements/shiftC","value":{"type":"Series","props":{"category":"Shift C","values":[1720,1800,1690,1900,1780]}}}
+{"op":"add","path":"/elements/energyHeader2","value":{"type":"CardHeader","props":{"title":"Energy Use Today by Area","subtitle":"kWh"}}}
+{"op":"add","path":"/elements/energyChart","value":{"type":"RadialChart","props":{"labels":["Pressing","Assembly","Paint","HVAC","Lighting"],"values":[1450,1280,760,420,210]}}}
+
+{"op":"add","path":"/elements/maintCard","value":{"type":"Card","props":{"gap":"s"},"children":["maintHeader","maintList","schedForm"]}}
+{"op":"add","path":"/elements/maintHeader","value":{"type":"CardHeader","props":{"title":"Machines Due for Maintenance","subtitle":"Next 14 days"}}}
+{"op":"add","path":"/elements/maintList","value":{"type":"Card","props":{"variant":"clear","gap":"s"},"repeat":{"statePath":"/maintenance","key":"id"},"children":["maintItem"]}}
+{"op":"add","path":"/state/maintenance","value":[]}
+{"op":"add","path":"/state/maintenance/0","value":{"id":"m1","machine":"Press P-12","due":"Tomorrow","task":"Hydraulic seal replacement"}}
+{"op":"add","path":"/state/maintenance/1","value":{"id":"m2","machine":"CNC C-04","due":"In 3 days","task":"Spindle bearing inspection"}}
+{"op":"add","path":"/state/maintenance/2","value":{"id":"m3","machine":"Conveyor CV-7","due":"In 6 days","task":"Belt tension & lubrication"}}
+{"op":"add","path":"/elements/maintItem","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["maintName","maintDue"]}}
+{"op":"add","path":"/elements/maintName","value":{"type":"TextContent","props":{"text":{"$template":"**${machine}** — ${task}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/maintDue","value":{"type":"Badge","props":{"text":{"$item":"due"},"variant":"outline"},"children":[]}}
+{"op":"add","path":"/elements/schedForm","value":{"type":"Form","props":{"name":"schedule-maintenance","buttons":"schedButtons","fields":["schedMachineField","schedDateField"]}}}
+{"op":"add","path":"/elements/schedMachineField","value":{"type":"FormControl","props":{"label":"Schedule maintenance — machine","input":"schedMachineSelect"}}}
+{"op":"add","path":"/elements/schedMachineSelect","value":{"type":"Select","props":{"name":"machine","items":["sm1","sm2","sm3","sm4"],"placeholder":"Select machine"}}}
+{"op":"add","path":"/elements/sm1","value":{"type":"SelectItem","props":{"value":"Press P-12","label":"Press P-12"}}}
+{"op":"add","path":"/elements/sm2","value":{"type":"SelectItem","props":{"value":"CNC C-04","label":"CNC C-04"}}}
+{"op":"add","path":"/elements/sm3","value":{"type":"SelectItem","props":{"value":"Conveyor CV-7","label":"Conveyor CV-7"}}}
+{"op":"add","path":"/elements/sm4","value":{"type":"SelectItem","props":{"value":"Welder W-02","label":"Welder W-02"}}}
+{"op":"add","path":"/elements/schedDateField","value":{"type":"FormControl","props":{"label":"Date","input":"schedDateInput","hint":"YYYY-MM-DD"}}}
+{"op":"add","path":"/elements/schedDateInput","value":{"type":"Input","props":{"name":"date","placeholder":"2025-06-20","value":{"$bindState":"/schedDate"}}}}
+{"op":"add","path":"/state/schedDate","value":""}
+{"op":"add","path":"/elements/schedButtons","value":{"type":"Buttons","props":{"buttons":["schedSubmit"]}}}
+{"op":"add","path":"/elements/schedSubmit","value":{"type":"Button","props":{"label":"Schedule Maintenance","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/maintenance","value":{"id":"$id","machine":"Scheduled job","due":{"$state":"/schedDate"},"task":"Supervisor-scheduled maintenance"},"clearStatePath":"/schedDate"}}},"children":[]}}
+
+{"op":"add","path":"/elements/inventoryCard","value":{"type":"Card","props":{"gap":"s"},"children":["invHeader","invSteel","invResin","invPack"]}}
+{"op":"add","path":"/elements/invHeader","value":{"type":"CardHeader","props":{"title":"Raw Material Stock","subtitle":"Percent of storage capacity"}}}
+{"op":"add","path":"/elements/invSteel","value":{"type":"Progress","props":{"value":{"$state":"/stock/steel"},"label":{"$template":"Steel — ${/stock/steel}%"}},"children":[]}}
+{"op":"add","path":"/elements/invResin","value":{"type":"Progress","props":{"value":{"$state":"/stock/resin"},"label":{"$template":"Resin — ${/stock/resin}%"}},"children":[]}}
+{"op":"add","path":"/elements/invPack","value":{"type":"Progress","props":{"value":{"$state":"/stock/packaging"},"label":{"$template":"Packaging — ${/stock/packaging}%"}},"children":[]}}
+{"op":"add","path":"/state/stock","value":{"steel":62,"resin":14,"packaging":47}}
+
+{"op":"add","path":"/elements/deliveriesCard","value":{"type":"Card","props":{"gap":"s"},"children":["delHeader","delList"]}}
+{"op":"add","path":"/elements/delHeader","value":{"type":"CardHeader","props":{"title":"Supplier Deliveries Due This Week"}}}
+{"op":"add","path":"/elements/delList","value":{"type":"Card","props":{"variant":"clear","gap":"s"},"repeat":{"statePath":"/deliveries","key":"id"},"children":["delItem"]}}
 {"op":"add","path":"/state/deliveries","value":[]}
-{"op":"add","path":"/state/deliveries/0","value":{"id":"d1","supplier":"Apex Steel Co.","material":"Cold-rolled steel","day":"Tuesday","qty":"12 t"}}
-{"op":"add","path":"/state/deliveries/1","value":{"id":"d2","supplier":"PolyChem Ltd.","material":"ABS resin pellets","day":"Wednesday","qty":"4 t"}}
-{"op":"add","path":"/state/deliveries/2","value":{"id":"d3","supplier":"PackRight","material":"Cartons & pallets","day":"Friday","qty":"8,000 units"}}
-{"op":"add","path":"/elements/hold-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["hold-title","hold-list"]}}
-{"op":"add","path":"/elements/hold-title","value":{"type":"CardHeader","props":{"title":"Batches on Quality Hold","subtitle":"Awaiting QA disposition"},"children":[]}}
-{"op":"add","path":"/elements/hold-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"repeat":{"statePath":"/qualityHolds","key":"id"},"children":["hold-item"]}}
-{"op":"add","path":"/elements/hold-item","value":{"type":"ListItem","props":{"title":{"$template":"Batch ${batch}"},"subtitle":{"$template":"${reason} · held ${since}"}},"children":[]}}
-{"op":"add","path":"/state/qualityHolds","value":[]}
-{"op":"add","path":"/state/qualityHolds/0","value":{"id":"q1","batch":"B-2281","reason":"Dimension out of tolerance","since":"2 days"}}
-{"op":"add","path":"/state/qualityHolds/1","value":{"id":"q2","batch":"B-2294","reason":"Surface finish defect","since":"1 day"}}
-{"op":"add","path":"/elements/safety-row","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["wo-title","wo-list"]}}
-{"op":"add","path":"/elements/wo-title","value":{"type":"CardHeader","props":{"title":"Open Work Orders","subtitle":"Sorted by priority"},"children":[]}}
-{"op":"add","path":"/elements/wo-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"repeat":{"statePath":"/workOrders","key":"id"},"children":["wo-item"]}}
-{"op":"add","path":"/elements/wo-item","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["wo-item-text","wo-item-tag"]}}
-{"op":"add","path":"/elements/wo-item-text","value":{"type":"TextContent","props":{"text":{"$template":"${id} — ${task} (${line})"}},"children":[]}}
-{"op":"add","path":"/elements/wo-item-tag","value":{"type":"Tag","props":{"text":{"$item":"priority"},"variant":{"$cond":{"$item":"priority","eq":"High"},"$then":"danger","$else":"info"}},"children":[]}}
-{"op":"add","path":"/state/workOrders","value":[]}
-{"op":"add","path":"/state/workOrders/0","value":{"id":"WO-1042","task":"Replace nutrunner station 4","line":"Line 2","priority":"High"}}
-{"op":"add","path":"/state/workOrders/1","value":{"id":"WO-1045","task":"Refill resin hopper","line":"Line 1","priority":"High"}}
-{"op":"add","path":"/state/workOrders/2","value":{"id":"WO-1051","task":"Inspect conveyor V-7 belt","line":"Line 3","priority":"Medium"}}
-{"op":"add","path":"/state/workOrders/3","value":{"id":"WO-1056","task":"Calibrate vision system","line":"Line 4","priority":"Low"}}
-{"op":"add","path":"/elements/maint-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["sched-title","sched-form"]}}
-{"op":"add","path":"/elements/sched-title","value":{"type":"CardHeader","props":{"title":"Schedule Maintenance","subtitle":"Book a machine slot"},"children":[]}}
-{"op":"add","path":"/elements/sched-form","value":{"type":"Form","props":{"name":"maintForm","buttons":"sched-buttons","fields":["fc-machine","fc-date","fc-notes"]},"children":[]}}
-{"op":"add","path":"/elements/fc-machine","value":{"type":"FormControl","props":{"label":"Machine","input":"in-machine","hint":"Select the machine to service"},"children":[]}}
-{"op":"add","path":"/elements/in-machine","value":{"type":"Select","props":{"name":"machine","items":["opt-p12","opt-c04","opt-v7","opt-w1"],"placeholder":"Choose machine","value":{"$bindState":"/maintForm/machine"}},"children":[]}}
-{"op":"add","path":"/elements/opt-p12","value":{"type":"SelectItem","props":{"value":"Press P-12","label":"Press P-12"},"children":[]}}
-{"op":"add","path":"/elements/opt-c04","value":{"type":"SelectItem","props":{"value":"CNC C-04","label":"CNC C-04"},"children":[]}}
-{"op":"add","path":"/elements/opt-v7","value":{"type":"SelectItem","props":{"value":"Conveyor V-7","label":"Conveyor V-7"},"children":[]}}
-{"op":"add","path":"/elements/opt-w1","value":{"type":"SelectItem","props":{"value":"Welder W-1","label":"Welder W-1"},"children":[]}}
-{"op":"add","path":"/elements/fc-date","value":{"type":"FormControl","props":{"label":"Date","input":"in-date"},"children":[]}}
-{"op":"add","path":"/elements/in-date","value":{"type":"DatePicker","props":{"name":"date","mode":"single"},"children":[]}}
-{"op":"add","path":"/elements/fc-notes","value":{"type":"FormControl","props":{"label":"Notes","input":"in-notes"},"children":[]}}
-{"op":"add","path":"/elements/in-notes","value":{"type":"TextArea","props":{"name":"notes","placeholder":"Work to be performed...","rows":2,"value":{"$bindState":"/maintForm/notes"}},"children":[]}}
-{"op":"add","path":"/elements/sched-buttons","value":{"type":"Buttons","props":{"buttons":["sched-submit"]},"children":[]}}
-{"op":"add","path":"/elements/sched-submit","value":{"type":"Button","props":{"label":"Schedule Maintenance","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/maintenanceDue","value":{"id":"$id","machine":{"$state":"/maintForm/machine"},"due":"Scheduled","task":{"$state":"/maintForm/notes"}},"clearStatePath":"/maintForm/notes"}}},"children":[]}}
-{"op":"add","path":"/state/maintForm","value":{"machine":"","notes":""}}
-{"op":"add","path":"/elements/wo-section","value":{"type":"Card","props":{"variant":"clear"},"children":[],"visible":false}}
-{"op":"add","path":"/elements/footer","value":{"type":"TextContent","props":{"size":"small","text":"Data refreshes every 30 seconds · Plant 2 MES link OK · Last sync 14:05"},"children":[]}}
+{"op":"add","path":"/state/deliveries/0","value":{"id":"d1","supplier":"Apex Steel Co.","item":"Cold-rolled steel coils","day":"Tuesday","status":"Confirmed"}}
+{"op":"add","path":"/state/deliveries/1","value":{"id":"d2","supplier":"PolyChem Ltd.","item":"ABS resin pellets","day":"Wednesday","status":"In transit"}}
+{"op":"add","path":"/state/deliveries/2","value":{"id":"d3","supplier":"PackRight Inc.","item":"Cartons & pallets","day":"Friday","status":"Pending"}}
+{"op":"add","path":"/elements/delItem","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["delName","delStatus"]}}
+{"op":"add","path":"/elements/delName","value":{"type":"TextContent","props":{"text":{"$template":"**${supplier}** — ${item} (${day})"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/delStatus","value":{"type":"Badge","props":{"text":{"$item":"status"},"variant":{"$cond":{"$item":"status","eq":"Confirmed"},"$then":"secondary","$else":"outline"}},"children":[]}}
+
+{"op":"add","path":"/elements/workOrdersCard","value":{"type":"Card","props":{"gap":"s"},"children":["woHeader","woTable"]}}
+{"op":"add","path":"/elements/woHeader","value":{"type":"CardHeader","props":{"title":"Open Work Orders","subtitle":"With priority"}}}
+{"op":"add","path":"/elements/woTable","value":{"type":"Table","props":{"columns":["woId","woDesc","woLine","woPriority"]}}}
+{"op":"add","path":"/elements/woId","value":{"type":"Col","props":{"label":"WO #","data":["WO-1042","WO-1043","WO-1044","WO-1045"]}}}
+{"op":"add","path":"/elements/woDesc","value":{"type":"Col","props":{"label":"Description","data":["Bracket assembly run","Housing mold batch","Fastener kit packing","Frame weld order"]}}}
+{"op":"add","path":"/elements/woLine","value":{"type":"Col","props":{"label":"Line","data":["Line 1","Line 2","Line 4","Line 3"]}}}
+{"op":"add","path":"/elements/woPriority","value":{"type":"Col","props":{"label":"Priority","data":["High","Medium","Low","Critical"]}}}
+
+{"op":"add","path":"/elements/holdsCard","value":{"type":"Card","props":{"gap":"s"},"children":["holdsHeader","holdsList"]}}
+{"op":"add","path":"/elements/holdsHeader","value":{"type":"CardHeader","props":{"title":"Batches on Quality Hold"}}}
+{"op":"add","path":"/elements/holdsList","value":{"type":"Card","props":{"variant":"clear","gap":"s"},"repeat":{"statePath":"/holds","key":"id"},"children":["holdItem"]}}
+{"op":"add","path":"/state/holds","value":[]}
+{"op":"add","path":"/state/holds/0","value":{"id":"h1","batch":"B-3391","reason":"Dimensional out of tolerance","qty":"240 units"}}
+{"op":"add","path":"/state/holds/1","value":{"id":"h2","batch":"B-3394","reason":"Surface finish defect","qty":"110 units"}}
+{"op":"add","path":"/elements/holdItem","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["holdName","holdQty"]}}
+{"op":"add","path":"/elements/holdName","value":{"type":"TextContent","props":{"text":{"$template":"**${batch}** — ${reason}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/holdQty","value":{"type":"Badge","props":{"text":{"$item":"qty"},"variant":"destructive"},"children":[]}}
+
+{"op":"add","path":"/elements/exportRow","value":{"type":"Card","props":{"gap":"s"},"children":["exportBtn","exportDone"]}}
+{"op":"add","path":"/elements/exportBtn","value":{"type":"Button","props":{"label":"Export Shift Report (PDF)","variant":"primary","size":"large"},"on":{"press":{"action":"setState","params":{"statePath":"/exported","value":true}}},"children":[]}}
+{"op":"add","path":"/state/exported","value":false}
+{"op":"add","path":"/elements/exportDone","value":{"type":"Callout","props":{"variant":"success","title":"Report exported","description":"Shift report has been generated and sent to the plant manager."}},"visible":{"$state":"/exported"},"children":[]}}

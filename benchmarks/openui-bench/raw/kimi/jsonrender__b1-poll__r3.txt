@@ -1,18 +1,19 @@
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","question","options"]}}
-{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Team Lunch Poll","subtitle":"Cast your vote — one vote per person"},"children":[]}}
-{"op":"add","path":"/elements/question","value":{"type":"Heading","props":{"text":"Where should we go for lunch on Friday?","level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/options","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"repeat":{"statePath":"/restaurants","key":"id"},"children":["option-card"]}}
-{"op":"add","path":"/state/restaurants","value":[]}
-{"op":"add","path":"/state/restaurants/0","value":{"id":"r1","name":"Taqueria El Sol","cuisine":"Mexican","detail":"Casual tacos and burritos, 5 min walk","votes":4}}
-{"op":"add","path":"/state/restaurants/1","value":{"id":"r2","name":"Nonna's Kitchen","cuisine":"Italian","detail":"Fresh pasta and wood-fired pizza","votes":6}}
-{"op":"add","path":"/state/restaurants/2","value":{"id":"r3","name":"Sakura Sushi Bar","cuisine":"Japanese","detail":"Sushi rolls, ramen, and bento boxes","votes":3}}
-{"op":"add","path":"/elements/option-card","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["opt-row","opt-detail","opt-bar"]}}
-{"op":"add","path":"/elements/opt-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center"},"children":["opt-name","opt-votes"]}}
-{"op":"add","path":"/elements/opt-name","value":{"type":"TextContent","props":{"text":{"$template":"${name} — ${cuisine}"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/opt-votes","value":{"type":"Tag","props":{"text":{"$template":"${votes} votes"},"variant":"info","size":"sm"},"children":[]}}
-{"op":"add","path":"/elements/opt-detail","value":{"type":"TextContent","props":{"text":{"$item":"detail"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/opt-bar","value":{"type":"Button","props":{"label":{"$template":"Vote for ${name}"},"variant":"primary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/voted","value":{"$item":"name"}}}},"children":[]}}
-{"op":"add","path":"/state/voted","value":""}
-{"op":"add","path":"/elements/thanks","value":{"type":"Callout","props":{"variant":"success","title":"Vote recorded!","description":{"$template":"You voted for ${/voted}. See you Friday!"}},"visible":{"$state":"/voted","neq":""},"children":[]}}
-{"op":"replace","path":"/elements/main/children","value":["header","question","options","thanks"]}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"gap":"l"},"children":["header","intro","voteCard","resultsHeader","results","voteCallout"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Team Lunch Poll","subtitle":"Cast your vote before Thursday 5pm"}}}
+{"op":"add","path":"/elements/intro","value":{"type":"TextContent","props":{"text":"Where should we go for lunch on Friday?","size":"large-heavy"}}}
+{"op":"add","path":"/elements/voteCard","value":{"type":"Card","props":{"variant":"sunk","gap":"m"},"children":["options","voteBtn"]}}
+{"op":"add","path":"/elements/options","value":{"type":"RadioGroup","props":{"name":"restaurant","items":["opt1","opt2","opt3"]},"children":[]}}
+{"op":"add","path":"/elements/opt1","value":{"type":"RadioItem","props":{"label":"Bella Cucina","description":"Italian — wood-fired pizza & pasta, 5 min walk","value":"bella"}}}
+{"op":"add","path":"/elements/opt2","value":{"type":"RadioItem","props":{"label":"Sakura Sushi","description":"Japanese — sushi rolls & bento boxes, 10 min walk","value":"sakura"}}}
+{"op":"add","path":"/elements/opt3","value":{"type":"RadioItem","props":{"label":"El Camino","description":"Mexican — tacos & burritos, 8 min walk","value":"camino"}}}
+{"op":"add","path":"/elements/voteBtn","value":{"type":"Button","props":{"label":"Cast my vote","variant":"primary"},"on":{"press":{"action":"setState","params":{"statePath":"/voted","value":true}}},"children":[]}}
+{"op":"add","path":"/elements/resultsHeader","value":{"type":"TextContent","props":{"text":"Current standings","size":"small-heavy"}}}
+{"op":"add","path":"/elements/results","value":{"type":"Card","props":{"variant":"clear","gap":"s"},"repeat":{"statePath":"/tally","key":"id"},"children":["resultRow"]}}
+{"op":"add","path":"/state/tally","value":[]}
+{"op":"add","path":"/state/tally/0","value":{"id":"bella","name":"Bella Cucina","votes":6}}
+{"op":"add","path":"/state/tally/1","value":{"id":"sakura","name":"Sakura Sushi","votes":4}}
+{"op":"add","path":"/state/tally/2","value":{"id":"camino","name":"El Camino","votes":3}}
+{"op":"add","path":"/elements/resultRow","value":{"type":"Progress","props":{"label":{"$template":"${name} — ${votes} votes"},"value":{"$item":"votes"}},"children":[]}}
+{"op":"add","path":"/elements/voteCallout","value":{"type":"Callout","props":{"variant":"success","title":"Vote recorded!","description":"Thanks — we'll announce the winner on Thursday evening."},"visible":{"$state":"/voted"},"children":[]}}
+{"op":"add","path":"/state/voted","value":false}

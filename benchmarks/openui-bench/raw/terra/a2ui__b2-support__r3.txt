@@ -1,7 +1,208 @@
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"support-lead-morning-view","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#2563EB","agentDisplayName":"Support Operations"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"support-lead-morning-view","components":[{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["header","metrics","filter-and-action","recent-section"]},{"id":"header","component":"Card","variant":"clear","direction":"column","gap":"xs","children":["page-title","page-subtitle"]},{"id":"page-title","component":"Heading","level":"h1","text":"Support morning view"},{"id":"page-subtitle","component":"TextContent","size":"default","text":"A quick overview of today’s support queue and recent customer requests."},{"id":"metrics","component":"Card","variant":"clear","direction":"row","gap":"m","align":"stretch","children":["open-tickets-card","response-time-card"]},{"id":"open-tickets-card","component":"Card","variant":"card","direction":"column","gap":"s","children":["open-tickets-label","open-tickets-value","open-tickets-note"],"weight":1},{"id":"open-tickets-label","component":"TextContent","size":"small","text":"Open tickets"},{"id":"open-tickets-value","component":"Heading","level":"h2","text":"42"},{"id":"open-tickets-note","component":"TextContent","size":"small","text":"8 added since yesterday"},{"id":"response-time-card","component":"Card","variant":"card","direction":"column","gap":"s","children":["response-time-label","response-time-value","response-time-note"],"weight":1},{"id":"response-time-label","component":"TextContent","size":"small","text":"Average first-response time"},{"id":"response-time-value","component":"Heading","level":"h2","text":"18 min"},{"id":"response-time-note","component":"TextContent","size":"small","text":"Within the 30-minute target"},{"id":"filter-and-action","component":"Card","variant":"clear","direction":"row","gap":"m","align":"end","justify":"between","children":["priority-filter-control","new-ticket-button"]},{"id":"priority-filter-control","component":"FormControl","label":"Queue filter","hint":"Show only the most urgent requests.","input":"priority-filter","weight":1},{"id":"priority-filter","component":"Select","name":"priorityFilter","placeholder":"All priorities","value":"all","items":["priority-all","priority-high"]},{"id":"priority-all","component":"SelectItem","value":"all","label":"All priorities"},{"id":"priority-high","component":"SelectItem","value":"high","label":"High priority only"},{"id":"new-ticket-button","component":"Button","label":"Open new ticket","variant":"primary","size":"medium","action":[{"type":"open_new_ticket"}]},{"id":"recent-section","component":"Card","variant":"card","direction":"column","gap":"m","children":["recent-header","recent-tickets-table"]},{"id":"recent-header","component":"CardHeader","title":"Five most recent tickets","subtitle":"Newest requests across the support queue"},{"id":"recent-tickets-table","component":"Table","columns":["ticket-id-column","subject-column","customer-column","priority-column","received-column"]},{"id":"ticket-id-column","component":"Col","label":"Ticket","type":"string","data":["#48219","#48218","#48217","#48216","#48215"]},{"id":"subject-column","component":"Col","label":"Subject","type":"string","data":["Unable to reset account password","Billing charge appears twice","API requests timing out","Need help updating team seats","Exported report is missing rows"]},{"id":"customer-column","component":"Col","label":"Customer","type":"string","data":["Northstar Labs","Cedar & Co.","Orbit Systems","Horizon Health","Pineworks"]},{"id":"priority-column","component":"Col","label":"Priority","type":"string","data":["High","Medium","High","Low","Medium"]},{"id":"received-column","component":"Col","label":"Received","type":"string","data":["8 min ago","16 min ago","24 min ago","31 min ago","43 min ago"]}]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "summary",
+          "filterControl",
+          "recentHeader",
+          "ticketsTable",
+          "newTicketButton"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Support Morning View",
+        "subtitle": "Today’s queue at a glance"
+      },
+      {
+        "id": "summary",
+        "component": "Card",
+        "children": [
+          "openTickets",
+          "responseTime"
+        ],
+        "direction": "row",
+        "gap": "m"
+      },
+      {
+        "id": "openTickets",
+        "component": "Card",
+        "children": [
+          "openTicketsLabel",
+          "openTicketsValue"
+        ],
+        "variant": "sunk",
+        "gap": "xs",
+        "weight": 1
+      },
+      {
+        "id": "openTicketsLabel",
+        "component": "TextContent",
+        "text": "Open tickets",
+        "size": "small"
+      },
+      {
+        "id": "openTicketsValue",
+        "component": "TextContent",
+        "text": "42",
+        "size": "large-heavy"
+      },
+      {
+        "id": "responseTime",
+        "component": "Card",
+        "children": [
+          "responseTimeLabel",
+          "responseTimeValue"
+        ],
+        "variant": "sunk",
+        "gap": "xs",
+        "weight": 1
+      },
+      {
+        "id": "responseTimeLabel",
+        "component": "TextContent",
+        "text": "Average first-response time",
+        "size": "small"
+      },
+      {
+        "id": "responseTimeValue",
+        "component": "TextContent",
+        "text": "18 min",
+        "size": "large-heavy"
+      },
+      {
+        "id": "filterControl",
+        "component": "FormControl",
+        "label": "Ticket priority",
+        "input": "priorityFilter",
+        "hint": "Use this filter to focus on urgent work."
+      },
+      {
+        "id": "priorityFilter",
+        "component": "Select",
+        "name": "priority_filter",
+        "items": [
+          "allPriorities",
+          "highPriority"
+        ],
+        "value": "all"
+      },
+      {
+        "id": "allPriorities",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All priorities"
+      },
+      {
+        "id": "highPriority",
+        "component": "SelectItem",
+        "value": "high",
+        "label": "High priority only"
+      },
+      {
+        "id": "recentHeader",
+        "component": "Heading",
+        "text": "Five most recent tickets",
+        "level": "h2"
+      },
+      {
+        "id": "ticketsTable",
+        "component": "Table",
+        "columns": [
+          "ticketIdColumn",
+          "subjectColumn",
+          "customerColumn",
+          "priorityColumn",
+          "updatedColumn"
+        ]
+      },
+      {
+        "id": "ticketIdColumn",
+        "component": "Col",
+        "label": "Ticket",
+        "data": [
+          "#1842",
+          "#1841",
+          "#1840",
+          "#1839",
+          "#1838"
+        ]
+      },
+      {
+        "id": "subjectColumn",
+        "component": "Col",
+        "label": "Subject",
+        "data": [
+          "Unable to reset password",
+          "Invoice shows duplicate charge",
+          "API rate limit question",
+          "Account access for new teammate",
+          "Export report is missing rows"
+        ]
+      },
+      {
+        "id": "customerColumn",
+        "component": "Col",
+        "label": "Customer",
+        "data": [
+          "Northstar Labs",
+          "Acme Co.",
+          "Riverton Health",
+          "Brightline Studio",
+          "Pine & Co."
+        ]
+      },
+      {
+        "id": "priorityColumn",
+        "component": "Col",
+        "label": "Priority",
+        "data": [
+          "High",
+          "High",
+          "Normal",
+          "Normal",
+          "Low"
+        ]
+      },
+      {
+        "id": "updatedColumn",
+        "component": "Col",
+        "label": "Last updated",
+        "data": [
+          "2 min ago",
+          "8 min ago",
+          "14 min ago",
+          "21 min ago",
+          "32 min ago"
+        ]
+      },
+      {
+        "id": "newTicketButton",
+        "component": "Button",
+        "label": "Open new ticket",
+        "variant": "primary",
+        "size": "large"
+      }
+    ]
+  }
+}
 </a2ui-json>

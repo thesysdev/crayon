@@ -1,30 +1,29 @@
 {"op":"add","path":"/root","value":"inventory-warning"}
-{"op":"add","path":"/elements/inventory-warning","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xl"},"children":["warning-header","warning-callout","search-panel","inventory-section"]}}
-{"op":"add","path":"/elements/warning-header","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center","gap":"m"},"children":["warning-title","threshold-badge"]}}
-{"op":"add","path":"/elements/warning-title","value":{"type":"CardHeader","props":{"title":"Low inventory","subtitle":"Review items that need replenishment before they run out."},"children":[]}}
-{"op":"add","path":"/elements/threshold-badge","value":{"type":"Badge","props":{"text":{"$template":"Warning threshold: ${/inventoryThreshold} units"},"variant":"destructive"},"children":[]}}
-{"op":"add","path":"/state/inventoryThreshold","value":12}
-{"op":"add","path":"/elements/warning-callout","value":{"type":"Callout","props":{"variant":"warning","title":"Reorder recommended","description":"Items shown below have reached or fallen below your low-stock threshold of 12 units."},"children":[]}}
-{"op":"add","path":"/elements/search-panel","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["search-label","search-input"]}}
+{"op":"add","path":"/elements/inventory-warning","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["page-header","warning-callout","threshold-card","search-card","inventory-section"]}}
+{"op":"add","path":"/elements/page-header","value":{"type":"CardHeader","props":{"title":"Low inventory","subtitle":"Review products that need replenishment before they run out."},"children":[]}}
+{"op":"add","path":"/elements/warning-callout","value":{"type":"Alert","props":{"title":"4 items need attention","description":"These products are at or below their configured reorder threshold.","variant":"warning"},"children":[]}}
+{"op":"add","path":"/elements/threshold-card","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between"},"children":["threshold-copy","threshold-badge"]}}
+{"op":"add","path":"/elements/threshold-copy","value":{"type":"TextContent","props":{"text":"**Warning threshold**\nItems appear here when available stock reaches 10 units or fewer.","size":"default"},"children":[]}}
+{"op":"add","path":"/elements/threshold-badge","value":{"type":"Badge","props":{"text":"≤ 10 units","variant":"destructive"},"children":[]}}
+{"op":"add","path":"/elements/search-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["search-label","search-input"]}}
 {"op":"add","path":"/elements/search-label","value":{"type":"TextContent","props":{"text":"Search low-inventory items","size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/search-input","value":{"type":"Input","props":{"name":"inventory-search","placeholder":"Search by item name or SKU","type":"text","value":{"$bindState":"/searchQuery"}},"children":[]}}
+{"op":"add","path":"/elements/search-input","value":{"type":"Input","props":{"name":"inventory-search","placeholder":"Search by product name or SKU","value":{"$bindState":"/searchQuery"}},"children":[]}}
 {"op":"add","path":"/state/searchQuery","value":""}
-{"op":"add","path":"/elements/inventory-section","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"children":["inventory-section-header","low-stock-list"]}}
-{"op":"add","path":"/elements/inventory-section-header","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"baseline","gap":"m"},"children":["inventory-heading","inventory-count"]}}
+{"op":"add","path":"/elements/inventory-section","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"children":["inventory-heading","inventory-list"]}}
 {"op":"add","path":"/elements/inventory-heading","value":{"type":"Heading","props":{"text":"Items running low","level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/inventory-count","value":{"type":"TextContent","props":{"text":{"$template":"${/lowStockItemsCount} items need attention"},"size":"small"},"children":[]}}
-{"op":"add","path":"/state/lowStockItemsCount","value":4}
-{"op":"add","path":"/elements/low-stock-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/lowStockItems","key":"id"},"children":["low-stock-item"]}}
-{"op":"add","path":"/elements/low-stock-item","value":{"type":"Card","props":{"variant":"card","direction":"row","justify":"between","align":"center","gap":"m","wrap":true},"children":["item-details","item-actions"]}}
-{"op":"add","path":"/elements/item-details","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["item-name","item-sku","item-stock-status"]}}
+{"op":"add","path":"/elements/inventory-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/lowInventoryItems","key":"id"},"children":["inventory-item"]}}
+{"op":"add","path":"/state/lowInventoryItems","value":[]}
+{"op":"add","path":"/state/lowInventoryItems/0","value":{"id":"sku-4812","name":"Organic Oat Milk, 1L","sku":"SKU-4812","remaining":4,"threshold":10,"supplier":"Northstar Foods"}}
+{"op":"add","path":"/state/lowInventoryItems/1","value":{"id":"sku-2097","name":"Ethiopian Roast Coffee, 12 oz","sku":"SKU-2097","remaining":6,"threshold":10,"supplier":"Harbor Roasters"}}
+{"op":"add","path":"/state/lowInventoryItems/2","value":{"id":"sku-7364","name":"Reusable Canvas Tote","sku":"SKU-7364","remaining":8,"threshold":10,"supplier":"Field & Form"}}
+{"op":"add","path":"/state/lowInventoryItems/3","value":{"id":"sku-1550","name":"Vanilla Bean Syrup, 750 ml","sku":"SKU-1550","remaining":2,"threshold":10,"supplier":"Northstar Foods"}}
+{"op":"add","path":"/elements/inventory-item","value":{"type":"Card","props":{"variant":"card","direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["item-details","item-stock","reorder-button"]}}
+{"op":"add","path":"/elements/item-details","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["item-name","item-sku","item-supplier"]}}
 {"op":"add","path":"/elements/item-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"large-heavy"},"children":[]}}
-{"op":"add","path":"/elements/item-sku","value":{"type":"TextContent","props":{"text":{"$template":"SKU: ${sku} · Reorder point: ${threshold} units"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/item-stock-status","value":{"type":"Badge","props":{"text":{"$template":"${remaining} units remaining"},"variant":"destructive"},"children":[]}}
-{"op":"add","path":"/elements/item-actions","value":{"type":"Card","props":{"variant":"clear","direction":"column","align":"end","gap":"s"},"children":["item-reorder-info","reorder-button"]}}
-{"op":"add","path":"/elements/item-reorder-info","value":{"type":"TextContent","props":{"text":{"$template":"Suggested reorder: ${reorderQuantity} units"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/reorder-button","value":{"type":"Button","props":{"label":"Reorder item","variant":"primary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/lastReorder","value":{"itemId":{"$item":"id"},"itemName":{"$item":"name"},"status":"Reorder request started"}}}},"children":[]}}
-{"op":"add","path":"/state/lowStockItems","value":[]}
-{"op":"add","path":"/state/lowStockItems/0","value":{"id":"sku-1042","name":"Organic Whole Bean Coffee, 12 oz","sku":"COF-1042","remaining":4,"threshold":12,"reorderQuantity":36}}
-{"op":"add","path":"/state/lowStockItems/1","value":{"id":"sku-2087","name":"Matte Black Water Bottle, 20 oz","sku":"BOT-2087","remaining":7,"threshold":12,"reorderQuantity":24}}
-{"op":"add","path":"/state/lowStockItems/2","value":{"id":"sku-3115","name":"Cotton Canvas Tote Bag","sku":"TOT-3115","remaining":9,"threshold":12,"reorderQuantity":30}}
-{"op":"add","path":"/state/lowStockItems/3","value":{"id":"sku-4521","name":"Lavender Hand Soap Refill, 16 oz","sku":"SOAP-4521","remaining":11,"threshold":12,"reorderQuantity":48}}
+{"op":"add","path":"/elements/item-sku","value":{"type":"TextContent","props":{"text":{"$template":"SKU: ${sku}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/item-supplier","value":{"type":"TextContent","props":{"text":{"$template":"Supplier: ${supplier}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/item-stock","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs","align":"center"},"children":["stock-label","stock-value"]}}
+{"op":"add","path":"/elements/stock-label","value":{"type":"TextContent","props":{"text":"Remaining","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/stock-value","value":{"type":"Badge","props":{"text":{"$template":"${remaining} units"},"variant":"destructive"},"children":[]}}
+{"op":"add","path":"/elements/reorder-button","value":{"type":"Button","props":{"label":"Reorder","variant":"primary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/lastReorderItem","value":{"$item":"name"}}}},"children":[]}}
+{"op":"add","path":"/state/lastReorderItem","value":""}

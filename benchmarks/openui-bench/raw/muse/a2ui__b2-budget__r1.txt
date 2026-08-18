@@ -1,164 +1,248 @@
-Your personal budget check is ready — all 5 items on one screen:
+Your personal budget check is ready — track spend vs budget, breakdown, and add new expenses all in one place.
 
-<a2ui-json>{"version": "v0.9", "createSurface": {"surfaceId": "budget-check-surface", "catalogId": "thesys.dev:c1-openui"}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
 
-<a2ui-json>{
+<a2ui-json>
+{
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "budget-check-surface",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "l",
         "children": [
           "header",
-          "monthSelectorCard",
-          "budgetOverviewCard",
-          "categoryCard",
+          "monthCard",
+          "budgetCard",
+          "splitCard",
           "largestCard",
           "addExpenseCard"
-        ]
+        ],
+        "gap": "l",
+        "direction": "column"
       },
       {
         "id": "header",
         "component": "CardHeader",
         "title": "Personal Budget Check",
-        "subtitle": "Track spending, stay on budget — June 2026"
+        "subtitle": "May 2026 overview — stay on top of your spending"
       },
       {
-        "id": "monthSelectorCard",
+        "id": "monthCard",
         "component": "Card",
         "variant": "sunk",
         "children": [
-          "monthSelectControl"
+          "monthHeader",
+          "monthControl"
         ]
       },
       {
-        "id": "monthSelectControl",
+        "id": "monthHeader",
+        "component": "CardHeader",
+        "title": "Select Month",
+        "subtitle": "Switch to view a different month's budget"
+      },
+      {
+        "id": "monthControl",
         "component": "FormControl",
-        "label": "View different month (Item 4)",
-        "hint": "Select a month to review past or current spending",
+        "label": "Month",
+        "hint": "Choose a month to update all figures below",
         "input": "monthSelect"
       },
       {
         "id": "monthSelect",
         "component": "Select",
-        "name": "selectedMonth",
-        "value": "2026-06",
-        "placeholder": "Choose month",
+        "name": "month",
+        "value": "2026-05",
+        "placeholder": "Select month",
         "items": [
-          "monthOptMay",
-          "monthOptJune",
-          "monthOptJuly",
-          "monthOptAug"
+          "monthMay",
+          "monthApr",
+          "monthMar",
+          "monthFeb"
         ]
       },
       {
-        "id": "monthOptMay",
+        "id": "monthMay",
         "component": "SelectItem",
         "value": "2026-05",
-        "label": "May 2026"
+        "label": "May 2026 (Current)"
       },
       {
-        "id": "monthOptJune",
+        "id": "monthApr",
         "component": "SelectItem",
-        "value": "2026-06",
-        "label": "June 2026 — Current"
+        "value": "2026-04",
+        "label": "April 2026"
       },
       {
-        "id": "monthOptJuly",
+        "id": "monthMar",
         "component": "SelectItem",
-        "value": "2026-07",
-        "label": "July 2026"
+        "value": "2026-03",
+        "label": "March 2026"
       },
       {
-        "id": "monthOptAug",
+        "id": "monthFeb",
         "component": "SelectItem",
-        "value": "2026-08",
-        "label": "August 2026"
+        "value": "2026-02",
+        "label": "February 2026"
       },
       {
-        "id": "budgetOverviewCard",
+        "id": "budgetCard",
         "component": "Card",
-        "variant": "card",
         "children": [
           "budgetHeader",
           "budgetProgress",
           "budgetText",
-          "budgetCallout"
+          "budgetStatsTable"
         ]
       },
       {
         "id": "budgetHeader",
         "component": "CardHeader",
         "title": "1. Total Spent vs Budget",
-        "subtitle": "June 2026 overview"
+        "subtitle": "This month's progress"
       },
       {
         "id": "budgetProgress",
         "component": "Progress",
-        "value": 78,
-        "label": "78% of budget used"
+        "value": 73.6,
+        "label": "$1,840 of $2,500 used"
       },
       {
         "id": "budgetText",
         "component": "TextContent",
-        "text": "**$2,340** spent of **$3,000** budget  •  **$660 remaining**  •  22% left",
-        "size": "large"
+        "text": "**$1,840 spent** of **$2,500 budget** — **$660 remaining** (26.4% left). You're on track with 12 days left in May.",
+        "size": "default"
       },
       {
-        "id": "budgetCallout",
-        "component": "TextCallout",
-        "variant": "info",
-        "title": "On track",
-        "description": "You've used 78% with 8 days left in June. Daily average: $78 / day."
-      },
-      {
-        "id": "categoryCard",
-        "component": "Card",
-        "variant": "card",
-        "children": [
-          "categoryHeader",
-          "categoryPie"
+        "id": "budgetStatsTable",
+        "component": "Table",
+        "columns": [
+          "colMetric",
+          "colValue"
         ]
       },
       {
-        "id": "categoryHeader",
-        "component": "CardHeader",
-        "title": "2. Spending Split by Category",
-        "subtitle": "Where your $2,340 went"
+        "id": "colMetric",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Budget",
+          "Spent",
+          "Remaining",
+          "Daily avg left"
+        ]
       },
       {
-        "id": "categoryPie",
+        "id": "colValue",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "$2,500.00",
+          "$1,840.00",
+          "$660.00",
+          "$55.00 / day"
+        ]
+      },
+      {
+        "id": "splitCard",
+        "component": "Card",
+        "children": [
+          "splitHeader",
+          "categoryChart",
+          "categoryTable"
+        ]
+      },
+      {
+        "id": "splitHeader",
+        "component": "CardHeader",
+        "title": "2. Spending Split by Category",
+        "subtitle": "Where your money went in May"
+      },
+      {
+        "id": "categoryChart",
         "component": "PieChart",
-        "variant": "donut",
         "labels": [
           "Housing",
-          "Food & Groceries",
+          "Groceries",
+          "Dining Out",
           "Transport",
           "Entertainment",
-          "Utilities",
-          "Other"
+          "Utilities"
         ],
         "values": [
-          1200,
-          480,
-          220,
+          850,
+          320,
           240,
+          180,
           150,
-          50
+          100
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "categoryTable",
+        "component": "Table",
+        "columns": [
+          "catNameCol",
+          "catAmountCol",
+          "catPercentCol"
+        ]
+      },
+      {
+        "id": "catNameCol",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Housing",
+          "Groceries",
+          "Dining Out",
+          "Transport",
+          "Entertainment",
+          "Utilities"
+        ]
+      },
+      {
+        "id": "catAmountCol",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "$850.00",
+          "$320.00",
+          "$240.00",
+          "$180.00",
+          "$150.00",
+          "$100.00"
+        ]
+      },
+      {
+        "id": "catPercentCol",
+        "component": "Col",
+        "label": "% of Spend",
+        "data": [
+          "46.2%",
+          "17.4%",
+          "13.0%",
+          "9.8%",
+          "8.2%",
+          "5.4%"
         ]
       },
       {
         "id": "largestCard",
         "component": "Card",
-        "variant": "card",
         "children": [
           "largestHeader",
-          "largestCallout",
+          "largestAlert",
           "largestDetails"
         ]
       },
@@ -169,22 +253,21 @@ Your personal budget check is ready — all 5 items on one screen:
         "subtitle": "Your biggest single transaction this month"
       },
       {
-        "id": "largestCallout",
-        "component": "Callout",
-        "variant": "warning",
-        "title": "🔶 Largest Expense: $1,200 — Rent Payment",
-        "description": "June 1, 2026 • Housing • 51.3% of total monthly spending"
+        "id": "largestAlert",
+        "component": "Alert",
+        "title": "🏠 Rent Payment — $850.00",
+        "description": "May 1, 2026 • Housing • Paid to Maple Apartments. This is 46.2% of your total May spending.",
+        "variant": "warning"
       },
       {
         "id": "largestDetails",
         "component": "TextContent",
-        "text": "This one expense is **2.5x larger** than your next biggest (Food & Groceries $480). Paid to Maple Apartments via bank transfer.",
+        "text": "Tip: This single expense is larger than your next 3 categories combined ($670). Consider reviewing housing costs if this trend continues next month.",
         "size": "small"
       },
       {
         "id": "addExpenseCard",
         "component": "Card",
-        "variant": "card",
         "children": [
           "addHeader",
           "addForm"
@@ -194,91 +277,110 @@ Your personal budget check is ready — all 5 items on one screen:
         "id": "addHeader",
         "component": "CardHeader",
         "title": "5. Add an Expense",
-        "subtitle": "Log a new transaction to update your budget instantly"
+        "subtitle": "Log a new purchase to update your budget instantly"
       },
       {
         "id": "addForm",
         "component": "Form",
-        "name": "addExpense",
+        "name": "add-expense",
         "buttons": "formButtons",
         "fields": [
-          "fieldAmountControl",
-          "fieldCategoryControl",
-          "fieldDateControl",
-          "fieldDescControl"
+          "descField",
+          "amountField",
+          "categoryField",
+          "dateField"
         ]
       },
       {
-        "id": "fieldAmountControl",
+        "id": "descField",
         "component": "FormControl",
-        "label": "Amount ($)",
-        "input": "inputAmount"
+        "label": "Description",
+        "input": "descInput"
       },
       {
-        "id": "inputAmount",
+        "id": "descInput",
+        "component": "Input",
+        "name": "description",
+        "placeholder": "e.g., Grocery run at Trader Joe's"
+      },
+      {
+        "id": "amountField",
+        "component": "FormControl",
+        "label": "Amount ($)",
+        "input": "amountInput"
+      },
+      {
+        "id": "amountInput",
         "component": "Input",
         "name": "amount",
-        "placeholder": "e.g. 45.00",
+        "placeholder": "0.00",
         "type": "number"
       },
       {
-        "id": "fieldCategoryControl",
+        "id": "categoryField",
         "component": "FormControl",
         "label": "Category",
-        "input": "selectCategory"
+        "input": "categorySelect"
       },
       {
-        "id": "selectCategory",
+        "id": "categorySelect",
         "component": "Select",
         "name": "category",
-        "placeholder": "Select category",
+        "placeholder": "Choose category",
         "items": [
-          "catItemHousing",
-          "catItemFood",
-          "catItemTransport",
-          "catItemEntertainment",
-          "catItemUtilities",
-          "catItemOther"
+          "catHousing",
+          "catGroceries",
+          "catDining",
+          "catTransport",
+          "catEntertain",
+          "catUtilities",
+          "catOther"
         ]
       },
       {
-        "id": "catItemHousing",
+        "id": "catHousing",
         "component": "SelectItem",
         "value": "housing",
         "label": "Housing"
       },
       {
-        "id": "catItemFood",
+        "id": "catGroceries",
         "component": "SelectItem",
-        "value": "food",
-        "label": "Food & Groceries"
+        "value": "groceries",
+        "label": "Groceries"
       },
       {
-        "id": "catItemTransport",
+        "id": "catDining",
+        "component": "SelectItem",
+        "value": "dining",
+        "label": "Dining Out"
+      },
+      {
+        "id": "catTransport",
         "component": "SelectItem",
         "value": "transport",
         "label": "Transport"
       },
       {
-        "id": "catItemEntertainment",
+        "id": "catEntertain",
         "component": "SelectItem",
         "value": "entertainment",
         "label": "Entertainment"
       },
       {
-        "id": "catItemUtilities",
+        "id": "catUtilities",
         "component": "SelectItem",
         "value": "utilities",
         "label": "Utilities"
       },
       {
-        "id": "catItemOther",
+        "id": "catOther",
         "component": "SelectItem",
         "value": "other",
         "label": "Other"
       },
       {
-        "id": "fieldDateControl",
+        "id": "dateField",
         "component": "FormControl",
         "label": "Date",
         "input": "datePicker"
@@ -286,51 +388,30 @@ Your personal budget check is ready — all 5 items on one screen:
       {
         "id": "datePicker",
         "component": "DatePicker",
-        "name": "expenseDate",
+        "name": "expense_date",
         "mode": "single"
-      },
-      {
-        "id": "fieldDescControl",
-        "component": "FormControl",
-        "label": "Description",
-        "hint": "Optional note (e.g., Grocery run at Trader Joe's)",
-        "input": "inputDesc"
-      },
-      {
-        "id": "inputDesc",
-        "component": "Input",
-        "name": "description",
-        "placeholder": "What was this for?",
-        "type": "text"
       },
       {
         "id": "formButtons",
         "component": "Buttons",
         "buttons": [
-          "btnAdd",
-          "btnCancel"
+          "submitBtn",
+          "cancelBtn"
         ]
       },
       {
-        "id": "btnAdd",
+        "id": "submitBtn",
         "component": "Button",
         "label": "Add Expense",
         "variant": "primary"
       },
       {
-        "id": "btnCancel",
+        "id": "cancelBtn",
         "component": "Button",
-        "label": "Cancel",
+        "label": "Clear",
         "variant": "secondary"
       }
     ]
   }
-}</a2ui-json>
-
-All 5 requirements covered on one screen:
-
-**1. Total vs Budget** — Progress bar + $2,340 / $3,000 with $660 remaining  
-**2. Split by Category** — Donut PieChart (Housing, Food, Transport, Entertainment, Utilities, Other)  
-**3. Largest Expense** — Highlighted warning Callout for $1,200 Rent on June 1  
-**4. Different Month** — Month selector at top (May / June / July / Aug)  
-**5. Add Expense** — Form with amount, category, date, and description
+}
+</a2ui-json>

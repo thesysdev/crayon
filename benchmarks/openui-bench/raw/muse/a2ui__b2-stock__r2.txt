@@ -1,5 +1,261 @@
-A low-inventory warning screen with search, threshold context, and per-item reorder built for you:
+Here's a single-screen low-inventory warning view covering search, thresholds, remaining units, and per-item reordering:
 
-<a2ui-json>{"version":"v0.9","createSurface":{"surfaceId":"low-inventory-warning","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#E67E22","agentDisplayName":"Inventory Manager"},"sendDataModel":false}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
 
-<a2ui-json>{"version":"v0.9","updateComponents":{"surfaceId":"low-inventory-warning","components":[{"component":"Card","id":"root","children":["header","alertBanner","controlsRow","inventoryCard","footerText","followUpBlock"],"variant":"clear","direction":"column","gap":"m"},{"component":"CardHeader","id":"header","title":"Low Inventory Warning","subtitle":"6 items at or below threshold • Last synced just now"},{"component":"Alert","id":"alertBanner","title":"Attention needed - stock running low","description":"All items shown have 10 or fewer units remaining. Reorder critical items first to avoid stockouts.","variant":"warning"},{"component":"Card","id":"controlsRow","children":["searchFormControl","thresholdCard"],"variant":"clear","direction":"row","gap":"m","wrap":true},{"component":"FormControl","id":"searchFormControl","label":"Search items","input":"searchInput","hint":"Filter by name, SKU, or category"},{"component":"Input","id":"searchInput","name":"searchQuery","placeholder":"Search e.g. Milk, Eggs, SKU #1024...","type":"text"},{"component":"Card","id":"thresholdCard","children":["thresholdHeading","thresholdText","thresholdBadge"],"variant":"sunk","direction":"column","gap":"xs"},{"component":"Heading","id":"thresholdHeading","text":"Warning Threshold","level":"h3"},{"component":"TextContent","id":"thresholdText","text":"Items with **≤ 10 units** trigger this warning. Threshold applies store-wide. Adjust in Inventory Settings if needed.","size":"small"},{"component":"Badge","id":"thresholdBadge","text":"Threshold: ≤ 10 units","variant":"secondary"},{"component":"Card","id":"inventoryCard","children":["inventoryCardHeader","inventoryTable","reorderHelpText"],"variant":"card","direction":"column","gap":"s"},{"component":"CardHeader","id":"inventoryCardHeader","title":"Items Running Low (6)","subtitle":"Sorted by lowest stock first • Tap Reorder to create purchase order"},{"component":"Table","id":"inventoryTable","columns":["colItem","colSku","colRemaining","colThreshold","colStatus","colAction"]},{"component":"Col","id":"colItem","label":"Item","data":["Almond Butter 16oz","Sourdough Loaf","Organic Whole Milk 1G","Cold Brew 12oz","Free-Range Eggs 12pk","Hass Avocados"],"type":"string"},{"component":"Col","id":"colSku","label":"SKU","data":["#1042-AB","#1018-SD","#1004-MK","#1055-CB","#1009-EG","#1033-AV"],"type":"string"},{"component":"Col","id":"colRemaining","label":"Remaining","data":[2,3,4,6,7,9],"type":"number"},{"component":"Col","id":"colThreshold","label":"Threshold","data":[10,10,10,10,10,10],"type":"number"},{"component":"Col","id":"colStatus","label":"Status","data":["Critical","Critical","Low","Low","Low","Low"],"type":"string"},{"component":"Col","id":"colAction","label":"Reorder","data":["Reorder","Reorder","Reorder","Reorder","Reorder","Reorder"],"type":"action"},{"component":"TextContent","id":"reorderHelpText","text":"**How to reorder:** Tap **Reorder** on any row to open a purchase order. Items with ≤ 4 units are marked Critical.","size":"small"},{"component":"TextContent","id":"footerText","text":"Showing only items at or below threshold. Use the search field above to quickly filter this list.","size":"small"},{"component":"FollowUpBlock","id":"followUpBlock","items":["followUp1","followUp2","followUp3"]},{"component":"FollowUpItem","id":"followUp1","text":"Reorder all critical items"},{"component":"FollowUpItem","id":"followUp2","text":"Adjust warning threshold"},{"component":"FollowUpItem","id":"followUp3","text":"View full inventory"}]}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "searchForm",
+          "thresholdAlert",
+          "inventoryTable",
+          "reorderHeading",
+          "reorderList",
+          "bulkActions",
+          "footerNote"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Low Inventory Warnings",
+        "subtitle": "6 items at or below threshold • Last checked: Today 9:42 AM"
+      },
+      {
+        "id": "searchForm",
+        "component": "Form",
+        "name": "search-items",
+        "buttons": "searchButtons",
+        "fields": [
+          "searchField"
+        ]
+      },
+      {
+        "id": "searchField",
+        "component": "FormControl",
+        "label": "Search low-stock items",
+        "hint": "Filter by item name, SKU, or supplier",
+        "input": "searchInput"
+      },
+      {
+        "id": "searchInput",
+        "component": "Input",
+        "name": "search",
+        "placeholder": "Search items — e.g. Almond Milk or SKU #1024",
+        "type": "text"
+      },
+      {
+        "id": "searchButtons",
+        "component": "Buttons",
+        "buttons": [
+          "searchBtn",
+          "clearBtn"
+        ]
+      },
+      {
+        "id": "searchBtn",
+        "component": "Button",
+        "label": "Search",
+        "variant": "primary"
+      },
+      {
+        "id": "clearBtn",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "secondary"
+      },
+      {
+        "id": "thresholdAlert",
+        "component": "Alert",
+        "title": "Warning threshold: ≤ 10 units",
+        "description": "Any item at or below 10 units triggers this low-inventory warning. Threshold applies store-wide. Adjust threshold to change sensitivity.",
+        "variant": "warning"
+      },
+      {
+        "id": "inventoryTable",
+        "component": "Table",
+        "columns": [
+          "colItem",
+          "colSku",
+          "colRemaining",
+          "colThreshold",
+          "colStatus"
+        ]
+      },
+      {
+        "id": "colItem",
+        "component": "Col",
+        "label": "Item",
+        "data": [
+          "Organic Almond Milk 1L",
+          "Free-Range Eggs (12ct)",
+          "Artisan Sourdough Loaf",
+          "Cold Brew Concentrate 32oz",
+          "Hass Avocados (case)",
+          "Oat Milk Barista Blend"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colSku",
+        "component": "Col",
+        "label": "SKU",
+        "data": [
+          "#1024",
+          "#2041",
+          "#3108",
+          "#4520",
+          "#5093",
+          "#1029"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colRemaining",
+        "component": "Col",
+        "label": "Remaining",
+        "data": [
+          "4 units",
+          "6 units",
+          "2 units",
+          "8 units",
+          "5 units",
+          "9 units"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colThreshold",
+        "component": "Col",
+        "label": "Threshold",
+        "data": [
+          "≤ 10",
+          "≤ 10",
+          "≤ 10",
+          "≤ 10",
+          "≤ 10",
+          "≤ 10"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Critical",
+          "Low",
+          "Critical",
+          "Low",
+          "Low",
+          "Low"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "reorderHeading",
+        "component": "Heading",
+        "text": "Reorder items",
+        "level": "h3"
+      },
+      {
+        "id": "reorderList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "item1",
+          "item2",
+          "item3",
+          "item4",
+          "item5",
+          "item6"
+        ]
+      },
+      {
+        "id": "item1",
+        "component": "ListItem",
+        "title": "Organic Almond Milk 1L",
+        "subtitle": "4 units left • Threshold: 10 • Supplier: PureHarvest",
+        "actionLabel": "Reorder"
+      },
+      {
+        "id": "item2",
+        "component": "ListItem",
+        "title": "Free-Range Eggs (12ct)",
+        "subtitle": "6 units left • Threshold: 10 • Supplier: Sunny Farms",
+        "actionLabel": "Reorder"
+      },
+      {
+        "id": "item3",
+        "component": "ListItem",
+        "title": "Artisan Sourdough Loaf",
+        "subtitle": "2 units left • CRITICAL • Supplier: Stone Mill Bakery",
+        "actionLabel": "Reorder"
+      },
+      {
+        "id": "item4",
+        "component": "ListItem",
+        "title": "Cold Brew Concentrate 32oz",
+        "subtitle": "8 units left • Threshold: 10 • Supplier: Midnight Roasters",
+        "actionLabel": "Reorder"
+      },
+      {
+        "id": "item5",
+        "component": "ListItem",
+        "title": "Hass Avocados (case)",
+        "subtitle": "5 units left • Threshold: 10 • Supplier: FreshSource",
+        "actionLabel": "Reorder"
+      },
+      {
+        "id": "item6",
+        "component": "ListItem",
+        "title": "Oat Milk Barista Blend",
+        "subtitle": "9 units left • Threshold: 10 • Supplier: PureHarvest",
+        "actionLabel": "Reorder"
+      },
+      {
+        "id": "bulkActions",
+        "component": "Buttons",
+        "buttons": [
+          "reorderAllBtn",
+          "adjustThresholdBtn"
+        ]
+      },
+      {
+        "id": "reorderAllBtn",
+        "component": "Button",
+        "label": "Reorder all low items",
+        "variant": "primary"
+      },
+      {
+        "id": "adjustThresholdBtn",
+        "component": "Button",
+        "label": "Adjust threshold",
+        "variant": "secondary"
+      },
+      {
+        "id": "footerNote",
+        "component": "TextContent",
+        "text": "Tip: Use Search to quickly find an item, then tap Reorder next to it. Items are sorted by lowest stock first.",
+        "size": "small"
+      }
+    ]
+  }
+}
+</a2ui-json>

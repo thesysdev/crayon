@@ -1,70 +1,56 @@
+
+
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["cafe-header","special-callout","filter-bar","drinks-all-section","drinks-veg-section","food-all-section","food-veg-section","hours-section"]}}
-{"op":"add","path":"/elements/cafe-header","value":{"type":"Heading","props":{"text":"☕ The Daily Grind Café","level":"h1"},"children":[]}}
-{"op":"add","path":"/elements/special-callout","value":{"type":"Callout","props":{"variant":"success","title":"🌟 Today's Special","description":"Lavender Honey Latte with a fresh almond croissant — $8.50 (save $2.00!)"},"children":[]}}
-{"op":"add","path":"/elements/filter-bar","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","variant":"sunk"},"children":["filter-label","filter-btn"]}}
-{"op":"add","path":"/elements/filter-label","value":{"type":"TextContent","props":{"text":"🥬 Dietary Filter","size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/filter-btn","value":{"type":"Button","props":{"label":{"$cond":{"$state":"/showVegOnly"},"$then":"Show All Items","$else":"Vegetarian Only"},"variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/showVegOnly","value":{"$cond":{"$state":"/showVegOnly"},"$then":false,"$else":true}}}},"children":[]}}
-{"op":"add","path":"/state/showVegOnly","value":false}
-{"op":"add","path":"/elements/drinks-all-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"visible":{"$state":"/showVegOnly","not":true},"children":["drinks-all-header","drinks-all-list"]}}
-{"op":"add","path":"/elements/drinks-all-header","value":{"type":"Heading","props":{"text":"🥤 Drinks","level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/drinks-all-list","value":{"type":"Card","props":{"direction":"column","gap":"xs","variant":"clear"},"repeat":{"statePath":"/drinks","key":"id"},"children":["drink-item"]}}
-{"op":"add","path":"/elements/drink-item","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","variant":"clear"},"children":["drink-name","drink-price"]}}
-{"op":"add","path":"/elements/drink-name","value":{"type":"TextContent","props":{"text":{"$template":"${name} ${vegTag}"},"size":"default"},"children":[]}}
-{"op":"add","path":"/elements/drink-price","value":{"type":"TextContent","props":{"text":{"$template":"$${price}"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["cafe-header","special-callout","filter-bar","drinks-section","food-section","hours-section"]}}
+{"op":"add","path":"/elements/cafe-header","value":{"type":"CardHeader","props":{"title":"The Daily Grind","subtitle":"Cafe Menu"},"children":[]}}
+{"op":"add","path":"/elements/special-callout","value":{"type":"Callout","props":{"variant":"success","title":"Today's Special","description":{"$template":"${/special/name} — ${/special/description} · ${/special/price}"}},"children":[]}}
+{"op":"add","path":"/state/special","value":{"name":"Maple Pecan Latte","description":"Espresso with maple syrup, toasted pecan cream, and cinnamon dust","price":"$6.25"}}
+{"op":"add","path":"/elements/filter-bar","value":{"type":"Card","props":{"variant":"sunk","direction":"row","align":"center","justify":"between","gap":"m"},"children":["filter-label","filter-buttons"]}}
+{"op":"add","path":"/elements/filter-label","value":{"type":"TextContent","props":{"text":"Show vegetarian items only","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/filter-buttons","value":{"type":"Buttons","props":{"buttons":["filter-all-btn","filter-veg-btn"],"direction":"row"},"children":[]}}
+{"op":"add","path":"/elements/filter-all-btn","value":{"type":"Button","props":{"label":"All items","variant":{"$cond":{"$state":"/activeFilter","eq":"all"},"$then":"primary","$else":"secondary"}},"on":{"press":{"action":"setState","params":{"statePath":"/activeFilter","value":"all"}}},"children":[]}}
+{"op":"add","path":"/elements/filter-veg-btn","value":{"type":"Button","props":{"label":"Vegetarian only","variant":{"$cond":{"$state":"/activeFilter","eq":"vegetarian"},"$then":"primary","$else":"secondary"}},"on":{"press":{"action":"setState","params":{"statePath":"/activeFilter","value":"vegetarian"}}},"children":[]}}
+{"op":"add","path":"/state/activeFilter","value":"all"}
+{"op":"add","path":"/elements/menu-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","align":"center","justify":"between","gap":"m"},"children":["menu-item-info","menu-item-price"]}}
+{"op":"add","path":"/elements/menu-item-info","value":{"type":"TextContent","props":{"text":{"$template":"**${name}** — ${description}"}},"children":[]}}
+{"op":"add","path":"/elements/menu-item-price","value":{"type":"TextContent","props":{"text":{"$item":"price"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/drinks-section","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["drinks-header","all-drinks-list","veg-drinks-list"]}}
+{"op":"add","path":"/elements/drinks-header","value":{"type":"CardHeader","props":{"title":"Drinks","subtitle":"Espresso, tea, and cold drinks"},"children":[]}}
+{"op":"add","path":"/elements/all-drinks-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"visible":{"$or":[{"$state":"/activeFilter","eq":"all"},{"$state":"/activeFilter","not":true}]},"repeat":{"statePath":"/drinks","key":"id"},"children":["menu-row"]}}
 {"op":"add","path":"/state/drinks","value":[]}
-{"op":"add","path":"/state/drinks/0","value":{"id":"d1","name":"Espresso","price":"3.50","vegTag":"🌱","vegetarian":true}}
-{"op":"add","path":"/state/drinks/1","value":{"id":"d2","name":"Cappuccino","price":"4.50","vegTag":"🌱","vegetarian":true}}
-{"op":"add","path":"/state/drinks/2","value":{"id":"d3","name":"Lavender Honey Latte","price":"5.50","vegTag":"🌱","vegetarian":true}}
-{"op":"add","path":"/state/drinks/3","value":{"id":"d4","name":"Matcha Green Tea","price":"4.75","vegTag":"🌱","vegetarian":true}}
-{"op":"add","path":"/state/drinks/4","value":{"id":"d5","name":"Hot Chocolate","price":"4.25","vegTag":"🌱","vegetarian":true}}
-{"op":"add","path":"/state/drinks/5","value":{"id":"d6","name":"Fresh Orange Juice","price":"4.00","vegTag":"🌱","vegetarian":true}}
-{"op":"add","path":"/elements/drinks-veg-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"visible":{"$state":"/showVegOnly"},"children":["drinks-veg-header","drinks-veg-list"]}}
-{"op":"add","path":"/elements/drinks-veg-header","value":{"type":"Heading","props":{"text":"🥤 Drinks (Vegetarian)","level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/drinks-veg-list","value":{"type":"Card","props":{"direction":"column","gap":"xs","variant":"clear"},"repeat":{"statePath":"/drinksVeg","key":"id"},"children":["drink-veg-item"]}}
-{"op":"add","path":"/elements/drink-veg-item","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","variant":"clear"},"children":["drink-veg-name","drink-veg-price"]}}
-{"op":"add","path":"/elements/drink-veg-name","value":{"type":"TextContent","props":{"text":{"$template":"${name} 🌱"},"size":"default"},"children":[]}}
-{"op":"add","path":"/elements/drink-veg-price","value":{"type":"TextContent","props":{"text":{"$template":"$${price}"},"size":"default"},"children":[]}}
-{"op":"add","path":"/state/drinksVeg","value":[]}
-{"op":"add","path":"/state/drinksVeg/0","value":{"id":"d1","name":"Espresso","price":"3.50"}}
-{"op":"add","path":"/state/drinksVeg/1","value":{"id":"d2","name":"Cappuccino","price":"4.50"}}
-{"op":"add","path":"/state/drinksVeg/2","value":{"id":"d3","name":"Lavender Honey Latte","price":"5.50"}}
-{"op":"add","path":"/state/drinksVeg/3","value":{"id":"d4","name":"Matcha Green Tea","price":"4.75"}}
-{"op":"add","path":"/state/drinksVeg/4","value":{"id":"d5","name":"Hot Chocolate","price":"4.25"}}
-{"op":"add","path":"/state/drinksVeg/5","value":{"id":"d6","name":"Fresh Orange Juice","price":"4.00"}}
-{"op":"add","path":"/elements/food-all-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"visible":{"$state":"/showVegOnly","not":true},"children":["food-all-header","food-all-list"]}}
-{"op":"add","path":"/elements/food-all-header","value":{"type":"Heading","props":{"text":"🍽️ Food","level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/food-all-list","value":{"type":"Card","props":{"direction":"column","gap":"xs","variant":"clear"},"repeat":{"statePath":"/food","key":"id"},"children":["food-item"]}}
-{"op":"add","path":"/elements/food-item","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","variant":"clear"},"children":["food-name","food-price"]}}
-{"op":"add","path":"/elements/food-name","value":{"type":"TextContent","props":{"text":{"$template":"${name} ${vegTag}"},"size":"default"},"children":[]}}
-{"op":"add","path":"/elements/food-price","value":{"type":"TextContent","props":{"text":{"$template":"$${price}"},"size":"default"},"children":[]}}
+{"op":"add","path":"/state/drinks/0","value":{"id":"d1","name":"Espresso","description":"Double shot, rich crema","price":"$3.00","vegetarian":true}}
+{"op":"add","path":"/state/drinks/1","value":{"id":"d2","name":"Cappuccino","description":"Espresso with velvety steamed milk","price":"$4.50","vegetarian":true}}
+{"op":"add","path":"/state/drinks/2","value":{"id":"d3","name":"Iced Matcha Latte","description":"Ceremonial matcha, oat milk, ice","price":"$5.25","vegetarian":true}}
+{"op":"add","path":"/state/drinks/3","value":{"id":"d4","name":"Chai Tea","description":"Spiced black tea with steamed milk","price":"$4.25","vegetarian":true}}
+{"op":"add","path":"/state/drinks/4","value":{"id":"d5","name":"Maple Pecan Latte","description":"Today's special with maple and toasted pecan cream","price":"$6.25","vegetarian":true}}
+{"op":"add","path":"/elements/veg-drinks-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"visible":{"$state":"/activeFilter","eq":"vegetarian"},"repeat":{"statePath":"/vegDrinks","key":"id"},"children":["menu-row"]}}
+{"op":"add","path":"/state/vegDrinks","value":[]}
+{"op":"add","path":"/state/vegDrinks/0","value":{"id":"vd1","name":"Espresso","description":"Double shot, rich crema","price":"$3.00","vegetarian":true}}
+{"op":"add","path":"/state/vegDrinks/1","value":{"id":"vd2","name":"Cappuccino","description":"Espresso with velvety steamed milk","price":"$4.50","vegetarian":true}}
+{"op":"add","path":"/state/vegDrinks/2","value":{"id":"vd3","name":"Iced Matcha Latte","description":"Ceremonial matcha, oat milk, ice","price":"$5.25","vegetarian":true}}
+{"op":"add","path":"/state/vegDrinks/3","value":{"id":"vd4","name":"Chai Tea","description":"Spiced black tea with steamed milk","price":"$4.25","vegetarian":true}}
+{"op":"add","path":"/state/vegDrinks/4","value":{"id":"vd5","name":"Maple Pecan Latte","description":"Today's special with maple and toasted pecan cream","price":"$6.25","vegetarian":true}}
+{"op":"add","path":"/elements/food-section","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["food-header","all-food-list","veg-food-list"]}}
+{"op":"add","path":"/elements/food-header","value":{"type":"CardHeader","props":{"title":"Food","subtitle":"Fresh bakery items and light meals"},"children":[]}}
+{"op":"add","path":"/elements/all-food-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"visible":{"$or":[{"$state":"/activeFilter","eq":"all"},{"$state":"/activeFilter","not":true}]},"repeat":{"statePath":"/food","key":"id"},"children":["menu-row"]}}
 {"op":"add","path":"/state/food","value":[]}
-{"op":"add","path":"/state/food/0","value":{"id":"f1","name":"Almond Croissant","price":"4.50","vegTag":"🌱","vegetarian":true}}
-{"op":"add","path":"/state/food/1","value":{"id":"f2","name":"Avocado Toast","price":"7.50","vegTag":"🌱","vegetarian":true}}
-{"op":"add","path":"/state/food/2","value":{"id":"f3","name":"Grilled Chicken Panini","price":"9.50","vegTag":"","vegetarian":false}}
-{"op":"add","path":"/state/food/3","value":{"id":"f4","name":"Caprese Salad","price":"8.00","vegTag":"🌱","vegetarian":true}}
-{"op":"add","path":"/state/food/4","value":{"id":"f5","name":"Bacon & Egg Bap","price":"7.00","vegTag":"","vegetarian":false}}
-{"op":"add","path":"/state/food/5","value":{"id":"f6","name":"Mushroom Risotto Bowl","price":"10.50","vegTag":"🌱","vegetarian":true}}
-{"op":"add","path":"/state/food/6","value":{"id":"f7","name":"Blueberry Muffin","price":"3.75","vegTag":"🌱","vegetarian":true}}
-{"op":"add","path":"/elements/food-veg-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"visible":{"$state":"/showVegOnly"},"children":["food-veg-header","food-veg-list"]}}
-{"op":"add","path":"/elements/food-veg-header","value":{"type":"Heading","props":{"text":"🍽️ Food (Vegetarian)","level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/food-veg-list","value":{"type":"Card","props":{"direction":"column","gap":"xs","variant":"clear"},"repeat":{"statePath":"/foodVeg","key":"id"},"children":["food-veg-item"]}}
-{"op":"add","path":"/elements/food-veg-item","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","variant":"clear"},"children":["food-veg-name","food-veg-price"]}}
-{"op":"add","path":"/elements/food-veg-name","value":{"type":"TextContent","props":{"text":{"$template":"${name} 🌱"},"size":"default"},"children":[]}}
-{"op":"add","path":"/elements/food-veg-price","value":{"type":"TextContent","props":{"text":{"$template":"$${price}"},"size":"default"},"children":[]}}
-{"op":"add","path":"/state/foodVeg","value":[]}
-{"op":"add","path":"/state/foodVeg/0","value":{"id":"f1","name":"Almond Croissant","price":"4.50"}}
-{"op":"add","path":"/state/foodVeg/1","value":{"id":"f2","name":"Avocado Toast","price":"7.50"}}
-{"op":"add","path":"/state/foodVeg/2","value":{"id":"f4","name":"Caprese Salad","price":"8.00"}}
-{"op":"add","path":"/state/foodVeg/3","value":{"id":"f6","name":"Mushroom Risotto Bowl","price":"10.50"}}
-{"op":"add","path":"/state/foodVeg/4","value":{"id":"f7","name":"Blueberry Muffin","price":"3.75"}}
-{"op":"add","path":"/elements/hours-section","value":{"type":"Card","props":{"direction":"column","gap":"s","variant":"sunk"},"children":["hours-header","hours-list"]}}
-{"op":"add","path":"/elements/hours-header","value":{"type":"Heading","props":{"text":"🕐 Opening Hours","level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/hours-list","value":{"type":"Card","props":{"direction":"column","gap":"xs","variant":"clear"},"repeat":{"statePath":"/hours","key":"day"},"children":["hours-row"]}}
-{"op":"add","path":"/elements/hours-row","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","variant":"clear"},"children":["hours-day","hours-time"]}}
-{"op":"add","path":"/elements/hours-day","value":{"type":"TextContent","props":{"text":{"$item":"day"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/hours-time","value":{"type":"TextContent","props":{"text":{"$item":"time"},"size":"small"},"children":[]}}
+{"op":"add","path":"/state/food/0","value":{"id":"f1","name":"Butter Croissant","description":"Flaky, baked daily","price":"$2.75","vegetarian":true}}
+{"op":"add","path":"/state/food/1","value":{"id":"f2","name":"Avocado Toast","description":"Sourdough, avocado, chili flakes","price":"$6.50","vegetarian":true}}
+{"op":"add","path":"/state/food/2","value":{"id":"f3","name":"Bacon & Egg Roll","description":"Soft roll, bacon, fried egg, aioli","price":"$7.25","vegetarian":false}}
+{"op":"add","path":"/state/food/3","value":{"id":"f4","name":"Caprese Panini","description":"Mozzarella, tomato, basil, balsamic","price":"$8.00","vegetarian":true}}
+{"op":"add","path":"/state/food/4","value":{"id":"f5","name":"Chicken Pesto Wrap","description":"Grilled chicken, pesto, spinach","price":"$9.25","vegetarian":false}}
+{"op":"add","path":"/elements/veg-food-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"visible":{"$state":"/activeFilter","eq":"vegetarian"},"repeat":{"statePath":"/vegFood","key":"id"},"children":["menu-row"]}}
+{"op":"add","path":"/state/vegFood","value":[]}
+{"op":"add","path":"/state/vegFood/0","value":{"id":"vf1","name":"Butter Croissant","description":"Flaky, baked daily","price":"$2.75","vegetarian":true}}
+{"op":"add","path":"/state/vegFood/1","value":{"id":"vf2","name":"Avocado Toast","description":"Sourdough, avocado, chili flakes","price":"$6.50","vegetarian":true}}
+{"op":"add","path":"/state/vegFood/2","value":{"id":"vf4","name":"Caprese Panini","description":"Mozzarella, tomato, basil, balsamic","price":"$8.00","vegetarian":true}}
+{"op":"add","path":"/elements/hours-section","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["hours-header","hours-list"]}}
+{"op":"add","path":"/elements/hours-header","value":{"type":"CardHeader","props":{"title":"Opening Hours","subtitle":"Come see us"},"children":[]}}
+{"op":"add","path":"/elements/hours-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","align":"center","justify":"between","gap":"m"},"children":["hours-day","hours-time"]}}
+{"op":"add","path":"/elements/hours-day","value":{"type":"TextContent","props":{"text":{"$item":"day"}},"children":[]}}
+{"op":"add","path":"/elements/hours-time","value":{"type":"TextContent","props":{"text":{"$item":"hours"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/hours-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/hours","key":"id"},"children":["hours-row"]}}
 {"op":"add","path":"/state/hours","value":[]}
-{"op":"add","path":"/state/hours/0","value":{"day":"Monday – Friday","time":"7:00 AM – 6:00 PM"}}
-{"op":"add","path":"/state/hours/1","value":{"day":"Saturday","time":"8:00 AM – 5:00 PM"}}
-{"op":"add","path":"/state/hours/2","value":{"day":"Sunday","time":"8:00 AM – 3:00 PM"}}
+{"op":"add","path":"/state/hours/0","value":{"id":"h1","day":"Monday - Friday","hours":"7:00 AM - 6:00 PM"}}
+{"op":"add","path":"/state/hours/1","value":{"id":"h2","day":"Saturday","hours":"8:00 AM - 5:00 PM"}}
+{"op":"add","path":"/state/hours/2","value":{"id":"h3","day":"Sunday","hours":"8:00 AM - 3:00 PM"}}

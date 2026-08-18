@@ -7,8 +7,8 @@ featured: false
 ---
 
 We ran the same 46 prompts through the 3 different Generative UI formats, OpenUI, Google A2UI and Vercel json-render on 6 different models across different model families.
-<br /> On completion rate, OpenUI (92.9%) and A2UI (92.4%) finished in a statistical dead heat, with json-render more than 11 points behind (81.3%), while OpenUI consumed less than half the tokens per screen.
-<br /> A2UI performed the worst when it came to blank screens, with at least 53 out of 1,104 runs resulting in a fully blank screen while OpenUI only failed to render twice vs json-render's 9.
+<br /> On completion rate, OpenUI (96.5%) leads A2UI (95.7%), with json-render about 16 points behind both (80.2%). OpenUI also consumed less than half the output tokens per screen.
+<br /> A2UI performed the worst when it came to blank screens, with 35 out of 1,104 runs resulting in a fully blank screen, against 1 for OpenUI and 4 for json-render.
 
 <CompletionByModel />
 
@@ -16,38 +16,37 @@ We ran the same 46 prompts through the 3 different Generative UI formats, OpenUI
 ## Methodology
 We chose 6 frontier models from various model families to test the 3 different Generative UI formats, OpenUI, Google A2UI and Vercel json-render.
 For all of these combinations we used the same catalog of 70 components, built entirely from OpenUI's public component library: the open-source chat set, six chat blocks from the same library, and twelve components from the public shadcn-chat example. The exact catalog is committed in the repo.
-For each format we used the official prompt generator and parser from the SDK, under one uniform condition for every model: OpenUI's prompt carries its component groups, two rules and two worked examples through lang-core's official options; json-render runs `catalog.prompt()` with its three custom rules; A2UI runs its generator's prompt as-is.
+For each format we used that SDK's own official prompt generator and parser, and gave all three the same two worked examples, so no format was hand-tuned against the others.
 Every model ran every prompt 4 times, giving 1,104 runs per format.
 In total 46 different prompts were used that mirror real life requests. None of them name a component or a layout to mimic real life user queries.
 
 For evaluation we used the following rubrics:
-- Completeness: Every prompt is rendered, every reference should be resolved without silently dropping anything. Higher is better
+- Completeness: a run counts as complete when everything the brief asked for renders and every reference resolves, with nothing silently dropped, scored per run, all-or-nothing. Higher is better
 - Empty responses: Whether the user saw anything at all. If the response completely failed to render then we count that separately from completeness.
   Naturally the lower the score in this rubric, the better.
 
 ## Results
 
-### No format wins on every model
+### OpenUI leads on most models
 
-- GPT-5.6 Sol is nearly flawless with OpenUI at 99.5%: one dangling reference in 184 runs.
-- Claude Opus 4.8 is too close to call: 97.3% A2UI against 96.7% OpenUI, inside our noise band, with json-render trailing at 87.0%. Opus's OpenUI misses are five broken references (four orphaned, one dangling) and one wrong signature, zero enum errors.
-- Kimi K3 leans the other way but is also within noise: 93.5% OpenUI against 92.4% A2UI, json-render at 85.3%.
-- Gemini 3.6 Flash, a small lightweight model, stays close at the top (94.6 OpenUI vs 90.2 A2UI) but json-render drops to 71.7%.
-- Qwen3.8 2.4T is an exact tie: OpenUI and A2UI both land on 89.7%, with json-render at 73.9%.
-- Meta's Muse Spark is A2UI's one clear win: 91.8% against OpenUI's 83.7%, almost entirely on enum discipline. Muse keeps reaching for variant names that feel natural but don't exist in the catalog ("primary", "success"), and a strict DSL rejects what a JSON prop bag absorbs.
+- GPT-5.6 Sol is nearly flawless with OpenUI at 99.5%: one dangling reference in 184 runs, against 96.2% with A2UI.
+- Claude Opus 4.8 is A2UI's only win: 99.5% A2UI against 98.9% OpenUI, still within a point, with json-render trailing at 87.5%.
+- Kimi K3 goes to OpenUI: 96.7% against 95.7% A2UI, json-render at 71.2%.
+- Gemini 3.6 Flash is an exact tie: 95.1% for both OpenUI and A2UI, with json-render at 77.2%.
+- Qwen3.8 2.4T goes to OpenUI: 91.8% against 91.3% A2UI, with json-render at 81.0%. Qwen produced the most empty responses of any model and is the weakest on both OpenUI and A2UI.
+- Meta's Muse Spark is tied: 96.7% for both OpenUI and A2UI.
 
-json-render's losses have one dominant cause: of 1,399 scoring errors across the six models, 1,311 are reference-graph failures, dangling and orphaned element ids. Its flat patch-registry format makes every parent-child link a string id the model must keep consistent across the whole stream, and models lose the thread as screens grow.
+json-render's losses have one dominant cause: of 959 scoring errors across the six models, 929 are reference-graph failures, dangling and orphaned element ids. Its flat patch-registry format makes every parent-child link a string id the model must keep consistent across the whole stream, and models lose the thread as screens grow.
 
-We suspect heavy JSON post-training explains part of the remaining spread, making JSON scaffolding strong on some models while a compact line-based DSL wins on the rest.
-The key takeaway is if you use a fixed model, benchmark that model. If you support several, the average matters more and it becomes harder to achieve the highest quality across various different model families.
+Here's what surprised us. Modern models are post-trained heavily on JSON and agentic tool-calling, so we expected the JSON-based formats to hold a clear reliability edge. They didn't: a compact, line-based DSL, a format these models have seen far less of, matched them run-for-run on completion (96.5% vs 95.7%: three model wins, two ties, one loss inside a point), and did it at less than half the output tokens. Reliability came out roughly format-agnostic; where the formats actually separate is cost and failure shape.
 
 ### Screens get harder as they grow
 
 <CompletionByDensity />
 
-Every format degrades as generations become complicated to involve more components (which is expected).
+Every format trends downward as generations become complicated to involve more components (which is expected).
 <br /> json-render falls fastest and furthest as requirement counts climb.
-<br /> OpenUI & A2UI closely tail each other across every band.
+<br /> OpenUI leads A2UI through the lighter bands; the two converge on the densest screens, where A2UI holds a small edge in both the 11-13 and 16-18 requirement tiers.
 
 *Note: prompt content moves these numbers about as much as format choice does. One rule telling the model to "attach every component it defines" was worth 13 points to OpenUI on Kimi in earlier runs, and a single wrong worked example in our own prompt cost two models double digits until we caught it. Every model+format combination needs prompt care to get the most out of it.*
 
@@ -58,9 +57,9 @@ Every format degrades as generations become complicated to involve more componen
 The completion rubric treats a missing component and a fully blank screen the same but in real life your users wouldn't.
 We added a rescoring script to analyze how many of the generations actually resulted in a fully blank screen from the user's perspective.
 
-OpenUI failed to render only 2 times out of 1,104 runs, and both were empty API responses to the same disaster-response prompt, one from Muse and one from Qwen. Both models answer that prompt at full length in the JSON formats, and both answered it in OpenUI on other repeats of the same run. This looks like an intermittent provider-side safety filter that tolerates structured JSON output but sometimes suppresses freeform responses on sensitive topics; we score the empties as blanks anyway because that is what a user would see.
-A2UI's default renderer, which drops the whole updateComponents message if it has any invalid component structure, blanked out 56 times. Counting conservatively - rendering each component individually through the same official validator, with the all-or-nothing rule removed - 53 are still completely blank.
-json-render failed 9 times.
+OpenUI failed to render just once out of 1,104 runs, a Qwen generation that returned nothing. We score empties as blanks because that is what a user would see.
+A2UI's default renderer, which drops the whole updateComponents message if it has any invalid component structure, blanked out 35 times across the six models. Qwen alone accounted for 16 of those.
+json-render failed 4 times, all zero-byte Qwen responses of the same upstream kind.
 
 The main difference in how these formats are interpreted: each OpenUI component is one line, so a parse error only costs that line while a JSON document has no smaller unit to fall back to.
 This does lead to OpenUI trading blank screens for partial ones which can be harder to notice which is why we track the completion rubric separately.
@@ -71,8 +70,8 @@ Rescoring scripts for both these rubrics are in the repo.
 <TokenOverhead />
 
 Given input tokens & tool definitions are developer defined in all three formats, the token overhead comes from 2 categories:
-- **System Prompt** that goes in every request: 4,828 tokens for OpenUI (including its component groups and two worked examples), 6,497 for json-render, 11,080 for A2UI for the same component library generated by the respective SDKs.
-- **Output Tokens** become a factor of format verbosity: 1,284 mean tokens per screen for OpenUI against 3,558 for json-render and 2,740 for A2UI, a 2.1 to 2.8x gap. The same header is one line in OpenUI, a patch operation in json-render, a wrapped message in A2UI.
+- **System Prompt** that goes in every request: 5,031 tokens for OpenUI, 7,651 for json-render, 12,610 for A2UI, all generated by the respective SDKs over the same component library.
+- **Output Tokens** become a factor of format verbosity: 1,362 mean tokens per screen for OpenUI against 3,258 for json-render and 2,823 for A2UI, a 2.1 to 2.4x gap. The same header is one line in OpenUI, a patch operation in json-render, a wrapped message in A2UI.
 
 The same header, in each format's wire shape
 ```text
@@ -88,56 +87,45 @@ header = Header("Executive Revenue Dashboard", "Q4 Performance Overview")
 Token optimizations are not just about output token size but a leaner format streams much faster and reduces the context size on follow up turns leading to a better UX and more turns per 100k context window.
 
 ## Cost
-Generating the identical 46 screens costs 1.7 to 2.9x less in OpenUI on the five models with public list prices.
-One pass costs \$2.04 in OpenUI on Claude Opus 4.8. The same screens in A2UI cost \$5.83.
+Generating the identical 46 screens costs 1.9 to 2.6x less in OpenUI on the five models with public list prices.
+One pass costs \$2.27 in OpenUI on Claude Opus 4.8. The same screens in A2UI cost \$5.85.
 
 <CostPerPass />
 
 ## Lessons from running Generative UI in production
 
-We have been running OpenUI and its predecessor (Thesys C1) in production for a year now. Here is some of our learnings from the field:
+We have run OpenUI and its predecessor (Thesys C1) in production for a year. A few things from the field.
 
-On the older JSON format we tried few-shot examples, schema reordering, and different prompt styles. They changed which errors we saw, but not the overall failure rate.
-Giving the model more reasoning time helped, but added too much latency for real-time UI.
-That pushed us toward repairing the output instead of continuing to tune the prompt.
+Prompt tuning alone plateaued. On the older JSON format we tried few-shot examples, schema reordering, and different prompt styles; they changed which errors we saw, not the overall rate. More reasoning time helped but cost too much latency for real-time UI. So we built a repair layer instead.
 
-Overall error rates were 15% on the older json-based format which have now dropped to 4-5% after migrating to OpenUI.
-The error distribution from a 15-day production parser log (1,285 failures):
+Over a recent week of production streaming traffic, about 7% of OpenUI-Lang generations tripped validation on the first pass. What tripped them:
 
 | Failure family | Share |
 | --- | --- |
-| No valid root | 29.6% |
-| Reference graph | 27.5% |
-| Enum and type mismatches | 22.9% |
-| Truncation | 13.6% |
-| Wrong argument counts | 4.9% |
-| Everything else | 1.5% |
+| No valid root (often truncation-related) | 44% |
+| Reference graph (dangling or orphaned refs) | 36% |
+| Enum, type and argument errors | 16% |
+| Truncation | 4% |
 
-<RepairFunnel />
+The pattern is structural, not semantic. Reference-graph failures dominate the explainable set. The model plans a screen top-down, listing a section's children before defining them, and in a long output it either forgets the one line that attaches a finished section to the root, or runs out of budget before writing the last few rows of a table. Enum errors are mostly a naming trap: a chart field named `unit` accepts magnitude suffixes (k, m, b, t), so models reasonably write "%" or "GB" instead. These are near-misses, not nonsense.
 
-Most of these are mechanical. Orphans can be garbage-collected, near-miss enums snapped to valid values, typo'd references matched to the nearest defined name.
-None of that needs an LLM for error correction, and because every OpenUI component is one named line, a repair touches only the broken lines by reusing
-the same property that powers [incremental editing](/docs/openui-lang/incremental-editing).
+The parser already absorbs the cosmetic breakage that sinks a strict JSON parser. Markdown fences, comments, and unclosed brackets are stripped or auto-closed before validation, so they never count as failures. When a generation still fails, it is a genuine structural error, and we repair it: the exact parser error goes to a small sanitizer model that edits only the broken lines and re-validates, retrying if needed. Because every OpenUI component is one named line, the edit is local, the same mechanism that powers [incremental editing](/docs/openui-lang/incremental-editing).
 
-
-### The number we actually run on
-
-Failures happen 4 to 5% of the time.
-The repair pipeline catches 96% of those.
-Multiply the two and roughly 2 screens in 1,000 (0.2%) reach an OpenUI Cloud user broken and we are actively working towards reducing that number down to 0.
+That repair recovers roughly nine in ten first-pass failures, so under 1% of streaming screens reach a user broken, and we are working to push that toward zero.
 
 Our takeaway is that raw completion rate isn't the whole story; how a format fails matters as much.
-OpenUI's line-level structure kept failures small enough to contain and repair, which is why we ended up building the production system around repair instead of trying to eliminate generation errors entirely.
+OpenUI-Lang's line-level structure keeps failures small and local enough to repair, which is why we built the production system around repair instead of trying to eliminate generation errors outright.
 Whatever format you pick, at enough volume you'll want that repair layer too.
+
 
 ---
 
 Footnotes:
 - We built OpenUI Lang, so read this as a first-party benchmark with everything disclosed, including that the 70-component catalog is derived from our own public component library.
 - A near-perfect cell means near-zero failures at this sample size, not a model that never fails; Sol's 99.5% is one failure in 184 runs.
-- An extended Terra run, also OpenAI, put OpenUI first at 97.8 vs 79.9 and 79.9, but stays out of the average to keep one seat per company.
-- The averages are the mean of six per-model completion rates where each model gets equal weight. Every model ran 4 generations per prompt; Gemini's json-render and A2UI legs were generated with 10 before we settled on 4 for everyone, and the scored set is the first 4 (a fixed rule, not outcome-selected).
-- One condition for all models and formats. OpenUI's prompt includes component groups, two rules and two worked examples via lang-core's official generatePrompt options; json-render and A2UI ran their generators' prompts with their documented options and no worked examples. Giving the competitors equivalent worked examples through their official free-text options is planned as a follow-up, and we expect it to raise their scores.
+- An extended Terra run, also OpenAI, put OpenUI first at 98.4 vs 94.0 and 68.5, but stays out of the average to keep one seat per company.
+- The averages are the equal-weight mean of the six per-model completion rates, computed from the exact run fractions (the per-model cells are shown rounded to one decimal). Every model ran 4 generations per prompt.
+- Prompt composition per format: all three carry the same two worked examples; OpenUI's prompt also adds its component groups and three rules (lang-core's official options), json-render its three custom rules, A2UI nothing beyond the examples.
 - Scoring is each SDK's own shipped code plus one shared completeness layer with a coverage floor; the layer credits json-render's native children slot wherever a component's single ref prop allows it, and consumes A2UI validation errors its itemized checks would miss.
 - The full judgment-call list, all code, prompts, and every raw output: [benchmark repo](https://github.com/thesysdev/openui/tree/main/benchmarks/openui-bench).
 - The method builds on Mobile Reality's [MDMA benchmark](https://github.com/MobileReality/mdma/tree/main/benchmarks/genui-formats).

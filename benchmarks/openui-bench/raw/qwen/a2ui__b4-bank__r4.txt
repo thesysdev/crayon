@@ -1,17 +1,13 @@
 
 
-Here is a single-screen personal banking home that covers all requested items.
+Here's a comprehensive personal banking home screen covering all 11 items:
 
 <a2ui-json>
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "personal-banking-home",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": {
-      "primaryColor": "#0F6A4F"
-    },
-    "sendDataModel": false
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
@@ -20,393 +16,617 @@ Here is a single-screen personal banking home that covers all requested items.
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "personal-banking-home",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "l",
         "children": [
-          "headerTitle",
-          "balancesCard",
-          "transactionsCard",
-          "spendingCard",
-          "billsCard",
-          "goalCard",
-          "creditCard",
-          "moveMoneyCard",
-          "statementCard",
-          "alertsCard",
-          "disputeCard"
-        ]
+          "header",
+          "balancesSection",
+          "transactionsSection",
+          "spendingSection",
+          "billsSection",
+          "goalSection",
+          "creditScoreSection",
+          "transferSection",
+          "freezeSection",
+          "statementSection",
+          "alertsSection",
+          "disputeSection"
+        ],
+        "gap": "l"
       },
       {
-        "id": "headerTitle",
+        "id": "header",
         "component": "CardHeader",
-        "title": "Personal Banking Home",
-        "subtitle": "Balances, activity, and account controls"
+        "title": "My Banking Home",
+        "subtitle": "Welcome back, Alex"
       },
       {
-        "id": "balancesCard",
+        "id": "balancesSection",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "balancesHeading",
-          "balancesTable"
-        ]
+        "variant": "sunk",
+        "children": ["balancesHeader", "balancesTable"],
+        "gap": "s"
       },
       {
-        "id": "balancesHeading",
+        "id": "balancesHeader",
         "component": "Heading",
-        "text": "1. Balances",
-        "level": "h2"
+        "text": "Account Balances",
+        "level": "h3"
       },
       {
         "id": "balancesTable",
         "component": "Table",
-        "columns": [
-          "colAccount",
-          "colBalance",
-          "colAvailable"
-        ]
+        "columns": ["balAccount", "balType", "balAmount"]
       },
       {
-        "id": "colAccount",
+        "id": "balAccount",
         "component": "Col",
         "label": "Account",
-        "data": [
-          "Checking 4821",
-          "Savings 7034",
-          "Credit 9956"
-        ],
-        "type": "string"
+        "data": ["Everyday Checking", "High-Yield Savings", "Platinum Credit Card"]
       },
       {
-        "id": "colBalance",
+        "id": "balType",
+        "component": "Col",
+        "label": "Type",
+        "data": ["Checking", "Savings", "Credit"]
+      },
+      {
+        "id": "balAmount",
         "component": "Col",
         "label": "Balance",
-        "data": [
-          "$4,820.55",
-          "$12,650.00",
-          "-$1,240.10"
-        ],
-        "type": "string"
+        "data": ["$4,832.17", "$12,450.00", "-$1,247.89"]
       },
       {
-        "id": "colAvailable",
-        "component": "Col",
-        "label": "Available",
-        "data": [
-          "$4,820.55",
-          "$12,650.00",
-          "$3,759.90"
-        ],
-        "type": "string"
-      },
-      {
-        "id": "transactionsCard",
+        "id": "transactionsSection",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "transactionsHeading",
-          "transactionsTable"
-        ]
+        "variant": "sunk",
+        "children": ["txnHeader", "txnTable"],
+        "gap": "s"
       },
       {
-        "id": "transactionsHeading",
+        "id": "txnHeader",
         "component": "Heading",
-        "text": "2. Recent transactions",
-        "level": "h2"
+        "text": "Recent Transactions",
+        "level": "h3"
       },
       {
-        "id": "transactionsTable",
+        "id": "txnTable",
         "component": "Table",
-        "columns": [
-          "colMerchant",
-          "colAmount",
-          "colDate"
-        ]
+        "columns": ["txnDate", "txnMerchant", "txnAmount"]
       },
       {
-        "id": "colMerchant",
-        "component": "Col",
-        "label": "Merchant",
-        "data": [
-          "Blue Bottle Coffee",
-          "Whole Foods Market",
-          "Shell Gas",
-          "Netflix",
-          "Trader Joe's"
-        ],
-        "type": "string"
-      },
-      {
-        "id": "colAmount",
-        "component": "Col",
-        "label": "Amount",
-        "data": [
-          "-$5.75",
-          "-$86.20",
-          "-$42.10",
-          "-$15.99",
-          "-$54.31"
-        ],
-        "type": "string"
-      },
-      {
-        "id": "colDate",
+        "id": "txnDate",
         "component": "Col",
         "label": "Date",
-        "data": [
-          "Jun 16",
-          "Jun 15",
-          "Jun 14",
-          "Jun 12",
-          "Jun 11"
-        ],
-        "type": "string"
+        "data": ["Jun 14", "Jun 13", "Jun 13", "Jun 12", "Jun 11"]
       },
       {
-        "id": "spendingCard",
+        "id": "txnMerchant",
+        "component": "Col",
+        "label": "Merchant",
+        "data": ["Whole Foods Market", "Netflix", "Shell Gas Station", "Starbucks", "Amazon.com"]
+      },
+      {
+        "id": "txnAmount",
+        "component": "Col",
+        "label": "Amount",
+        "data": ["-$84.32", "-$15.99", "-$52.10", "-$6.75", "-$31.99"]
+      },
+      {
+        "id": "spendingSection",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "spendingHeading",
-          "spendingChart",
-          "spendingNote"
-        ]
+        "variant": "sunk",
+        "children": ["spendHeader", "spendChart"],
+        "gap": "s"
       },
       {
-        "id": "spendingHeading",
+        "id": "spendHeader",
         "component": "Heading",
-        "text": "3. Spending split by category this month",
-        "level": "h2"
+        "text": "Spending by Category — June 2025",
+        "level": "h3"
       },
       {
-        "id": "spendingChart",
+        "id": "spendChart",
         "component": "PieChart",
-        "labels": [
-          "Groceries",
-          "Dining",
-          "Transport",
-          "Utilities",
-          "Entertainment"
-        ],
-        "values": [
-          420,
-          260,
-          180,
-          210,
-          130
-        ],
-        "variant": "donut",
-        "appearance": "circular"
+        "labels": ["Groceries", "Dining", "Transport", "Entertainment", "Shopping", "Utilities"],
+        "values": [420, 285, 190, 145, 310, 175],
+        "variant": "donut"
       },
       {
-        "id": "spendingNote",
-        "component": "TextContent",
-        "text": "Total this month: $1,200. Groceries is the largest category.",
-        "size": "small"
-      },
-      {
-        "id": "billsCard",
+        "id": "billsSection",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "billsHeading",
-          "billsTable"
-        ]
+        "variant": "sunk",
+        "children": ["billsHeader", "billsTable"],
+        "gap": "s"
       },
       {
-        "id": "billsHeading",
+        "id": "billsHeader",
         "component": "Heading",
-        "text": "4. Bills due soon",
-        "level": "h2"
+        "text": "Bills Due Soon",
+        "level": "h3"
       },
       {
         "id": "billsTable",
         "component": "Table",
-        "columns": [
-          "colBill",
-          "colDue",
-          "colBillAmount",
-          "colBillStatus"
-        ]
+        "columns": ["billName", "billDue", "billAmount"]
       },
       {
-        "id": "colBill",
+        "id": "billName",
         "component": "Col",
         "label": "Bill",
-        "data": [
-          "Electricity",
-          "Internet",
-          "Auto Loan",
-          "Water"
-        ],
-        "type": "string"
+        "data": ["Electric — ConEd", "Internet — Comcast", "Car Insurance", "Rent"]
       },
       {
-        "id": "colDue",
+        "id": "billDue",
         "component": "Col",
-        "label": "Due",
-        "data": [
-          "Jun 28",
-          "Jun 30",
-          "Jul 2",
-          "Jul 5"
-        ],
-        "type": "string"
+        "label": "Due Date",
+        "data": ["Jun 18", "Jun 20", "Jun 22", "Jul 1"]
       },
       {
-        "id": "colBillAmount",
+        "id": "billAmount",
         "component": "Col",
         "label": "Amount",
-        "data": [
-          "$92.00",
-          "$59.99",
-          "$312.00",
-          "$38.50"
-        ],
-        "type": "string"
+        "data": ["$112.40", "$79.99", "$145.00", "$1,800.00"]
       },
       {
-        "id": "colBillStatus",
-        "component": "Col",
-        "label": "Status",
-        "data": [
-          "Autopay on",
-          "Autopay off",
-          "Autopay on",
-          "Autopay on"
-        ],
-        "type": "string"
-      },
-      {
-        "id": "goalCard",
+        "id": "goalSection",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "goalHeading",
-          "goalProgress",
-          "goalNote"
-        ]
+        "variant": "sunk",
+        "children": ["goalHeader", "goalProgress", "goalText"],
+        "gap": "s"
       },
       {
-        "id": "goalHeading",
+        "id": "goalHeader",
         "component": "Heading",
-        "text": "5. Vacation savings goal",
-        "level": "h2"
+        "text": "Vacation Savings Goal",
+        "level": "h3"
       },
       {
         "id": "goalProgress",
         "component": "Progress",
         "value": 68,
-        "label": "Vacation fund: $6,800 of $10,000"
+        "label": "$3,400 of $5,000"
       },
       {
-        "id": "goalNote",
+        "id": "goalText",
         "component": "TextContent",
-        "text": "68% complete. You are on track for your August trip.",
+        "text": "You're on track! At your current pace you'll reach your goal by **September 15**.",
         "size": "small"
       },
       {
-        "id": "creditCard",
+        "id": "creditScoreSection",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "creditHeading",
-          "creditScoreText",
-          "creditScoreDescription",
-          "freezeHeading",
-          "freezeCreditAlertDialog"
-        ]
+        "variant": "sunk",
+        "children": ["csHeader", "csChart", "csBadge"],
+        "gap": "s"
       },
       {
-        "id": "creditHeading",
+        "id": "csHeader",
         "component": "Heading",
-        "text": "6. Current credit score",
-        "level": "h2"
-      },
-      {
-        "id": "creditScoreText",
-        "component": "TextContent",
-        "text": "742",
-        "size": "large-heavy"
-      },
-      {
-        "id": "creditScoreDescription",
-        "component": "TextContent",
-        "text": "Excellent • Updated today",
-        "size": "small"
-      },
-      {
-        "id": "freezeHeading",
-        "component": "Heading",
-        "text": "8. Freeze credit line",
+        "text": "Credit Score",
         "level": "h3"
       },
       {
-        "id": "freezeCreditAlertDialog",
-        "component": "AlertDialogBlock",
-        "triggerLabel": "Freeze credit line",
-        "title": "Freeze credit line?",
-        "description": "This temporarily blocks new purchases and cash advances on your credit line.",
-        "confirmLabel": "Freeze",
-        "cancelLabel": "Cancel",
-        "triggerVariant": "destructive"
+        "id": "csChart",
+        "component": "RadialChart",
+        "labels": ["Score"],
+        "values": [742]
       },
       {
-        "id": "moveMoneyCard",
+        "id": "csBadge",
+        "component": "Badge",
+        "text": "Good — up 12 pts from last month",
+        "variant": "secondary"
+      },
+      {
+        "id": "transferSection",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "moveMoneyHeading",
-          "transferForm"
-        ]
+        "variant": "sunk",
+        "children": ["transferHeader", "transferForm"],
+        "gap": "s"
       },
       {
-        "id": "moveMoneyHeading",
+        "id": "transferHeader",
         "component": "Heading",
-        "text": "7. Move money between accounts",
-        "level": "h2"
+        "text": "Transfer Money",
+        "level": "h3"
       },
       {
         "id": "transferForm",
         "component": "Form",
-        "name": "move-money",
+        "name": "transfer",
         "buttons": "transferButtons",
-        "fields": [
-          "fromFormControl",
-          "toFormControl",
-          "amountFormControl"
-        ]
+        "fields": ["fromField", "toField", "amountField"]
       },
       {
-        "id": "fromFormControl",
+        "id": "fromField",
         "component": "FormControl",
-        "label": "From",
-        "input": "fromSelect",
-        "hint": "Choose the account to move money from."
+        "label": "From account",
+        "input": "fromSelect"
       },
       {
         "id": "fromSelect",
         "component": "Select",
-        "name": "from-account",
-        "items": [
-          "fromCheckingItem",
+        "name": "from_account",
+        "items": ["fromChecking", "fromSavings"],
+        "placeholder": "Select source"
+      },
+      {
+        "id": "fromChecking",
+        "component": "SelectItem",
+        "value": "checking",
+        "label": "Everyday Checking ($4,832.17)"
+      },
+      {
+        "id": "fromSavings",
+        "component": "SelectItem",
+        "value": "savings",
+        "label": "High-Yield Savings ($12,450.00)"
+      },
+      {
+        "id": "toField",
+        "component": "FormControl",
+        "label": "To account",
+        "input": "toSelect"
+      },
+      {
+        "id": "toSelect",
+        "component": "Select",
+        "name": "to_account",
+        "items": ["toChecking", "toSavings"],
+        "placeholder": "Select destination"
+      },
+      {
+        "id": "toChecking",
+        "component": "SelectItem",
+        "value": "checking",
+        "label": "Everyday Checking"
+      },
+      {
+        "id": "toSavings",
+        "component": "SelectItem",
+        "value": "savings",
+        "label": "High-Yield Savings"
+      },
+      {
+        "id": "amountField",
+        "component": "FormControl",
+        "label": "Amount",
+        "input": "amountInput"
+      },
+      {
+        "id": "amountInput",
+        "component": "Input",
+        "name": "transfer_amount",
+        "type": "number",
+        "placeholder": "0.00"
+      },
+      {
+        "id": "transferButtons",
+        "component": "Buttons",
+        "buttons": ["transferSubmit"]
+      },
+      {
+        "id": "transferSubmit",
+        "component": "Button",
+        "label": "Transfer",
+        "variant": "primary"
+      },
+      {
+        "id": "freezeSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["freezeHeader", "freezeText", "freezeBtn"],
+        "gap": "s"
+      },
+      {
+        "id": "freezeHeader",
+        "component": "Heading",
+        "text": "Credit Line",
+        "level": "h3"
+      },
+      {
+        "id": "freezeText",
+        "component": "TextContent",
+        "text": "Freeze your credit line to prevent new charges. Existing recurring payments will still go through.",
+        "size": "small"
+      },
+      {
+        "id": "freezeBtn",
+        "component": "AlertDialogBlock",
+        "triggerLabel": "Freeze Credit Line",
+        "title": "Freeze credit line?",
+        "description": "This will block all new purchases on your Platinum Credit Card until you unfreeze it. Are you sure?",
+        "confirmLabel": "Yes, freeze it",
+        "cancelLabel": "Cancel",
+        "triggerVariant": "destructive"
+      },
+      {
+        "id": "statementSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["stmtHeader", "stmtForm"],
+        "gap": "s"
+      },
+      {
+        "id": "stmtHeader",
+        "component": "Heading",
+        "text": "View Statement",
+        "level": "h3"
+      },
+      {
+        "id": "stmtForm",
+        "component": "Form",
+        "name": "statement-picker",
+        "buttons": "stmtButtons",
+        "fields": ["stmtPeriodField"]
+      },
+      {
+        "id": "stmtPeriodField",
+        "component": "FormControl",
+        "label": "Statement period",
+        "input": "stmtSelect"
+      },
+      {
+        "id": "stmtSelect",
+        "component": "Select",
+        "name": "statement_period",
+        "items": ["stmtJun", "stmtMay", "stmtApr", "stmtMar"],
+        "placeholder": "Choose a month"
+      },
+      {
+        "id": "stmtJun",
+        "component": "SelectItem",
+        "value": "2025-06",
+        "label": "June 2025"
+      },
+      {
+        "id": "stmtMay",
+        "component": "SelectItem",
+        "value": "2025-05",
+        "label": "May 2025"
+      },
+      {
+        "id": "stmtApr",
+        "component": "SelectItem",
+        "value": "2025-04",
+        "label": "April 2025"
+      },
+      {
+        "id": "stmtMar",
+        "component": "SelectItem",
+        "value": "2025-03",
+        "label": "March 2025"
+      },
+      {
+        "id": "stmtButtons",
+        "component": "Buttons",
+        "buttons": ["stmtViewBtn"]
+      },
+      {
+        "id": "stmtViewBtn",
+        "component": "Button",
+        "label": "View Statement",
+        "variant": "secondary"
+      },
+      {
+        "id": "alertsSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["alertsHeader", "alertsSwitches"],
+        "gap": "s"
+      },
+      {
+        "id": "alertsHeader",
+        "component": "Heading",
+        "text": "Alert Preferences",
+        "level": "h3"
+      },
+      {
+        "id": "alertsSwitches",
+        "component": "SwitchGroup",
+        "name": "alert_triggers",
+        "items": ["alertLarge", "alertLow", "alertDue", "alertLogin", "alertGoal"]
+      },
+      {
+        "id": "alertLarge",
+        "component": "SwitchItem",
+        "name": "large_purchase",
+        "label": "Large purchases",
+        "description": "Notify me of any transaction over $100",
+        "defaultChecked": true
+      },
+      {
+        "id": "alertLow",
+        "component": "SwitchItem",
+        "name": "low_balance",
+        "label": "Low balance",
+        "description": "Alert when checking drops below $500",
+        "defaultChecked": true
+      },
+      {
+        "id": "alertDue",
+        "component": "SwitchItem",
+        "name": "bill_due",
+        "label": "Bills due",
+        "description": "Remind me 3 days before a bill is due",
+        "defaultChecked": true
+      },
+      {
+        "id": "alertLogin",
+        "component": "SwitchItem",
+        "name": "new_login",
+        "label": "New device login",
+        "description": "Alert on sign-in from unrecognized device",
+        "defaultChecked": false
+      },
+      {
+        "id": "alertGoal",
+        "component": "SwitchItem",
+        "name": "goal_milestone",
+        "label": "Savings goal milestones",
+        "description": "Celebrate when I hit 25%, 50%, 75%, 100%",
+        "defaultChecked": false
+      },
+      {
+        "id": "disputeSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["disputeHeader", "disputeDialog"],
+        "gap": "s"
+      },
+      {
+        "id": "disputeHeader",
+        "component": "Heading",
+        "text": "Dispute a Transaction",
+        "level": "h3"
+      },
+      {
+        "id": "disputeDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Start a Dispute",
+        "title": "Dispute a Transaction",
+        "description": "Select the transaction and tell us what went wrong.",
+        "content": ["disputeForm"]
+      },
+      {
+        "id": "disputeForm",
+        "component": "Form",
+        "name": "dispute",
+        "buttons": "disputeButtons",
+        "fields": ["disputeTxnField", "disputeReasonField", "disputeDetailsField"]
+      },
+      {
+        "id": "disputeTxnField",
+        "component": "FormControl",
+        "label": "Transaction",
+        "input": "disputeTxnSelect"
+      },
+      {
+        "id": "disputeTxnSelect",
+        "component": "Select",
+        "name": "dispute_transaction",
+        "items": ["dt1", "dt2", "dt3", "dt4", "dt5"],
+        "placeholder": "Choose a transaction"
+      },
+      {
+        "id": "dt1",
+        "component": "SelectItem",
+        "value": "txn_001",
+        "label": "Jun 14 — Whole Foods Market ($84.32)"
+      },
+      {
+        "id": "dt2",
+        "component": "SelectItem",
+        "value": "txn_002",
+        "label": "Jun 13 — Netflix ($15.99)"
+      },
+      {
+        "id": "dt3",
+        "component": "SelectItem",
+        "value": "txn_003",
+        "label": "Jun 13 — Shell Gas Station ($52.10)"
+      },
+      {
+        "id": "dt4",
+        "component": "SelectItem",
+        "value": "txn_004",
+        "label": "Jun 12 — Starbucks ($6.75)"
+      },
+      {
+        "id": "dt5",
+        "component": "SelectItem",
+        "value": "txn_005",
+        "label": "Jun 11 — Amazon.com ($31.99)"
+      },
+      {
+        "id": "disputeReasonField",
+        "component": "FormControl",
+        "label": "Reason",
+        "input": "disputeReasonSelect"
+      },
+      {
+        "id": "disputeReasonSelect",
+        "component": "Select",
+        "name": "dispute_reason",
+        "items": ["dr1", "dr2", "dr3", "dr4"],
+        "placeholder": "Select a reason"
+      },
+      {
+        "id": "dr1",
+        "component": "SelectItem",
+        "value": "unauthorized",
+        "label": "I didn't make this purchase"
+      },
+      {
+        "id": "dr2",
+        "component": "SelectItem",
+        "value": "wrong_amount",
+        "label": "Amount is incorrect"
+      },
+      {
+        "id": "dr3",
+        "component": "SelectItem",
+        "value": "duplicate",
+        "label": "Duplicate charge"
+      },
+      {
+        "id": "dr4",
+        "component": "SelectItem",
+        "value": "not_received",
+        "label": "Goods/services not received"
+      },
+      {
+        "id": "disputeDetailsField",
+        "component": "FormControl",
+        "label": "Additional details",
+        "input": "disputeDetailsInput",
+        "hint": "Optional — anything that helps us investigate"
+      },
+      {
+        "id": "disputeDetailsInput",
+        "component": "TextArea",
+        "name": "dispute_details",
+        "placeholder": "Describe the issue…",
+        "rows": 3
+      },
+      {
+        "id": "disputeButtons",
+        "component": "Buttons",
+        "buttons": ["disputeSubmitBtn", "disputeCancelBtn"]
+      },
+      {
+        "id": "disputeSubmitBtn",
+        "component": "Button",
+        "label": "Submit Dispute",
+        "variant": "primary"
+      },
+      {
+        "id": "disputeCancelBtn",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This single screen covers all 11 requirements:
+
+| # | Requirement | Component Used |
+|---|---|---|
+| 1 | Account balances | Table with account, type, and balance columns |
+| 2 | Recent transactions | Table with date, merchant, and amount |
+| 3 | Spending by category | Donut PieChart with 6 categories |
+| 4 | Bills due soon | Table with bill name, due date, and amount |
+| 5 | Vacation savings goal | Progress bar (68%) with motivational text |
+| 6 | Credit score | RadialChart showing 742 + badge with trend |
+| 7 | Transfer money | Form with from/to account selects + amount input |
+| 8 | Freeze credit line | AlertDialogBlock with destructive confirmation |
+| 9 | Statement period | Form with month select + view button |
+| 10 | Alert triggers | SwitchGroup with 5 toggleable alert types |
+| 11 | Dispute a transaction | DialogBlock containing a full dispute form |

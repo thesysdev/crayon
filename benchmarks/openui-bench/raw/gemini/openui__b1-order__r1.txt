@@ -1,33 +1,50 @@
-root = Card([header, statusBanner, deliveryDetails, progressTracker, problemSection])
+root = Card([header, statusBanner, deliveryDetails, mapPreview, actionButtons, reportProblemDrawer])
 
-header = CardHeader("Package Tracking", "Tracking Number: #TRK-8942-0199")
+header = CardHeader("Track Your Package", "Order #ORD-8942-8821")
 
-statusBanner = Alert("Out for Delivery", "Your driver is nearby and expected to arrive today.", "info")
+statusBanner = Callout("info", "In Transit - On Schedule", "Your package is currently out for delivery and will arrive today.")
 
-deliveryDetails = Table([colMetric, colDetail])
-colMetric = Col("Detail", ["Estimated Arrival", "Current Location", "Carrier", "Shipping Service"])
-colDetail = Col("Information", ["Today, Oct 24 (By 4:00 PM)", "Oakland, CA (0.8 miles away)", "SwiftParcel Express", "Priority Ground"])
+deliveryDetails = Card([etaSection, separator1, currentLocSection], "sunk")
 
-progressTracker = Steps([step1, step2, step3, step4])
-step1 = StepsItem("Order Processed", "Oct 22, 9:15 AM — Warehouse Facility, Sparks, NV")
-step2 = StepsItem("In Transit", "Oct 23, 2:30 PM — Regional Sorting Hub, Sacramento, CA")
-step3 = StepsItem("Out for Delivery", "Oct 24, 8:05 AM — Local Depot, Oakland, CA")
-step4 = StepsItem("Delivered", "Pending arrival")
+etaSection = TextContent("### Estimated Delivery\n**Today, October 24 by 4:30 PM**\n\n*Carrier: Express Logistics (Tracking #EX-990214)*", "default")
 
-problemSection = SectionBlock([problemItem], true)
-problemItem = SectionItem("report-issue", "Report a Problem with this Delivery", [issueForm])
+separator1 = Separator("horizontal")
 
-issueForm = Form("report_issue_form", formButtons, [issueTypeField, issueNotesField])
+currentLocSection = Card([currentLocHeading, progressTracker, listSteps], "clear")
+currentLocHeading = Heading("Current Location & Status", "h4")
 
-issueTypeField = FormControl("Issue Category", issueSelect)
-issueSelect = Select("issue_category", [opt1, opt2, opt3, opt4], "Select a reason...")
-opt1 = SelectItem("late", "Package is delayed")
+progressTracker = Progress(75, "Out for Delivery")
+
+listSteps = ListBlock([step1, step2, step3, step4])
+step1 = ListItem("Out for Delivery", "Local Distribution Center - 8:15 AM", null, "Current")
+step2 = ListItem("Arrived at Regional Hub", "Metro Logistics Center - Yesterday, 11:30 PM")
+step3 = ListItem("In Transit", "Departed Origin Facility - Oct 22, 6:00 PM")
+step4 = ListItem("Order Processed", "Merchant Warehouse - Oct 22, 2:15 PM")
+
+mapPreview = Image("Package current location map", "https://picsum.photos/seed/deliverymap/800/300")
+
+actionButtons = Buttons([refreshBtn, shareBtn])
+refreshBtn = Button("Refresh Tracking", null, "secondary")
+shareBtn = Button("Share Status", null, "tertiary")
+
+reportProblemDrawer = DrawerBlock("Report a Problem", "Report an Issue with Delivery #ORD-8942-8821", "Select the issue you are experiencing and our support team will assist you immediately.", problemForm)
+
+problemForm = Form("report_issue_form", formButtons, [issueTypeField, descriptionField, contactPrefField])
+
+issueTypeField = FormControl("What is the issue?", issueSelect)
+issueSelect = Select("issue_type", [opt1, opt2, opt3, opt4], "Select an issue type")
+opt1 = SelectItem("delayed", "Package is delayed / No updates")
 opt2 = SelectItem("wrong_address", "Incorrect delivery address")
-opt3 = SelectItem("instructions", "Special delivery instructions")
-opt4 = SelectItem("other", "Other shipment inquiry")
+opt3 = SelectItem("instructions", "Special delivery instructions update")
+opt4 = SelectItem("other", "Other issue")
 
-issueNotesField = FormControl("Additional Details", issueNotesInput, "Provide any helpful details for customer support.")
-issueNotesInput = TextArea("issue_notes", "Describe your issue here...", 3)
+descriptionField = FormControl("Additional Details", descriptionInput, "Provide any relevant details to help resolve your issue faster.")
+descriptionInput = TextArea("details", "Describe what happened...", 4)
 
-formButtons = Buttons([submitBtn])
-submitBtn = Button("Submit Report", null, "primary")
+contactPrefField = FormControl("Preferred Contact Method", contactRadio)
+contactRadio = RadioGroup("contact_method", [prefEmail, prefSMS], "email")
+prefEmail = RadioItem("Email", "Receive updates via email", "email")
+prefSMS = RadioItem("SMS Text Message", "Receive updates via mobile text", "sms")
+
+formButtons = Buttons([submitProblemBtn])
+submitProblemBtn = Button("Submit Report", null, "primary")

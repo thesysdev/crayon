@@ -1,10 +1,10 @@
-Here's a support lead's morning dashboard covering all five requirements:
+Here's a support lead's morning dashboard covering all five requirements.
 
 <a2ui-json>
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "support-morning",
+    "surfaceId": "main",
     "catalogId": "thesys.dev:c1-openui"
   }
 }
@@ -14,43 +14,50 @@ Here's a support lead's morning dashboard covering all five requirements:
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "support-morning",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "l",
-        "children": ["header", "metricsRow", "actionsRow", "recentSection"]
+        "children": [
+          "header",
+          "kpiRow",
+          "controls",
+          "recentHeader",
+          "recentTable"
+        ]
       },
       {
         "id": "header",
         "component": "CardHeader",
-        "title": "Good morning — Support Overview",
-        "subtitle": "Your queue at a glance"
+        "title": "Good morning, Support Lead",
+        "subtitle": "Your team's queue at a glance"
       },
       {
-        "id": "metricsRow",
+        "id": "kpiRow",
         "component": "Card",
         "variant": "clear",
         "direction": "row",
         "gap": "m",
-        "children": ["openTicketsCard", "responseTimeCard"]
+        "children": [
+          "openCard",
+          "frtCard"
+        ]
       },
       {
-        "id": "openTicketsCard",
+        "id": "openCard",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
+        "variant": "sunk",
         "weight": 1,
-        "children": ["openLabel", "openValue", "openBadge"]
+        "children": [
+          "openLabel",
+          "openValue"
+        ]
       },
       {
         "id": "openLabel",
         "component": "TextContent",
-        "text": "Open Tickets",
+        "text": "Open tickets",
         "size": "small-heavy"
       },
       {
@@ -60,92 +67,97 @@ Here's a support lead's morning dashboard covering all five requirements:
         "level": "h1"
       },
       {
-        "id": "openBadge",
-        "component": "Badge",
-        "text": "8 unassigned",
-        "variant": "destructive"
-      },
-      {
-        "id": "responseTimeCard",
+        "id": "frtCard",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
+        "variant": "sunk",
         "weight": 1,
-        "children": ["respLabel", "respValue", "respBadge"]
+        "children": [
+          "frtLabel",
+          "frtValue"
+        ]
       },
       {
-        "id": "respLabel",
+        "id": "frtLabel",
         "component": "TextContent",
-        "text": "Avg. First-Response Time",
+        "text": "Avg. first-response time",
         "size": "small-heavy"
       },
       {
-        "id": "respValue",
+        "id": "frtValue",
         "component": "Heading",
         "text": "1h 24m",
         "level": "h1"
       },
       {
-        "id": "respBadge",
-        "component": "Badge",
-        "text": "Within SLA",
-        "variant": "secondary"
-      },
-      {
-        "id": "actionsRow",
-        "component": "Buttons",
+        "id": "controls",
+        "component": "Card",
+        "variant": "clear",
         "direction": "row",
-        "buttons": ["highPriorityBtn", "newTicketBtn"]
+        "gap": "m",
+        "justify": "between",
+        "align": "center",
+        "children": [
+          "filterGroup",
+          "actionButtons"
+        ]
       },
       {
-        "id": "highPriorityBtn",
-        "component": "Button",
-        "label": "Show High-Priority Only",
-        "variant": "secondary",
-        "action": [
-          {
-            "call": "filterTickets",
-            "args": { "priority": "high" }
-          }
+        "id": "filterGroup",
+        "component": "SwitchGroup",
+        "name": "queueFilters",
+        "variant": "card",
+        "items": [
+          "highPriToggle"
+        ]
+      },
+      {
+        "id": "highPriToggle",
+        "component": "SwitchItem",
+        "name": "high_priority_only",
+        "label": "High priority only",
+        "description": "Narrow the queue to high-priority tickets"
+      },
+      {
+        "id": "actionButtons",
+        "component": "Buttons",
+        "buttons": [
+          "newTicketBtn"
         ]
       },
       {
         "id": "newTicketBtn",
         "component": "Button",
-        "label": "＋ New Ticket",
-        "variant": "primary",
-        "action": [
-          {
-            "call": "openNewTicket",
-            "args": {}
-          }
-        ]
-      },
-      {
-        "id": "recentSection",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "children": ["recentHeader", "recentTable"]
+        "label": "New ticket",
+        "variant": "primary"
       },
       {
         "id": "recentHeader",
-        "component": "CardHeader",
-        "title": "5 Most Recent Tickets"
+        "component": "Heading",
+        "text": "5 most recent tickets",
+        "level": "h3"
       },
       {
         "id": "recentTable",
         "component": "Table",
-        "columns": ["colId", "colSubject", "colPriority", "colTime"]
+        "columns": [
+          "colId",
+          "colSubject",
+          "colPriority",
+          "colTime"
+        ]
       },
       {
         "id": "colId",
         "component": "Col",
         "label": "Ticket",
         "type": "string",
-        "data": ["#4821", "#4820", "#4819", "#4818", "#4817"]
+        "data": [
+          "#4812",
+          "#4811",
+          "#4810",
+          "#4809",
+          "#4808"
+        ]
       },
       {
         "id": "colSubject",
@@ -154,10 +166,10 @@ Here's a support lead's morning dashboard covering all five requirements:
         "type": "string",
         "data": [
           "Login fails after password reset",
-          "Invoice PDF not downloading",
-          "API rate limit questions",
+          "Invoice PDF not generating",
           "Feature request: dark mode",
-          "Cannot update billing address"
+          "API returns 500 on bulk export",
+          "Billing address won't save"
         ]
       },
       {
@@ -165,24 +177,36 @@ Here's a support lead's morning dashboard covering all five requirements:
         "component": "Col",
         "label": "Priority",
         "type": "string",
-        "data": ["High", "High", "Medium", "Low", "Medium"]
+        "data": [
+          "High",
+          "Medium",
+          "Low",
+          "High",
+          "Medium"
+        ]
       },
       {
         "id": "colTime",
         "component": "Col",
         "label": "Received",
         "type": "string",
-        "data": ["7:52 AM", "7:41 AM", "7:15 AM", "6:58 AM", "6:30 AM"]
+        "data": [
+          "6m ago",
+          "22m ago",
+          "48m ago",
+          "1h ago",
+          "1h 35m ago"
+        ]
       }
     ]
   }
 }
 </a2ui-json>
 
-This single screen covers every requirement:
+This screen covers every item:
 
-1. **Open tickets** — the "Open Tickets" metric card showing **37** (with 8 unassigned flagged).
-2. **Average first-response time** — the "Avg. First-Response Time" card showing **1h 24m** with an SLA status.
-3. **Five most recent tickets with priority** — a table listing the 5 latest tickets, each with a Priority column (High / Medium / Low) and time received.
-4. **Narrow to high-priority only** — the **"Show High-Priority Only"** button triggers a filter action.
-5. **Open a new ticket** — the primary **"＋ New Ticket"** button triggers the new-ticket flow.
+1. **Open tickets** — the "37" KPI card.
+2. **Average first-response time** — the "1h 24m" KPI card.
+3. **Five most recent tickets with priority** — the table, with a dedicated Priority column.
+4. **Narrow to high-priority only** — the "High priority only" toggle.
+5. **Open a new ticket** — the primary "New ticket" button.

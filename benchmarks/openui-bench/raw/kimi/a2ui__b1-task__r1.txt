@@ -1,10 +1,10 @@
-Here's a personal focus view for your most urgent task:
+Here's a single-screen focus view covering all three numbered items — the urgent task with its deadline, its live status, and a one-tap "Mark as done" action.
 
 <a2ui-json>
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "focus-view",
+    "surfaceId": "main",
     "catalogId": "thesys.dev:c1-openui"
   }
 }
@@ -14,83 +14,72 @@ Here's a personal focus view for your most urgent task:
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "focus-view",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": ["header", "taskCard", "statusRow", "doneButton"]
+        "children": [
+          "header",
+          "taskTitle",
+          "deadline",
+          "status",
+          "taskProgress",
+          "actions"
+        ]
       },
       {
         "id": "header",
         "component": "CardHeader",
-        "title": "🎯 Today's Focus",
-        "subtitle": "Your single most urgent task right now"
-      },
-      {
-        "id": "taskCard",
-        "component": "Card",
-        "variant": "sunk",
-        "direction": "column",
-        "gap": "s",
-        "children": ["taskTitle", "taskDeadline"]
+        "title": "Focus View",
+        "subtitle": "Your single most urgent task"
       },
       {
         "id": "taskTitle",
         "component": "Heading",
-        "text": "Submit Q3 financial report",
+        "text": "Finalize Q4 budget proposal",
         "level": "h2"
       },
       {
-        "id": "taskDeadline",
-        "component": "TextContent",
-        "text": "⏰ **Deadline:** Today, 5:00 PM (in 3 hours)",
-        "size": "large-heavy"
+        "id": "deadline",
+        "component": "Badge",
+        "text": "Deadline: Today, 5:00 PM",
+        "variant": "destructive"
       },
       {
-        "id": "statusRow",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "gap": "s",
-        "align": "center",
-        "children": ["statusLabel", "statusBadge"]
+        "id": "status",
+        "component": "Badge",
+        "text": "Status: In Progress",
+        "variant": "secondary"
       },
       {
-        "id": "statusLabel",
-        "component": "TextContent",
-        "text": "Current status:",
-        "size": "default"
+        "id": "taskProgress",
+        "component": "Progress",
+        "value": 60,
+        "label": "60% complete"
       },
       {
-        "id": "statusBadge",
-        "component": "Tag",
-        "text": "In Progress",
-        "variant": "warning",
-        "size": "md"
-      },
-      {
-        "id": "doneButton",
-        "component": "Button",
-        "label": "✓ Mark as Done",
-        "variant": "primary",
-        "size": "large",
-        "action": [
-          {
-            "name": "mark_task_done",
-            "args": { "taskId": "q3-financial-report" }
-          }
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": [
+          "doneBtn"
         ]
+      },
+      {
+        "id": "doneBtn",
+        "component": "Button",
+        "label": "Mark as done",
+        "variant": "primary"
       }
     ]
   }
 }
 </a2ui-json>
 
-This single-screen focus view covers all three requirements:
-1. **Most urgent task + deadline** — "Submit Q3 financial report" with its deadline highlighted prominently (today, 5:00 PM).
-2. **Current status** — shown as an "In Progress" tag.
-3. **Mark done** — a large primary "✓ Mark as Done" button that triggers a `mark_task_done` action.
+How each requirement is covered:
+
+1. **Urgent task + deadline** — The `Heading` shows the task ("Finalize Q4 budget proposal") and the destructive `Badge` highlights the deadline ("Today, 5:00 PM").
+2. **Current status** — A secondary `Badge` shows "In Progress," reinforced by a `Progress` bar at 60%.
+3. **Mark it done** — A primary `Button` labeled "Mark as done" completes the loop.
+
+Want a variation — e.g., a confirmation dialog before marking done, or an auto-updating countdown to the deadline?

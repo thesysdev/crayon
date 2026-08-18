@@ -1,123 +1,97 @@
-Here's a focused single-task view covering all three requirements.
+Here's a focused single-task view covering the urgent task, its deadline, status, and a way to mark it done.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "focus-task",
-      "catalogId": "thesys.dev:c1-openui"
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "focus-task",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "direction": "column",
-          "gap": "l",
-          "children": ["header", "urgentSection", "deadlineTag", "statusSection", "progress", "sep", "actionButtons"]
-        },
-        {
-          "id": "header",
-          "component": "CardHeader",
-          "title": "Today's Focus",
-          "subtitle": "Your single most urgent task"
-        },
-        {
-          "id": "urgentSection",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "s",
-          "children": ["taskHeading", "taskDesc"]
-        },
-        {
-          "id": "taskHeading",
-          "component": "Heading",
-          "text": "Submit Q3 Financial Report",
-          "level": "h2"
-        },
-        {
-          "id": "taskDesc",
-          "component": "TextContent",
-          "text": "Finalize the quarterly numbers and send to the leadership team before the board review.",
-          "size": "default"
-        },
-        {
-          "id": "deadlineTag",
-          "component": "Alert",
-          "variant": "destructive",
-          "title": "Deadline: Today, 5:00 PM",
-          "description": "Only 2 hours remaining — this is the most time-sensitive item."
-        },
-        {
-          "id": "statusSection",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "s",
-          "align": "center",
-          "children": ["statusLabel", "statusBadge"]
-        },
-        {
-          "id": "statusLabel",
-          "component": "TextContent",
-          "text": "Current Status:",
-          "size": "small-heavy"
-        },
-        {
-          "id": "statusBadge",
-          "component": "Tag",
-          "text": "In Progress",
-          "icon": "clock",
-          "variant": "warning",
-          "size": "md"
-        },
-        {
-          "id": "progress",
-          "component": "Progress",
-          "value": 65,
-          "label": "65% complete"
-        },
-        {
-          "id": "sep",
-          "component": "Separator",
-          "orientation": "horizontal"
-        },
-        {
-          "id": "actionButtons",
-          "component": "Buttons",
-          "direction": "row",
-          "buttons": ["doneBtn", "snoozeBtn"]
-        },
-        {
-          "id": "doneBtn",
-          "component": "Button",
-          "label": "✓ Mark as Done",
-          "variant": "primary",
-          "size": "large",
-          "action": ["markTaskDone"]
-        },
-        {
-          "id": "snoozeBtn",
-          "component": "Button",
-          "label": "Snooze",
-          "variant": "secondary",
-          "size": "large",
-          "action": ["snoozeTask"]
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-This screen covers every numbered requirement:
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "deadlineAlert",
+          "statusRow",
+          "progress",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Finalize Q3 budget report",
+        "subtitle": "Your most urgent task right now"
+      },
+      {
+        "id": "deadlineAlert",
+        "component": "Alert",
+        "title": "Due today at 5:00 PM",
+        "description": "Deadline: Thursday, June 12 \u2014 less than 4 hours remaining",
+        "variant": "warning"
+      },
+      {
+        "id": "statusRow",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "m",
+        "align": "center",
+        "children": [
+          "statusLabel",
+          "statusBadge"
+        ]
+      },
+      {
+        "id": "statusLabel",
+        "component": "TextContent",
+        "text": "Current status",
+        "size": "small-heavy"
+      },
+      {
+        "id": "statusBadge",
+        "component": "Badge",
+        "text": "In progress",
+        "variant": "secondary"
+      },
+      {
+        "id": "progress",
+        "component": "Progress",
+        "value": 75,
+        "label": "75% complete"
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": [
+          "doneBtn"
+        ]
+      },
+      {
+        "id": "doneBtn",
+        "component": "Button",
+        "label": "Mark as done",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>
 
-1. **Most urgent task with deadline** — The task "Submit Q3 Financial Report" is shown prominently in a sunk card, with a red destructive alert calling out the deadline (Today, 5:00 PM) and time remaining.
-2. **Current status** — A labeled "In Progress" warning tag plus a 65% progress bar make the state clear at a glance.
-3. **Way to mark it done** — A large primary "✓ Mark as Done" button (with a secondary Snooze option) sits at the bottom for immediate action.
+This screen covers all three requirements:
+
+1. **Most urgent task with deadline** — the header names the task and the warning alert shows the due date and remaining time.
+2. **Current status** — the sunk status row shows an "In progress" badge, reinforced by a 75% progress bar.
+3. **A way to mark it done** — the primary "Mark as done" button.

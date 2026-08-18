@@ -1,79 +1,56 @@
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"children":["headerCard","kpiRow","searchCard","delayedSection","shipmentsHeader","shipmentsListContainer","chartsRow","weeklyVolumeCard","footerBar"]}}
-{"op":"add","path":"/elements/headerCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["cardHeader","lastRefreshRow"]}}
-{"op":"add","path":"/elements/cardHeader","value":{"type":"CardHeader","props":{"title":"Logistics Coordinator Board","subtitle":"Monitoring 147 active shipments • 8 carriers • Global network"},"children":[]}}
-{"op":"add","path":"/elements/lastRefreshRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center","justify":"between"},"children":["lastRefreshLabel","lastRefreshValue","refreshBtn"]}}
-{"op":"add","path":"/elements/lastRefreshLabel","value":{"type":"TextContent","props":{"text":"Last refreshed:","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/lastRefreshValue","value":{"type":"TextContent","props":{"text":{"$state":"/meta/lastRefreshed"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/refreshBtn","value":{"type":"Button","props":{"label":"Refresh now","variant":"secondary","size":"small"},"children":[]}}
-{"op":"add","path":"/state/meta","value":{"lastRefreshed":"Aug 18, 2026 — 08:42 UTC • Auto-refresh every 15m","nextRefresh":"08:57 UTC"}}
-{"op":"add","path":"/elements/kpiRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m"},"children":["kpiOnTimeCard","kpiAvgCostCard","kpiFlaggedCard"]}}
-{"op":"add","path":"/elements/kpiOnTimeCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["kpiOnTimeTitle","kpiOnTimeValue","kpiOnTimeProgress","kpiOnTimeSub"]}}
-{"op":"add","path":"/elements/kpiOnTimeTitle","value":{"type":"TextContent","props":{"text":"On-Time % — This Month","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/kpiOnTimeValue","value":{"type":"TextContent","props":{"text":{"$template":"${/metrics/onTimePct}%"},"size":"large-heavy"},"children":[]}}
-{"op":"add","path":"/elements/kpiOnTimeProgress","value":{"type":"Progress","props":{"value":87,"label":"87% on-time"},"children":[]}}
-{"op":"add","path":"/elements/kpiOnTimeSub","value":{"type":"TextContent","props":{"text":{"$template":"${/metrics/onTimeCount} of ${/metrics/totalShipments} shipments on schedule"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/kpiAvgCostCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["kpiAvgCostTitle","kpiAvgCostValue","kpiAvgCostSub","kpiAvgCostTrend"]}}
-{"op":"add","path":"/elements/kpiAvgCostTitle","value":{"type":"TextContent","props":{"text":"Average Cost per Shipment","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/kpiAvgCostValue","value":{"type":"TextContent","props":{"text":{"$template":"$${/metrics/avgCost}"},"size":"large-heavy"},"children":[]}}
-{"op":"add","path":"/elements/kpiAvgCostSub","value":{"type":"TextContent","props":{"text":"Across 163 shipments • Aug 1–18","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/kpiAvgCostTrend","value":{"type":"TagBlock","props":{"tags":["↓ 3.2% vs July","$1,327 prev. avg"]},"children":[]}}
-{"op":"add","path":"/elements/kpiFlaggedCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["kpiFlaggedTitle","kpiFlaggedValue","kpiFlaggedSub"]}}
-{"op":"add","path":"/elements/kpiFlaggedTitle","value":{"type":"TextContent","props":{"text":"Flagged Shipments","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/kpiFlaggedValue","value":{"type":"TextContent","props":{"text":{"$template":"${/metrics/flaggedCount}"},"size":"large-heavy"},"children":[]}}
-{"op":"add","path":"/elements/kpiFlaggedSub","value":{"type":"TextContent","props":{"text":"2 escalated • 1 awaiting carrier reply","size":"small"},"children":[]}}
-{"op":"add","path":"/state/metrics","value":{"onTimePct":87,"onTimeCount":142,"totalShipments":163,"avgCost":1284,"flaggedCount":3}}
-{"op":"add","path":"/elements/searchCard","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["searchControl","searchHint"]}}
-{"op":"add","path":"/elements/searchControl","value":{"type":"FormControl","props":{"label":"Search by Route","input":"searchInput","hint":"Filter by origin, destination, carrier or ID (e.g. Shanghai → Rotterdam)"},"children":[]}}
-{"op":"add","path":"/elements/searchInput","value":{"type":"Input","props":{"name":"searchQuery","placeholder":"Try: Shanghai → Rotterdam, LAX, MAERSK...","value":{"$bindState":"/searchQuery"}},"children":[]}}
-{"op":"add","path":"/elements/searchHint","value":{"type":"TextContent","props":{"text":"Showing all in-transit shipments. Type to narrow the list below.","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["header","kpiRow","searchSection","delayedAlert","shipmentsSection","flaggedCallout","analyticsRow","footer"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Logistics Coordinator Board","subtitle":"Real-time transit monitoring • August 2026 • 6 active shipments"},"children":[]}}
+{"op":"add","path":"/elements/kpiRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","wrap":true},"children":["kpiOnTime","kpiAvgCost","kpiTotal"]}}
+{"op":"add","path":"/elements/kpiOnTime","value":{"type":"Card","props":{"gap":"s"},"children":["kpiOnTimeHeader","kpiOnTimeProgress","kpiOnTimeLabel"]}}
+{"op":"add","path":"/elements/kpiOnTimeHeader","value":{"type":"TextContent","props":{"text":"On-Time Percentage — This Month","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/kpiOnTimeProgress","value":{"type":"Progress","props":{"value":{"$state":"/onTimePct"},"label":"87% on-time"},"children":[]}}
+{"op":"add","path":"/elements/kpiOnTimeLabel","value":{"type":"TextContent","props":{"text":{"$template":"${/onTimePct}% of 52 shipments delivered on schedule in August"},"size":"small"},"children":[]}}
+{"op":"add","path":"/state/onTimePct","value":87}
+{"op":"add","path":"/elements/kpiAvgCost","value":{"type":"Card","props":{"gap":"s"},"children":["kpiAvgCostHeader","kpiAvgCostValue","kpiAvgCostSub"]}}
+{"op":"add","path":"/elements/kpiAvgCostHeader","value":{"type":"TextContent","props":{"text":"Average Cost per Shipment","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/kpiAvgCostValue","value":{"type":"TextContent","props":{"text":{"$template":"$${/avgCost}"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/kpiAvgCostSub","value":{"type":"TextContent","props":{"text":"Across 52 shipments • +2.3% vs July","size":"small"},"children":[]}}
+{"op":"add","path":"/state/avgCost","value":1240}
+{"op":"add","path":"/elements/kpiTotal","value":{"type":"Card","props":{"gap":"s"},"children":["kpiTotalHeader","kpiTotalValue","kpiTotalSub"]}}
+{"op":"add","path":"/elements/kpiTotalHeader","value":{"type":"TextContent","props":{"text":"In-Transit Volume","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/kpiTotalValue","value":{"type":"TextContent","props":{"text":{"$template":"${/totalInTransit} shipments"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/kpiTotalSub","value":{"type":"TextContent","props":{"text":"2 delayed • 1 customs hold • 3 on track","size":"small"},"children":[]}}
+{"op":"add","path":"/state/totalInTransit","value":6}
+{"op":"add","path":"/elements/searchSection","value":{"type":"Card","props":{"gap":"s"},"children":["searchHeader","searchControl"]}}
+{"op":"add","path":"/elements/searchHeader","value":{"type":"Heading","props":{"text":"Search by Route","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/searchControl","value":{"type":"FormControl","props":{"label":"Route search","input":"searchInput","hint":"Filter by origin or destination — e.g. 'Shanghai', 'New York', 'Rotterdam → Chicago'"},"children":[]}}
+{"op":"add","path":"/elements/searchInput","value":{"type":"Input","props":{"name":"routeSearch","placeholder":"Search origin or destination...","value":{"$bindState":"/searchQuery"}},"children":[]}}
 {"op":"add","path":"/state/searchQuery","value":""}
-{"op":"add","path":"/elements/delayedSection","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["delayedCallout","delayedListContainer"]}}
-{"op":"add","path":"/elements/delayedCallout","value":{"type":"Callout","props":{"variant":"warning","title":"3 Delayed Shipments Require Attention","description":"ETA slipped >24h — flagged for coordinator review. Use Flag to escalate to carrier ops."},"children":[]}}
-{"op":"add","path":"/elements/delayedListContainer","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/delayedShipments","key":"id"},"children":["delayedItem"]}}
-{"op":"add","path":"/elements/delayedItem","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between"},"children":["delayedItemRoute","delayedItemEta","delayedItemStatus","delayedItemFlagBtn"]}}
-{"op":"add","path":"/elements/delayedItemRoute","value":{"type":"TextContent","props":{"text":{"$template":"${origin} → ${destination}"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/delayedItemEta","value":{"type":"TextContent","props":{"text":{"$template":"ETA ${eta} • ${delay}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/delayedItemStatus","value":{"type":"Badge","props":{"text":{"$item":"status"},"variant":"destructive"},"children":[]}}
-{"op":"add","path":"/elements/delayedItemFlagBtn","value":{"type":"Button","props":{"label":"Flagged","variant":"secondary","size":"extra-small"},"on":{"press":{"action":"setState","params":{"statePath":{"$item":"flagged"},"value":true}}},"children":[]}}
-{"op":"add","path":"/state/delayedShipments","value":[]}
-{"op":"add","path":"/state/delayedShipments/0","value":{"id":"SHP-88421","origin":"Shanghai (CNSHA)","destination":"Rotterdam (NLRTM)","eta":"Aug 19, 18:00","delay":"+38h delay","status":"Delayed — Customs Hold","flagged":true,"carrier":"COSCO"}}
-{"op":"add","path":"/state/delayedShipments/1","value":{"id":"SHP-88409","origin":"Los Angeles (USLAX)","destination":"Hamburg (DEHAM)","eta":"Aug 20, 09:30","delay":"+27h delay","status":"Delayed — Port Congestion","flagged":true,"carrier":"Maersk"}}
-{"op":"add","path":"/state/delayedShipments/2","value":{"id":"SHP-88397","origin":"Nhava Sheva (INNSA)","destination":"Felixstowe (GBFXT)","eta":"Aug 18, 14:15","delay":"+52h delay","status":"Delayed — Vessel Delay","flagged":false,"carrier":"MSC"}}
-{"op":"add","path":"/elements/shipmentsHeader","value":{"type":"Heading","props":{"text":"Shipments in Transit","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/shipmentsListContainer","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/shipments","key":"id"},"children":["shipmentCard"]}}
-{"op":"add","path":"/elements/shipmentCard","value":{"type":"Card","props":{"variant":"card","direction":"row","gap":"m","align":"center","justify":"between"},"children":["shipmentRouteCol","shipmentEtaCol","shipmentStatusCol","shipmentFlagCol"]}}
-{"op":"add","path":"/elements/shipmentRouteCol","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["routeText","routeSubText"]}}
-{"op":"add","path":"/elements/routeText","value":{"type":"TextContent","props":{"text":{"$template":"${origin} → ${destination}"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/routeSubText","value":{"type":"TextContent","props":{"text":{"$template":"${id} • ${carrier}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/shipmentEtaCol","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["etaText","etaSub"]}}
-{"op":"add","path":"/elements/etaText","value":{"type":"TextContent","props":{"text":{"$template":"ETA ${eta}"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/etaSub","value":{"type":"TextContent","props":{"text":{"$item":"routeCode"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/shipmentStatusCol","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs","align":"center"},"children":["statusBadge"]}}
-{"op":"add","path":"/elements/statusBadge","value":{"type":"Badge","props":{"text":{"$item":"status"},"variant":"secondary"},"children":[]}}
-{"op":"add","path":"/elements/shipmentFlagCol","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs","align":"center"},"children":["flagBtn","flaggedTag"]}}
-{"op":"add","path":"/elements/flagBtn","value":{"type":"Button","props":{"label":"Flag","variant":"tertiary","size":"extra-small"},"on":{"press":{"action":"setState","params":{"statePath":{"$item":"flagged"},"value":true}}},"children":[]}}
-{"op":"add","path":"/elements/flaggedTag","value":{"type":"Tag","props":{"text":"Flagged","variant":"warning","size":"sm"},"children":[]}}
+{"op":"add","path":"/elements/delayedAlert","value":{"type":"Alert","props":{"title":"2 Delayed Shipments Require Attention","description":"SH-8821 • Hamburg → New York (ETA Aug 20) — 2 days late, awaiting berth. SH-8824 • Singapore → Seattle (ETA Aug 19) — customs inspection delay. Flag to escalate.","variant":"warning"},"children":[]}}
+{"op":"add","path":"/elements/shipmentsSection","value":{"type":"Card","props":{"gap":"s"},"children":["shipmentsHeader","shipmentsListContainer"]}}
+{"op":"add","path":"/elements/shipmentsHeader","value":{"type":"CardHeader","props":{"title":"Shipments in Transit","subtitle":"Origin • Destination • ETA • Status • Flag for escalation"},"children":[]}}
+{"op":"add","path":"/elements/shipmentsListContainer","value":{"type":"Card","props":{"variant":"sunk","gap":"s"},"repeat":{"statePath":"/shipments","key":"id"},"children":["shipmentRow"]}}
+{"op":"add","path":"/elements/shipmentRow","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["shipRouteText","shipETAText","shipStatusTag","shipFlagBtn"]}}
+{"op":"add","path":"/elements/shipRouteText","value":{"type":"TextContent","props":{"text":{"$template":"${id} • ${origin} → ${destination}"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/shipETAText","value":{"type":"TextContent","props":{"text":{"$template":"ETA ${eta}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/shipStatusTag","value":{"type":"Tag","props":{"text":{"$item":"status"},"variant":"info","size":"md"},"children":[]}}
+{"op":"add","path":"/elements/shipFlagBtn","value":{"type":"Button","props":{"label":"Flag","variant":"secondary","size":"small"},"on":{"press":{"action":"pushState","params":{"statePath":"/flaggedShipments","value":{"id":"$id","shipmentId":{"$item":"id"},"route":{"$template":"${origin} → ${destination}"}}}}}},"children":[]}}
 {"op":"add","path":"/state/shipments","value":[]}
-{"op":"add","path":"/state/shipments/0","value":{"id":"SHP-88421","origin":"Shanghai","destination":"Rotterdam","eta":"Aug 19, 18:00","status":"Delayed","carrier":"COSCO","routeCode":"CNSHA → NLRTM • 38d transit","flagged":true}}
-{"op":"add","path":"/state/shipments/1","value":{"id":"SHP-88409","origin":"Los Angeles","destination":"Hamburg","eta":"Aug 20, 09:30","status":"Delayed","carrier":"Maersk","routeCode":"USLAX → DEHAM • 22d transit","flagged":true}}
-{"op":"add","path":"/state/shipments/2","value":{"id":"SHP-88397","origin":"Nhava Sheva","destination":"Felixstowe","eta":"Aug 18, 14:15","status":"Delayed","carrier":"MSC","routeCode":"INNSA → GBFXT • 26d transit","flagged":false}}
-{"op":"add","path":"/state/shipments/3","value":{"id":"SHP-88433","origin":"Singapore","destination":"Long Beach","eta":"Aug 22, 07:00","status":"In Transit","carrier":"ONE","routeCode":"SGSIN → USLGB • 18d transit","flagged":false}}
-{"op":"add","path":"/state/shipments/4","value":{"id":"SHP-88418","origin":"Busan","destination":"Antwerp","eta":"Aug 21, 11:45","status":"In Transit","carrier":"Hapag-Lloyd","routeCode":"KRPUS → BEANR • 31d transit","flagged":false}}
-{"op":"add","path":"/state/shipments/5","value":{"id":"SHP-88427","origin":"Rotterdam","destination":"New York","eta":"Aug 19, 22:10","status":"On Schedule","carrier":"Maersk","routeCode":"NLRTM → USNYC • 9d transit","flagged":false}}
-{"op":"add","path":"/state/shipments/6","value":{"id":"SHP-88415","origin":"Jebel Ali","destination":"Valencia","eta":"Aug 23, 16:20","status":"On Schedule","carrier":"MSC","routeCode":"AEJEA → ESVLC • 14d transit","flagged":false}}
-{"op":"add","path":"/state/shipments/7","value":{"id":"SHP-88402","origin":"Santos","destination":"Shanghai","eta":"Aug 24, 05:00","status":"In Transit","carrier":"COSCO","routeCode":"BRSSZ → CNSHA • 36d transit","flagged":false}}
-{"op":"add","path":"/elements/chartsRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m"},"children":["carrierCard"]}}
-{"op":"add","path":"/elements/carrierCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["carrierHeader","carrierPie","carrierLegend"]}}
-{"op":"add","path":"/elements/carrierHeader","value":{"type":"CardHeader","props":{"title":"Volume Split by Carrier","subtitle":"TEU volume share — August MTD (1,420 TEU)"},"children":[]}}
-{"op":"add","path":"/elements/carrierPie","value":{"type":"PieChart","props":{"labels":{"$state":"/carrierSplit/labels"},"values":{"$state":"/carrierSplit/values"},"variant":"donut","appearance":"circular"},"children":[]}}
-{"op":"add","path":"/elements/carrierLegend","value":{"type":"TagBlock","props":{"tags":["Maersk 38%","MSC 24%","COSCO 18%","Hapag-Lloyd 9%","ONE 7%","Others 4%"]},"children":[]}}
-{"op":"add","path":"/state/carrierSplit","value":{"labels":["Maersk","MSC","COSCO","Hapag-Lloyd","ONE","Others"],"values":[38,24,18,9,7,4]}}
-{"op":"add","path":"/elements/weeklyVolumeCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["weeklyHeader","weeklyBar"]}}
+{"op":"add","path":"/state/shipments/0","value":{"id":"SH-8820","origin":"Shanghai","destination":"Los Angeles","eta":"2026-08-22","status":"In Transit"}}
+{"op":"add","path":"/state/shipments/1","value":{"id":"SH-8821","origin":"Hamburg","destination":"New York","eta":"2026-08-20","status":"Delayed"}}
+{"op":"add","path":"/state/shipments/2","value":{"id":"SH-8822","origin":"Rotterdam","destination":"Chicago","eta":"2026-08-25","status":"In Transit"}}
+{"op":"add","path":"/state/shipments/3","value":{"id":"SH-8824","origin":"Singapore","destination":"Seattle","eta":"2026-08-19","status":"Delayed"}}
+{"op":"add","path":"/state/shipments/4","value":{"id":"SH-8825","origin":"Busan","destination":"Oakland","eta":"2026-08-24","status":"In Transit"}}
+{"op":"add","path":"/state/shipments/5","value":{"id":"SH-8826","origin":"Felixstowe","destination":"Houston","eta":"2026-08-28","status":"Customs Hold"}}
+{"op":"add","path":"/state/flaggedShipments","value":[]}
+{"op":"add","path":"/state/hasFlagged","value":false}
+{"op":"add","path":"/elements/flaggedCallout","value":{"type":"Callout","props":{"variant":"warning","title":"Shipment flagged","description":"Flagged shipment added to escalation queue. Coordinator notified."},"children":[]}}
+{"op":"add","path":"/elements/analyticsRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","wrap":true},"children":["carrierCard","weeklyCard"]}}
+{"op":"add","path":"/elements/carrierCard","value":{"type":"Card","props":{"gap":"s"},"children":["carrierHeader","carrierPie","carrierLegend"]}}
+{"op":"add","path":"/elements/carrierHeader","value":{"type":"CardHeader","props":{"title":"Volume Split by Carrier","subtitle":"August shipments by carrier (52 total)"},"children":[]}}
+{"op":"add","path":"/elements/carrierPie","value":{"type":"PieChart","props":{"labels":["FedEx Freight","UPS Supply Chain","DHL Global","Maersk Line"],"values":[18,14,11,9],"variant":"donut"},"children":[]}}
+{"op":"add","path":"/elements/carrierLegend","value":{"type":"TextContent","props":{"text":"FedEx 34.6% • UPS 26.9% • DHL 21.2% • Maersk 17.3%","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/weeklyCard","value":{"type":"Card","props":{"gap":"s"},"children":["weeklyHeader","weeklyChart"]}}
 {"op":"add","path":"/elements/weeklyHeader","value":{"type":"CardHeader","props":{"title":"Weekly Volume — Past Two Months","subtitle":"Shipments dispatched per week (8 weeks)"},"children":[]}}
-{"op":"add","path":"/elements/weeklyBar","value":{"type":"BarChart","props":{"labels":{"$state":"/weeklyVolume/labels"},"series":["weeklySeries"],"variant":"grouped","xLabel":"Week starting","yLabel":"Shipments"},"children":[]}}
-{"op":"add","path":"/elements/weeklySeries","value":{"type":"Series","props":{"category":"Shipments","values":{"$state":"/weeklyVolume/values"}},"children":[]}}
-{"op":"add","path":"/state/weeklyVolume","value":{"labels":["Jun 24","Jul 01","Jul 08","Jul 15","Jul 22","Jul 29","Aug 05","Aug 12"],"values":[42,38,45,51,47,44,49,52]}}
-{"op":"add","path":"/elements/footerBar","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"s","align":"center","justify":"between"},"children":["footerText","footerTag"]}}
-{"op":"add","path":"/elements/footerText","value":{"type":"TextContent","props":{"text":{"$template":"Data last refreshed: ${/meta/lastRefreshed} • Source: TMS + Carrier EDI feeds • Next auto-refresh at ${/meta/nextRefresh}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/footerTag","value":{"type":"Badge","props":{"text":"Live","variant":"secondary"},"children":[]}}
+{"op":"add","path":"/elements/weeklyChart","value":{"type":"BarChart","props":{"labels":["Jun W3","Jun W4","Jul W1","Jul W2","Jul W3","Jul W4","Aug W1","Aug W2"],"series":["weeklySeries"],"variant":"grouped","xLabel":"Week","yLabel":"Shipments"},"children":[]}}
+{"op":"add","path":"/elements/weeklySeries","value":{"type":"Series","props":{"category":"Shipments","values":[38,42,45,39,51,48,55,52]}},"children":[]}}
+{"op":"add","path":"/elements/footer","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["lastRefreshedText","refreshBtn"]}}
+{"op":"add","path":"/elements/lastRefreshedText","value":{"type":"TextContent","props":{"text":{"$template":"Last refreshed: ${/lastRefreshed} • Auto-refresh every 15 min"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/refreshBtn","value":{"type":"Button","props":{"label":"Refresh Now","variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/lastRefreshed","value":"2026-08-18 14:35 UTC"}}},"children":[]}}
+{"op":"add","path":"/state/lastRefreshed","value":"2026-08-18 14:32 UTC"}

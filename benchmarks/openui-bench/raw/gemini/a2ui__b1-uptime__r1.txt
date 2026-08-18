@@ -1,104 +1,118 @@
-Here is the current platform status overview:
+Here is the status page dashboard for the platform team, displaying the current API uptime percentage and details regarding the most recent incident.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "platform-status-surface",
-      "catalogId": "thesys.dev:c1-openui",
-      "theme": {
-        "primaryColor": "#0F172A",
-        "agentDisplayName": "Platform Engineering Team"
-      }
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "platform-status-surface",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "l",
-          "children": [
-            "header-section",
-            "uptime-card",
-            "incident-section"
-          ]
-        },
-        {
-          "id": "header-section",
-          "component": "CardHeader",
-          "title": "Platform Infrastructure Status",
-          "subtitle": "Real-time metrics and service health summary"
-        },
-        {
-          "id": "uptime-card",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "uptime-header",
-            "uptime-metric",
-            "uptime-progress",
-            "uptime-badge"
-          ]
-        },
-        {
-          "id": "uptime-header",
-          "component": "Heading",
-          "text": "Core API Uptime (Current Month)",
-          "level": "h3"
-        },
-        {
-          "id": "uptime-metric",
-          "component": "Heading",
-          "text": "99.94%",
-          "level": "h1"
-        },
-        {
-          "id": "uptime-progress",
-          "component": "Progress",
-          "value": 99.94,
-          "label": "SLA Target: 99.90%"
-        },
-        {
-          "id": "uptime-badge",
-          "component": "Tag",
-          "text": "Meeting SLA",
-          "variant": "success"
-        },
-        {
-          "id": "incident-section",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "column",
-          "gap": "s",
-          "children": [
-            "incident-heading",
-            "incident-callout"
-          ]
-        },
-        {
-          "id": "incident-heading",
-          "component": "Heading",
-          "text": "Most Recent Incident",
-          "level": "h3"
-        },
-        {
-          "id": "incident-callout",
-          "component": "Callout",
-          "variant": "info",
-          "title": "API Gateway Elevated Latency (Resolved)",
-          "description": "On October 24, 2023 at 14:15 UTC, the primary API gateway experienced elevated latency and intermittent 502 errors due to a misconfigured connection pool during a routine scaling event. Traffic was re-routed to the fallback gateway cluster, and full operational service was restored by 14:38 UTC (total duration: 23 minutes)."
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "header",
+          "statusBadge",
+          "uptimeCard",
+          "incidentCard",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Platform Status",
+        "subtitle": "Real-time system operational metrics and incident history"
+      },
+      {
+        "id": "statusBadge",
+        "component": "Badge",
+        "text": "All Systems Operational",
+        "variant": "secondary"
+      },
+      {
+        "id": "uptimeCard",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "s",
+        "children": [
+          "uptimeHeader",
+          "uptimeProgress",
+          "uptimeDetails"
+        ]
+      },
+      {
+        "id": "uptimeHeader",
+        "component": "Heading",
+        "level": "h3",
+        "text": "Core API Uptime (Current Month)"
+      },
+      {
+        "id": "uptimeProgress",
+        "component": "Progress",
+        "label": "99.94%",
+        "value": 99.94
+      },
+      {
+        "id": "uptimeDetails",
+        "component": "TextContent",
+        "size": "small",
+        "text": "Target SLA: **99.90%** | Total Monitored Time: **672 hrs** | Unplanned Downtime: **24 mins**"
+      },
+      {
+        "id": "incidentCard",
+        "component": "Card",
+        "variant": "card",
+        "gap": "xs",
+        "children": [
+          "incidentAlert",
+          "incidentDetails"
+        ]
+      },
+      {
+        "id": "incidentAlert",
+        "component": "Alert",
+        "title": "Most Recent Incident: Increased API Gateway Latency",
+        "description": "High latency and intermittent 504 Gateway Timeouts were observed across the primary EU-West region due to an unexpected connection pool exhaustion.",
+        "variant": "info"
+      },
+      {
+        "id": "incidentDetails",
+        "component": "TextContent",
+        "size": "small",
+        "text": "**Resolved:** Oct 24, 2023 at 14:32 UTC (Duration: 24 minutes)\n**Fix Applied:** Re-routed traffic to fallback clusters and scaled out gateway connection pool limits."
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": [
+          "refreshBtn",
+          "historyBtn"
+        ]
+      },
+      {
+        "id": "refreshBtn",
+        "component": "Button",
+        "label": "Refresh Metrics",
+        "variant": "primary"
+      },
+      {
+        "id": "historyBtn",
+        "component": "Button",
+        "label": "View Incident History",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
 </a2ui-json>

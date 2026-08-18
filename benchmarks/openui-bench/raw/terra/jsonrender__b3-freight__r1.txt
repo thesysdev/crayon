@@ -1,71 +1,63 @@
 {"op":"add","path":"/root","value":"logistics-board"}
-{"op":"add","path":"/elements/logistics-board","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["board-header","metrics-row","operations-row","volume-section","shipments-section"]}}
-{"op":"add","path":"/elements/board-header","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center","gap":"m","wrap":true},"children":["title-block","refresh-block"]}}
-{"op":"add","path":"/elements/title-block","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["board-title","board-subtitle"]}}
-{"op":"add","path":"/elements/board-title","value":{"type":"Heading","props":{"text":"Logistics Control Board","level":"h1"},"children":[]}}
-{"op":"add","path":"/elements/board-subtitle","value":{"type":"TextContent","props":{"text":"Live shipment coordination across active routes","size":"default"},"children":[]}}
-{"op":"add","path":"/elements/refresh-block","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs","align":"end"},"children":["refresh-label","refresh-time"]}}
-{"op":"add","path":"/elements/refresh-label","value":{"type":"TextContent","props":{"text":"Last refreshed","size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/refresh-time","value":{"type":"TextContent","props":{"text":{"$template":"${/lastRefreshed}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/state/lastRefreshed","value":"Today, 10:42 AM"}
-{"op":"add","path":"/elements/metrics-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","wrap":true,"align":"stretch"},"children":["on-time-metric","cost-metric","active-metric"]}}
-{"op":"add","path":"/elements/on-time-metric","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["on-time-heading","on-time-progress","on-time-detail"]}}
-{"op":"add","path":"/elements/on-time-heading","value":{"type":"CardHeader","props":{"title":"On-time performance","subtitle":"This month"},"children":[]}}
-{"op":"add","path":"/elements/on-time-progress","value":{"type":"Progress","props":{"value":{"$state":"/metrics/onTimePercent"},"label":{"$template":"${/metrics/onTimePercent}% on time"}},"children":[]}}
-{"op":"add","path":"/elements/on-time-detail","value":{"type":"TextContent","props":{"text":{"$template":"${/metrics/onTimeShipments} of ${/metrics/totalShipments} shipments arrived within SLA"},"size":"small"},"children":[]}}
-{"op":"add","path":"/state/metrics","value":{"onTimePercent":94,"onTimeShipments":218,"totalShipments":232,"averageCost":842,"activeInTransit":18}}
-{"op":"add","path":"/elements/cost-metric","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["cost-heading","cost-value","cost-note"]}}
-{"op":"add","path":"/elements/cost-heading","value":{"type":"CardHeader","props":{"title":"Average cost","subtitle":"Per shipment"},"children":[]}}
-{"op":"add","path":"/elements/cost-value","value":{"type":"Heading","props":{"text":{"$template":"$${/metrics/averageCost}"},"level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/cost-note","value":{"type":"TextContent","props":{"text":"Blended line-haul, fuel, and accessorial cost","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/active-metric","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["active-heading","active-value","active-note"]}}
-{"op":"add","path":"/elements/active-heading","value":{"type":"CardHeader","props":{"title":"In transit","subtitle":"Active shipments"},"children":[]}}
-{"op":"add","path":"/elements/active-value","value":{"type":"Heading","props":{"text":{"$template":"${/metrics/activeInTransit}"},"level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/active-note","value":{"type":"TextContent","props":{"text":"Monitored across 12 active lanes","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/operations-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","wrap":true,"align":"start"},"children":["delayed-panel","route-search-panel"]}}
-{"op":"add","path":"/elements/delayed-panel","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["delayed-header","delayed-alert","delayed-list"]}}
-{"op":"add","path":"/elements/delayed-header","value":{"type":"CardHeader","props":{"title":"Delayed shipments","subtitle":"Requires coordinator attention"},"children":[]}}
-{"op":"add","path":"/elements/delayed-alert","value":{"type":"Alert","props":{"title":{"$template":"${/delayedCount} shipments delayed"},"description":"Review exceptions and flag shipments that need escalation.","variant":"warning"},"children":[]}}
-{"op":"add","path":"/state/delayedCount","value":2}
-{"op":"add","path":"/elements/delayed-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/delayedShipments","key":"id"},"children":["delayed-route","delayed-info"]}}
-{"op":"add","path":"/elements/delayed-route","value":{"type":"TextContent","props":{"text":{"$template":"${reference} · ${origin} → ${destination}"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/delayed-info","value":{"type":"TextCallout","props":{"variant":"warning","title":{"$template":"ETA ${eta} · ${delayReason}"},"description":{"$template":"Carrier: ${carrier} | Delay: ${delay}"},"children":[]}}
+{"op":"add","path":"/elements/logistics-board","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["board-header","refresh-note","kpi-row","route-search-card","delayed-section","transit-section","analytics-section"]}}
+{"op":"add","path":"/elements/board-header","value":{"type":"CardHeader","props":{"title":"Logistics Coordinator Board","subtitle":"Live shipment visibility, carrier performance, and delivery risk"}}}
+{"op":"add","path":"/elements/refresh-note","value":{"type":"TextContent","props":{"text":{"$template":"Last refreshed: ${/lastRefreshed}"}},"children":[]}}
+{"op":"add","path":"/state/lastRefreshed","value":"August 18, 2026 · 09:42 AM"}
+{"op":"add","path":"/elements/kpi-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","wrap":true},"children":["on-time-kpi","cost-kpi","active-kpi"]}}
+{"op":"add","path":"/elements/on-time-kpi","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["on-time-title","on-time-progress"]}}
+{"op":"add","path":"/elements/on-time-title","value":{"type":"TextContent","props":{"text":{"$template":"On-time this month · ${/metrics/onTimePercentage}%"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/on-time-progress","value":{"type":"Progress","props":{"value":{"$state":"/metrics/onTimePercentage"},"label":"Delivered within scheduled ETA"}},"children":[]}}
+{"op":"add","path":"/state/metrics","value":{"onTimePercentage":94,"averageCost":1284,"activeShipments":18}}
+{"op":"add","path":"/elements/cost-kpi","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["cost-label","cost-value"]}}
+{"op":"add","path":"/elements/cost-label","value":{"type":"TextContent","props":{"text":"Average cost per shipment","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/cost-value","value":{"type":"TextContent","props":{"text":{"$template":"$${/metrics/averageCost}"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/active-kpi","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["active-label","active-value"]}}
+{"op":"add","path":"/elements/active-label","value":{"type":"TextContent","props":{"text":"Shipments currently in transit","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/active-value","value":{"type":"TextContent","props":{"text":{"$state":"/metrics/activeShipments"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/route-search-card","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["route-search-heading","route-search-field","route-search-hint"]}}
+{"op":"add","path":"/elements/route-search-heading","value":{"type":"Heading","props":{"text":"Find a route","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/route-search-field","value":{"type":"FormControl","props":{"label":"Search by origin, destination, or route ID","input":"route-search-input"}}}
+{"op":"add","path":"/elements/route-search-input","value":{"type":"Input","props":{"name":"routeSearch","placeholder":"e.g., Chicago → Dallas or RT-4821","value":{"$bindState":"/routeSearch"}},"children":[]}}
+{"op":"add","path":"/state/routeSearch","value":""}
+{"op":"add","path":"/elements/route-search-hint","value":{"type":"TextContent","props":{"text":"Use route terms to quickly locate shipment lanes.","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/delayed-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["delayed-header","delayed-alert","delayed-list"]}}
+{"op":"add","path":"/elements/delayed-header","value":{"type":"Heading","props":{"text":"Delayed shipments","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/delayed-alert","value":{"type":"Alert","props":{"title":{"$template":"${/delayedSummary/count} shipments need attention"},"description":{"$state":"/delayedSummary/message"},"variant":"warning"},"children":[]}}
+{"op":"add","path":"/state/delayedSummary","value":{"count":2,"message":"Two loads are running behind schedule due to weather and terminal congestion."}}
+{"op":"add","path":"/elements/delayed-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/delayedShipments","key":"id"},"children":["delayed-item"]}}
+{"op":"add","path":"/elements/delayed-item","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center","gap":"m","wrap":true},"children":["delayed-details","delayed-actions"]}}
+{"op":"add","path":"/elements/delayed-details","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["delayed-route","delayed-meta","delayed-status"]}}
+{"op":"add","path":"/elements/delayed-route","value":{"type":"TextContent","props":{"text":{"$template":"${id} · ${origin} → ${destination}"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/delayed-meta","value":{"type":"TextContent","props":{"text":{"$template":"ETA: ${eta} · ${carrier} · ${delayReason}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/delayed-status","value":{"type":"Tag","props":{"text":{"$item":"status"},"variant":"danger","size":"sm"},"children":[]}}
+{"op":"add","path":"/elements/delayed-actions","value":{"type":"Button","props":{"label":"Flag shipment","variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":{"$item":"flagged"},"value":true}}},"children":[]}}
 {"op":"add","path":"/state/delayedShipments","value":[]}
-{"op":"add","path":"/state/delayedShipments/0","value":{"id":"shp-1048","reference":"SHP-1048","origin":"Chicago, IL","destination":"Dallas, TX","eta":"Today, 4:30 PM","carrier":"Northstar Freight","delay":"3h 15m","delayReason":"Weather hold"}}
-{"op":"add","path":"/state/delayedShipments/1","value":{"id":"shp-1062","reference":"SHP-1062","origin":"Savannah, GA","destination":"Atlanta, GA","eta":"Tomorrow, 9:00 AM","carrier":"BlueLine Logistics","delay":"5h 40m","delayReason":"Terminal congestion"}}
-{"op":"add","path":"/elements/route-search-panel","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["route-search-header","route-search-form","search-result-note"]}}
-{"op":"add","path":"/elements/route-search-header","value":{"type":"CardHeader","props":{"title":"Find a route","subtitle":"Search active shipments by origin or destination"},"children":[]}}
-{"op":"add","path":"/elements/route-search-form","value":{"type":"Form","props":{"name":"routeSearch","buttons":"route-search-buttons","fields":["route-search-control"]},"children":[]}}
-{"op":"add","path":"/elements/route-search-control","value":{"type":"FormControl","props":{"label":"Route","hint":"Example: Chicago to Dallas","input":"route-search-input"},"children":[]}}
-{"op":"add","path":"/elements/route-search-input","value":{"type":"Input","props":{"name":"routeQuery","placeholder":"Search origin or destination","type":"text","value":{"$bindState":"/routeQuery"}},"children":[]}}
-{"op":"add","path":"/state/routeQuery","value":""}
-{"op":"add","path":"/elements/route-search-buttons","value":{"type":"Buttons","props":{"direction":"row","buttons":["route-search-button"]},"children":[]}}
-{"op":"add","path":"/elements/route-search-button","value":{"type":"Button","props":{"label":"Search routes","variant":"primary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/lastSearch","value":{"$state":"/routeQuery"}}}},"children":[]}}
-{"op":"add","path":"/elements/search-result-note","value":{"type":"TextContent","props":{"text":{"$template":"Search query: ${/lastSearch}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/state/lastSearch","value":"All active routes"}
-{"op":"add","path":"/elements/volume-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["volume-header","volume-chart","carrier-divider","carrier-title","carrier-chart"]}}
-{"op":"add","path":"/elements/volume-header","value":{"type":"CardHeader","props":{"title":"Weekly shipment volume","subtitle":"Past two months"},"children":[]}}
-{"op":"add","path":"/elements/volume-chart","value":{"type":"LineChart","props":{"labels":["Jun 24","Jul 1","Jul 8","Jul 15","Jul 22","Jul 29","Aug 5","Aug 12"],"series":["weekly-volume-series"],"variant":"natural","xLabel":"Week","yLabel":"Shipments"},"children":[]}}
-{"op":"add","path":"/elements/weekly-volume-series","value":{"type":"Series","props":{"category":"Shipments","values":[184,201,196,218,225,211,238,229]},"children":[]}}
-{"op":"add","path":"/elements/carrier-divider","value":{"type":"Separator","props":{"orientation":"horizontal","decorative":true},"children":[]}}
-{"op":"add","path":"/elements/carrier-title","value":{"type":"Heading","props":{"text":"Volume split by carrier","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/carrier-chart","value":{"type":"PieChart","props":{"labels":["Northstar Freight","BlueLine Logistics","Pioneer Transport","Atlas Express"],"values":[38,27,21,14],"variant":"donut","appearance":"circular"},"children":[]}}
-{"op":"add","path":"/elements/shipments-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["shipments-header","shipment-list"]}}
-{"op":"add","path":"/elements/shipments-header","value":{"type":"CardHeader","props":{"title":"Shipments in transit","subtitle":"Current active loads with route, ETA, and operational status"},"children":[]}}
-{"op":"add","path":"/elements/shipment-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"repeat":{"statePath":"/shipments","key":"id"},"children":["shipment-card"]}}
-{"op":"add","path":"/elements/shipment-card","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center","gap":"m","wrap":true},"children":["shipment-details","shipment-status-area","shipment-flag-button"]}}
-{"op":"add","path":"/elements/shipment-details","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["shipment-reference","shipment-route","shipment-carrier"]}}
-{"op":"add","path":"/elements/shipment-reference","value":{"type":"TextContent","props":{"text":{"$template":"${reference}"},"size":"large-heavy"},"children":[]}}
-{"op":"add","path":"/elements/shipment-route","value":{"type":"TextContent","props":{"text":{"$template":"${origin} → ${destination}"},"size":"default"},"children":[]}}
-{"op":"add","path":"/elements/shipment-carrier","value":{"type":"TextContent","props":{"text":{"$template":"${carrier} · ${mode}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/shipment-status-area","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs","align":"end"},"children":["shipment-eta","shipment-status"]}}
-{"op":"add","path":"/elements/shipment-eta","value":{"type":"TextContent","props":{"text":{"$template":"ETA: ${eta}"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/shipment-status","value":{"type":"Tag","props":{"text":{"$item":"status"},"variant":{"$cond":{"$state":"/flaggedShipmentId","eq":{"$item":"id"}},"$then":"danger","$else":"info"},"size":"md"},"children":[]}}
-{"op":"add","path":"/elements/shipment-flag-button","value":{"type":"Button","props":{"label":{"$cond":{"$state":"/flaggedShipmentId","eq":{"$item":"id"}},"$then":"Flagged","$else":"Flag shipment"},"variant":"secondary","type":"normal","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/flaggedShipmentId","value":{"$item":"id"}}}},"children":[]}}
-{"op":"add","path":"/state/flaggedShipmentId","value":""}
+{"op":"add","path":"/state/delayedShipments/0","value":{"id":"SH-4821","origin":"Chicago, IL","destination":"Dallas, TX","eta":"Today, 3:30 PM","carrier":"NorthStar Freight","status":"Delayed · 4h","delayReason":"Severe weather","flagged":false}}
+{"op":"add","path":"/state/delayedShipments/1","value":{"id":"SH-4837","origin":"Long Beach, CA","destination":"Phoenix, AZ","eta":"Tomorrow, 10:00 AM","carrier":"Pacific Linehaul","status":"Delayed · 1 day","delayReason":"Terminal congestion","flagged":false}}
+{"op":"add","path":"/elements/transit-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["transit-header","transit-list"]}}
+{"op":"add","path":"/elements/transit-header","value":{"type":"Heading","props":{"text":"Shipments in transit","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/transit-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/shipments","key":"id"},"children":["shipment-row"]}}
+{"op":"add","path":"/elements/shipment-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center","gap":"m","wrap":true},"children":["shipment-details","shipment-right"]}}
+{"op":"add","path":"/elements/shipment-details","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["shipment-route","shipment-eta","shipment-carrier"]}}
+{"op":"add","path":"/elements/shipment-route","value":{"type":"TextContent","props":{"text":{"$template":"${id} · ${origin} → ${destination}"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/shipment-eta","value":{"type":"TextContent","props":{"text":{"$template":"ETA: ${eta}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/shipment-carrier","value":{"type":"TextContent","props":{"text":{"$template":"Carrier: ${carrier}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/shipment-right","value":{"type":"Card","props":{"variant":"clear","direction":"row","align":"center","gap":"s"},"children":["shipment-status","shipment-flag"]}}
+{"op":"add","path":"/elements/shipment-status","value":{"type":"Tag","props":{"text":{"$item":"status"},"variant":{"$cond":{"$state":"/placeholder","eq":"unused"},"$then":"danger","$else":"info"},"size":"sm"},"children":[]}}
+{"op":"add","path":"/state/placeholder","value":"active"}
+{"op":"add","path":"/elements/shipment-flag","value":{"type":"Button","props":{"label":{"$cond":{"$item":"flagged"},"$then":"Flagged","$else":"Flag"},"variant":"tertiary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":{"$item":"flagged"},"value":true}}},"children":[]}}
 {"op":"add","path":"/state/shipments","value":[]}
-{"op":"add","path":"/state/shipments/0","value":{"id":"shp-1041","reference":"SHP-1041","origin":"Los Angeles, CA","destination":"Phoenix, AZ","eta":"Today, 2:15 PM","status":"On schedule","carrier":"Atlas Express","mode":"FTL"}}
-{"op":"add","path":"/state/shipments/1","value":{"id":"shp-1048","reference":"SHP-1048","origin":"Chicago, IL","destination":"Dallas, TX","eta":"Today, 4:30 PM","status":"Delayed","carrier":"Northstar Freight","mode":"FTL"}}
-{"op":"add","path":"/state/shipments/2","value":{"id":"shp-1055","reference":"SHP-1055","origin":"Newark, NJ","destination":"Boston, MA","eta":"Today, 6:00 PM","status":"On schedule","carrier":"BlueLine Logistics","mode":"LTL"}}
-{"op":"add","path":"/state/shipments/3","value":{"id":"shp-1062","reference":"SHP-1062","origin":"Savannah, GA","destination":"Atlanta, GA","eta":"Tomorrow, 9:00 AM","status":"Delayed","carrier":"BlueLine Logistics","mode":"FTL"}}
-{"op":"add","path":"/state/shipments/4","value":{"id":"shp-1067","reference":"SHP-1067","origin":"Denver, CO","destination":"Salt Lake City, UT","eta":"Tomorrow, 11:45 AM","status":"On schedule","carrier":"Pioneer Transport","mode":"FTL"}}
+{"op":"add","path":"/state/shipments/0","value":{"id":"SH-4812","origin":"Seattle, WA","destination":"Denver, CO","eta":"Today, 1:15 PM","carrier":"NorthStar Freight","status":"On schedule","flagged":false}}
+{"op":"add","path":"/state/shipments/1","value":{"id":"SH-4819","origin":"Atlanta, GA","destination":"Nashville, TN","eta":"Today, 6:45 PM","carrier":"Blue Ridge Logistics","status":"On schedule","flagged":false}}
+{"op":"add","path":"/state/shipments/2","value":{"id":"SH-4825","origin":"Newark, NJ","destination":"Boston, MA","eta":"Tomorrow, 8:00 AM","carrier":"Atlantic Express","status":"On schedule","flagged":true}}
+{"op":"add","path":"/state/shipments/3","value":{"id":"SH-4831","origin":"Houston, TX","destination":"Orlando, FL","eta":"Tomorrow, 4:20 PM","carrier":"GulfStream Transport","status":"At transfer hub","flagged":false}}
+{"op":"add","path":"/elements/analytics-section","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","wrap":true},"children":["carrier-volume-card","weekly-volume-card"]}}
+{"op":"add","path":"/elements/carrier-volume-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["carrier-volume-heading","carrier-volume-chart"]}}
+{"op":"add","path":"/elements/carrier-volume-heading","value":{"type":"Heading","props":{"text":"Volume split by carrier","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/carrier-volume-chart","value":{"type":"PieChart","props":{"labels":{"$state":"/carrierVolume/labels"},"values":{"$state":"/carrierVolume/values"},"variant":"donut","appearance":"circular"},"children":[]}}
+{"op":"add","path":"/state/carrierVolume","value":{"labels":["NorthStar Freight","Pacific Linehaul","Blue Ridge Logistics","Atlantic Express","Other carriers"],"values":[32,24,18,15,11]}}
+{"op":"add","path":"/elements/weekly-volume-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["weekly-volume-heading","weekly-volume-chart","weekly-volume-series"]}}
+{"op":"add","path":"/elements/weekly-volume-heading","value":{"type":"Heading","props":{"text":"Weekly shipment volume · past 2 months","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/weekly-volume-chart","value":{"type":"LineChart","props":{"labels":{"$state":"/weeklyVolume/labels"},"series":["weekly-volume-series"],"variant":"natural","xLabel":"Week","yLabel":"Shipments"},"children":[]}}
+{"op":"add","path":"/elements/weekly-volume-series","value":{"type":"Series","props":{"category":"Shipment volume","values":{"$state":"/weeklyVolume/values"}},"children":[]}}
+{"op":"add","path":"/state/weeklyVolume","value":{"labels":["Jun 29","Jul 6","Jul 13","Jul 20","Jul 27","Aug 3","Aug 10","Aug 17"],"values":[116,123,119,131,127,138,142,135]}}

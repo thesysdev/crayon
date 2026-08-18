@@ -1,6 +1,534 @@
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"service-health-oncall","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#2563EB","agentDisplayName":"Service Health"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#2563EB",
+      "agentDisplayName": "Service Health"
+    }
+  }
+}
 </a2ui-json>
+
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"service-health-oncall","components":[{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["header","region-form","metrics-row","usage-card","incidents-card","endpoints-card","threshold-card"]},{"id":"header","component":"Card","variant":"clear","direction":"column","gap":"xs","children":["title","subtitle"]},{"id":"title","component":"Heading","text":"Service health","level":"h1"},{"id":"subtitle","component":"TextContent","text":"On-call overview · Updated just now","size":"small"},{"id":"region-form","component":"Form","name":"region-filter","fields":["region-control"],"buttons":"region-buttons"},{"id":"region-control","component":"FormControl","label":"Region","input":"region-select","hint":"Narrow all health metrics and incidents to one region."},{"id":"region-select","component":"Select","name":"region","items":["region-all","region-use1","region-usw2","region-euw1","region-apse1"],"value":"all","size":"medium"},{"id":"region-all","component":"SelectItem","value":"all","label":"All regions"},{"id":"region-use1","component":"SelectItem","value":"us-east-1","label":"US East (N. Virginia)"},{"id":"region-usw2","component":"SelectItem","value":"us-west-2","label":"US West (Oregon)"},{"id":"region-euw1","component":"SelectItem","value":"eu-west-1","label":"EU West (Ireland)"},{"id":"region-apse1","component":"SelectItem","value":"ap-southeast-1","label":"Asia Pacific (Singapore)"},{"id":"region-buttons","component":"Buttons","buttons":["region-apply"],"direction":"row"},{"id":"region-apply","component":"Button","label":"Apply region","variant":"secondary","size":"small","action":[{"type":"submit","form":"region-filter"}]},{"id":"metrics-row","component":"Card","variant":"clear","direction":"row","gap":"m","wrap":true,"children":["uptime-card","error-card"]},{"id":"uptime-card","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["uptime-label","uptime-value","uptime-progress"]},{"id":"uptime-label","component":"TextContent","text":"Uptime this quarter","size":"small-heavy"},{"id":"uptime-value","component":"Heading","text":"99.982%","level":"h2"},{"id":"uptime-progress","component":"Progress","value":99.982,"label":"Quarterly uptime"},{"id":"error-card","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["error-label","error-value","error-status"]},{"id":"error-label","component":"TextContent","text":"Error rate right now","size":"small-heavy"},{"id":"error-value","component":"Heading","text":"1.84%","level":"h2"},{"id":"error-status","component":"Tag","text":"Elevated · +0.62% vs baseline","variant":"warning","size":"md"},{"id":"usage-card","component":"Card","variant":"card","direction":"column","gap":"m","children":["usage-header","usage-tabs"]},{"id":"usage-header","component":"CardHeader","title":"Resource usage · past 24 hours","subtitle":"Five-minute averages across the selected region"},{"id":"usage-tabs","component":"Tabs","items":["cpu-tab","memory-tab"]},{"id":"cpu-tab","component":"TabItem","value":"cpu","trigger":"CPU","content":["cpu-chart"]},{"id":"memory-tab","component":"TabItem","value":"memory","trigger":"Memory","content":["memory-chart"]},{"id":"cpu-chart","component":"AreaChart","labels":["00:00","02:00","04:00","06:00","08:00","10:00","12:00","14:00","16:00","18:00","20:00","22:00","Now"],"series":["cpu-series"],"variant":"natural","xLabel":"Time","yLabel":"CPU %"},{"id":"cpu-series","component":"Series","category":"CPU usage","values":[38,35,32,36,49,61,68,72,65,74,70,62,58]},{"id":"memory-chart","component":"AreaChart","labels":["00:00","02:00","04:00","06:00","08:00","10:00","12:00","14:00","16:00","18:00","20:00","22:00","Now"],"series":["memory-series"],"variant":"natural","xLabel":"Time","yLabel":"Memory %"},{"id":"memory-series","component":"Series","category":"Memory usage","values":[57,56,55,55,58,61,64,67,69,71,70,68,66]},{"id":"incidents-card","component":"Card","variant":"card","direction":"column","gap":"m","children":["incidents-header","incidents-table","ack-dialog"]},{"id":"incidents-header","component":"CardHeader","title":"Open incidents","subtitle":"3 active incidents · Select Acknowledge to take ownership"},{"id":"incidents-table","component":"Table","columns":["incident-id-col","incident-severity-col","incident-summary-col","incident-region-col","incident-age-col"]},{"id":"incident-id-col","component":"Col","label":"Incident","data":["INC-2481","INC-2479","INC-2476"],"type":"string"},{"id":"incident-severity-col","component":"Col","label":"Severity","data":["SEV-1 Critical","SEV-2 High","SEV-3 Moderate"],"type":"string"},{"id":"incident-summary-col","component":"Col","label":"Summary","data":["Checkout API elevated errors","Queue processing delay","Search replica lag"],"type":"string"},{"id":"incident-region-col","component":"Col","label":"Region","data":["us-east-1","eu-west-1","us-west-2"],"type":"string"},{"id":"incident-age-col","component":"Col","label":"Open for","data":["18 min","41 min","1 hr 12 min"],"type":"string"},{"id":"ack-dialog","component":"DialogBlock","triggerLabel":"Acknowledge an incident","title":"Acknowledge incident","description":"Choose the incident you are taking ownership of.","content":["ack-form"],"triggerVariant":"default"},{"id":"ack-form","component":"Form","name":"acknowledge-incident","fields":["ack-incident-control","ack-note-control"],"buttons":"ack-buttons"},{"id":"ack-incident-control","component":"FormControl","label":"Incident","input":"ack-incident-select"},{"id":"ack-incident-select","component":"Select","name":"incidentId","items":["ack-inc-2481","ack-inc-2479","ack-inc-2476"],"placeholder":"Select an open incident","size":"medium"},{"id":"ack-inc-2481","component":"SelectItem","value":"INC-2481","label":"INC-2481 · SEV-1 · Checkout API elevated errors"},{"id":"ack-inc-2479","component":"SelectItem","value":"INC-2479","label":"INC-2479 · SEV-2 · Queue processing delay"},{"id":"ack-inc-2476","component":"SelectItem","value":"INC-2476","label":"INC-2476 · SEV-3 · Search replica lag"},{"id":"ack-note-control","component":"FormControl","label":"Handoff note","input":"ack-note","hint":"Optional note for the incident timeline."},{"id":"ack-note","component":"TextArea","name":"note","placeholder":"Investigating now…","rows":3},{"id":"ack-buttons","component":"Buttons","buttons":["ack-submit","ack-cancel"],"direction":"row"},{"id":"ack-submit","component":"Button","label":"Acknowledge incident","variant":"primary","size":"medium","action":[{"type":"submit","form":"acknowledge-incident"}]},{"id":"ack-cancel","component":"Button","label":"Cancel","variant":"tertiary","size":"medium"},{"id":"endpoints-card","component":"Card","variant":"card","direction":"column","gap":"m","children":["endpoints-header","endpoints-chart","endpoints-table"]},{"id":"endpoints-header","component":"CardHeader","title":"Five slowest endpoints","subtitle":"p95 latency over the last 15 minutes"},{"id":"endpoints-chart","component":"HorizontalBarChart","labels":["POST /v1/checkout","GET /v1/search","POST /v1/reports","GET /v1/orders/:id","GET /v1/catalog"],"series":["latency-series"],"variant":"grouped","xLabel":"Latency (ms)","yLabel":"Endpoint"},{"id":"latency-series","component":"Series","category":"p95 latency","values":[1840,1320,1185,940,810]},{"id":"endpoints-table","component":"Table","columns":["endpoint-col","latency-col"]},{"id":"endpoint-col","component":"Col","label":"Endpoint","data":["POST /v1/checkout","GET /v1/search","POST /v1/reports","GET /v1/orders/:id","GET /v1/catalog"],"type":"string"},{"id":"latency-col","component":"Col","label":"p95 latency","data":["1,840 ms","1,320 ms","1,185 ms","940 ms","810 ms"],"type":"string"},{"id":"threshold-card","component":"Card","variant":"card","direction":"column","gap":"m","children":["threshold-header","threshold-form"]},{"id":"threshold-header","component":"CardHeader","title":"Alert threshold","subtitle":"Configure when the on-call engineer should be notified."},{"id":"threshold-form","component":"Form","name":"alert-threshold","fields":["threshold-metric-control","threshold-value-control","threshold-window-control"],"buttons":"threshold-buttons"},{"id":"threshold-metric-control","component":"FormControl","label":"Metric","input":"threshold-metric"},{"id":"threshold-metric","component":"Select","name":"metric","items":["metric-error","metric-cpu","metric-memory","metric-latency"],"value":"error-rate","size":"medium"},{"id":"metric-error","component":"SelectItem","value":"error-rate","label":"Error rate (%)"},{"id":"metric-cpu","component":"SelectItem","value":"cpu","label":"CPU usage (%)"},{"id":"metric-memory","component":"SelectItem","value":"memory","label":"Memory usage (%)"},{"id":"metric-latency","component":"SelectItem","value":"latency","label":"p95 latency (ms)"},{"id":"threshold-value-control","component":"FormControl","label":"Threshold value","input":"threshold-value","hint":"Alert when the selected metric exceeds this value."},{"id":"threshold-value","component":"Input","name":"thresholdValue","type":"number","placeholder":"2.0","value":"2.0"},{"id":"threshold-window-control","component":"FormControl","label":"Evaluation window","input":"threshold-window"},{"id":"threshold-window","component":"Select","name":"window","items":["window-5","window-10","window-15","window-30"],"value":"5m","size":"medium"},{"id":"window-5","component":"SelectItem","value":"5m","label":"5 minutes"},{"id":"window-10","component":"SelectItem","value":"10m","label":"10 minutes"},{"id":"window-15","component":"SelectItem","value":"15m","label":"15 minutes"},{"id":"window-30","component":"SelectItem","value":"30m","label":"30 minutes"},{"id":"threshold-buttons","component":"Buttons","buttons":["threshold-save"],"direction":"row"},{"id":"threshold-save","component":"Button","label":"Save alert threshold","variant":"primary","size":"medium","action":[{"type":"submit","form":"alert-threshold"}]}]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "regionForm",
+          "healthSummary",
+          "resourceHeading",
+          "resourceChart",
+          "incidentsHeading",
+          "incidentsAlert",
+          "incidentsTable",
+          "acknowledgeForm",
+          "endpointsHeading",
+          "endpointsTable",
+          "thresholdHeading",
+          "thresholdForm"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "On-call service health",
+        "subtitle": "Live operational view · resource history covers the past 24 hours"
+      },
+      {
+        "id": "regionForm",
+        "component": "Form",
+        "name": "region-filter",
+        "buttons": "regionButtons",
+        "fields": [
+          "regionField"
+        ]
+      },
+      {
+        "id": "regionButtons",
+        "component": "Buttons",
+        "buttons": [
+          "applyRegionButton"
+        ]
+      },
+      {
+        "id": "applyRegionButton",
+        "component": "Button",
+        "label": "Apply region",
+        "variant": "secondary",
+        "size": "small"
+      },
+      {
+        "id": "regionField",
+        "component": "FormControl",
+        "label": "Region",
+        "input": "regionSelect",
+        "hint": "Narrow every metric and incident to one region"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region",
+        "items": [
+          "regionAll",
+          "regionUSEast",
+          "regionUSWest",
+          "regionEUWest",
+          "regionAPSE"
+        ],
+        "value": "all",
+        "size": "medium"
+      },
+      {
+        "id": "regionAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All regions"
+      },
+      {
+        "id": "regionUSEast",
+        "component": "SelectItem",
+        "value": "us-east-1",
+        "label": "US East (us-east-1)"
+      },
+      {
+        "id": "regionUSWest",
+        "component": "SelectItem",
+        "value": "us-west-2",
+        "label": "US West (us-west-2)"
+      },
+      {
+        "id": "regionEUWest",
+        "component": "SelectItem",
+        "value": "eu-west-1",
+        "label": "EU West (eu-west-1)"
+      },
+      {
+        "id": "regionAPSE",
+        "component": "SelectItem",
+        "value": "ap-southeast-1",
+        "label": "Asia Pacific (ap-southeast-1)"
+      },
+      {
+        "id": "healthSummary",
+        "component": "Table",
+        "columns": [
+          "healthMetric",
+          "healthValue",
+          "healthStatus"
+        ]
+      },
+      {
+        "id": "healthMetric",
+        "component": "Col",
+        "label": "Current health",
+        "data": [
+          "Uptime this quarter",
+          "Error rate right now"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "healthValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "99.982%",
+          "1.37%"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "healthStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Within 99.95% SLO",
+          "Elevated"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "resourceHeading",
+        "component": "Heading",
+        "text": "CPU and memory usage · past 24 hours",
+        "level": "h2"
+      },
+      {
+        "id": "resourceChart",
+        "component": "LineChart",
+        "labels": [
+          "00:00",
+          "03:00",
+          "06:00",
+          "09:00",
+          "12:00",
+          "15:00",
+          "18:00",
+          "21:00",
+          "Now"
+        ],
+        "series": [
+          "cpuSeries",
+          "memorySeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Time",
+        "yLabel": "Utilization (%)"
+      },
+      {
+        "id": "cpuSeries",
+        "component": "Series",
+        "category": "CPU",
+        "values": [
+          42,
+          38,
+          35,
+          57,
+          64,
+          61,
+          73,
+          68,
+          71
+        ]
+      },
+      {
+        "id": "memorySeries",
+        "component": "Series",
+        "category": "Memory",
+        "values": [
+          61,
+          60,
+          58,
+          63,
+          67,
+          69,
+          72,
+          74,
+          76
+        ]
+      },
+      {
+        "id": "incidentsHeading",
+        "component": "Heading",
+        "text": "Open incidents",
+        "level": "h2"
+      },
+      {
+        "id": "incidentsAlert",
+        "component": "Alert",
+        "title": "3 incidents require attention",
+        "description": "One critical incident is actively affecting checkout traffic.",
+        "variant": "warning"
+      },
+      {
+        "id": "incidentsTable",
+        "component": "Table",
+        "columns": [
+          "incidentId",
+          "incidentSummary",
+          "incidentSeverity",
+          "incidentRegion",
+          "incidentAge"
+        ]
+      },
+      {
+        "id": "incidentId",
+        "component": "Col",
+        "label": "Incident",
+        "data": [
+          "INC-2481",
+          "INC-2479",
+          "INC-2476"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "incidentSummary",
+        "component": "Col",
+        "label": "Summary",
+        "data": [
+          "Checkout timeouts",
+          "Delayed event processing",
+          "Elevated authentication latency"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "incidentSeverity",
+        "component": "Col",
+        "label": "Severity",
+        "data": [
+          "SEV-1 Critical",
+          "SEV-2 High",
+          "SEV-3 Moderate"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "incidentRegion",
+        "component": "Col",
+        "label": "Region",
+        "data": [
+          "us-east-1",
+          "eu-west-1",
+          "us-west-2"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "incidentAge",
+        "component": "Col",
+        "label": "Open for",
+        "data": [
+          "18 min",
+          "42 min",
+          "1 hr 12 min"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "acknowledgeForm",
+        "component": "Form",
+        "name": "acknowledge-incident",
+        "buttons": "acknowledgeButtons",
+        "fields": [
+          "incidentChoiceField"
+        ]
+      },
+      {
+        "id": "acknowledgeButtons",
+        "component": "Buttons",
+        "buttons": [
+          "acknowledgeButton"
+        ]
+      },
+      {
+        "id": "acknowledgeButton",
+        "component": "Button",
+        "label": "Acknowledge incident",
+        "variant": "primary"
+      },
+      {
+        "id": "incidentChoiceField",
+        "component": "FormControl",
+        "label": "Incident to acknowledge",
+        "input": "incidentChoice"
+      },
+      {
+        "id": "incidentChoice",
+        "component": "Select",
+        "name": "incident_id",
+        "items": [
+          "incident2481",
+          "incident2479",
+          "incident2476"
+        ],
+        "placeholder": "Select an open incident"
+      },
+      {
+        "id": "incident2481",
+        "component": "SelectItem",
+        "value": "INC-2481",
+        "label": "INC-2481 · SEV-1 · Checkout timeouts"
+      },
+      {
+        "id": "incident2479",
+        "component": "SelectItem",
+        "value": "INC-2479",
+        "label": "INC-2479 · SEV-2 · Delayed event processing"
+      },
+      {
+        "id": "incident2476",
+        "component": "SelectItem",
+        "value": "INC-2476",
+        "label": "INC-2476 · SEV-3 · Authentication latency"
+      },
+      {
+        "id": "endpointsHeading",
+        "component": "Heading",
+        "text": "Five slowest endpoints",
+        "level": "h2"
+      },
+      {
+        "id": "endpointsTable",
+        "component": "Table",
+        "columns": [
+          "endpointRank",
+          "endpointPath",
+          "endpointLatency"
+        ]
+      },
+      {
+        "id": "endpointRank",
+        "component": "Col",
+        "label": "Rank",
+        "data": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "type": "number"
+      },
+      {
+        "id": "endpointPath",
+        "component": "Col",
+        "label": "Endpoint",
+        "data": [
+          "POST /v1/checkout",
+          "GET /v1/reports/export",
+          "POST /v1/search",
+          "GET /v1/orders/:id",
+          "POST /v1/auth/token"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "endpointLatency",
+        "component": "Col",
+        "label": "p95 latency",
+        "data": [
+          "2,840 ms",
+          "2,310 ms",
+          "1,920 ms",
+          "1,470 ms",
+          "1,180 ms"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "thresholdHeading",
+        "component": "Heading",
+        "text": "Alert threshold",
+        "level": "h2"
+      },
+      {
+        "id": "thresholdForm",
+        "component": "Form",
+        "name": "alert-threshold",
+        "buttons": "thresholdButtons",
+        "fields": [
+          "metricField",
+          "thresholdField",
+          "windowField"
+        ]
+      },
+      {
+        "id": "thresholdButtons",
+        "component": "Buttons",
+        "buttons": [
+          "saveThresholdButton"
+        ]
+      },
+      {
+        "id": "saveThresholdButton",
+        "component": "Button",
+        "label": "Save alert threshold",
+        "variant": "primary"
+      },
+      {
+        "id": "metricField",
+        "component": "FormControl",
+        "label": "Metric",
+        "input": "metricSelect"
+      },
+      {
+        "id": "metricSelect",
+        "component": "Select",
+        "name": "alert_metric",
+        "items": [
+          "metricError",
+          "metricCPU",
+          "metricMemory",
+          "metricLatency"
+        ],
+        "value": "error_rate"
+      },
+      {
+        "id": "metricError",
+        "component": "SelectItem",
+        "value": "error_rate",
+        "label": "Error rate (%)"
+      },
+      {
+        "id": "metricCPU",
+        "component": "SelectItem",
+        "value": "cpu",
+        "label": "CPU usage (%)"
+      },
+      {
+        "id": "metricMemory",
+        "component": "SelectItem",
+        "value": "memory",
+        "label": "Memory usage (%)"
+      },
+      {
+        "id": "metricLatency",
+        "component": "SelectItem",
+        "value": "latency",
+        "label": "p95 latency (ms)"
+      },
+      {
+        "id": "thresholdField",
+        "component": "FormControl",
+        "label": "Trigger above",
+        "input": "thresholdInput",
+        "hint": "Enter the threshold in the selected metric's unit"
+      },
+      {
+        "id": "thresholdInput",
+        "component": "Input",
+        "name": "threshold_value",
+        "type": "number",
+        "value": "2"
+      },
+      {
+        "id": "windowField",
+        "component": "FormControl",
+        "label": "Evaluation window",
+        "input": "windowSelect"
+      },
+      {
+        "id": "windowSelect",
+        "component": "Select",
+        "name": "evaluation_window",
+        "items": [
+          "window1",
+          "window5",
+          "window15"
+        ],
+        "value": "5m"
+      },
+      {
+        "id": "window1",
+        "component": "SelectItem",
+        "value": "1m",
+        "label": "1 minute"
+      },
+      {
+        "id": "window5",
+        "component": "SelectItem",
+        "value": "5m",
+        "label": "5 minutes"
+      },
+      {
+        "id": "window15",
+        "component": "SelectItem",
+        "value": "15m",
+        "label": "15 minutes"
+      }
+    ]
+  }
+}
 </a2ui-json>

@@ -1,5 +1,193 @@
-Your team lunch poll is ready to vote:
+Here's your team lunch poll — vote for Friday's spot:
 
-<a2ui-json>{"version": "v0.9", "createSurface": {"surfaceId": "team-lunch-poll-friday", "catalogId": "thesys.dev:c1-openui", "theme": {"primaryColor": "#0EA5E9", "agentDisplayName": "Lunch Poll"}}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
 
-<a2ui-json>{"version": "v0.9", "updateComponents": {"surfaceId": "team-lunch-poll-friday", "components": [{"id": "root", "component": "Card", "children": ["headingQuestion", "subHeader", "pollFormCard", "separator1", "resultsHeader", "resultsCard", "calloutInfo", "followUpBlock"], "direction": "column", "gap": "l"}, {"id": "headingQuestion", "component": "Heading", "text": "Where should we go for lunch on Friday?", "level": "h1"}, {"id": "subHeader", "component": "TextContent", "text": "Team lunch poll  •  Friday 12:30 PM  •  12 teammates invited  •  Voting closes Thursday 5 PM", "size": "small"}, {"id": "pollFormCard", "component": "Card", "variant": "card", "children": ["radioGroupLunch", "voteButtons"], "direction": "column", "gap": "m"}, {"id": "radioGroupLunch", "component": "RadioGroup", "name": "lunchVote", "items": ["radioSushi", "radioItalian", "radioBurger"]}, {"id": "radioSushi", "component": "RadioItem", "label": "Sakura Sushi", "description": "Fresh sushi, ramen & bento boxes • $$ • 5 min walk • Great for vegetarians", "value": "sakura_sushi"}, {"id": "radioItalian", "component": "RadioItem", "label": "La Piazza Italian", "description": "Wood-fired pizza & pasta • $$ • 8 min walk • Outdoor patio", "value": "la_piazza"}, {"id": "radioBurger", "component": "RadioItem", "label": "Burger & Brew Co.", "description": "Gourmet burgers, fries & craft beer • $ • 3 min walk • Fast service", "value": "burger_brew"}, {"id": "voteButtons", "component": "Buttons", "buttons": ["voteBtn"], "direction": "row"}, {"id": "voteBtn", "component": "Button", "label": "Cast My Vote", "variant": "primary", "size": "large"}, {"id": "separator1", "component": "Separator", "orientation": "horizontal", "decorative": true}, {"id": "resultsHeader", "component": "Heading", "text": "Live Results — 12 votes so far", "level": "h3"}, {"id": "resultsCard", "component": "Card", "variant": "sunk", "children": ["barChart", "progressSushi", "progressItalian", "progressBurger"], "direction": "column", "gap": "s"}, {"id": "barChart", "component": "BarChart", "labels": ["Sakura Sushi", "La Piazza Italian", "Burger & Brew Co."], "series": ["seriesVotes"], "variant": "grouped", "xLabel": "Restaurant", "yLabel": "Votes"}, {"id": "seriesVotes", "component": "Series", "category": "Votes", "values": [5, 4, 3]}, {"id": "progressSushi", "component": "Progress", "value": 42, "label": "Sakura Sushi — 5 votes (42%)"}, {"id": "progressItalian", "component": "Progress", "value": 33, "label": "La Piazza Italian — 4 votes (33%)"}, {"id": "progressBurger", "component": "Progress", "value": 25, "label": "Burger & Brew Co. — 3 votes (25%)"}, {"id": "calloutInfo", "component": "Callout", "variant": "info", "title": "How voting works", "description": "Select one restaurant and tap 'Cast My Vote'. You can change your vote until Thursday 5 PM. Results update live."}, {"id": "followUpBlock", "component": "FollowUpBlock", "items": ["followUp1", "followUp2"]}, {"id": "followUp1", "component": "FollowUpItem", "text": "Add a restaurant suggestion"}, {"id": "followUp2", "component": "FollowUpItem", "text": "Remind me before voting closes"}]}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "badge",
+          "intro",
+          "voteForm",
+          "separator",
+          "resultsHeading",
+          "resultsChart",
+          "resultsTable",
+          "footerCallout"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Where should we go for lunch on Friday?",
+        "subtitle": "Team lunch poll • Cast your vote by Thursday 5 PM"
+      },
+      {
+        "id": "badge",
+        "component": "Badge",
+        "text": "Voting open • 16 votes so far",
+        "variant": "secondary"
+      },
+      {
+        "id": "intro",
+        "component": "TextContent",
+        "text": "Pick your favorite from the three options below. You can change your vote until the poll closes. Current results are shown at the bottom.",
+        "size": "small"
+      },
+      {
+        "id": "voteForm",
+        "component": "Form",
+        "name": "lunch-poll",
+        "buttons": "formButtons",
+        "fields": [
+          "restaurantControl"
+        ]
+      },
+      {
+        "id": "restaurantControl",
+        "component": "FormControl",
+        "label": "Choose a restaurant",
+        "input": "restaurantRadio",
+        "hint": "Select one option and tap Vote"
+      },
+      {
+        "id": "restaurantRadio",
+        "component": "RadioGroup",
+        "name": "restaurant",
+        "items": [
+          "restaurant1",
+          "restaurant2",
+          "restaurant3"
+        ]
+      },
+      {
+        "id": "restaurant1",
+        "component": "RadioItem",
+        "label": "Sakura Sushi",
+        "description": "Fresh sushi, bento boxes & ramen • $$ • 5 min walk",
+        "value": "sakura"
+      },
+      {
+        "id": "restaurant2",
+        "component": "RadioItem",
+        "label": "La Piazza",
+        "description": "Wood-fired pizza & pasta • $$ • Outdoor patio",
+        "value": "piazza"
+      },
+      {
+        "id": "restaurant3",
+        "component": "RadioItem",
+        "label": "Burger & Brew",
+        "description": "Gourmet burgers & craft beers • $ • Great for groups",
+        "value": "burger"
+      },
+      {
+        "id": "formButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitBtn",
+          "skipBtn"
+        ]
+      },
+      {
+        "id": "submitBtn",
+        "component": "Button",
+        "label": "Vote now",
+        "variant": "primary"
+      },
+      {
+        "id": "skipBtn",
+        "component": "Button",
+        "label": "See results only",
+        "variant": "secondary"
+      },
+      {
+        "id": "separator",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "resultsHeading",
+        "component": "Heading",
+        "text": "Live results",
+        "level": "h3"
+      },
+      {
+        "id": "resultsChart",
+        "component": "BarChart",
+        "labels": [
+          "Sakura Sushi",
+          "La Piazza",
+          "Burger & Brew"
+        ],
+        "series": [
+          "resultsSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Restaurant",
+        "yLabel": "Votes"
+      },
+      {
+        "id": "resultsSeries",
+        "component": "Series",
+        "category": "Votes",
+        "values": [
+          5,
+          8,
+          3
+        ]
+      },
+      {
+        "id": "resultsTable",
+        "component": "Table",
+        "columns": [
+          "colName",
+          "colVotes"
+        ]
+      },
+      {
+        "id": "colName",
+        "component": "Col",
+        "label": "Restaurant",
+        "data": [
+          "Sakura Sushi",
+          "La Piazza",
+          "Burger & Brew"
+        ]
+      },
+      {
+        "id": "colVotes",
+        "component": "Col",
+        "label": "Votes",
+        "data": [
+          "5",
+          "8",
+          "3"
+        ]
+      },
+      {
+        "id": "footerCallout",
+        "component": "TextCallout",
+        "variant": "info",
+        "title": "Poll closes Thursday 5 PM",
+        "description": "Winner will be announced in #team-lunch. Tie? We'll do a quick runoff."
+      }
+    ]
+  }
+}
+</a2ui-json>

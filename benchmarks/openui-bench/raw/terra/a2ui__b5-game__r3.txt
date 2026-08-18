@@ -2,11 +2,11 @@
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "live-ops-command-center",
+    "surfaceId": "main",
     "catalogId": "thesys.dev:c1-openui",
     "theme": {
       "primaryColor": "#7C3AED",
-      "agentDisplayName": "Live Ops Command Center"
+      "agentDisplayName": "Live Ops Command"
     }
   }
 }
@@ -16,7 +16,7 @@
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "live-ops-command-center",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
@@ -25,308 +25,207 @@
         "direction": "column",
         "gap": "l",
         "children": [
-          "page-header",
-          "incident-callout",
-          "kpi-row",
-          "trend-and-commerce",
-          "operations-row",
-          "quality-and-economy",
-          "experiments-and-workflow"
+          "header",
+          "liveAlert",
+          "overview",
+          "sessionChart",
+          "operations",
+          "commerceAndEconomy",
+          "qualityAndExperiments",
+          "workflowActions"
         ]
       },
       {
-        "id": "page-header",
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Live Ops Command Center",
+        "subtitle": "Realmfront Online · Live production telemetry"
+      },
+      {
+        "id": "liveAlert",
+        "component": "Alert",
+        "title": "Live incident watch",
+        "description": "EU West latency is elevated. Monitor the region before scheduling the next event wave.",
+        "variant": "warning"
+      },
+      {
+        "id": "overview",
         "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "justify": "between",
-        "align": "center",
-        "children": [
-          "title-stack",
-          "header-actions"
-        ]
-      },
-      {
-        "id": "title-stack",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "page-title",
-          "page-subtitle"
-        ]
-      },
-      {
-        "id": "page-title",
-        "component": "Heading",
-        "text": "Live Ops Room",
-        "level": "h1"
-      },
-      {
-        "id": "page-subtitle",
-        "component": "TextContent",
-        "text": "Realtime game health, player operations, economy, and release controls • Updated just now",
-        "size": "small"
-      },
-      {
-        "id": "header-actions",
-        "component": "Buttons",
-        "direction": "row",
-        "buttons": [
-          "focus-region-button",
-          "ship-hotfix-button"
-        ]
-      },
-      {
-        "id": "focus-region-button",
-        "component": "DrawerBlock",
-        "triggerLabel": "Focus a region",
-        "title": "Regional Operations Focus",
-        "description": "Select a region to prioritize in the live-ops view.",
-        "content": [
-          "region-focus-copy",
-          "region-focus-options"
-        ]
-      },
-      {
-        "id": "region-focus-copy",
-        "component": "TextContent",
-        "text": "Choose the server region you want to monitor closely. This is useful during incidents, launches, and event peaks."
-      },
-      {
-        "id": "region-focus-options",
-        "component": "RadioGroup",
-        "name": "focused-region",
-        "defaultValue": "global",
-        "items": [
-          "focus-global",
-          "focus-na",
-          "focus-eu",
-          "focus-apac",
-          "focus-sa"
-        ]
-      },
-      {
-        "id": "focus-global",
-        "component": "RadioItem",
-        "label": "Global",
-        "description": "All regions combined",
-        "value": "global"
-      },
-      {
-        "id": "focus-na",
-        "component": "RadioItem",
-        "label": "North America",
-        "description": "US and Canada clusters",
-        "value": "na"
-      },
-      {
-        "id": "focus-eu",
-        "component": "RadioItem",
-        "label": "Europe",
-        "description": "EU West and EU Central clusters",
-        "value": "eu"
-      },
-      {
-        "id": "focus-apac",
-        "component": "RadioItem",
-        "label": "Asia Pacific",
-        "description": "Japan, Korea, and Singapore clusters",
-        "value": "apac"
-      },
-      {
-        "id": "focus-sa",
-        "component": "RadioItem",
-        "label": "South America",
-        "description": "Brazil cluster",
-        "value": "sa"
-      },
-      {
-        "id": "ship-hotfix-button",
-        "component": "AlertDialogBlock",
-        "triggerLabel": "Ship hotfix",
-        "title": "Deploy emergency hotfix?",
-        "description": "This begins a staged deployment to 10% of players, with automatic rollback if crash rate or latency thresholds are exceeded.",
-        "confirmLabel": "Start staged rollout",
-        "cancelLabel": "Cancel",
-        "triggerVariant": "destructive"
-      },
-      {
-        "id": "incident-callout",
-        "component": "Callout",
-        "variant": "warning",
-        "title": "APAC latency elevated",
-        "description": "Median matchmaking latency is 18% above baseline in APAC. No player-impacting outage detected."
-      },
-      {
-        "id": "kpi-row",
-        "component": "Card",
-        "variant": "clear",
+        "variant": "card",
         "direction": "row",
         "gap": "m",
         "wrap": true,
         "children": [
-          "online-kpi",
-          "active-kpi",
-          "revenue-kpi",
-          "rpu-kpi"
+          "onlineKpi",
+          "dailyActiveKpi",
+          "monthlyActiveKpi",
+          "revenueTodayKpi",
+          "rpuKpi"
         ]
       },
       {
-        "id": "online-kpi",
+        "id": "onlineKpi",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
+        "variant": "sunk",
         "children": [
-          "online-label",
-          "online-value",
-          "online-status"
-        ]
+          "onlineLabel",
+          "onlineValue",
+          "onlineStatus"
+        ],
+        "weight": 1
       },
       {
-        "id": "online-label",
+        "id": "onlineLabel",
         "component": "TextContent",
         "text": "Players online now",
         "size": "small"
       },
       {
-        "id": "online-value",
+        "id": "onlineValue",
         "component": "Heading",
-        "text": "184,260",
+        "text": "184,290",
         "level": "h2"
       },
       {
-        "id": "online-status",
-        "component": "Tag",
-        "text": "+6.8% vs. last hour",
-        "variant": "success",
-        "size": "sm"
+        "id": "onlineStatus",
+        "component": "Badge",
+        "text": "+8.4% vs. last hour",
+        "variant": "secondary"
       },
       {
-        "id": "active-kpi",
+        "id": "dailyActiveKpi",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
+        "variant": "sunk",
         "children": [
-          "active-label",
-          "dau-value",
-          "mau-value"
-        ]
+          "dailyActiveLabel",
+          "dailyActiveValue",
+          "dailyActiveStatus"
+        ],
+        "weight": 1
       },
       {
-        "id": "active-label",
+        "id": "dailyActiveLabel",
         "component": "TextContent",
-        "text": "Active players",
+        "text": "Daily active players",
         "size": "small"
       },
       {
-        "id": "dau-value",
-        "component": "TextContent",
-        "text": "DAU  •  1.42M",
-        "size": "large-heavy"
+        "id": "dailyActiveValue",
+        "component": "Heading",
+        "text": "1.26M",
+        "level": "h2"
       },
       {
-        "id": "mau-value",
-        "component": "TextContent",
-        "text": "MAU  •  12.8M",
-        "size": "default"
+        "id": "dailyActiveStatus",
+        "component": "Badge",
+        "text": "+4.1% day over day",
+        "variant": "secondary"
       },
       {
-        "id": "revenue-kpi",
+        "id": "monthlyActiveKpi",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
+        "variant": "sunk",
         "children": [
-          "revenue-label",
-          "revenue-value",
-          "revenue-status"
-        ]
+          "monthlyActiveLabel",
+          "monthlyActiveValue",
+          "monthlyActiveStatus"
+        ],
+        "weight": 1
       },
       {
-        "id": "revenue-label",
+        "id": "monthlyActiveLabel",
+        "component": "TextContent",
+        "text": "Monthly active players",
+        "size": "small"
+      },
+      {
+        "id": "monthlyActiveValue",
+        "component": "Heading",
+        "text": "8.74M",
+        "level": "h2"
+      },
+      {
+        "id": "monthlyActiveStatus",
+        "component": "Badge",
+        "text": "+6.7% month over month",
+        "variant": "secondary"
+      },
+      {
+        "id": "revenueTodayKpi",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "revenueTodayLabel",
+          "revenueTodayValue",
+          "revenueTodayStatus"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "revenueTodayLabel",
         "component": "TextContent",
         "text": "Revenue today",
         "size": "small"
       },
       {
-        "id": "revenue-value",
+        "id": "revenueTodayValue",
         "component": "Heading",
-        "text": "$428,760",
+        "text": "$428,650",
         "level": "h2"
       },
       {
-        "id": "revenue-status",
-        "component": "Tag",
-        "text": "+11.2% vs. daily baseline",
-        "variant": "success",
-        "size": "sm"
+        "id": "revenueTodayStatus",
+        "component": "Badge",
+        "text": "73% of daily target",
+        "variant": "secondary"
       },
       {
-        "id": "rpu-kpi",
+        "id": "rpuKpi",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
+        "variant": "sunk",
         "children": [
-          "rpu-label",
-          "rpu-value",
-          "rpu-detail"
-        ]
+          "rpuLabel",
+          "rpuValue",
+          "rpuStatus"
+        ],
+        "weight": 1
       },
       {
-        "id": "rpu-label",
+        "id": "rpuLabel",
         "component": "TextContent",
         "text": "Revenue per user",
         "size": "small"
       },
       {
-        "id": "rpu-value",
+        "id": "rpuValue",
         "component": "Heading",
-        "text": "$0.30",
+        "text": "$0.34",
         "level": "h2"
       },
       {
-        "id": "rpu-detail",
-        "component": "TextContent",
-        "text": "Per daily active player • +3.1%",
-        "size": "small"
+        "id": "rpuStatus",
+        "component": "Badge",
+        "text": "+2.9% vs. 7-day avg",
+        "variant": "secondary"
       },
       {
-        "id": "trend-and-commerce",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "gap": "m",
-        "align": "stretch",
-        "children": [
-          "session-card",
-          "best-sellers-card"
-        ]
-      },
-      {
-        "id": "session-card",
+        "id": "sessionChart",
         "component": "Card",
         "variant": "card",
-        "direction": "column",
-        "gap": "s",
         "children": [
-          "session-header",
-          "session-chart",
-          "session-note"
+          "sessionHeader",
+          "sessionLengthChart",
+          "sessionSeries"
         ]
       },
       {
-        "id": "session-header",
+        "id": "sessionHeader",
         "component": "CardHeader",
-        "title": "Session length",
-        "subtitle": "Average minutes per session • Past 14 days"
+        "title": "Average session length",
+        "subtitle": "Past two weeks · minutes per player"
       },
       {
-        "id": "session-chart",
+        "id": "sessionLengthChart",
         "component": "LineChart",
         "labels": [
           "Aug 5",
@@ -345,626 +244,590 @@
           "Today"
         ],
         "series": [
-          "session-series"
+          "sessionSeries"
         ],
         "variant": "natural",
+        "xLabel": "Date",
         "yLabel": "Minutes"
       },
       {
-        "id": "session-series",
+        "id": "sessionSeries",
         "component": "Series",
-        "category": "Average session length",
+        "category": "Session length",
         "values": [
-          31.4,
-          31.8,
-          32.1,
-          31.7,
-          32.5,
-          33.2,
-          32.9,
-          33.6,
-          34.1,
-          33.8,
-          34.5,
-          35.0,
-          34.7,
-          35.2
+          36.2,
+          36.8,
+          37.1,
+          36.5,
+          38.4,
+          39.2,
+          38.7,
+          40.1,
+          41.3,
+          40.8,
+          42.0,
+          41.6,
+          42.7,
+          43.1
         ]
       },
       {
-        "id": "session-note",
-        "component": "TextContent",
-        "text": "35.2 min today • +2.4 min versus the prior two-week average",
-        "size": "small"
-      },
-      {
-        "id": "best-sellers-card",
+        "id": "operations",
         "component": "Card",
         "variant": "card",
-        "direction": "column",
-        "gap": "s",
+        "direction": "row",
+        "gap": "l",
+        "wrap": true,
         "children": [
-          "best-sellers-header",
-          "best-sellers-table"
+          "regionPanel",
+          "eventsPanel",
+          "moderationPanel"
         ]
       },
       {
-        "id": "best-sellers-header",
-        "component": "CardHeader",
-        "title": "Best-selling items",
-        "subtitle": "Units sold today"
+        "id": "regionPanel",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "regionHeader",
+          "regionTable",
+          "regionNameCol",
+          "regionHealthCol",
+          "regionLatencyCol",
+          "regionActions"
+        ],
+        "weight": 2
       },
       {
-        "id": "best-sellers-table",
+        "id": "regionHeader",
+        "component": "CardHeader",
+        "title": "Server regions",
+        "subtitle": "Health and current median latency"
+      },
+      {
+        "id": "regionTable",
         "component": "Table",
         "columns": [
-          "item-col",
-          "units-col",
-          "sales-col"
+          "regionNameCol",
+          "regionHealthCol",
+          "regionLatencyCol"
         ]
       },
       {
-        "id": "item-col",
+        "id": "regionNameCol",
+        "component": "Col",
+        "label": "Region",
+        "data": [
+          "North America East",
+          "North America West",
+          "Europe West",
+          "Asia Pacific",
+          "South America"
+        ]
+      },
+      {
+        "id": "regionHealthCol",
+        "component": "Col",
+        "label": "Health",
+        "data": [
+          "Healthy",
+          "Healthy",
+          "Degraded",
+          "Healthy",
+          "Healthy"
+        ]
+      },
+      {
+        "id": "regionLatencyCol",
+        "component": "Col",
+        "label": "Median latency",
+        "data": [
+          "42 ms",
+          "51 ms",
+          "118 ms",
+          "63 ms",
+          "74 ms"
+        ]
+      },
+      {
+        "id": "regionActions",
+        "component": "Buttons",
+        "buttons": [
+          "focusRegionButton"
+        ]
+      },
+      {
+        "id": "focusRegionButton",
+        "component": "Button",
+        "label": "Focus on a region",
+        "variant": "secondary"
+      },
+      {
+        "id": "eventsPanel",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "eventsHeader",
+          "eventsList",
+          "event1",
+          "event2",
+          "event3",
+          "event4"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "eventsHeader",
+        "component": "CardHeader",
+        "title": "Live events",
+        "subtitle": "Running and upcoming"
+      },
+      {
+        "id": "eventsList",
+        "component": "ListBlock",
+        "items": [
+          "event1",
+          "event2",
+          "event3",
+          "event4"
+        ]
+      },
+      {
+        "id": "event1",
+        "component": "ListItem",
+        "title": "Eclipse Siege",
+        "subtitle": "Running · Ends in 2h 18m · 92,440 participants"
+      },
+      {
+        "id": "event2",
+        "component": "ListItem",
+        "title": "Double XP Weekend",
+        "subtitle": "Running · Ends Monday 09:00 UTC"
+      },
+      {
+        "id": "event3",
+        "component": "ListItem",
+        "title": "Sky Harbor Raid",
+        "subtitle": "Upcoming · Starts in 5h 40m"
+      },
+      {
+        "id": "event4",
+        "component": "ListItem",
+        "title": "Guild Arena Season 12",
+        "subtitle": "Upcoming · Starts tomorrow 16:00 UTC"
+      },
+      {
+        "id": "moderationPanel",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "moderationHeader",
+          "reportsProgress",
+          "appealsProgress",
+          "moderationActions"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "moderationHeader",
+        "component": "CardHeader",
+        "title": "Trust & safety queue",
+        "subtitle": "Items awaiting review"
+      },
+      {
+        "id": "reportsProgress",
+        "component": "Progress",
+        "label": "Player reports · 184 awaiting review",
+        "value": 62
+      },
+      {
+        "id": "appealsProgress",
+        "component": "Progress",
+        "label": "Ban appeals · 27 awaiting review",
+        "value": 35
+      },
+      {
+        "id": "moderationActions",
+        "component": "Buttons",
+        "buttons": [
+          "reviewReportsButton",
+          "reviewAppealsButton"
+        ],
+        "direction": "column"
+      },
+      {
+        "id": "reviewReportsButton",
+        "component": "Button",
+        "label": "Review player reports",
+        "variant": "secondary"
+      },
+      {
+        "id": "reviewAppealsButton",
+        "component": "Button",
+        "label": "Review ban appeals",
+        "variant": "tertiary"
+      },
+      {
+        "id": "commerceAndEconomy",
+        "component": "Card",
+        "variant": "card",
+        "direction": "row",
+        "gap": "l",
+        "wrap": true,
+        "children": [
+          "bestSellersPanel",
+          "inflationPanel"
+        ]
+      },
+      {
+        "id": "bestSellersPanel",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "bestSellersHeader",
+          "bestSellersTable",
+          "itemNameCol",
+          "itemUnitsCol",
+          "itemRevenueCol"
+        ],
+        "weight": 2
+      },
+      {
+        "id": "bestSellersHeader",
+        "component": "CardHeader",
+        "title": "Best-selling items",
+        "subtitle": "Today · completed purchases"
+      },
+      {
+        "id": "bestSellersTable",
+        "component": "Table",
+        "columns": [
+          "itemNameCol",
+          "itemUnitsCol",
+          "itemRevenueCol"
+        ]
+      },
+      {
+        "id": "itemNameCol",
         "component": "Col",
         "label": "Item",
         "data": [
-          "Neon Ronin Bundle",
-          "Season Pass Premium",
-          "Voidrunner Skin",
+          "Eclipse Battle Pass",
+          "Voidrunner Skin Bundle",
           "1,200 Gem Pack",
-          "Battle Boost x10"
+          "Phoenix Mount",
+          "Starter Vault"
         ]
       },
       {
-        "id": "units-col",
+        "id": "itemUnitsCol",
         "component": "Col",
         "label": "Units",
-        "type": "number",
         "data": [
-          18420,
-          12680,
-          9410,
-          8130,
-          6970
-        ]
+          "18,420",
+          "9,870",
+          "8,216",
+          "3,442",
+          "2,980"
+        ],
+        "type": "number"
       },
       {
-        "id": "sales-col",
+        "id": "itemRevenueCol",
         "component": "Col",
-        "label": "Gross sales",
+        "label": "Revenue",
         "data": [
-          "$147.4K",
-          "$101.4K",
-          "$75.3K",
-          "$40.7K",
-          "$27.9K"
+          "$184,108",
+          "$98,601",
+          "$65,728",
+          "$51,596",
+          "$29,770"
         ]
       },
       {
-        "id": "operations-row",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "gap": "m",
-        "align": "stretch",
-        "children": [
-          "regions-card",
-          "events-card",
-          "review-queue-card"
-        ]
-      },
-      {
-        "id": "regions-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "children": [
-          "regions-header",
-          "regions-list"
-        ]
-      },
-      {
-        "id": "regions-header",
-        "component": "CardHeader",
-        "title": "Server regions",
-        "subtitle": "Current health and player load"
-      },
-      {
-        "id": "regions-list",
-        "component": "ListBlock",
-        "variant": "number",
-        "items": [
-          "region-na",
-          "region-eu",
-          "region-apac",
-          "region-sa"
-        ]
-      },
-      {
-        "id": "region-na",
-        "component": "ListItem",
-        "title": "North America • Healthy",
-        "subtitle": "72,180 online • 42 ms median latency • 99.99% uptime"
-      },
-      {
-        "id": "region-eu",
-        "component": "ListItem",
-        "title": "Europe • Healthy",
-        "subtitle": "51,940 online • 49 ms median latency • 99.98% uptime"
-      },
-      {
-        "id": "region-apac",
-        "component": "ListItem",
-        "title": "Asia Pacific • Degraded",
-        "subtitle": "44,610 online • 86 ms median latency • 99.91% uptime"
-      },
-      {
-        "id": "region-sa",
-        "component": "ListItem",
-        "title": "South America • Healthy",
-        "subtitle": "15,530 online • 67 ms median latency • 99.97% uptime"
-      },
-      {
-        "id": "events-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "children": [
-          "events-header",
-          "events-tabs"
-        ]
-      },
-      {
-        "id": "events-header",
-        "component": "CardHeader",
-        "title": "Live events",
-        "subtitle": "Running now and scheduled next"
-      },
-      {
-        "id": "events-tabs",
-        "component": "Tabs",
-        "items": [
-          "running-events-tab",
-          "upcoming-events-tab"
-        ]
-      },
-      {
-        "id": "running-events-tab",
-        "component": "TabItem",
-        "value": "running",
-        "trigger": "Running (2)",
-        "content": [
-          "running-events-list"
-        ]
-      },
-      {
-        "id": "running-events-list",
-        "component": "ListBlock",
-        "variant": "number",
-        "items": [
-          "event-skyfall",
-          "event-double-xp"
-        ]
-      },
-      {
-        "id": "event-skyfall",
-        "component": "ListItem",
-        "title": "Skyfall Invasion",
-        "subtitle": "Ends in 18h 24m • 412K participants • Completion rate 63%"
-      },
-      {
-        "id": "event-double-xp",
-        "component": "ListItem",
-        "title": "Double XP Weekend",
-        "subtitle": "Ends in 1d 6h • 1.08M participants • Engagement +14%"
-      },
-      {
-        "id": "upcoming-events-tab",
-        "component": "TabItem",
-        "value": "upcoming",
-        "trigger": "Upcoming (2)",
-        "content": [
-          "upcoming-events-list"
-        ]
-      },
-      {
-        "id": "upcoming-events-list",
-        "component": "ListBlock",
-        "variant": "number",
-        "items": [
-          "event-arena",
-          "event-harvest"
-        ]
-      },
-      {
-        "id": "event-arena",
-        "component": "ListItem",
-        "title": "Arena Clash",
-        "subtitle": "Starts Aug 21 • Ranked PvP event • 7-day duration"
-      },
-      {
-        "id": "event-harvest",
-        "component": "ListItem",
-        "title": "Moon Harvest",
-        "subtitle": "Starts Aug 25 • Community collection event • 10-day duration"
-      },
-      {
-        "id": "review-queue-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "review-header",
-          "reports-queue",
-          "appeals-queue"
-        ]
-      },
-      {
-        "id": "review-header",
-        "component": "CardHeader",
-        "title": "Trust & safety queue",
-        "subtitle": "Items awaiting moderator review"
-      },
-      {
-        "id": "reports-queue",
+        "id": "inflationPanel",
         "component": "Card",
         "variant": "sunk",
-        "direction": "column",
-        "gap": "xs",
         "children": [
-          "reports-title",
-          "reports-value",
-          "reports-detail"
-        ]
+          "inflationHeader",
+          "inflationChart",
+          "goldInflationSeries",
+          "crystalInflationSeries",
+          "inflationNote"
+        ],
+        "weight": 1
       },
       {
-        "id": "reports-title",
-        "component": "TextContent",
-        "text": "Player reports awaiting review",
-        "size": "small"
-      },
-      {
-        "id": "reports-value",
-        "component": "Heading",
-        "text": "286",
-        "level": "h2"
-      },
-      {
-        "id": "reports-detail",
-        "component": "TextContent",
-        "text": "34 high priority • Oldest report: 41 minutes",
-        "size": "small"
-      },
-      {
-        "id": "appeals-queue",
-        "component": "Card",
-        "variant": "sunk",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "appeals-title",
-          "appeals-value",
-          "appeals-detail"
-        ]
-      },
-      {
-        "id": "appeals-title",
-        "component": "TextContent",
-        "text": "Ban appeals awaiting review",
-        "size": "small"
-      },
-      {
-        "id": "appeals-value",
-        "component": "Heading",
-        "text": "74",
-        "level": "h2"
-      },
-      {
-        "id": "appeals-detail",
-        "component": "TextContent",
-        "text": "12 due within SLA • Oldest appeal: 19 hours",
-        "size": "small"
-      },
-      {
-        "id": "quality-and-economy",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "gap": "m",
-        "align": "stretch",
-        "children": [
-          "crash-card",
-          "inflation-card"
-        ]
-      },
-      {
-        "id": "crash-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "children": [
-          "crash-header",
-          "crash-chart",
-          "crash-note"
-        ]
-      },
-      {
-        "id": "crash-header",
+        "id": "inflationHeader",
         "component": "CardHeader",
-        "title": "Crash rate by app version",
-        "subtitle": "Crashes per 1,000 sessions • Last 24 hours"
+        "title": "Currency inflation",
+        "subtitle": "14-day index · baseline = 100"
       },
       {
-        "id": "crash-chart",
-        "component": "BarChart",
+        "id": "inflationChart",
+        "component": "LineChart",
         "labels": [
-          "3.14.2",
-          "3.14.1",
-          "3.13.8",
-          "3.13.7",
-          "3.12.9"
+          "Aug 5",
+          "Aug 7",
+          "Aug 9",
+          "Aug 11",
+          "Aug 13",
+          "Aug 15",
+          "Aug 17",
+          "Today"
         ],
         "series": [
-          "crash-series"
+          "goldInflationSeries",
+          "crystalInflationSeries"
         ],
-        "variant": "grouped",
-        "yLabel": "Crashes / 1K sessions"
+        "variant": "linear",
+        "xLabel": "Date",
+        "yLabel": "Index"
       },
       {
-        "id": "crash-series",
+        "id": "goldInflationSeries",
         "component": "Series",
-        "category": "Crash rate",
+        "category": "Gold",
         "values": [
-          1.8,
-          1.1,
-          0.9,
-          0.8,
-          0.7
+          100,
+          101,
+          102,
+          104,
+          106,
+          108,
+          110,
+          112
         ]
       },
       {
-        "id": "crash-note",
+        "id": "crystalInflationSeries",
+        "component": "Series",
+        "category": "Crystals",
+        "values": [
+          100,
+          100,
+          101,
+          102,
+          102,
+          103,
+          104,
+          104
+        ]
+      },
+      {
+        "id": "inflationNote",
         "component": "Alert",
-        "title": "Version 3.14.2 is above guardrail",
-        "description": "Crash rate is 1.8 per 1,000 sessions; investigate before expanding rollout.",
+        "title": "Gold supply above target",
+        "description": "Gold is 12% above baseline after the Eclipse Siege reward multiplier.",
         "variant": "warning"
       },
       {
-        "id": "inflation-card",
+        "id": "qualityAndExperiments",
         "component": "Card",
         "variant": "card",
-        "direction": "column",
-        "gap": "s",
+        "direction": "row",
+        "gap": "l",
+        "wrap": true,
         "children": [
-          "inflation-header",
-          "inflation-chart",
-          "inflation-summary"
+          "crashPanel",
+          "experimentsPanel"
         ]
       },
       {
-        "id": "inflation-header",
-        "component": "CardHeader",
-        "title": "In-game currency inflation",
-        "subtitle": "Net currency supply change by currency • 7 days"
+        "id": "crashPanel",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "crashHeader",
+          "crashChart",
+          "crashSeries"
+        ],
+        "weight": 1
       },
       {
-        "id": "inflation-chart",
-        "component": "HorizontalBarChart",
+        "id": "crashHeader",
+        "component": "CardHeader",
+        "title": "Crash rate by app version",
+        "subtitle": "Crashes per 1,000 sessions"
+      },
+      {
+        "id": "crashChart",
+        "component": "BarChart",
         "labels": [
-          "Gold",
-          "Gems",
-          "Arena Tokens",
-          "Crafting Shards"
+          "2.14.0",
+          "2.14.1",
+          "2.15.0",
+          "2.15.1",
+          "2.16.0"
         ],
         "series": [
-          "inflation-series"
+          "crashSeries"
         ],
         "variant": "grouped",
-        "xLabel": "Net supply change"
+        "xLabel": "App version",
+        "yLabel": "Crashes / 1k sessions"
       },
       {
-        "id": "inflation-series",
+        "id": "crashSeries",
         "component": "Series",
-        "category": "Weekly inflation",
+        "category": "Crash rate",
         "values": [
-          4.8,
+          0.8,
           0.6,
-          2.1,
-          -1.3
+          1.1,
+          0.7,
+          2.9
         ]
       },
       {
-        "id": "inflation-summary",
-        "component": "TextCallout",
-        "variant": "warning",
-        "title": "Gold supply is rising",
-        "description": "Gold supply increased 4.8% this week, primarily from Skyfall reward chests. Watch auction-house pricing."
-      },
-      {
-        "id": "experiments-and-workflow",
+        "id": "experimentsPanel",
         "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "gap": "m",
-        "align": "stretch",
+        "variant": "sunk",
         "children": [
-          "experiments-card",
-          "patch-notes-card"
-        ]
+          "experimentsHeader",
+          "experimentsTable",
+          "experimentNameCol",
+          "experimentResultCol",
+          "experimentDecisionCol"
+        ],
+        "weight": 1
       },
       {
-        "id": "experiments-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "children": [
-          "experiments-header",
-          "experiment-one",
-          "experiment-two"
-        ]
-      },
-      {
-        "id": "experiments-header",
+        "id": "experimentsHeader",
         "component": "CardHeader",
         "title": "Running experiments",
-        "subtitle": "Live A/B test results"
+        "subtitle": "Current results"
       },
       {
-        "id": "experiment-one",
-        "component": "Card",
-        "variant": "sunk",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "experiment-one-title",
-          "experiment-one-progress",
-          "experiment-one-result"
+        "id": "experimentsTable",
+        "component": "Table",
+        "columns": [
+          "experimentNameCol",
+          "experimentResultCol",
+          "experimentDecisionCol"
         ]
       },
       {
-        "id": "experiment-one-title",
-        "component": "TextContent",
-        "text": "Onboarding reward choice",
-        "size": "large-heavy"
-      },
-      {
-        "id": "experiment-one-progress",
-        "component": "Progress",
-        "value": 68,
-        "label": "68% of target sample collected"
-      },
-      {
-        "id": "experiment-one-result",
-        "component": "TextContent",
-        "text": "Variant B: +4.6% day-1 retention, +1.2% tutorial completion • Confidence: 94%",
-        "size": "small"
-      },
-      {
-        "id": "experiment-two",
-        "component": "Card",
-        "variant": "sunk",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "experiment-two-title",
-          "experiment-two-progress",
-          "experiment-two-result"
+        "id": "experimentNameCol",
+        "component": "Col",
+        "label": "Experiment",
+        "data": [
+          "Onboarding Quest Flow",
+          "Store Offer Personalization"
         ]
       },
       {
-        "id": "experiment-two-title",
-        "component": "TextContent",
-        "text": "Store bundle price test",
-        "size": "large-heavy"
+        "id": "experimentResultCol",
+        "component": "Col",
+        "label": "Result",
+        "data": [
+          "+5.8% Day-1 retention · 96% confidence",
+          "+3.2% conversion · 89% confidence"
+        ]
       },
       {
-        "id": "experiment-two-progress",
-        "component": "Progress",
-        "value": 82,
-        "label": "82% of target sample collected"
+        "id": "experimentDecisionCol",
+        "component": "Col",
+        "label": "Recommendation",
+        "data": [
+          "Expand to 50%",
+          "Continue collecting data"
+        ]
       },
       {
-        "id": "experiment-two-result",
-        "component": "TextContent",
-        "text": "Variant B: +7.9% conversion, −2.3% average order value, net revenue +5.4% • Confidence: 97%",
-        "size": "small"
-      },
-      {
-        "id": "patch-notes-card",
+        "id": "workflowActions",
         "component": "Card",
         "variant": "card",
-        "direction": "column",
-        "gap": "s",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
         "children": [
-          "patch-header",
-          "patch-form"
+          "patchNotesDialog",
+          "hotfixDialog",
+          "handoffNote"
         ]
       },
       {
-        "id": "patch-header",
-        "component": "CardHeader",
+        "id": "patchNotesDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Draft patch notes",
         "title": "Draft patch notes",
-        "subtitle": "Prepare player-facing notes for the next release"
+        "description": "Prepare player-facing notes for the next deployment.",
+        "triggerVariant": "secondary",
+        "content": [
+          "patchNotesForm",
+          "patchNotesTitleField",
+          "patchNotesTitleInput",
+          "patchNotesBodyField",
+          "patchNotesBodyInput",
+          "patchNotesButtons",
+          "savePatchDraftButton"
+        ]
       },
       {
-        "id": "patch-form",
+        "id": "patchNotesForm",
         "component": "Form",
         "name": "patch-notes-draft",
+        "buttons": "patchNotesButtons",
         "fields": [
-          "patch-version-control",
-          "patch-title-control",
-          "patch-notes-control"
-        ],
-        "buttons": "patch-buttons"
-      },
-      {
-        "id": "patch-version-control",
-        "component": "FormControl",
-        "label": "Patch version",
-        "input": "patch-version-input",
-        "hint": "Example: 3.14.3"
-      },
-      {
-        "id": "patch-version-input",
-        "component": "Input",
-        "name": "patch-version",
-        "placeholder": "3.14.3",
-        "type": "text"
-      },
-      {
-        "id": "patch-title-control",
-        "component": "FormControl",
-        "label": "Patch title",
-        "input": "patch-title-input"
-      },
-      {
-        "id": "patch-title-input",
-        "component": "Input",
-        "name": "patch-title",
-        "placeholder": "Skyfall stability update",
-        "type": "text"
-      },
-      {
-        "id": "patch-notes-control",
-        "component": "FormControl",
-        "label": "Player-facing notes",
-        "input": "patch-notes-input",
-        "hint": "Use concise bullets for fixes, balance changes, and known issues."
-      },
-      {
-        "id": "patch-notes-input",
-        "component": "TextArea",
-        "name": "patch-notes",
-        "placeholder": "• Improved matchmaking stability in APAC\n• Fixed an issue with Skyfall reward chests\n• Adjusted Arena token rewards",
-        "rows": 7
-      },
-      {
-        "id": "patch-buttons",
-        "component": "Buttons",
-        "direction": "row",
-        "buttons": [
-          "save-draft-button",
-          "preview-notes-button"
+          "patchNotesTitleField",
+          "patchNotesBodyField"
         ]
       },
       {
-        "id": "save-draft-button",
-        "component": "Button",
-        "label": "Save draft",
-        "variant": "primary",
-        "size": "medium"
+        "id": "patchNotesTitleField",
+        "component": "FormControl",
+        "label": "Patch title",
+        "input": "patchNotesTitleInput"
       },
       {
-        "id": "preview-notes-button",
+        "id": "patchNotesTitleInput",
+        "component": "Input",
+        "name": "patch_title",
+        "placeholder": "Update 2.16.1"
+      },
+      {
+        "id": "patchNotesBodyField",
+        "component": "FormControl",
+        "label": "Player-facing notes",
+        "input": "patchNotesBodyInput",
+        "hint": "Summarize fixes, balance changes, and known issues."
+      },
+      {
+        "id": "patchNotesBodyInput",
+        "component": "TextArea",
+        "name": "patch_notes",
+        "placeholder": "Write patch notes...",
+        "rows": 8
+      },
+      {
+        "id": "patchNotesButtons",
+        "component": "Buttons",
+        "buttons": [
+          "savePatchDraftButton"
+        ]
+      },
+      {
+        "id": "savePatchDraftButton",
         "component": "Button",
-        "label": "Preview",
-        "variant": "secondary",
-        "size": "medium"
+        "label": "Save draft",
+        "variant": "primary"
+      },
+      {
+        "id": "hotfixDialog",
+        "component": "AlertDialogBlock",
+        "triggerLabel": "Ship hotfix",
+        "title": "Ship production hotfix?",
+        "description": "This will begin the approved hotfix deployment to all production regions.",
+        "confirmLabel": "Ship hotfix",
+        "cancelLabel": "Cancel",
+        "triggerVariant": "destructive"
+      },
+      {
+        "id": "handoffNote",
+        "component": "TextContent",
+        "text": "Next scheduled deployment window: 18:00 UTC. Use the region focus control to isolate operational telemetry before shipping.",
+        "size": "small"
       }
     ]
   }

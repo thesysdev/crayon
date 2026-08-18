@@ -1,15 +1,11 @@
-Here's a single-screen airline hub operations desk covering all 12 items — KPIs up top, weather and delay callouts, the live flight board, gate changes / at-risk connections / available crews, and a rebooking form plus a hub switcher.
+Here's a single-screen operations desk for hub ORD covering all 12 items — KPIs up top (on-time performance, cancellations, passenger load, turnaround), the flight board with delayed flights called out, weather advisories, gate changes, crew availability, at-risk connections, a rebooking form, and a hub switcher.
 
 <a2ui-json>
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "hub-ops-desk",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": {
-      "primaryColor": "#1A6EDB",
-      "agentDisplayName": "Hub Ops Desk"
-    }
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
@@ -18,322 +14,733 @@ Here's a single-screen airline hub operations desk covering all 12 items — KPI
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "hub-ops-desk",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
+        "variant": "clear",
         "direction": "column",
         "gap": "m",
         "children": [
-          "ops-header",
-          "ops-hub-control",
-          "ops-weather",
-          "ops-kpi-row",
-          "ops-delay-alert",
-          "ops-flights-card",
-          "ops-mid-row",
-          "ops-rebook-card"
+          "header",
+          "hubCard",
+          "kpiRow",
+          "alertsRow",
+          "flightsCard",
+          "midRow",
+          "connectionsCard",
+          "rebookCard"
         ]
       },
       {
-        "id": "ops-header",
+        "id": "header",
         "component": "CardHeader",
-        "title": "Hub Operations Desk — ATL",
-        "subtitle": "Live operations · Hartsfield–Jackson Atlanta International · Today"
+        "title": "Hub Operations Desk — ORD (Chicago O'Hare)",
+        "subtitle": "Today · All times local · Updated 12:45"
       },
       {
-        "id": "ops-hub-control",
+        "id": "hubCard",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "align": "center",
+        "justify": "between",
+        "gap": "m",
+        "children": [
+          "hubText",
+          "hubForm"
+        ]
+      },
+      {
+        "id": "hubText",
+        "component": "TextContent",
+        "text": "**Viewing hub:** ORD — Chicago O'Hare. Select another hub to load its operations."
+      },
+      {
+        "id": "hubForm",
+        "component": "Form",
+        "name": "switch-hub",
+        "buttons": "hubButtons",
+        "fields": [
+          "hubField"
+        ]
+      },
+      {
+        "id": "hubField",
         "component": "FormControl",
-        "label": "View a different hub",
-        "input": "ops-hub-select",
-        "hint": "All widgets refresh to the selected hub"
+        "label": "Switch hub",
+        "input": "hubSelect",
+        "hint": "Loads flights, crews, and weather for the selected hub"
       },
       {
-        "id": "ops-hub-select",
+        "id": "hubSelect",
         "component": "Select",
         "name": "hub",
-        "value": "ATL",
-        "items": ["ops-hub-atl", "ops-hub-dfw", "ops-hub-ord", "ops-hub-den", "ops-hub-jfk"]
-      },
-      { "id": "ops-hub-atl", "component": "SelectItem", "value": "ATL", "label": "Atlanta (ATL)" },
-      { "id": "ops-hub-dfw", "component": "SelectItem", "value": "DFW", "label": "Dallas/Fort Worth (DFW)" },
-      { "id": "ops-hub-ord", "component": "SelectItem", "value": "ORD", "label": "Chicago O'Hare (ORD)" },
-      { "id": "ops-hub-den", "component": "SelectItem", "value": "DEN", "label": "Denver (DEN)" },
-      { "id": "ops-hub-jfk", "component": "SelectItem", "value": "JFK", "label": "New York JFK (JFK)" },
-      {
-        "id": "ops-weather",
-        "component": "Alert",
-        "variant": "warning",
-        "title": "Weather advisory — ATL",
-        "description": "Thunderstorms expected 15:00–18:00 local. Ground delays up to 45 min; destination flow metering in effect. No de-icing required."
+        "placeholder": "Choose a hub",
+        "items": [
+          "hubATL",
+          "hubDFW",
+          "hubDEN",
+          "hubLAX",
+          "hubJFK"
+        ]
       },
       {
-        "id": "ops-kpi-row",
+        "id": "hubATL",
+        "component": "SelectItem",
+        "value": "atl",
+        "label": "ATL — Atlanta"
+      },
+      {
+        "id": "hubDFW",
+        "component": "SelectItem",
+        "value": "dfw",
+        "label": "DFW — Dallas/Fort Worth"
+      },
+      {
+        "id": "hubDEN",
+        "component": "SelectItem",
+        "value": "den",
+        "label": "DEN — Denver"
+      },
+      {
+        "id": "hubLAX",
+        "component": "SelectItem",
+        "value": "lax",
+        "label": "LAX — Los Angeles"
+      },
+      {
+        "id": "hubJFK",
+        "component": "SelectItem",
+        "value": "jfk",
+        "label": "JFK — New York"
+      },
+      {
+        "id": "hubButtons",
+        "component": "Buttons",
+        "buttons": [
+          "hubGo"
+        ]
+      },
+      {
+        "id": "hubGo",
+        "component": "Button",
+        "label": "View hub",
+        "variant": "primary",
+        "size": "small"
+      },
+      {
+        "id": "kpiRow",
         "component": "Card",
         "variant": "clear",
         "direction": "row",
         "gap": "m",
-        "wrap": true,
-        "children": ["ops-kpi-otp", "ops-kpi-cancel", "ops-kpi-load", "ops-kpi-turn"]
+        "children": [
+          "otpCard",
+          "cancelCard",
+          "loadCard",
+          "turnCard"
+        ]
       },
       {
-        "id": "ops-kpi-otp",
+        "id": "otpCard",
         "component": "Card",
         "variant": "sunk",
-        "children": ["ops-kpi-otp-prog"]
+        "weight": 1,
+        "children": [
+          "otpLabel",
+          "otpValue",
+          "otpProgress"
+        ]
       },
       {
-        "id": "ops-kpi-otp-prog",
-        "component": "Progress",
-        "value": 78,
-        "label": "On-time performance today"
+        "id": "otpLabel",
+        "component": "Label",
+        "text": "On-time performance today"
       },
       {
-        "id": "ops-kpi-cancel",
-        "component": "Card",
-        "variant": "sunk",
-        "children": ["ops-kpi-cancel-t"]
-      },
-      {
-        "id": "ops-kpi-cancel-t",
+        "id": "otpValue",
         "component": "TextContent",
-        "size": "large-heavy",
-        "text": "**9** cancellations today"
+        "text": "87.4%",
+        "size": "large-heavy"
       },
       {
-        "id": "ops-kpi-load",
-        "component": "Card",
-        "variant": "sunk",
-        "children": ["ops-kpi-load-prog"]
-      },
-      {
-        "id": "ops-kpi-load-prog",
+        "id": "otpProgress",
         "component": "Progress",
-        "value": 86,
-        "label": "Average passenger load today"
+        "value": 87.4,
+        "label": "Departures within 15 min of schedule"
       },
       {
-        "id": "ops-kpi-turn",
+        "id": "cancelCard",
         "component": "Card",
         "variant": "sunk",
-        "children": ["ops-kpi-turn-t"]
+        "weight": 1,
+        "children": [
+          "cancelLabel",
+          "cancelValue",
+          "cancelSub"
+        ]
       },
       {
-        "id": "ops-kpi-turn-t",
+        "id": "cancelLabel",
+        "component": "Label",
+        "text": "Cancellations today"
+      },
+      {
+        "id": "cancelValue",
         "component": "TextContent",
-        "size": "large-heavy",
-        "text": "**38 min** average turnaround"
+        "text": "9",
+        "size": "large-heavy"
       },
       {
-        "id": "ops-delay-alert",
+        "id": "cancelSub",
+        "component": "TextContent",
+        "text": "4 weather · 3 crew · 2 maintenance",
+        "size": "small"
+      },
+      {
+        "id": "loadCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": [
+          "loadLabel",
+          "loadValue",
+          "loadProgress"
+        ]
+      },
+      {
+        "id": "loadLabel",
+        "component": "Label",
+        "text": "Average passenger load today"
+      },
+      {
+        "id": "loadValue",
+        "component": "TextContent",
+        "text": "82%",
+        "size": "large-heavy"
+      },
+      {
+        "id": "loadProgress",
+        "component": "Progress",
+        "value": 82,
+        "label": "Seats filled across departed flights"
+      },
+      {
+        "id": "turnCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": [
+          "turnLabel",
+          "turnValue",
+          "turnSub"
+        ]
+      },
+      {
+        "id": "turnLabel",
+        "component": "Label",
+        "text": "Average turnaround time"
+      },
+      {
+        "id": "turnValue",
+        "component": "TextContent",
+        "text": "42 min",
+        "size": "large-heavy"
+      },
+      {
+        "id": "turnSub",
+        "component": "TextContent",
+        "text": "Target: 40 min · Slipping on Concourse F",
+        "size": "small"
+      },
+      {
+        "id": "alertsRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "delayedAlert",
+          "weatherCard"
+        ]
+      },
+      {
+        "id": "delayedAlert",
         "component": "Alert",
         "variant": "destructive",
-        "title": "4 delayed flights called out",
-        "description": "DL245 → LGA (45 min) · DL882 → LAX (62 min) · DL772 → MCO (25 min) · DL1550 → ORD (38 min)"
+        "title": "3 flights delayed 45+ minutes",
+        "description": "UA1123 (DEN) +50m · UA2487 (MIA) +1h 20m · UA776 (LAS) +45m. UA2487 crew times out at 16:10 — reassignment needed.",
+        "weight": 1
       },
       {
-        "id": "ops-flights-card",
+        "id": "weatherCard",
         "component": "Card",
-        "children": ["ops-fl-header", "ops-fl-table"]
+        "variant": "card",
+        "direction": "column",
+        "gap": "s",
+        "weight": 1,
+        "children": [
+          "weatherHeader",
+          "weather1",
+          "weather2"
+        ]
       },
       {
-        "id": "ops-fl-header",
+        "id": "weatherHeader",
+        "component": "CardHeader",
+        "title": "Weather advisories — ORD"
+      },
+      {
+        "id": "weather1",
+        "component": "Alert",
+        "variant": "warning",
+        "title": "Thunderstorms 15:00–18:00",
+        "description": "Ground delay program expected; plan 30–60 min arrival delays."
+      },
+      {
+        "id": "weather2",
+        "component": "Alert",
+        "variant": "info",
+        "title": "High winds until 13:00",
+        "description": "NW gusts to 32 kt. Runway 09C closed — single-runway ops in effect."
+      },
+      {
+        "id": "flightsCard",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "children": [
+          "flightsHeader",
+          "flightsTable"
+        ]
+      },
+      {
+        "id": "flightsHeader",
         "component": "CardHeader",
         "title": "Flights today",
-        "subtitle": "Number, route, gate and status for every departure"
+        "subtitle": "Departures from ORD · number, route, gate, status"
       },
       {
-        "id": "ops-fl-table",
+        "id": "flightsTable",
         "component": "Table",
-        "columns": ["ops-fl-c-num", "ops-fl-c-route", "ops-fl-c-gate", "ops-fl-c-status"]
+        "columns": [
+          "fNum",
+          "fRoute",
+          "fGate",
+          "fStatus"
+        ]
       },
       {
-        "id": "ops-fl-c-num",
+        "id": "fNum",
         "component": "Col",
         "label": "Flight",
-        "data": ["DL245", "DL882", "DL331", "DL1550", "DL772", "DL480", "DL918"]
+        "data": [
+          "UA101",
+          "UA102",
+          "UA1123",
+          "UA2487",
+          "UA776",
+          "UA305",
+          "UA88"
+        ]
       },
       {
-        "id": "ops-fl-c-route",
+        "id": "fRoute",
         "component": "Col",
         "label": "Route",
-        "data": ["ATL → LGA", "ATL → LAX", "ATL → MIA", "ATL → ORD", "ATL → MCO", "ATL → SEA", "ATL → JFK"]
+        "data": [
+          "ORD → SFO",
+          "ORD → JFK",
+          "ORD → DEN",
+          "ORD → MIA",
+          "ORD → LAS",
+          "ORD → SEA",
+          "ORD → AUS"
+        ]
       },
       {
-        "id": "ops-fl-c-gate",
+        "id": "fGate",
         "component": "Col",
         "label": "Gate",
-        "data": ["B12", "A06", "C21", "T09", "B30", "C07", "A11"]
+        "data": [
+          "C12",
+          "C4",
+          "F11",
+          "E11",
+          "C22",
+          "B14",
+          "—"
+        ]
       },
       {
-        "id": "ops-fl-c-status",
+        "id": "fStatus",
         "component": "Col",
         "label": "Status",
-        "data": ["Delayed", "Delayed", "On Time", "Boarding", "Delayed", "Cancelled", "On Time"]
+        "data": [
+          "Boarding",
+          "On time",
+          "Delayed 50m",
+          "Delayed 1h 20m",
+          "Delayed 45m",
+          "Departed",
+          "Cancelled"
+        ]
       },
       {
-        "id": "ops-mid-row",
+        "id": "midRow",
         "component": "Card",
         "variant": "clear",
         "direction": "row",
         "gap": "m",
-        "wrap": true,
-        "children": ["ops-gate-card", "ops-risk-card", "ops-crew-card"]
+        "children": [
+          "gateCard",
+          "crewCard"
+        ]
       },
       {
-        "id": "ops-gate-card",
+        "id": "gateCard",
         "component": "Card",
-        "children": ["ops-gate-header", "ops-gate-list"]
+        "variant": "card",
+        "direction": "column",
+        "weight": 1,
+        "children": [
+          "gateHeader",
+          "gateTable"
+        ]
       },
       {
-        "id": "ops-gate-header",
+        "id": "gateHeader",
         "component": "CardHeader",
         "title": "Recent gate changes"
       },
       {
-        "id": "ops-gate-list",
-        "component": "ListBlock",
-        "variant": "number",
-        "items": ["ops-gate-i1", "ops-gate-i2", "ops-gate-i3"]
+        "id": "gateTable",
+        "component": "Table",
+        "columns": [
+          "gFlight",
+          "gChange",
+          "gTime"
+        ]
       },
       {
-        "id": "ops-gate-i1",
-        "component": "ListItem",
-        "title": "DL882 — gate A04 → A06",
-        "subtitle": "Changed 08:42 local"
+        "id": "gFlight",
+        "component": "Col",
+        "label": "Flight",
+        "data": [
+          "UA102",
+          "UA410",
+          "UA1123"
+        ]
       },
       {
-        "id": "ops-gate-i2",
-        "component": "ListItem",
-        "title": "DL331 — gate C19 → C21",
-        "subtitle": "Changed 08:15 local"
+        "id": "gChange",
+        "component": "Col",
+        "label": "Gate change",
+        "data": [
+          "B7 → C4",
+          "E3 → E9",
+          "F4 → F11"
+        ]
       },
       {
-        "id": "ops-gate-i3",
-        "component": "ListItem",
-        "title": "DL918 — gate A09 → A11",
-        "subtitle": "Changed 07:58 local"
+        "id": "gTime",
+        "component": "Col",
+        "label": "Time",
+        "data": [
+          "12:40",
+          "12:22",
+          "11:58"
+        ]
       },
       {
-        "id": "ops-risk-card",
+        "id": "crewCard",
         "component": "Card",
-        "children": ["ops-risk-header", "ops-risk-list"]
+        "variant": "card",
+        "direction": "column",
+        "weight": 1,
+        "children": [
+          "crewHeader",
+          "crewTable"
+        ]
       },
       {
-        "id": "ops-risk-header",
-        "component": "CardHeader",
-        "title": "Connections at risk"
-      },
-      {
-        "id": "ops-risk-list",
-        "component": "ListBlock",
-        "variant": "number",
-        "items": ["ops-risk-i1", "ops-risk-i2", "ops-risk-i3"]
-      },
-      {
-        "id": "ops-risk-i1",
-        "component": "ListItem",
-        "title": "DL245 (LGA) → DL684 (BOS)",
-        "subtitle": "18-min buffer · 14 passengers"
-      },
-      {
-        "id": "ops-risk-i2",
-        "component": "ListItem",
-        "title": "DL882 (LAX) → DL927 (SAN)",
-        "subtitle": "22-min buffer · 6 passengers"
-      },
-      {
-        "id": "ops-risk-i3",
-        "component": "ListItem",
-        "title": "DL772 (MCO) → DL655 (CLT)",
-        "subtitle": "15-min buffer · 9 passengers"
-      },
-      {
-        "id": "ops-crew-card",
-        "component": "Card",
-        "children": ["ops-crew-header", "ops-crew-tags"]
-      },
-      {
-        "id": "ops-crew-header",
+        "id": "crewHeader",
         "component": "CardHeader",
         "title": "Crews available for reassignment"
       },
       {
-        "id": "ops-crew-tags",
-        "component": "TagBlock",
-        "tags": [
-          "Crew 214 · 4 members · A320 rated",
-          "Crew 318 · 5 members · B737 rated",
-          "Crew 442 · 3 members · A350 rated",
-          "Crew 507 · 4 members · B767 rated"
+        "id": "crewTable",
+        "component": "Table",
+        "columns": [
+          "cCrew",
+          "cRole",
+          "cQual",
+          "cUntil"
         ]
       },
       {
-        "id": "ops-rebook-card",
-        "component": "Card",
-        "children": ["ops-rebook-header", "ops-rebook-form"]
+        "id": "cCrew",
+        "component": "Col",
+        "label": "Crew",
+        "data": [
+          "Capt. R. Alvarez",
+          "J. Kim",
+          "S. Patel + 3 FAs",
+          "M. Osei + 1 FA"
+        ]
       },
       {
-        "id": "ops-rebook-header",
+        "id": "cRole",
+        "component": "Col",
+        "label": "Role",
+        "data": [
+          "Captain",
+          "First Officer",
+          "Flight Attendants",
+          "Flight Attendants"
+        ]
+      },
+      {
+        "id": "cQual",
+        "component": "Col",
+        "label": "Qualified",
+        "data": [
+          "737",
+          "A320",
+          "Intl. wide-body",
+          "Domestic"
+        ]
+      },
+      {
+        "id": "cUntil",
+        "component": "Col",
+        "label": "Available until",
+        "data": [
+          "18:00",
+          "16:30",
+          "22:00",
+          "20:00"
+        ]
+      },
+      {
+        "id": "connectionsCard",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "children": [
+          "connHeader",
+          "connTable"
+        ]
+      },
+      {
+        "id": "connHeader",
+        "component": "CardHeader",
+        "title": "Connections at risk of being missed",
+        "subtitle": "Minimum connection time at ORD: 35 min"
+      },
+      {
+        "id": "connTable",
+        "component": "Table",
+        "columns": [
+          "cnPax",
+          "cnInbound",
+          "cnOutbound",
+          "cnWindow",
+          "cnRisk"
+        ]
+      },
+      {
+        "id": "cnPax",
+        "component": "Col",
+        "label": "Passengers",
+        "data": [
+          "14",
+          "6",
+          "9"
+        ],
+        "type": "number"
+      },
+      {
+        "id": "cnInbound",
+        "component": "Col",
+        "label": "Inbound",
+        "data": [
+          "UA1123 from DEN",
+          "UA776 from LAS",
+          "UA555 from PDX"
+        ]
+      },
+      {
+        "id": "cnOutbound",
+        "component": "Col",
+        "label": "Outbound",
+        "data": [
+          "UA900 → LHR (E6)",
+          "UA318 → BOS (B3)",
+          "UA92 → DFW (F8)"
+        ]
+      },
+      {
+        "id": "cnWindow",
+        "component": "Col",
+        "label": "Connection window",
+        "data": [
+          "18 min",
+          "25 min",
+          "12 min"
+        ]
+      },
+      {
+        "id": "cnRisk",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "At risk",
+          "Tight",
+          "Likely missed"
+        ]
+      },
+      {
+        "id": "rebookCard",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "children": [
+          "rebookHeader",
+          "rebookForm"
+        ]
+      },
+      {
+        "id": "rebookHeader",
         "component": "CardHeader",
         "title": "Rebook affected passengers",
-        "subtitle": "For delayed or cancelled departures"
+        "subtitle": "For delayed or cancelled flights and missed connections"
       },
       {
-        "id": "ops-rebook-form",
+        "id": "rebookForm",
         "component": "Form",
-        "name": "rebook",
-        "fields": ["ops-rebook-fc-flight", "ops-rebook-fc-pax"],
-        "buttons": "ops-rebook-buttons"
+        "name": "rebook-passengers",
+        "buttons": "rebookButtons",
+        "fields": [
+          "rbFlight",
+          "rbPax",
+          "rbNew",
+          "rbNotes"
+        ]
       },
       {
-        "id": "ops-rebook-fc-flight",
+        "id": "rbFlight",
         "component": "FormControl",
         "label": "Affected flight",
-        "input": "ops-rebook-flight",
-        "hint": "Delayed or cancelled departures"
+        "input": "rbFlightInput"
       },
       {
-        "id": "ops-rebook-flight",
-        "component": "Select",
-        "name": "flight",
-        "placeholder": "Choose flight",
-        "items": ["ops-rebook-f1", "ops-rebook-f2", "ops-rebook-f3", "ops-rebook-f4"]
-      },
-      { "id": "ops-rebook-f1", "component": "SelectItem", "value": "DL245", "label": "DL245 — ATL → LGA (delayed)" },
-      { "id": "ops-rebook-f2", "component": "SelectItem", "value": "DL882", "label": "DL882 — ATL → LAX (delayed)" },
-      { "id": "ops-rebook-f3", "component": "SelectItem", "value": "DL772", "label": "DL772 — ATL → MCO (delayed)" },
-      { "id": "ops-rebook-f4", "component": "SelectItem", "value": "DL480", "label": "DL480 — ATL → SEA (cancelled)" },
-      {
-        "id": "ops-rebook-fc-pax",
-        "component": "FormControl",
-        "label": "Passenger name",
-        "input": "ops-rebook-pax",
-        "hint": "Search or enter the passenger name"
-      },
-      {
-        "id": "ops-rebook-pax",
+        "id": "rbFlightInput",
         "component": "Input",
-        "name": "passenger",
-        "type": "text",
-        "placeholder": "e.g., A. Nguyen"
+        "name": "flight",
+        "placeholder": "e.g. UA88"
       },
       {
-        "id": "ops-rebook-buttons",
+        "id": "rbPax",
+        "component": "FormControl",
+        "label": "Passengers to rebook",
+        "input": "rbPaxInput"
+      },
+      {
+        "id": "rbPaxInput",
+        "component": "Input",
+        "name": "passengers",
+        "type": "number",
+        "placeholder": "e.g. 42"
+      },
+      {
+        "id": "rbNew",
+        "component": "FormControl",
+        "label": "Rebook onto",
+        "input": "rbNewSelect"
+      },
+      {
+        "id": "rbNewSelect",
+        "component": "Select",
+        "name": "new_flight",
+        "placeholder": "Choose an alternative",
+        "items": [
+          "alt1",
+          "alt2",
+          "alt3"
+        ]
+      },
+      {
+        "id": "alt1",
+        "component": "SelectItem",
+        "value": "ua2090",
+        "label": "UA2090 · ORD → AUS · dep 14:35 · Gate C18"
+      },
+      {
+        "id": "alt2",
+        "component": "SelectItem",
+        "value": "ua614",
+        "label": "UA614 · ORD → AUS · dep 16:10 · Gate F1"
+      },
+      {
+        "id": "alt3",
+        "component": "SelectItem",
+        "value": "nextday",
+        "label": "First available tomorrow morning"
+      },
+      {
+        "id": "rbNotes",
+        "component": "FormControl",
+        "label": "Notes",
+        "input": "rbNotesArea",
+        "hint": "Optional — meal vouchers, hotels, special handling"
+      },
+      {
+        "id": "rbNotesArea",
+        "component": "TextArea",
+        "name": "notes",
+        "rows": 2,
+        "placeholder": "e.g. 2 wheelchair assists, 1 unaccompanied minor"
+      },
+      {
+        "id": "rebookButtons",
         "component": "Buttons",
-        "direction": "row",
-        "buttons": ["ops-rebook-submit"]
+        "buttons": [
+          "rbSubmit",
+          "rbNotify"
+        ]
       },
       {
-        "id": "ops-rebook-submit",
+        "id": "rbSubmit",
         "component": "Button",
-        "label": "Find new itinerary",
+        "label": "Rebook passengers",
         "variant": "primary"
+      },
+      {
+        "id": "rbNotify",
+        "component": "Button",
+        "label": "Notify only",
+        "variant": "secondary"
       }
     ]
   }
 }
 </a2ui-json>
 
-Coverage check: (1) on-time performance, (7) average passenger load, (11) cancellations, and (12) average turnaround are the four KPI cards; (6) weather advisory and (3) delayed-flight callout are banner alerts; (2) the flight board table shows number / route / gate / status; (4) gate changes, (8) at-risk connections, and (5) available crews sit in the middle row; (9) the rebooking form handles affected passengers; and (10) the hub selector at the top switches hubs.
+Coverage checklist:
+1. **On-time performance** — KPI card with 87.4% + progress bar
+2. **Flights table** — number, route, gate, status for 7 departures
+3. **Delayed flights** — destructive alert calling out UA1123, UA2487, UA776 with crew timeout risk
+4. **Gate changes** — table of the 3 most recent moves
+5. **Crews available** — table with role, qualification, and availability window
+6. **Weather advisories** — thunderstorm and high-wind alerts for ORD
+7. **Avg passenger load** — 82% KPI with progress bar
+8. **Connections at risk** — table with windows below the 35-min minimum
+9. **Rebooking** — form with affected flight, passenger count, alternative flight, notes, and rebook/notify actions
+10. **Different hub** — switch-hub form with hub selector (ATL, DFW, DEN, LAX, JFK)
+11. **Cancellations today** — 9, broken down by cause
+12. **Avg turnaround time** — 42 min vs. 40-min target
+
+Want me to add an action on the connections table (e.g., "hold outbound flight" buttons) or a departure-bank timeline chart?

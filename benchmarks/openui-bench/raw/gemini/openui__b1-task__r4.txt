@@ -1,29 +1,36 @@
-root = Card([header, taskCard, formSection, followUp], "card", "column", "m")
+root = Card([header, statusCallout, taskDetails, markDoneSection, followUp])
 
-header = CardHeader("Personal Focus View", "Stay locked in on your single top priority")
+header = CardHeader("Task Focus", "Concentrate on your highest priority item")
 
-taskCard = Card([taskContent, taskMeta], "sunk", "column", "s")
+statusCallout = Callout("warning", "Urgent Deadline Approaching", "This task is due in 2 hours and requires immediate attention.")
 
-taskContent = CardHeader("Q3 Financial Audit & Compliance Report", "High priority task requiring immediate attention before EOD")
+taskDetails = Card([taskTitle, taskMeta, taskDescription, subtasksHeading, subtasksList], "sunk", "column", "m")
 
-taskMeta = Card([statusBadge, deadlineTag], "clear", "row", "m", "center")
+taskTitle = Heading("Finalize Q3 Financial Report & Executive Deck", "h2")
 
-statusBadge = Badge("In Progress", "default")
-deadlineTag = Tag("Due Today, 5:00 PM", "clock", "md", "warning")
+taskMeta = Table([metaField, metaValue])
+metaField = Col("Property", ["Due Date", "Priority", "Status", "Estimated Time"])
+metaValue = Col("Details", ["Today, 5:00 PM (In 2h)", "P1 - Critical", "In Progress", "45 mins remaining"])
 
-formSection = Form("complete-task-form", actionButtons, [notesControl, confirmControl])
+taskDescription = TextContent("Complete the variance analysis section for Q3 revenue, cross-check EBITDA metrics with accounting, and upload the slide deck to the board portal for review.", "default")
 
-notesControl = FormControl("Completion Notes", notesInput, "Optional: Add any final links or handoff notes")
-notesInput = TextArea("notes", "Completed final review of balance sheet and attached compliance sign-off document.", 3)
+subtasksHeading = Heading("Remaining Action Items", "h4")
+subtasksList = ListBlock([subtask1, subtask2, subtask3])
+subtask1 = ListItem("Verify Q3 EBITDA margin calculations", "Matches accounting ledger v4")
+subtask2 = ListItem("Update slide 12 revenue chart", "Reflect final September totals")
+subtask3 = ListItem("Export PDF and upload to Board Portal", "Requires admin permissions")
 
-confirmControl = FormControl("Sign-off Confirmation", confirmCheck)
-confirmCheck = CheckBoxGroup("confirmation", [confirmItem])
-confirmItem = CheckBoxItem("I confirm all compliance checks are verified", "Required before marking this task as complete", "verified", true)
+markDoneSection = Card([actionHeading, markDoneForm], "card", "column", "s")
+actionHeading = Heading("Complete Task", "h3")
+
+markDoneForm = Form("complete-task-form", actionButtons, [notesField])
+notesField = FormControl("Completion Notes (Optional)", notesInput)
+notesInput = TextArea("notes", "Add any handover notes or context...", 2)
 
 actionButtons = Buttons([doneBtn, snoozeBtn], "row")
-doneBtn = Button("Mark Task Done", null, "primary")
-snoozeBtn = Button("Snooze 1 Hour", null, "secondary")
+doneBtn = Button("Mark as Completed", null, "primary")
+snoozeBtn = Button("Request Extension (+1h)", null, "secondary")
 
 followUp = FollowUpBlock([nextTaskItem, summarizeItem])
-nextTaskItem = FollowUpItem("What is my next most urgent task?")
-summarizeItem = FollowUpItem("Summarize today's completed focus tasks")
+nextTaskItem = FollowUpItem("Show my next urgent task")
+summarizeItem = FollowUpItem("Summarize my completed tasks today")

@@ -1,14 +1,221 @@
-Your single-screen learner home is ready — all 6 items covered:
+Your course home is ready — progress, next lesson, and continue action all in one view:
 
-<a2ui-json>{"version":"v0.9","createSurface":{"surfaceId":"learner-course-home","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#4F46E5","agentDisplayName":"LearnHub"},"sendDataModel":false}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
 
-<a2ui-json>{"version":"v0.9","updateComponents":{"surfaceId":"learner-course-home","components":[{"component":"Card","id":"root","children":["heroCard","nextLessonAlert","nextLessonCard","modulesCard","footerHelp"],"direction":"column","gap":"l","variant":"clear"},{"component":"Card","id":"heroCard","children":["courseTitle","instructorText","heroSeparator","statsRow"],"direction":"column","gap":"m","variant":"card"},{"component":"Heading","id":"courseTitle","text":"Design Systems Fundamentals","level":"h1"},{"component":"TextContent","id":"instructorText","text":"with **Dr. Elena Torres** · Lead Product Designer, Figma · 6 modules · 29 lessons · 8.5 hours","size":"default"},{"component":"Separator","id":"heroSeparator","orientation":"horizontal","decorative":true},{"component":"Card","id":"statsRow","children":["progressCard","ratingCard","continueActionCard"],"direction":"row","gap":"m","variant":"clear","align":"stretch","wrap":true},{"component":"Card","id":"progressCard","children":["progressLabel","progressBar","progressDetail"],"direction":"column","gap":"s","variant":"sunk"},{"component":"TextContent","id":"progressLabel","text":"Overall Progress","size":"small-heavy"},{"component":"Progress","id":"progressBar","value":62,"label":"62% complete"},{"component":"TextContent","id":"progressDetail","text":"18 of 29 lessons · 4 of 6 modules finished · ~3.2 hrs remaining","size":"small"},{"component":"Card","id":"ratingCard","children":["ratingLabel","ratingValue","ratingDetail","ratingTags"],"direction":"column","gap":"s","variant":"sunk"},{"component":"TextContent","id":"ratingLabel","text":"Average Learner Rating","size":"small-heavy"},{"component":"Heading","id":"ratingValue","text":"★ 4.8 / 5.0","level":"h2"},{"component":"TextContent","id":"ratingDetail","text":"Based on 2,847 ratings · 94% would recommend","size":"small"},{"component":"TagBlock","id":"ratingTags","tags":["Highly Rated","Top 5% Course","Updated Mar 2026"]},{"component":"Card","id":"continueActionCard","children":["continueBtn","continueHint"],"direction":"column","gap":"s","variant":"clear","align":"center","justify":"center"},{"component":"Button","id":"continueBtn","label":"▶ Continue Learning","variant":"primary","size":"large"},{"component":"TextContent","id":"continueHint","text":"Resume where you left off — 1 click to next lesson","size":"small"},{"component":"Callout","id":"nextLessonAlert","variant":"info","title":"Next Up: Module 4 — Lesson 1","description":"You're ready for 'Documenting Components for Scale' · 12 min · Video + exercise. This is your immediate next step."},{"component":"Card","id":"nextLessonCard","children":["nextLessonHeader","nextLessonTitle","nextLessonMeta","nextLessonButtons"],"direction":"column","gap":"m","variant":"card"},{"component":"CardHeader","id":"nextLessonHeader","title":"Next Lesson","subtitle":"Module 4: Patterns & Documentation · Lesson 1 of 5"},{"component":"TextContent","id":"nextLessonTitle","text":"### Documenting Components for Scale\nLearn how to write usage guidelines, props tables, and live examples that teams actually use. Includes a hands-on Notion template.","size":"default"},{"component":"TextContent","id":"nextLessonMeta","text":"⏱ 12 min  ·  🎥 Video  ·  📝 Exercise  ·  Prerequisite: Component Architecture completed","size":"small"},{"component":"Buttons","id":"nextLessonButtons","buttons":["nextLessonContinueBtn","nextLessonPreviewBtn"],"direction":"row"},{"component":"Button","id":"nextLessonContinueBtn","label":"Continue to Lesson →","variant":"primary"},{"component":"Button","id":"nextLessonPreviewBtn","label":"Preview Lesson Outline","variant":"secondary"},{"component":"Card","id":"modulesCard","children":["modulesHeader","modulesTable","modulesProgressSummary"],"direction":"column","gap":"m","variant":"card"},{"component":"CardHeader","id":"modulesHeader","title":"Course Modules","subtitle":"6 modules · Completion status tracked automatically"},{"component":"Table","id":"modulesTable","columns":["colModule","colStatus","colProgress"]},{"component":"Col","id":"colModule","label":"Module","data":["01 · Introduction to Design Systems","02 · Foundations & Tokens","03 · Component Architecture","04 · Patterns & Documentation","05 · Governance & Scaling","06 · Final Project & Review"],"type":"string"},{"component":"Col","id":"colStatus","label":"Status","data":["✓ Completed","✓ Completed","● In Progress — 3/5 lessons","○ Up Next","○ Not Started","○ Not Started"],"type":"string"},{"component":"Col","id":"colProgress","label":"Progress","data":["100%","100%","65%","0% — Next lesson highlighted above","0%","0%"],"type":"string"},{"component":"TextContent","id":"modulesProgressSummary","text":"You’ve completed **18 lessons**. Module 3 is 65% done — finish its 2 remaining lessons to unlock the certificate track.","size":"small"},{"component":"TextContent","id":"footerHelp","text":"Need help? Jump to **Module 3, Lesson 4** or message Dr. Torres during office hours (Tue/Thu 4pm PT).","size":"small"}]}}</a2ui-json>
-
-**What’s covered on this single screen:**
-
-1. **Course title & instructor** — Hero header: *Design Systems Fundamentals* with Dr. Elena Torres
-2. **Overall progress** — 62% Progress bar with “18 of 29 lessons” detail
-3. **Modules with status** — Table showing all 6 modules: Completed / In Progress / Up Next / Not Started with % per module
-4. **Next lesson called out** — Blue Callout + dedicated “Next Lesson” card for *Documenting Components for Scale* (Module 4, Lesson 1)
-5. **Average learner rating** — 4.8 / 5.0 from 2,847 ratings
-6. **Continue learning** — Primary “Continue Learning” button (hero) + “Continue to Lesson →” button in next lesson card
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "overallProgressCard",
+          "nextLessonAlert",
+          "ratingSection",
+          "modulesSection",
+          "continueSection"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Modern Web Development Bootcamp",
+        "subtitle": "Instructor: Dr. Maya Chen • 12 weeks • 25 lessons • Certificate included"
+      },
+      {
+        "id": "overallProgressCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "progressTitle",
+          "progressBar",
+          "progressDetail"
+        ],
+        "gap": "s"
+      },
+      {
+        "id": "progressTitle",
+        "component": "TextContent",
+        "text": "**Overall Progress — 68% complete**",
+        "size": "large-heavy"
+      },
+      {
+        "id": "progressBar",
+        "component": "Progress",
+        "value": 68,
+        "label": "68% • 17 of 25 lessons completed"
+      },
+      {
+        "id": "progressDetail",
+        "component": "TextContent",
+        "text": "Great momentum! 2 modules completed, 1 in progress. ~3.5 hours remaining.",
+        "size": "small"
+      },
+      {
+        "id": "nextLessonAlert",
+        "component": "Alert",
+        "variant": "info",
+        "title": "Up Next: Lesson 3.4 — Context API & useReducer",
+        "description": "Module 3 • React & State Management • 18 min video + hands-on exercise • Pick up exactly where you left off."
+      },
+      {
+        "id": "ratingSection",
+        "component": "Card",
+        "variant": "clear",
+        "children": [
+          "ratingStatsRow",
+          "ratingCaption"
+        ],
+        "gap": "xs"
+      },
+      {
+        "id": "ratingStatsRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "align": "center",
+        "gap": "m",
+        "children": [
+          "ratingScore",
+          "ratingBadge"
+        ]
+      },
+      {
+        "id": "ratingScore",
+        "component": "Heading",
+        "text": "★ 4.8 / 5.0",
+        "level": "h2"
+      },
+      {
+        "id": "ratingBadge",
+        "component": "Badge",
+        "text": "Excellent • 2,431 ratings",
+        "variant": "secondary"
+      },
+      {
+        "id": "ratingCaption",
+        "component": "TextContent",
+        "text": "Average learner rating • 96% would recommend • Updated weekly from verified completions",
+        "size": "small"
+      },
+      {
+        "id": "modulesSection",
+        "component": "Card",
+        "variant": "clear",
+        "children": [
+          "modulesHeader",
+          "modulesTable",
+          "modulesLegend"
+        ],
+        "gap": "s"
+      },
+      {
+        "id": "modulesHeader",
+        "component": "CardHeader",
+        "title": "Course Modules",
+        "subtitle": "5 modules • Track completion status for each"
+      },
+      {
+        "id": "modulesTable",
+        "component": "Table",
+        "columns": [
+          "colModule",
+          "colStatus",
+          "colProgress"
+        ]
+      },
+      {
+        "id": "colModule",
+        "component": "Col",
+        "label": "Module",
+        "data": [
+          "1. HTML & CSS Foundations",
+          "2. JavaScript Fundamentals",
+          "3. React & State Management",
+          "4. Backend with Node.js",
+          "5. Capstone Project"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "✓ Completed",
+          "✓ Completed",
+          "● In Progress",
+          "○ Not Started",
+          "○ Locked"
+        ]
+      },
+      {
+        "id": "colProgress",
+        "component": "Col",
+        "label": "Progress",
+        "data": [
+          "100% • 5/5 lessons",
+          "100% • 6/6 lessons",
+          "45% • 4/9 lessons",
+          "0% • 0/4 lessons",
+          "0% • 0/1 project"
+        ]
+      },
+      {
+        "id": "modulesLegend",
+        "component": "TextContent",
+        "text": "✓ Completed • ● In Progress (resumes at Lesson 3.4) • ○ Not Started — unlocks after previous module",
+        "size": "small"
+      },
+      {
+        "id": "continueSection",
+        "component": "Card",
+        "variant": "clear",
+        "children": [
+          "continueButtons",
+          "continueHint"
+        ],
+        "gap": "xs"
+      },
+      {
+        "id": "continueButtons",
+        "component": "Buttons",
+        "buttons": [
+          "continueBtn",
+          "viewSyllabusBtn"
+        ]
+      },
+      {
+        "id": "continueBtn",
+        "component": "Button",
+        "label": "Continue Learning → Resume Lesson 3.4",
+        "variant": "primary"
+      },
+      {
+        "id": "viewSyllabusBtn",
+        "component": "Button",
+        "label": "View Full Syllabus",
+        "variant": "secondary"
+      },
+      {
+        "id": "continueHint",
+        "component": "TextContent",
+        "text": "Resumes at Module 3, Lesson 4 — Context API & useReducer (18 min) • Your progress is auto-saved",
+        "size": "small"
+      }
+    ]
+  }
+}
+</a2ui-json>

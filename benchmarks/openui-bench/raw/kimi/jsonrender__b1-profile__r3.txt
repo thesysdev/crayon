@@ -1,20 +1,26 @@
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["profile-card","bio-card","message-card"]}}
-{"op":"add","path":"/elements/profile-card","value":{"type":"Card","props":{"variant":"card","direction":"row","gap":"m","align":"center"},"children":["avatar","profile-info"]}}
-{"op":"add","path":"/elements/avatar","value":{"type":"Avatar","props":{"src":"https://i.pravatar.cc/150?img=32","alt":"Sarah Chen","fallback":"SC"},"children":[]}}
-{"op":"add","path":"/elements/profile-info","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["name","role","dept-tag"]}}
-{"op":"add","path":"/elements/name","value":{"type":"Heading","props":{"text":{"$state":"/person/name"},"level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/role","value":{"type":"TextContent","props":{"text":{"$template":"${/person/role} · ${/person/department}"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/dept-tag","value":{"type":"Tag","props":{"text":{"$state":"/person/location"},"icon":"📍","variant":"info","size":"sm"},"children":[]}}
-{"op":"add","path":"/state/person","value":{"name":"Sarah Chen","role":"Senior Product Designer","department":"Design Team","location":"San Francisco, CA","bio":"Sarah has been designing intuitive product experiences for over 8 years. She leads the design system initiative and is passionate about accessibility, mentoring junior designers, and turning complex problems into simple, elegant interfaces. Outside of work, she's an avid trail runner and amateur potter."}}
-{"op":"add","path":"/elements/bio-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["bio-header","bio-text"]}}
-{"op":"add","path":"/elements/bio-header","value":{"type":"CardHeader","props":{"title":"About"},"children":[]}}
-{"op":"add","path":"/elements/bio-text","value":{"type":"TextContent","props":{"text":{"$state":"/person/bio"}},"children":[]}}
-{"op":"add","path":"/elements/message-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["msg-header","msg-input","msg-actions","msg-sent"]}}
-{"op":"add","path":"/elements/msg-header","value":{"type":"CardHeader","props":{"title":"Send a Message","subtitle":"Your message will be delivered to Sarah's inbox"},"children":[]}}
-{"op":"add","path":"/elements/msg-input","value":{"type":"TextArea","props":{"name":"message","placeholder":"Write your message to Sarah...","rows":4,"value":{"$bindState":"/draftMessage"}},"children":[]}}
-{"op":"add","path":"/state/draftMessage","value":""}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"gap":"l"},"children":["headerRow","bioCard","msgCard"]}}
+{"op":"add","path":"/elements/headerRow","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center"},"children":["avatar","nameRole","statusTag"]}}
+{"op":"add","path":"/elements/avatar","value":{"type":"Avatar","props":{"fallback":"AR","alt":"Ava Reyes"}}}
+{"op":"add","path":"/elements/nameRole","value":{"type":"Card","props":{"variant":"clear","gap":"xs"},"children":["name","role","tags"]}}
+{"op":"add","path":"/elements/name","value":{"type":"Heading","props":{"text":"Ava Reyes","level":"h2"}}}
+{"op":"add","path":"/elements/role","value":{"type":"TextContent","props":{"text":"Senior Product Designer — Design Systems Team","size":"small-heavy"}}}
+{"op":"add","path":"/elements/tags","value":{"type":"TagBlock","props":{"tags":["Design","Figma","Accessibility"]}}}
+{"op":"add","path":"/elements/statusTag","value":{"type":"Tag","props":{"text":"Available","icon":"check","variant":"success"}}}
+{"op":"add","path":"/elements/bioCard","value":{"type":"Card","props":{"gap":"s"},"children":["bioHeader","bioText"]}}
+{"op":"add","path":"/elements/bioHeader","value":{"type":"CardHeader","props":{"title":"About"}}}
+{"op":"add","path":"/elements/bioText","value":{"type":"TextContent","props":{"text":"Ava has spent 8 years crafting intuitive interfaces and scalable design systems. She leads the component library used across all company products, mentors junior designers, and cares deeply about accessibility and inclusive design. Outside of work, she's an amateur potter and trail runner."}}}
+{"op":"add","path":"/elements/msgCard","value":{"type":"Card","props":{"gap":"m"},"children":["msgHeader","sentCallout","msgForm"]}}
+{"op":"add","path":"/elements/msgHeader","value":{"type":"CardHeader","props":{"title":"Send Ava a message","subtitle":"She usually replies within a day"}}}
+{"op":"add","path":"/elements/sentCallout","value":{"type":"Callout","props":{"variant":"success","title":"Message sent","description":"Ava will get back to you soon."},"visible":{"$state":"/messageSent"},"children":[]}}
 {"op":"add","path":"/state/messageSent","value":false}
-{"op":"add","path":"/elements/msg-actions","value":{"type":"Buttons","props":{"buttons":["send-btn"],"direction":"row"},"children":[]}}
-{"op":"add","path":"/elements/send-btn","value":{"type":"Button","props":{"label":"Send Message","variant":"primary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/messageSent","value":true}}},"children":[]}}
-{"op":"add","path":"/elements/msg-sent","value":{"type":"Callout","props":{"variant":"success","title":"Message Sent","description":"Sarah will get back to you soon."},"visible":{"$state":"/messageSent"},"children":[]}}
+{"op":"add","path":"/elements/msgForm","value":{"type":"Form","props":{"name":"message-ava","buttons":"msgButtons","fields":["subjectField","bodyField"]}}}
+{"op":"add","path":"/elements/subjectField","value":{"type":"FormControl","props":{"label":"Subject","input":"subjectInput"}}}
+{"op":"add","path":"/elements/subjectInput","value":{"type":"Input","props":{"name":"subject","placeholder":"Question about the design system","value":{"$bindState":"/message/subject"}}}}
+{"op":"add","path":"/state/message/subject","value":""}
+{"op":"add","path":"/elements/bodyField","value":{"type":"FormControl","props":{"label":"Message","input":"bodyInput","hint":"Be specific so Ava can help quickly"}}}
+{"op":"add","path":"/elements/bodyInput","value":{"type":"TextArea","props":{"name":"body","placeholder":"Hi Ava, I wanted to ask about...","rows":5,"value":{"$bindState":"/message/body"}}}}
+{"op":"add","path":"/state/message/body","value":""}
+{"op":"add","path":"/elements/msgButtons","value":{"type":"Buttons","props":{"buttons":["sendBtn","clearBtn"]}}}
+{"op":"add","path":"/elements/sendBtn","value":{"type":"Button","props":{"label":"Send message","variant":"primary"},"on":{"press":{"action":"setState","params":{"statePath":"/messageSent","value":true}}}}}
+{"op":"add","path":"/elements/clearBtn","value":{"type":"Button","props":{"label":"Clear","variant":"tertiary"},"on":{"press":{"action":"setState","params":{"statePath":"/message/body","value":""}}}}}

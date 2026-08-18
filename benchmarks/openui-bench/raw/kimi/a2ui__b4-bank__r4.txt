@@ -1,117 +1,350 @@
-Here's a complete personal banking home screen covering all 11 requirements:
+Here's your personal banking home — balances, transactions, spending, bills, goals, credit score, plus transfers, freeze, statements, alert triggers, and disputes all on one screen.
 
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"banking-home","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#1E5EFF","agentDisplayName":"Personal Banking"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"banking-home","components":[
-{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["header","balancesCard","mainRow","goalsRow","actionsCard","alertsCard"]},
-{"id":"header","component":"CardHeader","title":"Good morning, Alex","subtitle":"Here's your financial overview for November"},
-
-{"id":"balancesCard","component":"Card","variant":"card","direction":"column","gap":"m","children":["balancesHeader","balancesTable","creditScoreRow"]},
-{"id":"balancesHeader","component":"CardHeader","title":"Account Balances","subtitle":"As of today"},
-{"id":"balancesTable","component":"Table","columns":["colAccount","colBalance","colStatus"]},
-{"id":"colAccount","component":"Col","label":"Account","data":["Checking ••4821","Savings ••9034","Credit Card ••7710"],"type":"string"},
-{"id":"colBalance","component":"Col","label":"Balance","data":["$4,280.55","$18,940.20","-$1,245.80"],"type":"string"},
-{"id":"colStatus","component":"Col","label":"Status","data":["Active","Active","Active"],"type":"string"},
-{"id":"creditScoreRow","component":"Card","variant":"sunk","direction":"row","gap":"l","align":"center","justify":"between","children":["creditScoreText","creditScoreBadge"]},
-{"id":"creditScoreText","component":"TextContent","text":"**Credit Score: 742** — Excellent. Up 8 points since last month.","size":"default"},
-{"id":"creditScoreBadge","component":"Badge","text":"Excellent","variant":"default"},
-
-{"id":"mainRow","component":"Card","variant":"clear","direction":"row","gap":"l","wrap":true,"children":["transactionsCard","spendingCard"]},
-{"id":"transactionsCard","component":"Card","variant":"card","direction":"column","gap":"m","weight":1,"children":["txHeader","txTable","disputeSection","statementPicker"]},
-{"id":"txHeader","component":"CardHeader","title":"Recent Transactions","subtitle":"Last 7 days"},
-{"id":"txTable","component":"Table","columns":["colMerchant","colDate","colAmount"]},
-{"id":"colMerchant","component":"Col","label":"Merchant","data":["Whole Foods Market","Shell Gas Station","Netflix","Amazon.com","Starbucks","PG&E Utilities"],"type":"string"},
-{"id":"colDate","component":"Col","label":"Date","data":["Nov 12","Nov 11","Nov 10","Nov 9","Nov 8","Nov 7"],"type":"string"},
-{"id":"colAmount","component":"Col","label":"Amount","data":["-$86.42","-$45.00","-$15.99","-$112.30","-$6.75","-$98.20"],"type":"string"},
-{"id":"disputeSection","component":"Card","variant":"sunk","direction":"column","gap":"s","children":["disputeHeader","disputeForm"]},
-{"id":"disputeHeader","component":"TextContent","text":"**Dispute a Transaction**","size":"small-heavy"},
-{"id":"disputeForm","component":"Form","name":"disputeForm","buttons":"disputeButtons","fields":["disputeMerchantControl","disputeReasonControl","disputeDetailsControl"]},
-{"id":"disputeMerchantControl","component":"FormControl","label":"Transaction","input":"disputeMerchantSelect","hint":"Pick the transaction to dispute"},
-{"id":"disputeMerchantSelect","component":"Select","name":"merchant","placeholder":"Select transaction","items":["dItem1","dItem2","dItem3","dItem4","dItem5","dItem6"]},
-{"id":"dItem1","component":"SelectItem","value":"wholefoods","label":"Whole Foods — $86.42"},
-{"id":"dItem2","component":"SelectItem","value":"shell","label":"Shell — $45.00"},
-{"id":"dItem3","component":"SelectItem","value":"netflix","label":"Netflix — $15.99"},
-{"id":"dItem4","component":"SelectItem","value":"amazon","label":"Amazon — $112.30"},
-{"id":"dItem5","component":"SelectItem","value":"starbucks","label":"Starbucks — $6.75"},
-{"id":"dItem6","component":"SelectItem","value":"pge","label":"PG&E — $98.20"},
-{"id":"disputeReasonControl","component":"FormControl","label":"Reason","input":"disputeReasonSelect"},
-{"id":"disputeReasonSelect","component":"Select","name":"reason","placeholder":"Select reason","items":["rItem1","rItem2","rItem3","rItem4"]},
-{"id":"rItem1","component":"SelectItem","value":"unauthorized","label":"Unauthorized charge"},
-{"id":"rItem2","component":"SelectItem","value":"duplicate","label":"Duplicate charge"},
-{"id":"rItem3","component":"SelectItem","value":"wrong_amount","label":"Wrong amount"},
-{"id":"rItem4","component":"SelectItem","value":"not_received","label":"Item/service not received"},
-{"id":"disputeDetailsControl","component":"FormControl","label":"Details","input":"disputeDetails"},
-{"id":"disputeDetails","component":"TextArea","name":"details","placeholder":"Describe the issue...","rows":3},
-{"id":"disputeButtons","component":"Buttons","buttons":["disputeSubmit"]},
-{"id":"disputeSubmit","component":"Button","label":"Submit Dispute","variant":"primary","action":[{"event":"submit_dispute"}]},
-{"id":"statementPicker","component":"Card","variant":"sunk","direction":"column","gap":"s","children":["statementHeader","statementControl"]},
-{"id":"statementHeader","component":"TextContent","text":"**Statement Period**","size":"small-heavy"},
-{"id":"statementControl","component":"FormControl","label":"Select period","input":"statementDatePicker","hint":"Choose a date range to download or view statements"},
-{"id":"statementDatePicker","component":"DatePicker","name":"statementPeriod","mode":"range"},
-
-{"id":"spendingCard","component":"Card","variant":"card","direction":"column","gap":"m","weight":1,"children":["spendingHeader","spendingChart","billsHeader","billsList"]},
-{"id":"spendingHeader","component":"CardHeader","title":"Spending This Month","subtitle":"$1,842 total across categories"},
-{"id":"spendingChart","component":"PieChart","variant":"donut","labels":["Groceries","Dining","Transport","Utilities","Entertainment","Shopping"],"values":[520,310,240,180,142,450]},
-{"id":"billsHeader","component":"CardHeader","title":"Bills Due Soon","subtitle":"Next 14 days"},
-{"id":"billsList","component":"ListBlock","variant":"number","items":["bill1","bill2","bill3"]},
-{"id":"bill1","component":"ListItem","title":"Rent — $1,650","subtitle":"Due Nov 15 · Auto-pay on"},
-{"id":"bill2","component":"ListItem","title":"Electric (PG&E) — $98.20","subtitle":"Due Nov 18 · Auto-pay off"},
-{"id":"bill3","component":"ListItem","title":"Internet (Comcast) — $79.99","subtitle":"Due Nov 22 · Auto-pay on"},
-
-{"id":"goalsRow","component":"Card","variant":"clear","direction":"row","gap":"l","wrap":true,"children":["goalCard","transferCard"]},
-{"id":"goalCard","component":"Card","variant":"card","direction":"column","gap":"m","weight":1,"children":["goalHeader","goalProgress","goalText"]},
-{"id":"goalHeader","component":"CardHeader","title":"Vacation Savings Goal","subtitle":"Hawaii trip — June 2026"},
-{"id":"goalProgress","component":"Progress","value":68,"label":"$3,400 of $5,000 saved"},
-{"id":"goalText","component":"TextContent","text":"You're on track! At your current pace of $400/month, you'll hit your goal by April 2026 — two months early. 🎉","size":"small"},
-{"id":"transferCard","component":"Card","variant":"card","direction":"column","gap":"m","weight":1,"children":["transferHeader","transferForm"]},
-{"id":"transferHeader","component":"CardHeader","title":"Move Money","subtitle":"Transfer between your accounts"},
-{"id":"transferForm","component":"Form","name":"transferForm","buttons":"transferButtons","fields":["fromControl","toControl","amountControl"]},
-{"id":"fromControl","component":"FormControl","label":"From","input":"fromSelect"},
-{"id":"fromSelect","component":"Select","name":"from","placeholder":"Source account","items":["fromChecking","fromSavings"]},
-{"id":"fromChecking","component":"SelectItem","value":"checking","label":"Checking ••4821 — $4,280.55"},
-{"id":"fromSavings","component":"SelectItem","value":"savings","label":"Savings ••9034 — $18,940.20"},
-{"id":"toControl","component":"FormControl","label":"To","input":"toSelect"},
-{"id":"toSelect","component":"Select","name":"to","placeholder":"Destination account","items":["toChecking","toSavings","toCredit"]},
-{"id":"toChecking","component":"SelectItem","value":"checking","label":"Checking ••4821"},
-{"id":"toSavings","component":"SelectItem","value":"savings","label":"Savings ••9034"},
-{"id":"toCredit","component":"SelectItem","value":"credit","label":"Credit Card ••7710 (payment)"},
-{"id":"amountControl","component":"FormControl","label":"Amount","input":"amountInput","hint":"Enter an amount in USD"},
-{"id":"amountInput","component":"Input","name":"amount","type":"number","placeholder":"0.00"},
-{"id":"transferButtons","component":"Buttons","buttons":["transferSubmit"]},
-{"id":"transferSubmit","component":"Button","label":"Transfer Now","variant":"primary","action":[{"event":"submit_transfer"}]},
-
-{"id":"actionsCard","component":"Card","variant":"card","direction":"column","gap":"m","children":["creditLineHeader","creditLineRow"]},
-{"id":"creditLineHeader","component":"CardHeader","title":"Credit Line Controls","subtitle":"Instantly freeze or unfreeze your credit line"},
-{"id":"creditLineRow","component":"Card","variant":"sunk","direction":"row","gap":"l","align":"center","justify":"between","children":["creditLineStatus","freezeButton"]},
-{"id":"creditLineStatus","component":"TextContent","text":"**Credit line is currently ACTIVE.** Freezing blocks all new purchases instantly; recurring charges still process.","size":"default"},
-{"id":"freezeButton","component":"Button","label":"Freeze Credit Line","variant":"secondary","type":"destructive","action":[{"event":"freeze_credit_line"}]},
-
-{"id":"alertsCard","component":"Card","variant":"card","direction":"column","gap":"m","children":["alertsHeader","alertsGroup"]},
-{"id":"alertsHeader","component":"CardHeader","title":"Alert Preferences","subtitle":"Choose what triggers a notification"},
-{"id":"alertsGroup","component":"SwitchGroup","name":"alertPrefs","variant":"clear","items":["alert1","alert2","alert3","alert4","alert5"]},
-{"id":"alert1","component":"SwitchItem","name":"large_purchase","label":"Large purchases","description":"Any transaction over $200","defaultChecked":true},
-{"id":"alert2","component":"SwitchItem","name":"low_balance","label":"Low balance","description":"Checking drops below $500","defaultChecked":true},
-{"id":"alert3","component":"SwitchItem","name":"bill_due","label":"Bill due reminders","description":"3 days before a bill is due","defaultChecked":true},
-{"id":"alert4","component":"SwitchItem","name":"international","label":"International transactions","description":"Any charge made outside the US","defaultChecked":false},
-{"id":"alert5","component":"SwitchItem","name":"score_change","label":"Credit score changes","description":"Monthly score updates and big shifts","defaultChecked":false}
-]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "quickAlert",
+          "balancesRow",
+          "sepA",
+          "txnHeading",
+          "txnTable",
+          "sepB",
+          "spendHeading",
+          "spendChart",
+          "sepC",
+          "midRow",
+          "sepD",
+          "transferHeading",
+          "transferForm",
+          "sepE",
+          "manageRow",
+          "sepF",
+          "securityCard"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Good morning, Alex",
+        "subtitle": "Your money at a glance · Tuesday, Oct 7"
+      },
+      {
+        "id": "quickAlert",
+        "component": "Alert",
+        "title": "2 bills due this week",
+        "description": "Electric ($84.20) due Oct 10 and Internet ($59.99) due Oct 12.",
+        "variant": "warning"
+      },
+      {
+        "id": "balancesRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": ["checkingCard", "savingsCard", "creditCard"]
+      },
+      {
+        "id": "checkingCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["checkingLabel", "checkingAmt", "checkingSub"]
+      },
+      { "id": "checkingLabel", "component": "Label", "text": "Checking" },
+      { "id": "checkingAmt", "component": "Heading", "text": "$4,250.33", "level": "h3" },
+      { "id": "checkingSub", "component": "TextContent", "text": "••••4821 · Available now", "size": "small" },
+      {
+        "id": "savingsCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["savingsLabel", "savingsAmt", "savingsSub"]
+      },
+      { "id": "savingsLabel", "component": "Label", "text": "Savings" },
+      { "id": "savingsAmt", "component": "Heading", "text": "$12,840.10", "level": "h3" },
+      { "id": "savingsSub", "component": "TextContent", "text": "••••7710 · APY 4.20%", "size": "small" },
+      {
+        "id": "creditCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["creditLabel", "creditAmt", "creditSub"]
+      },
+      { "id": "creditLabel", "component": "Label", "text": "Credit Card" },
+      { "id": "creditAmt", "component": "Heading", "text": "$1,230.45", "level": "h3" },
+      { "id": "creditSub", "component": "TextContent", "text": "••••9934 · $8,769.55 of $10,000 available", "size": "small" },
+      { "id": "sepA", "component": "Separator", "decorative": true },
+      { "id": "txnHeading", "component": "Heading", "text": "Recent transactions", "level": "h3" },
+      {
+        "id": "txnTable",
+        "component": "Table",
+        "columns": ["txnMerchant", "txnDate", "txnAmount", "txnAction"]
+      },
+      {
+        "id": "txnMerchant",
+        "component": "Col",
+        "label": "Merchant",
+        "data": ["Whole Foods", "Netflix", "Shell", "Amazon", "Payroll — Acme Corp"]
+      },
+      {
+        "id": "txnDate",
+        "component": "Col",
+        "label": "Date",
+        "data": ["Oct 6", "Oct 5", "Oct 4", "Oct 3", "Oct 1"]
+      },
+      {
+        "id": "txnAmount",
+        "component": "Col",
+        "label": "Amount",
+        "data": ["-$82.14", "-$15.99", "-$46.30", "-$129.99", "+$3,200.00"]
+      },
+      {
+        "id": "txnAction",
+        "component": "Col",
+        "label": "",
+        "type": "action",
+        "data": ["Dispute", "Dispute", "Dispute", "Dispute", "—"]
+      },
+      { "id": "sepB", "component": "Separator", "decorative": true },
+      { "id": "spendHeading", "component": "Heading", "text": "Spending this month", "level": "h3" },
+      {
+        "id": "spendChart",
+        "component": "PieChart",
+        "labels": ["Groceries", "Dining", "Transport", "Shopping", "Bills", "Other"],
+        "values": [540, 310, 220, 480, 720, 190],
+        "variant": "donut",
+        "appearance": "circular"
+      },
+      { "id": "sepC", "component": "Separator", "decorative": true },
+      {
+        "id": "midRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": ["billsCard", "goalsCard"]
+      },
+      {
+        "id": "billsCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["billsHeader", "billsList"]
+      },
+      { "id": "billsHeader", "component": "CardHeader", "title": "Bills due soon" },
+      {
+        "id": "billsList",
+        "component": "ListBlock",
+        "items": ["bill1", "bill2", "bill3"]
+      },
+      { "id": "bill1", "component": "ListItem", "title": "Electric — City Power", "subtitle": "Due Oct 10 · $84.20", "actionLabel": "Pay" },
+      { "id": "bill2", "component": "ListItem", "title": "Internet — NetFast", "subtitle": "Due Oct 12 · $59.99", "actionLabel": "Pay" },
+      { "id": "bill3", "component": "ListItem", "title": "Water — Metro Utilities", "subtitle": "Due Oct 15 · $41.75 · Autopay on", "actionLabel": "Manage" },
+      {
+        "id": "goalsCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["goalsHeader", "vacationProgress", "goalsSep", "scoreLabel", "scoreValue", "scoreBadge", "scoreSub"]
+      },
+      { "id": "goalsHeader", "component": "CardHeader", "title": "Goals & credit" },
+      { "id": "vacationProgress", "component": "Progress", "value": 62, "label": "Vacation fund — $3,100 of $5,000" },
+      { "id": "goalsSep", "component": "Separator", "decorative": true },
+      { "id": "scoreLabel", "component": "Label", "text": "Credit score" },
+      { "id": "scoreValue", "component": "Heading", "text": "762", "level": "h2" },
+      { "id": "scoreBadge", "component": "Badge", "text": "Excellent · +6 pts this month", "variant": "secondary" },
+      { "id": "scoreSub", "component": "TextContent", "text": "Updated Oct 1 · TransUnion", "size": "small" },
+      { "id": "sepD", "component": "Separator", "decorative": true },
+      { "id": "transferHeading", "component": "Heading", "text": "Move money", "level": "h3" },
+      {
+        "id": "transferForm",
+        "component": "Form",
+        "name": "transfer",
+        "buttons": "transferButtons",
+        "fields": ["fromField", "toField", "amountField"]
+      },
+      { "id": "fromField", "component": "FormControl", "label": "From", "input": "fromSelect" },
+      {
+        "id": "fromSelect",
+        "component": "Select",
+        "name": "from_account",
+        "placeholder": "Choose account",
+        "items": ["fromChecking", "fromSavings"]
+      },
+      { "id": "fromChecking", "component": "SelectItem", "value": "checking", "label": "Checking ••••4821 — $4,250.33" },
+      { "id": "fromSavings", "component": "SelectItem", "value": "savings", "label": "Savings ••••7710 — $12,840.10" },
+      { "id": "toField", "component": "FormControl", "label": "To", "input": "toSelect" },
+      {
+        "id": "toSelect",
+        "component": "Select",
+        "name": "to_account",
+        "placeholder": "Choose account",
+        "items": ["toChecking", "toSavings", "toCredit"]
+      },
+      { "id": "toChecking", "component": "SelectItem", "value": "checking", "label": "Checking ••••4821" },
+      { "id": "toSavings", "component": "SelectItem", "value": "savings", "label": "Savings ••••7710" },
+      { "id": "toCredit", "component": "SelectItem", "value": "credit", "label": "Credit card ••••9934 — pay down balance" },
+      {
+        "id": "amountField",
+        "component": "FormControl",
+        "label": "Amount",
+        "input": "amountInput",
+        "hint": "Transfers between your accounts are instant."
+      },
+      { "id": "amountInput", "component": "Input", "name": "amount", "type": "number", "placeholder": "0.00" },
+      { "id": "transferButtons", "component": "Buttons", "buttons": ["transferSubmit"] },
+      { "id": "transferSubmit", "component": "Button", "label": "Transfer now", "variant": "primary" },
+      { "id": "sepE", "component": "Separator", "decorative": true },
+      {
+        "id": "manageRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": ["statementsCard", "alertsCard"]
+      },
+      {
+        "id": "statementsCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["statementsHeader", "statementsForm"]
+      },
+      { "id": "statementsHeader", "component": "CardHeader", "title": "Statements" },
+      {
+        "id": "statementsForm",
+        "component": "Form",
+        "name": "statements",
+        "buttons": "statementsButtons",
+        "fields": ["periodField"]
+      },
+      { "id": "periodField", "component": "FormControl", "label": "Statement period", "input": "periodSelect" },
+      {
+        "id": "periodSelect",
+        "component": "Select",
+        "name": "period",
+        "placeholder": "Select a period",
+        "items": ["p1", "p2", "p3", "p4"]
+      },
+      { "id": "p1", "component": "SelectItem", "value": "2025-09", "label": "September 2025" },
+      { "id": "p2", "component": "SelectItem", "value": "2025-08", "label": "August 2025" },
+      { "id": "p3", "component": "SelectItem", "value": "2025-q3", "label": "Q3 2025 (Jul–Sep)" },
+      { "id": "p4", "component": "SelectItem", "value": "custom", "label": "Custom range…" },
+      { "id": "statementsButtons", "component": "Buttons", "buttons": ["downloadBtn"] },
+      { "id": "downloadBtn", "component": "Button", "label": "Download statement", "variant": "secondary" },
+      {
+        "id": "alertsCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["alertsHeader", "alertsForm"]
+      },
+      { "id": "alertsHeader", "component": "CardHeader", "title": "Alert triggers" },
+      {
+        "id": "alertsForm",
+        "component": "Form",
+        "name": "alerts",
+        "buttons": "alertsButtons",
+        "fields": ["alertsField"]
+      },
+      { "id": "alertsField", "component": "FormControl", "label": "Notify me when…", "input": "alertsSwitch" },
+      {
+        "id": "alertsSwitch",
+        "component": "SwitchGroup",
+        "name": "alert_triggers",
+        "variant": "clear",
+        "items": ["sw1", "sw2", "sw3", "sw4"],
+        "value": ["large_purchase", "low_balance"]
+      },
+      { "id": "sw1", "component": "SwitchItem", "name": "large_purchase", "label": "Large purchase", "description": "Any card purchase over $200", "defaultChecked": true },
+      { "id": "sw2", "component": "SwitchItem", "name": "low_balance", "label": "Low balance", "description": "Checking drops below $500", "defaultChecked": true },
+      { "id": "sw3", "component": "SwitchItem", "name": "bill_due", "label": "Bill due soon", "description": "3 days before a bill is due" },
+      { "id": "sw4", "component": "SwitchItem", "name": "card_not_present", "label": "Online or phone charge", "description": "Card-not-present transactions" },
+      { "id": "alertsButtons", "component": "Buttons", "buttons": ["alertsSave"] },
+      { "id": "alertsSave", "component": "Button", "label": "Save preferences", "variant": "primary" },
+      { "id": "sepF", "component": "Separator", "decorative": true },
+      {
+        "id": "securityCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["securityHeader", "securityDesc", "securityButtons"]
+      },
+      { "id": "securityHeader", "component": "CardHeader", "title": "Security & disputes" },
+      {
+        "id": "securityDesc",
+        "component": "TextContent",
+        "text": "Freeze your credit line instantly if your card is lost, or dispute a charge you don't recognize.",
+        "size": "small"
+      },
+      { "id": "securityButtons", "component": "Buttons", "buttons": ["freezeDialog", "disputeDialog"] },
+      {
+        "id": "freezeDialog",
+        "component": "AlertDialogBlock",
+        "triggerLabel": "Freeze credit line",
+        "title": "Freeze your credit line?",
+        "description": "New purchases will be declined immediately. Autopay and existing subscriptions still run. You can unfreeze anytime.",
+        "confirmLabel": "Freeze now",
+        "cancelLabel": "Keep active",
+        "triggerVariant": "destructive"
+      },
+      {
+        "id": "disputeDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Dispute a transaction",
+        "title": "Dispute a transaction",
+        "description": "Tell us which charge and why.",
+        "triggerVariant": "outline",
+        "content": ["disputeForm"]
+      },
+      {
+        "id": "disputeForm",
+        "component": "Form",
+        "name": "dispute",
+        "buttons": "disputeButtons",
+        "fields": ["dTxnField", "dReasonField", "dDetailsField"]
+      },
+      { "id": "dTxnField", "component": "FormControl", "label": "Transaction", "input": "dTxnSelect" },
+      {
+        "id": "dTxnSelect",
+        "component": "Select",
+        "name": "transaction",
+        "placeholder": "Choose a transaction",
+        "items": ["dt1", "dt2", "dt3", "dt4"]
+      },
+      { "id": "dt1", "component": "SelectItem", "value": "whole-foods-oct6", "label": "Whole Foods — $82.14 (Oct 6)" },
+      { "id": "dt2", "component": "SelectItem", "value": "netflix-oct5", "label": "Netflix — $15.99 (Oct 5)" },
+      { "id": "dt3", "component": "SelectItem", "value": "shell-oct4", "label": "Shell — $46.30 (Oct 4)" },
+      { "id": "dt4", "component": "SelectItem", "value": "amazon-oct3", "label": "Amazon — $129.99 (Oct 3)" },
+      { "id": "dReasonField", "component": "FormControl", "label": "Reason", "input": "dReasonSelect" },
+      {
+        "id": "dReasonSelect",
+        "component": "Select",
+        "name": "reason",
+        "placeholder": "Select a reason",
+        "items": ["dr1", "dr2", "dr3", "dr4"]
+      },
+      { "id": "dr1", "component": "SelectItem", "value": "unrecognized", "label": "I don't recognize this charge" },
+      { "id": "dr2", "component": "SelectItem", "value": "duplicate", "label": "I was charged twice" },
+      { "id": "dr3", "component": "SelectItem", "value": "wrong_amount", "label": "Wrong amount charged" },
+      { "id": "dr4", "component": "SelectItem", "value": "not_received", "label": "Item or service not received" },
+      { "id": "dDetailsField", "component": "FormControl", "label": "Details (optional)", "input": "dDetailsArea" },
+      { "id": "dDetailsArea", "component": "TextArea", "name": "details", "placeholder": "Add anything helpful…", "rows": 3 },
+      { "id": "disputeButtons", "component": "Buttons", "buttons": ["disputeSubmit"] },
+      { "id": "disputeSubmit", "component": "Button", "label": "Submit dispute", "variant": "primary" }
+    ]
+  }
+}
 </a2ui-json>
 
-Everything you asked for is on this single screen:
-
-1. **Balances** — checking, savings, and credit in a table at top
-2. **Recent transactions** — merchant, date, and amount for each
-3. **Spending split** — donut chart of this month by category
-4. **Bills due soon** — rent, electric, and internet with due dates
-5. **Vacation goal** — progress bar at 68% ($3,400 / $5,000)
-6. **Credit score** — 742 with an "Excellent" badge
-7. **Move money** — from/to account selectors plus an amount field
-8. **Freeze credit line** — destructive action button with current status
-9. **Statement period** — range date picker
-10. **Alert triggers** — five toggle switches for notification rules
-11. **Dispute a transaction** — form with transaction picker, reason, and details
-
-Want me to add anything, like a cash-flow trend chart or upcoming direct deposit info?
+All 11 items are covered: **1** balance cards (checking/savings/credit), **2** transactions table with merchant + amount, **3** donut chart of this month's category split, **4** bills-due list with pay actions, **5** vacation fund progress bar (62%), **6** credit score card (762, Excellent), **7** transfer form with from/to/amount, **8** freeze credit line via confirm dialog, **9** statement period picker with download, **10** alert trigger switches, and **11** dispute via per-row actions in the table plus a full dispute dialog.

@@ -1,161 +1,541 @@
-Here's a comprehensive morning trading workspace covering all requested items.
+Here's a comprehensive trading desk morning workspace covering all 17 requirements.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "trading-desk",
-      "catalogId": "thesys.dev:c1-openui",
-      "theme": { "primaryColor": "#1E88E5", "agentDisplayName": "Trading Desk" }
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "trading-desk",
-      "components": [
-        { "id": "root", "component": "Card", "direction": "column", "gap": "l", "children": ["hdr", "kpiRow", "tf-row", "alertsCallout", "mainTabs", "followups"] },
-
-        { "id": "hdr", "component": "CardHeader", "title": "Morning Workspace", "subtitle": "Global Macro Desk — Session Open" },
-
-        { "id": "kpiRow", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "wrap": true, "children": ["kpiPV", "kpiPnL", "kpiVaR", "kpiMargin"] },
-        { "id": "kpiPV", "component": "Card", "variant": "sunk", "direction": "column", "gap": "xs", "children": ["kpiPV-l", "kpiPV-v", "kpiPV-b"] },
-        { "id": "kpiPV-l", "component": "TextContent", "text": "Portfolio Value", "size": "small-heavy" },
-        { "id": "kpiPV-v", "component": "Heading", "text": "$48,320,750", "level": "h3" },
-        { "id": "kpiPV-b", "component": "Badge", "text": "▲ 1.24% today", "variant": "secondary" },
-
-        { "id": "kpiPnL", "component": "Card", "variant": "sunk", "direction": "column", "gap": "xs", "children": ["kpiPnL-l", "kpiPnL-v", "kpiPnL-b"] },
-        { "id": "kpiPnL-l", "component": "TextContent", "text": "P&L Today", "size": "small-heavy" },
-        { "id": "kpiPnL-v", "component": "Heading", "text": "+$592,140", "level": "h3" },
-        { "id": "kpiPnL-b", "component": "Tag", "text": "Realized $210k / Unrealized $382k", "variant": "success", "size": "sm" },
-
-        { "id": "kpiVaR", "component": "Card", "variant": "sunk", "direction": "column", "gap": "xs", "children": ["kpiVaR-l", "kpiVaR-v", "kpiVaR-b"] },
-        { "id": "kpiVaR-l", "component": "TextContent", "text": "Value at Risk (1d, 95%)", "size": "small-heavy" },
-        { "id": "kpiVaR-v", "component": "Heading", "text": "$1,845,000", "level": "h3" },
-        { "id": "kpiVaR-b", "component": "Tag", "text": "3.8% of NAV", "variant": "warning", "size": "sm" },
-
-        { "id": "kpiMargin", "component": "Card", "variant": "sunk", "direction": "column", "gap": "xs", "children": ["kpiMargin-l", "kpiMargin-p", "kpiMargin-v"] },
-        { "id": "kpiMargin-l", "component": "TextContent", "text": "Margin In Use", "size": "small-heavy" },
-        { "id": "kpiMargin-p", "component": "Progress", "value": 62, "label": "$12.4M of $20M" },
-        { "id": "kpiMargin-v", "component": "TextContent", "text": "62% utilized — $7.6M available", "size": "small" },
-
-        { "id": "tf-row", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "align": "center", "children": ["tf-label", "tf-select", "tf-refresh"] },
-        { "id": "tf-label", "component": "Label", "text": "Timeframe" },
-        { "id": "tf-select", "component": "Select", "name": "timeframe", "placeholder": "Select timeframe", "value": "1D", "size": "small", "items": ["tf-1d", "tf-1w", "tf-1m", "tf-ytd", "tf-1y"] },
-        { "id": "tf-1d", "component": "SelectItem", "value": "1D", "label": "Today (1D)" },
-        { "id": "tf-1w", "component": "SelectItem", "value": "1W", "label": "1 Week" },
-        { "id": "tf-1m", "component": "SelectItem", "value": "1M", "label": "1 Month" },
-        { "id": "tf-ytd", "component": "SelectItem", "value": "YTD", "label": "Year to Date" },
-        { "id": "tf-1y", "component": "SelectItem", "value": "1Y", "label": "1 Year" },
-        { "id": "tf-refresh", "component": "Button", "label": "Apply", "variant": "secondary", "size": "small", "action": ["applyTimeframe"] },
-
-        { "id": "alertsCallout", "component": "Callout", "variant": "warning", "title": "Risk Limits Near Breach", "description": "Tech sector exposure at 92% of limit • Single-name AAPL at 88% of limit • Overnight VaR at 95% of cap. Review before adding risk." },
-
-        { "id": "mainTabs", "component": "Tabs", "items": ["tab-positions", "tab-risk", "tab-orders", "tab-market", "tab-perf"] },
-
-        { "id": "tab-positions", "component": "TabItem", "value": "positions", "trigger": "Positions & Exposure", "content": ["posTable", "sep1", "sectorChart"] },
-        { "id": "posTable", "component": "Table", "columns": ["col-tkr", "col-size", "col-entry", "col-cur", "col-pnl"] },
-        { "id": "col-tkr", "component": "Col", "label": "Ticker", "type": "string", "data": ["AAPL", "MSFT", "NVDA", "TSLA", "JPM", "XOM"] },
-        { "id": "col-size", "component": "Col", "label": "Size", "type": "number", "data": [12000, 8500, 4000, -3000, 15000, 20000] },
-        { "id": "col-entry", "component": "Col", "label": "Entry", "type": "number", "data": [182.4, 405.1, 118.2, 245.0, 195.3, 108.7] },
-        { "id": "col-cur", "component": "Col", "label": "Current", "type": "number", "data": [189.7, 418.6, 124.9, 238.4, 201.8, 112.3] },
-        { "id": "col-pnl", "component": "Col", "label": "Unrealized P&L", "type": "string", "data": ["+$87,600", "+$114,750", "+$26,800", "+$19,800", "+$97,500", "+$72,000"] },
-
-        { "id": "sep1", "component": "Separator", "orientation": "horizontal" },
-        { "id": "sectorChart", "component": "PieChart", "variant": "donut", "labels": ["Technology", "Financials", "Energy", "Healthcare", "Consumer", "Cash"], "values": [38, 22, 15, 10, 9, 6] },
-
-        { "id": "tab-risk", "component": "TabItem", "value": "risk", "trigger": "Risk", "content": ["riskLimits", "sep2", "ddHeading", "ddChart"] },
-        { "id": "riskLimits", "component": "Table", "columns": ["rl-name", "rl-usage", "rl-status"] },
-        { "id": "rl-name", "component": "Col", "label": "Limit", "type": "string", "data": ["Tech Sector Exposure", "Single-Name AAPL", "Overnight VaR", "Gross Leverage", "Energy Sector"] },
-        { "id": "rl-usage", "component": "Col", "label": "Usage", "type": "string", "data": ["92%", "88%", "95%", "71%", "60%"] },
-        { "id": "rl-status", "component": "Col", "label": "Status", "type": "string", "data": ["NEAR BREACH", "NEAR BREACH", "NEAR BREACH", "OK", "OK"] },
-        { "id": "sep2", "component": "Separator", "orientation": "horizontal" },
-        { "id": "ddHeading", "component": "Heading", "text": "Drawdown — Trailing 12 Months", "level": "h4" },
-        { "id": "ddChart", "component": "AreaChart", "variant": "natural", "xLabel": "Month", "yLabel": "Drawdown %", "labels": ["Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May"], "series": ["dd-series"] },
-        { "id": "dd-series", "component": "Series", "category": "Drawdown", "values": [-1.2, -0.8, -3.5, -5.1, -4.2, -2.0, -0.5, -1.8, -6.3, -4.9, -2.1, -0.9] },
-
-        { "id": "tab-orders", "component": "TabItem", "value": "orders", "trigger": "Orders", "content": ["woHeading", "workingOrders", "sep3", "orderForm"] },
-        { "id": "woHeading", "component": "Heading", "text": "Working Orders", "level": "h4" },
-        { "id": "workingOrders", "component": "Table", "columns": ["wo-tkr", "wo-side", "wo-qty", "wo-px", "wo-status"] },
-        { "id": "wo-tkr", "component": "Col", "label": "Ticker", "type": "string", "data": ["NVDA", "GOOGL", "META", "CVX"] },
-        { "id": "wo-side", "component": "Col", "label": "Side", "type": "string", "data": ["BUY", "SELL", "BUY", "SELL"] },
-        { "id": "wo-qty", "component": "Col", "label": "Qty", "type": "number", "data": [2000, 1500, 3000, 5000] },
-        { "id": "wo-px", "component": "Col", "label": "Limit Px", "type": "number", "data": [123.5, 172.0, 498.2, 158.4] },
-        { "id": "wo-status", "component": "Col", "label": "Status", "type": "string", "data": ["Working", "Working", "Partial", "Working"] },
-        { "id": "sep3", "component": "Separator", "orientation": "horizontal" },
-        { "id": "orderForm", "component": "Form", "name": "placeOrder", "buttons": "orderBtns", "fields": ["fc-ticker", "fc-side", "fc-qty"] },
-        { "id": "fc-ticker", "component": "FormControl", "label": "Ticker", "input": "in-ticker", "hint": "Symbol to trade" },
-        { "id": "in-ticker", "component": "Input", "name": "ticker", "placeholder": "e.g. AAPL", "type": "text" },
-        { "id": "fc-side", "component": "FormControl", "label": "Side", "input": "in-side" },
-        { "id": "in-side", "component": "Select", "name": "side", "placeholder": "Buy or Sell", "items": ["side-buy", "side-sell"] },
-        { "id": "side-buy", "component": "SelectItem", "value": "buy", "label": "Buy" },
-        { "id": "side-sell", "component": "SelectItem", "value": "sell", "label": "Sell" },
-        { "id": "fc-qty", "component": "FormControl", "label": "Quantity", "input": "in-qty", "hint": "Number of shares" },
-        { "id": "in-qty", "component": "Input", "name": "quantity", "placeholder": "e.g. 1000", "type": "number" },
-        { "id": "orderBtns", "component": "Buttons", "direction": "row", "buttons": ["btn-submit-order", "btn-rebalance"] },
-        { "id": "btn-submit-order", "component": "Button", "label": "Place Order", "variant": "primary", "action": ["submitOrder"] },
-        { "id": "btn-rebalance", "component": "Button", "label": "Rebalance Portfolio", "variant": "secondary", "action": ["openRebalance"] },
-
-        { "id": "tab-market", "component": "TabItem", "value": "market", "trigger": "Market", "content": ["gainLoseRow", "sep4", "watchHeading", "watchTable", "sep5", "newsHeading", "newsList", "sep6", "econHeading", "econTable"] },
-        { "id": "gainLoseRow", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "wrap": true, "children": ["gainersCard", "losersCard"] },
-        { "id": "gainersCard", "component": "Card", "variant": "sunk", "direction": "column", "gap": "xs", "children": ["gainersH", "gainersTags"] },
-        { "id": "gainersH", "component": "TextContent", "text": "Top Gainers", "size": "small-heavy" },
-        { "id": "gainersTags", "component": "TagBlock", "tags": ["NVDA +5.7%", "AMD +4.9%", "MSFT +3.3%", "AAPL +4.0%"] },
-        { "id": "losersCard", "component": "Card", "variant": "sunk", "direction": "column", "gap": "xs", "children": ["losersH", "losersTags"] },
-        { "id": "losersH", "component": "TextContent", "text": "Top Losers", "size": "small-heavy" },
-        { "id": "losersTags", "component": "TagBlock", "tags": ["TSLA -2.7%", "PYPL -3.1%", "INTC -2.4%", "DIS -1.9%"] },
-        { "id": "sep4", "component": "Separator", "orientation": "horizontal" },
-        { "id": "watchHeading", "component": "Heading", "text": "Watchlist", "level": "h4" },
-        { "id": "watchTable", "component": "Table", "columns": ["wl-tkr", "wl-px", "wl-chg"] },
-        { "id": "wl-tkr", "component": "Col", "label": "Instrument", "type": "string", "data": ["SPY", "QQQ", "BTC-USD", "GLD", "US10Y", "EURUSD"] },
-        { "id": "wl-px", "component": "Col", "label": "Price", "type": "number", "data": [531.4, 458.2, 67420.0, 214.6, 4.28, 1.084] },
-        { "id": "wl-chg", "component": "Col", "label": "Chg %", "type": "string", "data": ["+0.6%", "+0.9%", "+2.1%", "-0.3%", "+0.04", "-0.2%"] },
-        { "id": "sep5", "component": "Separator", "orientation": "horizontal" },
-        { "id": "newsHeading", "component": "Heading", "text": "Market Headlines", "level": "h4" },
-        { "id": "newsList", "component": "ListBlock", "variant": "number", "items": ["news1", "news2", "news3", "news4"] },
-        { "id": "news1", "component": "ListItem", "title": "Fed signals patience on rate cuts amid sticky inflation", "subtitle": "Sentiment: Bearish" },
-        { "id": "news2", "component": "ListItem", "title": "NVIDIA guidance beats on data-center demand", "subtitle": "Sentiment: Bullish" },
-        { "id": "news3", "component": "ListItem", "title": "Oil steadies as OPEC+ holds output", "subtitle": "Sentiment: Neutral" },
-        { "id": "news4", "component": "ListItem", "title": "Strong jobs report lifts yields", "subtitle": "Sentiment: Bullish" },
-        { "id": "sep6", "component": "Separator", "orientation": "horizontal" },
-        { "id": "econHeading", "component": "Heading", "text": "Economic Releases This Week", "level": "h4" },
-        { "id": "econTable", "component": "Table", "columns": ["ec-day", "ec-event", "ec-cons"] },
-        { "id": "ec-day", "component": "Col", "label": "Day", "type": "string", "data": ["Mon", "Tue", "Wed", "Thu", "Fri"] },
-        { "id": "ec-event", "component": "Col", "label": "Event", "type": "string", "data": ["ISM Manufacturing", "JOLTS Openings", "FOMC Minutes", "Initial Jobless Claims", "Nonfarm Payrolls"] },
-        { "id": "ec-cons", "component": "Col", "label": "Consensus", "type": "string", "data": ["48.9", "8.7M", "—", "215K", "+185K"] },
-
-        { "id": "tab-perf", "component": "TabItem", "value": "perf", "trigger": "Strategies", "content": ["stratHeading", "stratChart"] },
-        { "id": "stratHeading", "component": "Heading", "text": "Strategy Returns — YTD", "level": "h4" },
-        { "id": "stratChart", "component": "HorizontalBarChart", "xLabel": "Return %", "yLabel": "Strategy", "labels": ["Global Macro", "Long/Short Equity", "Stat Arb", "Volatility", "Credit"], "series": ["strat-series"] },
-        { "id": "strat-series", "component": "Series", "category": "YTD Return", "values": [14.2, 9.8, 6.4, -2.1, 4.7] },
-
-        { "id": "followups", "component": "FollowUpBlock", "items": ["fu1", "fu2", "fu3"] },
-        { "id": "fu1", "component": "FollowUpItem", "text": "Show detailed VaR breakdown by strategy" },
-        { "id": "fu2", "component": "FollowUpItem", "text": "Suggest hedges to reduce tech exposure" },
-        { "id": "fu3", "component": "FollowUpItem", "text": "Draft a rebalance to target weights" }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-This single screen covers every item:
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "topControls",
+          "limitAlert",
+          "kpiRow",
+          "positionsHeader",
+          "positions",
+          "sectorRiskRow",
+          "moversRow",
+          "watchOrdersRow",
+          "headlines",
+          "econReleases",
+          "strategyReturns",
+          "drawdown",
+          "actionsHeader",
+          "actionButtons",
+          "orderForm"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Morning Trading Desk",
+        "subtitle": "Pre-market workspace \u2014 as of 08:15 ET"
+      },
+      {
+        "id": "topControls",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "align": "center",
+        "children": [
+          "timeframeControl"
+        ]
+      },
+      {
+        "id": "timeframeControl",
+        "component": "FormControl",
+        "label": "Timeframe",
+        "input": "timeframeSelect",
+        "hint": "Applies to charts and P&L windows"
+      },
+      {
+        "id": "timeframeSelect",
+        "component": "Select",
+        "name": "timeframe",
+        "placeholder": "Select timeframe",
+        "value": "1D",
+        "items": [
+          "tf1D",
+          "tf1W",
+          "tf1M",
+          "tf3M",
+          "tf1Y"
+        ]
+      },
+      { "id": "tf1D", "component": "SelectItem", "value": "1D", "label": "Today" },
+      { "id": "tf1W", "component": "SelectItem", "value": "1W", "label": "1 Week" },
+      { "id": "tf1M", "component": "SelectItem", "value": "1M", "label": "1 Month" },
+      { "id": "tf3M", "component": "SelectItem", "value": "3M", "label": "3 Months" },
+      { "id": "tf1Y", "component": "SelectItem", "value": "1Y", "label": "1 Year" },
+      {
+        "id": "limitAlert",
+        "component": "Alert",
+        "variant": "warning",
+        "title": "Risk limits near breach",
+        "description": "Tech sector exposure at 92% of limit; single-name concentration (NVDA) at 88% of limit; overnight VaR at 85% of limit."
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "kpiTable"
+        ]
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": [
+          "kpiMetric",
+          "kpiValue"
+        ]
+      },
+      {
+        "id": "kpiMetric",
+        "component": "Col",
+        "label": "Metric",
+        "type": "string",
+        "data": [
+          "Portfolio Value",
+          "P&L Today",
+          "Value at Risk (1d, 95%)",
+          "Margin In Use"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "type": "string",
+        "data": [
+          "$48,320,500",
+          "+$212,840 (+0.44%)",
+          "$1,180,000",
+          "$14,200,000 (43% of $33M)"
+        ]
+      },
+      {
+        "id": "positionsHeader",
+        "component": "Heading",
+        "text": "Positions",
+        "level": "h3"
+      },
+      {
+        "id": "positions",
+        "component": "Table",
+        "columns": [
+          "posTicker",
+          "posSize",
+          "posEntry",
+          "posCurrent"
+        ]
+      },
+      {
+        "id": "posTicker",
+        "component": "Col",
+        "label": "Ticker",
+        "type": "string",
+        "data": ["AAPL", "NVDA", "MSFT", "XOM", "JPM", "TSLA"]
+      },
+      {
+        "id": "posSize",
+        "component": "Col",
+        "label": "Size",
+        "type": "number",
+        "data": [12000, 8500, 6000, 15000, 9000, -4000]
+      },
+      {
+        "id": "posEntry",
+        "component": "Col",
+        "label": "Entry",
+        "type": "string",
+        "data": ["$182.40", "$610.20", "$398.10", "$104.80", "$189.30", "$248.60"]
+      },
+      {
+        "id": "posCurrent",
+        "component": "Col",
+        "label": "Current",
+        "type": "string",
+        "data": ["$189.15", "$642.90", "$405.55", "$102.10", "$194.70", "$238.20"]
+      },
+      {
+        "id": "sectorRiskRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "l",
+        "wrap": true,
+        "children": [
+          "sectorExposure",
+          "varRadial"
+        ]
+      },
+      {
+        "id": "sectorExposure",
+        "component": "PieChart",
+        "variant": "donut",
+        "labels": ["Technology", "Energy", "Financials", "Consumer", "Healthcare"],
+        "values": [42, 18, 20, 12, 8]
+      },
+      {
+        "id": "varRadial",
+        "component": "RadialChart",
+        "labels": ["VaR used", "Margin used", "Concentration"],
+        "values": [85, 43, 88]
+      },
+      {
+        "id": "moversRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "l",
+        "wrap": true,
+        "children": [
+          "gainers",
+          "losers"
+        ]
+      },
+      {
+        "id": "gainers",
+        "component": "Table",
+        "columns": [
+          "gainTicker",
+          "gainChange"
+        ]
+      },
+      {
+        "id": "gainTicker",
+        "component": "Col",
+        "label": "Top Gainers",
+        "type": "string",
+        "data": ["NVDA", "AMD", "MSFT"]
+      },
+      {
+        "id": "gainChange",
+        "component": "Col",
+        "label": "Change",
+        "type": "string",
+        "data": ["+5.36%", "+3.90%", "+1.87%"]
+      },
+      {
+        "id": "losers",
+        "component": "Table",
+        "columns": [
+          "loseTicker",
+          "loseChange"
+        ]
+      },
+      {
+        "id": "loseTicker",
+        "component": "Col",
+        "label": "Top Losers",
+        "type": "string",
+        "data": ["TSLA", "XOM", "PFE"]
+      },
+      {
+        "id": "loseChange",
+        "component": "Col",
+        "label": "Change",
+        "type": "string",
+        "data": ["-4.18%", "-2.58%", "-1.95%"]
+      },
+      {
+        "id": "watchOrdersRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "l",
+        "wrap": true,
+        "children": [
+          "watchlist",
+          "workingOrders"
+        ]
+      },
+      {
+        "id": "watchlist",
+        "component": "Table",
+        "columns": [
+          "watchTicker",
+          "watchPrice"
+        ]
+      },
+      {
+        "id": "watchTicker",
+        "component": "Col",
+        "label": "Watching",
+        "type": "string",
+        "data": ["GOOGL", "META", "AMZN", "NFLX", "BAC"]
+      },
+      {
+        "id": "watchPrice",
+        "component": "Col",
+        "label": "Price",
+        "type": "string",
+        "data": ["$174.20", "$505.80", "$186.40", "$628.10", "$41.35"]
+      },
+      {
+        "id": "workingOrders",
+        "component": "Table",
+        "columns": [
+          "woTicker",
+          "woSide",
+          "woQty",
+          "woStatus"
+        ]
+      },
+      {
+        "id": "woTicker",
+        "component": "Col",
+        "label": "Ticker",
+        "type": "string",
+        "data": ["AAPL", "GOOGL", "META"]
+      },
+      {
+        "id": "woSide",
+        "component": "Col",
+        "label": "Side",
+        "type": "string",
+        "data": ["BUY", "SELL", "BUY"]
+      },
+      {
+        "id": "woQty",
+        "component": "Col",
+        "label": "Qty @ Limit",
+        "type": "string",
+        "data": ["2,000 @ $187.50", "1,500 @ $176.00", "800 @ $500.00"]
+      },
+      {
+        "id": "woStatus",
+        "component": "Col",
+        "label": "Status",
+        "type": "string",
+        "data": ["Working", "Working", "Partial"]
+      },
+      {
+        "id": "headlines",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": ["hl1", "hl2", "hl3", "hl4"]
+      },
+      {
+        "id": "hl1",
+        "component": "ListItem",
+        "title": "Fed officials signal patience on rate cuts",
+        "subtitle": "Sentiment: Bearish for rate-sensitive sectors"
+      },
+      {
+        "id": "hl2",
+        "component": "ListItem",
+        "title": "NVIDIA guides Q2 above consensus on AI demand",
+        "subtitle": "Sentiment: Bullish"
+      },
+      {
+        "id": "hl3",
+        "component": "ListItem",
+        "title": "Crude slips as inventories build",
+        "subtitle": "Sentiment: Bearish for energy"
+      },
+      {
+        "id": "hl4",
+        "component": "ListItem",
+        "title": "Bank earnings beat on net interest income",
+        "subtitle": "Sentiment: Bullish for financials"
+      },
+      {
+        "id": "econReleases",
+        "component": "Table",
+        "columns": [
+          "econDay",
+          "econEvent",
+          "econForecast"
+        ]
+      },
+      {
+        "id": "econDay",
+        "component": "Col",
+        "label": "Day",
+        "type": "string",
+        "data": ["Mon", "Wed", "Thu", "Fri"]
+      },
+      {
+        "id": "econEvent",
+        "component": "Col",
+        "label": "Release",
+        "type": "string",
+        "data": ["ISM Manufacturing", "FOMC Minutes", "Initial Jobless Claims", "Nonfarm Payrolls"]
+      },
+      {
+        "id": "econForecast",
+        "component": "Col",
+        "label": "Forecast",
+        "type": "string",
+        "data": ["49.2", "\u2014", "218K", "185K"]
+      },
+      {
+        "id": "strategyReturns",
+        "component": "BarChart",
+        "labels": ["Momentum", "Mean Reversion", "Pairs", "Vol Carry", "Macro"],
+        "series": ["strategySeries"],
+        "variant": "grouped",
+        "xLabel": "Strategy",
+        "yLabel": "YTD Return %"
+      },
+      {
+        "id": "strategySeries",
+        "component": "Series",
+        "category": "YTD Return %",
+        "values": [14.2, 6.8, 9.1, -2.4, 11.7]
+      },
+      {
+        "id": "drawdown",
+        "component": "AreaChart",
+        "labels": ["Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+        "series": ["ddSeries"],
+        "variant": "natural",
+        "xLabel": "Month",
+        "yLabel": "Drawdown %"
+      },
+      {
+        "id": "ddSeries",
+        "component": "Series",
+        "category": "Drawdown %",
+        "values": [-1.2, -3.5, -2.1, -6.8, -4.2, -1.9, -0.8, -2.6, -5.1, -3.3, -1.4, -0.6]
+      },
+      {
+        "id": "actionsHeader",
+        "component": "Heading",
+        "text": "Actions",
+        "level": "h3"
+      },
+      {
+        "id": "actionButtons",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": ["rebalanceBtn"]
+      },
+      {
+        "id": "rebalanceBtn",
+        "component": "Button",
+        "label": "Rebalance Portfolio",
+        "variant": "secondary"
+      },
+      {
+        "id": "orderForm",
+        "component": "Form",
+        "name": "place-order",
+        "buttons": "orderFormButtons",
+        "fields": [
+          "orderTickerField",
+          "orderSideField",
+          "orderQtyField"
+        ]
+      },
+      {
+        "id": "orderTickerField",
+        "component": "FormControl",
+        "label": "Ticker",
+        "input": "orderTickerInput"
+      },
+      {
+        "id": "orderTickerInput",
+        "component": "Input",
+        "name": "ticker",
+        "placeholder": "e.g. AAPL",
+        "type": "text"
+      },
+      {
+        "id": "orderSideField",
+        "component": "FormControl",
+        "label": "Side",
+        "input": "orderSideRadio"
+      },
+      {
+        "id": "orderSideRadio",
+        "component": "RadioGroup",
+        "name": "side",
+        "defaultValue": "buy",
+        "items": ["sideBuy", "sideSell"]
+      },
+      {
+        "id": "sideBuy",
+        "component": "RadioItem",
+        "label": "Buy",
+        "description": "Open or add to long",
+        "value": "buy"
+      },
+      {
+        "id": "sideSell",
+        "component": "RadioItem",
+        "label": "Sell",
+        "description": "Reduce or short",
+        "value": "sell"
+      },
+      {
+        "id": "orderQtyField",
+        "component": "FormControl",
+        "label": "Quantity",
+        "input": "orderQtyInput"
+      },
+      {
+        "id": "orderQtyInput",
+        "component": "Input",
+        "name": "quantity",
+        "placeholder": "e.g. 1000",
+        "type": "number"
+      },
+      {
+        "id": "orderFormButtons",
+        "component": "Buttons",
+        "buttons": ["submitOrderBtn", "clearOrderBtn"]
+      },
+      {
+        "id": "submitOrderBtn",
+        "component": "Button",
+        "label": "Place Order",
+        "variant": "primary"
+      },
+      {
+        "id": "clearOrderBtn",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>
 
-1. **Portfolio value** – top KPI card
-2. **P&L today** – KPI card with realized/unrealized split
-3. **Positions** – Positions table (ticker, size, entry, current, unrealized P&L)
-4. **Exposure by sector** – donut chart
-5. **Value at Risk** – KPI card
-6. **Gainers & losers** – Market tab tag blocks
-7. **Watched instruments with price** – Watchlist table
-8. **Working orders** – Orders tab table
-9. **Margin in use** – KPI card with progress bar
-10. **Headlines with sentiment** – numbered news list
-11. **Economic releases this week** – Market tab table
-12. **Strategy returns this year** – horizontal bar chart
-13. **Drawdown past year** – area chart
-14. **Risk limits near breach** – warning callout + Risk tab table
-15. **Rebalance** – "Rebalance Portfolio" button
-16. **Place order (ticker/side/qty)** – order form
-17. **Change timeframe** – timeframe selector with Apply
+This workspace covers every item:
+
+1. **Portfolio value** & 2. **P&L today** & 5. **VaR** & 9. **Margin in use** — top KPI table
+3. **Positions** — table with ticker, size, entry, current price
+4. **Exposure by sector** — donut chart
+6. **Gainers/losers** — paired tables
+7. **Watchlist with prices** & 8. **Working orders** — paired tables
+10. **Headlines with sentiment** — numbered list
+11. **Economic releases this week** — table
+12. **Strategy YTD returns** — bar chart
+13. **Drawdown over past year** — area chart
+14. **Risk limits near breach** — warning alert + radial gauge
+15. **Rebalance** — action button
+16. **Place order** — form with ticker, side (buy/sell), quantity
+17. **Change timeframe** — select control at top

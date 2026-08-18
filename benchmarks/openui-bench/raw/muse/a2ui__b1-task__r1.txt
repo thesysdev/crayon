@@ -1,5 +1,189 @@
-Single-task focus view — built around your most urgent deadline with clear status and one-tap completion.
+Your single-task focus view is ready — centered on your most urgent item:
 
-<a2ui-json>{"version":"v0.9","createSurface":{"surfaceId":"personal-focus-view","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#DC2626","agentDisplayName":"Focus"},"sendDataModel":false}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
 
-<a2ui-json>{"version":"v0.9","updateComponents":{"surfaceId":"personal-focus-view","components":[{"component":"Card","id":"root","variant":"sunk","direction":"column","gap":"l","children":["heading","subText","alertUrgent","taskCard","actionButtons","footerText"]},{"component":"Heading","id":"heading","text":"Today's Focus","level":"h1"},{"component":"TextContent","id":"subText","text":"One task at a time. Full attention on what matters most.","size":"small"},{"component":"Alert","id":"alertUrgent","title":"🔥 Most Urgent Task","description":"Deadline in 4h 12m — Today at 5:00 PM. This is your #1 priority.","variant":"destructive"},{"component":"Card","id":"taskCard","variant":"card","direction":"column","gap":"m","children":["taskHeader","tagRow","taskDesc","separatorA","metaRow","progress"]},{"component":"Buttons","id":"actionButtons","buttons":["markDoneBtn"],"direction":"column"},{"component":"TextContent","id":"footerText","text":"Tip: Marking this done will clear your focus and reveal the next priority.","size":"small"},{"component":"CardHeader","id":"taskHeader","title":"Submit Q4 Client Proposal","subtitle":"Due Today • August 18, 2026 • 5:00 PM"},{"component":"Card","id":"tagRow","variant":"clear","direction":"row","gap":"s","align":"center","children":["tagUrgent","tagStatus","badgeOverdue"]},{"component":"TextContent","id":"taskDesc","text":"Finalize pricing table, add 2 case studies, and send to Acme Corp for review. This is blocking the team's next sprint and client sign-off.","size":"default"},{"component":"Separator","id":"separatorA","orientation":"horizontal","decorative":true},{"component":"Card","id":"metaRow","variant":"clear","direction":"row","justify":"between","align":"center","children":["deadlineBlock","statusBadge"]},{"component":"Progress","id":"progress","value":65,"label":"Progress — 65% complete"},{"component":"Button","id":"markDoneBtn","label":"✓  Mark as Done","variant":"primary","size":"large"},{"component":"Tag","id":"tagUrgent","text":"URGENT","variant":"danger","size":"md"},{"component":"Tag","id":"tagStatus","text":"High Priority","variant":"warning","size":"md"},{"component":"Badge","id":"badgeOverdue","text":"Due Today","variant":"destructive"},{"component":"Card","id":"deadlineBlock","variant":"clear","direction":"column","gap":"none","children":["deadlineLabel","deadlineValue"]},{"component":"Badge","id":"statusBadge","text":"●  In Progress","variant":"secondary"},{"component":"TextContent","id":"deadlineLabel","text":"DEADLINE","size":"small"},{"component":"TextContent","id":"deadlineValue","text":"Today, 5:00 PM • 4h 12m left","size":"small-heavy"}]}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "taskCard",
+          "statusCard",
+          "separator",
+          "actionCard",
+          "footerText"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Focus View",
+        "subtitle": "One task. Full attention."
+      },
+      {
+        "id": "taskCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "taskBadgeRow",
+          "taskTitle",
+          "taskSubtitle",
+          "deadlineAlert",
+          "taskDesc"
+        ],
+        "gap": "s"
+      },
+      {
+        "id": "taskBadgeRow",
+        "component": "Tag",
+        "text": "🔥 MOST URGENT • P0",
+        "variant": "danger",
+        "size": "sm"
+      },
+      {
+        "id": "taskTitle",
+        "component": "Heading",
+        "text": "Submit Q4 Budget Proposal",
+        "level": "h2"
+      },
+      {
+        "id": "taskSubtitle",
+        "component": "TextContent",
+        "text": "Finance • Assigned by Sarah Chen • Project: FY26 Planning",
+        "size": "small"
+      },
+      {
+        "id": "deadlineAlert",
+        "component": "Alert",
+        "title": "Deadline: Tomorrow — Aug 19, 2026 at 5:00 PM",
+        "description": "Due in 22 hours • Overdue risk if not submitted today. No extensions.",
+        "variant": "destructive"
+      },
+      {
+        "id": "taskDesc",
+        "component": "TextContent",
+        "text": "Finalize spreadsheet, add headcount justifications, and upload PDF to Notion for leadership review. This is your #1 priority — everything else can wait.",
+        "size": "default"
+      },
+      {
+        "id": "statusCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "statusHeader",
+          "statusRow",
+          "progressBar"
+        ],
+        "gap": "s"
+      },
+      {
+        "id": "statusHeader",
+        "component": "TextContent",
+        "text": "Current Status",
+        "size": "small-heavy"
+      },
+      {
+        "id": "statusRow",
+        "component": "Card",
+        "variant": "clear",
+        "children": [
+          "statusBadge",
+          "statusDueBadge"
+        ],
+        "direction": "row",
+        "gap": "s",
+        "align": "center"
+      },
+      {
+        "id": "statusBadge",
+        "component": "Badge",
+        "text": "In Progress",
+        "variant": "default"
+      },
+      {
+        "id": "statusDueBadge",
+        "component": "Badge",
+        "text": "Due Soon",
+        "variant": "destructive"
+      },
+      {
+        "id": "progressBar",
+        "component": "Progress",
+        "value": 65,
+        "label": "65% complete — 2 of 3 sections drafted"
+      },
+      {
+        "id": "separator",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "actionCard",
+        "component": "Card",
+        "variant": "clear",
+        "children": [
+          "actionHeader",
+          "completeButtons"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "actionHeader",
+        "component": "TextContent",
+        "text": "Ready to close the loop?",
+        "size": "large-heavy"
+      },
+      {
+        "id": "completeButtons",
+        "component": "Buttons",
+        "buttons": [
+          "completeBtn",
+          "snoozeBtn"
+        ],
+        "direction": "column"
+      },
+      {
+        "id": "completeBtn",
+        "component": "Button",
+        "label": "✓ Mark as Done",
+        "variant": "primary",
+        "size": "large"
+      },
+      {
+        "id": "snoozeBtn",
+        "component": "Button",
+        "label": "Keep working",
+        "variant": "tertiary",
+        "size": "medium"
+      },
+      {
+        "id": "footerText",
+        "component": "TextContent",
+        "text": "Marking as done will archive this task and show your next focus.",
+        "size": "small"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+**Covered:**
+
+1.  **Most urgent task + deadline** — "Submit Q4 Budget Proposal" with prominent deadline alert: *Aug 19, 2026 at 5:00 PM (Due in 22 hours)*
+2.  **Current status** — `In Progress` / `Due Soon` badges + 65% progress bar in the sunk status card
+3.  **Way to mark it done** — Large primary button `✓ Mark as Done`

@@ -1,10 +1,10 @@
-Here is a delivery tracking screen displaying the current status, estimated arrival date, details, and options to report any issues with the package.
+I have generated the UI screen for checking a delivery. It includes real-time package status tracking, the estimated delivery date, step-by-step progress, and a direct modal action to report any delivery issues.
 
 <a2ui-json>
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "delivery-tracking",
+    "surfaceId": "delivery-status",
     "catalogId": "thesys.dev:c1-openui"
   }
 }
@@ -14,138 +14,223 @@ Here is a delivery tracking screen displaying the current status, estimated arri
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "delivery-tracking",
+    "surfaceId": "delivery-status",
     "components": [
       {
         "id": "root",
         "component": "Card",
         "variant": "card",
-        "direction": "column",
-        "gap": "l",
         "children": [
           "header",
-          "status-callout",
-          "progress-bar",
-          "details-card",
-          "tracking-history-accordion",
-          "report-problem-block"
+          "statusAlert",
+          "etaCard",
+          "separator1",
+          "timelineHeader",
+          "deliverySteps",
+          "separator2",
+          "actions"
         ]
       },
       {
         "id": "header",
         "component": "CardHeader",
-        "title": "Package Delivery Tracking",
-        "subtitle": "Tracking ID: #TRK-84920491"
+        "title": "Package Tracking",
+        "subtitle": "Tracking ID: #TRK-98420511"
       },
       {
-        "id": "status-callout",
-        "component": "Callout",
-        "variant": "info",
-        "title": "Out for Delivery",
-        "description": "Your package is on the local delivery vehicle and scheduled to arrive today."
+        "id": "statusAlert",
+        "component": "Alert",
+        "title": "Current Location: Out for Delivery",
+        "description": "Your package is on the local delivery vehicle and is currently 1.2 miles away in your area (Oakland Depot, Bay Area Hub).",
+        "variant": "info"
       },
       {
-        "id": "progress-bar",
-        "component": "Progress",
-        "value": 75,
-        "label": "Delivery Status: 75% complete"
-      },
-      {
-        "id": "details-card",
+        "id": "etaCard",
         "component": "Card",
         "variant": "sunk",
         "direction": "column",
-        "gap": "m",
         "children": [
-          "eta-heading",
-          "eta-text",
-          "sep1",
-          "location-heading",
-          "location-text"
+          "etaHeading",
+          "etaText",
+          "etaProgress"
         ]
       },
       {
-        "id": "eta-heading",
+        "id": "etaHeading",
         "component": "Heading",
-        "text": "Estimated Delivery Date",
-        "level": "h4"
+        "level": "h3",
+        "text": "Estimated Delivery Date"
       },
       {
-        "id": "eta-text",
+        "id": "etaText",
         "component": "TextContent",
-        "text": "**Today, October 24, 2023**\nExpected between **2:00 PM – 5:00 PM**",
-        "size": "large"
+        "size": "large-heavy",
+        "text": "Today, Oct 24 by 4:30 PM"
       },
       {
-        "id": "sep1",
+        "id": "etaProgress",
+        "component": "Progress",
+        "value": 85,
+        "label": "Progress: 85% completed"
+      },
+      {
+        "id": "separator1",
         "component": "Separator",
         "orientation": "horizontal",
         "decorative": true
       },
       {
-        "id": "location-heading",
+        "id": "timelineHeader",
         "component": "Heading",
-        "text": "Current Location",
-        "level": "h4"
+        "level": "h4",
+        "text": "Tracking Details"
       },
       {
-        "id": "location-text",
-        "component": "TextContent",
-        "text": "**Downtown Distribution Hub — Vehicle #4B**\n*4.2 miles away from destination*",
-        "size": "default"
-      },
-      {
-        "id": "tracking-history-accordion",
-        "component": "Accordion",
-        "items": [
-          "accordion-item-history"
-        ]
-      },
-      {
-        "id": "accordion-item-history",
-        "component": "AccordionItem",
-        "value": "history",
-        "trigger": "View Full Tracking History",
-        "content": [
-          "history-steps"
-        ]
-      },
-      {
-        "id": "history-steps",
+        "id": "deliverySteps",
         "component": "Steps",
         "items": [
-          "step-1",
-          "step-2",
-          "step-3"
+          "step1",
+          "step2",
+          "step3",
+          "step4"
         ]
       },
       {
-        "id": "step-1",
+        "id": "step1",
         "component": "StepsItem",
-        "title": "Out for Delivery — Oct 24, 8:30 AM",
-        "details": "Loaded onto courier truck at Regional Hub."
+        "title": "Order Placed",
+        "details": "Oct 22, 09:15 AM - Sender processed order"
       },
       {
-        "id": "step-2",
+        "id": "step2",
         "component": "StepsItem",
-        "title": "Arrived at Sorting Facility — Oct 23, 11:15 PM",
-        "details": "Processed through local sorting facility."
+        "title": "In Transit",
+        "details": "Oct 23, 02:40 PM - Arrived at Regional Sorting Facility"
       },
       {
-        "id": "step-3",
+        "id": "step3",
         "component": "StepsItem",
-        "title": "Shipped — Oct 22, 4:00 PM",
-        "details": "Package picked up by carrier."
+        "title": "Out for Delivery",
+        "details": "Oct 24, 08:10 AM - Loaded onto courier truck (Driver: Alex M.)"
       },
       {
-        "id": "report-problem-block",
-        "component": "AlertDialogBlock",
+        "id": "step4",
+        "component": "StepsItem",
+        "title": "Delivered",
+        "details": "Pending final drop-off at your address"
+      },
+      {
+        "id": "separator2",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": [
+          "reportProblemDialog",
+          "refreshBtn"
+        ]
+      },
+      {
+        "id": "reportProblemDialog",
+        "component": "DialogBlock",
         "triggerLabel": "Report a Problem",
         "triggerVariant": "destructive",
-        "title": "Report an Issue with Delivery",
-        "description": "Please select the issue you are experiencing with shipment #TRK-84920491. Our support team will investigate immediately.",
-        "confirmLabel": "Submit Report",
-        "cancelLabel": "Cancel"
+        "title": "Report an Issue with your Delivery",
+        "description": "Please select the issue you are experiencing so our support team can help resolve it.",
+        "content": [
+          "problemForm"
+        ]
+      },
+      {
+        "id": "problemForm",
+        "component": "Form",
+        "name": "report-problem",
+        "fields": [
+          "issueTypeField",
+          "issueNotesField"
+        ],
+        "buttons": "dialogButtons"
+      },
+      {
+        "id": "issueTypeField",
+        "component": "FormControl",
+        "label": "Issue Type",
+        "input": "issueSelect"
+      },
+      {
+        "id": "issueSelect",
+        "component": "Select",
+        "name": "issue_type",
+        "placeholder": "Select a problem",
+        "items": [
+          "opt1",
+          "opt2",
+          "opt3",
+          "opt4"
+        ]
+      },
+      {
+        "id": "opt1",
+        "component": "SelectItem",
+        "value": "delayed",
+        "label": "Package is delayed"
+      },
+      {
+        "id": "opt2",
+        "component": "SelectItem",
+        "value": "wrong_address",
+        "label": "Incorrect delivery address"
+      },
+      {
+        "id": "opt3",
+        "component": "SelectItem",
+        "value": "instructions",
+        "label": "Special delivery instructions request"
+      },
+      {
+        "id": "opt4",
+        "component": "SelectItem",
+        "value": "damaged",
+        "label": "Marked delivered but not received / Damaged"
+      },
+      {
+        "id": "issueNotesField",
+        "component": "FormControl",
+        "label": "Additional Details",
+        "input": "issueNotesInput",
+        "hint": "Provide any extra info to assist our resolution team"
+      },
+      {
+        "id": "issueNotesInput",
+        "component": "TextArea",
+        "name": "notes",
+        "placeholder": "Describe what went wrong...",
+        "rows": 3
+      },
+      {
+        "id": "dialogButtons",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": [
+          "submitIssueBtn"
+        ]
+      },
+      {
+        "id": "submitIssueBtn",
+        "component": "Button",
+        "label": "Submit Report",
+        "variant": "primary",
+        "type": "destructive"
+      },
+      {
+        "id": "refreshBtn",
+        "component": "Button",
+        "label": "Refresh Status",
+        "variant": "secondary"
       }
     ]
   }

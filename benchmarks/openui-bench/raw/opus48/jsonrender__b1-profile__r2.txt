@@ -1,23 +1,26 @@
-{"op":"add","path":"/root","value":"page"}
-{"op":"add","path":"/elements/page","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["profile","bio-section","message-section"]}}
-{"op":"add","path":"/elements/profile","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center","variant":"clear"},"children":["avatar","profile-info"]}}
-{"op":"add","path":"/elements/avatar","value":{"type":"Avatar","props":{"src":{"$state":"/person/avatar"},"alt":{"$state":"/person/name"},"fallback":{"$state":"/person/initials"}},"children":[]}}
-{"op":"add","path":"/elements/profile-info","value":{"type":"Card","props":{"direction":"column","gap":"xs","variant":"clear"},"children":["name","role","dept-tag"]}}
-{"op":"add","path":"/elements/name","value":{"type":"Heading","props":{"text":{"$state":"/person/name"},"level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/role","value":{"type":"TextContent","props":{"text":{"$state":"/person/role"},"size":"large"},"children":[]}}
-{"op":"add","path":"/elements/dept-tag","value":{"type":"Tag","props":{"text":{"$state":"/person/department"},"variant":"info","size":"sm"},"children":[]}}
-{"op":"add","path":"/state/person","value":{"name":"Elena Marsh","role":"Senior Product Designer","department":"Design","initials":"EM","avatar":"","email":"elena.marsh@company.com"}}
-{"op":"add","path":"/elements/bio-section","value":{"type":"Card","props":{"direction":"column","gap":"s","variant":"sunk"},"children":["bio-header","bio-text","contact-info"]}}
-{"op":"add","path":"/elements/bio-header","value":{"type":"Heading","props":{"text":"About","level":"h4"},"children":[]}}
-{"op":"add","path":"/elements/bio-text","value":{"type":"TextContent","props":{"text":{"$state":"/person/bio"}},"children":[]}}
-{"op":"add","path":"/state/person/bio","value":"Elena leads design for our core platform, focusing on intuitive experiences and design systems. With over 8 years in product design, she partners closely with engineering and research to ship thoughtful, accessible products. When not designing, she mentors junior designers and enjoys hiking."}
-{"op":"add","path":"/elements/contact-info","value":{"type":"TextContent","props":{"text":{"$template":"📧 ${/person/email}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/message-section","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["message-header","message-input","message-actions","message-sent"]}}
-{"op":"add","path":"/elements/message-header","value":{"type":"Heading","props":{"text":"Send a message","level":"h4"},"children":[]}}
-{"op":"add","path":"/elements/message-input","value":{"type":"FormControl","props":{"label":"Your message","input":"message-textarea","hint":"Elena typically replies within a day."},"children":[]}}
-{"op":"add","path":"/elements/message-textarea","value":{"type":"TextArea","props":{"name":"message","placeholder":"Write a message to Elena...","rows":4,"value":{"$bindState":"/messageText"}},"children":[]}}
-{"op":"add","path":"/state/messageText","value":""}
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["profileCard","bioCard","messageCard"]}}
+{"op":"add","path":"/elements/profileCard","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center"},"children":["avatar","identity"]}}
+{"op":"add","path":"/elements/avatar","value":{"type":"Avatar","props":{"src":"https://i.pravatar.cc/150?img=47","alt":"Elena Vasquez","fallback":"EV"}}}
+{"op":"add","path":"/elements/identity","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["name","role","tags"]}}
+{"op":"add","path":"/elements/name","value":{"type":"Heading","props":{"text":{"$state":"/person/name"},"level":"h2"}}}
+{"op":"add","path":"/elements/role","value":{"type":"TextContent","props":{"text":{"$template":"${/person/role} · ${/person/team}"},"size":"default"}}}
+{"op":"add","path":"/elements/tags","value":{"type":"TagBlock","props":{"tags":["Product Design","Accessibility","Design Systems"]}}}
+{"op":"add","path":"/state/person","value":{"name":"Elena Vasquez","role":"Senior Product Designer","team":"Design Systems","email":"elena.vasquez@company.com","location":"Austin, TX","pronouns":"she/her"}}
+{"op":"add","path":"/elements/bioCard","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["bioHeader","bio","details"]}}
+{"op":"add","path":"/elements/bioHeader","value":{"type":"CardHeader","props":{"title":"About"}}}
+{"op":"add","path":"/elements/bio","value":{"type":"TextContent","props":{"text":"Elena leads design for our internal component library, partnering with engineering to ship accessible, consistent experiences. Before joining, she spent six years building design systems at a fintech startup. Outside of work she mentors junior designers and hikes every trail she can find.","size":"default"}}}
+{"op":"add","path":"/elements/details","value":{"type":"TextContent","props":{"text":{"$template":"📍 ${/person/location}   ·   ✉️ ${/person/email}   ·   ${/person/pronouns}"},"size":"small"}}}
+{"op":"add","path":"/elements/messageCard","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["msgHeader","sentAlert","msgForm"]}}
+{"op":"add","path":"/elements/msgHeader","value":{"type":"CardHeader","props":{"title":"Send a message","subtitle":{"$template":"Reach out to ${/person/name} directly"}}}}
+{"op":"add","path":"/elements/sentAlert","value":{"type":"Alert","props":{"title":"Message sent","description":"Your message has been delivered.","variant":"success"},"visible":{"$state":"/messageSent"},"children":[]}}
+{"op":"add","path":"/elements/msgForm","value":{"type":"Form","props":{"name":"contact","buttons":"msgButtons","fields":["subjectField","bodyField"]}}}
+{"op":"add","path":"/elements/subjectField","value":{"type":"FormControl","props":{"label":"Subject","input":"subjectInput"}}}
+{"op":"add","path":"/elements/subjectInput","value":{"type":"Input","props":{"name":"subject","placeholder":"What's this about?","value":{"$bindState":"/draft/subject"}}}}
+{"op":"add","path":"/state/draft","value":{"subject":"","body":""}}
+{"op":"add","path":"/elements/bodyField","value":{"type":"FormControl","props":{"label":"Message","input":"bodyInput","hint":"Keep it brief and friendly"}}}
+{"op":"add","path":"/elements/bodyInput","value":{"type":"TextArea","props":{"name":"body","placeholder":"Write your message to Elena...","rows":5,"value":{"$bindState":"/draft/body"}}}}
+{"op":"add","path":"/elements/msgButtons","value":{"type":"Buttons","props":{"buttons":["sendBtn","clearBtn"]}}}
+{"op":"add","path":"/elements/sendBtn","value":{"type":"Button","props":{"label":"Send message","variant":"primary"},"on":{"press":{"action":"setState","params":{"statePath":"/messageSent","value":true}}}}}
+{"op":"add","path":"/elements/clearBtn","value":{"type":"Button","props":{"label":"Clear","variant":"tertiary"},"on":{"press":{"action":"setState","params":{"statePath":"/draft","value":{"subject":"","body":""}}}}}}
 {"op":"add","path":"/state/messageSent","value":false}
-{"op":"add","path":"/elements/message-actions","value":{"type":"Buttons","props":{"buttons":["send-btn"],"direction":"row"},"children":[]}}
-{"op":"add","path":"/elements/send-btn","value":{"type":"Button","props":{"label":"Send message","variant":"primary"},"on":{"press":{"action":"setState","params":{"statePath":"/messageSent","value":true}}},"children":[]}}
-{"op":"add","path":"/elements/message-sent","value":{"type":"Callout","props":{"variant":"success","title":"Message sent","description":"Your message has been delivered to Elena."},"visible":{"$state":"/messageSent"},"children":[]}}

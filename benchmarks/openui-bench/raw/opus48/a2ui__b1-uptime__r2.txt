@@ -1,10 +1,10 @@
-Here's a status page for the platform team covering both the API uptime and the most recent incident.
+Here's a status page covering both the current API uptime and the most recent incident.
 
 <a2ui-json>
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "status-page",
+    "surfaceId": "main",
     "catalogId": "thesys.dev:c1-openui"
   }
 }
@@ -14,95 +14,96 @@ Here's a status page for the platform team covering both the API uptime and the 
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "status-page",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "direction": "column",
-        "gap": "l",
-        "children": ["header", "status-tag", "uptime-section", "sep-1", "incident-section"]
+        "children": [
+          "header",
+          "statusBadge",
+          "uptimeSection",
+          "sep",
+          "incidentSection"
+        ]
       },
       {
         "id": "header",
         "component": "CardHeader",
         "title": "Platform Status",
-        "subtitle": "API service health — current month"
+        "subtitle": "API service health"
       },
       {
-        "id": "status-tag",
-        "component": "Tag",
-        "text": "All Systems Operational",
-        "icon": "check-circle",
-        "variant": "success",
-        "size": "lg"
+        "id": "statusBadge",
+        "component": "Badge",
+        "text": "All systems operational",
+        "variant": "default"
       },
       {
-        "id": "uptime-section",
+        "id": "uptimeSection",
         "component": "Card",
         "variant": "sunk",
-        "direction": "column",
-        "gap": "s",
-        "children": ["uptime-heading", "uptime-value", "uptime-progress", "uptime-note"]
+        "children": [
+          "uptimeHeading",
+          "uptimeValue",
+          "uptimeBar",
+          "uptimeNote"
+        ]
       },
       {
-        "id": "uptime-heading",
+        "id": "uptimeHeading",
         "component": "Heading",
-        "text": "API Uptime (This Month)",
-        "level": "h4"
+        "text": "API Uptime — This Month",
+        "level": "h3"
       },
       {
-        "id": "uptime-value",
+        "id": "uptimeValue",
         "component": "TextContent",
-        "text": "**99.98%**",
+        "text": "**99.97%**",
         "size": "large-heavy"
       },
       {
-        "id": "uptime-progress",
+        "id": "uptimeBar",
         "component": "Progress",
-        "value": 99.98,
-        "label": "Measured against a 99.9% SLA target"
+        "value": 99.97,
+        "label": "99.97% uptime (target: 99.9%)"
       },
       {
-        "id": "uptime-note",
+        "id": "uptimeNote",
         "component": "TextContent",
-        "text": "Approximately 8 minutes of total downtime so far this month.",
+        "text": "Measured across all API regions for the current calendar month. ~13 minutes of cumulative downtime.",
         "size": "small"
       },
       {
-        "id": "sep-1",
+        "id": "sep",
         "component": "Separator",
         "orientation": "horizontal"
       },
       {
-        "id": "incident-section",
+        "id": "incidentSection",
         "component": "Card",
         "variant": "clear",
-        "direction": "column",
-        "gap": "s",
-        "children": ["incident-heading", "incident-alert"]
+        "children": [
+          "incidentHeading",
+          "incidentAlert"
+        ]
       },
       {
-        "id": "incident-heading",
+        "id": "incidentHeading",
         "component": "Heading",
         "text": "Most Recent Incident",
-        "level": "h4"
+        "level": "h3"
       },
       {
-        "id": "incident-alert",
+        "id": "incidentAlert",
         "component": "Alert",
-        "variant": "success",
-        "title": "Resolved — Elevated API Latency",
-        "description": "A brief spike in API response times was caused by a database connection pool exhaustion. Engineers increased pool limits and traffic returned to normal. Resolved on Feb 12, 2025 at 3:47 PM UTC (duration: ~8 minutes)."
+        "title": "Elevated API latency — Resolved",
+        "description": "A degraded database connection pool caused elevated response times on the API for roughly 11 minutes. Detected at 02:14 UTC on Feb 18, 2025 and fully resolved at 02:25 UTC on Feb 18, 2025. No data loss occurred.",
+        "variant": "success"
       }
     ]
   }
 }
 </a2ui-json>
 
-This screen covers both required items:
-
-1. **Current uptime** — Shown prominently as **99.98%** with a progress bar referencing the 99.9% SLA target and a note on total downtime.
-2. **Most recent incident** — A resolved-status alert summarizing the elevated API latency incident, its root cause, the fix, and the resolution timestamp (Feb 12, 2025 at 3:47 PM UTC).
-
-Let me know if you'd like to add a historical incident timeline or per-service breakdown.
+This screen covers both requirements: **(1)** the current monthly API uptime percentage (99.97%) shown as a headline figure with a progress bar against the SLA target, and **(2)** a summary of the most recent incident with its resolution time (detected 02:14 UTC, resolved 02:25 UTC on Feb 18, 2025). Let me know if you'd like to add a historical uptime chart or an incident history table.

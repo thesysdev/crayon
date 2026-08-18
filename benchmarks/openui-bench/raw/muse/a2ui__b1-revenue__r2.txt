@@ -1,11 +1,218 @@
-Mid-morning pulse check ready — revenue today and head-to-head vs yesterday same time (11:30 AM cut-off).
+Mid-morning pulse check for your shop — revenue so far today vs. yesterday at the same time:
 
-<a2ui-json>{"version":"v0.9","createSurface":{"surfaceId":"shop-midmorning-dashboard","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#0F766E","agentDisplayName":"Shop Pulse"},"sendDataModel":false}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
 
-<a2ui-json>{"version":"v0.9","updateComponents":{"surfaceId":"shop-midmorning-dashboard","components":[{"component":"Card","id":"root","children":["header","kpiRow","comparisonCard","trendCard","insightAlert","detailsTable","followUps"],"direction":"column","gap":"l"},{"component":"CardHeader","id":"header","title":"Mid-Morning Check-In","subtitle":"Tuesday, Aug 18 • 11:30 AM • Open 3.5 hrs (8:00 AM - 11:30 AM)"},{"component":"Card","id":"kpiRow","children":["todayCard","yesterdayCard","diffCard"],"direction":"row","gap":"m","variant":"clear"},{"component":"Card","id":"todayCard","children":["todayLabel","todayValue","todayMeta","todayBadge"],"variant":"card","direction":"column","gap":"xs"},{"component":"Card","id":"yesterdayCard","children":["yesterdayLabel","yesterdayValue","yesterdayMeta"],"variant":"sunk","direction":"column","gap":"xs"},{"component":"Card","id":"diffCard","children":["diffLabel","diffValue","diffMeta","diffBadge"],"variant":"card","direction":"column","gap":"xs"},{"component":"Card","id":"comparisonCard","children":["comparisonHeader","barChart","barCaption"],"variant":"card","direction":"column","gap":"m"},{"component":"Card","id":"trendCard","children":["trendHeader","lineChart"],"variant":"card","direction":"column","gap":"m"},{"component":"Alert","id":"insightAlert","title":"You're ahead of yesterday's pace","description":"+$314.50 (+12.4%) vs same time yesterday. If this pace holds, you're tracking toward ~$8,240 vs $7,350 yesterday. Strongest lift 9-10 AM.","variant":"success"},{"component":"Table","id":"detailsTable","columns":["colTime","colToday","colYesterday","colDiff"]},{"component":"FollowUpBlock","id":"followUps","items":["fu1","fu2","fu3"]},{"component":"TextContent","id":"todayLabel","text":"1 — REVENUE SO FAR TODAY","size":"small"},{"component":"Heading","id":"todayValue","text":"$2,847.50","level":"h1"},{"component":"TextContent","id":"todayMeta","text":"87 transactions • Avg $32.73 • as of 11:30 AM","size":"small"},{"component":"Badge","id":"todayBadge","text":"+12.4% vs yesterday","variant":"secondary"},{"component":"TextContent","id":"yesterdayLabel","text":"2 — SAME TIME YESTERDAY","size":"small"},{"component":"Heading","id":"yesterdayValue","text":"$2,533.00","level":"h2"},{"component":"TextContent","id":"yesterdayMeta","text":"Mon 8:00-11:30 AM • 81 transactions","size":"small"},{"component":"TextContent","id":"diffLabel","text":"DIFFERENCE","size":"small"},{"component":"Heading","id":"diffValue","text":"+$314.50","level":"h2"},{"component":"TextContent","id":"diffMeta","text":"Ahead by 6 transactions • On pace for daily goal","size":"small"},{"component":"Badge","id":"diffBadge","text":"Ahead of pace","variant":"default"},{"component":"CardHeader","id":"comparisonHeader","title":"Today vs Yesterday — Same Time Window","subtitle":"Direct comparison to 11:30 AM cut-off"},{"component":"BarChart","id":"barChart","labels":["Revenue to 11:30 AM"],"series":["seriesYesterday","seriesToday"],"variant":"grouped","xLabel":"Amount ($)","yLabel":"Period"},{"component":"TextContent","id":"barCaption","text":"Today $2,847.50 vs Yesterday $2,533.00 — you are $314.50 ahead at mid-morning.","size":"small"},{"component":"CardHeader","id":"trendHeader","title":"Cumulative Pace — Today vs Yesterday","subtitle":"How revenue built hour-by-hour to 11:30 AM"},{"component":"LineChart","id":"lineChart","labels":["8 AM","9 AM","10 AM","11 AM","11:30 AM"],"series":["lineYesterdaySeries","lineTodaySeries"],"variant":"natural","xLabel":"Time","yLabel":"Cumulative Revenue ($)"},{"component":"Col","id":"colTime","label":"Hour Block","data":["8-9 AM","9-10 AM","10-11 AM","11-11:30 AM","TOTAL to 11:30"],"type":"string"},{"component":"Col","id":"colToday","label":"Today","data":["$420.00","$890.00","$1,120.00","$417.50","$2,847.50"],"type":"string"},{"component":"Col","id":"colYesterday","label":"Yesterday Same Time","data":["$380.00","$750.00","$980.00","$423.00","$2,533.00"],"type":"string"},{"component":"Col","id":"colDiff","label":"Difference","data":["+$40.00","+$140.00","+$140.00","-$5.50","+$314.50"],"type":"string"},{"component":"FollowUpItem","id":"fu1","text":"Show full day forecast"},{"component":"FollowUpItem","id":"fu2","text":"Break down by payment method"},{"component":"FollowUpItem","id":"fu3","text":"Compare this week vs last week"},{"component":"Series","id":"seriesYesterday","category":"Yesterday","values":[2533]},{"component":"Series","id":"seriesToday","category":"Today","values":[2847.5]},{"component":"Series","id":"lineYesterdaySeries","category":"Yesterday (Mon)","values":[0,380,1130,2110,2533]},{"component":"Series","id":"lineTodaySeries","category":"Today (Tue)","values":[0,420,1310,2430,2847.5]}]}}</a2ui-json>
-
-**How to read it:**
-
-**1. Revenue so far today:** **$2,847.50** across 87 transactions (avg $32.73) as of 11:30 AM — shown top-left as your primary KPI.
-
-**2. vs Same Time Yesterday:** **$2,533.00** (81 txns to 11:30 AM Monday) — you're **+$314.50 / +12.4% ahead**. The bar chart gives the instant visual head-to-head, the line chart shows you pulled ahead 9-10 AM and held it, and the table breaks it down by hour block.
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "heroRow",
+          "compareSection",
+          "trendChart",
+          "insights",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Mid-Morning Check-In",
+        "subtitle": "Today as of 11:00 AM • Tue, Aug 18 • Open 3.5 hours"
+      },
+      {
+        "id": "heroRow",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "heroLabel",
+          "heroValue",
+          "heroSub",
+          "heroProgress",
+          "heroProgressLabel"
+        ]
+      },
+      {
+        "id": "heroLabel",
+        "component": "TextContent",
+        "text": "Revenue so far today",
+        "size": "small"
+      },
+      {
+        "id": "heroValue",
+        "component": "Heading",
+        "text": "$2,840.00",
+        "level": "h1"
+      },
+      {
+        "id": "heroSub",
+        "component": "TextContent",
+        "text": "47 transactions • Avg. $60.43 • 8:00 AM - 11:00 AM",
+        "size": "small"
+      },
+      {
+        "id": "heroProgress",
+        "component": "Progress",
+        "value": 56.8,
+        "label": "Daily goal progress"
+      },
+      {
+        "id": "heroProgressLabel",
+        "component": "TextContent",
+        "text": "$2,840 of $5,000 daily target (56.8%) — on pace to beat target by ~$680",
+        "size": "small"
+      },
+      {
+        "id": "compareSection",
+        "component": "Card",
+        "children": [
+          "compareHeader",
+          "compareBadge",
+          "compareTable"
+        ]
+      },
+      {
+        "id": "compareHeader",
+        "component": "CardHeader",
+        "title": "vs. Same Time Yesterday",
+        "subtitle": "Yesterday as of 11:00 AM (Mon, Aug 17) — apples-to-apples comparison"
+      },
+      {
+        "id": "compareBadge",
+        "component": "Badge",
+        "text": "▲ +22.9% ahead of yesterday",
+        "variant": "secondary"
+      },
+      {
+        "id": "compareTable",
+        "component": "Table",
+        "columns": [
+          "colMetric",
+          "colToday",
+          "colYesterday",
+          "colChange"
+        ]
+      },
+      {
+        "id": "colMetric",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Cumulative Revenue (by 11 AM)",
+          "Transactions",
+          "Avg. Ticket"
+        ]
+      },
+      {
+        "id": "colToday",
+        "component": "Col",
+        "label": "Today",
+        "data": [
+          "$2,840.00",
+          "47",
+          "$60.43"
+        ]
+      },
+      {
+        "id": "colYesterday",
+        "component": "Col",
+        "label": "Yesterday 11 AM",
+        "data": [
+          "$2,310.00",
+          "41",
+          "$56.34"
+        ]
+      },
+      {
+        "id": "colChange",
+        "component": "Col",
+        "label": "Change",
+        "data": [
+          "+$530.00 (+22.9%)",
+          "+6 (+14.6%)",
+          "+$4.09 (+7.3%)"
+        ]
+      },
+      {
+        "id": "trendChart",
+        "component": "LineChart",
+        "labels": [
+          "8 AM",
+          "9 AM",
+          "10 AM",
+          "11 AM"
+        ],
+        "series": [
+          "seriesToday",
+          "seriesYesterday"
+        ],
+        "variant": "natural",
+        "xLabel": "Time (cumulative)",
+        "yLabel": "Revenue (USD)"
+      },
+      {
+        "id": "seriesToday",
+        "component": "Series",
+        "category": "Today",
+        "values": [
+          420,
+          1180,
+          2050,
+          2840
+        ]
+      },
+      {
+        "id": "seriesYesterday",
+        "component": "Series",
+        "category": "Yesterday",
+        "values": [
+          380,
+          950,
+          1720,
+          2310
+        ]
+      },
+      {
+        "id": "insights",
+        "component": "Alert",
+        "title": "You're ahead of pace",
+        "description": "Up $530 vs yesterday at 11 AM. Strongest lift was 9-10 AM (+$330 vs yesterday). If this pace holds, you're tracking for ~$5,680 today vs $4,750 yesterday.",
+        "variant": "success"
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": [
+          "btnDetails",
+          "btnRefresh"
+        ]
+      },
+      {
+        "id": "btnDetails",
+        "component": "Button",
+        "label": "View transaction details"
+      },
+      {
+        "id": "btnRefresh",
+        "component": "Button",
+        "label": "Refresh now",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>

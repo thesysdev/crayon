@@ -1,13 +1,282 @@
-Your delivery tracking screen is ready — showing live location, ETA, and problem reporting in one place:
+Your delivery tracking screen is ready — live location, ETA, and problem reporting in one view.
 
-<a2ui-json>{"version":"v0.9","createSurface":{"surfaceId":"delivery-tracking-001","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#0F62FE","agentDisplayName":"Delivery Tracker"},"sendDataModel":true}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
 
-<a2ui-json>{"version":"v0.9","updateComponents":{"surfaceId":"delivery-tracking-001","components":[{"component":"Card","id":"root","children":["header","statusCallout","progressCard","detailsRow","timelineCard","reportCard"],"direction":"column","gap":"l"},{"component":"CardHeader","id":"header","title":"Track Your Package","subtitle":"Tracking # 1Z 999 AA1 03 9876 5421 • Ordered Aug 12, 2026"},{"component":"Callout","id":"statusCallout","variant":"info","title":"Package is Out for Delivery","description":"Your package left the Phoenix Distribution Center at 6:42 AM today and is on the vehicle for delivery."},{"component":"Card","id":"progressCard","variant":"sunk","children":["progress","progressText"],"direction":"column","gap":"s"},{"component":"Progress","id":"progress","value":75,"label":"75% to delivery"},{"component":"TextContent","id":"progressText","text":"Step 3 of 4 — Out for delivery. Next: Delivered to your door.","size":"small"},{"component":"Card","id":"detailsRow","children":["currentLocationCard","etaCard"],"direction":"row","gap":"m"},{"component":"Card","id":"currentLocationCard","children":["currentLocationHeader","currentLocationText","locationImage"],"direction":"column","gap":"s"},{"component":"CardHeader","id":"currentLocationHeader","title":"📍 Where Your Package Is Now","subtitle":"Live status • Updated 2 mins ago"},{"component":"TextContent","id":"currentLocationText","text":"**Phoenix Distribution Center — Out for Delivery**\n3345 E Sky Harbor Blvd, Phoenix, AZ 85034\n\nCarrier: UPS Ground • Vehicle # AZ-4821 • Last scan: 06:42 AM MST","size":"default"},{"component":"ImageBlock","id":"locationImage","src":"https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&q=80","alt":"Delivery truck on route map"},{"component":"Card","id":"etaCard","variant":"card","children":["etaHeader","etaBadge","etaText","etaDetails","etaSeparator","etaSupportText"],"direction":"column","gap":"s"},{"component":"CardHeader","id":"etaHeader","title":"Estimated Delivery","subtitle":"Guaranteed delivery window"},{"component":"Badge","id":"etaBadge","text":"Tomorrow","variant":"secondary"},{"component":"TextContent","id":"etaText","text":"**Tuesday, August 19, 2026**","size":"large-heavy"},{"component":"TextContent","id":"etaDetails","text":"By 9:00 PM • UPS Ground\nTo: 1247 W Elm St, Tempe, AZ 85281\n\nNo signature required — driver will leave at front door if you're not home.","size":"small"},{"component":"Separator","id":"etaSeparator","orientation":"horizontal","decorative":true},{"component":"TextContent","id":"etaSupportText","text":"Delivery window may shift due to weather or traffic. You'll get an SMS when it's 30 mins away.","size":"small"},{"component":"Card","id":"timelineCard","children":["timelineHeader","steps"],"direction":"column","gap":"s"},{"component":"CardHeader","id":"timelineHeader","title":"Shipment Journey","subtitle":"Follow your package from warehouse to doorstep"},{"component":"Steps","id":"steps","items":["stepsItem1","stepsItem2","stepsItem3","stepsItem4","stepsItem5"]},{"component":"StepsItem","id":"stepsItem1","title":"Order Processed","details":"Aug 13 • 10:15 AM — Order confirmed at fulfillment center, Ontario, CA"},{"component":"StepsItem","id":"stepsItem2","title":"Shipped","details":"Aug 14 • 4:30 PM — Departed Ontario, CA • Carrier picked up"},{"component":"StepsItem","id":"stepsItem3","title":"In Transit","details":"Aug 16 • 2:10 AM — Arrived at Phoenix Hub, AZ • Sorted for local delivery"},{"component":"StepsItem","id":"stepsItem4","title":"Out for Delivery — CURRENT","details":"Aug 18 • 6:42 AM — Left Phoenix Distribution Center, on vehicle for delivery"},{"component":"StepsItem","id":"stepsItem5","title":"Delivered","details":"Expected Aug 19 by 9:00 PM — Tempe, AZ"},{"component":"Card","id":"reportCard","children":["reportHeader","reportForm"],"direction":"column","gap":"m"},{"component":"CardHeader","id":"reportHeader","title":"Report a Problem","subtitle":"Missing, damaged, or delayed? Let us know and we'll help immediately."},{"component":"Form","id":"reportForm","name":"reportProblemForm","fields":["fcIssueType","fcDetails","fcContact"],"buttons":"formButtons"},{"component":"FormControl","id":"fcIssueType","label":"Issue Type","input":"selectIssueType","hint":"Select the problem that best describes your delivery"},{"component":"FormControl","id":"fcDetails","label":"Describe the Problem","input":"textAreaDetails","hint":"Include details like damage, missing items, or wrong address"},{"component":"FormControl","id":"fcContact","label":"Contact Email or Phone","input":"inputContact","hint":"We'll use this to update you on the resolution"},{"component":"Select","id":"selectIssueType","name":"issueType","placeholder":"Choose an issue...","items":["si1","si2","si3","si4"]},{"component":"SelectItem","id":"si1","value":"not_arrived","label":"Package hasn't arrived / Delayed"},{"component":"SelectItem","id":"si2","value":"damaged","label":"Package arrived damaged"},{"component":"SelectItem","id":"si3","value":"missing_items","label":"Items missing from package"},{"component":"SelectItem","id":"si4","value":"wrong_address","label":"Delivered to wrong address"},{"component":"TextArea","id":"textAreaDetails","name":"details","placeholder":"e.g., Box was crushed on one side, item inside is broken...","rows":4},{"component":"Input","id":"inputContact","name":"contact","placeholder":"you@email.com or (555) 123-4567","type":"text"},{"component":"Buttons","id":"formButtons","buttons":["btnSubmit","btnCancel"],"direction":"row"},{"component":"Button","id":"btnSubmit","label":"Submit Report","variant":"primary"},{"component":"Button","id":"btnCancel","label":"Cancel","variant":"secondary"}]}}</a2ui-json>
-
-**What you're seeing:**
-
-**1. Where the package is right now:** Top blue callout + left card shows live location — *Phoenix Distribution Center, Out for Delivery* on vehicle AZ-4821, last scan 6:42 AM, with progress bar at 75% and full journey timeline below.
-
-**2. Estimated delivery date:** Right card highlights **Tuesday, August 19, 2026 by 9:00 PM** with delivery window, address, and service type.
-
-**3. Way to report a problem:** Bottom form lets you select an issue type, describe the problem, add contact info, and submit — directly routing to support.
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "currentLocationCallout",
+          "etaCard",
+          "journeySteps",
+          "reportSection",
+          "supportActions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Delivery Tracking # 8472-9910-5521",
+        "subtitle": "Nike Air Max — Ordered Aug 14 • UPS Ground • 2.1 lbs"
+      },
+      {
+        "id": "currentLocationCallout",
+        "component": "Callout",
+        "variant": "info",
+        "title": "📦 Where your package is right now: Out for Delivery",
+        "description": "Last scan: Today at 7:14 AM — Chicago South Distribution Center, 60607 (Vehicle #CH-8421). Courier has departed and is en route to your address in Lincoln Park."
+      },
+      {
+        "id": "etaCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "etaHeader",
+          "etaDate",
+          "etaBadge",
+          "etaHint",
+          "deliveryProgress"
+        ]
+      },
+      {
+        "id": "etaHeader",
+        "component": "CardHeader",
+        "title": "Estimated Delivery",
+        "subtitle": "On time — no delays reported"
+      },
+      {
+        "id": "etaDate",
+        "component": "Heading",
+        "text": "Tomorrow — Tuesday, August 19, 2026 by 8:00 PM",
+        "level": "h2"
+      },
+      {
+        "id": "etaBadge",
+        "component": "Badge",
+        "text": "Arrives in ~1 day • Signature not required",
+        "variant": "secondary"
+      },
+      {
+        "id": "etaHint",
+        "component": "TextContent",
+        "text": "Delivery window: 9:00 AM - 8:00 PM CDT to 1847 N Halsted St, Chicago, IL 60614. You'll get an SMS when it's 3 stops away.",
+        "size": "small"
+      },
+      {
+        "id": "deliveryProgress",
+        "component": "Progress",
+        "value": 75,
+        "label": "75% of journey complete — 3 of 4 stages done"
+      },
+      {
+        "id": "journeySteps",
+        "component": "Steps",
+        "items": [
+          "stepOrdered",
+          "stepShipped",
+          "stepTransit",
+          "stepOutForDelivery"
+        ]
+      },
+      {
+        "id": "stepOrdered",
+        "component": "StepsItem",
+        "title": "Ordered — Aug 14, 10:22 AM",
+        "details": "Order confirmed. Fulfilled from Indianapolis, IN."
+      },
+      {
+        "id": "stepShipped",
+        "component": "StepsItem",
+        "title": "Shipped — Aug 15, 4:05 PM",
+        "details": "Departed Indianapolis Facility • Tracking active • UPS Ground"
+      },
+      {
+        "id": "stepTransit",
+        "component": "StepsItem",
+        "title": "In Transit — Aug 16-18",
+        "details": "Memphis, TN → St. Louis, MO → Chicago, IL. Arrived Chicago South Hub Aug 18, 11:48 PM."
+      },
+      {
+        "id": "stepOutForDelivery",
+        "component": "StepsItem",
+        "title": "Out for Delivery — Today, Aug 18, 7:14 AM",
+        "details": "CURRENT: On vehicle #CH-8421. Next stop: your address. Estimated 4-6 hours."
+      },
+      {
+        "id": "reportSection",
+        "component": "Card",
+        "children": [
+          "reportHeader",
+          "reportForm"
+        ]
+      },
+      {
+        "id": "reportHeader",
+        "component": "CardHeader",
+        "title": "Report a problem with this delivery",
+        "subtitle": "Damaged, missing, late, or wrong address? Let us know and we'll resolve it within 24 hours."
+      },
+      {
+        "id": "reportForm",
+        "component": "Form",
+        "name": "report-delivery-problem",
+        "buttons": "formButtons",
+        "fields": [
+          "issueTypeField",
+          "detailsField",
+          "contactField"
+        ]
+      },
+      {
+        "id": "issueTypeField",
+        "component": "FormControl",
+        "label": "What's the issue?",
+        "input": "issueSelect",
+        "hint": "Choose the closest match"
+      },
+      {
+        "id": "issueSelect",
+        "component": "Select",
+        "name": "issue_type",
+        "placeholder": "Select an issue",
+        "items": [
+          "issueDamaged",
+          "issueMissing",
+          "issueLate",
+          "issueWrongAddress",
+          "issueOther"
+        ]
+      },
+      {
+        "id": "issueDamaged",
+        "component": "SelectItem",
+        "value": "damaged",
+        "label": "Package damaged"
+      },
+      {
+        "id": "issueMissing",
+        "component": "SelectItem",
+        "value": "missing",
+        "label": "Package marked delivered but missing"
+      },
+      {
+        "id": "issueLate",
+        "component": "SelectItem",
+        "value": "late",
+        "label": "Delivery is late / stuck"
+      },
+      {
+        "id": "issueWrongAddress",
+        "component": "SelectItem",
+        "value": "wrong_address",
+        "label": "Wrong address or delivery location"
+      },
+      {
+        "id": "issueOther",
+        "component": "SelectItem",
+        "value": "other",
+        "label": "Something else"
+      },
+      {
+        "id": "detailsField",
+        "component": "FormControl",
+        "label": "Describe the problem",
+        "input": "detailsArea",
+        "hint": "Add photos/description after submitting if needed"
+      },
+      {
+        "id": "detailsArea",
+        "component": "TextArea",
+        "name": "details",
+        "placeholder": "e.g., Box was crushed on one side, item inside is broken...",
+        "rows": 3
+      },
+      {
+        "id": "contactField",
+        "component": "FormControl",
+        "label": "How should we reach you?",
+        "input": "contactRadio"
+      },
+      {
+        "id": "contactRadio",
+        "component": "RadioGroup",
+        "name": "contact_method",
+        "items": [
+          "contactEmail",
+          "contactPhone"
+        ],
+        "defaultValue": "email"
+      },
+      {
+        "id": "contactEmail",
+        "component": "RadioItem",
+        "label": "Email",
+        "description": "Reply to alex.m@example.com",
+        "value": "email"
+      },
+      {
+        "id": "contactPhone",
+        "component": "RadioItem",
+        "label": "Text / Call",
+        "description": "SMS updates to (312) 555-0148",
+        "value": "phone"
+      },
+      {
+        "id": "formButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitBtn",
+          "cancelBtn"
+        ]
+      },
+      {
+        "id": "submitBtn",
+        "component": "Button",
+        "label": "Submit report",
+        "variant": "primary"
+      },
+      {
+        "id": "cancelBtn",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "tertiary"
+      },
+      {
+        "id": "supportActions",
+        "component": "Buttons",
+        "buttons": [
+          "trackBtn",
+          "contactSupportBtn"
+        ]
+      },
+      {
+        "id": "trackBtn",
+        "component": "Button",
+        "label": "Refresh tracking",
+        "variant": "secondary"
+      },
+      {
+        "id": "contactSupportBtn",
+        "component": "Button",
+        "label": "Chat with support",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>

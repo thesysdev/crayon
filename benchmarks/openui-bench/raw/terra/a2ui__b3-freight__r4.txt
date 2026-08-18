@@ -1,7 +1,349 @@
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"logistics-coordinator-board","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#2563EB","agentDisplayName":"Logistics Coordinator"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"logistics-coordinator-board","components":[{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["header","refresh","kpi-row","search-card","transit-card","delayed-callout","carrier-card","weekly-card"]},{"id":"header","component":"Card","variant":"clear","direction":"row","justify":"between","align":"center","children":["title-block","status-badge"]},{"id":"title-block","component":"Card","variant":"clear","direction":"column","gap":"xs","children":["page-title","page-subtitle"]},{"id":"page-title","component":"Heading","text":"Logistics Coordinator Board","level":"h1"},{"id":"page-subtitle","component":"TextContent","text":"Live shipment operations overview","size":"default"},{"id":"status-badge","component":"Badge","text":"Operations live","variant":"secondary"},{"id":"refresh","component":"TextContent","text":"Last refreshed: August 18, 2026 · 10:42 AM","size":"small"},{"id":"kpi-row","component":"Card","variant":"clear","direction":"row","gap":"m","wrap":true,"children":["on-time-kpi","cost-kpi"]},{"id":"on-time-kpi","component":"Card","variant":"card","direction":"column","gap":"xs","children":["on-time-title","on-time-value","on-time-progress"]},{"id":"on-time-title","component":"TextContent","text":"On-time this month","size":"small"},{"id":"on-time-value","component":"Heading","text":"94.2%","level":"h2"},{"id":"on-time-progress","component":"Progress","value":94.2,"label":"1,184 of 1,257 shipments on time"},{"id":"cost-kpi","component":"Card","variant":"card","direction":"column","gap":"xs","children":["cost-title","cost-value","cost-detail"]},{"id":"cost-title","component":"TextContent","text":"Average cost per shipment","size":"small"},{"id":"cost-value","component":"Heading","text":"$486","level":"h2"},{"id":"cost-detail","component":"TextContent","text":"Down 3.8% versus last month","size":"small"},{"id":"search-card","component":"Card","variant":"sunk","direction":"column","gap":"s","children":["search-heading","route-search-control"]},{"id":"search-heading","component":"Heading","text":"Find a route","level":"h3"},{"id":"route-search-control","component":"FormControl","label":"Search by origin, destination, or route ID","hint":"Example: Chicago → Dallas or RT-2048","input":"route-search-input"},{"id":"route-search-input","component":"Input","name":"routeSearch","placeholder":"Search routes…","type":"text"},{"id":"transit-card","component":"Card","variant":"card","direction":"column","gap":"m","children":["transit-header","transit-table"]},{"id":"transit-header","component":"CardHeader","title":"Shipments in transit","subtitle":"18 active shipments currently moving through the network"},{"id":"transit-table","component":"Table","columns":["shipment-col","origin-col","destination-col","eta-col","shipment-status-col","flag-col"]},{"id":"shipment-col","component":"Col","label":"Shipment","data":["SHP-48291","SHP-48276","SHP-48264","SHP-48242","SHP-48218"],"type":"string"},{"id":"origin-col","component":"Col","label":"Origin","data":["Los Angeles, CA","Chicago, IL","Newark, NJ","Atlanta, GA","Seattle, WA"],"type":"string"},{"id":"destination-col","component":"Col","label":"Destination","data":["Phoenix, AZ","Dallas, TX","Boston, MA","Miami, FL","Portland, OR"],"type":"string"},{"id":"eta-col","component":"Col","label":"ETA","data":["Today, 2:30 PM","Today, 6:00 PM","Tomorrow, 9:15 AM","Tomorrow, 1:45 PM","Aug 20, 11:00 AM"],"type":"string"},{"id":"shipment-status-col","component":"Col","label":"Status","data":["On schedule","Delayed","On schedule","At risk","On schedule"],"type":"string"},{"id":"flag-col","component":"Col","label":"Flag shipment","data":["Flag SHP-48291","Flag SHP-48276","Flag SHP-48264","Flag SHP-48242","Flag SHP-48218"],"type":"action"},{"id":"delayed-callout","component":"Callout","variant":"warning","title":"2 delayed shipments need attention","description":"SHP-48276 (Chicago → Dallas) is delayed 4h 20m due to weather. SHP-48193 (Memphis → Denver) is delayed 2h 10m due to a carrier capacity issue."},{"id":"carrier-card","component":"Card","variant":"card","direction":"column","gap":"m","children":["carrier-header","carrier-chart"]},{"id":"carrier-header","component":"CardHeader","title":"Volume split by carrier","subtitle":"Share of 1,257 shipments this month"},{"id":"carrier-chart","component":"PieChart","labels":["NorthStar Freight","BlueLine Logistics","RapidHaul","Atlas Transport","Other"],"values":[396,314,251,189,107],"variant":"donut","appearance":"circular"},{"id":"weekly-card","component":"Card","variant":"card","direction":"column","gap":"m","children":["weekly-header","weekly-chart"]},{"id":"weekly-header","component":"CardHeader","title":"Weekly shipment volume","subtitle":"Past two months"},{"id":"weekly-chart","component":"LineChart","labels":["Jun 29","Jul 6","Jul 13","Jul 20","Jul 27","Aug 3","Aug 10","Aug 17"],"series":["weekly-series"],"variant":"natural","xLabel":"Week starting","yLabel":"Shipments"},{"id":"weekly-series","component":"Series","category":"Shipments","values":[128,142,136,158,151,164,172,149]}]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "refreshInfo",
+          "routeSearch",
+          "kpiRow",
+          "transitSection",
+          "delayAlert",
+          "carrierSection",
+          "weeklyVolumeSection"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Logistics Coordinator Board",
+        "subtitle": "Live shipment operations overview"
+      },
+      {
+        "id": "refreshInfo",
+        "component": "TextContent",
+        "text": "Last refreshed: August 18, 2026 at 10:42 AM",
+        "size": "small"
+      },
+      {
+        "id": "routeSearch",
+        "component": "Form",
+        "name": "route-search",
+        "fields": [
+          "routeSearchControl"
+        ],
+        "buttons": "routeSearchButtons"
+      },
+      {
+        "id": "routeSearchControl",
+        "component": "FormControl",
+        "label": "Search shipments by route",
+        "hint": "Enter an origin, destination, or route code.",
+        "input": "routeSearchInput"
+      },
+      {
+        "id": "routeSearchInput",
+        "component": "Input",
+        "name": "route",
+        "placeholder": "e.g., Chicago to Dallas or CHI-DAL",
+        "type": "text"
+      },
+      {
+        "id": "routeSearchButtons",
+        "component": "Buttons",
+        "buttons": [
+          "searchButton"
+        ]
+      },
+      {
+        "id": "searchButton",
+        "component": "Button",
+        "label": "Search routes",
+        "variant": "primary"
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "onTimeKpi",
+          "costKpi",
+          "activeKpi"
+        ]
+      },
+      {
+        "id": "onTimeKpi",
+        "component": "Card",
+        "children": [
+          "onTimeTitle",
+          "onTimeProgress"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "onTimeTitle",
+        "component": "TextContent",
+        "text": "**On-time performance — August:** 94.2%",
+        "size": "large-heavy"
+      },
+      {
+        "id": "onTimeProgress",
+        "component": "Progress",
+        "value": 94.2,
+        "label": "94.2% delivered on time this month"
+      },
+      {
+        "id": "costKpi",
+        "component": "Card",
+        "children": [
+          "costTitle",
+          "costDetail"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "costTitle",
+        "component": "TextContent",
+        "text": "**Average cost per shipment**",
+        "size": "small-heavy"
+      },
+      {
+        "id": "costDetail",
+        "component": "TextContent",
+        "text": "$1,284",
+        "size": "large-heavy"
+      },
+      {
+        "id": "activeKpi",
+        "component": "Card",
+        "children": [
+          "activeTitle",
+          "activeDetail"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "activeTitle",
+        "component": "TextContent",
+        "text": "**Shipments in transit**",
+        "size": "small-heavy"
+      },
+      {
+        "id": "activeDetail",
+        "component": "TextContent",
+        "text": "42 active loads",
+        "size": "large-heavy"
+      },
+      {
+        "id": "transitSection",
+        "component": "Card",
+        "children": [
+          "transitHeader",
+          "shipmentTable"
+        ]
+      },
+      {
+        "id": "transitHeader",
+        "component": "CardHeader",
+        "title": "Shipments in Transit",
+        "subtitle": "Current active loads and expected arrival times"
+      },
+      {
+        "id": "shipmentTable",
+        "component": "Table",
+        "columns": [
+          "shipmentIdCol",
+          "originCol",
+          "destinationCol",
+          "etaCol",
+          "statusCol",
+          "flagCol"
+        ]
+      },
+      {
+        "id": "shipmentIdCol",
+        "component": "Col",
+        "label": "Shipment",
+        "data": [
+          "SHP-10482",
+          "SHP-10491",
+          "SHP-10503",
+          "SHP-10517",
+          "SHP-10524"
+        ]
+      },
+      {
+        "id": "originCol",
+        "component": "Col",
+        "label": "Origin",
+        "data": [
+          "Chicago, IL",
+          "Los Angeles, CA",
+          "Atlanta, GA",
+          "Seattle, WA",
+          "Newark, NJ"
+        ]
+      },
+      {
+        "id": "destinationCol",
+        "component": "Col",
+        "label": "Destination",
+        "data": [
+          "Dallas, TX",
+          "Phoenix, AZ",
+          "Nashville, TN",
+          "Portland, OR",
+          "Boston, MA"
+        ]
+      },
+      {
+        "id": "etaCol",
+        "component": "Col",
+        "label": "ETA",
+        "data": [
+          "Today, 3:30 PM",
+          "Today, 6:15 PM",
+          "Aug 19, 9:00 AM",
+          "Aug 19, 1:45 PM",
+          "Aug 20, 11:30 AM"
+        ]
+      },
+      {
+        "id": "statusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "On schedule",
+          "Delayed — 2h 15m",
+          "On schedule",
+          "At risk",
+          "On schedule"
+        ]
+      },
+      {
+        "id": "flagCol",
+        "component": "Col",
+        "label": "Flag",
+        "type": "action",
+        "data": [
+          "Flag SHP-10482",
+          "Flag SHP-10491",
+          "Flag SHP-10503",
+          "Flag SHP-10517",
+          "Flag SHP-10524"
+        ]
+      },
+      {
+        "id": "delayAlert",
+        "component": "Alert",
+        "title": "Delayed shipments require attention",
+        "description": "SHP-10491 from Los Angeles to Phoenix is delayed by 2 hours 15 minutes due to carrier congestion. SHP-10517 from Seattle to Portland is at risk due to a weather advisory.",
+        "variant": "warning"
+      },
+      {
+        "id": "carrierSection",
+        "component": "Card",
+        "children": [
+          "carrierHeader",
+          "carrierChart"
+        ]
+      },
+      {
+        "id": "carrierHeader",
+        "component": "CardHeader",
+        "title": "Volume Split by Carrier",
+        "subtitle": "Shipment volume this month"
+      },
+      {
+        "id": "carrierChart",
+        "component": "PieChart",
+        "labels": [
+          "NorthStar Freight",
+          "RapidLine Logistics",
+          "Atlas Transport",
+          "BlueRoad Carriers",
+          "Other"
+        ],
+        "values": [
+          148,
+          112,
+          86,
+          64,
+          39
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "weeklyVolumeSection",
+        "component": "Card",
+        "children": [
+          "weeklyVolumeHeader",
+          "weeklyVolumeChart",
+          "weeklyVolumeSeries"
+        ]
+      },
+      {
+        "id": "weeklyVolumeHeader",
+        "component": "CardHeader",
+        "title": "Weekly Shipment Volume",
+        "subtitle": "Past two months"
+      },
+      {
+        "id": "weeklyVolumeChart",
+        "component": "LineChart",
+        "labels": [
+          "Jul 1",
+          "Jul 8",
+          "Jul 15",
+          "Jul 22",
+          "Jul 29",
+          "Aug 5",
+          "Aug 12",
+          "Aug 18"
+        ],
+        "series": [
+          "weeklyVolumeSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Week",
+        "yLabel": "Shipments"
+      },
+      {
+        "id": "weeklyVolumeSeries",
+        "component": "Series",
+        "category": "Shipments",
+        "values": [
+          96,
+          104,
+          118,
+          109,
+          123,
+          131,
+          126,
+          142
+        ]
+      }
+    ]
+  }
+}
 </a2ui-json>

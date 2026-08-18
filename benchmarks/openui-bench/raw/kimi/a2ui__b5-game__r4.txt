@@ -1,121 +1,866 @@
-Here's a complete live-ops command center covering all 16 items:
+Here's the live-ops command screen. All 16 items are covered — I've noted the mapping at the end.
 
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"liveops","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#7C3AED","agentDisplayName":"LiveOps Console"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#7C3AED",
+      "agentDisplayName": "Nova LiveOps"
+    }
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"liveops","components":[
-{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["header","kpiRow","chartsRow1","chartsRow2","chartsRow3","eventsReportsRow","expCurrencyRow","opsRow"]},
-{"id":"header","component":"CardHeader","title":"Live-Ops Command Center","subtitle":"Real-time studio operations overview — updated 30s ago"},
-
-{"id":"kpiRow","component":"Card","variant":"clear","direction":"row","gap":"m","children":["kpiOnline","kpiDauMau","kpiRevenue","kpiArpu"]},
-{"id":"kpiOnline","component":"Card","variant":"card","children":["kpiOnlineT","kpiOnlineSub"],"weight":1},
-{"id":"kpiOnlineT","component":"TextContent","text":"**Players Online Now**\n\n# 84,213","size":"large-heavy"},
-{"id":"kpiOnlineSub","component":"TextContent","text":"▲ 6.2% vs. this time yesterday (item 1)","size":"small"},
-{"id":"kpiDauMau","component":"Card","variant":"card","children":["kpiDauMauT","kpiDauMauSub"],"weight":1},
-{"id":"kpiDauMauT","component":"TextContent","text":"**DAU / MAU**\n\n# 412K / 2.9M","size":"large-heavy"},
-{"id":"kpiDauMauSub","component":"TextContent","text":"Stickiness 14.2% (item 2)","size":"small"},
-{"id":"kpiRevenue","component":"Card","variant":"card","children":["kpiRevT","kpiRevSub"],"weight":1},
-{"id":"kpiRevT","component":"TextContent","text":"**Revenue Today**\n\n# $96,480","size":"large-heavy"},
-{"id":"kpiRevSub","component":"TextContent","text":"▲ 11% vs. 7-day avg (item 3)","size":"small"},
-{"id":"kpiArpu","component":"Card","variant":"card","children":["kpiArpuT","kpiArpuSub"],"weight":1},
-{"id":"kpiArpuT","component":"TextContent","text":"**Revenue per User**\n\n# $0.234","size":"large-heavy"},
-{"id":"kpiArpuSub","component":"TextContent","text":"ARPPU $8.12 · Payer rate 2.9% (item 4)","size":"small"},
-
-{"id":"chartsRow1","component":"Card","variant":"clear","direction":"row","gap":"m","children":["sessionCard","crashCard"]},
-{"id":"sessionCard","component":"Card","children":["sessionHead","sessionChart"],"weight":1},
-{"id":"sessionHead","component":"CardHeader","title":"Avg Session Length — Past 14 Days (min)","subtitle":"Item 5"},
-{"id":"sessionChart","component":"LineChart","labels":["D-13","D-12","D-11","D-10","D-9","D-8","D-7","D-6","D-5","D-4","D-3","D-2","D-1","Today"],"series":["sessionSeries"],"variant":"natural","yLabel":"Minutes"},
-{"id":"sessionSeries","component":"Series","category":"Avg session (min)","values":[21,22,20,23,24,26,25,24,27,28,26,29,31,30]},
-{"id":"crashCard","component":"Card","children":["crashHead","crashChart"],"weight":1},
-{"id":"crashHead","component":"CardHeader","title":"Crash Rate by App Version (%)","subtitle":"Item 8"},
-{"id":"crashChart","component":"HorizontalBarChart","labels":["v4.2.1","v4.2.0","v4.1.3","v4.1.0","v4.0.x"],"series":["crashSeries"],"xLabel":"Crash rate %"},
-{"id":"crashSeries","component":"Series","category":"Crash rate","values":[0.4,0.6,0.9,1.4,2.3]},
-
-{"id":"chartsRow2","component":"Card","variant":"clear","direction":"row","gap":"m","children":["itemsCard","regionCard"]},
-{"id":"itemsCard","component":"Card","children":["itemsHead","itemsChart"],"weight":1},
-{"id":"itemsHead","component":"CardHeader","title":"Best-Selling Items (units, today)","subtitle":"Item 6"},
-{"id":"itemsChart","component":"HorizontalBarChart","labels":["Dragon Skin Bundle","Gem Pack L","Battle Pass S9","XP Booster x10","Emote: Clutch"],"series":["itemsSeries"],"xLabel":"Units sold"},
-{"id":"itemsSeries","component":"Series","category":"Units","values":[4820,3960,3510,2980,2140]},
-{"id":"regionCard","component":"Card","children":["regionHead","regionTable"],"weight":1},
-{"id":"regionHead","component":"CardHeader","title":"Server Regions & Health","subtitle":"Item 7"},
-{"id":"regionTable","component":"Table","columns":["regionCol","statusCol","pingCol","loadCol"]},
-{"id":"regionCol","component":"Col","label":"Region","data":["NA-East","NA-West","EU-Central","APAC-SG","SA-BR"]},
-{"id":"statusCol","component":"Col","label":"Health","data":["Healthy","Healthy","Degraded","Healthy","Healthy"]},
-{"id":"pingCol","component":"Col","label":"Ping (ms)","data":[32,41,88,56,74],"type":"number"},
-{"id":"loadCol","component":"Col","label":"Load %","data":[61,54,92,47,38],"type":"number"},
-
-{"id":"chartsRow3","component":"Card","variant":"clear","direction":"row","gap":"m","children":["inflCard","expCard"]},
-{"id":"inflCard","component":"Card","children":["inflHead","inflChart","inflNote"],"weight":1},
-{"id":"inflHead","component":"CardHeader","title":"In-Game Currency Inflation","subtitle":"Item 12 — gold earned vs. spent per day (M)"},
-{"id":"inflChart","component":"AreaChart","labels":["W1","W2","W3","W4","W5","W6"],"series":["inflEarn","inflSpend"],"variant":"natural","yLabel":"Millions of gold"},
-{"id":"inflEarn","component":"Series","category":"Gold earned","values":[120,128,141,155,171,189]},
-{"id":"inflSpend","component":"Series","category":"Gold spent","values":[118,124,132,138,144,151]},
-{"id":"inflNote","component":"Callout","variant":"warning","title":"Inflation alert","description":"Net faucet/sink gap growing +8% WoW. Consider new gold sinks in next patch."},
-{"id":"expCard","component":"Card","children":["expHead","expATable","expBTable"],"weight":1},
-{"id":"expHead","component":"CardHeader","title":"Running Experiments — Results","subtitle":"Item 13"},
-{"id":"expATable","component":"Table","columns":["expACol","expAMetric"]},
-{"id":"expACol","component":"Col","label":"EXP-118: New onboarding flow","data":["Control","Variant A","Lift","Confidence"]},
-{"id":"expAMetric","component":"Col","label":"D1 retention","data":["31.2%","35.8%","+14.7%","97% ✅"]},
-{"id":"expBTable","component":"Table","columns":["expBCol","expBMetric"]},
-{"id":"expBCol","component":"Col","label":"EXP-121: Shop layout v2","data":["Control","Variant B","Lift","Confidence"]},
-{"id":"expBMetric","component":"Col","label":"Conversion","data":["2.7%","2.5%","-7.4%","81% ⚠️"]},
-
-{"id":"eventsReportsRow","component":"Card","variant":"clear","direction":"row","gap":"m","children":["eventsCard","reportsCard","appealsCard"]},
-{"id":"eventsCard","component":"Card","children":["eventsHead","eventsList"],"weight":1},
-{"id":"eventsHead","component":"CardHeader","title":"Live Events","subtitle":"Item 9"},
-{"id":"eventsList","component":"ListBlock","items":["ev1","ev2","ev3","ev4"]},
-{"id":"ev1","component":"ListItem","title":"🟢 Double XP Weekend","subtitle":"LIVE — ends in 18h · participation 41%"},
-{"id":"ev2","component":"ListItem","title":"🟢 Frost Raid Boss","subtitle":"LIVE — 3 days left · 12K kills"},
-{"id":"ev3","component":"ListItem","title":"🟡 Lunar Festival","subtitle":"Upcoming — starts in 4 days"},
-{"id":"ev4","component":"ListItem","title":"🟡 Ranked Season 10","subtitle":"Upcoming — starts in 9 days"},
-{"id":"reportsCard","component":"Card","children":["reportsHead","reportsList"],"weight":1},
-{"id":"reportsHead","component":"CardHeader","title":"Player Reports Awaiting Review","subtitle":"Item 10 — 47 open"},
-{"id":"reportsList","component":"ListBlock","items":["rp1","rp2","rp3"]},
-{"id":"rp1","component":"ListItem","title":"Cheating — aimbot suspicion","subtitle":"23 reports · oldest 2h","actionLabel":"Review"},
-{"id":"rp2","component":"ListItem","title":"Toxic chat — ranked lobby","subtitle":"17 reports · oldest 5h","actionLabel":"Review"},
-{"id":"rp3","component":"ListItem","title":"Exploit — item duplication","subtitle":"7 reports · oldest 1h","actionLabel":"Review"},
-{"id":"appealsCard","component":"Card","children":["appealsHead","appealsList"],"weight":1},
-{"id":"appealsHead","component":"CardHeader","title":"Ban Appeals Awaiting Review","subtitle":"Item 11 — 12 open"},
-{"id":"appealsList","component":"ListBlock","items":["ap1","ap2","ap3"]},
-{"id":"ap1","component":"ListItem","title":"Appeal #A-2291 — permaban","subtitle":"Reason: cheating · waiting 26h","actionLabel":"Review"},
-{"id":"ap2","component":"ListItem","title":"Appeal #A-2290 — 7-day ban","subtitle":"Reason: toxicity · waiting 12h","actionLabel":"Review"},
-{"id":"ap3","component":"ListItem","title":"Appeal #A-2288 — 30-day ban","subtitle":"Reason: RMT · waiting 8h","actionLabel":"Review"},
-
-{"id":"expCurrencyRow","component":"Card","variant":"clear","direction":"row","gap":"m","children":["patchCard","focusCard"]},
-{"id":"patchCard","component":"Card","children":["patchHead","patchForm"],"weight":2},
-{"id":"patchHead","component":"CardHeader","title":"Draft Patch Notes","subtitle":"Item 14"},
-{"id":"patchForm","component":"Form","name":"patchNotes","buttons":"patchButtons","fields":["pfVersion","pfType","pfNotes"]},
-{"id":"pfVersion","component":"FormControl","label":"Patch version","input":"pfVersionInput"},
-{"id":"pfVersionInput","component":"Input","name":"version","placeholder":"e.g. v4.2.2","type":"text"},
-{"id":"pfType","component":"FormControl","label":"Category","input":"pfTypeSelect"},
-{"id":"pfTypeSelect","component":"Select","name":"category","items":["pfT1","pfT2","pfT3"],"placeholder":"Select category"},
-{"id":"pfT1","component":"SelectItem","value":"balance","label":"Balance changes"},
-{"id":"pfT2","component":"SelectItem","value":"bugfix","label":"Bug fixes"},
-{"id":"pfT3","component":"SelectItem","value":"content","label":"New content"},
-{"id":"pfNotes","component":"FormControl","label":"Notes (markdown)","input":"pfNotesArea"},
-{"id":"pfNotesArea","component":"TextArea","name":"notes","placeholder":"- Fixed crash on raid start...\n- Buffed Frost Mage Q by 8%...","rows":5},
-{"id":"patchButtons","component":"Buttons","buttons":["patchSave","patchPublish"]},
-{"id":"patchSave","component":"Button","label":"Save Draft","variant":"secondary"},
-{"id":"patchPublish","component":"Button","label":"Publish Notes","variant":"primary"},
-{"id":"focusCard","component":"Card","children":["focusHead","focusSelect","focusNote"],"weight":1},
-{"id":"focusHead","component":"CardHeader","title":"Focus on a Region","subtitle":"Item 15 — filters all dashboard metrics"},
-{"id":"focusSelect","component":"Select","name":"regionFocus","items":["fr0","fr1","fr2","fr3","fr4","fr5"],"placeholder":"All regions"},
-{"id":"fr0","component":"SelectItem","value":"all","label":"🌍 All regions"},
-{"id":"fr1","component":"SelectItem","value":"na-east","label":"NA-East"},
-{"id":"fr2","component":"SelectItem","value":"na-west","label":"NA-West"},
-{"id":"fr3","component":"SelectItem","value":"eu-central","label":"EU-Central"},
-{"id":"fr4","component":"SelectItem","value":"apac-sg","label":"APAC-SG"},
-{"id":"fr5","component":"SelectItem","value":"sa-br","label":"SA-BR"},
-{"id":"focusNote","component":"TextContent","text":"Selecting a region re-scopes KPIs, charts, and queues to that shard.","size":"small"},
-
-{"id":"opsRow","component":"Card","children":["opsHead","opsButtons"]},
-{"id":"opsHead","component":"CardHeader","title":"Hotfix Deployment","subtitle":"Item 16 — EU-Central is degraded; consider shipping the latency hotfix"},
-{"id":"opsButtons","component":"Buttons","buttons":["hotfixBtn","rollbackBtn"]},
-{"id":"hotfixBtn","component":"Button","label":"🚀 Ship Hotfix v4.2.2-hotfix.1","variant":"primary","size":"large"},
-{"id":"rollbackBtn","component":"Button","label":"Rollback Last Deploy","variant":"secondary","type":"destructive"}
-]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "gap": "l",
+        "children": [
+          "header",
+          "alert",
+          "activityHeading",
+          "kpis",
+          "sessionChart",
+          "economyHeading",
+          "inflationChart",
+          "inflationCallout",
+          "sellersTable",
+          "infraHeading",
+          "regionFocusForm",
+          "regionsTable",
+          "crashChart",
+          "eventsHeading",
+          "eventsList",
+          "safetyHeading",
+          "safetyRow",
+          "expHeading",
+          "expTable",
+          "releaseHeading",
+          "patchForm",
+          "hotfixCard"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Live Ops Command Center",
+        "subtitle": "Project Nova · all regions · updated 12s ago"
+      },
+      {
+        "id": "alert",
+        "component": "Alert",
+        "title": "APAC-Singapore degraded",
+        "description": "Latency 34ms above baseline for the last 40 minutes. Use the region focus tool below to drill in.",
+        "variant": "warning"
+      },
+      {
+        "id": "activityHeading",
+        "component": "Heading",
+        "text": "Players",
+        "level": "h2"
+      },
+      {
+        "id": "kpis",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "kpiOnline",
+          "kpiActivity",
+          "kpiRevenue",
+          "kpiArpu"
+        ]
+      },
+      {
+        "id": "kpiOnline",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "xs",
+        "children": [
+          "kpiOnlineLabel",
+          "kpiOnlineValue",
+          "kpiOnlineBadge",
+          "kpiOnlineNote"
+        ]
+      },
+      {
+        "id": "kpiOnlineLabel",
+        "component": "TextContent",
+        "text": "Players online now",
+        "size": "small"
+      },
+      {
+        "id": "kpiOnlineValue",
+        "component": "TextContent",
+        "text": "48,213",
+        "size": "large-heavy"
+      },
+      {
+        "id": "kpiOnlineBadge",
+        "component": "Badge",
+        "text": "LIVE",
+        "variant": "default"
+      },
+      {
+        "id": "kpiOnlineNote",
+        "component": "TextContent",
+        "text": "+6% vs this time yesterday",
+        "size": "small"
+      },
+      {
+        "id": "kpiActivity",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "xs",
+        "children": [
+          "kpiActivityLabel",
+          "kpiActivityValue",
+          "kpiActivityNote"
+        ]
+      },
+      {
+        "id": "kpiActivityLabel",
+        "component": "TextContent",
+        "text": "Daily / monthly active",
+        "size": "small"
+      },
+      {
+        "id": "kpiActivityValue",
+        "component": "TextContent",
+        "text": "412,500 / 3.8M",
+        "size": "large-heavy"
+      },
+      {
+        "id": "kpiActivityNote",
+        "component": "TextContent",
+        "text": "Stickiness (DAU/MAU) 10.9%",
+        "size": "small"
+      },
+      {
+        "id": "kpiRevenue",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "xs",
+        "children": [
+          "kpiRevenueLabel",
+          "kpiRevenueValue",
+          "kpiRevenueNote"
+        ]
+      },
+      {
+        "id": "kpiRevenueLabel",
+        "component": "TextContent",
+        "text": "Revenue today",
+        "size": "small"
+      },
+      {
+        "id": "kpiRevenueValue",
+        "component": "TextContent",
+        "text": "$86,420",
+        "size": "large-heavy"
+      },
+      {
+        "id": "kpiRevenueNote",
+        "component": "TextContent",
+        "text": "+12% vs last Tuesday",
+        "size": "small"
+      },
+      {
+        "id": "kpiArpu",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "xs",
+        "children": [
+          "kpiArpuLabel",
+          "kpiArpuValue",
+          "kpiArpuNote"
+        ]
+      },
+      {
+        "id": "kpiArpuLabel",
+        "component": "TextContent",
+        "text": "Revenue per user (ARPDAU)",
+        "size": "small"
+      },
+      {
+        "id": "kpiArpuValue",
+        "component": "TextContent",
+        "text": "$0.21",
+        "size": "large-heavy"
+      },
+      {
+        "id": "kpiArpuNote",
+        "component": "TextContent",
+        "text": "Target $0.19 · above target",
+        "size": "small"
+      },
+      {
+        "id": "sessionChart",
+        "component": "LineChart",
+        "labels": [
+          "Apr 1",
+          "Apr 2",
+          "Apr 3",
+          "Apr 4",
+          "Apr 5",
+          "Apr 6",
+          "Apr 7",
+          "Apr 8",
+          "Apr 9",
+          "Apr 10",
+          "Apr 11",
+          "Apr 12",
+          "Apr 13",
+          "Apr 14"
+        ],
+        "series": [
+          "sessionSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Day",
+        "yLabel": "Avg session (min)"
+      },
+      {
+        "id": "sessionSeries",
+        "component": "Series",
+        "category": "Avg session length",
+        "values": [
+          24,
+          26,
+          25,
+          28,
+          31,
+          29,
+          27,
+          26,
+          28,
+          30,
+          32,
+          29,
+          31,
+          33
+        ]
+      },
+      {
+        "id": "economyHeading",
+        "component": "Heading",
+        "text": "Economy",
+        "level": "h2"
+      },
+      {
+        "id": "inflationChart",
+        "component": "LineChart",
+        "labels": [
+          "Apr 1",
+          "Apr 2",
+          "Apr 3",
+          "Apr 4",
+          "Apr 5",
+          "Apr 6",
+          "Apr 7",
+          "Apr 8",
+          "Apr 9",
+          "Apr 10",
+          "Apr 11",
+          "Apr 12",
+          "Apr 13",
+          "Apr 14"
+        ],
+        "series": [
+          "inflationSeries"
+        ],
+        "variant": "linear",
+        "xLabel": "Day",
+        "yLabel": "Gold supply (billions)"
+      },
+      {
+        "id": "inflationSeries",
+        "component": "Series",
+        "category": "Total gold in circulation",
+        "values": [
+          8.2,
+          8.3,
+          8.4,
+          8.6,
+          8.9,
+          9.2,
+          9.5,
+          9.9,
+          10.4,
+          10.8,
+          11.3,
+          11.9,
+          12.5,
+          13.2
+        ]
+      },
+      {
+        "id": "inflationCallout",
+        "component": "TextCallout",
+        "variant": "warning",
+        "title": "Currency inflation +61% in 14 days",
+        "description": "Event rewards are overtuned relative to sinks. Recommend enabling the Auction House tax sink at 2% in the next patch."
+      },
+      {
+        "id": "sellersTable",
+        "component": "Table",
+        "columns": [
+          "itemCol",
+          "unitsCol",
+          "revCol"
+        ]
+      },
+      {
+        "id": "itemCol",
+        "component": "Col",
+        "label": "Best-selling item",
+        "data": [
+          "Dragon Mount Skin",
+          "XP Booster (7d)",
+          "Gem Pack 500",
+          "Battle Pass S9",
+          "Emote: Victory Lap"
+        ]
+      },
+      {
+        "id": "unitsCol",
+        "component": "Col",
+        "label": "Units sold",
+        "data": [
+          "12,480",
+          "9,860",
+          "8,214",
+          "7,930",
+          "6,410"
+        ]
+      },
+      {
+        "id": "revCol",
+        "component": "Col",
+        "label": "Revenue",
+        "data": [
+          "$24,960",
+          "$9,860",
+          "$16,428",
+          "$39,650",
+          "$3,205"
+        ]
+      },
+      {
+        "id": "infraHeading",
+        "component": "Heading",
+        "text": "Infrastructure",
+        "level": "h2"
+      },
+      {
+        "id": "regionFocusForm",
+        "component": "Form",
+        "name": "region-focus",
+        "buttons": "regionButtons",
+        "fields": [
+          "regionField"
+        ]
+      },
+      {
+        "id": "regionField",
+        "component": "FormControl",
+        "label": "Focus on a region",
+        "input": "regionSelect",
+        "hint": "Filters every widget on this screen to the selected region"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region",
+        "placeholder": "Choose a region",
+        "items": [
+          "regionAll",
+          "regionNA",
+          "regionEU",
+          "regionAPAC",
+          "regionSA",
+          "regionMENA"
+        ]
+      },
+      {
+        "id": "regionAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All regions"
+      },
+      {
+        "id": "regionNA",
+        "component": "SelectItem",
+        "value": "na-east",
+        "label": "NA-East"
+      },
+      {
+        "id": "regionEU",
+        "component": "SelectItem",
+        "value": "eu-west",
+        "label": "EU-West"
+      },
+      {
+        "id": "regionAPAC",
+        "component": "SelectItem",
+        "value": "apac-sgp",
+        "label": "APAC-Singapore"
+      },
+      {
+        "id": "regionSA",
+        "component": "SelectItem",
+        "value": "sa-east",
+        "label": "SA-East"
+      },
+      {
+        "id": "regionMENA",
+        "component": "SelectItem",
+        "value": "mena-bah",
+        "label": "MENA-Bahrain"
+      },
+      {
+        "id": "regionButtons",
+        "component": "Buttons",
+        "buttons": [
+          "applyRegionBtn",
+          "clearRegionBtn"
+        ]
+      },
+      {
+        "id": "applyRegionBtn",
+        "component": "Button",
+        "label": "Apply focus",
+        "variant": "primary"
+      },
+      {
+        "id": "clearRegionBtn",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "tertiary"
+      },
+      {
+        "id": "regionsTable",
+        "component": "Table",
+        "columns": [
+          "regionCol",
+          "playersCol",
+          "latencyCol",
+          "statusCol"
+        ]
+      },
+      {
+        "id": "regionCol",
+        "component": "Col",
+        "label": "Region",
+        "data": [
+          "NA-East",
+          "EU-West",
+          "APAC-Singapore",
+          "SA-East",
+          "MENA-Bahrain"
+        ]
+      },
+      {
+        "id": "playersCol",
+        "component": "Col",
+        "label": "Players online",
+        "data": [
+          "14,220",
+          "12,480",
+          "9,860",
+          "4,120",
+          "3,540"
+        ]
+      },
+      {
+        "id": "latencyCol",
+        "component": "Col",
+        "label": "Avg latency",
+        "data": [
+          "38 ms",
+          "41 ms",
+          "89 ms",
+          "92 ms",
+          "76 ms"
+        ]
+      },
+      {
+        "id": "statusCol",
+        "component": "Col",
+        "label": "Health",
+        "data": [
+          "Healthy",
+          "Healthy",
+          "Degraded",
+          "Healthy",
+          "Maintenance"
+        ]
+      },
+      {
+        "id": "crashChart",
+        "component": "BarChart",
+        "labels": [
+          "1.9.2",
+          "1.9.3",
+          "1.9.4",
+          "2.0.0",
+          "2.0.1"
+        ],
+        "series": [
+          "crashSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "App version",
+        "yLabel": "Crash rate (%)"
+      },
+      {
+        "id": "crashSeries",
+        "component": "Series",
+        "category": "Crash rate",
+        "values": [
+          1.8,
+          1.2,
+          0.9,
+          2.4,
+          0.6
+        ]
+      },
+      {
+        "id": "eventsHeading",
+        "component": "Heading",
+        "text": "Live events",
+        "level": "h2"
+      },
+      {
+        "id": "eventsList",
+        "component": "ListBlock",
+        "items": [
+          "event1",
+          "event2",
+          "event3",
+          "event4"
+        ]
+      },
+      {
+        "id": "event1",
+        "component": "ListItem",
+        "title": "Double XP Weekend",
+        "subtitle": "LIVE · ends in 18h · 210k participants",
+        "actionLabel": "Monitor"
+      },
+      {
+        "id": "event2",
+        "component": "ListItem",
+        "title": "Dragon Hunt world raid",
+        "subtitle": "LIVE · 32k players in queue",
+        "actionLabel": "Monitor"
+      },
+      {
+        "id": "event3",
+        "component": "ListItem",
+        "title": "Spring Festival",
+        "subtitle": "Upcoming · starts Apr 18",
+        "actionLabel": "Edit"
+      },
+      {
+        "id": "event4",
+        "component": "ListItem",
+        "title": "Ranked Season 10",
+        "subtitle": "Upcoming · starts Apr 22",
+        "actionLabel": "Edit"
+      },
+      {
+        "id": "safetyHeading",
+        "component": "Heading",
+        "text": "Trust & safety",
+        "level": "h2"
+      },
+      {
+        "id": "safetyRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "reportsCard",
+          "appealsCard"
+        ]
+      },
+      {
+        "id": "reportsCard",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "xs",
+        "children": [
+          "reportsLabel",
+          "reportsValue",
+          "reportsBtn"
+        ]
+      },
+      {
+        "id": "reportsLabel",
+        "component": "TextContent",
+        "text": "Player reports awaiting review",
+        "size": "small"
+      },
+      {
+        "id": "reportsValue",
+        "component": "TextContent",
+        "text": "1,284",
+        "size": "large-heavy"
+      },
+      {
+        "id": "reportsBtn",
+        "component": "Button",
+        "label": "Open review queue",
+        "variant": "secondary",
+        "size": "small"
+      },
+      {
+        "id": "appealsCard",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "xs",
+        "children": [
+          "appealsLabel",
+          "appealsValue",
+          "appealsBtn"
+        ]
+      },
+      {
+        "id": "appealsLabel",
+        "component": "TextContent",
+        "text": "Ban appeals awaiting review",
+        "size": "small"
+      },
+      {
+        "id": "appealsValue",
+        "component": "TextContent",
+        "text": "87",
+        "size": "large-heavy"
+      },
+      {
+        "id": "appealsBtn",
+        "component": "Button",
+        "label": "Review appeals",
+        "variant": "secondary",
+        "size": "small"
+      },
+      {
+        "id": "expHeading",
+        "component": "Heading",
+        "text": "Experiments (2 running)",
+        "level": "h2"
+      },
+      {
+        "id": "expTable",
+        "component": "Table",
+        "columns": [
+          "expNameCol",
+          "expVariantsCol",
+          "expMetricCol",
+          "expResultCol"
+        ]
+      },
+      {
+        "id": "expNameCol",
+        "component": "Col",
+        "label": "Experiment",
+        "data": [
+          "Shop layout test",
+          "Matchmaking v2"
+        ]
+      },
+      {
+        "id": "expVariantsCol",
+        "component": "Col",
+        "label": "Variants",
+        "data": [
+          "A: grid · B: carousel",
+          "Control · New algorithm"
+        ]
+      },
+      {
+        "id": "expMetricCol",
+        "component": "Col",
+        "label": "Primary metric",
+        "data": [
+          "Shop conversion",
+          "7-day retention"
+        ]
+      },
+      {
+        "id": "expResultCol",
+        "component": "Col",
+        "label": "Result so far",
+        "data": [
+          "B wins +12.4% · 98% confidence",
+          "+3.1% · 87% confidence"
+        ]
+      },
+      {
+        "id": "releaseHeading",
+        "component": "Heading",
+        "text": "Release tools",
+        "level": "h2"
+      },
+      {
+        "id": "patchForm",
+        "component": "Form",
+        "name": "patch-notes-draft",
+        "buttons": "patchButtons",
+        "fields": [
+          "versionField",
+          "sectionField",
+          "notesField"
+        ]
+      },
+      {
+        "id": "versionField",
+        "component": "FormControl",
+        "label": "Patch version",
+        "input": "versionInput"
+      },
+      {
+        "id": "versionInput",
+        "component": "Input",
+        "name": "version",
+        "value": "2.0.2",
+        "placeholder": "e.g. 2.0.2"
+      },
+      {
+        "id": "sectionField",
+        "component": "FormControl",
+        "label": "Section",
+        "input": "sectionSelect"
+      },
+      {
+        "id": "sectionSelect",
+        "component": "Select",
+        "name": "section",
+        "placeholder": "Choose a section",
+        "items": [
+          "secGameplay",
+          "secBalance",
+          "secBugfix",
+          "secEvents"
+        ]
+      },
+      {
+        "id": "secGameplay",
+        "component": "SelectItem",
+        "value": "gameplay",
+        "label": "Gameplay"
+      },
+      {
+        "id": "secBalance",
+        "component": "SelectItem",
+        "value": "balance",
+        "label": "Balance"
+      },
+      {
+        "id": "secBugfix",
+        "component": "SelectItem",
+        "value": "bugfix",
+        "label": "Bug fixes"
+      },
+      {
+        "id": "secEvents",
+        "component": "SelectItem",
+        "value": "events",
+        "label": "Events"
+      },
+      {
+        "id": "notesField",
+        "component": "FormControl",
+        "label": "Patch notes draft",
+        "input": "notesArea",
+        "hint": "Markdown supported · saved as a draft until published"
+      },
+      {
+        "id": "notesArea",
+        "component": "TextArea",
+        "name": "notes",
+        "rows": 5,
+        "placeholder": "- Fixed crash on raid entry (v2.0.0 regression)\n- Enabled 2% Auction House tax sink\n- Tuned Dragon Hunt rewards"
+      },
+      {
+        "id": "patchButtons",
+        "component": "Buttons",
+        "buttons": [
+          "saveDraftBtn",
+          "previewBtn"
+        ]
+      },
+      {
+        "id": "saveDraftBtn",
+        "component": "Button",
+        "label": "Save draft",
+        "variant": "primary"
+      },
+      {
+        "id": "previewBtn",
+        "component": "Button",
+        "label": "Preview",
+        "variant": "tertiary"
+      },
+      {
+        "id": "hotfixCard",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "s",
+        "children": [
+          "hotfixText",
+          "hotfixDialog"
+        ]
+      },
+      {
+        "id": "hotfixText",
+        "component": "TextContent",
+        "text": "Hotfix 2.0.2 is staged and passes smoke tests. It fixes the v2.0.0 raid-entry crash (2.4% crash rate) and enables the gold tax sink.",
+        "size": "small"
+      },
+      {
+        "id": "hotfixDialog",
+        "component": "AlertDialogBlock",
+        "triggerLabel": "Ship hotfix 2.0.2",
+        "title": "Deploy hotfix to production?",
+        "description": "This will rolling-restart game servers in all 5 regions. Expect ~90s of elevated latency per region. This cannot be undone.",
+        "confirmLabel": "Deploy hotfix",
+        "cancelLabel": "Cancel",
+        "triggerVariant": "destructive"
+      }
+    ]
+  }
+}
 </a2ui-json>
 
-All 16 items are covered: KPI cards (1–4), session-length line chart (5), best-sellers bar chart (6), region health table (7), crash-rate chart (8), events list (9), reports (10) and appeals (11) queues, currency inflation area chart with alert (12), experiment result tables (13), patch-notes form (14), region focus selector (15), and hotfix/rollback controls (16). Want me to wire the region selector to actually filter the charts, or add a confirmation dialog to the hotfix button?
+**Coverage map:**
+1. **Players online now** — KPI card "48,213" with LIVE badge
+2. **DAU / MAU** — KPI card "412,500 / 3.8M" with stickiness note
+3. **Revenue today** — KPI card "$86,420"
+4. **Revenue per user** — ARPDAU KPI card "$0.21" vs target
+5. **Session length, past 2 weeks** — 14-day line chart
+6. **Best-selling items with units** — table with item, units sold, revenue
+7. **Server regions + health** — regions table (players, latency, health) plus a warning alert for the degraded region
+8. **Crash rate by app version** — bar chart across versions 1.9.2–2.0.1
+9. **Live & upcoming events** — events list with status and actions
+10. **Player reports awaiting review** — card with count (1,284) and queue button
+11. **Ban appeals awaiting review** — card with count (87) and review button
+12. **Currency inflation** — gold-supply trend chart plus a warning callout with a recommended sink
+13. **Two running experiments** — experiments table with variants, metric, and current result
+14. **Draft patch notes** — patch notes form (version, section, markdown body, save/preview)
+15. **Focus on one region** — region selector form that filters the screen
+16. **Ship a hotfix** — staged hotfix card with a destructive confirm/cancel deploy dialog

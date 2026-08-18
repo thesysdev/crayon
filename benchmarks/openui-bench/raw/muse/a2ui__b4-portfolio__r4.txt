@@ -1,216 +1,174 @@
-PMO Portfolio Review — single-screen view covering active projects, budget, utilization, risks, timelines and actions.
+Portfolio review built for PMO — all 13 items covered in one screen.
 
 <a2ui-json>
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "pmo-portfolio-review",
+    "surfaceId": "main",
     "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
+
 <a2ui-json>
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "pmo-portfolio-review",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "direction": "column",
-        "gap": "m",
-        "variant": "clear",
         "children": [
-          "headerCard",
-          "tabsMain",
-          "resourceCard",
-          "archiveCard"
+          "header",
+          "healthSummary",
+          "controlsCard",
+          "activeProjectsCard",
+          "budgetCard",
+          "utilizationCard",
+          "paceCard",
+          "overdueCard",
+          "risksCard",
+          "deadlinesCard",
+          "blockedCard",
+          "staffingCard"
         ]
       },
       {
-        "id": "headerCard",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "headingPortfolio",
-          "healthCallout",
-          "controlsRow"
-        ]
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Project Portfolio Review",
+        "subtitle": "PMO • Q3 2026 • 6 Active Projects • Last updated: Aug 18, 2026"
       },
       {
-        "id": "headingPortfolio",
-        "component": "Heading",
-        "text": "Project Portfolio Review — Q3 2026",
-        "level": "h2"
-      },
-      {
-        "id": "healthCallout",
+        "id": "healthSummary",
         "component": "Callout",
         "variant": "info",
         "title": "Portfolio Health Summary",
-        "description": "6 active projects: 3 On Track, 2 At Risk, 1 Blocked • 68% of $2.1M budget utilized • 3 overdue milestones • Velocity trending up (+29% over 6 sprints)."
+        "description": "Portfolio is stable: 4 of 6 projects on track, 2 at risk — budget 78% consumed ($1.73M / $2.05M), velocity trending up (+40% over 6 sprints)."
       },
       {
-        "id": "controlsRow",
+        "id": "controlsCard",
         "component": "Card",
-        "variant": "clear",
+        "variant": "sunk",
         "direction": "row",
         "gap": "m",
         "align": "end",
         "justify": "between",
         "children": [
-          "quarterFormControl",
-          "exportButtons"
+          "quarterControl",
+          "controlsButtons"
         ]
       },
       {
-        "id": "quarterFormControl",
+        "id": "quarterControl",
         "component": "FormControl",
-        "label": "Review Quarter",
-        "hint": "Switch quarter to compare portfolio snapshots",
-        "input": "quarterSelect"
+        "label": "View Quarter",
+        "input": "quarterSelect",
+        "hint": "Switch quarter to compare portfolio snapshots"
       },
       {
         "id": "quarterSelect",
         "component": "Select",
         "name": "quarter",
-        "placeholder": "Q3 2026",
-        "value": "Q3 2026",
+        "value": "Q3-2026",
+        "placeholder": "Select quarter",
         "items": [
-          "qi_Q2",
-          "qi_Q3",
-          "qi_Q4",
-          "qi_Q1Next"
+          "q1",
+          "q2",
+          "q3",
+          "q4"
         ]
       },
       {
-        "id": "qi_Q2",
+        "id": "q1",
         "component": "SelectItem",
-        "value": "Q2 2026",
+        "value": "Q1-2026",
+        "label": "Q1 2026"
+      },
+      {
+        "id": "q2",
+        "component": "SelectItem",
+        "value": "Q2-2026",
         "label": "Q2 2026"
       },
       {
-        "id": "qi_Q3",
+        "id": "q3",
         "component": "SelectItem",
-        "value": "Q3 2026",
+        "value": "Q3-2026",
         "label": "Q3 2026 (Current)"
       },
       {
-        "id": "qi_Q4",
+        "id": "q4",
         "component": "SelectItem",
-        "value": "Q4 2026",
-        "label": "Q4 2026 Forecast"
+        "value": "Q4-2026",
+        "label": "Q4 2026 (Forecast)"
       },
       {
-        "id": "qi_Q1Next",
-        "component": "SelectItem",
-        "value": "Q1 2027",
-        "label": "Q1 2027 Plan"
-      },
-      {
-        "id": "exportButtons",
+        "id": "controlsButtons",
         "component": "Buttons",
-        "direction": "row",
         "buttons": [
-          "exportButton"
+          "exportBtn",
+          "archiveDialog"
         ]
       },
       {
-        "id": "exportButton",
+        "id": "exportBtn",
         "component": "Button",
-        "label": "Export Review (PDF / Excel)",
+        "label": "Export Review",
         "variant": "primary"
       },
       {
-        "id": "tabsMain",
-        "component": "Tabs",
-        "items": [
-          "tabOverview",
-          "tabRisks",
-          "tabTimeline"
-        ]
-      },
-      {
-        "id": "tabOverview",
-        "component": "TabItem",
-        "value": "overview",
-        "trigger": "Overview",
-        "content": [
-          "activeProjectsCard",
-          "budgetCard",
-          "utilizationCard"
-        ]
-      },
-      {
-        "id": "tabRisks",
-        "component": "TabItem",
-        "value": "risks",
-        "trigger": "Risks & Blocks",
-        "content": [
-          "risksCard",
-          "blockedCard"
-        ]
-      },
-      {
-        "id": "tabTimeline",
-        "component": "TabItem",
-        "value": "timeline",
-        "trigger": "Timeline & Pace",
-        "content": [
-          "overdueCard",
-          "upcomingCard",
-          "paceCard"
-        ]
+        "id": "archiveDialog",
+        "component": "AlertDialogBlock",
+        "triggerLabel": "Archive Finished Project",
+        "title": "Archive finished project?",
+        "description": "This will move the selected completed project to the archive. It will be removed from active portfolio metrics but remain searchable.",
+        "confirmLabel": "Archive Project",
+        "cancelLabel": "Cancel",
+        "triggerVariant": "secondary"
       },
       {
         "id": "activeProjectsCard",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
         "children": [
-          "activeHeader",
-          "activeTable"
+          "activeProjectsHeader",
+          "activeProjectsTable"
         ]
       },
       {
-        "id": "activeHeader",
+        "id": "activeProjectsHeader",
         "component": "CardHeader",
         "title": "1. Active Projects",
-        "subtitle": "Owner • Deadline • Health"
+        "subtitle": "Owner, deadline and health for each project"
       },
       {
-        "id": "activeTable",
+        "id": "activeProjectsTable",
         "component": "Table",
         "columns": [
-          "colProj",
-          "colOwner",
-          "colDeadline",
-          "colHealth"
+          "projectCol",
+          "ownerCol",
+          "deadlineCol",
+          "healthCol"
         ]
       },
       {
-        "id": "colProj",
+        "id": "projectCol",
         "component": "Col",
         "label": "Project",
-        "type": "string",
         "data": [
-          "Atlas Platform",
-          "Beacon Mobile",
-          "Crest Analytics",
-          "Delta Migration",
-          "Echo Commerce",
-          "Fusion AI"
+          "Atlas Migration",
+          "Beacon Platform",
+          "Catalyst Analytics",
+          "Delta CRM",
+          "Horizon Mobile",
+          "Infra Modernization"
         ]
       },
       {
-        "id": "colOwner",
+        "id": "ownerCol",
         "component": "Col",
         "label": "Owner",
-        "type": "string",
         "data": [
           "Priya Desai",
           "Marcus Chen",
@@ -221,39 +179,34 @@ PMO Portfolio Review — single-screen view covering active projects, budget, ut
         ]
       },
       {
-        "id": "colDeadline",
+        "id": "deadlineCol",
         "component": "Col",
         "label": "Deadline",
-        "type": "string",
         "data": [
           "2026-09-12",
+          "2026-10-03",
           "2026-08-30",
-          "2026-10-05",
-          "2026-08-28",
-          "2026-09-18",
-          "2026-11-01"
+          "2026-09-28",
+          "2026-11-15",
+          "2026-12-01"
         ]
       },
       {
-        "id": "colHealth",
+        "id": "healthCol",
         "component": "Col",
         "label": "Health",
-        "type": "string",
         "data": [
-          "On Track",
-          "At Risk",
-          "On Track",
-          "Blocked",
-          "On Track",
-          "At Risk"
+          "🟢 On Track",
+          "🟡 At Risk",
+          "🔴 Off Track",
+          "🟢 On Track",
+          "🟡 At Risk",
+          "🟢 On Track"
         ]
       },
       {
         "id": "budgetCard",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
         "children": [
           "budgetHeader",
           "budgetChart"
@@ -263,7 +216,7 @@ PMO Portfolio Review — single-screen view covering active projects, budget, ut
         "id": "budgetHeader",
         "component": "CardHeader",
         "title": "3. Budget: Spent vs Allocation",
-        "subtitle": "$ in thousands • Spent (dark) + Remaining = Allocation"
+        "subtitle": "Per project — spent (dark) against total allocation (light) in USD"
       },
       {
         "id": "budgetChart",
@@ -271,364 +224,92 @@ PMO Portfolio Review — single-screen view covering active projects, budget, ut
         "labels": [
           "Atlas",
           "Beacon",
-          "Crest",
+          "Catalyst",
           "Delta",
-          "Echo",
-          "Fusion"
+          "Horizon",
+          "Infra"
         ],
-        "variant": "stacked",
-        "xLabel": "Project",
-        "yLabel": "$k",
         "series": [
-          "seriesSpent",
-          "seriesRemaining"
-        ]
+          "spentSeries",
+          "allocationSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Project",
+        "yLabel": "USD"
       },
       {
-        "id": "seriesSpent",
+        "id": "spentSeries",
         "component": "Series",
         "category": "Spent",
         "values": [
-          420,
-          310,
-          180,
-          250,
-          95,
-          340
+          420000,
+          310000,
+          580000,
+          150000,
+          275000,
+          195000
         ]
       },
       {
-        "id": "seriesRemaining",
+        "id": "allocationSeries",
         "component": "Series",
-        "category": "Remaining",
+        "category": "Allocation",
         "values": [
-          80,
-          90,
-          120,
-          50,
-          55,
-          60
+          500000,
+          400000,
+          600000,
+          200000,
+          350000,
+          300000
         ]
       },
       {
         "id": "utilizationCard",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
         "children": [
-          "utilHeader",
-          "progEng",
-          "progDesign",
-          "progQA",
-          "progProduct"
+          "utilizationHeader",
+          "utilizationChart"
         ]
       },
       {
-        "id": "utilHeader",
+        "id": "utilizationHeader",
         "component": "CardHeader",
         "title": "4. Team Utilization",
-        "subtitle": "Current sprint capacity • >85% = high load"
+        "subtitle": "Current capacity utilization by functional team (%)"
       },
       {
-        "id": "progEng",
-        "component": "Progress",
-        "value": 88,
-        "label": "Engineering — 88% (35/40 FTE)"
+        "id": "utilizationChart",
+        "component": "HorizontalBarChart",
+        "labels": [
+          "Engineering",
+          "Design",
+          "Data Science",
+          "QA",
+          "PMO",
+          "DevOps"
+        ],
+        "series": [
+          "utilizationSeries"
+        ],
+        "xLabel": "Utilization %",
+        "yLabel": "Team"
       },
       {
-        "id": "progDesign",
-        "component": "Progress",
-        "value": 72,
-        "label": "Design — 72% (13/18 FTE)"
-      },
-      {
-        "id": "progQA",
-        "component": "Progress",
-        "value": 94,
-        "label": "QA — 94% (17/18 FTE) — Overallocated"
-      },
-      {
-        "id": "progProduct",
-        "component": "Progress",
-        "value": 67,
-        "label": "Product / PMO — 67% (8/12 FTE)"
-      },
-      {
-        "id": "risksCard",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "children": [
-          "risksHeader",
-          "risksTable"
+        "id": "utilizationSeries",
+        "component": "Series",
+        "category": "Utilization",
+        "values": [
+          94,
+          88,
+          76,
+          81,
+          68,
+          92
         ]
-      },
-      {
-        "id": "risksHeader",
-        "component": "CardHeader",
-        "title": "5. Risks by Severity",
-        "subtitle": "Sorted by severity • Critical requires immediate mitigation"
-      },
-      {
-        "id": "risksTable",
-        "component": "Table",
-        "columns": [
-          "colRisk",
-          "colRiskProj",
-          "colSeverity",
-          "colMitigation"
-        ]
-      },
-      {
-        "id": "colRisk",
-        "component": "Col",
-        "label": "Risk",
-        "type": "string",
-        "data": [
-          "Vendor API delay",
-          "Data migration rollback risk",
-          "Key engineer PTO gap",
-          "Scope creep - Fusion AI"
-        ]
-      },
-      {
-        "id": "colRiskProj",
-        "component": "Col",
-        "label": "Project",
-        "type": "string",
-        "data": [
-          "Delta Migration",
-          "Delta Migration",
-          "Beacon Mobile",
-          "Fusion AI"
-        ]
-      },
-      {
-        "id": "colSeverity",
-        "component": "Col",
-        "label": "Severity",
-        "type": "string",
-        "data": [
-          "Critical",
-          "High",
-          "High",
-          "Medium"
-        ]
-      },
-      {
-        "id": "colMitigation",
-        "component": "Col",
-        "label": "Mitigation",
-        "type": "string",
-        "data": [
-          "Escalate to vendor exec",
-          "Parallel run + backup",
-          "Contractor backfill",
-          "Freeze requirements"
-        ]
-      },
-      {
-        "id": "blockedCard",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "children": [
-          "blockedHeader",
-          "blockedTable"
-        ]
-      },
-      {
-        "id": "blockedHeader",
-        "component": "CardHeader",
-        "title": "8. Blocked Work Items",
-        "subtitle": "Items waiting on dependency or decision"
-      },
-      {
-        "id": "blockedTable",
-        "component": "Table",
-        "columns": [
-          "colBlockedItem",
-          "colBlockedProj",
-          "colBlockedSince",
-          "colBlockedOwner"
-        ]
-      },
-      {
-        "id": "colBlockedItem",
-        "component": "Col",
-        "label": "Work Item",
-        "type": "string",
-        "data": [
-          "DELTA-142 API contract",
-          "BEACON-89 App Store review",
-          "FUSION-21 Model approval"
-        ]
-      },
-      {
-        "id": "colBlockedProj",
-        "component": "Col",
-        "label": "Project",
-        "type": "string",
-        "data": [
-          "Delta Migration",
-          "Beacon Mobile",
-          "Fusion AI"
-        ]
-      },
-      {
-        "id": "colBlockedSince",
-        "component": "Col",
-        "label": "Blocked Since",
-        "type": "string",
-        "data": [
-          "2026-08-10 (8d)",
-          "2026-08-14 (4d)",
-          "2026-08-12 (6d)"
-        ]
-      },
-      {
-        "id": "colBlockedOwner",
-        "component": "Col",
-        "label": "Owner",
-        "type": "string",
-        "data": [
-          "James Okafor",
-          "Marcus Chen",
-          "David Park"
-        ]
-      },
-      {
-        "id": "overdueCard",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "children": [
-          "overdueHeader",
-          "overdueTable"
-        ]
-      },
-      {
-        "id": "overdueHeader",
-        "component": "CardHeader",
-        "title": "2. Overdue Milestones",
-        "subtitle": "Past due • Requires recovery plan"
-      },
-      {
-        "id": "overdueTable",
-        "component": "Table",
-        "columns": [
-          "colOverdueProj",
-          "colOverdueMilestone",
-          "colOverdueDue",
-          "colOverdueDays"
-        ]
-      },
-      {
-        "id": "colOverdueProj",
-        "component": "Col",
-        "label": "Project",
-        "type": "string",
-        "data": [
-          "Delta Migration",
-          "Beacon Mobile",
-          "Fusion AI"
-        ]
-      },
-      {
-        "id": "colOverdueMilestone",
-        "component": "Col",
-        "label": "Milestone",
-        "type": "string",
-        "data": [
-          "UAT Sign-off",
-          "Beta Release",
-          "Data Pipeline v2"
-        ]
-      },
-      {
-        "id": "colOverdueDue",
-        "component": "Col",
-        "label": "Due Date",
-        "type": "string",
-        "data": [
-          "2026-08-08",
-          "2026-08-12",
-          "2026-08-15"
-        ]
-      },
-      {
-        "id": "colOverdueDays",
-        "component": "Col",
-        "label": "Days Overdue",
-        "type": "string",
-        "data": [
-          "10 days",
-          "6 days",
-          "3 days"
-        ]
-      },
-      {
-        "id": "upcomingCard",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "children": [
-          "upcomingHeader",
-          "upcomingList"
-        ]
-      },
-      {
-        "id": "upcomingHeader",
-        "component": "CardHeader",
-        "title": "6. Deadlines — Next 2 Weeks",
-        "subtitle": "Aug 19 – Sep 01, 2026"
-      },
-      {
-        "id": "upcomingList",
-        "component": "ListBlock",
-        "variant": "number",
-        "items": [
-          "upcomingItem1",
-          "upcomingItem2",
-          "upcomingItem3",
-          "upcomingItem4"
-        ]
-      },
-      {
-        "id": "upcomingItem1",
-        "component": "ListItem",
-        "title": "Beacon Mobile — RC Build",
-        "subtitle": "Due Aug 22 • Owner: Marcus Chen • At Risk"
-      },
-      {
-        "id": "upcomingItem2",
-        "component": "ListItem",
-        "title": "Delta Migration — Cutover Dry Run",
-        "subtitle": "Due Aug 25 • Owner: James Okafor • Blocked"
-      },
-      {
-        "id": "upcomingItem3",
-        "component": "ListItem",
-        "title": "Atlas Platform — Security Audit",
-        "subtitle": "Due Aug 28 • Owner: Priya Desai • On Track"
-      },
-      {
-        "id": "upcomingItem4",
-        "component": "ListItem",
-        "title": "Echo Commerce — Checkout Launch",
-        "subtitle": "Due Aug 30 • Owner: Aisha Khan • On Track"
       },
       {
         "id": "paceCard",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
         "children": [
           "paceHeader",
           "paceChart"
@@ -638,230 +319,459 @@ PMO Portfolio Review — single-screen view covering active projects, budget, ut
         "id": "paceHeader",
         "component": "CardHeader",
         "title": "7. Delivery Pace — Last 6 Sprints",
-        "subtitle": "Velocity (story points completed) • Trend: +29% vs Sprint 19"
+        "subtitle": "Story points delivered per sprint (velocity)"
       },
       {
         "id": "paceChart",
         "component": "LineChart",
         "labels": [
-          "Sprint 19",
-          "Sprint 20",
           "Sprint 21",
           "Sprint 22",
           "Sprint 23",
-          "Sprint 24"
+          "Sprint 24",
+          "Sprint 25",
+          "Sprint 26"
+        ],
+        "series": [
+          "velocitySeries"
         ],
         "variant": "natural",
         "xLabel": "Sprint",
-        "yLabel": "Points",
-        "series": [
-          "seriesVelocity"
-        ]
+        "yLabel": "Points"
       },
       {
-        "id": "seriesVelocity",
+        "id": "velocitySeries",
         "component": "Series",
         "category": "Velocity",
         "values": [
-          42,
+          32,
           38,
-          45,
-          51,
-          48,
-          54
+          35,
+          42,
+          39,
+          45
         ]
       },
       {
-        "id": "resourceCard",
+        "id": "overdueCard",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
         "children": [
-          "resourceHeader",
-          "resourceForm"
+          "overdueHeader",
+          "overdueTable"
         ]
       },
       {
-        "id": "resourceHeader",
+        "id": "overdueHeader",
+        "component": "CardHeader",
+        "title": "2. Overdue Milestones",
+        "subtitle": "4 milestones past due — requires immediate attention"
+      },
+      {
+        "id": "overdueTable",
+        "component": "Table",
+        "columns": [
+          "overdueMilestoneCol",
+          "overdueProjectCol",
+          "overdueDueCol",
+          "overdueOwnerCol"
+        ]
+      },
+      {
+        "id": "overdueMilestoneCol",
+        "component": "Col",
+        "label": "Milestone",
+        "data": [
+          "API Freeze v2",
+          "UAT Sign-off",
+          "Security Audit",
+          "Data Migration Dry Run"
+        ]
+      },
+      {
+        "id": "overdueProjectCol",
+        "component": "Col",
+        "label": "Project",
+        "data": [
+          "Catalyst Analytics",
+          "Atlas Migration",
+          "Beacon Platform",
+          "Atlas Migration"
+        ]
+      },
+      {
+        "id": "overdueDueCol",
+        "component": "Col",
+        "label": "Due Date",
+        "data": [
+          "2026-08-05 (13d overdue)",
+          "2026-08-12 (6d overdue)",
+          "2026-08-10 (8d overdue)",
+          "2026-08-15 (3d overdue)"
+        ]
+      },
+      {
+        "id": "overdueOwnerCol",
+        "component": "Col",
+        "label": "Owner",
+        "data": [
+          "Sofia Reyes",
+          "Priya Desai",
+          "Marcus Chen",
+          "Priya Desai"
+        ]
+      },
+      {
+        "id": "risksCard",
+        "component": "Card",
+        "children": [
+          "risksHeader",
+          "risksTable"
+        ]
+      },
+      {
+        "id": "risksHeader",
+        "component": "CardHeader",
+        "title": "5. Risks by Severity",
+        "subtitle": "Top risks requiring mitigation"
+      },
+      {
+        "id": "risksTable",
+        "component": "Table",
+        "columns": [
+          "riskDescCol",
+          "riskProjectCol",
+          "riskSeverityCol"
+        ]
+      },
+      {
+        "id": "riskDescCol",
+        "component": "Col",
+        "label": "Risk",
+        "data": [
+          "Vendor delay — ETL connector",
+          "Key engineer resignation risk",
+          "Regulatory scope creep (GDPR)",
+          "Mobile OS compatibility",
+          "Budget overrun >10% in Q3"
+        ]
+      },
+      {
+        "id": "riskProjectCol",
+        "component": "Col",
+        "label": "Project",
+        "data": [
+          "Catalyst Analytics",
+          "Horizon Mobile",
+          "Beacon Platform",
+          "Horizon Mobile",
+          "Catalyst Analytics"
+        ]
+      },
+      {
+        "id": "riskSeverityCol",
+        "component": "Col",
+        "label": "Severity",
+        "data": [
+          "🔴 Critical",
+          "🔴 Critical",
+          "🟠 High",
+          "🟡 Medium",
+          "🟠 High"
+        ]
+      },
+      {
+        "id": "deadlinesCard",
+        "component": "Card",
+        "children": [
+          "deadlinesHeader",
+          "deadlinesTable"
+        ]
+      },
+      {
+        "id": "deadlinesHeader",
+        "component": "CardHeader",
+        "title": "6. Deadlines — Next 2 Weeks",
+        "subtitle": "Aug 19 — Sep 1, 2026"
+      },
+      {
+        "id": "deadlinesTable",
+        "component": "Table",
+        "columns": [
+          "deadlineTaskCol",
+          "deadlineProjectCol",
+          "deadlineDateCol"
+        ]
+      },
+      {
+        "id": "deadlineTaskCol",
+        "component": "Col",
+        "label": "Deadline",
+        "data": [
+          "Beta Release",
+          "Sprint Review & Demo",
+          "Contract Renewal Decision",
+          "QA Regression Complete",
+          "Executive Steering Review"
+        ]
+      },
+      {
+        "id": "deadlineProjectCol",
+        "component": "Col",
+        "label": "Project",
+        "data": [
+          "Horizon Mobile",
+          "Delta CRM",
+          "Beacon Platform",
+          "Atlas Migration",
+          "Portfolio"
+        ]
+      },
+      {
+        "id": "deadlineDateCol",
+        "component": "Col",
+        "label": "Date",
+        "data": [
+          "2026-08-22",
+          "2026-08-25",
+          "2026-08-27",
+          "2026-08-29",
+          "2026-09-01"
+        ]
+      },
+      {
+        "id": "blockedCard",
+        "component": "Card",
+        "children": [
+          "blockedHeader",
+          "blockedTable"
+        ]
+      },
+      {
+        "id": "blockedHeader",
+        "component": "CardHeader",
+        "title": "8. Blocked Work Items",
+        "subtitle": "5 items blocked — avg 4.6 days blocked"
+      },
+      {
+        "id": "blockedTable",
+        "component": "Table",
+        "columns": [
+          "blockedItemCol",
+          "blockedProjectCol",
+          "blockedReasonCol",
+          "blockedDaysCol"
+        ]
+      },
+      {
+        "id": "blockedItemCol",
+        "component": "Col",
+        "label": "Work Item",
+        "data": [
+          "CAT-342: Snowflake auth",
+          "BEA-189: SSO integration",
+          "ATL-207: Legacy DB lock",
+          "HOR-112: Push notif cert",
+          "DEL-56: Workflow engine"
+        ]
+      },
+      {
+        "id": "blockedProjectCol",
+        "component": "Col",
+        "label": "Project",
+        "data": [
+          "Catalyst",
+          "Beacon",
+          "Atlas",
+          "Horizon",
+          "Delta"
+        ]
+      },
+      {
+        "id": "blockedReasonCol",
+        "component": "Col",
+        "label": "Blocked By",
+        "data": [
+          "Waiting on Infra ticket #4419",
+          "Vendor Okta support",
+          "DBA access pending",
+          "Apple cert renewal",
+          "Dependency: BEA-189"
+        ]
+      },
+      {
+        "id": "blockedDaysCol",
+        "component": "Col",
+        "label": "Days Blocked",
+        "data": [
+          "7",
+          "5",
+          "6",
+          "3",
+          "2"
+        ]
+      },
+      {
+        "id": "staffingCard",
+        "component": "Card",
+        "children": [
+          "staffingHeader",
+          "staffingForm"
+        ]
+      },
+      {
+        "id": "staffingHeader",
         "component": "CardHeader",
         "title": "11. Request More People",
-        "subtitle": "Submit staffing request to PMO • Avg response 2 business days"
+        "subtitle": "Submit a staffing request for any active project"
       },
       {
-        "id": "resourceForm",
+        "id": "staffingForm",
         "component": "Form",
-        "name": "requestResources",
+        "name": "staffing-request",
+        "buttons": "staffingButtons",
         "fields": [
-          "fcProject",
-          "fcRole",
-          "fcCount"
-        ],
-        "buttons": "resourceButtons"
+          "staffingProjectControl",
+          "roleControl",
+          "countControl",
+          "reasonControl"
+        ]
       },
       {
-        "id": "fcProject",
+        "id": "staffingProjectControl",
         "component": "FormControl",
         "label": "Project",
-        "input": "selectProject"
+        "input": "staffingProjectSelect"
       },
       {
-        "id": "selectProject",
+        "id": "staffingProjectSelect",
         "component": "Select",
-        "name": "project",
+        "name": "staffing_project",
         "placeholder": "Choose project",
         "items": [
-          "sp_Atlas",
-          "sp_Beacon",
-          "sp_Crest",
-          "sp_Delta"
+          "projOpt1",
+          "projOpt2",
+          "projOpt3",
+          "projOpt4",
+          "projOpt5"
         ]
       },
       {
-        "id": "sp_Atlas",
+        "id": "projOpt1",
         "component": "SelectItem",
-        "value": "Atlas Platform",
-        "label": "Atlas Platform"
+        "value": "atlas",
+        "label": "Atlas Migration"
       },
       {
-        "id": "sp_Beacon",
+        "id": "projOpt2",
         "component": "SelectItem",
-        "value": "Beacon Mobile",
-        "label": "Beacon Mobile"
+        "value": "beacon",
+        "label": "Beacon Platform"
       },
       {
-        "id": "sp_Crest",
+        "id": "projOpt3",
         "component": "SelectItem",
-        "value": "Crest Analytics",
-        "label": "Crest Analytics"
+        "value": "catalyst",
+        "label": "Catalyst Analytics"
       },
       {
-        "id": "sp_Delta",
+        "id": "projOpt4",
         "component": "SelectItem",
-        "value": "Delta Migration",
-        "label": "Delta Migration"
+        "value": "horizon",
+        "label": "Horizon Mobile"
       },
       {
-        "id": "fcRole",
+        "id": "projOpt5",
+        "component": "SelectItem",
+        "value": "delta",
+        "label": "Delta CRM"
+      },
+      {
+        "id": "roleControl",
         "component": "FormControl",
         "label": "Role Needed",
-        "input": "inputRole",
-        "hint": "e.g., Senior Backend Engineer, QA Lead"
+        "input": "roleSelect"
       },
       {
-        "id": "inputRole",
-        "component": "Input",
+        "id": "roleSelect",
+        "component": "Select",
         "name": "role",
-        "placeholder": "Enter role"
-      },
-      {
-        "id": "fcCount",
-        "component": "FormControl",
-        "label": "People Required",
-        "input": "sliderCount"
-      },
-      {
-        "id": "sliderCount",
-        "component": "Slider",
-        "name": "headcount",
-        "variant": "discrete",
-        "min": 1,
-        "max": 5,
-        "step": 1,
-        "defaultValue": [
-          2
-        ],
-        "label": "Headcount"
-      },
-      {
-        "id": "resourceButtons",
-        "component": "Buttons",
-        "buttons": [
-          "btnRequest"
+        "placeholder": "Select role",
+        "items": [
+          "roleOpt1",
+          "roleOpt2",
+          "roleOpt3",
+          "roleOpt4"
         ]
       },
       {
-        "id": "btnRequest",
+        "id": "roleOpt1",
+        "component": "SelectItem",
+        "value": "engineer",
+        "label": "Engineer"
+      },
+      {
+        "id": "roleOpt2",
+        "component": "SelectItem",
+        "value": "designer",
+        "label": "Designer"
+      },
+      {
+        "id": "roleOpt3",
+        "component": "SelectItem",
+        "value": "qa",
+        "label": "QA Analyst"
+      },
+      {
+        "id": "roleOpt4",
+        "component": "SelectItem",
+        "value": "data",
+        "label": "Data Engineer"
+      },
+      {
+        "id": "countControl",
+        "component": "FormControl",
+        "label": "Headcount",
+        "input": "countInput",
+        "hint": "Number of people requested"
+      },
+      {
+        "id": "countInput",
+        "component": "Input",
+        "name": "headcount",
+        "placeholder": "e.g., 2",
+        "type": "number"
+      },
+      {
+        "id": "reasonControl",
+        "component": "FormControl",
+        "label": "Justification",
+        "input": "reasonInput"
+      },
+      {
+        "id": "reasonInput",
+        "component": "TextArea",
+        "name": "justification",
+        "placeholder": "Explain why additional capacity is needed..."
+      },
+      {
+        "id": "staffingButtons",
+        "component": "Buttons",
+        "buttons": [
+          "requestBtn",
+          "clearBtn"
+        ]
+      },
+      {
+        "id": "requestBtn",
         "component": "Button",
-        "label": "Submit Request",
+        "label": "Request Staffing",
         "variant": "primary"
       },
       {
-        "id": "archiveCard",
-        "component": "Card",
-        "variant": "sunk",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "archiveHeader",
-          "archiveDialog"
-        ]
-      },
-      {
-        "id": "archiveHeader",
-        "component": "CardHeader",
-        "title": "13. Archive Finished Project",
-        "subtitle": "Move completed projects to archive • Read-only after archiving"
-      },
-      {
-        "id": "archiveDialog",
-        "component": "DialogBlock",
-        "triggerLabel": "Archive Finished Project",
-        "title": "Archive Project",
-        "description": "Select a completed project to archive. This will lock editing and move it to the portfolio archive.",
-        "content": [
-          "archiveSelectControl",
-          "archiveButtons"
-        ]
-      },
-      {
-        "id": "archiveSelectControl",
-        "component": "FormControl",
-        "label": "Completed Project",
-        "input": "archiveSelect"
-      },
-      {
-        "id": "archiveSelect",
-        "component": "Select",
-        "name": "archiveProject",
-        "placeholder": "Select finished project",
-        "items": [
-          "as_Helios",
-          "as_Orion",
-          "as_Nova"
-        ]
-      },
-      {
-        "id": "as_Helios",
-        "component": "SelectItem",
-        "value": "Helios Infra",
-        "label": "Helios Infra — Done 2026-07-30"
-      },
-      {
-        "id": "as_Orion",
-        "component": "SelectItem",
-        "value": "Orion CRM",
-        "label": "Orion CRM — Done 2026-08-01"
-      },
-      {
-        "id": "as_Nova",
-        "component": "SelectItem",
-        "value": "Nova Website",
-        "label": "Nova Website — Done 2026-07-15"
-      },
-      {
-        "id": "archiveButtons",
-        "component": "Buttons",
-        "buttons": [
-          "btnArchive"
-        ]
-      },
-      {
-        "id": "btnArchive",
+        "id": "clearBtn",
         "component": "Button",
-        "label": "Confirm Archive",
-        "variant": "secondary",
-        "type": "destructive"
+        "label": "Clear",
+        "variant": "tertiary"
       }
     ]
   }

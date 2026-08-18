@@ -2,12 +2,8 @@
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "cafe-menu",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": {
-      "primaryColor": "#7A4B2A",
-      "agentDisplayName": "Café Menu"
-    }
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
@@ -16,235 +12,207 @@
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "cafe-menu",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "l",
         "children": [
           "header",
           "special",
-          "vegetarian-filter",
-          "drinks-section",
-          "food-section",
-          "hours-section"
-        ]
+          "vegFilter",
+          "menuTabs",
+          "hours"
+        ],
+        "gap": "l"
       },
       {
         "id": "header",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "menu-title",
-          "menu-subtitle"
-        ]
-      },
-      {
-        "id": "menu-title",
-        "component": "Heading",
-        "text": "Juniper Café",
-        "level": "h1"
-      },
-      {
-        "id": "menu-subtitle",
-        "component": "TextContent",
-        "text": "Today’s menu · Freshly made, thoughtfully sourced",
-        "size": "default"
+        "component": "CardHeader",
+        "title": "Juniper Café",
+        "subtitle": "Fresh coffee, seasonal food, and good company"
       },
       {
         "id": "special",
         "component": "Callout",
         "variant": "success",
-        "title": "Today’s Special: Roasted Tomato & Basil Toastie — $11.50",
-        "description": "Sourdough, melty mozzarella, slow-roasted tomatoes, basil pesto, and a side salad. Vegetarian."
+        "title": "Today's Special: Roasted Veggie Focaccia — $12",
+        "description": "Warm focaccia with roasted vegetables, pesto, mozzarella, and a side salad."
       },
       {
-        "id": "vegetarian-filter",
+        "id": "vegFilter",
         "component": "SwitchGroup",
-        "name": "vegetarianOnly",
+        "name": "vegetarian_filter",
         "variant": "sunk",
         "items": [
-          "vegetarian-switch"
+          "vegOnlySwitch"
         ]
       },
       {
-        "id": "vegetarian-switch",
+        "id": "vegOnlySwitch",
         "component": "SwitchItem",
-        "name": "vegetarianOnly",
-        "label": "Show vegetarian items only",
-        "description": "Hide menu items containing meat or fish",
+        "name": "vegetarian_only",
+        "label": "Vegetarian items only",
+        "description": "Show meat-free drinks and food",
         "defaultChecked": false
       },
       {
-        "id": "drinks-section",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "drinks-heading",
-          "drinks-table",
-          "drinks-note"
+        "id": "menuTabs",
+        "component": "Tabs",
+        "items": [
+          "drinksTab",
+          "foodTab"
         ]
       },
       {
-        "id": "drinks-heading",
+        "id": "drinksTab",
+        "component": "TabItem",
+        "value": "drinks",
+        "trigger": "Drinks",
+        "content": [
+          "drinksHeading",
+          "drinksTable"
+        ]
+      },
+      {
+        "id": "drinksHeading",
         "component": "Heading",
         "text": "Drinks",
         "level": "h2"
       },
       {
-        "id": "drinks-table",
+        "id": "drinksTable",
         "component": "Table",
         "columns": [
-          "drink-name-col",
-          "drink-price-col"
+          "drinkNameCol",
+          "drinkDescriptionCol",
+          "drinkPriceCol"
         ]
       },
       {
-        "id": "drink-name-col",
+        "id": "drinkNameCol",
         "component": "Col",
         "label": "Drink",
         "data": [
           "Espresso",
-          "Americano",
           "Cappuccino",
-          "Latte",
+          "Iced Vanilla Latte",
           "Matcha Latte",
-          "Iced Tea"
-        ],
-        "type": "string"
+          "Fresh Orange Juice"
+        ]
       },
       {
-        "id": "drink-price-col",
+        "id": "drinkDescriptionCol",
+        "component": "Col",
+        "label": "Details",
+        "data": [
+          "Double shot",
+          "Espresso, steamed milk, foam",
+          "Cold brew espresso, vanilla, milk",
+          "Ceremonial matcha and milk",
+          "Freshly pressed"
+        ]
+      },
+      {
+        "id": "drinkPriceCol",
         "component": "Col",
         "label": "Price",
         "data": [
           "$3.00",
-          "$3.50",
           "$4.50",
-          "$4.75",
-          "$5.25",
-          "$3.75"
-        ],
-        "type": "string"
-      },
-      {
-        "id": "drinks-note",
-        "component": "TextContent",
-        "text": "Oat, almond, and soy milk available +$0.75.",
-        "size": "small"
-      },
-      {
-        "id": "food-section",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "food-heading",
-          "food-table",
-          "vegetarian-key"
+          "$5.50",
+          "$5.00",
+          "$4.00"
         ]
       },
       {
-        "id": "food-heading",
+        "id": "foodTab",
+        "component": "TabItem",
+        "value": "food",
+        "trigger": "Food",
+        "content": [
+          "foodHeading",
+          "foodTable",
+          "vegNote"
+        ]
+      },
+      {
+        "id": "foodHeading",
         "component": "Heading",
         "text": "Food",
         "level": "h2"
       },
       {
-        "id": "food-table",
+        "id": "foodTable",
         "component": "Table",
         "columns": [
-          "food-name-col",
-          "food-price-col",
-          "food-diet-col"
+          "foodNameCol",
+          "foodDescriptionCol",
+          "foodPriceCol"
         ]
       },
       {
-        "id": "food-name-col",
+        "id": "foodNameCol",
         "component": "Col",
-        "label": "Item",
+        "label": "Food",
         "data": [
-          "Avocado Toast",
-          "Roasted Tomato & Basil Toastie",
-          "Breakfast Burrito",
-          "Chicken Caesar Wrap",
-          "Blueberry Muffin",
-          "Chocolate Chip Cookie"
-        ],
-        "type": "string"
+          "Avocado Toast (V)",
+          "Roasted Veggie Focaccia (V)",
+          "Turkey & Swiss Croissant",
+          "Tomato Basil Soup (V)",
+          "Blueberry Muffin (V)"
+        ]
       },
       {
-        "id": "food-price-col",
+        "id": "foodDescriptionCol",
+        "component": "Col",
+        "label": "Details",
+        "data": [
+          "Sourdough, avocado, chili flakes",
+          "Pesto, mozzarella, side salad",
+          "Roasted turkey, Swiss, greens",
+          "Served with sourdough toast",
+          "Baked fresh this morning"
+        ]
+      },
+      {
+        "id": "foodPriceCol",
         "component": "Col",
         "label": "Price",
         "data": [
-          "$9.50",
+          "$9.00",
+          "$12.00",
           "$11.50",
-          "$10.75",
-          "$12.25",
-          "$4.25",
-          "$3.00"
-        ],
-        "type": "string"
-      },
-      {
-        "id": "food-diet-col",
-        "component": "Col",
-        "label": "Dietary",
-        "data": [
-          "Vegetarian",
-          "Vegetarian · Special",
-          "Contains meat",
-          "Contains meat",
-          "Vegetarian",
-          "Vegetarian"
-        ],
-        "type": "string"
-      },
-      {
-        "id": "vegetarian-key",
-        "component": "TextCallout",
-        "variant": "neutral",
-        "title": "Vegetarian menu",
-        "description": "Use the toggle above to view vegetarian items only."
-      },
-      {
-        "id": "hours-section",
-        "component": "Card",
-        "variant": "sunk",
-        "direction": "column",
-        "gap": "s",
-        "children": [
-          "hours-heading",
-          "weekday-hours",
-          "weekend-hours"
+          "$7.50",
+          "$4.25"
         ]
       },
       {
-        "id": "hours-heading",
+        "id": "vegNote",
+        "component": "TextContent",
+        "text": "(V) Vegetarian. Ask our team about vegan and gluten-free options.",
+        "size": "small"
+      },
+      {
+        "id": "hours",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "hoursHeading",
+          "hoursText"
+        ],
+        "gap": "s"
+      },
+      {
+        "id": "hoursHeading",
         "component": "Heading",
         "text": "Opening Hours",
-        "level": "h2"
+        "level": "h3"
       },
       {
-        "id": "weekday-hours",
+        "id": "hoursText",
         "component": "TextContent",
-        "text": "**Monday–Friday:** 7:00 AM – 6:00 PM",
-        "size": "default"
-      },
-      {
-        "id": "weekend-hours",
-        "component": "TextContent",
-        "text": "**Saturday–Sunday:** 8:00 AM – 4:00 PM",
-        "size": "default"
+        "text": "Monday–Friday: 7:00 AM–6:00 PM\nSaturday–Sunday: 8:00 AM–4:00 PM"
       }
     ]
   }

@@ -1,6 +1,183 @@
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"delivery-tracking","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#2563EB","agentDisplayName":"Delivery Tracker"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
+
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"delivery-tracking","components":[{"id":"root","component":"Card","children":["header","status","progress","location-card","delivery-card","problem-dialog"],"direction":"column","gap":"m"},{"id":"header","component":"CardHeader","title":"Track your delivery","subtitle":"Order #PKG-48291"},{"id":"status","component":"Callout","variant":"info","title":"In transit","description":"Your package is moving through the carrier network."},{"id":"progress","component":"Progress","value":72,"label":"Delivery progress"},{"id":"location-card","component":"Card","children":["location-heading","location-text","location-update"],"variant":"sunk","direction":"column","gap":"s"},{"id":"location-heading","component":"Heading","text":"Current package location","level":"h3"},{"id":"location-text","component":"TextContent","text":"**Regional Distribution Center**\nAustin, Texas","size":"large"},{"id":"location-update","component":"TextContent","text":"Last scanned today at 8:42 AM","size":"small"},{"id":"delivery-card","component":"Card","children":["delivery-heading","delivery-date","delivery-window"],"variant":"sunk","direction":"column","gap":"s"},{"id":"delivery-heading","component":"Heading","text":"Estimated delivery","level":"h3"},{"id":"delivery-date","component":"TextContent","text":"**Thursday, August 20, 2026**","size":"large"},{"id":"delivery-window","component":"TextContent","text":"Expected between 10:00 AM and 2:00 PM","size":"small"},{"id":"problem-dialog","component":"DialogBlock","triggerLabel":"Report a delivery problem","title":"Report a problem","description":"Tell us what went wrong, and our delivery support team will review it.","content":["problem-form"],"triggerVariant":"outline"},{"id":"problem-form","component":"Form","name":"delivery-problem","fields":["issue-control","details-control"],"buttons":"problem-buttons"},{"id":"issue-control","component":"FormControl","label":"What is the problem?","input":"issue-select"},{"id":"issue-select","component":"Select","name":"issueType","items":["issue-late","issue-damaged","issue-missing","issue-address","issue-other"],"placeholder":"Select an issue","size":"medium"},{"id":"issue-late","component":"SelectItem","value":"late","label":"Delivery is late"},{"id":"issue-damaged","component":"SelectItem","value":"damaged","label":"Package is damaged"},{"id":"issue-missing","component":"SelectItem","value":"missing","label":"Package says delivered but is missing"},{"id":"issue-address","component":"SelectItem","value":"address","label":"Delivery address problem"},{"id":"issue-other","component":"SelectItem","value":"other","label":"Other issue"},{"id":"details-control","component":"FormControl","label":"Details","input":"details-input","hint":"Do not include payment information."},{"id":"details-input","component":"TextArea","name":"details","placeholder":"Describe the delivery problem","rows":4},{"id":"problem-buttons","component":"Buttons","buttons":["submit-problem"],"direction":"row"},{"id":"submit-problem","component":"Button","label":"Submit report","variant":"primary","size":"medium","action":[{"type":"submit","form":"delivery-problem"}]}]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "status",
+          "location",
+          "deliveryEstimate",
+          "progress",
+          "separator",
+          "problemDialog"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Track your delivery",
+        "subtitle": "Package #PKG-48291"
+      },
+      {
+        "id": "status",
+        "component": "Badge",
+        "text": "In transit",
+        "variant": "secondary"
+      },
+      {
+        "id": "location",
+        "component": "TextCallout",
+        "variant": "info",
+        "title": "Current location",
+        "description": "Downtown Distribution Center — your package arrived at 8:42 AM and is being prepared for local delivery."
+      },
+      {
+        "id": "deliveryEstimate",
+        "component": "TextCallout",
+        "variant": "success",
+        "title": "Estimated delivery",
+        "description": "Thursday, August 20, 2026 by 8:00 PM"
+      },
+      {
+        "id": "progress",
+        "component": "Progress",
+        "value": 75,
+        "label": "Delivery progress"
+      },
+      {
+        "id": "separator",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "problemDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Report a delivery problem",
+        "title": "Report a delivery problem",
+        "description": "Tell us what went wrong and our support team will review it.",
+        "content": [
+          "problemForm"
+        ],
+        "triggerVariant": "outline"
+      },
+      {
+        "id": "problemForm",
+        "component": "Form",
+        "name": "delivery-problem",
+        "buttons": "problemButtons",
+        "fields": [
+          "problemTypeField",
+          "detailsField",
+          "emailField"
+        ]
+      },
+      {
+        "id": "problemTypeField",
+        "component": "FormControl",
+        "label": "What is the problem?",
+        "input": "problemType"
+      },
+      {
+        "id": "problemType",
+        "component": "Select",
+        "name": "problem_type",
+        "items": [
+          "lateOption",
+          "damagedOption",
+          "missingOption",
+          "wrongAddressOption",
+          "otherOption"
+        ],
+        "placeholder": "Select a problem"
+      },
+      {
+        "id": "lateOption",
+        "component": "SelectItem",
+        "value": "late",
+        "label": "Delivery is late"
+      },
+      {
+        "id": "damagedOption",
+        "component": "SelectItem",
+        "value": "damaged",
+        "label": "Package is damaged"
+      },
+      {
+        "id": "missingOption",
+        "component": "SelectItem",
+        "value": "missing",
+        "label": "Package says delivered but is missing"
+      },
+      {
+        "id": "wrongAddressOption",
+        "component": "SelectItem",
+        "value": "wrong_address",
+        "label": "Wrong delivery address"
+      },
+      {
+        "id": "otherOption",
+        "component": "SelectItem",
+        "value": "other",
+        "label": "Other issue"
+      },
+      {
+        "id": "detailsField",
+        "component": "FormControl",
+        "label": "Details",
+        "input": "detailsInput",
+        "hint": "Include any information that may help us investigate."
+      },
+      {
+        "id": "detailsInput",
+        "component": "TextArea",
+        "name": "details",
+        "placeholder": "Describe the delivery problem",
+        "rows": 4
+      },
+      {
+        "id": "emailField",
+        "component": "FormControl",
+        "label": "Contact email",
+        "input": "emailInput"
+      },
+      {
+        "id": "emailInput",
+        "component": "Input",
+        "name": "email",
+        "type": "email",
+        "placeholder": "you@example.com"
+      },
+      {
+        "id": "problemButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitProblem"
+        ]
+      },
+      {
+        "id": "submitProblem",
+        "component": "Button",
+        "label": "Submit report",
+        "variant": "primary"
+      }
+    ]
+  }
+}
 </a2ui-json>

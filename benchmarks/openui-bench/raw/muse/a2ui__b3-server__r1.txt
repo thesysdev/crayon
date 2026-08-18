@@ -1,95 +1,108 @@
-On-call health view covering all 8 requirements — uptime, 24h CPU/Memory, live error rate, incidents with severity + acknowledge, region filter, slowest endpoints, and alert threshold.
+On-call health view — quarter uptime, 24h CPU/memory, live error rate, incidents by severity, region filter, slowest endpoints, and alert controls in one screen.
 
 <a2ui-json>
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "oncall-health-view",
+    "surfaceId": "main",
     "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
+
 <a2ui-json>
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "oncall-health-view",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "direction": "column",
-        "gap": "m",
         "children": [
-          "headerSection",
+          "header",
+          "regionCard",
           "kpiRow",
-          "chartsCard",
-          "bottomRow",
-          "alertCard",
+          "cpuMemCard",
+          "errorAlert",
+          "incidentsCard",
+          "slowestCard",
+          "thresholdCard",
           "followUpBlock"
-        ]
+        ],
+        "gap": "l"
       },
       {
-        "id": "headerSection",
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Service Health — On-Call View",
+        "subtitle": "api-prod • Last refreshed 2 min ago • Auto-refresh 30s"
+      },
+      {
+        "id": "regionCard",
         "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "align": "center",
-        "justify": "between",
+        "variant": "sunk",
         "children": [
-          "headingMain",
-          "regionFormControl"
+          "regionHeader",
+          "regionControl"
         ]
       },
       {
-        "id": "headingMain",
-        "component": "Heading",
-        "text": "Service Health — On-Call View",
-        "level": "h2"
+        "id": "regionHeader",
+        "component": "CardHeader",
+        "title": "Region filter",
+        "subtitle": "Narrow all metrics and incidents to one region (5)"
       },
       {
-        "id": "regionFormControl",
+        "id": "regionControl",
         "component": "FormControl",
-        "label": "Region filter (5)",
-        "input": "regionSelect",
-        "hint": "Narrow all metrics to one region"
+        "label": "Selected region",
+        "hint": "Applies to charts, error rate, incidents and endpoints",
+        "input": "regionSelect"
       },
       {
         "id": "regionSelect",
         "component": "Select",
-        "name": "regionFilter",
+        "name": "region",
         "placeholder": "All regions",
         "value": "all",
         "items": [
-          "regionAll",
-          "regionUsEast",
-          "regionEuWest",
-          "regionApSouth"
+          "regionOptAll",
+          "regionOptUse1",
+          "regionOptUsw2",
+          "regionOptEuw1",
+          "regionOptAps1"
         ]
       },
       {
-        "id": "regionAll",
+        "id": "regionOptAll",
         "component": "SelectItem",
         "value": "all",
-        "label": "All regions (global)"
+        "label": "All regions — Global"
       },
       {
-        "id": "regionUsEast",
+        "id": "regionOptUse1",
         "component": "SelectItem",
         "value": "us-east-1",
-        "label": "us-east-1"
+        "label": "us-east-1 (Virginia)"
       },
       {
-        "id": "regionEuWest",
+        "id": "regionOptUsw2",
+        "component": "SelectItem",
+        "value": "us-west-2",
+        "label": "us-west-2 (Oregon)"
+      },
+      {
+        "id": "regionOptEuw1",
         "component": "SelectItem",
         "value": "eu-west-1",
-        "label": "eu-west-1"
+        "label": "eu-west-1 (Ireland)"
       },
       {
-        "id": "regionApSouth",
+        "id": "regionOptAps1",
         "component": "SelectItem",
         "value": "ap-south-1",
-        "label": "ap-south-1"
+        "label": "ap-south-1 (Mumbai)"
       },
       {
         "id": "kpiRow",
@@ -99,8 +112,7 @@ On-call health view covering all 8 requirements — uptime, 24h CPU/Memory, live
         "gap": "m",
         "children": [
           "uptimeCard",
-          "errorCard",
-          "healthSummaryCard"
+          "errorRateCard"
         ]
       },
       {
@@ -116,8 +128,8 @@ On-call health view covering all 8 requirements — uptime, 24h CPU/Memory, live
       {
         "id": "uptimeHeader",
         "component": "CardHeader",
-        "title": "Uptime this quarter (1)",
-        "subtitle": "Q3 2024 · Jul 1 — Today · SLO 99.9%"
+        "title": "Uptime this quarter",
+        "subtitle": "Q3 2026 • SLO 99.90% • 1. Uptime"
       },
       {
         "id": "uptimeProgress",
@@ -128,97 +140,65 @@ On-call health view covering all 8 requirements — uptime, 24h CPU/Memory, live
       {
         "id": "uptimeText",
         "component": "TextContent",
-        "text": "**99.92%** — 3m 42s downtime this quarter. 0.02% above SLO. Budget remaining: 43m",
+        "text": "43m 12s downtime this quarter. 99.92% exceeds SLO. Best region: us-west-2 (99.98%), lowest: ap-south-1 (99.81%).",
         "size": "small"
       },
       {
         "id": "uptimeBadge",
         "component": "Badge",
-        "text": "SLO: PASSING",
+        "text": "SLO met • +0.02% buffer",
         "variant": "secondary"
       },
       {
-        "id": "errorCard",
+        "id": "errorRateCard",
         "component": "Card",
         "children": [
           "errorHeader",
-          "errorProgress",
+          "errorBadge",
           "errorText",
-          "errorCallout"
+          "errorMeta"
         ]
       },
       {
         "id": "errorHeader",
         "component": "CardHeader",
-        "title": "Error rate right now (3)",
-        "subtitle": "Live · last 5 min window · 12.4k req/min"
+        "title": "Error rate right now",
+        "subtitle": "Last 5 min window • 3. Live"
       },
       {
-        "id": "errorProgress",
-        "component": "Progress",
-        "value": 2.34,
-        "label": "2.34% errors"
+        "id": "errorBadge",
+        "component": "Badge",
+        "text": "0.84% • 127 errors / 15,120 req",
+        "variant": "destructive"
       },
       {
         "id": "errorText",
         "component": "TextContent",
-        "text": "**2.34%** (291 errors / 12.4k requests) — threshold 1.5% exceeded",
+        "text": "Above 0.5% threshold. 78% are 5xx on api-prod. us-east-1 driving 62% of errors. p95 latency correlated.",
         "size": "small"
       },
       {
-        "id": "errorCallout",
-        "component": "Alert",
-        "title": "Elevated errors",
-        "description": "Error rate above alert threshold. Check incidents INC-4821 & INC-4819.",
-        "variant": "destructive"
-      },
-      {
-        "id": "healthSummaryCard",
-        "component": "Card",
-        "children": [
-          "healthSummaryHeader",
-          "healthSummaryText",
-          "healthSummaryTags"
-        ]
-      },
-      {
-        "id": "healthSummaryHeader",
-        "component": "CardHeader",
-        "title": "On-call summary",
-        "subtitle": "3 open incidents · filtered by region"
-      },
-      {
-        "id": "healthSummaryText",
+        "id": "errorMeta",
         "component": "TextContent",
-        "text": "P95 latency 612ms · Slowest endpoint /api/checkout at 842ms",
+        "text": "Updated 14:42 UTC • Source: /api/metrics/errors",
         "size": "small"
       },
       {
-        "id": "healthSummaryTags",
-        "component": "TagBlock",
-        "tags": [
-          "SEV1: 1",
-          "SEV2: 1",
-          "SEV3: 1",
-          "Region: All"
-        ]
-      },
-      {
-        "id": "chartsCard",
+        "id": "cpuMemCard",
         "component": "Card",
         "children": [
-          "chartsHeader",
-          "cpuMemLineChart"
+          "cpuMemHeader",
+          "cpuMemChart"
         ]
       },
       {
-        "id": "chartsHeader",
+        "id": "cpuMemHeader",
         "component": "CardHeader",
-        "title": "CPU and memory usage — past 24 hours (2)",
-        "subtitle": "Avg CPU 58% · Avg Memory 69% · Peak at 12:00 UTC"
+        "title": "CPU and memory usage — past 24 hours",
+        "subtitle": "avg per 5 min • api-prod fleet (12 hosts) • 2. CPU / Memory"
       },
       {
-        "id": "cpuMemLineChart",
+        "id": "cpuMemChart",
         "component": "LineChart",
         "labels": [
           "00:00",
@@ -227,54 +207,50 @@ On-call health view covering all 8 requirements — uptime, 24h CPU/Memory, live
           "12:00",
           "16:00",
           "20:00",
-          "24:00"
+          "00:00"
         ],
         "series": [
-          "seriesCpu",
-          "seriesMemory"
+          "cpuSeries",
+          "memSeries"
         ],
         "variant": "natural",
         "xLabel": "Time (UTC)",
-        "yLabel": "Utilization %"
+        "yLabel": "% Utilization"
       },
       {
-        "id": "seriesCpu",
+        "id": "cpuSeries",
         "component": "Series",
-        "category": "CPU %",
+        "category": "CPU",
         "values": [
           42,
+          38,
           55,
           68,
           72,
           61,
-          58,
           48
         ]
       },
       {
-        "id": "seriesMemory",
+        "id": "memSeries",
         "component": "Series",
-        "category": "Memory %",
+        "category": "Memory",
         "values": [
+          58,
+          60,
           62,
-          64,
-          71,
-          78,
-          75,
+          65,
           70,
-          66
+          68,
+          64
         ]
       },
       {
-        "id": "bottomRow",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "gap": "m",
-        "children": [
-          "incidentsCard",
-          "endpointsCard"
-        ]
+        "id": "errorAlert",
+        "component": "Alert",
+        "title": "Elevated error rate in us-east-1",
+        "description": "Error rate 0.84% exceeds alert threshold 0.5%. 3 open incidents. Consider acknowledging P1 and checking slowest endpoints below.",
+        "variant": "warning"
       },
       {
         "id": "incidentsCard",
@@ -282,34 +258,34 @@ On-call health view covering all 8 requirements — uptime, 24h CPU/Memory, live
         "children": [
           "incidentsHeader",
           "incidentsTable",
-          "incidentsAckButtons"
+          "incidentsButtons",
+          "ackDialog"
         ]
       },
       {
         "id": "incidentsHeader",
         "component": "CardHeader",
-        "title": "Open incidents with severity (4)",
-        "subtitle": "3 open · Acknowledge to claim (8)"
+        "title": "Open incidents",
+        "subtitle": "4. With severity • Sorted by severity • Acknowledge required"
       },
       {
         "id": "incidentsTable",
         "component": "Table",
         "columns": [
-          "colIncident",
+          "colIncidentId",
           "colSeverity",
-          "colRegion",
-          "colAge",
-          "colAction"
+          "colService",
+          "colOpened"
         ]
       },
       {
-        "id": "colIncident",
+        "id": "colIncidentId",
         "component": "Col",
         "label": "Incident",
         "data": [
-          "INC-4821 Checkout latency spike",
-          "INC-4819 Search 5xx errors",
-          "INC-4815 Cache eviction warning"
+          "INC-2847",
+          "INC-2849",
+          "INC-2851"
         ],
         "type": "string"
       },
@@ -318,117 +294,115 @@ On-call health view covering all 8 requirements — uptime, 24h CPU/Memory, live
         "component": "Col",
         "label": "Severity",
         "data": [
-          "SEV1 — Critical",
-          "SEV2 — Major",
-          "SEV3 — Minor"
+          "P1 — Critical",
+          "P2 — High",
+          "P3 — Medium"
         ],
         "type": "string"
       },
       {
-        "id": "colRegion",
+        "id": "colService",
         "component": "Col",
-        "label": "Region",
+        "label": "Service / Region",
         "data": [
-          "us-east-1",
-          "eu-west-1",
-          "ap-south-1"
+          "api-prod / us-east-1",
+          "api-prod / eu-west-1",
+          "worker-jobs / us-west-2"
         ],
         "type": "string"
       },
       {
-        "id": "colAge",
+        "id": "colOpened",
         "component": "Col",
-        "label": "Age",
+        "label": "Opened",
         "data": [
-          "12m",
-          "47m",
-          "2h 11m"
+          "14:18 UTC (24m ago)",
+          "13:05 UTC (97m ago)",
+          "09:42 UTC (5h ago)"
         ],
         "type": "string"
       },
       {
-        "id": "colAction",
-        "component": "Col",
-        "label": "Action",
-        "data": [
-          "Acknowledge",
-          "Acknowledge",
-          "Acknowledge"
-        ],
-        "type": "action"
-      },
-      {
-        "id": "incidentsAckButtons",
+        "id": "incidentsButtons",
         "component": "Buttons",
-        "direction": "row",
         "buttons": [
-          "ackBtnInc4821",
-          "ackBtnInc4819"
+          "ackP1Btn",
+          "viewAllBtn"
         ]
       },
       {
-        "id": "ackBtnInc4821",
+        "id": "ackP1Btn",
         "component": "Button",
-        "label": "Acknowledge INC-4821 (SEV1)",
+        "label": "Acknowledge INC-2847 (P1)",
         "variant": "primary"
       },
       {
-        "id": "ackBtnInc4819",
+        "id": "viewAllBtn",
         "component": "Button",
-        "label": "Acknowledge INC-4819",
+        "label": "View incident timeline",
         "variant": "secondary"
       },
       {
-        "id": "endpointsCard",
+        "id": "ackDialog",
+        "component": "AlertDialogBlock",
+        "triggerLabel": "Acknowledge incident…",
+        "title": "Acknowledge incident",
+        "description": "Confirm you are taking ownership of the selected incident. This will page the secondary only on escalation and stop repeat alerts. (8. Acknowledge)",
+        "confirmLabel": "Confirm acknowledge",
+        "cancelLabel": "Cancel",
+        "triggerVariant": "outline"
+      },
+      {
+        "id": "slowestCard",
         "component": "Card",
         "children": [
-          "endpointsHeader",
-          "slowestBarChart",
-          "endpointsTable"
+          "slowestHeader",
+          "slowestChart",
+          "slowestTable"
         ]
       },
       {
-        "id": "endpointsHeader",
+        "id": "slowestHeader",
         "component": "CardHeader",
-        "title": "Five slowest endpoints (6)",
-        "subtitle": "P95 latency · past 1 hour · region: All"
+        "title": "Five slowest endpoints",
+        "subtitle": "p95 latency • Last 60 min • 6. Latency per endpoint"
       },
       {
-        "id": "slowestBarChart",
+        "id": "slowestChart",
         "component": "HorizontalBarChart",
         "labels": [
-          "/api/checkout",
-          "/api/search",
-          "/api/user/profile",
-          "/api/orders/history",
-          "/api/recommendations"
+          "/api/v1/reports",
+          "/api/v1/search",
+          "/api/v1/export",
+          "/api/v1/users/:id",
+          "/api/v1/billing/invoice"
         ],
         "series": [
-          "seriesLatency"
+          "slowestSeries"
         ],
         "variant": "grouped",
-        "xLabel": "Latency (ms)",
+        "xLabel": "p95 latency (ms)",
         "yLabel": "Endpoint"
       },
       {
-        "id": "seriesLatency",
+        "id": "slowestSeries",
         "component": "Series",
-        "category": "P95 ms",
+        "category": "p95",
         "values": [
-          842,
-          612,
-          489,
-          423,
-          398
+          1240,
+          980,
+          870,
+          650,
+          540
         ]
       },
       {
-        "id": "endpointsTable",
+        "id": "slowestTable",
         "component": "Table",
         "columns": [
           "colEndpoint",
           "colLatency",
-          "colCount"
+          "colP95"
         ]
       },
       {
@@ -436,68 +410,160 @@ On-call health view covering all 8 requirements — uptime, 24h CPU/Memory, live
         "component": "Col",
         "label": "Endpoint",
         "data": [
-          "/api/checkout",
-          "/api/search",
-          "/api/user/profile",
-          "/api/orders/history",
-          "/api/recommendations"
+          "/api/v1/reports",
+          "/api/v1/search",
+          "/api/v1/export",
+          "/api/v1/users/:id",
+          "/api/v1/billing/invoice"
         ],
         "type": "string"
       },
       {
         "id": "colLatency",
         "component": "Col",
-        "label": "P95 latency",
+        "label": "p95 Latency",
         "data": [
-          "842 ms",
-          "612 ms",
-          "489 ms",
-          "423 ms",
-          "398 ms"
+          "1,240 ms",
+          "980 ms",
+          "870 ms",
+          "650 ms",
+          "540 ms"
         ],
         "type": "string"
       },
       {
-        "id": "colCount",
+        "id": "colP95",
         "component": "Col",
-        "label": "Requests",
+        "label": "Requests (60m)",
         "data": [
-          "4.2k",
-          "8.1k",
-          "3.3k",
-          "2.7k",
-          "5.9k"
+          "2,410",
+          "8,920",
+          "1,340",
+          "12,540",
+          "3,210"
         ],
         "type": "string"
       },
       {
-        "id": "alertCard",
+        "id": "thresholdCard",
         "component": "Card",
-        "variant": "sunk",
         "children": [
-          "alertHeader",
+          "thresholdHeader",
           "thresholdForm"
         ]
       },
       {
-        "id": "alertHeader",
+        "id": "thresholdHeader",
         "component": "CardHeader",
-        "title": "Set alert threshold (7)",
-        "subtitle": "Configure when to page on-call"
+        "title": "Alert threshold",
+        "subtitle": "7. Set when to trigger error-rate alerts"
       },
       {
         "id": "thresholdForm",
         "component": "Form",
-        "name": "alertThresholdForm",
-        "buttons": "thresholdButtons",
+        "name": "alert-threshold",
+        "buttons": "thresholdFormButtons",
         "fields": [
-          "formControlSlider",
-          "formControlMetric",
-          "formControlNotify"
+          "thresholdSliderControl",
+          "thresholdWindowControl",
+          "thresholdNotifyControl"
         ]
       },
       {
-        "id": "thresholdButtons",
+        "id": "thresholdSliderControl",
+        "component": "FormControl",
+        "label": "Error rate threshold (%)",
+        "hint": "Alert fires when live error rate exceeds this for the selected window",
+        "input": "thresholdSlider"
+      },
+      {
+        "id": "thresholdSlider",
+        "component": "Slider",
+        "name": "error_threshold",
+        "variant": "discrete",
+        "min": 0.1,
+        "max": 5,
+        "step": 0.1,
+        "defaultValue": [
+          0.5
+        ],
+        "label": "Threshold"
+      },
+      {
+        "id": "thresholdWindowControl",
+        "component": "FormControl",
+        "label": "Evaluation window",
+        "input": "thresholdWindowSelect"
+      },
+      {
+        "id": "thresholdWindowSelect",
+        "component": "Select",
+        "name": "window",
+        "items": [
+          "thresholdWindow5m",
+          "thresholdWindow15m",
+          "thresholdWindow30m"
+        ],
+        "placeholder": "Choose window"
+      },
+      {
+        "id": "thresholdWindow5m",
+        "component": "SelectItem",
+        "value": "5m",
+        "label": "5 minutes (sensitive)"
+      },
+      {
+        "id": "thresholdWindow15m",
+        "component": "SelectItem",
+        "value": "15m",
+        "label": "15 minutes"
+      },
+      {
+        "id": "thresholdWindow30m",
+        "component": "SelectItem",
+        "value": "30m",
+        "label": "30 minutes (stable)"
+      },
+      {
+        "id": "thresholdNotifyControl",
+        "component": "FormControl",
+        "label": "Notify via",
+        "input": "thresholdNotifyRadio"
+      },
+      {
+        "id": "thresholdNotifyRadio",
+        "component": "RadioGroup",
+        "name": "notify_channel",
+        "items": [
+          "thresholdNotifySlack",
+          "thresholdNotifyPager",
+          "thresholdNotifyEmail"
+        ],
+        "defaultValue": "pager"
+      },
+      {
+        "id": "thresholdNotifySlack",
+        "component": "RadioItem",
+        "label": "Slack",
+        "description": "#oncall-alerts",
+        "value": "slack"
+      },
+      {
+        "id": "thresholdNotifyPager",
+        "component": "RadioItem",
+        "label": "PagerDuty",
+        "description": "Urgent page to primary",
+        "value": "pager"
+      },
+      {
+        "id": "thresholdNotifyEmail",
+        "component": "RadioItem",
+        "label": "Email",
+        "description": "Digest to team",
+        "value": "email"
+      },
+      {
+        "id": "thresholdFormButtons",
         "component": "Buttons",
         "buttons": [
           "saveThresholdBtn",
@@ -514,95 +580,31 @@ On-call health view covering all 8 requirements — uptime, 24h CPU/Memory, live
         "id": "cancelThresholdBtn",
         "component": "Button",
         "label": "Reset",
-        "variant": "secondary"
-      },
-      {
-        "id": "formControlSlider",
-        "component": "FormControl",
-        "label": "Error rate threshold %",
-        "input": "sliderThreshold",
-        "hint": "Page if error rate exceeds this for 5 min"
-      },
-      {
-        "id": "sliderThreshold",
-        "component": "Slider",
-        "name": "errorThreshold",
-        "variant": "discrete",
-        "min": 0.5,
-        "max": 5,
-        "step": 0.5,
-        "defaultValue": [
-          1.5
-        ],
-        "label": "Threshold"
-      },
-      {
-        "id": "formControlMetric",
-        "component": "FormControl",
-        "label": "Metric to watch",
-        "input": "selectMetric"
-      },
-      {
-        "id": "selectMetric",
-        "component": "Select",
-        "name": "metricType",
-        "placeholder": "Choose metric",
-        "value": "error_rate",
-        "items": [
-          "selectMetricError",
-          "selectMetricLatency",
-          "selectMetricCpu"
-        ]
-      },
-      {
-        "id": "selectMetricError",
-        "component": "SelectItem",
-        "value": "error_rate",
-        "label": "Error rate %"
-      },
-      {
-        "id": "selectMetricLatency",
-        "component": "SelectItem",
-        "value": "p95_latency",
-        "label": "P95 latency (ms)"
-      },
-      {
-        "id": "selectMetricCpu",
-        "component": "SelectItem",
-        "value": "cpu",
-        "label": "CPU utilization"
-      },
-      {
-        "id": "formControlNotify",
-        "component": "FormControl",
-        "label": "Notify channel",
-        "input": "inputNotify",
-        "hint": "Slack channel or PagerDuty service"
-      },
-      {
-        "id": "inputNotify",
-        "component": "Input",
-        "name": "notifyChannel",
-        "placeholder": "#oncall-alerts",
-        "value": "#oncall-alerts"
+        "variant": "tertiary"
       },
       {
         "id": "followUpBlock",
         "component": "FollowUpBlock",
         "items": [
           "followUp1",
-          "followUp2"
+          "followUp2",
+          "followUp3"
         ]
       },
       {
         "id": "followUp1",
         "component": "FollowUpItem",
-        "text": "Show logs for INC-4821"
+        "text": "Show logs for INC-2847"
       },
       {
         "id": "followUp2",
         "component": "FollowUpItem",
-        "text": "Filter to us-east-1 only"
+        "text": "Compare us-east-1 vs us-west-2"
+      },
+      {
+        "id": "followUp3",
+        "component": "FollowUpItem",
+        "text": "Snooze alerts for 30 minutes"
       }
     ]
   }

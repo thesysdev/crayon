@@ -1,30 +1,35 @@
+
+
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["course-header","progress-section","next-lesson","modules-heading","modules-list","rating-section","continue-section"]}}
-{"op":"add","path":"/elements/course-header","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["course-title","instructor-row"]}}
-{"op":"add","path":"/elements/course-title","value":{"type":"Heading","props":{"text":{"$state":"/course/title"},"level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/instructor-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center"},"children":["instructor-avatar","instructor-name"]}}
-{"op":"add","path":"/elements/instructor-avatar","value":{"type":"Avatar","props":{"fallback":"SC","alt":"Dr. Sarah Chen"},"children":[]}}
-{"op":"add","path":"/elements/instructor-name","value":{"type":"TextContent","props":{"text":{"$template":"Instructor: ${/course/instructor}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/state/course","value":{"title":"Advanced React & TypeScript","instructor":"Dr. Sarah Chen","progress":51,"rating":4.7,"reviewCount":1284}}
-{"op":"add","path":"/elements/progress-section","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["progress-label","progress-bar"]}}
-{"op":"add","path":"/elements/progress-label","value":{"type":"TextContent","props":{"text":{"$template":"Overall Progress: ${/course/progress}%"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/progress-bar","value":{"type":"Progress","props":{"value":{"$state":"/course/progress"},"label":"Course Completion"},"children":[]}}
-{"op":"add","path":"/elements/next-lesson","value":{"type":"Callout","props":{"variant":"info","title":"📌 Next Up","description":{"$template":"${/nextLesson/title} — ${/nextLesson/module} · ${/nextLesson/duration}"}},"children":[]}}
-{"op":"add","path":"/state/nextLesson","value":{"title":"Custom Hooks & useReducer","module":"Module 3: Advanced Patterns","duration":"24 min"}}
-{"op":"add","path":"/elements/modules-heading","value":{"type":"Heading","props":{"text":"Course Modules","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/modules-list","value":{"type":"Card","props":{"direction":"column","gap":"s"},"repeat":{"statePath":"/modules","key":"id"},"children":["module-row"]}}
-{"op":"add","path":"/elements/module-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["module-info","module-status"]}}
-{"op":"add","path":"/elements/module-info","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["module-name","module-lessons"]}}
-{"op":"add","path":"/elements/module-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"default"},"children":[]}}
-{"op":"add","path":"/elements/module-lessons","value":{"type":"TextContent","props":{"text":{"$template":"${completedLessons} of ${totalLessons} lessons completed"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/module-status","value":{"type":"Tag","props":{"text":{"$item":"status"},"variant":{"$item":"variant"}},"children":[]}}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"gap":"m"},"children":["header","progress-section","next-lesson","rating-row","separator","modules-heading","modules-list","continue-section"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":{"$state":"/courseTitle"},"subtitle":{"$template":"Instructor: ${/instructor}"}}}}
+{"op":"add","path":"/elements/progress-section","value":{"type":"Card","props":{"variant":"sunk","gap":"s"},"children":["progress-label","progress-bar"]}}
+{"op":"add","path":"/elements/progress-label","value":{"type":"TextContent","props":{"text":{"$template":"Overall Progress: ${/progress}%"},"size":"small-heavy"}}}
+{"op":"add","path":"/elements/progress-bar","value":{"type":"Progress","props":{"value":{"$state":"/progress"},"label":"Course completion"}}}
+{"op":"add","path":"/elements/next-lesson","value":{"type":"Callout","props":{"variant":"info","title":"Up Next","description":{"$template":"${/nextLesson} — ${/nextModule}"}}}}
+{"op":"add","path":"/elements/rating-row","value":{"type":"Card","props":{"direction":"row","align":"center","gap":"s","variant":"clear"},"children":["rating-stars","rating-text"]}}
+{"op":"add","path":"/elements/rating-stars","value":{"type":"Tag","props":{"text":{"$template":"⭐ ${/rating}"},"variant":"warning","size":"md"}}}
+{"op":"add","path":"/elements/rating-text","value":{"type":"TextContent","props":{"text":{"$template":"Average rating from ${/ratingCount} learners"},"size":"small"}}}
+{"op":"add","path":"/elements/separator","value":{"type":"Separator","props":{}}}
+{"op":"add","path":"/elements/modules-heading","value":{"type":"Heading","props":{"text":"Course Modules","level":"h3"}}}
+{"op":"add","path":"/elements/modules-list","value":{"type":"Card","props":{"variant":"clear","gap":"s"},"repeat":{"statePath":"/modules","key":"id"},"children":["module-row"]}}
+{"op":"add","path":"/elements/module-row","value":{"type":"Card","props":{"direction":"row","align":"center","justify":"between","gap":"s"},"children":["module-info","module-status"]}}
+{"op":"add","path":"/elements/module-info","value":{"type":"Card","props":{"variant":"clear","gap":"xs"},"children":["module-title","module-detail"]}}
+{"op":"add","path":"/elements/module-title","value":{"type":"TextContent","props":{"text":{"$item":"title"},"size":"default"}}}
+{"op":"add","path":"/elements/module-detail","value":{"type":"TextContent","props":{"text":{"$template":"${completed}/${lessons} lessons completed"},"size":"small"}}}
+{"op":"add","path":"/elements/module-status","value":{"type":"Tag","props":{"text":{"$item":"statusLabel"},"variant":{"$cond":{"$item":"status","eq":"completed"},"$then":"success","$else":{"$cond":{"$item":"status","eq":"in-progress"},"$then":"info","$else":"neutral"}},"size":"sm"}}}
+{"op":"add","path":"/elements/continue-section","value":{"type":"Card","props":{"variant":"clear","align":"center"},"children":["continue-btn"]}}
+{"op":"add","path":"/elements/continue-btn","value":{"type":"Button","props":{"label":"Continue Learning →","variant":"primary","size":"large"}}}
+{"op":"add","path":"/state/courseTitle","value":"Advanced React Patterns"}
+{"op":"add","path":"/state/instructor","value":"Sarah Chen"}
+{"op":"add","path":"/state/progress","value":62}
+{"op":"add","path":"/state/rating","value":4.7}
+{"op":"add","path":"/state/ratingCount","value":1284}
+{"op":"add","path":"/state/nextLesson","value":"Custom Hooks Deep Dive"}
+{"op":"add","path":"/state/nextModule","value":"Module 3: Advanced Hooks"}
 {"op":"add","path":"/state/modules","value":[]}
-{"op":"add","path":"/state/modules/0","value":{"id":"1","name":"Module 1: TypeScript Fundamentals","totalLessons":8,"completedLessons":8,"status":"Complete","variant":"success"}}
-{"op":"add","path":"/state/modules/1","value":{"id":"2","name":"Module 2: React Core Concepts","totalLessons":10,"completedLessons":10,"status":"Complete","variant":"success"}}
-{"op":"add","path":"/state/modules/2","value":{"id":"3","name":"Module 3: Advanced Patterns","totalLessons":12,"completedLessons":5,"status":"In Progress","variant":"info"}}
-{"op":"add","path":"/state/modules/3","value":{"id":"4","name":"Module 4: Performance & Testing","totalLessons":9,"completedLessons":0,"status":"Not Started","variant":"neutral"}}
-{"op":"add","path":"/state/modules/4","value":{"id":"5","name":"Module 5: Deployment & CI/CD","totalLessons":6,"completedLessons":0,"status":"Not Started","variant":"neutral"}}
-{"op":"add","path":"/elements/rating-section","value":{"type":"Card","props":{"variant":"sunk","direction":"row","align":"center","gap":"s"},"children":["rating-stars","rating-text"]}}
-{"op":"add","path":"/elements/rating-stars","value":{"type":"TextContent","props":{"text":"⭐⭐⭐⭐⭐","size":"default"},"children":[]}}
-{"op":"add","path":"/elements/rating-text","value":{"type":"TextContent","props":{"text":{"$template":"${/course/rating} average rating from ${/course/reviewCount} learners"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/continue-section","value":{"type":"Button","props":{"label":"▶  Continue Learning","variant":"primary","size":"large"},"children":[]}}
+{"op":"add","path":"/state/modules/0","value":{"id":"1","title":"Module 1: React Fundamentals","lessons":8,"completed":8,"status":"completed","statusLabel":"Completed"}}
+{"op":"add","path":"/state/modules/1","value":{"id":"2","title":"Module 2: Component Patterns","lessons":6,"completed":6,"status":"completed","statusLabel":"Completed"}}
+{"op":"add","path":"/state/modules/2","value":{"id":"3","title":"Module 3: Advanced Hooks","lessons":7,"completed":3,"status":"in-progress","statusLabel":"In Progress"}}
+{"op":"add","path":"/state/modules/3","value":{"id":"4","title":"Module 4: Performance Optimization","lessons":5,"completed":0,"status":"locked","statusLabel":"Locked"}}
+{"op":"add","path":"/state/modules/4","value":{"id":"5","title":"Module 5: Testing Strategies","lessons":6,"completed":0,"status":"locked","statusLabel":"Locked"}}

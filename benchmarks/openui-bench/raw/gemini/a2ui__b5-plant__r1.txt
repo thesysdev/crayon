@@ -1,989 +1,857 @@
-Here is a factory floor supervisor's console covering all 17 operational tracking and management points.
+Here is a comprehensive single-screen Factory Floor Supervisor's Console that covers all 17 required operational metrics, real-time alerts, line views, inventory levels, maintenance scheduling, and shift reporting.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "factory-console",
-      "catalogId": "thesys.dev:c1-openui",
-      "theme": {
-        "primaryColor": "#0F52BA",
-        "agentDisplayName": "Industrial Ops Center"
-      }
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "factory-console",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "column",
-          "gap": "l",
-          "children": [
-            "header-card",
-            "andon-alert-banner",
-            "kpi-summary-card",
-            "main-tabs"
-          ]
-        },
-        {
-          "id": "header-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "row",
-          "align": "center",
-          "justify": "between",
-          "children": [
-            "header-info",
-            "header-actions"
-          ]
-        },
-        {
-          "id": "header-info",
-          "component": "CardHeader",
-          "title": "Factory Floor Supervisor Console",
-          "subtitle": "Plant #4 - Metal Fabrication & Polymer Assembly | Shift A (06:00 - 14:00)"
-        },
-        {
-          "id": "header-actions",
-          "component": "Buttons",
-          "direction": "row",
-          "buttons": [
-            "export-shift-btn"
-          ]
-        },
-        {
-          "id": "export-shift-btn",
-          "component": "Button",
-          "label": "Export Shift Report (PDF/CSV)",
-          "variant": "primary",
-          "action": ["exportShiftReport"]
-        },
-        {
-          "id": "andon-alert-banner",
-          "component": "Alert",
-          "title": "LIVE ANDON ALERT - Production Line 2 Paused",
-          "description": "Feed jam detected at Stamping Station B. Operator flagged material obstruction at 10:42 AM. Maintenance dispatched.",
-          "variant": "destructive"
-        },
-        {
-          "id": "kpi-summary-card",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "kpi-title",
-            "kpi-grid"
-          ]
-        },
-        {
-          "id": "kpi-title",
-          "component": "Heading",
-          "text": "Plant Real-Time Performance",
-          "level": "h3"
-        },
-        {
-          "id": "kpi-grid",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "m",
-          "wrap": true,
-          "children": [
-            "kpi-oee",
-            "kpi-units",
-            "kpi-energy",
-            "kpi-safety"
-          ]
-        },
-        {
-          "id": "kpi-oee",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "xs",
-          "children": [
-            "oee-label",
-            "oee-val",
-            "oee-progress"
-          ]
-        },
-        {
-          "id": "oee-label",
-          "component": "TextContent",
-          "text": "Overall Equipment Effectiveness (OEE)",
-          "size": "small-heavy"
-        },
-        {
-          "id": "oee-val",
-          "component": "Heading",
-          "text": "84.2%",
-          "level": "h2"
-        },
-        {
-          "id": "oee-progress",
-          "component": "Progress",
-          "value": 84,
-          "label": "Target: 85.0%"
-        },
-        {
-          "id": "kpi-units",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "xs",
-          "children": [
-            "units-label",
-            "units-val",
-            "units-progress"
-          ]
-        },
-        {
-          "id": "units-label",
-          "component": "TextContent",
-          "text": "Today's Target vs Actual Units",
-          "size": "small-heavy"
-        },
-        {
-          "id": "units-val",
-          "component": "Heading",
-          "text": "7,450 / 9,000",
-          "level": "h2"
-        },
-        {
-          "id": "units-progress",
-          "component": "Progress",
-          "value": 82.7,
-          "label": "82.7% Daily Target Met"
-        },
-        {
-          "id": "kpi-energy",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "xs",
-          "children": [
-            "energy-label",
-            "energy-val",
-            "energy-badge"
-          ]
-        },
-        {
-          "id": "energy-label",
-          "component": "TextContent",
-          "text": "Today's Energy Usage",
-          "size": "small-heavy"
-        },
-        {
-          "id": "energy-val",
-          "component": "Heading",
-          "text": "3,240 kWh",
-          "level": "h2"
-        },
-        {
-          "id": "energy-badge",
-          "component": "Badge",
-          "text": "-4.1% vs Daily Peak Average",
-          "variant": "default"
-        },
-        {
-          "id": "kpi-safety",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "xs",
-          "children": [
-            "safety-label",
-            "safety-val",
-            "safety-tags"
-          ]
-        },
-        {
-          "id": "safety-label",
-          "component": "TextContent",
-          "text": "Safety & Incidents",
-          "size": "small-heavy"
-        },
-        {
-          "id": "safety-val",
-          "component": "Heading",
-          "text": "142 Days Incident-Free",
-          "level": "h2"
-        },
-        {
-          "id": "safety-tags",
-          "component": "TagBlock",
-          "tags": ["YTD Incidents: 1 (Minor)", "Status: Green"]
-        },
-        {
-          "id": "main-tabs",
-          "component": "Tabs",
-          "items": [
-            "tab-lines",
-            "tab-maintenance",
-            "tab-inventory-quality",
-            "tab-analytics"
-          ]
-        },
-        {
-          "id": "tab-lines",
-          "component": "TabItem",
-          "value": "lines",
-          "trigger": "Production Lines & Focus View",
-          "content": [
-            "line-filter-card",
-            "lines-table-card"
-          ]
-        },
-        {
-          "id": "line-filter-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "row",
-          "align": "center",
-          "gap": "m",
-          "children": [
-            "filter-label",
-            "line-select"
-          ]
-        },
-        {
-          "id": "filter-label",
-          "component": "TextContent",
-          "text": "Focus Line View:",
-          "size": "small-heavy"
-        },
-        {
-          "id": "line-select",
-          "component": "Select",
-          "name": "lineFocus",
-          "placeholder": "Select Line to Focus...",
-          "items": [
-            "select-line-all",
-            "select-line-1",
-            "select-line-2",
-            "select-line-3",
-            "select-line-4"
-          ]
-        },
-        {
-          "id": "select-line-all",
-          "component": "SelectItem",
-          "value": "all",
-          "label": "All Production Lines"
-        },
-        {
-          "id": "select-line-1",
-          "component": "SelectItem",
-          "value": "line-1",
-          "label": "Line 1 - Heavy Stamping (Running)"
-        },
-        {
-          "id": "select-line-2",
-          "component": "SelectItem",
-          "value": "line-2",
-          "label": "Line 2 - Injection Molding (Andon Hold)"
-        },
-        {
-          "id": "select-line-3",
-          "component": "SelectItem",
-          "value": "line-3",
-          "label": "Line 3 - Polymer Assembly (Running)"
-        },
-        {
-          "id": "select-line-4",
-          "component": "SelectItem",
-          "value": "line-4",
-          "label": "Line 4 - Packaging & Palletizing (Maintenance)"
-        },
-        {
-          "id": "lines-table-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "children": [
-            "lines-table-title",
-            "lines-table"
-          ]
-        },
-        {
-          "id": "lines-table-title",
-          "component": "Heading",
-          "text": "Production Line Status & Output Rates",
-          "level": "h4"
-        },
-        {
-          "id": "lines-table",
-          "component": "Table",
-          "columns": [
-            "col-line-id",
-            "col-line-name",
-            "col-line-status",
-            "col-line-rate",
-            "col-line-target",
-            "col-line-oee"
-          ]
-        },
-        {
-          "id": "col-line-id",
-          "component": "Col",
-          "label": "Line ID",
-          "type": "string",
-          "data": ["L-01", "L-02", "L-03", "L-04"]
-        },
-        {
-          "id": "col-line-name",
-          "component": "Col",
-          "label": "Line Name",
-          "type": "string",
-          "data": ["Heavy Stamping", "Injection Molding", "Polymer Assembly", "Packaging & Palletizing"]
-        },
-        {
-          "id": "col-line-status",
-          "component": "Col",
-          "label": "Current Status",
-          "type": "string",
-          "data": ["Running", "ANDON STOP - Feed Jam", "Running", "Scheduled Maintenance"]
-        },
-        {
-          "id": "col-line-rate",
-          "component": "Col",
-          "label": "Rate (Units/Hr)",
-          "type": "number",
-          "data": [420, 0, 310, 0]
-        },
-        {
-          "id": "col-line-target",
-          "component": "Col",
-          "label": "Target Rate",
-          "type": "number",
-          "data": [400, 380, 300, 500]
-        },
-        {
-          "id": "col-line-oee",
-          "component": "Col",
-          "label": "Line OEE",
-          "type": "string",
-          "data": ["88.5%", "54.2%", "91.0%", "72.0%"]
-        },
-        {
-          "id": "tab-maintenance",
-          "component": "TabItem",
-          "value": "maintenance",
-          "trigger": "Maintenance & Work Orders",
-          "content": [
-            "maint-split-container"
-          ]
-        },
-        {
-          "id": "maint-split-container",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "l",
-          "wrap": true,
-          "children": [
-            "due-maint-card",
-            "schedule-form-card",
-            "work-orders-card"
-          ]
-        },
-        {
-          "id": "due-maint-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "children": [
-            "due-maint-title",
-            "due-maint-list"
-          ]
-        },
-        {
-          "id": "due-maint-title",
-          "component": "Heading",
-          "text": "Machines Due for Maintenance",
-          "level": "h4"
-        },
-        {
-          "id": "due-maint-list",
-          "component": "ListBlock",
-          "variant": "number",
-          "items": [
-            "due-item-1",
-            "due-item-2",
-            "due-item-3"
-          ]
-        },
-        {
-          "id": "due-item-1",
-          "component": "ListItem",
-          "title": "CNC Stamping Press #3",
-          "subtitle": "500-hr Hydraulic Fluid Change | Overdue by 12 hrs",
-          "actionLabel": "High Priority"
-        },
-        {
-          "id": "due-item-2",
-          "component": "ListItem",
-          "title": "Robotic Arm Cell B",
-          "subtitle": "Axis Joint Lubrication & Calibration | Due Today",
-          "actionLabel": "Medium Priority"
-        },
-        {
-          "id": "due-item-3",
-          "component": "ListItem",
-          "title": "Heat Sealer Line 4",
-          "subtitle": "Heating Element Replacement | Due in 2 Days",
-          "actionLabel": "Scheduled"
-        },
-        {
-          "id": "schedule-form-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "schedule-form-title",
-            "schedule-form"
-          ]
-        },
-        {
-          "id": "schedule-form-title",
-          "component": "Heading",
-          "text": "Schedule Machine Maintenance",
-          "level": "h4"
-        },
-        {
-          "id": "schedule-form",
-          "component": "Form",
-          "name": "scheduleMaintForm",
-          "fields": [
-            "form-field-machine",
-            "form-field-date",
-            "form-field-notes"
-          ],
-          "buttons": "form-buttons"
-        },
-        {
-          "id": "form-field-machine",
-          "component": "FormControl",
-          "label": "Select Machine",
-          "input": "machine-select"
-        },
-        {
-          "id": "machine-select",
-          "component": "Select",
-          "name": "targetMachine",
-          "placeholder": "Choose Equipment...",
-          "items": [
-            "m-item-1",
-            "m-item-2",
-            "m-item-3",
-            "m-item-4"
-          ]
-        },
-        {
-          "id": "m-item-1",
-          "component": "SelectItem",
-          "value": "press-3",
-          "label": "CNC Stamping Press #3"
-        },
-        {
-          "id": "m-item-2",
-          "component": "SelectItem",
-          "value": "robot-b",
-          "label": "Robotic Arm Cell B"
-        },
-        {
-          "id": "m-item-3",
-          "component": "SelectItem",
-          "value": "sealer-4",
-          "label": "Heat Sealer Line 4"
-        },
-        {
-          "id": "m-item-4",
-          "component": "SelectItem",
-          "value": "molder-2",
-          "label": "Injection Press Line 2"
-        },
-        {
-          "id": "form-field-date",
-          "component": "FormControl",
-          "label": "Maintenance Date",
-          "input": "maint-datepicker"
-        },
-        {
-          "id": "maint-datepicker",
-          "component": "DatePicker",
-          "name": "maintenanceDate",
-          "mode": "single"
-        },
-        {
-          "id": "form-field-notes",
-          "component": "FormControl",
-          "label": "Work Order Description",
-          "input": "maint-notes"
-        },
-        {
-          "id": "maint-notes",
-          "component": "TextArea",
-          "name": "workDescription",
-          "placeholder": "Enter maintenance tasks or symptoms...",
-          "rows": 3
-        },
-        {
-          "id": "form-buttons",
-          "component": "Buttons",
-          "direction": "row",
-          "buttons": [
-            "submit-maint-btn"
-          ]
-        },
-        {
-          "id": "submit-maint-btn",
-          "component": "Button",
-          "label": "Create & Schedule Work Order",
-          "variant": "primary",
-          "action": ["submitMaintenanceSchedule"]
-        },
-        {
-          "id": "work-orders-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "children": [
-            "wo-title",
-            "wo-table"
-          ]
-        },
-        {
-          "id": "wo-title",
-          "component": "Heading",
-          "text": "Open Work Orders & Priorities",
-          "level": "h4"
-        },
-        {
-          "id": "wo-table",
-          "component": "Table",
-          "columns": [
-            "col-wo-id",
-            "col-wo-machine",
-            "col-wo-issue",
-            "col-wo-priority",
-            "col-wo-status"
-          ]
-        },
-        {
-          "id": "col-wo-id",
-          "component": "Col",
-          "label": "WO #",
-          "type": "string",
-          "data": ["WO-8821", "WO-8819", "WO-8804", "WO-8792"]
-        },
-        {
-          "id": "col-wo-machine",
-          "component": "Col",
-          "label": "Equipment",
-          "type": "string",
-          "data": ["Injection Press Line 2", "CNC Stamping Press #3", "Conveyor Belt L1", "Cooling Tower B"]
-        },
-        {
-          "id": "col-wo-issue",
-          "component": "Col",
-          "label": "Issue Summary",
-          "type": "string",
-          "data": ["Feed Jam & Sensor Error", "Hydraulic Pressure Drop", "Roller Misalignment", "Filter Flushing Needed"]
-        },
-        {
-          "id": "col-wo-priority",
-          "component": "Col",
-          "label": "Priority",
-          "type": "string",
-          "data": ["CRITICAL", "HIGH", "MEDIUM", "LOW"]
-        },
-        {
-          "id": "col-wo-status",
-          "component": "Col",
-          "label": "Status",
-          "type": "string",
-          "data": ["In Progress", "Scheduled", "Parts Pending", "Open"]
-        },
-        {
-          "id": "tab-inventory-quality",
-          "component": "TabItem",
-          "value": "inventory-quality",
-          "trigger": "Raw Stock, Suppliers & Quality Holds",
-          "content": [
-            "inv-quality-grid"
-          ]
-        },
-        {
-          "id": "inv-quality-grid",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "l",
-          "wrap": true,
-          "children": [
-            "stock-card",
-            "deliveries-card",
-            "quality-hold-card"
-          ]
-        },
-        {
-          "id": "stock-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "stock-title",
-            "stock-steel",
-            "stock-resin",
-            "stock-pkg"
-          ]
-        },
-        {
-          "id": "stock-title",
-          "component": "Heading",
-          "text": "Current Raw Material Stock",
-          "level": "h4"
-        },
-        {
-          "id": "stock-steel",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "xs",
-          "children": [
-            "steel-lbl",
-            "steel-prog"
-          ]
-        },
-        {
-          "id": "steel-lbl",
-          "component": "TextContent",
-          "text": "Coil Steel Stock: 42.5 Tons (Sufficient for 3.5 Days)",
-          "size": "small-heavy"
-        },
-        {
-          "id": "steel-prog",
-          "component": "Progress",
-          "value": 70,
-          "label": "Safety Threshold: 15 Tons"
-        },
-        {
-          "id": "stock-resin",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "xs",
-          "children": [
-            "resin-lbl",
-            "resin-prog"
-          ]
-        },
-        {
-          "id": "resin-lbl",
-          "component": "TextContent",
-          "text": "Polymer Resin Pellets: 8.2 Tons (LOW STOCK)",
-          "size": "small-heavy"
-        },
-        {
-          "id": "resin-prog",
-          "component": "Progress",
-          "value": 28,
-          "label": "Reorder Level Reached"
-        },
-        {
-          "id": "stock-pkg",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "xs",
-          "children": [
-            "pkg-lbl",
-            "pkg-prog"
-          ]
-        },
-        {
-          "id": "pkg-lbl",
-          "component": "TextContent",
-          "text": "Packaging & Corrugated Boxes: 14,000 Units",
-          "size": "small-heavy"
-        },
-        {
-          "id": "pkg-prog",
-          "component": "Progress",
-          "value": 85,
-          "label": "Sufficient for 6 Days"
-        },
-        {
-          "id": "deliveries-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "children": [
-            "del-title",
-            "del-table"
-          ]
-        },
-        {
-          "id": "del-title",
-          "component": "Heading",
-          "text": "Supplier Deliveries Due This Week",
-          "level": "h4"
-        },
-        {
-          "id": "del-table",
-          "component": "Table",
-          "columns": [
-            "col-del-date",
-            "col-del-supplier",
-            "col-del-item",
-            "col-del-qty",
-            "col-del-status"
-          ]
-        },
-        {
-          "id": "col-del-date",
-          "component": "Col",
-          "label": "ETA Date",
-          "type": "string",
-          "data": ["Today 14:00", "Tomorrow 09:00", "Thu Oct 24", "Fri Oct 25"]
-        },
-        {
-          "id": "col-del-supplier",
-          "component": "Col",
-          "label": "Supplier",
-          "type": "string",
-          "data": ["Apex Polymer Corp", "Midwest Steel Inc", "PackPro Logistics", "Precision Fasteners"]
-        },
-        {
-          "id": "col-del-item",
-          "component": "Col",
-          "label": "Material",
-          "type": "string",
-          "data": ["HDPE Resin Pellets", "CR Sheet Steel", "Corrugated Cartons", "M6 Hex Bolts"]
-        },
-        {
-          "id": "col-del-qty",
-          "component": "Col",
-          "label": "Quantity",
-          "type": "string",
-          "data": ["12.0 Tons", "25.0 Tons", "5,000 Units", "50,000 Pcs"]
-        },
-        {
-          "id": "col-del-status",
-          "component": "Col",
-          "label": "Status",
-          "type": "string",
-          "data": ["In Transit (On Time)", "Confirmed", "Scheduled", "Pending Dispatch"]
-        },
-        {
-          "id": "quality-hold-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "children": [
-            "hold-title",
-            "hold-callout",
-            "hold-table"
-          ]
-        },
-        {
-          "id": "hold-title",
-          "component": "Heading",
-          "text": "Batches on Quality Hold",
-          "level": "h4"
-        },
-        {
-          "id": "hold-callout",
-          "component": "TextCallout",
-          "variant": "warning",
-          "title": "Quality Quarantine Active",
-          "description": "2 batches require QA supervisor disposition approval before release to packaging."
-        },
-        {
-          "id": "hold-table",
-          "component": "Table",
-          "columns": [
-            "col-hold-batch",
-            "col-hold-line",
-            "col-hold-reason",
-            "col-hold-qty",
-            "col-hold-time"
-          ]
-        },
-        {
-          "id": "col-hold-batch",
-          "component": "Col",
-          "label": "Batch ID",
-          "type": "string",
-          "data": ["BAT-2024-0981", "BAT-2024-0985"]
-        },
-        {
-          "id": "col-hold-line",
-          "component": "Col",
-          "label": "Line",
-          "type": "string",
-          "data": ["Line 2", "Line 1"]
-        },
-        {
-          "id": "col-hold-reason",
-          "component": "Col",
-          "label": "Hold Reason",
-          "type": "string",
-          "data": ["Wall Thickness Variation (>0.5mm)", "Surface Scratches on Coating"]
-        },
-        {
-          "id": "col-hold-qty",
-          "component": "Col",
-          "label": "Held Units",
-          "type": "number",
-          "data": [450, 120]
-        },
-        {
-          "id": "col-hold-time",
-          "component": "Col",
-          "label": "Quarantine Time",
-          "type": "string",
-          "data": ["3 hrs ago", "45 mins ago"]
-        },
-        {
-          "id": "tab-analytics",
-          "component": "TabItem",
-          "value": "analytics",
-          "trigger": "Historical Analytics & Loss Breakdown",
-          "content": [
-            "analytics-grid"
-          ]
-        },
-        {
-          "id": "analytics-grid",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "l",
-          "wrap": true,
-          "children": [
-            "defect-chart-card",
-            "downtime-chart-card",
-            "shift-comparison-card"
-          ]
-        },
-        {
-          "id": "defect-chart-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "children": [
-            "defect-chart-title",
-            "defect-line-chart"
-          ]
-        },
-        {
-          "id": "defect-chart-title",
-          "component": "Heading",
-          "text": "Defect Rate Over Past Month (%)",
-          "level": "h4"
-        },
-        {
-          "id": "defect-line-chart",
-          "component": "LineChart",
-          "labels": ["Week 1", "Week 2", "Week 3", "Week 4 (Current)"],
-          "variant": "natural",
-          "xLabel": "Timeline",
-          "yLabel": "Defect Rate %",
-          "series": [
-            "series-defects"
-          ]
-        },
-        {
-          "id": "series-defects",
-          "component": "Series",
-          "category": "Defect Percentage",
-          "values": [2.4, 1.9, 1.5, 1.2]
-        },
-        {
-          "id": "downtime-chart-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "children": [
-            "downtime-chart-title",
-            "downtime-pie-chart"
-          ]
-        },
-        {
-          "id": "downtime-chart-title",
-          "component": "Heading",
-          "text": "Downtime Split by Cause (Hours - Month to Date)",
-          "level": "h4"
-        },
-        {
-          "id": "downtime-pie-chart",
-          "component": "PieChart",
-          "variant": "donut",
-          "appearance": "circular",
-          "labels": ["Mechanical Failure", "Material Starvation", "Changeovers", "Operator Absence", "Power / Utility Fluke"],
-          "values": [18.5, 12.0, 9.5, 4.0, 2.0]
-        },
-        {
-          "id": "shift-comparison-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "children": [
-            "shift-chart-title",
-            "shift-bar-chart"
-          ]
-        },
-        {
-          "id": "shift-chart-title",
-          "component": "Heading",
-          "text": "Shift Output Comparison (Units Produced Today)",
-          "level": "h4"
-        },
-        {
-          "id": "shift-bar-chart",
-          "component": "BarChart",
-          "variant": "grouped",
-          "xLabel": "Shifts",
-          "yLabel": "Units Produced",
-          "labels": ["Shift A (Morning)", "Shift B (Afternoon)", "Shift C (Night)"],
-          "series": [
-            "series-shift-actual",
-            "series-shift-target"
-          ]
-        },
-        {
-          "id": "series-shift-actual",
-          "component": "Series",
-          "category": "Actual Units",
-          "values": [3100, 2850, 1500]
-        },
-        {
-          "id": "series-shift-target",
-          "component": "Series",
-          "category": "Target Units",
-          "values": [3000, 3000, 3000]
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "gap": "l",
+        "children": [
+          "header",
+          "andonAlerts",
+          "focusLineForm",
+          "topMetricsTabs",
+          "lineStatusTable",
+          "middleSectionTabs",
+          "bottomSectionTabs",
+          "formSectionTabs",
+          "footerActions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Factory Floor Supervisor Console",
+        "subtitle": "Plant #4 - Real-Time Operational Overview & Line Management"
+      },
+      {
+        "id": "andonAlerts",
+        "component": "Alert",
+        "title": "LIVE ANDON ALERTS (2 Active)",
+        "description": "Line 2 - Stamping Press: Material Jam detected (5m ago) | Line 4 - Assembly: Component shortage at Station 3 (12m ago)",
+        "variant": "destructive"
+      },
+      {
+        "id": "focusLineForm",
+        "component": "Form",
+        "name": "focusLineFilter",
+        "buttons": "lineFilterBtnGroup",
+        "fields": [
+          "lineSelectControl"
+        ]
+      },
+      {
+        "id": "lineSelectControl",
+        "component": "FormControl",
+        "label": "Line Focus Filter",
+        "hint": "Select a specific line to isolate telemetry and alerts",
+        "input": "lineSelect"
+      },
+      {
+        "id": "lineSelect",
+        "component": "Select",
+        "name": "selectedLine",
+        "placeholder": "All Lines (Overview)",
+        "items": [
+          "optAll",
+          "optL1",
+          "optL2",
+          "optL3",
+          "optL4"
+        ]
+      },
+      {
+        "id": "optAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All Production Lines"
+      },
+      {
+        "id": "optL1",
+        "component": "SelectItem",
+        "value": "line1",
+        "label": "Line 1 - Machining & Stamping"
+      },
+      {
+        "id": "optL2",
+        "component": "SelectItem",
+        "value": "line2",
+        "label": "Line 2 - Heavy Stamping Press"
+      },
+      {
+        "id": "optL3",
+        "component": "SelectItem",
+        "value": "line3",
+        "label": "Line 3 - Injection Molding"
+      },
+      {
+        "id": "optL4",
+        "component": "SelectItem",
+        "value": "line4",
+        "label": "Line 4 - Automated Assembly"
+      },
+      {
+        "id": "lineFilterBtnGroup",
+        "component": "Buttons",
+        "buttons": [
+          "applyFilterBtn"
+        ]
+      },
+      {
+        "id": "applyFilterBtn",
+        "component": "Button",
+        "label": "Focus Line",
+        "variant": "secondary"
+      },
+      {
+        "id": "topMetricsTabs",
+        "component": "Tabs",
+        "items": [
+          "tabKpis",
+          "tabSafetyEnergy"
+        ]
+      },
+      {
+        "id": "tabKpis",
+        "component": "TabItem",
+        "value": "kpis",
+        "trigger": "Core Production KPIs",
+        "content": [
+          "kpiCardGroup"
+        ]
+      },
+      {
+        "id": "kpiCardGroup",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "oeeBadge",
+          "oeeProgress",
+          "unitsTargetProgress"
+        ]
+      },
+      {
+        "id": "oeeBadge",
+        "component": "Badge",
+        "text": "Overall Equipment Effectiveness (OEE): 84.2% (Target: 85.0%)",
+        "variant": "secondary"
+      },
+      {
+        "id": "oeeProgress",
+        "component": "Progress",
+        "label": "OEE Target Completion",
+        "value": 84
+      },
+      {
+        "id": "unitsTargetProgress",
+        "component": "Progress",
+        "label": "Today's Target Output: 8,420 / 10,000 Units (84.2%)",
+        "value": 84
+      },
+      {
+        "id": "tabSafetyEnergy",
+        "component": "TabItem",
+        "value": "safetyEnergy",
+        "trigger": "Safety & Energy Today",
+        "content": [
+          "safetyEnergyCard"
+        ]
+      },
+      {
+        "id": "safetyEnergyCard",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "safetyHeading",
+          "safetyDaysTag",
+          "safetyIncidentsTag",
+          "energyHeading",
+          "energyProgress"
+        ]
+      },
+      {
+        "id": "safetyHeading",
+        "component": "Heading",
+        "level": "h4",
+        "text": "EHS Safety Metrics"
+      },
+      {
+        "id": "safetyDaysTag",
+        "component": "Tag",
+        "text": "142 Days Since Last Incident",
+        "variant": "success"
+      },
+      {
+        "id": "safetyIncidentsTag",
+        "component": "Tag",
+        "text": "2 Total Safety Incidents YTD",
+        "variant": "warning"
+      },
+      {
+        "id": "energyHeading",
+        "component": "Heading",
+        "level": "h4",
+        "text": "Energy Consumption Today"
+      },
+      {
+        "id": "energyProgress",
+        "component": "Progress",
+        "label": "12,450 kWh / 15,000 kWh Daily Budget (83%)",
+        "value": 83
+      },
+      {
+        "id": "lineStatusTable",
+        "component": "Table",
+        "columns": [
+          "colLineName",
+          "colLineRate",
+          "colLineTarget",
+          "colLineStatus"
+        ]
+      },
+      {
+        "id": "colLineName",
+        "component": "Col",
+        "label": "Production Line",
+        "data": [
+          "Line 1 - Machining",
+          "Line 2 - Stamping Press",
+          "Line 3 - Molding",
+          "Line 4 - Assembly"
+        ]
+      },
+      {
+        "id": "colLineRate",
+        "component": "Col",
+        "label": "Current Rate (units/hr)",
+        "data": [
+          "450 / hr",
+          "0 / hr (BLOCKED)",
+          "620 / hr",
+          "310 / hr (DEGRADED)"
+        ]
+      },
+      {
+        "id": "colLineTarget",
+        "component": "Col",
+        "label": "Target Rate",
+        "data": [
+          "450 / hr",
+          "500 / hr",
+          "600 / hr",
+          "400 / hr"
+        ]
+      },
+      {
+        "id": "colLineStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "RUNNING - NORMAL",
+          "DOWN - ANDON ALERT",
+          "RUNNING - OPTIMAL",
+          "RUNNING - MATERIAL DELAY"
+        ]
+      },
+      {
+        "id": "middleSectionTabs",
+        "component": "Tabs",
+        "items": [
+          "tabDefectsDowntime",
+          "tabShiftOutput"
+        ]
+      },
+      {
+        "id": "tabDefectsDowntime",
+        "component": "TabItem",
+        "value": "defectsDowntime",
+        "trigger": "Defect Rate & Downtime Breakdown",
+        "content": [
+          "defectsHeading",
+          "defectChart",
+          "downtimeHeading",
+          "downtimeChart"
+        ]
+      },
+      {
+        "id": "defectsHeading",
+        "component": "Heading",
+        "level": "h4",
+        "text": "Defect Rate Over Past Month (%)"
+      },
+      {
+        "id": "defectChart",
+        "component": "LineChart",
+        "xLabel": "Week",
+        "yLabel": "% Defective",
+        "labels": [
+          "Week 1",
+          "Week 2",
+          "Week 3",
+          "Week 4"
+        ],
+        "series": [
+          "defectSeries"
+        ]
+      },
+      {
+        "id": "defectSeries",
+        "component": "Series",
+        "category": "Defect Rate %",
+        "values": [
+          2.4,
+          1.8,
+          1.5,
+          1.2
+        ]
+      },
+      {
+        "id": "downtimeHeading",
+        "component": "Heading",
+        "level": "h4",
+        "text": "Downtime Split by Cause (Hours)"
+      },
+      {
+        "id": "downtimeChart",
+        "component": "HorizontalBarChart",
+        "xLabel": "Hours Lost",
+        "yLabel": "Downtime Reason",
+        "labels": [
+          "Mechanical Breakdown",
+          "Material Shortage",
+          "Tool Changeover",
+          "Operator Absence",
+          "Unplanned Calibration"
+        ],
+        "series": [
+          "downtimeSeries"
+        ]
+      },
+      {
+        "id": "downtimeSeries",
+        "component": "Series",
+        "category": "Downtime Hours",
+        "values": [
+          14.5,
+          9.2,
+          6.0,
+          3.5,
+          2.8
+        ]
+      },
+      {
+        "id": "tabShiftOutput",
+        "component": "TabItem",
+        "value": "shiftOutput",
+        "trigger": "Shift Output Comparison",
+        "content": [
+          "shiftHeading",
+          "shiftChart"
+        ]
+      },
+      {
+        "id": "shiftHeading",
+        "component": "Heading",
+        "level": "h4",
+        "text": "Output Comparison Across Shifts (Today)"
+      },
+      {
+        "id": "shiftChart",
+        "component": "BarChart",
+        "xLabel": "Shift",
+        "yLabel": "Units Produced",
+        "labels": [
+          "Shift 1 (Morning)",
+          "Shift 2 (Afternoon)",
+          "Shift 3 (Night)"
+        ],
+        "series": [
+          "shiftActualSeries",
+          "shiftTargetSeries"
+        ]
+      },
+      {
+        "id": "shiftActualSeries",
+        "component": "Series",
+        "category": "Actual Units",
+        "values": [
+          3450,
+          3200,
+          1770
+        ]
+      },
+      {
+        "id": "shiftTargetSeries",
+        "component": "Series",
+        "category": "Target Units",
+        "values": [
+          3330,
+          3330,
+          3340
+        ]
+      },
+      {
+        "id": "bottomSectionTabs",
+        "component": "Tabs",
+        "items": [
+          "tabSupplyHold",
+          "tabMaintenanceWorkOrders"
+        ]
+      },
+      {
+        "id": "tabSupplyHold",
+        "component": "TabItem",
+        "value": "supplyHold",
+        "trigger": "Inventory, Deliveries & Quality Hold",
+        "content": [
+          "stockHeading",
+          "stockTable",
+          "deliveriesHeading",
+          "deliveriesTable",
+          "qualityHoldHeading",
+          "qualityHoldTable"
+        ]
+      },
+      {
+        "id": "stockHeading",
+        "component": "Heading",
+        "level": "h4",
+        "text": "Raw Material Stock Levels"
+      },
+      {
+        "id": "stockTable",
+        "component": "Table",
+        "columns": [
+          "colMatName",
+          "colMatQty",
+          "colMatStatus"
+        ]
+      },
+      {
+        "id": "colMatName",
+        "component": "Col",
+        "label": "Material",
+        "data": [
+          "Sheet Steel (Coils)",
+          "Polypropylene Resin",
+          "Corrugated Packaging"
+        ]
+      },
+      {
+        "id": "colMatQty",
+        "component": "Col",
+        "label": "Stock On Hand",
+        "data": [
+          "42.5 Tons",
+          "12.8 Tons",
+          "1,850 Units"
+        ]
+      },
+      {
+        "id": "colMatStatus",
+        "component": "Col",
+        "label": "Stock Status",
+        "data": [
+          "HEALTHY (4 Days)",
+          "LOW - REORDER SENT",
+          "HEALTHY (6 Days)"
+        ]
+      },
+      {
+        "id": "deliveriesHeading",
+        "component": "Heading",
+        "level": "h4",
+        "text": "Supplier Deliveries Due This Week"
+      },
+      {
+        "id": "deliveriesTable",
+        "component": "Table",
+        "columns": [
+          "colDelSupplier",
+          "colDelItem",
+          "colDelQty",
+          "colDelDueDate"
+        ]
+      },
+      {
+        "id": "colDelSupplier",
+        "component": "Col",
+        "label": "Supplier",
+        "data": [
+          "Apex Steel Corp",
+          "Polymax Polymer Co",
+          "BoxCraft Supply"
+        ]
+      },
+      {
+        "id": "colDelItem",
+        "component": "Col",
+        "label": "Item",
+        "data": [
+          "Cold-Rolled Steel Coils",
+          "PP Resin Grade B",
+          "Export Master Cartons"
+        ]
+      },
+      {
+        "id": "colDelQty",
+        "component": "Col",
+        "label": "Quantity",
+        "data": [
+          "20 Tons",
+          "10 Tons",
+          "5,000 Pcs"
+        ]
+      },
+      {
+        "id": "colDelDueDate",
+        "component": "Col",
+        "label": "Due Date",
+        "data": [
+          "Tomorrow (10:00 AM)",
+          "Oct 24 (2:00 PM)",
+          "Oct 26 (8:00 AM)"
+        ]
+      },
+      {
+        "id": "qualityHoldHeading",
+        "component": "Heading",
+        "level": "h4",
+        "text": "Batches on Quality Hold"
+      },
+      {
+        "id": "qualityHoldTable",
+        "component": "Table",
+        "columns": [
+          "colBatchId",
+          "colBatchLine",
+          "colBatchReason",
+          "colBatchQty"
+        ]
+      },
+      {
+        "id": "colBatchId",
+        "component": "Col",
+        "label": "Batch ID",
+        "data": [
+          "BATCH-8821",
+          "BATCH-8835"
+        ]
+      },
+      {
+        "id": "colBatchLine",
+        "component": "Col",
+        "label": "Source Line",
+        "data": [
+          "Line 3 - Molding",
+          "Line 1 - Machining"
+        ]
+      },
+      {
+        "id": "colBatchReason",
+        "component": "Col",
+        "label": "Hold Reason",
+        "data": [
+          "Dimensional Out-of-Spec (+0.05mm)",
+          "Surface Burr Inspection"
+        ]
+      },
+      {
+        "id": "colBatchQty",
+        "component": "Col",
+        "label": "Quantity",
+        "data": [
+          "450 units",
+          "180 units"
+        ]
+      },
+      {
+        "id": "tabMaintenanceWorkOrders",
+        "component": "TabItem",
+        "value": "maintWO",
+        "trigger": "Maintenance & Open Work Orders",
+        "content": [
+          "maintHeading",
+          "maintTable",
+          "woHeading",
+          "woTable"
+        ]
+      },
+      {
+        "id": "maintHeading",
+        "component": "Heading",
+        "level": "h4",
+        "text": "Machines Due for Maintenance"
+      },
+      {
+        "id": "maintTable",
+        "component": "Table",
+        "columns": [
+          "colMaintMachine",
+          "colMaintType",
+          "colMaintDueDate",
+          "colMaintStatus"
+        ]
+      },
+      {
+        "id": "colMaintMachine",
+        "component": "Col",
+        "label": "Machine",
+        "data": [
+          "Stamping Press #2",
+          "CNC Router #4",
+          "Molding Feed Servo"
+        ]
+      },
+      {
+        "id": "colMaintType",
+        "component": "Col",
+        "label": "Service Required",
+        "data": [
+          "Hydraulic Seal Replacement",
+          "Spindle Lubrication & Alignment",
+          "Filter Replacement"
+        ]
+      },
+      {
+        "id": "colMaintDueDate",
+        "component": "Col",
+        "label": "Due Date",
+        "data": [
+          "Overdue (2 Days)",
+          "Today",
+          "Oct 27"
+        ]
+      },
+      {
+        "id": "colMaintStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "CRITICAL",
+          "SCHEDULED",
+          "PENDING"
+        ]
+      },
+      {
+        "id": "woHeading",
+        "component": "Heading",
+        "level": "h4",
+        "text": "Open Work Orders"
+      },
+      {
+        "id": "woTable",
+        "component": "Table",
+        "columns": [
+          "colWoId",
+          "colWoDesc",
+          "colWoAssignee",
+          "colWoPriority"
+        ]
+      },
+      {
+        "id": "colWoId",
+        "component": "Col",
+        "label": "Work Order #",
+        "data": [
+          "WO-4091",
+          "WO-4098",
+          "WO-4102",
+          "WO-4105"
+        ]
+      },
+      {
+        "id": "colWoDesc",
+        "component": "Col",
+        "label": "Description",
+        "data": [
+          "Replace jammed conveyor belt on Line 2",
+          "Sensor re-calibration on Assembly Station 3",
+          "Coolant flush on CNC Router #1",
+          "Inspect safety curtain sensor on Press #1"
+        ]
+      },
+      {
+        "id": "colWoAssignee",
+        "component": "Col",
+        "label": "Assigned Tech",
+        "data": [
+          "M. Vance",
+          "R. Patel",
+          "Unassigned",
+          "J. Kowalski"
+        ]
+      },
+      {
+        "id": "colWoPriority",
+        "component": "Col",
+        "label": "Priority",
+        "data": [
+          "HIGH - P1",
+          "HIGH - P2",
+          "MEDIUM - P3",
+          "LOW - P4"
+        ]
+      },
+      {
+        "id": "formSectionTabs",
+        "component": "Tabs",
+        "items": [
+          "tabScheduleMaint"
+        ]
+      },
+      {
+        "id": "tabScheduleMaint",
+        "component": "TabItem",
+        "value": "scheduleMaintTab",
+        "trigger": "Schedule Machine Maintenance",
+        "content": [
+          "scheduleForm"
+        ]
+      },
+      {
+        "id": "scheduleForm",
+        "component": "Form",
+        "name": "scheduleMaintenanceForm",
+        "buttons": "scheduleFormButtons",
+        "fields": [
+          "fieldMachineSelect",
+          "fieldMaintDate",
+          "fieldMaintNotes"
+        ]
+      },
+      {
+        "id": "fieldMachineSelect",
+        "component": "FormControl",
+        "label": "Select Machine",
+        "input": "selectMachineInput"
+      },
+      {
+        "id": "selectMachineInput",
+        "component": "Select",
+        "name": "targetMachine",
+        "placeholder": "Choose equipment...",
+        "items": [
+          "mOpt1",
+          "mOpt2",
+          "mOpt3",
+          "mOpt4"
+        ]
+      },
+      {
+        "id": "mOpt1",
+        "component": "SelectItem",
+        "value": "press2",
+        "label": "Stamping Press #2 (Line 2)"
+      },
+      {
+        "id": "mOpt2",
+        "component": "SelectItem",
+        "value": "cnc4",
+        "label": "CNC Router #4 (Line 1)"
+      },
+      {
+        "id": "mOpt3",
+        "component": "SelectItem",
+        "value": "moldingServo",
+        "label": "Molding Feed Servo (Line 3)"
+      },
+      {
+        "id": "mOpt4",
+        "component": "SelectItem",
+        "value": "assemblyRobot1",
+        "label": "Assembly Pick-Robot #1 (Line 4)"
+      },
+      {
+        "id": "fieldMaintDate",
+        "component": "FormControl",
+        "label": "Scheduled Maintenance Date",
+        "input": "maintDatePicker"
+      },
+      {
+        "id": "maintDatePicker",
+        "component": "DatePicker",
+        "name": "scheduledDate",
+        "mode": "single"
+      },
+      {
+        "id": "fieldMaintNotes",
+        "component": "FormControl",
+        "label": "Maintenance Details & Tasks",
+        "hint": "Specify required parts, technician instructions, or downtime window",
+        "input": "maintNotesInput"
+      },
+      {
+        "id": "maintNotesInput",
+        "component": "TextArea",
+        "name": "maintenanceNotes",
+        "placeholder": "e.g., Scheduled PM, oil change, and belt replacement.",
+        "rows": 3
+      },
+      {
+        "id": "scheduleFormButtons",
+        "component": "Buttons",
+        "buttons": [
+          "btnSubmitSchedule",
+          "btnResetSchedule"
+        ]
+      },
+      {
+        "id": "btnSubmitSchedule",
+        "component": "Button",
+        "label": "Confirm Maintenance Schedule",
+        "variant": "primary"
+      },
+      {
+        "id": "btnResetSchedule",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "tertiary"
+      },
+      {
+        "id": "footerActions",
+        "component": "Card",
+        "variant": "clear",
+        "children": [
+          "exportButtons"
+        ]
+      },
+      {
+        "id": "exportButtons",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": [
+          "btnExportShiftReport",
+          "btnRefreshConsole"
+        ]
+      },
+      {
+        "id": "btnExportShiftReport",
+        "component": "Button",
+        "label": "Export Shift Report (PDF/CSV)",
+        "variant": "primary"
+      },
+      {
+        "id": "btnRefreshConsole",
+        "component": "Button",
+        "label": "Refresh Live Feeds",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
 </a2ui-json>

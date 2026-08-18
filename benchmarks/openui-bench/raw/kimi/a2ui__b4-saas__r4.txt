@@ -1,94 +1,463 @@
-Here's your SaaS admin overview — a single screen covering all 13 items: KPIs (MRR, ARR, churn, NPS), signups trend, plan split, top customers, at-risk accounts, failed payments with retry, feature adoption, seat utilization, reporting period control, and an invite-admin form.
+Here's a complete SaaS admin overview dashboard covering all 13 items:
 
 <a2ui-json>
-[
-  {"version": "v0.9", "createSurface": {"surfaceId": "admin-overview", "catalogId": "thesys.dev:c1-openui", "theme": {"primaryColor": "#2563EB", "agentDisplayName": "SaaS Admin Overview"}}},
-  {"version": "v0.9", "updateComponents": {"surfaceId": "admin-overview", "components": [
-    {"id": "root", "component": "Card", "variant": "clear", "direction": "column", "gap": "m", "children": ["header", "periodCard", "kpiRow", "mainRow", "row2", "row3", "row4", "inviteCard"]},
-
-    {"id": "header", "component": "CardHeader", "title": "Admin Overview", "subtitle": "Company health, revenue, customers and adoption"},
-
-    {"id": "periodCard", "component": "Card", "variant": "sunk", "direction": "row", "align": "center", "justify": "between", "gap": "m", "children": ["periodLabel", "periodSelect"]},
-    {"id": "periodLabel", "component": "TextContent", "text": "**Reporting period** (applies to all metrics below)", "size": "small"},
-    {"id": "periodSelect", "component": "Select", "name": "reportingPeriod", "items": ["pi1", "pi2", "pi3", "pi4"], "value": "last30", "size": "medium"},
-    {"id": "pi1", "component": "SelectItem", "value": "last30", "label": "Last 30 days"},
-    {"id": "pi2", "component": "SelectItem", "value": "last90", "label": "Last 90 days"},
-    {"id": "pi3", "component": "SelectItem", "value": "last12m", "label": "Last 12 months"},
-    {"id": "pi4", "component": "SelectItem", "value": "ytd", "label": "Year to date"},
-
-    {"id": "kpiRow", "component": "Card", "variant": "card", "direction": "row", "gap": "m", "wrap": true, "children": ["kpiMrr", "kpiArr", "kpiChurn", "kpiNps"]},
-    {"id": "kpiMrr", "component": "Card", "variant": "sunk", "direction": "column", "gap": "xs", "children": ["mrrLabel", "mrrValue", "mrrDelta"]},
-    {"id": "mrrLabel", "component": "TextContent", "text": "Monthly Recurring Revenue", "size": "small"},
-    {"id": "mrrValue", "component": "TextContent", "text": "$128,400", "size": "large-heavy"},
-    {"id": "mrrDelta", "component": "Tag", "text": "+4.2% MoM", "variant": "success"},
-    {"id": "kpiArr", "component": "Card", "variant": "sunk", "direction": "column", "gap": "xs", "children": ["arrLabel", "arrValue", "arrDelta"]},
-    {"id": "arrLabel", "component": "TextContent", "text": "Annual Recurring Revenue", "size": "small"},
-    {"id": "arrValue", "component": "TextContent", "text": "$1.54M", "size": "large-heavy"},
-    {"id": "arrDelta", "component": "Tag", "text": "+18% YoY", "variant": "success"},
-    {"id": "kpiChurn", "component": "Card", "variant": "sunk", "direction": "column", "gap": "xs", "children": ["churnLabel", "churnValue", "churnDelta"]},
-    {"id": "churnLabel", "component": "TextContent", "text": "Churn This Month", "size": "small"},
-    {"id": "churnValue", "component": "TextContent", "text": "2.1% (14 accounts)", "size": "large-heavy"},
-    {"id": "churnDelta", "component": "Tag", "text": "↑ 0.4 pts", "variant": "warning"},
-    {"id": "kpiNps", "component": "Card", "variant": "sunk", "direction": "column", "gap": "xs", "children": ["npsLabel", "npsValue", "npsDelta"]},
-    {"id": "npsLabel", "component": "TextContent", "text": "Current NPS", "size": "small"},
-    {"id": "npsValue", "component": "TextContent", "text": "42", "size": "large-heavy"},
-    {"id": "npsDelta", "component": "Tag", "text": "+3 since Q2", "variant": "info"},
-
-    {"id": "mainRow", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "children": ["signupsCard", "plansCard"]},
-    {"id": "signupsCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "weight": 2, "children": ["signupsHeader", "signupsChart"]},
-    {"id": "signupsHeader", "component": "CardHeader", "title": "New Signups — Past 90 Days", "subtitle": "Weekly new accounts"},
-    {"id": "signupsChart", "component": "LineChart", "labels": ["W1","W2","W3","W4","W5","W6","W7","W8","W9","W10","W11","W12"], "series": ["signupSeries"], "variant": "natural", "xLabel": "Week", "yLabel": "Signups"},
-    {"id": "signupSeries", "component": "Series", "category": "New signups", "values": [42, 55, 48, 61, 74, 68, 82, 79, 91, 88, 103, 97]},
-    {"id": "plansCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "weight": 1, "children": ["plansHeader", "plansChart"]},
-    {"id": "plansHeader", "component": "CardHeader", "title": "Customers by Plan"},
-    {"id": "plansChart", "component": "PieChart", "labels": ["Starter", "Growth", "Scale", "Enterprise"], "values": [380, 210, 95, 32], "variant": "donut"},
-
-    {"id": "row2", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "children": ["topCustCard", "riskCard"]},
-    {"id": "topCustCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "weight": 3, "children": ["topCustHeader", "topCustTable"]},
-    {"id": "topCustHeader", "component": "CardHeader", "title": "10 Largest Customers", "subtitle": "By monthly spend"},
-    {"id": "topCustTable", "component": "Table", "columns": ["tcName", "tcSeats", "tcSpend"]},
-    {"id": "tcName", "component": "Col", "label": "Customer", "data": ["Acme Corp", "Globex", "Initech", "Umbrella Inc", "Hooli", "Stark Industries", "Wayne Enterprises", "Cyberdyne", "Massive Dynamic", "Aperture Labs"], "type": "string"},
-    {"id": "tcSeats", "component": "Col", "label": "Seats", "data": [420, 350, 290, 260, 240, 210, 180, 160, 140, 120], "type": "number"},
-    {"id": "tcSpend", "component": "Col", "label": "Monthly Spend", "data": ["$12,600", "$10,400", "$8,900", "$8,100", "$7,500", "$6,800", "$5,900", "$5,200", "$4,600", "$4,100"], "type": "string"},
-
-    {"id": "riskCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "weight": 2, "children": ["riskHeader", "riskTable"]},
-    {"id": "riskHeader", "component": "CardHeader", "title": "Accounts at Risk", "subtitle": "Flagged in the last 14 days"},
-    {"id": "riskTable", "component": "Table", "columns": ["rkName", "rkReason"]},
-    {"id": "rkName", "component": "Col", "label": "Account", "data": ["Tyrell Corp", "Soylent Co", "Wonka Industries", "Oscorp"], "type": "string"},
-    {"id": "rkReason", "component": "Col", "label": "Reason", "data": ["Usage down 62% in 30 days", "Champion left the company", "3 failed payments in a row", "Contract renewal in 30 days, no engagement"], "type": "string"},
-
-    {"id": "row3", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "children": ["payCard", "adoptCard"]},
-    {"id": "payCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "weight": 3, "children": ["payHeader", "payTable"]},
-    {"id": "payHeader", "component": "CardHeader", "title": "Failed Payments", "subtitle": "Retry directly from this table"},
-    {"id": "payTable", "component": "Table", "columns": ["fpAcct", "fpAmount", "fpRetry"]},
-    {"id": "fpAcct", "component": "Col", "label": "Account", "data": ["Soylent Co", "Gringotts LLC", "Dunder Mifflin", "Bluth Company"], "type": "string"},
-    {"id": "fpAmount", "component": "Col", "label": "Amount", "data": ["$1,250", "$640", "$2,100", "$480"], "type": "string"},
-    {"id": "fpRetry", "component": "Col", "label": "Action", "data": ["Retry", "Retry", "Retry", "Retry"], "type": "action"},
-
-    {"id": "adoptCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "weight": 2, "children": ["adoptHeader", "adopt1", "adopt2", "adopt3"]},
-    {"id": "adoptHeader", "component": "CardHeader", "title": "New Feature Adoption", "subtitle": "% of active accounts using each feature"},
-    {"id": "adopt1", "component": "Progress", "value": 68, "label": "AI Report Builder — 68%"},
-    {"id": "adopt2", "component": "Progress", "value": 45, "label": "Slack Alerts Integration — 45%"},
-    {"id": "adopt3", "component": "Progress", "value": 22, "label": "Custom SSO Roles — 22%"},
-
-    {"id": "row4", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["seatHeader", "seatChart"]},
-    {"id": "seatHeader", "component": "CardHeader", "title": "Seat Utilization", "subtitle": "Active vs. provisioned seats across the company"},
-    {"id": "seatChart", "component": "SingleStackedBarChart", "labels": ["Active", "Inactive", "Unassigned"], "values": [1240, 310, 150]},
-
-    {"id": "inviteCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["inviteHeader", "inviteForm"]},
-    {"id": "inviteHeader", "component": "CardHeader", "title": "Invite Another Admin", "subtitle": "They'll receive an email invitation with admin privileges"},
-    {"id": "inviteForm", "component": "Form", "name": "inviteAdmin", "fields": ["invEmailCtrl", "invRoleCtrl"], "buttons": "inviteButtons"},
-    {"id": "invEmailCtrl", "component": "FormControl", "label": "Email address", "input": "invEmail", "hint": "Work email of the new admin"},
-    {"id": "invEmail", "component": "Input", "name": "adminEmail", "placeholder": "name@company.com", "type": "email", "rules": [{"required": true}]},
-    {"id": "invRoleCtrl", "component": "FormControl", "label": "Role", "input": "invRole"},
-    {"id": "invRole", "component": "Select", "name": "adminRole", "items": ["ri1", "ri2", "ri3"], "placeholder": "Select a role"},
-    {"id": "ri1", "component": "SelectItem", "value": "admin", "label": "Admin (full access)"},
-    {"id": "ri2", "component": "SelectItem", "value": "billing", "label": "Billing admin"},
-    {"id": "ri3", "component": "SelectItem", "value": "readonly", "label": "Read-only"},
-    {"id": "inviteButtons", "component": "Buttons", "buttons": ["inviteBtn"]},
-    {"id": "inviteBtn", "component": "Button", "label": "Send invitation", "variant": "primary"}
-  ]}}
-]
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
-All 13 items are covered: MRR/ARR/churn/NPS as KPI cards (1, 2, 3, 10), a 90-day signup line chart (4), plan-split donut (5), top-10 customers table with seats and spend (6), at-risk accounts with reasons (7), failed payments with retry actions (8), feature adoption progress bars (9), reporting-period selector (11), company-wide seat utilization bar (12), and an invite-admin form (13).
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "periodForm",
+          "kpiTable",
+          "signupChart",
+          "planSplit",
+          "seatUtil",
+          "npsBlock",
+          "topCustomers",
+          "atRisk",
+          "failedPayments",
+          "featureAdoption",
+          "inviteForm"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Admin Overview",
+        "subtitle": "Company-wide SaaS metrics and account health"
+      },
+      {
+        "id": "periodForm",
+        "component": "Form",
+        "name": "period-form",
+        "buttons": "periodButtons",
+        "fields": [
+          "periodControl"
+        ]
+      },
+      {
+        "id": "periodControl",
+        "component": "FormControl",
+        "label": "Reporting period",
+        "input": "periodSelect"
+      },
+      {
+        "id": "periodSelect",
+        "component": "Select",
+        "name": "period",
+        "items": [
+          "p7",
+          "p30",
+          "p90",
+          "pYtd",
+          "p12m"
+        ],
+        "value": "30d"
+      },
+      {
+        "id": "p7",
+        "component": "SelectItem",
+        "value": "7d",
+        "label": "Last 7 days"
+      },
+      {
+        "id": "p30",
+        "component": "SelectItem",
+        "value": "30d",
+        "label": "Last 30 days"
+      },
+      {
+        "id": "p90",
+        "component": "SelectItem",
+        "value": "90d",
+        "label": "Last 90 days"
+      },
+      {
+        "id": "pYtd",
+        "component": "SelectItem",
+        "value": "ytd",
+        "label": "Year to date"
+      },
+      {
+        "id": "p12m",
+        "component": "SelectItem",
+        "value": "12m",
+        "label": "Last 12 months"
+      },
+      {
+        "id": "periodButtons",
+        "component": "Buttons",
+        "buttons": [
+          "applyPeriod"
+        ]
+      },
+      {
+        "id": "applyPeriod",
+        "component": "Button",
+        "label": "Apply period",
+        "variant": "secondary"
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": [
+          "kpiName",
+          "kpiValue",
+          "kpiTrend"
+        ]
+      },
+      {
+        "id": "kpiName",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Monthly Recurring Revenue",
+          "Annual Recurring Revenue",
+          "Churn (this month)",
+          "New signups (90 days)"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "$184,200",
+          "$2,210,400",
+          "2.4% (11 accounts)",
+          "1,438"
+        ]
+      },
+      {
+        "id": "kpiTrend",
+        "component": "Col",
+        "label": "Trend",
+        "data": [
+          "+4.1% MoM",
+          "+38% YoY",
+          "-0.3 pts vs last month",
+          "+12% vs prior 90d"
+        ]
+      },
+      {
+        "id": "signupChart",
+        "component": "AreaChart",
+        "labels": [
+          "W1",
+          "W2",
+          "W3",
+          "W4",
+          "W5",
+          "W6",
+          "W7",
+          "W8",
+          "W9",
+          "W10",
+          "W11",
+          "W12",
+          "W13"
+        ],
+        "series": [
+          "signupSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Week (past 90 days)",
+        "yLabel": "Signups"
+      },
+      {
+        "id": "signupSeries",
+        "component": "Series",
+        "category": "New signups",
+        "values": [
+          88,
+          102,
+          95,
+          121,
+          118,
+          134,
+          109,
+          127,
+          142,
+          131,
+          125,
+          118,
+          128
+        ]
+      },
+      {
+        "id": "planSplit",
+        "component": "PieChart",
+        "labels": [
+          "Starter",
+          "Growth",
+          "Enterprise"
+        ],
+        "values": [
+          612,
+          348,
+          96
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "seatUtil",
+        "component": "Progress",
+        "value": 71,
+        "label": "Seat utilization: 8,492 of 11,960 seats (71%)"
+      },
+      {
+        "id": "npsBlock",
+        "component": "RadialChart",
+        "labels": [
+          "Current NPS"
+        ],
+        "values": [
+          52
+        ]
+      },
+      {
+        "id": "topCustomers",
+        "component": "Table",
+        "columns": [
+          "custName",
+          "custSeats",
+          "custSpend"
+        ]
+      },
+      {
+        "id": "custName",
+        "component": "Col",
+        "label": "Top 10 customers",
+        "data": [
+          "Acme Corp",
+          "Globex",
+          "Initech",
+          "Umbrella Inc",
+          "Hooli",
+          "Stark Industries",
+          "Wayne Enterprises",
+          "Massive Dynamic",
+          "Cyberdyne",
+          "Tyrell Corp"
+        ]
+      },
+      {
+        "id": "custSeats",
+        "component": "Col",
+        "label": "Seats",
+        "data": [
+          850,
+          620,
+          540,
+          480,
+          430,
+          390,
+          350,
+          310,
+          280,
+          240
+        ]
+      },
+      {
+        "id": "custSpend",
+        "component": "Col",
+        "label": "Monthly spend",
+        "data": [
+          "$18,400",
+          "$14,200",
+          "$12,800",
+          "$11,500",
+          "$10,900",
+          "$9,700",
+          "$8,900",
+          "$8,100",
+          "$7,400",
+          "$6,800"
+        ]
+      },
+      {
+        "id": "atRisk",
+        "component": "Table",
+        "columns": [
+          "riskAcct",
+          "riskReason"
+        ]
+      },
+      {
+        "id": "riskAcct",
+        "component": "Col",
+        "label": "Accounts at risk",
+        "data": [
+          "Soylent Co",
+          "Aperture Labs",
+          "Gringotts Finance",
+          "Oceanic Airlines"
+        ]
+      },
+      {
+        "id": "riskReason",
+        "component": "Col",
+        "label": "Reason",
+        "data": [
+          "Usage down 62% in 30 days",
+          "Champion left the company",
+          "Contract renewal in 14 days, no engagement",
+          "3 failed payments in a row"
+        ]
+      },
+      {
+        "id": "failedPayments",
+        "component": "Table",
+        "columns": [
+          "fpAcct",
+          "fpAmount",
+          "fpAction"
+        ]
+      },
+      {
+        "id": "fpAcct",
+        "component": "Col",
+        "label": "Failed payments",
+        "data": [
+          "Oceanic Airlines",
+          "Dunder Mifflin",
+          "Wonka Industries"
+        ]
+      },
+      {
+        "id": "fpAmount",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "$2,340",
+          "$890",
+          "$1,120"
+        ]
+      },
+      {
+        "id": "fpAction",
+        "component": "Col",
+        "label": "Retry",
+        "type": "action",
+        "data": [
+          "Retry payment",
+          "Retry payment",
+          "Retry payment"
+        ]
+      },
+      {
+        "id": "featureAdoption",
+        "component": "HorizontalBarChart",
+        "labels": [
+          "AI Insights",
+          "Team Workspaces",
+          "Slack Integration"
+        ],
+        "series": [
+          "adoptSeries"
+        ],
+        "xLabel": "% of active accounts",
+        "yLabel": "Feature"
+      },
+      {
+        "id": "adoptSeries",
+        "component": "Series",
+        "category": "Adoption %",
+        "values": [
+          44,
+          31,
+          58
+        ]
+      },
+      {
+        "id": "inviteForm",
+        "component": "Form",
+        "name": "invite-admin",
+        "buttons": "inviteButtons",
+        "fields": [
+          "inviteEmailControl",
+          "inviteRoleControl"
+        ]
+      },
+      {
+        "id": "inviteEmailControl",
+        "component": "FormControl",
+        "label": "Invite another admin",
+        "input": "inviteEmail",
+        "hint": "They'll receive an email invitation"
+      },
+      {
+        "id": "inviteEmail",
+        "component": "Input",
+        "name": "admin_email",
+        "placeholder": "colleague@company.com",
+        "type": "email"
+      },
+      {
+        "id": "inviteRoleControl",
+        "component": "FormControl",
+        "label": "Role",
+        "input": "inviteRole"
+      },
+      {
+        "id": "inviteRole",
+        "component": "Select",
+        "name": "admin_role",
+        "items": [
+          "roleAdmin",
+          "roleBilling",
+          "roleViewer"
+        ],
+        "placeholder": "Select role"
+      },
+      {
+        "id": "roleAdmin",
+        "component": "SelectItem",
+        "value": "admin",
+        "label": "Full admin"
+      },
+      {
+        "id": "roleBilling",
+        "component": "SelectItem",
+        "value": "billing",
+        "label": "Billing admin"
+      },
+      {
+        "id": "roleViewer",
+        "component": "SelectItem",
+        "value": "viewer",
+        "label": "Read-only"
+      },
+      {
+        "id": "inviteButtons",
+        "component": "Buttons",
+        "buttons": [
+          "sendInvite"
+        ]
+      },
+      {
+        "id": "sendInvite",
+        "component": "Button",
+        "label": "Send invite",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+All 13 items are covered: MRR/ARR/churn/signups in the KPI table, signups trend chart (90 days), plan-split donut, top-10 customers with seats and spend, at-risk accounts with reasons, failed payments with retry actions, feature adoption bars, NPS radial, reporting-period selector, seat utilization progress bar, and the admin invite form.

@@ -1,62 +1,301 @@
-Here's a complete sales account page covering all nine items:
-
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"account-page","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#2563EB","agentDisplayName":"CRM Assistant"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"account-page","components":[
-{"id":"root","component":"Card","children":["header","valueTag","stage","renewalCallout","activitySection","contactsSection","followupsSection","noteForm","callForm"],"gap":"m","direction":"column"},
-{"id":"header","component":"CardHeader","title":"Acme Corporation","subtitle":"Account Owner: Sarah Chen · Enterprise Sales"},
-{"id":"valueTag","component":"Tag","text":"Total Deal Value: $240,000","variant":"success","size":"lg"},
-{"id":"stage","component":"TextContent","text":"**Current Deal Stage:** Negotiation (Stage 4 of 5)","size":"large"},
-{"id":"renewalCallout","component":"Callout","variant":"warning","title":"Renewal Approaching","description":"Contract renews on 2025-07-15 — only 21 days away. Reach out to confirm renewal terms."},
-{"id":"activitySection","component":"Card","children":["activityTitle","activityList"],"gap":"s","variant":"sunk"},
-{"id":"activityTitle","component":"TextContent","text":"**Recent Activity**","size":"small-heavy"},
-{"id":"activityList","component":"ListBlock","variant":"number","items":["act1","act2","act3","act4"]},
-{"id":"act1","component":"ListItem","title":"Pricing proposal sent","subtitle":"Jun 22, 2025 · Sarah Chen"},
-{"id":"act2","component":"ListItem","title":"Demo call completed","subtitle":"Jun 18, 2025 · with J. Morales"},
-{"id":"act3","component":"ListItem","title":"Contract redlines received","subtitle":"Jun 12, 2025 · Legal review"},
-{"id":"act4","component":"ListItem","title":"Discovery meeting","subtitle":"Jun 3, 2025 · Initial scoping"},
-{"id":"contactsSection","component":"Card","children":["contactsTitle","contactsTable"],"gap":"s","variant":"sunk"},
-{"id":"contactsTitle","component":"TextContent","text":"**Contacts**","size":"small-heavy"},
-{"id":"contactsTable","component":"Table","columns":["colName","colRole","colEmail"]},
-{"id":"colName","component":"Col","label":"Name","data":["Jorge Morales","Priya Patel","Tom Becker"],"type":"string"},
-{"id":"colRole","component":"Col","label":"Role","data":["Decision Maker","Technical Evaluator","Finance Approver"],"type":"string"},
-{"id":"colEmail","component":"Col","label":"Email","data":["jorge@acme.com","priya@acme.com","tom@acme.com"],"type":"string"},
-{"id":"followupsSection","component":"Card","children":["followupsTitle","followupsList"],"gap":"s","variant":"sunk"},
-{"id":"followupsTitle","component":"TextContent","text":"**Open Follow-ups**","size":"small-heavy"},
-{"id":"followupsList","component":"ListBlock","variant":"number","items":["fu1","fu2","fu3"]},
-{"id":"fu1","component":"ListItem","title":"Send revised pricing","subtitle":"Due Jun 26, 2025"},
-{"id":"fu2","component":"ListItem","title":"Schedule security review","subtitle":"Due Jun 30, 2025"},
-{"id":"fu3","component":"ListItem","title":"Confirm renewal terms","subtitle":"Due Jul 8, 2025"},
-{"id":"noteForm","component":"Form","name":"noteForm","buttons":"noteButtons","fields":["noteField"]},
-{"id":"noteField","component":"FormControl","label":"Jot a Note","input":"noteInput","hint":"Notes are saved to the account timeline"},
-{"id":"noteInput","component":"TextArea","name":"note","placeholder":"Type a quick note...","rows":3},
-{"id":"noteButtons","component":"Buttons","buttons":["noteSubmit"]},
-{"id":"noteSubmit","component":"Button","label":"Save Note","variant":"primary"},
-{"id":"callForm","component":"Form","name":"callForm","buttons":"callButtons","fields":["callSummaryField","callOutcomeField","callDateField"]},
-{"id":"callSummaryField","component":"FormControl","label":"Log a Call — Summary","input":"callSummary"},
-{"id":"callSummary","component":"Input","name":"callSummary","placeholder":"What was discussed?","type":"text"},
-{"id":"callOutcomeField","component":"FormControl","label":"Outcome","input":"callOutcome"},
-{"id":"callOutcome","component":"Select","name":"callOutcome","items":["out1","out2","out3"],"placeholder":"Select outcome"},
-{"id":"out1","component":"SelectItem","value":"connected","label":"Connected"},
-{"id":"out2","component":"SelectItem","value":"voicemail","label":"Left Voicemail"},
-{"id":"out3","component":"SelectItem","value":"no-answer","label":"No Answer"},
-{"id":"callDateField","component":"FormControl","label":"Call Date","input":"callDate"},
-{"id":"callDate","component":"DatePicker","name":"callDate","mode":"single"},
-{"id":"callButtons","component":"Buttons","buttons":["callSubmit"]},
-{"id":"callSubmit","component":"Button","label":"Log Call","variant":"secondary"}
-]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "ownerBadge",
+          "dealValue",
+          "stage",
+          "renewalAlert",
+          "activityHeading",
+          "activityList",
+          "contactsHeading",
+          "contactsTable",
+          "followUpsHeading",
+          "followUpsTable",
+          "noteForm",
+          "callForm"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Acme Corporation",
+        "subtitle": "Account overview"
+      },
+      {
+        "id": "ownerBadge",
+        "component": "Badge",
+        "text": "Owner: Sarah Chen",
+        "variant": "secondary"
+      },
+      {
+        "id": "dealValue",
+        "component": "TextContent",
+        "text": "**Total Deal Value: $245,000**",
+        "size": "large-heavy"
+      },
+      {
+        "id": "stage",
+        "component": "Tag",
+        "text": "Stage: Negotiation",
+        "variant": "info",
+        "size": "lg"
+      },
+      {
+        "id": "renewalAlert",
+        "component": "Alert",
+        "title": "Renewal coming up: March 15, 2025",
+        "description": "Renewal is in 12 days — reach out to confirm terms soon.",
+        "variant": "warning"
+      },
+      {
+        "id": "activityHeading",
+        "component": "Heading",
+        "text": "Recent Activity",
+        "level": "h3"
+      },
+      {
+        "id": "activityList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "act1",
+          "act2",
+          "act3",
+          "act4"
+        ]
+      },
+      {
+        "id": "act1",
+        "component": "ListItem",
+        "title": "Pricing call with procurement",
+        "subtitle": "Today, 10:30 AM"
+      },
+      {
+        "id": "act2",
+        "component": "ListItem",
+        "title": "Sent revised proposal v3",
+        "subtitle": "Yesterday, 4:15 PM"
+      },
+      {
+        "id": "act3",
+        "component": "ListItem",
+        "title": "Demo with engineering team",
+        "subtitle": "Feb 20, 2:00 PM"
+      },
+      {
+        "id": "act4",
+        "component": "ListItem",
+        "title": "Initial discovery meeting",
+        "subtitle": "Feb 12, 11:00 AM"
+      },
+      {
+        "id": "contactsHeading",
+        "component": "Heading",
+        "text": "Contacts",
+        "level": "h3"
+      },
+      {
+        "id": "contactsTable",
+        "component": "Table",
+        "columns": [
+          "contactName",
+          "contactRole"
+        ]
+      },
+      {
+        "id": "contactName",
+        "component": "Col",
+        "label": "Name",
+        "data": [
+          "Priya Nair",
+          "Tom Alvarez",
+          "Grace Liu"
+        ]
+      },
+      {
+        "id": "contactRole",
+        "component": "Col",
+        "label": "Role",
+        "data": [
+          "VP of Procurement",
+          "Engineering Lead",
+          "Finance Director"
+        ]
+      },
+      {
+        "id": "followUpsHeading",
+        "component": "Heading",
+        "text": "Open Follow-ups",
+        "level": "h3"
+      },
+      {
+        "id": "followUpsTable",
+        "component": "Table",
+        "columns": [
+          "fuTask",
+          "fuDue"
+        ]
+      },
+      {
+        "id": "fuTask",
+        "component": "Col",
+        "label": "Task",
+        "data": [
+          "Send security questionnaire answers",
+          "Confirm legal review timeline",
+          "Schedule exec sponsor intro"
+        ]
+      },
+      {
+        "id": "fuDue",
+        "component": "Col",
+        "label": "Due Date",
+        "data": [
+          "Mar 5, 2025",
+          "Mar 8, 2025",
+          "Mar 12, 2025"
+        ]
+      },
+      {
+        "id": "noteForm",
+        "component": "Form",
+        "name": "add-note",
+        "buttons": "noteButtons",
+        "fields": [
+          "noteField"
+        ]
+      },
+      {
+        "id": "noteField",
+        "component": "FormControl",
+        "label": "Jot a note",
+        "input": "noteInput"
+      },
+      {
+        "id": "noteInput",
+        "component": "TextArea",
+        "name": "note",
+        "placeholder": "Quick note about this account...",
+        "rows": 3
+      },
+      {
+        "id": "noteButtons",
+        "component": "Buttons",
+        "buttons": [
+          "noteSubmit"
+        ]
+      },
+      {
+        "id": "noteSubmit",
+        "component": "Button",
+        "label": "Save note",
+        "variant": "primary"
+      },
+      {
+        "id": "callForm",
+        "component": "Form",
+        "name": "log-call",
+        "buttons": "callButtons",
+        "fields": [
+          "callDateField",
+          "callSummaryField",
+          "callOutcomeField"
+        ]
+      },
+      {
+        "id": "callDateField",
+        "component": "FormControl",
+        "label": "Call date",
+        "input": "callDate"
+      },
+      {
+        "id": "callDate",
+        "component": "DatePicker",
+        "name": "call_date",
+        "mode": "single"
+      },
+      {
+        "id": "callSummaryField",
+        "component": "FormControl",
+        "label": "Call summary",
+        "input": "callSummary"
+      },
+      {
+        "id": "callSummary",
+        "component": "TextArea",
+        "name": "summary",
+        "placeholder": "What was discussed?",
+        "rows": 2
+      },
+      {
+        "id": "callOutcomeField",
+        "component": "FormControl",
+        "label": "Outcome",
+        "input": "callOutcome"
+      },
+      {
+        "id": "callOutcome",
+        "component": "Select",
+        "name": "outcome",
+        "placeholder": "Select outcome",
+        "items": [
+          "outPositive",
+          "outNeutral",
+          "outFollowup"
+        ]
+      },
+      {
+        "id": "outPositive",
+        "component": "SelectItem",
+        "value": "positive",
+        "label": "Positive"
+      },
+      {
+        "id": "outNeutral",
+        "component": "SelectItem",
+        "value": "neutral",
+        "label": "Neutral"
+      },
+      {
+        "id": "outFollowup",
+        "component": "SelectItem",
+        "value": "follow_up",
+        "label": "Needs follow-up"
+      },
+      {
+        "id": "callButtons",
+        "component": "Buttons",
+        "buttons": [
+          "callSubmit"
+        ]
+      },
+      {
+        "id": "callSubmit",
+        "component": "Button",
+        "label": "Log call",
+        "variant": "primary"
+      }
+    ]
+  }
+}
 </a2ui-json>
 
-This page covers all nine requirements:
-1. **Account name & owner** — "Acme Corporation" with owner Sarah Chen in the header
-2. **Total deal value** — $240,000 shown as a prominent tag
-3. **Deal stage** — Negotiation (Stage 4 of 5)
-4. **Recent activity** — Chronological numbered list of the last 4 activities
-5. **Contacts with roles** — Table showing name, role, and email
-6. **Open follow-ups** — Three items with due dates
-7. **Note jotting** — TextArea form with a Save Note button
-8. **Renewal warning** — Yellow callout flagging the renewal 21 days out
-9. **Call logging** — Form with summary, outcome dropdown, date picker, and Log Call button
+The account page covers all nine items: account name (Acme Corporation) with owner badge (1), total deal value of $245,000 (2), current stage tag "Negotiation" (3), a numbered recent activity list in chronological order (4), a contacts table with roles (5), open follow-ups with due dates (6), a note form with save button (7), a renewal warning alert since it's only 12 days away (8), and a log-a-call form with date, summary, and outcome (9).

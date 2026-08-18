@@ -1,26 +1,27 @@
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","current","outlook-heading","outlook-list","sun-heading","sun-card"]}}
-{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Good Morning, Bengaluru","subtitle":"Tuesday, Weather Brief"}}}
-{"op":"add","path":"/elements/current","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s","align":"center"},"children":["current-temp","current-cond","current-tags"]}}
-{"op":"add","path":"/elements/current-temp","value":{"type":"Heading","props":{"text":"24°C","level":"h1"}}}
-{"op":"add","path":"/elements/current-cond","value":{"type":"TextContent","props":{"text":"Partly Cloudy · Feels like 25°C","size":"large"}}}
-{"op":"add","path":"/elements/current-tags","value":{"type":"TagBlock","props":{"tags":["Humidity 68%","Wind 12 km/h","UV 6"]}}}
-{"op":"add","path":"/elements/outlook-heading","value":{"type":"Heading","props":{"text":"3-Day Outlook","level":"h3"}}}
-{"op":"add","path":"/elements/outlook-list","value":{"type":"Card","props":{"direction":"row","gap":"m","justify":"between"},"repeat":{"statePath":"/forecast","key":"day"},"children":["outlook-item"]}}
-{"op":"add","path":"/elements/outlook-item","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs","align":"center"},"children":["outlook-day","outlook-icon","outlook-hi","outlook-lo"]}}
-{"op":"add","path":"/elements/outlook-day","value":{"type":"TextContent","props":{"text":{"$item":"day"},"size":"small-heavy"}}}
-{"op":"add","path":"/elements/outlook-icon","value":{"type":"TextContent","props":{"text":{"$item":"condition"},"size":"small"}}}
-{"op":"add","path":"/elements/outlook-hi","value":{"type":"TextContent","props":{"text":{"$template":"High ${high}°"},"size":"default"}}}
-{"op":"add","path":"/elements/outlook-lo","value":{"type":"TextContent","props":{"text":{"$template":"Low ${low}°"},"size":"small"}}}
-{"op":"add","path":"/state/forecast","value":[]}
-{"op":"add","path":"/state/forecast/0","value":{"day":"Wed","condition":"☀️ Sunny","high":29,"low":19}}
-{"op":"add","path":"/state/forecast/1","value":{"day":"Thu","condition":"⛅ Cloudy","high":27,"low":18}}
-{"op":"add","path":"/state/forecast/2","value":{"day":"Fri","condition":"🌧️ Showers","high":25,"low":17}}
-{"op":"add","path":"/elements/sun-heading","value":{"type":"Heading","props":{"text":"Sun Schedule","level":"h3"}}}
-{"op":"add","path":"/elements/sun-card","value":{"type":"Card","props":{"direction":"row","gap":"m","justify":"around"},"children":["sunrise","sunset"]}}
-{"op":"add","path":"/elements/sunrise","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs","align":"center"},"children":["sunrise-label","sunrise-time"]}}
-{"op":"add","path":"/elements/sunrise-label","value":{"type":"TextContent","props":{"text":"🌅 Sunrise","size":"small-heavy"}}}
-{"op":"add","path":"/elements/sunrise-time","value":{"type":"Heading","props":{"text":"6:12 AM","level":"h3"}}}
-{"op":"add","path":"/elements/sunset","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs","align":"center"},"children":["sunset-label","sunset-time"]}}
-{"op":"add","path":"/elements/sunset-label","value":{"type":"TextContent","props":{"text":"🌇 Sunset","size":"small-heavy"}}}
-{"op":"add","path":"/elements/sunset-time","value":{"type":"Heading","props":{"text":"6:38 PM","level":"h3"}}}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","current","suntimes","outlookHeading","outlookList"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Good Morning, Bengaluru","subtitle":"Tuesday, June 10 · Morning Brief"}}}
+{"op":"add","path":"/elements/current","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s","align":"start"},"children":["currentTemp","currentCond","currentTags"]}}
+{"op":"add","path":"/elements/currentTemp","value":{"type":"Heading","props":{"text":{"$template":"${/current/temp}°C"},"level":"h1"}}}
+{"op":"add","path":"/elements/currentCond","value":{"type":"TextContent","props":{"text":{"$template":"**${/current/conditions}** · Feels like ${/current/feelsLike}°C"},"size":"large"}}}
+{"op":"add","path":"/elements/currentTags","value":{"type":"TagBlock","props":{"tags":["Humidity 72%","Wind 11 km/h","UV Low"]}}}
+{"op":"add","path":"/state/current","value":{"temp":22,"feelsLike":24,"conditions":"Partly Cloudy"}}
+{"op":"add","path":"/elements/suntimes","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"l","justify":"around"},"children":["sunrise","sunset"]}}
+{"op":"add","path":"/elements/sunrise","value":{"type":"Card","props":{"direction":"column","gap":"xs","align":"center"},"children":["sunriseLabel","sunriseTime"]}}
+{"op":"add","path":"/elements/sunriseLabel","value":{"type":"TextContent","props":{"text":"🌅 Sunrise","size":"small-heavy"}}}
+{"op":"add","path":"/elements/sunriseTime","value":{"type":"Heading","props":{"text":{"$state":"/sun/sunrise"},"level":"h3"}}}
+{"op":"add","path":"/elements/sunset","value":{"type":"Card","props":{"direction":"column","gap":"xs","align":"center"},"children":["sunsetLabel","sunsetTime"]}}
+{"op":"add","path":"/elements/sunsetLabel","value":{"type":"TextContent","props":{"text":"🌇 Sunset","size":"small-heavy"}}}
+{"op":"add","path":"/elements/sunsetTime","value":{"type":"Heading","props":{"text":{"$state":"/sun/sunset"},"level":"h3"}}}
+{"op":"add","path":"/state/sun","value":{"sunrise":"5:52 AM","sunset":"6:47 PM"}}
+{"op":"add","path":"/elements/outlookHeading","value":{"type":"Heading","props":{"text":"3-Day Outlook","level":"h4"}}}
+{"op":"add","path":"/elements/outlookList","value":{"type":"Card","props":{"direction":"row","gap":"m","justify":"between","wrap":true},"repeat":{"statePath":"/outlook","key":"id"},"children":["dayCard"]}}
+{"op":"add","path":"/elements/dayCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs","align":"center"},"children":["dayName","dayIcon","dayTemps","dayCond"]}}
+{"op":"add","path":"/elements/dayName","value":{"type":"TextContent","props":{"text":{"$item":"day"},"size":"small-heavy"}}}
+{"op":"add","path":"/elements/dayIcon","value":{"type":"Heading","props":{"text":{"$item":"icon"},"level":"h2"}}}
+{"op":"add","path":"/elements/dayTemps","value":{"type":"TextContent","props":{"text":{"$template":"${high}° / ${low}°"},"size":"default"}}}
+{"op":"add","path":"/elements/dayCond","value":{"type":"TextContent","props":{"text":{"$item":"conditions"},"size":"small"}}}
+{"op":"add","path":"/state/outlook","value":[]}
+{"op":"add","path":"/state/outlook/0","value":{"id":"1","day":"Wed","icon":"⛅","high":29,"low":20,"conditions":"Partly Cloudy"}}
+{"op":"add","path":"/state/outlook/1","value":{"id":"2","day":"Thu","icon":"🌧️","high":26,"low":19,"conditions":"Light Rain"}}
+{"op":"add","path":"/state/outlook/2","value":{"id":"3","day":"Fri","icon":"☀️","high":31,"low":21,"conditions":"Sunny"}}

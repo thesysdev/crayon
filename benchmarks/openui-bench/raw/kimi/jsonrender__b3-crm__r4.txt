@@ -1,88 +1,65 @@
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["header-card","kpi-row","mid-row","bottom-row"]}}
-{"op":"add","path":"/elements/header-card","value":{"type":"Card","props":{"variant":"card","direction":"row","justify":"between","align":"center","wrap":true},"children":["header-left","stage-tag"]}}
-{"op":"add","path":"/elements/header-left","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"center"},"children":["owner-avatar","header-text-col"]}}
-{"op":"add","path":"/elements/owner-avatar","value":{"type":"Avatar","props":{"fallback":"JR","alt":"Jordan Reyes"},"children":[]}}
-{"op":"add","path":"/elements/header-text-col","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["account-heading","owner-text"]}}
-{"op":"add","path":"/elements/account-heading","value":{"type":"Heading","props":{"text":{"$state":"/account/name"},"level":"h1"},"children":[]}}
-{"op":"add","path":"/elements/owner-text","value":{"type":"TextContent","props":{"text":{"$template":"Owner: ${/account/owner} · ${/account/ownerRole}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/stage-tag","value":{"type":"Tag","props":{"text":{"$state":"/account/dealStage"},"variant":"info","size":"lg","icon":"flag"},"children":[]}}
-{"op":"add","path":"/state/account","value":{"name":"Northwind Traders","owner":"Jordan Reyes","ownerRole":"Senior Account Executive","dealStage":"Negotiation","stageNumber":4,"stagePercent":80,"totalDealValue":"$482,500","openOpps":4,"renewalDate":"April 2, 2025","daysUntilRenewal":18}}
-{"op":"add","path":"/elements/kpi-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","wrap":true},"children":["deal-card","stage-card","renewal-card"]}}
-{"op":"add","path":"/elements/deal-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["deal-header","deal-value","deal-sub"]}}
-{"op":"add","path":"/elements/deal-header","value":{"type":"CardHeader","props":{"title":"Total deal value","subtitle":"Open pipeline on this account"},"children":[]}}
-{"op":"add","path":"/elements/deal-value","value":{"type":"TextContent","props":{"text":{"$state":"/account/totalDealValue"},"size":"large-heavy"},"children":[]}}
-{"op":"add","path":"/elements/deal-sub","value":{"type":"TextContent","props":{"text":{"$template":"Across ${openOpps} open opportunities"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/stage-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["stage-header","stage-progress"]}}
-{"op":"add","path":"/elements/stage-header","value":{"type":"CardHeader","props":{"title":"Current stage","subtitle":"Awaiting legal review of redlines"},"children":[]}}
-{"op":"add","path":"/elements/stage-progress","value":{"type":"Progress","props":{"value":{"$state":"/account/stagePercent"},"label":{"$template":"Stage ${/account/stageNumber} of 5 — ${/account/dealStage}"}},"children":[]}}
-{"op":"add","path":"/elements/renewal-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["renewal-header","renewal-date","renewal-warning"]}}
-{"op":"add","path":"/elements/renewal-header","value":{"type":"CardHeader","props":{"title":"Renewal date","subtitle":{"$template":"${/account/daysUntilRenewal} days remaining"}},"children":[]}}
-{"op":"add","path":"/elements/renewal-date","value":{"type":"TextContent","props":{"text":{"$state":"/account/renewalDate"},"size":"large-heavy"},"children":[]}}
-{"op":"add","path":"/elements/renewal-warning","value":{"type":"Callout","props":{"variant":"warning","title":"Renewal approaching","description":{"$template":"Contract renews in ${/account/daysUntilRenewal} days — start renewal outreach now."}},"visible":{"$state":"/account/daysUntilRenewal","lte":30},"children":[]}}
-{"op":"add","path":"/elements/mid-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","wrap":true,"align":"start"},"children":["activity-card","side-col"]}}
-{"op":"add","path":"/elements/activity-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["activity-header","activity-list"]}}
-{"op":"add","path":"/elements/activity-header","value":{"type":"CardHeader","props":{"title":"Recent activity","subtitle":"Most recent first"},"children":[]}}
-{"op":"add","path":"/elements/activity-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/activities","key":"id"},"children":["activity-row"]}}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"gap":"l"},"children":["header","kpis","stageCard","renewalCard","activityCard","contactsCard","followupsCard","noteCard","callCard"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":{"$template":"${/account/name}"},"subtitle":{"$template":"Owner: ${/account/owner} · ${/account/industry}"}}}}
+{"op":"add","path":"/state/account","value":{"name":"Acme Corporation","owner":"Sarah Chen","industry":"Manufacturing","totalDealValue":245000,"stage":"Negotiation","renewalDate":"2025-07-18","renewalNear":true}}
+{"op":"add","path":"/elements/kpis","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","justify":"between"},"children":["dealValue","stageBadge"]}}
+{"op":"add","path":"/elements/dealValue","value":{"type":"TextContent","props":{"text":{"$template":"**Total Deal Value:** $${/account/totalDealValue}"},"size":"large-heavy"}}}
+{"op":"add","path":"/elements/stageBadge","value":{"type":"Badge","props":{"text":{"$state":"/account/stage"},"variant":"secondary"}}}
+{"op":"add","path":"/elements/stageCard","value":{"type":"Card","props":{"variant":"sunk","gap":"s"},"children":["stageLabel","stageSteps"]}}
+{"op":"add","path":"/elements/stageLabel","value":{"type":"TextContent","props":{"text":"**Current Deal Stage**","size":"small-heavy"}}}
+{"op":"add","path":"/elements/stageSteps","value":{"type":"Steps","props":{"items":["st1","st2","st3","st4"]}}}
+{"op":"add","path":"/elements/st1","value":{"type":"StepsItem","props":{"title":"Discovery","details":"Completed Mar 4 — needs analysis done"}}}
+{"op":"add","path":"/elements/st2","value":{"type":"StepsItem","props":{"title":"Proposal","details":"Completed Apr 12 — pricing sent"}}}
+{"op":"add","path":"/elements/st3","value":{"type":"StepsItem","props":{"title":"Negotiation","details":"Current stage — legal review in progress"}}}
+{"op":"add","path":"/elements/st4","value":{"type":"StepsItem","props":{"title":"Closed Won","details":"Pending signature"}}}
+{"op":"add","path":"/elements/renewalCard","value":{"type":"Card","props":{"gap":"s"},"children":["renewalWarn","renewalInfo"]}}
+{"op":"add","path":"/elements/renewalWarn","value":{"type":"Alert","props":{"title":"Renewal approaching","description":{"$template":"Contract renews on ${/account/renewalDate} — less than 30 days away. Start renewal conversations now."},"variant":"warning"},"visible":{"$state":"/account/renewalNear"}}}
+{"op":"add","path":"/elements/renewalInfo","value":{"type":"TextContent","props":{"text":{"$template":"**Renewal date:** ${/account/renewalDate}"}}}}
+{"op":"add","path":"/elements/activityCard","value":{"type":"Card","props":{"gap":"s"},"children":["activityTitle","activityList"]}}
+{"op":"add","path":"/elements/activityTitle","value":{"type":"TextContent","props":{"text":"**Recent Activity**","size":"small-heavy"}}}
+{"op":"add","path":"/elements/activityList","value":{"type":"ListBlock","props":{"items":["actTpl"],"variant":"number"},"repeat":{"statePath":"/activities","key":"id"},"children":[]}}
+{"op":"add","path":"/elements/actTpl","value":{"type":"ListItem","props":{"title":{"$item":"title"},"subtitle":{"$item":"date"}}}}
 {"op":"add","path":"/state/activities","value":[]}
-{"op":"add","path":"/state/activities/0","value":{"id":"a1","type":"Email","text":"Sent revised pricing proposal to Dana Whitmore.","time":"Today, 9:42 AM"}}
-{"op":"add","path":"/state/activities/1","value":{"id":"a2","type":"Call","text":"Discovery call with procurement team — 32 min.","time":"Yesterday, 3:15 PM"}}
-{"op":"add","path":"/state/activities/2","value":{"id":"a3","type":"Meeting","text":"On-site demo for the operations group.","time":"Mar 4, 11:00 AM"}}
-{"op":"add","path":"/state/activities/3","value":{"id":"a4","type":"Email","text":"Follow-up on security questionnaire responses.","time":"Mar 2, 4:47 PM"}}
-{"op":"add","path":"/elements/activity-row","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["activity-top","activity-text"]}}
-{"op":"add","path":"/elements/activity-top","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center"},"children":["activity-type-tag","activity-time"]}}
-{"op":"add","path":"/elements/activity-type-tag","value":{"type":"Tag","props":{"text":{"$item":"type"},"variant":"info","size":"sm"},"children":[]}}
-{"op":"add","path":"/elements/activity-time","value":{"type":"TextContent","props":{"text":{"$item":"time"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/activity-text","value":{"type":"TextContent","props":{"text":{"$item":"text"}},"children":[]}}
-{"op":"add","path":"/elements/side-col","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"children":["logcall-card","followups-card"]}}
-{"op":"add","path":"/elements/logcall-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["logcall-header","logcall-form"]}}
-{"op":"add","path":"/elements/logcall-header","value":{"type":"CardHeader","props":{"title":"Log a call","subtitle":"Adds to recent activity"},"children":[]}}
-{"op":"add","path":"/elements/logcall-form","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"children":["call-outcome-select","call-summary-input","log-call-btn"]}}
-{"op":"add","path":"/elements/call-outcome-select","value":{"type":"Select","props":{"name":"outcome","placeholder":"Outcome","value":{"$bindState":"/callOutcome"},"items":["sel-connected","sel-voicemail","sel-noshow"]},"children":[]}}
-{"op":"add","path":"/elements/sel-connected","value":{"type":"SelectItem","props":{"value":"Connected","label":"Connected"},"children":[]}}
-{"op":"add","path":"/elements/sel-voicemail","value":{"type":"SelectItem","props":{"value":"Voicemail","label":"Left voicemail"},"children":[]}}
-{"op":"add","path":"/elements/sel-noshow","value":{"type":"SelectItem","props":{"value":"NoShow","label":"No answer"},"children":[]}}
-{"op":"add","path":"/state/callOutcome","value":""}
-{"op":"add","path":"/elements/call-summary-input","value":{"type":"Input","props":{"name":"callSummary","placeholder":"Call summary…","value":{"$bindState":"/callSummary"}},"children":[]}}
-{"op":"add","path":"/state/callSummary","value":""}
-{"op":"add","path":"/elements/log-call-btn","value":{"type":"Button","props":{"label":"Log call","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/activities","value":{"id":"$id","type":"Call","text":{"$state":"/callSummary"},"time":"Just now"},"clearStatePath":"/callSummary"}}},"children":[]}}
-{"op":"add","path":"/elements/followups-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["followups-header","followup-list"]}}
-{"op":"add","path":"/elements/followups-header","value":{"type":"CardHeader","props":{"title":"Open follow-ups","subtitle":"Tap Done to clear a task"},"children":[]}}
-{"op":"add","path":"/elements/followup-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/followUps","key":"id"},"children":["followup-row"]}}
-{"op":"add","path":"/state/followUps","value":[]}
-{"op":"add","path":"/state/followUps/0","value":{"id":"f1","task":"Send updated MSA to legal","due":"Mar 14"}}
-{"op":"add","path":"/state/followUps/1","value":{"id":"f2","task":"Schedule renewal kickoff call","due":"Mar 17"}}
-{"op":"add","path":"/state/followUps/2","value":{"id":"f3","task":"Confirm Q2 rollout dates with ops","due":"Mar 21"}}
-{"op":"add","path":"/elements/followup-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["followup-text-col","followup-done"]}}
-{"op":"add","path":"/elements/followup-text-col","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["followup-task","followup-due"]}}
-{"op":"add","path":"/elements/followup-task","value":{"type":"TextContent","props":{"text":{"$item":"task"}},"children":[]}}
-{"op":"add","path":"/elements/followup-due","value":{"type":"TextContent","props":{"text":{"$template":"Due: ${due}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/followup-done","value":{"type":"Button","props":{"label":"Done","variant":"tertiary","size":"small"},"on":{"press":{"action":"removeState","params":{"statePath":"/followUps","index":{"$index":true}}}},"children":[]}}
-{"op":"add","path":"/elements/bottom-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","wrap":true,"align":"start"},"children":["contacts-card","notes-card"]}}
-{"op":"add","path":"/elements/contacts-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["contacts-header","contact-list"]}}
-{"op":"add","path":"/elements/contacts-header","value":{"type":"CardHeader","props":{"title":"Contacts","subtitle":"Key people and their roles"},"children":[]}}
-{"op":"add","path":"/elements/contact-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/contacts","key":"id"},"children":["contact-row"]}}
-{"op":"add","path":"/state/contacts","value":[]}
-{"op":"add","path":"/state/contacts/0","value":{"id":"c1","name":"Dana Whitmore","role":"Decision Maker","initials":"DW","email":"dana.w@northwind.com"}}
-{"op":"add","path":"/state/contacts/1","value":{"id":"c2","name":"Marcus Lee","role":"Champion","initials":"ML","email":"marcus.l@northwind.com"}}
-{"op":"add","path":"/state/contacts/2","value":{"id":"c3","name":"Priya Nair","role":"Procurement","initials":"PN","email":"priya.n@northwind.com"}}
-{"op":"add","path":"/elements/contact-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","align":"center","justify":"between","gap":"m"},"children":["contact-left","contact-role-tag"]}}
-{"op":"add","path":"/elements/contact-left","value":{"type":"Card","props":{"variant":"clear","direction":"row","align":"center","gap":"m"},"children":["contact-avatar","contact-info"]}}
-{"op":"add","path":"/elements/contact-avatar","value":{"type":"Avatar","props":{"fallback":{"$item":"initials"},"alt":{"$item":"name"}},"children":[]}}
-{"op":"add","path":"/elements/contact-info","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["contact-name","contact-email"]}}
-{"op":"add","path":"/elements/contact-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/contact-email","value":{"type":"TextContent","props":{"text":{"$item":"email"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/contact-role-tag","value":{"type":"Tag","props":{"text":{"$item":"role"},"variant":"neutral","size":"sm"},"children":[]}}
-{"op":"add","path":"/elements/notes-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["notes-header","note-list","note-input-row"]}}
-{"op":"add","path":"/elements/notes-header","value":{"type":"CardHeader","props":{"title":"Notes","subtitle":"Jot something down for next time"},"children":[]}}
-{"op":"add","path":"/elements/note-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/notes","key":"id"},"children":["note-row"]}}
-{"op":"add","path":"/state/notes","value":[]}
-{"op":"add","path":"/state/notes/0","value":{"id":"n1","text":"Dana prefers email over phone before 10 AM.","time":"Mar 3"}}
-{"op":"add","path":"/state/notes/1","value":{"id":"n2","text":"Budget cycle closes Mar 31 — proposal must land before then.","time":"Mar 5"}}
-{"op":"add","path":"/elements/note-row","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["note-text","note-time"]}}
-{"op":"add","path":"/elements/note-text","value":{"type":"TextContent","props":{"text":{"$item":"text"}},"children":[]}}
-{"op":"add","path":"/elements/note-time","value":{"type":"TextContent","props":{"text":{"$item":"time"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/note-input-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center"},"children":["note-input","note-add-btn"]}}
-{"op":"add","path":"/elements/note-input","value":{"type":"Input","props":{"name":"note","placeholder":"Jot a note…","value":{"$bindState":"/newNote"}},"children":[]}}
+{"op":"add","path":"/state/activities/0","value":{"id":"a1","title":"Pricing call with procurement team","date":"Jun 20, 2025"}}
+{"op":"add","path":"/state/activities/1","value":{"id":"a2","title":"Sent revised contract to legal","date":"Jun 17, 2025"}}
+{"op":"add","path":"/state/activities/2","value":{"id":"a3","title":"Demo for operations stakeholders","date":"Jun 10, 2025"}}
+{"op":"add","path":"/state/activities/3","value":{"id":"a4","title":"Initial discovery meeting","date":"May 28, 2025"}}
+{"op":"add","path":"/elements/contactsCard","value":{"type":"Card","props":{"gap":"s"},"children":["contactsTitle","contactsTable"]}}
+{"op":"add","path":"/elements/contactsTitle","value":{"type":"TextContent","props":{"text":"**Contacts**","size":"small-heavy"}}}
+{"op":"add","path":"/elements/contactsTable","value":{"type":"Table","props":{"columns":["cName","cRole","cEmail"]}}}
+{"op":"add","path":"/elements/cName","value":{"type":"Col","props":{"label":"Name","data":["Michael Torres","Priya Nair","David Kim"]}}}
+{"op":"add","path":"/elements/cRole","value":{"type":"Col","props":{"label":"Role","data":["VP of Operations (Decision Maker)","Procurement Lead (Champion)","IT Director (Technical Buyer)"]}}}
+{"op":"add","path":"/elements/cEmail","value":{"type":"Col","props":{"label":"Email","data":["m.torres@acme.com","p.nair@acme.com","d.kim@acme.com"]}}}
+{"op":"add","path":"/elements/followupsCard","value":{"type":"Card","props":{"gap":"s"},"children":["followupsTitle","followupsList"]}}
+{"op":"add","path":"/elements/followupsTitle","value":{"type":"TextContent","props":{"text":"**Open Follow-ups**","size":"small-heavy"}}}
+{"op":"add","path":"/elements/followupsList","value":{"type":"Card","props":{"variant":"clear","gap":"s"},"repeat":{"statePath":"/followups","key":"id"},"children":["fuRow"]}}
+{"op":"add","path":"/elements/fuRow","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["fuText","fuDone"]}}
+{"op":"add","path":"/elements/fuText","value":{"type":"TextContent","props":{"text":{"$template":"${task} — due ${due}"}}}}
+{"op":"add","path":"/elements/fuDone","value":{"type":"Button","props":{"label":"Done","variant":"tertiary","size":"small"},"on":{"press":{"action":"removeState","params":{"statePath":"/followups","index":{"$index":true}}}}}}
+{"op":"add","path":"/state/followups","value":[]}
+{"op":"add","path":"/state/followups/0","value":{"id":"f1","task":"Send updated security questionnaire","due":"Jun 24, 2025"}}
+{"op":"add","path":"/state/followups/1","value":{"id":"f2","task":"Schedule exec sponsor intro call","due":"Jun 27, 2025"}}
+{"op":"add","path":"/state/followups/2","value":{"id":"f3","task":"Confirm renewal pricing terms","due":"Jul 1, 2025"}}
+{"op":"add","path":"/elements/noteCard","value":{"type":"Card","props":{"gap":"s"},"children":["noteTitle","noteInput","noteBtn","notesList"]}}
+{"op":"add","path":"/elements/noteTitle","value":{"type":"TextContent","props":{"text":"**Jot a Note**","size":"small-heavy"}}}
+{"op":"add","path":"/elements/noteInput","value":{"type":"TextArea","props":{"name":"note","placeholder":"Write a quick note about this account...","rows":3,"value":{"$bindState":"/newNote"}}}}
 {"op":"add","path":"/state/newNote","value":""}
-{"op":"add","path":"/elements/note-add-btn","value":{"type":"Button","props":{"label":"Add note","variant":"secondary"},"on":{"press":{"action":"pushState","params":{"statePath":"/notes","value":{"id":"$id","text":{"$state":"/newNote"},"time":"Just now"},"clearStatePath":"/newNote"}}},"children":[]}}
+{"op":"add","path":"/elements/noteBtn","value":{"type":"Button","props":{"label":"Save note","variant":"primary","size":"small"},"on":{"press":{"action":"pushState","params":{"statePath":"/notes","value":{"id":"$id","text":{"$state":"/newNote"}},"clearStatePath":"/newNote"}}}}}
+{"op":"add","path":"/elements/notesList","value":{"type":"Card","props":{"variant":"clear","gap":"xs"},"repeat":{"statePath":"/notes","key":"id"},"children":["noteItem"]}}
+{"op":"add","path":"/elements/noteItem","value":{"type":"TextContent","props":{"text":{"$template":"📝 ${text}"},"size":"small"}}}
+{"op":"add","path":"/state/notes","value":[]}
+{"op":"add","path":"/state/notes/0","value":{"id":"n1","text":"Priya mentioned budget approval expected by end of month."}}
+{"op":"add","path":"/elements/callCard","value":{"type":"Card","props":{"gap":"s"},"children":["callTitle","callSummary","callOutcome","callBtn","callLog"]}}
+{"op":"add","path":"/elements/callTitle","value":{"type":"TextContent","props":{"text":"**Log a Call**","size":"small-heavy"}}}
+{"op":"add","path":"/elements/callSummary","value":{"type":"Input","props":{"name":"callSummary","placeholder":"Call summary (e.g. discussed pricing with Michael)","value":{"$bindState":"/callSummary"}}}}
+{"op":"add","path":"/state/callSummary","value":""}
+{"op":"add","path":"/elements/callOutcome","value":{"type":"Select","props":{"name":"callOutcome","items":["co1","co2","co3"],"placeholder":"Outcome","value":{"$bindState":"/callOutcome"}}}}
+{"op":"add","path":"/state/callOutcome","value":""}
+{"op":"add","path":"/elements/co1","value":{"type":"SelectItem","props":{"value":"connected","label":"Connected"}}}
+{"op":"add","path":"/elements/co2","value":{"type":"SelectItem","props":{"value":"voicemail","label":"Left voicemail"}}}
+{"op":"add","path":"/elements/co3","value":{"type":"SelectItem","props":{"value":"no-answer","label":"No answer"}}}
+{"op":"add","path":"/elements/callBtn","value":{"type":"Button","props":{"label":"Log call","variant":"primary","size":"small"},"on":{"press":{"action":"pushState","params":{"statePath":"/callLog","value":{"id":"$id","summary":{"$state":"/callSummary"},"outcome":{"$state":"/callOutcome"}},"clearStatePath":"/callSummary"}}}}}
+{"op":"add","path":"/elements/callLog","value":{"type":"Card","props":{"variant":"clear","gap":"xs"},"repeat":{"statePath":"/callLog","key":"id"},"children":["callItem"]}}
+{"op":"add","path":"/elements/callItem","value":{"type":"TextContent","props":{"text":{"$template":"📞 ${summary} (${outcome})"},"size":"small"}}}
+{"op":"add","path":"/state/callLog","value":[]}
+{"op":"add","path":"/state/callLog/0","value":{"id":"c1","summary":"Discussed contract redlines with David Kim","outcome":"connected"}}

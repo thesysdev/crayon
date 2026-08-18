@@ -1,50 +1,63 @@
-{"op":"add","path":"/root","value":"screen"}
-{"op":"add","path":"/elements/screen","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["header","stats","comparison","chart-card"]}}
-{"op":"add","path":"/elements/header","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center","wrap":true},"children":["header-copy","asof-tag"]}}
-{"op":"add","path":"/elements/header-copy","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["heading","subheading"]}}
-{"op":"add","path":"/elements/heading","value":{"type":"Heading","props":{"text":"Shop revenue check-in","level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/subheading","value":{"type":"TextContent","props":{"text":"Mid-morning snapshot: revenue so far today and how it compares with the same time yesterday.","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/asof-tag","value":{"type":"Tag","props":{"text":{"$template":"As of ${/metrics/asOf}"},"icon":"schedule","size":"md","variant":"info"},"children":[]}}
-{"op":"add","path":"/state/metrics","value":{}}
-{"op":"add","path":"/state/metrics/asOf","value":"10:40 AM"}
-{"op":"add","path":"/elements/stats","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","wrap":true},"children":["stat-today","stat-yesterday","stat-delta"]}}
-{"op":"add","path":"/elements/stat-today","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["stat-today-label","stat-today-value","stat-today-note"]}}
-{"op":"add","path":"/elements/stat-today-label","value":{"type":"Label","props":{"text":"1) Revenue so far today"},"children":[]}}
-{"op":"add","path":"/elements/stat-today-value","value":{"type":"TextContent","props":{"text":{"$state":"/metrics/todayRevenue"},"size":"large-heavy"},"children":[]}}
-{"op":"add","path":"/elements/stat-today-note","value":{"type":"TextContent","props":{"text":{"$template":"Pace: ${/metrics/paceLabel}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/state/metrics/todayRevenue","value":"$1,284"}
-{"op":"add","path":"/state/metrics/paceLabel","value":"On track"}
-{"op":"add","path":"/elements/stat-yesterday","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["stat-yesterday-label","stat-yesterday-value","stat-yesterday-note"]}}
-{"op":"add","path":"/elements/stat-yesterday-label","value":{"type":"Label","props":{"text":"2) Same time yesterday"},"children":[]}}
-{"op":"add","path":"/elements/stat-yesterday-value","value":{"type":"TextContent","props":{"text":{"$state":"/metrics/yesterdayRevenue"},"size":"large"},"children":[]}}
-{"op":"add","path":"/elements/stat-yesterday-note","value":{"type":"TextContent","props":{"text":{"$template":"Difference: ${/metrics/deltaAmount}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/state/metrics/yesterdayRevenue","value":"$1,102"}
-{"op":"add","path":"/state/metrics/deltaAmount","value":"+$182"}
-{"op":"add","path":"/elements/stat-delta","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["stat-delta-label","stat-delta-value","stat-delta-note"]}}
-{"op":"add","path":"/elements/stat-delta-label","value":{"type":"Label","props":{"text":"Comparison"},"children":[]}}
-{"op":"add","path":"/elements/stat-delta-value","value":{"type":"TextContent","props":{"text":{"$state":"/metrics/deltaPct"},"size":"large-heavy"},"children":[]}}
-{"op":"add","path":"/elements/stat-delta-note","value":{"type":"TextContent","props":{"text":"Positive means ahead of yesterday.","size":"small"},"children":[]}}
-{"op":"add","path":"/state/metrics/deltaPct","value":"+16.5%"}
-{"op":"add","path":"/elements/comparison","value":{"type":"TextCallout","props":{"variant":"success","title":"Ahead of yesterday at the same time","description":{"$template":"Today is up ${/metrics/deltaPct} (${/metrics/deltaAmount}) versus ${/metrics/yesterdayRevenue} at this point yesterday."}},"children":[]}}
-{"op":"add","path":"/elements/chart-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["chart-heading","revenue-chart","chart-note"]}}
-{"op":"add","path":"/elements/chart-heading","value":{"type":"Heading","props":{"text":"Cumulative revenue by hour","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/revenue-chart","value":{"type":"AreaChart","props":{"labels":{"$state":"/chart/hours"},"series":["ser-today","ser-yesterday"],"variant":"natural","xLabel":"Hour","yLabel":"Revenue"},"children":[]}}
-{"op":"add","path":"/elements/ser-today","value":{"type":"Series","props":{"category":"Today","values":{"$state":"/chart/today"}},"children":[]}}
-{"op":"add","path":"/elements/ser-yesterday","value":{"type":"Series","props":{"category":"Yesterday","values":{"$state":"/chart/yesterday"}},"children":[]}}
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","revenueCard","paceCallout","compareCard","chartCard","dayProgress"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Riverside Market — Mid-Morning Check-In","subtitle":"Thursday · Figures as of 10:45 AM"}}}
+{"op":"add","path":"/elements/revenueCard","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["revenueLeft","trendTag"]}}
+{"op":"add","path":"/elements/revenueLeft","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["revenueLabel","revenueValue"]}}
+{"op":"add","path":"/elements/revenueLabel","value":{"type":"TextContent","props":{"text":"Revenue so far today","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/revenueValue","value":{"type":"TextContent","props":{"text":{"$state":"/today/revenueDisplay"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/state/today","value":{}}
+{"op":"add","path":"/state/today/revenueDisplay","value":"$1,284.50"}
+{"op":"add","path":"/elements/trendTag","value":{"type":"Tag","props":{"text":{"$state":"/comparison/tagText"},"icon":"trending-up","variant":"success","size":"lg"},"children":[]}}
+{"op":"add","path":"/state/comparison","value":{}}
+{"op":"add","path":"/state/comparison/tagText","value":"+12.5% vs yesterday"}
+{"op":"add","path":"/elements/paceCallout","value":{"type":"Callout","props":{"variant":"success","title":"Ahead of yesterday's pace","description":{"$template":"By 10:45 AM yesterday you'd taken ${/yesterday/revenueDisplay}. Right now you're ${/comparison/changeAbs} ahead."}},"children":[]}}
+{"op":"add","path":"/state/yesterday","value":{}}
+{"op":"add","path":"/state/yesterday/revenueDisplay","value":"$1,142.20"}
+{"op":"add","path":"/state/comparison/changeAbs","value":"+$142.30"}
+{"op":"add","path":"/elements/compareCard","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["compareHeader","compareTable"]}}
+{"op":"add","path":"/elements/compareHeader","value":{"type":"CardHeader","props":{"title":"Today vs. yesterday — same time","subtitle":"Both columns as of 10:45 AM"}}}
+{"op":"add","path":"/elements/compareTable","value":{"type":"Table","props":{"columns":["colMetric","colToday","colYesterday","colChange"]}}}
+{"op":"add","path":"/elements/colMetric","value":{"type":"Col","props":{"label":"Metric","data":{"$state":"/table/metric"}},"children":[]}}
+{"op":"add","path":"/elements/colToday","value":{"type":"Col","props":{"label":"Today","data":{"$state":"/table/today"}},"children":[]}}
+{"op":"add","path":"/elements/colYesterday","value":{"type":"Col","props":{"label":"Yesterday","data":{"$state":"/table/yesterday"}},"children":[]}}
+{"op":"add","path":"/elements/colChange","value":{"type":"Col","props":{"label":"Change","data":{"$state":"/table/change"}},"children":[]}}
+{"op":"add","path":"/state/table","value":{}}
+{"op":"add","path":"/state/table/metric","value":[]}
+{"op":"add","path":"/state/table/metric/0","value":"Revenue so far"}
+{"op":"add","path":"/state/table/metric/1","value":"Transactions"}
+{"op":"add","path":"/state/table/metric/2","value":"Average sale"}
+{"op":"add","path":"/state/table/today","value":[]}
+{"op":"add","path":"/state/table/today/0","value":"$1,284.50"}
+{"op":"add","path":"/state/table/today/1","value":"96"}
+{"op":"add","path":"/state/table/today/2","value":"$13.38"}
+{"op":"add","path":"/state/table/yesterday","value":[]}
+{"op":"add","path":"/state/table/yesterday/0","value":"$1,142.20"}
+{"op":"add","path":"/state/table/yesterday/1","value":"89"}
+{"op":"add","path":"/state/table/yesterday/2","value":"$12.83"}
+{"op":"add","path":"/state/table/change","value":[]}
+{"op":"add","path":"/state/table/change/0","value":"+$142.30 (+12.5%)"}
+{"op":"add","path":"/state/table/change/1","value":"+7 (+7.9%)"}
+{"op":"add","path":"/state/table/change/2","value":"+$0.55 (+4.3%)"}
+{"op":"add","path":"/elements/chartCard","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["chartHeader","chart"]}}
+{"op":"add","path":"/elements/chartHeader","value":{"type":"CardHeader","props":{"title":"Hourly revenue","subtitle":"Today vs. yesterday, since 8:00 AM open"}}}
+{"op":"add","path":"/elements/chart","value":{"type":"LineChart","props":{"labels":{"$state":"/chart/labels"},"series":["todaySeries","yesterdaySeries"],"variant":"natural","xLabel":"Hour","yLabel":"Revenue ($)"}}}
+{"op":"add","path":"/elements/todaySeries","value":{"type":"Series","props":{"category":"Today","values":{"$state":"/chart/todayValues"}},"children":[]}}
+{"op":"add","path":"/elements/yesterdaySeries","value":{"type":"Series","props":{"category":"Yesterday","values":{"$state":"/chart/yesterdayValues"}},"children":[]}}
 {"op":"add","path":"/state/chart","value":{}}
-{"op":"add","path":"/state/chart/hours","value":[]}
-{"op":"add","path":"/state/chart/hours/0","value":"8 AM"}
-{"op":"add","path":"/state/chart/hours/1","value":"9 AM"}
-{"op":"add","path":"/state/chart/hours/2","value":"10 AM"}
-{"op":"add","path":"/state/chart/hours/3","value":"10:40 AM"}
-{"op":"add","path":"/state/chart/today","value":[]}
-{"op":"add","path":"/state/chart/today/0","value":420}
-{"op":"add","path":"/state/chart/today/1","value":815}
-{"op":"add","path":"/state/chart/today/2","value":1120}
-{"op":"add","path":"/state/chart/today/3","value":1284}
-{"op":"add","path":"/state/chart/yesterday","value":[]}
-{"op":"add","path":"/state/chart/yesterday/0","value":365}
-{"op":"add","path":"/state/chart/yesterday/1","value":742}
-{"op":"add","path":"/state/chart/yesterday/2","value":990}
-{"op":"add","path":"/state/chart/yesterday/3","value":1102}
-{"op":"add","path":"/elements/chart-note","value":{"type":"TextContent","props":{"text":"Same-time comparison: today versus yesterday through 10:40 AM.","size":"small"},"children":[]}}
+{"op":"add","path":"/state/chart/labels","value":[]}
+{"op":"add","path":"/state/chart/labels/0","value":"8 AM"}
+{"op":"add","path":"/state/chart/labels/1","value":"9 AM"}
+{"op":"add","path":"/state/chart/labels/2","value":"10 AM"}
+{"op":"add","path":"/state/chart/todayValues","value":[]}
+{"op":"add","path":"/state/chart/todayValues/0","value":318}
+{"op":"add","path":"/state/chart/todayValues/1","value":452}
+{"op":"add","path":"/state/chart/todayValues/2","value":514.5}
+{"op":"add","path":"/state/chart/yesterdayValues","value":[]}
+{"op":"add","path":"/state/chart/yesterdayValues/0","value":286}
+{"op":"add","path":"/state/chart/yesterdayValues/1","value":401}
+{"op":"add","path":"/state/chart/yesterdayValues/2","value":455.2}
+{"op":"add","path":"/elements/dayProgress","value":{"type":"Progress","props":{"value":{"$state":"/progress/pctOfYesterday"},"label":{"$template":"That's ${/progress/pctDisplay} of yesterday's full-day total (${/progress/yesterdayFullDay})"}},"children":[]}}
+{"op":"add","path":"/state/progress","value":{}}
+{"op":"add","path":"/state/progress/pctOfYesterday","value":27}
+{"op":"add","path":"/state/progress/pctDisplay","value":"27%"}
+{"op":"add","path":"/state/progress/yesterdayFullDay","value":"$4,820.00"}

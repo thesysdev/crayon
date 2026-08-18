@@ -1,148 +1,172 @@
-Here is a mid-morning dashboard designed for a shop owner to quickly review today's revenue and performance compared to yesterday.
+Here is a real-time summary card for your shop's mid-morning performance, showing today's revenue alongside yesterday's mid-morning figures.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "shop-owner-morning-checkin",
-      "catalogId": "thesys.dev:c1-openui",
-      "theme": {
-        "primaryColor": "#10B981",
-        "agentDisplayName": "Retail Analytics"
-      }
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "shop-owner-morning-checkin",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "l",
-          "children": [
-            "header",
-            "kpi-card",
-            "chart-card",
-            "followup-section"
-          ]
-        },
-        {
-          "id": "header",
-          "component": "CardHeader",
-          "title": "Mid-Morning Store Overview",
-          "subtitle": "Today, Oct 24 • As of 10:30 AM"
-        },
-        {
-          "id": "kpi-card",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "kpi-title",
-            "revenue-display",
-            "comparison-tag",
-            "kpi-summary"
-          ]
-        },
-        {
-          "id": "kpi-title",
-          "component": "Heading",
-          "level": "h4",
-          "text": "Revenue So Far Today"
-        },
-        {
-          "id": "revenue-display",
-          "component": "Heading",
-          "level": "h1",
-          "text": "$1,480.50"
-        },
-        {
-          "id": "comparison-tag",
-          "component": "Tag",
-          "text": "+18.5% vs Yesterday at 10:30 AM ($1,250.00)",
-          "variant": "success",
-          "size": "lg",
-          "icon": "trending-up"
-        },
-        {
-          "id": "kpi-summary",
-          "component": "TextContent",
-          "size": "small",
-          "text": "You are currently **$230.50 ahead** of yesterday's pace, driven by higher early morning foot traffic and coffee/pastry combo orders."
-        },
-        {
-          "id": "chart-card",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "column",
-          "gap": "s",
-          "children": [
-            "chart-title",
-            "line-chart"
-          ]
-        },
-        {
-          "id": "chart-title",
-          "component": "Heading",
-          "level": "h3",
-          "text": "Hourly Revenue Pace Comparison"
-        },
-        {
-          "id": "line-chart",
-          "component": "LineChart",
-          "labels": ["6:00 AM", "7:00 AM", "8:00 AM", "9:00 AM", "10:00 AM", "10:30 AM"],
-          "series": [
-            "series-today",
-            "series-yesterday"
-          ],
-          "variant": "natural",
-          "xLabel": "Time of Day",
-          "yLabel": "Cumulative Revenue ($)"
-        },
-        {
-          "id": "series-today",
-          "component": "Series",
-          "category": "Today",
-          "values": [120, 350, 720, 1100, 1380, 1480]
-        },
-        {
-          "id": "series-yesterday",
-          "component": "Series",
-          "category": "Yesterday",
-          "values": [90, 280, 580, 910, 1180, 1250]
-        },
-        {
-          "id": "followup-section",
-          "component": "FollowUpBlock",
-          "items": [
-            "followup-1",
-            "followup-2",
-            "followup-3"
-          ]
-        },
-        {
-          "id": "followup-1",
-          "component": "FollowUpItem",
-          "text": "View top selling items today"
-        },
-        {
-          "id": "followup-2",
-          "component": "FollowUpItem",
-          "text": "Compare transaction count vs yesterday"
-        },
-        {
-          "id": "followup-3",
-          "component": "FollowUpItem",
-          "text": "Check current inventory levels"
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "comparisonBadge",
+          "sep1",
+          "revTable",
+          "revChart",
+          "sep2",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Mid-Morning Revenue Summary",
+        "subtitle": "Today vs. Yesterday (as of 10:30 AM)"
+      },
+      {
+        "id": "comparisonBadge",
+        "component": "Badge",
+        "text": "+16.3% vs. Same Time Yesterday",
+        "variant": "default"
+      },
+      {
+        "id": "sep1",
+        "component": "Separator",
+        "decorative": true,
+        "orientation": "horizontal"
+      },
+      {
+        "id": "revTable",
+        "component": "Table",
+        "columns": [
+          "colTimeframe",
+          "colRevenue",
+          "colOrders",
+          "colAvgTicket"
+        ]
+      },
+      {
+        "id": "colTimeframe",
+        "component": "Col",
+        "data": [
+          "Today (by 10:30 AM)",
+          "Yesterday (by 10:30 AM)",
+          "Yesterday (Full Day)"
+        ],
+        "label": "Timeframe"
+      },
+      {
+        "id": "colRevenue",
+        "component": "Col",
+        "data": [
+          "$1,480.50",
+          "$1,272.80",
+          "$3,450.00"
+        ],
+        "label": "Revenue"
+      },
+      {
+        "id": "colOrders",
+        "component": "Col",
+        "data": [
+          "42",
+          "38",
+          "112"
+        ],
+        "label": "Orders"
+      },
+      {
+        "id": "colAvgTicket",
+        "component": "Col",
+        "data": [
+          "$35.25",
+          "$33.50",
+          "$30.80"
+        ],
+        "label": "Avg Order"
+      },
+      {
+        "id": "revChart",
+        "component": "BarChart",
+        "labels": [
+          "6:00 AM",
+          "7:00 AM",
+          "8:00 AM",
+          "9:00 AM",
+          "10:00 AM"
+        ],
+        "series": [
+          "todaySeries",
+          "yesterdaySeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Hour",
+        "yLabel": "Revenue ($)"
+      },
+      {
+        "id": "todaySeries",
+        "component": "Series",
+        "category": "Today",
+        "values": [
+          120,
+          210,
+          340,
+          430,
+          380.5
+        ]
+      },
+      {
+        "id": "yesterdaySeries",
+        "component": "Series",
+        "category": "Yesterday",
+        "values": [
+          95,
+          180,
+          310,
+          380,
+          307.8
+        ]
+      },
+      {
+        "id": "sep2",
+        "component": "Separator",
+        "decorative": true,
+        "orientation": "horizontal"
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": [
+          "refreshBtn",
+          "detailsBtn"
+        ],
+        "direction": "row"
+      },
+      {
+        "id": "refreshBtn",
+        "component": "Button",
+        "label": "Refresh Live Data",
+        "variant": "primary"
+      },
+      {
+        "id": "detailsBtn",
+        "component": "Button",
+        "label": "View Item Breakdown",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
 </a2ui-json>

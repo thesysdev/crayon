@@ -1,29 +1,27 @@
-{"op":"add","path":"/root","value":"container"}
-{"op":"add","path":"/elements/container","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header-card","next-lesson-card","progress-card","modules-heading","modules-list","rating-card"]}}
-{"op":"add","path":"/elements/header-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["course-badge","header-text"]}}
-{"op":"add","path":"/elements/course-badge","value":{"type":"Tag","props":{"text":"In Progress","variant":"info","size":"md"},"children":[]}}
-{"op":"add","path":"/elements/header-text","value":{"type":"CardHeader","props":{"title":{"$state":"/course/title"},"subtitle":{"$template":"Instructor: ${/course/instructor}"}},"children":[]}}
-{"op":"add","path":"/state/course","value":{"title":"Advanced React & UI Architecture","instructor":"Sarah Drasner"}}
-{"op":"add","path":"/elements/next-lesson-card","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"m"},"children":["next-lesson-header","next-lesson-info","continue-btn"]}}
-{"op":"add","path":"/elements/next-lesson-header","value":{"type":"TextContent","props":{"text":"**Up Next**","size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/next-lesson-info","value":{"type":"CardHeader","props":{"title":{"$state":"/nextLesson/title"},"subtitle":{"$template":"Module ${/nextLesson/moduleNum}: ${/nextLesson/moduleTitle} • ${/nextLesson/duration}"}},"children":[]}}
-{"op":"add","path":"/elements/continue-btn","value":{"type":"Button","props":{"label":"Continue Learning","variant":"primary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/learningStarted","value":true}}},"children":[]}}
-{"op":"add","path":"/state/nextLesson","value":{"title":"Building State-Driven UI Engines","moduleNum":3,"moduleTitle":"State & Dynamic Graphs","duration":"18 mins left"}}
-{"op":"add","path":"/elements/progress-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["progress-header","overall-progress-bar"]}}
-{"op":"add","path":"/elements/progress-header","value":{"type":"TextContent","props":{"text":"**Overall Course Progress**","size":"default"},"children":[]}}
-{"op":"add","path":"/elements/overall-progress-bar","value":{"type":"Progress","props":{"value":{"$state":"/course/progress"},"label":{"$template":"${/course/progress}% Complete"}},"children":[]}}
-{"op":"add","path":"/state/course/progress","value":68}
-{"op":"add","path":"/elements/modules-heading","value":{"type":"Heading","props":{"text":"Course Modules","level":"h3"},"children":[]}}
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"gap":"l"},"children":["course-header","next-lesson-card","progress-card","modules-card","rating-card"]}}
+{"op":"add","path":"/elements/course-header","value":{"type":"Card","props":{"variant":"sunk","gap":"s"},"children":["header-info","tags-row"]}}
+{"op":"add","path":"/elements/header-info","value":{"type":"CardHeader","props":{"title":"Advanced React Patterns & Architecture","subtitle":"Instructor: Dr. Sarah Chen • Senior Staff Engineer"}}}
+{"op":"add","path":"/elements/tags-row","value":{"type":"TagBlock","props":{"tags":["Intermediate","Web Development","React 19","12 Hours Total"]}}}
+{"op":"add","path":"/elements/next-lesson-card","value":{"type":"Card","props":{"variant":"card","gap":"m"},"children":["next-lesson-header","next-lesson-details","continue-button"]}}
+{"op":"add","path":"/elements/next-lesson-header","value":{"type":"CardHeader","props":{"title":"Up Next: Lesson 3.2","subtitle":"Module 3 • State Management at Scale"}}}
+{"op":"add","path":"/elements/next-lesson-details","value":{"type":"TextContent","props":{"text":"**Custom Hooks for Compound Components**\n\nLearn how to encapsulate complex component logic into clean, reusable custom hooks while maintaining dynamic dynamic context sharing across deeply nested subcomponents. (18 mins remaining)","size":"default"}}}
+{"op":"add","path":"/elements/continue-button","value":{"type":"Button","props":{"label":"Continue Learning (Lesson 3.2)","variant":"primary","size":"large"}}}
+{"op":"add","path":"/elements/progress-card","value":{"type":"Card","props":{"variant":"card","gap":"s"},"children":["progress-header","overall-progress"]}}
+{"op":"add","path":"/elements/progress-header","value":{"type":"CardHeader","props":{"title":"Overall Progress","subtitle":"64% Complete (16 of 25 Lessons Completed)"}}}
+{"op":"add","path":"/elements/overall-progress","value":{"type":"Progress","props":{"value":64,"label":"64% Overall Completion"}}}
+{"op":"add","path":"/elements/modules-card","value":{"type":"Card","props":{"variant":"card","gap":"m"},"children":["modules-header","modules-list"]}}
+{"op":"add","path":"/elements/modules-header","value":{"type":"CardHeader","props":{"title":"Course Modules","subtitle":"Track your journey across all 5 core learning units"}}}
 {"op":"add","path":"/elements/modules-list","value":{"type":"Card","props":{"direction":"column","gap":"s"},"repeat":{"statePath":"/modules","key":"id"},"children":["module-item"]}}
 {"op":"add","path":"/elements/module-item","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["module-info","module-badge"]}}
-{"op":"add","path":"/elements/module-info","value":{"type":"CardHeader","props":{"title":{"$template":"Module ${id}: ${title}"},"subtitle":{"$template":"${lessonsCount} lessons • ${duration}"}},"children":[]}}
-{"op":"add","path":"/elements/module-badge","value":{"type":"Tag","props":{"text":{"$item":"status"},"variant":{"$cond":{"$state":"/$item/status","eq":"Completed"},"$then":"success","$else":{"$cond":{"$state":"/$item/status","eq":"In Progress"},"$then":"info","$else":"neutral"}},"size":"sm"},"children":[]}}
+{"op":"add","path":"/elements/module-info","value":{"type":"TextContent","props":{"text":{"$template":"**${title}**\n${lessonsCount} lessons • ${duration}"},"size":"default"}}}
+{"op":"add","path":"/elements/module-badge","value":{"type":"Badge","props":{"text":{"$item":"status"},"variant":{"$cond":{"$state":{"$item":"status"},"eq":"Completed"},"$then":"secondary","$else":{"$cond":{"$state":{"$item":"status"},"eq":"In Progress"},"$then":"default","$else":"outline"}}}}}}
 {"op":"add","path":"/state/modules","value":[]}
-{"op":"add","path":"/state/modules/0","value":{"id":1,"title":"Foundations of UI Trees","lessonsCount":5,"duration":"45 mins","status":"Completed"}}
-{"op":"add","path":"/state/modules/1","value":{"id":2,"title":"Component Design Systems","lessonsCount":8,"duration":"1h 20m","status":"Completed"}}
-{"op":"add","path":"/state/modules/2","value":{"id":3,"title":"State & Dynamic Graphs","lessonsCount":6,"duration":"1h 10m","status":"In Progress"}}
-{"op":"add","path":"/state/modules/3","value":{"id":4,"title":"Performance & Streaming","lessonsCount":4,"duration":"50 mins","status":"Not Started"}}
-{"op":"add","path":"/elements/rating-card","value":{"type":"Card","props":{"variant":"card","direction":"row","justify":"between","align":"center"},"children":["rating-info","rating-badge"]}}
-{"op":"add","path":"/elements/rating-info","value":{"type":"CardHeader","props":{"title":"Learner Rating","subtitle":{"$template":"Based on ${/rating/count} student reviews"}},"children":[]}}
-{"op":"add","path":"/elements/rating-badge","value":{"type":"Badge","props":{"text":{"$template":"★ ${/rating/average} / 5.0"},"variant":"secondary"},"children":[]}}
-{"op":"add","path":"/state/rating","value":{"average":4.9,"count":1240}}
+{"op":"add","path":"/state/modules/0","value":{"id":"m1","title":"Module 1: Component Composition Architecture","lessonsCount":"5","duration":"2.5 hrs","status":"Completed"}}
+{"op":"add","path":"/state/modules/1","value":{"id":"m2","title":"Module 2: Render Performance Optimization","lessonsCount":"4","duration":"2.0 hrs","status":"Completed"}}
+{"op":"add","path":"/state/modules/2","value":{"id":"m3","title":"Module 3: State Management at Scale","lessonsCount":"6","duration":"3.2 hrs","status":"In Progress"}}
+{"op":"add","path":"/state/modules/3","value":{"id":"m4","title":"Module 4: Concurrent Mode & Transitions","lessonsCount":"5","duration":"2.8 hrs","status":"Not Started"}}
+{"op":"add","path":"/state/modules/4","value":{"id":"m5","title":"Module 5: Micro-Frontends & Design Systems","lessonsCount":"5","duration":"2.5 hrs","status":"Not Started"}}
+{"op":"add","path":"/elements/rating-card","value":{"type":"Card","props":{"variant":"sunk","direction":"row","align":"center","justify":"between"},"children":["rating-text","rating-badge"]}}
+{"op":"add","path":"/elements/rating-text","value":{"type":"TextContent","props":{"text":"**Average Learner Rating**\nBased on 1,240 verified student reviews","size":"small"}}}
+{"op":"add","path":"/elements/rating-badge","value":{"type":"Badge","props":{"text":"★ 4.9 / 5.0","variant":"secondary"}}}

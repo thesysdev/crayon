@@ -1,1042 +1,582 @@
-Here is a comprehensive Editor's Content Studio dashboard designed to manage your publication workflow, track performance metrics, filter by category, manage comments, and create or schedule content.
+Here is a comprehensive single-screen Editor's Content Studio designed to handle content management, analytics, scheduling, and reader engagement in one unified view.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "editor-content-studio",
-      "catalogId": "thesys.dev:c1-openui",
-      "theme": {
-        "primaryColor": "#2563EB",
-        "agentDisplayName": "Editorial Assistant"
-      }
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "editor-content-studio",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "column",
-          "gap": "l",
-          "children": [
-            "header-card",
-            "tabs-container"
-          ]
-        },
-        {
-          "id": "header-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "header-top-row",
-            "separator-header",
-            "category-filter-control"
-          ]
-        },
-        {
-          "id": "header-top-row",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "justify": "between",
-          "align": "center",
-          "children": [
-            "header-title-group",
-            "header-action-buttons"
-          ]
-        },
-        {
-          "id": "header-title-group",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "column",
-          "gap": "xs",
-          "children": [
-            "studio-heading",
-            "studio-subtitle"
-          ]
-        },
-        {
-          "id": "studio-heading",
-          "component": "Heading",
-          "text": "Editor's Content Studio",
-          "level": "h1"
-        },
-        {
-          "id": "studio-subtitle",
-          "component": "TextContent",
-          "text": "Manage drafts, schedule posts, monitor readership, and moderate community discussions.",
-          "size": "small"
-        },
-        {
-          "id": "header-action-buttons",
-          "component": "Buttons",
-          "direction": "row",
-          "buttons": [
-            "schedule-dialog-btn",
-            "new-draft-dialog-btn"
-          ]
-        },
-        {
-          "id": "schedule-dialog-btn",
-          "component": "DialogBlock",
-          "triggerLabel": "Schedule Piece",
-          "triggerVariant": "outline",
-          "title": "Schedule a New Piece",
-          "description": "Set a publish date and time for an upcoming article.",
-          "content": [
-            "schedule-form"
-          ]
-        },
-        {
-          "id": "schedule-form",
-          "component": "Form",
-          "name": "schedulePieceForm",
-          "fields": [
-            "schedule-title-control",
-            "schedule-category-control",
-            "schedule-date-control"
-          ],
-          "buttons": "schedule-form-buttons"
-        },
-        {
-          "id": "schedule-title-control",
-          "component": "FormControl",
-          "label": "Article Title",
-          "input": "schedule-title-input",
-          "hint": "Enter the headline for the piece."
-        },
-        {
-          "id": "schedule-title-input",
-          "component": "Input",
-          "name": "articleTitle",
-          "placeholder": "e.g., The Future of Generative Design Systems",
-          "type": "text"
-        },
-        {
-          "id": "schedule-category-control",
-          "component": "FormControl",
-          "label": "Category",
-          "input": "schedule-category-select"
-        },
-        {
-          "id": "schedule-category-select",
-          "component": "Select",
-          "name": "category",
-          "placeholder": "Select Category",
-          "items": [
-            "cat-opt-1",
-            "cat-opt-2",
-            "cat-opt-3",
-            "cat-opt-4"
-          ]
-        },
-        {
-          "id": "cat-opt-1",
-          "component": "SelectItem",
-          "value": "tech",
-          "label": "Technology"
-        },
-        {
-          "id": "cat-opt-2",
-          "component": "SelectItem",
-          "value": "design",
-          "label": "Design"
-        },
-        {
-          "id": "cat-opt-3",
-          "component": "SelectItem",
-          "value": "culture",
-          "label": "Culture"
-        },
-        {
-          "id": "cat-opt-4",
-          "component": "SelectItem",
-          "value": "business",
-          "label": "Business"
-        },
-        {
-          "id": "schedule-date-control",
-          "component": "FormControl",
-          "label": "Publish Date",
-          "input": "schedule-date-picker",
-          "hint": "Choose target release date."
-        },
-        {
-          "id": "schedule-date-picker",
-          "component": "DatePicker",
-          "name": "publishDate",
-          "mode": "single"
-        },
-        {
-          "id": "schedule-form-buttons",
-          "component": "Buttons",
-          "direction": "row",
-          "buttons": [
-            "submit-schedule-btn"
-          ]
-        },
-        {
-          "id": "submit-schedule-btn",
-          "component": "Button",
-          "label": "Confirm Schedule",
-          "variant": "primary"
-        },
-        {
-          "id": "new-draft-dialog-btn",
-          "component": "DialogBlock",
-          "triggerLabel": "Start New Draft",
-          "triggerVariant": "default",
-          "title": "Start New Article Draft",
-          "description": "Create a new blank canvas or start from an editorial template.",
-          "content": [
-            "new-draft-form"
-          ]
-        },
-        {
-          "id": "new-draft-form",
-          "component": "Form",
-          "name": "newDraftForm",
-          "fields": [
-            "draft-title-control",
-            "draft-summary-control",
-            "draft-category-control"
-          ],
-          "buttons": "draft-form-buttons"
-        },
-        {
-          "id": "draft-title-control",
-          "component": "FormControl",
-          "label": "Working Title",
-          "input": "draft-title-input"
-        },
-        {
-          "id": "draft-title-input",
-          "component": "Input",
-          "name": "workingTitle",
-          "placeholder": "Enter draft title...",
-          "type": "text"
-        },
-        {
-          "id": "draft-summary-control",
-          "component": "FormControl",
-          "label": "Brief Outline / Concept",
-          "input": "draft-summary-textarea"
-        },
-        {
-          "id": "draft-summary-textarea",
-          "component": "TextArea",
-          "name": "draftConcept",
-          "placeholder": "Key takeaways, targets, or main thesis...",
-          "rows": 3
-        },
-        {
-          "id": "draft-category-control",
-          "component": "FormControl",
-          "label": "Category Desk",
-          "input": "draft-category-select"
-        },
-        {
-          "id": "draft-category-select",
-          "component": "Select",
-          "name": "draftCategory",
-          "placeholder": "Assign to Desk",
-          "items": [
-            "cat-opt-1",
-            "cat-opt-2",
-            "cat-opt-3",
-            "cat-opt-4"
-          ]
-        },
-        {
-          "id": "draft-form-buttons",
-          "component": "Buttons",
-          "direction": "row",
-          "buttons": [
-            "create-draft-btn"
-          ]
-        },
-        {
-          "id": "create-draft-btn",
-          "component": "Button",
-          "label": "Open Editor",
-          "variant": "primary"
-        },
-        {
-          "id": "separator-header",
-          "component": "Separator",
-          "orientation": "horizontal",
-          "decorative": true
-        },
-        {
-          "id": "category-filter-control",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "align": "center",
-          "gap": "m",
-          "children": [
-            "filter-label",
-            "category-select-dropdown"
-          ]
-        },
-        {
-          "id": "filter-label",
-          "component": "Label",
-          "text": "Filter Studio View by Category:"
-        },
-        {
-          "id": "category-select-dropdown",
-          "component": "Select",
-          "name": "globalCategoryFilter",
-          "placeholder": "All Categories",
-          "size": "small",
-          "items": [
-            "cat-all",
-            "cat-tech",
-            "cat-design",
-            "cat-culture",
-            "cat-biz"
-          ]
-        },
-        {
-          "id": "cat-all",
-          "component": "SelectItem",
-          "value": "all",
-          "label": "All Categories"
-        },
-        {
-          "id": "cat-tech",
-          "component": "SelectItem",
-          "value": "tech",
-          "label": "Technology"
-        },
-        {
-          "id": "cat-design",
-          "component": "SelectItem",
-          "value": "design",
-          "label": "Design"
-        },
-        {
-          "id": "cat-culture",
-          "component": "SelectItem",
-          "value": "culture",
-          "label": "Culture"
-        },
-        {
-          "id": "cat-biz",
-          "component": "SelectItem",
-          "value": "biz",
-          "label": "Business"
-        },
-        {
-          "id": "tabs-container",
-          "component": "Tabs",
-          "items": [
-            "tab-dashboard",
-            "tab-drafts",
-            "tab-published",
-            "tab-comments"
-          ]
-        },
-        {
-          "id": "tab-dashboard",
-          "component": "TabItem",
-          "value": "overview",
-          "trigger": "Overview & Performance",
-          "content": [
-            "overview-layout"
-          ]
-        },
-        {
-          "id": "overview-layout",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "column",
-          "gap": "l",
-          "children": [
-            "top-performer-card",
-            "readership-chart-card",
-            "dashboard-split-grid"
-          ]
-        },
-        {
-          "id": "top-performer-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "children": [
-            "top-performer-header",
-            "top-performer-body"
-          ]
-        },
-        {
-          "id": "top-performer-header",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "justify": "between",
-          "align": "center",
-          "children": [
-            "top-performer-title",
-            "top-performer-badge"
-          ]
-        },
-        {
-          "id": "top-performer-title",
-          "component": "Heading",
-          "text": "Most-Read Article This Month",
-          "level": "h3"
-        },
-        {
-          "id": "top-performer-badge",
-          "component": "Badge",
-          "text": "142.5K Readers",
-          "variant": "default"
-        },
-        {
-          "id": "top-performer-body",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "xs",
-          "children": [
-            "article-headline",
-            "article-meta",
-            "article-quote"
-          ]
-        },
-        {
-          "id": "article-headline",
-          "component": "TextContent",
-          "text": "The Architectural Shift: How AI Native Frameworks are Redefining UI Development",
-          "size": "large-heavy"
-        },
-        {
-          "id": "article-meta",
-          "component": "TagBlock",
-          "tags": [
-            "Technology",
-            "Published Oct 4",
-            "Avg Read Time: 8 min",
-            "Share Rate: 12.4%"
-          ]
-        },
-        {
-          "id": "article-quote",
-          "component": "Blockquote",
-          "text": "Component-driven design isn't disappearing; it's evolving into real-time dynamic layout orchestration.",
-          "cite": "By Sarah Jenkins, Lead Tech Editor"
-        },
-        {
-          "id": "readership-chart-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "chart-card-header",
-            "readership-line-chart"
-          ]
-        },
-        {
-          "id": "chart-card-header",
-          "component": "CardHeader",
-          "title": "Readership Over Past 30 Days",
-          "subtitle": "Daily unique article views across all active desks"
-        },
-        {
-          "id": "readership-line-chart",
-          "component": "LineChart",
-          "variant": "natural",
-          "xLabel": "Past 30 Days (Weeks 1 to 4)",
-          "yLabel": "Daily Views",
-          "labels": [
-            "Day 1",
-            "Day 5",
-            "Day 10",
-            "Day 15",
-            "Day 20",
-            "Day 25",
-            "Day 30"
-          ],
-          "series": [
-            "series-views"
-          ]
-        },
-        {
-          "id": "series-views",
-          "component": "Series",
-          "category": "Unique Readers",
-          "values": [
-            12400,
-            14200,
-            18900,
-            16500,
-            24100,
-            28500,
-            31000
-          ]
-        },
-        {
-          "id": "dashboard-split-grid",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "m",
-          "children": [
-            "quick-drafts-summary-card",
-            "quick-published-summary-card"
-          ]
-        },
-        {
-          "id": "quick-drafts-summary-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "weight": 1,
-          "children": [
-            "quick-drafts-header",
-            "quick-drafts-list"
-          ]
-        },
-        {
-          "id": "quick-drafts-header",
-          "component": "CardHeader",
-          "title": "Active Drafts (4)",
-          "subtitle": "Work in progress requiring review or edit"
-        },
-        {
-          "id": "quick-drafts-list",
-          "component": "ListBlock",
-          "variant": "number",
-          "items": [
-            "draft-item-1",
-            "draft-item-2"
-          ]
-        },
-        {
-          "id": "draft-item-1",
-          "component": "ListItem",
-          "title": "Designing for Spatial Audio in Web Content",
-          "subtitle": "Draft • Tech Desk • Needs Copyedit",
-          "actionLabel": "Edit Draft"
-        },
-        {
-          "id": "draft-item-2",
-          "component": "ListItem",
-          "title": "The Creator Economy in 2025: Revenue Models",
-          "subtitle": "In Review • Business Desk • Due Tomorrow",
-          "actionLabel": "Review"
-        },
-        {
-          "id": "quick-published-summary-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "weight": 1,
-          "children": [
-            "quick-pub-header",
-            "quick-pub-list"
-          ]
-        },
-        {
-          "id": "quick-pub-header",
-          "component": "CardHeader",
-          "title": "Published This Week (3)",
-          "subtitle": "Latest live content items"
-        },
-        {
-          "id": "quick-pub-list",
-          "component": "ListBlock",
-          "variant": "number",
-          "items": [
-            "pub-item-1",
-            "pub-item-2"
-          ]
-        },
-        {
-          "id": "pub-item-1",
-          "component": "ListItem",
-          "title": "Understanding Modern CSS Layout Primitives",
-          "subtitle": "Published Oct 22 • 18.2k Views • Design Desk",
-          "actionLabel": "View Stats"
-        },
-        {
-          "id": "pub-item-2",
-          "component": "ListItem",
-          "title": "Weekly Editorial Brief: The Next Tech Cycle",
-          "subtitle": "Published Oct 20 • 9.4k Views • Culture Desk",
-          "actionLabel": "View Stats"
-        },
-        {
-          "id": "tab-drafts",
-          "component": "TabItem",
-          "value": "drafts",
-          "trigger": "Drafts & Pipeline",
-          "content": [
-            "drafts-tab-card"
-          ]
-        },
-        {
-          "id": "drafts-tab-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "drafts-table-header",
-            "drafts-table"
-          ]
-        },
-        {
-          "id": "drafts-table-header",
-          "component": "CardHeader",
-          "title": "All Working Drafts",
-          "subtitle": "Track editorial status, assignee, and target publishing dates"
-        },
-        {
-          "id": "drafts-table",
-          "component": "Table",
-          "columns": [
-            "col-draft-title",
-            "col-draft-category",
-            "col-draft-status",
-            "col-draft-author",
-            "col-draft-progress"
-          ]
-        },
-        {
-          "id": "col-draft-title",
-          "component": "Col",
-          "label": "Article Draft Title",
-          "type": "string",
-          "data": [
-            "Designing for Spatial Audio in Web Content",
-            "The Creator Economy in 2025: Revenue Models",
-            "Ethical AI Frameworks for Local Newsrooms",
-            "Micro-Frontends: 3 Years Later"
-          ]
-        },
-        {
-          "id": "col-draft-category",
-          "component": "Col",
-          "label": "Category",
-          "type": "string",
-          "data": [
-            "Design",
-            "Business",
-            "Culture",
-            "Technology"
-          ]
-        },
-        {
-          "id": "col-draft-status",
-          "component": "Col",
-          "label": "Editorial Status",
-          "type": "string",
-          "data": [
-            "Drafting (60%)",
-            "In Review",
-            "Scheduled (Oct 28)",
-            "Approved for Edit"
-          ]
-        },
-        {
-          "id": "col-draft-author",
-          "component": "Col",
-          "label": "Author",
-          "type": "string",
-          "data": [
-            "Marcus Chen",
-            "Elena Rostova",
-            "Darnell Vance",
-            "Sarah Jenkins"
-          ]
-        },
-        {
-          "id": "col-draft-progress",
-          "component": "Col",
-          "label": "Action",
-          "type": "action",
-          "data": [
-            "Continue Editing",
-            "Open Review",
-            "View Schedule",
-            "Start Edit"
-          ]
-        },
-        {
-          "id": "tab-published",
-          "component": "TabItem",
-          "value": "published",
-          "trigger": "Published This Week",
-          "content": [
-            "published-tab-card"
-          ]
-        },
-        {
-          "id": "published-tab-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "pub-tab-header",
-            "pub-articles-list"
-          ]
-        },
-        {
-          "id": "pub-tab-header",
-          "component": "CardHeader",
-          "title": "Content Published This Week",
-          "subtitle": "Articles, essays, and reports released in the past 7 days"
-        },
-        {
-          "id": "pub-articles-list",
-          "component": "ListBlock",
-          "variant": "image",
-          "items": [
-            "pub-list-1",
-            "pub-list-2",
-            "pub-list-3"
-          ]
-        },
-        {
-          "id": "pub-list-1",
-          "component": "ListItem",
-          "title": "Understanding Modern CSS Layout Primitives",
-          "subtitle": "Category: Design • Released: Oct 22 • Views: 18,240 • Comments: 42",
-          "actionLabel": "Manage Story"
-        },
-        {
-          "id": "pub-list-2",
-          "component": "ListItem",
-          "title": "Weekly Editorial Brief: The Next Tech Cycle",
-          "subtitle": "Category: Culture • Released: Oct 20 • Views: 9,410 • Comments: 18",
-          "actionLabel": "Manage Story"
-        },
-        {
-          "id": "pub-list-3",
-          "component": "ListItem",
-          "title": "How Remote Engineering Teams Maintain Velocity",
-          "subtitle": "Category: Technology • Released: Oct 19 • Views: 22,150 • Comments: 56",
-          "actionLabel": "Manage Story"
-        },
-        {
-          "id": "tab-comments",
-          "component": "TabItem",
-          "value": "comments",
-          "trigger": "Comments Awaiting Reply",
-          "content": [
-            "comments-tab-card"
-          ]
-        },
-        {
-          "id": "comments-tab-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "comments-header",
-            "comments-alert",
-            "comments-accordion"
-          ]
-        },
-        {
-          "id": "comments-header",
-          "component": "CardHeader",
-          "title": "Moderation Queue",
-          "subtitle": "Reader comments flagged for editorial feedback or awaiting official response"
-        },
-        {
-          "id": "comments-alert",
-          "component": "Alert",
-          "title": "3 Unanswered Reader Questions",
-          "description": "Replying to high-engagement comments within 24 hours increases subscriber retention by 18%.",
-          "variant": "info"
-        },
-        {
-          "id": "comments-accordion",
-          "component": "Accordion",
-          "items": [
-            "acc-comment-1",
-            "acc-comment-2",
-            "acc-comment-3"
-          ]
-        },
-        {
-          "id": "acc-comment-1",
-          "component": "AccordionItem",
-          "value": "comm-1",
-          "trigger": "On 'Understanding Modern CSS Layout Primitives' — by Alex R.",
-          "content": [
-            "comment-1-body"
-          ]
-        },
-        {
-          "id": "comment-1-body",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "s",
-          "children": [
-            "comment-1-author-row",
-            "comment-1-quote",
-            "comment-1-reply-form"
-          ]
-        },
-        {
-          "id": "comment-1-author-row",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "align": "center",
-          "gap": "s",
-          "children": [
-            "comment-1-avatar",
-            "comment-1-meta"
-          ]
-        },
-        {
-          "id": "comment-1-avatar",
-          "component": "Avatar",
-          "fallback": "AR"
-        },
-        {
-          "id": "comment-1-meta",
-          "component": "TextContent",
-          "text": "Alex R. • Posted 2 hours ago",
-          "size": "small-heavy"
-        },
-        {
-          "id": "comment-1-quote",
-          "component": "Blockquote",
-          "text": "Great breakdown! Would you recommend using Subgrid for complex card layouts with dynamic text lengths, or sticking to standard container queries?"
-        },
-        {
-          "id": "comment-1-reply-form",
-          "component": "Form",
-          "name": "replyForm1",
-          "fields": [
-            "reply-1-input-control"
-          ],
-          "buttons": "reply-1-buttons"
-        },
-        {
-          "id": "reply-1-input-control",
-          "component": "FormControl",
-          "label": "Editorial Reply",
-          "input": "reply-1-textarea"
-        },
-        {
-          "id": "reply-1-textarea",
-          "component": "TextArea",
-          "name": "commentReply1",
-          "placeholder": "Write an official author reply...",
-          "rows": 2
-        },
-        {
-          "id": "reply-1-buttons",
-          "component": "Buttons",
-          "direction": "row",
-          "buttons": [
-            "send-reply-1-btn"
-          ]
-        },
-        {
-          "id": "send-reply-1-btn",
-          "component": "Button",
-          "label": "Post Reply",
-          "variant": "primary",
-          "size": "small"
-        },
-        {
-          "id": "acc-comment-2",
-          "component": "AccordionItem",
-          "value": "comm-2",
-          "trigger": "On 'The Architectural Shift' — by DevLead_09",
-          "content": [
-            "comment-2-body"
-          ]
-        },
-        {
-          "id": "comment-2-body",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "s",
-          "children": [
-            "comment-2-author-row",
-            "comment-2-quote",
-            "comment-2-reply-form"
-          ]
-        },
-        {
-          "id": "comment-2-author-row",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "align": "center",
-          "gap": "s",
-          "children": [
-            "comment-2-avatar",
-            "comment-2-meta"
-          ]
-        },
-        {
-          "id": "comment-2-avatar",
-          "component": "Avatar",
-          "fallback": "DL"
-        },
-        {
-          "id": "comment-2-meta",
-          "component": "TextContent",
-          "text": "DevLead_09 • Posted 5 hours ago",
-          "size": "small-heavy"
-        },
-        {
-          "id": "comment-2-quote",
-          "component": "Blockquote",
-          "text": "Are there benchmarks on latency overhead when generating UI streams dynamically on the server versus client side?"
-        },
-        {
-          "id": "comment-2-reply-form",
-          "component": "Form",
-          "name": "replyForm2",
-          "fields": [
-            "reply-2-input-control"
-          ],
-          "buttons": "reply-2-buttons"
-        },
-        {
-          "id": "reply-2-input-control",
-          "component": "FormControl",
-          "label": "Editorial Reply",
-          "input": "reply-2-textarea"
-        },
-        {
-          "id": "reply-2-textarea",
-          "component": "TextArea",
-          "name": "commentReply2",
-          "placeholder": "Write an official author reply...",
-          "rows": 2
-        },
-        {
-          "id": "reply-2-buttons",
-          "component": "Buttons",
-          "direction": "row",
-          "buttons": [
-            "send-reply-2-btn"
-          ]
-        },
-        {
-          "id": "send-reply-2-btn",
-          "component": "Button",
-          "label": "Post Reply",
-          "variant": "primary",
-          "size": "small"
-        },
-        {
-          "id": "acc-comment-3",
-          "component": "AccordionItem",
-          "value": "comm-3",
-          "trigger": "On 'How Remote Engineering Teams Maintain Velocity' — by TechDirector",
-          "content": [
-            "comment-3-body"
-          ]
-        },
-        {
-          "id": "comment-3-body",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "s",
-          "children": [
-            "comment-3-author-row",
-            "comment-3-quote",
-            "comment-3-reply-form"
-          ]
-        },
-        {
-          "id": "comment-3-author-row",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "align": "center",
-          "gap": "s",
-          "children": [
-            "comment-3-avatar",
-            "comment-3-meta"
-          ]
-        },
-        {
-          "id": "comment-3-avatar",
-          "component": "Avatar",
-          "fallback": "TD"
-        },
-        {
-          "id": "comment-3-meta",
-          "component": "TextContent",
-          "text": "TechDirector • Posted 1 day ago",
-          "size": "small-heavy"
-        },
-        {
-          "id": "comment-3-quote",
-          "component": "Blockquote",
-          "text": "Would love a follow-up piece specifically addressing time zone overlap strategies."
-        },
-        {
-          "id": "comment-3-reply-form",
-          "component": "Form",
-          "name": "replyForm3",
-          "fields": [
-            "reply-3-input-control"
-          ],
-          "buttons": "reply-3-buttons"
-        },
-        {
-          "id": "reply-3-input-control",
-          "component": "FormControl",
-          "label": "Editorial Reply",
-          "input": "reply-3-textarea"
-        },
-        {
-          "id": "reply-3-textarea",
-          "component": "TextArea",
-          "name": "commentReply3",
-          "placeholder": "Write an official author reply...",
-          "rows": 2
-        },
-        {
-          "id": "reply-3-buttons",
-          "component": "Buttons",
-          "direction": "row",
-          "buttons": [
-            "send-reply-3-btn"
-          ]
-        },
-        {
-          "id": "send-reply-3-btn",
-          "component": "Button",
-          "label": "Post Reply",
-          "variant": "primary",
-          "size": "small"
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "alertNotice",
+          "filterBar",
+          "topSection",
+          "mainTabs"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Editor's Content Studio",
+        "subtitle": "Manage drafts, scheduling, publication trends, and reader discussions"
+      },
+      {
+        "id": "alertNotice",
+        "component": "Alert",
+        "title": "3 Comments Awaiting Moderation",
+        "description": "High engagement on recent AI insights article. Review flagged reader comments.",
+        "variant": "info"
+      },
+      {
+        "id": "filterBar",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "align": "center",
+        "justify": "between",
+        "gap": "m",
+        "children": [
+          "categorySelectControl",
+          "newDraftBtn"
+        ]
+      },
+      {
+        "id": "categorySelectControl",
+        "component": "FormControl",
+        "label": "Filter Studio View by Category (Item 5)",
+        "input": "categorySelect"
+      },
+      {
+        "id": "categorySelect",
+        "component": "Select",
+        "name": "category_filter",
+        "placeholder": "All Categories",
+        "items": [
+          "catAll",
+          "catTech",
+          "catDesign",
+          "catCulture",
+          "catBusiness"
+        ]
+      },
+      {
+        "id": "catAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All Categories"
+      },
+      {
+        "id": "catTech",
+        "component": "SelectItem",
+        "value": "technology",
+        "label": "Technology & AI"
+      },
+      {
+        "id": "catDesign",
+        "component": "SelectItem",
+        "value": "design",
+        "label": "Design & UX"
+      },
+      {
+        "id": "catCulture",
+        "component": "SelectItem",
+        "value": "culture",
+        "label": "Culture & Trends"
+      },
+      {
+        "id": "catBusiness",
+        "component": "SelectItem",
+        "value": "business",
+        "label": "Business & Strategy"
+      },
+      {
+        "id": "newDraftBtn",
+        "component": "Button",
+        "label": "+ Start New Draft (Item 8)",
+        "variant": "primary"
+      },
+      {
+        "id": "topSection",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "topSectionHeading",
+          "readershipChart",
+          "topArticleHighlight"
+        ]
+      },
+      {
+        "id": "topSectionHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "Readership & Analytics (Item 4)"
+      },
+      {
+        "id": "readershipChart",
+        "component": "AreaChart",
+        "xLabel": "Past 30 Days",
+        "yLabel": "Pageviews",
+        "variant": "natural",
+        "labels": [
+          "Day 1",
+          "Day 5",
+          "Day 10",
+          "Day 15",
+          "Day 20",
+          "Day 25",
+          "Day 30"
+        ],
+        "series": [
+          "readershipSeries"
+        ]
+      },
+      {
+        "id": "readershipSeries",
+        "component": "Series",
+        "category": "Unique Readers",
+        "values": [
+          12400,
+          15800,
+          14200,
+          21000,
+          28500,
+          24100,
+          31200
+        ]
+      },
+      {
+        "id": "topArticleHighlight",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "topArticleBadge",
+          "topArticleTitle",
+          "topArticleMeta"
+        ]
+      },
+      {
+        "id": "topArticleBadge",
+        "component": "Badge",
+        "text": "🔥 Most-Read Article This Month (Item 3)",
+        "variant": "default"
+      },
+      {
+        "id": "topArticleTitle",
+        "component": "Heading",
+        "level": "h4",
+        "text": "The Next Decade of Generative UI Interfaces"
+      },
+      {
+        "id": "topArticleMeta",
+        "component": "TextContent",
+        "size": "small",
+        "text": "Published **12 days ago** in *Technology & AI* • **142,850 reads** • **4.8 min avg reading time** • **98 comments**"
+      },
+      {
+        "id": "mainTabs",
+        "component": "Tabs",
+        "items": [
+          "tabDrafts",
+          "tabPublished",
+          "tabSchedule",
+          "tabComments"
+        ]
+      },
+      {
+        "id": "tabDrafts",
+        "component": "TabItem",
+        "value": "drafts",
+        "trigger": "Active Drafts (Item 1)",
+        "content": [
+          "draftsTable"
+        ]
+      },
+      {
+        "id": "draftsTable",
+        "component": "Table",
+        "columns": [
+          "draftTitleCol",
+          "draftCategoryCol",
+          "draftWordsCol",
+          "draftStatusCol"
+        ]
+      },
+      {
+        "id": "draftTitleCol",
+        "component": "Col",
+        "label": "Draft Title",
+        "data": [
+          "Designing for Spatial Audio in Web Frameworks",
+          "Why Micro-Frontends Fail at Scale",
+          "2025 Product Design Trends Report",
+          "The Ethics of AI-Generated Content Systems"
+        ]
+      },
+      {
+        "id": "draftCategoryCol",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Design & UX",
+          "Technology & AI",
+          "Design & UX",
+          "Culture & Trends"
+        ]
+      },
+      {
+        "id": "draftWordsCol",
+        "component": "Col",
+        "label": "Word Count",
+        "data": [
+          "1,240 words",
+          "850 words",
+          "2,400 words",
+          "410 words"
+        ]
+      },
+      {
+        "id": "draftStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "In Review",
+          "Changes Requested",
+          "In Progress",
+          "Initial Outline"
+        ]
+      },
+      {
+        "id": "tabPublished",
+        "component": "TabItem",
+        "value": "published",
+        "trigger": "Published This Week (Item 2)",
+        "content": [
+          "publishedList"
+        ]
+      },
+      {
+        "id": "publishedList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "pubItem1",
+          "pubItem2",
+          "pubItem3"
+        ]
+      },
+      {
+        "id": "pubItem1",
+        "component": "ListItem",
+        "title": "Building Resilient Design Systems for Enterprise Teams",
+        "subtitle": "Published Oct 24 • Category: Design & UX • Reads: 14,200",
+        "actionLabel": "View Analytics"
+      },
+      {
+        "id": "pubItem2",
+        "component": "ListItem",
+        "title": "Understanding Vector Databases in 10 Minutes",
+        "subtitle": "Published Oct 22 • Category: Technology & AI • Reads: 28,900",
+        "actionLabel": "View Analytics"
+      },
+      {
+        "id": "pubItem3",
+        "component": "ListItem",
+        "title": "How Async Remote Culture Saved Our Product Velocity",
+        "subtitle": "Published Oct 20 • Category: Business & Strategy • Reads: 9,450",
+        "actionLabel": "View Analytics"
+      },
+      {
+        "id": "tabSchedule",
+        "component": "TabItem",
+        "value": "schedule",
+        "trigger": "Schedule a Piece (Item 6)",
+        "content": [
+          "scheduleFormCard"
+        ]
+      },
+      {
+        "id": "scheduleFormCard",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "scheduleForm"
+        ]
+      },
+      {
+        "id": "scheduleForm",
+        "component": "Form",
+        "name": "schedule_form",
+        "buttons": "scheduleFormBtns",
+        "fields": [
+          "scheduleTitleControl",
+          "scheduleCategoryControl",
+          "scheduleDateControl"
+        ]
+      },
+      {
+        "id": "scheduleTitleControl",
+        "component": "FormControl",
+        "label": "Article Title",
+        "hint": "Enter the final title or working headline for publication",
+        "input": "scheduleTitleInput"
+      },
+      {
+        "id": "scheduleTitleInput",
+        "component": "Input",
+        "name": "article_title",
+        "placeholder": "e.g., Understanding Quantum Computing Basics"
+      },
+      {
+        "id": "scheduleCategoryControl",
+        "component": "FormControl",
+        "label": "Category",
+        "input": "scheduleCategorySelect"
+      },
+      {
+        "id": "scheduleCategorySelect",
+        "component": "Select",
+        "name": "schedule_category",
+        "placeholder": "Select Category",
+        "items": [
+          "schedCatTech",
+          "schedCatDesign",
+          "schedCatCulture",
+          "schedCatBusiness"
+        ]
+      },
+      {
+        "id": "schedCatTech",
+        "component": "SelectItem",
+        "value": "technology",
+        "label": "Technology & AI"
+      },
+      {
+        "id": "schedCatDesign",
+        "component": "SelectItem",
+        "value": "design",
+        "label": "Design & UX"
+      },
+      {
+        "id": "schedCatCulture",
+        "component": "SelectItem",
+        "value": "culture",
+        "label": "Culture & Trends"
+      },
+      {
+        "id": "schedCatBusiness",
+        "component": "SelectItem",
+        "value": "business",
+        "label": "Business & Strategy"
+      },
+      {
+        "id": "scheduleDateControl",
+        "component": "FormControl",
+        "label": "Publish Date & Range",
+        "hint": "Select target publishing date",
+        "input": "scheduleDatePicker"
+      },
+      {
+        "id": "scheduleDatePicker",
+        "component": "DatePicker",
+        "name": "publish_date",
+        "mode": "single"
+      },
+      {
+        "id": "scheduleFormBtns",
+        "component": "Buttons",
+        "buttons": [
+          "confirmScheduleBtn",
+          "saveDraftBtn"
+        ]
+      },
+      {
+        "id": "confirmScheduleBtn",
+        "component": "Button",
+        "label": "Schedule Publication",
+        "variant": "primary"
+      },
+      {
+        "id": "saveDraftBtn",
+        "component": "Button",
+        "label": "Save as Pending",
+        "variant": "tertiary"
+      },
+      {
+        "id": "tabComments",
+        "component": "TabItem",
+        "value": "comments",
+        "trigger": "Comments Awaiting Reply (Item 7)",
+        "content": [
+          "commentsAccordion"
+        ]
+      },
+      {
+        "id": "commentsAccordion",
+        "component": "Accordion",
+        "items": [
+          "commentItem1",
+          "commentItem2",
+          "commentItem3"
+        ]
+      },
+      {
+        "id": "commentItem1",
+        "component": "AccordionItem",
+        "value": "c1",
+        "trigger": "Alex R. on 'Generative UI Interfaces' (2 hours ago)",
+        "content": [
+          "commentBody1",
+          "replyControl1",
+          "replyButtons1"
+        ]
+      },
+      {
+        "id": "commentBody1",
+        "component": "Blockquote",
+        "text": "Great breakdown! Do you think traditional component libraries will be obsolete once streaming JSON UI models mature further?",
+        "cite": "Alex R. - Tech Lead at Acme Corp"
+      },
+      {
+        "id": "replyControl1",
+        "component": "FormControl",
+        "label": "Your Reply",
+        "input": "replyArea1"
+      },
+      {
+        "id": "replyArea1",
+        "component": "TextArea",
+        "name": "reply_c1",
+        "placeholder": "Type your response to Alex...",
+        "rows": 3
+      },
+      {
+        "id": "replyButtons1",
+        "component": "Buttons",
+        "buttons": [
+          "sendReplyBtn1",
+          "dismissComment1"
+        ]
+      },
+      {
+        "id": "sendReplyBtn1",
+        "component": "Button",
+        "label": "Post Reply",
+        "variant": "primary"
+      },
+      {
+        "id": "dismissComment1",
+        "component": "Button",
+        "label": "Mark as Read",
+        "variant": "tertiary"
+      },
+      {
+        "id": "commentItem2",
+        "component": "AccordionItem",
+        "value": "c2",
+        "trigger": "Elena M. on 'Vector Databases' (5 hours ago)",
+        "content": [
+          "commentBody2",
+          "replyControl2",
+          "replyButtons2"
+        ]
+      },
+      {
+        "id": "commentBody2",
+        "component": "Blockquote",
+        "text": "Could you expand on benchmark differences between HNSW indexing and flat vector search in a follow-up piece?",
+        "cite": "Elena M. - Data Engineer"
+      },
+      {
+        "id": "replyControl2",
+        "component": "FormControl",
+        "label": "Your Reply",
+        "input": "replyArea2"
+      },
+      {
+        "id": "replyArea2",
+        "component": "TextArea",
+        "name": "reply_c2",
+        "placeholder": "Type your response to Elena...",
+        "rows": 3
+      },
+      {
+        "id": "replyButtons2",
+        "component": "Buttons",
+        "buttons": [
+          "sendReplyBtn2"
+        ]
+      },
+      {
+        "id": "sendReplyBtn2",
+        "component": "Button",
+        "label": "Post Reply",
+        "variant": "primary"
+      },
+      {
+        "id": "commentItem3",
+        "component": "AccordionItem",
+        "value": "c3",
+        "trigger": "Marcus T. on 'Resilient Design Systems' (1 day ago)",
+        "content": [
+          "commentBody3",
+          "replyControl3",
+          "replyButtons3"
+        ]
+      },
+      {
+        "id": "commentBody3",
+        "component": "Blockquote",
+        "text": "How do you handle breaking token updates when multiple product pods consume the same global library?",
+        "cite": "Marcus T. - Staff Designer"
+      },
+      {
+        "id": "replyControl3",
+        "component": "FormControl",
+        "label": "Your Reply",
+        "input": "replyArea3"
+      },
+      {
+        "id": "replyArea3",
+        "component": "TextArea",
+        "name": "reply_c3",
+        "placeholder": "Type your response to Marcus...",
+        "rows": 3
+      },
+      {
+        "id": "replyButtons3",
+        "component": "Buttons",
+        "buttons": [
+          "sendReplyBtn3"
+        ]
+      },
+      {
+        "id": "sendReplyBtn3",
+        "component": "Button",
+        "label": "Post Reply",
+        "variant": "primary"
+      }
+    ]
+  }
+}
 </a2ui-json>

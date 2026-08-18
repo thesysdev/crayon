@@ -1,7 +1,275 @@
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"month-end-finance","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#2563EB","agentDisplayName":"Finance Dashboard"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"month-end-finance","components":[{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["header","month-controls","metrics","expense-section","transactions-section","download-card"]},{"id":"header","component":"Card","variant":"clear","direction":"column","gap":"xs","children":["title","subtitle"]},{"id":"title","component":"Heading","text":"Month-end finance","level":"h1"},{"id":"subtitle","component":"TextContent","text":"A concise view of liquidity, burn, and material spending for August 2026.","size":"default"},{"id":"month-controls","component":"Card","variant":"sunk","direction":"row","gap":"m","align":"end","children":["month-control","month-select","download-button"]},{"id":"month-control","component":"FormControl","label":"Reporting month","hint":"Choose a completed month to review.","input":"month-select"},{"id":"month-select","component":"Select","name":"reporting_month","placeholder":"Select month","value":"2026-08","size":"medium","items":["month-aug","month-jul","month-jun"]},{"id":"month-aug","component":"SelectItem","value":"2026-08","label":"August 2026"},{"id":"month-jul","component":"SelectItem","value":"2026-07","label":"July 2026"},{"id":"month-jun","component":"SelectItem","value":"2026-06","label":"June 2026"},{"id":"download-button","component":"Button","label":"Download statement","variant":"primary","size":"medium","action":["download_statement","2026-08"]},{"id":"metrics","component":"Card","variant":"clear","direction":"row","gap":"m","align":"stretch","children":["cash-card","burn-card","runway-card"]},{"id":"cash-card","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["cash-label","cash-value","cash-note"]},{"id":"cash-label","component":"TextContent","text":"Cash on hand","size":"small-heavy"},{"id":"cash-value","component":"Heading","text":"$1,240,000","level":"h2"},{"id":"cash-note","component":"TextContent","text":"As of August 31, 2026","size":"small"},{"id":"burn-card","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["burn-label","burn-value","burn-note"]},{"id":"burn-label","component":"TextContent","text":"Monthly burn","size":"small-heavy"},{"id":"burn-value","component":"Heading","text":"$186,000","level":"h2"},{"id":"burn-note","component":"TextContent","text":"Net cash outflow in August","size":"small"},{"id":"runway-card","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["runway-label","runway-value","runway-note"]},{"id":"runway-label","component":"TextContent","text":"Months of runway","size":"small-heavy"},{"id":"runway-value","component":"Heading","text":"6.7 months","level":"h2"},{"id":"runway-note","component":"TextContent","text":"At the current monthly burn rate","size":"small"},{"id":"expense-section","component":"Card","variant":"card","direction":"column","gap":"m","children":["expense-header","expense-chart","expense-summary"]},{"id":"expense-header","component":"CardHeader","title":"Expenses by category","subtitle":"August 2026 operating expenses — $214,500 total"},{"id":"expense-chart","component":"PieChart","labels":["Payroll","Cloud infrastructure","Marketing","Professional services","Software & tools","Other"],"values":[112000,34500,28000,18500,12500,9000],"variant":"donut","appearance":"circular"},{"id":"expense-summary","component":"TagBlock","tags":["Payroll · $112,000","Cloud infrastructure · $34,500","Marketing · $28,000","Professional services · $18,500","Software & tools · $12,500","Other · $9,000"]},{"id":"transactions-section","component":"Card","variant":"card","direction":"column","gap":"m","children":["transactions-header","transactions-alert","transactions-table"]},{"id":"transactions-header","component":"CardHeader","title":"Transactions above $10,000","subtitle":"Material transactions recorded in August 2026"},{"id":"transactions-alert","component":"Alert","title":"5 transactions require review","description":"Each transaction below exceeds the $10,000 threshold.","variant":"info"},{"id":"transactions-table","component":"Table","columns":["txn-date","txn-vendor","txn-category","txn-amount","txn-status"]},{"id":"txn-date","component":"Col","label":"Date","type":"string","data":["Aug 04, 2026","Aug 08, 2026","Aug 14, 2026","Aug 21, 2026","Aug 28, 2026"]},{"id":"txn-vendor","component":"Col","label":"Vendor / description","type":"string","data":["August payroll","AWS","Growth campaign — Q3","Cooley LLP","Product design contractor"]},{"id":"txn-category","component":"Col","label":"Category","type":"string","data":["Payroll","Cloud infrastructure","Marketing","Professional services","Contractors"]},{"id":"txn-amount","component":"Col","label":"Amount","type":"number","data":[112000,24500,18000,14500,12000]},{"id":"txn-status","component":"Col","label":"Status","type":"string","data":["Cleared","Cleared","Cleared","Pending","Cleared"]},{"id":"download-card","component":"Card","variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between","children":["download-copy","download-statement-button"]},{"id":"download-copy","component":"Card","variant":"clear","direction":"column","gap":"xs","children":["download-title","download-description"]},{"id":"download-title","component":"TextContent","text":"Need the full statement?","size":"large-heavy"},{"id":"download-description","component":"TextContent","text":"Export the August 2026 month-end statement as a PDF for your records or board packet.","size":"small"},{"id":"download-statement-button","component":"Button","label":"Download PDF statement","variant":"secondary","size":"medium","action":["download_statement_pdf","2026-08"]}]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "monthSelector",
+          "summary",
+          "expenseSection",
+          "largeTransactionsSection",
+          "actions"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Month-end finance",
+        "subtitle": "Financial position for August 2026"
+      },
+      {
+        "id": "monthSelector",
+        "component": "FormControl",
+        "label": "Reporting month",
+        "input": "monthInput",
+        "hint": "Choose a different month to review its statement."
+      },
+      {
+        "id": "monthInput",
+        "component": "DatePicker",
+        "name": "reporting_month",
+        "mode": "single",
+        "value": [
+          "2026-08-01"
+        ]
+      },
+      {
+        "id": "summary",
+        "component": "Card",
+        "children": [
+          "cashMetric",
+          "burnMetric",
+          "runwayMetric"
+        ],
+        "direction": "row",
+        "gap": "m",
+        "wrap": true
+      },
+      {
+        "id": "cashMetric",
+        "component": "Card",
+        "children": [
+          "cashLabel",
+          "cashValue"
+        ],
+        "variant": "sunk",
+        "gap": "xs",
+        "weight": 1
+      },
+      {
+        "id": "cashLabel",
+        "component": "TextContent",
+        "text": "Cash on hand",
+        "size": "small"
+      },
+      {
+        "id": "cashValue",
+        "component": "Heading",
+        "text": "$1,248,000",
+        "level": "h2"
+      },
+      {
+        "id": "burnMetric",
+        "component": "Card",
+        "children": [
+          "burnLabel",
+          "burnValue"
+        ],
+        "variant": "sunk",
+        "gap": "xs",
+        "weight": 1
+      },
+      {
+        "id": "burnLabel",
+        "component": "TextContent",
+        "text": "Monthly burn",
+        "size": "small"
+      },
+      {
+        "id": "burnValue",
+        "component": "Heading",
+        "text": "$142,500",
+        "level": "h2"
+      },
+      {
+        "id": "runwayMetric",
+        "component": "Card",
+        "children": [
+          "runwayLabel",
+          "runwayValue",
+          "runwayProgress"
+        ],
+        "variant": "sunk",
+        "gap": "xs",
+        "weight": 1
+      },
+      {
+        "id": "runwayLabel",
+        "component": "TextContent",
+        "text": "Months of runway",
+        "size": "small"
+      },
+      {
+        "id": "runwayValue",
+        "component": "Heading",
+        "text": "8.8 months",
+        "level": "h2"
+      },
+      {
+        "id": "runwayProgress",
+        "component": "Progress",
+        "value": 73,
+        "label": "73% of 12-month target"
+      },
+      {
+        "id": "expenseSection",
+        "component": "Card",
+        "children": [
+          "expenseHeader",
+          "expenseChart",
+          "expenseNote"
+        ],
+        "variant": "clear",
+        "gap": "m"
+      },
+      {
+        "id": "expenseHeader",
+        "component": "Heading",
+        "text": "Expenses by category",
+        "level": "h3"
+      },
+      {
+        "id": "expenseChart",
+        "component": "PieChart",
+        "labels": [
+          "Payroll",
+          "Cloud infrastructure",
+          "Marketing",
+          "Software",
+          "Professional services",
+          "Other"
+        ],
+        "values": [
+          78500,
+          22400,
+          18300,
+          9600,
+          8200,
+          5500
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "expenseNote",
+        "component": "TextContent",
+        "text": "Total expenses: $142,500",
+        "size": "small-heavy"
+      },
+      {
+        "id": "largeTransactionsSection",
+        "component": "Card",
+        "children": [
+          "transactionsHeader",
+          "transactionsTable"
+        ],
+        "variant": "clear",
+        "gap": "m"
+      },
+      {
+        "id": "transactionsHeader",
+        "component": "Heading",
+        "text": "Transactions above $10,000",
+        "level": "h3"
+      },
+      {
+        "id": "transactionsTable",
+        "component": "Table",
+        "columns": [
+          "transactionDate",
+          "transactionVendor",
+          "transactionCategory",
+          "transactionAmount"
+        ]
+      },
+      {
+        "id": "transactionDate",
+        "component": "Col",
+        "label": "Date",
+        "data": [
+          "Aug 01, 2026",
+          "Aug 05, 2026",
+          "Aug 14, 2026",
+          "Aug 20, 2026",
+          "Aug 28, 2026"
+        ]
+      },
+      {
+        "id": "transactionVendor",
+        "component": "Col",
+        "label": "Vendor / payee",
+        "data": [
+          "Payroll provider",
+          "AWS",
+          "Brightline Media",
+          "Northstar Legal",
+          "Payroll provider"
+        ]
+      },
+      {
+        "id": "transactionCategory",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Payroll",
+          "Cloud infrastructure",
+          "Marketing",
+          "Professional services",
+          "Payroll"
+        ]
+      },
+      {
+        "id": "transactionAmount",
+        "component": "Col",
+        "label": "Amount",
+        "type": "number",
+        "data": [
+          "$39,250",
+          "$14,800",
+          "$12,500",
+          "$11,200",
+          "$39,250"
+        ]
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": [
+          "downloadStatement"
+        ]
+      },
+      {
+        "id": "downloadStatement",
+        "component": "Button",
+        "label": "Download August statement",
+        "variant": "primary"
+      }
+    ]
+  }
+}
 </a2ui-json>

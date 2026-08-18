@@ -1,9 +1,266 @@
-I have built a UI surface for a remote team's asynchronous standup. It includes today's date, status updates grouped by blockers vs. on-track team members, an indicator for missing updates, and an interactive form to submit your own update.
+Here is an async standup dashboard designed for remote teams, complete with teammate updates, highlighted blockers, completion tracking, today's date, and a quick update form.
 
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"async-standup-surface","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#2563EB","agentDisplayName":"Standup Bot"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"async-standup-surface","components":[{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["header-card","stats-callout","tab-container","form-card"]},{"id":"header-card","component":"Card","variant":"card","direction":"column","gap":"s","children":["header-title","header-subtitle"]},{"id":"header-title","component":"Heading","level":"h2","text":"Async Daily Standup"},{"id":"header-subtitle","component":"TextContent","size":"default","text":"📅 **Wednesday, October 24, 2023** · Product & Engineering Team"},{"id":"stats-callout","component":"Callout","variant":"warning","title":"Missing Standup Updates","description":"3 of 8 team members have not submitted their update yet today (Alex, Jordan, Sam)."},{"id":"tab-container","component":"Tabs","items":["tab-all","tab-blocked"]},{"id":"tab-all","component":"TabItem","value":"all-updates","trigger":"All Updates (5)","content":["blockers-section","on-track-section"]},{"id":"blockers-section","component":"Card","variant":"clear","direction":"column","gap":"m","children":["blockers-heading","blocker-item-1"]},{"id":"blockers-heading","component":"Heading","level":"h3","text":"🚨 Blocked Teammates (1)"},{"id":"blocker-item-1","component":"Card","variant":"sunk","direction":"column","gap":"s","children":["blocker-1-header","blocker-1-callout","blocker-1-details"]},{"id":"blocker-1-header","component":"Card","variant":"clear","direction":"row","align":"center","justify":"between","children":["blocker-1-user","blocker-1-tag"]},{"id":"blocker-1-user","component":"TextContent","size":"large-heavy","text":"Elena Rostova (Frontend Lead)"},{"id":"blocker-1-tag","component":"Tag","text":"BLOCKED","variant":"danger","size":"sm"},{"id":"blocker-1-callout","component":"TextCallout","variant":"danger","title":"Blocker","description":"Waiting on API response schema clarification from backend team for the new billing portal integration."},{"id":"blocker-1-details","component":"TextContent","size":"default","text":"**Yesterday:** Completed UI component library update.\n**Today:** Integrating billing portal flow."},{"id":"on-track-section","component":"Card","variant":"clear","direction":"column","gap":"m","children":["on-track-heading","on-track-list"]},{"id":"on-track-heading","component":"Heading","level":"h3","text":"✅ On Track (4)"},{"id":"on-track-list","component":"ListBlock","variant":"number","items":["track-item-1","track-item-2","track-item-3","track-item-4"]},{"id":"track-item-1","component":"ListItem","title":"Marcus Chen (Backend Dev)","subtitle":"Yesterday: Auth service migration. Today: Finalizing OAuth2 endpoints & unit tests. No blockers.","actionLabel":"On Track"},{"id":"track-item-2","component":"ListItem","title":"Sarah Jenkins (Product Designer)","subtitle":"Yesterday: User testing interviews. Today: High-fidelity mocks for checkout flow v2. No blockers.","actionLabel":"On Track"},{"id":"track-item-3","component":"ListItem","title":"David Kim (DevOps)","subtitle":"Yesterday: Staging K8s cluster maintenance. Today: CI/CD pipeline optimization for build times. No blockers.","actionLabel":"On Track"},{"id":"track-item-4","component":"ListItem","title":"Priya Patel (QA Lead)","subtitle":"Yesterday: Regression testing sprint 42. Today: E2E automated test suite setup. No blockers.","actionLabel":"On Track"},{"id":"tab-blocked","component":"TabItem","value":"blocked-only","trigger":"Blocked Only (1)","content":["blocker-item-1"]},{"id":"form-card","component":"Card","variant":"card","direction":"column","gap":"m","children":["form-heading","update-form"]},{"id":"form-heading","component":"Heading","level":"h3","text":"Post Your Standup Update"},{"id":"update-form","component":"Form","name":"standup-form","fields":["field-yesterday","field-today","field-blocked","field-blocker-text"],"buttons":"form-buttons"},{"id":"field-yesterday","component":"FormControl","label":"What did you accomplish yesterday?","input":"input-yesterday"},{"id":"input-yesterday","component":"TextArea","name":"yesterday","placeholder":"Summarize your key tasks completed yesterday...","rows":2},{"id":"field-today","component":"FormControl","label":"What are you planning to work on today?","input":"input-today"},{"id":"input-today","component":"TextArea","name":"today","placeholder":"Outline your priorities for today...","rows":2},{"id":"field-blocked","component":"FormControl","label":"Are you currently blocked?","input":"radio-blocked"},{"id":"radio-blocked","component":"RadioGroup","name":"isBlocked","defaultValue":"no","items":["radio-no","radio-yes"]},{"id":"radio-no","component":"RadioItem","label":"No, I'm clear","value":"no","description":"Everything is moving smoothly."},{"id":"radio-yes","component":"RadioItem","label":"Yes, I have a blocker","value":"yes","description":"I need help or input from someone else."},{"id":"field-blocker-text","component":"FormControl","label":"Blocker details (if applicable)","input":"input-blocker","hint":"Specify what/who you are waiting on so the team can jump in."},{"id":"input-blocker","component":"Input","name":"blockerDetails","placeholder":"Describe your blocker...","type":"text"},{"id":"form-buttons","component":"Buttons","direction":"row","buttons":["btn-submit"] logic":{"submit":{"action":"submitForm"}}},{"id":"btn-submit","component":"Button","label":"Submit Standup Update","variant":"primary","size":"medium"}]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "blockerAlert",
+          "tabs",
+          "separator",
+          "formHeader",
+          "updateForm",
+          "followUps"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Daily Async Standup",
+        "subtitle": "Wednesday, October 24 • Engineering & Product Team"
+      },
+      {
+        "id": "blockerAlert",
+        "component": "Alert",
+        "title": "1 Teammate Blocked",
+        "description": "Sarah Connor is blocked on API rate limit issues with the gateway provider. Needs DevOps review.",
+        "variant": "destructive"
+      },
+      {
+        "id": "tabs",
+        "component": "Tabs",
+        "items": [
+          "tabUpdates",
+          "tabMissing"
+        ]
+      },
+      {
+        "id": "tabUpdates",
+        "component": "TabItem",
+        "value": "submitted",
+        "trigger": "Submitted Updates (3)",
+        "content": [
+          "updatesList"
+        ]
+      },
+      {
+        "id": "updatesList",
+        "component": "ListBlock",
+        "items": [
+          "itemSarah",
+          "itemAlex",
+          "itemElena"
+        ]
+      },
+      {
+        "id": "itemSarah",
+        "component": "ListItem",
+        "title": "Sarah Connor — Lead Engineer 🔴 BLOCKED",
+        "subtitle": "Yesterday: Completed auth migration setup. | Today: Debugging API gateway latency. | Blocker: Exceeding rate limits on staging gateway, need higher quota approved.",
+        "actionLabel": "Help Blocked Teammate"
+      },
+      {
+        "id": "itemAlex",
+        "component": "ListItem",
+        "title": "Alex Rivera — Product Designer 🟢 On Track",
+        "subtitle": "Yesterday: Finalized wireframes for checkout v2. | Today: Handing off design specs to frontend team and reviewing usability test videos.",
+        "actionLabel": "View Figma Specs"
+      },
+      {
+        "id": "itemElena",
+        "component": "ListItem",
+        "title": "Elena Rostova — Backend Developer 🟢 On Track",
+        "subtitle": "Yesterday: Wrote unit tests for payment webhooks. | Today: Submitting PR for webhooks retry mechanism and pairing with Sarah on gateway.",
+        "actionLabel": "Review PR #402"
+      },
+      {
+        "id": "tabMissing",
+        "component": "TabItem",
+        "value": "missing",
+        "trigger": "Missing Updates (2)",
+        "content": [
+          "missingNotice",
+          "missingList"
+        ]
+      },
+      {
+        "id": "missingNotice",
+        "component": "TextCallout",
+        "variant": "warning",
+        "title": "2 Standup Updates Outstanding",
+        "description": "Automated reminders sent via Slack at 9:00 AM EST."
+      },
+      {
+        "id": "missingList",
+        "component": "ListBlock",
+        "items": [
+          "itemMarcus",
+          "itemDavid"
+        ]
+      },
+      {
+        "id": "itemMarcus",
+        "component": "ListItem",
+        "title": "Marcus Vance — QA Lead",
+        "subtitle": "Status: Pending update submission",
+        "actionLabel": "Nudge on Slack"
+      },
+      {
+        "id": "itemDavid",
+        "component": "ListItem",
+        "title": "David Kim — Frontend Engineer",
+        "subtitle": "Status: Pending update submission (Out of Office AM)",
+        "actionLabel": "Nudge on Slack"
+      },
+      {
+        "id": "separator",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "formHeader",
+        "component": "CardHeader",
+        "title": "Post Your Standup Update",
+        "subtitle": "Keep the team informed on your progress and any blockers"
+      },
+      {
+        "id": "updateForm",
+        "component": "Form",
+        "name": "standup-submission",
+        "buttons": "formActions",
+        "fields": [
+          "yesterdayField",
+          "todayField",
+          "blockerRadioField",
+          "blockerDetailsField"
+        ]
+      },
+      {
+        "id": "yesterdayField",
+        "component": "FormControl",
+        "label": "What did you accomplish yesterday?",
+        "input": "yesterdayInput"
+      },
+      {
+        "id": "yesterdayInput",
+        "component": "TextArea",
+        "name": "yesterday",
+        "placeholder": "e.g., Shipped feature flag for dashboard analytics...",
+        "rows": 2
+      },
+      {
+        "id": "todayField",
+        "component": "FormControl",
+        "label": "What are you working on today?",
+        "input": "todayInput"
+      },
+      {
+        "id": "todayInput",
+        "component": "TextArea",
+        "name": "today",
+        "placeholder": "e.g., Code review for PR #104, writing integration tests...",
+        "rows": 2
+      },
+      {
+        "id": "blockerRadioField",
+        "component": "FormControl",
+        "label": "Are you currently blocked?",
+        "input": "blockerRadio"
+      },
+      {
+        "id": "blockerRadio",
+        "component": "RadioGroup",
+        "name": "is_blocked",
+        "defaultValue": "no",
+        "items": [
+          "radioNo",
+          "radioYes"
+        ]
+      },
+      {
+        "id": "radioNo",
+        "component": "RadioItem",
+        "label": "No blockers",
+        "description": "Everything is running smoothly",
+        "value": "no"
+      },
+      {
+        "id": "radioYes",
+        "component": "RadioItem",
+        "label": "Yes, I need help",
+        "description": "Will alert team members and show blocker badge",
+        "value": "yes"
+      },
+      {
+        "id": "blockerDetailsField",
+        "component": "FormControl",
+        "label": "Blocker details (optional)",
+        "input": "blockerDetailsInput",
+        "hint": "Specify who or what service you are waiting on"
+      },
+      {
+        "id": "blockerDetailsInput",
+        "component": "Input",
+        "name": "blocker_details",
+        "placeholder": "e.g., Waiting for design feedback on modal state...",
+        "type": "text"
+      },
+      {
+        "id": "formActions",
+        "component": "Buttons",
+        "buttons": [
+          "submitBtn",
+          "clearBtn"
+        ]
+      },
+      {
+        "id": "submitBtn",
+        "component": "Button",
+        "label": "Submit Standup",
+        "variant": "primary"
+      },
+      {
+        "id": "clearBtn",
+        "component": "Button",
+        "label": "Save Draft",
+        "variant": "tertiary"
+      },
+      {
+        "id": "followUps",
+        "component": "FollowUpBlock",
+        "items": [
+          "followUp1",
+          "followUp2"
+        ]
+      },
+      {
+        "id": "followUp1",
+        "component": "FollowUpItem",
+        "text": "Send Slack nudge to teammates with missing updates"
+      },
+      {
+        "id": "followUp2",
+        "component": "FollowUpItem",
+        "text": "View yesterday's standup summary"
+      }
+    ]
+  }
+}
 </a2ui-json>

@@ -1,6 +1,185 @@
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"delivery-tracking","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#2563EB","agentDisplayName":"Delivery Tracking"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
+
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"delivery-tracking","components":[{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["header","status-card","eta-card","problem-card"]},{"id":"header","component":"Card","variant":"clear","direction":"column","gap":"xs","children":["title","subtitle"]},{"id":"title","component":"Heading","text":"Track your delivery","level":"h1"},{"id":"subtitle","component":"TextContent","text":"Order #DLV-48291","size":"default"},{"id":"status-card","component":"Card","variant":"card","direction":"column","gap":"m","children":["status-header","location-callout","status-detail"]},{"id":"status-header","component":"CardHeader","title":"Package location","subtitle":"Latest tracking update"},{"id":"location-callout","component":"Callout","variant":"info","title":"Out for delivery","description":"Your package is currently with the local delivery driver in your area."},{"id":"status-detail","component":"TextContent","text":"Last scanned today at 9:42 AM • Local delivery facility","size":"small"},{"id":"eta-card","component":"Card","variant":"card","direction":"column","gap":"s","children":["eta-header","eta-text","eta-progress"]},{"id":"eta-header","component":"CardHeader","title":"Estimated delivery","subtitle":"Today, August 18"},{"id":"eta-text","component":"TextContent","text":"Expected by 8:00 PM","size":"large-heavy"},{"id":"eta-progress","component":"Progress","value":80,"label":"Delivery progress"},{"id":"problem-card","component":"Card","variant":"sunk","direction":"column","gap":"m","children":["problem-header","problem-text","report-button"]},{"id":"problem-header","component":"CardHeader","title":"Need help with this delivery?"},{"id":"problem-text","component":"TextContent","text":"Report a missing package, damaged item, incorrect address, or another delivery issue.","size":"default"},{"id":"report-button","component":"DialogBlock","triggerLabel":"Report a delivery problem","title":"Report a delivery problem","description":"Choose the issue that best describes your delivery.","triggerVariant":"destructive","content":["problem-options"]},{"id":"problem-options","component":"RadioGroup","name":"delivery_issue","items":["issue-missing","issue-damaged","issue-address","issue-other"]},{"id":"issue-missing","component":"RadioItem","label":"Package not received","description":"The tracking says delivered, but I cannot find it.","value":"missing"},{"id":"issue-damaged","component":"RadioItem","label":"Package arrived damaged","description":"The package or its contents were damaged.","value":"damaged"},{"id":"issue-address","component":"RadioItem","label":"Wrong delivery address","description":"The delivery address needs to be corrected.","value":"address"},{"id":"issue-other","component":"RadioItem","label":"Other issue","description":"Report another delivery concern.","value":"other"}]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "status",
+          "location",
+          "deliveryDate",
+          "separator",
+          "issueSection"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Track your delivery",
+        "subtitle": "Order #DLV-48291"
+      },
+      {
+        "id": "status",
+        "component": "Badge",
+        "text": "Out for delivery",
+        "variant": "secondary"
+      },
+      {
+        "id": "location",
+        "component": "Callout",
+        "variant": "info",
+        "title": "Your package is in your area",
+        "description": "It is currently with the local delivery driver and is on its way to your address."
+      },
+      {
+        "id": "deliveryDate",
+        "component": "TextCallout",
+        "variant": "success",
+        "title": "Estimated delivery",
+        "description": "Today, August 18, by 8:00 PM"
+      },
+      {
+        "id": "separator",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "issueSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "issueHeading",
+          "issueDescription",
+          "reportProblem"
+        ],
+        "gap": "s"
+      },
+      {
+        "id": "issueHeading",
+        "component": "Heading",
+        "text": "Need help with this delivery?",
+        "level": "h3"
+      },
+      {
+        "id": "issueDescription",
+        "component": "TextContent",
+        "text": "If your package is delayed, damaged, missing, or delivered to the wrong place, let us know.",
+        "size": "small"
+      },
+      {
+        "id": "reportProblem",
+        "component": "DialogBlock",
+        "triggerLabel": "Report a delivery problem",
+        "title": "Report a delivery problem",
+        "description": "Choose the issue that best describes what happened.",
+        "triggerVariant": "destructive",
+        "content": [
+          "problemForm"
+        ]
+      },
+      {
+        "id": "problemForm",
+        "component": "Form",
+        "name": "delivery-problem",
+        "fields": [
+          "problemTypeField",
+          "detailsField"
+        ],
+        "buttons": "problemButtons"
+      },
+      {
+        "id": "problemTypeField",
+        "component": "FormControl",
+        "label": "What is the problem?",
+        "input": "problemType"
+      },
+      {
+        "id": "problemType",
+        "component": "Select",
+        "name": "problem_type",
+        "placeholder": "Select an issue",
+        "items": [
+          "lateOption",
+          "damagedOption",
+          "missingOption",
+          "wrongAddressOption"
+        ]
+      },
+      {
+        "id": "lateOption",
+        "component": "SelectItem",
+        "value": "late",
+        "label": "Delivery is late"
+      },
+      {
+        "id": "damagedOption",
+        "component": "SelectItem",
+        "value": "damaged",
+        "label": "Package is damaged"
+      },
+      {
+        "id": "missingOption",
+        "component": "SelectItem",
+        "value": "missing",
+        "label": "Package is missing"
+      },
+      {
+        "id": "wrongAddressOption",
+        "component": "SelectItem",
+        "value": "wrong_address",
+        "label": "Delivered to the wrong address"
+      },
+      {
+        "id": "detailsField",
+        "component": "FormControl",
+        "label": "Additional details",
+        "input": "detailsInput",
+        "hint": "Optional"
+      },
+      {
+        "id": "detailsInput",
+        "component": "TextArea",
+        "name": "details",
+        "placeholder": "Tell us what happened",
+        "rows": 3
+      },
+      {
+        "id": "problemButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitProblem",
+          "cancelProblem"
+        ]
+      },
+      {
+        "id": "submitProblem",
+        "component": "Button",
+        "label": "Submit report",
+        "variant": "primary"
+      },
+      {
+        "id": "cancelProblem",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
 </a2ui-json>

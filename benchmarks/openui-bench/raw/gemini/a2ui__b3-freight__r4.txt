@@ -1,618 +1,500 @@
-Here is a interactive logistics dashboard for managing shipments, performance metrics, and carrier distributions.
+Here is a comprehensive dashboard tailored for a logistics coordinator, featuring shipment tracking, status alerts, carrier breakdowns, weekly volume trends, search functionality, and real-time updates.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "logistics-dashboard",
-      "catalogId": "thesys.dev:c1-openui",
-      "theme": {
-        "primaryColor": "#0F52BA",
-        "agentDisplayName": "Logistics Command Center"
-      }
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "logistics-dashboard",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "column",
-          "gap": "l",
-          "children": [
-            "header-card",
-            "kpi-summary-card",
-            "delay-alert-callout",
-            "search-filter-card",
-            "shipments-table-card",
-            "analytics-tabs-card"
-          ]
-        },
-        {
-          "id": "header-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "row",
-          "justify": "between",
-          "align": "center",
-          "children": [
-            "header-title-block",
-            "refresh-badge"
-          ]
-        },
-        {
-          "id": "header-title-block",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "column",
-          "gap": "xs",
-          "children": [
-            "main-heading",
-            "sub-heading"
-          ]
-        },
-        {
-          "id": "main-heading",
-          "component": "Heading",
-          "level": "h2",
-          "text": "Logistics Operations Control"
-        },
-        {
-          "id": "sub-heading",
-          "component": "TextContent",
-          "size": "small",
-          "text": "Real-time fleet status, route tracking, and performance analytics"
-        },
-        {
-          "id": "refresh-badge",
-          "component": "Tag",
-          "text": "Last Refreshed: Today, 14:32:05 UTC",
-          "variant": "neutral",
-          "size": "sm"
-        },
-        {
-          "id": "kpi-summary-card",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "m",
-          "children": [
-            "kpi-ontime-card",
-            "kpi-cost-card",
-            "kpi-active-card"
-          ]
-        },
-        {
-          "id": "kpi-ontime-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "weight": 1,
-          "children": [
-            "kpi-ontime-header",
-            "kpi-ontime-value",
-            "kpi-ontime-progress"
-          ]
-        },
-        {
-          "id": "kpi-ontime-header",
-          "component": "CardHeader",
-          "title": "On-Time Delivery Rate",
-          "subtitle": "Current Month Performance"
-        },
-        {
-          "id": "kpi-ontime-value",
-          "component": "Heading",
-          "level": "h1",
-          "text": "94.2%"
-        },
-        {
-          "id": "kpi-ontime-progress",
-          "component": "Progress",
-          "value": 94,
-          "label": "Target: 95.0%"
-        },
-        {
-          "id": "kpi-cost-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "weight": 1,
-          "children": [
-            "kpi-cost-header",
-            "kpi-cost-value",
-            "kpi-cost-desc"
-          ]
-        },
-        {
-          "id": "kpi-cost-header",
-          "component": "CardHeader",
-          "title": "Avg Cost / Shipment",
-          "subtitle": "30-Day Moving Average"
-        },
-        {
-          "id": "kpi-cost-value",
-          "component": "Heading",
-          "level": "h1",
-          "text": "$1,248"
-        },
-        {
-          "id": "kpi-cost-desc",
-          "component": "TextContent",
-          "size": "small",
-          "text": "↓ 3.1% decrease vs last month ($1,288)"
-        },
-        {
-          "id": "kpi-active-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "weight": 1,
-          "children": [
-            "kpi-active-header",
-            "kpi-active-value",
-            "kpi-active-badge"
-          ]
-        },
-        {
-          "id": "kpi-active-header",
-          "component": "CardHeader",
-          "title": "Active Shipments",
-          "subtitle": "Currently in transit"
-        },
-        {
-          "id": "kpi-active-value",
-          "component": "Heading",
-          "level": "h1",
-          "text": "1,420"
-        },
-        {
-          "id": "kpi-active-badge",
-          "component": "Tag",
-          "text": "2 Alerted Delays",
-          "variant": "danger",
-          "size": "sm"
-        },
-        {
-          "id": "delay-alert-callout",
-          "component": "Alert",
-          "variant": "destructive",
-          "title": "Action Required: 2 Shipments Delayed",
-          "description": "Shipment #SH-8092 (Chicago → Houston) delayed by severe weather (+18h). Shipment #SH-9104 (Seattle → Los Angeles) delayed due to mechanical inspection (+6h). Contact dispatch or flag for priority escalation."
-        },
-        {
-          "id": "search-filter-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "row",
-          "gap": "m",
-          "align": "end",
-          "children": [
-            "route-search-control",
-            "status-select-control",
-            "search-buttons"
-          ]
-        },
-        {
-          "id": "route-search-control",
-          "component": "FormControl",
-          "label": "Search by Route / Location",
-          "hint": "e.g., Chicago, Los Angeles, SH-8092",
-          "input": "route-search-input",
-          "weight": 2
-        },
-        {
-          "id": "route-search-input",
-          "component": "Input",
-          "name": "routeQuery",
-          "placeholder": "Enter origin, destination, or tracking ID..."
-        },
-        {
-          "id": "status-select-control",
-          "component": "FormControl",
-          "label": "Filter Status",
-          "input": "status-select",
-          "weight": 1
-        },
-        {
-          "id": "status-select",
-          "component": "Select",
-          "name": "statusFilter",
-          "placeholder": "All Statuses",
-          "items": [
-            "status-item-all",
-            "status-item-ontime",
-            "status-item-delayed",
-            "status-item-delivered"
-          ]
-        },
-        {
-          "id": "status-item-all",
-          "component": "SelectItem",
-          "value": "all",
-          "label": "All Statuses"
-        },
-        {
-          "id": "status-item-ontime",
-          "component": "SelectItem",
-          "value": "ontime",
-          "label": "On Schedule"
-        },
-        {
-          "id": "status-item-delayed",
-          "component": "SelectItem",
-          "value": "delayed",
-          "label": "Delayed"
-        },
-        {
-          "id": "status-item-delivered",
-          "component": "SelectItem",
-          "value": "delivered",
-          "label": "Delivered"
-        },
-        {
-          "id": "search-buttons",
-          "component": "Buttons",
-          "direction": "row",
-          "buttons": [
-            "filter-apply-btn",
-            "flag-dialog-trigger"
-          ]
-        },
-        {
-          "id": "filter-apply-btn",
-          "component": "Button",
-          "label": "Filter Routes",
-          "variant": "primary",
-          "size": "medium"
-        },
-        {
-          "id": "flag-dialog-trigger",
-          "component": "DialogBlock",
-          "triggerLabel": "Flag / Escalate Shipment",
-          "triggerVariant": "destructive",
-          "title": "Flag Shipment for Attention",
-          "description": "Submit an urgent flag or operational note to the dispatch team.",
-          "content": [
-            "flag-form"
-          ]
-        },
-        {
-          "id": "flag-form",
-          "component": "Form",
-          "name": "flagShipmentForm",
-          "fields": [
-            "flag-shipment-id-control",
-            "flag-reason-control",
-            "flag-notes-control"
-          ],
-          "buttons": "flag-form-buttons"
-        },
-        {
-          "id": "flag-shipment-id-control",
-          "component": "FormControl",
-          "label": "Shipment ID",
-          "input": "flag-shipment-id-input"
-        },
-        {
-          "id": "flag-shipment-id-input",
-          "component": "Input",
-          "name": "shipmentId",
-          "placeholder": "e.g. SH-8092"
-        },
-        {
-          "id": "flag-reason-control",
-          "component": "FormControl",
-          "label": "Flag Reason",
-          "input": "flag-reason-select"
-        },
-        {
-          "id": "flag-reason-select",
-          "component": "Select",
-          "name": "flagReason",
-          "placeholder": "Select issue...",
-          "items": [
-            "reason-weather",
-            "reason-breakdown",
-            "reason-customs",
-            "reason-customer"
-          ]
-        },
-        {
-          "id": "reason-weather",
-          "component": "SelectItem",
-          "value": "weather",
-          "label": "Weather Delay"
-        },
-        {
-          "id": "reason-breakdown",
-          "component": "SelectItem",
-          "value": "breakdown",
-          "label": "Mechanical Breakdown"
-        },
-        {
-          "id": "reason-customs",
-          "component": "SelectItem",
-          "value": "customs",
-          "label": "Customs Hold"
-        },
-        {
-          "id": "reason-customer",
-          "component": "SelectItem",
-          "value": "customer",
-          "label": "Customer Escalation"
-        },
-        {
-          "id": "flag-notes-control",
-          "component": "FormControl",
-          "label": "Notes / Action Plan",
-          "input": "flag-notes-textarea"
-        },
-        {
-          "id": "flag-notes-textarea",
-          "component": "TextArea",
-          "name": "flagNotes",
-          "placeholder": "Describe required rerouting or follow-up...",
-          "rows": 3
-        },
-        {
-          "id": "flag-form-buttons",
-          "component": "Buttons",
-          "direction": "row",
-          "buttons": [
-            "submit-flag-btn"
-          ]
-        },
-        {
-          "id": "submit-flag-btn",
-          "component": "Button",
-          "label": "Submit Flag",
-          "variant": "primary",
-          "type": "destructive"
-        },
-        {
-          "id": "shipments-table-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "table-header",
-            "shipments-table",
-            "table-pagination"
-          ]
-        },
-        {
-          "id": "table-header",
-          "component": "CardHeader",
-          "title": "In-Transit Shipments",
-          "subtitle": "Live tracking and active status updates across all carriers"
-        },
-        {
-          "id": "shipments-table",
-          "component": "Table",
-          "columns": [
-            "col-id",
-            "col-origin",
-            "col-destination",
-            "col-carrier",
-            "col-eta",
-            "col-status",
-            "col-action"
-          ]
-        },
-        {
-          "id": "col-id",
-          "component": "Col",
-          "label": "Tracking ID",
-          "type": "string",
-          "data": [
-            "SH-8092",
-            "SH-9104",
-            "SH-7721",
-            "SH-6540",
-            "SH-4432"
-          ]
-        },
-        {
-          "id": "col-origin",
-          "component": "Col",
-          "label": "Origin",
-          "type": "string",
-          "data": [
-            "Chicago, IL",
-            "Seattle, WA",
-            "Atlanta, GA",
-            "Dallas, TX",
-            "New York, NY"
-          ]
-        },
-        {
-          "id": "col-destination",
-          "component": "Col",
-          "label": "Destination",
-          "type": "string",
-          "data": [
-            "Houston, TX",
-            "Los Angeles, CA",
-            "Miami, FL",
-            "Denver, CO",
-            "Toronto, ON"
-          ]
-        },
-        {
-          "id": "col-carrier",
-          "component": "Col",
-          "label": "Carrier",
-          "type": "string",
-          "data": [
-            "Swift Logistics",
-            "Apex Express",
-            "FreightCo",
-            "LogiTrans",
-            "Apex Express"
-          ]
-        },
-        {
-          "id": "col-eta",
-          "component": "Col",
-          "label": "ETA",
-          "type": "string",
-          "data": [
-            "Oct 25, 18:00 (Delayed +18h)",
-            "Oct 24, 22:30 (Delayed +6h)",
-            "Oct 24, 14:00 (On Time)",
-            "Oct 25, 09:15 (On Time)",
-            "Oct 26, 11:00 (On Time)"
-          ]
-        },
-        {
-          "id": "col-status",
-          "component": "Col",
-          "label": "Status",
-          "type": "string",
-          "data": [
-            "🚨 DELAYED - Severe Weather",
-            "🚨 DELAYED - Mechanical",
-            "✅ ON SCHEDULE",
-            "✅ ON SCHEDULE",
-            "✅ ON SCHEDULE"
-          ]
-        },
-        {
-          "id": "col-action",
-          "component": "Col",
-          "label": "Flag Status",
-          "type": "string",
-          "data": [
-            "🚩 Flagged (High Priority)",
-            "🚩 Flagged (Medium)",
-            "Normal",
-            "Normal",
-            "Normal"
-          ]
-        },
-        {
-          "id": "table-pagination",
-          "component": "PaginationBlock",
-          "currentPage": 1,
-          "totalPages": 28
-        },
-        {
-          "id": "analytics-tabs-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "analytics-tabs"
-          ]
-        },
-        {
-          "id": "analytics-tabs",
-          "component": "Tabs",
-          "items": [
-            "tab-volume-trend",
-            "tab-carrier-split"
-          ]
-        },
-        {
-          "id": "tab-volume-trend",
-          "component": "TabItem",
-          "value": "volume-trend",
-          "trigger": "Weekly Volume (Past 2 Months)",
-          "content": [
-            "volume-chart-header",
-            "weekly-volume-chart"
-          ]
-        },
-        {
-          "id": "volume-chart-header",
-          "component": "TextContent",
-          "size": "small",
-          "text": "Total shipment volume per week over the last 8 weeks (in thousands of units)."
-        },
-        {
-          "id": "weekly-volume-chart",
-          "component": "BarChart",
-          "variant": "grouped",
-          "xLabel": "Week",
-          "yLabel": "Volume (Shipments)",
-          "labels": [
-            "Wk 1 (Sep 1)",
-            "Wk 2 (Sep 8)",
-            "Wk 3 (Sep 15)",
-            "Wk 4 (Sep 22)",
-            "Wk 5 (Sep 29)",
-            "Wk 6 (Oct 6)",
-            "Wk 7 (Oct 13)",
-            "Wk 8 (Oct 20)"
-          ],
-          "series": [
-            "series-weekly-shipments"
-          ]
-        },
-        {
-          "id": "series-weekly-shipments",
-          "component": "Series",
-          "category": "Total Volume",
-          "values": [
-            1250,
-            1380,
-            1420,
-            1310,
-            1490,
-            1550,
-            1610,
-            1580
-          ]
-        },
-        {
-          "id": "tab-carrier-split",
-          "component": "TabItem",
-          "value": "carrier-split",
-          "trigger": "Volume Split by Carrier",
-          "content": [
-            "carrier-chart-header",
-            "carrier-split-chart"
-          ]
-        },
-        {
-          "id": "carrier-chart-header",
-          "component": "TextContent",
-          "size": "small",
-          "text": "Distribution of total active shipments by contracted carrier."
-        },
-        {
-          "id": "carrier-split-chart",
-          "component": "PieChart",
-          "variant": "donut",
-          "appearance": "circular",
-          "labels": [
-            "Apex Express",
-            "Swift Logistics",
-            "FreightCo",
-            "LogiTrans",
-            "Others"
-          ],
-          "values": [
-            35,
-            28,
-            20,
-            12,
-            5
-          ]
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "delayAlert",
+          "kpiOverview",
+          "weeklyVolumeCard",
+          "carrierAndRouteSection",
+          "shipmentsCard"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Logistics Operations Control",
+        "subtitle": "Last updated: Today at 14:32 EST • Refreshed 3 mins ago"
+      },
+      {
+        "id": "delayAlert",
+        "component": "Alert",
+        "title": "Critical Delays Detected (2 Shipments)",
+        "description": "Shipment #SH-8092 (Chicago → Dallas) and #SH-8104 (Seattle → Los Angeles) are experiencing severe delays due to weather and port congestion.",
+        "variant": "destructive"
+      },
+      {
+        "id": "kpiOverview",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "onTimeCard",
+          "avgCostCard",
+          "activeShipmentsCard"
+        ]
+      },
+      {
+        "id": "onTimeCard",
+        "component": "Card",
+        "children": [
+          "onTimeHeader",
+          "onTimeProgress"
+        ],
+        "variant": "sunk"
+      },
+      {
+        "id": "onTimeHeader",
+        "component": "CardHeader",
+        "title": "94.2%",
+        "subtitle": "On-Time Delivery Rate (This Month)"
+      },
+      {
+        "id": "onTimeProgress",
+        "component": "Progress",
+        "value": 94,
+        "label": "Target: 95%"
+      },
+      {
+        "id": "avgCostCard",
+        "component": "Card",
+        "children": [
+          "avgCostHeader",
+          "avgCostBadge"
+        ],
+        "variant": "sunk"
+      },
+      {
+        "id": "avgCostHeader",
+        "component": "CardHeader",
+        "title": "$1,245",
+        "subtitle": "Avg Cost per Shipment"
+      },
+      {
+        "id": "avgCostBadge",
+        "component": "Badge",
+        "text": "-3.8% vs last month",
+        "variant": "secondary"
+      },
+      {
+        "id": "activeShipmentsCard",
+        "component": "Card",
+        "children": [
+          "activeHeader",
+          "activeBadge"
+        ],
+        "variant": "sunk"
+      },
+      {
+        "id": "activeHeader",
+        "component": "CardHeader",
+        "title": "1,420",
+        "subtitle": "Active Shipments in Transit"
+      },
+      {
+        "id": "activeBadge",
+        "component": "Badge",
+        "text": "12 Delayed",
+        "variant": "destructive"
+      },
+      {
+        "id": "weeklyVolumeCard",
+        "component": "Card",
+        "children": [
+          "weeklyVolumeHeader",
+          "weeklyVolumeChart"
+        ]
+      },
+      {
+        "id": "weeklyVolumeHeader",
+        "component": "CardHeader",
+        "title": "Weekly Shipment Volume",
+        "subtitle": "Past 8 weeks (Last 2 Months)"
+      },
+      {
+        "id": "weeklyVolumeChart",
+        "component": "BarChart",
+        "labels": [
+          "Wk 1",
+          "Wk 2",
+          "Wk 3",
+          "Wk 4",
+          "Wk 5",
+          "Wk 6",
+          "Wk 7",
+          "Wk 8"
+        ],
+        "series": [
+          "volumeSeries"
+        ],
+        "xLabel": "Week",
+        "yLabel": "Total Shipments"
+      },
+      {
+        "id": "volumeSeries",
+        "component": "Series",
+        "category": "Shipments",
+        "values": [
+          310,
+          345,
+          290,
+          410,
+          380,
+          425,
+          390,
+          450
+        ]
+      },
+      {
+        "id": "carrierAndRouteSection",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "carrierCard",
+          "routeSearchCard"
+        ]
+      },
+      {
+        "id": "carrierCard",
+        "component": "Card",
+        "children": [
+          "carrierHeader",
+          "carrierPieChart"
+        ]
+      },
+      {
+        "id": "carrierHeader",
+        "component": "CardHeader",
+        "title": "Volume Split by Carrier",
+        "subtitle": "Current distribution across partners"
+      },
+      {
+        "id": "carrierPieChart",
+        "component": "PieChart",
+        "labels": [
+          "FedEx Freight",
+          "DHL Supply Chain",
+          "XPO Logistics",
+          "JB Hunt",
+          "Others"
+        ],
+        "values": [
+          35,
+          25,
+          20,
+          12,
+          8
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "routeSearchCard",
+        "component": "Card",
+        "children": [
+          "searchHeader",
+          "searchForm"
+        ]
+      },
+      {
+        "id": "searchHeader",
+        "component": "CardHeader",
+        "title": "Filter & Search Routes",
+        "subtitle": "Find shipments by origin or destination"
+      },
+      {
+        "id": "searchForm",
+        "component": "Form",
+        "name": "routeSearchForm",
+        "buttons": "searchButtons",
+        "fields": [
+          "originField",
+          "destinationField",
+          "statusSelectField"
+        ]
+      },
+      {
+        "id": "originField",
+        "component": "FormControl",
+        "label": "Origin City / Hub",
+        "input": "originInput"
+      },
+      {
+        "id": "originInput",
+        "component": "Input",
+        "name": "origin",
+        "placeholder": "e.g. Chicago, IL"
+      },
+      {
+        "id": "destinationField",
+        "component": "FormControl",
+        "label": "Destination City / Hub",
+        "input": "destinationInput"
+      },
+      {
+        "id": "destinationInput",
+        "component": "Input",
+        "name": "destination",
+        "placeholder": "e.g. Dallas, TX"
+      },
+      {
+        "id": "statusSelectField",
+        "component": "FormControl",
+        "label": "Shipment Status",
+        "input": "statusSelect"
+      },
+      {
+        "id": "statusSelect",
+        "component": "Select",
+        "name": "status",
+        "placeholder": "All Statuses",
+        "items": [
+          "optAll",
+          "optOnTime",
+          "optDelayed",
+          "optException"
+        ]
+      },
+      {
+        "id": "optAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All Statuses"
+      },
+      {
+        "id": "optOnTime",
+        "component": "SelectItem",
+        "value": "ontime",
+        "label": "On Time"
+      },
+      {
+        "id": "optDelayed",
+        "component": "SelectItem",
+        "value": "delayed",
+        "label": "Delayed"
+      },
+      {
+        "id": "optException",
+        "component": "SelectItem",
+        "value": "exception",
+        "label": "Exception"
+      },
+      {
+        "id": "searchButtons",
+        "component": "Buttons",
+        "buttons": [
+          "applySearchBtn",
+          "resetSearchBtn"
+        ]
+      },
+      {
+        "id": "applySearchBtn",
+        "component": "Button",
+        "label": "Search Route",
+        "variant": "primary"
+      },
+      {
+        "id": "resetSearchBtn",
+        "component": "Button",
+        "label": "Reset Filters",
+        "variant": "tertiary"
+      },
+      {
+        "id": "shipmentsCard",
+        "component": "Card",
+        "children": [
+          "shipmentsHeader",
+          "shipmentsTable",
+          "flagActionCard"
+        ]
+      },
+      {
+        "id": "shipmentsHeader",
+        "component": "CardHeader",
+        "title": "Shipments in Transit",
+        "subtitle": "Live tracking and route status"
+      },
+      {
+        "id": "shipmentsTable",
+        "component": "Table",
+        "columns": [
+          "colId",
+          "colOrigin",
+          "colDest",
+          "colCarrier",
+          "colEta",
+          "colStatus",
+          "colFlagged"
+        ]
+      },
+      {
+        "id": "colId",
+        "component": "Col",
+        "label": "Shipment ID",
+        "data": [
+          "#SH-8092",
+          "#SH-8095",
+          "#SH-8101",
+          "#SH-8104",
+          "#SH-8110"
+        ]
+      },
+      {
+        "id": "colOrigin",
+        "component": "Col",
+        "label": "Origin",
+        "data": [
+          "Chicago, IL",
+          "Atlanta, GA",
+          "New York, NY",
+          "Seattle, WA",
+          "Miami, FL"
+        ]
+      },
+      {
+        "id": "colDest",
+        "component": "Col",
+        "label": "Destination",
+        "data": [
+          "Dallas, TX",
+          "Miami, FL",
+          "Chicago, IL",
+          "Los Angeles, CA",
+          "Houston, TX"
+        ]
+      },
+      {
+        "id": "colCarrier",
+        "component": "Col",
+        "label": "Carrier",
+        "data": [
+          "FedEx Freight",
+          "JB Hunt",
+          "DHL Supply Chain",
+          "XPO Logistics",
+          "FedEx Freight"
+        ]
+      },
+      {
+        "id": "colEta",
+        "component": "Col",
+        "label": "ETA",
+        "data": [
+          "Oct 24, 18:00 (Delayed)",
+          "Oct 24, 09:30",
+          "Oct 25, 14:00",
+          "Oct 26, 11:00 (Delayed)",
+          "Oct 25, 16:30"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "DELAYED",
+          "ON TIME",
+          "ON TIME",
+          "DELAYED",
+          "ON TIME"
+        ]
+      },
+      {
+        "id": "colFlagged",
+        "component": "Col",
+        "label": "Flag Status",
+        "data": [
+          "FLAGGED - Severe Weather",
+          "Normal",
+          "Normal",
+          "FLAGGED - Port Delay",
+          "Normal"
+        ]
+      },
+      {
+        "id": "flagActionCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "flagHeader",
+          "flagForm"
+        ]
+      },
+      {
+        "id": "flagHeader",
+        "component": "CardHeader",
+        "title": "Flag a Shipment for Review",
+        "subtitle": "Mark a shipment with an incident tag or priority follow-up"
+      },
+      {
+        "id": "flagForm",
+        "component": "Form",
+        "name": "flagShipmentForm",
+        "buttons": "flagButtons",
+        "fields": [
+          "flagShipmentIdField",
+          "flagReasonField"
+        ]
+      },
+      {
+        "id": "flagShipmentIdField",
+        "component": "FormControl",
+        "label": "Shipment ID",
+        "input": "flagShipmentIdInput",
+        "hint": "Select or type the ID to flag (e.g. SH-8101)"
+      },
+      {
+        "id": "flagShipmentIdInput",
+        "component": "Input",
+        "name": "shipmentId",
+        "placeholder": "#SH-XXXX"
+      },
+      {
+        "id": "flagReasonField",
+        "component": "FormControl",
+        "label": "Flag Reason / Exception Note",
+        "input": "flagReasonInput"
+      },
+      {
+        "id": "flagReasonInput",
+        "component": "Input",
+        "name": "flagReason",
+        "placeholder": "e.g. Mechanical issue, Customs hold, Weather delay"
+      },
+      {
+        "id": "flagButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitFlagBtn"
+        ]
+      },
+      {
+        "id": "submitFlagBtn",
+        "component": "Button",
+        "label": "Flag Shipment",
+        "variant": "primary",
+        "type": "destructive"
+      }
+    ]
+  }
+}
 </a2ui-json>

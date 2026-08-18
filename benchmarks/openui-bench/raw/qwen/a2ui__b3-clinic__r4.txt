@@ -1,76 +1,476 @@
-Here's a comprehensive clinic receptionist day view covering all 7 requirements:
+
+
+Here's a complete clinic receptionist day view covering all seven requirements:
 
 <a2ui-json>
-[
-  {"createSurface":{"surfaceId":"clinic-day-view","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#2563EB","agentDisplayName":"ClinicDesk"}},"version":"v0.9"},
-  {"updateComponents":{"surfaceId":"clinic-day-view","components":[
-    {"id":"root","component":"Card","direction":"column","gap":"l","children":["header","stats-row","next-patient-callout","appointments-section","rooms-section","checkin-section","day-nav-section"]},
-    {"id":"header","component":"CardHeader","title":"🏥 Clinic Reception — Day View","subtitle":"Tuesday, June 17, 2025"},
-    {"id":"stats-row","component":"Card","direction":"row","gap":"m","variant":"clear","children":["stat-expected","stat-noshow","stat-checkedin"]},
-    {"id":"stat-expected","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["stat-expected-label","stat-expected-value"]},
-    {"id":"stat-expected-label","component":"Label","text":"Patients Expected Today"},
-    {"id":"stat-expected-value","component":"TextContent","text":"**24**","size":"large-heavy"},
-    {"id":"stat-noshow","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["stat-noshow-label","stat-noshow-value"]},
-    {"id":"stat-noshow-label","component":"Label","text":"No-Show Rate (This Month)"},
-    {"id":"stat-noshow-value","component":"TextContent","text":"**8.3%**","size":"large-heavy"},
-    {"id":"stat-checkedin","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["stat-checkedin-label","stat-checkedin-value"]},
-    {"id":"stat-checkedin-label","component":"Label","text":"Checked In So Far"},
-    {"id":"stat-checkedin-value","component":"TextContent","text":"**11 / 24**","size":"large-heavy"},
-    {"id":"next-patient-callout","component":"Callout","variant":"info","title":"🔔 Next Patient to Call","description":"Maria Gonzalez — 9:45 AM — Room 3 — Dr. Patel (Annual Physical)"},
-    {"id":"appointments-section","component":"Card","direction":"column","gap":"s","children":["appointments-title","appointments-table"]},
-    {"id":"appointments-title","component":"Heading","text":"Today's Appointments","level":"h3"},
-    {"id":"appointments-table","component":"Table","columns":["col-time","col-patient","col-provider","col-room","col-type","col-status"]},
-    {"id":"col-time","component":"Col","label":"Time","data":["8:00 AM","8:15 AM","8:30 AM","8:45 AM","9:00 AM","9:15 AM","9:30 AM","9:45 AM","10:00 AM","10:15 AM","10:30 AM","10:45 AM","11:00 AM","11:15 AM","11:30 AM","1:00 PM","1:15 PM","1:30 PM","1:45 PM","2:00 PM","2:15 PM","2:30 PM","2:45 PM","3:00 PM"],"type":"string"},
-    {"id":"col-patient","component":"Col","label":"Patient","data":["James Whitfield","Ana Reyes","Robert Chen","Linda Okafor","Thomas Berg","Sarah Kim","David Nguyen","Maria Gonzalez","Emily Watson","Carlos Mendez","Patricia Hall","Kevin O'Brien","Rachel Adams","Samuel Torres","Diane Foster","Brian Mitchell","Angela Cruz","Frank Williams","Nancy Lee","George Patel","Susan Brown","Michael Davis","Karen Johnson","Steven Clark"],"type":"string"},
-    {"id":"col-provider","component":"Col","label":"Provider","data":["Dr. Patel","Dr. Patel","Dr. Nguyen","Dr. Patel","Dr. Nguyen","Dr. Patel","Dr. Nguyen","Dr. Patel","Dr. Nguyen","Dr. Patel","Dr. Nguyen","Dr. Patel","Dr. Nguyen","Dr. Patel","Dr. Nguyen","Dr. Patel","Dr. Nguyen","Dr. Patel","Dr. Nguyen","Dr. Patel","Dr. Nguyen","Dr. Patel","Dr. Nguyen","Dr. Patel"],"type":"string"},
-    {"id":"col-room","component":"Col","label":"Room","data":["1","2","3","1","2","3","1","3","2","1","3","2","1","3","2","1","2","3","1","2","3","1","2","3"],"type":"string"},
-    {"id":"col-type","component":"Col","label":"Visit Type","data":["Follow-up","New Patient","Annual Physical","Follow-up","Urgent","Annual Physical","Follow-up","Annual Physical","New Patient","Follow-up","Lab Review","Annual Physical","Follow-up","Urgent","New Patient","Follow-up","Annual Physical","Follow-up","Lab Review","New Patient","Follow-up","Annual Physical","Follow-up","New Patient"],"type":"string"},
-    {"id":"col-status","component":"Col","label":"Status","data":["✅ Checked In","✅ Checked In","✅ Checked In","✅ Checked In","✅ Checked In","✅ Checked In","✅ Checked In","⏳ Waiting","⬜ Scheduled","⬜ Scheduled","⬜ Scheduled","⬜ Scheduled","⬜ Scheduled","⬜ Scheduled","⬜ Scheduled","⬜ Scheduled","⬜ Scheduled","⬜ Scheduled","⬜ Scheduled","⬜ Scheduled","⬜ Scheduled","⬜ Scheduled","⬜ Scheduled","⬜ Scheduled"],"type":"string"},
-    {"id":"rooms-section","component":"Card","direction":"column","gap":"s","children":["rooms-title","rooms-row"]},
-    {"id":"rooms-title","component":"Heading","text":"Room Availability (Now)","level":"h3"},
-    {"id":"rooms-row","component":"Card","direction":"row","gap":"m","variant":"clear","wrap":true,"children":["room1","room2","room3","room4","room5","room6"]},
-    {"id":"room1","component":"Tag","text":"Room 1 — Occupied","variant":"danger","size":"md"},
-    {"id":"room2","component":"Tag","text":"Room 2 — Free","variant":"success","size":"md"},
-    {"id":"room3","component":"Tag","text":"Room 3 — Occupied","variant":"danger","size":"md"},
-    {"id":"room4","component":"Tag","text":"Room 4 — Free","variant":"success","size":"md"},
-    {"id":"room5","component":"Tag","text":"Room 5 — Free","variant":"success","size":"md"},
-    {"id":"room6","component":"Tag","text":"Room 6 — Cleaning","variant":"warning","size":"md"},
-    {"id":"checkin-section","component":"Card","direction":"column","gap":"s","children":["checkin-title","checkin-form"]},
-    {"id":"checkin-title","component":"Heading","text":"Check In a Patient","level":"h3"},
-    {"id":"checkin-form","component":"Form","name":"checkin-form","fields":["checkin-patient-field","checkin-room-field"],"buttons":"checkin-buttons"},
-    {"id":"checkin-patient-field","component":"FormControl","label":"Patient","input":"checkin-patient-select"},
-    {"id":"checkin-patient-select","component":"Select","name":"patient","placeholder":"Select patient…","items":["sel-gonzalez","sel-watson","sel-mendez","sel-hall","sel-obrien"]},
-    {"id":"sel-gonzalez","component":"SelectItem","value":"maria-gonzalez","label":"Maria Gonzalez — 9:45 AM"},
-    {"id":"sel-watson","component":"SelectItem","value":"emily-watson","label":"Emily Watson — 10:00 AM"},
-    {"id":"sel-mendez","component":"SelectItem","value":"carlos-mendez","label":"Carlos Mendez — 10:15 AM"},
-    {"id":"sel-hall","component":"SelectItem","value":"patricia-hall","label":"Patricia Hall — 10:30 AM"},
-    {"id":"sel-obrien","component":"SelectItem","value":"kevin-obrien","label":"Kevin O'Brien — 10:45 AM"},
-    {"id":"checkin-room-field","component":"FormControl","label":"Assign Room","input":"checkin-room-select"},
-    {"id":"checkin-room-select","component":"Select","name":"room","placeholder":"Select room…","items":["room-opt-2","room-opt-4","room-opt-5"]},
-    {"id":"room-opt-2","component":"SelectItem","value":"room-2","label":"Room 2"},
-    {"id":"room-opt-4","component":"SelectItem","value":"room-4","label":"Room 4"},
-    {"id":"room-opt-5","component":"SelectItem","value":"room-5","label":"Room 5"},
-    {"id":"checkin-buttons","component":"Buttons","buttons":["checkin-btn","no-show-btn"]},
-    {"id":"checkin-btn","component":"Button","label":"✓ Check In","variant":"primary","size":"medium"},
-    {"id":"no-show-btn","component":"Button","label":"✗ Mark No-Show","variant":"secondary","type":"destructive","size":"medium"},
-    {"id":"day-nav-section","component":"Card","direction":"column","gap":"s","children":["day-nav-title","day-nav-row"]},
-    {"id":"day-nav-title","component":"Heading","text":"Navigate to Another Day","level":"h3"},
-    {"id":"day-nav-row","component":"Card","direction":"row","gap":"m","variant":"clear","align":"center","children":["prev-day-btn","day-picker","next-day-btn"]},
-    {"id":"prev-day-btn","component":"Button","label":"← Previous Day","variant":"secondary","size":"medium"},
-    {"id":"day-picker","component":"DatePicker","name":"select-date","mode":"single","value":["2025-06-17"]},
-    {"id":"next-day-btn","component":"Button","label":"Next Day →","variant":"secondary","size":"medium"}
-  ]},"version":"v0.9"}
-]
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
-This single screen covers all 7 requirements:
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "header",
+          "nextPatientCallout",
+          "statsRow",
+          "roomsSection",
+          "appointmentsSection",
+          "checkInSection",
+          "dayNavSection"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Reception Day View",
+        "subtitle": "Tuesday, June 24, 2025"
+      },
+      {
+        "id": "nextPatientCallout",
+        "component": "Callout",
+        "variant": "info",
+        "title": "Next Patient Called",
+        "description": "Sarah Mitchell → Room 3 at 10:15 AM (Dr. Patel)"
+      },
+      {
+        "id": "statsRow",
+        "component": "Card",
+        "direction": "row",
+        "gap": "l",
+        "align": "center",
+        "children": [
+          "patientsExpected",
+          "statSeparator",
+          "noShowRate"
+        ]
+      },
+      {
+        "id": "patientsExpected",
+        "component": "TextContent",
+        "text": "**18** patients expected today",
+        "size": "default"
+      },
+      {
+        "id": "statSeparator",
+        "component": "Separator",
+        "orientation": "vertical"
+      },
+      {
+        "id": "noShowRate",
+        "component": "TextContent",
+        "text": "No-show rate this month: **12%** (↓ 3% vs last month)",
+        "size": "default"
+      },
+      {
+        "id": "roomsSection",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "roomsHeader",
+          "roomsTags"
+        ]
+      },
+      {
+        "id": "roomsHeader",
+        "component": "CardHeader",
+        "title": "Room Availability Now",
+        "subtitle": "Live status as of 10:05 AM"
+      },
+      {
+        "id": "roomsTags",
+        "component": "TagBlock",
+        "tags": [
+          "Room 1 — Free",
+          "Room 2 — Occupied",
+          "Room 3 — Free",
+          "Room 4 — Occupied",
+          "Room 5 — Free",
+          "Room 6 — Cleaning"
+        ]
+      },
+      {
+        "id": "appointmentsSection",
+        "component": "Card",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "apptHeader",
+          "apptTable"
+        ]
+      },
+      {
+        "id": "apptHeader",
+        "component": "CardHeader",
+        "title": "Today's Appointments",
+        "subtitle": "18 scheduled · 7 checked in · 11 remaining"
+      },
+      {
+        "id": "apptTable",
+        "component": "Table",
+        "columns": [
+          "colTime",
+          "colPatient",
+          "colProvider",
+          "colStatus"
+        ]
+      },
+      {
+        "id": "colTime",
+        "component": "Col",
+        "label": "Time",
+        "data": [
+          "8:00 AM",
+          "8:30 AM",
+          "9:00 AM",
+          "9:30 AM",
+          "10:00 AM",
+          "10:15 AM",
+          "10:30 AM",
+          "11:00 AM",
+          "11:30 AM",
+          "1:00 PM",
+          "1:30 PM",
+          "2:00 PM",
+          "2:30 PM",
+          "3:00 PM",
+          "3:30 PM",
+          "4:00 PM",
+          "4:30 PM",
+          "5:00 PM"
+        ]
+      },
+      {
+        "id": "colPatient",
+        "component": "Col",
+        "label": "Patient",
+        "data": [
+          "James Okafor",
+          "Linda Tran",
+          "Robert Chen",
+          "Maria Gonzalez",
+          "David Kim",
+          "Sarah Mitchell",
+          "Angela Brooks",
+          "Thomas Wright",
+          "Priya Sharma",
+          "Kevin O'Brien",
+          "Nancy Liu",
+          "Hassan Ali",
+          "Emily Foster",
+          "George Martin",
+          "Diana Reyes",
+          "Samuel Adeyemi",
+          "Rachel Green",
+          "Victor Nguyen"
+        ]
+      },
+      {
+        "id": "colProvider",
+        "component": "Col",
+        "label": "Provider",
+        "data": [
+          "Dr. Patel",
+          "Dr. Patel",
+          "Dr. Nguyen",
+          "Dr. Patel",
+          "Dr. Nguyen",
+          "Dr. Patel",
+          "Dr. Nguyen",
+          "Dr. Patel",
+          "Dr. Nguyen",
+          "Dr. Patel",
+          "Dr. Nguyen",
+          "Dr. Patel",
+          "Dr. Nguyen",
+          "Dr. Patel",
+          "Dr. Nguyen",
+          "Dr. Patel",
+          "Dr. Nguyen",
+          "Dr. Patel"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "✓ Checked In",
+          "✓ Checked In",
+          "✓ Checked In",
+          "✓ Checked In",
+          "✓ Checked In",
+          "→ Called",
+          "Waiting",
+          "Waiting",
+          "Waiting",
+          "Scheduled",
+          "Scheduled",
+          "Scheduled",
+          "Scheduled",
+          "Scheduled",
+          "Scheduled",
+          "Scheduled",
+          "Scheduled",
+          "Scheduled"
+        ]
+      },
+      {
+        "id": "checkInSection",
+        "component": "Card",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "checkInHeader",
+          "checkInForm"
+        ]
+      },
+      {
+        "id": "checkInHeader",
+        "component": "CardHeader",
+        "title": "Check In Patient",
+        "subtitle": "Select a patient and assign a room"
+      },
+      {
+        "id": "checkInForm",
+        "component": "Form",
+        "name": "check-in",
+        "buttons": "checkInButtons",
+        "fields": [
+          "patientField",
+          "roomField"
+        ]
+      },
+      {
+        "id": "patientField",
+        "component": "FormControl",
+        "label": "Patient",
+        "input": "patientSelect"
+      },
+      {
+        "id": "patientSelect",
+        "component": "Select",
+        "name": "patient",
+        "placeholder": "Select patient…",
+        "items": [
+          "p1",
+          "p2",
+          "p3",
+          "p4",
+          "p5",
+          "p6",
+          "p7",
+          "p8",
+          "p9",
+          "p10",
+          "p11"
+        ]
+      },
+      {
+        "id": "p1",
+        "component": "SelectItem",
+        "value": "sarah-mitchell",
+        "label": "Sarah Mitchell — 10:15 AM"
+      },
+      {
+        "id": "p2",
+        "component": "SelectItem",
+        "value": "angela-brooks",
+        "label": "Angela Brooks — 10:30 AM"
+      },
+      {
+        "id": "p3",
+        "component": "SelectItem",
+        "value": "thomas-wright",
+        "label": "Thomas Wright — 11:00 AM"
+      },
+      {
+        "id": "p4",
+        "component": "SelectItem",
+        "value": "priya-sharma",
+        "label": "Priya Sharma — 11:30 AM"
+      },
+      {
+        "id": "p5",
+        "component": "SelectItem",
+        "value": "kevin-obrien",
+        "label": "Kevin O'Brien — 1:00 PM"
+      },
+      {
+        "id": "p6",
+        "component": "SelectItem",
+        "value": "nancy-liu",
+        "label": "Nancy Liu — 1:30 PM"
+      },
+      {
+        "id": "p7",
+        "component": "SelectItem",
+        "value": "hassan-ali",
+        "label": "Hassan Ali — 2:00 PM"
+      },
+      {
+        "id": "p8",
+        "component": "SelectItem",
+        "value": "emily-foster",
+        "label": "Emily Foster — 2:30 PM"
+      },
+      {
+        "id": "p9",
+        "component": "SelectItem",
+        "value": "george-martin",
+        "label": "George Martin — 3:00 PM"
+      },
+      {
+        "id": "p10",
+        "component": "SelectItem",
+        "value": "diana-reyes",
+        "label": "Diana Reyes — 3:30 PM"
+      },
+      {
+        "id": "p11",
+        "component": "SelectItem",
+        "value": "samuel-adeyemi",
+        "label": "Samuel Adeyemi — 4:00 PM"
+      },
+      {
+        "id": "roomField",
+        "component": "FormControl",
+        "label": "Assign Room",
+        "input": "roomSelect",
+        "hint": "Only free rooms are listed"
+      },
+      {
+        "id": "roomSelect",
+        "component": "Select",
+        "name": "room",
+        "placeholder": "Choose a room…",
+        "items": [
+          "r1",
+          "r3",
+          "r5"
+        ]
+      },
+      {
+        "id": "r1",
+        "component": "SelectItem",
+        "value": "room-1",
+        "label": "Room 1"
+      },
+      {
+        "id": "r3",
+        "component": "SelectItem",
+        "value": "room-3",
+        "label": "Room 3"
+      },
+      {
+        "id": "r5",
+        "component": "SelectItem",
+        "value": "room-5",
+        "label": "Room 5"
+      },
+      {
+        "id": "checkInButtons",
+        "component": "Buttons",
+        "buttons": [
+          "checkInBtn",
+          "noShowBtn"
+        ]
+      },
+      {
+        "id": "checkInBtn",
+        "component": "Button",
+        "label": "Check In",
+        "variant": "primary"
+      },
+      {
+        "id": "noShowBtn",
+        "component": "Button",
+        "label": "Mark No-Show",
+        "variant": "secondary",
+        "type": "destructive"
+      },
+      {
+        "id": "dayNavSection",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "dayNavHeader",
+          "dayNavButtons",
+          "datePicker"
+        ]
+      },
+      {
+        "id": "dayNavHeader",
+        "component": "CardHeader",
+        "title": "Switch Day",
+        "subtitle": "Jump to another date"
+      },
+      {
+        "id": "dayNavButtons",
+        "component": "Buttons",
+        "buttons": [
+          "prevDayBtn",
+          "todayBtn",
+          "nextDayBtn"
+        ]
+      },
+      {
+        "id": "prevDayBtn",
+        "component": "Button",
+        "label": "← Previous Day",
+        "variant": "secondary",
+        "size": "small"
+      },
+      {
+        "id": "todayBtn",
+        "component": "Button",
+        "label": "Today",
+        "variant": "primary",
+        "size": "small"
+      },
+      {
+        "id": "nextDayBtn",
+        "component": "Button",
+        "label": "Next Day →",
+        "variant": "secondary",
+        "size": "small"
+      },
+      {
+        "id": "datePicker",
+        "component": "DatePicker",
+        "name": "selected_date",
+        "mode": "single"
+      }
+    ]
+  }
+}
+</a2ui-json>
 
-| # | Requirement | How It's Covered |
+This single screen covers all seven requirements:
+
+| # | Requirement | Component Used |
 |---|---|---|
-| 1 | Today's appointments | Full table with time, patient, provider, room, visit type & status |
-| 2 | Patients expected | Stat card showing **24** expected |
-| 3 | No-show rate | Stat card showing **8.3%** for the month |
-| 4 | Rooms free now | Color-coded tags (green = free, red = occupied, yellow = cleaning) |
-| 5 | Next patient called | Blue callout banner highlighting Maria Gonzalez at 9:45 AM |
-| 6 | Check a patient in | Form with patient dropdown, room assignment, and Check In / No-Show buttons |
-| 7 | Move to another day | Previous/Next day buttons + a date picker |
+| 1 | Today's appointments | **Table** with Time, Patient, Provider, and Status columns |
+| 2 | Patients expected | **TextContent** stat showing "18 patients expected" |
+| 3 | No-show rate | **TextContent** stat showing 12% with trend |
+| 4 | Free rooms | **TagBlock** listing all 6 rooms with live status |
+| 5 | Next patient called | **Callout** banner highlighting Sarah Mitchell → Room 3 |
+| 6 | Check-in workflow | **Form** with patient select, room assignment, and Check In / No-Show buttons |
+| 7 | Day navigation | **Buttons** (prev/today/next) plus a **DatePicker** for jumping to any date |

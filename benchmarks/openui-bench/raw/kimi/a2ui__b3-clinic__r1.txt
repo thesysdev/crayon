@@ -1,12 +1,11 @@
-Here's a complete receptionist day-view dashboard covering all seven requirements:
+Here's a clinic receptionist day-view screen covering all 7 items:
 
 <a2ui-json>
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "clinic-day-view",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": { "primaryColor": "#0E7C86", "agentDisplayName": "Clinic Front Desk" }
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
@@ -15,64 +14,266 @@ Here's a complete receptionist day-view dashboard covering all seven requirement
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "clinic-day-view",
+    "surfaceId": "main",
     "components": [
-      { "id": "root", "component": "Card", "variant": "clear", "direction": "column", "gap": "m", "children": ["header", "dateNav", "statsRow", "nextPatient", "mainRow", "checkinCard"] },
-
-      { "id": "header", "component": "CardHeader", "title": "Front Desk — Day View", "subtitle": "Tuesday, March 12 · Dr. Patel & Dr. Nguyen on duty" },
-
-      { "id": "dateNav", "component": "Card", "variant": "card", "direction": "row", "gap": "m", "align": "center", "justify": "between", "children": ["prevDayBtn", "dayPicker", "nextDayBtn"] },
-      { "id": "prevDayBtn", "component": "Button", "label": "← Previous Day", "variant": "secondary", "action": [{ "call": "changeDay", "args": { "offset": -1 } }] },
-      { "id": "dayPicker", "component": "DatePicker", "name": "viewDate", "mode": "single", "value": ["2025-03-12"] },
-      { "id": "nextDayBtn", "component": "Button", "label": "Next Day →", "variant": "secondary", "action": [{ "call": "changeDay", "args": { "offset": 1 } }] },
-
-      { "id": "statsRow", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "children": ["expectedCard", "noshowCard", "roomsCard"] },
-      { "id": "expectedCard", "component": "Card", "variant": "card", "direction": "column", "gap": "xs", "weight": 1, "children": ["expectedTitle", "expectedValue"] },
-      { "id": "expectedTitle", "component": "TextContent", "text": "Patients Expected Today", "size": "small" },
-      { "id": "expectedValue", "component": "TextContent", "text": "**14** (9 seen, 5 remaining)", "size": "large-heavy" },
-      { "id": "noshowCard", "component": "Card", "variant": "card", "direction": "column", "gap": "xs", "weight": 1, "children": ["noshowTitle", "noshowValue", "noshowBar"] },
-      { "id": "noshowTitle", "component": "TextContent", "text": "No-Show Rate (March)", "size": "small" },
-      { "id": "noshowValue", "component": "TextContent", "text": "**7.2%** — 11 of 153 appointments", "size": "large-heavy" },
-      { "id": "noshowBar", "component": "Progress", "value": 7.2, "label": "Target: under 10%" },
-      { "id": "roomsCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "weight": 1, "children": ["roomsTitle", "roomTags"] },
-      { "id": "roomsTitle", "component": "TextContent", "text": "Rooms Free Right Now", "size": "small" },
-      { "id": "roomTags", "component": "TagBlock", "tags": ["Room 2 — free", "Room 4 — free", "Room 1 — occupied", "Room 3 — occupied", "Room 5 — cleaning"] },
-
-      { "id": "nextPatient", "component": "Callout", "variant": "info", "title": "Now Calling: Maria Gonzalez", "description": "10:30 appointment with Dr. Patel · Please send to Room 2 · Checked in 10:12 AM" },
-
-      { "id": "mainRow", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["apptHeader", "apptTable"] },
-      { "id": "apptHeader", "component": "CardHeader", "title": "Today's Appointments", "subtitle": "14 scheduled · tap a row action to manage" },
-      { "id": "apptTable", "component": "Table", "columns": ["colTime", "colPatient", "colDoctor", "colRoom", "colStatus"] },
-      { "id": "colTime", "component": "Col", "label": "Time", "data": ["09:00", "09:20", "09:40", "10:00", "10:30", "10:50", "11:10", "11:30", "13:00", "13:20", "13:40", "14:00", "14:30", "15:00"] },
-      { "id": "colPatient", "component": "Col", "label": "Patient", "data": ["James Okafor", "Linda Chen", "Robert Diaz", "Aisha Khan", "Maria Gonzalez", "Tom Becker", "Sara Ali", "Peter Novak", "Emma Rossi", "David Kim", "Nora Smith", "Lucas Meyer", "Ana Souza", "Henry Ford"] },
-      { "id": "colDoctor", "component": "Col", "label": "Doctor", "data": ["Dr. Patel", "Dr. Nguyen", "Dr. Patel", "Dr. Nguyen", "Dr. Patel", "Dr. Nguyen", "Dr. Patel", "Dr. Nguyen", "Dr. Patel", "Dr. Nguyen", "Dr. Patel", "Dr. Nguyen", "Dr. Patel", "Dr. Nguyen"] },
-      { "id": "colRoom", "component": "Col", "label": "Room", "data": ["1", "3", "1", "3", "2", "1", "3", "1", "2", "3", "1", "2", "3", "1"] },
-      { "id": "colStatus", "component": "Col", "label": "Status", "data": ["Seen", "Seen", "Seen", "Seen", "Called", "Checked in", "Checked in", "Waiting", "Expected", "Expected", "Expected", "Expected", "Expected", "Expected"] },
-
-      { "id": "checkinCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["checkinHeader", "checkinForm"] },
-      { "id": "checkinHeader", "component": "CardHeader", "title": "Check a Patient In", "subtitle": "Search by name and confirm arrival" },
-      { "id": "checkinForm", "component": "Form", "name": "checkin", "fields": ["fcPatient", "fcRoom"], "buttons": "checkinButtons" },
-      { "id": "fcPatient", "component": "FormControl", "label": "Patient Name", "input": "patientInput", "hint": "Start typing to search today's list" },
-      { "id": "patientInput", "component": "Input", "name": "patientName", "placeholder": "e.g. Emma Rossi", "type": "text", "rules": [{ "required": true }] },
-      { "id": "fcRoom", "component": "FormControl", "label": "Assign Room (optional)", "input": "roomSelect" },
-      { "id": "roomSelect", "component": "Select", "name": "room", "placeholder": "Choose a free room", "items": ["roomOpt2", "roomOpt4"] },
-      { "id": "roomOpt2", "component": "SelectItem", "value": "room2", "label": "Room 2 (free)" },
-      { "id": "roomOpt4", "component": "SelectItem", "value": "room4", "label": "Room 4 (free)" },
-      { "id": "checkinButtons", "component": "Buttons", "buttons": ["checkinSubmit"], "direction": "row" },
-      { "id": "checkinSubmit", "component": "Button", "label": "Check In", "variant": "primary", "action": [{ "call": "checkInPatient" }] }
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "kpis",
+          "nextPatient",
+          "rooms",
+          "appointments",
+          "checkinForm",
+          "dayNav"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Front Desk — Day View",
+        "subtitle": "Tuesday, March 12 · Dr. Patel & Dr. Nguyen"
+      },
+      {
+        "id": "kpis",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "expectedKpi",
+          "noShowKpi"
+        ]
+      },
+      {
+        "id": "expectedKpi",
+        "component": "TextContent",
+        "text": "**18** patients expected today",
+        "size": "large-heavy"
+      },
+      {
+        "id": "noShowKpi",
+        "component": "TextContent",
+        "text": "No-show rate this month: **6.2%**",
+        "size": "large"
+      },
+      {
+        "id": "nextPatient",
+        "component": "Callout",
+        "variant": "info",
+        "title": "Next patient called",
+        "description": "Maria Lopez — 10:30 AM with Dr. Patel · Please call to Room 2"
+      },
+      {
+        "id": "rooms",
+        "component": "Card",
+        "variant": "clear",
+        "children": [
+          "roomsLabel",
+          "roomTags"
+        ]
+      },
+      {
+        "id": "roomsLabel",
+        "component": "Label",
+        "text": "Rooms free right now"
+      },
+      {
+        "id": "roomTags",
+        "component": "TagBlock",
+        "tags": [
+          "Room 1 — Free",
+          "Room 2 — Occupied",
+          "Room 3 — Free",
+          "Room 4 — Cleaning"
+        ]
+      },
+      {
+        "id": "appointments",
+        "component": "Table",
+        "columns": [
+          "timeCol",
+          "patientCol",
+          "doctorCol",
+          "statusCol"
+        ]
+      },
+      {
+        "id": "timeCol",
+        "component": "Col",
+        "label": "Time",
+        "data": [
+          "9:00 AM",
+          "9:30 AM",
+          "10:00 AM",
+          "10:30 AM",
+          "11:00 AM",
+          "11:30 AM"
+        ]
+      },
+      {
+        "id": "patientCol",
+        "component": "Col",
+        "label": "Patient",
+        "data": [
+          "James Carter",
+          "Aisha Khan",
+          "Robert Chen",
+          "Maria Lopez",
+          "Emily Davis",
+          "Tom Nguyen"
+        ]
+      },
+      {
+        "id": "doctorCol",
+        "component": "Col",
+        "label": "Doctor",
+        "data": [
+          "Dr. Patel",
+          "Dr. Nguyen",
+          "Dr. Patel",
+          "Dr. Patel",
+          "Dr. Nguyen",
+          "Dr. Nguyen"
+        ]
+      },
+      {
+        "id": "statusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Checked in",
+          "Checked in",
+          "In room",
+          "Called",
+          "Arrived",
+          "Scheduled"
+        ]
+      },
+      {
+        "id": "checkinForm",
+        "component": "Form",
+        "name": "patient-checkin",
+        "buttons": "checkinButtons",
+        "fields": [
+          "patientField",
+          "roomField"
+        ]
+      },
+      {
+        "id": "patientField",
+        "component": "FormControl",
+        "label": "Check a patient in",
+        "input": "patientSelect"
+      },
+      {
+        "id": "patientSelect",
+        "component": "Select",
+        "name": "patient",
+        "placeholder": "Select arriving patient",
+        "items": [
+          "p1",
+          "p2",
+          "p3"
+        ]
+      },
+      {
+        "id": "p1",
+        "component": "SelectItem",
+        "value": "emily-davis",
+        "label": "Emily Davis — 11:00 AM"
+      },
+      {
+        "id": "p2",
+        "component": "SelectItem",
+        "value": "tom-nguyen",
+        "label": "Tom Nguyen — 11:30 AM"
+      },
+      {
+        "id": "p3",
+        "component": "SelectItem",
+        "value": "sara-ali",
+        "label": "Sara Ali — 12:00 PM"
+      },
+      {
+        "id": "roomField",
+        "component": "FormControl",
+        "label": "Assign room",
+        "input": "roomSelect"
+      },
+      {
+        "id": "roomSelect",
+        "component": "Select",
+        "name": "room",
+        "placeholder": "Choose a free room",
+        "items": [
+          "r1",
+          "r3"
+        ]
+      },
+      {
+        "id": "r1",
+        "component": "SelectItem",
+        "value": "room-1",
+        "label": "Room 1"
+      },
+      {
+        "id": "r3",
+        "component": "SelectItem",
+        "value": "room-3",
+        "label": "Room 3"
+      },
+      {
+        "id": "checkinButtons",
+        "component": "Buttons",
+        "buttons": [
+          "checkinBtn"
+        ]
+      },
+      {
+        "id": "checkinBtn",
+        "component": "Button",
+        "label": "Check in",
+        "variant": "primary"
+      },
+      {
+        "id": "dayNav",
+        "component": "Buttons",
+        "buttons": [
+          "prevDay",
+          "todayBtn",
+          "nextDay"
+        ]
+      },
+      {
+        "id": "prevDay",
+        "component": "Button",
+        "label": "← Previous day",
+        "variant": "secondary"
+      },
+      {
+        "id": "todayBtn",
+        "component": "Button",
+        "label": "Today",
+        "variant": "tertiary"
+      },
+      {
+        "id": "nextDay",
+        "component": "Button",
+        "label": "Next day →",
+        "variant": "secondary"
+      }
     ]
   }
 }
 </a2ui-json>
 
-All seven items are covered:
-
-1. **Today's appointments** — full table with times, patient names, doctor, room, and status
-2. **Expected count** — "14 (9 seen, 5 remaining)" stat card
-3. **No-show rate** — 7.2% for March with a progress bar against the 10% target
-4. **Free rooms** — room status tags (Rooms 2 & 4 free)
-5. **Next patient** — highlighted callout: Maria Gonzalez, send to Room 2
-6. **Check-in** — form with patient search, optional room assignment, and submit button
-7. **Day navigation** — previous/next day buttons plus a date picker
-
-Want me to add a walk-in queue, appointment rescheduling, or an end-of-day summary?
+This screen covers everything:
+1. **Appointments** — table with times, patient names, doctors, and status
+2. **Expected count** — "18 patients expected today" KPI
+3. **No-show rate** — 6.2% this month
+4. **Free rooms** — tag block showing each room's live status
+5. **Next patient** — callout banner for Maria Lopez
+6. **Check-in** — form to select an arriving patient and assign a free room
+7. **Day navigation** — previous/today/next buttons

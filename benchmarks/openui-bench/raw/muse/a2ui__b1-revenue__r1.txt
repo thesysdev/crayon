@@ -1,4 +1,268 @@
-Mid-morning pulse check — live revenue vs. same time yesterday:
+Mid-morning pulse check for your shop — revenue so far today vs. yesterday at the same time:
 
-<a2ui-json>{"version":"v0.9","createSurface":{"surfaceId":"shop-midmorning-0818","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#0F766E","agentDisplayName":"Shop Pulse"},"sendDataModel":false}}</a2ui-json>
-<a2ui-json>{"version":"v0.9","updateComponents":{"surfaceId":"shop-midmorning-0818","components":[{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"m","children":["header","kpiRow","chartCard","insightAlert","detailCard","footerText"]},{"id":"header","component":"CardHeader","title":"Mid-Morning Check-In","subtitle":"Tuesday, Aug 18 • 11:30 AM • Live sales pulse"},{"id":"kpiRow","component":"Card","variant":"clear","direction":"row","gap":"m","children":["todayCard","yesterdayCard","changeCard"]},{"id":"todayCard","component":"Card","variant":"card","direction":"column","gap":"xs","children":["todayLabel","todayValue","todaySub","todayProgress"]},{"id":"yesterdayCard","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["yesterdayLabel","yesterdayValue","yesterdaySub","yesterdayNote"]},{"id":"changeCard","component":"Card","variant":"card","direction":"column","gap":"xs","children":["changeBadge","changeValue","changeSub","changeProgress"]},{"id":"todayLabel","component":"TextContent","text":"REVENUE SO FAR TODAY","size":"small"},{"id":"todayValue","component":"Heading","text":"$1,847.00","level":"h1"},{"id":"todaySub","component":"TextContent","text":"as of 11:30 AM • 42 transactions • Avg $44.00","size":"small"},{"id":"todayProgress","component":"Progress","value":38,"label":"38% of $4,850 daily goal"},{"id":"yesterdayLabel","component":"TextContent","text":"SAME TIME YESTERDAY","size":"small"},{"id":"yesterdayValue","component":"Heading","text":"$1,620.00","level":"h2"},{"id":"yesterdaySub","component":"TextContent","text":"Mon, Aug 17 • 11:30 AM • 38 transactions","size":"small"},{"id":"yesterdayNote","component":"TextContent","text":"Yesterday closed at $4,280","size":"small"},{"id":"changeBadge","component":"Badge","text":"+14.0% vs yesterday","variant":"default"},{"id":"changeValue","component":"TextContent","text":"+$227 ahead","size":"large-heavy"},{"id":"changeSub","component":"TextContent","text":"You're pacing ahead. 4 more transactions than yesterday at this time.","size":"small"},{"id":"changeProgress","component":"Progress","value":14,"label":"+14% lift"},{"id":"chartCard","component":"Card","variant":"card","direction":"column","gap":"m","children":["chartHeader","barChart"]},{"id":"chartHeader","component":"CardHeader","title":"Hourly Revenue: Today vs Same Time Yesterday","subtitle":"Grouped by hour — shows where the lift came from"},{"id":"barChart","component":"BarChart","labels":["8 AM","9 AM","10 AM","11 AM*"],"series":["seriesToday","seriesYesterday"],"variant":"grouped","xLabel":"Hour","yLabel":"Revenue ($)"},{"id":"seriesToday","component":"Series","category":"Today","values":[320,580,520,427]},{"id":"seriesYesterday","component":"Series","category":"Yesterday (same time)","values":[280,510,480,350]},{"id":"insightAlert","component":"Alert","title":"Ahead of pace — strong 9-11 AM","description":"Today's 9 AM and 11 AM hours are driving the +$227 gap (+$70 at 9 AM, +$77 at 11 AM). If this pace holds, you're on track for ~$4,920 today vs $4,280 yesterday.","variant":"success"},{"id":"detailCard","component":"Card","variant":"card","direction":"column","gap":"s","children":["detailHeader","detailTable"]},{"id":"detailHeader","component":"CardHeader","title":"Breakdown by Hour","subtitle":"*11 AM is partial (11:00-11:30)"},{"id":"detailTable","component":"Table","columns":["colHour","colToday","colYesterday","colDiff","colDiffPct"]},{"id":"colHour","component":"Col","label":"Hour","data":["8 AM","9 AM","10 AM","11 AM*","TOTAL to 11:30"],"type":"string"},{"id":"colToday","component":"Col","label":"Today","data":["$320","$580","$520","$427","$1,847"],"type":"string"},{"id":"colYesterday","component":"Col","label":"Yesterday Same Time","data":["$280","$510","$480","$350","$1,620"],"type":"string"},{"id":"colDiff","component":"Col","label":"Difference","data":["+$40","+$70","+$40","+$77","+$227"],"type":"string"},{"id":"colDiffPct","component":"Col","label":"+ %","data":["+14.3%","+13.7%","+8.3%","+22.0%","+14.0%"],"type":"string"},{"id":"footerText","component":"TextContent","text":"Last updated: 11:30 AM • Auto-refreshes every 15 min • Comparison is time-matched (opening to 11:30 AM)","size":"small"}]}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "statusRow",
+          "revenueCard",
+          "comparisonCard",
+          "trendCard",
+          "insightAlert",
+          "separator",
+          "actions"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Mid-Morning Check-In",
+        "subtitle": "Saturday, Aug 18 • 11:00 AM • 3.5 hours after open (7:30 AM)"
+      },
+      {
+        "id": "statusRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "s",
+        "children": [
+          "badgeOpen",
+          "badgeAhead"
+        ]
+      },
+      {
+        "id": "badgeOpen",
+        "component": "Badge",
+        "text": "● Open • Day in progress",
+        "variant": "secondary"
+      },
+      {
+        "id": "badgeAhead",
+        "component": "Badge",
+        "text": "▲ +17.2% vs yesterday same time",
+        "variant": "default"
+      },
+      {
+        "id": "revenueCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "revenueLabel",
+          "revenueValue",
+          "revenueMeta",
+          "revenueProgress",
+          "revenueHint"
+        ]
+      },
+      {
+        "id": "revenueLabel",
+        "component": "TextContent",
+        "text": "REVENUE SO FAR TODAY — 1. Today's Revenue",
+        "size": "small-heavy"
+      },
+      {
+        "id": "revenueValue",
+        "component": "Heading",
+        "text": "$2,847.50",
+        "level": "h1"
+      },
+      {
+        "id": "revenueMeta",
+        "component": "TextContent",
+        "text": "As of 11:00 AM • 47 transactions • Avg ticket $60.57 • Cash $1,120 • Card $1,727.50",
+        "size": "small"
+      },
+      {
+        "id": "revenueProgress",
+        "component": "Progress",
+        "value": 63,
+        "label": "63% of daily target ($4,500)"
+      },
+      {
+        "id": "revenueHint",
+        "component": "TextCallout",
+        "variant": "neutral",
+        "title": "Pace",
+        "description": "On track for ~$4,850 close if morning pace holds. Busiest hour so far: 9-10 AM ($825)."
+      },
+      {
+        "id": "comparisonCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "compHeader",
+          "compTable",
+          "compCallout"
+        ]
+      },
+      {
+        "id": "compHeader",
+        "component": "CardHeader",
+        "title": "2. vs. Same Time Yesterday (11:00 AM cutoff)",
+        "subtitle": "Apples-to-apples comparison — yesterday Friday Aug 17 at 11:00 AM"
+      },
+      {
+        "id": "compTable",
+        "component": "Table",
+        "columns": [
+          "colMetric",
+          "colToday",
+          "colYesterday",
+          "colChange"
+        ]
+      },
+      {
+        "id": "colMetric",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Revenue",
+          "Transactions",
+          "Avg Ticket"
+        ]
+      },
+      {
+        "id": "colToday",
+        "component": "Col",
+        "label": "Today by 11 AM",
+        "data": [
+          "$2,847.50",
+          "47",
+          "$60.57"
+        ]
+      },
+      {
+        "id": "colYesterday",
+        "component": "Col",
+        "label": "Yesterday by 11 AM",
+        "data": [
+          "$2,430.00",
+          "42",
+          "$57.86"
+        ]
+      },
+      {
+        "id": "colChange",
+        "component": "Col",
+        "label": "Change",
+        "data": [
+          "+$417.50 (+17.2%)",
+          "+5 (+11.9%)",
+          "+$2.71 (+4.7%)"
+        ]
+      },
+      {
+        "id": "compCallout",
+        "component": "TextCallout",
+        "variant": "success",
+        "title": "Ahead by $417.50 (+17.2%)",
+        "description": "You’re outperforming yesterday despite similar foot traffic. Higher avg ticket is driving the lift — 3 more $80+ baskets than yesterday."
+      },
+      {
+        "id": "trendCard",
+        "component": "Card",
+        "variant": "clear",
+        "children": [
+          "trendHeader",
+          "trendChart"
+        ]
+      },
+      {
+        "id": "trendHeader",
+        "component": "CardHeader",
+        "title": "Cumulative revenue build — Today vs Yesterday",
+        "subtitle": "Hourly running total from open to 11 AM"
+      },
+      {
+        "id": "trendChart",
+        "component": "LineChart",
+        "labels": [
+          "8 AM",
+          "9 AM",
+          "10 AM",
+          "11 AM"
+        ],
+        "series": [
+          "seriesToday",
+          "seriesYesterday"
+        ],
+        "variant": "natural",
+        "xLabel": "Time",
+        "yLabel": "Cumulative $"
+      },
+      {
+        "id": "seriesToday",
+        "component": "Series",
+        "category": "Today",
+        "values": [
+          420,
+          1280,
+          2105,
+          2847
+        ]
+      },
+      {
+        "id": "seriesYesterday",
+        "component": "Series",
+        "category": "Yesterday same time",
+        "values": [
+          380,
+          1100,
+          1820,
+          2430
+        ]
+      },
+      {
+        "id": "insightAlert",
+        "component": "Alert",
+        "title": "Takeaway at 11 AM",
+        "description": "Strong morning — you opened stronger (+$40 at 8 AM) and pulled ahead each hour. If you hold this +17% gap, expect to close ~$600 ahead of yesterday's $4,210.",
+        "variant": "success"
+      },
+      {
+        "id": "separator",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": [
+          "viewBtn",
+          "summaryBtn"
+        ]
+      },
+      {
+        "id": "viewBtn",
+        "component": "Button",
+        "label": "View transactions",
+        "variant": "primary"
+      },
+      {
+        "id": "summaryBtn",
+        "component": "Button",
+        "label": "Share mid-morning summary",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>

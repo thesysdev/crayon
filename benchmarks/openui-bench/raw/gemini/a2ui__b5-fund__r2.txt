@@ -1,15 +1,11 @@
-Here is a comprehensive morning workspace dashboard designed for a trading desk. It integrates real-time risk parameters, portfolio breakdowns, active orders, news/calendar monitoring, and instant order entry or rebalancing tools.
+Here is the comprehensive trading desk morning workspace containing all required portfolio metrics, risk monitor, analytics, news/calendar feeds, and execution controls.
 
 <a2ui-json>
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "trading-desk-workspace",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": {
-      "primaryColor": "#10B981",
-      "agentDisplayName": "Trading Desk Terminal"
-    }
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
@@ -18,493 +14,525 @@ Here is a comprehensive morning workspace dashboard designed for a trading desk.
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "trading-desk-workspace",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "variant": "clear",
         "direction": "column",
-        "gap": "l",
+        "gap": "m",
         "children": [
-          "header-card",
-          "risk-alerts",
-          "kpi-overview",
-          "desk-tabs"
+          "header",
+          "breachAlert",
+          "tabs"
         ]
       },
       {
-        "id": "header-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "row",
-        "align": "center",
-        "justify": "between",
-        "children": [
-          "header-title",
-          "header-timeframe"
-        ]
-      },
-      {
-        "id": "header-title",
+        "id": "header",
         "component": "CardHeader",
-        "title": "Morning Workspace — Equity Alpha Desk",
-        "subtitle": "Global Macro & US Multi-Strat Desk | Real-time Monitor"
+        "title": "Institutional Trading Desk — Morning Workspace",
+        "subtitle": "Global Multi-Asset Overview | Account #7084-QX"
       },
       {
-        "id": "header-timeframe",
-        "component": "Select",
-        "name": "timeframe_select",
-        "placeholder": "Select Timeframe",
-        "value": "1D",
-        "items": [
-          "tf-1d",
-          "tf-1w",
-          "tf-1m",
-          "tf-ytd",
-          "tf-1y"
-        ]
-      },
-      {
-        "id": "tf-1d",
-        "component": "SelectItem",
-        "value": "1D",
-        "label": "Timeframe: Today (1D)"
-      },
-      {
-        "id": "tf-1w",
-        "component": "SelectItem",
-        "value": "1W",
-        "label": "Timeframe: 1 Week (1W)"
-      },
-      {
-        "id": "tf-1m",
-        "component": "SelectItem",
-        "value": "1M",
-        "label": "Timeframe: 1 Month (1M)"
-      },
-      {
-        "id": "tf-ytd",
-        "component": "SelectItem",
-        "value": "YTD",
-        "label": "Timeframe: Year to Date (YTD)"
-      },
-      {
-        "id": "tf-1y",
-        "component": "SelectItem",
-        "value": "1Y",
-        "label": "Timeframe: 1 Year (1Y)"
-      },
-      {
-        "id": "risk-alerts",
+        "id": "breachAlert",
         "component": "Alert",
         "variant": "warning",
-        "title": "Risk Limit Warning: Tech Sector Exposure & VaR Threshold",
-        "description": "Information Technology exposure at 38.0% (Limit: 40.0%). Daily 99% VaR is at $485,000 (Limit: $500,000). Consider executing a portfolio rebalance."
+        "title": "Risk Limit Warning: High Yield Credit Exposure (14)",
+        "description": "HY Credit exposure is at 14.2% (Limit: 15.0%). VaR utilisation at 89% of intraday limit. Rebalance recommended before market open."
       },
       {
-        "id": "kpi-overview",
-        "component": "Card",
-        "variant": "sunk",
-        "direction": "row",
-        "gap": "m",
-        "children": [
-          "kpi-val",
-          "kpi-pnl",
-          "kpi-var",
-          "kpi-margin"
-        ]
-      },
-      {
-        "id": "kpi-val",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "kpi-val-head",
-          "kpi-val-num"
-        ]
-      },
-      {
-        "id": "kpi-val-head",
-        "component": "CardHeader",
-        "title": "Portfolio Value",
-        "subtitle": "Total Net Asset Value"
-      },
-      {
-        "id": "kpi-val-num",
-        "component": "Heading",
-        "text": "$42,850,210.00",
-        "level": "h2"
-      },
-      {
-        "id": "kpi-pnl",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "kpi-pnl-head",
-          "kpi-pnl-num"
-        ]
-      },
-      {
-        "id": "kpi-pnl-head",
-        "component": "CardHeader",
-        "title": "P&L Today",
-        "subtitle": "+1.38% Un-realized / Realized"
-      },
-      {
-        "id": "kpi-pnl-num",
-        "component": "Heading",
-        "text": "+$582,400.00",
-        "level": "h2"
-      },
-      {
-        "id": "kpi-var",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "kpi-var-head",
-          "kpi-var-num"
-        ]
-      },
-      {
-        "id": "kpi-var-head",
-        "component": "CardHeader",
-        "title": "Value at Risk (99% 1D)",
-        "subtitle": "97.0% of $500k Max Limit"
-      },
-      {
-        "id": "kpi-var-num",
-        "component": "Heading",
-        "text": "$485,000.00",
-        "level": "h2"
-      },
-      {
-        "id": "kpi-margin",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "kpi-margin-head",
-          "kpi-margin-progress"
-        ]
-      },
-      {
-        "id": "kpi-margin-head",
-        "component": "CardHeader",
-        "title": "Margin in Use",
-        "subtitle": "$18.2M used of $30.0M Capacity"
-      },
-      {
-        "id": "kpi-margin-progress",
-        "component": "Progress",
-        "value": 60.6,
-        "label": "60.6% Margin Utilization"
-      },
-      {
-        "id": "desk-tabs",
+        "id": "tabs",
         "component": "Tabs",
         "items": [
-          "tab-positions",
-          "tab-analytics",
-          "tab-market-intel",
-          "tab-execution"
+          "tabOverview",
+          "tabRiskAnalytics",
+          "tabMarketIntel",
+          "tabTradeExecution"
         ]
       },
       {
-        "id": "tab-positions",
+        "id": "tabOverview",
         "component": "TabItem",
-        "value": "positions",
-        "trigger": "Active Positions & Working Orders",
+        "value": "overview",
+        "trigger": "Portfolio Overview & Orders",
         "content": [
-          "positions-card",
-          "orders-card"
+          "overviewCard"
         ]
       },
       {
-        "id": "positions-card",
+        "id": "overviewCard",
         "component": "Card",
-        "variant": "card",
         "direction": "column",
         "gap": "m",
         "children": [
-          "pos-header",
-          "pos-table"
+          "kpiHeaderGroup",
+          "positionsSectionHeader",
+          "positionsTable",
+          "ordersSectionHeader",
+          "workingOrdersTable",
+          "watchlistSectionHeader",
+          "watchlistTable"
         ]
       },
       {
-        "id": "pos-header",
-        "component": "CardHeader",
-        "title": "Open Portfolio Positions",
-        "subtitle": "Live market mark-to-market prices"
-      },
-      {
-        "id": "pos-table",
+        "id": "kpiHeaderGroup",
         "component": "Table",
         "columns": [
-          "col-ticker",
-          "col-size",
-          "col-entry",
-          "col-curr",
-          "col-pnl"
+          "kpiMetricCol",
+          "kpiValCol",
+          "kpiStatusCol"
         ]
       },
       {
-        "id": "col-ticker",
+        "id": "kpiMetricCol",
+        "component": "Col",
+        "label": "Key Desk Metrics",
+        "data": [
+          "1. Portfolio Value",
+          "2. Daily PnL",
+          "5. Value at Risk (VaR 99% 1D)",
+          "9. Margin Usage"
+        ]
+      },
+      {
+        "id": "kpiValCol",
+        "component": "Col",
+        "label": "Current Value",
+        "data": [
+          "$42,850,240.00",
+          "+$312,450.00 (+0.73%)",
+          "$415,000.00 (1.02% NAV)",
+          "$11,200,000.00 / $25,000,000.00"
+        ]
+      },
+      {
+        "id": "kpiStatusCol",
+        "component": "Col",
+        "label": "Status / Level",
+        "data": [
+          "Peak NAV",
+          "Positive",
+          "89% Limit Used",
+          "44.8% Utilised"
+        ]
+      },
+      {
+        "id": "positionsSectionHeader",
+        "component": "Heading",
+        "level": "h3",
+        "text": "3. Open Positions"
+      },
+      {
+        "id": "positionsTable",
+        "component": "Table",
+        "columns": [
+          "posTicker",
+          "posSize",
+          "posEntry",
+          "posCurrent",
+          "posUnrealized"
+        ]
+      },
+      {
+        "id": "posTicker",
         "component": "Col",
         "label": "Ticker",
-        "type": "string",
         "data": [
           "NVDA",
           "AAPL",
           "MSFT",
-          "AMZN",
-          "JPM",
-          "XOM"
+          "TLT",
+          "USO"
         ]
       },
       {
-        "id": "col-size",
+        "id": "posSize",
         "component": "Col",
-        "label": "Position Size",
-        "type": "number",
+        "label": "Size (Shares)",
         "data": [
-          15000,
-          25000,
-          12000,
-          8500,
-          18000,
-          22000
+          "15,000",
+          "25,000",
+          "10,000",
+          "40,000",
+          "50,000"
         ]
       },
       {
-        "id": "col-entry",
+        "id": "posEntry",
         "component": "Col",
-        "label": "Entry Price ($)",
-        "type": "number",
+        "label": "Entry Price",
         "data": [
-          118.5,
-          215.2,
-          438.0,
-          178.4,
-          194.1,
-          112.3
+          "$118.50",
+          "$220.10",
+          "$430.00",
+          "$98.20",
+          "$71.40"
         ]
       },
       {
-        "id": "col-curr",
+        "id": "posCurrent",
         "component": "Col",
-        "label": "Current Price ($)",
-        "type": "number",
+        "label": "Current Price",
         "data": [
-          128.4,
-          224.3,
-          448.2,
-          186.1,
-          208.5,
-          118.9
+          "$128.40",
+          "$226.50",
+          "$442.10",
+          "$96.80",
+          "$74.20"
         ]
       },
       {
-        "id": "col-pnl",
+        "id": "posUnrealized",
         "component": "Col",
-        "label": "Unrealized P&L ($)",
-        "type": "number",
+        "label": "Unrealized P&L",
         "data": [
-          148500,
-          227500,
-          122400,
-          65450,
-          259200,
-          145200
+          "+$148,500",
+          "+$160,000",
+          "+$121,000",
+          "-$56,000",
+          "+$140,000"
         ]
       },
       {
-        "id": "orders-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "orders-header",
-          "orders-table"
-        ]
+        "id": "ordersSectionHeader",
+        "component": "Heading",
+        "level": "h3",
+        "text": "8. Active Working Orders"
       },
       {
-        "id": "orders-header",
-        "component": "CardHeader",
-        "title": "Working Orders",
-        "subtitle": "Active exchange limit and stop orders"
-      },
-      {
-        "id": "orders-table",
+        "id": "workingOrdersTable",
         "component": "Table",
         "columns": [
-          "col-ord-id",
-          "col-ord-symbol",
-          "col-ord-side",
-          "col-ord-qty",
-          "col-ord-limit",
-          "col-ord-status"
+          "ordId",
+          "ordTicker",
+          "ordSide",
+          "ordQty",
+          "ordType",
+          "ordPrice",
+          "ordStatus"
         ]
       },
       {
-        "id": "col-ord-id",
+        "id": "ordId",
         "component": "Col",
         "label": "Order ID",
-        "type": "string",
         "data": [
-          "ORD-9801",
-          "ORD-9802",
-          "ORD-9805",
-          "ORD-9810"
+          "ORD-9921",
+          "ORD-9924",
+          "ORD-9925"
         ]
       },
       {
-        "id": "col-ord-symbol",
+        "id": "ordTicker",
         "component": "Col",
         "label": "Ticker",
-        "type": "string",
         "data": [
+          "AMZN",
           "GOOGL",
-          "TSLA",
-          "AMD",
-          "META"
+          "SPY"
         ]
       },
       {
-        "id": "col-ord-side",
+        "id": "ordSide",
         "component": "Col",
         "label": "Side",
-        "type": "string",
         "data": [
-          "BUY LIMIT",
-          "SELL LIMIT",
-          "BUY LIMIT",
-          "SELL STOP"
+          "BUY",
+          "SELL",
+          "BUY"
         ]
       },
       {
-        "id": "col-ord-qty",
+        "id": "ordQty",
         "component": "Col",
         "label": "Quantity",
-        "type": "number",
         "data": [
-          5000,
-          2000,
-          4000,
-          1500
+          "5,000",
+          "3,500",
+          "10,000"
         ]
       },
       {
-        "id": "col-ord-limit",
+        "id": "ordType",
         "component": "Col",
-        "label": "Target Price ($)",
-        "type": "number",
+        "label": "Type",
         "data": [
-          172.5,
-          255.0,
-          152.0,
-          485.0
+          "Limit",
+          "Stop",
+          "Limit"
         ]
       },
       {
-        "id": "col-ord-status",
+        "id": "ordPrice",
+        "component": "Col",
+        "label": "Target Price",
+        "data": [
+          "$182.50",
+          "$174.00",
+          "$540.00"
+        ]
+      },
+      {
+        "id": "ordStatus",
         "component": "Col",
         "label": "Status",
-        "type": "string",
         "data": [
-          "Working (60% Filled)",
-          "Working (Pending)",
-          "Working (Pending)",
-          "Trigger Set"
+          "Working (Partial 40%)",
+          "Working",
+          "Queued for Open"
         ]
       },
       {
-        "id": "tab-analytics",
+        "id": "watchlistSectionHeader",
+        "component": "Heading",
+        "level": "h3",
+        "text": "7. Watchlist Instruments"
+      },
+      {
+        "id": "watchlistTable",
+        "component": "Table",
+        "columns": [
+          "wlTicker",
+          "wlName",
+          "wlPrice",
+          "wlChange"
+        ]
+      },
+      {
+        "id": "wlTicker",
+        "component": "Col",
+        "label": "Ticker",
+        "data": [
+          "TSLA",
+          "AMD",
+          "META",
+          "BTC-USD"
+        ]
+      },
+      {
+        "id": "wlName",
+        "component": "Col",
+        "label": "Instrument",
+        "data": [
+          "Tesla Inc.",
+          "Advanced Micro Devices",
+          "Meta Platforms Inc.",
+          "Bitcoin / USD"
+        ]
+      },
+      {
+        "id": "wlPrice",
+        "component": "Col",
+        "label": "Price",
+        "data": [
+          "$214.30",
+          "$156.80",
+          "$502.40",
+          "$64,250.00"
+        ]
+      },
+      {
+        "id": "wlChange",
+        "component": "Col",
+        "label": "Day Change",
+        "data": [
+          "+3.45%",
+          "-1.12%",
+          "+0.85%",
+          "+2.15%"
+        ]
+      },
+      {
+        "id": "tabRiskAnalytics",
         "component": "TabItem",
-        "value": "analytics",
-        "trigger": "Risk, Exposure & Strategy Returns",
+        "value": "risk",
+        "trigger": "Risk, Exposure & Performance",
         "content": [
-          "analytics-row-1",
-          "analytics-row-2"
+          "riskCard"
         ]
       },
       {
-        "id": "analytics-row-1",
+        "id": "riskCard",
         "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "gap": "m",
-        "children": [
-          "exposure-card",
-          "drawdown-card"
-        ]
-      },
-      {
-        "id": "exposure-card",
-        "component": "Card",
-        "variant": "card",
         "direction": "column",
         "gap": "m",
         "children": [
-          "exposure-head",
-          "exposure-chart"
+          "tfHeader",
+          "exposureHeading",
+          "exposureChart",
+          "expTech",
+          "expFin",
+          "expEnergy",
+          "expHealth",
+          "expBonds",
+          "perfHeading",
+          "perfChart",
+          "seriesGlobal",
+          "seriesAlpha",
+          "seriesMacro",
+          "drawdownHeading",
+          "drawdownChart",
+          "seriesDD",
+          "gainersLosersHeading",
+          "gainersLosersTable"
         ]
       },
       {
-        "id": "exposure-head",
+        "id": "tfHeader",
         "component": "CardHeader",
-        "title": "Exposure by Sector (%)",
-        "subtitle": "Current allocation vs internal limits"
+        "title": "Analytics Timeframe Selection (17)",
+        "subtitle": "Switch chart parameters across intraday, trailing, and annual periods"
       },
       {
-        "id": "exposure-chart",
-        "component": "PieChart",
-        "variant": "donut",
+        "id": "exposureHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "4. Sector Exposure Breakdown (% NAV)"
+      },
+      {
+        "id": "exposureChart",
+        "component": "HorizontalBarChart",
+        "variant": "grouped",
+        "xLabel": "% Exposure",
+        "yLabel": "Sector",
         "labels": [
           "Technology",
           "Financials",
           "Energy",
           "Healthcare",
-          "Consumer",
-          "Cash / Short Term"
+          "Fixed Income"
         ],
+        "series": [
+          "expTech",
+          "expFin",
+          "expEnergy",
+          "expHealth",
+          "expBonds"
+        ]
+      },
+      {
+        "id": "expTech",
+        "component": "Series",
+        "category": "Technology",
         "values": [
-          38,
-          22,
+          42,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "id": "expFin",
+        "component": "Series",
+        "category": "Financials",
+        "values": [
+          0,
+          18,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "id": "expEnergy",
+        "component": "Series",
+        "category": "Energy",
+        "values": [
+          0,
+          0,
           14,
+          0,
+          0
+        ]
+      },
+      {
+        "id": "expHealth",
+        "component": "Series",
+        "category": "Healthcare",
+        "values": [
+          0,
+          0,
+          0,
           12,
-          9,
-          5
+          0
         ]
       },
       {
-        "id": "drawdown-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "drawdown-head",
-          "drawdown-chart"
+        "id": "expBonds",
+        "component": "Series",
+        "category": "Fixed Income",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          14
         ]
       },
       {
-        "id": "drawdown-head",
-        "component": "CardHeader",
-        "title": "Historical Drawdown (Past 1 Year)",
-        "subtitle": "Peak-to-trough decline (%)"
+        "id": "perfHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "12. YTD Strategy Returns Comparison (%)"
       },
       {
-        "id": "drawdown-chart",
+        "id": "perfChart",
+        "component": "BarChart",
+        "variant": "grouped",
+        "xLabel": "Quarter",
+        "yLabel": "Return %",
+        "labels": [
+          "Q1",
+          "Q2",
+          "Q3 (YTD)"
+        ],
+        "series": [
+          "seriesGlobal",
+          "seriesAlpha",
+          "seriesMacro"
+        ]
+      },
+      {
+        "id": "seriesGlobal",
+        "component": "Series",
+        "category": "Global Equity Long/Short (+18.4% YTD)",
+        "values": [
+          5.2,
+          6.1,
+          7.1
+        ]
+      },
+      {
+        "id": "seriesAlpha",
+        "component": "Series",
+        "category": "Tech Market Neutral (+11.2% YTD)",
+        "values": [
+          3.1,
+          4.0,
+          4.1
+        ]
+      },
+      {
+        "id": "seriesMacro",
+        "component": "Series",
+        "category": "Global Macro & Rates (+6.8% YTD)",
+        "values": [
+          2.0,
+          1.8,
+          3.0
+        ]
+      },
+      {
+        "id": "drawdownHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "13. Trailing 1-Year Portfolio Drawdown (%)"
+      },
+      {
+        "id": "drawdownChart",
         "component": "AreaChart",
+        "variant": "natural",
         "xLabel": "Month",
         "yLabel": "Drawdown %",
         "labels": [
@@ -522,486 +550,417 @@ Here is a comprehensive morning workspace dashboard designed for a trading desk.
           "Sep"
         ],
         "series": [
-          "dd-series"
+          "seriesDD"
         ]
       },
       {
-        "id": "dd-series",
+        "id": "seriesDD",
         "component": "Series",
-        "category": "Portfolio Max DD %",
+        "category": "Peak-to-Trough Drawdown",
         "values": [
-          -1.2,
-          -2.4,
           -0.5,
-          -4.8,
-          -3.1,
-          -1.0,
-          -6.2,
-          -2.8,
-          -1.5,
+          -1.2,
           -0.8,
-          -3.4,
-          -1.1
+          -2.4,
+          -5.1,
+          -3.2,
+          -1.5,
+          -0.4,
+          -2.1,
+          -1.1,
+          -0.6,
+          -0.2
         ]
       },
       {
-        "id": "analytics-row-2",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "strat-head",
-          "strat-chart"
+        "id": "gainersLosersHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "6. Today's Biggest Gainers & Losers"
+      },
+      {
+        "id": "gainersLosersTable",
+        "component": "Table",
+        "columns": [
+          "glCategory",
+          "glTicker",
+          "glName",
+          "glMove"
         ]
       },
       {
-        "id": "strat-head",
-        "component": "CardHeader",
-        "title": "Strategy YTD Return Performance (%)",
-        "subtitle": "Performance across individual trading sub-strategies"
-      },
-      {
-        "id": "strat-chart",
-        "component": "HorizontalBarChart",
-        "xLabel": "Return (%)",
-        "labels": [
-          "US Tech Long/Short",
-          "Global Macro Systematic",
-          "Statistical Arbitrage",
-          "Energy Momentum",
-          "Event Driven Special Situations"
-        ],
-        "series": [
-          "strat-series"
+        "id": "glCategory",
+        "component": "Col",
+        "label": "Type",
+        "data": [
+          "Top Gainer",
+          "Top Gainer",
+          "Top Loser",
+          "Top Loser"
         ]
       },
       {
-        "id": "strat-series",
-        "component": "Series",
-        "category": "YTD Return %",
-        "values": [
-          24.6,
-          14.2,
-          9.8,
-          18.1,
-          6.4
+        "id": "glTicker",
+        "component": "Col",
+        "label": "Ticker",
+        "data": [
+          "NVDA",
+          "AVGO",
+          "INTC",
+          "TLT"
         ]
       },
       {
-        "id": "tab-market-intel",
+        "id": "glName",
+        "component": "Col",
+        "label": "Name",
+        "data": [
+          "NVIDIA Corp",
+          "Broadcom Inc",
+          "Intel Corp",
+          "20+ Yr Treasury ETF"
+        ]
+      },
+      {
+        "id": "glMove",
+        "component": "Col",
+        "label": "% Change",
+        "data": [
+          "+4.25%",
+          "+3.10%",
+          "-3.80%",
+          "-1.45%"
+        ]
+      },
+      {
+        "id": "tabMarketIntel",
         "component": "TabItem",
         "value": "intel",
-        "trigger": "Watchlist & Market Intelligence",
+        "trigger": "Headlines & Macro Calendar",
         "content": [
-          "intel-row-1",
-          "intel-row-2"
+          "intelCard"
         ]
       },
       {
-        "id": "intel-row-1",
+        "id": "intelCard",
         "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "gap": "m",
-        "children": [
-          "movers-card",
-          "watchlist-card"
-        ]
-      },
-      {
-        "id": "movers-card",
-        "component": "Card",
-        "variant": "card",
         "direction": "column",
         "gap": "m",
         "children": [
-          "movers-head",
-          "gainers-head",
-          "gainers-tags",
-          "losers-head",
-          "losers-tags"
+          "headlinesHeading",
+          "headlinesTable",
+          "econHeading",
+          "econTable"
         ]
       },
       {
-        "id": "movers-head",
-        "component": "CardHeader",
-        "title": "Today's Biggest Movers",
-        "subtitle": "Market movers in universe"
+        "id": "headlinesHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "10. Real-Time Market Headlines & Sentiment Analysis"
       },
       {
-        "id": "gainers-head",
-        "component": "TextContent",
-        "text": "Top Gainers",
-        "size": "small-heavy"
-      },
-      {
-        "id": "gainers-tags",
-        "component": "TagBlock",
-        "tags": [
-          "NVDA +5.8%",
-          "AVGO +4.2%",
-          "AMD +3.9%",
-          "LLY +3.1%"
+        "id": "headlinesTable",
+        "component": "Table",
+        "columns": [
+          "hlTime",
+          "hlHeadline",
+          "hlImpacted",
+          "hlSentiment"
         ]
       },
       {
-        "id": "losers-head",
-        "component": "TextContent",
-        "text": "Top Losers",
-        "size": "small-heavy"
-      },
-      {
-        "id": "losers-tags",
-        "component": "TagBlock",
-        "tags": [
-          "INTC -4.1%",
-          "NKE -3.5%",
-          "TSLA -2.8%",
-          "BA -2.2%"
+        "id": "hlTime",
+        "component": "Col",
+        "label": "Time",
+        "data": [
+          "08:14 EST",
+          "07:55 EST",
+          "07:30 EST",
+          "06:45 EST"
         ]
       },
       {
-        "id": "watchlist-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "watch-head",
-          "watch-list"
+        "id": "hlHeadline",
+        "component": "Col",
+        "label": "Headline",
+        "data": [
+          "Fed Signals Potential 50bps Cut as Inflation Cools Rapidly",
+          "Tech Heavyweight Announces $10B AI Infrastructure Expansion",
+          "Crude Oil Rallies Following Middle East Supply Disruption Concerns",
+          "European Central Bank Keeps Key Benchmark Rates Unchanged"
         ]
       },
       {
-        "id": "watch-head",
-        "component": "CardHeader",
-        "title": "Desk Watchlist",
-        "subtitle": "Instruments under active observation"
-      },
-      {
-        "id": "watch-list",
-        "component": "ListBlock",
-        "variant": "number",
-        "items": [
-          "w-1",
-          "w-2",
-          "w-3",
-          "w-4"
+        "id": "hlImpacted",
+        "component": "Col",
+        "label": "Asset / Ticker",
+        "data": [
+          "USD / UST 10Y",
+          "NVDA, MSFT",
+          "USO, BRENT",
+          "EURUSD, STOXX"
         ]
       },
       {
-        "id": "w-1",
-        "component": "ListItem",
-        "title": "SPY - S&P 500 ETF",
-        "subtitle": "Price: $568.40 (+0.45%)"
-      },
-      {
-        "id": "w-2",
-        "component": "ListItem",
-        "title": "QQQ - Nasdaq 100 ETF",
-        "subtitle": "Price: $488.10 (+0.82%)"
-      },
-      {
-        "id": "w-3",
-        "component": "ListItem",
-        "title": "TLT - 20+ Yr Treasury Bond",
-        "subtitle": "Price: $94.20 (-0.35%)"
-      },
-      {
-        "id": "w-4",
-        "component": "ListItem",
-        "title": "USO - US Oil Fund",
-        "subtitle": "Price: $76.85 (+1.10%)"
-      },
-      {
-        "id": "intel-row-2",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "gap": "m",
-        "children": [
-          "headlines-card",
-          "econ-card"
+        "id": "hlSentiment",
+        "component": "Col",
+        "label": "AI Sentiment Score",
+        "data": [
+          "BULLISH (+0.82)",
+          "VERY BULLISH (+0.95)",
+          "BULLISH (+0.64)",
+          "NEUTRAL (0.00)"
         ]
       },
       {
-        "id": "headlines-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "news-head",
-          "news-list"
+        "id": "econHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "11. Economic Releases Calendar (This Week)"
+      },
+      {
+        "id": "econTable",
+        "component": "Table",
+        "columns": [
+          "ecDate",
+          "ecEvent",
+          "ecForecast",
+          "ecPrior"
         ]
       },
       {
-        "id": "news-head",
-        "component": "CardHeader",
-        "title": "Market Headlines & AI Sentiment",
-        "subtitle": "Real-time newsfeed classification"
-      },
-      {
-        "id": "news-list",
-        "component": "ListBlock",
-        "variant": "number",
-        "items": [
-          "news-1",
-          "news-2",
-          "news-3"
+        "id": "ecDate",
+        "component": "Col",
+        "label": "Date & Time",
+        "data": [
+          "Today, 08:30 EST",
+          "Wed, 14:00 EST",
+          "Thu, 08:30 EST",
+          "Fri, 08:30 EST"
         ]
       },
       {
-        "id": "news-1",
-        "component": "ListItem",
-        "title": "Fed Officials Signal Potential 25bps Rate Cut Next Month",
-        "subtitle": "Sentiment: Bullish (Score: +0.82)"
-      },
-      {
-        "id": "news-2",
-        "component": "ListItem",
-        "title": "Tech Supply Chain Output Rebounds Strongly In East Asia",
-        "subtitle": "Sentiment: Bullish (Score: +0.65)"
-      },
-      {
-        "id": "news-3",
-        "component": "ListItem",
-        "title": "Middle East Crude Supply Concerns Rise After Tanker Standoff",
-        "subtitle": "Sentiment: Bearish / Volatile (Score: -0.45)"
-      },
-      {
-        "id": "econ-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "econ-head",
-          "econ-list"
+        "id": "ecEvent",
+        "component": "Col",
+        "label": "Economic Event",
+        "data": [
+          "Core CPI (MoM)",
+          "FOMC Meeting Rate Decision",
+          "Initial Jobless Claims",
+          "Non-Farm Payrolls"
         ]
       },
       {
-        "id": "econ-head",
-        "component": "CardHeader",
-        "title": "Economic Releases This Week",
-        "subtitle": "Key macro calendar events"
-      },
-      {
-        "id": "econ-list",
-        "component": "ListBlock",
-        "variant": "number",
-        "items": [
-          "e-1",
-          "e-2",
-          "e-3",
-          "e-4"
+        "id": "ecForecast",
+        "component": "Col",
+        "label": "Consensus Forecast",
+        "data": [
+          "0.2%",
+          "5.25%",
+          "225K",
+          "165K"
         ]
       },
       {
-        "id": "e-1",
-        "component": "ListItem",
-        "title": "US CPI YoY (Oct)",
-        "subtitle": "Wed 08:30 EST | Forecast: 2.6% | Prior: 2.4%"
+        "id": "ecPrior",
+        "component": "Col",
+        "label": "Prior Value",
+        "data": [
+          "0.3%",
+          "5.50%",
+          "230K",
+          "114K"
+        ]
       },
       {
-        "id": "e-2",
-        "component": "ListItem",
-        "title": "Initial Jobless Claims",
-        "subtitle": "Thu 08:30 EST | Forecast: 220k | Prior: 221k"
-      },
-      {
-        "id": "e-3",
-        "component": "ListItem",
-        "title": "US PPI MoM",
-        "subtitle": "Thu 08:30 EST | Forecast: 0.2% | Prior: 0.0%"
-      },
-      {
-        "id": "e-4",
-        "component": "ListItem",
-        "title": "Retail Sales MoM",
-        "subtitle": "Fri 08:30 EST | Forecast: 0.3% | Prior: 0.4%"
-      },
-      {
-        "id": "tab-execution",
+        "id": "tabTradeExecution",
         "component": "TabItem",
         "value": "execution",
-        "trigger": "Order Placement & Desk Rebalance",
+        "trigger": "Execution & Rebalance Controls",
         "content": [
-          "exec-row"
+          "executionCard"
         ]
       },
       {
-        "id": "exec-row",
+        "id": "executionCard",
         "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "gap": "m",
-        "children": [
-          "order-entry-card",
-          "rebalance-card"
-        ]
-      },
-      {
-        "id": "order-entry-card",
-        "component": "Card",
-        "variant": "card",
         "direction": "column",
         "gap": "m",
         "children": [
-          "oe-head",
-          "oe-form"
+          "orderFormHeading",
+          "orderForm",
+          "sepExecution",
+          "rebalanceHeading",
+          "rebalanceText",
+          "rebalanceButtons"
         ]
       },
       {
-        "id": "oe-head",
-        "component": "CardHeader",
-        "title": "Direct Order Ticket",
-        "subtitle": "Execute single-leg market/limit order"
+        "id": "orderFormHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "16. Immediate Order Entry"
       },
       {
-        "id": "oe-form",
+        "id": "orderForm",
         "component": "Form",
-        "name": "direct_order_form",
+        "name": "quick-order-form",
+        "buttons": "orderFormButtons",
         "fields": [
-          "field-ticker",
-          "field-side",
-          "field-qty"
-        ],
-        "buttons": "oe-buttons"
+          "fieldTicker",
+          "fieldSide",
+          "fieldQty",
+          "fieldOrderType"
+        ]
       },
       {
-        "id": "field-ticker",
+        "id": "fieldTicker",
         "component": "FormControl",
-        "label": "Instrument Ticker",
-        "hint": "e.g., NVDA, AAPL, SPY",
-        "input": "input-ticker"
+        "label": "Ticker Symbol",
+        "input": "inputTicker"
       },
       {
-        "id": "input-ticker",
+        "id": "inputTicker",
         "component": "Input",
         "name": "ticker",
-        "placeholder": "Enter Ticker Symbol",
+        "placeholder": "e.g. NVDA, AAPL, SPY",
         "type": "text"
       },
       {
-        "id": "field-side",
+        "id": "fieldSide",
         "component": "FormControl",
         "label": "Order Side",
-        "hint": "Select execution action",
-        "input": "input-side"
+        "input": "radioSide"
       },
       {
-        "id": "input-side",
+        "id": "radioSide",
         "component": "RadioGroup",
         "name": "side",
-        "defaultValue": "BUY",
+        "defaultValue": "buy",
         "items": [
-          "side-buy",
-          "side-sell",
-          "side-short"
+          "radioBuy",
+          "radioSell"
         ]
       },
       {
-        "id": "side-buy",
+        "id": "radioBuy",
         "component": "RadioItem",
-        "label": "BUY",
-        "description": "Go Long / Cover",
-        "value": "BUY"
+        "label": "BUY (Long)",
+        "description": "Acquire position",
+        "value": "buy"
       },
       {
-        "id": "side-sell",
+        "id": "radioSell",
         "component": "RadioItem",
-        "label": "SELL",
-        "description": "Close Long Position",
-        "value": "SELL"
+        "label": "SELL (Short/Close)",
+        "description": "Liquidate or short position",
+        "value": "sell"
       },
       {
-        "id": "side-short",
-        "component": "RadioItem",
-        "label": "SELL SHORT",
-        "description": "Open Short Position",
-        "value": "SELL_SHORT"
-      },
-      {
-        "id": "field-qty",
+        "id": "fieldQty",
         "component": "FormControl",
-        "label": "Order Quantity (Shares)",
-        "hint": "Enter unit count",
-        "input": "input-qty"
+        "label": "Quantity (Shares/Contracts)",
+        "input": "inputQty"
       },
       {
-        "id": "input-qty",
+        "id": "inputQty",
         "component": "Input",
         "name": "quantity",
-        "placeholder": "e.g. 5000",
+        "placeholder": "1000",
         "type": "number"
       },
       {
-        "id": "oe-buttons",
-        "component": "Buttons",
-        "direction": "row",
-        "buttons": [
-          "btn-submit-order"
+        "id": "fieldOrderType",
+        "component": "FormControl",
+        "label": "Execution Strategy",
+        "input": "selectOrderType"
+      },
+      {
+        "id": "selectOrderType",
+        "component": "Select",
+        "name": "order_type",
+        "placeholder": "Select execution type",
+        "items": [
+          "optMkt",
+          "optLmt",
+          "optVWAP"
         ]
       },
       {
-        "id": "btn-submit-order",
+        "id": "optMkt",
+        "component": "SelectItem",
+        "label": "Market Order",
+        "value": "market"
+      },
+      {
+        "id": "optLmt",
+        "component": "SelectItem",
+        "label": "Limit Order",
+        "value": "limit"
+      },
+      {
+        "id": "optVWAP",
+        "component": "SelectItem",
+        "label": "VWAP Algorithmic Execution",
+        "value": "vwap"
+      },
+      {
+        "id": "orderFormButtons",
+        "component": "Buttons",
+        "buttons": [
+          "btnSubmitOrder",
+          "btnClearForm"
+        ]
+      },
+      {
+        "id": "btnSubmitOrder",
         "component": "Button",
-        "label": "Transmit Order",
+        "label": "Transmit Order to Desk",
         "variant": "primary"
       },
       {
-        "id": "rebalance-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "reb-head",
-          "reb-details",
-          "reb-slider",
-          "reb-buttons"
-        ]
-      },
-      {
-        "id": "reb-head",
-        "component": "CardHeader",
-        "title": "Automated Rebalance Tool",
-        "subtitle": "Bring portfolio weights back within mandated risk limits"
-      },
-      {
-        "id": "reb-details",
-        "component": "TextCallout",
-        "variant": "warning",
-        "title": "Recommended Action: Trim Tech Exposure",
-        "description": "Executing target rebalance will sell ~3.5% of NVDA & MSFT to reduce Technology sector exposure from 38% back to 34.5% target weight, bringing VaR within safe threshold limits."
-      },
-      {
-        "id": "reb-slider",
-        "component": "Slider",
-        "name": "rebalance_aggression",
-        "label": "Target Exposure Reduction %",
-        "variant": "continuous",
-        "min": 1,
-        "max": 10,
-        "step": 0.5,
-        "defaultValue": [
-          3.5
-        ]
-      },
-      {
-        "id": "reb-buttons",
-        "component": "Buttons",
-        "direction": "row",
-        "buttons": [
-          "btn-execute-rebalance"
-        ]
-      },
-      {
-        "id": "btn-execute-rebalance",
+        "id": "btnClearForm",
         "component": "Button",
-        "label": "Execute Smart Rebalance Basket",
+        "label": "Clear Inputs",
+        "variant": "tertiary"
+      },
+      {
+        "id": "sepExecution",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "rebalanceHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "15. Portfolio Target Rebalancing"
+      },
+      {
+        "id": "rebalanceText",
+        "component": "TextContent",
+        "text": "Automated rebalancing tool calculates target weight deviations based on sector limits, benchmark weights, and current VaR capacity. Executing rebalance will generate proposed trades to bring High Yield Credit back under 12.0%."
+      },
+      {
+        "id": "rebalanceButtons",
+        "component": "Buttons",
+        "buttons": [
+          "btnCalcRebalance",
+          "btnExecuteRebalance"
+        ]
+      },
+      {
+        "id": "btnCalcRebalance",
+        "component": "Button",
+        "label": "Preview Rebalance Orders",
         "variant": "secondary"
+      },
+      {
+        "id": "btnExecuteRebalance",
+        "component": "Button",
+        "label": "Execute Auto-Rebalance",
+        "variant": "primary"
       }
     ]
   }

@@ -1,15 +1,11 @@
-Here's a clean signup screen for your weekly product newsletter:
+Here's a signup screen for the weekly product newsletter:
 
 <a2ui-json>
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "newsletter-signup",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": {
-      "primaryColor": "#6366F1",
-      "agentDisplayName": "Product Weekly"
-    }
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
@@ -18,76 +14,67 @@ Here's a clean signup screen for your weekly product newsletter:
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "newsletter-signup",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": ["header", "description", "signup-form"]
+        "children": [
+          "header",
+          "pitch",
+          "form"
+        ]
       },
       {
         "id": "header",
         "component": "CardHeader",
-        "title": "📬 Product Weekly",
-        "subtitle": "The newsletter for product builders"
+        "title": "The Product Weekly",
+        "subtitle": "A newsletter for product people"
       },
       {
-        "id": "description",
+        "id": "pitch",
         "component": "TextContent",
-        "text": "Every Monday, subscribers get a 5-minute digest of the week's best product launches, growth tactics, and teardown insights from top product teams."
+        "text": "Subscribers get one concise email every week with the best product launches, growth tactics, and curated reads from across the industry."
       },
       {
-        "id": "signup-form",
+        "id": "form",
         "component": "Form",
-        "name": "newsletterSignup",
-        "fields": ["email-field"],
-        "buttons": "form-buttons"
+        "name": "newsletter-signup",
+        "buttons": "formButtons",
+        "fields": [
+          "emailField"
+        ]
       },
       {
-        "id": "email-field",
+        "id": "emailField",
         "component": "FormControl",
         "label": "Email address",
-        "input": "email-input",
-        "hint": "We send one email per week. No spam, unsubscribe anytime."
+        "input": "emailInput",
+        "hint": "No spam — unsubscribe anytime"
       },
       {
-        "id": "email-input",
+        "id": "emailInput",
         "component": "Input",
         "name": "email",
-        "type": "email",
         "placeholder": "you@example.com",
-        "rules": [
-          { "required": true, "message": "Please enter your email address" },
-          { "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$", "message": "Please enter a valid email address" }
+        "type": "email"
+      },
+      {
+        "id": "formButtons",
+        "component": "Buttons",
+        "buttons": [
+          "subscribeBtn"
         ]
       },
       {
-        "id": "form-buttons",
-        "component": "Buttons",
-        "direction": "row",
-        "buttons": ["subscribe-btn"]
-      },
-      {
-        "id": "subscribe-btn",
+        "id": "subscribeBtn",
         "component": "Button",
         "label": "Subscribe",
-        "variant": "primary",
-        "size": "large",
-        "action": [
-          {
-            "type": "submitForm",
-            "formName": "newsletterSignup"
-          }
-        ]
+        "variant": "primary"
       }
     ]
   }
 }
 </a2ui-json>
 
-The screen covers both requirements:
-1. **What subscribers get** — a one-sentence description of the weekly digest (launches, tactics, teardowns).
-2. **Email entry + subscribe** — a validated email input with a prominent Subscribe button, plus a reassurance hint about frequency and unsubscribing.
+This covers both requirements: the pitch sentence explains what subscribers receive each week, and the form provides an email field with a Subscribe button.

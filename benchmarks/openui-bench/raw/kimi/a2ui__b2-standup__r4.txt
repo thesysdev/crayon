@@ -1,46 +1,207 @@
-Here's a single-screen async standup board covering all five requirements:
+Here's a single-screen async standup board covering all five items — teammate updates, a blocked callout, today's date, a post-update form, and a missing-updates count.
 
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"standup-surface","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#6366F1","agentDisplayName":"Async Standup"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"standup-surface","components":[
-{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"m","children":["header","dateRow","blockedAlert","missingCard","updatesCard","formCard"]},
-{"id":"header","component":"CardHeader","title":"Remote Team — Async Standup","subtitle":"Engineering Team · 8 members"},
-{"id":"dateRow","component":"Tag","text":"📅 Tuesday, May 13, 2025","variant":"info","size":"md"},
-{"id":"blockedAlert","component":"Alert","title":"2 teammates are blocked","description":"Priya is blocked waiting on API credentials from DevOps. Marcus is blocked on the design review for the checkout flow.","variant":"warning"},
-{"id":"missingCard","component":"Card","variant":"sunk","direction":"column","gap":"s","children":["missingHeader","missingProgress","missingText"]},
-{"id":"missingHeader","component":"TextContent","text":"**Updates missing: 3 of 8**","size":"large-heavy"},
-{"id":"missingProgress","component":"Progress","value":62,"label":"5 of 8 updates posted"},
-{"id":"missingText","component":"TextContent","text":"Still waiting on: Sofia, Daniel, Aisha","size":"small"},
-{"id":"updatesCard","component":"Card","variant":"card","direction":"column","gap":"s","children":["updatesHeader","updatesList"]},
-{"id":"updatesHeader","component":"TextContent","text":"**Today's Updates**","size":"large"},
-{"id":"updatesList","component":"ListBlock","variant":"number","items":["u1","u2","u3","u4","u5"]},
-{"id":"u1","component":"ListItem","title":"Priya — ⛔ BLOCKED","subtitle":"Yesterday: Migrated auth service to v2. Today: Token refresh logic. Blocker: waiting on API credentials from DevOps."},
-{"id":"u2","component":"ListItem","title":"Marcus — ⛔ BLOCKED","subtitle":"Yesterday: Checkout UI polish. Today: Payment error states. Blocker: needs design review sign-off."},
-{"id":"u3","component":"ListItem","title":"Lena","subtitle":"Yesterday: Fixed flaky CI tests. Today: Starting search indexing spike. No blockers."},
-{"id":"u4","component":"ListItem","title":"Tomás","subtitle":"Yesterday: Code reviews + docs. Today: Onboarding flow A/B test setup. No blockers."},
-{"id":"u5","component":"ListItem","title":"Jamie","subtitle":"Yesterday: Incident postmortem write-up. Today: Alerting thresholds tuning. No blockers."},
-{"id":"formCard","component":"Card","variant":"card","direction":"column","gap":"s","children":["formHeader","postForm"]},
-{"id":"formHeader","component":"TextContent","text":"**Post Your Update**","size":"large"},
-{"id":"postForm","component":"Form","name":"standupForm","buttons":"formButtons","fields":["fName","fYesterday","fToday","fBlocked"]},
-{"id":"fName","component":"FormControl","label":"Your name","input":"inName"},
-{"id":"inName","component":"Input","name":"name","placeholder":"e.g., Sofia","type":"text"},
-{"id":"fYesterday","component":"FormControl","label":"Yesterday","input":"inYesterday"},
-{"id":"inYesterday","component":"TextArea","name":"yesterday","placeholder":"What did you work on?","rows":2},
-{"id":"fToday","component":"FormControl","label":"Today","input":"inToday"},
-{"id":"inToday","component":"TextArea","name":"today","placeholder":"What's the plan for today?","rows":2},
-{"id":"fBlocked","component":"FormControl","label":"Blocked?","input":"inBlocked","hint":"Describe any blocker, or leave blank"},
-{"id":"inBlocked","component":"Input","name":"blocked","placeholder":"e.g., Waiting on staging access","type":"text"},
-{"id":"formButtons","component":"Buttons","buttons":["submitBtn"],"direction":"row"},
-{"id":"submitBtn","component":"Button","label":"Post Update","variant":"primary","size":"medium"}
-]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "metaRow",
+          "blockedAlert",
+          "updatesTable",
+          "divider",
+          "postForm"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Async Standup — Wednesday, June 11, 2025",
+        "subtitle": "Team Nebula · updates due by 10:00 AM your local time"
+      },
+      {
+        "id": "metaRow",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "m",
+        "align": "center",
+        "children": [
+          "missingBadge",
+          "submittedBadge"
+        ]
+      },
+      {
+        "id": "missingBadge",
+        "component": "Badge",
+        "text": "2 updates still missing",
+        "variant": "destructive"
+      },
+      {
+        "id": "submittedBadge",
+        "component": "Badge",
+        "text": "5 of 7 posted",
+        "variant": "secondary"
+      },
+      {
+        "id": "blockedAlert",
+        "component": "Alert",
+        "title": "Blocked: Priya & Marco",
+        "description": "Priya is waiting on API credentials from DevOps. Marco is blocked by the unresolved payment-gateway incident (#4821).",
+        "variant": "warning"
+      },
+      {
+        "id": "updatesTable",
+        "component": "Table",
+        "columns": [
+          "colTeammate",
+          "colStatus",
+          "colUpdate"
+        ]
+      },
+      {
+        "id": "colTeammate",
+        "component": "Col",
+        "label": "Teammate",
+        "data": [
+          "Priya S.",
+          "Marco T.",
+          "Aisha K.",
+          "Devon R.",
+          "Lena M.",
+          "Tom W.",
+          "You"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "🚫 Blocked",
+          "🚫 Blocked",
+          "✅ On track",
+          "✅ On track",
+          "✅ On track",
+          "⏳ Missing",
+          "⏳ Missing"
+        ]
+      },
+      {
+        "id": "colUpdate",
+        "component": "Col",
+        "label": "Today's update",
+        "data": [
+          "Auth service integration done; blocked on API credentials from DevOps.",
+          "Fixed checkout retry bug; blocked by payment-gateway incident #4821.",
+          "Shipped new onboarding flow to staging; starting analytics events today.",
+          "Code reviews done; drafting design doc for notifications service.",
+          "Closed 3 support escalations; updating runbook this afternoon.",
+          "—",
+          "—"
+        ]
+      },
+      {
+        "id": "divider",
+        "component": "Separator"
+      },
+      {
+        "id": "postForm",
+        "component": "Form",
+        "name": "standup-update",
+        "buttons": "formButtons",
+        "fields": [
+          "updateField",
+          "blockerField"
+        ]
+      },
+      {
+        "id": "updateField",
+        "component": "FormControl",
+        "label": "Your update for today",
+        "input": "updateInput",
+        "hint": "What did you do, what's next?"
+      },
+      {
+        "id": "updateInput",
+        "component": "TextArea",
+        "name": "update",
+        "placeholder": "Yesterday I… Today I will…",
+        "rows": 3
+      },
+      {
+        "id": "blockerField",
+        "component": "FormControl",
+        "label": "Are you blocked?",
+        "input": "blockerSelect"
+      },
+      {
+        "id": "blockerSelect",
+        "component": "Select",
+        "name": "blocked",
+        "placeholder": "Select…",
+        "items": [
+          "notBlocked",
+          "isBlocked"
+        ]
+      },
+      {
+        "id": "notBlocked",
+        "component": "SelectItem",
+        "value": "no",
+        "label": "No, I'm on track"
+      },
+      {
+        "id": "isBlocked",
+        "component": "SelectItem",
+        "value": "yes",
+        "label": "Yes, I'm blocked"
+      },
+      {
+        "id": "formButtons",
+        "component": "Buttons",
+        "buttons": [
+          "postBtn",
+          "clearBtn"
+        ]
+      },
+      {
+        "id": "postBtn",
+        "component": "Button",
+        "label": "Post my update",
+        "variant": "primary"
+      },
+      {
+        "id": "clearBtn",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
 </a2ui-json>
 
-This screen covers all five items:
-1. **Teammate updates** — a numbered list showing each person's yesterday/today status.
-2. **Blocked callouts** — a warning alert plus ⛔ markers on Priya and Marcus with their blockers.
-3. **Today's date** — displayed as an info tag near the top.
-4. **Post your own update** — a form with name, yesterday, today, and blocker fields.
-5. **Missing count** — "3 of 8 missing" with a progress bar and who's still pending.
+How it maps to your requirements:
+1. **Teammate updates** — the table lists all 7 teammates with their status and today's update.
+2. **Blocked callout** — a warning alert highlights Priya and Marco and why they're blocked.
+3. **Today's date** — shown in the card header.
+4. **Post your own update** — the form with a textarea, blocked/not-blocked selector, and a "Post my update" button.
+5. **Missing updates** — a destructive badge shows "2 updates still missing" alongside "5 of 7 posted."
+
+Want me to adjust the roster, date, or add a follow-up reminder action for the missing teammates?

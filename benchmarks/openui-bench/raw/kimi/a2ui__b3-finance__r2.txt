@@ -1,45 +1,276 @@
-Here's your month-end finance dashboard covering all seven requirements:
+Here's the month-end finance screen — KPIs up top, then the expense split, the >$10k transaction list, and controls to switch months or grab the statement.
 
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"finance-dash","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#16A34A","agentDisplayName":"Finance"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"finance-dash","components":[
-{"component":"Card","id":"root","children":["header","controls","metrics","charts","txTitle","txTable","download"],"gap":"l"},
-{"component":"CardHeader","id":"header","title":"Month-End Finance Overview","subtitle":"April 2024 — close summary"},
-{"component":"Card","id":"controls","children":["monthLabel","monthSelect"],"direction":"row","align":"center","gap":"m","variant":"clear"},
-{"component":"Label","id":"monthLabel","text":"Viewing month:"},
-{"component":"Select","id":"monthSelect","name":"month","value":"2024-04","items":["mi1","mi2","mi3","mi4","mi5","mi6"],"size":"small"},
-{"component":"SelectItem","id":"mi1","value":"2024-04","label":"April 2024"},
-{"component":"SelectItem","id":"mi2","value":"2024-03","label":"March 2024"},
-{"component":"SelectItem","id":"mi3","value":"2024-02","label":"February 2024"},
-{"component":"SelectItem","id":"mi4","value":"2024-01","label":"January 2024"},
-{"component":"SelectItem","id":"mi5","value":"2023-12","label":"December 2023"},
-{"component":"SelectItem","id":"mi6","value":"2023-11","label":"November 2023"},
-{"component":"Card","id":"metrics","children":["m1","m2","m3"],"direction":"row","gap":"m","variant":"clear"},
-{"component":"Card","id":"m1","children":["m1h","m1v"],"variant":"sunk","weight":1},
-{"component":"Label","id":"m1h","text":"Cash on Hand"},
-{"component":"TextContent","id":"m1v","text":"# $1,284,500","size":"large-heavy"},
-{"component":"Card","id":"m2","children":["m2h","m2v"],"variant":"sunk","weight":1},
-{"component":"Label","id":"m2h","text":"Monthly Burn"},
-{"component":"TextContent","id":"m2v","text":"# $142,300","size":"large-heavy"},
-{"component":"Card","id":"m3","children":["m3h","m3v"],"variant":"sunk","weight":1},
-{"component":"Label","id":"m3h","text":"Runway"},
-{"component":"TextContent","id":"m3v","text":"# 9.0 months","size":"large-heavy"},
-{"component":"Card","id":"charts","children":["chartTitle","pie"],"gap":"s"},
-{"component":"Heading","id":"chartTitle","text":"Expenses by Category","level":"h3"},
-{"component":"PieChart","id":"pie","labels":["Payroll","Cloud & Infra","Marketing","Office & Rent","Legal & Compliance","Other"],"values":[82000,21500,15600,12400,6800,4000],"variant":"donut"},
-{"component":"Heading","id":"txTitle","text":"Transactions over $10,000 — April 2024","level":"h3"},
-{"component":"Table","id":"txTable","columns":["colDate","colDesc","colCat","colAmt"]},
-{"component":"Col","id":"colDate","label":"Date","data":["2024-04-03","2024-04-10","2024-04-15","2024-04-18","2024-04-25"],"type":"string"},
-{"component":"Col","id":"colDesc","label":"Description","data":["Payroll run — first half","AWS annual reserved instance","Payroll run — second half","Series B legal retainer","Ad campaign — Q2 launch"],"type":"string"},
-{"component":"Col","id":"colCat","label":"Category","data":["Payroll","Cloud & Infra","Payroll","Legal & Compliance","Marketing"],"type":"string"},
-{"component":"Col","id":"colAmt","label":"Amount","data":[41200,18500,40800,15000,12000],"type":"number"},
-{"component":"Buttons","id":"download","buttons":["dlBtn","csvBtn"]},
-{"component":"Button","id":"dlBtn","label":"Download Statement (PDF)","variant":"primary","action":["download_statement",{"month":"2024-04","format":"pdf"}]},
-{"component":"Button","id":"csvBtn","label":"Export Transactions (CSV)","variant":"secondary","action":["download_statement",{"month":"2024-04","format":"csv"}]}
-]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "header",
+          "monthForm",
+          "health",
+          "kpiTable",
+          "sep1",
+          "expenseTitle",
+          "expenseChart",
+          "sep2",
+          "txnTitle",
+          "txnNote",
+          "txnTable",
+          "downloads"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Month-End Finance — September 2025",
+        "subtitle": "Acme Robotics · books closed Sep 30, 2025"
+      },
+      {
+        "id": "monthForm",
+        "component": "Form",
+        "name": "month-picker",
+        "buttons": "formBtns",
+        "fields": [
+          "monthControl"
+        ]
+      },
+      {
+        "id": "monthControl",
+        "component": "FormControl",
+        "label": "Reporting month",
+        "input": "monthSelect",
+        "hint": "Reloads cash, burn, runway, expenses, and transactions"
+      },
+      {
+        "id": "monthSelect",
+        "component": "Select",
+        "name": "month",
+        "value": "2025-09",
+        "items": [
+          "mo1",
+          "mo2",
+          "mo3",
+          "mo4",
+          "mo5",
+          "mo6"
+        ]
+      },
+      {
+        "id": "mo1",
+        "component": "SelectItem",
+        "value": "2025-04",
+        "label": "April 2025"
+      },
+      {
+        "id": "mo2",
+        "component": "SelectItem",
+        "value": "2025-05",
+        "label": "May 2025"
+      },
+      {
+        "id": "mo3",
+        "component": "SelectItem",
+        "value": "2025-06",
+        "label": "June 2025"
+      },
+      {
+        "id": "mo4",
+        "component": "SelectItem",
+        "value": "2025-07",
+        "label": "July 2025"
+      },
+      {
+        "id": "mo5",
+        "component": "SelectItem",
+        "value": "2025-08",
+        "label": "August 2025"
+      },
+      {
+        "id": "mo6",
+        "component": "SelectItem",
+        "value": "2025-09",
+        "label": "September 2025 (current)"
+      },
+      {
+        "id": "formBtns",
+        "component": "Buttons",
+        "buttons": [
+          "viewMonthBtn"
+        ]
+      },
+      {
+        "id": "viewMonthBtn",
+        "component": "Button",
+        "label": "View month",
+        "variant": "primary"
+      },
+      {
+        "id": "health",
+        "component": "Tag",
+        "text": "Health: 7.9 months of runway",
+        "variant": "success",
+        "size": "sm"
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": [
+          "kpiMetric",
+          "kpiValue"
+        ]
+      },
+      {
+        "id": "kpiMetric",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Cash on hand",
+          "Monthly burn (net)",
+          "Runway"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "September 2025",
+        "data": [
+          "$486,200",
+          "$61,400",
+          "7.9 months"
+        ]
+      },
+      {
+        "id": "sep1",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "expenseTitle",
+        "component": "Heading",
+        "text": "Expenses by category",
+        "level": "h3"
+      },
+      {
+        "id": "expenseChart",
+        "component": "PieChart",
+        "labels": [
+          "Payroll",
+          "Cloud & infrastructure",
+          "Marketing & ads",
+          "Office & admin",
+          "Software & tools"
+        ],
+        "values": [
+          38200,
+          9800,
+          7100,
+          3400,
+          2900
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "sep2",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "txnTitle",
+        "component": "Heading",
+        "text": "Transactions over $10,000",
+        "level": "h3"
+      },
+      {
+        "id": "txnNote",
+        "component": "TextContent",
+        "text": "5 transactions above the $10,000 threshold this month — $81,840 combined.",
+        "size": "small"
+      },
+      {
+        "id": "txnTable",
+        "component": "Table",
+        "columns": [
+          "txnDate",
+          "txnDesc",
+          "txnAmount"
+        ]
+      },
+      {
+        "id": "txnDate",
+        "component": "Col",
+        "label": "Date",
+        "data": [
+          "Sep 3",
+          "Sep 9",
+          "Sep 12",
+          "Sep 18",
+          "Sep 24"
+        ]
+      },
+      {
+        "id": "txnDesc",
+        "component": "Col",
+        "label": "Vendor / description",
+        "data": [
+          "Payroll — Gusto (bi-weekly)",
+          "Amazon Web Services — cloud",
+          "Google Ads — acquisition",
+          "Office lease — HQ",
+          "Payroll — Gusto (bi-weekly)"
+        ]
+      },
+      {
+        "id": "txnAmount",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "$22,410",
+          "$13,870",
+          "$11,950",
+          "$11,200",
+          "$22,410"
+        ]
+      },
+      {
+        "id": "downloads",
+        "component": "Buttons",
+        "buttons": [
+          "statementBtn",
+          "csvBtn"
+        ]
+      },
+      {
+        "id": "statementBtn",
+        "component": "Button",
+        "label": "Download statement (PDF)",
+        "variant": "secondary"
+      },
+      {
+        "id": "csvBtn",
+        "component": "Button",
+        "label": "Export transactions (CSV)",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
 </a2ui-json>
 
-Everything is covered: **cash ($1.28M), burn ($142.3K), and runway (9 months)** as headline metrics; a **donut chart for expense categories**; a **table of transactions above $10,000**; a **month selector** to switch periods; and **download buttons** for the statement (PDF or CSV).
+Every item is covered: (1) cash on hand, (2) monthly burn, and (3) runway are the three KPI rows; (4) the donut chart shows the expense split; (5) the table lists the five >$10k transactions; (6) the "Reporting month" selector reloads the view for a different month; and (7) the statement download button sits at the bottom. Runway math is consistent — $486,200 ÷ $61,400 ≈ 7.9 months.

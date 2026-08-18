@@ -2,12 +2,8 @@
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "month-end-finance",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": {
-      "primaryColor": "#2563EB",
-      "agentDisplayName": "Finance Dashboard"
-    }
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
@@ -16,322 +12,270 @@
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "month-end-finance",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "l",
         "children": [
           "header",
-          "month-selector",
-          "metrics-card",
-          "expenses-card",
-          "transactions-card",
-          "download-button"
-        ]
+          "controls",
+          "summary",
+          "expenseSection",
+          "transactionSection",
+          "downloadActions"
+        ],
+        "gap": "l"
       },
       {
         "id": "header",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "title",
-          "subtitle"
-        ]
+        "component": "CardHeader",
+        "title": "Month-End Finance",
+        "subtitle": "Financial position and activity for August 2026"
       },
       {
-        "id": "title",
-        "component": "Heading",
-        "text": "Month-end finance",
-        "level": "h1"
-      },
-      {
-        "id": "subtitle",
-        "component": "TextContent",
-        "text": "Financial snapshot for August 2026",
-        "size": "default"
-      },
-      {
-        "id": "month-selector",
-        "component": "Select",
-        "name": "reporting_month",
-        "placeholder": "Select a month",
-        "value": "2026-08",
-        "items": [
-          "month-aug",
-          "month-jul",
-          "month-jun"
-        ]
-      },
-      {
-        "id": "month-aug",
-        "component": "SelectItem",
-        "value": "2026-08",
-        "label": "August 2026"
-      },
-      {
-        "id": "month-jul",
-        "component": "SelectItem",
-        "value": "2026-07",
-        "label": "July 2026"
-      },
-      {
-        "id": "month-jun",
-        "component": "SelectItem",
-        "value": "2026-06",
-        "label": "June 2026"
-      },
-      {
-        "id": "metrics-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "metrics-heading",
-          "cash-metric",
-          "burn-metric",
-          "runway-metric"
-        ]
-      },
-      {
-        "id": "metrics-heading",
-        "component": "Heading",
-        "text": "Cash and runway",
-        "level": "h2"
-      },
-      {
-        "id": "cash-metric",
+        "id": "controls",
         "component": "Card",
         "variant": "sunk",
-        "direction": "column",
-        "gap": "xs",
         "children": [
-          "cash-label",
-          "cash-value"
+          "monthControl"
         ]
       },
       {
-        "id": "cash-label",
+        "id": "monthControl",
+        "component": "FormControl",
+        "label": "Reporting month",
+        "input": "monthPicker",
+        "hint": "Choose a different month to review its statement"
+      },
+      {
+        "id": "monthPicker",
+        "component": "DatePicker",
+        "name": "reporting_month",
+        "mode": "single",
+        "value": [
+          "2026-08-01"
+        ]
+      },
+      {
+        "id": "summary",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "cashKpi",
+          "burnKpi",
+          "runwayKpi"
+        ]
+      },
+      {
+        "id": "cashKpi",
+        "component": "Card",
+        "children": [
+          "cashLabel",
+          "cashValue",
+          "cashNote"
+        ],
+        "gap": "s",
+        "weight": 1
+      },
+      {
+        "id": "cashLabel",
         "component": "TextContent",
         "text": "Cash on hand",
         "size": "small"
       },
       {
-        "id": "cash-value",
+        "id": "cashValue",
+        "component": "Heading",
+        "text": "$842,500",
+        "level": "h2"
+      },
+      {
+        "id": "cashNote",
         "component": "TextContent",
-        "text": "$1,248,500",
-        "size": "large-heavy"
+        "text": "Available operating cash at month-end",
+        "size": "small"
       },
       {
-        "id": "burn-metric",
+        "id": "burnKpi",
         "component": "Card",
-        "variant": "sunk",
-        "direction": "column",
-        "gap": "xs",
         "children": [
-          "burn-label",
-          "burn-value",
-          "burn-note"
-        ]
+          "burnLabel",
+          "burnValue",
+          "burnNote"
+        ],
+        "gap": "s",
+        "weight": 1
       },
       {
-        "id": "burn-label",
+        "id": "burnLabel",
         "component": "TextContent",
         "text": "Monthly burn",
         "size": "small"
       },
       {
-        "id": "burn-value",
-        "component": "TextContent",
-        "text": "$142,300",
-        "size": "large-heavy"
+        "id": "burnValue",
+        "component": "Heading",
+        "text": "$96,400",
+        "level": "h2"
       },
       {
-        "id": "burn-note",
+        "id": "burnNote",
         "component": "TextContent",
         "text": "Net cash outflow this month",
         "size": "small"
       },
       {
-        "id": "runway-metric",
+        "id": "runwayKpi",
         "component": "Card",
-        "variant": "sunk",
-        "direction": "column",
-        "gap": "xs",
         "children": [
-          "runway-label",
-          "runway-value",
-          "runway-note"
-        ]
+          "runwayLabel",
+          "runwayValue",
+          "runwayProgress"
+        ],
+        "gap": "s",
+        "weight": 1
       },
       {
-        "id": "runway-label",
+        "id": "runwayLabel",
         "component": "TextContent",
         "text": "Months of runway",
         "size": "small"
       },
       {
-        "id": "runway-value",
-        "component": "TextContent",
-        "text": "8.8 months",
-        "size": "large-heavy"
-      },
-      {
-        "id": "runway-note",
-        "component": "TextContent",
-        "text": "At the current monthly burn rate",
-        "size": "small"
-      },
-      {
-        "id": "expenses-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "expenses-heading",
-          "expenses-description",
-          "expense-chart"
-        ]
-      },
-      {
-        "id": "expenses-heading",
+        "id": "runwayValue",
         "component": "Heading",
-        "text": "Expenses by category",
+        "text": "8.7 months",
         "level": "h2"
       },
       {
-        "id": "expenses-description",
-        "component": "TextContent",
-        "text": "Total operating expenses: $186,750",
-        "size": "small"
+        "id": "runwayProgress",
+        "component": "Progress",
+        "value": 73,
+        "label": "73% of 12-month target"
       },
       {
-        "id": "expense-chart",
+        "id": "expenseSection",
+        "component": "Card",
+        "children": [
+          "expenseHeader",
+          "expenseChart"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "expenseHeader",
+        "component": "CardHeader",
+        "title": "Expenses by category",
+        "subtitle": "Total operating expenses: $118,700"
+      },
+      {
+        "id": "expenseChart",
         "component": "PieChart",
         "labels": [
           "Payroll",
           "Software & tools",
           "Marketing",
-          "Rent & operations",
+          "Office & operations",
           "Professional services"
         ],
         "values": [
-          98500,
-          24250,
-          31800,
-          18700,
-          13500
+          68400,
+          16200,
+          14800,
+          10700,
+          8600
         ],
-        "variant": "donut",
-        "appearance": "circular"
+        "variant": "donut"
       },
       {
-        "id": "transactions-card",
+        "id": "transactionSection",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
         "children": [
-          "transactions-heading",
-          "transactions-description",
-          "transactions-table"
-        ]
+          "transactionHeader",
+          "transactionTable"
+        ],
+        "gap": "m"
       },
       {
-        "id": "transactions-heading",
-        "component": "Heading",
-        "text": "Transactions above $10,000",
-        "level": "h2"
+        "id": "transactionHeader",
+        "component": "CardHeader",
+        "title": "Transactions above $10,000",
+        "subtitle": "August 2026"
       },
       {
-        "id": "transactions-description",
-        "component": "TextContent",
-        "text": "August 2026 transactions exceeding $10,000",
-        "size": "small"
-      },
-      {
-        "id": "transactions-table",
+        "id": "transactionTable",
         "component": "Table",
         "columns": [
-          "transaction-date",
-          "transaction-vendor",
-          "transaction-category",
-          "transaction-amount"
+          "transactionDate",
+          "transactionVendor",
+          "transactionCategory",
+          "transactionAmount"
         ]
       },
       {
-        "id": "transaction-date",
+        "id": "transactionDate",
         "component": "Col",
         "label": "Date",
-        "type": "string",
         "data": [
-          "Aug 02, 2026",
+          "Aug 01, 2026",
           "Aug 05, 2026",
           "Aug 12, 2026",
           "Aug 18, 2026",
-          "Aug 26, 2026"
+          "Aug 28, 2026"
         ]
       },
       {
-        "id": "transaction-vendor",
+        "id": "transactionVendor",
         "component": "Col",
         "label": "Vendor / payee",
-        "type": "string",
         "data": [
-          "Gusto Payroll",
+          "Payroll transfer",
           "Google Cloud",
-          "LinkedIn",
-          "Downtown Office LLC",
-          "Wilson & Hart LLP"
+          "Brightside Media",
+          "Harper & Cole LLP",
+          "Payroll transfer"
         ]
       },
       {
-        "id": "transaction-category",
+        "id": "transactionCategory",
         "component": "Col",
         "label": "Category",
-        "type": "string",
         "data": [
           "Payroll",
           "Software & tools",
           "Marketing",
-          "Rent & operations",
-          "Professional services"
+          "Professional services",
+          "Payroll"
         ]
       },
       {
-        "id": "transaction-amount",
+        "id": "transactionAmount",
         "component": "Col",
         "label": "Amount",
         "type": "number",
         "data": [
-          98500,
-          14620,
-          12500,
-          15000,
-          13500
+          "$34,200",
+          "$12,480",
+          "$11,750",
+          "$14,000",
+          "$34,200"
         ]
       },
       {
-        "id": "download-button",
-        "component": "Button",
-        "label": "Download August statement",
-        "variant": "primary",
-        "size": "large",
-        "action": [
-          {
-            "type": "download",
-            "format": "pdf",
-            "report": "month_end_statement",
-            "month": "2026-08"
-          }
+        "id": "downloadActions",
+        "component": "Buttons",
+        "buttons": [
+          "downloadStatement"
         ]
+      },
+      {
+        "id": "downloadStatement",
+        "component": "Button",
+        "label": "Download August 2026 statement",
+        "variant": "primary"
       }
     ]
   }

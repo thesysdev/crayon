@@ -1,106 +1,109 @@
-{"op":"add","path":"/root","value":"main-container"}
-{"op":"add","path":"/elements/main-container","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","controls-card","kpi-grid","chart-grid","lists-grid","operations-grid","invite-dialog"]}}
-{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"SaaS Executive & Admin Overview","subtitle":"Real-time revenue metrics, customer health, adoption, and system operations."},"children":[]}}
-{"op":"add","path":"/elements/controls-card","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["period-control","admin-invite-trigger"]}}
-{"op":"add","path":"/elements/period-control","value":{"type":"FormControl","props":{"label":"Reporting Period","input":"period-select"},"children":[]}}
-{"op":"add","path":"/elements/period-select","value":{"type":"Select","props":{"name":"period","value":{"$bindState":"/selectedPeriod"},"items":["opt-30","opt-90","opt-yr"]},"children":[]}}
-{"op":"add","path":"/elements/opt-30","value":{"type":"SelectItem","props":{"value":"30d","label":"Last 30 Days"},"children":[]}}
-{"op":"add","path":"/elements/opt-90","value":{"type":"SelectItem","props":{"value":"90d","label":"Last 90 Days"},"children":[]}}
-{"op":"add","path":"/elements/opt-yr","value":{"type":"SelectItem","props":{"value":"12m","label":"Last 12 Months"},"children":[]}}
-{"op":"add","path":"/elements/admin-invite-trigger","value":{"type":"Button","props":{"label":"+ Invite Admin","variant":"primary"},"on":{"press":{"action":"setState","params":{"statePath":"/inviteModalOpen","value":true}}},"children":[]}}
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","kpi-grid","period-tabs","middle-grid","customers-atrisk-grid","failed-payments-card","features-nps-grid","dialogs"]}}
+{"op":"add","path":"/elements/header","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center"},"children":["title-block","header-actions"]}}
+{"op":"add","path":"/elements/title-block","value":{"type":"CardHeader","props":{"title":"SaaS Admin Overview","subtitle":"Executive performance & operations dashboard"}}}
+{"op":"add","path":"/elements/header-actions","value":{"type":"Buttons","props":{"buttons":["invite-admin-dialog-trigger"]}}}
+{"op":"add","path":"/elements/invite-admin-dialog-trigger","value":{"type":"DialogBlock","props":{"triggerLabel":"Invite Admin","triggerVariant":"default","title":"Invite New Administrator","description":"Grant administrative access to team members. They will receive an email invitation link.","content":["invite-form"]}}}
+{"op":"add","path":"/elements/invite-form","value":{"type":"Form","props":{"name":"invite-admin-form","buttons":"invite-buttons","fields":["invite-email-field","invite-role-field"]}}}
+{"op":"add","path":"/elements/invite-email-field","value":{"type":"FormControl","props":{"label":"Email Address","input":"invite-email-input"}}}
+{"op":"add","path":"/elements/invite-email-input","value":{"type":"Input","props":{"name":"inviteEmail","placeholder":"admin@company.com","type":"email","value":{"$bindState":"/forms/inviteEmail"}}}}
+{"op":"add","path":"/elements/invite-role-field","value":{"type":"FormControl","props":{"label":"Admin Level","input":"invite-role-select"}}}
+{"op":"add","path":"/elements/invite-role-select","value":{"type":"Select","props":{"name":"inviteRole","placeholder":"Select role","items":["role-super","role-billing","role-support"],"value":{"$bindState":"/forms/inviteRole"}}}}
+{"op":"add","path":"/elements/role-super","value":{"type":"SelectItem","props":{"label":"Super Admin (Full Access)","value":"super_admin"}}}
+{"op":"add","path":"/elements/role-billing","value":{"type":"SelectItem","props":{"label":"Billing Administrator","value":"billing_admin"}}}
+{"op":"add","path":"/elements/role-support","value":{"type":"SelectItem","props":{"label":"Support Administrator","value":"support_admin"}}}
+{"op":"add","path":"/elements/invite-buttons","value":{"type":"Buttons","props":{"buttons":["send-invite-btn"]}}}
+{"op":"add","path":"/elements/send-invite-btn","value":{"type":"Button","props":{"label":"Send Invitation","variant":"primary"},"on":{"press":{"action":"setState","params":{"statePath":"/inviteStatus","value":"Invitation sent successfully!"}}}}}
+{"op":"add","path":"/elements/period-tabs","value":{"type":"Card","props":{"direction":"row","align":"center","gap":"m","variant":"sunk"},"children":["period-label","period-selector"]}}
+{"op":"add","path":"/elements/period-label","value":{"type":"Label","props":{"text":"Reporting Period:"}}}
+{"op":"add","path":"/elements/period-selector","value":{"type":"RadioGroup","props":{"name":"periodSelect","items":["period-30","period-90","period-ytd","period-12m"],"value":{"$bindState":"/selectedPeriod"}}}}
+{"op":"add","path":"/elements/period-30","value":{"type":"RadioItem","props":{"label":"Last 30 Days","description":"","value":"30d"}}}
+{"op":"add","path":"/elements/period-90","value":{"type":"RadioItem","props":{"label":"Last 90 Days","description":"","value":"90d"}}}
+{"op":"add","path":"/elements/period-ytd","value":{"type":"RadioItem","props":{"label":"Year to Date","description":"","value":"ytd"}}}
+{"op":"add","path":"/elements/period-12m","value":{"type":"RadioItem","props":{"label":"Trailing 12 Months","description":"","value":"12m"}}}
 {"op":"add","path":"/state/selectedPeriod","value":"90d"}
-{"op":"add","path":"/state/inviteModalOpen","value":false}
-{"op":"add","path":"/elements/kpi-grid","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"children":["card-mrr","card-arr","card-churn","card-nps","card-seats"]}}
-{"op":"add","path":"/elements/card-mrr","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["lbl-mrr","val-mrr","tag-mrr"]}}
-{"op":"add","path":"/elements/lbl-mrr","value":{"type":"Label","props":{"text":"Monthly Recurring Revenue (MRR)"},"children":[]}}
-{"op":"add","path":"/elements/val-mrr","value":{"type":"Heading","props":{"text":{"$state":"/kpis/mrr"},"level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/tag-mrr","value":{"type":"Tag","props":{"text":"+4.2% vs last mo","variant":"success"},"children":[]}}
-{"op":"add","path":"/elements/card-arr","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["lbl-arr","val-arr","tag-arr"]}}
-{"op":"add","path":"/elements/lbl-arr","value":{"type":"Label","props":{"text":"Annual Recurring Revenue (ARR)"},"children":[]}}
-{"op":"add","path":"/elements/val-arr","value":{"type":"Heading","props":{"text":{"$state":"/kpis/arr"},"level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/tag-arr","value":{"type":"Tag","props":{"text":"Target: $1.5M","variant":"info"},"children":[]}}
-{"op":"add","path":"/elements/card-churn","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["lbl-churn","val-churn","tag-churn"]}}
-{"op":"add","path":"/elements/lbl-churn","value":{"type":"Label","props":{"text":"Churn This Month"},"children":[]}}
-{"op":"add","path":"/elements/val-churn","value":{"type":"Heading","props":{"text":{"$state":"/kpis/churn"},"level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/tag-churn","value":{"type":"Tag","props":{"text":"-0.3% improvement","variant":"success"},"children":[]}}
-{"op":"add","path":"/elements/card-nps","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["lbl-nps","val-nps","tag-nps"]}}
-{"op":"add","path":"/elements/lbl-nps","value":{"type":"Label","props":{"text":"Current NPS"},"children":[]}}
-{"op":"add","path":"/elements/val-nps","value":{"type":"Heading","props":{"text":{"$state":"/kpis/nps"},"level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/tag-nps","value":{"type":"Tag","props":{"text":"Excellent (>50)","variant":"success"},"children":[]}}
-{"op":"add","path":"/elements/card-seats","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["lbl-seats","val-seats","prog-seats"]}}
-{"op":"add","path":"/elements/lbl-seats","value":{"type":"Label","props":{"text":"Seat Utilization"},"children":[]}}
-{"op":"add","path":"/elements/val-seats","value":{"type":"Heading","props":{"text":{"$state":"/kpis/seatsUsed"},"level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/prog-seats","value":{"type":"Progress","props":{"value":82,"label":"82% total active"},"children":[]}}
-{"op":"add","path":"/state/kpis","value":{"mrr":"$104,250","arr":"$1,251,000","churn":"1.2%","nps":"+64","seatsUsed":"3,280 / 4,000 seats"}}
-{"op":"add","path":"/elements/chart-grid","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"children":["signups-card","plans-card"]}}
-{"op":"add","path":"/elements/signups-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["signups-title","signups-chart"]}}
-{"op":"add","path":"/elements/signups-title","value":{"type":"Heading","props":{"text":"New Signups (Past 90 Days)","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/signups-chart","value":{"type":"AreaChart","props":{"labels":["Jan","Feb","Mar"],"series":["series-signups"],"xLabel":"Month","yLabel":"Signups"},"children":["series-signups"]}}
-{"op":"add","path":"/elements/series-signups","value":{"type":"Series","props":{"category":"Signups","values":[320,450,580]},"children":[]}}
-{"op":"add","path":"/elements/plans-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["plans-title","plans-chart"]}}
-{"op":"add","path":"/elements/plans-title","value":{"type":"Heading","props":{"text":"Customers Split by Plan","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/plans-chart","value":{"type":"PieChart","props":{"labels":["Starter","Pro","Enterprise"],"values":[450,320,85],"variant":"donut"},"children":[]}}
-{"op":"add","path":"/elements/lists-grid","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"children":["top-customers-card","at-risk-card"]}}
-{"op":"add","path":"/elements/top-customers-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["top-cust-title","top-cust-table"]}}
-{"op":"add","path":"/elements/top-cust-title","value":{"type":"Heading","props":{"text":"Ten Largest Customers","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/top-cust-table","value":{"type":"Table","props":{"columns":["col-cust-name","col-cust-plan","col-cust-seats","col-cust-spend"]},"children":["col-cust-name","col-cust-plan","col-cust-seats","col-cust-spend"]}}
-{"op":"add","path":"/elements/col-cust-name","value":{"type":"Col","props":{"label":"Customer / Account","data":{"$state":"/topCustomers/names"},"type":"string"},"children":[]}}
-{"op":"add","path":"/elements/col-cust-plan","value":{"type":"Col","props":{"label":"Plan Tier","data":{"$state":"/topCustomers/plans"},"type":"string"},"children":[]}}
-{"op":"add","path":"/elements/col-cust-seats","value":{"type":"Col","props":{"label":"Seats Allocated","data":{"$state":"/topCustomers/seats"},"type":"number"},"children":[]}}
-{"op":"add","path":"/elements/col-cust-spend","value":{"type":"Col","props":{"label":"Annual Spend","data":{"$state":"/topCustomers/spend"},"type":"string"},"children":[]}}
-{"op":"add","path":"/state/topCustomers","value":{"names":["Acme Corp","TechGlobe Inc","Apex Logistics","Global Dynamic","Nexus Health","Starlight Media","Vanguard Systems","Horizon Cloud","Omega Bio","Vertex Solutions"],"plans":["Enterprise","Enterprise","Enterprise","Enterprise","Pro","Enterprise","Pro","Enterprise","Pro","Enterprise"],"seats":[450,320,280,250,210,180,160,150,140,120],"spend":["$54,000","$38,400","$33,600","$30,000","$25,200","$21,600","$19,200","$18,000","$16,800","$14,400"]}}
-{"op":"add","path":"/elements/at-risk-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["at-risk-title","at-risk-list"]}}
-{"op":"add","path":"/elements/at-risk-title","value":{"type":"Heading","props":{"text":"Accounts At Risk","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/at-risk-list","value":{"type":"Card","props":{"direction":"column","gap":"s"},"repeat":{"statePath":"/atRiskAccounts","key":"id"},"children":["at-risk-item"]}}
-{"op":"add","path":"/elements/at-risk-item","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["at-risk-info","at-risk-badge"]}}
-{"op":"add","path":"/elements/at-risk-info","value":{"type":"Card","props":{"direction":"column","gap":"none"},"children":["at-risk-name","at-risk-reason"]}}
-{"op":"add","path":"/elements/at-risk-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/at-risk-reason","value":{"type":"TextContent","props":{"text":{"$item":"reason"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/at-risk-badge","value":{"type":"Badge","props":{"text":{"$item":"mrr"},"variant":"destructive"},"children":[]}}
+{"op":"add","path":"/state/forms","value":{"inviteEmail":"","inviteRole":"super_admin"}}
+{"op":"add","path":"/elements/kpi-grid","value":{"type":"Card","props":{"direction":"row","gap":"m"},"children":["kpi-mrr","kpi-arr","kpi-churn","kpi-nps","kpi-seats"]}}
+{"op":"add","path":"/elements/kpi-mrr","value":{"type":"Card","props":{"variant":"card","gap":"xs"},"children":["mrr-title","mrr-val","mrr-badge"]}}
+{"op":"add","path":"/elements/mrr-title","value":{"type":"Label","props":{"text":"Monthly Recurring Revenue (MRR)"}}}
+{"op":"add","path":"/elements/mrr-val","value":{"type":"Heading","props":{"level":"h2","text":"$248,500"}}}
+{"op":"add","path":"/elements/mrr-badge","value":{"type":"Badge","props":{"text":"+5.2% vs last month","variant":"default"}}}
+{"op":"add","path":"/elements/kpi-arr","value":{"type":"Card","props":{"variant":"card","gap":"xs"},"children":["arr-title","arr-val","arr-badge"]}}
+{"op":"add","path":"/elements/arr-title","value":{"type":"Label","props":{"text":"Annual Recurring Revenue (ARR)"}}}
+{"op":"add","path":"/elements/arr-val","value":{"type":"Heading","props":{"level":"h2","text":"$2,982,000"}}}
+{"op":"add","path":"/elements/arr-badge","value":{"type":"Badge","props":{"text":"On track for $3.2M EOY","variant":"secondary"}}}
+{"op":"add","path":"/elements/kpi-churn","value":{"type":"Card","props":{"variant":"card","gap":"xs"},"children":["churn-title","churn-val","churn-badge"]}}
+{"op":"add","path":"/elements/churn-title","value":{"type":"Label","props":{"text":"Churn This Month"}}}
+{"op":"add","path":"/elements/churn-val","value":{"type":"Heading","props":{"level":"h2","text":"1.2%"}}}
+{"op":"add","path":"/elements/churn-badge","value":{"type":"Badge","props":{"text":"$3,100 MRR lost (4 accounts)","variant":"destructive"}}}
+{"op":"add","path":"/elements/kpi-nps","value":{"type":"Card","props":{"variant":"card","gap":"xs"},"children":["nps-title","nps-val","nps-badge"]}}
+{"op":"add","path":"/elements/nps-title","value":{"type":"Label","props":{"text":"Current NPS"}}}
+{"op":"add","path":"/elements/nps-val","value":{"type":"Heading","props":{"level":"h2","text":"+64"}}}
+{"op":"add","path":"/elements/nps-badge","value":{"type":"Badge","props":{"text":"Exceeds benchmark (+50)","variant":"default"}}}
+{"op":"add","path":"/elements/kpi-seats","value":{"type":"Card","props":{"variant":"card","gap":"xs"},"children":["seats-title","seats-val","seats-progress"]}}
+{"op":"add","path":"/elements/seats-title","value":{"type":"Label","props":{"text":"Seat Utilization Across Company"}}}
+{"op":"add","path":"/elements/seats-val","value":{"type":"Heading","props":{"level":"h2","text":"82%"}}}
+{"op":"add","path":"/elements/seats-progress","value":{"type":"Progress","props":{"value":82,"label":"4,120 of 5,024 seats active"}}}
+{"op":"add","path":"/elements/middle-grid","value":{"type":"Card","props":{"direction":"row","gap":"l"},"children":["signups-card","plan-split-card"]}}
+{"op":"add","path":"/elements/signups-card","value":{"type":"Card","props":{"variant":"card"},"children":["signups-header","signups-chart"]}}
+{"op":"add","path":"/elements/signups-header","value":{"type":"CardHeader","props":{"title":"New Signups Over Past 90 Days","subtitle":"Total: 642 new accounts added"}}}
+{"op":"add","path":"/elements/signups-chart","value":{"type":"AreaChart","props":{"labels":["Week 1","Week 2","Week 3","Week 4","Week 5","Week 6","Week 7","Week 8","Week 9","Week 10","Week 11","Week 12"],"series":["signupsSeries"],"variant":"natural","xLabel":"Weeks","yLabel":"New Signups"}}}
+{"op":"add","path":"/elements/signupsSeries","value":{"type":"Series","props":{"category":"Signups","values":[38,42,45,51,48,56,62,59,64,70,72,75]}}}
+{"op":"add","path":"/elements/plan-split-card","value":{"type":"Card","props":{"variant":"card"},"children":["plan-header","plan-chart"]}}
+{"op":"add","path":"/elements/plan-header","value":{"type":"CardHeader","props":{"title":"Customers Split by Plan","subtitle":"Distribution across active tiers"}}}
+{"op":"add","path":"/elements/plan-chart","value":{"type":"PieChart","props":{"labels":["Starter ($49/mo)","Professional ($199/mo)","Enterprise ($899/mo)","Custom / Dedicated"],"values":[420,285,110,35],"variant":"donut","appearance":"circular"}}}
+{"op":"add","path":"/elements/customers-atrisk-grid","value":{"type":"Card","props":{"direction":"row","gap":"l"},"children":["top-customers-card","at-risk-card"]}}
+{"op":"add","path":"/elements/top-customers-card","value":{"type":"Card","props":{"variant":"card"},"children":["top-cust-header","top-cust-table"]}}
+{"op":"add","path":"/elements/top-cust-header","value":{"type":"CardHeader","props":{"title":"Ten Largest Customers","subtitle":"Ranked by monthly spend"}}}
+{"op":"add","path":"/elements/top-cust-table","value":{"type":"Table","props":{"columns":["col-rank","col-customer","col-plan","col-seats","col-spend"]}}}
+{"op":"add","path":"/elements/col-rank","value":{"type":"Col","props":{"label":"#","data":["1","2","3","4","5","6","7","8","9","10"],"type":"string"}}}
+{"op":"add","path":"/elements/col-customer","value":{"type":"Col","props":{"label":"Customer","data":["Acme Tech Corp","Global Logistics Inc","Apex Financial","Starlight Systems","Nexus Healthcare","CloudScale Labs","Vanguard Media","Omni Consumer Products","Horizon Robotics","Quantum Dynamics"],"type":"string"}}}
+{"op":"add","path":"/elements/col-plan","value":{"type":"Col","props":{"label":"Plan","data":["Enterprise","Enterprise","Enterprise","Enterprise","Enterprise","Enterprise","Enterprise","Professional","Enterprise","Enterprise"],"type":"string"}}}
+{"op":"add","path":"/elements/col-seats","value":{"type":"Col","props":{"label":"Seats","data":["450 seats","380 seats","310 seats","290 seats","250 seats","220 seats","180 seats","160 seats","140 seats","125 seats"],"type":"string"}}}
+{"op":"add","path":"/elements/col-spend","value":{"type":"Col","props":{"label":"Monthly Spend","data":["$18,500/mo","$15,200/mo","$12,400/mo","$11,600/mo","$10,000/mo","$8,800/mo","$7,200/mo","$6,400/mo","$5,600/mo","$5,000/mo"],"type":"string"}}}
+{"op":"add","path":"/elements/at-risk-card","value":{"type":"Card","props":{"variant":"card"},"children":["atrisk-header","atrisk-list"]}}
+{"op":"add","path":"/elements/atrisk-header","value":{"type":"CardHeader","props":{"title":"Accounts At Risk","subtitle":"Action needed to prevent churn"}}}
+{"op":"add","path":"/elements/atrisk-list","value":{"type":"Card","props":{"direction":"column","gap":"s"},"repeat":{"statePath":"/atRiskAccounts","key":"id"},"children":["atrisk-item"]}}
+{"op":"add","path":"/elements/atrisk-item","value":{"type":"TextCallout","props":{"variant":"warning","title":{"$template":"${name} (${mrr} MRR)"},"description":{"$template":"Reason: ${reason} | Health Score: ${health}"}}}}
 {"op":"add","path":"/state/atRiskAccounts","value":[]}
-{"op":"add","path":"/state/atRiskAccounts/0","value":{"id":"ar-1","name":"Hyperion Systems","reason":"Low active seat usage (-65% drop)","mrr":"$2,400/mo"}}
-{"op":"add","path":"/state/atRiskAccounts/1","value":{"id":"ar-2","name":"BioTech Labs","reason":"Champion user left the company","mrr":"$1,800/mo"}}
-{"op":"add","path":"/state/atRiskAccounts/2","value":{"id":"ar-3","name":"Solaris Inc","reason":"Multiple unresolved support tickets","mrr":"$3,200/mo"}}
-{"op":"add","path":"/state/atRiskAccounts/3","value":{"id":"ar-4","name":"Urban Mobility","reason":"Executive sponsor change","mrr":"$1,100/mo"}}
-{"op":"add","path":"/elements/operations-grid","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"children":["failed-payments-card","feature-adoption-card"]}}
-{"op":"add","path":"/elements/failed-payments-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["failed-pay-title","failed-pay-list"]}}
-{"op":"add","path":"/elements/failed-pay-title","value":{"type":"Heading","props":{"text":"Failed Payments","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/failed-pay-list","value":{"type":"Card","props":{"direction":"column","gap":"s"},"repeat":{"statePath":"/failedPayments","key":"id"},"children":["failed-pay-item"]}}
-{"op":"add","path":"/elements/failed-pay-item","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["failed-pay-details","failed-pay-action"]}}
-{"op":"add","path":"/elements/failed-pay-details","value":{"type":"Card","props":{"direction":"column","gap":"none"},"children":["failed-pay-customer","failed-pay-sub"]}}
-{"op":"add","path":"/elements/failed-pay-customer","value":{"type":"TextContent","props":{"text":{"$item":"customer"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/failed-pay-sub","value":{"type":"TextContent","props":{"text":{"$template":"${amount} • ${date} (${status})"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/failed-pay-action","value":{"type":"Button","props":{"label":{"$cond":{"$item":"retrying"},"$then":"Processing...","$else":"Retry Charge"},"variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":{"$template":"/failedPayments/${$index}/status"},"value":"Payment Recovered"}}},"children":[]}}
+{"op":"add","path":"/state/atRiskAccounts/0","value":{"id":"1","name":"Hyperion Logistics","mrr":"$4,200/mo","reason":"Champion departed; seat usage dropped 45% in last 30 days","health":"38/100"}}
+{"op":"add","path":"/state/atRiskAccounts/1","value":{"id":"2","name":"BioHealth Research","mrr":"$2,800/mo","reason":"Unresolved critical support ticket #4821 open for >14 days","health":"42/100"}}
+{"op":"add","path":"/state/atRiskAccounts/2","value":{"id":"3","name":"Synergy Media","mrr":"$1,950/mo","reason":"Failed renewal conversation; negotiating competitor pricing","health":"49/100"}}
+{"op":"add","path":"/state/atRiskAccounts/3","value":{"id":"4","name":"Urban Mobility Tech","mrr":"$3,100/mo","reason":"Zero active logins recorded over the past 21 consecutive days","health":"25/100"}}
+{"op":"add","path":"/elements/failed-payments-card","value":{"type":"Card","props":{"variant":"card"},"children":["failed-header","failed-alert","failed-table"]}}
+{"op":"add","path":"/elements/failed-header","value":{"type":"CardHeader","props":{"title":"Failed Payments & Dunning","subtitle":"Past-due invoices requiring retry or resolution"}}}
+{"op":"add","path":"/elements/failed-alert","value":{"type":"Callout","props":{"variant":"warning","title":"$8,750 at risk across 4 failed payments","description":"Automated dunning cycle is active. You can trigger manual charge retries below."}}}
+{"op":"add","path":"/elements/failed-table","value":{"type":"Card","props":{"direction":"column","gap":"s"},"repeat":{"statePath":"/failedPayments","key":"id"},"children":["failed-row"]}}
+{"op":"add","path":"/elements/failed-row","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","variant":"sunk"},"children":["failed-row-info","failed-row-status","failed-retry-button"]}}
+{"op":"add","path":"/elements/failed-row-info","value":{"type":"Card","props":{"direction":"column","gap":"none"},"children":["failed-row-customer","failed-row-meta"]}}
+{"op":"add","path":"/elements/failed-row-customer","value":{"type":"TextContent","props":{"size":"small-heavy","text":{"$template":"${customer} - ${amount}"}}}}
+{"op":"add","path":"/elements/failed-row-meta","value":{"type":"TextContent","props":{"size":"small","text":{"$template":"Invoice: ${invoice} | Date: ${date} | Card: ${card}"}}}}
+{"op":"add","path":"/elements/failed-row-status","value":{"type":"Tag","props":{"text":{"$template":"Attempts: ${attempts}"},"variant":"danger"}}}
+{"op":"add","path":"/elements/failed-retry-button","value":{"type":"Button","props":{"label":{"$cond":{"$state":"/retryingId","eq":{"$item":"id"}},"$then":"Retrying...","$else":"Retry Payment"}},"size":"small","variant":"secondary"},"on":{"press":{"action":"setState","params":{"statePath":"/retryingId","value":{"$item":"id"}}}}}
 {"op":"add","path":"/state/failedPayments","value":[]}
-{"op":"add","path":"/state/failedPayments/0","value":{"id":"fp-1","customer":"Krypton Cloud","amount":"$1,200","date":"2 hours ago","status":"Card Declined","retrying":false}}
-{"op":"add","path":"/state/failedPayments/1","value":{"id":"fp-2","customer":"DataStream LLC","amount":"$450","date":"1 day ago","status":"Expired Card","retrying":false}}
-{"op":"add","path":"/state/failedPayments/2","value":{"id":"fp-3","customer":"Quantum Analytics","amount":"$2,900","date":"2 days ago","status":"Insufficient Funds","retrying":false}}
-{"op":"add","path":"/elements/feature-adoption-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["feature-title","features-list"]}}
-{"op":"add","path":"/elements/feature-title","value":{"type":"Heading","props":{"text":"New Feature Adoption","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/features-list","value":{"type":"Card","props":{"direction":"column","gap":"m"},"repeat":{"statePath":"/featureAdoption","key":"id"},"children":["feature-item"]}}
-{"op":"add","path":"/elements/feature-item","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"children":["feature-header","feature-prog"]}}
-{"op":"add","path":"/elements/feature-header","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center"},"children":["feature-name","feature-badge"]}}
-{"op":"add","path":"/elements/feature-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/feature-badge","value":{"type":"Tag","props":{"text":{"$template":"${adoptionRate}% accounts"},"variant":"info"},"children":[]}}
-{"op":"add","path":"/elements/feature-prog","value":{"type":"Progress","props":{"value":{"$item":"adoptionRate"}},"children":[]}}
-{"op":"add","path":"/state/featureAdoption","value":[]}
-{"op":"add","path":"/state/featureAdoption/0","value":{"id":"feat-1","name":"AI Workflow Automation","adoptionRate":68}}
-{"op":"add","path":"/state/featureAdoption/1","value":{"id":"feat-2","name":"Custom Role Permissions","adoptionRate":42}}
-{"op":"add","path":"/state/featureAdoption/2","value":{"id":"feat-3","name":"Real-time Webhook Triggers","adoptionRate":29}}
-{"op":"add","path":"/elements/invite-dialog","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"m"},"visible":{"$state":"/inviteModalOpen"},"children":["invite-dialog-header","invite-form","invite-success-alert"]}}
-{"op":"add","path":"/elements/invite-dialog-header","value":{"type":"CardHeader","props":{"title":"Invite New Administrator","subtitle":"Provide email details to grant full system access."},"children":[]}}
-{"op":"add","path":"/elements/invite-form","value":{"type":"Form","props":{"name":"inviteAdminForm","fields":["fc-email","fc-role"],"buttons":"invite-form-btns"},"children":["fc-email","fc-role","invite-form-btns"]}}
-{"op":"add","path":"/elements/fc-email","value":{"type":"FormControl","props":{"label":"Admin Email Address","input":"input-email"},"children":["input-email"]}}
-{"op":"add","path":"/elements/input-email","value":{"type":"Input","props":{"name":"adminEmail","type":"email","placeholder":"colleague@company.com","value":{"$bindState":"/newAdminEmail"}},"children":[]}}
-{"op":"add","path":"/elements/fc-role","value":{"type":"FormControl","props":{"label":"Access Role","input":"select-role"},"children":["select-role"]}}
-{"op":"add","path":"/elements/select-role","value":{"type":"Select","props":{"name":"adminRole","value":{"$bindState":"/newAdminRole"},"items":["role-super","role-billing","role-support"]},"children":["role-super","role-billing","role-support"]}}
-{"op":"add","path":"/elements/role-super","value":{"type":"SelectItem","props":{"value":"super","label":"Super Admin"},"children":[]}}
-{"op":"add","path":"/elements/role-billing","value":{"type":"SelectItem","props":{"value":"billing","label":"Billing Admin"},"children":[]}}
-{"op":"add","path":"/elements/role-support","value":{"type":"SelectItem","props":{"value":"support","label":"Support Admin"},"children":[]}}
-{"op":"add","path":"/elements/invite-form-btns","value":{"type":"Buttons","props":{"buttons":["btn-send-invite","btn-cancel-invite"]},"children":["btn-send-invite","btn-cancel-invite"]}}
-{"op":"add","path":"/elements/btn-send-invite","value":{"type":"Button","props":{"label":"Send Invitation","variant":"primary"},"on":{"press":{"action":"setState","params":{"statePath":"/inviteSent","value":true}}},"children":[]}}
-{"op":"add","path":"/elements/btn-cancel-invite","value":{"type":"Button","props":{"label":"Close Window","variant":"secondary"},"on":{"press":{"action":"setState","params":{"statePath":"/inviteModalOpen","value":false}}},"children":[]}}
-{"op":"add","path":"/elements/invite-success-alert","value":{"type":"Alert","props":{"title":"Invitation Sent!","description":"An admin access invitation has been emailed to the user.","variant":"success"},"visible":{"$state":"/inviteSent"},"children":[]}}
-{"op":"add","path":"/state/newAdminEmail","value":""}
-{"op":"add","path":"/state/newAdminRole","value":"super"}
-{"op":"add","path":"/state/inviteSent","value":false}
+{"op":"add","path":"/state/failedPayments/0","value":{"id":"fp-1","customer":"Krypton Analytics","amount":"$3,200","invoice":"INV-2024-0891","date":"2025-02-14","card":"Visa ending in 4242","attempts":"2/3"}}
+{"op":"add","path":"/state/failedPayments/1","value":{"id":"fp-2","customer":"AeroSpace Ventures","amount":"$2,450","invoice":"INV-2024-0898","date":"2025-02-15","card":"Mastercard ending in 8812","attempts":"1/3"}}
+{"op":"add","path":"/state/failedPayments/2","value":{"id":"fp-3","customer":"Pinnacle Retail","amount":"$1,800","invoice":"INV-2024-0902","date":"2025-02-16","card":"Amex ending in 1004","attempts":"3/3"}}
+{"op":"add","path":"/state/failedPayments/3","value":{"id":"fp-4","customer":"Solaris Energy","amount":"$1,300","invoice":"INV-2024-0910","date":"2025-02-17","card":"Visa ending in 9901","attempts":"1/3"}}
+{"op":"add","path":"/elements/features-nps-grid","value":{"type":"Card","props":{"direction":"row","gap":"l"},"children":["feature-adoption-card","nps-breakdown-card"]}}
+{"op":"add","path":"/elements/feature-adoption-card","value":{"type":"Card","props":{"variant":"card"},"children":["feature-header","feature-list"]}}
+{"op":"add","path":"/elements/feature-header","value":{"type":"CardHeader","props":{"title":"Adoption of 3 Newest Features","subtitle":"Active usage among eligible accounts"}}}
+{"op":"add","path":"/elements/feature-list","value":{"type":"Card","props":{"direction":"column","gap":"m"},"repeat":{"statePath":"/features","key":"id"},"children":["feature-item"]}}
+{"op":"add","path":"/elements/feature-item","value":{"type":"Card","props":{"direction":"column","gap":"xs","variant":"clear"},"children":["feature-item-top","feature-progress","feature-desc"]}}
+{"op":"add","path":"/elements/feature-item-top","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center"},"children":["feature-title-tag","feature-pct"]}}
+{"op":"add","path":"/elements/feature-title-tag","value":{"type":"Card","props":{"direction":"row","gap":"xs","align":"center"},"children":["feature-title","feature-tag"]}}
+{"op":"add","path":"/elements/feature-title","value":{"type":"TextContent","props":{"size":"small-heavy","text":{"$item":"name"}}}}
+{"op":"add","path":"/elements/feature-tag","value":{"type":"Tag","props":{"text":{"$item":"released"},"variant":"info","size":"sm"}}}
+{"op":"add","path":"/elements/feature-pct","value":{"type":"Badge","props":{"text":{"$template":"${adoption}% Accounts"},"variant":"secondary"}}}
+{"op":"add","path":"/elements/feature-progress","value":{"type":"Progress","props":{"value":{"$item":"adoption"},"label":{"$template":"${activeAccounts} of ${totalAccounts} accounts active"}}}}
+{"op":"add","path":"/elements/feature-desc","value":{"type":"TextContent","props":{"size":"small","text":{"$item":"description"}}}}
+{"op":"add","path":"/state/features","value":[]}
+{"op":"add","path":"/state/features/0","value":{"id":"f-1","name":"AI Analytics Co-Pilot","released":"Released 2w ago","adoption":68,"activeAccounts":578,"totalAccounts":850,"description":"Automated insight generation and conversational queries over customer data."}}
+{"op":"add","path":"/state/features/1","value":{"id":"f-2","name":"Custom Role RBAC","released":"Released 4w ago","adoption":44,"activeAccounts":374,"totalAccounts":850,"description":"Granular permissions editor for enterprise security and governance compliance."}}
+{"op":"add","path":"/state/features/2","value":{"id":"f-3","name":"Automated Webhook Triggers","released":"Released 6w ago","adoption":82,"activeAccounts":697,"totalAccounts":850,"description":"Event-driven HTTP callbacks for third-party system integrations."}}
+{"op":"add","path":"/elements/nps-breakdown-card","value":{"type":"Card","props":{"variant":"card"},"children":["nps-header","nps-radar"]}}
+{"op":"add","path":"/elements/nps-header","value":{"type":"CardHeader","props":{"title":"NPS Category Breakdown","subtitle":"Satisfaction scores by customer segment"}}}
+{"op":"add","path":"/elements/nps-radar","value":{"type":"RadarChart","props":{"labels":["Product Usability","Customer Support","Value for Money","Feature Set","API & Reliability","Onboarding Experience"],"series":["npsSeries"]}}}
+{"op":"add","path":"/elements/npsSeries","value":{"type":"Series","props":{"category":"NPS Rating (out of 100)","values":[88,92,76,81,95,84]}}}
+{"op":"add","path":"/elements/dialogs","value":{"type":"Card","props":{"direction":"column"},"visible":{"$state":"/inviteStatus"},"children":["invite-alert"]}}
+{"op":"add","path":"/elements/invite-alert","value":{"type":"Alert","props":{"title":"Success","description":{"$state":"/inviteStatus"},"variant":"success"}}}

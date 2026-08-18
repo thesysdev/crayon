@@ -1,504 +1,1006 @@
-Here's a comprehensive university administrator dashboard covering all 16 requirements.
+Here's a comprehensive university administrator overview covering all sixteen items.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "admin-overview",
-      "catalogId": "thesys.dev:c1-openui",
-      "theme": { "primaryColor": "#1E3A8A", "agentDisplayName": "University Admin" }
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "admin-overview",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "column",
-          "gap": "l",
-          "children": ["hdr", "deptFocus", "kpiRow", "enrollCard", "appsRow", "capacityRow", "riskRow", "financeRow", "housingCard", "eventsCard", "alumniCard", "actionsRow", "followups"]
-        },
-        {
-          "id": "hdr",
-          "component": "CardHeader",
-          "title": "University Administrator Overview",
-          "subtitle": "Institutional metrics for the current academic year"
-        },
-
-        {
-          "id": "deptFocus",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "row",
-          "gap": "m",
-          "align": "center",
-          "children": ["deptFocusLabel", "deptSelect"]
-        },
-        { "id": "deptFocusLabel", "component": "Label", "text": "Focus on department:" },
-        {
-          "id": "deptSelect",
-          "component": "Select",
-          "name": "departmentFocus",
-          "placeholder": "All departments",
-          "value": "all",
-          "items": ["dsAll", "dsEng", "dsBus", "dsArts", "dsSci", "dsMed"]
-        },
-        { "id": "dsAll", "component": "SelectItem", "value": "all", "label": "All Departments" },
-        { "id": "dsEng", "component": "SelectItem", "value": "eng", "label": "Engineering" },
-        { "id": "dsBus", "component": "SelectItem", "value": "bus", "label": "Business" },
-        { "id": "dsArts", "component": "SelectItem", "value": "arts", "label": "Arts & Humanities" },
-        { "id": "dsSci", "component": "SelectItem", "value": "sci", "label": "Sciences" },
-        { "id": "dsMed", "component": "SelectItem", "value": "med", "label": "Medicine" },
-
-        {
-          "id": "kpiRow",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "m",
-          "wrap": true,
-          "children": ["kpiEnroll", "kpiAccept", "kpiTuition", "kpiSemester"]
-        },
-        {
-          "id": "kpiEnroll",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "xs",
-          "weight": 1,
-          "children": ["kpiEnrollH", "kpiEnrollV", "kpiEnrollD"]
-        },
-        { "id": "kpiEnrollH", "component": "TextContent", "size": "small", "text": "Total Enrollment" },
-        { "id": "kpiEnrollV", "component": "Heading", "level": "h2", "text": "24,850" },
-        { "id": "kpiEnrollD", "component": "Tag", "variant": "success", "size": "sm", "text": "+6.2% over 5 yrs" },
-
-        {
-          "id": "kpiAccept",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "xs",
-          "weight": 1,
-          "children": ["kpiAcceptH", "kpiAcceptV", "kpiAcceptBar"]
-        },
-        { "id": "kpiAcceptH", "component": "TextContent", "size": "small", "text": "Acceptance Rate" },
-        { "id": "kpiAcceptV", "component": "Heading", "level": "h2", "text": "38%" },
-        { "id": "kpiAcceptBar", "component": "Progress", "value": 38, "label": "12,200 accepted of 32,100 applicants" },
-
-        {
-          "id": "kpiTuition",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "xs",
-          "weight": 1,
-          "children": ["kpiTuitionH", "kpiTuitionV", "kpiTuitionD"]
-        },
-        { "id": "kpiTuitionH", "component": "TextContent", "size": "small", "text": "Tuition Revenue (This Year)" },
-        { "id": "kpiTuitionV", "component": "Heading", "level": "h2", "text": "$412.6M" },
-        { "id": "kpiTuitionD", "component": "Tag", "variant": "info", "size": "sm", "text": "FY 2024–25" },
-
-        {
-          "id": "kpiSemester",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "xs",
-          "weight": 1,
-          "children": ["kpiSemesterH", "kpiSemesterV", "kpiSemesterD"]
-        },
-        { "id": "kpiSemesterH", "component": "TextContent", "size": "small", "text": "This Semester vs Last" },
-        { "id": "kpiSemesterV", "component": "Heading", "level": "h2", "text": "+3.4%" },
-        { "id": "kpiSemesterD", "component": "TextContent", "size": "small", "text": "Enrollment growth Spring vs Fall" },
-
-        {
-          "id": "enrollCard",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "children": ["enrollHdr", "enrollChart"]
-        },
-        { "id": "enrollHdr", "component": "CardHeader", "title": "Total Enrollment — 5 Year Trend" },
-        {
-          "id": "enrollChart",
-          "component": "LineChart",
-          "variant": "natural",
-          "xLabel": "Year",
-          "yLabel": "Students",
-          "labels": ["2020", "2021", "2022", "2023", "2024"],
-          "series": ["enrollSeries"]
-        },
-        { "id": "enrollSeries", "component": "Series", "category": "Enrollment", "values": [23400, 23720, 24100, 24500, 24850] },
-
-        {
-          "id": "appsRow",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "m",
-          "wrap": true,
-          "children": ["appsCard", "waitlistCard"]
-        },
-        {
-          "id": "appsCard",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "weight": 1,
-          "children": ["appsHdr", "appsChart"]
-        },
-        { "id": "appsHdr", "component": "CardHeader", "title": "Applications by Program" },
-        {
-          "id": "appsChart",
-          "component": "HorizontalBarChart",
-          "xLabel": "Applications",
-          "yLabel": "Program",
-          "labels": ["Engineering", "Business", "Sciences", "Arts", "Medicine"],
-          "series": ["appsSeries"]
-        },
-        { "id": "appsSeries", "component": "Series", "category": "Applications", "values": [9800, 8200, 6100, 4300, 3700] },
-
-        {
-          "id": "waitlistCard",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "weight": 1,
-          "children": ["waitlistHdr", "waitlistTable"]
-        },
-        { "id": "waitlistHdr", "component": "CardHeader", "title": "Waitlisted Students per Program" },
-        {
-          "id": "waitlistTable",
-          "component": "Table",
-          "columns": ["wlProg", "wlCount"]
-        },
-        { "id": "wlProg", "component": "Col", "label": "Program", "type": "string", "data": ["Engineering", "Business", "Sciences", "Arts", "Medicine"] },
-        { "id": "wlCount", "component": "Col", "label": "Waitlisted", "type": "number", "data": [312, 268, 154, 97, 205] },
-
-        {
-          "id": "capacityRow",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "m",
-          "wrap": true,
-          "children": ["capacityCard", "loadCard"]
-        },
-        {
-          "id": "capacityCard",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "weight": 1,
-          "children": ["capacityHdr", "capA", "capB", "capC", "capD"]
-        },
-        { "id": "capacityHdr", "component": "CardHeader", "title": "Course Offering Fill Rates" },
-        { "id": "capA", "component": "Progress", "value": 96, "label": "CS 101 — Intro to Programming (96%)" },
-        { "id": "capB", "component": "Progress", "value": 82, "label": "BUS 210 — Marketing (82%)" },
-        { "id": "capC", "component": "Progress", "value": 74, "label": "BIO 305 — Genetics (74%)" },
-        { "id": "capD", "component": "Progress", "value": 58, "label": "ART 150 — Sculpture (58%)" },
-
-        {
-          "id": "loadCard",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "weight": 1,
-          "children": ["loadHdr", "loadTable"]
-        },
-        { "id": "loadHdr", "component": "CardHeader", "title": "Teaching Load by Faculty" },
-        {
-          "id": "loadTable",
-          "component": "Table",
-          "columns": ["facName", "facCourses", "facHours"]
-        },
-        { "id": "facName", "component": "Col", "label": "Faculty", "type": "string", "data": ["Dr. Chen", "Dr. Okafor", "Dr. Rossi", "Dr. Nguyen", "Dr. Patel"] },
-        { "id": "facCourses", "component": "Col", "label": "Courses", "type": "number", "data": [4, 3, 5, 2, 4] },
-        { "id": "facHours", "component": "Col", "label": "Weekly Hrs", "type": "number", "data": [16, 12, 20, 8, 15] },
-
-        {
-          "id": "riskRow",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "column",
-          "gap": "s",
-          "children": ["riskAlert", "riskCard"]
-        },
-        {
-          "id": "riskAlert",
-          "component": "Alert",
-          "variant": "warning",
-          "title": "Students at Academic Risk",
-          "description": "426 students currently flagged with GPA below 2.0 or failing 2+ courses. Advising outreach recommended."
-        },
-        {
-          "id": "riskCard",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "children": ["riskHdr", "riskTable"]
-        },
-        { "id": "riskHdr", "component": "CardHeader", "title": "At-Risk Breakdown by Department" },
-        {
-          "id": "riskTable",
-          "component": "Table",
-          "columns": ["riskDept", "riskCount", "riskPct"]
-        },
-        { "id": "riskDept", "component": "Col", "label": "Department", "type": "string", "data": ["Engineering", "Business", "Sciences", "Arts", "Medicine"] },
-        { "id": "riskCount", "component": "Col", "label": "At-Risk", "type": "number", "data": [142, 98, 76, 61, 49] },
-        { "id": "riskPct", "component": "Col", "label": "% of Dept", "type": "string", "data": ["2.4%", "1.9%", "1.6%", "2.1%", "1.3%"] },
-
-        {
-          "id": "financeRow",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "m",
-          "wrap": true,
-          "children": ["scholarshipCard", "revenueCard"]
-        },
-        {
-          "id": "scholarshipCard",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "weight": 1,
-          "children": ["scholarshipHdr", "scholarshipBar", "scholarshipNote"]
-        },
-        { "id": "scholarshipHdr", "component": "CardHeader", "title": "Scholarship Budget Used" },
-        { "id": "scholarshipBar", "component": "Progress", "value": 72, "label": "$18.0M used of $25.0M budget" },
-        { "id": "scholarshipNote", "component": "TextContent", "size": "small", "text": "72% of the annual scholarship budget has been allocated." },
-
-        {
-          "id": "revenueCard",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "weight": 1,
-          "children": ["revenueHdr", "revenueChart"]
-        },
-        { "id": "revenueHdr", "component": "CardHeader", "title": "Tuition Revenue by Program" },
-        {
-          "id": "revenueChart",
-          "component": "PieChart",
-          "variant": "donut",
-          "labels": ["Engineering", "Business", "Sciences", "Arts", "Medicine"],
-          "values": [132, 98, 74, 42, 66]
-        },
-
-        {
-          "id": "housingCard",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "children": ["housingHdr", "housingBar", "housingBar2", "housingBar3"]
-        },
-        { "id": "housingHdr", "component": "CardHeader", "title": "Housing Occupancy" },
-        { "id": "housingBar", "component": "Progress", "value": 94, "label": "North Halls — 94%" },
-        { "id": "housingBar2", "component": "Progress", "value": 88, "label": "West Village — 88%" },
-        { "id": "housingBar3", "component": "Progress", "value": 76, "label": "Graduate Apartments — 76%" },
-
-        {
-          "id": "eventsCard",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "children": ["eventsHdr", "eventsList"]
-        },
-        { "id": "eventsHdr", "component": "CardHeader", "title": "Campus Events This Month" },
-        {
-          "id": "eventsList",
-          "component": "ListBlock",
-          "variant": "number",
-          "items": ["ev1", "ev2", "ev3", "ev4"]
-        },
-        { "id": "ev1", "component": "ListItem", "title": "Spring Career Fair", "subtitle": "Apr 8 — Main Hall" },
-        { "id": "ev2", "component": "ListItem", "title": "Guest Lecture: AI Ethics", "subtitle": "Apr 14 — Auditorium B" },
-        { "id": "ev3", "component": "ListItem", "title": "Alumni Networking Night", "subtitle": "Apr 21 — Union Center" },
-        { "id": "ev4", "component": "ListItem", "title": "Founders Day Celebration", "subtitle": "Apr 29 — Quad" },
-
-        {
-          "id": "alumniCard",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "children": ["alumniHdr", "alumniChart"]
-        },
-        { "id": "alumniHdr", "component": "CardHeader", "title": "Alumni Giving — Past 4 Years" },
-        {
-          "id": "alumniChart",
-          "component": "BarChart",
-          "xLabel": "Year",
-          "yLabel": "Giving ($M)",
-          "labels": ["2021", "2022", "2023", "2024"],
-          "series": ["alumniSeries"]
-        },
-        { "id": "alumniSeries", "component": "Series", "category": "Giving ($M)", "values": [28.4, 31.2, 35.8, 42.1] },
-
-        {
-          "id": "actionsRow",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "m",
-          "wrap": true,
-          "children": ["approveCourseDialog", "messageDrawer"]
-        },
-        {
-          "id": "approveCourseDialog",
-          "component": "DialogBlock",
-          "triggerLabel": "Approve New Course",
-          "triggerVariant": "default",
-          "title": "Approve New Course",
-          "description": "Review and approve a proposed course offering.",
-          "content": ["approveForm"]
-        },
-        {
-          "id": "approveForm",
-          "component": "Form",
-          "name": "approveCourse",
-          "buttons": "approveButtons",
-          "fields": ["fcCourseName", "fcDept", "fcCredits"]
-        },
-        {
-          "id": "fcCourseName",
-          "component": "FormControl",
-          "label": "Course Title",
-          "input": "inpCourseName"
-        },
-        { "id": "inpCourseName", "component": "Input", "name": "courseName", "type": "text", "placeholder": "e.g. Advanced Machine Learning" },
-        {
-          "id": "fcDept",
-          "component": "FormControl",
-          "label": "Department",
-          "input": "selCourseDept"
-        },
-        {
-          "id": "selCourseDept",
-          "component": "Select",
-          "name": "courseDept",
-          "placeholder": "Select department",
-          "items": ["cdEng", "cdBus", "cdArts", "cdSci", "cdMed"]
-        },
-        { "id": "cdEng", "component": "SelectItem", "value": "eng", "label": "Engineering" },
-        { "id": "cdBus", "component": "SelectItem", "value": "bus", "label": "Business" },
-        { "id": "cdArts", "component": "SelectItem", "value": "arts", "label": "Arts & Humanities" },
-        { "id": "cdSci", "component": "SelectItem", "value": "sci", "label": "Sciences" },
-        { "id": "cdMed", "component": "SelectItem", "value": "med", "label": "Medicine" },
-        {
-          "id": "fcCredits",
-          "component": "FormControl",
-          "label": "Credit Hours",
-          "input": "inpCredits"
-        },
-        { "id": "inpCredits", "component": "Input", "name": "credits", "type": "number", "placeholder": "3" },
-        {
-          "id": "approveButtons",
-          "component": "Buttons",
-          "buttons": ["btnApprove", "btnReject"]
-        },
-        { "id": "btnApprove", "component": "Button", "label": "Approve Course", "variant": "primary" },
-        { "id": "btnReject", "component": "Button", "label": "Reject", "variant": "secondary", "type": "destructive" },
-
-        {
-          "id": "messageDrawer",
-          "component": "DrawerBlock",
-          "triggerLabel": "Message a Student Group",
-          "title": "Send Message to Student Group",
-          "description": "Compose and send a message to a targeted group of students.",
-          "content": ["messageForm"]
-        },
-        {
-          "id": "messageForm",
-          "component": "Form",
-          "name": "messageGroup",
-          "buttons": "messageButtons",
-          "fields": ["fcGroup", "fcSubject", "fcBody"]
-        },
-        {
-          "id": "fcGroup",
-          "component": "FormControl",
-          "label": "Recipient Group",
-          "input": "selGroup"
-        },
-        {
-          "id": "selGroup",
-          "component": "Select",
-          "name": "group",
-          "placeholder": "Choose a group",
-          "items": ["grAll", "grRisk", "grWaitlist", "grScholar", "grGrad"]
-        },
-        { "id": "grAll", "component": "SelectItem", "value": "all", "label": "All Students" },
-        { "id": "grRisk", "component": "SelectItem", "value": "risk", "label": "At-Risk Students" },
-        { "id": "grWaitlist", "component": "SelectItem", "value": "waitlist", "label": "Waitlisted Applicants" },
-        { "id": "grScholar", "component": "SelectItem", "value": "scholar", "label": "Scholarship Recipients" },
-        { "id": "grGrad", "component": "SelectItem", "value": "grad", "label": "Graduating Class" },
-        {
-          "id": "fcSubject",
-          "component": "FormControl",
-          "label": "Subject",
-          "input": "inpSubject"
-        },
-        { "id": "inpSubject", "component": "Input", "name": "subject", "type": "text", "placeholder": "Message subject" },
-        {
-          "id": "fcBody",
-          "component": "FormControl",
-          "label": "Message",
-          "input": "taBody"
-        },
-        { "id": "taBody", "component": "TextArea", "name": "body", "rows": 5, "placeholder": "Write your message..." },
-        {
-          "id": "messageButtons",
-          "component": "Buttons",
-          "buttons": ["btnSend"]
-        },
-        { "id": "btnSend", "component": "Button", "label": "Send Message", "variant": "primary" },
-
-        {
-          "id": "followups",
-          "component": "FollowUpBlock",
-          "items": ["fu1", "fu2", "fu3"]
-        },
-        { "id": "fu1", "component": "FollowUpItem", "text": "Show detailed retention analytics" },
-        { "id": "fu2", "component": "FollowUpItem", "text": "Compare tuition revenue year over year" },
-        { "id": "fu3", "component": "FollowUpItem", "text": "Export the at-risk student list" }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-This single screen covers all 16 items:
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "deptFocus",
+          "kpiRow",
+          "enrollTrend",
+          "appsByProgram",
+          "capacityAndLoad",
+          "riskAndWaitlist",
+          "budgetsRow",
+          "givingTrend",
+          "eventsSection",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "University Administration Overview",
+        "subtitle": "Institutional dashboard — current academic year"
+      },
+      {
+        "id": "deptFocus",
+        "component": "FormControl",
+        "label": "Focus on department",
+        "input": "deptSelect",
+        "hint": "Filter the dashboard to a single department"
+      },
+      {
+        "id": "deptSelect",
+        "component": "Select",
+        "name": "department",
+        "placeholder": "All departments",
+        "items": [
+          "deptAll",
+          "deptCS",
+          "deptEng",
+          "deptBus",
+          "deptArts",
+          "deptSci"
+        ]
+      },
+      {
+        "id": "deptAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All departments"
+      },
+      {
+        "id": "deptCS",
+        "component": "SelectItem",
+        "value": "cs",
+        "label": "Computer Science"
+      },
+      {
+        "id": "deptEng",
+        "component": "SelectItem",
+        "value": "eng",
+        "label": "Engineering"
+      },
+      {
+        "id": "deptBus",
+        "component": "SelectItem",
+        "value": "bus",
+        "label": "Business"
+      },
+      {
+        "id": "deptArts",
+        "component": "SelectItem",
+        "value": "arts",
+        "label": "Arts & Humanities"
+      },
+      {
+        "id": "deptSci",
+        "component": "SelectItem",
+        "value": "sci",
+        "label": "Natural Sciences"
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "kpiEnroll",
+          "kpiAccept",
+          "kpiTuition",
+          "kpiSemester"
+        ]
+      },
+      {
+        "id": "kpiEnroll",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "kpiEnrollLabel",
+          "kpiEnrollValue",
+          "kpiEnrollBadge"
+        ]
+      },
+      {
+        "id": "kpiEnrollLabel",
+        "component": "TextContent",
+        "text": "Total Enrollment",
+        "size": "small"
+      },
+      {
+        "id": "kpiEnrollValue",
+        "component": "Heading",
+        "text": "18,642",
+        "level": "h2"
+      },
+      {
+        "id": "kpiEnrollBadge",
+        "component": "Badge",
+        "text": "+4.1% vs last year",
+        "variant": "secondary"
+      },
+      {
+        "id": "kpiAccept",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "kpiAcceptLabel",
+          "kpiAcceptValue",
+          "kpiAcceptProgress"
+        ]
+      },
+      {
+        "id": "kpiAcceptLabel",
+        "component": "TextContent",
+        "text": "Acceptance Rate",
+        "size": "small"
+      },
+      {
+        "id": "kpiAcceptValue",
+        "component": "Heading",
+        "text": "37%",
+        "level": "h2"
+      },
+      {
+        "id": "kpiAcceptProgress",
+        "component": "Progress",
+        "value": 37,
+        "label": "9,240 accepted of 24,900 applicants"
+      },
+      {
+        "id": "kpiTuition",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "kpiTuitionLabel",
+          "kpiTuitionValue",
+          "kpiTuitionBadge"
+        ]
+      },
+      {
+        "id": "kpiTuitionLabel",
+        "component": "TextContent",
+        "text": "Tuition Revenue (This Year)",
+        "size": "small"
+      },
+      {
+        "id": "kpiTuitionValue",
+        "component": "Heading",
+        "text": "$342.8M",
+        "level": "h2"
+      },
+      {
+        "id": "kpiTuitionBadge",
+        "component": "Badge",
+        "text": "On budget",
+        "variant": "default"
+      },
+      {
+        "id": "kpiSemester",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "kpiSemesterLabel",
+          "kpiSemesterValue",
+          "kpiSemesterBadge"
+        ]
+      },
+      {
+        "id": "kpiSemesterLabel",
+        "component": "TextContent",
+        "text": "This Semester vs Last",
+        "size": "small"
+      },
+      {
+        "id": "kpiSemesterValue",
+        "component": "Heading",
+        "text": "+312 students",
+        "level": "h2"
+      },
+      {
+        "id": "kpiSemesterBadge",
+        "component": "Badge",
+        "text": "Retention 91% (was 89%)",
+        "variant": "secondary"
+      },
+      {
+        "id": "enrollTrend",
+        "component": "Card",
+        "children": [
+          "enrollTrendHeader",
+          "enrollTrendChart"
+        ]
+      },
+      {
+        "id": "enrollTrendHeader",
+        "component": "CardHeader",
+        "title": "Total Enrollment Over Five Years",
+        "subtitle": "Headcount by academic year"
+      },
+      {
+        "id": "enrollTrendChart",
+        "component": "LineChart",
+        "labels": [
+          "2020",
+          "2021",
+          "2022",
+          "2023",
+          "2024"
+        ],
+        "series": [
+          "enrollSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Year",
+        "yLabel": "Students"
+      },
+      {
+        "id": "enrollSeries",
+        "component": "Series",
+        "category": "Enrollment",
+        "values": [
+          16120,
+          16780,
+          17410,
+          17910,
+          18642
+        ]
+      },
+      {
+        "id": "appsByProgram",
+        "component": "Card",
+        "children": [
+          "appsHeader",
+          "appsChart"
+        ]
+      },
+      {
+        "id": "appsHeader",
+        "component": "CardHeader",
+        "title": "Applications by Program",
+        "subtitle": "Current admissions cycle"
+      },
+      {
+        "id": "appsChart",
+        "component": "HorizontalBarChart",
+        "labels": [
+          "Computer Science",
+          "Engineering",
+          "Business",
+          "Arts & Humanities",
+          "Natural Sciences"
+        ],
+        "series": [
+          "appsSeries"
+        ],
+        "xLabel": "Applications",
+        "yLabel": "Program"
+      },
+      {
+        "id": "appsSeries",
+        "component": "Series",
+        "category": "Applications",
+        "values": [
+          7200,
+          5400,
+          6100,
+          3200,
+          3000
+        ]
+      },
+      {
+        "id": "capacityAndLoad",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "capacityCard",
+          "facultyLoadCard"
+        ]
+      },
+      {
+        "id": "capacityCard",
+        "component": "Card",
+        "weight": 1,
+        "children": [
+          "capacityHeader",
+          "capacityTable"
+        ]
+      },
+      {
+        "id": "capacityHeader",
+        "component": "CardHeader",
+        "title": "Course Offering Capacity",
+        "subtitle": "How full each offering is"
+      },
+      {
+        "id": "capacityTable",
+        "component": "Table",
+        "columns": [
+          "capCourse",
+          "capEnrolled",
+          "capSeats",
+          "capFull"
+        ]
+      },
+      {
+        "id": "capCourse",
+        "component": "Col",
+        "label": "Course",
+        "data": [
+          "CS 101",
+          "ENG 210",
+          "BUS 305",
+          "ART 150",
+          "SCI 220"
+        ]
+      },
+      {
+        "id": "capEnrolled",
+        "component": "Col",
+        "label": "Enrolled",
+        "type": "number",
+        "data": [
+          298,
+          145,
+          180,
+          88,
+          132
+        ]
+      },
+      {
+        "id": "capSeats",
+        "component": "Col",
+        "label": "Seats",
+        "type": "number",
+        "data": [
+          300,
+          150,
+          200,
+          120,
+          150
+        ]
+      },
+      {
+        "id": "capFull",
+        "component": "Col",
+        "label": "% Full",
+        "data": [
+          "99%",
+          "97%",
+          "90%",
+          "73%",
+          "88%"
+        ]
+      },
+      {
+        "id": "facultyLoadCard",
+        "component": "Card",
+        "weight": 1,
+        "children": [
+          "facultyHeader",
+          "facultyTable"
+        ]
+      },
+      {
+        "id": "facultyHeader",
+        "component": "CardHeader",
+        "title": "Teaching Load by Faculty",
+        "subtitle": "Courses & credit hours"
+      },
+      {
+        "id": "facultyTable",
+        "component": "Table",
+        "columns": [
+          "facName",
+          "facCourses",
+          "facHours"
+        ]
+      },
+      {
+        "id": "facName",
+        "component": "Col",
+        "label": "Faculty",
+        "data": [
+          "Dr. Reyes",
+          "Dr. Okafor",
+          "Dr. Lindqvist",
+          "Dr. Tanaka",
+          "Dr. Moreau"
+        ]
+      },
+      {
+        "id": "facCourses",
+        "component": "Col",
+        "label": "Courses",
+        "type": "number",
+        "data": [
+          4,
+          3,
+          5,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "facHours",
+        "component": "Col",
+        "label": "Credit Hrs",
+        "type": "number",
+        "data": [
+          12,
+          9,
+          15,
+          6,
+          9
+        ]
+      },
+      {
+        "id": "riskAndWaitlist",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "riskCard",
+          "waitlistCard"
+        ]
+      },
+      {
+        "id": "riskCard",
+        "component": "Card",
+        "weight": 1,
+        "children": [
+          "riskHeader",
+          "riskAlert",
+          "riskTable"
+        ]
+      },
+      {
+        "id": "riskHeader",
+        "component": "CardHeader",
+        "title": "Students at Academic Risk",
+        "subtitle": "GPA below threshold or failing"
+      },
+      {
+        "id": "riskAlert",
+        "component": "Alert",
+        "title": "214 students flagged",
+        "description": "42 are critical (GPA < 1.5) and need immediate advising outreach",
+        "variant": "warning"
+      },
+      {
+        "id": "riskTable",
+        "component": "Table",
+        "columns": [
+          "riskLevel",
+          "riskCount"
+        ]
+      },
+      {
+        "id": "riskLevel",
+        "component": "Col",
+        "label": "Risk Level",
+        "data": [
+          "Critical (GPA < 1.5)",
+          "High (GPA 1.5–2.0)",
+          "Watch (GPA 2.0–2.3)"
+        ]
+      },
+      {
+        "id": "riskCount",
+        "component": "Col",
+        "label": "Students",
+        "type": "number",
+        "data": [
+          42,
+          88,
+          84
+        ]
+      },
+      {
+        "id": "waitlistCard",
+        "component": "Card",
+        "weight": 1,
+        "children": [
+          "waitlistHeader",
+          "waitlistTable"
+        ]
+      },
+      {
+        "id": "waitlistHeader",
+        "component": "CardHeader",
+        "title": "Waitlisted Students per Program",
+        "subtitle": "Current waitlist demand"
+      },
+      {
+        "id": "waitlistTable",
+        "component": "Table",
+        "columns": [
+          "wlProgram",
+          "wlCount"
+        ]
+      },
+      {
+        "id": "wlProgram",
+        "component": "Col",
+        "label": "Program",
+        "data": [
+          "Computer Science",
+          "Engineering",
+          "Business",
+          "Arts & Humanities",
+          "Natural Sciences"
+        ]
+      },
+      {
+        "id": "wlCount",
+        "component": "Col",
+        "label": "Waitlisted",
+        "type": "number",
+        "data": [
+          186,
+          94,
+          72,
+          31,
+          48
+        ]
+      },
+      {
+        "id": "budgetsRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "scholarshipCard",
+          "housingCard"
+        ]
+      },
+      {
+        "id": "scholarshipCard",
+        "component": "Card",
+        "weight": 1,
+        "children": [
+          "scholarshipHeader",
+          "scholarshipProgress",
+          "scholarshipNote"
+        ]
+      },
+      {
+        "id": "scholarshipHeader",
+        "component": "CardHeader",
+        "title": "Scholarship Budget",
+        "subtitle": "Used against total allocation"
+      },
+      {
+        "id": "scholarshipProgress",
+        "component": "Progress",
+        "value": 78,
+        "label": "$18.7M used of $24.0M (78%)"
+      },
+      {
+        "id": "scholarshipNote",
+        "component": "TextContent",
+        "text": "$5.3M remaining for spring disbursements.",
+        "size": "small"
+      },
+      {
+        "id": "housingCard",
+        "component": "Card",
+        "weight": 1,
+        "children": [
+          "housingHeader",
+          "housingProgress",
+          "housingNote"
+        ]
+      },
+      {
+        "id": "housingHeader",
+        "component": "CardHeader",
+        "title": "Housing Occupancy",
+        "subtitle": "Residence hall capacity"
+      },
+      {
+        "id": "housingProgress",
+        "component": "Progress",
+        "value": 94,
+        "label": "6,580 of 7,000 beds occupied (94%)"
+      },
+      {
+        "id": "housingNote",
+        "component": "TextContent",
+        "text": "420 beds available; 128 on the housing waitlist.",
+        "size": "small"
+      },
+      {
+        "id": "givingTrend",
+        "component": "Card",
+        "children": [
+          "givingHeader",
+          "givingChart"
+        ]
+      },
+      {
+        "id": "givingHeader",
+        "component": "CardHeader",
+        "title": "Alumni Giving",
+        "subtitle": "Total donations over the past four years"
+      },
+      {
+        "id": "givingChart",
+        "component": "BarChart",
+        "labels": [
+          "2021",
+          "2022",
+          "2023",
+          "2024"
+        ],
+        "series": [
+          "givingSeries"
+        ],
+        "xLabel": "Year",
+        "yLabel": "USD (millions)"
+      },
+      {
+        "id": "givingSeries",
+        "component": "Series",
+        "category": "Donations ($M)",
+        "values": [
+          28.4,
+          31.2,
+          35.9,
+          41.6
+        ]
+      },
+      {
+        "id": "eventsSection",
+        "component": "Card",
+        "children": [
+          "eventsHeader",
+          "eventsList"
+        ]
+      },
+      {
+        "id": "eventsHeader",
+        "component": "CardHeader",
+        "title": "Campus Events This Month",
+        "subtitle": "Upcoming institutional events"
+      },
+      {
+        "id": "eventsList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "event1",
+          "event2",
+          "event3",
+          "event4"
+        ]
+      },
+      {
+        "id": "event1",
+        "component": "ListItem",
+        "title": "Fall Career Fair",
+        "subtitle": "Oct 8 · Main Quad · 120 employers registered"
+      },
+      {
+        "id": "event2",
+        "component": "ListItem",
+        "title": "Board of Trustees Meeting",
+        "subtitle": "Oct 14 · Admin Hall · Budget review"
+      },
+      {
+        "id": "event3",
+        "component": "ListItem",
+        "title": "Homecoming Weekend",
+        "subtitle": "Oct 18–20 · Campus-wide · Alumni reception"
+      },
+      {
+        "id": "event4",
+        "component": "ListItem",
+        "title": "Research Symposium",
+        "subtitle": "Oct 25 · Science Center · 60 presentations"
+      },
+      {
+        "id": "actions",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "approveCourse",
+          "messageGroup"
+        ]
+      },
+      {
+        "id": "approveCourse",
+        "component": "DialogBlock",
+        "triggerLabel": "Approve New Course",
+        "title": "Approve New Course Offering",
+        "description": "Review and approve a proposed course for the upcoming term",
+        "triggerVariant": "default",
+        "content": [
+          "approveForm"
+        ]
+      },
+      {
+        "id": "approveForm",
+        "component": "Form",
+        "name": "approve-course",
+        "buttons": "approveButtons",
+        "fields": [
+          "courseCodeField",
+          "courseTitleField",
+          "courseDeptField",
+          "courseSeatsField"
+        ]
+      },
+      {
+        "id": "courseCodeField",
+        "component": "FormControl",
+        "label": "Course code",
+        "input": "courseCodeInput"
+      },
+      {
+        "id": "courseCodeInput",
+        "component": "Input",
+        "name": "course_code",
+        "placeholder": "e.g. CS 340"
+      },
+      {
+        "id": "courseTitleField",
+        "component": "FormControl",
+        "label": "Course title",
+        "input": "courseTitleInput"
+      },
+      {
+        "id": "courseTitleInput",
+        "component": "Input",
+        "name": "course_title",
+        "placeholder": "e.g. Distributed Systems"
+      },
+      {
+        "id": "courseDeptField",
+        "component": "FormControl",
+        "label": "Department",
+        "input": "courseDeptSelect"
+      },
+      {
+        "id": "courseDeptSelect",
+        "component": "Select",
+        "name": "course_dept",
+        "placeholder": "Select department",
+        "items": [
+          "cdCS",
+          "cdEng",
+          "cdBus",
+          "cdArts",
+          "cdSci"
+        ]
+      },
+      {
+        "id": "cdCS",
+        "component": "SelectItem",
+        "value": "cs",
+        "label": "Computer Science"
+      },
+      {
+        "id": "cdEng",
+        "component": "SelectItem",
+        "value": "eng",
+        "label": "Engineering"
+      },
+      {
+        "id": "cdBus",
+        "component": "SelectItem",
+        "value": "bus",
+        "label": "Business"
+      },
+      {
+        "id": "cdArts",
+        "component": "SelectItem",
+        "value": "arts",
+        "label": "Arts & Humanities"
+      },
+      {
+        "id": "cdSci",
+        "component": "SelectItem",
+        "value": "sci",
+        "label": "Natural Sciences"
+      },
+      {
+        "id": "courseSeatsField",
+        "component": "FormControl",
+        "label": "Seat capacity",
+        "input": "courseSeatsInput"
+      },
+      {
+        "id": "courseSeatsInput",
+        "component": "Input",
+        "name": "course_seats",
+        "type": "number",
+        "placeholder": "e.g. 120"
+      },
+      {
+        "id": "approveButtons",
+        "component": "Buttons",
+        "buttons": [
+          "approveSubmit",
+          "approveCancel"
+        ]
+      },
+      {
+        "id": "approveSubmit",
+        "component": "Button",
+        "label": "Approve Course",
+        "variant": "primary"
+      },
+      {
+        "id": "approveCancel",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      },
+      {
+        "id": "messageGroup",
+        "component": "DrawerBlock",
+        "triggerLabel": "Message a Student Group",
+        "title": "Send Message to Student Group",
+        "description": "Compose an announcement to a targeted group of students",
+        "content": [
+          "messageForm"
+        ]
+      },
+      {
+        "id": "messageForm",
+        "component": "Form",
+        "name": "message-group",
+        "buttons": "messageButtons",
+        "fields": [
+          "groupField",
+          "subjectField",
+          "bodyField"
+        ]
+      },
+      {
+        "id": "groupField",
+        "component": "FormControl",
+        "label": "Recipient group",
+        "input": "groupSelect"
+      },
+      {
+        "id": "groupSelect",
+        "component": "Select",
+        "name": "recipient_group",
+        "placeholder": "Select a group",
+        "items": [
+          "grpAll",
+          "grpRisk",
+          "grpWaitlist",
+          "grpScholarship",
+          "grpSeniors"
+        ]
+      },
+      {
+        "id": "grpAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All students"
+      },
+      {
+        "id": "grpRisk",
+        "component": "SelectItem",
+        "value": "risk",
+        "label": "At-risk students (214)"
+      },
+      {
+        "id": "grpWaitlist",
+        "component": "SelectItem",
+        "value": "waitlist",
+        "label": "Waitlisted students (431)"
+      },
+      {
+        "id": "grpScholarship",
+        "component": "SelectItem",
+        "value": "scholarship",
+        "label": "Scholarship recipients"
+      },
+      {
+        "id": "grpSeniors",
+        "component": "SelectItem",
+        "value": "seniors",
+        "label": "Graduating seniors"
+      },
+      {
+        "id": "subjectField",
+        "component": "FormControl",
+        "label": "Subject",
+        "input": "subjectInput"
+      },
+      {
+        "id": "subjectInput",
+        "component": "Input",
+        "name": "subject",
+        "placeholder": "Message subject"
+      },
+      {
+        "id": "bodyField",
+        "component": "FormControl",
+        "label": "Message",
+        "input": "bodyInput"
+      },
+      {
+        "id": "bodyInput",
+        "component": "TextArea",
+        "name": "body",
+        "placeholder": "Write your message…",
+        "rows": 5
+      },
+      {
+        "id": "messageButtons",
+        "component": "Buttons",
+        "buttons": [
+          "messageSend",
+          "messageCancel"
+        ]
+      },
+      {
+        "id": "messageSend",
+        "component": "Button",
+        "label": "Send Message",
+        "variant": "primary"
+      },
+      {
+        "id": "messageCancel",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>
 
-1. **Total enrollment & 5-yr trend** — KPI card + LineChart
-2. **Applications by program** — HorizontalBarChart
-3. **Acceptance rate** — KPI card with Progress bar
-4. **Tuition revenue this year** — KPI card + program breakdown donut
-5. **Course offering fill rates** — Progress bars per course
-6. **Teaching load by faculty** — Table
-7. **Students at academic risk** — Alert + breakdown Table
-8. **Scholarship budget used** — Progress bar ($18M of $25M)
-9. **Housing occupancy** — Progress bars per residence
-10. **Campus events this month** — ListBlock
-11. **Alumni giving (4 yrs)** — BarChart
-12. **Focus on one department** — Select at the top
-13. **This semester vs last** — KPI card (+3.4%)
-14. **Waitlisted students per program** — Table
-15. **Approve a new course** — DialogBlock with a Form
-16. **Message a student group** — DrawerBlock with a Form
+This single screen covers all sixteen requirements:
+
+1. **Total enrollment + five-year movement** — KPI card (18,642) plus the five-year line chart.
+2. **Applications by program** — horizontal bar chart.
+3. **Acceptance rate** — KPI card with progress (37%).
+4. **Tuition revenue this year** — KPI card ($342.8M).
+5. **Course offering fullness** — capacity table with % full.
+6. **Teaching load by faculty** — faculty table with courses and credit hours.
+7. **Students at academic risk** — alert plus risk-level breakdown table.
+8. **Scholarship budget used vs total** — progress bar (78%).
+9. **Housing occupancy** — progress bar (94%).
+10. **Campus events this month** — numbered list.
+11. **Alumni giving over four years** — bar chart.
+12. **Focus on one department** — department select at the top.
+13. **This semester vs last** — KPI card (+312 students, retention comparison).
+14. **Waitlisted students per program** — waitlist table.
+15. **Approve a new course** — dialog with an approval form.
+16. **Message a student group** — drawer with a compose form.

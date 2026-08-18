@@ -1,104 +1,101 @@
 {"op":"add","path":"/root","value":"admin-overview"}
-{"op":"add","path":"/elements/admin-overview","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["topbar","kpi-grid","growth-section","customer-section","operations-section","product-section"]}}
-{"op":"add","path":"/elements/topbar","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["title-block","topbar-actions"]}}
-{"op":"add","path":"/elements/title-block","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["page-title","page-subtitle"]}}
-{"op":"add","path":"/elements/page-title","value":{"type":"Heading","props":{"text":"Admin overview","level":"h1"},"children":[]}}
-{"op":"add","path":"/elements/page-subtitle","value":{"type":"TextContent","props":{"text":"Revenue, customer health, product adoption, and billing performance.","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/topbar-actions","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center","wrap":true},"children":["period-control","invite-admin"]}}
-{"op":"add","path":"/elements/period-control","value":{"type":"FormControl","props":{"label":"Reporting period","input":"period-select"},"children":[]}}
-{"op":"add","path":"/elements/period-select","value":{"type":"Select","props":{"name":"reporting-period","items":["period-30","period-90","period-year"],"size":"small","value":{"$bindState":"/reportingPeriod"}},"children":[]}}
-{"op":"add","path":"/elements/period-30","value":{"type":"SelectItem","props":{"value":"30d","label":"Last 30 days"},"children":[]}}
-{"op":"add","path":"/elements/period-90","value":{"type":"SelectItem","props":{"value":"90d","label":"Last 90 days"},"children":[]}}
-{"op":"add","path":"/elements/period-year","value":{"type":"SelectItem","props":{"value":"year","label":"Year to date"},"children":[]}}
-{"op":"add","path":"/state/reportingPeriod","value":"90d"}
-{"op":"add","path":"/elements/invite-admin","value":{"type":"DialogBlock","props":{"triggerLabel":"Invite admin","title":"Invite another admin","description":"Send an invitation with administrative access.","content":["invite-form"],"triggerVariant":"default"},"children":[]}}
-{"op":"add","path":"/elements/invite-form","value":{"type":"Form","props":{"name":"invite-admin-form","fields":["invite-name-control","invite-email-control"],"buttons":"invite-buttons"},"children":[]}}
-{"op":"add","path":"/elements/invite-name-control","value":{"type":"FormControl","props":{"label":"Full name","input":"invite-name","hint":"The administrator's display name."},"children":[]}}
-{"op":"add","path":"/elements/invite-name","value":{"type":"Input","props":{"name":"admin-name","placeholder":"Jordan Lee","type":"text","value":{"$bindState":"/invite/name"},"rules":[{"required":true}]},"children":[]}}
-{"op":"add","path":"/state/invite","value":{"name":"","email":""}}
-{"op":"add","path":"/elements/invite-email-control","value":{"type":"FormControl","props":{"label":"Work email","input":"invite-email","hint":"An invitation will be sent to this address."},"children":[]}}
-{"op":"add","path":"/elements/invite-email","value":{"type":"Input","props":{"name":"admin-email","placeholder":"jordan@company.com","type":"email","value":{"$bindState":"/invite/email"},"rules":[{"required":true},{"email":true}]},"children":[]}}
-{"op":"add","path":"/elements/invite-buttons","value":{"type":"Buttons","props":{"buttons":["send-invite"],"direction":"row"},"children":[]}}
-{"op":"add","path":"/elements/send-invite","value":{"type":"Button","props":{"label":"Send invitation","variant":"primary","size":"medium"},"on":{"press":{"action":"validateForm","params":{"statePath":"/inviteValidation"}}},"children":[]}}
-{"op":"add","path":"/state/inviteValidation","value":{"valid":false,"errors":{}}}
+{"op":"add","path":"/elements/admin-overview","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["overview-header","reporting-period","kpi-grid","growth-section","customer-section","risk-payment-section","product-health-section"]}}
+{"op":"add","path":"/elements/overview-header","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["overview-title","admin-actions"]}}
+{"op":"add","path":"/elements/overview-title","value":{"type":"CardHeader","props":{"title":"Admin overview","subtitle":"Revenue, customers, product health, and account operations"}}}
+{"op":"add","path":"/elements/admin-actions","value":{"type":"Buttons","props":{"buttons":["invite-admin-button"],"direction":"row"},"children":[]}}
+{"op":"add","path":"/elements/invite-admin-button","value":{"type":"Button","props":{"label":"Invite another admin","variant":"primary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/inviteDialogOpen","value":true}}},"children":[]}}
+{"op":"add","path":"/state/inviteDialogOpen","value":false}
+{"op":"add","path":"/elements/reporting-period","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["reporting-label","period-buttons"]}}
+{"op":"add","path":"/elements/reporting-label","value":{"type":"TextContent","props":{"text":{"$template":"Reporting period: ${/reportingPeriod}"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/state/reportingPeriod","value":"Last 90 days"}
+{"op":"add","path":"/elements/period-buttons","value":{"type":"Buttons","props":{"buttons":["period-30","period-90","period-ytd","period-12m"],"direction":"row"},"children":[]}}
+{"op":"add","path":"/elements/period-30","value":{"type":"Button","props":{"label":"30 days","variant":{"$cond":{"$state":"/reportingPeriod","eq":"Last 30 days"},"$then":"primary","$else":"tertiary"},"size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/reportingPeriod","value":"Last 30 days"}}},"children":[]}}
+{"op":"add","path":"/elements/period-90","value":{"type":"Button","props":{"label":"90 days","variant":{"$cond":{"$state":"/reportingPeriod","eq":"Last 90 days"},"$then":"primary","$else":"tertiary"},"size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/reportingPeriod","value":"Last 90 days"}}},"children":[]}}
+{"op":"add","path":"/elements/period-ytd","value":{"type":"Button","props":{"label":"Year to date","variant":{"$cond":{"$state":"/reportingPeriod","eq":"Year to date"},"$then":"primary","$else":"tertiary"},"size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/reportingPeriod","value":"Year to date"}}},"children":[]}}
+{"op":"add","path":"/elements/period-12m","value":{"type":"Button","props":{"label":"12 months","variant":{"$cond":{"$state":"/reportingPeriod","eq":"Last 12 months"},"$then":"primary","$else":"tertiary"},"size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/reportingPeriod","value":"Last 12 months"}}},"children":[]}}
 {"op":"add","path":"/elements/kpi-grid","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"stretch","wrap":true},"children":["mrr-card","arr-card","churn-card","nps-card"]}}
-{"op":"add","path":"/elements/mrr-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["mrr-label","mrr-value","mrr-note"]}}
-{"op":"add","path":"/elements/mrr-label","value":{"type":"TextContent","props":{"text":"Monthly recurring revenue","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/mrr-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["mrr-label","mrr-value","mrr-change"]}}
+{"op":"add","path":"/elements/mrr-label","value":{"type":"TextContent","props":{"text":"Monthly recurring revenue","size":"small"},"children":[]}}
 {"op":"add","path":"/elements/mrr-value","value":{"type":"Heading","props":{"text":{"$state":"/metrics/mrr"},"level":"h2"},"children":[]}}
-{"op":"add","path":"/state/metrics","value":{"mrr":"$428,600","arr":"$5.14M","churn":"2.4%","nps":"54","seatUtilization":82}}
-{"op":"add","path":"/elements/mrr-note","value":{"type":"Tag","props":{"text":"+6.8% vs prior period","variant":"success","size":"sm","icon":"trending-up"},"children":[]}}
-{"op":"add","path":"/elements/arr-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["arr-label","arr-value","arr-note"]}}
-{"op":"add","path":"/elements/arr-label","value":{"type":"TextContent","props":{"text":"Annual recurring revenue","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/state/metrics","value":{}}
+{"op":"add","path":"/state/metrics/mrr","value":"$428,600"}
+{"op":"add","path":"/elements/mrr-change","value":{"type":"Badge","props":{"text":"+6.8% month over month","variant":"secondary"},"children":[]}}
+{"op":"add","path":"/elements/arr-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["arr-label","arr-value","arr-change"]}}
+{"op":"add","path":"/elements/arr-label","value":{"type":"TextContent","props":{"text":"Annual recurring revenue","size":"small"},"children":[]}}
 {"op":"add","path":"/elements/arr-value","value":{"type":"Heading","props":{"text":{"$state":"/metrics/arr"},"level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/arr-note","value":{"type":"Tag","props":{"text":"+18.2% year over year","variant":"success","size":"sm","icon":"trending-up"},"children":[]}}
+{"op":"add","path":"/state/metrics/arr","value":"$5.14M"}
+{"op":"add","path":"/elements/arr-change","value":{"type":"Badge","props":{"text":"+31.4% year over year","variant":"secondary"},"children":[]}}
 {"op":"add","path":"/elements/churn-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["churn-label","churn-value","churn-note"]}}
-{"op":"add","path":"/elements/churn-label","value":{"type":"TextContent","props":{"text":"Churn this month","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/churn-label","value":{"type":"TextContent","props":{"text":"Churn this month","size":"small"},"children":[]}}
 {"op":"add","path":"/elements/churn-value","value":{"type":"Heading","props":{"text":{"$state":"/metrics/churn"},"level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/churn-note","value":{"type":"Tag","props":{"text":"0.3 pts below target","variant":"success","size":"sm"},"children":[]}}
+{"op":"add","path":"/state/metrics/churn","value":"1.8%"}
+{"op":"add","path":"/elements/churn-note","value":{"type":"Badge","props":{"text":"0.4 pts below target","variant":"secondary"},"children":[]}}
 {"op":"add","path":"/elements/nps-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["nps-label","nps-value","nps-note"]}}
-{"op":"add","path":"/elements/nps-label","value":{"type":"TextContent","props":{"text":"Current NPS","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/nps-label","value":{"type":"TextContent","props":{"text":"Current NPS","size":"small"},"children":[]}}
 {"op":"add","path":"/elements/nps-value","value":{"type":"Heading","props":{"text":{"$state":"/metrics/nps"},"level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/nps-note","value":{"type":"Tag","props":{"text":"Excellent · 1,284 responses","variant":"success","size":"sm"},"children":[]}}
-{"op":"add","path":"/elements/growth-section","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"stretch","wrap":true},"children":["signup-card","plan-card","utilization-card"]}}
-{"op":"add","path":"/elements/signup-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["signup-header","signup-chart"]}}
-{"op":"add","path":"/elements/signup-header","value":{"type":"CardHeader","props":{"title":"New signups · past 90 days","subtitle":"Weekly account creation"},"children":[]}}
-{"op":"add","path":"/elements/signup-chart","value":{"type":"AreaChart","props":{"labels":{"$state":"/signupChart/labels"},"series":["signup-series"],"variant":"natural","xLabel":"Week","yLabel":"Signups"},"children":[]}}
-{"op":"add","path":"/elements/signup-series","value":{"type":"Series","props":{"category":"New signups","values":{"$state":"/signupChart/values"}},"children":[]}}
-{"op":"add","path":"/state/signupChart","value":{"labels":["May 25","Jun 1","Jun 8","Jun 15","Jun 22","Jun 29","Jul 6","Jul 13","Jul 20","Jul 27","Aug 3","Aug 10","Aug 17"],"values":[118,126,121,139,147,155,149,168,176,171,189,203,214]}}
-{"op":"add","path":"/elements/plan-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["plan-header","plan-chart"]}}
-{"op":"add","path":"/elements/plan-header","value":{"type":"CardHeader","props":{"title":"Customers by plan","subtitle":"2,846 active customer accounts"},"children":[]}}
-{"op":"add","path":"/elements/plan-chart","value":{"type":"PieChart","props":{"labels":{"$state":"/planMix/labels"},"values":{"$state":"/planMix/values"},"variant":"donut","appearance":"circular"},"children":[]}}
-{"op":"add","path":"/state/planMix","value":{"labels":["Starter","Growth","Business","Enterprise"],"values":[1248,902,514,182]}}
-{"op":"add","path":"/elements/utilization-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["utilization-header","utilization-value","utilization-progress","utilization-detail"]}}
-{"op":"add","path":"/elements/utilization-header","value":{"type":"CardHeader","props":{"title":"Seat utilization","subtitle":"Across all customer accounts"},"children":[]}}
-{"op":"add","path":"/elements/utilization-value","value":{"type":"Heading","props":{"text":{"$template":"${/metrics/seatUtilization}%"},"level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/utilization-progress","value":{"type":"Progress","props":{"value":{"$state":"/metrics/seatUtilization"},"label":"16,892 of 20,600 seats active"},"children":[]}}
-{"op":"add","path":"/elements/utilization-detail","value":{"type":"TextContent","props":{"text":"Utilization increased 4 percentage points this quarter.","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/customer-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["customer-header","customer-table"]}}
-{"op":"add","path":"/elements/customer-header","value":{"type":"CardHeader","props":{"title":"Ten largest customers","subtitle":"Ranked by monthly recurring spend"},"children":[]}}
-{"op":"add","path":"/elements/customer-table","value":{"type":"Table","props":{"columns":["customer-name-col","customer-plan-col","customer-seats-col","customer-spend-col"]},"children":[]}}
-{"op":"add","path":"/elements/customer-name-col","value":{"type":"Col","props":{"label":"Customer","data":{"$state":"/largestCustomers/names"},"type":"string"},"children":[]}}
-{"op":"add","path":"/elements/customer-plan-col","value":{"type":"Col","props":{"label":"Plan","data":{"$state":"/largestCustomers/plans"},"type":"string"},"children":[]}}
-{"op":"add","path":"/elements/customer-seats-col","value":{"type":"Col","props":{"label":"Seats","data":{"$state":"/largestCustomers/seats"},"type":"number"},"children":[]}}
-{"op":"add","path":"/elements/customer-spend-col","value":{"type":"Col","props":{"label":"Monthly spend","data":{"$state":"/largestCustomers/spend"},"type":"string"},"children":[]}}
-{"op":"add","path":"/state/largestCustomers","value":{"names":["Northstar Labs","Vertex Systems","Aperture Health","Meridian Cloud","Brightline Media","Cobalt Financial","Evergreen Logistics","Summit Robotics","Atlas Commerce","Harbor Analytics"],"plans":["Enterprise","Enterprise","Enterprise","Enterprise","Business","Enterprise","Business","Enterprise","Business","Business"],"seats":[1240,980,875,760,690,640,585,540,510,475],"spend":["$32,480","$27,900","$24,350","$21,760","$18,630","$17,920","$15,840","$14,980","$13,770","$12,960"]}}
-{"op":"add","path":"/elements/operations-section","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"stretch","wrap":true},"children":["risk-card","payments-card"]}}
+{"op":"add","path":"/state/metrics/nps","value":"54"}
+{"op":"add","path":"/elements/nps-note","value":{"type":"Badge","props":{"text":"+7 vs. prior survey","variant":"secondary"},"children":[]}}
+{"op":"add","path":"/elements/growth-section","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"l","align":"stretch","wrap":true},"children":["signups-card","plans-card","seat-utilization-card"]}}
+{"op":"add","path":"/elements/signups-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["signups-header","signups-chart"]}}
+{"op":"add","path":"/elements/signups-header","value":{"type":"CardHeader","props":{"title":"New signups","subtitle":"Past 90 days · 3,124 total"}}}
+{"op":"add","path":"/elements/signups-chart","value":{"type":"AreaChart","props":{"labels":["May 20","Jun 3","Jun 17","Jul 1","Jul 15","Jul 29","Aug 12","Aug 18"],"series":["signups-series"],"variant":"natural","xLabel":"Date","yLabel":"Signups"},"children":[]}}
+{"op":"add","path":"/elements/signups-series","value":{"type":"Series","props":{"category":"New signups","values":[286,331,354,402,389,447,431,484]},"children":[]}}
+{"op":"add","path":"/elements/plans-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["plans-header","plans-chart","plans-legend"]}}
+{"op":"add","path":"/elements/plans-header","value":{"type":"CardHeader","props":{"title":"Customers by plan","subtitle":"1,482 active customer accounts"}}}
+{"op":"add","path":"/elements/plans-chart","value":{"type":"PieChart","props":{"labels":["Starter","Growth","Business","Enterprise"],"values":[614,487,271,110],"variant":"donut","appearance":"circular"},"children":[]}}
+{"op":"add","path":"/elements/plans-legend","value":{"type":"TextContent","props":{"text":"Starter 41% · Growth 33% · Business 18% · Enterprise 8%","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/seat-utilization-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["seat-header","seat-progress","seat-detail"]}}
+{"op":"add","path":"/elements/seat-header","value":{"type":"CardHeader","props":{"title":"Seat utilization","subtitle":"Across all customer accounts"}}}
+{"op":"add","path":"/elements/seat-progress","value":{"type":"Progress","props":{"value":{"$state":"/metrics/seatUtilization"},"label":"78% utilized"},"children":[]}}
+{"op":"add","path":"/state/metrics/seatUtilization","value":78}
+{"op":"add","path":"/elements/seat-detail","value":{"type":"TextContent","props":{"text":"18,942 of 24,285 purchased seats are assigned. 5,343 seats remain available.","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/customer-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["customer-header","largest-customers-table"]}}
+{"op":"add","path":"/elements/customer-header","value":{"type":"CardHeader","props":{"title":"Ten largest customers","subtitle":"Ranked by monthly recurring spend"}}}
+{"op":"add","path":"/elements/largest-customers-table","value":{"type":"Table","props":{"columns":["customer-name-col","customer-plan-col","customer-seats-col","customer-spend-col"]},"children":[]}}
+{"op":"add","path":"/elements/customer-name-col","value":{"type":"Col","props":{"label":"Customer","data":["Northstar Logistics","Vertex Health","Atlas Financial","Brightline Retail","Cobalt Systems","Summit Energy","Harbor Media","Juniper Labs","Redwood Foods","Orion Mobility"],"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/customer-plan-col","value":{"type":"Col","props":{"label":"Plan","data":["Enterprise","Enterprise","Enterprise","Business","Enterprise","Business","Business","Enterprise","Business","Growth"],"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/customer-seats-col","value":{"type":"Col","props":{"label":"Seats","data":[1240,980,845,720,680,610,540,495,460,425],"type":"number"},"children":[]}}
+{"op":"add","path":"/elements/customer-spend-col","value":{"type":"Col","props":{"label":"Monthly spend","data":["$31,200","$26,850","$22,400","$18,900","$17,750","$15,600","$14,250","$13,800","$12,950","$11,700"],"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/risk-payment-section","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"l","align":"start","wrap":true},"children":["risk-card","payments-card"]}}
 {"op":"add","path":"/elements/risk-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["risk-header","risk-list"]}}
-{"op":"add","path":"/elements/risk-header","value":{"type":"CardHeader","props":{"title":"Accounts at risk","subtitle":"Prioritized for customer success follow-up"},"children":[]}}
-{"op":"add","path":"/elements/risk-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/atRisk","key":"id"},"children":["risk-item"]}}
-{"op":"add","path":"/elements/risk-item","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["risk-item-row","risk-reason"]}}
-{"op":"add","path":"/elements/risk-item-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center","justify":"between"},"children":["risk-name","risk-badge"]}}
+{"op":"add","path":"/elements/risk-header","value":{"type":"CardHeader","props":{"title":"Accounts at risk","subtitle":"Customer success signals requiring attention"}}}
+{"op":"add","path":"/elements/risk-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/atRiskAccounts","key":"id"},"children":["risk-item"]}}
+{"op":"add","path":"/state/atRiskAccounts","value":[]}
+{"op":"add","path":"/state/atRiskAccounts/0","value":{"id":"risk-1","name":"Evergreen Analytics","reason":"Weekly active users fell 43% over the last 30 days","severity":"High"}}
+{"op":"add","path":"/state/atRiskAccounts/1","value":{"id":"risk-2","name":"Beacon Manufacturing","reason":"Executive sponsor left; renewal is due in 37 days","severity":"High"}}
+{"op":"add","path":"/state/atRiskAccounts/2","value":{"id":"risk-3","name":"Lumen Education","reason":"Using only 38% of purchased seats for two consecutive months","severity":"Medium"}}
+{"op":"add","path":"/state/atRiskAccounts/3","value":{"id":"risk-4","name":"Pioneer Travel","reason":"Three unresolved support escalations in the past 14 days","severity":"Medium"}}
+{"op":"add","path":"/elements/risk-item","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["risk-item-top","risk-reason"]}}
+{"op":"add","path":"/elements/risk-item-top","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center","justify":"between"},"children":["risk-name","risk-severity"]}}
 {"op":"add","path":"/elements/risk-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/risk-badge","value":{"type":"Tag","props":{"text":{"$item":"risk"},"variant":"danger","size":"sm","icon":"alert-triangle"},"children":[]}}
+{"op":"add","path":"/elements/risk-severity","value":{"type":"Badge","props":{"text":{"$item":"severity"},"variant":"destructive"},"children":[]}}
 {"op":"add","path":"/elements/risk-reason","value":{"type":"TextContent","props":{"text":{"$item":"reason"},"size":"small"},"children":[]}}
-{"op":"add","path":"/state/atRisk","value":[]}
-{"op":"add","path":"/state/atRisk/0","value":{"id":"risk-1","name":"Redwood Security","risk":"High risk","reason":"Usage declined 43% over 30 days; renewal is due September 12."}}
-{"op":"add","path":"/state/atRisk/1","value":{"id":"risk-2","name":"Nova Education","risk":"High risk","reason":"Executive sponsor left and no replacement has been assigned."}}
-{"op":"add","path":"/state/atRisk/2","value":{"id":"risk-3","name":"Pioneer Foods","risk":"Medium risk","reason":"Only 38% of purchased seats are active after onboarding."}}
-{"op":"add","path":"/state/atRisk/3","value":{"id":"risk-4","name":"Lumen Works","risk":"Medium risk","reason":"Three unresolved support escalations in the past 14 days."}}
-{"op":"add","path":"/elements/payments-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["payments-header","payment-list"]}}
-{"op":"add","path":"/elements/payments-header","value":{"type":"CardHeader","props":{"title":"Failed payments","subtitle":"$18,420 in recoverable monthly revenue"},"children":[]}}
-{"op":"add","path":"/elements/payment-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/failedPayments","key":"id"},"children":["payment-item"]}}
-{"op":"add","path":"/elements/payment-item","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["payment-info","retry-payment"]}}
-{"op":"add","path":"/elements/payment-info","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["payment-name","payment-detail"]}}
-{"op":"add","path":"/elements/payment-name","value":{"type":"TextContent","props":{"text":{"$item":"customer"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/payment-detail","value":{"type":"TextContent","props":{"text":{"$template":"${amount} · ${reason} · Failed ${date}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/retry-payment","value":{"type":"Button","props":{"label":"Retry payment","variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":{"$item":"status"},"value":"Retry requested"}}},"children":[]}}
+{"op":"add","path":"/elements/payments-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["payments-header","payments-list"]}}
+{"op":"add","path":"/elements/payments-header","value":{"type":"CardHeader","props":{"title":"Failed payments","subtitle":"4 invoices need collection action"}}}
+{"op":"add","path":"/elements/payments-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/failedPayments","key":"id"},"children":["payment-item"]}}
 {"op":"add","path":"/state/failedPayments","value":[]}
-{"op":"add","path":"/state/failedPayments/0","value":{"id":"pay-1","customer":"Oak & Stone","amount":"$6,240","reason":"Card declined","date":"Aug 17","status":"Failed"}}
-{"op":"add","path":"/state/failedPayments/1","value":{"id":"pay-2","customer":"Clearpath Energy","amount":"$4,980","reason":"Insufficient funds","date":"Aug 16","status":"Failed"}}
-{"op":"add","path":"/state/failedPayments/2","value":{"id":"pay-3","customer":"Mosaic Travel","amount":"$3,750","reason":"Expired card","date":"Aug 15","status":"Failed"}}
-{"op":"add","path":"/state/failedPayments/3","value":{"id":"pay-4","customer":"Kindred Legal","amount":"$3,450","reason":"Bank authentication required","date":"Aug 14","status":"Failed"}}
-{"op":"add","path":"/elements/product-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["adoption-header","adoption-grid"]}}
-{"op":"add","path":"/elements/adoption-header","value":{"type":"CardHeader","props":{"title":"Newest feature adoption","subtitle":"Share of eligible accounts using each feature in the selected period"},"children":[]}}
-{"op":"add","path":"/elements/adoption-grid","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"stretch","wrap":true},"repeat":{"statePath":"/featureAdoption","key":"id"},"children":["adoption-item"]}}
-{"op":"add","path":"/elements/adoption-item","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["adoption-name-row","adoption-progress","adoption-detail"]}}
-{"op":"add","path":"/elements/adoption-name-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center","justify":"between"},"children":["adoption-name","adoption-rate"]}}
-{"op":"add","path":"/elements/adoption-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/adoption-rate","value":{"type":"Tag","props":{"text":{"$template":"${rate}% adopted"},"variant":"info","size":"sm"},"children":[]}}
-{"op":"add","path":"/elements/adoption-progress","value":{"type":"Progress","props":{"value":{"$item":"rate"},"label":{"$item":"label"}},"children":[]}}
-{"op":"add","path":"/elements/adoption-detail","value":{"type":"TextContent","props":{"text":{"$item":"detail"},"size":"small"},"children":[]}}
-{"op":"add","path":"/state/featureAdoption","value":[]}
-{"op":"add","path":"/state/featureAdoption/0","value":{"id":"feature-1","name":"AI workflow assistant","rate":68,"label":"1,936 active accounts","detail":"Released June 18 · adoption is up 12 points this month."}}
-{"op":"add","path":"/state/featureAdoption/1","value":{"id":"feature-2","name":"Advanced audit logs","rate":47,"label":"1,338 active accounts","detail":"Released July 9 · strongest adoption among Enterprise customers."}}
-{"op":"add","path":"/state/featureAdoption/2","value":{"id":"feature-3","name":"Custom executive dashboards","rate":31,"label":"882 active accounts","detail":"Released July 29 · 426 dashboards created so far."}}
+{"op":"add","path":"/state/failedPayments/0","value":{"id":"pay-1","customer":"Willow Commerce","amount":"$4,820","reason":"Card declined","status":"Failed"}}
+{"op":"add","path":"/state/failedPayments/1","value":{"id":"pay-2","customer":"Meridian Works","amount":"$3,640","reason":"Insufficient funds","status":"Failed"}}
+{"op":"add","path":"/state/failedPayments/2","value":{"id":"pay-3","customer":"Aster Digital","amount":"$2,175","reason":"Expired payment method","status":"Failed"}}
+{"op":"add","path":"/state/failedPayments/3","value":{"id":"pay-4","customer":"Fieldstone Group","amount":"$1,960","reason":"Bank authorization required","status":"Failed"}}
+{"op":"add","path":"/elements/payment-item","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"s","align":"center","justify":"between","wrap":true},"children":["payment-info","retry-payment"]}}
+{"op":"add","path":"/elements/payment-info","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["payment-customer","payment-detail"]}}
+{"op":"add","path":"/elements/payment-customer","value":{"type":"TextContent","props":{"text":{"$template":"${customer} · ${amount}"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/payment-detail","value":{"type":"TextContent","props":{"text":{"$item":"reason"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/retry-payment","value":{"type":"Button","props":{"label":"Retry payment","variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":{"$item":"status"},"value":"Retry requested"}}},"children":[]}}
+{"op":"add","path":"/elements/product-health-section","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"children":["adoption-card","invite-panel"]}}
+{"op":"add","path":"/elements/adoption-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["adoption-header","adoption-chart","adoption-note"]}}
+{"op":"add","path":"/elements/adoption-header","value":{"type":"CardHeader","props":{"title":"Newest feature adoption","subtitle":"Share of eligible active accounts using each feature"}}}
+{"op":"add","path":"/elements/adoption-chart","value":{"type":"HorizontalBarChart","props":{"labels":["AI Workflow Builder","Advanced Audit Logs","Custom Executive Dashboards"],"series":["adoption-series"],"variant":"grouped","xLabel":"Adoption rate (%)","yLabel":"Feature"},"children":[]}}
+{"op":"add","path":"/elements/adoption-series","value":{"type":"Series","props":{"category":"Adoption","values":[64,47,31]},"children":[]}}
+{"op":"add","path":"/elements/adoption-note","value":{"type":"TextContent","props":{"text":"AI Workflow Builder leads at 64%, followed by Advanced Audit Logs at 47% and Custom Executive Dashboards at 31%.","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/invite-panel","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"m"},"visible":{"$state":"/inviteDialogOpen"},"children":["invite-title","invite-form","invite-close"]}}
+{"op":"add","path":"/elements/invite-title","value":{"type":"CardHeader","props":{"title":"Invite another admin","subtitle":"Send an administrator invitation by email"}}}
+{"op":"add","path":"/elements/invite-form","value":{"type":"Form","props":{"name":"invite-admin","buttons":"invite-form-buttons","fields":["invite-email-control"]},"children":[]}}
+{"op":"add","path":"/elements/invite-email-control","value":{"type":"FormControl","props":{"label":"Admin email","input":"invite-email-input","hint":"The recipient will receive a secure invitation link."},"children":[]}}
+{"op":"add","path":"/elements/invite-email-input","value":{"type":"Input","props":{"name":"admin_email","placeholder":"admin@company.com","type":"email","value":{"$bindState":"/inviteEmail"},"rules":[{"required":true}]},"children":[]}}
+{"op":"add","path":"/state/inviteEmail","value":""}
+{"op":"add","path":"/elements/invite-form-buttons","value":{"type":"Buttons","props":{"buttons":["send-invite-button"],"direction":"row"},"children":[]}}
+{"op":"add","path":"/elements/send-invite-button","value":{"type":"Button","props":{"label":"Send invitation","variant":"primary"},"on":{"press":{"action":"validateForm","params":{"statePath":"/inviteValidation"}}},"children":[]}}
+{"op":"add","path":"/state/inviteValidation","value":{"valid":false,"errors":{}}}
+{"op":"add","path":"/elements/invite-close","value":{"type":"Button","props":{"label":"Close","variant":"tertiary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/inviteDialogOpen","value":false}}},"children":[]}}

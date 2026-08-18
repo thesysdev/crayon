@@ -1,67 +1,31 @@
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["header","special","filter","drinks-section","food-section","hours"]}}
-{"op":"add","path":"/elements/header","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["title","tagline"]}}
-{"op":"add","path":"/elements/title","value":{"type":"Heading","props":{"text":"The Daily Grind Café","level":"h1"},"children":[]}}
-{"op":"add","path":"/elements/tagline","value":{"type":"TextContent","props":{"text":"Freshly roasted coffee & homemade kitchen — est. 2015","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/special","value":{"type":"Callout","props":{"variant":"warning","title":"☀️ Today's Special","description":"Pumpkin Spice Latte + a slice of homemade Banana Bread — $6.50 combo (save $2.00!). Available until 2 PM."},"children":[]}}
-{"op":"add","path":"/elements/filter","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center"},"children":["filter-label","btn-all","btn-veg"]}}
-{"op":"add","path":"/elements/filter-label","value":{"type":"Label","props":{"text":"Show:"},"children":[]}}
-{"op":"add","path":"/elements/btn-all","value":{"type":"Button","props":{"label":"All Items","size":"small","variant":{"$cond":{"$state":"/vegOnly","not":true},"$then":"primary","$else":"secondary"}},"on":{"press":{"action":"setState","params":{"statePath":"/vegOnly","value":false}}},"children":[]}}
-{"op":"add","path":"/elements/btn-veg","value":{"type":"Button","props":{"label":"🌱 Vegetarian Only","size":"small","variant":{"$cond":{"$state":"/vegOnly"},"$then":"primary","$else":"secondary"}},"on":{"press":{"action":"setState","params":{"statePath":"/vegOnly","value":true}}},"children":[]}}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","special","vegToggle","drinksHeader","drinksList","foodHeader","foodList","sep","hours"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"The Daily Grind Café","subtitle":"Fresh coffee, homemade food, good vibes"}}}
+{"op":"add","path":"/elements/special","value":{"type":"Callout","props":{"variant":"success","title":"Today's Special: Maple Oat Latte + Banana Bread — $7.50","description":"Available until 2pm while supplies last. Save $2 off the regular combo price."}}}
+{"op":"add","path":"/elements/vegToggle","value":{"type":"SwitchGroup","props":{"name":"filters","items":["vegSwitch"],"variant":"sunk"},"children":[]}}
+{"op":"add","path":"/elements/vegSwitch","value":{"type":"SwitchItem","props":{"label":"Vegetarian items only","description":"Hide all non-vegetarian menu items","name":"vegOnly","defaultChecked":false},"on":{"change":{"action":"setState","params":{"statePath":"/vegOnly","value":{"$state":"/vegOnly","not":true}}}},"children":[]}}
 {"op":"add","path":"/state/vegOnly","value":false}
-{"op":"add","path":"/elements/drinks-section","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["drinks-header","drinks-all","drinks-veg"]}}
-{"op":"add","path":"/elements/drinks-header","value":{"type":"CardHeader","props":{"title":"☕ Drinks","subtitle":"Made with our house-roasted beans"},"children":[]}}
-{"op":"add","path":"/elements/drinks-all","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/drinks","key":"id"},"visible":{"$state":"/vegOnly","not":true},"children":["drink-row"]}}
-{"op":"add","path":"/elements/drink-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center","gap":"m"},"children":["drink-info","drink-price"]}}
-{"op":"add","path":"/elements/drink-info","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["drink-name","drink-desc"]}}
-{"op":"add","path":"/elements/drink-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/drink-desc","value":{"type":"TextContent","props":{"text":{"$item":"desc"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/drink-price","value":{"type":"TextContent","props":{"text":{"$template":"$${price}"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/drinksHeader","value":{"type":"Heading","props":{"text":"☕ Drinks","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/drinksList","value":{"type":"ListBlock","props":{"items":["drinkItem"]},"repeat":{"statePath":"/drinks","key":"id"},"children":[]}}
+{"op":"add","path":"/elements/drinkItem","value":{"type":"ListItem","props":{"title":{"$item":"name"},"subtitle":{"$item":"desc"},"actionLabel":{"$item":"price"}},"visible":{"$or":[{"$state":"/vegOnly","not":true},{"$item":"veg"}]},"children":[]}}
 {"op":"add","path":"/state/drinks","value":[]}
-{"op":"add","path":"/state/drinks/0","value":{"id":"d1","name":"Espresso 🌱","desc":"Rich double shot, crema on top","price":"3.00"}}
-{"op":"add","path":"/state/drinks/1","value":{"id":"d2","name":"Cappuccino 🌱","desc":"Velvety steamed milk, dusted cocoa","price":"4.00"}}
-{"op":"add","path":"/state/drinks/2","value":{"id":"d3","name":"Pumpkin Spice Latte 🌱","desc":"Today's special — warm spices & espresso","price":"5.00"}}
-{"op":"add","path":"/state/drinks/3","value":{"id":"d4","name":"Maple Bacon Latte","desc":"Smoky bacon syrup with maple & espresso","price":"5.50"}}
-{"op":"add","path":"/state/drinks/4","value":{"id":"d5","name":"Iced Matcha 🌱","desc":"Ceremonial-grade matcha over oat milk","price":"4.75"}}
-{"op":"add","path":"/state/drinks/5","value":{"id":"d6","name":"Hot Chocolate 🌱","desc":"Belgian dark chocolate, whipped cream","price":"4.25"}}
-{"op":"add","path":"/elements/drinks-veg","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/vegDrinks","key":"id"},"visible":{"$state":"/vegOnly"},"children":["drink-row-v"]}}
-{"op":"add","path":"/elements/drink-row-v","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center","gap":"m"},"children":["drink-info-v","drink-price-v"]}}
-{"op":"add","path":"/elements/drink-info-v","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["drink-name-v","drink-desc-v"]}}
-{"op":"add","path":"/elements/drink-name-v","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/drink-desc-v","value":{"type":"TextContent","props":{"text":{"$item":"desc"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/drink-price-v","value":{"type":"TextContent","props":{"text":{"$template":"$${price}"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/state/vegDrinks","value":[]}
-{"op":"add","path":"/state/vegDrinks/0","value":{"id":"d1","name":"Espresso 🌱","desc":"Rich double shot, crema on top","price":"3.00"}}
-{"op":"add","path":"/state/vegDrinks/1","value":{"id":"d2","name":"Cappuccino 🌱","desc":"Velvety steamed milk, dusted cocoa","price":"4.00"}}
-{"op":"add","path":"/state/vegDrinks/2","value":{"id":"d3","name":"Pumpkin Spice Latte 🌱","desc":"Today's special — warm spices & espresso","price":"5.00"}}
-{"op":"add","path":"/state/vegDrinks/3","value":{"id":"d5","name":"Iced Matcha 🌱","desc":"Ceremonial-grade matcha over oat milk","price":"4.75"}}
-{"op":"add","path":"/state/vegDrinks/4","value":{"id":"d6","name":"Hot Chocolate 🌱","desc":"Belgian dark chocolate, whipped cream","price":"4.25"}}
-{"op":"add","path":"/elements/food-section","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["food-header","food-all","food-veg"]}}
-{"op":"add","path":"/elements/food-header","value":{"type":"CardHeader","props":{"title":"🍳 Food","subtitle":"Baked fresh every morning"},"children":[]}}
-{"op":"add","path":"/elements/food-all","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/food","key":"id"},"visible":{"$state":"/vegOnly","not":true},"children":["food-row"]}}
-{"op":"add","path":"/elements/food-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center","gap":"m"},"children":["food-info","food-price"]}}
-{"op":"add","path":"/elements/food-info","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["food-name","food-desc"]}}
-{"op":"add","path":"/elements/food-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/food-desc","value":{"type":"TextContent","props":{"text":{"$item":"desc"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/food-price","value":{"type":"TextContent","props":{"text":{"$template":"$${price}"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/state/drinks/0","value":{"id":"d1","name":"Espresso","desc":"Double shot, rich crema","price":"$3.00","veg":true}}
+{"op":"add","path":"/state/drinks/1","value":{"id":"d2","name":"Maple Oat Latte","desc":"Espresso, oat milk, real maple syrup","price":"$5.25","veg":true}}
+{"op":"add","path":"/state/drinks/2","value":{"id":"d3","name":"Cold Brew","desc":"18-hour steep, served over ice","price":"$4.50","veg":true}}
+{"op":"add","path":"/state/drinks/3","value":{"id":"d4","name":"Chai Latte","desc":"Spiced black tea with steamed milk","price":"$4.75","veg":true}}
+{"op":"add","path":"/state/drinks/4","value":{"id":"d5","name":"Honey Bacon Bloody Mary","desc":"Weekend special with candied bacon garnish","price":"$9.00","veg":false}}
+{"op":"add","path":"/elements/foodHeader","value":{"type":"Heading","props":{"text":"🥐 Food","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/foodList","value":{"type":"ListBlock","props":{"items":["foodItem"]},"repeat":{"statePath":"/food","key":"id"},"children":[]}}
+{"op":"add","path":"/elements/foodItem","value":{"type":"ListItem","props":{"title":{"$item":"name"},"subtitle":{"$item":"desc"},"actionLabel":{"$item":"price"}},"visible":{"$or":[{"$state":"/vegOnly","not":true},{"$item":"veg"}]},"children":[]}}
 {"op":"add","path":"/state/food","value":[]}
-{"op":"add","path":"/state/food/0","value":{"id":"f1","name":"Avocado Toast 🌱","desc":"Sourdough, smashed avo, chili flakes","price":"7.50"}}
-{"op":"add","path":"/state/food/1","value":{"id":"f2","name":"Breakfast Burrito","desc":"Eggs, bacon, cheddar, salsa roja","price":"8.50"}}
-{"op":"add","path":"/state/food/2","value":{"id":"f3","name":"Banana Bread 🌱","desc":"Today's special pairing — toasted with butter","price":"3.50"}}
-{"op":"add","path":"/state/food/3","value":{"id":"f4","name":"Caprese Panini 🌱","desc":"Mozzarella, tomato, basil pesto","price":"8.00"}}
-{"op":"add","path":"/state/food/4","value":{"id":"f5","name":"Ham & Cheese Croissant","desc":"Flaky croissant, smoked ham, gruyère","price":"6.50"}}
-{"op":"add","path":"/state/food/5","value":{"id":"f6","name":"Garden Salad 🌱","desc":"Seasonal greens, citrus vinaigrette","price":"7.00"}}
-{"op":"add","path":"/elements/food-veg","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/vegFood","key":"id"},"visible":{"$state":"/vegOnly"},"children":["food-row-v"]}}
-{"op":"add","path":"/elements/food-row-v","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center","gap":"m"},"children":["food-info-v","food-price-v"]}}
-{"op":"add","path":"/elements/food-info-v","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["food-name-v","food-desc-v"]}}
-{"op":"add","path":"/elements/food-name-v","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/food-desc-v","value":{"type":"TextContent","props":{"text":{"$item":"desc"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/food-price-v","value":{"type":"TextContent","props":{"text":{"$template":"$${price}"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/state/vegFood","value":[]}
-{"op":"add","path":"/state/vegFood/0","value":{"id":"f1","name":"Avocado Toast 🌱","desc":"Sourdough, smashed avo, chili flakes","price":"7.50"}}
-{"op":"add","path":"/state/vegFood/1","value":{"id":"f3","name":"Banana Bread 🌱","desc":"Today's special pairing — toasted with butter","price":"3.50"}}
-{"op":"add","path":"/state/vegFood/2","value":{"id":"f4","name":"Caprese Panini 🌱","desc":"Mozzarella, tomato, basil pesto","price":"8.00"}}
-{"op":"add","path":"/state/vegFood/3","value":{"id":"f6","name":"Garden Salad 🌱","desc":"Seasonal greens, citrus vinaigrette","price":"7.00"}}
-{"op":"add","path":"/elements/hours","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["hours-header","hours-body"]}}
-{"op":"add","path":"/elements/hours-header","value":{"type":"CardHeader","props":{"title":"🕐 Opening Hours"},"children":[]}}
-{"op":"add","path":"/elements/hours-body","value":{"type":"TextContent","props":{"text":"**Monday – Friday:** 7:00 AM – 6:00 PM\n\n**Saturday:** 8:00 AM – 5:00 PM\n\n**Sunday:** 8:00 AM – 3:00 PM\n\n*Kitchen closes 30 minutes before closing time.*","size":"small"},"children":[]}}
+{"op":"add","path":"/state/food/0","value":{"id":"f1","name":"Banana Bread","desc":"Toasted, served with salted butter","price":"$3.75","veg":true}}
+{"op":"add","path":"/state/food/1","value":{"id":"f2","name":"Avocado Toast","desc":"Sourdough, smashed avo, chili flakes, lime","price":"$8.50","veg":true}}
+{"op":"add","path":"/state/food/2","value":{"id":"f3","name":"Caprese Panini","desc":"Mozzarella, tomato, basil pesto on ciabatta","price":"$9.25","veg":true}}
+{"op":"add","path":"/state/food/3","value":{"id":"f4","name":"Ham & Cheese Croissant","desc":"Flaky croissant, smoked ham, gruyère","price":"$7.00","veg":false}}
+{"op":"add","path":"/state/food/4","value":{"id":"f5","name":"Chicken Caesar Wrap","desc":"Grilled chicken, romaine, parmesan, caesar dressing","price":"$9.75","veg":false}}
+{"op":"add","path":"/elements/sep","value":{"type":"Separator","props":{"orientation":"horizontal"},"children":[]}}
+{"op":"add","path":"/elements/hours","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["hoursHeader","hoursTable"]}}
+{"op":"add","path":"/elements/hoursHeader","value":{"type":"Heading","props":{"text":"🕐 Opening Hours","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/hoursTable","value":{"type":"Table","props":{"columns":["dayCol","timeCol"]},"children":[]}}
+{"op":"add","path":"/elements/dayCol","value":{"type":"Col","props":{"label":"Day","data":["Monday – Friday","Saturday","Sunday"]},"children":[]}}
+{"op":"add","path":"/elements/timeCol","value":{"type":"Col","props":{"label":"Hours","data":["7:00 AM – 6:00 PM","8:00 AM – 5:00 PM","8:00 AM – 2:00 PM"]},"children":[]}}

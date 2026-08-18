@@ -1,507 +1,566 @@
 
 
-Here's a complete single-screen daily console for a store manager, covering all 12 items:
+Here's a comprehensive store manager's daily console covering all 12 items, organized into three tabs for clarity:
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "store-manager-console",
-      "catalogId": "thesys.dev:c1-openui",
-      "sendDataModel": false
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "store-manager-console",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "column",
-          "gap": "l",
-          "children": [
-            "consoleHeader",
-            "storeForm",
-            "kpiRow",
-            "trafficCard",
-            "midRow",
-            "reorderCard",
-            "opsRow",
-            "promoCard",
-            "weekCard"
-          ]
-        },
-        {
-          "id": "consoleHeader",
-          "component": "CardHeader",
-          "title": "Daily Store Console",
-          "subtitle": "Downtown Flagship · Thursday · Live as of 2:40 PM"
-        },
-        {
-          "id": "storeForm",
-          "component": "Form",
-          "name": "store-switcher",
-          "fields": ["storeSelect"],
-          "buttons": "storeButtons"
-        },
-        {
-          "id": "storeSelect",
-          "component": "Select",
-          "name": "store",
-          "value": "downtown",
-          "items": ["storeOpt1", "storeOpt2", "storeOpt3", "storeOpt4"]
-        },
-        { "id": "storeOpt1", "component": "SelectItem", "value": "downtown", "label": "Downtown Flagship (current)" },
-        { "id": "storeOpt2", "component": "SelectItem", "value": "riverside", "label": "Riverside Mall" },
-        { "id": "storeOpt3", "component": "SelectItem", "value": "airport", "label": "Airport Kiosk" },
-        { "id": "storeOpt4", "component": "SelectItem", "value": "westside", "label": "Westside Plaza" },
-        {
-          "id": "storeButtons",
-          "component": "Buttons",
-          "buttons": ["storeSwitchBtn"]
-        },
-        {
-          "id": "storeSwitchBtn",
-          "component": "Button",
-          "label": "View selected store",
-          "variant": "secondary"
-        },
-        {
-          "id": "kpiRow",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "m",
-          "children": ["salesCard", "basketCard", "returnsCard"]
-        },
-        {
-          "id": "salesCard",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "s",
-          "weight": 1,
-          "children": ["salesLabel", "salesValue", "salesProgress", "salesSub"]
-        },
-        { "id": "salesLabel", "component": "Label", "text": "Sales today vs target" },
-        { "id": "salesValue", "component": "TextContent", "text": "$12,480", "size": "large-heavy" },
-        { "id": "salesProgress", "component": "Progress", "value": 83.2, "label": "83.2% of $15,000 target" },
-        { "id": "salesSub", "component": "TextContent", "text": "$2,520 to go · on pace to finish near target", "size": "small" },
-        {
-          "id": "basketCard",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "s",
-          "weight": 1,
-          "children": ["basketLabel", "basketValue", "basketSub"]
-        },
-        { "id": "basketLabel", "component": "Label", "text": "Average basket size" },
-        { "id": "basketValue", "component": "TextContent", "text": "$46.80", "size": "large-heavy" },
-        { "id": "basketSub", "component": "TextContent", "text": "+$3.10 vs last week · 267 transactions", "size": "small" },
-        {
-          "id": "returnsCard",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "s",
-          "weight": 1,
-          "children": ["returnsLabel", "returnsValue", "returnsSub"]
-        },
-        { "id": "returnsLabel", "component": "Label", "text": "Returns this week" },
-        { "id": "returnsValue", "component": "TextContent", "text": "27 returns", "size": "large-heavy" },
-        { "id": "returnsSub", "component": "TextContent", "text": "$1,184 refunded · 2.5% return rate", "size": "small" },
-        {
-          "id": "trafficCard",
-          "component": "Card",
-          "direction": "column",
-          "gap": "m",
-          "children": ["trafficHeader", "trafficChart"]
-        },
-        {
-          "id": "trafficHeader",
-          "component": "CardHeader",
-          "title": "Foot traffic today",
-          "subtitle": "Door counts by hour · 1,293 visitors · 267 transactions · 21% conversion"
-        },
-        {
-          "id": "trafficChart",
-          "component": "AreaChart",
-          "variant": "natural",
-          "xLabel": "Hour of day",
-          "yLabel": "Visitors",
-          "labels": ["9a", "10a", "11a", "12p", "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p"],
-          "series": ["trafficSeries"]
-        },
-        {
-          "id": "trafficSeries",
-          "component": "Series",
-          "category": "Visitors",
-          "values": [42, 78, 116, 151, 138, 122, 104, 96, 118, 143, 121, 64]
-        },
-        {
-          "id": "midRow",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "m",
-          "children": ["bestCard", "oosCard"]
-        },
-        {
-          "id": "bestCard",
-          "component": "Card",
-          "direction": "column",
-          "gap": "m",
-          "weight": 1,
-          "children": ["bestHeader", "bestTable"]
-        },
-        {
-          "id": "bestHeader",
-          "component": "CardHeader",
-          "title": "Best sellers today",
-          "subtitle": "Ranked by units sold"
-        },
-        {
-          "id": "bestTable",
-          "component": "Table",
-          "columns": ["bsItemCol", "bsUnitsCol", "bsRevenueCol"]
-        },
-        {
-          "id": "bsItemCol",
-          "component": "Col",
-          "label": "Item",
-          "type": "string",
-          "data": ["USB-C Fast Charger", "Phone Case (Clear)", "Wireless Earbuds Lite", "Screen Protector 2-pack", "Bluetooth Speaker Mini"]
-        },
-        {
-          "id": "bsUnitsCol",
-          "component": "Col",
-          "label": "Units",
-          "type": "number",
-          "data": [84, 71, 46, 39, 22]
-        },
-        {
-          "id": "bsRevenueCol",
-          "component": "Col",
-          "label": "Revenue",
-          "type": "string",
-          "data": ["$1,679", "$1,064", "$1,610", "$507", "$879"]
-        },
-        {
-          "id": "oosCard",
-          "component": "Card",
-          "direction": "column",
-          "gap": "m",
-          "weight": 1,
-          "children": ["oosHeader", "oosTable"]
-        },
-        {
-          "id": "oosHeader",
-          "component": "CardHeader",
-          "title": "Out of stock",
-          "subtitle": "4 items at zero · use Reorder below"
-        },
-        {
-          "id": "oosTable",
-          "component": "Table",
-          "columns": ["oosItemCol", "oosHandCol", "oosDaysCol", "oosPointCol"]
-        },
-        {
-          "id": "oosItemCol",
-          "component": "Col",
-          "label": "Item",
-          "type": "string",
-          "data": ["Noise-Cancelling Headphones X3", "Laptop Sleeve 15\"", "Magnetic Car Mount", "AA Batteries 8-pack"]
-        },
-        {
-          "id": "oosHandCol",
-          "component": "Col",
-          "label": "On hand",
-          "type": "number",
-          "data": [0, 0, 0, 0]
-        },
-        {
-          "id": "oosDaysCol",
-          "component": "Col",
-          "label": "Days out",
-          "type": "number",
-          "data": [3, 2, 5, 1]
-        },
-        {
-          "id": "oosPointCol",
-          "component": "Col",
-          "label": "Reorder point",
-          "type": "number",
-          "data": [12, 20, 15, 30]
-        },
-        {
-          "id": "reorderCard",
-          "component": "Card",
-          "direction": "column",
-          "gap": "m",
-          "children": ["reorderHeader", "reorderForm"]
-        },
-        {
-          "id": "reorderHeader",
-          "component": "CardHeader",
-          "title": "Reorder an item",
-          "subtitle": "Sends a purchase order to the distribution center"
-        },
-        {
-          "id": "reorderForm",
-          "component": "Form",
-          "name": "reorder",
-          "fields": ["reorderItemControl", "reorderQtyControl"],
-          "buttons": "reorderButtons"
-        },
-        {
-          "id": "reorderItemControl",
-          "component": "FormControl",
-          "label": "Item",
-          "hint": "Out-of-stock items are listed first",
-          "input": "reorderSelect"
-        },
-        {
-          "id": "reorderSelect",
-          "component": "Select",
-          "name": "item",
-          "placeholder": "Choose an item to reorder",
-          "items": ["reorderOpt1", "reorderOpt2", "reorderOpt3", "reorderOpt4"]
-        },
-        { "id": "reorderOpt1", "component": "SelectItem", "value": "x3-headphones", "label": "Noise-Cancelling Headphones X3 (out of stock)" },
-        { "id": "reorderOpt2", "component": "SelectItem", "value": "sleeve-15", "label": "Laptop Sleeve 15\" (out of stock)" },
-        { "id": "reorderOpt3", "component": "SelectItem", "value": "car-mount", "label": "Magnetic Car Mount (out of stock)" },
-        { "id": "reorderOpt4", "component": "SelectItem", "value": "aa-8pack", "label": "AA Batteries 8-pack (out of stock)" },
-        {
-          "id": "reorderQtyControl",
-          "component": "FormControl",
-          "label": "Quantity",
-          "hint": "Tip: order at least the item's reorder point",
-          "input": "reorderQtyInput"
-        },
-        {
-          "id": "reorderQtyInput",
-          "component": "Input",
-          "name": "quantity",
-          "type": "number",
-          "placeholder": "e.g. 24"
-        },
-        {
-          "id": "reorderButtons",
-          "component": "Buttons",
-          "buttons": ["reorderSubmitBtn"]
-        },
-        {
-          "id": "reorderSubmitBtn",
-          "component": "Button",
-          "label": "Submit reorder",
-          "variant": "primary"
-        },
-        {
-          "id": "opsRow",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "m",
-          "children": ["shiftCard", "regCard"]
-        },
-        {
-          "id": "shiftCard",
-          "component": "Card",
-          "direction": "column",
-          "gap": "m",
-          "weight": 1,
-          "children": ["shiftHeader", "shiftTable"]
-        },
-        {
-          "id": "shiftHeader",
-          "component": "CardHeader",
-          "title": "On shift today",
-          "subtitle": "5 scheduled · 2 on shift right now"
-        },
-        {
-          "id": "shiftTable",
-          "component": "Table",
-          "columns": ["stNameCol", "stRoleCol", "stTimeCol", "stStatusCol"]
-        },
-        {
-          "id": "stNameCol",
-          "component": "Col",
-          "label": "Name",
-          "type": "string",
-          "data": ["Maya Rodriguez", "Chris Patel", "Jordan Lee", "Sam O'Brien", "Priya Nair"]
-        },
-        {
-          "id": "stRoleCol",
-          "component": "Col",
-          "label": "Role",
-          "type": "string",
-          "data": ["Store manager", "Cashier", "Sales floor", "Stockroom", "Cashier"]
-        },
-        {
-          "id": "stTimeCol",
-          "component": "Col",
-          "label": "Shift",
-          "type": "string",
-          "data": ["8:00a–4:30p", "9:00a–5:00p", "12:00p–8:30p", "6:00a–2:30p", "4:00p–9:00p"]
-        },
-        {
-          "id": "stStatusCol",
-          "component": "Col",
-          "label": "Status",
-          "type": "string",
-          "data": ["On shift", "On shift", "Arrives 12:00p", "Ended 2:30p", "Arrives 4:00p"]
-        },
-        {
-          "id": "regCard",
-          "component": "Card",
-          "direction": "column",
-          "gap": "m",
-          "weight": 1,
-          "children": ["regHeader", "regTable"]
-        },
-        {
-          "id": "regHeader",
-          "component": "CardHeader",
-          "title": "Registers",
-          "subtitle": "2 of 4 open"
-        },
-        {
-          "id": "regTable",
-          "component": "Table",
-          "columns": ["regIdCol", "regStatusCol", "regStaffCol"]
-        },
-        {
-          "id": "regIdCol",
-          "component": "Col",
-          "label": "Register",
-          "type": "string",
-          "data": ["Register 1", "Register 2", "Register 3", "Register 4"]
-        },
-        {
-          "id": "regStatusCol",
-          "component": "Col",
-          "label": "Status",
-          "type": "string",
-          "data": ["Open", "Open", "Closed", "Closed — maintenance"]
-        },
-        {
-          "id": "regStaffCol",
-          "component": "Col",
-          "label": "Staffed by",
-          "type": "string",
-          "data": ["Chris Patel", "Maya Rodriguez", "—", "—"]
-        },
-        {
-          "id": "promoCard",
-          "component": "Card",
-          "direction": "column",
-          "gap": "m",
-          "children": ["promoHeader", "promoTable"]
-        },
-        {
-          "id": "promoHeader",
-          "component": "CardHeader",
-          "title": "Promotion performance",
-          "subtitle": "4 active promotions · since each promo's start date"
-        },
-        {
-          "id": "promoTable",
-          "component": "Table",
-          "columns": ["prNameCol", "prRedCol", "prRevCol", "prGoalCol"]
-        },
-        {
-          "id": "prNameCol",
-          "component": "Col",
-          "label": "Promotion",
-          "type": "string",
-          "data": ["BOGO 50% Cables", "15% Off Accessories $50+", "Trade-In Bonus $20", "Free Gift Wrap — Holiday"]
-        },
-        {
-          "id": "prRedCol",
-          "component": "Col",
-          "label": "Redemptions",
-          "type": "number",
-          "data": [312, 189, 57, 203]
-        },
-        {
-          "id": "prRevCol",
-          "component": "Col",
-          "label": "Attributed revenue",
-          "type": "string",
-          "data": ["$4,680", "$6,120", "$1,140", "$410"]
-        },
-        {
-          "id": "prGoalCol",
-          "component": "Col",
-          "label": "Progress to goal",
-          "type": "string",
-          "data": ["82% of goal", "64% of goal", "45% of goal", "91% of goal"]
-        },
-        {
-          "id": "weekCard",
-          "component": "Card",
-          "direction": "column",
-          "gap": "m",
-          "children": ["weekHeader", "weekChart", "weekNote"]
-        },
-        {
-          "id": "weekHeader",
-          "component": "CardHeader",
-          "title": "This week vs last week",
-          "subtitle": "Net sales by day · through Thursday"
-        },
-        {
-          "id": "weekChart",
-          "component": "BarChart",
-          "variant": "grouped",
-          "xLabel": "Day",
-          "yLabel": "Net sales ($)",
-          "labels": ["Mon", "Tue", "Wed", "Thu"],
-          "series": ["weekThisSeries", "weekLastSeries"]
-        },
-        {
-          "id": "weekThisSeries",
-          "component": "Series",
-          "category": "This week",
-          "values": [11200, 12650, 10940, 12480]
-        },
-        {
-          "id": "weekLastSeries",
-          "component": "Series",
-          "category": "Last week",
-          "values": [10800, 11900, 12400, 13100]
-        },
-        {
-          "id": "weekNote",
-          "component": "TextCallout",
-          "variant": "neutral",
-          "title": "Week to date: $47,270",
-          "description": "Down 1.9% vs last week's $48,200 through the same four days. Thursday is pacing strong and promo redemptions are up."
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-Everything requested is covered:
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "storeSelectorWrap",
+          "tabs"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Store Manager Console",
+        "subtitle": "Daily operations overview — Tuesday, June 17, 2025"
+      },
+      {
+        "id": "storeSelectorWrap",
+        "component": "FormControl",
+        "label": "Viewing store",
+        "input": "storeSelect"
+      },
+      {
+        "id": "storeSelect",
+        "component": "Select",
+        "name": "store",
+        "placeholder": "Select a store",
+        "value": "downtown",
+        "items": ["storeDowntown", "storeMall", "storeAirport"]
+      },
+      {
+        "id": "storeDowntown",
+        "component": "SelectItem",
+        "value": "downtown",
+        "label": "Downtown Flagship (#042)"
+      },
+      {
+        "id": "storeMall",
+        "component": "SelectItem",
+        "value": "mall",
+        "label": "Westfield Mall (#078)"
+      },
+      {
+        "id": "storeAirport",
+        "component": "SelectItem",
+        "value": "airport",
+        "label": "Airport Terminal B (#103)"
+      },
+      {
+        "id": "tabs",
+        "component": "Tabs",
+        "items": ["overviewTab", "inventoryTab", "operationsTab"]
+      },
+      {
+        "id": "overviewTab",
+        "component": "TabItem",
+        "value": "overview",
+        "trigger": "Overview",
+        "content": ["salesSection", "kpiTable", "footTrafficSection", "weekCompareSection"]
+      },
+      {
+        "id": "salesSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["salesHeader", "salesProgress", "salesNote"]
+      },
+      {
+        "id": "salesHeader",
+        "component": "CardHeader",
+        "title": "Sales Today vs Target",
+        "subtitle": "Target: $18,500"
+      },
+      {
+        "id": "salesProgress",
+        "component": "Progress",
+        "value": 72,
+        "label": "$13,320 of $18,500 (72%)"
+      },
+      {
+        "id": "salesNote",
+        "component": "TextCallout",
+        "variant": "info",
+        "title": "Pacing",
+        "description": "On track to hit target by close. Peak hours expected 5–7 PM."
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": ["kpiMetric", "kpiValue", "kpiDelta"]
+      },
+      {
+        "id": "kpiMetric",
+        "component": "Col",
+        "label": "Metric",
+        "data": ["Average Basket Size", "Returns This Week", "Transactions Today"]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": ["$47.80", "23 items / $1,142", "278"]
+      },
+      {
+        "id": "kpiDelta",
+        "component": "Col",
+        "label": "vs Last Week",
+        "data": ["+4.2%", "-12% (improving)", "+9%"]
+      },
+      {
+        "id": "footTrafficSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["footTrafficHeader", "footTrafficChart"]
+      },
+      {
+        "id": "footTrafficHeader",
+        "component": "CardHeader",
+        "title": "Foot Traffic Today",
+        "subtitle": "Visitors per hour"
+      },
+      {
+        "id": "footTrafficChart",
+        "component": "AreaChart",
+        "labels": ["8 AM", "9 AM", "10 AM", "11 AM", "12 PM", "1 PM", "2 PM", "3 PM", "4 PM"],
+        "series": ["trafficSeries"],
+        "variant": "natural",
+        "xLabel": "Hour",
+        "yLabel": "Visitors"
+      },
+      {
+        "id": "trafficSeries",
+        "component": "Series",
+        "category": "Visitors",
+        "values": [22, 45, 68, 94, 112, 105, 88, 76, 82]
+      },
+      {
+        "id": "weekCompareSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["weekCompareHeader", "weekCompareChart"]
+      },
+      {
+        "id": "weekCompareHeader",
+        "component": "CardHeader",
+        "title": "This Week vs Last Week",
+        "subtitle": "Daily revenue comparison"
+      },
+      {
+        "id": "weekCompareChart",
+        "component": "BarChart",
+        "labels": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+        "series": ["thisWeekSeries", "lastWeekSeries"],
+        "variant": "grouped",
+        "xLabel": "Day",
+        "yLabel": "Revenue ($)"
+      },
+      {
+        "id": "thisWeekSeries",
+        "component": "Series",
+        "category": "This Week",
+        "values": [16200, 13320, 0, 0, 0, 0, 0]
+      },
+      {
+        "id": "lastWeekSeries",
+        "component": "Series",
+        "category": "Last Week",
+        "values": [15100, 14800, 16900, 17200, 19400, 22100, 18600]
+      },
+      {
+        "id": "inventoryTab",
+        "component": "TabItem",
+        "value": "inventory",
+        "trigger": "Inventory",
+        "content": ["bestSellersSection", "oosSection", "reorderSection"]
+      },
+      {
+        "id": "bestSellersSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["bestSellersHeader", "bestSellersTable"]
+      },
+      {
+        "id": "bestSellersHeader",
+        "component": "CardHeader",
+        "title": "Best Sellers Today",
+        "subtitle": "Top 5 by units sold"
+      },
+      {
+        "id": "bestSellersTable",
+        "component": "Table",
+        "columns": ["bsRank", "bsProduct", "bsUnits", "bsRevenue"]
+      },
+      {
+        "id": "bsRank",
+        "component": "Col",
+        "label": "#",
+        "data": ["1", "2", "3", "4", "5"]
+      },
+      {
+        "id": "bsProduct",
+        "component": "Col",
+        "label": "Product",
+        "data": ["Wireless Earbuds Pro", "USB-C Charging Cable", "Phone Case (Clear)", "Screen Protector", "Bluetooth Speaker Mini"]
+      },
+      {
+        "id": "bsUnits",
+        "component": "Col",
+        "label": "Units",
+        "data": ["34", "29", "27", "22", "18"]
+      },
+      {
+        "id": "bsRevenue",
+        "component": "Col",
+        "label": "Revenue",
+        "data": ["$2,716", "$435", "$537", "$286", "$898"]
+      },
+      {
+        "id": "oosSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["oosHeader", "oosAlert", "oosTable"]
+      },
+      {
+        "id": "oosHeader",
+        "component": "CardHeader",
+        "title": "Out of Stock",
+        "subtitle": "Items requiring immediate attention"
+      },
+      {
+        "id": "oosAlert",
+        "component": "Alert",
+        "variant": "warning",
+        "title": "3 items out of stock",
+        "description": "These items have zero on-hand inventory and are actively selling online. Reorder recommended."
+      },
+      {
+        "id": "oosTable",
+        "component": "Table",
+        "columns": ["oosProduct", "oosSku", "oosDaysOut", "oosLostSales"]
+      },
+      {
+        "id": "oosProduct",
+        "component": "Col",
+        "label": "Product",
+        "data": ["Lightning Cable 6ft", "Wall Charger 20W", "Laptop Sleeve 14\""]
+      },
+      {
+        "id": "oosSku",
+        "component": "Col",
+        "label": "SKU",
+        "data": ["LC-6FT-BLK", "WC-20W-US", "LS-14-GRY"]
+      },
+      {
+        "id": "oosDaysOut",
+        "component": "Col",
+        "label": "Days Out",
+        "data": ["2", "1", "3"]
+      },
+      {
+        "id": "oosLostSales",
+        "component": "Col",
+        "label": "Est. Lost Sales",
+        "data": ["$340", "$520", "$210"]
+      },
+      {
+        "id": "reorderSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["reorderHeader", "reorderForm"]
+      },
+      {
+        "id": "reorderHeader",
+        "component": "CardHeader",
+        "title": "Quick Reorder",
+        "subtitle": "Submit a purchase order for an item"
+      },
+      {
+        "id": "reorderForm",
+        "component": "Form",
+        "name": "reorder",
+        "buttons": "reorderButtons",
+        "fields": ["reorderItemField", "reorderQtyField", "reorderPriorityField"]
+      },
+      {
+        "id": "reorderItemField",
+        "component": "FormControl",
+        "label": "Item to reorder",
+        "input": "reorderItemSelect"
+      },
+      {
+        "id": "reorderItemSelect",
+        "component": "Select",
+        "name": "item",
+        "placeholder": "Select an item",
+        "items": ["reorderItem1", "reorderItem2", "reorderItem3", "reorderItem4", "reorderItem5"]
+      },
+      {
+        "id": "reorderItem1",
+        "component": "SelectItem",
+        "value": "LC-6FT-BLK",
+        "label": "Lightning Cable 6ft (LC-6FT-BLK)"
+      },
+      {
+        "id": "reorderItem2",
+        "component": "SelectItem",
+        "value": "WC-20W-US",
+        "label": "Wall Charger 20W (WC-20W-US)"
+      },
+      {
+        "id": "reorderItem3",
+        "component": "SelectItem",
+        "value": "LS-14-GRY",
+        "label": "Laptop Sleeve 14\" (LS-14-GRY)"
+      },
+      {
+        "id": "reorderItem4",
+        "component": "SelectItem",
+        "value": "WB-PRO-BLK",
+        "label": "Wireless Earbuds Pro (WB-PRO-BLK)"
+      },
+      {
+        "id": "reorderItem5",
+        "component": "SelectItem",
+        "value": "SP-MINI-BLU",
+        "label": "Bluetooth Speaker Mini (SP-MINI-BLU)"
+      },
+      {
+        "id": "reorderQtyField",
+        "component": "FormControl",
+        "label": "Quantity",
+        "input": "reorderQtyInput",
+        "hint": "Recommended reorder qty shown in parentheses"
+      },
+      {
+        "id": "reorderQtyInput",
+        "component": "Input",
+        "name": "quantity",
+        "type": "number",
+        "placeholder": "e.g. 50"
+      },
+      {
+        "id": "reorderPriorityField",
+        "component": "FormControl",
+        "label": "Delivery priority",
+        "input": "reorderPriorityRadio"
+      },
+      {
+        "id": "reorderPriorityRadio",
+        "component": "RadioGroup",
+        "name": "priority",
+        "items": ["priorityStandard", "priorityExpress", "priorityEmergency"]
+      },
+      {
+        "id": "priorityStandard",
+        "component": "RadioItem",
+        "label": "Standard",
+        "description": "3–5 business days",
+        "value": "standard"
+      },
+      {
+        "id": "priorityExpress",
+        "component": "RadioItem",
+        "label": "Express",
+        "description": "1–2 business days",
+        "value": "express"
+      },
+      {
+        "id": "priorityEmergency",
+        "component": "RadioItem",
+        "label": "Emergency",
+        "description": "Next-day delivery (+$45 fee)",
+        "value": "emergency"
+      },
+      {
+        "id": "reorderButtons",
+        "component": "Buttons",
+        "buttons": ["reorderSubmit", "reorderCancel"]
+      },
+      {
+        "id": "reorderSubmit",
+        "component": "Button",
+        "label": "Submit Reorder",
+        "variant": "primary"
+      },
+      {
+        "id": "reorderCancel",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "tertiary"
+      },
+      {
+        "id": "operationsTab",
+        "component": "TabItem",
+        "value": "operations",
+        "trigger": "Operations",
+        "content": ["staffSection", "registerSection", "promoSection"]
+      },
+      {
+        "id": "staffSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["staffHeader", "staffTable"]
+      },
+      {
+        "id": "staffHeader",
+        "component": "CardHeader",
+        "title": "Staff on Shift Today",
+        "subtitle": "6 team members scheduled"
+      },
+      {
+        "id": "staffTable",
+        "component": "Table",
+        "columns": ["staffName", "staffRole", "staffShift", "staffStatus"]
+      },
+      {
+        "id": "staffName",
+        "component": "Col",
+        "label": "Name",
+        "data": ["Maria Gonzalez", "James Chen", "Aisha Patel", "Tom Williams", "Sofia Reyes", "Derek Johnson"]
+      },
+      {
+        "id": "staffRole",
+        "component": "Col",
+        "label": "Role",
+        "data": ["Shift Lead", "Sales Associate", "Sales Associate", "Stock Associate", "Cashier", "Cashier"]
+      },
+      {
+        "id": "staffShift",
+        "component": "Col",
+        "label": "Shift",
+        "data": ["8 AM – 4 PM", "9 AM – 5 PM", "10 AM – 6 PM", "8 AM – 4 PM", "12 PM – 8 PM", "12 PM – 8 PM"]
+      },
+      {
+        "id": "staffStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": ["Clocked In", "Clocked In", "Clocked In", "Clocked In", "Not Yet", "Not Yet"]
+      },
+      {
+        "id": "registerSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["registerHeader", "registerTable"]
+      },
+      {
+        "id": "registerHeader",
+        "component": "CardHeader",
+        "title": "Register Status",
+        "subtitle": "4 of 6 registers available"
+      },
+      {
+        "id": "registerTable",
+        "component": "Table",
+        "columns": ["regId", "regStatus", "regOperator", "regNote"]
+      },
+      {
+        "id": "regId",
+        "component": "Col",
+        "label": "Register",
+        "data": ["REG 1", "REG 2", "REG 3", "REG 4", "REG 5", "REG 6"]
+      },
+      {
+        "id": "regStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": ["Open", "Open", "Open", "Open", "Closed", "Closed"]
+      },
+      {
+        "id": "regOperator",
+        "component": "Col",
+        "label": "Operator",
+        "data": ["Maria G.", "Derek J.", "Sofia R.", "Self-Service", "—", "—"]
+      },
+      {
+        "id": "regNote",
+        "component": "Col",
+        "label": "Note",
+        "data": ["", "", "", "Kiosk mode", "Maintenance", "Opens at 12 PM"]
+      },
+      {
+        "id": "promoSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["promoHeader", "promoTable"]
+      },
+      {
+        "id": "promoHeader",
+        "component": "CardHeader",
+        "title": "Active Promotions",
+        "subtitle": "Performance of running campaigns"
+      },
+      {
+        "id": "promoTable",
+        "component": "Table",
+        "columns": ["promoName", "promoType", "promoRedemptions", "promoRevenue", "promoStatus"]
+      },
+      {
+        "id": "promoName",
+        "component": "Col",
+        "label": "Promotion",
+        "data": ["Summer Bundle Deal", "10% Off Accessories", "Buy 2 Get 1 Free Cables", "Loyalty Double Points"]
+      },
+      {
+        "id": "promoType",
+        "component": "Col",
+        "label": "Type",
+        "data": ["Bundle", "Percentage", "BOGO", "Loyalty"]
+      },
+      {
+        "id": "promoRedemptions",
+        "component": "Col",
+        "label": "Redemptions",
+        "data": ["42", "87", "31", "64"]
+      },
+      {
+        "id": "promoRevenue",
+        "component": "Col",
+        "label": "Revenue Driven",
+        "data": ["$3,150", "$1,240", "$580", "$2,890"]
+      },
+      {
+        "id": "promoStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": ["Active (ends Jun 30)", "Active (ends Jun 22)", "Active (ends Jun 20)", "Ongoing"]
+      }
+    ]
+  }
+}
+</a2ui-json>
 
-1. **Sales vs target** — top KPI card with progress bar (83.2% of $15,000)
-2. **Foot traffic** — hourly area chart with visitor, transaction, and conversion stats
-3. **Best sellers** — table with units and revenue per item
-4. **Out of stock** — table with days out and reorder points
-5. **On shift** — staff table with roles, shift times, and live status
-6. **Average basket size** — KPI card with week-over-week delta
-7. **Returns this week** — KPI card with count, refund total, and rate
-8. **Promotions** — table with redemptions, attributed revenue, and goal progress
-9. **Registers** — open/closed status and who's staffing each
-10. **Reorder** — form with item selector (pre-filled with OOS items), quantity, and submit button
-11. **Switch store** — store selector + button at the top of the screen
-12. **Week comparison** — grouped bar chart of this week vs last week, plus a WTD summary callout
+This console covers all 12 requirements:
 
-Want me to wire the store switcher or reorder form to real actions, or add drill-downs (e.g., clicking an out-of-stock item pre-fills the reorder form)?
+| # | Requirement | Where |
+|---|---|---|
+| 1 | Sales vs target | Progress bar in **Overview** tab |
+| 2 | Foot traffic | Area chart in **Overview** tab |
+| 3 | Best sellers | Table in **Inventory** tab |
+| 4 | Out of stock | Alert + table in **Inventory** tab |
+| 5 | Staff on shift | Table in **Operations** tab |
+| 6 | Avg basket size | KPI table in **Overview** tab |
+| 7 | Returns this week | KPI table in **Overview** tab |
+| 8 | Promotion performance | Table in **Operations** tab |
+| 9 | Register status | Table in **Operations** tab |
+| 10 | Reorder an item | Form in **Inventory** tab |
+| 11 | View different store | Store selector at top |
+| 12 | Week vs last week | Grouped bar chart in **Overview** tab |

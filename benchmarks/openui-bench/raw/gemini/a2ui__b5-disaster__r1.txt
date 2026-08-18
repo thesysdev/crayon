@@ -1,15 +1,11 @@
-Here is a comprehensive Emergency Response Coordination Center dashboard covering all 18 specified items in a clear, actionable dashboard interface.
+I have built a complete, single-screen Emergency Response Coordination Dashboard incorporating all 18 requested features.
 
 <a2ui-json>
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "emergency-dashboard",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": {
-      "primaryColor": "#DC2626",
-      "agentDisplayName": "Emergency Operations Center AI"
-    }
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
@@ -18,1601 +14,1235 @@ Here is a comprehensive Emergency Response Coordination Center dashboard coverin
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "emergency-dashboard",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "l",
         "children": [
-          "header-card",
-          "quick-actions-tabs",
-          "tabs-container"
+          "header",
+          "alertBanner",
+          "tabs"
         ]
       },
       {
-        "id": "header-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "header-title",
-          "header-controls-card"
-        ]
-      },
-      {
-        "id": "header-title",
+        "id": "header",
         "component": "CardHeader",
-        "title": "EOC Operations Dashboard — Incident Management & Logistics",
-        "subtitle": "Real-time Situational Awareness & Resource Coordination Unit"
+        "title": "Emergency Response Coordination Center",
+        "subtitle": "Real-time incident monitoring, resource deployment, and operational dispatch"
       },
       {
-        "id": "header-controls-card",
+        "id": "alertBanner",
+        "component": "Alert",
+        "title": "CRITICAL SITUATION BRIEFING",
+        "description": "Category 3 Flood Alert active in Zone Alpha and Bravo. High water levels disrupting Northern evacuation corridors.",
+        "variant": "destructive"
+      },
+      {
+        "id": "tabs",
+        "component": "Tabs",
+        "items": [
+          "tabOverview",
+          "tabIncidents",
+          "tabResources",
+          "tabSheltersHospitals",
+          "tabRoutesLogistics",
+          "tabCommunications",
+          "tabActions"
+        ]
+      },
+      {
+        "id": "tabOverview",
+        "component": "TabItem",
+        "value": "overview",
+        "trigger": "1. Overview & Summary",
+        "content": [
+          "overviewHeading",
+          "severitySummary",
+          "casualtyProgressCard",
+          "weatherForecast",
+          "zoneFocusCard"
+        ]
+      },
+      {
+        "id": "overviewHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "2 & 7. Overall Severity, Rescues & Weather Briefing"
+      },
+      {
+        "id": "severitySummary",
+        "component": "Callout",
+        "variant": "error",
+        "title": "2. Overall Severity Level: SEVERE / LEVEL 4",
+        "description": "4 Active High-Severity Incidents | 12 Operational Infrastructure Hazards | Weather deteriorating over next 24h"
+      },
+      {
+        "id": "casualtyProgressCard",
         "component": "Card",
         "variant": "sunk",
-        "direction": "row",
-        "gap": "m",
-        "align": "center",
-        "justify": "between",
         "children": [
-          "zone-filter-select",
-          "eoc-status-badge"
+          "rescuedHeading",
+          "rescuedProgress",
+          "rescuedTag",
+          "casualtiesTag"
         ]
       },
       {
-        "id": "zone-filter-select",
-        "component": "Select",
-        "name": "zone_focus",
-        "placeholder": "Filter / Focus Zone (Item 17)",
-        "items": [
-          "zone-item-all",
-          "zone-item-north",
-          "zone-item-central",
-          "zone-item-coastal",
-          "zone-item-south"
-        ]
+        "id": "rescuedHeading",
+        "component": "Heading",
+        "level": "h4",
+        "text": "7. People Rescued & Casualties So Far"
       },
       {
-        "id": "zone-item-all",
-        "component": "SelectItem",
-        "value": "all",
-        "label": "All Operational Zones"
+        "id": "rescuedProgress",
+        "component": "Progress",
+        "value": 82,
+        "label": "Rescues Completed Target (820 / 1000 accounted)"
       },
       {
-        "id": "zone-item-north",
-        "component": "SelectItem",
-        "value": "zone-north",
-        "label": "Zone Alpha (North Hills)"
-      },
-      {
-        "id": "zone-item-central",
-        "component": "SelectItem",
-        "value": "zone-central",
-        "label": "Zone Bravo (Downtown Central)"
-      },
-      {
-        "id": "zone-item-coastal",
-        "component": "SelectItem",
-        "value": "zone-coastal",
-        "label": "Zone Charlie (Coastal Delta)"
-      },
-      {
-        "id": "zone-item-south",
-        "component": "SelectItem",
-        "value": "zone-south",
-        "label": "Zone Delta (South Valley)"
-      },
-      {
-        "id": "eoc-status-badge",
+        "id": "rescuedTag",
         "component": "Tag",
-        "text": "EOC STATUS: RED ALERT (LEVEL 3)",
-        "variant": "danger",
-        "size": "lg"
+        "text": "820 Rescued Safely",
+        "variant": "success"
       },
       {
-        "id": "quick-actions-tabs",
+        "id": "casualtiesTag",
+        "component": "Tag",
+        "text": "14 Confirmed Casualties / 3 Missing",
+        "variant": "danger"
+      },
+      {
+        "id": "weatherForecast",
         "component": "Accordion",
         "items": [
-          "quick-action-resource-item",
-          "quick-action-broadcast-item",
-          "quick-action-sitrep-item"
+          "weatherItem"
         ]
       },
       {
-        "id": "quick-action-resource-item",
+        "id": "weatherItem",
         "component": "AccordionItem",
-        "value": "action-req-resources",
-        "trigger": "⚡ Quick Action: Request Additional Resources (Item 15)",
+        "value": "weather",
+        "trigger": "6. Weather Forecast (Next 48 Hours)",
         "content": [
-          "form-req-resources"
+          "weatherTable"
         ]
       },
       {
-        "id": "form-req-resources",
+        "id": "weatherTable",
+        "component": "Table",
+        "columns": [
+          "weatherTime",
+          "weatherCond",
+          "weatherRain",
+          "weatherWind"
+        ]
+      },
+      {
+        "id": "weatherTime",
+        "component": "Col",
+        "label": "Time Window",
+        "data": [
+          "00h - 12h",
+          "12h - 24h",
+          "24h - 36h",
+          "36h - 48h"
+        ]
+      },
+      {
+        "id": "weatherCond",
+        "component": "Col",
+        "label": "Condition",
+        "data": [
+          "Heavy Downpour",
+          "Flash Flood Risk",
+          "Moderate Rain",
+          "Clearing / Overcast"
+        ]
+      },
+      {
+        "id": "weatherRain",
+        "component": "Col",
+        "label": "Precipitation",
+        "data": [
+          "85 mm",
+          "120 mm",
+          "40 mm",
+          "10 mm"
+        ]
+      },
+      {
+        "id": "weatherWind",
+        "component": "Col",
+        "label": "Wind Speed",
+        "data": [
+          "45 km/h",
+          "65 km/h",
+          "30 km/h",
+          "15 km/h"
+        ]
+      },
+      {
+        "id": "zoneFocusCard",
+        "component": "Card",
+        "children": [
+          "zoneFocusForm"
+        ]
+      },
+      {
+        "id": "zoneFocusForm",
         "component": "Form",
-        "name": "resource_request_form",
+        "name": "zoneFocusForm",
+        "buttons": "zoneFocusButtons",
         "fields": [
-          "field-res-type",
-          "field-res-qty",
-          "field-res-dest"
-        ],
-        "buttons": "btn-grp-resource"
-      },
-      {
-        "id": "field-res-type",
-        "component": "FormControl",
-        "label": "Resource Type Required",
-        "input": "input-res-type"
-      },
-      {
-        "id": "input-res-type",
-        "component": "Select",
-        "name": "resource_type",
-        "placeholder": "Select type...",
-        "items": [
-          "res-opt-1",
-          "res-opt-2",
-          "res-opt-3",
-          "res-opt-4"
+          "zoneFocusField"
         ]
       },
       {
-        "id": "res-opt-1",
-        "component": "SelectItem",
-        "value": "hazmat_team",
-        "label": "Hazmat Containment Team"
+        "id": "zoneFocusField",
+        "component": "FormControl",
+        "label": "17. Focus on One Zone",
+        "hint": "Filter all telemetry and map layers by target zone",
+        "input": "zoneFocusSelect"
       },
       {
-        "id": "res-opt-2",
-        "component": "SelectItem",
-        "value": "swiftwater_boat",
-        "label": "Swiftwater Rescue Boat Unit"
+        "id": "zoneFocusSelect",
+        "component": "Select",
+        "name": "selectedZone",
+        "placeholder": "Select Zone to Focus",
+        "items": [
+          "zoneAll",
+          "zoneA",
+          "zoneB",
+          "zoneC",
+          "zoneD"
+        ]
       },
       {
-        "id": "res-opt-3",
+        "id": "zoneAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All Zones (Global View)"
+      },
+      {
+        "id": "zoneA",
+        "component": "SelectItem",
+        "value": "zone_alpha",
+        "label": "Zone Alpha (River Basin)"
+      },
+      {
+        "id": "zoneB",
+        "component": "SelectItem",
+        "value": "zone_bravo",
+        "label": "Zone Bravo (Downtown)"
+      },
+      {
+        "id": "zoneC",
+        "component": "SelectItem",
+        "value": "zone_charlie",
+        "label": "Zone Charlie (Industrial North)"
+      },
+      {
+        "id": "zoneD",
+        "component": "SelectItem",
+        "value": "zone_delta",
+        "label": "Zone Delta (Highland East)"
+      },
+      {
+        "id": "zoneFocusButtons",
+        "component": "Buttons",
+        "buttons": [
+          "zoneFocusBtn"
+        ]
+      },
+      {
+        "id": "zoneFocusBtn",
+        "component": "Button",
+        "label": "Set Zone Focus",
+        "variant": "primary"
+      },
+      {
+        "id": "tabIncidents",
+        "component": "TabItem",
+        "value": "incidents",
+        "trigger": "2. Incidents & Tasks",
+        "content": [
+          "incidentsHeading",
+          "incidentsTable",
+          "tasksHeading",
+          "tasksTable"
+        ]
+      },
+      {
+        "id": "incidentsHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "1. Active Incidents by Zone"
+      },
+      {
+        "id": "incidentsTable",
+        "component": "Table",
+        "columns": [
+          "incId",
+          "incZone",
+          "incDesc",
+          "incSeverity"
+        ]
+      },
+      {
+        "id": "incId",
+        "component": "Col",
+        "label": "Incident ID",
+        "data": [
+          "INC-101",
+          "INC-102",
+          "INC-103",
+          "INC-104",
+          "INC-105"
+        ]
+      },
+      {
+        "id": "incZone",
+        "component": "Col",
+        "label": "Zone",
+        "data": [
+          "Zone Alpha",
+          "Zone Alpha",
+          "Zone Bravo",
+          "Zone Charlie",
+          "Zone Delta"
+        ]
+      },
+      {
+        "id": "incDesc",
+        "component": "Col",
+        "label": "Description",
+        "data": [
+          "Levee breach near Sector 4",
+          "Power grid failure at Substation 2",
+          "Structural collapse at Mall",
+          "Chemical tank spill warning",
+          "Landslide blocking Access Road 9"
+        ]
+      },
+      {
+        "id": "incSeverity",
+        "component": "Col",
+        "label": "Severity Level",
+        "data": [
+          "CRITICAL (L5)",
+          "HIGH (L4)",
+          "CRITICAL (L5)",
+          "MEDIUM (L3)",
+          "HIGH (L4)"
+        ]
+      },
+      {
+        "id": "tasksHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "14. Open Tasks & Assignees"
+      },
+      {
+        "id": "tasksTable",
+        "component": "Table",
+        "columns": [
+          "taskId",
+          "taskDesc",
+          "taskAssignee",
+          "taskStatus"
+        ]
+      },
+      {
+        "id": "taskId",
+        "component": "Col",
+        "label": "Task ID",
+        "data": [
+          "TSK-801",
+          "TSK-802",
+          "TSK-803",
+          "TSK-804"
+        ]
+      },
+      {
+        "id": "taskDesc",
+        "component": "Col",
+        "label": "Action Item",
+        "data": [
+          "Deploy sandbags to Substation 2",
+          "Clear debris from Highway 10",
+          "Deliver MREs to Shelter Beta",
+          "Establish secondary radio repeater"
+        ]
+      },
+      {
+        "id": "taskAssignee",
+        "component": "Col",
+        "label": "Assignee / Unit",
+        "data": [
+          "Eng Battalion 3 (Capt. Miller)",
+          "Public Works Crew B",
+          "Red Cross Logistics 1",
+          "Comms Team Bravo"
+        ]
+      },
+      {
+        "id": "taskStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "In Progress",
+          "Dispatched",
+          "In Progress",
+          "Pending Setup"
+        ]
+      },
+      {
+        "id": "tabResources",
+        "component": "TabItem",
+        "value": "resources",
+        "trigger": "3. Resources & Volunteers",
+        "content": [
+          "resHeading",
+          "resTable",
+          "volHeading",
+          "volTable",
+          "donHeading",
+          "donationsBlock"
+        ]
+      },
+      {
+        "id": "resHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "3. Vehicles, Personnel & Supplies Available"
+      },
+      {
+        "id": "resTable",
+        "component": "Table",
+        "columns": [
+          "resCategory",
+          "resItem",
+          "resAvailable",
+          "resTotal"
+        ]
+      },
+      {
+        "id": "resCategory",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Vehicles",
+          "Vehicles",
+          "Personnel",
+          "Personnel",
+          "Supplies",
+          "Supplies"
+        ]
+      },
+      {
+        "id": "resItem",
+        "component": "Col",
+        "label": "Resource Type",
+        "data": [
+          "Ambulances",
+          "Rescue Boats",
+          "Paramedics",
+          "Firefighters",
+          "Potable Water (L)",
+          "Emergency Rations (MRE)"
+        ]
+      },
+      {
+        "id": "resAvailable",
+        "component": "Col",
+        "label": "Available",
+        "data": [
+          "14 units",
+          "8 units",
+          "42 personnel",
+          "65 personnel",
+          "12,500 L",
+          "3,200 units"
+        ]
+      },
+      {
+        "id": "resTotal",
+        "component": "Col",
+        "label": "Total Capacity",
+        "data": [
+          "25 units",
+          "12 units",
+          "80 personnel",
+          "100 personnel",
+          "50,000 L",
+          "10,000 units"
+        ]
+      },
+      {
+        "id": "volHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "8. Volunteers on Duty & Assignments"
+      },
+      {
+        "id": "volTable",
+        "component": "Table",
+        "columns": [
+          "volName",
+          "volRole",
+          "volDuty",
+          "volAssignment"
+        ]
+      },
+      {
+        "id": "volName",
+        "component": "Col",
+        "label": "Volunteer Name",
+        "data": [
+          "Sarah Jenkins",
+          "David Chen",
+          "Maria Gomez",
+          "Alex Rivera"
+        ]
+      },
+      {
+        "id": "volRole",
+        "component": "Col",
+        "label": "Specialty",
+        "data": [
+          "First Aid / Triage",
+          "Ham Radio Operator",
+          "Logistics / Intake",
+          "Boat Operator"
+        ]
+      },
+      {
+        "id": "volDuty",
+        "component": "Col",
+        "label": "Shift Status",
+        "data": [
+          "On Duty",
+          "On Duty",
+          "On Duty",
+          "On Duty"
+        ]
+      },
+      {
+        "id": "volAssignment",
+        "component": "Col",
+        "label": "Current Assignment",
+        "data": [
+          "Shelter Alpha Medical Tent",
+          "Comms Center Sub-Station B",
+          "Central Distribution Depot",
+          "Zone Alpha Water Rescue Crew"
+        ]
+      },
+      {
+        "id": "donHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "9. Donations Received"
+      },
+      {
+        "id": "donationsBlock",
+        "component": "TagBlock",
+        "tags": [
+          "$145,200 Monetary Relief",
+          "1,200 Warm Blankets",
+          "500 First Aid Kits",
+          "3,000 Water Bottles",
+          "2 Emergency Generators"
+        ]
+      },
+      {
+        "id": "tabSheltersHospitals",
+        "component": "TabItem",
+        "value": "shelters_hospitals",
+        "trigger": "4. Shelters & Hospitals",
+        "content": [
+          "shelterHeading",
+          "shelterTable",
+          "hospitalHeading",
+          "hospitalTable"
+        ]
+      },
+      {
+        "id": "shelterHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "4. Shelters (Capacity & Occupancy)"
+      },
+      {
+        "id": "shelterTable",
+        "component": "Table",
+        "columns": [
+          "shelterName",
+          "shelterZone",
+          "shelterCap",
+          "shelterOcc",
+          "shelterStatus"
+        ]
+      },
+      {
+        "id": "shelterName",
+        "component": "Col",
+        "label": "Shelter Name",
+        "data": [
+          "Central High School Gym",
+          "Civic Center Arena",
+          "Westside Community Hall",
+          "St. Jude Parish Center"
+        ]
+      },
+      {
+        "id": "shelterZone",
+        "component": "Col",
+        "label": "Zone",
+        "data": [
+          "Zone Bravo",
+          "Zone Bravo",
+          "Zone Delta",
+          "Zone Delta"
+        ]
+      },
+      {
+        "id": "shelterCap",
+        "component": "Col",
+        "label": "Max Capacity",
+        "data": [
+          "500",
+          "1200",
+          "300",
+          "250"
+        ]
+      },
+      {
+        "id": "shelterOcc",
+        "component": "Col",
+        "label": "Current Occupancy",
+        "data": [
+          "460",
+          "890",
+          "120",
+          "210"
+        ]
+      },
+      {
+        "id": "shelterStatus",
+        "component": "Col",
+        "label": "Space Available",
+        "data": [
+          "40 beds (Near Full)",
+          "310 beds (Open)",
+          "180 beds (Open)",
+          "40 beds (Near Full)"
+        ]
+      },
+      {
+        "id": "hospitalHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "13. Nearby Hospitals & Free Beds"
+      },
+      {
+        "id": "hospitalTable",
+        "component": "Table",
+        "columns": [
+          "hospName",
+          "hospTrauma",
+          "hospBeds",
+          "hospIcu",
+          "hospStatus"
+        ]
+      },
+      {
+        "id": "hospName",
+        "component": "Col",
+        "label": "Hospital",
+        "data": [
+          "City General Hospital",
+          "Memorial Medical Center",
+          "St. Mary Regional Hospital",
+          "Northside Trauma Center"
+        ]
+      },
+      {
+        "id": "hospTrauma",
+        "component": "Col",
+        "label": "Trauma Level",
+        "data": [
+          "Level 1",
+          "Level 2",
+          "Level 3",
+          "Level 1"
+        ]
+      },
+      {
+        "id": "hospBeds",
+        "component": "Col",
+        "label": "Free Standard Beds",
+        "data": [
+          "18",
+          "34",
+          "12",
+          "5"
+        ]
+      },
+      {
+        "id": "hospIcu",
+        "component": "Col",
+        "label": "Free ICU Beds",
+        "data": [
+          "2",
+          "6",
+          "0",
+          "1"
+        ]
+      },
+      {
+        "id": "hospStatus",
+        "component": "Col",
+        "label": "Accepting Patients",
+        "data": [
+          "YES (Critical Only)",
+          "YES",
+          "DERTED (ICU Full)",
+          "YES (Critical Only)"
+        ]
+      },
+      {
+        "id": "tabRoutesLogistics",
+        "component": "TabItem",
+        "value": "routes_logistics",
+        "trigger": "5. Routes & Aid Requests",
+        "content": [
+          "routesHeading",
+          "routesTable",
+          "roadsHeading",
+          "roadsBlock",
+          "aidHeading",
+          "aidTable"
+        ]
+      },
+      {
+        "id": "routesHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "5. Evacuation Routes Status"
+      },
+      {
+        "id": "routesTable",
+        "component": "Table",
+        "columns": [
+          "routeName",
+          "routeCorridor",
+          "routeStatus",
+          "routeCongestion"
+        ]
+      },
+      {
+        "id": "routeName",
+        "component": "Col",
+        "label": "Evacuation Corridor",
+        "data": [
+          "Corridor North (Route 15)",
+          "Corridor South (Interstate 95)",
+          "Corridor East (Highway 40)",
+          "Corridor West (Route 88)"
+        ]
+      },
+      {
+        "id": "routeCorridor",
+        "component": "Col",
+        "label": "Direction",
+        "data": [
+          "Northbound",
+          "Southbound",
+          "Eastbound",
+          "Westbound"
+        ]
+      },
+      {
+        "id": "routeStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "CLEAR / OPEN",
+          "HEAVY TRAFFIC",
+          "PARTIALLY BLOCKED",
+          "CLOSED"
+        ]
+      },
+      {
+        "id": "routeCongestion",
+        "component": "Col",
+        "label": "Passability",
+        "data": [
+          "100% Passable",
+          "75% Passable (Slow)",
+          "40% Passable (Single Lane)",
+          "0% Passable (Flooded)"
+        ]
+      },
+      {
+        "id": "roadsHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "12. Roads Closed"
+      },
+      {
+        "id": "roadsBlock",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "road1",
+          "road2",
+          "road3",
+          "road4"
+        ]
+      },
+      {
+        "id": "road1",
+        "component": "ListItem",
+        "title": "Route 88 (Mile 12 to 28)",
+        "subtitle": "Reason: High water flood submergence. Expected reopen: 24h+"
+      },
+      {
+        "id": "road2",
+        "component": "ListItem",
+        "title": "Main Street Bridge (Zone Bravo)",
+        "subtitle": "Reason: Structural assessment pending after debris impact."
+      },
+      {
+        "id": "road3",
+        "component": "ListItem",
+        "title": "Oak Ridge Pass (Zone Delta)",
+        "subtitle": "Reason: Landslide blockage. Heavy machinery clearing in progress."
+      },
+      {
+        "id": "road4",
+        "component": "ListItem",
+        "title": "Industrial Parkway (Zone Charlie)",
+        "subtitle": "Reason: Chemical spill containment perimeter."
+      },
+      {
+        "id": "aidHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "10. Aid Requests Awaiting Action"
+      },
+      {
+        "id": "aidTable",
+        "component": "Table",
+        "columns": [
+          "aidReqId",
+          "aidSource",
+          "aidNeed",
+          "aidUrgency",
+          "aidAction"
+        ]
+      },
+      {
+        "id": "aidReqId",
+        "component": "Col",
+        "label": "Request ID",
+        "data": [
+          "REQ-301",
+          "REQ-302",
+          "REQ-303",
+          "REQ-304"
+        ]
+      },
+      {
+        "id": "aidSource",
+        "component": "Col",
+        "label": "Origin",
+        "data": [
+          "St. Mary Nursing Home",
+          "Shelter Beta",
+          "Sector 7 Neighborhood",
+          "Zone Alpha Dispatch"
+        ]
+      },
+      {
+        "id": "aidNeed",
+        "component": "Col",
+        "label": "Requested Aid",
+        "data": [
+          "Emergency Oxygen Supplies (20 tanks)",
+          "Infant Formula & Diapers",
+          "Water pump for basement flooding",
+          "2 Inflatable Rescue Boats"
+        ]
+      },
+      {
+        "id": "aidUrgency",
+        "component": "Col",
+        "label": "Urgency",
+        "data": [
+          "HIGH",
+          "MEDIUM",
+          "MEDIUM",
+          "CRITICAL"
+        ]
+      },
+      {
+        "id": "aidAction",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Awaiting Dispatcher",
+          "Awaiting Dispatcher",
+          "Awaiting Supplier",
+          "Pushed to Queue"
+        ]
+      },
+      {
+        "id": "tabCommunications",
+        "component": "TabItem",
+        "value": "comms",
+        "trigger": "6. Communications",
+        "content": [
+          "commsHeading",
+          "commsTable"
+        ]
+      },
+      {
+        "id": "commsHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "11. Communication Channels & Operational Status"
+      },
+      {
+        "id": "commsTable",
+        "component": "Table",
+        "columns": [
+          "commName",
+          "commType",
+          "commFreq",
+          "commStatus"
+        ]
+      },
+      {
+        "id": "commName",
+        "component": "Col",
+        "label": "Channel Name",
+        "data": [
+          "Primary Fire / Rescue Dispatch",
+          "Police Command Network",
+          "Tactical Emergency Radio (VHF)",
+          "Satellite Mesh Network",
+          "Cellular Base Station Sector 4",
+          "Public Emergency Broadcast System"
+        ]
+      },
+      {
+        "id": "commType",
+        "component": "Col",
+        "label": "Type",
+        "data": [
+          "Radio Trunking",
+          "Encrypted Digital",
+          "VHF Radio",
+          "Satellite Data",
+          "Cellular 4G/5G",
+          "EAS Network"
+        ]
+      },
+      {
+        "id": "commFreq",
+        "component": "Col",
+        "label": "Frequency / Band",
+        "data": [
+          "800 MHz",
+          "700 MHz",
+          "155.475 MHz",
+          "Ku-Band",
+          "Band 14 FirstNet",
+          "FM / TV / AM"
+        ]
+      },
+      {
+        "id": "commStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "UP / ONLINE",
+          "UP / ONLINE",
+          "UP / ONLINE",
+          "UP / ONLINE",
+          "DOWN (Tower Damaged)",
+          "UP / ONLINE"
+        ]
+      },
+      {
+        "id": "tabActions",
+        "component": "TabItem",
+        "value": "actions",
+        "trigger": "7. Dispatch & Reporting Actions",
+        "content": [
+          "actionHeading",
+          "resourceFormCard",
+          "broadcastFormCard",
+          "sitrepFormCard"
+        ]
+      },
+      {
+        "id": "actionHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "15, 16 & 18. Dispatcher Control Panel"
+      },
+      {
+        "id": "resourceFormCard",
+        "component": "Card",
+        "children": [
+          "resourceFormHeader",
+          "resourceForm"
+        ]
+      },
+      {
+        "id": "resourceFormHeader",
+        "component": "CardHeader",
+        "title": "15. Request Additional Resources",
+        "subtitle": "Submit request to State & National Command Center"
+      },
+      {
+        "id": "resourceForm",
+        "component": "Form",
+        "name": "resourceRequestForm",
+        "buttons": "resourceFormButtons",
+        "fields": [
+          "resTypeField",
+          "resQtyField",
+          "resUrgencyField"
+        ]
+      },
+      {
+        "id": "resTypeField",
+        "component": "FormControl",
+        "label": "Resource Type",
+        "input": "resTypeSelect"
+      },
+      {
+        "id": "resTypeSelect",
+        "component": "Select",
+        "name": "resourceType",
+        "placeholder": "Select resource type",
+        "items": [
+          "rt1",
+          "rt2",
+          "rt3",
+          "rt4"
+        ]
+      },
+      {
+        "id": "rt1",
+        "component": "SelectItem",
+        "value": "boats",
+        "label": "Water Rescue Crafts"
+      },
+      {
+        "id": "rt2",
         "component": "SelectItem",
         "value": "generators",
-        "label": "Industrial Diesel Generators (100kW)"
+        "label": "Industrial Mobile Generators"
       },
       {
-        "id": "res-opt-4",
+        "id": "rt3",
         "component": "SelectItem",
-        "value": "mre_water",
-        "label": "Pallets of Clean Water & MREs"
+        "value": "medical",
+        "label": "Field Triage Medical Kits"
       },
       {
-        "id": "field-res-qty",
+        "id": "rt4",
+        "component": "SelectItem",
+        "value": "personnel",
+        "label": "National Guard Search & Rescue Teams"
+      },
+      {
+        "id": "resQtyField",
         "component": "FormControl",
-        "label": "Quantity Requested",
-        "input": "input-res-qty"
+        "label": "Quantity Needed",
+        "input": "resQtyInput"
       },
       {
-        "id": "input-res-qty",
+        "id": "resQtyInput",
         "component": "Input",
-        "name": "resource_quantity",
-        "type": "number",
-        "placeholder": "e.g. 5"
+        "name": "resourceQuantity",
+        "placeholder": "e.g., 10",
+        "type": "number"
       },
       {
-        "id": "field-res-dest",
+        "id": "resUrgencyField",
         "component": "FormControl",
-        "label": "Destination Staging Area",
-        "input": "input-res-dest"
+        "label": "Target Destination Zone",
+        "input": "resZoneInput"
       },
       {
-        "id": "input-res-dest",
+        "id": "resZoneInput",
         "component": "Input",
-        "name": "destination_zone",
-        "type": "text",
-        "placeholder": "e.g. Staging Base Bravo / Zone Charlie"
+        "name": "targetZone",
+        "placeholder": "e.g., Zone Alpha Sector 4",
+        "type": "text"
       },
       {
-        "id": "btn-grp-resource",
+        "id": "resourceFormButtons",
         "component": "Buttons",
-        "direction": "row",
         "buttons": [
-          "btn-submit-resource"
+          "submitReqBtn"
         ]
       },
       {
-        "id": "btn-submit-resource",
+        "id": "submitReqBtn",
         "component": "Button",
-        "label": "Dispatch Resource Request",
-        "variant": "primary",
-        "size": "medium"
+        "label": "Submit Resource Request",
+        "variant": "primary"
       },
       {
-        "id": "quick-action-broadcast-item",
-        "component": "AccordionItem",
-        "value": "action-broadcast",
-        "trigger": "📢 Quick Action: Broadcast Emergency Update (Item 16)",
-        "content": [
-          "form-broadcast"
+        "id": "broadcastFormCard",
+        "component": "Card",
+        "children": [
+          "broadcastFormHeader",
+          "broadcastForm"
         ]
       },
       {
-        "id": "form-broadcast",
+        "id": "broadcastFormHeader",
+        "component": "CardHeader",
+        "title": "16. Broadcast Public / Team Update",
+        "subtitle": "Transmit alert message to active field channels and EAS"
+      },
+      {
+        "id": "broadcastForm",
         "component": "Form",
-        "name": "broadcast_form",
+        "name": "broadcastForm",
+        "buttons": "broadcastFormButtons",
         "fields": [
-          "field-bcast-channel",
-          "field-bcast-msg"
-        ],
-        "buttons": "btn-grp-broadcast"
-      },
-      {
-        "id": "field-bcast-channel",
-        "component": "FormControl",
-        "label": "Target Broadcast Channel",
-        "input": "input-bcast-channel"
-      },
-      {
-        "id": "input-bcast-channel",
-        "component": "Select",
-        "name": "broadcast_channel",
-        "placeholder": "Select broadcast medium...",
-        "items": [
-          "bcast-opt-1",
-          "bcast-opt-2",
-          "bcast-opt-3"
+          "broadcastMsgField",
+          "broadcastTargetField"
         ]
       },
       {
-        "id": "bcast-opt-1",
-        "component": "SelectItem",
-        "value": "all_channels",
-        "label": "All Channels (EAS, SMS, Radio)"
-      },
-      {
-        "id": "bcast-opt-2",
-        "component": "SelectItem",
-        "value": "public_eas",
-        "label": "Emergency Alert System (Public EAS)"
-      },
-      {
-        "id": "bcast-opt-3",
-        "component": "SelectItem",
-        "value": "firstnet_radio",
-        "label": "FirstNet Tactical First Responders"
-      },
-      {
-        "id": "field-bcast-msg",
+        "id": "broadcastMsgField",
         "component": "FormControl",
-        "label": "Emergency Broadcast Message Text",
-        "input": "input-bcast-msg"
+        "label": "Broadcast Message",
+        "hint": "Will be sent via SMS, Emergency Radio, and EAS",
+        "input": "broadcastArea"
       },
       {
-        "id": "input-bcast-msg",
+        "id": "broadcastArea",
         "component": "TextArea",
-        "name": "broadcast_message",
-        "placeholder": "Type critical emergency notice to be transmitted...",
+        "name": "broadcastText",
+        "placeholder": "Enter urgent update message for field responders or public...",
         "rows": 3
       },
       {
-        "id": "btn-grp-broadcast",
-        "component": "Buttons",
-        "direction": "row",
-        "buttons": [
-          "btn-submit-broadcast"
-        ]
-      },
-      {
-        "id": "btn-submit-broadcast",
-        "component": "Button",
-        "label": "Transmit Emergency Broadcast",
-        "variant": "primary",
-        "type": "destructive",
-        "size": "medium"
-      },
-      {
-        "id": "quick-action-sitrep-item",
-        "component": "AccordionItem",
-        "value": "action-sitrep",
-        "trigger": "📋 Quick Action: File Official Situation Report (Item 18)",
-        "content": [
-          "form-sitrep"
-        ]
-      },
-      {
-        "id": "form-sitrep",
-        "component": "Form",
-        "name": "sitrep_form",
-        "fields": [
-          "field-sitrep-zone",
-          "field-sitrep-summary",
-          "field-sitrep-details"
-        ],
-        "buttons": "btn-grp-sitrep"
-      },
-      {
-        "id": "field-sitrep-zone",
+        "id": "broadcastTargetField",
         "component": "FormControl",
-        "label": "Operational Zone",
-        "input": "input-sitrep-zone"
+        "label": "Audience",
+        "input": "broadcastRadioGroup"
       },
       {
-        "id": "input-sitrep-zone",
-        "component": "Select",
-        "name": "sitrep_zone",
-        "placeholder": "Select operational zone...",
+        "id": "broadcastRadioGroup",
+        "component": "RadioGroup",
+        "name": "broadcastTarget",
         "items": [
-          "zone-item-north",
-          "zone-item-central",
-          "zone-item-coastal",
-          "zone-item-south"
+          "bRad1",
+          "bRad2"
         ]
       },
       {
-        "id": "field-sitrep-summary",
-        "component": "FormControl",
-        "label": "Executive Summary",
-        "input": "input-sitrep-summary"
+        "id": "bRad1",
+        "component": "RadioItem",
+        "value": "public",
+        "label": "Public Safety Alert",
+        "description": "Cellular Emergency Broadcast & TV/Radio EAS"
       },
       {
-        "id": "input-sitrep-summary",
+        "id": "bRad2",
+        "component": "RadioItem",
+        "value": "internal",
+        "label": "Field Responders Only",
+        "description": "Encrypted tactical radio channels and mobile app"
+      },
+      {
+        "id": "broadcastFormButtons",
+        "component": "Buttons",
+        "buttons": [
+          "sendBroadcastBtn"
+        ]
+      },
+      {
+        "id": "sendBroadcastBtn",
+        "component": "Button",
+        "label": "Broadcast Update",
+        "variant": "primary"
+      },
+      {
+        "id": "sitrepFormCard",
+        "component": "Card",
+        "children": [
+          "sitrepFormHeader",
+          "sitrepForm"
+        ]
+      },
+      {
+        "id": "sitrepFormHeader",
+        "component": "CardHeader",
+        "title": "18. File a Situation Report (SITREP)",
+        "subtitle": "Log periodic summary report to central incident database"
+      },
+      {
+        "id": "sitrepForm",
+        "component": "Form",
+        "name": "sitrepForm",
+        "buttons": "sitrepButtons",
+        "fields": [
+          "sitrepTitleField",
+          "sitrepDetailsField"
+        ]
+      },
+      {
+        "id": "sitrepTitleField",
+        "component": "FormControl",
+        "label": "SITREP Summary Headline",
+        "input": "sitrepTitleInput"
+      },
+      {
+        "id": "sitrepTitleInput",
         "component": "Input",
-        "name": "sitrep_summary",
-        "type": "text",
-        "placeholder": "Brief title of shift/incident situation"
+        "name": "sitrepTitle",
+        "placeholder": "e.g., Operational SITREP #04 - Shift Change Briefing",
+        "type": "text"
       },
       {
-        "id": "field-sitrep-details",
+        "id": "sitrepDetailsField",
         "component": "FormControl",
-        "label": "Detailed Field Assessment & Hazards",
-        "input": "input-sitrep-details"
+        "label": "Detailed Assessment & Operational Notes",
+        "input": "sitrepArea"
       },
       {
-        "id": "input-sitrep-details",
+        "id": "sitrepArea",
         "component": "TextArea",
-        "name": "sitrep_details",
-        "placeholder": "Detailed field intelligence, casualties, infrastructure damage, and recommendations...",
+        "name": "sitrepDetails",
+        "placeholder": "Log casualties, infrastructure health, weather changes, and 6-hour projection...",
         "rows": 4
       },
       {
-        "id": "btn-grp-sitrep",
+        "id": "sitrepButtons",
         "component": "Buttons",
-        "direction": "row",
         "buttons": [
-          "btn-submit-sitrep"
+          "fileSitrepBtn"
         ]
       },
       {
-        "id": "btn-submit-sitrep",
+        "id": "fileSitrepBtn",
         "component": "Button",
-        "label": "Submit SitRep to State Command",
-        "variant": "secondary",
-        "size": "medium"
-      },
-      {
-        "id": "tabs-container",
-        "component": "Tabs",
-        "items": [
-          "tab-overview",
-          "tab-logistics",
-          "tab-infrastructure",
-          "tab-requests"
-        ]
-      },
-      {
-        "id": "tab-overview",
-        "component": "TabItem",
-        "value": "overview",
-        "trigger": "1. Situational & Active Incidents",
-        "content": [
-          "overview-card"
-        ]
-      },
-      {
-        "id": "overview-card",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "section-summary-title",
-          "summary-alert-banner",
-          "stats-cards-row",
-          "chart-severity-summary",
-          "incidents-table-heading",
-          "incidents-table",
-          "weather-section-card"
-        ]
-      },
-      {
-        "id": "section-summary-title",
-        "component": "Heading",
-        "level": "h2",
-        "text": "Overall Severity & Life Safety Metrics (Items 2 & 7)"
-      },
-      {
-        "id": "summary-alert-banner",
-        "component": "Alert",
-        "variant": "destructive",
-        "title": "SEVERITY SUMMARY: HIGH CRITICALITY (Level 4 Flash Flood & Hurricane)",
-        "description": "Zone Charlie experiencing major coastal surge. Total Active Incidents: 24. Immediate air-sea extraction required in Delta sector."
-      },
-      {
-        "id": "stats-cards-row",
-        "component": "Card",
-        "variant": "sunk",
-        "direction": "row",
-        "gap": "m",
-        "children": [
-          "rescued-card",
-          "casualties-card",
-          "incidents-count-card"
-        ]
-      },
-      {
-        "id": "rescued-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "rescued-label",
-          "rescued-val",
-          "rescued-sub"
-        ]
-      },
-      {
-        "id": "rescued-label",
-        "component": "TextContent",
-        "text": "People Rescued So Far (Item 7)",
-        "size": "small-heavy"
-      },
-      {
-        "id": "rescued-val",
-        "component": "Heading",
-        "level": "h1",
-        "text": "1,428"
-      },
-      {
-        "id": "rescued-sub",
-        "component": "Tag",
-        "text": "+112 in last 3 hrs",
-        "variant": "success",
-        "size": "sm"
-      },
-      {
-        "id": "casualties-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "cas-label",
-          "cas-val",
-          "cas-sub"
-        ]
-      },
-      {
-        "id": "cas-label",
-        "component": "TextContent",
-        "text": "Confirmed Casualties (Item 7)",
-        "size": "small-heavy"
-      },
-      {
-        "id": "cas-val",
-        "component": "Heading",
-        "level": "h1",
-        "text": "14"
-      },
-      {
-        "id": "cas-sub",
-        "component": "Tag",
-        "text": "32 Injuries Treated",
-        "variant": "danger",
-        "size": "sm"
-      },
-      {
-        "id": "incidents-count-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "inc-label",
-          "inc-val",
-          "inc-sub"
-        ]
-      },
-      {
-        "id": "inc-label",
-        "component": "TextContent",
-        "text": "Active Incidents (Item 1)",
-        "size": "small-heavy"
-      },
-      {
-        "id": "inc-val",
-        "component": "Heading",
-        "level": "h1",
-        "text": "24"
-      },
-      {
-        "id": "inc-sub",
-        "component": "Tag",
-        "text": "8 Critical / Criticality Extreme",
-        "variant": "warning",
-        "size": "sm"
-      },
-      {
-        "id": "chart-severity-summary",
-        "component": "HorizontalBarChart",
-        "xLabel": "Number of Incidents",
-        "yLabel": "Zone",
-        "labels": [
-          "Zone Alpha (North)",
-          "Zone Bravo (Central)",
-          "Zone Charlie (Coastal)",
-          "Zone Delta (South)"
-        ],
-        "series": [
-          "series-critical",
-          "series-moderate",
-          "series-minor"
-        ],
-        "variant": "stacked"
-      },
-      {
-        "id": "series-critical",
-        "component": "Series",
-        "category": "Critical Severity",
-        "values": [
-          1,
-          2,
-          4,
-          1
-        ]
-      },
-      {
-        "id": "series-moderate",
-        "component": "Series",
-        "category": "Moderate Severity",
-        "values": [
-          3,
-          4,
-          5,
-          2
-        ]
-      },
-      {
-        "id": "series-minor",
-        "component": "Series",
-        "category": "Minor Severity",
-        "values": [
-          2,
-          1,
-          1,
-          2
-        ]
-      },
-      {
-        "id": "incidents-table-heading",
-        "component": "Heading",
-        "level": "h3",
-        "text": "Active Incidents Log by Zone & Severity (Item 1)"
-      },
-      {
-        "id": "incidents-table",
-        "component": "Table",
-        "columns": [
-          "col-inc-id",
-          "col-inc-zone",
-          "col-inc-type",
-          "col-inc-severity",
-          "col-inc-status"
-        ]
-      },
-      {
-        "id": "col-inc-id",
-        "component": "Col",
-        "label": "Incident ID",
-        "type": "string",
-        "data": [
-          "INC-801",
-          "INC-804",
-          "INC-809",
-          "INC-812",
-          "INC-815"
-        ]
-      },
-      {
-        "id": "col-inc-zone",
-        "component": "Col",
-        "label": "Zone",
-        "type": "string",
-        "data": [
-          "Zone Charlie (Coastal)",
-          "Zone Charlie (Coastal)",
-          "Zone Bravo (Central)",
-          "Zone Alpha (North)",
-          "Zone Delta (South)"
-        ]
-      },
-      {
-        "id": "col-inc-type",
-        "component": "Col",
-        "label": "Description",
-        "type": "string",
-        "data": [
-          "Levee Breach & Severe Flooding",
-          "Stranded Residents on Roofs",
-          "Substation Explosion & Blackout",
-          "Mudslide Blocking Highway 101",
-          "Chemical Spill at Water Plant"
-        ]
-      },
-      {
-        "id": "col-inc-severity",
-        "component": "Col",
-        "label": "Severity Level",
-        "type": "string",
-        "data": [
-          "🔴 Critical (Cat 5)",
-          "🔴 Critical (Cat 5)",
-          "🟠 High (Cat 4)",
-          "🟡 Moderate (Cat 3)",
-          "🔴 Critical (Cat 5)"
-        ]
-      },
-      {
-        "id": "col-inc-status",
-        "component": "Col",
-        "label": "Current Response",
-        "type": "string",
-        "data": [
-          "Coast Guard En Route",
-          "2 Choppers Deployed",
-          "Utility Team On-Site",
-          "Caltrans Clearing",
-          "HAZMAT Team Active"
-        ]
-      },
-      {
-        "id": "weather-section-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "children": [
-          "weather-heading",
-          "weather-line-chart",
-          "weather-markdown"
-        ]
-      },
-      {
-        "id": "weather-heading",
-        "component": "Heading",
-        "level": "h3",
-        "text": "48-Hour Weather Forecast & Environmental Hazards (Item 6)"
-      },
-      {
-        "id": "weather-line-chart",
-        "component": "LineChart",
-        "xLabel": "Timeline (Next 48 Hours)",
-        "yLabel": "Sustained Speed (mph) / Rainfall (in/hr)",
-        "labels": [
-          "00:00 (Now)",
-          "+06 Hrs",
-          "+12 Hrs",
-          "+18 Hrs",
-          "+24 Hrs",
-          "+36 Hrs",
-          "+48 Hrs"
-        ],
-        "series": [
-          "series-wind",
-          "series-rain"
-        ],
-        "variant": "natural"
-      },
-      {
-        "id": "series-wind",
-        "component": "Series",
-        "category": "Wind Speed (mph)",
-        "values": [
-          45,
-          62,
-          78,
-          65,
-          40,
-          25,
-          15
-        ]
-      },
-      {
-        "id": "series-rain",
-        "component": "Series",
-        "category": "Precipitation (in/hr)",
-        "values": [
-          1.2,
-          2.5,
-          3.8,
-          2.1,
-          1.0,
-          0.3,
-          0.0
-        ]
-      },
-      {
-        "id": "weather-markdown",
-        "component": "MarkDownRenderer",
-        "variant": "sunk",
-        "textMarkdown": "**Weather Briefing:** Heavy rainfall peaking at **+12 hours** (3.8 in/hr) with gusting winds up to **85 mph**. Expected storm surge elevated by +4.2ft at high tide (04:00 local). Clearing trend expected after **+36 hours**."
-      },
-      {
-        "id": "tab-logistics",
-        "component": "TabItem",
-        "value": "logistics",
-        "trigger": "2. Resources, Shelters & Volunteers",
-        "content": [
-          "logistics-card"
-        ]
-      },
-      {
-        "id": "logistics-card",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "res-avail-heading",
-          "res-avail-grid",
-          "shelter-heading",
-          "shelter-table",
-          "volunteers-heading",
-          "volunteers-table",
-          "donations-heading",
-          "donations-card"
-        ]
-      },
-      {
-        "id": "res-avail-heading",
-        "component": "Heading",
-        "level": "h2",
-        "text": "Available Fleet, Personnel & Medical Supplies (Item 3)"
-      },
-      {
-        "id": "res-avail-grid",
-        "component": "Card",
-        "variant": "sunk",
-        "direction": "row",
-        "gap": "m",
-        "children": [
-          "vehicles-card",
-          "personnel-card",
-          "supplies-card"
-        ]
-      },
-      {
-        "id": "vehicles-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "v-title",
-          "v-progress-1",
-          "v-progress-2",
-          "v-text"
-        ]
-      },
-      {
-        "id": "v-title",
-        "component": "Heading",
-        "level": "h4",
-        "text": "Emergency Vehicles"
-      },
-      {
-        "id": "v-progress-1",
-        "component": "Progress",
-        "value": 75,
-        "label": "Ambulances & Medevac (18 / 24 Available)"
-      },
-      {
-        "id": "v-progress-2",
-        "component": "Progress",
-        "value": 40,
-        "label": "High-Water Rescue Trucks (6 / 15 Available)"
-      },
-      {
-        "id": "v-text",
-        "component": "TextContent",
-        "text": "• Helicopters Ready: **4 Airborne, 2 Staged**\n• Swiftwater Boats: **12 Units Active**",
-        "size": "small"
-      },
-      {
-        "id": "personnel-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "p-title",
-          "p-progress-1",
-          "p-progress-2",
-          "p-text"
-        ]
-      },
-      {
-        "id": "p-title",
-        "component": "Heading",
-        "level": "h4",
-        "text": "Deployed Personnel"
-      },
-      {
-        "id": "p-progress-1",
-        "component": "Progress",
-        "value": 90,
-        "label": "Fire & Rescue (320 On Duty)"
-      },
-      {
-        "id": "p-progress-2",
-        "component": "Progress",
-        "value": 65,
-        "label": "National Guard Units (450 Deployed)"
-      },
-      {
-        "id": "p-text",
-        "component": "TextContent",
-        "text": "• Paramedics: **85 Active Field Triage**\n• Search & Rescue Dogs: **14 Teams**",
-        "size": "small"
-      },
-      {
-        "id": "supplies-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "s-title",
-          "s-progress-1",
-          "s-progress-2",
-          "s-text"
-        ]
-      },
-      {
-        "id": "s-title",
-        "component": "Heading",
-        "level": "h4",
-        "text": "Supply Depot Stock"
-      },
-      {
-        "id": "s-progress-1",
-        "component": "Progress",
-        "value": 82,
-        "label": "Potable Water (41,000 / 50,000 L)"
-      },
-      {
-        "id": "s-progress-2",
-        "component": "Progress",
-        "value": 55,
-        "label": "Emergency MRE Meals (11,000 Packs)"
-      },
-      {
-        "id": "s-text",
-        "component": "TextContent",
-        "text": "• First Aid Kits: **2,400 Units**\n• Emergency Cots / Blankets: **3,800 Sets**",
-        "size": "small"
-      },
-      {
-        "id": "shelter-heading",
-        "component": "Heading",
-        "level": "h3",
-        "text": "Evacuation Shelters — Capacity & Occupancy (Item 4)"
-      },
-      {
-        "id": "shelter-table",
-        "component": "Table",
-        "columns": [
-          "col-sh-name",
-          "col-sh-zone",
-          "col-sh-occ",
-          "col-sh-cap",
-          "col-sh-status"
-        ]
-      },
-      {
-        "id": "col-sh-name",
-        "component": "Col",
-        "label": "Shelter Name",
-        "type": "string",
-        "data": [
-          "Lincoln High School Arena",
-          "Central Convention Center",
-          "Westside Community Complex",
-          "Northside Baptist Gym"
-        ]
-      },
-      {
-        "id": "col-sh-zone",
-        "component": "Col",
-        "label": "Zone",
-        "type": "string",
-        "data": [
-          "Zone Bravo",
-          "Zone Bravo",
-          "Zone Charlie",
-          "Zone Alpha"
-        ]
-      },
-      {
-        "id": "col-sh-occ",
-        "component": "Col",
-        "label": "Current Occupancy",
-        "type": "number",
-        "data": [
-          850,
-          1820,
-          490,
-          210
-        ]
-      },
-      {
-        "id": "col-sh-cap",
-        "component": "Col",
-        "label": "Max Capacity",
-        "type": "number",
-        "data": [
-          1000,
-          2000,
-          500,
-          400
-        ]
-      },
-      {
-        "id": "col-sh-status",
-        "component": "Col",
-        "label": "Occupancy Rate",
-        "type": "string",
-        "data": [
-          "85% (Near Full)",
-          "91% (CRITICAL FULL)",
-          "98% (FULL - DIVERTIING)",
-          "52% (Accepting Evacuees)"
-        ]
-      },
-      {
-        "id": "volunteers-heading",
-        "component": "Heading",
-        "level": "h3",
-        "text": "Volunteers On Duty & Field Assignments (Item 8)"
-      },
-      {
-        "id": "volunteers-table",
-        "component": "Table",
-        "columns": [
-          "col-vol-group",
-          "col-vol-count",
-          "col-vol-lead",
-          "col-vol-assign",
-          "col-vol-contact"
-        ]
-      },
-      {
-        "id": "col-vol-group",
-        "component": "Col",
-        "label": "Volunteer Unit / Organization",
-        "type": "string",
-        "data": [
-          "Red Cross Logistics Squad Alpha",
-          "CERT Search & Rescue Team 3",
-          "Medical Reserve Corps Unit B",
-          "Amateur Radio Emergency (ARES)",
-          "Community Food Bank Team"
-        ]
-      },
-      {
-        "id": "col-vol-count",
-        "component": "Col",
-        "label": "Volunteers",
-        "type": "number",
-        "data": [
-          42,
-          28,
-          15,
-          8,
-          35
-        ]
-      },
-      {
-        "id": "col-vol-lead",
-        "component": "Col",
-        "label": "Team Lead",
-        "type": "string",
-        "data": [
-          "Sarah Jenkins",
-          "David Ross",
-          "Dr. Aris Thorne",
-          "Mark Vance (K6R)",
-          "Elena Gomez"
-        ]
-      },
-      {
-        "id": "col-vol-assign",
-        "component": "Col",
-        "label": "Current Assignment & Location",
-        "type": "string",
-        "data": [
-          "Food & Blanket Distribution (Convention Center)",
-          "Door-to-door Evacuation Checks (Zone Charlie)",
-          "Field Medical Triage (Westside Shelter)",
-          "Backup VHF Communications (EOC Tower)",
-          "Hot Meal Preparation & Logistics (Staging Base A)"
-        ]
-      },
-      {
-        "id": "col-vol-contact",
-        "component": "Col",
-        "label": "Status",
-        "type": "string",
-        "data": [
-          "Active",
-          "Active",
-          "Active",
-          "Standby",
-          "Active"
-        ]
-      },
-      {
-        "id": "donations-heading",
-        "component": "Heading",
-        "level": "h3",
-        "text": "Donations Received & Warehouse Inventory (Item 9)"
-      },
-      {
-        "id": "donations-card",
-        "component": "Card",
-        "variant": "sunk",
-        "direction": "row",
-        "gap": "m",
-        "children": [
-          "don-monetary-card",
-          "don-supplies-card"
-        ]
-      },
-      {
-        "id": "don-monetary-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "don-m-title",
-          "don-m-val",
-          "don-m-sub"
-        ]
-      },
-      {
-        "id": "don-m-title",
-        "component": "TextContent",
-        "text": "Financial Disaster Fund Raised",
-        "size": "small-heavy"
-      },
-      {
-        "id": "don-m-val",
-        "component": "Heading",
-        "level": "h2",
-        "text": "$1,845,200"
-      },
-      {
-        "id": "don-m-sub",
-        "component": "TextContent",
-        "text": "Direct emergency allocations via State Relief Grant & Public Portal.",
-        "size": "small"
-      },
-      {
-        "id": "don-supplies-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "don-s-title",
-          "don-s-tags"
-        ]
-      },
-      {
-        "id": "don-s-title",
-        "component": "TextContent",
-        "text": "In-Kind Goods Received at Central Warehouse",
-        "size": "small-heavy"
-      },
-      {
-        "id": "don-s-tags",
-        "component": "TagBlock",
-        "tags": [
-          "12,500 Bottled Water Cases",
-          "4,200 Hygiene Kits",
-          "1,800 Infant Formula Cans",
-          "3,000 Heavy Blankets",
-          "45 Port-a-Potties",
-          "12 Mobile Power Stations"
-        ]
-      },
-      {
-        "id": "tab-infrastructure",
-        "component": "TabItem",
-        "value": "infrastructure",
-        "trigger": "3. Routes, Comms & Hospitals",
-        "content": [
-          "infra-card"
-        ]
-      },
-      {
-        "id": "infra-card",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "hospitals-heading",
-          "hospitals-table",
-          "routes-heading",
-          "routes-table",
-          "comms-heading",
-          "comms-grid"
-        ]
-      },
-      {
-        "id": "hospitals-heading",
-        "component": "Heading",
-        "level": "h2",
-        "text": "Nearby Hospitals & Available Beds (Item 13)"
-      },
-      {
-        "id": "hospitals-table",
-        "component": "Table",
-        "columns": [
-          "col-hosp-name",
-          "col-hosp-dist",
-          "col-hosp-icu",
-          "col-hosp-er",
-          "col-hosp-status"
-        ]
-      },
-      {
-        "id": "col-hosp-name",
-        "component": "Col",
-        "label": "Hospital Facility",
-        "type": "string",
-        "data": [
-          "St. Jude Medical Center",
-          "City General Trauma Hospital",
-          "Memorial Regional Health",
-          "Valley Veteran's Medical"
-        ]
-      },
-      {
-        "id": "col-hosp-dist",
-        "component": "Col",
-        "label": "Distance / Zone",
-        "type": "string",
-        "data": [
-          "3.2 miles (Zone Bravo)",
-          "5.8 miles (Zone Central)",
-          "12.1 miles (Zone Alpha)",
-          "18.5 miles (Zone South)"
-        ]
-      },
-      {
-        "id": "col-hosp-icu",
-        "component": "Col",
-        "label": "Free ICU Beds",
-        "type": "number",
-        "data": [
-          2,
-          0,
-          8,
-          14
-        ]
-      },
-      {
-        "id": "col-hosp-er",
-        "component": "Col",
-        "label": "Free ER/Gen Beds",
-        "type": "number",
-        "data": [
-          11,
-          4,
-          35,
-          62
-        ]
-      },
-      {
-        "id": "col-hosp-status",
-        "component": "Col",
-        "label": "Trauma Status",
-        "type": "string",
-        "data": [
-          "🟡 Level 1 Trauma (Near Capacity)",
-          "🔴 Diverting Non-Criticals",
-          "🟢 Level 2 Trauma (Operational)",
-          "🟢 Accepting All Transfers"
-        ]
-      },
-      {
-        "id": "routes-heading",
-        "component": "Heading",
-        "level": "h3",
-        "text": "Evacuation Routes & Road Closures Status (Items 5 & 12)"
-      },
-      {
-        "id": "routes-table",
-        "component": "Table",
-        "columns": [
-          "col-rt-name",
-          "col-rt-dir",
-          "col-rt-status",
-          "col-rt-reason",
-          "col-rt-alt"
-        ]
-      },
-      {
-        "id": "col-rt-name",
-        "component": "Col",
-        "label": "Route / Highway",
-        "type": "string",
-        "data": [
-          "I-95 Northbound Corrdor",
-          "State Route 104 West",
-          "Coastal Highway 1",
-          "Bridge St. Causeway",
-          "County Rd 42 East"
-        ]
-      },
-      {
-        "id": "col-rt-dir",
-        "component": "Col",
-        "label": "Segment / Zone",
-        "type": "string",
-        "data": [
-          "Mile 12 to 45 (Outbound)",
-          "Zone Bravo to Airport",
-          "Mile 2 to 18 (Coastal)",
-          "Downtown to Westside",
-          "Zone South Bypass"
-        ]
-      },
-      {
-        "id": "col-rt-status",
-        "component": "Col",
-        "label": "Route Status",
-        "type": "string",
-        "data": [
-          "🟢 OPEN (Contraflow Active)",
-          "🟡 PARTIAL (1 Lane Heavy Traffic)",
-          "🔴 CLOSED (Item 12)",
-          "🔴 CLOSED (Item 12)",
-          "🟢 OPEN (Clear)"
-        ]
-      },
-      {
-        "id": "col-rt-reason",
-        "component": "Col",
-        "label": "Condition / Hazard",
-        "type": "string",
-        "data": [
-          "Police Escorted Flow",
-          "Tree Debris on Shoulder",
-          "Submerged under 4ft Water",
-          "Structural Safety Inspection",
-          "Normal Traffic Flow"
-        ]
-      },
-      {
-        "id": "col-rt-alt",
-        "component": "Col",
-        "label": "Detour / Recommendation",
-        "type": "string",
-        "data": [
-          "Primary Evac Arterial",
-          "Proceed with Caution",
-          "Use I-95 North Detour",
-          "Use South Veterans Bridge",
-          "Secondary Supply Route"
-        ]
-      },
-      {
-        "id": "comms-heading",
-        "component": "Heading",
-        "level": "h3",
-        "text": "Operational Communication Channels Status (Item 11)"
-      },
-      {
-        "id": "comms-grid",
-        "component": "Card",
-        "variant": "sunk",
-        "direction": "row",
-        "gap": "m",
-        "wrap": true,
-        "children": [
-          "comm-card-1",
-          "comm-card-2",
-          "comm-card-3",
-          "comm-card-4"
-        ]
-      },
-      {
-        "id": "comm-card-1",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "c1-title",
-          "c1-status"
-        ]
-      },
-      {
-        "id": "c1-title",
-        "component": "TextContent",
-        "text": "FirstNet First Responder Trunk Radio",
-        "size": "small-heavy"
-      },
-      {
-        "id": "c1-status",
-        "component": "Tag",
-        "text": "🟢 UP / ONLINE (100% Signal)",
-        "variant": "success",
-        "size": "md"
-      },
-      {
-        "id": "comm-card-2",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "c2-title",
-          "c2-status"
-        ]
-      },
-      {
-        "id": "c2-title",
-        "component": "TextContent",
-        "text": "EAS Broadcast Transmitter (FM/TV)",
-        "size": "small-heavy"
-      },
-      {
-        "id": "c2-status",
-        "component": "Tag",
-        "text": "🟢 UP / ONLINE (Standby Active)",
-        "variant": "success",
-        "size": "md"
-      },
-      {
-        "id": "comm-card-3",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "c3-title",
-          "c3-status"
-        ]
-      },
-      {
-        "id": "c3-title",
-        "component": "TextContent",
-        "text": "Coastal Cellular Tower Grid",
-        "size": "small-heavy"
-      },
-      {
-        "id": "c3-status",
-        "component": "Tag",
-        "text": "🔴 DOWN (Generator Failure)",
-        "variant": "danger",
-        "size": "md"
-      },
-      {
-        "id": "comm-card-4",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "c4-title",
-          "c4-status"
-        ]
-      },
-      {
-        "id": "c4-title",
-        "component": "TextContent",
-        "text": "Starlink Satellite Emergency Uplink",
-        "size": "small-heavy"
-      },
-      {
-        "id": "c4-status",
-        "component": "Tag",
-        "text": "🟢 UP / ONLINE (450 Mbps)",
-        "variant": "success",
-        "size": "md"
-      },
-      {
-        "id": "tab-requests",
-        "component": "TabItem",
-        "value": "requests",
-        "trigger": "4. Aid Requests & Open Tasks",
-        "content": [
-          "req-task-card"
-        ]
-      },
-      {
-        "id": "req-task-card",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "aid-heading",
-          "aid-table",
-          "tasks-heading",
-          "tasks-table"
-        ]
-      },
-      {
-        "id": "aid-heading",
-        "component": "Heading",
-        "level": "h2",
-        "text": "Incoming Aid Requests Awaiting Action (Item 10)"
-      },
-      {
-        "id": "aid-table",
-        "component": "Table",
-        "columns": [
-          "col-aid-id",
-          "col-aid-source",
-          "col-aid-req",
-          "col-aid-urgency",
-          "col-aid-time"
-        ]
-      },
-      {
-        "id": "col-aid-id",
-        "component": "Col",
-        "label": "Ticket #",
-        "type": "string",
-        "data": [
-          "REQ-4091",
-          "REQ-4094",
-          "REQ-4098",
-          "REQ-4102"
-        ]
-      },
-      {
-        "id": "col-aid-source",
-        "component": "Col",
-        "label": "Requesting Party",
-        "type": "string",
-        "data": [
-          "St. Jude Medical Center",
-          "Zone Charlie Shelter Lead",
-          "Pinecrest Senior Living Center",
-          "Harbor Police Unit 4"
-        ]
-      },
-      {
-        "id": "col-aid-req",
-        "component": "Col",
-        "label": "Requested Aid / Material",
-        "type": "string",
-        "data": [
-          "Emergency Oxygen Cylinders (50 units)",
-          "500 Emergency Cots & Portable Bathrooms",
-          "Priority Evacuation Bus for 40 Mobility-Impaired Patients",
-          "Fuel Refill Truck for Patrol Boats (Diesel)"
-        ]
-      },
-      {
-        "id": "col-aid-urgency",
-        "component": "Col",
-        "label": "Urgency",
-        "type": "string",
-        "data": [
-          "🔴 CRITICAL (Immediate)",
-          "🟠 HIGH (< 2 Hours)",
-          "🔴 CRITICAL (Immediate)",
-          "🟡 MEDIUM (< 6 Hours)"
-        ]
-      },
-      {
-        "id": "col-aid-time",
-        "component": "Col",
-        "label": "Time Queued",
-        "type": "string",
-        "data": [
-          "12 mins ago",
-          "24 mins ago",
-          "31 mins ago",
-          "45 mins ago"
-        ]
-      },
-      {
-        "id": "tasks-heading",
-        "component": "Heading",
-        "level": "h2",
-        "text": "Open Incident Response Tasks & Assignees (Item 14)"
-      },
-      {
-        "id": "tasks-table",
-        "component": "Table",
-        "columns": [
-          "col-tsk-id",
-          "col-tsk-desc",
-          "col-tsk-assignee",
-          "col-tsk-priority",
-          "col-tsk-due"
-        ]
-      },
-      {
-        "id": "col-tsk-id",
-        "component": "Col",
-        "label": "Task ID",
-        "type": "string",
-        "data": [
-          "TSK-102",
-          "TSK-105",
-          "TSK-108",
-          "TSK-111",
-          "TSK-114"
-        ]
-      },
-      {
-        "id": "col-tsk-desc",
-        "component": "Col",
-        "label": "Task Description",
-        "type": "string",
-        "data": [
-          "Deploy mobile generator to Cell Tower #4",
-          "Clear fallen timber off SR-104 Exit 8",
-          "Deliver water pallets to Westside Shelter",
-          "Coordinate air drop for stranded hikers in Zone Alpha",
-          "Inspect levees on North River sector"
-        ]
-      },
-      {
-        "id": "col-tsk-assignee",
-        "component": "Col",
-        "label": "Assigned Unit / Officer",
-        "type": "string",
-        "data": [
-          "Capt. Miller (Tech Ops)",
-          "Caltrans Crew B",
-          "Logistics Specialist Evans",
-          "National Guard Flight Recon",
-          "US Army Corps of Engineers"
-        ]
-      },
-      {
-        "id": "col-tsk-priority",
-        "component": "Col",
-        "label": "Priority",
-        "type": "string",
-        "data": [
-          "High",
-          "Medium",
-          "High",
-          "Urgent",
-          "Critical"
-        ]
-      },
-      {
-        "id": "col-tsk-due",
-        "component": "Col",
-        "label": "Target SLA",
-        "type": "string",
-        "data": [
-          "+1 hour",
-          "+3 hours",
-          "+30 mins",
-          "+45 mins",
-          "+2 hours"
-        ]
+        "label": "File Official SITREP",
+        "variant": "primary"
       }
     ]
   }

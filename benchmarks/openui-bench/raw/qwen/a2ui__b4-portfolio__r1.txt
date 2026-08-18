@@ -1,17 +1,11 @@
-
-
-Here's a complete PMO portfolio review screen covering all 13 items — active projects table, overdue milestones, budget vs. allocation, utilization, risks, upcoming deadlines, sprint velocity, blocked items, a one-line health banner, plus quarter switching, headcount requests, export, and archiving controls.
+Here's a comprehensive PMO Project Portfolio Review screen covering all 13 requirements:
 
 <a2ui-json>
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "pmo-portfolio-review",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": {
-      "primaryColor": "#1F6FEB",
-      "agentDisplayName": "PMO Copilot"
-    }
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
@@ -20,592 +14,725 @@ Here's a complete PMO portfolio review screen covering all 13 items — active p
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "pmo-portfolio-review",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
+        "children": [
+          "header",
+          "healthSummary",
+          "controlsCard",
+          "tabs"
+        ],
         "direction": "column",
-        "gap": "l",
-        "children": [
-          "titleHeading",
-          "subtitleText",
-          "summaryAlert",
-          "controlsRow",
-          "cardProjects",
-          "chartsRow",
-          "paceRow",
-          "issuesRow",
-          "cardRisks"
-        ]
+        "gap": "m"
       },
       {
-        "id": "titleHeading",
-        "component": "Heading",
-        "level": "h1",
-        "text": "Project Portfolio Review — Q3 2025"
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Project Portfolio Review",
+        "subtitle": "PMO Dashboard — Q2 2025"
       },
       {
-        "id": "subtitleText",
-        "component": "TextContent",
-        "size": "small",
-        "text": "PMO weekly review · Data as of Jul 18, 2025 · 6 active projects"
-      },
-      {
-        "id": "summaryAlert",
+        "id": "healthSummary",
         "component": "Alert",
-        "variant": "warning",
-        "title": "Portfolio health: AMBER",
-        "description": "6 active projects — 2 at risk, 1 off track · 4 milestones overdue · budget 74% spent vs. 68% of timeline elapsed · 4 work items blocked."
+        "title": "Portfolio Health: Amber",
+        "description": "7 of 9 projects on track. 2 projects at risk due to resource constraints and scope creep. Budget burn rate is 4% above plan.",
+        "variant": "warning"
       },
       {
-        "id": "controlsRow",
+        "id": "controlsCard",
         "component": "Card",
+        "variant": "sunk",
         "direction": "row",
-        "gap": "m",
-        "wrap": true,
-        "align": "end",
+        "align": "center",
+        "justify": "between",
         "children": [
-          "quarterForm",
-          "exportForm",
-          "headcountDialog",
-          "archiveDialog"
+          "quarterField",
+          "actionButtons"
         ]
       },
       {
-        "id": "quarterForm",
-        "component": "Form",
-        "name": "select-quarter",
-        "fields": ["fcQuarter"],
-        "buttons": "quarterButtons"
-      },
-      {
-        "id": "fcQuarter",
+        "id": "quarterField",
         "component": "FormControl",
-        "label": "Review quarter",
-        "hint": "Switch the review period",
+        "label": "View Quarter",
         "input": "quarterSelect"
       },
       {
         "id": "quarterSelect",
         "component": "Select",
         "name": "quarter",
+        "placeholder": "Select quarter",
+        "value": "q2-2025",
+        "items": [
+          "q1Item",
+          "q2Item",
+          "q3Item",
+          "q4Item"
+        ]
+      },
+      {
+        "id": "q1Item",
+        "component": "SelectItem",
+        "value": "q1-2025",
+        "label": "Q1 2025"
+      },
+      {
+        "id": "q2Item",
+        "component": "SelectItem",
+        "value": "q2-2025",
+        "label": "Q2 2025"
+      },
+      {
+        "id": "q3Item",
+        "component": "SelectItem",
         "value": "q3-2025",
-        "items": ["qiQ1", "qiQ2", "qiQ3", "qiQ4"]
+        "label": "Q3 2025"
       },
-      { "id": "qiQ1", "component": "SelectItem", "value": "q1-2025", "label": "Q1 2025" },
-      { "id": "qiQ2", "component": "SelectItem", "value": "q2-2025", "label": "Q2 2025" },
-      { "id": "qiQ3", "component": "SelectItem", "value": "q3-2025", "label": "Q3 2025 (current)" },
-      { "id": "qiQ4", "component": "SelectItem", "value": "q4-2025", "label": "Q4 2025" },
       {
-        "id": "quarterButtons",
+        "id": "q4Item",
+        "component": "SelectItem",
+        "value": "q4-2025",
+        "label": "Q4 2025"
+      },
+      {
+        "id": "actionButtons",
         "component": "Buttons",
-        "buttons": ["btnLoadQuarter"]
+        "buttons": [
+          "exportBtn",
+          "requestPeopleDialog",
+          "archiveDialog"
+        ]
       },
       {
-        "id": "btnLoadQuarter",
+        "id": "exportBtn",
         "component": "Button",
-        "label": "Load quarter",
-        "variant": "secondary",
-        "action": ["load-quarter"]
+        "label": "Export Review",
+        "variant": "secondary"
       },
       {
-        "id": "exportForm",
-        "component": "Form",
-        "name": "export-review",
-        "fields": ["fcFormat"],
-        "buttons": "exportButtons"
-      },
-      {
-        "id": "fcFormat",
-        "component": "FormControl",
-        "label": "Export format",
-        "input": "formatSelect"
-      },
-      {
-        "id": "formatSelect",
-        "component": "Select",
-        "name": "format",
-        "value": "pdf",
-        "items": ["fiPdf", "fiCsv", "fiXlsx"]
-      },
-      { "id": "fiPdf", "component": "SelectItem", "value": "pdf", "label": "PDF" },
-      { "id": "fiCsv", "component": "SelectItem", "value": "csv", "label": "CSV" },
-      { "id": "fiXlsx", "component": "SelectItem", "value": "xlsx", "label": "Excel (XLSX)" },
-      {
-        "id": "exportButtons",
-        "component": "Buttons",
-        "buttons": ["btnExport"]
-      },
-      {
-        "id": "btnExport",
-        "component": "Button",
-        "label": "Export review",
-        "variant": "primary",
-        "action": ["export-review"]
-      },
-      {
-        "id": "headcountDialog",
+        "id": "requestPeopleDialog",
         "component": "DialogBlock",
-        "triggerLabel": "Request more people",
-        "title": "Request additional headcount",
-        "description": "Submit a staffing request to the PMO. Requests are reviewed at the weekly capacity board.",
-        "content": ["headcountForm"]
+        "triggerLabel": "Request Resources",
+        "triggerVariant": "secondary",
+        "title": "Request Additional Resources",
+        "description": "Submit a staffing request for a project",
+        "content": [
+          "requestForm"
+        ]
       },
       {
-        "id": "headcountForm",
+        "id": "requestForm",
         "component": "Form",
-        "name": "headcount-request",
-        "fields": ["fcHcProject", "fcHcFte", "fcHcReason"],
-        "buttons": "hcButtons"
+        "name": "resource-request",
+        "buttons": "reqFormButtons",
+        "fields": [
+          "reqProjectField",
+          "reqCountField",
+          "reqRoleField",
+          "reqJustField"
+        ]
       },
       {
-        "id": "fcHcProject",
+        "id": "reqProjectField",
         "component": "FormControl",
         "label": "Project",
-        "input": "hcProjectSelect"
+        "input": "reqProjectSelect"
       },
       {
-        "id": "hcProjectSelect",
+        "id": "reqProjectSelect",
         "component": "Select",
         "name": "project",
-        "placeholder": "Select a project",
-        "items": ["hiApollo", "hiOrion", "hiHelios", "hiNova", "hiZephyr", "hiLyra"]
+        "placeholder": "Select project",
+        "items": [
+          "reqProj1",
+          "reqProj2",
+          "reqProj3",
+          "reqProj4",
+          "reqProj5"
+        ]
       },
-      { "id": "hiApollo", "component": "SelectItem", "value": "apollo", "label": "Apollo CRM Migration" },
-      { "id": "hiOrion", "component": "SelectItem", "value": "orion", "label": "Orion Payments Platform" },
-      { "id": "hiHelios", "component": "SelectItem", "value": "helios", "label": "Helios Data Warehouse" },
-      { "id": "hiNova", "component": "SelectItem", "value": "nova", "label": "Nova Mobile App" },
-      { "id": "hiZephyr", "component": "SelectItem", "value": "zephyr", "label": "Zephyr Cloud Cost Program" },
-      { "id": "hiLyra", "component": "SelectItem", "value": "lyra", "label": "Lyra Compliance Suite" },
       {
-        "id": "fcHcFte",
+        "id": "reqProj1",
+        "component": "SelectItem",
+        "value": "atlas",
+        "label": "Project Atlas"
+      },
+      {
+        "id": "reqProj2",
+        "component": "SelectItem",
+        "value": "beacon",
+        "label": "Project Beacon"
+      },
+      {
+        "id": "reqProj3",
+        "component": "SelectItem",
+        "value": "catalyst",
+        "label": "Project Catalyst"
+      },
+      {
+        "id": "reqProj4",
+        "component": "SelectItem",
+        "value": "delta",
+        "label": "Project Delta"
+      },
+      {
+        "id": "reqProj5",
+        "component": "SelectItem",
+        "value": "echo",
+        "label": "Project Echo"
+      },
+      {
+        "id": "reqCountField",
         "component": "FormControl",
-        "label": "Additional FTEs",
-        "hint": "Number of people requested",
-        "input": "hcFteInput"
+        "label": "Number of People",
+        "input": "reqCountInput"
       },
       {
-        "id": "hcFteInput",
+        "id": "reqCountInput",
         "component": "Input",
-        "name": "fte",
+        "name": "headcount",
         "type": "number",
-        "placeholder": "e.g. 2"
+        "placeholder": "e.g. 3"
       },
       {
-        "id": "fcHcReason",
+        "id": "reqRoleField",
         "component": "FormControl",
-        "label": "Business justification",
-        "input": "hcReasonArea"
+        "label": "Role / Skill Needed",
+        "input": "reqRoleInput"
       },
       {
-        "id": "hcReasonArea",
+        "id": "reqRoleInput",
+        "component": "Input",
+        "name": "role",
+        "type": "text",
+        "placeholder": "e.g. Senior Backend Engineer"
+      },
+      {
+        "id": "reqJustField",
+        "component": "FormControl",
+        "label": "Justification",
+        "input": "reqJustInput"
+      },
+      {
+        "id": "reqJustInput",
         "component": "TextArea",
         "name": "justification",
-        "rows": 3,
-        "placeholder": "Why is the additional capacity needed?"
+        "placeholder": "Explain why additional resources are needed...",
+        "rows": 3
       },
       {
-        "id": "hcButtons",
+        "id": "reqFormButtons",
         "component": "Buttons",
-        "buttons": ["btnHcSubmit"]
+        "buttons": [
+          "reqSubmitBtn",
+          "reqCancelBtn"
+        ]
       },
       {
-        "id": "btnHcSubmit",
+        "id": "reqSubmitBtn",
         "component": "Button",
-        "label": "Submit request",
-        "variant": "primary",
-        "action": ["submit-headcount-request"]
+        "label": "Submit Request",
+        "variant": "primary"
+      },
+      {
+        "id": "reqCancelBtn",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
       },
       {
         "id": "archiveDialog",
-        "component": "DialogBlock",
-        "triggerLabel": "Archive finished project",
-        "title": "Archive a finished project",
-        "description": "Archived projects are removed from the active portfolio but remain available for reporting.",
-        "content": ["archiveForm"]
+        "component": "AlertDialogBlock",
+        "triggerLabel": "Archive Project",
+        "triggerVariant": "outline",
+        "title": "Archive a Finished Project",
+        "description": "Select a completed project to archive. This will remove it from the active portfolio view and move it to historical records. This action cannot be undone.",
+        "confirmLabel": "Archive",
+        "cancelLabel": "Cancel"
       },
       {
-        "id": "archiveForm",
-        "component": "Form",
-        "name": "archive-project",
-        "fields": ["fcArchProject"],
-        "buttons": "archButtons"
+        "id": "tabs",
+        "component": "Tabs",
+        "items": [
+          "tabProjects",
+          "tabDelivery",
+          "tabTeamRisk"
+        ]
       },
       {
-        "id": "fcArchProject",
-        "component": "FormControl",
-        "label": "Finished project",
-        "input": "archSelect"
+        "id": "tabProjects",
+        "component": "TabItem",
+        "value": "projects",
+        "trigger": "Projects & Budget",
+        "content": [
+          "projectsHeading",
+          "projectsTable",
+          "budgetHeading",
+          "budgetChart"
+        ]
       },
       {
-        "id": "archSelect",
-        "component": "Select",
-        "name": "project",
-        "placeholder": "Select a completed project",
-        "items": ["aiTitan", "aiAtlas"]
-      },
-      { "id": "aiTitan", "component": "SelectItem", "value": "titan", "label": "Titan Rebrand — completed Jun 2025" },
-      { "id": "aiAtlas", "component": "SelectItem", "value": "atlas", "label": "Atlas Vendor Consolidation — completed May 2025" },
-      {
-        "id": "archButtons",
-        "component": "Buttons",
-        "buttons": ["btnArchive"]
-      },
-      {
-        "id": "btnArchive",
-        "component": "Button",
-        "label": "Archive project",
-        "variant": "primary",
-        "type": "destructive",
-        "action": ["archive-project"]
+        "id": "tabDelivery",
+        "component": "TabItem",
+        "value": "delivery",
+        "trigger": "Delivery & Timeline",
+        "content": [
+          "overdueHeading",
+          "overdueTable",
+          "upcomingHeading",
+          "upcomingList",
+          "paceHeading",
+          "paceChart",
+          "blockedHeading",
+          "blockedList"
+        ]
       },
       {
-        "id": "cardProjects",
-        "component": "Card",
-        "direction": "column",
-        "gap": "s",
-        "children": ["hdrProjects", "projectsTable"]
+        "id": "tabTeamRisk",
+        "component": "TabItem",
+        "value": "team-risk",
+        "trigger": "Team & Risks",
+        "content": [
+          "utilHeading",
+          "utilCard",
+          "risksHeading",
+          "risksTable"
+        ]
       },
       {
-        "id": "hdrProjects",
-        "component": "CardHeader",
-        "title": "Active projects",
-        "subtitle": "Owner, deadline and current health"
+        "id": "projectsHeading",
+        "component": "Heading",
+        "text": "Active Projects",
+        "level": "h3"
       },
       {
         "id": "projectsTable",
         "component": "Table",
-        "columns": ["colProject", "colOwner", "colDeadline", "colHealth"]
+        "columns": [
+          "projNameCol",
+          "projOwnerCol",
+          "projDeadlineCol",
+          "projHealthCol"
+        ]
       },
       {
-        "id": "colProject",
+        "id": "projNameCol",
         "component": "Col",
         "label": "Project",
-        "data": ["Apollo CRM Migration", "Orion Payments Platform", "Helios Data Warehouse", "Nova Mobile App", "Zephyr Cloud Cost Program", "Lyra Compliance Suite"]
+        "data": [
+          "Project Atlas",
+          "Project Beacon",
+          "Project Catalyst",
+          "Project Delta",
+          "Project Echo",
+          "Project Falcon",
+          "Project Granite"
+        ]
       },
       {
-        "id": "colOwner",
+        "id": "projOwnerCol",
         "component": "Col",
         "label": "Owner",
-        "data": ["Dana Whitfield", "Marcus Lee", "Priya Nair", "Tom Becker", "Alicia Gomez", "Sam Okafor"]
+        "data": [
+          "Sarah Chen",
+          "Marcus Webb",
+          "Aisha Patel",
+          "Tom Erikson",
+          "Lina Torres",
+          "James Okafor",
+          "Rachel Kim"
+        ]
       },
       {
-        "id": "colDeadline",
+        "id": "projDeadlineCol",
         "component": "Col",
         "label": "Deadline",
-        "data": ["Aug 29, 2025", "Jul 31, 2025", "Sep 15, 2025", "Jul 25, 2025", "Oct 03, 2025", "Aug 08, 2025"]
+        "data": [
+          "2025-07-15",
+          "2025-08-01",
+          "2025-06-30",
+          "2025-09-15",
+          "2025-07-22",
+          "2025-08-20",
+          "2025-06-28"
+        ]
       },
       {
-        "id": "colHealth",
+        "id": "projHealthCol",
         "component": "Col",
         "label": "Health",
-        "data": ["🟢 On track", "🟠 At risk", "🟢 On track", "🔴 Off track", "🟢 On track", "🟠 At risk"]
+        "data": [
+          "🟢 On Track",
+          "🟡 At Risk",
+          "🔴 Critical",
+          "🟢 On Track",
+          "🟢 On Track",
+          "🟡 At Risk",
+          "🟢 On Track"
+        ]
       },
       {
-        "id": "chartsRow",
-        "component": "Card",
-        "direction": "row",
-        "gap": "m",
-        "align": "stretch",
-        "children": ["cardBudget", "cardUtil"]
-      },
-      {
-        "id": "cardBudget",
-        "component": "Card",
-        "direction": "column",
-        "gap": "s",
-        "weight": 1,
-        "children": ["hdrBudget", "budgetChart"]
-      },
-      {
-        "id": "hdrBudget",
-        "component": "CardHeader",
-        "title": "Budget: spent vs. allocation",
-        "subtitle": "USD thousands, per project"
+        "id": "budgetHeading",
+        "component": "Heading",
+        "text": "Budget: Spent vs. Allocated ($K)",
+        "level": "h3"
       },
       {
         "id": "budgetChart",
         "component": "HorizontalBarChart",
+        "labels": [
+          "Atlas",
+          "Beacon",
+          "Catalyst",
+          "Delta",
+          "Echo",
+          "Falcon",
+          "Granite"
+        ],
+        "series": [
+          "budgetSpentSeries",
+          "budgetAllocSeries"
+        ],
         "variant": "grouped",
-        "xLabel": "USD (thousands)",
-        "labels": ["Apollo", "Orion", "Helios", "Nova", "Zephyr", "Lyra"],
-        "series": ["seriesAlloc", "seriesSpent"]
+        "xLabel": "USD ($K)",
+        "yLabel": "Project"
       },
       {
-        "id": "seriesAlloc",
+        "id": "budgetSpentSeries",
+        "component": "Series",
+        "category": "Spent",
+        "values": [
+          320,
+          185,
+          410,
+          95,
+          240,
+          150,
+          78
+        ]
+      },
+      {
+        "id": "budgetAllocSeries",
         "component": "Series",
         "category": "Allocated",
-        "values": [480, 620, 900, 350, 275, 400]
+        "values": [
+          450,
+          280,
+          380,
+          200,
+          310,
+          220,
+          120
+        ]
       },
       {
-        "id": "seriesSpent",
-        "component": "Series",
-        "category": "Spent to date",
-        "values": [355, 585, 415, 340, 120, 260]
-      },
-      {
-        "id": "cardUtil",
-        "component": "Card",
-        "direction": "column",
-        "gap": "s",
-        "weight": 1,
-        "children": ["hdrUtil", "utilChart"]
-      },
-      {
-        "id": "hdrUtil",
-        "component": "CardHeader",
-        "title": "Team utilization",
-        "subtitle": "% of available capacity committed"
-      },
-      {
-        "id": "utilChart",
-        "component": "BarChart",
-        "yLabel": "% utilization",
-        "labels": ["Platform Eng", "Data Eng", "Mobile", "QA", "DevOps", "Design"],
-        "series": ["seriesUtil"]
-      },
-      {
-        "id": "seriesUtil",
-        "component": "Series",
-        "category": "Utilization %",
-        "values": [92, 78, 105, 64, 71, 58]
-      },
-      {
-        "id": "paceRow",
-        "component": "Card",
-        "direction": "row",
-        "gap": "m",
-        "align": "stretch",
-        "children": ["cardPace", "cardDeadlines"]
-      },
-      {
-        "id": "cardPace",
-        "component": "Card",
-        "direction": "column",
-        "gap": "s",
-        "weight": 1,
-        "children": ["hdrPace", "paceChart"]
-      },
-      {
-        "id": "hdrPace",
-        "component": "CardHeader",
-        "title": "Delivery pace",
-        "subtitle": "Story points delivered, last 6 sprints"
-      },
-      {
-        "id": "paceChart",
-        "component": "LineChart",
-        "variant": "natural",
-        "yLabel": "Story points",
-        "labels": ["Sprint 21", "Sprint 22", "Sprint 23", "Sprint 24", "Sprint 25", "Sprint 26"],
-        "series": ["seriesPace"]
-      },
-      {
-        "id": "seriesPace",
-        "component": "Series",
-        "category": "Delivered points",
-        "values": [68, 74, 61, 80, 86, 79]
-      },
-      {
-        "id": "cardDeadlines",
-        "component": "Card",
-        "direction": "column",
-        "gap": "s",
-        "weight": 1,
-        "children": ["hdrDeadlines", "deadlinesList"]
-      },
-      {
-        "id": "hdrDeadlines",
-        "component": "CardHeader",
-        "title": "Deadlines — next 2 weeks",
-        "subtitle": "Jul 18 – Aug 01, 2025"
-      },
-      {
-        "id": "deadlinesList",
-        "component": "ListBlock",
-        "variant": "number",
-        "items": ["dl1", "dl2", "dl3", "dl4", "dl5"]
-      },
-      {
-        "id": "dl1",
-        "component": "ListItem",
-        "title": "Beta RC sign-off",
-        "subtitle": "Nova Mobile App · Jul 21"
-      },
-      {
-        "id": "dl2",
-        "component": "ListItem",
-        "title": "PCI-DSS remediation complete",
-        "subtitle": "Orion Payments Platform · Jul 24"
-      },
-      {
-        "id": "dl3",
-        "component": "ListItem",
-        "title": "ETL pipeline cutover",
-        "subtitle": "Helios Data Warehouse · Jul 28"
-      },
-      {
-        "id": "dl4",
-        "component": "ListItem",
-        "title": "Payments platform go-live",
-        "subtitle": "Orion Payments Platform · Jul 31"
-      },
-      {
-        "id": "dl5",
-        "component": "ListItem",
-        "title": "UAT exit criteria review",
-        "subtitle": "Apollo CRM Migration · Aug 01"
-      },
-      {
-        "id": "issuesRow",
-        "component": "Card",
-        "direction": "row",
-        "gap": "m",
-        "align": "stretch",
-        "children": ["cardOverdue", "cardBlocked"]
-      },
-      {
-        "id": "cardOverdue",
-        "component": "Card",
-        "direction": "column",
-        "gap": "s",
-        "weight": 1,
-        "children": ["hdrOverdue", "overdueTable"]
-      },
-      {
-        "id": "hdrOverdue",
-        "component": "CardHeader",
-        "title": "Overdue milestones",
-        "subtitle": "4 milestones past due"
+        "id": "overdueHeading",
+        "component": "Heading",
+        "text": "Overdue Milestones",
+        "level": "h3"
       },
       {
         "id": "overdueTable",
         "component": "Table",
-        "columns": ["colMsProject", "colMsName", "colMsDue", "colMsOverdue"]
+        "columns": [
+          "overdueMilestoneCol",
+          "overdueProjectCol",
+          "overdueDueCol",
+          "overdueDaysCol"
+        ]
       },
       {
-        "id": "colMsProject",
-        "component": "Col",
-        "label": "Project",
-        "data": ["Lyra Compliance Suite", "Orion Payments Platform", "Nova Mobile App", "Apollo CRM Migration"]
-      },
-      {
-        "id": "colMsName",
+        "id": "overdueMilestoneCol",
         "component": "Col",
         "label": "Milestone",
-        "data": ["SOC 2 evidence collection", "API gateway go-live", "App store submission", "Data migration dry-run"]
+        "data": [
+          "API Integration Complete",
+          "UAT Sign-off",
+          "Data Migration Phase 2",
+          "Security Audit"
+        ]
       },
       {
-        "id": "colMsDue",
-        "component": "Col",
-        "label": "Due",
-        "data": ["Jul 02", "Jul 10", "Jul 14", "Jul 16"]
-      },
-      {
-        "id": "colMsOverdue",
-        "component": "Col",
-        "label": "Overdue by",
-        "data": ["16 days", "8 days", "4 days", "2 days"]
-      },
-      {
-        "id": "cardBlocked",
-        "component": "Card",
-        "direction": "column",
-        "gap": "s",
-        "weight": 1,
-        "children": ["hdrBlocked", "blockedTable"]
-      },
-      {
-        "id": "hdrBlocked",
-        "component": "CardHeader",
-        "title": "Blocked work items",
-        "subtitle": "4 items need unblocking"
-      },
-      {
-        "id": "blockedTable",
-        "component": "Table",
-        "columns": ["colBlProject", "colBlItem", "colBlBlocker", "colBlDays"]
-      },
-      {
-        "id": "colBlProject",
+        "id": "overdueProjectCol",
         "component": "Col",
         "label": "Project",
-        "data": ["Apollo CRM Migration", "Orion Payments Platform", "Nova Mobile App", "Helios Data Warehouse"]
+        "data": [
+          "Project Catalyst",
+          "Project Beacon",
+          "Project Catalyst",
+          "Project Falcon"
+        ]
       },
       {
-        "id": "colBlItem",
+        "id": "overdueDueCol",
         "component": "Col",
-        "label": "Work item",
-        "data": ["Legacy CRM sunset", "Settlement reports", "Push notification service", "PII masking job"]
+        "label": "Was Due",
+        "data": [
+          "2025-06-01",
+          "2025-06-05",
+          "2025-06-10",
+          "2025-06-12"
+        ]
       },
       {
-        "id": "colBlBlocker",
+        "id": "overdueDaysCol",
         "component": "Col",
-        "label": "Blocker",
-        "data": ["Legal contract review pending", "Awaiting finance sign-off", "Vendor API keys not issued", "Security review slot unavailable"]
+        "label": "Days Overdue",
+        "data": [
+          18,
+          14,
+          9,
+          7
+        ]
       },
       {
-        "id": "colBlDays",
-        "component": "Col",
-        "label": "Blocked for",
-        "data": ["6 days", "5 days", "3 days", "2 days"]
+        "id": "upcomingHeading",
+        "component": "Heading",
+        "text": "Deadlines — Next 2 Weeks",
+        "level": "h3"
       },
       {
-        "id": "cardRisks",
+        "id": "upcomingList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "upcoming1",
+          "upcoming2",
+          "upcoming3",
+          "upcoming4",
+          "upcoming5"
+        ]
+      },
+      {
+        "id": "upcoming1",
+        "component": "ListItem",
+        "title": "Project Granite — Go-Live",
+        "subtitle": "Jun 28, 2025 · Owner: Rachel Kim",
+        "actionLabel": "View"
+      },
+      {
+        "id": "upcoming2",
+        "component": "ListItem",
+        "title": "Project Catalyst — Final Delivery",
+        "subtitle": "Jun 30, 2025 · Owner: Aisha Patel",
+        "actionLabel": "View"
+      },
+      {
+        "id": "upcoming3",
+        "component": "ListItem",
+        "title": "Project Atlas — Sprint 14 Demo",
+        "subtitle": "Jul 2, 2025 · Owner: Sarah Chen",
+        "actionLabel": "View"
+      },
+      {
+        "id": "upcoming4",
+        "component": "ListItem",
+        "title": "Project Echo — Design Review",
+        "subtitle": "Jul 5, 2025 · Owner: Lina Torres",
+        "actionLabel": "View"
+      },
+      {
+        "id": "upcoming5",
+        "component": "ListItem",
+        "title": "Project Delta — Architecture Approval",
+        "subtitle": "Jul 8, 2025 · Owner: Tom Erikson",
+        "actionLabel": "View"
+      },
+      {
+        "id": "paceHeading",
+        "component": "Heading",
+        "text": "Delivery Pace — Last 6 Sprints (Story Points Completed)",
+        "level": "h3"
+      },
+      {
+        "id": "paceChart",
+        "component": "BarChart",
+        "labels": [
+          "Sprint 9",
+          "Sprint 10",
+          "Sprint 11",
+          "Sprint 12",
+          "Sprint 13",
+          "Sprint 14"
+        ],
+        "series": [
+          "paceSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Sprint",
+        "yLabel": "Story Points"
+      },
+      {
+        "id": "paceSeries",
+        "component": "Series",
+        "category": "Completed",
+        "values": [
+          68,
+          74,
+          61,
+          82,
+          79,
+          88
+        ]
+      },
+      {
+        "id": "blockedHeading",
+        "component": "Heading",
+        "text": "Blocked Work Items",
+        "level": "h3"
+      },
+      {
+        "id": "blockedList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "blocked1",
+          "blocked2",
+          "blocked3"
+        ]
+      },
+      {
+        "id": "blocked1",
+        "component": "ListItem",
+        "title": "CAT-412: Payment gateway integration",
+        "subtitle": "Blocked by: Vendor API credentials pending · 6 days blocked",
+        "actionLabel": "Escalate"
+      },
+      {
+        "id": "blocked2",
+        "component": "ListItem",
+        "title": "BEC-287: Load testing environment",
+        "subtitle": "Blocked by: Infra team capacity · 4 days blocked",
+        "actionLabel": "Escalate"
+      },
+      {
+        "id": "blocked3",
+        "component": "ListItem",
+        "title": "FAL-156: Compliance sign-off",
+        "subtitle": "Blocked by: Legal review queue · 3 days blocked",
+        "actionLabel": "Escalate"
+      },
+      {
+        "id": "utilHeading",
+        "component": "Heading",
+        "text": "Team Utilization",
+        "level": "h3"
+      },
+      {
+        "id": "utilCard",
         "component": "Card",
+        "variant": "sunk",
         "direction": "column",
         "gap": "s",
-        "children": ["hdrRisks", "risksTable"]
+        "children": [
+          "util1",
+          "util2",
+          "util3",
+          "util4",
+          "util5"
+        ]
       },
       {
-        "id": "hdrRisks",
-        "component": "CardHeader",
-        "title": "Risks",
-        "subtitle": "Top risks per project with severity"
+        "id": "util1",
+        "component": "Progress",
+        "label": "Engineering — 92% allocated",
+        "value": 92
+      },
+      {
+        "id": "util2",
+        "component": "Progress",
+        "label": "Design — 78% allocated",
+        "value": 78
+      },
+      {
+        "id": "util3",
+        "component": "Progress",
+        "label": "QA — 85% allocated",
+        "value": 85
+      },
+      {
+        "id": "util4",
+        "component": "Progress",
+        "label": "DevOps — 96% allocated",
+        "value": 96
+      },
+      {
+        "id": "util5",
+        "component": "Progress",
+        "label": "Product — 71% allocated",
+        "value": 71
+      },
+      {
+        "id": "risksHeading",
+        "component": "Heading",
+        "text": "Risk Register",
+        "level": "h3"
       },
       {
         "id": "risksTable",
         "component": "Table",
-        "columns": ["colRiskProject", "colRisk", "colSeverity"]
+        "columns": [
+          "riskProjectCol",
+          "riskDescCol",
+          "riskSeverityCol",
+          "riskMitigationCol"
+        ]
       },
       {
-        "id": "colRiskProject",
+        "id": "riskProjectCol",
         "component": "Col",
         "label": "Project",
-        "data": ["Orion Payments Platform", "Nova Mobile App", "Lyra Compliance Suite", "Helios Data Warehouse", "Apollo CRM Migration", "Zephyr Cloud Cost Program"]
+        "data": [
+          "Catalyst",
+          "Catalyst",
+          "Beacon",
+          "Falcon",
+          "Atlas",
+          "Delta"
+        ]
       },
       {
-        "id": "colRisk",
+        "id": "riskDescCol",
         "component": "Col",
-        "label": "Risk",
-        "data": ["Budget likely exhausted before go-live", "App store rejection — incomplete privacy labels", "External auditor availability conflict in August", "Source schema drift delaying ingestion", "Key engineer PTO overlaps cutover window", "Cloud vendor pricing change impacts savings case"]
+        "label": "Risk Description",
+        "data": [
+          "Scope creep exceeding change control",
+          "Key engineer on leave — no backfill",
+          "Third-party API deprecation in Aug",
+          "Compliance requirements unclear",
+          "Dependency on shared platform team",
+          "Budget overrun likely by 15%"
+        ]
       },
       {
-        "id": "colSeverity",
+        "id": "riskSeverityCol",
         "component": "Col",
         "label": "Severity",
-        "data": ["🔴 High", "🔴 High", "🟠 Medium", "🟠 Medium", "🟢 Low", "🟢 Low"]
+        "data": [
+          "🔴 Critical",
+          "🔴 Critical",
+          "🟡 High",
+          "🟡 High",
+          "🟠 Medium",
+          "🟠 Medium"
+        ]
+      },
+      {
+        "id": "riskMitigationCol",
+        "component": "Col",
+        "label": "Mitigation",
+        "data": [
+          "Escalated to steering committee",
+          "Contractor onboarded Jul 1",
+          "Migration plan in progress",
+          "Legal review scheduled",
+          "Platform team commitment obtained",
+          "Re-forecast submitted to finance"
+        ]
       }
     ]
   }
 }
 </a2ui-json>
-
-**How each requirement is covered:**
-
-1. **Active projects** — table with project, owner, deadline, and color-coded health
-2. **Overdue milestones** — dedicated table with due dates and days overdue
-3. **Budget vs. allocation** — grouped horizontal bar chart per project
-4. **Team utilization** — bar chart of capacity % per team (Mobile is over 100%)
-5. **Risks with severity** — risk register table with High/Medium/Low ratings
-6. **Next-two-week deadlines** — numbered list with dates and owning project
-7. **Delivery pace** — line chart across sprints 21–26
-8. **Blocked work items** — table with blocker reason and duration
-9. **One-line health summary** — amber alert banner at the top
-10. **Quarter switcher** — quarter dropdown + "Load quarter" button
-11. **Headcount request** — dialog with project, FTE count, and justification form
-12. **Export** — format picker (PDF/CSV/XLSX) + "Export review" button
-13. **Archive** — dialog listing completed projects with a destructive "Archive project" confirm
-
-Want me to wire any of these actions to real data queries, or drill one section (e.g., the risk register) into its own detail view?

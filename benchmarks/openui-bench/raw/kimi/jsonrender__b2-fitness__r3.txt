@@ -1,41 +1,51 @@
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["header","stats-row","workout-chart-card","log-form-card"]}}
-{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Today's Fitness Summary","subtitle":"Tuesday, March 12 — Keep up the great work!"},"children":[]}}
-{"op":"add","path":"/elements/stats-row","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"children":["steps-card","calories-card"]}}
-{"op":"add","path":"/elements/steps-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["steps-title","steps-value","steps-progress","steps-goal-text"]}}
-{"op":"add","path":"/elements/steps-title","value":{"type":"TextContent","props":{"text":"👟 Steps Today","size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/steps-value","value":{"type":"TextContent","props":{"text":{"$template":"${/steps/current} steps"},"size":"large-heavy"},"children":[]}}
-{"op":"add","path":"/state/steps","value":{"current":7842,"goal":10000}}
-{"op":"add","path":"/elements/steps-progress","value":{"type":"Progress","props":{"value":78,"label":"78% of daily goal"},"children":[]}}
-{"op":"add","path":"/elements/steps-goal-text","value":{"type":"TextContent","props":{"text":{"$template":"Goal: ${/steps/goal} steps — 2,158 to go!"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/calories-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["cal-title","cal-value","cal-badge","cal-note"]}}
-{"op":"add","path":"/elements/cal-title","value":{"type":"TextContent","props":{"text":"🔥 Calories Burned","size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/cal-value","value":{"type":"TextContent","props":{"text":{"$template":"${/calories/today} kcal"},"size":"large-heavy"},"children":[]}}
-{"op":"add","path":"/state/calories","value":{"today":542,"avg":480}}
-{"op":"add","path":"/elements/cal-badge","value":{"type":"Badge","props":{"text":"Above daily average","variant":"secondary"},"children":[]}}
-{"op":"add","path":"/elements/cal-note","value":{"type":"TextContent","props":{"text":{"$template":"7-day average: ${/calories/avg} kcal"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/workout-chart-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["chart-title","workout-chart","cal-series","mins-series"]}}
-{"op":"add","path":"/elements/chart-title","value":{"type":"TextContent","props":{"text":"📊 Past Week — Workout Performance","size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/workout-chart","value":{"type":"BarChart","props":{"labels":["Wed","Thu","Fri","Sat","Sun","Mon","Tue"],"series":["cal-series","mins-series"],"variant":"grouped","xLabel":"Day","yLabel":"Value"},"children":[]}}
-{"op":"add","path":"/elements/cal-series","value":{"type":"Series","props":{"category":"Calories burned","values":[320,0,450,610,280,390,542]},"children":[]}}
-{"op":"add","path":"/elements/mins-series","value":{"type":"Series","props":{"category":"Active minutes","values":[30,0,45,75,25,40,60]},"children":[]}}
-{"op":"add","path":"/elements/log-form-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["log-title","logged-list","log-form"]}}
-{"op":"add","path":"/elements/log-title","value":{"type":"TextContent","props":{"text":"➕ Log a New Workout","size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/logged-list","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"repeat":{"statePath":"/workouts","key":"id"},"children":["logged-item"]}}
-{"op":"add","path":"/elements/logged-item","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center"},"children":["logged-text","logged-delete"]}}
-{"op":"add","path":"/elements/logged-text","value":{"type":"TextContent","props":{"text":{"$template":"${type} — ${minutes} min (${calories} kcal)"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/logged-delete","value":{"type":"Button","props":{"label":"Remove","variant":"tertiary","type":"destructive","size":"extra-small"},"on":{"press":{"action":"removeState","params":{"statePath":"/workouts","index":{"$index":true}}}},"children":[]}}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","streakCallout","statsRow","weekSection","todaySection","logSection"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Daily Summary","subtitle":"Tuesday, May 14"}}}
+{"op":"add","path":"/elements/streakCallout","value":{"type":"Callout","props":{"variant":"success","title":"5-day streak! 🔥","description":"You're 84% of the way to your step goal — a 20-minute walk will get you there."}}}
+{"op":"add","path":"/elements/statsRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"stretch"},"children":["stepsCard","calCard"]}}
+{"op":"add","path":"/elements/stepsCard","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["stepsLabel","stepsValue","stepsProgress","stepsDelta"]}}
+{"op":"add","path":"/elements/stepsLabel","value":{"type":"Label","props":{"text":"STEPS TODAY"}}}
+{"op":"add","path":"/elements/stepsValue","value":{"type":"TextContent","props":{"text":{"$template":"${/steps/current}"},"size":"large-heavy"}}}
+{"op":"add","path":"/elements/stepsProgress","value":{"type":"Progress","props":{"value":{"$state":"/steps/percent"},"label":{"$template":"of ${/steps/goal} step goal"}}}}
+{"op":"add","path":"/elements/stepsDelta","value":{"type":"TextContent","props":{"text":"▲ 12% vs yesterday","size":"small"}}}
+{"op":"add","path":"/elements/calCard","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["calLabel","calValue","calProgress","calDelta"]}}
+{"op":"add","path":"/elements/calLabel","value":{"type":"Label","props":{"text":"CALORIES BURNED"}}}
+{"op":"add","path":"/elements/calValue","value":{"type":"TextContent","props":{"text":{"$template":"${/calories/burned} kcal"},"size":"large-heavy"}}}
+{"op":"add","path":"/elements/calProgress","value":{"type":"Progress","props":{"value":{"$state":"/calories/percent"},"label":{"$template":"of ${/calories/goal} kcal goal"}}}}
+{"op":"add","path":"/elements/calDelta","value":{"type":"TextContent","props":{"text":"Active burn from 2 workouts + steps","size":"small"}}}
+{"op":"add","path":"/state/steps","value":{"current":8432,"goal":10000,"percent":84}}
+{"op":"add","path":"/state/calories","value":{"burned":612,"goal":800,"percent":76}}
+{"op":"add","path":"/elements/weekSection","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"children":["weekHeading","weekChart","weekSummary"]}}
+{"op":"add","path":"/elements/weekHeading","value":{"type":"Heading","props":{"text":"Workouts This Week","level":"h3"}}}
+{"op":"add","path":"/elements/weekChart","value":{"type":"BarChart","props":{"labels":["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],"series":["weekSeries"],"variant":"grouped","xLabel":"Day","yLabel":"Active minutes"}}}
+{"op":"add","path":"/elements/weekSeries","value":{"type":"Series","props":{"category":"Workout minutes","values":[30,45,0,60,25,75,20]}}}
+{"op":"add","path":"/elements/weekSummary","value":{"type":"TextContent","props":{"text":"5 active days · 255 total minutes · Best day: Saturday (75 min)","size":"small"}}}
+{"op":"add","path":"/elements/todaySection","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"children":["todayHeading","workoutList"]}}
+{"op":"add","path":"/elements/todayHeading","value":{"type":"Heading","props":{"text":"Today's Workouts","level":"h3"}}}
+{"op":"add","path":"/elements/workoutList","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/workouts","key":"id"},"children":["workoutRow"]}}
+{"op":"add","path":"/elements/workoutRow","value":{"type":"Card","props":{"variant":"sunk","direction":"row","align":"center","justify":"between","gap":"m"},"children":["workoutInfo","removeBtn"]}}
+{"op":"add","path":"/elements/workoutInfo","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"none"},"children":["workoutTitle","workoutMeta"]}}
+{"op":"add","path":"/elements/workoutTitle","value":{"type":"TextContent","props":{"text":{"$template":"**${type}**"},"size":"default"}}}
+{"op":"add","path":"/elements/workoutMeta","value":{"type":"TextContent","props":{"text":{"$template":"${duration} min · ${calories} kcal · ${time}"},"size":"small"}}}
+{"op":"add","path":"/elements/removeBtn","value":{"type":"Button","props":{"label":"Remove","variant":"tertiary","type":"destructive","size":"small"},"on":{"press":{"action":"removeState","params":{"statePath":"/workouts","index":{"$index":true}}},"children":[]}}
 {"op":"add","path":"/state/workouts","value":[]}
-{"op":"add","path":"/state/workouts/0","value":{"id":"w1","type":"Run","minutes":30,"calories":320}}
-{"op":"add","path":"/state/workouts/1","value":{"id":"w2","type":"Strength training","minutes":45,"calories":280}}
-{"op":"add","path":"/state/workouts/2","value":{"id":"w3","type":"Yoga","minutes":25,"calories":120}}
-{"op":"add","path":"/elements/log-form","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"end","wrap":true},"children":["type-select","type-opt-1","type-opt-2","type-opt-3","type-opt-4","mins-input","cal-input","add-btn"]}}
-{"op":"add","path":"/elements/type-select","value":{"type":"Select","props":{"name":"workoutType","placeholder":"Workout type","items":["type-opt-1","type-opt-2","type-opt-3","type-opt-4"],"value":{"$bindState":"/newWorkout/type"}},"children":[]}}
-{"op":"add","path":"/state/newWorkout","value":{"type":"","minutes":"","calories":""}}
-{"op":"add","path":"/elements/type-opt-1","value":{"type":"SelectItem","props":{"value":"Run","label":"Run"},"children":[]}}
-{"op":"add","path":"/elements/type-opt-2","value":{"type":"SelectItem","props":{"value":"Strength training","label":"Strength training"},"children":[]}}
-{"op":"add","path":"/elements/type-opt-3","value":{"type":"SelectItem","props":{"value":"Cycling","label":"Cycling"},"children":[]}}
-{"op":"add","path":"/elements/type-opt-4","value":{"type":"SelectItem","props":{"value":"Yoga","label":"Yoga"},"children":[]}}
-{"op":"add","path":"/elements/mins-input","value":{"type":"Input","props":{"name":"minutes","placeholder":"Minutes","type":"number","value":{"$bindState":"/newWorkout/minutes"}},"children":[]}}
-{"op":"add","path":"/elements/cal-input","value":{"type":"Input","props":{"name":"calories","placeholder":"Calories","type":"number","value":{"$bindState":"/newWorkout/calories"}},"children":[]}}
-{"op":"add","path":"/elements/add-btn","value":{"type":"Button","props":{"label":"Log Workout","variant":"primary","size":"medium"},"on":{"press":{"action":"pushState","params":{"statePath":"/workouts","value":{"id":"$id","type":{"$state":"/newWorkout/type"},"minutes":{"$state":"/newWorkout/minutes"},"calories":{"$state":"/newWorkout/calories"}},"clearStatePath":"/newWorkout"}}},"children":[]}}
+{"op":"add","path":"/state/workouts/0","value":{"id":"w1","type":"Morning Run","duration":32,"calories":310,"time":"7:15 AM"}}
+{"op":"add","path":"/state/workouts/1","value":{"id":"w2","type":"Strength Training","duration":45,"calories":285,"time":"12:30 PM"}}
+{"op":"add","path":"/state/workouts/2","value":{"id":"w3","type":"Evening Yoga","duration":25,"calories":95,"time":"6:05 PM"}}
+{"op":"add","path":"/elements/logSection","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"m"},"children":["logHeading","logForm"]}}
+{"op":"add","path":"/elements/logHeading","value":{"type":"Heading","props":{"text":"Log a Workout","level":"h3"}}}
+{"op":"add","path":"/elements/logForm","value":{"type":"Form","props":{"name":"log-workout","buttons":"logButtons","fields":["typeField","durationField","calField"]}}}
+{"op":"add","path":"/elements/typeField","value":{"type":"FormControl","props":{"label":"Workout type","input":"typeSelect"}}}
+{"op":"add","path":"/elements/typeSelect","value":{"type":"Select","props":{"name":"type","items":["typeRun","typeStrength","typeCycle","typeSwim","typeYoga"],"placeholder":"Choose a workout","value":{"$bindState":"/newWorkout/type"}}}}
+{"op":"add","path":"/elements/typeRun","value":{"type":"SelectItem","props":{"value":"Run","label":"Run"}}}
+{"op":"add","path":"/elements/typeStrength","value":{"type":"SelectItem","props":{"value":"Strength Training","label":"Strength Training"}}}
+{"op":"add","path":"/elements/typeCycle","value":{"type":"SelectItem","props":{"value":"Cycling","label":"Cycling"}}}
+{"op":"add","path":"/elements/typeSwim","value":{"type":"SelectItem","props":{"value":"Swimming","label":"Swimming"}}}
+{"op":"add","path":"/elements/typeYoga","value":{"type":"SelectItem","props":{"value":"Yoga","label":"Yoga"}}}
+{"op":"add","path":"/elements/durationField","value":{"type":"FormControl","props":{"label":"Duration (minutes)","input":"durationInput","hint":"Total active time"}}}
+{"op":"add","path":"/elements/durationInput","value":{"type":"Input","props":{"name":"duration","type":"number","placeholder":"30","value":{"$bindState":"/newWorkout/duration"}}}}
+{"op":"add","path":"/elements/calField","value":{"type":"FormControl","props":{"label":"Calories burned","input":"calInput"}}}
+{"op":"add","path":"/elements/calInput","value":{"type":"Input","props":{"name":"calories","type":"number","placeholder":"250","value":{"$bindState":"/newWorkout/calories"}}}}
+{"op":"add","path":"/elements/logButtons","value":{"type":"Buttons","props":{"buttons":["logBtn"]}}}
+{"op":"add","path":"/elements/logBtn","value":{"type":"Button","props":{"label":"Log Workout","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/workouts","value":{"id":"$id","type":{"$state":"/newWorkout/type"},"duration":{"$state":"/newWorkout/duration"},"calories":{"$state":"/newWorkout/calories"},"time":"Just now"},"clearStatePath":"/newWorkout"}}},"children":[]}}
+{"op":"add","path":"/state/newWorkout","value":{"type":"","duration":"","calories":""}}

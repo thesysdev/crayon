@@ -1,10 +1,10 @@
-Single-screen account view for your sales rep — all 9 items covered below.
+Account workspace for your rep — all deal health, contacts, and next steps in one view.
 
 <a2ui-json>
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "sales-account-page",
+    "surfaceId": "main",
     "catalogId": "thesys.dev:c1-openui"
   }
 }
@@ -14,222 +14,209 @@ Single-screen account view for your sales rep — all 9 items covered below.
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "sales-account-page",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "m",
         "children": [
-          "headerCard",
-          "metricsRow",
-          "tabs",
-          "formsRow"
-        ]
-      },
-      {
-        "id": "headerCard",
-        "component": "Card",
-        "direction": "row",
-        "gap": "m",
-        "align": "center",
-        "justify": "between",
-        "children": [
-          "avatar",
           "header",
-          "badgeStage"
-        ]
-      },
-      {
-        "id": "avatar",
-        "component": "Avatar",
-        "fallback": "AC",
-        "alt": "Acme Corp logo"
+          "kpiRow",
+          "renewalAlert",
+          "activityCard",
+          "contactsFollowUpsRow",
+          "actionsRow"
+        ],
+        "gap": "l"
       },
       {
         "id": "header",
         "component": "CardHeader",
         "title": "Acme Corporation",
-        "subtitle": "Owner: Sarah Chen  •  Enterprise Account  •  San Francisco, CA"
+        "subtitle": "Owner: Sarah Chen  •  Enterprise Account  •  acme.com  •  San Francisco, CA"
       },
       {
-        "id": "badgeStage",
-        "component": "Badge",
-        "text": "Negotiation",
-        "variant": "secondary"
-      },
-      {
-        "id": "metricsRow",
+        "id": "kpiRow",
         "component": "Card",
         "variant": "clear",
         "direction": "row",
         "gap": "m",
         "children": [
-          "valueCard",
+          "dealValueCard",
           "stageCard",
           "renewalCard"
         ]
       },
       {
-        "id": "valueCard",
+        "id": "dealValueCard",
         "component": "Card",
-        "direction": "column",
-        "gap": "xs",
+        "variant": "sunk",
         "children": [
-          "valueHeading",
-          "valueAmount",
-          "valueSub"
+          "dealValueHeader",
+          "dealValueAmount",
+          "dealValueSub"
         ]
       },
       {
-        "id": "valueHeading",
-        "component": "Heading",
-        "text": "Total Deal Value",
-        "level": "h4"
+        "id": "dealValueHeader",
+        "component": "CardHeader",
+        "title": "Total Deal Value",
+        "subtitle": "ACV + Expansion"
       },
       {
-        "id": "valueAmount",
+        "id": "dealValueAmount",
         "component": "TextContent",
         "text": "$248,500",
         "size": "large-heavy"
       },
       {
-        "id": "valueSub",
+        "id": "dealValueSub",
         "component": "TextContent",
-        "text": "3 open opportunities • Weighted: $186,375",
+        "text": "+12% vs last quarter • 2 open opportunities",
         "size": "small"
       },
       {
         "id": "stageCard",
         "component": "Card",
-        "direction": "column",
-        "gap": "xs",
+        "variant": "sunk",
         "children": [
-          "stageHeading",
+          "stageHeader",
+          "stageBadge",
           "stageProgress",
           "stageLabel"
         ]
       },
       {
-        "id": "stageHeading",
-        "component": "Heading",
-        "text": "Current Deal Stage",
-        "level": "h4"
+        "id": "stageHeader",
+        "component": "CardHeader",
+        "title": "Current Deal Stage",
+        "subtitle": "Sales Process"
+      },
+      {
+        "id": "stageBadge",
+        "component": "Badge",
+        "text": "4 — Negotiation",
+        "variant": "default"
       },
       {
         "id": "stageProgress",
         "component": "Progress",
-        "value": 75,
-        "label": "Stage 4 of 5"
+        "value": 80,
+        "label": "80% through pipeline"
       },
       {
         "id": "stageLabel",
         "component": "TextContent",
-        "text": "**Negotiation** — Proposal accepted, legal & security review in progress",
+        "text": "Next: Verbal → Closed Won. Legal review in progress.",
         "size": "small"
       },
       {
         "id": "renewalCard",
         "component": "Card",
-        "direction": "column",
-        "gap": "xs",
+        "variant": "sunk",
         "children": [
-          "renewalHeading",
-          "renewalAlert",
-          "renewalDateText"
+          "renewalHeader",
+          "renewalDateText",
+          "renewalDaysBadge"
         ]
       },
       {
-        "id": "renewalHeading",
-        "component": "Heading",
-        "text": "Renewal Date",
-        "level": "h4"
-      },
-      {
-        "id": "renewalAlert",
-        "component": "Alert",
-        "variant": "warning",
-        "title": "Renewal Approaching — 28 days",
-        "description": "Renewal due Sep 15, 2026. Risk: High — decision maker not yet engaged for renewal."
+        "id": "renewalHeader",
+        "component": "CardHeader",
+        "title": "Renewal Date",
+        "subtitle": "Annual subscription"
       },
       {
         "id": "renewalDateText",
         "component": "TextContent",
-        "text": "Contract ends **Sep 15, 2026** • ARR $142,000",
-        "size": "small"
+        "text": "September 12, 2026",
+        "size": "large-heavy"
       },
       {
-        "id": "tabs",
-        "component": "Tabs",
+        "id": "renewalDaysBadge",
+        "component": "Badge",
+        "text": "25 days remaining — Due Soon",
+        "variant": "destructive"
+      },
+      {
+        "id": "renewalAlert",
+        "component": "Alert",
+        "title": "Renewal warning — action needed",
+        "description": "Renewal is in 25 days (Sep 12, 2026). Risk: MSA redlines pending and executive sponsor not yet engaged. Schedule exec alignment this week.",
+        "variant": "warning"
+      },
+      {
+        "id": "activityCard",
+        "component": "Card",
+        "children": [
+          "activityHeader",
+          "activitySteps"
+        ]
+      },
+      {
+        "id": "activityHeader",
+        "component": "CardHeader",
+        "title": "Recent Activity",
+        "subtitle": "Most recent first — ordered chronologically"
+      },
+      {
+        "id": "activitySteps",
+        "component": "Steps",
         "items": [
-          "tabActivity",
-          "tabContacts",
-          "tabFollowups"
+          "step1",
+          "step2",
+          "step3",
+          "step4"
         ]
       },
       {
-        "id": "tabActivity",
-        "component": "TabItem",
-        "value": "activity",
-        "trigger": "Recent Activity",
-        "content": [
-          "activityList"
+        "id": "step1",
+        "component": "StepsItem",
+        "title": "Aug 14 — Email: Revised pricing sent",
+        "details": "Sarah Chen sent updated proposal with 15% volume discount to Maria Lopez. Opened 2 hours later."
+      },
+      {
+        "id": "step2",
+        "component": "StepsItem",
+        "title": "Aug 12 — Call completed (32 min)",
+        "details": "Discovery with James Park. Notes: Budget approved, needs security review. Next step agreed: legal intro."
+      },
+      {
+        "id": "step3",
+        "component": "StepsItem",
+        "title": "Aug 08 — Proposal delivered",
+        "details": "Mutual action plan shared via DocSend. Viewed by 3 contacts. Champion feedback: positive."
+      },
+      {
+        "id": "step4",
+        "component": "StepsItem",
+        "title": "Aug 02 — Discovery call",
+        "details": "Initial qualification with Maria Lopez & David Kim. Pain points confirmed: onboarding time, reporting gaps."
+      },
+      {
+        "id": "contactsFollowUpsRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "contactsCard",
+          "followUpsCard"
         ]
       },
       {
-        "id": "tabContacts",
-        "component": "TabItem",
-        "value": "contacts",
-        "trigger": "Contacts (3)",
-        "content": [
+        "id": "contactsCard",
+        "component": "Card",
+        "children": [
+          "contactsHeader",
           "contactsTable"
         ]
       },
       {
-        "id": "tabFollowups",
-        "component": "TabItem",
-        "value": "followups",
-        "trigger": "Open Follow-ups (3)",
-        "content": [
-          "followupsTable"
-        ]
-      },
-      {
-        "id": "activityList",
-        "component": "ListBlock",
-        "variant": "number",
-        "items": [
-          "activity1",
-          "activity2",
-          "activity3",
-          "activity4"
-        ]
-      },
-      {
-        "id": "activity1",
-        "component": "ListItem",
-        "title": "Call with CTO — Integration scope clarified",
-        "subtitle": "Aug 17, 2026 • 2:30 PM • Sarah Chen • Outcome: Positive, requested revised proposal"
-      },
-      {
-        "id": "activity2",
-        "component": "ListItem",
-        "title": "Proposal Sent — $248,500 (Annual + Implementation)",
-        "subtitle": "Aug 15, 2026 • 9:00 AM • Sarah Chen • Document viewed 4x by buyer"
-      },
-      {
-        "id": "activity3",
-        "component": "ListItem",
-        "title": "Demo Completed — Technical evaluation",
-        "subtitle": "Aug 12, 2026 • 11:00 AM • Sarah Chen + Lisa Wong (Technical Evaluator)"
-      },
-      {
-        "id": "activity4",
-        "component": "ListItem",
-        "title": "Discovery Call — Pain points & budget confirmed",
-        "subtitle": "Aug 10, 2026 • 10:15 AM • Sarah Chen • Next step: Demo scheduled"
+        "id": "contactsHeader",
+        "component": "CardHeader",
+        "title": "Contacts",
+        "subtitle": "Role for each stakeholder"
       },
       {
         "id": "contactsTable",
@@ -243,80 +230,91 @@ Single-screen account view for your sales rep — all 9 items covered below.
       {
         "id": "colContactName",
         "component": "Col",
-        "label": "Contact",
-        "type": "string",
+        "label": "Name",
         "data": [
-          "Jane Doe",
-          "Mark Smith",
-          "Lisa Wong"
+          "James Park",
+          "Maria Lopez",
+          "David Kim",
+          "Priya Nair"
         ]
       },
       {
         "id": "colContactRole",
         "component": "Col",
         "label": "Role",
-        "type": "string",
         "data": [
-          "Economic Buyer — CFO",
-          "Champion — VP Operations",
-          "Technical Evaluator — CTO"
+          "Economic Buyer",
+          "Champion",
+          "Technical Evaluator",
+          "Legal Counsel"
         ]
       },
       {
         "id": "colContactEmail",
         "component": "Col",
         "label": "Contact",
-        "type": "string",
         "data": [
-          "jane.doe@acme.com",
-          "mark.smith@acme.com",
-          "lisa.wong@acme.com"
+          "j.park@acme.com",
+          "m.lopez@acme.com",
+          "d.kim@acme.com",
+          "p.nair@acme.com"
         ]
       },
       {
-        "id": "followupsTable",
+        "id": "followUpsCard",
+        "component": "Card",
+        "children": [
+          "followUpsHeader",
+          "followUpsTable"
+        ]
+      },
+      {
+        "id": "followUpsHeader",
+        "component": "CardHeader",
+        "title": "Open Follow-ups",
+        "subtitle": "3 tasks • Sorted by due date"
+      },
+      {
+        "id": "followUpsTable",
         "component": "Table",
         "columns": [
-          "colFollowupTask",
-          "colFollowupDue",
-          "colFollowupOwner"
+          "colTask",
+          "colDue",
+          "colAssignee"
         ]
       },
       {
-        "id": "colFollowupTask",
+        "id": "colTask",
         "component": "Col",
         "label": "Task",
-        "type": "string",
         "data": [
-          "Send revised proposal with security addendum",
-          "Schedule legal review with Jane Doe",
-          "Follow up on security questionnaire"
+          "Pricing review call",
+          "Send revised MSA",
+          "Schedule exec alignment"
         ]
       },
       {
-        "id": "colFollowupDue",
+        "id": "colDue",
         "component": "Col",
         "label": "Due Date",
-        "type": "string",
         "data": [
-          "Aug 20, 2026 — 2 days",
-          "Aug 22, 2026 — 4 days",
-          "Aug 25, 2026 — 7 days"
+          "Aug 20, 2026",
+          "Aug 22, 2026",
+          "Aug 25, 2026"
         ]
       },
       {
-        "id": "colFollowupOwner",
+        "id": "colAssignee",
         "component": "Col",
         "label": "Owner",
-        "type": "string",
         "data": [
           "Sarah Chen",
           "Sarah Chen",
-          "Lisa Wong"
+          "Sarah Chen"
         ]
       },
       {
-        "id": "formsRow",
+        "id": "actionsRow",
         "component": "Card",
         "variant": "clear",
         "direction": "row",
@@ -329,8 +327,6 @@ Single-screen account view for your sales rep — all 9 items covered below.
       {
         "id": "noteCard",
         "component": "Card",
-        "direction": "column",
-        "gap": "s",
         "children": [
           "noteHeader",
           "noteForm"
@@ -340,29 +336,29 @@ Single-screen account view for your sales rep — all 9 items covered below.
         "id": "noteHeader",
         "component": "CardHeader",
         "title": "Jot a Note",
-        "subtitle": "Quick capture — auto-saved to activity feed"
+        "subtitle": "Quick capture — auto-saves to activity feed"
       },
       {
         "id": "noteForm",
         "component": "Form",
-        "name": "quickNote",
-        "buttons": "noteButtons",
+        "name": "quick-note",
         "fields": [
-          "noteControl"
-        ]
+          "noteField"
+        ],
+        "buttons": "noteButtons"
       },
       {
-        "id": "noteControl",
+        "id": "noteField",
         "component": "FormControl",
         "label": "Note",
-        "hint": "Supports markdown. @mention a contact to notify them.",
+        "hint": "Visible to account team only",
         "input": "noteInput"
       },
       {
         "id": "noteInput",
         "component": "TextArea",
         "name": "note",
-        "placeholder": "Type your note about Acme Corp... e.g., 'Jane confirmed budget approval next week'",
+        "placeholder": "Type a quick note about this account...",
         "rows": 4
       },
       {
@@ -381,8 +377,6 @@ Single-screen account view for your sales rep — all 9 items covered below.
       {
         "id": "callCard",
         "component": "Card",
-        "direction": "column",
-        "gap": "s",
         "children": [
           "callHeader",
           "callForm"
@@ -392,70 +386,21 @@ Single-screen account view for your sales rep — all 9 items covered below.
         "id": "callHeader",
         "component": "CardHeader",
         "title": "Log a Call",
-        "subtitle": "Log outcome and create follow-up"
+        "subtitle": "Record outcome and next steps"
       },
       {
         "id": "callForm",
         "component": "Form",
-        "name": "logCall",
-        "buttons": "callButtons",
+        "name": "log-call",
         "fields": [
-          "callControlContact",
-          "callControlDuration",
-          "callControlOutcome",
-          "callControlNotes"
-        ]
+          "callOutcomeField",
+          "callDateField",
+          "callNotesField"
+        ],
+        "buttons": "callButtons"
       },
       {
-        "id": "callControlContact",
-        "component": "FormControl",
-        "label": "Contact",
-        "input": "callContactSelect"
-      },
-      {
-        "id": "callContactSelect",
-        "component": "Select",
-        "name": "callContact",
-        "placeholder": "Select contact",
-        "items": [
-          "callContactOpt1",
-          "callContactOpt2",
-          "callContactOpt3"
-        ]
-      },
-      {
-        "id": "callContactOpt1",
-        "component": "SelectItem",
-        "value": "jane",
-        "label": "Jane Doe — Economic Buyer"
-      },
-      {
-        "id": "callContactOpt2",
-        "component": "SelectItem",
-        "value": "mark",
-        "label": "Mark Smith — Champion"
-      },
-      {
-        "id": "callContactOpt3",
-        "component": "SelectItem",
-        "value": "lisa",
-        "label": "Lisa Wong — Technical Evaluator"
-      },
-      {
-        "id": "callControlDuration",
-        "component": "FormControl",
-        "label": "Duration (min)",
-        "input": "callDurationInput"
-      },
-      {
-        "id": "callDurationInput",
-        "component": "Input",
-        "name": "duration",
-        "placeholder": "e.g., 30",
-        "type": "number"
-      },
-      {
-        "id": "callControlOutcome",
+        "id": "callOutcomeField",
         "component": "FormControl",
         "label": "Outcome",
         "input": "callOutcomeSelect"
@@ -463,42 +408,54 @@ Single-screen account view for your sales rep — all 9 items covered below.
       {
         "id": "callOutcomeSelect",
         "component": "Select",
-        "name": "outcome",
+        "name": "call_outcome",
         "placeholder": "Select outcome",
         "items": [
-          "callOutcomeOpt1",
-          "callOutcomeOpt2",
-          "callOutcomeOpt3"
+          "outcomeConnected",
+          "outcomeVoicemail",
+          "outcomeNoAnswer"
         ]
       },
       {
-        "id": "callOutcomeOpt1",
+        "id": "outcomeConnected",
         "component": "SelectItem",
         "value": "connected",
-        "label": "Connected — Positive"
+        "label": "Connected — Conversation held"
       },
       {
-        "id": "callOutcomeOpt2",
+        "id": "outcomeVoicemail",
         "component": "SelectItem",
         "value": "voicemail",
-        "label": "Voicemail Left"
+        "label": "Voicemail left"
       },
       {
-        "id": "callOutcomeOpt3",
+        "id": "outcomeNoAnswer",
         "component": "SelectItem",
         "value": "no_answer",
-        "label": "No Answer"
+        "label": "No answer"
       },
       {
-        "id": "callControlNotes",
+        "id": "callDateField",
         "component": "FormControl",
-        "label": "Call Notes",
+        "label": "Call date",
+        "input": "callDatePicker"
+      },
+      {
+        "id": "callDatePicker",
+        "component": "DatePicker",
+        "name": "call_date",
+        "mode": "single"
+      },
+      {
+        "id": "callNotesField",
+        "component": "FormControl",
+        "label": "Call notes",
         "input": "callNotesInput"
       },
       {
         "id": "callNotesInput",
         "component": "TextArea",
-        "name": "callNotes",
+        "name": "call_notes",
         "placeholder": "What was discussed? Next steps?",
         "rows": 3
       },
@@ -506,7 +463,8 @@ Single-screen account view for your sales rep — all 9 items covered below.
         "id": "callButtons",
         "component": "Buttons",
         "buttons": [
-          "callSubmitBtn"
+          "callSubmitBtn",
+          "callCancelBtn"
         ]
       },
       {
@@ -514,6 +472,12 @@ Single-screen account view for your sales rep — all 9 items covered below.
         "component": "Button",
         "label": "Log Call",
         "variant": "primary"
+      },
+      {
+        "id": "callCancelBtn",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "secondary"
       }
     ]
   }

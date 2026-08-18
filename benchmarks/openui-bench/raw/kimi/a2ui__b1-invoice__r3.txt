@@ -1,15 +1,11 @@
-Here's a clean, single-screen invoice view for the client:
+Here's a client-facing invoice screen covering all three items — amount due with currency, due date, and a "Pay now" action:
 
 <a2ui-json>
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "invoice-view",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": {
-      "primaryColor": "#4F46E5",
-      "agentDisplayName": "Freelancer Invoicing"
-    }
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
@@ -18,62 +14,119 @@ Here's a clean, single-screen invoice view for the client:
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "invoice-view",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "l",
-        "children": ["header", "statusRow", "separator1", "amountSection", "dueDateSection", "separator2", "payButton", "note"]
+        "children": [
+          "header",
+          "statusBadge",
+          "amountHeading",
+          "amountDue",
+          "dueDate",
+          "sep1",
+          "lineItems",
+          "sep2",
+          "payActions",
+          "note"
+        ]
       },
       {
         "id": "header",
         "component": "CardHeader",
-        "title": "Invoice #INV-2025-041",
-        "subtitle": "From: Jordan Lee — Freelance Design Services"
+        "title": "Invoice #INV-2041",
+        "subtitle": "From: Jordan Lee — Freelance Design"
       },
       {
-        "id": "statusRow",
-        "component": "TagBlock",
-        "tags": ["Awaiting Payment", "Issued Oct 28, 2025"]
+        "id": "statusBadge",
+        "component": "Badge",
+        "text": "Awaiting payment",
+        "variant": "secondary"
       },
       {
-        "id": "separator1",
-        "component": "Separator",
-        "orientation": "horizontal"
+        "id": "amountHeading",
+        "component": "Label",
+        "text": "Amount due"
       },
       {
-        "id": "amountSection",
-        "component": "TextContent",
-        "text": "## Amount Due: **$2,400.00 USD**",
-        "size": "large-heavy"
+        "id": "amountDue",
+        "component": "Heading",
+        "text": "$2,450.00 USD",
+        "level": "h1"
       },
       {
-        "id": "dueDateSection",
-        "component": "Callout",
-        "variant": "warning",
-        "title": "Due Date: November 15, 2025",
-        "description": "Please complete payment by this date to avoid a 5% late fee."
+        "id": "dueDate",
+        "component": "Alert",
+        "title": "Due date: March 15, 2025",
+        "description": "Please pay within 14 days of the invoice date to avoid a late fee.",
+        "variant": "warning"
       },
       {
-        "id": "separator2",
-        "component": "Separator",
-        "orientation": "horizontal"
+        "id": "sep1",
+        "component": "Separator"
       },
       {
-        "id": "payButton",
+        "id": "lineItems",
+        "component": "Table",
+        "columns": [
+          "itemCol",
+          "amountCol"
+        ]
+      },
+      {
+        "id": "itemCol",
+        "component": "Col",
+        "label": "Service",
+        "data": [
+          "Website redesign (milestone 2)",
+          "Brand asset package",
+          "Subtotal",
+          "Tax (0%)",
+          "Total due"
+        ]
+      },
+      {
+        "id": "amountCol",
+        "component": "Col",
+        "label": "Amount (USD)",
+        "data": [
+          "$1,800.00",
+          "$650.00",
+          "$2,450.00",
+          "$0.00",
+          "$2,450.00"
+        ]
+      },
+      {
+        "id": "sep2",
+        "component": "Separator"
+      },
+      {
+        "id": "payActions",
+        "component": "Buttons",
+        "buttons": [
+          "payNowBtn",
+          "downloadBtn"
+        ]
+      },
+      {
+        "id": "payNowBtn",
         "component": "Button",
-        "label": "Pay Now — $2,400.00 USD",
+        "label": "Pay now — $2,450.00 USD",
         "variant": "primary",
-        "size": "large",
-        "action": [{"name": "pay_invoice", "invoiceId": "INV-2025-041", "amount": 2400.00, "currency": "USD"}]
+        "size": "large"
+      },
+      {
+        "id": "downloadBtn",
+        "component": "Button",
+        "label": "Download PDF",
+        "variant": "secondary"
       },
       {
         "id": "note",
         "component": "TextContent",
-        "text": "Secure payment via card or bank transfer. A receipt will be emailed to you after payment.",
+        "text": "Payment methods: card, bank transfer, or PayPal. Questions? Reply to this invoice.",
         "size": "small"
       }
     ]
@@ -82,6 +135,6 @@ Here's a clean, single-screen invoice view for the client:
 </a2ui-json>
 
 This covers all three requirements:
-1. **Amount due & currency** — displayed prominently as $2,400.00 USD
-2. **Due date** — highlighted in a warning callout (November 15, 2025) with a late-fee note
-3. **Pay now** — a large primary "Pay Now" button wired to a payment action
+1. **Amount due & currency** — "$2,450.00 USD" shown prominently as a heading, plus an itemized breakdown.
+2. **Due date** — highlighted in a warning alert ("March 15, 2025") with late-fee context.
+3. **Pay now** — a large primary "Pay now" button, with a secondary PDF download option.

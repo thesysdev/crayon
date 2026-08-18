@@ -4,7 +4,7 @@ Here's a low-inventory warning view covering all four requirements.
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "low-inventory-view",
+    "surfaceId": "main",
     "catalogId": "thesys.dev:c1-openui"
   }
 }
@@ -14,184 +14,144 @@ Here's a low-inventory warning view covering all four requirements.
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "low-inventory-view",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
         "direction": "column",
         "gap": "l",
-        "children": ["header", "threshold-callout", "search-section", "items-heading", "items-list"]
+        "children": [
+          "header",
+          "thresholdBanner",
+          "searchControl",
+          "inventoryTable",
+          "reorderActions"
+        ]
       },
       {
         "id": "header",
         "component": "CardHeader",
         "title": "Low Inventory Warning",
-        "subtitle": "Items at or below the reorder threshold need attention"
+        "subtitle": "Items at or below the reorder threshold"
       },
       {
-        "id": "threshold-callout",
-        "component": "Callout",
-        "variant": "warning",
-        "title": "Reorder Threshold: 15 units",
-        "description": "Any item with 15 or fewer units remaining triggers this low-inventory warning. Reorder soon to avoid stockouts."
+        "id": "thresholdBanner",
+        "component": "Alert",
+        "title": "Warning threshold: 20 units",
+        "description": "Any item with 20 or fewer units remaining is flagged for reorder.",
+        "variant": "warning"
       },
       {
-        "id": "search-section",
-        "component": "Card",
-        "variant": "sunk",
-        "direction": "column",
-        "gap": "s",
-        "children": ["search-input", "search-btn"]
+        "id": "searchControl",
+        "component": "FormControl",
+        "label": "Search items",
+        "input": "searchInput",
+        "hint": "Filter by product name or SKU"
       },
       {
-        "id": "search-input",
+        "id": "searchInput",
         "component": "Input",
-        "name": "itemSearch",
-        "type": "text",
-        "placeholder": "Search items by name or SKU..."
+        "name": "item_search",
+        "placeholder": "Search product name or SKU...",
+        "type": "text"
       },
       {
-        "id": "search-btn",
-        "component": "Button",
-        "label": "Search Items",
-        "variant": "secondary",
-        "size": "small",
-        "action": [{ "call": "searchInventory", "args": { "query": { "path": "/itemSearch" } } }]
+        "id": "inventoryTable",
+        "component": "Table",
+        "columns": [
+          "colItem",
+          "colSku",
+          "colRemaining",
+          "colThreshold",
+          "colReorder"
+        ]
       },
       {
-        "id": "items-heading",
-        "component": "Heading",
-        "text": "Items Running Low",
-        "level": "h3"
+        "id": "colItem",
+        "component": "Col",
+        "label": "Item",
+        "type": "string",
+        "data": [
+          "Organic Coffee Beans 1kg",
+          "Stainless Water Bottle",
+          "Wireless Mouse",
+          "Notebook A5 Pack",
+          "USB-C Charger 65W"
+        ]
       },
       {
-        "id": "items-list",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "m",
-        "children": ["item-1", "item-2", "item-3", "item-4"]
+        "id": "colSku",
+        "component": "Col",
+        "label": "SKU",
+        "type": "string",
+        "data": [
+          "COF-1001",
+          "BTL-2043",
+          "MSE-3312",
+          "NBK-0087",
+          "CHG-5560"
+        ]
       },
       {
-        "id": "item-1",
-        "component": "Card",
-        "variant": "card",
+        "id": "colRemaining",
+        "component": "Col",
+        "label": "Units Remaining",
+        "type": "number",
+        "data": [
+          4,
+          12,
+          8,
+          19,
+          2
+        ]
+      },
+      {
+        "id": "colThreshold",
+        "component": "Col",
+        "label": "Threshold",
+        "type": "number",
+        "data": [
+          20,
+          20,
+          20,
+          20,
+          20
+        ]
+      },
+      {
+        "id": "colReorder",
+        "component": "Col",
+        "label": "Action",
+        "type": "action",
+        "data": [
+          "Reorder",
+          "Reorder",
+          "Reorder",
+          "Reorder",
+          "Reorder"
+        ]
+      },
+      {
+        "id": "reorderActions",
+        "component": "Buttons",
         "direction": "row",
-        "align": "center",
-        "justify": "between",
-        "gap": "m",
-        "children": ["item-1-info", "item-1-badge", "item-1-reorder"]
+        "buttons": [
+          "reorderSelectedBtn",
+          "reorderAllBtn"
+        ]
       },
       {
-        "id": "item-1-info",
-        "component": "TextContent",
-        "text": "**Organic Coffee Beans (1kg)**\nSKU: CFB-1001",
-        "size": "default"
-      },
-      {
-        "id": "item-1-badge",
-        "component": "Badge",
-        "text": "3 units left",
-        "variant": "destructive"
-      },
-      {
-        "id": "item-1-reorder",
+        "id": "reorderSelectedBtn",
         "component": "Button",
-        "label": "Reorder",
-        "variant": "primary",
-        "size": "small",
-        "action": [{ "call": "reorderItem", "args": { "sku": "CFB-1001" } }]
-      },
-      {
-        "id": "item-2",
-        "component": "Card",
-        "variant": "card",
-        "direction": "row",
-        "align": "center",
-        "justify": "between",
-        "gap": "m",
-        "children": ["item-2-info", "item-2-badge", "item-2-reorder"]
-      },
-      {
-        "id": "item-2-info",
-        "component": "TextContent",
-        "text": "**Ceramic Mug (White)**\nSKU: MUG-2044",
-        "size": "default"
-      },
-      {
-        "id": "item-2-badge",
-        "component": "Badge",
-        "text": "8 units left",
-        "variant": "destructive"
-      },
-      {
-        "id": "item-2-reorder",
-        "component": "Button",
-        "label": "Reorder",
-        "variant": "primary",
-        "size": "small",
-        "action": [{ "call": "reorderItem", "args": { "sku": "MUG-2044" } }]
-      },
-      {
-        "id": "item-3",
-        "component": "Card",
-        "variant": "card",
-        "direction": "row",
-        "align": "center",
-        "justify": "between",
-        "gap": "m",
-        "children": ["item-3-info", "item-3-badge", "item-3-reorder"]
-      },
-      {
-        "id": "item-3-info",
-        "component": "TextContent",
-        "text": "**Paper Filters (100ct)**\nSKU: FLT-3012",
-        "size": "default"
-      },
-      {
-        "id": "item-3-badge",
-        "component": "Badge",
-        "text": "12 units left",
+        "label": "Reorder Selected",
         "variant": "secondary"
       },
       {
-        "id": "item-3-reorder",
+        "id": "reorderAllBtn",
         "component": "Button",
-        "label": "Reorder",
-        "variant": "primary",
-        "size": "small",
-        "action": [{ "call": "reorderItem", "args": { "sku": "FLT-3012" } }]
-      },
-      {
-        "id": "item-4",
-        "component": "Card",
-        "variant": "card",
-        "direction": "row",
-        "align": "center",
-        "justify": "between",
-        "gap": "m",
-        "children": ["item-4-info", "item-4-badge", "item-4-reorder"]
-      },
-      {
-        "id": "item-4-info",
-        "component": "TextContent",
-        "text": "**Insulated Tumbler (500ml)**\nSKU: TMB-4088",
-        "size": "default"
-      },
-      {
-        "id": "item-4-badge",
-        "component": "Badge",
-        "text": "14 units left",
-        "variant": "secondary"
-      },
-      {
-        "id": "item-4-reorder",
-        "component": "Button",
-        "label": "Reorder",
-        "variant": "primary",
-        "size": "small",
-        "action": [{ "call": "reorderItem", "args": { "sku": "TMB-4088" } }]
+        "label": "Reorder All Low Items",
+        "variant": "primary"
       }
     ]
   }
@@ -200,7 +160,7 @@ Here's a low-inventory warning view covering all four requirements.
 
 This screen covers every requirement:
 
-1. **Items running low with remaining units** — Each item card shows the product name/SKU and a badge with the exact remaining unit count (red badges for critical, gray for near-threshold).
-2. **A way to reorder each item** — Every item has its own "Reorder" button wired to a `reorderItem` action with the item's SKU.
-3. **The triggering threshold** — The warning banner at the top clearly states the 15-unit reorder threshold and explains what it means.
-4. **A way to search items** — A search input plus button at the top lets users find items by name or SKU.
+1. **Items running low with remaining units** — the table lists each flagged product with a "Units Remaining" column (e.g., 4, 12, 8, 19, 2).
+2. **A way to reorder each item** — each row has a per-item "Reorder" action column, plus batch "Reorder Selected" and "Reorder All Low Items" buttons at the bottom.
+3. **The threshold that triggers the warning** — shown both in the top banner ("20 units") and as a dedicated "Threshold" column for per-row clarity.
+4. **A way to search items** — a search input at the top filters by product name or SKU.

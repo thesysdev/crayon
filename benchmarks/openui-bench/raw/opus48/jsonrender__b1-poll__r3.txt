@@ -1,15 +1,19 @@
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","poll-list","footer"]}}
-{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Where should we go for lunch on Friday?","subtitle":"Team Lunch Poll — cast your vote below"}}}
-{"op":"add","path":"/elements/poll-list","value":{"type":"Card","props":{"direction":"column","gap":"m"},"repeat":{"statePath":"/restaurants","key":"id"},"children":["restaurant-card"]}}
-{"op":"add","path":"/elements/restaurant-card","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["r-header","r-progress","r-vote-btn"]}}
-{"op":"add","path":"/elements/r-header","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center"},"children":["r-title","r-count"]}}
-{"op":"add","path":"/elements/r-title","value":{"type":"TextContent","props":{"text":{"$template":"**${name}**\n\n${cuisine}"},"size":"large"}}}
-{"op":"add","path":"/elements/r-count","value":{"type":"Badge","props":{"text":{"$template":"${votes} votes"},"variant":"secondary"}}}
-{"op":"add","path":"/elements/r-progress","value":{"type":"Progress","props":{"value":{"$item":"votes"}}}}
-{"op":"add","path":"/elements/r-vote-btn","value":{"type":"Button","props":{"label":"Vote","variant":"primary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":{"$item":"votes"},"value":1}}}}}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","totalVotes","list","footer"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Where should we go for lunch on Friday?","subtitle":"Cast your vote below — one option per person"}}}
+{"op":"add","path":"/elements/totalVotes","value":{"type":"Badge","props":{"text":{"$template":"Total votes: ${/totalVotes}"},"variant":"secondary"}}}
+{"op":"add","path":"/state/totalVotes","value":0}
+{"op":"add","path":"/elements/list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"repeat":{"statePath":"/restaurants","key":"id"},"children":["restaurantCard"]}}
+{"op":"add","path":"/elements/restaurantCard","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between"},"children":["restaurantInfo","restaurantVoteArea"]}}
+{"op":"add","path":"/elements/restaurantInfo","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["restaurantName","restaurantDesc","restaurantVotes"]}}
+{"op":"add","path":"/elements/restaurantName","value":{"type":"Heading","props":{"text":{"$item":"name"},"level":"h4"}}}
+{"op":"add","path":"/elements/restaurantDesc","value":{"type":"TextContent","props":{"text":{"$item":"description"},"size":"small"}}}
+{"op":"add","path":"/elements/restaurantVotes","value":{"type":"TextContent","props":{"text":{"$template":"${votes} vote(s)"},"size":"small-heavy"}}}
+{"op":"add","path":"/elements/restaurantVoteArea","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center"},"children":["restaurantTag","voteBtn"]}}
+{"op":"add","path":"/elements/restaurantTag","value":{"type":"Tag","props":{"text":{"$item":"cuisine"},"variant":"info","size":"sm"}}}
+{"op":"add","path":"/elements/voteBtn","value":{"type":"Button","props":{"label":"Vote","variant":"primary","size":"small"},"on":{"press":[{"action":"setState","params":{"statePath":{"$item":"votes"},"value":{"$item":"votes"}}}]}}}
 {"op":"add","path":"/state/restaurants","value":[]}
-{"op":"add","path":"/state/restaurants/0","value":{"id":"1","name":"Green Fork Bistro","cuisine":"Fresh salads & bowls","votes":5}}
-{"op":"add","path":"/state/restaurants/1","value":{"id":"2","name":"Taco Loco","cuisine":"Mexican street food","votes":8}}
-{"op":"add","path":"/state/restaurants/2","value":{"id":"3","name":"Noodle House","cuisine":"Asian noodles & ramen","votes":3}}
-{"op":"add","path":"/elements/footer","value":{"type":"TextContent","props":{"text":"Vote closes Thursday at 5pm. One vote per person.","size":"small"}}}
+{"op":"add","path":"/state/restaurants/0","value":{"id":"1","name":"Casa Verde","description":"Fresh Mexican bowls, tacos & salsas","cuisine":"Mexican","votes":0}}
+{"op":"add","path":"/state/restaurants/1","value":{"id":"2","name":"Noodle House","description":"Ramen, pho & rice noodles made to order","cuisine":"Asian","votes":0}}
+{"op":"add","path":"/state/restaurants/2","value":{"id":"3","name":"The Grillhouse","description":"Burgers, wings & loaded fries","cuisine":"American","votes":0}}
+{"op":"add","path":"/elements/footer","value":{"type":"TextContent","props":{"text":"Poll closes Thursday at 5 PM. Pick your favorite!","size":"small"}}}

@@ -2,12 +2,8 @@
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "low-inventory-warning",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": {
-      "primaryColor": "#C2410C",
-      "agentDisplayName": "Inventory Manager"
-    }
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
@@ -16,21 +12,20 @@
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "low-inventory-warning",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "l",
         "children": [
           "header",
           "warning",
           "searchControl",
+          "threshold",
           "inventoryTable",
-          "footerNote"
-        ]
+          "reorderActions"
+        ],
+        "gap": "l"
       },
       {
         "id": "header",
@@ -41,105 +36,130 @@
       {
         "id": "warning",
         "component": "Alert",
-        "variant": "warning",
-        "title": "Reorder threshold: 10 units",
-        "description": "Products with 10 or fewer units remaining appear in this list."
+        "title": "5 items are running low",
+        "description": "Reorder soon to avoid stockouts.",
+        "variant": "warning"
       },
       {
         "id": "searchControl",
         "component": "FormControl",
-        "label": "Search low-inventory items",
-        "hint": "Search by product name, SKU, or category.",
-        "input": "searchInput"
+        "label": "Search inventory",
+        "input": "searchInput",
+        "hint": "Search by item name or SKU"
       },
       {
         "id": "searchInput",
         "component": "Input",
-        "name": "inventorySearch",
-        "type": "text",
+        "name": "inventory_search",
         "placeholder": "Search items..."
+      },
+      {
+        "id": "threshold",
+        "component": "TextCallout",
+        "variant": "info",
+        "title": "Low-stock warning threshold",
+        "description": "An item appears here when available inventory is 10 units or fewer."
       },
       {
         "id": "inventoryTable",
         "component": "Table",
         "columns": [
-          "productColumn",
+          "itemColumn",
           "skuColumn",
           "remainingColumn",
-          "thresholdColumn",
-          "actionColumn"
+          "statusColumn"
         ]
       },
       {
-        "id": "productColumn",
+        "id": "itemColumn",
         "component": "Col",
         "label": "Item",
         "data": [
-          "Organic whole milk",
-          "Arabica coffee beans",
-          "Paper towels — 6 pack",
-          "AA batteries — 12 pack",
-          "Classic tomato soup"
-        ],
-        "type": "string"
+          "Classic Crew T-Shirt",
+          "Canvas Tote Bag",
+          "Stainless Water Bottle",
+          "Logo Baseball Cap",
+          "Everyday Notebook"
+        ]
       },
       {
         "id": "skuColumn",
         "component": "Col",
         "label": "SKU",
         "data": [
-          "DAI-1042",
-          "PAN-2218",
-          "HOM-3091",
-          "ELE-4175",
-          "GRO-5820"
-        ],
-        "type": "string"
+          "TSH-CL-001",
+          "TOTE-CA-014",
+          "BOT-ST-022",
+          "CAP-LG-008",
+          "NOTE-ED-031"
+        ]
       },
       {
         "id": "remainingColumn",
         "component": "Col",
         "label": "Remaining units",
+        "type": "number",
         "data": [
-          "3",
-          "5",
-          "7",
-          "8",
-          "10"
-        ],
-        "type": "number"
+          3,
+          5,
+          7,
+          8,
+          10
+        ]
       },
       {
-        "id": "thresholdColumn",
+        "id": "statusColumn",
         "component": "Col",
-        "label": "Warning threshold",
+        "label": "Status",
         "data": [
-          "10 units",
-          "10 units",
-          "10 units",
-          "10 units",
-          "10 units"
-        ],
-        "type": "string"
+          "Critical",
+          "Critical",
+          "Low",
+          "Low",
+          "Low"
+        ]
       },
       {
-        "id": "actionColumn",
-        "component": "Col",
-        "label": "Reorder",
-        "data": [
-          "Reorder milk",
-          "Reorder coffee",
-          "Reorder towels",
-          "Reorder batteries",
-          "Reorder soup"
+        "id": "reorderActions",
+        "component": "Buttons",
+        "buttons": [
+          "reorderShirts",
+          "reorderTotes",
+          "reorderBottles",
+          "reorderCaps",
+          "reorderNotebooks"
         ],
-        "type": "action"
+        "direction": "column"
       },
       {
-        "id": "footerNote",
-        "component": "TextContent",
-        "size": "small",
-        "text": "Showing 5 items at or below the current reorder threshold."
+        "id": "reorderShirts",
+        "component": "Button",
+        "label": "Reorder Classic Crew T-Shirt",
+        "variant": "primary"
+      },
+      {
+        "id": "reorderTotes",
+        "component": "Button",
+        "label": "Reorder Canvas Tote Bag",
+        "variant": "secondary"
+      },
+      {
+        "id": "reorderBottles",
+        "component": "Button",
+        "label": "Reorder Stainless Water Bottle",
+        "variant": "secondary"
+      },
+      {
+        "id": "reorderCaps",
+        "component": "Button",
+        "label": "Reorder Logo Baseball Cap",
+        "variant": "secondary"
+      },
+      {
+        "id": "reorderNotebooks",
+        "component": "Button",
+        "label": "Reorder Everyday Notebook",
+        "variant": "secondary"
       }
     ]
   }

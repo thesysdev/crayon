@@ -1,119 +1,107 @@
 Here's a clean freelancer invoice view with the amount due, due date, and a pay button:
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "invoice-view",
-      "catalogId": "thesys.dev:c1-openui"
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "invoice-view",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "children": ["header", "amount-section", "separator", "due-date-section", "separator2", "pay-section"],
-          "direction": "column",
-          "gap": "m",
-          "variant": "card"
-        },
-        {
-          "id": "header",
-          "component": "CardHeader",
-          "title": "Invoice #2024-0187",
-          "subtitle": "From: Alex Rivera Design"
-        },
-        {
-          "id": "amount-section",
-          "component": "Card",
-          "children": ["amount-label", "amount-value"],
-          "direction": "column",
-          "gap": "xs",
-          "variant": "sunk",
-          "align": "center"
-        },
-        {
-          "id": "amount-label",
-          "component": "TextContent",
-          "text": "Amount Due",
-          "size": "small"
-        },
-        {
-          "id": "amount-value",
-          "component": "TextContent",
-          "text": "$2,450.00 USD",
-          "size": "large-heavy"
-        },
-        {
-          "id": "separator",
-          "component": "Separator",
-          "orientation": "horizontal"
-        },
-        {
-          "id": "due-date-section",
-          "component": "Card",
-          "children": ["due-date-label", "due-date-value"],
-          "direction": "row",
-          "gap": "s",
-          "variant": "clear",
-          "justify": "between",
-          "align": "center"
-        },
-        {
-          "id": "due-date-label",
-          "component": "TextContent",
-          "text": "Due Date",
-          "size": "default"
-        },
-        {
-          "id": "due-date-value",
-          "component": "Tag",
-          "text": "July 15, 2025",
-          "variant": "warning",
-          "size": "md"
-        },
-        {
-          "id": "separator2",
-          "component": "Separator",
-          "orientation": "horizontal"
-        },
-        {
-          "id": "pay-section",
-          "component": "Card",
-          "children": ["pay-button"],
-          "direction": "column",
-          "gap": "none",
-          "variant": "clear",
-          "align": "stretch"
-        },
-        {
-          "id": "pay-button",
-          "component": "Button",
-          "label": "Pay Now",
-          "variant": "primary",
-          "size": "large",
-          "action": [
-            {
-              "type": "pay",
-              "invoiceId": "2024-0187",
-              "amount": 2450.00,
-              "currency": "USD"
-            }
-          ]
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-This invoice screen includes:
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "statusBadge",
+          "separator1",
+          "amountLabel",
+          "amountValue",
+          "dueDateRow",
+          "separator2",
+          "paySection"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Invoice #2024-0147",
+        "subtitle": "Billed to: Acme Design Co."
+      },
+      {
+        "id": "statusBadge",
+        "component": "Badge",
+        "text": "Awaiting Payment",
+        "variant": "secondary"
+      },
+      {
+        "id": "separator1",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "amountLabel",
+        "component": "TextContent",
+        "text": "Amount Due",
+        "size": "small"
+      },
+      {
+        "id": "amountValue",
+        "component": "TextContent",
+        "text": "$2,450.00 USD",
+        "size": "large-heavy"
+      },
+      {
+        "id": "dueDateRow",
+        "component": "TextContent",
+        "text": "**Due date:** July 15, 2025",
+        "size": "default"
+      },
+      {
+        "id": "separator2",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "paySection",
+        "component": "Buttons",
+        "buttons": [
+          "payNowBtn",
+          "downloadBtn"
+        ],
+        "direction": "row"
+      },
+      {
+        "id": "payNowBtn",
+        "component": "Button",
+        "label": "Pay Now",
+        "variant": "primary",
+        "size": "large"
+      },
+      {
+        "id": "downloadBtn",
+        "component": "Button",
+        "label": "Download PDF",
+        "variant": "secondary",
+        "size": "large"
+      }
+    ]
+  }
+}
+</a2ui-json>
 
-1. **Amount due & currency** — Displayed prominently in a recessed section showing **$2,450.00 USD** in large bold text.
-2. **Due date** — Shown as a warning-tagged badge reading **July 15, 2025**, making it visually distinct and easy to spot.
-3. **Pay Now button** — A full-width primary action button at the bottom that triggers the payment flow with the invoice details attached.
+This invoice view covers all three requirements:
+
+1. **Amount due & currency** — Displayed prominently as **$2,450.00 USD** in a large, bold format with a small "Amount Due" label above it.
+2. **Due date** — Shown clearly as **July 15, 2025**.
+3. **Way to pay now** — A primary **"Pay Now"** button is provided, along with a secondary option to download the invoice as a PDF.

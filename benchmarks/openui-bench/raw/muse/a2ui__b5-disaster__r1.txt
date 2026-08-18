@@ -1,5 +1,1627 @@
-Emergency Coordination Center is now live — unified view for incidents, resources, shelters, routes, and field operations.
+Emergency Response Coordination Center — single-screen command view covering all 18 required items.
 
-<a2ui-json>{"version":"v0.9","createSurface":{"surfaceId":"emergency-coordination-center","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#DC2626","agentDisplayName":"ERCC Command"},"sendDataModel":true}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
 
-<a2ui-json>{"version":"v0.9","updateComponents":{"surfaceId":"emergency-coordination-center","components":[{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["header","controlsCard","severityAlert","tabs"]},{"id":"header","component":"CardHeader","title":"Emergency Response Coordination Center","subtitle":"Single-screen command view • Last sync: 2 min ago • EOC Active - Level 2"},{"id":"controlsCard","component":"Card","variant":"card","direction":"row","gap":"m","align":"center","justify":"between","wrap":true,"children":["zoneFocusControl","quickActionsButtons"]},{"id":"zoneFocusControl","component":"FormControl","label":"17. Focus on Zone","hint":"Filter all incident data by zone","input":"zoneSelect"},{"id":"zoneSelect","component":"Select","name":"focusZone","placeholder":"All Zones - Overview","items":["zoneAllItem","zoneNorthItem","zoneSouthItem","zoneEastItem","zoneWestItem","zoneCentralItem"],"value":"All Zones"},{"id":"zoneAllItem","component":"SelectItem","value":"all","label":"All Zones - Overview"},{"id":"zoneNorthItem","component":"SelectItem","value":"north","label":"Zone North - Industrial"},{"id":"zoneSouthItem","component":"SelectItem","value":"south","label":"Zone South - Residential"},{"id":"zoneEastItem","component":"SelectItem","value":"east","label":"Zone East - Riverside"},{"id":"zoneWestItem","component":"SelectItem","value":"west","label":"Zone West - Hillside"},{"id":"zoneCentralItem","component":"SelectItem","value":"central","label":"Zone Central - Downtown"},{"id":"quickActionsButtons","component":"Buttons","direction":"row","buttons":["btnRequest","btnBroadcast","btnReport"]},{"id":"btnRequest","component":"Button","label":"Request Resources (15)","variant":"primary"},{"id":"btnBroadcast","component":"Button","label":"Broadcast Update (16)","variant":"secondary"},{"id":"btnReport","component":"Button","label":"File Situation Report (18)","variant":"secondary"},{"id":"severityAlert","component":"Alert","title":"Overall Severity Summary (2) — HIGH ALERT","description":"4 Critical • 7 High • 5 Medium • 3 Low incidents active. 2 zones at critical threshold (North, East). Immediate resource reallocation recommended.","variant":"destructive"},{"id":"tabs","component":"Tabs","items":["tabOverview","tabLogistics","tabPersonnel","tabActions"]},{"id":"tabOverview","component":"TabItem","value":"overview","trigger":"Overview & Threats","content":["overviewRow","incidentsCard","weatherCard","commsRoadsRow"]},{"id":"tabLogistics","component":"TabItem","value":"logistics","trigger":"Shelters & Logistics","content":["sheltersCard","evacuationCard","resourcesDetailCard","hospitalsRow","donationsCard"]},{"id":"tabPersonnel","component":"TabItem","value":"personnel","trigger":"People & Tasks","content":["rescuedCasualtiesRow","volunteersCard","aidRequestsCard","tasksCard"]},{"id":"tabActions","component":"TabItem","value":"actions","trigger":"Actions (15/16/18)","content":["actionsIntro","requestResourcesCard","broadcastCard","sitRepCard"]},{"id":"overviewRow","component":"Card","variant":"clear","direction":"row","gap":"m","wrap":true,"children":["severitySummaryCard","rescuedCasualtiesCard","resourcesOverviewCard"]},{"id":"severitySummaryCard","component":"Card","variant":"card","children":["severitySummaryHeader","severityPie","severityLegend"]},{"id":"severitySummaryHeader","component":"CardHeader","title":"2. Overall Severity Breakdown","subtitle":"19 active incidents"},{"id":"severityPie","component":"PieChart","labels":["Critical","High","Medium","Low"],"values":[4,7,5,3],"variant":"donut"},{"id":"severityLegend","component":"TextContent","text":"**Critical: 21%** • High: 37% • Medium: 26% • Low: 16% — Trend: +2 Critical in last hour (Zones North/East)","size":"small"},{"id":"rescuedCasualtiesCard","component":"Card","variant":"card","children":["rescuedHeader","rescuedStatsText","rescuedProgress","casualtyProgress"]},{"id":"rescuedHeader","component":"CardHeader","title":"7. People Rescued & Casualties","subtitle":"Cumulative since 06:00 today"},{"id":"rescuedStatsText","component":"MarkDownRenderer","textMarkdown":"**142 Rescued** ✅  |  **18 Casualties** (12 injured, 6 fatalities)  |  **27 Still Missing**\n\nRescue rate: 12/hr last 4 hours","variant":"clear"},{"id":"rescuedProgress","component":"Progress","value":84,"label":"Rescue target progress (142 / 169 located)"},{"id":"casualtyProgress","component":"Progress","value":11,"label":"Casualty rate vs total affected (18 / 169)"},{"id":"resourcesOverviewCard","component":"Card","variant":"card","children":["resourcesHeader","resourcesText","resourcesBarMini"]},{"id":"resourcesHeader","component":"CardHeader","title":"3. Resources Available (Summary)","subtitle":"Vehicles • Personnel • Supplies"},{"id":"resourcesText","component":"TextContent","text":"Vehicles: 24/32 available (75%) • Personnel: 86/120 (72%) • Supplies: 64% stock remaining. 3 resupply trucks en route.","size":"small"},{"id":"resourcesBarMini","component":"SingleStackedBarChart","labels":["Vehicles","Personnel","Supplies"],"values":[75,72,64]},{"id":"incidentsCard","component":"Card","variant":"card","children":["incidentsHeader","incidentsTable"]},{"id":"incidentsHeader","component":"CardHeader","title":"1. Active Incidents by Zone with Severity","subtitle":"19 incidents • Filter via Zone selector above"},{"id":"incidentsTable","component":"Table","columns":["colIncZone","colIncType","colIncSeverity","colIncStatus"]},{"id":"colIncZone","component":"Col","label":"Zone","data":["North","North","East","East","South","Central","West","South"],"type":"string"},{"id":"colIncType","component":"Col","label":"Incident","data":["Chemical leak - Plant A","Structure fire - Warehouse 3","River flooding - Levee 2","Power outage - Substation","Building collapse - Oak St","Gas leak - Downtown","Landslide - Hwy 17","Wildfire edge - Park South"],"type":"string"},{"id":"colIncSeverity","component":"Col","label":"Severity","data":["Critical","Critical","Critical","High","High","High","Medium","Medium"],"type":"string"},{"id":"colIncStatus","component":"Col","label":"Status","data":["Active - Contained","Active - Uncontained","Active - Rising","Active","Active - Rescue ongoing","Active - Evacuating","Monitoring","Monitoring"],"type":"string"},{"id":"weatherCard","component":"Card","variant":"card","children":["weatherHeader","weatherLineChart","weatherForecastText"]},{"id":"weatherHeader","component":"CardHeader","title":"6. Weather Forecast - Next 48 Hours","subtitle":"Source: NWS • Updated 14:30 • Impacts evacuation"},{"id":"weatherLineChart","component":"LineChart","labels":["Now","6h","12h","18h","24h","30h","36h","42h","48h"],"series":["seriesTemp","seriesWind"],"variant":"natural","xLabel":"Time","yLabel":"Temp °F / Wind mph"},{"id":"seriesTemp","component":"Series","category":"Temp (°F)","values":[78,76,72,68,70,74,79,81,77]},{"id":"seriesWind","component":"Series","category":"Wind (mph)","values":[12,18,25,32,28,22,15,10,14]},{"id":"weatherForecastText","component":"Callout","variant":"warning","title":"Weather Alert: High winds 25-32 mph next 12-18h","description":"Heavy rain expected 18-30h (1.5-2.5in). River level may rise +2ft. Secure shelters in Zone East. Avoid air ops 12-24h."},{"id":"commsRoadsRow","component":"Card","variant":"clear","direction":"row","gap":"m","wrap":true,"children":["commsCard","roadsCard"]},{"id":"commsCard","component":"Card","variant":"sunk","children":["commsHeader","commsListBlock"]},{"id":"commsHeader","component":"CardHeader","title":"11. Communication Channels","subtitle":"Status: Up / Degraded / Down"},{"id":"commsListBlock","component":"ListBlock","variant":"number","items":["commsItemRadio","commsItemSat","commsItemCell","commsItemInternet","commsItemSiren"]},{"id":"commsItemRadio","component":"ListItem","title":"VHF Radio - Command Net","subtitle":"UP • 98% signal • Primary"},{"id":"commsItemSat","component":"ListItem","title":"Satellite Link - EOC","subtitle":"UP • Backup active"},{"id":"commsItemCell","component":"ListItem","title":"Cellular - FirstNet","subtitle":"DEGRADED • Zone East tower down"},{"id":"commsItemInternet","component":"ListItem","title":"Internet / Data - EOC","subtitle":"UP • 45 Mbps"},{"id":"commsItemSiren","component":"ListItem","title":"Public Siren System","subtitle":"DOWN • Zone West - power loss"},{"id":"roadsCard","component":"Card","variant":"sunk","children":["roadsHeader","roadsTagBlock","roadsText"]},{"id":"roadsHeader","component":"CardHeader","title":"12. Roads Closed","subtitle":"6 closures affecting evacuation"},{"id":"roadsTagBlock","component":"TagBlock","tags":["Hwy 17 @ Mile 12 - Landslide","River Rd - Flooded","Oak St Bridge - Collapse","Industrial Pkwy - Chemical spill","Park South Rd - Fire","Elm St - Debris"]},{"id":"roadsText","component":"TextContent","text":"Detour via Hwy 101 recommended for Zones West/East. Check evacuation routes tab for alternatives.","size":"small"},{"id":"sheltersCard","component":"Card","variant":"card","children":["sheltersHeader","sheltersTable"]},{"id":"sheltersHeader","component":"CardHeader","title":"4. Shelters - Capacity & Occupancy","subtitle":"5 shelters • 1,240 total capacity"},{"id":"sheltersTable","component":"Table","columns":["colShelterName","colShelterCap","colShelterOcc","colShelterAvail","colShelterStatus"]},{"id":"colShelterName","component":"Col","label":"Shelter","data":["Central High School","Riverside Community Center","South Elementary","North Armory","West Church"],"type":"string"},{"id":"colShelterCap","component":"Col","label":"Capacity","data":[400,300,250,200,90],"type":"number"},{"id":"colShelterOcc","component":"Col","label":"Occupied","data":[385,210,180,45,72],"type":"number"},{"id":"colShelterAvail","component":"Col","label":"Available","data":[15,90,70,155,18],"type":"number"},{"id":"colShelterStatus","component":"Col","label":"Occupancy","data":["96% - FULL","70%","72%","23%","80%"],"type":"string"},{"id":"evacuationCard","component":"Card","variant":"card","children":["evacHeader","evacTable"]},{"id":"evacHeader","component":"CardHeader","title":"5. Evacuation Routes - Status","subtitle":"Per zone - monitor closures"},{"id":"evacTable","component":"Table","columns":["colEvacRoute","colEvacStatus","colEvacCapacity"]},{"id":"colEvacRoute","component":"Col","label":"Route","data":["Route A - North via Hwy 101","Route B - East via River Rd","Route C - South via I-5","Route D - West via Hwy 17","Route E - Central via Main St"],"type":"string"},{"id":"colEvacStatus","component":"Col","label":"Status","data":["OPEN - Clear","CLOSED - Flooded","OPEN - Congested","CLOSED - Landslide","OPEN - Controlled"],"type":"string"},{"id":"colEvacCapacity","component":"Col","label":"Flow","data":["High - 1200/hr","0","Medium - 600/hr","0","High - 900/hr"],"type":"string"},{"id":"resourcesDetailCard","component":"Card","variant":"card","children":["resourcesDetailHeader","resourcesBarChart"]},{"id":"resourcesDetailHeader","component":"CardHeader","title":"3. Detailed Resources Available","subtitle":"Vehicles, Personnel, Supplies by type"},{"id":"resourcesBarChart","component":"BarChart","labels":["Available","Deployed","In Maintenance"],"series":["seriesVehicles","seriesPersonnel","seriesSupplies"],"variant":"stacked","xLabel":"Resource Pool","yLabel":"Units"},{"id":"seriesVehicles","component":"Series","category":"Vehicles","values":[24,6,2]},{"id":"seriesPersonnel","component":"Series","category":"Personnel","values":[86,28,6]},{"id":"seriesSupplies","component":"Series","category":"Supplies (pallets)","values":[64,36,12]},{"id":"hospitalsRow","component":"Card","variant":"clear","direction":"row","gap":"m","wrap":true,"children":["hospitalsCard","donationsCard"]},{"id":"hospitalsCard","component":"Card","variant":"card","children":["hospitalsHeader","hospitalsTable"]},{"id":"hospitalsHeader","component":"CardHeader","title":"13. Nearby Hospitals - Free Beds","subtitle":"Within 30km • Trauma capable"},{"id":"hospitalsTable","component":"Table","columns":["colHospName","colHospBeds","colHospTotal","colHospDistance"]},{"id":"colHospName","component":"Col","label":"Hospital","data":["Central General","Riverside Medical","South County","West Hills Trauma"],"type":"string"},{"id":"colHospBeds","component":"Col","label":"Free Beds","data":[12,8,22,5],"type":"number"},{"id":"colHospTotal","component":"Col","label":"Total / ICU Free","data":["40 / 4","32 / 2","50 / 6","24 / 1"],"type":"string"},{"id":"colHospDistance","component":"Col","label":"Distance","data":["3.2 km","8.5 km","12.1 km","18.4 km"],"type":"string"},{"id":"donationsCard","component":"Card","variant":"card","children":["donationsHeader","donationsTable"]},{"id":"donationsHeader","component":"CardHeader","title":"9. Donations Received","subtitle":"Last 24h • $42,500 + goods"},{"id":"donationsTable","component":"Table","columns":["colDonType","colDonQty","colDonSource","colDonStatus"]},{"id":"colDonType","component":"Col","label":"Type","data":["Funds","Water (cases)","Food pallets","Blankets","Medical kits"],"type":"string"},{"id":"colDonQty","component":"Col","label":"Quantity","data":["$42,500","240","18","350","45"],"type":"string"},{"id":"colDonSource","component":"Col","label":"Source","data":["Red Cross","Local Biz Alliance","State Reserve","Community Drive","Hospital Network"],"type":"string"},{"id":"colDonStatus","component":"Col","label":"Status","data":["Allocated","At Warehouse","In Transit","Distributed","Received"],"type":"string"},{"id":"rescuedCasualtiesRow","component":"Card","variant":"clear","direction":"row","gap":"m","wrap":true,"children":["rescuedDetailCard","statsCallout"]},{"id":"rescuedDetailCard","component":"Card","variant":"card","children":["rescuedDetailHeader","rescuedBarChart"]},{"id":"rescuedDetailHeader","component":"CardHeader","title":"7. Rescue Operations Progress","subtitle":"By zone last 6 hours"},{"id":"rescuedBarChart","component":"BarChart","labels":["North","South","East","Central","West"],"series":["seriesRescued","seriesCasualties"],"variant":"grouped","xLabel":"Zone","yLabel":"People"},{"id":"seriesRescued","component":"Series","category":"Rescued","values":[28,42,35,22,15]},{"id":"seriesCasualties","component":"Series","category":"Casualties","values":[6,2,8,1,1]},{"id":"statsCallout","component":"TextCallout","variant":"info","title":"Operational Insight","description":"South zone rescue rate highest (42). East zone has highest casualty ratio - prioritize medical teams there. 27 missing concentrated in North."},{"id":"volunteersCard","component":"Card","variant":"card","children":["volunteersHeader","volunteersTable"]},{"id":"volunteersHeader","component":"CardHeader","title":"8. Volunteers On Duty with Assignment","subtitle":"34 active • 12 on standby"},{"id":"volunteersTable","component":"Table","columns":["colVolName","colVolAssignment","colVolZone","colVolStatus"]},{"id":"colVolName","component":"Col","label":"Volunteer","data":["A. Martinez","J. Chen","S. Okafor","R. Patel","L. Gomez","K. Williams"],"type":"string"},{"id":"colVolAssignment","component":"Col","label":"Assignment","data":["Shelter ops - Central High","Medical triage","Evac transport driver","Food distribution","Search & rescue - K9","Comms support"],"type":"string"},{"id":"colVolZone","component":"Col","label":"Zone","data":["Central","East","North","South","West","Central"],"type":"string"},{"id":"colVolStatus","component":"Col","label":"Status","data":["On Duty","On Duty","On Duty","On Break","On Duty","On Duty"],"type":"string"},{"id":"aidRequestsCard","component":"Card","variant":"card","children":["aidHeader","aidTable"]},{"id":"aidHeader","component":"CardHeader","title":"10. Aid Requests Awaiting Action","subtitle":"9 pending • 3 urgent"},{"id":"aidTable","component":"Table","columns":["colAidId","colAidZone","colAidType","colAidPriority","colAidStatus"]},{"id":"colAidId","component":"Col","label":"Request ID","data":["AR-1042","AR-1045","AR-1047","AR-1048","AR-1051"],"type":"string"},{"id":"colAidZone","component":"Col","label":"Zone","data":["North","East","South","West","Central"],"type":"string"},{"id":"colAidType","component":"Col","label":"Type","data":["Medical evac needed","Water + food for 40","Blankets / shelter","Generator fuel","Insulin - urgent"],"type":"string"},{"id":"colAidPriority","component":"Col","label":"Priority","data":["Critical","High","Medium","High","Critical"],"type":"string"},{"id":"colAidStatus","component":"Col","label":"Status","data":["Awaiting dispatch","Awaiting approval","Queued","Awaiting dispatch","Awaiting approval"],"type":"string"},{"id":"tasksCard","component":"Card","variant":"card","children":["tasksHeader","tasksTable"]},{"id":"tasksHeader","component":"CardHeader","title":"14. Open Tasks with Assignee","subtitle":"11 open • 2 overdue"},{"id":"tasksTable","component":"Table","columns":["colTaskTitle","colTaskAssignee","colTaskDue","colTaskPriority"]},{"id":"colTaskTitle","component":"Col","label":"Task","data":["Secure levee - sandbagging","Restore power - Substation East","Clear debris - Oak St","Inventory medical supplies","Setup backup comms - West"],"type":"string"},{"id":"colTaskAssignee","component":"Col","label":"Assignee","data":["Team Bravo - J. Torres","Utility Crew 2","Engine 4 - D. Lee","Logistics - M. Singh","Comms Unit - K. Williams"],"type":"string"},{"id":"colTaskDue","component":"Col","label":"Due","data":["16:00 Today","18:00 Today","Tomorrow 09:00","Today 15:00 OVERDUE","Today 17:00"],"type":"string"},{"id":"colTaskPriority","component":"Col","label":"Priority","data":["Critical","High","High","Medium","High"],"type":"string"},{"id":"actionsIntro","component":"TextContent","text":"**Actions Hub:** Use the forms below to request resources (15), broadcast updates (16), and file situation reports (18). All submissions are logged and dispatched to Command.","size":"default"},{"id":"requestResourcesCard","component":"Card","variant":"card","children":["requestResourcesHeader","formRequestResources"]},{"id":"requestResourcesHeader","component":"CardHeader","title":"15. Request More Resources","subtitle":"Type + Quantity • Routed to Logistics Chief"},{"id":"formRequestResources","component":"Form","name":"requestResources","fields":["fcResourceType","fcQuantity","fcZoneRequest","fcPriority"],"buttons":"buttonsRequest"},{"id":"buttonsRequest","component":"Buttons","buttons":["btnSubmitRequest"]},{"id":"btnSubmitRequest","component":"Button","label":"Submit Resource Request","variant":"primary"},{"id":"fcResourceType","component":"FormControl","label":"Resource Type","input":"selectResourceType"},{"id":"selectResourceType","component":"Select","name":"resourceType","placeholder":"Select type","items":["itemResVehicles","itemResPersonnel","itemResMedical","itemResFood","itemResShelter"]},{"id":"itemResVehicles","component":"SelectItem","value":"vehicles","label":"Vehicles / Transport"},{"id":"itemResPersonnel","component":"SelectItem","value":"personnel","label":"Personnel / Teams"},{"id":"itemResMedical","component":"SelectItem","value":"medical","label":"Medical Supplies"},{"id":"itemResFood","component":"SelectItem","value":"food_water","label":"Food & Water"},{"id":"itemResShelter","component":"SelectItem","value":"shelter","label":"Shelter Materials"},{"id":"fcQuantity","component":"FormControl","label":"Quantity Needed","hint":"Number of units, pallets, or personnel","input":"inputQuantity"},{"id":"inputQuantity","component":"Input","name":"quantity","placeholder":"e.g. 5","type":"number"},{"id":"fcZoneRequest","component":"FormControl","label":"For Zone","input":"selectZoneRequest"},{"id":"selectZoneRequest","component":"Select","name":"zoneRequest","placeholder":"Select zone","items":["itemZoneReqNorth","itemZoneReqSouth","itemZoneReqEast","itemZoneReqWest","itemZoneReqCentral"]},{"id":"itemZoneReqNorth","component":"SelectItem","value":"north","label":"Zone North"},{"id":"itemZoneReqSouth","component":"SelectItem","value":"south","label":"Zone South"},{"id":"itemZoneReqEast","component":"SelectItem","value":"east","label":"Zone East"},{"id":"itemZoneReqWest","component":"SelectItem","value":"west","label":"Zone West"},{"id":"itemZoneReqCentral","component":"SelectItem","value":"central","label":"Zone Central"},{"id":"fcPriority","component":"FormControl","label":"Priority","input":"selectPriority"},{"id":"selectPriority","component":"Select","name":"priority","placeholder":"Select priority","items":["itemPriorityCritical","itemPriorityHigh","itemPriorityMedium"]},{"id":"itemPriorityCritical","component":"SelectItem","value":"critical","label":"Critical - Immediate"},{"id":"itemPriorityHigh","component":"SelectItem","value":"high","label":"High - < 2 hours"},{"id":"itemPriorityMedium","component":"SelectItem","value":"medium","label":"Medium - < 12 hours"},{"id":"broadcastCard","component":"Card","variant":"card","children":["broadcastHeader","formBroadcast"]},{"id":"broadcastHeader","component":"CardHeader","title":"16. Broadcast an Update","subtitle":"Message will go to selected channels • Requires confirmation"},{"id":"formBroadcast","component":"Form","name":"broadcastUpdate","fields":["fcBroadcastChannel","fcBroadcastMessage"],"buttons":"buttonsBroadcast"},{"id":"buttonsBroadcast","component":"Buttons","buttons":["btnSendBroadcast"]},{"id":"btnSendBroadcast","component":"Button","label":"Broadcast Now","variant":"primary"},{"id":"fcBroadcastChannel","component":"FormControl","label":"Channel(s)","input":"selectBroadcastChannel"},{"id":"selectBroadcastChannel","component":"Select","name":"broadcastChannel","placeholder":"Select channel","items":["itemChanAll","itemChanRadio","itemChanSMS","itemChanSiren"]},{"id":"itemChanAll","component":"SelectItem","value":"all","label":"All Available Channels"},{"id":"itemChanRadio","component":"SelectItem","value":"radio","label":"VHF Radio Only"},{"id":"itemChanSMS","component":"SelectItem","value":"sms","label":"SMS / Cellular Alert"},{"id":"itemChanSiren","component":"SelectItem","value":"siren","label":"Public Siren + Loudspeaker"},{"id":"fcBroadcastMessage","component":"FormControl","label":"Message","hint":"Keep under 280 characters for SMS/siren","input":"inputBroadcastMessage"},{"id":"inputBroadcastMessage","component":"TextArea","name":"broadcastMessage","placeholder":"e.g. EVACUATION ORDER: Zone East - proceed via Route A to Central High Shelter. Avoid River Rd. - EOC","rows":3},{"id":"sitRepCard","component":"Card","variant":"card","children":["sitRepHeader","formSitRep"]},{"id":"sitRepHeader","component":"CardHeader","title":"18. File a Situation Report (SITREP)","subtitle":"For field teams and zone coordinators"},{"id":"formSitRep","component":"Form","name":"sitrep","fields":["fcSitRepZone","fcSitRepType","fcSitRepDetails"],"buttons":"buttonsSitRep"},{"id":"buttonsSitRep","component":"Buttons","buttons":["btnSubmitSitRep"]},{"id":"btnSubmitSitRep","component":"Button","label":"Submit SITREP","variant":"primary"},{"id":"fcSitRepZone","component":"FormControl","label":"Zone","input":"selectSitRepZone"},{"id":"selectSitRepZone","component":"Select","name":"sitrepZone","placeholder":"Select zone","items":["itemSitZoneNorth","itemSitZoneSouth","itemSitZoneEast","itemSitZoneWest","itemSitZoneCentral"]},{"id":"itemSitZoneNorth","component":"SelectItem","value":"north","label":"Zone North"},{"id":"itemSitZoneSouth","component":"SelectItem","value":"south","label":"Zone South"},{"id":"itemSitZoneEast","component":"SelectItem","value":"east","label":"Zone East"},{"id":"itemSitZoneWest","component":"SelectItem","value":"west","label":"Zone West"},{"id":"itemSitZoneCentral","component":"SelectItem","value":"central","label":"Zone Central"},{"id":"fcSitRepType","component":"FormControl","label":"Report Type","input":"selectSitRepType"},{"id":"selectSitRepType","component":"Select","name":"sitrepType","placeholder":"Select type","items":["itemSitTypeFire","itemSitTypeFlood","itemSitTypeMedical","itemSitTypeInfra","itemSitTypeOther"]},{"id":"itemSitTypeFire","component":"SelectItem","value":"fire","label":"Fire / Hazmat"},{"id":"itemSitTypeFlood","component":"SelectItem","value":"flood","label":"Flood / Weather"},{"id":"itemSitTypeMedical","component":"SelectItem","value":"medical","label":"Medical / Casualty"},{"id":"itemSitTypeInfra","component":"SelectItem","value":"infra","label":"Infrastructure / Roads"},{"id":"itemSitTypeOther","component":"SelectItem","value":"other","label":"Other"},{"id":"fcSitRepDetails","component":"FormControl","label":"Details & Observations","hint":"Include location, severity, actions taken","input":"inputSitRepDetails"},{"id":"inputSitRepDetails","component":"TextArea","name":"sitrepDetails","placeholder":"Describe situation, casualties, needs, and actions taken...","rows":4}]}}
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "zoneFocusCard",
+          "kpiCard",
+          "incidentsCard",
+          "severityCard",
+          "resourcesCard",
+          "sheltersCard",
+          "evacCard",
+          "roadsCard",
+          "weatherCard",
+          "volunteersCard",
+          "donationsCard",
+          "aidCard",
+          "commsCard",
+          "hospitalsCard",
+          "tasksCard",
+          "requestFormCard",
+          "broadcastFormCard",
+          "sitrepFormCard"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Emergency Response Coordination Center",
+        "subtitle": "Unified Command Dashboard • Live Operations • Last sync: 2 min ago • EOC Level 2"
+      },
+      {
+        "id": "zoneFocusCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "zoneFocusHeader",
+          "zoneFocusForm"
+        ]
+      },
+      {
+        "id": "zoneFocusHeader",
+        "component": "CardHeader",
+        "title": "Focus on One Zone (17)",
+        "subtitle": "Filter all incidents, shelters, and tasks to a single operational zone"
+      },
+      {
+        "id": "zoneFocusForm",
+        "component": "Form",
+        "name": "zone-focus",
+        "fields": [
+          "zoneFocusControl"
+        ],
+        "buttons": "zoneFocusButtons"
+      },
+      {
+        "id": "zoneFocusControl",
+        "component": "FormControl",
+        "label": "Select Zone to Focus",
+        "input": "zoneSelect"
+      },
+      {
+        "id": "zoneSelect",
+        "component": "Select",
+        "name": "focus_zone",
+        "placeholder": "All Zones (overview)",
+        "items": [
+          "zoneAll",
+          "zoneA",
+          "zoneB",
+          "zoneC",
+          "zoneD",
+          "zoneE"
+        ]
+      },
+      {
+        "id": "zoneAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All Zones — Overview"
+      },
+      {
+        "id": "zoneA",
+        "component": "SelectItem",
+        "value": "zone-a",
+        "label": "Zone A — North Industrial"
+      },
+      {
+        "id": "zoneB",
+        "component": "SelectItem",
+        "value": "zone-b",
+        "label": "Zone B — Riverside"
+      },
+      {
+        "id": "zoneC",
+        "component": "SelectItem",
+        "value": "zone-c",
+        "label": "Zone C — Downtown"
+      },
+      {
+        "id": "zoneD",
+        "component": "SelectItem",
+        "value": "zone-d",
+        "label": "Zone D — East Hills"
+      },
+      {
+        "id": "zoneE",
+        "component": "SelectItem",
+        "value": "zone-e",
+        "label": "Zone E — South Port"
+      },
+      {
+        "id": "zoneFocusButtons",
+        "component": "Buttons",
+        "buttons": [
+          "zoneFocusBtn"
+        ]
+      },
+      {
+        "id": "zoneFocusBtn",
+        "component": "Button",
+        "label": "Apply Zone Focus",
+        "variant": "primary"
+      },
+      {
+        "id": "kpiCard",
+        "component": "Card",
+        "children": [
+          "kpiHeader",
+          "kpiTable",
+          "kpiNote"
+        ]
+      },
+      {
+        "id": "kpiHeader",
+        "component": "CardHeader",
+        "title": "People Rescued & Casualties So Far (7)",
+        "subtitle": "Cumulative since incident start — 14:00 Aug 17"
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": [
+          "kpiMetricCol",
+          "kpiValueCol",
+          "kpiTrendCol"
+        ]
+      },
+      {
+        "id": "kpiMetricCol",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "People Rescued",
+          "Casualties (Deceased)",
+          "Injured / Hospitalized",
+          "Missing Persons"
+        ]
+      },
+      {
+        "id": "kpiValueCol",
+        "component": "Col",
+        "label": "Count",
+        "data": [
+          "1,247",
+          "34",
+          "186",
+          "18"
+        ]
+      },
+      {
+        "id": "kpiTrendCol",
+        "component": "Col",
+        "label": "Last 6h",
+        "data": [
+          "+142 rescued",
+          "+2",
+          "+11",
+          "-9 located"
+        ]
+      },
+      {
+        "id": "kpiNote",
+        "component": "TextContent",
+        "text": "Rescue rate +22% vs previous operational period. Medical surge capacity still adequate.",
+        "size": "small"
+      },
+      {
+        "id": "incidentsCard",
+        "component": "Card",
+        "children": [
+          "incidentsHeader",
+          "incidentsTable"
+        ]
+      },
+      {
+        "id": "incidentsHeader",
+        "component": "CardHeader",
+        "title": "Active Incidents by Zone with Severity (1)",
+        "subtitle": "5 active incidents • 2 Critical, 2 High, 1 Medium"
+      },
+      {
+        "id": "incidentsTable",
+        "component": "Table",
+        "columns": [
+          "incZoneCol",
+          "incTypeCol",
+          "incSeverityCol",
+          "incStatusCol"
+        ]
+      },
+      {
+        "id": "incZoneCol",
+        "component": "Col",
+        "label": "Zone",
+        "data": [
+          "Zone A — North Industrial",
+          "Zone B — Riverside",
+          "Zone C — Downtown",
+          "Zone D — East Hills",
+          "Zone E — South Port"
+        ]
+      },
+      {
+        "id": "incTypeCol",
+        "component": "Col",
+        "label": "Incident",
+        "data": [
+          "Chemical spill — Plant 4",
+          "River flood — Levee breach",
+          "Power outage — Grid substation",
+          "Wildfire — Ridge line",
+          "Bridge collapse — Harbor span"
+        ]
+      },
+      {
+        "id": "incSeverityCol",
+        "component": "Col",
+        "label": "Severity",
+        "data": [
+          "CRITICAL",
+          "HIGH",
+          "MEDIUM",
+          "CRITICAL",
+          "HIGH"
+        ]
+      },
+      {
+        "id": "incStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Containment 60%",
+          "Evacuation ongoing",
+          "Crews on site",
+          "Air support deployed",
+          "USAR team engaged"
+        ]
+      },
+      {
+        "id": "severityCard",
+        "component": "Card",
+        "children": [
+          "severityHeader",
+          "severityPie",
+          "severityAlert"
+        ]
+      },
+      {
+        "id": "severityHeader",
+        "component": "CardHeader",
+        "title": "Overall Severity Summary (2)",
+        "subtitle": "Distribution across all active incidents"
+      },
+      {
+        "id": "severityPie",
+        "component": "PieChart",
+        "labels": [
+          "Critical",
+          "High",
+          "Medium",
+          "Low"
+        ],
+        "values": [
+          2,
+          2,
+          1,
+          0
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "severityAlert",
+        "component": "Alert",
+        "title": "Overall Posture: SEVERE",
+        "description": "2 Critical incidents active in Zones A & D. Command recommends maintaining Level 2 EOC and prioritizing air assets to Zone D.",
+        "variant": "destructive"
+      },
+      {
+        "id": "resourcesCard",
+        "component": "Card",
+        "children": [
+          "resourcesHeader",
+          "resourcesTable",
+          "resourcesBar"
+        ]
+      },
+      {
+        "id": "resourcesHeader",
+        "component": "CardHeader",
+        "title": "Vehicles, Personnel & Supplies Available (3)",
+        "subtitle": "Ready-to-deploy resources"
+      },
+      {
+        "id": "resourcesTable",
+        "component": "Table",
+        "columns": [
+          "resTypeCol",
+          "resAvailableCol",
+          "resTotalCol",
+          "resStatusCol"
+        ]
+      },
+      {
+        "id": "resTypeCol",
+        "component": "Col",
+        "label": "Resource",
+        "data": [
+          "Vehicles — Trucks",
+          "Vehicles — Helicopters",
+          "Personnel — Responders",
+          "Supplies — Water (pallets)",
+          "Supplies — Food (kits)",
+          "Supplies — Medical kits"
+        ]
+      },
+      {
+        "id": "resAvailableCol",
+        "component": "Col",
+        "label": "Available",
+        "data": [
+          "12",
+          "6",
+          "142",
+          "4,200",
+          "3,800",
+          "950"
+        ]
+      },
+      {
+        "id": "resTotalCol",
+        "component": "Col",
+        "label": "Total Fleet/Stock",
+        "data": [
+          "18",
+          "8",
+          "210",
+          "6,000",
+          "5,500",
+          "1,200"
+        ]
+      },
+      {
+        "id": "resStatusCol",
+        "component": "Col",
+        "label": "Readiness",
+        "data": [
+          "66% available",
+          "75% available",
+          "68% available",
+          "70% available",
+          "69% available",
+          "79% available"
+        ]
+      },
+      {
+        "id": "resourcesBar",
+        "component": "BarChart",
+        "labels": [
+          "Trucks",
+          "Helicopters",
+          "Personnel",
+          "Water",
+          "Food",
+          "Med Kits"
+        ],
+        "series": [
+          "resSeries"
+        ],
+        "variant": "grouped",
+        "yLabel": "Available Units"
+      },
+      {
+        "id": "resSeries",
+        "component": "Series",
+        "category": "Available",
+        "values": [
+          12,
+          6,
+          142,
+          4200,
+          3800,
+          950
+        ]
+      },
+      {
+        "id": "sheltersCard",
+        "component": "Card",
+        "children": [
+          "sheltersHeader",
+          "sheltersTable",
+          "shelterProg1",
+          "shelterProg2",
+          "shelterProg3"
+        ]
+      },
+      {
+        "id": "sheltersHeader",
+        "component": "CardHeader",
+        "title": "Shelters — Capacity & Occupancy (4)",
+        "subtitle": "2,600 total capacity • 1,718 occupied (66%)"
+      },
+      {
+        "id": "sheltersTable",
+        "component": "Table",
+        "columns": [
+          "shelterNameCol",
+          "shelterCapCol",
+          "shelterOccCol",
+          "shelterAvailCol"
+        ]
+      },
+      {
+        "id": "shelterNameCol",
+        "component": "Col",
+        "label": "Shelter",
+        "data": [
+          "Central High School",
+          "Riverside Arena",
+          "East Community Center",
+          "Port Warehouse"
+        ]
+      },
+      {
+        "id": "shelterCapCol",
+        "component": "Col",
+        "label": "Capacity",
+        "data": [
+          "500",
+          "800",
+          "300",
+          "1,000"
+        ]
+      },
+      {
+        "id": "shelterOccCol",
+        "component": "Col",
+        "label": "Occupied",
+        "data": [
+          "387",
+          "612",
+          "298",
+          "421"
+        ]
+      },
+      {
+        "id": "shelterAvailCol",
+        "component": "Col",
+        "label": "Free / Status",
+        "data": [
+          "113 — Open",
+          "188 — Open",
+          "2 — NEAR FULL",
+          "579 — Open"
+        ]
+      },
+      {
+        "id": "shelterProg1",
+        "component": "Progress",
+        "value": 77,
+        "label": "Central High: 77% occupied"
+      },
+      {
+        "id": "shelterProg2",
+        "component": "Progress",
+        "value": 99,
+        "label": "East Community Center: 99% — DIVERTING"
+      },
+      {
+        "id": "shelterProg3",
+        "component": "Progress",
+        "value": 42,
+        "label": "Port Warehouse: 42% — Recommended for new evacuees"
+      },
+      {
+        "id": "evacCard",
+        "component": "Card",
+        "children": [
+          "evacHeader",
+          "evacTable"
+        ]
+      },
+      {
+        "id": "evacHeader",
+        "component": "CardHeader",
+        "title": "Status of Each Evacuation Route (5)",
+        "subtitle": "Primary corridors — updated 5 min ago"
+      },
+      {
+        "id": "evacTable",
+        "component": "Table",
+        "columns": [
+          "evacRouteCol",
+          "evacStatusCol",
+          "evacNotesCol"
+        ]
+      },
+      {
+        "id": "evacRouteCol",
+        "component": "Col",
+        "label": "Route",
+        "data": [
+          "Route 1 — North Highway (A→C)",
+          "Route 2 — River Road (B)",
+          "Route 3 — East Bypass (D)",
+          "Route 4 — Coastal Evac (E)"
+        ]
+      },
+      {
+        "id": "evacStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "OPEN",
+          "CONGESTED",
+          "CLOSED",
+          "OPEN"
+        ]
+      },
+      {
+        "id": "evacNotesCol",
+        "component": "Col",
+        "label": "Notes / ETA",
+        "data": [
+          "Clear, 25 min to shelter",
+          "Heavy traffic, 55 min — use alt",
+          "Wildfire crossing — DO NOT USE",
+          "Clear, 18 min — priority for Zone E"
+        ]
+      },
+      {
+        "id": "roadsCard",
+        "component": "Card",
+        "children": [
+          "roadsHeader",
+          "roadsList"
+        ]
+      },
+      {
+        "id": "roadsHeader",
+        "component": "CardHeader",
+        "title": "Roads Closed (12)",
+        "subtitle": "Do not route civilian or supply convoys"
+      },
+      {
+        "id": "roadsList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "roadItem1",
+          "roadItem2",
+          "roadItem3",
+          "roadItem4"
+        ]
+      },
+      {
+        "id": "roadItem1",
+        "component": "ListItem",
+        "title": "Harbor Bridge — Mile 4.2 (Zone E)",
+        "subtitle": "Structural failure — closed indefinitely"
+      },
+      {
+        "id": "roadItem2",
+        "component": "ListItem",
+        "title": "East Bypass between Exit 12-14 (Zone D)",
+        "subtitle": "Wildfire + fallen trees — closed"
+      },
+      {
+        "id": "roadItem3",
+        "component": "ListItem",
+        "title": "River Road — Levee crossing (Zone B)",
+        "subtitle": "Flooded 2ft — closed to non-high-clearance"
+      },
+      {
+        "id": "roadItem4",
+        "component": "ListItem",
+        "title": "Industrial Parkway North (Zone A)",
+        "subtitle": "Hazmat cordon — closed 500m radius"
+      },
+      {
+        "id": "weatherCard",
+        "component": "Card",
+        "children": [
+          "weatherHeader",
+          "weatherAlert",
+          "weatherChart",
+          "weatherTable"
+        ]
+      },
+      {
+        "id": "weatherHeader",
+        "component": "CardHeader",
+        "title": "Weather Forecast — Next 48 Hours (6)",
+        "subtitle": "County EOC Zone • Source: NWS Updated 09:15 UTC"
+      },
+      {
+        "id": "weatherAlert",
+        "component": "Alert",
+        "title": "Wind advisory 18:00-02:00",
+        "description": "Gusts to 45 mph may ground helicopters and accelerate Zone D wildfire. Prepare to pause air ops.",
+        "variant": "warning"
+      },
+      {
+        "id": "weatherChart",
+        "component": "LineChart",
+        "labels": [
+          "Now",
+          "+6h",
+          "+12h",
+          "+18h",
+          "+24h",
+          "+30h",
+          "+36h",
+          "+42h",
+          "+48h"
+        ],
+        "series": [
+          "tempSeries",
+          "windSeries",
+          "rainSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Time",
+        "yLabel": "Temp °F / Wind mph / Rain in"
+      },
+      {
+        "id": "tempSeries",
+        "component": "Series",
+        "category": "Temp °F",
+        "values": [
+          78,
+          82,
+          85,
+          81,
+          76,
+          74,
+          79,
+          83,
+          80
+        ]
+      },
+      {
+        "id": "windSeries",
+        "component": "Series",
+        "category": "Wind Gust mph",
+        "values": [
+          12,
+          18,
+          28,
+          45,
+          38,
+          22,
+          16,
+          14,
+          10
+        ]
+      },
+      {
+        "id": "rainSeries",
+        "component": "Series",
+        "category": "Rain (in)",
+        "values": [
+          0,
+          0,
+          0.1,
+          0.4,
+          0.8,
+          0.3,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "id": "weatherTable",
+        "component": "Table",
+        "columns": [
+          "wTimeCol",
+          "wCondCol",
+          "wTempCol",
+          "wWindCol"
+        ]
+      },
+      {
+        "id": "wTimeCol",
+        "component": "Col",
+        "label": "Window",
+        "data": [
+          "Tonight",
+          "Tomorrow AM",
+          "Tomorrow PM",
+          "Day 2"
+        ]
+      },
+      {
+        "id": "wCondCol",
+        "component": "Col",
+        "label": "Conditions",
+        "data": [
+          "Partly cloudy, gusty",
+          "Thunderstorms likely",
+          "Heavy rain",
+          "Clearing"
+        ]
+      },
+      {
+        "id": "wTempCol",
+        "component": "Col",
+        "label": "Temp",
+        "data": [
+          "78-85°F",
+          "76-81°F",
+          "74-79°F",
+          "80°F"
+        ]
+      },
+      {
+        "id": "wWindCol",
+        "component": "Col",
+        "label": "Wind",
+        "data": [
+          "12-45 mph",
+          "22-38 mph",
+          "16 mph",
+          "10 mph"
+        ]
+      },
+      {
+        "id": "volunteersCard",
+        "component": "Card",
+        "children": [
+          "volunteersHeader",
+          "volunteersTable"
+        ]
+      },
+      {
+        "id": "volunteersHeader",
+        "component": "CardHeader",
+        "title": "Volunteers on Duty with Assignment (8)",
+        "subtitle": "18 active • 4 on standby"
+      },
+      {
+        "id": "volunteersTable",
+        "component": "Table",
+        "columns": [
+          "volNameCol",
+          "volAssignCol",
+          "volShiftCol",
+          "volStatusCol"
+        ]
+      },
+      {
+        "id": "volNameCol",
+        "component": "Col",
+        "label": "Volunteer",
+        "data": [
+          "Maria Lopez",
+          "James Chen",
+          "Aisha Patel",
+          "David Kim",
+          "Sofia Rivera"
+        ]
+      },
+      {
+        "id": "volAssignCol",
+        "component": "Col",
+        "label": "Assignment",
+        "data": [
+          "Shelter Ops — Central High",
+          "Medical Triage — Riverside",
+          "Logistics — Port Warehouse",
+          "Evac Transport — Route 1",
+          "Comms Support — EOC"
+        ]
+      },
+      {
+        "id": "volShiftCol",
+        "component": "Col",
+        "label": "Shift",
+        "data": [
+          "06:00-18:00",
+          "08:00-20:00",
+          "07:00-19:00",
+          "09:00-21:00",
+          "10:00-22:00"
+        ]
+      },
+      {
+        "id": "volStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "On duty",
+          "On duty",
+          "On duty",
+          "On duty",
+          "On break"
+        ]
+      },
+      {
+        "id": "donationsCard",
+        "component": "Card",
+        "children": [
+          "donationsHeader",
+          "donationsTable",
+          "donationsPie"
+        ]
+      },
+      {
+        "id": "donationsHeader",
+        "component": "CardHeader",
+        "title": "Donations Received (9)",
+        "subtitle": "$142,800 + in-kind • Last 24h"
+      },
+      {
+        "id": "donationsTable",
+        "component": "Table",
+        "columns": [
+          "donorCol",
+          "donationTypeCol",
+          "donationAmtCol"
+        ]
+      },
+      {
+        "id": "donorCol",
+        "component": "Col",
+        "label": "Donor / Source",
+        "data": [
+          "Community Drive",
+          "Metro Corp",
+          "Red Cross Chapter",
+          "Local Farms Co-op",
+          "Anonymous"
+        ]
+      },
+      {
+        "id": "donationTypeCol",
+        "component": "Col",
+        "label": "Type",
+        "data": [
+          "Cash",
+          "Cash + Water",
+          "Medical supplies",
+          "Food pallets",
+          "Cash"
+        ]
+      },
+      {
+        "id": "donationAmtCol",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "$48,200",
+          "$52,000 + 800 cases",
+          "320 kits",
+          "42 pallets",
+          "$15,000"
+        ]
+      },
+      {
+        "id": "donationsPie",
+        "component": "PieChart",
+        "labels": [
+          "Cash",
+          "Water",
+          "Food",
+          "Medical"
+        ],
+        "values": [
+          115200,
+          18000,
+          22000,
+          15000
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "aidCard",
+        "component": "Card",
+        "children": [
+          "aidHeader",
+          "aidTable"
+        ]
+      },
+      {
+        "id": "aidHeader",
+        "component": "CardHeader",
+        "title": "Aid Requests Awaiting Action (10)",
+        "subtitle": "7 pending • 3 urgent"
+      },
+      {
+        "id": "aidTable",
+        "component": "Table",
+        "columns": [
+          "aidIdCol",
+          "aidZoneCol",
+          "aidRequestCol",
+          "aidPriorityCol",
+          "aidStatusCol"
+        ]
+      },
+      {
+        "id": "aidIdCol",
+        "component": "Col",
+        "label": "ID",
+        "data": [
+          "AR-104",
+          "AR-105",
+          "AR-106",
+          "AR-107",
+          "AR-108"
+        ]
+      },
+      {
+        "id": "aidZoneCol",
+        "component": "Col",
+        "label": "Zone",
+        "data": [
+          "Zone B",
+          "Zone D",
+          "Zone A",
+          "Zone C",
+          "Zone E"
+        ]
+      },
+      {
+        "id": "aidRequestCol",
+        "component": "Col",
+        "label": "Request",
+        "data": [
+          "Water + sandbags — 200 homes",
+          "Respirators — wildfire crews",
+          "Decon showers — chemical zone",
+          "Generators — 2 shelters",
+          "Boat rescue — marina"
+        ]
+      },
+      {
+        "id": "aidPriorityCol",
+        "component": "Col",
+        "label": "Priority",
+        "data": [
+          "URGENT",
+          "URGENT",
+          "HIGH",
+          "MEDIUM",
+          "URGENT"
+        ]
+      },
+      {
+        "id": "aidStatusCol",
+        "component": "Col",
+        "label": "Action",
+        "data": [
+          "Awaiting dispatch",
+          "Awaiting approval",
+          "Queued",
+          "Queued",
+          "Team en route"
+        ]
+      },
+      {
+        "id": "commsCard",
+        "component": "Card",
+        "children": [
+          "commsHeader",
+          "commsTable"
+        ]
+      },
+      {
+        "id": "commsHeader",
+        "component": "CardHeader",
+        "title": "Communication Channel Status (11)",
+        "subtitle": "Up / Degraded / Down"
+      },
+      {
+        "id": "commsTable",
+        "component": "Table",
+        "columns": [
+          "channelCol",
+          "commStatusCol",
+          "commUptimeCol"
+        ]
+      },
+      {
+        "id": "channelCol",
+        "component": "Col",
+        "label": "Channel",
+        "data": [
+          "VHF Radio — Tac 2",
+          "LTE / FirstNet",
+          "Satellite (Iridium)",
+          "Landline — EOC",
+          "Public Alert System (IPAWS)"
+        ]
+      },
+      {
+        "id": "commStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "UP",
+          "DEGRADED",
+          "UP",
+          "DOWN",
+          "UP"
+        ]
+      },
+      {
+        "id": "commUptimeCol",
+        "component": "Col",
+        "label": "Notes",
+        "data": [
+          "100% — Primary",
+          "62% — Congested Zone B",
+          "Backup active",
+          "Fiber cut Zone C — ETA 4h",
+          "Ready to broadcast"
+        ]
+      },
+      {
+        "id": "hospitalsCard",
+        "component": "Card",
+        "children": [
+          "hospitalsHeader",
+          "hospitalsTable"
+        ]
+      },
+      {
+        "id": "hospitalsHeader",
+        "component": "CardHeader",
+        "title": "Nearby Hospitals — Free Beds (13)",
+        "subtitle": "Within 10km • Updated 10 min ago"
+      },
+      {
+        "id": "hospitalsTable",
+        "component": "Table",
+        "columns": [
+          "hospNameCol",
+          "hospDistCol",
+          "hospBedsCol",
+          "hospTraumaCol"
+        ]
+      },
+      {
+        "id": "hospNameCol",
+        "component": "Col",
+        "label": "Hospital",
+        "data": [
+          "Metro General",
+          "Riverside Medical",
+          "St. Claire Regional",
+          "Port Urgent Care"
+        ]
+      },
+      {
+        "id": "hospDistCol",
+        "component": "Col",
+        "label": "Distance",
+        "data": [
+          "2.1 km",
+          "4.5 km",
+          "6.0 km",
+          "7.8 km"
+        ]
+      },
+      {
+        "id": "hospBedsCol",
+        "component": "Col",
+        "label": "Free Beds",
+        "data": [
+          "12 (8 ICU)",
+          "3 (1 ICU)",
+          "22 (6 ICU)",
+          "5 — Urgent only"
+        ]
+      },
+      {
+        "id": "hospTraumaCol",
+        "component": "Col",
+        "label": "Trauma / Status",
+        "data": [
+          "Level I — Accepting",
+          "Level II — Limited",
+          "Level I — Accepting",
+          "Level III — Stable only"
+        ]
+      },
+      {
+        "id": "tasksCard",
+        "component": "Card",
+        "children": [
+          "tasksHeader",
+          "tasksTable"
+        ]
+      },
+      {
+        "id": "tasksHeader",
+        "component": "CardHeader",
+        "title": "Open Tasks with Assignee (14)",
+        "subtitle": "6 open • 2 overdue"
+      },
+      {
+        "id": "tasksTable",
+        "component": "Table",
+        "columns": [
+          "taskNameCol",
+          "taskAssigneeCol",
+          "taskPriorityCol",
+          "taskDueCol"
+        ]
+      },
+      {
+        "id": "taskNameCol",
+        "component": "Col",
+        "label": "Task",
+        "data": [
+          "Deploy sandbags — Zone B levee",
+          "Air recon — Zone D fire line",
+          "Restore power — Downtown grid",
+          "Coordinate shelter food delivery",
+          "Inspect Harbor Bridge"
+        ]
+      },
+      {
+        "id": "taskAssigneeCol",
+        "component": "Col",
+        "label": "Assignee",
+        "data": [
+          "Team Bravo — J. Torres",
+          "Air Unit — K. Singh",
+          "Utility Crew — L. Okafor",
+          "Logistics — A. Patel",
+          "Engineers — M. Weber"
+        ]
+      },
+      {
+        "id": "taskPriorityCol",
+        "component": "Col",
+        "label": "Priority",
+        "data": [
+          "High",
+          "Critical",
+          "High",
+          "Medium",
+          "High"
+        ]
+      },
+      {
+        "id": "taskDueCol",
+        "component": "Col",
+        "label": "Due",
+        "data": [
+          "Today 16:00",
+          "Today 14:30 OVERDUE",
+          "Today 18:00",
+          "Today 15:00",
+          "Tomorrow 09:00"
+        ]
+      },
+      {
+        "id": "requestFormCard",
+        "component": "Card",
+        "children": [
+          "requestHeader",
+          "requestForm"
+        ]
+      },
+      {
+        "id": "requestHeader",
+        "component": "CardHeader",
+        "title": "Request More Resources (15)",
+        "subtitle": "Type and quantity — routed to Logistics"
+      },
+      {
+        "id": "requestForm",
+        "component": "Form",
+        "name": "resource-request",
+        "fields": [
+          "reqTypeControl",
+          "reqQtyControl",
+          "reqZoneControl",
+          "reqNotesControl"
+        ],
+        "buttons": "reqButtons"
+      },
+      {
+        "id": "reqTypeControl",
+        "component": "FormControl",
+        "label": "Resource Type",
+        "input": "reqTypeSelect"
+      },
+      {
+        "id": "reqTypeSelect",
+        "component": "Select",
+        "name": "resource_type",
+        "placeholder": "Choose type",
+        "items": [
+          "reqTypeVehicles",
+          "reqTypePersonnel",
+          "reqTypeMedical",
+          "reqTypeFood",
+          "reqTypeEquipment"
+        ]
+      },
+      {
+        "id": "reqTypeVehicles",
+        "component": "SelectItem",
+        "value": "vehicles",
+        "label": "Vehicles"
+      },
+      {
+        "id": "reqTypePersonnel",
+        "component": "SelectItem",
+        "value": "personnel",
+        "label": "Personnel"
+      },
+      {
+        "id": "reqTypeMedical",
+        "component": "SelectItem",
+        "value": "medical",
+        "label": "Medical Supplies"
+      },
+      {
+        "id": "reqTypeFood",
+        "component": "SelectItem",
+        "value": "food_water",
+        "label": "Food & Water"
+      },
+      {
+        "id": "reqTypeEquipment",
+        "component": "SelectItem",
+        "value": "heavy_equipment",
+        "label": "Heavy Equipment"
+      },
+      {
+        "id": "reqQtyControl",
+        "component": "FormControl",
+        "label": "Quantity",
+        "input": "reqQtyInput",
+        "hint": "Number of units / people / pallets"
+      },
+      {
+        "id": "reqQtyInput",
+        "component": "Input",
+        "name": "quantity",
+        "placeholder": "e.g., 2 trucks, 20 personnel, 100 kits",
+        "type": "text"
+      },
+      {
+        "id": "reqZoneControl",
+        "component": "FormControl",
+        "label": "For Zone",
+        "input": "reqZoneSelect"
+      },
+      {
+        "id": "reqZoneSelect",
+        "component": "Select",
+        "name": "request_zone",
+        "placeholder": "Select zone",
+        "items": [
+          "reqZoneAll2",
+          "reqZoneA2",
+          "reqZoneB2",
+          "reqZoneC2",
+          "reqZoneD2",
+          "reqZoneE2"
+        ]
+      },
+      {
+        "id": "reqZoneAll2",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "EOC Reserve"
+      },
+      {
+        "id": "reqZoneA2",
+        "component": "SelectItem",
+        "value": "zone-a",
+        "label": "Zone A — North Industrial"
+      },
+      {
+        "id": "reqZoneB2",
+        "component": "SelectItem",
+        "value": "zone-b",
+        "label": "Zone B — Riverside"
+      },
+      {
+        "id": "reqZoneC2",
+        "component": "SelectItem",
+        "value": "zone-c",
+        "label": "Zone C — Downtown"
+      },
+      {
+        "id": "reqZoneD2",
+        "component": "SelectItem",
+        "value": "zone-d",
+        "label": "Zone D — East Hills"
+      },
+      {
+        "id": "reqZoneE2",
+        "component": "SelectItem",
+        "value": "zone-e",
+        "label": "Zone E — South Port"
+      },
+      {
+        "id": "reqNotesControl",
+        "component": "FormControl",
+        "label": "Details / Justification",
+        "input": "reqNotesInput"
+      },
+      {
+        "id": "reqNotesInput",
+        "component": "TextArea",
+        "name": "request_notes",
+        "placeholder": "Urgency, drop location, contact..."
+      },
+      {
+        "id": "reqButtons",
+        "component": "Buttons",
+        "buttons": [
+          "reqSubmitBtn",
+          "reqCancelBtn"
+        ]
+      },
+      {
+        "id": "reqSubmitBtn",
+        "component": "Button",
+        "label": "Submit Request",
+        "variant": "primary"
+      },
+      {
+        "id": "reqCancelBtn",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "tertiary"
+      },
+      {
+        "id": "broadcastFormCard",
+        "component": "Card",
+        "children": [
+          "broadcastHeader",
+          "broadcastForm"
+        ]
+      },
+      {
+        "id": "broadcastHeader",
+        "component": "CardHeader",
+        "title": "Broadcast an Update (16)",
+        "subtitle": "Send message via IPAWS / VHF / SMS — logs to comms"
+      },
+      {
+        "id": "broadcastForm",
+        "component": "Form",
+        "name": "broadcast-update",
+        "fields": [
+          "broadcastMsgControl",
+          "broadcastPriorityControl"
+        ],
+        "buttons": "broadcastButtons"
+      },
+      {
+        "id": "broadcastMsgControl",
+        "component": "FormControl",
+        "label": "Message",
+        "input": "broadcastMsgInput",
+        "hint": "Keep under 280 characters for SMS/IPAWS"
+      },
+      {
+        "id": "broadcastMsgInput",
+        "component": "TextArea",
+        "name": "broadcast_message",
+        "placeholder": "e.g., EVACUATION UPDATE: Route 3 closed. Use Route 1 North Highway. Shelter space available at Port Warehouse...",
+        "rows": 3
+      },
+      {
+        "id": "broadcastPriorityControl",
+        "component": "FormControl",
+        "label": "Priority / Channel",
+        "input": "broadcastPrioritySelect"
+      },
+      {
+        "id": "broadcastPrioritySelect",
+        "component": "Select",
+        "name": "broadcast_priority",
+        "placeholder": "Select priority",
+        "items": [
+          "bPriorityImmediate",
+          "bPriorityUrgent",
+          "bPriorityRoutine"
+        ]
+      },
+      {
+        "id": "bPriorityImmediate",
+        "component": "SelectItem",
+        "value": "immediate",
+        "label": "Immediate — IPAWS + All channels"
+      },
+      {
+        "id": "bPriorityUrgent",
+        "component": "SelectItem",
+        "value": "urgent",
+        "label": "Urgent — VHF + SMS"
+      },
+      {
+        "id": "bPriorityRoutine",
+        "component": "SelectItem",
+        "value": "routine",
+        "label": "Routine — EOC log only"
+      },
+      {
+        "id": "broadcastButtons",
+        "component": "Buttons",
+        "buttons": [
+          "broadcastBtn"
+        ]
+      },
+      {
+        "id": "broadcastBtn",
+        "component": "Button",
+        "label": "Broadcast Now",
+        "variant": "primary"
+      },
+      {
+        "id": "sitrepFormCard",
+        "component": "Card",
+        "children": [
+          "sitrepHeader",
+          "sitrepForm"
+        ]
+      },
+      {
+        "id": "sitrepHeader",
+        "component": "CardHeader",
+        "title": "File a Situation Report (18)",
+        "subtitle": "SITREP — will be appended to incident log and shared with command"
+      },
+      {
+        "id": "sitrepForm",
+        "component": "Form",
+        "name": "sitrep",
+        "fields": [
+          "sitrepZoneControl",
+          "sitrepSeverityControl",
+          "sitrepDetailsControl",
+          "sitrepReporterControl"
+        ],
+        "buttons": "sitrepButtons"
+      },
+      {
+        "id": "sitrepZoneControl",
+        "component": "FormControl",
+        "label": "Zone",
+        "input": "sitrepZoneSelect"
+      },
+      {
+        "id": "sitrepZoneSelect",
+        "component": "Select",
+        "name": "sitrep_zone",
+        "placeholder": "Select zone",
+        "items": [
+          "sitrepZoneA",
+          "sitrepZoneB",
+          "sitrepZoneC",
+          "sitrepZoneD",
+          "sitrepZoneE"
+        ]
+      },
+      {
+        "id": "sitrepZoneA",
+        "component": "SelectItem",
+        "value": "zone-a",
+        "label": "Zone A — North Industrial"
+      },
+      {
+        "id": "sitrepZoneB",
+        "component": "SelectItem",
+        "value": "zone-b",
+        "label": "Zone B — Riverside"
+      },
+      {
+        "id": "sitrepZoneC",
+        "component": "SelectItem",
+        "value": "zone-c",
+        "label": "Zone C — Downtown"
+      },
+      {
+        "id": "sitrepZoneD",
+        "component": "SelectItem",
+        "value": "zone-d",
+        "label": "Zone D — East Hills"
+      },
+      {
+        "id": "sitrepZoneE",
+        "component": "SelectItem",
+        "value": "zone-e",
+        "label": "Zone E — South Port"
+      },
+      {
+        "id": "sitrepSeverityControl",
+        "component": "FormControl",
+        "label": "Observed Severity",
+        "input": "sitrepSeveritySelect"
+      },
+      {
+        "id": "sitrepSeveritySelect",
+        "component": "Select",
+        "name": "sitrep_severity",
+        "placeholder": "Select severity",
+        "items": [
+          "sitrepSevCritical",
+          "sitrepSevHigh",
+          "sitrepSevMedium",
+          "sitrepSevLow"
+        ]
+      },
+      {
+        "id": "sitrepSevCritical",
+        "component": "SelectItem",
+        "value": "critical",
+        "label": "Critical"
+      },
+      {
+        "id": "sitrepSevHigh",
+        "component": "SelectItem",
+        "value": "high",
+        "label": "High"
+      },
+      {
+        "id": "sitrepSevMedium",
+        "component": "SelectItem",
+        "value": "medium",
+        "label": "Medium"
+      },
+      {
+        "id": "sitrepSevLow",
+        "component": "SelectItem",
+        "value": "low",
+        "label": "Low"
+      },
+      {
+        "id": "sitrepDetailsControl",
+        "component": "FormControl",
+        "label": "Situation Details",
+        "input": "sitrepDetailsInput"
+      },
+      {
+        "id": "sitrepDetailsInput",
+        "component": "TextArea",
+        "name": "sitrep_details",
+        "placeholder": "Describe conditions, actions taken, needs...",
+        "rows": 4
+      },
+      {
+        "id": "sitrepReporterControl",
+        "component": "FormControl",
+        "label": "Reported By",
+        "input": "sitrepReporterInput"
+      },
+      {
+        "id": "sitrepReporterInput",
+        "component": "Input",
+        "name": "reporter_name",
+        "placeholder": "Name / Call sign"
+      },
+      {
+        "id": "sitrepButtons",
+        "component": "Buttons",
+        "buttons": [
+          "sitrepSubmitBtn",
+          "sitrepCancelBtn"
+        ]
+      },
+      {
+        "id": "sitrepSubmitBtn",
+        "component": "Button",
+        "label": "File SITREP",
+        "variant": "primary"
+      },
+      {
+        "id": "sitrepCancelBtn",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>

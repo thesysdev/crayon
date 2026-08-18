@@ -2,7 +2,7 @@
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "content-studio-dashboard",
+    "surfaceId": "main",
     "catalogId": "thesys.dev:c1-openui",
     "theme": {
       "primaryColor": "#2563EB",
@@ -12,357 +12,192 @@
 }
 </a2ui-json>
 
-< a2ui-json>
+<a2ui-json>
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "content-studio-dashboard",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
         "variant": "clear",
-        "direction": "column",
-        "gap": "xl",
+        "gap": "l",
         "children": [
           "header",
-          "filters",
+          "topActions",
+          "categoryFilter",
           "overview",
-          "mainContent",
-          "scheduleSection",
-          "commentsSection"
+          "readership",
+          "draftsSection",
+          "commentsSection",
+          "scheduleSection"
         ]
       },
       {
         "id": "header",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "align": "center",
-        "justify": "between",
-        "children": [
-          "pageTitle",
-          "newDraftButton"
+        "component": "CardHeader",
+        "title": "Content Studio",
+        "subtitle": "Plan, publish, and manage your editorial workflow"
+      },
+      {
+        "id": "topActions",
+        "component": "Buttons",
+        "buttons": [
+          "newDraftBtn"
         ]
       },
       {
-        "id": "pageTitle",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "title",
-          "subtitle"
-        ]
-      },
-      {
-        "id": "title",
-        "component": "Heading",
-        "text": "Content Studio",
-        "level": "h1"
-      },
-      {
-        "id": "subtitle",
-        "component": "TextContent",
-        "text": "Plan, publish, and measure your editorial work."
-      },
-      {
-        "id": "newDraftButton",
+        "id": "newDraftBtn",
         "component": "Button",
         "label": "Start new draft",
         "variant": "primary",
-        "size": "medium",
-        "action": [
-          {
-            "type": "newDraft"
-          }
-        ]
+        "size": "large"
       },
       {
-        "id": "filters",
-        "component": "Card",
-        "variant": "sunk",
-        "direction": "row",
-        "align": "center",
-        "gap": "m",
-        "children": [
-          "categoryControl",
-          "categorySelect"
-        ]
-      },
-      {
-        "id": "categoryControl",
-        "component": "Label",
-        "text": "Category"
+        "id": "categoryFilter",
+        "component": "FormControl",
+        "label": "Category",
+        "hint": "Filter your content and performance data",
+        "input": "categorySelect"
       },
       {
         "id": "categorySelect",
         "component": "Select",
         "name": "category",
         "placeholder": "All categories",
-        "value": "all",
         "items": [
-          "categoryAll",
-          "categoryNews",
-          "categoryFeatures",
-          "categoryGuides",
-          "categoryOpinion"
+          "catAll",
+          "catNews",
+          "catGuides",
+          "catOpinion",
+          "catCulture"
         ]
       },
       {
-        "id": "categoryAll",
+        "id": "catAll",
         "component": "SelectItem",
         "value": "all",
         "label": "All categories"
       },
       {
-        "id": "categoryNews",
+        "id": "catNews",
         "component": "SelectItem",
         "value": "news",
         "label": "News"
       },
       {
-        "id": "categoryFeatures",
-        "component": "SelectItem",
-        "value": "features",
-        "label": "Features"
-      },
-      {
-        "id": "categoryGuides",
+        "id": "catGuides",
         "component": "SelectItem",
         "value": "guides",
         "label": "Guides"
       },
       {
-        "id": "categoryOpinion",
+        "id": "catOpinion",
         "component": "SelectItem",
         "value": "opinion",
         "label": "Opinion"
       },
       {
+        "id": "catCulture",
+        "component": "SelectItem",
+        "value": "culture",
+        "label": "Culture"
+      },
+      {
         "id": "overview",
         "component": "Card",
-        "variant": "clear",
         "direction": "row",
         "gap": "m",
         "children": [
-          "publishedWeekCard",
-          "topArticleCard",
-          "commentsCard"
+          "publishedKpi",
+          "topArticleKpi"
         ]
       },
       {
-        "id": "publishedWeekCard",
+        "id": "publishedKpi",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
+        "variant": "sunk",
         "gap": "s",
         "children": [
-          "publishedWeekLabel",
-          "publishedWeekValue",
-          "publishedWeekNote"
-        ],
-        "weight": 1
+          "publishedTitle",
+          "publishedValue",
+          "publishedNote"
+        ]
       },
       {
-        "id": "publishedWeekLabel",
+        "id": "publishedTitle",
         "component": "TextContent",
         "text": "Published this week",
-        "size": "small"
+        "size": "small-heavy"
       },
       {
-        "id": "publishedWeekValue",
+        "id": "publishedValue",
         "component": "Heading",
-        "text": "12 pieces",
+        "text": "8 pieces",
         "level": "h2"
       },
       {
-        "id": "publishedWeekNote",
+        "id": "publishedNote",
         "component": "TextContent",
-        "text": "3 more than last week",
+        "text": "2 more than last week",
         "size": "small"
       },
       {
-        "id": "topArticleCard",
+        "id": "topArticleKpi",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
+        "variant": "sunk",
         "gap": "s",
         "children": [
-          "topArticleLabel",
           "topArticleTitle",
+          "topArticleName",
           "topArticleReads",
-          "topArticleTag"
-        ],
-        "weight": 2
-      },
-      {
-        "id": "topArticleLabel",
-        "component": "TextContent",
-        "text": "Most-read this month",
-        "size": "small"
+          "topArticleBadge"
+        ]
       },
       {
         "id": "topArticleTitle",
+        "component": "TextContent",
+        "text": "Most-read this month",
+        "size": "small-heavy"
+      },
+      {
+        "id": "topArticleName",
         "component": "Heading",
-        "text": "The practical guide to building a better newsletter",
+        "text": "The practical guide to AI-assisted editing",
         "level": "h3"
       },
       {
         "id": "topArticleReads",
         "component": "TextContent",
-        "text": "48,290 reads · 6.8% average engagement",
-        "size": "small"
+        "text": "24,680 reads",
+        "size": "large-heavy"
       },
       {
-        "id": "topArticleTag",
-        "component": "Tag",
-        "text": "Guides",
-        "variant": "info",
-        "size": "sm"
+        "id": "topArticleBadge",
+        "component": "Badge",
+        "text": "Top performer",
+        "variant": "secondary"
       },
       {
-        "id": "commentsCard",
+        "id": "readership",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "children": [
-          "commentsLabel",
-          "commentsValue",
-          "commentsNote"
-        ],
-        "weight": 1
-      },
-      {
-        "id": "commentsLabel",
-        "component": "TextContent",
-        "text": "Awaiting reply",
-        "size": "small"
-      },
-      {
-        "id": "commentsValue",
-        "component": "Heading",
-        "text": "8 comments",
-        "level": "h2"
-      },
-      {
-        "id": "commentsNote",
-        "component": "TextContent",
-        "text": "2 marked high priority",
-        "size": "small"
-      },
-      {
-        "id": "mainContent",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "gap": "m",
-        "align": "stretch",
-        "children": [
-          "draftsPanel",
-          "readershipPanel"
-        ]
-      },
-      {
-        "id": "draftsPanel",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "draftsHeader",
-          "draftsTable"
-        ],
-        "weight": 2
-      },
-      {
-        "id": "draftsHeader",
-        "component": "CardHeader",
-        "title": "Drafts",
-        "subtitle": "Your active editorial queue"
-      },
-      {
-        "id": "draftsTable",
-        "component": "Table",
-        "columns": [
-          "draftTitleColumn",
-          "draftCategoryColumn",
-          "draftStatusColumn",
-          "draftUpdatedColumn"
-        ]
-      },
-      {
-        "id": "draftTitleColumn",
-        "component": "Col",
-        "label": "Title",
-        "type": "string",
-        "data": [
-          "How AI is changing local reporting",
-          "The editor's guide to source verification",
-          "Five story formats to try this quarter",
-          "Interview: Designing for reader trust"
-        ]
-      },
-      {
-        "id": "draftCategoryColumn",
-        "component": "Col",
-        "label": "Category",
-        "type": "string",
-        "data": [
-          "News",
-          "Guides",
-          "Features",
-          "Opinion"
-        ]
-      },
-      {
-        "id": "draftStatusColumn",
-        "component": "Col",
-        "label": "Status",
-        "type": "string",
-        "data": [
-          "In review",
-          "Writing",
-          "Ready to publish",
-          "Needs edits"
-        ]
-      },
-      {
-        "id": "draftUpdatedColumn",
-        "component": "Col",
-        "label": "Last updated",
-        "type": "string",
-        "data": [
-          "18 min ago",
-          "Yesterday",
-          "2 days ago",
-          "Aug 12"
-        ]
-      },
-      {
-        "id": "readershipPanel",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
         "gap": "m",
         "children": [
           "readershipHeader",
           "readershipChart",
-          "readershipSummary"
-        ],
-        "weight": 2
+          "readershipSeries"
+        ]
       },
       {
         "id": "readershipHeader",
         "component": "CardHeader",
         "title": "Readership",
-        "subtitle": "Daily reads over the past 30 days"
+        "subtitle": "Daily article reads over the past 30 days"
       },
       {
         "id": "readershipChart",
-        "component": "LineChart",
+        "component": "AreaChart",
         "labels": [
           "Jul 20",
           "Jul 23",
@@ -386,127 +221,106 @@
       {
         "id": "readershipSeries",
         "component": "Series",
-        "category": "Reads",
+        "category": "Article reads",
         "values": [
-          1820,
-          2140,
+          1840,
+          2130,
           1980,
+          2470,
+          2260,
+          2810,
+          3040,
           2760,
-          3110,
-          2890,
-          3540,
-          4020,
-          3780,
-          4510,
-          4890
+          3380,
+          3620,
+          3890
         ]
       },
       {
-        "id": "readershipSummary",
-        "component": "TextContent",
-        "text": "92,480 total reads · Up 18% compared with the previous 30 days",
-        "size": "small"
-      },
-      {
-        "id": "scheduleSection",
+        "id": "draftsSection",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
         "gap": "m",
         "children": [
-          "scheduleHeader",
-          "scheduleForm"
+          "draftsHeader",
+          "draftsTable",
+          "draftTitleCol",
+          "draftStatusCol",
+          "draftUpdatedCol"
         ]
       },
       {
-        "id": "scheduleHeader",
+        "id": "draftsHeader",
         "component": "CardHeader",
-        "title": "Schedule a piece",
-        "subtitle": "Add an upcoming publication to your editorial calendar."
+        "title": "Drafts",
+        "subtitle": "4 pieces currently in progress"
       },
       {
-        "id": "scheduleForm",
-        "component": "Form",
-        "name": "schedule-piece",
-        "fields": [
-          "scheduleTitleControl",
-          "scheduleDateControl"
-        ],
-        "buttons": "scheduleButtons"
-      },
-      {
-        "id": "scheduleTitleControl",
-        "component": "FormControl",
-        "label": "Piece title",
-        "hint": "Use a working title; you can revise it later.",
-        "input": "scheduleTitleInput"
-      },
-      {
-        "id": "scheduleTitleInput",
-        "component": "Input",
-        "name": "pieceTitle",
-        "type": "text",
-        "placeholder": "Enter a title"
-      },
-      {
-        "id": "scheduleDateControl",
-        "component": "FormControl",
-        "label": "Publish date",
-        "input": "scheduleDateInput"
-      },
-      {
-        "id": "scheduleDateInput",
-        "component": "DatePicker",
-        "name": "publishDate",
-        "mode": "single"
-      },
-      {
-        "id": "scheduleButtons",
-        "component": "Buttons",
-        "direction": "row",
-        "buttons": [
-          "scheduleButton",
-          "saveScheduleDraftButton"
+        "id": "draftsTable",
+        "component": "Table",
+        "columns": [
+          "draftTitleCol",
+          "draftStatusCol",
+          "draftUpdatedCol"
         ]
       },
       {
-        "id": "scheduleButton",
-        "component": "Button",
-        "label": "Schedule piece",
-        "variant": "primary",
-        "action": [
-          {
-            "type": "schedulePiece"
-          }
+        "id": "draftTitleCol",
+        "component": "Col",
+        "label": "Title",
+        "data": [
+          "What creators can learn from newsroom workflows",
+          "Interview: Building a more humane web",
+          "The August culture desk roundup",
+          "How we fact-check fast-moving stories"
         ]
       },
       {
-        "id": "saveScheduleDraftButton",
-        "component": "Button",
-        "label": "Save as draft",
-        "variant": "secondary",
-        "action": [
-          {
-            "type": "saveDraft"
-          }
+        "id": "draftStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "In review",
+          "Needs edits",
+          "Writing",
+          "In review"
+        ]
+      },
+      {
+        "id": "draftUpdatedCol",
+        "component": "Col",
+        "label": "Last updated",
+        "data": [
+          "Today, 10:42 AM",
+          "Yesterday",
+          "Aug 15",
+          "Aug 13"
         ]
       },
       {
         "id": "commentsSection",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
         "gap": "m",
         "children": [
           "commentsHeader",
-          "commentsList"
+          "commentsAlert",
+          "commentsList",
+          "commentOne",
+          "commentTwo",
+          "commentThree"
         ]
       },
       {
         "id": "commentsHeader",
         "component": "CardHeader",
         "title": "Comments awaiting reply",
-        "subtitle": "Respond to readers and keep the conversation moving."
+        "subtitle": "3 reader conversations need your attention"
+      },
+      {
+        "id": "commentsAlert",
+        "component": "Alert",
+        "title": "Oldest comment is 2 days old",
+        "description": "Reply soon to keep the conversation active.",
+        "variant": "warning"
       },
       {
         "id": "commentsList",
@@ -521,23 +335,91 @@
       {
         "id": "commentOne",
         "component": "ListItem",
-        "title": "Maya Chen · “Could you share the source for this figure?”",
-        "subtitle": "On: The practical guide to building a better newsletter · 12 min ago",
+        "title": "Maya Chen on “The practical guide to AI-assisted editing”",
+        "subtitle": "“Could you share more about your source-verification process?”",
         "actionLabel": "Reply"
       },
       {
         "id": "commentTwo",
         "component": "ListItem",
-        "title": "Jordan Lee · “This framework was especially helpful for our team.”",
-        "subtitle": "On: Five story formats to try this quarter · 1 hr ago",
+        "title": "Jordan Wright on “Why local reporting still matters”",
+        "subtitle": "“This was a thoughtful read. How can readers support this work?”",
         "actionLabel": "Reply"
       },
       {
         "id": "commentThree",
         "component": "ListItem",
-        "title": "Priya Shah · “Will you cover accessibility in a follow-up?”",
-        "subtitle": "On: Designing for reader trust · Yesterday",
+        "title": "Priya Shah on “The August culture desk roundup”",
+        "subtitle": "“Will there be a follow-up on independent publishers?”",
         "actionLabel": "Reply"
+      },
+      {
+        "id": "scheduleSection",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "scheduleHeader",
+          "scheduleForm",
+          "scheduleTitleField",
+          "scheduleTitleInput",
+          "scheduleDateField",
+          "scheduleDatePicker",
+          "scheduleButtons",
+          "scheduleBtn"
+        ]
+      },
+      {
+        "id": "scheduleHeader",
+        "component": "CardHeader",
+        "title": "Schedule a piece",
+        "subtitle": "Set a title and publication date to add it to your editorial calendar"
+      },
+      {
+        "id": "scheduleForm",
+        "component": "Form",
+        "name": "schedule-piece",
+        "fields": [
+          "scheduleTitleField",
+          "scheduleDateField"
+        ],
+        "buttons": "scheduleButtons"
+      },
+      {
+        "id": "scheduleTitleField",
+        "component": "FormControl",
+        "label": "Piece title",
+        "input": "scheduleTitleInput"
+      },
+      {
+        "id": "scheduleTitleInput",
+        "component": "Input",
+        "name": "piece_title",
+        "placeholder": "Enter a working title"
+      },
+      {
+        "id": "scheduleDateField",
+        "component": "FormControl",
+        "label": "Publish date",
+        "input": "scheduleDatePicker"
+      },
+      {
+        "id": "scheduleDatePicker",
+        "component": "DatePicker",
+        "name": "publish_date",
+        "mode": "single"
+      },
+      {
+        "id": "scheduleButtons",
+        "component": "Buttons",
+        "buttons": [
+          "scheduleBtn"
+        ]
+      },
+      {
+        "id": "scheduleBtn",
+        "component": "Button",
+        "label": "Schedule piece",
+        "variant": "primary"
       }
     ]
   }

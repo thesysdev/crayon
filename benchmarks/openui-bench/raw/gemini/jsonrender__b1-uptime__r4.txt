@@ -1,38 +1,49 @@
-{"op":"add","path":"/root","value":"container"}
-{"op":"add","path":"/elements/container","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","uptime-card","incident-card","systems-card"]}}
-{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Platform System Status","subtitle":"Real-time infrastructure health & operational status"}}}
-{"op":"add","path":"/elements/uptime-card","value":{"type":"Card","props":{"direction":"column","gap":"m","variant":"sunk"},"children":["uptime-header","uptime-progress","uptime-stats"]}}
-{"op":"add","path":"/elements/uptime-header","value":{"type":"Heading","props":{"level":"h3","text":"API Uptime (Current Month)"}}}
-{"op":"add","path":"/elements/uptime-progress","value":{"type":"Progress","props":{"value":{"$state":"/uptime/percentage"},"label":{"$template":"${/uptime/percentage}% Operational"}}}}
-{"op":"add","path":"/state/uptime","value":{"percentage":99.94,"target":"99.90%","outageTime":"26m 12s","totalRequests":"1.24B"}}
-{"op":"add","path":"/elements/uptime-stats","value":{"type":"Card","props":{"direction":"row","justify":"between","gap":"s"},"children":["stat-target","stat-outage","stat-requests"]}}
-{"op":"add","path":"/elements/stat-target","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"children":["stat-target-label","stat-target-val"]}}
-{"op":"add","path":"/elements/stat-target-label","value":{"type":"Label","props":{"text":"SLA Target"}}}
-{"op":"add","path":"/elements/stat-target-val","value":{"type":"TextContent","props":{"text":{"$state":"/uptime/target"},"size":"small-heavy"}}}
-{"op":"add","path":"/elements/stat-outage","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"children":["stat-outage-label","stat-outage-val"]}}
-{"op":"add","path":"/elements/stat-outage-label","value":{"type":"Label","props":{"text":"Downtime This Month"}}}
-{"op":"add","path":"/elements/stat-outage-val","value":{"type":"TextContent","props":{"text":{"$state":"/uptime/outageTime"},"size":"small-heavy"}}}
-{"op":"add","path":"/elements/stat-requests","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"children":["stat-requests-label","stat-requests-val"]}}
-{"op":"add","path":"/elements/stat-requests-label","value":{"type":"Label","props":{"text":"Total API Requests"}}}
-{"op":"add","path":"/elements/stat-requests-val","value":{"type":"TextContent","props":{"text":{"$state":"/uptime/totalRequests"},"size":"small-heavy"}}}
-{"op":"add","path":"/elements/incident-card","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["incident-header","incident-callout","incident-details"]}}
-{"op":"add","path":"/elements/incident-header","value":{"type":"Heading","props":{"level":"h3","text":"Most Recent Incident"}}}
-{"op":"add","path":"/elements/incident-callout","value":{"type":"Alert","props":{"title":{"$state":"/recentIncident/title"},"description":{"$state":"/recentIncident/summary"},"variant":"success"}}}
-{"op":"add","path":"/elements/incident-details","value":{"type":"Card","props":{"direction":"column","gap":"s","variant":"clear"},"children":["inc-resolved-badge","inc-timeline","inc-impact"]}}
-{"op":"add","path":"/elements/inc-resolved-badge","value":{"type":"Badge","props":{"text":{"$template":"Resolved at ${/recentIncident/resolvedAt} (${/recentIncident/date})"},"variant":"secondary"}}}
-{"op":"add","path":"/elements/inc-timeline","value":{"type":"TextContent","props":{"text":{"$template":"**Duration:** ${/recentIncident/duration} | **Impacted Service:** ${/recentIncident/affectedService}"},"size":"small"}}}
-{"op":"add","path":"/elements/inc-impact","value":{"type":"TextContent","props":{"text":{"$state":"/recentIncident/resolutionNotes"},"size":"default"}}}
-{"op":"add","path":"/state/recentIncident","value":{"id":"inc-8492","title":"INC-8492: Elevated Latency in API Gateway Services","summary":"Increased response times observed across primary REST API routes due to connection pool exhaustion in the auth proxy.","resolvedAt":"14:32 UTC","date":"May 18, 2024","duration":"18 minutes","affectedService":"API Gateway / Auth","resolutionNotes":"**Resolution Summary:** The connection pool limit for the authentication proxy service was scaled out dynamically, and connection recycling rules were updated. Traffic normalized fully within 5 minutes of applying the update. No data loss occurred."}}
-{"op":"add","path":"/elements/systems-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["systems-title","services-list"]}}
-{"op":"add","path":"/elements/systems-title","value":{"type":"Heading","props":{"level":"h4","text":"Core Services Status"}}}
-{"op":"add","path":"/elements/services-list","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"repeat":{"statePath":"/services","key":"name"},"children":["service-row"]}}
-{"op":"add","path":"/elements/service-row","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center"},"children":["service-info","service-tag"]}}
-{"op":"add","path":"/elements/service-info","value":{"type":"Card","props":{"direction":"column","gap":"none"},"children":["service-name","service-uptime"]}}
-{"op":"add","path":"/elements/service-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"small-heavy"}}}
-{"op":"add","path":"/elements/service-uptime","value":{"type":"TextContent","props":{"text":{"$template":"Uptime: ${uptime}"},"size":"small"}}}
-{"op":"add","path":"/elements/service-tag","value":{"type":"Tag","props":{"text":{"$item":"status"},"variant":{"$cond":{"$state":"/status","eq":"Operational"},"$then":"success","$else":"warning"},"size":"sm"}}}
-{"op":"add","path":"/state/services","value":[]}
-{"op":"add","path":"/state/services/0","value":{"name":"Core REST API","uptime":"99.96%","status":"Operational"}}
-{"op":"add","path":"/state/services/1","value":{"name":"GraphQL Engine","uptime":"99.92%","status":"Operational"}}
-{"op":"add","path":"/state/services/2","value":{"name":"Authentication & OAuth","uptime":"99.89%","status":"Operational"}}
-{"op":"add","path":"/state/services/3","value":{"name":"Webhooks Delivery","uptime":"99.99%","status":"Operational"}}
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","uptimeCard","incidentCard","servicesCard","historyCard","footer"]}}
+{"op":"add","path":"/elements/header","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center"},"children":["titleGroup","overallBadge"]}}
+{"op":"add","path":"/elements/titleGroup","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"children":["heading","subheading"]}}
+{"op":"add","path":"/elements/heading","value":{"type":"Heading","props":{"text":"Platform Status","level":"h1"}}}
+{"op":"add","path":"/elements/subheading","value":{"type":"TextContent","props":{"text":"Real-time system performance, incidents, and operational metrics","size":"small"}}}
+{"op":"add","path":"/elements/overallBadge","value":{"type":"Badge","props":{"text":"All Systems Operational","variant":"secondary"}}}
+{"op":"add","path":"/elements/uptimeCard","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"m"},"children":["uptimeHeader","uptimeMetricRow","uptimeChart"]}}
+{"op":"add","path":"/elements/uptimeHeader","value":{"type":"CardHeader","props":{"title":"API Uptime & Performance","subtitle":"Current month operational statistics for primary Core API"}}}
+{"op":"add","path":"/elements/uptimeMetricRow","value":{"type":"Card","props":{"direction":"row","gap":"l","align":"center"},"children":["mainStat","targetStat","latencyStat"]}}
+{"op":"add","path":"/elements/mainStat","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"children":["statLabel","statValue"]}}
+{"op":"add","path":"/elements/statLabel","value":{"type":"Label","props":{"text":"Month-to-Date Uptime"}}}
+{"op":"add","path":"/elements/statValue","value":{"type":"Heading","props":{"text":{"$state":"/uptime/current"},"level":"h2"}}}
+{"op":"add","path":"/elements/targetStat","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"children":["targetLabel","targetValue"]}}
+{"op":"add","path":"/elements/targetLabel","value":{"type":"Label","props":{"text":"SLA Target"}}}
+{"op":"add","path":"/elements/targetValue","value":{"type":"TextContent","props":{"text":{"$state":"/uptime/sla"},"size":"large-heavy"}}}
+{"op":"add","path":"/elements/latencyStat","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"children":["latencyLabel","latencyValue"]}}
+{"op":"add","path":"/elements/latencyLabel","value":{"type":"Label","props":{"text":"Avg Latency (p95)"}}}
+{"op":"add","path":"/elements/latencyValue","value":{"type":"TextContent","props":{"text":{"$state":"/uptime/latency"},"size":"large-heavy"}}}
+{"op":"add","path":"/state/uptime","value":{"current":"99.94%","sla":"99.90%","latency":"42ms"}}
+{"op":"add","path":"/elements/uptimeChart","value":{"type":"AreaChart","props":{"labels":["Week 1","Week 2","Week 3","Week 4"],"series":["uptimeSeries"],"variant":"natural","xLabel":"Month Period","yLabel":"Uptime %"}}}
+{"op":"add","path":"/elements/uptimeSeries","value":{"type":"Series","props":{"category":"API Uptime %","values":[99.98,99.85,99.96,99.97]}}}
+{"op":"add","path":"/elements/incidentCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["incidentHeader","incidentCallout","incidentDetails"]}}
+{"op":"add","path":"/elements/incidentHeader","value":{"type":"CardHeader","props":{"title":"Recent Incident Report","subtitle":"Latest resolved operational issue"}}}
+{"op":"add","path":"/elements/incidentCallout","value":{"type":"Callout","props":{"variant":"success","title":{"$state":"/latestIncident/title"},"description":{"$state":"/latestIncident/summary"}}}}
+{"op":"add","path":"/elements/incidentDetails","value":{"type":"Accordion","props":{"items":["incidentSteps"]}}}
+{"op":"add","path":"/elements/incidentSteps","value":{"type":"AccordionItem","props":{"value":"timeline","trigger":"Incident Resolution Timeline & RCA","content":["timelineSteps"]}}}
+{"op":"add","path":"/elements/timelineSteps","value":{"type":"Steps","props":{"items":["step1","step2","step3"]}}}
+{"op":"add","path":"/elements/step1","value":{"type":"StepsItem","props":{"title":"Detected (14:22 UTC)","details":"Automated alert triggered for elevated 502 errors on Core API endpoints."}}}
+{"op":"add","path":"/elements/step2","value":{"type":"StepsItem","props":{"title":"Mitigated (14:38 UTC)","details":"Traffic rerouted to secondary cluster while scaling up connection pool size."}}}
+{"op":"add","path":"/elements/step3","value":{"type":"StepsItem","props":{"title":"Resolved (14:45 UTC)","details":"Database connection exhaustion fix deployed. All system metrics restored to normal."}}}
+{"op":"add","path":"/state/latestIncident","value":{"title":"Resolved: API Latency Spike & Intermittent 502 Errors","summary":"Resolved on Oct 24, 2023 at 14:45 UTC (Duration: 23 mins). Cause: Transient database connection pool saturation during scheduled DB migration."}}
+{"op":"add","path":"/elements/servicesCard","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["servicesHeader","servicesList"]}}
+{"op":"add","path":"/elements/servicesHeader","value":{"type":"CardHeader","props":{"title":"System Subcomponents","subtitle":"Status by service component"}}}
+{"op":"add","path":"/elements/servicesList","value":{"type":"ListBlock","props":{"items":["serviceCore","serviceAuth","serviceDB","serviceCDN"]}}}
+{"op":"add","path":"/elements/serviceCore","value":{"type":"ListItem","props":{"title":"REST & GraphQL API Engine","subtitle":"Operational • 99.94% Uptime","actionLabel":"Healthy"}}}
+{"op":"add","path":"/elements/serviceAuth","value":{"type":"ListItem","props":{"title":"Authentication & OAuth Gateway","subtitle":"Operational • 100.0% Uptime","actionLabel":"Healthy"}}}
+{"op":"add","path":"/elements/serviceDB","value":{"type":"ListItem","props":{"title":"Primary Database Clusters","subtitle":"Operational • 99.98% Uptime","actionLabel":"Healthy"}}}
+{"op":"add","path":"/elements/serviceCDN","value":{"type":"ListItem","props":{"title":"Edge Edge CDN & Caching","subtitle":"Operational • 100.0% Uptime","actionLabel":"Healthy"}}}
+{"op":"add","path":"/elements/historyCard","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"m"},"children":["historyHeader","historyTable"]}}
+{"op":"add","path":"/elements/historyHeader","value":{"type":"CardHeader","props":{"title":"Past 30 Days Incident Log","subtitle":"Historical incident summary"}}}
+{"op":"add","path":"/elements/historyTable","value":{"type":"Table","props":{"columns":["colDate","colService","colImpact","colStatus"]}}}
+{"op":"add","path":"/elements/colDate","value":{"type":"Col","props":{"label":"Date","data":["Oct 24, 2023","Oct 12, 2023","Sep 28, 2023"]}}}
+{"op":"add","path":"/elements/colService","value":{"type":"Col","props":{"label":"Component","data":["Core API","Auth Gateway","Edge CDN"]}}}
+{"op":"add","path":"/elements/colImpact","value":{"type":"Col","props":{"label":"Impact","data":["Minor (Degraded Performance)","Minor (Delayed Tokens)","Maintenance (Scheduled)"]}}}
+{"op":"add","path":"/elements/colStatus","value":{"type":"Col","props":{"label":"Status","data":["Resolved","Resolved","Completed"]}}}
+{"op":"add","path":"/elements/footer","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center"},"children":["footerText","refreshButton"]}}
+{"op":"add","path":"/elements/footerText","value":{"type":"TextContent","props":{"text":"Automated checks run every 60 seconds • Platform Operations Team","size":"small"}}}
+{"op":"add","path":"/elements/refreshButton","value":{"type":"Button","props":{"label":"Subscribe to Updates","variant":"secondary","size":"small"}}}

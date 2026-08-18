@@ -1,46 +1,46 @@
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["header","questionCard","pollCard","resultsCard"]}}
-{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Team Lunch Poll","subtitle":"Friday • 12:30 PM • Poll closes Thursday 5 PM"},"children":[]}}
-{"op":"add","path":"/elements/questionCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["qIconRow","qHeading","qHint"]}}
-{"op":"add","path":"/elements/qIconRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center"},"children":["qBadge","qMetaText"]}}
-{"op":"add","path":"/elements/qBadge","value":{"type":"Badge","props":{"text":"TEAM VOTE","variant":"secondary"},"children":[]}}
-{"op":"add","path":"/elements/qMetaText","value":{"type":"TextContent","props":{"text":"3 options • 14 votes so far","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/qHeading","value":{"type":"Heading","props":{"text":"Where should we go for lunch on Friday?","level":"h1"},"children":[]}}
-{"op":"add","path":"/elements/qHint","value":{"type":"TextContent","props":{"text":"Cast your vote below — you can change it anytime before the deadline. Majority wins!","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/pollCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"watch":{"/selectedId":{"action":"setState","params":{"statePath":"/hasVoted","value":true}}},"children":["pollHeader","restaurantList","votingFooter"]}}
-{"op":"add","path":"/elements/pollHeader","value":{"type":"CardHeader","props":{"title":"Choose one restaurant","subtitle":"Tap Vote to cast your choice"},"children":[]}}
-{"op":"add","path":"/elements/restaurantList","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"repeat":{"statePath":"/restaurants","key":"id"},"children":["restaurantRow"]}}
-{"op":"add","path":"/elements/restaurantRow","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["rowTop","rowDesc","rowBottom"]}}
-{"op":"add","path":"/elements/rowTop","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"center","justify":"between"},"children":["infoBlock","voteBtn"]}}
-{"op":"add","path":"/elements/infoBlock","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["rName","rMeta"]}}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["header","pollCard","resultsCard","footerNote"]}}
+{"op":"add","path":"/elements/header","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs","align":"center"},"children":["headerTitle","headerSubtitle"]}}
+{"op":"add","path":"/elements/headerTitle","value":{"type":"TextContent","props":{"text":"🌮 Team Lunch Poll","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/headerSubtitle","value":{"type":"TextContent","props":{"text":"Friday • 12:30pm • Poll closes Thursday 4pm","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/pollCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["questionHeading","questionSub","separator1","restaurantList","votingControl","actionBar","votedSuccess"]}}
+{"op":"add","path":"/elements/questionHeading","value":{"type":"Heading","props":{"text":"Where should we go for lunch on Friday?","level":"h1"},"children":[]}}
+{"op":"add","path":"/elements/questionSub","value":{"type":"TextContent","props":{"text":"Pick one restaurant — your vote decides where the team goes. You can change your vote until the poll closes.","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/separator1","value":{"type":"Separator","props":{"orientation":"horizontal"},"children":[]}}
+{"op":"add","path":"/elements/restaurantList","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"repeat":{"statePath":"/restaurants","key":"id"},"children":["restaurantCard"]}}
+{"op":"add","path":"/elements/restaurantCard","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["rCardTop","rDesc","rMetaRow","rProgressWrap"]}}
+{"op":"add","path":"/elements/rCardTop","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","justify":"between","align":"center"},"children":["rName","rVotesBadge"]}}
 {"op":"add","path":"/elements/rName","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"large-heavy"},"children":[]}}
-{"op":"add","path":"/elements/rMeta","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"xs","align":"center"},"children":["rCuisineBadge","rPriceBadge","rVotesBadge"]}}
-{"op":"add","path":"/elements/rCuisineBadge","value":{"type":"Badge","props":{"text":{"$item":"cuisine"},"variant":"secondary"},"children":[]}}
-{"op":"add","path":"/elements/rPriceBadge","value":{"type":"Badge","props":{"text":{"$item":"price"},"variant":"outline"},"children":[]}}
-{"op":"add","path":"/elements/rVotesBadge","value":{"type":"Badge","props":{"text":{"$template":"${votes} votes"},"variant":"default"},"children":[]}}
-{"op":"add","path":"/elements/voteBtn","value":{"type":"Button","props":{"label":"Vote","variant":"primary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/selectedId","value":{"$item":"id"}}}},"children":[]}}
-{"op":"add","path":"/elements/rowDesc","value":{"type":"TextContent","props":{"text":{"$item":"description"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/rowBottom","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["progressBar","voteCountText"]}}
-{"op":"add","path":"/elements/progressBar","value":{"type":"Progress","props":{"value":{"$item":"percent"},"label":{"$template":"${percent}% of votes"}},"children":[]}}
-{"op":"add","path":"/elements/voteCountText","value":{"type":"TextContent","props":{"text":{"$template":"${votes} of 14 votes • ${percent}% • ${distance}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/rVotesBadge","value":{"type":"Badge","props":{"text":{"$template":"${votes} votes • ${pct}%"},"variant":"secondary"},"children":[]}}
+{"op":"add","path":"/elements/rDesc","value":{"type":"TextContent","props":{"text":{"$item":"description"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/rMetaRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","justify":"between","align":"center"},"children":["rCuisineTag","rTimeTag"]}}
+{"op":"add","path":"/elements/rCuisineTag","value":{"type":"Tag","props":{"text":{"$item":"cuisine"},"variant":"neutral","size":"sm"},"children":[]}}
+{"op":"add","path":"/elements/rTimeTag","value":{"type":"Tag","props":{"text":{"$item":"time"},"variant":"info","size":"sm"},"children":[]}}
+{"op":"add","path":"/elements/rProgressWrap","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["rProgress","rProgressLabel"]}}
+{"op":"add","path":"/elements/rProgress","value":{"type":"Progress","props":{"value":{"$item":"pct"},"label":""},"children":[]}}
+{"op":"add","path":"/elements/rProgressLabel","value":{"type":"TextContent","props":{"text":{"$template":"${pct}% of 15 total votes  •  ${price}  •  ${cuisine}"},"size":"small"},"children":[]}}
 {"op":"add","path":"/state/restaurants","value":[]}
-{"op":"add","path":"/state/restaurants/0","value":{"id":"sakura","name":"Sakura Sushi","cuisine":"Japanese","price":"$$","description":"Fresh sushi, ramen & bento boxes — great for groups, quick service","votes":4,"percent":29,"distance":"0.3 mi away"}}
-{"op":"add","path":"/state/restaurants/1","value":{"id":"camino","name":"El Camino Cantina","cuisine":"Mexican","price":"$$","description":"Tacos, burritos & margaritas with a sunny patio — team favorite","votes":7,"percent":50,"distance":"0.5 mi away"}}
-{"op":"add","path":"/state/restaurants/2","value":{"id":"greenleaf","name":"Green Leaf Kitchen","cuisine":"Mediterranean","price":"$","description":"Healthy bowls, falafel & wood-fired pizzas — vegan friendly","votes":3,"percent":21,"distance":"0.2 mi away"}}
-{"op":"add","path":"/elements/votingFooter","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"children":["notVotedHint","votedCallout","selectedText"]}}
-{"op":"add","path":"/elements/notVotedHint","value":{"type":"Callout","props":{"variant":"info","title":"Your vote matters!","description":"Pick your favorite above. Results update live and you can change your vote anytime."},"visible":{"$state":"/hasVoted","not":true},"children":[]}}
-{"op":"add","path":"/elements/votedCallout","value":{"type":"Callout","props":{"variant":"success","title":"Vote recorded!","description":"Thanks for voting — tap another Vote button to change your choice before Thursday 5 PM."},"visible":{"$state":"/hasVoted"},"children":[]}}
-{"op":"add","path":"/elements/selectedText","value":{"type":"TextContent","props":{"text":{"$template":"You selected: ${/selectedId} • Change your mind? Just vote again."},"size":"small"},"visible":{"$state":"/hasVoted"},"children":[]}}
+{"op":"add","path":"/state/restaurants/0","value":{"id":"r1","name":"Taco Libre","cuisine":"Mexican • Tacos & Bowls","description":"Street tacos, fresh salsas, and horchata. Great for groups, quick service.","votes":5,"pct":33,"price":"$$","time":"8 min walk"}}
+{"op":"add","path":"/state/restaurants/1","value":{"id":"r2","name":"Sakura Sushi","cuisine":"Japanese • Sushi & Ramen","description":"Fresh nigiri, crunchy rolls, and tonkotsu ramen. Cozy booths for teams.","votes":3,"pct":20,"price":"$$$","time":"12 min walk"}}
+{"op":"add","path":"/state/restaurants/2","value":{"id":"r3","name":"Verde Garden","cuisine":"Mediterranean • Salads & Wraps","description":"Grain bowls, falafel, and grilled proteins. Vegan-friendly and sunny patio.","votes":7,"pct":47,"price":"$$","time":"5 min walk"}}
+{"op":"add","path":"/elements/votingControl","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"children":["votingLabel","voteRadioGroup","selectedHint"]}}
+{"op":"add","path":"/elements/votingLabel","value":{"type":"TextContent","props":{"text":"Cast your vote:","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/voteRadioGroup","value":{"type":"RadioGroup","props":{"name":"lunchVote","items":["radioTaco","radioSushi","radioVerde"],"value":{"$bindState":"/selectedId"}},"children":[]}}
+{"op":"add","path":"/elements/radioTaco","value":{"type":"RadioItem","props":{"label":"Taco Libre","description":"5 votes • Mexican • 8 min walk","value":"r1"},"children":[]}}
+{"op":"add","path":"/elements/radioSushi","value":{"type":"RadioItem","props":{"label":"Sakura Sushi","description":"3 votes • Japanese • 12 min walk","value":"r2"},"children":[]}}
+{"op":"add","path":"/elements/radioVerde","value":{"type":"RadioItem","props":{"label":"Verde Garden","description":"7 votes • Mediterranean • 5 min walk","value":"r3"},"children":[]}}
+{"op":"add","path":"/elements/selectedHint","value":{"type":"TextContent","props":{"text":{"$template":"Selected: ${/selectedId}"},"size":"small"},"children":[]}}
 {"op":"add","path":"/state/selectedId","value":""}
 {"op":"add","path":"/state/hasVoted","value":false}
-{"op":"add","path":"/elements/resultsCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["resultsHeader","chartArea","resultsFooter"]}}
-{"op":"add","path":"/elements/resultsHeader","value":{"type":"CardHeader","props":{"title":"Live Results","subtitle":"14 total votes • updates in real time"},"children":[]}}
-{"op":"add","path":"/elements/chartArea","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"m"},"children":["barChart","voteSeries","chartCaption"]}}
-{"op":"add","path":"/elements/barChart","value":{"type":"BarChart","props":{"labels":{"$state":"/chartLabels"},"series":["voteSeries"],"variant":"grouped","xLabel":"Restaurant","yLabel":"Votes"},"children":[]}}
-{"op":"add","path":"/elements/voteSeries","value":{"type":"Series","props":{"category":"Votes","values":{"$state":"/chartValues"}},"children":[]}}
-{"op":"add","path":"/elements/chartCaption","value":{"type":"TextContent","props":{"text":"El Camino Cantina is leading with 7 votes (50%).","size":"small"},"children":[]}}
-{"op":"add","path":"/state/chartLabels","value":["Sakura Sushi","El Camino Cantina","Green Leaf Kitchen"]}
-{"op":"add","path":"/state/chartValues","value":[4,7,3]}
-{"op":"add","path":"/elements/resultsFooter","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","justify":"between","align":"center"},"children":["resultsNote","changeVoteBtn"]}}
-{"op":"add","path":"/elements/resultsNote","value":{"type":"TextContent","props":{"text":"Poll closes Thursday 5 PM • Winner announced in #team-lunch","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/changeVoteBtn","value":{"type":"Button","props":{"label":"Clear vote","variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/selectedId","value":""}}},"children":[]}}
+{"op":"add","path":"/elements/actionBar","value":{"type":"Buttons","props":{"buttons":["castVoteBtn","clearBtn"],"direction":"row"},"children":[]}}
+{"op":"add","path":"/elements/castVoteBtn","value":{"type":"Button","props":{"label":"Confirm Vote","variant":"primary"},"on":{"press":{"action":"setState","params":{"statePath":"/hasVoted","value":true}}},"children":[]}}
+{"op":"add","path":"/elements/clearBtn","value":{"type":"Button","props":{"label":"Clear choice","variant":"secondary"},"on":{"press":{"action":"setState","params":{"statePath":"/selectedId","value":""}}},"children":[]}}
+{"op":"add","path":"/elements/votedSuccess","value":{"type":"Callout","props":{"variant":"success","title":"Vote recorded!","description":"Thanks for voting. You can change your pick before Thursday 4pm."},"visible":{"$state":"/hasVoted","eq":true},"children":[]}}
+{"op":"add","path":"/elements/resultsCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["resultsHeader","resultsChart","resultsFooter"]}}
+{"op":"add","path":"/elements/resultsHeader","value":{"type":"CardHeader","props":{"title":"Live results","subtitle":"15 total votes • Updates as teammates vote"},"children":[]}}
+{"op":"add","path":"/elements/resultsChart","value":{"type":"BarChart","props":{"labels":["Taco Libre","Sakura Sushi","Verde Garden"],"series":["voteSeries"],"variant":"grouped","yLabel":"Votes","xLabel":"Restaurant"},"children":[]}}
+{"op":"add","path":"/elements/voteSeries","value":{"type":"Series","props":{"category":"Votes","values":[5,3,7]},"children":[]}}
+{"op":"add","path":"/elements/resultsFooter","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","justify":"between","align":"center"},"children":["totalVotesText","pollClosesTag"]}}
+{"op":"add","path":"/elements/totalVotesText","value":{"type":"TextContent","props":{"text":"Verde Garden is in the lead with 7 votes (47%)","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/pollClosesTag","value":{"type":"Badge","props":{"text":"Closes Thu 4pm","variant":"outline"},"children":[]}}
+{"op":"add","path":"/elements/footerNote","value":{"type":"TextContent","props":{"text":"One vote per person • Ask in #team-lunch if you have dietary needs","size":"small"},"children":[]}}

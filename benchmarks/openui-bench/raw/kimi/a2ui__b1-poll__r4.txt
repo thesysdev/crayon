@@ -1,25 +1,104 @@
-Here's a team lunch poll screen with the question and three restaurants to vote between:
+Here's your team lunch poll — the question up top, three restaurants to pick from, and a button to cast the vote.
 
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"lunch-poll","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#E8590C","agentDisplayName":"Team Lunch Poll"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"lunch-poll","components":[
-{"id":"root","component":"Card","children":["header","question","pollForm"],"gap":"m"},
-{"id":"header","component":"CardHeader","title":"🍽️ Team Lunch Poll","subtitle":"Cast your vote — poll closes Thursday at 5 PM"},
-{"id":"question","component":"TextContent","text":"Where should we go for lunch on Friday?","size":"large-heavy"},
-{"id":"pollForm","component":"Form","name":"lunchPoll","buttons":"voteButtons","fields":["restaurantField"]},
-{"id":"restaurantField","component":"FormControl","label":"Choose one restaurant","input":"restaurantGroup"},
-{"id":"restaurantGroup","component":"RadioGroup","name":"restaurant","items":["opt1","opt2","opt3"],"rules":[{"required":true}]},
-{"id":"opt1","component":"RadioItem","label":"Sakura Sushi","description":"Japanese — sushi rolls, ramen & bento boxes","value":"sakura_sushi"},
-{"id":"opt2","component":"RadioItem","label":"Bella Trattoria","description":"Italian — pasta, pizza & salads","value":"bella_trattoria"},
-{"id":"opt3","component":"RadioItem","label":"El Camino Taqueria","description":"Mexican — tacos, burritos & bowls","value":"el_camino"},
-{"id":"voteButtons","component":"Buttons","buttons":["voteBtn"]},
-{"id":"voteBtn","component":"Button","label":"Submit Vote","variant":"primary"}
-]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "note",
+          "form"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Where should we go for lunch on Friday?",
+        "subtitle": "Team lunch poll — pick one and cast your vote"
+      },
+      {
+        "id": "note",
+        "component": "Callout",
+        "variant": "info",
+        "title": "Poll open",
+        "description": "Voting closes Thursday at 5pm. Majority wins."
+      },
+      {
+        "id": "form",
+        "component": "Form",
+        "name": "lunch-poll",
+        "buttons": "pollButtons",
+        "fields": [
+          "voteControl"
+        ]
+      },
+      {
+        "id": "voteControl",
+        "component": "FormControl",
+        "label": "Choose a restaurant",
+        "input": "voteRadio",
+        "hint": "One vote per person"
+      },
+      {
+        "id": "voteRadio",
+        "component": "RadioGroup",
+        "name": "restaurant",
+        "items": [
+          "optLuigis",
+          "optSakura",
+          "optElCamino"
+        ]
+      },
+      {
+        "id": "optLuigis",
+        "component": "RadioItem",
+        "label": "Luigi's Trattoria",
+        "description": "Italian — fresh pasta, wood-fired pizza, 10 min walk",
+        "value": "luigis-trattoria"
+      },
+      {
+        "id": "optSakura",
+        "component": "RadioItem",
+        "label": "Sakura Sushi",
+        "description": "Japanese — sushi, ramen and bento boxes",
+        "value": "sakura-sushi"
+      },
+      {
+        "id": "optElCamino",
+        "component": "RadioItem",
+        "label": "El Camino Taqueria",
+        "description": "Mexican — tacos, burritos and great veggie options",
+        "value": "el-camino-taqueria"
+      },
+      {
+        "id": "pollButtons",
+        "component": "Buttons",
+        "buttons": [
+          "voteBtn"
+        ]
+      },
+      {
+        "id": "voteBtn",
+        "component": "Button",
+        "label": "Cast my vote",
+        "variant": "primary"
+      }
+    ]
+  }
+}
 </a2ui-json>
-
-This covers both requirements:
-1. **The question** — "Where should we go for lunch on Friday?" is displayed prominently.
-2. **Three restaurants** — Sakura Sushi, Bella Trattoria, and El Camino Taqueria are presented as radio options, with a Submit Vote button to cast the vote.

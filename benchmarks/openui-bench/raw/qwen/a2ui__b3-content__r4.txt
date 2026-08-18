@@ -1,451 +1,388 @@
 
 
-Here's a full editor's content studio dashboard covering all eight requirements:
+Here's a single-screen editor's content studio covering all eight items: drafts + status, this week's published pieces, the month's most-read article, a 30-day readership trend, a category filter, a schedule-a-piece form, pending comments, and a new-draft action.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "editor-content-studio",
-      "catalogId": "thesys.dev:c1-openui",
-      "theme": {
-        "primaryColor": "#4F46E5",
-        "agentDisplayName": "Content Studio"
-      }
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "editor-content-studio",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "direction": "column",
-          "gap": "l",
-          "children": [
-            "header",
-            "toolbar-row",
-            "most-read-card",
-            "readership-card",
-            "drafts-card",
-            "published-card",
-            "comments-card",
-            "schedule-card"
-          ]
-        },
-        {
-          "id": "header",
-          "component": "CardHeader",
-          "title": "📰 Editor's Content Studio",
-          "subtitle": "Manage drafts, track readership, and schedule publications"
-        },
-        {
-          "id": "toolbar-row",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "m",
-          "align": "center",
-          "justify": "between",
-          "children": [
-            "category-filter-control",
-            "new-draft-btn"
-          ]
-        },
-        {
-          "id": "category-filter-control",
-          "component": "FormControl",
-          "label": "Filter by Category",
-          "input": "category-select"
-        },
-        {
-          "id": "category-select",
-          "component": "Select",
-          "name": "category",
-          "placeholder": "All Categories",
-          "items": [
-            "cat-all",
-            "cat-tech",
-            "cat-business",
-            "cat-culture",
-            "cat-science",
-            "cat-opinion"
-          ]
-        },
-        { "id": "cat-all", "component": "SelectItem", "value": "all", "label": "All Categories" },
-        { "id": "cat-tech", "component": "SelectItem", "value": "technology", "label": "Technology" },
-        { "id": "cat-business", "component": "SelectItem", "value": "business", "label": "Business" },
-        { "id": "cat-culture", "component": "SelectItem", "value": "culture", "label": "Culture" },
-        { "id": "cat-science", "component": "SelectItem", "value": "science", "label": "Science" },
-        { "id": "cat-opinion", "component": "SelectItem", "value": "opinion", "label": "Opinion" },
-        {
-          "id": "new-draft-btn",
-          "component": "Button",
-          "label": "✏️ Start New Draft",
-          "variant": "primary",
-          "size": "medium"
-        },
-        {
-          "id": "most-read-card",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "s",
-          "children": [
-            "most-read-header",
-            "most-read-content",
-            "most-read-tags"
-          ]
-        },
-        {
-          "id": "most-read-header",
-          "component": "CardHeader",
-          "title": "🏆 Most-Read Article This Month",
-          "subtitle": "June 2025"
-        },
-        {
-          "id": "most-read-content",
-          "component": "MarkDownRenderer",
-          "textMarkdown": "**\"The Silent Revolution in Urban Farming\"**\n\nBy *Maya Chen* · Published June 3, 2025\n\n**142,380 reads** · 8.2 min avg. read time · 3,214 shares\n\n> This piece outperformed the monthly average by **340%** and drove a 22% spike in newsletter sign-ups.",
-          "variant": "clear"
-        },
-        {
-          "id": "most-read-tags",
-          "component": "TagBlock",
-          "tags": ["Sustainability", "Urban Planning", "Trending"]
-        },
-        {
-          "id": "readership-card",
-          "component": "Card",
-          "direction": "column",
-          "gap": "s",
-          "children": [
-            "readership-header",
-            "readership-chart"
-          ]
-        },
-        {
-          "id": "readership-header",
-          "component": "CardHeader",
-          "title": "📈 Readership — Past 30 Days",
-          "subtitle": "Daily unique readers across all published content"
-        },
-        {
-          "id": "readership-chart",
-          "component": "AreaChart",
-          "labels": ["May 26","May 27","May 28","May 29","May 30","May 31","Jun 1","Jun 2","Jun 3","Jun 4","Jun 5","Jun 6","Jun 7","Jun 8","Jun 9","Jun 10","Jun 11","Jun 12","Jun 13","Jun 14","Jun 15","Jun 16","Jun 17","Jun 18","Jun 19","Jun 20","Jun 21","Jun 22","Jun 23","Jun 24"],
-          "series": ["series-readers"],
-          "variant": "natural",
-          "xLabel": "Date",
-          "yLabel": "Unique Readers"
-        },
-        {
-          "id": "series-readers",
-          "component": "Series",
-          "category": "Daily Readers",
-          "values": [4200,4350,4100,4500,4800,3900,3600,5100,8200,7800,6400,5900,5200,4800,5100,5400,5600,5300,5800,6100,5900,6200,6500,6100,6800,7200,6900,7100,7400,7600]
-        },
-        {
-          "id": "drafts-card",
-          "component": "Card",
-          "direction": "column",
-          "gap": "s",
-          "children": [
-            "drafts-header",
-            "drafts-table"
-          ]
-        },
-        {
-          "id": "drafts-header",
-          "component": "CardHeader",
-          "title": "📝 Drafts",
-          "subtitle": "5 drafts in progress"
-        },
-        {
-          "id": "drafts-table",
-          "component": "Table",
-          "columns": [
-            "col-draft-title",
-            "col-draft-author",
-            "col-draft-category",
-            "col-draft-status",
-            "col-draft-updated"
-          ]
-        },
-        {
-          "id": "col-draft-title",
-          "component": "Col",
-          "label": "Title",
-          "type": "string",
-          "data": ["AI in the Newsroom: A Practical Guide","The Economics of Remote Work","Deep Sea Mining: Promise vs. Peril","Gen Z and the New Voting Landscape","The Rise of Micro-Mobility Cities"]
-        },
-        {
-          "id": "col-draft-author",
-          "component": "Col",
-          "label": "Author",
-          "type": "string",
-          "data": ["James Okafor","Lena Vasquez","Tom Nguyen","Aisha Patel","Carlos Rivera"]
-        },
-        {
-          "id": "col-draft-category",
-          "component": "Col",
-          "label": "Category",
-          "type": "string",
-          "data": ["Technology","Business","Science","Opinion","Culture"]
-        },
-        {
-          "id": "col-draft-status",
-          "component": "Col",
-          "label": "Status",
-          "type": "string",
-          "data": ["🟡 In Review","🟢 Ready to Publish","🔴 Needs Revision","🟡 In Review","🔵 First Draft"]
-        },
-        {
-          "id": "col-draft-updated",
-          "component": "Col",
-          "label": "Last Updated",
-          "type": "string",
-          "data": ["Jun 23, 2025","Jun 22, 2025","Jun 20, 2025","Jun 24, 2025","Jun 18, 2025"]
-        },
-        {
-          "id": "published-card",
-          "component": "Card",
-          "direction": "column",
-          "gap": "s",
-          "children": [
-            "published-header",
-            "published-list"
-          ]
-        },
-        {
-          "id": "published-header",
-          "component": "CardHeader",
-          "title": "🚀 Published This Week",
-          "subtitle": "4 articles published since Monday, June 23"
-        },
-        {
-          "id": "published-list",
-          "component": "ListBlock",
-          "variant": "number",
-          "items": [
-            "pub-item-1",
-            "pub-item-2",
-            "pub-item-3",
-            "pub-item-4"
-          ]
-        },
-        {
-          "id": "pub-item-1",
-          "component": "ListItem",
-          "title": "How Quantum Computing Will Reshape Drug Discovery",
-          "subtitle": "By Maya Chen · Jun 24 · Technology · 12,480 reads"
-        },
-        {
-          "id": "pub-item-2",
-          "component": "ListItem",
-          "title": "The Hidden Cost of Fast Fashion's 'Green' Collections",
-          "subtitle": "By Aisha Patel · Jun 24 · Culture · 9,320 reads"
-        },
-        {
-          "id": "pub-item-3",
-          "component": "ListItem",
-          "title": "Central Banks at a Crossroads: Rate Cuts or Hold?",
-          "subtitle": "By Lena Vasquez · Jun 23 · Business · 15,740 reads"
-        },
-        {
-          "id": "pub-item-4",
-          "component": "ListItem",
-          "title": "CRISPR 3.0: Editing the Editors",
-          "subtitle": "By Tom Nguyen · Jun 23 · Science · 8,910 reads"
-        },
-        {
-          "id": "comments-card",
-          "component": "Card",
-          "direction": "column",
-          "gap": "s",
-          "children": [
-            "comments-header",
-            "comments-alert",
-            "comments-list"
-          ]
-        },
-        {
-          "id": "comments-header",
-          "component": "CardHeader",
-          "title": "💬 Comments Awaiting Reply",
-          "subtitle": "6 unread comments across 3 articles"
-        },
-        {
-          "id": "comments-alert",
-          "component": "Alert",
-          "variant": "warning",
-          "title": "Action Needed",
-          "description": "2 comments have been waiting over 48 hours. Prioritize replies to maintain reader engagement."
-        },
-        {
-          "id": "comments-list",
-          "component": "ListBlock",
-          "variant": "number",
-          "items": [
-            "comment-1",
-            "comment-2",
-            "comment-3",
-            "comment-4",
-            "comment-5",
-            "comment-6"
-          ]
-        },
-        {
-          "id": "comment-1",
-          "component": "ListItem",
-          "title": "\"Great analysis, but what about the impact on small publishers?\"",
-          "subtitle": "by @reader_mike · on \"Central Banks at a Crossroads\" · 52 hrs ago",
-          "actionLabel": "Reply"
-        },
-        {
-          "id": "comment-2",
-          "component": "ListItem",
-          "title": "\"Can you share the dataset used in Figure 3?\"",
-          "subtitle": "by @data_nerd · on \"CRISPR 3.0\" · 49 hrs ago",
-          "actionLabel": "Reply"
-        },
-        {
-          "id": "comment-3",
-          "component": "ListItem",
-          "title": "\"This changed my perspective entirely. Thank you!\"",
-          "subtitle": "by @green_living · on \"Fast Fashion's Green Collections\" · 28 hrs ago",
-          "actionLabel": "Reply"
-        },
-        {
-          "id": "comment-4",
-          "component": "ListItem",
-          "title": "\"How does this compare to the EU's approach?\"",
-          "subtitle": "by @policy_wonk · on \"Central Banks at a Crossroads\" · 22 hrs ago",
-          "actionLabel": "Reply"
-        },
-        {
-          "id": "comment-5",
-          "component": "ListItem",
-          "title": "\"Would love a follow-up on clinical trial timelines.\"",
-          "subtitle": "by @biotech_sara · on \"Quantum Computing & Drug Discovery\" · 14 hrs ago",
-          "actionLabel": "Reply"
-        },
-        {
-          "id": "comment-6",
-          "component": "ListItem",
-          "title": "\"The sourcing on this piece is impeccable.\"",
-          "subtitle": "by @journalism_prof · on \"CRISPR 3.0\" · 6 hrs ago",
-          "actionLabel": "Reply"
-        },
-        {
-          "id": "schedule-card",
-          "component": "Card",
-          "direction": "column",
-          "gap": "s",
-          "children": [
-            "schedule-header",
-            "schedule-form"
-          ]
-        },
-        {
-          "id": "schedule-header",
-          "component": "CardHeader",
-          "title": "📅 Schedule a Publication",
-          "subtitle": "Set a title and target publish date for an upcoming piece"
-        },
-        {
-          "id": "schedule-form",
-          "component": "Form",
-          "name": "schedule-publication",
-          "fields": [
-            "schedule-title-control",
-            "schedule-category-control",
-            "schedule-date-control"
-          ],
-          "buttons": "schedule-submit-btn"
-        },
-        {
-          "id": "schedule-title-control",
-          "component": "FormControl",
-          "label": "Article Title",
-          "input": "schedule-title-input",
-          "hint": "Enter the working title for the piece"
-        },
-        {
-          "id": "schedule-title-input",
-          "component": "Input",
-          "name": "article_title",
-          "type": "text",
-          "placeholder": "e.g., The Future of Renewable Energy Storage"
-        },
-        {
-          "id": "schedule-category-control",
-          "component": "FormControl",
-          "label": "Category",
-          "input": "schedule-category-select"
-        },
-        {
-          "id": "schedule-category-select",
-          "component": "Select",
-          "name": "article_category",
-          "placeholder": "Select a category",
-          "items": [
-            "sched-cat-tech",
-            "sched-cat-biz",
-            "sched-cat-culture",
-            "sched-cat-science",
-            "sched-cat-opinion"
-          ]
-        },
-        { "id": "sched-cat-tech", "component": "SelectItem", "value": "technology", "label": "Technology" },
-        { "id": "sched-cat-biz", "component": "SelectItem", "value": "business", "label": "Business" },
-        { "id": "sched-cat-culture", "component": "SelectItem", "value": "culture", "label": "Culture" },
-        { "id": "sched-cat-science", "component": "SelectItem", "value": "science", "label": "Science" },
-        { "id": "sched-cat-opinion", "component": "SelectItem", "value": "opinion", "label": "Opinion" },
-        {
-          "id": "schedule-date-control",
-          "component": "FormControl",
-          "label": "Publish Date",
-          "input": "schedule-date-picker",
-          "hint": "Choose the target publication date"
-        },
-        {
-          "id": "schedule-date-picker",
-          "component": "DatePicker",
-          "name": "publish_date",
-          "mode": "single"
-        },
-        {
-          "id": "schedule-submit-btn",
-          "component": "Buttons",
-          "buttons": ["schedule-confirm-btn"],
-          "direction": "row"
-        },
-        {
-          "id": "schedule-confirm-btn",
-          "component": "Button",
-          "label": "📅 Schedule Publication",
-          "variant": "primary",
-          "size": "medium"
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-This single-screen dashboard covers all eight requirements:
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "toolbar",
+          "mostRead",
+          "readershipHead",
+          "readershipChart",
+          "draftsHead",
+          "draftsTable",
+          "publishedHead",
+          "publishedTable",
+          "commentsHead",
+          "commentsList",
+          "scheduleHead",
+          "scheduleForm"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Editor's Content Studio",
+        "subtitle": "Drafts, publishing, and audience at a glance"
+      },
+      {
+        "id": "toolbar",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "align": "end",
+        "justify": "between",
+        "wrap": true,
+        "gap": "m",
+        "children": [
+          "categoryField",
+          "newDraftBtn"
+        ]
+      },
+      {
+        "id": "categoryField",
+        "component": "FormControl",
+        "label": "Narrow by category",
+        "input": "categorySelect"
+      },
+      {
+        "id": "categorySelect",
+        "component": "Select",
+        "name": "category_filter",
+        "placeholder": "All categories",
+        "items": [
+          "catAll",
+          "catNews",
+          "catFeatures",
+          "catOpinion",
+          "catCulture"
+        ]
+      },
+      {
+        "id": "catAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All categories"
+      },
+      {
+        "id": "catNews",
+        "component": "SelectItem",
+        "value": "news",
+        "label": "News"
+      },
+      {
+        "id": "catFeatures",
+        "component": "SelectItem",
+        "value": "features",
+        "label": "Features"
+      },
+      {
+        "id": "catOpinion",
+        "component": "SelectItem",
+        "value": "opinion",
+        "label": "Opinion"
+      },
+      {
+        "id": "catCulture",
+        "component": "SelectItem",
+        "value": "culture",
+        "label": "Culture"
+      },
+      {
+        "id": "newDraftBtn",
+        "component": "Button",
+        "label": "Start new draft",
+        "variant": "primary"
+      },
+      {
+        "id": "mostRead",
+        "component": "Callout",
+        "variant": "info",
+        "title": "Most-read this month: “The Quiet Rise of Local Newsletters”",
+        "description": "12,480 reads · 642 shares · 4:32 avg read time · Features"
+      },
+      {
+        "id": "readershipHead",
+        "component": "Heading",
+        "text": "Readership — past 30 days",
+        "level": "h3"
+      },
+      {
+        "id": "readershipChart",
+        "component": "LineChart",
+        "variant": "natural",
+        "yLabel": "Reads",
+        "labels": [
+          "Jun 1", "Jun 2", "Jun 3", "Jun 4", "Jun 5", "Jun 6", "Jun 7",
+          "Jun 8", "Jun 9", "Jun 10", "Jun 11", "Jun 12", "Jun 13", "Jun 14",
+          "Jun 15", "Jun 16", "Jun 17", "Jun 18", "Jun 19", "Jun 20", "Jun 21",
+          "Jun 22", "Jun 23", "Jun 24", "Jun 25", "Jun 26", "Jun 27", "Jun 28",
+          "Jun 29", "Jun 30"
+        ],
+        "series": [
+          "readsSeries"
+        ]
+      },
+      {
+        "id": "readsSeries",
+        "component": "Series",
+        "category": "Reads",
+        "values": [
+          820, 940, 1010, 890, 760, 1100, 1240,
+          980, 1050, 1180, 1320, 1210, 900, 860,
+          1480, 1560, 1390, 1270, 1150, 1620, 1740,
+          1510, 1330, 1280, 1900, 2040, 1780, 1660,
+          1590, 2130
+        ]
+      },
+      {
+        "id": "draftsHead",
+        "component": "Heading",
+        "text": "Drafts",
+        "level": "h3"
+      },
+      {
+        "id": "draftsTable",
+        "component": "Table",
+        "columns": [
+          "draftTitle",
+          "draftCategory",
+          "draftStatus",
+          "draftEdited"
+        ]
+      },
+      {
+        "id": "draftTitle",
+        "component": "Col",
+        "label": "Title",
+        "data": [
+          "Inside the Newsroom's AI Experiment",
+          "Opinion: Rethinking the Paywall",
+          "Summer Festival Preview",
+          "Transit Board Vote Explained"
+        ]
+      },
+      {
+        "id": "draftCategory",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Features",
+          "Opinion",
+          "Culture",
+          "News"
+        ]
+      },
+      {
+        "id": "draftStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "In progress",
+          "Needs review",
+          "Ready to publish",
+          "In progress"
+        ]
+      },
+      {
+        "id": "draftEdited",
+        "component": "Col",
+        "label": "Last edited",
+        "data": [
+          "Jun 26",
+          "Jun 24",
+          "Jun 27",
+          "Jun 28"
+        ]
+      },
+      {
+        "id": "publishedHead",
+        "component": "Heading",
+        "text": "Published this week",
+        "level": "h3"
+      },
+      {
+        "id": "publishedTable",
+        "component": "Table",
+        "columns": [
+          "pubTitle",
+          "pubCategory",
+          "pubDate",
+          "pubViews"
+        ]
+      },
+      {
+        "id": "pubTitle",
+        "component": "Col",
+        "label": "Title",
+        "data": [
+          "The Quiet Rise of Local Newsletters",
+          "City Hall Budget Showdown",
+          "Five Coffee Shops Worth the Trip",
+          "Opinion: Our Transit Future"
+        ]
+      },
+      {
+        "id": "pubCategory",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Features",
+          "News",
+          "Culture",
+          "Opinion"
+        ]
+      },
+      {
+        "id": "pubDate",
+        "component": "Col",
+        "label": "Published",
+        "data": [
+          "Jun 24",
+          "Jun 23",
+          "Jun 25",
+          "Jun 22"
+        ]
+      },
+      {
+        "id": "pubViews",
+        "component": "Col",
+        "label": "Reads",
+        "data": [
+          "12,480",
+          "4,210",
+          "3,675",
+          "2,140"
+        ]
+      },
+      {
+        "id": "commentsHead",
+        "component": "Heading",
+        "text": "Comments awaiting reply (4)",
+        "level": "h3"
+      },
+      {
+        "id": "commentsList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "comment1",
+          "comment2",
+          "comment3",
+          "comment4"
+        ]
+      },
+      {
+        "id": "comment1",
+        "component": "ListItem",
+        "title": "Maya R. on “The Quiet Rise of Local Newsletters”",
+        "subtitle": "“Great data — do you have numbers on subscriber churn?”",
+        "actionLabel": "Reply"
+      },
+      {
+        "id": "comment2",
+        "component": "ListItem",
+        "title": "Devon P. on “City Hall Budget Showdown”",
+        "subtitle": "“The chart on line items seems off; can you clarify?”",
+        "actionLabel": "Reply"
+      },
+      {
+        "id": "comment3",
+        "component": "ListItem",
+        "title": "Priya S. on “Five Coffee Shops Worth the Trip”",
+        "subtitle": "“Please add the roastery on 9th — it's a must!”",
+        "actionLabel": "Reply"
+      },
+      {
+        "id": "comment4",
+        "component": "ListItem",
+        "title": "Tom W. on “Opinion: Our Transit Future”",
+        "subtitle": "“Strong piece. What about the ferry proposal?”",
+        "actionLabel": "Reply"
+      },
+      {
+        "id": "scheduleHead",
+        "component": "Heading",
+        "text": "Schedule a piece",
+        "level": "h3"
+      },
+      {
+        "id": "scheduleForm",
+        "component": "Form",
+        "name": "schedule-piece",
+        "fields": [
+          "schedTitleField",
+          "schedDateField"
+        ],
+        "buttons": "schedButtons"
+      },
+      {
+        "id": "schedTitleField",
+        "component": "FormControl",
+        "label": "Title",
+        "input": "schedTitleInput"
+      },
+      {
+        "id": "schedTitleInput",
+        "component": "Input",
+        "name": "piece_title",
+        "placeholder": "Working title for the piece"
+      },
+      {
+        "id": "schedDateField",
+        "component": "FormControl",
+        "label": "Publish date",
+        "input": "schedDatePicker",
+        "hint": "The piece goes live at 7:00 AM on this date"
+      },
+      {
+        "id": "schedDatePicker",
+        "component": "DatePicker",
+        "name": "publish_date",
+        "mode": "single"
+      },
+      {
+        "id": "schedButtons",
+        "component": "Buttons",
+        "buttons": [
+          "schedSubmit",
+          "schedCancel"
+        ]
+      },
+      {
+        "id": "schedSubmit",
+        "component": "Button",
+        "label": "Schedule piece",
+        "variant": "primary"
+      },
+      {
+        "id": "schedCancel",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>
 
-| # | Requirement | Component Used |
-|---|---|---|
-| 1 | **Drafts with status** | Table with 5 drafts showing title, author, category, color-coded status, and last updated date |
-| 2 | **Published this week** | Numbered list of 4 articles with read counts |
-| 3 | **Most-read article** | Highlighted sunk card featuring the top performer with stats and context |
-| 4 | **30-day readership** | Area chart with daily unique reader data showing a growth trend |
-| 5 | **Category filter** | Select dropdown at the top with 6 category options |
-| 6 | **Schedule a piece** | Form with title input, category select, and date picker |
-| 7 | **Comments awaiting reply** | List of 6 comments with a warning alert about overdue replies |
-| 8 | **Start a new draft** | Primary "✏️ Start New Draft" button in the toolbar |
+Item coverage: (1) Drafts table with a Status column, (2) "Published this week" table, (3) most-read callout, (4) 30-day readership line chart, (5) category filter select, (6) schedule form with title + publish date, (7) comments list with Reply actions, (8) "Start new draft" button in the toolbar.

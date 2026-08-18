@@ -1,44 +1,207 @@
-Here's a delivery tracking screen covering all three items:
+Here's a delivery tracking screen covering all three requirements:
 
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"delivery-tracking","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#2563EB","agentDisplayName":"Delivery Tracker"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"delivery-tracking","components":[
-{"id":"root","component":"Card","direction":"column","gap":"l","children":["header","statusCard","etaCard","steps","separator","reportHeader","reportForm"]},
-{"id":"header","component":"CardHeader","title":"Track Your Delivery","subtitle":"Order #DLV-78432 · Carrier: FastShip Express"},
-{"id":"statusCard","component":"Card","variant":"sunk","direction":"column","gap":"s","children":["statusTitle","statusBadge","statusText"]},
-{"id":"statusTitle","component":"Heading","text":"📍 Current Location","level":"h3"},
-{"id":"statusBadge","component":"Badge","text":"In Transit","variant":"default"},
-{"id":"statusText","component":"TextContent","text":"Your package is currently at the **Denver, CO distribution center**. It was last scanned today at 9:42 AM and is scheduled to depart on the next outbound truck."},
-{"id":"etaCard","component":"Card","variant":"sunk","direction":"column","gap":"s","children":["etaTitle","etaText","etaProgress"]},
-{"id":"etaTitle","component":"Heading","text":"📦 Estimated Delivery","level":"h3"},
-{"id":"etaText","component":"TextContent","text":"**Friday, June 14, 2025** — between 10:00 AM and 2:00 PM. Signature will be required upon delivery."},
-{"id":"etaProgress","component":"Progress","value":65,"label":"Journey progress"},
-{"id":"steps","component":"Steps","items":["step1","step2","step3","step4"]},
-{"id":"step1","component":"StepsItem","title":"Order Picked Up","details":"June 10 · Origin facility, Austin, TX"},
-{"id":"step2","component":"StepsItem","title":"In Transit","details":"June 12 · Arrived at Denver, CO distribution center (current)"},
-{"id":"step3","component":"StepsItem","title":"Out for Delivery","details":"Expected June 14 morning"},
-{"id":"step4","component":"StepsItem","title":"Delivered","details":"Pending — signature required"},
-{"id":"separator","component":"Separator","orientation":"horizontal"},
-{"id":"reportHeader","component":"CardHeader","title":"Report a Problem","subtitle":"Something wrong with this delivery? Let us know."},
-{"id":"reportForm","component":"Form","name":"reportProblem","fields":["issueControl","detailsControl"],"buttons":"formButtons"},
-{"id":"issueControl","component":"FormControl","label":"What's the issue?","input":"issueSelect","hint":"Choose the option that best describes your problem"},
-{"id":"issueSelect","component":"Select","name":"issueType","placeholder":"Select an issue","items":["issue1","issue2","issue3","issue4"],"rules":[{"required":true}]},
-{"id":"issue1","component":"SelectItem","value":"late","label":"Package is late"},
-{"id":"issue2","component":"SelectItem","value":"damaged","label":"Package arrived damaged"},
-{"id":"issue3","component":"SelectItem","value":"lost","label":"Package appears lost"},
-{"id":"issue4","component":"SelectItem","value":"other","label":"Other issue"},
-{"id":"detailsControl","component":"FormControl","label":"Details","input":"detailsInput"},
-{"id":"detailsInput","component":"TextArea","name":"details","placeholder":"Describe the problem in more detail...","rows":4},
-{"id":"formButtons","component":"Buttons","buttons":["submitBtn","cancelBtn"]},
-{"id":"submitBtn","component":"Button","label":"Submit Report","variant":"primary"},
-{"id":"cancelBtn","component":"Button","label":"Cancel","variant":"secondary"}
-]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "statusBadge",
+          "locationAlert",
+          "etaCard",
+          "progressBar",
+          "timeline",
+          "reportSection"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Track Your Delivery",
+        "subtitle": "Order #PKG-88214 · Carrier: FastShip Express"
+      },
+      {
+        "id": "statusBadge",
+        "component": "Badge",
+        "text": "In Transit",
+        "variant": "default"
+      },
+      {
+        "id": "locationAlert",
+        "component": "Alert",
+        "title": "Current Location",
+        "description": "Your package is at the Denver, CO distribution center. Last scanned today at 9:42 AM.",
+        "variant": "info"
+      },
+      {
+        "id": "etaCard",
+        "component": "Callout",
+        "variant": "success",
+        "title": "Estimated Delivery: Thursday, June 12",
+        "description": "Expected between 10:00 AM – 2:00 PM. No signature required."
+      },
+      {
+        "id": "progressBar",
+        "component": "Progress",
+        "value": 65,
+        "label": "Journey progress"
+      },
+      {
+        "id": "timeline",
+        "component": "Steps",
+        "items": [
+          "step1",
+          "step2",
+          "step3",
+          "step4"
+        ]
+      },
+      {
+        "id": "step1",
+        "component": "StepsItem",
+        "title": "Order placed",
+        "details": "June 7 · Package prepared by sender"
+      },
+      {
+        "id": "step2",
+        "component": "StepsItem",
+        "title": "Picked up",
+        "details": "June 8 · Collected by FastShip Express, Austin, TX"
+      },
+      {
+        "id": "step3",
+        "component": "StepsItem",
+        "title": "In transit",
+        "details": "June 10 · Arrived at Denver, CO distribution center"
+      },
+      {
+        "id": "step4",
+        "component": "StepsItem",
+        "title": "Out for delivery",
+        "details": "Pending — estimated June 12"
+      },
+      {
+        "id": "reportSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "reportHeader",
+          "reportForm"
+        ]
+      },
+      {
+        "id": "reportHeader",
+        "component": "CardHeader",
+        "title": "Problem with your delivery?",
+        "subtitle": "Let us know and we'll look into it"
+      },
+      {
+        "id": "reportForm",
+        "component": "Form",
+        "name": "delivery-problem",
+        "buttons": "reportButtons",
+        "fields": [
+          "issueField",
+          "detailsField"
+        ]
+      },
+      {
+        "id": "issueField",
+        "component": "FormControl",
+        "label": "What's the issue?",
+        "input": "issueSelect"
+      },
+      {
+        "id": "issueSelect",
+        "component": "Select",
+        "name": "issue_type",
+        "placeholder": "Select a problem",
+        "items": [
+          "issueLate",
+          "issueDamaged",
+          "issueMissing",
+          "issueAddress"
+        ]
+      },
+      {
+        "id": "issueLate",
+        "component": "SelectItem",
+        "value": "late",
+        "label": "Delivery is late"
+      },
+      {
+        "id": "issueDamaged",
+        "component": "SelectItem",
+        "value": "damaged",
+        "label": "Package arrived damaged"
+      },
+      {
+        "id": "issueMissing",
+        "component": "SelectItem",
+        "value": "missing",
+        "label": "Package is missing / not received"
+      },
+      {
+        "id": "issueAddress",
+        "component": "SelectItem",
+        "value": "wrong_address",
+        "label": "Wrong delivery address"
+      },
+      {
+        "id": "detailsField",
+        "component": "FormControl",
+        "label": "Additional details",
+        "input": "detailsInput",
+        "hint": "Optional — helps us resolve it faster"
+      },
+      {
+        "id": "detailsInput",
+        "component": "TextArea",
+        "name": "details",
+        "placeholder": "Describe the problem...",
+        "rows": 3
+      },
+      {
+        "id": "reportButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitReport",
+          "contactSupport"
+        ]
+      },
+      {
+        "id": "submitReport",
+        "component": "Button",
+        "label": "Report a problem",
+        "variant": "primary"
+      },
+      {
+        "id": "contactSupport",
+        "component": "Button",
+        "label": "Contact support",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
 </a2ui-json>
 
 This screen covers all three requirements:
-1. **Current location** — Denver, CO distribution center with an "In Transit" badge and last scan time, plus a step-by-step journey timeline.
-2. **Estimated delivery date** — Friday, June 14 with a delivery window and a progress bar.
-3. **Report a problem** — a form with an issue-type dropdown (late, damaged, lost, other), a details field, and submit/cancel buttons.
+1. **Current location** — an info alert shows the package is at the Denver, CO distribution center with the last scan time, plus a progress bar and step-by-step timeline.
+2. **Estimated delivery date** — a success callout highlights Thursday, June 12 with a delivery window.
+3. **Report a problem** — a form with an issue-type dropdown, details field, and submit button.

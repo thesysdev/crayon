@@ -1,5 +1,797 @@
-Manager console with all 12 items — sales vs target, traffic, best sellers, stock, staff, basket, returns, promos, registers, reorder & store switcher.
+Daily console ready — all 12 items covered in one screen. Use the store switcher to change location and the reorder form to restock instantly.
 
-<a2ui-json>{"version":"v0.9","createSurface":{"surfaceId":"store-manager-console","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#0F766E","agentDisplayName":"Store Console"},"sendDataModel":true}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
 
-<a2ui-json>{"version":"v0.9","updateComponents":{"surfaceId":"store-manager-console","components":[{"component":"Card","id":"root","children":["headerCard","kpiRow","trafficCard","comparisonCard","sellersCard","inventoryCard","staffCard","promoCard","registersCard"],"direction":"column","gap":"m","variant":"clear"},{"component":"Card","id":"headerCard","children":["headerTitle","storeControl"],"direction":"row","gap":"m","align":"center","justify":"between","variant":"card"},{"component":"CardHeader","id":"headerTitle","title":"Daily Console — Downtown Flagship","subtitle":"Tuesday, Aug 18 • Open 7AM - 9PM • Manager: Alex Rivera"},{"component":"FormControl","id":"storeControl","label":"View different store","input":"storeSelect"},{"component":"Select","id":"storeSelect","name":"storeSelect","placeholder":"Downtown Flagship","items":["storeOpt1","storeOpt2","storeOpt3","storeOpt4"],"value":"downtown"},{"component":"SelectItem","id":"storeOpt1","component":"SelectItem","value":"downtown","label":"Downtown Flagship"},{"component":"SelectItem","id":"storeOpt2","component":"SelectItem","value":"mall","label":"Mall Location - Westfield"},{"component":"SelectItem","id":"storeOpt3","component":"SelectItem","value":"airport","label":"Airport Terminal 2"},{"component":"SelectItem","id":"storeOpt4","component":"SelectItem","value":"westside","label":"Westside Market"},{"component":"Card","id":"kpiRow","children":["salesCard","basketCard","returnsCard"],"direction":"row","gap":"m","variant":"clear"},{"component":"Card","id":"salesCard","children":["salesHeading","salesProgress","salesText","salesTag"],"direction":"column","gap":"s","variant":"card"},{"component":"Heading","id":"salesHeading","text":"Sales Today vs Target","level":"h3"},{"component":"Progress","id":"salesProgress","value":73,"label":"73% of target"},{"component":"TextContent","id":"salesText","text":"**$8,420** / $11,500 target • $3,080 to go • Updated 2:45 PM","size":"small"},{"component":"Tag","id":"salesTag","text":"On track • +8% vs yesterday","variant":"success","size":"sm"},{"component":"Card","id":"basketCard","children":["basketHeading","basketValue","basketSub","basketTag2"],"direction":"column","gap":"s","variant":"card"},{"component":"Heading","id":"basketHeading","text":"Average Basket Size","level":"h3"},{"component":"TextContent","id":"basketValue","text":"$42.80","size":"large-heavy"},{"component":"TextContent","id":"basketSub","text":"+ $3.30 vs last week ($39.50) • 197 transactions today","size":"small"},{"component":"Tag","id":"basketTag2","text":"↑ 8.4% WoW","variant":"success","size":"sm"},{"component":"Card","id":"returnsCard","children":["returnsHeading","returnsValue","returnsSub","returnsBarChart"],"direction":"column","gap":"s","variant":"card"},{"component":"Heading","id":"returnsHeading","text":"Returns This Week","level":"h3"},{"component":"TextContent","id":"returnsValue","text":"23 returns","size":"large-heavy"},{"component":"TextContent","id":"returnsSub","text":"1.9% return rate • 3 today • Main reason: Wrong size","size":"small"},{"component":"BarChart","id":"returnsBarChart","labels":["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],"series":["returnsSeries"],"variant":"grouped","xLabel":"Day","yLabel":"Returns"},{"component":"Series","id":"returnsSeries","category":"Returns","values":[2,5,3,4,6,2,1]},{"component":"Card","id":"trafficCard","children":["trafficHeader","trafficLineChart"],"direction":"column","gap":"s","variant":"card"},{"component":"CardHeader","id":"trafficHeader","title":"Foot Traffic Through the Day","subtitle":"Total today: 1,195 visitors • Peak: 4PM (260)"},{"component":"LineChart","id":"trafficLineChart","labels":["8AM","10AM","12PM","2PM","4PM","6PM","8PM"],"series":["trafficSeries"],"variant":"natural","xLabel":"Time","yLabel":"Visitors"},{"component":"Series","id":"trafficSeries","category":"Visitors","values":[45,120,210,185,260,190,85]},{"component":"Card","id":"comparisonCard","children":["comparisonHeader","comparisonBarChart"],"direction":"column","gap":"s","variant":"card"},{"component":"CardHeader","id":"comparisonHeader","title":"This Week Compared with Last Week","subtitle":"Total sales: $11,290 vs $10,250 last week (+10.1%)"},{"component":"BarChart","id":"comparisonBarChart","labels":["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],"series":["comparisonSeriesThis","comparisonSeriesLast"],"variant":"grouped","xLabel":"Day","yLabel":"Sales $"},{"component":"Series","id":"comparisonSeriesThis","category":"This Week","values":[1200,1450,1380,1620,1890,2100,1650]},{"component":"Series","id":"comparisonSeriesLast","category":"Last Week","values":[1100,1300,1250,1400,1750,1950,1500]},{"component":"Card","id":"sellersCard","children":["sellersHeader","sellersHBar","sellersTable"],"direction":"column","gap":"s","variant":"card"},{"component":"CardHeader","id":"sellersHeader","title":"Best Sellers Today","subtitle":"Top 5 by units sold"},{"component":"HorizontalBarChart","id":"sellersHBar","labels":["Cold Brew 12oz","Croissant","Avocado Toast","Latte Large","Blueberry Muffin"],"series":["sellersHSeries"],"xLabel":"Units","yLabel":"Product"},{"component":"Series","id":"sellersHSeries","category":"Units Sold","values":[87,72,64,58,51]},{"component":"Table","id":"sellersTable","columns":["sellersColProduct","sellersColUnits","sellersColRevenue"]},{"component":"Col","id":"sellersColProduct","label":"Product","data":["Cold Brew 12oz","Croissant","Avocado Toast","Latte Large","Blueberry Muffin"],"type":"string"},{"component":"Col","id":"sellersColUnits","label":"Units","data":[87,72,64,58,51],"type":"number"},{"component":"Col","id":"sellersColRevenue","label":"Revenue","data":["$348","$252","$512","$319","$204"],"type":"string"},{"component":"Card","id":"inventoryCard","children":["inventoryHeader","inventoryAlert","oosTable","reorderForm"],"direction":"column","gap":"m","variant":"card"},{"component":"CardHeader","id":"inventoryHeader","title":"Items Out of Stock","subtitle":"4 SKUs require attention"},{"component":"Alert","id":"inventoryAlert","title":"Low stock alert","description":"4 items are out of stock. Oat Milk has been OOS for 3 days — reorder recommended.","variant":"warning"},{"component":"Table","id":"oosTable","columns":["oosColItem","oosColCategory","oosColDays"]},{"component":"Col","id":"oosColItem","label":"Item","data":["Oat Milk - Oatly","Everything Bagel","Almond Croissant","Sparkling Water Lime"],"type":"string"},{"component":"Col","id":"oosColCategory","label":"Category","data":["Dairy Alt","Bakery","Bakery","Beverage"],"type":"string"},{"component":"Col","id":"oosColDays","label":"Days OOS","data":[3,1,2,1],"type":"number"},{"component":"Form","id":"reorderForm","name":"reorderForm","buttons":"reorderButtons","fields":["reorderFieldItem","reorderFieldQty"]},{"component":"Buttons","id":"reorderButtons","buttons":["reorderBtn"],"direction":"row"},{"component":"Button","id":"reorderBtn","label":"Reorder Selected Item","variant":"primary"},{"component":"FormControl","id":"reorderFieldItem","label":"Item to reorder","input":"reorderInputItem"},{"component":"Select","id":"reorderInputItem","name":"reorderItem","placeholder":"Select item","items":["reorderOpt1","reorderOpt2","reorderOpt3","reorderOpt4"]},{"component":"SelectItem","id":"reorderOpt1","component":"SelectItem","value":"oat_milk","label":"Oat Milk - Oatly"},{"component":"SelectItem","id":"reorderOpt2","component":"SelectItem","value":"bagel","label":"Everything Bagel"},{"component":"SelectItem","id":"reorderOpt3","component":"SelectItem","value":"croissant","label":"Almond Croissant"},{"component":"SelectItem","id":"reorderOpt4","component":"SelectItem","value":"water","label":"Sparkling Water Lime"},{"component":"FormControl","id":"reorderFieldQty","label":"Quantity / Notes","input":"reorderInputQty"},{"component":"Input","id":"reorderInputQty","name":"quantity","placeholder":"e.g. 24 units - rush delivery"},{"component":"Card","id":"staffCard","children":["staffHeader","staffList"],"direction":"column","gap":"s","variant":"card"},{"component":"CardHeader","id":"staffHeader","title":"Who Is On Shift Today","subtitle":"6 staff • 2 on break • Next shift: 6PM"},{"component":"ListBlock","id":"staffList","items":["staff1","staff2","staff3","staff4","staff5","staff6"],"variant":"number"},{"component":"ListItem","id":"staff1","title":"Maya Chen — Register 1","subtitle":"08:00 - 16:00 • Floor Lead • On floor"},{"component":"ListItem","id":"staff2","title":"Jon Park — Register 2","subtitle":"09:00 - 17:00 • Cashier • On floor"},{"component":"ListItem","id":"staff3","title":"Priya Desai — Register 4 (Self-check)","subtitle":"10:00 - 18:00 • Cashier • On break until 3:00 PM"},{"component":"ListItem","id":"staff4","title":"Carlos Mendez — Barista","subtitle":"07:00 - 15:00 • Bar • On floor"},{"component":"ListItem","id":"staff5","title":"Sofia Lee — Stock & Prep","subtitle":"06:00 - 14:00 • Back of house • On floor"},{"component":"ListItem","id":"staff6","title":"Devon Wright — Supervisor","subtitle":"11:00 - 19:00 • Manager on duty • Arriving 11AM"},{"component":"Card","id":"promoCard","children":["promoHeader","promoTable"],"direction":"column","gap":"s","variant":"card"},{"component":"CardHeader","id":"promoHeader","title":"Running Promotions","subtitle":"3 active • 1 ending today"},{"component":"Table","id":"promoTable","columns":["promoColName","promoColRedemptions","promoColLift","promoColStatus"]},{"component":"Col","id":"promoColName","label":"Promotion","data":["Summer Sip $2 Off Iced","Buy 2 Pastries 15% Off","Loyalty Double Points"],"type":"string"},{"component":"Col","id":"promoColRedemptions","label":"Redemptions","data":[142,89,210],"type":"number"},{"component":"Col","id":"promoColLift","label":"Revenue Lift","data":["+$284","+$178","+$412"],"type":"string"},{"component":"Col","id":"promoColStatus","label":"Status","data":["Ends today","Ends Aug 24","Ongoing"],"type":"string"},{"component":"Card","id":"registersCard","children":["registersHeader","registersTable"],"direction":"column","gap":"s","variant":"card"},{"component":"CardHeader","id":"registersHeader","title":"Registers","subtitle":"3 of 4 open • 1 closed for maintenance"},{"component":"Table","id":"registersTable","columns":["regColId","regColStatus","regColCashier","regColTxns"]},{"component":"Col","id":"regColId","label":"Register","data":["Register 1","Register 2","Register 3","Register 4 (Self)"],"type":"string"},{"component":"Col","id":"regColStatus","label":"Status","data":["● OPEN","● OPEN","○ CLOSED","● OPEN"],"type":"string"},{"component":"Col","id":"regColCashier","label":"Cashier","data":["Maya Chen","Jon Park","—","Priya Desai"],"type":"string"},{"component":"Col","id":"regColTxns","label":"Txns Today","data":[68,54,0,75],"type":"number"}]}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "storeSwitcher",
+          "kpiRow",
+          "salesTargetCard",
+          "trafficCard",
+          "weekCompareCard",
+          "bestSellersCard",
+          "promoCard",
+          "registersCard",
+          "opsRow",
+          "reorderCard"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Store Manager — Daily Console",
+        "subtitle": "Downtown Flagship • Tuesday, Aug 18 • Live as of 4:42 PM"
+      },
+      {
+        "id": "storeSwitcher",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "storeControl",
+          "viewStoreBtn"
+        ]
+      },
+      {
+        "id": "storeControl",
+        "component": "FormControl",
+        "label": "Viewing store",
+        "input": "storeSelect",
+        "hint": "Switch to view a different store (Item 11)"
+      },
+      {
+        "id": "storeSelect",
+        "component": "Select",
+        "name": "store",
+        "value": "downtown",
+        "items": [
+          "storeDowntown",
+          "storeMall",
+          "storeAirport",
+          "storeWestside"
+        ],
+        "placeholder": "Select store"
+      },
+      {
+        "id": "storeDowntown",
+        "component": "SelectItem",
+        "value": "downtown",
+        "label": "Downtown Flagship"
+      },
+      {
+        "id": "storeMall",
+        "component": "SelectItem",
+        "value": "mall",
+        "label": "Mall Outlet #2"
+      },
+      {
+        "id": "storeAirport",
+        "component": "SelectItem",
+        "value": "airport",
+        "label": "Airport Express"
+      },
+      {
+        "id": "storeWestside",
+        "component": "SelectItem",
+        "value": "westside",
+        "label": "Westside Market"
+      },
+      {
+        "id": "viewStoreBtn",
+        "component": "Button",
+        "label": "View Store Dashboard",
+        "variant": "secondary"
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "kpiSalesCard",
+          "kpiBasketCard",
+          "kpiReturnsCard"
+        ]
+      },
+      {
+        "id": "kpiSalesCard",
+        "component": "Card",
+        "children": [
+          "kpiSalesHeader",
+          "kpiSalesValue",
+          "kpiSalesProgress"
+        ]
+      },
+      {
+        "id": "kpiSalesHeader",
+        "component": "CardHeader",
+        "title": "Sales Today vs Target",
+        "subtitle": "Item 1"
+      },
+      {
+        "id": "kpiSalesValue",
+        "component": "TextContent",
+        "text": "$8,420 / $12,000 — 70% to target",
+        "size": "large-heavy"
+      },
+      {
+        "id": "kpiSalesProgress",
+        "component": "Progress",
+        "value": 70.2,
+        "label": "$3,580 remaining to close the day on target"
+      },
+      {
+        "id": "kpiBasketCard",
+        "component": "Card",
+        "children": [
+          "kpiBasketHeader",
+          "kpiBasketValue",
+          "kpiBasketSub"
+        ]
+      },
+      {
+        "id": "kpiBasketHeader",
+        "component": "CardHeader",
+        "title": "Average Basket Size",
+        "subtitle": "Item 6"
+      },
+      {
+        "id": "kpiBasketValue",
+        "component": "TextContent",
+        "text": "$42.80",
+        "size": "large-heavy"
+      },
+      {
+        "id": "kpiBasketSub",
+        "component": "TextContent",
+        "text": "▲ 3.2% vs yesterday ($41.48) • 197 transactions today",
+        "size": "small"
+      },
+      {
+        "id": "kpiReturnsCard",
+        "component": "Card",
+        "children": [
+          "kpiReturnsHeader",
+          "kpiReturnsValue",
+          "kpiReturnsSub"
+        ]
+      },
+      {
+        "id": "kpiReturnsHeader",
+        "component": "CardHeader",
+        "title": "Returns This Week",
+        "subtitle": "Item 7 • Mon-Sun"
+      },
+      {
+        "id": "kpiReturnsValue",
+        "component": "TextContent",
+        "text": "23 returns • $1,140",
+        "size": "large-heavy"
+      },
+      {
+        "id": "kpiReturnsSub",
+        "component": "TextContent",
+        "text": "1.8% return rate • -4 vs last week (27)",
+        "size": "small"
+      },
+      {
+        "id": "salesTargetCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "salesTargetHeader",
+          "salesTargetProgress",
+          "salesTargetText"
+        ]
+      },
+      {
+        "id": "salesTargetHeader",
+        "component": "CardHeader",
+        "title": "Daily Target Tracker",
+        "subtitle": "$12,000 target • Closes 9 PM"
+      },
+      {
+        "id": "salesTargetProgress",
+        "component": "Progress",
+        "value": 70.2,
+        "label": "70.2% achieved"
+      },
+      {
+        "id": "salesTargetText",
+        "component": "TextContent",
+        "text": "Pace: Need $892/hr to hit target. Projected close: $11,240 at current run rate.",
+        "size": "small"
+      },
+      {
+        "id": "trafficCard",
+        "component": "Card",
+        "children": [
+          "trafficHeader",
+          "trafficChart"
+        ]
+      },
+      {
+        "id": "trafficHeader",
+        "component": "CardHeader",
+        "title": "Foot Traffic Through the Day",
+        "subtitle": "Item 2 • Visitors per hour • Total today: 1,133"
+      },
+      {
+        "id": "trafficChart",
+        "component": "LineChart",
+        "labels": [
+          "9 AM",
+          "10 AM",
+          "11 AM",
+          "12 PM",
+          "1 PM",
+          "2 PM",
+          "3 PM",
+          "4 PM",
+          "5 PM",
+          "6 PM",
+          "7 PM",
+          "8 PM"
+        ],
+        "series": [
+          "trafficSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Hour",
+        "yLabel": "Visitors"
+      },
+      {
+        "id": "trafficSeries",
+        "component": "Series",
+        "category": "Visitors",
+        "values": [
+          45,
+          68,
+          92,
+          124,
+          110,
+          98,
+          135,
+          142,
+          128,
+          85,
+          62,
+          34
+        ]
+      },
+      {
+        "id": "weekCompareCard",
+        "component": "Card",
+        "children": [
+          "weekCompareHeader",
+          "weekCompareChart"
+        ]
+      },
+      {
+        "id": "weekCompareHeader",
+        "component": "CardHeader",
+        "title": "This Week vs Last Week",
+        "subtitle": "Item 12 • Daily sales (Mon-Sun) • This week $38,240 vs Last $36,910 (+3.6%)"
+      },
+      {
+        "id": "weekCompareChart",
+        "component": "BarChart",
+        "labels": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat",
+          "Sun"
+        ],
+        "series": [
+          "weekThisSeries",
+          "weekLastSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Day",
+        "yLabel": "Sales $"
+      },
+      {
+        "id": "weekThisSeries",
+        "component": "Series",
+        "category": "This Week",
+        "values": [
+          5200,
+          8420,
+          6100,
+          5800,
+          7200,
+          5520,
+          0
+        ]
+      },
+      {
+        "id": "weekLastSeries",
+        "component": "Series",
+        "category": "Last Week",
+        "values": [
+          4980,
+          7120,
+          5890,
+          6020,
+          6850,
+          6050,
+          0
+        ]
+      },
+      {
+        "id": "bestSellersCard",
+        "component": "Card",
+        "children": [
+          "bestSellersHeader",
+          "bestSellersChart",
+          "bestSellersTable"
+        ]
+      },
+      {
+        "id": "bestSellersHeader",
+        "component": "CardHeader",
+        "title": "Best Sellers Today",
+        "subtitle": "Item 3 • By units sold"
+      },
+      {
+        "id": "bestSellersChart",
+        "component": "HorizontalBarChart",
+        "labels": [
+          "Organic Bananas 1kg",
+          "Whole Milk 1L",
+          "Sourdough Loaf",
+          "Free-Range Eggs 12pk",
+          "Cold Brew 500ml"
+        ],
+        "series": [
+          "bestSellersSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Units",
+        "yLabel": "Product"
+      },
+      {
+        "id": "bestSellersSeries",
+        "component": "Series",
+        "category": "Units",
+        "values": [
+          87,
+          64,
+          51,
+          48,
+          42
+        ]
+      },
+      {
+        "id": "bestSellersTable",
+        "component": "Table",
+        "columns": [
+          "colProduct",
+          "colUnits",
+          "colRevenue"
+        ]
+      },
+      {
+        "id": "colProduct",
+        "component": "Col",
+        "label": "Product",
+        "data": [
+          "Organic Bananas 1kg",
+          "Whole Milk 1L",
+          "Sourdough Loaf",
+          "Free-Range Eggs 12pk",
+          "Cold Brew 500ml"
+        ]
+      },
+      {
+        "id": "colUnits",
+        "component": "Col",
+        "label": "Units",
+        "type": "number",
+        "data": [
+          87,
+          64,
+          51,
+          48,
+          42
+        ]
+      },
+      {
+        "id": "colRevenue",
+        "component": "Col",
+        "label": "Revenue",
+        "data": [
+          "$304.50",
+          "$249.60",
+          "$280.50",
+          "$287.52",
+          "$210.00"
+        ]
+      },
+      {
+        "id": "promoCard",
+        "component": "Card",
+        "children": [
+          "promoHeader",
+          "promoTable"
+        ]
+      },
+      {
+        "id": "promoHeader",
+        "component": "CardHeader",
+        "title": "Running Promotions",
+        "subtitle": "Item 8 • Real-time performance"
+      },
+      {
+        "id": "promoTable",
+        "component": "Table",
+        "columns": [
+          "promoNameCol",
+          "promoRedemptionCol",
+          "promoRevenueCol",
+          "promoStatusCol"
+        ]
+      },
+      {
+        "id": "promoNameCol",
+        "component": "Col",
+        "label": "Promotion",
+        "data": [
+          "Summer Sips - BOGO Cold Brew",
+          "Bakery Bundle $10",
+          "Loyalty 10% Off $50+"
+        ]
+      },
+      {
+        "id": "promoRedemptionCol",
+        "component": "Col",
+        "label": "Redemptions",
+        "type": "number",
+        "data": [
+          38,
+          52,
+          71
+        ]
+      },
+      {
+        "id": "promoRevenueCol",
+        "component": "Col",
+        "label": "Lift / Revenue",
+        "data": [
+          "+$189 • 42 units",
+          "+$416 • 52 bundles",
+          "+$892 • 71 orders"
+        ]
+      },
+      {
+        "id": "promoStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "On Track",
+          "Top Performer",
+          "Needs Push"
+        ]
+      },
+      {
+        "id": "registersCard",
+        "component": "Card",
+        "children": [
+          "registersHeader",
+          "registersTable"
+        ]
+      },
+      {
+        "id": "registersHeader",
+        "component": "CardHeader",
+        "title": "Registers",
+        "subtitle": "Item 9 • Open / Closed • 4 of 5 open"
+      },
+      {
+        "id": "registersTable",
+        "component": "Table",
+        "columns": [
+          "regIdCol",
+          "regStatusCol",
+          "regCashierCol",
+          "regSalesCol"
+        ]
+      },
+      {
+        "id": "regIdCol",
+        "component": "Col",
+        "label": "Register",
+        "data": [
+          "Reg #1 — Front",
+          "Reg #2 — Front",
+          "Reg #3 — Express",
+          "Reg #4 — Self-Checkout",
+          "Reg #5 — Customer Service"
+        ]
+      },
+      {
+        "id": "regStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "● OPEN",
+          "● OPEN",
+          "● OPEN",
+          "○ CLOSED",
+          "● OPEN"
+        ]
+      },
+      {
+        "id": "regCashierCol",
+        "component": "Col",
+        "label": "Cashier",
+        "data": [
+          "Maya P.",
+          "Jordan L.",
+          "Samir K.",
+          "—",
+          "Alex R."
+        ]
+      },
+      {
+        "id": "regSalesCol",
+        "component": "Col",
+        "label": "Sales Today",
+        "data": [
+          "$2,840",
+          "$2,310",
+          "$1,920",
+          "$0",
+          "$1,350"
+        ]
+      },
+      {
+        "id": "opsRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "stockCard",
+          "shiftCard"
+        ]
+      },
+      {
+        "id": "stockCard",
+        "component": "Card",
+        "children": [
+          "stockHeader",
+          "stockAlert",
+          "stockList"
+        ]
+      },
+      {
+        "id": "stockHeader",
+        "component": "CardHeader",
+        "title": "Out of Stock",
+        "subtitle": "Item 4 • 4 SKUs need attention"
+      },
+      {
+        "id": "stockAlert",
+        "component": "Alert",
+        "title": "Restock needed",
+        "description": "4 items at zero on-hand. Use Reorder below.",
+        "variant": "destructive"
+      },
+      {
+        "id": "stockList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "stockItem1",
+          "stockItem2",
+          "stockItem3",
+          "stockItem4"
+        ]
+      },
+      {
+        "id": "stockItem1",
+        "component": "ListItem",
+        "title": "Oat Milk Barista 1L",
+        "subtitle": "SKU: OAT-001 • Last sold 2h ago • Supplier: FreshDirect"
+      },
+      {
+        "id": "stockItem2",
+        "component": "ListItem",
+        "title": "Avocado Hass (each)",
+        "subtitle": "SKU: PRO-088 • Expected delivery tomorrow 7 AM"
+      },
+      {
+        "id": "stockItem3",
+        "component": "ListItem",
+        "title": "Sparkling Water Lime 6pk",
+        "subtitle": "SKU: BEV-214 • 0 on hand, 12 on order"
+      },
+      {
+        "id": "stockItem4",
+        "component": "ListItem",
+        "title": "Paper Bags Large",
+        "subtitle": "SKU: SUP-042 • Critical — impacts checkout"
+      },
+      {
+        "id": "shiftCard",
+        "component": "Card",
+        "children": [
+          "shiftHeader",
+          "shiftList"
+        ]
+      },
+      {
+        "id": "shiftHeader",
+        "component": "CardHeader",
+        "title": "On Shift Today",
+        "subtitle": "Item 5 • 6 staff • Shift 8 AM - 5 PM / 2 PM - 10 PM"
+      },
+      {
+        "id": "shiftList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "shift1",
+          "shift2",
+          "shift3",
+          "shift4",
+          "shift5",
+          "shift6"
+        ]
+      },
+      {
+        "id": "shift1",
+        "component": "ListItem",
+        "title": "Maya Patel — Lead Cashier",
+        "subtitle": "8 AM - 5 PM • Reg #1 • On break until 5:00"
+      },
+      {
+        "id": "shift2",
+        "component": "ListItem",
+        "title": "Jordan Lee — Floor Associate",
+        "subtitle": "9 AM - 6 PM • Restocking aisles"
+      },
+      {
+        "id": "shift3",
+        "component": "ListItem",
+        "title": "Samir Khan — Barista / Cashier",
+        "subtitle": "8 AM - 4 PM • Reg #3"
+      },
+      {
+        "id": "shift4",
+        "component": "ListItem",
+        "title": "Alex Rivera — Customer Service",
+        "subtitle": "2 PM - 10 PM • Reg #5 • Closing lead"
+      },
+      {
+        "id": "shift5",
+        "component": "ListItem",
+        "title": "Priya Nair — Stockroom",
+        "subtitle": "7 AM - 3 PM • Receiving delivery"
+      },
+      {
+        "id": "shift6",
+        "component": "ListItem",
+        "title": "Chris Okafor — Self-Checkout Attendant",
+        "subtitle": "10 AM - 7 PM • Currently OFF — Reg #4 closed"
+      },
+      {
+        "id": "reorderCard",
+        "component": "Card",
+        "children": [
+          "reorderHeader",
+          "reorderForm"
+        ]
+      },
+      {
+        "id": "reorderHeader",
+        "component": "CardHeader",
+        "title": "Reorder Item",
+        "subtitle": "Item 10 • Creates PO instantly to supplier"
+      },
+      {
+        "id": "reorderForm",
+        "component": "Form",
+        "name": "reorder-form",
+        "buttons": "reorderButtons",
+        "fields": [
+          "reorderItemControl",
+          "reorderQtyControl"
+        ]
+      },
+      {
+        "id": "reorderItemControl",
+        "component": "FormControl",
+        "label": "Item to reorder",
+        "input": "reorderItemSelect"
+      },
+      {
+        "id": "reorderItemSelect",
+        "component": "Select",
+        "name": "item",
+        "items": [
+          "reorderItemA",
+          "reorderItemB",
+          "reorderItemC",
+          "reorderItemD"
+        ],
+        "placeholder": "Choose out-of-stock item"
+      },
+      {
+        "id": "reorderItemA",
+        "component": "SelectItem",
+        "value": "OAT-001",
+        "label": "Oat Milk Barista 1L (OAT-001)"
+      },
+      {
+        "id": "reorderItemB",
+        "component": "SelectItem",
+        "value": "PRO-088",
+        "label": "Avocado Hass (PRO-088)"
+      },
+      {
+        "id": "reorderItemC",
+        "component": "SelectItem",
+        "value": "BEV-214",
+        "label": "Sparkling Water Lime 6pk (BEV-214)"
+      },
+      {
+        "id": "reorderItemD",
+        "component": "SelectItem",
+        "value": "SUP-042",
+        "label": "Paper Bags Large (SUP-042)"
+      },
+      {
+        "id": "reorderQtyControl",
+        "component": "FormControl",
+        "label": "Quantity",
+        "input": "reorderQtyInput",
+        "hint": "Units / cases"
+      },
+      {
+        "id": "reorderQtyInput",
+        "component": "Input",
+        "name": "quantity",
+        "placeholder": "e.g., 24",
+        "type": "number"
+      },
+      {
+        "id": "reorderButtons",
+        "component": "Buttons",
+        "buttons": [
+          "reorderBtn"
+        ]
+      },
+      {
+        "id": "reorderBtn",
+        "component": "Button",
+        "label": "Reorder Now",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>

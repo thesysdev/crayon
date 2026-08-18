@@ -1,206 +1,183 @@
-Here is a delivery tracking screen showing the real-time package status, estimated delivery date, and an easy option to report any issues with the shipment.
+I have created a tracking screen for your delivery. It displays the current package location, the estimated delivery date, and includes an interactive option to report any issues with the shipment.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "delivery-tracking",
-      "catalogId": "thesys.dev:c1-openui",
-      "theme": {
-        "primaryColor": "#2563EB",
-        "agentDisplayName": "Delivery Tracker"
-      }
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "delivery-tracking",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "l",
-          "children": [
-            "header",
-            "eta-callout",
-            "progress-section",
-            "divider",
-            "issue-dialog"
-          ]
-        },
-        {
-          "id": "header",
-          "component": "CardHeader",
-          "title": "Package Tracking",
-          "subtitle": "Tracking ID: #TRK-892041928"
-        },
-        {
-          "id": "eta-callout",
-          "component": "Callout",
-          "variant": "info",
-          "title": "Estimated Delivery Date",
-          "description": "Thursday, Oct 24 by 7:00 PM"
-        },
-        {
-          "id": "progress-section",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "current-status-title",
-            "status-progress",
-            "status-steps"
-          ]
-        },
-        {
-          "id": "current-status-title",
-          "component": "Heading",
-          "level": "h3",
-          "text": "Current Status: Out for Delivery"
-        },
-        {
-          "id": "status-progress",
-          "component": "Progress",
-          "value": 75,
-          "label": "Package is in transit on local delivery vehicle"
-        },
-        {
-          "id": "status-steps",
-          "component": "Steps",
-          "items": [
-            "step-1",
-            "step-2",
-            "step-3",
-            "step-4"
-          ]
-        },
-        {
-          "id": "step-1",
-          "component": "StepsItem",
-          "title": "Order Placed",
-          "details": "Oct 21, 9:30 AM - Merchant received order"
-        },
-        {
-          "id": "step-2",
-          "component": "StepsItem",
-          "title": "Shipped",
-          "details": "Oct 22, 2:15 PM - Processed at sorting facility"
-        },
-        {
-          "id": "step-3",
-          "component": "StepsItem",
-          "title": "Out for Delivery (Current Location)",
-          "details": "Oct 24, 8:00 AM - Loaded on courier vehicle at Regional Hub (5 miles away)"
-        },
-        {
-          "id": "step-4",
-          "component": "StepsItem",
-          "title": "Delivered",
-          "details": "Pending final drop-off at your address"
-        },
-        {
-          "id": "divider",
-          "component": "Separator",
-          "orientation": "horizontal",
-          "decorative": true
-        },
-        {
-          "id": "issue-dialog",
-          "component": "DialogBlock",
-          "triggerLabel": "Report a Problem with Delivery",
-          "triggerVariant": "destructive",
-          "title": "Report an Issue",
-          "description": "Select the issue you are experiencing with this delivery:",
-          "content": [
-            "issue-form"
-          ]
-        },
-        {
-          "id": "issue-form",
-          "component": "Form",
-          "name": "delivery-issue-form",
-          "fields": [
-            "issue-type-control",
-            "issue-details-control"
-          ],
-          "buttons": "issue-form-buttons"
-        },
-        {
-          "id": "issue-type-control",
-          "component": "FormControl",
-          "label": "Issue Type",
-          "input": "issue-type-select"
-        },
-        {
-          "id": "issue-type-select",
-          "component": "Select",
-          "name": "issueType",
-          "placeholder": "Select a reason",
-          "items": [
-            "opt-delay",
-            "opt-address",
-            "opt-instructions",
-            "opt-other"
-          ]
-        },
-        {
-          "id": "opt-delay",
-          "component": "SelectItem",
-          "value": "delayed",
-          "label": "Delivery Delayed"
-        },
-        {
-          "id": "opt-address",
-          "component": "SelectItem",
-          "value": "address",
-          "label": "Wrong Address Updated"
-        },
-        {
-          "id": "opt-instructions",
-          "component": "SelectItem",
-          "value": "instructions",
-          "label": "Special Delivery Request"
-        },
-        {
-          "id": "opt-other",
-          "component": "SelectItem",
-          "value": "other",
-          "label": "Other Inquiry"
-        },
-        {
-          "id": "issue-details-control",
-          "component": "FormControl",
-          "label": "Additional Information",
-          "input": "issue-details-text"
-        },
-        {
-          "id": "issue-details-text",
-          "component": "TextArea",
-          "name": "issueDetails",
-          "placeholder": "Provide details to help us resolve the issue...",
-          "rows": 3
-        },
-        {
-          "id": "issue-form-buttons",
-          "component": "Buttons",
-          "buttons": [
-            "submit-issue-btn"
-          ]
-        },
-        {
-          "id": "submit-issue-btn",
-          "component": "Button",
-          "label": "Submit Report",
-          "variant": "primary",
-          "type": "destructive"
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "deliveryStatusAlert",
+          "etaProgress",
+          "trackingSteps",
+          "separator",
+          "issueDialog"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Shipment Tracking",
+        "subtitle": "Tracking ID: #TRK-98420183"
+      },
+      {
+        "id": "deliveryStatusAlert",
+        "component": "Alert",
+        "title": "Estimated Delivery Date",
+        "description": "Thursday, Oct 24 by 7:00 PM",
+        "variant": "info"
+      },
+      {
+        "id": "etaProgress",
+        "component": "Progress",
+        "label": "In Transit (Step 3 of 4)",
+        "value": 75
+      },
+      {
+        "id": "trackingSteps",
+        "component": "Steps",
+        "items": [
+          "step1",
+          "step2",
+          "step3",
+          "step4"
+        ]
+      },
+      {
+        "id": "step1",
+        "component": "StepsItem",
+        "title": "Order Processed",
+        "details": "Oct 21, 09:30 AM - Warehouse, Logistics Hub"
+      },
+      {
+        "id": "step2",
+        "component": "StepsItem",
+        "title": "Shipped",
+        "details": "Oct 22, 02:15 PM - In transit to local facility"
+      },
+      {
+        "id": "step3",
+        "component": "StepsItem",
+        "title": "Out for Delivery (Current Location)",
+        "details": "Oct 24, 08:00 AM - Regional Distribution Center, Sector 4"
+      },
+      {
+        "id": "step4",
+        "component": "StepsItem",
+        "title": "Delivered",
+        "details": "Pending final drop-off at your address"
+      },
+      {
+        "id": "separator",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "issueDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Report a Problem",
+        "triggerVariant": "destructive",
+        "title": "Report Delivery Issue",
+        "description": "Let us know what went wrong so we can help you right away.",
+        "content": [
+          "issueForm"
+        ]
+      },
+      {
+        "id": "issueForm",
+        "component": "Form",
+        "name": "report-issue-form",
+        "buttons": "formButtons",
+        "fields": [
+          "issueTypeControl",
+          "issueDetailsControl"
+        ]
+      },
+      {
+        "id": "issueTypeControl",
+        "component": "FormControl",
+        "label": "Select Issue Type",
+        "input": "issueTypeSelect"
+      },
+      {
+        "id": "issueTypeSelect",
+        "component": "Select",
+        "name": "issue_type",
+        "placeholder": "Choose an option",
+        "items": [
+          "optDelayed",
+          "optDamaged",
+          "optAddress",
+          "optOther"
+        ]
+      },
+      {
+        "id": "optDelayed",
+        "component": "SelectItem",
+        "value": "delayed",
+        "label": "Package is severely delayed"
+      },
+      {
+        "id": "optDamaged",
+        "component": "SelectItem",
+        "value": "damaged",
+        "label": "Item/Package is damaged"
+      },
+      {
+        "id": "optAddress",
+        "component": "SelectItem",
+        "value": "address",
+        "label": "Incorrect delivery address"
+      },
+      {
+        "id": "optOther",
+        "component": "SelectItem",
+        "value": "other",
+        "label": "Other issue"
+      },
+      {
+        "id": "issueDetailsControl",
+        "component": "FormControl",
+        "label": "Additional Details",
+        "hint": "Provide any relevant notes or details for the courier",
+        "input": "issueDetailsInput"
+      },
+      {
+        "id": "issueDetailsInput",
+        "component": "TextArea",
+        "name": "issue_details",
+        "placeholder": "Describe your issue here...",
+        "rows": 4
+      },
+      {
+        "id": "formButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitIssueBtn"
+        ]
+      },
+      {
+        "id": "submitIssueBtn",
+        "component": "Button",
+        "label": "Submit Report",
+        "variant": "primary"
+      }
+    ]
+  }
+}
 </a2ui-json>

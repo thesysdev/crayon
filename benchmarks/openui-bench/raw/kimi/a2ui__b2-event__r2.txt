@@ -1,61 +1,242 @@
-Here's your conference landing screen covering all six items:
+Here's a complete conference landing screen covering all six items — header with name/date/venue, a countdown callout, agenda table, speaker list, ticket pricing table, and a registration form.
 
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"conf-landing","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#6C3CE9","agentDisplayName":"ConfHub"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"conf-landing","components":[
-{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["hero","countdown","agenda","speakers","tickets","register"]},
-
-{"id":"hero","component":"Card","variant":"card","direction":"column","gap":"s","children":["heroTitle","heroSub"]},
-{"id":"heroTitle","component":"Heading","text":"TechForward Summit 2025","level":"h1"},
-{"id":"heroSub","component":"TextContent","text":"📅 **November 18–19, 2025** · 📍 Moscone Center, San Francisco, CA","size":"large"},
-
-{"id":"countdown","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["countTitle","countBar"]},
-{"id":"countTitle","component":"TextContent","text":"⏳ **42 days remaining** until TechForward Summit 2025","size":"small-heavy"},
-{"id":"countBar","component":"Progress","value":70,"label":"Countdown to event"},
-
-{"id":"agenda","component":"Card","variant":"card","direction":"column","gap":"m","children":["agendaHead","agendaTable"]},
-{"id":"agendaHead","component":"Heading","text":"Agenda","level":"h2"},
-{"id":"agendaTable","component":"Table","columns":["colTime","colSession","colTrack"]},
-{"id":"colTime","component":"Col","label":"Time","data":["9:00 AM","10:00 AM","11:30 AM","1:00 PM","2:30 PM","4:00 PM"]},
-{"id":"colSession","component":"Col","label":"Session","data":["Registration & Coffee","Opening Keynote: The Future of AI","Panel: Scaling Cloud Infrastructure","Lunch & Networking","Workshop: Hands-on LLM Apps","Closing Talk & Awards"]},
-{"id":"colTrack","component":"Col","label":"Track","data":["Main Hall","Main Hall","Room B","Expo Floor","Room C","Main Hall"]},
-
-{"id":"speakers","component":"Card","variant":"card","direction":"column","gap":"m","children":["spkHead","spkList"]},
-{"id":"spkHead","component":"Heading","text":"Speakers","level":"h2"},
-{"id":"spkList","component":"ListBlock","items":["spk1","spk2","spk3","spk4"]},
-{"id":"spk1","component":"ListItem","title":"Dr. Amara Chen","subtitle":"Chief AI Scientist at NovaLabs — pioneer in multimodal foundation models."},
-{"id":"spk2","component":"ListItem","title":"Marcus Rivera","subtitle":"VP of Engineering at CloudScale — led infrastructure for 100M+ users."},
-{"id":"spk3","component":"ListItem","title":"Priya Natarajan","subtitle":"Founder of DevFlow — building the next generation of developer tools."},
-{"id":"spk4","component":"ListItem","title":"Jonas Weber","subtitle":"Security Lead at Sentinel — expert in zero-trust architecture."},
-
-{"id":"tickets","component":"Card","variant":"card","direction":"column","gap":"m","children":["tixHead","tixTable"]},
-{"id":"tixHead","component":"Heading","text":"Tickets","level":"h2"},
-{"id":"tixTable","component":"Table","columns":["colTier","colPrice","colPerks"]},
-{"id":"colTier","component":"Col","label":"Tier","data":["Early Bird","General Admission","VIP"]},
-{"id":"colPrice","component":"Col","label":"Price","data":["$299","$449","$899"]},
-{"id":"colPerks","component":"Col","label":"Includes","data":["All talks + lunch","All talks, workshops + lunch","Front-row seating, speaker dinner, swag bag"]},
-
-{"id":"register","component":"Card","variant":"card","direction":"column","gap":"m","children":["regHead","regForm"]},
-{"id":"regHead","component":"Heading","text":"Register Now","level":"h2"},
-{"id":"regForm","component":"Form","name":"registration","buttons":"regBtns","fields":["fcName","fcEmail"]},
-{"id":"fcName","component":"FormControl","label":"Full Name","input":"inName"},
-{"id":"inName","component":"Input","name":"name","placeholder":"Jane Doe","type":"text"},
-{"id":"fcEmail","component":"FormControl","label":"Email","input":"inEmail","hint":"We'll send your ticket confirmation here."},
-{"id":"inEmail","component":"Input","name":"email","placeholder":"jane@example.com","type":"email"},
-{"id":"regBtns","component":"Buttons","buttons":["btnSubmit"]},
-{"id":"btnSubmit","component":"Button","label":"Register","variant":"primary","size":"large"}
-]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "gap": "l",
+        "children": [
+          "header",
+          "countdown",
+          "agendaHeading",
+          "agendaTable",
+          "speakersHeading",
+          "speakersList",
+          "ticketsHeading",
+          "ticketsTable",
+          "registerHeading",
+          "regForm"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Nexus AI Summit 2026",
+        "subtitle": "June 9–11, 2026 · Moscone Center, San Francisco"
+      },
+      {
+        "id": "countdown",
+        "component": "Callout",
+        "variant": "info",
+        "title": "142 days remaining",
+        "description": "Doors open June 9, 2026. Early-bird pricing ends April 30 — register now to lock in the lowest rate."
+      },
+      {
+        "id": "agendaHeading",
+        "component": "Heading",
+        "text": "Agenda — Day 1",
+        "level": "h3"
+      },
+      {
+        "id": "agendaTable",
+        "component": "Table",
+        "columns": [
+          "agendaTime",
+          "agendaSession"
+        ]
+      },
+      {
+        "id": "agendaTime",
+        "component": "Col",
+        "label": "Time",
+        "data": [
+          "09:00",
+          "10:30",
+          "12:00",
+          "13:30",
+          "15:30",
+          "17:00"
+        ]
+      },
+      {
+        "id": "agendaSession",
+        "component": "Col",
+        "label": "Session",
+        "data": [
+          "Opening Keynote: The State of AI",
+          "Panel: Agents in Production",
+          "Lunch & Networking",
+          "Workshop: Building with LLM Tooling",
+          "Fireside Chat: The Next Decade of Interfaces",
+          "Closing Reception"
+        ]
+      },
+      {
+        "id": "speakersHeading",
+        "component": "Heading",
+        "text": "Speakers",
+        "level": "h3"
+      },
+      {
+        "id": "speakersList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "speaker1",
+          "speaker2",
+          "speaker3",
+          "speaker4"
+        ]
+      },
+      {
+        "id": "speaker1",
+        "component": "ListItem",
+        "title": "Dr. Amara Chen",
+        "subtitle": "Chief AI Scientist at Helios Labs and a pioneer in multimodal reasoning systems."
+      },
+      {
+        "id": "speaker2",
+        "component": "ListItem",
+        "title": "Jordan Reyes",
+        "subtitle": "CEO of Loopwork, scaled agent infrastructure to 40M tasks per day."
+      },
+      {
+        "id": "speaker3",
+        "component": "ListItem",
+        "title": "Priya Natarajan",
+        "subtitle": "Staff Engineer at Northwind leading open-source model evaluation tooling."
+      },
+      {
+        "id": "speaker4",
+        "component": "ListItem",
+        "title": "Sam Okafor",
+        "subtitle": "Founder of Fieldnote, building voice-first interfaces for field teams."
+      },
+      {
+        "id": "ticketsHeading",
+        "component": "Heading",
+        "text": "Tickets",
+        "level": "h3"
+      },
+      {
+        "id": "ticketsTable",
+        "component": "Table",
+        "columns": [
+          "tierCol",
+          "priceCol",
+          "perksCol"
+        ]
+      },
+      {
+        "id": "tierCol",
+        "component": "Col",
+        "label": "Tier",
+        "data": [
+          "General Admission",
+          "Pro",
+          "VIP"
+        ]
+      },
+      {
+        "id": "priceCol",
+        "component": "Col",
+        "label": "Price",
+        "data": [
+          "$499",
+          "$899",
+          "$1,499"
+        ]
+      },
+      {
+        "id": "perksCol",
+        "component": "Col",
+        "label": "Includes",
+        "data": [
+          "All keynotes & panels, expo hall access",
+          "GA + hands-on workshops & recordings",
+          "Pro + speaker dinner & front-row seating"
+        ]
+      },
+      {
+        "id": "registerHeading",
+        "component": "Heading",
+        "text": "Register",
+        "level": "h3"
+      },
+      {
+        "id": "regForm",
+        "component": "Form",
+        "name": "conference-registration",
+        "fields": [
+          "nameField",
+          "emailField"
+        ],
+        "buttons": "regButtons"
+      },
+      {
+        "id": "nameField",
+        "component": "FormControl",
+        "label": "Full name",
+        "input": "nameInput"
+      },
+      {
+        "id": "nameInput",
+        "component": "Input",
+        "name": "name",
+        "placeholder": "Ada Lovelace"
+      },
+      {
+        "id": "emailField",
+        "component": "FormControl",
+        "label": "Email",
+        "input": "emailInput",
+        "hint": "We'll send your ticket and updates here"
+      },
+      {
+        "id": "emailInput",
+        "component": "Input",
+        "name": "email",
+        "placeholder": "ada@example.com",
+        "type": "email"
+      },
+      {
+        "id": "regButtons",
+        "component": "Buttons",
+        "buttons": [
+          "registerBtn",
+          "updatesBtn"
+        ]
+      },
+      {
+        "id": "registerBtn",
+        "component": "Button",
+        "label": "Register now",
+        "variant": "primary"
+      },
+      {
+        "id": "updatesBtn",
+        "component": "Button",
+        "label": "Just send me updates",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
 </a2ui-json>
 
-The screen includes:
-1. **Hero card** — event name (TechForward Summit 2025), dates, and venue
-2. **Countdown** — 42 days remaining with a progress bar
-3. **Agenda table** — six sessions with times and tracks
-4. **Speakers list** — four speakers with a one-line bio each
-5. **Ticket tiers table** — Early Bird ($299), GA ($449), VIP ($899) with perks
-6. **Registration form** — name and email fields with a Register button
-
-Want me to add a venue map, change the pricing, or adjust the agenda?
+All six requirements are covered: (1) event name, date and venue in the header, (2) timed agenda table, (3) four speakers with one-line bios, (4) three ticket tiers with prices and perks, (5) name + email registration form, and (6) a countdown callout showing days remaining.

@@ -1,19 +1,19 @@
 
 
-{"op":"add","path":"/root","value":"focus-container"}
-{"op":"add","path":"/elements/focus-container","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["focus-header","task-title","task-description","separator-1","deadline-row","status-row","separator-2","action-area","done-callout"]}}
-{"op":"add","path":"/elements/focus-header","value":{"type":"CardHeader","props":{"title":"🎯 Focus Task","subtitle":"Your most urgent item right now"},"children":[]}}
-{"op":"add","path":"/elements/task-title","value":{"type":"Heading","props":{"text":{"$state":"/task/title"},"level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/task-description","value":{"type":"TextContent","props":{"text":{"$state":"/task/description"},"size":"default"},"children":[]}}
-{"op":"add","path":"/elements/separator-1","value":{"type":"Separator","props":{"orientation":"horizontal","decorative":true},"children":[]}}
-{"op":"add","path":"/elements/deadline-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center"},"children":["deadline-label","deadline-value"]}}
-{"op":"add","path":"/elements/deadline-label","value":{"type":"TextContent","props":{"text":"⏰ Deadline","size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/deadline-value","value":{"type":"TextContent","props":{"text":{"$state":"/task/deadline"},"size":"default"},"children":[]}}
-{"op":"add","path":"/elements/status-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center"},"children":["status-label","status-badge"]}}
-{"op":"add","path":"/elements/status-label","value":{"type":"TextContent","props":{"text":"📋 Status","size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/status-badge","value":{"type":"Tag","props":{"text":{"$cond":{"$state":"/task/completed"},"$then":"Completed","$else":{"$state":"/task/status"}},"variant":{"$cond":{"$state":"/task/completed"},"$then":"success","$else":"warning"}},"children":[]}}
-{"op":"add","path":"/elements/separator-2","value":{"type":"Separator","props":{"orientation":"horizontal","decorative":true},"children":[]}}
-{"op":"add","path":"/elements/action-area","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m","align":"center"},"visible":{"$state":"/task/completed","not":true},"children":["mark-done-btn"]}}
-{"op":"add","path":"/elements/mark-done-btn","value":{"type":"Button","props":{"label":"✓ Mark as Done","variant":"primary","size":"large"},"on":{"press":{"action":"setState","params":{"statePath":"/task/completed","value":true}}},"children":[]}}
-{"op":"add","path":"/elements/done-callout","value":{"type":"Callout","props":{"variant":"success","title":"Task Complete! 🎉","description":"Great work! You've finished your most urgent task. Take a moment to celebrate before moving on."},"visible":{"$state":"/task/completed"},"children":[]}}
-{"op":"add","path":"/state/task","value":{"title":"Finalize Q3 Budget Report","description":"Compile all departmental spending data, reconcile discrepancies with finance team, and submit the final Q3 budget report to the CFO for board review.","deadline":"Today, 5:00 PM","status":"In Progress","completed":false}}
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"gap":"m"},"children":["header","task-title","task-desc","meta-row","separator","status-section","action-section","done-section"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"🎯 Focus","subtitle":"Your most urgent task right now"}}}
+{"op":"add","path":"/elements/task-title","value":{"type":"Heading","props":{"text":{"$state":"/task/title"},"level":"h2"}}}
+{"op":"add","path":"/elements/task-desc","value":{"type":"TextContent","props":{"text":{"$state":"/task/description"}}}}
+{"op":"add","path":"/elements/meta-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between"},"children":["deadline-tag","priority-tag"]}}
+{"op":"add","path":"/elements/deadline-tag","value":{"type":"Tag","props":{"text":{"$template":"⏰ ${/task/deadlineLabel}"},"variant":"danger","size":"md"}}}
+{"op":"add","path":"/elements/priority-tag","value":{"type":"Tag","props":{"text":{"$template":"🔥 ${/task/priority} Priority"},"variant":"warning","size":"md"}}}
+{"op":"add","path":"/state/task","value":{"title":"Finalize Q3 Budget Report","description":"Review all department submissions, reconcile discrepancies, and submit the final version to the finance team for board approval.","deadline":"2025-01-20","deadlineLabel":"Due: Jan 20, 2025","priority":"High","status":"In Progress","completed":false,"timeRemaining":"2 days remaining"}}
+{"op":"add","path":"/elements/separator","value":{"type":"Separator","props":{}}}
+{"op":"add","path":"/elements/status-section","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center"},"children":["status-label","status-badge"]}}
+{"op":"add","path":"/elements/status-label","value":{"type":"TextContent","props":{"text":"Status:","size":"small-heavy"}}}
+{"op":"add","path":"/elements/status-badge","value":{"type":"Badge","props":{"text":{"$state":"/task/status"},"variant":{"$cond":{"$state":"/task/completed"},"$then":"secondary","$else":"default"}}}}
+{"op":"add","path":"/elements/action-section","value":{"type":"Card","props":{"variant":"clear","gap":"s"},"visible":{"$state":"/task/completed","not":true},"children":["time-note","done-btn"]}}
+{"op":"add","path":"/elements/time-note","value":{"type":"TextContent","props":{"text":{"$state":"/task/timeRemaining"},"size":"small"}}}
+{"op":"add","path":"/elements/done-btn","value":{"type":"Button","props":{"label":"✓ Mark as Done","variant":"primary","size":"large"},"on":{"press":{"action":"setState","params":{"statePath":"/task/completed","value":true}}}}}
+{"op":"add","path":"/elements/done-section","value":{"type":"Callout","props":{"variant":"success","title":"Task Complete!","description":"Great work — this task is now marked as done. Take a moment to celebrate before moving on."},"visible":{"$state":"/task/completed"}}}

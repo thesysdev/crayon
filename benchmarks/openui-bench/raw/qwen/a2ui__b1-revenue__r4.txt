@@ -1,74 +1,123 @@
-Here's a mid-morning revenue check-in screen for the shop owner:
+
+
+Here's a mid-morning check-in screen for the shop owner — today's revenue so far, side by side with yesterday at the same time, plus an hour-by-hour comparison.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "shop-morning-checkin",
-      "catalogId": "thesys.dev:c1-openui",
-      "theme": {
-        "primaryColor": "#2E7D32"
-      }
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "shop-morning-checkin",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "children": ["header", "revenue-label", "revenue-value", "separator", "yesterday-section", "comparison-callout"],
-          "direction": "column",
-          "gap": "m"
-        },
-        {
-          "id": "header",
-          "component": "CardHeader",
-          "title": "☀️ Mid-Morning Check-In",
-          "subtitle": "Tuesday, June 17 · 10:45 AM"
-        },
-        {
-          "id": "revenue-label",
-          "component": "TextContent",
-          "text": "Revenue so far today",
-          "size": "small"
-        },
-        {
-          "id": "revenue-value",
-          "component": "TextContent",
-          "text": "**$1,247.50**",
-          "size": "large-heavy"
-        },
-        {
-          "id": "separator",
-          "component": "Separator",
-          "orientation": "horizontal"
-        },
-        {
-          "id": "yesterday-section",
-          "component": "TextContent",
-          "text": "Same time yesterday: **$1,102.30**",
-          "size": "default"
-        },
-        {
-          "id": "comparison-callout",
-          "component": "Callout",
-          "variant": "success",
-          "title": "+$145.20 ahead of yesterday",
-          "description": "You're up 13.2% compared to the same time yesterday. Great pace!"
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-This screen gives the shop owner an at-a-glance view of:
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "paceBadge",
+          "kpis",
+          "trend",
+          "callout"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Morning check-in",
+        "subtitle": "Today's sales · as of 11:00 AM"
+      },
+      {
+        "id": "paceBadge",
+        "component": "Badge",
+        "text": "Ahead of yesterday",
+        "variant": "secondary"
+      },
+      {
+        "id": "kpis",
+        "component": "Table",
+        "columns": [
+          "metricCol",
+          "valueCol"
+        ]
+      },
+      {
+        "id": "metricCol",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Revenue today (so far)",
+          "Yesterday at 11:00 AM",
+          "Difference"
+        ]
+      },
+      {
+        "id": "valueCol",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "$1,842",
+          "$1,610",
+          "+$232 (+14.4%)"
+        ]
+      },
+      {
+        "id": "trend",
+        "component": "LineChart",
+        "labels": [
+          "8 AM",
+          "9 AM",
+          "10 AM",
+          "11 AM"
+        ],
+        "series": [
+          "todaySeries",
+          "yesterdaySeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Time",
+        "yLabel": "Cumulative revenue (USD)"
+      },
+      {
+        "id": "todaySeries",
+        "component": "Series",
+        "category": "Today",
+        "values": [
+          240,
+          760,
+          1320,
+          1842
+        ]
+      },
+      {
+        "id": "yesterdaySeries",
+        "component": "Series",
+        "category": "Yesterday",
+        "values": [
+          210,
+          640,
+          1150,
+          1610
+        ]
+      },
+      {
+        "id": "callout",
+        "component": "Callout",
+        "variant": "success",
+        "title": "Pacing ahead",
+        "description": "You've made $232 more than at this time yesterday (+14.4%)."
+      }
+    ]
+  }
+}
+</a2ui-json>
 
-1. **Revenue so far today** — displayed prominently as **$1,247.50** in a large, bold format.
-2. **Comparison with same time yesterday** — showing yesterday's figure ($1,102.30) and a green success callout highlighting the +$145.20 (13.2%) lead.
-
-The green accent and success callout make it immediately clear that today is tracking ahead of yesterday.
+The table covers both required numbers — $1,842 so far today vs. $1,610 at 11:00 AM yesterday — and the chart shows how the two mornings compare hour by hour since opening.

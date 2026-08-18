@@ -1,451 +1,249 @@
-Here is the month-end finance view for your startup, including key metrics, expense category breakdown, high-value transactions, month selector, and statement download action.
+Here is the month-end finance view tailored for your startup, including key KPIs, expense distribution breakdown, flagged high-value transactions, month selector, and export action.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "finance-dashboard",
-      "catalogId": "thesys.dev:c1-openui",
-      "theme": {
-        "primaryColor": "#0F172A",
-        "agentDisplayName": "Finance Ops"
-      }
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "finance-dashboard",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "column",
-          "gap": "l",
-          "children": [
-            "header-card",
-            "kpi-card",
-            "tabs-card",
-            "followup-section"
-          ]
-        },
-        {
-          "id": "header-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "header-title",
-            "controls-card"
-          ]
-        },
-        {
-          "id": "header-title",
-          "component": "CardHeader",
-          "title": "Month-End Financial Dashboard",
-          "subtitle": "Overview of cash flow, runway, expense distribution, and notable transactions."
-        },
-        {
-          "id": "controls-card",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "row",
-          "gap": "m",
-          "align": "center",
-          "justify": "between",
-          "children": [
-            "month-select-control",
-            "download-btn"
-          ]
-        },
-        {
-          "id": "month-select-control",
-          "component": "FormControl",
-          "label": "Select Period",
-          "input": "month-select",
-          "hint": "Viewing settled figures for selected month"
-        },
-        {
-          "id": "month-select",
-          "component": "Select",
-          "name": "selectedMonth",
-          "value": "2023-10",
-          "items": [
-            "select-oct",
-            "select-sep",
-            "select-aug",
-            "select-jul"
-          ]
-        },
-        {
-          "id": "select-oct",
-          "component": "SelectItem",
-          "value": "2023-10",
-          "label": "October 2023 (Latest)"
-        },
-        {
-          "id": "select-sep",
-          "component": "SelectItem",
-          "value": "2023-09",
-          "label": "September 2023"
-        },
-        {
-          "id": "select-aug",
-          "component": "SelectItem",
-          "value": "2023-08",
-          "label": "August 2023"
-        },
-        {
-          "id": "select-jul",
-          "component": "SelectItem",
-          "value": "2023-07",
-          "label": "July 2023"
-        },
-        {
-          "id": "download-btn",
-          "component": "Button",
-          "label": "Download Statement (PDF)",
-          "variant": "primary",
-          "size": "medium"
-        },
-        {
-          "id": "kpi-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "row",
-          "gap": "m",
-          "children": [
-            "cash-kpi",
-            "burn-kpi",
-            "runway-kpi"
-          ]
-        },
-        {
-          "id": "cash-kpi",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "xs",
-          "weight": 1,
-          "children": [
-            "cash-badge",
-            "cash-label",
-            "cash-value",
-            "cash-subtext"
-          ]
-        },
-        {
-          "id": "cash-badge",
-          "component": "Badge",
-          "text": "Item 1",
-          "variant": "secondary"
-        },
-        {
-          "id": "cash-label",
-          "component": "TextContent",
-          "text": "Cash on Hand",
-          "size": "small-heavy"
-        },
-        {
-          "id": "cash-value",
-          "component": "Heading",
-          "text": "$1,420,000",
-          "level": "h2"
-        },
-        {
-          "id": "cash-subtext",
-          "component": "TextContent",
-          "text": "+$150k vs last month (Grant received)",
-          "size": "small"
-        },
-        {
-          "id": "burn-kpi",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "xs",
-          "weight": 1,
-          "children": [
-            "burn-badge",
-            "burn-label",
-            "burn-value",
-            "burn-subtext"
-          ]
-        },
-        {
-          "id": "burn-badge",
-          "component": "Badge",
-          "text": "Item 2",
-          "variant": "secondary"
-        },
-        {
-          "id": "burn-label",
-          "component": "TextContent",
-          "text": "Monthly Burn",
-          "size": "small-heavy"
-        },
-        {
-          "id": "burn-value",
-          "component": "Heading",
-          "text": "$85,000",
-          "level": "h2"
-        },
-        {
-          "id": "burn-subtext",
-          "component": "TextContent",
-          "text": "-4% efficiency improvement MoM",
-          "size": "small"
-        },
-        {
-          "id": "runway-kpi",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "xs",
-          "weight": 1,
-          "children": [
-            "runway-badge",
-            "runway-label",
-            "runway-value",
-            "runway-progress"
-          ]
-        },
-        {
-          "id": "runway-badge",
-          "component": "Badge",
-          "text": "Item 3",
-          "variant": "secondary"
-        },
-        {
-          "id": "runway-label",
-          "component": "TextContent",
-          "text": "Months of Runway",
-          "size": "small-heavy"
-        },
-        {
-          "id": "runway-value",
-          "component": "Heading",
-          "text": "16.7 Mos",
-          "level": "h2"
-        },
-        {
-          "id": "runway-progress",
-          "component": "Progress",
-          "value": 70,
-          "label": "Healthy Target (>12 Mos)"
-        },
-        {
-          "id": "tabs-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "finance-tabs"
-          ]
-        },
-        {
-          "id": "finance-tabs",
-          "component": "Tabs",
-          "items": [
-            "tab-expenses",
-            "tab-transactions"
-          ]
-        },
-        {
-          "id": "tab-expenses",
-          "component": "TabItem",
-          "value": "expenses",
-          "trigger": "Expenses Breakdown (Item 4)",
-          "content": [
-            "expenses-header",
-            "expense-chart",
-            "expense-table"
-          ]
-        },
-        {
-          "id": "expenses-header",
-          "component": "TextContent",
-          "text": "### Expense Breakdown by Category\nVisual breakdown of operating expenses incurred during October 2023.",
-          "size": "default"
-        },
-        {
-          "id": "expense-chart",
-          "component": "PieChart",
-          "variant": "donut",
-          "appearance": "circular",
-          "labels": [
-            "Payroll & Benefits",
-            "Cloud & Infrastructure",
-            "Marketing & Growth",
-            "Software & SaaS",
-            "Office & Operations",
-            "Legal & Finance"
-          ],
-          "values": [
-            45000,
-            18000,
-            12000,
-            5500,
-            3000,
-            1500
-          ]
-        },
-        {
-          "id": "expense-table",
-          "component": "Table",
-          "columns": [
-            "cat-col",
-            "amount-col",
-            "pct-col"
-          ]
-        },
-        {
-          "id": "cat-col",
-          "component": "Col",
-          "label": "Category",
-          "type": "string",
-          "data": [
-            "Payroll & Benefits",
-            "Cloud & Infrastructure",
-            "Marketing & Growth",
-            "Software & SaaS",
-            "Office & Operations",
-            "Legal & Finance"
-          ]
-        },
-        {
-          "id": "amount-col",
-          "component": "Col",
-          "label": "Amount",
-          "type": "string",
-          "data": [
-            "$45,000",
-            "$18,000",
-            "$12,000",
-            "$5,500",
-            "$3,000",
-            "$1,500"
-          ]
-        },
-        {
-          "id": "pct-col",
-          "component": "Col",
-          "label": "Share",
-          "type": "string",
-          "data": [
-            "52.9%",
-            "21.2%",
-            "14.1%",
-            "6.5%",
-            "3.5%",
-            "1.8%"
-          ]
-        },
-        {
-          "id": "tab-transactions",
-          "component": "TabItem",
-          "value": "transactions",
-          "trigger": "Transactions > $10,000 (Item 5)",
-          "content": [
-            "tx-callout",
-            "tx-table"
-          ]
-        },
-        {
-          "id": "tx-callout",
-          "component": "Callout",
-          "variant": "info",
-          "title": "Large Transactions Flagged",
-          "description": "Displaying all 4 individual transactions exceeding the $10,000 threshold for the selected month."
-        },
-        {
-          "id": "tx-table",
-          "component": "Table",
-          "columns": [
-            "tx-date-col",
-            "tx-desc-col",
-            "tx-cat-col",
-            "tx-amt-col"
-          ]
-        },
-        {
-          "id": "tx-date-col",
-          "component": "Col",
-          "label": "Date",
-          "type": "string",
-          "data": [
-            "Oct 01, 2023",
-            "Oct 05, 2023",
-            "Oct 12, 2023",
-            "Oct 28, 2023"
-          ]
-        },
-        {
-          "id": "tx-desc-col",
-          "component": "Col",
-          "label": "Description / Recipient",
-          "type": "string",
-          "data": [
-            "Gusto Payroll Direct Deposit",
-            "AWS Cloud Hosting Invoice #84920",
-            "Google Ads Growth Campaign",
-            "Annual Security Audit & Compliance"
-          ]
-        },
-        {
-          "id": "tx-cat-col",
-          "component": "Col",
-          "label": "Category",
-          "type": "string",
-          "data": [
-            "Payroll & Benefits",
-            "Cloud & Infrastructure",
-            "Marketing & Growth",
-            "Legal & Finance"
-          ]
-        },
-        {
-          "id": "tx-amt-col",
-          "component": "Col",
-          "label": "Amount",
-          "type": "string",
-          "data": [
-            "$45,000.00",
-            "$16,240.50",
-            "$11,500.00",
-            "$10,000.00"
-          ]
-        },
-        {
-          "id": "followup-section",
-          "component": "FollowUpBlock",
-          "items": [
-            "fu-1",
-            "fu-2",
-            "fu-3"
-          ]
-        },
-        {
-          "id": "fu-1",
-          "component": "FollowUpItem",
-          "text": "Email summary report to board"
-        },
-        {
-          "id": "fu-2",
-          "component": "FollowUpItem",
-          "text": "Compare Q3 vs Q4 burn rate trends"
-        },
-        {
-          "id": "fu-3",
-          "component": "FollowUpItem",
-          "text": "Set up alerts for transactions > $5,000"
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "controlRow",
+          "sep1",
+          "runwayAlert",
+          "kpiTable",
+          "sep2",
+          "breakdownHeader",
+          "expensePie",
+          "sep3",
+          "txHeader",
+          "txTable"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Month-End Finance Summary",
+        "subtitle": "Overview of cash, runway, and major expenditures"
+      },
+      {
+        "id": "controlRow",
+        "component": "Form",
+        "name": "financeControls",
+        "buttons": "controlButtons",
+        "fields": [
+          "monthSelectField"
+        ]
+      },
+      {
+        "id": "monthSelectField",
+        "component": "FormControl",
+        "label": "Reporting Period",
+        "input": "monthSelect"
+      },
+      {
+        "id": "monthSelect",
+        "component": "Select",
+        "name": "selectedMonth",
+        "value": "2023-10",
+        "placeholder": "Select month",
+        "items": [
+          "optOct",
+          "optSep",
+          "optAug"
+        ]
+      },
+      {
+        "id": "optOct",
+        "component": "SelectItem",
+        "value": "2023-10",
+        "label": "October 2023"
+      },
+      {
+        "id": "optSep",
+        "component": "SelectItem",
+        "value": "2023-09",
+        "label": "September 2023"
+      },
+      {
+        "id": "optAug",
+        "component": "SelectItem",
+        "value": "2023-08",
+        "label": "August 2023"
+      },
+      {
+        "id": "controlButtons",
+        "component": "Buttons",
+        "buttons": [
+          "downloadBtn"
+        ]
+      },
+      {
+        "id": "downloadBtn",
+        "component": "Button",
+        "label": "Download Statement",
+        "variant": "primary"
+      },
+      {
+        "id": "sep1",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "runwayAlert",
+        "component": "Alert",
+        "title": "Runway Health Check",
+        "description": "At current burn, cash on hand covers 14.8 months of operation.",
+        "variant": "info"
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": [
+          "kpiLabelCol",
+          "kpiValCol",
+          "kpiTrendCol"
+        ]
+      },
+      {
+        "id": "kpiLabelCol",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Cash on Hand",
+          "Monthly Burn Rate",
+          "Runway Remaining"
+        ]
+      },
+      {
+        "id": "kpiValCol",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "$1,850,000",
+          "$125,000",
+          "14.8 Months"
+        ]
+      },
+      {
+        "id": "kpiTrendCol",
+        "component": "Col",
+        "label": "MoM Change",
+        "data": [
+          "-6.3%",
+          "+2.1%",
+          "-0.9 Mo"
+        ]
+      },
+      {
+        "id": "sep2",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "breakdownHeader",
+        "component": "Heading",
+        "text": "Expenses Split by Category",
+        "level": "h3"
+      },
+      {
+        "id": "expensePie",
+        "component": "PieChart",
+        "variant": "donut",
+        "labels": [
+          "Payroll & Benefits",
+          "Cloud Infrastructure",
+          "Sales & Marketing",
+          "Software & Tools",
+          "Legal & Office"
+        ],
+        "values": [
+          75000,
+          22000,
+          15000,
+          8000,
+          5000
+        ]
+      },
+      {
+        "id": "sep3",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "txHeader",
+        "component": "Heading",
+        "text": "Flagged Transactions (>$10,000)",
+        "level": "h3"
+      },
+      {
+        "id": "txTable",
+        "component": "Table",
+        "columns": [
+          "txDateCol",
+          "txDescCol",
+          "txCatCol",
+          "txAmtCol"
+        ]
+      },
+      {
+        "id": "txDateCol",
+        "component": "Col",
+        "label": "Date",
+        "data": [
+          "Oct 03, 2023",
+          "Oct 12, 2023",
+          "Oct 15, 2023",
+          "Oct 28, 2023"
+        ]
+      },
+      {
+        "id": "txDescCol",
+        "component": "Col",
+        "label": "Vendor / Description",
+        "data": [
+          "Gusto Payroll Direct Deposit",
+          "AWS Cloud Hosting Invoice",
+          "Google Ads Monthly Spend",
+          "WeWork Office Lease Q4"
+        ]
+      },
+      {
+        "id": "txCatCol",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Payroll & Benefits",
+          "Cloud Infrastructure",
+          "Sales & Marketing",
+          "Legal & Office"
+        ]
+      },
+      {
+        "id": "txAmtCol",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "$72,500.00",
+          "$18,420.50",
+          "$12,100.00",
+          "$10,500.00"
+        ]
+      }
+    ]
+  }
+}
 </a2ui-json>

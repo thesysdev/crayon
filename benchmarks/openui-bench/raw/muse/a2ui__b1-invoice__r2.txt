@@ -1,5 +1,317 @@
-Your invoice is ready — review and pay securely below.
+Single-screen invoice view for your client — amount, currency, due date and instant payment in one place.
 
-<a2ui-json>{"version":"v0.9","createSurface":{"surfaceId":"freelance-invoice-001","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#0F766E","agentDisplayName":"Freelance Invoice"},"sendDataModel":false}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
 
-<a2ui-json>{"version":"v0.9","updateComponents":{"surfaceId":"freelance-invoice-001","components":[{"component":"Card","id":"root","children":["invoiceHeader","alertDue","amountCard","detailsGrid","lineItemsCard","summaryCard","payCard","footerNote"],"direction":"column","gap":"l","variant":"clear"},{"component":"CardHeader","id":"invoiceHeader","title":"Invoice #INV-2024-087","subtitle":"From: Alex Morgan — Brand & Web Design  •  To: Acme Co. (Sarah Chen)"},{"component":"Alert","id":"alertDue","title":"Payment due soon","description":"Due on September 5, 2026 • Net 15 terms. Please pay by the due date to avoid late fees.","variant":"warning"},{"component":"Card","id":"amountCard","children":["amountLabel","amountValue","amountCurrency","amountHint"],"variant":"card","direction":"column","gap":"xs","align":"center"},{"component":"TextContent","id":"amountLabel","text":"AMOUNT DUE","size":"small"},{"component":"Heading","id":"amountValue","text":"$2,450.00","level":"h1"},{"component":"TextContent","id":"amountCurrency","text":"USD  •  United States Dollar","size":"large"},{"component":"TextContent","id":"amountHint","text":"Total includes $150 tax + $100 expenses • Invoice issued Aug 18, 2026","size":"small"},{"component":"Card","id":"detailsGrid","children":["dueDateGroup","clientGroup","projectGroup"],"variant":"clear","direction":"row","gap":"m","wrap":true},{"component":"Card","id":"dueDateGroup","children":["dueDateLabel","dueDateValue","dueDateSub"],"variant":"sunk","direction":"column","gap":"xs"},{"component":"TextContent","id":"dueDateLabel","text":"DUE DATE","size":"small"},{"component":"Heading","id":"dueDateValue","text":"Sep 05, 2026","level":"h3"},{"component":"TextContent","id":"dueDateSub","text":"Due in 18 days • Friday, 5:00 PM EST","size":"small"},{"component":"Card","id":"clientGroup","children":["clientLabel","clientValue","clientSub"],"variant":"sunk","direction":"column","gap":"xs"},{"component":"TextContent","id":"clientLabel","text":"BILLED TO","size":"small"},{"component":"TextContent","id":"clientValue","text":"Acme Co.","size":"default"},{"component":"TextContent","id":"clientSub","text":"Sarah Chen • sarah@acmeco.com","size":"small"},{"component":"Card","id":"projectGroup","children":["projectLabel","projectValue","projectSub"],"variant":"sunk","direction":"column","gap":"xs"},{"component":"TextContent","id":"projectLabel","text":"PROJECT","size":"small"},{"component":"TextContent","id":"projectValue","text":"Brand Identity Refresh","size":"default"},{"component":"TextContent","id":"projectSub","text":"PO #AC-8821 • Aug 1-15, 2026","size":"small"},{"component":"Card","id":"lineItemsCard","children":["lineItemsHeader","invoiceTable"],"variant":"card","direction":"column","gap":"m"},{"component":"CardHeader","id":"lineItemsHeader","title":"Invoice Details","subtitle":"3 line items • Payment via Stripe, PayPal or Bank Transfer"},{"component":"Table","id":"invoiceTable","columns":["colDesc","colQty","colRate","colAmount"]},{"component":"Col","id":"colDesc","label":"Description","data":["Brand Strategy & Logo Concepts","Website Homepage Design (Figma)","Stock Assets & Font Licensing"],"type":"string"},{"component":"Col","id":"colQty","label":"Qty / Hrs","data":["12 hrs","1.0","1.0"],"type":"string"},{"component":"Col","id":"colRate","label":"Rate","data":["$150.00/hr","$400.00","$100.00"],"type":"string"},{"component":"Col","id":"colAmount","label":"Amount","data":["$1,800.00","$400.00","$100.00"],"type":"string"},{"component":"Card","id":"summaryCard","children":["summarySubtotal","summaryTax","summaryTotal","separator1"],"variant":"clear","direction":"column","gap":"xs"},{"component":"TextContent","id":"summarySubtotal","text":"Subtotal: $2,300.00","size":"small"},{"component":"TextContent","id":"summaryTax","text":"Tax (6.5%): $150.00","size":"small"},{"component":"Separator","id":"separator1","orientation":"horizontal","decorative":true},{"component":"TextContent","id":"summaryTotal","text":"Total Due: $2,450.00 USD","size":"large-heavy"},{"component":"Card","id":"payCard","children":["payHeader","payButtons","trustText"],"variant":"card","direction":"column","gap":"m"},{"component":"CardHeader","id":"payHeader","title":"Ready to pay?","subtitle":"Secure, encrypted payment. Receipt sent automatically to sarah@acmeco.com"},{"component":"Buttons","id":"payButtons","buttons":["payNowBtn","downloadBtn"],"direction":"row"},{"component":"Button","id":"payNowBtn","label":"Pay Now — $2,450.00 USD","variant":"primary","size":"large"},{"component":"Button","id":"downloadBtn","label":"Download PDF","variant":"secondary","size":"large"},{"component":"TextContent","id":"trustText","text":"🔒 Secured by Stripe • Cards, ACH, PayPal accepted • Questions? Reply to this invoice or contact alex@morgan.design","size":"small"},{"component":"TextContent","id":"footerNote","text":"Late fee of 1.5% per month applies after due date. Thank you for your business!","size":"small"}]}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "statusRow",
+          "dueAlert",
+          "amountCard",
+          "invoiceMeta",
+          "lineItemsTable",
+          "paymentSection",
+          "footerHelp"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Invoice #INV-2024-084",
+        "subtitle": "Acme Design Co.  •  From Alex Rivera — Freelance Product Designer"
+      },
+      {
+        "id": "statusRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "s",
+        "align": "center",
+        "justify": "between",
+        "children": [
+          "statusBadge",
+          "statusDueText"
+        ]
+      },
+      {
+        "id": "statusBadge",
+        "component": "Badge",
+        "text": "● Unpaid — Due in 5 days",
+        "variant": "secondary"
+      },
+      {
+        "id": "statusDueText",
+        "component": "TextContent",
+        "text": "Issued Aug 14, 2026 • Net 14",
+        "size": "small"
+      },
+      {
+        "id": "dueAlert",
+        "component": "Alert",
+        "title": "Payment due soon",
+        "description": "Due on Wednesday, August 28, 2026 at 11:59 PM PT. Late fee 1.5% monthly after due date.",
+        "variant": "warning"
+      },
+      {
+        "id": "amountCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "amountLabel",
+          "amountValue",
+          "amountMeta",
+          "dueDateBlock"
+        ],
+        "gap": "s"
+      },
+      {
+        "id": "amountLabel",
+        "component": "Label",
+        "text": "AMOUNT DUE"
+      },
+      {
+        "id": "amountValue",
+        "component": "Heading",
+        "text": "$4,250.00 USD",
+        "level": "h1"
+      },
+      {
+        "id": "amountMeta",
+        "component": "TextContent",
+        "text": "Currency: USD — United States Dollar • All amounts in USD",
+        "size": "small"
+      },
+      {
+        "id": "dueDateBlock",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "s",
+        "align": "center",
+        "children": [
+          "dueDateBadge",
+          "dueDateText"
+        ]
+      },
+      {
+        "id": "dueDateBadge",
+        "component": "Badge",
+        "text": "Due Date",
+        "variant": "outline"
+      },
+      {
+        "id": "dueDateText",
+        "component": "TextContent",
+        "text": "Wednesday, August 28, 2026",
+        "size": "small-heavy"
+      },
+      {
+        "id": "invoiceMeta",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "billToCard",
+          "fromCard",
+          "metaCard"
+        ]
+      },
+      {
+        "id": "billToCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "billToHeader",
+          "billToName",
+          "billToDetails"
+        ],
+        "gap": "xs"
+      },
+      {
+        "id": "billToHeader",
+        "component": "Label",
+        "text": "BILL TO"
+      },
+      {
+        "id": "billToName",
+        "component": "TextContent",
+        "text": "Acme Design Co.",
+        "size": "large-heavy"
+      },
+      {
+        "id": "billToDetails",
+        "component": "TextContent",
+        "text": "Attn: Sarah Chen\n123 Market St, Suite 400\nSan Francisco, CA 94105\nsarah@acmedesign.co",
+        "size": "small"
+      },
+      {
+        "id": "fromCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "fromHeader",
+          "fromName",
+          "fromDetails"
+        ],
+        "gap": "xs"
+      },
+      {
+        "id": "fromHeader",
+        "component": "Label",
+        "text": "FROM"
+      },
+      {
+        "id": "fromName",
+        "component": "TextContent",
+        "text": "Alex Rivera",
+        "size": "large-heavy"
+      },
+      {
+        "id": "fromDetails",
+        "component": "TextContent",
+        "text": "Freelance Product Designer\nEIN: 84-1234567\nalex@rivera.design • (415) 555-0142",
+        "size": "small"
+      },
+      {
+        "id": "metaCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "metaHeader",
+          "metaDetails"
+        ],
+        "gap": "xs"
+      },
+      {
+        "id": "metaHeader",
+        "component": "Label",
+        "text": "DETAILS"
+      },
+      {
+        "id": "metaDetails",
+        "component": "TextContent",
+        "text": "Invoice #: INV-2024-084\nPO #: ACME-0824\nPayment Terms: Net 14\nMethod: Card, ACH, Wire",
+        "size": "small"
+      },
+      {
+        "id": "lineItemsTable",
+        "component": "Table",
+        "columns": [
+          "colDesc",
+          "colQty",
+          "colRate",
+          "colAmount"
+        ]
+      },
+      {
+        "id": "colDesc",
+        "component": "Col",
+        "label": "Description",
+        "data": [
+          "Brand Identity Refresh — Logo, palette & guidelines",
+          "Marketing Website Design (32 hrs)",
+          "Design System Handoff & Assets"
+        ]
+      },
+      {
+        "id": "colQty",
+        "component": "Col",
+        "label": "Qty / Hours",
+        "data": [
+          "1",
+          "32",
+          "1"
+        ]
+      },
+      {
+        "id": "colRate",
+        "component": "Col",
+        "label": "Rate",
+        "data": [
+          "$1,800.00",
+          "$75.00",
+          "$50.00"
+        ]
+      },
+      {
+        "id": "colAmount",
+        "component": "Col",
+        "label": "Amount (USD)",
+        "data": [
+          "$1,800.00",
+          "$2,400.00",
+          "$50.00"
+        ]
+      },
+      {
+        "id": "paymentSection",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "paymentHeader",
+          "paymentButtons",
+          "paymentHint"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "paymentHeader",
+        "component": "CardHeader",
+        "title": "Ready to pay?",
+        "subtitle": "Secure checkout • Receipt sent instantly to sarah@acmedesign.co"
+      },
+      {
+        "id": "paymentButtons",
+        "component": "Buttons",
+        "buttons": [
+          "payNowBtn",
+          "downloadBtn"
+        ]
+      },
+      {
+        "id": "payNowBtn",
+        "component": "Button",
+        "label": "Pay $4,250.00 USD Now",
+        "variant": "primary",
+        "size": "large"
+      },
+      {
+        "id": "downloadBtn",
+        "component": "Button",
+        "label": "Download PDF",
+        "variant": "secondary"
+      },
+      {
+        "id": "paymentHint",
+        "component": "TextContent",
+        "text": "Powered by Stripe • Accepts Visa, Mastercard, Amex, ACH & Wire • 256-bit encrypted. Due date: Aug 28, 2026.",
+        "size": "small"
+      },
+      {
+        "id": "footerHelp",
+        "component": "TextContent",
+        "text": "Questions? Contact Alex at alex@rivera.design or (415) 555-0142. Thank you for your business!",
+        "size": "small"
+      }
+    ]
+  }
+}
+</a2ui-json>

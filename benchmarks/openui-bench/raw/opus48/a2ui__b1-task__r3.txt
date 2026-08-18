@@ -1,129 +1,93 @@
 Here's a focused single-task view covering the urgent task, its deadline, current status, and a way to mark it done.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "focus-task-view",
-      "catalogId": "thesys.dev:c1-openui"
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "focus-task-view",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "direction": "column",
-          "gap": "l",
-          "children": [
-            "header",
-            "urgencyTag",
-            "taskTitle",
-            "deadlineAlert",
-            "statusSection",
-            "progressBar",
-            "separator",
-            "actionButtons"
-          ]
-        },
-        {
-          "id": "header",
-          "component": "CardHeader",
-          "title": "Today's Focus",
-          "subtitle": "Your single most urgent task"
-        },
-        {
-          "id": "urgencyTag",
-          "component": "Tag",
-          "text": "Most Urgent",
-          "icon": "flame",
-          "size": "md",
-          "variant": "danger"
-        },
-        {
-          "id": "taskTitle",
-          "component": "Heading",
-          "text": "Finalize Q3 Budget Report",
-          "level": "h2"
-        },
-        {
-          "id": "deadlineAlert",
-          "component": "Alert",
-          "title": "Deadline: Today at 5:00 PM",
-          "description": "Due in 3 hours — this task cannot be rescheduled.",
-          "variant": "destructive"
-        },
-        {
-          "id": "statusSection",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "row",
-          "gap": "m",
-          "align": "center",
-          "justify": "between",
-          "children": ["statusLabel", "statusBadge"]
-        },
-        {
-          "id": "statusLabel",
-          "component": "TextContent",
-          "text": "Current Status",
-          "size": "small-heavy"
-        },
-        {
-          "id": "statusBadge",
-          "component": "Badge",
-          "text": "In Progress",
-          "variant": "secondary"
-        },
-        {
-          "id": "progressBar",
-          "component": "Progress",
-          "value": 70,
-          "label": "70% complete"
-        },
-        {
-          "id": "separator",
-          "component": "Separator",
-          "orientation": "horizontal"
-        },
-        {
-          "id": "actionButtons",
-          "component": "Buttons",
-          "direction": "row",
-          "buttons": ["markDoneBtn", "snoozeBtn"]
-        },
-        {
-          "id": "markDoneBtn",
-          "component": "Button",
-          "label": "Mark as Done",
-          "variant": "primary",
-          "size": "large",
-          "action": [
-            {
-              "type": "completeTask",
-              "taskId": "q3-budget-report"
-            }
-          ]
-        },
-        {
-          "id": "snoozeBtn",
-          "component": "Button",
-          "label": "View Details",
-          "variant": "secondary",
-          "size": "large"
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-This screen addresses every requirement:
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "deadlineAlert",
+          "statusRow",
+          "progress",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Finalize Q3 Budget Report",
+        "subtitle": "Your most urgent task"
+      },
+      {
+        "id": "deadlineAlert",
+        "component": "Alert",
+        "title": "Due today at 5:00 PM",
+        "description": "Deadline: Fri, Jun 27 — less than 4 hours remaining",
+        "variant": "warning"
+      },
+      {
+        "id": "statusRow",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "m",
+        "align": "center",
+        "children": [
+          "statusLabel",
+          "statusBadge"
+        ]
+      },
+      {
+        "id": "statusLabel",
+        "component": "TextContent",
+        "text": "Current status",
+        "size": "small-heavy"
+      },
+      {
+        "id": "statusBadge",
+        "component": "Badge",
+        "text": "In Progress",
+        "variant": "secondary"
+      },
+      {
+        "id": "progress",
+        "component": "Progress",
+        "value": 70,
+        "label": "70% complete"
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": [
+          "doneBtn"
+        ]
+      },
+      {
+        "id": "doneBtn",
+        "component": "Button",
+        "label": "Mark as Done",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>
 
-1. **Most urgent task with deadline** — The task "Finalize Q3 Budget Report" is highlighted with a "Most Urgent" tag and a destructive alert showing the deadline (Today at 5:00 PM).
-2. **Current status** — A dedicated status card shows an "In Progress" badge plus a progress bar for at-a-glance context.
-3. **Mark it done** — A prominent primary "Mark as Done" button triggers a `completeTask` action.
+This screen covers all three requirements: **(1)** the single most urgent task with its deadline shown in the header and warning alert, **(2)** its current status via the "In Progress" badge and progress bar, and **(3)** a primary "Mark as Done" button to complete it.

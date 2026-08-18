@@ -29,11 +29,13 @@ raw model output, and the scored verdicts.
   per format. Gemini's json-render and A2UI legs were generated with 10
   repeats before the 4-rep rule was settled; the scored set is the first 4
   (fixed rule, not outcome-selected) and only those are committed.
-- Each format's prompt comes from its own SDK's generator: OpenUI through
-  `generatePrompt` with its official options (component groups, two additional
-  rules, two worked examples; see `protocols/openui/prompt.ts`), json-render
-  through `catalog.prompt()` with three custom rules, A2UI through the agent
-  SDK's `DirectJsonFormat` generator as-is.
+- Each format's prompt comes from its own SDK's generator, all carrying the
+  same two worked examples: OpenUI through `generatePrompt` with its official
+  options (component groups, three rules, two worked examples; see
+  `protocols/openui/prompt.ts`), json-render through `catalog.prompt()` with
+  three custom rules plus the same two examples, A2UI through the agent SDK's
+  `DirectJsonFormat` generator with the same two examples in its
+  `role_description`.
 - Each format's validation is its own SDK's shipped code plus one shared
   completeness layer (identical rules for all three) described under
   "Judgment calls".
@@ -155,9 +157,8 @@ Everything that is not the SDKs' own code, in one place:
   renderability; `protocols/a2ui/counterfactual.mjs` reports the conservative
   count, runs that stay blank even when every component is rendered
   individually with the all-or-nothing rule removed.
-- **Empty responses**: scored as blanks (renderable=false), including the two
-  openui runs where a provider-side filter intermittently returned an empty
-  response to the disaster-response brief.
+- **Empty responses**: scored as blanks (renderable=false), including the one
+  openui run (Qwen, on the streaming brief) that returned an empty response.
 - **API errors**: retried and resumed at generation time; no failed API call
   is scored as a model failure.
 
@@ -173,3 +174,4 @@ benchmark itself. The A2UI catalog id and title embedded in the raws' prompts
 are kept verbatim so the committed raws stay reproducible. The files under
 `raw/` are verbatim large-language-model outputs generated for this benchmark
 and are published here as its data record.
+

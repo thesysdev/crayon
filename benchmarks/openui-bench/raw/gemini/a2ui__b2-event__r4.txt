@@ -1,15 +1,11 @@
-Here is a complete conference landing screen built using the A2UI framework, covering the event details, agenda, speakers, ticket pricing, registration form, and a countdown banner.
+I have created a comprehensive conference landing screen that includes all required details: event header, countdown, ticket tiers, full schedule agenda, speaker lineup, and registration form.
 
 <a2ui-json>
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "conf-landing-page",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": {
-      "primaryColor": "#4F46E5",
-      "agentDisplayName": "TechSummit 2025"
-    }
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
@@ -18,276 +14,78 @@ Here is a complete conference landing screen built using the A2UI framework, cov
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "conf-landing-page",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "l",
         "children": [
-          "header-card",
-          "countdown-callout",
-          "main-tabs"
+          "header",
+          "countdownAlert",
+          "sep1",
+          "ticketsTabs",
+          "sep2",
+          "mainTabs",
+          "sep3",
+          "registerForm"
         ]
       },
       {
-        "id": "header-card",
+        "id": "header",
+        "component": "CardHeader",
+        "title": "TechFuture Summit 2025",
+        "subtitle": "October 24–25, 2025 • Moscone Center, San Francisco, CA"
+      },
+      {
+        "id": "countdownAlert",
+        "component": "Alert",
+        "title": "Registration Open",
+        "description": "245 days remaining until TechFuture Summit 2025. Reserve your spot before early bird pricing ends!",
+        "variant": "info"
+      },
+      {
+        "id": "sep1",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "ticketsTabs",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
         "children": [
-          "event-title",
-          "event-details-text",
-          "header-tags"
-        ]
+          "ticketsHeading",
+          "ticketsTable"
+        ],
+        "variant": "sunk"
       },
       {
-        "id": "event-title",
+        "id": "ticketsHeading",
         "component": "Heading",
-        "level": "h1",
-        "text": "TechFuture Summit 2025"
+        "level": "h3",
+        "text": "Ticket Tiers & Pricing"
       },
       {
-        "id": "event-details-text",
-        "component": "TextContent",
-        "size": "large-heavy",
-        "text": "📅 **Date:** October 15–17, 2025  \n📍 **Venue:** Metropolitan Convention Center, San Francisco, CA"
-      },
-      {
-        "id": "header-tags",
-        "component": "TagBlock",
-        "tags": [
-          "Artificial Intelligence",
-          "Cloud Computing",
-          "Developer Experience",
-          "In-Person & Virtual"
-        ]
-      },
-      {
-        "id": "countdown-callout",
-        "component": "Callout",
-        "variant": "info",
-        "title": "⏳ Event Starts Soon!",
-        "description": "Only 45 days remaining! Early bird pricing ends in 10 days. Secure your spot now."
-      },
-      {
-        "id": "main-tabs",
-        "component": "Tabs",
-        "items": [
-          "tab-agenda",
-          "tab-speakers",
-          "tab-tickets",
-          "tab-register"
-        ]
-      },
-      {
-        "id": "tab-agenda",
-        "component": "TabItem",
-        "value": "agenda",
-        "trigger": "📋 Agenda",
-        "content": [
-          "agenda-card"
-        ]
-      },
-      {
-        "id": "agenda-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "agenda-header",
-          "agenda-table"
-        ]
-      },
-      {
-        "id": "agenda-header",
-        "component": "CardHeader",
-        "title": "Conference Schedule",
-        "subtitle": "Day 1 Highlights — October 15, 2025"
-      },
-      {
-        "id": "agenda-table",
+        "id": "ticketsTable",
         "component": "Table",
         "columns": [
-          "col-time",
-          "col-session",
-          "col-speaker",
-          "col-location"
+          "tierCol",
+          "priceCol",
+          "accessCol"
         ]
       },
       {
-        "id": "col-time",
+        "id": "tierCol",
         "component": "Col",
-        "label": "Time",
-        "type": "string",
-        "data": [
-          "09:00 AM - 10:00 AM",
-          "10:15 AM - 11:30 AM",
-          "11:45 AM - 01:00 PM",
-          "01:00 PM - 02:00 PM",
-          "02:00 PM - 03:30 PM",
-          "03:45 PM - 05:00 PM"
-        ]
-      },
-      {
-        "id": "col-session",
-        "component": "Col",
-        "label": "Session Title",
-        "type": "string",
-        "data": [
-          "Opening Keynote: The Future of AI Architecture",
-          "Scaling Distributed Systems in 2025",
-          "Designing Next-Gen User Interfaces",
-          "Networking Lunch & Exhibition",
-          "DevOps Automation & Security Best Practices",
-          "Closing Panel: The Next Decade of Software Engineering"
-        ]
-      },
-      {
-        "id": "col-speaker",
-        "component": "Col",
-        "label": "Speaker",
-        "type": "string",
-        "data": [
-          "Dr. Aris Thorne",
-          "Elena Rostova",
-          "Marcus Vance",
-          "—",
-          "Sarah Chen",
-          "All Keynote Panelists"
-        ]
-      },
-      {
-        "id": "col-location",
-        "component": "Col",
-        "label": "Hall",
-        "type": "string",
-        "data": [
-          "Main Auditorium",
-          "Hall A",
-          "Hall B",
-          "Dining Commons",
-          "Hall A",
-          "Main Auditorium"
-        ]
-      },
-      {
-        "id": "tab-speakers",
-        "component": "TabItem",
-        "value": "speakers",
-        "trigger": "🎙️ Speakers",
-        "content": [
-          "speakers-card"
-        ]
-      },
-      {
-        "id": "speakers-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "speakers-header",
-          "speakers-list"
-        ]
-      },
-      {
-        "id": "speakers-header",
-        "component": "CardHeader",
-        "title": "Featured Speakers",
-        "subtitle": "Industry leaders, researchers, and innovators sharing their expertise."
-      },
-      {
-        "id": "speakers-list",
-        "component": "ListBlock",
-        "variant": "image",
-        "items": [
-          "speaker-1",
-          "speaker-2",
-          "speaker-3",
-          "speaker-4"
-        ]
-      },
-      {
-        "id": "speaker-1",
-        "component": "ListItem",
-        "title": "Dr. Aris Thorne",
-        "subtitle": "Chief AI Architect at SynthTech — Pioneering foundation models and autonomous systems research."
-      },
-      {
-        "id": "speaker-2",
-        "component": "ListItem",
-        "title": "Elena Rostova",
-        "subtitle": "VP of Engineering at CloudScale — Leading global infrastructure resilience and microservice platforms."
-      },
-      {
-        "id": "speaker-3",
-        "component": "ListItem",
-        "title": "Marcus Vance",
-        "subtitle": "Head of Design at UI Labs — Crafting accessible and adaptive digital experiences for millions."
-      },
-      {
-        "id": "speaker-4",
-        "component": "ListItem",
-        "title": "Sarah Chen",
-        "subtitle": "Director of Security at Enterprise Shield — Author and speaker on zero-trust architectures."
-      },
-      {
-        "id": "tab-tickets",
-        "component": "TabItem",
-        "value": "tickets",
-        "trigger": "🎟️ Pricing & Tiers",
-        "content": [
-          "tickets-card"
-        ]
-      },
-      {
-        "id": "tickets-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "tickets-header",
-          "tickets-table"
-        ]
-      },
-      {
-        "id": "tickets-header",
-        "component": "CardHeader",
-        "title": "Ticket Packages",
-        "subtitle": "Choose the pass that fits your needs. Group discounts available."
-      },
-      {
-        "id": "tickets-table",
-        "component": "Table",
-        "columns": [
-          "col-tier",
-          "col-price",
-          "col-access",
-          "col-perks"
-        ]
-      },
-      {
-        "id": "col-tier",
-        "component": "Col",
-        "label": "Pass Tier",
-        "type": "string",
+        "label": "Tier",
         "data": [
           "Virtual Pass",
-          "General Admission",
-          "VIP All-Access"
+          "Main Conference Pass",
+          "VIP All-Access Pass"
         ]
       },
       {
-        "id": "col-price",
+        "id": "priceCol",
         "component": "Col",
         "label": "Price",
-        "type": "string",
         "data": [
           "$149",
           "$499",
@@ -295,135 +93,229 @@ Here is a complete conference landing screen built using the A2UI framework, cov
         ]
       },
       {
-        "id": "col-access",
+        "id": "accessCol",
         "component": "Col",
-        "label": "Access",
-        "type": "string",
+        "label": "Perks & Access",
         "data": [
-          "Online Live Stream",
-          "In-Person Venue Access",
-          "Full Venue + Exclusive VIP Lounge"
+          "Livestream access & recorded sessions",
+          "Full 2-day in-person access, lunch & expo floor",
+          "Main pass perks + VIP lounge, dinner & workshop seats"
         ]
       },
       {
-        "id": "col-perks",
-        "component": "Col",
-        "label": "Includes",
-        "type": "string",
-        "data": [
-          "Live Q&A, On-demand recordings",
-          "Keynotes, Workshops, Swag bag, Lunch",
-          "Keynotes, Workshops, Speakers Dinner, 1-on-1 Mentorship"
+        "id": "sep2",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "mainTabs",
+        "component": "Tabs",
+        "items": [
+          "agendaTab",
+          "speakersTab"
         ]
       },
       {
-        "id": "tab-register",
+        "id": "agendaTab",
         "component": "TabItem",
-        "value": "register",
-        "trigger": "✍️ Register Now",
+        "value": "agenda",
+        "trigger": "Event Agenda",
         "content": [
-          "register-card"
+          "agendaTable"
         ]
       },
       {
-        "id": "register-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "register-form"
+        "id": "agendaTable",
+        "component": "Table",
+        "columns": [
+          "timeCol",
+          "sessionCol",
+          "trackCol"
         ]
       },
       {
-        "id": "register-form",
+        "id": "timeCol",
+        "component": "Col",
+        "label": "Time",
+        "data": [
+          "08:30 AM",
+          "09:30 AM",
+          "11:00 AM",
+          "01:30 PM",
+          "03:00 PM",
+          "04:30 PM"
+        ]
+      },
+      {
+        "id": "sessionCol",
+        "component": "Col",
+        "label": "Session / Topic",
+        "data": [
+          "Check-in & Networking Breakfast",
+          "Keynote: The Next Decade in AI & Systems",
+          "Panel: Scalable Architecture in 2025",
+          "Fireside Chat: Product Strategy for Modern Teams",
+          "Workshop: Hands-on UI Frameworks",
+          "Closing Remarks & Networking Reception"
+        ]
+      },
+      {
+        "id": "trackCol",
+        "component": "Col",
+        "label": "Track / Location",
+        "data": [
+          "Main Foyer",
+          "Main Auditorium",
+          "Stage A",
+          "Stage B",
+          "Workshop Room 1",
+          "Exhibition Hall"
+        ]
+      },
+      {
+        "id": "speakersTab",
+        "component": "TabItem",
+        "value": "speakers",
+        "trigger": "Featured Speakers",
+        "content": [
+          "speakersList"
+        ]
+      },
+      {
+        "id": "speakersList",
+        "component": "ListBlock",
+        "items": [
+          "spk1",
+          "spk2",
+          "spk3",
+          "spk4"
+        ]
+      },
+      {
+        "id": "spk1",
+        "component": "ListItem",
+        "title": "Dr. Sarah Chen",
+        "subtitle": "VP of AI Research at NeuralLabs • Pioneering scalable deep learning and multi-agent coordination."
+      },
+      {
+        "id": "spk2",
+        "component": "ListItem",
+        "title": "Marcus Vance",
+        "subtitle": "Chief Architect at CloudScale • Industry veteran behind high-throughput distributed systems."
+      },
+      {
+        "id": "spk3",
+        "component": "ListItem",
+        "title": "Elena Rostova",
+        "subtitle": "Head of Product at DesignSystem Co • Expert in UI component engineering and modern frontend workflows."
+      },
+      {
+        "id": "spk4",
+        "component": "ListItem",
+        "title": "David K. Miller",
+        "subtitle": "Founder & CEO at NextGen Tech • Serial entrepreneur building open-source infrastructure tools."
+      },
+      {
+        "id": "sep3",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "registerForm",
         "component": "Form",
-        "name": "conferenceRegistration",
+        "name": "conference-registration",
+        "buttons": "formActions",
         "fields": [
-          "field-fullname",
-          "field-email",
-          "field-tier-select"
-        ],
-        "buttons": "form-buttons"
+          "regTitle",
+          "nameField",
+          "emailField",
+          "tierField"
+        ]
       },
       {
-        "id": "field-fullname",
+        "id": "regTitle",
+        "component": "FormControl",
+        "label": "Register Now",
+        "input": "regIntroText"
+      },
+      {
+        "id": "regIntroText",
+        "component": "TextContent",
+        "text": "Fill out your details below to reserve your conference pass."
+      },
+      {
+        "id": "nameField",
         "component": "FormControl",
         "label": "Full Name",
-        "hint": "Enter your first and last name as it should appear on your badge.",
-        "input": "input-fullname"
+        "input": "nameInput"
       },
       {
-        "id": "input-fullname",
+        "id": "nameInput",
         "component": "Input",
         "name": "fullName",
-        "placeholder": "e.g. Jane Doe",
-        "type": "text"
+        "placeholder": "Alex Morgan"
       },
       {
-        "id": "field-email",
+        "id": "emailField",
         "component": "FormControl",
-        "label": "Email Address",
-        "hint": "Your ticket confirmation and schedule updates will be sent here.",
-        "input": "input-email"
+        "label": "Work Email",
+        "hint": "Your ticket confirmation will be sent to this email address",
+        "input": "emailInput"
       },
       {
-        "id": "input-email",
+        "id": "emailInput",
         "component": "Input",
         "name": "email",
-        "placeholder": "jane.doe@example.com",
+        "placeholder": "alex.morgan@company.com",
         "type": "email"
       },
       {
-        "id": "field-tier-select",
+        "id": "tierField",
         "component": "FormControl",
-        "label": "Ticket Tier",
-        "hint": "Select your desired registration tier.",
-        "input": "select-tier"
+        "label": "Select Pass Tier",
+        "input": "tierSelect"
       },
       {
-        "id": "select-tier",
+        "id": "tierSelect",
         "component": "Select",
         "name": "ticketTier",
-        "placeholder": "Select a ticket option",
+        "placeholder": "Select a ticket tier",
         "items": [
-          "select-item-virtual",
-          "select-item-ga",
-          "select-item-vip"
+          "optVirtual",
+          "optMain",
+          "optVip"
         ]
       },
       {
-        "id": "select-item-virtual",
+        "id": "optVirtual",
         "component": "SelectItem",
-        "value": "virtual",
-        "label": "Virtual Pass ($149)"
+        "label": "Virtual Pass — $149",
+        "value": "virtual"
       },
       {
-        "id": "select-item-ga",
+        "id": "optMain",
         "component": "SelectItem",
-        "value": "ga",
-        "label": "General Admission ($499)"
+        "label": "Main Conference Pass — $499",
+        "value": "main"
       },
       {
-        "id": "select-item-vip",
+        "id": "optVip",
         "component": "SelectItem",
-        "value": "vip",
-        "label": "VIP All-Access ($899)"
+        "label": "VIP All-Access Pass — $899",
+        "value": "vip"
       },
       {
-        "id": "form-buttons",
+        "id": "formActions",
         "component": "Buttons",
-        "direction": "row",
         "buttons": [
-          "btn-submit"
+          "submitRegBtn"
         ]
       },
       {
-        "id": "btn-submit",
+        "id": "submitRegBtn",
         "component": "Button",
         "label": "Complete Registration",
-        "variant": "primary",
-        "size": "large"
+        "variant": "primary"
       }
     ]
   }

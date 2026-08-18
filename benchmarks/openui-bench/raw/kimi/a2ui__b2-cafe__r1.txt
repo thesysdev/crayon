@@ -4,12 +4,8 @@ Here's a cafe menu screen covering all five requirements:
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "cafe-menu",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": {
-      "primaryColor": "#8B5A2B",
-      "agentDisplayName": "Corner Café"
-    }
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
@@ -18,154 +14,147 @@ Here's a cafe menu screen covering all five requirements:
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "cafe-menu",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "m",
-        "children": ["header", "special-callout", "veg-filter", "tabs", "hours-card"]
+        "children": [
+          "header",
+          "special",
+          "vegToggle",
+          "tabs",
+          "hoursSection"
+        ]
       },
       {
         "id": "header",
         "component": "CardHeader",
-        "title": "☕ Corner Café Menu",
-        "subtitle": "Fresh coffee, homemade food — served daily"
+        "title": "☕ The Corner Cafe",
+        "subtitle": "Fresh brews & homemade bites"
       },
       {
-        "id": "special-callout",
+        "id": "special",
         "component": "Callout",
         "variant": "success",
-        "title": "⭐ Today's Special",
-        "description": "Pumpkin Spice Latte + Blueberry Muffin combo — only $6.50 (save $2.00!). Available until sold out."
+        "title": "Today's Special: Pumpkin Spice Latte + Banana Bread",
+        "description": "Combo for just $7.50 — today only!"
       },
       {
-        "id": "veg-filter",
+        "id": "vegToggle",
         "component": "SwitchGroup",
-        "name": "dietaryFilters",
-        "variant": "sunk",
-        "items": ["veg-switch"]
+        "name": "filters",
+        "items": ["vegSwitch"],
+        "variant": "clear"
       },
       {
-        "id": "veg-switch",
+        "id": "vegSwitch",
         "component": "SwitchItem",
-        "name": "vegetarianOnly",
-        "label": "🌱 Show vegetarian items only",
-        "description": "Filter the menu to display vegetarian-friendly dishes and drinks"
+        "name": "vegetarian_only",
+        "label": "Vegetarian items only 🌱",
+        "description": "Filter the menu to show vegetarian options"
       },
       {
         "id": "tabs",
         "component": "Tabs",
-        "items": ["drinks-tab", "food-tab"]
+        "items": ["drinksTab", "foodTab"]
       },
       {
-        "id": "drinks-tab",
+        "id": "drinksTab",
         "component": "TabItem",
         "value": "drinks",
-        "trigger": "🥤 Drinks",
-        "content": ["drinks-table"]
+        "trigger": "Drinks",
+        "content": ["drinksTable"]
       },
       {
-        "id": "drinks-table",
+        "id": "drinksTable",
         "component": "Table",
-        "columns": ["drink-name", "drink-price", "drink-tags"]
+        "columns": ["drinkName", "drinkPrice", "drinkVeg"]
       },
       {
-        "id": "drink-name",
+        "id": "drinkName",
         "component": "Col",
         "label": "Drink",
-        "data": ["Espresso", "Cappuccino", "Pumpkin Spice Latte ⭐", "Iced Matcha Latte", "Hot Chocolate", "Fresh Orange Juice"],
-        "type": "string"
+        "data": ["Espresso", "Cappuccino", "Pumpkin Spice Latte ⭐", "Iced Matcha Latte", "Hot Chocolate", "Fresh Orange Juice"]
       },
       {
-        "id": "drink-price",
+        "id": "drinkPrice",
         "component": "Col",
         "label": "Price",
-        "data": [3.0, 4.25, 4.75, 4.5, 3.75, 3.5],
-        "type": "number"
+        "data": ["$3.00", "$4.50", "$5.50", "$5.00", "$4.00", "$4.50"]
       },
       {
-        "id": "drink-tags",
+        "id": "drinkVeg",
         "component": "Col",
-        "label": "Dietary",
-        "data": ["🌱 Vegetarian", "🌱 Vegetarian", "🌱 Vegetarian", "🌱 Vegetarian", "🌱 Vegetarian", "🌱 Vegetarian"],
-        "type": "string"
+        "label": "Vegetarian",
+        "data": ["🌱", "🌱", "🌱", "🌱", "🌱", "🌱"]
       },
       {
-        "id": "food-tab",
+        "id": "foodTab",
         "component": "TabItem",
         "value": "food",
-        "trigger": "🍽️ Food",
-        "content": ["food-table"]
+        "trigger": "Food",
+        "content": ["foodTable"]
       },
       {
-        "id": "food-table",
+        "id": "foodTable",
         "component": "Table",
-        "columns": ["food-name", "food-price", "food-tags"]
+        "columns": ["foodName", "foodPrice", "foodVeg"]
       },
       {
-        "id": "food-name",
+        "id": "foodName",
         "component": "Col",
         "label": "Item",
-        "data": ["Blueberry Muffin ⭐", "Avocado Toast", "Ham & Cheese Croissant", "Caesar Salad", "Veggie Panini", "Tomato Soup"],
-        "type": "string"
+        "data": ["Banana Bread ⭐", "Avocado Toast", "Ham & Cheese Croissant", "Veggie Quiche", "Blueberry Muffin", "Chicken Panini"]
       },
       {
-        "id": "food-price",
+        "id": "foodPrice",
         "component": "Col",
         "label": "Price",
-        "data": [3.75, 6.5, 5.25, 7.0, 6.75, 5.5],
-        "type": "number"
+        "data": ["$3.50", "$6.50", "$5.50", "$5.00", "$3.00", "$7.00"]
       },
       {
-        "id": "food-tags",
+        "id": "foodVeg",
         "component": "Col",
-        "label": "Dietary",
-        "data": ["🌱 Vegetarian", "🌱 Vegetarian", "—", "—", "🌱 Vegetarian", "🌱 Vegetarian"],
-        "type": "string"
+        "label": "Vegetarian",
+        "data": ["🌱", "🌱", "—", "🌱", "🌱", "—"]
       },
       {
-        "id": "hours-card",
+        "id": "hoursSection",
         "component": "Card",
         "variant": "sunk",
-        "direction": "column",
-        "gap": "s",
-        "children": ["hours-header", "hours-table"]
+        "children": ["hoursHeader", "hoursTable"]
       },
       {
-        "id": "hours-header",
+        "id": "hoursHeader",
         "component": "CardHeader",
-        "title": "🕐 Opening Hours"
+        "title": "Opening Hours"
       },
       {
-        "id": "hours-table",
+        "id": "hoursTable",
         "component": "Table",
-        "columns": ["hours-day", "hours-time"]
+        "columns": ["hoursDay", "hoursTime"]
       },
       {
-        "id": "hours-day",
+        "id": "hoursDay",
         "component": "Col",
         "label": "Day",
-        "data": ["Monday – Friday", "Saturday", "Sunday"],
-        "type": "string"
+        "data": ["Mon – Fri", "Saturday", "Sunday"]
       },
       {
-        "id": "hours-time",
+        "id": "hoursTime",
         "component": "Col",
         "label": "Hours",
-        "data": ["7:00 AM – 6:00 PM", "8:00 AM – 5:00 PM", "8:00 AM – 2:00 PM"],
-        "type": "string"
+        "data": ["7:00 AM – 6:00 PM", "8:00 AM – 5:00 PM", "8:00 AM – 2:00 PM"]
       }
     ]
   }
 }
 </a2ui-json>
 
-This screen includes:
-1. **Drinks with prices** — a tabbed table with six drinks and prices
-2. **Food with prices** — a second tab with six food items and prices
-3. **Today's special** — a highlighted callout for the Pumpkin Spice Latte + Muffin combo (also marked with ⭐ in the tables)
-4. **Vegetarian filter** — a toggle switch to show vegetarian items only, with 🌱 tags in a dietary column
-5. **Opening hours** — a table showing weekday, Saturday, and Sunday hours
+This screen covers everything:
+1. **Drinks with prices** — in the Drinks tab table
+2. **Food with prices** — in the Food tab table
+3. **Today's special** — highlighted callout banner at the top (combo deal, ⭐ marks the items in the tables)
+4. **Vegetarian-only filter** — toggle switch, with 🌱 indicators on each item
+5. **Opening hours** — table at the bottom of the screen

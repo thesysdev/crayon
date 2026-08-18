@@ -1,33 +1,22 @@
-{"op":"add","path":"/root","value":"inventory-screen"}
-{"op":"add","path":"/elements/page-title","value":{"type":"Heading","props":{"text":"Low inventory","level":"h1"},"children":[]}}
-{"op":"add","path":"/elements/page-subtitle","value":{"type":"TextContent","props":{"text":"Review items at or below their warning threshold and reorder stock before it runs out."},"children":[]}}
-{"op":"add","path":"/elements/header","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["page-title","page-subtitle"]}}
+{"op":"add","path":"/root","value":"low-inventory-screen"}
+{"op":"add","path":"/elements/low-inventory-screen","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["page-header","inventory-summary","search-panel","inventory-list"]}}
+{"op":"add","path":"/elements/page-header","value":{"type":"CardHeader","props":{"title":"Low inventory","subtitle":"Review stock at or below the warning threshold and reorder items."},"children":[]}}
+{"op":"add","path":"/elements/inventory-summary","value":{"type":"Callout","props":{"variant":"warning","title":{"$template":"${/lowStockCount} items need attention"},"description":{"$template":"Low-inventory warnings are triggered when remaining stock reaches ${/warningThreshold} units or fewer."}},"children":[]}}
+{"op":"add","path":"/state/lowStockCount","value":4}
+{"op":"add","path":"/state/warningThreshold","value":10}
+{"op":"add","path":"/elements/search-panel","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["search-heading","search-input"]}}
+{"op":"add","path":"/elements/search-heading","value":{"type":"Heading","props":{"text":"Search items","level":"h3"},"children":[]}}
 {"op":"add","path":"/elements/search-input","value":{"type":"Input","props":{"name":"inventory-search","type":"text","placeholder":"Search by item name or SKU","value":{"$bindState":"/searchQuery"}},"children":[]}}
 {"op":"add","path":"/state/searchQuery","value":""}
-{"op":"add","path":"/elements/search-control","value":{"type":"FormControl","props":{"label":"Search items","input":"search-input","hint":"Enter an item name or SKU to narrow the list."},"children":[]}}
-{"op":"add","path":"/elements/search-card","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["search-control"]}}
-{"op":"add","path":"/elements/warning-banner","value":{"type":"Alert","props":{"variant":"warning","title":"5 items need attention","description":"These products have reached or fallen below their configured low-stock warning thresholds."},"children":[]}}
-{"op":"add","path":"/elements/list-heading","value":{"type":"Heading","props":{"text":"Items running low","level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/item-name","value":{"type":"Heading","props":{"text":{"$item":"name"},"level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/item-sku","value":{"type":"TextContent","props":{"text":{"$template":"SKU: ${sku} · ${category}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/item-identity","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["item-name","item-sku"]}}
-{"op":"add","path":"/elements/remaining-label","value":{"type":"TextContent","props":{"text":"Remaining","size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/remaining-value","value":{"type":"TextContent","props":{"text":{"$template":"${remainingUnits} units"},"size":"large-heavy"},"children":[]}}
-{"op":"add","path":"/elements/remaining-block","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs","align":"center"},"children":["remaining-label","remaining-value"]}}
-{"op":"add","path":"/elements/threshold-label","value":{"type":"TextContent","props":{"text":"Warning threshold","size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/threshold-value","value":{"type":"TextContent","props":{"text":{"$template":"Triggers at ${threshold} units or fewer"},"size":"default"},"children":[]}}
-{"op":"add","path":"/elements/threshold-block","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["threshold-label","threshold-value"]}}
-{"op":"add","path":"/elements/item-details","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"stretch","wrap":true},"children":["remaining-block","threshold-block"]}}
-{"op":"add","path":"/elements/reorder-button","value":{"type":"Button","props":{"label":{"$template":"Reorder ${name}"},"variant":"primary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":{"$item":"reorderRequested"},"value":true}}},"children":[]}}
-{"op":"add","path":"/elements/reorder-confirmation","value":{"type":"Callout","props":{"variant":"success","title":"Reorder requested","description":{"$template":"A replenishment request for ${name} has been queued."}},"visible":{"$item":"reorderRequested"},"children":[]}}
-{"op":"add","path":"/elements/item-actions","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s","align":"start"},"children":["reorder-button","reorder-confirmation"]}}
-{"op":"add","path":"/elements/inventory-item","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["item-identity","item-details","item-actions"]}}
 {"op":"add","path":"/elements/inventory-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"repeat":{"statePath":"/lowInventory","key":"id"},"children":["inventory-item"]}}
+{"op":"add","path":"/elements/inventory-item","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["item-details","item-stock-status","item-reorder"]}}
+{"op":"add","path":"/elements/item-details","value":{"type":"CardHeader","props":{"title":{"$item":"name"},"subtitle":{"$template":"SKU: ${sku} · ${category}"}},"children":[]}}
+{"op":"add","path":"/elements/item-stock-status","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["remaining-units","item-threshold"]}}
+{"op":"add","path":"/elements/remaining-units","value":{"type":"Badge","props":{"text":{"$template":"${remainingUnits} units remaining"},"variant":"destructive"},"children":[]}}
+{"op":"add","path":"/elements/item-threshold","value":{"type":"TextContent","props":{"text":{"$template":"Warning threshold: ${threshold} units"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/item-reorder","value":{"type":"Button","props":{"label":{"$template":"Reorder ${name}"},"variant":"primary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":{"$item":"reorderRequested"},"value":true}}},"children":[]}}
 {"op":"add","path":"/state/lowInventory","value":[]}
-{"op":"add","path":"/state/lowInventory/0","value":{"id":"inv-1001","name":"Organic Oat Milk","sku":"DRY-OM-946","category":"Beverages","remainingUnits":3,"threshold":8,"reorderRequested":false}}
-{"op":"add","path":"/state/lowInventory/1","value":{"id":"inv-1002","name":"House Blend Coffee Beans","sku":"COF-HB-1KG","category":"Coffee","remainingUnits":5,"threshold":10,"reorderRequested":false}}
-{"op":"add","path":"/state/lowInventory/2","value":{"id":"inv-1003","name":"Recycled Paper Towels","sku":"HOM-RPT-6PK","category":"Household","remainingUnits":2,"threshold":6,"reorderRequested":false}}
-{"op":"add","path":"/state/lowInventory/3","value":{"id":"inv-1004","name":"Lavender Hand Soap","sku":"CARE-LHS-500","category":"Personal Care","remainingUnits":4,"threshold":7,"reorderRequested":false}}
-{"op":"add","path":"/state/lowInventory/4","value":{"id":"inv-1005","name":"Sea Salt Crackers","sku":"SNK-SSC-250","category":"Snacks","remainingUnits":6,"threshold":12,"reorderRequested":false}}
-{"op":"add","path":"/elements/inventory-content","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"children":["list-heading","inventory-list"]}}
-{"op":"add","path":"/elements/inventory-screen","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["header","search-card","warning-banner","inventory-content"]}}
+{"op":"add","path":"/state/lowInventory/0","value":{"id":"inv-1001","name":"Organic Whole Milk","sku":"DRY-1048","category":"Dairy","remainingUnits":3,"threshold":10,"reorderRequested":false}}
+{"op":"add","path":"/state/lowInventory/1","value":{"id":"inv-1002","name":"House Blend Coffee Beans","sku":"COF-2201","category":"Beverages","remainingUnits":5,"threshold":10,"reorderRequested":false}}
+{"op":"add","path":"/state/lowInventory/2","value":{"id":"inv-1003","name":"Recycled Paper Towels","sku":"HOM-3316","category":"Household","remainingUnits":7,"threshold":10,"reorderRequested":false}}
+{"op":"add","path":"/state/lowInventory/3","value":{"id":"inv-1004","name":"Sea Salt Potato Chips","sku":"SNK-4812","category":"Snacks","remainingUnits":9,"threshold":10,"reorderRequested":false}}

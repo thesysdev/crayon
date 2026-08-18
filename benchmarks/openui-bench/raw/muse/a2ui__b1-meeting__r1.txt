@@ -1,96 +1,98 @@
-Here's your next meeting at a glance — all in one screen:
+Here's your next meeting at a glance — title, start time, attendees, and one-tap join:
 
-<a2ui-json>{"version": "v0.9", "createSurface": {"surfaceId": "next-meeting-surface", "catalogId": "thesys.dev:c1-openui"}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
 
-<a2ui-json>{
+<a2ui-json>
+{
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "next-meeting-surface",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "m",
         "children": [
           "header",
-          "statusCallout",
-          "meetingCard"
-        ]
+          "statusRow",
+          "meetingCard",
+          "attendeesHeading",
+          "attendeesList",
+          "joinActions",
+          "footerText"
+        ],
+        "gap": "m"
       },
       {
         "id": "header",
         "component": "CardHeader",
-        "title": "What's Next",
-        "subtitle": "Tuesday, Aug 18 • 2:12 PM — Your calendar"
+        "title": "Up next on your calendar",
+        "subtitle": "Monday, August 18 • 1 meeting starting soon"
       },
       {
-        "id": "statusCallout",
-        "component": "Callout",
-        "variant": "info",
-        "title": "Starting in 18 minutes",
-        "description": "Your next meeting is Q3 Product Roadmap Review at 2:30 PM"
-      },
-      {
-        "id": "meetingCard",
+        "id": "statusRow",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "meetingTitle",
-          "meetingMetaRow",
-          "separator1",
-          "attendeesLabel",
-          "attendeesList",
-          "separator2",
-          "joinButtons",
-          "hintText"
-        ]
-      },
-      {
-        "id": "meetingTitle",
-        "component": "Heading",
-        "text": "Q3 Product Roadmap Review",
-        "level": "h2"
-      },
-      {
-        "id": "meetingMetaRow",
-        "component": "Card",
-        "variant": "sunk",
+        "variant": "clear",
         "direction": "row",
         "gap": "s",
-        "align": "center",
-        "justify": "start",
         "children": [
-          "timeBadge",
-          "timeText"
+          "statusBadge",
+          "timeBadge"
         ]
+      },
+      {
+        "id": "statusBadge",
+        "component": "Badge",
+        "text": "Starts in 12 minutes",
+        "variant": "secondary"
       },
       {
         "id": "timeBadge",
         "component": "Badge",
-        "text": "2:30 PM — 3:30 PM",
-        "variant": "default"
+        "text": "Today 2:30 PM – 3:15 PM PDT",
+        "variant": "outline"
       },
       {
-        "id": "timeText",
+        "id": "meetingCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "meetingTitle",
+          "meetingTime",
+          "meetingLocation"
+        ],
+        "gap": "xs"
+      },
+      {
+        "id": "meetingTitle",
+        "component": "Heading",
+        "text": "Product Sync — Q3 Roadmap Review",
+        "level": "h2"
+      },
+      {
+        "id": "meetingTime",
         "component": "TextContent",
-        "text": "Today • Conference Room B + Google Meet",
+        "text": "**Starts at 2:30 PM PDT** • Monday, August 18, 2026 • 45 minutes • Conference Room B + Google Meet",
+        "size": "large"
+      },
+      {
+        "id": "meetingLocation",
+        "component": "TextContent",
+        "text": "meet.google.com/pqv-xyzt-k2m • Organized by Sarah Chen",
         "size": "small"
       },
       {
-        "id": "separator1",
-        "component": "Separator",
-        "orientation": "horizontal",
-        "decorative": true
-      },
-      {
-        "id": "attendeesLabel",
-        "component": "TextContent",
+        "id": "attendeesHeading",
+        "component": "Heading",
         "text": "Who's attending (4)",
-        "size": "small-heavy"
+        "level": "h4"
       },
       {
         "id": "attendeesList",
@@ -107,73 +109,56 @@ Here's your next meeting at a glance — all in one screen:
         "id": "attendee1",
         "component": "ListItem",
         "title": "Sarah Chen",
-        "subtitle": "Organizer • sarah.chen@company.com",
-        "image": [
-          "https://i.pravatar.cc/100?img=5"
-        ]
+        "subtitle": "Product Manager • Organizer • sarah.chen@company.com",
+        "actionLabel": "Organizer"
       },
       {
         "id": "attendee2",
         "component": "ListItem",
-        "title": "Marcus Lee",
-        "subtitle": "Product • marcus.lee@company.com",
-        "image": [
-          "https://i.pravatar.cc/100?img=8"
-        ]
+        "title": "You",
+        "subtitle": "Design • Required",
+        "actionLabel": "You"
       },
       {
         "id": "attendee3",
         "component": "ListItem",
-        "title": "Priya Patel",
-        "subtitle": "Design • priya.patel@company.com",
-        "image": [
-          "https://i.pravatar.cc/100?img=9"
-        ]
+        "title": "Alex Rivera",
+        "subtitle": "Engineering Lead • Required • alex.r@company.com"
       },
       {
         "id": "attendee4",
         "component": "ListItem",
-        "title": "You",
-        "subtitle": "Required • you@company.com",
-        "image": [
-          "https://i.pravatar.cc/100?img=12"
-        ]
+        "title": "Priya Nair",
+        "subtitle": "UX Research • Optional • priya.n@company.com"
       },
       {
-        "id": "separator2",
-        "component": "Separator",
-        "orientation": "horizontal",
-        "decorative": true
-      },
-      {
-        "id": "joinButtons",
+        "id": "joinActions",
         "component": "Buttons",
-        "direction": "row",
         "buttons": [
           "joinBtn",
-          "detailsBtn"
+          "copyLinkBtn"
         ]
       },
       {
         "id": "joinBtn",
         "component": "Button",
-        "label": "Join Google Meet",
+        "label": "Join Google Meet call",
         "variant": "primary",
         "size": "large"
       },
       {
-        "id": "detailsBtn",
+        "id": "copyLinkBtn",
         "component": "Button",
-        "label": "View in Calendar",
-        "variant": "secondary",
-        "size": "large"
+        "label": "Copy link",
+        "variant": "secondary"
       },
       {
-        "id": "hintText",
+        "id": "footerText",
         "component": "TextContent",
-        "text": "Meeting link ready • 1-tap join enabled",
+        "text": "Link: meet.google.com/pqv-xyzt-k2m • Dial-in: +1 650-555-0142 PIN 884 291 #",
         "size": "small"
       }
     ]
   }
-}</a2ui-json>
+}
+</a2ui-json>

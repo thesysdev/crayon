@@ -1,12 +1,13 @@
 
 
+Here's a delivery tracking screen that covers the package location, estimated delivery date, and a problem reporting option:
+
 <a2ui-json>
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "delivery-status",
-    "catalogId": "thesys.dev:c1-openui",
-    "sendDataModel": false
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
@@ -15,198 +16,268 @@
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "delivery-status",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "direction": "column",
-        "gap": "m",
         "children": [
-          "screenHeader",
-          "currentLocationCard",
-          "estimatedDeliveryCard",
-          "reportProblemCard"
+          "header",
+          "statusRow",
+          "separator1",
+          "locationSection",
+          "separator2",
+          "etaSection",
+          "separator3",
+          "problemSection"
         ]
       },
       {
-        "id": "screenHeader",
+        "id": "header",
         "component": "CardHeader",
-        "title": "Track your delivery",
-        "subtitle": "Order 84392"
+        "title": "Delivery Tracking",
+        "subtitle": "Order #TRK-2025-48391"
       },
       {
-        "id": "currentLocationCard",
+        "id": "statusRow",
         "component": "Card",
-        "variant": "sunk",
-        "direction": "column",
+        "variant": "clear",
+        "direction": "row",
+        "align": "center",
         "gap": "s",
         "children": [
-          "currentLocationHeading",
-          "currentLocationText",
-          "lastUpdateText"
+          "statusBadge",
+          "statusText"
         ]
       },
       {
-        "id": "currentLocationHeading",
-        "component": "Heading",
-        "text": "Where your package is right now",
-        "level": "h3"
+        "id": "statusBadge",
+        "component": "Badge",
+        "text": "In Transit",
+        "variant": "secondary"
       },
       {
-        "id": "currentLocationText",
+        "id": "statusText",
         "component": "TextContent",
-        "text": "**Chicago, IL Distribution Center**"
-      },
-      {
-        "id": "lastUpdateText",
-        "component": "TextContent",
-        "text": "In transit · Last scanned 10:42 AM",
+        "text": "Your package is on its way",
         "size": "small"
       },
       {
-        "id": "estimatedDeliveryCard",
+        "id": "separator1",
+        "component": "Separator"
+      },
+      {
+        "id": "locationSection",
         "component": "Card",
-        "variant": "sunk",
-        "direction": "column",
-        "gap": "s",
+        "variant": "clear",
         "children": [
-          "estimatedDeliveryHeading",
-          "estimatedDeliveryText",
-          "deliveryWindowText"
+          "locationHeading",
+          "deliverySteps"
         ]
       },
       {
-        "id": "estimatedDeliveryHeading",
+        "id": "locationHeading",
         "component": "Heading",
-        "text": "Estimated delivery date",
+        "text": "Current Location",
         "level": "h3"
       },
       {
-        "id": "estimatedDeliveryText",
-        "component": "TextContent",
-        "text": "**Wednesday, June 17, 2026**"
-      },
-      {
-        "id": "deliveryWindowText",
-        "component": "TextContent",
-        "text": "Arriving by 8:00 PM local time",
-        "size": "small"
-      },
-      {
-        "id": "reportProblemCard",
-        "component": "Card",
-        "direction": "column",
-        "gap": "s",
-        "children": [
-          "reportProblemHeading",
-          "reportProblemText",
-          "reportDialog"
+        "id": "deliverySteps",
+        "component": "Steps",
+        "items": [
+          "step1",
+          "step2",
+          "step3",
+          "step4"
         ]
       },
       {
-        "id": "reportProblemHeading",
+        "id": "step1",
+        "component": "StepsItem",
+        "title": "Order confirmed",
+        "details": "Jun 28, 2025 — 9:14 AM"
+      },
+      {
+        "id": "step2",
+        "component": "StepsItem",
+        "title": "Shipped from warehouse",
+        "details": "Jun 29, 2025 — 2:30 PM · Dallas, TX"
+      },
+      {
+        "id": "step3",
+        "component": "StepsItem",
+        "title": "Arrived at regional hub",
+        "details": "Jul 1, 2025 — 6:45 AM · Memphis, TN"
+      },
+      {
+        "id": "step4",
+        "component": "StepsItem",
+        "title": "Out for delivery",
+        "details": "Pending"
+      },
+      {
+        "id": "separator2",
+        "component": "Separator"
+      },
+      {
+        "id": "etaSection",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "s",
+        "children": [
+          "etaHeading",
+          "etaDate",
+          "etaNote"
+        ]
+      },
+      {
+        "id": "etaHeading",
+        "component": "Heading",
+        "text": "Estimated Delivery",
+        "level": "h3"
+      },
+      {
+        "id": "etaDate",
+        "component": "TextContent",
+        "text": "**Thursday, July 3, 2025** between 10:00 AM – 2:00 PM",
+        "size": "large"
+      },
+      {
+        "id": "etaNote",
+        "component": "TextContent",
+        "text": "Delivery window may shift based on local carrier conditions.",
+        "size": "small"
+      },
+      {
+        "id": "separator3",
+        "component": "Separator"
+      },
+      {
+        "id": "problemSection",
+        "component": "Card",
+        "variant": "clear",
+        "children": [
+          "problemHeading",
+          "problemDialog"
+        ]
+      },
+      {
+        "id": "problemHeading",
         "component": "Heading",
         "text": "Need help?",
         "level": "h3"
       },
       {
-        "id": "reportProblemText",
-        "component": "TextContent",
-        "text": "If the delivery is delayed, missing, or damaged, you can report it now.",
-        "size": "small"
-      },
-      {
-        "id": "reportDialog",
+        "id": "problemDialog",
         "component": "DialogBlock",
-        "triggerLabel": "Report a problem",
-        "title": "Report a delivery problem",
-        "description": "Tell us what happened and how we can help.",
+        "triggerLabel": "Report a delivery problem",
+        "triggerVariant": "outline",
+        "title": "Report a Delivery Problem",
+        "description": "Tell us what went wrong and we'll look into it right away.",
         "content": [
-          "reportForm"
+          "problemForm"
         ]
       },
       {
-        "id": "reportForm",
+        "id": "problemForm",
         "component": "Form",
-        "name": "deliveryProblemReport",
-        "buttons": "reportFormButtons",
+        "name": "delivery-problem",
         "fields": [
-          "problemField",
+          "issueTypeField",
           "detailsField"
-        ]
+        ],
+        "buttons": "problemButtons"
       },
       {
-        "id": "problemField",
+        "id": "issueTypeField",
         "component": "FormControl",
-        "label": "Problem type",
-        "input": "problemSelect"
+        "label": "What's the issue?",
+        "input": "issueSelect"
       },
       {
-        "id": "problemSelect",
+        "id": "issueSelect",
         "component": "Select",
-        "name": "problemType",
-        "placeholder": "Select a problem",
+        "name": "issue_type",
+        "placeholder": "Select an issue",
         "items": [
-          "problemOptionDelayed",
-          "problemOptionMissing",
-          "problemOptionDamaged",
-          "problemOptionWrongAddress"
+          "issueLate",
+          "issueDamaged",
+          "issueMissing",
+          "issueWrong",
+          "issueOther"
         ]
       },
       {
-        "id": "problemOptionDelayed",
+        "id": "issueLate",
         "component": "SelectItem",
-        "value": "delayed",
-        "label": "Delivery is delayed"
+        "value": "late",
+        "label": "Package is late"
       },
       {
-        "id": "problemOptionMissing",
-        "component": "SelectItem",
-        "value": "missing",
-        "label": "Package not received"
-      },
-      {
-        "id": "problemOptionDamaged",
+        "id": "issueDamaged",
         "component": "SelectItem",
         "value": "damaged",
-        "label": "Package damaged"
+        "label": "Package arrived damaged"
       },
       {
-        "id": "problemOptionWrongAddress",
+        "id": "issueMissing",
         "component": "SelectItem",
-        "value": "wrong_address",
-        "label": "Wrong delivery address"
+        "value": "missing",
+        "label": "Package marked delivered but not received"
+      },
+      {
+        "id": "issueWrong",
+        "component": "SelectItem",
+        "value": "wrong_item",
+        "label": "Received wrong item"
+      },
+      {
+        "id": "issueOther",
+        "component": "SelectItem",
+        "value": "other",
+        "label": "Something else"
       },
       {
         "id": "detailsField",
         "component": "FormControl",
-        "label": "Details",
+        "label": "Additional details",
         "input": "detailsInput",
-        "hint": "Include any delivery instructions or photos if available."
+        "hint": "Optional — include anything that helps us investigate"
       },
       {
         "id": "detailsInput",
         "component": "TextArea",
-        "name": "problemDetails",
-        "rows": 4,
-        "placeholder": "What happened?"
+        "name": "details",
+        "placeholder": "Describe the issue…",
+        "rows": 4
       },
       {
-        "id": "reportFormButtons",
+        "id": "problemButtons",
         "component": "Buttons",
-        "direction": "row",
         "buttons": [
-          "submitButton"
+          "submitProblemBtn",
+          "cancelProblemBtn"
         ]
       },
       {
-        "id": "submitButton",
+        "id": "submitProblemBtn",
         "component": "Button",
         "label": "Submit report",
         "variant": "primary"
+      },
+      {
+        "id": "cancelProblemBtn",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
       }
     ]
   }
 }
 </a2ui-json>
+
+This screen covers all three requirements:
+
+1. **Current location** — A step-by-step timeline shows the package's journey from order confirmation through its latest scan at the Memphis regional hub.
+2. **Estimated delivery date** — Displayed prominently in a sunken card with the date, time window, and a small disclaimer.
+3. **Report a problem** — A "Report a delivery problem" button opens a dialog with a form where the customer can select an issue type and provide additional details.

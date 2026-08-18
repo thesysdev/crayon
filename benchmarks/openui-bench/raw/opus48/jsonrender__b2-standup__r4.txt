@@ -1,35 +1,37 @@
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","summary","blocked-callout","updates-list","post-card"]}}
-{"op":"add","path":"/elements/header","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["title","date"]}}
-{"op":"add","path":"/elements/title","value":{"type":"Heading","props":{"text":"Async Standup","level":"h1"}}}
-{"op":"add","path":"/elements/date","value":{"type":"TextContent","props":{"text":{"$template":"📅 ${/today}"},"size":"large-heavy"}}}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"gap":"l"},"children":["header","summary","blockedCallout","updatesList","postForm"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Async Standup","subtitle":{"$template":"${/today} · Remote Team"}}}}
 {"op":"add","path":"/state/today","value":"Monday, June 9, 2025"}
-{"op":"add","path":"/elements/summary","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","justify":"between","align":"center"},"children":["summary-text","summary-badge"]}}
-{"op":"add","path":"/elements/summary-text","value":{"type":"TextContent","props":{"text":"Standup progress","size":"large-heavy"}}}
-{"op":"add","path":"/elements/summary-badge","value":{"type":"Badge","props":{"text":{"$template":"${/missingCount} updates still missing"},"variant":"destructive"}}}
+{"op":"add","path":"/elements/summary","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between"},"children":["summaryStat","summaryProgress"]}}
+{"op":"add","path":"/elements/summaryStat","value":{"type":"TextContent","props":{"text":{"$template":"**${/postedCount}/${/totalCount}** updates posted · **${/missingCount}** still missing"},"size":"large"}}}
+{"op":"add","path":"/state/totalCount","value":6}
+{"op":"add","path":"/state/postedCount","value":4}
 {"op":"add","path":"/state/missingCount","value":2}
-{"op":"add","path":"/elements/blocked-callout","value":{"type":"Alert","props":{"title":"Blocked teammates","description":"Priya (waiting on API keys) and Marcus (build pipeline down) are blocked today.","variant":"warning"}}}
-{"op":"add","path":"/elements/updates-list","value":{"type":"Card","props":{"direction":"column","gap":"m"},"repeat":{"statePath":"/updates","key":"id"},"children":["update-item"]}}
-{"op":"add","path":"/elements/update-item","value":{"type":"Card","props":{"variant":"card","direction":"row","gap":"m","align":"start"},"children":["update-avatar","update-body"]}}
-{"op":"add","path":"/elements/update-avatar","value":{"type":"Avatar","props":{"fallback":{"$item":"initials"},"alt":{"$item":"name"}}}}
-{"op":"add","path":"/elements/update-body","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["update-name-row","update-status"]}}
-{"op":"add","path":"/elements/update-name-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center"},"children":["update-name","update-tag"]}}
-{"op":"add","path":"/elements/update-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"large-heavy"}}}
-{"op":"add","path":"/elements/update-tag","value":{"type":"Tag","props":{"text":{"$item":"tagText"},"variant":{"$item":"tagVariant"},"size":"sm"}}}
-{"op":"add","path":"/elements/update-status","value":{"type":"TextContent","props":{"text":{"$item":"status"}}}}
+{"op":"add","path":"/elements/summaryProgress","value":{"type":"Progress","props":{"value":67,"label":"Standup completion"}}}
+{"op":"add","path":"/elements/blockedCallout","value":{"type":"Callout","props":{"variant":"warning","title":"2 teammates are blocked","description":"Priya is waiting on API access · Marco is blocked on design review. Please unblock them today."}}}
+{"op":"add","path":"/elements/updatesList","value":{"type":"Card","props":{"gap":"m"},"repeat":{"statePath":"/updates","key":"id"},"children":["updateCard"]}}
+{"op":"add","path":"/elements/updateCard","value":{"type":"Card","props":{"variant":"card","direction":"row","gap":"m","align":"start"},"children":["updateAvatar","updateBody"]}}
+{"op":"add","path":"/elements/updateAvatar","value":{"type":"Avatar","props":{"fallback":{"$item":"initials"},"alt":{"$item":"name"}}}}
+{"op":"add","path":"/elements/updateBody","value":{"type":"Card","props":{"variant":"clear","gap":"xs"},"children":["updateNameRow","updateStatusText"]}}
+{"op":"add","path":"/elements/updateNameRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center"},"children":["updateName","updateBadge"]}}
+{"op":"add","path":"/elements/updateName","value":{"type":"TextContent","props":{"text":{"$template":"**${name}** · ${role}"}}}}
+{"op":"add","path":"/elements/updateBadge","value":{"type":"Tag","props":{"text":{"$item":"statusLabel"},"size":"sm","variant":{"$item":"statusVariant"}}}}
+{"op":"add","path":"/elements/updateStatusText","value":{"type":"TextContent","props":{"text":{"$item":"update"},"size":"small"}}}
 {"op":"add","path":"/state/updates","value":[]}
-{"op":"add","path":"/state/updates/0","value":{"id":"1","name":"Alex Chen","initials":"AC","tagText":"On track","tagVariant":"success","status":"Finished the onboarding flow refactor. Reviewing PRs today and starting the settings page."}}
-{"op":"add","path":"/state/updates/1","value":{"id":"2","name":"Priya Nair","initials":"PN","tagText":"Blocked","tagVariant":"danger","status":"Blocked: still waiting on the third-party API keys. Meanwhile drafting the integration tests."}}
-{"op":"add","path":"/state/updates/2","value":{"id":"3","name":"Marcus Lee","initials":"ML","tagText":"Blocked","tagVariant":"danger","status":"Blocked: build pipeline is down after the CI upgrade. Coordinating with DevOps to fix it."}}
-{"op":"add","path":"/state/updates/3","value":{"id":"4","name":"Sofia Ramos","initials":"SR","tagText":"On track","tagVariant":"success","status":"Shipped the analytics dashboard widgets. Today: polishing charts and writing docs."}}
-{"op":"add","path":"/elements/post-card","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"m"},"children":["post-header","post-name-control","post-status-control","post-blocked-switch","post-button"]}}
-{"op":"add","path":"/elements/post-header","value":{"type":"Heading","props":{"text":"Post your update","level":"h3"}}}
-{"op":"add","path":"/elements/post-name-control","value":{"type":"FormControl","props":{"label":"Your name","input":"post-name-input"},"children":[]}}
-{"op":"add","path":"/elements/post-name-input","value":{"type":"Input","props":{"name":"postName","placeholder":"e.g. Jordan Kim","value":{"$bindState":"/draft/name"}}}}
-{"op":"add","path":"/state/draft","value":{"name":"","status":"","blocked":false}}
-{"op":"add","path":"/elements/post-status-control","value":{"type":"FormControl","props":{"label":"Today's status","input":"post-status-input","hint":"What did you do, and what's next?"},"children":[]}}
-{"op":"add","path":"/elements/post-status-input","value":{"type":"TextArea","props":{"name":"postStatus","placeholder":"Share your progress and plans...","rows":3,"value":{"$bindState":"/draft/status"}}}}
-{"op":"add","path":"/elements/post-blocked-switch","value":{"type":"SwitchGroup","props":{"name":"postBlocked","variant":"card","items":["post-blocked-item"]},"children":["post-blocked-item"]}}
-{"op":"add","path":"/elements/post-blocked-item","value":{"type":"SwitchItem","props":{"name":"blocked","label":"I'm blocked","description":"Flag this so the team can help unblock you."}}}
-{"op":"add","path":"/elements/post-button","value":{"type":"Button","props":{"label":"Post update","variant":"primary","size":"medium"},"on":{"press":{"action":"pushState","params":{"statePath":"/updates","value":{"id":"$id","name":{"$state":"/draft/name"},"initials":"YOU","tagText":"On track","tagVariant":"success","status":{"$state":"/draft/status"}},"clearStatePath":"/draft/status"}}}}}
-{"op":"add","path":"/elements/post-button-wrap","value":{"type":"Card","props":{},"children":[]}}
+{"op":"add","path":"/state/updates/0","value":{"id":"u1","name":"Priya Sharma","initials":"PS","role":"Backend","statusLabel":"Blocked","statusVariant":"danger","update":"✅ Finished auth token refresh. 🚧 **Blocked:** waiting on staging API access from DevOps to test integration."}}
+{"op":"add","path":"/state/updates/1","value":{"id":"u2","name":"Marco Reyes","initials":"MR","role":"Frontend","statusLabel":"Blocked","statusVariant":"danger","update":"✅ Shipped the new nav bar. 🚧 **Blocked:** need design review sign-off on the settings page before I can continue."}}
+{"op":"add","path":"/state/updates/2","value":{"id":"u3","name":"Aisha Bello","initials":"AB","role":"Design","statusLabel":"On track","statusVariant":"success","update":"✅ Delivered onboarding mockups. Today: reviewing Marco's settings page and refining the icon set."}}
+{"op":"add","path":"/state/updates/3","value":{"id":"u4","name":"Tom Vasquez","initials":"TV","role":"QA","statusLabel":"On track","statusVariant":"success","update":"✅ Cleared the regression backlog. Today: writing e2e tests for checkout flow."}}
+{"op":"add","path":"/elements/postForm","value":{"type":"Card","props":{"variant":"sunk","gap":"m"},"children":["postHeader","nameCtrl","statusCtrl","updateCtrl","postButtons"]}}
+{"op":"add","path":"/elements/postHeader","value":{"type":"Heading","props":{"text":"Post your update","level":"h4"}}}
+{"op":"add","path":"/elements/nameCtrl","value":{"type":"FormControl","props":{"label":"Your name","input":"nameInput"}}}
+{"op":"add","path":"/elements/nameInput","value":{"type":"Input","props":{"name":"name","placeholder":"Your name","value":{"$bindState":"/draft/name"}}}}
+{"op":"add","path":"/state/draft","value":{"name":"","status":"On track","update":""}}
+{"op":"add","path":"/elements/statusCtrl","value":{"type":"FormControl","props":{"label":"Status","input":"statusSelect"}}}
+{"op":"add","path":"/elements/statusSelect","value":{"type":"Select","props":{"name":"status","placeholder":"Select status","items":["statusOnTrack","statusBlocked"],"value":{"$bindState":"/draft/status"}}}}
+{"op":"add","path":"/elements/statusOnTrack","value":{"type":"SelectItem","props":{"value":"On track","label":"On track"}}}
+{"op":"add","path":"/elements/statusBlocked","value":{"type":"SelectItem","props":{"value":"Blocked","label":"Blocked"}}}
+{"op":"add","path":"/elements/updateCtrl","value":{"type":"FormControl","props":{"label":"What did you do / what's next?","input":"updateInput","hint":"Include ✅ done, today's focus, and any 🚧 blockers."}}}
+{"op":"add","path":"/elements/updateInput","value":{"type":"TextArea","props":{"name":"update","rows":3,"placeholder":"Yesterday I… Today I'll… Blocked on…","value":{"$bindState":"/draft/update"}}}}
+{"op":"add","path":"/elements/postButtons","value":{"type":"Buttons","props":{"buttons":["submitUpdate"]}}}
+{"op":"add","path":"/elements/submitUpdate","value":{"type":"Button","props":{"label":"Post update","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/updates","value":{"id":"$id","name":{"$state":"/draft/name"},"initials":"ME","role":"Me","statusLabel":{"$state":"/draft/status"},"statusVariant":"info","update":{"$state":"/draft/update"}}}}}}}

@@ -1,30 +1,19 @@
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["header","task-card","done-alert"]}}
-{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"🎯 Focus Mode","subtitle":"Your single most urgent task — give it your full attention."},"children":[]}}
-{"op":"add","path":"/elements/task-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"watch":{"/task/completed":{"action":"setState","params":{"statePath":"/task/progress","value":100}}},"children":["tc-top","task-title","task-desc","sep1","deadline-card","status-row","btn-done"]}}
-{"op":"add","path":"/state/task","value":{}}
-{"op":"add","path":"/elements/tc-top","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center"},"children":["tag-urgent","tag-priority"]}}
-{"op":"add","path":"/elements/tag-urgent","value":{"type":"Tag","props":{"text":"🔥 Most Urgent","variant":"danger","size":"md"},"children":[]}}
-{"op":"add","path":"/elements/tag-priority","value":{"type":"Tag","props":{"text":{"$state":"/task/priority"},"variant":"warning","size":"md"},"children":[]}}
-{"op":"add","path":"/state/task/priority","value":"P1 · Critical"}
-{"op":"add","path":"/elements/task-title","value":{"type":"TextContent","props":{"text":{"$state":"/task/title"},"size":"large-heavy"},"children":[]}}
-{"op":"add","path":"/state/task/title","value":"Submit Q3 budget proposal to Finance"}
-{"op":"add","path":"/elements/task-desc","value":{"type":"TextContent","props":{"text":{"$state":"/task/description"},"size":"small"},"children":[]}}
-{"op":"add","path":"/state/task/description","value":"Final numbers are reviewed. Attach the updated forecast sheet, send it to finance@company.com, and CC Priya for sign-off."}
-{"op":"add","path":"/elements/sep1","value":{"type":"Separator","props":{},"children":[]}}
-{"op":"add","path":"/elements/deadline-card","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["dl-left","tag-duein"]}}
-{"op":"add","path":"/elements/dl-left","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["dl-label","dl-value"]}}
-{"op":"add","path":"/elements/dl-label","value":{"type":"Label","props":{"text":"⏰ DEADLINE"},"children":[]}}
-{"op":"add","path":"/elements/dl-value","value":{"type":"TextContent","props":{"text":{"$state":"/task/deadline"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/state/task/deadline","value":"Today · 5:00 PM"}
-{"op":"add","path":"/elements/tag-duein","value":{"type":"Tag","props":{"text":{"$state":"/task/dueIn"},"variant":"danger","size":"md"},"children":[]}}
-{"op":"add","path":"/state/task/dueIn","value":"Due in 3h 12m"}
-{"op":"add","path":"/elements/status-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center","gap":"m"},"children":["status-left","status-tag"]}}
-{"op":"add","path":"/elements/status-left","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["status-label","status-progress"]}}
-{"op":"add","path":"/elements/status-label","value":{"type":"Label","props":{"text":"📊 CURRENT STATUS"},"children":[]}}
-{"op":"add","path":"/elements/status-progress","value":{"type":"Progress","props":{"value":{"$state":"/task/progress"},"label":"Subtask progress"},"children":[]}}
-{"op":"add","path":"/state/task/progress","value":65}
-{"op":"add","path":"/elements/status-tag","value":{"type":"Tag","props":{"text":{"$cond":{"$state":"/task/completed"},"$then":"✓ Done","$else":"● In Progress"},"variant":{"$cond":{"$state":"/task/completed"},"$then":"success","$else":"info"},"size":"lg"},"children":[]}}
-{"op":"add","path":"/state/task/completed","value":false}
-{"op":"add","path":"/elements/btn-done","value":{"type":"Button","props":{"label":"✓ Mark as Done","variant":"primary","size":"large"},"visible":{"$state":"/task/completed","not":true},"on":{"press":{"action":"setState","params":{"statePath":"/task/completed","value":true}}},"children":[]}}
-{"op":"add","path":"/elements/done-alert","value":{"type":"Alert","props":{"title":"Done — nice work! 🎉","description":"You've cleared your most urgent task. Take a breath, then pull the next one from your queue.","variant":"success"},"visible":{"$state":"/task/completed"},"children":[]}}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"gap":"m"},"children":["header","divider","deadlineRow","statusRow","progress","divider2","actions","doneCallout"]}}
+{"op":"add","path":"/state/taskDone","value":false}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Submit quarterly tax filing","subtitle":"Most urgent task — focus mode"}}}
+{"op":"add","path":"/elements/divider","value":{"type":"Separator","props":{}}}
+{"op":"add","path":"/elements/deadlineRow","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["deadlineLabel","deadlineValue"]}}
+{"op":"add","path":"/elements/deadlineLabel","value":{"type":"TextContent","props":{"text":"**Deadline**","size":"small"}}
+}
+{"op":"add","path":"/elements/deadlineValue","value":{"type":"Tag","props":{"text":"Today, 5:00 PM","icon":"clock","variant":"danger","size":"lg"}}}
+{"op":"add","path":"/elements/statusRow","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["statusLabel","statusPending","statusDone"]}}
+{"op":"add","path":"/elements/statusLabel","value":{"type":"TextContent","props":{"text":"**Status**","size":"small"}}}
+{"op":"add","path":"/elements/statusPending","value":{"type":"Badge","props":{"text":"In Progress","variant":"destructive"},"visible":{"$state":"/taskDone","not":true}}}
+{"op":"add","path":"/elements/statusDone","value":{"type":"Badge","props":{"text":"Completed","variant":"secondary"},"visible":{"$state":"/taskDone"}}}
+{"op":"add","path":"/elements/progress","value":{"type":"Progress","props":{"value":{"$cond":{"$state":"/taskDone"},"$then":100,"$else":70},"label":"Draft prepared — awaiting final review"}}}
+{"op":"add","path":"/elements/divider2","value":{"type":"Separator","props":{}}}
+{"op":"add","path":"/elements/actions","value":{"type":"Buttons","props":{"buttons":["doneBtn","undoBtn"]}}}
+{"op":"add","path":"/elements/doneBtn","value":{"type":"Button","props":{"label":"Mark as Done","variant":"primary","size":"large"},"visible":{"$state":"/taskDone","not":true},"on":{"press":{"action":"setState","params":{"statePath":"/taskDone","value":true}}}}}
+{"op":"add","path":"/elements/undoBtn","value":{"type":"Button","props":{"label":"Undo — reopen task","variant":"tertiary"},"visible":{"$state":"/taskDone"},"on":{"press":{"action":"setState","params":{"statePath":"/taskDone","value":false}}}}}
+{"op":"add","path":"/elements/doneCallout","value":{"type":"Callout","props":{"variant":"success","title":"Task completed","description":"Quarterly tax filing marked as done. Great work!"},"visible":{"$state":"/taskDone"}}}

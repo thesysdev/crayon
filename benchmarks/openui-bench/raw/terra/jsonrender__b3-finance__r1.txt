@@ -1,62 +1,48 @@
 {"op":"add","path":"/root","value":"finance-dashboard"}
-{"op":"add","path":"/elements/finance-dashboard","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xl"},"children":["dashboard-header","month-controls","summary-metrics","expense-section","transactions-section","statement-section"]}}
-{"op":"add","path":"/elements/dashboard-header","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center"},"children":["dashboard-title","dashboard-status"]}}
-{"op":"add","path":"/elements/dashboard-title","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["dashboard-heading","dashboard-subtitle"]}}
-{"op":"add","path":"/elements/dashboard-heading","value":{"type":"Heading","props":{"text":"Month-end finance","level":"h1"},"children":[]}}
-{"op":"add","path":"/elements/dashboard-subtitle","value":{"type":"TextContent","props":{"text":{"$template":"Financial position and spending activity for ${/selectedMonthLabel}."},"size":"default"},"children":[]}}
-{"op":"add","path":"/state/selectedMonthLabel","value":"July 2026"}
-{"op":"add","path":"/elements/dashboard-status","value":{"type":"Badge","props":{"text":"Month closed","variant":"secondary"},"children":[]}}
-{"op":"add","path":"/elements/month-controls","value":{"type":"Card","props":{"variant":"card","direction":"row","gap":"m","align":"end","justify":"between","wrap":true},"children":["month-picker-control","download-statement-button"]}}
-{"op":"add","path":"/elements/month-picker-control","value":{"type":"FormControl","props":{"label":"Reporting month","hint":"Select a month to review its statement.","input":"month-picker"},"children":[]}}
-{"op":"add","path":"/elements/month-picker","value":{"type":"Select","props":{"name":"reportingMonth","items":["month-june","month-july","month-august"],"value":{"$bindState":"/selectedMonth"},"size":"medium"},"children":[]}}
-{"op":"add","path":"/state/selectedMonth","value":"2026-07"}
-{"op":"add","path":"/elements/month-june","value":{"type":"SelectItem","props":{"value":"2026-06","label":"June 2026"},"children":[]}}
-{"op":"add","path":"/elements/month-july","value":{"type":"SelectItem","props":{"value":"2026-07","label":"July 2026"},"children":[]}}
-{"op":"add","path":"/elements/month-august","value":{"type":"SelectItem","props":{"value":"2026-08","label":"August 2026"},"children":[]}}
-{"op":"add","path":"/elements/download-statement-button","value":{"type":"Button","props":{"label":"Download statement","variant":"primary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/statementDownloadRequested","value":true}}},"children":[]}}
-{"op":"add","path":"/state/statementDownloadRequested","value":false}
-{"op":"add","path":"/elements/summary-metrics","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","wrap":true,"align":"stretch"},"children":["cash-metric","burn-metric","runway-metric"]}}
-{"op":"add","path":"/elements/cash-metric","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["cash-label","cash-value","cash-note"]}}
+{"op":"add","path":"/elements/finance-dashboard","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xl"},"children":["dashboard-header","month-controls","summary-row","expense-section","transactions-section","statement-actions"]}}
+{"op":"add","path":"/elements/dashboard-header","value":{"type":"CardHeader","props":{"title":"Month-end finance","subtitle":"A clear view of cash, burn, and operating expenses"}}}
+{"op":"add","path":"/elements/month-controls","value":{"type":"Card","props":{"variant":"card","direction":"row","gap":"m","align":"end","justify":"between","wrap":true},"children":["month-field","month-note"]}}
+{"op":"add","path":"/elements/month-field","value":{"type":"FormControl","props":{"label":"Reporting month","input":"month-picker","hint":"Choose a month to review its statement"}}}
+{"op":"add","path":"/elements/month-picker","value":{"type":"DatePicker","props":{"name":"reportingMonth","mode":"single","value":{"$bindState":"/reportingMonth"}},"children":[]}}
+{"op":"add","path":"/state/reportingMonth","value":["2026-07-31"]}
+{"op":"add","path":"/elements/month-note","value":{"type":"TextContent","props":{"text":{"$template":"Showing close for ${/reportingMonth}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/summary-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"stretch","wrap":true},"children":["cash-card","burn-card","runway-card"]}}
+{"op":"add","path":"/elements/cash-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["cash-label","cash-value","cash-detail"]}}
 {"op":"add","path":"/elements/cash-label","value":{"type":"TextContent","props":{"text":"Cash on hand","size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/cash-value","value":{"type":"Heading","props":{"text":{"$template":"${/metrics/cashOnHand}"},"level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/cash-note","value":{"type":"TextContent","props":{"text":"Available operating cash at month-end.","size":"small"},"children":[]}}
-{"op":"add","path":"/state/metrics","value":{"cashOnHand":"$842,600","monthlyBurn":"$96,400","runway":"8.7 months"}}
-{"op":"add","path":"/elements/burn-metric","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["burn-label","burn-value","burn-note"]}}
+{"op":"add","path":"/elements/cash-value","value":{"type":"Heading","props":{"text":{"$state":"/metrics/cashOnHand"},"level":"h2"},"children":[]}}
+{"op":"add","path":"/state/metrics","value":{"cashOnHand":"$1,842,600","monthlyBurn":"$214,300","runway":"8.6 months"}}
+{"op":"add","path":"/elements/cash-detail","value":{"type":"TextContent","props":{"text":"Available operating cash after July close","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/burn-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["burn-label","burn-value","burn-detail"]}}
 {"op":"add","path":"/elements/burn-label","value":{"type":"TextContent","props":{"text":"Monthly burn","size":"small-heavy"},"children":[]}}
 {"op":"add","path":"/elements/burn-value","value":{"type":"Heading","props":{"text":{"$state":"/metrics/monthlyBurn"},"level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/burn-note","value":{"type":"TextContent","props":{"text":"Net cash outflow during the selected month.","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/runway-metric","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["runway-label","runway-value","runway-progress"]}}
+{"op":"add","path":"/elements/burn-detail","value":{"type":"TextContent","props":{"text":"Net cash outflow for the reporting month","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/runway-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["runway-label","runway-value","runway-progress"]}}
 {"op":"add","path":"/elements/runway-label","value":{"type":"TextContent","props":{"text":"Months of runway","size":"small-heavy"},"children":[]}}
 {"op":"add","path":"/elements/runway-value","value":{"type":"Heading","props":{"text":{"$state":"/metrics/runway"},"level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/runway-progress","value":{"type":"Progress","props":{"value":73,"label":"73% of 12-month operating target"},"children":[]}}
-{"op":"add","path":"/elements/expense-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["expense-header","expense-chart","expense-breakdown"]}}
-{"op":"add","path":"/elements/expense-header","value":{"type":"CardHeader","props":{"title":"Expenses by category","subtitle":"Total operating expenses: $118,900"},"children":[]}}
-{"op":"add","path":"/elements/expense-chart","value":{"type":"PieChart","props":{"labels":{"$state":"/expenseChart/labels"},"values":{"$state":"/expenseChart/values"},"variant":"donut","appearance":"circular"},"children":[]}}
-{"op":"add","path":"/state/expenseChart","value":{"labels":["Payroll","Cloud infrastructure","Marketing","Professional services","Office & travel"],"values":[68400,18400,14200,10300,7600]}}
-{"op":"add","path":"/elements/expense-breakdown","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/expenseCategories","key":"id"},"children":["expense-row"]}}
-{"op":"add","path":"/state/expenseCategories","value":[]}
-{"op":"add","path":"/state/expenseCategories/0","value":{"id":"payroll","category":"Payroll","amount":"$68,400","share":"58%"}}
-{"op":"add","path":"/state/expenseCategories/1","value":{"id":"cloud","category":"Cloud infrastructure","amount":"$18,400","share":"15%"}}
-{"op":"add","path":"/state/expenseCategories/2","value":{"id":"marketing","category":"Marketing","amount":"$14,200","share":"12%"}}
-{"op":"add","path":"/state/expenseCategories/3","value":{"id":"services","category":"Professional services","amount":"$10,300","share":"9%"}}
-{"op":"add","path":"/state/expenseCategories/4","value":{"id":"office","category":"Office & travel","amount":"$7,600","share":"6%"}}
-{"op":"add","path":"/elements/expense-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center","gap":"m"},"children":["expense-category-name","expense-amount-group"]}}
-{"op":"add","path":"/elements/expense-category-name","value":{"type":"TextContent","props":{"text":{"$item":"category"},"size":"default"},"children":[]}}
-{"op":"add","path":"/elements/expense-amount-group","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center"},"children":["expense-share","expense-amount"]}}
-{"op":"add","path":"/elements/expense-share","value":{"type":"Badge","props":{"text":{"$item":"share"},"variant":"outline"},"children":[]}}
-{"op":"add","path":"/elements/expense-amount","value":{"type":"TextContent","props":{"text":{"$item":"amount"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/transactions-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["transactions-header","large-transactions-table","transactions-note"]}}
-{"op":"add","path":"/elements/transactions-header","value":{"type":"CardHeader","props":{"title":"Transactions above $10,000","subtitle":"Selected month activity requiring review"},"children":[]}}
-{"op":"add","path":"/elements/large-transactions-table","value":{"type":"Table","props":{"columns":["transaction-date-col","transaction-vendor-col","transaction-category-col","transaction-amount-col","transaction-status-col"]},"children":[]}}
-{"op":"add","path":"/elements/transaction-date-col","value":{"type":"Col","props":{"label":"Date","data":{"$state":"/largeTransactions/date"},"type":"string"},"children":[]}}
-{"op":"add","path":"/state/largeTransactions","value":{"date":["Jul 01, 2026","Jul 08, 2026","Jul 15, 2026","Jul 22, 2026","Jul 29, 2026"],"vendor":["Northstar Payroll","AWS","Brightline Media","Harris & Cole LLP","Vertex Systems"],"category":["Payroll","Cloud infrastructure","Marketing","Professional services","Software"],"amount":["-$42,800","-$16,750","-$12,500","-$10,300","-$11,200"],"status":["Cleared","Cleared","Cleared","Cleared","Pending review"]}}
-{"op":"add","path":"/elements/transaction-vendor-col","value":{"type":"Col","props":{"label":"Vendor","data":{"$state":"/largeTransactions/vendor"},"type":"string"},"children":[]}}
-{"op":"add","path":"/elements/transaction-category-col","value":{"type":"Col","props":{"label":"Category","data":{"$state":"/largeTransactions/category"},"type":"string"},"children":[]}}
-{"op":"add","path":"/elements/transaction-amount-col","value":{"type":"Col","props":{"label":"Amount","data":{"$state":"/largeTransactions/amount"},"type":"string"},"children":[]}}
-{"op":"add","path":"/elements/transaction-status-col","value":{"type":"Col","props":{"label":"Status","data":{"$state":"/largeTransactions/status"},"type":"string"},"children":[]}}
-{"op":"add","path":"/elements/transactions-note","value":{"type":"TextCallout","props":{"variant":"info","title":"Review item","description":"Vertex Systems is pending review before the month-end statement is finalized."},"children":[]}}
-{"op":"add","path":"/elements/statement-section","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center","gap":"m","wrap":true},"children":["statement-copy","statement-download-status"]}}
-{"op":"add","path":"/elements/statement-copy","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["statement-heading","statement-description"]}}
-{"op":"add","path":"/elements/statement-heading","value":{"type":"Heading","props":{"text":"Month-end statement","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/statement-description","value":{"type":"TextContent","props":{"text":"Download a PDF-ready statement with balances, category detail, and transaction activity.","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/statement-download-status","value":{"type":"TextContent","props":{"text":{"$cond":{"$state":"/statementDownloadRequested","eq":true},"$then":"Statement download prepared.","$else":"Ready to download."},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/runway-progress","value":{"type":"Progress","props":{"value":72,"label":"72% of 12-month operating target"},"children":[]}}
+{"op":"add","path":"/elements/expense-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["expense-header","expense-chart","expense-table"]}}
+{"op":"add","path":"/elements/expense-header","value":{"type":"CardHeader","props":{"title":"Expenses by category","subtitle":"July operating expenses total $286,900"}}}
+{"op":"add","path":"/elements/expense-chart","value":{"type":"PieChart","props":{"labels":["Payroll","Cloud infrastructure","Sales & marketing","Professional services","Office & operations"],"values":[156400,48200,39700,24100,18500],"variant":"donut","appearance":"circular"},"children":[]}}
+{"op":"add","path":"/elements/expense-table","value":{"type":"Table","props":{"columns":["expense-category-col","expense-amount-col","expense-share-col"]},"children":[]}}
+{"op":"add","path":"/elements/expense-category-col","value":{"type":"Col","props":{"label":"Category","data":{"$state":"/expenses/categories"}},"children":[]}}
+{"op":"add","path":"/state/expenses","value":{"categories":["Payroll","Cloud infrastructure","Sales & marketing","Professional services","Office & operations"],"amounts":["$156,400","$48,200","$39,700","$24,100","$18,500"],"shares":["54.5%","16.8%","13.8%","8.4%","6.5%"]}}
+{"op":"add","path":"/elements/expense-amount-col","value":{"type":"Col","props":{"label":"Amount","data":{"$state":"/expenses/amounts"},"type":"number"},"children":[]}}
+{"op":"add","path":"/elements/expense-share-col","value":{"type":"Col","props":{"label":"Share","data":{"$state":"/expenses/shares"}},"children":[]}}
+{"op":"add","path":"/elements/transactions-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["transactions-header","transactions-list"]}}
+{"op":"add","path":"/elements/transactions-header","value":{"type":"CardHeader","props":{"title":"Transactions above $10,000","subtitle":"Large cash movements recorded this month"}}}
+{"op":"add","path":"/elements/transactions-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/largeTransactions","key":"id"},"children":["transaction-row"]}}
+{"op":"add","path":"/state/largeTransactions","value":[]}
+{"op":"add","path":"/state/largeTransactions/0","value":{"id":"txn-001","vendor":"Northstar Payroll","date":"Jul 31, 2026","category":"Payroll","amount":"-$156,400"}}
+{"op":"add","path":"/state/largeTransactions/1","value":{"id":"txn-002","vendor":"Amazon Web Services","date":"Jul 28, 2026","category":"Cloud infrastructure","amount":"-$32,850"}}
+{"op":"add","path":"/state/largeTransactions/2","value":{"id":"txn-003","vendor":"Vertex Growth Partners","date":"Jul 22, 2026","category":"Sales & marketing","amount":"-$18,500"}}
+{"op":"add","path":"/state/largeTransactions/3","value":{"id":"txn-004","vendor":"Harrison & Cole LLP","date":"Jul 16, 2026","category":"Professional services","amount":"-$14,750"}}
+{"op":"add","path":"/state/largeTransactions/4","value":{"id":"txn-005","vendor":"Helio Ventures","date":"Jul 10, 2026","category":"Investment proceeds","amount":"+$500,000"}}
+{"op":"add","path":"/elements/transaction-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["transaction-info","transaction-amount"]}}
+{"op":"add","path":"/elements/transaction-info","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["transaction-vendor","transaction-meta"]}}
+{"op":"add","path":"/elements/transaction-vendor","value":{"type":"TextContent","props":{"text":{"$item":"vendor"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/transaction-meta","value":{"type":"TextContent","props":{"text":{"$template":"${date} · ${category}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/transaction-amount","value":{"type":"TextContent","props":{"text":{"$item":"amount"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/statement-actions","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","justify":"end","wrap":true},"children":["statement-status","download-statement"]}}
+{"op":"add","path":"/elements/statement-status","value":{"type":"Badge","props":{"text":"July statement reconciled","variant":"secondary"},"children":[]}}
+{"op":"add","path":"/elements/download-statement","value":{"type":"Button","props":{"label":"Download statement","variant":"primary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/statementDownloadRequested","value":true}}},"children":[]}}
+{"op":"add","path":"/state/statementDownloadRequested","value":false}

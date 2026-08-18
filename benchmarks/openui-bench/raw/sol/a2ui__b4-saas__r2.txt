@@ -1,7 +1,941 @@
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"saas-admin-overview","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#635BFF","agentDisplayName":"SaaS Admin Overview"},"sendDataModel":false}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#635BFF",
+      "agentDisplayName": "SaaS Admin"
+    }
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"saas-admin-overview","components":[{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["header","period_form","kpi_card","growth_card","customer_card","risk_payment_card","adoption_card","nps_seats_card"]},{"id":"header","component":"Card","variant":"clear","direction":"row","gap":"m","align":"center","justify":"between","children":["title","invite_admin"]},{"id":"title","component":"CardHeader","title":"Admin overview","subtitle":"Revenue, customers, risk, payments, and product health"},{"id":"invite_admin","component":"DialogBlock","triggerLabel":"Invite admin","title":"Invite another admin","description":"Send an administrator invitation by email.","content":["invite_form"],"triggerVariant":"default"},{"id":"invite_form","component":"Form","name":"invite_admin","fields":["invite_email_control","invite_role_control"],"buttons":"invite_buttons"},{"id":"invite_email_control","component":"FormControl","label":"Email address","input":"invite_email","hint":"The invitation will expire in 7 days."},{"id":"invite_email","component":"Input","name":"email","type":"email","placeholder":"admin@company.com","rules":[{"required":true}]},{"id":"invite_role_control","component":"FormControl","label":"Role","input":"invite_role"},{"id":"invite_role","component":"Select","name":"role","items":["role_admin","role_billing"],"value":"admin"},{"id":"role_admin","component":"SelectItem","value":"admin","label":"Admin"},{"id":"role_billing","component":"SelectItem","value":"billing_admin","label":"Billing admin"},{"id":"invite_buttons","component":"Buttons","buttons":["send_invite"],"direction":"row"},{"id":"send_invite","component":"Button","label":"Send invitation","variant":"primary","action":[{"type":"submit","form":"invite_admin"}]},{"id":"period_form","component":"Form","name":"reporting_period","fields":["period_control"],"buttons":"period_buttons"},{"id":"period_control","component":"FormControl","label":"Reporting period","input":"period_select","hint":"Metrics and trends update to the selected period."},{"id":"period_select","component":"Select","name":"period","items":["period_30","period_90","period_qtd","period_ytd"],"value":"90d","size":"medium"},{"id":"period_30","component":"SelectItem","value":"30d","label":"Last 30 days"},{"id":"period_90","component":"SelectItem","value":"90d","label":"Last 90 days"},{"id":"period_qtd","component":"SelectItem","value":"qtd","label":"Quarter to date"},{"id":"period_ytd","component":"SelectItem","value":"ytd","label":"Year to date"},{"id":"period_buttons","component":"Buttons","buttons":["apply_period"],"direction":"row"},{"id":"apply_period","component":"Button","label":"Apply period","variant":"secondary","size":"small","action":[{"type":"submit","form":"reporting_period"}]},{"id":"kpi_card","component":"Card","variant":"card","direction":"column","gap":"m","children":["kpi_header","kpi_values","kpi_note"]},{"id":"kpi_header","component":"CardHeader","title":"Revenue snapshot","subtitle":"Current recurring revenue and churn"},{"id":"kpi_values","component":"Table","columns":["kpi_metric","kpi_value","kpi_change"]},{"id":"kpi_metric","component":"Col","label":"Metric","data":["Monthly recurring revenue","Annual recurring revenue","Churn this month"],"type":"string"},{"id":"kpi_value","component":"Col","label":"Current","data":["$482,600","$5,791,200","1.8%"],"type":"string"},{"id":"kpi_change","component":"Col","label":"Change","data":["+4.7%","+$258,000","-0.3 pp"],"type":"string"},{"id":"kpi_note","component":"TextContent","text":"MRR and ARR are up, while monthly churn improved by 0.3 percentage points.","size":"small"},{"id":"growth_card","component":"Card","variant":"card","direction":"column","gap":"m","children":["growth_header","signup_chart"]},{"id":"growth_header","component":"CardHeader","title":"New signups · past 90 days","subtitle":"Weekly account creation"},{"id":"signup_chart","component":"AreaChart","labels":["May 25","Jun 1","Jun 8","Jun 15","Jun 22","Jun 29","Jul 6","Jul 13","Jul 20","Jul 27","Aug 3","Aug 10","Aug 17"],"series":["signup_series"],"variant":"natural","xLabel":"Week","yLabel":"New signups"},{"id":"signup_series","component":"Series","category":"Signups","values":[184,201,196,228,244,231,269,287,276,312,328,341,367]},{"id":"customer_card","component":"Card","variant":"card","direction":"column","gap":"m","children":["customer_header","plan_chart","largest_heading","largest_table"]},{"id":"customer_header","component":"CardHeader","title":"Customers","subtitle":"Plan mix and ten largest accounts"},{"id":"plan_chart","component":"PieChart","labels":["Starter","Growth","Business","Enterprise"],"values":[842,516,229,73],"variant":"donut","appearance":"circular"},{"id":"largest_heading","component":"Heading","text":"Ten largest customers","level":"h3"},{"id":"largest_table","component":"Table","columns":["largest_name","largest_plan","largest_seats","largest_spend"]},{"id":"largest_name","component":"Col","label":"Customer","data":["Northstar Labs","Apex Systems","Meridian Health","Atlas Finance","Brightline Media","Summit Cloud","Harbor Logistics","Vertex AI","Oak & Co.","Nimbus Security"],"type":"string"},{"id":"largest_plan","component":"Col","label":"Plan","data":["Enterprise","Enterprise","Enterprise","Enterprise","Business","Enterprise","Business","Enterprise","Business","Business"],"type":"string"},{"id":"largest_seats","component":"Col","label":"Seats","data":[1240,980,865,720,645,590,544,510,482,455],"type":"number"},{"id":"largest_spend","component":"Col","label":"Monthly spend","data":["$42,800","$36,400","$31,900","$28,750","$23,600","$21,900","$19,850","$18,600","$17,400","$16,950"],"type":"string"},{"id":"risk_payment_card","component":"Card","variant":"card","direction":"column","gap":"m","children":["risk_payment_header","operations_tabs"]},{"id":"risk_payment_header","component":"CardHeader","title":"Account operations","subtitle":"Retention risks and payment recovery"},{"id":"operations_tabs","component":"Tabs","items":["risk_tab","payments_tab"]},{"id":"risk_tab","component":"TabItem","value":"at-risk","trigger":"Accounts at risk (5)","content":["risk_table"]},{"id":"risk_table","component":"Table","columns":["risk_account","risk_reason","risk_owner","risk_status"]},{"id":"risk_account","component":"Col","label":"Account","data":["Cedar Analytics","Lumen Works","Polaris Retail","Fieldstone Inc.","Redwood Legal"],"type":"string"},{"id":"risk_reason","component":"Col","label":"Reason","data":["Usage down 46% in 30 days","Champion left the company","Renewal in 21 days; no response","Support CSAT fell to 2.1","Seat utilization below 25%"],"type":"string"},{"id":"risk_owner","component":"Col","label":"Owner","data":["Maya Chen","Jon Bell","Priya Shah","Alex Kim","Maya Chen"],"type":"string"},{"id":"risk_status","component":"Col","label":"Risk","data":["High","High","High","Medium","Medium"],"type":"string"},{"id":"payments_tab","component":"TabItem","value":"failed-payments","trigger":"Failed payments (4)","content":["payment_alert","failed_payment_list"]},{"id":"payment_alert","component":"Alert","title":"$8,940 awaiting recovery","description":"Four invoices failed in the current reporting period. Retry individually below.","variant":"warning"},{"id":"failed_payment_list","component":"ListBlock","items":["payment_1","payment_2","payment_3","payment_4"],"variant":"number"},{"id":"payment_1","component":"ListItem","title":"Orbit Design · $3,200","subtitle":"Card declined · failed Aug 17","actionLabel":"Retry payment"},{"id":"payment_2","component":"ListItem","title":"Kite Commerce · $2,480","subtitle":"Insufficient funds · failed Aug 16","actionLabel":"Retry payment"},{"id":"payment_3","component":"ListItem","title":"Mosaic Data · $1,860","subtitle":"Expired card · failed Aug 14","actionLabel":"Retry payment"},{"id":"payment_4","component":"ListItem","title":"Evergreen Studio · $1,400","subtitle":"Bank authorization failed · failed Aug 12","actionLabel":"Retry payment"},{"id":"adoption_card","component":"Card","variant":"card","direction":"column","gap":"m","children":["adoption_header","adoption_chart","adoption_note"]},{"id":"adoption_header","component":"CardHeader","title":"Newest feature adoption","subtitle":"Share of eligible accounts using each feature"},{"id":"adoption_chart","component":"HorizontalBarChart","labels":["AI summaries","Workflow builder","Audit exports"],"series":["adoption_series"],"variant":"grouped","xLabel":"Adoption (%)","yLabel":"Feature"},{"id":"adoption_series","component":"Series","category":"Adoption","values":[64,47,31]},{"id":"adoption_note","component":"TextContent","text":"AI summaries leads adoption at 64%; Audit exports has the largest activation opportunity.","size":"small"},{"id":"nps_seats_card","component":"Card","variant":"card","direction":"column","gap":"m","children":["health_header","health_metrics","seat_progress","seat_note"]},{"id":"health_header","component":"CardHeader","title":"Company health","subtitle":"Customer sentiment and seat utilization"},{"id":"health_metrics","component":"Table","columns":["health_metric","health_value","health_context"]},{"id":"health_metric","component":"Col","label":"Metric","data":["Current NPS","Licensed seats","Active seats"],"type":"string"},{"id":"health_value","component":"Col","label":"Value","data":["52","18,420","14,276"],"type":"string"},{"id":"health_context","component":"Col","label":"Context","data":["+6 points vs prior period","Across 1,660 customers","77.5% utilization"],"type":"string"},{"id":"seat_progress","component":"Progress","value":77.5,"label":"Seat utilization · 14,276 of 18,420 seats active"},{"id":"seat_note","component":"Callout","variant":"info","title":"4,144 seats are currently unused","description":"Enterprise accounts account for 61% of unused capacity. Consider targeted enablement and right-sizing outreach."}]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "variant": "clear",
+        "gap": "l",
+        "children": [
+          "headerRow",
+          "kpiRow",
+          "signupCard",
+          "portfolioRow",
+          "customerCard",
+          "riskPaymentRow",
+          "featureNpsRow"
+        ]
+      },
+      {
+        "id": "headerRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "align": "center",
+        "justify": "between",
+        "children": [
+          "pageHeader",
+          "reportingPeriod",
+          "inviteAdminDialog"
+        ]
+      },
+      {
+        "id": "pageHeader",
+        "component": "CardHeader",
+        "title": "Admin overview",
+        "subtitle": "Company performance, customer health, and product adoption"
+      },
+      {
+        "id": "reportingPeriod",
+        "component": "Select",
+        "name": "reporting_period",
+        "value": "90d",
+        "size": "medium",
+        "items": [
+          "period30",
+          "period90",
+          "periodYear",
+          "periodCustom"
+        ],
+        "accessibility": {
+          "label": "Reporting period"
+        }
+      },
+      {
+        "id": "period30",
+        "component": "SelectItem",
+        "value": "30d",
+        "label": "Last 30 days"
+      },
+      {
+        "id": "period90",
+        "component": "SelectItem",
+        "value": "90d",
+        "label": "Last 90 days"
+      },
+      {
+        "id": "periodYear",
+        "component": "SelectItem",
+        "value": "year",
+        "label": "Year to date"
+      },
+      {
+        "id": "periodCustom",
+        "component": "SelectItem",
+        "value": "custom",
+        "label": "Custom period"
+      },
+      {
+        "id": "inviteAdminDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Invite admin",
+        "triggerVariant": "default",
+        "title": "Invite another admin",
+        "description": "Send an administrator invitation by email.",
+        "content": [
+          "inviteForm"
+        ]
+      },
+      {
+        "id": "inviteForm",
+        "component": "Form",
+        "name": "invite-admin",
+        "fields": [
+          "adminNameControl",
+          "adminEmailControl",
+          "adminRoleControl"
+        ],
+        "buttons": "inviteButtons"
+      },
+      {
+        "id": "adminNameControl",
+        "component": "FormControl",
+        "label": "Full name",
+        "input": "adminNameInput"
+      },
+      {
+        "id": "adminNameInput",
+        "component": "Input",
+        "name": "admin_name",
+        "placeholder": "Alex Morgan"
+      },
+      {
+        "id": "adminEmailControl",
+        "component": "FormControl",
+        "label": "Work email",
+        "input": "adminEmailInput"
+      },
+      {
+        "id": "adminEmailInput",
+        "component": "Input",
+        "name": "admin_email",
+        "type": "email",
+        "placeholder": "alex@company.com"
+      },
+      {
+        "id": "adminRoleControl",
+        "component": "FormControl",
+        "label": "Admin role",
+        "input": "adminRoleSelect"
+      },
+      {
+        "id": "adminRoleSelect",
+        "component": "Select",
+        "name": "admin_role",
+        "value": "admin",
+        "items": [
+          "roleAdmin",
+          "roleBilling",
+          "roleViewer"
+        ]
+      },
+      {
+        "id": "roleAdmin",
+        "component": "SelectItem",
+        "value": "admin",
+        "label": "Administrator"
+      },
+      {
+        "id": "roleBilling",
+        "component": "SelectItem",
+        "value": "billing",
+        "label": "Billing admin"
+      },
+      {
+        "id": "roleViewer",
+        "component": "SelectItem",
+        "value": "viewer",
+        "label": "Read-only admin"
+      },
+      {
+        "id": "inviteButtons",
+        "component": "Buttons",
+        "buttons": [
+          "sendInviteButton"
+        ]
+      },
+      {
+        "id": "sendInviteButton",
+        "component": "Button",
+        "label": "Send invitation",
+        "variant": "primary",
+        "action": [
+          {
+            "event": "invite_admin",
+            "form": "invite-admin"
+          }
+        ]
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "mrrCard",
+          "arrCard",
+          "churnCard",
+          "npsCard"
+        ]
+      },
+      {
+        "id": "mrrCard",
+        "component": "Card",
+        "variant": "card",
+        "gap": "s",
+        "weight": 1,
+        "children": [
+          "mrrLabel",
+          "mrrValue",
+          "mrrTrend"
+        ]
+      },
+      {
+        "id": "mrrLabel",
+        "component": "Label",
+        "text": "Monthly recurring revenue"
+      },
+      {
+        "id": "mrrValue",
+        "component": "Heading",
+        "text": "$428,600",
+        "level": "h2"
+      },
+      {
+        "id": "mrrTrend",
+        "component": "Tag",
+        "text": "↑ 6.8% vs prior period",
+        "variant": "success",
+        "size": "sm"
+      },
+      {
+        "id": "arrCard",
+        "component": "Card",
+        "variant": "card",
+        "gap": "s",
+        "weight": 1,
+        "children": [
+          "arrLabel",
+          "arrValue",
+          "arrTrend"
+        ]
+      },
+      {
+        "id": "arrLabel",
+        "component": "Label",
+        "text": "Annual recurring revenue"
+      },
+      {
+        "id": "arrValue",
+        "component": "Heading",
+        "text": "$5.14M",
+        "level": "h2"
+      },
+      {
+        "id": "arrTrend",
+        "component": "Tag",
+        "text": "↑ 18.4% year over year",
+        "variant": "success",
+        "size": "sm"
+      },
+      {
+        "id": "churnCard",
+        "component": "Card",
+        "variant": "card",
+        "gap": "s",
+        "weight": 1,
+        "children": [
+          "churnLabel",
+          "churnValue",
+          "churnTrend"
+        ]
+      },
+      {
+        "id": "churnLabel",
+        "component": "Label",
+        "text": "Churn this month"
+      },
+      {
+        "id": "churnValue",
+        "component": "Heading",
+        "text": "2.7%",
+        "level": "h2"
+      },
+      {
+        "id": "churnTrend",
+        "component": "Tag",
+        "text": "↓ 0.4 pts vs last month",
+        "variant": "success",
+        "size": "sm"
+      },
+      {
+        "id": "npsCard",
+        "component": "Card",
+        "variant": "card",
+        "gap": "s",
+        "weight": 1,
+        "children": [
+          "npsLabel",
+          "npsValue",
+          "npsTrend"
+        ]
+      },
+      {
+        "id": "npsLabel",
+        "component": "Label",
+        "text": "Current NPS"
+      },
+      {
+        "id": "npsValue",
+        "component": "Heading",
+        "text": "54",
+        "level": "h2"
+      },
+      {
+        "id": "npsTrend",
+        "component": "Tag",
+        "text": "Excellent · 1,284 responses",
+        "variant": "success",
+        "size": "sm"
+      },
+      {
+        "id": "signupCard",
+        "component": "Card",
+        "variant": "card",
+        "gap": "m",
+        "children": [
+          "signupHeader",
+          "signupChart"
+        ]
+      },
+      {
+        "id": "signupHeader",
+        "component": "CardHeader",
+        "title": "New signups",
+        "subtitle": "Past 90 days · 2,940 total"
+      },
+      {
+        "id": "signupChart",
+        "component": "AreaChart",
+        "labels": [
+          "May 21",
+          "May 28",
+          "Jun 4",
+          "Jun 11",
+          "Jun 18",
+          "Jun 25",
+          "Jul 2",
+          "Jul 9",
+          "Jul 16",
+          "Jul 23",
+          "Jul 30",
+          "Aug 6",
+          "Aug 13"
+        ],
+        "series": [
+          "signupSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Week",
+        "yLabel": "Signups"
+      },
+      {
+        "id": "signupSeries",
+        "component": "Series",
+        "category": "New signups",
+        "values": [
+          178,
+          194,
+          205,
+          187,
+          221,
+          216,
+          238,
+          229,
+          251,
+          244,
+          267,
+          253,
+          257
+        ]
+      },
+      {
+        "id": "portfolioRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "planCard",
+          "seatCard"
+        ]
+      },
+      {
+        "id": "planCard",
+        "component": "Card",
+        "variant": "card",
+        "gap": "m",
+        "weight": 1,
+        "children": [
+          "planHeader",
+          "planChart"
+        ]
+      },
+      {
+        "id": "planHeader",
+        "component": "CardHeader",
+        "title": "Customers by plan",
+        "subtitle": "3,842 active customer accounts"
+      },
+      {
+        "id": "planChart",
+        "component": "PieChart",
+        "labels": [
+          "Starter",
+          "Growth",
+          "Business",
+          "Enterprise"
+        ],
+        "values": [
+          1812,
+          1264,
+          598,
+          168
+        ],
+        "variant": "donut",
+        "appearance": "circular"
+      },
+      {
+        "id": "seatCard",
+        "component": "Card",
+        "variant": "card",
+        "gap": "m",
+        "weight": 1,
+        "children": [
+          "seatHeader",
+          "seatProgress",
+          "seatDetails"
+        ]
+      },
+      {
+        "id": "seatHeader",
+        "component": "CardHeader",
+        "title": "Seat utilization",
+        "subtitle": "Across all customer accounts"
+      },
+      {
+        "id": "seatProgress",
+        "component": "Progress",
+        "value": 78,
+        "label": "78% utilized"
+      },
+      {
+        "id": "seatDetails",
+        "component": "Table",
+        "columns": [
+          "seatMetricCol",
+          "seatValueCol"
+        ]
+      },
+      {
+        "id": "seatMetricCol",
+        "component": "Col",
+        "label": "Metric",
+        "type": "string",
+        "data": [
+          "Purchased seats",
+          "Assigned seats",
+          "Available seats"
+        ]
+      },
+      {
+        "id": "seatValueCol",
+        "component": "Col",
+        "label": "Seats",
+        "type": "number",
+        "data": [
+          48210,
+          37604,
+          10606
+        ]
+      },
+      {
+        "id": "customerCard",
+        "component": "Card",
+        "variant": "card",
+        "gap": "m",
+        "children": [
+          "customerHeader",
+          "customerTable"
+        ]
+      },
+      {
+        "id": "customerHeader",
+        "component": "CardHeader",
+        "title": "Ten largest customers",
+        "subtitle": "Ranked by monthly spend"
+      },
+      {
+        "id": "customerTable",
+        "component": "Table",
+        "columns": [
+          "customerNameCol",
+          "customerPlanCol",
+          "customerSeatsCol",
+          "customerSpendCol"
+        ]
+      },
+      {
+        "id": "customerNameCol",
+        "component": "Col",
+        "label": "Customer",
+        "type": "string",
+        "data": [
+          "Northstar Labs",
+          "Acme Global",
+          "Vertex Systems",
+          "Summit Health",
+          "Beacon Financial",
+          "Atlas Commerce",
+          "Orbit Media",
+          "Pioneer Works",
+          "Evergreen Cloud",
+          "Cobalt Logistics"
+        ]
+      },
+      {
+        "id": "customerPlanCol",
+        "component": "Col",
+        "label": "Plan",
+        "type": "string",
+        "data": [
+          "Enterprise",
+          "Enterprise",
+          "Enterprise",
+          "Enterprise",
+          "Business",
+          "Enterprise",
+          "Business",
+          "Business",
+          "Enterprise",
+          "Business"
+        ]
+      },
+      {
+        "id": "customerSeatsCol",
+        "component": "Col",
+        "label": "Seats",
+        "type": "number",
+        "data": [
+          1240,
+          980,
+          875,
+          760,
+          690,
+          625,
+          580,
+          525,
+          490,
+          455
+        ]
+      },
+      {
+        "id": "customerSpendCol",
+        "component": "Col",
+        "label": "Monthly spend",
+        "type": "string",
+        "data": [
+          "$28,400",
+          "$24,900",
+          "$21,750",
+          "$19,600",
+          "$17,250",
+          "$16,875",
+          "$14,500",
+          "$13,650",
+          "$12,980",
+          "$11,830"
+        ]
+      },
+      {
+        "id": "riskPaymentRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "align": "start",
+        "children": [
+          "riskCard",
+          "paymentCard"
+        ]
+      },
+      {
+        "id": "riskCard",
+        "component": "Card",
+        "variant": "card",
+        "gap": "m",
+        "weight": 1,
+        "children": [
+          "riskHeader",
+          "riskAlert",
+          "riskTable"
+        ]
+      },
+      {
+        "id": "riskHeader",
+        "component": "CardHeader",
+        "title": "Accounts at risk",
+        "subtitle": "5 accounts need attention"
+      },
+      {
+        "id": "riskAlert",
+        "component": "Alert",
+        "title": "$31,960 MRR at risk",
+        "description": "Prioritize low-engagement accounts with upcoming renewals.",
+        "variant": "warning"
+      },
+      {
+        "id": "riskTable",
+        "component": "Table",
+        "columns": [
+          "riskAccountCol",
+          "riskReasonCol",
+          "riskMrrCol"
+        ]
+      },
+      {
+        "id": "riskAccountCol",
+        "component": "Col",
+        "label": "Account",
+        "type": "string",
+        "data": [
+          "Redwood Analytics",
+          "Nova Retail",
+          "Harbor Legal",
+          "Juniper Studio",
+          "Kinetic Energy"
+        ]
+      },
+      {
+        "id": "riskReasonCol",
+        "component": "Col",
+        "label": "Reason",
+        "type": "string",
+        "data": [
+          "Usage down 46% in 30 days",
+          "Renewal in 14 days; no champion",
+          "3 unresolved support escalations",
+          "Only 28% of seats assigned",
+          "NPS detractor; requested pricing review"
+        ]
+      },
+      {
+        "id": "riskMrrCol",
+        "component": "Col",
+        "label": "MRR",
+        "type": "string",
+        "data": [
+          "$9,800",
+          "$7,250",
+          "$6,400",
+          "$4,860",
+          "$3,650"
+        ]
+      },
+      {
+        "id": "paymentCard",
+        "component": "Card",
+        "variant": "card",
+        "gap": "m",
+        "weight": 1,
+        "children": [
+          "paymentHeader",
+          "paymentAlert",
+          "failedPaymentList"
+        ]
+      },
+      {
+        "id": "paymentHeader",
+        "component": "CardHeader",
+        "title": "Failed payments",
+        "subtitle": "4 payments · $12,670 outstanding"
+      },
+      {
+        "id": "paymentAlert",
+        "component": "Alert",
+        "title": "Payment recovery required",
+        "description": "Retry each charge after confirming the customer’s payment method.",
+        "variant": "destructive"
+      },
+      {
+        "id": "failedPaymentList",
+        "component": "Card",
+        "variant": "clear",
+        "gap": "s",
+        "children": [
+          "paymentRow1",
+          "paymentRow2",
+          "paymentRow3",
+          "paymentRow4"
+        ]
+      },
+      {
+        "id": "paymentRow1",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "m",
+        "align": "center",
+        "justify": "between",
+        "children": [
+          "paymentInfo1",
+          "retryButton1"
+        ]
+      },
+      {
+        "id": "paymentInfo1",
+        "component": "TextContent",
+        "text": "**Silverline AI** · $4,800\nCard declined · Aug 17",
+        "size": "small"
+      },
+      {
+        "id": "retryButton1",
+        "component": "Button",
+        "label": "Retry",
+        "variant": "secondary",
+        "size": "small",
+        "action": [
+          {
+            "event": "retry_payment",
+            "paymentId": "pay_sl_4800"
+          }
+        ]
+      },
+      {
+        "id": "paymentRow2",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "m",
+        "align": "center",
+        "justify": "between",
+        "children": [
+          "paymentInfo2",
+          "retryButton2"
+        ]
+      },
+      {
+        "id": "paymentInfo2",
+        "component": "TextContent",
+        "text": "**Ember Security** · $3,250\nInsufficient funds · Aug 16",
+        "size": "small"
+      },
+      {
+        "id": "retryButton2",
+        "component": "Button",
+        "label": "Retry",
+        "variant": "secondary",
+        "size": "small",
+        "action": [
+          {
+            "event": "retry_payment",
+            "paymentId": "pay_es_3250"
+          }
+        ]
+      },
+      {
+        "id": "paymentRow3",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "m",
+        "align": "center",
+        "justify": "between",
+        "children": [
+          "paymentInfo3",
+          "retryButton3"
+        ]
+      },
+      {
+        "id": "paymentInfo3",
+        "component": "TextContent",
+        "text": "**Lumen Robotics** · $2,760\nExpired card · Aug 15",
+        "size": "small"
+      },
+      {
+        "id": "retryButton3",
+        "component": "Button",
+        "label": "Retry",
+        "variant": "secondary",
+        "size": "small",
+        "action": [
+          {
+            "event": "retry_payment",
+            "paymentId": "pay_lr_2760"
+          }
+        ]
+      },
+      {
+        "id": "paymentRow4",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "m",
+        "align": "center",
+        "justify": "between",
+        "children": [
+          "paymentInfo4",
+          "retryButton4"
+        ]
+      },
+      {
+        "id": "paymentInfo4",
+        "component": "TextContent",
+        "text": "**Willow Foods** · $1,860\nBank authorization failed · Aug 14",
+        "size": "small"
+      },
+      {
+        "id": "retryButton4",
+        "component": "Button",
+        "label": "Retry",
+        "variant": "secondary",
+        "size": "small",
+        "action": [
+          {
+            "event": "retry_payment",
+            "paymentId": "pay_wf_1860"
+          }
+        ]
+      },
+      {
+        "id": "featureNpsRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "align": "start",
+        "children": [
+          "featureCard",
+          "npsDetailCard"
+        ]
+      },
+      {
+        "id": "featureCard",
+        "component": "Card",
+        "variant": "card",
+        "gap": "m",
+        "weight": 2,
+        "children": [
+          "featureHeader",
+          "featureChart",
+          "featureNote"
+        ]
+      },
+      {
+        "id": "featureHeader",
+        "component": "CardHeader",
+        "title": "Newest feature adoption",
+        "subtitle": "Share of eligible accounts using each feature"
+      },
+      {
+        "id": "featureChart",
+        "component": "HorizontalBarChart",
+        "labels": [
+          "AI workflow builder",
+          "Advanced audit logs",
+          "Custom dashboards"
+        ],
+        "series": [
+          "featureSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Adoption rate (%)",
+        "yLabel": "Feature"
+      },
+      {
+        "id": "featureSeries",
+        "component": "Series",
+        "category": "Adoption",
+        "values": [
+          62,
+          47,
+          35
+        ]
+      },
+      {
+        "id": "featureNote",
+        "component": "TextContent",
+        "text": "AI workflow builder leads adoption at **62%**, followed by advanced audit logs at **47%** and custom dashboards at **35%**.",
+        "size": "small"
+      },
+      {
+        "id": "npsDetailCard",
+        "component": "Card",
+        "variant": "card",
+        "gap": "m",
+        "weight": 1,
+        "children": [
+          "npsDetailHeader",
+          "npsChart",
+          "npsDetailText"
+        ]
+      },
+      {
+        "id": "npsDetailHeader",
+        "component": "CardHeader",
+        "title": "NPS breakdown",
+        "subtitle": "Current score: 54"
+      },
+      {
+        "id": "npsChart",
+        "component": "SingleStackedBarChart",
+        "labels": [
+          "Promoters",
+          "Passives",
+          "Detractors"
+        ],
+        "values": [
+          68,
+          18,
+          14
+        ]
+      },
+      {
+        "id": "npsDetailText",
+        "component": "TextContent",
+        "text": "**68%** promoters · **18%** passives · **14%** detractors",
+        "size": "small"
+      }
+    ]
+  }
+}
 </a2ui-json>

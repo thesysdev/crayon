@@ -1,5 +1,126 @@
-Live Platform Status screen — covering API uptime and latest incident:
+Status page ready for the platform team — covering current API uptime and the latest incident.
 
-<a2ui-json>{"version":"v0.9","createSurface":{"surfaceId":"platform-status-page","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#0EA5E9","agentDisplayName":"Platform Team"},"sendDataModel":false}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
 
-<a2ui-json>{"version":"v0.9","updateComponents":{"surfaceId":"platform-status-page","components":[{"component":"Card","id":"root","children":["header","uptimeCard","incidentCard","footerCard"],"direction":"column","gap":"l"},{"component":"CardHeader","id":"header","title":"Platform Status","subtitle":"API & Services • August 2026 • All systems monitored"},{"component":"Card","id":"uptimeCard","children":["uptimeHeading","uptimeBadgeRow","uptimeProgress","uptimeText"],"direction":"column","gap":"m","variant":"card"},{"component":"Heading","id":"uptimeHeading","text":"API Uptime — This Month","level":"h2"},{"component":"Card","id":"uptimeBadgeRow","children":["uptimeBadge","uptimeSloTag"],"direction":"row","gap":"s","variant":"clear"},{"component":"Badge","id":"uptimeBadge","text":"● Operational","variant":"default"},{"component":"Tag","id":"uptimeSloTag","text":"SLO 99.9% — Passing","variant":"success","size":"sm"},{"component":"Progress","id":"uptimeProgress","value":99.92,"label":"99.92% uptime (Aug 1–18)"},{"component":"TextContent","id":"uptimeText","text":"**99.92%** uptime for the **API this month**. That's 34 minutes of downtime against a 43,200 minute window. We're 0.02% above our 99.9% SLO. Last 30 days: 99.95% | Uptime checks every 60s from 6 regions."},{"component":"Card","id":"incidentCard","children":["incidentHeader","incidentAlert","incidentDetails","incidentResolved"],"direction":"column","gap":"m","variant":"card"},{"component":"CardHeader","id":"incidentHeader","title":"Most Recent Incident","subtitle":"Incident #INC-2026-0816 • Resolved"},{"component":"Alert","id":"incidentAlert","title":"Elevated API Latency — Aug 16, 2026","description":"p95 latency spiked to 1.8s (normal ~180ms) on US-EAST API gateway. Impact: ~12% of requests slow, no errors or data loss.","variant":"warning"},{"component":"TextContent","id":"incidentDetails","text":"**Note:** Database connection pool saturation after deploy v2.14.3 caused queueing on write endpoints. Team rolled back to v2.14.2 and increased pool from 50 → 100 connections. Error rate stayed <0.1% throughout."},{"component":"Tag","id":"incidentResolved","text":"✓ Resolved Aug 16, 2026 at 14:42 UTC (47m duration)","variant":"success","size":"md"},{"component":"Card","id":"footerCard","children":["footerText","footerSubtext"],"direction":"column","gap":"xs","variant":"sunk"},{"component":"TextContent","id":"footerText","text":"Status updated: Aug 18, 2026 09:00 UTC • Next check in ~42s","size":"small"},{"component":"TextContent","id":"footerSubtext","text":"Subscribe to updates • View incident history • Status API: status.platform.internal/v1","size":"small"}]}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "operationalBadge",
+          "divider1",
+          "uptimeBlock",
+          "divider2",
+          "incidentBlock",
+          "footer"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Platform Status",
+        "subtitle": "API & Services • November 2026 • Real-time health"
+      },
+      {
+        "id": "operationalBadge",
+        "component": "Badge",
+        "text": "● All Systems Operational",
+        "variant": "secondary"
+      },
+      {
+        "id": "divider1",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "uptimeBlock",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "uptimeHeader",
+          "uptimeStats",
+          "uptimeProgress",
+          "uptimeCaption"
+        ]
+      },
+      {
+        "id": "uptimeHeader",
+        "component": "Heading",
+        "text": "API Uptime — This Month",
+        "level": "h3"
+      },
+      {
+        "id": "uptimeStats",
+        "component": "TextContent",
+        "text": "99.95%",
+        "size": "large-heavy"
+      },
+      {
+        "id": "uptimeProgress",
+        "component": "Progress",
+        "value": 99.95,
+        "label": "99.95% uptime"
+      },
+      {
+        "id": "uptimeCaption",
+        "component": "TextContent",
+        "text": "31 days tracked • 22 min total downtime • SLA target 99.90% — exceeding target",
+        "size": "small"
+      },
+      {
+        "id": "divider2",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "incidentBlock",
+        "component": "Card",
+        "children": [
+          "incidentHeader",
+          "incidentAlert",
+          "incidentMeta"
+        ]
+      },
+      {
+        "id": "incidentHeader",
+        "component": "Heading",
+        "text": "Most Recent Incident",
+        "level": "h3"
+      },
+      {
+        "id": "incidentAlert",
+        "component": "Alert",
+        "title": "API Latency Spike — Resolved",
+        "description": "Elevated p95 latency (~1.2s) in EU region caused by database connection pool saturation during peak traffic. Mitigated by scaling read replicas and tuning pool limits. No data loss or errors for customers.",
+        "variant": "info"
+      },
+      {
+        "id": "incidentMeta",
+        "component": "TextContent",
+        "text": "Resolved: Nov 14, 2026 at 16:42 UTC • Duration: 38 minutes • Postmortem published and shared in #platform-incidents",
+        "size": "small"
+      },
+      {
+        "id": "footer",
+        "component": "TextContent",
+        "text": "Last checked 2 minutes ago • Auto-refreshes every 60s • Subscribe to status updates",
+        "size": "small"
+      }
+    ]
+  }
+}
+</a2ui-json>
