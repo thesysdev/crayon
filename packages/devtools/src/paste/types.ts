@@ -46,6 +46,7 @@ export interface LangModule {
     onError?: (errors: unknown[]) => void;
     onStateUpdate?: (state: Record<string, unknown>) => void;
     onAction?: (event: unknown) => void;
+    publishObservability?: boolean;
   }>;
   createParser: (schema: unknown, rootName?: string) => ParserLike;
   createStreamingParser?: (schema: unknown, rootName?: string) => StreamParserLike;

@@ -91,10 +91,12 @@ export function StreamToolbar({
         >
           <StepForward {...ICON} />
         </button>
+        {/* Stays live even with an empty editor: otherwise clearing the input during
+            a run leaves the panels showing a playback nothing can clear. */}
         <button
-          style={groupStyle(false, !!disabled || state.status === "idle", false, true)}
+          style={groupStyle(false, state.status === "idle", false, true)}
           onClick={reset}
-          disabled={disabled || state.status === "idle"}
+          disabled={state.status === "idle"}
           aria-label="Reset playback"
           title="Reset playback"
         >

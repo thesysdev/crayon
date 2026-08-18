@@ -75,6 +75,10 @@ export function RenderPanel({
   );
 
   const usesTools = /\b(Query|Mutation)\s*\(/.test(code);
+  // Whitespace-only input has nothing to render. Handing it to the Renderer anyway
+  // reports a "parse-failed" error that then sticks around, since an empty editor
+  // never produces another report to replace it. runValidation() guards the same way.
+  const source = code.trim() ? code : null;
 
   return (
     <div style={s.renderPanel}>
@@ -89,9 +93,10 @@ export function RenderPanel({
       ) : null}
       <div style={s.renderCanvas}>
         <Renderer
-          response={code || null}
+          response={source}
           library={library}
           isStreaming={isStreaming}
+          publishObservability={false}
           toolProvider={toolProvider}
           onError={setRuntimeErrors}
           onStateUpdate={setFormState}
@@ -110,7 +115,7 @@ export function RenderPanel({
           </ul>
         </details>
       ) : null}
-      {runtimeErrors.length > 0 ? (
+      {source && runtimeErrors.length > 0 ? (
         <details style={s.renderDetails} open>
           <summary>Runtime errors ({runtimeErrors.length})</summary>
           <ul style={s.errorList}>

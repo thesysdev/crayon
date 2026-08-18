@@ -23,6 +23,8 @@ The widget renders nothing in production builds (`NODE_ENV === "production"`) un
 
 In development, `createLibrary()` registers the live library with the widget. The **OpenUI Paste** banner at the bottom of the drawer widens the drawer into an editor against that library (host CSS included), with Render / Validation / Tree / JSON / Stream panels and simulated stream playback. A stream event's **Debug** button opens its response the same way. Eject moves the view into a separate window. The first visit opens a short step-by-step guide (also on **Help**); dismissing it is remembered.
 
+Paste renders through the host's own `Renderer`. Its previews stay off the event bus so a Stream replay does not append cards to the drawer you are reading.
+
 Display filters ("auto-open on error", "errors only") and the theme live behind the gear in the drawer header. The theme is Light or Dark, chosen manually and remembered across reloads: nothing is auto-detected from the host page or the OS, and it styles the devtools chrome only — never your app. The floating Shiro toggle stays dark so the branded mark stays readable.
 
 ## Props

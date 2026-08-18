@@ -10,6 +10,7 @@ export interface UseStreamingObservabilityOptions {
   result: ParseResult | null;
   errorsRef: CurrentRef<OpenUIError[]>;
   errorRevision: number;
+  publish?: boolean;
 }
 
 export interface StreamingObservabilityState {
@@ -104,10 +105,12 @@ export function useStreamingObservability({
   result,
   errorsRef,
   errorRevision,
+  publish = true,
 }: UseStreamingObservabilityOptions): void {
   const streamRef = useRef<StreamingObservabilityState>(createStreamingObservabilityState());
 
   useEffect(() => {
+    if (!publish) return;
     const errors = errorsRef.current;
     const settledErrorKey = isStreaming ? null : JSON.stringify(errors);
     const update = advanceStreamingObservability(
@@ -150,5 +153,5 @@ export function useStreamingObservability({
             : "OpenUI Lang settled",
       });
     }
-  }, [isStreaming, response, result, errorsRef, errorRevision]);
+  }, [publish, isStreaming, response, result, errorsRef, errorRevision]);
 }

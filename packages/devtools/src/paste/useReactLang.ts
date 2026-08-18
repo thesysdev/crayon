@@ -3,6 +3,19 @@ import type { LangModule } from "./types";
 
 let pending: Promise<LangModule | null> | null = null;
 
+/**
+ * Reads an export that older react-lang builds may not have. Some module
+ * namespaces (test mocks, exotic bundlers) throw on a missing export instead of
+ * answering undefined, and a throw here would look like react-lang is missing.
+ */
+function optionalExport<T>(read: () => T | undefined): T | undefined {
+  try {
+    return read();
+  } catch {
+    return undefined;
+  }
+}
+
 export function loadReactLang(): Promise<LangModule | null> {
   pending ??= import("@openuidev/react-lang")
     .then((mod) => {
@@ -11,7 +24,7 @@ export function loadReactLang(): Promise<LangModule | null> {
       return {
         Renderer: loaded.Renderer,
         createParser: loaded.createParser,
-        createStreamingParser: loaded.createStreamingParser,
+        createStreamingParser: optionalExport(() => loaded.createStreamingParser),
         langCoreVersion:
           typeof loaded.LANG_CORE_VERSION === "string" ? loaded.LANG_CORE_VERSION : null,
       };
