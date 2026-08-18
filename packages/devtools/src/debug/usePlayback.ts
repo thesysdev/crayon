@@ -113,77 +113,128 @@ export function usePlayback(
     [schema, rootName],
   );
 
-  const advance = useCallback((s: Session, status: PlaybackStatus): boolean => {
-    const chunk = s.chunks[s.index];
-    if (!chunk) return false;
-    s.prefix += chunk.text;
-    let result: ParseResult | null = null;
-    let fatal: string | null = null;
-    try {
-      result = normalizeResult(s.push(chunk.text, s.prefix));
-    } catch (err) {
-      fatal = err instanceof Error ? err.message : String(err);
-    }
-    const rootPresent = !!result?.root;
-    if (result) {
-      if (s.rows.length >= TRACE_CAP) {
-        s.truncated = true;
-      } else {
-        s.rows.push({
-          i: s.index,
-          chunkPreview: chunk.text.length > 40 ? `${chunk.text.slice(0, 40)}…` : chunk.text,
-          delayMs: chunk.delayMs,
-          rootPresent,
-          rootAppeared: rootPresent && !s.lastRootPresent,
-          rootDropped: !rootPresent && s.lastRootPresent,
-          statementCount: result.meta.statementCount,
-          incomplete: result.meta.incomplete,
-          unresolvedCount: result.meta.unresolved.length,
-          errorCount: result.meta.errors.length,
-        });
+  const applyChunk = useCallback(
+    (s: Session): { result: ParseResult | null; fatal: string | null } => {
+      const chunk = s.chunks[s.index];
+      if (!chunk) return { result: null, fatal: null };
+      s.prefix += chunk.text;
+      let result: ParseResult | null = null;
+      let fatal: string | null = null;
+      try {
+        result = normalizeResult(s.push(chunk.text, s.prefix));
+      } catch (err) {
+        fatal = err instanceof Error ? err.message : String(err);
       }
-    }
-    s.lastRootPresent = rootPresent;
-    s.index += 1;
-    setState({
-      status: fatal ? "done" : status,
-      prefix: s.prefix,
-      chunkIndex: s.index,
-      totalChunks: s.chunks.length,
-      trace: [...s.rows],
-      traceTruncated: s.truncated,
-      result,
-      convergence: null,
-      emulated: s.emulated,
-      fatal,
-    });
-    return !fatal;
+      const rootPresent = !!result?.root;
+      if (result) {
+        if (s.rows.length >= TRACE_CAP) {
+          s.truncated = true;
+        } else {
+          s.rows.push({
+            i: s.index,
+            chunkPreview: chunk.text.length > 40 ? `${chunk.text.slice(0, 40)}…` : chunk.text,
+            delayMs: chunk.delayMs,
+            rootPresent,
+            rootAppeared: rootPresent && !s.lastRootPresent,
+            rootDropped: !rootPresent && s.lastRootPresent,
+            statementCount: result.meta.statementCount,
+            incomplete: result.meta.incomplete,
+            unresolvedCount: result.meta.unresolved.length,
+            errorCount: result.meta.errors.length,
+          });
+        }
+      }
+      s.lastRootPresent = rootPresent;
+      s.index += 1;
+      return { result, fatal };
+    },
+    [],
+  );
+
+  const snapshot = useCallback(
+    (s: Session, status: PlaybackStatus, result: ParseResult | null, fatal: string | null) => {
+      setState({
+        status: fatal ? "done" : status,
+        prefix: s.prefix,
+        chunkIndex: s.index,
+        totalChunks: s.chunks.length,
+        trace: [...s.rows],
+        traceTruncated: s.truncated,
+        result,
+        convergence: null,
+        emulated: s.emulated,
+        fatal,
+      });
+    },
+    [],
+  );
+
+  const advance = useCallback(
+    (s: Session, status: PlaybackStatus): boolean => {
+      const { result, fatal } = applyChunk(s);
+      snapshot(s, status, result, fatal);
+      return !fatal;
+    },
+    [applyChunk, snapshot],
+  );
+
+  const chunkDelay = useCallback((s: Session, chunk: StreamChunk | undefined) => {
+    if (!chunk) return 0;
+    const base = s.strategy === "llm" ? chunk.delayMs : BASE_INTERVAL_MS;
+    return Math.max(0, base / speedRef.current);
   }, []);
 
   const play = useCallback(
     (s: Session, module: LangModule) => {
       const gen = generation.current;
+      // Wait *before* each chunk. Cap catch-up so a slow first paint cannot
+      // mark the whole stream overdue and flush it in one frame.
+      const MAX_PLAYBACK_MS_PER_TICK = 50;
+      let nextAt = performance.now() + chunkDelay(s, s.chunks[s.index]);
+
       const tick = () => {
         if (generation.current !== gen || session.current !== s) return;
         if (s.index >= s.chunks.length) {
           finish(s, module);
           return;
         }
-        if (!advance(s, "playing")) return;
+
+        const now = performance.now();
+        if (nextAt > now) {
+          setTimeout(tick, nextAt - now);
+          return;
+        }
+
+        let last: { result: ParseResult | null; fatal: string | null } | null = null;
+        let played = 0;
+
+        while (s.index < s.chunks.length && nextAt <= now && played < MAX_PLAYBACK_MS_PER_TICK) {
+          const appliedDelay = chunkDelay(s, s.chunks[s.index]);
+          last = applyChunk(s);
+          if (last.fatal) {
+            snapshot(s, "done", last.result, last.fatal);
+            return;
+          }
+          nextAt += chunkDelay(s, s.chunks[s.index]);
+          played += appliedDelay > 0 ? appliedDelay : 4;
+        }
+
+        if (last) snapshot(s, "playing", last.result, last.fatal);
         if (s.index >= s.chunks.length) {
           finish(s, module);
           return;
         }
-        schedule();
+
+        const wait = nextAt - performance.now();
+        if (wait <= 0) requestAnimationFrame(tick);
+        else setTimeout(tick, wait);
       };
-      const schedule = () => {
-        const next = s.chunks[s.index];
-        const base = s.strategy === "llm" && next ? next.delayMs : BASE_INTERVAL_MS;
-        setTimeout(tick, Math.max(0, base / speedRef.current));
-      };
-      schedule();
+
+      const wait = nextAt - performance.now();
+      if (wait <= 0) requestAnimationFrame(tick);
+      else setTimeout(tick, wait);
     },
-    [advance, finish],
+    [applyChunk, chunkDelay, finish, snapshot],
   );
 
   const start = useCallback(

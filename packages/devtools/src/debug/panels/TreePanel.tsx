@@ -33,7 +33,7 @@ function PropValue({ value }: { value: unknown }) {
   if (Array.isArray(value)) {
     if (value.some((item) => isElementNode(item))) {
       return (
-        <div>
+        <div style={{ minWidth: 0 }}>
           {value.map((item, index) => (
             <PropValue key={index} value={item} />
           ))}
@@ -61,7 +61,7 @@ function NodeView({
   const [open, setOpen] = useState(true);
   const entries = Object.entries(node.props ?? {});
   return (
-    <div>
+    <div style={{ minWidth: 0 }}>
       <button style={s.treeHeader} onClick={() => setOpen((value) => !value)}>
         {open ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
         <span style={s.treeType}>{node.typeName}</span>
@@ -73,7 +73,7 @@ function NodeView({
           {entries.map(([key, value]) => (
             <div key={key} style={s.treeProp}>
               <dt style={s.treeDt}>{key}</dt>
-              <dd style={{ margin: 0 }}>
+              <dd style={s.treeDd}>
                 <PropValue value={value} />
               </dd>
             </div>
@@ -103,7 +103,7 @@ export function TreePanel({ result }: { result: ParseResult | null }) {
             {Object.entries(state).map(([key, value]) => (
               <div key={key} style={s.treeProp}>
                 <dt style={s.treeDt}>${key.replace(/^\$/, "")}</dt>
-                <dd style={{ margin: 0 }}>
+                <dd style={s.treeDd}>
                   <code style={s.treeScalar}>{safeStringify(value)}</code>
                 </dd>
               </div>
