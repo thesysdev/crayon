@@ -1,0 +1,81 @@
+root = Card([header, liveNow, focusForm, alerts, topTitles, watchTrend, subsVsCancel, genrePerf, quality, releases, licenses, recsAndSearch, revDevice, flags, promote])
+
+header = CardHeader("Operations Room", "Live streaming health & performance")
+
+liveNow = Card([liveHeading, liveViewers, bufferProgress, recsClick], "sunk", "row", "l", "center", "between", false)
+liveHeading = Heading("Right Now", "h3")
+liveViewers = Badge("1,284,932 watching", "secondary")
+bufferProgress = Progress(2, "Buffering rate")
+recsClick = Progress(37, "Recommendation click-through")
+
+focusForm = Form("region-focus", focusButtons, [regionField])
+regionField = FormControl("Focus on region", regionSelect, "Filter dashboards to a single region")
+regionSelect = Select("region", [rNA, rEU, rAPAC, rLATAM, rMEA], "All regions")
+rNA = SelectItem("na", "North America")
+rEU = SelectItem("eu", "Europe")
+rAPAC = SelectItem("apac", "Asia Pacific")
+rLATAM = SelectItem("latam", "Latin America")
+rMEA = SelectItem("mea", "Middle East & Africa")
+focusButtons = Buttons([applyFocus, resetFocus])
+applyFocus = Button("Apply focus", null, "primary")
+resetFocus = Button("Reset", null, "tertiary")
+
+alerts = Alert("Buffering spike in APAC", "Edge nodes in Singapore reporting elevated rebuffer ratio", "warning")
+
+topTitles = Table([titleName, titleHours])
+titleName = Col("Title", ["Neon Horizon", "The Last Signal", "Crown of Ash", "Midnight Diner", "Vault 7"])
+titleHours = Col("Hours watched", [4820000, 3910000, 3140000, 2670000, 2210000], "number")
+
+watchTrend = AreaChart(["W1", "W2", "W3", "W4"], [watchSeries], "natural", "Week", "Million hours")
+watchSeries = Series("Watch time", [82, 88, 91, 97])
+
+subsVsCancel = BarChart(["W1", "W2", "W3", "W4"], [newSubs, cancels], "grouped", "Week", "Accounts")
+newSubs = Series("New subscribers", [42000, 38500, 45100, 51000])
+cancels = Series("Cancellations", [18000, 21000, 17500, 16200])
+
+genrePerf = RadarChart(["Drama", "Comedy", "Action", "Documentary", "Kids", "Horror"], [genreSeries])
+genreSeries = Series("Engagement", [88, 74, 91, 63, 70, 58])
+
+quality = HorizontalBarChart(["North America", "Europe", "Asia Pacific", "Latin America", "Middle East"], [healthSeries], "grouped", "Delivery health %", "Region")
+healthSeries = Series("Health", [99, 98, 92, 96, 94])
+
+releases = ListBlock([rel1, rel2, rel3], "number")
+rel1 = ListItem("Neon Horizon S2", "Premieres Mar 14 — Original series")
+rel2 = ListItem("Silent Waters", "Premieres Mar 21 — Feature film")
+rel3 = ListItem("Cook It Live", "Premieres Mar 28 — Unscripted")
+
+licenses = Table([licTitle, licExpiry, licDays])
+licTitle = Col("Title", ["Retro Classics Pack", "Skyline Nights", "Global Docs Vol. 3"])
+licExpiry = Col("Expires", ["Mar 31", "Apr 05", "Apr 12"])
+licDays = Col("Days left", [9, 14, 21], "number")
+
+recsAndSearch = Card([recBlock, searchBlock], "clear", "row", "l", "stretch", "between", false)
+recBlock = PieChart(["Clicked", "Ignored"], [37, 63], "donut")
+searchBlock = Table([searchTerm, searchCount])
+searchTerm = Col("Zero-result search", ["comfort shows", "oscar winners 2024", "korean thriller", "family movie night"])
+searchCount = Col("Count", [12400, 9800, 7600, 6100], "number")
+
+revDevice = Card([revenue, device], "clear", "row", "l", "stretch", "between", false)
+revenue = PieChart(["Basic", "Standard", "Premium", "Ad-supported"], [18, 34, 33, 15], "donut")
+device = PieChart(["Smart TV", "Mobile", "Web", "Tablet", "Console"], [46, 27, 14, 8, 5], "pie")
+
+flags = SwitchGroup("feature-flags", [flagAv1, flagP2p, flag4k, flagSkip], "card", null)
+flagAv1 = SwitchItem("AV1 encoding", "Serve AV1 to supported devices", "flag_av1", true)
+flagP2p = SwitchItem("P2P delivery", "Peer-assisted edge delivery", "flag_p2p", false)
+flag4k = SwitchItem("4K on mobile", "Allow UHD streams on mobile", "flag_4k_mobile", false)
+flagSkip = SwitchItem("Skip intro", "Auto-detect and offer skip", "flag_skip_intro", true)
+
+promote = DialogBlock("Promote a title", "Promote to Home Screen", "Feature a title in the hero spot", [promoteForm], "default")
+promoteForm = Form("promote-title", promoteButtons, [promoTitleField, promoRowField, promoDateField])
+promoTitleField = FormControl("Title", promoTitleInput)
+promoTitleInput = Input("title", "Neon Horizon")
+promoRowField = FormControl("Placement", promoRowSelect)
+promoRowSelect = Select("placement", [placeHero, placeTrending, placeTop10], "Choose a row")
+placeHero = SelectItem("hero", "Hero banner")
+placeTrending = SelectItem("trending", "Trending now")
+placeTop10 = SelectItem("top10", "Top 10 today")
+promoDateField = FormControl("Run dates", promoDate)
+promoDate = DatePicker("run_dates", "range")
+promoteButtons = Buttons([promoteSubmit, promoteCancel])
+promoteSubmit = Button("Promote", null, "primary")
+promoteCancel = Button("Cancel", null, "tertiary")

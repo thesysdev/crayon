@@ -1,0 +1,464 @@
+Here's your CEO Quarterly Command View covering all 18 items.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "ceo-command-view",
+      "catalogId": "thesys.dev:c1-openui"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "ceo-command-view",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "l",
+          "children": ["header", "controls", "kpiRow", "trendsRow", "deptRow", "riskInitRow", "healthRow", "boardCard", "footer"]
+        },
+        {
+          "id": "header",
+          "component": "CardHeader",
+          "title": "Quarterly Command View — Q3 2024",
+          "subtitle": "Executive summary across finance, operations, and growth"
+        },
+
+        {
+          "id": "controls",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "row",
+          "gap": "m",
+          "align": "end",
+          "justify": "between",
+          "children": ["quarterControl", "regionControl", "exportBtns"]
+        },
+        {
+          "id": "quarterControl",
+          "component": "FormControl",
+          "label": "Quarter",
+          "input": "quarterSelect"
+        },
+        {
+          "id": "quarterSelect",
+          "component": "Select",
+          "name": "quarter",
+          "value": "q3-2024",
+          "items": ["qOpt1", "qOpt2", "qOpt3", "qOpt4"]
+        },
+        { "id": "qOpt1", "component": "SelectItem", "value": "q4-2023", "label": "Q4 2023" },
+        { "id": "qOpt2", "component": "SelectItem", "value": "q1-2024", "label": "Q1 2024" },
+        { "id": "qOpt3", "component": "SelectItem", "value": "q2-2024", "label": "Q2 2024" },
+        { "id": "qOpt4", "component": "SelectItem", "value": "q3-2024", "label": "Q3 2024" },
+
+        {
+          "id": "regionControl",
+          "component": "FormControl",
+          "label": "Region Focus",
+          "input": "regionSelect"
+        },
+        {
+          "id": "regionSelect",
+          "component": "Select",
+          "name": "region",
+          "value": "all",
+          "items": ["rOpt1", "rOpt2", "rOpt3", "rOpt4", "rOpt5"]
+        },
+        { "id": "rOpt1", "component": "SelectItem", "value": "all", "label": "All Regions" },
+        { "id": "rOpt2", "component": "SelectItem", "value": "amer", "label": "Americas" },
+        { "id": "rOpt3", "component": "SelectItem", "value": "emea", "label": "EMEA" },
+        { "id": "rOpt4", "component": "SelectItem", "value": "apac", "label": "APAC" },
+        { "id": "rOpt5", "component": "SelectItem", "value": "latam", "label": "LATAM" },
+
+        {
+          "id": "exportBtns",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": ["exportBtn"]
+        },
+        {
+          "id": "exportBtn",
+          "component": "Button",
+          "label": "Export Board Pack",
+          "variant": "primary",
+          "action": ["exportPack"]
+        },
+
+        {
+          "id": "kpiRow",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "children": ["revenueCard", "costsCard", "profitCard"]
+        },
+        {
+          "id": "revenueCard",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["revLabel", "revValue", "revBadge"]
+        },
+        { "id": "revLabel", "component": "TextContent", "text": "Revenue", "size": "small-heavy" },
+        { "id": "revValue", "component": "Heading", "text": "$48.2M", "level": "h2" },
+        { "id": "revBadge", "component": "Badge", "text": "+12% QoQ", "variant": "default" },
+
+        {
+          "id": "costsCard",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["costLabel", "costValue", "costBadge"]
+        },
+        { "id": "costLabel", "component": "TextContent", "text": "Costs", "size": "small-heavy" },
+        { "id": "costValue", "component": "Heading", "text": "$31.6M", "level": "h2" },
+        { "id": "costBadge", "component": "Badge", "text": "+5% QoQ", "variant": "secondary" },
+
+        {
+          "id": "profitCard",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["profLabel", "profValue", "profBadge"]
+        },
+        { "id": "profLabel", "component": "TextContent", "text": "Profit", "size": "small-heavy" },
+        { "id": "profValue", "component": "Heading", "text": "$16.6M", "level": "h2" },
+        { "id": "profBadge", "component": "Badge", "text": "34.4% margin", "variant": "default" },
+
+        {
+          "id": "trendsRow",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "children": ["revenueTrendCard", "costsTrendCard"]
+        },
+        {
+          "id": "revenueTrendCard",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "weight": 1,
+          "children": ["revTrendHeader", "revTrendChart"]
+        },
+        { "id": "revTrendHeader", "component": "CardHeader", "title": "Revenue Over Four Quarters" },
+        {
+          "id": "revTrendChart",
+          "component": "LineChart",
+          "labels": ["Q4 2023", "Q1 2024", "Q2 2024", "Q3 2024"],
+          "series": ["revSeries"],
+          "variant": "natural",
+          "xLabel": "Quarter",
+          "yLabel": "Revenue ($M)"
+        },
+        { "id": "revSeries", "component": "Series", "category": "Revenue", "values": [38.5, 41.2, 43.0, 48.2] },
+
+        {
+          "id": "costsTrendCard",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "weight": 1,
+          "children": ["costTrendHeader", "costTrendChart"]
+        },
+        { "id": "costTrendHeader", "component": "CardHeader", "title": "Costs Over Four Quarters" },
+        {
+          "id": "costTrendChart",
+          "component": "AreaChart",
+          "labels": ["Q4 2023", "Q1 2024", "Q2 2024", "Q3 2024"],
+          "series": ["costSeries"],
+          "variant": "natural",
+          "xLabel": "Quarter",
+          "yLabel": "Costs ($M)"
+        },
+        { "id": "costSeries", "component": "Series", "category": "Costs", "values": [27.8, 29.1, 30.1, 31.6] },
+
+        {
+          "id": "deptRow",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "children": ["budgetCard", "headcountCard"]
+        },
+        {
+          "id": "budgetCard",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "weight": 1,
+          "children": ["budgetHeader", "budgetChart"]
+        },
+        { "id": "budgetHeader", "component": "CardHeader", "title": "Budget by Department vs Plan" },
+        {
+          "id": "budgetChart",
+          "component": "BarChart",
+          "labels": ["Eng", "Sales", "Marketing", "Ops", "G&A"],
+          "series": ["budgetPlan", "budgetActual"],
+          "variant": "grouped",
+          "xLabel": "Department",
+          "yLabel": "$M"
+        },
+        { "id": "budgetPlan", "component": "Series", "category": "Plan", "values": [12.0, 8.5, 5.0, 4.0, 3.0] },
+        { "id": "budgetActual", "component": "Series", "category": "Actual", "values": [12.6, 8.1, 5.4, 3.8, 2.9] },
+
+        {
+          "id": "headcountCard",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "weight": 1,
+          "children": ["headcountHeader", "headcountChart"]
+        },
+        { "id": "headcountHeader", "component": "CardHeader", "title": "Headcount by Department" },
+        {
+          "id": "headcountChart",
+          "component": "HorizontalBarChart",
+          "labels": ["Eng", "Sales", "Marketing", "Ops", "G&A"],
+          "series": ["headcountSeries"],
+          "xLabel": "People",
+          "yLabel": "Department"
+        },
+        { "id": "headcountSeries", "component": "Series", "category": "Headcount", "values": [186, 94, 42, 58, 31] },
+
+        {
+          "id": "riskInitRow",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "children": ["risksCard", "initiativesCard"]
+        },
+        {
+          "id": "risksCard",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "weight": 1,
+          "children": ["risksHeader", "risksTable"]
+        },
+        { "id": "risksHeader", "component": "CardHeader", "title": "Top Risks & Owners" },
+        {
+          "id": "risksTable",
+          "component": "Table",
+          "columns": ["riskCol", "riskOwnerCol", "riskSevCol"]
+        },
+        {
+          "id": "riskCol",
+          "component": "Col",
+          "label": "Risk",
+          "type": "string",
+          "data": ["Key customer renewal at risk", "EMEA regulatory change", "Cloud cost overrun", "Senior eng attrition"]
+        },
+        {
+          "id": "riskOwnerCol",
+          "component": "Col",
+          "label": "Owner",
+          "type": "string",
+          "data": ["A. Chen (CRO)", "M. Ortiz (Legal)", "P. Singh (CTO)", "L. Novak (CPO)"]
+        },
+        {
+          "id": "riskSevCol",
+          "component": "Col",
+          "label": "Severity",
+          "type": "string",
+          "data": ["High", "Medium", "High", "Medium"]
+        },
+
+        {
+          "id": "initiativesCard",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "weight": 1,
+          "children": ["initHeader", "initTable"]
+        },
+        { "id": "initHeader", "component": "CardHeader", "title": "Strategic Initiatives & Status" },
+        {
+          "id": "initTable",
+          "component": "Table",
+          "columns": ["initCol", "initStatusCol", "initProgCol"]
+        },
+        {
+          "id": "initCol",
+          "component": "Col",
+          "label": "Initiative",
+          "type": "string",
+          "data": ["Enterprise platform launch", "APAC market expansion", "AI product line", "Cost optimization program"]
+        },
+        {
+          "id": "initStatusCol",
+          "component": "Col",
+          "label": "Status",
+          "type": "string",
+          "data": ["On Track", "At Risk", "On Track", "Delayed"]
+        },
+        {
+          "id": "initProgCol",
+          "component": "Col",
+          "label": "Progress",
+          "type": "string",
+          "data": ["72%", "45%", "60%", "30%"]
+        },
+
+        {
+          "id": "healthRow",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "wrap": true,
+          "children": ["runwayCard", "pipelineCard", "winRateCard", "customerCard", "npsCard"]
+        },
+        {
+          "id": "runwayCard",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["runwayLabel", "runwayValue"]
+        },
+        { "id": "runwayLabel", "component": "TextContent", "text": "Runway", "size": "small-heavy" },
+        { "id": "runwayValue", "component": "Heading", "text": "22 months", "level": "h3" },
+
+        {
+          "id": "pipelineCard",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["pipelineLabel", "pipelineValue"]
+        },
+        { "id": "pipelineLabel", "component": "TextContent", "text": "Sales Pipeline", "size": "small-heavy" },
+        { "id": "pipelineValue", "component": "Heading", "text": "$92.4M", "level": "h3" },
+
+        {
+          "id": "winRateCard",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["winLabel", "winValue", "winProgress"]
+        },
+        { "id": "winLabel", "component": "TextContent", "text": "Win Rate", "size": "small-heavy" },
+        { "id": "winValue", "component": "Heading", "text": "28%", "level": "h3" },
+        { "id": "winProgress", "component": "Progress", "value": 28, "label": "Deals won" },
+
+        {
+          "id": "customerCard",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["custLabel", "custValue", "churnBadge"]
+        },
+        { "id": "custLabel", "component": "TextContent", "text": "Customers", "size": "small-heavy" },
+        { "id": "custValue", "component": "Heading", "text": "1,847", "level": "h3" },
+        { "id": "churnBadge", "component": "Badge", "text": "Churn 2.1%", "variant": "outline" },
+
+        {
+          "id": "npsCard",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["npsLabel", "npsValue", "npsBadge"]
+        },
+        { "id": "npsLabel", "component": "TextContent", "text": "NPS", "size": "small-heavy" },
+        { "id": "npsValue", "component": "Heading", "text": "62", "level": "h3" },
+        { "id": "npsBadge", "component": "Badge", "text": "+4 QoQ", "variant": "default" },
+
+        {
+          "id": "boardCard",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "children": ["boardHeader", "boardList"]
+        },
+        { "id": "boardHeader", "component": "CardHeader", "title": "Next Board Meeting Agenda", "subtitle": "Items requiring board attention" },
+        {
+          "id": "boardList",
+          "component": "ListBlock",
+          "variant": "number",
+          "items": ["board1", "board2", "board3", "board4", "board5"]
+        },
+        { "id": "board1", "component": "ListItem", "title": "Approve FY25 operating budget", "subtitle": "Finance — decision required" },
+        { "id": "board2", "component": "ListItem", "title": "Review APAC expansion investment case", "subtitle": "Strategy — discussion" },
+        { "id": "board3", "component": "ListItem", "title": "AI product line go-to-market plan", "subtitle": "Product — update" },
+        { "id": "board4", "component": "ListItem", "title": "Key customer renewal risk mitigation", "subtitle": "Revenue — decision required" },
+        { "id": "board5", "component": "ListItem", "title": "Executive compensation review", "subtitle": "People & Comp — approval" },
+
+        {
+          "id": "footer",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "row",
+          "gap": "m",
+          "justify": "between",
+          "align": "center",
+          "children": ["footerNote", "footerExport"]
+        },
+        { "id": "footerNote", "component": "TextContent", "text": "Data as of end of Q3 2024. Filtered view reflects selected quarter and region.", "size": "small" },
+        {
+          "id": "footerExport",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": ["footerExportBtn"]
+        },
+        {
+          "id": "footerExportBtn",
+          "component": "Button",
+          "label": "Export Full Pack (PDF)",
+          "variant": "secondary",
+          "action": ["exportPackPdf"]
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+This single screen covers all 18 items:
+
+1. **Revenue** – $48.2M KPI card
+2. **Costs** – $31.6M KPI card
+3. **Profit** – $16.6M KPI card with margin
+4. **Revenue over four quarters** – line chart
+5. **Costs over four quarters** – area chart
+6. **Budget by department vs plan** – grouped bar chart
+7. **Headcount by department** – horizontal bar chart
+8. **Top risks with owner** – table (Risk / Owner / Severity)
+9. **Strategic initiatives with status** – table (Initiative / Status / Progress)
+10. **Runway** – 22 months
+11. **Sales pipeline value** – $92.4M
+12. **Win rate** – 28% with progress bar
+13. **Customer count & churn** – 1,847 customers, 2.1% churn
+14. **NPS** – 62
+15. **Board meeting items** – numbered agenda list
+16. **Change the quarter** – quarter Select
+17. **Focus on one region** – region Select
+18. **Export the pack** – Export buttons (header + footer)

@@ -1,0 +1,72 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"children":["headerCard","metricsRow","controlsRow","ticketsSection","dialogNewTicket"]}}
+{"op":"add","path":"/elements/headerCard","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["headingMain","subHeading"]}}
+{"op":"add","path":"/elements/headingMain","value":{"type":"Heading","props":{"text":"Support Lead — Morning View","level":"h1"},"children":[]}}
+{"op":"add","path":"/elements/subHeading","value":{"type":"TextContent","props":{"text":"Monday, Aug 18 • 08:30 AM • Queue health and latest inbound"},"children":[]}}
+{"op":"add","path":"/elements/metricsRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m"},"children":["metricOpenCard","metricResponseCard","metricSlaCard"]}}
+{"op":"add","path":"/elements/metricOpenCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["metricOpenLabel","metricOpenValue","metricOpenSub"]}}
+{"op":"add","path":"/elements/metricOpenLabel","value":{"type":"TextContent","props":{"text":"OPEN TICKETS","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/metricOpenValue","value":{"type":"TextContent","props":{"text":{"$state":"/metrics/openCount"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/metricOpenSub","value":{"type":"TextContent","props":{"text":"12 high priority • 15 standard","size":"small"},"children":[]}}
+{"op":"add","path":"/state/metrics","value":{"openCount":27,"avgResponse":"1h 42m","slaCompliance":"94%"}}
+{"op":"add","path":"/elements/metricResponseCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["metricResponseLabel","metricResponseValue","metricResponseSub"]}}
+{"op":"add","path":"/elements/metricResponseLabel","value":{"type":"TextContent","props":{"text":"AVG FIRST-RESPONSE TIME","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/metricResponseValue","value":{"type":"TextContent","props":{"text":{"$state":"/metrics/avgResponse"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/metricResponseSub","value":{"type":"TextContent","props":{"text":"Target < 2h • 18 tickets responded today","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/metricSlaCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["metricSlaLabel","metricSlaValue","metricSlaSub"]}}
+{"op":"add","path":"/elements/metricSlaLabel","value":{"type":"TextContent","props":{"text":"SLA COMPLIANCE","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/metricSlaValue","value":{"type":"TextContent","props":{"text":{"$state":"/metrics/slaCompliance"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/metricSlaSub","value":{"type":"TextContent","props":{"text":"Last 7 days • +2% vs last week","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/controlsRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","justify":"between","align":"center"},"children":["filterControlCard","filterStatusCard"]}}
+{"op":"add","path":"/elements/filterControlCard","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"s","align":"center"},"children":["filterLabel","btnFilterHigh","btnShowAll"]}}
+{"op":"add","path":"/elements/filterLabel","value":{"type":"TextContent","props":{"text":"Filter:","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/btnFilterHigh","value":{"type":"Button","props":{"label":"Show high-priority only","variant":"secondary","size":"small"},"children":[],"visible":{"$or":[{"$state":"/filterHighOnly","eq":false},{"$state":"/filterHighOnly","not":true}]},"on":{"press":{"action":"setState","params":{"statePath":"/filterHighOnly","value":true}}}}}
+{"op":"add","path":"/elements/btnShowAll","value":{"type":"Button","props":{"label":"Show all tickets","variant":"primary","size":"small"},"children":[],"visible":{"$state":"/filterHighOnly","eq":true},"on":{"press":{"action":"setState","params":{"statePath":"/filterHighOnly","value":false}}}}}
+{"op":"add","path":"/state/filterHighOnly","value":false}
+{"op":"add","path":"/elements/filterStatusCard","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"none","align":"end"},"children":["filterStatusText","filterHint"]}}
+{"op":"add","path":"/elements/filterStatusText","value":{"type":"TextContent","props":{"text":{"$cond":{"$state":"/filterHighOnly","eq":true},"$then":"Showing: High priority only (2 tickets)","$else":"Showing: 5 most recent tickets"}},"children":[]}}
+{"op":"add","path":"/elements/filterHint","value":{"type":"TextContent","props":{"text":"Toggle to narrow the queue","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/ticketsSection","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["ticketsHeaderRow","containerAllTickets","containerHighTickets"]}}
+{"op":"add","path":"/elements/ticketsHeaderRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","justify":"between","align":"center"},"children":["headingTickets","badgeCount"]}}
+{"op":"add","path":"/elements/headingTickets","value":{"type":"Heading","props":{"text":"Five most recent tickets","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/badgeCount","value":{"type":"Badge","props":{"text":"Updated just now","variant":"secondary"},"children":[]}}
+{"op":"add","path":"/elements/containerAllTickets","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"children":["ticketCardAll"],"repeat":{"statePath":"/tickets","key":"id"},"visible":{"$or":[{"$state":"/filterHighOnly","eq":false},{"$state":"/filterHighOnly","not":true}]}}}
+{"op":"add","path":"/elements/ticketCardAll","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["ticketTopRowAll","ticketSubjectAll","ticketMetaAll"]}}
+{"op":"add","path":"/elements/ticketTopRowAll","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","justify":"between","align":"center"},"children":["ticketIdAll","tagPriorityAll"]}}
+{"op":"add","path":"/elements/ticketIdAll","value":{"type":"TextContent","props":{"text":{"$template":"${id} • ${createdAt}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/tagPriorityAll","value":{"type":"Tag","props":{"text":{"$item":"priority"},"variant":{"$cond":{"$state":"/filterHighOnly","eq":true},"$then":"danger","$else":{"$cond":{"$item":"priority","eq":"High"},"$then":"danger","$else":{"$cond":{"$item":"priority","eq":"Urgent"},"$then":"danger","$else":"secondary"}}},"size":"sm"},"children":[]}}
+{"op":"add","path":"/elements/ticketSubjectAll","value":{"type":"TextContent","props":{"text":{"$item":"subject"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/ticketMetaAll","value":{"type":"TextContent","props":{"text":{"$template":"${requester} • ${status}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/state/tickets","value":[]}
+{"op":"add","path":"/state/tickets/0","value":{"id":"#4821","subject":"Checkout fails with 500 on payment step","priority":"High","status":"Open • Awaiting response","requester":"Avery Chen","createdAt":"08:12 AM"}}
+{"op":"add","path":"/state/tickets/1","value":{"id":"#4820","subject":"SSO login loop for enterprise users","priority":"Urgent","status":"Open • Assigned to you","requester":"Maya Patel","createdAt":"07:55 AM"}}
+{"op":"add","path":"/state/tickets/2","value":{"id":"#4819","subject":"Feature request: Export tickets to CSV","priority":"Low","status":"Open • New","requester":"Jonas Weber","createdAt":"07:41 AM"}}
+{"op":"add","path":"/state/tickets/3","value":{"id":"#4818","subject":"Mobile app crashes on iOS 17.4 after update","priority":"High","status":"Open • In progress","requester":"Sofia Reyes","createdAt":"07:18 AM"}}
+{"op":"add","path":"/state/tickets/4","value":{"id":"#4817","subject":"Invoice PDF not generating for EU customers","priority":"Medium","status":"Open • New","requester":"Liam Okafor","createdAt":"06:52 AM"}}
+{"op":"add","path":"/elements/containerHighTickets","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"children":["calloutHigh","ticketCardHigh"],"visible":{"$state":"/filterHighOnly","eq":true}}}
+{"op":"add","path":"/elements/calloutHigh","value":{"type":"Callout","props":{"variant":"warning","title":"High-priority filter active","description":"Showing 2 of 5 recent tickets marked High or Urgent."},"children":[]}}
+{"op":"add","path":"/elements/ticketCardHigh","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["ticketTopRowHigh","ticketSubjectHigh","ticketMetaHigh"]}}
+{"op":"add","path":"/elements/ticketTopRowHigh","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","justify":"between","align":"center"},"children":["ticketIdHigh","tagPriorityHigh"]}}
+{"op":"add","path":"/elements/ticketIdHigh","value":{"type":"TextContent","props":{"text":{"$template":"${id} • ${createdAt}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/tagPriorityHigh","value":{"type":"Tag","props":{"text":{"$item":"priority"},"variant":"danger","size":"sm"},"children":[]}}
+{"op":"add","path":"/elements/ticketSubjectHigh","value":{"type":"TextContent","props":{"text":{"$item":"subject"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/ticketMetaHigh","value":{"type":"TextContent","props":{"text":{"$template":"${requester} • ${status}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/state/highPriorityTickets","value":[]}
+{"op":"add","path":"/state/highPriorityTickets/0","value":{"id":"#4821","subject":"Checkout fails with 500 on payment step","priority":"High","status":"Open • Awaiting response","requester":"Avery Chen","createdAt":"08:12 AM"}}
+{"op":"add","path":"/state/highPriorityTickets/1","value":{"id":"#4820","subject":"SSO login loop for enterprise users","priority":"Urgent","status":"Open • Assigned to you","requester":"Maya Patel","createdAt":"07:55 AM"}}
+{"op":"add","path":"/elements/dialogNewTicket","value":{"type":"DialogBlock","props":{"triggerLabel":"＋ New Ticket","title":"Open a new ticket","description":"Create a ticket and it will appear in the recent list."},"children":["formNewTicket"]}}
+{"op":"add","path":"/elements/formNewTicket","value":{"type":"Form","props":{"name":"newTicketForm"},"children":["fieldSubject","fieldPriority","fieldDesc","buttonsForm"]}}
+{"op":"add","path":"/elements/fieldSubject","value":{"type":"FormControl","props":{"label":"Subject","hint":"Brief summary of the issue"},"children":["inputSubject"]}}
+{"op":"add","path":"/elements/inputSubject","value":{"type":"Input","props":{"name":"subject","placeholder":"e.g., Cannot reset password","value":{"$bindState":"/newTicket/subject"}},"children":[]}}
+{"op":"add","path":"/elements/fieldPriority","value":{"type":"FormControl","props":{"label":"Priority"},"children":["selectPriority"]}}
+{"op":"add","path":"/elements/selectPriority","value":{"type":"Select","props":{"name":"priority","placeholder":"Select priority","value":{"$bindState":"/newTicket/priority"},"items":["selectItemLow","selectItemMedium","selectItemHigh","selectItemUrgent"]},"children":[]}}
+{"op":"add","path":"/elements/selectItemLow","value":{"type":"SelectItem","props":{"value":"Low","label":"Low"},"children":[]}}
+{"op":"add","path":"/elements/selectItemMedium","value":{"type":"SelectItem","props":{"value":"Medium","label":"Medium"},"children":[]}}
+{"op":"add","path":"/elements/selectItemHigh","value":{"type":"SelectItem","props":{"value":"High","label":"High"},"children":[]}}
+{"op":"add","path":"/elements/selectItemUrgent","value":{"type":"SelectItem","props":{"value":"Urgent","label":"Urgent"},"children":[]}}
+{"op":"add","path":"/elements/fieldDesc","value":{"type":"FormControl","props":{"label":"Description","hint":"Add details for the assignee"},"children":["textAreaDesc"]}}
+{"op":"add","path":"/elements/textAreaDesc","value":{"type":"TextArea","props":{"name":"description","placeholder":"Describe the issue, steps to reproduce...","rows":3,"value":{"$bindState":"/newTicket/description"}},"children":[]}}
+{"op":"add","path":"/elements/buttonsForm","value":{"type":"Buttons","props":{"direction":"row"},"children":["btnCreateTicket","btnClear"]}}
+{"op":"add","path":"/elements/btnCreateTicket","value":{"type":"Button","props":{"label":"Create ticket","variant":"primary"},"children":[],"on":{"press":{"action":"pushState","params":{"statePath":"/tickets","value":{"id":"$id","subject":{"$state":"/newTicket/subject"},"priority":{"$state":"/newTicket/priority"},"status":"Open • New","requester":"You","createdAt":"Just now"},"clearStatePath":"/newTicket/subject"}}}}}
+{"op":"add","path":"/elements/btnClear","value":{"type":"Button","props":{"label":"Clear","variant":"secondary"},"children":[],"on":{"press":{"action":"setState","params":{"statePath":"/newTicket/subject","value":""}}}}}
+{"op":"add","path":"/state/newTicket","value":{"subject":"","priority":"Medium","description":""}}

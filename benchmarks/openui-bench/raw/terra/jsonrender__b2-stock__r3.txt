@@ -1,0 +1,29 @@
+{"op":"add","path":"/root","value":"inventory-warning"}
+{"op":"add","path":"/elements/page-title","value":{"type":"Heading","props":{"text":"Low inventory","level":"h1"},"children":[]}}
+{"op":"add","path":"/elements/page-subtitle","value":{"type":"TextContent","props":{"text":"Review items approaching their reorder point and replenish stock before it runs out.","size":"default"},"children":[]}}
+{"op":"add","path":"/elements/threshold-callout","value":{"type":"Callout","props":{"variant":"warning","title":"Low-stock threshold","description":{"$template":"Items with ${/settings/lowStockThreshold} or fewer units on hand appear in this warning view."}},"children":[]}}
+{"op":"add","path":"/state/settings","value":{"lowStockThreshold":12}}
+{"op":"add","path":"/elements/search-input","value":{"type":"Input","props":{"name":"inventory-search","placeholder":"Search by item name or SKU","type":"text","value":{"$bindState":"/searchQuery"}},"children":[]}}
+{"op":"add","path":"/state/searchQuery","value":""}
+{"op":"add","path":"/elements/search-control","value":{"type":"FormControl","props":{"label":"Search low-inventory items","hint":"Find an item to review or reorder.","input":"search-input"},"children":[]}}
+{"op":"add","path":"/elements/list-heading","value":{"type":"Heading","props":{"text":"Items needing attention","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/low-stock-count","value":{"type":"Badge","props":{"text":{"$template":"${/inventorySummary/lowStockCount} items low"},"variant":"destructive"},"children":[]}}
+{"op":"add","path":"/state/inventorySummary","value":{"lowStockCount":4}}
+{"op":"add","path":"/elements/item-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/item-sku","value":{"type":"TextContent","props":{"text":{"$template":"SKU: ${sku}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/item-category","value":{"type":"Tag","props":{"text":{"$item":"category"},"variant":"neutral","size":"sm"},"children":[]}}
+{"op":"add","path":"/elements/item-details","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs","align":"start"},"children":["item-name","item-sku","item-category"]}}
+{"op":"add","path":"/elements/units-remaining","value":{"type":"TextContent","props":{"text":{"$template":"${units} units remaining"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/reorder-point","value":{"type":"TextContent","props":{"text":{"$template":"Warning threshold: ${threshold} units"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/stock-status","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs","align":"end"},"children":["units-remaining","reorder-point"]}}
+{"op":"add","path":"/elements/reorder-button","value":{"type":"Button","props":{"label":"Reorder","variant":"primary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/selectedReorderItem","value":{"$item":"id"}}}},"children":[]}}
+{"op":"add","path":"/elements/low-stock-row","value":{"type":"Card","props":{"variant":"card","direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["item-details","stock-status","reorder-button"]}}
+{"op":"add","path":"/elements/low-stock-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/lowStockItems","key":"id"},"children":["low-stock-row"]}}
+{"op":"add","path":"/state/lowStockItems","value":[]}
+{"op":"add","path":"/state/lowStockItems/0","value":{"id":"inv-101","name":"Organic Whole Bean Coffee","sku":"COF-ORG-1KG","category":"Grocery","units":4,"threshold":12}}
+{"op":"add","path":"/state/lowStockItems/1","value":{"id":"inv-102","name":"Matte Black Water Bottle","sku":"BOT-MBK-750","category":"Drinkware","units":7,"threshold":12}}
+{"op":"add","path":"/state/lowStockItems/2","value":{"id":"inv-103","name":"Linen Notebook, Sand","sku":"NOTE-LIN-SND","category":"Stationery","units":9,"threshold":12}}
+{"op":"add","path":"/state/lowStockItems/3","value":{"id":"inv-104","name":"Cedar + Sage Candle","sku":"CND-CED-240","category":"Home Fragrance","units":2,"threshold":12}}
+{"op":"add","path":"/elements/reorder-confirmation","value":{"type":"Callout","props":{"variant":"success","title":"Reorder item selected","description":{"$template":"Ready to create a purchase order for item ${/selectedReorderItem}."}},"visible":{"$state":"/selectedReorderItem"},"children":[]}}
+{"op":"add","path":"/state/selectedReorderItem","value":""}
+{"op":"add","path":"/elements/inventory-warning","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l","align":"stretch"},"children":["page-title","page-subtitle","threshold-callout","search-control","list-heading","low-stock-count","low-stock-list","reorder-confirmation"]}}

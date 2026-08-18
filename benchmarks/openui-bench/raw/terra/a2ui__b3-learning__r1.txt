@@ -1,0 +1,494 @@
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "training-analytics-dashboard",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#2563EB",
+      "agentDisplayName": "Training Analytics"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "training-analytics-dashboard",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "cohort-filter",
+          "metrics-row",
+          "engagement-card",
+          "details-row"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "page-title",
+          "page-subtitle"
+        ]
+      },
+      {
+        "id": "page-title",
+        "component": "Heading",
+        "text": "Learning analytics",
+        "level": "h1"
+      },
+      {
+        "id": "page-subtitle",
+        "component": "TextContent",
+        "text": "Monitor learner progress, engagement, and retention risk across your training programs.",
+        "size": "default"
+      },
+      {
+        "id": "cohort-filter",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "m",
+        "align": "end",
+        "children": [
+          "cohort-control",
+          "message-cohort"
+        ]
+      },
+      {
+        "id": "cohort-control",
+        "component": "FormControl",
+        "label": "Cohort",
+        "hint": "Narrow all analytics to a specific learner cohort.",
+        "input": "cohort-select",
+        "weight": 1
+      },
+      {
+        "id": "cohort-select",
+        "component": "Select",
+        "name": "cohort",
+        "placeholder": "All cohorts",
+        "value": "all",
+        "items": [
+          "cohort-all",
+          "cohort-new-hires",
+          "cohort-sales",
+          "cohort-managers",
+          "cohort-engineering"
+        ]
+      },
+      {
+        "id": "cohort-all",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All cohorts"
+      },
+      {
+        "id": "cohort-new-hires",
+        "component": "SelectItem",
+        "value": "new-hires-q3",
+        "label": "New hires — Q3"
+      },
+      {
+        "id": "cohort-sales",
+        "component": "SelectItem",
+        "value": "sales-onboarding",
+        "label": "Sales onboarding"
+      },
+      {
+        "id": "cohort-managers",
+        "component": "SelectItem",
+        "value": "manager-development",
+        "label": "Manager development"
+      },
+      {
+        "id": "cohort-engineering",
+        "component": "SelectItem",
+        "value": "engineering-foundations",
+        "label": "Engineering foundations"
+      },
+      {
+        "id": "message-cohort",
+        "component": "DialogBlock",
+        "triggerLabel": "Message cohort",
+        "title": "Message selected cohort",
+        "description": "Send an update, encouragement, or reminder to everyone in the selected cohort.",
+        "triggerVariant": "default",
+        "content": [
+          "message-subject-control",
+          "message-body-control",
+          "message-actions"
+        ]
+      },
+      {
+        "id": "message-subject-control",
+        "component": "FormControl",
+        "label": "Subject",
+        "input": "message-subject"
+      },
+      {
+        "id": "message-subject",
+        "component": "Input",
+        "name": "messageSubject",
+        "placeholder": "e.g., Keep your learning momentum going"
+      },
+      {
+        "id": "message-body-control",
+        "component": "FormControl",
+        "label": "Message",
+        "input": "message-body"
+      },
+      {
+        "id": "message-body",
+        "component": "TextArea",
+        "name": "messageBody",
+        "placeholder": "Write a message for this cohort…",
+        "rows": 5
+      },
+      {
+        "id": "message-actions",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": [
+          "send-message-button"
+        ]
+      },
+      {
+        "id": "send-message-button",
+        "component": "Button",
+        "label": "Send message",
+        "variant": "primary"
+      },
+      {
+        "id": "metrics-row",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "align": "stretch",
+        "children": [
+          "active-learners-card",
+          "completion-rate-card",
+          "quiz-score-card"
+        ]
+      },
+      {
+        "id": "active-learners-card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "active-learners-label",
+          "active-learners-value",
+          "active-learners-change"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "active-learners-label",
+        "component": "TextContent",
+        "text": "Active learners this week",
+        "size": "small"
+      },
+      {
+        "id": "active-learners-value",
+        "component": "Heading",
+        "text": "1,284",
+        "level": "h2"
+      },
+      {
+        "id": "active-learners-change",
+        "component": "Tag",
+        "text": "↑ 12% vs. last week",
+        "variant": "success",
+        "size": "sm"
+      },
+      {
+        "id": "completion-rate-card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "completion-rate-label",
+          "completion-rate-value",
+          "completion-progress"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "completion-rate-label",
+        "component": "TextContent",
+        "text": "Course completion rate",
+        "size": "small"
+      },
+      {
+        "id": "completion-rate-value",
+        "component": "Heading",
+        "text": "78%",
+        "level": "h2"
+      },
+      {
+        "id": "completion-progress",
+        "component": "Progress",
+        "value": 78,
+        "label": "78% completed"
+      },
+      {
+        "id": "quiz-score-card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "quiz-score-label",
+          "quiz-score-value",
+          "quiz-score-change"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "quiz-score-label",
+        "component": "TextContent",
+        "text": "Average quiz score",
+        "size": "small"
+      },
+      {
+        "id": "quiz-score-value",
+        "component": "Heading",
+        "text": "84.6%",
+        "level": "h2"
+      },
+      {
+        "id": "quiz-score-change",
+        "component": "Tag",
+        "text": "↑ 2.4 pts this month",
+        "variant": "success",
+        "size": "sm"
+      },
+      {
+        "id": "engagement-card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "engagement-header",
+          "engagement-chart"
+        ]
+      },
+      {
+        "id": "engagement-header",
+        "component": "CardHeader",
+        "title": "Learner engagement",
+        "subtitle": "Weekly active learners across the past eight weeks"
+      },
+      {
+        "id": "engagement-chart",
+        "component": "LineChart",
+        "labels": [
+          "Jun 29",
+          "Jul 6",
+          "Jul 13",
+          "Jul 20",
+          "Jul 27",
+          "Aug 3",
+          "Aug 10",
+          "Aug 17"
+        ],
+        "series": [
+          "engagement-series"
+        ],
+        "variant": "natural",
+        "xLabel": "Week",
+        "yLabel": "Active learners"
+      },
+      {
+        "id": "engagement-series",
+        "component": "Series",
+        "category": "Active learners",
+        "values": [
+          892,
+          941,
+          1008,
+          976,
+          1104,
+          1158,
+          1146,
+          1284
+        ]
+      },
+      {
+        "id": "details-row",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "align": "start",
+        "children": [
+          "courses-card",
+          "risk-card"
+        ]
+      },
+      {
+        "id": "courses-card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "courses-header",
+          "courses-table"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "courses-header",
+        "component": "CardHeader",
+        "title": "Courses ranked by enrollment",
+        "subtitle": "Most enrolled courses in the selected cohort"
+      },
+      {
+        "id": "courses-table",
+        "component": "Table",
+        "columns": [
+          "course-rank-col",
+          "course-name-col",
+          "course-enrollment-col",
+          "course-completion-col"
+        ]
+      },
+      {
+        "id": "course-rank-col",
+        "component": "Col",
+        "label": "Rank",
+        "data": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+        ],
+        "type": "number"
+      },
+      {
+        "id": "course-name-col",
+        "component": "Col",
+        "label": "Course",
+        "data": [
+          "Security Awareness Fundamentals",
+          "New Manager Essentials",
+          "Product Knowledge: Core Suite",
+          "Consultative Selling",
+          "Data Literacy Foundations"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "course-enrollment-col",
+        "component": "Col",
+        "label": "Enrolled",
+        "data": [
+          "1,126",
+          "984",
+          "842",
+          "711",
+          "638"
+        ],
+        "type": "number"
+      },
+      {
+        "id": "course-completion-col",
+        "component": "Col",
+        "label": "Completion",
+        "data": [
+          "91%",
+          "76%",
+          "82%",
+          "69%",
+          "73%"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "risk-card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "risk-header",
+          "risk-alert",
+          "risk-list"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "risk-header",
+        "component": "CardHeader",
+        "title": "Learners at risk",
+        "subtitle": "Low activity or overdue learning milestones"
+      },
+      {
+        "id": "risk-alert",
+        "component": "Alert",
+        "variant": "warning",
+        "title": "46 learners need attention",
+        "description": "These learners have not engaged recently or are behind their expected course pace."
+      },
+      {
+        "id": "risk-list",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "risk-learner-1",
+          "risk-learner-2",
+          "risk-learner-3",
+          "risk-learner-4"
+        ]
+      },
+      {
+        "id": "risk-learner-1",
+        "component": "ListItem",
+        "title": "Jordan Lee",
+        "subtitle": "No activity for 14 days · 42% course progress",
+        "actionLabel": "Review"
+      },
+      {
+        "id": "risk-learner-2",
+        "component": "ListItem",
+        "title": "Priya Shah",
+        "subtitle": "2 overdue modules · 58% course progress",
+        "actionLabel": "Review"
+      },
+      {
+        "id": "risk-learner-3",
+        "component": "ListItem",
+        "title": "Marcus Brown",
+        "subtitle": "No activity for 11 days · 35% course progress",
+        "actionLabel": "Review"
+      },
+      {
+        "id": "risk-learner-4",
+        "component": "ListItem",
+        "title": "Elena García",
+        "subtitle": "Quiz attempts declining · 61% course progress",
+        "actionLabel": "Review"
+      }
+    ]
+  }
+}
+</a2ui-json>

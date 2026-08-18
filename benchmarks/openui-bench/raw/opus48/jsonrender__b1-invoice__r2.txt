@@ -1,0 +1,29 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","summary","line-items","total-card","pay-section"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":{"$template":"Invoice ${/invoice/number}"},"subtitle":{"$template":"From ${/invoice/from} to ${/invoice/client}"}}}}
+{"op":"add","path":"/state/invoice","value":{"number":"INV-2024-047","from":"Jordan Reyes Design","client":"Acme Corp.","currency":"USD","currencySymbol":"$","amountDue":"3,450.00","dueDate":"June 30, 2024","status":"Unpaid"}}
+{"op":"add","path":"/elements/summary","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"l","justify":"between","align":"center"},"children":["amount-block","status-tag"]}}
+{"op":"add","path":"/elements/amount-block","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["amount-label","amount-value","currency-note"]}}
+{"op":"add","path":"/elements/amount-label","value":{"type":"TextContent","props":{"text":"Amount Due","size":"small-heavy"}}}
+{"op":"add","path":"/elements/amount-value","value":{"type":"Heading","props":{"level":"h1","text":{"$template":"${/invoice/currencySymbol}${/invoice/amountDue}"}}}}
+{"op":"add","path":"/elements/currency-note","value":{"type":"TextContent","props":{"text":{"$template":"Billed in ${/invoice/currency}"},"size":"small"}}}
+{"op":"add","path":"/elements/status-tag","value":{"type":"Tag","props":{"text":{"$state":"/invoice/status"},"variant":"danger","size":"lg"}}}
+{"op":"add","path":"/elements/line-items","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"children":["items-heading","items-table"]}}
+{"op":"add","path":"/elements/items-heading","value":{"type":"Heading","props":{"level":"h4","text":"Line Items"}}}
+{"op":"add","path":"/elements/items-table","value":{"type":"Table","props":{"columns":["col-desc","col-hours","col-amount"]}}}
+{"op":"add","path":"/elements/col-desc","value":{"type":"Col","props":{"label":"Description","type":"string","data":["Brand identity design","Landing page UI","Design system setup"]}}}
+{"op":"add","path":"/elements/col-hours","value":{"type":"Col","props":{"label":"Hours","type":"number","data":[18,12,8]}}}
+{"op":"add","path":"/elements/col-amount","value":{"type":"Col","props":{"label":"Amount (USD)","type":"string","data":["$1,620.00","$1,080.00","$750.00"]}}}
+{"op":"add","path":"/elements/total-card","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["due-date-row","total-row"]}}
+{"op":"add","path":"/elements/due-date-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center"},"children":["due-date-label","due-date-value"]}}
+{"op":"add","path":"/elements/due-date-label","value":{"type":"TextContent","props":{"text":"Due Date","size":"default"}}}
+{"op":"add","path":"/elements/due-date-value","value":{"type":"TextContent","props":{"text":{"$state":"/invoice/dueDate"},"size":"large-heavy"}}}
+{"op":"add","path":"/elements/total-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center"},"children":["total-label","total-value"]}}
+{"op":"add","path":"/elements/total-label","value":{"type":"TextContent","props":{"text":"Total Due","size":"default"}}}
+{"op":"add","path":"/elements/total-value","props":{},"value":{"type":"TextContent","props":{"text":{"$template":"${/invoice/currencySymbol}${/invoice/amountDue} ${/invoice/currency}"},"size":"large-heavy"}}}
+{"op":"add","path":"/elements/pay-section","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m","align":"stretch"},"children":["pay-buttons","paid-alert"]}}
+{"op":"add","path":"/elements/pay-buttons","value":{"type":"Buttons","props":{"buttons":["pay-now-btn","download-btn"],"direction":"row"}}}
+{"op":"add","path":"/elements/pay-now-btn","value":{"type":"Button","props":{"label":{"$template":"Pay ${/invoice/currencySymbol}${/invoice/amountDue} Now"},"variant":"primary","size":"large"},"on":{"press":{"action":"setState","params":{"statePath":"/paid","value":true}}}}}
+{"op":"add","path":"/state/paid","value":false}
+{"op":"add","path":"/elements/download-btn","value":{"type":"Button","props":{"label":"Download PDF","variant":"secondary","size":"large"}}}
+{"op":"add","path":"/elements/paid-alert","value":{"type":"Alert","props":{"title":"Payment Successful","description":"Thank you! Your payment has been received.","variant":"success"},"visible":{"$state":"/paid"}}}

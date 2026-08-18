@@ -1,0 +1,56 @@
+root = Card([header, periodControls, kpis, signupsSection, planSplit, topCustomers, atRisk, failedPayments, featureAdoption, npsSection, seatSection, inviteSection])
+
+header = CardHeader("Admin Overview", "Company health at a glance")
+
+periodControls = Form("period", periodButtons, [periodField])
+periodField = FormControl("Reporting period", periodSelect, "Changes all metrics below")
+periodSelect = Select("period", [pWeek, pMonth, pQuarter, pYear], "This month")
+pWeek = SelectItem("week", "This week")
+pMonth = SelectItem("month", "This month")
+pQuarter = SelectItem("quarter", "This quarter")
+pYear = SelectItem("year", "This year")
+periodButtons = Buttons([applyPeriod])
+applyPeriod = Button("Apply period", null, "primary")
+
+kpis = Table([kpiMetric, kpiValue, kpiChange])
+kpiMetric = Col("Metric", ["Monthly Recurring Revenue", "Annual Recurring Revenue", "Churn (this month)", "Current NPS"])
+kpiValue = Col("Value", ["$482,300", "$5,787,600", "2.4%", "58"])
+kpiChange = Col("Change", ["+6.1%", "+7.4%", "+0.3%", "+4"])
+
+signupsSection = AreaChart(["Days 1-15", "16-30", "31-45", "46-60", "61-75", "76-90"], [signupSeries], "natural", "Past 90 days", "New signups")
+signupSeries = Series("New signups", [180, 210, 195, 240, 265, 310])
+
+planSplit = PieChart(["Starter", "Growth", "Business", "Enterprise"], [1420, 860, 340, 95], "donut")
+
+topCustomers = Table([tcName, tcSeats, tcSpend])
+tcName = Col("Customer", ["Acme Corp", "Globex", "Initech", "Umbrella", "Soylent", "Hooli", "Stark Ind", "Wayne Ent", "Cyberdyne", "Vehement"])
+tcSeats = Col("Seats", [420, 385, 310, 295, 260, 240, 210, 190, 175, 160], "number")
+tcSpend = Col("Annual Spend", ["$142,000", "$128,500", "$104,200", "$98,000", "$86,400", "$79,900", "$70,000", "$63,300", "$58,100", "$52,000"])
+
+atRisk = Table([arName, arReason, arRisk])
+arName = Col("Account", ["Nakatomi Trading", "Pied Piper", "Dunder Mifflin", "Prestige Worldwide"])
+arReason = Col("Reason", ["Usage down 40% MoM", "Champion left company", "Support tickets spiking", "Contract renewal overdue"])
+arRisk = Col("Risk", ["High", "High", "Medium", "Medium"])
+
+failedPayments = Table([fpCustomer, fpAmount, fpAction])
+fpCustomer = Col("Customer", ["Globex", "Soylent", "Vehement", "Cyberdyne"])
+fpAmount = Col("Amount", ["$128,500", "$86,400", "$52,000", "$58,100"])
+fpAction = Col("Action", ["Retry", "Retry", "Retry", "Retry"], "action")
+
+featureAdoption = HorizontalBarChart(["AI Insights", "Bulk Export", "Team Roles"], [adoptionSeries], "grouped", "Adoption %", "Feature")
+adoptionSeries = Series("Adoption", [42, 68, 31])
+
+npsSection = Progress(58, "Current NPS: 58 (Great)")
+
+seatSection = Progress(74, "Seat utilization: 3,240 of 4,380 seats active (74%)")
+
+inviteSection = Form("invite-admin", inviteButtons, [inviteEmailField, inviteRoleField])
+inviteEmailField = FormControl("Admin email", inviteEmailInput, "They will receive an invitation link")
+inviteEmailInput = Input("email", "name@company.com", "email")
+inviteRoleField = FormControl("Role", inviteRoleSelect)
+inviteRoleSelect = Select("role", [roleAdmin, roleBilling, roleReadonly], "Full admin")
+roleAdmin = SelectItem("admin", "Full admin")
+roleBilling = SelectItem("billing", "Billing admin")
+roleReadonly = SelectItem("readonly", "Read-only")
+inviteButtons = Buttons([sendInvite])
+sendInvite = Button("Send invitation", null, "primary")

@@ -1,0 +1,126 @@
+root = Card([header, mainGrid, followUps])
+header = CardHeader("Trading Desk Workspace", "Morning Dashboard & Execution Hub")
+
+mainGrid = SectionBlock([overviewSection, riskSection, marketsSection, executionSection])
+
+overviewSection = SectionItem("overview", "1. Portfolio Overview & Performance", [pnlCard, sectorAndStrategyTabs, drawdownChart])
+
+pnlCard = Table([metricCol, valueCol, detailCol])
+metricCol = Col("Metric", ["Portfolio Value", "Today's P&L", "Margin In Use", "Value at Risk (VaR 95%)"])
+valueCol = Col("Value", ["$14,250,800", "+$142,350 (+1.01%)", "$4,850,000 (34.0%)", "$215,000 (1.51%)"])
+detailCol = Col("Status / Target", ["All-Time High", "Unrealized: +$98k | Realized: +$44k", "Limit: $7,000,000", "Daily Limit: $350,000"])
+
+sectorAndStrategyTabs = Tabs([sectorTab, strategyTab])
+sectorTab = TabItem("sectors", "Sector Exposure", [sectorChart])
+sectorChart = PieChart(["Technology", "Financials", "Healthcare", "Energy", "Consumer Discretionary"], [35, 22, 18, 15, 10], "donut")
+
+strategyTab = TabItem("strategies", "Strategy YTD Returns", [strategyTable])
+strategyTable = Table([stratCol, ytdCol, sharpeCol])
+stratCol = Col("Strategy", ["Alpha Tech Long/Short", "Global Macro Core", "Quant Momentum", "Credit Arbitrage"])
+ytdCol = Col("YTD Return", ["+18.4%", "+8.2%", "+12.1%", "+5.6%"])
+sharpeCol = Col("Sharpe Ratio", ["2.10", "1.45", "1.82", "1.95"])
+
+drawdownChart = AreaChart(["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], [ddSeries], "natural", "Month", "Drawdown (%)")
+ddSeries = Series("Max Drawdown", [-1.2, -2.5, -4.1, -1.8, -0.5, -3.2, -2.1, -1.0, -0.4, -1.9, -0.8, -0.2])
+
+riskSection = SectionItem("risk", "2. Positions, Risk & Limits", [riskBreachCallout, positionsTable])
+
+riskBreachCallout = Callout("warning", "Risk Limit Alert", "Gross Exposure limit for Technology Sector is at 88% capacity ($4.98M / $5.50M max). Net Delta limit for Energy Sector is at 92% capacity.")
+
+positionsTable = Table([tickerCol, sizeCol, entryCol, currentCol, pnlPosCol])
+tickerCol = Col("Ticker", ["NVDA", "AAPL", "MSFT", "JPM", "XOM", "AMZN"])
+sizeCol = Col("Size (Shares)", ["+2,500", "+5,000", "-1,200", "+4,000", "+8,500", "-1,500"])
+entryCol = Col("Entry Price", ["$118.50", "$215.20", "$445.00", "$198.10", "$112.40", "$185.30"])
+currentCol = Col("Current Price", ["$128.40", "$224.50", "$438.10", "$204.80", "$115.20", "$178.90"])
+pnlPosCol = Col("Unrealized P&L", ["+$24,750", "+$46,500", "+$8,280", "+$26,800", "+$23,800", "+$9,600"])
+
+marketsSection = SectionItem("markets", "3. Market Intelligence & Movers", [moversTabs, watchlistTable, newsAndEcoGrid])
+
+moversTabs = Tabs([gainersTab, losersTab])
+gainersTab = TabItem("gainers", "Top Gainers", [gainersTable])
+gainersTable = Table([gTicker, gPrice, gChange])
+gTicker = Col("Ticker", ["NVDA", "AMD", "META"])
+gPrice = Col("Price", ["$128.40", "$156.20", "$512.30"])
+gChange = Col("Change Today", ["+4.85%", "+3.92%", "+3.10%"])
+
+losersTab = TabItem("losers", "Top Losers", [losersTable])
+losersTable = Table([lTicker, lPrice, lChange])
+lTicker = Col("Ticker", ["TSLA", "INTC", "BABA"])
+lPrice = Col("Price", ["$210.10", "$30.20", "$74.50"])
+lChange = Col("Change Today", ["-5.12%", "-3.80%", "-2.95%"])
+
+watchlistTable = Table([wTicker, wPrice, wTag])
+wTicker = Col("Watchlist Ticker", ["SPY", "QQQ", "TLT", "GLD", "USO"])
+wPrice = Col("Last Price", ["$552.10", "$480.30", "$94.80", "$220.50", "$76.20"])
+wTag = Col("Asset Class", ["Equity Index", "Tech Index", "US Treasury", "Commodity Gold", "Commodity Crude"])
+
+newsAndEcoGrid = SectionBlock([newsSection, ecoSection])
+newsSection = SectionItem("news", "Market Headlines & Sentiment", [newsList])
+newsList = ListBlock([news1, news2, news3])
+news1 = ListItem("Fed Signals Potential 50bps Rate Cut in Upcoming Meeting", "Macro Economics — Impact: High", null, "Bullish")
+news2 = ListItem("Tech Earnings Beat Estimates Across Semiconductor Sector", "Equities — Impact: High", null, "Bullish")
+news3 = ListItem("Middle East Crude Supply Concerns Escalating", "Commodities — Impact: Medium", null, "Bearish")
+
+ecoSection = SectionItem("eco", "Economic Calendar This Week", [ecoTable])
+ecoTable = Table([ecoDate, ecoEvent, ecoImpact])
+ecoDate = Col("Date / Time", ["Wed 08:30", "Thu 08:30", "Thu 10:00", "Fri 08:30"])
+ecoEvent = Col("Event", ["Core CPI (MoM)", "Initial Jobless Claims", "ISM Services PMI", "Non-Farm Payrolls"])
+ecoImpact = Col("Forecast / Impact", ["0.2% (High)", "225k (Medium)", "52.4 (Medium)", "165k (High)"])
+
+executionSection = SectionItem("execution", "4. Orders, Rebalance & Controls", [controlsRow, workingOrdersTable])
+
+controlsRow = Buttons([placeOrderModal, rebalanceModal, timeframeModal])
+
+placeOrderModal = DialogBlock("Place Order", "New Ticket Order Execution", "Submit a market or limit order directly to the desk queue.", orderForm, "default")
+
+orderForm = Form("order-ticket", orderButtons, [tickerField, sideField, qtyField, typeField])
+tickerField = FormControl("Ticker Symbol", tickerInput, "e.g. NVDA, AAPL")
+tickerInput = Input("ticker", "NVDA")
+sideField = FormControl("Order Side", sideRadio)
+sideRadio = RadioGroup("side", [sideBuy, sideSell], "buy")
+sideBuy = RadioItem("Buy / Long", "Open or expand long position", "buy")
+sideSell = RadioItem("Sell / Short", "Open or expand short position", "sell")
+qtyField = FormControl("Quantity (Shares/Contracts)", qtyInput)
+qtyInput = Input("qty", "500", "number")
+typeField = FormControl("Order Type", typeSelect)
+typeSelect = Select("order_type", [typeMkt, typeLmt], "Select execution type")
+typeMkt = SelectItem("market", "Market Order")
+typeLmt = SelectItem("limit", "Limit Order")
+orderButtons = Buttons([submitOrderBtn])
+submitOrderBtn = Button("Submit Order Ticket", null, "primary")
+
+rebalanceModal = DialogBlock("Rebalance Portfolio", "Portfolio Target Allocation Rebalance", "Realign strategy weights back to benchmark parameters.", rebalanceForm, "outline")
+
+rebalanceForm = Form("rebalance-form", rebalanceButtons, [targetTechField, maxDriftField])
+targetTechField = FormControl("Tech Target Weight (%)", targetTechInput)
+targetTechInput = Input("tech_weight", "30.0", "number")
+maxDriftField = FormControl("Max Allowed Drift (%)", maxDriftInput)
+maxDriftInput = Input("max_drift", "2.0", "number")
+rebalanceButtons = Buttons([execRebalanceBtn])
+execRebalanceBtn = Button("Execute Rebalance Orders", null, "primary")
+
+timeframeModal = DialogBlock("Change Timeframe", "Global Workspace Timeframe Settings", "Adjust historical lookback for performance, risk and charts.", timeframeForm, "secondary")
+
+timeframeForm = Form("timeframe-form", timeframeButtons, [tfField])
+tfField = FormControl("Select Timeframe", tfSelect)
+tfSelect = Select("timeframe", [tf1d, tf1w, tf1m, tfytd, tf1y], "Select period")
+tf1d = SelectItem("1d", "1 Day (Intraday)")
+tf1w = SelectItem("1w", "1 Week")
+tf1m = SelectItem("1m", "1 Month")
+tfytd = SelectItem("ytd", "Year To Date")
+tf1y = SelectItem("1y", "1 Year trailing")
+timeframeButtons = Buttons([applyTfBtn])
+applyTfBtn = Button("Apply Timeframe", null, "primary")
+
+workingOrdersTable = Table([ordId, ordTicker, ordSide, ordQty, ordPrice, ordStatus])
+ordId = Col("Order ID", ["#ORD-8821", "#ORD-8824", "#ORD-8825"])
+ordTicker = Col("Ticker", ["NVDA", "MSFT", "TLT"])
+ordSide = Col("Side", ["BUY", "SELL", "BUY"])
+ordQty = Col("Quantity", ["1,000", "500", "2,500"])
+ordPrice = Col("Limit Price", ["$125.00", "$442.50", "$93.50"])
+ordStatus = Col("Status", ["Working", "Working", "Partial Fill (1,000/2,500)"])
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Export current positions to CSV")
+f2 = FollowUpItem("Simulate 25bps rate hike impact on VaR")
+f3 = FollowUpItem("View block trade history")

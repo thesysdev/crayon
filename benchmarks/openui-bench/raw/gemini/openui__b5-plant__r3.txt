@@ -1,0 +1,101 @@
+root = Card([header, liveAndon, kpiGrid, lineFocusAccordion, analyticsTabs, opsTabs, scheduleMaintenanceForm, exportActions, followUps], "card", "column", "l")
+
+header = CardHeader("Factory Floor Supervisor Console", "Plant 4 - Shift A (06:00 - 14:00) • Live Telemetry & Control")
+
+liveAndon = Callout("warning", "Live Andon Alerts (2 Active)", "Line 3 - Packaging: Labeler jam (Severity: Medium) | Line 1 - Stamping: High motor temperature warning (Severity: Low)")
+
+kpiGrid = Table([kpiMetric, kpiValue, kpiTarget, kpiStatus])
+kpiMetric = Col("Key Indicator", ["Overall Equipment Effectiveness (OEE)", "Today's Output (Units)", "Defect Rate (30 Days)", "Energy Consumption (Today)", "Safety Record"])
+kpiValue = Col("Current Value", ["84.2%", "14,280 units", "1.18%", "4,820 kWh", "142 Days Incident-Free"])
+kpiTarget = Col("Target / Metric", ["85.0%", "16,000 units", "< 1.50%", "5,200 kWh limit", "1 Incident YTD (0 Lost Time)"])
+kpiStatus = Col("Status", ["Optimal", "89% of Target", "In Control", "Normal", "Active Streak"])
+
+lineFocusAccordion = SectionBlock([lineSection], true)
+lineSection = SectionItem("line-details", "15. Line Focus & Status Details (Click to Expand)", [lineTable])
+lineTable = Table([lineName, lineStatus, lineRate, lineTargetRate, lineOEE])
+lineName = Col("Production Line", ["Line 1 - Stamping", "Line 2 - Assembly", "Line 3 - Packaging", "Line 4 - CNC Machining"])
+lineStatus = Col("Operational Status", ["Running", "Running", "Warning (Jam)", "Running"])
+lineRate = Col("Current Rate", ["450 units/hr", "620 units/hr", "310 units/hr", "280 units/hr"])
+lineTargetRate = Col("Target Rate", ["480 units/hr", "600 units/hr", "400 units/hr", "300 units/hr"])
+lineOEE = Col("Line OEE", ["86.4%", "88.1%", "72.5%", "89.8%"])
+
+analyticsTabs = Tabs([trendTab, downtimeTab, shiftTab])
+
+trendTab = TabItem("trends", "4. Defect Rate Trend", [defectChart])
+defectChart = LineChart(["Week 1", "Week 2", "Week 3", "Week 4"], [defectSeries], "natural", "Past Month", "% Defective")
+defectSeries = Series("Defect Rate (%)", [1.45, 1.32, 1.20, 1.18])
+
+downtimeTab = TabItem("downtime", "5. Downtime Split", [downtimeChart])
+downtimeChart = PieChart(["Mechanical Faults", "Material Shortage", "Operator Delay", "Tooling Changeover", "Scheduled PM"], [42, 22, 15, 12, 9], "donut")
+
+shiftTab = TabItem("shifts", "9. Shift Output Comparison", [shiftChart])
+shiftChart = BarChart(["Shift A (Morning)", "Shift B (Afternoon)", "Shift C (Night)"], [shiftTargetSeries, shiftActualSeries], "grouped", "Shift", "Units")
+shiftTargetSeries = Series("Target Units", [16000, 16000, 14000])
+shiftActualSeries = Series("Actual Output", [14280, 15800, 13900])
+
+opsTabs = Tabs([invMaintTab, ordersQualityTab])
+
+invMaintTab = TabItem("inv-maint", "Inventory & Maintenance Status", [invHeading, stockTable, sep1, maintHeading, maintTable])
+invHeading = Heading("7. Raw Materials Stock & 8. Deliveries Due", "h4")
+stockTable = Table([matName, stockQty, reorderLevel, nextDelivery])
+matName = Col("Material / Item", ["Steel Coils (CR4)", "Polypropylene Resin", "Corrugated Packaging", "Supplier Delivery: Apex Steel", "Supplier Delivery: Polymer Corp"])
+stockQty = Col("Current Level / Status", ["142.5 Tons", "18.4 Tons", "4,200 Pallets", "12 Tons (En Route)", "5 Tons (Confirmed)"])
+reorderLevel = Col("Reorder Level / Due Date", ["50.0 Tons", "10.0 Tons", "1,500 Pallets", "Due Tomorrow, 08:00", "Due Thursday, 14:00"])
+nextDelivery = Col("Supplier / Note", ["Apex Steel Inc.", "Polymer Corp", "PacPro Solutions", "PO #89421", "PO #89455"])
+
+sep1 = Separator("horizontal")
+
+maintHeading = Heading("6. Machines Due for Maintenance", "h4")
+maintTable = Table([machName, machMaintDue, machType, machPriority])
+machName = Col("Machine ID", ["CNC Milling Station 02", "Hydraulic Press 01", "Robotic Arm Arm-04", "Conveyor Belt Line 3"])
+machMaintDue = Col("Maintenance Due", ["Overdue by 2 days", "Due Today", "Due in 3 days", "Due in 5 days"])
+machType = Col("Service Type", ["Spindle Calibration", "Hydraulic Fluid & Filter", "Joint Lubrication", "Belt Tension Check"])
+machPriority = Col("Priority", ["High", "Medium", "Low", "Medium"])
+
+ordersQualityTab = TabItem("orders-quality", "Work Orders & Quality Holds", [woHeading, woTable, sep2, holdHeading, holdTable])
+woHeading = Heading("13. Open Work Orders", "h4")
+woTable = Table([woId, woDesc, woLine, woPriority, woStatus])
+woId = Col("Work Order", ["WO-4401", "WO-4405", "WO-4408", "WO-4412"])
+woDesc = Col("Task Description", ["Replace heating element", "Clear jam & calibrate sensor", "Repair guard switch", "Motor bearing inspection"])
+woLine = Col("Location", ["Line 2", "Line 3", "Line 1", "Line 4"])
+woPriority = Col("Priority", ["Critical", "High", "Medium", "Low"])
+woStatus = Col("Status", ["In Progress", "Pending", "Open", "Scheduled"])
+
+sep2 = Separator("horizontal")
+
+holdHeading = Heading("11. Batches on Quality Hold", "h4")
+holdTable = Table([batchId, batchProd, holdReason, holdQty, quarantineZone])
+batchId = Col("Batch ID", ["BAT-2024-089", "BAT-2024-094", "BAT-2024-098"])
+batchProd = Col("Product", ["Bracket Sub-Assembly", "Resin Casing Type B", "Stamped Plate A"])
+holdReason = Col("Hold Reason", ["Dimensional Tolerance Out", "Surface Blemish Detected", "Pending Tensile Test"])
+holdQty = Col("Quantity", ["450 units", "1,200 units", "800 units"])
+quarantineZone = Col("Quarantine Location", ["Hold Bay A-1", "Hold Bay B-3", "Hold Bay A-2"])
+
+scheduleMaintenanceForm = Form("schedule-maint", scheduleButtons, [maintLineField, maintMachineField, maintDateField, maintNotesField])
+maintLineField = FormControl("14. Schedule Maintenance - Select Line", lineSelect)
+lineSelect = Select("maint_line", [selL1, selL2, selL3, selL4], "Select production line")
+selL1 = SelectItem("line1", "Line 1 - Stamping")
+selL2 = SelectItem("line2", "Line 2 - Assembly")
+selL3 = SelectItem("line3", "Line 3 - Packaging")
+selL4 = SelectItem("line4", "Line 4 - CNC Machining")
+
+maintMachineField = FormControl("Machine Name / ID", machineInput)
+machineInput = Input("machine_id", "e.g., CNC Milling Station 02")
+
+maintDateField = FormControl("Scheduled Date", maintDatePicker)
+maintDatePicker = DatePicker("maint_date", "single")
+
+maintNotesField = FormControl("Work Instructions / Notes", maintNotes)
+maintNotes = TextArea("maint_notes", "Enter details for the maintenance team...", 2)
+
+scheduleButtons = Buttons([scheduleSubmitBtn])
+scheduleSubmitBtn = Button("Schedule Maintenance Work Order", null, "primary")
+
+exportActions = Buttons([exportShiftReportBtn, refreshDataBtn], "row")
+exportShiftReportBtn = Button("17. Export Shift Summary Report (PDF/CSV)", null, "primary")
+refreshDataBtn = Button("Refresh Live Telemetry", null, "secondary")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Acknowledge Line 3 Packaging Andon Alert")
+f2 = FollowUpItem("View detailed safety incident log for this year")
+f3 = FollowUpItem("Generate inventory requisition for packaging supplies")

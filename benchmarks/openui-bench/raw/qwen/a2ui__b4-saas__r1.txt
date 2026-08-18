@@ -1,0 +1,541 @@
+Here's a comprehensive SaaS admin overview dashboard covering all 13 requirements:
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "saas-admin-overview",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": {
+        "primaryColor": "#4F46E5",
+        "agentDisplayName": "Admin Console"
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "saas-admin-overview",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "children": ["header", "kpi-row", "controls-row", "charts-row", "top-customers-card", "at-risk-card", "failed-payments-card", "adoption-card", "utilization-card"],
+          "direction": "column",
+          "gap": "l",
+          "variant": "clear"
+        },
+        {
+          "id": "header",
+          "component": "CardHeader",
+          "title": "Admin Overview",
+          "subtitle": "Real-time business health and operations dashboard"
+        },
+        {
+          "id": "kpi-row",
+          "component": "Card",
+          "children": ["mrr-card", "arr-card", "churn-card", "nps-card"],
+          "direction": "row",
+          "gap": "m",
+          "variant": "clear"
+        },
+        {
+          "id": "mrr-card",
+          "component": "Card",
+          "children": ["mrr-label", "mrr-value"],
+          "direction": "column",
+          "gap": "xs",
+          "variant": "card"
+        },
+        {
+          "id": "mrr-label",
+          "component": "TextContent",
+          "text": "Monthly Recurring Revenue",
+          "size": "small"
+        },
+        {
+          "id": "mrr-value",
+          "component": "TextContent",
+          "text": "**$284,500**",
+          "size": "large-heavy"
+        },
+        {
+          "id": "arr-card",
+          "component": "Card",
+          "children": ["arr-label", "arr-value"],
+          "direction": "column",
+          "gap": "xs",
+          "variant": "card"
+        },
+        {
+          "id": "arr-label",
+          "component": "TextContent",
+          "text": "Annual Recurring Revenue",
+          "size": "small"
+        },
+        {
+          "id": "arr-value",
+          "component": "TextContent",
+          "text": "**$3,414,000**",
+          "size": "large-heavy"
+        },
+        {
+          "id": "churn-card",
+          "component": "Card",
+          "children": ["churn-label", "churn-value"],
+          "direction": "column",
+          "gap": "xs",
+          "variant": "card"
+        },
+        {
+          "id": "churn-label",
+          "component": "TextContent",
+          "text": "Churn This Month",
+          "size": "small"
+        },
+        {
+          "id": "churn-value",
+          "component": "TextContent",
+          "text": "**2.3%** ↓ 0.4% vs last month",
+          "size": "large-heavy"
+        },
+        {
+          "id": "nps-card",
+          "component": "Card",
+          "children": ["nps-label", "nps-value"],
+          "direction": "column",
+          "gap": "xs",
+          "variant": "card"
+        },
+        {
+          "id": "nps-label",
+          "component": "TextContent",
+          "text": "Current NPS",
+          "size": "small"
+        },
+        {
+          "id": "nps-value",
+          "component": "TextContent",
+          "text": "**62** (Excellent)",
+          "size": "large-heavy"
+        },
+        {
+          "id": "controls-row",
+          "component": "Card",
+          "children": ["period-form", "invite-dialog"],
+          "direction": "row",
+          "gap": "m",
+          "align": "end",
+          "justify": "between",
+          "variant": "clear"
+        },
+        {
+          "id": "period-form",
+          "component": "Form",
+          "name": "reporting-period",
+          "buttons": "period-buttons",
+          "fields": ["period-field"]
+        },
+        {
+          "id": "period-field",
+          "component": "FormControl",
+          "label": "Reporting Period",
+          "input": "period-select"
+        },
+        {
+          "id": "period-select",
+          "component": "Select",
+          "name": "period",
+          "placeholder": "Select period",
+          "value": "90d",
+          "items": ["period-item-30", "period-item-90", "period-item-12m", "period-item-ytd"]
+        },
+        {
+          "id": "period-item-30",
+          "component": "SelectItem",
+          "value": "30d",
+          "label": "Last 30 Days"
+        },
+        {
+          "id": "period-item-90",
+          "component": "SelectItem",
+          "value": "90d",
+          "label": "Last 90 Days"
+        },
+        {
+          "id": "period-item-12m",
+          "component": "SelectItem",
+          "value": "12m",
+          "label": "Last 12 Months"
+        },
+        {
+          "id": "period-item-ytd",
+          "component": "SelectItem",
+          "value": "ytd",
+          "label": "Year to Date"
+        },
+        {
+          "id": "period-buttons",
+          "component": "Buttons",
+          "buttons": ["period-apply-btn"]
+        },
+        {
+          "id": "period-apply-btn",
+          "component": "Button",
+          "label": "Apply",
+          "variant": "secondary",
+          "size": "medium"
+        },
+        {
+          "id": "invite-dialog",
+          "component": "DialogBlock",
+          "triggerLabel": "＋ Invite Admin",
+          "triggerVariant": "default",
+          "title": "Invite New Admin",
+          "description": "Send an invitation to add a new administrator to this workspace.",
+          "content": ["invite-form"]
+        },
+        {
+          "id": "invite-form",
+          "component": "Form",
+          "name": "invite-admin",
+          "buttons": "invite-buttons",
+          "fields": ["invite-email-field", "invite-role-field"]
+        },
+        {
+          "id": "invite-email-field",
+          "component": "FormControl",
+          "label": "Email Address",
+          "input": "invite-email-input",
+          "hint": "The invite link expires in 7 days"
+        },
+        {
+          "id": "invite-email-input",
+          "component": "Input",
+          "name": "email",
+          "type": "email",
+          "placeholder": "colleague@company.com",
+          "rules": [{"required": true, "message": "Email is required"}]
+        },
+        {
+          "id": "invite-role-field",
+          "component": "FormControl",
+          "label": "Role",
+          "input": "invite-role-select"
+        },
+        {
+          "id": "invite-role-select",
+          "component": "Select",
+          "name": "role",
+          "placeholder": "Select role",
+          "items": ["invite-role-admin", "invite-role-billing", "invite-role-viewer"]
+        },
+        {
+          "id": "invite-role-admin",
+          "component": "SelectItem",
+          "value": "admin",
+          "label": "Full Admin"
+        },
+        {
+          "id": "invite-role-billing",
+          "component": "SelectItem",
+          "value": "billing",
+          "label": "Billing Admin"
+        },
+        {
+          "id": "invite-role-viewer",
+          "component": "SelectItem",
+          "value": "viewer",
+          "label": "Read-Only"
+        },
+        {
+          "id": "invite-buttons",
+          "component": "Buttons",
+          "buttons": ["invite-submit-btn"]
+        },
+        {
+          "id": "invite-submit-btn",
+          "component": "Button",
+          "label": "Send Invite",
+          "variant": "primary",
+          "size": "medium"
+        },
+        {
+          "id": "charts-row",
+          "component": "Card",
+          "children": ["signups-card", "plan-card"],
+          "direction": "row",
+          "gap": "m",
+          "variant": "clear"
+        },
+        {
+          "id": "signups-card",
+          "component": "Card",
+          "children": ["signups-header", "signups-chart"],
+          "direction": "column",
+          "gap": "s",
+          "variant": "card",
+          "weight": 2
+        },
+        {
+          "id": "signups-header",
+          "component": "CardHeader",
+          "title": "New Signups",
+          "subtitle": "Past 90 days"
+        },
+        {
+          "id": "signups-chart",
+          "component": "AreaChart",
+          "labels": ["Wk 1", "Wk 2", "Wk 3", "Wk 4", "Wk 5", "Wk 6", "Wk 7", "Wk 8", "Wk 9", "Wk 10", "Wk 11", "Wk 12", "Wk 13"],
+          "series": ["signups-series"],
+          "variant": "natural",
+          "xLabel": "Week",
+          "yLabel": "Signups"
+        },
+        {
+          "id": "signups-series",
+          "component": "Series",
+          "category": "New Signups",
+          "values": [12, 15, 18, 14, 22, 19, 25, 28, 24, 31, 27, 35, 38]
+        },
+        {
+          "id": "plan-card",
+          "component": "Card",
+          "children": ["plan-header", "plan-chart"],
+          "direction": "column",
+          "gap": "s",
+          "variant": "card",
+          "weight": 1
+        },
+        {
+          "id": "plan-header",
+          "component": "CardHeader",
+          "title": "Customers by Plan",
+          "subtitle": "572 total accounts"
+        },
+        {
+          "id": "plan-chart",
+          "component": "PieChart",
+          "labels": ["Starter (340)", "Professional (185)", "Enterprise (47)"],
+          "values": [340, 185, 47],
+          "variant": "donut"
+        },
+        {
+          "id": "top-customers-card",
+          "component": "Card",
+          "children": ["top-customers-header", "top-customers-table"],
+          "direction": "column",
+          "gap": "s",
+          "variant": "card"
+        },
+        {
+          "id": "top-customers-header",
+          "component": "CardHeader",
+          "title": "Top 10 Customers by Spend",
+          "subtitle": "Ranked by monthly spend"
+        },
+        {
+          "id": "top-customers-table",
+          "component": "Table",
+          "columns": ["tc-col-rank", "tc-col-name", "tc-col-plan", "tc-col-seats", "tc-col-spend"]
+        },
+        {
+          "id": "tc-col-rank",
+          "component": "Col",
+          "label": "#",
+          "data": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+          "type": "number"
+        },
+        {
+          "id": "tc-col-name",
+          "component": "Col",
+          "label": "Account",
+          "data": ["Acme Corp", "TechFlow Inc", "GlobalSync", "DataPrime", "CloudNine", "NexaWorks", "BrightPath", "Vertex Labs", "Orion Systems", "Pulse Digital"],
+          "type": "string"
+        },
+        {
+          "id": "tc-col-plan",
+          "component": "Col",
+          "label": "Plan",
+          "data": ["Enterprise", "Enterprise", "Enterprise", "Enterprise", "Professional", "Enterprise", "Professional", "Professional", "Professional", "Starter"],
+          "type": "string"
+        },
+        {
+          "id": "tc-col-seats",
+          "component": "Col",
+          "label": "Seats",
+          "data": [250, 180, 150, 120, 95, 85, 72, 65, 58, 45],
+          "type": "number"
+        },
+        {
+          "id": "tc-col-spend",
+          "component": "Col",
+          "label": "Monthly Spend",
+          "data": ["$45,000", "$32,400", "$27,000", "$21,600", "$14,250", "$15,300", "$10,800", "$9,750", "$8,700", "$4,500"],
+          "type": "string"
+        },
+        {
+          "id": "at-risk-card",
+          "component": "Card",
+          "children": ["at-risk-header", "at-risk-alert", "at-risk-table"],
+          "direction": "column",
+          "gap": "s",
+          "variant": "card"
+        },
+        {
+          "id": "at-risk-header",
+          "component": "CardHeader",
+          "title": "Accounts at Risk",
+          "subtitle": "5 accounts flagged for intervention"
+        },
+        {
+          "id": "at-risk-alert",
+          "component": "Alert",
+          "title": "Action Needed",
+          "description": "2 high-risk accounts require immediate attention. TechFlow Inc usage has dropped 40% and CloudNine has repeated payment failures.",
+          "variant": "warning"
+        },
+        {
+          "id": "at-risk-table",
+          "component": "Table",
+          "columns": ["ar-col-account", "ar-col-reason", "ar-col-risk-level"]
+        },
+        {
+          "id": "ar-col-account",
+          "component": "Col",
+          "label": "Account",
+          "data": ["TechFlow Inc", "CloudNine", "BrightPath", "Orion Systems", "Pulse Digital"],
+          "type": "string"
+        },
+        {
+          "id": "ar-col-reason",
+          "component": "Col",
+          "label": "Risk Reason",
+          "data": ["Usage dropped 40% in 30 days", "Payment failed twice consecutively", "No admin login in 45 days", "Downgrade request pending", "Support ticket unresolved 14+ days"],
+          "type": "string"
+        },
+        {
+          "id": "ar-col-risk-level",
+          "component": "Col",
+          "label": "Severity",
+          "data": ["🔴 High", "🔴 High", "🟡 Medium", "🟡 Medium", "🟢 Low"],
+          "type": "string"
+        },
+        {
+          "id": "failed-payments-card",
+          "component": "Card",
+          "children": ["failed-payments-header", "failed-payments-table"],
+          "direction": "column",
+          "gap": "s",
+          "variant": "card"
+        },
+        {
+          "id": "failed-payments-header",
+          "component": "CardHeader",
+          "title": "Failed Payments",
+          "subtitle": "3 payments require retry"
+        },
+        {
+          "id": "failed-payments-table",
+          "component": "Table",
+          "columns": ["fp-col-account", "fp-col-amount", "fp-col-date", "fp-col-attempts", "fp-col-retry"]
+        },
+        {
+          "id": "fp-col-account",
+          "component": "Col",
+          "label": "Account",
+          "data": ["CloudNine", "Vertex Labs", "Pulse Digital"],
+          "type": "string"
+        },
+        {
+          "id": "fp-col-amount",
+          "component": "Col",
+          "label": "Amount",
+          "data": ["$14,250", "$9,750", "$4,500"],
+          "type": "string"
+        },
+        {
+          "id": "fp-col-date",
+          "component": "Col",
+          "label": "Failed On",
+          "data": ["Jan 15, 2025", "Jan 14, 2025", "Jan 12, 2025"],
+          "type": "string"
+        },
+        {
+          "id": "fp-col-attempts",
+          "component": "Col",
+          "label": "Attempts",
+          "data": [3, 2, 1],
+          "type": "number"
+        },
+        {
+          "id": "fp-col-retry",
+          "component": "Col",
+          "label": "Action",
+          "data": ["Retry Payment", "Retry Payment", "Retry Payment"],
+          "type": "action"
+        },
+        {
+          "id": "adoption-card",
+          "component": "Card",
+          "children": ["adoption-header", "adoption-feature1", "adoption-feature2", "adoption-feature3"],
+          "direction": "column",
+          "gap": "m",
+          "variant": "card"
+        },
+        {
+          "id": "adoption-header",
+          "component": "CardHeader",
+          "title": "New Feature Adoption",
+          "subtitle": "Rollout progress across all accounts"
+        },
+        {
+          "id": "adoption-feature1",
+          "component": "Progress",
+          "label": "AI Copilot (launched Dec 2024)",
+          "value": 67
+        },
+        {
+          "id": "adoption-feature2",
+          "component": "Progress",
+          "label": "Workflow Automations (launched Jan 2025)",
+          "value": 43
+        },
+        {
+          "id": "adoption-feature3",
+          "component": "Progress",
+          "label": "Advanced Analytics (launched Jan 2025)",
+          "value": 28
+        },
+        {
+          "id": "utilization-card",
+          "component": "Card",
+          "children": ["utilization-header", "utilization-progress", "utilization-text"],
+          "direction": "column",
+          "gap": "s",
+          "variant": "card"
+        },
+        {
+          "id": "utilization-header",
+          "component": "CardHeader",
+          "title": "Seat Utilization",
+          "subtitle": "Active seats vs. purchased seats across all accounts"
+        },
+        {
+          "id": "utilization-progress",
+          "component": "Progress",
+          "label": "Overall Utilization",
+          "value": 73
+        },
+        {
+          "id": "utilization-text",
+          "component": "TextContent",
+          "text": "**1,247 of 1,708** purchased seats are actively used. Enterprise accounts average 81% utilization, Professional 68%, and Starter 59%.",
+          "size": "small"
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>

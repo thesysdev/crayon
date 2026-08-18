@@ -1,0 +1,289 @@
+Here's a comprehensive service health view for on-call engineers covering all requested items.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "service-health",
+      "catalogId": "thesys.dev:c1-openui"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "service-health",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "direction": "column",
+          "gap": "l",
+          "children": ["header", "regionFilter", "topRow", "chartsRow", "incidentsSection", "endpointsSection", "alertSection"]
+        },
+        {
+          "id": "header",
+          "component": "CardHeader",
+          "title": "Service Health — Production",
+          "subtitle": "On-call operational overview"
+        },
+        {
+          "id": "regionFilter",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "row",
+          "gap": "m",
+          "align": "center",
+          "children": ["regionLabel", "regionSelect"]
+        },
+        {
+          "id": "regionLabel",
+          "component": "Label",
+          "text": "Narrow to region:"
+        },
+        {
+          "id": "regionSelect",
+          "component": "Select",
+          "name": "region",
+          "placeholder": "All regions",
+          "value": "all",
+          "items": ["regAll", "regUsEast", "regUsWest", "regEu", "regApac"]
+        },
+        { "id": "regAll", "component": "SelectItem", "value": "all", "label": "All Regions" },
+        { "id": "regUsEast", "component": "SelectItem", "value": "us-east", "label": "US East (Virginia)" },
+        { "id": "regUsWest", "component": "SelectItem", "value": "us-west", "label": "US West (Oregon)" },
+        { "id": "regEu", "component": "SelectItem", "value": "eu-central", "label": "EU Central (Frankfurt)" },
+        { "id": "regApac", "component": "SelectItem", "value": "apac", "label": "APAC (Singapore)" },
+
+        {
+          "id": "topRow",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "l",
+          "children": ["uptimeCard", "errorRateCard"]
+        },
+        {
+          "id": "uptimeCard",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "weight": 1,
+          "children": ["uptimeHeading", "uptimeValue", "uptimeProgress"]
+        },
+        { "id": "uptimeHeading", "component": "Label", "text": "Uptime This Quarter" },
+        { "id": "uptimeValue", "component": "Heading", "text": "99.982%", "level": "h2" },
+        { "id": "uptimeProgress", "component": "Progress", "value": 99.982, "label": "SLA target: 99.95%" },
+
+        {
+          "id": "errorRateCard",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "weight": 1,
+          "children": ["errorHeading", "errorValue", "errorBadge"]
+        },
+        { "id": "errorHeading", "component": "Label", "text": "Error Rate (Now)" },
+        { "id": "errorValue", "component": "Heading", "text": "0.42%", "level": "h2" },
+        { "id": "errorBadge", "component": "Badge", "text": "Elevated — above 0.30% baseline", "variant": "destructive" },
+
+        {
+          "id": "chartsRow",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "m",
+          "children": ["chartsHeading", "resourceChart"]
+        },
+        { "id": "chartsHeading", "component": "Heading", "text": "CPU & Memory — Past 24 Hours", "level": "h3" },
+        {
+          "id": "resourceChart",
+          "component": "LineChart",
+          "variant": "natural",
+          "xLabel": "Time (24h)",
+          "yLabel": "Utilization %",
+          "labels": ["00:00", "03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00", "Now"],
+          "series": ["cpuSeries", "memSeries"]
+        },
+        {
+          "id": "cpuSeries",
+          "component": "Series",
+          "category": "CPU %",
+          "values": [42, 38, 35, 55, 72, 78, 68, 61, 64]
+        },
+        {
+          "id": "memSeries",
+          "component": "Series",
+          "category": "Memory %",
+          "values": [58, 57, 56, 60, 65, 71, 74, 73, 75]
+        },
+
+        {
+          "id": "incidentsSection",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "m",
+          "children": ["incidentsHeading", "incidentsTable", "ackArea"]
+        },
+        { "id": "incidentsHeading", "component": "Heading", "text": "Open Incidents", "level": "h3" },
+        {
+          "id": "incidentsTable",
+          "component": "Table",
+          "columns": ["colIncId", "colIncTitle", "colIncSev", "colIncAge"]
+        },
+        {
+          "id": "colIncId",
+          "component": "Col",
+          "label": "ID",
+          "type": "string",
+          "data": ["INC-4821", "INC-4819", "INC-4815"]
+        },
+        {
+          "id": "colIncTitle",
+          "component": "Col",
+          "label": "Title",
+          "type": "string",
+          "data": ["Payment API latency spike", "Cache node eviction storm", "Elevated 5xx on checkout"]
+        },
+        {
+          "id": "colIncSev",
+          "component": "Col",
+          "label": "Severity",
+          "type": "string",
+          "data": ["SEV-1", "SEV-2", "SEV-3"]
+        },
+        {
+          "id": "colIncAge",
+          "component": "Col",
+          "label": "Age",
+          "type": "string",
+          "data": ["14m", "1h 22m", "3h 05m"]
+        },
+        {
+          "id": "ackArea",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "row",
+          "gap": "m",
+          "align": "center",
+          "children": ["ackSelect", "ackButton"]
+        },
+        {
+          "id": "ackSelect",
+          "component": "Select",
+          "name": "ackIncident",
+          "placeholder": "Select incident to acknowledge",
+          "weight": 1,
+          "items": ["ackItem1", "ackItem2", "ackItem3"]
+        },
+        { "id": "ackItem1", "component": "SelectItem", "value": "INC-4821", "label": "INC-4821 — Payment API latency spike (SEV-1)" },
+        { "id": "ackItem2", "component": "SelectItem", "value": "INC-4819", "label": "INC-4819 — Cache node eviction storm (SEV-2)" },
+        { "id": "ackItem3", "component": "SelectItem", "value": "INC-4815", "label": "INC-4815 — Elevated 5xx on checkout (SEV-3)" },
+        {
+          "id": "ackButton",
+          "component": "Button",
+          "label": "Acknowledge",
+          "variant": "primary",
+          "action": [{ "action": "acknowledgeIncident", "incidentPath": "/ackIncident" }]
+        },
+
+        {
+          "id": "endpointsSection",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "m",
+          "children": ["endpointsHeading", "endpointsChart"]
+        },
+        { "id": "endpointsHeading", "component": "Heading", "text": "5 Slowest Endpoints (p95 latency)", "level": "h3" },
+        {
+          "id": "endpointsChart",
+          "component": "HorizontalBarChart",
+          "xLabel": "Latency (ms)",
+          "yLabel": "Endpoint",
+          "labels": ["POST /payments/charge", "GET /checkout/summary", "POST /orders/create", "GET /user/profile", "GET /catalog/search"],
+          "series": ["latencySeries"]
+        },
+        {
+          "id": "latencySeries",
+          "component": "Series",
+          "category": "p95 latency (ms)",
+          "values": [1840, 1220, 960, 740, 610]
+        },
+
+        {
+          "id": "alertSection",
+          "component": "Form",
+          "name": "alertThresholdForm",
+          "buttons": "alertButtons",
+          "fields": ["alertMetricControl", "alertThresholdControl"]
+        },
+        {
+          "id": "alertMetricControl",
+          "component": "FormControl",
+          "label": "Alert Metric",
+          "hint": "Choose which metric this alert watches",
+          "input": "alertMetricSelect"
+        },
+        {
+          "id": "alertMetricSelect",
+          "component": "Select",
+          "name": "alertMetric",
+          "placeholder": "Select metric",
+          "value": "error_rate",
+          "items": ["metricErr", "metricCpu", "metricMem", "metricLatency"]
+        },
+        { "id": "metricErr", "component": "SelectItem", "value": "error_rate", "label": "Error Rate (%)" },
+        { "id": "metricCpu", "component": "SelectItem", "value": "cpu", "label": "CPU Utilization (%)" },
+        { "id": "metricMem", "component": "SelectItem", "value": "memory", "label": "Memory Utilization (%)" },
+        { "id": "metricLatency", "component": "SelectItem", "value": "latency", "label": "p95 Latency (ms)" },
+        {
+          "id": "alertThresholdControl",
+          "component": "FormControl",
+          "label": "Threshold",
+          "hint": "Trigger an alert when the metric crosses this value",
+          "input": "alertThresholdSlider"
+        },
+        {
+          "id": "alertThresholdSlider",
+          "component": "Slider",
+          "name": "alertThreshold",
+          "variant": "continuous",
+          "label": "Threshold value",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "defaultValue": [80]
+        },
+        {
+          "id": "alertButtons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": ["saveAlertBtn"]
+        },
+        {
+          "id": "saveAlertBtn",
+          "component": "Button",
+          "label": "Set Alert Threshold",
+          "variant": "primary",
+          "action": [{ "action": "submitForm", "formName": "alertThresholdForm" }]
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+This single screen covers all eight requirements:
+
+1. **Uptime this quarter** — headline metric card (99.982%) with an SLA-target progress bar.
+2. **CPU & memory over 24h** — a dual-series line chart.
+3. **Error rate now** — a headline metric card (0.42%) with an "Elevated" badge.
+4. **Open incidents with severity** — a table listing ID, title, SEV level, and age.
+5. **Narrow to one region** — a region Select at the top.
+6. **Five slowest endpoints with latency** — a ranked horizontal bar chart of p95 latencies.
+7. **Set an alert threshold** — a form with a metric selector and a threshold slider.
+8. **Acknowledge an incident** — an incident selector plus an "Acknowledge" action button.

@@ -1,0 +1,65 @@
+{"op":"add","path":"/root","value":"budget-screen"}
+{"op":"add","path":"/elements/budget-screen","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["budget-header","month-controls","summary-card","category-section","largest-expense-card","add-expense-form"]}}
+{"op":"add","path":"/elements/budget-header","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["budget-title","budget-subtitle"]}}
+{"op":"add","path":"/elements/budget-title","value":{"type":"Heading","props":{"text":"Personal budget check","level":"h1"},"children":[]}}
+{"op":"add","path":"/elements/budget-subtitle","value":{"type":"TextContent","props":{"text":"Review your monthly spending, spot trends, and add new expenses.","size":"default"},"children":[]}}
+{"op":"add","path":"/elements/month-controls","value":{"type":"Card","props":{"variant":"card","direction":"row","gap":"m","align":"end","justify":"between","wrap":true},"children":["month-picker-control","month-status"]}}
+{"op":"add","path":"/elements/month-picker-control","value":{"type":"FormControl","props":{"label":"Viewing month","hint":"Choose a month to review","input":"month-picker"},"children":[]}}
+{"op":"add","path":"/elements/month-picker","value":{"type":"DatePicker","props":{"name":"budgetMonth","mode":"single","value":{"$bindState":"/selectedMonth"}},"children":[]}}
+{"op":"add","path":"/state/selectedMonth","value":["2026-08-01"]}
+{"op":"add","path":"/elements/month-status","value":{"type":"Tag","props":{"text":{"$template":"Budget period: ${/selectedMonthLabel}"},"variant":"info","size":"md"},"children":[]}}
+{"op":"add","path":"/state/selectedMonthLabel","value":"August 2026"}
+{"op":"add","path":"/elements/summary-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["summary-header","budget-progress","summary-details"]}}
+{"op":"add","path":"/elements/summary-header","value":{"type":"CardHeader","props":{"title":"Monthly spending","subtitle":{"$template":"${/selectedMonthLabel} overview"}},"children":[]}}
+{"op":"add","path":"/elements/budget-progress","value":{"type":"Progress","props":{"value":{"$state":"/budgetPercent"},"label":{"$template":"$${/totalSpent} spent of $${/monthlyBudget} budget"}},"children":[]}}
+{"op":"add","path":"/state/totalSpent","value":1874.5}
+{"op":"add","path":"/state/monthlyBudget","value":2500}
+{"op":"add","path":"/state/budgetPercent","value":75}
+{"op":"add","path":"/elements/summary-details","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","justify":"between","wrap":true},"children":["remaining-budget","daily-average"]}}
+{"op":"add","path":"/elements/remaining-budget","value":{"type":"TextContent","props":{"text":{"$template":"**Remaining:** $${/remainingBudget}"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/state/remainingBudget","value":625.5}
+{"op":"add","path":"/elements/daily-average","value":{"type":"TextContent","props":{"text":{"$template":"Daily average: $${/dailyAverage}"},"size":"default"},"children":[]}}
+{"op":"add","path":"/state/dailyAverage","value":104.14}
+{"op":"add","path":"/elements/category-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["category-header","category-chart","category-list"]}}
+{"op":"add","path":"/elements/category-header","value":{"type":"CardHeader","props":{"title":"Spending by category","subtitle":"Where your money went this month"}},"children":[]}}
+{"op":"add","path":"/elements/category-chart","value":{"type":"PieChart","props":{"labels":{"$state":"/categoryLabels"},"values":{"$state":"/categoryValues"},"variant":"donut","appearance":"circular"},"children":[]}}
+{"op":"add","path":"/state/categoryLabels","value":["Housing","Groceries","Dining","Transport","Utilities","Entertainment"]}
+{"op":"add","path":"/state/categoryValues","value":[850,312.4,248.6,190,173.5,100]}
+{"op":"add","path":"/elements/category-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/categories","key":"id"},"children":["category-row"]}}
+{"op":"add","path":"/elements/category-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","justify":"between","align":"center"},"children":["category-name","category-amount"]}}
+{"op":"add","path":"/elements/category-name","value":{"type":"TextContent","props":{"text":{"$template":"${name}"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/category-amount","value":{"type":"Tag","props":{"text":{"$template":"$${amount}"},"variant":"neutral","size":"sm"},"children":[]}}
+{"op":"add","path":"/state/categories","value":[]}
+{"op":"add","path":"/state/categories/0","value":{"id":"housing","name":"Housing","amount":"850.00"}}
+{"op":"add","path":"/state/categories/1","value":{"id":"groceries","name":"Groceries","amount":"312.40"}}
+{"op":"add","path":"/state/categories/2","value":{"id":"dining","name":"Dining","amount":"248.60"}}
+{"op":"add","path":"/state/categories/3","value":{"id":"transport","name":"Transport","amount":"190.00"}}
+{"op":"add","path":"/state/categories/4","value":{"id":"utilities","name":"Utilities","amount":"173.50"}}
+{"op":"add","path":"/state/categories/5","value":{"id":"entertainment","name":"Entertainment","amount":"100.00"}}
+{"op":"add","path":"/elements/largest-expense-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["largest-expense-header","largest-expense-alert","largest-expense-detail"]}}
+{"op":"add","path":"/elements/largest-expense-header","value":{"type":"CardHeader","props":{"title":"Largest expense","subtitle":"Your biggest single purchase this month"}},"children":[]}}
+{"op":"add","path":"/elements/largest-expense-alert","value":{"type":"Alert","props":{"title":{"$template":"${/largestExpense/merchant} — $${/largestExpense/amount}"},"description":{"$template":"${/largestExpense/category} on ${/largestExpense/date}"},"variant":"warning"},"children":[]}}
+{"op":"add","path":"/state/largestExpense","value":{"merchant":"Riverside Apartments","amount":"850.00","category":"Housing","date":"August 1, 2026","note":"Monthly rent payment"}}
+{"op":"add","path":"/elements/largest-expense-detail","value":{"type":"TextContent","props":{"text":{"$template":"${/largestExpense/note}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/add-expense-form","value":{"type":"Form","props":{"name":"addExpense","buttons":"expense-form-buttons","fields":["expense-name-control","expense-amount-control","expense-category-control","expense-date-control"]},"children":[]}}
+{"op":"add","path":"/elements/expense-name-control","value":{"type":"FormControl","props":{"label":"Expense name","input":"expense-name-input"},"children":[]}}
+{"op":"add","path":"/elements/expense-name-input","value":{"type":"Input","props":{"name":"expenseName","placeholder":"e.g. Coffee with team","type":"text","value":{"$bindState":"/newExpense/name"}},"children":[]}}
+{"op":"add","path":"/state/newExpense","value":{"name":"","amount":"","category":"","date":[]}}
+{"op":"add","path":"/elements/expense-amount-control","value":{"type":"FormControl","props":{"label":"Amount","input":"expense-amount-input"},"children":[]}}
+{"op":"add","path":"/elements/expense-amount-input","value":{"type":"Input","props":{"name":"expenseAmount","placeholder":"0.00","type":"number","value":{"$bindState":"/newExpense/amount"}},"children":[]}}
+{"op":"add","path":"/elements/expense-category-control","value":{"type":"FormControl","props":{"label":"Category","input":"expense-category-select"},"children":[]}}
+{"op":"add","path":"/elements/expense-category-select","value":{"type":"Select","props":{"name":"expenseCategory","placeholder":"Select a category","items":["category-option-housing","category-option-groceries","category-option-dining","category-option-transport","category-option-utilities","category-option-entertainment"],"value":{"$bindState":"/newExpense/category"}},"children":[]}}
+{"op":"add","path":"/elements/category-option-housing","value":{"type":"SelectItem","props":{"value":"Housing","label":"Housing"},"children":[]}}
+{"op":"add","path":"/elements/category-option-groceries","value":{"type":"SelectItem","props":{"value":"Groceries","label":"Groceries"},"children":[]}}
+{"op":"add","path":"/elements/category-option-dining","value":{"type":"SelectItem","props":{"value":"Dining","label":"Dining"},"children":[]}}
+{"op":"add","path":"/elements/category-option-transport","value":{"type":"SelectItem","props":{"value":"Transport","label":"Transport"},"children":[]}}
+{"op":"add","path":"/elements/category-option-utilities","value":{"type":"SelectItem","props":{"value":"Utilities","label":"Utilities"},"children":[]}}
+{"op":"add","path":"/elements/category-option-entertainment","value":{"type":"SelectItem","props":{"value":"Entertainment","label":"Entertainment"},"children":[]}}
+{"op":"add","path":"/elements/expense-date-control","value":{"type":"FormControl","props":{"label":"Date","input":"expense-date-picker"},"children":[]}}
+{"op":"add","path":"/elements/expense-date-picker","value":{"type":"DatePicker","props":{"name":"expenseDate","mode":"single","value":{"$bindState":"/newExpense/date"}},"children":[]}}
+{"op":"add","path":"/elements/expense-form-buttons","value":{"type":"Buttons","props":{"buttons":["add-expense-button"],"direction":"row"},"children":[]}}
+{"op":"add","path":"/elements/add-expense-button","value":{"type":"Button","props":{"label":"Add expense","variant":"primary","size":"medium"},"on":{"press":{"action":"pushState","params":{"statePath":"/expenses","value":{"id":"$id","name":{"$state":"/newExpense/name"},"amount":{"$state":"/newExpense/amount"},"category":{"$state":"/newExpense/category"},"date":{"$state":"/newExpense/date"}},"clearStatePath":"/newExpense"}}},"children":[]}}
+{"op":"add","path":"/state/expenses","value":[]}
+{"op":"add","path":"/state/expenses/0","value":{"id":"exp-001","name":"Monthly rent","amount":"850.00","category":"Housing","date":"2026-08-01"}}
+{"op":"add","path":"/state/expenses/1","value":{"id":"exp-002","name":"Market groceries","amount":"126.45","category":"Groceries","date":"2026-08-14"}}
+{"op":"add","path":"/state/expenses/2","value":{"id":"exp-003","name":"Train pass","amount":"95.00","category":"Transport","date":"2026-08-03"}}

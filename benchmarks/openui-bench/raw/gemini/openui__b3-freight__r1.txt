@@ -1,0 +1,57 @@
+root = Card([header, kpis, searchForm, delayAlert, tablesSection, chartsSection, actions, refreshTag, suggestions])
+
+header = CardHeader("Logistics Operations Dashboard", "Real-time fleet monitoring and shipment tracking")
+
+kpis = Table([kpiMetric, kpiValue, kpiChange])
+kpiMetric = Col("KPI", ["On-Time Delivery Rate", "Avg Cost per Shipment", "Total Active Shipments"])
+kpiValue = Col("Current Value", ["94.2%", "$1,245", "1,420"])
+kpiChange = Col("MoM Trend", ["+1.8%", "-2.4%", "+5.1%"])
+
+searchForm = Form("search_route_form", searchButtons, [routeField])
+routeField = FormControl("Filter & Search by Route", routeInput, "Enter origin or destination (e.g., Chicago, LAX)")
+routeInput = Input("route_query", "e.g., Chicago to Los Angeles...")
+searchButtons = Buttons([searchBtn, resetBtn])
+searchBtn = Button("Search Route", null, "primary")
+resetBtn = Button("Clear Filter", null, "tertiary")
+
+delayAlert = Callout("warning", "Delayed Shipments Attention Required (3)", "Critical delays detected on Midwest and East Coast corridors due to adverse weather. Tap below to re-route.")
+
+tablesSection = Tabs([activeShipmentsTab, delayedShipmentsTab])
+
+activeShipmentsTab = TabItem("active", "In-Transit Shipments", [shipmentsTable])
+shipmentsTable = Table([shipmentId, originCol, destCol, carrierCol, etaCol, statusCol])
+shipmentId = Col("Tracking ID", ["SHP-8901", "SHP-8902", "SHP-8904", "SHP-8905", "SHP-8906"])
+originCol = Col("Origin", ["Chicago, IL", "Seattle, WA", "Dallas, TX", "Miami, FL", "Atlanta, GA"])
+destCol = Col("Destination", ["Los Angeles, CA", "Denver, CO", "Phoenix, AZ", "New York, NY", "Chicago, IL"])
+carrierCol = Col("Carrier", ["Swift Logistics", "FedEx Freight", "XPO Logistics", "JB Hunt", "Knight-Swift"])
+etaCol = Col("ETA", ["Oct 24, 14:00", "Oct 25, 09:30", "Oct 24, 18:15", "Oct 26, 11:00", "Oct 25, 16:45"])
+statusCol = Col("Status", ["In Transit", "In Transit", "In Transit", "In Transit", "In Transit"])
+
+delayedShipmentsTab = TabItem("delayed", "Delayed Shipments (3)", [delayedTable])
+delayedTable = Table([dShipmentId, dOriginCol, dDestCol, dCarrierCol, dDelayCol, dReasonCol])
+dShipmentId = Col("Tracking ID", ["SHP-8890", "SHP-8895", "SHP-8899"])
+dOriginCol = Col("Origin", ["Detroit, MI", "Memphis, TN", "Savannah, GA"])
+dDestCol = Col("Destination", ["Boston, MA", "Columbus, OH", "Houston, TX"])
+dCarrierCol = Col("Carrier", ["FedEx Freight", "JB Hunt", "XPO Logistics"])
+dDelayCol = Col("Delay", ["+6 Hours", "+12 Hours", "+4 Hours"])
+dReasonCol = Col("Reason", ["Severe Weather", "Engine Mechanical", "Port Congestion"])
+
+chartsSection = SectionBlock([volumeTrendSection, carrierSplitSection])
+
+volumeTrendSection = SectionItem("weekly_volume", "Weekly Shipment Volume (Past 8 Weeks)", [weeklyChart])
+weeklyChart = LineChart(["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"], [volumeSeries], "natural", "Week", "Shipments Delivered")
+volumeSeries = Series("Volume", [310, 345, 320, 380, 410, 395, 430, 450])
+
+carrierSplitSection = SectionItem("carrier_split", "Carrier Volume Distribution", [carrierChart])
+carrierChart = PieChart(["FedEx Freight", "JB Hunt", "XPO Logistics", "Swift Logistics", "Others"], [35, 25, 20, 12, 8], "donut")
+
+actions = Buttons([flagShipmentBtn, exportReportBtn])
+flagShipmentBtn = Button("Flag Shipment Issue", null, "secondary")
+exportReportBtn = Button("Export Logistics Summary", null, "tertiary")
+
+refreshTag = Tag("Data last refreshed: Today at 14:32:05 UTC", "info", "sm", "info")
+
+suggestions = FollowUpBlock([sug1, sug2, sug3])
+sug1 = FollowUpItem("Re-route delayed shipment SHP-8890")
+sug2 = FollowUpItem("Download carrier performance scorecards")
+sug3 = FollowUpItem("View cost breakdown by route")

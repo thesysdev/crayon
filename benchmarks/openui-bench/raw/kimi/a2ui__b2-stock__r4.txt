@@ -1,0 +1,116 @@
+Here's a low-inventory warning dashboard covering all four requirements:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "low-inventory-view",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#d97706",
+      "agentDisplayName": "Inventory Manager"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "low-inventory-view",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "m",
+        "children": ["header", "thresholdAlert", "searchControl", "searchInput", "inventoryTable", "footerNote"]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "⚠️ Low Inventory Warning",
+        "subtitle": "4 items are below their reorder threshold"
+      },
+      {
+        "id": "thresholdAlert",
+        "component": "Alert",
+        "variant": "warning",
+        "title": "Reorder Threshold: 20 units",
+        "description": "Items appear on this list when remaining stock falls to 20 units or fewer. Adjust thresholds per item in Settings."
+      },
+      {
+        "id": "searchControl",
+        "component": "FormControl",
+        "label": "Search Items",
+        "input": "searchInput",
+        "hint": "Filter by item name or SKU"
+      },
+      {
+        "id": "searchInput",
+        "component": "Input",
+        "name": "search",
+        "type": "text",
+        "placeholder": "e.g. Coffee Beans or SKU-1042"
+      },
+      {
+        "id": "inventoryTable",
+        "component": "Table",
+        "columns": ["colItem", "colSku", "colUnits", "colThreshold", "colAction"]
+      },
+      {
+        "id": "colItem",
+        "component": "Col",
+        "label": "Item",
+        "type": "string",
+        "data": ["Arabica Coffee Beans 1kg", "Oat Milk 1L", "Paper Cups 12oz (pack of 50)", "Matcha Powder 500g"]
+      },
+      {
+        "id": "colSku",
+        "component": "Col",
+        "label": "SKU",
+        "type": "string",
+        "data": ["SKU-1042", "SKU-2210", "SKU-3305", "SKU-4471"]
+      },
+      {
+        "id": "colUnits",
+        "component": "Col",
+        "label": "Units Remaining",
+        "type": "number",
+        "data": [12, 8, 18, 5]
+      },
+      {
+        "id": "colThreshold",
+        "component": "Col",
+        "label": "Threshold",
+        "type": "number",
+        "data": [20, 20, 20, 20]
+      },
+      {
+        "id": "colAction",
+        "component": "Col",
+        "label": "Reorder",
+        "type": "action",
+        "data": ["Reorder", "Reorder", "Reorder", "Reorder"]
+      },
+      {
+        "id": "footerNote",
+        "component": "TextContent",
+        "text": "Stock levels last synced 10 minutes ago.",
+        "size": "small"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This screen covers each requirement:
+
+1. **Low items + remaining units** — The table lists each item with its SKU and exact units remaining (e.g., Matcha Powder at 5 units).
+2. **Reorder per item** — Each row has a "Reorder" action button in the last column.
+3. **Warning threshold** — The alert banner states the 20-unit reorder threshold that triggers items appearing here, and each row shows its threshold for comparison.
+4. **Search** — A search field filters items by name or SKU.
+
+Want me to add per-item custom thresholds, a bulk reorder option, or sort by urgency?

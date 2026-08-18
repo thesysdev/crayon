@@ -1,0 +1,137 @@
+
+
+Here's a complete low-inventory warning screen with all four requirements covered:
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "low-inventory-alert",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": {
+        "primaryColor": "#E65100",
+        "agentDisplayName": "Inventory Manager"
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "low-inventory-alert",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "children": ["heading", "threshold-alert", "separator-1", "search-section", "separator-2", "inventory-table", "summary-footer"],
+          "direction": "column",
+          "gap": "m"
+        },
+        {
+          "id": "heading",
+          "component": "Heading",
+          "text": "⚠️ Low Inventory Alert",
+          "level": "h1"
+        },
+        {
+          "id": "threshold-alert",
+          "component": "Alert",
+          "variant": "warning",
+          "title": "Reorder Threshold: 10 units",
+          "description": "Items with 10 or fewer remaining units are flagged below. Adjust threshold in Settings → Inventory Rules."
+        },
+        {
+          "id": "separator-1",
+          "component": "Separator",
+          "orientation": "horizontal"
+        },
+        {
+          "id": "search-section",
+          "component": "FormControl",
+          "label": "Search Items",
+          "input": "search-input",
+          "hint": "Filter by product name or SKU"
+        },
+        {
+          "id": "search-input",
+          "component": "Input",
+          "name": "search",
+          "type": "text",
+          "placeholder": "e.g. Wireless Mouse, SKU-4421…"
+        },
+        {
+          "id": "separator-2",
+          "component": "Separator",
+          "orientation": "horizontal"
+        },
+        {
+          "id": "inventory-table",
+          "component": "Table",
+          "columns": ["col-item", "col-sku", "col-remaining", "col-status", "col-action"]
+        },
+        {
+          "id": "col-item",
+          "component": "Col",
+          "label": "Item Name",
+          "type": "string",
+          "data": ["Wireless Mouse", "USB-C Cable (2m)", "Mechanical Keyboard", "27\" Monitor Stand", "Webcam HD 1080p", "Laptop Sleeve 15\"", "HDMI Adapter", "Desk Lamp LED"]
+        },
+        {
+          "id": "col-sku",
+          "component": "Col",
+          "label": "SKU",
+          "type": "string",
+          "data": ["SKU-4421", "SKU-1187", "SKU-3305", "SKU-2290", "SKU-5512", "SKU-6640", "SKU-7783", "SKU-8819"]
+        },
+        {
+          "id": "col-remaining",
+          "component": "Col",
+          "label": "Remaining Units",
+          "type": "number",
+          "data": [3, 7, 2, 9, 5, 1, 8, 4]
+        },
+        {
+          "id": "col-status",
+          "component": "Col",
+          "label": "Status",
+          "type": "string",
+          "data": ["🔴 Critical", "🟡 Low", "🔴 Critical", "🟡 Low", "🟡 Low", "🔴 Critical", "🟡 Low", "🔴 Critical"]
+        },
+        {
+          "id": "col-action",
+          "component": "Col",
+          "label": "Reorder",
+          "type": "action",
+          "data": ["Reorder", "Reorder", "Reorder", "Reorder", "Reorder", "Reorder", "Reorder", "Reorder"]
+        },
+        {
+          "id": "summary-footer",
+          "component": "Card",
+          "variant": "sunk",
+          "children": ["summary-text"],
+          "direction": "row",
+          "justify": "between",
+          "align": "center"
+        },
+        {
+          "id": "summary-text",
+          "component": "TextContent",
+          "text": "**8 items** below threshold · **3 critical** (≤ 3 units) · Last scanned: 2 minutes ago",
+          "size": "small"
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+This screen covers all four requirements:
+
+| # | Requirement | Implementation |
+|---|---|---|
+| 1 | Items running low + remaining units | Table with **Item Name**, **SKU**, and **Remaining Units** columns |
+| 2 | Way to reorder each item | **Action column** with a "Reorder" button per row |
+| 3 | Threshold that triggers the warning | **Warning alert banner** at the top stating the 10-unit threshold |
+| 4 | Way to search items | **Search input** with placeholder and hint text for filtering |
+
+The view also includes a status indicator (🔴 Critical / 🟡 Low) and a summary footer showing the total count of flagged items and how many are critically low.

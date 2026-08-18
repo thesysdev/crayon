@@ -1,0 +1,41 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["header","summary-alert","controls-card","list-card","queue-card"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Low Inventory Warnings","subtitle":"Restock alerts for items at or below your low-stock threshold"},"children":[]}}
+{"op":"add","path":"/elements/summary-alert","value":{"type":"Alert","props":{"variant":"warning","title":"6 items are running low on stock","description":{"$template":"All items with ${/threshold} or fewer units remaining are listed below, sorted by urgency."}},"children":[]}}
+{"op":"add","path":"/state/threshold","value":"10"}
+{"op":"add","path":"/elements/search-input","value":{"type":"Input","props":{"name":"search","type":"text","placeholder":"Search by name, category, or SKU…","value":{"$bindState":"/searchQuery"}},"children":[]}}
+{"op":"add","path":"/state/searchQuery","value":""}
+{"op":"add","path":"/elements/fc-search","value":{"type":"FormControl","props":{"label":"Search items","input":"search-input","hint":"Type to filter the list below"},"children":[]}}
+{"op":"add","path":"/elements/opt-5","value":{"type":"SelectItem","props":{"value":"5","label":"≤ 5 units"},"children":[]}}
+{"op":"add","path":"/elements/opt-10","value":{"type":"SelectItem","props":{"value":"10","label":"≤ 10 units"},"children":[]}}
+{"op":"add","path":"/elements/opt-15","value":{"type":"SelectItem","props":{"value":"15","label":"≤ 15 units"},"children":[]}}
+{"op":"add","path":"/elements/opt-20","value":{"type":"SelectItem","props":{"value":"20","label":"≤ 20 units"},"children":[]}}
+{"op":"add","path":"/elements/threshold-select","value":{"type":"Select","props":{"name":"threshold","items":["opt-5","opt-10","opt-15","opt-20"],"value":{"$bindState":"/threshold"}},"children":[]}}
+{"op":"add","path":"/elements/fc-threshold","value":{"type":"FormControl","props":{"label":"Warning threshold","input":"threshold-select","hint":"Items at or below this unit count trigger a warning"},"children":[]}}
+{"op":"add","path":"/elements/controls-card","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"start","wrap":true},"children":["fc-search","fc-threshold"]}}
+{"op":"add","path":"/elements/list-header","value":{"type":"CardHeader","props":{"title":"Low-stock items","subtitle":{"$template":"Items with ${/threshold} or fewer units remaining"}},"children":[]}}
+{"op":"add","path":"/elements/search-echo","value":{"type":"TextContent","props":{"text":{"$template":"Showing results for “${/searchQuery}”"},"size":"small"},"visible":{"$state":"/searchQuery"},"children":[]}}
+{"op":"add","path":"/elements/item-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/item-meta","value":{"type":"TextContent","props":{"text":{"$template":"${category} · SKU ${sku}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/item-info","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["item-name","item-meta"]}}
+{"op":"add","path":"/elements/item-units","value":{"type":"Tag","props":{"text":{"$template":"${units} left"},"variant":{"$item":"severity"},"size":"md"},"children":[]}}
+{"op":"add","path":"/elements/reorder-btn","value":{"type":"Button","props":{"label":"Reorder","variant":"secondary","size":"small"},"on":{"press":{"action":"pushState","params":{"statePath":"/reorders","value":{"id":"$id","name":{"$template":"${name}"},"quantity":{"$template":"${reorderQty}"}}}}},"children":[]}}
+{"op":"add","path":"/elements/item-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center","gap":"m","wrap":true},"children":["item-info","item-units","reorder-btn"]}}
+{"op":"add","path":"/elements/items-repeat","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/lowItems","key":"id"},"children":["item-row"]}}
+{"op":"add","path":"/state/lowItems","value":[]}
+{"op":"add","path":"/state/lowItems/0","value":{"id":"itm-1","name":"Paper Towels 2-Roll","category":"Household","sku":"HOME-3417","units":2,"reorderQty":48,"severity":"danger"}}
+{"op":"add","path":"/state/lowItems/1","value":{"id":"itm-2","name":"AA Batteries 8-Pack","category":"Household","sku":"HOME-3301","units":3,"reorderQty":50,"severity":"danger"}}
+{"op":"add","path":"/state/lowItems/2","value":{"id":"itm-3","name":"Organic Whole Milk 1L","category":"Dairy","sku":"DAIRY-1024","units":4,"reorderQty":24,"severity":"danger"}}
+{"op":"add","path":"/state/lowItems/3","value":{"id":"itm-4","name":"Cold Brew Coffee 330ml","category":"Beverages","sku":"BEV-2210","units":6,"reorderQty":36,"severity":"warning"}}
+{"op":"add","path":"/state/lowItems/4","value":{"id":"itm-5","name":"Sourdough Bread Loaf","category":"Bakery","sku":"BAK-1187","units":7,"reorderQty":30,"severity":"warning"}}
+{"op":"add","path":"/state/lowItems/5","value":{"id":"itm-6","name":"Free-Range Eggs (Dozen)","category":"Dairy","sku":"DAIRY-1058","units":9,"reorderQty":40,"severity":"warning"}}
+{"op":"add","path":"/elements/list-card","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["list-header","search-echo","items-repeat"]}}
+{"op":"add","path":"/elements/queue-header","value":{"type":"CardHeader","props":{"title":"Reorder Queue","subtitle":"Purchase orders placed during this session"},"children":[]}}
+{"op":"add","path":"/elements/queue-name","value":{"type":"TextContent","props":{"text":{"$template":"${name}"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/queue-qty","value":{"type":"Tag","props":{"text":{"$template":"${quantity} units"},"variant":"info","size":"sm"},"children":[]}}
+{"op":"add","path":"/elements/queue-remove","value":{"type":"Button","props":{"label":"Remove","variant":"tertiary","size":"extra-small"},"on":{"press":{"action":"removeState","params":{"statePath":"/reorders","index":{"$index":true}}}},"children":[]}}
+{"op":"add","path":"/elements/queue-right","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center"},"children":["queue-qty","queue-remove"]}}
+{"op":"add","path":"/elements/queue-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center","gap":"m"},"children":["queue-name","queue-right"]}}
+{"op":"add","path":"/elements/queue-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/reorders","key":"id"},"children":["queue-row"]}}
+{"op":"add","path":"/state/reorders","value":[]}
+{"op":"add","path":"/elements/queue-card","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["queue-header","queue-list"]}}

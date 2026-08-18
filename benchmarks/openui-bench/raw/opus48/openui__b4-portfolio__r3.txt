@@ -1,0 +1,79 @@
+root = Card([header, summary, quarterPicker, actions, projectsTable, overdueMilestones, budgetChart, utilizationChart, risksTable, upcomingDeadlines, deliveryPace, blockedItems, addPeople, archiveProject, followUps])
+
+header = CardHeader("Portfolio Review", "PMO Q2 2024")
+
+summary = Alert("Portfolio health", "8 active projects — 5 on track, 2 at risk, 1 off track; 3 milestones overdue.", "warning")
+
+quarterPicker = Form("quarter-select", quarterButtons, [quarterField])
+quarterField = FormControl("View quarter", quarterSelect)
+quarterSelect = Select("quarter", [q1, q2, q3, q4], "Select quarter", null, "Q2 2024")
+q1 = SelectItem("q1-2024", "Q1 2024")
+q2 = SelectItem("q2-2024", "Q2 2024")
+q3 = SelectItem("q3-2024", "Q3 2024")
+q4 = SelectItem("q4-2024", "Q4 2024")
+quarterButtons = Buttons([viewQuarterBtn])
+viewQuarterBtn = Button("View quarter", null, "secondary")
+
+actions = Buttons([exportBtn])
+exportBtn = Button("Export review", null, "primary")
+
+projectsTable = Table([projName, projOwner, projDeadline, projHealth])
+projName = Col("Project", ["Apollo CRM", "Orbit Mobile", "Helix Data", "Nova Billing", "Vega Portal"])
+projOwner = Col("Owner", ["S. Okafor", "L. Chen", "M. Patel", "R. Novak", "K. Alvarez"])
+projDeadline = Col("Deadline", ["2024-06-14", "2024-05-30", "2024-07-01", "2024-06-05", "2024-06-28"])
+projHealth = Col("Health", ["On track", "At risk", "On track", "Off track", "On track"])
+
+overdueMilestones = Table([omProject, omMilestone, omDue, omDays])
+omProject = Col("Project", ["Orbit Mobile", "Nova Billing", "Nova Billing"])
+omMilestone = Col("Milestone", ["Beta release", "Payment gateway", "UAT sign-off"])
+omDue = Col("Was due", ["2024-05-10", "2024-04-28", "2024-05-02"])
+omDays = Col("Days late", [12, 24, 20], "number")
+
+budgetChart = BarChart(["Apollo", "Orbit", "Helix", "Nova", "Vega"], [allocSeries, spentSeries], "grouped", "Project", "USD (k)")
+allocSeries = Series("Allocated", [400, 250, 600, 320, 280])
+spentSeries = Series("Spent", [280, 240, 310, 355, 190])
+
+utilizationChart = HorizontalBarChart(["Frontend", "Backend", "Data", "QA", "Design"], [utilSeries], "grouped", "Utilization %", "Team")
+utilSeries = Series("Utilization", [92, 88, 71, 96, 64])
+
+risksTable = Table([riskDesc, riskProject, riskSeverity])
+riskDesc = Col("Risk", ["Vendor API delay", "Key engineer leaving", "Scope creep", "Data migration risk"])
+riskProject = Col("Project", ["Nova Billing", "Orbit Mobile", "Vega Portal", "Helix Data"])
+riskSeverity = Col("Severity", ["High", "High", "Medium", "Medium"])
+
+upcomingDeadlines = ListBlock([d1, d2, d3, d4], "number")
+d1 = ListItem("Orbit Mobile — Beta re-release", "Due 2024-05-30 · L. Chen")
+d2 = ListItem("Nova Billing — UAT sign-off", "Due 2024-06-05 · R. Novak")
+d3 = ListItem("Apollo CRM — Integration test", "Due 2024-06-08 · S. Okafor")
+d4 = ListItem("Vega Portal — Design freeze", "Due 2024-06-11 · K. Alvarez")
+
+deliveryPace = LineChart(["S1", "S2", "S3", "S4", "S5", "S6"], [paceSeries], "natural", "Sprint", "Story points")
+paceSeries = Series("Delivered", [42, 48, 39, 55, 51, 58])
+
+blockedItems = Table([blkItem, blkProject, blkReason])
+blkItem = Col("Item", ["Auth refactor", "Report export", "Schema v2"])
+blkProject = Col("Project", ["Apollo CRM", "Vega Portal", "Helix Data"])
+blkReason = Col("Blocked by", ["Waiting on security review", "Pending vendor fix", "Awaiting infra provisioning"])
+
+addPeople = DialogBlock("Request more people", "Request additional staffing", "Ask for extra headcount for a project", [peopleForm], "secondary")
+peopleForm = Form("request-people", peopleButtons, [rpProject, rpRole, rpCount, rpNotes])
+rpProject = FormControl("Project", rpProjectSelect)
+rpProjectSelect = Select("project", [rpApollo, rpOrbit, rpNova], "Select project")
+rpApollo = SelectItem("apollo", "Apollo CRM")
+rpOrbit = SelectItem("orbit", "Orbit Mobile")
+rpNova = SelectItem("nova", "Nova Billing")
+rpRole = FormControl("Role needed", rpRoleInput)
+rpRoleInput = Input("role", "e.g. Backend Engineer")
+rpCount = FormControl("Headcount", rpCountInput)
+rpCountInput = Input("count", "1", "number")
+rpNotes = FormControl("Justification", rpNotesArea)
+rpNotesArea = TextArea("notes", "Why is this needed?", 3)
+peopleButtons = Buttons([submitPeopleBtn])
+submitPeopleBtn = Button("Submit request", null, "primary")
+
+archiveProject = AlertDialogBlock("Archive completed project", "Archive project", "This will archive the selected finished project and remove it from active review. This cannot be undone.", "Archive", "Cancel", "outline")
+
+followUps = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Show details for the off-track projects")
+fu2 = FollowUpItem("Break down budget overruns by team")
+fu3 = FollowUpItem("Draft a mitigation plan for high-severity risks")

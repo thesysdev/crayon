@@ -1,0 +1,55 @@
+Here's a support lead morning dashboard covering all five items:
+
+<a2ui-json>
+{"version":"v0.9","createSurface":{"surfaceId":"support-morning","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#2563EB","agentDisplayName":"Support Ops"}}}
+</a2ui-json>
+
+<a2ui-json>
+{"version":"v0.9","updateComponents":{"surfaceId":"support-morning","components":[
+{"id":"root","component":"Card","direction":"column","gap":"l","children":["header","statsRow","filterCard","ticketsCard","newTicketDialog"]},
+{"id":"header","component":"CardHeader","title":"Support Morning Briefing","subtitle":"Tuesday, 8:00 AM — queue overview"},
+
+{"id":"statsRow","component":"Card","direction":"row","gap":"m","variant":"clear","children":["openCard","frtCard"]},
+{"id":"openCard","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["openNum","openLabel"],"weight":1},
+{"id":"openNum","component":"TextContent","text":"**23**","size":"large-heavy"},
+{"id":"openLabel","component":"TextContent","text":"Open tickets (6 high priority)","size":"small"},
+{"id":"frtCard","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["frtNum","frtLabel"],"weight":1},
+{"id":"frtNum","component":"TextContent","text":"**14 min**","size":"large-heavy"},
+{"id":"frtLabel","component":"TextContent","text":"Avg. first-response time (target: 15 min)","size":"small"},
+
+{"id":"filterCard","component":"Card","variant":"clear","direction":"row","align":"center","justify":"between","children":["filterLabel","priorityFilter"]},
+{"id":"filterLabel","component":"TextContent","text":"**Narrow the queue:**","size":"default"},
+{"id":"priorityFilter","component":"SwitchGroup","name":"priorityOnly","items":["highOnlySwitch"]},
+{"id":"highOnlySwitch","component":"SwitchItem","name":"highOnly","label":"High priority only","description":"Show just urgent tickets"},
+
+{"id":"ticketsCard","component":"Card","direction":"column","gap":"s","children":["ticketsHeader","ticketsTable"]},
+{"id":"ticketsHeader","component":"CardHeader","title":"5 Most Recent Tickets"},
+{"id":"ticketsTable","component":"Table","columns":["colId","colSubject","colPriority","colAge"]},
+{"id":"colId","component":"Col","label":"Ticket","data":["#4821","#4820","#4819","#4818","#4817"]},
+{"id":"colSubject","component":"Col","label":"Subject","data":["Payment failed at checkout","SSO login loop after update","Export CSV returns empty file","Feature request: dark mode","Password reset email not arriving"]},
+{"id":"colPriority","component":"Col","label":"Priority","data":["🔴 High","🔴 High","🟡 Medium","🟢 Low","🔴 High"]},
+{"id":"colAge","component":"Col","label":"Opened","data":["4 min ago","18 min ago","42 min ago","1 hr ago","2 hr ago"]},
+
+{"id":"newTicketDialog","component":"DialogBlock","triggerLabel":"+ Open New Ticket","title":"Create a new ticket","description":"Log a ticket on behalf of a customer.","triggerVariant":"default","content":["newTicketForm"]},
+{"id":"newTicketForm","component":"Form","name":"newTicket","fields":["fcSubject","fcCustomer","fcPriority"],"buttons":"formButtons"},
+{"id":"fcSubject","component":"FormControl","label":"Subject","input":"inSubject","hint":"Short summary of the issue"},
+{"id":"inSubject","component":"Input","name":"subject","placeholder":"e.g. Cannot access billing page"},
+{"id":"fcCustomer","component":"FormControl","label":"Customer email","input":"inCustomer"},
+{"id":"inCustomer","component":"Input","name":"customer","type":"email","placeholder":"customer@company.com"},
+{"id":"fcPriority","component":"FormControl","label":"Priority","input":"inPriority"},
+{"id":"inPriority","component":"Select","name":"priority","placeholder":"Select priority","items":["piHigh","piMed","piLow"]},
+{"id":"piHigh","component":"SelectItem","value":"high","label":"High"},
+{"id":"piMed","component":"SelectItem","value":"medium","label":"Medium"},
+{"id":"piLow","component":"SelectItem","value":"low","label":"Low"},
+{"id":"formButtons","component":"Buttons","buttons":["btnSubmit","btnCancel"]},
+{"id":"btnSubmit","component":"Button","label":"Create Ticket","variant":"primary"},
+{"id":"btnCancel","component":"Button","label":"Cancel","variant":"tertiary"}
+]}}
+</a2ui-json>
+
+This covers each requirement:
+1. **Open tickets** — "23" stat card (with high-priority count noted)
+2. **Avg first-response time** — "14 min" stat card vs. the 15-min target
+3. **Five most recent tickets** — table with subject, priority (color-coded), and age
+4. **High-priority filter** — "High priority only" toggle switch
+5. **Open a new ticket** — button opening a dialog with a subject/email/priority form

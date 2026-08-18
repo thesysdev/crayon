@@ -1,0 +1,54 @@
+root = Card([header, kpis, sep1, filterForm, sep2, recentOrdersSection, sep3, metricsSection])
+
+header = CardHeader("E-Commerce Operations Desk", "Live order management & store analytics overview")
+
+# 1, 2, 3, 7 - KPI Cards / Table Overview
+kpis = Table([kpiMetric, kpiValue, kpiChange])
+kpiMetric = Col("KPI", ["Orders Placed Today", "Revenue Today", "Average Order Value", "Refund Rate (This Month)"])
+kpiValue = Col("Current Value", ["342", "$28,450.00", "$83.18", "1.8%"])
+kpiChange = Col("Status / Trend", ["+12% vs yesterday", "+18% vs yesterday", "+$4.20 vs avg", "-0.4% vs last month"])
+
+sep1 = Separator()
+
+# 5, 6 - Search and Filter Form
+filterForm = Form("order-filters", filterButtons, [searchField, statusField])
+searchField = FormControl("Search Customer", customerInput, "Filter list by customer name")
+customerInput = Input("customer_search", "Search by customer name...")
+statusField = FormControl("OrderStatus", statusSelect, "Filter list by fulfillment status")
+statusSelect = Select("status_filter", [statusAll, statusPending, statusProcessing, statusFulfilled, statusCancelled], "All Statuses")
+statusAll = SelectItem("all", "All Statuses")
+statusPending = SelectItem("pending", "Pending")
+statusProcessing = SelectItem("processing", "Processing")
+statusFulfilled = SelectItem("fulfilled", "Fulfilled")
+statusCancelled = SelectItem("cancelled", "Cancelled")
+
+filterButtons = Buttons([applyFiltersBtn, resetFiltersBtn])
+applyFiltersBtn = Button("Apply Filters", null, "primary")
+resetFiltersBtn = Button("Reset", null, "tertiary")
+
+sep2 = Separator()
+
+# 4, 9 - Recent Orders & Fulfilled Action
+recentOrdersSection = Card([recentOrdersHeader, recentOrdersTable, actionSection], "sunk", "column", "m")
+recentOrdersHeader = Heading("Recent Orders", "h3")
+recentOrdersTable = Table([orderIdCol, customerCol, totalCol, statusCol])
+orderIdCol = Col("Order ID", ["#ORD-9021", "#ORD-9020", "#ORD-9019", "#ORD-9018", "#ORD-9017"])
+customerCol = Col("Customer", ["Sarah Jenkins", "Michael Chang", "Emma Watson", "David Miller", "Sophia Martinez"])
+totalCol = Col("Total", ["$124.50", "$45.00", "$210.80", "$89.99", "$156.20"])
+statusCol = Col("Status", ["Processing", "Pending", "Fulfilled", "Processing", "Pending"])
+
+actionSection = Card([fulfillForm], "clear", "row", "m", "center")
+fulfillForm = Form("fulfill-order", fulfillButtons, [fulfillOrderField])
+fulfillOrderField = FormControl("Mark Order Fulfilled", fulfillInput, "Enter Order ID to mark as fulfilled")
+fulfillInput = Input("order_id_to_fulfill", "e.g. #ORD-9021")
+fulfillButtons = Buttons([fulfillSubmitBtn])
+fulfillSubmitBtn = Button("Mark Fulfilled", null, "primary")
+
+sep3 = Separator()
+
+# 8 - Order Volume Across Past 4 Weeks
+metricsSection = Card([chartHeader, volumeChart], "clear", "column", "m")
+chartHeader = Heading("Order Volume (Past 4 Weeks)", "h3")
+volumeChart = BarChart(["Week 1", "Week 2", "Week 3", "Week 4"], [ordersSeries, fulfilledSeries], "grouped", "Timeline", "Orders")
+ordersSeries = Series("Total Orders", [1850, 2100, 1980, 2340])
+fulfilledSeries = Series("Fulfilled Orders", [1810, 2050, 1940, 2290])

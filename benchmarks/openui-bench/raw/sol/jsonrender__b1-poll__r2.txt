@@ -1,0 +1,17 @@
+{"op":"add","path":"/root","value":"lunch-poll"}
+{"op":"add","path":"/elements/poll-title","value":{"type":"Heading","props":{"text":"Where should we go for lunch on Friday?","level":"h1"},"children":[]}}
+{"op":"add","path":"/elements/poll-subtitle","value":{"type":"TextContent","props":{"text":"Choose one restaurant and cast your vote.","size":"default"},"children":[]}}
+{"op":"add","path":"/elements/restaurant-radio","value":{"type":"RadioItem","props":{"label":{"$item":"name"},"description":{"$item":"description"},"value":{"$item":"id"}},"children":[]}}
+{"op":"add","path":"/elements/restaurant-options","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/restaurants","key":"id"},"children":["restaurant-radio"]}}
+{"op":"add","path":"/state/restaurants","value":[]}
+{"op":"add","path":"/state/restaurants/0","value":{"id":"olive-grove","name":"Olive Grove Kitchen","description":"Mediterranean bowls, wraps, and fresh salads · $$"}}
+{"op":"add","path":"/state/restaurants/1","value":{"id":"taco-junction","name":"Taco Junction","description":"Street tacos, burritos, and vegetarian plates · $"}}
+{"op":"add","path":"/state/restaurants/2","value":{"id":"sakura-house","name":"Sakura House","description":"Sushi rolls, ramen, and Japanese lunch specials · $$"}}
+{"op":"add","path":"/elements/restaurant-choice","value":{"type":"RadioGroup","props":{"name":"lunchRestaurant","items":["restaurant-options"],"value":{"$bindState":"/selectedRestaurant"},"rules":[{"required":true,"message":"Choose a restaurant before voting."}]},"children":[]}}
+{"op":"add","path":"/state/selectedRestaurant","value":""}
+{"op":"add","path":"/elements/vote-button","value":{"type":"Button","props":{"label":"Cast my vote","variant":"primary","size":"large"},"on":{"press":{"action":"setState","params":{"statePath":"/voteSubmitted","value":true}}},"children":[]}}
+{"op":"add","path":"/elements/vote-actions","value":{"type":"Buttons","props":{"buttons":["vote-button"],"direction":"row"},"children":[]}}
+{"op":"add","path":"/elements/vote-confirmation","value":{"type":"Alert","props":{"title":"Vote recorded","description":"Thanks! Your lunch preference has been submitted.","variant":"success"},"visible":[{"$state":"/voteSubmitted"},{"$state":"/selectedRestaurant","neq":""}],"children":[]}}
+{"op":"add","path":"/state/voteSubmitted","value":false}
+{"op":"add","path":"/elements/poll-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"l","align":"stretch"},"children":["poll-title","poll-subtitle","restaurant-choice","vote-actions","vote-confirmation"]}}
+{"op":"add","path":"/elements/lunch-poll","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l","align":"stretch"},"children":["poll-card"]}}

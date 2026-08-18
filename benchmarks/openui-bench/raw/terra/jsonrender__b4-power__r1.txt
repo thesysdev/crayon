@@ -1,0 +1,125 @@
+{"op":"add","path":"/root","value":"operator-console"}
+{"op":"add","path":"/elements/operator-console","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["console-header","overview-row","generation-section","plants-section","forecast-section","operations-row","alerts-section"]}}
+{"op":"add","path":"/elements/console-header","value":{"type":"Card","props":{"variant":"card","direction":"row","justify":"between","align":"center","gap":"m","wrap":true},"children":["title-block","region-control","curtailment-control"]}}
+{"op":"add","path":"/elements/title-block","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["console-title","console-subtitle","system-status"]}}
+{"op":"add","path":"/elements/console-title","value":{"type":"Heading","props":{"text":"Grid Operations Console","level":"h1"},"children":[]}}
+{"op":"add","path":"/elements/console-subtitle","value":{"type":"TextContent","props":{"text":{"$template":"Live network view • ${/lastUpdated}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/state/lastUpdated","value":"Updated 14:32 UTC"}
+{"op":"add","path":"/elements/system-status","value":{"type":"Badge","props":{"text":{"$state":"/systemStatus"},"variant":"default"},"children":[]}}
+{"op":"add","path":"/state/systemStatus","value":"System stable"}
+{"op":"add","path":"/elements/region-control","value":{"type":"FormControl","props":{"label":"Focus region","hint":"Filters operational attention to the selected control area.","input":"region-select"},"children":[]}}
+{"op":"add","path":"/elements/region-select","value":{"type":"Select","props":{"name":"region","placeholder":"Select a region","items":["region-all","region-north","region-central","region-coastal","region-south"],"value":{"$bindState":"/selectedRegion"},"size":"medium"},"children":[]}}
+{"op":"add","path":"/elements/region-all","value":{"type":"SelectItem","props":{"value":"All regions","label":"All regions"},"children":[]}}
+{"op":"add","path":"/elements/region-north","value":{"type":"SelectItem","props":{"value":"North","label":"North"},"children":[]}}
+{"op":"add","path":"/elements/region-central","value":{"type":"SelectItem","props":{"value":"Central","label":"Central"},"children":[]}}
+{"op":"add","path":"/elements/region-coastal","value":{"type":"SelectItem","props":{"value":"Coastal","label":"Coastal"},"children":[]}}
+{"op":"add","path":"/elements/region-south","value":{"type":"SelectItem","props":{"value":"South","label":"South"},"children":[]}}
+{"op":"add","path":"/state/selectedRegion","value":"All regions"}
+{"op":"add","path":"/elements/curtailment-control","value":{"type":"DialogBlock","props":{"triggerLabel":"Order curtailment","title":"Issue curtailment order","description":"Use only when instructed by the duty controller. This order will be logged and dispatched to participating loads.","triggerVariant":"destructive","content":["curtailment-note","curtailment-form"]},"children":[]}}
+{"op":"add","path":"/elements/curtailment-note","value":{"type":"Alert","props":{"title":"Operational safeguard","description":"Confirm the target region and requested reduction before issuing an order.","variant":"warning"},"children":[]}}
+{"op":"add","path":"/elements/curtailment-form","value":{"type":"Form","props":{"name":"curtailmentOrder","buttons":"curtailment-buttons","fields":["curtailment-region-field","curtailment-mw-field"]},"children":[]}}
+{"op":"add","path":"/elements/curtailment-region-field","value":{"type":"FormControl","props":{"label":"Target region","input":"curtailment-region-select"},"children":[]}}
+{"op":"add","path":"/elements/curtailment-region-select","value":{"type":"Select","props":{"name":"curtailmentTarget","items":["curtailment-north","curtailment-central","curtailment-coastal","curtailment-south"],"value":{"$bindState":"/curtailment/region"}},"children":[]}}
+{"op":"add","path":"/elements/curtailment-north","value":{"type":"SelectItem","props":{"value":"North","label":"North"},"children":[]}}
+{"op":"add","path":"/elements/curtailment-central","value":{"type":"SelectItem","props":{"value":"Central","label":"Central"},"children":[]}}
+{"op":"add","path":"/elements/curtailment-coastal","value":{"type":"SelectItem","props":{"value":"Coastal","label":"Coastal"},"children":[]}}
+{"op":"add","path":"/elements/curtailment-south","value":{"type":"SelectItem","props":{"value":"South","label":"South"},"children":[]}}
+{"op":"add","path":"/state/curtailment/region","value":"Central"}
+{"op":"add","path":"/elements/curtailment-mw-field","value":{"type":"FormControl","props":{"label":"Requested reduction (MW)","input":"curtailment-mw-input","hint":"Enter the verified demand reduction target."},"children":[]}}
+{"op":"add","path":"/elements/curtailment-mw-input","value":{"type":"Input","props":{"name":"curtailmentMW","type":"number","placeholder":"e.g. 150","value":{"$bindState":"/curtailment/mw"}},"children":[]}}
+{"op":"add","path":"/state/curtailment/mw","value":"150"}
+{"op":"add","path":"/elements/curtailment-buttons","value":{"type":"Buttons","props":{"direction":"row","buttons":["confirm-curtailment","cancel-curtailment"]},"children":[]}}
+{"op":"add","path":"/elements/confirm-curtailment","value":{"type":"Button","props":{"label":"Submit order","variant":"primary","type":"destructive"},"on":{"press":{"action":"setState","params":{"statePath":"/curtailment/submitted","value":true}}},"children":[]}}
+{"op":"add","path":"/elements/cancel-curtailment","value":{"type":"Button","props":{"label":"Cancel","variant":"secondary"},"on":{"press":{"action":"setState","params":{"statePath":"/curtailment/submitted","value":false}}},"children":[]}}
+{"op":"add","path":"/state/curtailment/submitted","value":false}
+{"op":"add","path":"/elements/overview-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","wrap":true,"align":"stretch"},"children":["load-card","capacity-card","price-card","emissions-card"]}}
+{"op":"add","path":"/elements/load-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["load-header","load-value","load-detail"]}}
+{"op":"add","path":"/elements/load-header","value":{"type":"CardHeader","props":{"title":"Current network load","subtitle":"Real-time demand"},"children":[]}}
+{"op":"add","path":"/elements/load-value","value":{"type":"Heading","props":{"text":{"$template":"${/metrics/currentLoad} MW"},"level":"h2"},"children":[]}}
+{"op":"add","path":"/state/metrics/currentLoad","value":8420}
+{"op":"add","path":"/elements/load-detail","value":{"type":"TextContent","props":{"text":{"$template":"Net change: +${/metrics/loadChange} MW in the last hour"},"size":"small"},"children":[]}}
+{"op":"add","path":"/state/metrics/loadChange","value":310}
+{"op":"add","path":"/elements/capacity-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["capacity-header","capacity-value","capacity-progress","capacity-detail"]}}
+{"op":"add","path":"/elements/capacity-header","value":{"type":"CardHeader","props":{"title":"Capacity utilization","subtitle":"Available dispatchable capacity"},"children":[]}}
+{"op":"add","path":"/elements/capacity-value","value":{"type":"Heading","props":{"text":{"$template":"${/metrics/capacityUtilization}% utilized"},"level":"h2"},"children":[]}}
+{"op":"add","path":"/state/metrics/capacityUtilization","value":86}
+{"op":"add","path":"/elements/capacity-progress","value":{"type":"Progress","props":{"value":{"$state":"/metrics/capacityUtilization"},"label":"Network capacity"},"children":[]}}
+{"op":"add","path":"/elements/capacity-detail","value":{"type":"TextContent","props":{"text":{"$template":"${/metrics/reserveMargin} MW operating reserve remaining"},"size":"small"},"children":[]}}
+{"op":"add","path":"/state/metrics/reserveMargin","value":1370}
+{"op":"add","path":"/elements/price-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["price-header","price-value","price-detail"]}}
+{"op":"add","path":"/elements/price-header","value":{"type":"CardHeader","props":{"title":"Current energy price","subtitle":"Day-ahead balancing market"},"children":[]}}
+{"op":"add","path":"/elements/price-value","value":{"type":"Heading","props":{"text":{"$template":"$${/metrics/pricePerMWh}/MWh"},"level":"h2"},"children":[]}}
+{"op":"add","path":"/state/metrics/pricePerMWh","value":87.45}
+{"op":"add","path":"/elements/price-detail","value":{"type":"TextContent","props":{"text":{"$template":"${/metrics/priceTrend} versus previous interval"},"size":"small"},"children":[]}}
+{"op":"add","path":"/state/metrics/priceTrend","value":"Up 4.2%"}
+{"op":"add","path":"/elements/emissions-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["emissions-header","emissions-value","emissions-detail"]}}
+{"op":"add","path":"/elements/emissions-header","value":{"type":"CardHeader","props":{"title":"Emissions today","subtitle":"Estimated grid emissions"},"children":[]}}
+{"op":"add","path":"/elements/emissions-value","value":{"type":"Heading","props":{"text":{"$template":"${/metrics/emissionsToday} tCO₂e"},"level":"h2"},"children":[]}}
+{"op":"add","path":"/state/metrics/emissionsToday","value":12840}
+{"op":"add","path":"/elements/emissions-detail","value":{"type":"TextContent","props":{"text":{"$template":"Carbon intensity: ${/metrics/carbonIntensity} gCO₂e/kWh"},"size":"small"},"children":[]}}
+{"op":"add","path":"/state/metrics/carbonIntensity","value":286}
+{"op":"add","path":"/elements/generation-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["generation-header","generation-chart","generation-legend"]}}
+{"op":"add","path":"/elements/generation-header","value":{"type":"CardHeader","props":{"title":"Generation split by source","subtitle":"Current dispatched output"},"children":[]}}
+{"op":"add","path":"/elements/generation-chart","value":{"type":"PieChart","props":{"labels":{"$state":"/generationLabels"},"values":{"$state":"/generationValues"},"variant":"donut","appearance":"circular"},"children":[]}}
+{"op":"add","path":"/state/generationLabels","value":["Gas","Wind","Solar","Nuclear","Hydro","Imports"]}
+{"op":"add","path":"/state/generationValues","value":[3010,2140,1260,980,640,390]}
+{"op":"add","path":"/elements/generation-legend","value":{"type":"TagBlock","props":{"tags":{"$state":"/generationSummary"}},"children":[]}}
+{"op":"add","path":"/state/generationSummary","value":["Gas 35.8%","Wind 25.4%","Solar 15.0%","Nuclear 11.6%","Hydro 7.6%","Imports 4.6%"]}
+{"op":"add","path":"/elements/plants-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["plants-header","plant-list"]}}
+{"op":"add","path":"/elements/plants-header","value":{"type":"CardHeader","props":{"title":"Plant dispatch","subtitle":"Output and operating status"},"children":[]}}
+{"op":"add","path":"/elements/plant-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/plants","key":"id"},"children":["plant-row"]}}
+{"op":"add","path":"/state/plants","value":[]}
+{"op":"add","path":"/state/plants/0","value":{"id":"plant-1","name":"Riverside CCGT","region":"Central","output":"1,240 MW","status":"Online","statusVariant":"success"}}
+{"op":"add","path":"/state/plants/1","value":{"id":"plant-2","name":"North Ridge Wind","region":"North","output":"860 MW","status":"Online","statusVariant":"success"}}
+{"op":"add","path":"/state/plants/2","value":{"id":"plant-3","name":"Seabank Solar","region":"Coastal","output":"610 MW","status":"Curtailment ready","statusVariant":"warning"}}
+{"op":"add","path":"/state/plants/3","value":{"id":"plant-4","name":"Hartwell Nuclear","region":"Central","output":"980 MW","status":"Online","statusVariant":"success"}}
+{"op":"add","path":"/state/plants/4","value":{"id":"plant-5","name":"South Valley Hydro","region":"South","output":"420 MW","status":"Ramp limited","statusVariant":"warning"}}
+{"op":"add","path":"/elements/plant-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center","gap":"m","wrap":true},"children":["plant-name-block","plant-output-block","plant-status"]}}
+{"op":"add","path":"/elements/plant-name-block","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["plant-name","plant-region"]}}
+{"op":"add","path":"/elements/plant-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/plant-region","value":{"type":"TextContent","props":{"text":{"$template":"Region: ${region}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/plant-output-block","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs","align":"end"},"children":["plant-output-label","plant-output"]}}
+{"op":"add","path":"/elements/plant-output-label","value":{"type":"TextContent","props":{"text":"Current output","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/plant-output","value":{"type":"TextContent","props":{"text":{"$item":"output"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/plant-status","value":{"type":"Tag","props":{"text":{"$item":"status"},"variant":{"$item":"statusVariant"},"size":"md"},"children":[]}}
+{"op":"add","path":"/elements/forecast-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["forecast-header","forecast-chart","forecast-note"]}}
+{"op":"add","path":"/elements/forecast-header","value":{"type":"CardHeader","props":{"title":"24-hour demand forecast","subtitle":"Forecast load with expected evening peak"},"children":[]}}
+{"op":"add","path":"/elements/forecast-chart","value":{"type":"LineChart","props":{"labels":{"$state":"/forecast/labels"},"series":["forecast-series"],"variant":"natural","xLabel":"Hour","yLabel":"Demand (MW)"},"children":[]}}
+{"op":"add","path":"/state/forecast/labels","value":["15:00","18:00","21:00","00:00","03:00","06:00","09:00","12:00"]}
+{"op":"add","path":"/elements/forecast-series","value":{"type":"Series","props":{"category":"Forecast demand","values":{"$state":"/forecast/values"}},"children":[]}}
+{"op":"add","path":"/state/forecast/values","value":[8560,9140,8870,7540,6920,7150,8010,8460]}
+{"op":"add","path":"/elements/forecast-note","value":{"type":"Callout","props":{"variant":"info","title":"Peak forecast","description":{"$template":"Expected peak of ${/forecast/peakLoad} MW at ${/forecast/peakTime}; reserve margin projected at ${/forecast/peakReserve} MW."}},"children":[]}}
+{"op":"add","path":"/state/forecast/peakLoad","value":9140}
+{"op":"add","path":"/state/forecast/peakTime","value":"18:00"}
+{"op":"add","path":"/state/forecast/peakReserve","value":650}
+{"op":"add","path":"/elements/operations-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","wrap":true,"align":"stretch"},"children":["outages-card","maintenance-card"]}}
+{"op":"add","path":"/elements/outages-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["outages-header","outage-list"]}}
+{"op":"add","path":"/elements/outages-header","value":{"type":"CardHeader","props":{"title":"Active outages","subtitle":"Affected regions and restoration status"},"children":[]}}
+{"op":"add","path":"/elements/outage-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/outages","key":"id"},"children":["outage-row"]}}
+{"op":"add","path":"/state/outages","value":[]}
+{"op":"add","path":"/state/outages/0","value":{"id":"out-1","title":"Eastmoor 132 kV feeder fault","region":"Coastal","detail":"1,850 customers affected • Crew dispatched","severity":"High","variant":"danger"}}
+{"op":"add","path":"/state/outages/1","value":{"id":"out-2","title":"Northgate transformer derating","region":"North","detail":"120 MW capacity reduction • Inspection in progress","severity":"Medium","variant":"warning"}}
+{"op":"add","path":"/state/outages/2","value":{"id":"out-3","title":"West Basin interconnector constraint","region":"Central","detail":"Imports limited to 390 MW • Reassessment at 16:00","severity":"Medium","variant":"warning"}}
+{"op":"add","path":"/elements/outage-row","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["outage-title-row","outage-detail"]}}
+{"op":"add","path":"/elements/outage-title-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center","gap":"s","wrap":true},"children":["outage-title","outage-severity"]}}
+{"op":"add","path":"/elements/outage-title","value":{"type":"TextContent","props":{"text":{"$template":"${title} — ${region}"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/outage-severity","value":{"type":"Tag","props":{"text":{"$item":"severity"},"variant":{"$item":"variant"},"size":"sm"},"children":[]}}
+{"op":"add","path":"/elements/outage-detail","value":{"type":"TextContent","props":{"text":{"$item":"detail"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/maintenance-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["maintenance-header","maintenance-list"]}}
+{"op":"add","path":"/elements/maintenance-header","value":{"type":"CardHeader","props":{"title":"Planned maintenance this month","subtitle":"Scheduled operational work"},"children":[]}}
+{"op":"add","path":"/elements/maintenance-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/maintenance","key":"id"},"children":["maintenance-row"]}}
+{"op":"add","path":"/state/maintenance","value":[]}
+{"op":"add","path":"/state/maintenance/0","value":{"id":"maint-1","title":"Riverside CCGT turbine inspection","date":"22 Aug","impact":"180 MW unavailable","region":"Central"}}
+{"op":"add","path":"/state/maintenance/1","value":{"id":"maint-2","title":"Seabank Solar inverter upgrade","date":"25 Aug","impact":"240 MW reduced output","region":"Coastal"}}
+{"op":"add","path":"/state/maintenance/2","value":{"id":"maint-3","title":"South Valley Hydro gate service","date":"29 Aug","impact":"90 MW unavailable","region":"South"}}
+{"op":"add","path":"/elements/maintenance-row","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["maintenance-title","maintenance-detail"]}}
+{"op":"add","path":"/elements/maintenance-title","value":{"type":"TextContent","props":{"text":{"$item":"title"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/maintenance-detail","value":{"type":"TextContent","props":{"text":{"$template":"${date} • ${region} • ${impact}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/alerts-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["alerts-header","live-alert-list"]}}
+{"op":"add","path":"/elements/alerts-header","value":{"type":"CardHeader","props":{"title":"Live alerts","subtitle":"Incoming operational events"},"children":[]}}
+{"op":"add","path":"/elements/live-alert-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/alerts","key":"id"},"children":["live-alert"]}}
+{"op":"add","path":"/state/alerts","value":[]}
+{"op":"add","path":"/state/alerts/0","value":{"id":"alert-1","title":"Reserve margin below preferred threshold","description":"Central region reserve margin is 8.1%. Monitor evening ramp requirements.","variant":"warning"}}
+{"op":"add","path":"/state/alerts/1","value":{"id":"alert-2","title":"Wind forecast revised downward","description":"North Ridge expected output reduced by 95 MW for the 18:00–21:00 interval.","variant":"info"}}
+{"op":"add","path":"/state/alerts/2","value":{"id":"alert-3","title":"Feeder restoration crew on site","description":"Eastmoor 132 kV feeder assessment is underway; next update expected in 20 minutes.","variant":"success"}}
+{"op":"add","path":"/elements/live-alert","value":{"type":"Callout","props":{"variant":{"$item":"variant"},"title":{"$item":"title"},"description":{"$item":"description"}},"children":[]}}

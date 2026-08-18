@@ -1,3 +1,11 @@
+import {
+  BlankScreens,
+  CompletionByModel,
+  CostPerPass,
+  RepairFunnel,
+  TokenOverhead,
+} from "@/components/charts/benchmark-charts";
+import { CompletionByDensity } from "@/components/charts/completion-by-density";
 import { FakeVisual } from "@/components/fake-visual";
 import { Mermaid } from "@/components/mermaid";
 import { TweetEmbed } from "@/components/tweet-embed";
@@ -11,6 +19,12 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     ...TabsComponents,
     TweetEmbed,
     FakeVisual,
+    CompletionByModel,
+    CompletionByDensity,
+    BlankScreens,
+    TokenOverhead,
+    CostPerPass,
+    RepairFunnel,
     Mermaid,
     ...components,
   };

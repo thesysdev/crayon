@@ -1,0 +1,189 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","summary","controls","incidents-sec","resources-sec","shelters-sec","routes-sec","weather-sec","rescue-sec","volunteers-sec","donations-sec","aid-sec","comms-sec","roads-sec","hospitals-sec","tasks-sec"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Emergency Response Coordination Center","subtitle":"Regional Operations — Live Status"}}}
+
+{"op":"add","path":"/elements/summary","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"children":["sum-sev","sum-inc","sum-shelter","sum-rescued"]}}
+{"op":"add","path":"/elements/sum-sev","value":{"type":"Callout","props":{"variant":"error","title":"Overall Severity: CRITICAL","description":"3 zones at high severity. Immediate coordination required."}}}
+{"op":"add","path":"/elements/sum-inc","value":{"type":"Callout","props":{"variant":"warning","title":"12 Active Incidents","description":"Across 5 zones"}}}
+{"op":"add","path":"/elements/sum-shelter","value":{"type":"Callout","props":{"variant":"info","title":"Shelters 68% Full","description":"1,360 / 2,000 capacity used"}}}
+{"op":"add","path":"/elements/sum-rescued","value":{"type":"Callout","props":{"variant":"success","title":"482 Rescued","description":"17 casualties reported"}}}
+
+{"op":"add","path":"/elements/controls","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"children":["focus-ctl","broadcast-ctl","request-ctl","sitrep-ctl"]}}
+
+{"op":"add","path":"/elements/focus-ctl","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["focus-h","focus-select","focus-btn"]}}
+{"op":"add","path":"/elements/focus-h","value":{"type":"Heading","props":{"text":"Focus on Zone","level":"h4"}}}
+{"op":"add","path":"/elements/focus-select","value":{"type":"Select","props":{"name":"focusZone","placeholder":"Select zone","value":{"$bindState":"/focusZone"},"items":["fz1","fz2","fz3","fz4","fz5"]}}}
+{"op":"add","path":"/elements/fz1","value":{"type":"SelectItem","props":{"value":"Zone A","label":"Zone A — Riverside"}}}
+{"op":"add","path":"/elements/fz2","value":{"type":"SelectItem","props":{"value":"Zone B","label":"Zone B — Downtown"}}}
+{"op":"add","path":"/elements/fz3","value":{"type":"SelectItem","props":{"value":"Zone C","label":"Zone C — Hillcrest"}}}
+{"op":"add","path":"/elements/fz4","value":{"type":"SelectItem","props":{"value":"Zone D","label":"Zone D — Harbor"}}}
+{"op":"add","path":"/elements/fz5","value":{"type":"SelectItem","props":{"value":"Zone E","label":"Zone E — Eastfield"}}}
+{"op":"add","path":"/elements/focus-btn","value":{"type":"Button","props":{"label":"Focus","variant":"primary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/focusedZone","value":{"$state":"/focusZone"}}}}}}
+{"op":"add","path":"/state/focusZone","value":""}
+{"op":"add","path":"/state/focusedZone","value":""}
+
+{"op":"add","path":"/elements/broadcast-ctl","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["bc-h","bc-msg","bc-btn"]}}
+{"op":"add","path":"/elements/bc-h","value":{"type":"Heading","props":{"text":"Broadcast Update","level":"h4"}}}
+{"op":"add","path":"/elements/bc-msg","value":{"type":"TextArea","props":{"name":"broadcastMsg","placeholder":"Message to all units...","rows":2,"value":{"$bindState":"/broadcastMsg"}}}}
+{"op":"add","path":"/elements/bc-btn","value":{"type":"Button","props":{"label":"Broadcast","variant":"primary","size":"small"},"on":{"press":{"action":"pushState","params":{"statePath":"/broadcasts","value":{"id":"$id","message":{"$state":"/broadcastMsg"}},"clearStatePath":"/broadcastMsg"}}}}}
+{"op":"add","path":"/state/broadcastMsg","value":""}
+{"op":"add","path":"/state/broadcasts","value":[]}
+
+{"op":"add","path":"/elements/request-ctl","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["rq-h","rq-type","rq-qty","rq-btn"]}}
+{"op":"add","path":"/elements/rq-h","value":{"type":"Heading","props":{"text":"Request Resources","level":"h4"}}}
+{"op":"add","path":"/elements/rq-type","value":{"type":"Select","props":{"name":"reqType","placeholder":"Resource type","value":{"$bindState":"/reqType"},"items":["rt1","rt2","rt3","rt4"]}}}
+{"op":"add","path":"/elements/rt1","value":{"type":"SelectItem","props":{"value":"Vehicles","label":"Vehicles"}}}
+{"op":"add","path":"/elements/rt2","value":{"type":"SelectItem","props":{"value":"Personnel","label":"Personnel"}}}
+{"op":"add","path":"/elements/rt3","value":{"type":"SelectItem","props":{"value":"Supplies","label":"Supplies"}}}
+{"op":"add","path":"/elements/rt4","value":{"type":"SelectItem","props":{"value":"Medical","label":"Medical"}}}
+{"op":"add","path":"/elements/rq-qty","value":{"type":"Input","props":{"name":"reqQty","type":"number","placeholder":"Quantity","value":{"$bindState":"/reqQty"}}}}
+{"op":"add","path":"/elements/rq-btn","value":{"type":"Button","props":{"label":"Submit Request","variant":"primary","size":"small"},"on":{"press":{"action":"pushState","params":{"statePath":"/resourceRequests","value":{"id":"$id","type":{"$state":"/reqType"},"quantity":{"$state":"/reqQty"},"status":"Pending"},"clearStatePath":"/reqQty"}}}}}
+{"op":"add","path":"/state/reqType","value":""}
+{"op":"add","path":"/state/reqQty","value":""}
+{"op":"add","path":"/state/resourceRequests","value":[]}
+
+{"op":"add","path":"/elements/sitrep-ctl","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["sr-h","sr-title","sr-body","sr-btn"]}}
+{"op":"add","path":"/elements/sr-h","value":{"type":"Heading","props":{"text":"File Situation Report","level":"h4"}}}
+{"op":"add","path":"/elements/sr-title","value":{"type":"Input","props":{"name":"sitrepTitle","placeholder":"Report title","value":{"$bindState":"/sitrepTitle"}}}}
+{"op":"add","path":"/elements/sr-body","value":{"type":"TextArea","props":{"name":"sitrepBody","placeholder":"Situation details...","rows":2,"value":{"$bindState":"/sitrepBody"}}}}
+{"op":"add","path":"/elements/sr-btn","value":{"type":"Button","props":{"label":"File Report","variant":"secondary","size":"small"},"on":{"press":{"action":"pushState","params":{"statePath":"/sitreps","value":{"id":"$id","title":{"$state":"/sitrepTitle"},"body":{"$state":"/sitrepBody"}},"clearStatePath":"/sitrepBody"}}}}}
+{"op":"add","path":"/state/sitrepTitle","value":""}
+{"op":"add","path":"/state/sitrepBody","value":""}
+{"op":"add","path":"/state/sitreps","value":[]}
+
+{"op":"add","path":"/elements/incidents-sec","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["inc-h","inc-list"]}}
+{"op":"add","path":"/elements/inc-h","value":{"type":"Heading","props":{"text":"1. Active Incidents by Zone","level":"h3"}}}
+{"op":"add","path":"/elements/inc-list","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"repeat":{"statePath":"/incidents","key":"id"},"children":["inc-row"]}}
+{"op":"add","path":"/elements/inc-row","value":{"type":"Card","props":{"direction":"row","gap":"m","justify":"between","align":"center"},"children":["inc-name","inc-zone","inc-sev"]}}
+{"op":"add","path":"/elements/inc-name","value":{"type":"TextContent","props":{"text":{"$item":"name"}}}}
+{"op":"add","path":"/elements/inc-zone","value":{"type":"Badge","props":{"text":{"$item":"zone"},"variant":"outline"}}}
+{"op":"add","path":"/elements/inc-sev","value":{"type":"Tag","props":{"text":{"$item":"severity"},"variant":"danger","size":"sm"}}}
+{"op":"add","path":"/state/incidents","value":[]}
+{"op":"add","path":"/state/incidents/0","value":{"id":"1","name":"Flooding — Main St","zone":"Zone A","severity":"Critical"}}
+{"op":"add","path":"/state/incidents/1","value":{"id":"2","name":"Building Collapse","zone":"Zone B","severity":"High"}}
+{"op":"add","path":"/state/incidents/2","value":{"id":"3","name":"Wildfire Front","zone":"Zone C","severity":"Critical"}}
+{"op":"add","path":"/state/incidents/3","value":{"id":"4","name":"Gas Leak","zone":"Zone D","severity":"Moderate"}}
+{"op":"add","path":"/state/incidents/4","value":{"id":"5","name":"Power Outage","zone":"Zone E","severity":"Low"}}
+
+{"op":"add","path":"/elements/resources-sec","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["res-h","res-row"]}}
+{"op":"add","path":"/elements/res-h","value":{"type":"Heading","props":{"text":"3. Resources Available","level":"h3"}}}
+{"op":"add","path":"/elements/res-row","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"children":["res-veh","res-pers","res-sup"]}}
+{"op":"add","path":"/elements/res-veh","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["res-veh-t","res-veh-v"]}}
+{"op":"add","path":"/elements/res-veh-t","value":{"type":"TextContent","props":{"text":"Vehicles","size":"small-heavy"}}}
+{"op":"add","path":"/elements/res-veh-v","value":{"type":"Heading","props":{"text":"34","level":"h2"}}}
+{"op":"add","path":"/elements/res-pers","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["res-pers-t","res-pers-v"]}}
+{"op":"add","path":"/elements/res-pers-t","value":{"type":"TextContent","props":{"text":"Personnel","size":"small-heavy"}}}
+{"op":"add","path":"/elements/res-pers-v","value":{"type":"Heading","props":{"text":"216","level":"h2"}}}
+{"op":"add","path":"/elements/res-sup","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["res-sup-t","res-sup-v"]}}
+{"op":"add","path":"/elements/res-sup-t","value":{"type":"TextContent","props":{"text":"Supply Units","size":"small-heavy"}}}
+{"op":"add","path":"/elements/res-sup-v","value":{"type":"Heading","props":{"text":"1,850","level":"h2"}}}
+
+{"op":"add","path":"/elements/shelters-sec","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["sh-h","sh-list"]}}
+{"op":"add","path":"/elements/sh-h","value":{"type":"Heading","props":{"text":"4. Shelters — Capacity & Occupancy","level":"h3"}}}
+{"op":"add","path":"/elements/sh-list","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"repeat":{"statePath":"/shelters","key":"id"},"children":["sh-row"]}}
+{"op":"add","path":"/elements/sh-row","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"children":["sh-name","sh-prog"]}}
+{"op":"add","path":"/elements/sh-name","value":{"type":"TextContent","props":{"text":{"$template":"${name} — ${occupancy}/${capacity}"}}}}
+{"op":"add","path":"/elements/sh-prog","value":{"type":"Progress","props":{"value":{"$item":"pct"}}}}
+{"op":"add","path":"/state/shelters","value":[]}
+{"op":"add","path":"/state/shelters/0","value":{"id":"1","name":"Central High School","capacity":600,"occupancy":540,"pct":90}}
+{"op":"add","path":"/state/shelters/1","value":{"id":"2","name":"Community Center","capacity":400,"occupancy":220,"pct":55}}
+{"op":"add","path":"/state/shelters/2","value":{"id":"3","name":"Riverside Gym","capacity":500,"occupancy":410,"pct":82}}
+{"op":"add","path":"/state/shelters/3","value":{"id":"4","name":"Harbor Church","capacity":500,"occupancy":190,"pct":38}}
+
+{"op":"add","path":"/elements/routes-sec","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["rt-h","rt-list"]}}
+{"op":"add","path":"/elements/rt-h","value":{"type":"Heading","props":{"text":"5. Evacuation Routes","level":"h3"}}}
+{"op":"add","path":"/elements/rt-list","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"repeat":{"statePath":"/routes","key":"id"},"children":["rt-row"]}}
+{"op":"add","path":"/elements/rt-row","value":{"type":"Card","props":{"direction":"row","gap":"m","justify":"between","align":"center"},"children":["rt-name","rt-status"]}}
+{"op":"add","path":"/elements/rt-name","value":{"type":"TextContent","props":{"text":{"$item":"name"}}}}
+{"op":"add","path":"/elements/rt-status","value":{"type":"Tag","props":{"text":{"$item":"status"},"size":"sm"}}}
+{"op":"add","path":"/state/routes","value":[]}
+{"op":"add","path":"/state/routes/0","value":{"id":"1","name":"Route 1 — North Bridge","status":"Open"}}
+{"op":"add","path":"/state/routes/1","value":{"id":"2","name":"Route 2 — Coastal Hwy","status":"Congested"}}
+{"op":"add","path":"/state/routes/2","value":{"id":"3","name":"Route 3 — Valley Pass","status":"Blocked"}}
+{"op":"add","path":"/state/routes/3","value":{"id":"4","name":"Route 4 — East Tunnel","status":"Open"}}
+
+{"op":"add","path":"/elements/weather-sec","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["w-h","w-chart"]}}
+{"op":"add","path":"/elements/w-h","value":{"type":"Heading","props":{"text":"6. Weather Forecast — Next 48h","level":"h3"}}}
+{"op":"add","path":"/elements/w-chart","value":{"type":"LineChart","props":{"labels":["0h","6h","12h","18h","24h","30h","36h","42h","48h"],"series":["w-temp","w-rain"],"variant":"natural","xLabel":"Time","yLabel":"Value"}}}
+{"op":"add","path":"/elements/w-temp","value":{"type":"Series","props":{"category":"Temp (°C)","values":[14,12,16,19,15,11,13,17,18]}}}
+{"op":"add","path":"/elements/w-rain","value":{"type":"Series","props":{"category":"Rain (mm)","values":[8,20,35,12,5,28,40,15,6]}}}
+
+{"op":"add","path":"/elements/rescue-sec","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["rsc-h","rsc-row"]}}
+{"op":"add","path":"/elements/rsc-h","value":{"type":"Heading","props":{"text":"7. Rescues & Casualties","level":"h3"}}}
+{"op":"add","path":"/elements/rsc-row","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"children":["rsc-r","rsc-c"]}}
+{"op":"add","path":"/elements/rsc-r","value":{"type":"Alert","props":{"title":"People Rescued","description":"482 individuals brought to safety","variant":"success"}}}
+{"op":"add","path":"/elements/rsc-c","value":{"type":"Alert","props":{"title":"Casualties","description":"17 casualties reported","variant":"destructive"}}}
+
+{"op":"add","path":"/elements/volunteers-sec","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["vol-h","vol-list"]}}
+{"op":"add","path":"/elements/vol-h","value":{"type":"Heading","props":{"text":"8. Volunteers on Duty","level":"h3"}}}
+{"op":"add","path":"/elements/vol-list","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"repeat":{"statePath":"/volunteers","key":"id"},"children":["vol-row"]}}
+{"op":"add","path":"/elements/vol-row","value":{"type":"Card","props":{"direction":"row","gap":"m","justify":"between","align":"center"},"children":["vol-name","vol-assign"]}}
+{"op":"add","path":"/elements/vol-name","value":{"type":"TextContent","props":{"text":{"$item":"name"}}}}
+{"op":"add","path":"/elements/vol-assign","value":{"type":"Badge","props":{"text":{"$item":"assignment"},"variant":"secondary"}}}
+{"op":"add","path":"/state/volunteers","value":[]}
+{"op":"add","path":"/state/volunteers/0","value":{"id":"1","name":"Maria Lopez","assignment":"Shelter Intake"}}
+{"op":"add","path":"/state/volunteers/1","value":{"id":"2","name":"James Chen","assignment":"Zone A Search"}}
+{"op":"add","path":"/state/volunteers/2","value":{"id":"3","name":"Aisha Khan","assignment":"Supply Distribution"}}
+{"op":"add","path":"/state/volunteers/3","value":{"id":"4","name":"Tom Reilly","assignment":"Route 2 Traffic"}}
+
+{"op":"add","path":"/elements/donations-sec","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["don-h","don-chart"]}}
+{"op":"add","path":"/elements/don-h","value":{"type":"Heading","props":{"text":"9. Donations Received","level":"h3"}}}
+{"op":"add","path":"/elements/don-chart","value":{"type":"PieChart","props":{"labels":["Cash","Food","Water","Medical","Clothing"],"values":[125000,8400,12000,5600,4300],"variant":"donut"}}}
+
+{"op":"add","path":"/elements/aid-sec","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["aid-h","aid-list"]}}
+{"op":"add","path":"/elements/aid-h","value":{"type":"Heading","props":{"text":"10. Aid Requests Awaiting Action","level":"h3"}}}
+{"op":"add","path":"/elements/aid-list","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"repeat":{"statePath":"/aidRequests","key":"id"},"children":["aid-row"]}}
+{"op":"add","path":"/elements/aid-row","value":{"type":"Card","props":{"direction":"row","gap":"m","justify":"between","align":"center"},"children":["aid-desc","aid-pri"]}}
+{"op":"add","path":"/elements/aid-desc","value":{"type":"TextContent","props":{"text":{"$template":"${request} — ${zone}"}}}}
+{"op":"add","path":"/elements/aid-pri","value":{"type":"Tag","props":{"text":{"$item":"priority"},"variant":"warning","size":"sm"}}}
+{"op":"add","path":"/state/aidRequests","value":[]}
+{"op":"add","path":"/state/aidRequests/0","value":{"id":"1","request":"Water delivery","zone":"Zone C","priority":"High"}}
+{"op":"add","path":"/state/aidRequests/1","value":{"id":"2","request":"Medical team","zone":"Zone A","priority":"Urgent"}}
+{"op":"add","path":"/state/aidRequests/2","value":{"id":"3","request":"Blankets 200","zone":"Zone D","priority":"Medium"}}
+
+{"op":"add","path":"/elements/comms-sec","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["cm-h","cm-list"]}}
+{"op":"add","path":"/elements/cm-h","value":{"type":"Heading","props":{"text":"11. Communication Channels","level":"h3"}}}
+{"op":"add","path":"/elements/cm-list","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","wrap":true},"repeat":{"statePath":"/comms","key":"id"},"children":["cm-row"]}}
+{"op":"add","path":"/elements/cm-row","value":{"type":"Card","props":{"direction":"row","gap":"s","align":"center"},"children":["cm-name","cm-status"]}}
+{"op":"add","path":"/elements/cm-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"small-heavy"}}}
+{"op":"add","path":"/elements/cm-status","value":{"type":"Tag","props":{"text":{"$item":"status"},"variant":{"$cond":{"$item":"up"},"$then":"success","$else":"danger"},"size":"sm"}}}
+{"op":"add","path":"/state/comms","value":[]}
+{"op":"add","path":"/state/comms/0","value":{"id":"1","name":"Radio Net 1","status":"Up","up":true}}
+{"op":"add","path":"/state/comms/1","value":{"id":"2","name":"Satellite Phone","status":"Up","up":true}}
+{"op":"add","path":"/state/comms/2","value":{"id":"3","name":"Cellular","status":"Down","up":false}}
+{"op":"add","path":"/state/comms/3","value":{"id":"4","name":"Internet","status":"Degraded","up":false}}
+
+{"op":"add","path":"/elements/roads-sec","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["rd-h","rd-list"]}}
+{"op":"add","path":"/elements/rd-h","value":{"type":"Heading","props":{"text":"12. Roads Closed","level":"h3"}}}
+{"op":"add","path":"/elements/rd-list","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"repeat":{"statePath":"/roadsClosed","key":"id"},"children":["rd-row"]}}
+{"op":"add","path":"/elements/rd-row","value":{"type":"Card","props":{"direction":"row","gap":"m","justify":"between","align":"center"},"children":["rd-name","rd-reason"]}}
+{"op":"add","path":"/elements/rd-name","value":{"type":"TextContent","props":{"text":{"$item":"road"}}}}
+{"op":"add","path":"/elements/rd-reason","value":{"type":"Badge","props":{"text":{"$item":"reason"},"variant":"destructive"}}}
+{"op":"add","path":"/state/roadsClosed","value":[]}
+{"op":"add","path":"/state/roadsClosed/0","value":{"id":"1","road":"Main St @ 4th","reason":"Flooding"}}
+{"op":"add","path":"/state/roadsClosed/1","value":{"id":"2","road":"Valley Pass","reason":"Landslide"}}
+{"op":"add","path":"/state/roadsClosed/2","value":{"id":"3","road":"Elm Ave Bridge","reason":"Structural"}}
+
+{"op":"add","path":"/elements/hospitals-sec","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["hp-h","hp-list"]}}
+{"op":"add","path":"/elements/hp-h","value":{"type":"Heading","props":{"text":"13. Nearby Hospitals — Free Beds","level":"h3"}}}
+{"op":"add","path":"/elements/hp-list","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"repeat":{"statePath":"/hospitals","key":"id"},"children":["hp-row"]}}
+{"op":"add","path":"/elements/hp-row","value":{"type":"Card","props":{"direction":"row","gap":"m","justify":"between","align":"center"},"children":["hp-name","hp-beds"]}}
+{"op":"add","path":"/elements/hp-name","value":{"type":"TextContent","props":{"text":{"$item":"name"}}}}
+{"op":"add","path":"/elements/hp-beds","value":{"type":"Tag","props":{"text":{"$template":"${freeBeds} free beds"},"variant":"info","size":"sm"}}}
+{"op":"add","path":"/state/hospitals","value":[]}
+{"op":"add","path":"/state/hospitals/0","value":{"id":"1","name":"St. Mary's General","freeBeds":24}}
+{"op":"add","path":"/state/hospitals/1","value":{"id":"2","name":"Harbor Medical","freeBeds":8}}
+{"op":"add","path":"/state/hospitals/2","value":{"id":"3","name":"Eastfield Clinic","freeBeds":15}}
+{"op":"add","path":"/state/hospitals/3","value":{"id":"4","name":"Hillcrest Trauma","freeBeds":3}}
+
+{"op":"add","path":"/elements/tasks-sec","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["tk-h","tk-list"]}}
+{"op":"add","path":"/elements/tk-h","value":{"type":"Heading","props":{"text":"14. Open Tasks","level":"h3"}}}
+{"op":"add","path":"/elements/tk-list","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"repeat":{"statePath":"/tasks","key":"id"},"children":["tk-row"]}}
+{"op":"add","path":"/elements/tk-row","value":{"type":"Card","props":{"direction":"row","gap":"m","justify":"between","align":"center"},"children":["tk-title","tk-assignee"]}}
+{"op":"add","path":"/elements/tk-title","value":{"type":"TextContent","props":{"text":{"$item":"title"}}}}
+{"op":"add","path":"/elements/tk-assignee","value":{"type":"Avatar","props":{"fallback":{"$item":"initials"},"alt":{"$item":"assignee"}}}}
+{"op":"add","path":"/state/tasks","value":[]}
+{"op":"add","path":"/state/tasks/0","value":{"id":"1","title":"Deploy pumps to Main St","assignee":"D. Ruiz","initials":"DR"}}
+{"op":"add","path":"/state/tasks/1","value":{"id":"2","title":"Coordinate hospital transfers","assignee":"S. Patel","initials":"SP"}}
+{"op":"add","path":"/state/tasks/2","value":{"id":"3","title":"Restock Shelter 1 water","assignee":"L. Nguyen","initials":"LN"}}
+{"op":"add","path":"/state/tasks/3","value":{"id":"4","title":"Clear Valley Pass debris","assignee":"K. Owens","initials":"KO"}}

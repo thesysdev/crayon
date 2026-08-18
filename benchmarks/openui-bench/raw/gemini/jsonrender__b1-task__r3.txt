@@ -1,0 +1,19 @@
+{"op":"add","path":"/root","value":"main-container"}
+{"op":"add","path":"/elements/main-container","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l","align":"stretch"},"children":["header-card","task-card","celebration-callout","actions-card"]}}
+{"op":"add","path":"/elements/header-card","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center"},"children":["header-title","urgency-badge"]}}
+{"op":"add","path":"/elements/header-title","value":{"type":"Heading","props":{"text":"Personal Focus","level":"h1"}}}
+{"op":"add","path":"/elements/urgency-badge","value":{"type":"Tag","props":{"text":"High Priority","variant":"danger","icon":"alert-circle","size":"md"}}}
+{"op":"add","path":"/elements/task-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["task-status-row","task-title","task-description","task-meta-row"]}}
+{"op":"add","path":"/elements/task-status-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center"},"children":["status-badge","deadline-tag"]}}
+{"op":"add","path":"/elements/status-badge","value":{"type":"Badge","props":{"text":{"$cond":{"$state":"/task/completed"},"$then":"Completed","$else":"In Progress"},"variant":{"$cond":{"$state":"/task/completed"},"$then":"default","$else":"secondary"}}}}
+{"op":"add","path":"/elements/deadline-tag","value":{"type":"Tag","props":{"text":{"$template":"Due ${/task/deadline}"},"variant":"warning","size":"sm"}}}
+{"op":"add","path":"/elements/task-title","value":{"type":"Heading","props":{"text":{"$state":"/task/title"},"level":"h2"}}}
+{"op":"add","path":"/elements/task-description","value":{"type":"TextContent","props":{"text":{"$state":"/task/description"},"size":"default"}}}
+{"op":"add","path":"/elements/task-meta-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center","gap":"s"},"children":["project-tag","estimated-time"]}}
+{"op":"add","path":"/elements/project-tag","value":{"type":"Tag","props":{"text":{"$template":"Project: ${/task/project}"},"variant":"info","size":"sm"}}}
+{"op":"add","path":"/elements/estimated-time","value":{"type":"TextContent","props":{"text":{"$template":"Est: ${/task/estimatedTime}"},"size":"small"}}}
+{"op":"add","path":"/state/task","value":{"id":"task-1","title":"Finalize Q3 Product Roadmap & Strategy","description":"Review feedback from executive committee, integrate engineering scope estimates, and complete the final deck for stakeholder sign-off.","deadline":"Today, 5:00 PM","project":"Product Launch 2024","estimatedTime":"45 mins","completed":false}}
+{"op":"add","path":"/elements/celebration-callout","value":{"type":"Callout","props":{"variant":"success","title":"Task Completed!","description":"Great job staying focused! You've tackled your most urgent priority for today."},"visible":{"$state":"/task/completed"}}}
+{"op":"add","path":"/elements/actions-card","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s","align":"stretch"},"children":["toggle-button","undo-button"]}}
+{"op":"add","path":"/elements/toggle-button","value":{"type":"Button","props":{"label":"Mark Task as Done","variant":"primary","size":"large"},"visible":{"$state":"/task/completed","not":true},"on":{"press":{"action":"setState","params":{"statePath":"/task/completed","value":true}}}}}
+{"op":"add","path":"/elements/undo-button","value":{"type":"Button","props":{"label":"Reopen Task","variant":"secondary","size":"medium"},"visible":{"$state":"/task/completed"},"on":{"press":{"action":"setState","params":{"statePath":"/task/completed","value":false}}}}}

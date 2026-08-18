@@ -1,0 +1,596 @@
+
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "emergency-coordination-center",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#DC2626"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "emergency-coordination-center",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "align": "stretch",
+        "children": ["pageHeader", "mainSections"]
+      },
+      {
+        "id": "pageHeader",
+        "component": "CardHeader",
+        "title": "Emergency Response Coordination Center",
+        "subtitle": "Single-screen operational picture for incidents, resources, shelters, and response actions"
+      },
+      {
+        "id": "mainSections",
+        "component": "SectionBlock",
+        "isFoldable": false,
+        "sections": [
+          "sec_incidents",
+          "sec_severity",
+          "sec_resources",
+          "sec_shelters",
+          "sec_routes",
+          "sec_weather",
+          "sec_casualties",
+          "sec_volunteers",
+          "sec_donations",
+          "sec_aid",
+          "sec_comms",
+          "sec_roads",
+          "sec_hospitals",
+          "sec_tasks",
+          "sec_request",
+          "sec_broadcast",
+          "sec_focus",
+          "sec_sitrep"
+        ]
+      },
+      {
+        "id": "sec_incidents",
+        "component": "SectionItem",
+        "value": "sec_incidents",
+        "trigger": "1. Active Incidents by Zone",
+        "content": ["incidents_table"]
+      },
+      {
+        "id": "incidents_table",
+        "component": "Table",
+        "columns": ["incidents_zone", "incidents_active", "incidents_sev", "incidents_status"]
+      },
+      {
+        "id": "incidents_zone",
+        "component": "Col",
+        "label": "Zone",
+        "type": "string",
+        "data": ["North Ridge", "Downtown Core", "Riverbend", "Industrial Park", "Coastal Strip"]
+      },
+      {
+        "id": "incidents_active",
+        "component": "Col",
+        "label": "Active Incidents",
+        "type": "number",
+        "data": [4, 6, 3, 2, 5]
+      },
+      {
+        "id": "incidents_sev",
+        "component": "Col",
+        "label": "Severity",
+        "type": "string",
+        "data": ["Critical", "High", "Moderate", "High", "Critical"]
+      },
+      {
+        "id": "incidents_status",
+        "component": "Col",
+        "label": "Operational Status",
+        "type": "string",
+        "data": [
+          "Response underway",
+          "Evacuation in progress",
+          "Monitoring",
+          "Containment",
+          "Search and rescue"
+        ]
+      },
+      {
+        "id": "sec_severity",
+        "component": "SectionItem",
+        "value": "sec_severity",
+        "trigger": "2. Overall Severity Summary",
+        "content": ["sev_callout", "sev_chart"]
+      },
+      {
+        "id": "sev_callout",
+        "component": "TextCallout",
+        "variant": "warning",
+        "title": "Overall Severity: High",
+        "description": "20 active incidents: 4 critical, 7 high, 5 moderate, and 4 low. Evacuation pressure is highest in Downtown Core and Coastal Strip."
+      },
+      {
+        "id": "sev_chart",
+        "component": "HorizontalBarChart",
+        "labels": ["Critical", "High", "Moderate", "Low"],
+        "series": ["sev_series"],
+        "xLabel": "Incident Count",
+        "yLabel": "Severity Level"
+      },
+      {
+        "id": "sev_series",
+        "component": "Series",
+        "category": "Active incidents",
+        "values": [4, 7, 5, 4]
+      },
+      {
+        "id": "sec_resources",
+        "component": "SectionItem",
+        "value": "sec_resources",
+        "trigger": "3. Vehicles, Personnel, and Supplies Available",
+        "content": ["resources_table"]
+      },
+      {
+        "id": "resources_table",
+        "component": "Table",
+        "columns": [
+          "resources_category",
+          "resources_available",
+          "resources_deployed",
+          "resources_reserve",
+          "resources_unit"
+        ]
+      },
+      {
+        "id": "resources_category",
+        "component": "Col",
+        "label": "Resource",
+        "type": "string",
+        "data": [
+          "Rescue vehicles",
+          "Ambulances",
+          "Fire engines",
+          "Personnel",
+          "Medical supply kits",
+          "Food and water",
+          "Blankets and shelter kits"
+        ]
+      },
+      {
+        "id": "resources_available",
+        "component": "Col",
+        "label": "Available",
+        "type": "number",
+        "data": [12, 9, 7, 248, 340, 5200, 1800]
+      },
+      {
+        "id": "resources_deployed",
+        "component": "Col",
+        "label": "Deployed",
+        "type": "number",
+        "data": [8, 6, 5, 190, 220, 3100, 950]
+      },
+      {
+        "id": "resources_reserve",
+        "component": "Col",
+        "label": "Reserve",
+        "type": "number",
+        "data": [4, 3, 2, 58, 120, 2100, 850]
+      },
+      {
+        "id": "resources_unit",
+        "component": "Col",
+        "label": "Unit",
+        "type": "string",
+        "data": ["vehicles", "vehicles", "vehicles", "people", "kits", "rations", "units"]
+      },
+      {
+        "id": "sec_shelters",
+        "component": "SectionItem",
+        "value": "sec_shelters",
+        "trigger": "4. Shelters: Capacity and Occupancy",
+        "content": ["shelters_table"]
+      },
+      {
+        "id": "shelters_table",
+        "component": "Table",
+        "columns": [
+          "shelters_name",
+          "shelters_capacity",
+          "shelters_occupancy",
+          "shelters_available",
+          "shelters_status"
+        ]
+      },
+      {
+        "id": "shelters_name",
+        "component": "Col",
+        "label": "Shelter",
+        "type": "string",
+        "data": [
+          "Lincoln High Gym",
+          "Eastside Community Center",
+          "Riverside Church Hall",
+          "Fairgrounds Pavilion",
+          "Harbor Youth Center"
+        ]
+      },
+      {
+        "id": "shelters_capacity",
+        "component": "Col",
+        "label": "Capacity",
+        "type": "number",
+        "data": [400, 250, 150, 600, 120]
+      },
+      {
+        "id": "shelters_occupancy",
+        "component": "Col",
+        "label": "Occupancy",
+        "type": "number",
+        "data": [312, 219, 141, 284, 117]
+      },
+      {
+        "id": "shelters_available",
+        "component": "Col",
+        "label": "Available Spaces",
+        "type": "number",
+        "data": [88, 31, 9, 316, 3]
+      },
+      {
+        "id": "shelters_status",
+        "component": "Col",
+        "label": "Status",
+        "type": "string",
+        "data": ["Open", "Open", "Near capacity", "Open", "Near capacity"]
+      },
+      {
+        "id": "sec_routes",
+        "component": "SectionItem",
+        "value": "sec_routes",
+        "trigger": "5. Evacuation Route Status",
+        "content": ["routes_table"]
+      },
+      {
+        "id": "routes_table",
+        "component": "Table",
+        "columns": [
+          "routes_name",
+          "routes_status",
+          "routes_capacity",
+          "routes_assessment",
+          "routes_notes"
+        ]
+      },
+      {
+        "id": "routes_name",
+        "component": "Col",
+        "label": "Route",
+        "type": "string",
+        "data": ["Route A North", "Route B Bridge", "Route C Coastal", "Route D Industrial"]
+      },
+      {
+        "id": "routes_status",
+        "component": "Col",
+        "label": "Status",
+        "type": "string",
+        "data": ["Open", "Congested", "Closed", "Open"]
+      },
+      {
+        "id": "routes_capacity",
+        "component": "Col",
+        "label": "Throughput Capacity",
+        "type": "string",
+        "data": ["High", "Medium", "None", "Medium"]
+      },
+      {
+        "id": "routes_assessment",
+        "component": "Col",
+        "label": "Last Assessment",
+        "type": "string",
+        "data": ["02:15", "02:05", "01:40", "02:00"]
+      },
+      {
+        "id": "routes_notes",
+        "component": "Col",
+        "label": "Notes",
+        "type": "string",
+        "data": [
+          "Primary north corridor",
+          "Bridge inspection ongoing",
+          "Flooded, alternate route required",
+          "Truck priority for supplies"
+        ]
+      },
+      {
+        "id": "sec_weather",
+        "component": "SectionItem",
+        "value": "sec_weather",
+        "trigger": "6. 48-Hour Weather Forecast",
+        "content": ["weather_table"]
+      },
+      {
+        "id": "weather_table",
+        "component": "Table",
+        "columns": [
+          "weather_period",
+          "weather_conditions",
+          "weather_temp",
+          "weather_wind",
+          "weather_precip",
+          "weather_impact"
+        ]
+      },
+      {
+        "id": "weather_period",
+        "component": "Col",
+        "label": "Period",
+        "type": "string",
+        "data": [
+          "00-06h",
+          "06-12h",
+          "12-18h",
+          "18-24h",
+          "24-30h",
+          "30-36h",
+          "36-42h",
+          "42-48h"
+        ]
+      },
+      {
+        "id": "weather_conditions",
+        "component": "Col",
+        "label": "Forecast",
+        "type": "string",
+        "data": [
+          "Heavy rain",
+          "Thunderstorms",
+          "Rain showers",
+          "Cloudy",
+          "Intermittent rain",
+          "Heavy rain",
+          "Thunderstorms",
+          "Gradual clearing"
+        ]
+      },
+      {
+        "id": "weather_temp",
+        "component": "Col",
+        "label": "Temp",
+        "type": "string",
+        "data": ["18 C", "19 C", "20 C", "17 C", "18 C", "19 C", "20 C", "21 C"]
+      },
+      {
+        "id": "weather_wind",
+        "component": "Col",
+        "label": "Wind",
+        "type": "string",
+        "data": [
+          "35 km/h",
+          "40 km/h",
+          "30 km/h",
+          "25 km/h",
+          "28 km/h",
+          "38 km/h",
+          "42 km/h",
+          "22 km/h"
+        ]
+      },
+      {
+        "id": "weather_precip",
+        "component": "Col",
+        "label": "Precip Chance",
+        "type": "string",
+        "data": ["80%", "75%", "55%", "30%", "45%", "70%", "80%", "25%"]
+      },
+      {
+        "id": "weather_impact",
+        "component": "Col",
+        "label": "Operational Impact",
+        "type": "string",
+        "data": [
+          "Flash flood risk",
+          "Evacuation delays",
+          "Slippery roads",
+          "Improved access",
+          "Localized flooding",
+          "Route closures possible",
+          "Outdoor operations limited",
+          "Recovery window"
+        ]
+      },
+      {
+        "id": "sec_casualties",
+        "component": "SectionItem",
+        "value": "sec_casualties",
+        "trigger": "7. People Rescued and Casualties",
+        "content": ["casualties_table"]
+      },
+      {
+        "id": "casualties_table",
+        "component": "Table",
+        "columns": ["casualties_metric", "casualties_count", "casualties_change", "casualties_notes"]
+      },
+      {
+        "id": "casualties_metric",
+        "component": "Col",
+        "label": "Metric",
+        "type": "string",
+        "data": ["People rescued", "Fatalities", "Injured", "Missing"]
+      },
+      {
+        "id": "casualties_count",
+        "component": "Col",
+        "label": "Total So Far",
+        "type": "number",
+        "data": [312, 9, 143, 26]
+      },
+      {
+        "id": "casualties_change",
+        "component": "Col",
+        "label": "Change Last 6h",
+        "type": "string",
+        "data": ["+38", "+2", "+17", "-4"]
+      },
+      {
+        "id": "casualties_notes",
+        "component": "Col",
+        "label": "Notes",
+        "type": "string",
+        "data": [
+          "Live rescue operations",
+          "Confirmed by medical examiner",
+          "Transported to hospitals",
+          "Search and rescue active"
+        ]
+      },
+      {
+        "id": "sec_volunteers",
+        "component": "SectionItem",
+        "value": "sec_volunteers",
+        "trigger": "8. Volunteers on Duty and Assignments",
+        "content": ["volunteers_table"]
+      },
+      {
+        "id": "volunteers_table",
+        "component": "Table",
+        "columns": [
+          "volunteers_name",
+          "volunteers_role",
+          "volunteers_assignment",
+          "volunteers_shift",
+          "volunteers_status"
+        ]
+      },
+      {
+        "id": "volunteers_name",
+        "component": "Col",
+        "label": "Volunteer",
+        "type": "string",
+        "data": ["Maria Lopez", "Samir Patel", "Chen Wei", "Ava Johnson", "Diego Fernandez"]
+      },
+      {
+        "id": "volunteers_role",
+        "component": "Col",
+        "label": "Role",
+        "type": "string",
+        "data": [
+          "Medical Lead",
+          "Logistics Coordinator",
+          "Search and Rescue Zone Lead",
+          "Registration Officer",
+          "Communications Operator"
+        ]
+      },
+      {
+        "id": "volunteers_assignment",
+        "component": "Col",
+        "label": "Assignment",
+        "type": "string",
+        "data": [
+          "North Ridge Shelter",
+          "Supply Depot",
+          "Coastal Strip",
+          "Eastside Shelter",
+          "Coordination Center"
+        ]
+      },
+      {
+        "id": "volunteers_shift",
+        "component": "Col",
+        "label": "Shift",
+        "type": "string",
+        "data": ["06:00-14:00", "14:00-22:00", "22:00-06:00", "06:00-14:00", "14:00-22:00"]
+      },
+      {
+        "id": "volunteers_status",
+        "component": "Col",
+        "label": "Status",
+        "type": "string",
+        "data": ["On duty", "On duty", "On duty", "On duty", "On duty"]
+      },
+      {
+        "id": "sec_donations",
+        "component": "SectionItem",
+        "value": "sec_donations",
+        "trigger": "9. Donations Received",
+        "content": ["donations_table"]
+      },
+      {
+        "id": "donations_table",
+        "component": "Table",
+        "columns": [
+          "donations_donor",
+          "donations_type",
+          "donations_amount",
+          "donations_received",
+          "donations_status"
+        ]
+      },
+      {
+        "id": "donations_donor",
+        "component": "Col",
+        "label": "Donor",
+        "type": "string",
+        "data": ["Red Cross", "Harbor Foods", "City Foundation", "Northside Church", "Tech Relief"]
+      },
+      {
+        "id": "donations_type",
+        "component": "Col",
+        "label": "Donation Type",
+        "type": "string",
+        "data": [
+          "Medical supplies",
+          "Food and water",
+          "Cash grant",
+          "Clothing",
+          "Communications equipment"
+        ]
+      },
+      {
+        "id": "donations_amount",
+        "component": "Col",
+        "label": "Value",
+        "type": "number",
+        "data": [25000, 18000, 50000, 5000, 12000]
+      },
+      {
+        "id": "donations_received",
+        "component": "Col",
+        "label": "Received At",
+        "type": "string",
+        "data": ["08:30", "09:15", "09:40", "10:05", "10:30"]
+      },
+      {
+        "id": "donations_status",
+        "component": "Col",
+        "label": "Status",
+        "type": "string",
+        "data": ["Received", "Received", "Processing", "Sorting", "Received"]
+      },
+      {
+        "id": "sec_aid",
+        "component": "SectionItem",
+        "value": "sec_aid",
+        "trigger": "10. Aid Requests Awaiting Action",
+        "content": ["aid_table"]
+      },
+      {
+        "id": "aid_table",
+        "component": "Table",
+        "columns": ["aid_request", "aid_zone", "aid_priority", "aid_requested", "aid_status"]
+      },
+      {
+        "id": "aid_request",
+        "component": "Col",
+        "label": "Request",
+        "type": "string",
+        "data":

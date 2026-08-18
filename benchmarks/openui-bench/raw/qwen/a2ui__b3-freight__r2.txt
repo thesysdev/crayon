@@ -1,0 +1,94 @@
+
+
+Here's a single-screen logistics coordinator board covering all nine items — live transit table, delayed-shipment alert, KPIs, carrier split, weekly volume trend, route search, shipment flagging, and a refresh timestamp.
+
+<a2ui-json>
+{"version":"v0.9","createSurface":{"surfaceId":"logistics-coordinator-board","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#2563EB","agentDisplayName":"Dispatch Ops"}}}
+</a2ui-json>
+
+<a2ui-json>
+{"version":"v0.9","updateComponents":{"surfaceId":"logistics-coordinator-board","components":[
+{"id":"root","component":"Card","variant":"card","direction":"column","gap":"l","align":"stretch","children":["header-card","delayed-alert","kpi-row","controls-row","shipments-card","charts-row"]},
+
+{"id":"header-card","component":"Card","variant":"clear","direction":"row","justify":"between","align":"center","wrap":true,"gap":"m","children":["header-info","refresh-box"]},
+{"id":"header-info","component":"CardHeader","title":"Logistics Coordinator Board","subtitle":"In-transit operations · live network snapshot"},
+{"id":"refresh-box","component":"Card","variant":"sunk","direction":"column","gap":"xs","align":"end","children":["refresh-title","refresh-time","refresh-btn"]},
+{"id":"refresh-title","component":"TextContent","text":"LAST REFRESHED","size":"small"},
+{"id":"refresh-time","component":"TextContent","text":"Mon, Jun 9 · 08:15 UTC","size":"small-heavy"},
+{"id":"refresh-btn","component":"Button","label":"Refresh now","variant":"secondary","size":"small"},
+
+{"id":"delayed-alert","component":"Alert","variant":"warning","title":"3 shipments delayed — action needed","description":"SHP-1042 Chicago → Atlanta (+18h · weather hold) · SHP-1057 Miami → Houston (+9h · customs) · SHP-1063 Savannah → Baltimore (+26h · port congestion)"},
+
+{"id":"kpi-row","component":"Card","variant":"clear","direction":"row","gap":"m","align":"stretch","wrap":true,"children":["kpi-ontime","kpi-cost","kpi-transit"]},
+{"id":"kpi-ontime","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["kpi-ontime-label","kpi-ontime-value","kpi-ontime-progress"]},
+{"id":"kpi-ontime-label","component":"TextContent","text":"On-time rate · this month (Jun MTD)","size":"small"},
+{"id":"kpi-ontime-value","component":"TextContent","text":"92.6%","size":"large-heavy"},
+{"id":"kpi-ontime-progress","component":"Progress","value":92.6,"label":"Target: 90%"},
+{"id":"kpi-cost","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["kpi-cost-label","kpi-cost-value","kpi-cost-delta"]},
+{"id":"kpi-cost-label","component":"TextContent","text":"Average cost per shipment","size":"small"},
+{"id":"kpi-cost-value","component":"TextContent","text":"$1,284","size":"large-heavy"},
+{"id":"kpi-cost-delta","component":"TextContent","text":"▲ $23 vs. May average","size":"small"},
+{"id":"kpi-transit","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["kpi-transit-label","kpi-transit-value","kpi-transit-note"]},
+{"id":"kpi-transit-label","component":"TextContent","text":"In transit now","size":"small"},
+{"id":"kpi-transit-value","component":"TextContent","text":"48","size":"large-heavy"},
+{"id":"kpi-transit-note","component":"TextContent","text":"3 delayed · 4 active carriers","size":"small"},
+
+{"id":"controls-row","component":"Card","variant":"clear","direction":"row","gap":"m","align":"stretch","wrap":true,"children":["route-form","flag-form"]},
+{"id":"route-form","component":"Form","name":"route-search","fields":["route-fc"],"buttons":"route-btns"},
+{"id":"route-fc","component":"FormControl","label":"Search by route","input":"route-input","hint":"Try \"Chicago → Atlanta\" for a lane-exact match, or a single city name."},
+{"id":"route-input","component":"Input","name":"route","type":"text","placeholder":"Origin → Destination or city name"},
+{"id":"route-btns","component":"Buttons","direction":"row","buttons":["route-search-btn","route-clear-btn"]},
+{"id":"route-search-btn","component":"Button","label":"Search","variant":"primary"},
+{"id":"route-clear-btn","component":"Button","label":"Clear","variant":"tertiary"},
+
+{"id":"flag-form","component":"Form","name":"flag-shipment","fields":["flag-select-fc","flag-reason-fc"],"buttons":"flag-btns"},
+{"id":"flag-select-fc","component":"FormControl","label":"Flag a shipment","input":"flag-select","hint":"Flagged shipments go to the shift-lead review queue."},
+{"id":"flag-select","component":"Select","name":"shipment","placeholder":"Select a shipment","size":"medium","items":["sel-1","sel-2","sel-3","sel-4","sel-5","sel-6","sel-7","sel-8"]},
+{"id":"sel-1","component":"SelectItem","value":"SHP-1042","label":"SHP-1042 · Chicago → Atlanta"},
+{"id":"sel-2","component":"SelectItem","value":"SHP-1043","label":"SHP-1043 · Los Angeles → Seattle"},
+{"id":"sel-3","component":"SelectItem","value":"SHP-1047","label":"SHP-1047 · Dallas → Denver"},
+{"id":"sel-4","component":"SelectItem","value":"SHP-1051","label":"SHP-1051 · Newark → Boston"},
+{"id":"sel-5","component":"SelectItem","value":"SHP-1057","label":"SHP-1057 · Miami → Houston"},
+{"id":"sel-6","component":"SelectItem","value":"SHP-1060","label":"SHP-1060 · Portland → Phoenix"},
+{"id":"sel-7","component":"SelectItem","value":"SHP-1063","label":"SHP-1063 · Savannah → Baltimore"},
+{"id":"sel-8","component":"SelectItem","value":"SHP-1071","label":"SHP-1071 · Memphis → Nashville"},
+{"id":"flag-reason-fc","component":"FormControl","label":"Flag reason (optional)","input":"flag-reason"},
+{"id":"flag-reason","component":"TextArea","name":"reason","rows":2,"placeholder":"e.g., customer escalation, damage report, temperature excursion"},
+{"id":"flag-btns","component":"Buttons","direction":"row","buttons":["flag-submit-btn"]},
+{"id":"flag-submit-btn","component":"Button","label":"Flag shipment","variant":"primary"},
+
+{"id":"shipments-card","component":"Card","direction":"column","gap":"m","children":["shipments-header","shipments-table"]},
+{"id":"shipments-header","component":"CardHeader","title":"Shipments in transit","subtitle":"Showing 8 of 48 active shipments — use Route Search to narrow down"},
+{"id":"shipments-table","component":"Table","columns":["col-shipment","col-origin","col-destination","col-eta","col-status","col-flag"]},
+{"id":"col-shipment","component":"Col","label":"Shipment","type":"string","data":["SHP-1042","SHP-1043","SHP-1047","SHP-1051","SHP-1057","SHP-1060","SHP-1063","SHP-1071"]},
+{"id":"col-origin","component":"Col","label":"Origin","type":"string","data":["Chicago","Los Angeles","Dallas","Newark","Miami","Portland","Savannah","Memphis"]},
+{"id":"col-destination","component":"Col","label":"Destination","type":"string","data":["Atlanta","Seattle","Denver","Boston","Houston","Phoenix","Baltimore","Nashville"]},
+{"id":"col-eta","component":"Col","label":"ETA","type":"string","data":["Jun 9, 19:00","Jun 10, 09:30","Jun 9, 18:45","Jun 10, 07:15","Jun 11, 11:00","Jun 12, 20:30","Jun 11, 06:00","Jun 9, 15:20"]},
+{"id":"col-status","component":"Col","label":"Status","type":"string","data":["Delayed · weather (+18h)","In transit","In transit","At hub · Columbus","Delayed · customs (+9h)","In transit","Delayed · port congestion (+26h)","Out for delivery"]},
+{"id":"col-flag","component":"Col","label":"Flag","type":"action","data":["Flagged","Flag","Flag","Flag","Flag","Flag","Flag","Flag"]},
+
+{"id":"charts-row","component":"Card","variant":"clear","direction":"row","gap":"m","align":"stretch","wrap":true,"children":["carrier-card","volume-card"]},
+{"id":"carrier-card","component":"Card","direction":"column","gap":"m","children":["carrier-header","carrier-chart"]},
+{"id":"carrier-header","component":"CardHeader","title":"Volume split by carrier","subtitle":"Rolling 8 weeks · 412 shipments"},
+{"id":"carrier-chart","component":"PieChart","variant":"donut","labels":["FastLine Express","TransCon Freight","RoadRunner LTL","BluePeak Air"],"values":[164,118,76,54]},
+{"id":"volume-card","component":"Card","direction":"column","gap":"m","children":["volume-header","volume-chart","volume-note"]},
+{"id":"volume-header","component":"CardHeader","title":"Weekly volume · past 2 months","subtitle":"Shipments tendered per week"},
+{"id":"volume-chart","component":"BarChart","xLabel":"Week starting","yLabel":"Shipments","labels":["Apr 14","Apr 21","Apr 28","May 5","May 12","May 19","May 26","Jun 2"],"series":["vol-series"]},
+{"id":"vol-series","component":"Series","category":"Shipments","values":[46,52,49,58,61,54,63,29]},
+{"id":"volume-note","component":"TextContent","text":"Jun 2 week is partial (refreshed Jun 9)." size":"small"}
+]}}
+</a2ui-json>
+
+Everything on the checklist is covered:
+
+1. **In-transit shipments** — table with origin, destination, ETA, and status per shipment
+2. **Delayed call-out** — warning alert banner listing the 3 delayed shipments with causes and delay durations (also marked in the Status column)
+3. **On-time percentage** — 92.6% this month KPI with target progress bar
+4. **Volume by carrier** — donut chart across the four carriers
+5. **Route search** — search form supporting "Origin → Destination" or single city
+6. **Average cost per shipment** — $1,284 KPI with month-over-month delta
+7. **Weekly volume, past two months** — 8-week bar chart (partial current week noted)
+8. **Flag a shipment** — dedicated flagging form (shipment picker + reason), plus inline Flag actions in the table
+9. **Last refreshed** — timestamp box in the header ("Mon, Jun 9 · 08:15 UTC") with a Refresh button
+
+Want me to wire the search Refresh buttons to specific behavior, or add filters like carrier or status buckets?

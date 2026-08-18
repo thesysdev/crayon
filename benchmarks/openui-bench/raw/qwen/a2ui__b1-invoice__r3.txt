@@ -1,0 +1,166 @@
+
+
+Here's a single-screen freelancer invoice view covering all three requirements — amount due with currency, due date, and a prominent Pay Now action:
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "invoice-view",
+      "catalogId": "thesys.dev:c1-openui",
+      "sendDataModel": false,
+      "theme": {
+        "primaryColor": "#0F766E",
+        "agentDisplayName": "Freelance Billing"
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "invoice-view",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "direction": "column",
+          "gap": "m",
+          "align": "stretch",
+          "children": ["header", "amountCard", "dueRow", "itemsTable", "separator", "actionButtons", "footerNote"]
+        },
+        {
+          "id": "header",
+          "component": "CardHeader",
+          "title": "Invoice #INV-2025-017",
+          "subtitle": "Issued to Aurora Design Co. · Issued Apr 15, 2025"
+        },
+        {
+          "id": "amountCard",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "children": ["amountLabel", "amountRow"]
+        },
+        {
+          "id": "amountLabel",
+          "component": "TextContent",
+          "text": "Amount due",
+          "size": "small"
+        },
+        {
+          "id": "amountRow",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "s",
+          "align": "baseline",
+          "children": ["amountValue", "currencyTag"]
+        },
+        {
+          "id": "amountValue",
+          "component": "TextContent",
+          "text": "$2,450.00",
+          "size": "large-heavy"
+        },
+        {
+          "id": "currencyTag",
+          "component": "Tag",
+          "text": "USD",
+          "variant": "neutral",
+          "size": "md"
+        },
+        {
+          "id": "dueRow",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "justify": "between",
+          "align": "center",
+          "children": ["dueDateText", "statusBadge"]
+        },
+        {
+          "id": "dueDateText",
+          "component": "TextContent",
+          "text": "**Due date:** May 15, 2025 · in 12 days"
+        },
+        {
+          "id": "statusBadge",
+          "component": "Badge",
+          "text": "Unpaid",
+          "variant": "secondary"
+        },
+        {
+          "id": "itemsTable",
+          "component": "Table",
+          "columns": ["colDesc", "colHours", "colAmount"]
+        },
+        {
+          "id": "colDesc",
+          "component": "Col",
+          "label": "Description",
+          "data": ["Brand identity design", "Landing page UI kit", "Rounds of revisions (×2)"]
+        },
+        {
+          "id": "colHours",
+          "component": "Col",
+          "label": "Hours",
+          "type": "number",
+          "data": [18, 12, 5]
+        },
+        {
+          "id": "colAmount",
+          "component": "Col",
+          "label": "Amount",
+          "data": ["$1,440.00", "$860.00", "$150.00"]
+        },
+        {
+          "id": "separator",
+          "component": "Separator",
+          "orientation": "horizontal",
+          "decorative": true
+        },
+        {
+          "id": "actionButtons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": ["payNowBtn", "downloadBtn"]
+        },
+        {
+          "id": "payNowBtn",
+          "component": "Button",
+          "label": "Pay now · $2,450.00",
+          "variant": "primary",
+          "size": "large",
+          "action": [{ "type": "pay_invoice", "invoiceId": "INV-2025-017", "amount": 2450.0, "currency": "USD" }],
+          "accessibility": {
+            "label": "Pay invoice now",
+            "description": "Pays 2,450.00 US dollars toward invoice INV-2025-017"
+          }
+        },
+        {
+          "id": "downloadBtn",
+          "component": "Button",
+          "label": "Download PDF",
+          "variant": "secondary",
+          "action": [{ "type": "download_invoice", "invoiceId": "INV-2025-017" }]
+        },
+        {
+          "id": "footerNote",
+          "component": "TextContent",
+          "text": "Secure payment accepted by card or bank transfer (ACH). A 1.5% late fee applies after the due date. Questions? Reply to hello@yourstudio.co",
+          "size": "small"
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+**How it covers each requirement:**
+1. **Amount due + currency** — a recessed highlight card shows **$2,450.00** with a **USD** tag right below the header.
+2. **Due date** — shown as **May 15, 2025** with a countdown hint and an "Unpaid" status badge.
+3. **Way to pay now** — a large primary **"Pay now"** button (with an optional secondary "Download PDF" and payment terms underneath).
+
+Want me to adjust the amounts, add partial payment history, or include payment method selection (card vs. bank transfer)?

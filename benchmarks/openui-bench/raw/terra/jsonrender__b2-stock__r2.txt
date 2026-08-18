@@ -1,0 +1,33 @@
+{"op":"add","path":"/root","value":"inventory-warning-screen"}
+{"op":"add","path":"/elements/inventory-warning-screen","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xl"},"children":["inventory-header","inventory-alert","search-control","threshold-card","low-stock-section"]}}
+{"op":"add","path":"/elements/inventory-header","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["inventory-title","inventory-subtitle"]}}
+{"op":"add","path":"/elements/inventory-title","value":{"type":"Heading","props":{"text":"Low inventory","level":"h1"},"children":[]}}
+{"op":"add","path":"/elements/inventory-subtitle","value":{"type":"TextContent","props":{"text":"Review items that need replenishment and place reorder requests before stock runs out.","size":"default"},"children":[]}}
+{"op":"add","path":"/elements/inventory-alert","value":{"type":"Alert","props":{"title":"Reorder attention needed","description":{"$template":"${/lowStockCount} items are at or below their low-inventory threshold."},"variant":"warning"},"children":[]}}
+{"op":"add","path":"/state/lowStockCount","value":4}
+{"op":"add","path":"/elements/search-control","value":{"type":"FormControl","props":{"label":"Search low-inventory items","hint":"Search by product name, SKU, or category.","input":"search-input"},"children":[]}}
+{"op":"add","path":"/elements/search-input","value":{"type":"Input","props":{"name":"inventorySearch","placeholder":"Search items…","type":"text","value":{"$bindState":"/inventorySearch"}},"children":[]}}
+{"op":"add","path":"/state/inventorySearch","value":""}
+{"op":"add","path":"/elements/threshold-card","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["threshold-copy","threshold-badge"]}}
+{"op":"add","path":"/elements/threshold-copy","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["threshold-heading","threshold-description"]}}
+{"op":"add","path":"/elements/threshold-heading","value":{"type":"Heading","props":{"text":"Warning threshold","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/threshold-description","value":{"type":"TextContent","props":{"text":{"$template":"Items appear here when available stock reaches ${/warningThreshold} units or fewer."},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/threshold-badge","value":{"type":"Badge","props":{"text":{"$template":"≤ ${/warningThreshold} units"},"variant":"secondary"},"children":[]}}
+{"op":"add","path":"/state/warningThreshold","value":12}
+{"op":"add","path":"/elements/low-stock-section","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"children":["low-stock-heading","low-stock-list"]}}
+{"op":"add","path":"/elements/low-stock-heading","value":{"type":"Heading","props":{"text":"Items running low","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/low-stock-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"repeat":{"statePath":"/lowStockItems","key":"id"},"children":["low-stock-item"]}}
+{"op":"add","path":"/elements/low-stock-item","value":{"type":"Card","props":{"variant":"card","direction":"row","gap":"l","align":"center","justify":"between","wrap":true},"children":["item-details","item-stock-status","reorder-button"]}}
+{"op":"add","path":"/elements/item-details","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["item-name","item-sku","item-category"]}}
+{"op":"add","path":"/elements/item-name","value":{"type":"Heading","props":{"text":{"$item":"name"},"level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/item-sku","value":{"type":"TextContent","props":{"text":{"$template":"SKU: ${sku}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/item-category","value":{"type":"Tag","props":{"text":{"$item":"category"},"size":"sm","variant":"neutral"},"children":[]}}
+{"op":"add","path":"/elements/item-stock-status","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs","align":"center"},"children":["remaining-units","item-threshold"]}}
+{"op":"add","path":"/elements/remaining-units","value":{"type":"TextContent","props":{"text":{"$template":"${remaining} units left"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/item-threshold","value":{"type":"TextContent","props":{"text":{"$template":"Warning at ${threshold} units"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/reorder-button","value":{"type":"Button","props":{"label":"Reorder","variant":"primary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/reorderNotice","value":{"$template":"Reorder request started for ${name}."}}}},"children":[]}}
+{"op":"add","path":"/state/lowStockItems","value":[]}
+{"op":"add","path":"/state/lowStockItems/0","value":{"id":"sku-10482","name":"Organic Whole Bean Coffee","sku":"COF-10482","category":"Grocery","remaining":4,"threshold":12}}
+{"op":"add","path":"/state/lowStockItems/1","value":{"id":"sku-20917","name":"Insulated Travel Mug, 16 oz","sku":"DRK-20917","category":"Drinkware","remaining":7,"threshold":10}}
+{"op":"add","path":"/state/lowStockItems/2","value":{"id":"sku-31506","name":"Cedar & Sage Hand Soap","sku":"HOM-31506","category":"Home care","remaining":3,"threshold":8}}
+{"op":"add","path":"/state/lowStockItems/3","value":{"id":"sku-48721","name":"Classic Canvas Tote Bag","sku":"ACC-48721","category":"Accessories","remaining":9,"threshold":12}}

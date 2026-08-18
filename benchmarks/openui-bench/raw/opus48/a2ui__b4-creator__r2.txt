@@ -1,0 +1,144 @@
+Here's a comprehensive creator studio dashboard covering all 11 requirements:
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "creator-studio",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": { "primaryColor": "#7C3AED", "agentDisplayName": "Creator Studio" }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "creator-studio",
+      "components": [
+        { "id": "root", "component": "Card", "variant": "clear", "direction": "column", "gap": "l", "children": ["header", "platform-filter", "kpi-row", "charts-row", "best-posts", "schedule-row", "engage-row", "collab-section", "scheduler"] },
+
+        { "id": "header", "component": "CardHeader", "title": "Creator Studio", "subtitle": "Your cross-platform performance at a glance" },
+
+        { "id": "platform-filter", "component": "Card", "variant": "sunk", "direction": "row", "gap": "m", "align": "center", "children": ["filter-label", "filter-select"] },
+        { "id": "filter-label", "component": "Label", "text": "Filter all metrics by platform:" },
+        { "id": "filter-select", "component": "Select", "name": "platformFilter", "placeholder": "All Platforms", "value": "all", "items": ["opt-all", "opt-ig", "opt-tt", "opt-yt", "opt-x"] },
+        { "id": "opt-all", "component": "SelectItem", "value": "all", "label": "All Platforms" },
+        { "id": "opt-ig", "component": "SelectItem", "value": "instagram", "label": "Instagram" },
+        { "id": "opt-tt", "component": "SelectItem", "value": "tiktok", "label": "TikTok" },
+        { "id": "opt-yt", "component": "SelectItem", "value": "youtube", "label": "YouTube" },
+        { "id": "opt-x", "component": "SelectItem", "value": "x", "label": "X (Twitter)" },
+
+        { "id": "kpi-row", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "children": ["kpi-followers", "kpi-engagement", "kpi-earnings"] },
+
+        { "id": "kpi-followers", "component": "Card", "variant": "card", "direction": "column", "gap": "xs", "weight": 1, "children": ["kpi-fol-head", "kpi-fol-num", "kpi-fol-growth"] },
+        { "id": "kpi-fol-head", "component": "Label", "text": "Total Followers" },
+        { "id": "kpi-fol-num", "component": "Heading", "text": "248,930", "level": "h2" },
+        { "id": "kpi-fol-growth", "component": "Badge", "text": "▲ +12,480 (+5.3%) this month", "variant": "default" },
+
+        { "id": "kpi-engagement", "component": "Card", "variant": "card", "direction": "column", "gap": "xs", "weight": 1, "children": ["kpi-eng-head", "kpi-eng-num", "kpi-eng-tag"] },
+        { "id": "kpi-eng-head", "component": "Label", "text": "Engagement Rate" },
+        { "id": "kpi-eng-num", "component": "Heading", "text": "6.8%", "level": "h2" },
+        { "id": "kpi-eng-tag", "component": "Badge", "text": "▲ +0.9% vs last month", "variant": "secondary" },
+
+        { "id": "kpi-earnings", "component": "Card", "variant": "card", "direction": "column", "gap": "xs", "weight": 1, "children": ["kpi-earn-head", "kpi-earn-num", "kpi-earn-tag"] },
+        { "id": "kpi-earn-head", "component": "Label", "text": "Earnings This Month" },
+        { "id": "kpi-earn-num", "component": "Heading", "text": "$8,420", "level": "h2" },
+        { "id": "kpi-earn-tag", "component": "Badge", "text": "▲ +18% vs last month", "variant": "default" },
+
+        { "id": "charts-row", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "children": ["growth-card", "audience-card"] },
+
+        { "id": "growth-card", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "weight": 2, "children": ["growth-title", "growth-chart"] },
+        { "id": "growth-title", "component": "Heading", "text": "Follower Growth — Past Month", "level": "h4" },
+        { "id": "growth-chart", "component": "AreaChart", "labels": ["Wk 1", "Wk 2", "Wk 3", "Wk 4"], "series": ["growth-series"], "variant": "natural", "xLabel": "Week", "yLabel": "Followers" },
+        { "id": "growth-series", "component": "Series", "category": "Followers", "values": [236450, 240100, 244600, 248930] },
+
+        { "id": "audience-card", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "weight": 1, "children": ["audience-title", "audience-chart"] },
+        { "id": "audience-title", "component": "Heading", "text": "Audience by Platform", "level": "h4" },
+        { "id": "audience-chart", "component": "PieChart", "labels": ["Instagram", "TikTok", "YouTube", "X"], "values": [102000, 78500, 45430, 23000], "variant": "donut", "appearance": "circular" },
+
+        { "id": "best-posts", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["best-title", "best-table"] },
+        { "id": "best-title", "component": "Heading", "text": "Best Posts This Month", "level": "h4" },
+        { "id": "best-table", "component": "Table", "columns": ["col-post", "col-platform", "col-reach"] },
+        { "id": "col-post", "component": "Col", "label": "Post", "type": "string", "data": ["Morning routine reel", "Studio tour", "Gear review", "Q&A live clip", "Behind the scenes"] },
+        { "id": "col-platform", "component": "Col", "label": "Platform", "type": "string", "data": ["TikTok", "Instagram", "YouTube", "Instagram", "TikTok"] },
+        { "id": "col-reach", "component": "Col", "label": "Reach", "type": "number", "data": [412000, 298500, 187300, 154200, 132900] },
+
+        { "id": "schedule-row", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "children": ["scheduled-card", "besthour-card"] },
+
+        { "id": "scheduled-card", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "weight": 1, "children": ["scheduled-title", "scheduled-list"] },
+        { "id": "scheduled-title", "component": "Heading", "text": "Scheduled This Week", "level": "h4" },
+        { "id": "scheduled-list", "component": "ListBlock", "variant": "number", "items": ["sch-1", "sch-2", "sch-3", "sch-4"] },
+        { "id": "sch-1", "component": "ListItem", "title": "Product teaser", "subtitle": "Mon 9:00 AM · Instagram" },
+        { "id": "sch-2", "component": "ListItem", "title": "Weekly vlog", "subtitle": "Wed 6:00 PM · YouTube" },
+        { "id": "sch-3", "component": "ListItem", "title": "Trend challenge", "subtitle": "Thu 8:00 PM · TikTok" },
+        { "id": "sch-4", "component": "ListItem", "title": "Poll + thread", "subtitle": "Fri 12:00 PM · X" },
+
+        { "id": "besthour-card", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "weight": 1, "children": ["besthour-title", "besthour-callout", "besthour-chart"] },
+        { "id": "besthour-title", "component": "Heading", "text": "Best Hour to Post", "level": "h4" },
+        { "id": "besthour-callout", "component": "TextCallout", "variant": "success", "title": "Optimal window: 8–9 PM", "description": "Based on 6 months of engagement history, evening posts perform 34% better." },
+        { "id": "besthour-chart", "component": "BarChart", "labels": ["9AM", "12PM", "3PM", "6PM", "8PM", "10PM"], "series": ["hour-series"], "variant": "grouped", "xLabel": "Hour", "yLabel": "Avg engagement" },
+        { "id": "hour-series", "component": "Series", "category": "Engagement", "values": [42, 55, 48, 71, 92, 68] },
+
+        { "id": "engage-row", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["engage-title", "comments-list"] },
+        { "id": "engage-title", "component": "Heading", "text": "Comments Waiting for a Reply", "level": "h4" },
+        { "id": "comments-list", "component": "ListBlock", "variant": "image", "items": ["cm-1", "cm-2", "cm-3"] },
+        { "id": "cm-1", "component": "ListItem", "title": "@jenna_makes", "subtitle": "\"What camera do you use for the reels?\" · Instagram", "actionLabel": "Reply" },
+        { "id": "cm-2", "component": "ListItem", "title": "@devon.codes", "subtitle": "\"Tutorial on this edit please!\" · TikTok", "actionLabel": "Reply" },
+        { "id": "cm-3", "component": "ListItem", "title": "@maratypes", "subtitle": "\"Loved the studio tour 🔥\" · YouTube", "actionLabel": "Reply" },
+
+        { "id": "collab-section", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["collab-title", "collab-accordion"] },
+        { "id": "collab-title", "component": "Heading", "text": "Pending Collaboration Requests", "level": "h4" },
+        { "id": "collab-accordion", "component": "Accordion", "items": ["collab-1", "collab-2", "collab-3"] },
+        { "id": "collab-1", "component": "AccordionItem", "value": "c1", "trigger": "AuroraSkincare — Sponsored reel ($1,200)", "content": ["collab-1-body", "collab-1-btns"] },
+        { "id": "collab-1-body", "component": "TextContent", "text": "Requesting one 30s reel featuring the new serum line. Deadline in 2 weeks." },
+        { "id": "collab-1-btns", "component": "Buttons", "direction": "row", "buttons": ["c1-accept", "c1-decline"] },
+        { "id": "c1-accept", "component": "Button", "label": "Accept", "variant": "primary", "action": ["accept_collab_aurora"] },
+        { "id": "c1-decline", "component": "Button", "label": "Decline", "variant": "tertiary", "type": "destructive", "action": ["decline_collab_aurora"] },
+        { "id": "collab-2", "component": "AccordionItem", "value": "c2", "trigger": "PeakAudio — YouTube integration ($2,500)", "content": ["collab-2-body", "collab-2-btns"] },
+        { "id": "collab-2-body", "component": "TextContent", "text": "60s mid-roll integration in your next vlog reviewing wireless earbuds." },
+        { "id": "collab-2-btns", "component": "Buttons", "direction": "row", "buttons": ["c2-accept", "c2-decline"] },
+        { "id": "c2-accept", "component": "Button", "label": "Accept", "variant": "primary", "action": ["accept_collab_peak"] },
+        { "id": "c2-decline", "component": "Button", "label": "Decline", "variant": "tertiary", "type": "destructive", "action": ["decline_collab_peak"] },
+        { "id": "collab-3", "component": "AccordionItem", "value": "c3", "trigger": "TrailGear — Gifted product + story ($0)", "content": ["collab-3-body", "collab-3-btns"] },
+        { "id": "collab-3-body", "component": "TextContent", "text": "Gifted hiking backpack in exchange for 3 story frames. No fixed deadline." },
+        { "id": "collab-3-btns", "component": "Buttons", "direction": "row", "buttons": ["c3-accept", "c3-decline"] },
+        { "id": "c3-accept", "component": "Button", "label": "Accept", "variant": "primary", "action": ["accept_collab_trail"] },
+        { "id": "c3-decline", "component": "Button", "label": "Decline", "variant": "tertiary", "type": "destructive", "action": ["decline_collab_trail"] },
+
+        { "id": "scheduler", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["scheduler-title", "schedule-form"] },
+        { "id": "scheduler-title", "component": "Heading", "text": "Schedule a New Post", "level": "h4" },
+        { "id": "schedule-form", "component": "Form", "name": "schedulePost", "buttons": "schedule-buttons", "fields": ["fc-platform", "fc-caption", "fc-date", "fc-time"] },
+        { "id": "fc-platform", "component": "FormControl", "label": "Platform", "input": "sp-platform", "hint": "Where should this post go?" },
+        { "id": "sp-platform", "component": "Select", "name": "postPlatform", "placeholder": "Choose platform", "items": ["sp-ig", "sp-tt", "sp-yt", "sp-x"] },
+        { "id": "sp-ig", "component": "SelectItem", "value": "instagram", "label": "Instagram" },
+        { "id": "sp-tt", "component": "SelectItem", "value": "tiktok", "label": "TikTok" },
+        { "id": "sp-yt", "component": "SelectItem", "value": "youtube", "label": "YouTube" },
+        { "id": "sp-x", "component": "SelectItem", "value": "x", "label": "X (Twitter)" },
+        { "id": "fc-caption", "component": "FormControl", "label": "Caption", "input": "sp-caption", "hint": "Write your post caption" },
+        { "id": "sp-caption", "component": "TextArea", "name": "caption", "placeholder": "What's on your mind?", "rows": 4 },
+        { "id": "fc-date", "component": "FormControl", "label": "Date", "input": "sp-date" },
+        { "id": "sp-date", "component": "DatePicker", "name": "postDate", "mode": "single" },
+        { "id": "fc-time", "component": "FormControl", "label": "Time", "input": "sp-time", "hint": "Tip: 8–9 PM performs best" },
+        { "id": "sp-time", "component": "Input", "name": "postTime", "type": "text", "placeholder": "e.g. 8:30 PM" },
+        { "id": "schedule-buttons", "component": "Buttons", "direction": "row", "buttons": ["btn-schedule", "btn-draft"] },
+        { "id": "btn-schedule", "component": "Button", "label": "Schedule Post", "variant": "primary", "action": ["schedule_post"] },
+        { "id": "btn-draft", "component": "Button", "label": "Save as Draft", "variant": "secondary", "action": ["save_draft"] }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+This single screen covers every requirement:
+
+1. **Follower total & growth** — KPI card (248,930, +5.3%) plus the area chart trend over the past month
+2. **Engagement rate** — KPI card showing 6.8% with month-over-month change
+3. **Best posts with reach** — sortable table listing each top post, its platform, and reach
+4. **Audience split by platform** — donut chart breaking down followers per platform
+5. **Posts scheduled this week** — numbered list with day, time, and platform
+6. **Best hour to post** — a success callout plus a bar chart of engagement by hour
+7. **Comments waiting for reply** — list with per-comment Reply actions
+8. **Earnings this month** — KPI card ($8,420, +18%)
+9. **Pending collaborations** — accordion with accept/decline actions per request
+10. **Schedule a post** — full form with platform, caption, date, and time
+11. **Narrow to one platform** — the platform filter dropdown at the top

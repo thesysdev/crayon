@@ -1,0 +1,29 @@
+root = Card([header, warningAlert, thresholdInfo, searchSection, inventoryTable, followUp])
+
+header = CardHeader("Low Inventory Alerts", "Manage reorders and critical stock thresholds")
+
+warningAlert = Callout("warning", "Stock Alert", "5 items have fallen below their minimum safety thresholds and require immediate reorders.")
+
+thresholdInfo = Card([thresholdHeader, thresholdDetails], "sunk", "column", "s")
+thresholdHeader = Heading("Threshold Policy", "h4")
+thresholdDetails = TextContent("Default safety threshold is set to **15 units** for general inventory and **25 units** for high-demand electronics. Items falling below these limits trigger automated reorder suggestions.")
+
+searchSection = Form("searchForm", searchButtons, [searchInputControl])
+searchInputControl = FormControl("Search Stock Items", searchInput, "Filter by SKU, item name, or category")
+searchInput = Input("searchQuery", "e.g., Wireless Mouse or SKU-1092...")
+searchButtons = Buttons([searchBtn, clearBtn])
+searchBtn = Button("Search", null, "primary", "normal", "small")
+clearBtn = Button("Clear", null, "tertiary", "normal", "small")
+
+inventoryTable = Table([skuCol, nameCol, categoryCol, currentStockCol, thresholdCol, actionCol])
+skuCol = Col("SKU", ["SKU-8821", "SKU-4039", "SKU-1102", "SKU-9942", "SKU-3321"])
+nameCol = Col("Item Name", ["Ergonomic Mechanical Keyboard", "UltraWide 34\" Monitor", "USB-C Multi-Port Hub", "Wireless Noise-Canceling Headphones", "Vertical Wireless Mouse"])
+categoryCol = Col("Category", ["Peripherals", "Monitors", "Accessories", "Audio", "Peripherals"])
+currentStockCol = Col("Remaining Units", [4, 2, 8, 11, 5], "number")
+thresholdCol = Col("Warning Threshold", [15, 10, 25, 20, 15], "number")
+actionCol = Col("Action", ["Reorder 50 units", "Reorder 20 units", "Reorder 100 units", "Reorder 40 units", "Reorder 60 units"], "action")
+
+followUp = FollowUpBlock([suggest1, suggest2, suggest3])
+suggest1 = FollowUpItem("Adjust global inventory thresholds")
+suggest2 = FollowUpItem("View pending purchase orders")
+suggest3 = FollowUpItem("Export low stock report to CSV")

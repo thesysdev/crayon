@@ -1,0 +1,130 @@
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "focus-task-view",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": {
+        "primaryColor": "#4F46E5"
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "focus-task-view",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "children": ["task-header", "status-row", "deadline-row", "divider", "action-area"],
+          "direction": "column",
+          "gap": "m",
+          "variant": "card"
+        },
+        {
+          "id": "task-header",
+          "component": "CardHeader",
+          "title": "🎯 Focus Task",
+          "subtitle": "Your most urgent item right now"
+        },
+        {
+          "id": "status-row",
+          "component": "Card",
+          "children": ["task-title", "status-badge"],
+          "direction": "row",
+          "gap": "m",
+          "align": "center",
+          "justify": "between",
+          "variant": "sunk"
+        },
+        {
+          "id": "task-title",
+          "component": "Heading",
+          "text": "Finalize Q3 Budget Report",
+          "level": "h3"
+        },
+        {
+          "id": "status-badge",
+          "component": "Tag",
+          "text": "In Progress",
+          "variant": "warning",
+          "size": "md"
+        },
+        {
+          "id": "deadline-row",
+          "component": "Card",
+          "children": ["deadline-label", "deadline-value"],
+          "direction": "row",
+          "gap": "s",
+          "align": "center",
+          "variant": "clear"
+        },
+        {
+          "id": "deadline-label",
+          "component": "TextContent",
+          "text": "⏰ **Deadline:**",
+          "size": "default"
+        },
+        {
+          "id": "deadline-value",
+          "component": "TextContent",
+          "text": "Today, 5:00 PM",
+          "size": "default"
+        },
+        {
+          "id": "divider",
+          "component": "Separator",
+          "orientation": "horizontal"
+        },
+        {
+          "id": "action-area",
+          "component": "Card",
+          "children": ["done-button"],
+          "direction": "column",
+          "gap": "none",
+          "align": "stretch",
+          "variant": "clear"
+        },
+        {
+          "id": "done-button",
+          "component": "Button",
+          "label": "✓ Mark as Done",
+          "variant": "primary",
+          "size": "large",
+          "action": [
+            {
+              "type": "updateDataModel",
+              "path": "/task/status",
+              "value": "done"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateDataModel": {
+      "surfaceId": "focus-task-view",
+      "path": "/task",
+      "value": {
+        "title": "Finalize Q3 Budget Report",
+        "status": "In Progress",
+        "deadline": "Today, 5:00 PM"
+      }
+    }
+  }
+]
+</a2ui-json>
+
+Here's your **personal focus view** — a single-screen card that covers all three requirements:
+
+| # | Requirement | How it's covered |
+|---|---|---|
+| 1 | Most urgent task + deadline | Task title ("Finalize Q3 Budget Report") displayed prominently with a deadline row showing "Today, 5:00 PM" |
+| 2 | Current status | A color-coded **"In Progress"** tag (warning/amber variant) sits beside the task title |
+| 3 | Mark it done | A large primary **"✓ Mark as Done"** button at the bottom triggers a data model update to flip the status |
+
+The design is intentionally minimal and distraction-free — one card, one task, one action.

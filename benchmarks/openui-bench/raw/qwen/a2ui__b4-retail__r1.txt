@@ -1,0 +1,73 @@
+
+
+Here's a complete single-screen daily console for a store manager. I'll create the surface first, then build the full component tree.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "store-manager-console",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#1F6FEB",
+      "agentDisplayName": "Store Ops Console"
+    },
+    "sendDataModel": false
+  }
+}
+</a2ui-json>
+
+Now the full console layout:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "store-manager-console",
+    "components": [
+      { "id": "root", "component": "Card", "variant": "clear", "direction": "column", "gap": "l", "children": ["header", "alertBanner", "kpiRow", "chartsRow", "midRow", "opsRow", "reorderCard"] },
+      { "id": "header", "component": "Card", "variant": "clear", "direction": "row", "justify": "between", "align": "center", "children": ["titleHeading", "storeFC"] },
+      { "id": "alertBanner", "component": "Alert", "variant": "warning", "title": "Needs attention", "description": "4 items are out of stock, and Register 3 has been down for maintenance since 11:00 AM." },
+      { "id": "kpiRow", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "children": ["salesCard", "basketCard", "returnsCard"] },
+      { "id": "chartsRow", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "children": ["trafficCard", "weekCard"] },
+      { "id": "midRow", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "children": ["bestCard", "promoCard"] },
+      { "id": "opsRow", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "children": ["oosCard", "bottomRight"] },
+      { "id": "reorderCard", "component": "Card", "direction": "column", "gap": "m", "children": ["reorderHeader", "reorderForm"] },
+
+      { "id": "titleHeading", "component": "Heading", "level": "h2", "text": "Store Manager Console — Saturday Overview" },
+      { "id": "storeFC", "component": "FormControl", "label": "Viewing store", "hint": "Switch to manage a different location", "input": "storeSelect" },
+
+      { "id": "salesCard", "component": "Card", "weight": 1, "children": ["salesHeader", "salesBig", "salesProgress", "salesSub"] },
+      { "id": "basketCard", "component": "Card", "weight": 1, "children": ["basketHeader", "basketBig", "basketSub"] },
+      { "id": "returnsCard", "component": "Card", "weight": 1, "children": ["returnsHeader", "returnsBig", "returnsSub"] },
+
+      { "id": "trafficCard", "component": "Card", "weight": 1, "children": ["trafficHeader", "trafficChart"] },
+      { "id": "weekCard", "component": "Card", "weight": 1, "children": ["weekHeader", "weekChart"] },
+
+      { "id": "bestCard", "component": "Card", "weight": 1, "children": ["bestHeader", "bestTable"] },
+      { "id": "promoCard", "component": "Card", "weight": 1, "children": ["promoHeader", "promoTable"] },
+
+      { "id": "oosCard", "component": "Card", "weight": 3, "children": ["oosHeader", "oosTable"] },
+      { "id": "bottomRight", "component": "Card", "variant": "clear", "direction": "column", "gap": "m", "weight": 2, "children": ["shiftCard", "registersCard"] },
+
+      { "id": "reorderHeader", "component": "CardHeader", "title": "Quick Reorder", "subtitle": "Creates a restock purchase order to the central warehouse" },
+      { "id": "reorderForm", "component": "Form", "name": "quick-reorder", "fields": ["itemFC", "qtyFC"], "buttons": "reorderBtns" },
+
+      { "id": "storeSelect", "component": "Select", "name": "store", "value": "store-104", "items": ["st1", "st2", "st3", "st4"] },
+
+      { "id": "salesHeader", "component": "CardHeader", "title": "Sales Today vs Target" },
+      { "id": "salesBig", "component": "TextContent", "size": "large-heavy", "text": "$8,420 / $10,000" },
+      { "id": "salesProgress", "component": "Progress", "value": 84.2, "label": "84% of daily target" },
+      { "id": "salesSub", "component": "TextContent", "size": "small", "text": "On pace · $1,580 to go by 9:00 PM close" },
+
+      { "id": "basketHeader", "component": "CardHeader", "title": "Average Basket Size" },
+      { "id": "basketBig", "component": "TextContent", "size": "large-heavy", "text": "$42.18" },
+      { "id": "basketSub", "component": "TextContent", "size": "small", "text": "+$3.10 vs last week · 199 transactions today" },
+
+      { "id": "returnsHeader", "component": "CardHeader", "title": "Returns This Week" },
+      { "id": "returnsBig", "component": "TextContent", "size": "large-heavy", "text": "37 returns · $1,265" },
+      { "id": "returnsSub", "component": "TextContent", "size": "small", "text": "2.1% of weekly sales · top reason: damaged in transit" },
+
+      { "id": "trafficHeader", "component": "CardHeader", "title": "Foot Traffic Through the Day", "subtitle": "Hourly door counts · 921 visitors so far · peak 12–1 PM" },
+      { "id": "trafficChart", "component": "AreaChart", "variant": "natural", "xLabel": "Hour", "yLabel": "Visitors", "labels": ["8a", "9a", "10a", "11a", "12p", "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p"], "series": ["trafficSeries"] },
+

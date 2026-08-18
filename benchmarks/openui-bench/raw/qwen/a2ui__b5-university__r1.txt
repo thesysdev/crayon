@@ -1,0 +1,168 @@
+Here's a comprehensive university administrator dashboard covering all 16 items, organized into logical tabs for easy navigation:
+
+<a2ui-json>
+[
+  {"version":"v0.9","createSurface":{"surfaceId":"university-admin-dashboard","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#1B3A6B","agentDisplayName":"University Admin Portal"}}},
+  {"version":"v0.9","updateComponents":{"surfaceId":"university-admin-dashboard","components":[
+    {"id":"root","component":"Card","children":["header","dept-control","main-tabs"],"direction":"column","gap":"m"},
+    {"id":"header","component":"CardHeader","title":"University Administrator Dashboard","subtitle":"Fall 2024 Semester Overview"},
+    {"id":"dept-control","component":"FormControl","label":"Focus on Department","input":"dept-select","hint":"Select a department to filter all metrics below"},
+    {"id":"dept-select","component":"Select","name":"department","placeholder":"All Departments","items":["dept-item-1","dept-item-2","dept-item-3","dept-item-4","dept-item-5","dept-item-6"]},
+    {"id":"dept-item-1","component":"SelectItem","value":"cs","label":"Computer Science"},
+    {"id":"dept-item-2","component":"SelectItem","value":"bio","label":"Biology"},
+    {"id":"dept-item-3","component":"SelectItem","value":"eng","label":"English"},
+    {"id":"dept-item-4","component":"SelectItem","value":"math","label":"Mathematics"},
+    {"id":"dept-item-5","component":"SelectItem","value":"bus","label":"Business Administration"},
+    {"id":"dept-item-6","component":"SelectItem","value":"nurs","label":"Nursing"},
+
+    {"id":"main-tabs","component":"Tabs","items":["tab-overview","tab-enrollment","tab-academics","tab-campus","tab-actions"]},
+
+    {"id":"tab-overview","component":"TabItem","value":"overview","trigger":"Key Metrics","content":["overview-grid"]},
+    {"id":"overview-grid","component":"Card","children":["metric-acceptance","metric-tuition","metric-scholarship","metric-housing"],"direction":"column","gap":"m","variant":"clear"},
+
+    {"id":"metric-acceptance","component":"Card","children":["acceptance-header","acceptance-progress","acceptance-note"],"direction":"column","gap":"s"},
+    {"id":"acceptance-header","component":"Heading","text":"Acceptance Rate","level":"h3"},
+    {"id":"acceptance-progress","component":"Progress","value":34,"label":"34% of applicants admitted"},
+    {"id":"acceptance-note","component":"TextContent","text":"Down from 38% last cycle. Target range: 30–40%.","size":"small"},
+
+    {"id":"metric-tuition","component":"Card","children":["tuition-header","tuition-value","tuition-detail"],"direction":"column","gap":"s"},
+    {"id":"tuition-header","component":"Heading","text":"Tuition Revenue (FY 2024–25)","level":"h3"},
+    {"id":"tuition-value","component":"TextContent","text":"$142.6M","size":"large-heavy"},
+    {"id":"tuition-detail","component":"TextContent","text":"Projected: $148.0M · On track at 96.4% of annual target","size":"small"},
+
+    {"id":"metric-scholarship","component":"Card","children":["scholarship-header","scholarship-progress","scholarship-note"],"direction":"column","gap":"s"},
+    {"id":"scholarship-header","component":"Heading","text":"Scholarship Budget Utilization","level":"h3"},
+    {"id":"scholarship-progress","component":"Progress","value":72,"label":"$18.7M used of $26.0M total"},
+    {"id":"scholarship-note","component":"TextContent","text":"72% disbursed with one semester remaining. Pace is slightly above target.","size":"small"},
+
+    {"id":"metric-housing","component":"Card","children":["housing-header","housing-progress","housing-note"],"direction":"column","gap":"s"},
+    {"id":"housing-header","component":"Heading","text":"Housing Occupancy","level":"h3"},
+    {"id":"housing-progress","component":"Progress","value":94,"label":"94% — 4,812 of 5,120 beds occupied"},
+    {"id":"housing-note","component":"TextContent","text":"North Hall renovation reduces capacity by 200 beds next term.","size":"small"},
+
+    {"id":"tab-enrollment","component":"TabItem","value":"enrollment","trigger":"Enrollment & Admissions","content":["enrollment-content"]},
+    {"id":"enrollment-content","component":"Card","children":["enroll-title","enroll-chart","apps-title","apps-chart","waitlist-title","waitlist-table"],"direction":"column","gap":"m","variant":"clear"},
+
+    {"id":"enroll-title","component":"Heading","text":"Total Enrollment — 5-Year Trend","level":"h3"},
+    {"id":"enroll-chart","component":"AreaChart","labels":["2020","2021","2022","2023","2024"],"series":["enroll-series"],"xLabel":"Year","yLabel":"Students"},
+    {"id":"enroll-series","component":"Series","category":"Total Enrollment","values":[14200,14650,15100,15480,15920]},
+
+    {"id":"apps-title","component":"Heading","text":"Applications by Program","level":"h3"},
+    {"id":"apps-chart","component":"HorizontalBarChart","labels":["Computer Science","Business Admin","Nursing","Biology","Engineering","Psychology"],"series":["apps-series"],"xLabel":"Applications"},
+    {"id":"apps-series","component":"Series","category":"Applications Received","values":[4820,3950,3200,2870,2640,2410]},
+
+    {"id":"waitlist-title","component":"Heading","text":"Waitlisted Students per Program","level":"h3"},
+    {"id":"waitlist-table","component":"Table","columns":["wl-col-program","wl-col-waitlisted","wl-col-capacity","wl-col-pct"]},
+    {"id":"wl-col-program","component":"Col","label":"Program","data":["Computer Science","Nursing","Business Admin","Biology","Engineering","Psychology"],"type":"string"},
+    {"id":"wl-col-waitlisted","component":"Col","label":"Waitlisted","data":[312,245,198,156,134,89],"type":"number"},
+    {"id":"wl-col-capacity","component":"Col","label":"Program Capacity","data":[450,320,400,350,380,300],"type":"number"},
+    {"id":"wl-col-pct","component":"Col","label":"Waitlist / Capacity","data":["69%","77%","50%","45%","35%","30%"],"type":"string"},
+
+    {"id":"tab-academics","component":"TabItem","value":"academics","trigger":"Academics","content":["academics-content"]},
+    {"id":"academics-content","component":"Card","children":["course-full-title","course-full-chart","teach-load-title","teach-load-chart","risk-title","risk-table","sem-compare-title","sem-compare-table"],"direction":"column","gap":"m","variant":"clear"},
+
+    {"id":"course-full-title","component":"Heading","text":"Course Offering Fullness","level":"h3"},
+    {"id":"course-full-chart","component":"HorizontalBarChart","labels":["CS 101 – Intro to Programming","NURS 310 – Clinical Practicum","BUS 220 – Financial Accounting","MATH 240 – Linear Algebra","ENG 150 – Composition","BIO 201 – Genetics"],"series":["course-full-series"],"xLabel":"% Seats Filled"},
+    {"id":"course-full-series","component":"Series","category":"Occupancy %","values":[98,95,91,87,82,76]},
+
+    {"id":"teach-load-title","component":"Heading","text":"Teaching Load by Faculty (Credit Hours)","level":"h3"},
+    {"id":"teach-load-chart","component":"HorizontalBarChart","labels":["Dr. Patel","Dr. Nguyen","Dr. Okafor","Dr. Martinez","Dr. Kim","Dr. Johnson","Dr. Williams"],"series":["teach-load-series"],"xLabel":"Credit Hours"},
+    {"id":"teach-load-series","component":"Series","category":"Current Load","values":[15,14,12,12,11,9,9]},
+
+    {"id":"risk-title","component":"Heading","text":"Students at Academic Risk","level":"h3"},
+    {"id":"risk-table","component":"Table","columns":["risk-col-name","risk-col-id","risk-col-gpa","risk-col-status","risk-col-advisor"]},
+    {"id":"risk-col-name","component":"Col","label":"Student","data":["Maria Gonzalez","James Chen","Aisha Bello","Tyler Brooks","Sofia Petrov"],"type":"string"},
+    {"id":"risk-col-id","component":"Col","label":"ID","data":["S-20481","S-19834","S-21057","S-20293","S-21442"],"type":"string"},
+    {"id":"risk-col-gpa","component":"Col","label":"GPA","data":[1.42,1.68,1.71,1.85,1.91],"type":"number"},
+    {"id":"risk-col-status","component":"Col","label":"Status","data":["Probation","Probation","Warning","Warning","Warning"],"type":"string"},
+    {"id":"risk-col-advisor","component":"Col","label":"Assigned Advisor","data":["Dr. Patel","Dr. Kim","Dr. Okafor","Dr. Nguyen","Dr. Martinez"],"type":"string"},
+
+    {"id":"sem-compare-title","component":"Heading","text":"This Semester vs. Last Semester","level":"h3"},
+    {"id":"sem-compare-table","component":"Table","columns":["sem-col-metric","sem-col-last","sem-col-current","sem-col-change"]},
+    {"id":"sem-col-metric","component":"Col","label":"Metric","data":["Enrollment","Avg. Class Size","Retention Rate","GPA (all students)","Credits Completed","D/F/W Rate"],"type":"string"},
+    {"id":"sem-col-last","component":"Col","label":"Spring 2024","data":["15,480","28.3","91.2%","3.12","182,400","8.1%"],"type":"string"},
+    {"id":"sem-col-current","component":"Col","label":"Fall 2024","data":["15,920","29.1","92.0%","3.15","191,750","7.4%"],"type":"string"},
+    {"id":"sem-col-change","component":"Col","label":"Change","data":["+440 (+2.8%)","+0.8","+0.8 pp","+0.03","+9,350","−0.7 pp"],"type":"string"},
+
+    {"id":"tab-campus","component":"TabItem","value":"campus","trigger":"Campus & Alumni","content":["campus-content"]},
+    {"id":"campus-content","component":"Card","children":["events-title","events-list","alumni-title","alumni-chart"],"direction":"column","gap":"m","variant":"clear"},
+
+    {"id":"events-title","component":"Heading","text":"Campus Events — November 2024","level":"h3"},
+    {"id":"events-list","component":"ListBlock","variant":"number","items":["event-1","event-2","event-3","event-4","event-5","event-6"]},
+    {"id":"event-1","component":"ListItem","title":"Homecoming Weekend","subtitle":"Nov 2–4 · Main Quad & Stadium","actionLabel":"Details"},
+    {"id":"event-2","component":"ListItem","title":"Research Symposium","subtitle":"Nov 8 · Science Center Auditorium","actionLabel":"Details"},
+    {"id":"event-3","component":"ListItem","title":"Career Fair – STEM","subtitle":"Nov 12 · Student Union Ballroom","actionLabel":"Details"},
+    {"id":"event-4","component":"ListItem","title":"International Culture Night","subtitle":"Nov 15 · Global Commons","actionLabel":"Details"},
+    {"id":"event-5","component":"ListItem","title":"Thanksgiving Food Drive","subtitle":"Nov 18–22 · All Dining Halls","actionLabel":"Details"},
+    {"id":"event-6","component":"ListItem","title":"Winter Concert Series Kickoff","subtitle":"Nov 29 · Performing Arts Center","actionLabel":"Details"},
+
+    {"id":"alumni-title","component":"Heading","text":"Alumni Giving — Past 4 Years","level":"h3"},
+    {"id":"alumni-chart","component":"BarChart","labels":["2021","2022","2023","2024"],"series":["alumni-series"],"xLabel":"Year","yLabel":"Donations ($M)"},
+    {"id":"alumni-series","component":"Series","category":"Total Giving","values":[8.2,9.1,10.4,11.8]},
+
+    {"id":"tab-actions","component":"TabItem","value":"actions","trigger":"Actions","content":["actions-content"]},
+    {"id":"actions-content","component":"Card","children":["approve-section","msg-section"],"direction":"column","gap":"l","variant":"clear"},
+
+    {"id":"approve-section","component":"Card","children":["approve-header","approve-form"],"direction":"column","gap":"s"},
+    {"id":"approve-header","component":"Heading","text":"Approve a New Course","level":"h3"},
+    {"id":"approve-form","component":"Form","name":"approve-course","fields":["fc-course-code","fc-course-title","fc-dept","fc-credits","fc-instructor"],"buttons":"approve-buttons"},
+    {"id":"fc-course-code","component":"FormControl","label":"Course Code","input":"input-course-code"},
+    {"id":"input-course-code","component":"Input","name":"courseCode","placeholder":"e.g. CS 450","type":"text"},
+    {"id":"fc-course-title","component":"FormControl","label":"Course Title","input":"input-course-title"},
+    {"id":"input-course-title","component":"Input","name":"courseTitle","placeholder":"e.g. Machine Learning","type":"text"},
+    {"id":"fc-dept","component":"FormControl","label":"Department","input":"select-course-dept"},
+    {"id":"select-course-dept","component":"Select","name":"courseDept","placeholder":"Select department","items":["cd-1","cd-2","cd-3","cd-4","cd-5","cd-6"]},
+    {"id":"cd-1","component":"SelectItem","value":"cs","label":"Computer Science"},
+    {"id":"cd-2","component":"SelectItem","value":"bio","label":"Biology"},
+    {"id":"cd-3","component":"SelectItem","value":"eng","label":"English"},
+    {"id":"cd-4","component":"SelectItem","value":"math","label":"Mathematics"},
+    {"id":"cd-5","component":"SelectItem","value":"bus","label":"Business Administration"},
+    {"id":"cd-6","component":"SelectItem","value":"nurs","label":"Nursing"},
+    {"id":"fc-credits","component":"FormControl","label":"Credit Hours","input":"input-credits"},
+    {"id":"input-credits","component":"Input","name":"credits","placeholder":"3","type":"number"},
+    {"id":"fc-instructor","component":"FormControl","label":"Proposed Instructor","input":"input-instructor"},
+    {"id":"input-instructor","component":"Input","name":"instructor","placeholder":"e.g. Dr. Patel","type":"text"},
+    {"id":"approve-buttons","component":"Buttons","buttons":["btn-approve","btn-reject"],"direction":"row"},
+    {"id":"btn-approve","component":"Button","label":"Approve Course","variant":"primary","size":"medium"},
+    {"id":"btn-reject","component":"Button","label":"Reject","variant":"secondary","type":"destructive","size":"medium"},
+
+    {"id":"msg-section","component":"Card","children":["msg-header","msg-form"],"direction":"column","gap":"s"},
+    {"id":"msg-header","component":"Heading","text":"Send Message to Student Group","level":"h3"},
+    {"id":"msg-form","component":"Form","name":"send-message","fields":["fc-group","fc-subject","fc-body"],"buttons":"msg-buttons"},
+    {"id":"fc-group","component":"FormControl","label":"Recipient Group","input":"select-group"},
+    {"id":"select-group","component":"Select","name":"recipientGroup","placeholder":"Select a group","items":["grp-1","grp-2","grp-3","grp-4","grp-5"]},
+    {"id":"grp-1","component":"SelectItem","value":"all-students","label":"All Students"},
+    {"id":"grp-2","component":"SelectItem","value":"freshmen","label":"First-Year Students"},
+    {"id":"grp-3","component":"SelectItem","value":"seniors","label":"Seniors"},
+    {"id":"grp-4","component":"SelectItem","value":"intl","label":"International Students"},
+    {"id":"grp-5","component":"SelectItem","value":"at-risk","label":"Students at Academic Risk"},
+    {"id":"fc-subject","component":"FormControl","label":"Subject","input":"input-subject"},
+    {"id":"input-subject","component":"Input","name":"subject","placeholder":"Message subject","type":"text"},
+    {"id":"fc-body","component":"FormControl","label":"Message","input":"textarea-body"},
+    {"id":"textarea-body","component":"TextArea","name":"messageBody","placeholder":"Type your message here…","rows":5},
+    {"id":"msg-buttons","component":"Buttons","buttons":["btn-send"],"direction":"row"},
+    {"id":"btn-send","component":"Button","label":"Send Message","variant":"primary","size":"medium"}
+  ]}}
+]
+</a2ui-json>
+
+This dashboard covers all 16 requirements:
+
+| # | Requirement | Where |
+|---|---|---|
+| 1 | Total enrollment + 5-year trend | **Enrollment tab** – Area chart |
+| 2 | Applications by program | **Enrollment tab** – Horizontal bar chart |
+| 3 | Acceptance rate | **Key Metrics tab** – Progress bar (34%) |
+| 4 | Tuition revenue | **Key Metrics tab** – $142.6M with projection |
+| 5 | Course offering fullness | **Academics tab** – Horizontal bar chart |
+| 6 | Teaching load by faculty | **Academics tab** – Horizontal bar chart |
+| 7 | Students at academic risk | **Academics tab** – Table with GPA, status, advisor |
+| 8 | Scholarship budget | **Key Metrics tab** – Progress (72% of $26M) |
+| 9 | Housing occupancy | **Key Metrics tab** – Progress (94%) |
+| 10 | Campus events this month | **Campus tab** – Numbered list |
+| 11 | Alumni giving (4 years) | **Campus tab** – Bar chart |
+| 12 | Department focus | **Top-level Select** dropdown |
+| 13 | Semester comparison | **Academics tab** – Side-by-side table |
+| 14 | Waitlisted per program | **Enrollment tab** – Table |
+| 15 | Approve a new course | **Actions tab** – Form with approve/reject |
+| 16 | Message a student group | **Actions tab** – Form with group selector |

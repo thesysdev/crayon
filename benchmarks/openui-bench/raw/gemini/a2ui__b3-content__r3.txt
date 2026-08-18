@@ -1,0 +1,961 @@
+I have created an editor's content studio dashboard that fulfills all 8 required features.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "editor-content-studio",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": {
+        "primaryColor": "#6366F1",
+        "agentDisplayName": "Editorial Director"
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "editor-content-studio",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "l",
+          "children": [
+            "header-section",
+            "tabs-container"
+          ]
+        },
+        {
+          "id": "header-section",
+          "component": "Card",
+          "variant": "card",
+          "direction": "row",
+          "align": "center",
+          "justify": "between",
+          "children": [
+            "header-titles",
+            "header-actions"
+          ]
+        },
+        {
+          "id": "header-titles",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "xs",
+          "children": [
+            "main-heading",
+            "studio-subtitle"
+          ]
+        },
+        {
+          "id": "main-heading",
+          "component": "Heading",
+          "text": "Editor's Content Studio",
+          "level": "h1"
+        },
+        {
+          "id": "studio-subtitle",
+          "component": "TextContent",
+          "text": "Manage drafts, scheduled posts, analytics, and readership engagement.",
+          "size": "small"
+        },
+        {
+          "id": "header-actions",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "align": "center",
+          "children": [
+            "filter-select",
+            "new-draft-btn"
+          ]
+        },
+        {
+          "id": "filter-select",
+          "component": "Select",
+          "name": "categoryFilter",
+          "placeholder": "All Categories",
+          "size": "medium",
+          "items": [
+            "cat-all",
+            "cat-tech",
+            "cat-design",
+            "cat-culture",
+            "cat-business"
+          ]
+        },
+        {
+          "id": "cat-all",
+          "component": "SelectItem",
+          "value": "all",
+          "label": "All Categories"
+        },
+        {
+          "id": "cat-tech",
+          "component": "SelectItem",
+          "value": "technology",
+          "label": "Technology"
+        },
+        {
+          "id": "cat-design",
+          "component": "SelectItem",
+          "value": "design",
+          "label": "Design & UI"
+        },
+        {
+          "id": "cat-culture",
+          "component": "SelectItem",
+          "value": "culture",
+          "label": "Culture"
+        },
+        {
+          "id": "cat-business",
+          "component": "SelectItem",
+          "value": "business",
+          "label": "Business Strategy"
+        },
+        {
+          "id": "new-draft-btn",
+          "component": "Button",
+          "label": "+ Start New Draft",
+          "variant": "primary",
+          "size": "medium",
+          "action": ["click", "createNewDraft"]
+        },
+        {
+          "id": "tabs-container",
+          "component": "Tabs",
+          "items": [
+            "tab-overview",
+            "tab-drafts",
+            "tab-published",
+            "tab-schedule",
+            "tab-comments"
+          ]
+        },
+        {
+          "id": "tab-overview",
+          "component": "TabItem",
+          "value": "overview",
+          "trigger": "Overview & Analytics",
+          "content": [
+            "analytics-row",
+            "published-and-comments-row"
+          ]
+        },
+        {
+          "id": "analytics-row",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "children": [
+            "readership-card",
+            "top-article-card"
+          ]
+        },
+        {
+          "id": "readership-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "readership-header",
+            "readership-chart"
+          ]
+        },
+        {
+          "id": "readership-header",
+          "component": "CardHeader",
+          "title": "Readership Over Past 30 Days",
+          "subtitle": "Daily total unique pageviews across all categories"
+        },
+        {
+          "id": "readership-chart",
+          "component": "LineChart",
+          "variant": "natural",
+          "xLabel": "Days Ago",
+          "yLabel": "Views",
+          "labels": ["30d", "25d", "20d", "15d", "10d", "5d", "Today"],
+          "series": [
+            "series-views"
+          ]
+        },
+        {
+          "id": "series-views",
+          "component": "Series",
+          "category": "Pageviews",
+          "values": [12400, 15800, 14200, 21000, 18500, 26400, 29100]
+        },
+        {
+          "id": "top-article-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "top-article-header",
+            "top-article-badge",
+            "top-article-title",
+            "top-article-meta",
+            "top-article-stats",
+            "top-article-quote"
+          ]
+        },
+        {
+          "id": "top-article-header",
+          "component": "CardHeader",
+          "title": "Most-Read Article This Month"
+        },
+        {
+          "id": "top-article-badge",
+          "component": "Badge",
+          "text": "🔥 #1 Trending in Technology",
+          "variant": "default"
+        },
+        {
+          "id": "top-article-title",
+          "component": "Heading",
+          "text": "The Architecture of AI-Driven Interfaces: What's Next in 2025",
+          "level": "h3"
+        },
+        {
+          "id": "top-article-meta",
+          "component": "TextContent",
+          "text": "Published Feb 4, 2025 • By Sarah Jenkins • 12 min read",
+          "size": "small"
+        },
+        {
+          "id": "top-article-stats",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "row",
+          "justify": "around",
+          "align": "center",
+          "children": [
+            "stat-views",
+            "stat-reads",
+            "stat-shares"
+          ]
+        },
+        {
+          "id": "stat-views",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "none",
+          "children": [
+            "stat-views-val",
+            "stat-views-lbl"
+          ]
+        },
+        {
+          "id": "stat-views-val",
+          "component": "Heading",
+          "text": "142.8K",
+          "level": "h2"
+        },
+        {
+          "id": "stat-views-lbl",
+          "component": "TextContent",
+          "text": "Total Views",
+          "size": "small"
+        },
+        {
+          "id": "stat-reads",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "none",
+          "children": [
+            "stat-reads-val",
+            "stat-reads-lbl"
+          ]
+        },
+        {
+          "id": "stat-reads-val",
+          "component": "Heading",
+          "text": "88%",
+          "level": "h2"
+        },
+        {
+          "id": "stat-reads-lbl",
+          "component": "TextContent",
+          "text": "Completion Rate",
+          "size": "small"
+        },
+        {
+          "id": "stat-shares",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "none",
+          "children": [
+            "stat-shares-val",
+            "stat-shares-lbl"
+          ]
+        },
+        {
+          "id": "stat-shares-val",
+          "component": "Heading",
+          "text": "3.4K",
+          "level": "h2"
+        },
+        {
+          "id": "stat-shares-lbl",
+          "component": "TextContent",
+          "text": "Social Shares",
+          "size": "small"
+        },
+        {
+          "id": "top-article-quote",
+          "component": "Blockquote",
+          "text": "An essential deep-dive into standardizing human-agent canvas surfaces.",
+          "cite": "TechDesign Weekly"
+        },
+        {
+          "id": "published-and-comments-row",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "children": [
+            "published-this-week-card",
+            "comments-card"
+          ]
+        },
+        {
+          "id": "published-this-week-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "published-header",
+            "published-table"
+          ]
+        },
+        {
+          "id": "published-header",
+          "component": "CardHeader",
+          "title": "Pieces Published This Week",
+          "subtitle": "4 stories live in the last 7 days"
+        },
+        {
+          "id": "published-table",
+          "component": "Table",
+          "columns": [
+            "col-pub-title",
+            "col-pub-cat",
+            "col-pub-date",
+            "col-pub-reads"
+          ]
+        },
+        {
+          "id": "col-pub-title",
+          "component": "Col",
+          "label": "Article Title",
+          "type": "string",
+          "data": [
+            "Designing for Spatial Audio in Web Apps",
+            "How Remote Teams Scale Culture",
+            "Micro-Frontends: 2025 Retrospective",
+            "Sustainable UX: Reducing Cloud Footprints"
+          ]
+        },
+        {
+          "id": "col-pub-cat",
+          "component": "Col",
+          "label": "Category",
+          "type": "string",
+          "data": [
+            "Design",
+            "Culture",
+            "Technology",
+            "Design"
+          ]
+        },
+        {
+          "id": "col-pub-date",
+          "component": "Col",
+          "label": "Date",
+          "type": "string",
+          "data": [
+            "Yesterday",
+            "Feb 18, 2025",
+            "Feb 17, 2025",
+            "Feb 16, 2025"
+          ]
+        },
+        {
+          "id": "col-pub-reads",
+          "component": "Col",
+          "label": "Reads",
+          "type": "number",
+          "data": [
+            4200,
+            8900,
+            15400,
+            6100
+          ]
+        },
+        {
+          "id": "comments-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "comments-header",
+            "comments-list"
+          ]
+        },
+        {
+          "id": "comments-header",
+          "component": "CardHeader",
+          "title": "Comments Awaiting Reply",
+          "subtitle": "3 reader inquiries need editorial moderation"
+        },
+        {
+          "id": "comments-list",
+          "component": "Accordion",
+          "items": [
+            "comment-item-1",
+            "comment-item-2",
+            "comment-item-3"
+          ]
+        },
+        {
+          "id": "comment-item-1",
+          "component": "AccordionItem",
+          "value": "c1",
+          "trigger": "Marcus Vance on 'Architecture of AI-Driven Interfaces'",
+          "content": [
+            "comment-body-1",
+            "comment-actions-1"
+          ]
+        },
+        {
+          "id": "comment-body-1",
+          "component": "TextContent",
+          "text": "\"Great breakdown! Do you think context window size will still limit canvas updates for multi-modal agentic workflows by end of year?\"",
+          "size": "small"
+        },
+        {
+          "id": "comment-actions-1",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "s",
+          "children": [
+            "reply-input-1",
+            "reply-btn-1"
+          ]
+        },
+        {
+          "id": "reply-input-1",
+          "component": "Input",
+          "name": "reply_c1",
+          "placeholder": "Write a reply..."
+        },
+        {
+          "id": "reply-btn-1",
+          "component": "Button",
+          "label": "Reply",
+          "variant": "primary",
+          "size": "small"
+        },
+        {
+          "id": "comment-item-2",
+          "component": "AccordionItem",
+          "value": "c2",
+          "trigger": "Elena Rostova on 'Micro-Frontends: 2025 Retrospective'",
+          "content": [
+            "comment-body-2",
+            "comment-actions-2"
+          ]
+        },
+        {
+          "id": "comment-body-2",
+          "component": "TextContent",
+          "text": "\"Could you share the benchmark repository for the bundle size comparisons mentioned in Section 3?\"",
+          "size": "small"
+        },
+        {
+          "id": "comment-actions-2",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "s",
+          "children": [
+            "reply-input-2",
+            "reply-btn-2"
+          ]
+        },
+        {
+          "id": "reply-input-2",
+          "component": "Input",
+          "name": "reply_c2",
+          "placeholder": "Write a reply..."
+        },
+        {
+          "id": "reply-btn-2",
+          "component": "Button",
+          "label": "Reply",
+          "variant": "primary",
+          "size": "small"
+        },
+        {
+          "id": "comment-item-3",
+          "component": "AccordionItem",
+          "value": "c3",
+          "trigger": "David K. on 'Designing for Spatial Audio'",
+          "content": [
+            "comment-body-3",
+            "comment-actions-3"
+          ]
+        },
+        {
+          "id": "comment-body-3",
+          "component": "TextContent",
+          "text": "\"Are there specific WebAudio API fallbacks recommended for older mobile Safari versions?\"",
+          "size": "small"
+        },
+        {
+          "id": "comment-actions-3",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "s",
+          "children": [
+            "reply-input-3",
+            "reply-btn-3"
+          ]
+        },
+        {
+          "id": "reply-input-3",
+          "component": "Input",
+          "name": "reply_c3",
+          "placeholder": "Write a reply..."
+        },
+        {
+          "id": "reply-btn-3",
+          "component": "Button",
+          "label": "Reply",
+          "variant": "primary",
+          "size": "small"
+        },
+        {
+          "id": "tab-drafts",
+          "component": "TabItem",
+          "value": "drafts",
+          "trigger": "Drafts & Workflow",
+          "content": [
+            "drafts-card"
+          ]
+        },
+        {
+          "id": "drafts-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "drafts-header",
+            "drafts-table"
+          ]
+        },
+        {
+          "id": "drafts-header",
+          "component": "CardHeader",
+          "title": "Active Drafts & Status",
+          "subtitle": "Track work-in-progress, peer reviews, and editorial approvals"
+        },
+        {
+          "id": "drafts-table",
+          "component": "Table",
+          "columns": [
+            "col-draft-title",
+            "col-draft-author",
+            "col-draft-cat",
+            "col-draft-status",
+            "col-draft-wordcount"
+          ]
+        },
+        {
+          "id": "col-draft-title",
+          "component": "Col",
+          "label": "Draft Title",
+          "type": "string",
+          "data": [
+            "Rethinking Component Catalogs for Streaming UI",
+            "The Rise of Local LLMs on Mobile Devices",
+            "Design Systems in 2026: Tokens to Autonomous Themes",
+            "Quarterly Editorial Strategy & Growth Playbook"
+          ]
+        },
+        {
+          "id": "col-draft-author",
+          "component": "Col",
+          "label": "Author",
+          "type": "string",
+          "data": [
+            "Alex Chen",
+            "Samantha Roy",
+            "Alex Chen",
+            "Jordan Miller"
+          ]
+        },
+        {
+          "id": "col-draft-cat",
+          "component": "Col",
+          "label": "Category",
+          "type": "string",
+          "data": [
+            "Technology",
+            "Technology",
+            "Design",
+            "Business"
+          ]
+        },
+        {
+          "id": "col-draft-status",
+          "component": "Col",
+          "label": "Status",
+          "type": "string",
+          "data": [
+            "In Review",
+            "In Progress",
+            "Copy Edit",
+            "Needs Revisions"
+          ]
+        },
+        {
+          "id": "col-draft-wordcount",
+          "component": "Col",
+          "label": "Word Count",
+          "type": "number",
+          "data": [
+            1850,
+            920,
+            2400,
+            3100
+          ]
+        },
+        {
+          "id": "tab-published",
+          "component": "TabItem",
+          "value": "published",
+          "trigger": "Published (This Week)",
+          "content": [
+            "published-full-card"
+          ]
+        },
+        {
+          "id": "published-full-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "published-full-header",
+            "published-full-table"
+          ]
+        },
+        {
+          "id": "published-full-header",
+          "component": "CardHeader",
+          "title": "All Pieces Published This Week",
+          "subtitle": "Performance breakdowns and readership logs for recently published stories"
+        },
+        {
+          "id": "published-full-table",
+          "component": "Table",
+          "columns": [
+            "col-pf-title",
+            "col-pf-cat",
+            "col-pf-date",
+            "col-pf-views",
+            "col-pf-comments"
+          ]
+        },
+        {
+          "id": "col-pf-title",
+          "component": "Col",
+          "label": "Title",
+          "type": "string",
+          "data": [
+            "Designing for Spatial Audio in Web Apps",
+            "How Remote Teams Scale Culture",
+            "Micro-Frontends: 2025 Retrospective",
+            "Sustainable UX: Reducing Cloud Footprints"
+          ]
+        },
+        {
+          "id": "col-pf-cat",
+          "component": "Col",
+          "label": "Category",
+          "type": "string",
+          "data": [
+            "Design",
+            "Culture",
+            "Technology",
+            "Design"
+          ]
+        },
+        {
+          "id": "col-pf-date",
+          "component": "Col",
+          "label": "Published On",
+          "type": "string",
+          "data": [
+            "Feb 19, 2025",
+            "Feb 18, 2025",
+            "Feb 17, 2025",
+            "Feb 16, 2025"
+          ]
+        },
+        {
+          "id": "col-pf-views",
+          "component": "Col",
+          "label": "30-Day Views",
+          "type": "number",
+          "data": [
+            4200,
+            8900,
+            15400,
+            6100
+          ]
+        },
+        {
+          "id": "col-pf-comments",
+          "component": "Col",
+          "label": "Comments",
+          "type": "number",
+          "data": [
+            8,
+            14,
+            23,
+            5
+          ]
+        },
+        {
+          "id": "tab-schedule",
+          "component": "TabItem",
+          "value": "schedule",
+          "trigger": "Schedule & Publishing",
+          "content": [
+            "schedule-section-card"
+          ]
+        },
+        {
+          "id": "schedule-section-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "l",
+          "children": [
+            "schedule-header",
+            "schedule-form"
+          ]
+        },
+        {
+          "id": "schedule-header",
+          "component": "CardHeader",
+          "title": "Schedule a Piece for Publication",
+          "subtitle": "Set publishing queue dates and target category tags"
+        },
+        {
+          "id": "schedule-form",
+          "component": "Form",
+          "name": "schedulePieceForm",
+          "fields": [
+            "field-title",
+            "field-category",
+            "field-date",
+            "field-notes"
+          ],
+          "buttons": "schedule-form-buttons"
+        },
+        {
+          "id": "field-title",
+          "component": "FormControl",
+          "label": "Article Title",
+          "hint": "Enter the final or working title of the article",
+          "input": "input-sched-title"
+        },
+        {
+          "id": "input-sched-title",
+          "component": "Input",
+          "name": "articleTitle",
+          "placeholder": "e.g., The Future of Zero-Trust Security in Edge Computing",
+          "type": "text"
+        },
+        {
+          "id": "field-category",
+          "component": "FormControl",
+          "label": "Primary Category",
+          "input": "select-sched-cat"
+        },
+        {
+          "id": "select-sched-cat",
+          "component": "Select",
+          "name": "articleCategory",
+          "placeholder": "Select a category",
+          "items": [
+            "scat-tech",
+            "scat-design",
+            "scat-culture",
+            "scat-biz"
+          ]
+        },
+        {
+          "id": "scat-tech",
+          "component": "SelectItem",
+          "value": "technology",
+          "label": "Technology"
+        },
+        {
+          "id": "scat-design",
+          "component": "SelectItem",
+          "value": "design",
+          "label": "Design & UI"
+        },
+        {
+          "id": "scat-culture",
+          "component": "SelectItem",
+          "value": "culture",
+          "label": "Culture"
+        },
+        {
+          "id": "scat-biz",
+          "component": "SelectItem",
+          "value": "business",
+          "label": "Business Strategy"
+        },
+        {
+          "id": "field-date",
+          "component": "FormControl",
+          "label": "Publish Date & Range",
+          "hint": "Select target date for automatic publication release",
+          "input": "picker-sched-date"
+        },
+        {
+          "id": "picker-sched-date",
+          "component": "DatePicker",
+          "name": "publishDate",
+          "mode": "single"
+        },
+        {
+          "id": "field-notes",
+          "component": "FormControl",
+          "label": "Editorial Notes / Social Teaser",
+          "input": "textarea-sched-notes"
+        },
+        {
+          "id": "textarea-sched-notes",
+          "component": "TextArea",
+          "name": "editorialNotes",
+          "placeholder": "Add any notes for copy editors or newsletter promotion blurb...",
+          "rows": 3
+        },
+        {
+          "id": "schedule-form-buttons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": [
+            "btn-submit-schedule",
+            "btn-cancel-schedule"
+          ]
+        },
+        {
+          "id": "btn-submit-schedule",
+          "component": "Button",
+          "label": "Confirm & Schedule Release",
+          "variant": "primary",
+          "action": ["submit", "schedulePiece"]
+        },
+        {
+          "id": "btn-cancel-schedule",
+          "component": "Button",
+          "label": "Save as Draft",
+          "variant": "secondary",
+          "action": ["click", "saveDraft"]
+        },
+        {
+          "id": "tab-comments",
+          "component": "TabItem",
+          "value": "comments",
+          "trigger": "Comments Queue",
+          "content": [
+            "comments-full-card"
+          ]
+        },
+        {
+          "id": "comments-full-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "comments-full-header",
+            "comments-full-callout",
+            "comments-list-full"
+          ]
+        },
+        {
+          "id": "comments-full-header",
+          "component": "CardHeader",
+          "title": "Pending Moderation & Replies",
+          "subtitle": "Engage with readers and moderate flagged comments"
+        },
+        {
+          "id": "comments-full-callout",
+          "component": "Callout",
+          "variant": "info",
+          "title": "Community Response Time: ~2.4 hrs",
+          "description": "Replying to top comments within 4 hours increases subscriber retention by 18%."
+        },
+        {
+          "id": "comments-list-full",
+          "component": "ListBlock",
+          "variant": "number",
+          "items": [
+            "citem-1",
+            "citem-2",
+            "citem-3"
+          ]
+        },
+        {
+          "id": "citem-1",
+          "component": "ListItem",
+          "title": "Marcus Vance on 'Architecture of AI-Driven Interfaces'",
+          "subtitle": "\"Great breakdown! Do you think context window size will still limit canvas updates...\"",
+          "actionLabel": "Reply Now"
+        },
+        {
+          "id": "citem-2",
+          "component": "ListItem",
+          "title": "Elena Rostova on 'Micro-Frontends: 2025 Retrospective'",
+          "subtitle": "\"Could you share the benchmark repository for the bundle size comparisons...\"",
+          "actionLabel": "Reply Now"
+        },
+        {
+          "id": "citem-3",
+          "component": "ListItem",
+          "title": "David K. on 'Designing for Spatial Audio'",
+          "subtitle": "\"Are there specific WebAudio API fallbacks recommended for older mobile Safari...\"",
+          "actionLabel": "Reply Now"
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>

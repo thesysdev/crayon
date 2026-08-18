@@ -1,0 +1,105 @@
+root = Card([headerControls, kpiGrid, chartsRow, featuresAndNpsRow, tablesSection, followUp])
+
+headerControls = Card(headerItems, "clear", "row", "m", "center", "between")
+headerItems = [titleHeader, periodSelectForm]
+
+titleHeader = CardHeader("SaaS Executive Overview", "Real-time metrics, account health, and growth indicators")
+
+periodSelectForm = Form("period-filter", periodButtons, [periodField])
+periodField = FormControl("Reporting Period", periodSelect)
+periodSelect = Select("period", [p30, p90, p365], "Select period", null, "90d", "small")
+p30 = SelectItem("30d", "Last 30 Days")
+p90 = SelectItem("90d", "Last 90 Days")
+p365 = SelectItem("365d", "Last 12 Months")
+periodButtons = Buttons([inviteAdminDialog])
+
+inviteAdminDialog = DialogBlock("Invite Admin", "Invite New Administrator", "Grant admin access to a colleague.", inviteFormContent, "default")
+
+inviteFormContent = Form("invite-admin-form", inviteFormButtons, [inviteEmailField, inviteRoleField])
+inviteEmailField = FormControl("Work Email", inviteEmailInput)
+inviteEmailInput = Input("admin_email", "colleague@company.com", "email")
+inviteRoleField = FormControl("Role", inviteRoleSelect)
+inviteRoleSelect = Select("admin_role", [roleSuper, roleOps, roleBilling], "Select role")
+roleSuper = SelectItem("super", "Super Admin")
+roleOps = SelectItem("ops", "Ops Admin")
+roleBilling = SelectItem("billing", "Billing Admin")
+inviteFormButtons = Buttons([sendInviteBtn])
+sendInviteBtn = Button("Send Invitation", null, "primary")
+
+kpiGrid = Card([mrrCard, arrCard, churnCard, npsCard, seatUtilCard], "clear", "row", "m", "stretch", "start", true)
+
+mrrCard = Card([mrrHeader, mrrVal, mrrBadge], "sunk", "column", "xs")
+mrrHeader = CardHeader("Monthly Recurring (MRR)")
+mrrVal = TextContent("$184,500", "large-heavy")
+mrrBadge = Badge("+8.4% vs last month", "secondary")
+
+arrCard = Card([arrHeader, arrVal, arrBadge], "sunk", "column", "xs")
+arrHeader = CardHeader("Annual Recurring (ARR)")
+arrVal = TextContent("$2,214,000", "large-heavy")
+arrBadge = Badge("On track for $2.5M", "default")
+
+churnCard = Card([churnHeader, churnVal, churnBadge], "sunk", "column", "xs")
+churnHeader = CardHeader("Churn (This Month)")
+churnVal = TextContent("1.2%", "large-heavy")
+churnBadge = Badge("-0.3% improvement", "secondary")
+
+npsCard = Card([npsHeader, npsVal, npsBadge], "sunk", "column", "xs")
+npsHeader = CardHeader("Current NPS")
+npsVal = TextContent("+58", "large-heavy")
+npsBadge = Badge("Excellent (68% Promoters)", "default")
+
+seatUtilCard = Card([seatUtilHeader, seatUtilProgress, seatUtilDetails], "sunk", "column", "xs")
+seatUtilHeader = CardHeader("Seat Utilization")
+seatUtilProgress = Progress(82, "82% Overall Utilization")
+seatUtilDetails = TextContent("14,760 of 18,000 paid seats active", "small")
+
+chartsRow = Card([signupsChartCard, planSplitChartCard], "clear", "row", "l", "stretch")
+
+signupsChartCard = Card([signupsHeader, signupsLineChart], "card", "column", "s")
+signupsHeader = CardHeader("New Signups (Past 90 Days)", "Daily and weekly signup velocity")
+signupsLineChart = AreaChart(["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8", "W9", "W10", "W11", "W12"], [signupsSeries], "natural", "Weeks (Last 90 Days)", "Signups")
+signupsSeries = Series("Signups", [120, 145, 132, 168, 190, 210, 205, 240, 235, 278, 295, 310])
+
+planSplitChartCard = Card([planHeader, planPieChart], "card", "column", "s")
+planHeader = CardHeader("Customers Split by Plan", "Distribution across subscription tiers")
+planPieChart = PieChart(["Starter", "Professional", "Enterprise", "Custom"], [450, 820, 210, 45], "donut")
+
+featuresAndNpsRow = Card([featureAdoptionCard, sectionDetailsCard], "clear", "row", "l", "stretch")
+
+featureAdoptionCard = Card([featureHeader, featureChart], "card", "column", "s")
+featureHeader = CardHeader("Adoption of Newest Features", "% of active accounts using feature weekly")
+featureChart = HorizontalBarChart(["AI Analytics Assistant", "Workflows V2", "SSO & SAML Config"], [featureSeries], "grouped", "% Accounts", "Feature")
+featureSeries = Series("Adoption Rate (%)", [68, 42, 89])
+
+sectionDetailsCard = Card([sections], "card", "column", "s")
+sections = SectionBlock([riskSection, failedPaySection])
+
+riskSection = SectionItem("at-risk", "Accounts at Risk (4 Accounts)", [atRiskTable])
+atRiskTable = Table([riskColAccount, riskColArr, riskColReason, riskColHealth])
+riskColAccount = Col("Account Name", ["Acme Corp", "TechGlobe Inc", "BetaLogistics", "Apex Digital"])
+riskColArr = Col("ARR", ["$48,000", "$36,000", "$24,000", "$18,000"])
+riskColReason = Col("Risk Factor / Reason", ["Executive sponsor departed", "Usage dropped 45% in 30d", "Unresolved support escalation", "Budget cuts announced"])
+riskColHealth = Col("Health Score", ["Critical (32)", "At Risk (45)", "At Risk (48)", "At Risk (52)"])
+
+failedPaySection = SectionItem("failed-payments", "Failed Payments (Action Required)", [failedPayCallout, failedPayTable])
+failedPayCallout = Callout("warning", "Overdue Invoices", "3 payments failed this week totaling $14,200. Retries can be triggered manually below.")
+failedPayTable = Table([failColCustomer, failColAmount, failColDate, failColAction])
+failColCustomer = Col("Customer", ["CloudScale Systems", "OmniData LLC", "Vortex Media"])
+failColAmount = Col("Amount", ["$8,500", "$3,200", "$2,500"])
+failColDate = Col("Failed Date", ["Oct 24, 2023", "Oct 25, 2023", "Oct 26, 2023"])
+failColAction = Col("Action", ["Retry Payment", "Retry Payment", "Retry Payment"], "action")
+
+tablesSection = Card([topCustomersHeader, topCustomersTable], "card", "column", "m")
+topCustomersHeader = CardHeader("Top 10 Largest Customers", "Ranked by annual recurring revenue and seat volume")
+topCustomersTable = Table([topColRank, topColName, topColPlan, topColSeats, topColSpend, topColStatus])
+topColRank = Col("#", [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+topColName = Col("Customer Name", ["Global Tech Enterprises", "FinServe Holdings", "BioHealth Solutions", "RetailMax Global", "CyberShield Inc", "Nexus Logistics", "OmniMedia Group", "Strata Financial", "AeroSystems Int", "DataPulse Software"])
+topColPlan = Col("Plan", ["Custom Enterprise", "Enterprise", "Enterprise", "Enterprise", "Enterprise", "Professional", "Enterprise", "Professional", "Enterprise", "Professional"])
+topColSeats = Col("Seats Allocated", [1200, 850, 750, 620, 500, 480, 450, 400, 380, 350])
+topColSpend = Col("Annual Spend", ["$144,000", "$102,000", "$90,000", "$74,400", "$60,000", "$57,600", "$54,000", "$48,000", "$45,600", "$42,000"])
+topColStatus = Col("Account Status", ["Healthy", "Healthy", "Healthy", "Healthy", "Healthy", "Healthy", "Healthy", "At Risk", "Healthy", "Healthy"])
+
+followUp = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Export top 10 customers report as CSV")
+f2 = FollowUpItem("View detailed churn breakdown by plan tier")
+f3 = FollowUpItem("Schedule automated risk alert digest for CSM team")

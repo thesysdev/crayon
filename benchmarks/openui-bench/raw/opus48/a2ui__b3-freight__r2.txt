@@ -1,0 +1,408 @@
+Here's a logistics coordinator's board covering all nine items.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "logistics-board",
+      "catalogId": "thesys.dev:c1-openui"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "logistics-board",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "l",
+          "children": [
+            "header",
+            "refreshNote",
+            "kpiRow",
+            "delayedCallout",
+            "searchCard",
+            "transitTable",
+            "chartsRow",
+            "weeklyChart",
+            "flagForm"
+          ]
+        },
+        {
+          "id": "header",
+          "component": "CardHeader",
+          "title": "Logistics Coordination Board",
+          "subtitle": "Live shipment operations overview"
+        },
+        {
+          "id": "refreshNote",
+          "component": "Tag",
+          "text": "Last refreshed: Today at 09:42 AM",
+          "icon": "clock",
+          "variant": "info",
+          "size": "md"
+        },
+        {
+          "id": "kpiRow",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "wrap": true,
+          "children": ["kpiOnTime", "kpiAvgCost"]
+        },
+        {
+          "id": "kpiOnTime",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "weight": 1,
+          "children": ["kpiOnTimeLabel", "kpiOnTimeValue", "kpiOnTimeBar"]
+        },
+        {
+          "id": "kpiOnTimeLabel",
+          "component": "TextContent",
+          "text": "On-Time Delivery (This Month)",
+          "size": "small-heavy"
+        },
+        {
+          "id": "kpiOnTimeValue",
+          "component": "Heading",
+          "text": "92.4%",
+          "level": "h2"
+        },
+        {
+          "id": "kpiOnTimeBar",
+          "component": "Progress",
+          "value": 92.4,
+          "label": "Target: 95%"
+        },
+        {
+          "id": "kpiAvgCost",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "weight": 1,
+          "children": ["kpiAvgCostLabel", "kpiAvgCostValue", "kpiAvgCostSub"]
+        },
+        {
+          "id": "kpiAvgCostLabel",
+          "component": "TextContent",
+          "text": "Average Cost Per Shipment",
+          "size": "small-heavy"
+        },
+        {
+          "id": "kpiAvgCostValue",
+          "component": "Heading",
+          "text": "$1,284",
+          "level": "h2"
+        },
+        {
+          "id": "kpiAvgCostSub",
+          "component": "TextContent",
+          "text": "Down 3.1% vs last month",
+          "size": "small"
+        },
+        {
+          "id": "delayedCallout",
+          "component": "Callout",
+          "variant": "warning",
+          "title": "3 Delayed Shipments",
+          "description": "SHP-2041 (Chicago→Denver, +6h), SHP-2098 (Miami→Atlanta, +12h), SHP-2110 (Seattle→Boise, +4h) are behind schedule and need attention."
+        },
+        {
+          "id": "searchCard",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "children": ["searchHeader", "searchForm"]
+        },
+        {
+          "id": "searchHeader",
+          "component": "TextContent",
+          "text": "Search by Route",
+          "size": "large-heavy"
+        },
+        {
+          "id": "searchForm",
+          "component": "Form",
+          "name": "routeSearch",
+          "buttons": "searchButtons",
+          "fields": ["searchOriginCtrl", "searchDestCtrl"]
+        },
+        {
+          "id": "searchOriginCtrl",
+          "component": "FormControl",
+          "label": "Origin",
+          "input": "searchOriginInput",
+          "hint": "City or hub code"
+        },
+        {
+          "id": "searchOriginInput",
+          "component": "Input",
+          "name": "origin",
+          "placeholder": "e.g. Chicago",
+          "type": "text"
+        },
+        {
+          "id": "searchDestCtrl",
+          "component": "FormControl",
+          "label": "Destination",
+          "input": "searchDestInput",
+          "hint": "City or hub code"
+        },
+        {
+          "id": "searchDestInput",
+          "component": "Input",
+          "name": "destination",
+          "placeholder": "e.g. Denver",
+          "type": "text"
+        },
+        {
+          "id": "searchButtons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": ["searchSubmit"]
+        },
+        {
+          "id": "searchSubmit",
+          "component": "Button",
+          "label": "Search Routes",
+          "variant": "primary",
+          "action": ["searchRoutes"]
+        },
+        {
+          "id": "transitTable",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "children": ["transitHeader", "shipTable"]
+        },
+        {
+          "id": "transitHeader",
+          "component": "TextContent",
+          "text": "Shipments In Transit",
+          "size": "large-heavy"
+        },
+        {
+          "id": "shipTable",
+          "component": "Table",
+          "columns": ["colId", "colOrigin", "colDest", "colEta", "colStatus"]
+        },
+        {
+          "id": "colId",
+          "component": "Col",
+          "label": "Shipment",
+          "type": "string",
+          "data": ["SHP-2041", "SHP-2098", "SHP-2110", "SHP-2115", "SHP-2120", "SHP-2133"]
+        },
+        {
+          "id": "colOrigin",
+          "component": "Col",
+          "label": "Origin",
+          "type": "string",
+          "data": ["Chicago", "Miami", "Seattle", "Dallas", "New York", "Phoenix"]
+        },
+        {
+          "id": "colDest",
+          "component": "Col",
+          "label": "Destination",
+          "type": "string",
+          "data": ["Denver", "Atlanta", "Boise", "Houston", "Boston", "Las Vegas"]
+        },
+        {
+          "id": "colEta",
+          "component": "Col",
+          "label": "ETA",
+          "type": "string",
+          "data": ["Today 6:00 PM", "Tomorrow 9:00 AM", "Today 8:00 PM", "Today 2:00 PM", "Tomorrow 11:00 AM", "Today 5:00 PM"]
+        },
+        {
+          "id": "colStatus",
+          "component": "Col",
+          "label": "Status",
+          "type": "string",
+          "data": ["Delayed", "Delayed", "Delayed", "On Time", "On Time", "On Time"]
+        },
+        {
+          "id": "chartsRow",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "wrap": true,
+          "children": ["carrierCard"]
+        },
+        {
+          "id": "carrierCard",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "weight": 1,
+          "children": ["carrierHeader", "carrierChart"]
+        },
+        {
+          "id": "carrierHeader",
+          "component": "TextContent",
+          "text": "Volume Split by Carrier",
+          "size": "large-heavy"
+        },
+        {
+          "id": "carrierChart",
+          "component": "PieChart",
+          "variant": "donut",
+          "labels": ["FedEx", "UPS", "DHL", "USPS", "Regional"],
+          "values": [340, 280, 190, 120, 70]
+        },
+        {
+          "id": "weeklyChart",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "children": ["weeklyHeader", "weeklyBar"]
+        },
+        {
+          "id": "weeklyHeader",
+          "component": "TextContent",
+          "text": "Weekly Volume — Past Two Months",
+          "size": "large-heavy"
+        },
+        {
+          "id": "weeklyBar",
+          "component": "BarChart",
+          "labels": ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"],
+          "series": ["weeklySeries"],
+          "xLabel": "Week",
+          "yLabel": "Shipments"
+        },
+        {
+          "id": "weeklySeries",
+          "component": "Series",
+          "category": "Shipments",
+          "values": [210, 245, 198, 267, 289, 254, 301, 278]
+        },
+        {
+          "id": "flagForm",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "children": ["flagHeader", "flagFormInner"]
+        },
+        {
+          "id": "flagHeader",
+          "component": "TextContent",
+          "text": "Flag a Shipment",
+          "size": "large-heavy"
+        },
+        {
+          "id": "flagFormInner",
+          "component": "Form",
+          "name": "flagShipment",
+          "buttons": "flagButtons",
+          "fields": ["flagIdCtrl", "flagReasonCtrl", "flagNotesCtrl"]
+        },
+        {
+          "id": "flagIdCtrl",
+          "component": "FormControl",
+          "label": "Shipment ID",
+          "input": "flagIdInput"
+        },
+        {
+          "id": "flagIdInput",
+          "component": "Input",
+          "name": "shipmentId",
+          "placeholder": "e.g. SHP-2041",
+          "type": "text"
+        },
+        {
+          "id": "flagReasonCtrl",
+          "component": "FormControl",
+          "label": "Reason",
+          "input": "flagReasonSelect"
+        },
+        {
+          "id": "flagReasonSelect",
+          "component": "Select",
+          "name": "reason",
+          "placeholder": "Select a reason",
+          "items": ["reasonDelay", "reasonDamage", "reasonMissing", "reasonCost"]
+        },
+        {
+          "id": "reasonDelay",
+          "component": "SelectItem",
+          "value": "delay",
+          "label": "Delay / ETA Risk"
+        },
+        {
+          "id": "reasonDamage",
+          "component": "SelectItem",
+          "value": "damage",
+          "label": "Damaged Goods"
+        },
+        {
+          "id": "reasonMissing",
+          "component": "SelectItem",
+          "value": "missing",
+          "label": "Missing / Lost"
+        },
+        {
+          "id": "reasonCost",
+          "component": "SelectItem",
+          "value": "cost",
+          "label": "Cost Discrepancy"
+        },
+        {
+          "id": "flagNotesCtrl",
+          "component": "FormControl",
+          "label": "Notes",
+          "input": "flagNotesInput"
+        },
+        {
+          "id": "flagNotesInput",
+          "component": "TextArea",
+          "name": "notes",
+          "placeholder": "Add context for the flag...",
+          "rows": 3
+        },
+        {
+          "id": "flagButtons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": ["flagSubmit"]
+        },
+        {
+          "id": "flagSubmit",
+          "component": "Button",
+          "label": "Flag Shipment",
+          "variant": "primary",
+          "type": "destructive",
+          "action": ["submitFlag"]
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+This single screen covers every item:
+
+1. **Shipments in transit** — the "Shipments In Transit" table with origin, destination, ETA, and status columns.
+2. **Delayed shipments** — the amber warning callout naming the three delayed shipments (also flagged in the table's Status column).
+3. **On-time percentage** — the "On-Time Delivery" KPI card showing 92.4% with a progress bar against target.
+4. **Volume split by carrier** — the donut chart breaking down volume across FedEx, UPS, DHL, USPS, and Regional.
+5. **Search by route** — the "Search by Route" form with origin and destination fields.
+6. **Average cost per shipment** — the "$1,284" KPI card with trend note.
+7. **Weekly volume (past two months)** — the 8-week bar chart.
+8. **Flag a shipment** — the "Flag a Shipment" form with ID, reason, and notes.
+9. **Last refreshed** — the timestamp tag near the top.

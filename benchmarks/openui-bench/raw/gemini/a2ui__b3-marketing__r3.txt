@@ -1,0 +1,403 @@
+Here is the weekly marketing manager dashboard containing all requested metrics, campaign details, traffic sources, and action controls.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "marketing-dashboard",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#2563EB",
+      "agentDisplayName": "Marketing Analytics Engine"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "marketing-dashboard",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header-card",
+          "best-campaign-callout",
+          "kpi-summary-card",
+          "charts-tab-container",
+          "campaigns-card",
+          "followup-suggestions"
+        ]
+      },
+      {
+        "id": "header-card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "header-title",
+          "controls-card"
+        ]
+      },
+      {
+        "id": "header-title",
+        "component": "CardHeader",
+        "title": "Marketing Manager Weekly Dashboard",
+        "subtitle": "Overview of traffic, campaign performance, conversion rates, and audience growth."
+      },
+      {
+        "id": "controls-card",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "m",
+        "align": "center",
+        "justify": "between",
+        "children": [
+          "date-picker-control",
+          "export-buttons"
+        ]
+      },
+      {
+        "id": "date-picker-control",
+        "component": "FormControl",
+        "label": "Date Range",
+        "input": "date-picker-input",
+        "hint": "Select custom date filter (Item #6)"
+      },
+      {
+        "id": "date-picker-input",
+        "component": "DatePicker",
+        "name": "dashboardDateRange",
+        "mode": "range"
+      },
+      {
+        "id": "export-buttons",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": [
+          "export-pdf-btn",
+          "export-csv-btn"
+        ]
+      },
+      {
+        "id": "export-pdf-btn",
+        "component": "Button",
+        "label": "Export Report (PDF)",
+        "variant": "primary",
+        "size": "medium"
+      },
+      {
+        "id": "export-csv-btn",
+        "component": "Button",
+        "label": "Export Data (CSV)",
+        "variant": "secondary",
+        "size": "medium"
+      },
+      {
+        "id": "best-campaign-callout",
+        "component": "Callout",
+        "variant": "success",
+        "title": "Best Performing Campaign: Q3 Search Ads Lift (Item #5)",
+        "description": "Achieved the highest ROI this period with 3,850 total conversions, a 4.8% conversion rate, and an average CPA of $18.20."
+      },
+      {
+        "id": "kpi-summary-card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "kpi-heading",
+          "kpi-metrics-tabs"
+        ]
+      },
+      {
+        "id": "kpi-heading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "Core Metrics Overview"
+      },
+      {
+        "id": "kpi-metrics-tabs",
+        "component": "Tabs",
+        "items": [
+          "tab-visitors",
+          "tab-conversion",
+          "tab-subscribers"
+        ]
+      },
+      {
+        "id": "tab-visitors",
+        "component": "TabItem",
+        "value": "visitors",
+        "trigger": "Site Visitors (Last 30 Days)",
+        "content": [
+          "visitors-tag",
+          "visitors-line-chart"
+        ]
+      },
+      {
+        "id": "visitors-tag",
+        "component": "Tag",
+        "text": "Total Visitors (30d): 124,500 (+14% vs prev period)",
+        "variant": "info",
+        "size": "md"
+      },
+      {
+        "id": "visitors-line-chart",
+        "component": "LineChart",
+        "variant": "natural",
+        "xLabel": "Date (Last 30 Days)",
+        "yLabel": "Visitors",
+        "labels": [
+          "Day 1", "Day 5", "Day 10", "Day 15", "Day 20", "Day 25", "Day 30"
+        ],
+        "series": [
+          "visitors-series"
+        ]
+      },
+      {
+        "id": "visitors-series",
+        "component": "Series",
+        "category": "Daily Visitors",
+        "values": [3200, 3800, 4100, 3950, 4600, 4300, 4850]
+      },
+      {
+        "id": "tab-conversion",
+        "component": "TabItem",
+        "value": "conversion",
+        "trigger": "Conversion Rate",
+        "content": [
+          "conversion-tag",
+          "conversion-area-chart"
+        ]
+      },
+      {
+        "id": "conversion-tag",
+        "component": "Tag",
+        "text": "Avg Conversion Rate: 3.42% (+0.35% MoM)",
+        "variant": "success",
+        "size": "md"
+      },
+      {
+        "id": "conversion-area-chart",
+        "component": "AreaChart",
+        "variant": "natural",
+        "xLabel": "Week",
+        "yLabel": "Conversion Rate (%)",
+        "labels": ["Week 1", "Week 2", "Week 3", "Week 4"],
+        "series": [
+          "conversion-series"
+        ]
+      },
+      {
+        "id": "conversion-series",
+        "component": "Series",
+        "category": "Conversion Rate %",
+        "values": [3.1, 3.25, 3.38, 3.42]
+      },
+      {
+        "id": "tab-subscribers",
+        "component": "TabItem",
+        "value": "subscribers",
+        "trigger": "Subscriber Growth (This Month)",
+        "content": [
+          "subscribers-tag",
+          "subscribers-bar-chart"
+        ]
+      },
+      {
+        "id": "subscribers-tag",
+        "component": "Tag",
+        "text": "New Subscribers This Month: +8,450 (Target: 8,000)",
+        "variant": "success",
+        "size": "md"
+      },
+      {
+        "id": "subscribers-bar-chart",
+        "component": "BarChart",
+        "variant": "grouped",
+        "xLabel": "Week of Month",
+        "yLabel": "New Subscribers",
+        "labels": ["Week 1", "Week 2", "Week 3", "Week 4"],
+        "series": [
+          "subscribers-series"
+        ]
+      },
+      {
+        "id": "subscribers-series",
+        "component": "Series",
+        "category": "Net New Subscribers",
+        "values": [1850, 2100, 2250, 2250]
+      },
+      {
+        "id": "charts-tab-container",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "sources-heading",
+          "sources-pie-chart",
+          "sources-table"
+        ]
+      },
+      {
+        "id": "sources-heading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "Top 5 Traffic Sources & Share (Item #3)"
+      },
+      {
+        "id": "sources-pie-chart",
+        "component": "PieChart",
+        "variant": "donut",
+        "appearance": "circular",
+        "labels": [
+          "Organic Search",
+          "Paid Search",
+          "Direct Traffic",
+          "Social Media",
+          "Email Campaigns"
+        ],
+        "values": [40, 25, 15, 12, 8]
+      },
+      {
+        "id": "sources-table",
+        "component": "Table",
+        "columns": [
+          "col-source-name",
+          "col-source-share",
+          "col-source-visitors"
+        ]
+      },
+      {
+        "id": "col-source-name",
+        "component": "Col",
+        "label": "Source",
+        "type": "string",
+        "data": [
+          "Organic Search",
+          "Paid Search",
+          "Direct Traffic",
+          "Social Media",
+          "Email Campaigns"
+        ]
+      },
+      {
+        "id": "col-source-share",
+        "component": "Col",
+        "label": "Share (%)",
+        "type": "number",
+        "data": [40, 25, 15, 12, 8]
+      },
+      {
+        "id": "col-source-visitors",
+        "component": "Col",
+        "label": "Visitors Count",
+        "type": "number",
+        "data": [49800, 31125, 18675, 14940, 9960]
+      },
+      {
+        "id": "campaigns-card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "campaigns-heading",
+          "campaigns-table"
+        ]
+      },
+      {
+        "id": "campaigns-heading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "Running Campaigns & Spend (Item #4)"
+      },
+      {
+        "id": "campaigns-table",
+        "component": "Table",
+        "columns": [
+          "col-camp-name",
+          "col-camp-status",
+          "col-camp-spend",
+          "col-camp-conversions"
+        ]
+      },
+      {
+        "id": "col-camp-name",
+        "component": "Col",
+        "label": "Campaign Name",
+        "type": "string",
+        "data": [
+          "Q3 Search Ads Lift (Best Performing)",
+          "Social Retargeting - Fall",
+          "Newsletter Sponsor Placement",
+          "Partner Co-Marketing Webinar",
+          "Display Brand Awareness"
+        ]
+      },
+      {
+        "id": "col-camp-status",
+        "component": "Col",
+        "label": "Status",
+        "type": "string",
+        "data": [
+          "Active",
+          "Active",
+          "Active",
+          "Active",
+          "Paused"
+        ]
+      },
+      {
+        "id": "col-camp-spend",
+        "component": "Col",
+        "label": "Current Spend ($)",
+        "type": "number",
+        "data": [14500, 8200, 4500, 3100, 1200]
+      },
+      {
+        "id": "col-camp-conversions",
+        "component": "Col",
+        "label": "Conversions",
+        "type": "number",
+        "data": [3850, 1240, 680, 510, 95]
+      },
+      {
+        "id": "followup-suggestions",
+        "component": "FollowUpBlock",
+        "items": [
+          "followup-item-1",
+          "followup-item-2",
+          "followup-item-3"
+        ]
+      },
+      {
+        "id": "followup-item-1",
+        "component": "FollowUpItem",
+        "text": "Break down Organic Search traffic by top landing pages."
+      },
+      {
+        "id": "followup-item-2",
+        "component": "FollowUpItem",
+        "text": "Compare Q3 Search Ads Lift with last quarter's paid campaign."
+      },
+      {
+        "id": "followup-item-3",
+        "component": "FollowUpItem",
+        "text": "Show email subscriber growth by acquisition channel."
+      }
+    ]
+  }
+}
+</a2ui-json>

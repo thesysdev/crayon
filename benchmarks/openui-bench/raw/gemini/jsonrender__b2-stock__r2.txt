@@ -1,0 +1,38 @@
+{"op":"add","path":"/root","value":"container"}
+{"op":"add","path":"/elements/container","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["header","alert-banner","controls-card","inventory-card"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Low Inventory Management","subtitle":"Monitor stock levels, manage alert thresholds, and reorder critical stock."},"children":[]}}
+{"op":"add","path":"/elements/alert-banner","value":{"type":"Callout","props":{"variant":"warning","title":"Action Required: Low Stock Items Detected","description":"Multiple inventory items have fallen below your safety stock threshold. Please review and place reorders to avoid fulfillment delays."},"children":[]}}
+{"op":"add","path":"/elements/controls-card","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between"},"children":["search-control","threshold-control"]}}
+{"op":"add","path":"/elements/search-control","value":{"type":"FormControl","props":{"label":"Search Inventory","input":"search-input","hint":"Filter by SKU, item name, or category"},"children":[]}}
+{"op":"add","path":"/elements/search-input","value":{"type":"Input","props":{"name":"search","placeholder":"Search items...","value":{"$bindState":"/searchQuery"}},"children":[]}}
+{"op":"add","path":"/state/searchQuery","value":""}
+{"op":"add","path":"/elements/threshold-control","value":{"type":"FormControl","props":{"label":"Warning Threshold (Units)","input":"threshold-slider","hint":"Items with stock ≤ threshold will trigger warnings"},"children":[]}}
+{"op":"add","path":"/elements/threshold-slider","value":{"type":"Slider","props":{"name":"threshold","variant":"discrete","min":5,"max":50,"step":5,"value":{"$bindState":"/warningThreshold"}},"children":[]}}
+{"op":"add","path":"/state/warningThreshold","value":[15]}
+{"op":"add","path":"/elements/inventory-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["inventory-title","items-list"]}}
+{"op":"add","path":"/elements/inventory-title","value":{"type":"Heading","props":{"text":"Low Stock Items","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/inventory-list-container","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"}}}
+{"op":"add","path":"/elements/items-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/items","key":"id"},"children":["item-row"]}}
+{"op":"add","path":"/state/items","value":[]}
+{"op":"add","path":"/state/items/0","value":{"id":"item-1","sku":"SKU-1042","name":"Wireless Mechanical Keyboard","category":"Electronics","stock":4,"reorderQty":"25","status":"Critical"}}
+{"op":"add","path":"/state/items/1","value":{"id":"item-2","sku":"SKU-2891","name":"Ergonomic Mesh Office Chair","category":"Furniture","stock":2,"reorderQty":"10","status":"Critical"}}
+{"op":"add","path":"/state/items/2","value":{"id":"item-3","sku":"SKU-7734","name":"USB-C Dual Monitor Dock","category":"Electronics","stock":8,"reorderQty":"15","status":"Low"}}
+{"op":"add","path":"/state/items/3","value":{"id":"item-4","sku":"SKU-5120","name":"UltraWide 34\" Curved Monitor","category":"Electronics","stock":11,"reorderQty":"8","status":"Low"}}
+{"op":"add","path":"/state/items/4","value":{"id":"item-5","sku":"SKU-9012","name":"Noise Cancelling Headphones","category":"Audio","stock":6,"reorderQty":"20","status":"Critical"}}
+{"op":"add","path":"/elements/item-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between"},"children":["item-info","item-stock","item-actions"]}}
+{"op":"add","path":"/elements/item-info","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["item-title-badge","item-sku"]}}
+{"op":"add","path":"/elements/item-title-badge","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center"},"children":["item-name","item-badge"]}}
+{"op":"add","path":"/elements/item-name","value":{"type":"Heading","props":{"text":{"$item":"name"},"level":"h4"},"children":[]}}
+{"op":"add","path":"/elements/item-badge","value":{"type":"Badge","props":{"text":{"$item":"status"},"variant":{"$cond":{"$item":"status","eq":"Critical"},"$then":"destructive","$else":"secondary"}},"children":[]}}
+{"op":"add","path":"/elements/item-sku","value":{"type":"TextContent","props":{"text":{"$template":"SKU: ${sku}  •  Category: ${category}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/item-stock","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs","align":"center"},"children":["item-units","item-threshold-comparison"]}}
+{"op":"add","path":"/elements/item-units","value":{"type":"TextContent","props":{"text":{"$template":"**${stock}** units left"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/item-threshold-comparison","value":{"type":"Tag","props":{"text":"Below Threshold","variant":"danger","size":"sm"},"children":[]}}
+{"op":"add","path":"/elements/item-actions","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center"},"children":["reorder-dialog"]}}
+{"op":"add","path":"/elements/reorder-dialog","value":{"type":"DialogBlock","props":{"triggerLabel":"Reorder","triggerVariant":"default","title":"Place Purchase Order","description":"Confirm details to submit a stock reorder to the supplier.","content":["reorder-form-card"]},"children":[]}}
+{"op":"add","path":"/elements/reorder-form-card","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"children":["reorder-item-summary","reorder-quantity-field","reorder-confirm-button"]}}
+{"op":"add","path":"/elements/reorder-item-summary","value":{"type":"TextCallout","props":{"variant":"info","title":"Order Summary","description":{"$template":"Reordering stock for item: ${name} (SKU: ${sku}). Current stock is ${stock} units."}},"children":[]}}
+{"op":"add","path":"/elements/reorder-quantity-field","value":{"type":"FormControl","props":{"label":"Reorder Quantity","input":"reorder-input","hint":"Default recommended batch size shown"},"children":[]}}
+{"op":"add","path":"/elements/reorder-input","value":{"type":"Input","props":{"name":"reorderQty","type":"number","value":{"$bindItem":"reorderQty"}},"children":[]}}
+{"op":"add","path":"/elements/reorder-confirm-button","value":{"type":"Button","props":{"label":"Confirm & Send Order","variant":"primary"},"on":{"press":{"action":"setState","params":{"statePath":"/lastOrderedItem","value":{"$item":"name"}}}},"children":[]}}
+{"op":"add","path":"/state/lastOrderedItem","value":""}

@@ -1,0 +1,79 @@
+
+
+Here's a complete single-screen weekly dashboard for a marketing manager. It covers all eight requirements: 30-day visitor trend, conversion rate, top-5 traffic source shares, running campaigns with spend, a callout for the best performer, a date-range control (preset selector + custom range picker), email subscriber growth for the month, and export actions.
+
+<a2ui-json>
+{"version":"v0.9","createSurface":{"surfaceId":"marketing-weekly-dashboard","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#4F46E5"}}}
+</a2ui-json>
+
+<a2ui-json>
+{"version":"v0.9","updateComponents":{"surfaceId":"marketing-weekly-dashboard","components":[
+{"id":"root","component":"Card","direction":"column","gap":"l","children":["header","controlsRow","bestCallout","kpiRow","visitorsCard","midRow","campaignsCard"]},
+
+{"id":"header","component":"CardHeader","title":"Marketing Weekly Dashboard","subtitle":"Performance overview · May 9 – Jun 7 · Updated today 9:00 AM"},
+
+{"id":"controlsRow","component":"Card","variant":"clear","direction":"row","gap":"m","align":"end","justify":"between","wrap":true,"children":["dateRangeControl","customRangeControl","exportButtons"]},
+{"id":"dateRangeControl","component":"FormControl","label":"Date range","input":"dateRangeSelect"},
+{"id":"dateRangeSelect","component":"Select","name":"dateRange","value":"30d","items":["dr7","dr14","dr30","drMtd"]},
+{"id":"dr7","component":"SelectItem","value":"7d","label":"Last 7 days"},
+{"id":"dr14","component":"SelectItem","value":"14d","label":"Last 14 days"},
+{"id":"dr30","component":"SelectItem","value":"30d","label":"Last 30 days"},
+{"id":"drMtd","component":"SelectItem","value":"mtd","label":"This month"},
+{"id":"customRangeControl","component":"FormControl","label":"Custom range","input":"customRangePicker"},
+{"id":"customRangePicker","component":"DatePicker","name":"customRange","mode":"range","value":["2025-05-09","2025-06-07"]},
+{"id":"exportButtons","component":"Buttons","direction":"row","buttons":["exportPdf","exportCsv"]},
+{"id":"exportPdf","component":"Button","label":"Export PDF","variant":"primary","action":[{"event":"export","format":"pdf"}],"accessibility":{"label":"Export report as PDF","description":"Downloads the full dashboard report as a PDF file"}},
+{"id":"exportCsv","component":"Button","label":"Export CSV","variant":"secondary","action":[{"event":"export","format":"csv"}],"accessibility":{"label":"Export data as CSV","description":"Downloads the dashboard data as a CSV file"}},
+
+{"id":"bestCallout","component":"Callout","variant":"success","title":"🏆 Best performing campaign: Summer Sale Retargeting","description":"5.6x ROAS · 4.1% CTR · $12,400 spend → $69,440 attributed revenue. Recommendation: shift +20% budget from Brand Awareness Video."},
+
+{"id":"kpiRow","component":"Card","variant":"clear","direction":"row","gap":"m","wrap":true,"children":["kpiVisitors","kpiConversion","kpiSubs"]},
+{"id":"kpiVisitors","component":"Card","direction":"column","gap":"xs","weight":1,"children":["kpiVisitorsValue","kpiVisitorsLabel"]},
+{"id":"kpiVisitorsValue","component":"TextContent","text":"143,350","size":"large-heavy"},
+{"id":"kpiVisitorsLabel","component":"TextContent","text":"Site visitors · last 30 days · ▲ 12.4% vs prior period","size":"small"},
+{"id":"kpiConversion","component":"Card","direction":"column","gap":"xs","weight":1,"children":["kpiConversionValue","kpiConversionLabel"]},
+{"id":"kpiConversionValue","component":"TextContent","text":"3.42%","size":"large-heavy"},
+{"id":"kpiConversionLabel","component":"TextContent","text":"Conversion rate · target 3.0% · ▲ 0.4 pts vs prior period","size":"small"},
+{"id":"kpiSubs","component":"Card","direction":"column","gap":"xs","weight":1,"children":["kpiSubsValue","kpiSubsLabel"]},
+{"id":"kpiSubsValue","component":"TextContent","text":"+2,847","size":"large-heavy"},
+{"id":"kpiSubsLabel","component":"TextContent","text":"New email subscribers this month · ▲ 9.1% · list total 48,210","size":"small"},
+
+{"id":"visitorsCard","component":"Card","direction":"column","gap":"m","children":["visitorsHeader","visitorsChart"]},
+{"id":"visitorsHeader","component":"CardHeader","title":"Site Visitors","subtitle":"Daily unique visitors · last 30 days · 143,350 total"},
+{"id":"visitorsChart","component":"AreaChart","variant":"natural","xLabel":"Date","yLabel":"Visitors","labels":["May 9","May 10","May 11","May 12","May 13","May 14","May 15","May 16","May 17","May 18","May 19","May 20","May 21","May 22","May 23","May 24","May 25","May 26","May 27","May 28","May 29","May 30","May 31","Jun 1","Jun 2","Jun 3","Jun 4","Jun 5","Jun 6","Jun 7"],"series":["visitorsSeries"]},
+{"id":"visitorsSeries","component":"Series","category":"Visitors","values":[3850,4120,3980,4310,4520,4890,4610,4230,4050,4380,4720,5010,5240,4980,4560,4320,4650,4890,5120,5480,5210,4870,4590,4780,5060,5340,5690,5420,5110,5370]},
+
+{"id":"midRow","component":"Card","variant":"clear","direction":"row","gap":"m","wrap":true,"children":["trafficCard","subsCard"]},
+{"id":"trafficCard","component":"Card","direction":"column","gap":"m","weight":1,"children":["trafficHeader","trafficPie","trafficNote"]},
+{"id":"trafficHeader","component":"CardHeader","title":"Top 5 Traffic Sources","subtitle":"Share of sessions · last 30 days"},
+{"id":"trafficPie","component":"PieChart","variant":"donut","labels":["Organic Search","Paid Search","Social Media","Direct","Email"],"values":[36,24,18,13,9]},
+{"id":"trafficNote","component":"TextContent","text":"Organic 36% · Paid Search 24% · Social 18% · Direct 13% · Email 9%","size":"small"},
+{"id":"subsCard","component":"Card","direction":"column","gap":"m","weight":1,"children":["subsHeader","subsChart","subsNote"]},
+{"id":"subsHeader","component":"CardHeader","title":"Email Subscriber Growth","subtitle":"June · new subscribers per week"},
+{"id":"subsChart","component":"BarChart","variant":"grouped","yLabel":"New subscribers","labels":["Week 1","Week 2","Week 3","Week 4"],"series":["subsSeries"]},
+{"id":"subsSeries","component":"Series","category":"New subscribers","values":[612,704,738,793]},
+{"id":"subsNote","component":"TextContent","text":"+2,847 new subscribers MTD · best week: Week 4 (+793)","size":"small"},
+
+{"id":"campaignsCard","component":"Card","direction":"column","gap":"m","children":["campaignsHeader","campaignsTable"]},
+{"id":"campaignsHeader","component":"CardHeader","title":"Running Campaigns","subtitle":"5 active campaigns · $35,250 total spend this month"},
+{"id":"campaignsTable","component":"Table","columns":["colCampaign","colChannel","colSpend","colRoas","colStatus"]},
+{"id":"colCampaign","component":"Col","label":"Campaign","type":"string","data":["Summer Sale Retargeting","Brand Awareness Video","Weekly Newsletter Push","Search – Generic Terms","Lookalike Prospecting"]},
+{"id":"colChannel","component":"Col","label":"Channel","type":"string","data":["Paid Social","YouTube","Email","Paid Search","Paid Social"]},
+{"id":"colSpend","component":"Col","label":"Spend (MTD)","type":"string","data":["$12,400","$9,800","$1,150","$7,300","$4,600"]},
+{"id":"colRoas","component":"Col","label":"ROAS","type":"string","data":["5.6x","1.9x","3.8x","3.1x","2.4x"]},
+{"id":"colStatus","component":"Col","label":"Status","type":"string","data":["Active","Active","Active","Active","Active"]}
+]}}
+</a2ui-json>
+
+**How each requirement is covered:**
+
+1. **Site visitors (30 days)** — area chart with daily uniques plus a 143,350 total KPI card
+2. **Conversion rate** — KPI card showing 3.42% vs. a 3.0% target
+3. **Top 5 traffic sources** — donut chart with each source's share, echoed as a text legend
+4. **Running campaigns + spend** — table with all 5 active campaigns, channel, and MTD spend
+5. **Best campaign callout** — green callout banner highlighting Summer Sale Retargeting with ROAS/CTR and a budget recommendation
+6. **Date range control** — preset dropdown (7/14/30 days, this month) plus a custom range picker
+7. **Email subscriber growth** — KPI card (+2,847 MTD) and weekly bar chart for June
+8. **Export** — Export PDF / Export CSV buttons in the header row
+
+Want me to wire the date-range selector to actually swap the chart data, or add drill-down views per campaign?

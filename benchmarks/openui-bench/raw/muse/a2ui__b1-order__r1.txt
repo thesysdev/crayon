@@ -1,0 +1,410 @@
+Here's a single-screen delivery tracker covering all 3 requested items — live location, ETA, and problem reporting:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "delivery-tracking",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#0F766E",
+      "agentDisplayName": "Delivery Assistant"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "delivery-tracking",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "header",
+          "statusCallout",
+          "locationSection",
+          "etaSection",
+          "reportSection"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Track Your Package",
+        "subtitle": "Order #DL-78294410 • 3 items • FedEx Ground  #7946 2819 3341"
+      },
+      {
+        "id": "statusCallout",
+        "component": "Callout",
+        "variant": "info",
+        "title": "In Transit — On Schedule",
+        "description": "Your package is moving as expected. Last scan was 2 hours ago."
+      },
+      {
+        "id": "locationSection",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "locationHeader",
+          "trackingSteps",
+          "currentBox",
+          "locationDetails"
+        ]
+      },
+      {
+        "id": "locationHeader",
+        "component": "CardHeader",
+        "title": "1. Where your package is right now",
+        "subtitle": "Live tracking • Updated just now"
+      },
+      {
+        "id": "trackingSteps",
+        "component": "Steps",
+        "items": [
+          "step1",
+          "step2",
+          "step3",
+          "step4",
+          "step5"
+        ]
+      },
+      {
+        "id": "step1",
+        "component": "StepsItem",
+        "title": "Ordered",
+        "details": "Jun 12 • Order confirmed in Columbus, OH"
+      },
+      {
+        "id": "step2",
+        "component": "StepsItem",
+        "title": "Shipped",
+        "details": "Jun 13 • Left warehouse • Carrier picked up"
+      },
+      {
+        "id": "step3",
+        "component": "StepsItem",
+        "title": "In Transit — Current Location",
+        "details": "Jun 14, 10:42 AM • Chicago, IL Distribution Center • Departed 12:15 PM heading to Milwaukee"
+      },
+      {
+        "id": "step4",
+        "component": "StepsItem",
+        "title": "Out for Delivery",
+        "details": "Expected Jun 15 • Milwaukee, WI"
+      },
+      {
+        "id": "step5",
+        "component": "StepsItem",
+        "title": "Delivered",
+        "details": "Estimated Jun 15 by 8:00 PM"
+      },
+      {
+        "id": "currentBox",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "currentLabel",
+          "currentText",
+          "currentBadgeRow"
+        ]
+      },
+      {
+        "id": "currentLabel",
+        "component": "TextContent",
+        "text": "📍 CURRENT LOCATION",
+        "size": "small-heavy"
+      },
+      {
+        "id": "currentText",
+        "component": "MarkDownRenderer",
+        "textMarkdown": "**Chicago, IL Distribution Center**\nDeparted at 12:15 PM CST — In transit to Milwaukee, WI facility (approx. 90 miles away). Next scan expected within 4 hours.",
+        "variant": "clear"
+      },
+      {
+        "id": "currentBadgeRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "s",
+        "children": [
+          "badgeInTransit",
+          "badgeTracking"
+        ]
+      },
+      {
+        "id": "badgeInTransit",
+        "component": "Badge",
+        "text": "● In Transit",
+        "variant": "secondary"
+      },
+      {
+        "id": "badgeTracking",
+        "component": "Badge",
+        "text": "Tracking: 7946 2819 3341",
+        "variant": "outline"
+      },
+      {
+        "id": "locationDetails",
+        "component": "TextContent",
+        "text": "Carrier: FedEx Ground • Last scan: Chicago, IL • Next stop: Milwaukee, WI",
+        "size": "small"
+      },
+      {
+        "id": "etaSection",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "etaHeader",
+          "etaDateCard",
+          "etaCalendar",
+          "etaNote"
+        ]
+      },
+      {
+        "id": "etaHeader",
+        "component": "CardHeader",
+        "title": "2. Estimated Delivery Date",
+        "subtitle": "On time — no delays reported"
+      },
+      {
+        "id": "etaDateCard",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "etaHeading",
+          "etaSubtext",
+          "etaBadges"
+        ]
+      },
+      {
+        "id": "etaHeading",
+        "component": "Heading",
+        "text": "Sunday, June 15, 2025 by 8:00 PM",
+        "level": "h2"
+      },
+      {
+        "id": "etaSubtext",
+        "component": "TextContent",
+        "text": "Residential delivery • No signature required • You'll get a notification when it's out for delivery",
+        "size": "small"
+      },
+      {
+        "id": "etaBadges",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "s",
+        "children": [
+          "etaBadgeOnTime",
+          "etaBadgeWindow"
+        ]
+      },
+      {
+        "id": "etaBadgeOnTime",
+        "component": "Tag",
+        "text": "On Time",
+        "variant": "success",
+        "size": "sm"
+      },
+      {
+        "id": "etaBadgeWindow",
+        "component": "Tag",
+        "text": "Delivery window: 9AM - 8PM",
+        "variant": "neutral",
+        "size": "sm"
+      },
+      {
+        "id": "etaCalendar",
+        "component": "CalendarBlock",
+        "mode": "single",
+        "defaultMonth": "2025-06-15",
+        "numberOfMonths": 1,
+        "captionLayout": "label"
+      },
+      {
+        "id": "etaNote",
+        "component": "Alert",
+        "title": "Delivery Instructions",
+        "description": "Leave at front door if no answer. Package is weather-resistant.",
+        "variant": "default"
+      },
+      {
+        "id": "reportSection",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "reportHeader",
+          "reportText",
+          "reportButtons",
+          "reportDialog",
+          "reportAltContact"
+        ]
+      },
+      {
+        "id": "reportHeader",
+        "component": "CardHeader",
+        "title": "3. Report a Problem",
+        "subtitle": "Something wrong? Let us know and we'll respond within 2 hours"
+      },
+      {
+        "id": "reportText",
+        "component": "TextContent",
+        "text": "Use this if your package is delayed, shows delivered but missing, arrived damaged, or went to the wrong address.",
+        "size": "default"
+      },
+      {
+        "id": "reportButtons",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": [
+          "btnQuickReport",
+          "btnContact"
+        ]
+      },
+      {
+        "id": "btnQuickReport",
+        "component": "Button",
+        "label": "Quick Actions",
+        "variant": "tertiary",
+        "size": "small"
+      },
+      {
+        "id": "btnContact",
+        "component": "Button",
+        "label": "Chat with Support",
+        "variant": "secondary",
+        "size": "small"
+      },
+      {
+        "id": "reportDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Report a Problem with This Delivery",
+        "title": "Report a Delivery Problem",
+        "description": "Order #DL-78294410 • Chicago, IL → Milwaukee, WI",
+        "triggerVariant": "default",
+        "content": [
+          "reportForm"
+        ]
+      },
+      {
+        "id": "reportAltContact",
+        "component": "TextContent",
+        "text": "Or call 1-800-555-0199 (24/7) with tracking #7946 2819 3341",
+        "size": "small"
+      },
+      {
+        "id": "reportForm",
+        "component": "Form",
+        "name": "deliveryProblemForm",
+        "fields": [
+          "fcIssueType",
+          "fcDescription"
+        ],
+        "buttons": "formButtons"
+      },
+      {
+        "id": "fcIssueType",
+        "component": "FormControl",
+        "label": "Issue Type",
+        "hint": "Choose the category that best describes the problem",
+        "input": "issueSelect"
+      },
+      {
+        "id": "issueSelect",
+        "component": "Select",
+        "name": "issueType",
+        "placeholder": "Choose an issue",
+        "items": [
+          "siDelayed",
+          "siDamaged",
+          "siWrongAddress",
+          "siMissing"
+        ]
+      },
+      {
+        "id": "siDelayed",
+        "component": "SelectItem",
+        "value": "delayed",
+        "label": "Package hasn't arrived / Delayed"
+      },
+      {
+        "id": "siDamaged",
+        "component": "SelectItem",
+        "value": "damaged",
+        "label": "Package arrived damaged"
+      },
+      {
+        "id": "siWrongAddress",
+        "component": "SelectItem",
+        "value": "wrong_address",
+        "label": "Delivered to wrong address"
+      },
+      {
+        "id": "siMissing",
+        "component": "SelectItem",
+        "value": "missing",
+        "label": "Delivered but missing / Stolen"
+      },
+      {
+        "id": "fcDescription",
+        "component": "FormControl",
+        "label": "Describe the problem",
+        "hint": "Include details — damage, location, or when you expected it",
+        "input": "issueDesc"
+      },
+      {
+        "id": "issueDesc",
+        "component": "TextArea",
+        "name": "description",
+        "placeholder": "E.g., Tracking hasn't updated in 24 hours / Box was crushed on arrival...",
+        "rows": 4
+      },
+      {
+        "id": "formButtons",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": [
+          "submitBtn",
+          "cancelBtn"
+        ]
+      },
+      {
+        "id": "submitBtn",
+        "component": "Button",
+        "label": "Submit Report",
+        "variant": "primary"
+      },
+      {
+        "id": "cancelBtn",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This single screen covers:
+
+**1. Where the package is right now** — Highlighted in the Steps tracker + a dedicated "Current Location" card showing Chicago, IL Distribution Center (departed 12:15 PM, en route to Milwaukee) with live tracking number.
+
+**2. Estimated delivery date** — Prominent card with **Sunday, June 15, 2025 by 8:00 PM**, calendar view, delivery window, and status tag.
+
+**3. Way to report a problem** — "Report a Problem with This Delivery" button opens a dialog form with Issue Type selector (delayed/damaged/wrong address/missing) and description field, plus quick chat and phone fallback.

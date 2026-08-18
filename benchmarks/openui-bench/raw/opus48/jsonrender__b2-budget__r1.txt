@@ -1,0 +1,49 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","month-select","budget-card","largest-card","category-header","category-chart","add-expense"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Budget Check","subtitle":"Track your monthly spending"}}}
+{"op":"add","path":"/elements/month-select","value":{"type":"FormControl","props":{"label":"View month","input":"month-input"}}}
+{"op":"add","path":"/elements/month-input","value":{"type":"Select","props":{"name":"month","value":{"$bindState":"/selectedMonth"},"items":["m-jan","m-feb","m-mar"]}}}
+{"op":"add","path":"/elements/m-jan","value":{"type":"SelectItem","props":{"value":"January 2025","label":"January 2025"}}}
+{"op":"add","path":"/elements/m-feb","value":{"type":"SelectItem","props":{"value":"February 2025","label":"February 2025"}}}
+{"op":"add","path":"/elements/m-mar","value":{"type":"SelectItem","props":{"value":"March 2025","label":"March 2025"}}}
+{"op":"add","path":"/state/selectedMonth","value":"March 2025"}
+{"op":"add","path":"/elements/budget-card","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"m"},"children":["budget-heading","budget-summary","budget-progress","budget-remaining"]}}
+{"op":"add","path":"/elements/budget-heading","value":{"type":"Heading","props":{"text":"Total Spent This Month","level":"h3"}}}
+{"op":"add","path":"/elements/budget-summary","value":{"type":"TextContent","props":{"text":{"$template":"**$${/totalSpent}** spent of **$${/budget}** budget"},"size":"large"}}}
+{"op":"add","path":"/elements/budget-progress","value":{"type":"Progress","props":{"value":72,"label":"72% of budget used"}}}
+{"op":"add","path":"/elements/budget-remaining","value":{"type":"TextCallout","props":{"variant":"success","title":"Remaining","description":{"$template":"You have $${/remaining} left this month."}}}}
+{"op":"add","path":"/state/totalSpent","value":1806}
+{"op":"add","path":"/state/budget","value":2500}
+{"op":"add","path":"/state/remaining","value":694}
+{"op":"add","path":"/elements/largest-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["largest-heading","largest-callout"]}}
+{"op":"add","path":"/elements/largest-heading","value":{"type":"Heading","props":{"text":"Largest Expense","level":"h3"}}}
+{"op":"add","path":"/elements/largest-callout","value":{"type":"Callout","props":{"variant":"warning","title":{"$template":"${/largest/name} — $${/largest/amount}"},"description":{"$template":"${/largest/category} · ${/largest/date}"}}}}
+{"op":"add","path":"/state/largest","value":{"name":"Rent Payment","amount":950,"category":"Housing","date":"Mar 1"}}
+{"op":"add","path":"/elements/category-header","value":{"type":"Heading","props":{"text":"Spending by Category","level":"h3"}}}
+{"op":"add","path":"/elements/category-chart","value":{"type":"PieChart","props":{"variant":"donut","labels":{"$state":"/categoryLabels"},"values":{"$state":"/categoryValues"}}}}
+{"op":"add","path":"/state/categoryLabels","value":["Housing","Food","Transport","Entertainment","Utilities"]}
+{"op":"add","path":"/state/categoryValues","value":[950,420,210,140,86]}
+{"op":"add","path":"/elements/add-expense","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"m"},"children":["add-heading","fc-name","fc-amount","fc-category","add-btn","expense-list"]}}
+{"op":"add","path":"/elements/add-heading","value":{"type":"Heading","props":{"text":"Add Expense","level":"h3"}}}
+{"op":"add","path":"/elements/fc-name","value":{"type":"FormControl","props":{"label":"Description","input":"in-name"}}}
+{"op":"add","path":"/elements/in-name","value":{"type":"Input","props":{"name":"expName","placeholder":"e.g. Groceries","value":{"$bindState":"/newExpense/name"}}}}
+{"op":"add","path":"/elements/fc-amount","value":{"type":"FormControl","props":{"label":"Amount","input":"in-amount"}}}
+{"op":"add","path":"/elements/in-amount","value":{"type":"Input","props":{"name":"expAmount","type":"number","placeholder":"0.00","value":{"$bindState":"/newExpense/amount"}}}}
+{"op":"add","path":"/elements/fc-category","value":{"type":"FormControl","props":{"label":"Category","input":"in-category"}}}
+{"op":"add","path":"/elements/in-category","value":{"type":"Select","props":{"name":"expCategory","value":{"$bindState":"/newExpense/category"},"items":["c-housing","c-food","c-transport","c-ent","c-util"]}}}
+{"op":"add","path":"/elements/c-housing","value":{"type":"SelectItem","props":{"value":"Housing","label":"Housing"}}}
+{"op":"add","path":"/elements/c-food","value":{"type":"SelectItem","props":{"value":"Food","label":"Food"}}}
+{"op":"add","path":"/elements/c-transport","value":{"type":"SelectItem","props":{"value":"Transport","label":"Transport"}}}
+{"op":"add","path":"/elements/c-ent","value":{"type":"SelectItem","props":{"value":"Entertainment","label":"Entertainment"}}}
+{"op":"add","path":"/elements/c-util","value":{"type":"SelectItem","props":{"value":"Utilities","label":"Utilities"}}}
+{"op":"add","path":"/state/newExpense","value":{"name":"","amount":"","category":"Food"}}
+{"op":"add","path":"/elements/add-btn","value":{"type":"Button","props":{"label":"Add Expense","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/expenses","value":{"id":"$id","name":{"$state":"/newExpense/name"},"amount":{"$state":"/newExpense/amount"},"category":{"$state":"/newExpense/category"}},"clearStatePath":"/newExpense/name"}}}}}
+{"op":"add","path":"/elements/expense-list","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"repeat":{"statePath":"/expenses","key":"id"},"children":["expense-row"]}}
+{"op":"add","path":"/elements/expense-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center"},"children":["exp-info","exp-remove"]}}
+{"op":"add","path":"/elements/exp-info","value":{"type":"TextContent","props":{"text":{"$template":"**${name}** · ${category} — $${amount}"}}}
+{"op":"add","path":"/elements/exp-remove","value":{"type":"Button","props":{"label":"Remove","variant":"tertiary","type":"destructive","size":"extra-small"},"on":{"press":{"action":"removeState","params":{"statePath":"/expenses","index":{"$index":true}}}}}}
+{"op":"add","path":"/state/expenses","value":[]}
+{"op":"add","path":"/state/expenses/0","value":{"id":"e1","name":"Rent Payment","amount":950,"category":"Housing"}}
+{"op":"add","path":"/state/expenses/1","value":{"id":"e2","name":"Grocery Run","amount":210,"category":"Food"}}
+{"op":"add","path":"/state/expenses/2","value":{"id":"e3","name":"Gas","amount":85,"category":"Transport"}}
+{"op":"add","path":"/state/expenses/3","value":{"id":"e4","name":"Movie Night","amount":48,"category":"Entertainment"}}

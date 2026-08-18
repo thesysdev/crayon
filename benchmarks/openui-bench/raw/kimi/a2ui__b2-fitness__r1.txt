@@ -1,0 +1,233 @@
+Here's your daily fitness summary screen:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "fitness-summary",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#22C55E",
+      "agentDisplayName": "FitTrack"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "fitness-summary",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "l",
+        "children": ["header", "statsRow", "stepsCard", "caloriesCard", "weeklyCard", "logCard"]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Today's Summary",
+        "subtitle": "Tuesday, March 12 — Keep it up! 💪"
+      },
+      {
+        "id": "statsRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": []
+      },
+      {
+        "id": "stepsCard",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "s",
+        "children": ["stepsHeader", "stepsProgress", "stepsText"]
+      },
+      {
+        "id": "stepsHeader",
+        "component": "CardHeader",
+        "title": "👟 Steps",
+        "subtitle": "Goal: 10,000 steps"
+      },
+      {
+        "id": "stepsProgress",
+        "component": "Progress",
+        "value": 74,
+        "label": "7,428 / 10,000 steps"
+      },
+      {
+        "id": "stepsText",
+        "component": "TextContent",
+        "text": "2,572 steps to go — a 20-minute walk will get you there!",
+        "size": "small"
+      },
+      {
+        "id": "caloriesCard",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "s",
+        "children": ["calHeader", "calText", "calTags"]
+      },
+      {
+        "id": "calHeader",
+        "component": "CardHeader",
+        "title": "🔥 Calories Burned",
+        "subtitle": "Today so far"
+      },
+      {
+        "id": "calText",
+        "component": "TextContent",
+        "text": "**1,840 kcal** total — 520 kcal from workouts, 1,320 kcal resting.",
+        "size": "large"
+      },
+      {
+        "id": "calTags",
+        "component": "TagBlock",
+        "tags": ["520 kcal active", "1,320 kcal resting", "Goal: 2,000 kcal"]
+      },
+      {
+        "id": "weeklyCard",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": ["weeklyHeader", "weeklyChart", "weeklySeries", "weeklySummary"]
+      },
+      {
+        "id": "weeklyHeader",
+        "component": "CardHeader",
+        "title": "📊 This Week's Workouts",
+        "subtitle": "Minutes of exercise per day"
+      },
+      {
+        "id": "weeklyChart",
+        "component": "BarChart",
+        "labels": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+        "series": ["weeklySeries"],
+        "xLabel": "Day",
+        "yLabel": "Minutes"
+      },
+      {
+        "id": "weeklySeries",
+        "component": "Series",
+        "category": "Workout minutes",
+        "values": [45, 30, 0, 60, 25, 75, 0]
+      },
+      {
+        "id": "weeklySummary",
+        "component": "TextContent",
+        "text": "4 workouts this week, 235 total minutes. Rest days: Wed & Sun.",
+        "size": "small"
+      },
+      {
+        "id": "logCard",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": ["logHeader", "logForm", "logTypeField", "logTypeSelect", "logTypeRun", "logTypeLift", "logTypeYoga", "logTypeSwim", "logTypeCycle", "logDurationField", "logDurationInput", "logButtons", "logSubmitBtn"]
+      },
+      {
+        "id": "logHeader",
+        "component": "CardHeader",
+        "title": "➕ Log a Workout",
+        "subtitle": "Add today's session"
+      },
+      {
+        "id": "logForm",
+        "component": "Form",
+        "name": "logWorkout",
+        "fields": ["logTypeField", "logDurationField"],
+        "buttons": "logButtons"
+      },
+      {
+        "id": "logTypeField",
+        "component": "FormControl",
+        "label": "Workout type",
+        "input": "logTypeSelect"
+      },
+      {
+        "id": "logTypeSelect",
+        "component": "Select",
+        "name": "workoutType",
+        "placeholder": "Choose activity",
+        "items": ["logTypeRun", "logTypeLift", "logTypeYoga", "logTypeSwim", "logTypeCycle"],
+        "rules": [{"required": true}]
+      },
+      {
+        "id": "logTypeRun",
+        "component": "SelectItem",
+        "value": "running",
+        "label": "Running"
+      },
+      {
+        "id": "logTypeLift",
+        "component": "SelectItem",
+        "value": "weights",
+        "label": "Weight Training"
+      },
+      {
+        "id": "logTypeYoga",
+        "component": "SelectItem",
+        "value": "yoga",
+        "label": "Yoga"
+      },
+      {
+        "id": "logTypeSwim",
+        "component": "SelectItem",
+        "value": "swimming",
+        "label": "Swimming"
+      },
+      {
+        "id": "logTypeCycle",
+        "component": "SelectItem",
+        "value": "cycling",
+        "label": "Cycling"
+      },
+      {
+        "id": "logDurationField",
+        "component": "FormControl",
+        "label": "Duration (minutes)",
+        "input": "logDurationInput",
+        "hint": "How long was your session?"
+      },
+      {
+        "id": "logDurationInput",
+        "component": "Input",
+        "name": "duration",
+        "type": "number",
+        "placeholder": "e.g. 30",
+        "rules": [{"required": true}]
+      },
+      {
+        "id": "logButtons",
+        "component": "Buttons",
+        "buttons": ["logSubmitBtn"]
+      },
+      {
+        "id": "logSubmitBtn",
+        "component": "Button",
+        "label": "Log Workout",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This single screen covers all four items:
+
+1. **Steps vs. goal** — a progress bar showing 7,428 / 10,000 steps (74%) with an encouraging nudge.
+2. **Calories burned** — 1,840 kcal total, broken down into active vs. resting burn.
+3. **Past week's workouts** — a bar chart of exercise minutes per day, plus a summary line (4 sessions, 235 minutes).
+4. **Log a new workout** — a form with activity type dropdown, duration input, and a submit button.
+
+Want me to add a weekly calorie trend chart or a streak counter next?

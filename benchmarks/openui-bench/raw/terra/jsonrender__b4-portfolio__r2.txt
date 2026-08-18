@@ -1,0 +1,93 @@
+{"op":"add","path":"/root","value":"portfolio-review"}
+{"op":"add","path":"/elements/portfolio-review","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xl"},"children":["review-header","portfolio-summary","top-actions","active-projects-section","milestones-section","budget-section","utilization-section","risks-section","deadlines-section","delivery-pace-section","blocked-work-section"]}}
+{"op":"add","path":"/elements/review-header","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center","gap":"m","wrap":true},"children":["review-title","quarter-control"]}}
+{"op":"add","path":"/elements/review-title","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["title","subtitle"]}}
+{"op":"add","path":"/elements/title","value":{"type":"Heading","props":{"text":"Project Portfolio Review","level":"h1"},"children":[]}}
+{"op":"add","path":"/elements/subtitle","value":{"type":"TextContent","props":{"text":"Executive review of delivery, capacity, budget, and portfolio risk.","size":"default"},"children":[]}}
+{"op":"add","path":"/elements/quarter-control","value":{"type":"FormControl","props":{"label":"Review quarter","hint":"Switch the reporting period"},"children":[]}}
+{"op":"add","path":"/elements/quarter-select","value":{"type":"Select","props":{"name":"quarter","items":["quarter-q3","quarter-q4","quarter-q1"],"value":{"$bindState":"/selectedQuarter"},"size":"medium"},"children":[]}}
+{"op":"replace","path":"/elements/quarter-control","value":{"type":"FormControl","props":{"label":"Review quarter","input":"quarter-select","hint":"Switch the reporting period"},"children":[]}}
+{"op":"add","path":"/elements/quarter-q3","value":{"type":"SelectItem","props":{"value":"Q3 2026","label":"Q3 2026"},"children":[]}}
+{"op":"add","path":"/elements/quarter-q4","value":{"type":"SelectItem","props":{"value":"Q4 2026","label":"Q4 2026"},"children":[]}}
+{"op":"add","path":"/elements/quarter-q1","value":{"type":"SelectItem","props":{"value":"Q1 2027","label":"Q1 2027"},"children":[]}}
+{"op":"add","path":"/state/selectedQuarter","value":"Q3 2026"}
+{"op":"add","path":"/elements/portfolio-summary","value":{"type":"Callout","props":{"variant":"warning","title":"Portfolio health: Watch","description":{"$state":"/portfolioHealthSummary"}},"children":[]}}
+{"op":"add","path":"/state/portfolioHealthSummary","value":"Delivery remains on track overall, but two overdue milestones, elevated platform risk, and constrained engineering capacity require attention this week."}
+{"op":"add","path":"/elements/top-actions","value":{"type":"Buttons","props":{"buttons":["export-review-button"],"direction":"row"},"children":[]}}
+{"op":"add","path":"/elements/export-review-button","value":{"type":"Button","props":{"label":"Export review","variant":"secondary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/exportRequested","value":true}}},"children":[]}}
+{"op":"add","path":"/state/exportRequested","value":false}
+{"op":"add","path":"/elements/active-projects-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["active-projects-header","active-projects-list"]}}
+{"op":"add","path":"/elements/active-projects-header","value":{"type":"CardHeader","props":{"title":"Active projects","subtitle":"Owner, committed deadline, and current health"},"children":[]}}
+{"op":"add","path":"/elements/active-projects-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/projects","key":"id"},"children":["project-row"]}}
+{"op":"add","path":"/elements/project-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center","gap":"m","wrap":true},"children":["project-details","project-health","project-actions"]}}
+{"op":"add","path":"/elements/project-details","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["project-name","project-owner","project-deadline"]}}
+{"op":"add","path":"/elements/project-name","value":{"type":"Heading","props":{"text":{"$item":"name"},"level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/project-owner","value":{"type":"TextContent","props":{"text":{"$template":"Owner: ${owner}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/project-deadline","value":{"type":"TextContent","props":{"text":{"$template":"Deadline: ${deadline}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/project-health","value":{"type":"Badge","props":{"text":{"$item":"health"},"variant":{"$cond":{"$state":"/selectedQuarter","eq":"Q3 2026"},"$then":"outline","$else":"secondary"}},"children":[]}}
+{"op":"add","path":"/elements/project-actions","value":{"type":"Buttons","props":{"buttons":["request-people-button","archive-project-button"],"direction":"row"},"children":[]}}
+{"op":"add","path":"/elements/request-people-button","value":{"type":"Button","props":{"label":"Request people","variant":"primary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/peopleRequestProject","value":{"$item":"name"}}}},"children":[]}}
+{"op":"add","path":"/elements/archive-project-button","value":{"type":"Button","props":{"label":"Archive","variant":"tertiary","type":"destructive","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/archiveCandidate","value":{"$item":"name"}}}},"children":[]}}
+{"op":"add","path":"/state/projects","value":[]}
+{"op":"add","path":"/state/projects/0","value":{"id":"p1","name":"Customer Identity Platform","owner":"Maya Chen","deadline":"Sep 12, 2026","health":"At risk","allocation":850000,"spent":612000}}
+{"op":"add","path":"/state/projects/1","value":{"id":"p2","name":"Mobile Checkout Redesign","owner":"Jon Bell","deadline":"Sep 20, 2026","health":"On track","allocation":420000,"spent":238000}}
+{"op":"add","path":"/state/projects/2","value":{"id":"p3","name":"Data Governance Foundation","owner":"Priya Nair","deadline":"Oct 2, 2026","health":"Watch","allocation":610000,"spent":489000}}
+{"op":"add","path":"/state/projects/3","value":{"id":"p4","name":"APAC Market Launch","owner":"Luis Romero","deadline":"Sep 28, 2026","health":"On track","allocation":530000,"spent":301000}}
+{"op":"add","path":"/state/peopleRequestProject","value":""}
+{"op":"add","path":"/state/archiveCandidate","value":""}
+{"op":"add","path":"/elements/milestones-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["milestones-header","overdue-milestones-list"]}}
+{"op":"add","path":"/elements/milestones-header","value":{"type":"CardHeader","props":{"title":"Overdue milestones","subtitle":"Items requiring recovery plans or revised commitments"},"children":[]}}
+{"op":"add","path":"/elements/overdue-milestones-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/overdueMilestones","key":"id"},"children":["milestone-row"]}}
+{"op":"add","path":"/elements/milestone-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center","gap":"m","wrap":true},"children":["milestone-text","milestone-status"]}}
+{"op":"add","path":"/elements/milestone-text","value":{"type":"TextContent","props":{"text":{"$template":"${project} — ${name} · Due ${dueDate}"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/milestone-status","value":{"type":"Badge","props":{"text":{"$template":"${daysOverdue} days overdue"},"variant":"destructive"},"children":[]}}
+{"op":"add","path":"/state/overdueMilestones","value":[]}
+{"op":"add","path":"/state/overdueMilestones/0","value":{"id":"m1","project":"Customer Identity Platform","name":"SSO migration pilot","dueDate":"Aug 14","daysOverdue":12}}
+{"op":"add","path":"/state/overdueMilestones/1","value":{"id":"m2","project":"Data Governance Foundation","name":"Stewardship operating model","dueDate":"Aug 20","daysOverdue":6}}
+{"op":"add","path":"/elements/budget-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["budget-header","budget-table"]}}
+{"op":"add","path":"/elements/budget-header","value":{"type":"CardHeader","props":{"title":"Budget spent vs. allocation","subtitle":"Current quarter forecast and consumption by project"},"children":[]}}
+{"op":"add","path":"/elements/budget-table","value":{"type":"Table","props":{"columns":["budget-project-col","budget-allocation-col","budget-spent-col","budget-remaining-col"]},"children":[]}}
+{"op":"add","path":"/elements/budget-project-col","value":{"type":"Col","props":{"label":"Project","data":{"$state":"/budget/project"},"type":"string"},"children":[]}}
+{"op":"add","path":"/state/budget","value":{"project":["Customer Identity Platform","Mobile Checkout Redesign","Data Governance Foundation","APAC Market Launch"],"allocation":["$850k","$420k","$610k","$530k"],"spent":["$612k (72%)","$238k (57%)","$489k (80%)","$301k (57%)"],"remaining":["$238k","$182k","$121k","$229k"]}}
+{"op":"add","path":"/elements/budget-allocation-col","value":{"type":"Col","props":{"label":"Allocation","data":{"$state":"/budget/allocation"},"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/budget-spent-col","value":{"type":"Col","props":{"label":"Spent","data":{"$state":"/budget/spent"},"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/budget-remaining-col","value":{"type":"Col","props":{"label":"Remaining","data":{"$state":"/budget/remaining"},"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/utilization-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["utilization-header","utilization-chart"]}}
+{"op":"add","path":"/elements/utilization-header","value":{"type":"CardHeader","props":{"title":"Team utilization","subtitle":"Capacity load by delivery discipline"},"children":[]}}
+{"op":"add","path":"/elements/utilization-chart","value":{"type":"BarChart","props":{"labels":{"$state":"/utilization/labels"},"series":["utilization-series"],"variant":"grouped","xLabel":"Team","yLabel":"Utilization (%)"},"children":[]}}
+{"op":"add","path":"/elements/utilization-series","value":{"type":"Series","props":{"category":"Utilization","values":{"$state":"/utilization/values"}},"children":[]}}
+{"op":"add","path":"/state/utilization","value":{"labels":["Product","Engineering","Design","Data","QA"],"values":[82,94,76,88,69]}}
+{"op":"add","path":"/elements/risks-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["risks-header","risks-list"]}}
+{"op":"add","path":"/elements/risks-header","value":{"type":"CardHeader","props":{"title":"Portfolio risks","subtitle":"Open risks and their assessed severity"},"children":[]}}
+{"op":"add","path":"/elements/risks-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/risks","key":"id"},"children":["risk-row"]}}
+{"op":"add","path":"/elements/risk-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center","gap":"m","wrap":true},"children":["risk-copy","risk-severity"]}}
+{"op":"add","path":"/elements/risk-copy","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["risk-project","risk-description"]}}
+{"op":"add","path":"/elements/risk-project","value":{"type":"TextContent","props":{"text":{"$item":"project"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/risk-description","value":{"type":"TextContent","props":{"text":{"$item":"description"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/risk-severity","value":{"type":"Tag","props":{"text":{"$item":"severity"},"variant":{"$cond":{"$state":"/selectedQuarter","eq":"Q3 2026"},"$then":"warning","$else":"neutral"},"size":"md"},"children":[]}}
+{"op":"add","path":"/state/risks","value":[]}
+{"op":"add","path":"/state/risks/0","value":{"id":"r1","project":"Customer Identity Platform","description":"Vendor penetration-test slot may delay production approval.","severity":"High"}}
+{"op":"add","path":"/state/risks/1","value":{"id":"r2","project":"Data Governance Foundation","description":"Data steward backfill remains unapproved.","severity":"Medium"}}
+{"op":"add","path":"/state/risks/2","value":{"id":"r3","project":"APAC Market Launch","description":"Localized payment certification timeline is compressed.","severity":"Medium"}}
+{"op":"add","path":"/elements/deadlines-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["deadlines-header","deadlines-list"]}}
+{"op":"add","path":"/elements/deadlines-header","value":{"type":"CardHeader","props":{"title":"Deadlines in the next two weeks","subtitle":"Upcoming commitments through Sep 9"},"children":[]}}
+{"op":"add","path":"/elements/deadlines-list","value":{"type":"ListBlock","props":{"items":["deadline-1","deadline-2","deadline-3","deadline-4"]},"children":[]}}
+{"op":"add","path":"/elements/deadline-1","value":{"type":"ListItem","props":{"title":"Mobile Checkout — Usability sign-off","subtitle":"Aug 29 · Owner: Jon Bell"},"children":[]}}
+{"op":"add","path":"/elements/deadline-2","value":{"type":"ListItem","props":{"title":"Customer Identity — Security remediation complete","subtitle":"Sep 1 · Owner: Maya Chen"},"children":[]}}
+{"op":"add","path":"/elements/deadline-3","value":{"type":"ListItem","props":{"title":"APAC Market Launch — Localization content freeze","subtitle":"Sep 5 · Owner: Luis Romero"},"children":[]}}
+{"op":"add","path":"/elements/deadline-4","value":{"type":"ListItem","props":{"title":"Data Governance — Catalog beta release","subtitle":"Sep 8 · Owner: Priya Nair"},"children":[]}}
+{"op":"add","path":"/elements/delivery-pace-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["delivery-pace-header","delivery-pace-chart"]}}
+{"op":"add","path":"/elements/delivery-pace-header","value":{"type":"CardHeader","props":{"title":"Delivery pace","subtitle":"Completed story points over the past six sprints"},"children":[]}}
+{"op":"add","path":"/elements/delivery-pace-chart","value":{"type":"LineChart","props":{"labels":{"$state":"/deliveryPace/labels"},"series":["delivery-pace-series"],"variant":"linear","xLabel":"Sprint","yLabel":"Completed story points"},"children":[]}}
+{"op":"add","path":"/elements/delivery-pace-series","value":{"type":"Series","props":{"category":"Completed points","values":{"$state":"/deliveryPace/values"}},"children":[]}}
+{"op":"add","path":"/state/deliveryPace","value":{"labels":["Sprint 18","Sprint 19","Sprint 20","Sprint 21","Sprint 22","Sprint 23"],"values":[74,81,77,89,92,86]}}
+{"op":"add","path":"/elements/blocked-work-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["blocked-work-header","blocked-work-list"]}}
+{"op":"add","path":"/elements/blocked-work-header","value":{"type":"CardHeader","props":{"title":"Blocked work items","subtitle":"Dependencies currently preventing delivery"},"children":[]}}
+{"op":"add","path":"/elements/blocked-work-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/blockedWork","key":"id"},"children":["blocked-work-row"]}}
+{"op":"add","path":"/elements/blocked-work-row","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["blocked-work-title","blocked-work-detail"]}}
+{"op":"add","path":"/elements/blocked-work-title","value":{"type":"TextContent","props":{"text":{"$template":"${project}: ${item}"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/blocked-work-detail","value":{"type":"TextContent","props":{"text":{"$template":"Blocked by: ${blocker} · Owner: ${owner}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/state/blockedWork","value":[]}
+{"op":"add","path":"/state/blockedWork/0","value":{"id":"b1","project":"Customer Identity Platform","item":"Production SSO rollout","blocker":"Security exception approval","owner":"Maya Chen"}}
+{"op":"add","path":"/state/blockedWork/1","value":{"id":"b2","project":"Data Governance Foundation","item":"Metadata ingestion pipeline","blocker":"Source-system access credentials","owner":"Priya Nair"}}
+{"op":"add","path":"/state/blockedWork/2","value":{"id":"b3","project":"APAC Market Launch","item":"Regional payment configuration","blocker":"Payment provider certification","owner":"Luis Romero"}}

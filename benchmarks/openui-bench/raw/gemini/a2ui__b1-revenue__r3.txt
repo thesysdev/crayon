@@ -1,0 +1,138 @@
+Here is a mid-morning performance dashboard for your shop, comparing today's revenue so far against yesterday's figures at the same time.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "shop-morning-checkin",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": {
+        "primaryColor": "#10B981",
+        "agentDisplayName": "Retail Analytics"
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "shop-morning-checkin",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "l",
+          "children": [
+            "header",
+            "stat-callout",
+            "revenue-chart",
+            "details-accordion",
+            "follow-ups"
+          ]
+        },
+        {
+          "id": "header",
+          "component": "CardHeader",
+          "title": "Morning Sales Overview",
+          "subtitle": "Live snapshot as of 10:30 AM today"
+        },
+        {
+          "id": "stat-callout",
+          "component": "Callout",
+          "variant": "success",
+          "title": "$1,480.00 Revenue Today",
+          "description": "Up +18.4% compared to $1,250.00 at 10:30 AM yesterday (+$230.00)."
+        },
+        {
+          "id": "revenue-chart",
+          "component": "BarChart",
+          "variant": "grouped",
+          "xLabel": "Time of Day",
+          "yLabel": "Revenue ($)",
+          "labels": ["8:00 AM", "9:00 AM", "10:00 AM", "10:30 AM (Pace)"],
+          "series": ["series-today", "series-yesterday"]
+        },
+        {
+          "id": "series-today",
+          "component": "Series",
+          "category": "Today",
+          "values": [210, 540, 1120, 1480]
+        },
+        {
+          "id": "series-yesterday",
+          "component": "Series",
+          "category": "Yesterday",
+          "values": [180, 420, 950, 1250]
+        },
+        {
+          "id": "details-accordion",
+          "component": "Accordion",
+          "items": ["hourly-breakdown-item"]
+        },
+        {
+          "id": "hourly-breakdown-item",
+          "component": "AccordionItem",
+          "value": "hourly-table",
+          "trigger": "View Hourly Revenue Breakdown",
+          "content": ["hourly-table-component"]
+        },
+        {
+          "id": "hourly-table-component",
+          "component": "Table",
+          "columns": ["col-time", "col-today", "col-yesterday", "col-diff"]
+        },
+        {
+          "id": "col-time",
+          "component": "Col",
+          "label": "Time Interval",
+          "type": "string",
+          "data": ["8:00 - 9:00 AM", "9:00 - 10:00 AM", "10:00 - 10:30 AM"]
+        },
+        {
+          "id": "col-today",
+          "component": "Col",
+          "label": "Today ($)",
+          "type": "number",
+          "data": [330, 580, 360]
+        },
+        {
+          "id": "col-yesterday",
+          "component": "Col",
+          "label": "Yesterday ($)",
+          "type": "number",
+          "data": [240, 530, 300]
+        },
+        {
+          "id": "col-diff",
+          "component": "Col",
+          "label": "Difference",
+          "type": "string",
+          "data": ["+$90 (+37.5%)", "+$50 (+9.4%)", "+$60 (+20.0%)"]
+        },
+        {
+          "id": "follow-ups",
+          "component": "FollowUpBlock",
+          "items": ["fu-1", "fu-2", "fu-3"]
+        },
+        {
+          "id": "fu-1",
+          "component": "FollowUpItem",
+          "text": "What are the top-selling items today?"
+        },
+        {
+          "id": "fu-2",
+          "component": "FollowUpItem",
+          "text": "Show foot traffic stats"
+        },
+        {
+          "id": "fu-3",
+          "component": "FollowUpItem",
+          "text": "Compare with last week's average"
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>

@@ -1,0 +1,58 @@
+Here's an on-call service health dashboard covering all eight requirements.
+
+<a2ui-json>
+{"version":"v0.9","createSurface":{"surfaceId":"svc-health","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#0E7C86","agentDisplayName":"Ops Health"}}}
+</a2ui-json>
+
+<a2ui-json>
+{"version":"v0.9","updateComponents":{"surfaceId":"svc-health","components":[
+{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"m","children":["hdr","regionSel","kpiRow","chartsCard","incidentsCard","slowCard","alertCard"]},
+{"id":"hdr","component":"CardHeader","title":"Service Health — payments-api","subtitle":"On-call view · updated 30s ago"},
+{"id":"regionSel","component":"Select","name":"region","placeholder":"All regions","items":["r1","r2","r3","r4"],"value":"all"},
+{"id":"r1","component":"SelectItem","value":"all","label":"All regions"},
+{"id":"r2","component":"SelectItem","value":"us-east-1","label":"us-east-1"},
+{"id":"r3","component":"SelectItem","value":"eu-west-1","label":"eu-west-1"},
+{"id":"r4","component":"SelectItem","value":"ap-south-1","label":"ap-south-1"},
+{"id":"kpiRow","component":"Card","variant":"clear","direction":"row","gap":"m","children":["uptimeCard","errCard"]},
+{"id":"uptimeCard","component":"Card","children":["uptimeTxt"],"weight":1},
+{"id":"uptimeTxt","component":"TextContent","size":"large-heavy","text":"Uptime this quarter: 99.97% (13m 12s downtime)"},
+{"id":"errCard","component":"Card","children":["errTxt","errTag"],"weight":1},
+{"id":"errTxt","component":"TextContent","size":"large-heavy","text":"Error rate now: 0.42%"},
+{"id":"errTag","component":"Tag","text":"Within SLO","variant":"success"},
+{"id":"chartsCard","component":"Card","children":["chartsHdr","cpuChart","memChart"]},
+{"id":"chartsHdr","component":"TextContent","size":"small-heavy","text":"Resource usage — past 24h"},
+{"id":"cpuChart","component":"LineChart","labels":["00:00","04:00","08:00","12:00","16:00","20:00","now"],"series":["cpuS"],"variant":"natural","xLabel":"Time","yLabel":"CPU %"},
+{"id":"cpuS","component":"Series","category":"CPU %","values":[32,28,45,61,58,47,39]},
+{"id":"memChart","component":"LineChart","labels":["00:00","04:00","08:00","12:00","16:00","20:00","now"],"series":["memS"],"variant":"natural","xLabel":"Time","yLabel":"Memory %"},
+{"id":"memS","component":"Series","category":"Memory %","values":[54,55,58,63,66,64,62]},
+{"id":"incidentsCard","component":"Card","children":["incHdr","incTable","incAck"]},
+{"id":"incHdr","component":"TextContent","size":"small-heavy","text":"Open incidents"},
+{"id":"incTable","component":"Table","columns":["cId","cTitle","cSev","cAge"]},
+{"id":"cId","component":"Col","label":"ID","data":["INC-1042","INC-1043","INC-1044"],"type":"string"},
+{"id":"cTitle","component":"Col","label":"Title","data":["Elevated 5xx on checkout","DB replica lag","Webhook delivery delays"],"type":"string"},
+{"id":"cSev","component":"Col","label":"Severity","data":["SEV1","SEV2","SEV3"],"type":"string"},
+{"id":"cAge","component":"Col","label":"Age","data":["18m","1h 4m","3h 22m"],"type":"string"},
+{"id":"incAck","component":"Form","name":"ackIncident","fields":["incSelectCtl"],"buttons":"ackButtons"},
+{"id":"incSelectCtl","component":"FormControl","label":"Acknowledge incident","input":"incSelect"},
+{"id":"incSelect","component":"Select","name":"incidentId","placeholder":"Select incident","items":["i1","i2","i3"]},
+{"id":"i1","component":"SelectItem","value":"INC-1042","label":"INC-1042 — Elevated 5xx on checkout"},
+{"id":"i2","component":"SelectItem","value":"INC-1043","label":"INC-1043 — DB replica lag"},
+{"id":"i3","component":"SelectItem","value":"INC-1044","label":"INC-1044 — Webhook delivery delays"},
+{"id":"ackButtons","component":"Buttons","buttons":["ackBtn"]},
+{"id":"ackBtn","component":"Button","label":"Acknowledge","variant":"primary"},
+{"id":"slowCard","component":"Card","children":["slowHdr","slowTable"]},
+{"id":"slowHdr","component":"TextContent","size":"small-heavy","text":"Slowest endpoints (p95, last hour)"},
+{"id":"slowTable","component":"Table","columns":["sEp","sLat"]},
+{"id":"sEp","component":"Col","label":"Endpoint","data":["POST /checkout","GET /orders/:id","POST /refunds","GET /search","POST /webhooks"],"type":"string"},
+{"id":"sLat","component":"Col","label":"p95 latency (ms)","data":[1840,1210,980,760,640],"type":"number"},
+{"id":"alertCard","component":"Card","children":["alertHdr","alertForm"]},
+{"id":"alertHdr","component":"TextContent","size":"small-heavy","text":"Alert threshold"},
+{"id":"alertForm","component":"Form","name":"setThreshold","fields":["threshCtl"],"buttons":"threshButtons"},
+{"id":"threshCtl","component":"FormControl","label":"Error rate threshold (%)","input":"threshSlider","hint":"Page on-call when error rate exceeds this for 5 minutes"},
+{"id":"threshSlider","component":"Slider","name":"errorThreshold","variant":"discrete","min":0,"max":10,"step":0.5,"defaultValue":[2]},
+{"id":"threshButtons","component":"Buttons","buttons":["threshBtn"]},
+{"id":"threshBtn","component":"Button","label":"Save threshold","variant":"primary"}
+]}}
+</a2ui-json>
+
+The dashboard covers everything: **(1)** quarterly uptime (99.97%), **(2)** CPU and memory line charts over 24h, **(3)** current error rate with SLO tag, **(4)** open incidents table with severity, **(5)** region selector, **(6)** five slowest endpoints with p95 latency, **(7)** a slider to set the alert threshold, and **(8)** an acknowledge-incident form.

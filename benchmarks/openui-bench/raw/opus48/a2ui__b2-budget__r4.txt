@@ -1,0 +1,244 @@
+Here's your personal budget check screen covering all five items.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "budget-check",
+      "catalogId": "thesys.dev:c1-openui"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "budget-check",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "direction": "column",
+          "gap": "l",
+          "children": [
+            "header",
+            "month-selector",
+            "budget-progress-card",
+            "largest-expense-callout",
+            "category-section",
+            "add-expense-section"
+          ]
+        },
+        {
+          "id": "header",
+          "component": "CardHeader",
+          "title": "Budget Check",
+          "subtitle": "Track your spending at a glance"
+        },
+        {
+          "id": "month-selector",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "row",
+          "gap": "m",
+          "align": "center",
+          "children": ["month-label", "month-select"]
+        },
+        {
+          "id": "month-label",
+          "component": "Label",
+          "text": "Viewing month:"
+        },
+        {
+          "id": "month-select",
+          "component": "Select",
+          "name": "month",
+          "value": "2024-06",
+          "size": "medium",
+          "items": ["m-apr", "m-may", "m-jun"]
+        },
+        { "id": "m-apr", "component": "SelectItem", "value": "2024-04", "label": "April 2024" },
+        { "id": "m-may", "component": "SelectItem", "value": "2024-05", "label": "May 2024" },
+        { "id": "m-jun", "component": "SelectItem", "value": "2024-06", "label": "June 2024" },
+
+        {
+          "id": "budget-progress-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "children": ["spent-heading", "budget-progress", "budget-note"]
+        },
+        {
+          "id": "spent-heading",
+          "component": "Heading",
+          "level": "h2",
+          "text": "$1,840 spent of $2,500"
+        },
+        {
+          "id": "budget-progress",
+          "component": "Progress",
+          "value": 74,
+          "label": "74% of monthly budget used"
+        },
+        {
+          "id": "budget-note",
+          "component": "TextContent",
+          "size": "small",
+          "text": "$660 remaining for the rest of June."
+        },
+
+        {
+          "id": "largest-expense-callout",
+          "component": "Callout",
+          "variant": "warning",
+          "title": "Largest expense: Rent — $1,050",
+          "description": "This single payment accounts for 57% of your total spending this month."
+        },
+
+        {
+          "id": "category-section",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "m",
+          "children": ["category-heading", "category-pie", "category-table"]
+        },
+        {
+          "id": "category-heading",
+          "component": "Heading",
+          "level": "h3",
+          "text": "Spending by category"
+        },
+        {
+          "id": "category-pie",
+          "component": "PieChart",
+          "variant": "donut",
+          "labels": ["Rent", "Groceries", "Dining", "Transport", "Utilities", "Other"],
+          "values": [1050, 320, 190, 110, 95, 75]
+        },
+        {
+          "id": "category-table",
+          "component": "Table",
+          "columns": ["col-cat", "col-amt", "col-share"]
+        },
+        {
+          "id": "col-cat",
+          "component": "Col",
+          "label": "Category",
+          "type": "string",
+          "data": ["Rent", "Groceries", "Dining", "Transport", "Utilities", "Other"]
+        },
+        {
+          "id": "col-amt",
+          "component": "Col",
+          "label": "Amount",
+          "type": "string",
+          "data": ["$1,050", "$320", "$190", "$110", "$95", "$75"]
+        },
+        {
+          "id": "col-share",
+          "component": "Col",
+          "label": "Share",
+          "type": "string",
+          "data": ["57%", "17%", "10%", "6%", "5%", "4%"]
+        },
+
+        {
+          "id": "add-expense-section",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "m",
+          "children": ["add-expense-form"]
+        },
+        {
+          "id": "add-expense-form",
+          "component": "Form",
+          "name": "addExpense",
+          "buttons": "add-expense-buttons",
+          "fields": ["fc-amount", "fc-category", "fc-date", "fc-note"]
+        },
+        {
+          "id": "fc-amount",
+          "component": "FormControl",
+          "label": "Amount",
+          "hint": "Enter the expense amount in dollars",
+          "input": "in-amount"
+        },
+        {
+          "id": "in-amount",
+          "component": "Input",
+          "name": "amount",
+          "type": "number",
+          "placeholder": "0.00"
+        },
+        {
+          "id": "fc-category",
+          "component": "FormControl",
+          "label": "Category",
+          "input": "in-category"
+        },
+        {
+          "id": "in-category",
+          "component": "Select",
+          "name": "category",
+          "placeholder": "Choose a category",
+          "items": ["c-rent", "c-groceries", "c-dining", "c-transport", "c-utilities", "c-other"]
+        },
+        { "id": "c-rent", "component": "SelectItem", "value": "rent", "label": "Rent" },
+        { "id": "c-groceries", "component": "SelectItem", "value": "groceries", "label": "Groceries" },
+        { "id": "c-dining", "component": "SelectItem", "value": "dining", "label": "Dining" },
+        { "id": "c-transport", "component": "SelectItem", "value": "transport", "label": "Transport" },
+        { "id": "c-utilities", "component": "SelectItem", "value": "utilities", "label": "Utilities" },
+        { "id": "c-other", "component": "SelectItem", "value": "other", "label": "Other" },
+        {
+          "id": "fc-date",
+          "component": "FormControl",
+          "label": "Date",
+          "input": "in-date"
+        },
+        {
+          "id": "in-date",
+          "component": "DatePicker",
+          "name": "date",
+          "mode": "single"
+        },
+        {
+          "id": "fc-note",
+          "component": "FormControl",
+          "label": "Note (optional)",
+          "input": "in-note"
+        },
+        {
+          "id": "in-note",
+          "component": "TextArea",
+          "name": "note",
+          "rows": 2,
+          "placeholder": "What was this expense for?"
+        },
+        {
+          "id": "add-expense-buttons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": ["btn-add"]
+        },
+        {
+          "id": "btn-add",
+          "component": "Button",
+          "label": "Add expense",
+          "variant": "primary",
+          "size": "medium"
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+Everything requested is on one screen:
+
+1. **Total vs. budget** — the progress card shows *$1,840 spent of $2,500* (74% used, $660 remaining).
+2. **Split by category** — a donut chart plus a breakdown table with amounts and shares.
+3. **Largest expense** — highlighted in the warning callout (*Rent — $1,050*, 57% of spend).
+4. **Look at a different month** — the month dropdown at the top.
+5. **Add an expense** — the form at the bottom with amount, category, date, and note.

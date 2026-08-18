@@ -1,0 +1,92 @@
+root = Card([header, timeframe, kpiRow, riskAlert, positions, exposure, moversTabs, watchlist, orders, headlines, econ, strategies, drawdownChart, riskLimits, actions])
+
+header = CardHeader("Morning Workspace", "Trading Desk — Global Macro Book")
+
+timeframe = Form("timeframe", tfButtons, [tfField])
+tfField = FormControl("Timeframe", tfSelect)
+tfSelect = Select("range", [tf1d, tf1w, tf1m, tfYtd], "Select range", null, "1d")
+tf1d = SelectItem("1d", "Today")
+tf1w = SelectItem("1w", "This week")
+tf1m = SelectItem("1m", "This month")
+tfYtd = SelectItem("ytd", "Year to date")
+tfButtons = Buttons([tfApply])
+tfApply = Button("Apply", null, "secondary", "normal", "small")
+
+kpiRow = Table([kpiMetric, kpiValue])
+kpiMetric = Col("Metric", ["Portfolio Value", "P&L Today", "Value at Risk (95%, 1d)", "Margin In Use"])
+kpiValue = Col("Value", ["$48,215,900", "+$312,480 (+0.65%)", "$1,842,000", "$12,400,000 (58%)"])
+
+riskAlert = Alert("Risk limit approaching", "Sector concentration in Technology at 92% of limit", "warning")
+
+positions = Table([posTicker, posSize, posEntry, posCurrent, posPnl])
+posTicker = Col("Ticker", ["AAPL", "MSFT", "NVDA", "TSLA", "JPM", "XOM"])
+posSize = Col("Size", [12000, 8500, 4200, -3000, 15000, 9000])
+posEntry = Col("Entry", [182.40, 401.20, 118.75, 244.10, 191.30, 108.90])
+posCurrent = Col("Current", [188.15, 412.80, 124.30, 236.55, 194.10, 112.40])
+posPnl = Col("P&L", ["+$69,000", "+$98,600", "+$23,310", "+$22,650", "+$42,000", "+$31,500"])
+
+exposure = PieChart(exposureLabels, exposureValues, "donut")
+exposureLabels = ["Technology", "Financials", "Energy", "Healthcare", "Consumer", "Cash"]
+exposureValues = [38, 22, 14, 11, 9, 6]
+
+moversTabs = Tabs([gainersTab, losersTab])
+gainersTab = TabItem("gainers", "Top Gainers", [gainersTable])
+gainersTable = Table([gainTicker, gainChg])
+gainTicker = Col("Ticker", ["MSFT", "NVDA", "AAPL"])
+gainChg = Col("Change", ["+2.89%", "+4.67%", "+3.15%"])
+losersTab = TabItem("losers", "Top Losers", [losersTable])
+losersTable = Table([loseTicker, loseChg])
+loseTicker = Col("Ticker", ["TSLA", "XOM", "JPM"])
+loseChg = Col("Change", ["-3.09%", "-1.42%", "-0.88%"])
+
+watchlist = Table([watchTicker, watchPrice])
+watchTicker = Col("Ticker", ["AMZN", "GOOGL", "META", "AMD", "GLD"])
+watchPrice = Col("Price", [178.20, 141.55, 498.30, 168.40, 214.75])
+
+orders = Table([ordTicker, ordSide, ordQty, ordLimit, ordStatus])
+ordTicker = Col("Ticker", ["NVDA", "JPM", "AMZN"])
+ordSide = Col("Side", ["Buy", "Sell", "Buy"])
+ordQty = Col("Qty", [1000, 5000, 2500])
+ordLimit = Col("Limit", [122.00, 195.00, 176.50])
+ordStatus = Col("Status", ["Working", "Working", "Partial"])
+
+headlines = ListBlock([hl1, hl2, hl3, hl4])
+hl1 = ListItem("Fed signals patience on rate cuts", "Sentiment: Neutral")
+hl2 = ListItem("Chip demand surges on AI capex", "Sentiment: Positive")
+hl3 = ListItem("Oil slips on demand concerns", "Sentiment: Negative")
+hl4 = ListItem("Bank earnings beat estimates", "Sentiment: Positive")
+
+econ = Table([econDate, econEvent, econForecast])
+econDate = Col("Date", ["Mon", "Tue", "Wed", "Thu", "Fri"])
+econEvent = Col("Release", ["ISM Manufacturing", "JOLTS", "FOMC Minutes", "CPI", "Nonfarm Payrolls"])
+econForecast = Col("Forecast", ["48.9", "8.1M", "—", "3.2% YoY", "+185K"])
+
+strategies = BarChart(stratLabels, [stratSeries], "grouped", "Strategy", "Return %")
+stratLabels = ["Macro", "Momentum", "Mean Rev", "Vol Arb", "Carry"]
+stratSeries = Series("YTD Return", [14.2, 9.8, 5.1, 11.6, 7.3])
+
+drawdownChart = AreaChart(ddLabels, [ddSeries], "natural", "Month", "Drawdown %")
+ddLabels = ["Feb", "Apr", "Jun", "Aug", "Oct", "Dec"]
+ddSeries = Series("Drawdown", [-2.1, -5.4, -3.2, -7.8, -4.1, -2.6])
+
+riskLimits = Table([rlName, rlUsage, rlStatus])
+rlName = Col("Limit", ["Tech Sector Concentration", "Gross Leverage", "Single Name (NVDA)"])
+rlUsage = Col("Usage", ["92%", "78%", "88%"])
+rlStatus = Col("Status", ["Near breach", "OK", "Near breach"])
+
+actions = Card([rebalanceBtn, orderForm], "clear", "column", "m")
+rebalanceBtn = Buttons([rebalance])
+rebalance = Button("Rebalance Portfolio", null, "primary")
+
+orderForm = Form("place-order", orderButtons, [orderTicker, orderSide, orderQty])
+orderTicker = FormControl("Ticker", orderTickerInput)
+orderTickerInput = Input("ticker", "e.g. AAPL")
+orderSide = FormControl("Side", orderSideRadio)
+orderSideRadio = RadioGroup("side", [sideBuy, sideSell], "buy")
+sideBuy = RadioItem("Buy", "Open or add to a long", "buy")
+sideSell = RadioItem("Sell", "Reduce or short", "sell")
+orderQty = FormControl("Quantity", orderQtyInput)
+orderQtyInput = Input("quantity", "Number of shares", "number")
+orderButtons = Buttons([placeOrder, clearOrder])
+placeOrder = Button("Place Order", null, "primary")
+clearOrder = Button("Clear", null, "tertiary")

@@ -1,0 +1,71 @@
+root = Card([header, hubSelect, kpis, weather, advisory, otpChart, flightsTable, delayed, gateChanges, crews, connections, rebook, followUps])
+
+header = CardHeader("Hub Operations — ATL", "Live status · updated 2 min ago")
+
+hubSelect = DrawerBlock("Switch hub", "Select a hub", "View operations for a different hub", [hubList])
+hubList = ListBlock([hubATL, hubDFW, hubORD, hubDEN], "number")
+hubATL = ListItem("ATL — Atlanta", "Current hub · 892 flights today")
+hubDFW = ListItem("DFW — Dallas/Fort Worth", "768 flights today")
+hubORD = ListItem("ORD — Chicago O'Hare", "654 flights today")
+hubDEN = ListItem("DEN — Denver", "531 flights today")
+
+kpis = Table([kpiName, kpiValue])
+kpiName = Col("Metric", ["On-time performance", "Avg passenger load", "Avg turnaround time", "Cancellations today"])
+kpiValue = Col("Value", ["82%", "87%", "38 min", "14"])
+
+weather = Alert("Weather advisory", "Thunderstorms expected 14:00–17:00. Ground stop possible on north runways.", "warning")
+
+advisory = TagBlock(["Wind shear alert", "Low ceiling", "Runway 27L wet", "De-icing on standby"])
+
+otpChart = AreaChart(["06:00", "08:00", "10:00", "12:00", "14:00", "16:00"], [otpSeries], "natural", "Time", "On-time %")
+otpSeries = Series("On-time %", [94, 90, 86, 83, 81, 82])
+
+flightsTable = Table([fltNum, fltRoute, fltGate, fltStatus])
+fltNum = Col("Flight", ["DL118", "DL422", "DL905", "DL1330", "DL766", "DL284"])
+fltRoute = Col("Route", ["ATL→JFK", "ATL→LAX", "ATL→MIA", "ATL→ORD", "ATL→SEA", "ATL→DFW"])
+fltGate = Col("Gate", ["B14", "A22", "C08", "B31", "E12", "A05"])
+fltStatus = Col("Status", ["On time", "Delayed", "Boarding", "Delayed", "On time", "Cancelled"])
+
+delayed = Callout("warning", "Delayed flights", "DL422 (ATL→LAX) +45m · DL1330 (ATL→ORD) +30m · DL889 (ATL→BOS) +25m")
+
+gateChanges = ListBlock([gc1, gc2, gc3], "number")
+gc1 = ListItem("DL905 — Gate C08", "Moved from C15 · 6 min ago")
+gc2 = ListItem("DL422 — Gate A22", "Moved from A18 · 12 min ago")
+gc3 = ListItem("DL284 — Gate A05", "Moved from A09 · 20 min ago")
+
+crews = Table([crewId, crewRole, crewAvail])
+crewId = Col("Crew", ["C-2201", "C-2188", "C-2350", "C-2412"])
+crewRole = Col("Role", ["Full cockpit + cabin", "Cabin only", "Full cockpit + cabin", "Cabin only"])
+crewAvail = Col("Available", ["Now", "13:30", "Now", "14:15"])
+
+connections = Table([connPax, connFrom, connTo, connMargin])
+connPax = Col("Passengers", ["12", "8", "23", "5"])
+connFrom = Col("Arriving", ["DL422 (LAX)", "DL1330 (ORD)", "DL889 (BOS)", "DL766 (SEA)"])
+connTo = Col("Connecting to", ["DL118 (JFK)", "DL905 (MIA)", "DL284 (DFW)", "DL118 (JFK)"])
+connMargin = Col("Margin", ["-10 min", "-5 min", "8 min", "12 min"])
+
+rebook = DialogBlock("Rebook affected passengers", "Rebook passengers", "Reassign passengers from at-risk connections", [rebookForm], "default")
+rebookForm = Form("rebook", rebookButtons, [paxField, flightField, optionField])
+paxField = FormControl("Affected group", paxSelect)
+paxSelect = Select("group", [pax1, pax2, pax3], "Select connection group")
+pax1 = SelectItem("g1", "DL422→DL118 · 12 pax · -10 min")
+pax2 = SelectItem("g2", "DL1330→DL905 · 8 pax · -5 min")
+pax3 = SelectItem("g3", "DL889→DL284 · 23 pax · 8 min")
+flightField = FormControl("Rebook onto", flightSelect)
+flightSelect = Select("flight", [rf1, rf2, rf3], "Select replacement flight")
+rf1 = SelectItem("f1", "DL602 ATL→JFK · dep 15:20")
+rf2 = SelectItem("f2", "DL778 ATL→MIA · dep 15:45")
+rf3 = SelectItem("f3", "DL910 ATL→DFW · dep 16:10")
+optionField = FormControl("Options", optionChecks)
+optionChecks = CheckBoxGroup("options", [optHotel, optMeal, optNotify])
+optHotel = CheckBoxItem("Hotel voucher", "Issue if overnight", "hotel")
+optMeal = CheckBoxItem("Meal voucher", "Issue for delays over 3h", "meal")
+optNotify = CheckBoxItem("Notify passengers", "Send SMS + email", "notify", true)
+rebookButtons = Buttons([rebookConfirm, rebookCancel])
+rebookConfirm = Button("Confirm rebooking", null, "primary")
+rebookCancel = Button("Cancel", null, "tertiary")
+
+followUps = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Show all cancellations today")
+fu2 = FollowUpItem("Reassign crew C-2201 to DL422")
+fu3 = FollowUpItem("Forecast on-time performance for tonight")

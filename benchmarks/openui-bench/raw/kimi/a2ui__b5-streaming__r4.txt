@@ -1,0 +1,141 @@
+Here's a complete operations room dashboard covering all 16 items.
+
+<a2ui-json>
+{"version":"v0.9","createSurface":{"surfaceId":"ops-room","catalogId":"thesys.dev:c1-openui","theme":{"agentDisplayName":"StreamOps","primaryColor":"#7C3AED"}}}
+</a2ui-json>
+
+<a2ui-json>
+{"version":"v0.9","updateComponents":{"surfaceId":"ops-room","components":[
+{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["header","liveRow","mainTabs"]},
+{"id":"header","component":"CardHeader","title":"StreamOps — Operations Room","subtitle":"Live overview of viewership, content, health, and growth"},
+
+{"id":"liveRow","component":"Card","direction":"row","gap":"m","children":["liveCard","bufferCard","recCard"]},
+{"id":"liveCard","component":"Card","direction":"column","gap":"s","children":["liveTitle","liveValue","liveTrend"]},
+{"id":"liveTitle","component":"TextContent","text":"**Viewers watching right now**","size":"small"},
+{"id":"liveValue","component":"TextContent","text":"1,284,392","size":"large-heavy"},
+{"id":"liveTrend","component":"TextContent","text":"▲ 6.2% vs this time yesterday · Peak today: 1.41M","size":"small"},
+{"id":"bufferCard","component":"Card","direction":"column","gap":"s","children":["bufferTitle","bufferChart"]},
+{"id":"bufferTitle","component":"TextContent","text":"**Buffering rate (%) — last 24h**","size":"small"},
+{"id":"bufferChart","component":"LineChart","labels":["00","04","08","12","16","20","now"],"series":["bufSeries"],"xLabel":"Hour","yLabel":"%"},
+{"id":"bufSeries","component":"Series","category":"Buffering %","values":[0.42,0.38,0.51,0.72,0.95,1.12,0.68]},
+{"id":"recCard","component":"Card","direction":"column","gap":"s","children":["recTitle","recChart"]},
+{"id":"recTitle","component":"TextContent","text":"**Recommendation click-through (%) — 7 days**","size":"small"},
+{"id":"recChart","component":"BarChart","labels":["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],"series":["recSeries"],"xLabel":"Day","yLabel":"CTR %"},
+{"id":"recSeries","component":"Series","category":"CTR","values":[11.2,10.8,12.1,12.9,14.3,15.6,13.8]},
+
+{"id":"mainTabs","component":"Tabs","items":["tabAudience","tabContent","tabGrowth","tabInfra","tabControls"]},
+
+{"id":"tabAudience","component":"TabItem","value":"audience","trigger":"Audience","content":["audCard1","audCard2","audCard3"]},
+{"id":"audCard1","component":"Card","children":["audH1","watchtimeChart"]},
+{"id":"audH1","component":"TextContent","text":"**Watch time over the past month (millions of hours)**","size":"small-heavy"},
+{"id":"watchtimeChart","component":"AreaChart","labels":["W1","W2","W3","W4"],"series":["wtSeries"],"variant":"natural","xLabel":"Week","yLabel":"M hours"},
+{"id":"wtSeries","component":"Series","category":"Watch time","values":[212,228,241,259]},
+{"id":"audCard2","component":"Card","children":["audH2","deviceChart"]},
+{"id":"audH2","component":"TextContent","text":"**Viewing split by device**","size":"small-heavy"},
+{"id":"deviceChart","component":"PieChart","labels":["Smart TV","Mobile","Web","Tablet","Console"],"values":[46,28,14,7,5],"variant":"donut"},
+{"id":"audCard3","component":"Card","children":["audH3","deadSearchTable"]},
+{"id":"audH3","component":"TextContent","text":"**Searches that ended without playback (top queries)**","size":"small-heavy"},
+{"id":"deadSearchTable","component":"Table","columns":["dsQ","dsCount","dsRate"]},
+{"id":"dsQ","component":"Col","label":"Query","data":["the midnight harbor","champions final replay","space odyssey 2099","kids baking show","documentary deep sea"],"type":"string"},
+{"id":"dsCount","component":"Col","label":"Searches","data":[8420,6110,4980,4230,3710],"type":"number"},
+{"id":"dsRate","component":"Col","label":"No-play %","data":[91,87,84,79,76],"type":"number"},
+
+{"id":"tabContent","component":"TabItem","value":"content","trigger":"Content","content":["conCard1","conCard2","conCard3"]},
+{"id":"conCard1","component":"Card","children":["conH1","topTitlesChart"]},
+{"id":"conH1","component":"TextContent","text":"**Most-watched titles (hours viewed, millions)**","size":"small-heavy"},
+{"id":"topTitlesChart","component":"HorizontalBarChart","labels":["Crimson Tide","Night Shift S3","The Last Orchard","Static","Paper Moons"],"series":["ttSeries"],"xLabel":"M hours","yLabel":"Title"},
+{"id":"ttSeries","component":"Series","category":"Hours","values":[38.2,31.5,27.8,22.1,18.4]},
+{"id":"conCard2","component":"Card","children":["conH2","releasesTable"]},
+{"id":"conH2","component":"TextContent","text":"**Releases coming this month**","size":"small-heavy"},
+{"id":"releasesTable","component":"Table","columns":["relTitle","relDate","relType"]},
+{"id":"relTitle","component":"Col","label":"Title","data":["Night Shift S4","Harbor Lights","Ironwood","Small Wonders","Echo Point"],"type":"string"},
+{"id":"relDate","component":"Col","label":"Release date","data":["Jun 3","Jun 9","Jun 14","Jun 21","Jun 27"],"type":"string"},
+{"id":"relType","component":"Col","label":"Type","data":["Series","Film","Series","Kids","Documentary"],"type":"string"},
+{"id":"conCard3","component":"Card","children":["conH3","licenseTable"]},
+{"id":"conH3","component":"TextContent","text":"**Licenses expiring soon**","size":"small-heavy"},
+{"id":"licenseTable","component":"Table","columns":["licTitle","licExp","licRisk"]},
+{"id":"licTitle","component":"Col","label":"Title","data":["Neon District","Old Friends S1–S2","Coastline","The Quiet Room"],"type":"string"},
+{"id":"licExp","component":"Col","label":"Expires","data":["Jun 12","Jun 18","Jun 25","Jul 2"],"type":"string"},
+{"id":"licRisk","component":"Col","label":"Daily hours at risk (K)","data":[412,288,190,95],"type":"number"},
+
+{"id":"tabGrowth","component":"TabItem","value":"growth","trigger":"Growth & Revenue","content":["groCard1","groCard2"]},
+{"id":"groCard1","component":"Card","children":["groH1","subsChart"]},
+{"id":"groH1","component":"TextContent","text":"**New subscribers vs cancellations (weekly, thousands)**","size":"small-heavy"},
+{"id":"subsChart","component":"BarChart","labels":["W1","W2","W3","W4"],"series":["newSubs","cancels"],"variant":"grouped","xLabel":"Week","yLabel":"K subscribers"},
+{"id":"newSubs","component":"Series","category":"New subscribers","values":[84,91,88,102]},
+{"id":"cancels","component":"Series","category":"Cancellations","values":[52,49,57,48]},
+{"id":"groCard2","component":"Card","children":["groH2","revChart"]},
+{"id":"groH2","component":"TextContent","text":"**Revenue split by plan**","size":"small-heavy"},
+{"id":"revChart","component":"PieChart","labels":["Premium 4K","Standard HD","Basic w/ Ads","Family Bundle"],"values":[38,34,17,11],"variant":"pie"},
+
+{"id":"tabInfra","component":"TabItem","value":"infra","trigger":"Delivery & Regions","content":["infCard1","infCard2","infCard3"]},
+{"id":"infCard1","component":"Card","children":["infH1","regionSelect"]},
+{"id":"infH1","component":"TextContent","text":"**Focus on one region**","size":"small-heavy"},
+{"id":"regionSelect","component":"Select","name":"region","placeholder":"All regions","items":["rAll","rNA","rEU","rAPAC","rLATAM","rMEA"]},
+{"id":"rAll","component":"SelectItem","value":"all","label":"All regions"},
+{"id":"rNA","component":"SelectItem","value":"na","label":"North America"},
+{"id":"rEU","component":"SelectItem","value":"eu","label":"Europe"},
+{"id":"rAPAC","component":"SelectItem","value":"apac","label":"Asia-Pacific"},
+{"id":"rLATAM","component":"SelectItem","value":"latam","label":"Latin America"},
+{"id":"rMEA","component":"SelectItem","value":"mea","label":"Middle East & Africa"},
+{"id":"infCard2","component":"Card","children":["infH2","regionTable"]},
+{"id":"infH2","component":"TextContent","text":"**Delivery health by region**","size":"small-heavy"},
+{"id":"regionTable","component":"Table","columns":["rgName","rgUptime","rgBuf","rgStatus"]},
+{"id":"rgName","component":"Col","label":"Region","data":["North America","Europe","Asia-Pacific","Latin America","Middle East & Africa"],"type":"string"},
+{"id":"rgUptime","component":"Col","label":"Uptime %","data":[99.98,99.95,99.81,99.62,99.44],"type":"number"},
+{"id":"rgBuf","component":"Col","label":"Buffering %","data":[0.41,0.48,0.92,1.35,1.71],"type":"number"},
+{"id":"rgStatus","component":"Col","label":"Status","data":["Healthy","Healthy","Degraded","Degraded","At risk"],"type":"string"},
+{"id":"infCard3","component":"Card","children":["infH3","genreChart"]},
+{"id":"infH3","component":"TextContent","text":"**Performance by genre (engagement score vs completion %)**","size":"small-heavy"},
+{"id":"genreChart","component":"RadarChart","labels":["Drama","Comedy","Docs","Action","Kids","Reality"],"series":["gEngage","gComplete"]},
+{"id":"gEngage","component":"Series","category":"Engagement","values":[88,74,69,81,77,62]},
+{"id":"gComplete","component":"Series","category":"Completion","values":[72,81,58,65,84,49]},
+
+{"id":"tabControls","component":"TabItem","value":"controls","trigger":"Controls","content":["ctlCard1","ctlCard2"]},
+{"id":"ctlCard1","component":"Card","children":["ctlH1","flagGroup"]},
+{"id":"ctlH1","component":"TextContent","text":"**Feature flags**","size":"small-heavy"},
+{"id":"flagGroup","component":"SwitchGroup","name":"featureFlags","variant":"sunk","items":["flag1","flag2","flag3","flag4","flag5"],"value":["newPlayer","autoPreviews"]},
+{"id":"flag1","component":"SwitchItem","name":"newPlayer","label":"New video player","description":"Redesigned player UI with gesture controls","defaultChecked":true},
+{"id":"flag2","component":"SwitchItem","name":"autoPreviews","label":"Auto-play previews","description":"Hover previews on browse rows","defaultChecked":true},
+{"id":"flag3","component":"SwitchItem","name":"aiRecsV2","label":"Recommendations v2 (AI)","description":"Next-gen ranking model, 5% rollout","defaultChecked":false},
+{"id":"flag4","component":"SwitchItem","name":"offlineMobile","label":"Offline downloads on mobile","description":"Download-to-go for Standard+ plans","defaultChecked":false},
+{"id":"flag5","component":"SwitchItem","name":"watchParty","label":"Watch Party","description":"Synchronized group viewing","defaultChecked":false},
+{"id":"ctlCard2","component":"Card","children":["ctlH2","promoteForm"]},
+{"id":"ctlH2","component":"TextContent","text":"**Promote a title on the home screen**","size":"small-heavy"},
+{"id":"promoteForm","component":"Form","name":"promoteTitle","fields":["fcTitle","fcSlot","fcDates"],"buttons":"promoteButtons"},
+{"id":"fcTitle","component":"FormControl","label":"Title","input":"promoteTitleInput","hint":"Exact title as it appears in the catalog"},
+{"id":"promoteTitleInput","component":"Select","name":"title","placeholder":"Choose a title","items":["pt1","pt2","pt3","pt4"]},
+{"id":"pt1","component":"SelectItem","value":"harbor-lights","label":"Harbor Lights (Jun 9)"},
+{"id":"pt2","component":"SelectItem","value":"night-shift-s4","label":"Night Shift S4 (Jun 3)"},
+{"id":"pt3","component":"SelectItem","value":"ironwood","label":"Ironwood (Jun 14)"},
+{"id":"pt4","component":"SelectItem","value":"crimson-tide","label":"Crimson Tide"},
+{"id":"fcSlot","component":"FormControl","label":"Home screen slot","input":"promoteSlotInput","hint":"Hero banner gets maximum exposure"},
+{"id":"promoteSlotInput","component":"RadioGroup","name":"slot","defaultValue":"hero","items":["slot1","slot2","slot3"]},
+{"id":"slot1","component":"RadioItem","label":"Hero banner","description":"Top of home, full width","value":"hero"},
+{"id":"slot2","component":"RadioItem","label":"Top row","description":"First content row","value":"top-row"},
+{"id":"slot3","component":"RadioItem","label":"Trending rail","description":"Trending Now carousel","value":"trending"},
+{"id":"fcDates","component":"FormControl","label":"Promotion window","input":"promoteDates"},
+{"id":"promoteDates","component":"DatePicker","name":"promoWindow","mode":"range"},
+{"id":"promoteButtons","component":"Buttons","buttons":["promoteSubmit","promoteCancel"]},
+{"id":"promoteSubmit","component":"Button","label":"Schedule promotion","variant":"primary","action":[{"type":"formSubmit","form":"promoteTitle"}]},
+{"id":"promoteCancel","component":"Button","label":"Clear","variant":"tertiary","action":[{"type":"formReset","form":"promoteTitle"}]}
+]}}
+</a2ui-json>
+
+All 16 items are covered:
+1. **Viewers now** — live counter card with trend
+2. **Most-watched titles** — horizontal bar chart with hours
+3. **Watch time, past month** — area chart (Content → Audience tab)
+4. **Subs vs cancels** — grouped bar chart (Growth tab)
+5. **Genre performance** — radar chart (Delivery tab)
+6. **Buffering rate** — 24h line chart
+7. **Delivery health by region** — uptime/buffering/status table
+8. **Upcoming releases** — releases table (Content tab)
+9. **Expiring licenses** — license table with hours at risk
+10. **Recommendation CTR** — 7-day bar chart
+11. **Dead-end searches** — no-playback query table
+12. **Revenue by plan** — pie chart
+13. **Device split** — donut chart
+14. **Region focus** — region selector dropdown
+15. **Feature flags** — switch group with per-flag state
+16. **Promote a title** — form with title, slot, date range, and submit

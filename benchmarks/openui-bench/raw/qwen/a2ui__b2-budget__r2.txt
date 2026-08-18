@@ -1,0 +1,207 @@
+
+
+Here's a single-screen personal budget check covering all five items: totals vs. budget with a progress indicator, a donut breakdown by category, a highlighted largest expense, a month switcher, and an "Add expense" dialog with a full form.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "budget-check",
+      "catalogId": "thesys.dev:c1-openui",
+      "sendDataModel": true,
+      "theme": { "primaryColor": "#4F46E5" }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "budget-check",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "direction": "column",
+          "gap": "l",
+          "align": "stretch",
+          "children": ["controlsRow", "summaryCard", "largestCallout", "chartCard", "footerHint"]
+        },
+        {
+          "id": "controlsRow",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "justify": "between",
+          "align": "end",
+          "children": ["monthFC", "addBtn"]
+        },
+        {
+          "id": "monthFC",
+          "component": "FormControl",
+          "label": "Viewing month",
+          "input": "selMonth"
+        },
+        {
+          "id": "selMonth",
+          "component": "Select",
+          "name": "month",
+          "value": "2025-10",
+          "items": ["m1", "m2", "m3", "m4", "m5", "m6"],
+          "accessibility": { "label": "Month selector", "description": "Choose a different month to review" }
+        },
+        { "id": "m1", "component": "SelectItem", "value": "2025-05", "label": "May 2025" },
+        { "id": "m2", "component": "SelectItem", "value": "2025-06", "label": "June 2025" },
+        { "id": "m3", "component": "SelectItem", "value": "2025-07", "label": "July 2025" },
+        { "id": "m4", "component": "SelectItem", "value": "2025-08", "label": "August 2025" },
+        { "id": "m5", "component": "SelectItem", "value": "2025-09", "label": "September 2025" },
+        { "id": "m6", "component": "SelectItem", "value": "2025-10", "label": "October 2025" },
+        {
+          "id": "addBtn",
+          "component": "DialogBlock",
+          "triggerLabel": "+ Add expense",
+          "title": "Add an expense",
+          "description": "Log a purchase against this month's budget.",
+          "content": ["expenseForm"],
+          "accessibility": { "label": "Add expense" }
+        },
+        {
+          "id": "expenseForm",
+          "component": "Form",
+          "name": "add-expense",
+          "fields": ["fcDesc", "fcAmount", "fcCategory", "fcDate"],
+          "buttons": "formButtons"
+        },
+        { "id": "fcDesc", "component": "FormControl", "label": "Description", "input": "inDesc" },
+        {
+          "id": "inDesc",
+          "component": "Input",
+          "name": "description",
+          "placeholder": "e.g. Groceries at Green Market",
+          "rules": ["required"]
+        },
+        { "id": "fcAmount", "component": "FormControl", "label": "Amount ($)", "input": "inAmount" },
+        {
+          "id": "inAmount",
+          "component": "Input",
+          "name": "amount",
+          "type": "number",
+          "placeholder": "0.00",
+          "rules": ["required"]
+        },
+        { "id": "fcCategory", "component": "FormControl", "label": "Category", "input": "selCat" },
+        {
+          "id": "selCat",
+          "component": "Select",
+          "name": "category",
+          "value": "Groceries",
+          "items": ["c1", "c2", "c3", "c4", "c5", "c6", "c7"]
+        },
+        { "id": "c1", "component": "SelectItem", "value": "Housing", "label": "Housing" },
+        { "id": "c2", "component": "SelectItem", "value": "Groceries", "label": "Groceries" },
+        { "id": "c3", "component": "SelectItem", "value": "Dining out", "label": "Dining out" },
+        { "id": "c4", "component": "SelectItem", "value": "Transport", "label": "Transport" },
+        { "id": "c5", "component": "SelectItem", "value": "Entertainment", "label": "Entertainment" },
+        { "id": "c6", "component": "SelectItem", "value": "Utilities", "label": "Utilities" },
+        { "id": "c7", "component": "SelectItem", "value": "Other", "label": "Other" },
+        { "id": "fcDate", "component": "FormControl", "label": "Date", "input": "expDate" },
+        { "id": "expDate", "component": "DatePicker", "name": "date", "mode": "single" },
+        { "id": "formButtons", "component": "Buttons", "direction": "row", "buttons": ["saveBtn"] },
+        {
+          "id": "saveBtn",
+          "component": "Button",
+          "label": "Save expense",
+          "variant": "primary",
+          "action": [{ "type": "submitForm" }],
+          "accessibility": { "label": "Save expense" }
+        },
+        {
+          "id": "summaryCard",
+          "component": "Card",
+          "direction": "column",
+          "gap": "m",
+          "children": ["summaryHeader", "spentLine", "budgetProgress", "remainingLine"]
+        },
+        {
+          "id": "summaryHeader",
+          "component": "CardHeader",
+          "title": "October 2025",
+          "subtitle": "Total spent vs. budget"
+        },
+        {
+          "id": "spentLine",
+          "component": "TextContent",
+          "size": "large",
+          "text": "**$1,847** spent of **$2,500** budget"
+        },
+        {
+          "id": "budgetProgress",
+          "component": "Progress",
+          "value": 74,
+          "label": "74% of budget used"
+        },
+        {
+          "id": "remainingLine",
+          "component": "TextContent",
+          "size": "small",
+          "text": "$653 remaining — currently under budget"
+        },
+        {
+          "id": "largestCallout",
+          "component": "Alert",
+          "variant": "warning",
+          "title": "Largest expense: Rent — $950",
+          "description": "Housing · Oct 3 · 51% of this month's total spending"
+        },
+        {
+          "id": "chartCard",
+          "component": "Card",
+          "direction": "column",
+          "gap": "m",
+          "children": ["chartHeader", "donutChart", "catTags"]
+        },
+        {
+          "id": "chartHeader",
+          "component": "CardHeader",
+          "title": "Spending by category",
+          "subtitle": "October 2025 breakdown"
+        },
+        {
+          "id": "donutChart",
+          "component": "PieChart",
+          "variant": "donut",
+          "labels": ["Housing", "Groceries", "Dining out", "Transport", "Entertainment", "Utilities", "Other"],
+          "values": [950, 312, 186, 145, 128, 96, 30]
+        },
+        {
+          "id": "catTags",
+          "component": "TagBlock",
+          "tags": [
+            "Housing $950 · 51%",
+            "Groceries $312 · 17%",
+            "Dining out $186 · 10%",
+            "Transport $145 · 8%",
+            "Entertainment $128 · 7%",
+            "Utilities $96 · 5%",
+            "Other $30 · 2%"
+          ]
+        },
+        {
+          "id": "footerHint",
+          "component": "TextContent",
+          "size": "small",
+          "text": "Switch the month above to review history, or use “Add expense” to log a new purchase."
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+Coverage of the checklist:
+1. **Total vs. budget** — headline amount, progress bar at 74%, and remaining balance.
+2. **Category split** — donut chart plus tag breakdown for all seven categories.
+3. **Largest expense** — warning alert highlighting Rent at $950 (51% of spend).
+4. **Different month** — month dropdown (May–Oct 2025) above the summary.
+5. **Add expense** — “+ Add expense” opens a dialog with description, amount, category, date, and a save button.
+
+The data is sample data for October 2025 — point the surface at your real expense store and wire the month select and save button to update it.

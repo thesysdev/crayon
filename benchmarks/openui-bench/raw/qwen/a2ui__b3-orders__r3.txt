@@ -1,0 +1,256 @@
+
+
+Here's a single-screen e-commerce operations desk covering all nine requirements: three daily KPIs (1–3), a recent orders table (4), status tabs to narrow down (5), a customer-name search form (6), the monthly refund-rate KPI (7), a four-week volume bar chart (8), and a fulfill-order form listing pending orders (9).
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "ecom-ops-desk",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": { "primaryColor": "#0F766E" }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "ecom-ops-desk",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "direction": "column",
+          "gap": "m",
+          "children": ["pageHeader", "kpiRow", "volumeCard", "consoleCard"]
+        },
+        {
+          "id": "pageHeader",
+          "component": "CardHeader",
+          "title": "E-commerce Operations Desk",
+          "subtitle": "Today at a glance · All times local"
+        },
+        {
+          "id": "kpiRow",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "align": "stretch",
+          "wrap": true,
+          "children": ["kpiOrders", "kpiRevenue", "kpiAov", "kpiRefundRate"]
+        },
+        {
+          "id": "kpiOrders",
+          "component": "Card",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["kpiOrdersLabel", "kpiOrdersValue", "kpiOrdersNote"]
+        },
+        { "id": "kpiOrdersLabel", "component": "TextContent", "size": "small", "text": "Orders today" },
+        { "id": "kpiOrdersValue", "component": "TextContent", "size": "large-heavy", "text": "38" },
+        { "id": "kpiOrdersNote", "component": "TextContent", "size": "small", "text": "+12% vs yesterday" },
+        {
+          "id": "kpiRevenue",
+          "component": "Card",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["kpiRevenueLabel", "kpiRevenueValue", "kpiRevenueNote"]
+        },
+        { "id": "kpiRevenueLabel", "component": "TextContent", "size": "small", "text": "Revenue today" },
+        { "id": "kpiRevenueValue", "component": "TextContent", "size": "large-heavy", "text": "$4,816.20" },
+        { "id": "kpiRevenueNote", "component": "TextContent", "size": "small", "text": "+8.4% vs yesterday" },
+        {
+          "id": "kpiAov",
+          "component": "Card",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["kpiAovLabel", "kpiAovValue", "kpiAovNote"]
+        },
+        { "id": "kpiAovLabel", "component": "TextContent", "size": "small", "text": "Average order value" },
+        { "id": "kpiAovValue", "component": "TextContent", "size": "large-heavy", "text": "$126.74" },
+        { "id": "kpiAovNote", "component": "TextContent", "size": "small", "text": "−3.1% vs yesterday" },
+        {
+          "id": "kpiRefundRate",
+          "component": "Card",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["kpiRefundLabel", "kpiRefundValue", "kpiRefundNote"]
+        },
+        { "id": "kpiRefundLabel", "component": "TextContent", "size": "small", "text": "Refund rate · this month" },
+        { "id": "kpiRefundValue", "component": "TextContent", "size": "large-heavy", "text": "2.4%" },
+        { "id": "kpiRefundNote", "component": "TextContent", "size": "small", "text": "31 refunds · 1,286 orders" },
+        {
+          "id": "volumeCard",
+          "component": "Card",
+          "direction": "column",
+          "gap": "s",
+          "children": ["volumeHeader", "volumeChart", "volSeries"]
+        },
+        {
+          "id": "volumeHeader",
+          "component": "CardHeader",
+          "title": "Order volume · past 4 weeks",
+          "subtitle": "Total orders placed per week"
+        },
+        {
+          "id": "volumeChart",
+          "component": "BarChart",
+          "labels": ["Week −3", "Week −2", "Week −1", "This week"],
+          "series": ["volSeries"],
+          "xLabel": "Week",
+          "yLabel": "Orders"
+        },
+        {
+          "id": "volSeries",
+          "component": "Series",
+          "category": "Orders placed",
+          "values": [214, 246, 238, 268]
+        },
+        {
+          "id": "consoleCard",
+          "component": "Card",
+          "direction": "column",
+          "gap": "m",
+          "children": ["consoleHeader", "filtersRow", "tabs"]
+        },
+        {
+          "id": "consoleHeader",
+          "component": "CardHeader",
+          "title": "Recent orders",
+          "subtitle": "Narrow by status with the tabs, search by customer name, or mark a pending order fulfilled"
+        },
+        {
+          "id": "filtersRow",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "align": "stretch",
+          "wrap": true,
+          "children": ["searchForm", "fulfillForm"]
+        },
+        {
+          "id": "searchForm",
+          "component": "Form",
+          "name": "customer-search",
+          "fields": ["searchField"],
+          "buttons": "searchButtons"
+        },
+        {
+          "id": "searchField",
+          "component": "FormControl",
+          "label": "Search by customer name",
+          "input": "searchInput",
+          "hint": "Matches against customer names in recent orders"
+        },
+        {
+          "id": "searchInput",
+          "component": "Input",
+          "name": "customerQuery",
+          "type": "text",
+          "placeholder": "e.g. Maya Chen",
+          "accessibility": { "label": "Customer name search" }
+        },
+        { "id": "searchButtons", "component": "Buttons", "buttons": ["searchBtn"] },
+        {
+          "id": "searchBtn",
+          "component": "Button",
+          "label": "Search",
+          "variant": "secondary",
+          "size": "small",
+          "action": [{ "event": { "name": "search_customer" } }],
+          "accessibility": { "label": "Search orders", "description": "Filters recent orders by the entered customer name" }
+        },
+        {
+          "id": "fulfillForm",
+          "component": "Form",
+          "name": "fulfill-order",
+          "fields": ["fulfillField"],
+          "buttons": "fulfillButtons"
+        },
+        {
+          "id": "fulfillField",
+          "component": "FormControl",
+          "label": "Mark an order fulfilled",
+          "input": "fulfillSelect",
+          "hint": "Pending orders only"
+        },
+        {
+          "id": "fulfillSelect",
+          "component": "Select",
+          "name": "orderId",
+          "placeholder": "Select a pending order",
+          "items": ["pendOpt1", "pendOpt2"],
+          "accessibility": { "label": "Order to fulfill" }
+        },
+        { "id": "pendOpt1", "component": "SelectItem", "value": "10240", "label": "#10240 · Liam O'Connor · $96.00" },
+        { "id": "pendOpt2", "component": "SelectItem", "value": "10238", "label": "#10238 · Noah Kim · $58.30" },
+        { "id": "fulfillButtons", "component": "Buttons", "buttons": ["fulfillBtn"] },
+        {
+          "id": "fulfillBtn",
+          "component": "Button",
+          "label": "Mark fulfilled",
+          "variant": "primary",
+          "size": "small",
+          "action": [{ "event": { "name": "mark_order_fulfilled" } }],
+          "accessibility": { "label": "Mark order fulfilled", "description": "Sets the selected pending order to fulfilled" }
+        },
+        {
+          "id": "tabs",
+          "component": "Tabs",
+          "items": ["tabAll", "tabPending", "tabShipped", "tabDelivered", "tabRefunded"]
+        },
+        { "id": "tabAll", "component": "TabItem", "value": "all", "trigger": "All (8)", "content": ["tableAll"] },
+        {
+          "id": "tableAll",
+          "component": "Table",
+          "columns": ["colAllId", "colAllCustomer", "colAllTotal", "colAllStatus"]
+        },
+        { "id": "colAllId", "component": "Col", "type": "string", "label": "Order ID", "data": ["#10241", "#10240", "#10239", "#10238", "#10237", "#10236", "#10235", "#10234"] },
+        { "id": "colAllCustomer", "component": "Col", "type": "string", "label": "Customer", "data": ["Maya Chen", "Liam O'Connor", "Ava Patel", "Noah Kim", "Sofia Reyes", "Ethan Brooks", "Zoe Müller", "Daniel Osei"] },
+        { "id": "colAllTotal", "component": "Col", "type": "string", "label": "Total", "data": ["$182.50", "$96.00", "$247.90", "$58.30", "$315.00", "$74.99", "$129.00", "$204.75"] },
+        { "id": "colAllStatus", "component": "Col", "type": "string", "label": "Status", "data": ["Shipped", "Pending", "Delivered", "Pending", "Shipped", "Refunded", "Delivered", "Shipped"] },
+        { "id": "tabPending", "component": "TabItem", "value": "pending", "trigger": "Pending (2)", "content": ["tablePending"] },
+        { "id": "tablePending", "component": "Table", "columns": ["colPendingId", "colPendingCustomer", "colPendingTotal"] },
+        { "id": "colPendingId", "component": "Col", "type": "string", "label": "Order ID", "data": ["#10240", "#10238"] },
+        { "id": "colPendingCustomer", "component": "Col", "type": "string", "label": "Customer", "data": ["Liam O'Connor", "Noah Kim"] },
+        { "id": "colPendingTotal", "component": "Col", "type": "string", "label": "Total", "data": ["$96.00", "$58.30"] },
+        { "id": "tabShipped", "component": "TabItem", "value": "shipped", "trigger": "Shipped (3)", "content": ["tableShipped"] },
+        { "id": "tableShipped", "component": "Table", "columns": ["colShippedId", "colShippedCustomer", "colShippedTotal"] },
+        { "id": "colShippedId", "component": "Col", "type": "string", "label": "Order ID", "data": ["#10241", "#10237", "#10234"] },
+        { "id": "colShippedCustomer", "component": "Col", "type": "string", "label": "Customer", "data": ["Maya Chen", "Sofia Reyes", "Daniel Osei"] },
+        { "id": "colShippedTotal", "component": "Col", "type": "string", "label": "Total", "data": ["$182.50", "$315.00", "$204.75"] },
+        { "id": "tabDelivered", "component": "TabItem", "value": "delivered", "trigger": "Delivered (2)", "content": ["tableDelivered"] },
+        { "id": "tableDelivered", "component": "Table", "columns": ["colDeliveredId", "colDeliveredCustomer", "colDeliveredTotal"] },
+        { "id": "colDeliveredId", "component": "Col", "type": "string", "label": "Order ID", "data": ["#10239", "#10235"] },
+        { "id": "colDeliveredCustomer", "component": "Col", "type": "string", "label": "Customer", "data": ["Ava Patel", "Zoe Müller"] },
+        { "id": "colDeliveredTotal", "component": "Col", "type": "string", "label": "Total", "data": ["$247.90", "$129.00"] },
+        { "id": "tabRefunded", "component": "TabItem", "value": "refunded", "trigger": "Refunded (1)", "content": ["tableRefunded"] },
+        { "id": "tableRefunded", "component": "Table", "columns": ["colRefundedId", "colRefundedCustomer", "colRefundedTotal"] },
+        { "id": "colRefundedId", "component": "Col", "type": "string", "label": "Order ID", "data": ["#10236"] },
+        { "id": "colRefundedCustomer", "component": "Col", "type": "string", "label": "Customer", "data": ["Ethan Brooks"] },
+        { "id": "colRefundedTotal", "component": "Col", "type": "string", "label": "Total", "data": ["$74.99"] }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+Everything maps to your checklist:
+
+1. **Orders today** — KPI card (38)
+2. **Revenue today** — KPI card ($4,816.20)
+3. **Average order value** — KPI card ($126.74)
+4. **Recent orders** — table with Order ID, Customer, Total, Status per order
+5. **Narrow by status** — All / Pending / Shipped / Delivered / Refunded tabs, each showing the filtered orders
+6. **Search by customer** — customer-name input with a Search button
+7. **Refund rate this month** — KPI card (2.4%, 31 of 1,286 orders)
+8. **Order volume, past four weeks** — bar chart with weekly totals
+9. **Mark fulfilled** — fulfill form with a dropdown of pending orders and a "Mark fulfilled" button
+
+Want me to wire the search/fulfill actions to real data refreshes, or add bulk fulfillment next?

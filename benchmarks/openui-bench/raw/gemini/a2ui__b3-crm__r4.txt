@@ -1,0 +1,600 @@
+Here is a complete, interactive sales rep account management page built using A2UI. It covers all 9 requested features, including real-time details on account ownership, pipeline value, deal stages, upcoming renewal warnings, key contacts, recent activities, open tasks, quick note-taking, and a call-logging form.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "sales-account-surface",
+      "catalogId": "thesys.dev:c1-openui"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "sales-account-surface",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "l",
+          "children": [
+            "account-header",
+            "renewal-alert",
+            "metrics-card",
+            "tabs-section"
+          ]
+        },
+        {
+          "id": "account-header",
+          "component": "Card",
+          "variant": "card",
+          "direction": "row",
+          "justify": "between",
+          "align": "center",
+          "children": [
+            "header-info",
+            "header-badges"
+          ]
+        },
+        {
+          "id": "header-info",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "xs",
+          "children": [
+            "account-title",
+            "account-owner"
+          ]
+        },
+        {
+          "id": "account-title",
+          "component": "Heading",
+          "text": "Acme Corporation",
+          "level": "h1"
+        },
+        {
+          "id": "account-owner",
+          "component": "TextContent",
+          "text": "Account Owner: **Sarah Jenkins** (Senior Enterprise AE)",
+          "size": "small"
+        },
+        {
+          "id": "header-badges",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "s",
+          "align": "center",
+          "children": [
+            "account-status-badge",
+            "tier-badge"
+          ]
+        },
+        {
+          "id": "account-status-badge",
+          "component": "Badge",
+          "text": "Active Customer",
+          "variant": "default"
+        },
+        {
+          "id": "tier-badge",
+          "component": "Tag",
+          "text": "Enterprise Tier",
+          "variant": "info",
+          "size": "md"
+        },
+        {
+          "id": "renewal-alert",
+          "component": "Alert",
+          "title": "Renewal Warning: 14 Days Remaining",
+          "description": "The annual contract ($180,000 ARR) is set to renew on October 15, 2024. Schedule a executive review meeting immediately.",
+          "variant": "warning"
+        },
+        {
+          "id": "metrics-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "row",
+          "gap": "l",
+          "justify": "around",
+          "children": [
+            "metric-deal-value",
+            "metric-stage",
+            "metric-health"
+          ]
+        },
+        {
+          "id": "metric-deal-value",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "xs",
+          "align": "center",
+          "children": [
+            "deal-value-label",
+            "deal-value-amount"
+          ]
+        },
+        {
+          "id": "deal-value-label",
+          "component": "TextContent",
+          "text": "Total Deal Value",
+          "size": "small"
+        },
+        {
+          "id": "deal-value-amount",
+          "component": "Heading",
+          "text": "$245,000",
+          "level": "h2"
+        },
+        {
+          "id": "metric-stage",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "xs",
+          "align": "center",
+          "children": [
+            "stage-label",
+            "stage-value"
+          ]
+        },
+        {
+          "id": "stage-label",
+          "component": "TextContent",
+          "text": "Current Deal Stage",
+          "size": "small"
+        },
+        {
+          "id": "stage-value",
+          "component": "Tag",
+          "text": "Proposal / Negotiation",
+          "variant": "warning",
+          "size": "lg"
+        },
+        {
+          "id": "metric-health",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "xs",
+          "align": "center",
+          "children": [
+            "health-label",
+            "health-progress"
+          ]
+        },
+        {
+          "id": "health-label",
+          "component": "TextContent",
+          "text": "Account Health Score",
+          "size": "small"
+        },
+        {
+          "id": "health-progress",
+          "component": "Progress",
+          "value": 85,
+          "label": "85/100 (Strong)"
+        },
+        {
+          "id": "tabs-section",
+          "component": "Tabs",
+          "items": [
+            "tab-activity",
+            "tab-contacts",
+            "tab-followups",
+            "tab-actions"
+          ]
+        },
+        {
+          "id": "tab-activity",
+          "component": "TabItem",
+          "value": "activity",
+          "trigger": "Recent Activity",
+          "content": [
+            "activity-card"
+          ]
+        },
+        {
+          "id": "activity-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "activity-heading",
+            "activity-list"
+          ]
+        },
+        {
+          "id": "activity-heading",
+          "component": "CardHeader",
+          "title": "Activity History",
+          "subtitle": "Most recent interactions recorded chronologically"
+        },
+        {
+          "id": "activity-list",
+          "component": "ListBlock",
+          "variant": "number",
+          "items": [
+            "act-1",
+            "act-2",
+            "act-3",
+            "act-4"
+          ]
+        },
+        {
+          "id": "act-1",
+          "component": "ListItem",
+          "title": "Email Sent: Renewal Proposal v2.pdf",
+          "subtitle": "Oct 1, 2024 at 2:30 PM — Sent to Marcus Vance (CTO)"
+        },
+        {
+          "id": "act-2",
+          "component": "ListItem",
+          "title": "Call Completed: Security Review Sync",
+          "subtitle": "Sep 28, 2024 at 10:00 AM — Spoke with Security Team. Compliant with SOC2 requirement."
+        },
+        {
+          "id": "act-3",
+          "component": "ListItem",
+          "title": "Meeting Held: Q3 Executive Business Review",
+          "subtitle": "Sep 20, 2024 at 4:00 PM — Attended by Elena Rostova (SVP Ops) and Sarah Jenkins."
+        },
+        {
+          "id": "act-4",
+          "component": "ListItem",
+          "title": "Note Created: Pricing Negotiation Limits",
+          "subtitle": "Sep 15, 2024 at 11:15 AM — Approved max 10% discount for multi-year renewal."
+        },
+        {
+          "id": "tab-contacts",
+          "component": "TabItem",
+          "value": "contacts",
+          "trigger": "Contacts",
+          "content": [
+            "contacts-card"
+          ]
+        },
+        {
+          "id": "contacts-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "contacts-heading",
+            "contacts-table"
+          ]
+        },
+        {
+          "id": "contacts-heading",
+          "component": "CardHeader",
+          "title": "Key Account Contacts",
+          "subtitle": "Key stakeholders and decision makers"
+        },
+        {
+          "id": "contacts-table",
+          "component": "Table",
+          "columns": [
+            "col-name",
+            "col-role",
+            "col-email",
+            "col-phone"
+          ]
+        },
+        {
+          "id": "col-name",
+          "component": "Col",
+          "label": "Name",
+          "type": "string",
+          "data": [
+            "Marcus Vance",
+            "Elena Rostova",
+            "David Chen",
+            "Sarah Miller"
+          ]
+        },
+        {
+          "id": "col-role",
+          "component": "Col",
+          "label": "Role / Title",
+          "type": "string",
+          "data": [
+            "Chief Technology Officer (Economic Buyer)",
+            "SVP Operations (Executive Champion)",
+            "Lead Solutions Architect (Technical Evaluator)",
+            "Procurement Manager (Contract Negotiator)"
+          ]
+        },
+        {
+          "id": "col-email",
+          "component": "Col",
+          "label": "Email",
+          "type": "string",
+          "data": [
+            "m.vance@acme.com",
+            "e.rostova@acme.com",
+            "d.chen@acme.com",
+            "s.miller@acme.com"
+          ]
+        },
+        {
+          "id": "col-phone",
+          "component": "Col",
+          "label": "Phone",
+          "type": "string",
+          "data": [
+            "+1 (555) 019-2831",
+            "+1 (555) 019-2832",
+            "+1 (555) 019-8823",
+            "+1 (555) 019-4412"
+          ]
+        },
+        {
+          "id": "tab-followups",
+          "component": "TabItem",
+          "value": "followups",
+          "trigger": "Open Follow-ups",
+          "content": [
+            "followups-card"
+          ]
+        },
+        {
+          "id": "followups-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "followups-heading",
+            "followups-list"
+          ]
+        },
+        {
+          "id": "followups-heading",
+          "component": "CardHeader",
+          "title": "Open Action Items & Follow-ups",
+          "subtitle": "Pending tasks and deadline tracking"
+        },
+        {
+          "id": "followups-list",
+          "component": "ListBlock",
+          "variant": "number",
+          "items": [
+            "task-1",
+            "task-2",
+            "task-3"
+          ]
+        },
+        {
+          "id": "task-1",
+          "component": "ListItem",
+          "title": "Send updated Addendum for Security SLA",
+          "subtitle": "Due Date: Oct 3, 2024 (Overdue / High Priority)"
+        },
+        {
+          "id": "task-2",
+          "component": "ListItem",
+          "title": "Schedule Executive Alignment Call with CTO",
+          "subtitle": "Due Date: Oct 5, 2024"
+        },
+        {
+          "id": "task-3",
+          "component": "ListItem",
+          "title": "Deliver Q4 Expansion Roadmap Deck",
+          "subtitle": "Due Date: Oct 10, 2024"
+        },
+        {
+          "id": "tab-actions",
+          "component": "TabItem",
+          "value": "actions",
+          "trigger": "Log & Notes",
+          "content": [
+            "actions-grid"
+          ]
+        },
+        {
+          "id": "actions-grid",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "l",
+          "children": [
+            "jot-note-card",
+            "log-call-card"
+          ]
+        },
+        {
+          "id": "jot-note-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "weight": 1,
+          "children": [
+            "note-form"
+          ]
+        },
+        {
+          "id": "note-form",
+          "component": "Form",
+          "name": "jotNoteForm",
+          "fields": [
+            "note-field-control"
+          ],
+          "buttons": "note-form-buttons"
+        },
+        {
+          "id": "note-field-control",
+          "component": "FormControl",
+          "label": "Jot Quick Note",
+          "hint": "Notes are saved to the account timeline immediately.",
+          "input": "note-textarea"
+        },
+        {
+          "id": "note-textarea",
+          "component": "TextArea",
+          "name": "quickNote",
+          "placeholder": "Enter internal notes, meeting observations, or strategic reminders...",
+          "rows": 4
+        },
+        {
+          "id": "note-form-buttons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": [
+            "save-note-btn"
+          ]
+        },
+        {
+          "id": "save-note-btn",
+          "component": "Button",
+          "label": "Save Note",
+          "variant": "primary"
+        },
+        {
+          "id": "log-call-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "weight": 1,
+          "children": [
+            "call-form"
+          ]
+        },
+        {
+          "id": "call-form",
+          "component": "Form",
+          "name": "logCallForm",
+          "fields": [
+            "call-contact-control",
+            "call-outcome-control",
+            "call-notes-control"
+          ],
+          "buttons": "call-form-buttons"
+        },
+        {
+          "id": "call-contact-control",
+          "component": "FormControl",
+          "label": "Contact Spoken To",
+          "hint": "Select the primary contact for this call.",
+          "input": "call-contact-select"
+        },
+        {
+          "id": "call-contact-select",
+          "component": "Select",
+          "name": "callContact",
+          "placeholder": "Select contact...",
+          "items": [
+            "select-marcus",
+            "select-elena",
+            "select-david",
+            "select-sarah"
+          ]
+        },
+        {
+          "id": "select-marcus",
+          "component": "SelectItem",
+          "value": "marcus",
+          "label": "Marcus Vance (CTO)"
+        },
+        {
+          "id": "select-elena",
+          "component": "SelectItem",
+          "value": "elena",
+          "label": "Elena Rostova (SVP Ops)"
+        },
+        {
+          "id": "select-david",
+          "component": "SelectItem",
+          "value": "david",
+          "label": "David Chen (Solutions Architect)"
+        },
+        {
+          "id": "select-sarah",
+          "component": "SelectItem",
+          "value": "sarah",
+          "label": "Sarah Miller (Procurement)"
+        },
+        {
+          "id": "call-outcome-control",
+          "component": "FormControl",
+          "label": "Call Outcome",
+          "hint": "Primary result of the conversation.",
+          "input": "call-outcome-select"
+        },
+        {
+          "id": "call-outcome-select",
+          "component": "Select",
+          "name": "callOutcome",
+          "placeholder": "Select outcome...",
+          "items": [
+            "outcome-connected",
+            "outcome-left-voicemail",
+            "outcome-scheduled-followup",
+            "outcome-no-answer"
+          ]
+        },
+        {
+          "id": "outcome-connected",
+          "component": "SelectItem",
+          "value": "connected",
+          "label": "Connected / Productive Conversation"
+        },
+        {
+          "id": "outcome-left-voicemail",
+          "component": "SelectItem",
+          "value": "voicemail",
+          "label": "Left Voicemail"
+        },
+        {
+          "id": "outcome-scheduled-followup",
+          "component": "SelectItem",
+          "value": "followup",
+          "label": "Scheduled Demo / Follow-up"
+        },
+        {
+          "id": "outcome-no-answer",
+          "component": "SelectItem",
+          "value": "no_answer",
+          "label": "No Answer"
+        },
+        {
+          "id": "call-notes-control",
+          "component": "FormControl",
+          "label": "Call Summary / Notes",
+          "hint": "Brief overview of what was discussed.",
+          "input": "call-notes-input"
+        },
+        {
+          "id": "call-notes-input",
+          "component": "Input",
+          "name": "callSummary",
+          "placeholder": "e.g., Discussed Q4 budget expansion and timing...",
+          "type": "text"
+        },
+        {
+          "id": "call-form-buttons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": [
+            "log-call-btn"
+          ]
+        },
+        {
+          "id": "log-call-btn",
+          "component": "Button",
+          "label": "Log Call Activity",
+          "variant": "primary"
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>

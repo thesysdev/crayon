@@ -1,0 +1,930 @@
+Hospital Operations Command Center — single-screen view covering all 12 requested items.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "hospital-ops-command",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#0E6EAA",
+      "agentDisplayName": "Mercy General — Ops Command"
+    }
+  }
+}
+</a2ui-json> <a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "hospital-ops-command",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "controlsCard",
+          "kpiRow",
+          "chartsTabs",
+          "middleRow",
+          "bottomRow",
+          "actionsRow"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Hospital Operations Command Center",
+        "subtitle": "Mercy General Hospital • Live view for 12 Aug 2026 • Auto-refresh every 60s"
+      },
+      {
+        "id": "controlsCard",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "align": "center",
+        "justify": "between",
+        "children": [
+          "controlsText",
+          "datePickerControl"
+        ]
+      },
+      {
+        "id": "controlsText",
+        "component": "TextContent",
+        "text": "**Viewing:** Today (Tue, Aug 12) — use the date picker to review any other day's operations",
+        "size": "small"
+      },
+      {
+        "id": "datePickerControl",
+        "component": "FormControl",
+        "label": "Look at another day",
+        "input": "datePicker",
+        "hint": "Item #11 — Change date to reload all metrics"
+      },
+      {
+        "id": "datePicker",
+        "component": "DatePicker",
+        "name": "viewDate",
+        "mode": "single",
+        "value": [
+          "2026-08-12"
+        ]
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "bedCard",
+          "erCard"
+        ]
+      },
+      {
+        "id": "bedCard",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "bedHeader",
+          "bedProgress",
+          "bedText",
+          "bedStacked"
+        ]
+      },
+      {
+        "id": "erCard",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "erHeader",
+          "erWaitHeading",
+          "erBadge",
+          "erSubtext",
+          "erSeparator",
+          "erDetails"
+        ]
+      },
+      {
+        "id": "bedHeader",
+        "component": "CardHeader",
+        "title": "1. Bed Occupancy",
+        "subtitle": "Total capacity: 300 beds"
+      },
+      {
+        "id": "bedProgress",
+        "component": "Progress",
+        "value": 84,
+        "label": "84% occupied"
+      },
+      {
+        "id": "bedText",
+        "component": "TextContent",
+        "text": "**252 / 300 beds occupied** • 48 available • 12 ICU beds free • Threshold alert at >90%",
+        "size": "small"
+      },
+      {
+        "id": "bedStacked",
+        "component": "SingleStackedBarChart",
+        "labels": [
+          "Occupied",
+          "Available"
+        ],
+        "values": [
+          252,
+          48
+        ]
+      },
+      {
+        "id": "erHeader",
+        "component": "CardHeader",
+        "title": "2. Current ER Wait",
+        "subtitle": "Updated 08:42 AM"
+      },
+      {
+        "id": "erWaitHeading",
+        "component": "Heading",
+        "text": "47 min average wait",
+        "level": "h1"
+      },
+      {
+        "id": "erBadge",
+        "component": "Badge",
+        "text": "HIGH — Above 30min target",
+        "variant": "destructive"
+      },
+      {
+        "id": "erSubtext",
+        "component": "TextContent",
+        "text": "18 patients in waiting room • 4 triage nurses active • Longest wait: 68 min (ESI 3)",
+        "size": "small"
+      },
+      {
+        "id": "erSeparator",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "erDetails",
+        "component": "TextContent",
+        "text": "Trend: +12 min vs yesterday. Fast-track beds opening at 09:00.",
+        "size": "small"
+      },
+      {
+        "id": "chartsTabs",
+        "component": "Tabs",
+        "items": [
+          "tabAdmissions",
+          "tabDept"
+        ]
+      },
+      {
+        "id": "tabAdmissions",
+        "component": "TabItem",
+        "value": "admissions",
+        "trigger": "3. Admissions — Past 2 Weeks",
+        "content": [
+          "admissionsChart"
+        ]
+      },
+      {
+        "id": "tabDept",
+        "component": "TabItem",
+        "value": "dept",
+        "trigger": "4. Patients per Department",
+        "content": [
+          "deptChart"
+        ]
+      },
+      {
+        "id": "admissionsChart",
+        "component": "LineChart",
+        "labels": [
+          "Jul 30",
+          "Jul 31",
+          "Aug 01",
+          "Aug 02",
+          "Aug 03",
+          "Aug 04",
+          "Aug 05",
+          "Aug 06",
+          "Aug 07",
+          "Aug 08",
+          "Aug 09",
+          "Aug 10",
+          "Aug 11",
+          "Aug 12"
+        ],
+        "series": [
+          "admissionsSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Date",
+        "yLabel": "Admissions"
+      },
+      {
+        "id": "admissionsSeries",
+        "component": "Series",
+        "category": "Daily Admissions",
+        "values": [
+          42,
+          38,
+          51,
+          47,
+          44,
+          58,
+          62,
+          49,
+          55,
+          60,
+          46,
+          53,
+          57,
+          34
+        ]
+      },
+      {
+        "id": "deptChart",
+        "component": "BarChart",
+        "labels": [
+          "Emergency",
+          "ICU",
+          "Cardiology",
+          "Orthopedics",
+          "Pediatrics",
+          "Oncology",
+          "Neurology"
+        ],
+        "series": [
+          "deptSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Department",
+        "yLabel": "Current Patients"
+      },
+      {
+        "id": "deptSeries",
+        "component": "Series",
+        "category": "Patients",
+        "values": [
+          38,
+          22,
+          27,
+          19,
+          31,
+          15,
+          18
+        ]
+      },
+      {
+        "id": "middleRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "staffCard",
+          "criticalCard",
+          "dischargeCard"
+        ]
+      },
+      {
+        "id": "staffCard",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "staffHeader",
+          "staffTable"
+        ]
+      },
+      {
+        "id": "criticalCard",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "criticalHeader",
+          "criticalAlert1",
+          "criticalAlert2",
+          "criticalList"
+        ]
+      },
+      {
+        "id": "dischargeCard",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "dischargeHeader",
+          "dischargeTable",
+          "dischargeCallout"
+        ]
+      },
+      {
+        "id": "staffHeader",
+        "component": "CardHeader",
+        "title": "5. Staff on Shift",
+        "subtitle": "42 staff currently active • Day shift 07:00-19:00"
+      },
+      {
+        "id": "staffTable",
+        "component": "Table",
+        "columns": [
+          "staffNameCol",
+          "staffRoleCol",
+          "staffShiftCol",
+          "staffStatusCol"
+        ]
+      },
+      {
+        "id": "staffNameCol",
+        "component": "Col",
+        "label": "Name",
+        "data": [
+          "Dr. A. Sharma",
+          "Dr. L. Chen",
+          "N. Patel, RN",
+          "J. Okafor, RN",
+          "M. Rivera, RT",
+          "S. Kim, PharmD"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "staffRoleCol",
+        "component": "Col",
+        "label": "Role",
+        "data": [
+          "Attending — ER",
+          "Intensivist — ICU",
+          "Charge Nurse — ED",
+          "RN — Cardiology",
+          "Respiratory Therapist",
+          "Clinical Pharmacist"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "staffShiftCol",
+        "component": "Col",
+        "label": "Shift",
+        "data": [
+          "07:00-19:00",
+          "07:00-19:00",
+          "07:00-19:00",
+          "07:00-15:00",
+          "07:00-19:00",
+          "08:00-16:00"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "staffStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "On Duty",
+          "On Duty",
+          "On Break",
+          "On Duty",
+          "On Duty",
+          "On Duty"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "criticalHeader",
+        "component": "CardHeader",
+        "title": "6. Critical Patients",
+        "subtitle": "Requires immediate attention"
+      },
+      {
+        "id": "criticalAlert1",
+        "component": "Alert",
+        "title": "ICU Bed 7 — Code Blue Risk",
+        "description": "M. Alvarez (68M) • Septic shock • MAP 58 • On norepinephrine",
+        "variant": "destructive"
+      },
+      {
+        "id": "criticalAlert2",
+        "component": "Alert",
+        "title": "ER Trauma 2 — Unstable",
+        "description": "J. Doe (24F) • MVC • Hemorrhagic shock • Awaiting OR",
+        "variant": "destructive"
+      },
+      {
+        "id": "criticalList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "criticalItem1",
+          "criticalItem2",
+          "criticalItem3"
+        ]
+      },
+      {
+        "id": "criticalItem1",
+        "component": "ListItem",
+        "title": "R. Thompson — ICU 3",
+        "subtitle": "COPD exacerbation • SpO2 84% on 15L • Intubation standby"
+      },
+      {
+        "id": "criticalItem2",
+        "component": "ListItem",
+        "title": "K. Nguyen — Cardiology 12",
+        "subtitle": "STEMI • Troponin 12.4 • Cath lab activated"
+      },
+      {
+        "id": "criticalItem3",
+        "component": "ListItem",
+        "title": "E. Brooks — Pediatrics 4",
+        "subtitle": "Febrile seizure • Status epilepticus • Neuro consult en route"
+      },
+      {
+        "id": "dischargeHeader",
+        "component": "CardHeader",
+        "title": "7. Ready for Discharge",
+        "subtitle": "5 patients cleared — awaiting transport/paperwork"
+      },
+      {
+        "id": "dischargeTable",
+        "component": "Table",
+        "columns": [
+          "disPatCol",
+          "disDeptCol",
+          "disTimeCol",
+          "disStatusCol"
+        ]
+      },
+      {
+        "id": "disPatCol",
+        "component": "Col",
+        "label": "Patient",
+        "data": [
+          "L. Garcia (45F)",
+          "H. Wilson (72M)",
+          "T. Adeyemi (33M)",
+          "P. Singh (58F)",
+          "D. Foster (29M)"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "disDeptCol",
+        "component": "Col",
+        "label": "Dept",
+        "data": [
+          "Orthopedics",
+          "Cardiology",
+          "Pediatrics",
+          "Oncology",
+          "Neurology"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "disTimeCol",
+        "component": "Col",
+        "label": "Cleared At",
+        "data": [
+          "07:15",
+          "08:05",
+          "08:30",
+          "06:50",
+          "07:55"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "disStatusCol",
+        "component": "Col",
+        "label": "Next Step",
+        "data": [
+          "Awaiting ride",
+          "Pharmacy review",
+          "Paperwork",
+          "Awaiting ride",
+          "Discharge lounge"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "dischargeCallout",
+        "component": "TextCallout",
+        "variant": "success",
+        "title": "Free 5 beds in ~60 min",
+        "description": "Expedite transport to improve ER flow and reduce wait."
+      },
+      {
+        "id": "bottomRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "orCard",
+          "suppliesCard"
+        ]
+      },
+      {
+        "id": "orCard",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "orHeader",
+          "orTable"
+        ]
+      },
+      {
+        "id": "suppliesCard",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "suppliesHeader",
+          "suppliesTable",
+          "suppliesAlert"
+        ]
+      },
+      {
+        "id": "orHeader",
+        "component": "CardHeader",
+        "title": "8. Today's OR Bookings",
+        "subtitle": "Aug 12 • 6 cases • 3 rooms active"
+      },
+      {
+        "id": "orTable",
+        "component": "Table",
+        "columns": [
+          "orTimeCol",
+          "orRoomCol",
+          "orProcedureCol",
+          "orSurgeonCol",
+          "orStatusCol"
+        ]
+      },
+      {
+        "id": "orTimeCol",
+        "component": "Col",
+        "label": "Time",
+        "data": [
+          "08:00",
+          "09:30",
+          "11:00",
+          "13:00",
+          "14:30",
+          "16:00"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "orRoomCol",
+        "component": "Col",
+        "label": "Room",
+        "data": [
+          "OR-1",
+          "OR-2",
+          "OR-1",
+          "OR-3",
+          "OR-2",
+          "OR-1"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "orProcedureCol",
+        "component": "Col",
+        "label": "Procedure",
+        "data": [
+          "Laparoscopic Cholecystectomy",
+          "Total Knee Arthroplasty",
+          "Emergency Laparotomy",
+          "CABG x3",
+          "Craniotomy",
+          "Colon Resection"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "orSurgeonCol",
+        "component": "Col",
+        "label": "Surgeon",
+        "data": [
+          "Dr. Evans",
+          "Dr. Patel",
+          "Dr. Chen",
+          "Dr. Williams",
+          "Dr. Alvarez",
+          "Dr. Evans"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "orStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "In Progress",
+          "Pre-op",
+          "Urgent — Holding",
+          "Scheduled",
+          "Scheduled",
+          "Scheduled"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "suppliesHeader",
+        "component": "CardHeader",
+        "title": "9. Supplies Running Low",
+        "subtitle": "Reorder threshold breached"
+      },
+      {
+        "id": "suppliesTable",
+        "component": "Table",
+        "columns": [
+          "supItemCol",
+          "supStockCol",
+          "supThresholdCol",
+          "supStatusCol"
+        ]
+      },
+      {
+        "id": "supItemCol",
+        "component": "Col",
+        "label": "Item",
+        "data": [
+          "N95 Masks (3M 1860)",
+          "IV Saline 1L",
+          "Propofol 200mg",
+          "Sterile Gloves L",
+          "O2 Cylinders (Portable)"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "supStockCol",
+        "component": "Col",
+        "label": "On Hand",
+        "data": [
+          "42 units",
+          "18 bags",
+          "9 vials",
+          "3 boxes",
+          "6 cylinders"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "supThresholdCol",
+        "component": "Col",
+        "label": "Min Required",
+        "data": [
+          "200 units",
+          "50 bags",
+          "20 vials",
+          "10 boxes",
+          "12 cylinders"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "supStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Critical",
+          "Low",
+          "Critical",
+          "Low",
+          "Low"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "suppliesAlert",
+        "component": "Alert",
+        "title": "Auto-reorder triggered for 3 items",
+        "description": "N95, Propofol, IV Saline — PO sent to central supply at 07:00. ETA 14:00.",
+        "variant": "warning"
+      },
+      {
+        "id": "actionsRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "incidentCard",
+          "transferCard"
+        ]
+      },
+      {
+        "id": "incidentCard",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "incidentForm"
+        ]
+      },
+      {
+        "id": "transferCard",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "transferForm"
+        ]
+      },
+      {
+        "id": "incidentForm",
+        "component": "Form",
+        "name": "incidentForm",
+        "buttons": "incidentButtons",
+        "fields": [
+          "incidentTypeControl",
+          "incidentDescControl",
+          "incidentLocationControl"
+        ]
+      },
+      {
+        "id": "incidentButtons",
+        "component": "Buttons",
+        "buttons": [
+          "incidentSubmitBtn"
+        ]
+      },
+      {
+        "id": "incidentSubmitBtn",
+        "component": "Button",
+        "label": "Submit Incident Report",
+        "variant": "primary"
+      },
+      {
+        "id": "incidentTypeControl",
+        "component": "FormControl",
+        "label": "10. File an Incident — Type",
+        "input": "incidentTypeSelect",
+        "hint": "Safety, fall, medication error, equipment failure"
+      },
+      {
+        "id": "incidentTypeSelect",
+        "component": "Select",
+        "name": "incidentType",
+        "placeholder": "Select incident type",
+        "items": [
+          "incidentTypeOpt1",
+          "incidentTypeOpt2",
+          "incidentTypeOpt3",
+          "incidentTypeOpt4"
+        ]
+      },
+      {
+        "id": "incidentTypeOpt1",
+        "component": "SelectItem",
+        "value": "safety",
+        "label": "Patient Safety"
+      },
+      {
+        "id": "incidentTypeOpt2",
+        "component": "SelectItem",
+        "value": "fall",
+        "label": "Fall"
+      },
+      {
+        "id": "incidentTypeOpt3",
+        "component": "SelectItem",
+        "value": "med_error",
+        "label": "Medication Error"
+      },
+      {
+        "id": "incidentTypeOpt4",
+        "component": "SelectItem",
+        "value": "equipment",
+        "label": "Equipment Failure"
+      },
+      {
+        "id": "incidentDescControl",
+        "component": "FormControl",
+        "label": "Description",
+        "input": "incidentDesc",
+        "hint": "Include time, location, persons involved"
+      },
+      {
+        "id": "incidentDesc",
+        "component": "TextArea",
+        "name": "incidentDescription",
+        "placeholder": "Describe what happened...",
+        "rows": 3
+      },
+      {
+        "id": "incidentLocationControl",
+        "component": "FormControl",
+        "label": "Location / Unit",
+        "input": "incidentLocation"
+      },
+      {
+        "id": "incidentLocation",
+        "component": "Input",
+        "name": "incidentLocation",
+        "placeholder": "e.g., ER Bay 3, ICU-7"
+      },
+      {
+        "id": "transferForm",
+        "component": "Form",
+        "name": "transferForm",
+        "buttons": "transferButtons",
+        "fields": [
+          "transferPatientControl",
+          "transferFromControl",
+          "transferToControl",
+          "transferReasonControl"
+        ]
+      },
+      {
+        "id": "transferButtons",
+        "component": "Buttons",
+        "buttons": [
+          "transferSubmitBtn"
+        ]
+      },
+      {
+        "id": "transferSubmitBtn",
+        "component": "Button",
+        "label": "Request Transfer",
+        "variant": "primary"
+      },
+      {
+        "id": "transferPatientControl",
+        "component": "FormControl",
+        "label": "12. Request Patient Transfer — Patient ID / Name",
+        "input": "transferPatient",
+        "hint": "MRN or full name"
+      },
+      {
+        "id": "transferPatient",
+        "component": "Input",
+        "name": "transferPatient",
+        "placeholder": "e.g., 884739 — J. Doe"
+      },
+      {
+        "id": "transferFromControl",
+        "component": "FormControl",
+        "label": "From Unit",
+        "input": "transferFrom"
+      },
+      {
+        "id": "transferFrom",
+        "component": "Input",
+        "name": "transferFrom",
+        "placeholder": "e.g., Emergency"
+      },
+      {
+        "id": "transferToControl",
+        "component": "FormControl",
+        "label": "To Unit / Facility",
+        "input": "transferTo"
+      },
+      {
+        "id": "transferTo",
+        "component": "Input",
+        "name": "transferTo",
+        "placeholder": "e.g., ICU, Cardiology, or External Hospital"
+      },
+      {
+        "id": "transferReasonControl",
+        "component": "FormControl",
+        "label": "Reason / Priority",
+        "input": "transferReason"
+      },
+      {
+        "id": "transferReason",
+        "component": "TextArea",
+        "name": "transferReason",
+        "placeholder": "e.g., Requires ICU monitoring — High priority",
+        "rows": 2
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+All 12 items are covered in one screen — use the top date picker to view another day, and the bottom two forms to file incidents and request transfers.

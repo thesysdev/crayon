@@ -1,0 +1,361 @@
+Here's the logistics coordinator's board covering all requested items.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "logistics-board",
+      "catalogId": "thesys.dev:c1-openui"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "logistics-board",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "direction": "column",
+          "gap": "l",
+          "children": [
+            "header",
+            "refresh-note",
+            "kpi-row",
+            "delayed-callout",
+            "search-form",
+            "transit-header",
+            "transit-table",
+            "charts-row",
+            "flag-form"
+          ]
+        },
+        {
+          "id": "header",
+          "component": "CardHeader",
+          "title": "Logistics Coordinator Board",
+          "subtitle": "Live shipment operations overview"
+        },
+        {
+          "id": "refresh-note",
+          "component": "Tag",
+          "text": "Last refreshed: Today 09:42 AM",
+          "icon": "clock",
+          "variant": "info",
+          "size": "md"
+        },
+        {
+          "id": "kpi-row",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "children": ["kpi-ontime", "kpi-cost", "kpi-transit"]
+        },
+        {
+          "id": "kpi-ontime",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["kpi-ontime-label", "kpi-ontime-progress"]
+        },
+        {
+          "id": "kpi-ontime-label",
+          "component": "TextContent",
+          "text": "On-Time Delivery (This Month)",
+          "size": "small-heavy"
+        },
+        {
+          "id": "kpi-ontime-progress",
+          "component": "Progress",
+          "value": 92,
+          "label": "92% on-time"
+        },
+        {
+          "id": "kpi-cost",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["kpi-cost-label", "kpi-cost-value"]
+        },
+        {
+          "id": "kpi-cost-label",
+          "component": "TextContent",
+          "text": "Avg Cost / Shipment",
+          "size": "small-heavy"
+        },
+        {
+          "id": "kpi-cost-value",
+          "component": "Heading",
+          "text": "$438.75",
+          "level": "h2"
+        },
+        {
+          "id": "kpi-transit",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["kpi-transit-label", "kpi-transit-value"]
+        },
+        {
+          "id": "kpi-transit-label",
+          "component": "TextContent",
+          "text": "Shipments In Transit",
+          "size": "small-heavy"
+        },
+        {
+          "id": "kpi-transit-value",
+          "component": "Heading",
+          "text": "6",
+          "level": "h2"
+        },
+        {
+          "id": "delayed-callout",
+          "component": "Alert",
+          "variant": "warning",
+          "title": "2 Delayed Shipments",
+          "description": "SHP-1042 (Chicago → Denver) is 6h behind ETA due to weather. SHP-1047 (Seattle → Austin) is 12h behind ETA at customs hold."
+        },
+        {
+          "id": "search-form",
+          "component": "Form",
+          "name": "route-search",
+          "fields": ["search-origin-control", "search-dest-control"],
+          "buttons": "search-buttons"
+        },
+        {
+          "id": "search-origin-control",
+          "component": "FormControl",
+          "label": "Origin",
+          "input": "search-origin-input"
+        },
+        {
+          "id": "search-origin-input",
+          "component": "Input",
+          "name": "searchOrigin",
+          "type": "text",
+          "placeholder": "e.g. Chicago"
+        },
+        {
+          "id": "search-dest-control",
+          "component": "FormControl",
+          "label": "Destination",
+          "input": "search-dest-input"
+        },
+        {
+          "id": "search-dest-input",
+          "component": "Input",
+          "name": "searchDest",
+          "type": "text",
+          "placeholder": "e.g. Denver"
+        },
+        {
+          "id": "search-buttons",
+          "component": "Buttons",
+          "buttons": ["search-submit"]
+        },
+        {
+          "id": "search-submit",
+          "component": "Button",
+          "label": "Search Route",
+          "variant": "primary"
+        },
+        {
+          "id": "transit-header",
+          "component": "Heading",
+          "text": "Shipments In Transit",
+          "level": "h3"
+        },
+        {
+          "id": "transit-table",
+          "component": "Table",
+          "columns": ["col-id", "col-origin", "col-dest", "col-eta", "col-status"]
+        },
+        {
+          "id": "col-id",
+          "component": "Col",
+          "label": "Shipment",
+          "type": "string",
+          "data": ["SHP-1039", "SHP-1042", "SHP-1044", "SHP-1047", "SHP-1051", "SHP-1053"]
+        },
+        {
+          "id": "col-origin",
+          "component": "Col",
+          "label": "Origin",
+          "type": "string",
+          "data": ["Los Angeles", "Chicago", "New York", "Seattle", "Miami", "Boston"]
+        },
+        {
+          "id": "col-dest",
+          "component": "Col",
+          "label": "Destination",
+          "type": "string",
+          "data": ["Phoenix", "Denver", "Atlanta", "Austin", "Dallas", "Newark"]
+        },
+        {
+          "id": "col-eta",
+          "component": "Col",
+          "label": "ETA",
+          "type": "string",
+          "data": ["Today 4:30 PM", "Tomorrow 8:00 AM", "Today 6:15 PM", "Wed 2:00 PM", "Today 9:00 PM", "Tomorrow 11:30 AM"]
+        },
+        {
+          "id": "col-status",
+          "component": "Col",
+          "label": "Status",
+          "type": "string",
+          "data": ["On Time", "Delayed", "On Time", "Delayed", "On Time", "On Time"]
+        },
+        {
+          "id": "charts-row",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "wrap": true,
+          "children": ["carrier-card", "weekly-card"]
+        },
+        {
+          "id": "carrier-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "weight": 1,
+          "children": ["carrier-title", "carrier-pie"]
+        },
+        {
+          "id": "carrier-title",
+          "component": "TextContent",
+          "text": "Volume Split by Carrier",
+          "size": "small-heavy"
+        },
+        {
+          "id": "carrier-pie",
+          "component": "PieChart",
+          "variant": "donut",
+          "labels": ["FedEx", "UPS", "DHL", "USPS", "Regional"],
+          "values": [340, 285, 190, 120, 65]
+        },
+        {
+          "id": "weekly-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "weight": 1,
+          "children": ["weekly-title", "weekly-bar"]
+        },
+        {
+          "id": "weekly-title",
+          "component": "TextContent",
+          "text": "Weekly Volume — Past Two Months",
+          "size": "small-heavy"
+        },
+        {
+          "id": "weekly-bar",
+          "component": "BarChart",
+          "xLabel": "Week",
+          "yLabel": "Shipments",
+          "labels": ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"],
+          "series": ["weekly-series"]
+        },
+        {
+          "id": "weekly-series",
+          "component": "Series",
+          "category": "Volume",
+          "values": [210, 245, 198, 260, 275, 240, 288, 305]
+        },
+        {
+          "id": "flag-form",
+          "component": "Form",
+          "name": "flag-shipment",
+          "fields": ["flag-id-control", "flag-reason-control"],
+          "buttons": "flag-buttons"
+        },
+        {
+          "id": "flag-id-control",
+          "component": "FormControl",
+          "label": "Shipment ID to Flag",
+          "input": "flag-id-input"
+        },
+        {
+          "id": "flag-id-input",
+          "component": "Input",
+          "name": "flagShipmentId",
+          "type": "text",
+          "placeholder": "e.g. SHP-1042"
+        },
+        {
+          "id": "flag-reason-control",
+          "component": "FormControl",
+          "label": "Reason",
+          "input": "flag-reason-select"
+        },
+        {
+          "id": "flag-reason-select",
+          "component": "Select",
+          "name": "flagReason",
+          "placeholder": "Select reason",
+          "items": ["flag-r1", "flag-r2", "flag-r3", "flag-r4"]
+        },
+        {
+          "id": "flag-r1",
+          "component": "SelectItem",
+          "value": "delay",
+          "label": "Delayed / At Risk"
+        },
+        {
+          "id": "flag-r2",
+          "component": "SelectItem",
+          "value": "damage",
+          "label": "Damage Reported"
+        },
+        {
+          "id": "flag-r3",
+          "component": "SelectItem",
+          "value": "customs",
+          "label": "Customs Hold"
+        },
+        {
+          "id": "flag-r4",
+          "component": "SelectItem",
+          "value": "other",
+          "label": "Other"
+        },
+        {
+          "id": "flag-buttons",
+          "component": "Buttons",
+          "buttons": ["flag-submit"]
+        },
+        {
+          "id": "flag-submit",
+          "component": "Button",
+          "label": "Flag Shipment",
+          "variant": "primary",
+          "type": "destructive"
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+This board covers every item:
+
+1. **In-transit shipments** — the table lists origin, destination, ETA, and status per shipment
+2. **Delayed shipments** — called out in the amber alert banner
+3. **On-time percentage** — the progress KPI (92% this month)
+4. **Volume split by carrier** — the donut chart
+5. **Search by route** — origin/destination search form
+6. **Average cost per shipment** — the KPI card ($438.75)
+7. **Weekly volume, past two months** — the 8-week bar chart
+8. **Flag a shipment** — the flag form with ID + reason
+9. **Last refreshed** — the timestamp tag near the top

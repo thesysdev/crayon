@@ -1,0 +1,117 @@
+Here's a complete hospital operations command dashboard covering all 12 items:
+
+<a2ui-json>
+[
+  {"version": "v0.9", "createSurface": {"surfaceId": "hospital-command", "catalogId": "thesys.dev:c1-openui"}},
+  {"version": "v0.9", "updateComponents": {"surfaceId": "hospital-command", "components": [
+    {"id": "root", "component": "Card", "variant": "clear", "gap": "m", "children": ["header", "kpi-row", "charts-row", "mid-row", "bottom-row", "actions-row"]},
+    {"id": "header", "component": "CardHeader", "title": "Hospital Operations Command", "subtitle": "Live overview — updated 5 min ago"},
+
+    {"id": "kpi-row", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "children": ["kpi-bed", "kpi-er", "kpi-critical", "kpi-discharge"]},
+    {"id": "kpi-bed", "component": "Card", "variant": "card", "weight": 1, "children": ["kpi-bed-h", "kpi-bed-p", "kpi-bed-t"]},
+    {"id": "kpi-bed-h", "component": "TextContent", "text": "**1. Bed Occupancy**", "size": "small-heavy"},
+    {"id": "kpi-bed-p", "component": "Progress", "value": 87, "label": "348 / 400 beds occupied"},
+    {"id": "kpi-bed-t", "component": "TextContent", "text": "ICU: 94% · Med-Surg: 89% · Peds: 71%", "size": "small"},
+    {"id": "kpi-er", "component": "Card", "variant": "card", "weight": 1, "children": ["kpi-er-h", "kpi-er-v", "kpi-er-t"]},
+    {"id": "kpi-er-h", "component": "TextContent", "text": "**2. Current ER Wait**", "size": "small-heavy"},
+    {"id": "kpi-er-v", "component": "TextContent", "text": "42 min", "size": "large-heavy"},
+    {"id": "kpi-er-t", "component": "TextContent", "text": "23 patients waiting · 6 in triage", "size": "small"},
+    {"id": "kpi-critical", "component": "Card", "variant": "card", "weight": 1, "children": ["kpi-crit-h", "kpi-crit-a"]},
+    {"id": "kpi-crit-h", "component": "TextContent", "text": "**6. Critical Patients**", "size": "small-heavy"},
+    {"id": "kpi-crit-a", "component": "Alert", "title": "4 critical patients", "description": "ICU-12 (post-op decline), ICU-04 (sepsis), ER-7 (cardiac), CCU-2 (arrhythmia)", "variant": "destructive"},
+    {"id": "kpi-discharge", "component": "Card", "variant": "card", "weight": 1, "children": ["kpi-dis-h", "kpi-dis-l"]},
+    {"id": "kpi-dis-h", "component": "TextContent", "text": "**7. Ready for Discharge**", "size": "small-heavy"},
+    {"id": "kpi-dis-l", "component": "ListBlock", "items": ["dis-1", "dis-2", "dis-3"]},
+    {"id": "dis-1", "component": "ListItem", "title": "M. Alvarez — 4B", "subtitle": "Paperwork complete"},
+    {"id": "dis-2", "component": "ListItem", "title": "J. Okafor — 3A", "subtitle": "Awaiting transport"},
+    {"id": "dis-3", "component": "ListItem", "title": "S. Kim — 5C", "subtitle": "Pharmacy pickup pending"},
+
+    {"id": "charts-row", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "children": ["adm-card", "dept-card"]},
+    {"id": "adm-card", "component": "Card", "variant": "card", "weight": 1, "children": ["adm-h", "adm-chart"]},
+    {"id": "adm-h", "component": "TextContent", "text": "**3. Admissions — Past 14 Days**", "size": "small-heavy"},
+    {"id": "adm-chart", "component": "LineChart", "labels": ["D1","D2","D3","D4","D5","D6","D7","D8","D9","D10","D11","D12","D13","D14"], "series": ["adm-s1"], "xLabel": "Day", "yLabel": "Admissions"},
+    {"id": "adm-s1", "component": "Series", "category": "Admissions", "values": [42,38,51,47,55,60,44,39,48,52,58,61,46,50]},
+    {"id": "dept-card", "component": "Card", "variant": "card", "weight": 1, "children": ["dept-h", "dept-chart"]},
+    {"id": "dept-h", "component": "TextContent", "text": "**4. Patients per Department**", "size": "small-heavy"},
+    {"id": "dept-chart", "component": "PieChart", "labels": ["Med-Surg","ICU","ER","Peds","OB","Cardiac"], "values": [120,32,29,24,18,15], "variant": "donut"},
+
+    {"id": "mid-row", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "children": ["staff-card", "or-card"]},
+    {"id": "staff-card", "component": "Card", "variant": "card", "weight": 1, "children": ["staff-h", "staff-table"]},
+    {"id": "staff-h", "component": "TextContent", "text": "**5. Staff On Shift**", "size": "small-heavy"},
+    {"id": "staff-table", "component": "Table", "columns": ["staff-c1", "staff-c2", "staff-c3"]},
+    {"id": "staff-c1", "component": "Col", "label": "Name", "data": ["Dr. Reyes","Nurse Patel","Dr. Nguyen","Nurse Brooks","Tech Harris","Dr. Santos"]},
+    {"id": "staff-c2", "component": "Col", "label": "Role", "data": ["Attending","RN — ICU","Surgeon","RN — ER","Rad Tech","Anesthesiologist"]},
+    {"id": "staff-c3", "component": "Col", "label": "Shift Ends", "data": ["19:00","07:00","23:00","19:00","23:00","07:00"]},
+    {"id": "or-card", "component": "Card", "variant": "card", "weight": 1, "children": ["or-h", "or-table"]},
+    {"id": "or-h", "component": "TextContent", "text": "**8. Today's OR Bookings**", "size": "small-heavy"},
+    {"id": "or-table", "component": "Table", "columns": ["or-c1", "or-c2", "or-c3", "or-c4"]},
+    {"id": "or-c1", "component": "Col", "label": "Time", "data": ["07:30","09:00","11:30","13:00","15:30"]},
+    {"id": "or-c2", "component": "Col", "label": "Room", "data": ["OR-1","OR-2","OR-1","OR-3","OR-2"]},
+    {"id": "or-c3", "component": "Col", "label": "Procedure", "data": ["Appendectomy","Knee replacement","CABG","C-section","Cataract"]},
+    {"id": "or-c4", "component": "Col", "label": "Surgeon", "data": ["Dr. Nguyen","Dr. Cole","Dr. Santos","Dr. Reyes","Dr. Lane"]},
+
+    {"id": "bottom-row", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "children": ["supplies-card", "date-card"]},
+    {"id": "supplies-card", "component": "Card", "variant": "card", "weight": 1, "children": ["sup-h", "sup-call", "sup-tags"]},
+    {"id": "sup-h", "component": "TextContent", "text": "**9. Supplies Running Low**", "size": "small-heavy"},
+    {"id": "sup-call", "component": "Callout", "variant": "warning", "title": "Reorder advised", "description": "3 items below threshold"},
+    {"id": "sup-tags", "component": "TagBlock", "tags": ["IV saline — 12% left", "N95 masks — 18% left", "Surgical gloves (M) — 22% left"]},
+    {"id": "date-card", "component": "Card", "variant": "card", "weight": 1, "children": ["date-h", "date-form"]},
+    {"id": "date-h", "component": "TextContent", "text": "**11. View Another Day**", "size": "small-heavy"},
+    {"id": "date-form", "component": "Form", "name": "dateForm", "buttons": "date-btns", "fields": ["date-fc"]},
+    {"id": "date-fc", "component": "FormControl", "label": "Select date", "input": "date-input"},
+    {"id": "date-input", "component": "DatePicker", "name": "viewDate", "mode": "single"},
+    {"id": "date-btns", "component": "Buttons", "buttons": ["date-btn"]},
+    {"id": "date-btn", "component": "Button", "label": "Load day", "variant": "secondary"},
+
+    {"id": "actions-row", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "children": ["incident-card", "transfer-card"]},
+    {"id": "incident-card", "component": "Card", "variant": "card", "weight": 1, "children": ["inc-h", "inc-form"]},
+    {"id": "inc-h", "component": "TextContent", "text": "**10. File an Incident**", "size": "small-heavy"},
+    {"id": "inc-form", "component": "Form", "name": "incidentForm", "buttons": "inc-btns", "fields": ["inc-fc1", "inc-fc2", "inc-fc3"]},
+    {"id": "inc-fc1", "component": "FormControl", "label": "Type", "input": "inc-type"},
+    {"id": "inc-type", "component": "Select", "name": "incidentType", "items": ["inc-t1", "inc-t2", "inc-t3"], "placeholder": "Select type"},
+    {"id": "inc-t1", "component": "SelectItem", "value": "safety", "label": "Patient safety"},
+    {"id": "inc-t2", "component": "SelectItem", "value": "equipment", "label": "Equipment failure"},
+    {"id": "inc-t3", "component": "SelectItem", "value": "medication", "label": "Medication error"},
+    {"id": "inc-fc2", "component": "FormControl", "label": "Location", "input": "inc-loc"},
+    {"id": "inc-loc", "component": "Input", "name": "location", "placeholder": "e.g. Ward 4B"},
+    {"id": "inc-fc3", "component": "FormControl", "label": "Description", "input": "inc-desc"},
+    {"id": "inc-desc", "component": "TextArea", "name": "description", "rows": 3, "placeholder": "Describe the incident…"},
+    {"id": "inc-btns", "component": "Buttons", "buttons": ["inc-btn"]},
+    {"id": "inc-btn", "component": "Button", "label": "Submit incident", "variant": "primary", "type": "destructive"},
+    {"id": "transfer-card", "component": "Card", "variant": "card", "weight": 1, "children": ["tr-h", "tr-form"]},
+    {"id": "tr-h", "component": "TextContent", "text": "**12. Request Patient Transfer**", "size": "small-heavy"},
+    {"id": "tr-form", "component": "Form", "name": "transferForm", "buttons": "tr-btns", "fields": ["tr-fc1", "tr-fc2", "tr-fc3", "tr-fc4"]},
+    {"id": "tr-fc1", "component": "FormControl", "label": "Patient ID", "input": "tr-pid"},
+    {"id": "tr-pid", "component": "Input", "name": "patientId", "placeholder": "e.g. P-10482"},
+    {"id": "tr-fc2", "component": "FormControl", "label": "From unit", "input": "tr-from"},
+    {"id": "tr-from", "component": "Input", "name": "fromUnit", "placeholder": "e.g. ER"},
+    {"id": "tr-fc3", "component": "FormControl", "label": "To unit", "input": "tr-to"},
+    {"id": "tr-to", "component": "Select", "name": "toUnit", "items": ["tr-u1", "tr-u2", "tr-u3", "tr-u4"], "placeholder": "Destination unit"},
+    {"id": "tr-u1", "component": "SelectItem", "value": "icu", "label": "ICU"},
+    {"id": "tr-u2", "component": "SelectItem", "value": "medsurg", "label": "Med-Surg"},
+    {"id": "tr-u3", "component": "SelectItem", "value": "ccu", "label": "CCU"},
+    {"id": "tr-u4", "component": "SelectItem", "value": "stepdown", "label": "Step-down"},
+    {"id": "tr-fc4", "component": "FormControl", "label": "Reason", "input": "tr-reason"},
+    {"id": "tr-reason", "component": "TextArea", "name": "reason", "rows": 2, "placeholder": "Clinical justification…"},
+    {"id": "tr-btns", "component": "Buttons", "buttons": ["tr-btn"]},
+    {"id": "tr-btn", "component": "Button", "label": "Request transfer", "variant": "primary"}
+  ]}}
+]
+</a2ui-json>
+
+All 12 items are covered:
+
+1. **Bed occupancy** — progress bar with unit breakdown
+2. **ER wait** — current wait time with queue counts
+3. **Admissions, 14 days** — line chart
+4. **Patients per department** — donut chart
+5. **Staff on shift** — table with name, role, shift end
+6. **Critical patients** — destructive alert calling out 4 cases
+7. **Ready for discharge** — list with status per patient
+8. **OR bookings** — today's schedule table
+9. **Low supplies** — warning callout + tags with stock levels
+10. **File an incident** — form with type, location, description
+11. **View another day** — date picker form
+12. **Patient transfer** — form with patient ID, from/to units, reason
+
+Want me to make the forms actually wired to submission actions, or split this into tabbed views to reduce scroll?

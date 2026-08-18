@@ -1,0 +1,117 @@
+Here's a clean invoice view for your client covering the amount due, due date, and a way to pay now.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "invoice-view",
+      "catalogId": "thesys.dev:c1-openui"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "invoice-view",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "direction": "column",
+          "gap": "l",
+          "children": ["header", "amountCard", "dueDateCard", "separator", "payButtons"]
+        },
+        {
+          "id": "header",
+          "component": "CardHeader",
+          "title": "Invoice #INV-2024-087",
+          "subtitle": "Billed to: Acme Corp • From: Jordan Blake (Freelance Design)"
+        },
+        {
+          "id": "amountCard",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "children": ["amountLabel", "amountValue", "amountNote"]
+        },
+        {
+          "id": "amountLabel",
+          "component": "TextContent",
+          "text": "Amount Due",
+          "size": "small-heavy"
+        },
+        {
+          "id": "amountValue",
+          "component": "Heading",
+          "text": "$4,250.00 USD",
+          "level": "h1"
+        },
+        {
+          "id": "amountNote",
+          "component": "TextContent",
+          "text": "Currency: US Dollars (USD)",
+          "size": "small"
+        },
+        {
+          "id": "dueDateCard",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "align": "center",
+          "justify": "between",
+          "children": ["dueDateText", "dueDateBadge"]
+        },
+        {
+          "id": "dueDateText",
+          "component": "TextContent",
+          "text": "**Due Date**",
+          "size": "large"
+        },
+        {
+          "id": "dueDateBadge",
+          "component": "Tag",
+          "text": "July 15, 2024",
+          "icon": "calendar",
+          "size": "lg",
+          "variant": "warning"
+        },
+        {
+          "id": "separator",
+          "component": "Separator",
+          "orientation": "horizontal"
+        },
+        {
+          "id": "payButtons",
+          "component": "Buttons",
+          "direction": "column",
+          "buttons": ["payNowBtn", "downloadBtn"]
+        },
+        {
+          "id": "payNowBtn",
+          "component": "Button",
+          "label": "Pay Now — $4,250.00",
+          "variant": "primary",
+          "size": "large",
+          "action": [{"type": "pay_invoice", "invoiceId": "INV-2024-087", "amount": 4250.00, "currency": "USD"}]
+        },
+        {
+          "id": "downloadBtn",
+          "component": "Button",
+          "label": "Download PDF",
+          "variant": "secondary",
+          "size": "medium",
+          "action": [{"type": "download_invoice", "invoiceId": "INV-2024-087"}]
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+This screen covers all three requirements:
+
+1. **Amount due and currency** — displayed prominently in the recessed card as **$4,250.00 USD**, with an explicit currency note.
+2. **Due date** — shown as a highlighted warning tag reading **July 15, 2024**.
+3. **A way to pay now** — a large primary **"Pay Now"** button that triggers the payment action, plus a secondary option to download the invoice PDF.

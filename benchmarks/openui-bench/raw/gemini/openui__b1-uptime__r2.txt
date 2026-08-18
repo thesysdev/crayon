@@ -1,0 +1,33 @@
+root = Card([header, uptimeKpi, incidentCallout, metricsGrid, followUp], "card", "column", "m")
+
+header = CardHeader("Platform Operations Status", "Core Services & API Infrastructure — Current Status")
+
+uptimeKpi = Card([uptimeHeader, uptimeProgress, uptimeDetails], "sunk", "column", "s")
+uptimeHeader = CardHeader("API Availability (This Month)", "99.94% overall uptime — SLA Target: 99.90%")
+uptimeProgress = Progress(99.94, "Monthly Target: 99.90%")
+uptimeDetails = Table([metricCol, valueCol, statusCol])
+
+metricCol = Col("Component", ["Core REST API", "GraphQL Gateway", "Webhooks Ingestion", "Authentication (OAuth2)"])
+valueCol = Col("Availability", ["99.98%", "99.91%", "99.89%", "99.99%"])
+statusCol = Col("Status", ["Operational", "Operational", "Operational", "Operational"])
+
+incidentCallout = Callout("info", "Recent Incident Resolved: Increased API Latency & 504 Timeouts", "Resolved on Oct 24, 2023 at 14:32 UTC (Duration: 28 mins). Root cause was an isolated connection pool exhaustion in the secondary database cluster following an automated schema migration. Mitigated by scaling pool limits and rolling back the migration. All endpoints are fully operational.")
+
+metricsGrid = SectionBlock([serviceHealthSection, incidentHistorySection])
+
+serviceHealthSection = SectionItem("services", "Service Health Breakdown", [serviceTable])
+serviceTable = Table([svcCol, latencyCol, errRateCol, stateCol])
+svcCol = Col("Service", ["API Gateway", "User Database", "Event Stream", "Cache Cluster"])
+latencyCol = Col("p99 Latency", ["42 ms", "12 ms", "18 ms", "2 ms"])
+errRateCol = Col("Error Rate", ["0.01%", "0.00%", "0.03%", "0.00%"])
+stateCol = Col("Health", ["Healthy", "Healthy", "Healthy", "Healthy"])
+
+incidentHistorySection = SectionItem("history", "Past 30 Days Incident Log", [historyList])
+historyList = ListBlock([inc1, inc2])
+inc1 = ListItem("API Gateway Latency Spike", "Oct 24, 2023 — 14:04 to 14:32 UTC (Resolved) — Impact: 2.1% of requests delayed", null, "Details")
+inc2 = ListItem("Webhook Delivery Delays", "Oct 11, 2023 — 08:15 to 08:40 UTC (Resolved) — Impact: Backlog cleared automatically", null, "Details")
+
+followUp = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("View real-time response times")
+f2 = FollowUpItem("Subscribe to incident notifications")
+f3 = FollowUpItem("Download SLA compliance report")

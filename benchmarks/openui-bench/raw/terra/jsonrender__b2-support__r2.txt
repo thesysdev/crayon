@@ -1,0 +1,46 @@
+{"op":"add","path":"/root","value":"support-dashboard"}
+{"op":"add","path":"/elements/dashboard-title","value":{"type":"Heading","props":{"text":"Support Morning View","level":"h1"},"children":[]}}
+{"op":"add","path":"/elements/dashboard-subtitle","value":{"type":"TextContent","props":{"text":"Start the day with a clear view of your team’s queue and newest customer requests.","size":"default"},"children":[]}}
+{"op":"add","path":"/elements/new-ticket-button","value":{"type":"Button","props":{"label":"Open new ticket","variant":"primary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/newTicketOpen","value":true}}},"children":[]}}
+{"op":"add","path":"/elements/top-bar","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center","gap":"m"},"children":["dashboard-title","new-ticket-button","dashboard-subtitle"]}}
+{"op":"add","path":"/elements/open-tickets-label","value":{"type":"TextContent","props":{"text":"Open tickets","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/open-tickets-value","value":{"type":"Heading","props":{"text":{"$state":"/metrics/openTickets"},"level":"h2"},"children":[]}}
+{"op":"add","path":"/state/metrics","value":{"openTickets":24,"averageFirstResponse":"18 min"}}
+{"op":"add","path":"/elements/open-tickets-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["open-tickets-label","open-tickets-value"]}}
+{"op":"add","path":"/elements/response-time-label","value":{"type":"TextContent","props":{"text":"Average first-response time","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/response-time-value","value":{"type":"Heading","props":{"text":{"$state":"/metrics/averageFirstResponse"},"level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/response-time-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["response-time-label","response-time-value"]}}
+{"op":"add","path":"/elements/metrics-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"stretch"},"children":["open-tickets-card","response-time-card"]}}
+{"op":"add","path":"/elements/filter-high-button","value":{"type":"Button","props":{"label":{"$cond":{"$state":"/highPriorityOnly"},"$then":"Showing high priority","$else":"High priority only"},"variant":{"$cond":{"$state":"/highPriorityOnly"},"$then":"primary","$else":"secondary"},"size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/highPriorityOnly","value":{"$cond":{"$state":"/highPriorityOnly"},"$then":false,"$else":true}}}},"children":[]}}
+{"op":"add","path":"/state/highPriorityOnly","value":false}
+{"op":"add","path":"/elements/recent-heading","value":{"type":"Heading","props":{"text":"Most recent tickets","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/recent-header","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center","gap":"m"},"children":["recent-heading","filter-high-button"]}}
+{"op":"add","path":"/elements/ticket-subject","value":{"type":"TextContent","props":{"text":{"$item":"subject"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/ticket-customer","value":{"type":"TextContent","props":{"text":{"$template":"${customer} · ${updatedAt}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/ticket-priority","value":{"type":"Badge","props":{"text":{"$item":"priority"},"variant":{"$cond":{"$state":"/highPriorityOnly"},"$then":"destructive","$else":"secondary"}},"children":[]}}
+{"op":"add","path":"/elements/ticket-main","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["ticket-subject","ticket-customer"]}}
+{"op":"add","path":"/elements/ticket-row","value":{"type":"Card","props":{"variant":"card","direction":"row","justify":"between","align":"center","gap":"m"},"children":["ticket-main","ticket-priority"]}}
+{"op":"add","path":"/elements/recent-ticket-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/recentTickets","key":"id"},"children":["ticket-row"]}}
+{"op":"add","path":"/state/recentTickets","value":[]}
+{"op":"add","path":"/state/recentTickets/0","value":{"id":"TKT-1048","subject":"Unable to reset account password","customer":"Maya Chen","priority":"High","updatedAt":"9:12 AM"}}
+{"op":"add","path":"/state/recentTickets/1","value":{"id":"TKT-1047","subject":"Invoice shows duplicate charge","customer":"Northstar Labs","priority":"High","updatedAt":"9:04 AM"}}
+{"op":"add","path":"/state/recentTickets/2","value":{"id":"TKT-1046","subject":"Question about SSO setup","customer":"Jordan Williams","priority":"Medium","updatedAt":"8:56 AM"}}
+{"op":"add","path":"/state/recentTickets/3","value":{"id":"TKT-1045","subject":"Export report is missing columns","customer":"Cedar & Co.","priority":"Medium","updatedAt":"8:41 AM"}}
+{"op":"add","path":"/state/recentTickets/4","value":{"id":"TKT-1044","subject":"Request to update billing contact","customer":"Priya Nair","priority":"Low","updatedAt":"8:29 AM"}}
+{"op":"add","path":"/elements/new-ticket-title","value":{"type":"Heading","props":{"text":"Open a new ticket","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/new-ticket-subject-input","value":{"type":"Input","props":{"name":"ticketSubject","placeholder":"Briefly describe the issue","value":{"$bindState":"/newTicket/subject"}},"children":[]}}
+{"op":"add","path":"/state/newTicket","value":{"subject":"","customer":"","priority":"Medium"}}
+{"op":"add","path":"/elements/new-ticket-subject-control","value":{"type":"FormControl","props":{"label":"Subject","input":"new-ticket-subject-input"},"children":[]}}
+{"op":"add","path":"/elements/new-ticket-customer-input","value":{"type":"Input","props":{"name":"ticketCustomer","placeholder":"Customer name or company","value":{"$bindState":"/newTicket/customer"}},"children":[]}}
+{"op":"add","path":"/elements/new-ticket-customer-control","value":{"type":"FormControl","props":{"label":"Customer","input":"new-ticket-customer-input"},"children":[]}}
+{"op":"add","path":"/elements/priority-low","value":{"type":"SelectItem","props":{"value":"Low","label":"Low"},"children":[]}}
+{"op":"add","path":"/elements/priority-medium","value":{"type":"SelectItem","props":{"value":"Medium","label":"Medium"},"children":[]}}
+{"op":"add","path":"/elements/priority-high","value":{"type":"SelectItem","props":{"value":"High","label":"High"},"children":[]}}
+{"op":"add","path":"/elements/new-ticket-priority-input","value":{"type":"Select","props":{"name":"ticketPriority","items":["priority-low","priority-medium","priority-high"],"value":{"$bindState":"/newTicket/priority"}},"children":[]}}
+{"op":"add","path":"/elements/new-ticket-priority-control","value":{"type":"FormControl","props":{"label":"Priority","input":"new-ticket-priority-input"},"children":[]}}
+{"op":"add","path":"/elements/create-ticket-button","value":{"type":"Button","props":{"label":"Create ticket","variant":"primary","size":"medium"},"on":{"press":{"action":"pushState","params":{"statePath":"/recentTickets","value":{"id":"$id","subject":{"$state":"/newTicket/subject"},"customer":{"$state":"/newTicket/customer"},"priority":{"$state":"/newTicket/priority"},"updatedAt":"Just now"},"clearStatePath":"/newTicket/subject"}},"children":[]}}
+{"op":"add","path":"/elements/cancel-ticket-button","value":{"type":"Button","props":{"label":"Cancel","variant":"secondary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/newTicketOpen","value":false}}},"children":[]}}
+{"op":"add","path":"/elements/new-ticket-actions","value":{"type":"Buttons","props":{"buttons":["create-ticket-button","cancel-ticket-button"],"direction":"row"},"children":[]}}
+{"op":"add","path":"/elements/new-ticket-form","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"m"},"visible":{"$state":"/newTicketOpen"},"children":["new-ticket-title","new-ticket-subject-control","new-ticket-customer-control","new-ticket-priority-control","new-ticket-actions"]}}
+{"op":"add","path":"/state/newTicketOpen","value":false}
+{"op":"add","path":"/elements/support-dashboard","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["top-bar","metrics-row","recent-header","recent-ticket-list","new-ticket-form"]}}

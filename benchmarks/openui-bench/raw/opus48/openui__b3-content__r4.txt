@@ -1,0 +1,52 @@
+root = Card([header, actions, topStat, categoryFilter, drafts, published, readership, comments, scheduleForm, followUps])
+header = CardHeader("Content Studio", "Editorial dashboard")
+actions = Buttons([newDraftBtn])
+newDraftBtn = Button("Start new draft", null, "primary")
+
+topStat = Callout("success", "Most-read this month", "\"How AI Is Reshaping Newsrooms\" — 48,210 reads")
+
+categoryFilter = Form("category-filter", filterButtons, [categoryField])
+categoryField = FormControl("Narrow by category", categorySelect)
+categorySelect = Select("category", [catAll, catTech, catCulture, catPolitics, catBiz], "All categories")
+catAll = SelectItem("all", "All categories")
+catTech = SelectItem("tech", "Technology")
+catCulture = SelectItem("culture", "Culture")
+catPolitics = SelectItem("politics", "Politics")
+catBiz = SelectItem("business", "Business")
+filterButtons = Buttons([applyFilterBtn])
+applyFilterBtn = Button("Apply filter", null, "secondary")
+
+drafts = Table([draftTitle, draftAuthor, draftStatus])
+draftTitle = Col("Draft", ["The Quiet Boom in Local News", "Inside the Creator Economy", "Election Data Explained", "Remote Work, Three Years On"])
+draftAuthor = Col("Author", ["M. Reyes", "J. Okafor", "L. Tanaka", "S. Duval"])
+draftStatus = Col("Status", ["In review", "Needs edit", "Draft", "Ready to publish"])
+
+published = Card([publishedHeader, publishedList], "sunk")
+publishedHeader = Heading("Published this week", "h4")
+publishedList = ListBlock([pub1, pub2, pub3], "number")
+pub1 = ListItem("The Return of the Long Read", "Culture · 5,120 reads")
+pub2 = ListItem("Chips, Chains and Shortages", "Business · 8,940 reads")
+pub3 = ListItem("A Field Guide to Misinformation", "Politics · 6,700 reads")
+
+readership = AreaChart(readLabels, [readSeries], "natural", "Day", "Reads")
+readLabels = ["Day 1", "Day 5", "Day 10", "Day 15", "Day 20", "Day 25", "Day 30"]
+readSeries = Series("Readers", [3200, 4100, 3900, 5200, 6100, 7300, 8100])
+
+comments = Card([commentsHeader, commentsList], "sunk")
+commentsHeader = Heading("Comments awaiting reply", "h4")
+commentsList = ListBlock([cm1, cm2, cm3])
+cm1 = ListItem("On \"Inside the Creator Economy\"", "\"Any data on payout splits?\" — 2h ago", null, "Reply")
+cm2 = ListItem("On \"Chips, Chains and Shortages\"", "\"Great piece — source for figure 3?\" — 5h ago", null, "Reply")
+cm3 = ListItem("On \"The Return of the Long Read\"", "\"Disagree on the framing here.\" — 1d ago", null, "Reply")
+
+scheduleForm = Form("schedule-piece", scheduleButtons, [scheduleTitleField, scheduleDateField])
+scheduleTitleField = FormControl("Title", scheduleTitleInput)
+scheduleTitleInput = Input("title", "Working title of the piece")
+scheduleDateField = FormControl("Publish date", scheduleDate)
+scheduleDate = DatePicker("publish_date", "single")
+scheduleButtons = Buttons([scheduleBtn])
+scheduleBtn = Button("Schedule piece", null, "primary")
+
+followUps = FollowUpBlock([fu1, fu2])
+fu1 = FollowUpItem("Show drafts needing edits")
+fu2 = FollowUpItem("Which category performed best this month?")

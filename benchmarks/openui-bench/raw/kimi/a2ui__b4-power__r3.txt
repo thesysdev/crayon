@@ -1,0 +1,131 @@
+Here's a full **Grid Operations Console** on one surface. All 12 required items are covered — KPIs up top (load, capacity, price, emissions), charts in the middle (generation mix, 24h forecast), then plants, outages, maintenance, alerts, and the region focus + curtailment controls.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "grid-ops-console",
+      "catalogId": "thesys.dev:c1-openui"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "grid-ops-console",
+      "components": [
+        {"id": "root", "component": "Card", "variant": "clear", "direction": "column", "gap": "m", "children": ["headerRow", "kpiRow", "midRow", "plantsCard", "bottomRow", "alertsCard", "curtailCard"]},
+
+        {"id": "headerRow", "component": "Card", "variant": "card", "direction": "row", "justify": "between", "align": "center", "children": ["titleText", "regionLabel", "regionSelect"]},
+        {"id": "titleText", "component": "TextContent", "text": "⚡ Grid Operations Console — Live Network", "size": "large-heavy"},
+        {"id": "regionLabel", "component": "Label", "text": "Focus Region:"},
+        {"id": "regionSelect", "component": "Select", "name": "focusRegion", "placeholder": "All Regions", "value": "all", "items": ["rsAll", "rsNorth", "rsSouth", "rsEast", "rsWest", "rsCentral"], "size": "small"},
+        {"id": "rsAll", "component": "SelectItem", "value": "all", "label": "All Regions"},
+        {"id": "rsNorth", "component": "SelectItem", "value": "north", "label": "North"},
+        {"id": "rsSouth", "component": "SelectItem", "value": "south", "label": "South"},
+        {"id": "rsEast", "component": "SelectItem", "value": "east", "label": "East"},
+        {"id": "rsWest", "component": "SelectItem", "value": "west", "label": "West"},
+        {"id": "rsCentral", "component": "SelectItem", "value": "central", "label": "Central"},
+
+        {"id": "kpiRow", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "children": ["loadCard", "capacityCard", "priceCard", "emissionsCard"]},
+
+        {"id": "loadCard", "component": "Card", "variant": "card", "weight": 1, "children": ["loadHeader", "loadValue", "loadNote"]},
+        {"id": "loadHeader", "component": "CardHeader", "title": ("① Current Network Load")},
+        {"id": "loadValue", "component": "TextContent", "text": "**6,842 MW**", "size": "large-heavy"},
+        {"id": "loadNote", "component": "TextContent", "text": "Total draw on the network right now", "size": "small"},
+
+        {"id": "capacityCard", "component": "Card", "variant": "card", "weight": 1, "children": ["capacityHeader", "capacityProgress", "capacityNote"]},
+        {"id": "capacityHeader", "component": "CardHeader", "title": "② Headroom to Capacity"},
+        {"id": "capacityProgress", "component": "Progress", "value": 78, "label": "78% of 8,775 MW"},
+        {"id": "capacityNote", "component": "TextContent", "text": "Operating reserve: 1,933 MW", "size": "small"},
+
+        {"id": "priceCard", "component": "Card", "variant": "card", "weight": 1, "children": ["priceHeader", "priceValue", "priceNote"]},
+        {"id": "priceHeader", "component": "CardHeader", "title": "⑦ Spot Price"},
+        {"id": "priceValue", "component": "TextContent", "text": "**$74.20**", "size": "large-heavy"},
+        {"id": "priceNote", "component": "TextContent", "text": "per MWh · real-time market", "size": "small"},
+
+        {"id": "emissionsCard", "component": "Card", "variant": "card", "weight": 1, "children": ["emissionsHeader", "emissionsValue", "emissionsNote"]},
+        {"id": "emissionsHeader", "component": "CardHeader", "title": "⑫ Emissions Today"},
+        {"id": "emissionsValue", "component": "TextContent", "text": "**412 t CO₂e**", "size": "large-heavy"},
+        {"id": "emissionsNote", "component": "TextContent", "text": "Cumulative since 00:00", "size": "small"},
+
+        {"id": "midRow", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "children": ["genSplitCard", "forecastCard"]},
+
+        {"id": "genSplitCard", "component": "Card", "variant": "card", "weight": 1, "children": ["genSplitHeader", "genPie"]},
+        {"id": "genSplitHeader", "component": "CardHeader", "title": "③ Generation Split by Source"},
+        {"id": "genPie", "component": "PieChart", "variant": "donut", "labels": ["Gas", "Coal", "Nuclear", "Wind", "Solar", "Hydro"], "values": [2200, 1750, 1600, 760, 340, 192]},
+
+        {"id": "forecastCard", "component": "Card", "variant": "card", "weight": 2, "children": ["forecastHeader", "forecastLine", "forecastSeries"]},
+        {"id": "forecastHeader", "component": "CardHeader", "title": "⑥ Demand Forecast — Next 24 Hours"},
+        {"id": "forecastLine", "component": "LineChart", "variant": "natural", "labels": ["00","01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23"], "series": ["forecastSeries"], "xLabel": "Hour", "yLabel": "MW"},
+        {"id": "forecastSeries", "component": "Series", "category": "Forecast demand", "values": [5200, 4980, 4810, 4700, 4650, 4720, 5350, 6100, 6900, 7450, 7800, 7980, 8100, 7950, 7820, 7700, 7850, 8300, 8680, 8560, 7800, 6900, 6100, 5600]},
+
+        {"id": "plantsCard", "component": "Card", "variant": "card", "children": ["plantsHeader", "plantsTable"]},
+        {"id": "plantsHeader", "component": "CardHeader", "title": "④ Plants — Output & Status"},
+        {"id": "plantsTable", "component": "Table", "columns": ["colPlant", "colType", "colOutput", "colStatus"]},
+        {"id": "colPlant", "component": "Col", "label": "Plant", "type": "string", "data": ["Atom One", "Riverside", "Coalbrook", "Windhaven", "Solarfield", "Hydrodam"]},
+        {"id": "colType", "component": "Col", "label": "Type", "type": "string", "data": ["Nuclear", "Gas", "Coal", "Wind", "Solar", "Hydro"]},
+        {"id": "colOutput", "component": "Col", "label": "Output (MW)", "type": "number", "data": [1600, 1180, 940, 610, 340, 192]},
+        {"id": "colStatus", "component": "Col", "label": "Status", "type": "string", "data": ["Online", "Online", "Derated", "Online", "Online", "Maintenance"]},
+
+        {"id": "bottomRow", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "children": ["outagesCard", "maintCard"]},
+
+        {"id": "outagesCard", "component": "Card", "variant": "card", "weight": 1, "children": ["outagesHeader", "outagesTable"]},
+        {"id": "outagesHeader", "component": "CardHeader", "title": "⑤ Active Outages by Region"},
+        {"id": "outagesTable", "component": "Table", "columns": ["oColRegion", "oColCause", "oColCustomers", "oColEta"]},
+        {"id": "oColRegion", "component": "Col", "label": "Region", "type": "string", "data": ["North", "East", "South"]},
+        {"id": "oColCause", "component": "Col", "label": "Cause", "type": "string", "data": ["Storm damage", "Line trip", "Transformer fault"]},
+        {"id": "oColCustomers", "component": "Col", "label": "Customers Affected", "type": "number", "data": [12400, 3100, 8750]},
+        {"id": "oColEta", "component": "Col", "label": "Restoration ETA", "type": "string", "data": ["~2 h", "45 min", "~4 h"]},
+
+        {"id": "maintCard", "component": "Card", "variant": "card", "weight": 1, "children": ["maintHeader", "maintList"]},
+        {"id": "maintHeader", "component": "CardHeader", "title": "⑧ Maintenance Planned This Month"},
+        {"id": "maintList", "component": "ListBlock", "variant": "number", "items": ["maintItem1", "maintItem2", "maintItem3", "maintItem4"]},
+        {"id": "maintItem1", "component": "ListItem", "title": "Hydrodam — penstock inspection", "subtitle": "Jun 4 · 08:00–16:00 · Hydro offline"},
+        {"id": "maintItem2", "component": "ListItem", "title": "Coalbrook — boiler tube replacement", "subtitle": "Jun 11 → Jun 18 · Derated operation"},
+        {"id": "maintItem3", "component": "ListItem", "title": "Atom One — refuelling prep", "subtitle": "Jun 20 · Reactor reduced to 60%"},
+        {"id": "maintItem4", "component": "ListItem", "title": "Riverbend 220 kV line — tower maintenance", "subtitle": "Jun 25 · Temporary reroute via East corridor"},
+
+        {"id": "alertsCard", "component": "Card", "variant": "card", "children": ["alertsHeader", "alertCrit", "alertWarn", "alertInfo"]},
+        {"id": "alertsHeader", "component": "CardHeader", "title": "⑨ Live Alerts (as they arrive)"},
+        {"id": "alertCrit", "component": "Alert", "variant": "destructive", "title": "Line trip — 220 kV Riverbend–Elm", "description": "12:41 UTC · East region · auto-reclose failed, crew dispatched."},
+        {"id": "alertWarn", "component": "Alert", "variant": "warning", "title": "Frequency dip on North interconnect", "description": "49.7 Hz at 12:38 UTC · monitoring tie-line flow."},
+        {"id": "alertInfo", "component": "Alert", "variant": "info", "title": "Wind ramp expected 18:00–20:00", "description": "West region forecast +380 MW ramp-up."},
+
+        {"id": "curtailCard", "component": "Card", "variant": "card", "children": ["curtailHeader", "curtailForm"]},
+        {"id": "curtailHeader", "component": "CardHeader", "title": "⑪ Order Curtailment"},
+        {"id": "curtailForm", "component": "Form", "name": "curtailmentOrder", "fields": ["fcRegion", "fcAmount", "fcReason"], "buttons": "curtailButtons"},
+        {"id": "fcRegion", "component": "FormControl", "label": "Region to curtail", "input": "curRegionSelect"},
+        {"id": "fcAmount", "component": "FormControl", "label": "Curtailment amount (MW)", "input": "curtailSlider", "hint": "Shed non-essential load in 50 MW steps"},
+        {"id": "fcReason", "component": "FormControl", "label": "Reason / note", "input": "curtailReason"},
+        {"id": "curtailButtons", "component": "Buttons", "direction": "row", "buttons": ["curtailSubmit"]},
+        {"id": "curRegionSelect", "component": "Select", "name": "curtailRegion", "placeholder": "Select region", "items": ["fsNorth", "fsSouth", "fsEast", "fsWest", "fsCentral"]},
+        {"id": "curtailSlider", "component": "Slider", "name": "curtailAmount", "variant": "discrete", "min": 0, "max": 1000, "step": 50, "defaultValue": [200], "label": "MW to shed"},
+        {"id": "curtailReason", "component": "Input", "name": "curtailReasonText", "placeholder": "e.g. Loss of North tie-line", "type": "text"},
+        {"id": "curtailSubmit", "component": "Button", "label": "Issue Curtailment Order", "variant": "primary", "type": "destructive", "action": ["issue_curtailment_order"]},
+        {"id": "fsNorth", "component": "SelectItem", "value": "north", "label": "North"},
+        {"id": "fsSouth", "component": "SelectItem", "value": "south", "label": "South"},
+        {"id": "fsEast", "component": "SelectItem", "value": "east", "label": "East"},
+        {"id": "fsWest", "component": "SelectItem", "value": "west", "label": "West"},
+        {"id": "fsCentral", "component": "SelectItem", "value": "central", "label": "Central"}
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+**Coverage map:**
+- **① Load** → "Current Network Load" KPI (6,842 MW)
+- **② Capacity headroom** → Progress bar at 78% of 8,775 MW
+- **③ Generation split** → Donut pie by source
+- **④ Plants** → Table: name, type, output (MW), status
+- **⑤ Outages** → Table with region, cause, affected customers, ETA
+- **⑥ Demand forecast** → 24-hour line chart
+- **⑦ Price** → $74.20/MWh KPI
+- **⑧ Maintenance** → Numbered list of this month's planned work
+- **⑨ Live alerts** → Stacked alert banners by severity
+- **⑩ Region focus** → Select dropdown in the header (North / South / East / West / Central / All)
+- **⑪ Curtailment** → Order form: region, MW slider (50-step), reason, destructive "Issue Order" button
+- **⑫ Emissions** → "Emissions Today" KPI (412 t CO₂e)
+
+Want me to wire the region selector to actually filter the plants/outages tables, or add substation-level drill-downs?

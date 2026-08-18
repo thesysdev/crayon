@@ -1,0 +1,31 @@
+
+
+{"op":"add","path":"/root","value":"page"}
+{"op":"add","path":"/elements/page","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"l"},"children":["profile-card","bio-card","message-card"]}}
+{"op":"add","path":"/elements/profile-card","value":{"type":"Card","props":{"variant":"card","direction":"row","align":"center","gap":"l"},"children":["avatar","profile-info"]}}
+{"op":"add","path":"/elements/avatar","value":{"type":"Avatar","props":{"fallback":{"$state":"/person/initials"}},"children":[]}}
+{"op":"add","path":"/elements/profile-info","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["person-name","person-role"]}}
+{"op":"add","path":"/elements/person-name","value":{"type":"Heading","props":{"level":"h1","text":{"$state":"/person/name"}},"children":[]}}
+{"op":"add","path":"/elements/person-role","value":{"type":"Badge","props":{"variant":"secondary","text":{"$state":"/person/role"}},"children":[]}}
+{"op":"add","path":"/state/person","value":{}}
+{"op":"add","path":"/state/person/name","value":"Priya Sharma"}
+{"op":"add","path":"/state/person/role","value":"Senior Product Manager"}
+{"op":"add","path":"/state/person/initials","value":"PS"}
+{"op":"add","path":"/elements/bio-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["bio-heading","bio-text"]}}
+{"op":"add","path":"/elements/bio-heading","value":{"type":"Heading","props":{"level":"h2","text":"About"},"children":[]}}
+{"op":"add","path":"/elements/bio-text","value":{"type":"TextContent","props":{"text":{"$state":"/person/bio"}},"children":[]}}
+{"op":"add","path":"/state/person/bio","value":"Priya leads roadmap and discovery for the payments platform. She partners with engineering, design, and compliance to ship customer-facing releases while mentoring new product managers across the company."}
+{"op":"add","path":"/elements/message-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"watch":{"/sentMessages":{"action":"setState","params":{"statePath":"/messageSent","value":true}}},"children":["message-heading","message-intro","form-card","success-alert"]}}
+{"op":"add","path":"/elements/message-heading","value":{"type":"Heading","props":{"level":"h2","text":"Send a message"},"children":[]}}
+{"op":"add","path":"/elements/message-intro","value":{"type":"TextContent","props":{"text":{"$template":"Send a private note to ${/person/name}."}},"children":[]}}
+{"op":"add","path":"/elements/form-card","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"m"},"children":["field-sender","field-message","send-button"]}}
+{"op":"add","path":"/elements/field-sender","value":{"type":"FormControl","props":{"label":"Your name","hint":"How the recipient will see your note.","input":"sender-input"},"children":[]}}
+{"op":"add","path":"/elements/sender-input","value":{"type":"Input","props":{"name":"senderName","placeholder":"Jane Doe","value":{"$bindState":"/senderName"}},"children":[]}}
+{"op":"add","path":"/state/senderName","value":"Alex Rivera"}
+{"op":"add","path":"/elements/field-message","value":{"type":"FormControl","props":{"label":"Message","hint":"Keep it short and actionable.","input":"message-input"},"children":[]}}
+{"op":"add","path":"/elements/message-input","value":{"type":"TextArea","props":{"name":"message","placeholder":"Hi Priya, I wanted to connect about...","rows":4,"value":{"$bindState":"/messageDraft"}},"children":[]}}
+{"op":"add","path":"/state/messageDraft","value":"Hi Priya, I’d love to sync on the Q3 directory refresh when you have a moment."}
+{"op":"add","path":"/elements/send-button","value":{"type":"Button","props":{"label":"Send message","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/sentMessages","value":{"id":"$id","from":{"$state":"/senderName"},"to":{"$state":"/person/name"},"body":{"$state":"/messageDraft"}},"clearStatePath":"/messageDraft"}}},"children":[]}}
+{"op":"add","path":"/state/sentMessages","value":[]}
+{"op":"add","path":"/elements/success-alert","value":{"type":"Alert","props":{"variant":"success","title":"Message sent","description":"Your message has been queued for delivery."},"visible":{"$state":"/messageSent"},"children":[]}}
+{"op":"add","path":"/state/messageSent","value":false}

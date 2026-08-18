@@ -1,0 +1,49 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["header","metrics-row","next-patient-callout","rooms-section","appointments-section"]}}
+{"op":"add","path":"/elements/header","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","variant":"clear"},"children":["nav-prev","date-label","nav-next"]}}
+{"op":"add","path":"/elements/nav-prev","value":{"type":"Button","props":{"label":"← Prev Day","variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/currentDate","value":"2024-01-14"}}},"children":[]}}
+{"op":"add","path":"/elements/date-label","value":{"type":"TextContent","props":{"text":{"$template":"📅 ${/currentDateDisplay}"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/nav-next","value":{"type":"Button","props":{"label":"Next Day →","variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/currentDate","value":"2024-01-16"}}},"children":[]}}
+{"op":"add","path":"/state/currentDate","value":"2024-01-15"}
+{"op":"add","path":"/state/currentDateDisplay","value":"Monday, January 15, 2024"}
+{"op":"add","path":"/elements/metrics-row","value":{"type":"Card","props":{"direction":"row","gap":"m","variant":"clear"},"children":["metric-patients","metric-noshow"]}}
+{"op":"add","path":"/elements/metric-patients","value":{"type":"Card","props":{"direction":"column","align":"center","gap":"xs"},"children":["metric-patients-value","metric-patients-label"]}}
+{"op":"add","path":"/elements/metric-patients-value","value":{"type":"TextContent","props":{"text":{"$template":"${/patientsExpected}"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/metric-patients-label","value":{"type":"TextContent","props":{"text":"Patients Expected Today","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/metric-noshow","value":{"type":"Card","props":{"direction":"column","align":"center","gap":"xs"},"children":["metric-noshow-value","metric-noshow-label"]}}
+{"op":"add","path":"/elements/metric-noshow-value","value":{"type":"TextContent","props":{"text":{"$template":"${/noShowRate}%"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/metric-noshow-label","value":{"type":"TextContent","props":{"text":"No-Show Rate (This Month)","size":"small"},"children":[]}}
+{"op":"add","path":"/state/patientsExpected","value":24}
+{"op":"add","path":"/state/noShowRate","value":12.5}
+{"op":"add","path":"/elements/next-patient-callout","value":{"type":"Callout","props":{"variant":"info","title":"Next Patient to Call","description":{"$template":"${/nextPatient/name} — ${/nextPatient/time} → Room ${/nextPatient/room}"}},"children":[]}}
+{"op":"add","path":"/state/nextPatient","value":{"name":"Maria Gonzalez","time":"9:45 AM","room":"3"}}
+{"op":"add","path":"/elements/rooms-section","value":{"type":"Card","props":{"direction":"column","gap":"s","variant":"clear"},"children":["rooms-title","rooms-grid"]}}
+{"op":"add","path":"/elements/rooms-title","value":{"type":"Heading","props":{"text":"Room Availability","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/rooms-grid","value":{"type":"Card","props":{"direction":"row","gap":"s","wrap":true,"variant":"clear"},"repeat":{"statePath":"/rooms","key":"id"},"children":["room-tag"]}}
+{"op":"add","path":"/elements/room-tag","value":{"type":"Tag","props":{"text":{"$template":"Room ${number} — ${status}"},"variant":{"$cond":{"$state":"/rooms","eq":"Free"},"$then":"success","$else":"danger"}},"children":[]}}
+{"op":"add","path":"/state/rooms","value":[]}
+{"op":"add","path":"/state/rooms/0","value":{"id":"r1","number":"1","status":"Occupied"}}
+{"op":"add","path":"/state/rooms/1","value":{"id":"r2","number":"2","status":"Free"}}
+{"op":"add","path":"/state/rooms/2","value":{"id":"r3","number":"3","status":"Free"}}
+{"op":"add","path":"/state/rooms/3","value":{"id":"r4","number":"4","status":"Occupied"}}
+{"op":"add","path":"/state/rooms/4","value":{"id":"r5","number":"5","status":"Free"}}
+{"op":"add","path":"/state/rooms/5","value":{"id":"r6","number":"6","status":"Cleaning"}}
+{"op":"add","path":"/elements/appointments-section","value":{"type":"Card","props":{"direction":"column","gap":"s","variant":"clear"},"children":["appointments-title","appointments-list"]}}
+{"op":"add","path":"/elements/appointments-title","value":{"type":"Heading","props":{"text":"Today's Appointments","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/appointments-list","value":{"type":"Card","props":{"direction":"column","gap":"xs","variant":"clear"},"repeat":{"statePath":"/appointments","key":"id"},"children":["appt-row"]}}
+{"op":"add","path":"/elements/appt-row","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","gap":"m","variant":"sunk"},"children":["appt-info","appt-actions"]}}
+{"op":"add","path":"/elements/appt-info","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center","variant":"clear"},"children":["appt-time","appt-name","appt-type"]}}
+{"op":"add","path":"/elements/appt-time","value":{"type":"TextContent","props":{"text":{"$item":"time"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/appt-name","value":{"type":"TextContent","props":{"text":{"$item":"name"}},"children":[]}}
+{"op":"add","path":"/elements/appt-type","value":{"type":"Badge","props":{"text":{"$item":"type"},"variant":"secondary"},"children":[]}}
+{"op":"add","path":"/elements/appt-actions","value":{"type":"Card","props":{"direction":"row","gap":"s","variant":"clear"},"children":["checkin-btn"]}}
+{"op":"add","path":"/elements/checkin-btn","value":{"type":"Button","props":{"label":{"$cond":{"$item":"checkedIn"},"$then":"✓ Checked In","$else":"Check In"},"variant":{"$cond":{"$item":"checkedIn"},"$then":"tertiary","$else":"primary"},"size":"small"},"on":{"press":{"action":"setState","params":{"statePath":{"$template":"/appointments/${$index}/checkedIn"},"value":true}}},"children":[]}}
+{"op":"add","path":"/state/appointments","value":[]}
+{"op":"add","path":"/state/appointments/0","value":{"id":"a1","time":"8:00 AM","name":"James Whitfield","type":"Follow-up","checkedIn":true}}
+{"op":"add","path":"/state/appointments/1","value":{"id":"a2","time":"8:30 AM","name":"Sarah Chen","type":"New Patient","checkedIn":true}}
+{"op":"add","path":"/state/appointments/2","value":{"id":"a3","time":"9:00 AM","name":"Robert Okafor","type":"Annual Physical","checkedIn":false}}
+{"op":"add","path":"/state/appointments/3","value":{"id":"a4","time":"9:45 AM","name":"Maria Gonzalez","type":"Consultation","checkedIn":false}}
+{"op":"add","path":"/state/appointments/4","value":{"id":"a5","time":"10:15 AM","name":"David Park","type":"Follow-up","checkedIn":false}}
+{"op":"add","path":"/state/appointments/5","value":{"id":"a6","time":"10:45 AM","name":"Linda Torres","type":"Lab Review","checkedIn":false}}
+{"op":"add","path":"/state/appointments/6","value":{"id":"a7","time":"11:30 AM","name":"Ahmed Hassan","type":"New Patient","checkedIn":false}}
+{"op":"add","path":"/state/appointments/7","value":{"id":"a8","time":"1:00 PM","name":"Emily Watson","type":"Follow-up","checkedIn":false}}

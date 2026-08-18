@@ -1,0 +1,18 @@
+{"op":"add","path":"/root","value":"poll-card"}
+{"op":"add","path":"/elements/poll-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"l"},"children":["poll-header","options-list","vote-alert","results-heading","results-chart"]}}
+{"op":"add","path":"/elements/poll-header","value":{"type":"CardHeader","props":{"title":"Where should we go for lunch on Friday?","subtitle":"Cast your vote for this week's team lunch!"},"children":[]}}
+{"op":"add","path":"/elements/options-list","value":{"type":"Card","props":{"direction":"column","gap":"m"},"repeat":{"statePath":"/restaurants","key":"id"},"children":["option-item"]}}
+{"op":"add","path":"/elements/option-item","value":{"type":"Card","props":{"variant":"sunk","direction":"row","align":"center","justify":"between"},"children":["option-info","vote-button"]}}
+{"op":"add","path":"/elements/option-info","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"children":["option-title","option-desc"]}}
+{"op":"add","path":"/elements/option-title","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/option-desc","value":{"type":"TextContent","props":{"text":{"$template":"${cuisine} • ${votes} votes"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/vote-button","value":{"type":"Button","props":{"label":{"$cond":{"$state":"/userVote","eq":{"$item":"id"}},"$then":"Voted","$else":"Vote"},"variant":{"$cond":{"$state":"/userVote","eq":{"$item":"id"}},"$then":"primary","$else":"secondary"}},"on":{"press":{"action":"setState","params":{"statePath":"/userVote","value":{"$item":"id"}}}},"children":[]}}
+{"op":"add","path":"/state/restaurants","value":[]}
+{"op":"add","path":"/state/restaurants/0","value":{"id":"1","name":"Taco Del Mar","cuisine":"Mexican Grill","votes":8}}
+{"op":"add","path":"/state/restaurants/1","value":{"id":"2","name":"Luigi's Trattoria","cuisine":"Italian & Pasta","votes":12}}
+{"op":"add","path":"/state/restaurants/2","value":{"id":"3","name":"Sakura Ramen","cuisine":"Japanese Noodles","votes":6}}
+{"op":"add","path":"/state/userVote","value":""}
+{"op":"add","path":"/elements/vote-alert","value":{"type":"Alert","props":{"title":"Vote Recorded","description":"Thank you for voting! You can change your selection anytime before Friday 10 AM.","variant":"success"},"visible":{"$state":"/userVote"},"children":[]}}
+{"op":"add","path":"/elements/results-heading","value":{"type":"Heading","props":{"text":"Current Standings","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/results-chart","value":{"type":"BarChart","props":{"labels":["Taco Del Mar","Luigi's Trattoria","Sakura Ramen"],"series":["votes-series"]},"children":[]}}
+{"op":"add","path":"/elements/votes-series","value":{"type":"Series","props":{"category":"Votes","values":[8,12,6]},"children":[]}}

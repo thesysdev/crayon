@@ -1,0 +1,117 @@
+Here's a low-inventory warning view that covers all four requirements:
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "low-inventory-view",
+      "catalogId": "thesys.dev:c1-openui"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "low-inventory-view",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "children": ["heading", "search-control", "threshold-callout", "separator", "inventory-table"],
+          "direction": "column",
+          "gap": "m"
+        },
+        {
+          "id": "heading",
+          "component": "Heading",
+          "text": "⚠️ Low Inventory Alert",
+          "level": "h2"
+        },
+        {
+          "id": "search-control",
+          "component": "FormControl",
+          "label": "Search Items",
+          "input": "search-input",
+          "hint": "Filter by item name or SKU"
+        },
+        {
+          "id": "search-input",
+          "component": "Input",
+          "name": "search",
+          "type": "text",
+          "placeholder": "e.g. Wireless Mouse, SKU-1042…"
+        },
+        {
+          "id": "threshold-callout",
+          "component": "Callout",
+          "variant": "warning",
+          "title": "Reorder Threshold: 10 units",
+          "description": "Items falling below 10 remaining units are flagged automatically. Adjust this threshold in Settings → Inventory Rules."
+        },
+        {
+          "id": "separator",
+          "component": "Separator",
+          "orientation": "horizontal",
+          "decorative": true
+        },
+        {
+          "id": "inventory-table",
+          "component": "Table",
+          "columns": ["col-item", "col-sku", "col-remaining", "col-threshold", "col-status", "col-action"]
+        },
+        {
+          "id": "col-item",
+          "component": "Col",
+          "label": "Item Name",
+          "type": "string",
+          "data": ["Wireless Mouse", "USB-C Cable (2m)", "Mechanical Keyboard", "27\" Monitor Stand", "Webcam HD 1080p"]
+        },
+        {
+          "id": "col-sku",
+          "component": "Col",
+          "label": "SKU",
+          "type": "string",
+          "data": ["SKU-1042", "SKU-2087", "SKU-3315", "SKU-4190", "SKU-5523"]
+        },
+        {
+          "id": "col-remaining",
+          "component": "Col",
+          "label": "Remaining",
+          "type": "number",
+          "data": [3, 7, 2, 5, 9]
+        },
+        {
+          "id": "col-threshold",
+          "component": "Col",
+          "label": "Threshold",
+          "type": "number",
+          "data": [10, 10, 10, 10, 10]
+        },
+        {
+          "id": "col-status",
+          "component": "Col",
+          "label": "Status",
+          "type": "string",
+          "data": ["🔴 Critical", "🟡 Low", "🔴 Critical", "🟡 Low", "🟡 Low"]
+        },
+        {
+          "id": "col-action",
+          "component": "Col",
+          "label": "Action",
+          "type": "action",
+          "data": ["Reorder", "Reorder", "Reorder", "Reorder", "Reorder"]
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+This view covers all four requirements:
+
+| # | Requirement | How it's addressed |
+|---|---|---|
+| 1 | **Items running low + remaining units** | The table lists each item with its current remaining stock and a color-coded status (🔴 Critical / 🟡 Low). |
+| 2 | **Way to reorder** | The "Action" column provides a **Reorder** button for every row. |
+| 3 | **Threshold that triggers the warning** | A prominent warning callout at the top states the threshold is **10 units**, and the table also shows the threshold per item for clarity. |
+| 4 | **Way to search items** | A search input at the top lets users filter by item name or SKU. |

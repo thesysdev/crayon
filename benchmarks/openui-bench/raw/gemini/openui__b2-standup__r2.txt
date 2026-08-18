@@ -1,0 +1,50 @@
+root = Card([header, alertCallout, missingProgress, tabs, followUps])
+
+header = CardHeader("Async Standup", "Thursday, October 24, 2024")
+
+alertCallout = Alert("Blocker Reported", "Alex Rivera is currently blocked on the Payment Gateway API integration.", "destructive")
+
+missingProgress = Callout("warning", "3 Updates Missing", "5 of 8 team members have submitted their standup for today.")
+
+tabs = Tabs([tabTeam, tabPost])
+
+tabTeam = TabItem("team", "Team Updates (5/8)", [teamList])
+
+teamList = ListBlock([itemAlex, itemSarah, itemChen, itemEmily, itemMarcus])
+
+itemAlex = ListItem("Alex Rivera — Frontend Lead", "BLOCKED: Waiting for API credentials for the new checkout flow. | Yesterday: Finished UI components.", [avatarAlex])
+avatarAlex = "https://picsum.photos/seed/alex/100/100"
+
+itemSarah = ListItem("Sarah Chen — Product Designer", "Today: Finalizing mobile design tokens. | Yesterday: Handed off design specs to engineering. | No blockers.", [avatarSarah])
+avatarSarah = "https://picsum.photos/seed/sarah/100/100"
+
+itemChen = ListItem("Chen Wei — Backend Engineer", "Today: Refactoring database queries for dashboard. | Yesterday: Merged PR #402. | No blockers.", [avatarChen])
+avatarChen = "https://picsum.photos/seed/chen/100/100"
+
+itemEmily = ListItem("Emily Watson — QA Engineer", "Today: E2E testing for release v2.4. | Yesterday: Wrote automated tests for auth flow. | No blockers.", [avatarEmily])
+avatarEmily = "https://picsum.photos/seed/emily/100/100"
+
+itemMarcus = ListItem("Marcus Vance — DevOps", "Today: Upgrading Kubernetes cluster to v1.28. | Yesterday: Configured staging environment. | No blockers.", [avatarMarcus])
+avatarMarcus = "https://picsum.photos/seed/marcus/100/100"
+
+tabPost = TabItem("post", "Post Your Update", [updateForm])
+
+updateForm = Form("standup-form", formButtons, [fieldYesterday, fieldToday, fieldBlocker])
+
+fieldYesterday = FormControl("What did you do yesterday?", inputYesterday)
+inputYesterday = TextArea("yesterday", "Completed task X, reviewed PR #12...")
+
+fieldToday = FormControl("What will you do today?", inputToday)
+inputToday = TextArea("today", "Working on feature Y, meeting with team...")
+
+fieldBlocker = FormControl("Any blockers?", inputBlocker, "Leave blank if you are not blocked")
+inputBlocker = Input("blockers", "None")
+
+formButtons = Buttons([submitBtn, draftBtn])
+submitBtn = Button("Submit Update", null, "primary")
+draftBtn = Button("Save Draft", null, "secondary")
+
+followUps = FollowUpBlock([fuRemind, fuSummary, fuBlockers])
+fuRemind = FollowUpItem("Send reminder to missing teammates")
+fuSummary = FollowUpItem("Generate AI summary for Slack")
+fuBlockers = FollowUpItem("View all unresolved blockers")

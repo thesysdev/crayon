@@ -1,0 +1,74 @@
+{"op":"add","path":"/root","value":"main-stack"}
+{"op":"add","path":"/elements/main-stack","value":{"type":"Card","props":{"direction":"column","gap":"xl","variant":"clear"},"children":["header-card","countdown-card","nav-tabs","tab-agenda","tab-speakers","tab-tickets","tab-register"]}}
+{"op":"add","path":"/elements/header-card","value":{"type":"Card","props":{"direction":"column","gap":"m","variant":"card","align":"center"},"children":["header-badge","header-title","header-details"]}}
+{"op":"add","path":"/elements/header-badge","value":{"type":"Badge","props":{"text":"Annual Tech Conference 2025","variant":"secondary"}}}
+{"op":"add","path":"/elements/header-title","value":{"type":"Heading","props":{"text":"Future Tech Summit 2025","level":"h1"}}}
+{"op":"add","path":"/elements/header-details","value":{"type":"Card","props":{"direction":"row","gap":"l","align":"center","justify":"center","variant":"clear"},"children":["date-tag","venue-tag"]}}
+{"op":"add","path":"/elements/date-tag","value":{"type":"Tag","props":{"text":"October 24-26, 2025","icon":"calendar","variant":"info","size":"lg"}}}
+{"op":"add","path":"/elements/venue-tag","value":{"type":"Tag","props":{"text":"Moscone Center, San Francisco, CA","icon":"map-pin","variant":"neutral","size":"lg"}}}
+{"op":"add","path":"/elements/countdown-card","value":{"type":"Card","props":{"direction":"column","gap":"s","variant":"sunk","align":"center"},"children":["countdown-title","countdown-progress"]}}
+{"op":"add","path":"/elements/countdown-title","value":{"type":"Heading","props":{"text":{"$template":"⏳ Only ${/daysLeft} Days Remaining Until the Event!"},"level":"h3"}}}
+{"op":"add","path":"/elements/countdown-progress","value":{"type":"Progress","props":{"value":75,"label":"75% of Tickets Reserved"}}}
+{"op":"add","path":"/state/daysLeft","value":42}
+{"op":"add","path":"/elements/nav-tabs","value":{"type":"Card","props":{"direction":"row","gap":"s","justify":"center","variant":"clear"},"children":["btn-tab-agenda","btn-tab-speakers","btn-tab-tickets","btn-tab-register"]}}
+{"op":"add","path":"/elements/btn-tab-agenda","value":{"type":"Button","props":{"label":"📅 Agenda","variant":{"$cond":{"$or":[{"$state":"/activeTab","eq":"agenda"},{"$state":"/activeTab","not":true}]},"Wait":"primary","$else":"secondary"},"size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/activeTab","value":"agenda"}}}}}
+{"op":"add","path":"/elements/btn-tab-speakers","value":{"type":"Button","props":{"label":"🎙️ Speakers","variant":{"$cond":{"$state":"/activeTab","eq":"speakers"},"$then":"primary","$else":"secondary"},"size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/activeTab","value":"speakers"}}}}}
+{"op":"add","path":"/elements/btn-tab-tickets","value":{"type":"Button","props":{"label":"🎟️ Tickets","variant":{"$cond":{"$state":"/activeTab","eq":"tickets"},"$then":"primary","$else":"secondary"},"size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/activeTab","value":"tickets"}}}}}
+{"op":"add","path":"/elements/btn-tab-register","value":{"type":"Button","props":{"label":"✍️ Register","variant":{"$cond":{"$state":"/activeTab","eq":"register"},"$then":"primary","$else":"secondary"},"size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/activeTab","value":"register"}}}}}
+{"op":"add","path":"/elements/tab-agenda","value":{"type":"Card","props":{"direction":"column","gap":"m","variant":"clear"},"visible":{"$or":[{"$state":"/activeTab","eq":"agenda"},{"$state":"/activeTab","not":true}]},"children":["agenda-header","agenda-list"]}}
+{"op":"add","path":"/elements/agenda-header","value":{"type":"Heading","props":{"text":"Event Agenda","level":"h2"}}}
+{"op":"add","path":"/elements/agenda-list","value":{"type":"Card","props":{"direction":"column","gap":"s","variant":"clear"},"repeat":{"statePath":"/agenda","key":"id"},"children":["agenda-item-card"]}}
+{"op":"add","path":"/elements/agenda-item-card","value":{"type":"Card","props":{"direction":"row","gap":"m","variant":"card","align":"center"},"children":["agenda-time-badge","agenda-info"]}}
+{"op":"add","path":"/elements/agenda-time-badge","value":{"type":"Tag","props":{"text":{"$item":"time"},"variant":"info","size":"md"}}}
+{"op":"add","path":"/elements/agenda-info","value":{"type":"Card","props":{"direction":"column","gap":"xs","variant":"clear"},"children":["agenda-title","agenda-desc"]}}
+{"op":"add","path":"/elements/agenda-title","value":{"type":"Heading","props":{"text":{"$item":"title"},"level":"h4"}}}
+{"op":"add","path":"/elements/agenda-desc","value":{"type":"TextContent","props":{"text":{"$template":"${speaker} • ${location}"},"size":"small"}}}
+{"op":"add","path":"/state/agenda","value":[]}
+{"op":"add","path":"/state/agenda/0","value":{"id":"1","time":"09:00 AM","title":"Opening Keynote: The AI Horizon","speaker":"Dr. Elena Rostova","location":"Main Stage"}}
+{"op":"add","path":"/state/agenda/1","value":{"id":"2","time":"10:30 AM","title":"Building Scalable Systems in 2025","speaker":"Marcus Chen","location":"Track A - Tech Hall"}}
+{"op":"add","path":"/state/agenda/2","value":{"id":"3","time":"01:00 PM","title":"Design Systems for Enterprise Applications","speaker":"Sarah Jenkins","location":"Track B - Design Hub"}}
+{"op":"add","path":"/state/agenda/3","value":{"id":"4","time":"03:30 PM","title":"Panel: Cyber Security & Ethics in Tech","speaker":"Moderated by Alex Vance","location":"Main Stage"}}
+{"op":"add","path":"/elements/tab-speakers","value":{"type":"Card","props":{"direction":"column","gap":"m","variant":"clear"},"visible":{"$state":"/activeTab","eq":"speakers"},"children":["speakers-header","speakers-list"]}}
+{"op":"add","path":"/elements/speakers-header","value":{"type":"Heading","props":{"text":"Featured Speakers","level":"h2"}}}
+{"op":"add","path":"/elements/speakers-list","value":{"type":"Card","props":{"direction":"column","gap":"m","variant":"clear"},"repeat":{"statePath":"/speakers","key":"id"},"children":["speaker-card"]}}
+{"op":"add","path":"/elements/speaker-card","value":{"type":"Card","props":{"direction":"row","gap":"m","variant":"card","align":"center"},"children":["speaker-avatar","speaker-details"]}}
+{"op":"add","path":"/elements/speaker-avatar","value":{"type":"Avatar","props":{"fallback":{"$item":"initials"}}}}
+{"op":"add","path":"/elements/speaker-details","value":{"type":"Card","props":{"direction":"column","gap":"xs","variant":"clear"},"children":["speaker-name","speaker-bio"]}}
+{"op":"add","path":"/elements/speaker-name","value":{"type":"Heading","props":{"text":{"$item":"name"},"level":"h4"}}}
+{"op":"add","path":"/elements/speaker-bio","value":{"type":"TextContent","props":{"text":{"$template":"**${title}** — ${bio}"},"size":"default"}}}
+{"op":"add","path":"/state/speakers","value":[]}
+{"op":"add","path":"/state/speakers/0","value":{"id":"1","name":"Dr. Elena Rostova","initials":"ER","title":"VP of AI Research at NeuralTech","bio":"Leading breakthrough research in autonomous AI agents and quantum computing models."}}
+{"op":"add","path":"/state/speakers/1","value":{"id":"2","name":"Marcus Chen","initials":"MC","title":"Chief Architect at CloudScale","bio":"Pioneered distributed systems handling over 10 billion daily transactions worldwide."}}
+{"op":"add","path":"/state/speakers/2","value":{"id":"3","name":"Sarah Jenkins","initials":"SJ","title":"Head of Design at Studio UX","bio":"Author of multi-platform design frameworks used by Fortune 500 tech companies."}}
+{"op":"add","path":"/state/speakers/3","value":{"id":"4","name":"Alex Vance","initials":"AV","title":"Director of Cybersecurity Institute","bio":"Specializes in threat intelligence, privacy compliance, and Ethical AI governance."}}
+{"op":"add","path":"/elements/tab-tickets","value":{"type":"Card","props":{"direction":"column","gap":"m","variant":"clear"},"visible":{"$state":"/activeTab","eq":"tickets"},"children":["tickets-header","tickets-list"]}}
+{"op":"add","path":"/elements/tickets-header","value":{"type":"Heading","props":{"text":"Ticket Tiers","level":"h2"}}}
+{"op":"add","path":"/elements/tickets-list","value":{"type":"Card","props":{"direction":"row","gap":"m","variant":"clear","wrap":true},"repeat":{"statePath":"/tickets","key":"id"},"children":["ticket-card"]}}
+{"op":"add","path":"/elements/ticket-card","value":{"type":"Card","props":{"direction":"column","gap":"m","variant":"card","align":"start"},"children":["ticket-name","ticket-price","ticket-desc","ticket-select-btn"]}}
+{"op":"add","path":"/elements/ticket-name","value":{"type":"Heading","props":{"text":{"$item":"name"},"level":"h3"}}}
+{"op":"add","path":"/elements/ticket-price","value":{"type":"Tag","props":{"text":{"$item":"price"},"variant":"success","size":"lg"}}}
+{"op":"add","path":"/elements/ticket-desc","value":{"type":"TextContent","props":{"text":{"$item":"description"},"size":"default"}}}
+{"op":"add","path":"/elements/ticket-select-btn","value":{"type":"Button","props":{"label":"Select Tier","variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/regTier","value":{"$item":"name"}}}}}}
+{"op":"add","path":"/state/tickets","value":[]}
+{"op":"add","path":"/state/tickets/0","value":{"id":"1","name":"Virtual Pass","price":"$99","description":"Full access to live streams, recorded sessions, and digital networking platform."}}
+{"op":"add","path":"/state/tickets/1","value":{"id":"2","name":"Standard Pass","price":"$499","description":"In-person access to all keynote sessions, exhibition hall, workshops, and lunch."}}
+{"op":"add","path":"/state/tickets/2","value":{"id":"3","name":"VIP All-Access","price":"$899","description":"Includes VIP lounge access, exclusive speaker dinner, priority seating, and swag bag."}}
+{"op":"add","path":"/elements/tab-register","value":{"type":"Card","props":{"direction":"column","gap":"m","variant":"card"},"visible":{"$state":"/activeTab","eq":"register"},"children":["reg-header","reg-success-banner","reg-form-card"]}}
+{"op":"add","path":"/elements/reg-header","value":{"type":"CardHeader","props":{"title":"Register for Future Tech Summit 2025","subtitle":"Fill out your information below to reserve your spot."}}}
+{"op":"add","path":"/elements/reg-success-banner","value":{"type":"Callout","props":{"variant":"success","title":"Registration Successful!","description":{"$template":"Thank you, ${/regSubmittedName}! Confirmation sent to ${/regSubmittedEmail}."}},"visible":{"$state":"/isSubmitted","eq":true}}}
+{"op":"add","path":"/elements/reg-form-card","value":{"type":"Card","props":{"direction":"column","gap":"m","variant":"clear"},"visible":{"$state":"/isSubmitted","neq":true},"children":["fc-name","fc-email","fc-tier","btn-submit-reg"]}}
+{"op":"add","path":"/elements/fc-name","value":{"type":"FormControl","props":{"label":"Full Name","hint":"Enter your first and last name","input":"input-name"}}}
+{"op":"add","path":"/elements/input-name","value":{"type":"Input","props":{"name":"fullName","placeholder":"e.g. Jane Doe","value":{"$bindState":"/regName"}}}}
+{"op":"add","path":"/elements/fc-email","value":{"type":"FormControl","props":{"label":"Email Address","hint":"We will send your ticket confirmation here","input":"input-email"}}}
+{"op":"add","path":"/elements/input-email","value":{"type":"Input","props":{"name":"email","type":"email","placeholder":"jane.doe@example.com","value":{"$bindState":"/regEmail"}}}}
+{"op":"add","path":"/elements/fc-tier","value":{"type":"FormControl","props":{"label":"Selected Ticket Tier","hint":"Choose your pass level","input":"select-tier"}}}
+{"op":"add","path":"/elements/select-tier","value":{"type":"Select","props":{"name":"tier","value":{"$bindState":"/regTier"},"items":["tier-opt-virtual","tier-opt-standard","tier-opt-vip"],"placeholder":"Select pass..."}}}
+{"op":"add","path":"/elements/tier-opt-virtual","value":{"type":"SelectItem","props":{"value":"Virtual Pass","label":"Virtual Pass - $99"}}}
+{"op":"add","path":"/elements/tier-opt-standard","value":{"type":"SelectItem","props":{"value":"Standard Pass","label":"Standard Pass - $499"}}}
+{"op":"add","path":"/elements/tier-opt-vip","value":{"type":"SelectItem","props":{"value":"VIP All-Access","label":"VIP All-Access - $899"}}}
+{"op":"add","path":"/elements/btn-submit-reg","value":{"type":"Button","props":{"label":"Complete Registration","variant":"primary","size":"large"},"on":{"press":[{"action":"setState","params":{"statePath":"/regSubmittedName","value":{"$state":"/regName"}}},{"action":"setState","params":{"statePath":"/regSubmittedEmail","value":{"$state":"/regEmail"}}},{"action":"setState","params":{"statePath":"/isSubmitted","value":true}}]}}}
+{"op":"add","path":"/state/regName","value":""}
+{"op":"add","path":"/state/regEmail","value":""}
+{"op":"add","path":"/state/regTier","value":"Standard Pass"}
+{"op":"add","path":"/state/isSubmitted","value":false}
+{"op":"add","path":"/state/activeTab","value":"agenda"}

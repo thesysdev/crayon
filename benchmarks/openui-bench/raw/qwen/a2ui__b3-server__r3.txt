@@ -1,0 +1,83 @@
+Here's a comprehensive on-call service health dashboard covering all 8 requirements:
+
+<a2ui-json>
+[
+  {"version":"v0.9","createSurface":{"surfaceId":"oncall-health","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#0EA5E9"}}},
+  {"version":"v0.9","updateComponents":{"surfaceId":"oncall-health","components":[
+    {"id":"root","component":"Card","direction":"column","gap":"l","children":["header","region-filter-card","metrics-row","chart-card","incidents-card","endpoints-card","alert-card"]},
+    {"id":"header","component":"CardHeader","title":"🛡️ Service Health Dashboard","subtitle":"On-Call Engineer View • Last updated: 2 min ago"},
+    {"id":"region-filter-card","component":"Card","variant":"sunk","direction":"row","gap":"m","align":"center","children":["region-label","region-select"]},
+    {"id":"region-label","component":"Label","text":"Filter by Region:"},
+    {"id":"region-select","component":"Select","name":"region","placeholder":"All Regions","items":["region-all","region-us-east","region-us-west","region-eu-west","region-ap-south"]},
+    {"id":"region-all","component":"SelectItem","value":"all","label":"All Regions"},
+    {"id":"region-us-east","component":"SelectItem","value":"us-east-1","label":"US East (N. Virginia)"},
+    {"id":"region-us-west","component":"SelectItem","value":"us-west-2","label":"US West (Oregon)"},
+    {"id":"region-eu-west","component":"SelectItem","value":"eu-west-1","label":"EU West (Ireland)"},
+    {"id":"region-ap-south","component":"SelectItem","value":"ap-south-1","label":"AP South (Mumbai)"},
+    {"id":"metrics-row","component":"Card","direction":"row","gap":"m","children":["uptime-card","error-card"]},
+    {"id":"uptime-card","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["uptime-label","uptime-value","uptime-sub"],weight":1},
+    {"id":"uptime-label","component":"TextContent","text":"**Uptime This Quarter**","size":"small"},
+    {"id":"uptime-value","component":"TextContent","text":"99.97%","size":"large-heavy"},
+    {"id":"uptime-sub","component":"TextContent","text":"Target: 99.95% ✅","size":"small"},
+    {"id":"error-card","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["error-label","error-value","error-sub"],weight":1},
+    {"id":"error-label","component":"TextContent","text":"**Current Error Rate**","size":"small"},
+    {"id":"error-value","component":"TextContent","text":"0.42%","size":"large-heavy"},
+    {"id":"error-sub","component":"TextContent","text":"↑ 0.12% from 1h ago","size":"small"},
+    {"id":"chart-card","component":"Card","direction":"column","gap":"s","children":["chart-header","cpu-mem-chart"]},
+    {"id":"chart-header","component":"CardHeader","title":"CPU & Memory Usage — Past 24 Hours"},
+    {"id":"cpu-mem-chart","component":"LineChart","labels":["00:00","01:00","02:00","03:00","04:00","05:00","06:00","07:00","08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00","21:00","22:00","23:00"],"series":["cpu-series","mem-series"],"xLabel":"Time (UTC)","yLabel":"Usage (%)"},
+    {"id":"cpu-series","component":"Series","category":"CPU %","values":[42,38,35,33,31,34,45,58,67,72,74,71,69,73,76,78,75,72,68,63,58,52,48,44]},
+    {"id":"mem-series","component":"Series","category":"Memory %","values":[61,60,59,58,58,59,62,68,74,78,80,79,77,80,82,84,83,81,78,75,72,69,66,63]},
+    {"id":"incidents-card","component":"Card","direction":"column","gap":"s","children":["incidents-header","incidents-table","ack-section"]},
+    {"id":"incidents-header","component":"CardHeader","title":"🚨 Open Incidents","subtitle":"3 active incidents require attention"},
+    {"id":"incidents-table","component":"Table","columns":["inc-col-id","inc-col-title","inc-col-severity","inc-col-region","inc-col-duration"]},
+    {"id":"inc-col-id","component":"Col","label":"ID","data":["INC-4821","INC-4819","INC-4815"],"type":"string"},
+    {"id":"inc-col-title","component":"Col","label":"Title","data":["Elevated 5xx on /api/checkout","Database connection pool exhaustion","Memory leak in worker-pod-7"],"type":"string"},
+    {"id":"inc-col-severity","component":"Col","label":"Severity","data":["SEV-1 Critical","SEV-2 High","SEV-3 Medium"],"type":"string"},
+    {"id":"inc-col-region","component":"Col","label":"Region","data":["us-east-1","us-east-1","eu-west-1"],"type":"string"},
+    {"id":"inc-col-duration","component":"Col","label":"Open For","data":["12 min","47 min","2h 15m"],"type":"string"},
+    {"id":"ack-section","component":"Card","variant":"clear","direction":"column","gap":"s","children":["ack-label","ack-buttons"]},
+    {"id":"ack-label","component":"TextContent","text":"**Acknowledge an incident:**","size":"small"},
+    {"id":"ack-buttons","component":"Buttons","direction":"row","buttons":["ack-btn-1","ack-btn-2","ack-btn-3"]},
+    {"id":"ack-btn-1","component":"Button","label":"Ack INC-4821","variant":"primary","size":"small","action":[{"type":"acknowledge","incidentId":"INC-4821"}]},
+    {"id":"ack-btn-2","component":"Button","label":"Ack INC-4819","variant":"secondary","size":"small","action":[{"type":"acknowledge","incidentId":"INC-4819"}]},
+    {"id":"ack-btn-3","component":"Button","label":"Ack INC-4815","variant":"secondary","size":"small","action":[{"type":"acknowledge","incidentId":"INC-4815"}]},
+    {"id":"endpoints-card","component":"Card","direction":"column","gap":"s","children":["endpoints-header","endpoints-table"]},
+    {"id":"endpoints-header","component":"CardHeader","title":"🐢 5 Slowest Endpoints","subtitle":"Ranked by p95 latency"},
+    {"id":"endpoints-table","component":"Table","columns":["ep-col-rank","ep-col-endpoint","ep-col-p50","ep-col-p95","ep-col-p99","ep-col-rps"]},
+    {"id":"ep-col-rank","component":"Col","label":"#","data":["1","2","3","4","5"],"type":"number"},
+    {"id":"ep-col-endpoint","component":"Col","label":"Endpoint","data":["/api/v2/reports/generate","/api/v2/search","/api/v1/export/csv","/api/v2/analytics/dashboard","/api/v1/batch/process"],"type":"string"},
+    {"id":"ep-col-p50","component":"Col","label":"p50","data":["820ms","640ms","510ms","480ms","390ms"],"type":"string"},
+    {"id":"ep-col-p95","component":"Col","label":"p95","data":["3,200ms","2,100ms","1,850ms","1,400ms","1,100ms"],"type":"string"},
+    {"id":"ep-col-p99","component":"Col","label":"p99","data":["8,500ms","5,400ms","4,200ms","3,100ms","2,800ms"],"type":"string"},
+    {"id":"ep-col-rps","component":"Col","label":"Req/s","data":["12","340","45","89","23"],"type":"number"},
+    {"id":"alert-card","component":"Card","direction":"column","gap":"s","children":["alert-header","alert-form"]},
+    {"id":"alert-header","component":"CardHeader","title":"⚙️ Alert Threshold Configuration","subtitle":"Set the error rate % that triggers a page"},
+    {"id":"alert-form","component":"Form","name":"alert-threshold-form","fields":["threshold-slider-control","threshold-duration-control"],"buttons":"alert-form-buttons"},
+    {"id":"threshold-slider-control","component":"FormControl","label":"Error Rate Threshold (%)","input":"threshold-slider","hint":"Current threshold: 1.0% — alerts fire when error rate exceeds this value"},
+    {"id":"threshold-slider","component":"Slider","name":"error_threshold","variant":"discrete","min":0.1,"max":5.0,"step":0.1,"defaultValue":[1.0]},
+    {"id":"threshold-duration-control","component":"FormControl","label":"Sustained Duration Before Alert","input":"threshold-duration","hint":"How long the threshold must be breached before paging"},
+    {"id":"threshold-duration","component":"Select","name":"duration","items":["dur-1m","dur-5m","dur-10m","dur-15m"],"value":"5m"},
+    {"id":"dur-1m","component":"SelectItem","value":"1m","label":"1 minute"},
+    {"id":"dur-5m","component":"SelectItem","value":"5m","label":"5 minutes"},
+    {"id":"dur-10m","component":"SelectItem","value":"10m","label":"10 minutes"},
+    {"id":"dur-15m","component":"SelectItem","value":"15m","label":"15 minutes"},
+    {"id":"alert-form-buttons","component":"Buttons","direction":"row","buttons":["alert-save-btn","alert-reset-btn"]},
+    {"id":"alert-save-btn","component":"Button","label":"Save Threshold","variant":"primary","action":[{"type":"submit","form":"alert-threshold-form"}]},
+    {"id":"alert-reset-btn","component":"Button","label":"Reset to Default","variant":"tertiary","action":[{"type":"reset","form":"alert-threshold-form"}]}
+  ]}}
+]
+</a2ui-json>
+
+This dashboard covers all 8 requirements:
+
+| # | Requirement | Implementation |
+|---|---|---|
+| 1 | Uptime this quarter | Prominent metric card showing **99.97%** vs target |
+| 2 | CPU & Memory (24h) | Dual-series **LineChart** with hourly data points |
+| 3 | Error rate right now | Metric card showing **0.42%** with trend indicator |
+| 4 | Open incidents + severity | **Table** with ID, title, severity, region, and duration |
+| 5 | Region filter | **Select** dropdown at the top (All, US-East, US-West, EU-West, AP-South) |
+| 6 | 5 slowest endpoints | **Table** ranked by p95 latency with p50/p99/RPS |
+| 7 | Alert threshold config | **Form** with a discrete slider (0.1–5.0%) + sustained duration selector |
+| 8 | Acknowledge incident | **Buttons** per incident (Ack INC-4821, etc.) with action payloads |

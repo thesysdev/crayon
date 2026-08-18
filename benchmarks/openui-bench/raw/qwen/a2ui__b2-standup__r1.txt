@@ -1,0 +1,210 @@
+
+
+Here's a complete async standup board — it opens with the date and team pulse, calls out the blocked teammate prominently, lists everyone's update in a table, flags who's missing, and ends with a form to post your own check-in.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "async-standup",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": { "primaryColor": "#4F46E5" }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "async-standup",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "direction": "column",
+          "gap": "l",
+          "children": ["header", "statsRow", "blockedAlert", "missingCallout", "updatesHeading", "updatesTable", "divider", "formHeading", "postForm"]
+        },
+        {
+          "id": "header",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "justify": "between",
+          "align": "center",
+          "children": ["titleBlock", "dateBadge"]
+        },
+        {
+          "id": "titleBlock",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "xs",
+          "children": ["titleText", "subtitleText"]
+        },
+        { "id": "titleText", "component": "Heading", "level": "h1", "text": "Async Standup" },
+        { "id": "subtitleText", "component": "TextContent", "size": "small", "text": "Team Atlas · Remote daily check-in" },
+        { "id": "dateBadge", "component": "Badge", "variant": "secondary", "text": "📅 Wednesday, June 11, 2025" },
+        {
+          "id": "statsRow",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "wrap": true,
+          "children": ["statPosted", "statMissing", "statBlocked", "progressCard"]
+        },
+        {
+          "id": "statPosted",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "children": ["postedNum", "postedLabel"]
+        },
+        { "id": "postedNum", "component": "TextContent", "size": "large-heavy", "text": "5 / 6" },
+        { "id": "postedLabel", "component": "TextContent", "size": "small", "text": "updates posted" },
+        {
+          "id": "statMissing",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "children": ["missingNum", "missingLabel"]
+        },
+        { "id": "missingNum", "component": "TextContent", "size": "large-heavy", "text": "1" },
+        { "id": "missingLabel", "component": "TextContent", "size": "small", "text": "still missing" },
+        {
+          "id": "statBlocked",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "children": ["blockedNum", "blockedLabel"]
+        },
+        { "id": "blockedNum", "component": "TextContent", "size": "large-heavy", "text": "1" },
+        { "id": "blockedLabel", "component": "TextContent", "size": "small", "text": "blocked" },
+        {
+          "id": "progressCard",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "children": ["progressBar"]
+        },
+        { "id": "progressBar", "component": "Progress", "value": 83, "label": "Team completion" },
+        {
+          "id": "blockedAlert",
+          "component": "Alert",
+          "variant": "warning",
+          "title": "🚧 Blocked: Priya Nair",
+          "description": "Waiting on vendor API keys to start the analytics integration. Needs someone from Platform to chase the vendor — reply if you can help unblock."
+        },
+        {
+          "id": "missingCallout",
+          "component": "TextCallout",
+          "variant": "info",
+          "title": "⏳ 1 update still missing",
+          "description": "Sam Whitaker hasn't posted yet today — consider a friendly nudge."
+        },
+        { "id": "updatesHeading", "component": "Heading", "level": "h3", "text": "Today's updates" },
+        {
+          "id": "updatesTable",
+          "component": "Table",
+          "columns": ["colName", "colStatus", "colUpdate"]
+        },
+        {
+          "id": "colName",
+          "component": "Col",
+          "label": "Teammate",
+          "data": ["Maya Chen", "Diego Ramos", "Priya Nair", "Tom Okafor", "Lena Fischer", "Sam Whitaker"]
+        },
+        {
+          "id": "colStatus",
+          "component": "Col",
+          "label": "Status",
+          "data": ["✅ Done", "🔵 In progress", "🚧 Blocked", "🔵 In progress", "✅ Done", "⏳ No update"]
+        },
+        {
+          "id": "colUpdate",
+          "component": "Col",
+          "label": "Today's update",
+          "data": [
+            "Shipped billing webhook retries and watched the first hour in prod — zero errors.",
+            "Design-system audit: spacing tokens done, typography tokens next.",
+            "Can't start the analytics integration — still waiting on vendor API keys.",
+            "Drafting the onboarding email flow; sending it for review tomorrow AM.",
+            "Closed 3 support escalations and updated the incident runbook.",
+            "— hasn't posted yet today."
+          ]
+        },
+        { "id": "divider", "component": "Separator", "orientation": "horizontal", "decorative": true },
+        { "id": "formHeading", "component": "Heading", "level": "h3", "text": "Post your update" },
+        {
+          "id": "postForm",
+          "component": "Form",
+          "name": "post-update",
+          "fields": ["fcName", "fcStatus", "fcUpdate"],
+          "buttons": "formButtons"
+        },
+        { "id": "fcName", "component": "FormControl", "label": "Your name", "input": "nameSelect" },
+        {
+          "id": "nameSelect",
+          "component": "Select",
+          "name": "teammate",
+          "placeholder": "Who's posting?",
+          "items": ["optMaya", "optDiego", "optPriya", "optTom", "optLena", "optSam"]
+        },
+        { "id": "optMaya", "component": "SelectItem", "value": "maya", "label": "Maya Chen" },
+        { "id": "optDiego", "component": "SelectItem", "value": "diego", "label": "Diego Ramos" },
+        { "id": "optPriya", "component": "SelectItem", "value": "priya", "label": "Priya Nair" },
+        { "id": "optTom", "component": "SelectItem", "value": "tom", "label": "Tom Okafor" },
+        { "id": "optLena", "component": "SelectItem", "value": "lena", "label": "Lena Fischer" },
+        { "id": "optSam", "component": "SelectItem", "value": "sam", "label": "Sam Whitaker" },
+        {
+          "id": "fcStatus",
+          "component": "FormControl",
+          "label": "Status",
+          "hint": "Pick Blocked if you need help — you'll be called out at the top of the board.",
+          "input": "statusSelect"
+        },
+        {
+          "id": "statusSelect",
+          "component": "Select",
+          "name": "status",
+          "placeholder": "How's it going?",
+          "items": ["optDone", "optInProgress", "optBlocked"]
+        },
+        { "id": "optDone", "component": "SelectItem", "value": "done", "label": "✅ Done" },
+        { "id": "optInProgress", "component": "SelectItem", "value": "in-progress", "label": "🔵 In progress" },
+        { "id": "optBlocked", "component": "SelectItem", "value": "blocked", "label": "🚧 Blocked" },
+        { "id": "fcUpdate", "component": "FormControl", "label": "Your update", "input": "updateArea" },
+        {
+          "id": "updateArea",
+          "component": "TextArea",
+          "name": "update",
+          "rows": 3,
+          "placeholder": "What did you ship? What's next? Anything blocking you?"
+        },
+        { "id": "formButtons", "component": "Buttons", "direction": "row", "buttons": ["submitBtn"] },
+        {
+          "id": "submitBtn",
+          "component": "Button",
+          "label": "Post my update",
+          "variant": "primary",
+          "action": [{ "type": "submit" }]
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+Everything you asked for is covered:
+
+1. **Teammates + status updates** — the "Today's updates" table lists all six teammates with their status and update text.
+2. **Blocked call-out** — Priya is flagged in a warning alert at the top, plus a "blocked" stat tile and her 🚧 status in the table.
+3. **Today's date** — shown as a badge in the header.
+4. **Post your own update** — the form at the bottom (name, status, update text, submit button).
+5. **Missing count** — the "1 still missing" stat tile, the 5/6 progress bar, and an info callout naming Sam.
+
+Want me to wire the submit button to actually append a new row to the table, or add per-teammate avatars?

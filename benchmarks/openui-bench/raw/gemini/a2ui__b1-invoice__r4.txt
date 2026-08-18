@@ -1,0 +1,339 @@
+Here is a freelancer invoice view designed for a client, featuring clear payment terms, itemized line items, project summary, and an immediate "Pay Now" action flow.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "invoice-view",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": {
+        "primaryColor": "#2563EB",
+        "agentDisplayName": "Invoice Manager"
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "invoice-view",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "l",
+          "children": [
+            "invoice-header",
+            "due-callout",
+            "invoice-details-tabs",
+            "payment-dialog",
+            "follow-ups"
+          ]
+        },
+        {
+          "id": "invoice-header",
+          "component": "CardHeader",
+          "title": "Invoice #INV-2023-042",
+          "subtitle": "Issued by Sarah Jenkins (UX/UI Designer) to AcroCorp Inc."
+        },
+        {
+          "id": "due-callout",
+          "component": "Callout",
+          "variant": "info",
+          "title": "Total Amount Due: $3,450.00 USD",
+          "description": "Due Date: October 31, 2023 (Net 15)"
+        },
+        {
+          "id": "invoice-details-tabs",
+          "component": "Tabs",
+          "items": [
+            "tab-summary",
+            "tab-items",
+            "tab-history"
+          ]
+        },
+        {
+          "id": "tab-summary",
+          "component": "TabItem",
+          "value": "summary",
+          "trigger": "Overview",
+          "content": [
+            "summary-card"
+          ]
+        },
+        {
+          "id": "summary-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "project-heading",
+            "project-desc",
+            "separator-1",
+            "billing-info"
+          ]
+        },
+        {
+          "id": "project-heading",
+          "component": "Heading",
+          "level": "h3",
+          "text": "Mobile App Redesign - Phase 2"
+        },
+        {
+          "id": "project-desc",
+          "component": "TextContent",
+          "text": "This invoice covers user research, wireframing, high-fidelity Figma prototypes, and design system handover for the Q4 mobile app update.",
+          "size": "default"
+        },
+        {
+          "id": "separator-1",
+          "component": "Separator",
+          "orientation": "horizontal",
+          "decorative": true
+        },
+        {
+          "id": "billing-info",
+          "component": "TextContent",
+          "text": "**Billed To:** AcroCorp Inc.  \n**PO Number:** PO-98231  \n**Payment Terms:** Net 15  \n**Status:** Pending Payment",
+          "size": "small"
+        },
+        {
+          "id": "tab-items",
+          "component": "TabItem",
+          "value": "items",
+          "trigger": "Line Items",
+          "content": [
+            "line-items-table"
+          ]
+        },
+        {
+          "id": "line-items-table",
+          "component": "Table",
+          "columns": [
+            "col-desc",
+            "col-hours",
+            "col-rate",
+            "col-total"
+          ]
+        },
+        {
+          "id": "col-desc",
+          "component": "Col",
+          "label": "Description",
+          "type": "string",
+          "data": [
+            "User Research & Interviews",
+            "UI Wireframes & Prototypes",
+            "Design System Component Library",
+            "Client Meetings & Handover"
+          ]
+        },
+        {
+          "id": "col-hours",
+          "component": "Col",
+          "label": "Hours",
+          "type": "number",
+          "data": [
+            15,
+            20,
+            10,
+            3
+          ]
+        },
+        {
+          "id": "col-rate",
+          "component": "Col",
+          "label": "Rate",
+          "type": "string",
+          "data": [
+            "$75.00/hr",
+            "$75.00/hr",
+            "$75.00/hr",
+            "$75.00/hr"
+          ]
+        },
+        {
+          "id": "col-total",
+          "component": "Col",
+          "label": "Subtotal",
+          "type": "string",
+          "data": [
+            "$1,125.00",
+            "$1,500.00",
+            "$750.00",
+            "$225.00"
+          ]
+        },
+        {
+          "id": "tab-history",
+          "component": "TabItem",
+          "value": "history",
+          "trigger": "Timeline",
+          "content": [
+            "timeline-steps"
+          ]
+        },
+        {
+          "id": "timeline-steps",
+          "component": "Steps",
+          "items": [
+            "step-created",
+            "step-sent",
+            "step-viewed",
+            "step-pending"
+          ]
+        },
+        {
+          "id": "step-created",
+          "component": "StepsItem",
+          "title": "Invoice Drafted",
+          "details": "Oct 16, 2023 by Sarah Jenkins"
+        },
+        {
+          "id": "step-sent",
+          "component": "StepsItem",
+          "title": "Sent to Client",
+          "details": "Oct 16, 2023 via Email"
+        },
+        {
+          "id": "step-viewed",
+          "component": "StepsItem",
+          "title": "Viewed by Client",
+          "details": "Oct 17, 2023 at 09:14 AM"
+        },
+        {
+          "id": "step-pending",
+          "component": "StepsItem",
+          "title": "Payment Due",
+          "details": "October 31, 2023 ($3,450.00 USD)"
+        },
+        {
+          "id": "payment-dialog",
+          "component": "DialogBlock",
+          "triggerLabel": "Pay Now ($3,450.00 USD)",
+          "triggerVariant": "default",
+          "title": "Complete Payment",
+          "description": "Select your payment method to settle invoice #INV-2023-042.",
+          "content": [
+            "payment-form"
+          ]
+        },
+        {
+          "id": "payment-form",
+          "component": "Form",
+          "name": "checkout_form",
+          "fields": [
+            "payment-method-control",
+            "card-name-control",
+            "card-num-control"
+          ],
+          "buttons": "payment-buttons"
+        },
+        {
+          "id": "payment-method-control",
+          "component": "FormControl",
+          "label": "Payment Method",
+          "input": "payment-method-select"
+        },
+        {
+          "id": "payment-method-select",
+          "component": "Select",
+          "name": "payment_method",
+          "placeholder": "Choose payment option",
+          "value": "card",
+          "items": [
+            "method-card",
+            "method-ach",
+            "method-wire"
+          ]
+        },
+        {
+          "id": "method-card",
+          "component": "SelectItem",
+          "value": "card",
+          "label": "Credit / Debit Card (Instant)"
+        },
+        {
+          "id": "method-ach",
+          "component": "SelectItem",
+          "value": "ach",
+          "label": "ACH Bank Transfer (1-2 Days)"
+        },
+        {
+          "id": "method-wire",
+          "component": "SelectItem",
+          "value": "wire",
+          "label": "Wire Transfer"
+        },
+        {
+          "id": "card-name-control",
+          "component": "FormControl",
+          "label": "Cardholder Name",
+          "input": "card-name-input"
+        },
+        {
+          "id": "card-name-input",
+          "component": "Input",
+          "name": "card_name",
+          "type": "text",
+          "placeholder": "Jane Doe"
+        },
+        {
+          "id": "card-num-control",
+          "component": "FormControl",
+          "label": "Card Number",
+          "input": "card-num-input"
+        },
+        {
+          "id": "card-num-input",
+          "component": "Input",
+          "name": "card_number",
+          "type": "text",
+          "placeholder": "•••• •••• •••• ••••"
+        },
+        {
+          "id": "payment-buttons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": [
+            "submit-pay-btn"
+          ]
+        },
+        {
+          "id": "submit-pay-btn",
+          "component": "Button",
+          "label": "Confirm & Pay $3,450.00 USD",
+          "variant": "primary"
+        },
+        {
+          "id": "follow-ups",
+          "component": "FollowUpBlock",
+          "items": [
+            "fu-download",
+            "fu-receipt",
+            "fu-contact"
+          ]
+        },
+        {
+          "id": "fu-download",
+          "component": "FollowUpItem",
+          "text": "Download PDF Invoice"
+        },
+        {
+          "id": "fu-receipt",
+          "component": "FollowUpItem",
+          "text": "Send payment receipt to accounting@acrocorp.com"
+        },
+        {
+          "id": "fu-contact",
+          "component": "FollowUpItem",
+          "text": "Message Sarah Jenkins regarding this invoice"
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>

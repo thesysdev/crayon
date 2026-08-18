@@ -1,0 +1,89 @@
+Here's a power network operator console covering all 12 requirements:
+
+<a2ui-json>
+{"version":"v0.9","createSurface":{"surfaceId":"grid-console","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#F59E0B","agentDisplayName":"GridOps Console"}}}
+</a2ui-json>
+
+<a2ui-json>
+{"version":"v0.9","updateComponents":{"surfaceId":"grid-console","components":[
+{"id":"root","component":"Card","direction":"column","gap":"m","children":["header","alert-live","row-top","row-mid","row-bottom","row-ops"]},
+{"id":"header","component":"CardHeader","title":"⚡ National Grid Operations Console","subtitle":"Live network status — updated 14:32 UTC"},
+
+{"id":"alert-live","component":"Callout","variant":"warning","title":"LIVE ALERT: Frequency deviation detected","description":"Grid frequency at 49.82 Hz in North region — spinning reserve activated. 2 min ago."},
+
+{"id":"row-top","component":"Card","direction":"row","gap":"m","variant":"clear","children":["card-load","card-capacity","card-price","card-emissions"]},
+{"id":"card-load","component":"Card","children":["load-head","load-val","load-spark"],"weight":1},
+{"id":"load-head","component":"TextContent","text":"**1. Current Network Load**","size":"small-heavy"},
+{"id":"load-val","component":"TextContent","text":"# 38.4 GW","size":"large-heavy"},
+{"id":"load-spark","component":"TextContent","text":"▲ +2.1% vs. 1h ago","size":"small"},
+{"id":"card-capacity","component":"Card","children":["cap-head","cap-val","cap-bar"],"weight":1},
+{"id":"cap-head","component":"TextContent","text":"**2. Capacity Utilisation**","size":"small-heavy"},
+{"id":"cap-val","component":"TextContent","text":"# 82% of 46.8 GW","size":"large-heavy"},
+{"id":"cap-bar","component":"Progress","value":82,"label":"Headroom: 8.4 GW"},
+{"id":"card-price","component":"Card","children":["price-head","price-val","price-sub"],"weight":1},
+{"id":"price-head","component":"TextContent","text":"**7. Spot Price / MWh**","size":"small-heavy"},
+{"id":"price-val","component":"TextContent","text":"# £74.20","size":"large-heavy"},
+{"id":"price-sub","component":"TextContent","text":"▼ -£3.10 vs. day-ahead","size":"small"},
+{"id":"card-emissions","component":"Card","children":["em-head","em-val","em-sub"],"weight":1},
+{"id":"em-head","component":"TextContent","text":"**12. Emissions Today**","size":"small-heavy"},
+{"id":"em-val","component":"TextContent","text":"# 182 gCO₂/kWh","size":"large-heavy"},
+{"id":"em-sub","component":"TextContent","text":"Total: 96,400 tCO₂ so far","size":"small"},
+
+{"id":"row-mid","component":"Card","direction":"row","gap":"m","variant":"clear","children":["card-gen","card-forecast"]},
+{"id":"card-gen","component":"Card","children":["gen-head","gen-chart"],"weight":1},
+{"id":"gen-head","component":"TextContent","text":"**3. Generation Split by Source**","size":"small-heavy"},
+{"id":"gen-chart","component":"PieChart","labels":["Gas","Wind","Nuclear","Solar","Imports","Hydro","Biomass"],"values":[34,28,18,9,6,3,2],"variant":"donut"},
+{"id":"card-forecast","component":"Card","children":["fc-head","fc-chart","fc-s1","fc-s2"],"weight":2},
+{"id":"fc-head","component":"TextContent","text":"**6. Demand Forecast — Next 24h**","size":"small-heavy"},
+{"id":"fc-chart","component":"LineChart","labels":["15:00","18:00","21:00","00:00","03:00","06:00","09:00","12:00","15:00"],"series":["fc-s1","fc-s2"],"yLabel":"GW"},
+{"id":"fc-s1","component":"Series","category":"Forecast demand","values":[39.2,42.8,40.1,34.5,31.2,33.8,40.6,41.9,40.2]},
+{"id":"fc-s2","component":"Series","category":"Available capacity","values":[46.8,46.8,45.2,45.2,45.2,46.8,46.8,46.8,46.8]},
+
+{"id":"row-bottom","component":"Card","direction":"row","gap":"m","variant":"clear","children":["card-plants","card-outages"]},
+{"id":"card-plants","component":"Card","children":["pl-head","pl-table","pl-c1","pl-c2","pl-c3"],"weight":3},
+{"id":"pl-head","component":"TextContent","text":"**4. Plant Output & Status**","size":"small-heavy"},
+{"id":"pl-table","component":"Table","columns":["pl-c1","pl-c2","pl-c3"]},
+{"id":"pl-c1","component":"Col","label":"Plant","data":["Hinkley Point B (Nuclear)","Drax Unit 4 (Biomass)","Hornsea 2 (Wind)","Cottam CCGT (Gas)","Dinorwig (Hydro)"]},
+{"id":"pl-c2","component":"Col","label":"Output (MW)","data":[980,645,1320,1180,288],"type":"number"},
+{"id":"pl-c3","component":"Col","label":"Status","data":["Online","Online","Online","Standby","Pumping"]},
+{"id":"card-outages","component":"Card","children":["out-head","out-table","out-c1","out-c2","out-c3"],"weight":2},
+{"id":"out-head","component":"TextContent","text":"**5. Active Outages**","size":"small-heavy"},
+{"id":"out-table","component":"Table","columns":["out-c1","out-c2","out-c3"]},
+{"id":"out-c1","component":"Col","label":"Asset","data":["Feeder F-221","Substation S-09","Line L-447"]},
+{"id":"out-c2","component":"Col","label":"Affected Region","data":["North — Leeds","South — Brighton","West — Cardiff"]},
+{"id":"out-c3","component":"Col","label":"Customers","data":[4200,11500,800],"type":"number"},
+
+{"id":"row-ops","component":"Card","direction":"row","gap":"m","variant":"clear","children":["card-maint","card-region","card-curtail"]},
+{"id":"card-maint","component":"Card","children":["mt-head","mt-list","mt-i1","mt-i2","mt-i3"],"weight":1},
+{"id":"mt-head","component":"TextContent","text":"**8. Planned Maintenance — This Month**","size":"small-heavy"},
+{"id":"mt-list","component":"ListBlock","items":["mt-i1","mt-i2","mt-i3"],"variant":"number"},
+{"id":"mt-i1","component":"ListItem","title":"Sizewell B turbine inspection","subtitle":"Jun 12–14 · 600 MW offline"},
+{"id":"mt-i2","component":"ListItem","title":"East interconnector cable test","subtitle":"Jun 18 · 4h window"},
+{"id":"mt-i3","component":"ListItem","title":"Dinorwig valve overhaul","subtitle":"Jun 24–26 · Reserve cover arranged"},
+{"id":"card-region","component":"Card","children":["rg-head","rg-form","rg-fc","rg-select","rg-si1","rg-si2","rg-si3","rg-si4","rg-btns","rg-btn"],"weight":1},
+{"id":"rg-head","component":"TextContent","text":"**10. Focus on Region**","size":"small-heavy"},
+{"id":"rg-form","component":"Form","name":"regionFocus","buttons":"rg-btns","fields":["rg-fc"]},
+{"id":"rg-fc","component":"FormControl","label":"Region","input":"rg-select","hint":"Filters all panels to one region"},
+{"id":"rg-select","component":"Select","name":"region","items":["rg-si1","rg-si2","rg-si3","rg-si4"],"placeholder":"All regions"},
+{"id":"rg-si1","component":"SelectItem","value":"north","label":"North"},
+{"id":"rg-si2","component":"SelectItem","value":"south","label":"South"},
+{"id":"rg-si3","component":"SelectItem","value":"east","label":"East"},
+{"id":"rg-si4","component":"SelectItem","value":"west","label":"West"},
+{"id":"rg-btns","component":"Buttons","buttons":["rg-btn"]},
+{"id":"rg-btn","component":"Button","label":"Apply Focus","variant":"primary"},
+{"id":"card-curtail","component":"Card","children":["cu-head","cu-form","cu-fc1","cu-sel","cu-ci1","cu-ci2","cu-ci3","cu-fc2","cu-slider","cu-btns","cu-btn"],"weight":1},
+{"id":"cu-head","component":"TextContent","text":"**11. Order Curtailment**","size":"small-heavy"},
+{"id":"cu-form","component":"Form","name":"curtailment","buttons":"cu-btns","fields":["cu-fc1","cu-fc2"]},
+{"id":"cu-fc1","component":"FormControl","label":"Target plant / feeder","input":"cu-sel"},
+{"id":"cu-sel","component":"Select","name":"target","items":["cu-ci1","cu-ci2","cu-ci3"],"placeholder":"Select asset"},
+{"id":"cu-ci1","component":"SelectItem","value":"cottam","label":"Cottam CCGT"},
+{"id":"cu-ci2","component":"SelectItem","value":"f221","label":"Feeder F-221"},
+{"id":"cu-ci3","component":"SelectItem","value":"hornsea","label":"Hornsea 2"},
+{"id":"cu-fc2","component":"FormControl","label":"Curtailment level (MW)","input":"cu-slider"},
+{"id":"cu-slider","component":"Slider","name":"mw","variant":"discrete","min":0,"max":500,"step":25,"defaultValue":[100],"label":"MW"},
+{"id":"cu-btns","component":"Buttons","buttons":["cu-btn"]},
+{"id":"cu-btn","component":"Button","label":"Issue Curtailment Order","variant":"primary","type":"destructive"}
+]}}
+</a2ui-json>
+
+The console covers all 12 items: **1–2** load and capacity headroom cards, **3** generation donut chart, **4** plant table with output/status, **5** outage table by region, **6** 24-hour demand forecast vs. capacity line chart, **7** live spot price, **8** maintenance schedule, **9** live alert banner, **10** region focus selector, **11** curtailment order form with MW slider, and **12** today's emissions.

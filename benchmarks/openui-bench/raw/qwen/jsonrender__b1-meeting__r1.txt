@@ -1,0 +1,38 @@
+
+
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["screen-header","meeting-card","attendees-card","join-card"]}}
+{"op":"add","path":"/elements/screen-header","value":{"type":"Heading","props":{"text":"Next on calendar","level":"h1"},"children":[]}}
+{"op":"add","path":"/elements/meeting-card","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["meeting-badge","meeting-title","meeting-time-row"]}}
+{"op":"add","path":"/elements/meeting-badge","value":{"type":"Badge","props":{"text":"Next meeting","variant":"secondary"},"children":[]}}
+{"op":"add","path":"/elements/meeting-title","value":{"type":"TextContent","props":{"text":{"$state":"/meeting/title"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/state/meeting","value":{}}
+{"op":"add","path":"/state/meeting/title","value":"Design sync: Q3 calendar rollout"}
+{"op":"add","path":"/elements/meeting-time-row","value":{"type":"Card","props":{"direction":"row","gap":"s","align":"baseline"},"children":["time-label","meeting-start-time"]}}
+{"op":"add","path":"/elements/time-label","value":{"type":"TextContent","props":{"text":"Start time","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/meeting-start-time","value":{"type":"TextContent","props":{"text":{"$state":"/meeting/startTime"},"size":"default"},"children":[]}}
+{"op":"add","path":"/state/meeting/startTime","value":"Today · 2:00 PM - 2:30 PM"}
+{"op":"add","path":"/elements/attendees-card","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["attendees-header","attendees-list"]}}
+{"op":"add","path":"/elements/attendees-header","value":{"type":"CardHeader","props":{"title":"Attendees","subtitle":{"$template":"${/meeting/attendeeCount} invited"}},"children":[]}}
+{"op":"add","path":"/state/meeting/attendeeCount","value":4}
+{"op":"add","path":"/elements/attendees-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"repeat":{"statePath":"/attendees","key":"id"},"children":["attendee-row"]}}
+{"op":"add","path":"/elements/attendee-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","align":"center","justify":"between","gap":"s"},"children":["attendee-identity","attendee-status"]}}
+{"op":"add","path":"/elements/attendee-identity","value":{"type":"Card","props":{"variant":"clear","direction":"row","align":"center","gap":"s"},"children":["attendee-avatar","attendee-text"]}}
+{"op":"add","path":"/elements/attendee-avatar","value":{"type":"Avatar","props":{"fallback":{"$item":"initials"},"alt":{"$item":"name"}},"children":[]}}
+{"op":"add","path":"/elements/attendee-text","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"none"},"children":["attendee-name","attendee-role"]}}
+{"op":"add","path":"/elements/attendee-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/attendee-role","value":{"type":"TextContent","props":{"text":{"$item":"role"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/attendee-status","value":{"type":"Tag","props":{"text":{"$item":"status"},"variant":{"$item":"tagVariant"},"size":"sm"},"children":[]}}
+{"op":"add","path":"/state/attendees","value":[]}
+{"op":"add","path":"/state/attendees/0","value":{"id":"attendee-1","name":"Ava Chen","role":"Organizer","initials":"AC","status":"Accepted","tagVariant":"success"}}
+{"op":"add","path":"/state/attendees/1","value":{"id":"attendee-2","name":"Marcus Reed","role":"Product","initials":"MR","status":"Accepted","tagVariant":"success"}}
+{"op":"add","path":"/state/attendees/2","value":{"id":"attendee-3","name":"Priya Natarajan","role":"Engineering","initials":"PN","status":"Tentative","tagVariant":"warning"}}
+{"op":"add","path":"/state/attendees/3","value":{"id":"attendee-4","name":"Sofia Alvarez","role":"Marketing","initials":"SA","status":"Invited","tagVariant":"neutral"}}
+{"op":"add","path":"/elements/join-card","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["join-header","join-link-row","join-actions","joined-alert"]}}
+{"op":"add","path":"/elements/join-header","value":{"type":"CardHeader","props":{"title":"Join the call","subtitle":"Video conference is ready"},"children":[]}}
+{"op":"add","path":"/elements/join-link-row","value":{"type":"TextContent","props":{"text":{"$template":"Link: ${/meeting/link}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/state/meeting/link","value":"meet.nimbus.io/design-sync"}
+{"op":"add","path":"/elements/join-actions","value":{"type":"Buttons","props":{"direction":"row"},"buttons":["join-button"],"children":[]}}
+{"op":"add","path":"/elements/join-button","value":{"type":"Button","props":{"label":{"$cond":{"$state":"/joined"},"$then":"Joining...","$else":"Join call"},"variant":"primary","size":"large"},"on":{"press":{"action":"setState","params":{"statePath":"/joined","value":true}}},"children":[]}}
+{"op":"add","path":"/elements/joined-alert","value":{"type":"Alert","props":{"title":"Joining call","description":"Connecting you to the meeting.","variant":"success"},"visible":{"$state":"/joined"},"children":[]}}
+{"op":"add","path":"/state/joined","value":false}

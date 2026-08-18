@@ -1,0 +1,41 @@
+{"op":"add","path":"/root","value":"screen"}
+{"op":"add","path":"/elements/screen","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["topBar","questionCard","optionsList","actionBar","votedCallout","resultsCard","footer"]}}
+{"op":"add","path":"/elements/topBar","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center"},"children":["badgePoll","textDate"]}}
+{"op":"add","path":"/elements/badgePoll","value":{"type":"Badge","props":{"text":"Team Lunch Poll","variant":"secondary"},"children":[]}}
+{"op":"add","path":"/elements/textDate","value":{"type":"TextContent","props":{"text":"Friday • 12:30 PM","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/questionCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["questionHeading","questionSub","questionMetaRow"]}}
+{"op":"add","path":"/elements/questionHeading","value":{"type":"Heading","props":{"text":"Where should we go for lunch on Friday?","level":"h1"},"children":[]}}
+{"op":"add","path":"/elements/questionSub","value":{"type":"TextContent","props":{"text":"Cast your vote — poll closes Thursday 5 PM • 8 teammates invited. Majority wins!","size":"default"},"children":[]}}
+{"op":"add","path":"/elements/questionMetaRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","wrap":true},"children":["metaTag1","metaTag2","metaTag3"]}}
+{"op":"add","path":"/elements/metaTag1","value":{"type":"Tag","props":{"text":"📍 Downtown","variant":"neutral","size":"sm"},"children":[]}}
+{"op":"add","path":"/elements/metaTag2","value":{"type":"Tag","props":{"text":"👥 8 voters","variant":"neutral","size":"sm"},"children":[]}}
+{"op":"add","path":"/elements/metaTag3","value":{"type":"Tag","props":{"text":"⏰ Closes in 2 days","variant":"warning","size":"sm"},"children":[]}}
+{"op":"add","path":"/elements/optionsList","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"repeat":{"statePath":"/restaurants","key":"id"},"children":["restaurantCard"]}}
+{"op":"add","path":"/elements/restaurantCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"on":{"press":{"action":"setState","params":{"statePath":"/selectedId","value":{"$item":"id"}}}},"children":["rcName","rcCuisine","rcDesc","rcMetaRow"]}}
+{"op":"add","path":"/elements/rcName","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/rcCuisine","value":{"type":"TextContent","props":{"text":{"$item":"cuisine"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/rcDesc","value":{"type":"TextContent","props":{"text":{"$item":"description"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/rcMetaRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center"},"children":["rcVotes","rcTapHint"]}}
+{"op":"add","path":"/elements/rcVotes","value":{"type":"TextContent","props":{"text":{"$template":"${votes} votes • ${percent}%"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/rcTapHint","value":{"type":"Tag","props":{"text":"Tap to select","variant":"neutral","size":"sm"},"visible":{"$state":"/hasVoted","not":true},"children":[]}}
+{"op":"add","path":"/state/restaurants","value":[]}
+{"op":"add","path":"/state/restaurants/0","value":{"id":"sakura","name":"Sakura Sushi","cuisine":"Japanese • Sushi & Ramen","description":"Fresh nigiri, salmon poke bowls & veggie bento. Quiet tatami room, 5 min walk from office.","votes":3,"percent":37,"voters":"Maya, Jon, Priya"}}
+{"op":"add","path":"/state/restaurants/1","value":{"id":"piazza","name":"La Piazza","cuisine":"Italian • Wood-fired Pizza","description":"Shareable margherita & truffle pizzas, big salads, sunny patio. Great for groups, 8 min walk.","votes":4,"percent":50,"voters":"Alex, Sam, Taylor, Jordan"}}
+{"op":"add","path":"/state/restaurants/2","value":{"id":"oak","name":"Burger & Oak","cuisine":"American • Burgers & Brews","description":"Smash burgers, loaded fries & vegan Beyond patty. Fast service, 3 min walk.","votes":1,"percent":13,"voters":"Casey"}}
+{"op":"add","path":"/elements/actionBar","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s","align":"center"},"visible":{"$state":"/hasVoted","not":true},"children":["selectedText","voteBtn","helperText"]}}
+{"op":"add","path":"/elements/selectedText","value":{"type":"TextContent","props":{"text":{"$template":"Selected: ${/selectedId}"},"size":"small-heavy"},"visible":{"$state":"/selectedId"},"children":[]}}
+{"op":"add","path":"/elements/voteBtn","value":{"type":"Button","props":{"label":"Confirm vote","variant":"primary","size":"large"},"visible":{"$state":"/selectedId"},"on":{"press":{"action":"setState","params":{"statePath":"/hasVoted","value":true}}},"children":[]}}
+{"op":"add","path":"/elements/helperText","value":{"type":"TextContent","props":{"text":"Tap a restaurant card to select, then confirm. You can change your selection before confirming.","size":"small"},"visible":{"$state":"/selectedId","not":true},"children":[]}}
+{"op":"add","path":"/state/selectedId","value":""}
+{"op":"add","path":"/state/hasVoted","value":false}
+{"op":"add","path":"/elements/votedCallout","value":{"type":"Callout","props":{"variant":"success","title":"Vote recorded!","description":"Thanks for voting. You can see live results below. Poll closes Thursday 5 PM."},"visible":{"$state":"/hasVoted"},"children":[]}}
+{"op":"add","path":"/elements/resultsCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"visible":{"$state":"/hasVoted"},"children":["resultsHeader","resultsList"]}}
+{"op":"add","path":"/elements/resultsHeader","value":{"type":"CardHeader","props":{"title":"Live results","subtitle":"8 votes so far • updates after you vote"},"children":[]}}
+{"op":"add","path":"/elements/resultsList","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"repeat":{"statePath":"/restaurants","key":"id"},"children":["resultRow"]}}
+{"op":"add","path":"/elements/resultRow","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["resultTop","resultProgress","resultVoters"]}}
+{"op":"add","path":"/elements/resultTop","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center"},"children":["resultName","resultPercent"]}}
+{"op":"add","path":"/elements/resultName","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/resultPercent","value":{"type":"TextContent","props":{"text":{"$template":"${percent}%"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/resultProgress","value":{"type":"Progress","props":{"value":{"$item":"percent"}},"children":[]}}
+{"op":"add","path":"/elements/resultVoters","value":{"type":"TextContent","props":{"text":{"$template":"Voted by: ${voters}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/footer","value":{"type":"TextContent","props":{"text":"Poll created by Alex • Change your vote anytime before Thursday 5 PM","size":"small"},"children":[]}}

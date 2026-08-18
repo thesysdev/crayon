@@ -1,0 +1,103 @@
+
+
+root = Card([header, hubBadge, metricsHeading, kpiTable, delayedCallout, flightsHeading, flightTable, gateHeading, gateChangesTable, crewHeading, crewTable, weatherHeading, weatherAlert, loadProgress, connectionsHeading, connectionTable, rebookHeading, rebookForm, hubHeading, hubForm, cancellationsHeading, cancellationTable, turnaroundCallout], "card", "column", "l")
+
+header = CardHeader("Hub Operations Desk", "ORD — Chicago O'Hare | Today 14:35Z")
+hubBadge = Badge("Hub: ORD", "secondary")
+
+metricsHeading = Heading("Today's performance", "h3")
+kpiTable = Table([kpiMetricCol, kpiValueCol])
+kpiMetricCol = Col("Metric", ["On-time performance today", "Delayed flights", "Cancellations today", "Average passenger load", "Average turnaround time"])
+kpiValueCol = Col("Value", ["81.4%", "14 active", "3 total", "78.3%", "52 min"])
+
+delayedCallout = Callout("warning", "Delayed flights", "14 delays active. Worst: UA284 ORD-DEN 45 min, DL109 ATL-ORD 35 min, AS922 ORD-SEA 25 min.")
+
+flightsHeading = Heading("Flight status board", "h3")
+flightTable = Table([flightNoCol, routeCol, gateCol, statusCol])
+flightNoCol = Col("Flight", ["UA284", "DL109", "AS922", "AA1501", "WN314", "UA77", "DL208", "AA482"])
+routeCol = Col("Route", ["ORD → DEN", "ATL → ORD", "ORD → SEA", "ORD → LAX", "ORD → DAL", "ORD → SFO", "MCO → ORD", "ORD → CLT"])
+gateCol = Col("Gate", ["B12", "C4", "D18", "B22", "C9", "A7", "D4", "B3"])
+statusCol = Col("Status", ["Delayed 45m", "Delayed 35m", "Delayed 25m", "On Time", "Boarding", "Departed", "On Time", "Cancelled"])
+
+gateHeading = Heading("Recent gate changes", "h3")
+gateChangesTable = Table([gcTimeCol, gcFlightCol, gcFromCol, gcToCol, gcReasonCol])
+gcTimeCol = Col("Time", ["14:10Z", "13:45Z", "13:20Z", "12:55Z"])
+gcFlightCol = Col("Flight", ["UA284", "DL109", "AA482", "DL208"])
+gcFromCol = Col("From", ["B8", "C2", "B5", "D9"])
+gcToCol = Col("To", ["B12", "C4", "B3", "D4"])
+gcReasonCol = Col("Reason", ["De-ice queue", "Aircraft swap", "Crew availability", "Ramp congestion"])
+
+crewHeading = Heading("Crews available for reassignment", "h3")
+crewTable = Table([crewIdCol, crewTypeCol, crewBaseCol, crewAvailableCol, crewRestCol])
+crewIdCol = Col("Crew", ["CRW-3301", "CRW-2764", "CRW-1098", "CRW-4551"])
+crewTypeCol = Col("Type", ["Flight deck", "Cabin", "Flight deck", "Cabin"])
+crewBaseCol = Col("Base", ["ORD", "ORD", "DEN", "ATL"])
+crewAvailableCol = Col("Available", ["15:10Z", "Now", "16:40Z", "Now"])
+crewRestCol = Col("Rest", ["Legal", "16h", "Legal", "14h"])
+
+weatherHeading = Heading("Weather advisories", "h3")
+weatherAlert = Alert("Weather advisory", "Winter weather advisory at ORD 18:00Z-02:00Z. 2-4 in snow expected, de-icing queues likely, EDCTs possible.", "warning")
+
+loadProgress = Progress(78.3, "Average passenger load today")
+
+connectionsHeading = Heading("Connections at risk", "h3")
+connectionTable = Table([connPaxCol, connInboundCol, connOutboundCol, connTimeCol, connRiskCol])
+connPaxCol = Col("Pax", [18, 9, 14, 6, 22], "number")
+connInboundCol = Col("Inbound", ["DL208 MCO → ORD", "UA1090 DEN → ORD", "AA901 DFW → ORD", "DL109 ATL → ORD", "UA1420 IAH → ORD"])
+connOutboundCol = Col("Outbound", ["UA77 ORD → SFO", "AA1501 ORD → LAX", "WN314 ORD → DAL", "AS922 ORD → SEA", "UA284 ORD → DEN"])
+connTimeCol = Col("Connect", ["24 min", "31 min", "35 min", "38 min", "42 min"])
+connRiskCol = Col("Risk", ["High", "Medium", "Medium", "High", "Medium"])
+
+rebookHeading = Heading("Rebook affected passengers", "h3")
+rebookForm = Form("rebook-affected-passengers", rebookButtons, [rebookFlightField, rebookPnrField, rebookActionField, rebookPriorityField, rebookNotesField])
+rebookButtons = Buttons([rebookSubmit, rebookReset])
+rebookSubmit = Button("Rebook passengers", null, "primary")
+rebookReset = Button("Clear", null, "tertiary")
+
+rebookFlightField = FormControl("Affected flight", rebookFlightSelect, "Choose delayed or cancelled flight")
+rebookFlightSelect = Select("affected_flight", [rebookFlight1, rebookFlight2, rebookFlight3, rebookFlight4], "Select flight")
+rebookFlight1 = SelectItem("UA284", "UA284 ORD → DEN — delayed 45m")
+rebookFlight2 = SelectItem("DL109", "DL109 ATL → ORD — delayed 35m")
+rebookFlight3 = SelectItem("AS922", "AS922 ORD → SEA — delayed 25m")
+rebookFlight4 = SelectItem("AA482", "AA482 ORD → CLT — cancelled")
+
+rebookPnrField = FormControl("Record locator", rebookLocatorInput, "Optional for individual rebooking")
+rebookLocatorInput = Input("record_locator", "ABC123", "text")
+
+rebookActionField = FormControl("Rebooking action", rebookActionRadio)
+rebookActionRadio = RadioGroup("rebook_action", [rebookActionSame, rebookActionPartner, rebookActionNext, rebookActionHotel], "same_airline")
+rebookActionSame = RadioItem("Same airline", "Own-metal next feasible flight", "same_airline")
+rebookActionPartner = RadioItem("Partner airline", "Interline or partner reaccommodation", "partner")
+rebookActionNext = RadioItem("Next available", "Auto-assign across network", "next_available")
+rebookActionHotel = RadioItem("Hotel + tomorrow", "Overnight recovery when no seats today", "hotel")
+
+rebookPriorityField = FormControl("Priority", rebookPrioritySelect)
+rebookPrioritySelect = Select("priority", [priorityCritical, priorityHigh, priorityStandard], "Standard")
+priorityCritical = SelectItem("critical", "Critical — missed connections, medical")
+priorityHigh = SelectItem("high", "High — tight connections, premium")
+priorityStandard = SelectItem("standard", "Standard — general pool")
+
+rebookNotesField = FormControl("Notes", rebookNotes, "Add coordination notes")
+rebookNotes = TextArea("notes", "Example: 12 passengers at risk; need wheelchair assistance", 3)
+
+hubHeading = Heading("Switch hub", "h3")
+hubForm = Form("switch-hub", hubButtons, [hubField])
+hubButtons = Buttons([hubSwitchBtn])
+hubSwitchBtn = Button("View selected hub", null, "secondary")
+hubField = FormControl("Hub", hubSelect, "Switch operations view")
+hubSelect = Select("hub", [hubORD, hubDEN, hubATL, hubDFW, hubSEA], "Choose another hub")
+hubORD = SelectItem("ORD", "ORD — Chicago O'Hare")
+hubDEN = SelectItem("DEN", "DEN — Denver")
+hubATL = SelectItem("ATL", "ATL — Atlanta")
+hubDFW = SelectItem("DFW", "DFW — Dallas/Fort Worth")
+hubSEA = SelectItem("SEA", "SEA — Seattle")
+
+cancellationsHeading = Heading("Cancellations today", "h3")
+cancellationTable = Table([cancelFlightCol, cancelRouteCol, cancelReasonCol, cancelPaxCol, cancelStatusCol])
+cancelFlightCol = Col("Flight", ["AA482", "UA1031", "DL1557"])
+cancelRouteCol = Col("Route", ["ORD → CLT", "ORD → EWR", "IND → ORD"])
+cancelReasonCol = Col("Reason", ["Crew legality", "De-icing hold", "Inbound aircraft"])
+cancelPaxCol = Col("Passengers", [132, 118, 76], "number")
+cancelStatusCol = Col("Status", ["96 rebooked", "Rebooking in progress", "Moved to next flight"])
+
+turnaroundCallout = TextCallout("info", "Average turnaround time", "52 minutes today, 7 minutes above target. Longest turns on international arrivals and de-icing holds.")

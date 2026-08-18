@@ -1,0 +1,511 @@
+Here's a comprehensive PMO Portfolio Review screen covering all 13 requirements.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "pmo-review",
+      "catalogId": "thesys.dev:c1-openui"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "pmo-review",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "l",
+          "children": ["header", "controls", "healthSummary", "tabs"]
+        },
+        {
+          "id": "header",
+          "component": "CardHeader",
+          "title": "Portfolio Review — Q3 2024",
+          "subtitle": "Program Management Office · Portfolio Health & Delivery"
+        },
+        {
+          "id": "controls",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "row",
+          "gap": "m",
+          "align": "center",
+          "justify": "between",
+          "wrap": true,
+          "children": ["quarterSelect", "actionButtons"]
+        },
+        {
+          "id": "quarterSelect",
+          "component": "Select",
+          "name": "quarter",
+          "placeholder": "Select quarter",
+          "value": "q3-2024",
+          "size": "medium",
+          "items": ["q1-2024", "q2-2024", "q3-2024", "q4-2024"]
+        },
+        {
+          "id": "q1-2024",
+          "component": "SelectItem",
+          "value": "q1-2024",
+          "label": "Q1 2024"
+        },
+        {
+          "id": "q2-2024",
+          "component": "SelectItem",
+          "value": "q2-2024",
+          "label": "Q2 2024"
+        },
+        {
+          "id": "q3-2024",
+          "component": "SelectItem",
+          "value": "q3-2024",
+          "label": "Q3 2024"
+        },
+        {
+          "id": "q4-2024",
+          "component": "SelectItem",
+          "value": "q4-2024",
+          "label": "Q4 2024"
+        },
+        {
+          "id": "actionButtons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": ["exportBtn", "requestPeopleBtn", "archiveBtn"]
+        },
+        {
+          "id": "exportBtn",
+          "component": "Button",
+          "label": "Export Review",
+          "variant": "secondary",
+          "size": "medium",
+          "action": ["export_portfolio_review"]
+        },
+        {
+          "id": "requestPeopleBtn",
+          "component": "Button",
+          "label": "Request People",
+          "variant": "primary",
+          "size": "medium",
+          "action": ["request_additional_staff"]
+        },
+        {
+          "id": "archiveBtn",
+          "component": "Button",
+          "label": "Archive Project",
+          "variant": "tertiary",
+          "type": "destructive",
+          "size": "medium",
+          "action": ["archive_completed_project"]
+        },
+        {
+          "id": "healthSummary",
+          "component": "Callout",
+          "variant": "warning",
+          "title": "Portfolio Health: At Risk",
+          "description": "6 of 8 projects on track · 2 flagged for slippage · budget 71% consumed at 68% of timeline · 3 critical risks open."
+        },
+        {
+          "id": "tabs",
+          "component": "Tabs",
+          "items": ["tabProjects", "tabDelivery", "tabRisks", "tabTeam"]
+        },
+        {
+          "id": "tabProjects",
+          "component": "TabItem",
+          "value": "projects",
+          "trigger": "Projects & Budget",
+          "content": ["activeProjectsCard", "budgetCard", "milestonesCard", "deadlinesCard"]
+        },
+        {
+          "id": "activeProjectsCard",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "children": ["activeProjectsHeading", "activeProjectsTable"]
+        },
+        {
+          "id": "activeProjectsHeading",
+          "component": "Heading",
+          "text": "Active Projects",
+          "level": "h3"
+        },
+        {
+          "id": "activeProjectsTable",
+          "component": "Table",
+          "columns": ["colProjName", "colOwner", "colDeadline", "colHealth"]
+        },
+        {
+          "id": "colProjName",
+          "component": "Col",
+          "label": "Project",
+          "type": "string",
+          "data": ["Apollo Migration", "Beacon Mobile", "Cirrus Analytics", "Delta CRM", "Echo Portal", "Falcon Billing", "Gamma Search", "Helix Data Lake"]
+        },
+        {
+          "id": "colOwner",
+          "component": "Col",
+          "label": "Owner",
+          "type": "string",
+          "data": ["S. Kapoor", "M. Lopez", "J. Chen", "R. Okafor", "T. Nguyen", "A. Weiss", "L. Petrov", "D. Ahmed"]
+        },
+        {
+          "id": "colDeadline",
+          "component": "Col",
+          "label": "Deadline",
+          "type": "string",
+          "data": ["Oct 15", "Sep 30", "Nov 22", "Oct 08", "Dec 01", "Sep 25", "Nov 10", "Oct 30"]
+        },
+        {
+          "id": "colHealth",
+          "component": "Col",
+          "label": "Health",
+          "type": "string",
+          "data": ["On Track", "At Risk", "On Track", "At Risk", "On Track", "Critical", "On Track", "On Track"]
+        },
+        {
+          "id": "budgetCard",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": ["budgetHeading", "budgetChart", "budgetNote"]
+        },
+        {
+          "id": "budgetHeading",
+          "component": "Heading",
+          "text": "Budget Spent vs. Allocation ($K)",
+          "level": "h3"
+        },
+        {
+          "id": "budgetChart",
+          "component": "BarChart",
+          "variant": "grouped",
+          "xLabel": "Project",
+          "yLabel": "USD (thousands)",
+          "labels": ["Apollo", "Beacon", "Cirrus", "Delta", "Echo", "Falcon", "Gamma", "Helix"],
+          "series": ["budgetAllocated", "budgetSpent"]
+        },
+        {
+          "id": "budgetAllocated",
+          "component": "Series",
+          "category": "Allocated",
+          "values": [800, 450, 600, 520, 700, 380, 550, 900]
+        },
+        {
+          "id": "budgetSpent",
+          "component": "Series",
+          "category": "Spent",
+          "values": [640, 420, 390, 495, 410, 375, 300, 610]
+        },
+        {
+          "id": "budgetNote",
+          "component": "TextContent",
+          "size": "small",
+          "text": "Falcon Billing and Delta CRM are consuming budget faster than planned progress."
+        },
+        {
+          "id": "milestonesCard",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "children": ["milestonesAlert", "milestonesTable"]
+        },
+        {
+          "id": "milestonesAlert",
+          "component": "Alert",
+          "variant": "destructive",
+          "title": "Overdue Milestones",
+          "description": "4 milestones have passed their target date and require immediate attention."
+        },
+        {
+          "id": "milestonesTable",
+          "component": "Table",
+          "columns": ["colMsProject", "colMsName", "colMsDue", "colMsDays"]
+        },
+        {
+          "id": "colMsProject",
+          "component": "Col",
+          "label": "Project",
+          "type": "string",
+          "data": ["Beacon Mobile", "Falcon Billing", "Delta CRM", "Falcon Billing"]
+        },
+        {
+          "id": "colMsName",
+          "component": "Col",
+          "label": "Milestone",
+          "type": "string",
+          "data": ["Beta Release", "Payment Gateway Cert", "Data Migration", "UAT Sign-off"]
+        },
+        {
+          "id": "colMsDue",
+          "component": "Col",
+          "label": "Due",
+          "type": "string",
+          "data": ["Sep 10", "Sep 05", "Sep 12", "Aug 28"]
+        },
+        {
+          "id": "colMsDays",
+          "component": "Col",
+          "label": "Days Overdue",
+          "type": "number",
+          "data": [8, 13, 6, 21]
+        },
+        {
+          "id": "deadlinesCard",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "children": ["deadlinesHeading", "deadlinesList"]
+        },
+        {
+          "id": "deadlinesHeading",
+          "component": "Heading",
+          "text": "Deadlines — Next Two Weeks",
+          "level": "h3"
+        },
+        {
+          "id": "deadlinesList",
+          "component": "ListBlock",
+          "variant": "number",
+          "items": ["dl1", "dl2", "dl3", "dl4"]
+        },
+        {
+          "id": "dl1",
+          "component": "ListItem",
+          "title": "Falcon Billing — Go-Live Freeze",
+          "subtitle": "Due Sep 25 · Owner A. Weiss"
+        },
+        {
+          "id": "dl2",
+          "component": "ListItem",
+          "title": "Beacon Mobile — App Store Submission",
+          "subtitle": "Due Sep 30 · Owner M. Lopez"
+        },
+        {
+          "id": "dl3",
+          "component": "ListItem",
+          "title": "Delta CRM — Phase 1 Cutover",
+          "subtitle": "Due Oct 08 · Owner R. Okafor"
+        },
+        {
+          "id": "dl4",
+          "component": "ListItem",
+          "title": "Apollo Migration — Prod Validation",
+          "subtitle": "Due Oct 15 · Owner S. Kapoor"
+        },
+        {
+          "id": "tabDelivery",
+          "component": "TabItem",
+          "value": "delivery",
+          "trigger": "Delivery Pace",
+          "content": ["paceCard", "blockedCard"]
+        },
+        {
+          "id": "paceCard",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": ["paceHeading", "paceChart"]
+        },
+        {
+          "id": "paceHeading",
+          "component": "Heading",
+          "text": "Delivery Pace — Last Six Sprints",
+          "level": "h3"
+        },
+        {
+          "id": "paceChart",
+          "component": "LineChart",
+          "variant": "natural",
+          "xLabel": "Sprint",
+          "yLabel": "Story Points",
+          "labels": ["S19", "S20", "S21", "S22", "S23", "S24"],
+          "series": ["paceCommitted", "paceCompleted"]
+        },
+        {
+          "id": "paceCommitted",
+          "component": "Series",
+          "category": "Committed",
+          "values": [120, 125, 130, 128, 132, 135]
+        },
+        {
+          "id": "paceCompleted",
+          "component": "Series",
+          "category": "Completed",
+          "values": [110, 118, 105, 122, 112, 119]
+        },
+        {
+          "id": "blockedCard",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "children": ["blockedAlert", "blockedTable"]
+        },
+        {
+          "id": "blockedAlert",
+          "component": "Alert",
+          "variant": "warning",
+          "title": "Blocked Work Items",
+          "description": "5 items are currently blocked across the portfolio."
+        },
+        {
+          "id": "blockedTable",
+          "component": "Table",
+          "columns": ["colBlkId", "colBlkProject", "colBlkReason", "colBlkAge"]
+        },
+        {
+          "id": "colBlkId",
+          "component": "Col",
+          "label": "Item",
+          "type": "string",
+          "data": ["APOL-412", "DELT-88", "FALC-201", "BEAC-350", "HELX-77"]
+        },
+        {
+          "id": "colBlkProject",
+          "component": "Col",
+          "label": "Project",
+          "type": "string",
+          "data": ["Apollo Migration", "Delta CRM", "Falcon Billing", "Beacon Mobile", "Helix Data Lake"]
+        },
+        {
+          "id": "colBlkReason",
+          "component": "Col",
+          "label": "Blocker",
+          "type": "string",
+          "data": ["Awaiting infra approval", "Vendor API delay", "Security review pending", "Design assets missing", "Data access request"]
+        },
+        {
+          "id": "colBlkAge",
+          "component": "Col",
+          "label": "Days Blocked",
+          "type": "number",
+          "data": [9, 4, 12, 3, 7]
+        },
+        {
+          "id": "tabRisks",
+          "component": "TabItem",
+          "value": "risks",
+          "trigger": "Risks",
+          "content": ["risksCard"]
+        },
+        {
+          "id": "risksCard",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "children": ["risksHeading", "risksTable"]
+        },
+        {
+          "id": "risksHeading",
+          "component": "Heading",
+          "text": "Portfolio Risks",
+          "level": "h3"
+        },
+        {
+          "id": "risksTable",
+          "component": "Table",
+          "columns": ["colRiskProject", "colRiskDesc", "colRiskSeverity", "colRiskMit"]
+        },
+        {
+          "id": "colRiskProject",
+          "component": "Col",
+          "label": "Project",
+          "type": "string",
+          "data": ["Falcon Billing", "Delta CRM", "Beacon Mobile", "Apollo Migration", "Helix Data Lake"]
+        },
+        {
+          "id": "colRiskDesc",
+          "component": "Col",
+          "label": "Risk",
+          "type": "string",
+          "data": ["Payment cert delay may miss go-live", "Data migration integrity gaps", "App store rejection risk", "Legacy system cutover downtime", "Compliance approval uncertainty"]
+        },
+        {
+          "id": "colRiskSeverity",
+          "component": "Col",
+          "label": "Severity",
+          "type": "string",
+          "data": ["Critical", "High", "Medium", "High", "Medium"]
+        },
+        {
+          "id": "colRiskMit",
+          "component": "Col",
+          "label": "Mitigation",
+          "type": "string",
+          "data": ["Escalated to vendor exec", "Added QA validation gate", "Pre-review with store contact", "Rehearsal cutover scheduled", "Weekly compliance sync"]
+        },
+        {
+          "id": "tabTeam",
+          "component": "TabItem",
+          "value": "team",
+          "trigger": "Team Utilization",
+          "content": ["utilCard"]
+        },
+        {
+          "id": "utilCard",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": ["utilHeading", "utilChart", "utilNote"]
+        },
+        {
+          "id": "utilHeading",
+          "component": "Heading",
+          "text": "Team Utilization (%)",
+          "level": "h3"
+        },
+        {
+          "id": "utilChart",
+          "component": "HorizontalBarChart",
+          "variant": "grouped",
+          "xLabel": "Utilization %",
+          "yLabel": "Team",
+          "labels": ["Platform", "Mobile", "Analytics", "CRM", "Billing", "Data"],
+          "series": ["utilSeries"]
+        },
+        {
+          "id": "utilSeries",
+          "component": "Series",
+          "category": "Utilization",
+          "values": [88, 102, 74, 95, 110, 82]
+        },
+        {
+          "id": "utilNote",
+          "component": "TextContent",
+          "size": "small",
+          "text": "Billing (110%) and Mobile (102%) are over-allocated — candidates for additional staffing."
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+This single screen covers all 13 items:
+
+1. **Active projects** — Projects & Budget tab table with owner, deadline, health
+2. **Overdue milestones** — dedicated table with days overdue
+3. **Budget spent vs allocation** — grouped bar chart per project
+4. **Team utilization** — horizontal bar chart in the Team tab
+5. **Risks with severity** — Risks tab table with severity column
+6. **Next two weeks deadlines** — numbered list
+7. **Delivery pace (6 sprints)** — line chart of committed vs completed
+8. **Blocked work items** — table with blocker and age
+9. **One-line health summary** — the warning callout near the top
+10. **Look at a different quarter** — quarter Select dropdown
+11. **Request more people** — "Request People" button
+12. **Export the review** — "Export Review" button
+13. **Archive a finished project** — "Archive Project" button

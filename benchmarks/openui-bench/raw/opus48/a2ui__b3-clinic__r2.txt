@@ -1,0 +1,357 @@
+Here's a clinic receptionist's day view covering all seven requirements.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "reception-day-view",
+      "catalogId": "thesys.dev:c1-openui"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "reception-day-view",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "l",
+          "children": [
+            "header",
+            "day-nav",
+            "next-patient-callout",
+            "stats-row",
+            "rooms-card",
+            "appointments-card",
+            "checkin-card"
+          ]
+        },
+        {
+          "id": "header",
+          "component": "CardHeader",
+          "title": "Reception — Day View",
+          "subtitle": "Monday, June 9, 2025"
+        },
+
+        {
+          "id": "day-nav",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": ["prev-day", "today-btn", "next-day", "pick-day"]
+        },
+        {
+          "id": "prev-day",
+          "component": "Button",
+          "label": "← Previous Day",
+          "variant": "secondary",
+          "size": "small",
+          "action": [{ "call": "navigateDay", "args": { "direction": "previous" } }]
+        },
+        {
+          "id": "today-btn",
+          "component": "Button",
+          "label": "Today",
+          "variant": "primary",
+          "size": "small",
+          "action": [{ "call": "navigateDay", "args": { "direction": "today" } }]
+        },
+        {
+          "id": "next-day",
+          "component": "Button",
+          "label": "Next Day →",
+          "variant": "secondary",
+          "size": "small",
+          "action": [{ "call": "navigateDay", "args": { "direction": "next" } }]
+        },
+        {
+          "id": "pick-day",
+          "component": "Button",
+          "label": "Pick a Date…",
+          "variant": "tertiary",
+          "size": "small",
+          "action": [{ "call": "openDatePicker", "args": {} }]
+        },
+
+        {
+          "id": "next-patient-callout",
+          "component": "Callout",
+          "variant": "info",
+          "title": "Now Calling: Maria Alvarez",
+          "description": "9:40 AM appointment · Dr. Chen · Please proceed to Room 3."
+        },
+
+        {
+          "id": "stats-row",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "children": ["expected-card", "noshow-card"]
+        },
+        {
+          "id": "expected-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["expected-label", "expected-value", "expected-sub"]
+        },
+        {
+          "id": "expected-label",
+          "component": "TextContent",
+          "text": "Patients Expected Today",
+          "size": "small"
+        },
+        {
+          "id": "expected-value",
+          "component": "Heading",
+          "text": "24",
+          "level": "h1"
+        },
+        {
+          "id": "expected-sub",
+          "component": "TextContent",
+          "text": "8 checked in · 16 remaining",
+          "size": "small"
+        },
+        {
+          "id": "noshow-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["noshow-label", "noshow-value", "noshow-progress"]
+        },
+        {
+          "id": "noshow-label",
+          "component": "TextContent",
+          "text": "No-Show Rate (This Month)",
+          "size": "small"
+        },
+        {
+          "id": "noshow-value",
+          "component": "Heading",
+          "text": "7.2%",
+          "level": "h1"
+        },
+        {
+          "id": "noshow-progress",
+          "component": "Progress",
+          "value": 7.2,
+          "label": "18 no-shows of 250 booked"
+        },
+
+        {
+          "id": "rooms-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "children": ["rooms-header", "rooms-tags"]
+        },
+        {
+          "id": "rooms-header",
+          "component": "Heading",
+          "text": "Rooms Free Right Now",
+          "level": "h4"
+        },
+        {
+          "id": "rooms-tags",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "s",
+          "wrap": true,
+          "children": ["room1", "room2", "room4", "room3-busy", "room5-busy"]
+        },
+        {
+          "id": "room1",
+          "component": "Tag",
+          "text": "Room 1 · Free",
+          "variant": "success",
+          "size": "md"
+        },
+        {
+          "id": "room2",
+          "component": "Tag",
+          "text": "Room 2 · Free",
+          "variant": "success",
+          "size": "md"
+        },
+        {
+          "id": "room4",
+          "component": "Tag",
+          "text": "Room 4 · Free",
+          "variant": "success",
+          "size": "md"
+        },
+        {
+          "id": "room3-busy",
+          "component": "Tag",
+          "text": "Room 3 · In Use",
+          "variant": "neutral",
+          "size": "md"
+        },
+        {
+          "id": "room5-busy",
+          "component": "Tag",
+          "text": "Room 5 · In Use",
+          "variant": "neutral",
+          "size": "md"
+        },
+
+        {
+          "id": "appointments-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "children": ["appts-header", "appts-table"]
+        },
+        {
+          "id": "appts-header",
+          "component": "Heading",
+          "text": "Today's Appointments",
+          "level": "h4"
+        },
+        {
+          "id": "appts-table",
+          "component": "Table",
+          "columns": ["col-time", "col-patient", "col-provider", "col-status"]
+        },
+        {
+          "id": "col-time",
+          "component": "Col",
+          "label": "Time",
+          "type": "string",
+          "data": ["9:00 AM", "9:20 AM", "9:40 AM", "10:00 AM", "10:20 AM", "10:40 AM", "11:00 AM"]
+        },
+        {
+          "id": "col-patient",
+          "component": "Col",
+          "label": "Patient",
+          "type": "string",
+          "data": ["James Okafor", "Priya Nair", "Maria Alvarez", "Tom Becker", "Lena Fischer", "David Kim", "Sarah Lowe"]
+        },
+        {
+          "id": "col-provider",
+          "component": "Col",
+          "label": "Provider",
+          "type": "string",
+          "data": ["Dr. Chen", "Dr. Patel", "Dr. Chen", "Dr. Patel", "Dr. Chen", "Dr. Patel", "Dr. Chen"]
+        },
+        {
+          "id": "col-status",
+          "component": "Col",
+          "label": "Status",
+          "type": "string",
+          "data": ["Checked In", "Checked In", "Now Calling", "Waiting", "Waiting", "Waiting", "Waiting"]
+        },
+
+        {
+          "id": "checkin-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "children": ["checkin-header", "checkin-form"]
+        },
+        {
+          "id": "checkin-header",
+          "component": "Heading",
+          "text": "Check In a Patient",
+          "level": "h4"
+        },
+        {
+          "id": "checkin-form",
+          "component": "Form",
+          "name": "checkin",
+          "fields": ["field-patient", "field-appt-time"],
+          "buttons": "checkin-buttons"
+        },
+        {
+          "id": "field-patient",
+          "component": "FormControl",
+          "label": "Patient",
+          "hint": "Search or select the arriving patient",
+          "input": "select-patient"
+        },
+        {
+          "id": "select-patient",
+          "component": "Select",
+          "name": "patient",
+          "placeholder": "Select patient…",
+          "items": ["opt-becker", "opt-fischer", "opt-kim", "opt-lowe"]
+        },
+        {
+          "id": "opt-becker",
+          "component": "SelectItem",
+          "value": "becker",
+          "label": "Tom Becker — 10:00 AM"
+        },
+        {
+          "id": "opt-fischer",
+          "component": "SelectItem",
+          "value": "fischer",
+          "label": "Lena Fischer — 10:20 AM"
+        },
+        {
+          "id": "opt-kim",
+          "component": "SelectItem",
+          "value": "kim",
+          "label": "David Kim — 10:40 AM"
+        },
+        {
+          "id": "opt-lowe",
+          "component": "SelectItem",
+          "value": "lowe",
+          "label": "Sarah Lowe — 11:00 AM"
+        },
+        {
+          "id": "field-appt-time",
+          "component": "FormControl",
+          "label": "Arrival Time",
+          "hint": "Defaults to now",
+          "input": "input-arrival"
+        },
+        {
+          "id": "input-arrival",
+          "component": "Input",
+          "name": "arrivalTime",
+          "type": "text",
+          "placeholder": "e.g. 9:58 AM"
+        },
+        {
+          "id": "checkin-buttons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": ["btn-checkin"]
+        },
+        {
+          "id": "btn-checkin",
+          "component": "Button",
+          "label": "Check In Patient",
+          "variant": "primary",
+          "action": [{ "call": "checkInPatient", "args": {} }]
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+This screen covers all seven items:
+
+1. **Today's appointments** — the table with time, patient, provider, and status columns.
+2. **Patients expected** — the "24" stat card with check-in progress.
+3. **No-show rate this month** — the "7.2%" stat card with a supporting progress bar.
+4. **Free rooms** — green success tags (Rooms 1, 2, 4) alongside in-use rooms for context.
+5. **Next patient called out** — the highlighted info callout at the top ("Now Calling: Maria Alvarez").
+6. **Check a patient in** — the form with a patient selector, arrival time, and a check-in button.
+7. **Move to another day** — the navigation row with Previous/Next/Today and a date picker.

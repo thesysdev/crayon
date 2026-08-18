@@ -1,0 +1,516 @@
+Here is a complete async standup dashboard for your remote team. It includes today's date, team status updates with dynamic badges highlighting who is blocked, a counter for pending updates, and an inline submission form to post your own update.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "async-standup-surface",
+      "catalogId": "thesys.dev:c1-openui"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "async-standup-surface",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "l",
+          "children": [
+            "header-card",
+            "blockers-alert",
+            "standup-tabs",
+            "post-update-card",
+            "follow-up-suggestions"
+          ]
+        },
+        {
+          "id": "header-card",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "s",
+          "children": [
+            "heading-title",
+            "meta-info-card"
+          ]
+        },
+        {
+          "id": "heading-title",
+          "component": "Heading",
+          "text": "Daily Async Standup",
+          "level": "h1"
+        },
+        {
+          "id": "meta-info-card",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "justify": "between",
+          "align": "center",
+          "children": [
+            "standup-date",
+            "missing-updates-badge"
+          ]
+        },
+        {
+          "id": "standup-date",
+          "component": "Badge",
+          "text": "📅 Wednesday, October 24, 2023",
+          "variant": "outline"
+        },
+        {
+          "id": "missing-updates-badge",
+          "component": "Badge",
+          "text": "⏳ 2 Updates Missing (4 / 6 Completed)",
+          "variant": "secondary"
+        },
+        {
+          "id": "blockers-alert",
+          "component": "Alert",
+          "title": "Blocker Alert (1 Teammate Blocked)",
+          "description": "Marcus Vance is currently waiting on AWS IAM permissions to deploy the production auth service.",
+          "variant": "destructive"
+        },
+        {
+          "id": "standup-tabs",
+          "component": "Tabs",
+          "items": [
+            "tab-all-updates",
+            "tab-team-members"
+          ]
+        },
+        {
+          "id": "tab-all-updates",
+          "component": "TabItem",
+          "value": "updates",
+          "trigger": "Team Updates",
+          "content": [
+            "updates-list"
+          ]
+        },
+        {
+          "id": "updates-list",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "user-1-card",
+            "user-2-card",
+            "user-3-card",
+            "user-4-card"
+          ]
+        },
+        {
+          "id": "user-1-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "children": [
+            "user-1-header",
+            "user-1-content"
+          ]
+        },
+        {
+          "id": "user-1-header",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "justify": "between",
+          "align": "center",
+          "children": [
+            "user-1-info",
+            "user-1-status-tag"
+          ]
+        },
+        {
+          "id": "user-1-info",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "s",
+          "align": "center",
+          "children": [
+            "user-1-avatar",
+            "user-1-name"
+          ]
+        },
+        {
+          "id": "user-1-avatar",
+          "component": "Avatar",
+          "fallback": "MV",
+          "src": ""
+        },
+        {
+          "id": "user-1-name",
+          "component": "TextContent",
+          "text": "Marcus Vance — **Backend Lead**",
+          "size": "default"
+        },
+        {
+          "id": "user-1-status-tag",
+          "component": "Tag",
+          "text": "Blocked 🛑",
+          "variant": "danger",
+          "size": "sm"
+        },
+        {
+          "id": "user-1-content",
+          "component": "MarkDownRenderer",
+          "textMarkdown": "**Yesterday:** Finished JWT token migration and user session refactoring.\n**Today:** Deploy auth service to staging cluster.\n**Blocker:** Waiting on Ops team to provision AWS IAM roles for staging deployment.",
+          "variant": "clear"
+        },
+        {
+          "id": "user-2-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "children": [
+            "user-2-header",
+            "user-2-content"
+          ]
+        },
+        {
+          "id": "user-2-header",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "justify": "between",
+          "align": "center",
+          "children": [
+            "user-2-info",
+            "user-2-status-tag"
+          ]
+        },
+        {
+          "id": "user-2-info",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "s",
+          "align": "center",
+          "children": [
+            "user-2-avatar",
+            "user-2-name"
+          ]
+        },
+        {
+          "id": "user-2-avatar",
+          "component": "Avatar",
+          "fallback": "SL",
+          "src": ""
+        },
+        {
+          "id": "user-2-name",
+          "component": "TextContent",
+          "text": "Sarah Lin — **Frontend Engineer**",
+          "size": "default"
+        },
+        {
+          "id": "user-2-status-tag",
+          "component": "Tag",
+          "text": "Clear 🟢",
+          "variant": "success",
+          "size": "sm"
+        },
+        {
+          "id": "user-2-content",
+          "component": "MarkDownRenderer",
+          "textMarkdown": "**Yesterday:** Built mobile responsive layout for team settings dashboard.\n**Today:** Integrate new notification preference controls and write unit tests.\n**Blocker:** None.",
+          "variant": "clear"
+        },
+        {
+          "id": "user-3-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "children": [
+            "user-3-header",
+            "user-3-content"
+          ]
+        },
+        {
+          "id": "user-3-header",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "justify": "between",
+          "align": "center",
+          "children": [
+            "user-3-info",
+            "user-3-status-tag"
+          ]
+        },
+        {
+          "id": "user-3-info",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "s",
+          "align": "center",
+          "children": [
+            "user-3-avatar",
+            "user-3-name"
+          ]
+        },
+        {
+          "id": "user-3-avatar",
+          "component": "Avatar",
+          "fallback": "DK",
+          "src": ""
+        },
+        {
+          "id": "user-3-name",
+          "component": "TextContent",
+          "text": "Devon Kim — **Product Designer**",
+          "size": "default"
+        },
+        {
+          "id": "user-3-status-tag",
+          "component": "Tag",
+          "text": "Clear 🟢",
+          "variant": "success",
+          "size": "sm"
+        },
+        {
+          "id": "user-3-content",
+          "component": "MarkDownRenderer",
+          "textMarkdown": "**Yesterday:** Conducted 3 user feedback interviews for onboarding flow.\n**Today:** Update Figma wireframes based on feedback and hand off specs to frontend team.\n**Blocker:** None.",
+          "variant": "clear"
+        },
+        {
+          "id": "user-4-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "children": [
+            "user-4-header",
+            "user-4-content"
+          ]
+        },
+        {
+          "id": "user-4-header",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "justify": "between",
+          "align": "center",
+          "children": [
+            "user-4-info",
+            "user-4-status-tag"
+          ]
+        },
+        {
+          "id": "user-4-info",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "s",
+          "align": "center",
+          "children": [
+            "user-4-avatar",
+            "user-4-name"
+          ]
+        },
+        {
+          "id": "user-4-avatar",
+          "component": "Avatar",
+          "fallback": "AR",
+          "src": ""
+        },
+        {
+          "id": "user-4-name",
+          "component": "TextContent",
+          "text": "Alex Rivera — **DevOps Engineer**",
+          "size": "default"
+        },
+        {
+          "id": "user-4-status-tag",
+          "component": "Tag",
+          "text": "Clear 🟢",
+          "variant": "success",
+          "size": "sm"
+        },
+        {
+          "id": "user-4-content",
+          "component": "MarkDownRenderer",
+          "textMarkdown": "**Yesterday:** Upgraded Kubernetes nodes and tuned auto-scaling thresholds.\n**Today:** Process pending IAM access tickets and review security logs.\n**Blocker:** None.",
+          "variant": "clear"
+        },
+        {
+          "id": "tab-team-members",
+          "component": "TabItem",
+          "value": "roster",
+          "trigger": "Missing Updates (2)",
+          "content": [
+            "missing-list"
+          ]
+        },
+        {
+          "id": "missing-list",
+          "component": "ListBlock",
+          "variant": "image",
+          "items": [
+            "missing-item-1",
+            "missing-item-2"
+          ]
+        },
+        {
+          "id": "missing-item-1",
+          "component": "ListItem",
+          "title": "Elena Rostova — QA Engineer",
+          "subtitle": "Status: Pending update • Timezone: UTC+2 (Central Europe)",
+          "actionLabel": "Send Nudge 🔔"
+        },
+        {
+          "id": "missing-item-2",
+          "component": "ListItem",
+          "title": "Tom Patel — Data Engineer",
+          "subtitle": "Status: Pending update • Timezone: UTC-7 (Pacific)",
+          "actionLabel": "Send Nudge 🔔"
+        },
+        {
+          "id": "post-update-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "post-update-header",
+            "standup-form"
+          ]
+        },
+        {
+          "id": "post-update-header",
+          "component": "CardHeader",
+          "title": "Post Your Daily Update",
+          "subtitle": "Share your progress, plans for today, and flag any blockers."
+        },
+        {
+          "id": "standup-form",
+          "component": "Form",
+          "name": "async-standup-form",
+          "fields": [
+            "field-yesterday",
+            "field-today",
+            "field-blocker-status",
+            "field-blocker-details"
+          ],
+          "buttons": "form-buttons"
+        },
+        {
+          "id": "field-yesterday",
+          "component": "FormControl",
+          "label": "What did you accomplish yesterday?",
+          "input": "input-yesterday"
+        },
+        {
+          "id": "input-yesterday",
+          "component": "TextArea",
+          "name": "yesterdayProgress",
+          "placeholder": "e.g., Completed API endpoint for team settings and merged PR #142",
+          "rows": 2
+        },
+        {
+          "id": "field-today",
+          "component": "FormControl",
+          "label": "What are you working on today?",
+          "input": "input-today"
+        },
+        {
+          "id": "input-today",
+          "component": "TextArea",
+          "name": "todayPlan",
+          "placeholder": "e.g., Drafting unit tests for user management modules",
+          "rows": 2
+        },
+        {
+          "id": "field-blocker-status",
+          "component": "FormControl",
+          "label": "Are you currently blocked?",
+          "input": "input-blocker-radio"
+        },
+        {
+          "id": "input-blocker-radio",
+          "component": "RadioGroup",
+          "name": "isBlocked",
+          "defaultValue": "no",
+          "items": [
+            "radio-no-blocker",
+            "radio-yes-blocker"
+          ]
+        },
+        {
+          "id": "radio-no-blocker",
+          "component": "RadioItem",
+          "label": "No, I am clear to proceed",
+          "value": "no",
+          "description": "Everything is running smoothly"
+        },
+        {
+          "id": "radio-yes-blocker",
+          "component": "RadioItem",
+          "label": "Yes, I need help / blocked",
+          "value": "yes",
+          "description": "Highlight this update for immediate team attention"
+        },
+        {
+          "id": "field-blocker-details",
+          "component": "FormControl",
+          "label": "Blocker Details (if applicable)",
+          "input": "input-blockers"
+        },
+        {
+          "id": "input-blockers",
+          "component": "Input",
+          "name": "blockerDetails",
+          "placeholder": "Describe what is blocking you and who can help...",
+          "type": "text"
+        },
+        {
+          "id": "form-buttons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": [
+            "submit-button"
+          ]
+        },
+        {
+          "id": "submit-button",
+          "component": "Button",
+          "label": "Submit Async Update",
+          "variant": "primary",
+          "size": "medium"
+        },
+        {
+          "id": "follow-up-suggestions",
+          "component": "FollowUpBlock",
+          "items": [
+            "follow-up-1",
+            "follow-up-2"
+          ]
+        },
+        {
+          "id": "follow-up-1",
+          "component": "FollowUpItem",
+          "text": "Nudge missing teammates for updates"
+        },
+        {
+          "id": "follow-up-2",
+          "component": "FollowUpItem",
+          "text": "Offer help on Marcus's IAM blocker"
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>

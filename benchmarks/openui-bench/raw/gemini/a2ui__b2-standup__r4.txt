@@ -1,0 +1,388 @@
+Here is the UI for the remote team's daily async standup.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "async-standup-surface",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": {
+        "primaryColor": "#0F52BA",
+        "agentDisplayName": "Async Standup Bot"
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "async-standup-surface",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "l",
+          "children": [
+            "header-card",
+            "blocked-callout",
+            "status-summary-card",
+            "post-update-card",
+            "team-updates-tabs"
+          ]
+        },
+        {
+          "id": "header-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "xs",
+          "children": [
+            "header-title",
+            "header-subtitle"
+          ]
+        },
+        {
+          "id": "header-title",
+          "component": "Heading",
+          "level": "h2",
+          "text": "🚀 Engineering Team Async Standup"
+        },
+        {
+          "id": "header-subtitle",
+          "component": "TextContent",
+          "size": "small",
+          "text": "📅 **Today's Date:** Thursday, October 24, 2024"
+        },
+        {
+          "id": "blocked-callout",
+          "component": "Callout",
+          "variant": "error",
+          "title": "⚠️ Blocked Teammate: Alex Rivera",
+          "description": "Needs access permissions to the production staging environment to run final integration tests."
+        },
+        {
+          "id": "status-summary-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "children": [
+            "summary-heading",
+            "missing-progress",
+            "missing-badge"
+          ]
+        },
+        {
+          "id": "summary-heading",
+          "component": "Heading",
+          "level": "h4",
+          "text": "Standup Progress (4 / 6 Submitted)"
+        },
+        {
+          "id": "missing-progress",
+          "component": "Progress",
+          "value": 67,
+          "label": "Completion Rate"
+        },
+        {
+          "id": "missing-badge",
+          "component": "Badge",
+          "variant": "destructive",
+          "text": "⏳ 2 updates still missing (Sam, Taylor)"
+        },
+        {
+          "id": "post-update-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "post-update-header",
+            "post-update-form"
+          ]
+        },
+        {
+          "id": "post-update-header",
+          "component": "CardHeader",
+          "title": "Post Your Standup Update",
+          "subtitle": "Share what you did, what you're working on, and if you are blocked."
+        },
+        {
+          "id": "post-update-form",
+          "component": "Form",
+          "name": "standup_update_form",
+          "fields": [
+            "field-yesterday",
+            "field-today",
+            "field-blocked",
+            "field-blocker-details"
+          ],
+          "buttons": "form-buttons"
+        },
+        {
+          "id": "field-yesterday",
+          "component": "FormControl",
+          "label": "What did you accomplish yesterday?",
+          "input": "input-yesterday"
+        },
+        {
+          "id": "input-yesterday",
+          "component": "TextArea",
+          "name": "yesterday",
+          "placeholder": "Finished API endpoints for user auth...",
+          "rows": 2
+        },
+        {
+          "id": "field-today",
+          "component": "FormControl",
+          "label": "What are you working on today?",
+          "input": "input-today"
+        },
+        {
+          "id": "input-today",
+          "component": "TextArea",
+          "name": "today",
+          "placeholder": "Writing integration tests and updating docs...",
+          "rows": 2
+        },
+        {
+          "id": "field-blocked",
+          "component": "FormControl",
+          "label": "Are you blocked?",
+          "input": "select-blocked"
+        },
+        {
+          "id": "select-blocked",
+          "component": "Select",
+          "name": "is_blocked",
+          "placeholder": "Select status",
+          "items": [
+            "select-no",
+            "select-yes"
+          ]
+        },
+        {
+          "id": "select-no",
+          "component": "SelectItem",
+          "value": "no",
+          "label": "🟢 No blockages"
+        },
+        {
+          "id": "select-yes",
+          "component": "SelectItem",
+          "value": "yes",
+          "label": "🚨 Yes, I'm blocked"
+        },
+        {
+          "id": "field-blocker-details",
+          "component": "FormControl",
+          "label": "Blocker Details (if applicable)",
+          "input": "input-blocker"
+        },
+        {
+          "id": "input-blocker",
+          "component": "Input",
+          "name": "blocker_details",
+          "placeholder": "Describe what is blocking you...",
+          "type": "text"
+        },
+        {
+          "id": "form-buttons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": [
+            "btn-submit"
+          ]
+        },
+        {
+          "id": "btn-submit",
+          "component": "Button",
+          "label": "Submit Standup Update",
+          "variant": "primary",
+          "size": "medium"
+        },
+        {
+          "id": "team-updates-tabs",
+          "component": "Tabs",
+          "items": [
+            "tab-submitted",
+            "tab-missing"
+          ]
+        },
+        {
+          "id": "tab-submitted",
+          "component": "TabItem",
+          "value": "submitted",
+          "trigger": "Submitted Updates (4)",
+          "content": [
+            "submitted-list"
+          ]
+        },
+        {
+          "id": "submitted-list",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "update-alex",
+            "update-sarah",
+            "update-david",
+            "update-elena"
+          ]
+        },
+        {
+          "id": "update-alex",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "children": [
+            "alex-header",
+            "alex-tag",
+            "alex-body"
+          ]
+        },
+        {
+          "id": "alex-header",
+          "component": "CardHeader",
+          "title": "Alex Rivera (DevOps)",
+          "subtitle": "Submitted today at 08:45 AM"
+        },
+        {
+          "id": "alex-tag",
+          "component": "Tag",
+          "text": "🚨 BLOCKED",
+          "variant": "danger"
+        },
+        {
+          "id": "alex-body",
+          "component": "TextContent",
+          "text": "**Yesterday:** Set up staging environment pipelines.\n\n**Today:** Preparing release candidate scripts.\n\n**Blocker:** Waiting on cloud admin permissions to access staging cluster."
+        },
+        {
+          "id": "update-sarah",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "children": [
+            "sarah-header",
+            "sarah-tag",
+            "sarah-body"
+          ]
+        },
+        {
+          "id": "sarah-header",
+          "component": "CardHeader",
+          "title": "Sarah Chen (Frontend Lead)",
+          "subtitle": "Submitted today at 09:12 AM"
+        },
+        {
+          "id": "sarah-tag",
+          "component": "Tag",
+          "text": "🟢 On Track",
+          "variant": "success"
+        },
+        {
+          "id": "sarah-body",
+          "component": "TextContent",
+          "text": "**Yesterday:** Completed UI components for dashboard widgets.\n\n**Today:** Reviewing PRs and refactoring state management.\n\n**Blocker:** None!"
+        },
+        {
+          "id": "update-david",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "children": [
+            "david-header",
+            "david-tag",
+            "david-body"
+          ]
+        },
+        {
+          "id": "david-header",
+          "component": "CardHeader",
+          "title": "David Kim (Backend Engineer)",
+          "subtitle": "Submitted today at 09:30 AM"
+        },
+        {
+          "id": "david-tag",
+          "component": "Tag",
+          "text": "🟢 On Track",
+          "variant": "success"
+        },
+        {
+          "id": "david-body",
+          "component": "TextContent",
+          "text": "**Yesterday:** Migrated user database schema.\n\n**Today:** Optimizing slow queries on reporting endpoint.\n\n**Blocker:** None."
+        },
+        {
+          "id": "update-elena",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "children": [
+            "elena-header",
+            "elena-tag",
+            "elena-body"
+          ]
+        },
+        {
+          "id": "elena-header",
+          "component": "CardHeader",
+          "title": "Elena Rostova (Product Designer)",
+          "subtitle": "Submitted today at 09:50 AM"
+        },
+        {
+          "id": "elena-tag",
+          "component": "Tag",
+          "text": "🟢 On Track",
+          "variant": "success"
+        },
+        {
+          "id": "elena-body",
+          "component": "TextContent",
+          "text": "**Yesterday:** Finalized mockups for notifications flow.\n\n**Today:** Handing off design specs to frontend team and testing prototypes.\n\n**Blocker:** None."
+        },
+        {
+          "id": "tab-missing",
+          "component": "TabItem",
+          "value": "missing",
+          "trigger": "Missing Updates (2)",
+          "content": [
+            "missing-list"
+          ]
+        },
+        {
+          "id": "missing-list",
+          "component": "ListBlock",
+          "variant": "number",
+          "items": [
+            "missing-item-sam",
+            "missing-item-taylor"
+          ]
+        },
+        {
+          "id": "missing-item-sam",
+          "component": "ListItem",
+          "title": "Sam Vance (QA Lead)",
+          "subtitle": "Has not posted update for Thursday, Oct 24",
+          "actionLabel": "Send Reminder"
+        },
+        {
+          "id": "missing-item-taylor",
+          "component": "ListItem",
+          "title": "Taylor Swift (Fullstack Engineer)",
+          "subtitle": "Has not posted update for Thursday, Oct 24",
+          "actionLabel": "Send Reminder"
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>

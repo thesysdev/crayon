@@ -1,0 +1,54 @@
+root = Card([header, mainGrid, workoutLogSection, followUps], "card", "column", "l")
+
+header = CardHeader("Daily Fitness Summary", "Thursday, October 24 • Keep up the momentum!")
+
+mainGrid = Card([statsRow, weeklySection], "clear", "column", "m")
+
+statsRow = Card([stepsCard, calsCard], "clear", "row", "m", "stretch")
+
+stepsCard = Card([stepsTitle, stepsProgress, stepsBadge], "sunk", "column", "s", "center")
+stepsTitle = TextContent("Step Count Today", "small-heavy")
+stepsProgress = Progress(8420, "8,420 / 10,000 steps")
+stepsBadge = Badge("84% of Daily Goal", "secondary")
+
+calsCard = Card([calsTitle, calsVal, calsSub], "sunk", "column", "xs", "center")
+calsTitle = TextContent("Calories Burned", "small-heavy")
+calsVal = Heading("645 kcal", "h2")
+calsSub = TextContent("Active: 480 kcal • Resting: 165 kcal", "small")
+
+weeklySection = Card([weeklyHeader, weeklyChart], "sunk", "column", "s")
+weeklyHeader = CardHeader("Past 7 Days Activity", "Calories burned per day")
+weeklyChart = BarChart(["Fri", "Sat", "Sun", "Mon", "Tue", "Wed", "Thu"], [calsSeries, stepsSeries], "grouped", "Day", "Amount")
+calsSeries = Series("Calories (kcal)", [520, 710, 430, 680, 590, 810, 645])
+stepsSeries = Series("Steps (x10)", [750, 1020, 610, 940, 820, 1150, 842])
+
+workoutLogSection = Card([logHeader, logForm], "card", "column", "m")
+logHeader = CardHeader("Log a New Workout", "Record your latest session")
+
+logForm = Form("log_workout", formButtons, [typeField, durationField, calsField, intensityField])
+
+typeField = FormControl("Workout Type", typeSelect)
+typeSelect = Select("workout_type", [type1, type2, type3, type4, type5], "Select activity")
+type1 = SelectItem("running", "Running")
+type2 = SelectItem("cycling", "Cycling")
+type3 = SelectItem("swimming", "Swimming")
+type4 = SelectItem("weightlifting", "Strength Training")
+type5 = SelectItem("yoga", "Yoga / Mobility")
+
+durationField = FormControl("Duration (minutes)", durationInput)
+durationInput = Input("duration", "45", "number")
+
+calsField = FormControl("Estimated Calories Burned", calsInput, "Optional - auto-calculated if left blank")
+calsInput = Input("calories", "300", "number")
+
+intensityField = FormControl("Intensity Level", intensitySlider)
+intensitySlider = Slider("intensity", "discrete", 1, 5, 1, [3], "Perceived Effort (1-5)")
+
+formButtons = Buttons([submitWorkout, resetBtn])
+submitWorkout = Button("Log Workout", null, "primary")
+resetBtn = Button("Clear Form", null, "tertiary")
+
+followUps = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("View detailed heart rate trends")
+fu2 = FollowUpItem("Set a new daily step goal")
+fu3 = FollowUpItem("Export weekly workout summary")

@@ -1,0 +1,163 @@
+Here's a complete low-inventory warning screen that covers all four requirements:
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "low-inventory-view",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": {
+        "primaryColor": "#E65100",
+        "agentDisplayName": "Inventory Manager"
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "low-inventory-view",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "children": ["header", "search-section", "threshold-callout", "separator-1", "table-section", "footer-note"],
+          "direction": "column",
+          "gap": "m"
+        },
+        {
+          "id": "header",
+          "component": "CardHeader",
+          "title": "⚠️ Low Inventory Alert",
+          "subtitle": "Items below the minimum stock threshold require attention"
+        },
+        {
+          "id": "search-section",
+          "component": "Card",
+          "variant": "sunk",
+          "children": ["search-form"],
+          "direction": "column",
+          "gap": "s"
+        },
+        {
+          "id": "search-form",
+          "component": "Form",
+          "name": "search-inventory",
+          "fields": ["search-input-control"],
+          "buttons": "search-buttons"
+        },
+        {
+          "id": "search-input-control",
+          "component": "FormControl",
+          "label": "Search Items",
+          "input": "search-input",
+          "hint": "Filter by item name, SKU, or category"
+        },
+        {
+          "id": "search-input",
+          "component": "Input",
+          "name": "search_query",
+          "type": "text",
+          "placeholder": "e.g. Wireless Mouse, SKU-4402…"
+        },
+        {
+          "id": "search-buttons",
+          "component": "Buttons",
+          "buttons": ["search-btn"],
+          "direction": "row"
+        },
+        {
+          "id": "search-btn",
+          "component": "Button",
+          "label": "Search",
+          "variant": "primary",
+          "size": "medium"
+        },
+        {
+          "id": "threshold-callout",
+          "component": "Callout",
+          "variant": "warning",
+          "title": "Warning Threshold: 10 units",
+          "description": "Any item with 10 or fewer remaining units triggers this low-inventory alert. Threshold is configurable in Settings → Inventory Rules."
+        },
+        {
+          "id": "separator-1",
+          "component": "Separator",
+          "orientation": "horizontal",
+          "decorative": true
+        },
+        {
+          "id": "table-section",
+          "component": "Card",
+          "variant": "clear",
+          "children": ["inventory-table"],
+          "direction": "column",
+          "gap": "s"
+        },
+        {
+          "id": "inventory-table",
+          "component": "Table",
+          "columns": ["col-item", "col-sku", "col-category", "col-remaining", "col-status", "col-action"]
+        },
+        {
+          "id": "col-item",
+          "component": "Col",
+          "label": "Item Name",
+          "type": "string",
+          "data": ["Wireless Mouse", "USB-C Cable (2m)", "Mechanical Keyboard", "27\" Monitor Stand", "Webcam HD 1080p", "Laptop Sleeve 15\"", "HDMI Adapter", "Desk Lamp LED"]
+        },
+        {
+          "id": "col-sku",
+          "component": "Col",
+          "label": "SKU",
+          "type": "string",
+          "data": ["SKU-1042", "SKU-2287", "SKU-3315", "SKU-4402", "SKU-5519", "SKU-6623", "SKU-7734", "SKU-8841"]
+        },
+        {
+          "id": "col-category",
+          "component": "Col",
+          "label": "Category",
+          "type": "string",
+          "data": ["Peripherals", "Cables", "Peripherals", "Accessories", "Peripherals", "Accessories", "Adapters", "Lighting"]
+        },
+        {
+          "id": "col-remaining",
+          "component": "Col",
+          "label": "Remaining",
+          "type": "number",
+          "data": [3, 7, 2, 5, 8, 1, 6, 4]
+        },
+        {
+          "id": "col-status",
+          "component": "Col",
+          "label": "Status",
+          "type": "string",
+          "data": ["🔴 Critical", "🟡 Low", "🔴 Critical", "🟡 Low", "🟡 Low", "🔴 Critical", "🟡 Low", "🟡 Low"]
+        },
+        {
+          "id": "col-action",
+          "component": "Col",
+          "label": "Reorder",
+          "type": "action",
+          "data": ["Reorder", "Reorder", "Reorder", "Reorder", "Reorder", "Reorder", "Reorder", "Reorder"]
+        },
+        {
+          "id": "footer-note",
+          "component": "TextContent",
+          "text": "**8 items** are currently below the threshold of **10 units**. Last inventory sync: 2 minutes ago.",
+          "size": "small"
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+This screen covers all four requirements:
+
+| # | Requirement | How It's Covered |
+|---|---|---|
+| 1 | **Items running low + remaining units** | The table lists 8 items with their names, SKUs, categories, and exact remaining unit counts (all ≤ 10). |
+| 2 | **Way to reorder each item** | The "Reorder" action column provides a per-row reorder button for every item. |
+| 3 | **Threshold that triggers the warning** | A prominent warning callout states the threshold is **10 units** and notes it's configurable. |
+| 4 | **Way to search items** | A search form at the top lets users filter by item name, SKU, or category. |

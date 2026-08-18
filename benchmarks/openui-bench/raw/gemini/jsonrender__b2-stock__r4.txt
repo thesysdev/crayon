@@ -1,0 +1,30 @@
+{"op":"add","path":"/root","value":"main-container"}
+{"op":"add","path":"/elements/main-container","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["header","callout-banner","controls-card","inventory-list"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Low Inventory Management","subtitle":"Monitor stock levels, adjust warning thresholds, and place quick reorders."},"children":[]}}
+{"op":"add","path":"/elements/callout-banner","value":{"type":"Alert","props":{"title":"Action Required: Low Stock Items Detected","description":"Several items have fallen below the threshold. Reorder now to prevent stockouts during peak sales.","variant":"warning"},"children":[]}}
+{"op":"add","path":"/elements/controls-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["controls-row"]}}
+{"op":"add","path":"/elements/controls-row","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["search-control","threshold-control"]}}
+{"op":"add","path":"/elements/search-control","value":{"type":"FormControl","props":{"label":"Search Inventory","input":"search-input","hint":"Filter by item name or SKU"},"children":[]}}
+{"op":"add","path":"/elements/search-input","value":{"type":"Input","props":{"name":"search","placeholder":"e.g. Wireless Mouse, SKU-102...","value":{"$bindState":"/searchQuery"}},"children":[]}}
+{"op":"add","path":"/elements/threshold-control","value":{"type":"FormControl","props":{"label":{"$template":"Alert Threshold: ${/threshold} units"},"input":"threshold-slider","hint":"Items at or below this stock level will trigger warnings"},"children":[]}}
+{"op":"add","path":"/elements/threshold-slider","value":{"type":"Slider","props":{"name":"threshold","variant":"discrete","min":5,"max":50,"step":5,"value":{"$bindState":"/threshold"}},"children":[]}}
+{"op":"add","path":"/elements/inventory-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"repeat":{"statePath":"/inventory","key":"id"},"children":["inventory-item-card"]}}
+{"op":"add","path":"/elements/inventory-item-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["item-top-row","item-bottom-row"]}}
+{"op":"add","path":"/elements/item-top-row","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center","justify":"between"},"children":["item-info","stock-status"]}}
+{"op":"add","path":"/elements/item-info","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"children":["item-title","item-sku"]}}
+{"op":"add","path":"/elements/item-title","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/item-sku","value":{"type":"TextContent","props":{"text":{"$template":"SKU: ${sku} • Category: ${category}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/stock-status","value":{"type":"Card","props":{"direction":"row","gap":"xs","align":"center"},"children":["stock-badge","stock-count"]}}
+{"op":"add","path":"/elements/stock-badge","value":{"type":"Badge","props":{"text":{"$item":"status"},"variant":{"$cond":{"$state":"/inventory/0/units","lt":10},"$then":"destructive","$else":"secondary"}},"children":[]}}
+{"op":"add","path":"/elements/stock-count","value":{"type":"TextContent","props":{"text":{"$template":"${units} units left"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/item-bottom-row","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center","justify":"between"},"children":["supplier-info","reorder-button"]}}
+{"op":"add","path":"/elements/supplier-info","value":{"type":"TextContent","props":{"text":{"$template":"Supplier: ${supplier} (Lead time: ${leadTime})"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/reorder-button","value":{"type":"Button","props":{"label":{"$template":"Reorder ${reorderQty} Units"},"variant":"primary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/reorderSuccess","value":true}}},"children":[]}}
+{"op":"add","path":"/state/searchQuery","value":""}
+{"op":"add","path":"/state/threshold","value":[15]}
+{"op":"add","path":"/state/reorderSuccess","value":false}
+{"op":"add","path":"/state/inventory","value":[]}
+{"op":"add","path":"/state/inventory/0","value":{"id":"1","name":"Ergonomic Mechanical Keyboard","sku":"KB-8821","category":"Electronics","units":4,"status":"Critical Low","supplier":"TechGear Logistics","leadTime":"2 days","reorderQty":50}}
+{"op":"add","path":"/state/inventory/1","value":{"id":"2","name":"Ultra-Wide Monitor 34\"","sku":"MON-3400","category":"Electronics","units":7,"status":"Low Stock","supplier":"DisplayCorp","leadTime":"5 days","reorderQty":20}}
+{"op":"add","path":"/state/inventory/2","value":{"id":"3","name":"Wireless Noise-Canceling Headphones","sku":"AUD-9920","category":"Audio","units":12,"status":"Warning","supplier":"SoundWave Inc","leadTime":"3 days","reorderQty":30}}
+{"op":"add","path":"/state/inventory/3","value":{"id":"4","name":"USB-C Multi-Port Docking Station","sku":"ACC-1044","category":"Accessories","units":2,"status":"Critical Low","supplier":"ConnectTech","leadTime":"1 day","reorderQty":100}}

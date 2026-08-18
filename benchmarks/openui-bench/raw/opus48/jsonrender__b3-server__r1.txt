@@ -1,0 +1,54 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","region-filter","top-metrics","charts","incidents-section","endpoints-section","alert-section"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Service Health — Payments API","subtitle":"On-call dashboard · Live status overview"}}}
+{"op":"add","path":"/elements/region-filter","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center"},"children":["region-label","region-select"]}}
+{"op":"add","path":"/elements/region-label","value":{"type":"Label","props":{"text":"Region"}}}
+{"op":"add","path":"/elements/region-select","value":{"type":"Select","props":{"name":"region","placeholder":"Select region","value":{"$bindState":"/region"},"items":["r-all","r-us-east","r-us-west","r-eu","r-apac"]},"children":["r-all","r-us-east","r-us-west","r-eu","r-apac"]}}
+{"op":"add","path":"/elements/r-all","value":{"type":"SelectItem","props":{"value":"all","label":"All regions"}}}
+{"op":"add","path":"/elements/r-us-east","value":{"type":"SelectItem","props":{"value":"us-east","label":"US East"}}}
+{"op":"add","path":"/elements/r-us-west","value":{"type":"SelectItem","props":{"value":"us-west","label":"US West"}}}
+{"op":"add","path":"/elements/r-eu","value":{"type":"SelectItem","props":{"value":"eu","label":"EU"}}}
+{"op":"add","path":"/elements/r-apac","value":{"type":"SelectItem","props":{"value":"apac","label":"APAC"}}}
+{"op":"add","path":"/state/region","value":"all"}
+{"op":"add","path":"/elements/top-metrics","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"children":["uptime-card","errorrate-card"]}}
+{"op":"add","path":"/elements/uptime-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["uptime-title","uptime-value","uptime-progress"]}}
+{"op":"add","path":"/elements/uptime-title","value":{"type":"TextContent","props":{"text":"Uptime — This Quarter","size":"small-heavy"}}}
+{"op":"add","path":"/elements/uptime-value","value":{"type":"Heading","props":{"text":{"$template":"${/uptime/percent}%"},"level":"h1"}}}
+{"op":"add","path":"/elements/uptime-progress","value":{"type":"Progress","props":{"value":{"$state":"/uptime/percent"},"label":{"$template":"SLA target ${/uptime/target}%"}}}}
+{"op":"add","path":"/state/uptime","value":{"percent":99.97,"target":99.9}}
+{"op":"add","path":"/elements/errorrate-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["errorrate-title","errorrate-value","errorrate-badge"]}}
+{"op":"add","path":"/elements/errorrate-title","value":{"type":"TextContent","props":{"text":"Error Rate — Now","size":"small-heavy"}}}
+{"op":"add","path":"/elements/errorrate-value","value":{"type":"Heading","props":{"text":{"$template":"${/errorRate/current}%"},"level":"h1"}}}
+{"op":"add","path":"/elements/errorrate-badge","value":{"type":"Badge","props":{"text":"Elevated (5xx)","variant":"destructive"}}}
+{"op":"add","path":"/state/errorRate","value":{"current":1.42}}
+{"op":"add","path":"/elements/charts","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["charts-heading","usage-chart"]}}
+{"op":"add","path":"/elements/charts-heading","value":{"type":"Heading","props":{"text":"CPU & Memory — Past 24h","level":"h3"}}}
+{"op":"add","path":"/elements/usage-chart","value":{"type":"LineChart","props":{"labels":["00:00","03:00","06:00","09:00","12:00","15:00","18:00","21:00","Now"],"series":["cpu-series","mem-series"],"variant":"natural","xLabel":"Time","yLabel":"% Utilization"},"children":["cpu-series","mem-series"]}}
+{"op":"add","path":"/elements/cpu-series","value":{"type":"Series","props":{"category":"CPU %","values":[42,38,35,55,68,72,64,58,61]}}}
+{"op":"add","path":"/elements/mem-series","value":{"type":"Series","props":{"category":"Memory %","values":[55,54,53,60,66,70,71,69,72]}}}
+{"op":"add","path":"/elements/incidents-section","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["incidents-heading","incidents-list"]}}
+{"op":"add","path":"/elements/incidents-heading","value":{"type":"Heading","props":{"text":"Open Incidents","level":"h3"}}}
+{"op":"add","path":"/elements/incidents-list","value":{"type":"Card","props":{"direction":"column","gap":"s"},"repeat":{"statePath":"/incidents","key":"id"},"children":["incident-row"]}}
+{"op":"add","path":"/elements/incident-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between"},"children":["incident-info","incident-sev","incident-ack"]}}
+{"op":"add","path":"/elements/incident-info","value":{"type":"Card","props":{"direction":"column","gap":"none"},"children":["incident-title","incident-meta"]}}
+{"op":"add","path":"/elements/incident-title","value":{"type":"TextContent","props":{"text":{"$item":"title"},"size":"default"}}}
+{"op":"add","path":"/elements/incident-meta","value":{"type":"TextContent","props":{"text":{"$template":"${region} · opened ${opened} · ${status}"},"size":"small"}}}
+{"op":"add","path":"/elements/incident-sev","value":{"type":"Tag","props":{"text":{"$item":"severity"},"variant":{"$item":"sevVariant"},"size":"md"}}}
+{"op":"add","path":"/elements/incident-ack","value":{"type":"Button","props":{"label":{"$cond":{"$item":"acknowledged"},"$then":"Acknowledged","$else":"Acknowledge"},"variant":"primary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":{"$item":"acknowledged"},"value":true}}}}}
+{"op":"add","path":"/state/incidents","value":[]}
+{"op":"add","path":"/state/incidents/0","value":{"id":"INC-4821","title":"Payment gateway timeouts","region":"us-east","opened":"14m ago","status":"Investigating","severity":"SEV1","sevVariant":"danger","acknowledged":false}}
+{"op":"add","path":"/state/incidents/1","value":{"id":"INC-4818","title":"Elevated 5xx on checkout","region":"eu","opened":"38m ago","status":"Identified","severity":"SEV2","sevVariant":"warning","acknowledged":false}}
+{"op":"add","path":"/state/incidents/2","value":{"id":"INC-4805","title":"Cache node replication lag","region":"apac","opened":"1h 12m ago","status":"Monitoring","severity":"SEV3","sevVariant":"info","acknowledged":true}}
+{"op":"add","path":"/elements/endpoints-section","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["endpoints-heading","endpoints-table"]}}
+{"op":"add","path":"/elements/endpoints-heading","value":{"type":"Heading","props":{"text":"Slowest Endpoints (p95 latency)","level":"h3"}}}
+{"op":"add","path":"/elements/endpoints-table","value":{"type":"Table","props":{"columns":["col-endpoint","col-latency","col-calls"]},"children":["col-endpoint","col-latency","col-calls"]}}
+{"op":"add","path":"/elements/col-endpoint","value":{"type":"Col","props":{"label":"Endpoint","type":"string","data":["POST /v1/charges","GET /v1/balance","POST /v1/refunds","GET /v1/customers","POST /v1/payouts"]}}}
+{"op":"add","path":"/elements/col-latency","value":{"type":"Col","props":{"label":"p95 Latency (ms)","type":"number","data":[1840,1420,1190,970,880]}}}
+{"op":"add","path":"/elements/col-calls","value":{"type":"Col","props":{"label":"Calls/min","type":"number","data":[3200,5400,880,2100,640]}}}
+{"op":"add","path":"/elements/alert-section","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["alert-heading","alert-slider","alert-current","alert-save"]}}
+{"op":"add","path":"/elements/alert-heading","value":{"type":"Heading","props":{"text":"Alert Threshold","level":"h3"}}}
+{"op":"add","path":"/elements/alert-slider","value":{"type":"Slider","props":{"name":"threshold","variant":"discrete","min":0,"max":10,"step":0.5,"label":"Error rate alert (%)","value":{"$bindState":"/alertThreshold"},"defaultValue":[2]}}}
+{"op":"add","path":"/elements/alert-current","value":{"type":"TextContent","props":{"text":{"$template":"Notify on-call when error rate exceeds ${/alertThreshold}%"},"size":"small"}}}
+{"op":"add","path":"/state/alertThreshold","value":2}
+{"op":"add","path":"/elements/alert-save","value":{"type":"Button","props":{"label":"Save Threshold","variant":"primary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/alertSaved","value":true}}}}}
+{"op":"add","path":"/state/alertSaved","value":false}

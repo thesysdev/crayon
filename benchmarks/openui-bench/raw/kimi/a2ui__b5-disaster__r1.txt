@@ -1,0 +1,202 @@
+Here is a comprehensive emergency response coordination dashboard covering all 18 requirements, organized into tabs.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "erc-dashboard",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#D93025",
+      "agentDisplayName": "Emergency Response Coordination Center"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "erc-dashboard",
+    "components": [
+      { "id": "root", "component": "Card", "variant": "clear", "children": ["header", "alert1", "tabs"] },
+      { "id": "header", "component": "CardHeader", "title": "🚨 Emergency Response Coordination Center", "subtitle": "Regional Disaster Response — Live Operations Dashboard" },
+      { "id": "alert1", "component": "Alert", "variant": "destructive", "title": "SEVERE WEATHER WARNING", "description": "Flash flood watch in effect for Zones B and D until 06:00 tomorrow. All field teams exercise caution." },
+
+      { "id": "tabs", "component": "Tabs", "items": ["tabOverview", "tabIncidents", "tabResources", "tabShelters", "tabRoutes", "tabComms", "tabPeople", "tabActions"] },
+
+      { "id": "tabOverview", "component": "TabItem", "value": "overview", "trigger": "Overview", "content": ["sevSummary", "rescuedCard", "donationsCard", "weatherCard"] },
+      { "id": "sevSummary", "component": "Card", "children": ["sevHeader", "sevChart"] },
+      { "id": "sevHeader", "component": "CardHeader", "title": "Overall Severity Summary", "subtitle": "Incidents by severity level across all zones" },
+      { "id": "sevChart", "component": "PieChart", "variant": "donut", "labels": ["Critical", "High", "Moderate", "Low"], "values": [4, 7, 9, 5] },
+      { "id": "rescuedCard", "component": "Card", "children": ["rescuedHeader", "rescuedTable"] },
+      { "id": "rescuedHeader", "component": "CardHeader", "title": "Rescues & Casualties (Cumulative)", "subtitle": "Since operation start" },
+      { "id": "rescuedTable", "component": "Table", "columns": ["rcCol1", "rcCol2"] },
+      { "id": "rcCol1", "component": "Col", "label": "Metric", "data": ["People Rescued", "Injured (treated)", "Casualties (confirmed)", "Missing (active search)"] },
+      { "id": "rcCol2", "component": "Col", "label": "Count", "type": "number", "data": [312, 148, 23, 11] },
+      { "id": "donationsCard", "component": "Card", "children": ["donHeader", "donChart"] },
+      { "id": "donHeader", "component": "CardHeader", "title": "Donations Received", "subtitle": "By category (USD equivalent)" },
+      { "id": "donChart", "component": "BarChart", "labels": ["Cash", "Food", "Water", "Medical", "Clothing", "Equipment"], "series": ["donSeries1"], "yLabel": "USD" },
+      { "id": "donSeries1", "component": "Series", "category": "Donations", "values": [185000, 62000, 41000, 78000, 23000, 54000] },
+      { "id": "weatherCard", "component": "Card", "children": ["wxHeader", "wxTable"] },
+      { "id": "wxHeader", "component": "CardHeader", "title": "48-Hour Weather Forecast", "subtitle": "Regional operations area" },
+      { "id": "wxTable", "component": "Table", "columns": ["wxCol1", "wxCol2", "wxCol3", "wxCol4"] },
+      { "id": "wxCol1", "component": "Col", "label": "Period", "data": ["Now – 12h", "12 – 24h", "24 – 36h", "36 – 48h"] },
+      { "id": "wxCol2", "component": "Col", "label": "Condition", "data": ["Heavy rain", "Thunderstorms", "Rain easing", "Overcast, windy"] },
+      { "id": "wxCol3", "component": "Col", "label": "Temp (°C)", "type": "number", "data": [18, 16, 15, 14] },
+      { "id": "wxCol4", "component": "Col", "label": "Flood Risk", "data": ["High", "Severe", "Moderate", "Low"] },
+
+      { "id": "tabIncidents", "component": "TabItem", "value": "incidents", "trigger": "Incidents & Zones", "content": ["incidentsCard", "zoneFocusCard", "tasksCard", "aidReqCard"] },
+      { "id": "incidentsCard", "component": "Card", "children": ["incHeader", "incTable"] },
+      { "id": "incHeader", "component": "CardHeader", "title": "Active Incidents by Zone", "subtitle": "25 active incidents across 5 zones" },
+      { "id": "incTable", "component": "Table", "columns": ["incCol1", "incCol2", "incCol3", "incCol4"] },
+      { "id": "incCol1", "component": "Col", "label": "Zone", "data": ["Zone A", "Zone A", "Zone B", "Zone B", "Zone C", "Zone C", "Zone D", "Zone D", "Zone E"] },
+      { "id": "incCol2", "component": "Col", "label": "Incident", "data": ["Building collapse", "Gas leak", "Flash flooding", "Bridge damage", "Landslide", "Power outage", "River overflow", "Trapped families", "Fire (contained)"] },
+      { "id": "incCol3", "component": "Col", "label": "Severity", "data": ["Critical", "High", "Critical", "High", "Critical", "Moderate", "Critical", "High", "Low"] },
+      { "id": "incCol4", "component": "Col", "label": "Status", "data": ["Rescue ongoing", "Contained", "Evacuating", "Assessing", "Search ongoing", "Repair crews on-site", "Evacuating", "Rescue ongoing", "Monitoring"] },
+      { "id": "zoneFocusCard", "component": "Card", "children": ["zfHeader", "zfSelect"] },
+      { "id": "zfHeader", "component": "CardHeader", "title": "Focus on a Zone", "subtitle": "Select a zone to filter all views and operations" },
+      { "id": "zfSelect", "component": "Select", "name": "focusZone", "placeholder": "Choose zone to focus…", "items": ["zfA", "zfB", "zfC", "zfD", "zfE", "zfAll"] },
+      { "id": "zfA", "component": "SelectItem", "value": "zone-a", "label": "Zone A — North District" },
+      { "id": "zfB", "component": "SelectItem", "value": "zone-b", "label": "Zone B — Riverside" },
+      { "id": "zfC", "component": "SelectItem", "value": "zone-c", "label": "Zone C — Hillcrest" },
+      { "id": "zfD", "component": "SelectItem", "value": "zone-d", "label": "Zone D — Lowlands" },
+      { "id": "zfE", "component": "SelectItem", "value": "zone-e", "label": "Zone E — East Industrial" },
+      { "id": "zfAll", "component": "SelectItem", "value": "all", "label": "All Zones" },
+      { "id": "tasksCard", "component": "Card", "children": ["taskHeader", "taskTable"] },
+      { "id": "taskHeader", "component": "CardHeader", "title": "Open Tasks", "subtitle": "With current assignee" },
+      { "id": "taskTable", "component": "Table", "columns": ["tCol1", "tCol2", "tCol3"] },
+      { "id": "tCol1", "component": "Col", "label": "Task", "data": ["Clear debris on Hwy 9", "Set up field triage at Shelter 2", "Deliver water to Zone D", "Inspect Bridge 4 structural integrity", "Restore comms relay tower 3"] },
+      { "id": "tCol2", "component": "Col", "label": "Assignee", "data": ["Eng. Team Bravo", "Medical Unit 5", "Logistics — R. Alvarez", "Structural Eng. — K. Osei", "Comms — T. Nguyen"] },
+      { "id": "tCol3", "component": "Col", "label": "Priority", "data": ["High", "Critical", "Critical", "High", "Moderate"] },
+      { "id": "aidReqCard", "component": "Card", "children": ["arHeader", "arTable"] },
+      { "id": "arHeader", "component": "CardHeader", "title": "Aid Requests Awaiting Action", "subtitle": "Unassigned incoming requests" },
+      { "id": "arTable", "component": "Table", "columns": ["arCol1", "arCol2", "arCol3"] },
+      { "id": "arCol1", "component": "Col", "label": "Request", "data": ["Insulin & medical supplies", "Baby formula & diapers", "Rescue boat — 12 trapped", "Blankets (200 units)", "Generator for clinic"] },
+      { "id": "arCol2", "component": "Col", "label": "Location", "data": ["Zone B — Shelter 1", "Zone D — Community Hall", "Zone D — Elm St.", "Zone C — Shelter 3", "Zone A — St. Mary's Clinic"] },
+      { "id": "arCol3", "component": "Col", "label": "Urgency", "data": ["Critical", "High", "Critical", "Moderate", "High"] },
+
+      { "id": "tabResources", "component": "TabItem", "value": "resources", "trigger": "Resources", "content": ["resCard", "hospCard", "reqResCard"] },
+      { "id": "resCard", "component": "Card", "children": ["resHeader", "resChart"] },
+      { "id": "resHeader", "component": "CardHeader", "title": "Available Resources", "subtitle": "Vehicles, personnel and supplies currently deployable" },
+      { "id": "resChart", "component": "HorizontalBarChart", "labels": ["Ambulances", "Rescue Trucks", "Boats", "Helicopters", "Medics", "Firefighters", "Engineers", "Water (1000L)", "Food Rations (100s)", "Tents"], "series": ["resSeries1"], "xLabel": "Units available" },
+      { "id": "resSeries1", "component": "Series", "category": "Available", "values": [14, 22, 8, 2, 96, 140, 45, 320, 1500, 600] },
+      { "id": "hospCard", "component": "Card", "children": ["hospHeader", "hospTable"] },
+      { "id": "hospHeader", "component": "CardHeader", "title": "Nearby Hospitals — Free Beds", "subtitle": "Updated 15 minutes ago" },
+      { "id": "hospTable", "component": "Table", "columns": ["hCol1", "hCol2", "hCol3"] },
+      { "id": "hCol1", "component": "Col", "label": "Hospital", "data": ["Central General", "St. Mary's", "Riverside Medical", "Northgate Trauma Center"] },
+      { "id": "hCol2", "component": "Col", "label": "Free Beds", "type": "number", "data": [42, 18, 7, 25] },
+      { "id": "hCol3", "component": "Col", "label": "ICU Free", "type": "number", "data": [6, 2, 0, 4] },
+      { "id": "reqResCard", "component": "Card", "children": ["rrHeader", "rrForm"] },
+      { "id": "rrHeader", "component": "CardHeader", "title": "Request More Resources", "subtitle": "Submit a resource requisition to regional command" },
+      { "id": "rrForm", "component": "Form", "name": "resourceRequest", "fields": ["rrTypeCtl", "rrQtyCtl"], "buttons": "rrButtons" },
+      { "id": "rrTypeCtl", "component": "FormControl", "label": "Resource Type", "input": "rrType" },
+      { "id": "rrType", "component": "Select", "name": "resourceType", "placeholder": "Select resource…", "items": ["rrT1", "rrT2", "rrT3", "rrT4", "rrT5", "rrT6"] },
+      { "id": "rrT1", "component": "SelectItem", "value": "vehicles", "label": "Vehicles" },
+      { "id": "rrT2", "component": "SelectItem", "value": "personnel", "label": "Personnel" },
+      { "id": "rrT3", "component": "SelectItem", "value": "medical", "label": "Medical Supplies" },
+      { "id": "rrT4", "component": "SelectItem", "value": "food-water", "label": "Food & Water" },
+      { "id": "rrT5", "component": "SelectItem", "value": "shelter", "label": "Shelter Materials" },
+      { "id": "rrT6", "component": "SelectItem", "value": "equipment", "label": "Heavy Equipment" },
+      { "id": "rrQtyCtl", "component": "FormControl", "label": "Quantity", "input": "rrQty", "hint": "Number of units requested" },
+      { "id": "rrQty", "component": "Input", "name": "quantity", "type": "number", "placeholder": "e.g. 10" },
+      { "id": "rrButtons", "component": "Buttons", "buttons": ["rrSubmit"] },
+      { "id": "rrSubmit", "component": "Button", "label": "Submit Request", "variant": "primary" },
+
+      { "id": "tabShelters", "component": "TabItem", "value": "shelters", "trigger": "Shelters", "content": ["shelterCard"] },
+      { "id": "shelterCard", "component": "Card", "children": ["shHeader", "shTable", "shChart"] },
+      { "id": "shHeader", "component": "CardHeader", "title": "Shelters — Capacity & Occupancy", "subtitle": "Live occupancy tracking" },
+      { "id": "shTable", "component": "Table", "columns": ["shCol1", "shCol2", "shCol3", "shCol4"] },
+      { "id": "shCol1", "component": "Col", "label": "Shelter", "data": ["Shelter 1 — Riverside School", "Shelter 2 — City Arena", "Shelter 3 — Hillcrest Church", "Shelter 4 — North Gym", "Shelter 5 — Expo Center"] },
+      { "id": "shCol2", "component": "Col", "label": "Capacity", "type": "number", "data": [400, 1200, 250, 500, 2000] },
+      { "id": "shCol3", "component": "Col", "label": "Occupancy", "type": "number", "data": [385, 940, 250, 310, 1120] },
+      { "id": "shCol4", "component": "Col", "label": "Status", "data": ["Near full", "Open", "FULL", "Open", "Open"] },
+      { "id": "shChart", "component": "BarChart", "variant": "grouped", "labels": ["Shelter 1", "Shelter 2", "Shelter 3", "Shelter 4", "Shelter 5"], "series": ["shS1", "shS2"], "yLabel": "People" },
+      { "id": "shS1", "component": "Series", "category": "Capacity", "values": [400, 1200, 250, 500, 2000] },
+      { "id": "shS2", "component": "Series", "category": "Occupancy", "values": [385, 940, 250, 310, 1120] },
+
+      { "id": "tabRoutes", "component": "TabItem", "value": "routes", "trigger": "Routes & Roads", "content": ["routeCard", "roadCard"] },
+      { "id": "routeCard", "component": "Card", "children": ["rtHeader", "rtTable"] },
+      { "id": "rtHeader", "component": "CardHeader", "title": "Evacuation Route Status", "subtitle": "All designated evacuation corridors" },
+      { "id": "rtTable", "component": "Table", "columns": ["rtCol1", "rtCol2", "rtCol3"] },
+      { "id": "rtCol1", "component": "Col", "label": "Route", "data": ["Route 1 — Hwy 9 North", "Route 2 — River Rd", "Route 3 — Hillcrest Pass", "Route 4 — Industrial Pkwy", "Route 5 — Old Mill Rd"] },
+      { "id": "rtCol2", "component": "Col", "label": "Status", "data": ["OPEN", "CLOSED — flooding", "OPEN — one lane", "OPEN", "CLOSED — landslide"] },
+      { "id": "rtCol3", "component": "Col", "label": "Congestion", "data": ["Heavy", "N/A", "Moderate", "Light", "N/A"] },
+      { "id": "roadCard", "component": "Card", "children": ["rdHeader", "rdList"] },
+      { "id": "rdHeader", "component": "CardHeader", "title": "Roads Closed", "subtitle": "Current closures affecting operations" },
+      { "id": "rdList", "component": "ListBlock", "variant": "number", "items": ["rd1", "rd2", "rd3", "rd4"] },
+      { "id": "rd1", "component": "ListItem", "title": "River Rd (Bridge 2 approach)", "subtitle": "Flooded — impassable since 04:30" },
+      { "id": "rd2", "component": "ListItem", "title": "Old Mill Rd", "subtitle": "Landslide debris — clearance in progress" },
+      { "id": "rd3", "component": "ListItem", "title": "Elm St. (Zone D)", "subtitle": "Deep water — boat access only" },
+      { "id": "rd4", "component": "ListItem", "title": "Hwy 9 Southbound, km 12–15", "subtitle": "Fallen power lines — utility crew on-site" },
+
+      { "id": "tabComms", "component": "TabItem", "value": "comms", "trigger": "Comms", "content": ["commsCard", "broadcastCard", "sitrepCard"] },
+      { "id": "commsCard", "component": "Card", "children": ["cmHeader", "cmTable"] },
+      { "id": "cmHeader", "component": "CardHeader", "title": "Communication Channels", "subtitle": "Operational status of each channel" },
+      { "id": "cmTable", "component": "Table", "columns": ["cmCol1", "cmCol2"] },
+      { "id": "cmCol1", "component": "Col", "label": "Channel", "data": ["VHF Radio Net 1", "VHF Radio Net 2", "Satellite Uplink", "Cellular (Priority)", "Mesh Network", "Public Broadcast (AM 720)"] },
+      { "id": "cmCol2", "component": "Col", "label": "Status", "data": ["UP", "UP", "UP", "DEGRADED", "DOWN — relay 3 out", "UP"] },
+      { "id": "broadcastCard", "component": "Card", "children": ["bcHeader", "bcForm"] },
+      { "id": "bcHeader", "component": "CardHeader", "title": "Broadcast an Update", "subtitle": "Send a message to all field teams and channels" },
+      { "id": "bcForm", "component": "Form", "name": "broadcast", "fields": ["bcMsgCtl"], "buttons": "bcButtons" },
+      { "id": "bcMsgCtl", "component": "FormControl", "label": "Message", "input": "bcMsg" },
+      { "id": "bcMsg", "component": "TextArea", "name": "message", "placeholder": "Type broadcast message…", "rows": 3 },
+      { "id": "bcButtons", "component": "Buttons", "buttons": ["bcSubmit"] },
+      { "id": "bcSubmit", "component": "Button", "label": "📢 Broadcast Now", "variant": "primary" },
+      { "id": "sitrepCard", "component": "Card", "children": ["srHeader", "srForm"] },
+      { "id": "srHeader", "component": "CardHeader", "title": "File a Situation Report (SITREP)", "subtitle": "Formal report to regional command" },
+      { "id": "srForm", "component": "Form", "name": "sitrep", "fields": ["srZoneCtl", "srReportCtl"], "buttons": "srButtons" },
+      { "id": "srZoneCtl", "component": "FormControl", "label": "Zone", "input": "srZone" },
+      { "id": "srZone", "component": "Select", "name": "sitrepZone", "placeholder": "Select zone…", "items": ["srZ1", "srZ2", "srZ3", "srZ4", "srZ5", "srZ6"] },
+      { "id": "srZ1", "component": "SelectItem", "value": "zone-a", "label": "Zone A" },
+      { "id": "srZ2", "component": "SelectItem", "value": "zone-b", "label": "Zone B" },
+      { "id": "srZ3", "component": "SelectItem", "value": "zone-c", "label": "Zone C" },
+      { "id": "srZ4", "component": "SelectItem", "value": "zone-d", "label": "Zone D" },
+      { "id": "srZ5", "component": "SelectItem", "value": "zone-e", "label": "Zone E" },
+      { "id": "srZ6", "component": "SelectItem", "value": "region", "label": "Region-wide" },
+      { "id": "srReportCtl", "component": "FormControl", "label": "Situation Report", "input": "srReport" },
+      { "id": "srReport", "component": "TextArea", "name": "sitrepText", "placeholder": "Describe current situation, actions taken, needs…", "rows": 5 },
+      { "id": "srButtons", "component": "Buttons", "buttons": ["srSubmit"] },
+      { "id": "srSubmit", "component": "Button", "label": "File SITREP", "variant": "primary" },
+
+      { "id": "tabPeople", "component": "TabItem", "value": "people", "trigger": "Volunteers", "content": ["volCard"] },
+      { "id": "volCard", "component": "Card", "children": ["volHeader", "volTable"] },
+      { "id": "volHeader", "component": "CardHeader", "title": "Volunteers on Duty", "subtitle": "Currently checked-in volunteers and assignments" },
+      { "id": "volTable", "component": "Table", "columns": ["vCol1", "vCol2", "vCol3"] },
+      { "id": "vCol1", "component": "Col", "label": "Volunteer", "data": ["M. Chen", "S. Okafor", "L. Garcia", "P. Dubois", "A. Novak", "J. Smith", "R. Patel", "H. Kim"] },
+      { "id": "vCol2", "component": "Col", "label": "Assignment", "data": ["Shelter 2 intake", "Supply distribution — Zone C", "Boat rescue crew — Zone D", "Medical triage — Shelter 1", "Comms relay support", "Search team — Zone C", "Food kitchen — Shelter 5", "Transport shuttle driver"] },
+      { "id": "vCol3", "component": "Col", "label": "Shift Ends", "data": ["18:00", "20:00", "16:00", "22:00", "18:00", "17:00", "21:00", "19:00"] },
+
+      { "id": "tabActions", "component": "TabItem", "value": "actions", "trigger": "Quick Actions", "content": ["qaText", "qaFollowup"] },
+      { "id": "qaText", "component": "TextContent", "text": "Use the shortcuts below or the forms in other tabs to take action.", "size": "default" },
+      { "id": "qaFollowup", "component": "FollowUpBlock", "items": ["qa1", "qa2", "qa3", "qa4"] },
+      { "id": "qa1", "component": "FollowUpItem", "text": "Show all critical incidents only" },
+      { "id": "qa2", "component": "FollowUpItem", "text": "Request 5 additional ambulances" },
+      { "id": "qa3", "component": "FollowUpItem", "text": "Broadcast evacuation order for Zone D" },
+      { "id": "qa4", "component": "FollowUpItem", "text": "File SITREP for Zone B" }
+    ]
+  }
+}
+</a2ui-json>
+
+The dashboard covers all 18 items:
+
+1. **Incidents by zone with severity** — Incidents & Zones tab table
+2. **Overall severity summary** — donut chart on Overview
+3. **Vehicles, personnel, supplies** — Resources tab bar chart
+4. **Shelters with capacity/occupancy** — Shelters tab (table + chart)
+5. **Evacuation route status** — Routes & Roads tab
+6. **48-hour weather forecast** — Overview tab table
+7. **Rescued & casualties** — Overview tab metrics table
+8. **Volunteers on duty with assignments** — Volunteers tab
+9. **Donations received** — Overview tab bar chart
+10. **Aid requests awaiting action** — Incidents & Zones tab
+11. **Communication channels up/down** — Comms tab
+12. **Roads closed** — Routes & Roads tab list
+13. **Hospitals with free beds** — Resources tab
+14. **Open tasks with assignees** — Incidents & Zones tab
+15. **Request resources (type + quantity)** — form in Resources tab
+16. **Broadcast an update** — form in Comms tab
+17. **Focus on one zone** — zone selector in Incidents & Zones tab
+18. **File a situation report** — SITREP form in Comms tab

@@ -1,0 +1,342 @@
+Here's a comprehensive content studio dashboard covering all eight requirements.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "content-studio",
+      "catalogId": "thesys.dev:c1-openui"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "content-studio",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "l",
+          "children": ["header", "topActions", "filterCard", "metricsRow", "mostRead", "readershipChart", "draftsSection", "scheduleSection", "commentsSection"]
+        },
+        {
+          "id": "header",
+          "component": "CardHeader",
+          "title": "Content Studio",
+          "subtitle": "Manage drafts, schedules, and readership at a glance"
+        },
+        {
+          "id": "topActions",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": ["newDraftBtn"]
+        },
+        {
+          "id": "newDraftBtn",
+          "component": "Button",
+          "label": "＋ Start New Draft",
+          "variant": "primary",
+          "size": "medium",
+          "action": ["start_new_draft"]
+        },
+        {
+          "id": "filterCard",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "row",
+          "gap": "m",
+          "align": "end",
+          "children": ["categoryFilter", "applyFilterBtn"]
+        },
+        {
+          "id": "categoryFilter",
+          "component": "FormControl",
+          "label": "Narrow by Category",
+          "hint": "Filter all content below by topic",
+          "input": "categorySelect"
+        },
+        {
+          "id": "categorySelect",
+          "component": "Select",
+          "name": "category",
+          "placeholder": "All categories",
+          "size": "medium",
+          "items": ["catAll", "catTech", "catBusiness", "catCulture", "catOpinion", "catScience"]
+        },
+        { "id": "catAll", "component": "SelectItem", "value": "all", "label": "All Categories" },
+        { "id": "catTech", "component": "SelectItem", "value": "tech", "label": "Technology" },
+        { "id": "catBusiness", "component": "SelectItem", "value": "business", "label": "Business" },
+        { "id": "catCulture", "component": "SelectItem", "value": "culture", "label": "Culture" },
+        { "id": "catOpinion", "component": "SelectItem", "value": "opinion", "label": "Opinion" },
+        { "id": "catScience", "component": "SelectItem", "value": "science", "label": "Science" },
+        {
+          "id": "applyFilterBtn",
+          "component": "Button",
+          "label": "Apply Filter",
+          "variant": "secondary",
+          "size": "medium",
+          "action": ["apply_category_filter"]
+        },
+        {
+          "id": "metricsRow",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "children": ["publishedCard", "commentsMetricCard"]
+        },
+        {
+          "id": "publishedCard",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["publishedLabel", "publishedValue", "publishedBadge"]
+        },
+        { "id": "publishedLabel", "component": "TextContent", "text": "Published This Week", "size": "small" },
+        { "id": "publishedValue", "component": "Heading", "text": "12", "level": "h1" },
+        { "id": "publishedBadge", "component": "Badge", "text": "+3 vs last week", "variant": "secondary" },
+        {
+          "id": "commentsMetricCard",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["commentsMetricLabel", "commentsMetricValue", "commentsMetricBadge"]
+        },
+        { "id": "commentsMetricLabel", "component": "TextContent", "text": "Comments Awaiting Reply", "size": "small" },
+        { "id": "commentsMetricValue", "component": "Heading", "text": "8", "level": "h1" },
+        { "id": "commentsMetricBadge", "component": "Badge", "text": "Needs attention", "variant": "destructive" },
+        {
+          "id": "mostRead",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "children": ["mostReadHeader", "mostReadTitle", "mostReadStats", "mostReadTags"]
+        },
+        {
+          "id": "mostReadHeader",
+          "component": "CardHeader",
+          "title": "Most-Read This Month",
+          "subtitle": "Top performing article by unique readers"
+        },
+        { "id": "mostReadTitle", "component": "Heading", "text": "The Quiet Revolution in Local Journalism", "level": "h3" },
+        { "id": "mostReadStats", "component": "TextContent", "text": "**48,210** reads · **6:32** avg. time on page · **312** shares", "size": "default" },
+        { "id": "mostReadTags", "component": "TagBlock", "tags": ["Culture", "Featured", "Long-read"] },
+        {
+          "id": "readershipChart",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "children": ["readershipHeader", "readershipLine"]
+        },
+        {
+          "id": "readershipHeader",
+          "component": "CardHeader",
+          "title": "Readership — Past 30 Days",
+          "subtitle": "Daily unique readers"
+        },
+        {
+          "id": "readershipLine",
+          "component": "LineChart",
+          "variant": "natural",
+          "xLabel": "Day",
+          "yLabel": "Readers",
+          "labels": ["Day 1", "Day 5", "Day 10", "Day 15", "Day 20", "Day 25", "Day 30"],
+          "series": ["readershipSeries"]
+        },
+        {
+          "id": "readershipSeries",
+          "component": "Series",
+          "category": "Unique Readers",
+          "values": [3200, 4100, 3800, 5200, 4900, 6100, 7300]
+        },
+        {
+          "id": "draftsSection",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "children": ["draftsHeader", "draftsTable"]
+        },
+        {
+          "id": "draftsHeader",
+          "component": "CardHeader",
+          "title": "Drafts",
+          "subtitle": "Current work-in-progress with status"
+        },
+        {
+          "id": "draftsTable",
+          "component": "Table",
+          "columns": ["draftTitleCol", "draftAuthorCol", "draftStatusCol", "draftUpdatedCol"]
+        },
+        {
+          "id": "draftTitleCol",
+          "component": "Col",
+          "label": "Title",
+          "type": "string",
+          "data": ["AI in the Newsroom", "City Budget Explained", "Interview: Local Mayor", "Weekend Reads Roundup"]
+        },
+        {
+          "id": "draftAuthorCol",
+          "component": "Col",
+          "label": "Author",
+          "type": "string",
+          "data": ["R. Nolan", "S. Park", "M. Diaz", "J. Okafor"]
+        },
+        {
+          "id": "draftStatusCol",
+          "component": "Col",
+          "label": "Status",
+          "type": "string",
+          "data": ["In Review", "Editing", "Awaiting Approval", "Draft"]
+        },
+        {
+          "id": "draftUpdatedCol",
+          "component": "Col",
+          "label": "Last Updated",
+          "type": "string",
+          "data": ["2h ago", "5h ago", "Yesterday", "3 days ago"]
+        },
+        {
+          "id": "scheduleSection",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "children": ["scheduleHeader", "scheduleForm"]
+        },
+        {
+          "id": "scheduleHeader",
+          "component": "CardHeader",
+          "title": "Schedule a Piece",
+          "subtitle": "Set a title and publish date"
+        },
+        {
+          "id": "scheduleForm",
+          "component": "Form",
+          "name": "scheduleForm",
+          "buttons": "scheduleFormButtons",
+          "fields": ["scheduleTitleControl", "scheduleDateControl", "scheduleCategoryControl"]
+        },
+        {
+          "id": "scheduleTitleControl",
+          "component": "FormControl",
+          "label": "Title",
+          "input": "scheduleTitleInput"
+        },
+        {
+          "id": "scheduleTitleInput",
+          "component": "Input",
+          "name": "title",
+          "type": "text",
+          "placeholder": "Enter the article title"
+        },
+        {
+          "id": "scheduleDateControl",
+          "component": "FormControl",
+          "label": "Publish Date",
+          "input": "scheduleDatePicker"
+        },
+        {
+          "id": "scheduleDatePicker",
+          "component": "DatePicker",
+          "name": "publishDate",
+          "mode": "single"
+        },
+        {
+          "id": "scheduleCategoryControl",
+          "component": "FormControl",
+          "label": "Category",
+          "input": "scheduleCategorySelect"
+        },
+        {
+          "id": "scheduleCategorySelect",
+          "component": "Select",
+          "name": "scheduleCategory",
+          "placeholder": "Choose category",
+          "items": ["sCatTech", "sCatBusiness", "sCatCulture", "sCatOpinion", "sCatScience"]
+        },
+        { "id": "sCatTech", "component": "SelectItem", "value": "tech", "label": "Technology" },
+        { "id": "sCatBusiness", "component": "SelectItem", "value": "business", "label": "Business" },
+        { "id": "sCatCulture", "component": "SelectItem", "value": "culture", "label": "Culture" },
+        { "id": "sCatOpinion", "component": "SelectItem", "value": "opinion", "label": "Opinion" },
+        { "id": "sCatScience", "component": "SelectItem", "value": "science", "label": "Science" },
+        {
+          "id": "scheduleFormButtons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": ["scheduleSubmitBtn"]
+        },
+        {
+          "id": "scheduleSubmitBtn",
+          "component": "Button",
+          "label": "Schedule Publish",
+          "variant": "primary",
+          "size": "medium",
+          "action": ["schedule_piece"]
+        },
+        {
+          "id": "commentsSection",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "children": ["commentsHeader", "commentsList"]
+        },
+        {
+          "id": "commentsHeader",
+          "component": "CardHeader",
+          "title": "Comments Awaiting Reply",
+          "subtitle": "Reader comments that need a response"
+        },
+        {
+          "id": "commentsList",
+          "component": "ListBlock",
+          "variant": "number",
+          "items": ["comment1", "comment2", "comment3"]
+        },
+        {
+          "id": "comment1",
+          "component": "ListItem",
+          "title": "\"Great piece, but where's the data source?\"",
+          "subtitle": "On 'The Quiet Revolution' · 1h ago",
+          "actionLabel": "Reply"
+        },
+        {
+          "id": "comment2",
+          "component": "ListItem",
+          "title": "\"Could you cover the housing angle next?\"",
+          "subtitle": "On 'City Budget Explained' · 4h ago",
+          "actionLabel": "Reply"
+        },
+        {
+          "id": "comment3",
+          "component": "ListItem",
+          "title": "\"Loved the interview — any follow-up planned?\"",
+          "subtitle": "On 'Interview: Local Mayor' · Yesterday",
+          "actionLabel": "Reply"
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+This screen covers every numbered item:
+
+1. **Drafts with status** — a table listing each draft with author, status, and last-updated
+2. **Published this week** — a metric card showing 12 pieces with a week-over-week badge
+3. **Most-read article this month** — a highlighted card with reads, engagement, and tags
+4. **Readership over 30 days** — a line chart of daily unique readers
+5. **Narrow by category** — a category selector with an apply-filter button
+6. **Schedule a piece** — a form with title input, publish-date picker, and category
+7. **Comments awaiting reply** — a numbered list with reply actions
+8. **Start a new draft** — a prominent primary button at the top

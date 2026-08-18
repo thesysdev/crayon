@@ -1,0 +1,15 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","task-card"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Focus","subtitle":"Your single most urgent task"}}}
+{"op":"add","path":"/elements/task-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["task-status-row","task-title","task-desc","deadline-callout","progress","done-section"]}}
+{"op":"add","path":"/state/task","value":{"title":"Submit Q3 financial report","description":"Finalize the consolidated Q3 numbers, review with finance, and submit to the leadership team before the board meeting.","status":"In Progress","deadline":"Today, 5:00 PM","progress":70,"done":false}}
+{"op":"add","path":"/elements/task-status-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center","justify":"between"},"children":["urgent-tag","status-badge"]}}
+{"op":"add","path":"/elements/urgent-tag","value":{"type":"Tag","props":{"text":"Most Urgent","icon":"alert-triangle","variant":"danger","size":"md"}}}
+{"op":"add","path":"/elements/status-badge","value":{"type":"Badge","props":{"text":{"$cond":{"$state":"/task/done","eq":true},"$then":"Done","$else":{"$state":"/task/status"}},"variant":"secondary"}}}
+{"op":"add","path":"/elements/task-title","value":{"type":"Heading","props":{"level":"h2","text":{"$state":"/task/title"}}}}
+{"op":"add","path":"/elements/task-desc","value":{"type":"TextContent","props":{"text":{"$state":"/task/description"}}}}
+{"op":"add","path":"/elements/deadline-callout","value":{"type":"TextCallout","props":{"variant":"danger","title":"Deadline","description":{"$template":"Due ${/task/deadline}"}}}}
+{"op":"add","path":"/elements/progress","value":{"type":"Progress","props":{"value":{"$state":"/task/progress"},"label":"Progress"}}}
+{"op":"add","path":"/elements/done-section","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"children":["done-banner","done-btn"]}}
+{"op":"add","path":"/elements/done-banner","value":{"type":"Callout","props":{"variant":"success","title":"Task Completed","description":"Great work — this task is marked done."},"visible":{"$state":"/task/done","eq":true}}}
+{"op":"add","path":"/elements/done-btn","value":{"type":"Button","props":{"label":{"$cond":{"$state":"/task/done","eq":true},"$then":"Completed ✓","$else":"Mark as Done"},"variant":"primary","size":"large"},"on":{"press":{"action":"setState","params":{"statePath":"/task/done","value":true}}}}}

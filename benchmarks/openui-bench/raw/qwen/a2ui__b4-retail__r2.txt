@@ -1,0 +1,112 @@
+
+
+Here's a complete single-screen daily console for the store manager. All 12 requirements are covered:
+
+1. **Sales vs target** — KPI card with progress bar (84% of $10,000)
+2. **Foot traffic** — hourly area chart, 8 AM–8 PM
+3. **Best sellers** — table with units + revenue
+4. **Out of stock** — table with SKU and time out
+5. **On shift today** — staff table with roles, times, status
+6. **Avg basket size** — KPI card with transaction context
+7. **Returns this week** — KPI card with count, value, and top reason
+8. **Promotions** — table with redemptions, revenue, status
+9. **Registers** — table showing open/closed/maintenance
+10. **Reorder** — embedded form (item select + quantity + submit)
+11. **View another store** — store selector in the header
+12. **Week comparison** — grouped bar chart, this week vs last week
+
+<a2ui-json>
+{"version":"v0.9","createSurface":{"surfaceId":"store-manager-console","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#1E6B52","agentDisplayName":"Store Ops Console"}}}
+</a2ui-json>
+
+<a2ui-json>
+{"version":"v0.9","updateComponents":{"surfaceId":"store-manager-console","components":[
+{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["headerCard","alertBanner","kpiRow","rowA","rowB","rowC"]},
+{"id":"headerCard","component":"Card","direction":"row","justify":"between","align":"center","gap":"m","wrap":true,"children":["headerTitle","storeFormControl"]},
+{"id":"headerTitle","component":"CardHeader","title":"Daily Console — Maple & 5th (#214)","subtitle":"Thursday, June 12 · Live as of 2:45 PM"},
+{"id":"storeFormControl","component":"FormControl","label":"Viewing store","input":"storeSelect","hint":"Switch to another store's live data"},
+{"id":"storeSelect","component":"Select","name":"store","value":"maple-214","placeholder":"Choose a store","items":["si214","si187","si342","si098"]},
+{"id":"si214","component":"SelectItem","value":"maple-214","label":"Maple & 5th (#214)"},
+{"id":"si187","component":"SelectItem","value":"riverside-187","label":"Riverside (#187)"},
+{"id":"si342","component":"SelectItem","value":"airport-342","label":"Airport (#342)"},
+{"id":"si098","component":"SelectItem","value":"mallwest-098","label":"Mall West (#098)"},
+{"id":"alertBanner","component":"Alert","variant":"warning","title":"4 items out of stock","description":"Almond Milk ½ gal and Paper Towels 6pk are high-velocity sellers — submit reorders before 4:00 PM for tomorrow's 6:00 AM delivery."},
+{"id":"kpiRow","component":"Card","variant":"clear","direction":"row","gap":"m","wrap":true,"children":["salesCard","basketCard","returnsCard"]},
+{"id":"salesCard","component":"Card","direction":"column","gap":"s","weight":1,"children":["salesHeader","salesValue","salesProgress","salesNote"]},
+{"id":"salesHeader","component":"CardHeader","title":"Sales Today vs Target"},
+{"id":"salesValue","component":"TextContent","size":"large-heavy","text":"$8,432 of $10,000"},
+{"id":"salesProgress","component":"Progress","value":84,"label":"84% of daily target"},
+{"id":"salesNote","component":"TextContent","size":"small","text":"$1,568 to go · Ahead of last Thursday's pace at this hour"},
+{"id":"basketCard","component":"Card","direction":"column","gap":"s","weight":1,"children":["basketHeader","basketValue","basketNote"]},
+{"id":"basketHeader","component":"CardHeader","title":"Average Basket Size"},
+{"id":"basketValue","component":"TextContent","size":"large-heavy","text":"$42.18"},
+{"id":"basketNote","component":"TextContent","size":"small","text":"200 transactions · Up $1.92 vs yesterday"},
+{"id":"returnsCard","component":"Card","direction":"column","gap":"s","weight":1,"children":["returnsHeader","returnsValue","returnsNote"]},
+{"id":"returnsHeader","component":"CardHeader","title":"Returns This Week"},
+{"id":"returnsValue","component":"TextContent","size":"large-heavy","text":"37 returns · $1,284"},
+{"id":"returnsNote","component":"TextContent","size":"small","text":"3.1% of weekly sales · Top reason: damaged in transit (14)"},
+{"id":"rowA","component":"Card","variant":"clear","direction":"row","gap":"m","wrap":true,"align":"stretch","children":["trafficCard","weekCard"]},
+{"id":"trafficCard","component":"Card","direction":"column","gap":"s","weight":3,"children":["trafficHeader","trafficChart","trafficNote"]},
+{"id":"trafficHeader","component":"CardHeader","title":"Foot Traffic Through the Day","subtitle":"Visitors per hour, 8 AM – 8 PM"},
+{"id":"trafficChart","component":"AreaChart","variant":"natural","xLabel":"Hour","yLabel":"Visitors","labels":["8a","9a","10a","11a","12p","1p","2p","3p","4p","5p","6p","7p","8p"],"series":["trafficSeries"]},
+{"id":"trafficSeries","component":"Series","category":"Visitors","values":[42,68,95,120,165,158,110,96,104,142,171,133,88]},
+{"id":"trafficNote","component":"TextContent","size":"small","text":"1,492 visitors so far · Peak expected 5–6 PM (~171) · Conversion 13.4%"},
+{"id":"weekCard","component":"Card","direction":"column","gap":"s","weight":2,"children":["weekHeader","weekChart","weekNote"]},
+{"id":"weekHeader","component":"CardHeader","title":"This Week vs Last Week","subtitle":"Daily sales, Mon–Thu"},
+{"id":"weekChart","component":"BarChart","variant":"grouped","yLabel":"Sales ($)","labels":["Mon","Tue","Wed","Thu"],"series":["weekSeriesThis","weekSeriesLast"]},
+{"id":"weekSeriesThis","component":"Series","category":"This week","values":[5230,6100,5870,8432]},
+{"id":"weekSeriesLast","component":"Series","category":"Last week","values":[4980,5640,5310,7890]},
+{"id":"weekNote","component":"TextContent","size":"small","text":"WTD $25,632 vs $23,820 (+7.6%) · Thursday still in progress"},
+{"id":"rowB","component":"Card","variant":"clear","direction":"row","gap":"m","wrap":true,"align":"stretch","children":["bestCard","oosCard"]},
+{"id":"bestCard","component":"Card","direction":"column","gap":"s","weight":1,"children":["bestHeader","bestTable"]},
+{"id":"bestHeader","component":"CardHeader","title":"Best Sellers Today","subtitle":"Ranked by units sold"},
+{"id":"bestTable","component":"Table","columns":["bestColItem","bestColUnits","bestColRev"]},
+{"id":"bestColItem","component":"Col","label":"Item","type":"string","data":["Cold Brew Coffee 12oz","Rotisserie Chicken","Sourdough Loaf","Sparkling Water 8pk","Organic Bananas"]},
+{"id":"bestColUnits","component":"Col","label":"Units","type":"number","data":[214,163,141,126,119]},
+{"id":"bestColRev","component":"Col","label":"Revenue","type":"string","data":["$856","$1,304","$776","$630","$82"]},
+{"id":"oosCard","component":"Card","direction":"column","gap":"m","weight":1,"children":["oosHeader","oosTable","oosSep","reorderForm","reorderNote"]},
+{"id":"oosHeader","component":"CardHeader","title":"Out of Stock (4)","subtitle":"Reorder below — cutoff 4:00 PM"},
+{"id":"oosTable","component":"Table","columns":["oosColItem","oosColSku","oosColSince"]},
+{"id":"oosColItem","component":"Col","label":"Item","type":"string","data":["Almond Milk ½ gal","Paper Towels 6pk","AA Batteries 8pk","Greek Yogurt Plain 32oz"]},
+{"id":"oosColSku","component":"Col","label":"SKU","type":"string","data":["48213","77021","31566","55902"]},
+{"id":"oosColSince","component":"Col","label":"Out since","type":"string","data":["7:40 AM today","Yesterday","11:15 AM today","9:05 AM today"]},
+{"id":"oosSep","component":"Separator","orientation":"horizontal","decorative":true},
+{"id":"reorderForm","component":"Form","name":"reorder","fields":["fcItem","fcQty"],"buttons":"reorderButtons"},
+{"id":"fcItem","component":"FormControl","label":"Item to reorder","input":"itemSelect","hint":"Out-of-stock items listed"},
+{"id":"itemSelect","component":"Select","name":"item","placeholder":"Select an item","items":["siAlmond","siPaper","siBatt","siYogurt"]},
+{"id":"siAlmond","component":"SelectItem","value":"48213","label":"Almond Milk ½ gal (SKU 48213)"},
+{"id":"siPaper","component":"SelectItem","value":"77021","label":"Paper Towels 6pk (SKU 77021)"},
+{"id":"siBatt","component":"SelectItem","value":"31566","label":"AA Batteries 8pk (SKU 31566)"},
+{"id":"siYogurt","component":"SelectItem","value":"55902","label":"Greek Yogurt Plain 32oz (SKU 55902)"},
+{"id":"fcQty","component":"FormControl","label":"Quantity (cases)","input":"qtyInput","hint":"Suggested par shown by vendor"},
+{"id":"qtyInput","component":"Input","name":"qty","type":"number","placeholder":"e.g. 12"},
+{"id":"reorderButtons","component":"Buttons","direction":"row","buttons":["btnSubmit","btnDraft"]},
+{"id":"btnSubmit","component":"Button","label":"Submit reorder","variant":"primary"},
+{"id":"btnDraft","component":"Button","label":"Save as draft","variant":"secondary"},
+{"id":"reorderNote","component":"TextCallout","variant":"info","title":"Next-day delivery","description":"Reorders submitted before 4:00 PM arrive tomorrow at 6:00 AM."},
+{"id":"rowC","component":"Card","variant":"clear","direction":"row","gap":"m","wrap":true,"align":"stretch","children":["promoCard","shiftCard","regCard"]},
+{"id":"promoCard","component":"Card","direction":"column","gap":"s","weight":1,"children":["promoHeader","promoTable"]},
+{"id":"promoHeader","component":"CardHeader","title":"Promotions Running (4)","subtitle":"Redemptions today"},
+{"id":"promoTable","component":"Table","columns":["promoColName","promoColRedem","promoColRev","promoColStatus"]},
+{"id":"promoColName","component":"Col","label":"Promotion","type":"string","data":["$5 Meal Deal","BOGO Cold Brew","10% Off Bakery (after 5 PM)","Double Loyalty Points"]},
+{"id":"promoColRedem","component":"Col","label":"Redemptions","type":"number","data":[122,86,41,203]},
+{"id":"promoColRev","component":"Col","label":"Revenue","type":"string","data":["$610","$344","$168","—"]},
+{"id":"promoColStatus","component":"Col","label":"Status","type":"string","data":["Strong","On track","Active","Active"]},
+{"id":"shiftCard","component":"Card","direction":"column","gap":"s","weight":1,"children":["shiftHeader","shiftTable"]},
+{"id":"shiftHeader","component":"CardHeader","title":"On Shift Today (5)"},
+{"id":"shiftTable","component":"Table","columns":["shiftColName","shiftColRole","shiftColTime","shiftColStatus"]},
+{"id":"shiftColName","component":"Col","label":"Employee","type":"string","data":["Maya Chen","Derek Okafor","Priya Nair","Lena Ruiz","Tom Alvarez"]},
+{"id":"shiftColRole","component":"Col","label":"Role","type":"string","data":["Manager","Cashier","Stock","Cashier","Stock"]},
+{"id":"shiftColTime","component":"Col","label":"Shift","type":"string","data":["7:00a–3:00p","7:00a–3:00p","6:00a–2:00p","12:00p–8:00p","2:00p–10:00p"]},
+{"id":"shiftColStatus","component":"Col","label":"Status","type":"string","data":["On shift","On shift","On shift","On shift","Arrives 2:00p"]},
+{"id":"regCard","component":"Card","direction":"column","gap":"s","weight":1,"children":["regHeader","regTable","regNote"]},
+{"id":"regHeader","component":"CardHeader","title":"Register Status","subtitle":"3 of 6 open"},
+{"id":"regTable","component":"Table","columns":["regColName","regColAssigned","regColStatus"]},
+{"id":"regColName","component":"Col","label":"Register","type":"string","data":["Register 1","Register 2","Register 3","Register 4","Self-Checkout A","Self-Checkout B"]},
+{"id":"regColAssigned","component":"Col","label":"Assigned","type":"string","data":["Maya Chen","Derek Okafor","—","Lena Ruiz","—","—"]},
+{"id":"regColStatus","component":"Col","label":"Status","type":"string","data":["Open","Open","Closed","Open","Open","Maintenance"]},
+{"id":"regNote","component":"TextContent","size":"small","text":"Self-Checkout B down for maintenance — ticket #4411 · Register 3 opens at 4 PM if queue builds"}
+]}}
+</a2ui-json>
+
+The screen is organized top-down: header with store switcher → alert banner → KPI row (sales/basket/returns) → charts row (foot traffic + week-over-week) → product row (best sellers + out-of-stock with reorder form) → operations row (promotions, shift, registers). Let me know if you'd like different sample data, a different store type, or any section expanded.

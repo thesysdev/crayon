@@ -1,0 +1,646 @@
+Here is an interactive asynchronous standup dashboard for your remote team. It includes team status updates, highlights blocked teammates, tracks missing updates, displays today's date, and provides a quick form to post your own update.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "async-standup-surface",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": {
+        "primaryColor": "#6366F1",
+        "agentDisplayName": "StandupBot"
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "async-standup-surface",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "l",
+          "children": [
+            "header-card",
+            "blockers-alert",
+            "tabs-container"
+          ]
+        },
+        {
+          "id": "header-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "header-top-row",
+            "progress-bar",
+            "stats-row"
+          ]
+        },
+        {
+          "id": "header-top-row",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "justify": "between",
+          "align": "center",
+          "children": [
+            "header-title-group",
+            "date-badge"
+          ]
+        },
+        {
+          "id": "header-title-group",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "xs",
+          "children": [
+            "main-heading",
+            "sub-heading"
+          ]
+        },
+        {
+          "id": "main-heading",
+          "component": "Heading",
+          "text": "Async Standup",
+          "level": "h2"
+        },
+        {
+          "id": "sub-heading",
+          "component": "TextContent",
+          "text": "Engineering & Design Squad",
+          "size": "small"
+        },
+        {
+          "id": "date-badge",
+          "component": "Badge",
+          "text": "📅 Oct 24, 2023",
+          "variant": "secondary"
+        },
+        {
+          "id": "progress-bar",
+          "component": "Progress",
+          "value": 75,
+          "label": "Standup Completion (6/8 submitted)"
+        },
+        {
+          "id": "stats-row",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "row",
+          "justify": "around",
+          "align": "center",
+          "children": [
+            "stat-submitted",
+            "stat-missing",
+            "stat-blocked"
+          ]
+        },
+        {
+          "id": "stat-submitted",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "align": "center",
+          "children": [
+            "stat-submitted-num",
+            "stat-submitted-label"
+          ]
+        },
+        {
+          "id": "stat-submitted-num",
+          "component": "Heading",
+          "text": "6",
+          "level": "h3"
+        },
+        {
+          "id": "stat-submitted-label",
+          "component": "TextContent",
+          "text": "Submitted",
+          "size": "small"
+        },
+        {
+          "id": "stat-missing",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "align": "center",
+          "children": [
+            "stat-missing-num",
+            "stat-missing-label"
+          ]
+        },
+        {
+          "id": "stat-missing-num",
+          "component": "Heading",
+          "text": "2",
+          "level": "h3"
+        },
+        {
+          "id": "stat-missing-label",
+          "component": "TextContent",
+          "text": "Missing Updates",
+          "size": "small"
+        },
+        {
+          "id": "stat-blocked",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "align": "center",
+          "children": [
+            "stat-blocked-num",
+            "stat-blocked-label"
+          ]
+        },
+        {
+          "id": "stat-blocked-num",
+          "component": "Heading",
+          "text": "1",
+          "level": "h3"
+        },
+        {
+          "id": "stat-blocked-label",
+          "component": "TextContent",
+          "text": "Blocked",
+          "size": "small"
+        },
+        {
+          "id": "blockers-alert",
+          "component": "Alert",
+          "title": "🚨 1 Teammate Blocked",
+          "description": "Marcus Vance is currently blocked on API Rate Limits. Action required from DevOps.",
+          "variant": "destructive"
+        },
+        {
+          "id": "tabs-container",
+          "component": "Tabs",
+          "items": [
+            "tab-team-updates",
+            "tab-post-update",
+            "tab-missing-updates"
+          ]
+        },
+        {
+          "id": "tab-team-updates",
+          "component": "TabItem",
+          "value": "updates",
+          "trigger": "Team Updates (6)",
+          "content": [
+            "updates-list"
+          ]
+        },
+        {
+          "id": "updates-list",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "update-card-marcus",
+            "update-card-sarah",
+            "update-card-alex"
+          ]
+        },
+        {
+          "id": "update-card-marcus",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "children": [
+            "marcus-header",
+            "marcus-separator",
+            "marcus-yesterday",
+            "marcus-today",
+            "marcus-blocker"
+          ]
+        },
+        {
+          "id": "marcus-header",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "justify": "between",
+          "align": "center",
+          "children": [
+            "marcus-user-info",
+            "marcus-blocked-tag"
+          ]
+        },
+        {
+          "id": "marcus-user-info",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "s",
+          "align": "center",
+          "children": [
+            "marcus-avatar",
+            "marcus-name-role"
+          ]
+        },
+        {
+          "id": "marcus-avatar",
+          "component": "Avatar",
+          "fallback": "MV"
+        },
+        {
+          "id": "marcus-name-role",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "children": [
+            "marcus-name",
+            "marcus-role"
+          ]
+        },
+        {
+          "id": "marcus-name",
+          "component": "TextContent",
+          "text": "Marcus Vance",
+          "size": "large-heavy"
+        },
+        {
+          "id": "marcus-role",
+          "component": "TextContent",
+          "text": "Backend Engineer • Posted 9:15 AM",
+          "size": "small"
+        },
+        {
+          "id": "marcus-blocked-tag",
+          "component": "Tag",
+          "text": "BLOCKED",
+          "variant": "danger"
+        },
+        {
+          "id": "marcus-separator",
+          "component": "Separator",
+          "orientation": "horizontal",
+          "decorative": true
+        },
+        {
+          "id": "marcus-yesterday",
+          "component": "TextContent",
+          "text": "**Yesterday:** Finished authentication middleware refactoring and updated user data endpoints."
+        },
+        {
+          "id": "marcus-today",
+          "component": "TextContent",
+          "text": "**Today:** Integrate third-party payment gateway webhooks."
+        },
+        {
+          "id": "marcus-blocker",
+          "component": "TextCallout",
+          "variant": "danger",
+          "title": "Blocker",
+          "description": "Waiting on Sandbox API credentials and rate-limit exemption from DevOps."
+        },
+        {
+          "id": "update-card-sarah",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "children": [
+            "sarah-header",
+            "sarah-separator",
+            "sarah-yesterday",
+            "sarah-today"
+          ]
+        },
+        {
+          "id": "sarah-header",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "justify": "between",
+          "align": "center",
+          "children": [
+            "sarah-user-info",
+            "sarah-ok-tag"
+          ]
+        },
+        {
+          "id": "sarah-user-info",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "s",
+          "align": "center",
+          "children": [
+            "sarah-avatar",
+            "sarah-name-role"
+          ]
+        },
+        {
+          "id": "sarah-avatar",
+          "component": "Avatar",
+          "fallback": "SC"
+        },
+        {
+          "id": "sarah-name-role",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "children": [
+            "sarah-name",
+            "sarah-role"
+          ]
+        },
+        {
+          "id": "sarah-name",
+          "component": "TextContent",
+          "text": "Sarah Chen",
+          "size": "large-heavy"
+        },
+        {
+          "id": "sarah-role",
+          "component": "TextContent",
+          "text": "Lead Product Designer • Posted 8:45 AM",
+          "size": "small"
+        },
+        {
+          "id": "sarah-ok-tag",
+          "component": "Tag",
+          "text": "NO BLOCKERS",
+          "variant": "success"
+        },
+        {
+          "id": "sarah-separator",
+          "component": "Separator",
+          "orientation": "horizontal",
+          "decorative": true
+        },
+        {
+          "id": "sarah-yesterday",
+          "component": "TextContent",
+          "text": "**Yesterday:** Finalized mobile checkout wireframes and conducted 2 user testing sessions."
+        },
+        {
+          "id": "sarah-today",
+          "component": "TextContent",
+          "text": "**Today:** Handoff UI components for Design System v2.0 and sync with Frontend squad."
+        },
+        {
+          "id": "update-card-alex",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "children": [
+            "alex-header",
+            "alex-separator",
+            "alex-yesterday",
+            "alex-today"
+          ]
+        },
+        {
+          "id": "alex-header",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "justify": "between",
+          "align": "center",
+          "children": [
+            "alex-user-info",
+            "alex-ok-tag"
+          ]
+        },
+        {
+          "id": "alex-user-info",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "s",
+          "align": "center",
+          "children": [
+            "alex-avatar",
+            "alex-name-role"
+          ]
+        },
+        {
+          "id": "alex-avatar",
+          "component": "Avatar",
+          "fallback": "AR"
+        },
+        {
+          "id": "alex-name-role",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "children": [
+            "alex-name",
+            "alex-role"
+          ]
+        },
+        {
+          "id": "alex-name",
+          "component": "TextContent",
+          "text": "Alex Rivera",
+          "size": "large-heavy"
+        },
+        {
+          "id": "alex-role",
+          "component": "TextContent",
+          "text": "Frontend Engineer • Posted 9:30 AM",
+          "size": "small"
+        },
+        {
+          "id": "alex-ok-tag",
+          "component": "Tag",
+          "text": "NO BLOCKERS",
+          "variant": "success"
+        },
+        {
+          "id": "alex-separator",
+          "component": "Separator",
+          "orientation": "horizontal",
+          "decorative": true
+        },
+        {
+          "id": "alex-yesterday",
+          "component": "TextContent",
+          "text": "**Yesterday:** Resolved dashboard rendering latency bugs."
+        },
+        {
+          "id": "alex-today",
+          "component": "TextContent",
+          "text": "**Today:** Implementing dynamic widgets catalog."
+        },
+        {
+          "id": "tab-post-update",
+          "component": "TabItem",
+          "value": "post",
+          "trigger": "Post Your Update",
+          "content": [
+            "post-update-card"
+          ]
+        },
+        {
+          "id": "post-update-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "post-form-header",
+            "standup-form"
+          ]
+        },
+        {
+          "id": "post-form-header",
+          "component": "CardHeader",
+          "title": "Today's Standup Form",
+          "subtitle": "Share what you worked on, today's focus, and any impediments."
+        },
+        {
+          "id": "standup-form",
+          "component": "Form",
+          "name": "daily-standup-form",
+          "fields": [
+            "field-yesterday",
+            "field-today",
+            "field-blocker-toggle",
+            "field-blocker-details"
+          ],
+          "buttons": "form-submit-buttons"
+        },
+        {
+          "id": "field-yesterday",
+          "component": "FormControl",
+          "label": "What did you accomplish yesterday?",
+          "input": "input-yesterday",
+          "hint": "Mention completed tickets or PRs."
+        },
+        {
+          "id": "input-yesterday",
+          "component": "TextArea",
+          "name": "yesterdayText",
+          "placeholder": "Completed...",
+          "rows": 2
+        },
+        {
+          "id": "field-today",
+          "component": "FormControl",
+          "label": "What are you working on today?",
+          "input": "input-today",
+          "hint": "Main priority for today."
+        },
+        {
+          "id": "input-today",
+          "component": "TextArea",
+          "name": "todayText",
+          "placeholder": "Focusing on...",
+          "rows": 2
+        },
+        {
+          "id": "field-blocker-toggle",
+          "component": "FormControl",
+          "label": "Are you currently blocked?",
+          "input": "switch-blocked"
+        },
+        {
+          "id": "switch-blocked",
+          "component": "SwitchGroup",
+          "name": "isBlockedGroup",
+          "items": [
+            "switch-item-blocked"
+          ]
+        },
+        {
+          "id": "switch-item-blocked",
+          "component": "SwitchItem",
+          "name": "isBlocked",
+          "label": "I have an active blocker",
+          "description": "Flags your update for immediate attention."
+        },
+        {
+          "id": "field-blocker-details",
+          "component": "FormControl",
+          "label": "Blocker Details (if applicable)",
+          "input": "input-blocker",
+          "hint": "Describe what or who you are waiting on."
+        },
+        {
+          "id": "input-blocker",
+          "component": "Input",
+          "name": "blockerText",
+          "placeholder": "e.g. Needs code review / waiting on credentials",
+          "type": "text"
+        },
+        {
+          "id": "form-submit-buttons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": [
+            "submit-btn"
+          ]
+        },
+        {
+          "id": "submit-btn",
+          "component": "Button",
+          "label": "Submit Standup Update",
+          "variant": "primary",
+          "size": "medium"
+        },
+        {
+          "id": "tab-missing-updates",
+          "component": "TabItem",
+          "value": "missing",
+          "trigger": "Pending (2)",
+          "content": [
+            "missing-updates-card"
+          ]
+        },
+        {
+          "id": "missing-updates-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "missing-header",
+            "missing-list"
+          ]
+        },
+        {
+          "id": "missing-header",
+          "component": "CardHeader",
+          "title": "Missing Updates (2 Teammates)",
+          "subtitle": "Updates expected by 10:00 AM local time."
+        },
+        {
+          "id": "missing-list",
+          "component": "ListBlock",
+          "variant": "image",
+          "items": [
+            "missing-item-1",
+            "missing-item-2"
+          ]
+        },
+        {
+          "id": "missing-item-1",
+          "component": "ListItem",
+          "title": "David Kim",
+          "subtitle": "QA Lead • San Francisco (PST)",
+          "actionLabel": "Send Nudge 🔔"
+        },
+        {
+          "id": "missing-item-2",
+          "component": "ListItem",
+          "title": "Elena Rostova",
+          "subtitle": "DevOps Specialist • London (BST)",
+          "actionLabel": "Send Nudge 🔔"
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>

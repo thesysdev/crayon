@@ -1,0 +1,41 @@
+root = Card([header, metricsGrid, trendCard, topProductsCard, actionRow, followUp])
+
+header = CardHeader("Monthly Sales Dashboard", "Founder's performance overview for October 2023")
+
+metricsGrid = Card([revMetric, convMetric], "sunk", "row", "l")
+revMetric = Card([revBadge, revLabel, revValue, revSub], "card", "column", "xs")
+revBadge = Badge("Revenue", "default")
+revLabel = Heading("Revenue This Month", "h4")
+revValue = TextContent("$84,500", "large-heavy")
+revSub = TextContent("+12.5% vs last month", "small")
+
+convMetric = Card([convBadge, convLabel, convValue, convSub], "card", "column", "xs")
+convBadge = Badge("Performance", "secondary")
+convLabel = Heading("Conversion Rate", "h4")
+convValue = TextContent("3.82%", "large-heavy")
+convSub = TextContent("+0.4% vs last month", "small")
+
+trendCard = Card([trendHeader, trendChart], "card", "column", "m")
+trendHeader = CardHeader("6-Month Revenue Trend", "Monthly recurring & one-time revenue growth (in USD)")
+trendChart = AreaChart(trendMonths, [revSeries], "natural", "Month", "Revenue ($)")
+trendMonths = ["May", "Jun", "Jul", "Aug", "Sep", "Oct"]
+revSeries = Series("Revenue", [52000, 58500, 63000, 71200, 75100, 84500])
+
+topProductsCard = Card([productsHeader, productsTable], "card", "column", "m")
+productsHeader = CardHeader("Top 3 Best-Selling Products", "Ranked by total volume sold this month")
+productsTable = Table([rankCol, productCol, unitsCol, shareCol])
+rankCol = Col("Rank", ["#1", "#2", "#3"])
+productCol = Col("Product", ["Pro Annual License", "Starter Monthly Plan", "Enterprise Add-on"])
+unitsCol = Col("Units Sold", [342, 215, 89])
+shareCol = Col("Share of Sales", ["52%", "28%", "14%"])
+
+actionRow = Card([exportCallout, downloadButtons], "clear", "row", "m", "center", "between")
+exportCallout = TextCallout("info", "Monthly Report Ready", "Export all raw sales data, transaction logs, and conversion metrics in CSV format.")
+downloadButtons = Buttons([downloadCsvBtn, downloadPdfBtn])
+downloadCsvBtn = Button("Download CSV", null, "primary")
+downloadPdfBtn = Button("Export PDF", null, "secondary")
+
+followUp = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Compare revenue against target for Q4")
+f2 = FollowUpItem("Break down conversion rate by acquisition channel")
+f3 = FollowUpItem("View churn rate and Customer Acquisition Cost (CAC)")

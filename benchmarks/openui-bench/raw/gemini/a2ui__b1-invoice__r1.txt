@@ -1,0 +1,294 @@
+Here is the invoice view UI for a client, designed with payment options and invoice details.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "invoice-view",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#2563EB",
+      "agentDisplayName": "Billing Assistant"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "invoice-view",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "invoice-header",
+          "payment-summary",
+          "separator-1",
+          "line-items-heading",
+          "invoice-table",
+          "separator-2",
+          "payment-section-heading",
+          "payment-form",
+          "follow-ups"
+        ]
+      },
+      {
+        "id": "invoice-header",
+        "component": "CardHeader",
+        "title": "Invoice #INV-2023-042",
+        "subtitle": "Issued by Sarah Jenkins Design Studio"
+      },
+      {
+        "id": "payment-summary",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "justify": "between",
+        "align": "center",
+        "gap": "m",
+        "children": [
+          "amount-container",
+          "status-container"
+        ]
+      },
+      {
+        "id": "amount-container",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "amount-label",
+          "amount-value"
+        ]
+      },
+      {
+        "id": "amount-label",
+        "component": "TextContent",
+        "text": "Total Amount Due",
+        "size": "small"
+      },
+      {
+        "id": "amount-value",
+        "component": "Heading",
+        "text": "$3,450.00 USD",
+        "level": "h1"
+      },
+      {
+        "id": "status-container",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "xs",
+        "align": "end",
+        "children": [
+          "due-badge",
+          "due-date-text"
+        ]
+      },
+      {
+        "id": "due-badge",
+        "component": "Badge",
+        "text": "Payment Due",
+        "variant": "default"
+      },
+      {
+        "id": "due-date-text",
+        "component": "TextContent",
+        "text": "**Due Date:** Nov 30, 2023",
+        "size": "small"
+      },
+      {
+        "id": "separator-1",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "line-items-heading",
+        "component": "Heading",
+        "text": "Invoice Details",
+        "level": "h3"
+      },
+      {
+        "id": "invoice-table",
+        "component": "Table",
+        "columns": [
+          "col-desc",
+          "col-hours",
+          "col-rate",
+          "col-total"
+        ]
+      },
+      {
+        "id": "col-desc",
+        "component": "Col",
+        "label": "Description",
+        "type": "string",
+        "data": [
+          "UI/UX Redesign - Mobile App Dashboard",
+          "Design System Components & Documentation",
+          "User Testing & Iteration Sprint"
+        ]
+      },
+      {
+        "id": "col-hours",
+        "component": "Col",
+        "label": "Hours",
+        "type": "number",
+        "data": [
+          25,
+          10,
+          8
+        ]
+      },
+      {
+        "id": "col-rate",
+        "component": "Col",
+        "label": "Rate",
+        "type": "string",
+        "data": [
+          "$80.00/hr",
+          "$85.00/hr",
+          "$75.00/hr"
+        ]
+      },
+      {
+        "id": "col-total",
+        "component": "Col",
+        "label": "Amount",
+        "type": "string",
+        "data": [
+          "$2,000.00",
+          "$850.00",
+          "$600.00"
+        ]
+      },
+      {
+        "id": "separator-2",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "payment-section-heading",
+        "component": "Heading",
+        "text": "Pay Now",
+        "level": "h3"
+      },
+      {
+        "id": "payment-form",
+        "component": "Form",
+        "name": "payment-form",
+        "fields": [
+          "field-method",
+          "field-card-number",
+          "field-expiry"
+        ],
+        "buttons": "pay-button-group"
+      },
+      {
+        "id": "field-method",
+        "component": "FormControl",
+        "label": "Payment Method",
+        "input": "select-method"
+      },
+      {
+        "id": "select-method",
+        "component": "Select",
+        "name": "paymentMethod",
+        "value": "credit-card",
+        "items": [
+          "method-cc",
+          "method-ach"
+        ]
+      },
+      {
+        "id": "method-cc",
+        "component": "SelectItem",
+        "value": "credit-card",
+        "label": "Credit Card"
+      },
+      {
+        "id": "method-ach",
+        "component": "SelectItem",
+        "value": "bank-transfer",
+        "label": "Bank Transfer (ACH)"
+      },
+      {
+        "id": "field-card-number",
+        "component": "FormControl",
+        "label": "Card Number",
+        "input": "input-card-number"
+      },
+      {
+        "id": "input-card-number",
+        "component": "Input",
+        "name": "cardNumber",
+        "placeholder": "**** **** **** 4242",
+        "type": "text"
+      },
+      {
+        "id": "field-expiry",
+        "component": "FormControl",
+        "label": "Expiration Date",
+        "input": "input-expiry"
+      },
+      {
+        "id": "input-expiry",
+        "component": "Input",
+        "name": "expiry",
+        "placeholder": "MM/YY",
+        "type": "text"
+      },
+      {
+        "id": "pay-button-group",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": [
+          "btn-pay",
+          "btn-download"
+        ]
+      },
+      {
+        "id": "btn-pay",
+        "component": "Button",
+        "label": "Pay $3,450.00 USD Now",
+        "variant": "primary",
+        "size": "large"
+      },
+      {
+        "id": "btn-download",
+        "component": "Button",
+        "label": "Download PDF",
+        "variant": "tertiary",
+        "size": "large"
+      },
+      {
+        "id": "follow-ups",
+        "component": "FollowUpBlock",
+        "items": [
+          "follow-up-1",
+          "follow-up-2"
+        ]
+      },
+      {
+        "id": "follow-up-1",
+        "component": "FollowUpItem",
+        "text": "Send receipt to my accounting email"
+      },
+      {
+        "id": "follow-up-2",
+        "component": "FollowUpItem",
+        "text": "Contact freelancer about line items"
+      }
+    ]
+  }
+}
+</a2ui-json>

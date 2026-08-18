@@ -1,0 +1,1284 @@
+Here is the interactive Live-Ops Command Center interface designed for your game studio, covering all 16 requested metrics and operations tools.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "liveops-dashboard",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": {
+        "primaryColor": "#6366F1",
+        "agentDisplayName": "Apex LiveOps Command"
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "liveops-dashboard",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "l",
+          "children": [
+            "header-card",
+            "kpi-section",
+            "tabs-main"
+          ]
+        },
+        {
+          "id": "header-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "row",
+          "justify": "between",
+          "align": "center",
+          "gap": "m",
+          "children": [
+            "header-title-container",
+            "header-actions-container"
+          ]
+        },
+        {
+          "id": "header-title-container",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "xs",
+          "children": [
+            "header-heading",
+            "header-subtitle"
+          ]
+        },
+        {
+          "id": "header-heading",
+          "component": "Heading",
+          "level": "h2",
+          "text": "Live-Ops Room Command"
+        },
+        {
+          "id": "header-subtitle",
+          "component": "TextContent",
+          "text": "Real-time game telemetry, economy monitoring, dynamic moderation, and deployment controls.",
+          "size": "small"
+        },
+        {
+          "id": "header-actions-container",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "s",
+          "align": "center",
+          "children": [
+            "region-focus-dialog",
+            "hotfix-dialog"
+          ]
+        },
+        {
+          "id": "region-focus-dialog",
+          "component": "DialogBlock",
+          "triggerLabel": "Focus Region View (Item 15)",
+          "triggerVariant": "outline",
+          "title": "Select Target Region Focus",
+          "description": "Isolate all dashboard telemetry, crash logs, and event triggers to a specific operational region.",
+          "content": [
+            "region-select-form"
+          ]
+        },
+        {
+          "id": "region-select-form",
+          "component": "Form",
+          "name": "region_focus_form",
+          "fields": [
+            "region-select-control"
+          ],
+          "buttons": "region-select-buttons"
+        },
+        {
+          "id": "region-select-control",
+          "component": "FormControl",
+          "label": "Target Region",
+          "hint": "Filtering will adjust metrics and server actions",
+          "input": "region-select-dropdown"
+        },
+        {
+          "id": "region-select-dropdown",
+          "component": "Select",
+          "name": "target_region",
+          "placeholder": "Choose region...",
+          "items": [
+            "region-opt-global",
+            "region-opt-na-east",
+            "region-opt-na-west",
+            "region-opt-eu-central",
+            "region-opt-ap-east"
+          ]
+        },
+        {
+          "id": "region-opt-global",
+          "component": "SelectItem",
+          "label": "Global (All Regions)",
+          "value": "global"
+        },
+        {
+          "id": "region-opt-na-east",
+          "component": "SelectItem",
+          "label": "US-East (Virginia)",
+          "value": "na-east"
+        },
+        {
+          "id": "region-opt-na-west",
+          "component": "SelectItem",
+          "label": "US-West (Oregon)",
+          "value": "na-west"
+        },
+        {
+          "id": "region-opt-eu-central",
+          "component": "SelectItem",
+          "label": "EU-Central (Frankfurt)",
+          "value": "eu-central"
+        },
+        {
+          "id": "region-opt-ap-east",
+          "component": "SelectItem",
+          "label": "AP-East (Tokyo)",
+          "value": "ap-east"
+        },
+        {
+          "id": "region-select-buttons",
+          "component": "Buttons",
+          "buttons": [
+            "btn-apply-region"
+          ]
+        },
+        {
+          "id": "btn-apply-region",
+          "component": "Button",
+          "label": "Apply Focus Isolation",
+          "variant": "primary"
+        },
+        {
+          "id": "hotfix-dialog",
+          "component": "AlertDialogBlock",
+          "triggerLabel": "Ship Emergency Hotfix (Item 16)",
+          "triggerVariant": "destructive",
+          "title": "Deploy Emergency Hotfix Package",
+          "description": "This will trigger a rolling client patch and server-side config reload across selected active clusters.",
+          "confirmLabel": "Deploy Hotfix Now",
+          "cancelLabel": "Cancel Deployment"
+        },
+        {
+          "id": "kpi-section",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "children": [
+            "kpi-ccu",
+            "kpi-dau-mau",
+            "kpi-revenue",
+            "kpi-arpu"
+          ]
+        },
+        {
+          "id": "kpi-ccu",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "xs",
+          "children": [
+            "kpi-ccu-tag",
+            "kpi-ccu-val",
+            "kpi-ccu-desc"
+          ]
+        },
+        {
+          "id": "kpi-ccu-tag",
+          "component": "Tag",
+          "text": "Item 1: Concurrent Players",
+          "variant": "info",
+          "size": "sm"
+        },
+        {
+          "id": "kpi-ccu-val",
+          "component": "Heading",
+          "level": "h2",
+          "text": "142,890"
+        },
+        {
+          "id": "kpi-ccu-desc",
+          "component": "TextContent",
+          "text": "● Live Right Now (+12% vs peak)",
+          "size": "small"
+        },
+        {
+          "id": "kpi-dau-mau",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "xs",
+          "children": [
+            "kpi-daumau-tag",
+            "kpi-daumau-val",
+            "kpi-daumau-desc"
+          ]
+        },
+        {
+          "id": "kpi-daumau-tag",
+          "component": "Tag",
+          "text": "Item 2: DAU / MAU",
+          "variant": "neutral",
+          "size": "sm"
+        },
+        {
+          "id": "kpi-daumau-val",
+          "component": "Heading",
+          "level": "h2",
+          "text": "1.28M / 8.45M"
+        },
+        {
+          "id": "kpi-daumau-desc",
+          "component": "TextContent",
+          "text": "Stickiness Index: 15.1%",
+          "size": "small"
+        },
+        {
+          "id": "kpi-revenue",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "xs",
+          "children": [
+            "kpi-rev-tag",
+            "kpi-rev-val",
+            "kpi-rev-desc"
+          ]
+        },
+        {
+          "id": "kpi-rev-tag",
+          "component": "Tag",
+          "text": "Item 3: Revenue Today",
+          "variant": "success",
+          "size": "sm"
+        },
+        {
+          "id": "kpi-rev-val",
+          "component": "Heading",
+          "level": "h2",
+          "text": "$184,320"
+        },
+        {
+          "id": "kpi-rev-desc",
+          "component": "TextContent",
+          "text": "92% of daily target reached",
+          "size": "small"
+        },
+        {
+          "id": "kpi-arpu",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "xs",
+          "children": [
+            "kpi-arpu-tag",
+            "kpi-arpu-val",
+            "kpi-arpu-desc"
+          ]
+        },
+        {
+          "id": "kpi-arpu-tag",
+          "component": "Tag",
+          "text": "Item 4: ARPU / ARPPU",
+          "variant": "neutral",
+          "size": "sm"
+        },
+        {
+          "id": "kpi-arpu-val",
+          "component": "Heading",
+          "level": "h2",
+          "text": "$0.14 / $4.25"
+        },
+        {
+          "id": "kpi-arpu-desc",
+          "component": "TextContent",
+          "text": "Average Revenue Per User",
+          "size": "small"
+        },
+        {
+          "id": "tabs-main",
+          "component": "Tabs",
+          "items": [
+            "tab-telemetry",
+            "tab-economy",
+            "tab-liveops-events",
+            "tab-moderation",
+            "tab-patcher"
+          ]
+        },
+        {
+          "id": "tab-telemetry",
+          "component": "TabItem",
+          "value": "telemetry",
+          "trigger": "Server Health & Performance",
+          "content": [
+            "telemetry-card"
+          ]
+        },
+        {
+          "id": "telemetry-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "l",
+          "children": [
+            "region-health-header",
+            "region-health-table",
+            "telemetry-divider",
+            "telemetry-charts-row"
+          ]
+        },
+        {
+          "id": "region-health-header",
+          "component": "CardHeader",
+          "title": "Server Region Status & Infrastructure Health (Item 7)",
+          "subtitle": "Active compute clusters, operational capacity, and tick rates"
+        },
+        {
+          "id": "region-health-table",
+          "component": "Table",
+          "columns": [
+            "col-region-name",
+            "col-region-status",
+            "col-region-ping",
+            "col-region-load",
+            "col-region-tick"
+          ]
+        },
+        {
+          "id": "col-region-name",
+          "component": "Col",
+          "label": "Region Name",
+          "type": "string",
+          "data": [
+            "US-East (N. Virginia)",
+            "US-West (Oregon)",
+            "EU-Central (Frankfurt)",
+            "AP-East (Tokyo)",
+            "SA-East (São Paulo)"
+          ]
+        },
+        {
+          "id": "col-region-status",
+          "component": "Col",
+          "label": "Status",
+          "type": "string",
+          "data": [
+            "Healthy (99.9%)",
+            "Healthy (100%)",
+            "Degraded (High Load)",
+            "Healthy (99.8%)",
+            "Maintenance"
+          ]
+        },
+        {
+          "id": "col-region-ping",
+          "component": "Col",
+          "label": "Avg Latency",
+          "type": "string",
+          "data": [
+            "24ms",
+            "38ms",
+            "42ms",
+            "89ms",
+            "110ms"
+          ]
+        },
+        {
+          "id": "col-region-load",
+          "component": "Col",
+          "label": "Server Load",
+          "type": "string",
+          "data": [
+            "72%",
+            "64%",
+            "91%",
+            "58%",
+            "0%"
+          ]
+        },
+        {
+          "id": "col-region-tick",
+          "component": "Col",
+          "label": "Simulation Rate",
+          "type": "string",
+          "data": [
+            "128 Hz",
+            "128 Hz",
+            "114 Hz",
+            "128 Hz",
+            "0 Hz"
+          ]
+        },
+        {
+          "id": "telemetry-divider",
+          "component": "Separator",
+          "orientation": "horizontal",
+          "decorative": true
+        },
+        {
+          "id": "telemetry-charts-row",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "l",
+          "children": [
+            "chart-session-card",
+            "chart-crashes-card"
+          ]
+        },
+        {
+          "id": "chart-session-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "m",
+          "weight": 1,
+          "children": [
+            "chart-session-header",
+            "chart-session-length"
+          ]
+        },
+        {
+          "id": "chart-session-header",
+          "component": "CardHeader",
+          "title": "Avg Session Length (Past 2 Weeks) (Item 5)",
+          "subtitle": "Measured in minutes per active daily player"
+        },
+        {
+          "id": "chart-session-length",
+          "component": "LineChart",
+          "variant": "natural",
+          "xLabel": "Date",
+          "yLabel": "Minutes",
+          "labels": [
+            "Oct 1",
+            "Oct 2",
+            "Oct 3",
+            "Oct 4",
+            "Oct 5",
+            "Oct 6",
+            "Oct 7",
+            "Oct 8",
+            "Oct 9",
+            "Oct 10",
+            "Oct 11",
+            "Oct 12",
+            "Oct 13",
+            "Oct 14"
+          ],
+          "series": [
+            "series-session-avg"
+          ]
+        },
+        {
+          "id": "series-session-avg",
+          "component": "Series",
+          "category": "Session Duration (min)",
+          "values": [
+            34,
+            36,
+            35,
+            42,
+            48,
+            51,
+            38,
+            35,
+            37,
+            39,
+            44,
+            52,
+            55,
+            41
+          ]
+        },
+        {
+          "id": "chart-crashes-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "m",
+          "weight": 1,
+          "children": [
+            "chart-crashes-header",
+            "chart-crash-rate"
+          ]
+        },
+        {
+          "id": "chart-crashes-header",
+          "component": "CardHeader",
+          "title": "Crash Rate by App Version (Item 8)",
+          "subtitle": "Percentage of crash-free sessions vs crashes per 1,000 sessions"
+        },
+        {
+          "id": "chart-crash-rate",
+          "component": "BarChart",
+          "variant": "grouped",
+          "xLabel": "App Version",
+          "yLabel": "Crashes per 1k Sessions",
+          "labels": [
+            "v2.4.0 (Legacy)",
+            "v2.4.1 (Stable)",
+            "v2.5.0 (Current)",
+            "v2.5.1 (Beta)"
+          ],
+          "series": [
+            "series-crash-rate"
+          ]
+        },
+        {
+          "id": "series-crash-rate",
+          "component": "Series",
+          "category": "Crash Rate / 1,000",
+          "values": [
+            12.4,
+            1.8,
+            3.2,
+            18.5
+          ]
+        },
+        {
+          "id": "tab-economy",
+          "component": "TabItem",
+          "value": "economy",
+          "trigger": "Monetization & Inflation",
+          "content": [
+            "economy-card"
+          ]
+        },
+        {
+          "id": "economy-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "l",
+          "children": [
+            "economy-header",
+            "economy-layout-row"
+          ]
+        },
+        {
+          "id": "economy-header",
+          "component": "CardHeader",
+          "title": "In-Game Economy & Store Telemetry",
+          "subtitle": "Virtual currency sinks/faucets and microtransaction performance"
+        },
+        {
+          "id": "economy-layout-row",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "l",
+          "children": [
+            "best-sellers-card",
+            "inflation-card"
+          ]
+        },
+        {
+          "id": "best-sellers-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "m",
+          "weight": 1,
+          "children": [
+            "best-sellers-header",
+            "best-sellers-chart"
+          ]
+        },
+        {
+          "id": "best-sellers-header",
+          "component": "CardHeader",
+          "title": "Best-Selling Items Today (Units Sold) (Item 6)",
+          "subtitle": "Top Performing SKUs in Store"
+        },
+        {
+          "id": "best-sellers-chart",
+          "component": "HorizontalBarChart",
+          "variant": "grouped",
+          "xLabel": "Units Sold",
+          "yLabel": "Item Name",
+          "labels": [
+            "Battle Pass S4",
+            "Cyber Samurai Skin",
+            "1,000 Gold Coins",
+            "Neon Weapon Pack",
+            "X2 XP Boost (24h)"
+          ],
+          "series": [
+            "series-best-sellers"
+          ]
+        },
+        {
+          "id": "series-best-sellers",
+          "component": "Series",
+          "category": "Units Sold",
+          "values": [
+            14200,
+            9850,
+            8400,
+            5120,
+            3900
+          ]
+        },
+        {
+          "id": "inflation-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "m",
+          "weight": 1,
+          "children": [
+            "inflation-header",
+            "inflation-alert",
+            "inflation-chart"
+          ]
+        },
+        {
+          "id": "inflation-header",
+          "component": "CardHeader",
+          "title": "In-Game Currency Inflation Metric (Item 12)",
+          "subtitle": "Gold faucet generation vs sink consumption ratio over 7 days"
+        },
+        {
+          "id": "inflation-alert",
+          "component": "Alert",
+          "variant": "warning",
+          "title": "Moderate Inflation Warning (+4.2%)",
+          "description": "Gold generated from dungeon bosses exceeds golds sunk via item crafting. Consider tuning craft fees."
+        },
+        {
+          "id": "inflation-chart",
+          "component": "AreaChart",
+          "variant": "linear",
+          "xLabel": "Day",
+          "yLabel": "Gold Volume (Millions)",
+          "labels": [
+            "Mon",
+            "Tue",
+            "Wed",
+            "Thu",
+            "Fri",
+            "Sat",
+            "Sun"
+          ],
+          "series": [
+            "series-gold-faucets",
+            "series-gold-sinks"
+          ]
+        },
+        {
+          "id": "series-gold-faucets",
+          "component": "Series",
+          "category": "Gold Minted (Faucets)",
+          "values": [
+            45,
+            48,
+            52,
+            50,
+            68,
+            85,
+            92
+          ]
+        },
+        {
+          "id": "series-gold-sinks",
+          "component": "Series",
+          "category": "Gold Burned (Sinks)",
+          "values": [
+            40,
+            42,
+            45,
+            44,
+            58,
+            71,
+            76
+          ]
+        },
+        {
+          "id": "tab-liveops-events",
+          "component": "TabItem",
+          "value": "events",
+          "trigger": "Live Events & Experiments",
+          "content": [
+            "events-card"
+          ]
+        },
+        {
+          "id": "events-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "l",
+          "children": [
+            "events-section-header",
+            "events-row",
+            "events-divider",
+            "experiments-section-header",
+            "experiments-row"
+          ]
+        },
+        {
+          "id": "events-section-header",
+          "component": "CardHeader",
+          "title": "Running & Upcoming Live Events (Item 9)",
+          "subtitle": "Active game modifiers, seasonal events, and schedule queue"
+        },
+        {
+          "id": "events-row",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "children": [
+            "event-card-1",
+            "event-card-2",
+            "event-card-3"
+          ]
+        },
+        {
+          "id": "event-card-1",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": [
+            "ev1-tag",
+            "ev1-title",
+            "ev1-desc",
+            "ev1-prog"
+          ]
+        },
+        {
+          "id": "ev1-tag",
+          "component": "Tag",
+          "text": "LIVE NOW",
+          "variant": "success",
+          "size": "sm"
+        },
+        {
+          "id": "ev1-title",
+          "component": "Heading",
+          "level": "h4",
+          "text": "Halloween Blood Moon Spooktacular"
+        },
+        {
+          "id": "ev1-desc",
+          "component": "TextContent",
+          "text": "2x Drop rates on Shadow Dungeons. Ends in 24 hours.",
+          "size": "small"
+        },
+        {
+          "id": "ev1-prog",
+          "component": "Progress",
+          "value": 75,
+          "label": "Event Elapsed Time (75%)"
+        },
+        {
+          "id": "event-card-2",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": [
+            "ev2-tag",
+            "ev2-title",
+            "ev2-desc",
+            "ev2-prog"
+          ]
+        },
+        {
+          "id": "ev2-tag",
+          "component": "Tag",
+          "text": "LIVE NOW",
+          "variant": "success",
+          "size": "sm"
+        },
+        {
+          "id": "ev2-title",
+          "component": "Heading",
+          "level": "h4",
+          "text": "Double XP Weekend"
+        },
+        {
+          "id": "ev2-desc",
+          "component": "TextContent",
+          "text": "Global player level progression speed boost (+100%).",
+          "size": "small"
+        },
+        {
+          "id": "ev2-prog",
+          "component": "Progress",
+          "value": 40,
+          "label": "Event Elapsed Time (40%)"
+        },
+        {
+          "id": "event-card-3",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": [
+            "ev3-tag",
+            "ev3-title",
+            "ev3-desc",
+            "ev3-date"
+          ]
+        },
+        {
+          "id": "ev3-tag",
+          "component": "Tag",
+          "text": "UPCOMING",
+          "variant": "neutral",
+          "size": "sm"
+        },
+        {
+          "id": "ev3-title",
+          "component": "Heading",
+          "level": "h4",
+          "text": "Winter Frostbite Festival"
+        },
+        {
+          "id": "ev3-desc",
+          "component": "TextContent",
+          "text": "Snowy map overhaul, holiday questlines, dynamic weather.",
+          "size": "small"
+        },
+        {
+          "id": "ev3-date",
+          "component": "TextContent",
+          "text": "Starts: Nov 15, 00:00 UTC",
+          "size": "small-heavy"
+        },
+        {
+          "id": "events-divider",
+          "component": "Separator",
+          "orientation": "horizontal",
+          "decorative": true
+        },
+        {
+          "id": "experiments-section-header",
+          "component": "CardHeader",
+          "title": "Active A/B Experiments Status (Item 13)",
+          "subtitle": "Real-time results of live cohort tests"
+        },
+        {
+          "id": "experiments-row",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "children": [
+            "exp-1-card",
+            "exp-2-card"
+          ]
+        },
+        {
+          "id": "exp-1-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "m",
+          "weight": 1,
+          "children": [
+            "exp1-header",
+            "exp1-table"
+          ]
+        },
+        {
+          "id": "exp1-header",
+          "component": "CardHeader",
+          "title": "Experiment 1: FTUE Tutorial Length",
+          "subtitle": "Comparing 3-minute quick tutorial vs 8-minute detailed walkthrough"
+        },
+        {
+          "id": "exp1-table",
+          "component": "Table",
+          "columns": [
+            "col-exp1-variant",
+            "col-exp1-d1",
+            "col-exp1-pay"
+          ]
+        },
+        {
+          "id": "col-exp1-variant",
+          "component": "Col",
+          "label": "Cohort Variant",
+          "type": "string",
+          "data": [
+            "Control (8 min)",
+            "Variant A (3 min)"
+          ]
+        },
+        {
+          "id": "col-exp1-d1",
+          "component": "Col",
+          "label": "D1 Retention",
+          "type": "string",
+          "data": [
+            "38.2%",
+            "46.7% (+8.5%)"
+          ]
+        },
+        {
+          "id": "col-exp1-pay",
+          "component": "Col",
+          "label": "D7 Payer Conv.",
+          "type": "string",
+          "data": [
+            "2.1%",
+            "2.9% (+0.8%)"
+          ]
+        },
+        {
+          "id": "exp-2-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "m",
+          "weight": 1,
+          "children": [
+            "exp2-header",
+            "exp2-table"
+          ]
+        },
+        {
+          "id": "exp2-header",
+          "component": "CardHeader",
+          "title": "Experiment 2: Dynamic Matchmaking Algorithm",
+          "subtitle": "Skill-based latency priority vs pure ping priority"
+        },
+        {
+          "id": "exp2-table",
+          "component": "Table",
+          "columns": [
+            "col-exp2-variant",
+            "col-exp2-queue",
+            "col-exp2-churn"
+          ]
+        },
+        {
+          "id": "col-exp2-variant",
+          "component": "Col",
+          "label": "Cohort Variant",
+          "type": "string",
+          "data": [
+            "Control (Pure Ping)",
+            "Variant B (Skill Balanced)"
+          ]
+        },
+        {
+          "id": "col-exp2-queue",
+          "component": "Col",
+          "label": "Avg Queue Time",
+          "type": "string",
+          "data": [
+            "14 sec",
+            "32 sec"
+          ]
+        },
+        {
+          "id": "col-exp2-churn",
+          "component": "Col",
+          "label": "Rage Quit Rate",
+          "type": "string",
+          "data": [
+            "8.4%",
+            "4.1% (-4.3%)"
+          ]
+        },
+        {
+          "id": "tab-moderation",
+          "component": "TabItem",
+          "value": "moderation",
+          "trigger": "Player Moderation Queue",
+          "content": [
+            "moderation-card"
+          ]
+        },
+        {
+          "id": "moderation-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "l",
+          "children": [
+            "moderation-row"
+          ]
+        },
+        {
+          "id": "moderation-row",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "l",
+          "children": [
+            "reports-card",
+            "appeals-card"
+          ]
+        },
+        {
+          "id": "reports-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "m",
+          "weight": 1,
+          "children": [
+            "reports-header",
+            "reports-list"
+          ]
+        },
+        {
+          "id": "reports-header",
+          "component": "CardHeader",
+          "title": "Player Reports Awaiting Review (Item 10)",
+          "subtitle": "142 pending toxicity, speedhack, and exploit tickets"
+        },
+        {
+          "id": "reports-list",
+          "component": "ListBlock",
+          "variant": "number",
+          "items": [
+            "rep-item-1",
+            "rep-item-2",
+            "rep-item-3"
+          ]
+        },
+        {
+          "id": "rep-item-1",
+          "component": "ListItem",
+          "title": "User @ShadowNinjaX — Reported for Memory Injection / Speedhack",
+          "subtitle": "Reported by 12 players in Match #88291 • System Auto-Flagged Engine Anomaly",
+          "actionLabel": "Review Clip & Ban"
+        },
+        {
+          "id": "rep-item-2",
+          "component": "ListItem",
+          "title": "User @ToxicViper99 — Severe Verbal Harassment in Global Chat",
+          "subtitle": "Reported by 4 players • Text filter caught 5 severe violations",
+          "actionLabel": "Mute 7 Days"
+        },
+        {
+          "id": "rep-item-3",
+          "component": "ListItem",
+          "title": "User @LootGlitched — Duping Exploits in Trade Hub",
+          "subtitle": "Reported by Community Mod • Suspicious gold transfer spike detected",
+          "actionLabel": "Freeze Inventory"
+        },
+        {
+          "id": "appeals-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "m",
+          "weight": 1,
+          "children": [
+            "appeals-header",
+            "appeals-list"
+          ]
+        },
+        {
+          "id": "appeals-header",
+          "component": "CardHeader",
+          "title": "Ban Appeals Awaiting Review (Item 11)",
+          "subtitle": "28 pending contested suspension cases"
+        },
+        {
+          "id": "appeals-list",
+          "component": "ListBlock",
+          "variant": "number",
+          "items": [
+            "app-item-1",
+            "app-item-2",
+            "app-item-3"
+          ]
+        },
+        {
+          "id": "app-item-1",
+          "component": "ListItem",
+          "title": "Appeal #A-9041 by @KronoGamer (Banned: Hardware ID Flag)",
+          "subtitle": "Claim: False positive on anti-cheat due to RGB software driver conflict.",
+          "actionLabel": "Verify Telemetry Logs"
+        },
+        {
+          "id": "app-item-2",
+          "component": "ListItem",
+          "title": "Appeal #A-9038 by @FrostyQueen (Banned: Account Sharing)",
+          "subtitle": "Claim: Account hacked during vacation; IP location mismatch confirmed.",
+          "actionLabel": "Unban & Reset Credentials"
+        },
+        {
+          "id": "app-item-3",
+          "component": "ListItem",
+          "title": "Appeal #A-9022 by @PixelKnight (Banned: Economy Exploit)",
+          "subtitle": "Claim: Purchased glitched item on auction house without knowing it was duped.",
+          "actionLabel": "Rollback Item Only"
+        },
+        {
+          "id": "tab-patcher",
+          "component": "TabItem",
+          "value": "patcher",
+          "trigger": "Patch Notes & Release Manager",
+          "content": [
+            "patcher-card"
+          ]
+        },
+        {
+          "id": "patcher-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "l",
+          "children": [
+            "patcher-header",
+            "patcher-form",
+            "patcher-preview-divider",
+            "patcher-preview-header",
+            "patcher-preview-markdown"
+          ]
+        },
+        {
+          "id": "patcher-header",
+          "component": "CardHeader",
+          "title": "Draft & Publish Patch Notes (Item 14)",
+          "subtitle": "Prepare public release notes for launcher, Steam, and in-game news popups"
+        },
+        {
+          "id": "patcher-form",
+          "component": "Form",
+          "name": "patch_notes_form",
+          "fields": [
+            "field-patch-version",
+            "field-patch-type",
+            "field-patch-content"
+          ],
+          "buttons": "patch-form-buttons"
+        },
+        {
+          "id": "field-patch-version",
+          "component": "FormControl",
+          "label": "Target Release Version",
+          "hint": "e.g., v2.5.1 Hotfix or v2.6.0 Major Update",
+          "input": "input-patch-version"
+        },
+        {
+          "id": "input-patch-version",
+          "component": "Input",
+          "name": "patch_version",
+          "placeholder": "v2.5.1-hotfix3",
+          "type": "text",
+          "value": "v2.5.1"
+        },
+        {
+          "id": "field-patch-type",
+          "component": "FormControl",
+          "label": "Deployment Type",
+          "hint": "Select target channel distribution",
+          "input": "select-patch-type"
+        },
+        {
+          "select-patch-type": "Select",
+          "id": "select-patch-type",
+          "component": "Select",
+          "name": "patch_type",
+          "placeholder": "Select type...",
+          "items": [
+            "pt-opt-hotfix",
+            "pt-opt-minor",
+            "pt-opt-major"
+          ]
+        },
+        {
+          "id": "pt-opt-hotfix",
+          "component": "SelectItem",
+          "label": "Emergency Server Hotfix",
+          "value": "hotfix"
+        },
+        {
+          "id": "pt-opt-minor",
+          "component": "SelectItem",
+          "label": "Minor Balance & Bugfix Update",
+          "value": "minor"
+        },
+        {
+          "id": "pt-opt-major",
+          "component": "SelectItem",
+          "label": "Major Seasonal Content Patch",
+          "value": "major"
+        },
+        {
+          "id": "field-patch-content",
+          "component": "FormControl",
+          "label": "Patch Notes Markdown Body",
+          "hint": "Supports standard Markdown styling with headers, lists, and bold callouts",
+          "input": "textarea-patch-body"
+        },
+        {
+          "id": "textarea-patch-body",
+          "component": "TextArea",
+          "name": "patch_markdown",
+          "rows": 8,
+          "placeholder": "### Bug Fixes\n- Fixed crash when entering EU-Central servers\n- Resolved item duplication in trade window\n\n### Balance Changes\n- Weapon Damage reduced by 5%",
+          "value": "### Version 2.5.1 Release Notes\n\n#### 🛠️ Bug Fixes & Stability\n- Fixed rare client crash occurring on version `v2.5.0` during arena match loading.\n- Resolved auction house item duplication glitch.\n- Stabilized EU-Central server simulation tick rate back to 128Hz.\n\n#### ⚖️ Hero & Weapon Balance\n- **Cyber Blade**: Base attack damage adjusted from `120` to `112`.\n- **Shield Generator**: Cooldown increased by `1.5s` in competitive playlists."
+        },
+        {
+          "id": "patch-form-buttons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": [
+            "btn-save-draft",
+            "btn-publish-patch"
+          ]
+        },
+        {
+          "id": "btn-save-draft",
+          "component": "Button",
+          "label": "Save Draft",
+          "variant": "secondary"
+        },
+        {
+          "id": "btn-publish-patch",
+          "component": "Button",
+          "label": "Publish Patch Notes to All Clients",
+          "variant": "primary"
+        },
+        {
+          "id": "patcher-preview-divider",
+          "component": "Separator",
+          "orientation": "horizontal",
+          "decorative": true
+        },
+        {
+          "id": "patcher-preview-header",
+          "component": "Heading",
+          "level": "h4",
+          "text": "Live Live-Launcher Preview"
+        },
+        {
+          "id": "patcher-preview-markdown",
+          "component": "MarkDownRenderer",
+          "variant": "sunk",
+          "textMarkdown": "### Version 2.5.1 Release Notes\n\n#### 🛠️ Bug Fixes & Stability\n- Fixed rare client crash occurring on version `v2.5.0` during arena match loading.\n- Resolved auction house item duplication glitch.\n- Stabilized EU-Central server simulation tick rate back to 128Hz.\n\n#### ⚖️ Hero & Weapon Balance\n- **Cyber Blade**: Base attack damage adjusted from `120` to `112`.\n- **Shield Generator**: Cooldown increased by `1.5s` in competitive playlists."
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>

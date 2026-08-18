@@ -1,0 +1,217 @@
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "hub-ops-desk",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": {
+        "primaryColor": "#1B4F72",
+        "agentDisplayName": "Hub Operations Center"
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "hub-ops-desk",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "header",
+            "hub-selector-row",
+            "kpi-row",
+            "sep-1",
+            "flights-heading",
+            "flights-table",
+            "sep-2",
+            "alerts-heading",
+            "delay-alert",
+            "cancel-alert",
+            "weather-alert",
+            "sep-3",
+            "gate-heading",
+            "gate-changes-list",
+            "sep-4",
+            "crew-heading",
+            "crew-table",
+            "sep-5",
+            "connections-heading",
+            "connections-table",
+            "sep-6",
+            "rebook-row"
+          ]
+        },
+        {
+          "id": "header",
+          "component": "CardHeader",
+          "title": "Hub Operations Desk",
+          "subtitle": "Real-time operational overview — ATL Hartsfield-Jackson"
+        },
+        {
+          "id": "hub-selector-row",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "row",
+          "gap": "m",
+          "align": "center",
+          "children": ["hub-label", "hub-select"]
+        },
+        {
+          "id": "hub-label",
+          "component": "Label",
+          "text": "View Hub:"
+        },
+        {
+          "id": "hub-select",
+          "component": "Select",
+          "name": "hub",
+          "value": "ATL",
+          "items": ["hub-opt-1", "hub-opt-2", "hub-opt-3", "hub-opt-4"]
+        },
+        { "id": "hub-opt-1", "component": "SelectItem", "value": "ATL", "label": "ATL — Hartsfield-Jackson" },
+        { "id": "hub-opt-2", "component": "SelectItem", "value": "ORD", "label": "ORD — O'Hare International" },
+        { "id": "hub-opt-3", "component": "SelectItem", "value": "DFW", "label": "DFW — Dallas/Fort Worth" },
+        { "id": "hub-opt-4", "component": "SelectItem", "value": "DEN", "label": "DEN — Denver International" },
+        {
+          "id": "kpi-row",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "children": ["otp-card", "load-card", "turnaround-card"]
+        },
+        {
+          "id": "otp-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["otp-label", "otp-progress"]
+        },
+        { "id": "otp-label", "component": "Label", "text": "On-Time Performance Today" },
+        { "id": "otp-progress", "component": "Progress", "value": 78, "label": "78%" },
+        {
+          "id": "load-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["load-label", "load-progress"]
+        },
+        { "id": "load-label", "component": "Label", "text": "Avg Passenger Load Today" },
+        { "id": "load-progress", "component": "Progress", "value": 84, "label": "84%" },
+        {
+          "id": "turnaround-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["turnaround-label", "turnaround-value"]
+        },
+        { "id": "turnaround-label", "component": "Label", "text": "Avg Turnaround Time" },
+        { "id": "turnaround-value", "component": "TextContent", "text": "**42 min** (target: 45 min)", "size": "default" },
+        { "id": "sep-1", "component": "Separator" },
+        { "id": "flights-heading", "component": "Heading", "text": "Flight Board", "level": "h3" },
+        {
+          "id": "flights-table",
+          "component": "Table",
+          "columns": ["col-flight", "col-route", "col-gate", "col-status"]
+        },
+        { "id": "col-flight", "component": "Col", "label": "Flight", "data": ["DL 1421", "DL 887", "DL 2203", "DL 556", "DL 1094", "DL 3310", "DL 742", "DL 1988"] },
+        { "id": "col-route", "component": "Col", "label": "Route", "data": ["ATL → JFK", "ATL → LAX", "ATL → MIA", "ATL → ORD", "ATL → SFO", "ATL → BOS", "ATL → DTW", "ATL → MSP"] },
+        { "id": "col-gate", "component": "Col", "label": "Gate", "data": ["B12", "C4", "A22", "D18", "B7", "C11", "A3", "D25"] },
+        { "id": "col-status", "component": "Col", "label": "Status", "data": ["On Time", "Delayed 35 min", "Boarding", "On Time", "Delayed 50 min", "On Time", "Cancelled", "On Time"] },
+        { "id": "sep-2", "component": "Separator" },
+        { "id": "alerts-heading", "component": "Heading", "text": "Operational Alerts", "level": "h3" },
+        {
+          "id": "delay-alert",
+          "component": "Alert",
+          "variant": "warning",
+          "title": "Delayed Flights (2)",
+          "description": "DL 887 (ATL→LAX) delayed 35 min — crew connection. DL 1094 (ATL→SFO) delayed 50 min — inbound aircraft late."
+        },
+        {
+          "id": "cancel-alert",
+          "component": "Alert",
+          "variant": "destructive",
+          "title": "Cancellations Today (1)",
+          "description": "DL 742 (ATL→DTW) cancelled — mechanical issue. 148 passengers affected. Rebooking in progress."
+        },
+        {
+          "id": "weather-alert",
+          "component": "Alert",
+          "variant": "info",
+          "title": "Weather Advisory — ATL",
+          "description": "Scattered thunderstorms expected 14:00–18:00 local. Gusts to 35 kt. Possible ground stops on west concourse. Monitor SWOOP for updates."
+        },
+        { "id": "sep-3", "component": "Separator" },
+        { "id": "gate-heading", "component": "Heading", "text": "Recent Gate Changes", "level": "h3" },
+        {
+          "id": "gate-changes-list",
+          "component": "ListBlock",
+          "variant": "number",
+          "items": ["gc-1", "gc-2", "gc-3"]
+        },
+        { "id": "gc-1", "component": "ListItem", "title": "DL 887 → Gate C4 (was B19)", "subtitle": "Changed 12 min ago — ramp congestion" },
+        { "id": "gc-2", "component": "ListItem", "title": "DL 1094 → Gate B7 (was B14)", "subtitle": "Changed 28 min ago — inbound swap" },
+        { "id": "gc-3", "component": "ListItem", "title": "DL 3310 → Gate C11 (was C9)", "subtitle": "Changed 45 min ago — maintenance hold on C9" },
+        { "id": "sep-4", "component": "Separator" },
+        { "id": "crew-heading", "component": "Heading", "text": "Crews Available for Reassignment", "level": "h3" },
+        {
+          "id": "crew-table",
+          "component": "Table",
+          "columns": ["col-crew-name", "col-crew-type", "col-crew-base", "col-crew-avail"]
+        },
+        { "id": "col-crew-name", "component": "Col", "label": "Crew / ID", "data": ["Capt. R. Torres (88412)", "FO M. Chen (91034)", "FA Team Bravo (6 pax)", "Capt. J. Okafor (77201)", "FO L. Patel (83567)"] },
+        { "id": "col-crew-type", "component": "Col", "label": "Role", "data": ["Captain — B737", "First Officer — B737", "Flight Attendants", "Captain — A321", "First Officer — A321"] },
+        { "id": "col-crew-base", "component": "Col", "label": "Base", "data": ["ATL", "ATL", "ATL", "ATL", "ATL"] },
+        { "id": "col-crew-avail", "component": "Col", "label": "Available From", "data": ["Now", "Now", "Now", "14:30", "15:00"] },
+        { "id": "sep-5", "component": "Separator" },
+        { "id": "connections-heading", "component": "Heading", "text": "Connections at Risk", "level": "h3" },
+        {
+          "id": "connections-table",
+          "component": "Table",
+          "columns": ["col-conn-pax", "col-conn-inbound", "col-conn-outbound", "col-conn-gap"]
+        },
+        { "id": "col-conn-pax", "component": "Col", "label": "Passengers", "data": ["23 pax", "8 pax", "41 pax", "12 pax"] },
+        { "id": "col-conn-inbound", "component": "Col", "label": "Inbound Flight", "data": ["DL 556 (ORD)", "DL 887 (LAX)", "DL 1094 (SFO)", "DL 742 (DTW — CNX)"] },
+        { "id": "col-conn-outbound", "component": "Col", "label": "Connecting To", "data": ["DL 2203 (MIA)", "DL 1421 (JFK)", "DL 3310 (BOS)", "DL 1988 (MSP)"] },
+        { "id": "col-conn-gap", "component": "Col", "label": "Connection Time", "data": ["18 min (min 35)", "22 min (min 35)", "15 min (min 35)", "N/A — rebooking needed"] },
+        { "id": "sep-6", "component": "Separator" },
+        {
+          "id": "rebook-row",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "row",
+          "gap": "m",
+          "align": "center",
+          "justify": "between",
+          "children": ["rebook-text", "rebook-btn"]
+        },
+        {
+          "id": "rebook-text",
+          "component": "TextContent",
+          "text": "**84 passengers** across 4 flights need rebooking due to delays and cancellations.",
+          "size": "default"
+        },
+        {
+          "id": "rebook-btn",
+          "component": "Button",
+          "label": "Open Rebooking Tool",
+          "variant": "primary",
+          "size": "large",
+          "action": [{"type": "openRebooking", "hub": "ATL"}]
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>

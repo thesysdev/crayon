@@ -1,0 +1,96 @@
+root = Card([header, kpiRow, mainAlerts, hubTabs, followUp], "card", "column", "l")
+
+header = CardHeader("Airline Hub Operations Desk", "ORD - Chicago O'Hare International Airport | Live Operational Status")
+
+kpiRow = Card([otpKpi, loadKpi, turnaroundKpi, cancelKpi], "sunk", "row", "m", "center", "between")
+otpKpi = TextContent("### On-Time Performance\n**78.4%** OTP Today (-3.2% vs target)")
+loadKpi = TextContent("### Avg Passenger Load\n**86.2%** (31,450 / 36,480 seats)")
+turnaroundKpi = TextContent("### Avg Turnaround Time\n**42 min** (Target: 40 min)")
+cancelKpi = TextContent("### Cancellations Today\n**4 Flights** (0.8% total flights)")
+
+mainAlerts = Card([weatherAlert, delayAlert], "clear", "column", "s")
+weatherAlert = Callout("warning", "Hub Weather Advisory", "ORD experiencing high crosswinds (32 kts, gusting 45 kts) and light snow. Expect ground delay program with 15-20 min flow control restrictions until 18:00 CST.")
+delayAlert = Callout("error", "Connections at Risk", "14 inbound flights delayed. 82 passengers across 6 connecting flights are at critical risk (<15 min tight connection window).")
+
+hubTabs = Tabs([tabORD, tabDFW, tabATL, tabDEN])
+
+tabORD = TabItem("ord", "ORD (Current)", [ordContent])
+tabDFW = TabItem("dfw", "DFW", [dfwText])
+tabATL = TabItem("atl", "ATL", [atlText])
+tabDEN = TabItem("den", "DEN", [denText])
+
+dfwText = TextContent("Switching active hub view to DFW... Select ORD tab to return.")
+atlText = TextContent("Switching active hub view to ATL... Select ORD tab to return.")
+denText = TextContent("Switching active hub view to DEN... Select ORD tab to return.")
+
+ordContent = Card([opsAccordion, rebookSection], "clear", "column", "m")
+
+opsAccordion = Accordion([accFlightStatus, accGateChanges, accCrewAvail, accRiskConn])
+
+accFlightStatus = AccordionItem("flights", "Flight Operations & Status (Today)", [flightTable])
+flightTable = Table([colFlight, colRoute, colGate, colStatus, colTurnaround])
+colFlight = Col("Flight", ["AA 1042", "AA 2215", "AA 0412", "AA 1890", "AA 0305", "AA 1184", "AA 0921"])
+colRoute = Col("Route", ["ORD - LHR", "LAX - ORD", "ORD - DFW", "MIA - ORD", "ORD - JFK", "SFO - ORD", "ORD - BOS"])
+colGate = Col("Gate", ["H12", "K08", "H04", "L02", "K15", "H08", "G11"])
+colStatus = Col("Status", ["On Time", "Delayed (+45m)", "On Time", "Cancelled", "Delayed (+25m)", "On Time", "Cancelled"])
+colTurnaround = Col("Turnaround", ["45m", "52m", "38m", "N/A", "48m", "35m", "N/A"])
+
+accGateChanges = AccordionItem("gates", "Recent Gate Changes (Last 2 Hours)", [gateTable])
+gateTable = Table([gateFlight, gateOld, gateNew, gateReason, gateTime])
+gateFlight = Col("Flight", ["AA 2215", "AA 0884", "AA 1402", "AA 0305"])
+gateOld = Col("Original Gate", ["K02", "H06", "L10", "K04"])
+gateNew = Col("Assigned Gate", ["K08", "H14", "L02", "K15"])
+gateReason = Col("Reason", ["Inbound Delay", "Maintenance", "Aircraft Swap", "Gate Conflict"])
+gateTime = Col("Updated", ["14:10 CST", "14:22 CST", "14:45 CST", "15:02 CST"])
+
+accCrewAvail = AccordionItem("crew", "Crew Available for Reassignment", [crewTable])
+crewTable = Table([crewName, crewRole, crewBase, crewHours, crewStatus])
+crewName = Col("Crew Member", ["Capt. R. Miller", "FO J. Davis", "Purser M. Vance", "FA S. Chen", "FA T. Kowalski"])
+crewRole = Col("Role", ["Captain (A320)", "First Officer (B737)", "Flight Attendant Lead", "Flight Attendant", "Flight Attendant"])
+crewBase = Col("Base", ["ORD", "ORD", "DFW", "ORD", "ORD"])
+crewHours = Col("Duty Hrs Remaining", ["7h 15m", "8h 40m", "5h 10m", "9h 00m", "6h 30m"])
+crewStatus = Col("Availability", ["Standby (Gate)", "Reserve (Home - 30m)", "Standby (Gate)", "Standby (Gate)", "Reserve (Home - 45m)"])
+
+accRiskConn = AccordionItem("risk", "Connections at Risk & Delays Breakdown", [riskTable])
+riskTable = Table([riskPax, riskInbound, riskOutbound, riskWindow, riskAction])
+riskPax = Col("Pax Count", [24, 18, 15, 12, 13])
+riskInbound = Col("Inbound Flight", ["AA 2215 (LAX)", "AA 2215 (LAX)", "AA 0305 (JFK)", "AA 1540 (PHX)", "AA 0712 (MCO)"])
+riskOutbound = Col("Connecting Flight", ["AA 0104 (LHR)", "AA 1102 (CDG)", "AA 0412 (DFW)", "AA 0882 (BOS)", "AA 1904 (DCA)"])
+riskWindow = Col("Est. Window", ["8 mins", "12 mins", "5 mins", "10 mins", "2 mins"])
+riskAction = Col("Recommended Action", ["Express Connection / Hold Gate", "Auto-Rebook Available", "Auto-Rebook Available", "Express Connection", "Auto-Rebook Required"])
+
+rebookSection = Card([rebookHeader, rebookForm], "sunk", "column", "m")
+rebookHeader = CardHeader("Passenger Rebooking Desk", "Mass or individual rebooking control for affected hub passengers")
+rebookForm = Form("rebook-control", formBtns, [fieldFlightSelect, fieldPaxSelect, fieldOptionSelect, fieldReasonNote])
+
+fieldFlightSelect = FormControl("Target Delayed / Cancelled Flight", inputFlightSelect, "Select affected flight to process passengers")
+inputFlightSelect = Select("flight_id", [optF1, optF2, optF3, optF4], "Choose flight...")
+optF1 = SelectItem("AA2215", "AA 2215 - Delayed (+45m) - 42 Connecting Pax")
+optF2 = SelectItem("AA1890", "AA 1890 - Cancelled - 156 Pax")
+optF3 = SelectItem("AA0305", "AA 0305 - Delayed (+25m) - 18 Connecting Pax")
+optF4 = SelectItem("AA0921", "AA 0921 - Cancelled - 138 Pax")
+
+fieldPaxSelect = FormControl("Scope", inputPaxRadio)
+inputPaxRadio = RadioGroup("pax_scope", [radioAtRisk, radioAllCanceled, radioCustom])
+radioAtRisk = RadioItem("At-Risk Connections Only", "Process pax with <15m connection margin", "at_risk")
+radioAllCanceled = RadioItem("All Passengers on Flight", "Rebook entire manifest to next available", "all_manifest")
+radioCustom = RadioItem("Manual Selection", "Select specific PNRs individually", "custom")
+
+fieldOptionSelect = FormControl("Rebooking Strategy", inputOptionSelect)
+inputOptionSelect = Select("strategy", [stratNext, stratPartner, stratHotel], "Select strategy")
+stratNext = SelectItem("next_own", "Auto-Rebook Next Available (Same Airline)")
+stratPartner = SelectItem("partner", "Auto-Rebook Partner Airlines (OAL)")
+stratHotel = SelectItem("overnight", "Issue Hotel Voucher + Morning Rebook")
+
+fieldReasonNote = FormControl("Operational Override Notes", inputReasonNote, "Notes appended to passenger PNR audit trail")
+inputReasonNote = Input("override_note", "Weather delay flow restriction at ORD - Automated hub protection")
+
+formBtns = Buttons([btnRebook, btnProtect, btnCancel])
+btnRebook = Button("Execute Batch Rebook", null, "primary")
+btnProtect = Button("Issue Gate Connection Express Passes", null, "secondary")
+btnCancel = Button("Reset", null, "tertiary")
+
+followUp = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Show detailed crew assignment schedule")
+f2 = FollowUpItem("Export delayed flight log as CSV")
+f3 = FollowUpItem("View runway capacity and flow control stats")

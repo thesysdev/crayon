@@ -1,0 +1,79 @@
+
+
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements","value":{}}
+{"op":"add","path":"/state","value":{}}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l","align":"stretch","justify":"start","wrap":false},"children":["page-header","refresh-bar","kpi-row","search-bar","delayed-card","intransit-card","flagged-card","charts-row"]}}
+{"op":"add","path":"/elements/page-header","value":{"type":"CardHeader","props":{"title":"Logistics Coordinator Board","subtitle":"In-transit shipments, delayed exceptions, route search, and carrier volume"},"children":[]}}
+{"op":"add","path":"/elements/refresh-bar","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["refresh-text","refresh-badge"]}}
+{"op":"add","path":"/elements/refresh-text","value":{"type":"TextContent","props":{"text":{"$template":"Numbers last refreshed: ${/lastRefreshed}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/refresh-badge","value":{"type":"Badge","props":{"text":"Live feed","variant":"secondary"},"children":[]}}
+{"op":"add","path":"/state/lastRefreshed","value":"2026-02-22 09:20 UTC"}
+{"op":"add","path":"/elements/kpi-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"stretch","justify":"start","wrap":true},"children":["kpi-ontime-card","kpi-avgcost-card"]}}
+{"op":"add","path":"/elements/kpi-ontime-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["kpi-ontime-title","kpi-ontime-progress"]}}
+{"op":"add","path":"/elements/kpi-ontime-title","value":{"type":"TextContent","props":{"text":"On-time percentage this month","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/kpi-ontime-progress","value":{"type":"Progress","props":{"value":{"$state":"/onTimePercentage"},"label":{"$template":"${/onTimePercentage}% on time"}},"children":[]}}
+{"op":"add","path":"/state/onTimePercentage","value":92.4}
+{"op":"add","path":"/elements/kpi-avgcost-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["kpi-avgcost-title","kpi-avgcost-value"]}}
+{"op":"add","path":"/elements/kpi-avgcost-title","value":{"type":"TextContent","props":{"text":"Average cost per shipment","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/kpi-avgcost-value","value":{"type":"TextContent","props":{"text":{"$template":"US$ ${/avgCostPerShipment}"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/state/avgCostPerShipment","value":1284.55}
+{"op":"add","path":"/elements/search-bar","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"end","justify":"start","wrap":true},"children":["search-form-control","search-button","search-note"]}}
+{"op":"add","path":"/elements/search-form-control","value":{"type":"FormControl","props":{"label":"Search by route","hint":"Example: Shanghai → Los Angeles","input":"route-input"},"children":[]}}
+{"op":"add","path":"/elements/route-input","value":{"type":"Input","props":{"name":"routeSearch","placeholder":"Origin → Destination","type":"text","value":{"$bindState":"/routeSearch"}},"children":[]}}
+{"op":"add","path":"/elements/search-button","value":{"type":"Button","props":{"label":"Search route","variant":"primary","type":"normal","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/activeRouteSearch","value":{"$state":"/routeSearch"}}}},"children":[]}}
+{"op":"add","path":"/elements/search-note","value":{"type":"TextContent","props":{"text":{"$template":"Active route search: ${/activeRouteSearch}"},"size":"small"},"visible":{"$state":"/activeRouteSearch"},"children":[]}}
+{"op":"add","path":"/state/routeSearch","value":""}
+{"op":"add","path":"/state/activeRouteSearch","value":""}
+{"op":"add","path":"/elements/delayed-card","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["delayed-header","delayed-alert","delayed-list"]}}
+{"op":"add","path":"/elements/delayed-header","value":{"type":"CardHeader","props":{"title":"Delayed shipments","subtitle":"Called out for coordinator attention"},"children":[]}}
+{"op":"add","path":"/elements/delayed-alert","value":{"type":"Alert","props":{"title":"Delay exception","description":"The following shipments are running behind plan and need follow-up.","variant":"warning"},"children":[]}}
+{"op":"add","path":"/elements/delayed-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/delayedShipments","key":"id"},"children":["delayed-item"]}}
+{"op":"add","path":"/elements/delayed-item","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["delayed-route","delayed-eta","delayed-tag"]}}
+{"op":"add","path":"/elements/delayed-route","value":{"type":"TextContent","props":{"text":{"$template":"${origin} → ${destination}"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/delayed-eta","value":{"type":"TextContent","props":{"text":{"$template":"ETA ${eta}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/delayed-tag","value":{"type":"Tag","props":{"text":{"$item":"status"},"variant":"danger","size":"md"},"children":[]}}
+{"op":"add","path":"/state/delayedShipments","value":[]}
+{"op":"add","path":"/state/delayedShipments/0","value":{"id":"d-1","origin":"Los Angeles","destination":"Dallas","eta":"2026-02-24 18:30","status":"Delayed 6h"}}
+{"op":"add","path":"/state/delayedShipments/1","value":{"id":"d-2","origin":"Rotterdam","destination":"Lyon","eta":"2026-02-23 11:15","status":"Delayed 1d"}}
+{"op":"add","path":"/elements/intransit-card","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["intransit-header","intransit-list"]}}
+{"op":"add","path":"/elements/intransit-header","value":{"type":"CardHeader","props":{"title":"Shipments in transit","subtitle":"Origin, destination, ETA, and status"},"children":[]}}
+{"op":"add","path":"/elements/intransit-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/shipments","key":"id"},"children":["shipment-row"]}}
+{"op":"add","path":"/elements/shipment-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["shipment-route","shipment-eta","shipment-status","shipment-flag-button"]}}
+{"op":"add","path":"/elements/shipment-route","value":{"type":"TextContent","props":{"text":{"$template":"${origin} → ${destination}"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/shipment-eta","value":{"type":"TextContent","props":{"text":{"$template":"ETA ${eta}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/shipment-status","value":{"type":"Badge","props":{"text":{"$item":"status"},"variant":"secondary"},"children":[]}}
+{"op":"add","path":"/elements/shipment-flag-button","value":{"type":"Button","props":{"label":"Flag shipment","variant":"secondary","type":"normal","size":"small"},"on":{"press":{"action":"pushState","params":{"statePath":"/flaggedShipments","value":{"id":"$id","shipmentId":{"$item":"id"},"route":{"$item":"route"},"status":{"$item":"status"},"note":"Flagged from board"}}}},"children":[]}}
+{"op":"add","path":"/state/shipments","value":[]}
+{"op":"add","path":"/state/shipments/0","value":{"id":"s-1","origin":"Chicago","destination":"Atlanta","eta":"2026-02-23 16:00","status":"In Transit","route":"Chicago → Atlanta"}}
+{"op":"add","path":"/state/shipments/1","value":{"id":"s-2","origin":"Shanghai","destination":"Los Angeles","eta":"2026-03-02 08:15","status":"At Sea","route":"Shanghai → Los Angeles"}}
+{"op":"add","path":"/state/shipments/2","value":{"id":"s-3","origin":"Rotterdam","destination":"Lyon","eta":"2026-02-23 11:15","status":"Delayed 1d","route":"Rotterdam → Lyon"}}
+{"op":"add","path":"/state/shipments/3","value":{"id":"s-4","origin":"Dallas","destination":"Newark","eta":"2026-02-22 21:45","status":"Out for Delivery","route":"Dallas → Newark"}}
+{"op":"add","path":"/state/shipments/4","value":{"id":"s-5","origin":"Guangzhou","destination":"Hamburg","eta":"2026-03-05 06:30","status":"Customs Hold","route":"Guangzhou → Hamburg"}}
+{"op":"add","path":"/elements/flagged-card","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["flagged-header","flagged-list"]}}
+{"op":"add","path":"/elements/flagged-header","value":{"type":"CardHeader","props":{"title":"Flagged shipments","subtitle":"Escalations created from this board"},"children":[]}}
+{"op":"add","path":"/elements/flagged-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/flaggedShipments","key":"id"},"children":["flagged-item"]}}
+{"op":"add","path":"/elements/flagged-item","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["flagged-text","flagged-note","flagged-tag"]}}
+{"op":"add","path":"/elements/flagged-text","value":{"type":"TextContent","props":{"text":{"$template":"${route}"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/flagged-note","value":{"type":"TextContent","props":{"text":{"$template":"${note} • ${status}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/flagged-tag","value":{"type":"Tag","props":{"text":"Flagged","variant":"warning","size":"md"},"children":[]}}
+{"op":"add","path":"/state/flaggedShipments","value":[]}
+{"op":"add","path":"/state/flaggedShipments/0","value":{"id":"f-1","shipmentId":"s-3","route":"Rotterdam → Lyon","status":"Delayed 1d","note":"Customs hold; notify receiver"}}
+{"op":"add","path":"/elements/charts-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"l","align":"stretch","justify":"start","wrap":true},"children":["carrier-chart-card","weekly-chart-card"]}}
+{"op":"add","path":"/elements/carrier-chart-card","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["carrier-header","carrier-chart"]}}
+{"op":"add","path":"/elements/carrier-header","value":{"type":"CardHeader","props":{"title":"Volume split by carrier","subtitle":"Share of shipments this month"},"children":[]}}
+{"op":"add","path":"/elements/carrier-chart","value":{"type":"PieChart","props":{"labels":{"$state":"/carrierLabels"},"values":{"$state":"/carrierValues"},"variant":"donut","appearance":"circular"},"children":[]}}
+{"op":"add","path":"/state/carrierLabels","value":[]}
+{"op":"add","path":"/state/carrierLabels/0","value":"Northline Express"}
+{"op":"add","path":"/state/carrierLabels/1","value":"TransOceanic"}
+{"op":"add","path":"/state/carrierLabels/2","value":"RailBridge"}
+{"op":"add","path":"/state/carrierLabels/3","value":"SwiftFreight"}
+{"op":"add","path":"/state/carrierValues","value":[]}
+{"op":"add","path":"/state/carrierValues/0","value":38}
+{"op":"add","path":"/state/carrierValues/1","value":27}
+{"op":"add","path":"/state/carrierValues/2","value":21}
+{"op":"add","path":"/state/carrierValues/3","value":14}
+{"op":"add","path":"/elements/weekly-chart-card","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["weekly-header","weekly-chart"]}}
+{"op":"add","path":"/elements/weekly-header","value":{"type":"CardHeader","props":{"title":"Weekly volume","subtitle":"Past two months"},"children":[]}}
+{"op":"add","path":"/elements/weekly-chart","value":{"type":"BarChart","props":{"labels":{"$state":"/weeklyLabels"},"series":["weekly-series"],"variant":"grouped","xLabel":"Week","yLabel":"Shipments"},"children":[]}}
+{"op":"add","path":"/elements/weekly-series","value":{"type":"Series","props":{"category":"

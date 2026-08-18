@@ -1,0 +1,33 @@
+root = Card([header, statusBanner, deliveryDetails, progressTracker, problemSection])
+
+header = CardHeader("Package Tracking", "Tracking Number: #TRK-8942-0199")
+
+statusBanner = Alert("Out for Delivery", "Your driver is nearby and expected to arrive today.", "info")
+
+deliveryDetails = Table([colMetric, colDetail])
+colMetric = Col("Detail", ["Estimated Arrival", "Current Location", "Carrier", "Shipping Service"])
+colDetail = Col("Information", ["Today, Oct 24 (By 4:00 PM)", "Oakland, CA (0.8 miles away)", "SwiftParcel Express", "Priority Ground"])
+
+progressTracker = Steps([step1, step2, step3, step4])
+step1 = StepsItem("Order Processed", "Oct 22, 9:15 AM — Warehouse Facility, Sparks, NV")
+step2 = StepsItem("In Transit", "Oct 23, 2:30 PM — Regional Sorting Hub, Sacramento, CA")
+step3 = StepsItem("Out for Delivery", "Oct 24, 8:05 AM — Local Depot, Oakland, CA")
+step4 = StepsItem("Delivered", "Pending arrival")
+
+problemSection = SectionBlock([problemItem], true)
+problemItem = SectionItem("report-issue", "Report a Problem with this Delivery", [issueForm])
+
+issueForm = Form("report_issue_form", formButtons, [issueTypeField, issueNotesField])
+
+issueTypeField = FormControl("Issue Category", issueSelect)
+issueSelect = Select("issue_category", [opt1, opt2, opt3, opt4], "Select a reason...")
+opt1 = SelectItem("late", "Package is delayed")
+opt2 = SelectItem("wrong_address", "Incorrect delivery address")
+opt3 = SelectItem("instructions", "Special delivery instructions")
+opt4 = SelectItem("other", "Other shipment inquiry")
+
+issueNotesField = FormControl("Additional Details", issueNotesInput, "Provide any helpful details for customer support.")
+issueNotesInput = TextArea("issue_notes", "Describe your issue here...", 3)
+
+formButtons = Buttons([submitBtn])
+submitBtn = Button("Submit Report", null, "primary")

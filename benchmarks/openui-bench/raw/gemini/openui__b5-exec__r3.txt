@@ -1,0 +1,111 @@
+root = Card([header, topControls, kpiGrid, financialTrends, deptAnalysis, healthGrid, governanceGrid, followUps], "sunk", "column", "l")
+
+header = CardHeader("CEO Quarterly Command View", "Executive Performance Dashboard & Board Overview")
+
+topControls = Card([quarterSelectField, regionSelectField, exportButtons], "card", "row", "m", "center", "between")
+
+quarterSelectField = FormControl("Reporting Quarter", quarterSelect)
+quarterSelect = Select("quarter", [q4_24, q3_24, q2_24, q1_24], "Select Quarter", null, "Q4 2024")
+q4_24 = SelectItem("Q4 2024", "Q4 2024 (Current)")
+q3_24 = SelectItem("Q3 2024", "Q3 2024")
+q2_24 = SelectItem("Q2 2024", "Q2 2024")
+q1_24 = SelectItem("Q1 2024", "Q1 2024")
+
+regionSelectField = FormControl("Global Region", regionSelect)
+regionSelect = Select("region", [regGlobal, regNA, regEMEA, regAPAC], "Select Region", null, "global")
+regGlobal = SelectItem("global", "Global (All Regions)")
+regNA = SelectItem("na", "North America")
+regEMEA = SelectItem("emea", "EMEA")
+regAPAC = SelectItem("apac", "APAC")
+
+exportButtons = Buttons([exportPdfBtn, exportCsvBtn])
+exportPdfBtn = Button("Export Board Pack (PDF)", null, "primary")
+exportCsvBtn = Button("Export Raw Data (CSV)", null, "secondary")
+
+kpiGrid = Card([revKpi, costKpi, profitKpi, runwayKpi], "clear", "row", "m")
+
+revKpi = Card([revHeader, revVal, revBadge], "card", "column", "xs")
+revHeader = TextContent("Q4 Revenue", "small")
+revVal = Heading("$42.8M", "h2")
+revBadge = Badge("+14% YoY", "secondary")
+
+costKpi = Card([costHeader, costVal, costBadge], "card", "column", "xs")
+costHeader = TextContent("Q4 Operating Costs", "small")
+costVal = Heading("$31.2M", "h2")
+costBadge = Badge("2% Under Plan", "secondary")
+
+profitKpi = Card([profitHeader, profitVal, profitBadge], "card", "column", "xs")
+profitHeader = TextContent("Q4 Net Profit", "small")
+profitVal = Heading("$11.6M", "h2")
+profitBadge = Badge("27.1% Margin", "secondary")
+
+runwayKpi = Card([runwayHeader, runwayVal, runwayBadge], "card", "column", "xs")
+runwayHeader = TextContent("Cash Runway", "small")
+runwayVal = Heading("26 Months", "h2")
+runwayBadge = Badge("$84M Net Cash", "outline")
+
+financialTrends = Card([trendsHeader, finChart], "card", "column", "m")
+trendsHeader = CardHeader("Four-Quarter Financial Performance", "Revenue vs Operating Costs (Q1 - Q4 2024)")
+finChart = GroupedBarChart(["Q1 2024", "Q2 2024", "Q3 2024", "Q4 2024"], [revSeries, costSeries], "Quarter", "USD (Millions)")
+revSeries = Series("Revenue ($M)", [34.5, 37.2, 39.8, 42.8])
+costSeries = Series("Costs ($M)", [28.1, 29.4, 30.5, 31.2])
+
+deptAnalysis = Card([deptChartCard, deptTableCard], "clear", "row", "m")
+
+deptChartCard = Card([deptChartHeader, deptChart], "card", "column", "m")
+deptChartHeader = CardHeader("Department Budget vs Actual Plan", "Q4 Budget Allocation ($M)")
+deptChart = HorizontalBarChart(["Engineering", "Sales & Mktg", "Product", "Ops & G&A", "Customer Success"], [planBudgetSeries, actualBudgetSeries], "grouped", "USD ($M)", "Department")
+planBudgetSeries = Series("Target Plan", [12.5, 10.0, 4.5, 3.5, 2.5])
+actualBudgetSeries = Series("Actual Spend", [12.1, 10.4, 4.2, 3.4, 2.3])
+
+deptTableCard = Card([deptTableHeader, deptTable], "card", "column", "m")
+deptTableHeader = CardHeader("Department Headcount & Allocation", "Current FTE distribution and quarter-over-quarter growth")
+deptTable = Table([deptCol, headcountCol, growthCol, vacancyCol])
+deptCol = Col("Department", ["Engineering", "Sales & Marketing", "Product", "Operations & G&A", "Customer Success"])
+headcountCol = Col("Headcount (FTE)", [184, 126, 42, 35, 28])
+growthCol = Col("QoQ Change", ["+12", "+8", "+3", "+1", "+4"])
+vacancyCol = Col("Open Roles", [14, 9, 4, 2, 3])
+
+healthGrid = Card([salesMetricsCard, customerHealthCard], "clear", "row", "m")
+
+salesMetricsCard = Card([salesHeader, pipelineValText, winRateText, salesProgress], "card", "column", "m")
+salesHeader = CardHeader("Sales Pipeline & Conversion", "Current quarter deal health")
+pipelineValText = TextContent("Active Pipeline Value: **$148.5M**", "large-heavy")
+winRateText = TextContent("Qualified Win Rate: **31.4%** (+2.1% vs Q3 target)", "default")
+salesProgress = Progress(78, "Q4 Enterprise Quota Attainment (78%)")
+
+customerHealthCard = Card([custHeader, custCountText, churnText, npsText, npsProgress], "card", "column", "m")
+custHeader = CardHeader("Customer Base & Sentiment", "Account expansion and retention")
+custCountText = TextContent("Total Active Customers: **1,420** (+115 net new)", "large-heavy")
+churnText = TextContent("Net Revenue Churn: **-0.8%** (Expansion outpaced contraction)", "default")
+npsText = TextContent("Net Promoter Score (NPS): **+64**", "large-heavy")
+npsProgress = Progress(84, "Customer Satisfaction Rating (84%)")
+
+governanceGrid = Card([risksCard, initiativesCard, boardCard], "clear", "row", "m")
+
+risksCard = Card([risksHeader, risksTable], "card", "column", "m")
+risksHeader = CardHeader("Top Corporate Risks", "Key threats and assigned owners")
+risksTable = Table([riskCol, impactCol, ownerCol])
+riskCol = Col("Risk Factor", ["EU AI Act Regulatory Compliance", "Key Vendor Cloud Outage", "APAC Expansion Hiring Delay"])
+impactCol = Col("Severity", ["High", "High", "Medium"])
+ownerCol = Col("Owner", ["CISO (M. Chen)", "VP Infra (D. Ross)", "CRO (A. Vance)"])
+
+initiativesCard = Card([initHeader, initTable], "card", "column", "m")
+initHeader = CardHeader("Strategic Initiatives", "Execution status against annual goals")
+initTable = Table([initCol, statusCol, targetCol])
+initCol = Col("Initiative", ["Enterprise Platform v3.0", "ISO 27001 Recertification", "EMEA Data Center Launch"])
+statusCol = Col("Status", ["On Track", "Completed", "At Risk"])
+targetCol = Col("Target Date", ["Q1 2025", "Q4 2024", "Q1 2025"])
+
+boardCard = Card([boardHeader, boardList], "card", "column", "m")
+boardHeader = CardHeader("Next Board Meeting Agenda", "Dec 18, 2024 — Key Decision Items")
+boardList = ListBlock([boardItem1, boardItem2, boardItem3, boardItem4], "number")
+boardItem1 = ListItem("Approval of FY25 Operating Plan & Budget", "CFO presenting final proposed budget and hiring targets")
+boardItem2 = ListItem("Series C Extension & Capital Strategy", "Discussion on opportunistic M&A vs runway preservation")
+boardItem3 = ListItem("Executive Compensation & Equity Pool Refresh", "Compensation committee recommendation review")
+boardItem4 = ListItem("Product Roadmap & GenAI Monetization", "CTO presentation on technical defensibility")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Deep dive into Engineering headcount & hiring bottlenecks")
+f2 = FollowUpItem("Generate board slide deck for FY25 budget approval")
+f3 = FollowUpItem("Compare APAC win rate against EMEA performance")

@@ -1,0 +1,209 @@
+I'll build a comprehensive emergency response coordination center covering all 18 requirements.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "erc-main",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": { "primaryColor": "#D32F2F", "agentDisplayName": "Emergency Response Coordination Center" }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "erc-main",
+      "components": [
+        { "id": "root", "component": "Card", "direction": "column", "gap": "l", "children": ["hdr", "summary-row", "tabs-main"] },
+
+        { "id": "hdr", "component": "CardHeader", "title": "Emergency Response Coordination Center", "subtitle": "Live Operational Dashboard — Updated in real time" },
+
+        { "id": "summary-row", "component": "Card", "variant": "sunk", "direction": "row", "gap": "m", "wrap": true, "children": ["sev-card", "casualty-card", "resource-quick"] },
+
+        { "id": "sev-card", "component": "Card", "weight": 1, "direction": "column", "gap": "s", "children": ["sev-head", "sev-pie", "sev-alert"] },
+        { "id": "sev-head", "component": "Heading", "text": "Overall Severity Summary", "level": "h4" },
+        { "id": "sev-pie", "component": "PieChart", "variant": "donut", "labels": ["Critical", "High", "Moderate", "Low"], "values": [4, 7, 11, 9] },
+        { "id": "sev-alert", "component": "Alert", "variant": "destructive", "title": "Overall Status: CRITICAL", "description": "4 critical incidents active. Escalation protocol engaged." },
+
+        { "id": "casualty-card", "component": "Card", "weight": 1, "direction": "column", "gap": "s", "children": ["cas-head", "cas-rescued", "cas-casualty"] },
+        { "id": "cas-head", "component": "Heading", "text": "People Rescued & Casualties", "level": "h4" },
+        { "id": "cas-rescued", "component": "Progress", "value": 342, "label": "Rescued: 342 people" },
+        { "id": "cas-casualty", "component": "Callout", "variant": "warning", "title": "Casualties Reported", "description": "Injured: 87 · Deceased: 12 · Missing: 23" },
+
+        { "id": "resource-quick", "component": "Card", "weight": 1, "direction": "column", "gap": "s", "children": ["rq-head", "rq-tags"] },
+        { "id": "rq-head", "component": "Heading", "text": "Resources Available", "level": "h4" },
+        { "id": "rq-tags", "component": "TagBlock", "tags": ["🚒 Vehicles: 46", "👷 Personnel: 318", "📦 Supply Pallets: 1,240"] },
+
+        { "id": "tabs-main", "component": "Tabs", "items": ["tab-incidents", "tab-logistics", "tab-people", "tab-infra", "tab-tasks", "tab-actions"] },
+
+        { "id": "tab-incidents", "component": "TabItem", "value": "incidents", "trigger": "Incidents & Weather", "content": ["inc-head", "inc-table", "sev-sep", "weather-head", "weather-chart", "weather-tags"] },
+        { "id": "inc-head", "component": "Heading", "text": "Active Incidents by Zone", "level": "h3" },
+        { "id": "inc-table", "component": "Table", "columns": ["ic-zone", "ic-type", "ic-sev", "ic-status"] },
+        { "id": "ic-zone", "component": "Col", "label": "Zone", "type": "string", "data": ["Zone A - Riverside", "Zone B - Downtown", "Zone C - Hillcrest", "Zone D - Harbor", "Zone E - Industrial"] },
+        { "id": "ic-type", "component": "Col", "label": "Incident", "type": "string", "data": ["Flooding", "Structural Collapse", "Wildfire Edge", "Storm Surge", "Chemical Leak"] },
+        { "id": "ic-sev", "component": "Col", "label": "Severity", "type": "string", "data": ["Critical", "High", "Critical", "Moderate", "Critical"] },
+        { "id": "ic-status", "component": "Col", "label": "Status", "type": "string", "data": ["Active Response", "Search & Rescue", "Containment", "Monitoring", "Evacuation"] },
+        { "id": "sev-sep", "component": "Separator", "orientation": "horizontal" },
+        { "id": "weather-head", "component": "Heading", "text": "Weather Forecast — Next 48 Hours", "level": "h3" },
+        { "id": "weather-chart", "component": "LineChart", "variant": "natural", "xLabel": "Hours Ahead", "yLabel": "Value", "labels": ["0h", "6h", "12h", "18h", "24h", "30h", "36h", "42h", "48h"], "series": ["w-rain", "w-wind"] },
+        { "id": "w-rain", "component": "Series", "category": "Rainfall (mm)", "values": [42, 55, 68, 40, 22, 15, 30, 48, 25] },
+        { "id": "w-wind", "component": "Series", "category": "Wind (km/h)", "values": [35, 48, 62, 70, 55, 40, 33, 45, 38] },
+        { "id": "weather-tags", "component": "TagBlock", "tags": ["🌧 Heavy rain 12h", "💨 Peak wind 18h", "⚠️ Flood warning active"] },
+
+        { "id": "tab-logistics", "component": "TabItem", "value": "logistics", "trigger": "Logistics & Aid", "content": ["res-head", "res-bar", "shelter-head", "shelter-table", "hosp-head", "hosp-table", "don-head", "don-cards", "aid-head", "aid-list"] },
+        { "id": "res-head", "component": "Heading", "text": "Vehicles, Personnel & Supplies", "level": "h3" },
+        { "id": "res-bar", "component": "BarChart", "variant": "grouped", "xLabel": "Category", "yLabel": "Count", "labels": ["Vehicles", "Personnel", "Supplies (x10)"], "series": ["r-avail", "r-deployed"] },
+        { "id": "r-avail", "component": "Series", "category": "Available", "values": [46, 318, 124] },
+        { "id": "r-deployed", "component": "Series", "category": "Deployed", "values": [58, 402, 210] },
+
+        { "id": "shelter-head", "component": "Heading", "text": "Shelters — Capacity & Occupancy", "level": "h3" },
+        { "id": "shelter-table", "component": "Table", "columns": ["sh-name", "sh-cap", "sh-occ", "sh-status"] },
+        { "id": "sh-name", "component": "Col", "label": "Shelter", "type": "string", "data": ["Central High School", "Community Arena", "St. Mary's Hall", "North Rec Center"] },
+        { "id": "sh-cap", "component": "Col", "label": "Capacity", "type": "number", "data": [800, 1200, 350, 600] },
+        { "id": "sh-occ", "component": "Col", "label": "Occupancy", "type": "number", "data": [742, 980, 350, 415] },
+        { "id": "sh-status", "component": "Col", "label": "Status", "type": "string", "data": ["Near Full", "Space Available", "FULL", "Space Available"] },
+
+        { "id": "hosp-head", "component": "Heading", "text": "Nearby Hospitals — Free Beds", "level": "h3" },
+        { "id": "hosp-table", "component": "Table", "columns": ["h-name", "h-dist", "h-beds", "h-er"] },
+        { "id": "h-name", "component": "Col", "label": "Hospital", "type": "string", "data": ["General Medical Center", "Riverside Hospital", "St. Luke's", "County Trauma"] },
+        { "id": "h-dist", "component": "Col", "label": "Distance", "type": "string", "data": ["3.2 km", "5.8 km", "8.1 km", "11.4 km"] },
+        { "id": "h-beds", "component": "Col", "label": "Free Beds", "type": "number", "data": [24, 8, 41, 3] },
+        { "id": "h-er", "component": "Col", "label": "ER Status", "type": "string", "data": ["Open", "Diverting", "Open", "At Capacity"] },
+
+        { "id": "don-head", "component": "Heading", "text": "Donations Received", "level": "h3" },
+        { "id": "don-cards", "component": "Card", "variant": "sunk", "direction": "row", "gap": "m", "wrap": true, "children": ["don-money", "don-food", "don-goods"] },
+        { "id": "don-money", "component": "Card", "weight": 1, "children": ["dm-badge", "dm-text"] },
+        { "id": "dm-badge", "component": "Badge", "text": "Monetary", "variant": "default" },
+        { "id": "dm-text", "component": "TextContent", "text": "**$1,284,500** received from 8,412 donors", "size": "default" },
+        { "id": "don-food", "component": "Card", "weight": 1, "children": ["df-badge", "df-text"] },
+        { "id": "df-badge", "component": "Badge", "text": "Food & Water", "variant": "secondary" },
+        { "id": "df-text", "component": "TextContent", "text": "**62 tonnes** of food · **48,000 L** water", "size": "default" },
+        { "id": "don-goods", "component": "Card", "weight": 1, "children": ["dg-badge", "dg-text"] },
+        { "id": "dg-badge", "component": "Badge", "text": "Supplies", "variant": "outline" },
+        { "id": "dg-text", "component": "TextContent", "text": "**9,200** blankets · **3,100** hygiene kits", "size": "default" },
+
+        { "id": "aid-head", "component": "Heading", "text": "Aid Requests Awaiting Action", "level": "h3" },
+        { "id": "aid-list", "component": "ListBlock", "variant": "number", "items": ["aid-1", "aid-2", "aid-3", "aid-4"] },
+        { "id": "aid-1", "component": "ListItem", "title": "Medical supplies — Zone C", "subtitle": "Insulin & antibiotics, 200 units · URGENT", "actionLabel": "Assign" },
+        { "id": "aid-2", "component": "ListItem", "title": "Drinking water — Shelter St. Mary's", "subtitle": "5,000 L needed within 6h", "actionLabel": "Assign" },
+        { "id": "aid-3", "component": "ListItem", "title": "Generators — Zone A", "subtitle": "3 portable units for pump stations", "actionLabel": "Assign" },
+        { "id": "aid-4", "component": "ListItem", "title": "Baby formula — Community Arena", "subtitle": "Estimated 400 infants sheltered", "actionLabel": "Assign" },
+
+        { "id": "tab-people", "component": "TabItem", "value": "people", "trigger": "People & Volunteers", "content": ["vol-head", "vol-table"] },
+        { "id": "vol-head", "component": "Heading", "text": "Volunteers On Duty — Assignments", "level": "h3" },
+        { "id": "vol-table", "component": "Table", "columns": ["v-name", "v-role", "v-assign", "v-status"] },
+        { "id": "v-name", "component": "Col", "label": "Volunteer", "type": "string", "data": ["Maria Santos", "James Okoro", "Priya Nair", "Tom Becker", "Lena Fischer", "Omar Haddad"] },
+        { "id": "v-role", "component": "Col", "label": "Role", "type": "string", "data": ["Medic", "Logistics", "Search & Rescue", "Shelter Coord", "Comms", "Driver"] },
+        { "id": "v-assign", "component": "Col", "label": "Assignment", "type": "string", "data": ["Zone A Triage", "Central Depot", "Zone C Teams", "Community Arena", "Ops Center", "Supply Runs"] },
+        { "id": "v-status", "component": "Col", "label": "Status", "type": "string", "data": ["Active", "Active", "Active", "Active", "Active", "En Route"] },
+
+        { "id": "tab-infra", "component": "TabItem", "value": "infra", "trigger": "Routes & Infrastructure", "content": ["route-head", "route-table", "road-head", "road-list", "comm-head", "comm-switch"] },
+        { "id": "route-head", "component": "Heading", "text": "Evacuation Route Status", "level": "h3" },
+        { "id": "route-table", "component": "Table", "columns": ["rt-name", "rt-status", "rt-flow"] },
+        { "id": "rt-name", "component": "Col", "label": "Route", "type": "string", "data": ["Route 1 - Highway North", "Route 2 - Coastal Rd", "Route 3 - Valley Pass", "Route 4 - East Bridge"] },
+        { "id": "rt-status", "component": "Col", "label": "Status", "type": "string", "data": ["Open - Clear", "CLOSED - Flooded", "Open - Congested", "Restricted"] },
+        { "id": "rt-flow", "component": "Col", "label": "Flow", "type": "string", "data": ["Normal", "None", "Slow", "Emergency Only"] },
+
+        { "id": "road-head", "component": "Heading", "text": "Roads Closed", "level": "h3" },
+        { "id": "road-list", "component": "ListBlock", "variant": "number", "items": ["road-1", "road-2", "road-3"] },
+        { "id": "road-1", "component": "ListItem", "title": "Coastal Road (MP 4–12)", "subtitle": "Flooding — impassable" },
+        { "id": "road-2", "component": "ListItem", "title": "Mill Street Bridge", "subtitle": "Structural inspection pending" },
+        { "id": "road-3", "component": "ListItem", "title": "Industrial Ave", "subtitle": "Chemical hazard cordon" },
+
+        { "id": "comm-head", "component": "Heading", "text": "Communication Channels — Status", "level": "h3" },
+        { "id": "comm-switch", "component": "SwitchGroup", "name": "comms", "variant": "card", "items": ["cm-radio", "cm-cell", "cm-sat", "cm-internet", "cm-siren"] },
+        { "id": "cm-radio", "component": "SwitchItem", "name": "radio", "label": "VHF Radio Network", "description": "Primary field comms — UP", "defaultChecked": true },
+        { "id": "cm-cell", "component": "SwitchItem", "name": "cell", "label": "Cellular Network", "description": "Zone D tower down — DEGRADED", "defaultChecked": true },
+        { "id": "cm-sat", "component": "SwitchItem", "name": "sat", "label": "Satellite Uplink", "description": "Backup channel — UP", "defaultChecked": true },
+        { "id": "cm-internet", "component": "SwitchItem", "name": "internet", "label": "Fiber Internet", "description": "Ops center connection — DOWN", "defaultChecked": false },
+        { "id": "cm-siren", "component": "SwitchItem", "name": "siren", "label": "Public Siren System", "description": "All zones — UP", "defaultChecked": true },
+
+        { "id": "tab-tasks", "component": "TabItem", "value": "tasks", "trigger": "Open Tasks", "content": ["task-head", "task-table"] },
+        { "id": "task-head", "component": "Heading", "text": "Open Tasks & Assignees", "level": "h3" },
+        { "id": "task-table", "component": "Table", "columns": ["t-task", "t-assignee", "t-priority", "t-due"] },
+        { "id": "t-task", "component": "Col", "label": "Task", "type": "string", "data": ["Set up field hospital Zone A", "Restore Zone D cell tower", "Deliver water to St. Mary's", "Clear Mill St debris", "Register Arena evacuees"] },
+        { "id": "t-assignee", "component": "Col", "label": "Assignee", "type": "string", "data": ["Dr. Alvarez", "Comms Team 2", "Logistics Unit 4", "Engineering Crew A", "Reg. Desk Team"] },
+        { "id": "t-priority", "component": "Col", "label": "Priority", "type": "string", "data": ["Critical", "High", "High", "Medium", "Medium"] },
+        { "id": "t-due", "component": "Col", "label": "Due", "type": "string", "data": ["2h", "4h", "6h", "12h", "Ongoing"] },
+
+        { "id": "tab-actions", "component": "TabItem", "value": "actions", "trigger": "Actions", "content": ["act-intro", "req-form", "act-sep1", "bc-form", "act-sep2", "focus-form", "act-sep3", "sitrep-form"] },
+        { "id": "act-intro", "component": "TextContent", "text": "### Coordination Actions\nRequest resources, broadcast updates, focus operations, or file reports.", "size": "default" },
+
+        { "id": "req-form", "component": "Form", "name": "requestResources", "fields": ["rf-type", "rf-qty", "rf-zone", "rf-notes"], "buttons": "rf-btns" },
+        { "id": "rf-type", "component": "FormControl", "label": "Resource Type", "input": "rf-type-sel", "hint": "Select the type of resource needed" },
+        { "id": "rf-type-sel", "component": "Select", "name": "resourceType", "placeholder": "Choose type", "items": ["rft-1", "rft-2", "rft-3", "rft-4", "rft-5"] },
+        { "id": "rft-1", "component": "SelectItem", "value": "vehicles", "label": "Vehicles" },
+        { "id": "rft-2", "component": "SelectItem", "value": "personnel", "label": "Personnel" },
+        { "id": "rft-3", "component": "SelectItem", "value": "medical", "label": "Medical Supplies" },
+        { "id": "rft-4", "component": "SelectItem", "value": "water", "label": "Water" },
+        { "id": "rft-5", "component": "SelectItem", "value": "food", "label": "Food" },
+        { "id": "rf-qty", "component": "FormControl", "label": "Quantity", "input": "rf-qty-in", "hint": "Number of units required" },
+        { "id": "rf-qty-in", "component": "Input", "name": "quantity", "type": "number", "placeholder": "e.g. 50" },
+        { "id": "rf-zone", "component": "FormControl", "label": "Destination Zone", "input": "rf-zone-sel" },
+        { "id": "rf-zone-sel", "component": "Select", "name": "destZone", "placeholder": "Choose zone", "items": ["rfz-a", "rfz-b", "rfz-c", "rfz-d", "rfz-e"] },
+        { "id": "rfz-a", "component": "SelectItem", "value": "a", "label": "Zone A - Riverside" },
+        { "id": "rfz-b", "component": "SelectItem", "value": "b", "label": "Zone B - Downtown" },
+        { "id": "rfz-c", "component": "SelectItem", "value": "c", "label": "Zone C - Hillcrest" },
+        { "id": "rfz-d", "component": "SelectItem", "value": "d", "label": "Zone D - Harbor" },
+        { "id": "rfz-e", "component": "SelectItem", "value": "e", "label": "Zone E - Industrial" },
+        { "id": "rf-notes", "component": "FormControl", "label": "Notes", "input": "rf-notes-in" },
+        { "id": "rf-notes-in", "component": "TextArea", "name": "notes", "rows": 2, "placeholder": "Additional details or urgency" },
+        { "id": "rf-btns", "component": "Buttons", "buttons": ["rf-submit"] },
+        { "id": "rf-submit", "component": "Button", "label": "Request Resources", "variant": "primary", "action": ["submitResourceRequest"] },
+
+        { "id": "act-sep1", "component": "Separator", "orientation": "horizontal" },
+
+        { "id": "bc-form", "component": "Form", "name": "broadcastUpdate", "fields": ["bc-msg", "bc-audience"], "buttons": "bc-btns" },
+        { "id": "bc-msg", "component": "FormControl", "label": "Broadcast Message", "input": "bc-msg-in", "hint": "This will be sent to all active channels" },
+        { "id": "bc-msg-in", "component": "TextArea", "name": "message", "rows": 3, "placeholder": "Type the update to broadcast..." },
+        { "id": "bc-audience", "component": "FormControl", "label": "Audience", "input": "bc-aud-sel" },
+        { "id": "bc-aud-sel", "component": "Select", "name": "audience", "placeholder": "Choose recipients", "items": ["bca-1", "bca-2", "bca-3"] },
+        { "id": "bca-1", "component": "SelectItem", "value": "all", "label": "All Zones & Public" },
+        { "id": "bca-2", "component": "SelectItem", "value": "responders", "label": "Responders Only" },
+        { "id": "bca-3", "component": "SelectItem", "value": "shelters", "label": "Shelters Only" },
+        { "id": "bc-btns", "component": "Buttons", "buttons": ["bc-submit"] },
+        { "id": "bc-submit", "component": "Button", "label": "Broadcast Update", "variant": "primary", "action": ["sendBroadcast"] },
+
+        { "id": "act-sep2", "component": "Separator", "orientation": "horizontal" },
+
+        { "id": "focus-form", "component": "Form", "name": "focusZone", "fields": ["fz-sel"], "buttons": "fz-btns" },
+        { "id": "fz-sel", "component": "FormControl", "label": "Focus Operations on Zone", "input": "fz-radio", "hint": "Prioritizes dashboard and resource allocation for the selected zone" },
+        { "id": "fz-radio", "component": "RadioGroup", "name": "focusZone", "items": ["fzr-a", "fzr-b", "fzr-c", "fzr-d", "fzr-e"] },
+        { "id": "fzr-a", "component": "RadioItem", "value": "a", "label": "Zone A - Riverside", "description": "Critical - Flooding" },
+        { "id": "fzr-b", "component": "RadioItem", "value": "b", "label": "Zone B - Downtown", "description": "High - Structural" },
+        { "id": "fzr-c", "component": "RadioItem", "value": "c", "label": "Zone C - Hillcrest", "description": "Critical - Wildfire" },
+        { "id": "fzr-d", "component": "RadioItem", "value": "d", "label": "Zone D - Harbor", "description": "Moderate - Storm surge" },
+        { "id": "fzr-e", "component": "RadioItem", "value": "e", "label": "Zone E - Industrial", "description": "Critical - Chemical leak" },
+        { "id": "fz-btns", "component": "Buttons", "buttons": ["fz-submit"] },
+        { "id": "fz-submit", "component": "Button", "label": "Focus on Zone", "variant": "secondary", "action": ["focusOnZone"] },
+
+        { "id": "act-sep3", "component": "Separator", "orientation": "horizontal" },
+
+        { "id": "sitrep-form", "component": "Form", "name": "situationReport", "fields": ["sr-title", "sr-body", "sr-sev"], "buttons": "sr-btns" },
+        { "id": "sr-title", "component": "FormControl", "label": "Report Title", "input": "sr-title-in" },
+        { "id": "sr-title-in", "component": "Input", "name": "reportTitle", "type": "text", "placeholder": "e.g. 1800hrs Situation Report" },
+        { "id": "sr-body", "component": "FormControl", "label": "Situation Details", "input": "sr-body-in", "hint": "Summarize current status, actions taken, and needs" },
+        { "id": "sr-body-in", "component": "TextArea", "name": "reportBody", "rows": 5, "placeholder": "Describe the current situation..." },
+        { "id": "sr-sev", "component": "FormControl", "label": "Overall Severity", "input": "sr-sev-sel" },
+        { "id": "sr-sev-sel", "component": "Select", "name": "reportSeverity", "placeholder": "Choose level", "items": ["srs-1", "srs-2", "srs-3", "srs-4"] },
+        { "id": "srs-1", "component": "SelectItem", "value": "critical", "label": "Critical" },
+        { "id": "srs-2", "component": "SelectItem", "value": "high", "label": "High" },
+        { "id": "srs-3", "component": "SelectItem", "value": "moderate", "label": "Moderate" },
+        { "id": "srs-4", "component": "SelectItem", "value": "low", "label": "Low" },
+        { "id": "sr-btns", "component": "Buttons", "buttons": ["sr-submit"] },
+        { "id": "sr-submit", "component": "Button", "label": "File Situation Report", "variant": "primary", "action": ["fileSituationReport"] }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+The dashboard is organized into six tabs covering all 18 requirements:
+
+- **Incidents & Weather** — active incidents by zone with severity *(1)*, overall severity summary donut + alert *(2)*, and the 48-hour weather forecast *(6)*
+- **Logistics & Aid** — vehicles/personnel/supplies chart *(3)*, shelters with capacity & occupancy *(4)*, nearby hospitals with free beds *(13)*, donations received *(9)*, and aid requests awaiting action *(10)*
+- **People & Volunteers** — people rescued & casualties in the top summary *(7)*, and volunteers on duty with assignments *(8)*
+- **Routes & Infrastructure** — evacuation route status *(5)*, roads closed *(12)*, and communication channels with up/down toggles *(11)*
+- **Open Tasks** — tasks with assignees *(14)*
+- **Actions** — request more resources with type & quantity *(15)*, broadcast an update *(16)*, focus on one zone *(17)*, and file a situation report *(18)*

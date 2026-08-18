@@ -1,0 +1,69 @@
+root = Card([header, balances, scoreRow, txns, spending, bills, goal, transferForm, statementForm, alertsForm, actions])
+
+header = CardHeader("Good afternoon, Alex", "Your accounts at a glance")
+
+balances = Table([balName, balAmount])
+balName = Col("Account", ["Checking", "Savings", "Credit"])
+balAmount = Col("Balance", ["$4,285.12", "$18,940.00", "-$1,230.55"])
+
+scoreRow = Card([scoreLabel, scoreProgress, scoreBadge], "sunk", "column", "s")
+scoreLabel = Heading("Credit Score", "h4")
+scoreProgress = Progress(742, "742 — Very Good")
+scoreBadge = Badge("Up 12 pts this month", "secondary")
+
+txns = ListBlock([tx1, tx2, tx3, tx4, tx5])
+tx1 = ListItem("Whole Foods Market", "Groceries · Today", null, "Dispute")
+tx2 = ListItem("Shell Gas Station", "Transport · Yesterday", null, "Dispute")
+tx3 = ListItem("Netflix", "Subscriptions · Mar 3", null, "Dispute")
+tx4 = ListItem("Delta Airlines", "Travel · Mar 2", null, "Dispute")
+tx5 = ListItem("Starbucks", "Dining · Mar 1", null, "Dispute")
+
+spending = PieChart(spendLabels, spendValues, "donut")
+spendLabels = ["Groceries", "Dining", "Transport", "Subscriptions", "Travel"]
+spendValues = [640, 312, 185, 96, 540]
+
+bills = Table([billName, billDate, billAmount])
+billName = Col("Bill", ["Electric Co.", "Rent", "Car Insurance"])
+billDate = Col("Due", ["Mar 12", "Mar 15", "Mar 20"])
+billAmount = Col("Amount", ["$118.40", "$1,850.00", "$142.00"])
+
+goal = Card([goalLabel, goalProgress], "sunk", "column", "s")
+goalLabel = Heading("Vacation Savings Goal", "h4")
+goalProgress = Progress(64, "$3,200 of $5,000")
+
+transferForm = Form("transfer", transferButtons, [fromField, toField, amountField])
+fromField = FormControl("From account", fromSelect)
+fromSelect = Select("from", [fromChecking, fromSavings], "Select account")
+fromChecking = SelectItem("checking", "Checking — $4,285.12")
+fromSavings = SelectItem("savings", "Savings — $18,940.00")
+toField = FormControl("To account", toSelect)
+toSelect = Select("to", [toChecking, toSavings], "Select account")
+toChecking = SelectItem("checking", "Checking — $4,285.12")
+toSavings = SelectItem("savings", "Savings — $18,940.00")
+amountField = FormControl("Amount", amountInput)
+amountInput = Input("amount", "$0.00", "number")
+transferButtons = Buttons([transferBtn])
+transferBtn = Button("Transfer money", null, "primary")
+
+statementForm = Form("statement", statementButtons, [periodField])
+periodField = FormControl("Statement period", periodSelect)
+periodSelect = Select("period", [pMar, pFeb, pJan], "Choose a month")
+pMar = SelectItem("2024-03", "March 2024")
+pFeb = SelectItem("2024-02", "February 2024")
+pJan = SelectItem("2024-01", "January 2024")
+statementButtons = Buttons([statementBtn])
+statementBtn = Button("View statement", null, "secondary")
+
+alertsForm = Form("alerts", alertsButtons, [alertField])
+alertField = FormControl("Alert triggers", alertChecks)
+alertChecks = CheckBoxGroup("triggers", [alrtLarge, alrtLow, alrtDue, alrtForeign])
+alrtLarge = CheckBoxItem("Large purchases", "Notify over $200", "large", true)
+alrtLow = CheckBoxItem("Low balance", "Notify under $100", "low", true)
+alrtDue = CheckBoxItem("Bill due soon", "3 days before due date", "due", false)
+alrtForeign = CheckBoxItem("Foreign transactions", "Any purchase abroad", "foreign", false)
+alertsButtons = Buttons([alertsBtn])
+alertsBtn = Button("Save alert settings", null, "primary")
+
+actions = Buttons([freezeBtn, disputeBtn])
+freezeBtn = Button("Freeze credit line", null, "secondary", "destructive")
+disputeBtn = Button("Dispute a transaction", null, "tertiary")

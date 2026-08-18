@@ -1,0 +1,45 @@
+root = Card([header, refreshed, alerts, kpis, transitTable, carrierSplit, weeklyVolume, searchForm, flagForm, footer])
+
+header = CardHeader("Logistics Coordination Board", "Live shipment overview")
+
+refreshed = Badge("Last refreshed: today 09:42 AM", "secondary")
+
+alerts = Alert("2 shipments delayed", "SH-2043 (Chicago → Denver) and SH-2088 (Houston → Phoenix) are behind schedule", "warning")
+
+kpis = Card([onTime, avgCost], "sunk", "row", "l")
+onTime = Progress(93, "On-time this month: 93%")
+avgCost = TextContent("**Avg cost per shipment:** $412", "large-heavy")
+
+transitTable = Table([colId, colOrigin, colDest, colEta, colStatus])
+colId = Col("Shipment", ["SH-2041", "SH-2043", "SH-2057", "SH-2088", "SH-2094"])
+colOrigin = Col("Origin", ["Seattle", "Chicago", "Atlanta", "Houston", "Boston"])
+colDest = Col("Destination", ["Portland", "Denver", "Miami", "Phoenix", "New York"])
+colEta = Col("ETA", ["Today 4:00 PM", "Tomorrow 11:00 AM", "Today 8:30 PM", "Tomorrow 2:00 PM", "Today 6:15 PM"])
+colStatus = Col("Status", ["On time", "Delayed", "On time", "Delayed", "On time"])
+
+carrierSplit = PieChart(["FastFreight", "PrimeHaul", "RoadRunner", "CargoLink"], [38, 27, 21, 14], "donut")
+
+weeklyVolume = BarChart(["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"], [volSeries], "grouped", "Week", "Shipments")
+volSeries = Series("Volume", [420, 465, 510, 488, 502, 540, 575, 610])
+
+searchForm = Form("route-search", searchButtons, [originField, destField])
+originField = FormControl("Origin", originInput)
+originInput = Input("origin", "e.g. Chicago")
+destField = FormControl("Destination", destInput)
+destInput = Input("destination", "e.g. Denver")
+searchButtons = Buttons([searchBtn])
+searchBtn = Button("Search route", null, "primary")
+
+flagForm = Form("flag-shipment", flagButtons, [flagIdField, reasonField])
+flagIdField = FormControl("Shipment ID", flagIdInput)
+flagIdInput = Input("shipment_id", "e.g. SH-2043")
+reasonField = FormControl("Reason", reasonSelect)
+reasonSelect = Select("reason", [rDelay, rDamage, rMissing, rOther], "Select a reason")
+rDelay = SelectItem("delay", "Delay risk")
+rDamage = SelectItem("damage", "Damaged goods")
+rMissing = SelectItem("missing", "Missing items")
+rOther = SelectItem("other", "Other")
+flagButtons = Buttons([flagBtn])
+flagBtn = Button("Flag shipment", null, "secondary", "destructive")
+
+footer = TextContent("Data auto-refreshes every 15 minutes.", "small")

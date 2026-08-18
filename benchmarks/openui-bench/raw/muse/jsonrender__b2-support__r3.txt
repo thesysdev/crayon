@@ -1,0 +1,69 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["header","metricsRow","controlsRow","ticketsSection","newTicketDialog"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Support Lead — Morning View","subtitle":"Tuesday, Aug 19 • 8:30 AM • Queue overview for the day"},"children":[]}}
+{"op":"add","path":"/elements/metricsRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m"},"children":["openCard","responseCard"]}}
+{"op":"add","path":"/elements/openCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["openLabel","openValue","openSub"]}}
+{"op":"add","path":"/elements/openLabel","value":{"type":"TextContent","props":{"text":"Open Tickets","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/openValue","value":{"type":"TextContent","props":{"text":{"$template":"${/stats/openTickets}"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/openSub","value":{"type":"TextContent","props":{"text":"12 awaiting triage • 8 in progress • 3 overdue","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/responseCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["respLabel","respValue","respSub"]}}
+{"op":"add","path":"/elements/respLabel","value":{"type":"TextContent","props":{"text":"Avg First-Response Time","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/respValue","value":{"type":"TextContent","props":{"text":{"$state":"/stats/avgResponseTime"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/respSub","value":{"type":"TextContent","props":{"text":"SLA target: 2h • ↓ 18% vs yesterday • p95: 3h 10m","size":"small"},"children":[]}}
+{"op":"add","path":"/state/stats","value":{"openTickets":20,"avgResponseTime":"1h 42m"}}
+{"op":"add","path":"/elements/controlsRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"center","justify":"between"},"children":["filterGroup","newTicketDialog"]}}
+{"op":"add","path":"/elements/filterGroup","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center"},"children":["filterLabel","filterButtons"]}}
+{"op":"add","path":"/elements/filterLabel","value":{"type":"TextContent","props":{"text":"Filter:","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/filterButtons","value":{"type":"Buttons","props":{"direction":"row"},"children":["btnAll","btnHigh"]}}
+{"op":"add","path":"/elements/btnAll","value":{"type":"Button","props":{"label":"All tickets","variant":{"$cond":{"$state":"/showHighOnly","eq":true},"$then":"secondary","$else":"primary"},"size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/showHighOnly","value":false}}},"children":[]}}
+{"op":"add","path":"/elements/btnHigh","value":{"type":"Button","props":{"label":"High priority only","variant":{"$cond":{"$state":"/showHighOnly","eq":true},"$then":"primary","$else":"secondary"},"size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/showHighOnly","value":true}}},"children":[]}}
+{"op":"add","path":"/state/showHighOnly","value":false}
+{"op":"add","path":"/elements/ticketsSection","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["ticketsHeader","allTicketsList","highTicketsList","emptyHighState"]}}
+{"op":"add","path":"/elements/ticketsHeader","value":{"type":"CardHeader","props":{"title":"Five Most Recent Tickets","subtitle":"Sorted by newest first • Priority shown for each"},"children":[]}}
+{"op":"add","path":"/elements/allTicketsList","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/tickets","key":"id"},"children":["ticketCard"],"visible":{"$or":[{"$state":"/showHighOnly","eq":false},{"$state":"/showHighOnly","not":true}]}}}
+{"op":"add","path":"/elements/highTicketsList","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/highPriorityTickets","key":"id"},"children":["ticketCardHigh"],"visible":{"$state":"/showHighOnly","eq":true}}}
+{"op":"add","path":"/elements/ticketCard","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["ticketTopRow","ticketMetaRow","ticketStatusRow"]}}
+{"op":"add","path":"/elements/ticketTopRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center","justify":"between"},"children":["ticketTitle","ticketPriorityBadge"]}}
+{"op":"add","path":"/elements/ticketTitle","value":{"type":"TextContent","props":{"text":{"$item":"subject"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/ticketPriorityBadge","value":{"type":"Badge","props":{"text":{"$item":"priority"},"variant":"secondary"},"children":[]}}
+{"op":"add","path":"/elements/ticketMetaRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center"},"children":["ticketIdText","ticketTimeText"]}}
+{"op":"add","path":"/elements/ticketIdText","value":{"type":"TextContent","props":{"text":{"$template":"${id} • ${customer}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/ticketTimeText","value":{"type":"TextContent","props":{"text":{"$template":"• ${created}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/ticketStatusRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center","justify":"between"},"children":["ticketAssigneeText","ticketStatusBadge"]}}
+{"op":"add","path":"/elements/ticketAssigneeText","value":{"type":"TextContent","props":{"text":{"$template":"Assignee: ${assignee}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/ticketStatusBadge","value":{"type":"Tag","props":{"text":{"$item":"status"},"variant":"neutral","size":"sm"},"children":[]}}
+{"op":"add","path":"/elements/ticketCardHigh","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["ticketTopRowHigh","ticketMetaRowHigh","ticketStatusRowHigh"]}}
+{"op":"add","path":"/elements/ticketTopRowHigh","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center","justify":"between"},"children":["ticketTitleHigh","ticketPriorityBadgeHigh"]}}
+{"op":"add","path":"/elements/ticketTitleHigh","value":{"type":"TextContent","props":{"text":{"$item":"subject"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/ticketPriorityBadgeHigh","value":{"type":"Badge","props":{"text":{"$item":"priority"},"variant":"destructive"},"children":[]}}
+{"op":"add","path":"/elements/ticketMetaRowHigh","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center"},"children":["ticketIdTextHigh","ticketTimeTextHigh"]}}
+{"op":"add","path":"/elements/ticketIdTextHigh","value":{"type":"TextContent","props":{"text":{"$template":"${id} • ${customer}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/ticketTimeTextHigh","value":{"type":"TextContent","props":{"text":{"$template":"• ${created}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/ticketStatusRowHigh","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center","justify":"between"},"children":["ticketAssigneeTextHigh","ticketStatusBadgeHigh"]}}
+{"op":"add","path":"/elements/ticketAssigneeTextHigh","value":{"type":"TextContent","props":{"text":{"$template":"Assignee: ${assignee}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/ticketStatusBadgeHigh","value":{"type":"Tag","props":{"text":{"$item":"status"},"variant":"neutral","size":"sm"},"children":[]}}
+{"op":"add","path":"/elements/emptyHighState","value":{"type":"Callout","props":{"variant":"info","title":"High priority filter active","description":"Showing 3 of 5 recent tickets that are High priority."},"visible":{"$state":"/showHighOnly","eq":true},"children":[]}}
+{"op":"add","path":"/state/tickets","value":[]}
+{"op":"add","path":"/state/tickets/0","value":{"id":"T-8841","subject":"Checkout payment webhook timeout","priority":"High","customer":"Acme Co","created":"8:12 AM","status":"Open","assignee":"Unassigned"}}
+{"op":"add","path":"/state/tickets/1","value":{"id":"T-8840","subject":"SSO login loop for EU users","priority":"High","customer":"Northwind Traders","created":"7:55 AM","status":"Open","assignee":"Maya P."}}
+{"op":"add","path":"/state/tickets/2","value":{"id":"T-8839","subject":"CSV export missing columns","priority":"Medium","customer":"Contoso Ltd","created":"7:41 AM","status":"Open","assignee":"Jon K."}}
+{"op":"add","path":"/state/tickets/3","value":{"id":"T-8838","subject":"Mobile app crash on iOS 17.4","priority":"High","customer":"Fabrikam Inc","created":"7:20 AM","status":"In Progress","assignee":"Sasha L."}}
+{"op":"add","path":"/state/tickets/4","value":{"id":"T-8837","subject":"Billing invoice PDF formatting","priority":"Low","customer":"Adventure Works","created":"6:58 AM","status":"Open","assignee":"Unassigned"}}
+{"op":"add","path":"/state/highPriorityTickets","value":[]}
+{"op":"add","path":"/state/highPriorityTickets/0","value":{"id":"T-8841","subject":"Checkout payment webhook timeout","priority":"High","customer":"Acme Co","created":"8:12 AM","status":"Open","assignee":"Unassigned"}}
+{"op":"add","path":"/state/highPriorityTickets/1","value":{"id":"T-8840","subject":"SSO login loop for EU users","priority":"High","customer":"Northwind Traders","created":"7:55 AM","status":"Open","assignee":"Maya P."}}
+{"op":"add","path":"/state/highPriorityTickets/2","value":{"id":"T-8838","subject":"Mobile app crash on iOS 17.4","priority":"High","customer":"Fabrikam Inc","created":"7:20 AM","status":"In Progress","assignee":"Sasha L."}}
+{"op":"add","path":"/elements/newTicketDialog","value":{"type":"DialogBlock","props":{"triggerLabel":"＋ New Ticket","title":"Open a new ticket","description":"Add it to the queue. It will appear in the 5 most recent."},"children":["newTicketForm"]}}
+{"op":"add","path":"/elements/newTicketForm","value":{"type":"Form","props":{"name":"newTicketForm"},"children":["fieldSubject","fieldPriority","fieldCustomer","newTicketFormButtons"]}}
+{"op":"add","path":"/elements/fieldSubject","value":{"type":"FormControl","props":{"label":"Subject","input":"inputSubject","hint":"Brief summary of the issue"},"children":[]}}
+{"op":"add","path":"/elements/inputSubject","value":{"type":"Input","props":{"name":"subject","placeholder":"e.g. Login fails on SSO for EU users","value":{"$bindState":"/newTicket/subject"}},"children":[]}}
+{"op":"add","path":"/elements/fieldPriority","value":{"type":"FormControl","props":{"label":"Priority","input":"selectPriority"},"children":[]}}
+{"op":"add","path":"/elements/selectPriority","value":{"type":"Select","props":{"name":"priority","placeholder":"Select priority","items":["optHigh","optMedium","optLow"],"value":{"$bindState":"/newTicket/priority"}},"children":[]}}
+{"op":"add","path":"/elements/optHigh","value":{"type":"SelectItem","props":{"value":"High","label":"High — P1"},"children":[]}}
+{"op":"add","path":"/elements/optMedium","value":{"type":"SelectItem","props":{"value":"Medium","label":"Medium — P2"},"children":[]}}
+{"op":"add","path":"/elements/optLow","value":{"type":"SelectItem","props":{"value":"Low","label":"Low — P3"},"children":[]}}
+{"op":"add","path":"/elements/fieldCustomer","value":{"type":"FormControl","props":{"label":"Customer","input":"inputCustomer"},"children":[]}}
+{"op":"add","path":"/elements/inputCustomer","value":{"type":"Input","props":{"name":"customer","placeholder":"Customer name or email","value":{"$bindState":"/newTicket/customer"}},"children":[]}}
+{"op":"add","path":"/elements/newTicketFormButtons","value":{"type":"Buttons","props":{"direction":"row"},"children":["btnCreateTicket"]}}
+{"op":"add","path":"/elements/btnCreateTicket","value":{"type":"Button","props":{"label":"Create Ticket","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/tickets","value":{"id":"$id","subject":{"$state":"/newTicket/subject"},"priority":{"$state":"/newTicket/priority"},"customer":{"$state":"/newTicket/customer"},"created":"Just now","status":"Open","assignee":"Unassigned"},"clearStatePath":"/newTicket/subject"}}},"children":[]}}
+{"op":"add","path":"/state/newTicket","value":{"subject":"","priority":"","customer":""}}

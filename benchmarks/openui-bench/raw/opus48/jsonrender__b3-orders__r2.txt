@@ -1,0 +1,50 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","metrics","charts-row","controls","orders-section"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Operations Desk","subtitle":"Real-time order monitoring & fulfillment"}}}
+{"op":"add","path":"/elements/metrics","value":{"type":"Card","props":{"direction":"row","gap":"m","justify":"between"},"children":["metric-orders","metric-revenue","metric-aov","metric-refund"]}}
+{"op":"add","path":"/elements/metric-orders","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["metric-orders-label","metric-orders-value"]}}
+{"op":"add","path":"/elements/metric-orders-label","value":{"type":"TextContent","props":{"text":"Orders Placed Today","size":"small"}}}
+{"op":"add","path":"/elements/metric-orders-value","value":{"type":"Heading","props":{"text":{"$template":"${/stats/ordersToday}"},"level":"h2"}}}
+{"op":"add","path":"/elements/metric-revenue","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["metric-revenue-label","metric-revenue-value"]}}
+{"op":"add","path":"/elements/metric-revenue-label","value":{"type":"TextContent","props":{"text":"Revenue Today","size":"small"}}}
+{"op":"add","path":"/elements/metric-revenue-value","value":{"type":"Heading","props":{"text":{"$template":"$${/stats/revenueToday}"},"level":"h2"}}}
+{"op":"add","path":"/elements/metric-aov","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["metric-aov-label","metric-aov-value"]}}
+{"op":"add","path":"/elements/metric-aov-label","value":{"type":"TextContent","props":{"text":"Average Order Value","size":"small"}}}
+{"op":"add","path":"/elements/metric-aov-value","value":{"type":"Heading","props":{"text":{"$template":"$${/stats/avgOrderValue}"},"level":"h2"}}}
+{"op":"add","path":"/elements/metric-refund","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["metric-refund-label","metric-refund-value"]}}
+{"op":"add","path":"/elements/metric-refund-label","value":{"type":"TextContent","props":{"text":"Refund Rate (This Month)","size":"small"}}}
+{"op":"add","path":"/elements/metric-refund-value","value":{"type":"Heading","props":{"text":{"$template":"${/stats/refundRate}%"},"level":"h2"}}}
+{"op":"add","path":"/state/stats","value":{"ordersToday":142,"revenueToday":"18,940","avgOrderValue":"133.38","refundRate":"3.2"}}
+{"op":"add","path":"/elements/charts-row","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["charts-header","volume-chart"]}}
+{"op":"add","path":"/elements/charts-header","value":{"type":"Heading","props":{"text":"Order Volume — Past Four Weeks","level":"h3"}}}
+{"op":"add","path":"/elements/volume-chart","value":{"type":"BarChart","props":{"labels":["Week 1","Week 2","Week 3","Week 4"],"series":["volume-series"],"xLabel":"Week","yLabel":"Orders"}}}
+{"op":"add","path":"/elements/volume-series","value":{"type":"Series","props":{"category":"Orders","values":[820,910,875,1024]}}}
+{"op":"add","path":"/elements/controls","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"end"},"children":["search-control","status-control"]}}
+{"op":"add","path":"/elements/search-control","value":{"type":"FormControl","props":{"label":"Search by Customer","input":"search-input"}}}
+{"op":"add","path":"/elements/search-input","value":{"type":"Input","props":{"name":"customerSearch","placeholder":"Customer name...","type":"text","value":{"$bindState":"/filters/search"}}}}
+{"op":"add","path":"/state/filters","value":{"search":"","status":"all"}}
+{"op":"add","path":"/elements/status-control","value":{"type":"FormControl","props":{"label":"Filter by Status","input":"status-select"}}}
+{"op":"add","path":"/elements/status-select","value":{"type":"Select","props":{"name":"statusFilter","placeholder":"All statuses","value":{"$bindState":"/filters/status"},"items":["opt-all","opt-pending","opt-processing","opt-fulfilled","opt-refunded"]}}}
+{"op":"add","path":"/elements/opt-all","value":{"type":"SelectItem","props":{"value":"all","label":"All Statuses"}}}
+{"op":"add","path":"/elements/opt-pending","value":{"type":"SelectItem","props":{"value":"pending","label":"Pending"}}}
+{"op":"add","path":"/elements/opt-processing","value":{"type":"SelectItem","props":{"value":"processing","label":"Processing"}}}
+{"op":"add","path":"/elements/opt-fulfilled","value":{"type":"SelectItem","props":{"value":"fulfilled","label":"Fulfilled"}}}
+{"op":"add","path":"/elements/opt-refunded","value":{"type":"SelectItem","props":{"value":"refunded","label":"Refunded"}}}
+{"op":"add","path":"/elements/orders-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["orders-header","orders-list"]}}
+{"op":"add","path":"/elements/orders-header","value":{"type":"Heading","props":{"text":"Recent Orders","level":"h3"}}}
+{"op":"add","path":"/elements/orders-list","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"repeat":{"statePath":"/orders","key":"id"},"children":["order-row"]}}
+{"op":"add","path":"/elements/order-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between"},"children":["order-info","order-total","order-status","order-action"]}}
+{"op":"add","path":"/elements/order-info","value":{"type":"Card","props":{"direction":"column","gap":"none"},"children":["order-id","order-customer"]}}
+{"op":"add","path":"/elements/order-id","value":{"type":"TextContent","props":{"text":{"$template":"#${id}"},"size":"small-heavy"}}}
+{"op":"add","path":"/elements/order-customer","value":{"type":"TextContent","props":{"text":{"$item":"customer"},"size":"small"}}}
+{"op":"add","path":"/elements/order-total","value":{"type":"TextContent","props":{"text":{"$template":"$${total}"},"size":"default"}}}
+{"op":"add","path":"/elements/order-status","value":{"type":"Badge","props":{"text":{"$item":"status"},"variant":"secondary"}}}
+{"op":"add","path":"/elements/order-action","value":{"type":"Button","props":{"label":"Mark Fulfilled","variant":"primary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":{"$item":"status"},"value":"fulfilled"}}}}}
+{"op":"add","path":"/state/orders","value":[]}
+{"op":"add","path":"/state/orders/0","value":{"id":"10241","customer":"Ava Thompson","total":"249.00","status":"pending"}}
+{"op":"add","path":"/state/orders/1","value":{"id":"10242","customer":"Liam Chen","total":"89.50","status":"processing"}}
+{"op":"add","path":"/state/orders/2","value":{"id":"10243","customer":"Sofia Martinez","total":"412.75","status":"fulfilled"}}
+{"op":"add","path":"/state/orders/3","value":{"id":"10244","customer":"Noah Patel","total":"134.20","status":"pending"}}
+{"op":"add","path":"/state/orders/4","value":{"id":"10245","customer":"Emma Johnson","total":"67.99","status":"refunded"}}
+{"op":"add","path":"/state/orders/5","value":{"id":"10246","customer":"Oliver Kim","total":"318.00","status":"processing"}}
+{"op":"add","path":"/state/orders/6","value":{"id":"10247","customer":"Mia Rodriguez","total":"199.99","status":"pending"}}

@@ -1,0 +1,84 @@
+root = Card([header, kpis, riskAlert, timeframe, positions, exposure, gainersLosers, watchlist, orders, headlines, econ, strategy, drawdown, riskLimits, actions])
+
+header = CardHeader("Morning Workspace", "Trading Desk — Global Macro")
+
+kpis = Table([kpiName, kpiValue])
+kpiName = Col("Metric", ["Portfolio Value", "P&L Today", "Value at Risk (1d, 95%)", "Margin In Use"])
+kpiValue = Col("Value", ["$48,240,600", "+$312,480 (+0.65%)", "$1,184,000", "$9,620,000 (42%)"])
+
+riskAlert = Alert("Risk limits nearing breach", "2 limits are within 10% of their threshold — review before adding exposure", "warning")
+
+timeframe = Form("timeframe", tfButtons, [tfField])
+tfField = FormControl("Timeframe", tfSelect)
+tfSelect = Select("range", [tf1d, tf1w, tf1m, tfYtd], "Select range")
+tf1d = SelectItem("1d", "Today")
+tf1w = SelectItem("1w", "This Week")
+tf1m = SelectItem("1m", "This Month")
+tfYtd = SelectItem("ytd", "Year to Date")
+tfButtons = Buttons([tfApply])
+tfApply = Button("Apply", null, "secondary")
+
+positions = Table([posTicker, posSize, posEntry, posCurrent])
+posTicker = Col("Ticker", ["AAPL", "MSFT", "NVDA", "TSLA", "AMZN"])
+posSize = Col("Size", [12000, 8500, 4200, -3000, 6000], "number")
+posEntry = Col("Entry", [212.40, 418.10, 118.60, 244.20, 178.30], "number")
+posCurrent = Col("Current", [215.80, 421.50, 124.10, 238.90, 181.60], "number")
+
+exposure = PieChart(exposureLabels, exposureValues, "donut")
+exposureLabels = ["Technology", "Financials", "Energy", "Healthcare", "Consumer"]
+exposureValues = [38, 22, 15, 14, 11]
+
+gainersLosers = BarChart(glLabels, [glSeries], "grouped", "Instrument", "% Change")
+glLabels = ["NVDA", "AAPL", "AMZN", "TSLA", "META"]
+glSeries = Series("Change %", [4.6, 1.6, 1.9, -2.2, -3.4])
+
+watchlist = Table([wTicker, wPrice])
+wTicker = Col("Ticker", ["GOOGL", "AMD", "COIN", "SPY", "GLD"])
+wPrice = Col("Price", [174.20, 162.80, 248.90, 592.40, 251.30], "number")
+
+orders = Table([oTicker, oSide, oQty, oType, oStatus])
+oTicker = Col("Ticker", ["MSFT", "NVDA", "TSLA"])
+oSide = Col("Side", ["Buy", "Buy", "Sell"])
+oQty = Col("Qty", [2000, 1500, 1000], "number")
+oType = Col("Type", ["Limit 419.00", "Limit 122.00", "Stop 235.00"])
+oStatus = Col("Status", ["Working", "Working", "Working"])
+
+headlines = ListBlock([hl1, hl2, hl3])
+hl1 = ListItem("Fed signals patience on rate cuts", "Sentiment: Neutral — rates markets muted")
+hl2 = ListItem("NVDA supplier raises Q3 guidance", "Sentiment: Positive — chip demand strong")
+hl3 = ListItem("Oil slips on demand concerns", "Sentiment: Negative — energy names under pressure")
+
+econ = Table([ecDay, ecEvent, ecForecast])
+ecDay = Col("Day", ["Mon", "Tue", "Wed", "Thu", "Fri"])
+ecEvent = Col("Release", ["ISM Manufacturing", "JOLTS Openings", "FOMC Minutes", "CPI", "Nonfarm Payrolls"])
+ecForecast = Col("Forecast", ["48.9", "8.1M", "—", "3.2% YoY", "185K"])
+
+strategy = HorizontalBarChart(stratLabels, [stratSeries], "grouped", "Return %", "Strategy")
+stratLabels = ["Global Macro", "Stat Arb", "Long/Short", "Vol Carry", "Trend"]
+stratSeries = Series("YTD Return %", [14.2, 8.6, 11.9, -3.1, 6.4])
+
+drawdown = AreaChart(ddLabels, [ddSeries], "natural", "Month", "Drawdown %")
+ddLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+ddSeries = Series("Drawdown", [-2.1, -4.8, -3.2, -1.5, -6.4, -5.1, -2.9, -1.2, -3.6, -4.2, -2.0, -1.1])
+
+riskLimits = Table([rlName, rlUsage, rlStatus])
+rlName = Col("Limit", ["Gross Exposure", "Sector Tech Cap", "Single Name Cap", "VaR Budget"])
+rlUsage = Col("Usage", ["94%", "96%", "71%", "88%"])
+rlStatus = Col("Status", ["Near breach", "Near breach", "OK", "Watch"])
+
+actions = Buttons([rebalanceBtn, orderBtn])
+rebalanceBtn = Button("Rebalance Portfolio", null, "primary")
+
+orderBtn = DialogBlock("Place Order", "New Order", "Enter order details", [orderForm], "default")
+orderForm = Form("place-order", orderFormButtons, [ofTicker, ofSide, ofQty])
+ofTicker = FormControl("Ticker", ofTickerInput)
+ofTickerInput = Input("ticker", "e.g. AAPL")
+ofSide = FormControl("Side", ofSideRadio)
+ofSideRadio = RadioGroup("side", [ofBuy, ofSell], "buy")
+ofBuy = RadioItem("Buy", "Open or add long", "buy")
+ofSell = RadioItem("Sell", "Close or short", "sell")
+ofQty = FormControl("Quantity", ofQtyInput)
+ofQtyInput = Input("qty", "0", "number")
+orderFormButtons = Buttons([ofSubmit, ofCancel])
+ofSubmit = Button("Submit Order", null, "primary")
+ofCancel = Button("Cancel", null, "tertiary")

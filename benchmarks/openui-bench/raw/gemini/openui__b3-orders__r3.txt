@@ -1,0 +1,74 @@
+root = Card([header, kpiGrid, analyticsGrid, ordersSection, followUp])
+
+header = CardHeader("E-Commerce Operations Desk", "Real-time order management, metrics, and fulfillment")
+
+kpiGrid = Card([kpiOrders, kpiRevenue, kpiAOV, kpiRefund], "clear", "row", "m", "stretch")
+
+kpiOrders = Card([kpiOrdersHeader, kpiOrdersVal, kpiOrdersBadge], "card", "column", "xs")
+kpiOrdersHeader = TextContent("Orders Placed Today", "small-heavy")
+kpiOrdersVal = TextContent("142", "large-heavy")
+kpiOrdersBadge = Badge("+12% vs yesterday", "secondary")
+
+kpiRevenue = Card([kpiRevHeader, kpiRevVal, kpiRevBadge], "card", "column", "xs")
+kpiRevHeader = TextContent("Revenue Today", "small-heavy")
+kpiRevVal = TextContent("$18,450.00", "large-heavy")
+kpiRevBadge = Badge("+8% vs yesterday", "secondary")
+
+kpiAOV = Card([kpiAOVHeader, kpiAOVVal, kpiAOVBadge], "card", "column", "xs")
+kpiAOVHeader = TextContent("Average Order Value", "small-heavy")
+kpiAOVVal = TextContent("$129.93", "large-heavy")
+kpiAOVBadge = Badge("+$4.20 vs avg", "outline")
+
+kpiRefund = Card([kpiRefundHeader, kpiRefundVal, kpiRefundProgress], "card", "column", "xs")
+kpiRefundHeader = TextContent("Refund Rate (This Month)", "small-heavy")
+kpiRefundVal = TextContent("1.8%", "large-heavy")
+kpiRefundProgress = Progress(1.8, "Target: < 2.5%")
+
+analyticsGrid = Card([analyticsTitle, volumeChart], "sunk", "column", "m")
+analyticsTitle = Heading("Order Volume (Past 4 Weeks)", "h4")
+volumeChart = LineChart(["Week 1", "Week 2", "Week 3", "Week 4"], [volumeSeries], "natural", "Timeline", "Orders")
+volumeSeries = Series("Completed Orders", [720, 850, 910, 1040])
+
+ordersSection = Card([ordersTitle, filterForm, ordersTable, fulfillmentDialog], "card", "column", "m")
+ordersTitle = Heading("Recent Orders", "h3")
+
+filterForm = Form("order-filters", filterButtons, [searchField, statusField])
+searchField = FormControl("Search Customer", searchInput, "Search by customer name")
+searchInput = Input("customer_search", "e.g. Sarah Jenkins", "text")
+
+statusField = FormControl("Filter by Status", statusSelect, "Narrow orders by fulfillment state")
+statusSelect = Select("status_filter", [optAll, optPending, optProcessing, optFulfilled, optRefunded], "All Statuses")
+optAll = SelectItem("all", "All Statuses")
+optPending = SelectItem("pending", "Pending")
+optProcessing = SelectItem("processing", "Processing")
+optFulfilled = SelectItem("fulfilled", "Fulfilled")
+optRefunded = SelectItem("refunded", "Refunded")
+
+filterButtons = Buttons([btnApply, btnReset])
+btnApply = Button("Apply Filters", null, "primary", "normal", "small")
+btnReset = Button("Reset", null, "tertiary", "normal", "small")
+
+ordersTable = Table([colId, colCustomer, colTotal, colStatus])
+colId = Col("Order ID", ["#ORD-9481", "#ORD-9480", "#ORD-9479", "#ORD-9478", "#ORD-9477"])
+colCustomer = Col("Customer", ["Sarah Jenkins", "Michael Chang", "Elena Rostova", "David Miller", "Amanda Lewis"])
+colTotal = Col("Total", ["$245.00", "$89.50", "$412.10", "$64.00", "$178.25"])
+colStatus = Col("Status", ["Processing", "Pending", "Fulfilled", "Fulfilled", "Refunded"])
+
+fulfillmentDialog = DialogBlock("Mark Order Fulfilled", "Batch Fulfillment Action", "Select an order to update its status to Fulfilled and notify the customer.", fulfillForm, "outline")
+
+fulfillForm = Form("fulfill-action", fulfillButtons, [orderSelectField, trackingField])
+orderSelectField = FormControl("Select Pending/Processing Order", orderDropdown)
+orderDropdown = Select("target_order", [ord1, ord2], "Choose order...")
+ord1 = SelectItem("ORD-9481", "#ORD-9481 - Sarah Jenkins ($245.00)")
+ord2 = SelectItem("ORD-9480", "#ORD-9480 - Michael Chang ($89.50)")
+
+trackingField = FormControl("Tracking Number", trackingInput, "Optional carrier tracking code")
+trackingInput = Input("tracking_num", "e.g. TRK9840291", "text")
+
+fulfillButtons = Buttons([btnConfirmFulfill])
+btnConfirmFulfill = Button("Confirm Fulfillment", null, "primary")
+
+followUp = FollowUpBlock([suggest1, suggest2, suggest3])
+suggest1 = FollowUpItem("Export today's orders to CSV")
+suggest2 = FollowUpItem("View high-risk refund orders")
+suggest3 = FollowUpItem("Adjust monthly refund threshold alert")

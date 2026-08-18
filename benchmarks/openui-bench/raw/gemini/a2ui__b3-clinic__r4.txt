@@ -1,0 +1,426 @@
+Here is a comprehensive single-screen dashboard for a clinic receptionist's day view.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "clinic-day-view",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#0284C7",
+      "agentDisplayName": "Clinic Flow Assistant"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "clinic-day-view",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header-card",
+          "kpi-card-container",
+          "next-patient-alert",
+          "main-tabs"
+        ]
+      },
+      {
+        "id": "header-card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "row",
+        "justify": "between",
+        "align": "center",
+        "gap": "m",
+        "children": [
+          "header-title-container",
+          "date-picker-control"
+        ]
+      },
+      {
+        "id": "header-title-container",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "main-heading",
+          "sub-heading"
+        ]
+      },
+      {
+        "id": "main-heading",
+        "component": "Heading",
+        "level": "h2",
+        "text": "Reception Day View"
+      },
+      {
+        "id": "sub-heading",
+        "component": "TextContent",
+        "text": "Manage appointments, room allocations, and patient check-ins.",
+        "size": "small"
+      },
+      {
+        "id": "date-picker-control",
+        "component": "FormControl",
+        "label": "Select Date (Item 7)",
+        "input": "date-input"
+      },
+      {
+        "id": "date-input",
+        "component": "DatePicker",
+        "name": "selectedDate",
+        "mode": "single",
+        "value": ["2023-10-24"]
+      },
+      {
+        "id": "kpi-card-container",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "expected-patients-card",
+          "noshow-rate-card",
+          "available-rooms-card"
+        ]
+      },
+      {
+        "id": "expected-patients-card",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "kpi-expected-title",
+          "kpi-expected-value",
+          "kpi-expected-progress"
+        ]
+      },
+      {
+        "id": "kpi-expected-title",
+        "component": "Heading",
+        "level": "h4",
+        "text": "Expected Today (Item 2)"
+      },
+      {
+        "id": "kpi-expected-value",
+        "component": "TextContent",
+        "text": "28 Patients",
+        "size": "large-heavy"
+      },
+      {
+        "id": "kpi-expected-progress",
+        "component": "Progress",
+        "value": 64,
+        "label": "18 Checked In / 28 Total"
+      },
+      {
+        "id": "noshow-rate-card",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "kpi-noshow-title",
+          "kpi-noshow-value",
+          "kpi-noshow-badge"
+        ]
+      },
+      {
+        "id": "kpi-noshow-title",
+        "component": "Heading",
+        "level": "h4",
+        "text": "Monthly No-Show Rate (Item 3)"
+      },
+      {
+        "id": "kpi-noshow-value",
+        "component": "TextContent",
+        "text": "4.2%",
+        "size": "large-heavy"
+      },
+      {
+        "id": "kpi-noshow-badge",
+        "component": "Badge",
+        "text": "-1.5% lower than last month",
+        "variant": "secondary"
+      },
+      {
+        "id": "available-rooms-card",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "kpi-rooms-title",
+          "kpi-rooms-tags"
+        ]
+      },
+      {
+        "id": "kpi-rooms-title",
+        "component": "Heading",
+        "level": "h4",
+        "text": "Rooms Free Right Now (Item 4)"
+      },
+      {
+        "id": "kpi-rooms-tags",
+        "component": "TagBlock",
+        "tags": ["Room 102 (Exam)", "Room 105 (Consult)", "Room 201 (Procedure)"]
+      },
+      {
+        "id": "next-patient-alert",
+        "component": "Alert",
+        "variant": "info",
+        "title": "NEXT PATIENT CALLED OUT (Item 5)",
+        "description": "Sarah Jenkins • 10:15 AM Appointment • Dr. Marcus Vance • Assigned to Room 102"
+      },
+      {
+        "id": "main-tabs",
+        "component": "Tabs",
+        "items": [
+          "tab-appointments",
+          "tab-checkin"
+        ]
+      },
+      {
+        "id": "tab-appointments",
+        "component": "TabItem",
+        "value": "appointments",
+        "trigger": "Today's Schedule (Item 1)",
+        "content": [
+          "appointments-table-card"
+        ]
+      },
+      {
+        "id": "appointments-table-card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "appointments-table"
+        ]
+      },
+      {
+        "id": "appointments-table",
+        "component": "Table",
+        "columns": [
+          "col-time",
+          "col-patient",
+          "col-doctor",
+          "col-status",
+          "col-room"
+        ]
+      },
+      {
+        "id": "col-time",
+        "component": "Col",
+        "label": "Time",
+        "type": "string",
+        "data": ["09:00 AM", "09:30 AM", "10:00 AM", "10:15 AM", "10:45 AM", "11:15 AM"]
+      },
+      {
+        "id": "col-patient",
+        "component": "Col",
+        "label": "Patient Name",
+        "type": "string",
+        "data": ["Robert Chen", "Emily Davis", "Michael Brown", "Sarah Jenkins", "David Miller", "Jessica Taylor"]
+      },
+      {
+        "id": "col-doctor",
+        "component": "Col",
+        "label": "Provider",
+        "type": "string",
+        "data": ["Dr. Smith", "Dr. Vance", "Dr. Smith", "Dr. Vance", "Dr. Patel", "Dr. Smith"]
+      },
+      {
+        "id": "col-status",
+        "component": "Col",
+        "label": "Status",
+        "type": "string",
+        "data": ["Completed", "Completed", "In Room", "Next Up", "Checked In", "Scheduled"]
+      },
+      {
+        "id": "col-room",
+        "component": "Col",
+        "label": "Assigned Room",
+        "type": "string",
+        "data": ["Room 101", "Room 102", "Room 103", "Room 102 (Ready)", "Waiting Area", "--"]
+      },
+      {
+        "id": "tab-checkin",
+        "component": "TabItem",
+        "value": "checkin",
+        "trigger": "Quick Check-In Form (Item 6)",
+        "content": [
+          "checkin-form-card"
+        ]
+      },
+      {
+        "id": "checkin-form-card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "checkin-header",
+          "checkin-form"
+        ]
+      },
+      {
+        "id": "checkin-header",
+        "component": "CardHeader",
+        "title": "Patient Arrival Check-In",
+        "subtitle": "Search patient or select appointment to complete check-in process"
+      },
+      {
+        "id": "checkin-form",
+        "component": "Form",
+        "name": "patientCheckInForm",
+        "fields": [
+          "field-patient-select",
+          "field-room-select",
+          "field-copay",
+          "field-notes"
+        ],
+        "buttons": "checkin-buttons-group"
+      },
+      {
+        "id": "field-patient-select",
+        "component": "FormControl",
+        "label": "Arriving Patient",
+        "hint": "Select arriving patient from today's schedule",
+        "input": "input-patient-select"
+      },
+      {
+        "id": "input-patient-select",
+        "component": "Select",
+        "name": "patientId",
+        "placeholder": "-- Select Patient --",
+        "items": [
+          "opt-p1",
+          "opt-p2",
+          "opt-p3"
+        ]
+      },
+      {
+        "id": "opt-p1",
+        "component": "SelectItem",
+        "value": "p104",
+        "label": "Sarah Jenkins (10:15 AM - Dr. Vance)"
+      },
+      {
+        "id": "opt-p2",
+        "component": "SelectItem",
+        "value": "p105",
+        "label": "David Miller (10:45 AM - Dr. Patel)"
+      },
+      {
+        "id": "opt-p3",
+        "component": "SelectItem",
+        "value": "p106",
+        "label": "Jessica Taylor (11:15 AM - Dr. Smith)"
+      },
+      {
+        "id": "field-room-select",
+        "component": "FormControl",
+        "label": "Assign Available Room",
+        "hint": "Optional: Assign directly to an open room or send to waiting area",
+        "input": "input-room-select"
+      },
+      {
+        "id": "input-room-select",
+        "component": "Select",
+        "name": "assignedRoom",
+        "placeholder": "Waiting Area (Default)",
+        "items": [
+          "opt-r0",
+          "opt-r1",
+          "opt-r2",
+          "opt-r3"
+        ]
+      },
+      {
+        "id": "opt-r0",
+        "component": "SelectItem",
+        "value": "waiting",
+        "label": "Waiting Area"
+      },
+      {
+        "id": "opt-r1",
+        "component": "SelectItem",
+        "value": "room_102",
+        "label": "Room 102 (Exam)"
+      },
+      {
+        "id": "opt-r2",
+        "component": "SelectItem",
+        "value": "room_105",
+        "label": "Room 105 (Consult)"
+      },
+      {
+        "id": "opt-r3",
+        "component": "SelectItem",
+        "value": "room_201",
+        "label": "Room 201 (Procedure)"
+      },
+      {
+        "id": "field-copay",
+        "component": "FormControl",
+        "label": "Copay Collected ($)",
+        "input": "input-copay"
+      },
+      {
+        "id": "input-copay",
+        "component": "Input",
+        "name": "copayAmount",
+        "type": "number",
+        "placeholder": "25.00"
+      },
+      {
+        "id": "field-notes",
+        "component": "FormControl",
+        "label": "Reception Notes",
+        "input": "input-notes"
+      },
+      {
+        "id": "input-notes",
+        "component": "TextArea",
+        "name": "receptionNotes",
+        "placeholder": "e.g., Updated insurance card scanned, patient requested water.",
+        "rows": 2
+      },
+      {
+        "id": "checkin-buttons-group",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": [
+          "btn-confirm-checkin",
+          "btn-clear-checkin"
+        ]
+      },
+      {
+        "id": "btn-confirm-checkin",
+        "component": "Button",
+        "label": "Confirm Check-In",
+        "variant": "primary"
+      },
+      {
+        "id": "btn-clear-checkin",
+        "component": "Button",
+        "label": "Reset",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>

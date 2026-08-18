@@ -1,0 +1,48 @@
+root = Card([header, alerts, kpis, capacity, genSplit, plants, outages, forecast, maint, focusForm, actions])
+
+header = CardHeader("Power Network Operations Console", "Live grid status — updated every 5s")
+
+alerts = Alert("Frequency deviation", "Grid frequency dipped to 49.8 Hz in the North zone", "warning")
+
+kpis = Table([kpiName, kpiValue])
+kpiName = Col("Metric", ["Current Load", "Price per MWh", "Emissions Today"])
+kpiValue = Col("Value", ["38,420 MW", "$62.40", "12,840 tCO₂"])
+
+capacity = Progress(82, "Load vs Capacity (38,420 / 46,900 MW)")
+
+genSplit = PieChart(genLabels, genValues, "donut")
+genLabels = ["Gas", "Nuclear", "Wind", "Solar", "Hydro", "Coal"]
+genValues = [11200, 9600, 7800, 4200, 3600, 2020]
+
+plants = Table([plantName, plantOutput, plantStatus])
+plantName = Col("Plant", ["Rivergate Gas", "Northpoint Nuclear", "Coastal Wind", "Sunfield Solar", "Highdam Hydro", "Ashford Coal"])
+plantOutput = Col("Output (MW)", [11200, 9600, 7800, 4200, 3600, 2020])
+plantStatus = Col("Status", ["Online", "Online", "Online", "Curtailed", "Online", "Ramping Down"])
+
+outages = ListBlock([outage1, outage2, outage3])
+outage1 = ListItem("Feeder 14 fault", "Region: North Valley — 3,200 customers affected")
+outage2 = ListItem("Transformer T7 trip", "Region: East Ridge — 850 customers affected")
+outage3 = ListItem("Line 22 storm damage", "Region: Coastal — 5,400 customers affected")
+
+forecast = LineChart(forecastHours, [demandSeries], "natural", "Hour", "Load (MW)")
+forecastHours = ["00", "02", "04", "06", "08", "10", "12", "14", "16", "18", "20", "22"]
+demandSeries = Series("Forecast Demand", [31200, 29800, 29100, 32400, 37600, 41200, 43800, 44100, 45600, 46200, 42800, 36400])
+
+maint = ListBlock([maint1, maint2, maint3])
+maint1 = ListItem("Northpoint Nuclear — Unit 2 inspection", "Scheduled Mar 12–15")
+maint2 = ListItem("Coastal Wind — Turbine blade service", "Scheduled Mar 20")
+maint3 = ListItem("Highdam Hydro — Spillway maintenance", "Scheduled Mar 26–28")
+
+focusForm = Form("region-focus", focusButtons, [regionField])
+regionField = FormControl("Focus on region", regionSelect)
+regionSelect = Select("region", [regNorth, regEast, regCoastal, regSouth], "Select a region")
+regNorth = SelectItem("north", "North Valley")
+regEast = SelectItem("east", "East Ridge")
+regCoastal = SelectItem("coastal", "Coastal")
+regSouth = SelectItem("south", "South Plains")
+focusButtons = Buttons([focusBtn])
+focusBtn = Button("Focus region", null, "primary")
+
+actions = Buttons([curtailBtn, refreshBtn])
+curtailBtn = Button("Order curtailment", null, "primary", "destructive")
+refreshBtn = Button("Refresh grid data", null, "secondary")

@@ -1,0 +1,104 @@
+Here's your personal banking home screen, covering all 11 features:
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "banking-home",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": { "primaryColor": "#1B5E20", "agentDisplayName": "Personal Banking" }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "banking-home",
+      "components": [
+        { "id": "root", "component": "Card", "variant": "clear", "direction": "column", "gap": "m", "children": ["hdr","balCard","txCard","spendCard","billsCard","goalsCard","transferCard","creditCard","stmtCard","alertsCard","disputeCard"] },
+
+        { "id": "hdr", "component": "Heading", "text": "Good morning, Alex — My Banking", "level": "h2" },
+
+        { "id": "balCard", "component": "Card", "variant": "card", "children": ["balHdr","balTable"] },
+        { "id": "balHdr", "component": "CardHeader", "title": "Account Balances", "subtitle": "As of today" },
+        { "id": "balTable", "component": "Table", "columns": ["balAcct","balAmt","balStatus"] },
+        { "id": "balAcct", "component": "Col", "label": "Account", "data": ["Checking ••4821","Savings ••9034","Credit Card ••7710"] },
+        { "id": "balAmt", "component": "Col", "label": "Balance", "data": ["$4,250.18","$12,830.45","-$1,120.00"] },
+        { "id": "balStatus", "component": "Col", "label": "Status", "data": ["Available","Available","Active — $3,880 available credit"] },
+
+        { "id": "txCard", "component": "Card", "variant": "card", "children": ["txHdr","txTable"] },
+        { "id": "txHdr", "component": "CardHeader", "title": "Recent Transactions" },
+        { "id": "txTable", "component": "Table", "columns": ["txMerch","txDate","txAmt"] },
+        { "id": "txMerch", "component": "Col", "label": "Merchant", "data": ["Whole Foods Market","Shell Gas Station","Netflix","Amazon.com","PG&E Utilities"] },
+        { "id": "txDate", "component": "Col", "label": "Date", "data": ["Jun 12","Jun 11","Jun 10","Jun 9","Jun 8"] },
+        { "id": "txAmt", "component": "Col", "label": "Amount", "data": ["-$84.32","-$46.10","-$15.99","-$62.47","-$118.20"] },
+
+        { "id": "spendCard", "component": "Card", "variant": "card", "children": ["spendHdr","spendPie"] },
+        { "id": "spendHdr", "component": "CardHeader", "title": "Spending This Month", "subtitle": "By category" },
+        { "id": "spendPie", "component": "PieChart", "variant": "donut", "labels": ["Groceries","Dining","Transport","Utilities","Entertainment","Shopping"], "values": [620, 340, 210, 180, 150, 420] },
+
+        { "id": "billsCard", "component": "Card", "variant": "card", "children": ["billsHdr","billsList"] },
+        { "id": "billsHdr", "component": "CardHeader", "title": "Bills Due Soon" },
+        { "id": "billsList", "component": "ListBlock", "variant": "number", "items": ["bill1","bill2","bill3"] },
+        { "id": "bill1", "component": "ListItem", "title": "Electric — PG&E", "subtitle": "Due Jun 18 • $118.20" },
+        { "id": "bill2", "component": "ListItem", "title": "Internet — Comcast", "subtitle": "Due Jun 21 • $79.99" },
+        { "id": "bill3", "component": "ListItem", "title": "Credit Card Payment", "subtitle": "Due Jun 25 • $150.00 minimum" },
+
+        { "id": "goalsCard", "component": "Card", "variant": "card", "children": ["goalsHdr","goalProg","scoreRow"] },
+        { "id": "goalsHdr", "component": "CardHeader", "title": "Vacation Savings Goal & Credit Score" },
+        { "id": "goalProg", "component": "Progress", "value": 64, "label": "Vacation Fund: $3,200 of $5,000" },
+        { "id": "scoreRow", "component": "TagBlock", "tags": ["Credit Score: 742 — Very Good","+12 pts this quarter"] },
+
+        { "id": "transferCard", "component": "Card", "variant": "card", "children": ["transferHdr","transferForm"] },
+        { "id": "transferHdr", "component": "CardHeader", "title": "Move Money" },
+        { "id": "transferForm", "component": "Form", "name": "transfer", "buttons": "transferBtns", "fields": ["fcFrom","fcTo","fcAmt"] },
+        { "id": "fcFrom", "component": "FormControl", "label": "From", "input": "selFrom" },
+        { "id": "selFrom", "component": "Select", "name": "from", "items": ["siFromC","siFromS"], "placeholder": "Select account" },
+        { "id": "siFromC", "component": "SelectItem", "value": "checking", "label": "Checking ••4821" },
+        { "id": "siFromS", "component": "SelectItem", "value": "savings", "label": "Savings ••9034" },
+        { "id": "fcTo", "component": "FormControl", "label": "To", "input": "selTo" },
+        { "id": "selTo", "component": "Select", "name": "to", "items": ["siToC","siToS","siToCC"], "placeholder": "Select account" },
+        { "id": "siToC", "component": "SelectItem", "value": "checking", "label": "Checking ••4821" },
+        { "id": "siToS", "component": "SelectItem", "value": "savings", "label": "Savings ••9034" },
+        { "id": "siToCC", "component": "SelectItem", "value": "credit", "label": "Credit Card ••7710" },
+        { "id": "fcAmt", "component": "FormControl", "label": "Amount", "input": "amtInput", "hint": "Enter amount in USD" },
+        { "id": "amtInput", "component": "Input", "name": "amount", "type": "number", "placeholder": "0.00" },
+        { "id": "transferBtns", "component": "Buttons", "buttons": ["btnTransfer"] },
+        { "id": "btnTransfer", "component": "Button", "label": "Transfer Now", "variant": "primary" },
+
+        { "id": "creditCard", "component": "Card", "variant": "card", "children": ["creditHdr","freezeSwitch"] },
+        { "id": "creditHdr", "component": "CardHeader", "title": "Credit Line Controls" },
+        { "id": "freezeSwitch", "component": "SwitchGroup", "name": "creditControls", "items": ["swFreeze"] },
+        { "id": "swFreeze", "component": "SwitchItem", "name": "freeze", "label": "Freeze credit line", "description": "Instantly block all new charges on card ••7710" },
+
+        { "id": "stmtCard", "component": "Card", "variant": "card", "children": ["stmtHdr","stmtPicker"] },
+        { "id": "stmtHdr", "component": "CardHeader", "title": "Statements" },
+        { "id": "stmtPicker", "component": "DatePicker", "name": "statementPeriod", "mode": "range" },
+
+        { "id": "alertsCard", "component": "Card", "variant": "card", "children": ["alertsHdr","alertsGroup"] },
+        { "id": "alertsHdr", "component": "CardHeader", "title": "Alert Preferences" },
+        { "id": "alertsGroup", "component": "CheckBoxGroup", "name": "alerts", "items": ["al1","al2","al3","al4"] },
+        { "id": "al1", "component": "CheckBoxItem", "name": "largeTx", "label": "Large transactions", "description": "Notify on charges over $200", "defaultChecked": true },
+        { "id": "al2", "component": "CheckBoxItem", "name": "lowBal", "label": "Low balance", "description": "When checking falls below $500", "defaultChecked": true },
+        { "id": "al3", "component": "CheckBoxItem", "name": "billDue", "label": "Bill reminders", "description": "3 days before a bill is due", "defaultChecked": false },
+        { "id": "al4", "component": "CheckBoxItem", "name": "scoreChange", "label": "Credit score changes", "description": "Monthly score updates", "defaultChecked": false },
+
+        { "id": "disputeCard", "component": "Card", "variant": "card", "children": ["disputeHdr","disputeForm"] },
+        { "id": "disputeHdr", "component": "CardHeader", "title": "Dispute a Transaction" },
+        { "id": "disputeForm", "component": "Form", "name": "dispute", "buttons": "disputeBtns", "fields": ["fcTx","fcReason"] },
+        { "id": "fcTx", "component": "FormControl", "label": "Transaction", "input": "selTx" },
+        { "id": "selTx", "component": "Select", "name": "transaction", "items": ["dtx1","dtx2","dtx3"], "placeholder": "Select transaction" },
+        { "id": "dtx1", "component": "SelectItem", "value": "wf", "label": "Whole Foods — $84.32 (Jun 12)" },
+        { "id": "dtx2", "component": "SelectItem", "value": "amz", "label": "Amazon.com — $62.47 (Jun 9)" },
+        { "id": "dtx3", "component": "SelectItem", "value": "pge", "label": "PG&E — $118.20 (Jun 8)" },
+        { "id": "fcReason", "component": "FormControl", "label": "Reason", "input": "reasonText" },
+        { "id": "reasonText", "component": "TextArea", "name": "reason", "placeholder": "Describe why you're disputing this charge…", "rows": 3 },
+        { "id": "disputeBtns", "component": "Buttons", "buttons": ["btnDispute"] },
+        { "id": "btnDispute", "component": "Button", "label": "Submit Dispute", "variant": "secondary" }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+All 11 items are covered: balances table (1), recent transactions (2), donut chart of monthly spending by category (3), bills due list (4), vacation goal progress bar (5), credit score tag (6), transfer form with from/to/amount (7), credit line freeze switch (8), statement period date-range picker (9), alert trigger checkboxes (10), and a dispute form with transaction selector and reason (11).

@@ -1,0 +1,86 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","region-focus","top-metrics","load-section","gen-section","plants-section","outages-section","forecast-section","maint-section","alerts-section","curtail-section"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Grid Operations Console","subtitle":"Real-time power network monitoring & control"}}}
+
+{"op":"add","path":"/elements/region-focus","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center"},"children":["region-label","region-select"]}}
+{"op":"add","path":"/elements/region-label","value":{"type":"Label","props":{"text":"Focus Region:"}}}
+{"op":"add","path":"/elements/region-select","value":{"type":"Select","props":{"name":"region","items":["r-all","r-north","r-south","r-east","r-west"],"value":{"$bindState":"/focusRegion"},"size":"medium"},"children":["r-all","r-north","r-south","r-east","r-west"]}}
+{"op":"add","path":"/elements/r-all","value":{"type":"SelectItem","props":{"value":"all","label":"All Regions"}}}
+{"op":"add","path":"/elements/r-north","value":{"type":"SelectItem","props":{"value":"north","label":"North"}}}
+{"op":"add","path":"/elements/r-south","value":{"type":"SelectItem","props":{"value":"south","label":"South"}}}
+{"op":"add","path":"/elements/r-east","value":{"type":"SelectItem","props":{"value":"east","label":"East"}}}
+{"op":"add","path":"/elements/r-west","value":{"type":"SelectItem","props":{"value":"west","label":"West"}}}
+{"op":"add","path":"/state/focusRegion","value":"all"}
+
+{"op":"add","path":"/elements/top-metrics","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true,"justify":"between"},"children":["metric-load","metric-price","metric-emissions"]}}
+{"op":"add","path":"/elements/metric-load","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["metric-load-title","metric-load-value"]}}
+{"op":"add","path":"/elements/metric-load-title","value":{"type":"TextContent","props":{"text":"Current Network Load","size":"small-heavy"}}}
+{"op":"add","path":"/elements/metric-load-value","value":{"type":"Heading","props":{"text":{"$template":"${/currentLoad} MW"},"level":"h2"}}}
+{"op":"add","path":"/state/currentLoad","value":42850}
+{"op":"add","path":"/elements/metric-price","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["metric-price-title","metric-price-value"]}}
+{"op":"add","path":"/elements/metric-price-title","value":{"type":"TextContent","props":{"text":"Price per MWh","size":"small-heavy"}}}
+{"op":"add","path":"/elements/metric-price-value","value":{"type":"Heading","props":{"text":{"$template":"$${/pricePerMWh}"},"level":"h2"}}}
+{"op":"add","path":"/state/pricePerMWh","value":68.42}
+{"op":"add","path":"/elements/metric-emissions","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["metric-em-title","metric-em-value"]}}
+{"op":"add","path":"/elements/metric-em-title","value":{"type":"TextContent","props":{"text":"Emissions Today","size":"small-heavy"}}}
+{"op":"add","path":"/elements/metric-em-value","value":{"type":"Heading","props":{"text":{"$template":"${/emissionsToday} tCO₂"},"level":"h2"}}}
+{"op":"add","path":"/state/emissionsToday","value":18420}
+
+{"op":"add","path":"/elements/load-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["load-head","capacity-progress","load-detail"]}}
+{"op":"add","path":"/elements/load-head","value":{"type":"Heading","props":{"text":"Network Capacity","level":"h3"}}}
+{"op":"add","path":"/elements/capacity-progress","value":{"type":"Progress","props":{"value":85,"label":"85% of 50,400 MW capacity"}}}
+{"op":"add","path":"/elements/load-detail","value":{"type":"TextCallout","props":{"variant":"warning","title":"Approaching Peak","description":"Load is at 85% of maximum capacity. Reserve margin: 7,550 MW."}}}
+
+{"op":"add","path":"/elements/gen-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["gen-head","gen-chart"]}}
+{"op":"add","path":"/elements/gen-head","value":{"type":"Heading","props":{"text":"Generation by Source","level":"h3"}}}
+{"op":"add","path":"/elements/gen-chart","value":{"type":"PieChart","props":{"labels":["Natural Gas","Nuclear","Wind","Solar","Hydro","Coal"],"values":[15200,9800,7100,4300,3900,2550],"variant":"donut"}}}
+
+{"op":"add","path":"/elements/plants-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["plants-head","plants-list"]}}
+{"op":"add","path":"/elements/plants-head","value":{"type":"Heading","props":{"text":"Power Plants","level":"h3"}}}
+{"op":"add","path":"/elements/plants-list","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"repeat":{"statePath":"/plants","key":"id"},"children":["plant-row"]}}
+{"op":"add","path":"/elements/plant-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","justify":"between","align":"center"},"children":["plant-info","plant-output","plant-status"]}}
+{"op":"add","path":"/elements/plant-info","value":{"type":"TextContent","props":{"text":{"$template":"**${name}** — ${source} (${region})"}}}
+{"op":"add","path":"/elements/plant-output","value":{"type":"TextContent","props":{"text":{"$template":"${output} MW","size":"small-heavy"}}}}
+{"op":"add","path":"/elements/plant-status","value":{"type":"Badge","props":{"text":{"$item":"status"},"variant":"secondary"}}}
+{"op":"add","path":"/state/plants","value":[]}
+{"op":"add","path":"/state/plants/0","value":{"id":"p1","name":"Ashford CCGT","source":"Natural Gas","region":"north","output":8200,"status":"Online"}}
+{"op":"add","path":"/state/plants/1","value":{"id":"p2","name":"Bracewell Nuclear","source":"Nuclear","region":"east","output":9800,"status":"Online"}}
+{"op":"add","path":"/state/plants/2","value":{"id":"p3","name":"Fenmoor Wind Farm","source":"Wind","region":"west","output":7100,"status":"Online"}}
+{"op":"add","path":"/state/plants/3","value":{"id":"p4","name":"Sunridge Solar","source":"Solar","region":"south","output":4300,"status":"Ramping"}}
+{"op":"add","path":"/state/plants/4","value":{"id":"p5","name":"Glenhollow Hydro","source":"Hydro","region":"north","output":3900,"status":"Online"}}
+{"op":"add","path":"/state/plants/5","value":{"id":"p6","name":"Coalburn Station","source":"Coal","region":"east","output":2550,"status":"Reduced"}}
+
+{"op":"add","path":"/elements/outages-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["outages-head","outages-list"]}}
+{"op":"add","path":"/elements/outages-head","value":{"type":"Heading","props":{"text":"Active Outages","level":"h3"}}}
+{"op":"add","path":"/elements/outages-list","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"repeat":{"statePath":"/outages","key":"id"},"children":["outage-row"]}}
+{"op":"add","path":"/elements/outage-row","value":{"type":"Alert","props":{"title":{"$template":"${asset} — ${region}"},"description":{"$template":"${cause} · ${affected} affected · ETA ${eta}"},"variant":"destructive"}}}
+{"op":"add","path":"/state/outages","value":[]}
+{"op":"add","path":"/state/outages/0","value":{"id":"o1","asset":"Feeder Line 12","region":"South","cause":"Storm damage","affected":"14,200 customers","eta":"18:30"}}
+{"op":"add","path":"/state/outages/1","value":{"id":"o2","asset":"Substation E4","region":"East","cause":"Transformer fault","affected":"3,800 customers","eta":"21:00"}}
+{"op":"add","path":"/state/outages/2","value":{"id":"o3","asset":"Distribution Ring W7","region":"West","cause":"Scheduled isolation","affected":"900 customers","eta":"16:45"}}
+
+{"op":"add","path":"/elements/forecast-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["forecast-head","forecast-chart"]}}
+{"op":"add","path":"/elements/forecast-head","value":{"type":"Heading","props":{"text":"24-Hour Demand Forecast","level":"h3"}}}
+{"op":"add","path":"/elements/forecast-chart","value":{"type":"AreaChart","props":{"labels":["00","02","04","06","08","10","12","14","16","18","20","22"],"series":["forecast-series"],"variant":"natural","xLabel":"Hour","yLabel":"MW"}}}
+{"op":"add","path":"/elements/forecast-series","value":{"type":"Series","props":{"category":"Forecast Demand","values":[34200,32100,31500,33800,39200,43100,45600,46800,47200,49100,46300,40200]}}}
+
+{"op":"add","path":"/elements/maint-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["maint-head","maint-list"]}}
+{"op":"add","path":"/elements/maint-head","value":{"type":"Heading","props":{"text":"Planned Maintenance This Month","level":"h3"}}}
+{"op":"add","path":"/elements/maint-list","value":{"type":"ListBlock","props":{"items":["maint-1","maint-2","maint-3"]}}}
+{"op":"add","path":"/elements/maint-1","value":{"type":"ListItem","props":{"title":"Bracewell Nuclear — Unit 2 refuel","subtitle":"Jun 8–14 · East region · 1,200 MW offline"}}}
+{"op":"add","path":"/elements/maint-2","value":{"type":"ListItem","props":{"title":"Fenmoor Wind — turbine array service","subtitle":"Jun 17–19 · West region · 800 MW reduced"}}}
+{"op":"add","path":"/elements/maint-3","value":{"type":"ListItem","props":{"title":"Ashford CCGT — inspection","subtitle":"Jun 24–26 · North region · 2,000 MW offline"}}}
+
+{"op":"add","path":"/elements/alerts-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["alerts-head","alerts-list"]}}
+{"op":"add","path":"/elements/alerts-head","value":{"type":"Heading","props":{"text":"Live Alerts","level":"h3"}}}
+{"op":"add","path":"/elements/alerts-list","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"repeat":{"statePath":"/alerts","key":"id"},"children":["alert-row"]}}
+{"op":"add","path":"/elements/alert-row","value":{"type":"TextCallout","props":{"variant":{"$item":"severity"},"title":{"$item":"title"},"description":{"$template":"${time} · ${detail}"}}}}
+{"op":"add","path":"/state/alerts","value":[]}
+{"op":"add","path":"/state/alerts/0","value":{"id":"a1","severity":"danger","title":"Frequency deviation 49.7 Hz","time":"14:32","detail":"Automatic reserve dispatched in North"}}
+{"op":"add","path":"/state/alerts/1","value":{"id":"a2","severity":"warning","title":"Import interconnector at 95%","time":"14:28","detail":"East tie-line nearing limit"}}
+{"op":"add","path":"/state/alerts/2","value":{"id":"a3","severity":"info","title":"Wind ramp forecast","time":"14:15","detail":"+1,400 MW expected over next hour, West"}}
+
+{"op":"add","path":"/elements/curtail-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["curtail-head","curtail-desc","curtail-dialog"]}}
+{"op":"add","path":"/elements/curtail-head","value":{"type":"Heading","props":{"text":"Curtailment Control","level":"h3"}}}
+{"op":"add","path":"/elements/curtail-desc","value":{"type":"TextContent","props":{"text":"Issue a curtailment order to reduce demand in the focused region during peak stress.","size":"small"}}}
+{"op":"add","path":"/elements/curtail-dialog","value":{"type":"AlertDialogBlock","props":{"triggerLabel":"Order Curtailment","title":"Confirm Curtailment Order","description":"This will initiate mandatory load shedding in the selected region. Confirm to proceed.","confirmLabel":"Issue Order","cancelLabel":"Cancel","triggerVariant":"destructive"}}}

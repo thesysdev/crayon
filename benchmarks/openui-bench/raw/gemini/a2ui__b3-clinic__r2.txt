@@ -1,0 +1,701 @@
+I have created a receptionist day view dashboard that covers all required features: today's schedule with check-in buttons, summary KPIs, room availability, next patient queue, and date navigation.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "clinic-reception-dayview",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#0EA5E9",
+      "agentDisplayName": "Clinic Flow Reception"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "clinic-reception-dayview",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header_card",
+          "kpi_summary_card",
+          "next_patient_card",
+          "rooms_card",
+          "schedule_card",
+          "follow_ups"
+        ]
+      },
+      {
+        "id": "header_card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "header_title",
+          "date_nav_buttons"
+        ]
+      },
+      {
+        "id": "header_title",
+        "component": "Heading",
+        "level": "h2",
+        "text": "Clinic Reception Dashboard"
+      },
+      {
+        "id": "date_nav_buttons",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": [
+          "btn_prev_day",
+          "btn_today",
+          "btn_next_day",
+          "btn_pick_date"
+        ]
+      },
+      {
+        "id": "btn_prev_day",
+        "component": "Button",
+        "label": "← Previous Day",
+        "variant": "secondary",
+        "size": "small"
+      },
+      {
+        "id": "btn_today",
+        "component": "Button",
+        "label": "Today (Oct 24, 2023)",
+        "variant": "primary",
+        "size": "small"
+      },
+      {
+        "id": "btn_next_day",
+        "component": "Button",
+        "label": "Next Day →",
+        "variant": "secondary",
+        "size": "small"
+      },
+      {
+        "id": "btn_pick_date",
+        "component": "Button",
+        "label": "Select Date",
+        "variant": "tertiary",
+        "size": "small"
+      },
+      {
+        "id": "kpi_summary_card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "kpi_header",
+          "kpi_metrics_card"
+        ]
+      },
+      {
+        "id": "kpi_header",
+        "component": "CardHeader",
+        "title": "Daily Overview & Monthly Stats",
+        "subtitle": "Live metrics for patient volume and attendance"
+      },
+      {
+        "id": "kpi_metrics_card",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "xl",
+        "children": [
+          "metric_expected",
+          "metric_noshow"
+        ]
+      },
+      {
+        "id": "metric_expected",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "expected_tag",
+          "expected_count",
+          "expected_progress"
+        ]
+      },
+      {
+        "id": "expected_tag",
+        "component": "Tag",
+        "text": "Expected Patients Today",
+        "variant": "info",
+        "size": "sm"
+      },
+      {
+        "id": "expected_count",
+        "component": "Heading",
+        "level": "h1",
+        "text": "18"
+      },
+      {
+        "id": "expected_progress",
+        "component": "Progress",
+        "value": 44,
+        "label": "8 of 18 completed"
+      },
+      {
+        "id": "metric_noshow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "noshow_tag",
+          "noshow_rate",
+          "noshow_desc"
+        ]
+      },
+      {
+        "id": "noshow_tag",
+        "component": "Tag",
+        "text": "No-Show Rate (This Month)",
+        "variant": "warning",
+        "size": "sm"
+      },
+      {
+        "id": "noshow_rate",
+        "component": "Heading",
+        "level": "h1",
+        "text": "4.2%"
+      },
+      {
+        "id": "noshow_desc",
+        "component": "TextContent",
+        "text": "↓ 1.5% lower than last month target (5.0%)",
+        "size": "small"
+      },
+      {
+        "id": "next_patient_card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "next_patient_alert",
+          "next_patient_details"
+        ]
+      },
+      {
+        "id": "next_patient_alert",
+        "component": "Alert",
+        "title": "Next Patient Called Out",
+        "description": "Please direct the patient to the assigned examination room.",
+        "variant": "info"
+      },
+      {
+        "id": "next_patient_details",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "l",
+        "align": "center",
+        "children": [
+          "patient_avatar",
+          "patient_info_text",
+          "callout_actions"
+        ]
+      },
+      {
+        "id": "patient_avatar",
+        "component": "Avatar",
+        "fallback": "JD",
+        "src": ""
+      },
+      {
+        "id": "patient_info_text",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "next_name",
+          "next_appt_info"
+        ]
+      },
+      {
+        "id": "next_name",
+        "component": "Heading",
+        "level": "h3",
+        "text": "John Doe (10:15 AM)"
+      },
+      {
+        "id": "next_appt_info",
+        "component": "TextContent",
+        "text": "Assigned to: **Exam Room 2** • Dr. Sarah Jenkins (General Checkup)",
+        "size": "default"
+      },
+      {
+        "id": "callout_actions",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": [
+          "btn_announce",
+          "btn_send_in"
+        ]
+      },
+      {
+        "id": "btn_announce",
+        "component": "Button",
+        "label": "Re-Announce",
+        "variant": "secondary",
+        "size": "small"
+      },
+      {
+        "id": "btn_send_in",
+        "component": "Button",
+        "label": "Mark Sent In",
+        "variant": "primary",
+        "size": "small"
+      },
+      {
+        "id": "rooms_card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "rooms_header",
+          "rooms_status_row"
+        ]
+      },
+      {
+        "id": "rooms_header",
+        "component": "CardHeader",
+        "title": "Room Availability (Right Now)",
+        "subtitle": "Live room status and occupancy"
+      },
+      {
+        "id": "rooms_status_row",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "room_1",
+          "room_2",
+          "room_3",
+          "room_4",
+          "room_5"
+        ]
+      },
+      {
+        "id": "room_1",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "r1_tag",
+          "r1_title",
+          "r1_desc"
+        ]
+      },
+      {
+        "id": "r1_tag",
+        "component": "Tag",
+        "text": "FREE",
+        "variant": "success",
+        "size": "sm"
+      },
+      {
+        "id": "r1_title",
+        "component": "Heading",
+        "level": "h4",
+        "text": "Room 101"
+      },
+      {
+        "id": "r1_desc",
+        "component": "TextContent",
+        "text": "Ready for patient",
+        "size": "small"
+      },
+      {
+        "id": "room_2",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "r2_tag",
+          "r2_title",
+          "r2_desc"
+        ]
+      },
+      {
+        "id": "r2_tag",
+        "component": "Tag",
+        "text": "OCCUPIED",
+        "variant": "danger",
+        "size": "sm"
+      },
+      {
+        "id": "r2_title",
+        "component": "Heading",
+        "level": "h4",
+        "text": "Room 102"
+      },
+      {
+        "id": "r2_desc",
+        "component": "TextContent",
+        "text": "In use: Dr. Smith",
+        "size": "small"
+      },
+      {
+        "id": "room_3",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "r3_tag",
+          "r3_title",
+          "r3_desc"
+        ]
+      },
+      {
+        "id": "r3_tag",
+        "component": "Tag",
+        "text": "FREE",
+        "variant": "success",
+        "size": "sm"
+      },
+      {
+        "id": "r3_title",
+        "component": "Heading",
+        "level": "h4",
+        "text": "Room 103"
+      },
+      {
+        "id": "r3_desc",
+        "component": "TextContent",
+        "text": "Ready for patient",
+        "size": "small"
+      },
+      {
+        "id": "room_4",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "r4_tag",
+          "r4_title",
+          "r4_desc"
+        ]
+      },
+      {
+        "id": "r4_tag",
+        "component": "Tag",
+        "text": "OCCUPIED",
+        "variant": "danger",
+        "size": "sm"
+      },
+      {
+        "id": "r4_title",
+        "component": "Heading",
+        "level": "h4",
+        "text": "Room 104"
+      },
+      {
+        "id": "r4_desc",
+        "component": "TextContent",
+        "text": "In use: Dr. Lee",
+        "size": "small"
+      },
+      {
+        "id": "room_5",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "r5_tag",
+          "r5_title",
+          "r5_desc"
+        ]
+      },
+      {
+        "id": "r5_tag",
+        "component": "Tag",
+        "text": "FREE",
+        "variant": "success",
+        "size": "sm"
+      },
+      {
+        "id": "r5_title",
+        "component": "Heading",
+        "level": "h4",
+        "text": "Room 105"
+      },
+      {
+        "id": "r5_desc",
+        "component": "TextContent",
+        "text": "Sanitized & ready",
+        "size": "small"
+      },
+      {
+        "id": "schedule_card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "schedule_header",
+          "checkin_form_dialog",
+          "appointments_table"
+        ]
+      },
+      {
+        "id": "schedule_header",
+        "component": "CardHeader",
+        "title": "Today's Schedule & Check-In",
+        "subtitle": "Manage patient arrivals and view appointment list"
+      },
+      {
+        "id": "checkin_form_dialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Quick Check-In Form",
+        "triggerVariant": "default",
+        "title": "Patient Check-In",
+        "description": "Select an arriving patient and record check-in details",
+        "content": [
+          "checkin_form"
+        ]
+      },
+      {
+        "id": "checkin_form",
+        "component": "Form",
+        "name": "patient_checkin_form",
+        "fields": [
+          "field_patient_select",
+          "field_room_select",
+          "field_notes"
+        ],
+        "buttons": "form_buttons"
+      },
+      {
+        "id": "field_patient_select",
+        "component": "FormControl",
+        "label": "Select Patient",
+        "hint": "Choose from arriving appointments",
+        "input": "select_patient"
+      },
+      {
+        "id": "select_patient",
+        "component": "Select",
+        "name": "patient_name",
+        "placeholder": "Select patient...",
+        "items": [
+          "opt_p1",
+          "opt_p2",
+          "opt_p3"
+        ]
+      },
+      {
+        "id": "opt_p1",
+        "component": "SelectItem",
+        "value": "alice_smith",
+        "label": "10:30 AM - Alice Smith"
+      },
+      {
+        "id": "opt_p2",
+        "component": "SelectItem",
+        "value": "robert_brown",
+        "label": "11:00 AM - Robert Brown"
+      },
+      {
+        "id": "opt_p3",
+        "component": "SelectItem",
+        "value": "emma_wilson",
+        "label": "11:30 AM - Emma Wilson"
+      },
+      {
+        "id": "field_room_select",
+        "component": "FormControl",
+        "label": "Assign Room",
+        "hint": "Assign an available room",
+        "input": "select_room"
+      },
+      {
+        "id": "select_room",
+        "component": "Select",
+        "name": "assigned_room",
+        "placeholder": "Select available room...",
+        "items": [
+          "opt_r101",
+          "opt_r103",
+          "opt_r105"
+        ]
+      },
+      {
+        "id": "opt_r101",
+        "component": "SelectItem",
+        "value": "room_101",
+        "label": "Room 101 (Free)"
+      },
+      {
+        "id": "opt_r103",
+        "component": "SelectItem",
+        "value": "room_103",
+        "label": "Room 103 (Free)"
+      },
+      {
+        "id": "opt_r105",
+        "component": "SelectItem",
+        "value": "room_105",
+        "label": "Room 105 (Free)"
+      },
+      {
+        "id": "field_notes",
+        "component": "FormControl",
+        "label": "Arrival Notes",
+        "hint": "Optional notes for the nurse or doctor",
+        "input": "input_notes"
+      },
+      {
+        "id": "input_notes",
+        "component": "Input",
+        "name": "arrival_notes",
+        "placeholder": "e.g., Copay paid, paperwork completed"
+      },
+      {
+        "id": "form_buttons",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": [
+          "btn_confirm_checkin"
+        ]
+      },
+      {
+        "id": "btn_confirm_checkin",
+        "component": "Button",
+        "label": "Confirm Check-In",
+        "variant": "primary"
+      },
+      {
+        "id": "appointments_table",
+        "component": "Table",
+        "columns": [
+          "col_time",
+          "col_patient",
+          "col_doctor",
+          "col_status",
+          "col_action"
+        ]
+      },
+      {
+        "id": "col_time",
+        "component": "Col",
+        "label": "Time",
+        "type": "string",
+        "data": [
+          "09:00 AM",
+          "09:30 AM",
+          "10:15 AM",
+          "10:30 AM",
+          "11:00 AM",
+          "11:30 AM"
+        ]
+      },
+      {
+        "id": "col_patient",
+        "component": "Col",
+        "label": "Patient Name",
+        "type": "string",
+        "data": [
+          "Michael Chang",
+          "Sarah Connor",
+          "John Doe",
+          "Alice Smith",
+          "Robert Brown",
+          "Emma Wilson"
+        ]
+      },
+      {
+        "id": "col_doctor",
+        "component": "Col",
+        "label": "Provider",
+        "type": "string",
+        "data": [
+          "Dr. Smith",
+          "Dr. Lee",
+          "Dr. Jenkins",
+          "Dr. Smith",
+          "Dr. Lee",
+          "Dr. Jenkins"
+        ]
+      },
+      {
+        "id": "col_status",
+        "component": "Col",
+        "label": "Status",
+        "type": "string",
+        "data": [
+          "Completed",
+          "Completed",
+          "Called Out",
+          "Waiting in Lobby",
+          "Scheduled",
+          "Scheduled"
+        ]
+      },
+      {
+        "id": "col_action",
+        "component": "Col",
+        "label": "Quick Action",
+        "type": "action",
+        "data": [
+          "Done",
+          "Done",
+          "In Exam",
+          "Check In",
+          "Check In",
+          "Check In"
+        ]
+      },
+      {
+        "id": "follow_ups",
+        "component": "FollowUpBlock",
+        "items": [
+          "fu_1",
+          "fu_2",
+          "fu_3"
+        ]
+      },
+      {
+        "id": "fu_1",
+        "component": "FollowUpItem",
+        "text": "Filter schedule by Dr. Smith"
+      },
+      {
+        "id": "fu_2",
+        "component": "FollowUpItem",
+        "text": "View room cleaning log"
+      },
+      {
+        "id": "fu_3",
+        "component": "FollowUpItem",
+        "text": "Export today's attendance report"
+      }
+    ]
+  }
+}
+</a2ui-json>

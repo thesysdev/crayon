@@ -1,0 +1,208 @@
+
+
+Here's a single delivery-tracking screen covering all three requirements: a live progress timeline plus a callout showing the package's current location, a prominent estimated-delivery panel, and a "Report a problem" dialog with a full issue form.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "delivery-tracking",
+      "catalogId": "thesys.dev:c1-openui"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "delivery-tracking",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "direction": "column",
+          "gap": "l",
+          "children": ["header", "steps", "locationCallout", "etaBox", "separator", "reportHeading", "reportText", "reportDialog"]
+        },
+        {
+          "id": "header",
+          "component": "CardHeader",
+          "title": "Track your delivery",
+          "subtitle": "Order #4417-88213 • Tracking 1Z849W2F9X"
+        },
+        {
+          "id": "steps",
+          "component": "Steps",
+          "items": ["step1", "step2", "step3", "step4"]
+        },
+        {
+          "id": "step1",
+          "component": "StepsItem",
+          "title": "Order placed",
+          "details": "May 28, 9:14 AM"
+        },
+        {
+          "id": "step2",
+          "component": "StepsItem",
+          "title": "Shipped",
+          "details": "May 29, 6:02 PM — Columbus, OH"
+        },
+        {
+          "id": "step3",
+          "component": "StepsItem",
+          "title": "In transit",
+          "details": "Arrived at Springfield, IL distribution center"
+        },
+        {
+          "id": "step4",
+          "component": "StepsItem",
+          "title": "Out for delivery",
+          "details": "Pending"
+        },
+        {
+          "id": "locationCallout",
+          "component": "TextCallout",
+          "variant": "info",
+          "title": "Where your package is right now",
+          "description": "Springfield, IL Distribution Center — last scanned today at 7:42 AM, moving toward your address."
+        },
+        {
+          "id": "etaBox",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "children": ["etaLabel", "etaText", "etaAddress"]
+        },
+        {
+          "id": "etaLabel",
+          "component": "Label",
+          "text": "Estimated delivery"
+        },
+        {
+          "id": "etaText",
+          "component": "TextContent",
+          "text": "Thursday, June 12 by 8:00 PM",
+          "size": "large-heavy"
+        },
+        {
+          "id": "etaAddress",
+          "component": "TextContent",
+          "text": "Delivering to: 123 Maple Ave, Springfield, IL 62704",
+          "size": "small"
+        },
+        {
+          "id": "separator",
+          "component": "Separator"
+        },
+        {
+          "id": "reportHeading",
+          "component": "Heading",
+          "text": "Having a problem?",
+          "level": "h3"
+        },
+        {
+          "id": "reportText",
+          "component": "TextContent",
+          "text": "Late, missing, damaged, or wrong item — report it below and we'll respond within 24 hours.",
+          "size": "small"
+        },
+        {
+          "id": "reportDialog",
+          "component": "DialogBlock",
+          "triggerLabel": "Report a problem",
+          "title": "Report a delivery problem",
+          "description": "Tell us what went wrong so we can help.",
+          "content": ["problemForm"]
+        },
+        {
+          "id": "problemForm",
+          "component": "Form",
+          "name": "problemReport",
+          "fields": ["issueTypeControl", "detailsControl"],
+          "buttons": "formButtons"
+        },
+        {
+          "id": "issueTypeControl",
+          "component": "FormControl",
+          "label": "What's the problem?",
+          "input": "issueSelect"
+        },
+        {
+          "id": "issueSelect",
+          "component": "Select",
+          "name": "issueType",
+          "placeholder": "Select an issue",
+          "items": ["optLate", "optMissing", "optDamaged", "optWrong", "optOther"]
+        },
+        {
+          "id": "optLate",
+          "component": "SelectItem",
+          "value": "late",
+          "label": "Package is running late"
+        },
+        {
+          "id": "optMissing",
+          "component": "SelectItem",
+          "value": "missing",
+          "label": "Marked delivered but not received"
+        },
+        {
+          "id": "optDamaged",
+          "component": "SelectItem",
+          "value": "damaged",
+          "label": "Package or item damaged"
+        },
+        {
+          "id": "optWrong",
+          "component": "SelectItem",
+          "value": "wrong",
+          "label": "Wrong item received"
+        },
+        {
+          "id": "optOther",
+          "component": "SelectItem",
+          "value": "other",
+          "label": "Something else"
+        },
+        {
+          "id": "detailsControl",
+          "component": "FormControl",
+          "label": "Details",
+          "input": "detailsArea",
+          "hint": "Anything that helps us investigate (times, photos, condition)."
+        },
+        {
+          "id": "detailsArea",
+          "component": "TextArea",
+          "name": "details",
+          "placeholder": "Describe the problem…",
+          "rows": 4
+        },
+        {
+          "id": "formButtons",
+          "component": "Buttons",
+          "buttons": ["submitBtn", "cancelBtn"]
+        },
+        {
+          "id": "submitBtn",
+          "component": "Button",
+          "label": "Submit report",
+          "variant": "primary"
+        },
+        {
+          "id": "cancelBtn",
+          "component": "Button",
+          "label": "Cancel",
+          "variant": "secondary"
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+How each requirement is covered:
+
+1. **Current package location** — the step timeline shows the journey, and the info callout explicitly states the current scan location ("Springfield, IL Distribution Center").
+2. **Estimated delivery date** — the recessed panel highlights "Thursday, June 12 by 8:00 PM" along with the delivery address.
+3. **Report a problem** — the "Report a problem" button opens a dialog with a form (issue type dropdown, details textarea, submit/cancel actions).

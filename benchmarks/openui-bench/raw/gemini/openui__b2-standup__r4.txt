@@ -1,0 +1,53 @@
+root = Card([header, dateTag, missingCallout, blockedSection, teamList, formSection, followUps], "card", "column", "l")
+
+header = CardHeader("Async Daily Standup", "Engineering & Product Team")
+dateTag = Tag("Today: Thursday, Oct 24", "calendar", "md", "info")
+
+missingCallout = Callout("warning", "3 Updates Missing", "Waiting for updates from Alex, Sarah, and David. Daily deadline is 10:00 AM EST.")
+
+blockedSection = TextCallout("danger", "🚨 Teammates Blocked (1)", "Marcus is blocked on API rate limits for the payments integration. Needs Ops team review.")
+
+teamList = ListBlock([item1, item2, item3, item4, item5])
+
+item1 = ListItem("Marcus Chen — Frontend Lead", "Yesterday: Finished UI specs. Today: Integrating Stripe SDK. Blocked: Waiting on API rate limit increase.", [avatar1])
+avatar1 = "https://picsum.photos/seed/marcus/100/100"
+
+item2 = ListItem("Elena Rostova — Product Designer", "Yesterday: Finalized checkout flow. Today: Design review for mobile navigation. No blockers.", [avatar2])
+avatar2 = "https://picsum.photos/seed/elena/100/100"
+
+item3 = ListItem("Devon Vance — Backend Engineer", "Yesterday: Optimized DB queries. Today: Refactoring auth middleware. No blockers.", [avatar3])
+avatar3 = "https://picsum.photos/seed/devon/100/100"
+
+item4 = ListItem("Priya Patel — QA Lead", "Yesterday: Regression testing v2.4. Today: Writing E2E tests for checkout. No blockers.", [avatar4])
+avatar4 = "https://picsum.photos/seed/priya/100/100"
+
+item5 = ListItem("Aisha Khan — DevOps", "Yesterday: Upgraded K8s cluster. Today: CI/CD pipeline pipeline improvements. No blockers.", [avatar5])
+avatar5 = "https://picsum.photos/seed/aisha/100/100"
+
+formSection = SectionBlock([formSectionItem], false)
+formSectionItem = SectionItem("post-update", "📝 Post Your Update", [standupForm])
+
+standupForm = Form("standup-submit", formActions, [yesterdayField, todayField, blockerField, statusField])
+
+yesterdayField = FormControl("What did you do yesterday?", yesterdayInput)
+yesterdayInput = TextArea("yesterday", "Completed user profile API endpoints...", 2)
+
+todayField = FormControl("What will you do today?", todayInput)
+todayInput = TextArea("today", "Working on unit tests and documentation...", 2)
+
+blockerField = FormControl("Are you blocked?", blockerInput, "Leave blank if no blockers")
+blockerInput = Input("blockers", "None")
+
+statusField = FormControl("Current Status", statusSelect)
+statusSelect = Select("status", [optClear, optBlocked, optOoo], "Select status")
+optClear = SelectItem("clear", "🟢 Working smoothly")
+optBlocked = SelectItem("blocked", "🔴 Blocked")
+optOoo = SelectItem("ooo", "🟡 Out of Office / AFK")
+
+formActions = Buttons([submitBtn, draftBtn])
+submitBtn = Button("Submit Standup", null, "primary")
+draftBtn = Button("Save Draft", null, "tertiary")
+
+followUps = FollowUpBlock([f1, f2])
+f1 = FollowUpItem("Nudge missing updates")
+f2 = FollowUpItem("View yesterday's standup summary")

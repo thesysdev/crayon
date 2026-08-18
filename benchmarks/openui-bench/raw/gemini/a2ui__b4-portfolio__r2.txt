@@ -1,0 +1,844 @@
+I have created a single-screen PMO Project Portfolio Review dashboard covering all 13 required metrics and interactions.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "pmo-portfolio-review",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": {
+        "primaryColor": "#0F52BA",
+        "agentDisplayName": "PMO Intelligence"
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "pmo-portfolio-review",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "l",
+          "children": [
+            "header-card",
+            "health-summary-callout",
+            "tabs-container",
+            "followup-suggestions"
+          ]
+        },
+        {
+          "id": "header-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "header-top-row",
+            "header-actions-row"
+          ]
+        },
+        {
+          "id": "header-top-row",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "align": "center",
+          "justify": "between",
+          "children": [
+            "header-titles",
+            "quarter-selector-control"
+          ]
+        },
+        {
+          "id": "header-titles",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "xs",
+          "children": [
+            "main-heading",
+            "header-subtitle"
+          ]
+        },
+        {
+          "id": "main-heading",
+          "component": "Heading",
+          "level": "h1",
+          "text": "PMO Executive Portfolio Review"
+        },
+        {
+          "id": "header-subtitle",
+          "component": "TextContent",
+          "text": "Overall status, risks, budget allocation, delivery pace, and resource planning across active initiatives.",
+          "size": "small"
+        },
+        {
+          "id": "quarter-selector-control",
+          "component": "FormControl",
+          "label": "Review Period (Item #10)",
+          "input": "quarter-select",
+          "hint": "Switch timeline view"
+        },
+        {
+          "id": "quarter-select",
+          "component": "Select",
+          "name": "quarter_select",
+          "value": "q3_2024",
+          "items": [
+            "q1-item",
+            "q2-item",
+            "q3-item",
+            "q4-item"
+          ]
+        },
+        {
+          "id": "q1-item",
+          "component": "SelectItem",
+          "value": "q1_2024",
+          "label": "Q1 2024"
+        },
+        {
+          "id": "q2-item",
+          "component": "SelectItem",
+          "value": "q2_2024",
+          "label": "Q2 2024"
+        },
+        {
+          "id": "q3-item",
+          "component": "SelectItem",
+          "value": "q3_2024",
+          "label": "Q3 2024 (Current)"
+        },
+        {
+          "id": "q4-item",
+          "component": "SelectItem",
+          "value": "q4_2024",
+          "label": "Q4 2024 (Forecast)"
+        },
+        {
+          "id": "header-actions-row",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "align": "center",
+          "justify": "between",
+          "children": [
+            "action-buttons-group",
+            "header-badge"
+          ]
+        },
+        {
+          "id": "action-buttons-group",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": [
+            "export-review-btn",
+            "request-resource-dlg-btn",
+            "archive-project-dlg-btn"
+          ]
+        },
+        {
+          "id": "export-review-btn",
+          "component": "Button",
+          "label": "Export Portfolio Review (PDF/XLS)",
+          "variant": "primary",
+          "size": "small",
+          "action": ["exportPortfolio", {"format": "pdf"}]
+        },
+        {
+          "id": "request-resource-dlg-btn",
+          "component": "DialogBlock",
+          "triggerLabel": "Request Headcount (Item #11)",
+          "triggerVariant": "secondary",
+          "title": "Resource Allocation Request",
+          "description": "Submit a formal request to PMO Resource Management for additional team members.",
+          "content": [
+            "res-req-form"
+          ]
+        },
+        {
+          "id": "res-req-form",
+          "component": "Form",
+          "name": "resource_request_form",
+          "fields": [
+            "req-project-control",
+            "req-role-control",
+            "req-count-control",
+            "req-justification-control"
+          ],
+          "buttons": "res-req-buttons"
+        },
+        {
+          "id": "req-project-control",
+          "component": "FormControl",
+          "label": "Project Target",
+          "input": "req-project-select"
+        },
+        {
+          "id": "req-project-select",
+          "component": "Select",
+          "name": "target_project",
+          "value": "proj-apollo",
+          "items": [
+            "sel-apollo",
+            "sel-beacon",
+            "sel-cipher",
+            "sel-delta"
+          ]
+        },
+        {
+          "id": "sel-apollo",
+          "component": "SelectItem",
+          "value": "proj-apollo",
+          "label": "Project Apollo (Cloud Migration)"
+        },
+        {
+          "id": "sel-beacon",
+          "component": "SelectItem",
+          "value": "proj-beacon",
+          "label": "Project Beacon (Mobile Redesign)"
+        },
+        {
+          "id": "sel-cipher",
+          "component": "SelectItem",
+          "value": "proj-cipher",
+          "label": "Project Cipher (Security Standard)"
+        },
+        {
+          "id": "sel-delta",
+          "component": "SelectItem",
+          "value": "proj-delta",
+          "label": "Project Delta (ERP Integration)"
+        },
+        {
+          "id": "req-role-control",
+          "component": "FormControl",
+          "label": "Role Required",
+          "input": "req-role-input"
+        },
+        {
+          "id": "req-role-input",
+          "component": "Input",
+          "name": "role_type",
+          "placeholder": "e.g., Senior DevOps Engineer"
+        },
+        {
+          "id": "req-count-control",
+          "component": "FormControl",
+          "label": "FTE Count",
+          "input": "req-count-slider"
+        },
+        {
+          "id": "req-count-slider",
+          "component": "Slider",
+          "name": "fte_count",
+          "variant": "discrete",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "defaultValue": [1]
+        },
+        {
+          "id": "req-justification-control",
+          "component": "FormControl",
+          "label": "Business Justification",
+          "input": "req-justification-area"
+        },
+        {
+          "id": "req-justification-area",
+          "component": "TextArea",
+          "name": "justification",
+          "placeholder": "Explain capacity bottleneck or critical timeline risk...",
+          "rows": 3
+        },
+        {
+          "id": "res-req-buttons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": [
+            "submit-res-req-btn"
+          ]
+        },
+        {
+          "id": "submit-res-req-btn",
+          "component": "Button",
+          "label": "Submit Headcount Request",
+          "variant": "primary",
+          "action": ["submitResourceRequest"]
+        },
+        {
+          "id": "archive-project-dlg-btn",
+          "component": "AlertDialogBlock",
+          "triggerLabel": "Archive Finished Project (Item #13)",
+          "triggerVariant": "outline",
+          "title": "Archive Completed Project",
+          "description": "Select a project that has met all closeout criteria. Archiving moves the project history to PMO Vault and frees allocated resources.",
+          "confirmLabel": "Confirm Archive",
+          "cancelLabel": "Cancel"
+        },
+        {
+          "id": "header-badge",
+          "component": "Badge",
+          "text": "PMO Status: ACTIVE REVIEW",
+          "variant": "secondary"
+        },
+        {
+          "id": "health-summary-callout",
+          "component": "Callout",
+          "variant": "warning",
+          "title": "Item #9: Portfolio Health Summary",
+          "description": "Portfolio is MODERATELY HEALTHY (82% overall score): 2 projects on track, 1 at risk due to cloud architecture bottlenecks, and 1 delayed by vendor dependencies."
+        },
+        {
+          "id": "tabs-container",
+          "component": "Tabs",
+          "items": [
+            "tab-projects",
+            "tab-governance",
+            "tab-execution"
+          ]
+        },
+        {
+          "id": "tab-projects",
+          "component": "TabItem",
+          "value": "tab_projects_overview",
+          "trigger": "Active Projects & Budgets",
+          "content": [
+            "projects-card",
+            "budget-card"
+          ]
+        },
+        {
+          "id": "projects-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "projects-header",
+            "projects-table"
+          ]
+        },
+        {
+          "id": "projects-header",
+          "component": "CardHeader",
+          "title": "Item #1: Active Projects Status",
+          "subtitle": "Overview of active initiatives, designated project owners, targets, and current health"
+        },
+        {
+          "id": "projects-table",
+          "component": "Table",
+          "columns": [
+            "col-proj-name",
+            "col-proj-owner",
+            "col-proj-deadline",
+            "col-proj-health",
+            "col-proj-action"
+          ]
+        },
+        {
+          "id": "col-proj-name",
+          "component": "Col",
+          "label": "Project Name",
+          "type": "string",
+          "data": [
+            "Project Apollo (Cloud Migration)",
+            "Project Beacon (Mobile App Redesign)",
+            "Project Cipher (Zero Trust Security)",
+            "Project Delta (ERP Integration)"
+          ]
+        },
+        {
+          "id": "col-proj-owner",
+          "component": "Col",
+          "label": "Project Owner",
+          "type": "string",
+          "data": [
+            "Sarah Jenkins (VP Eng)",
+            "Marcus Vance (Product Lead)",
+            "Elena Rostova (CISO)",
+            "David Chen (Enterprise Arch)"
+          ]
+        },
+        {
+          "id": "col-proj-deadline",
+          "component": "Col",
+          "label": "Target Deadline",
+          "type": "string",
+          "data": [
+            "Oct 15, 2024",
+            "Nov 30, 2024",
+            "Sep 30, 2024",
+            "Dec 15, 2024"
+          ]
+        },
+        {
+          "id": "col-proj-health",
+          "component": "Col",
+          "label": "Health Indicator",
+          "type": "string",
+          "data": [
+            "AT RISK (Yellow)",
+            "HEALTHY (Green)",
+            "HEALTHY (Green)",
+            "DELAYED (Red)"
+          ]
+        },
+        {
+          "id": "col-proj-action",
+          "component": "Col",
+          "label": "Archive Action",
+          "type": "action",
+          "data": [
+            "Active",
+            "Active",
+            "Archive Ready",
+            "Active"
+          ]
+        },
+        {
+          "id": "budget-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "budget-header",
+            "budget-chart"
+          ]
+        },
+        {
+          "id": "budget-header",
+          "component": "CardHeader",
+          "title": "Item #3: Budget Spent vs Allocation",
+          "subtitle": "Comparison of consumed capital ($k) against allocated budget ceiling per active project"
+        },
+        {
+          "id": "budget-chart",
+          "component": "BarChart",
+          "variant": "grouped",
+          "xLabel": "Project",
+          "yLabel": "Amount ($ in Thousands)",
+          "labels": [
+            "Apollo",
+            "Beacon",
+            "Cipher",
+            "Delta"
+          ],
+          "series": [
+            "series-budget-allocated",
+            "series-budget-spent"
+          ]
+        },
+        {
+          "id": "series-budget-allocated",
+          "component": "Series",
+          "category": "Allocated Budget ($k)",
+          "values": [450, 300, 200, 600]
+        },
+        {
+          "id": "series-budget-spent",
+          "component": "Series",
+          "category": "Spent to Date ($k)",
+          "values": [380, 210, 185, 540]
+        },
+        {
+          "id": "tab-governance",
+          "component": "TabItem",
+          "value": "tab_governance_risks",
+          "trigger": "Milestones & Governance",
+          "content": [
+            "milestones-two-col-card",
+            "risks-card"
+          ]
+        },
+        {
+          "id": "milestones-two-col-card",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "children": [
+            "overdue-card",
+            "upcoming-card"
+          ]
+        },
+        {
+          "id": "overdue-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "weight": 1,
+          "children": [
+            "overdue-header",
+            "overdue-list"
+          ]
+        },
+        {
+          "id": "overdue-header",
+          "component": "CardHeader",
+          "title": "Item #2: Overdue Milestones",
+          "subtitle": "Critical path items past deadline requiring immediate PMO remediation"
+        },
+        {
+          "id": "overdue-list",
+          "component": "ListBlock",
+          "variant": "number",
+          "items": [
+            "overdue-item-1",
+            "overdue-item-2"
+          ]
+        },
+        {
+          "id": "overdue-item-1",
+          "component": "ListItem",
+          "title": "Data Pipeline AWS Migration Sign-off",
+          "subtitle": "Project Apollo • Overdue by 12 days • Owner: S. Jenkins",
+          "actionLabel": "Escalate"
+        },
+        {
+          "id": "overdue-item-2",
+          "component": "ListItem",
+          "title": "Legacy ERP API Connector Validation",
+          "subtitle": "Project Delta • Overdue by 5 days • Owner: D. Chen",
+          "actionLabel": "Escalate"
+        },
+        {
+          "id": "upcoming-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "weight": 1,
+          "children": [
+            "upcoming-header",
+            "upcoming-list"
+          ]
+        },
+        {
+          "id": "upcoming-header",
+          "component": "CardHeader",
+          "title": "Item #6: Deadlines Next 2 Weeks",
+          "subtitle": "Upcoming key deliverables scheduled between Sep 16 - Sep 30"
+        },
+        {
+          "id": "upcoming-list",
+          "component": "ListBlock",
+          "variant": "number",
+          "items": [
+            "upcoming-item-1",
+            "upcoming-item-2",
+            "upcoming-item-3"
+          ]
+        },
+        {
+          "id": "upcoming-item-1",
+          "component": "ListItem",
+          "title": "IAM Zero Trust Policy Rollout",
+          "subtitle": "Project Cipher • Due Sep 20, 2024",
+          "actionLabel": "View"
+        },
+        {
+          "id": "upcoming-item-2",
+          "component": "ListItem",
+          "title": "iOS Beta Build 2.0 User Testing",
+          "subtitle": "Project Beacon • Due Sep 24, 2024",
+          "actionLabel": "View"
+        },
+        {
+          "id": "upcoming-item-3",
+          "component": "ListItem",
+          "title": "Database Schema Freeze",
+          "subtitle": "Project Delta • Due Sep 28, 2024",
+          "actionLabel": "View"
+        },
+        {
+          "id": "risks-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "risks-header",
+            "risks-table"
+          ]
+        },
+        {
+          "id": "risks-header",
+          "component": "CardHeader",
+          "title": "Item #5: Key Portfolio Risks & Severity",
+          "subtitle": "Active risks evaluated by impact probability and severity classification"
+        },
+        {
+          "id": "risks-table",
+          "component": "Table",
+          "columns": [
+            "col-risk-id",
+            "col-risk-desc",
+            "col-risk-proj",
+            "col-risk-severity",
+            "col-risk-mitigation"
+          ]
+        },
+        {
+          "id": "col-risk-id",
+          "component": "Col",
+          "label": "Risk ID",
+          "type": "string",
+          "data": [
+            "RSK-102",
+            "RSK-108",
+            "RSK-114",
+            "RSK-119"
+          ]
+        },
+        {
+          "id": "col-risk-desc",
+          "component": "Col",
+          "label": "Risk Description",
+          "type": "string",
+          "data": [
+            "Third-party vendor API response latency exceeds SLA limits",
+            "Key DevOps personnel single point of failure during migration",
+            "Compliance delay on cross-border data residency audit",
+            "UI Design sign-off delay affecting sprint commitments"
+          ]
+        },
+        {
+          "id": "col-risk-proj",
+          "component": "Col",
+          "label": "Project",
+          "type": "string",
+          "data": [
+            "Project Delta",
+            "Project Apollo",
+            "Project Cipher",
+            "Project Beacon"
+          ]
+        },
+        {
+          "id": "col-risk-severity",
+          "component": "Col",
+          "label": "Severity",
+          "type": "string",
+          "data": [
+            "CRITICAL (High Impact)",
+            "HIGH (Medium Impact)",
+            "MEDIUM (Low Impact)",
+            "LOW (Minor)"
+          ]
+        },
+        {
+          "id": "col-risk-mitigation",
+          "component": "Col",
+          "label": "Mitigation Strategy",
+          "type": "string",
+          "data": [
+            "Engage executive sponsor for vendor escalation",
+            "Submit headcount request for backup SRE engineer",
+            "Retain external legal compliance advisor",
+            "Conduct asynchronous design review session"
+          ]
+        },
+        {
+          "id": "tab-execution",
+          "component": "TabItem",
+          "value": "tab_execution_velocity",
+          "trigger": "Execution, Utilization & Blockers",
+          "content": [
+            "utilization-pace-row",
+            "blockers-card"
+          ]
+        },
+        {
+          "id": "utilization-pace-row",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "children": [
+            "utilization-card",
+            "pace-card"
+          ]
+        },
+        {
+          "id": "utilization-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "weight": 1,
+          "children": [
+            "utilization-header",
+            "utilization-chart"
+          ]
+        },
+        {
+          "id": "utilization-header",
+          "component": "CardHeader",
+          "title": "Item #4: Team Utilization Rate",
+          "subtitle": "Percentage of allocated staff capacity actively engaged across domains"
+        },
+        {
+          "id": "utilization-chart",
+          "component": "RadialChart",
+          "labels": [
+            "Backend Eng (92%)",
+            "Frontend Eng (85%)",
+            "DevOps / SRE (105%)",
+            "QA & Testing (78%)"
+          ],
+          "values": [92, 85, 105, 78]
+        },
+        {
+          "id": "pace-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "weight": 1,
+          "children": [
+            "pace-header",
+            "pace-chart"
+          ]
+        },
+        {
+          "id": "pace-header",
+          "component": "CardHeader",
+          "title": "Item #7: Delivery Pace (Past 6 Sprints)",
+          "subtitle": "Completed story points vs planned points trend analysis"
+        },
+        {
+          "id": "pace-chart",
+          "component": "LineChart",
+          "variant": "natural",
+          "xLabel": "Sprint",
+          "yLabel": "Story Points",
+          "labels": [
+            "Sprint 40",
+            "Sprint 41",
+            "Sprint 42",
+            "Sprint 43",
+            "Sprint 44",
+            "Sprint 45"
+          ],
+          "series": [
+            "series-planned-points",
+            "series-delivered-points"
+          ]
+        },
+        {
+          "id": "series-planned-points",
+          "component": "Series",
+          "category": "Planned Velocity",
+          "values": [120, 125, 130, 130, 135, 140]
+        },
+        {
+          "id": "series-delivered-points",
+          "component": "Series",
+          "category": "Delivered Velocity",
+          "values": [115, 122, 110, 128, 131, 138]
+        },
+        {
+          "id": "blockers-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "blockers-header",
+            "blockers-accordion"
+          ]
+        },
+        {
+          "id": "blockers-header",
+          "component": "CardHeader",
+          "title": "Item #8: Blocked Work Items",
+          "subtitle": "High-priority tasks currently stalled due to external or internal dependencies"
+        },
+        {
+          "id": "blockers-accordion",
+          "component": "Accordion",
+          "items": [
+            "blocker-item-1",
+            "blocker-item-2",
+            "blocker-item-3"
+          ]
+        },
+        {
+          "id": "blocker-item-1",
+          "component": "AccordionItem",
+          "value": "blk_1",
+          "trigger": "APOLLO-402: Production Kubernetes Cluster Provisioning (Blocked for 6 days)",
+          "content": [
+            "blocker-text-1"
+          ]
+        },
+        {
+          "id": "blocker-text-1",
+          "component": "TextContent",
+          "text": "**Owner:** S. Jenkins | **Impact:** High  \n**Blocker Detail:** Awaiting InfoSec approval for automated firewall rules between VPC peering connections."
+        },
+        {
+          "id": "blocker-item-2",
+          "component": "AccordionItem",
+          "value": "blk_2",
+          "trigger": "DELTA-189: SAP Gateway Authentication Endpoint Setup (Blocked for 9 days)",
+          "content": [
+            "blocker-text-2"
+          ]
+        },
+        {
+          "id": "blocker-text-2",
+          "component": "TextContent",
+          "text": "**Owner:** D. Chen | **Impact:** Critical  \n**Blocker Detail:** External SAP vendor sandbox access tokens expired and renewal is pending contract addendum."
+        },
+        {
+          "id": "blocker-item-3",
+          "component": "AccordionItem",
+          "value": "blk_3",
+          "trigger": "BEACON-304: Biometric Auth Module App Store Review (Blocked for 3 days)",
+          "content": [
+            "blocker-text-3"
+          ]
+        },
+        {
+          "id": "blocker-text-3",
+          "component": "TextContent",
+          "text": "**Owner:** M. Vance | **Impact:** Medium  \n**Blocker Detail:** Waiting on Apple Developer Enterprise portal certificate re-issuance."
+        },
+        {
+          "id": "followup-suggestions",
+          "component": "FollowUpBlock",
+          "items": [
+            "followup-1",
+            "followup-2",
+            "followup-3"
+          ]
+        },
+        {
+          "id": "followup-1",
+          "component": "FollowUpItem",
+          "text": "Generate a detailed resource reallocation plan for DevOps on Project Apollo."
+        },
+        {
+          "id": "followup-2",
+          "component": "FollowUpItem",
+          "text": "Draft an executive escalation email for the SAP vendor blocking Project Delta."
+        },
+        {
+          "id": "followup-3",
+          "component": "FollowUpItem",
+          "text": "Compare Q3 delivery velocity against Q2 historical baseline."
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>

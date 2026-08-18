@@ -1,0 +1,220 @@
+Here's a low-inventory warning view covering all the requirements.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "low-inventory-view",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": { "primaryColor": "#D97706", "agentDisplayName": "Inventory Manager" }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "low-inventory-view",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "direction": "column",
+          "gap": "l",
+          "children": ["header", "threshold-callout", "search-form", "items-section", "footer-note"]
+        },
+        {
+          "id": "header",
+          "component": "CardHeader",
+          "title": "Low Inventory Warnings",
+          "subtitle": "Items at or below the reorder threshold"
+        },
+        {
+          "id": "threshold-callout",
+          "component": "Callout",
+          "variant": "warning",
+          "title": "Reorder Threshold: 10 units",
+          "description": "Any item with 10 or fewer remaining units is flagged for reordering below."
+        },
+        {
+          "id": "search-form",
+          "component": "Form",
+          "name": "searchForm",
+          "buttons": "search-buttons",
+          "fields": ["search-control"]
+        },
+        {
+          "id": "search-control",
+          "component": "FormControl",
+          "label": "Search Items",
+          "hint": "Filter by product name or SKU",
+          "input": "search-input"
+        },
+        {
+          "id": "search-input",
+          "component": "Input",
+          "name": "query",
+          "type": "text",
+          "placeholder": "e.g. 'AA Batteries' or 'SKU-1042'"
+        },
+        {
+          "id": "search-buttons",
+          "component": "Buttons",
+          "buttons": ["search-btn"]
+        },
+        {
+          "id": "search-btn",
+          "component": "Button",
+          "label": "Search",
+          "variant": "primary",
+          "action": ["searchInventory"]
+        },
+        {
+          "id": "items-section",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "m",
+          "children": ["item-1", "item-2", "item-3", "item-4"]
+        },
+        {
+          "id": "item-1",
+          "component": "Card",
+          "variant": "card",
+          "direction": "row",
+          "gap": "m",
+          "align": "center",
+          "justify": "between",
+          "children": ["item-1-info", "item-1-tag", "item-1-reorder"]
+        },
+        {
+          "id": "item-1-info",
+          "component": "TextContent",
+          "text": "**AA Batteries (24-pack)** — SKU-1042",
+          "size": "default"
+        },
+        {
+          "id": "item-1-tag",
+          "component": "Tag",
+          "text": "3 units left",
+          "variant": "danger",
+          "size": "md"
+        },
+        {
+          "id": "item-1-reorder",
+          "component": "Button",
+          "label": "Reorder",
+          "variant": "primary",
+          "size": "small",
+          "action": ["reorder:SKU-1042"]
+        },
+        {
+          "id": "item-2",
+          "component": "Card",
+          "variant": "card",
+          "direction": "row",
+          "gap": "m",
+          "align": "center",
+          "justify": "between",
+          "children": ["item-2-info", "item-2-tag", "item-2-reorder"]
+        },
+        {
+          "id": "item-2-info",
+          "component": "TextContent",
+          "text": "**Printer Paper (A4, 500 sheets)** — SKU-2087",
+          "size": "default"
+        },
+        {
+          "id": "item-2-tag",
+          "component": "Tag",
+          "text": "6 units left",
+          "variant": "warning",
+          "size": "md"
+        },
+        {
+          "id": "item-2-reorder",
+          "component": "Button",
+          "label": "Reorder",
+          "variant": "primary",
+          "size": "small",
+          "action": ["reorder:SKU-2087"]
+        },
+        {
+          "id": "item-3",
+          "component": "Card",
+          "variant": "card",
+          "direction": "row",
+          "gap": "m",
+          "align": "center",
+          "justify": "between",
+          "children": ["item-3-info", "item-3-tag", "item-3-reorder"]
+        },
+        {
+          "id": "item-3-info",
+          "component": "TextContent",
+          "text": "**USB-C Cables (2m)** — SKU-3391",
+          "size": "default"
+        },
+        {
+          "id": "item-3-tag",
+          "component": "Tag",
+          "text": "9 units left",
+          "variant": "warning",
+          "size": "md"
+        },
+        {
+          "id": "item-3-reorder",
+          "component": "Button",
+          "label": "Reorder",
+          "variant": "primary",
+          "size": "small",
+          "action": ["reorder:SKU-3391"]
+        },
+        {
+          "id": "item-4",
+          "component": "Card",
+          "variant": "card",
+          "direction": "row",
+          "gap": "m",
+          "align": "center",
+          "justify": "between",
+          "children": ["item-4-info", "item-4-tag", "item-4-reorder"]
+        },
+        {
+          "id": "item-4-info",
+          "component": "TextContent",
+          "text": "**Sticky Notes (Assorted)** — SKU-4410",
+          "size": "default"
+        },
+        {
+          "id": "item-4-tag",
+          "component": "Tag",
+          "text": "2 units left",
+          "variant": "danger",
+          "size": "md"
+        },
+        {
+          "id": "item-4-reorder",
+          "component": "Button",
+          "label": "Reorder",
+          "variant": "primary",
+          "size": "small",
+          "action": ["reorder:SKU-4410"]
+        },
+        {
+          "id": "footer-note",
+          "component": "TextContent",
+          "text": "Showing 4 items below the 10-unit threshold.",
+          "size": "small"
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+This screen covers every requirement:
+
+1. **Items running low with remaining units** — Each item card shows the product name/SKU with a colored `Tag` displaying units left (red for critical, amber for approaching threshold).
+2. **A way to reorder each item** — Every item has its own **Reorder** button wired to a per-SKU action.
+3. **The threshold that triggers the warning** — The amber `Callout` at the top states the **10-unit** threshold, echoed in the footer.
+4. **A way to search items** — A search `Form` with an input (name/SKU) and a Search button sits above the list.

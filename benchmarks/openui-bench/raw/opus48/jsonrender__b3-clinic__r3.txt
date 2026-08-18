@@ -1,0 +1,46 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","date-nav","next-patient","metrics-row","rooms-section","appts-section"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Reception — Day View","subtitle":{"$template":"Schedule for ${/currentDate}"}}}}
+{"op":"add","path":"/state/currentDate","value":"Monday, June 10, 2024"}
+{"op":"add","path":"/elements/date-nav","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center","justify":"between","variant":"sunk"},"children":["prev-day","date-label","next-day"]}}
+{"op":"add","path":"/elements/prev-day","value":{"type":"Button","props":{"label":"← Previous Day","variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/currentDate","value":"Sunday, June 9, 2024"}}}}}
+{"op":"add","path":"/elements/date-label","value":{"type":"TextContent","props":{"text":{"$template":"**${/currentDate}**"},"size":"large-heavy"}}}
+{"op":"add","path":"/elements/next-day","value":{"type":"Button","props":{"label":"Next Day →","variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/currentDate","value":"Tuesday, June 11, 2024"}}}}}
+{"op":"add","path":"/elements/next-patient","value":{"type":"Alert","props":{"title":{"$template":"Now calling: ${/nextPatient/name}"},"description":{"$template":"Appointment ${/nextPatient/time} • Dr. ${/nextPatient/doctor} • Room ${/nextPatient/room}"},"variant":"info"}}}
+{"op":"add","path":"/state/nextPatient","value":{"name":"Maria Gonzalez","time":"9:30 AM","doctor":"Patel","room":"3"}}
+{"op":"add","path":"/elements/metrics-row","value":{"type":"Card","props":{"direction":"row","gap":"m","justify":"between"},"children":["metric-expected","metric-checkedin","metric-noshow"]}}
+{"op":"add","path":"/elements/metric-expected","value":{"type":"Card","props":{"direction":"column","gap":"xs","align":"center","variant":"sunk"},"children":["me-num","me-label"]}}
+{"op":"add","path":"/elements/me-num","value":{"type":"Heading","props":{"text":{"$template":"${/stats/expected}"},"level":"h1"}}}
+{"op":"add","path":"/elements/me-label","value":{"type":"TextContent","props":{"text":"Patients Expected Today","size":"small"}}}
+{"op":"add","path":"/state/stats","value":{"expected":18,"checkedIn":6,"noShowRate":"7.4%"}}
+{"op":"add","path":"/elements/metric-checkedin","value":{"type":"Card","props":{"direction":"column","gap":"xs","align":"center","variant":"sunk"},"children":["mc-num","mc-label"]}}
+{"op":"add","path":"/elements/mc-num","value":{"type":"Heading","props":{"text":{"$template":"${/stats/checkedIn}"},"level":"h1"}}}
+{"op":"add","path":"/elements/mc-label","value":{"type":"TextContent","props":{"text":"Checked In","size":"small"}}}
+{"op":"add","path":"/elements/metric-noshow","value":{"type":"Card","props":{"direction":"column","gap":"xs","align":"center","variant":"sunk"},"children":["mn-num","mn-label"]}}
+{"op":"add","path":"/elements/mn-num","value":{"type":"Heading","props":{"text":{"$template":"${/stats/noShowRate}"},"level":"h1"}}}
+{"op":"add","path":"/elements/mn-label","value":{"type":"TextContent","props":{"text":"No-Show Rate (This Month)","size":"small"}}}
+{"op":"add","path":"/elements/rooms-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["rooms-head","rooms-list"]}}
+{"op":"add","path":"/elements/rooms-head","value":{"type":"Heading","props":{"text":"Room Availability","level":"h3"}}}
+{"op":"add","path":"/elements/rooms-list","value":{"type":"Card","props":{"direction":"row","gap":"s","wrap":true},"repeat":{"statePath":"/rooms","key":"id"},"children":["room-tag"]}}
+{"op":"add","path":"/elements/room-tag","value":{"type":"Tag","props":{"text":{"$template":"Room ${name} — ${status}"},"size":"md","variant":{"$cond":{"$item":"free"},"$then":"success","$else":"danger"}}}}
+{"op":"add","path":"/state/rooms","value":[]}
+{"op":"add","path":"/state/rooms/0","value":{"id":"1","name":"1","status":"Free","free":true}}
+{"op":"add","path":"/state/rooms/1","value":{"id":"2","name":"2","status":"Occupied","free":false}}
+{"op":"add","path":"/state/rooms/2","value":{"id":"3","name":"3","status":"Occupied","free":false}}
+{"op":"add","path":"/state/rooms/3","value":{"id":"4","name":"4","status":"Free","free":true}}
+{"op":"add","path":"/state/rooms/4","value":{"id":"5","name":"5","status":"Free","free":true}}
+{"op":"add","path":"/elements/appts-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["appts-head","appts-list"]}}
+{"op":"add","path":"/elements/appts-head","value":{"type":"Heading","props":{"text":"Today's Appointments","level":"h3"}}}
+{"op":"add","path":"/elements/appts-list","value":{"type":"Card","props":{"direction":"column","gap":"s"},"repeat":{"statePath":"/appointments","key":"id"},"children":["appt-row"]}}
+{"op":"add","path":"/elements/appt-row","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center","justify":"between","variant":"sunk"},"children":["appt-info","appt-status","appt-checkin"]}}
+{"op":"add","path":"/elements/appt-info","value":{"type":"TextContent","props":{"text":{"$template":"**${time}** — ${name}  •  Dr. ${doctor}"}}}
+{"op":"add","path":"/elements/appt-status","value":{"type":"Badge","props":{"text":{"$item":"status"},"variant":"secondary"}}}
+{"op":"add","path":"/elements/appt-checkin","value":{"type":"Button","props":{"label":"Check In","variant":"primary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":{"$item":"status"},"value":"Checked In"}}}}}
+{"op":"add","path":"/state/appointments","value":[]}
+{"op":"add","path":"/state/appointments/0","value":{"id":"a1","time":"9:00 AM","name":"James Carter","doctor":"Patel","status":"Checked In"}}
+{"op":"add","path":"/state/appointments/1","value":{"id":"a2","time":"9:30 AM","name":"Maria Gonzalez","doctor":"Patel","status":"Waiting"}}
+{"op":"add","path":"/state/appointments/2","value":{"id":"a3","time":"10:00 AM","name":"Ethan Wong","doctor":"Reyes","status":"Waiting"}}
+{"op":"add","path":"/state/appointments/3","value":{"id":"a4","time":"10:30 AM","name":"Olivia Bennett","doctor":"Reyes","status":"Scheduled"}}
+{"op":"add","path":"/state/appointments/4","value":{"id":"a5","time":"11:15 AM","name":"Liam Foster","doctor":"Nguyen","status":"Scheduled"}}
+{"op":"add","path":"/state/appointments/5","value":{"id":"a6","time":"1:00 PM","name":"Sophia Kim","doctor":"Patel","status":"Scheduled"}}
+{"op":"add","path":"/state/appointments/6","value":{"id":"a7","time":"2:30 PM","name":"Noah Williams","doctor":"Nguyen","status":"Scheduled"}}

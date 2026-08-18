@@ -1,0 +1,61 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["header","metrics-row","controls-row","tickets-all-section","tickets-high-section","new-ticket-dialog"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"☀️ Good Morning — Support Dashboard","subtitle":"Tuesday, June 17, 2025"},"children":[]}}
+{"op":"add","path":"/elements/metrics-row","value":{"type":"Card","props":{"direction":"row","gap":"m"},"children":["metric-open","metric-response"]}}
+{"op":"add","path":"/elements/metric-open","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs","align":"center"},"children":["metric-open-value","metric-open-label"]}}
+{"op":"add","path":"/elements/metric-open-value","value":{"type":"TextContent","props":{"text":{"$template":"${/stats/openCount}"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/metric-open-label","value":{"type":"TextContent","props":{"text":"Open Tickets","size":"small"},"children":[]}}
+{"op":"add","path":"/state/stats/openCount","value":47}
+{"op":"add","path":"/elements/metric-response","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs","align":"center"},"children":["metric-response-value","metric-response-label"]}}
+{"op":"add","path":"/elements/metric-response-value","value":{"type":"TextContent","props":{"text":{"$state":"/stats/avgResponseTime"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/metric-response-label","value":{"type":"TextContent","props":{"text":"Avg First-Response Time","size":"small"},"children":[]}}
+{"op":"add","path":"/state/stats/avgResponseTime","value":"2h 14m"}
+{"op":"add","path":"/elements/controls-row","value":{"type":"Card","props":{"direction":"row","gap":"s","align":"center","justify":"between"},"children":["filter-buttons","spacer","new-ticket-btn"]}}
+{"op":"add","path":"/elements/filter-buttons","value":{"type":"Buttons","props":{"direction":"row"},"children":["filter-all-btn","filter-high-btn"]}}
+{"op":"add","path":"/elements/filter-all-btn","value":{"type":"Button","props":{"label":"All Tickets","variant":{"$cond":{"$state":"/filter","eq":"all"},"$then":"primary","$else":"secondary"},"size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/filter","value":"all"}}},"children":[]}}
+{"op":"add","path":"/elements/filter-high-btn","value":{"type":"Button","props":{"label":"🔴 High Priority","variant":{"$cond":{"$state":"/filter","eq":"high"},"$then":"primary","$else":"secondary"},"size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/filter","value":"high"}}},"children":[]}}
+{"op":"add","path":"/state/filter","value":"all"}
+{"op":"add","path":"/elements/spacer","value":{"type":"TextContent","props":{"text":""},"children":[]}}
+{"op":"add","path":"/elements/new-ticket-btn","value":{"type":"Button","props":{"label":"+ New Ticket","variant":"primary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/showNewTicket","value":true}}},"children":[]}}
+{"op":"add","path":"/state/showNewTicket","value":false}
+{"op":"add","path":"/elements/tickets-all-section","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"visible":{"$state":"/filter","eq":"all"},"children":["tickets-all-header","tickets-all-list"]}}
+{"op":"add","path":"/elements/tickets-all-header","value":{"type":"TextContent","props":{"text":"**Recent Tickets** (showing all)","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/tickets-all-list","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"repeat":{"statePath":"/tickets","key":"id"},"children":["ticket-row"]}}
+{"op":"add","path":"/elements/ticket-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"s","align":"center","justify":"between"},"children":["ticket-info","ticket-priority"]}}
+{"op":"add","path":"/elements/ticket-info","value":{"type":"Card","props":{"direction":"column","gap":"none"},"children":["ticket-subject","ticket-meta"]}}
+{"op":"add","path":"/elements/ticket-subject","value":{"type":"TextContent","props":{"text":{"$template":"${id} — ${subject}"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/ticket-meta","value":{"type":"TextContent","props":{"text":{"$template":"Opened ${time} by ${requester}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/ticket-priority","value":{"type":"Tag","props":{"text":{"$item":"priority"},"variant":{"$cond":{"$item":"priority","eq":"High"},"$then":"danger","$else":{"$cond":{"$item":"priority","eq":"Medium"},"$then":"warning","$else":"info"}},"size":"sm"},"children":[]}}
+{"op":"add","path":"/state/tickets","value":[]}
+{"op":"add","path":"/state/tickets/0","value":{"id":"TK-1042","subject":"Payment gateway timeout on checkout","priority":"High","time":"8 min ago","requester":"Sarah Chen"}}
+{"op":"add","path":"/state/tickets/1","value":{"id":"TK-1041","subject":"Cannot reset password via SSO","priority":"High","time":"22 min ago","requester":"Marcus Webb"}}
+{"op":"add","path":"/state/tickets/2","value":{"id":"TK-1040","subject":"Dashboard charts not loading on Safari","priority":"Medium","time":"45 min ago","requester":"Aisha Patel"}}
+{"op":"add","path":"/state/tickets/3","value":{"id":"TK-1039","subject":"Feature request: export to CSV","priority":"Low","time":"1h ago","requester":"James O'Brien"}}
+{"op":"add","path":"/state/tickets/4","value":{"id":"TK-1038","subject":"API rate limit errors on batch import","priority":"High","time":"1h 15m ago","requester":"Lina Torres"}}
+{"op":"add","path":"/elements/tickets-high-section","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"visible":{"$state":"/filter","eq":"high"},"children":["tickets-high-header","tickets-high-list"]}}
+{"op":"add","path":"/elements/tickets-high-header","value":{"type":"TextContent","props":{"text":"**Recent Tickets** (high priority only)","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/tickets-high-list","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"repeat":{"statePath":"/highPriorityTickets","key":"id"},"children":["ticket-row-high"]}}
+{"op":"add","path":"/elements/ticket-row-high","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"s","align":"center","justify":"between"},"children":["ticket-info-high","ticket-priority-high"]}}
+{"op":"add","path":"/elements/ticket-info-high","value":{"type":"Card","props":{"direction":"column","gap":"none"},"children":["ticket-subject-high","ticket-meta-high"]}}
+{"op":"add","path":"/elements/ticket-subject-high","value":{"type":"TextContent","props":{"text":{"$template":"${id} — ${subject}"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/ticket-meta-high","value":{"type":"TextContent","props":{"text":{"$template":"Opened ${time} by ${requester}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/ticket-priority-high","value":{"type":"Tag","props":{"text":"High","variant":"danger","size":"sm"},"children":[]}}
+{"op":"add","path":"/state/highPriorityTickets","value":[]}
+{"op":"add","path":"/state/highPriorityTickets/0","value":{"id":"TK-1042","subject":"Payment gateway timeout on checkout","priority":"High","time":"8 min ago","requester":"Sarah Chen"}}
+{"op":"add","path":"/state/highPriorityTickets/1","value":{"id":"TK-1041","subject":"Cannot reset password via SSO","priority":"High","time":"22 min ago","requester":"Marcus Webb"}}
+{"op":"add","path":"/state/highPriorityTickets/2","value":{"id":"TK-1038","subject":"API rate limit errors on batch import","priority":"High","time":"1h 15m ago","requester":"Lina Torres"}}
+{"op":"add","path":"/elements/new-ticket-dialog","value":{"type":"DialogBlock","props":{"triggerLabel":"","title":"Create New Ticket","description":"Fill in the details below to open a new support ticket.","content":["new-ticket-form"]},"visible":{"$state":"/showNewTicket"},"children":[]}}
+{"op":"add","path":"/elements/new-ticket-form","value":{"type":"Form","props":{"name":"newTicket","fields":["nt-subject-field","nt-priority-field","nt-desc-field"],"buttons":"nt-buttons"},"children":[]}}
+{"op":"add","path":"/elements/nt-subject-field","value":{"type":"FormControl","props":{"label":"Subject","input":"nt-subject-input"},"children":[]}}
+{"op":"add","path":"/elements/nt-subject-input","value":{"type":"Input","props":{"name":"subject","placeholder":"Brief summary of the issue","value":{"$bindState":"/newTicket/subject"}},"children":[]}}
+{"op":"add","path":"/elements/nt-priority-field","value":{"type":"FormControl","props":{"label":"Priority","input":"nt-priority-select"},"children":[]}}
+{"op":"add","path":"/elements/nt-priority-select","value":{"type":"Select","props":{"name":"priority","placeholder":"Select priority","value":{"$bindState":"/newTicket/priority"},"items":["nt-pri-high","nt-pri-med","nt-pri-low"]},"children":[]}}
+{"op":"add","path":"/elements/nt-pri-high","value":{"type":"SelectItem","props":{"value":"High","label":"🔴 High"},"children":[]}}
+{"op":"add","path":"/elements/nt-pri-med","value":{"type":"SelectItem","props":{"value":"Medium","label":"🟡 Medium"},"children":[]}}
+{"op":"add","path":"/elements/nt-pri-low","value":{"type":"SelectItem","props":{"value":"Low","label":"🟢 Low"},"children":[]}}
+{"op":"add","path":"/elements/nt-desc-field","value":{"type":"FormControl","props":{"label":"Description","input":"nt-desc-input"},"children":[]}}
+{"op":"add","path":"/elements/nt-desc-input","value":{"type":"TextArea","props":{"name":"description","placeholder":"Describe the issue in detail...","rows":4,"value":{"$bindState":"/newTicket/description"}},"children":[]}}
+{"op":"add","path":"/elements/nt-buttons","value":{"type":"Buttons","props":{"direction":"row"},"children":["nt-submit-btn","nt-cancel-btn"]}}
+{"op":"add","path":"/elements/nt-submit-btn","value":{"type":"Button","props":{"label":"Create Ticket","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/tickets","value":{"id":"$id","subject":{"$state":"/newTicket/subject"},"priority":{"$state":"/newTicket/priority"},"time":"Just now","requester":"You"},"clearStatePath":"/newTicket"}}},"children":[]}}
+{"op":"add","path":"/elements/nt-cancel-btn","value":{"type":"Button","props":{"label":"Cancel","variant":"secondary"},"on":{"press":{"action":"setState","params":{"statePath":"/showNewTicket","value":false}}},"children":[]}}
+{"op":"add","path":"/state/newTicket","value":{"subject":"","priority":"","description":""}}

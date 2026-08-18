@@ -1,0 +1,48 @@
+root = Card([header, topActions, categoryFilter, drafts, publishedSection, mostRead, readership, comments, scheduleForm])
+header = CardHeader("Content Studio", "Your editorial workspace")
+topActions = Buttons([newDraftBtn])
+newDraftBtn = Button("Start new draft", null, "primary")
+
+categoryFilter = Form("category-filter", filterButtons, [categoryField])
+categoryField = FormControl("Narrow by category", categorySelect)
+categorySelect = Select("category", [catAll, catTech, catCulture, catBusiness, catHealth], "All categories")
+catAll = SelectItem("all", "All categories")
+catTech = SelectItem("tech", "Technology")
+catCulture = SelectItem("culture", "Culture")
+catBusiness = SelectItem("business", "Business")
+catHealth = SelectItem("health", "Health")
+filterButtons = Buttons([applyFilterBtn])
+applyFilterBtn = Button("Apply filter", null, "secondary")
+
+drafts = Table([draftTitle, draftAuthor, draftStatus])
+draftTitle = Col("Draft", ["The Rise of Edge AI", "Remote Work in 2025", "Longevity Diets Reviewed", "Startup Funding Winter"])
+draftAuthor = Col("Author", ["M. Chen", "R. Okafor", "S. Patel", "L. Novak"])
+draftStatus = Col("Status", ["In review", "Needs edits", "Draft", "Ready to publish"])
+
+publishedSection = Card([publishedHeader, publishedList], "sunk")
+publishedHeader = Heading("Published this week", "h3")
+publishedList = ListBlock([pub1, pub2, pub3], "number")
+pub1 = ListItem("Quantum Computing Explained", "Technology · Mon")
+pub2 = ListItem("The New Office Etiquette", "Culture · Wed")
+pub3 = ListItem("Interest Rates and You", "Business · Fri")
+
+mostRead = Callout("info", "Most-read this month", "\"The Rise of Edge AI\" — 48,200 reads")
+
+readership = AreaChart(readLabels, [readSeries], "natural", "Day", "Reads")
+readLabels = ["Day 1", "Day 5", "Day 10", "Day 15", "Day 20", "Day 25", "Day 30"]
+readSeries = Series("Readers", [3200, 4100, 3800, 5200, 6100, 5800, 7400])
+
+comments = Card([commentsHeader, commentsList], "sunk")
+commentsHeader = Heading("Comments awaiting reply", "h3")
+commentsList = ListBlock([cmt1, cmt2, cmt3])
+cmt1 = ListItem("On \"The Rise of Edge AI\"", "\"Great overview — any latency benchmarks?\"", null, "Reply")
+cmt2 = ListItem("On \"Remote Work in 2025\"", "\"Curious about hybrid team data.\"", null, "Reply")
+cmt3 = ListItem("On \"Interest Rates and You\"", "\"Could you cover mortgages next?\"", null, "Reply")
+
+scheduleForm = Form("schedule-piece", scheduleButtons, [scheduleTitle, scheduleDate])
+scheduleTitle = FormControl("Title", scheduleTitleInput)
+scheduleTitleInput = Input("title", "Piece title")
+scheduleDate = FormControl("Publish date", scheduleDatePicker)
+scheduleDatePicker = DatePicker("publish_date", "single")
+scheduleButtons = Buttons([scheduleBtn])
+scheduleBtn = Button("Schedule piece", null, "primary")

@@ -1,0 +1,60 @@
+root = Card([header, sep1, kpiCards, sep2, chartHeader, expenseChart, sep3, transHeader, transTable, sep4, actions, followUps], "card", "column", "l")
+
+header = CardHeader("Finance Overview", "Month-end summary for October 2023")
+
+sep1 = Separator()
+
+kpiCards = Card([cashCard, burnCard, runwayCard], "clear", "row", "m", "stretch", "between")
+
+cashCard = Card([cashLabel, cashVal, cashSub], "sunk", "column", "xs")
+cashLabel = TextContent("Cash on Hand", "small-heavy")
+cashVal = Heading("$1,245,000", "h2")
+cashSub = Badge("+4.2% vs last month", "secondary")
+
+burnCard = Card([burnLabel, burnVal, burnSub], "sunk", "column", "xs")
+burnLabel = TextContent("Monthly Burn", "small-heavy")
+burnVal = Heading("$115,000", "h2")
+burnSub = Badge("-2.1% vs last month", "secondary")
+
+runwayCard = Card([runwayLabel, runwayVal, runwaySub], "sunk", "column", "xs")
+runwayLabel = TextContent("Runway", "small-heavy")
+runwayVal = Heading("10.8 Months", "h2")
+runwaySub = Badge("Target: >12 mo", "outline")
+
+sep2 = Separator()
+
+chartHeader = Heading("Expenses by Category", "h3")
+expenseChart = HorizontalBarChart(chartCategories, [chartSeries], "grouped", "Amount ($)", "Category")
+chartCategories = ["Payroll & Benefits", "Cloud & Infra", "Marketing & Growth", "Software & SaaS", "Legal & Prof. Services", "Office & Supplies"]
+chartSeries = Series("Expenses", [68000, 18500, 14200, 8100, 4500, 1700])
+
+sep3 = Separator()
+
+transHeader = CardHeader("Large Transactions", "Single transactions exceeding $10,000 this month")
+transTable = Table([colDate, colDesc, colCat, colAmt])
+colDate = Col("Date", ["Oct 01, 2023", "Oct 05, 2023", "Oct 12, 2023", "Oct 15, 2023", "Oct 28, 2023"])
+colDesc = Col("Description", ["Gusto Payroll Services", "AWS Web Hosting", "Google Ads Campaign", "WeWork Office Space", "Cooley LLP Legal Fees"])
+colCat = Col("Category", ["Payroll", "Infrastructure", "Marketing", "Office", "Legal"])
+colAmt = Col("Amount", ["$68,000.00", "$14,250.00", "$12,000.00", "$10,500.00", "$11,800.00"])
+
+sep4 = Separator()
+
+actions = Card([monthSelect, actionButtons], "clear", "row", "m", "center", "between")
+monthSelect = Form("month-filter", monthFilterButtons, [monthControl])
+monthControl = FormControl("Selected Period", monthInput)
+monthInput = Select("month", [m1, m2, m3, m4], "Select month", null, "October 2023")
+m1 = SelectItem("2023-10", "October 2023")
+m2 = SelectItem("2023-09", "September 2023")
+m3 = SelectItem("2023-08", "August 2023")
+m4 = SelectItem("2023-07", "July 2023")
+monthFilterButtons = Buttons([applyBtn])
+applyBtn = Button("Change Month", null, "secondary", "normal", "small")
+
+actionButtons = Buttons([downloadBtn, exportCsvBtn])
+downloadBtn = Button("Download Statement (PDF)", null, "primary")
+exportCsvBtn = Button("Export Raw CSV", null, "tertiary")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Show month-over-month burn comparison")
+f2 = FollowUpItem("Break down Cloud & Infra expenses")
+f3 = FollowUpItem("Generate 12-month runway projection")

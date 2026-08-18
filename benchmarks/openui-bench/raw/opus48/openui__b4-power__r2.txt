@@ -1,0 +1,47 @@
+root = Card([header, alerts, kpiRow, capacity, genSplit, plants, outages, forecast, maintenance, controls])
+header = CardHeader("Grid Operations Console", "National Power Network — Live")
+
+alerts = Alert("Frequency deviation on North interconnect", "49.82 Hz detected at 14:03 — automatic reserves engaged", "warning")
+
+kpiRow = Table([kpiMetric, kpiValue])
+kpiMetric = Col("Metric", ["Current Load", "Price / MWh", "Emissions Today"])
+kpiValue = Col("Value", ["38,420 MW", "$61.40", "18,240 tCO₂"])
+
+capacity = Progress(83, "Load vs Capacity — 38,420 / 46,000 MW (83%)")
+
+genSplit = PieChart(genLabels, genValues, "donut")
+genLabels = ["Gas", "Nuclear", "Wind", "Solar", "Hydro", "Coal"]
+genValues = [12400, 9200, 7800, 4100, 3200, 1720]
+
+plants = Table([plantName, plantOutput, plantStatus])
+plantName = Col("Plant", ["Eastgate Gas", "Fenwood Nuclear", "Ridgeline Wind", "Solara Farm", "Deepdale Hydro", "Kellow Coal"])
+plantOutput = Col("Output (MW)", [4200, 4600, 3900, 2050, 1600, 860], "number")
+plantStatus = Col("Status", ["Online", "Online", "Online", "Curtailed", "Online", "Standby"])
+
+outages = Table([outageAsset, outageRegion, outageStatus])
+outageAsset = Col("Asset", ["Line NW-114", "Substation Hartley", "Kellow Unit 2"])
+outageRegion = Col("Region", ["North West", "Midlands", "South East"])
+outageStatus = Col("Status", ["Fault", "Under repair", "Offline"])
+
+forecast = LineChart(forecastHours, [forecastSeries], "natural", "Hour", "MW")
+forecastHours = ["00", "03", "06", "09", "12", "15", "18", "21", "24"]
+forecastSeries = Series("Forecast Demand", [31200, 29800, 33400, 40100, 42600, 41800, 45200, 43900, 34500])
+
+maintenance = ListBlock([maint1, maint2, maint3], "number")
+maint1 = ListItem("Fenwood Nuclear — Turbine inspection", "Jun 14–16 · Region: East")
+maint2 = ListItem("Ridgeline Wind — Blade servicing", "Jun 21 · Region: North")
+maint3 = ListItem("Deepdale Hydro — Sluice overhaul", "Jun 27–29 · Region: West")
+
+controls = Card([regionFocus, curtailDialog], "clear", "row", "m")
+regionFocus = Form("region-focus", focusButtons, [regionField])
+regionField = FormControl("Focus region", regionSelect)
+regionSelect = Select("region", [regNW, regMid, regSE, regEast, regWest], "Select a region")
+regNW = SelectItem("nw", "North West")
+regMid = SelectItem("mid", "Midlands")
+regSE = SelectItem("se", "South East")
+regEast = SelectItem("east", "East")
+regWest = SelectItem("west", "West")
+focusButtons = Buttons([focusBtn])
+focusBtn = Button("Focus", null, "primary")
+
+curtailDialog = AlertDialogBlock("Order Curtailment", "Order Load Curtailment", "This will reduce dispatch to selected plants and may affect supply. Confirm to proceed.", "Order Curtailment", "Cancel", "destructive")

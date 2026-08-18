@@ -1,0 +1,37 @@
+{"op":"add","path":"/root","value":"container"}
+{"op":"add","path":"/elements/container","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header-card","stats-row","form-card","updates-heading","updates-list"]}}
+{"op":"add","path":"/elements/header-card","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center"},"children":["header-title","header-date"]}}
+{"op":"add","path":"/elements/header-title","value":{"type":"Heading","props":{"text":"Async Daily Standup","level":"h1"}}}
+{"op":"add","path":"/elements/header-date","value":{"type":"Badge","props":{"text":{"$state":"/todayDate"},"variant":"outline"}}}
+{"op":"add","path":"/state/todayDate","value":"October 24, 2023"}
+{"op":"add","path":"/elements/stats-row","value":{"type":"Card","props":{"direction":"row","gap":"m"},"children":["stat-missing","stat-blocked"]}}
+{"op":"add","path":"/elements/stat-missing","value":{"type":"Alert","props":{"title":{"$template":"${/missingCount} Updates Missing"},"description":"Teammates who haven't submitted their async standup today.","variant":"warning"}}}
+{"op":"add","path":"/state/missingCount","value":2}
+{"op":"add","path":"/elements/stat-blocked","value":{"type":"Alert","props":{"title":{"$template":"${/blockedCount} Teammates Blocked"},"description":"Attention needed to clear blockers for the team.","variant":"destructive"}}}
+{"op":"add","path":"/state/blockedCount","value":1}
+{"op":"add","path":"/elements/form-card","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["form-title","input-name","input-today","input-blocker","submit-btn"]}}
+{"op":"add","path":"/elements/form-title","value":{"type":"Heading","props":{"text":"Post Your Update","level":"h3"}}}
+{"op":"add","path":"/elements/input-name","value":{"type":"FormControl","props":{"label":"Your Name","input":"field-name"}}}
+{"op":"add","path":"/elements/field-name","value":{"type":"Input","props":{"name":"authorName","placeholder":"e.g. Alex Morgan","value":{"$bindState":"/newUpdate/author"}}}}
+{"op":"add","path":"/elements/input-today","value":{"type":"FormControl","props":{"label":"What are you working on today?","input":"field-today"}}}
+{"op":"add","path":"/elements/field-today","value":{"type":"TextArea","props":{"name":"todayText","placeholder":"Today I am working on...","rows":2,"value":{"$bindState":"/newUpdate/today"}}}}
+{"op":"add","path":"/elements/input-blocker","value":{"type":"FormControl","props":{"label":"Any blockers? (Optional)","input":"field-blocker"}}}
+{"op":"add","path":"/elements/field-blocker","value":{"type":"Input","props":{"name":"blockerText","placeholder":"e.g. Waiting for API design signoff...","value":{"$bindState":"/newUpdate/blocker"}}}}
+{"op":"add","path":"/elements/submit-btn","value":{"type":"Button","props":{"label":"Submit Standup Update","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/updates","value":{"id":"$id","author":{"$state":"/newUpdate/author"},"avatar":"AM","role":"Team Member","today":{"$state":"/newUpdate/today"},"blocker":{"$state":"/newUpdate/blocker"},"isBlocked":true},"clearStatePath":"/newUpdate"}}}}}
+{"op":"add","path":"/state/newUpdate","value":{"author":"","today":"","blocker":""}}
+{"op":"add","path":"/elements/updates-heading","value":{"type":"Heading","props":{"text":"Team Updates","level":"h2"}}}
+{"op":"add","path":"/elements/updates-list","value":{"type":"Card","props":{"direction":"column","gap":"m"},"repeat":{"statePath":"/updates","key":"id"},"children":["update-card"]}}
+{"op":"add","path":"/elements/update-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["update-header","update-today","update-blocker-callout"]}}
+{"op":"add","path":"/elements/update-header","value":{"type":"Card","props":{"direction":"row","align":"center","justify":"between"},"children":["author-info","status-badge"]}}
+{"op":"add","path":"/elements/author-info","value":{"type":"Card","props":{"direction":"row","align":"center","gap":"s"},"children":["author-avatar","author-meta"]}}
+{"op":"add","path":"/elements/author-avatar","value":{"type":"Avatar","props":{"fallback":{"$item":"avatar"}}}}
+{"op":"add","path":"/elements/author-meta","value":{"type":"Card","props":{"direction":"column","gap":"none"},"children":["author-name","author-role"]}}
+{"op":"add","path":"/elements/author-name","value":{"type":"TextContent","props":{"text":{"$item":"author"},"size":"large-heavy"}}}
+{"op":"add","path":"/elements/author-role","value":{"type":"TextContent","props":{"text":{"$item":"role"},"size":"small"}}}
+{"op":"add","path":"/elements/status-badge","value":{"type":"Badge","props":{"text":{"$cond":{"$item":"isBlocked"},"$then":"Blocked","$else":"On Track"},"variant":{"$cond":{"$item":"isBlocked"},"$then":"destructive","$else":"secondary"}}}}
+{"op":"add","path":"/elements/update-today","value":{"type":"TextContent","props":{"text":{"$template":"**Today:** ${today}"}}}}
+{"op":"add","path":"/elements/update-blocker-callout","value":{"type":"Callout","props":{"variant":"error","title":"Blocker","description":{"$item":"blocker"}},"visible":{"$item":"isBlocked"}}}
+{"op":"add","path":"/state/updates","value":[]}
+{"op":"add","path":"/state/updates/0","value":{"id":"1","author":"Sarah Chen","role":"Senior Frontend Engineer","avatar":"SC","today":"Finalizing dashboard chart components and writing integration tests.","blocker":"Waiting on backend PR #402 for user analytics endpoint.","isBlocked":true}}
+{"op":"add","path":"/state/updates/1","value":{"id":"2","author":"Marcus Johnson","role":"Backend Developer","avatar":"MJ","today":"Reviewing database migration scripts and optimizing auth queries.","blocker":"","isBlocked":false}}
+{"op":"add","path":"/state/updates/2","value":{"id":"3","author":"Elena Rostova","role":"Product Designer","avatar":"ER","today":"Conducting user feedback sessions for the new onboarding flow.","blocker":"","isBlocked":false}}

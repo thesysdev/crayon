@@ -1,0 +1,35 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["header","blocked-callout","missing-banner","updates-list","separator","post-form"]}}
+{"op":"add","path":"/elements/header","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["header-title","header-date"]}}
+{"op":"add","path":"/elements/header-title","value":{"type":"Heading","props":{"text":"Async Standup","level":"h1"},"children":[]}}
+{"op":"add","path":"/elements/header-date","value":{"type":"TextContent","props":{"text":{"$template":"📅 ${/todayDate}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/state/todayDate","value":"Wednesday, June 18, 2025"}}
+{"op":"add","path":"/elements/blocked-callout","value":{"type":"Callout","props":{"variant":"warning","title":"🚧 Blocked Team Members","description":{"$template":"${/blockedNames}"}},"children":[]}}
+{"op":"add","path":"/state/blockedNames","value":"Sarah Chen (waiting on API keys from DevOps), Marcus Rivera (blocked by PR #482 review)"}}
+{"op":"add","path":"/elements/missing-banner","value":{"type":"Card","props":{"variant":"clear","direction":"row","align":"center","gap":"s"},"children":["missing-icon","missing-text"]}}
+{"op":"add","path":"/elements/missing-icon","value":{"type":"Badge","props":{"text":"⏳","variant":"secondary"},"children":[]}}
+{"op":"add","path":"/elements/missing-text","value":{"type":"TextContent","props":{"text":{"$template":"${/missingCount} of ${/totalMembers} updates still missing"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/state/missingCount","value":2}}
+{"op":"add","path":"/state/totalMembers","value":6}}
+{"op":"add","path":"/elements/updates-list","value":{"type":"Card","props":{"direction":"column","gap":"s"},"repeat":{"statePath":"/teamMembers","key":"id"},"children":["member-card"]}}
+{"op":"add","path":"/elements/member-card","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"start"},"children":["member-avatar","member-info"]}}
+{"op":"add","path":"/elements/member-avatar","value":{"type":"Avatar","props":{"fallback":{"$item":"initials"},"alt":{"$item":"name"}},"children":[]}}
+{"op":"add","path":"/elements/member-info","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["member-name-row","member-update"]}}
+{"op":"add","path":"/elements/member-name-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center"},"children":["member-name","member-status-badge"]}}
+{"op":"add","path":"/elements/member-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/member-status-badge","value":{"type":"Tag","props":{"text":{"$item":"statusLabel"},"variant":{"$item":"statusVariant"},"size":"sm"},"children":[]}}
+{"op":"add","path":"/elements/member-update","value":{"type":"TextContent","props":{"text":{"$cond":{"$item":"submitted"},"$then":{"$item":"update"},"$else":"⚪ No update yet"},"size":"small"},"children":[]}}
+{"op":"add","path":"/state/teamMembers","value":[]}
+{"op":"add","path":"/state/teamMembers/0","value":{"id":"1","name":"Alex Kim","initials":"AK","statusLabel":"✅ Done","statusVariant":"success","submitted":true,"update":"Shipped the new onboarding flow to staging. All tests passing. Ready for QA review tomorrow."}}
+{"op":"add","path":"/state/teamMembers/1","value":{"id":"2","name":"Sarah Chen","initials":"SC","statusLabel":"🚧 Blocked","statusVariant":"danger","submitted":true,"update":"Waiting on API keys from DevOps to integrate the payment gateway. Followed up twice, no response yet."}}
+{"op":"add","path":"/state/teamMembers/2","value":{"id":"3","name":"Marcus Rivera","initials":"MR","statusLabel":"🚧 Blocked","statusVariant":"danger","submitted":true,"update":"Blocked by PR #482 review — need at least one approval to merge the auth refactor before I can proceed."}}
+{"op":"add","path":"/state/teamMembers/3","value":{"id":"4","name":"Priya Patel","initials":"PP","statusLabel":"🔄 In Progress","statusVariant":"info","submitted":true,"update":"Continuing work on the dashboard analytics module. Charts are rendering, now wiring up the date range filters."}}
+{"op":"add","path":"/state/teamMembers/4","value":{"id":"5","name":"Jordan Lee","initials":"JL","statusLabel":"⏳ Pending","statusVariant":"neutral","submitted":false,"update":""}}
+{"op":"add","path":"/state/teamMembers/5","value":{"id":"6","name":"Emma Wilson","initials":"EW","statusLabel":"⏳ Pending","statusVariant":"neutral","submitted":false,"update":""}}
+{"op":"add","path":"/elements/separator","value":{"type":"Separator","props":{},"children":[]}}
+{"op":"add","path":"/elements/post-form","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["post-form-title","post-input-control","post-submit-btn"]}}
+{"op":"add","path":"/elements/post-form-title","value":{"type":"Heading","props":{"text":"Post Your Update","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/post-input-control","value":{"type":"FormControl","props":{"label":"What did you work on today?","input":"post-input","hint":"Include any blockers or help needed"},"children":[]}}
+{"op":"add","path":"/elements/post-input","value":{"type":"TextArea","props":{"name":"myUpdate","placeholder":"e.g. Finished the search feature. Blocked on design assets for the empty state.","rows":3,"value":{"$bindState":"/myUpdate"}},"children":[]}}
+{"op":"add","path":"/state/myUpdate","value":""}}
+{"op":"add","path":"/elements/post-submit-btn","value":{"type":"Button","props":{"label":"Submit Update","variant":"primary","size":"medium"},"on":{"press":{"action":"pushState","params":{"statePath":"/teamMembers","value":{"id":"$id","name":"You","initials":"YO","statusLabel":"✅ Done","statusVariant":"success","submitted":true,"update":{"$state":"/myUpdate"}},"clearStatePath":"/myUpdate"}}},"children":[]}}

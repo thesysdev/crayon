@@ -1,0 +1,58 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","metrics-row","controls-row","tickets-all-section","tickets-high-section"]}}
+{"op":"add","path":"/elements/header","value":{"type":"Heading","props":{"text":"☀️ Good Morning — Support Dashboard","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/metrics-row","value":{"type":"Card","props":{"direction":"row","gap":"m","variant":"clear"},"children":["metric-open","metric-response"]}}
+{"op":"add","path":"/elements/metric-open","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs","align":"center"},"children":["metric-open-value","metric-open-label"]}}
+{"op":"add","path":"/elements/metric-open-value","value":{"type":"TextContent","props":{"text":{"$template":"${/openCount}"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/metric-open-label","value":{"type":"TextContent","props":{"text":"Open Tickets","size":"small"},"children":[]}}
+{"op":"add","path":"/state/openCount","value":23}
+{"op":"add","path":"/elements/metric-response","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs","align":"center"},"children":["metric-response-value","metric-response-label"]}}
+{"op":"add","path":"/elements/metric-response-value","value":{"type":"TextContent","props":{"text":{"$template":"${/avgResponseTime}"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/metric-response-label","value":{"type":"TextContent","props":{"text":"Avg First-Response Time","size":"small"},"children":[]}}
+{"op":"add","path":"/state/avgResponseTime","value":"14 min"}
+{"op":"add","path":"/elements/controls-row","value":{"type":"Card","props":{"direction":"row","gap":"s","variant":"clear","align":"center","justify":"between"},"children":["filter-buttons","new-ticket-dialog"]}}
+{"op":"add","path":"/elements/filter-buttons","value":{"type":"Buttons","props":{"direction":"row"},"children":["filter-all-btn","filter-high-btn"]}}
+{"op":"add","path":"/elements/filter-all-btn","value":{"type":"Button","props":{"label":"All Tickets","variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/filter","value":"all"}}},"children":[]}}
+{"op":"add","path":"/elements/filter-high-btn","value":{"type":"Button","props":{"label":"🔴 High Priority Only","variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/filter","value":"high"}}},"children":[]}}
+{"op":"add","path":"/state/filter","value":"all"}
+{"op":"add","path":"/elements/new-ticket-dialog","value":{"type":"DialogBlock","props":{"triggerLabel":"+ New Ticket","triggerVariant":"default","title":"Create New Ticket","description":"Fill in the details below to open a new support ticket."},"children":["new-ticket-form"]}}
+{"op":"add","path":"/elements/new-ticket-form","value":{"type":"Form","props":{"name":"newTicket","buttons":"new-ticket-buttons","fields":["new-ticket-subject-field","new-ticket-priority-field","new-ticket-desc-field"]},"children":["new-ticket-subject-field","new-ticket-priority-field","new-ticket-desc-field","new-ticket-buttons"]}}
+{"op":"add","path":"/elements/new-ticket-subject-field","value":{"type":"FormControl","props":{"label":"Subject","input":"new-ticket-subject-input"},"children":["new-ticket-subject-input"]}}
+{"op":"add","path":"/elements/new-ticket-subject-input","value":{"type":"Input","props":{"name":"subject","placeholder":"Brief summary of the issue","value":{"$bindState":"/newTicket/subject"}},"children":[]}}
+{"op":"add","path":"/elements/new-ticket-priority-field","value":{"type":"FormControl","props":{"label":"Priority","input":"new-ticket-priority-select"},"children":["new-ticket-priority-select"]}}
+{"op":"add","path":"/elements/new-ticket-priority-select","value":{"type":"Select","props":{"name":"priority","placeholder":"Select priority","value":{"$bindState":"/newTicket/priority"},"items":["priority-opt-low","priority-opt-medium","priority-opt-high","priority-opt-critical"]},"children":["priority-opt-low","priority-opt-medium","priority-opt-high","priority-opt-critical"]}}
+{"op":"add","path":"/elements/priority-opt-low","value":{"type":"SelectItem","props":{"value":"Low","label":"Low"},"children":[]}}
+{"op":"add","path":"/elements/priority-opt-medium","value":{"type":"SelectItem","props":{"value":"Medium","label":"Medium"},"children":[]}}
+{"op":"add","path":"/elements/priority-opt-high","value":{"type":"SelectItem","props":{"value":"High","label":"High"},"children":[]}}
+{"op":"add","path":"/elements/priority-opt-critical","value":{"type":"SelectItem","props":{"value":"Critical","label":"Critical"},"children":[]}}
+{"op":"add","path":"/elements/new-ticket-desc-field","value":{"type":"FormControl","props":{"label":"Description","input":"new-ticket-desc-input"},"children":["new-ticket-desc-input"]}}
+{"op":"add","path":"/elements/new-ticket-desc-input","value":{"type":"TextArea","props":{"name":"description","placeholder":"Describe the issue in detail...","rows":4,"value":{"$bindState":"/newTicket/description"}},"children":[]}}
+{"op":"add","path":"/elements/new-ticket-buttons","value":{"type":"Buttons","props":{"direction":"row"},"children":["new-ticket-submit-btn"]}}
+{"op":"add","path":"/elements/new-ticket-submit-btn","value":{"type":"Button","props":{"label":"Submit Ticket","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/tickets","value":{"id":"$id","subject":{"$state":"/newTicket/subject"},"priority":{"$state":"/newTicket/priority"},"time":"Just now","requester":"You"},"clearStatePath":"/newTicket"}}},"children":[]}}
+{"op":"add","path":"/state/newTicket","value":{"subject":"","priority":"","description":""}}
+{"op":"add","path":"/elements/tickets-all-section","value":{"type":"Card","props":{"direction":"column","gap":"s","variant":"clear"},"visible":{"$or":[{"$state":"/filter","eq":"all"},{"$state":"/filter","not":true}]},"repeat":{"statePath":"/tickets","key":"id"},"children":["ticket-row"]}}
+{"op":"add","path":"/elements/ticket-row","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center","justify":"between"},"children":["ticket-info","ticket-meta"]}}
+{"op":"add","path":"/elements/ticket-info","value":{"type":"Card","props":{"direction":"row","gap":"s","align":"center","variant":"clear"},"children":["ticket-priority-tag","ticket-subject"]}}
+{"op":"add","path":"/elements/ticket-priority-tag","value":{"type":"Tag","props":{"text":{"$item":"priority"},"variant":{"$item":"priorityVariant"},"size":"sm"},"children":[]}}
+{"op":"add","path":"/elements/ticket-subject","value":{"type":"TextContent","props":{"text":{"$item":"subject"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/ticket-meta","value":{"type":"Card","props":{"direction":"row","gap":"s","align":"center","variant":"clear"},"children":["ticket-requester","ticket-time"]}}
+{"op":"add","path":"/elements/ticket-requester","value":{"type":"TextContent","props":{"text":{"$item":"requester"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/ticket-time","value":{"type":"TextContent","props":{"text":{"$item":"time"},"size":"small"},"children":[]}}
+{"op":"add","path":"/state/tickets","value":[]}
+{"op":"add","path":"/state/tickets/0","value":{"id":"t1","subject":"Payment gateway returning 502 errors","priority":"Critical","priorityVariant":"danger","time":"2 min ago","requester":"Acme Corp"}}
+{"op":"add","path":"/state/tickets/1","value":{"id":"t2","subject":"Unable to export CSV reports from dashboard","priority":"High","priorityVariant":"danger","time":"18 min ago","requester":"J. Martinez"}}
+{"op":"add","path":"/state/tickets/2","value":{"id":"t3","subject":"SSO login loop after password reset","priority":"High","priorityVariant":"danger","time":"34 min ago","requester":"K. Osei"}}
+{"op":"add","path":"/state/tickets/3","value":{"id":"t4","subject":"Feature request: dark mode for mobile app","priority":"Low","priorityVariant":"neutral","time":"1 hr ago","requester":"T. Nguyen"}}
+{"op":"add","path":"/state/tickets/4","value":{"id":"t5","subject":"Webhook delivery delayed by ~30 seconds","priority":"Medium","priorityVariant":"warning","time":"2 hr ago","requester":"DataFlow Inc"}}
+{"op":"add","path":"/elements/tickets-high-section","value":{"type":"Card","props":{"direction":"column","gap":"s","variant":"clear"},"visible":{"$state":"/filter","eq":"high"},"repeat":{"statePath":"/highPriorityTickets","key":"id"},"children":["ticket-row-high"]}}
+{"op":"add","path":"/elements/ticket-row-high","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center","justify":"between"},"children":["ticket-info-high","ticket-meta-high"]}}
+{"op":"add","path":"/elements/ticket-info-high","value":{"type":"Card","props":{"direction":"row","gap":"s","align":"center","variant":"clear"},"children":["ticket-priority-tag-high","ticket-subject-high"]}}
+{"op":"add","path":"/elements/ticket-priority-tag-high","value":{"type":"Tag","props":{"text":{"$item":"priority"},"variant":{"$item":"priorityVariant"},"size":"sm"},"children":[]}}
+{"op":"add","path":"/elements/ticket-subject-high","value":{"type":"TextContent","props":{"text":{"$item":"subject"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/ticket-meta-high","value":{"type":"Card","props":{"direction":"row","gap":"s","align":"center","variant":"clear"},"children":["ticket-requester-high","ticket-time-high"]}}
+{"op":"add","path":"/elements/ticket-requester-high","value":{"type":"TextContent","props":{"text":{"$item":"requester"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/ticket-time-high","value":{"type":"TextContent","props":{"text":{"$item":"time"},"size":"small"},"children":[]}}
+{"op":"add","path":"/state/highPriorityTickets","value":[]}
+{"op":"add","path":"/state/highPriorityTickets/0","value":{"id":"t1","subject":"Payment gateway returning 502 errors","priority":"Critical","priorityVariant":"danger","time":"2 min ago","requester":"Acme Corp"}}
+{"op":"add","path":"/state/highPriorityTickets/1","value":{"id":"t2","subject":"Unable to export CSV reports from dashboard","priority":"High","priorityVariant":"danger","time":"18 min ago","requester":"J. Martinez"}}
+{"op":"add","path":"/state/highPriorityTickets/2","value":{"id":"t3","subject":"SSO login loop after password reset","priority":"High","priorityVariant":"danger","time":"34 min ago","requester":"K. Osei"}}

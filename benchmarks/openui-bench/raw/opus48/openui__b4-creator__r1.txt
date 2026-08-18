@@ -1,0 +1,67 @@
+root = Card([header, filterSection, kpis, growthTrend, platformSplit, bestPosts, scheduled, bestHour, comments, collabs, scheduleForm, followUps])
+
+header = CardHeader("Creator Studio", "Your cross-platform performance this month")
+
+filterSection = Form("platform-filter", filterButtons, [platformField])
+platformField = FormControl("View", platformSelect, "Narrow every metric to one platform")
+platformSelect = Select("platform", [allP, igP, ttP, ytP, xP], "All platforms")
+allP = SelectItem("all", "All platforms")
+igP = SelectItem("instagram", "Instagram")
+ttP = SelectItem("tiktok", "TikTok")
+ytP = SelectItem("youtube", "YouTube")
+xP = SelectItem("x", "X / Twitter")
+filterButtons = Buttons([applyFilter])
+applyFilter = Button("Apply filter", null, "primary")
+
+kpis = Table([kpiName, kpiValue, kpiChange])
+kpiName = Col("Metric", ["Total followers", "Growth (30d)", "Engagement rate", "Earnings (30d)"])
+kpiValue = Col("Value", ["248,300", "+12,480", "4.8%", "$6,420"])
+kpiChange = Col("Change", ["—", "+5.3%", "+0.6pts", "+18%"])
+
+growthTrend = AreaChart(["W1", "W2", "W3", "W4"], [followerSeries], "natural", "Week", "Followers")
+followerSeries = Series("Followers", [235820, 240100, 244600, 248300])
+
+platformSplit = PieChart(platformLabels, platformValues, "donut")
+platformLabels = ["Instagram", "TikTok", "YouTube", "X / Twitter"]
+platformValues = [112000, 84300, 38000, 14000]
+
+bestPosts = Table([postName, postPlatform, postReach])
+postName = Col("Top post", ["Studio setup tour", "3 editing hacks", "Behind the launch", "Q&A live clip"])
+postPlatform = Col("Platform", ["TikTok", "Instagram", "YouTube", "Instagram"])
+postReach = Col("Reach", [412000, 298000, 187000, 96000], "number")
+
+scheduled = ListBlock([sch1, sch2, sch3], "number")
+sch1 = ListItem("Morning routine reel", "Instagram · Tue 9:00 AM")
+sch2 = ListItem("Gear unboxing", "YouTube · Thu 5:00 PM")
+sch3 = ListItem("Trend duet", "TikTok · Sat 7:00 PM")
+
+bestHour = BarChart(hourLabels, hourSeries, "grouped", "Hour", "Avg engagement %")
+hourLabels = ["6AM", "9AM", "12PM", "3PM", "6PM", "9PM"]
+hourSeries = Series("Engagement", [2.1, 4.2, 3.6, 4.9, 6.7, 5.4])
+
+comments = Callout("info", "Comments waiting", "27 comments across all platforms are still unanswered")
+
+collabs = ListBlock([collab1, collab2, collab3], "number")
+collab1 = ListItem("Aurora Skincare", "Sponsored reel · $1,800", null, "Review")
+collab2 = ListItem("PeakFit Apps", "3-post bundle · $2,400", null, "Review")
+collab3 = ListItem("BrewLab Coffee", "Story series · $900", null, "Review")
+
+scheduleForm = Form("schedule-post", scheduleButtons, [captionField, platformPostField, timeField])
+captionField = FormControl("Caption", captionInput, "Write your post caption")
+captionInput = TextArea("caption", "What's this post about?", 4)
+platformPostField = FormControl("Platform", postPlatformSelect)
+postPlatformSelect = Select("post_platform", [igP2, ttP2, ytP2, xP2], "Choose platform")
+igP2 = SelectItem("instagram", "Instagram")
+ttP2 = SelectItem("tiktok", "TikTok")
+ytP2 = SelectItem("youtube", "YouTube")
+xP2 = SelectItem("x", "X / Twitter")
+timeField = FormControl("Publish time", timePicker, "Suggested best hour: 6:00 PM")
+timePicker = DatePicker("publish_time", "single")
+scheduleButtons = Buttons([schedulePost, saveDraft])
+schedulePost = Button("Schedule post", null, "primary")
+saveDraft = Button("Save draft", null, "tertiary")
+
+followUps = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Draft replies to waiting comments")
+fu2 = FollowUpItem("Compare Instagram vs TikTok growth")
+fu3 = FollowUpItem("Show projected earnings next month")

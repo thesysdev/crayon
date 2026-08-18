@@ -1,0 +1,45 @@
+{"op":"add","path":"/root","value":"app-container"}
+{"op":"add","path":"/elements/app-container","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["header","missing-banner","add-update-card","updates-section","metrics-section"]}}
+{"op":"add","path":"/elements/header","value":{"type":"Card","props":{"variant":"card","direction":"row","justify":"between","align":"center"},"children":["header-title","header-date"]}}
+{"op":"add","path":"/elements/header-title","value":{"type":"Heading","props":{"text":"🚀 Engineering Team Async Standup","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/header-date","value":{"type":"Badge","props":{"text":"📅 Today, Oct 24, 2023","variant":"secondary"},"children":[]}}
+{"op":"add","path":"/elements/missing-banner","value":{"type":"Alert","props":{"title":{"$template":"${/missingCount} Teammates Pending Updates"},"description":"Please submit your daily check-in by 10:00 AM PST. Highlighting blockers helps the team unblock you faster!","variant":"warning"},"children":[]}}
+{"op":"add","path":"/state/missingCount","value":2}
+{"op":"add","path":"/elements/add-update-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["form-title","update-form"]}}
+{"op":"add","path":"/elements/form-title","value":{"type":"Heading","props":{"text":"✍️ Post Your Daily Update","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/update-form","value":{"type":"Form","props":{"name":"standupForm","fields":["field-yesterday","field-today","field-blocker"],"buttons":"form-buttons"},"children":[]}}
+{"op":"add","path":"/elements/field-yesterday","value":{"type":"FormControl","props":{"label":"What did you accomplish yesterday?","input":"input-yesterday"},"children":[]}}
+{"op":"add","path":"/elements/input-yesterday","value":{"type":"TextArea","props":{"name":"yesterday","placeholder":"Finished API endpoint documentation and resolved PR reviews...","rows":2,"value":{"$bindState":"/newUpdate/yesterday"}},"children":[]}}
+{"op":"add","path":"/elements/field-today","value":{"type":"FormControl","props":{"label":"What will you work on today?","input":"input-today"},"children":[]}}
+{"op":"add","path":"/elements/input-today","value":{"type":"TextArea","props":{"name":"today","placeholder":"Integrating new OAuth flow and setting up CI pipeline...","rows":2,"value":{"$bindState":"/newUpdate/today"}},"children":[]}}
+{"op":"add","path":"/elements/field-blocker","value":{"type":"FormControl","props":{"label":"Any blockers? (Leave blank if none)","input":"input-blocker","hint":"Blocked status will highlight your update for team support"},"children":[]}}
+{"op":"add","path":"/elements/input-blocker","value":{"type":"Input","props":{"name":"blocker","placeholder":"Waiting for design specs from UI team...","type":"text","value":{"$bindState":"/newUpdate/blocker"}},"children":[]}}
+{"op":"add","path":"/elements/form-buttons","value":{"type":"Buttons","props":{"buttons":["submit-btn"]},"children":[]}}
+{"op":"add","path":"/elements/submit-btn","value":{"type":"Button","props":{"label":"Submit Check-in","variant":"primary","size":"medium"},"on":{"press":{"action":"pushState","params":{"statePath":"/standups","value":{"id":"$id","name":"Current User","role":"Frontend Developer","avatar":"CU","time":"Just now","yesterday":{"$state":"/newUpdate/yesterday"},"today":{"$state":"/newUpdate/today"},"blocker":{"$state":"/newUpdate/blocker"},"isBlocked":{"$cond":{"$state":"/newUpdate/blocker"},"$then":true,"$else":false}},"clearStatePath":"/newUpdate"}}},"children":[]}}
+{"op":"add","path":"/state/newUpdate","value":{"yesterday":"","today":"","blocker":""}}
+{"op":"add","path":"/elements/updates-section","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"children":["updates-title","standup-list"]}}
+{"op":"add","path":"/elements/updates-title","value":{"type":"Heading","props":{"text":"💬 Team Updates","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/standup-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"repeat":{"statePath":"/standups","key":"id"},"children":["standup-card"]}}
+{"op":"add","path":"/elements/standup-card","value":{"type":"Card","props":{"variant":{"$cond":{"$item":"isBlocked"},"$then":"sunk","$else":"card"},"direction":"column","gap":"m"},"children":["user-header","blocker-alert","updates-details"]}}
+{"op":"add","path":"/elements/user-header","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center"},"children":["user-profile","time-badge"]}}
+{"op":"add","path":"/elements/user-profile","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center"},"children":["user-avatar","user-meta"]}}
+{"op":"add","path":"/elements/user-avatar","value":{"type":"Avatar","props":{"fallback":{"$item":"avatar"}},"children":[]}}
+{"op":"add","path":"/elements/user-meta","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"none"},"children":["user-name","user-role"]}}
+{"op":"add","path":"/elements/user-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/user-role","value":{"type":"TextContent","props":{"text":{"$item":"role"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/time-badge","value":{"type":"Badge","props":{"text":{"$item":"time"},"variant":"outline"},"children":[]}}
+{"op":"add","path":"/elements/blocker-alert","value":{"type":"Alert","props":{"title":"🚨 BLOCKED","description":{"$item":"blocker"},"variant":"destructive"},"visible":{"$item":"isBlocked"},"children":[]}}
+{"op":"add","path":"/elements/updates-details","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"children":["yesterday-block","today-block"]}}
+{"op":"add","path":"/elements/yesterday-block","value":{"type":"TextContent","props":{"text":{"$template":"**Yesterday:** ${yesterday}"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/today-block","value":{"type":"TextContent","props":{"text":{"$template":"**Today:** ${today}"},"size":"default"},"children":[]}}
+{"op":"add","path":"/state/standups","value":[]}
+{"op":"add","path":"/state/standups/0","value":{"id":"1","name":"Sarah Chen","role":"Tech Lead","avatar":"SC","time":"8:45 AM","yesterday":"Reviewed PRs for auth service and finalized Q4 architecture roadmap.","today":"Deployment of auth service v2 to staging; pairing with Alex on database migrations.","blocker":"Stuck waiting for DevOps team to provision staging DB cluster credentials.","isBlocked":true}}
+{"op":"add","path":"/state/standups/1","value":{"id":"2","name":"Marcus Vance","role":"Backend Engineer","avatar":"MV","time":"9:10 AM","yesterday":"Implemented redis caching layer for product catalog endpoints. Reduced response latency by 40%.","today":"Benchmarking search queries and adding unit tests for caching logic.","blocker":"","isBlocked":false}}
+{"op":"add","path":"/state/standups/2","value":{"id":"3","name":"Elena Rostova","role":"UI/UX Designer","avatar":"ER","time":"9:30 AM","yesterday":"Completed interactive Figma prototypes for the mobile checkout flow.","today":"Handing off assets to mobile developers and gathering feedback on design system tokens.","blocker":"Need confirmation on finalized stripe integration flow before locking checkout wireframes.","isBlocked":true}}
+{"op":"add","path":"/elements/metrics-section","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"m"},"children":["metrics-title","summary-table"]}}
+{"op":"add","path":"/elements/metrics-title","value":{"type":"Heading","props":{"text":"📊 Participation Summary","level":"h4"},"children":[]}}
+{"op":"add","path":"/elements/summary-table","value":{"type":"Table","props":{"columns":["col-member","col-status","col-time"]},"children":[]}}
+{"op":"add","path":"/elements/col-member","value":{"type":"Col","props":{"label":"Teammate","data":{"$state":"/summary/members"},"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/col-status","value":{"type":"Col","props":{"label":"Status","data":{"$state":"/summary/statuses"},"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/col-time","value":{"type":"Col","props":{"label":"Submitted","data":{"$state":"/summary/times"},"type":"string"},"children":[]}}
+{"op":"add","path":"/state/summary","value":{"members":["Sarah Chen","Marcus Vance","Elena Rostova","David Kim","Amara Patel"],"statuses":["Blocked","Submitted","Blocked","Missing","Missing"],"times":["8:45 AM","9:10 AM","9:30 AM","Pending","Pending"]}}

@@ -1,0 +1,271 @@
+Here is a single-screen dashboard designed for a founder's monthly sales check-in, covering all metrics, trend visualization, top-performing products, conversion rates, and an export option.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "monthly-sales-dashboard",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#0F172A",
+      "agentDisplayName": "Sales Analytics"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "monthly-sales-dashboard",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header-card",
+          "kpi-summary-card",
+          "revenue-chart-card",
+          "products-card",
+          "action-bar"
+        ]
+      },
+      {
+        "id": "header-card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "header-title",
+          "header-desc"
+        ]
+      },
+      {
+        "id": "header-title",
+        "component": "Heading",
+        "text": "Monthly Sales Overview",
+        "level": "h2"
+      },
+      {
+        "id": "header-title-text",
+        "component": "TextContent",
+        "text": "October 2023 Performance Summary",
+        "size": "small"
+      },
+      {
+        "id": "header-desc",
+        "component": "TextContent",
+        "text": "Key growth metrics, revenue trajectories, and product performance for executive review.",
+        "size": "default"
+      },
+      {
+        "id": "kpi-summary-card",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "kpi-revenue-card",
+          "kpi-conversion-card"
+        ]
+      },
+      {
+        "id": "kpi-revenue-card",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "weight": 1,
+        "children": [
+          "kpi-revenue-label",
+          "kpi-revenue-value",
+          "kpi-revenue-tag"
+        ]
+      },
+      {
+        "id": "kpi-revenue-label",
+        "component": "TextContent",
+        "text": "Revenue (This Month)",
+        "size": "small-heavy"
+      },
+      {
+        "id": "kpi-revenue-value",
+        "component": "Heading",
+        "text": "$128,450",
+        "level": "h1"
+      },
+      {
+        "id": "kpi-revenue-tag",
+        "component": "Tag",
+        "text": "+14.2% vs last month",
+        "variant": "success",
+        "size": "sm"
+      },
+      {
+        "id": "kpi-conversion-card",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "weight": 1,
+        "children": [
+          "kpi-conversion-label",
+          "kpi-conversion-value",
+          "kpi-conversion-tag"
+        ]
+      },
+      {
+        "id": "kpi-conversion-label",
+        "component": "TextContent",
+        "text": "Conversion Percentage",
+        "size": "small-heavy"
+      },
+      {
+        "id": "kpi-conversion-value",
+        "component": "Heading",
+        "text": "3.85%",
+        "level": "h1"
+      },
+      {
+        "id": "kpi-conversion-tag",
+        "component": "Tag",
+        "text": "+0.4% conversion rate gain",
+        "variant": "info",
+        "size": "sm"
+      },
+      {
+        "id": "revenue-chart-card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "chart-header",
+          "revenue-chart"
+        ]
+      },
+      {
+        "id": "chart-header",
+        "component": "CardHeader",
+        "title": "6-Month Revenue Trend",
+        "subtitle": "Monthly revenue growth (May 2023 – Oct 2023)"
+      },
+      {
+        "id": "revenue-chart",
+        "component": "AreaChart",
+        "labels": ["May", "Jun", "Jul", "Aug", "Sep", "Oct"],
+        "series": ["series-revenue"],
+        "variant": "natural",
+        "xLabel": "Month",
+        "yLabel": "Revenue ($ USD)"
+      },
+      {
+        "id": "series-revenue",
+        "component": "Series",
+        "category": "Revenue ($)",
+        "values": [84000, 92500, 89000, 105000, 112500, 128450]
+      },
+      {
+        "id": "products-card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "products-header",
+          "products-table"
+        ]
+      },
+      {
+        "id": "products-header",
+        "component": "CardHeader",
+        "title": "Top 3 Best-Selling Products",
+        "subtitle": "Leading products ranked by total volume sold this month"
+      },
+      {
+        "id": "products-table",
+        "component": "Table",
+        "columns": ["col-rank", "col-product", "col-category", "col-units", "col-revenue"]
+      },
+      {
+        "id": "col-rank",
+        "component": "Col",
+        "label": "Rank",
+        "data": ["#1", "#2", "#3"],
+        "type": "string"
+      },
+      {
+        "id": "col-product",
+        "component": "Col",
+        "label": "Product Name",
+        "data": ["Enterprise SaaS Tier", "Pro Analytics Suite", "API Starter Kit"],
+        "type": "string"
+      },
+      {
+        "id": "col-category",
+        "component": "Col",
+        "label": "Category",
+        "data": ["Subscriptions", "Software", "Developer Tools"],
+        "type": "string"
+      },
+      {
+        "id": "col-units",
+        "component": "Col",
+        "label": "Units Sold",
+        "data": [420, 850, 1240],
+        "type": "number"
+      },
+      {
+        "id": "col-revenue",
+        "component": "Col",
+        "label": "Gross Revenue",
+        "data": ["$63,000", "$42,500", "$18,600"],
+        "type": "string"
+      },
+      {
+        "id": "action-bar",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "align": "center",
+        "justify": "between",
+        "children": [
+          "action-info",
+          "download-buttons"
+        ]
+      },
+      {
+        "id": "action-info",
+        "component": "TextContent",
+        "text": "Export full monthly reports including user acquisition funnels and product breakdowns.",
+        "size": "small"
+      },
+      {
+        "id": "download-buttons",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": ["download-csv-btn", "download-pdf-btn"]
+      },
+      {
+        "id": "download-csv-btn",
+        "component": "Button",
+        "label": "Download CSV Data",
+        "variant": "primary",
+        "size": "medium"
+      },
+      {
+        "id": "download-pdf-btn",
+        "component": "Button",
+        "label": "Export Executive PDF",
+        "variant": "secondary",
+        "size": "medium"
+      }
+    ]
+  }
+}
+</a2ui-json>

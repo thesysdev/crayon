@@ -1,0 +1,46 @@
+root = Card([header, refreshNote, delayAlert, kpis, transitTable, carrierSplit, volumeTrend, searchForm, flagForm, footer])
+header = CardHeader("Logistics Board", "Shipments in transit and performance")
+refreshNote = Badge("Last refreshed: today 09:42 AM", "secondary")
+delayAlert = Alert("2 shipments delayed", "SHP-1042 and SHP-1050 are behind ETA — review below", "warning")
+
+kpis = Card([onTime, avgCost], "sunk", "row", "l")
+onTime = Progress(94, "On-time this month: 94%")
+avgCost = Card([avgCostLabel, avgCostValue], "clear", "column", "xs")
+avgCostLabel = TextContent("Avg cost per shipment", "small")
+avgCostValue = Heading("$418", "h2")
+
+transitTable = Table([colId, colOrigin, colDest, colEta, colStatus])
+colId = Col("Shipment", ["SHP-1037", "SHP-1042", "SHP-1048", "SHP-1050", "SHP-1055"])
+colOrigin = Col("Origin", ["Chicago", "Dallas", "Newark", "Seattle", "Atlanta"])
+colDest = Col("Destination", ["Denver", "Phoenix", "Boston", "Portland", "Miami"])
+colEta = Col("ETA", ["Jun 12", "Jun 11", "Jun 13", "Jun 10", "Jun 14"])
+colStatus = Col("Status", ["On time", "Delayed", "On time", "Delayed", "On time"])
+
+carrierSplit = PieChart(carrierLabels, carrierValues, "donut")
+carrierLabels = ["FastFreight", "RoadRunner", "BlueLine", "CargoX"]
+carrierValues = [42, 28, 18, 12]
+
+volumeTrend = LineChart(weekLabels, [volumeSeries], "natural", "Week", "Shipments")
+weekLabels = ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"]
+volumeSeries = Series("Volume", [320, 345, 310, 380, 402, 375, 410, 428])
+
+searchForm = Form("route-search", searchButtons, [originField, destField])
+originField = FormControl("Origin", originInput)
+originInput = Input("origin", "e.g. Chicago")
+destField = FormControl("Destination", destInput)
+destInput = Input("destination", "e.g. Denver")
+searchButtons = Buttons([searchBtn])
+searchBtn = Button("Search route", null, "primary")
+
+flagForm = Form("flag-shipment", flagButtons, [flagIdField, flagReasonField])
+flagIdField = FormControl("Shipment ID", flagIdInput)
+flagIdInput = Input("shipment_id", "e.g. SHP-1042")
+flagReasonField = FormControl("Reason", flagReasonSelect)
+flagReasonSelect = Select("reason", [reasonDelay, reasonDamage, reasonMissing], "Select a reason")
+reasonDelay = SelectItem("delay", "Delay risk")
+reasonDamage = SelectItem("damage", "Damaged goods")
+reasonMissing = SelectItem("missing", "Missing items")
+flagButtons = Buttons([flagBtn])
+flagBtn = Button("Flag shipment", null, "primary", "destructive")
+
+footer = TextContent("Data auto-refreshes every 15 minutes. Last refreshed today at 09:42 AM.", "small")

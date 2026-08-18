@@ -1,0 +1,62 @@
+
+
+root = Card([header, tags, bestCallout, visitorsHeading, visitorsChart, convHeading, convValue, convProgress, sep1, trafficHeading, trafficChart, trafficTable, campaignsHeading, campaignsTable, campaignsNote, sep2, subsHeading, subsStat, subsChart, sep3, rangeHeading, dateForm, exportHeading, exportButtons])
+
+header = CardHeader("Marketing Weekly Dashboard", "Week of Jun 16 – Jun 22, 2025 · viewing last 30 days")
+tags = TagBlock(["Last 30 days", "Jun 2025", "All channels", "5 campaigns live"])
+
+bestCallout = Callout("success", "Best performer: Summer Sale Retargeting", "Highest ROAS of all live campaigns at 5.2x — 1,240 conversions on $8,600 spend. Consider shifting budget away from low-ROAS display into this campaign.")
+
+visitorsHeading = Heading("Site visitors — last 30 days", "h3")
+visitorsChart = AreaChart(["May 23–27", "May 28–Jun 1", "Jun 2–6", "Jun 7–11", "Jun 12–16", "Jun 17–22"], [visitorsSeries], "natural", "Period", "Visitors")
+visitorsSeries = Series("Visitors", [21400, 23800, 22600, 26900, 28400, 31200])
+
+convHeading = Heading("Conversion rate", "h3")
+convValue = TextContent("3.4% overall conversion rate", "large-heavy")
+convProgress = Progress(3.4, "Goal: 3.0% — exceeded by 0.4 pts")
+
+sep1 = Separator("horizontal")
+
+trafficHeading = Heading("Top 5 traffic sources", "h3")
+trafficChart = HorizontalBarChart(["Organic Search", "Paid Search", "Social", "Direct", "Email"], [shareSeries], "grouped", "Share of sessions (%)")
+shareSeries = Series("Share %", [38, 24, 18, 12, 8])
+trafficTable = Table([srcName, srcSessions, srcShare])
+srcName = Col("Source", ["Organic Search", "Paid Search", "Social", "Direct", "Email"])
+srcSessions = Col("Sessions", [58600, 37000, 27800, 18500, 12400], "number")
+srcShare = Col("Share", ["38%", "24%", "18%", "12%", "8%"])
+
+campaignsHeading = Heading("Running campaigns", "h3")
+campaignsTable = Table([campName, campStatus, campSpend, campConv, campRoas])
+campName = Col("Campaign", ["Summer Sale Retargeting", "Brand Search Always-On", "Prospecting — Meta Lookalikes", "Newsletter Promo Blitz", "New Arrivals Display"])
+campStatus = Col("Status", ["Active", "Active", "Active", "Active", "Active"])
+campSpend = Col("Spend (month)", ["$8,600", "$12,000", "$9,400", "$2,300", "$4,100"])
+campConv = Col("Conversions", [1240, 980, 610, 290, 180], "number")
+campRoas = Col("ROAS", ["5.2x", "3.4x", "2.1x", "2.8x", "1.3x"])
+campaignsNote = TextContent("Total monthly spend across 5 live campaigns: $36,400.", "small")
+
+sep2 = Separator("horizontal")
+
+subsHeading = Heading("Email subscriber growth — June", "h3")
+subsStat = TextContent("+1,795 new subscribers this month · list total 48,210 · +4.8% vs May", "default")
+subsChart = LineChart(["W1", "W2", "W3", "W4"], [subsSeries], "natural", "Week", "New subscribers")
+subsSeries = Series("New subscribers", [410, 465, 390, 530])
+
+sep3 = Separator("horizontal")
+
+rangeHeading = Heading("Change date range", "h3")
+dateForm = Form("dashboard-date-range", dateFormButtons, [presetField, customField])
+presetField = FormControl("Date range", presetSelect)
+presetSelect = Select("range_preset", [opt7, opt14, opt30, opt90], "Choose a preset", [], "30d")
+opt7 = SelectItem("7d", "Last 7 days")
+opt14 = SelectItem("14d", "Last 14 days")
+opt30 = SelectItem("30d", "Last 30 days")
+opt90 = SelectItem("90d", "Last 90 days")
+customField = FormControl("Custom range", customPicker, "Optional — overrides the preset")
+customPicker = DatePicker("custom_range", "range")
+dateFormButtons = Buttons([applyBtn])
+applyBtn = Button("Apply date range", null, "primary")
+
+exportHeading = Heading("Export report", "h3")
+exportButtons = Buttons([exportPdfBtn, exportCsvBtn])
+exportPdfBtn = Button("Export PDF report", null, "primary")
+exportCsvBtn = Button("Export CSV", null, "secondary")

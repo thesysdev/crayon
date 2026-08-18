@@ -1,0 +1,36 @@
+
+
+Here's a single-screen status page for the platform team. Note: the numbers and dates are sample data — tell me the real uptime/incident details (or wire up a data model) and I'll swap them in.
+
+<a2ui-json>
+{"version":"v0.9","createSurface":{"surfaceId":"platform-status","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#2563EB"},"sendDataModel":false}}
+</a2ui-json>
+
+<a2ui-json>
+{"version":"v0.9","updateComponents":{"surfaceId":"platform-status","components":[
+{"id":"root","component":"Card","direction":"column","gap":"l","children":["header","uptimeCard","incidentCard","servicesTags","footer"]},
+{"id":"header","component":"CardHeader","title":"Platform Status","subtitle":"API uptime & incident summary · current month"},
+{"id":"uptimeCard","component":"Card","variant":"sunk","direction":"column","gap":"m","children":["uptimeLabel","uptimeRow","uptimeProgress","uptimeNote"]},
+{"id":"uptimeLabel","component":"Label","text":"API UPTIME — THIS MONTH"},
+{"id":"uptimeRow","component":"Card","variant":"clear","direction":"row","gap":"m","align":"center","justify":"between","children":["uptimeValue","uptimeTag"]},
+{"id":"uptimeValue","component":"TextContent","size":"large-heavy","text":"99.98%"},
+{"id":"uptimeTag","component":"Tag","text":"SLO 99.9% · met","variant":"success"},
+{"id":"uptimeProgress","component":"Progress","value":99.98,"label":"99.98% of the month fully operational"},
+{"id":"uptimeNote","component":"TextContent","size":"small","text":"≈ 9 minutes of downtime recorded this month, all attributable to the incident below."},
+{"id":"incidentCard","component":"Card","direction":"column","gap":"m","children":["incidentHeaderRow","incidentAlert","incidentMeta"]},
+{"id":"incidentHeaderRow","component":"Card","variant":"clear","direction":"row","gap":"m","align":"center","justify":"between","children":["incidentLabel","incidentBadge"]},
+{"id":"incidentLabel","component":"Label","text":"MOST RECENT INCIDENT"},
+{"id":"incidentBadge","component":"Badge","text":"Resolved","variant":"outline"},
+{"id":"incidentAlert","component":"Alert","variant":"success","title":"Elevated API error rate during database failover","description":"A spike in 5xx responses drove p95 latency above 2s on the public API during a database failover. The primary cluster was restored and connection-pool limits were raised. Resolved on the 12th at 14:37 UTC after 23 minutes."},
+{"id":"incidentMeta","component":"TextContent","size":"small","text":"Follow-ups: connection-pool autoscaling and retry/backoff changes ship this week · Postmortem: INC-2417"},
+{"id":"servicesTags","component":"TagBlock","tags":["Webhooks — operational","Edge cache — operational","Batch jobs — operational"]},
+{"id":"footer","component":"TextContent","size":"small","text":"Checks run every 60s from 6 regions · Board refreshes every 5 minutes · Escalations: #platform-oncall"}
+]}}
+</a2ui-json>
+
+Coverage of your numbered requirements:
+
+1. **Current uptime % for the API this month** — shown as the big 99.98% figure with a progress bar, an SLO status tag, and the downtime total.
+2. **Most recent incident + resolution** — the alert card summarizes the incident and explicitly states it was resolved on the 12th at 14:37 UTC.
+
+Want me to plug in real values, add a historical uptime chart, or make this auto-update from a metrics endpoint?

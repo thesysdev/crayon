@@ -1,0 +1,38 @@
+{"op":"add","path":"/root","value":"container"}
+{"op":"add","path":"/elements/container","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","uptime-card","incident-card","systems-card"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Platform System Status","subtitle":"Real-time infrastructure health & operational status"}}}
+{"op":"add","path":"/elements/uptime-card","value":{"type":"Card","props":{"direction":"column","gap":"m","variant":"sunk"},"children":["uptime-header","uptime-progress","uptime-stats"]}}
+{"op":"add","path":"/elements/uptime-header","value":{"type":"Heading","props":{"level":"h3","text":"API Uptime (Current Month)"}}}
+{"op":"add","path":"/elements/uptime-progress","value":{"type":"Progress","props":{"value":{"$state":"/uptime/percentage"},"label":{"$template":"${/uptime/percentage}% Operational"}}}}
+{"op":"add","path":"/state/uptime","value":{"percentage":99.94,"target":"99.90%","outageTime":"26m 12s","totalRequests":"1.24B"}}
+{"op":"add","path":"/elements/uptime-stats","value":{"type":"Card","props":{"direction":"row","justify":"between","gap":"s"},"children":["stat-target","stat-outage","stat-requests"]}}
+{"op":"add","path":"/elements/stat-target","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"children":["stat-target-label","stat-target-val"]}}
+{"op":"add","path":"/elements/stat-target-label","value":{"type":"Label","props":{"text":"SLA Target"}}}
+{"op":"add","path":"/elements/stat-target-val","value":{"type":"TextContent","props":{"text":{"$state":"/uptime/target"},"size":"small-heavy"}}}
+{"op":"add","path":"/elements/stat-outage","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"children":["stat-outage-label","stat-outage-val"]}}
+{"op":"add","path":"/elements/stat-outage-label","value":{"type":"Label","props":{"text":"Downtime This Month"}}}
+{"op":"add","path":"/elements/stat-outage-val","value":{"type":"TextContent","props":{"text":{"$state":"/uptime/outageTime"},"size":"small-heavy"}}}
+{"op":"add","path":"/elements/stat-requests","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"children":["stat-requests-label","stat-requests-val"]}}
+{"op":"add","path":"/elements/stat-requests-label","value":{"type":"Label","props":{"text":"Total API Requests"}}}
+{"op":"add","path":"/elements/stat-requests-val","value":{"type":"TextContent","props":{"text":{"$state":"/uptime/totalRequests"},"size":"small-heavy"}}}
+{"op":"add","path":"/elements/incident-card","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["incident-header","incident-callout","incident-details"]}}
+{"op":"add","path":"/elements/incident-header","value":{"type":"Heading","props":{"level":"h3","text":"Most Recent Incident"}}}
+{"op":"add","path":"/elements/incident-callout","value":{"type":"Alert","props":{"title":{"$state":"/recentIncident/title"},"description":{"$state":"/recentIncident/summary"},"variant":"success"}}}
+{"op":"add","path":"/elements/incident-details","value":{"type":"Card","props":{"direction":"column","gap":"s","variant":"clear"},"children":["inc-resolved-badge","inc-timeline","inc-impact"]}}
+{"op":"add","path":"/elements/inc-resolved-badge","value":{"type":"Badge","props":{"text":{"$template":"Resolved at ${/recentIncident/resolvedAt} (${/recentIncident/date})"},"variant":"secondary"}}}
+{"op":"add","path":"/elements/inc-timeline","value":{"type":"TextContent","props":{"text":{"$template":"**Duration:** ${/recentIncident/duration} | **Impacted Service:** ${/recentIncident/affectedService}"},"size":"small"}}}
+{"op":"add","path":"/elements/inc-impact","value":{"type":"TextContent","props":{"text":{"$state":"/recentIncident/resolutionNotes"},"size":"default"}}}
+{"op":"add","path":"/state/recentIncident","value":{"id":"inc-8492","title":"INC-8492: Elevated Latency in API Gateway Services","summary":"Increased response times observed across primary REST API routes due to connection pool exhaustion in the auth proxy.","resolvedAt":"14:32 UTC","date":"May 18, 2024","duration":"18 minutes","affectedService":"API Gateway / Auth","resolutionNotes":"**Resolution Summary:** The connection pool limit for the authentication proxy service was scaled out dynamically, and connection recycling rules were updated. Traffic normalized fully within 5 minutes of applying the update. No data loss occurred."}}
+{"op":"add","path":"/elements/systems-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["systems-title","services-list"]}}
+{"op":"add","path":"/elements/systems-title","value":{"type":"Heading","props":{"level":"h4","text":"Core Services Status"}}}
+{"op":"add","path":"/elements/services-list","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"repeat":{"statePath":"/services","key":"name"},"children":["service-row"]}}
+{"op":"add","path":"/elements/service-row","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center"},"children":["service-info","service-tag"]}}
+{"op":"add","path":"/elements/service-info","value":{"type":"Card","props":{"direction":"column","gap":"none"},"children":["service-name","service-uptime"]}}
+{"op":"add","path":"/elements/service-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"small-heavy"}}}
+{"op":"add","path":"/elements/service-uptime","value":{"type":"TextContent","props":{"text":{"$template":"Uptime: ${uptime}"},"size":"small"}}}
+{"op":"add","path":"/elements/service-tag","value":{"type":"Tag","props":{"text":{"$item":"status"},"variant":{"$cond":{"$state":"/status","eq":"Operational"},"$then":"success","$else":"warning"},"size":"sm"}}}
+{"op":"add","path":"/state/services","value":[]}
+{"op":"add","path":"/state/services/0","value":{"name":"Core REST API","uptime":"99.96%","status":"Operational"}}
+{"op":"add","path":"/state/services/1","value":{"name":"GraphQL Engine","uptime":"99.92%","status":"Operational"}}
+{"op":"add","path":"/state/services/2","value":{"name":"Authentication & OAuth","uptime":"99.89%","status":"Operational"}}
+{"op":"add","path":"/state/services/3","value":{"name":"Webhooks Delivery","uptime":"99.99%","status":"Operational"}}

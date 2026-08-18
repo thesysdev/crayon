@@ -1,0 +1,58 @@
+{"op":"add","path":"/root","value":"analytics-screen"}
+{"op":"add","path":"/elements/analytics-screen","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["header","filter-actions","metrics","engagement-card","course-ranking-card","risk-card"]}}
+{"op":"add","path":"/elements/header","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["page-title","page-subtitle"]}}
+{"op":"add","path":"/elements/page-title","value":{"type":"Heading","props":{"text":"Learning analytics","level":"h1"},"children":[]}}
+{"op":"add","path":"/elements/page-subtitle","value":{"type":"TextContent","props":{"text":"Monitor learner outcomes, engagement, course demand, and dropout risk.","size":"default"},"children":[]}}
+{"op":"add","path":"/elements/filter-actions","value":{"type":"Card","props":{"variant":"card","direction":"row","gap":"m","align":"end","justify":"between","wrap":true},"children":["cohort-control","message-dialog"]}}
+{"op":"add","path":"/elements/cohort-control","value":{"type":"FormControl","props":{"label":"Cohort","input":"cohort-select","hint":"Narrow all analytics to one learner cohort."},"children":[]}}
+{"op":"add","path":"/elements/cohort-select","value":{"type":"Select","props":{"name":"cohort","items":["cohort-all","cohort-spring","cohort-leadership","cohort-onboarding"],"value":{"$bindState":"/selectedCohort"},"size":"medium"},"children":[]}}
+{"op":"add","path":"/elements/cohort-all","value":{"type":"SelectItem","props":{"value":"all","label":"All cohorts"},"children":[]}}
+{"op":"add","path":"/elements/cohort-spring","value":{"type":"SelectItem","props":{"value":"spring-2026","label":"Spring 2026"},"children":[]}}
+{"op":"add","path":"/elements/cohort-leadership","value":{"type":"SelectItem","props":{"value":"leadership-track","label":"Leadership track"},"children":[]}}
+{"op":"add","path":"/elements/cohort-onboarding","value":{"type":"SelectItem","props":{"value":"new-hire-onboarding","label":"New-hire onboarding"},"children":[]}}
+{"op":"add","path":"/state/selectedCohort","value":"all"}
+{"op":"add","path":"/elements/message-dialog","value":{"type":"DialogBlock","props":{"triggerLabel":"Message cohort","title":"Message selected cohort","description":{"$template":"Send an announcement to ${/selectedCohort}."},"content":["message-form"],"triggerVariant":"default"},"children":[]}}
+{"op":"add","path":"/elements/message-form","value":{"type":"Form","props":{"name":"cohort-message","fields":["message-subject-control","message-body-control"],"buttons":"message-buttons"},"children":[]}}
+{"op":"add","path":"/elements/message-subject-control","value":{"type":"FormControl","props":{"label":"Subject","input":"message-subject"},"children":[]}}
+{"op":"add","path":"/elements/message-subject","value":{"type":"Input","props":{"name":"subject","placeholder":"Weekly learning update","type":"text","value":{"$bindState":"/message/subject"}},"children":[]}}
+{"op":"add","path":"/state/message","value":{"subject":"","body":"","sent":false}}
+{"op":"add","path":"/elements/message-body-control","value":{"type":"FormControl","props":{"label":"Message","input":"message-body","hint":"This message will be delivered to learners in the selected cohort."},"children":[]}}
+{"op":"add","path":"/elements/message-body","value":{"type":"TextArea","props":{"name":"message","placeholder":"Share an update, reminder, or encouragement…","rows":5,"value":{"$bindState":"/message/body"}},"children":[]}}
+{"op":"add","path":"/elements/message-buttons","value":{"type":"Buttons","props":{"buttons":["send-message"],"direction":"row"},"children":[]}}
+{"op":"add","path":"/elements/send-message","value":{"type":"Button","props":{"label":"Send message","variant":"primary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/message/sent","value":true}}},"children":[]}}
+{"op":"add","path":"/elements/metrics","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"stretch","wrap":true},"children":["active-learners-card","completion-card","quiz-card"]}}
+{"op":"add","path":"/elements/active-learners-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["active-learners-label","active-learners-value","active-learners-note"]}}
+{"op":"add","path":"/elements/active-learners-label","value":{"type":"TextContent","props":{"text":"Active learners this week","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/active-learners-value","value":{"type":"Heading","props":{"text":{"$state":"/metrics/activeLearners"},"level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/active-learners-note","value":{"type":"Badge","props":{"text":{"$state":"/metrics/activeChange"},"variant":"secondary"},"children":[]}}
+{"op":"add","path":"/state/metrics","value":{"activeLearners":"1,284","activeChange":"+8.6% vs last week","completionRate":74,"completionNote":"+3.2 points this month","averageQuizScore":"86%","quizNote":"+2.1 points vs prior period"}}
+{"op":"add","path":"/elements/completion-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["completion-label","completion-value","completion-progress","completion-note"]}}
+{"op":"add","path":"/elements/completion-label","value":{"type":"TextContent","props":{"text":"Course completion rate","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/completion-value","value":{"type":"Heading","props":{"text":{"$template":"${/metrics/completionRate}%"},"level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/completion-progress","value":{"type":"Progress","props":{"value":{"$state":"/metrics/completionRate"},"label":"Completion"},"children":[]}}
+{"op":"add","path":"/elements/completion-note","value":{"type":"Badge","props":{"text":{"$state":"/metrics/completionNote"},"variant":"secondary"},"children":[]}}
+{"op":"add","path":"/elements/quiz-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["quiz-label","quiz-value","quiz-note"]}}
+{"op":"add","path":"/elements/quiz-label","value":{"type":"TextContent","props":{"text":"Average quiz score","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/quiz-value","value":{"type":"Heading","props":{"text":{"$state":"/metrics/averageQuizScore"},"level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/quiz-note","value":{"type":"Badge","props":{"text":{"$state":"/metrics/quizNote"},"variant":"secondary"},"children":[]}}
+{"op":"add","path":"/elements/engagement-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["engagement-header","engagement-chart"]}}
+{"op":"add","path":"/elements/engagement-header","value":{"type":"CardHeader","props":{"title":"Engagement across the past eight weeks","subtitle":"Weekly active learners and completed learning sessions"},"children":[]}}
+{"op":"add","path":"/elements/engagement-chart","value":{"type":"LineChart","props":{"labels":{"$state":"/engagement/labels"},"series":["active-series","sessions-series"],"variant":"natural","xLabel":"Week","yLabel":"Learners / sessions"},"children":[]}}
+{"op":"add","path":"/elements/active-series","value":{"type":"Series","props":{"category":"Active learners","values":{"$state":"/engagement/activeLearners"}},"children":[]}}
+{"op":"add","path":"/elements/sessions-series","value":{"type":"Series","props":{"category":"Completed sessions","values":{"$state":"/engagement/completedSessions"}},"children":[]}}
+{"op":"add","path":"/state/engagement","value":{"labels":["Jun 29","Jul 6","Jul 13","Jul 20","Jul 27","Aug 3","Aug 10","Aug 17"],"activeLearners":[910,972,1018,1064,1109,1162,1182,1284],"completedSessions":[1420,1518,1602,1694,1778,1886,1954,2110]}}
+{"op":"add","path":"/elements/course-ranking-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["course-ranking-header","course-ranking-chart"]}}
+{"op":"add","path":"/elements/course-ranking-header","value":{"type":"CardHeader","props":{"title":"Courses ranked by enrollment","subtitle":"Current enrollments across the five most popular courses"},"children":[]}}
+{"op":"add","path":"/elements/course-ranking-chart","value":{"type":"HorizontalBarChart","props":{"labels":{"$state":"/courseRanking/labels"},"series":["enrollment-series"],"variant":"grouped","xLabel":"Enrolled learners","yLabel":"Course"},"children":[]}}
+{"op":"add","path":"/elements/enrollment-series","value":{"type":"Series","props":{"category":"Enrollment","values":{"$state":"/courseRanking/enrollments"}},"children":[]}}
+{"op":"add","path":"/state/courseRanking","value":{"labels":["Data Literacy Essentials","Leading Hybrid Teams","Cybersecurity Foundations","Customer Success Academy","Project Management Core"],"enrollments":[684,592,548,431,387]}}
+{"op":"add","path":"/elements/risk-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["risk-header","risk-alert","risk-table"]}}
+{"op":"add","path":"/elements/risk-header","value":{"type":"CardHeader","props":{"title":"Learners at risk of dropping out","subtitle":"Prioritized using inactivity, overdue work, and recent assessment performance"},"children":[]}}
+{"op":"add","path":"/elements/risk-alert","value":{"type":"Alert","props":{"title":"12 learners need intervention","description":"Five are high risk and have been inactive for at least 10 days.","variant":"warning"},"children":[]}}
+{"op":"add","path":"/elements/risk-table","value":{"type":"Table","props":{"columns":["risk-name-col","risk-course-col","risk-inactive-col","risk-progress-col","risk-level-col"]},"children":[]}}
+{"op":"add","path":"/elements/risk-name-col","value":{"type":"Col","props":{"label":"Learner","data":{"$state":"/riskLearners/names"},"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/risk-course-col","value":{"type":"Col","props":{"label":"Course","data":{"$state":"/riskLearners/courses"},"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/risk-inactive-col","value":{"type":"Col","props":{"label":"Last active","data":{"$state":"/riskLearners/lastActive"},"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/risk-progress-col","value":{"type":"Col","props":{"label":"Progress","data":{"$state":"/riskLearners/progress"},"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/risk-level-col","value":{"type":"Col","props":{"label":"Risk","data":{"$state":"/riskLearners/risk"},"type":"string"},"children":[]}}
+{"op":"add","path":"/state/riskLearners","value":{"names":["Maya Patel","Jordan Lee","Sofia Ramirez","Ethan Brooks","Amina Yusuf"],"courses":["Data Literacy Essentials","Leading Hybrid Teams","Cybersecurity Foundations","Customer Success Academy","Project Management Core"],"lastActive":["14 days ago","12 days ago","11 days ago","9 days ago","8 days ago"],"progress":["22%","31%","18%","39%","44%"],"risk":["High","High","High","Medium","Medium"]}}

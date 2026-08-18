@@ -1,0 +1,61 @@
+{"op":"add","path":"/root","value":"support-dashboard"}
+{"op":"add","path":"/elements/support-dashboard","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l","align":"stretch"},"children":["dashboard-header","metrics-row","filter-row","recent-section","new-ticket-dialog"]}}
+{"op":"add","path":"/elements/dashboard-header","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["morning-heading","morning-subtitle"]}}
+{"op":"add","path":"/elements/morning-heading","value":{"type":"Heading","props":{"text":"Good morning, Support","level":"h1"},"children":[]}}
+{"op":"add","path":"/elements/morning-subtitle","value":{"type":"TextContent","props":{"text":"Here’s the latest snapshot of your support queue.","size":"default"},"children":[]}}
+{"op":"add","path":"/elements/metrics-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"stretch","wrap":true},"children":["open-metric","response-metric"]}}
+{"op":"add","path":"/elements/open-metric","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["open-label","open-value","open-context"]}}
+{"op":"add","path":"/elements/open-label","value":{"type":"TextContent","props":{"text":"Open tickets","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/open-value","value":{"type":"Heading","props":{"text":{"$state":"/metrics/openTickets"},"level":"h2"},"children":[]}}
+{"op":"add","path":"/state/metrics","value":{"openTickets":"42","averageFirstResponse":"18 min"}}
+{"op":"add","path":"/elements/open-context","value":{"type":"Badge","props":{"text":"6 awaiting assignment","variant":"secondary"},"children":[]}}
+{"op":"add","path":"/elements/response-metric","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["response-label","response-value","response-context"]}}
+{"op":"add","path":"/elements/response-label","value":{"type":"TextContent","props":{"text":"Average first response","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/response-value","value":{"type":"Heading","props":{"text":{"$state":"/metrics/averageFirstResponse"},"level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/response-context","value":{"type":"Badge","props":{"text":"Within 30 min SLA","variant":"default"},"children":[]}}
+{"op":"add","path":"/elements/filter-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["filter-copy","priority-filter"]}}
+{"op":"add","path":"/elements/filter-copy","value":{"type":"TextContent","props":{"text":"Narrow the queue to urgent work","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/priority-filter","value":{"type":"SwitchGroup","props":{"name":"priority-filter","items":["high-priority-switch"],"variant":"clear","value":{"$bindState":"/filters/highPriorityOnly"}},"children":[]}}
+{"op":"add","path":"/state/filters","value":{"highPriorityOnly":[]}}
+{"op":"add","path":"/elements/high-priority-switch","value":{"type":"SwitchItem","props":{"name":"high-only","label":"High priority only","description":"Show only tickets requiring immediate attention"},"children":[]}}
+{"op":"add","path":"/elements/recent-section","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"children":["recent-header","all-ticket-list","high-ticket-list"]}}
+{"op":"add","path":"/elements/recent-header","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"center","justify":"between"},"children":["recent-heading","recent-count"]}}
+{"op":"add","path":"/elements/recent-heading","value":{"type":"Heading","props":{"text":"Five most recent tickets","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/recent-count","value":{"type":"Badge","props":{"text":"Latest activity","variant":"outline"},"children":[]}}
+{"op":"add","path":"/elements/all-ticket-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/tickets","key":"id"},"visible":{"$state":"/filters/highPriorityOnly","not":true},"children":["ticket-row"]}}
+{"op":"add","path":"/elements/ticket-row","value":{"type":"Card","props":{"variant":"card","direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["ticket-details","ticket-priority"]}}
+{"op":"add","path":"/elements/ticket-details","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["ticket-title","ticket-meta"]}}
+{"op":"add","path":"/elements/ticket-title","value":{"type":"TextContent","props":{"text":{"$item":"subject"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/ticket-meta","value":{"type":"TextContent","props":{"text":{"$template":"${id} · ${customer} · ${received}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/ticket-priority","value":{"type":"Tag","props":{"text":{"$item":"priority"},"variant":{"$item":"priorityVariant"},"size":"md"},"children":[]}}
+{"op":"add","path":"/state/tickets","value":[]}
+{"op":"add","path":"/state/tickets/0","value":{"id":"TKT-1842","subject":"Checkout fails after applying a discount code","customer":"Northstar Retail","received":"8:42 AM","priority":"High","priorityVariant":"danger"}}
+{"op":"add","path":"/state/tickets/1","value":{"id":"TKT-1841","subject":"Unable to export the monthly usage report","customer":"Brightline Analytics","received":"8:27 AM","priority":"Medium","priorityVariant":"warning"}}
+{"op":"add","path":"/state/tickets/2","value":{"id":"TKT-1840","subject":"SSO login loops back to the sign-in page","customer":"Acme Health","received":"8:11 AM","priority":"High","priorityVariant":"danger"}}
+{"op":"add","path":"/state/tickets/3","value":{"id":"TKT-1839","subject":"Question about adding seats mid-cycle","customer":"Juniper Labs","received":"7:54 AM","priority":"Low","priorityVariant":"neutral"}}
+{"op":"add","path":"/state/tickets/4","value":{"id":"TKT-1838","subject":"Webhook delivery delayed for order events","customer":"Harbor Commerce","received":"7:38 AM","priority":"Medium","priorityVariant":"warning"}}
+{"op":"add","path":"/elements/high-ticket-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/highPriorityTickets","key":"id"},"visible":{"$state":"/filters/highPriorityOnly},"children":["high-ticket-row"]}}
+{"op":"add","path":"/elements/high-ticket-row","value":{"type":"Card","props":{"variant":"card","direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["high-ticket-details","high-ticket-priority"]}}
+{"op":"add","path":"/elements/high-ticket-details","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["high-ticket-title","high-ticket-meta"]}}
+{"op":"add","path":"/elements/high-ticket-title","value":{"type":"TextContent","props":{"text":{"$item":"subject"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/high-ticket-meta","value":{"type":"TextContent","props":{"text":{"$template":"${id} · ${customer} · ${received}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/high-ticket-priority","value":{"type":"Tag","props":{"text":{"$item":"priority"},"variant":"danger","size":"md"},"children":[]}}
+{"op":"add","path":"/state/highPriorityTickets","value":[]}
+{"op":"add","path":"/state/highPriorityTickets/0","value":{"id":"TKT-1842","subject":"Checkout fails after applying a discount code","customer":"Northstar Retail","received":"8:42 AM","priority":"High"}}
+{"op":"add","path":"/state/highPriorityTickets/1","value":{"id":"TKT-1840","subject":"SSO login loops back to the sign-in page","customer":"Acme Health","received":"8:11 AM","priority":"High"}}
+{"op":"add","path":"/elements/new-ticket-dialog","value":{"type":"DialogBlock","props":{"triggerLabel":"Open new ticket","title":"Open a new support ticket","description":"Capture the customer’s issue and assign its initial priority.","content":["new-ticket-form"],"triggerVariant":"default"},"children":[]}}
+{"op":"add","path":"/elements/new-ticket-form","value":{"type":"Form","props":{"name":"new-ticket","fields":["subject-control","customer-control","priority-control","details-control"],"buttons":"new-ticket-buttons"},"children":[]}}
+{"op":"add","path":"/elements/subject-control","value":{"type":"FormControl","props":{"label":"Subject","input":"subject-input","hint":"Summarize the issue in one sentence."},"children":[]}}
+{"op":"add","path":"/elements/subject-input","value":{"type":"Input","props":{"name":"subject","placeholder":"e.g. Customer cannot complete checkout","type":"text","value":{"$bindState":"/newTicket/subject"},"rules":[{"required":true}]},"children":[]}}
+{"op":"add","path":"/state/newTicket","value":{"subject":"","customer":"","priority":"Medium","details":""}}
+{"op":"add","path":"/elements/customer-control","value":{"type":"FormControl","props":{"label":"Customer or account","input":"customer-input"},"children":[]}}
+{"op":"add","path":"/elements/customer-input","value":{"type":"Input","props":{"name":"customer","placeholder":"Account name","type":"text","value":{"$bindState":"/newTicket/customer"},"rules":[{"required":true}]},"children":[]}}
+{"op":"add","path":"/elements/priority-control","value":{"type":"FormControl","props":{"label":"Priority","input":"priority-select"},"children":[]}}
+{"op":"add","path":"/elements/priority-select","value":{"type":"Select","props":{"name":"priority","items":["priority-low","priority-medium","priority-high"],"value":{"$bindState":"/newTicket/priority"},"size":"medium"},"children":[]}}
+{"op":"add","path":"/elements/priority-low","value":{"type":"SelectItem","props":{"value":"Low","label":"Low"},"children":[]}}
+{"op":"add","path":"/elements/priority-medium","value":{"type":"SelectItem","props":{"value":"Medium","label":"Medium"},"children":[]}}
+{"op":"add","path":"/elements/priority-high","value":{"type":"SelectItem","props":{"value":"High","label":"High"},"children":[]}}
+{"op":"add","path":"/elements/details-control","value":{"type":"FormControl","props":{"label":"Issue details","input":"details-input","hint":"Include impact, troubleshooting, and any relevant context."},"children":[]}}
+{"op":"add","path":"/elements/details-input","value":{"type":"TextArea","props":{"name":"details","placeholder":"Describe what the customer is experiencing…","rows":5,"value":{"$bindState":"/newTicket/details"},"rules":[{"required":true}]},"children":[]}}
+{"op":"add","path":"/elements/new-ticket-buttons","value":{"type":"Buttons","props":{"buttons":["create-ticket-button"],"direction":"row"},"children":[]}}
+{"op":"add","path":"/elements/create-ticket-button","value":{"type":"Button","props":{"label":"Create ticket","variant":"primary","size":"medium"},"on":{"press":{"action":"validateForm","params":{"statePath":"/newTicketValidation"}}},"children":[]}}

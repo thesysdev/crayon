@@ -1,0 +1,296 @@
+Here is the invoice view for your client, complete with total amount due, due date, itemized service details, and immediate payment options.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "freelancer-invoice",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#2563EB",
+      "agentDisplayName": "Billing Portal"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "freelancer-invoice",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header-card",
+          "summary-card",
+          "breakdown-card",
+          "payment-card",
+          "followups"
+        ]
+      },
+      {
+        "id": "header-card",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "justify": "between",
+        "align": "center",
+        "children": [
+          "header-info",
+          "status-badge"
+        ]
+      },
+      {
+        "id": "header-info",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "invoice-title",
+          "freelancer-name"
+        ]
+      },
+      {
+        "id": "invoice-title",
+        "component": "Heading",
+        "text": "Invoice #INV-2024-042",
+        "level": "h2"
+      },
+      {
+        "id": "freelancer-name",
+        "component": "TextContent",
+        "text": "Issued by **Alex Morgan** (Design & Frontend Engineering)",
+        "size": "small"
+      },
+      {
+        "id": "status-badge",
+        "component": "Badge",
+        "text": "Payment Due",
+        "variant": "destructive"
+      },
+      {
+        "id": "summary-card",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "justify": "between",
+        "align": "center",
+        "children": [
+          "amount-group",
+          "duedate-group"
+        ]
+      },
+      {
+        "id": "amount-group",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "amount-label",
+          "amount-value"
+        ]
+      },
+      {
+        "id": "amount-label",
+        "component": "Label",
+        "text": "Total Amount Due"
+      },
+      {
+        "id": "amount-value",
+        "component": "Heading",
+        "text": "$3,450.00 USD",
+        "level": "h1"
+      },
+      {
+        "id": "duedate-group",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "xs",
+        "align": "end",
+        "children": [
+          "duedate-label",
+          "duedate-value"
+        ]
+      },
+      {
+        "id": "duedate-label",
+        "component": "Label",
+        "text": "Due Date"
+      },
+      {
+        "id": "duedate-value",
+        "component": "Tag",
+        "text": "Oct 28, 2024",
+        "variant": "warning",
+        "size": "lg"
+      },
+      {
+        "id": "breakdown-card",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "breakdown-header",
+          "line-items-table"
+        ]
+      },
+      {
+        "id": "breakdown-header",
+        "component": "CardHeader",
+        "title": "Service Breakdown",
+        "subtitle": "Milestone payments for Q4 Web App Redesign"
+      },
+      {
+        "id": "line-items-table",
+        "component": "Table",
+        "columns": [
+          "col-desc",
+          "col-hours",
+          "col-rate",
+          "col-subtotal"
+        ]
+      },
+      {
+        "id": "col-desc",
+        "component": "Col",
+        "label": "Description",
+        "type": "string",
+        "data": [
+          "UI Component System Design & Token Setup",
+          "Frontend Integration & API Hookup",
+          "Responsive Testing & QA Fixes"
+        ]
+      },
+      {
+        "id": "col-hours",
+        "component": "Col",
+        "label": "Hours",
+        "type": "number",
+        "data": [
+          20,
+          15,
+          5
+        ]
+      },
+      {
+        "id": "col-rate",
+        "component": "Col",
+        "label": "Rate",
+        "type": "string",
+        "data": [
+          "$85/hr",
+          "$90/hr",
+          "$80/hr"
+        ]
+      },
+      {
+        "id": "col-subtotal",
+        "component": "Col",
+        "label": "Amount",
+        "type": "string",
+        "data": [
+          "$1,700.00",
+          "$1,350.00",
+          "$400.00"
+        ]
+      },
+      {
+        "id": "payment-card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "payment-header",
+          "pay-actions"
+        ]
+      },
+      {
+        "id": "payment-header",
+        "component": "CardHeader",
+        "title": "Pay Now",
+        "subtitle": "Select your preferred payment method to settle this invoice instantly"
+      },
+      {
+        "id": "pay-actions",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": [
+          "pay-card-btn",
+          "pay-bank-btn",
+          "download-pdf-btn"
+        ]
+      },
+      {
+        "id": "pay-card-btn",
+        "component": "Button",
+        "label": "Pay $3,450.00 via Credit Card",
+        "variant": "primary",
+        "size": "medium",
+        "action": [
+          {
+            "type": "pay_invoice",
+            "method": "credit_card",
+            "invoiceId": "INV-2024-042"
+          }
+        ]
+      },
+      {
+        "id": "pay-bank-btn",
+        "component": "Button",
+        "label": "Pay via ACH / Bank Transfer",
+        "variant": "secondary",
+        "size": "medium",
+        "action": [
+          {
+            "type": "pay_invoice",
+            "method": "ach",
+            "invoiceId": "INV-2024-042"
+          }
+        ]
+      },
+      {
+        "id": "download-pdf-btn",
+        "component": "Button",
+        "label": "Download PDF Receipt",
+        "variant": "tertiary",
+        "size": "medium",
+        "action": [
+          {
+            "type": "download_pdf",
+            "invoiceId": "INV-2024-042"
+          }
+        ]
+      },
+      {
+        "id": "followups",
+        "component": "FollowUpBlock",
+        "items": [
+          "fu-1",
+          "fu-2"
+        ]
+      },
+      {
+        "id": "fu-1",
+        "component": "FollowUpItem",
+        "text": "Send payment receipt to accounting@company.com"
+      },
+      {
+        "id": "fu-2",
+        "component": "FollowUpItem",
+        "text": "Request tax document (Form W-9)"
+      }
+    ]
+  }
+}
+</a2ui-json>

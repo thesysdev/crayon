@@ -1,0 +1,115 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","summary","toolbar","active-projects-section","budget-section","milestones-risks-row","utilization-section","pace-section","deadlines-blocked-row","footer-actions"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Portfolio Review","subtitle":{"$template":"Quarter: ${/quarter} · PMO Portfolio Health Dashboard"}}}}
+{"op":"add","path":"/state/quarter","value":"Q3 2024"}
+{"op":"add","path":"/elements/summary","value":{"type":"Callout","props":{"variant":{"$state":"/summaryVariant"},"title":"Portfolio Health","description":{"$state":"/summaryText"}}}}
+{"op":"add","path":"/state/summaryVariant","value":"warning"}
+{"op":"add","path":"/state/summaryText","value":"7 active projects on track overall, but 3 milestones overdue and 2 projects at risk of budget overrun — attention needed on Atlas and Nimbus."}
+{"op":"add","path":"/elements/toolbar","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center","justify":"between","variant":"sunk"},"children":["quarter-picker-wrap","toolbar-actions"]}}
+{"op":"add","path":"/elements/quarter-picker-wrap","value":{"type":"FormControl","props":{"label":"View Quarter","input":"quarter-select"}}}
+{"op":"add","path":"/elements/quarter-select","value":{"type":"Select","props":{"name":"quarter","items":["q1","q2","q3","q4"],"value":{"$bindState":"/quarter"}},"children":["q1","q2","q3","q4"]}}
+{"op":"add","path":"/elements/q1","value":{"type":"SelectItem","props":{"value":"Q1 2024","label":"Q1 2024"}}}
+{"op":"add","path":"/elements/q2","value":{"type":"SelectItem","props":{"value":"Q2 2024","label":"Q2 2024"}}}
+{"op":"add","path":"/elements/q3","value":{"type":"SelectItem","props":{"value":"Q3 2024","label":"Q3 2024"}}}
+{"op":"add","path":"/elements/q4","value":{"type":"SelectItem","props":{"value":"Q4 2024","label":"Q4 2024"}}}
+{"op":"add","path":"/elements/toolbar-actions","value":{"type":"Buttons","props":{"buttons":["export-btn"],"direction":"row"}}}
+{"op":"add","path":"/elements/export-btn","value":{"type":"Button","props":{"label":"Export Review","variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/exported","value":true}}}}}
+{"op":"add","path":"/state/exported","value":false}
+{"op":"add","path":"/elements/active-projects-section","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["active-heading","active-list"]}}
+{"op":"add","path":"/elements/active-heading","value":{"type":"Heading","props":{"text":"Active Projects","level":"h3"}}}
+{"op":"add","path":"/elements/active-list","value":{"type":"Card","props":{"direction":"column","gap":"s"},"repeat":{"statePath":"/projects","key":"id"},"children":["project-row"]}}
+{"op":"add","path":"/elements/project-row","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center","justify":"between","variant":"sunk"},"children":["project-info","project-meta","project-actions"]}}
+{"op":"add","path":"/elements/project-info","value":{"type":"Card","props":{"direction":"column","gap":"none"},"children":["project-name","project-owner"]}}
+{"op":"add","path":"/elements/project-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"large-heavy"}}}
+{"op":"add","path":"/elements/project-owner","value":{"type":"TextContent","props":{"text":{"$template":"Owner: ${owner} · Due: ${deadline}"},"size":"small"}}}
+{"op":"add","path":"/elements/project-meta","value":{"type":"Badge","props":{"text":{"$item":"health"},"variant":{"$cond":{"$state":"/dummy"},"$then":"default","$else":"secondary"}}}}
+{"op":"add","path":"/state/dummy","value":false}
+{"op":"add","path":"/elements/project-actions","value":{"type":"Buttons","props":{"buttons":["req-people-btn","archive-btn"],"direction":"row"}}}
+{"op":"add","path":"/elements/req-people-btn","value":{"type":"Button","props":{"label":"Request People","variant":"tertiary","size":"extra-small"},"on":{"press":{"action":"setState","params":{"statePath":"/requestFor","value":{"$item":"name"}}}}}}
+{"op":"add","path":"/elements/archive-btn","value":{"type":"Button","props":{"label":"Archive","variant":"tertiary","type":"destructive","size":"extra-small"},"on":{"press":{"action":"removeState","params":{"statePath":"/projects","index":{"$index":true}}}}}}
+{"op":"add","path":"/state/requestFor","value":""}
+{"op":"add","path":"/state/projects","value":[]}
+{"op":"add","path":"/state/projects/0","value":{"id":"p1","name":"Atlas Migration","owner":"S. Reyes","deadline":"2024-08-30","health":"At Risk"}}
+{"op":"add","path":"/state/projects/1","value":{"id":"p2","name":"Nimbus Platform","owner":"K. Osei","deadline":"2024-09-15","health":"Off Track"}}
+{"op":"add","path":"/state/projects/2","value":{"id":"p3","name":"Orion Analytics","owner":"L. Zhang","deadline":"2024-10-01","health":"On Track"}}
+{"op":"add","path":"/state/projects/3","value":{"id":"p4","name":"Vega Mobile","owner":"M. Patel","deadline":"2024-09-20","health":"On Track"}}
+{"op":"add","path":"/state/projects/4","value":{"id":"p5","name":"Helios Billing","owner":"D. Cruz","deadline":"2024-08-25","health":"At Risk"}}
+{"op":"add","path":"/elements/request-dialog","value":{"type":"Alert","props":{"variant":"info","title":"Resource Request Prepared","description":{"$template":"A request for additional people on ${/requestFor} has been drafted for PMO approval."}},"visible":{"$state":"/requestFor","neq":""}}}
+{"op":"replace","path":"/elements/active-projects-section","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["active-heading","request-dialog","active-list"]}}
+{"op":"add","path":"/elements/budget-section","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["budget-heading","budget-chart"]}}
+{"op":"add","path":"/elements/budget-heading","value":{"type":"Heading","props":{"text":"Budget Spent vs Allocation","level":"h3"}}}
+{"op":"add","path":"/elements/budget-chart","value":{"type":"BarChart","props":{"labels":["Atlas","Nimbus","Orion","Vega","Helios"],"series":["series-spent","series-alloc"],"variant":"grouped","xLabel":"Project","yLabel":"$K"}}}
+{"op":"add","path":"/elements/series-spent","value":{"type":"Series","props":{"category":"Spent","values":[420,380,210,150,310]}}}
+{"op":"add","path":"/elements/series-alloc","value":{"type":"Series","props":{"category":"Allocated","values":[400,500,300,250,300]}}}
+{"op":"add","path":"/elements/milestones-risks-row","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"stretch"},"children":["milestones-section","risks-section"]}}
+{"op":"add","path":"/elements/milestones-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["milestones-heading","milestones-list"]}}
+{"op":"add","path":"/elements/milestones-heading","value":{"type":"Heading","props":{"text":"Overdue Milestones","level":"h4"}}}
+{"op":"add","path":"/elements/milestones-list","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"repeat":{"statePath":"/overdueMilestones","key":"id"},"children":["milestone-item"]}}
+{"op":"add","path":"/elements/milestone-item","value":{"type":"Card","props":{"direction":"row","gap":"s","justify":"between","align":"center","variant":"sunk"},"children":["milestone-title","milestone-days"]}}
+{"op":"add","path":"/elements/milestone-title","value":{"type":"TextContent","props":{"text":{"$template":"${title} — ${project}"},"size":"small"}}}
+{"op":"add","path":"/elements/milestone-days","value":{"type":"Tag","props":{"text":{"$template":"${daysLate}d late"},"variant":"danger","size":"sm"}}}
+{"op":"add","path":"/state/overdueMilestones","value":[]}
+{"op":"add","path":"/state/overdueMilestones/0","value":{"id":"m1","title":"Data Cutover","project":"Atlas","daysLate":12}}
+{"op":"add","path":"/state/overdueMilestones/1","value":{"id":"m2","title":"API Freeze","project":"Nimbus","daysLate":6}}
+{"op":"add","path":"/state/overdueMilestones/2","value":{"id":"m3","title":"UAT Signoff","project":"Helios","daysLate":3}}
+{"op":"add","path":"/elements/risks-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["risks-heading","risks-list"]}}
+{"op":"add","path":"/elements/risks-heading","value":{"type":"Heading","props":{"text":"Risks","level":"h4"}}}
+{"op":"add","path":"/elements/risks-list","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"repeat":{"statePath":"/risks","key":"id"},"children":["risk-item"]}}
+{"op":"add","path":"/elements/risk-item","value":{"type":"Card","props":{"direction":"row","gap":"s","justify":"between","align":"center","variant":"sunk"},"children":["risk-desc","risk-sev"]}}
+{"op":"add","path":"/elements/risk-desc","value":{"type":"TextContent","props":{"text":{"$item":"description"},"size":"small"}}}
+{"op":"add","path":"/elements/risk-sev","value":{"type":"Badge","props":{"text":{"$item":"severity"},"variant":"destructive"}}}
+{"op":"add","path":"/state/risks","value":[]}
+{"op":"add","path":"/state/risks/0","value":{"id":"r1","description":"Vendor SLA breach on Atlas cutover","severity":"High"}}
+{"op":"add","path":"/state/risks/1","value":{"id":"r2","description":"Nimbus scope creep from stakeholders","severity":"High"}}
+{"op":"add","path":"/state/risks/2","value":{"id":"r3","description":"Orion data quality gaps","severity":"Medium"}}
+{"op":"add","path":"/state/risks/3","value":{"id":"r4","description":"Helios payment gateway certification delay","severity":"Medium"}}
+{"op":"add","path":"/elements/utilization-section","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["util-heading","util-list"]}}
+{"op":"add","path":"/elements/util-heading","value":{"type":"Heading","props":{"text":"Team Utilization","level":"h3"}}}
+{"op":"add","path":"/elements/util-list","value":{"type":"Card","props":{"direction":"column","gap":"s"},"repeat":{"statePath":"/teams","key":"id"},"children":["util-item"]}}
+{"op":"add","path":"/elements/util-item","value":{"type":"Progress","props":{"value":{"$item":"utilization"},"label":{"$template":"${name} — ${utilization}%"}}}}
+{"op":"add","path":"/state/teams","value":[]}
+{"op":"add","path":"/state/teams/0","value":{"id":"t1","name":"Platform Engineering","utilization":92}}
+{"op":"add","path":"/state/teams/1","value":{"id":"t2","name":"Data & Analytics","utilization":78}}
+{"op":"add","path":"/state/teams/2","value":{"id":"t3","name":"Mobile","utilization":64}}
+{"op":"add","path":"/state/teams/3","value":{"id":"t4","name":"QA","utilization":88}}
+{"op":"add","path":"/elements/pace-section","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["pace-heading","pace-chart"]}}
+{"op":"add","path":"/elements/pace-heading","value":{"type":"Heading","props":{"text":"Delivery Pace — Last 6 Sprints","level":"h3"}}}
+{"op":"add","path":"/elements/pace-chart","value":{"type":"LineChart","props":{"labels":["S31","S32","S33","S34","S35","S36"],"series":["pace-series"],"variant":"natural","xLabel":"Sprint","yLabel":"Story Points"}}}
+{"op":"add","path":"/elements/pace-series","value":{"type":"Series","props":{"category":"Completed","values":[48,52,45,58,61,55]}}}
+{"op":"add","path":"/elements/deadlines-blocked-row","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"stretch"},"children":["deadlines-section","blocked-section"]}}
+{"op":"add","path":"/elements/deadlines-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["deadlines-heading","deadlines-list"]}}
+{"op":"add","path":"/elements/deadlines-heading","value":{"type":"Heading","props":{"text":"Deadlines — Next 2 Weeks","level":"h4"}}}
+{"op":"add","path":"/elements/deadlines-list","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"repeat":{"statePath":"/deadlines","key":"id"},"children":["deadline-item"]}}
+{"op":"add","path":"/elements/deadline-item","value":{"type":"Card","props":{"direction":"row","gap":"s","justify":"between","align":"center","variant":"sunk"},"children":["deadline-title","deadline-date"]}}
+{"op":"add","path":"/elements/deadline-title","value":{"type":"TextContent","props":{"text":{"$template":"${title} — ${project}"},"size":"small"}}}
+{"op":"add","path":"/elements/deadline-date","value":{"type":"Tag","props":{"text":{"$item":"date"},"variant":"warning","size":"sm"}}}
+{"op":"add","path":"/state/deadlines","value":[]}
+{"op":"add","path":"/state/deadlines/0","value":{"id":"d1","title":"Helios Go-Live","project":"Helios","date":"Aug 25"}}
+{"op":"add","path":"/state/deadlines/1","value":{"id":"d2","title":"Atlas Final Cutover","project":"Atlas","date":"Aug 30"}}
+{"op":"add","path":"/state/deadlines/2","value":{"id":"d3","title":"Nimbus Beta Release","project":"Nimbus","date":"Sep 02"}}
+{"op":"add","path":"/elements/blocked-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["blocked-heading","blocked-list"]}}
+{"op":"add","path":"/elements/blocked-heading","value":{"type":"Heading","props":{"text":"Blocked Work Items","level":"h4"}}}
+{"op":"add","path":"/elements/blocked-list","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"repeat":{"statePath":"/blocked","key":"id"},"children":["blocked-item"]}}
+{"op":"add","path":"/elements/blocked-item","value":{"type":"Card","props":{"direction":"row","gap":"s","justify":"between","align":"center","variant":"sunk"},"children":["blocked-title","blocked-tag"]}}
+{"op":"add","path":"/elements/blocked-title","value":{"type":"TextContent","props":{"text":{"$template":"${title} (${project})"},"size":"small"}}}
+{"op":"add","path":"/elements/blocked-tag","value":{"type":"Tag","props":{"text":"Blocked","variant":"danger","size":"sm","icon":"alert"}}}
+{"op":"add","path":"/state/blocked","value":[]}
+{"op":"add","path":"/state/blocked/0","value":{"id":"b1","title":"Env provisioning","project":"Atlas"}}
+{"op":"add","path":"/state/blocked/1","value":{"id":"b2","title":"Third-party contract signoff","project":"Nimbus"}}
+{"op":"add","path":"/state/blocked/2","value":{"id":"b3","title":"PCI compliance review","project":"Helios"}}
+{"op":"add","path":"/elements/footer-actions","value":{"type":"Card","props":{"direction":"row","gap":"m","justify":"end","align":"center"},"children":["archive-dialog","request-drawer","export-final-btn"]}}
+{"op":"add","path":"/elements/archive-dialog","value":{"type":"AlertDialogBlock","props":{"triggerLabel":"Archive Finished Project","title":"Archive Project","description":"Archiving moves a completed project out of the active portfolio. This can be undone by an admin.","confirmLabel":"Archive","cancelLabel":"Cancel","triggerVariant":"outline"}}}
+{"op":"add","path":"/elements/request-drawer","value":{"type":"DrawerBlock","props":{"triggerLabel":"Request More People","title":"Resource Request","description":"Request additional headcount for a project.","content":["req-form-control","req-count","req-submit"]}}}
+{"op":"add","path":"/elements/req-form-control","value":{"type":"FormControl","props":{"label":"Project","input":"req-project-select"}}}
+{"op":"add","path":"/elements/req-project-select","value":{"type":"Select","props":{"name":"reqProject","items":["rp1","rp2","rp3","rp4","rp5"],"value":{"$bindState":"/requestFor"}},"children":["rp1","rp2","rp3","rp4","rp5"]}}
+{"op":"add","path":"/elements/rp1","value":{"type":"SelectItem","props":{"value":"Atlas Migration","label":"Atlas Migration"}}}
+{"op":"add","path":"/elements/rp2","value":{"type":"SelectItem","props":{"value":"Nimbus Platform","label":"Nimbus Platform"}}}
+{"op":"add","path":"/elements/rp3","value":{"type":"SelectItem","props":{"value":"Orion Analytics","label":"Orion Analytics"}}}
+{"op":"add","path":"/elements/rp4","value":{"type":"SelectItem","props":{"value":"Vega Mobile","label":"Vega Mobile"}}}
+{"op":"add","path":"/elements/rp5","value":{"type":"SelectItem","props":{"value":"Helios Billing","label":"Helios Billing"}}}
+{"op":"add","path":"/elements/req-count","value":{"type":"FormControl","props":{"label":"People Needed","input":"req-count-input"}}}
+{"op":"add","path":"/elements/req-count-input","value":{"type":"Input","props":{"name":"peopleCount","type":"number","placeholder":"e.g. 2","value":{"$bindState":"/requestCount"}}}}
+{"op":"add","path":"/state/requestCount","value":""}
+{"op":"add","path":"/elements/req-submit","value":{"type":"Button","props":{"label":"Submit Request","variant":"primary"},"on":{"press":{"action":"setState","params":{"statePath":"/requestSubmitted","value":true}}}}}
+{"op":"add","path":"/state/requestSubmitted","value":false}
+{"op":"add","path":"/elements/export-final-btn","value":{"type":"Button","props":{"label":"Export Review (PDF)","variant":"primary"},"on":{"press":{"action":"setState","params":{"statePath":"/exported","value":true}}}}}

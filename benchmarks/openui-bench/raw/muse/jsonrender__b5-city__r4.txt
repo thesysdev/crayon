@@ -1,0 +1,164 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"children":["header","controlBar","kpiRow","chartsRow1","incidentsVehiclesRow","parkingEventsRow","reportsBacklogRow","roadworksMaintenanceRow"]}}
+{"op":"add","path":"/elements/header","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["headerTitle","headerSub"]}}
+{"op":"add","path":"/elements/headerTitle","value":{"type":"Heading","props":{"text":"City Operations Center — Live Dashboard","level":"h1"},"children":[]}}
+{"op":"add","path":"/elements/headerSub","value":{"type":"TextContent","props":{"text":"Monday, Aug 18 • 14:42 • All systems monitored • District filter applies to Air Quality, Incidents & Vehicles","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/controlBar","value":{"type":"Card","props":{"variant":"card","direction":"row","gap":"m","align":"center","justify":"between"},"children":["districtControl","dispatchDialog","alertCard"]}}
+{"op":"add","path":"/elements/districtControl","value":{"type":"FormControl","props":{"label":"Focus District (13)","hint":"Filters air quality, incidents & vehicles","input":"districtSelect"},"children":[]}}
+{"op":"add","path":"/elements/districtSelect","value":{"type":"Select","props":{"name":"district","placeholder":"All Districts","value":{"$bindState":"/selectedDistrict"},"items":["districtItemAll","districtItemDowntown","districtItemNorth","districtItemSouth","districtItemWest","districtItemEast"]},"children":[]}}
+{"op":"add","path":"/elements/districtItemAll","value":{"type":"SelectItem","props":{"value":"All","label":"All Districts"},"children":[]}}
+{"op":"add","path":"/elements/districtItemDowntown","value":{"type":"SelectItem","props":{"value":"Downtown","label":"Downtown"},"children":[]}}
+{"op":"add","path":"/elements/districtItemNorth","value":{"type":"SelectItem","props":{"value":"North","label":"North District"},"children":[]}}
+{"op":"add","path":"/elements/districtItemSouth","value":{"type":"SelectItem","props":{"value":"South","label":"South District"},"children":[]}}
+{"op":"add","path":"/elements/districtItemWest","value":{"type":"SelectItem","props":{"value":"West","label":"West End"},"children":[]}}
+{"op":"add","path":"/elements/districtItemEast","value":{"type":"SelectItem","props":{"value":"East","label":"Eastside"},"children":[]}}
+{"op":"add","path":"/state/selectedDistrict","value":"All"}
+{"op":"add","path":"/elements/dispatchDialog","value":{"type":"DialogBlock","props":{"triggerLabel":"Dispatch Crew (14)","title":"Dispatch Emergency / Maintenance Crew","description":"Assign a crew to a location. This creates a new vehicle deployment.","triggerVariant":"default"},"children":["dispatchForm"]}}
+{"op":"add","path":"/elements/dispatchForm","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"children":["dispatchCrewControl","dispatchLocationControl","dispatchNotesControl","dispatchButtons"]}}
+{"op":"add","path":"/elements/dispatchCrewControl","value":{"type":"FormControl","props":{"label":"Crew Type","input":"dispatchCrewType"},"children":[]}}
+{"op":"add","path":"/elements/dispatchCrewType","value":{"type":"Select","props":{"name":"crewType","placeholder":"Select crew","value":{"$bindState":"/dispatchForm/crewType"},"items":["dispatchCrewItemRoad","dispatchCrewItemUtility","dispatchCrewItemMedical","dispatchCrewItemTraffic"]},"children":[]}}
+{"op":"add","path":"/elements/dispatchCrewItemRoad","value":{"type":"SelectItem","props":{"value":"Road Crew","label":"Road Crew"},"children":[]}}
+{"op":"add","path":"/elements/dispatchCrewItemUtility","value":{"type":"SelectItem","props":{"value":"Utility Crew","label":"Utility Crew"},"children":[]}}
+{"op":"add","path":"/elements/dispatchCrewItemMedical","value":{"type":"SelectItem","props":{"value":"Medical Unit","label":"Medical Unit"},"children":[]}}
+{"op":"add","path":"/elements/dispatchCrewItemTraffic","value":{"type":"SelectItem","props":{"value":"Traffic Unit","label":"Traffic Unit"},"children":[]}}
+{"op":"add","path":"/elements/dispatchLocationControl","value":{"type":"FormControl","props":{"label":"Location / Intersection","input":"dispatchLocationInput"},"children":[]}}
+{"op":"add","path":"/elements/dispatchLocationInput","value":{"type":"Input","props":{"name":"location","placeholder":"e.g. 5th & Main, Downtown","value":{"$bindState":"/dispatchForm/location"}},"children":[]}}
+{"op":"add","path":"/elements/dispatchNotesControl","value":{"type":"FormControl","props":{"label":"Notes","input":"dispatchNotesInput"},"children":[]}}
+{"op":"add","path":"/elements/dispatchNotesInput","value":{"type":"Input","props":{"name":"notes","placeholder":"Reason for dispatch","value":{"$bindState":"/dispatchForm/notes"}},"children":[]}}
+{"op":"add","path":"/elements/dispatchButtons","value":{"type":"Buttons","props":{"buttons":["dispatchSubmitBtn"],"direction":"row"},"children":[]}}
+{"op":"add","path":"/elements/dispatchSubmitBtn","value":{"type":"Button","props":{"label":"Dispatch Now","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/vehicles","value":{"id":"$id","unit":{"$template":"CREW-${/dispatchForm/crewType}"},"type":{"$state":"/dispatchForm/crewType"},"district":{"$state":"/selectedDistrict"},"location":{"$state":"/dispatchForm/location"},"status":"En Route"}}}},"children":[]}}
+{"op":"add","path":"/state/dispatchForm","value":{"crewType":"Road Crew","location":"","notes":""}}
+{"op":"add","path":"/elements/alertCard","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["alertHeader","alertInput","alertSendBtn","alertSentCallout"]}}
+{"op":"add","path":"/elements/alertHeader","value":{"type":"CardHeader","props":{"title":"Public Alert (15)","subtitle":"Broadcast to citizens"},"children":[]}}
+{"op":"add","path":"/elements/alertInput","value":{"type":"TextArea","props":{"name":"alertMessage","placeholder":"Type public alert message... e.g. Avoid Downtown due to roadworks until 6PM","rows":3,"value":{"$bindState":"/alertMessage"}},"children":[]}}
+{"op":"add","path":"/elements/alertSendBtn","value":{"type":"Button","props":{"label":"Send Alert","variant":"primary"},"on":{"press":{"action":"setState","params":{"statePath":"/alertSent","value":true}}},"children":[]}}
+{"op":"add","path":"/elements/alertSentCallout","value":{"type":"Callout","props":{"variant":"success","title":"Alert Sent","description":"Message broadcast to all districts and mobile app."},"visible":{"$state":"/alertSent","eq":true},"children":[]}}
+{"op":"add","path":"/state/alertMessage","value":""}
+{"op":"add","path":"/state/alertSent","value":false}
+{"op":"add","path":"/elements/kpiRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m"},"children":["congestionCard","transitCard","waterCard","weatherCard"]}}
+{"op":"add","path":"/elements/congestionCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["congestionHeader","congestionValue","congestionProgress","congestionSub"]}}
+{"op":"add","path":"/elements/congestionHeader","value":{"type":"CardHeader","props":{"title":"Congestion Now (1)","subtitle":"Downtown core • Level of Service"},"children":[]}}
+{"op":"add","path":"/elements/congestionValue","value":{"type":"TextContent","props":{"text":{"$template":"${/congestion/level} — ${/congestion/status}"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/congestionProgress","value":{"type":"Progress","props":{"value":{"$state":"/congestion/percent"},"label":"Capacity used"},"children":[]}}
+{"op":"add","path":"/elements/congestionSub","value":{"type":"TextContent","props":{"text":{"$template":"Avg speed ${/congestion/speed} • ${/congestion/trend}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/state/congestion","value":{"level":"High","status":"Heavy","percent":78,"speed":"18 km/h","trend":"↑ +12% vs 1h ago"}}
+{"op":"add","path":"/elements/transitCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["transitHeader","transitValue","transitProgress","transitSub"]}}
+{"op":"add","path":"/elements/transitHeader","value":{"type":"CardHeader","props":{"title":"Transit Punctuality (2)","subtitle":"On-time performance • Last 60 min"},"children":[]}}
+{"op":"add","path":"/elements/transitValue","value":{"type":"TextContent","props":{"text":{"$template":"${/transit/onTime}% On Time"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/transitProgress","value":{"type":"Progress","props":{"value":{"$state":"/transit/onTime"},"label":"On-time"},"children":[]}}
+{"op":"add","path":"/elements/transitSub","value":{"type":"TextContent","props":{"text":{"$template":"${/transit/delayed} delayed • ${/transit/cancelled} cancelled • Next update 15:00"},"size":"small"},"children":[]}}
+{"op":"add","path":"/state/transit","value":{"onTime":84,"delayed":9,"cancelled":2}}
+{"op":"add","path":"/elements/waterCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["waterHeader","waterValue","waterProgress","waterSub"]}}
+{"op":"add","path":"/elements/waterHeader","value":{"type":"CardHeader","props":{"title":"Water Use Today (5)","subtitle":"City-wide consumption"},"children":[]}}
+{"op":"add","path":"/elements/waterValue","value":{"type":"TextContent","props":{"text":{"$template":"${/water/used} ML / ${/water/budget} ML"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/waterProgress","value":{"type":"Progress","props":{"value":{"$state":"/water/percent"},"label":"Daily budget"},"children":[]}}
+{"op":"add","path":"/elements/waterSub","value":{"type":"TextContent","props":{"text":{"$template":"Peak at ${/water/peakTime} • ${/water/vsYesterday} vs yesterday"},"size":"small"},"children":[]}}
+{"op":"add","path":"/state/water","value":{"used":42.7,"budget":58,"percent":73,"peakTime":"08:30","vsYesterday":"+4.2%"}}
+{"op":"add","path":"/elements/weatherCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["weatherHeader","weatherTemp","weatherDetails","weatherBadgeRow"]}}
+{"op":"add","path":"/elements/weatherHeader","value":{"type":"CardHeader","props":{"title":"Current Weather (12)","subtitle":"Central Station"},"children":[]}}
+{"op":"add","path":"/elements/weatherTemp","value":{"type":"TextContent","props":{"text":{"$template":"${/weather/temp}°C — ${/weather/condition}"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/weatherDetails","value":{"type":"TextContent","props":{"text":{"$template":"Wind ${/weather/wind} • Humidity ${/weather/humidity}% • AQI ${/weather/aqi} (${/weather/aqiLabel})"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/weatherBadgeRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"xs"},"children":["weatherTag1","weatherTag2"]}}
+{"op":"add","path":"/elements/weatherTag1","value":{"type":"Tag","props":{"text":{"$template":"Feels like ${/weather/feelsLike}°C"},"variant":"info","size":"sm"},"children":[]}}
+{"op":"add","path":"/elements/weatherTag2","value":{"type":"Tag","props":{"text":"No severe alerts","variant":"success","size":"sm"},"children":[]}}
+{"op":"add","path":"/state/weather","value":{"temp":27,"condition":"Partly Cloudy","wind":"14 km/h NW","humidity":62,"aqi":68,"aqiLabel":"Moderate","feelsLike":29}}
+{"op":"add","path":"/elements/chartsRow1","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m"},"children":["airQualityCard","energyCard"]}}
+{"op":"add","path":"/elements/airQualityCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["airQualityHeader","airQualityChart","airQualityNote"]}}
+{"op":"add","path":"/elements/airQualityHeader","value":{"type":"CardHeader","props":{"title":"Air Quality by District (3)","subtitle":"US AQI • Lower is better"},"children":[]}}
+{"op":"add","path":"/elements/airQualityChart","value":{"type":"HorizontalBarChart","props":{"labels":{"$state":"/airQuality/labels"},"series":["airQualitySeries"],"xLabel":"AQI","yLabel":"District"},"children":[]}}
+{"op":"add","path":"/elements/airQualitySeries","value":{"type":"Series","props":{"category":"AQI","values":{"$state":"/airQuality/values"}},"children":[]}}
+{"op":"add","path":"/elements/airQualityNote","value":{"type":"TextContent","props":{"text":"Filtered by district selector above. Threshold: 100 = Unhealthy for sensitive groups.","size":"small"},"children":[]}}
+{"op":"add","path":"/state/airQuality","value":{"labels":["Downtown","North","South","West","Eastside"],"values":[68,42,89,55,73]}}
+{"op":"add","path":"/elements/energyCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["energyHeader","energyChart","energySub"]}}
+{"op":"add","path":"/elements/energyHeader","value":{"type":"CardHeader","props":{"title":"Energy Use — Past Week (4)","subtitle":"MWh per day • Grid load"},"children":[]}}
+{"op":"add","path":"/elements/energyChart","value":{"type":"AreaChart","props":{"labels":{"$state":"/energy/labels"},"series":["energySeriesEl"],"variant":"natural","yLabel":"MWh","xLabel":"Day"},"children":[]}}
+{"op":"add","path":"/elements/energySeriesEl","value":{"type":"Series","props":{"category":"Consumption","values":{"$state":"/energy/values"}},"children":[]}}
+{"op":"add","path":"/elements/energySub","value":{"type":"TextContent","props":{"text":"Peak: 1,420 MWh on Sat • Avg 1,285 MWh • -3% vs last week","size":"small"},"children":[]}}
+{"op":"add","path":"/state/energy","value":{"labels":["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],"values":[1280,1310,1265,1295,1380,1420,1210]}}
+{"op":"add","path":"/elements/incidentsVehiclesRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m"},"children":["incidentsCard","vehiclesCard"]}}
+{"op":"add","path":"/elements/incidentsCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["incidentsHeader","incidentsTable"]}}
+{"op":"add","path":"/elements/incidentsHeader","value":{"type":"CardHeader","props":{"title":"Open Incidents (6)","subtitle":"Location & severity • Tap to filter by district"},"children":[]}}
+{"op":"add","path":"/elements/incidentsTable","value":{"type":"Table","props":{"columns":["incidentsColId","incidentsColLocation","incidentsColSeverity","incidentsColType","incidentsColTime"]},"children":[]}}
+{"op":"add","path":"/elements/incidentsColId","value":{"type":"Col","props":{"label":"ID","data":{"$state":"/incidents/id"},"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/incidentsColLocation","value":{"type":"Col","props":{"label":"Location","data":{"$state":"/incidents/location"},"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/incidentsColSeverity","value":{"type":"Col","props":{"label":"Severity","data":{"$state":"/incidents/severity"},"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/incidentsColType","value":{"type":"Col","props":{"label":"Type","data":{"$state":"/incidents/type"},"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/incidentsColTime","value":{"type":"Col","props":{"label":"Opened","data":{"$state":"/incidents/time"},"type":"string"},"children":[]}}
+{"op":"add","path":"/state/incidents","value":{"id":["INC-2041","INC-2038","INC-2035","INC-2031","INC-2029"],"location":["Downtown - 5th & Main","North - Hwy 101 MM 12","South - Elm St Bridge","West - Industrial Pkwy","Eastside - 12th Ave"],"severity":["Critical","High","Medium","High","Low"],"type":["Multi-vehicle collision","Signal failure","Water main leak","Power line down","Pothole hazard"],"time":["13:55","12:40","11:10","10:05","09:22"]}}
+{"op":"add","path":"/elements/vehiclesCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["vehiclesHeader","vehiclesTable","vehiclesHint"]}}
+{"op":"add","path":"/elements/vehiclesHeader","value":{"type":"CardHeader","props":{"title":"Emergency Vehicles Deployed (7)","subtitle":"Live positions"},"children":[]}}
+{"op":"add","path":"/elements/vehiclesTable","value":{"type":"Table","props":{"columns":["vehiclesColUnit","vehiclesColType","vehiclesColDistrict","vehiclesColLocation","vehiclesColStatus"]},"children":[]}}
+{"op":"add","path":"/elements/vehiclesColUnit","value":{"type":"Col","props":{"label":"Unit","data":{"$state":"/vehicles/unit"},"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/vehiclesColType","value":{"type":"Col","props":{"label":"Type","data":{"$state":"/vehicles/type"},"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/vehiclesColDistrict","value":{"type":"Col","props":{"label":"District","data":{"$state":"/vehicles/district"},"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/vehiclesColLocation","value":{"type":"Col","props":{"label":"Location","data":{"$state":"/vehicles/location"},"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/vehiclesColStatus","value":{"type":"Col","props":{"label":"Status","data":{"$state":"/vehicles/status"},"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/vehiclesHint","value":{"type":"TextContent","props":{"text":"Use 'Dispatch Crew' above to add a new deployment. Filter by district selector.","size":"small"},"children":[]}}
+{"op":"add","path":"/state/vehicles","value":{"unit":["E-41","M-12","T-08","U-03","P-19"],"type":["Fire Engine","Ambulance","Traffic Unit","Utility Crew","Police"],"district":["Downtown","North","Downtown","South","West"],"location":["5th & Main","Hwy 101 MM 12","3rd & Pine","Elm St Bridge","Industrial Pkwy"],"status":["On Scene","En Route","Directing Traffic","On Scene","Patrol"]}}
+{"op":"add","path":"/elements/parkingEventsRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m"},"children":["parkingCard","eventsCard"]}}
+{"op":"add","path":"/elements/parkingCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["parkingHeader","parkingProgress","parkingSub","parkingTable"]}}
+{"op":"add","path":"/elements/parkingHeader","value":{"type":"CardHeader","props":{"title":"Parking Downtown (8)","subtitle":"Real-time availability"},"children":[]}}
+{"op":"add","path":"/elements/parkingProgress","value":{"type":"Progress","props":{"value":{"$state":"/parking/overallPercent"},"label":"Occupied"},"children":[]}}
+{"op":"add","path":"/elements/parkingSub","value":{"type":"TextContent","props":{"text":{"$template":"${/parking/available} spots free of ${/parking/capacity} • ${/parking/overallPercent}% occupied"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/parkingTable","value":{"type":"Table","props":{"columns":["parkingColGarage","parkingColAvailable","parkingColCapacity","parkingColRate"]},"children":[]}}
+{"op":"add","path":"/elements/parkingColGarage","value":{"type":"Col","props":{"label":"Garage","data":{"$state":"/parking/garage"},"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/parkingColAvailable","value":{"type":"Col","props":{"label":"Free","data":{"$state":"/parking/free"},"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/parkingColCapacity","value":{"type":"Col","props":{"label":"Capacity","data":{"$state":"/parking/capacityList"},"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/parkingColRate","value":{"type":"Col","props":{"label":"Rate","data":{"$state":"/parking/rate"},"type":"string"},"children":[]}}
+{"op":"add","path":"/state/parking","value":{"overallPercent":82,"available":412,"capacity":2280,"garage":["Central Plaza","Riverfront","Metro Hub","City Hall"],"free":[45,128,89,150],"capacityList":[600,750,480,450],"rate":["$3.50/hr","$2.00/hr","$4.00/hr","$2.50/hr"]}}
+{"op":"add","path":"/elements/eventsCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["eventsHeader","eventsList"]}}
+{"op":"add","path":"/elements/eventsHeader","value":{"type":"CardHeader","props":{"title":"Public Events This Weekend (9)","subtitle":"Fri–Sun • Permits approved"},"children":[]}}
+{"op":"add","path":"/elements/eventsList","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/events","key":"id"},"children":["eventItem"]}}
+{"op":"add","path":"/elements/eventItem","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["eventTitle","eventMeta","eventTagRow"]}}
+{"op":"add","path":"/elements/eventTitle","value":{"type":"TextContent","props":{"text":{"$item":"title"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/eventMeta","value":{"type":"TextContent","props":{"text":{"$template":"${location} • ${time} • ${district}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/eventTagRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"xs"},"children":["eventTag"]}}
+{"op":"add","path":"/elements/eventTag","value":{"type":"Tag","props":{"text":{"$item":"audience"},"variant":"info","size":"sm"},"children":[]}}
+{"op":"add","path":"/state/events","value":[]}
+{"op":"add","path":"/state/events/0","value":{"id":"e1","title":"Riverfront Food Festival","location":"Riverfront Park","time":"Sat 11:00–22:00","district":"Downtown","audience":"25k expected"}}
+{"op":"add","path":"/state/events/1","value":{"id":"e2","title":"North District Marathon","location":"Hwy 101 to Central Ave","time":"Sun 07:00–13:00","district":"North","audience":"Road closures"}}
+{"op":"add","path":"/state/events/2","value":{"id":"e3","title":"West End Night Market","location":"Industrial Pkwy Lot C","time":"Fri–Sat 18:00–23:00","district":"West","audience":"8k expected"}}
+{"op":"add","path":"/state/events/3","value":{"id":"e4","title":"Eastside Jazz in the Park","location":"Eastside Commons","time":"Sat 16:00–20:00","district":"Eastside","audience":"Free entry"}}
+{"op":"add","path":"/elements/reportsBacklogRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m"},"children":["reportsCard","backlogCard"]}}
+{"op":"add","path":"/elements/reportsCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["reportsHeader","reportsList","reportsInputRow"]}}
+{"op":"add","path":"/elements/reportsHeader","value":{"type":"CardHeader","props":{"title":"Citizen Reports — Live (10)","subtitle":"As they come in • Auto-refresh"},"children":[]}}
+{"op":"add","path":"/elements/reportsList","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/reports","key":"id"},"children":["reportItem"]}}
+{"op":"add","path":"/elements/reportItem","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["reportTitleRow","reportDesc","reportMeta"]}}
+{"op":"add","path":"/elements/reportTitleRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"xs","justify":"between","align":"center"},"children":["reportTitle","reportSeverityTag"]}}
+{"op":"add","path":"/elements/reportTitle","value":{"type":"TextContent","props":{"text":{"$item":"title"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/reportSeverityTag","value":{"type":"Tag","props":{"text":{"$item":"severity"},"variant":"warning","size":"sm"},"children":[]}}
+{"op":"add","path":"/elements/reportDesc","value":{"type":"TextContent","props":{"text":{"$item":"description"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/reportMeta","value":{"type":"TextContent","props":{"text":{"$template":"${location} • ${timeAgo} • via ${channel}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/reportsInputRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center"},"children":["reportsInput","reportsAddBtn"]}}
+{"op":"add","path":"/elements/reportsInput","value":{"type":"Input","props":{"name":"newReport","placeholder":"Simulate new report...","value":{"$bindState":"/newReportText"}},"children":[]}}
+{"op":"add","path":"/elements/reportsAddBtn","value":{"type":"Button","props":{"label":"Add Report","variant":"secondary"},"on":{"press":{"action":"pushState","params":{"statePath":"/reports","value":{"id":"$id","title":{"$state":"/newReportText"},"description":"Manual entry from operations center","location":"Downtown","timeAgo":"just now","channel":"Ops Center","severity":"Medium"},"clearStatePath":"/newReportText"}}},"children":[]}}
+{"op":"add","path":"/state/reports","value":[]}
+{"op":"add","path":"/state/reports/0","value":{"id":"r1","title":"Pothole on 8th Ave","description":"Large pothole near bus stop, risk to cyclists","location":"Eastside - 8th Ave","timeAgo":"2 min ago","channel":"Mobile App","severity":"Medium"}}
+{"op":"add","path":"/state/reports/1","value":{"id":"r2","title":"Streetlight out","description":"Light flickering then off for 3 nights","location":"South - Oak St","timeAgo":"7 min ago","channel":"Phone","severity":"Low"}}
+{"op":"add","path":"/state/reports/2","value":{"id":"r3","title":"Flooding at underpass","description":"Water pooling 30cm after rain","location":"West - Industrial Underpass","timeAgo":"14 min ago","channel":"Mobile App","severity":"High"}}
+{"op":"add","path":"/state/reports/3","value":{"id":"r4","title":"Noise complaint - construction","description":"Jackhammer outside permitted hours","location":"Downtown - 3rd St","timeAgo":"22 min ago","channel":"Web","severity":"Low"}}
+{"op":"add","path":"/state/newReportText","value":""}
+{"op":"add","path":"/elements/backlogCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["backlogHeader","backlogChart","backlogSub","backlogStats"]}}
+{"op":"add","path":"/elements/backlogHeader","value":{"type":"CardHeader","props":{"title":"Service Request Backlog (11)","subtitle":"Open requests by category"},"children":[]}}
+{"op":"add","path":"/elements/backlogChart","value":{"type":"BarChart","props":{"labels":{"$state":"/backlog/labels"},"series":["backlogSeries"],"variant":"grouped","yLabel":"Requests","xLabel":"Category"},"children":[]}}
+{"op":"add","path":"/elements/backlogSeries","value":{"type":"Series","props":{"category":"Open","values":{"$state":"/backlog/values"}},"children":[]}}
+{"op":"add","path":"/elements/backlogSub","value":{"type":"TextContent","props":{"text":"Total 342 open • Oldest 18 days • SLA breach 23","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/backlogStats","value":{"type":"TagBlock","props":{"tags":["Roads: 98","Lighting: 64","Water: 52","Waste: 71","Parks: 57"]},"children":[]}}
+{"op":"add","path":"/state/backlog","value":{"labels":["Roads","Lighting","Water","Waste","Parks"],"values":[98,64,52,71,57]}}
+{"op":"add","path":"/elements/roadworksMaintenanceRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m"},"children":["roadworksCard","maintenanceCard"]}}
+{"op":"add","path":"/elements/roadworksCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["roadworksHeader","roadworksTable"]}}
+{"op":"add","path":"/elements/roadworksHeader","value":{"type":"CardHeader","props":{"title":"Roadworks Planned This Month (16)","subtitle":"Permitted & scheduled"},"children":[]}}
+{"op":"add","path":"/elements/roadworksTable","value":{"type":"Table","props":{"columns":["roadworksColProject","roadworksColDistrict","roadworksColDates","roadworksColImpact"]},"children":[]}}
+{"op":"add","path":"/elements/roadworksColProject","value":{"type":"Col","props":{"label":"Project","data":{"$state":"/roadworks/project"},"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/roadworksColDistrict","value":{"type":"Col","props":{"label":"District","data":{"$state":"/roadworks/district"},"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/roadworksColDates","value":{"type":"Col","props":{"label":"Dates","data":{"$state":"/roadworks/dates"},"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/roadworksColImpact","value":{"type":"Col","props":{"label":"Impact","data":{"$state":"/roadworks/impact"},"type":"string"},"children":[]}}
+{"op":"add","path":"/state/roadworks","value":{"project":["Resurfacing 5th Ave","Bridge joint - Elm St","Sewer upgrade - 12th Ave","Sidewalk rehab - Central"],"district":["Downtown","South","Eastside","Downtown"],"dates":["Aug 20–25","Aug 22–28","Aug 18–30","Aug 26–31"],"impact":["Lane closure","Full closure 22–24","One lane","Ped detour"]}}
+{"op":"add","path":"/elements/maintenanceCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["maintenanceHeader","maintenanceTable"]}}
+{"op":"add","path":"/elements/maintenanceHeader","value":{"type":"CardHeader","props":{"title":"Infrastructure Due for Maintenance (17)","subtitle":"Overdue & due <30 days"},"children":[]}}
+{"op":"add","path":"/elements/maintenanceTable","value":{"type":"Table","props":{"columns":["maintenanceColAsset","maintenanceColDistrict","maintenanceColDue","maintenanceColPriority"]},"children":[]}}
+{"op":"add","path":"/elements/maintenanceColAsset","value":{"type":"Col","props":{"label":"Asset","data":{"$state":"/maintenance/asset"},"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/maintenanceColDistrict","value":{"type":"Col","props":{"label":"District","data":{"$state":"/maintenance/district"},"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/maintenanceColDue","value":{"type":"Col","props":{"label":"Due","data":{"$state":"/maintenance/due"},"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/maintenanceColPriority","value":{"type":"Col","props":{"label":"Priority","data":{"$state":"/maintenance/priority"},"type":"string"},"children":[]}}
+{"op":"add","path":"/state/maintenance","value":{"asset":["Pump Station PS-04","Traffic Signal C-12","HV Substation North","Water Valve WV-88","Bridge Sensor B-07"],"district":["South","Downtown","North","West","South"],"due":["Overdue 4d","Due Aug 22","Due Aug 28","Overdue 11d","Due Aug 19"],"priority":["High","Medium","High","Critical","Medium"]}}

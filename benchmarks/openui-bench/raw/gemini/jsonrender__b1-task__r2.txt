@@ -1,0 +1,24 @@
+{"op":"add","path":"/root","value":"main-card"}
+{"op":"add","path":"/elements/main-card","value":{"type":"Card","props":{"variant":"card","gap":"l"},"children":["header-section","task-details-card","status-section","action-section","completion-alert"]}}
+{"op":"add","path":"/elements/header-section","value":{"type":"Card","props":{"variant":"clear","gap":"xs"},"children":["title-heading","subtitle-text"]}}
+{"op":"add","path":"/elements/title-heading","value":{"type":"Heading","props":{"text":"Focus Mode","level":"h2"}}}
+{"op":"add","path":"/elements/subtitle-text","value":{"type":"TextContent","props":{"text":"Concentrate on your highest priority task right now.","size":"small"}}}
+{"op":"add","path":"/elements/task-details-card","value":{"type":"Card","props":{"variant":"sunk","gap":"m"},"children":["priority-badge","task-title","task-desc","separator-1","metadata-row"]}}
+{"op":"add","path":"/elements/priority-badge","value":{"type":"Badge","props":{"text":"High Priority • Urgent","variant":"destructive"}}}
+{"op":"add","path":"/elements/task-title","value":{"type":"Heading","props":{"text":{"$state":"/task/title"},"level":"h3"}}}
+{"op":"add","path":"/elements/task-desc","value":{"type":"TextContent","props":{"text":{"$state":"/task/description"},"size":"default"}}}
+{"op":"add","path":"/elements/separator-1","value":{"type":"Separator","props":{"orientation":"horizontal"}}}
+{"op":"add","path":"/elements/metadata-row","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","variant":"clear"},"children":["deadline-tag","category-tag"]}}
+{"op":"add","path":"/elements/deadline-tag","value":{"type":"Tag","props":{"text":{"$template":"Due: ${/task/deadline}"},"variant":"danger","icon":"clock"}}}
+{"op":"add","path":"/elements/category-tag","value":{"type":"Tag","props":{"text":{"$state":"/task/category"},"variant":"info"}}}
+{"op":"add","path":"/elements/status-section","value":{"type":"Card","props":{"variant":"clear","gap":"xs"},"children":["status-label","status-badge-container","progress-bar"]}}
+{"op":"add","path":"/elements/status-label","value":{"type":"TextContent","props":{"text":"Current Status","size":"small-heavy"}}}
+{"op":"add","path":"/elements/status-badge-container","value":{"type":"Card","props":{"direction":"row","align":"center","gap":"s","variant":"clear"},"children":["status-badge"]}}
+{"op":"add","path":"/elements/status-badge","value":{"type":"Badge","props":{"text":{"$state":"/task/status"},"variant":{"$cond":{"$state":"/task/isDone"},"$then":"secondary","$else":"default"}}}}
+{"op":"add","path":"/elements/progress-bar","value":{"type":"Progress","props":{"value":{"$cond":{"$state":"/task/isDone"},"$then":100,"$else":65},"label":{"$cond":{"$state":"/task/isDone"},"$then":"Complete","$else":"In Progress (65%)"}}}}
+{"op":"add","path":"/elements/action-section","value":{"type":"Card","props":{"variant":"clear","gap":"m"},"children":["toggle-switch","mark-done-button"]}}
+{"op":"add","path":"/elements/toggle-switch","value":{"type":"SwitchItem","props":{"label":"Mark task as completed","description":"Update status and clear from active focus queue","name":"taskCompleted","defaultChecked":false},"on":{"change":{"action":"setState","params":{"statePath":"/task/isDone","value":true}}}}}
+{"op":"add","path":"/elements/mark-done-button","value":{"type":"Button","props":{"label":{"$cond":{"$state":"/task/isDone"},"$then":"Task Completed ✓","$else":"Mark Task as Done"},"variant":{"$cond":{"$state":"/task/isDone"},"$then":"secondary","$else":"primary"},"size":"large"},"on":{"press":{"action":"setState","params":{"statePath":"/task/isDone","value":true}}}}}
+{"op":"add","path":"/elements/completion-alert","value":{"type":"Alert","props":{"title":"Task Finished!","description":"Great job completing your highest priority item. Take a short break or start your next task.","variant":"success"},"visible":{"$state":"/task/isDone"}}}
+{"op":"add","path":"/state/task","value":{"title":"Finalize Q3 Security Audit & Compliance Report","description":"Review vulnerabilities identified in external penetration testing, apply required security patches, and issue sign-off to stakeholders before end-of-day deadline.","deadline":"Today at 5:00 PM","category":"Compliance & Security","status":"In Progress","isDone":false}}
+{"op":"add","path":"/watch","path":"/elements/main-card/watch","value":{"/task/isDone":{"action":"setState","params":{"statePath":"/task/status","value":"Completed"}}}}

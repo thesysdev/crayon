@@ -1,0 +1,892 @@
+Here is the complete UI dashboard for the Airline Hub Operations Desk, covering all 12 required metrics and tools.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "hub-ops-dashboard",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": {
+        "primaryColor": "#0F172A",
+        "agentDisplayName": "Hub Operations Desk"
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "hub-ops-dashboard",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "l",
+          "children": [
+            "header-card",
+            "weather-alert-callout",
+            "kpi-tabs-container",
+            "main-sections-accordion",
+            "followups"
+          ]
+        },
+        {
+          "id": "header-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "header-top-row",
+            "separator-header"
+          ]
+        },
+        {
+          "id": "header-top-row",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "align": "center",
+          "justify": "between",
+          "children": [
+            "header-title-block",
+            "hub-selector-control"
+          ]
+        },
+        {
+          "id": "header-title-block",
+          "component": "CardHeader",
+          "title": "Hub Operations Control Center",
+          "subtitle": "Real-time monitoring, turnaround performance, and connection recovery"
+        },
+        {
+          "id": "hub-selector-control",
+          "component": "FormControl",
+          "label": "10. Selected Hub Location",
+          "hint": "Switch operational view",
+          "input": "hub-select-dropdown"
+        },
+        {
+          "id": "hub-select-dropdown",
+          "component": "Select",
+          "name": "selectedHub",
+          "value": "ORD",
+          "placeholder": "Select Hub",
+          "items": [
+            "hub-ord",
+            "hub-dfw",
+            "hub-atl",
+            "hub-den"
+          ]
+        },
+        {
+          "id": "hub-ord",
+          "component": "SelectItem",
+          "value": "ORD",
+          "label": "ORD - Chicago O'Hare (Main Hub)"
+        },
+        {
+          "id": "hub-dfw",
+          "component": "SelectItem",
+          "value": "DFW",
+          "label": "DFW - Dallas/Fort Worth"
+        },
+        {
+          "id": "hub-atl",
+          "component": "SelectItem",
+          "value": "ATL",
+          "label": "ATL - Atlanta Hartsfield"
+        },
+        {
+          "id": "hub-den",
+          "component": "SelectItem",
+          "value": "DEN",
+          "label": "DEN - Denver International"
+        },
+        {
+          "id": "separator-header",
+          "component": "Separator",
+          "orientation": "horizontal",
+          "decorative": true
+        },
+        {
+          "id": "weather-alert-callout",
+          "component": "Callout",
+          "variant": "warning",
+          "title": "6. Weather Advisory at Hub (ORD)",
+          "description": "Thunderstorms forecasted 14:00 - 17:00 CST. Ground delay program active (avg delay 38 mins). De-icing and ground stop protocols on standby."
+        },
+        {
+          "id": "kpi-tabs-container",
+          "component": "Tabs",
+          "items": [
+            "tab-kpis",
+            "tab-rebook"
+          ]
+        },
+        {
+          "id": "tab-kpis",
+          "component": "TabItem",
+          "value": "kpis",
+          "trigger": "Hub Key Performance Metrics",
+          "content": [
+            "kpi-card"
+          ]
+        },
+        {
+          "id": "kpi-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "kpi-heading",
+            "kpi-progress-1",
+            "kpi-progress-2",
+            "kpi-progress-3",
+            "kpi-stats-table"
+          ]
+        },
+        {
+          "id": "kpi-heading",
+          "component": "Heading",
+          "level": "h3",
+          "text": "Daily Operations Metrics Summary"
+        },
+        {
+          "id": "kpi-progress-1",
+          "component": "Progress",
+          "value": 78,
+          "label": "1. On-Time Performance Today (OTP A14 Target: 82% | Current: 78.4%)"
+        },
+        {
+          "id": "kpi-progress-2",
+          "component": "Progress",
+          "value": 86,
+          "label": "7. Average Passenger Load Factor Today (Target: 85% | Current: 86.2%)"
+        },
+        {
+          "id": "kpi-progress-3",
+          "component": "Progress",
+          "value": 92,
+          "label": "12. Avg Turnaround Time Target Efficiency (Target: 42m | Current: 45.5m)"
+        },
+        {
+          "id": "kpi-stats-table",
+          "component": "Table",
+          "columns": [
+            "col-stat-metric",
+            "col-stat-val",
+            "col-stat-status"
+          ]
+        },
+        {
+          "id": "col-stat-metric",
+          "component": "Col",
+          "label": "Operational Metric",
+          "type": "string",
+          "data": [
+            "1. On-Time Departure Rate",
+            "7. Total Passengers Handled",
+            "11. Cancellations Today",
+            "12. Average Turnaround Time"
+          ]
+        },
+        {
+          "id": "col-stat-val",
+          "component": "Col",
+          "label": "Today's Value",
+          "type": "string",
+          "data": [
+            "78.4%",
+            "42,850 pax",
+            "4 flights (0.9% of schedule)",
+            "45.5 mins (Goal: <=42 mins)"
+          ]
+        },
+        {
+          "id": "col-stat-status",
+          "component": "Col",
+          "label": "Status",
+          "type": "string",
+          "data": [
+            "Warning (-3.6% vs target)",
+            "Above Target (+1.2%)",
+            "Within Operational Limits",
+            "Slight Delay (+3.5 mins)"
+          ]
+        },
+        {
+          "id": "tab-rebook",
+          "component": "TabItem",
+          "value": "rebook",
+          "trigger": "9. Passenger Rebooking Tool",
+          "content": [
+            "rebook-card"
+          ]
+        },
+        {
+          "id": "rebook-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "rebook-form"
+          ]
+        },
+        {
+          "id": "rebook-form",
+          "component": "Form",
+          "name": "passengerRebookForm",
+          "fields": [
+            "field-pax-pnr",
+            "field-orig-flight",
+            "field-new-flight",
+            "field-rebook-reason"
+          ],
+          "buttons": "rebook-form-buttons"
+        },
+        {
+          "id": "field-pax-pnr",
+          "component": "FormControl",
+          "label": "Passenger PNR / Ticket Number",
+          "hint": "e.g., K9X2P4",
+          "input": "input-pnr"
+        },
+        {
+          "id": "input-pnr",
+          "component": "Input",
+          "name": "pnr",
+          "placeholder": "Enter PNR or Record Locator"
+        },
+        {
+          "id": "field-orig-flight",
+          "component": "FormControl",
+          "label": "Affected Disrupted Flight",
+          "hint": "Select cancelled or severely delayed flight",
+          "input": "input-orig-flight"
+        },
+        {
+          "id": "input-orig-flight",
+          "component": "Select",
+          "name": "disruptedFlight",
+          "placeholder": "Select Flight",
+          "items": [
+            "f-dis-104",
+            "f-dis-882",
+            "f-dis-309"
+          ]
+        },
+        {
+          "id": "f-dis-104",
+          "component": "SelectItem",
+          "value": "AA104",
+          "label": "AA104 - ORD -> LGA (Cancelled)"
+        },
+        {
+          "id": "f-dis-882",
+          "component": "SelectItem",
+          "value": "AA882",
+          "label": "AA882 - ORD -> MIA (Delayed 85 mins)"
+        },
+        {
+          "id": "f-dis-309",
+          "component": "SelectItem",
+          "value": "AA309",
+          "label": "AA309 - ORD -> LAX (Missed Connection Risk)"
+        },
+        {
+          "id": "field-new-flight",
+          "component": "FormControl",
+          "label": "Available Rebooking Option",
+          "hint": "Automatically recommended next available seats",
+          "input": "input-new-flight"
+        },
+        {
+          "id": "input-new-flight",
+          "component": "Select",
+          "name": "newFlight",
+          "placeholder": "Select Replacement Flight",
+          "items": [
+            "f-opt-106",
+            "f-opt-886",
+            "f-opt-315"
+          ]
+        },
+        {
+          "id": "f-opt-106",
+          "component": "SelectItem",
+          "value": "AA106",
+          "label": "AA106 (Dep 15:30) - 14 Seats Available"
+        },
+        {
+          "id": "f-opt-886",
+          "component": "SelectItem",
+          "value": "AA886 (Dep 16:15) - 6 Seats Available",
+          "label": "AA886 (Dep 16:15) - 6 Seats Available"
+        },
+        {
+          "id": "f-opt-315",
+          "component": "SelectItem",
+          "value": "AA315 (Dep 17:00) - 22 Seats Available",
+          "label": "AA315 (Dep 17:00) - 22 Seats Available"
+        },
+        {
+          "id": "field-rebook-reason",
+          "component": "FormControl",
+          "label": "Protection / Waiver Reason",
+          "hint": "Reason code for free rebooking and voucher issuance",
+          "input": "input-rebook-reason"
+        },
+        {
+          "id": "input-rebook-reason",
+          "component": "Select",
+          "name": "reason",
+          "placeholder": "Select Reason",
+          "items": [
+            "r-wx",
+            "r-mx",
+            "r-cx"
+          ]
+        },
+        {
+          "id": "r-wx",
+          "component": "SelectItem",
+          "value": "WX_HUB",
+          "label": "Weather Disruption (Hub WX)"
+        },
+        {
+          "id": "r-mx",
+          "component": "SelectItem",
+          "value": "MECH",
+          "label": "Mechanical / Aircraft Maintenance"
+        },
+        {
+          "id": "r-cx",
+          "component": "SelectItem",
+          "value": "SKD_CX",
+          "label": "Airline Cancellation"
+        },
+        {
+          "id": "rebook-form-buttons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": [
+            "btn-submit-rebook",
+            "btn-issue-voucher"
+          ]
+        },
+        {
+          "id": "btn-submit-rebook",
+          "component": "Button",
+          "label": "Rebook Passenger & Issue Boarding Pass",
+          "variant": "primary"
+        },
+        {
+          "id": "btn-issue-voucher",
+          "component": "Button",
+          "label": "Issue Hotel / Meal Voucher",
+          "variant": "secondary"
+        },
+        {
+          "id": "main-sections-accordion",
+          "component": "Accordion",
+          "items": [
+            "acc-all-flights",
+            "acc-delays-cancels",
+            "acc-connections",
+            "acc-gate-changes",
+            "acc-crews"
+          ]
+        },
+        {
+          "id": "acc-all-flights",
+          "component": "AccordionItem",
+          "value": "all-flights",
+          "trigger": "2. Flight Schedule Master Status (Number, Route, Gate, Status)",
+          "content": [
+            "all-flights-table"
+          ]
+        },
+        {
+          "id": "all-flights-table",
+          "component": "Table",
+          "columns": [
+            "c-flt-num",
+            "c-flt-route",
+            "c-flt-gate",
+            "c-flt-status",
+            "c-flt-load"
+          ]
+        },
+        {
+          "id": "c-flt-num",
+          "component": "Col",
+          "label": "Flight",
+          "type": "string",
+          "data": [
+            "AA 104",
+            "AA 309",
+            "AA 452",
+            "AA 712",
+            "AA 882",
+            "AA 914",
+            "AA 1120"
+          ]
+        },
+        {
+          "id": "c-flt-route",
+          "component": "Col",
+          "label": "Route",
+          "type": "string",
+          "data": [
+            "ORD - LGA",
+            "ORD - LAX",
+            "ORD - BOS",
+            "ORD - DFW",
+            "ORD - MIA",
+            "ORD - SFO",
+            "ORD - DCA"
+          ]
+        },
+        {
+          "id": "c-flt-gate",
+          "component": "Col",
+          "label": "Gate",
+          "type": "string",
+          "data": [
+            "B12",
+            "C20",
+            "B8",
+            "K14",
+            "H6",
+            "C12",
+            "L4"
+          ]
+        },
+        {
+          "id": "c-flt-status",
+          "component": "Col",
+          "label": "Status",
+          "type": "string",
+          "data": [
+            "Cancelled (11)",
+            "Delayed - +45m (3)",
+            "On Time",
+            "On Time",
+            "Delayed - +85m (3)",
+            "On Time",
+            "On Time"
+          ]
+        },
+        {
+          "id": "c-flt-load",
+          "component": "Col",
+          "label": "Passenger Load (7)",
+          "type": "string",
+          "data": [
+            "0% (160 pax protected)",
+            "94% (172/183)",
+            "82% (131/160)",
+            "89% (160/180)",
+            "91% (164/180)",
+            "88% (158/180)",
+            "76% (114/150)"
+          ]
+        },
+        {
+          "id": "acc-delays-cancels",
+          "component": "AccordionItem",
+          "value": "delays-cancels",
+          "trigger": "3 & 11. Disrupted Operations (Delayed Flights & Cancellations Today)",
+          "content": [
+            "disruption-card"
+          ]
+        },
+        {
+          "id": "disruption-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "delayed-callout",
+            "cancelled-callout",
+            "disrupted-table"
+          ]
+        },
+        {
+          "id": "delayed-callout",
+          "component": "TextCallout",
+          "variant": "warning",
+          "title": "3. Delayed Flights Callout (2 Active Delays)",
+          "description": "AA882 (MIA) delayed +85 mins due to inbound maintenance. AA309 (LAX) delayed +45 mins due to ground congestion."
+        },
+        {
+          "id": "cancelled-callout",
+          "component": "TextCallout",
+          "variant": "danger",
+          "title": "11. Cancellations Today (4 Total Cancellations)",
+          "description": "AA104 (LGA), AA512 (DTW), AA901 (CLT), AA214 (MSP) cancelled due to severe weather system and slot restrictions."
+        },
+        {
+          "id": "disrupted-table",
+          "component": "Table",
+          "columns": [
+            "c-dis-flt",
+            "c-dis-type",
+            "c-dis-reason",
+            "c-dis-pax",
+            "c-dis-action"
+          ]
+        },
+        {
+          "id": "c-dis-flt",
+          "component": "Col",
+          "label": "Flight",
+          "type": "string",
+          "data": [
+            "AA 104",
+            "AA 882",
+            "AA 309",
+            "AA 512"
+          ]
+        },
+        {
+          "id": "c-dis-type",
+          "component": "Col",
+          "label": "Type",
+          "type": "string",
+          "data": [
+            "11. Cancellation",
+            "3. Delayed (+85m)",
+            "3. Delayed (+45m)",
+            "11. Cancellation"
+          ]
+        },
+        {
+          "id": "c-dis-reason",
+          "component": "Col",
+          "label": "Primary Cause",
+          "type": "string",
+          "data": [
+            "Severe Weather at Destination",
+            "Hydraulic Pump Replacement",
+            "Air Traffic Control Hold",
+            "Crew Duty Timeout"
+          ]
+        },
+        {
+          "id": "c-dis-pax",
+          "component": "Col",
+          "label": "Impacted Pax",
+          "type": "string",
+          "data": [
+            "160 pax",
+            "164 pax",
+            "172 pax",
+            "118 pax"
+          ]
+        },
+        {
+          "id": "c-dis-action",
+          "component": "Col",
+          "label": "Recovery Status",
+          "type": "action",
+          "data": [
+            "Auto-Rebooked 112/160",
+            "In Progress",
+            "Gate Hold",
+            "Vouchers Issued"
+          ]
+        },
+        {
+          "id": "acc-connections",
+          "component": "AccordionItem",
+          "value": "connections",
+          "trigger": "8. Connections at Risk of Being Missed",
+          "content": [
+            "connections-card"
+          ]
+        },
+        {
+          "id": "connections-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "risk-alert",
+            "connections-table"
+          ]
+        },
+        {
+          "id": "risk-alert",
+          "component": "Alert",
+          "variant": "destructive",
+          "title": "38 Tight Connections Under 20-Minute Window",
+          "description": "Inbound flight AA309 delay has endangered 14 international transits to AA90 (LHR) and 24 domestic transits."
+        },
+        {
+          "id": "connections-table",
+          "component": "Table",
+          "columns": [
+            "c-conn-in",
+            "c-conn-out",
+            "c-conn-count",
+            "c-conn-time",
+            "c-conn-risk"
+          ]
+        },
+        {
+          "id": "c-conn-in",
+          "component": "Col",
+          "label": "Inbound Flight",
+          "type": "string",
+          "data": [
+            "AA 309 (Gate C20)",
+            "AA 309 (Gate C20)",
+            "AA 882 (Gate H6)",
+            "AA 452 (Gate B8)"
+          ]
+        },
+        {
+          "id": "c-conn-out",
+          "component": "Col",
+          "label": "Outbound Flight",
+          "type": "string",
+          "data": [
+            "AA 90 to LHR (Gate M12)",
+            "AA 712 to DFW (Gate K14)",
+            "AA 1120 to DCA (Gate L4)",
+            "AA 914 to SFO (Gate C12)"
+          ]
+        },
+        {
+          "id": "c-conn-count",
+          "component": "Col",
+          "label": "Passengers",
+          "type": "string",
+          "data": [
+            "14 pax",
+            "10 pax",
+            "8 pax",
+            "6 pax"
+          ]
+        },
+        {
+          "id": "c-conn-time",
+          "component": "Col",
+          "label": "Estimated Connect Time",
+          "type": "string",
+          "data": [
+            "11 mins (Critical)",
+            "16 mins (Tight)",
+            "14 mins (Tight)",
+            "19 mins (Warning)"
+          ]
+        },
+        {
+          "id": "c-conn-risk",
+          "component": "Col",
+          "label": "Mitigation Action",
+          "type": "string",
+          "data": [
+            "Express Tarmac Shuttle Dispatched",
+            "Gate Hold Requested (5 mins)",
+            "Paging Agent at Gate H6",
+            "Baggage Runner Priority"
+          ]
+        },
+        {
+          "id": "acc-gate-changes",
+          "component": "AccordionItem",
+          "value": "gate-changes",
+          "trigger": "4. Recent Gate Changes",
+          "content": [
+            "gate-changes-table"
+          ]
+        },
+        {
+          "id": "gate-changes-table",
+          "component": "Table",
+          "columns": [
+            "c-gc-time",
+            "c-gc-flt",
+            "c-gc-old",
+            "c-gc-new",
+            "c-gc-reason"
+          ]
+        },
+        {
+          "id": "c-gc-time",
+          "component": "Col",
+          "label": "Time",
+          "type": "string",
+          "data": [
+            "13:42",
+            "13:35",
+            "13:18",
+            "12:55"
+          ]
+        },
+        {
+          "id": "c-gc-flt",
+          "component": "Col",
+          "label": "Flight",
+          "type": "string",
+          "data": [
+            "AA 712",
+            "AA 309",
+            "AA 914",
+            "AA 452"
+          ]
+        },
+        {
+          "id": "c-gc-old",
+          "component": "Col",
+          "label": "Previous Gate",
+          "type": "string",
+          "data": [
+            "K6",
+            "C10",
+            "H10",
+            "B2"
+          ]
+        },
+        {
+          "id": "c-gc-new",
+          "component": "Col",
+          "label": "New Gate",
+          "type": "string",
+          "data": [
+            "K14",
+            "C20",
+            "C12",
+            "B8"
+          ]
+        },
+        {
+          "id": "c-gc-reason",
+          "component": "Col",
+          "label": "Reason",
+          "type": "string",
+          "data": [
+            "Aircraft Swap (A321 to B738)",
+            "Late Inbound Occupying Gate",
+            "Maintain Tight Connect Proximity",
+            "Jetbridge Maintenance"
+          ]
+        },
+        {
+          "id": "acc-crews",
+          "component": "AccordionItem",
+          "value": "crews",
+          "trigger": "5. Crews Available for Reassignment",
+          "content": [
+            "crews-table"
+          ]
+        },
+        {
+          "id": "crews-table",
+          "component": "Table",
+          "columns": [
+            "c-cr-id",
+            "c-cr-type",
+            "c-cr-qual",
+            "c-cr-duty",
+            "c-cr-status"
+          ]
+        },
+        {
+          "id": "c-cr-id",
+          "component": "Col",
+          "label": "Crew Pair / ID",
+          "type": "string",
+          "data": [
+            "Reserve Crew #402",
+            "Standby Pilot Pair #108",
+            "Reserve FA Team #12",
+            "Reserve Crew #319"
+          ]
+        },
+        {
+          "id": "c-cr-type",
+          "component": "Col",
+          "label": "Composition",
+          "type": "string",
+          "data": [
+            "Full Crew (2 Pilots, 4 FA)",
+            "2 Pilots (Capt/FO)",
+            "4 Flight Attendants",
+            "Full Crew (2 Pilots, 5 FA)"
+          ]
+        },
+        {
+          "id": "c-cr-qual",
+          "component": "Col",
+          "label": "Fleet Qualification",
+          "type": "string",
+          "data": [
+            "B737 Family",
+            "A320 / A321",
+            "All Narrowbody",
+            "B787 / Widebody"
+          ]
+        },
+        {
+          "id": "c-cr-duty",
+          "component": "Col",
+          "label": "Max Remaining Duty",
+          "type": "string",
+          "data": [
+            "8h 30m",
+            "10h 15m",
+            "7h 00m",
+            "11h 45m"
+          ]
+        },
+        {
+          "id": "c-cr-status",
+          "component": "Col",
+          "label": "Availability",
+          "type": "string",
+          "data": [
+            "Immediate (Ready at ORD Ready Room)",
+            "Immediate (Ready at ORD Ready Room)",
+            "On 30-min Callout",
+            "Immediate (Ready at ORD Ready Room)"
+          ]
+        },
+        {
+          "id": "followups",
+          "component": "FollowUpBlock",
+          "items": [
+            "fu-1",
+            "fu-2",
+            "fu-3"
+          ]
+        },
+        {
+          "id": "fu-1",
+          "component": "FollowUpItem",
+          "text": "Show detailed baggage connection risks for AA 309"
+        },
+        {
+          "id": "fu-2",
+          "component": "FollowUpItem",
+          "text": "Assign Reserve Crew #402 to delayed flight AA 882"
+        },
+        {
+          "id": "fu-3",
+          "component": "FollowUpItem",
+          "text": "View DFW Hub Operations screen"
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>

@@ -1,0 +1,82 @@
+{"op":"add","path":"/root","value":"dashboard"}
+{"op":"add","path":"/elements/dashboard","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header-card","kpi-grid","middle-grid","bottom-grid"]}}
+{"op":"add","path":"/elements/header-card","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","wrap":true},"children":["header-text","header-controls"]}}
+{"op":"add","path":"/elements/header-text","value":{"type":"CardHeader","props":{"title":"Training Platform Analytics","subtitle":"Track learner performance, engagement trends, and cohort interventions"}}}
+{"op":"add","path":"/elements/header-controls","value":{"type":"Card","props":{"direction":"row","gap":"s","align":"center"},"children":["cohort-select-control","message-drawer"]}}
+{"op":"add","path":"/elements/cohort-select-control","value":{"type":"FormControl","props":{"label":"Select Cohort","input":"cohort-select","hint":"Filter analytics data"}}}
+{"op":"add","path":"/elements/cohort-select","value":{"type":"Select","props":{"name":"cohort","value":{"$bindState":"/selectedCohort"},"placeholder":"All Cohorts"},"children":["cohort-all","cohort-q1","cohort-q2","cohort-bootcamp"]}}
+{"op":"add","path":"/elements/cohort-all","value":{"type":"SelectItem","props":{"value":"all","label":"All Cohorts (1,240 Learners)"}}}
+{"op":"add","path":"/elements/cohort-q1","value":{"type":"SelectItem","props":{"value":"q1-eng","label":"Q1 Engineering Cohort"}}}
+{"op":"add","path":"/elements/cohort-q2","value":{"type":"SelectItem","props":{"value":"q2-data","label":"Q2 Data Science Cohort"}}}
+{"op":"add","path":"/elements/cohort-bootcamp","value":{"type":"SelectItem","props":{"value":"bootcamp-ux","label":"UX Design Bootcamp"}}}
+{"op":"add","path":"/elements/message-drawer","value":{"type":"DrawerBlock","props":{"triggerLabel":"Message Cohort","title":"Send Cohort Announcement","description":"Broadcast a direct message, reminder, or nudge to all learners in the selected cohort.","content":["message-form"]}}}
+{"op":"add","path":"/elements/message-form","value":{"type":"Form","props":{"name":"messageCohortForm","buttons":"message-form-buttons","fields":["msg-target-control","msg-subject-control","msg-body-control","msg-channel-control"]}}}
+{"op":"add","path":"/elements/msg-target-control","value":{"type":"FormControl","props":{"label":"Target Audience","input":"msg-target-input"}}}
+{"op":"add","path":"/elements/msg-target-input","value":{"type":"Input","props":{"name":"target","value":{"$template":"Active Selection: ${/selectedCohort}"}}}}
+{"op":"add","path":"/elements/msg-subject-control","value":{"type":"FormControl","props":{"label":"Subject / Title","input":"msg-subject-input"}}}
+{"op":"add","path":"/elements/msg-subject-input","value":{"type":"Input","props":{"name":"subject","placeholder":"e.g. Action Required: Weekly Quiz Deadline","value":{"$bindState":"/messageSubject"}}}}
+{"op":"add","path":"/elements/msg-body-control","value":{"type":"FormControl","props":{"label":"Message Body","input":"msg-body-input"}}}
+{"op":"add","path":"/elements/msg-body-input","value":{"type":"TextArea","props":{"name":"body","placeholder":"Write your announcement or reminder here...","rows":4,"value":{"$bindState":"/messageBody"}}}}
+{"op":"add","path":"/elements/msg-channel-control","value":{"type":"FormControl","props":{"label":"Delivery Method","input":"msg-channel-select"}}}
+{"op":"add","path":"/elements/msg-channel-select","value":{"type":"Select","props":{"name":"channel","value":{"$bindState":"/messageChannel"}},"children":["chan-email","chan-slack","chan-both"]}}
+{"op":"add","path":"/elements/chan-email","value":{"type":"SelectItem","props":{"value":"email","label":"Email Notification"}}}
+{"op":"add","path":"/elements/chan-slack","value":{"type":"SelectItem","props":{"value":"slack","label":"Slack / Teams Integration"}}}
+{"op":"add","path":"/elements/chan-both","value":{"type":"SelectItem","props":{"value":"both","label":"Both Email and Slack"}}}
+{"op":"add","path":"/elements/message-form-buttons","value":{"type":"Buttons","props":{"direction":"row"},"children":["send-msg-btn"]}}
+{"op":"add","path":"/elements/send-msg-btn","value":{"type":"Button","props":{"label":"Broadcast Message","variant":"primary"},"on":{"press":{"action":"setState","params":{"statePath":"/messageSentAlert","value":true}}}}}
+{"op":"add","path":"/state/selectedCohort","value":"all"}
+{"op":"add","path":"/state/messageSubject","value":""}
+{"op":"add","path":"/state/messageBody","value":""}
+{"op":"add","path":"/state/messageChannel","value":"both"}
+{"op":"add","path":"/state/messageSentAlert","value":false}
+{"op":"add","path":"/elements/kpi-grid","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["kpi-alert","kpi-cards-row"]}}
+{"op":"add","path":"/elements/kpi-alert","value":{"type":"Alert","props":{"title":"Cohort Announcement Sent","description":"Your broadcast was successfully delivered to the selected cohort.","variant":"success"},"visible":{"$state":"/messageSentAlert"}}}
+{"op":"add","path":"/elements/kpi-cards-row","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"children":["kpi-learners","kpi-completion","kpi-quiz"]}}
+{"op":"add","path":"/elements/kpi-learners","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["kpi-learners-val","kpi-learners-lbl","kpi-learners-badge"]}}
+{"op":"add","path":"/elements/kpi-learners-val","value":{"type":"Heading","props":{"text":"842","level":"h1"}}}
+{"op":"add","path":"/elements/kpi-learners-lbl","value":{"type":"TextContent","props":{"text":"Active Learners This Week","size":"small-heavy"}}}
+{"op":"add","path":"/elements/kpi-learners-badge","value":{"type":"Badge","props":{"text":"+12% vs last week","variant":"default"}}}
+{"op":"add","path":"/elements/kpi-completion","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["kpi-comp-val","kpi-comp-lbl","kpi-comp-progress"]}}
+{"op":"add","path":"/elements/kpi-comp-val","value":{"type":"Heading","props":{"text":"78.4%","level":"h1"}}}
+{"op":"add","path":"/elements/kpi-comp-lbl","value":{"type":"TextContent","props":{"text":"Course Completion Rate","size":"small-heavy"}}}
+{"op":"add","path":"/elements/kpi-comp-progress","value":{"type":"Progress","props":{"value":78,"label":"Target: 80%"}}}
+{"op":"add","path":"/elements/kpi-quiz","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["kpi-quiz-val","kpi-quiz-lbl","kpi-quiz-badge"]}}
+{"op":"add","path":"/elements/kpi-quiz-val","value":{"type":"Heading","props":{"text":"86.5","level":"h1"}}}
+{"op":"add","path":"/elements/kpi-quiz-lbl","value":{"type":"TextContent","props":{"text":"Average Quiz Score (Points)","size":"small-heavy"}}}
+{"op":"add","path":"/elements/kpi-quiz-badge","value":{"type":"Badge","props":{"text":"+3.2 pt increase","variant":"secondary"}}}
+{"op":"add","path":"/elements/middle-grid","value":{"type":"Card","props":{"direction":"row","gap":"l","wrap":true},"children":["engagement-chart-card","ranked-courses-card"]}}
+{"op":"add","path":"/elements/engagement-chart-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["engagement-header","engagement-line-chart"]}}
+{"op":"add","path":"/elements/engagement-header","value":{"type":"CardHeader","props":{"title":"Engagement Across Past 8 Weeks","subtitle":"Weekly active learning hours and quiz submissions"}}}
+{"op":"add","path":"/elements/engagement-line-chart","value":{"type":"LineChart","props":{"labels":["W1","W2","W3","W4","W5","W6","W7","W8"],"series":["series-active-hours","series-quiz-attempts"],"xLabel":"Timeline (Weeks)","yLabel":"Volume"},"children":["series-active-hours","series-quiz-attempts"]}}
+{"op":"add","path":"/elements/series-active-hours","value":{"type":"Series","props":{"category":"Learning Hours (x10)","values":[120,135,150,142,168,175,190,210]}}}
+{"op":"add","path":"/elements/series-quiz-attempts","value":{"type":"Series","props":{"category":"Quiz Submissions","values":[310,340,390,360,420,450,490,530]}}}
+{"op":"add","path":"/elements/ranked-courses-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["ranked-courses-header","courses-bar-chart"]}}
+{"op":"add","path":"/elements/ranked-courses-header","value":{"type":"CardHeader","props":{"title":"Top Courses Ranked by Enrollment","subtitle":"Active student volume per course module"}}}
+{"op":"add","path":"/elements/courses-bar-chart","value":{"type":"HorizontalBarChart","props":{"labels":["Fullstack Web Dev","Data Science Fundamentals","Cloud Architecture","UX/UI Product Design","Cybersecurity Essentials"],"series":["series-enrollments"],"xLabel":"Enrolled Learners","yLabel":"Course Name"},"children":["series-enrollments"]}}
+{"op":"add","path":"/elements/series-enrollments","value":{"type":"Series","props":{"category":"Enrollments","values":[340,285,210,175,130]}}}
+{"op":"add","path":"/elements/bottom-grid","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["at-risk-header","at-risk-table-container"]}}
+{"op":"add","path":"/elements/at-risk-header","value":{"type":"CardHeader","props":{"title":"Learners at Risk of Dropping Out","subtitle":"Flagged by low login frequency, missed deadlines, or declining quiz scores"}}}
+{"op":"add","path":"/elements/at-risk-table-container","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["at-risk-list"]}}
+{"op":"add","path":"/elements/at-risk-list","value":{"type":"Card","props":{"direction":"column","gap":"s"},"repeat":{"statePath":"/atRiskLearners","key":"id"},"children":["at-risk-item"]}}
+{"op":"add","path":"/elements/at-risk-item","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center","wrap":true},"children":["learner-info","learner-metrics","learner-actions"]}}
+{"op":"add","path":"/elements/learner-info","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center"},"children":["learner-avatar","learner-text-details"]}}
+{"op":"add","path":"/elements/learner-avatar","value":{"type":"Avatar","props":{"fallback":{"$item":"initials"}}}}
+{"op":"add","path":"/elements/learner-text-details","value":{"type":"Card","props":{"direction":"column","gap":"none"},"children":["learner-name","learner-course"]}}
+{"op":"add","path":"/elements/learner-name","value":{"type":"TextContent","props":{"text":{"$template":"**${name}**"},"size":"default"}}}
+{"op":"add","path":"/elements/learner-course","value":{"type":"TextContent","props":{"text":{"$template":"${course} • ${cohort}"},"size":"small"}}}
+{"op":"add","path":"/elements/learner-metrics","value":{"type":"Card","props":{"direction":"row","gap":"l","align":"center"},"children":["metric-inactivity","metric-quiz","risk-badge"]}}
+{"op":"add","path":"/elements/metric-inactivity","value":{"type":"Card","props":{"direction":"column","gap":"none"},"children":["inactivity-lbl","inactivity-val"]}}
+{"op":"add","path":"/elements/inactivity-lbl","value":{"type":"TextContent","props":{"text":"Inactivity","size":"small"}}}
+{"op":"add","path":"/elements/inactivity-val","value":{"type":"TextContent","props":{"text":{"$template":"${daysInactive} days"},"size":"small-heavy"}}}
+{"op":"add","path":"/elements/metric-quiz","value":{"type":"Card","props":{"direction":"column","gap":"none"},"children":["quiz-lbl","quiz-val"]}}
+{"op":"add","path":"/elements/quiz-lbl","value":{"type":"TextContent","props":{"text":"Avg Quiz","size":"small"}}}
+{"op":"add","path":"/elements/quiz-val","value":{"type":"TextContent","props":{"text":{"$template":"${avgScore}%"},"size":"small-heavy"}}}
+{"op":"add","path":"/elements/risk-badge","value":{"type":"Badge","props":{"text":{"$item":"riskLevel"},"variant":"destructive"}}}
+{"op":"add","path":"/elements/learner-actions","value":{"type":"Card","props":{"direction":"row","gap":"xs"},"children":["nudge-btn","dismiss-btn"]}}
+{"op":"add","path":"/elements/nudge-btn","value":{"type":"Button","props":{"label":"Send Nudge","variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/nudgeAlert","value":true}}}}}
+{"op":"add","path":"/elements/dismiss-btn","value":{"type":"Button","props":{"label":"Dismiss","variant":"tertiary","size":"small"},"on":{"press":{"action":"removeState","params":{"statePath":"/atRiskLearners","index":{"$index":true}}}}}}
+{"op":"add","path":"/state/atRiskLearners","value":[]}
+{"op":"add","path":"/state/atRiskLearners/0","value":{"id":"l1","name":"Marcus Chen","initials":"MC","course":"Fullstack Web Dev","cohort":"Q1 Engineering","daysInactive":12,"avgScore":54,"riskLevel":"High Risk"}}
+{"op":"add","path":"/state/atRiskLearners/1","value":{"id":"l2","name":"Sarah Jenkins","initials":"SJ","course":"Data Science Fundamentals","cohort":"Q2 Data Science","daysInactive":9,"avgScore":61,"riskLevel":"High Risk"}}
+{"op":"add","path":"/state/atRiskLearners/2","value":{"id":"l3","name":"David Kalu","initials":"DK","course":"Cloud Architecture","cohort":"Q1 Engineering","daysInactive":7,"avgScore":65,"riskLevel":"Medium Risk"}}
+{"op":"add","path":"/state/atRiskLearners/3","value":{"id":"l4","name":"Elena Rostova","initials":"ER","course":"UX/UI Product Design","cohort":"UX Bootcamp","daysInactive":10,"avgScore":58,"riskLevel":"High Risk"}}

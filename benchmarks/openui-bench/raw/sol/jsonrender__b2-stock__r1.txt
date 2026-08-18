@@ -1,0 +1,28 @@
+{"op":"add","path":"/root","value":"inventory-screen"}
+{"op":"add","path":"/elements/inventory-screen","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l","align":"stretch"},"children":["header","summary-row","search-control","threshold-callout","inventory-list"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Low-inventory warnings","subtitle":"Review items at or below the reorder threshold and replenish stock."},"children":[]}}
+{"op":"add","path":"/elements/summary-row","value":{"type":"Card","props":{"variant":"card","direction":"row","gap":"l","align":"center","justify":"between","wrap":true},"children":["low-count","threshold-summary"]}}
+{"op":"add","path":"/elements/low-count","value":{"type":"TextContent","props":{"text":{"$template":"**${/lowItemCount} items** need attention"},"size":"large"},"children":[]}}
+{"op":"add","path":"/state/lowItemCount","value":4}
+{"op":"add","path":"/elements/threshold-summary","value":{"type":"Badge","props":{"text":{"$template":"Warning threshold: ${/warningThreshold} units"},"variant":"outline"},"children":[]}}
+{"op":"add","path":"/state/warningThreshold","value":10}
+{"op":"add","path":"/elements/search-control","value":{"type":"FormControl","props":{"label":"Search items","input":"search-input","hint":"Search by item name or SKU."},"children":["search-input"]}}
+{"op":"add","path":"/elements/search-input","value":{"type":"Input","props":{"name":"inventory-search","type":"text","placeholder":"Search low-inventory items…","value":{"$bindState":"/searchQuery"}},"children":[]}}
+{"op":"add","path":"/state/searchQuery","value":""}
+{"op":"add","path":"/elements/threshold-callout","value":{"type":"Callout","props":{"variant":"warning","title":"Low-stock warning active","description":{"$template":"Items are flagged when remaining inventory reaches ${/warningThreshold} units or fewer."}},"children":[]}}
+{"op":"add","path":"/elements/inventory-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m","align":"stretch"},"repeat":{"statePath":"/lowInventory","key":"id"},"children":["inventory-item"]}}
+{"op":"add","path":"/elements/inventory-item","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m","align":"stretch"},"children":["item-top-row","item-progress","item-reorder-row"]}}
+{"op":"add","path":"/elements/item-top-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["item-details","remaining-badge"]}}
+{"op":"add","path":"/elements/item-details","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs","align":"start"},"children":["item-name","item-sku"]}}
+{"op":"add","path":"/elements/item-name","value":{"type":"Heading","props":{"text":{"$item":"name"},"level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/item-sku","value":{"type":"TextContent","props":{"text":{"$template":"SKU: ${sku} · ${category}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/remaining-badge","value":{"type":"Badge","props":{"text":{"$template":"${remaining} units left"},"variant":"destructive"},"children":[]}}
+{"op":"add","path":"/elements/item-progress","value":{"type":"Progress","props":{"value":{"$item":"stockPercent"},"label":{"$template":"${remaining} of ${capacity} units remaining"}},"children":[]}}
+{"op":"add","path":"/elements/item-reorder-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["item-threshold","reorder-button"]}}
+{"op":"add","path":"/elements/item-threshold","value":{"type":"TextContent","props":{"text":{"$template":"Warning threshold: **${threshold} units**"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/reorder-button","value":{"type":"Button","props":{"label":{"$template":"Reorder ${name}"},"variant":"primary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":{"$item":"reorderRequested"},"value":true}}},"children":[]}}
+{"op":"add","path":"/state/lowInventory","value":[]}
+{"op":"add","path":"/state/lowInventory/0","value":{"id":"inv-1001","name":"Thermal Receipt Paper","sku":"SUP-TRP-80","category":"Checkout supplies","remaining":3,"threshold":10,"capacity":50,"stockPercent":6,"reorderRequested":false}}
+{"op":"add","path":"/state/lowInventory/1","value":{"id":"inv-1002","name":"Medium Kraft Shopping Bags","sku":"PKG-KRB-M","category":"Packaging","remaining":5,"threshold":10,"capacity":100,"stockPercent":5,"reorderRequested":false}}
+{"op":"add","path":"/state/lowInventory/2","value":{"id":"inv-1003","name":"Organic Oat Milk, 1 L","sku":"BEV-OAT-1L","category":"Beverages","remaining":7,"threshold":10,"capacity":40,"stockPercent":18,"reorderRequested":false}}
+{"op":"add","path":"/state/lowInventory/3","value":{"id":"inv-1004","name":"All-Purpose Cleaner, 750 ml","sku":"CLN-APC-750","category":"Cleaning","remaining":9,"threshold":10,"capacity":60,"stockPercent":15,"reorderRequested":false}}

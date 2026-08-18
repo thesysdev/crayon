@@ -1,0 +1,77 @@
+root = Card([header, regionFilter, statusOverview, metricsRow, mainContent, alertDrawer], "card", "column", "l")
+
+header = CardHeader("Service Health Dashboard", "Production Cluster - Real-time Operational Insights")
+
+regionFilter = Form("region_filter", regionButtons, [regionControl])
+regionControl = FormControl("Filter Region", regionSelect)
+regionSelect = Select("region", [regGlobal, regUsEast, regUsWest, regEuCentral, regApEast], "Select Region", null, "global")
+regGlobal = SelectItem("global", "Global (All Regions)")
+regUsEast = SelectItem("us-east", "US-East (N. Virginia)")
+regUsWest = SelectItem("us-west", "US-West (Oregon)")
+regEuCentral = SelectItem("eu-central", "EU-Central (Frankfurt)")
+regApEast = SelectItem("ap-east", "AP-East (Tokyo)")
+regionButtons = Buttons([applyRegionBtn])
+applyRegionBtn = Button("Update Region View", null, "secondary", "normal", "small")
+
+statusOverview = Card([uptimeMetric, errorMetric, activeAlertsMetric], "sunk", "row", "m", "center", "between")
+
+uptimeMetric = Card([uptimeTitle, uptimeValue, uptimeBadge], "clear", "column", "xs")
+uptimeTitle = TextContent("Uptime (Q3)", "small")
+uptimeValue = TextContent("99.982%", "large-heavy")
+uptimeBadge = Badge("SLO: 99.95%", "secondary")
+
+errorMetric = Card([errorTitle, errorValue, errorBadge], "clear", "column", "xs")
+errorTitle = TextContent("Current Error Rate", "small")
+errorValue = TextContent("0.04%", "large-heavy")
+errorBadge = Badge("Healthy (<0.1%)", "secondary")
+
+activeAlertsMetric = Card([alertsTitle, alertsValue, alertsBadge], "clear", "column", "xs")
+alertsTitle = TextContent("Open Incidents", "small")
+alertsValue = TextContent("2 Active", "large-heavy")
+alertsBadge = Badge("Action Required", "destructive")
+
+metricsRow = Card([cpuMemChart], "clear", "column", "m")
+cpuMemChart = LineChart(["00:00", "04:00", "08:00", "12:00", "16:00", "20:00", "24:00"], [cpuSeries, memSeries], "natural", "Time (Past 24 Hours)", "Usage (%)")
+cpuSeries = Series("CPU Utilization (%)", [32, 28, 45, 78, 62, 51, 44])
+memSeries = Series("Memory Usage (%)", [61, 60, 64, 72, 75, 71, 68])
+
+mainContent = Card([incidentsSection, endpointsSection], "clear", "row", "l")
+
+incidentsSection = Card([incidentsHeader, incidentsTable], "card", "column", "m")
+incidentsHeader = Heading("Active Incidents & Mitigation", "h3")
+incidentsTable = Table([incIdCol, incSevCol, incDescCol, incTimeCol, incActionCol])
+incIdCol = Col("Incident ID", ["INC-8492", "INC-8488"])
+incSevCol = Col("Severity", ["CRITICAL", "HIGH"])
+incDescCol = Col("Description", ["Elevated 500 errors on /api/v1/checkout", "High Redis memory fragmentation on cache-03"])
+incTimeCol = Col("Duration", ["14m ago", "1h 22m ago"])
+incActionCol = Col("Action", ["Acknowledge INC-8492", "Acknowledge INC-8488"], "action")
+
+endpointsSection = Card([endpointsHeader, endpointsTable], "card", "column", "m")
+endpointsHeader = Heading("Top 5 Slowest Endpoints (p99)", "h3")
+endpointsTable = Table([endPathCol, endMethodCol, endLatencyCol, endStatusCol])
+endPathCol = Col("Endpoint", ["/api/v1/checkout", "/api/v2/analytics/reports", "/api/v1/search", "/api/v1/users/export", "/api/v1/auth/token"])
+endMethodCol = Col("Method", ["POST", "GET", "POST", "GET", "POST"])
+endLatencyCol = Col("p99 Latency", ["1,420 ms", "890 ms", "640 ms", "510 ms", "430 ms"])
+endStatusCol = Col("Status", ["DEGRADED", "WARN", "HEALTHY", "HEALTHY", "HEALTHY"])
+
+alertDrawer = DrawerBlock("Configure Alert Thresholds", "Set Service Alert Thresholds", "Update real-time alerting limits for CPU, memory, and error rates.", alertForm)
+alertForm = Form("alert_threshold_form", alertFormButtons, [metricField, thresholdField, durationField])
+metricField = FormControl("Target Metric", metricSelect)
+metricSelect = Select("alert_metric", [mErr, mCpu, mMem, mLat], "Select Metric")
+mErr = SelectItem("error_rate", "Error Rate (%)")
+mCpu = SelectItem("cpu_usage", "CPU Usage (%)")
+mMem = SelectItem("mem_usage", "Memory Usage (%)")
+mLat = SelectItem("latency", "p99 Latency (ms)")
+
+thresholdField = FormControl("Warning Threshold", thresholdInput, "Trigger warning alert when value exceeds this limit")
+thresholdInput = Input("threshold_value", "1.5", "number")
+
+durationField = FormControl("Evaluation Window", durationSelect)
+durationSelect = Select("evaluation_window", [d1m, d5m, d15m], "Select Window")
+d1m = SelectItem("1m", "1 minute")
+d5m = SelectItem("5m", "5 minutes")
+d15m = SelectItem("15m", "15 minutes")
+
+alertFormButtons = Buttons([saveAlertBtn, cancelAlertBtn])
+saveAlertBtn = Button("Save Alert Rule", null, "primary")
+cancelAlertBtn = Button("Cancel", null, "tertiary")

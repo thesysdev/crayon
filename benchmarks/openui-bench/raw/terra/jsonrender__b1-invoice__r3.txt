@@ -1,0 +1,16 @@
+{"op":"add","path":"/root","value":"invoice-screen"}
+{"op":"add","path":"/elements/invoice-title","value":{"type":"Heading","props":{"text":"Invoice","level":"h1"},"children":[]}}
+{"op":"add","path":"/elements/invoice-subtitle","value":{"type":"TextContent","props":{"text":{"$template":"Invoice ${/invoice/number} from ${/invoice/freelancer}"}},"children":[]}}
+{"op":"add","path":"/elements/invoice-header","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["invoice-title","invoice-subtitle"]}}
+{"op":"add","path":"/state/invoice","value":{"number":"#INV-2026-084","freelancer":"Alex Morgan","client":"Northstar Studio","currency":"USD","amountDue":"2,450.00","dueDate":"August 28, 2026","status":"Awaiting payment"}}
+{"op":"add","path":"/elements/status-badge","value":{"type":"Badge","props":{"text":{"$state":"/invoice/status"},"variant":"secondary"},"children":[]}}
+{"op":"add","path":"/elements/amount-label","value":{"type":"TextContent","props":{"text":"Amount due","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/amount-value","value":{"type":"Heading","props":{"text":{"$template":"${/invoice/currency} ${/invoice/amountDue}"},"level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/due-date","value":{"type":"TextContent","props":{"text":{"$template":"Due ${/invoice/dueDate}"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/payment-summary","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s","align":"start"},"children":["status-badge","amount-label","amount-value","due-date"]}}
+{"op":"add","path":"/elements/pay-now-button","value":{"type":"Button","props":{"label":"Pay now","variant":"primary","size":"large"},"on":{"press":{"action":"setState","params":{"statePath":"/paymentStarted","value":true}}},"children":[]}}
+{"op":"add","path":"/elements/payment-note","value":{"type":"TextContent","props":{"text":"Secure payment powered by your preferred payment method.","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/payment-actions","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s","align":"stretch"},"children":["pay-now-button","payment-note"]}}
+{"op":"add","path":"/elements/payment-confirmation","value":{"type":"Callout","props":{"variant":"success","title":"Payment checkout opened","description":"Continue to the secure payment page to complete this invoice."},"visible":{"$state":"/paymentStarted"},"children":[]}}
+{"op":"add","path":"/state/paymentStarted","value":false}
+{"op":"add","path":"/elements/invoice-screen","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"l","align":"stretch"},"children":["invoice-header","payment-summary","payment-actions","payment-confirmation"]}}

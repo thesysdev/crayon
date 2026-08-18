@@ -1,0 +1,33 @@
+root = Card([header, kpis, trend, controls, orders, actions])
+header = CardHeader("Operations Desk", "Today's order activity")
+
+kpis = Table([kpiMetric, kpiValue])
+kpiMetric = Col("Metric", ["Orders Today", "Revenue Today", "Avg Order Value", "Refund Rate (MTD)"])
+kpiValue = Col("Value", ["342", "$48,920", "$143.04", "2.4%"])
+
+trend = BarChart(["W1", "W2", "W3", "W4"], [volSeries], "grouped", "Week", "Orders")
+volSeries = Series("Order Volume", [1980, 2140, 2310, 2405])
+
+controls = Form("order-filters", filterButtons, [statusField, searchField])
+statusField = FormControl("Filter by status", statusSelect)
+statusSelect = Select("status", [stAll, stPending, stShipped, stDelivered, stRefunded], "All statuses")
+stAll = SelectItem("all", "All statuses")
+stPending = SelectItem("pending", "Pending")
+stShipped = SelectItem("shipped", "Shipped")
+stDelivered = SelectItem("delivered", "Delivered")
+stRefunded = SelectItem("refunded", "Refunded")
+searchField = FormControl("Search customer", searchInput)
+searchInput = Input("customer", "e.g. Jane Smith", "text")
+filterButtons = Buttons([applyBtn, clearBtn])
+applyBtn = Button("Apply", null, "primary")
+clearBtn = Button("Clear", null, "tertiary")
+
+orders = Table([ordId, ordCustomer, ordTotal, ordStatus])
+ordId = Col("Order ID", ["#10482", "#10481", "#10480", "#10479", "#10478"])
+ordCustomer = Col("Customer", ["Jane Smith", "Omar Ali", "Lena Kraus", "Tom Reyes", "Priya Nair"])
+ordTotal = Col("Total", ["$142.00", "$89.50", "$310.20", "$56.75", "$204.00"])
+ordStatus = Col("Status", ["Pending", "Shipped", "Delivered", "Pending", "Refunded"])
+
+actions = Buttons([fulfillBtn, refreshBtn])
+fulfillBtn = Button("Mark order fulfilled", null, "primary")
+refreshBtn = Button("Refresh", null, "secondary")

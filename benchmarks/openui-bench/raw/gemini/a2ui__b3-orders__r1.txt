@@ -1,0 +1,432 @@
+Here is an interactive operations desk dashboard for your e-commerce platform. It provides real-time metrics, order volume history over the past month, and a searchable, filterable order table with inline fulfillment actions.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "ecommerce-ops-desk",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#2563EB",
+      "agentDisplayName": "Operations Desk"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "ecommerce-ops-desk",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "kpi-tabs",
+          "volume-chart-card",
+          "orders-section"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "E-Commerce Operations Desk",
+        "subtitle": "Real-time order management, revenue metrics, and fulfillment actions."
+      },
+      {
+        "id": "kpi-tabs",
+        "component": "Tabs",
+        "items": [
+          "tab-today",
+          "tab-monthly"
+        ]
+      },
+      {
+        "id": "tab-today",
+        "component": "TabItem",
+        "value": "today",
+        "trigger": "Today's Overview",
+        "content": [
+          "kpi-card-1",
+          "kpi-card-2",
+          "kpi-card-3"
+        ]
+      },
+      {
+        "id": "kpi-card-1",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "kpi-title-1",
+          "kpi-val-1",
+          "kpi-tag-1"
+        ]
+      },
+      {
+        "id": "kpi-title-1",
+        "component": "TextContent",
+        "text": "**Orders Placed Today**",
+        "size": "small"
+      },
+      {
+        "id": "kpi-val-1",
+        "component": "Heading",
+        "level": "h1",
+        "text": "142"
+      },
+      {
+        "id": "kpi-tag-1",
+        "component": "Tag",
+        "text": "+12% vs yesterday",
+        "variant": "success",
+        "size": "sm"
+      },
+      {
+        "id": "kpi-card-2",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "kpi-title-2",
+          "kpi-val-2",
+          "kpi-tag-2"
+        ]
+      },
+      {
+        "id": "kpi-title-2",
+        "component": "TextContent",
+        "text": "**Revenue Today**",
+        "size": "small"
+      },
+      {
+        "id": "kpi-val-2",
+        "component": "Heading",
+        "level": "h1",
+        "text": "$12,450.00"
+      },
+      {
+        "id": "kpi-tag-2",
+        "component": "Tag",
+        "text": "+8.5% vs avg",
+        "variant": "success",
+        "size": "sm"
+      },
+      {
+        "id": "kpi-card-3",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "kpi-title-3",
+          "kpi-val-3",
+          "kpi-tag-3"
+        ]
+      },
+      {
+        "id": "kpi-title-3",
+        "component": "TextContent",
+        "text": "**Average Order Value (AOV)**",
+        "size": "small"
+      },
+      {
+        "id": "kpi-val-3",
+        "component": "Heading",
+        "level": "h1",
+        "text": "$87.68"
+      },
+      {
+        "id": "kpi-tag-3",
+        "component": "Tag",
+        "text": "Stable",
+        "variant": "info",
+        "size": "sm"
+      },
+      {
+        "id": "tab-monthly",
+        "component": "TabItem",
+        "value": "monthly",
+        "trigger": "Monthly Metrics",
+        "content": [
+          "kpi-card-4"
+        ]
+      },
+      {
+        "id": "kpi-card-4",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "kpi-title-4",
+          "kpi-val-4",
+          "kpi-tag-4"
+        ]
+      },
+      {
+        "id": "kpi-title-4",
+        "component": "TextContent",
+        "text": "**Refund Rate (This Month)**",
+        "size": "small"
+      },
+      {
+        "id": "kpi-val-4",
+        "component": "Heading",
+        "level": "h1",
+        "text": "1.8%"
+      },
+      {
+        "id": "kpi-tag-4",
+        "component": "Tag",
+        "text": "Well below 3.0% target",
+        "variant": "success",
+        "size": "sm"
+      },
+      {
+        "id": "volume-chart-card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "chart-header",
+          "volume-chart"
+        ]
+      },
+      {
+        "id": "chart-header",
+        "component": "CardHeader",
+        "title": "Order Volume Trend",
+        "subtitle": "Total order count across the past four weeks"
+      },
+      {
+        "id": "volume-chart",
+        "component": "BarChart",
+        "variant": "grouped",
+        "xLabel": "Timeline",
+        "yLabel": "Orders Placed",
+        "labels": [
+          "3 Weeks Ago",
+          "2 Weeks Ago",
+          "Last Week",
+          "Current Week"
+        ],
+        "series": [
+          "series-orders"
+        ]
+      },
+      {
+        "id": "series-orders",
+        "component": "Series",
+        "category": "Weekly Orders",
+        "values": [
+          780,
+          850,
+          920,
+          995
+        ]
+      },
+      {
+        "id": "orders-section",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "table-header",
+          "filter-form",
+          "orders-table"
+        ]
+      },
+      {
+        "id": "table-header",
+        "component": "CardHeader",
+        "title": "Recent Orders",
+        "subtitle": "Search and manage incoming orders for fulfillment"
+      },
+      {
+        "id": "filter-form",
+        "component": "Form",
+        "name": "orderFilters",
+        "fields": [
+          "search-control",
+          "status-control"
+        ],
+        "buttons": "form-buttons"
+      },
+      {
+        "id": "search-control",
+        "component": "FormControl",
+        "label": "Search Customer",
+        "hint": "Filter orders by customer name",
+        "input": "search-input"
+      },
+      {
+        "id": "search-input",
+        "component": "Input",
+        "name": "customerSearch",
+        "placeholder": "e.g., Sarah Jenkins",
+        "type": "text"
+      },
+      {
+        "id": "status-control",
+        "component": "FormControl",
+        "label": "Filter by Status",
+        "hint": "Show orders with specific fulfillment states",
+        "input": "status-select"
+      },
+      {
+        "id": "status-select",
+        "component": "Select",
+        "name": "statusFilter",
+        "placeholder": "All Statuses",
+        "items": [
+          "opt-all",
+          "opt-pending",
+          "opt-processing",
+          "opt-fulfilled",
+          "opt-refunded"
+        ]
+      },
+      {
+        "id": "opt-all",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All Statuses"
+      },
+      {
+        "id": "opt-pending",
+        "component": "SelectItem",
+        "value": "pending",
+        "label": "Pending"
+      },
+      {
+        "id": "opt-processing",
+        "component": "SelectItem",
+        "value": "processing",
+        "label": "Processing"
+      },
+      {
+        "id": "opt-fulfilled",
+        "component": "SelectItem",
+        "value": "fulfilled",
+        "label": "Fulfilled"
+      },
+      {
+        "id": "opt-refunded",
+        "component": "SelectItem",
+        "value": "refunded",
+        "label": "Refunded"
+      },
+      {
+        "id": "form-buttons",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": [
+          "btn-apply",
+          "btn-reset"
+        ]
+      },
+      {
+        "id": "btn-apply",
+        "component": "Button",
+        "label": "Apply Filters",
+        "variant": "primary",
+        "size": "small"
+      },
+      {
+        "id": "btn-reset",
+        "component": "Button",
+        "label": "Reset",
+        "variant": "tertiary",
+        "size": "small"
+      },
+      {
+        "id": "orders-table",
+        "component": "Table",
+        "columns": [
+          "col-id",
+          "col-customer",
+          "col-total",
+          "col-status",
+          "col-action"
+        ]
+      },
+      {
+        "id": "col-id",
+        "component": "Col",
+        "label": "Order ID",
+        "type": "string",
+        "data": [
+          "#ORD-9481",
+          "#ORD-9480",
+          "#ORD-9479",
+          "#ORD-9478",
+          "#ORD-9477"
+        ]
+      },
+      {
+        "id": "col-customer",
+        "component": "Col",
+        "label": "Customer",
+        "type": "string",
+        "data": [
+          "Sarah Jenkins",
+          "Michael Chen",
+          "Emma Davis",
+          "James Wilson",
+          "Sophia Martinez"
+        ]
+      },
+      {
+        "id": "col-total",
+        "component": "Col",
+        "label": "Total Amount",
+        "type": "string",
+        "data": [
+          "$142.50",
+          "$89.00",
+          "$215.10",
+          "$45.00",
+          "$310.00"
+        ]
+      },
+      {
+        "id": "col-status",
+        "component": "Col",
+        "label": "Status",
+        "type": "string",
+        "data": [
+          "Pending",
+          "Processing",
+          "Fulfilled",
+          "Pending",
+          "Fulfilled"
+        ]
+      },
+      {
+        "id": "col-action",
+        "component": "Col",
+        "label": "Quick Action",
+        "type": "action",
+        "data": [
+          "Mark Fulfilled",
+          "Mark Fulfilled",
+          "Fulfilled ✓",
+          "Mark Fulfilled",
+          "Fulfilled ✓"
+        ]
+      }
+    ]
+  }
+}
+</a2ui-json>

@@ -1,0 +1,293 @@
+Here is a interactive daily summary interface for your fitness application.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "fitness-daily-summary",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#10B981",
+      "agentDisplayName": "Fitness Tracker"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "fitness-daily-summary",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "tabs-container"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Daily Activity Summary",
+        "subtitle": "Track your daily goals, workout stats, and log new activities."
+      },
+      {
+        "id": "tabs-container",
+        "component": "Tabs",
+        "items": [
+          "tab-overview",
+          "tab-log-workout"
+        ]
+      },
+      {
+        "id": "tab-overview",
+        "component": "TabItem",
+        "value": "overview",
+        "trigger": "Today's Overview & Trends",
+        "content": [
+          "metrics-card",
+          "separator-1",
+          "trends-card"
+        ]
+      },
+      {
+        "id": "tab-log-workout",
+        "component": "TabItem",
+        "value": "log-workout",
+        "trigger": "Log New Workout",
+        "content": [
+          "log-workout-card"
+        ]
+      },
+      {
+        "id": "metrics-card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "metrics-heading",
+          "steps-progress",
+          "steps-details",
+          "calories-badge"
+        ]
+      },
+      {
+        "id": "metrics-heading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "Today's Progress"
+      },
+      {
+        "id": "steps-progress",
+        "component": "Progress",
+        "value": 82,
+        "label": "Steps: 8,240 / 10,000"
+      },
+      {
+        "id": "steps-details",
+        "component": "TextContent",
+        "size": "small",
+        "text": "You are 1,760 steps away from reaching your daily goal! Keep going."
+      },
+      {
+        "id": "calories-badge",
+        "component": "Callout",
+        "variant": "success",
+        "title": "540 kcal Burned Today",
+        "description": "Active calories: 420 kcal | Resting calories: 120 kcal"
+      },
+      {
+        "id": "separator-1",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "trends-card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "trends-heading",
+          "trends-description",
+          "weekly-chart"
+        ]
+      },
+      {
+        "id": "trends-heading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "Past Week Workouts"
+      },
+      {
+        "id": "trends-description",
+        "component": "TextContent",
+        "size": "small",
+        "text": "Duration in minutes recorded over the last 7 days:"
+      },
+      {
+        "id": "weekly-chart",
+        "component": "BarChart",
+        "xLabel": "Day",
+        "yLabel": "Duration (mins)",
+        "labels": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+        "series": ["series-workout-mins"]
+      },
+      {
+        "id": "series-workout-mins",
+        "component": "Series",
+        "category": "Workout Duration (mins)",
+        "values": [45, 30, 60, 0, 50, 75, 40]
+      },
+      {
+        "id": "log-workout-card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "log-workout-heading",
+          "workout-form"
+        ]
+      },
+      {
+        "id": "log-workout-heading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "Record an Activity"
+      },
+      {
+        "id": "workout-form",
+        "component": "Form",
+        "name": "workout_entry",
+        "fields": [
+          "field-type",
+          "field-duration",
+          "field-calories",
+          "field-notes"
+        ],
+        "buttons": "form-buttons"
+      },
+      {
+        "id": "field-type",
+        "component": "FormControl",
+        "label": "Workout Type",
+        "input": "select-workout-type",
+        "hint": "Select the activity you performed"
+      },
+      {
+        "id": "select-workout-type",
+        "component": "Select",
+        "name": "workout_type",
+        "placeholder": "Select activity...",
+        "items": [
+          "item-running",
+          "item-cycling",
+          "item-weightlifting",
+          "item-swimming",
+          "item-yoga",
+          "item-walking"
+        ]
+      },
+      {
+        "id": "item-running",
+        "component": "SelectItem",
+        "value": "running",
+        "label": "Running"
+      },
+      {
+        "id": "item-cycling",
+        "component": "SelectItem",
+        "value": "cycling",
+        "label": "Cycling"
+      },
+      {
+        "id": "item-weightlifting",
+        "component": "SelectItem",
+        "value": "weightlifting",
+        "label": "Strength Training"
+      },
+      {
+        "id": "item-swimming",
+        "component": "SelectItem",
+        "value": "swimming",
+        "label": "Swimming"
+      },
+      {
+        "id": "item-yoga",
+        "component": "SelectItem",
+        "value": "yoga",
+        "label": "Yoga / Mobility"
+      },
+      {
+        "id": "item-walking",
+        "component": "SelectItem",
+        "value": "walking",
+        "label": "Walking"
+      },
+      {
+        "id": "field-duration",
+        "component": "FormControl",
+        "label": "Duration (Minutes)",
+        "input": "input-duration"
+      },
+      {
+        "id": "input-duration",
+        "component": "Input",
+        "name": "duration",
+        "type": "number",
+        "placeholder": "e.g. 45"
+      },
+      {
+        "id": "field-calories",
+        "component": "FormControl",
+        "label": "Est. Calories Burned",
+        "input": "input-calories"
+      },
+      {
+        "id": "input-calories",
+        "component": "Input",
+        "name": "calories",
+        "type": "number",
+        "placeholder": "e.g. 350"
+      },
+      {
+        "id": "field-notes",
+        "component": "FormControl",
+        "label": "Notes / Reflection",
+        "input": "textarea-notes",
+        "hint": "How did the workout feel?"
+      },
+      {
+        "id": "textarea-notes",
+        "component": "TextArea",
+        "name": "notes",
+        "placeholder": "Optional details about heart rate, pace, or overall feeling...",
+        "rows": 3
+      },
+      {
+        "id": "form-buttons",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": [
+          "btn-submit"
+        ]
+      },
+      {
+        "id": "btn-submit",
+        "component": "Button",
+        "label": "Save Workout",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>

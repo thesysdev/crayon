@@ -1,0 +1,664 @@
+Here is a comprehensive service health view designed specifically for an on-call engineer, covering all requested operational metrics and interaction capabilities.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "service-health-dashboard",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": {
+        "primaryColor": "#0F172A",
+        "agentDisplayName": "SRE Health Monitor"
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "service-health-dashboard",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "l",
+          "children": [
+            "header-card",
+            "kpi-summary-card",
+            "metrics-and-endpoints-card",
+            "incidents-and-alerts-card"
+          ]
+        },
+        {
+          "id": "header-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "row",
+          "align": "center",
+          "justify": "between",
+          "children": [
+            "header-info",
+            "region-selector-container"
+          ]
+        },
+        {
+          "id": "header-info",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "xs",
+          "children": [
+            "title-heading",
+            "subtitle-text"
+          ]
+        },
+        {
+          "id": "title-heading",
+          "component": "Heading",
+          "level": "h2",
+          "text": "Core Payment Service — Health & Operations"
+        },
+        {
+          "id": "subtitle-text",
+          "component": "TextContent",
+          "size": "small",
+          "text": "Primary On-Call: Alex Rivera (Tier 1) | Duty Cycle: Week 42"
+        },
+        {
+          "id": "region-selector-container",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "xs",
+          "children": [
+            "region-select"
+          ]
+        },
+        {
+          "id": "region-select",
+          "component": "Select",
+          "name": "region",
+          "placeholder": "Filter by Region",
+          "value": "global",
+          "items": [
+            "region-all",
+            "region-us-east",
+            "region-us-west",
+            "region-eu-central",
+            "region-ap-southeast"
+          ]
+        },
+        {
+          "id": "region-all",
+          "component": "SelectItem",
+          "value": "global",
+          "label": "Global (All Regions)"
+        },
+        {
+          "id": "region-us-east",
+          "component": "SelectItem",
+          "value": "us-east-1",
+          "label": "US East (N. Virginia)"
+        },
+        {
+          "id": "region-us-west",
+          "component": "SelectItem",
+          "value": "us-west-2",
+          "label": "US West (Oregon)"
+        },
+        {
+          "id": "region-eu-central",
+          "component": "SelectItem",
+          "value": "eu-central-1",
+          "label": "EU Central (Frankfurt)"
+        },
+        {
+          "id": "region-ap-southeast",
+          "component": "SelectItem",
+          "value": "ap-southeast-1",
+          "label": "AP Southeast (Singapore)"
+        },
+        {
+          "id": "kpi-summary-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "kpi-header",
+            "kpi-grid"
+          ]
+        },
+        {
+          "id": "kpi-header",
+          "component": "CardHeader",
+          "title": "Real-Time System Health Overview",
+          "subtitle": "Key reliability indicators refreshed 10s ago"
+        },
+        {
+          "id": "kpi-grid",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "l",
+          "children": [
+            "uptime-card",
+            "error-rate-card",
+            "incident-count-card"
+          ]
+        },
+        {
+          "id": "uptime-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": [
+            "uptime-title",
+            "uptime-value",
+            "uptime-target",
+            "uptime-progress"
+          ]
+        },
+        {
+          "id": "uptime-title",
+          "component": "TextContent",
+          "size": "small-heavy",
+          "text": "1. Uptime (Q4 Current)"
+        },
+        {
+          "id": "uptime-value",
+          "component": "Heading",
+          "level": "h2",
+          "text": "99.948%"
+        },
+        {
+          "id": "uptime-target",
+          "component": "TextContent",
+          "size": "small",
+          "text": "SLA Target: 99.950% (Budget Remaining: 18m 12s)"
+        },
+        {
+          "id": "uptime-progress",
+          "component": "Progress",
+          "value": 99.95,
+          "label": "Quarterly SLA Target"
+        },
+        {
+          "id": "error-rate-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": [
+            "error-rate-title",
+            "error-rate-value",
+            "error-rate-tag"
+          ]
+        },
+        {
+          "id": "error-rate-title",
+          "component": "TextContent",
+          "size": "small-heavy",
+          "text": "3. Error Rate (Current)"
+        },
+        {
+          "id": "error-rate-value",
+          "component": "Heading",
+          "level": "h2",
+          "text": "1.84%"
+        },
+        {
+          "id": "error-rate-tag",
+          "component": "Tag",
+          "text": "Elevated (Threshold > 1.0%)",
+          "variant": "warning"
+        },
+        {
+          "id": "incident-count-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": [
+            "incident-count-title",
+            "incident-count-value",
+            "incident-count-tag"
+          ]
+        },
+        {
+          "id": "incident-count-title",
+          "component": "TextContent",
+          "size": "small-heavy",
+          "text": "4. Open Incidents"
+        },
+        {
+          "id": "incident-count-value",
+          "component": "Heading",
+          "level": "h2",
+          "text": "3 Active"
+        },
+        {
+          "id": "incident-count-tag",
+          "component": "Tag",
+          "text": "1 Critical | 1 High | 1 Low",
+          "variant": "danger"
+        },
+        {
+          "id": "metrics-and-endpoints-card",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "l",
+          "children": [
+            "resource-usage-card",
+            "slowest-endpoints-card"
+          ]
+        },
+        {
+          "id": "resource-usage-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "weight": 1,
+          "children": [
+            "resource-header",
+            "resource-chart",
+            "resource-legend-callout"
+          ]
+        },
+        {
+          "id": "resource-header",
+          "component": "CardHeader",
+          "title": "2. CPU & Memory Usage (Past 24 Hours)",
+          "subtitle": "Hourly percentage averages across cluster nodes"
+        },
+        {
+          "id": "resource-chart",
+          "component": "LineChart",
+          "xLabel": "Time of Day",
+          "yLabel": "Utilization %",
+          "variant": "natural",
+          "labels": ["00:00", "04:00", "08:00", "12:00", "16:00", "20:00", "Now"],
+          "series": [
+            "cpu-series",
+            "memory-series"
+          ]
+        },
+        {
+          "id": "cpu-series",
+          "component": "Series",
+          "category": "CPU Usage (%)",
+          "values": [42, 38, 65, 82, 88, 74, 79]
+        },
+        {
+          "id": "memory-series",
+          "component": "Series",
+          "category": "Memory Usage (%)",
+          "values": [58, 60, 64, 71, 75, 76, 78]
+        },
+        {
+          "id": "resource-legend-callout",
+          "component": "Callout",
+          "variant": "warning",
+          "title": "Resource Pressure Detected",
+          "description": "CPU usage peaked at 88% during peak checkout hours (16:00). Auto-scaling triggered +2 compute nodes."
+        },
+        {
+          "id": "slowest-endpoints-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "weight": 1,
+          "children": [
+            "slowest-header",
+            "slowest-table"
+          ]
+        },
+        {
+          "id": "slowest-header",
+          "component": "CardHeader",
+          "title": "6. Top 5 Slowest Endpoints",
+          "subtitle": "Ranked by p99 latency over the past 1 hour"
+        },
+        {
+          "id": "slowest-table",
+          "component": "Table",
+          "columns": [
+            "col-endpoint",
+            "col-method",
+            "col-p99",
+            "col-status"
+          ]
+        },
+        {
+          "id": "col-endpoint",
+          "component": "Col",
+          "label": "Endpoint Path",
+          "type": "string",
+          "data": [
+            "/api/v2/checkout/process",
+            "/api/v2/reports/export-pdf",
+            "/api/v1/user/subscriptions",
+            "/api/v2/auth/verify-mfa",
+            "/api/v1/inventory/batch-query"
+          ]
+        },
+        {
+          "id": "col-method",
+          "component": "Col",
+          "label": "HTTP Method",
+          "type": "string",
+          "data": ["POST", "POST", "GET", "POST", "POST"]
+        },
+        {
+          "id": "col-p99",
+          "component": "Col",
+          "label": "p99 Latency",
+          "type": "string",
+          "data": ["1,840 ms", "1,420 ms", "890 ms", "650 ms", "520 ms"]
+        },
+        {
+          "id": "col-status",
+          "component": "Col",
+          "label": "SLA Status",
+          "type": "string",
+          "data": ["DEGRADED", "DEGRADED", "WARN", "HEALTHY", "HEALTHY"]
+        },
+        {
+          "id": "incidents-and-alerts-card",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "l",
+          "children": [
+            "incidents-management-card",
+            "alert-threshold-card"
+          ]
+        },
+        {
+          "id": "incidents-management-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "weight": 2,
+          "children": [
+            "incidents-header",
+            "incidents-list"
+          ]
+        },
+        {
+          "id": "incidents-header",
+          "component": "CardHeader",
+          "title": "4 & 8. Active Incidents & Acknowledgment",
+          "subtitle": "Review active operational alerts and acknowledge duty ownership"
+        },
+        {
+          "id": "incidents-list",
+          "component": "Accordion",
+          "items": [
+            "incident-item-1",
+            "incident-item-2",
+            "incident-item-3"
+          ]
+        },
+        {
+          "id": "incident-item-1",
+          "component": "AccordionItem",
+          "value": "INC-8492",
+          "trigger": "[SEV-1 CRITICAL] High Latency & Errors on Checkout Endpoint (/api/v2/checkout/process)",
+          "content": [
+            "inc-1-details",
+            "inc-1-actions"
+          ]
+        },
+        {
+          "id": "inc-1-details",
+          "component": "TextContent",
+          "size": "default",
+          "text": "**Opened:** 14 minutes ago | **Region:** US East (N. Virginia)\n**Impact:** 12% of checkout attempts failing with HTTP 504 Gateway Timeout. Payment provider connection pool exhausted."
+        },
+        {
+          "id": "inc-1-actions",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": [
+            "ack-btn-1",
+            "page-tier2-btn"
+          ]
+        },
+        {
+          "id": "ack-btn-1",
+          "component": "Button",
+          "label": "8. Acknowledge Incident (INC-8492)",
+          "variant": "primary",
+          "action": ["acknowledge_incident", "INC-8492"]
+        },
+        {
+          "id": "page-tier2-btn",
+          "component": "Button",
+          "label": "Escalate to Payment Ops",
+          "variant": "secondary"
+        },
+        {
+          "id": "incident-item-2",
+          "component": "AccordionItem",
+          "value": "INC-8490",
+          "trigger": "[SEV-2 HIGH] Database Connection Pool Near Capacity (us-west-2)",
+          "content": [
+            "inc-2-details",
+            "inc-2-actions"
+          ]
+        },
+        {
+          "id": "inc-2-details",
+          "component": "TextContent",
+          "size": "default",
+          "text": "**Opened:** 38 minutes ago | **Region:** US West (Oregon)\n**Impact:** Primary DB instance active connection count at 91%. Latency spiking on read replicas."
+        },
+        {
+          "id": "inc-2-actions",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": [
+            "ack-btn-2"
+          ]
+        },
+        {
+          "id": "ack-btn-2",
+          "component": "Button",
+          "label": "8. Acknowledge Incident (INC-8490)",
+          "variant": "secondary",
+          "action": ["acknowledge_incident", "INC-8490"]
+        },
+        {
+          "id": "incident-item-3",
+          "component": "AccordionItem",
+          "value": "INC-8485",
+          "trigger": "[SEV-3 LOW] Scheduled SSL Certificate Renewal Pending",
+          "content": [
+            "inc-3-details",
+            "inc-3-actions"
+          ]
+        },
+        {
+          "id": "inc-3-details",
+          "component": "TextContent",
+          "size": "default",
+          "text": "**Opened:** 2 hours ago | **Region:** Global\n**Impact:** Cert auto-renewal failed for edge ingress due to DNS verification timeout. 5 days remaining."
+        },
+        {
+          "id": "inc-3-actions",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": [
+            "ack-btn-3"
+          ]
+        },
+        {
+          "id": "ack-btn-3",
+          "component": "Button",
+          "label": "8. Acknowledge Incident (INC-8485)",
+          "variant": "tertiary",
+          "action": ["acknowledge_incident", "INC-8485"]
+        },
+        {
+          "id": "alert-threshold-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "weight": 1,
+          "children": [
+            "alert-header",
+            "alert-form"
+          ]
+        },
+        {
+          "id": "alert-header",
+          "component": "CardHeader",
+          "title": "7. Configure Alert Thresholds",
+          "subtitle": "Dynamically adjust trigger parameters for on-call p2p paging"
+        },
+        {
+          "id": "alert-form",
+          "component": "Form",
+          "name": "alert-threshold-settings",
+          "fields": [
+            "field-metric-select",
+            "field-error-slider",
+            "field-latency-slider",
+            "field-notification-channel"
+          ],
+          "buttons": "alert-form-buttons"
+        },
+        {
+          "id": "field-metric-select",
+          "component": "FormControl",
+          "label": "Target Metric",
+          "hint": "Select operational metric to modify",
+          "input": "metric-select-input"
+        },
+        {
+          "id": "metric-select-input",
+          "component": "Select",
+          "name": "metric_target",
+          "placeholder": "Choose metric...",
+          "value": "error_rate",
+          "items": [
+            "metric-err-rate",
+            "metric-cpu-util",
+            "metric-p99-latency"
+          ]
+        },
+        {
+          "id": "metric-err-rate",
+          "component": "SelectItem",
+          "value": "error_rate",
+          "label": "Error Rate Threshold (%)"
+        },
+        {
+          "id": "metric-cpu-util",
+          "component": "SelectItem",
+          "value": "cpu_utilization",
+          "label": "CPU Utilization (%)"
+        },
+        {
+          "id": "metric-p99-latency",
+          "component": "SelectItem",
+          "value": "p99_latency",
+          "label": "p99 Latency (ms)"
+        },
+        {
+          "id": "field-error-slider",
+          "component": "FormControl",
+          "label": "Error Rate Paging Trigger (%)",
+          "hint": "Current trigger set at 1.0%",
+          "input": "error-rate-slider"
+        },
+        {
+          "id": "error-rate-slider",
+          "component": "Slider",
+          "name": "error_rate_threshold",
+          "variant": "discrete",
+          "min": 0,
+          "max": 10,
+          "step": 0.5,
+          "defaultValue": [1.0]
+        },
+        {
+          "id": "field-latency-slider",
+          "component": "FormControl",
+          "label": "p99 Latency Paging Trigger (ms)",
+          "hint": "Current trigger set at 1000ms",
+          "input": "latency-slider"
+        },
+        {
+          "id": "latency-slider",
+          "component": "Slider",
+          "name": "latency_threshold",
+          "variant": "continuous",
+          "min": 100,
+          "max": 3000,
+          "step": 50,
+          "defaultValue": [1000]
+        },
+        {
+          "id": "field-notification-channel",
+          "component": "FormControl",
+          "label": "Notification Escalation Route",
+          "hint": "Primary contact protocol",
+          "input": "radio-channel-group"
+        },
+        {
+          "id": "radio-channel-group",
+          "component": "RadioGroup",
+          "name": "alert_channel",
+          "defaultValue": "pagerduty",
+          "items": [
+            "radio-pd",
+            "radio-slack"
+          ]
+        },
+        {
+          "id": "radio-pd",
+          "component": "RadioItem",
+          "value": "pagerduty",
+          "label": "PagerDuty P1 Escalation",
+          "description": "Immediate SMS + Phone Call"
+        },
+        {
+          "id": "radio-slack",
+          "component": "RadioItem",
+          "value": "slack",
+          "label": "Slack Ops-Channel Only",
+          "description": "Post to #oncall-alerts"
+        },
+        {
+          "id": "alert-form-buttons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": [
+            "save-threshold-btn"
+          ]
+        },
+        {
+          "id": "save-threshold-btn",
+          "component": "Button",
+          "label": "Save Alert Threshold",
+          "variant": "primary",
+          "action": ["save_threshold"]
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>

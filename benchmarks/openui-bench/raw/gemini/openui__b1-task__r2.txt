@@ -1,0 +1,29 @@
+root = Card([header, mainFocusCard, quickActions], "card", "column", "m")
+
+header = CardHeader("Personal Focus View", "Stay locked in on your single top priority")
+
+mainFocusCard = Card([taskHeader, sep1, taskDetails, sep2, progressSection], "sunk", "column", "m")
+
+taskHeader = Card([taskBadge, mainTitle], "clear", "row", "s", "center")
+taskBadge = Badge("Priority #1", "destructive")
+mainTitle = Heading("Finalize Q3 Financial Audit", "h3")
+
+sep1 = Separator("horizontal")
+
+taskDetails = Table([fieldCol, valueCol])
+fieldCol = Col("Property", ["Deadline", "Status", "Project", "Estimated Time"])
+valueCol = Col("Details", ["Today at 5:00 PM", "In Progress", "Q3 Finance Review", "45 mins remaining"])
+
+sep2 = Separator("horizontal")
+
+progressSection = Card([progressLabel, taskProgress], "clear", "column", "xs")
+progressLabel = TextContent("Subtasks completed: 3 of 4", "small-heavy")
+taskProgress = Progress(75, "75% completed")
+
+quickActions = Form("complete-task-form", actionButtons, [notesField])
+notesField = FormControl("Completion Notes", notesInput, "Optional notes before closing this task")
+notesInput = TextArea("notes", "Add any relevant link or summary before marking as done...", 2)
+
+actionButtons = Buttons([markDoneBtn, deferBtn], "row")
+markDoneBtn = Button("Mark as Done", null, "primary")
+deferBtn = Button("Snooze / Defer", null, "tertiary")

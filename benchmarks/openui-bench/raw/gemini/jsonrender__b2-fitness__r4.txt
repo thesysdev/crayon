@@ -1,0 +1,47 @@
+{"op":"add","path":"/root","value":"app-shell"}
+{"op":"add","path":"/elements/app-shell","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","metrics-overview","workout-chart-card","log-workout-card","history-card"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Daily Fitness Tracker","subtitle":"Keep up the momentum and reach your health goals today!"},"children":[]}}
+{"op":"add","path":"/elements/metrics-overview","value":{"type":"Card","props":{"direction":"row","gap":"m"},"children":["steps-card","calories-card"]}}
+{"op":"add","path":"/elements/steps-card","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["steps-title","steps-progress","steps-badge"]}}
+{"op":"add","path":"/elements/steps-title","value":{"type":"Heading","props":{"text":"Steps Today","level":"h4"},"children":[]}}
+{"op":"add","path":"/elements/steps-progress","value":{"type":"Progress","props":{"value":{"$state":"/metrics/stepsProgress"},"label":{"$template":"${/metrics/stepsToday} / ${/metrics/stepsGoal} steps"}},"children":[]}}
+{"op":"add","path":"/elements/steps-badge","value":{"type":"Badge","props":{"text":{"$template":"${/metrics/stepsRemaining} steps to daily goal"},"variant":"secondary"},"children":[]}}
+{"op":"add","path":"/state/metrics","value":{"stepsToday":8420,"stepsGoal":10000,"stepsProgress":84,"stepsRemaining":1580,"caloriesBurned":640,"caloriesGoal":750}}
+{"op":"add","path":"/elements/calories-card","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["calories-title","calories-progress","calories-badge"]}}
+{"op":"add","path":"/elements/calories-title","value":{"type":"Heading","props":{"text":"Calories Burned","level":"h4"},"children":[]}}
+{"op":"add","path":"/elements/calories-progress","value":{"type":"Progress","props":{"value":85,"label":{"$template":"${/metrics/caloriesBurned} / ${/metrics/caloriesGoal} kcal"}},"children":[]}}
+{"op":"add","path":"/elements/calories-badge","value":{"type":"Badge","props":{"text":"Active Burn: High","variant":"default"},"children":[]}}
+{"op":"add","path":"/elements/workout-chart-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["chart-header","weekly-bar-chart"]}}
+{"op":"add","path":"/elements/chart-header","value":{"type":"CardHeader","props":{"title":"Weekly Workout Volume","subtitle":"Calories burned during logged workouts over the last 7 days"},"children":[]}}
+{"op":"add","path":"/elements/weekly-bar-chart","value":{"type":"BarChart","props":{"labels":["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],"series":["chart-series-calories"],"xLabel":"Day of Week","yLabel":"Calories"},"children":[]}}
+{"op":"add","path":"/elements/chart-series-calories","value":{"type":"Series","props":{"category":"Workout Calories","values":[350,420,0,510,300,600,640]},"children":[]}}
+{"op":"add","path":"/elements/log-workout-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["log-header","workout-form","log-success-alert"]}}
+{"op":"add","path":"/elements/log-header","value":{"type":"CardHeader","props":{"title":"Log a New Workout","subtitle":"Track your activity to update your daily summary"},"children":[]}}
+{"op":"add","path":"/elements/workout-form","value":{"type":"Form","props":{"name":"logWorkoutForm","fields":["field-type","field-duration","field-calories"],"buttons":"form-buttons"},"children":[]}}
+{"op":"add","path":"/elements/field-type","value":{"type":"FormControl","props":{"label":"Workout Type","input":"select-type"},"children":[]}}
+{"op":"add","path":"/elements/select-type","value":{"type":"Select","props":{"name":"type","placeholder":"Select activity...","items":["opt-running","opt-cycling","opt-strength","opt-hiit","opt-yoga"],"value":{"$bindState":"/newWorkout/type"}},"children":[]}}
+{"op":"add","path":"/elements/opt-running","value":{"type":"SelectItem","props":{"value":"Running","label":"Running"},"children":[]}}
+{"op":"add","path":"/elements/opt-cycling","value":{"type":"SelectItem","props":{"value":"Cycling","label":"Cycling"},"children":[]}}
+{"op":"add","path":"/elements/opt-strength","value":{"type":"SelectItem","props":{"value":"Strength Training","label":"Strength Training"},"children":[]}}
+{"op":"add","path":"/elements/opt-hiit","value":{"type":"SelectItem","props":{"value":"HIIT Workout","label":"HIIT Workout"},"children":[]}}
+{"op":"add","path":"/elements/opt-yoga","value":{"type":"SelectItem","props":{"value":"Yoga & Mobility","label":"Yoga & Mobility"},"children":[]}}
+{"op":"add","path":"/elements/field-duration","value":{"type":"FormControl","props":{"label":"Duration (minutes)","input":"input-duration"},"children":[]}}
+{"op":"add","path":"/elements/input-duration","value":{"type":"Input","props":{"name":"duration","type":"number","placeholder":"e.g. 45","value":{"$bindState":"/newWorkout/duration"}},"children":[]}}
+{"op":"add","path":"/elements/field-calories","value":{"type":"FormControl","props":{"label":"Estimated Calories","input":"input-calories"},"children":[]}}
+{"op":"add","path":"/elements/input-calories","value":{"type":"Input","props":{"name":"calories","type":"number","placeholder":"e.g. 350","value":{"$bindState":"/newWorkout/calories"}},"children":[]}}
+{"op":"add","path":"/elements/form-buttons","value":{"type":"Buttons","props":{"buttons":["btn-submit-workout"]},"children":[]}}
+{"op":"add","path":"/elements/btn-submit-workout","value":{"type":"Button","props":{"label":"Log Workout","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/recentWorkouts","value":{"id":"$id","type":{"$state":"/newWorkout/type"},"duration":{"$state":"/newWorkout/duration"},"calories":{"$state":"/newWorkout/calories"},"time":"Just now"},"clearStatePath":"/newWorkout/type"}}},"children":[]}}
+{"op":"add","path":"/state/newWorkout","value":{"type":"Running","duration":"30","calories":"280"}}
+{"op":"add","path":"/elements/log-success-alert","value":{"type":"Alert","props":{"title":"Workout Logged!","description":"Your daily metrics and summary have been updated successfully.","variant":"success"},"visible":{"$state":"/recentWorkouts/3"},"children":[]}}
+{"op":"add","path":"/elements/history-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["history-header","history-list"]}}
+{"op":"add","path":"/elements/history-header","value":{"type":"CardHeader","props":{"title":"Recent Workouts","subtitle":"Activities completed this week"},"children":[]}}
+{"op":"add","path":"/elements/history-list","value":{"type":"Card","props":{"direction":"column","gap":"s"},"repeat":{"statePath":"/recentWorkouts","key":"id"},"children":["workout-item-card"]}}
+{"op":"add","path":"/elements/workout-item-card","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["workout-item-details","workout-item-tag"]}}
+{"op":"add","path":"/elements/workout-item-details","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"children":["workout-item-title","workout-item-sub"]}}
+{"op":"add","path":"/elements/workout-item-title","value":{"type":"TextContent","props":{"text":{"$template":"**${type}**"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/workout-item-sub","value":{"type":"TextContent","props":{"text":{"$template":"${duration} mins • ${time}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/workout-item-tag","value":{"type":"Tag","props":{"text":{"$template":"${calories} kcal"},"variant":"info"},"children":[]}}
+{"op":"add","path":"/state/recentWorkouts","value":[]}
+{"op":"add","path":"/state/recentWorkouts/0","value":{"id":"w1","type":"Morning Outdoor Run","duration":"45","calories":"480","time":"Today, 7:30 AM"}}
+{"op":"add","path":"/state/recentWorkouts/1","value":{"id":"w2","type":"Upper Body Strength","duration":"50","calories":"320","time":"Yesterday, 5:45 PM"}}
+{"op":"add","path":"/state/recentWorkouts/2","value":{"id":"w3","type":"HIIT Session","duration":"30","calories":"350","time":"Thursday, 6:00 PM"}}

@@ -1,0 +1,81 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["header","stats-row","new-draft-card","filter-card","drafts-card","published-card","most-read-card","chart-card","schedule-card","comments-card"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Content Studio","subtitle":"Editorial dashboard — drafts, publishing, and audience at a glance"},"children":[]}}
+{"op":"add","path":"/elements/stats-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m"},"children":["stat-drafts","stat-published","stat-comments"]}}
+{"op":"add","path":"/elements/stat-drafts","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["stat-drafts-num","stat-drafts-label"]}}
+{"op":"add","path":"/elements/stat-drafts-num","value":{"type":"TextContent","props":{"text":{"$template":"${/metrics/draftCount}"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/state/metrics","value":{"draftCount":4,"publishedThisWeek":3,"pendingComments":3}}
+{"op":"add","path":"/elements/stat-drafts-label","value":{"type":"TextContent","props":{"text":"Active drafts"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/stat-published","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["stat-published-num","stat-published-label"]}}
+{"op":"add","path":"/elements/stat-published-num","value":{"type":"TextContent","props":{"text":{"$template":"${/metrics/publishedThisWeek}"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/stat-published-label","value":{"type":"TextContent","props":{"text":"Published this week"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/stat-comments","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["stat-comments-num","stat-comments-label"]}}
+{"op":"add","path":"/elements/stat-comments-num","value":{"type":"TextContent","props":{"text":{"$template":"${/metrics/pendingComments}"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/stat-comments-label","value":{"type":"TextContent","props":{"text":"Comments awaiting reply"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/new-draft-card","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center"},"children":["new-draft-input","new-draft-btn"]}}
+{"op":"add","path":"/elements/new-draft-input","value":{"type":"Input","props":{"name":"newDraftTitle","placeholder":"New draft title…","value":{"$bindState":"/newDraftTitle"}},"children":[]}}
+{"op":"add","path":"/state/newDraftTitle","value":""}
+{"op":"add","path":"/elements/new-draft-btn","value":{"type":"Button","props":{"label":"+ Start New Draft","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/drafts","value":{"id":"$id","title":{"$state":"/newDraftTitle"},"category":"Uncategorized","status":"In Progress"},"clearStatePath":"/newDraftTitle"}}},"children":[]}}
+{"op":"add","path":"/elements/filter-card","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center"},"children":["filter-label","filter-select"]}}
+{"op":"add","path":"/elements/filter-label","value":{"type":"Label","props":{"text":"Narrow by category:"},"children":[]}}
+{"op":"add","path":"/elements/filter-select","value":{"type":"Select","props":{"name":"category","items":["cat-all","cat-tech","cat-culture","cat-business","cat-science"],"placeholder":"All categories","value":{"$bindState":"/activeCategory"}},"children":[]}}
+{"op":"add","path":"/elements/cat-all","value":{"type":"SelectItem","props":{"value":"all","label":"All categories"},"children":[]}}
+{"op":"add","path":"/elements/cat-tech","value":{"type":"SelectItem","props":{"value":"Technology","label":"Technology"},"children":[]}}
+{"op":"add","path":"/elements/cat-culture","value":{"type":"SelectItem","props":{"value":"Culture","label":"Culture"},"children":[]}}
+{"op":"add","path":"/elements/cat-business","value":{"type":"SelectItem","props":{"value":"Business","label":"Business"},"children":[]}}
+{"op":"add","path":"/elements/cat-science","value":{"type":"SelectItem","props":{"value":"Science","label":"Science"},"children":[]}}
+{"op":"add","path":"/state/activeCategory","value":"all"}
+{"op":"add","path":"/elements/drafts-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["drafts-header","drafts-list"]}}
+{"op":"add","path":"/elements/drafts-header","value":{"type":"Heading","props":{"text":"Drafts","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/drafts-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/drafts","key":"id"},"children":["draft-row"]}}
+{"op":"add","path":"/state/drafts","value":[]}
+{"op":"add","path":"/elements/draft-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"visible":{"$or":[{"$state":"/activeCategory","eq":"all"},{"$state":"/activeCategory","not":true},{"$state":"/activeCategory","eq":{"$item":"category"}}]},"children":["draft-info","draft-status"]}}
+{"op":"add","path":"/elements/draft-info","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"none"},"children":["draft-title","draft-cat"]}}
+{"op":"add","path":"/elements/draft-title","value":{"type":"TextContent","props":{"text":{"$item":"title"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/draft-cat","value":{"type":"TextContent","props":{"text":{"$item":"category"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/draft-status","value":{"type":"Tag","props":{"text":{"$item":"status"},"variant":{"$cond":{"$item":"status","eq":"Ready for Review"},"$then":"success","$else":"info"}},"children":[]}}
+{"op":"add","path":"/state/drafts/0","value":{"id":"d1","title":"The Quiet Rise of Local LLMs","category":"Technology","status":"In Progress"}}
+{"op":"add","path":"/state/drafts/1","value":{"id":"d2","title":"Street Food Capitals of 2025","category":"Culture","status":"Ready for Review"}}
+{"op":"add","path":"/state/drafts/2","value":{"id":"d3","title":"Q3 Earnings: What Analysts Missed","category":"Business","status":"In Progress"}}
+{"op":"add","path":"/state/drafts/3","value":{"id":"d4","title":"CRISPR's Next Frontier","category":"Science","status":"Needs Edits"}}
+{"op":"add","path":"/elements/published-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["published-header","published-list"]}}
+{"op":"add","path":"/elements/published-header","value":{"type":"Heading","props":{"text":"Published This Week","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/published-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/published","key":"id"},"children":["pub-row"]}}
+{"op":"add","path":"/state/published","value":[]}
+{"op":"add","path":"/elements/pub-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["pub-title","pub-date"]}}
+{"op":"add","path":"/elements/pub-title","value":{"type":"TextContent","props":{"text":{"$item":"title"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/pub-date","value":{"type":"Tag","props":{"text":{"$item":"date"},"variant":"neutral"},"children":[]}}
+{"op":"add","path":"/state/published/0","value":{"id":"p1","title":"AI Regulation: The Global Patchwork","date":"Mon, Jun 9"}}
+{"op":"add","path":"/state/published/1","value":{"id":"p2","title":"The Resurgence of Vinyl Pressing Plants","date":"Wed, Jun 11"}}
+{"op":"add","path":"/state/published/2","value":{"id":"p3","title":"Inside the Supply Chain for Rare Earths","date":"Fri, Jun 13"}}
+{"op":"add","path":"/elements/most-read-card","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"children":["most-read-header","most-read-title","most-read-meta"]}}
+{"op":"add","path":"/elements/most-read-header","value":{"type":"Heading","props":{"text":"Most-Read Article This Month","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/most-read-title","value":{"type":"TextContent","props":{"text":{"$state":"/mostRead/title"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/state/mostRead","value":{"title":"The Hidden Cost of Fast Fashion Returns","reads":"48,210 reads","author":"By Maya Chen · Culture"}}
+{"op":"add","path":"/elements/most-read-meta","value":{"type":"TextContent","props":{"text":{"$template":"${/mostRead/reads} · ${/mostRead/author}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/chart-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["chart-header","readers-chart","readers-series"]}}
+{"op":"add","path":"/elements/chart-header","value":{"type":"Heading","props":{"text":"Readership — Past 30 Days","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/readers-chart","value":{"type":"LineChart","props":{"labels":["W1","W2","W3","W4"],"series":["readers-series"],"variant":"natural","xLabel":"Week","yLabel":"Daily avg readers"},"children":[]}}
+{"op":"add","path":"/elements/readers-series","value":{"type":"Series","props":{"category":"Readers","values":[12400,15800,14200,19600]},"children":[]}}
+{"op":"add","path":"/elements/schedule-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["schedule-header","schedule-title","schedule-date","schedule-btn","scheduled-list"]}}
+{"op":"add","path":"/elements/schedule-header","value":{"type":"Heading","props":{"text":"Schedule a Piece","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/schedule-title","value":{"type":"Input","props":{"name":"schedTitle","placeholder":"Piece title…","value":{"$bindState":"/schedTitle"}},"children":[]}}
+{"op":"add","path":"/state/schedTitle","value":""}
+{"op":"add","path":"/elements/schedule-date","value":{"type":"DatePicker","props":{"name":"schedDate","mode":"single"},"children":[]}}
+{"op":"add","path":"/elements/schedule-btn","value":{"type":"Button","props":{"label":"Schedule Publish","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/scheduled","value":{"id":"$id","title":{"$state":"/schedTitle"}},"clearStatePath":"/schedTitle"}}},"children":[]}}
+{"op":"add","path":"/elements/scheduled-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"repeat":{"statePath":"/scheduled","key":"id"},"children":["sched-row"]}}
+{"op":"add","path":"/state/scheduled","value":[]}
+{"op":"add","path":"/elements/sched-row","value":{"type":"TextContent","props":{"text":{"$template":"📅 ${title}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/state/scheduled/0","value":{"id":"s1","title":"Summer Reading Guide — Jun 20"}}
+{"op":"add","path":"/elements/comments-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["comments-header","comments-list"]}}
+{"op":"add","path":"/elements/comments-header","value":{"type":"Heading","props":{"text":"Comments Awaiting Reply","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/comments-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/comments","key":"id"},"children":["comment-row"]}}
+{"op":"add","path":"/state/comments","value":[]}
+{"op":"add","path":"/elements/comment-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["comment-body","comment-reply"]}}
+{"op":"add","path":"/elements/comment-body","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"none"},"children":["comment-author","comment-text"]}}
+{"op":"add","path":"/elements/comment-author","value":{"type":"TextContent","props":{"text":{"$template":"${author} on “${article}”"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/comment-text","value":{"type":"TextContent","props":{"text":{"$item":"text"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/comment-reply","value":{"type":"Button","props":{"label":"Mark Replied","variant":"secondary","size":"small"},"on":{"press":{"action":"removeState","params":{"statePath":"/comments","index":{"$index":true}}}},"children":[]}}
+{"op":"add","path":"/state/comments/0","value":{"id":"c1","author":"Jordan P.","article":"AI Regulation: The Global Patchwork","text":"Does this cover the EU AI Act's latest amendments?"}}
+{"op":"add","path":"/state/comments/1","value":{"id":"c2","author":"Rita S.","article":"The Resurgence of Vinyl Pressing Plants","text":"Great piece — any data on independent label pressings?"}}
+{"op":"add","path":"/state/comments/2","value":{"id":"c3","author":"Devon M.","article":"Inside the Supply Chain for Rare Earths","text":"Would love a follow-up on recycling initiatives."}}

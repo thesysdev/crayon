@@ -1,0 +1,159 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","controls","weather","topmetrics","charts-row","air-quality","incidents-section","emergency-section","parking-section","events-section","reports-section","backlog-section","roadworks-section","maintenance-section"]}}
+
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Metro City Operations Center","subtitle":"Live citywide situational awareness"}}}
+
+{"op":"add","path":"/elements/controls","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true,"align":"end"},"children":["district-focus","dispatch-dialog","alert-dialog"]}}
+
+{"op":"add","path":"/elements/district-focus","value":{"type":"FormControl","props":{"label":"Focus District (13)","input":"district-select"},"children":["district-select"]}}
+{"op":"add","path":"/elements/district-select","value":{"type":"Select","props":{"name":"district","placeholder":"Select district","items":["dopt-all","dopt-1","dopt-2","dopt-3","dopt-4"],"value":{"$bindState":"/focusDistrict"}},"children":["dopt-all","dopt-1","dopt-2","dopt-3","dopt-4"]}}
+{"op":"add","path":"/elements/dopt-all","value":{"type":"SelectItem","props":{"value":"all","label":"All Districts"}}}
+{"op":"add","path":"/elements/dopt-1","value":{"type":"SelectItem","props":{"value":"downtown","label":"Downtown"}}}
+{"op":"add","path":"/elements/dopt-2","value":{"type":"SelectItem","props":{"value":"riverside","label":"Riverside"}}}
+{"op":"add","path":"/elements/dopt-3","value":{"type":"SelectItem","props":{"value":"northgate","label":"Northgate"}}}
+{"op":"add","path":"/elements/dopt-4","value":{"type":"SelectItem","props":{"value":"eastend","label":"Eastend"}}}
+{"op":"add","path":"/state/focusDistrict","value":"all"}
+
+{"op":"add","path":"/elements/dispatch-dialog","value":{"type":"DialogBlock","props":{"triggerLabel":"Dispatch Crew (14)","title":"Dispatch a Crew","description":"Assign a crew to an incident or location","triggerVariant":"default","content":["dispatch-form"]},"children":["dispatch-form"]}}
+{"op":"add","path":"/elements/dispatch-form","value":{"type":"Form","props":{"name":"dispatch","fields":["fc-crew","fc-loc","fc-priority"],"buttons":["dispatch-btn"]},"children":["fc-crew","fc-loc","fc-priority","dispatch-btn"]}}
+{"op":"add","path":"/elements/fc-crew","value":{"type":"FormControl","props":{"label":"Crew Type","input":"crew-input"},"children":["crew-input"]}}
+{"op":"add","path":"/elements/crew-input","value":{"type":"Select","props":{"name":"crew","placeholder":"Choose crew","items":["cr-1","cr-2","cr-3"],"value":{"$bindState":"/dispatchCrew"}},"children":["cr-1","cr-2","cr-3"]}}
+{"op":"add","path":"/elements/cr-1","value":{"type":"SelectItem","props":{"value":"road","label":"Road Repair"}}}
+{"op":"add","path":"/elements/cr-2","value":{"type":"SelectItem","props":{"value":"water","label":"Water/Utilities"}}}
+{"op":"add","path":"/elements/cr-3","value":{"type":"SelectItem","props":{"value":"electric","label":"Electrical"}}}
+{"op":"add","path":"/state/dispatchCrew","value":""}
+{"op":"add","path":"/elements/fc-loc","value":{"type":"FormControl","props":{"label":"Location","input":"loc-input"},"children":["loc-input"]}}
+{"op":"add","path":"/elements/loc-input","value":{"type":"Input","props":{"name":"loc","placeholder":"e.g. 5th & Main","value":{"$bindState":"/dispatchLoc"}},"children":[]}}
+{"op":"add","path":"/state/dispatchLoc","value":""}
+{"op":"add","path":"/elements/fc-priority","value":{"type":"FormControl","props":{"label":"Priority","input":"prio-input"},"children":["prio-input"]}}
+{"op":"add","path":"/elements/prio-input","value":{"type":"Select","props":{"name":"prio","placeholder":"Priority","items":["p-1","p-2","p-3"],"value":{"$bindState":"/dispatchPrio"}},"children":["p-1","p-2","p-3"]}}
+{"op":"add","path":"/elements/p-1","value":{"type":"SelectItem","props":{"value":"high","label":"High"}}}
+{"op":"add","path":"/elements/p-2","value":{"type":"SelectItem","props":{"value":"medium","label":"Medium"}}}
+{"op":"add","path":"/elements/p-3","value":{"type":"SelectItem","props":{"value":"low","label":"Low"}}}
+{"op":"add","path":"/state/dispatchPrio","value":""}
+{"op":"add","path":"/elements/dispatch-btn","value":{"type":"Button","props":{"label":"Dispatch","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/emergency","value":{"id":"$id","unit":{"$state":"/dispatchCrew"},"location":{"$state":"/dispatchLoc"},"status":"En route","priority":{"$state":"/dispatchPrio"}},"clearStatePath":"/dispatchLoc"}}},"children":[]}}
+
+{"op":"add","path":"/elements/alert-dialog","value":{"type":"DialogBlock","props":{"triggerLabel":"Send Public Alert (15)","title":"Send Public Alert","description":"Broadcast a message to citizens","triggerVariant":"destructive","content":["alert-form"]},"children":["alert-form"]}}
+{"op":"add","path":"/elements/alert-form","value":{"type":"Form","props":{"name":"alert","fields":["fc-alert-title","fc-alert-msg"],"buttons":["alert-btn"]},"children":["fc-alert-title","fc-alert-msg","alert-btn"]}}
+{"op":"add","path":"/elements/fc-alert-title","value":{"type":"FormControl","props":{"label":"Alert Title","input":"alert-title-input"},"children":["alert-title-input"]}}
+{"op":"add","path":"/elements/alert-title-input","value":{"type":"Input","props":{"name":"alertTitle","placeholder":"e.g. Flood Warning","value":{"$bindState":"/alertTitle"}},"children":[]}}
+{"op":"add","path":"/state/alertTitle","value":""}
+{"op":"add","path":"/elements/fc-alert-msg","value":{"type":"FormControl","props":{"label":"Message","input":"alert-msg-input"},"children":["alert-msg-input"]}}
+{"op":"add","path":"/elements/alert-msg-input","value":{"type":"TextArea","props":{"name":"alertMsg","placeholder":"Message to send to citizens...","rows":3,"value":{"$bindState":"/alertMsg"}},"children":[]}}
+{"op":"add","path":"/state/alertMsg","value":""}
+{"op":"add","path":"/elements/alert-btn","value":{"type":"Button","props":{"label":"Broadcast Alert","variant":"primary","type":"destructive"},"on":{"press":{"action":"pushState","params":{"statePath":"/sentAlerts","value":{"id":"$id","title":{"$state":"/alertTitle"},"message":{"$state":"/alertMsg"}},"clearStatePath":"/alertMsg"}}},"children":[]}}
+{"op":"add","path":"/state/sentAlerts","value":[]}
+
+{"op":"add","path":"/elements/weather","value":{"type":"Callout","props":{"variant":"info","title":"Current Weather (12): 14°C, Overcast","description":"Wind 18 km/h NW · Humidity 72% · Rain likely after 3pm · UV index low"}}}
+
+{"op":"add","path":"/elements/topmetrics","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"children":["metric-congestion","metric-transit","metric-water","metric-parking"]}}
+
+{"op":"add","path":"/elements/metric-congestion","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["cong-head","cong-prog","cong-note"]}}
+{"op":"add","path":"/elements/cong-head","value":{"type":"Heading","props":{"text":"Congestion Now (1)","level":"h4"}}}
+{"op":"add","path":"/elements/cong-prog","value":{"type":"Progress","props":{"value":78,"label":"Citywide traffic load 78%"}}}
+{"op":"add","path":"/elements/cong-note","value":{"type":"TextContent","props":{"text":"Heavy on I-40 & Downtown loop. Avg speed 22 km/h.","size":"small"}}}
+
+{"op":"add","path":"/elements/metric-transit","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["transit-head","transit-prog","transit-note"]}}
+{"op":"add","path":"/elements/transit-head","value":{"type":"Heading","props":{"text":"Transit Punctuality (2)","level":"h4"}}}
+{"op":"add","path":"/elements/transit-prog","value":{"type":"Progress","props":{"value":91,"label":"On-time performance 91%"}}}
+{"op":"add","path":"/elements/transit-note","value":{"type":"TextContent","props":{"text":"Bus 12 delayed 8 min. Metro line B on schedule.","size":"small"}}}
+
+{"op":"add","path":"/elements/metric-water","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["water-head","water-prog","water-note"]}}
+{"op":"add","path":"/elements/water-head","value":{"type":"Heading","props":{"text":"Water Use Today (5)","level":"h4"}}}
+{"op":"add","path":"/elements/water-prog","value":{"type":"Progress","props":{"value":64,"label":"420 ML of 660 ML capacity"}}}
+{"op":"add","path":"/elements/water-note","value":{"type":"TextContent","props":{"text":"Consumption 6% below seasonal average.","size":"small"}}}
+
+{"op":"add","path":"/elements/metric-parking","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["parking-head","parking-prog","parking-note"]}}
+{"op":"add","path":"/elements/parking-head","value":{"type":"Heading","props":{"text":"Downtown Parking (8)","level":"h4"}}}
+{"op":"add","path":"/elements/parking-prog","value":{"type":"Progress","props":{"value":23,"label":"312 of 1350 spaces free (23%)"}}}
+{"op":"add","path":"/elements/parking-note","value":{"type":"TextContent","props":{"text":"Central Garage nearly full. Riverfront lot open.","size":"small"}}}
+
+{"op":"add","path":"/elements/charts-row","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["energy-head","energy-chart"]}}
+{"op":"add","path":"/elements/energy-head","value":{"type":"Heading","props":{"text":"Energy Use — Past Week (4)","level":"h3"}}}
+{"op":"add","path":"/elements/energy-chart","value":{"type":"AreaChart","props":{"labels":["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],"series":["energy-series"],"variant":"natural","xLabel":"Day","yLabel":"MWh"},"children":["energy-series"]}}
+{"op":"add","path":"/elements/energy-series","value":{"type":"Series","props":{"category":"Consumption (MWh)","values":[840,910,880,950,1020,760,700]}}}
+
+{"op":"add","path":"/elements/air-quality","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["air-head","air-chart"]}}
+{"op":"add","path":"/elements/air-head","value":{"type":"Heading","props":{"text":"Air Quality by District (3)","level":"h3"}}}
+{"op":"add","path":"/elements/air-chart","value":{"type":"HorizontalBarChart","props":{"labels":["Downtown","Riverside","Northgate","Eastend","Southpark","Hilltop"],"series":["aqi-series"],"xLabel":"AQI","yLabel":"District"},"children":["aqi-series"]}}
+{"op":"add","path":"/elements/aqi-series","value":{"type":"Series","props":{"category":"AQI","values":[88,42,61,73,55,38]}}}
+
+{"op":"add","path":"/elements/incidents-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["incidents-head","incidents-list"]}}
+{"op":"add","path":"/elements/incidents-head","value":{"type":"Heading","props":{"text":"Open Incidents (6)","level":"h3"}}}
+{"op":"add","path":"/elements/incidents-list","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"repeat":{"statePath":"/incidents","key":"id"},"children":["incident-row"]}}
+{"op":"add","path":"/elements/incident-row","value":{"type":"Card","props":{"direction":"row","gap":"m","justify":"between","align":"center"},"children":["incident-info","incident-sev"]}}
+{"op":"add","path":"/elements/incident-info","value":{"type":"Card","props":{"direction":"column","gap":"none"},"children":["incident-title","incident-loc"]}}
+{"op":"add","path":"/elements/incident-title","value":{"type":"TextContent","props":{"text":{"$item":"title"},"size":"default"}}}
+{"op":"add","path":"/elements/incident-loc","value":{"type":"TextContent","props":{"text":{"$template":"📍 ${location}"},"size":"small"}}}
+{"op":"add","path":"/elements/incident-sev","value":{"type":"Tag","props":{"text":{"$item":"severity"},"variant":"danger"}}}
+{"op":"add","path":"/state/incidents","value":[]}
+{"op":"add","path":"/state/incidents/0","value":{"id":"1","title":"Vehicle fire on overpass","location":"I-40 @ Exit 9, Downtown","severity":"Critical"}}
+{"op":"add","path":"/state/incidents/1","value":{"id":"2","title":"Water main break","location":"Elm St & 3rd Ave, Riverside","severity":"High"}}
+{"op":"add","path":"/state/incidents/2","value":{"id":"3","title":"Traffic signal outage","location":"Northgate Blvd & Pine","severity":"Medium"}}
+{"op":"add","path":"/state/incidents/3","value":{"id":"4","title":"Fallen tree blocking lane","location":"Eastend Park Rd","severity":"Low"}}
+
+{"op":"add","path":"/elements/emergency-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["emergency-head","emergency-list"]}}
+{"op":"add","path":"/elements/emergency-head","value":{"type":"Heading","props":{"text":"Emergency Vehicle Deployment (7)","level":"h3"}}}
+{"op":"add","path":"/elements/emergency-list","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"repeat":{"statePath":"/emergency","key":"id"},"children":["emergency-row"]}}
+{"op":"add","path":"/elements/emergency-row","value":{"type":"Card","props":{"direction":"row","gap":"m","justify":"between","align":"center"},"children":["emerg-unit","emerg-status"]}}
+{"op":"add","path":"/elements/emerg-unit","value":{"type":"TextContent","props":{"text":{"$template":"🚨 ${unit} — ${location}"}}}
+{"op":"add","path":"/elements/emerg-status","value":{"type":"Badge","props":{"text":{"$item":"status"},"variant":"secondary"}}}
+{"op":"add","path":"/state/emergency","value":[]}
+{"op":"add","path":"/state/emergency/0","value":{"id":"1","unit":"Engine 7","location":"I-40 @ Exit 9","status":"On scene","priority":"high"}}
+{"op":"add","path":"/state/emergency/1","value":{"id":"2","unit":"Ambulance 12","location":"Riverside General","status":"En route","priority":"high"}}
+{"op":"add","path":"/state/emergency/2","value":{"id":"3","unit":"Police Unit 34","location":"Northgate Blvd","status":"Patrolling","priority":"medium"}}
+
+{"op":"add","path":"/elements/parking-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["parking-sec-head","parking-table"]}}
+{"op":"add","path":"/elements/parking-sec-head","value":{"type":"Heading","props":{"text":"Downtown Parking Availability (8)","level":"h3"}}}
+{"op":"add","path":"/elements/parking-table","value":{"type":"Table","props":{"columns":["col-lot","col-free","col-total"]},"children":["col-lot","col-free","col-total"]}}
+{"op":"add","path":"/elements/col-lot","value":{"type":"Col","props":{"label":"Lot","data":["Central Garage","Riverfront Lot","City Hall Deck","Market St Ramp"],"type":"string"}}}
+{"op":"add","path":"/elements/col-free","value":{"type":"Col","props":{"label":"Free","data":[12,180,64,56],"type":"number"}}}
+{"op":"add","path":"/elements/col-total","value":{"type":"Col","props":{"label":"Total","data":[500,300,250,300],"type":"number"}}}
+
+{"op":"add","path":"/elements/events-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["events-head","events-list"]}}
+{"op":"add","path":"/elements/events-head","value":{"type":"Heading","props":{"text":"Public Events This Weekend (9)","level":"h3"}}}
+{"op":"add","path":"/elements/events-list","value":{"type":"ListBlock","props":{"items":["event-1","event-2","event-3"]},"children":["event-1","event-2","event-3"]}}
+{"op":"add","path":"/elements/event-1","value":{"type":"ListItem","props":{"title":"Riverside Music Festival","subtitle":"Sat 12pm–10pm · Riverside Park · ~8,000 expected"}}}
+{"op":"add","path":"/elements/event-2","value":{"type":"ListItem","props":{"title":"Downtown Farmers Market","subtitle":"Sat & Sun 8am–2pm · Market Square"}}}
+{"op":"add","path":"/elements/event-3","value":{"type":"ListItem","props":{"title":"Marathon 10K","subtitle":"Sun 7am · Route through Downtown & Northgate · road closures"}}}
+
+{"op":"add","path":"/elements/reports-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["reports-head","reports-input-row","reports-list"]}}
+{"op":"add","path":"/elements/reports-head","value":{"type":"Heading","props":{"text":"Citizen Reports (10)","level":"h3"}}}
+{"op":"add","path":"/elements/reports-input-row","value":{"type":"Card","props":{"direction":"row","gap":"s","align":"end"},"children":["report-input","report-btn"]}}
+{"op":"add","path":"/elements/report-input","value":{"type":"Input","props":{"name":"report","placeholder":"Add incoming citizen report...","value":{"$bindState":"/newReport"}},"children":[]}}
+{"op":"add","path":"/state/newReport","value":""}
+{"op":"add","path":"/elements/report-btn","value":{"type":"Button","props":{"label":"Log","variant":"secondary"},"on":{"press":{"action":"pushState","params":{"statePath":"/reports","value":{"id":"$id","text":{"$state":"/newReport"},"time":"just now"},"clearStatePath":"/newReport"}}},"children":[]}}
+{"op":"add","path":"/elements/reports-list","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"repeat":{"statePath":"/reports","key":"id"},"children":["report-row"]}}
+{"op":"add","path":"/elements/report-row","value":{"type":"TextContent","props":{"text":{"$template":"🗣️ ${text} — ${time}"},"size":"small"}}}
+{"op":"add","path":"/state/reports","value":[]}
+{"op":"add","path":"/state/reports/0","value":{"id":"1","text":"Pothole on Oak Avenue near school","time":"2 min ago"}}
+{"op":"add","path":"/state/reports/1","value":{"id":"2","text":"Streetlight out on Maple & 8th","time":"6 min ago"}}
+{"op":"add","path":"/state/reports/2","value":{"id":"3","text":"Overflowing bin at Riverside Park","time":"11 min ago"}}
+
+{"op":"add","path":"/elements/backlog-section","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["backlog-head","backlog-chart"]}}
+{"op":"add","path":"/elements/backlog-head","value":{"type":"Heading","props":{"text":"Service Request Backlog (11)","level":"h3"}}}
+{"op":"add","path":"/elements/backlog-chart","value":{"type":"BarChart","props":{"labels":["Roads","Waste","Water","Parks","Lighting","Permits"],"series":["backlog-series"],"xLabel":"Category","yLabel":"Open Requests"},"children":["backlog-series"]}}
+{"op":"add","path":"/elements/backlog-series","value":{"type":"Series","props":{"category":"Open Requests","values":[142,88,54,37,61,29]}}}
+
+{"op":"add","path":"/elements/roadworks-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["roadworks-head","roadworks-list"]}}
+{"op":"add","path":"/elements/roadworks-head","value":{"type":"Heading","props":{"text":"Planned Roadworks This Month (16)","level":"h3"}}}
+{"op":"add","path":"/elements/roadworks-list","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"repeat":{"statePath":"/roadworks","key":"id"},"children":["roadwork-row"]}}
+{"op":"add","path":"/elements/roadwork-row","value":{"type":"Card","props":{"direction":"row","gap":"m","justify":"between","align":"center"},"children":["roadwork-info","roadwork-date"]}}
+{"op":"add","path":"/elements/roadwork-info","value":{"type":"TextContent","props":{"text":{"$template":"🚧 ${name} — ${location}"}}}
+{"op":"add","path":"/elements/roadwork-date","value":{"type":"Badge","props":{"text":{"$item":"window"},"variant":"outline"}}}
+{"op":"add","path":"/state/roadworks","value":[]}
+{"op":"add","path":"/state/roadworks/0","value":{"id":"1","name":"Resurfacing","location":"Main St, Downtown","window":"Jun 4–8"}}
+{"op":"add","path":"/state/roadworks/1","value":{"id":"2","name":"Bridge joint repair","location":"Riverside Bridge","window":"Jun 12–15"}}
+{"op":"add","path":"/state/roadworks/2","value":{"id":"3","name":"Bike lane install","location":"Northgate Blvd","window":"Jun 20–25"}}
+
+{"op":"add","path":"/elements/maintenance-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["maint-head","maint-list"]}}
+{"op":"add","path":"/elements/maint-head","value":{"type":"Heading","props":{"text":"Infrastructure Maintenance Due (17)","level":"h3"}}}
+{"op":"add","path":"/elements/maint-list","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"repeat":{"statePath":"/maintenance","key":"id"},"children":["maint-row"]}}
+{"op":"add","path":"/elements/maint-row","value":{"type":"Card","props":{"direction":"row","gap":"m","justify":"between","align":"center"},"children":["maint-info","maint-status"]}}
+{"op":"add","path":"/elements/maint-info","value":{"type":"TextContent","props":{"text":{"$template":"🔧 ${asset} — due ${due}"}}}
+{"op":"add","path":"/elements/maint-status","value":{"type":"Tag","props":{"text":{"$item":"status"},"variant":"warning"}}}
+{"op":"add","path":"/state/maintenance","value":[]}
+{"op":"add","path":"/state/maintenance/0","value":{"id":"1","asset":"Pump Station 3","due":"Jun 6","status":"Overdue"}}
+{"op":"add","path":"/state/maintenance/1","value":{"id":"2","asset":"Traffic signals — Downtown grid","due":"Jun 14","status":"Scheduled"}}
+{"op":"add","path":"/state/maintenance/2","value":{"id":"3","asset":"Substation 7 inspection","due":"Jun 22","status":"Scheduled"}}
+{"op":"add","path":"/state/maintenance/3","value":{"id":"4","asset":"Water tower coating","due":"Jun 28","status":"Pending"}}

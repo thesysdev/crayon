@@ -1,0 +1,52 @@
+root = Card([header, kpis, searchForm, delayAlert, shipmentTable, chartsRow, followUps], "card", "column", "l")
+
+header = CardHeader("Logistics Control Board", "Real-time dispatch and fleet telemetry • Last refreshed 2 mins ago")
+
+kpis = Card([kpiTime, kpiCost, kpiTransit], "sunk", "row", "m")
+kpiTime = Card([kpiTimeTitle, kpiTimeVal], "clear", "column", "xs")
+kpiTimeTitle = TextContent("On-Time Delivery Rate", "small-heavy")
+kpiTimeVal = TextContent("94.2% (+1.8% vs last mo)", "large")
+
+kpiCost = Card([kpiCostTitle, kpiCostVal], "clear", "column", "xs")
+kpiCostTitle = TextContent("Avg Cost / Shipment", "small-heavy")
+kpiCostVal = TextContent("$1,245.50", "large")
+
+kpiTransit = Card([kpiTransitTitle, kpiTransitVal], "clear", "column", "xs")
+kpiTransitTitle = TextContent("Active Shipments", "small-heavy")
+kpiTransitVal = TextContent("1,420 Active", "large")
+
+delayAlert = Callout("warning", "Delayed Shipments Detected (2 Active)", "Shipment #SH-8821 (Port of LA → Chicago) delayed by 18h due to weather. Shipment #SH-9043 (Dallas → Atlanta) experiencing mechanical delay.")
+
+searchForm = Form("search_routes", searchBtnGroup, [searchInputControl])
+searchInputControl = FormControl("Route Search", searchInput, "Search by origin, destination, or corridor (e.g. LAX, Chicago, US-East)")
+searchInput = Input("route_query", "Enter origin or destination city...")
+searchBtnGroup = Buttons([searchBtn, clearBtn])
+searchBtn = Button("Search Route", null, "primary", "normal", "small")
+clearBtn = Button("Reset Filter", null, "tertiary", "normal", "small")
+
+shipmentTable = Card([tableHeader, tableComp], "card", "column", "s")
+tableHeader = Heading("Shipments in Transit", "h3")
+tableComp = Table([colID, colOrigin, colDest, colCarrier, colETA, colStatus, colAction])
+colID = Col("Shipment ID", ["SH-8821", "SH-8902", "SH-9011", "SH-9043", "SH-9105"])
+colOrigin = Col("Origin", ["Los Angeles, CA", "Seattle, WA", "Savannah, GA", "Dallas, TX", "Chicago, IL"])
+colDest = Col("Destination", ["Chicago, IL", "Denver, CO", "New York, NY", "Atlanta, GA", "Miami, FL"])
+colCarrier = Col("Carrier", ["Swift Logistics", "FedEx Freight", "Apex Global", "JB Hunt", "FedEx Freight"])
+colETA = Col("ETA", ["Oct 24, 14:00 (Delayed)", "Oct 24, 18:30", "Oct 25, 09:00", "Oct 25, 11:15 (Delayed)", "Oct 26, 08:00"])
+colStatus = Col("Status", ["Delayed", "On Time", "On Time", "Delayed", "On Time"])
+colAction = Col("Action", ["Flagged", "Standard", "Standard", "Flagged", "Standard"])
+
+chartsRow = Card([volumeChartCard, carrierChartCard], "clear", "row", "m")
+
+volumeChartCard = Card([volHeader, volChart], "sunk", "column", "s")
+volHeader = Heading("Weekly Volume (Past 8 Weeks)", "h4")
+volChart = BarChart(["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"], [volSeries], "grouped", "Week", "Shipments")
+volSeries = Series("Shipments", [320, 345, 310, 390, 410, 385, 430, 452])
+
+carrierChartCard = Card([carrierHeader, carrierChart], "sunk", "column", "s")
+carrierHeader = Heading("Volume Split by Carrier", "h4")
+carrierChart = PieChart(["FedEx Freight", "Swift Logistics", "JB Hunt", "Apex Global", "Other"], [420, 310, 280, 250, 160], "donut")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Reroute delayed shipment #SH-8821")
+f2 = FollowUpItem("Export monthly carrier performance report")
+f3 = FollowUpItem("View detailed cost breakdown by lane")

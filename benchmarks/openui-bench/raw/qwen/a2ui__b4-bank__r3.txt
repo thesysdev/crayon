@@ -1,0 +1,121 @@
+
+
+Here's a complete single-screen personal banking home covering all 11 requirements—account balances, transactions with dispute actions, spending breakdown, bills, vacation goal, credit score, transfer form, credit freeze, statement picker, and alert controls.
+
+<a2ui-json>
+{"version":"v0.9","createSurface":{"surfaceId":"banking-home","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#0F62FE"}}}
+</a2ui-json>
+
+<a2ui-json>
+{"version":"v0.9","updateComponents":{"surfaceId":"banking-home","components":[
+{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["hdr","acctRow","insightsRow","txnsCard","moneyRow","alertsRow","fUps"]},
+
+{"id":"hdr","component":"Card","variant":"clear","direction":"column","gap":"xs","children":["hdrTitle","hdrSub"]},
+{"id":"hdrTitle","component":"Heading","level":"h2","text":"Good afternoon, Alex"},
+{"id":"hdrSub","component":"TextContent","size":"small","text":"Thursday, March 20 · All accounts in good standing"},
+
+{"id":"acctRow","component":"Card","direction":"row","gap":"m","align":"stretch","children":["cChecking","cSavings","cCredit","cScore"]},
+
+{"id":"cChecking","component":"Card","direction":"column","gap":"xs","weight":1,"children":["lblChk","valChk","subChk"]},
+{"id":"lblChk","component":"TextContent","size":"small-heavy","text":"CHECKING ••4521"},
+{"id":"valChk","component":"TextContent","size":"large-heavy","text":"$4,286.90"},
+{"id":"subChk","component":"TextContent","size":"small","text":"Available · no pending holds"},
+
+{"id":"cSavings","component":"Card","direction":"column","gap":"xs","weight":1,"children":["lblSav","valSav","subSav"]},
+{"id":"lblSav","component":"TextContent","size":"small-heavy","text":"SAVINGS ••8830"},
+{"id":"valSav","component":"TextContent","size":"large-heavy","text":"$18,540.22"},
+{"id":"subSav","component":"TextContent","size":"small","text":"4.10% APY · earns automatically"},
+
+{"id":"cCredit","component":"Card","direction":"column","gap":"xs","weight":1,"children":["lblCrd","valCrd","subCrd"]},
+{"id":"lblCrd","component":"TextContent","size":"small-heavy","text":"CREDIT CARD ••1177"},
+{"id":"valCrd","component":"TextContent","size":"large-heavy","text":"$632.18"},
+{"id":"subCrd","component":"TextContent","size":"small","text":"Current balance · $4,367.82 available"},
+
+{"id":"cScore","component":"Card","direction":"column","gap":"xs","weight":1,"children":["lblScore","valScore","scoreTag"]},
+{"id":"lblScore","component":"TextContent","size":"small-heavy","text":"CREDIT SCORE"},
+{"id":"valScore","component":"TextContent","size":"large-heavy","text":"742"},
+{"id":"scoreTag","component":"Tag","variant":"success","text":"Excellent · +12 this month"},
+
+{"id":"insightsRow","component":"Card","direction":"row","gap":"m","align":"stretch","children":["spendCard","billsCard","goalCard"]},
+
+{"id":"spendCard","component":"Card","direction":"column","gap":"s","weight":1,"children":["spendTitle","spendChart","spendNote"]},
+{"id":"spendTitle","component":"TextContent","size":"small-heavy","text":"Spending this month"},
+{"id":"spendChart","component":"PieChart","variant":"donut","appearance":"circular","labels":["Dining","Groceries","Travel","Shopping","Utilities","Other"],"values":[412,386,240,198,145,92]},
+{"id":"spendNote","component":"TextContent","size":"small","text":"Total $1,473 · up 8% vs February"},
+
+{"id":"billsCard","component":"Card","direction":"column","gap":"s","weight":1,"children":["billsTitle","billsList"]},
+{"id":"billsTitle","component":"TextContent","size":"small-heavy","text":"Bills due soon"},
+{"id":"billsList","component":"ListBlock","variant":"number","items":["bill1","bill2","bill3"]},
+{"id":"bill1","component":"ListItem","title":"ConEd electric","subtitle":"Due Mar 22 · $84.13 · Autopay on","actionLabel":"Pay"},
+{"id":"bill2","component":"ListItem","title":"Rent - Maple Apts","subtitle":"Due Apr 1 · $1,750.00 · Autopay off","actionLabel":"Pay"},
+{"id":"bill3","component":"ListItem","title":"Verizon wireless","subtitle":"Due Apr 3 · $62.00","actionLabel":"Pay"},
+
+{"id":"goalCard","component":"Card","direction":"column","gap":"s","weight":1,"children":["goalTitle","goalProg","goalNote","goalBtns"]},
+{"id":"goalTitle","component":"TextContent","size":"small-heavy","text":"Vacation goal · Lisbon 2025"},
+{"id":"goalProg","component":"Progress","value":0.68,"label":"$3,400 of $5,000"},
+{"id":"goalNote","component":"TextContent","size":"small","text":"68% funded · about $270/mo to land by June"},
+{"id":"goalBtns","component":"Buttons","direction":"row","buttons":["goalAdd","goalEdit"]},
+{"id":"goalAdd","component":"Button","variant":"primary","size":"small","label":"Add $200"},
+{"id":"goalEdit","component":"Button","variant":"tertiary","size":"small","label":"Edit goal"},
+
+{"id":"txnsCard","component":"Card","direction":"column","gap":"m","children":["txnsHead","txnsList"]},
+{"id":"txnsHead","component":"CardHeader","title":"Recent transactions","subtitle":"Merchant and amount for each · dispute eligible charges inline"},
+{"id":"txnsList","component":"ListBlock","variant":"number","items":["tx1","tx2","tx3","tx4","tx5"]},
+{"id":"tx1","component":"ListItem","title":"Whole Foods Market","subtitle":"Today · Groceries · -$42.18","actionLabel":"Dispute"},
+{"id":"tx2","component":"ListItem","title":"Blue Bottle Coffee","subtitle":"Yesterday · Dining · -$6.50","actionLabel":"Dispute"},
+{"id":"tx3","component":"ListItem","title":"Delta Air Lines","subtitle":"Mar 16 · Travel · -$412.00","actionLabel":"Dispute"},
+{"id":"tx4","component":"ListItem","title":"Shell","subtitle":"Mar 15 · Gas · -$38.22","actionLabel":"Dispute"},
+{"id":"tx5","component":"ListItem","title":"Payroll · Acme Inc","subtitle":"Mar 14 · Income · +$2,850.00"},
+
+{"id":"moneyRow","component":"Card","direction":"row","gap":"m","align":"stretch","children":["transferCard","statementCard","freezeCard"]},
+
+{"id":"transferCard","component":"Card","direction":"column","gap":"s","weight":1,"children":["transferTitle","transferForm"]},
+{"id":"transferTitle","component":"TextContent","size":"small-heavy","text":"Move money"},
+{"id":"transferForm","component":"Form","name":"moveMoney","fields":["fromCtl","toCtl","amtCtl"],"buttons":"transferBtns"},
+{"id":"fromCtl","component":"FormControl","label":"From","input":"fromSel"},
+{"id":"fromSel","component":"Select","name":"fromAccount","value":"checking","items":["fChk","fSav"]},
+{"id":"fChk","component":"SelectItem","value":"checking","label":"Checking ••4521 · $4,286.90"},
+{"id":"fSav","component":"SelectItem","value":"savings","label":"Savings ••8830 · $18,540.22"},
+{"id":"toCtl","component":"FormControl","label":"To","input":"toSel"},
+{"id":"toSel","component":"Select","name":"toAccount","value":"savings","items":["tSav","tChk"]},
+{"id":"tSav","component":"SelectItem","value":"savings","label":"Savings ••8830 · $18,540.22"},
+{"id":"tChk","component":"SelectItem","value":"checking","label":"Checking ••4521 · $4,286.90"},
+{"id":"amtCtl","component":"FormControl","label":"Amount","hint":"Instant between your own accounts","input":"amt"},
+{"id":"amt","component":"Input","name":"amount","type":"number","placeholder":"0.00"},
+{"id":"transferBtns","component":"Buttons","buttons":["transferBtn"]},
+{"id":"transferBtn","component":"Button","variant":"primary","label":"Transfer now"},
+
+{"id":"statementCard","component":"Card","direction":"column","gap":"s","weight":1,"children":["stmtTitle","periodCtl","stmtBtns"]},
+{"id":"stmtTitle","component":"TextContent","size":"small-heavy","text":"Statements"},
+{"id":"periodCtl","component":"FormControl","label":"Statement period","hint":"Choose a cycle to view or download","input":"periodSel"},
+{"id":"periodSel","component":"Select","name":"statementPeriod","value":"feb2025","items":["pFeb","pJan","pDec","pNov"]},
+{"id":"pFeb","component":"SelectItem","value":"feb2025","label":"Feb 1 - Feb 28, 2025"},
+{"id":"pJan","component":"SelectItem","value":"jan2025","label":"Jan 1 - Jan 31, 2025"},
+{"id":"pDec","component":"SelectItem","value":"dec2024","label":"Dec 1 - Dec 31, 2024"},
+{"id":"pNov","component":"SelectItem","value":"nov2024","label":"Nov 1 - Nov 30, 2024"},
+{"id":"stmtBtns","component":"Buttons","buttons":["stmtBtn"]},
+{"id":"stmtBtn","component":"Button","variant":"secondary","label":"View statement"},
+
+{"id":"freezeCard","component":"Card","direction":"column","gap":"s","weight":1,"children":["freezeTitle","freezeDesc","freezeTag","freezeDlg"]},
+{"id":"freezeTitle","component":"TextContent","size":"small-heavy","text":"Credit line security"},
+{"id":"freezeDesc","component":"TextContent","size":"small","text":"Freezing blocks new purchases and cash advances on ••1177. Recurring payments still post."},
+{"id":"freezeTag","component":"Tag","variant":"success","text":"Line active · no freeze"},
+{"id":"freezeDlg","component":"AlertDialogBlock","triggerLabel":"Freeze credit line","triggerVariant":"destructive","title":"Freeze your credit line?","description":"New charges will be declined until the line is unfrozen. Subscriptions and pending authorizations aren't affected.","confirmLabel":"Freeze line","cancelLabel":"Not now"},
+
+{"id":"alertsRow","component":"Card","direction":"column","gap":"s","children":["alertsTitle","alertsDesc","alertsSwitches"]},
+{"id":"alertsTitle","component":"TextContent","size":"small-heavy","text":"Alert triggers"},
+{"id":"alertsDesc","component":"TextContent","size":"small","text":"Pick which events send a push notification or email."},
+{"id":"alertsSwitches","component":"SwitchGroup","name":"alertTriggers","variant":"card","items":["swLarge","swLow","swStmt","swSignin"]},
+{"id":"swLarge","component":"SwitchItem","name":"large-purchase","label":"Charges over $500","description":"Any single purchase above $500","defaultChecked":true},
+{"id":"swLow","component":"SwitchItem","name":"low-balance","label":"Low balance","description":"Checking drops below $100","defaultChecked":true},
+{"id":"swStmt","component":"SwitchItem","name":"statement-ready","label":"Statement ready","description":"When a new statement publishes","defaultChecked":false},
+{"id":"swSignin","component":"SwitchItem","name":"unusual-signin","label":"Unusual sign-in","description":"New device or location","defaultChecked":true},
+
+{"id":"fUps","component":"FollowUpBlock","items":["fu1","fu2","fu3"]},
+{"id":"fu1","component":"FollowUpItem","text":"Show my February statement"},
+{"id":"fu2","component":"FollowUpItem","text":"Set up autopay for rent"},
+{"id":"fu3","component":"FollowUpItem","text":"Round up spare change into savings"}
+]}}
+</a2ui-json>
+
+Everything's covered: **(1)** the four balance/score tiles up top, **(2)** the recent transactions list with merchant + amount, **(3)** the category donut, **(4)** bills due with pay actions, **(5)** the Lisbon goal progress bar, **(6)** the 742 score tile, **(7)** the Move Money form with from/to/amount, **(8)** the destructive freeze button with confirmation dialog, **(9)** the statement period dropdown, **(10)** the alert trigger switches, and **(11)** inline Dispute actions on each eligible charge. Want me to add a quick-actions row (send, deposit, pay) or adjust the card density?

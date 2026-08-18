@@ -1,0 +1,955 @@
+An executive command dashboard tailored for a CEO's quarterly view.
+
+It incorporates all 18 required elements into a high-density, top-level executive overview layout:
+- **Filters & Controls**: Quarter selection (Q3 2024 active), Regional drill-down (Global/NA/EMEA/APAC), and dynamic Export Pack actions.
+- **Top Financial & Operational Metrics**: Key metrics including Months of Runway, Pipeline, Win Rate, Customer Count & Churn, and NPS.
+- **Financial Performance**: Core financials (Revenue, Costs, Net Profit) alongside multi-quarter trends across Q4-23 to Q3-24.
+- **Departmental Budget & Headcount**: Breakdown of Departmental Budgets vs Plan alongside Headcount distribution.
+- **Strategy & Governance**: Active Strategic Initiatives with status badges, Top Enterprise Risks with assigned C-level owners, and standard Board Meeting agenda items.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "ceo-dashboard",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#0F172A",
+      "agentDisplayName": "Executive Operations"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "ceo-dashboard",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header-card",
+          "kpi-summary-card",
+          "financial-trends-card",
+          "tabs-analysis"
+        ]
+      },
+      {
+        "id": "header-card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "header-top-row",
+          "header-controls-row"
+        ]
+      },
+      {
+        "id": "header-top-row",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "justify": "between",
+        "align": "center",
+        "children": [
+          "header-title-stack",
+          "export-buttons"
+        ]
+      },
+      {
+        "id": "header-title-stack",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "main-heading",
+          "header-subtext"
+        ]
+      },
+      {
+        "id": "main-heading",
+        "component": "Heading",
+        "level": "h1",
+        "text": "Executive Command View"
+      },
+      {
+        "id": "header-subtext",
+        "component": "TextContent",
+        "text": "Real-time performance metrics, governance, and operational runway.",
+        "size": "small"
+      },
+      {
+        "id": "export-buttons",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": [
+          "btn-export-pdf",
+          "btn-export-pack"
+        ]
+      },
+      {
+        "id": "btn-export-pdf",
+        "component": "Button",
+        "label": "Export One-Pager",
+        "variant": "secondary",
+        "size": "small"
+      },
+      {
+        "id": "btn-export-pack",
+        "component": "Button",
+        "label": "Export Board Pack (.PDF/.PPTX)",
+        "variant": "primary",
+        "size": "small"
+      },
+      {
+        "id": "header-controls-row",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "l",
+        "align": "center",
+        "justify": "between",
+        "children": [
+          "select-quarter-control",
+          "select-region-control"
+        ]
+      },
+      {
+        "id": "select-quarter-control",
+        "component": "FormControl",
+        "label": "Reporting Quarter",
+        "hint": "Item 16: Select Quarter",
+        "input": "quarter-select-input"
+      },
+      {
+        "id": "quarter-select-input",
+        "component": "Select",
+        "name": "quarter",
+        "value": "q3-2024",
+        "size": "small",
+        "items": [
+          "q3-2024-item",
+          "q2-2024-item",
+          "q1-2024-item",
+          "q4-2023-item"
+        ]
+      },
+      {
+        "id": "q3-2024-item",
+        "component": "SelectItem",
+        "value": "q3-2024",
+        "label": "Q3 2024 (Current)"
+      },
+      {
+        "id": "q2-2024-item",
+        "component": "SelectItem",
+        "value": "q2-2024",
+        "label": "Q2 2024"
+      },
+      {
+        "id": "q1-2024-item",
+        "component": "SelectItem",
+        "value": "q1-2024",
+        "label": "Q1 2024"
+      },
+      {
+        "id": "q4-2023-item",
+        "component": "SelectItem",
+        "value": "q4-2023",
+        "label": "Q4 2023"
+      },
+      {
+        "id": "select-region-control",
+        "component": "FormControl",
+        "label": "Region Focus",
+        "hint": "Item 17: Focus Region",
+        "input": "region-select-input"
+      },
+      {
+        "id": "region-select-input",
+        "component": "Select",
+        "name": "region",
+        "value": "global",
+        "size": "small",
+        "items": [
+          "reg-global",
+          "reg-na",
+          "reg-emea",
+          "reg-apac"
+        ]
+      },
+      {
+        "id": "reg-global",
+        "component": "SelectItem",
+        "value": "global",
+        "label": "Global (Consolidated)"
+      },
+      {
+        "id": "reg-na",
+        "component": "SelectItem",
+        "value": "na",
+        "label": "North America"
+      },
+      {
+        "id": "reg-emea",
+        "component": "SelectItem",
+        "value": "emea",
+        "label": "EMEA"
+      },
+      {
+        "id": "reg-apac",
+        "component": "SelectItem",
+        "value": "apac",
+        "label": "APAC"
+      },
+      {
+        "id": "kpi-summary-card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "kpi-title",
+          "kpi-grid"
+        ]
+      },
+      {
+        "id": "kpi-title",
+        "component": "CardHeader",
+        "title": "Vital Signs & Operations Summary",
+        "subtitle": "Key metrics across runway, pipeline efficiency, and customer sentiment"
+      },
+      {
+        "id": "kpi-grid",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "kpi-runway",
+          "kpi-pipeline",
+          "kpi-winrate",
+          "kpi-customers",
+          "kpi-nps"
+        ]
+      },
+      {
+        "id": "kpi-runway",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "kpi-runway-badge",
+          "kpi-runway-val",
+          "kpi-runway-sub"
+        ]
+      },
+      {
+        "id": "kpi-runway-badge",
+        "component": "Badge",
+        "text": "10. Months of Runway",
+        "variant": "outline"
+      },
+      {
+        "id": "kpi-runway-val",
+        "component": "Heading",
+        "level": "h2",
+        "text": "26.4 Mo"
+      },
+      {
+        "id": "kpi-runway-sub",
+        "component": "TextContent",
+        "text": "$42.8M Cash balance",
+        "size": "small"
+      },
+      {
+        "id": "kpi-pipeline",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "kpi-pipeline-badge",
+          "kpi-pipeline-val",
+          "kpi-pipeline-sub"
+        ]
+      },
+      {
+        "id": "kpi-pipeline-badge",
+        "component": "Badge",
+        "text": "11. Sales Pipeline",
+        "variant": "outline"
+      },
+      {
+        "id": "kpi-pipeline-val",
+        "component": "Heading",
+        "level": "h2",
+        "text": "$38.5M"
+      },
+      {
+        "id": "kpi-pipeline-sub",
+        "component": "TextContent",
+        "text": "+14% vs Q2 ($33.8M)",
+        "size": "small"
+      },
+      {
+        "id": "kpi-winrate",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "kpi-winrate-badge",
+          "kpi-winrate-val",
+          "kpi-winrate-sub"
+        ]
+      },
+      {
+        "id": "kpi-winrate-badge",
+        "component": "Badge",
+        "text": "12. Win Rate",
+        "variant": "outline"
+      },
+      {
+        "id": "kpi-winrate-val",
+        "component": "Heading",
+        "level": "h2",
+        "text": "31.8%"
+      },
+      {
+        "id": "kpi-winrate-sub",
+        "component": "TextContent",
+        "text": "Target: 30.0% (+1.8%)",
+        "size": "small"
+      },
+      {
+        "id": "kpi-customers",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "kpi-cust-badge",
+          "kpi-cust-val",
+          "kpi-cust-sub"
+        ]
+      },
+      {
+        "id": "kpi-cust-badge",
+        "component": "Badge",
+        "text": "13. Customers & Churn",
+        "variant": "outline"
+      },
+      {
+        "id": "kpi-cust-val",
+        "component": "Heading",
+        "level": "h2",
+        "text": "1,420"
+      },
+      {
+        "id": "kpi-cust-sub",
+        "component": "TextContent",
+        "text": "Logo Churn: 1.2% / mo",
+        "size": "small"
+      },
+      {
+        "id": "kpi-nps",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "kpi-nps-badge",
+          "kpi-nps-val",
+          "kpi-nps-sub"
+        ]
+      },
+      {
+        "id": "kpi-nps-badge",
+        "component": "Badge",
+        "text": "14. Net Promoter Score",
+        "variant": "outline"
+      },
+      {
+        "id": "kpi-nps-val",
+        "component": "Heading",
+        "level": "h2",
+        "text": "+62"
+      },
+      {
+        "id": "kpi-nps-sub",
+        "component": "TextContent",
+        "text": "Up from +58 in Q2",
+        "size": "small"
+      },
+      {
+        "id": "financial-trends-card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "fin-header",
+          "fin-summary-row",
+          "fin-chart"
+        ]
+      },
+      {
+        "id": "fin-header",
+        "component": "CardHeader",
+        "title": "Financial Performance & Trajectory",
+        "subtitle": "Q3 Current Performance & 4-Quarter Revenue/Cost Comparison (Items 1, 2, 3, 4, 5)"
+      },
+      {
+        "id": "fin-summary-row",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "fin-rev-card",
+          "fin-cost-card",
+          "fin-profit-card"
+        ]
+      },
+      {
+        "id": "fin-rev-card",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "rev-lbl",
+          "rev-val",
+          "rev-sub"
+        ]
+      },
+      {
+        "id": "rev-lbl",
+        "component": "TextContent",
+        "text": "1. Q3 Revenue",
+        "size": "small-heavy"
+      },
+      {
+        "id": "rev-val",
+        "component": "Heading",
+        "level": "h3",
+        "text": "$24.5M"
+      },
+      {
+        "id": "rev-sub",
+        "component": "TextContent",
+        "text": "+8.8% QoQ vs Plan ($23.8M)",
+        "size": "small"
+      },
+      {
+        "id": "fin-cost-card",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "cost-lbl",
+          "cost-val",
+          "cost-sub"
+        ]
+      },
+      {
+        "id": "cost-lbl",
+        "component": "TextContent",
+        "text": "2. Q3 Costs & OPEX",
+        "size": "small-heavy"
+      },
+      {
+        "id": "cost-val",
+        "component": "Heading",
+        "level": "h3",
+        "text": "$18.2M"
+      },
+      {
+        "id": "cost-sub",
+        "component": "TextContent",
+        "text": "-1.6% Under Budget ($18.5M)",
+        "size": "small"
+      },
+      {
+        "id": "fin-profit-card",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "prof-lbl",
+          "prof-val",
+          "prof-sub"
+        ]
+      },
+      {
+        "id": "prof-lbl",
+        "component": "TextContent",
+        "text": "3. Q3 Net Profit",
+        "size": "small-heavy"
+      },
+      {
+        "id": "prof-val",
+        "component": "Heading",
+        "level": "h3",
+        "text": "$6.3M"
+      },
+      {
+        "id": "prof-sub",
+        "component": "TextContent",
+        "text": "25.7% Margin (+2.4% vs Plan)",
+        "size": "small"
+      },
+      {
+        "id": "fin-chart",
+        "component": "BarChart",
+        "xLabel": "Quarter",
+        "yLabel": "USD Millions ($M)",
+        "variant": "grouped",
+        "labels": [
+          "Q4 2023",
+          "Q1 2024",
+          "Q2 2024",
+          "Q3 2024"
+        ],
+        "series": [
+          "series-revenue",
+          "series-costs"
+        ]
+      },
+      {
+        "id": "series-revenue",
+        "component": "Series",
+        "category": "4. Revenue Trajectory",
+        "values": [
+          19.5,
+          21,
+          22.5,
+          24.5
+        ]
+      },
+      {
+        "id": "series-costs",
+        "component": "Series",
+        "category": "5. Cost Trajectory",
+        "values": [
+          16.8,
+          17.2,
+          17.9,
+          18.2
+        ]
+      },
+      {
+        "id": "tabs-analysis",
+        "component": "Tabs",
+        "items": [
+          "tab-org",
+          "tab-strategy",
+          "tab-risks",
+          "tab-board"
+        ]
+      },
+      {
+        "id": "tab-org",
+        "component": "TabItem",
+        "value": "org-dept",
+        "trigger": "Departments & Headcount",
+        "content": [
+          "card-dept-budget",
+          "card-dept-headcount"
+        ]
+      },
+      {
+        "id": "card-dept-budget",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "dept-budget-header",
+          "dept-budget-chart"
+        ]
+      },
+      {
+        "id": "dept-budget-header",
+        "component": "CardHeader",
+        "title": "6. Budget by Department vs. Plan ($M)",
+        "subtitle": "Comparing Q3 Actual Spend against Planned Budget per Department"
+      },
+      {
+        "id": "dept-budget-chart",
+        "component": "HorizontalBarChart",
+        "variant": "grouped",
+        "xLabel": "Budget ($M)",
+        "yLabel": "Department",
+        "labels": [
+          "Engineering",
+          "Sales & Mktg",
+          "Product",
+          "Operations",
+          "G&A"
+        ],
+        "series": [
+          "series-actual-budget",
+          "series-plan-budget"
+        ]
+      },
+      {
+        "id": "series-actual-budget",
+        "component": "Series",
+        "category": "Actual Spend",
+        "values": [
+          7.2,
+          5.8,
+          2.4,
+          1.6,
+          1.2
+        ]
+      },
+      {
+        "id": "series-plan-budget",
+        "component": "Series",
+        "category": "Planned Budget",
+        "values": [
+          7,
+          6.1,
+          2.5,
+          1.7,
+          1.2
+        ]
+      },
+      {
+        "id": "card-dept-headcount",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "dept-hc-header",
+          "dept-hc-table"
+        ]
+      },
+      {
+        "id": "dept-hc-header",
+        "component": "CardHeader",
+        "title": "7. Headcount by Department",
+        "subtitle": "Total Active Headcount: 342 FTEs"
+      },
+      {
+        "id": "dept-hc-table",
+        "component": "Table",
+        "columns": [
+          "col-hc-dept",
+          "col-hc-count",
+          "col-hc-open",
+          "col-hc-qoq"
+        ]
+      },
+      {
+        "id": "col-hc-dept",
+        "component": "Col",
+        "label": "Department",
+        "type": "string",
+        "data": [
+          "Engineering & AI",
+          "Sales & Marketing",
+          "Product & Design",
+          "Customer Success",
+          "General & Admin"
+        ]
+      },
+      {
+        "id": "col-hc-count",
+        "component": "Col",
+        "label": "Current Headcount",
+        "type": "number",
+        "data": [
+          145,
+          98,
+          42,
+          32,
+          25
+        ]
+      },
+      {
+        "id": "col-hc-open",
+        "component": "Col",
+        "label": "Open Reqs",
+        "type": "number",
+        "data": [
+          12,
+          8,
+          3,
+          2,
+          1
+        ]
+      },
+      {
+        "id": "col-hc-qoq",
+        "component": "Col",
+        "label": "QoQ Change",
+        "type": "string",
+        "data": [
+          "+8 FTE",
+          "+5 FTE",
+          "+2 FTE",
+          "+1 FTE",
+          "0 FTE"
+        ]
+      },
+      {
+        "id": "tab-strategy",
+        "component": "TabItem",
+        "value": "strategy-initiatives",
+        "trigger": "Strategic Initiatives",
+        "content": [
+          "card-initiatives"
+        ]
+      },
+      {
+        "id": "card-initiatives",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "init-header",
+          "init-table"
+        ]
+      },
+      {
+        "id": "init-header",
+        "component": "CardHeader",
+        "title": "9. Strategic Initiatives & Execution Status",
+        "subtitle": "Status tracking for core CEO level strategic bets"
+      },
+      {
+        "id": "init-table",
+        "component": "Table",
+        "columns": [
+          "col-init-name",
+          "col-init-owner",
+          "col-init-target",
+          "col-init-status"
+        ]
+      },
+      {
+        "id": "col-init-name",
+        "component": "Col",
+        "label": "Initiative Name",
+        "type": "string",
+        "data": [
+          "Project Apex (Enterprise Platform Expansion)",
+          "EMEA Regional Headquarters Setup",
+          "ISO 27001 & SOC2 Type II Certification",
+          "AI Copilot Feature Launch v2.0",
+          "Partner Channel Network Launch"
+        ]
+      },
+      {
+        "id": "col-init-owner",
+        "component": "Col",
+        "label": "Executive Lead",
+        "type": "string",
+        "data": [
+          "CTO (E. Wright)",
+          "VP EMEA (M. Vance)",
+          "CISO (D. Chen)",
+          "CPO (A. Patel)",
+          "CRO (R. Sterling)"
+        ]
+      },
+      {
+        "id": "col-init-target",
+        "component": "Col",
+        "label": "Target Date",
+        "type": "string",
+        "data": [
+          "Q4 2024",
+          "Q4 2024",
+          "Q3 2024",
+          "Q1 2025",
+          "Q1 2025"
+        ]
+      },
+      {
+        "id": "col-init-status",
+        "component": "Col",
+        "label": "Status",
+        "type": "string",
+        "data": [
+          "On Track",
+          "Delayed (1 Wk)",
+          "Completed",
+          "On Track",
+          "In Review"
+        ]
+      },
+      {
+        "id": "tab-risks",
+        "component": "TabItem",
+        "value": "risk-register",
+        "trigger": "Enterprise Risks",
+        "content": [
+          "card-risks"
+        ]
+      },
+      {
+        "id": "card-risks",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "risk-header",
+          "risk-table"
+        ]
+      },
+      {
+        "id": "risk-header",
+        "component": "CardHeader",
+        "title": "8. Top Risks & Executive Owners",
+        "subtitle": "Identified threat matrix with assigned executive owners and mitigation plans"
+      },
+      {
+        "id": "risk-table",
+        "component": "Table",
+        "columns": [
+          "col-risk-title",
+          "col-risk-owner",
+          "col-risk-severity",
+          "col-risk-mitigation"
+        ]
+      },
+      {
+        "id": "col-risk-title",
+        "component": "Col",
+        "label": "Risk Description",
+        "type": "string",
+        "data": [
+          "Key Vendor API Price Increase (+40%)",
+          "Delayed Key Engineering Hire (VP Infra)",
+          "Competitive Churn Pressure in Mid-Market",
+          "GDPR Regulatory Audit in EU"
+        ]
+      },
+      {
+        "id": "col-risk-owner",
+        "component": "Col",
+        "label": "Risk Owner",
+        "type": "string",
+        "data": [
+          "CTO (E. Wright)",
+          "VP HR (K. Thorne)",
+          "CRO (R. Sterling)",
+          "General Counsel (J. Ross)"
+        ]
+      },
+      {
+        "id": "col-risk-severity",
+        "component": "Col",
+        "label": "Severity",
+        "type": "string",
+        "data": [
+          "High",
+          "Medium",
+          "High",
+          "Low"
+        ]
+      },
+      {
+        "id": "col-risk-mitigation",
+        "component": "Col",
+        "label": "Mitigation Strategy",
+        "type": "string",
+        "data": [
+          "Transitioning secondary workloads to open-source model",
+          "Engaged executive search agency with 30-day placement SLA",
+          "Introduced annual lock-in discount & dedicated CSMs",
+          "External compliance firm engaged for pre-audit review"
+        ]
+      },
+      {
+        "id": "tab-board",
+        "component": "TabItem",
+        "value": "board-prep",
+        "trigger": "Board Meeting Agenda",
+        "content": [
+          "card-board"
+        ]
+      },
+      {
+        "id": "card-board",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "board-header",
+          "board-alert",
+          "board-steps"
+        ]
+      },
+      {
+        "id": "board-header",
+        "component": "CardHeader",
+        "title": "15. Next Board Meeting Agenda Items",
+        "subtitle": "Scheduled for November 12, 2024 — Key Materials & Presentation Flow"
+      },
+      {
+        "id": "board-alert",
+        "component": "Alert",
+        "variant": "info",
+        "title": "Board Deck Submission Deadline",
+        "description": "Final draft deck must be signed off by CEO & CFO by Nov 5th at 5:00 PM EST."
+      },
+      {
+        "id": "board-steps",
+        "component": "Steps",
+        "items": [
+          "step-board-1",
+          "step-board-2",
+          "step-board-3",
+          "step-board-4"
+        ]
+      },
+      {
+        "id": "step-board-1",
+        "component": "StepsItem",
+        "title": "1. CEO Opening & Executive Summary (15 mins)",
+        "details": "Review of Q3 financial performance, runway milestone, and key growth drivers."
+      },
+      {
+        "id": "step-board-2",
+        "component": "StepsItem",
+        "title": "2. FY25 Strategic Budget Approval (30 mins)",
+        "details": "Presentation of projected headcount growth, R&D allocation, and EMEA expansion budget."
+      },
+      {
+        "id": "step-board-3",
+        "component": "StepsItem",
+        "title": "3. M&A Strategy & Acquisition Targets (30 mins)",
+        "details": "Closed session: Evaluation of 2 potential tuck-in technology acquisitions."
+      },
+      {
+        "id": "step-board-4",
+        "component": "StepsItem",
+        "title": "4. Governance, Equity Grant Approval & Close (15 mins)",
+        "details": "Review of option pool refresh and formal vote on executive stock option grants."
+      }
+    ]
+  }
+}
+</a2ui-json>

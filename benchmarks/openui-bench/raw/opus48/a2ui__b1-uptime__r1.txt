@@ -1,0 +1,100 @@
+Here's a status page for the platform team covering the API uptime and the most recent incident.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "platform-status",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "platform-status",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": ["header", "statusTag", "uptimeSection", "sep", "incidentSection"]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Platform Status — API",
+        "subtitle": "Current month overview"
+      },
+      {
+        "id": "statusTag",
+        "component": "Tag",
+        "text": "All Systems Operational",
+        "icon": "check-circle",
+        "variant": "success",
+        "size": "md"
+      },
+      {
+        "id": "uptimeSection",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "s",
+        "children": ["uptimeHeading", "uptimeValue", "uptimeProgress"]
+      },
+      {
+        "id": "uptimeHeading",
+        "component": "Heading",
+        "text": "API Uptime — This Month",
+        "level": "h4"
+      },
+      {
+        "id": "uptimeValue",
+        "component": "TextContent",
+        "text": "**99.98%**",
+        "size": "large-heavy"
+      },
+      {
+        "id": "uptimeProgress",
+        "component": "Progress",
+        "value": 99.98,
+        "label": "Measured against a 99.9% SLA target"
+      },
+      {
+        "id": "sep",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "incidentSection",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "s",
+        "children": ["incidentHeading", "incidentAlert"]
+      },
+      {
+        "id": "incidentHeading",
+        "component": "Heading",
+        "text": "Most Recent Incident",
+        "level": "h4"
+      },
+      {
+        "id": "incidentAlert",
+        "component": "Alert",
+        "variant": "success",
+        "title": "Elevated API latency — Resolved",
+        "description": "On Feb 12 at 14:20 UTC, the API experienced elevated p95 latency due to a degraded database read replica. Traffic was rerouted and the replica was replaced. Fully resolved on Feb 12 at 15:05 UTC (45 min duration)."
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This screen covers both required items:
+
+1. **Current uptime** — 99.98% for the API this month, shown prominently with a progress bar against the 99.9% SLA target.
+2. **Most recent incident** — an elevated-latency event on Feb 12, with the cause, the fix, and the resolution time (resolved 15:05 UTC, 45-minute duration).

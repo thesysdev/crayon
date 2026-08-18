@@ -1,0 +1,95 @@
+root = Card([header, alertsCallout, kpiRow, mainTabs, followUps], "card", "column", "m")
+
+header = CardHeader("National Grid Control Center", "Live Power Network Operator Console — Transmission System")
+
+alertsCallout = Callout("warning", "3 Active Grid Alerts", "Substation B4 transformer temperature high | Frequency drop detected in North Region (49.82 Hz) | High wind generation ramp-down expected.")
+
+kpiRow = Card([loadBadge, capProgress, priceBadge, emissionsBadge], "sunk", "row", "m", "center", "between")
+loadBadge = Badge("Current Load: 28,450 MW", "default")
+capProgress = Progress(88, "Grid Capacity Utilization (28.45 GW / 32.30 GW Max)")
+priceBadge = Badge("Wholesale Price: $64.20 / MWh", "outline")
+emissionsBadge = Badge("CO2 Emissions Today: 142.5 gCO2/kWh", "secondary")
+
+mainTabs = Tabs([overviewTab, plantsTab, forecastTab, outagesTab, actionsTab])
+
+overviewTab = TabItem("overview", "Overview & Region", [regionCard, genSplitHeader, genSplitChart])
+
+regionCard = Card([regionSelectForm], "clear", "row", "m", "center")
+regionSelectForm = Form("region-filter", regionFormButtons, [regionControl])
+regionControl = FormControl("Focus Region", regionSelect, "Filter live telemetry by grid operational zone")
+regionSelect = Select("selected_region", [regAll, regNorth, regSouth, regEast, regWest], "Select Region...")
+regAll = SelectItem("all", "All Regions (National View)")
+regNorth = SelectItem("north", "North Transmission Zone")
+regSouth = SelectItem("south", "South Metro & Coast")
+regEast = SelectItem("east", "East Industrial Corridor")
+regWest = SelectItem("west", "West Renewables Hub")
+regionFormButtons = Buttons([applyRegBtn])
+applyRegBtn = Button("Apply Region Filter", null, "secondary", "normal", "small")
+
+genSplitHeader = Heading("Generation Mix by Source", "h3")
+genSplitChart = PieChart(["Wind", "Solar", "Nuclear", "Natural Gas", "Hydro", "Coal Import"], [12400, 4100, 6200, 4150, 1100, 500], "donut", "circular")
+
+plantsTab = TabItem("plants", "Power Plants", [plantsHeader, plantsTable])
+plantsHeader = Heading("Active Generation Assets", "h3")
+plantsTable = Table([plantNameCol, plantTypeCol, plantRegionCol, plantOutputCol, plantCapCol, plantStatusCol])
+plantNameCol = Col("Plant Name", ["Hornsea Array", "Sizewell B", "Dungeness Gas", "Cruachan Hydro", "Drax Biomass/Gas", "Walney Offshore"])
+plantTypeCol = Col("Primary Source", ["Wind", "Nuclear", "Gas Turbine", "Hydro Pumped", "Gas / Bio", "Wind"])
+plantRegionCol = Col("Region", ["North", "East", "South", "West", "North", "North"])
+plantOutputCol = Col("Current Output", ["2,150 MW", "1,200 MW", "850 MW", "440 MW", "1,100 MW", "980 MW"])
+plantCapCol = Col("Max Capacity", ["2,400 MW", "1,200 MW", "1,200 MW", "440 MW", "1,980 MW", "1,020 MW"])
+plantStatusCol = Col("Status", ["ONLINE (Normal)", "ONLINE (Base)", "ONLINE (Peaker)", "STANDBY", "ONLINE (Derated)", "ONLINE (Normal)"])
+
+forecastTab = TabItem("forecast", "24h Demand Forecast", [forecastHeader, forecastChart])
+forecastHeader = Heading("24-Hour Electricity Demand & Capacity Margin (MW)", "h3")
+forecastChart = LineChart(["00:00", "03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00"], [demandSeries, capacitySeries], "natural", "Time of Day", "Megawatts (MW)")
+demandSeries = Series("Forecast Demand", [21000, 19500, 22400, 29100, 31200, 30500, 32100, 26800])
+capacitySeries = Series("Available Capacity", [32300, 32300, 32300, 32300, 32300, 32300, 32300, 32300])
+
+outagesTab = TabItem("outages", "Outages & Maintenance", [outagesHeader, outagesTable, sep1, maintHeader, maintTable])
+outagesHeader = Heading("Active Network Outages", "h3")
+outagesTable = Table([outageIdCol, outageRegionCol, outageAssetCol, outageCauseCol, outageAffectedCol, outageEtcCol])
+outageIdCol = Col("Outage ID", ["OUT-8821", "OUT-8834", "OUT-8840"])
+outageRegionCol = Col("Affected Region", ["North Zone", "East Corridor", "South Coast"])
+outageAssetCol = Col("Substation / Line", ["Substation B4 - T2", "275kV Line L8-L9", "Feeder 11kV-S9"])
+outageCauseCol = Col("Root Cause", ["Transformer Overheat", "Storm Damage / Line Snap", "Breaker Trip"])
+outageAffectedCol = Col("Customers Affected", ["42,000", "18,500", "3,200"])
+outageEtcCol = Col("Est. Restoration", ["14:30 Today", "18:00 Today", "11:15 Today"])
+
+sep1 = Separator("horizontal")
+
+maintHeader = Heading("Planned Maintenance (This Month)", "h3")
+maintTable = Table([maintIdCol, maintAssetCol, maintRegionCol, maintWindowCol, maintImpactCol])
+maintIdCol = Col("Job ID", ["MNT-041", "MNT-048", "MNT-052", "MNT-061"])
+maintAssetCol = Col("Equipment", ["Grid Interconnector 1", "North Array Relay Upgrade", "Reactor Refuelling Outage", "HVDC Converter Station A"])
+maintRegionCol = Col("Region", ["South", "North", "East", "West"])
+maintWindowCol = Col("Scheduled Dates", ["Oct 12 - Oct 15", "Oct 18 - Oct 19", "Oct 20 - Nov 05", "Oct 28 - Oct 30"])
+maintImpactCol = Col("Capacity Impact", ["-1,000 MW", "-300 MW", "-600 MW", "-500 MW"])
+
+actionsTab = TabItem("actions", "Curtailment Controls", [curtailHeader, curtailForm])
+curtailHeader = Heading("Issue Emergency Demand / Generation Curtailment Order", "h3")
+curtailForm = Form("curtailment-order", curtailButtons, [curtailTargetControl, curtailTypeControl, curtailMwControl, curtailReasonControl])
+curtailTargetControl = FormControl("Target Zone / Asset", curtailTargetSelect)
+curtailTargetSelect = Select("target_asset", [tarNorthInd, tarWestWind, tarSouthCommercial], "Select Target...")
+tarNorthInd = SelectItem("north_ind", "North Zone - Heavy Industrial Load Block A")
+tarWestWind = SelectItem("west_wind", "West Zone - Renewable Wind Farm Group 3")
+tarSouthCommercial = SelectItem("south_comm", "South Metro - Demand Response Tier 2")
+
+curtailTypeControl = FormControl("Action Type", curtailTypeRadio)
+curtailTypeRadio = RadioGroup("action_type", [actGenDrop, actLoadShed], "gen_drop")
+actGenDrop = RadioItem("Generation Curtailment", "Instruct generators to ramp down output", "gen_drop")
+actLoadShed = RadioItem("Load Shedding / Demand Response", "Drop non-essential industrial load", "load_shed")
+
+curtailMwControl = FormControl("Curtailment Volume (MW)", curtailSlider, "Set magnitude in Megawatts")
+curtailSlider = Slider("curtail_mw", "discrete", 50, 2000, 50, [250], "MW Target")
+
+curtailReasonControl = FormControl("Instruction Justification", curtailReasonInput)
+curtailReasonInput = TextArea("reason", "Grid safety constraint mitigation due to thermal overload risk.", 3)
+
+curtailButtons = Buttons([issueOrderBtn, cancelOrderBtn])
+issueOrderBtn = Button("TRANSMIT CURTAILMENT ORDER", null, "primary", "destructive", "medium")
+cancelOrderBtn = Button("Clear Form", null, "tertiary", "normal", "medium")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Focus on North Zone details")
+f2 = FollowUpItem("Show 7-day demand history")
+f3 = FollowUpItem("Simulate 500 MW wind drop")

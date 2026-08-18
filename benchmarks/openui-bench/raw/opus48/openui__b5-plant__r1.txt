@@ -1,0 +1,82 @@
+root = Card([header, andon, kpiRow, oeeProgress, lineList, defectTrend, downtimePie, maintTable, stockRow, deliveryTable, shiftChart, safetyRow, holdList, energyRow, workOrderTable, scheduleForm, focusForm, actions])
+
+header = CardHeader("Factory Floor Console", "Line supervisor — live view")
+
+andon = Alert("Andon: Line 3 stopped", "Operator pulled cord — material jam at station 4", "destructive")
+
+kpiRow = Card([oeeBadge, prodTable], "sunk", "column", "m")
+oeeBadge = Badge("OEE 78%", "secondary")
+prodTable = Table([prodMetric, prodValue])
+prodMetric = Col("Metric", ["Units produced", "Today's target", "Completion"])
+prodValue = Col("Value", ["3,420", "4,000", "85.5%"])
+
+oeeProgress = Progress(78, "Overall Equipment Effectiveness")
+
+lineList = ListBlock([line1, line2, line3, line4])
+line1 = ListItem("Line 1 — Stamping", "Rate 420 u/h · Running", null, "Details")
+line2 = ListItem("Line 2 — Molding", "Rate 380 u/h · Running", null, "Details")
+line3 = ListItem("Line 3 — Assembly", "Rate 0 u/h · Stopped", null, "Details")
+line4 = ListItem("Line 4 — Packaging", "Rate 510 u/h · Idle", null, "Details")
+
+defectTrend = LineChart(["Wk1", "Wk2", "Wk3", "Wk4"], [defectSeries], "natural", "Week", "Defect %")
+defectSeries = Series("Defect rate", [2.4, 2.1, 1.8, 1.5])
+
+downtimePie = PieChart(["Changeover", "Breakdown", "Material", "No operator"], [42, 28, 18, 12], "donut")
+
+maintTable = Table([maintMachine, maintDue, maintType])
+maintMachine = Col("Machine", ["Press A2", "Mold M1", "Conveyor C4"])
+maintDue = Col("Due", ["Today", "Tomorrow", "In 3 days"])
+maintType = Col("Type", ["Lubrication", "Belt check", "Calibration"])
+
+stockRow = Card([steelStock, resinStock, packStock], "sunk", "column", "s")
+steelStock = Progress(62, "Steel stock")
+resinStock = Progress(38, "Resin stock")
+packStock = Progress(81, "Packaging stock")
+
+deliveryTable = Table([delSupplier, delItem, delDue])
+delSupplier = Col("Supplier", ["NorthSteel", "PolyChem", "BoxCo"])
+delItem = Col("Item", ["Steel coil", "Resin pellets", "Cartons"])
+delDue = Col("Due", ["Tue", "Wed", "Fri"])
+
+shiftChart = BarChart(["Morning", "Afternoon", "Night"], [shiftSeries], "grouped", "Shift", "Units")
+shiftSeries = Series("Output", [1240, 1180, 1000])
+
+safetyRow = Card([incidentBadge, daysBadge], "clear", "row", "m")
+incidentBadge = Badge("3 incidents this year", "destructive")
+daysBadge = Badge("47 days since last incident", "secondary")
+
+holdList = ListBlock([hold1, hold2])
+hold1 = ListItem("Batch B-2291", "On quality hold — dimension out of spec")
+hold2 = ListItem("Batch B-2288", "On quality hold — surface finish review")
+
+energyRow = Progress(64, "Energy use today (4.2 MWh of 6.5 MWh)")
+
+workOrderTable = Table([woId, woTask, woPriority])
+woId = Col("WO", ["WO-118", "WO-119", "WO-120", "WO-121"])
+woTask = Col("Task", ["Replace bearing", "Sensor recalibration", "Guard repair", "Coolant refill"])
+woPriority = Col("Priority", ["High", "Medium", "High", "Low"])
+
+scheduleForm = Form("schedule-maintenance", scheduleButtons, [machineField, dateField])
+machineField = FormControl("Machine", machineSelect)
+machineSelect = Select("machine", [mPressA2, mMoldM1, mConvC4], "Select machine")
+mPressA2 = SelectItem("press-a2", "Press A2")
+mMoldM1 = SelectItem("mold-m1", "Mold M1")
+mConvC4 = SelectItem("conv-c4", "Conveyor C4")
+dateField = FormControl("Date", dateInput)
+dateInput = DatePicker("maint_date", "single")
+scheduleButtons = Buttons([scheduleBtn])
+scheduleBtn = Button("Schedule maintenance", null, "primary")
+
+focusForm = Form("focus-line", focusButtons, [focusField])
+focusField = FormControl("Focus on line", focusSelect)
+focusSelect = Select("line", [fL1, fL2, fL3, fL4], "Choose a line")
+fL1 = SelectItem("line-1", "Line 1 — Stamping")
+fL2 = SelectItem("line-2", "Line 2 — Molding")
+fL3 = SelectItem("line-3", "Line 3 — Assembly")
+fL4 = SelectItem("line-4", "Line 4 — Packaging")
+focusButtons = Buttons([focusBtn])
+focusBtn = Button("Focus line", null, "secondary")
+
+actions = Buttons([exportBtn, ackBtn])
+exportBtn = Button("Export shift report", null, "primary")
+ackBtn = Button("Acknowledge andon alerts", null, "tertiary")

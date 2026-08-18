@@ -1,0 +1,77 @@
+root = Card([header, metricsGrid, sectionDivider1, departmentChart, pipelineSection, sectionDivider2, openRolesTable, interviewsList, sectionDivider3, attritionChart, newRoleDrawer, followUps])
+
+header = CardHeader("HR Hiring & Workforce Overview", "Q3 Performance, Active Pipelines & Headcount Metrics")
+
+metricsGrid = Table([metricCol, valueCol, statusCol])
+metricCol = Col("Key Metric", ["Current Headcount", "Open Roles", "Avg Time to Hire (YTD)", "Interviews This Week"])
+valueCol = Col("Value", ["248 FTE", "14 Active", "34 Days", "18 Scheduled"])
+statusCol = Col("Target / Status", ["+12 vs Q2", "8 Priority", "Target: <35 Days", "On Track"])
+
+sectionDivider1 = Separator("horizontal")
+
+departmentChart = PieChart(deptLabels, deptValues, "donut", "circular")
+deptLabels = ["Engineering", "Product & Design", "Sales & Marketing", "Customer Success", "Operations & HR"]
+deptValues = [92, 34, 65, 38, 19]
+
+pipelineSection = BarChart(pipelineLabels, [pipelineSeries], "grouped", "Pipeline Stage", "Candidates")
+pipelineLabels = ["Applied", "Screening", "1st Interview", "Technical / Task", "Final Round", "Offer Extended"]
+pipelineSeries = Series("Active Candidates", [142, 48, 26, 15, 8, 4])
+
+sectionDivider2 = Separator("horizontal")
+
+openRolesTable = Table([roleTitleCol, roleDeptCol, roleApplicantsCol, roleStatusCol])
+roleTitleCol = Col("Role Title", ["Senior Backend Engineer", "Product Designer", "Account Executive", "CS Specialist", "DevOps Engineer", "Marketing Lead"])
+roleDeptCol = Col("Department", ["Engineering", "Product & Design", "Sales & Marketing", "Customer Success", "Engineering", "Sales & Marketing"])
+roleApplicantsCol = Col("Candidates in Pipeline", [38, 24, 42, 18, 12, 29])
+roleStatusCol = Col("Priority Level", ["Urgent", "High", "Medium", "Medium", "Urgent", "High"])
+
+interviewsList = ListBlock([interview1, interview2, interview3, interview4])
+interview1 = ListItem("Senior Backend Engineer - Technical Round", "Mon, 10:00 AM • Candidate: Alex Chen • Panel: Sarah L., Tech Lead")
+interview2 = ListItem("Product Designer - Portfolio Review", "Tue, 2:30 PM • Candidate: Maya Lin • Panel: David K., Head of Design")
+interview3 = ListItem("Account Executive - Final Culture Fit", "Wed, 11:00 AM • Candidate: James Miller • Panel: VP Sales")
+interview4 = ListItem("DevOps Engineer - System Architecture", "Thu, 4:00 PM • Candidate: Priya Nair • Panel: Infra Team")
+
+sectionDivider3 = Separator("horizontal")
+
+attritionChart = LineChart(monthsLabels, [attritionSeries, industryAvgSeries], "natural", "Month", "Departures")
+monthsLabels = ["Mar", "Apr", "May", "Jun", "Jul", "Aug"]
+attritionSeries = Series("Internal Attrition", [3, 2, 4, 1, 2, 2])
+industryAvgSeries = Series("Benchmark Avg", [3, 3, 3, 3, 3, 3])
+
+newRoleDrawer = DrawerBlock("Open New Role Requisition", "Create a New Job Requisition", "Fill in the details below to initiate approval for a new position.", newRoleForm)
+
+newRoleForm = Form("new-role-req", formActions, [roleTitleField, deptField, headcountTypeField, priorityField, descriptionField])
+roleTitleField = FormControl("Job Title", titleInput, "Enter the official job title")
+titleInput = Input("title", "e.g. Senior Frontend Engineer")
+
+deptField = FormControl("Department", deptSelect)
+deptSelect = Select("department", [deptEng, deptProd, deptSales, deptCS, deptOps], "Select Department")
+deptEng = SelectItem("eng", "Engineering")
+deptProd = SelectItem("prod", "Product & Design")
+deptSales = SelectItem("sales", "Sales & Marketing")
+deptCS = SelectItem("cs", "Customer Success")
+deptOps = SelectItem("ops", "Operations & HR")
+
+headcountTypeField = FormControl("Employment Type", typeRadio)
+typeRadio = RadioGroup("emp_type", [typeFT, typePT, typeContract])
+typeFT = RadioItem("Full-Time", "Permanent budgeted position", "full_time")
+typePT = RadioItem("Part-Time", "Permanent part-time", "part_time")
+typeContract = RadioItem("Contractor", "Fixed-term contract", "contract")
+
+priorityField = FormControl("Priority Level", prioritySelect)
+prioritySelect = Select("priority", [priP1, priP2, priP3], "Select urgency")
+priP1 = SelectItem("p1", "P1 - Urgent (Immediate Backfill / Key Hire)")
+priP2 = SelectItem("p2", "P2 - High (Planned Growth)")
+priP3 = SelectItem("p3", "P3 - Standard")
+
+descriptionField = FormControl("Justification & Scope", descArea, "Briefly explain the business need for this headcount")
+descArea = TextArea("description", "Describe team goals, budget allocation, and key outcomes...", 3)
+
+formActions = Buttons([submitReqBtn, cancelReqBtn])
+submitReqBtn = Button("Submit Requisition", null, "primary")
+cancelReqBtn = Button("Save Draft", null, "secondary")
+
+followUps = FollowUpBlock([suggest1, suggest2, suggest3])
+suggest1 = FollowUpItem("Export hiring funnel report to CSV")
+suggest2 = FollowUpItem("Filter open roles by Engineering department")
+suggest3 = FollowUpItem("Schedule quarterly recruiting review")

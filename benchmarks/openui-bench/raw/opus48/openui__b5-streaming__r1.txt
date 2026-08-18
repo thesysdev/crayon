@@ -1,0 +1,81 @@
+root = Card([header, liveNow, buffering, mostWatched, watchTrend, subsVsCancels, genrePerf, deliveryHealth, upcomingReleases, expiringLicenses, recoClicks, failedSearches, revenueByPlan, viewingByDevice, regionFocus, featureFlags, promoteTitle])
+
+header = CardHeader("Streaming Operations Room", "Live platform health and content performance")
+
+liveNow = Callout("info", "Viewers watching now", "2,184,930 concurrent streams across all regions")
+
+buffering = Progress(3, "Buffering rate: 3.0% of active streams")
+
+mostWatched = Table([mwTitle, mwHours])
+mwTitle = Col("Title", ["Nebula Drift", "The Last Harbor", "Crown of Ash", "Midnight Circuit", "Silent Frequency"])
+mwHours = Col("Hours watched", [4820000, 3910000, 3450000, 2980000, 2510000], "number")
+
+watchTrend = LineChart(wtLabels, [wtSeries], "natural", "Week", "Million hours")
+wtLabels = ["Wk 1", "Wk 2", "Wk 3", "Wk 4"]
+wtSeries = Series("Watch time", [128, 141, 137, 156])
+
+subsVsCancels = BarChart(scLabels, [subsSeries, cancelSeries], "grouped", "Week", "Accounts")
+scLabels = ["Wk 1", "Wk 2", "Wk 3", "Wk 4"]
+subsSeries = Series("New subscribers", [82000, 91500, 88400, 103200])
+cancelSeries = Series("Cancellations", [41000, 38700, 45200, 39800])
+
+genrePerf = RadarChart(genreLabels, [genreSeries])
+genreLabels = ["Drama", "Comedy", "Action", "Documentary", "Sci-Fi", "Kids"]
+genreSeries = Series("Engagement index", [88, 74, 91, 62, 85, 70])
+
+deliveryHealth = HorizontalBarChart(regionLabels, [uptimeSeries], "grouped", "Uptime %", "Region")
+regionLabels = ["North America", "Europe", "Asia-Pacific", "Latin America", "Middle East"]
+uptimeSeries = Series("Uptime", [99.95, 99.91, 99.78, 99.62, 99.55])
+
+upcomingReleases = ListBlock([relA, relB, relC], "number")
+relA = ListItem("Aurora Protocol", "Original series · Premieres Mar 8")
+relB = ListItem("Echoes of Tomorrow", "Feature film · Premieres Mar 15")
+relC = ListItem("Kitchen Legends S3", "Reality · Premieres Mar 22")
+
+expiringLicenses = Table([licTitle, licDate])
+licTitle = Col("Licensed title", ["Golden Age Classics", "Retro Sports Vault", "Global Cinema Pack"])
+licDate = Col("Expires", ["Mar 12", "Mar 19", "Mar 28"])
+
+recoClicks = Progress(34, "Recommendation click-through rate: 34%")
+
+failedSearches = Callout("warning", "Searches without playback", "18.4% of searches ended without any title being played")
+
+revenueByPlan = PieChart(planLabels, planValues, "donut")
+planLabels = ["Basic", "Standard", "Premium", "Ad-supported"]
+planValues = [22, 31, 34, 13]
+
+viewingByDevice = PieChart(deviceLabels, deviceValues, "pie")
+deviceLabels = ["Smart TV", "Mobile", "Web", "Tablet", "Console"]
+deviceValues = [46, 27, 14, 8, 5]
+
+regionFocus = Form("region-focus", regionButtons, [regionField])
+regionField = FormControl("Focus region", regionSelect)
+regionSelect = Select("region", [rNA, rEU, rAP, rLA, rME], "Select a region to drill into")
+rNA = SelectItem("na", "North America")
+rEU = SelectItem("eu", "Europe")
+rAP = SelectItem("ap", "Asia-Pacific")
+rLA = SelectItem("la", "Latin America")
+rME = SelectItem("me", "Middle East")
+regionButtons = Buttons([regionApply])
+regionApply = Button("Focus region", null, "primary")
+
+featureFlags = SwitchGroup("feature-flags", [ffAutoplay, ffDolby, ff4k, ffOffline], "card")
+ffAutoplay = SwitchItem("Autoplay previews", "Play trailers on hover", "autoplay", true)
+ffDolby = SwitchItem("Dolby Atmos", "Spatial audio for supported titles", "dolby", true)
+ff4k = SwitchItem("4K on mobile", "Ultra HD streaming on phones", "mobile4k", false)
+ffOffline = SwitchItem("Offline downloads", "Save titles for offline viewing", "offline", true)
+
+promoteTitle = DialogBlock("Promote a title", "Feature on home screen", "Choose a title to spotlight in the hero banner", [promoteForm])
+promoteForm = Form("promote-title", promoteButtons, [promoteTitleField, promoteSlotField])
+promoteTitleField = FormControl("Title", promoteTitleSelect)
+promoteTitleSelect = Select("title", [pA, pB, pC], "Select a title")
+pA = SelectItem("nebula", "Nebula Drift")
+pB = SelectItem("harbor", "The Last Harbor")
+pC = SelectItem("aurora", "Aurora Protocol")
+promoteSlotField = FormControl("Placement", promoteSlotRadio)
+promoteSlotRadio = RadioGroup("slot", [slotHero, slotRow], "hero")
+slotHero = RadioItem("Hero banner", "Top of home screen", "hero")
+slotRow = RadioItem("Trending row", "First position in Trending", "row")
+promoteButtons = Buttons([promoteSubmit, promoteCancel])
+promoteSubmit = Button("Promote", null, "primary")
+promoteCancel = Button("Cancel", null, "tertiary")
