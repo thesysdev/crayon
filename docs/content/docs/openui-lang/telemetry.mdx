@@ -54,21 +54,15 @@ Runtime telemetry is off by default. When enabled, OpenUI Lang samples successfu
 
 ### Opt in
 
-Set the opt-in variable in the server environment where `generateSystemPrompt()` runs:
+1. Set this variable in your server environment:
 
 ```bash
-OPENUI_RUNTIME_TELEMETRY_ENABLED=1 pnpm dev
+OPENUI_RUNTIME_TELEMETRY_ENABLED=1
 ```
 
-For a deployed application, set this variable in the server environment where `generateSystemPrompt()` runs.
+2. Restart your server or redeploy your application.
 
-To turn runtime telemetry off again, remove `OPENUI_RUNTIME_TELEMETRY_ENABLED` or set a global disable flag:
-
-```bash
-OPENUI_TELEMETRY_DISABLED=1
-```
-
-The disable flags always win. Runtime telemetry stays off if `OPENUI_TELEMETRY_DISABLED=1` or `DO_NOT_TRACK=1` is set, even when the runtime opt-in is also set.
+To turn it off, remove `OPENUI_RUNTIME_TELEMETRY_ENABLED`. The global `OPENUI_TELEMETRY_DISABLED` and `DO_NOT_TRACK` settings always take priority.
 
 ## What we never collect
 
@@ -80,11 +74,3 @@ Neither telemetry flow sends:
 - Names, email addresses, usernames, user IDs, or chat data
 - Credentials, API keys, environment values, errors, logs, or stack traces
 - Routes, DOM data, or UI interactions
-
-Telemetry is sent through an OpenUI endpoint to PostHog. Like any web request, the endpoint and PostHog can see the source IP, but OpenUI Lang does not add it to the telemetry data.
-
-<Callout type="info">
-  This page covers telemetry in `@openuidev/lang-core`. The OpenUI CLI has separate command
-  telemetry. See the [CLI telemetry documentation](/docs/api-reference/cli#telemetry) for its data
-  boundaries and `--no-telemetry` control.
-</Callout>
