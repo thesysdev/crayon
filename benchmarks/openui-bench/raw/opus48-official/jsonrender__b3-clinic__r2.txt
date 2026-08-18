@@ -1,0 +1,58 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","daynav","metrics","nextpatient","rooms","checkin","appointments"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Reception — Daily View","subtitle":{"$template":"Showing schedule for ${/currentDay}"}},"children":[]}}
+{"op":"add","path":"/state/currentDay","value":"Monday, June 10"}
+{"op":"add","path":"/elements/daynav","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between"},"children":["dayprev","daylabel","daynext"]}}
+{"op":"add","path":"/elements/dayprev","value":{"type":"Button","props":{"label":"◀ Previous Day","variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/currentDay","value":"Sunday, June 9"}}},"children":[]}}
+{"op":"add","path":"/elements/daylabel","value":{"type":"TextContent","props":{"text":{"$template":"**${/currentDay}**"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/daynext","value":{"type":"Button","props":{"label":"Next Day ▶","variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/currentDay","value":"Tuesday, June 11"}}},"children":[]}}
+{"op":"add","path":"/elements/metrics","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"children":["metric-expected","metric-noshow","metric-rooms"]}}
+{"op":"add","path":"/elements/metric-expected","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs","align":"center"},"children":["metric-expected-num","metric-expected-lbl"]}}
+{"op":"add","path":"/elements/metric-expected-num","value":{"type":"Heading","props":{"text":{"$template":"${/expectedPatients}"},"level":"h1"},"children":[]}}
+{"op":"add","path":"/state/expectedPatients","value":24}
+{"op":"add","path":"/elements/metric-expected-lbl","value":{"type":"TextContent","props":{"text":"Patients expected today","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/metric-noshow","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs","align":"center"},"children":["metric-noshow-num","metric-noshow-lbl","metric-noshow-bar"]}}
+{"op":"add","path":"/elements/metric-noshow-num","value":{"type":"Heading","props":{"text":{"$template":"${/noShowRate}%"},"level":"h1"},"children":[]}}
+{"op":"add","path":"/state/noShowRate","value":8}
+{"op":"add","path":"/elements/metric-noshow-lbl","value":{"type":"TextContent","props":{"text":"No-show rate this month","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/metric-noshow-bar","value":{"type":"Progress","props":{"value":8,"label":"32 of 400 missed"},"children":[]}}
+{"op":"add","path":"/elements/metric-rooms","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs","align":"center"},"children":["metric-rooms-num","metric-rooms-lbl"]}}
+{"op":"add","path":"/elements/metric-rooms-num","value":{"type":"Heading","props":{"text":{"$template":"${/freeRoomCount}"},"level":"h1"},"children":[]}}
+{"op":"add","path":"/state/freeRoomCount","value":2}
+{"op":"add","path":"/elements/metric-rooms-lbl","value":{"type":"TextContent","props":{"text":"Rooms free right now","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/nextpatient","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["nextpatient-head","nextpatient-body"]}}
+{"op":"add","path":"/elements/nextpatient-head","value":{"type":"Heading","props":{"text":"Next Patient Called","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/nextpatient-body","value":{"type":"Alert","props":{"variant":"info","title":{"$template":"${/nextPatient/name} → ${/nextPatient/room}"},"description":{"$template":"Appointment ${/nextPatient/time} with ${/nextPatient/provider}"}},"children":[]}}
+{"op":"add","path":"/state/nextPatient","value":{"name":"Maria Gonzalez","room":"Room 3","time":"9:20 AM","provider":"Dr. Patel"}}
+{"op":"add","path":"/elements/rooms","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"children":["rooms-head","rooms-list"]}}
+{"op":"add","path":"/elements/rooms-head","value":{"type":"Heading","props":{"text":"Room Status","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/rooms-list","value":{"type":"Card","props":{"direction":"row","gap":"s","wrap":true},"repeat":{"statePath":"/rooms","key":"id"},"children":["room-item"]}}
+{"op":"add","path":"/elements/room-item","value":{"type":"Tag","props":{"text":{"$template":"${name}: ${status}"},"size":"lg","variant":{"$cond":{"$item":"free"},"$then":"success","$else":"neutral"}},"children":[]}}
+{"op":"add","path":"/state/rooms","value":[]}
+{"op":"add","path":"/state/rooms/0","value":{"id":"r1","name":"Room 1","status":"Occupied","free":false}}
+{"op":"add","path":"/state/rooms/1","value":{"id":"r2","name":"Room 2","status":"Free","free":true}}
+{"op":"add","path":"/state/rooms/2","value":{"id":"r3","name":"Room 3","status":"Occupied","free":false}}
+{"op":"add","path":"/state/rooms/3","value":{"id":"r4","name":"Room 4","status":"Free","free":true}}
+{"op":"add","path":"/state/rooms/4","value":{"id":"r5","name":"Room 5","status":"Cleaning","free":false}}
+{"op":"add","path":"/elements/checkin","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["checkin-head","checkin-form","checkin-btn"]}}
+{"op":"add","path":"/elements/checkin-head","value":{"type":"Heading","props":{"text":"Check In a Patient","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/checkin-form","value":{"type":"FormControl","props":{"label":"Patient name","input":"checkin-input","hint":"Enter the arriving patient's name to check them in"},"children":[]}}
+{"op":"add","path":"/elements/checkin-input","value":{"type":"Input","props":{"name":"checkinName","placeholder":"e.g. John Smith","value":{"$bindState":"/checkinName"}},"children":[]}}
+{"op":"add","path":"/state/checkinName","value":""}
+{"op":"add","path":"/elements/checkin-btn","value":{"type":"Button","props":{"label":"Check In","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/checkedIn","value":{"id":"$id","name":{"$state":"/checkinName"}},"clearStatePath":"/checkinName"}}},"children":[]}}
+{"op":"add","path":"/state/checkedIn","value":[]}
+{"op":"add","path":"/elements/appointments","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"children":["appts-head","appts-list"]}}
+{"op":"add","path":"/elements/appts-head","value":{"type":"Heading","props":{"text":"Today's Appointments","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/appts-list","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"repeat":{"statePath":"/appointments","key":"id"},"children":["appt-row"]}}
+{"op":"add","path":"/elements/appt-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between"},"children":["appt-time","appt-name","appt-status"]}}
+{"op":"add","path":"/elements/appt-time","value":{"type":"TextContent","props":{"text":{"$template":"**${time}**"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/appt-name","value":{"type":"TextContent","props":{"text":{"$template":"${patient} — ${provider}"}},"children":[]}}
+{"op":"add","path":"/elements/appt-status","value":{"type":"Badge","props":{"text":{"$item":"status"},"variant":"secondary"},"children":[]}}
+{"op":"add","path":"/state/appointments","value":[]}
+{"op":"add","path":"/state/appointments/0","value":{"id":"a1","time":"9:00 AM","patient":"James Carter","provider":"Dr. Patel","status":"Arrived"}}
+{"op":"add","path":"/state/appointments/1","value":{"id":"a2","time":"9:20 AM","patient":"Maria Gonzalez","provider":"Dr. Patel","status":"Called"}}
+{"op":"add","path":"/state/appointments/2","value":{"id":"a3","time":"9:40 AM","patient":"Wei Chen","provider":"Dr. Okafor","status":"Scheduled"}}
+{"op":"add","path":"/state/appointments/3","value":{"id":"a4","time":"10:00 AM","patient":"Aisha Rahman","provider":"Dr. Lopez","status":"Scheduled"}}
+{"op":"add","path":"/state/appointments/4","value":{"id":"a5","time":"10:30 AM","patient":"Robert Kim","provider":"Dr. Okafor","status":"Scheduled"}}
+{"op":"add","path":"/state/appointments/5","value":{"id":"a6","time":"11:00 AM","patient":"Emily Watson","provider":"Dr. Patel","status":"No-show"}}
+{"op":"add","path":"/state/appointments/6","value":{"id":"a7","time":"11:30 AM","patient":"David Nguyen","provider":"Dr. Lopez","status":"Scheduled"}}

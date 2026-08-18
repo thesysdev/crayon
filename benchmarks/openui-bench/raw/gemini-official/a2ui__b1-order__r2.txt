@@ -1,0 +1,315 @@
+I have generated a delivery tracking interface that displays the current package location, estimated delivery date, step-by-step progress, and a direct way to report delivery issues.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "delivery-tracking-surface",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": {
+        "primaryColor": "#2563EB",
+        "agentDisplayName": "Logistics Assistant"
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "delivery-tracking-surface",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "l",
+          "children": [
+            "header",
+            "alert-status",
+            "summary-card",
+            "progress-section",
+            "steps-accordion",
+            "separator-1",
+            "help-section"
+          ]
+        },
+        {
+          "id": "header",
+          "component": "CardHeader",
+          "title": "Delivery Tracking",
+          "subtitle": "Tracking ID: #TRK-89201492-US"
+        },
+        {
+          "id": "alert-status",
+          "component": "Alert",
+          "variant": "info",
+          "title": "On Schedule",
+          "description": "Your package is currently in transit to the local distribution facility."
+        },
+        {
+          "id": "summary-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "current-location-group",
+            "estimated-delivery-group"
+          ]
+        },
+        {
+          "id": "current-location-group",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "xs",
+          "children": [
+            "location-heading",
+            "location-value",
+            "location-badge"
+          ]
+        },
+        {
+          "id": "location-heading",
+          "component": "Heading",
+          "level": "h4",
+          "text": "Current Location"
+        },
+        {
+          "id": "location-value",
+          "component": "TextContent",
+          "size": "large-heavy",
+          "text": "Chicago Sorting Facility, IL"
+        },
+        {
+          "id": "location-badge",
+          "component": "Tag",
+          "text": "Arrived at Regional Hub • 2 hours ago",
+          "variant": "info",
+          "size": "sm"
+        },
+        {
+          "id": "estimated-delivery-group",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "xs",
+          "children": [
+            "delivery-heading",
+            "delivery-value"
+          ]
+        },
+        {
+          "id": "delivery-heading",
+          "component": "Heading",
+          "level": "h4",
+          "text": "Estimated Delivery Date"
+        },
+        {
+          "id": "delivery-value",
+          "component": "TextContent",
+          "size": "large-heavy",
+          "text": "Thursday, Oct 24, 2024 (By 5:00 PM)"
+        },
+        {
+          "id": "progress-section",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "s",
+          "children": [
+            "progress-bar",
+            "progress-label"
+          ]
+        },
+        {
+          "id": "progress-bar",
+          "component": "Progress",
+          "value": 65,
+          "label": "Shipment Progress"
+        },
+        {
+          "id": "progress-label",
+          "component": "TextContent",
+          "size": "small",
+          "text": "3 of 4 stages completed (In Transit)"
+        },
+        {
+          "id": "steps-accordion",
+          "component": "Accordion",
+          "items": [
+            "steps-item"
+          ]
+        },
+        {
+          "id": "steps-item",
+          "component": "AccordionItem",
+          "value": "history",
+          "trigger": "View Full Shipment History",
+          "content": [
+            "history-steps"
+          ]
+        },
+        {
+          "id": "history-steps",
+          "component": "Steps",
+          "items": [
+            "step-1",
+            "step-2",
+            "step-3",
+            "step-4"
+          ]
+        },
+        {
+          "id": "step-1",
+          "component": "StepsItem",
+          "title": "Order Placed",
+          "details": "Oct 21, 9:00 AM • Merchant fulfillment center"
+        },
+        {
+          "id": "step-2",
+          "component": "StepsItem",
+          "title": "In Transit",
+          "details": "Oct 22, 2:15 PM • Departed origin facility in Indianapolis, IN"
+        },
+        {
+          "id": "step-3",
+          "component": "StepsItem",
+          "title": "Arrived at Hub",
+          "details": "Oct 23, 6:40 AM • Chicago Sorting Facility, IL (Current Status)"
+        },
+        {
+          "id": "step-4",
+          "component": "StepsItem",
+          "title": "Out for Delivery",
+          "details": "Pending arrival at final destination hub"
+        },
+        {
+          "id": "separator-1",
+          "component": "Separator",
+          "orientation": "horizontal",
+          "decorative": true
+        },
+        {
+          "id": "help-section",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "help-heading",
+            "help-description",
+            "problem-dialog"
+          ]
+        },
+        {
+          "id": "help-heading",
+          "component": "Heading",
+          "level": "h3",
+          "text": "Need Help With This Shipment?"
+        },
+        {
+          "id": "help-description",
+          "component": "TextContent",
+          "size": "default",
+          "text": "If your package is delayed, damaged, or lost, submit a ticket to notify our support team immediately."
+        },
+        {
+          "id": "problem-dialog",
+          "component": "DialogBlock",
+          "triggerLabel": "Report a Problem",
+          "triggerVariant": "destructive",
+          "title": "Report Delivery Issue",
+          "description": "Please select the problem you are experiencing with shipment #TRK-89201492-US.",
+          "content": [
+            "report-form"
+          ]
+        },
+        {
+          "id": "report-form",
+          "component": "Form",
+          "name": "delivery_issue_form",
+          "fields": [
+            "issue-type-control",
+            "issue-details-control"
+          ],
+          "buttons": "report-buttons"
+        },
+        {
+          "id": "issue-type-control",
+          "component": "FormControl",
+          "label": "Issue Category",
+          "hint": "Select the primary issue regarding your delivery",
+          "input": "issue-type-select"
+        },
+        {
+          "id": "issue-type-select",
+          "component": "Select",
+          "name": "issue_type",
+          "placeholder": "Select issue type...",
+          "items": [
+            "opt-delay",
+            "opt-damaged",
+            "opt-wrong-address",
+            "opt-other"
+          ]
+        },
+        {
+          "id": "opt-delay",
+          "component": "SelectItem",
+          "value": "delayed",
+          "label": "Package is significantly delayed"
+        },
+        {
+          "id": "opt-damaged",
+          "component": "SelectItem",
+          "value": "damaged",
+          "label": "Package or contents damaged"
+        },
+        {
+          "id": "opt-wrong-address",
+          "component": "SelectItem",
+          "value": "incorrect_address",
+          "label": "Incorrect delivery address"
+        },
+        {
+          "id": "opt-other",
+          "component": "SelectItem",
+          "value": "other",
+          "label": "Other inquiry"
+        },
+        {
+          "id": "issue-details-control",
+          "component": "FormControl",
+          "label": "Additional Information",
+          "hint": "Provide relevant details to help us resolve the problem faster",
+          "input": "issue-details-textarea"
+        },
+        {
+          "id": "issue-details-textarea",
+          "component": "TextArea",
+          "name": "issue_details",
+          "placeholder": "Describe what happened...",
+          "rows": 4
+        },
+        {
+          "id": "report-buttons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": [
+            "submit-issue-btn"
+          ]
+        },
+        {
+          "id": "submit-issue-btn",
+          "component": "Button",
+          "label": "Submit Issue Report",
+          "variant": "primary",
+          "type": "destructive"
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>

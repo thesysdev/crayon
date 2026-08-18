@@ -1,0 +1,45 @@
+{"op":"add","path":"/root","value":"standup-root"}
+{"op":"add","path":"/elements/standup-root","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xl"},"children":["standup-header","blocked-section","updates-section","post-update-section"]}}
+{"op":"add","path":"/elements/standup-header","value":{"type":"Card","props":{"variant":"card","direction":"row","justify":"between","align":"center","gap":"m"},"children":["header-copy","missing-summary"]}}
+{"op":"add","path":"/elements/header-copy","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["standup-title","today-date"]}}
+{"op":"add","path":"/elements/standup-title","value":{"type":"Heading","props":{"text":"Async standup","level":"h1"},"children":[]}}
+{"op":"add","path":"/elements/today-date","value":{"type":"TextContent","props":{"text":{"$template":"Today · ${/todayDate}"},"size":"default"},"children":[]}}
+{"op":"add","path":"/state/todayDate","value":"Tuesday, August 18, 2026"}
+{"op":"add","path":"/elements/missing-summary","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs","align":"end"},"children":["missing-count","missing-label"]}}
+{"op":"add","path":"/elements/missing-count","value":{"type":"TextContent","props":{"text":{"$template":"${/missingUpdates}"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/state/missingUpdates","value":2}
+{"op":"add","path":"/elements/missing-label","value":{"type":"TextContent","props":{"text":"updates still missing","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/blocked-section","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"children":["blocked-heading","blocked-list"]}}
+{"op":"add","path":"/elements/blocked-heading","value":{"type":"Heading","props":{"text":"Blocked teammates","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/blocked-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/blockedTeammates","key":"id"},"children":["blocked-callout"]}}
+{"op":"add","path":"/elements/blocked-callout","value":{"type":"Callout","props":{"variant":"warning","title":{"$template":"${name} is blocked"},"description":{"$template":"${blocker} · Needs help from ${needsHelpFrom}"}},"children":[]}}
+{"op":"add","path":"/state/blockedTeammates","value":[]}
+{"op":"add","path":"/state/blockedTeammates/0","value":{"id":"marco","name":"Marco Ruiz","blocker":"Waiting on API access for the billing sandbox","needsHelpFrom":"Platform team"}}
+{"op":"add","path":"/elements/updates-section","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"children":["updates-heading","updates-list"]}}
+{"op":"add","path":"/elements/updates-heading","value":{"type":"Heading","props":{"text":"Today’s updates","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/updates-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"repeat":{"statePath":"/updates","key":"id"},"children":["update-card"]}}
+{"op":"add","path":"/elements/update-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["update-topline","update-progress","update-blocker"]}}
+{"op":"add","path":"/elements/update-topline","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"start","gap":"m"},"children":["update-person","update-status-tag"]}}
+{"op":"add","path":"/elements/update-person","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["update-name","update-role","update-text"]}}
+{"op":"add","path":"/elements/update-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/update-role","value":{"type":"TextContent","props":{"text":{"$item":"role"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/update-text","value":{"type":"TextContent","props":{"text":{"$item":"update"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/update-status-tag","value":{"type":"Tag","props":{"text":{"$item":"status"},"variant":{"$cond":{"$state":"/updates","eq":"blocked"},"$then":"warning","$else":"success"},"size":"sm"},"children":[]}}
+{"op":"add","path":"/elements/update-progress","value":{"type":"Progress","props":{"value":{"$item":"progress"},"label":{"$template":"${progress}% complete"}},"children":[]}}
+{"op":"add","path":"/elements/update-blocker","value":{"type":"TextCallout","props":{"variant":"warning","title":"Blocker","description":{"$item":"blocker"}},"visible":{"$item":"isBlocked"},"children":[]}}
+{"op":"add","path":"/state/updates","value":[]}
+{"op":"add","path":"/state/updates/0","value":{"id":"aisha","name":"Aisha Patel","role":"Product designer","status":"On track","update":"Finalized the onboarding flow and shared the prototype for review. Today I’m refining empty states.","progress":80,"isBlocked":false,"blocker":""}}
+{"op":"add","path":"/state/updates/1","value":{"id":"marco","name":"Marco Ruiz","role":"Backend engineer","status":"Blocked","update":"Completed webhook retry logic and added integration tests. Today I planned to validate billing events.","progress":60,"isBlocked":true,"blocker":"Waiting on API access for the billing sandbox."}}
+{"op":"add","path":"/state/updates/2","value":{"id":"jules","name":"Jules Kim","role":"Customer success","status":"On track","update":"Prepared the enterprise rollout checklist and followed up with three pilot customers.","progress":70,"isBlocked":false,"blocker":""}}
+{"op":"add","path":"/state/updates/3","value":{"id":"noah","name":"Noah Williams","role":"Frontend engineer","status":"On track","update":"Shipped the dashboard performance improvements and started accessibility fixes for the settings page.","progress":55,"isBlocked":false,"blocker":""}}
+{"op":"add","path":"/elements/post-update-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["post-update-heading","post-update-form"]}}
+{"op":"add","path":"/elements/post-update-heading","value":{"type":"CardHeader","props":{"title":"Post your update","subtitle":"Share what you completed, what you’ll do next, and anything blocking you."},"children":[]}}
+{"op":"add","path":"/elements/post-update-form","value":{"type":"Form","props":{"name":"my-standup-update","buttons":"post-update-buttons","fields":["my-update-field","my-blocker-field"]},"children":[]}}
+{"op":"add","path":"/elements/my-update-field","value":{"type":"FormControl","props":{"label":"Your update","hint":"Keep it concise and specific.","input":"my-update-input"},"children":[]}}
+{"op":"add","path":"/elements/my-update-input","value":{"type":"TextArea","props":{"name":"myUpdate","placeholder":"Yesterday I… Today I…","rows":4,"value":{"$bindState":"/draftUpdate"}},"children":[]}}
+{"op":"add","path":"/state/draftUpdate","value":""}
+{"op":"add","path":"/elements/my-blocker-field","value":{"type":"FormControl","props":{"label":"Blockers (optional)","hint":"Mention who can help if you are blocked.","input":"my-blocker-input"},"children":[]}}
+{"op":"add","path":"/elements/my-blocker-input","value":{"type":"Input","props":{"name":"myBlocker","placeholder":"e.g. Need review from Design","value":{"$bindState":"/draftBlocker"}},"children":[]}}
+{"op":"add","path":"/state/draftBlocker","value":""}
+{"op":"add","path":"/elements/post-update-buttons","value":{"type":"Buttons","props":{"buttons":["post-update-button"],"direction":"row"},"children":[]}}
+{"op":"add","path":"/elements/post-update-button","value":{"type":"Button","props":{"label":"Post update","variant":"primary","size":"medium"},"on":{"press":{"action":"pushState","params":{"statePath":"/updates","value":{"id":"$id","name":"You","role":"Team member","status":"Posted","update":{"$state":"/draftUpdate"},"progress":0,"isBlocked":false,"blocker":{"$state":"/draftBlocker"}},"clearStatePath":"/draftUpdate"}}},"children":[]}}

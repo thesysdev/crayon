@@ -1,0 +1,127 @@
+root = Card([header, districtFocus, topMetrics, tabs, quickActions, followUp], "card", "column", "l")
+
+header = CardHeader("Metropolis City Operations Center", "Real-time municipal monitoring & dispatch dashboard")
+
+districtFocus = Form("district-select-form", districtFormButtons, [districtControl])
+districtControl = FormControl("District Focus View", districtSelect, "Select a specific district to filter metrics, alerts, and dispatch units")
+districtSelect = Select("district_filter", [distAll, distDowntown, distNorth, distEast, distSouth, distWest], "All Districts (Citywide View)")
+distAll = SelectItem("all", "All Districts (Citywide View)")
+distDowntown = SelectItem("downtown", "Downtown Central")
+distNorth = SelectItem("north", "North Metro")
+distEast = SelectItem("east", "Eastside & Port")
+distSouth = SelectItem("south", "South Urban")
+distWest = SelectItem("west", "West Hills")
+districtFormButtons = Buttons([applyDistrictBtn])
+applyDistrictBtn = Button("Update View", null, "secondary", "normal", "small")
+
+topMetrics = Table([metricCol, statusCol, detailCol])
+metricCol = Col("Key Operational Indicator", ["1. Traffic Congestion", "2. Transit Punctuality", "5. Water Use Today", "8. Downtown Parking", "11. Service Request Backlog", "12. Current Weather"])
+statusCol = Col("Current Status", ["68% (Moderate)", "89.4% On-Time", "142.8 MGal", "34% Available", "1,284 Active Tickets", "72°F / Light Rain"])
+detailCol = Col("Detail / Trend", ["+5% vs avg commute hour", "Bus -2.1%, Rail +0.4%", "88% of daily target cap", "1,420 / 4,180 spots open", "-42 resolved today", "Wind: SW 8mph | AQI: 42"])
+
+tabs = Tabs([tabTrafficIncidents, tabDistrictsEnergy, tabServicesMaintenance, tabEventsCommunity])
+
+tabTrafficIncidents = TabItem("traffic_incidents", "Traffic & Incidents (1, 6, 7, 16)", [trafficIncidentsCard])
+trafficIncidentsCard = Card([incidentsHeading, incidentsTable, vehiclesHeading, vehiclesTable, roadworksHeading, roadworksTable], "sunk", "column", "m")
+
+incidentsHeading = Heading("6. Active Open Incidents", "h3")
+incidentsTable = Table([incIdCol, incLocCol, incSevCol, incDescCol])
+incIdCol = Col("ID", ["INC-4091", "INC-4088", "INC-4085", "INC-4082"])
+incLocCol = Col("Location", ["5th Ave & Main St (Downtown)", "Route 9 North Ext. (North)", "Port Harbor Terminal 3 (East)", "Oak Park Metro Station (South)"])
+incSevCol = Col("Severity", ["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+incDescCol = Col("Type & Description", ["Water Main Break - Lane blocked", "Multi-vehicle collision - Express lane", "Power Substation Signal Glitch", "Escalator Malfunction - Passenger Delay"])
+
+vehiclesHeading = Heading("7. Emergency Vehicle Deployments", "h3")
+vehiclesTable = Table([unitCol, typeCol, locationCol, statusUnitCol])
+unitCol = Col("Unit ID", ["ENG-12", "MED-04", "PAT-108", "ENG-03", "HAZ-01"])
+typeCol = Col("Vehicle Type", ["Fire Engine", "Paramedic Ambulance", "Police Patrol Unit", "Fire Engine", "Hazmat Unit"])
+locationCol = Col("Assigned Location", ["5th Ave & Main St", "Route 9 North Ext.", "Downtown Plaza", "Oak Park Metro", "Port Harbor Terminal 3"])
+statusUnitCol = Col("Status", ["On Scene (Command)", "En Route (ETA 3m)", "Patrol / Perimeter", "On Scene", "Staged / Assessment"])
+
+roadworksHeading = Heading("16. Planned Roadworks This Month", "h3")
+roadworksTable = Table([rwLocationCol, rwScopeCol, rwDatesCol, rwImpactCol])
+rwLocationCol = Col("Corridor", ["Grand Ave Bridge", "Broadway Tunnel", "Outer Ring Road (Km 12-16)"])
+rwScopeCol = Col("Scope of Work", ["Structural Joint Replacement", "LED Lighting & Ventilation", "Resurfacing & Lane Expansion"])
+rwDatesCol = Col("Scheduled Dates", ["Oct 12 - Oct 18", "Oct 19 - Oct 22", "Oct 25 - Nov 05"])
+rwImpactCol = Col("Expected Impact", ["Single lane alternate traffic", "Full night closures (11pm-5am)", "Left lane closed / Reduced speed"])
+
+tabDistrictsEnergy = TabItem("districts_energy", "Environment & Energy (3, 4)", [envCard])
+envCard = Card([aqiHeading, aqiChart, energyHeading, energyChart], "sunk", "column", "m")
+
+aqiHeading = Heading("3. Air Quality Index (AQI) by District", "h3")
+aqiChart = BarChart(["Downtown", "North Metro", "Eastside/Port", "South Urban", "West Hills"], [aqiSeries], "grouped", "District", "AQI Score")
+aqiSeries = Series("AQI Rating", [62, 38, 78, 45, 24])
+
+energyHeading = Heading("4. Citywide Energy Use Over Past Week (GWh)", "h3")
+energyChart = AreaChart(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], [energyResidential, energyCommercial, energyIndustrial], "natural", "Day of Week", "Gigawatt Hours (GWh)")
+energyResidential = Series("Residential", [42, 44, 43, 45, 48, 55, 52])
+energyCommercial = Series("Commercial", [68, 70, 72, 71, 69, 40, 35])
+energyIndustrial = Series("Industrial", [55, 56, 54, 55, 53, 30, 28])
+
+tabServicesMaintenance = TabItem("services_maint", "Infrastructure & Live Reports (10, 17)", [servicesCard])
+servicesCard = Card([maintHeading, maintTable, feedHeading, feedList], "sunk", "column", "m")
+
+maintHeading = Heading("17. Infrastructure Maintenance Due", "h3")
+maintTable = Table([assetCol, maintTypeCol, districtCol, dueCol, priorityCol])
+assetCol = Col("Asset Name", ["Pumping Station 4", "Traffic Light Array #104", "Subway Line B Switch 12", "Central Bridge Cable #4"])
+maintTypeCol = Col("Required Maintenance", ["Pump Impeller Service", "Controller Box Recalibration", "Hydraulic Cylinder Replace", "Ultrasonic Stress Test"])
+districtCol = Col("District", ["Eastside", "Downtown", "South Urban", "Downtown"])
+dueCol = Col("Due Date", ["Overdue (2d)", "Due Today", "In 3 Days", "In 5 Days"])
+priorityCol = Col("Priority", ["High", "Medium", "High", "Critical"])
+
+feedHeading = Heading("10. Live Incoming Citizen Reports", "h3")
+feedList = ListBlock([report1, report2, report3])
+report1 = ListItem("Pothole Hazard on 8th Street", "Reported 4 mins ago via City App • Downtown Central • Photo attached", null, "Review & Dispatch")
+report2 = ListItem("Streetlight Outage - Block 400", "Reported 12 mins ago via Call • North Metro", null, "Review & Dispatch")
+report3 = ListItem("Illegal Dumping in Park Alley", "Reported 25 mins ago via Web • West Hills", null, "Assign Sanitation")
+
+tabEventsCommunity = TabItem("events_comm", "Public Events (9)", [eventsCard])
+eventsCard = Card([eventsHeading, eventsTable], "sunk", "column", "m")
+
+eventsHeading = Heading("9. Public Events This Weekend", "h3")
+eventsTable = Table([eventNameCol, eventLocCol, eventTimeCol, eventAttCol, eventImpactCol])
+eventNameCol = Col("Event Name", ["Downtown Autumn Marathon", "Harbor Food & Music Fest", "City Tech Expo", "Farmers Market"])
+eventLocCol = Col("Location", ["Downtown Loop", "Eastside Waterfront Park", "Metro Convention Center", "West Hills Plaza"])
+eventTimeCol = Col("Schedule", ["Sat 06:00 - 13:00", "Sat-Sun 12:00 - 22:00", "Fri-Sun 09:00 - 18:00", "Sun 08:00 - 14:00"])
+eventAttCol = Col("Est. Attendance", ["15,000", "8,500", "22,000", "3,000"])
+eventImpactCol = Col("Ops Impact", ["Major Road Closures", "High Transit Demand", "Parking Surge", "Minor Traffic Detour"])
+
+quickActions = Card([actionsHeading, dispatchForm, alertForm], "sunk", "row", "l")
+actionsHeading = Heading("Emergency Operations & Control Actions", "h2")
+
+dispatchForm = Form("dispatch-crew-form", dispatchButtons, [dispatchIncident, dispatchUnit, dispatchNotes])
+dispatchIncident = FormControl("14. Dispatch Crew - Target Incident", dispatchIncSelect)
+dispatchIncSelect = Select("dispatch_incident", [incOpt1, incOpt2, incOpt3], "Select Active Incident")
+incOpt1 = SelectItem("INC-4091", "INC-4091: Water Main Break (5th Ave)")
+incOpt2 = SelectItem("INC-4088", "INC-4088: Collision (Route 9)")
+incOpt3 = SelectItem("INC-4085", "INC-4085: Signal Glitch (Port Harbor)")
+
+dispatchUnit = FormControl("Select Crew / Unit", dispatchUnitSelect)
+dispatchUnitSelect = Select("dispatch_unit", [unitOpt1, unitOpt2, unitOpt3], "Select Available Crew")
+unitOpt1 = SelectItem("CREW-UTIL-01", "Utility Repair Crew 01 (Public Works)")
+unitOpt2 = SelectItem("CREW-TRANS-04", "Traffic Signal Tech Team 04")
+unitOpt3 = SelectItem("CREW-ENG-05", "Fire & Rescue Engine 05")
+
+dispatchNotes = FormControl("Dispatch Instructions", dispatchNotesInput)
+dispatchNotesInput = Input("dispatch_notes", "Enter tactical response notes...")
+
+dispatchButtons = Buttons([submitDispatchBtn])
+submitDispatchBtn = Button("14. Dispatch Crew Now", null, "primary")
+
+alertForm = Form("public-alert-form", alertButtons, [alertTarget, alertMessage])
+alertTarget = FormControl("15. Send Public Alert - Target Zone", alertTargetSelect)
+alertTargetSelect = Select("alert_target", [zoneAll, zoneDowntown, zoneNorth], "Select Broadcast Zone")
+zoneAll = SelectItem("all_zones", "ALL DISTRICTS (Emergency Broadcast)")
+zoneDowntown = SelectItem("downtown_zone", "Downtown Central Only")
+zoneNorth = SelectItem("north_zone", "North Metro Corridor Only")
+
+alertMessage = FormControl("Alert Message Text", alertMessageInput, "Broadcasts to EAS, Mobile Push, and Digital Street Signage")
+alertMessageInput = TextArea("alert_message_text", "EMERGENCY ALERT: Water main break on 5th Ave. Please avoid the area and use 10th Ave detour.", 3)
+
+alertButtons = Buttons([submitAlertBtn])
+submitAlertBtn = Button("15. Send Public Alert", null, "primary", "destructive")
+
+followUp = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Show expanded traffic sensor camera feeds")
+fu2 = FollowUpItem("Export weekly energy and environmental report")
+fu3 = FollowUpItem("Filter open incidents for Downtown district only")

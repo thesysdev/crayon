@@ -1,0 +1,63 @@
+root = Card([header, countdownAlert, mainTabs, registerSection, followUps])
+
+header = CardHeader("TechForward Conf 2025", "October 24-25, 2025 | Metropolitan Pavilion, New York, NY")
+
+countdownAlert = Callout("info", "Countdown to TechForward 2025", "Only 45 days remaining until the premier tech event of the year! Secure your pass today.")
+
+mainTabs = Tabs([agendaTab, speakersTab, ticketsTab])
+
+agendaTab = TabItem("agenda", "Agenda & Schedule", [agendaIntro, day1Accordion, day2Accordion])
+agendaIntro = TextContent("Explore two days packed with insightful keynotes, hands-on workshops, and networking opportunities.", "default")
+
+day1Accordion = SectionBlock([day1Section], true)
+day1Section = SectionItem("day1", "Day 1: October 24 (Keynotes & Main Stage)", [day1Schedule])
+day1Schedule = Table([d1TimeCol, d1TrackCol, d1TitleCol])
+d1TimeCol = Col("Time", ["08:30 AM", "09:30 AM", "11:00 AM", "01:30 PM", "03:30 PM", "05:00 PM"])
+d1TrackCol = Col("Track", ["Registration", "Main Stage", "AI & Data", "Cloud Arch", "Design", "Social"])
+d1TitleCol = Col("Session Title", ["Doors Open & Breakfast", "Opening Keynote: The Future of Intelligence", "Scaling LLMs in Production", "Serverless Patterns at Scale", "Designing for Accessibility", "Networking Mixer"])
+
+day2Accordion = SectionBlock([day2Section], true)
+day2Section = SectionItem("day2", "Day 2: October 25 (Workshops & Deep Dives)", [day2Schedule])
+day2Schedule = Table([d2TimeCol, d2TrackCol, d2TitleCol])
+d2TimeCol = Col("Time", ["09:00 AM", "10:30 AM", "01:00 PM", "02:30 PM", "04:30 PM"])
+d2TrackCol = Col("Track", ["Workshop A", "Workshop B", "Keynote", "Panel", "Closing"])
+d2TitleCol = Col("Session Title", ["Building Reactive UI Frameworks", "Edge Computing in Practice", "The Next Decade in Software", "Ethics in Artificial Intelligence", "Closing Ceremony & Awards"])
+
+speakersTab = TabItem("speakers", "Featured Speakers", [speakersList])
+speakersList = ListBlock([speaker1, speaker2, speaker3, speaker4, speaker5])
+speaker1 = ListItem("Dr. Elena Rostova", "VP of AI Research at NeuralCore — Leading breakthrough developments in generative model efficiency.")
+speaker2 = ListItem("Marcus Chen", "Chief Architect at CloudScale — Pioneer in distributed systems and zero-trust cloud infrastructure.")
+speaker3 = ListItem("Sarah Jenkins", "Head of Product Design at Designify — Author of 'Design Systems for the Enterprise'.")
+speaker4 = ListItem("Devon Vance", "Founder of OpenStack Labs — Open-source advocate and creator of several high-performance UI libraries.")
+speaker5 = ListItem("Aisha Patel", "Director of Security at CipherGuard — Expert in post-quantum cryptography and application safety.")
+
+ticketsTab = TabItem("tickets", "Ticket Tiers", [ticketsTable, ticketsNote])
+ticketsTable = Table([tierCol, priceCol, accessCol, statusCol])
+tierCol = Col("Pass Type", ["Virtual Pass", "Standard Pass", "VIP All-Access"])
+priceCol = Col("Price", ["$199", "$599", "$1,199"])
+accessCol = Col("Includes", ["Live Stream + On-Demand Recordings", "Full 2-Day Access + Swag Bag + Lunch", "All-Access + Speaker Lounge + VIP Dinner"])
+statusCol = Col("Availability", ["Available", "Early Bird (Ends Soon)", "Limited Seats"])
+ticketsNote = TextCallout("success", "Group Discount Available", "Registering 5 or more attendees? Contact support@techforward.com for a 20% team discount.")
+
+registerSection = SectionBlock([registerSectionItem])
+registerSectionItem = SectionItem("register", "Register for TechForward 2025", [registerForm])
+
+registerForm = Form("registration", formButtons, [nameField, emailField, tierField])
+nameField = FormControl("Full Name", nameInput)
+nameInput = Input("full_name", "e.g. Alex Morgan")
+emailField = FormControl("Work Email", emailInput, "We'll send your ticket confirmation and digital badge here.")
+emailInput = Input("work_email", "alex@company.com", "email")
+tierField = FormControl("Select Pass Tier", tierSelect)
+tierSelect = Select("pass_tier", [virtualOpt, standardOpt, vipOpt], "Select a ticket tier")
+virtualOpt = SelectItem("virtual", "Virtual Pass ($199)")
+standardOpt = SelectItem("standard", "Standard Pass ($599)")
+vipOpt = SelectItem("vip", "VIP All-Access Pass ($1,199)")
+
+formButtons = Buttons([submitBtn, clearBtn])
+submitBtn = Button("Complete Registration", null, "primary")
+clearBtn = Button("Reset Form", null, "tertiary")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Where is Metropolitan Pavilion located?")
+f2 = FollowUpItem("What is the refund policy for tickets?")
+f3 = FollowUpItem("Are there hotel discounts for attendees?")

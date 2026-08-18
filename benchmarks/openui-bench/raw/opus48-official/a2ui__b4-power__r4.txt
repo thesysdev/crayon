@@ -1,0 +1,116 @@
+Here's a comprehensive power network operator's console covering all twelve requirements.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "grid-console",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": { "primaryColor": "#00BFFF", "agentDisplayName": "GridOps Console" }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "grid-console",
+      "components": [
+        { "id": "root", "component": "Card", "direction": "column", "gap": "l", "children": ["header", "topKpis", "regionFocusRow", "alertsBlock", "genTabs", "plantsSection", "outagesSection", "forecastCard", "maintCard", "footerActions"] },
+
+        { "id": "header", "component": "CardHeader", "title": "Power Network Operations Console", "subtitle": "Real-time grid monitoring & control" },
+
+        { "id": "topKpis", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "wrap": true, "children": ["kpiLoad", "kpiCapacity", "kpiPrice", "kpiEmissions"] },
+
+        { "id": "kpiLoad", "component": "Card", "variant": "sunk", "direction": "column", "gap": "xs", "weight": 1, "children": ["kpiLoadTitle", "kpiLoadValue"] },
+        { "id": "kpiLoadTitle", "component": "TextContent", "text": "Current Network Load", "size": "small" },
+        { "id": "kpiLoadValue", "component": "Heading", "text": "38,420 MW", "level": "h2" },
+
+        { "id": "kpiCapacity", "component": "Card", "variant": "sunk", "direction": "column", "gap": "xs", "weight": 1, "children": ["kpiCapTitle", "kpiCapProgress"] },
+        { "id": "kpiCapTitle", "component": "TextContent", "text": "Capacity Utilization", "size": "small" },
+        { "id": "kpiCapProgress", "component": "Progress", "value": 87, "label": "38,420 / 44,000 MW (87%)" },
+
+        { "id": "kpiPrice", "component": "Card", "variant": "sunk", "direction": "column", "gap": "xs", "weight": 1, "children": ["kpiPriceTitle", "kpiPriceValue", "kpiPriceTag"] },
+        { "id": "kpiPriceTitle", "component": "TextContent", "text": "Spot Price / MWh", "size": "small" },
+        { "id": "kpiPriceValue", "component": "Heading", "text": "$62.40", "level": "h2" },
+        { "id": "kpiPriceTag", "component": "Tag", "text": "+4.1% vs 1h ago", "variant": "warning", "size": "sm" },
+
+        { "id": "kpiEmissions", "component": "Card", "variant": "sunk", "direction": "column", "gap": "xs", "weight": 1, "children": ["kpiEmTitle", "kpiEmValue", "kpiEmTag"] },
+        { "id": "kpiEmTitle", "component": "TextContent", "text": "Emissions Today", "size": "small" },
+        { "id": "kpiEmValue", "component": "Heading", "text": "18,240 tCO₂", "level": "h2" },
+        { "id": "kpiEmTag", "component": "Tag", "text": "0.475 tCO₂/MWh", "variant": "info", "size": "sm" },
+
+        { "id": "regionFocusRow", "component": "Card", "variant": "card", "direction": "row", "gap": "m", "align": "end", "wrap": true, "children": ["regionFocusControl", "regionApplyBtn"] },
+        { "id": "regionFocusControl", "component": "FormControl", "label": "Focus on Region", "hint": "Filter all panels to a single region", "input": "regionSelect" },
+        { "id": "regionSelect", "component": "Select", "name": "region", "placeholder": "All Regions", "items": ["regNorth", "regSouth", "regEast", "regWest", "regCentral"] },
+        { "id": "regNorth", "component": "SelectItem", "value": "north", "label": "North" },
+        { "id": "regSouth", "component": "SelectItem", "value": "south", "label": "South" },
+        { "id": "regEast", "component": "SelectItem", "value": "east", "label": "East" },
+        { "id": "regWest", "component": "SelectItem", "value": "west", "label": "West" },
+        { "id": "regCentral", "component": "SelectItem", "value": "central", "label": "Central" },
+        { "id": "regionApplyBtn", "component": "Button", "label": "Apply Focus", "variant": "primary", "action": ["focusRegion"] },
+
+        { "id": "alertsBlock", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["alertsHeader", "alert1", "alert2", "alert3"] },
+        { "id": "alertsHeader", "component": "Heading", "text": "Live Alerts", "level": "h3" },
+        { "id": "alert1", "component": "Alert", "variant": "destructive", "title": "Frequency deviation — West grid", "description": "49.82 Hz detected 12s ago. Auto-response engaged." },
+        { "id": "alert2", "component": "Alert", "variant": "warning", "title": "High load — Central corridor", "description": "Corridor at 94% capacity. Monitor for congestion." },
+        { "id": "alert3", "component": "Alert", "variant": "info", "title": "Wind ramp forecast — North", "description": "Expected +1,200 MW over next 30 min." },
+
+        { "id": "genTabs", "component": "Card", "variant": "card", "direction": "column", "children": ["genTabsInner"] },
+        { "id": "genTabsInner", "component": "Tabs", "items": ["tabMix", "tabTrend"] },
+        { "id": "tabMix", "component": "TabItem", "value": "mix", "trigger": "Generation Mix", "content": ["genPie"] },
+        { "id": "genPie", "component": "PieChart", "variant": "donut", "labels": ["Natural Gas", "Nuclear", "Wind", "Solar", "Hydro", "Coal"], "values": [14200, 9800, 6100, 3400, 3200, 1720] },
+        { "id": "tabTrend", "component": "TabItem", "value": "trend", "trigger": "Source Output", "content": ["genBar"] },
+        { "id": "genBar", "component": "BarChart", "labels": ["Gas", "Nuclear", "Wind", "Solar", "Hydro", "Coal"], "series": ["genBarSeries"], "yLabel": "MW" },
+        { "id": "genBarSeries", "component": "Series", "category": "Output (MW)", "values": [14200, 9800, 6100, 3400, 3200, 1720] },
+
+        { "id": "plantsSection", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["plantsHeader", "plantsTable"] },
+        { "id": "plantsHeader", "component": "Heading", "text": "Plant Status & Output", "level": "h3" },
+        { "id": "plantsTable", "component": "Table", "columns": ["colPlant", "colRegion", "colOutput", "colStatus"] },
+        { "id": "colPlant", "component": "Col", "label": "Plant", "type": "string", "data": ["Ridgeline CCGT", "Halden Nuclear", "Cape Wind Array", "Solaris Field", "Blue River Hydro", "Old Mill Coal"] },
+        { "id": "colRegion", "component": "Col", "label": "Region", "type": "string", "data": ["West", "North", "East", "South", "Central", "Central"] },
+        { "id": "colOutput", "component": "Col", "label": "Output (MW)", "type": "number", "data": [3800, 4900, 2100, 1600, 1550, 860] },
+        { "id": "colStatus", "component": "Col", "label": "Status", "type": "string", "data": ["Online", "Online", "Online", "Reduced", "Online", "Derated"] },
+
+        { "id": "outagesSection", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["outagesHeader", "outagesTable"] },
+        { "id": "outagesHeader", "component": "Heading", "text": "Active Outages", "level": "h3" },
+        { "id": "outagesTable", "component": "Table", "columns": ["oColAsset", "oColRegion", "oColMW", "oColCause", "oColEta"] },
+        { "id": "oColAsset", "component": "Col", "label": "Asset", "type": "string", "data": ["Line 220-W", "Substation E4", "Peaker Unit 3"] },
+        { "id": "oColRegion", "component": "Col", "label": "Affected Region", "type": "string", "data": ["West", "East", "South"] },
+        { "id": "oColMW", "component": "Col", "label": "Lost (MW)", "type": "number", "data": [420, 180, 240] },
+        { "id": "oColCause", "component": "Col", "label": "Cause", "type": "string", "data": ["Fault trip", "Storm damage", "Unplanned trip"] },
+        { "id": "oColEta", "component": "Col", "label": "Restore ETA", "type": "string", "data": ["14:30", "18:00", "16:15"] },
+
+        { "id": "forecastCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["forecastHeader", "forecastChart"] },
+        { "id": "forecastHeader", "component": "Heading", "text": "Demand Forecast — Next 24h", "level": "h3" },
+        { "id": "forecastChart", "component": "AreaChart", "variant": "natural", "xLabel": "Hour", "yLabel": "MW", "labels": ["00", "02", "04", "06", "08", "10", "12", "14", "16", "18", "20", "22"], "series": ["forecastSeries"] },
+        { "id": "forecastSeries", "component": "Series", "category": "Forecast Demand", "values": [31000, 29500, 28800, 30200, 34500, 37800, 39100, 40200, 41800, 43200, 40500, 35600] },
+
+        { "id": "maintCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["maintHeader", "maintList"] },
+        { "id": "maintHeader", "component": "Heading", "text": "Planned Maintenance — This Month", "level": "h3" },
+        { "id": "maintList", "component": "ListBlock", "variant": "number", "items": ["maint1", "maint2", "maint3"] },
+        { "id": "maint1", "component": "ListItem", "title": "Halden Nuclear — Unit 2 refuel", "subtitle": "West · Jun 8–14 · 1,000 MW offline" },
+        { "id": "maint2", "component": "ListItem", "title": "Line 400-C insulator replacement", "subtitle": "Central · Jun 17 · 6h window" },
+        { "id": "maint3", "component": "ListItem", "title": "Cape Wind turbine servicing", "subtitle": "East · Jun 22–23 · 300 MW derate" },
+
+        { "id": "footerActions", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "justify": "end", "children": ["curtailDialog"] },
+        { "id": "curtailDialog", "component": "AlertDialogBlock", "triggerLabel": "Order Curtailment", "triggerVariant": "destructive", "title": "Confirm Curtailment Order", "description": "This will issue a load-shedding directive to the selected region and reduce delivered demand. This action is logged and audited. Proceed?", "confirmLabel": "Issue Curtailment", "cancelLabel": "Cancel" }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+This console covers every item:
+
+1. **Current load** — top KPI (38,420 MW)
+2. **Closeness to capacity** — utilization progress bar (87%)
+3. **Generation split by source** — donut/bar chart in the Generation Mix tab
+4. **Each plant with output & status** — Plant Status table
+5. **Outages with affected region** — Active Outages table
+6. **24h demand forecast** — area chart
+7. **Current price/MWh** — spot price KPI ($62.40)
+8. **Maintenance this month** — numbered list
+9. **Live alerts** — alerts panel with severity variants
+10. **Focus on one region** — region select + apply
+11. **Order curtailment** — confirm/cancel alert dialog
+12. **Emissions today** — emissions KPI (18,240 tCO₂)

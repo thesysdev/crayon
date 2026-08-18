@@ -1,0 +1,96 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["title","summary","toolbar","exported-callout","projects-heading","projects-list","budget-heading","budget-chart","util-heading","util-chart","milestones-heading","milestones-list","risks-heading","risks-list","deadlines-heading","deadlines-list","pace-heading","pace-chart","blocked-heading","blocked-list","actions-row","requested-callout"]}}
+{"op":"add","path":"/elements/title","value":{"type":"Heading","props":{"text":"PMO Project Portfolio Review","level":"h1"},"children":[]}}
+{"op":"add","path":"/elements/summary","value":{"type":"Callout","props":{"variant":"info","title":"Portfolio Health Summary","description":{"$state":"/healthSummary"}},"children":[]}}
+{"op":"add","path":"/state/healthSummary","value":"Portfolio is 78% healthy: 3 projects on track, 1 at risk, 2 milestones overdue, 1 critical risk open."}
+{"op":"add","path":"/elements/toolbar","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center","justify":"between","variant":"sunk"},"children":["quarter-select","quarter-q1","quarter-q2","quarter-q3","quarter-q4","toolbar-buttons"]}}
+{"op":"add","path":"/elements/quarter-select","value":{"type":"Select","props":{"name":"quarter","items":["quarter-q1","quarter-q2","quarter-q3","quarter-q4"],"value":{"$bindState":"/quarter"},"size":"small"},"children":[]}}
+{"op":"add","path":"/state/quarter","value":"Q3"}
+{"op":"add","path":"/elements/quarter-q1","value":{"type":"SelectItem","props":{"value":"Q1","label":"Q1 2024"},"children":[]}}
+{"op":"add","path":"/elements/quarter-q2","value":{"type":"SelectItem","props":{"value":"Q2","label":"Q2 2024"},"children":[]}}
+{"op":"add","path":"/elements/quarter-q3","value":{"type":"SelectItem","props":{"value":"Q3","label":"Q3 2024"},"children":[]}}
+{"op":"add","path":"/elements/quarter-q4","value":{"type":"SelectItem","props":{"value":"Q4","label":"Q4 2024"},"children":[]}}
+{"op":"add","path":"/elements/toolbar-buttons","value":{"type":"Buttons","props":{"buttons":["export-btn","request-people-dialog"]},"children":[]}}
+{"op":"add","path":"/elements/export-btn","value":{"type":"Button","props":{"label":"Export Review (PDF)","variant":"secondary"},"on":{"press":{"action":"setState","params":{"statePath":"/exported","value":true}}},"children":[]}}
+{"op":"add","path":"/elements/exported-callout","value":{"type":"Callout","props":{"variant":"success","title":"Export started","description":"The portfolio review PDF is being generated and will download shortly."},"visible":{"$state":"/exported"},"children":[]}}
+{"op":"add","path":"/state/exported","value":false}
+{"op":"add","path":"/elements/request-people-dialog","value":{"type":"DialogBlock","props":{"triggerLabel":"Request More People","title":"Request Additional Headcount","description":"Select a project and specify how many people you need.","content":["rp-project-select","rp-p1","rp-p2","rp-p3","rp-p4","rp-count-input","rp-submit-btn"]},"children":[]}}
+{"op":"add","path":"/elements/rp-project-select","value":{"type":"Select","props":{"name":"rpProject","items":["rp-p1","rp-p2","rp-p3","rp-p4"],"placeholder":"Select project","value":{"$bindState":"/requestForm/project"}},"children":[]}}
+{"op":"add","path":"/elements/rp-p1","value":{"type":"SelectItem","props":{"value":"atlas","label":"Atlas Platform Rewrite"},"children":[]}}
+{"op":"add","path":"/elements/rp-p2","value":{"type":"SelectItem","props":{"value":"beacon","label":"Beacon Mobile App"},"children":[]}}
+{"op":"add","path":"/elements/rp-p3","value":{"type":"SelectItem","props":{"value":"cinder","label":"Cinder Data Pipeline"},"children":[]}}
+{"op":"add","path":"/elements/rp-p4","value":{"type":"SelectItem","props":{"value":"delta","label":"Delta Billing Migration"},"children":[]}}
+{"op":"add","path":"/elements/rp-count-input","value":{"type":"Input","props":{"name":"rpCount","placeholder":"Number of people needed","type":"number","value":{"$bindState":"/requestForm/count"}},"children":[]}}
+{"op":"add","path":"/elements/rp-submit-btn","value":{"type":"Button","props":{"label":"Submit Request","variant":"primary"},"on":{"press":{"action":"setState","params":{"statePath":"/requested","value":true}}},"children":[]}}
+{"op":"add","path":"/state/requestForm/project","value":""}
+{"op":"add","path":"/state/requestForm/count","value":""}
+{"op":"add","path":"/state/requested","value":false}
+{"op":"add","path":"/elements/requested-callout","value":{"type":"Callout","props":{"variant":"success","title":"Headcount request submitted","description":"Your resourcing request has been routed to the staffing committee for review."},"visible":{"$state":"/requested"},"children":[]}}
+{"op":"add","path":"/elements/projects-heading","value":{"type":"Heading","props":{"text":"1. Active Projects","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/projects-list","value":{"type":"Card","props":{"direction":"column","gap":"s","variant":"clear"},"repeat":{"statePath":"/projects","key":"id"},"children":["project-row"]}}
+{"op":"add","path":"/state/projects","value":[]}
+{"op":"add","path":"/state/projects/0","value":{"id":"p1","name":"Atlas Platform Rewrite","owner":"Sarah Kim","deadline":"2024-09-30","health":"On Track"}}
+{"op":"add","path":"/state/projects/1","value":{"id":"p2","name":"Beacon Mobile App","owner":"Diego Ramos","deadline":"2024-08-15","health":"At Risk"}}
+{"op":"add","path":"/state/projects/2","value":{"id":"p3","name":"Cinder Data Pipeline","owner":"Priya Nair","deadline":"2024-10-12","health":"On Track"}}
+{"op":"add","path":"/state/projects/3","value":{"id":"p4","name":"Delta Billing Migration","owner":"Tom Becker","deadline":"2024-08-02","health":"Critical"}}
+{"op":"add","path":"/elements/project-row","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center","justify":"between"},"children":["project-info","project-health","project-archive-btn"]}}
+{"op":"add","path":"/elements/project-info","value":{"type":"TextContent","props":{"text":{"$template":"**${name}** — Owner: ${owner} · Deadline: ${deadline}"}},"children":[]}}
+{"op":"add","path":"/elements/project-health","value":{"type":"Tag","props":{"text":{"$item":"health"},"variant":{"$cond":{"$item":"health","eq":"On Track"},"$then":"success","$else":{"$cond":{"$item":"health","eq":"At Risk"},"$then":"warning","$else":"danger"}}},"children":[]}}
+{"op":"add","path":"/elements/project-archive-btn","value":{"type":"Button","props":{"label":"Archive","variant":"tertiary","size":"small"},"on":{"press":{"action":"removeState","params":{"statePath":"/projects","index":{"$index":true}}}},"children":[]}}
+{"op":"add","path":"/elements/budget-heading","value":{"type":"Heading","props":{"text":"3. Budget Spent vs Allocation","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/budget-chart","value":{"type":"BarChart","props":{"labels":{"$state":"/budgetLabels"},"series":["budget-spent","budget-allocated"],"variant":"grouped","yLabel":"USD (k)"},"children":[]}}
+{"op":"add","path":"/state/budgetLabels","value":["Atlas","Beacon","Cinder","Delta"]}
+{"op":"add","path":"/elements/budget-spent","value":{"type":"Series","props":{"category":"Spent","values":{"$state":"/budgetSpent"}},"children":[]}}
+{"op":"add","path":"/state/budgetSpent","value":[420,310,180,265]}
+{"op":"add","path":"/elements/budget-allocated","value":{"type":"Series","props":{"category":"Allocated","values":{"$state":"/budgetAllocated"}},"children":[]}}
+{"op":"add","path":"/state/budgetAllocated","value":[500,300,250,240]}
+{"op":"add","path":"/elements/util-heading","value":{"type":"Heading","props":{"text":"4. Team Utilization","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/util-chart","value":{"type":"PieChart","props":{"labels":{"$state":"/utilLabels"},"values":{"$state":"/utilValues"},"variant":"donut"},"children":[]}}
+{"op":"add","path":"/state/utilLabels","value":["Engineering","Design","QA","Product","Available"]}
+{"op":"add","path":"/state/utilValues","value":[42,18,14,10,16]}
+{"op":"add","path":"/elements/milestones-heading","value":{"type":"Heading","props":{"text":"2. Overdue Milestones","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/milestones-list","value":{"type":"Card","props":{"direction":"column","gap":"s","variant":"clear"},"repeat":{"statePath":"/overdueMilestones","key":"id"},"children":["milestone-row"]}}
+{"op":"add","path":"/state/overdueMilestones","value":[]}
+{"op":"add","path":"/state/overdueMilestones/0","value":{"id":"m1","title":"Beta sign-off","project":"Delta Billing Migration","due":"2024-06-28","daysLate":19}}
+{"op":"add","path":"/state/overdueMilestones/1","value":{"id":"m2","title":"API freeze","project":"Beacon Mobile App","due":"2024-07-05","daysLate":12}}
+{"op":"add","path":"/state/overdueMilestones/2","value":{"id":"m3","title":"Security audit","project":"Delta Billing Migration","due":"2024-07-12","daysLate":5}}
+{"op":"add","path":"/elements/milestone-row","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center","justify":"between"},"children":["milestone-info","milestone-tag"]}}
+{"op":"add","path":"/elements/milestone-info","value":{"type":"TextContent","props":{"text":{"$template":"**${title}** — ${project} · was due ${due}"}},"children":[]}}
+{"op":"add","path":"/elements/milestone-tag","value":{"type":"Tag","props":{"text":{"$template":"${daysLate}d late"},"variant":"danger"},"children":[]}}
+{"op":"add","path":"/elements/risks-heading","value":{"type":"Heading","props":{"text":"5. Open Risks","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/risks-list","value":{"type":"Card","props":{"direction":"column","gap":"s","variant":"clear"},"repeat":{"statePath":"/risks","key":"id"},"children":["risk-row"]}}
+{"op":"add","path":"/state/risks","value":[]}
+{"op":"add","path":"/state/risks/0","value":{"id":"r1","title":"Payment gateway vendor delays","project":"Delta Billing Migration","severity":"Critical"}}
+{"op":"add","path":"/state/risks/1","value":{"id":"r2","title":"Key iOS engineer on leave in Aug","project":"Beacon Mobile App","severity":"High"}}
+{"op":"add","path":"/state/risks/2","value":{"id":"r3","title":"Schema migration may extend timeline","project":"Cinder Data Pipeline","severity":"Medium"}}
+{"op":"add","path":"/state/risks/3","value":{"id":"r4","title":"Scope creep in platform rewrite","project":"Atlas Platform Rewrite","severity":"Low"}}
+{"op":"add","path":"/elements/risk-row","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center","justify":"between"},"children":["risk-info","risk-tag"]}}
+{"op":"add","path":"/elements/risk-info","value":{"type":"TextContent","props":{"text":{"$template":"**${title}** — ${project}"}},"children":[]}}
+{"op":"add","path":"/elements/risk-tag","value":{"type":"Tag","props":{"text":{"$item":"severity"},"variant":{"$cond":{"$item":"severity","eq":"Critical"},"$then":"danger","$else":{"$cond":{"$item":"severity","eq":"High"},"$then":"warning","$else":"neutral"}}},"children":[]}}
+{"op":"add","path":"/elements/deadlines-heading","value":{"type":"Heading","props":{"text":"6. Deadlines in the Next Two Weeks","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/deadlines-list","value":{"type":"Card","props":{"direction":"column","gap":"s","variant":"clear"},"repeat":{"statePath":"/upcomingDeadlines","key":"id"},"children":["deadline-row"]}}
+{"op":"add","path":"/state/upcomingDeadlines","value":[]}
+{"op":"add","path":"/state/upcomingDeadlines/0","value":{"id":"d1","title":"Delta go-live readiness review","project":"Delta Billing Migration","due":"2024-07-24"}}
+{"op":"add","path":"/state/upcomingDeadlines/1","value":{"id":"d2","title":"Beacon App Store submission","project":"Beacon Mobile App","due":"2024-07-26"}}
+{"op":"add","path":"/state/upcomingDeadlines/2","value":{"id":"d3","title":"Atlas performance benchmark","project":"Atlas Platform Rewrite","due":"2024-07-30"}}
+{"op":"add","path":"/elements/deadline-row","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center","justify":"between"},"children":["deadline-info","deadline-tag"]}}
+{"op":"add","path":"/elements/deadline-info","value":{"type":"TextContent","props":{"text":{"$template":"**${title}** — ${project}"}},"children":[]}}
+{"op":"add","path":"/elements/deadline-tag","value":{"type":"Tag","props":{"text":{"$item":"due"},"variant":"info"},"children":[]}}
+{"op":"add","path":"/elements/pace-heading","value":{"type":"Heading","props":{"text":"7. Delivery Pace — Last 6 Sprints","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/pace-chart","value":{"type":"LineChart","props":{"labels":{"$state":"/sprintLabels"},"series":["pace-done","pace-planned"],"variant":"natural","yLabel":"Story Points"},"children":[]}}
+{"op":"add","path":"/state/sprintLabels","value":["S14","S15","S16","S17","S18","S19"]}
+{"op":"add","path":"/elements/pace-done","value":{"type":"Series","props":{"category":"Completed","values":{"$state":"/sprintCompleted"}},"children":[]}}
+{"op":"add","path":"/state/sprintCompleted","value":[68,74,71,80,77,85]}
+{"op":"add","path":"/elements/pace-planned","value":{"type":"Series","props":{"category":"Planned","values":{"$state":"/sprintPlanned"}},"children":[]}}
+{"op":"add","path":"/state/sprintPlanned","value":[72,72,75,78,80,82]}
+{"op":"add","path":"/elements/blocked-heading","value":{"type":"Heading","props":{"text":"8. Blocked Work Items","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/blocked-list","value":{"type":"Card","props":{"direction":"column","gap":"s","variant":"clear"},"repeat":{"statePath":"/blockedItems","key":"id"},"children":["blocked-row"]}}
+{"op":"add","path":"/state/blockedItems","value":[]}
+{"op":"add","path":"/state/blockedItems/0","value":{"id":"b1","title":"Vendor sandbox credentials","project":"Delta Billing Migration","blocker":"Waiting on vendor","daysBlocked":9}}
+{"op":"add","path":"/state/blockedItems/1","value":{"id":"b2","title":"App Store privacy review answers","project":"Beacon Mobile App","blocker":"Legal review pending","daysBlocked":4}}
+{"op":"add","path":"/state/blockedItems/2","value":{"id":"b3","title":"Upstream data contract change","project":"Cinder Data Pipeline","blocker":"Cross-team dependency","daysBlocked":6}}
+{"op":"add","path":"/elements/blocked-row","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center","justify":"between"},"children":["blocked-info","blocked-tag"]}}
+{"op":"add","path":"/elements/blocked-info","value":{"type":"TextContent","props":{"text":{"$template":"**${title}** — ${project} · Blocker: ${blocker}"}},"children":[]}}
+{"op":"add","path":"/elements/blocked-tag","value":{"type":"Tag","props":{"text":{"$template":"${daysBlocked}d blocked"},"variant":"warning"},"children":[]}}
+{"op":"add","path":"/elements/actions-row","value":{"type":"Card","props":{"direction":"row","gap":"m","justify":"end","variant":"sunk"},"children":["actions-note"]}}
+{"op":"add","path":"/elements/actions-note","value":{"type":"TextContent","props":{"text":"Use **Archive** on any project row to remove a finished project from the portfolio. Switch quarters with the selector above, or export this review as a PDF.","size":"small"},"children":[]}}

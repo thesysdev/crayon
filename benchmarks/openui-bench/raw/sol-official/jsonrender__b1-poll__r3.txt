@@ -1,0 +1,16 @@
+{"op":"add","path":"/root","value":"lunch-poll"}
+{"op":"add","path":"/elements/lunch-poll","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l","align":"stretch"},"children":["poll-header","poll-options","vote-status"]}}
+{"op":"add","path":"/elements/poll-header","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s","align":"start"},"children":["poll-title","poll-subtitle"]}}
+{"op":"add","path":"/elements/poll-title","value":{"type":"Heading","props":{"text":"Where should we go for lunch on Friday?","level":"h1"},"children":[]}}
+{"op":"add","path":"/elements/poll-subtitle","value":{"type":"TextContent","props":{"text":"Choose one restaurant below. You can change your vote anytime.","size":"default"},"children":[]}}
+{"op":"add","path":"/elements/poll-options","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m","align":"stretch"},"repeat":{"statePath":"/restaurants","key":"id"},"children":["restaurant-option"]}}
+{"op":"add","path":"/elements/restaurant-option","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s","align":"stretch"},"children":["restaurant-name","restaurant-details","restaurant-vote-button"]}}
+{"op":"add","path":"/elements/restaurant-name","value":{"type":"Heading","props":{"text":{"$item":"name"},"level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/restaurant-details","value":{"type":"TextContent","props":{"text":{"$template":"${cuisine} · ${distance} · ${price}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/restaurant-vote-button","value":{"type":"Button","props":{"label":{"$cond":{"$state":"/selectedRestaurant","eq":{"$item":"id"}},"$then":"Selected","$else":{"$template":"Vote for ${name}"}},"variant":{"$cond":{"$state":"/selectedRestaurant","eq":{"$item":"id"}},"$then":"primary","$else":"secondary"},"size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/selectedRestaurant","value":{"$item":"id"}}}},"children":[]}}
+{"op":"add","path":"/state/restaurants","value":[]}
+{"op":"add","path":"/state/restaurants/0","value":{"id":"harbor-kitchen","name":"Harbor Kitchen","cuisine":"Mediterranean","distance":"5 min walk","price":"$$"}}
+{"op":"add","path":"/state/restaurants/1","value":{"id":"taco-junction","name":"Taco Junction","cuisine":"Mexican","distance":"8 min walk","price":"$"}}
+{"op":"add","path":"/state/restaurants/2","value":{"id":"green-table","name":"The Green Table","cuisine":"Seasonal bowls & salads","distance":"10 min walk","price":"$$"}}
+{"op":"add","path":"/state/selectedRestaurant","value":""}
+{"op":"add","path":"/elements/vote-status","value":{"type":"Callout","props":{"variant":"success","title":"Vote recorded","description":"Your lunch choice has been selected."},"visible":{"$state":"/selectedRestaurant"},"children":[]}}

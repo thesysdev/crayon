@@ -1,0 +1,125 @@
+Here's a comprehensive factory floor supervisor's console covering all 17 requirements.
+
+<a2ui-json>
+[
+{"version":"v0.9","createSurface":{"surfaceId":"factory-console","catalogId":"thesys.dev:c1-openui"}},
+{"version":"v0.9","updateComponents":{"surfaceId":"factory-console","components":[
+{"id":"root","component":"Card","direction":"column","gap":"l","children":["header","andon-alert","kpi-row","tabs","footer-actions"]},
+
+{"id":"header","component":"CardHeader","title":"Factory Floor Console — Line Supervisor","subtitle":"Real-time production monitoring · Shift A"},
+
+{"id":"andon-alert","component":"Card","variant":"sunk","direction":"column","gap":"s","children":["andon-title","andon-list"]},
+{"id":"andon-title","component":"Heading","text":"Live Andon Alerts","level":"h4"},
+{"id":"andon-list","component":"ListBlock","variant":"number","items":["andon-1","andon-2","andon-3"]},
+{"id":"andon-1","component":"ListItem","title":"Line 3 — Conveyor jam","subtitle":"Red · triggered 2 min ago · maintenance en route"},
+{"id":"andon-2","component":"ListItem","title":"Line 1 — Material low","subtitle":"Yellow · resin hopper below 15%"},
+{"id":"andon-3","component":"ListItem","title":"Line 5 — Quality check requested","subtitle":"Blue · operator flagged batch B-2291"},
+
+{"id":"kpi-row","component":"Card","variant":"clear","direction":"row","gap":"m","wrap":true,"children":["kpi-oee","kpi-output","kpi-energy","kpi-safety"]},
+
+{"id":"kpi-oee","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["kpi-oee-h","kpi-oee-prog","kpi-oee-note"]},
+{"id":"kpi-oee-h","component":"Heading","text":"Overall Equipment Effectiveness","level":"h4"},
+{"id":"kpi-oee-prog","component":"Progress","value":78,"label":"OEE 78%"},
+{"id":"kpi-oee-note","component":"TextContent","size":"small","text":"Availability 91% · Performance 88% · Quality 97%"},
+
+{"id":"kpi-output","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["kpi-output-h","kpi-output-prog","kpi-output-note"]},
+{"id":"kpi-output-h","component":"Heading","text":"Units vs Target","level":"h4"},
+{"id":"kpi-output-prog","component":"Progress","value":64,"label":"6,420 / 10,000 units"},
+{"id":"kpi-output-note","component":"TextContent","size":"small","text":"On pace to reach 9,850 by end of shift"},
+
+{"id":"kpi-energy","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["kpi-energy-h","kpi-energy-val","kpi-energy-note"]},
+{"id":"kpi-energy-h","component":"Heading","text":"Energy Use Today","level":"h4"},
+{"id":"kpi-energy-val","component":"TextContent","size":"large-heavy","text":"12,840 kWh"},
+{"id":"kpi-energy-note","component":"TextContent","size":"small","text":"+4% vs yesterday · peak 2:15 PM"},
+
+{"id":"kpi-safety","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["kpi-safety-h","kpi-safety-tags","kpi-safety-note"]},
+{"id":"kpi-safety-h","component":"Heading","text":"Safety","level":"h4"},
+{"id":"kpi-safety-tags","component":"TagBlock","tags":["47 days since last incident","3 incidents YTD"]},
+{"id":"kpi-safety-note","component":"TextContent","size":"small","text":"Last: minor — Line 2, hand abrasion (Mar 4)"},
+
+{"id":"tabs","component":"Tabs","items":["tab-lines","tab-quality","tab-maint","tab-supply","tab-shifts"]},
+
+{"id":"tab-lines","component":"TabItem","value":"lines","trigger":"Production Lines","content":["lines-table","downtime-h","downtime-pie","line-focus-form"]},
+{"id":"lines-table","component":"Table","columns":["lt-line","lt-rate","lt-status"]},
+{"id":"lt-line","component":"Col","label":"Line","type":"string","data":["Line 1","Line 2","Line 3","Line 4","Line 5"]},
+{"id":"lt-rate","component":"Col","label":"Rate (units/hr)","type":"number","data":[820,790,0,845,610]},
+{"id":"lt-status","component":"Col","label":"Status","type":"string","data":["Running","Running","Stopped","Running","Slowed"]},
+{"id":"downtime-h","component":"Heading","text":"Downtime by Cause (Today)","level":"h4"},
+{"id":"downtime-pie","component":"PieChart","variant":"donut","labels":["Mechanical fault","Material shortage","Changeover","Operator break","Quality hold"],"values":[38,22,18,12,10]},
+{"id":"line-focus-form","component":"Form","name":"lineFocus","buttons":"line-focus-buttons","fields":["line-focus-control"]},
+{"id":"line-focus-control","component":"FormControl","label":"Focus on a Line","input":"line-focus-select","hint":"Isolate one line for detailed monitoring"},
+{"id":"line-focus-select","component":"Select","name":"focusLine","placeholder":"Select a line","items":["lf-1","lf-2","lf-3","lf-4","lf-5"]},
+{"id":"lf-1","component":"SelectItem","value":"1","label":"Line 1"},
+{"id":"lf-2","component":"SelectItem","value":"2","label":"Line 2"},
+{"id":"lf-3","component":"SelectItem","value":"3","label":"Line 3"},
+{"id":"lf-4","component":"SelectItem","value":"4","label":"Line 4"},
+{"id":"lf-5","component":"SelectItem","value":"5","label":"Line 5"},
+{"id":"line-focus-buttons","component":"Buttons","buttons":["line-focus-btn"]},
+{"id":"line-focus-btn","component":"Button","label":"Focus Line","variant":"primary"},
+
+{"id":"tab-quality","component":"TabItem","value":"quality","trigger":"Quality","content":["defect-h","defect-chart","qhold-h","qhold-list"]},
+{"id":"defect-h","component":"Heading","text":"Defect Rate — Past Month","level":"h4"},
+{"id":"defect-chart","component":"LineChart","variant":"natural","labels":["Wk1","Wk2","Wk3","Wk4"],"series":["defect-series"],"xLabel":"Week","yLabel":"Defect %"},
+{"id":"defect-series","component":"Series","category":"Defect Rate %","values":[2.4,2.1,2.8,1.9]},
+{"id":"qhold-h","component":"Heading","text":"Batches on Quality Hold","level":"h4"},
+{"id":"qhold-list","component":"ListBlock","variant":"number","items":["qh-1","qh-2","qh-3"]},
+{"id":"qh-1","component":"ListItem","title":"Batch B-2291 — Line 5","subtitle":"Awaiting dimensional inspection · 480 units","actionLabel":"Review"},
+{"id":"qh-2","component":"ListItem","title":"Batch B-2287 — Line 2","subtitle":"Surface finish deviation · 220 units","actionLabel":"Review"},
+{"id":"qh-3","component":"ListItem","title":"Batch B-2280 — Line 4","subtitle":"Pending supplier cert · 1,050 units","actionLabel":"Review"},
+
+{"id":"tab-maint","component":"TabItem","value":"maint","trigger":"Maintenance & Orders","content":["maint-due-h","maint-due-table","schedule-form","wo-h","wo-table"]},
+{"id":"maint-due-h","component":"Heading","text":"Machines Due for Maintenance","level":"h4"},
+{"id":"maint-due-table","component":"Table","columns":["md-machine","md-due","md-type"]},
+{"id":"md-machine","component":"Col","label":"Machine","type":"string","data":["Press #3","CNC-07","Conveyor L3","Packer #2"]},
+{"id":"md-due","component":"Col","label":"Due","type":"string","data":["Overdue 2d","Today","In 3 days","In 6 days"]},
+{"id":"md-type","component":"Col","label":"Type","type":"string","data":["Hydraulic seal","Calibration","Belt inspection","Lubrication"]},
+{"id":"schedule-form","component":"Form","name":"scheduleMaint","buttons":"schedule-buttons","fields":["sched-machine-fc","sched-date-fc"]},
+{"id":"sched-machine-fc","component":"FormControl","label":"Machine","input":"sched-machine-select","hint":"Select the machine to service"},
+{"id":"sched-machine-select","component":"Select","name":"machine","placeholder":"Choose machine","items":["sm-1","sm-2","sm-3","sm-4"]},
+{"id":"sm-1","component":"SelectItem","value":"press3","label":"Press #3"},
+{"id":"sm-2","component":"SelectItem","value":"cnc07","label":"CNC-07"},
+{"id":"sm-3","component":"SelectItem","value":"convl3","label":"Conveyor L3"},
+{"id":"sm-4","component":"SelectItem","value":"packer2","label":"Packer #2"},
+{"id":"sched-date-fc","component":"FormControl","label":"Date","input":"sched-date-picker","hint":"Pick a maintenance date"},
+{"id":"sched-date-picker","component":"DatePicker","name":"maintDate","mode":"single"},
+{"id":"schedule-buttons","component":"Buttons","buttons":["schedule-btn"]},
+{"id":"schedule-btn","component":"Button","label":"Schedule Maintenance","variant":"primary"},
+{"id":"wo-h","component":"Heading","text":"Open Work Orders","level":"h4"},
+{"id":"wo-table","component":"Table","columns":["wo-id","wo-desc","wo-priority"]},
+{"id":"wo-id","component":"Col","label":"WO #","type":"string","data":["WO-4501","WO-4502","WO-4503","WO-4504"]},
+{"id":"wo-desc","component":"Col","label":"Description","type":"string","data":["Replace L3 belt","Recalibrate CNC-07","Seal leak Press #3","Sensor swap Packer #2"]},
+{"id":"wo-priority","component":"Col","label":"Priority","type":"string","data":["Critical","High","Critical","Medium"]},
+
+{"id":"tab-supply","component":"TabItem","value":"supply","trigger":"Inventory & Supply","content":["stock-h","stock-chart","deliv-h","deliv-table"]},
+{"id":"stock-h","component":"Heading","text":"Raw Material Stock","level":"h4"},
+{"id":"stock-chart","component":"BarChart","variant":"grouped","labels":["Steel","Resin","Packaging"],"series":["stock-series"],"xLabel":"Material","yLabel":"% of capacity"},
+{"id":"stock-series","component":"Series","category":"Stock Level %","values":[72,14,58]},
+{"id":"deliv-h","component":"Heading","text":"Supplier Deliveries Due This Week","level":"h4"},
+{"id":"deliv-table","component":"Table","columns":["dl-supplier","dl-item","dl-day"]},
+{"id":"dl-supplier","component":"Col","label":"Supplier","type":"string","data":["MetalCorp","PolyChem","BoxPro","MetalCorp"]},
+{"id":"dl-item","component":"Col","label":"Item","type":"string","data":["Steel coil","Resin pellets","Cartons","Steel sheet"]},
+{"id":"dl-day","component":"Col","label":"Due","type":"string","data":["Tue","Wed","Thu","Fri"]},
+
+{"id":"tab-shifts","component":"TabItem","value":"shifts","trigger":"Shift Output","content":["shift-h","shift-chart","shift-note"]},
+{"id":"shift-h","component":"Heading","text":"Shift Output Comparison","level":"h4"},
+{"id":"shift-chart","component":"BarChart","variant":"grouped","labels":["Morning (A)","Afternoon (B)","Night (C)"],"series":["shift-series"],"xLabel":"Shift","yLabel":"Units produced"},
+{"id":"shift-series","component":"Series","category":"Units","values":[6420,5980,5210]},
+{"id":"shift-note","component":"TextContent","size":"small","text":"Morning shift leads by 7.4% over afternoon; night shift below target."},
+
+{"id":"footer-actions","component":"Buttons","direction":"row","buttons":["export-btn","refresh-btn"]},
+{"id":"export-btn","component":"Button","label":"Export Shift Report","variant":"primary"},
+{"id":"refresh-btn","component":"Button","label":"Refresh Data","variant":"secondary"}
+]}}
+]
+</a2ui-json>
+
+This console organizes all 17 requirements into a scannable layout:
+
+- **KPI row (top):** OEE (1), units vs target (2), energy use (12), and safety incidents + days since last (10).
+- **Live Andon Alerts** banner (16) sits above the fold for immediate attention.
+- **Production Lines tab:** line rate & status table (3), downtime by cause donut (5), and a focus-one-line selector (15).
+- **Quality tab:** monthly defect-rate trend (4) and batches on quality hold (11).
+- **Maintenance & Orders tab:** machines due (6), a schedule-maintenance form with machine + date (14), and open work orders with priority (13).
+- **Inventory & Supply tab:** steel/resin/packaging stock (7) and this week's supplier deliveries (8).
+- **Shift Output tab:** per-shift comparison (9).
+- **Footer:** Export Shift Report button (17).

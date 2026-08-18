@@ -1,0 +1,55 @@
+root = Card([header, budgetProgress, largestAlert, categoryChart, categoryTable, controls])
+header = CardHeader("Budget Check", "March 2025")
+budgetProgress = Progress(78, "Spent $2,340 of $3,000")
+largestAlert = Alert("Largest expense", "Rent — $1,200 (51% of spending)", "warning")
+categoryChart = PieChart(catLabels, catValues, "donut")
+catLabels = ["Rent", "Groceries", "Transport", "Dining", "Utilities", "Other"]
+catValues = [1200, 480, 210, 190, 160, 100]
+categoryTable = Table([catCol, amtCol, shareCol])
+catCol = Col("Category", ["Rent", "Groceries", "Transport", "Dining", "Utilities", "Other"])
+amtCol = Col("Amount", ["$1,200", "$480", "$210", "$190", "$160", "$100"], "number")
+shareCol = Col("Share", ["51%", "21%", "9%", "8%", "7%", "4%"])
+controls = Buttons([monthDrawer, addDrawer], "row")
+monthDrawer = Button("View another month")
+addDrawer = Button("Add expense", null, "primary")
+
+monthPicker = DrawerBlock("View another month", "Choose a month", "Pick a month to review", [monthForm])
+monthForm = Form("select-month", monthButtons, [monthField])
+monthField = FormControl("Month", monthSelect)
+monthSelect = Select("month", [mJan, mFeb, mMar, mApr], "Select month")
+mJan = SelectItem("2025-01", "January 2025")
+mFeb = SelectItem("2025-02", "February 2025")
+mMar = SelectItem("2025-03", "March 2025")
+mApr = SelectItem("2025-04", "April 2025")
+monthButtons = Buttons([monthGo])
+monthGo = Button("View month", null, "primary")
+
+addExpense = DrawerBlock("Add expense", "Add an expense", "Record a new expense for this month", [expenseForm])
+expenseForm = Form("add-expense", expenseButtons, [descField, amountField, expCatField, dateField])
+descField = FormControl("Description", descInput)
+descInput = Input("desc", "e.g. Weekly groceries")
+amountField = FormControl("Amount", amountInput)
+amountInput = Input("amount", "0.00", "number")
+expCatField = FormControl("Category", expCatSelect)
+expCatSelect = Select("category", [ecRent, ecGroc, ecTrans, ecDining, ecUtil, ecOther], "Select category")
+ecRent = SelectItem("rent", "Rent")
+ecGroc = SelectItem("groceries", "Groceries")
+ecTrans = SelectItem("transport", "Transport")
+ecDining = SelectItem("dining", "Dining")
+ecUtil = SelectItem("utilities", "Utilities")
+ecOther = SelectItem("other", "Other")
+dateField = FormControl("Date", dateInput)
+dateInput = DatePicker("date", "single")
+expenseButtons = Buttons([expSave, expCancel])
+expSave = Button("Save expense", null, "primary")
+expCancel = Button("Cancel", null, "tertiary")
+
+Wait — I need the drawers reachable. Let me correct the controls.
+
+controls = Buttons([placeholder])
+placeholder = Button("actions")
+
+Actually the drawers must be in root children.
+
+root = Card([header, budgetProgress, largestAlert, categoryChart, categoryTable, actionRow])
+actionRow = Card([monthPicker, addExpense], "clear", "row", "m")

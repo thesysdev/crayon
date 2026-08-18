@@ -1,0 +1,904 @@
+
+
+Here's a comprehensive live-ops dashboard covering all 16 requirements:
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "liveops-dashboard",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": {
+        "primaryColor": "#6C5CE7",
+        "agentDisplayName": "Live-Ops Command Center"
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "liveops-dashboard",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "l",
+          "children": ["header", "metrics-row", "charts-row", "tables-row", "events-queue-row", "economy-experiments-row", "actions-row"]
+        },
+        {
+          "id": "header",
+          "component": "CardHeader",
+          "title": "🎮 Live-Ops Command Center",
+          "subtitle": "Real-time game operations dashboard — Last refreshed: 2025-01-15 14:32 UTC"
+        },
+        {
+          "id": "metrics-row",
+          "component": "Card",
+          "variant": "card",
+          "direction": "row",
+          "gap": "m",
+          "children": ["metric-online", "metric-dau", "metric-mau", "metric-revenue", "metric-arpu"]
+        },
+        {
+          "id": "metric-online",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "children": ["metric-online-label", "metric-online-value"]
+        },
+        {
+          "id": "metric-online-label",
+          "component": "TextContent",
+          "text": "🟢 Players Online Now",
+          "size": "small"
+        },
+        {
+          "id": "metric-online-value",
+          "component": "TextContent",
+          "text": "**142,837**",
+          "size": "large-heavy"
+        },
+        {
+          "id": "metric-dau",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "children": ["metric-dau-label", "metric-dau-value"]
+        },
+        {
+          "id": "metric-dau-label",
+          "component": "TextContent",
+          "text": "📅 Daily Active Players",
+          "size": "small"
+        },
+        {
+          "id": "metric-dau-value",
+          "component": "TextContent",
+          "text": "**1,284,502**",
+          "size": "large-heavy"
+        },
+        {
+          "id": "metric-mau",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "children": ["metric-mau-label", "metric-mau-value"]
+        },
+        {
+          "id": "metric-mau-label",
+          "component": "TextContent",
+          "text": "📆 Monthly Active Players",
+          "size": "small"
+        },
+        {
+          "id": "metric-mau-value",
+          "component": "TextContent",
+          "text": "**8,412,093**",
+          "size": "large-heavy"
+        },
+        {
+          "id": "metric-revenue",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "children": ["metric-revenue-label", "metric-revenue-value"]
+        },
+        {
+          "id": "metric-revenue-label",
+          "component": "TextContent",
+          "text": "💰 Revenue Today",
+          "size": "small"
+        },
+        {
+          "id": "metric-revenue-value",
+          "component": "TextContent",
+          "text": "**$387,241**",
+          "size": "large-heavy"
+        },
+        {
+          "id": "metric-arpu",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "children": ["metric-arpu-label", "metric-arpu-value"]
+        },
+        {
+          "id": "metric-arpu-label",
+          "component": "TextContent",
+          "text": "📊 Revenue Per User (ARPU)",
+          "size": "small"
+        },
+        {
+          "id": "metric-arpu-value",
+          "component": "TextContent",
+          "text": "**$0.301**",
+          "size": "large-heavy"
+        },
+        {
+          "id": "charts-row",
+          "component": "Card",
+          "variant": "card",
+          "direction": "row",
+          "gap": "m",
+          "children": ["session-chart-card", "crash-chart-card"]
+        },
+        {
+          "id": "session-chart-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "children": ["session-chart-title", "session-chart"]
+        },
+        {
+          "id": "session-chart-title",
+          "component": "TextContent",
+          "text": "⏱️ Avg Session Length — Past 14 Days (minutes)",
+          "size": "small-heavy"
+        },
+        {
+          "id": "session-chart",
+          "component": "LineChart",
+          "labels": ["Jan 1", "Jan 2", "Jan 3", "Jan 4", "Jan 5", "Jan 6", "Jan 7", "Jan 8", "Jan 9", "Jan 10", "Jan 11", "Jan 12", "Jan 13", "Jan 14"],
+          "series": ["session-series"],
+          "variant": "natural",
+          "yLabel": "Minutes"
+        },
+        {
+          "id": "session-series",
+          "component": "Series",
+          "category": "Avg Session",
+          "values": [23.4, 24.1, 22.8, 25.3, 26.7, 28.1, 27.4, 24.9, 23.2, 25.8, 27.3, 29.1, 28.6, 26.2]
+        },
+        {
+          "id": "crash-chart-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "children": ["crash-chart-title", "crash-chart"]
+        },
+        {
+          "id": "crash-chart-title",
+          "component": "TextContent",
+          "text": "💥 Crash Rate by App Version (%)",
+          "size": "small-heavy"
+        },
+        {
+          "id": "crash-chart",
+          "component": "BarChart",
+          "labels": ["v4.2.0", "v4.2.1", "v4.3.0", "v4.3.1", "v4.4.0-beta"],
+          "series": ["crash-series"],
+          "variant": "grouped",
+          "yLabel": "Crash %"
+        },
+        {
+          "id": "crash-series",
+          "component": "Series",
+          "category": "Crash Rate",
+          "values": [0.12, 0.08, 0.31, 0.05, 1.42]
+        },
+        {
+          "id": "tables-row",
+          "component": "Card",
+          "variant": "card",
+          "direction": "row",
+          "gap": "m",
+          "children": ["bestsellers-card", "regions-card"]
+        },
+        {
+          "id": "bestsellers-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "children": ["bestsellers-title", "bestsellers-table"]
+        },
+        {
+          "id": "bestsellers-title",
+          "component": "TextContent",
+          "text": "🏆 Best-Selling Items Today",
+          "size": "small-heavy"
+        },
+        {
+          "id": "bestsellers-table",
+          "component": "Table",
+          "columns": ["bs-col-item", "bs-col-units", "bs-col-revenue"]
+        },
+        {
+          "id": "bs-col-item",
+          "component": "Col",
+          "label": "Item",
+          "data": ["Dragon Slayer Skin", "XP Boost x2 (24h)", "Legendary Loot Crate", "Phoenix Mount", "Starter Gem Pack (500)"]
+        },
+        {
+          "id": "bs-col-units",
+          "component": "Col",
+          "label": "Units Sold",
+          "type": "number",
+          "data": [12847, 9231, 7654, 5102, 4893]
+        },
+        {
+          "id": "bs-col-revenue",
+          "component": "Col",
+          "label": "Revenue",
+          "data": ["$64,235", "$27,693", "$38,270", "$25,510", "$9,786"]
+        },
+        {
+          "id": "regions-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "children": ["regions-title", "regions-table"]
+        },
+        {
+          "id": "regions-title",
+          "component": "TextContent",
+          "text": "🌐 Server Regions & Health",
+          "size": "small-heavy"
+        },
+        {
+          "id": "regions-table",
+          "component": "Table",
+          "columns": ["rg-col-region", "rg-col-status", "rg-col-latency", "rg-col-players"]
+        },
+        {
+          "id": "rg-col-region",
+          "component": "Col",
+          "label": "Region",
+          "data": ["NA-East", "NA-West", "EU-West", "EU-Central", "APAC-Tokyo", "APAC-Sydney", "SA-Brazil"]
+        },
+        {
+          "id": "rg-col-status",
+          "component": "Col",
+          "label": "Status",
+          "data": ["🟢 Healthy", "🟢 Healthy", "🟡 Degraded", "🟢 Healthy", "🟢 Healthy", "🔴 Down", "🟢 Healthy"]
+        },
+        {
+          "id": "rg-col-latency",
+          "component": "Col",
+          "label": "Avg Latency",
+          "data": ["23ms", "31ms", "87ms", "42ms", "38ms", "—", "54ms"]
+        },
+        {
+          "id": "rg-col-players",
+          "component": "Col",
+          "label": "Players",
+          "type": "number",
+          "data": [38421, 27103, 31205, 18942, 14876, 0, 12290]
+        },
+        {
+          "id": "events-queue-row",
+          "component": "Card",
+          "variant": "card",
+          "direction": "row",
+          "gap": "m",
+          "children": ["events-card", "reports-card", "appeals-card"]
+        },
+        {
+          "id": "events-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "children": ["events-title", "events-list"]
+        },
+        {
+          "id": "events-title",
+          "component": "TextContent",
+          "text": "🎉 Live & Upcoming Events",
+          "size": "small-heavy"
+        },
+        {
+          "id": "events-list",
+          "component": "ListBlock",
+          "variant": "number",
+          "items": ["event-1", "event-2", "event-3", "event-4"]
+        },
+        {
+          "id": "event-1",
+          "component": "ListItem",
+          "title": "🔴 LIVE: Winter Frost Festival",
+          "subtitle": "Ends in 2d 14h • 67% participation rate"
+        },
+        {
+          "id": "event-2",
+          "component": "ListItem",
+          "title": "🔴 LIVE: Double XP Weekend",
+          "subtitle": "Ends in 18h • Active on all regions"
+        },
+        {
+          "id": "event-3",
+          "component": "ListItem",
+          "title": "🟡 UPCOMING: Guild Wars Season 12",
+          "subtitle": "Starts Jan 18 • Registration open"
+        },
+        {
+          "id": "event-4",
+          "component": "ListItem",
+          "title": "🟡 UPCOMING: Lunar New Year Event",
+          "subtitle": "Starts Jan 29 • Assets 80% ready"
+        },
+        {
+          "id": "reports-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "children": ["reports-title", "reports-metric", "reports-breakdown"]
+        },
+        {
+          "id": "reports-title",
+          "component": "TextContent",
+          "text": "🚨 Player Reports Queue",
+          "size": "small-heavy"
+        },
+        {
+          "id": "reports-metric",
+          "component": "TextContent",
+          "text": "**347** reports awaiting review",
+          "size": "large"
+        },
+        {
+          "id": "reports-breakdown",
+          "component": "Table",
+          "columns": ["rpt-col-type", "rpt-col-count", "rpt-col-priority"]
+        },
+        {
+          "id": "rpt-col-type",
+          "component": "Col",
+          "label": "Category",
+          "data": ["Cheating/Hacking", "Toxic Behavior", "Exploit Abuse", "Spam/Scam", "Other"]
+        },
+        {
+          "id": "rpt-col-count",
+          "component": "Col",
+          "label": "Count",
+          "type": "number",
+          "data": [142, 89, 53, 38, 25]
+        },
+        {
+          "id": "rpt-col-priority",
+          "component": "Col",
+          "label": "Priority",
+          "data": ["🔴 Critical", "🟡 High", "🔴 Critical", "🟡 Medium", "⚪ Low"]
+        },
+        {
+          "id": "appeals-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "children": ["appeals-title", "appeals-metric", "appeals-breakdown"]
+        },
+        {
+          "id": "appeals-title",
+          "component": "TextContent",
+          "text": "⚖️ Ban Appeals Queue",
+          "size": "small-heavy"
+        },
+        {
+          "id": "appeals-metric",
+          "component": "TextContent",
+          "text": "**83** appeals awaiting review",
+          "size": "large"
+        },
+        {
+          "id": "appeals-breakdown",
+          "component": "Table",
+          "columns": ["app-col-type", "app-col-count", "app-col-age"]
+        },
+        {
+          "id": "app-col-type",
+          "component": "Col",
+          "label": "Ban Type",
+          "data": ["Permanent (Cheating)", "Temporary (Toxicity)", "Permanent (RMT)", "Temporary (Exploit)"]
+        },
+        {
+          "id": "app-col-count",
+          "component": "Col",
+          "label": "Count",
+          "type": "number",
+          "data": [31, 24, 18, 10]
+        },
+        {
+          "id": "app-col-age",
+          "component": "Col",
+          "label": "Avg Wait",
+          "data": ["4.2 days", "2.1 days", "6.8 days", "1.5 days"]
+        },
+        {
+          "id": "economy-experiments-row",
+          "component": "Card",
+          "variant": "card",
+          "direction": "row",
+          "gap": "m",
+          "children": ["inflation-card", "experiments-card"]
+        },
+        {
+          "id": "inflation-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "children": ["inflation-title", "inflation-chart", "inflation-note"]
+        },
+        {
+          "id": "inflation-title",
+          "component": "TextContent",
+          "text": "💎 In-Game Currency Inflation",
+          "size": "small-heavy"
+        },
+        {
+          "id": "inflation-chart",
+          "component": "LineChart",
+          "labels": ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6"],
+          "series": ["inflation-series"],
+          "variant": "linear",
+          "yLabel": "Gold in Circulation (millions)"
+        },
+        {
+          "id": "inflation-series",
+          "component": "Series",
+          "category": "Gold Supply",
+          "values": [842, 891, 934, 1012, 1087, 1143]
+        },
+        {
+          "id": "inflation-note",
+          "component": "Callout",
+          "variant": "warning",
+          "title": "Inflation Alert",
+          "description": "Gold supply up 35.7% over 6 weeks. Sink ratio at 0.62 (target: 0.80). Consider adding gold sinks or reducing quest rewards."
+        },
+        {
+          "id": "experiments-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "children": ["experiments-title", "exp-a-card", "exp-b-card"]
+        },
+        {
+          "id": "experiments-title",
+          "component": "TextContent",
+          "text": "🧪 A/B Experiment Results",
+          "size": "small-heavy"
+        },
+        {
+          "id": "exp-a-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "xs",
+          "children": ["exp-a-title", "exp-a-body", "exp-a-verdict"]
+        },
+        {
+          "id": "exp-a-title",
+          "component": "TextContent",
+          "text": "**Experiment A: New Onboarding Flow**",
+          "size": "small"
+        },
+        {
+          "id": "exp-a-body",
+          "component": "TextContent",
+          "text": "Variant B (interactive tutorial) vs Control\n• D1 Retention: **48.2%** vs 41.7% (+6.5pp)\n• D7 Retention: **22.1%** vs 18.4% (+3.7pp)\n• Tutorial completion: **89%** vs 62%\n• Sample: 24,000 users per arm\n• p-value: 0.003 ✅",
+          "size": "small"
+        },
+        {
+          "id": "exp-a-verdict",
+          "component": "Tag",
+          "text": "✅ Significant — Recommend rollout",
+          "variant": "success"
+        },
+        {
+          "id": "exp-b-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "xs",
+          "children": ["exp-b-title", "exp-b-body", "exp-b-verdict"]
+        },
+        {
+          "id": "exp-b-title",
+          "component": "TextContent",
+          "text": "**Experiment B: Dynamic Pricing on Gem Packs**",
+          "size": "small"
+        },
+        {
+          "id": "exp-b-body",
+          "component": "TextContent",
+          "text": "Variant B (personalized offers) vs Control\n• Conversion rate: **3.8%** vs 3.5% (+0.3pp)\n• ARPPU: **$14.20** vs $15.10 (-$0.90)\n• Net revenue impact: **-2.1%**\n• Sample: 18,500 users per arm\n• p-value: 0.21 ❌",
+          "size": "small"
+        },
+        {
+          "id": "exp-b-verdict",
+          "component": "Tag",
+          "text": "❌ Not significant — Consider stopping",
+          "variant": "danger"
+        },
+        {
+          "id": "actions-row",
+          "component": "Card",
+          "variant": "card",
+          "direction": "row",
+          "gap": "m",
+          "children": ["patchnotes-card", "region-focus-card", "hotfix-card"]
+        },
+        {
+          "id": "patchnotes-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "children": ["patchnotes-title", "patchnotes-form"]
+        },
+        {
+          "id": "patchnotes-title",
+          "component": "TextContent",
+          "text": "📝 Draft Patch Notes",
+          "size": "small-heavy"
+        },
+        {
+          "id": "patchnotes-form",
+          "component": "Form",
+          "name": "patch-notes-form",
+          "fields": ["pn-version", "pn-category", "pn-body"],
+          "buttons": "pn-buttons"
+        },
+        {
+          "id": "pn-version",
+          "component": "FormControl",
+          "label": "Version",
+          "input": "pn-version-input",
+          "hint": "e.g. 4.3.2"
+        },
+        {
+          "id": "pn-version-input",
+          "component": "Input",
+          "name": "version",
+          "placeholder": "4.3.2",
+          "type": "text"
+        },
+        {
+          "id": "pn-category",
+          "component": "FormControl",
+          "label": "Category",
+          "input": "pn-category-select"
+        },
+        {
+          "id": "pn-category-select",
+          "component": "Select",
+          "name": "category",
+          "placeholder": "Select category...",
+          "items": ["pn-cat-bugfix", "pn-cat-balance", "pn-cat-feature", "pn-cat-security"]
+        },
+        {
+          "id": "pn-cat-bugfix",
+          "component": "SelectItem",
+          "value": "bugfix",
+          "label": "🐛 Bug Fixes"
+        },
+        {
+          "id": "pn-cat-balance",
+          "component": "SelectItem",
+          "value": "balance",
+          "label": "⚖️ Balance Changes"
+        },
+        {
+          "id": "pn-cat-feature",
+          "component": "SelectItem",
+          "value": "feature",
+          "label": "✨ New Features"
+        },
+        {
+          "id": "pn-cat-security",
+          "component": "SelectItem",
+          "value": "security",
+          "label": "🔒 Security"
+        },
+        {
+          "id": "pn-body",
+          "component": "FormControl",
+          "label": "Notes",
+          "input": "pn-body-textarea",
+          "hint": "Use markdown for formatting"
+        },
+        {
+          "id": "pn-body-textarea",
+          "component": "TextArea",
+          "name": "notes",
+          "placeholder": "- Fixed crash when entering Guild Hall on iOS\n- Adjusted Dragon Slayer damage from 340 → 310\n- Added new Lunar New Year cosmetics...",
+          "rows": 5
+        },
+        {
+          "id": "pn-buttons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": ["pn-save-btn", "pn-preview-btn"]
+        },
+        {
+          "id": "pn-save-btn",
+          "component": "Button",
+          "label": "Save Draft",
+          "variant": "secondary",
+          "size": "small"
+        },
+        {
+          "id": "pn-preview-btn",
+          "component": "Button",
+          "label": "Preview & Publish",
+          "variant": "primary",
+          "size": "small"
+        },
+        {
+          "id": "region-focus-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "children": ["region-focus-title", "region-focus-desc", "region-focus-form"]
+        },
+        {
+          "id": "region-focus-title",
+          "component": "TextContent",
+          "text": "🔍 Focus on Region",
+          "size": "small-heavy"
+        },
+        {
+          "id": "region-focus-desc",
+          "component": "TextContent",
+          "text": "Drill into a specific region for detailed metrics, logs, and player sentiment.",
+          "size": "small"
+        },
+        {
+          "id": "region-focus-form",
+          "component": "Form",
+          "name": "region-focus-form",
+          "fields": ["rf-region-select"],
+          "buttons": "rf-buttons"
+        },
+        {
+          "id": "rf-region-select",
+          "component": "FormControl",
+          "label": "Select Region",
+          "input": "rf-region-dropdown"
+        },
+        {
+          "id": "rf-region-dropdown",
+          "component": "Select",
+          "name": "region",
+          "placeholder": "Choose a region...",
+          "items": ["rf-na-east", "rf-na-west", "rf-eu-west", "rf-eu-central", "rf-apac-tokyo", "rf-apac-sydney", "rf-sa-brazil"]
+        },
+        {
+          "id": "rf-na-east",
+          "component": "SelectItem",
+          "value": "na-east",
+          "label": "🇺🇸 NA-East"
+        },
+        {
+          "id": "rf-na-west",
+          "component": "SelectItem",
+          "value": "na-west",
+          "label": "🇺🇸 NA-West"
+        },
+        {
+          "id": "rf-eu-west",
+          "component": "SelectItem",
+          "value": "eu-west",
+          "label": "🇬🇧 EU-West"
+        },
+        {
+          "id": "rf-eu-central",
+          "component": "SelectItem",
+          "value": "eu-central",
+          "label": "🇩🇪 EU-Central"
+        },
+        {
+          "id": "rf-apac-tokyo",
+          "component": "SelectItem",
+          "value": "apac-tokyo",
+          "label": "🇯🇵 APAC-Tokyo"
+        },
+        {
+          "id": "rf-apac-sydney",
+          "component": "SelectItem",
+          "value": "apac-sydney",
+          "label": "🇦🇺 APAC-Sydney"
+        },
+        {
+          "id": "rf-sa-brazil",
+          "component": "SelectItem",
+          "value": "sa-brazil",
+          "label": "🇧🇷 SA-Brazil"
+        },
+        {
+          "id": "rf-buttons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": ["rf-go-btn"]
+        },
+        {
+          "id": "rf-go-btn",
+          "component": "Button",
+          "label": "Open Region Dashboard",
+          "variant": "primary",
+          "size": "small"
+        },
+        {
+          "id": "hotfix-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "children": ["hotfix-title", "hotfix-desc", "hotfix-alert", "hotfix-dialog"]
+        },
+        {
+          "id": "hotfix-title",
+          "component": "TextContent",
+          "text": "🚀 Ship Hotfix",
+          "size": "small-heavy"
+        },
+        {
+          "id": "hotfix-desc",
+          "component": "TextContent",
+          "text": "Deploy an emergency hotfix to production. Requires lead approval.",
+          "size": "small"
+        },
+        {
+          "id": "hotfix-alert",
+          "component": "Alert",
+          "variant": "warning",
+          "title": "APAC-Sydney is DOWN",
+          "description": "Region unreachable since 14:07 UTC. 0 players connected. Consider emergency hotfix or failover."
+        },
+        {
+          "id": "hotfix-dialog",
+          "component": "DialogBlock",
+          "triggerLabel": "🔥 Initiate Hotfix Deploy",
+          "triggerVariant": "destructive",
+          "title": "Confirm Hotfix Deployment",
+          "description": "This will push the selected hotfix build to all production servers. This action is irreversible without a rollback.",
+          "content": ["hf-form"]
+        },
+        {
+          "id": "hf-form",
+          "component": "Form",
+          "name": "hotfix-form",
+          "fields": ["hf-branch", "hf-target", "hf-reason"],
+          "buttons": "hf-buttons"
+        },
+        {
+          "id": "hf-branch",
+          "component": "FormControl",
+          "label": "Hotfix Branch",
+          "input": "hf-branch-input",
+          "hint": "e.g. hotfix/4.3.2-sydney-crash"
+        },
+        {
+          "id": "hf-branch-input",
+          "component": "Input",
+          "name": "branch",
+          "placeholder": "hotfix/4.3.2-sydney-crash",
+          "type": "text"
+        },
+        {
+          "id": "hf-target",
+          "component": "FormControl",
+          "label": "Target Regions",
+          "input": "hf-target-select"
+        },
+        {
+          "id": "hf-target-select",
+          "component": "Select",
+          "name": "target",
+          "placeholder": "Select regions...",
+          "items": ["hf-all", "hf-sydney", "hf-apac"]
+        },
+        {
+          "id": "hf-all",
+          "component": "SelectItem",
+          "value": "all",
+          "label": "🌍 All Regions"
+        },
+        {
+          "id": "hf-sydney",
+          "component": "SelectItem",
+          "value": "sydney",
+          "label": "🇦🇵 APAC-Sydney Only"
+        },
+        {
+          "id": "hf-apac",
+          "component": "SelectItem",
+          "value": "apac",
+          "label": "🌏 All APAC"
+        },
+        {
+          "id": "hf-reason",
+          "component": "FormControl",
+          "label": "Reason / JIRA Ticket",
+          "input": "hf-reason-input"
+        },
+        {
+          "id": "hf-reason-input",
+          "component": "Input",
+          "name": "reason",
+          "placeholder": "OPS-4821: Sydney region crash loop",
+          "type": "text"
+        },
+        {
+          "id": "hf-buttons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": ["hf-deploy-btn", "hf-cancel-btn"]
+        },
+        {
+          "id": "hf-deploy-btn",
+          "component": "Button",
+          "label": "🚀 Deploy Now",
+          "variant": "primary",
+          "type": "destructive",
+          "size": "medium"
+        },
+        {
+          "id": "hf-cancel-btn",
+          "component": "Button",
+          "label": "Cancel",
+          "variant": "tertiary",
+          "size": "medium"
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+This dashboard covers all 16 requirements:
+
+| # | Requirement | Implementation |
+|---|---|---|
+| 1 | Players online | Large metric card (142,837) |
+| 2 | DAU / MAU | Metric cards (1.28M / 8.41M) |
+| 3 | Revenue today | Metric card ($387,241) |
+| 4 | Revenue per user | ARPU metric ($0.301) |
+| 5 | Session length (14 days) | Natural line chart |
+| 6 | Best-selling items + units | Table with item, units, revenue |
+| 7 | Server regions & health | Table with status, latency, player count |
+| 8 | Crash rate by version | Grouped bar chart |
+| 9 | Live & upcoming events | Numbered list with status indicators |
+| 10 | Player reports queue | Metric + breakdown table by category |
+| 11 | Ban appeals queue | Metric + breakdown table by ban type |
+| 12 | Currency inflation | Line chart + warning callout with analysis |
+| 13 | Experiment results | Two detailed cards with stats & verdicts |
+| 14 | Draft patch notes | Full form (version, category, notes body) |
+| 15 | Focus on a region | Region selector with drill-down button |
+| 16 | Ship a hotfix | Destructive dialog with branch/target/reason form |

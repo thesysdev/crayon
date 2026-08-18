@@ -1,0 +1,34 @@
+root = Card([header, callout, kpis, trafficTrend, subscriberGrowth, sources, campaigns, dateForm, actions])
+header = CardHeader("Marketing Dashboard", "Weekly performance overview")
+callout = TextCallout("success", "Top performer", "Spring Sale is your best campaign this week with a 4.8% conversion rate and lowest cost per acquisition.")
+
+kpis = Table([kpiName, kpiValue])
+kpiName = Col("Metric", ["Site visitors (30d)", "Conversion rate", "Subscriber growth (MTD)"])
+kpiValue = Col("Value", ["148,920", "3.6%", "+2,140"])
+
+trafficTrend = LineChart(trafficLabels, [visitorSeries], "natural", "Day", "Visitors")
+trafficLabels = ["Day 1", "Day 5", "Day 10", "Day 15", "Day 20", "Day 25", "Day 30"]
+visitorSeries = Series("Visitors", [3820, 4210, 4650, 5120, 4980, 5340, 5610])
+
+subscriberGrowth = AreaChart(subLabels, [subSeries], "natural", "Week", "Subscribers")
+subLabels = ["W1", "W2", "W3", "W4"]
+subSeries = Series("New subscribers", [420, 560, 610, 550])
+
+sources = HorizontalBarChart(sourceLabels, [sourceShare], "grouped", "Share (%)", "Source")
+sourceLabels = ["Organic Search", "Direct", "Paid Social", "Email", "Referral"]
+sourceShare = Series("Traffic share", [38, 24, 18, 12, 8])
+
+campaigns = Table([campName, campSpend, campConv])
+campName = Col("Campaign", ["Spring Sale", "Brand Awareness", "Retargeting", "Newsletter Push"])
+campSpend = Col("Spend", ["$12,400", "$8,900", "$5,300", "$2,100"], "string")
+campConv = Col("Conversion", ["4.8%", "2.1%", "3.9%", "3.2%"], "string")
+
+dateForm = Form("date-range", dateButtons, [rangeField])
+rangeField = FormControl("Report date range", rangePicker, "Choose the window for this report")
+rangePicker = DatePicker("range", "range")
+dateButtons = Buttons([applyBtn])
+applyBtn = Button("Apply range", null, "primary")
+
+actions = Buttons([exportBtn, shareBtn])
+exportBtn = Button("Export report", null, "primary")
+shareBtn = Button("Share with team", null, "secondary")

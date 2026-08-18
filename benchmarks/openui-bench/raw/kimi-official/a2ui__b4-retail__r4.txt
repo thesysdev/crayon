@@ -1,0 +1,134 @@
+Here's a single-screen store manager console covering all 12 requirements:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "store-console",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#2563EB",
+      "agentDisplayName": "Store Console"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "store-console",
+    "components": [
+      { "id": "root", "component": "Card", "variant": "clear", "direction": "column", "gap": "l", "children": ["hdr", "storeRow", "kpiRow", "trafficCard", "midRow", "bottomRow", "promoCard", "reorderCard"] },
+
+      { "id": "hdr", "component": "Heading", "text": "Daily Store Console — Downtown Flagship", "level": "h2" },
+
+      { "id": "storeRow", "component": "Card", "variant": "sunk", "direction": "row", "gap": "m", "align": "end", "children": ["storeControl", "storeSelect", "storeBtn"] },
+      { "id": "storeControl", "component": "FormControl", "label": "View a different store", "input": "storeSelect" },
+      { "id": "storeSelect", "component": "Select", "name": "store", "placeholder": "Select store", "items": ["si1", "si2", "si3", "si4"] },
+      { "id": "si1", "component": "SelectItem", "value": "downtown", "label": "Downtown Flagship" },
+      { "id": "si2", "component": "SelectItem", "value": "mall", "label": "Riverside Mall" },
+      { "id": "si3", "component": "SelectItem", "value": "airport", "label": "Airport Kiosk" },
+      { "id": "si4", "component": "SelectItem", "value": "suburb", "label": "Suburban Plaza" },
+      { "id": "storeBtn", "component": "Button", "label": "Switch Store", "variant": "secondary" },
+
+      { "id": "kpiRow", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "children": ["salesCard", "basketCard", "returnsCard", "weekCard"] },
+
+      { "id": "salesCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["salesHdr", "salesText", "salesProg"], "weight": 1 },
+      { "id": "salesHdr", "component": "CardHeader", "title": "1. Sales Today vs Target" },
+      { "id": "salesText", "component": "TextContent", "text": "**$8,420** of $10,000 target (84%)", "size": "large-heavy" },
+      { "id": "salesProg", "component": "Progress", "value": 84, "label": "Target progress" },
+
+      { "id": "basketCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["basketHdr", "basketText"], "weight": 1 },
+      { "id": "basketHdr", "component": "CardHeader", "title": "6. Average Basket Size" },
+      { "id": "basketText", "component": "TextContent", "text": "**$42.60** avg · 3.2 items/basket · 198 transactions", "size": "large" },
+
+      { "id": "returnsCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["returnsHdr", "returnsText", "returnsTag"], "weight": 1 },
+      { "id": "returnsHdr", "component": "CardHeader", "title": "7. Returns This Week" },
+      { "id": "returnsText", "component": "TextContent", "text": "**14 returns** — $612 refunded (2.1% of sales)", "size": "large" },
+      { "id": "returnsTag", "component": "Tag", "text": "Within normal range", "variant": "success" },
+
+      { "id": "weekCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["weekHdr", "weekChart", "weekS1", "weekS2"], "weight": 2 },
+      { "id": "weekHdr", "component": "CardHeader", "title": "12. This Week vs Last Week" },
+      { "id": "weekChart", "component": "BarChart", "labels": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], "series": ["weekS1", "weekS2"], "variant": "grouped", "yLabel": "Sales ($)" },
+      { "id": "weekS1", "component": "Series", "category": "This Week", "values": [7200, 8100, 6800, 8420, 0, 0, 0] },
+      { "id": "weekS2", "component": "Series", "category": "Last Week", "values": [6900, 7400, 7100, 7900, 8600, 11200, 5800] },
+
+      { "id": "trafficCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["trafficHdr", "trafficChart", "trafficS"] },
+      { "id": "trafficHdr", "component": "CardHeader", "title": "2. Foot Traffic Through the Day", "subtitle": "Visitors per hour" },
+      { "id": "trafficChart", "component": "LineChart", "labels": ["9am", "10am", "11am", "12pm", "1pm", "2pm", "3pm", "4pm", "5pm"], "series": ["trafficS"], "variant": "natural", "xLabel": "Hour", "yLabel": "Visitors" },
+      { "id": "trafficS", "component": "Series", "category": "Visitors", "values": [22, 35, 48, 71, 88, 64, 52, 47, 39] },
+
+      { "id": "midRow", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "children": ["bestCard", "stockCard"] },
+
+      { "id": "bestCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["bestHdr", "bestTable", "bestC1", "bestC2"], "weight": 1 },
+      { "id": "bestHdr", "component": "CardHeader", "title": "3. Best Sellers Today" },
+      { "id": "bestTable", "component": "Table", "columns": ["bestC1", "bestC2"] },
+      { "id": "bestC1", "component": "Col", "label": "Item", "data": ["Wireless Earbuds Pro", "Insulated Water Bottle", "Phone Case — Clear", "USB-C Cable 2m", "Desk Plant (Small)"] },
+      { "id": "bestC2", "component": "Col", "label": "Units Sold", "type": "number", "data": [34, 28, 25, 22, 17] },
+
+      { "id": "stockCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["stockHdr", "stockAlert", "stockList", "stockI1", "stockI2", "stockI3"], "weight": 1 },
+      { "id": "stockHdr", "component": "CardHeader", "title": "4. Out of Stock" },
+      { "id": "stockAlert", "component": "Alert", "title": "3 items out of stock", "description": "Reorder recommended for high-demand SKUs.", "variant": "warning" },
+      { "id": "stockList", "component": "ListBlock", "variant": "number", "items": ["stockI1", "stockI2", "stockI3"] },
+      { "id": "stockI1", "component": "ListItem", "title": "Bluetooth Speaker Mini", "subtitle": "SKU SPK-104 · Last sold 2 days ago" },
+      { "id": "stockI2", "component": "ListItem", "title": "Yoga Mat — Pro", "subtitle": "SKU YGA-220 · Last sold yesterday" },
+      { "id": "stockI3", "component": "ListItem", "title": "Ceramic Mug Set (4pc)", "subtitle": "SKU MUG-087 · Last sold 4 days ago" },
+
+      { "id": "bottomRow", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "children": ["shiftCard", "regCard"] },
+
+      { "id": "shiftCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["shiftHdr", "shiftList", "shiftI1", "shiftI2", "shiftI3", "shiftI4"], "weight": 1 },
+      { "id": "shiftHdr", "component": "CardHeader", "title": "5. On Shift Today" },
+      { "id": "shiftList", "component": "ListBlock", "items": ["shiftI1", "shiftI2", "shiftI3", "shiftI4"] },
+      { "id": "shiftI1", "component": "ListItem", "title": "Maria Lopez", "subtitle": "Store Manager · 8am–4pm" },
+      { "id": "shiftI2", "component": "ListItem", "title": "James Chen", "subtitle": "Cashier · 9am–5pm" },
+      { "id": "shiftI3", "component": "ListItem", "title": "Aisha Patel", "subtitle": "Floor Associate · 10am–6pm" },
+      { "id": "shiftI4", "component": "ListItem", "title": "Tom Becker", "subtitle": "Cashier · 12pm–8pm" },
+
+      { "id": "regCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["regHdr", "regTable", "regC1", "regC2"], "weight": 1 },
+      { "id": "regHdr", "component": "CardHeader", "title": "9. Register Status" },
+      { "id": "regTable", "component": "Table", "columns": ["regC1", "regC2"] },
+      { "id": "regC1", "component": "Col", "label": "Register", "data": ["Register 1", "Register 2", "Register 3", "Register 4", "Self-Checkout A", "Self-Checkout B"] },
+      { "id": "regC2", "component": "Col", "label": "Status", "data": ["🟢 Open", "🟢 Open", "🔴 Closed", "🟢 Open", "🟢 Open", "🔴 Closed"] },
+
+      { "id": "promoCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["promoHdr", "promoTable", "promoC1", "promoC2", "promoC3"] },
+      { "id": "promoHdr", "component": "CardHeader", "title": "8. Running Promotions Performance" },
+      { "id": "promoTable", "component": "Table", "columns": ["promoC1", "promoC2", "promoC3"] },
+      { "id": "promoC1", "component": "Col", "label": "Promotion", "data": ["BOGO 50% — Audio", "20% Off Drinkware", "Bundle: Case + Cable", "Weekend Flash Sale"] },
+      { "id": "promoC2", "component": "Col", "label": "Redemptions", "type": "number", "data": [41, 33, 19, 0] },
+      { "id": "promoC3", "component": "Col", "label": "Revenue / Status", "data": ["$1,890 · Strong", "$940 · Good", "$410 · Slow", "Starts Sat · Scheduled"] },
+
+      { "id": "reorderCard", "component": "Card", "variant": "card", "direction": "column", "gap": "m", "children": ["reorderHdr", "reorderForm", "reorderItemCtl", "reorderItem", "ri1", "ri2", "ri3", "reorderQtyCtl", "reorderQty", "reorderButtons", "reorderSubmit"] },
+      { "id": "reorderHdr", "component": "CardHeader", "title": "10. Reorder an Item", "subtitle": "Submit a restock request to the warehouse" },
+      { "id": "reorderForm", "component": "Form", "name": "reorder", "fields": ["reorderItemCtl", "reorderQtyCtl"], "buttons": "reorderButtons" },
+      { "id": "reorderItemCtl", "component": "FormControl", "label": "Item", "input": "reorderItem" },
+      { "id": "reorderItem", "component": "Select", "name": "item", "placeholder": "Choose an out-of-stock item", "items": ["ri1", "ri2", "ri3"] },
+      { "id": "ri1", "component": "SelectItem", "value": "SPK-104", "label": "Bluetooth Speaker Mini (SPK-104)" },
+      { "id": "ri2", "component": "SelectItem", "value": "YGA-220", "label": "Yoga Mat — Pro (YGA-220)" },
+      { "id": "ri3", "component": "SelectItem", "value": "MUG-087", "label": "Ceramic Mug Set 4pc (MUG-087)" },
+      { "id": "reorderQtyCtl", "component": "FormControl", "label": "Quantity", "input": "reorderQty", "hint": "Standard restock is 24 units" },
+      { "id": "reorderQty", "component": "Input", "name": "quantity", "type": "number", "placeholder": "24" },
+      { "id": "reorderButtons", "component": "Buttons", "buttons": ["reorderSubmit"] },
+      { "id": "reorderSubmit", "component": "Button", "label": "Submit Reorder", "variant": "primary" }
+    ]
+  }
+}
+</a2ui-json>
+
+This console covers all 12 items:
+
+1. **Sales vs target** — progress bar at 84% of the $10,000 goal
+2. **Foot traffic** — hourly line chart, peaking at 1pm
+3. **Best sellers** — table with units sold per item
+4. **Out of stock** — alert plus a numbered list of SKUs
+5. **On shift** — staff list with roles and hours
+6. **Average basket** — $42.60 with items-per-basket detail
+7. **Returns this week** — count, refund total, and a status tag
+8. **Promotions** — table with redemptions, revenue, and status
+9. **Registers** — open/closed status for all six
+10. **Reorder** — form with item selector, quantity, and submit
+11. **Store switcher** — dropdown to view a different store
+12. **Week comparison** — grouped bar chart, this week vs last
+
+Want me to add filters (e.g., date range), drill-downs into any metric, or wire the reorder form to a confirmation flow?

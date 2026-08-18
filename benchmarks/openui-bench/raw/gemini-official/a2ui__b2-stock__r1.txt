@@ -1,0 +1,282 @@
+Here is the complete low-inventory warning view interface for managing low stock levels, adjusting warning thresholds, and facilitating quick reorders.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "low-inventory-view",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#D97706",
+      "agentDisplayName": "Inventory Manager"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "low-inventory-view",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header-card",
+          "alert-banner",
+          "controls-card",
+          "inventory-table-card",
+          "followups"
+        ]
+      },
+      {
+        "id": "header-card",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "justify": "between",
+        "align": "center",
+        "children": [
+          "title-block",
+          "status-badge"
+        ]
+      },
+      {
+        "id": "title-block",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "main-heading",
+          "sub-heading"
+        ]
+      },
+      {
+        "id": "main-heading",
+        "component": "Heading",
+        "text": "Low Inventory Warnings",
+        "level": "h1"
+      },
+      {
+        "id": "sub-heading",
+        "component": "TextContent",
+        "text": "Review stock levels, adjust notification thresholds, and process vendor reorders.",
+        "size": "small"
+      },
+      {
+        "id": "status-badge",
+        "component": "Badge",
+        "text": "5 Items Need Attention",
+        "variant": "destructive"
+      },
+      {
+        "id": "alert-banner",
+        "component": "Alert",
+        "title": "Automated Stock Warning",
+        "description": "5 items are currently below the critical stock threshold. Immediate reordering recommended to prevent stockouts.",
+        "variant": "warning"
+      },
+      {
+        "id": "controls-card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "controls-header",
+          "controls-grid"
+        ]
+      },
+      {
+        "id": "controls-header",
+        "component": "CardHeader",
+        "title": "Inventory Controls & Settings",
+        "subtitle": "Search inventory and set global warning triggers"
+      },
+      {
+        "id": "controls-grid",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "l",
+        "align": "center",
+        "children": [
+          "search-control",
+          "threshold-control"
+        ]
+      },
+      {
+        "id": "search-control",
+        "component": "FormControl",
+        "label": "4. Search Low-Stock Items",
+        "hint": "Filter by item name or SKU",
+        "input": "search-input",
+        "weight": 1
+      },
+      {
+        "id": "search-input",
+        "component": "Input",
+        "name": "inventory_search",
+        "placeholder": "e.g., Organic Coffee Beans, SKU-8842...",
+        "type": "text"
+      },
+      {
+        "id": "threshold-control",
+        "component": "FormControl",
+        "label": "3. Low Stock Warning Threshold",
+        "hint": "Triggers alert when stock drops below this value",
+        "input": "threshold-slider",
+        "weight": 1
+      },
+      {
+        "id": "threshold-slider",
+        "component": "Slider",
+        "name": "global_threshold",
+        "variant": "discrete",
+        "min": 5,
+        "max": 50,
+        "step": 5,
+        "defaultValue": [15],
+        "label": "Threshold: 15 units"
+      },
+      {
+        "id": "inventory-table-card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "table-header",
+          "inventory-table"
+        ]
+      },
+      {
+        "id": "table-header",
+        "component": "CardHeader",
+        "title": "1 & 2. Low-Stock Items & Reorder Actions",
+        "subtitle": "Items currently operating below the set threshold"
+      },
+      {
+        "id": "inventory-table",
+        "component": "Table",
+        "columns": [
+          "col-sku",
+          "col-item",
+          "col-stock",
+          "col-threshold",
+          "col-status",
+          "col-action"
+        ]
+      },
+      {
+        "id": "col-sku",
+        "component": "Col",
+        "label": "SKU",
+        "type": "string",
+        "data": [
+          "SKU-1092",
+          "SKU-4481",
+          "SKU-3329",
+          "SKU-8821",
+          "SKU-5012"
+        ]
+      },
+      {
+        "id": "col-item",
+        "component": "Col",
+        "label": "Item Name",
+        "type": "string",
+        "data": [
+          "Espresso Roast Coffee Beans (1kg)",
+          "Oat Milk Barista Edition (1L)",
+          "Biodegradable Takeout Cups (12oz)",
+          "Vanilla Syrup (750ml)",
+          "Paper Napkins (Pack of 500)"
+        ]
+      },
+      {
+        "id": "col-stock",
+        "component": "Col",
+        "label": "1. Remaining Units",
+        "type": "number",
+        "data": [
+          4,
+          6,
+          8,
+          11,
+          14
+        ]
+      },
+      {
+        "id": "col-threshold",
+        "component": "Col",
+        "label": "3. Active Threshold",
+        "type": "number",
+        "data": [
+          15,
+          15,
+          15,
+          15,
+          15
+        ]
+      },
+      {
+        "id": "col-status",
+        "component": "Col",
+        "label": "Stock Status",
+        "type": "string",
+        "data": [
+          "Critical (4 left)",
+          "Critical (6 left)",
+          "Warning (8 left)",
+          "Warning (11 left)",
+          "Warning (14 left)"
+        ]
+      },
+      {
+        "id": "col-action",
+        "component": "Col",
+        "label": "2. Quick Reorder",
+        "type": "action",
+        "data": [
+          "Reorder 50 Units",
+          "Reorder 100 Units",
+          "Reorder 200 Units",
+          "Reorder 24 Units",
+          "Reorder 50 Packs"
+        ]
+      },
+      {
+        "id": "followups",
+        "component": "FollowUpBlock",
+        "items": [
+          "followup-1",
+          "followup-2",
+          "followup-3"
+        ]
+      },
+      {
+        "id": "followup-1",
+        "component": "FollowUpItem",
+        "text": "Reorder all critical items automatically"
+      },
+      {
+        "id": "followup-2",
+        "component": "FollowUpItem",
+        "text": "Change threshold trigger to 20 units"
+      },
+      {
+        "id": "followup-3",
+        "component": "FollowUpItem",
+        "text": "Export low inventory report as CSV"
+      }
+    ]
+  }
+}
+</a2ui-json>

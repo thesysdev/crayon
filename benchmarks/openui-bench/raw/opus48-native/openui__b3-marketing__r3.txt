@@ -1,0 +1,36 @@
+root = Card([header, callout, kpis, traffic, sources, campaigns, subscribers, controls])
+
+header = CardHeader("Marketing Dashboard", "Week of Feb 10 – Feb 16")
+
+callout = TextCallout("success", "Top performer: Spring Launch", "Spring Launch drove the highest ROI this week with a 4.8% conversion rate and $12,400 in attributed revenue.")
+
+kpis = Table([kpiMetric, kpiValue])
+kpiMetric = Col("Metric", ["Visitors (30d)", "Conversion rate", "Email subscribers"])
+kpiValue = Col("Value", ["148,920", "3.2%", "9,840"])
+
+traffic = AreaChart(trafficDays, [visitorSeries], "natural", "Day", "Visitors")
+trafficDays = ["Day 1", "Day 5", "Day 10", "Day 15", "Day 20", "Day 25", "Day 30"]
+visitorSeries = Series("Visitors", [3800, 4200, 4600, 5100, 4900, 5400, 5800])
+
+sources = PieChart(sourceLabels, sourceValues, "donut")
+sourceLabels = ["Organic Search", "Paid Social", "Direct", "Email", "Referral"]
+sourceValues = [42, 24, 16, 12, 6]
+
+campaigns = Table([campName, campSpend, campConv])
+campName = Col("Campaign", ["Spring Launch", "Retargeting Q1", "Newsletter Promo", "Brand Awareness"])
+campSpend = Col("Spend", ["$12,400", "$8,150", "$4,600", "$6,900"], "string")
+campConv = Col("Conv. Rate", ["4.8%", "3.9%", "2.7%", "1.8%"], "string")
+
+subscribers = LineChart(subWeeks, [subSeries], "natural", "Week", "Subscribers")
+subWeeks = ["Wk 1", "Wk 2", "Wk 3", "Wk 4"]
+subSeries = Series("Email subscribers", [9120, 9380, 9610, 9840])
+
+controls = Card([dateRange, exportBtns], "clear", "column", "m")
+dateRange = Form("date-range", rangeButtons, [rangeField])
+rangeField = FormControl("Date range", rangePicker, "Adjust the reporting window")
+rangePicker = DatePicker("range", "range")
+rangeButtons = Buttons([applyBtn])
+applyBtn = Button("Apply range", null, "primary")
+exportBtns = Buttons([exportCsv, exportPdf])
+exportCsv = Button("Export CSV")
+exportPdf = Button("Export PDF", null, "secondary")

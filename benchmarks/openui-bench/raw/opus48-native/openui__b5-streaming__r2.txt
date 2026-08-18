@@ -1,0 +1,70 @@
+root = Card([header, liveNow, topTitles, watchTrend, subsVsCancels, genrePerf, bufferBox, regionHealth, upcoming, licenses, recoClicks, deadSearches, revenueByPlan, deviceSplit, regionFocus, flags, promote])
+
+header = CardHeader("Operations Room", "Streaming service live overview")
+
+liveNow = Callout("info", "Viewers Watching Now", "1,284,502 concurrent streams across all regions")
+
+topTitles = Table([titleCol, hoursCol])
+titleCol = Col("Title", ["Neon Skyline", "The Deep End", "Last Signal", "Harvest Moon", "Crown of Ash"])
+hoursCol = Col("Hours Watched", [842300, 731200, 690450, 512800, 498100], "number")
+
+watchTrend = AreaChart(["W1", "W2", "W3", "W4"], [watchSeries], "natural", "Week", "Million hours")
+watchSeries = Series("Watch time", [58.2, 61.9, 64.3, 70.1])
+
+subsVsCancels = BarChart(["W1", "W2", "W3", "W4"], [newSubs, cancels], "grouped", "Week", "Accounts")
+newSubs = Series("New subscribers", [42100, 39800, 45200, 51000])
+cancels = Series("Cancellations", [18400, 20100, 17600, 19200])
+
+genrePerf = RadarChart(["Drama", "Comedy", "Action", "Docs", "Horror", "Kids"], [genreSeries])
+genreSeries = Series("Engagement index", [88, 74, 91, 62, 70, 66])
+
+bufferBox = Progress(2.4, "Buffering rate (% of sessions)")
+
+regionHealth = HorizontalBarChart(["North America", "Europe", "Asia Pacific", "Latin America", "Middle East"], [healthSeries], "grouped", "Health score", "Region")
+healthSeries = Series("Delivery health", [98, 96, 92, 89, 85])
+
+upcoming = ListBlock([rel1, rel2, rel3], "number")
+rel1 = ListItem("Midnight Archive", "Original series · Mar 12")
+rel2 = ListItem("Fault Lines", "Feature film · Mar 19")
+rel3 = ListItem("Tiny Explorers S2", "Kids series · Mar 27")
+
+licenses = Table([licTitle, licExpiry])
+licTitle = Col("Title", ["Golden Hour", "Steel Harbor", "The Quiet Road", "Paper Kings"])
+licExpiry = Col("Expires", ["Mar 08", "Mar 15", "Mar 22", "Mar 30"])
+
+recoClicks = Progress(37.5, "Recommendation click-through rate (%)")
+
+deadSearches = Callout("warning", "Searches Without Playback", "12.8% of searches ended without any title being played")
+
+revenueByPlan = PieChart(["Basic", "Standard", "Premium", "Ultra"], [22, 38, 28, 12], "donut")
+
+deviceSplit = PieChart(["Smart TV", "Mobile", "Web", "Tablet", "Console"], [46, 27, 14, 8, 5], "pie")
+
+regionFocus = Form("region-focus", focusButtons, [regionField])
+regionField = FormControl("Focus on region", regionSelect)
+regionSelect = Select("region", [rNA, rEU, rAP, rLA, rME], "Select a region")
+rNA = SelectItem("na", "North America")
+rEU = SelectItem("eu", "Europe")
+rAP = SelectItem("ap", "Asia Pacific")
+rLA = SelectItem("la", "Latin America")
+rME = SelectItem("me", "Middle East")
+focusButtons = Buttons([focusBtn])
+focusBtn = Button("Apply focus", null, "primary")
+
+flags = SwitchGroup("feature-flags", [flagAutoplay, flagNewUI, flag4k, flagOffline], "card")
+flagAutoplay = SwitchItem("Autoplay previews", "Play trailers on hover", "autoplay", true)
+flagNewUI = SwitchItem("New home layout", "Redesigned home rows", "new_ui", false)
+flag4k = SwitchItem("4K streaming", "Ultra HD for Premium+", "uhd_4k", true)
+flagOffline = SwitchItem("Offline downloads", "Save titles for offline", "offline", true)
+
+promote = Form("promote-title", promoteButtons, [promoteField, slotField])
+promoteField = FormControl("Title to promote", promoteInput, "Appears in the hero banner")
+promoteInput = Input("title", "e.g. Neon Skyline")
+slotField = FormControl("Home screen slot", slotSelect)
+slotSelect = Select("slot", [slotHero, slotRow1, slotSpotlight], "Choose a slot")
+slotHero = SelectItem("hero", "Hero banner")
+slotRow1 = SelectItem("row1", "Top row")
+slotSpotlight = SelectItem("spotlight", "Spotlight carousel")
+promoteButtons = Buttons([promoteBtn, previewBtn])
+promoteBtn = Button("Promote now", null, "primary")
+previewBtn = Button("Preview", null, "secondary")

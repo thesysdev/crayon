@@ -1,0 +1,27 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","threshold-callout","search-section","list-header","items-list"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Low Inventory Warnings","subtitle":"Items that need to be reordered soon"}}}
+{"op":"add","path":"/elements/threshold-callout","value":{"type":"Callout","props":{"variant":"warning","title":"Low-Stock Threshold","description":"Items are flagged when remaining units fall at or below 20 units."}}}
+{"op":"add","path":"/state/threshold","value":20}
+{"op":"add","path":"/elements/search-section","value":{"type":"FormControl","props":{"label":"Search items","input":"search-input","hint":"Filter by product name or SKU"}}}
+{"op":"add","path":"/elements/search-input","value":{"type":"Input","props":{"name":"search","placeholder":"Search inventory...","type":"text","value":{"$bindState":"/search"}}}}
+{"op":"add","path":"/state/search","value":""}
+{"op":"add","path":"/elements/list-header","value":{"type":"Heading","props":{"text":"Items Running Low","level":"h3"}}}
+{"op":"add","path":"/elements/items-list","value":{"type":"Card","props":{"direction":"column","gap":"m"},"repeat":{"statePath":"/items","key":"id"},"children":["item-card"]}}
+{"op":"add","path":"/elements/item-card","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between"},"children":["item-info","item-actions"]}}
+{"op":"add","path":"/elements/item-info","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"children":["item-name","item-sku","item-remaining","item-progress"]}}
+{"op":"add","path":"/elements/item-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"large-heavy"}}}
+{"op":"add","path":"/elements/item-sku","value":{"type":"TextContent","props":{"text":{"$template":"SKU: ${sku}"},"size":"small"}}}
+{"op":"add","path":"/elements/item-remaining","value":{"type":"Tag","props":{"text":{"$template":"${remaining} units remaining"},"variant":"danger","size":"md"}}}
+{"op":"add","path":"/elements/item-progress","value":{"type":"Progress","props":{"value":{"$item":"remaining"},"label":{"$template":"${remaining} of ${threshold} threshold"}}}}
+{"op":"add","path":"/elements/item-actions","value":{"type":"Buttons","props":{"buttons":["reorder-btn"],"direction":"column"}}}
+{"op":"add","path":"/elements/reorder-btn","value":{"type":"Button","props":{"label":"Reorder","variant":"primary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/lastReordered","value":{"$item":"name"}}}}}}
+{"op":"add","path":"/state/items","value":[]}
+{"op":"add","path":"/state/items/0","value":{"id":"1","name":"Organic Whole Milk 1L","sku":"MLK-001","remaining":4,"threshold":20}}
+{"op":"add","path":"/state/items/1","value":{"id":"2","name":"Free-Range Eggs (dozen)","sku":"EGG-012","remaining":8,"threshold":20}}
+{"op":"add","path":"/state/items/2","value":{"id":"3","name":"Sourdough Bread Loaf","sku":"BRD-045","remaining":11,"threshold":20}}
+{"op":"add","path":"/state/items/3","value":{"id":"4","name":"Cold Brew Coffee 500ml","sku":"COF-330","remaining":2,"threshold":20}}
+{"op":"add","path":"/state/items/4","value":{"id":"5","name":"Greek Yogurt 750g","sku":"YOG-078","remaining":15,"threshold":20}}
+{"op":"add","path":"/state/lastReordered","value":""}
+{"op":"add","path":"/elements/reorder-confirm","value":{"type":"Callout","props":{"variant":"success","title":"Reorder Placed","description":{"$template":"A reorder request was submitted for ${/lastReordered}."}},"visible":{"$state":"/lastReordered","neq":""}}}
+{"op":"add","path":"/elements/main/children/-","value":"reorder-confirm"}

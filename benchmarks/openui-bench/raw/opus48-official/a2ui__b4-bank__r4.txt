@@ -1,0 +1,502 @@
+Here's a comprehensive personal banking home screen covering all the requested items.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "banking-home",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": { "primaryColor": "#1E6F5C", "agentDisplayName": "My Bank" }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "banking-home",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "l",
+          "children": ["header", "balances", "credit-score", "tabs"]
+        },
+        {
+          "id": "header",
+          "component": "CardHeader",
+          "title": "Good morning, Alex",
+          "subtitle": "Here's your financial overview"
+        },
+
+        {
+          "id": "balances",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "children": ["bal-checking", "bal-savings", "bal-credit"]
+        },
+        {
+          "id": "bal-checking",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["bc-label", "bc-amount", "bc-tag"]
+        },
+        { "id": "bc-label", "component": "TextContent", "text": "Checking", "size": "small" },
+        { "id": "bc-amount", "component": "Heading", "text": "$4,235.18", "level": "h3" },
+        { "id": "bc-tag", "component": "Tag", "text": "•• 4821", "variant": "neutral", "size": "sm" },
+
+        {
+          "id": "bal-savings",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["bs-label", "bs-amount", "bs-tag"]
+        },
+        { "id": "bs-label", "component": "TextContent", "text": "Savings", "size": "small" },
+        { "id": "bs-amount", "component": "Heading", "text": "$18,920.55", "level": "h3" },
+        { "id": "bs-tag", "component": "Tag", "text": "•• 9032", "variant": "success", "size": "sm" },
+
+        {
+          "id": "bal-credit",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["cr-label", "cr-amount", "cr-tag"]
+        },
+        { "id": "cr-label", "component": "TextContent", "text": "Credit Card", "size": "small" },
+        { "id": "cr-amount", "component": "Heading", "text": "-$1,204.77", "level": "h3" },
+        { "id": "cr-tag", "component": "Tag", "text": "$3,795 available", "variant": "warning", "size": "sm" },
+
+        {
+          "id": "credit-score",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "children": ["cs-header", "cs-progress", "cs-note"]
+        },
+        { "id": "cs-header", "component": "CardHeader", "title": "Credit Score", "subtitle": "742 — Very Good" },
+        { "id": "cs-progress", "component": "Progress", "value": 82, "label": "Updated today" },
+        { "id": "cs-note", "component": "TextContent", "text": "Up 8 points since last month.", "size": "small" },
+
+        {
+          "id": "tabs",
+          "component": "Tabs",
+          "items": ["tab-activity", "tab-spending", "tab-bills", "tab-goals", "tab-actions"]
+        },
+
+        {
+          "id": "tab-activity",
+          "component": "TabItem",
+          "value": "activity",
+          "trigger": "Activity",
+          "content": ["tx-table", "dispute-section"]
+        },
+        {
+          "id": "tx-table",
+          "component": "Table",
+          "columns": ["tx-col-merchant", "tx-col-date", "tx-col-amount"]
+        },
+        {
+          "id": "tx-col-merchant",
+          "component": "Col",
+          "label": "Merchant",
+          "type": "string",
+          "data": ["Whole Foods Market", "Shell Gas Station", "Netflix", "Amazon", "Starbucks", "Salary Deposit"]
+        },
+        {
+          "id": "tx-col-date",
+          "component": "Col",
+          "label": "Date",
+          "type": "string",
+          "data": ["Jun 12", "Jun 11", "Jun 10", "Jun 9", "Jun 9", "Jun 8"]
+        },
+        {
+          "id": "tx-col-amount",
+          "component": "Col",
+          "label": "Amount",
+          "type": "string",
+          "data": ["-$86.43", "-$52.10", "-$15.99", "-$124.30", "-$6.75", "+$3,200.00"]
+        },
+
+        {
+          "id": "dispute-section",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "s",
+          "children": ["dispute-dialog"]
+        },
+        {
+          "id": "dispute-dialog",
+          "component": "DialogBlock",
+          "triggerLabel": "Dispute a transaction",
+          "triggerVariant": "outline",
+          "title": "Dispute a Transaction",
+          "description": "Tell us what went wrong and we'll investigate.",
+          "content": ["dispute-form"]
+        },
+        {
+          "id": "dispute-form",
+          "component": "Form",
+          "name": "disputeForm",
+          "fields": ["dispute-fc-tx", "dispute-fc-reason", "dispute-fc-details"],
+          "buttons": "dispute-buttons"
+        },
+        {
+          "id": "dispute-fc-tx",
+          "component": "FormControl",
+          "label": "Transaction",
+          "input": "dispute-select"
+        },
+        {
+          "id": "dispute-select",
+          "component": "Select",
+          "name": "disputeTx",
+          "placeholder": "Choose a transaction",
+          "items": ["dsel-1", "dsel-2", "dsel-3", "dsel-4"]
+        },
+        { "id": "dsel-1", "component": "SelectItem", "value": "wf", "label": "Whole Foods Market — $86.43" },
+        { "id": "dsel-2", "component": "SelectItem", "value": "shell", "label": "Shell Gas Station — $52.10" },
+        { "id": "dsel-3", "component": "SelectItem", "value": "amzn", "label": "Amazon — $124.30" },
+        { "id": "dsel-4", "component": "SelectItem", "value": "nflx", "label": "Netflix — $15.99" },
+        {
+          "id": "dispute-fc-reason",
+          "component": "FormControl",
+          "label": "Reason",
+          "input": "dispute-reason"
+        },
+        {
+          "id": "dispute-reason",
+          "component": "Select",
+          "name": "disputeReason",
+          "placeholder": "Select a reason",
+          "items": ["dr-1", "dr-2", "dr-3"]
+        },
+        { "id": "dr-1", "component": "SelectItem", "value": "unauthorized", "label": "I didn't authorize this" },
+        { "id": "dr-2", "component": "SelectItem", "value": "duplicate", "label": "Charged more than once" },
+        { "id": "dr-3", "component": "SelectItem", "value": "notreceived", "label": "Goods/services not received" },
+        {
+          "id": "dispute-fc-details",
+          "component": "FormControl",
+          "label": "Details",
+          "input": "dispute-details",
+          "hint": "Add any information that helps us investigate."
+        },
+        {
+          "id": "dispute-details",
+          "component": "TextArea",
+          "name": "disputeDetails",
+          "placeholder": "Describe what happened…",
+          "rows": 3
+        },
+        {
+          "id": "dispute-buttons",
+          "component": "Buttons",
+          "buttons": ["dispute-submit"]
+        },
+        {
+          "id": "dispute-submit",
+          "component": "Button",
+          "label": "Submit Dispute",
+          "variant": "primary",
+          "action": ["submitDispute"]
+        },
+
+        {
+          "id": "tab-spending",
+          "component": "TabItem",
+          "value": "spending",
+          "trigger": "Spending",
+          "content": ["spend-header", "spend-pie"]
+        },
+        {
+          "id": "spend-header",
+          "component": "CardHeader",
+          "title": "Spending by Category",
+          "subtitle": "This month — $1,842 total"
+        },
+        {
+          "id": "spend-pie",
+          "component": "PieChart",
+          "variant": "donut",
+          "labels": ["Groceries", "Dining", "Transport", "Shopping", "Subscriptions", "Utilities"],
+          "values": [520, 340, 210, 425, 92, 255]
+        },
+
+        {
+          "id": "tab-bills",
+          "component": "TabItem",
+          "value": "bills",
+          "trigger": "Bills",
+          "content": ["bills-header", "bills-list"]
+        },
+        {
+          "id": "bills-header",
+          "component": "CardHeader",
+          "title": "Bills Due Soon",
+          "subtitle": "Next 14 days"
+        },
+        {
+          "id": "bills-list",
+          "component": "ListBlock",
+          "variant": "number",
+          "items": ["bill-1", "bill-2", "bill-3"]
+        },
+        {
+          "id": "bill-1",
+          "component": "ListItem",
+          "title": "Electric — City Power",
+          "subtitle": "Due Jun 18 · $142.30",
+          "actionLabel": "Pay"
+        },
+        {
+          "id": "bill-2",
+          "component": "ListItem",
+          "title": "Rent — Oakwood Apartments",
+          "subtitle": "Due Jun 25 · $1,650.00",
+          "actionLabel": "Pay"
+        },
+        {
+          "id": "bill-3",
+          "component": "ListItem",
+          "title": "Internet — FiberOne",
+          "subtitle": "Due Jun 27 · $69.99",
+          "actionLabel": "Pay"
+        },
+
+        {
+          "id": "tab-goals",
+          "component": "TabItem",
+          "value": "goals",
+          "trigger": "Goals",
+          "content": ["goal-header", "goal-progress", "goal-note"]
+        },
+        {
+          "id": "goal-header",
+          "component": "CardHeader",
+          "title": "Vacation Savings Goal",
+          "subtitle": "Hawaii Trip 🌴"
+        },
+        {
+          "id": "goal-progress",
+          "component": "Progress",
+          "value": 64,
+          "label": "$3,200 of $5,000 saved"
+        },
+        {
+          "id": "goal-note",
+          "component": "TextContent",
+          "text": "You're on track! Save $360/month to reach your goal by December.",
+          "size": "small"
+        },
+
+        {
+          "id": "tab-actions",
+          "component": "TabItem",
+          "value": "actions",
+          "trigger": "Manage",
+          "content": ["transfer-section", "sep-1", "freeze-section", "sep-2", "statement-section", "sep-3", "alerts-section"]
+        },
+
+        {
+          "id": "transfer-section",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "children": ["transfer-header", "transfer-form"]
+        },
+        { "id": "transfer-header", "component": "CardHeader", "title": "Move Money", "subtitle": "Transfer between your accounts" },
+        {
+          "id": "transfer-form",
+          "component": "Form",
+          "name": "transferForm",
+          "fields": ["tf-from", "tf-to", "tf-amount"],
+          "buttons": "transfer-buttons"
+        },
+        { "id": "tf-from", "component": "FormControl", "label": "From", "input": "tf-from-select" },
+        {
+          "id": "tf-from-select",
+          "component": "Select",
+          "name": "transferFrom",
+          "placeholder": "Source account",
+          "items": ["tf-acc-1", "tf-acc-2", "tf-acc-3"]
+        },
+        { "id": "tf-to", "component": "FormControl", "label": "To", "input": "tf-to-select" },
+        {
+          "id": "tf-to-select",
+          "component": "Select",
+          "name": "transferTo",
+          "placeholder": "Destination account",
+          "items": ["tf-acc-1b", "tf-acc-2b", "tf-acc-3b"]
+        },
+        { "id": "tf-acc-1", "component": "SelectItem", "value": "checking", "label": "Checking •• 4821" },
+        { "id": "tf-acc-2", "component": "SelectItem", "value": "savings", "label": "Savings •• 9032" },
+        { "id": "tf-acc-3", "component": "SelectItem", "value": "credit", "label": "Credit Card •• 1177" },
+        { "id": "tf-acc-1b", "component": "SelectItem", "value": "checking", "label": "Checking •• 4821" },
+        { "id": "tf-acc-2b", "component": "SelectItem", "value": "savings", "label": "Savings •• 9032" },
+        { "id": "tf-acc-3b", "component": "SelectItem", "value": "credit", "label": "Credit Card •• 1177" },
+        { "id": "tf-amount", "component": "FormControl", "label": "Amount", "input": "tf-amount-input", "hint": "Enter the amount to transfer." },
+        {
+          "id": "tf-amount-input",
+          "component": "Input",
+          "name": "transferAmount",
+          "type": "number",
+          "placeholder": "0.00"
+        },
+        { "id": "transfer-buttons", "component": "Buttons", "buttons": ["transfer-submit"] },
+        {
+          "id": "transfer-submit",
+          "component": "Button",
+          "label": "Transfer Money",
+          "variant": "primary",
+          "action": ["submitTransfer"]
+        },
+
+        { "id": "sep-1", "component": "Separator", "orientation": "horizontal" },
+
+        {
+          "id": "freeze-section",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "children": ["freeze-header", "freeze-desc", "freeze-dialog"]
+        },
+        { "id": "freeze-header", "component": "CardHeader", "title": "Credit Line Security", "subtitle": "Freeze your credit card instantly" },
+        { "id": "freeze-desc", "component": "TextContent", "text": "Freezing blocks all new charges. You can unfreeze anytime.", "size": "small" },
+        {
+          "id": "freeze-dialog",
+          "component": "AlertDialogBlock",
+          "triggerLabel": "Freeze Credit Line",
+          "triggerVariant": "destructive",
+          "title": "Freeze your credit line?",
+          "description": "This will immediately block all new purchases on Credit Card •• 1177. Existing scheduled payments are unaffected.",
+          "confirmLabel": "Freeze Now",
+          "cancelLabel": "Cancel"
+        },
+
+        { "id": "sep-2", "component": "Separator", "orientation": "horizontal" },
+
+        {
+          "id": "statement-section",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "children": ["stmt-header", "stmt-form"]
+        },
+        { "id": "stmt-header", "component": "CardHeader", "title": "Statements", "subtitle": "Pick a period to view or download" },
+        {
+          "id": "stmt-form",
+          "component": "Form",
+          "name": "statementForm",
+          "fields": ["stmt-fc"],
+          "buttons": "stmt-buttons"
+        },
+        { "id": "stmt-fc", "component": "FormControl", "label": "Statement Period", "input": "stmt-select" },
+        {
+          "id": "stmt-select",
+          "component": "Select",
+          "name": "statementPeriod",
+          "placeholder": "Select a period",
+          "items": ["stmt-1", "stmt-2", "stmt-3", "stmt-4"]
+        },
+        { "id": "stmt-1", "component": "SelectItem", "value": "2024-06", "label": "June 2024" },
+        { "id": "stmt-2", "component": "SelectItem", "value": "2024-05", "label": "May 2024" },
+        { "id": "stmt-3", "component": "SelectItem", "value": "2024-04", "label": "April 2024" },
+        { "id": "stmt-4", "component": "SelectItem", "value": "2024-q1", "label": "Q1 2024" },
+        { "id": "stmt-buttons", "component": "Buttons", "buttons": ["stmt-view"] },
+        {
+          "id": "stmt-view",
+          "component": "Button",
+          "label": "View Statement",
+          "variant": "secondary",
+          "action": ["viewStatement"]
+        },
+
+        { "id": "sep-3", "component": "Separator", "orientation": "horizontal" },
+
+        {
+          "id": "alerts-section",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "children": ["alerts-header", "alerts-switches"]
+        },
+        { "id": "alerts-header", "component": "CardHeader", "title": "Alert Preferences", "subtitle": "Choose what triggers a notification" },
+        {
+          "id": "alerts-switches",
+          "component": "SwitchGroup",
+          "name": "alertPrefs",
+          "variant": "card",
+          "items": ["alert-1", "alert-2", "alert-3", "alert-4", "alert-5"]
+        },
+        {
+          "id": "alert-1",
+          "component": "SwitchItem",
+          "name": "largePurchase",
+          "label": "Large purchases",
+          "description": "Notify me for charges over $200",
+          "defaultChecked": true
+        },
+        {
+          "id": "alert-2",
+          "component": "SwitchItem",
+          "name": "lowBalance",
+          "label": "Low balance",
+          "description": "When checking drops below $500",
+          "defaultChecked": true
+        },
+        {
+          "id": "alert-3",
+          "component": "SwitchItem",
+          "name": "billDue",
+          "label": "Bill due reminders",
+          "description": "3 days before a bill is due",
+          "defaultChecked": true
+        },
+        {
+          "id": "alert-4",
+          "component": "SwitchItem",
+          "name": "foreignTx",
+          "label": "Foreign transactions",
+          "description": "Any charge outside your country",
+          "defaultChecked": false
+        },
+        {
+          "id": "alert-5",
+          "component": "SwitchItem",
+          "name": "creditScore",
+          "label": "Credit score changes",
+          "description": "When your score moves up or down",
+          "defaultChecked": true
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+This screen organizes everything into a clear layout:
+
+- **Balances** (item 1) and **credit score** (item 6) sit up top for at-a-glance viewing.
+- The **Activity** tab holds recent **transactions with merchant and amount** (item 2) plus a **dispute** dialog (item 11).
+- **Spending** tab shows the **category split** for this month (item 3).
+- **Bills** tab lists everything **due soon** (item 4).
+- **Goals** tab tracks the **vacation savings progress** (item 5).
+- The **Manage** tab bundles the action tools: **move money with an amount** (item 7), **freeze the credit line** (item 8), **pick a statement period** (item 9), and **manage alert triggers** (item 10).
+
+Let me know if you'd like to adjust the layout, add real-time data hooks, or expand any section.

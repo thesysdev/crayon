@@ -1,0 +1,667 @@
+Hiring overview dashboard covering all 8 requested metrics — built as a single operational screen for the HR lead.
+
+<a2ui-json>{"version":"v0.9","createSurface":{"surfaceId":"hr-hiring-overview","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#0F766E","agentDisplayName":"HR Hiring Console"},"sendDataModel":false}}</a2ui-json>
+
+<a2ui-json>{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "hr-hiring-overview",
+    "components": [
+      {
+        "component": "Card",
+        "id": "root",
+        "children": [
+          "header",
+          "kpiRow",
+          "middleRow",
+          "openRolesCard",
+          "bottomRow",
+          "actionsCard"
+        ],
+        "variant": "clear",
+        "direction": "column",
+        "gap": "l"
+      },
+      {
+        "component": "CardHeader",
+        "id": "header",
+        "title": "Hiring Overview",
+        "subtitle": "Workforce snapshot • Updated today • 184 employees • 8 open roles"
+      },
+      {
+        "component": "Card",
+        "id": "kpiRow",
+        "children": [
+          "kpiHeadcountCard",
+          "kpiTimeToHireCard",
+          "kpiOpenRolesCard",
+          "kpiAttritionMiniCard"
+        ],
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true
+      },
+      {
+        "component": "Card",
+        "id": "kpiHeadcountCard",
+        "children": [
+          "kpiHeadcountTitle",
+          "kpiHeadcountValue",
+          "kpiHeadcountProgress",
+          "kpiHeadcountHint"
+        ],
+        "variant": "card",
+        "gap": "s"
+      },
+      {
+        "component": "Card",
+        "id": "kpiTimeToHireCard",
+        "children": [
+          "kpiTimeTitle",
+          "kpiTimeValue",
+          "kpiTimeBadge",
+          "kpiTimeHint"
+        ],
+        "variant": "card",
+        "gap": "s"
+      },
+      {
+        "component": "Card",
+        "id": "kpiOpenRolesCard",
+        "children": [
+          "kpiOpenTitle",
+          "kpiOpenValue",
+          "kpiOpenHint",
+          "kpiOpenBadge"
+        ],
+        "variant": "card",
+        "gap": "s"
+      },
+      {
+        "component": "Card",
+        "id": "kpiAttritionMiniCard",
+        "children": [
+          "kpiAttritionTitle",
+          "kpiAttritionValue",
+          "kpiAttritionHint"
+        ],
+        "variant": "card",
+        "gap": "s"
+      },
+      {
+        "component": "Card",
+        "id": "middleRow",
+        "children": [
+          "pipelineCard",
+          "deptSplitCard"
+        ],
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true
+      },
+      {
+        "component": "Card",
+        "id": "pipelineCard",
+        "children": [
+          "pipelineHeader",
+          "pipelineChart"
+        ],
+        "variant": "card",
+        "gap": "m"
+      },
+      {
+        "component": "Card",
+        "id": "deptSplitCard",
+        "children": [
+          "deptHeader",
+          "deptPieChart"
+        ],
+        "variant": "card",
+        "gap": "m"
+      },
+      {
+        "component": "Card",
+        "id": "openRolesCard",
+        "children": [
+          "openRolesHeader",
+          "openRolesTable"
+        ],
+        "variant": "card",
+        "gap": "m"
+      },
+      {
+        "component": "Card",
+        "id": "bottomRow",
+        "children": [
+          "interviewsCard",
+          "attritionCard"
+        ],
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true
+      },
+      {
+        "component": "Card",
+        "id": "interviewsCard",
+        "children": [
+          "interviewsHeader",
+          "interviewsList"
+        ],
+        "variant": "card",
+        "gap": "m"
+      },
+      {
+        "component": "Card",
+        "id": "attritionCard",
+        "children": [
+          "attritionHeader",
+          "attritionChart"
+        ],
+        "variant": "card",
+        "gap": "m"
+      },
+      {
+        "component": "Card",
+        "id": "actionsCard",
+        "children": [
+          "newRoleDialog"
+        ],
+        "variant": "clear",
+        "gap": "s"
+      },
+      {
+        "component": "TextContent",
+        "id": "kpiHeadcountTitle",
+        "text": "Current Headcount",
+        "size": "small"
+      },
+      {
+        "component": "Heading",
+        "id": "kpiHeadcountValue",
+        "text": "184",
+        "level": "h1"
+      },
+      {
+        "component": "Progress",
+        "id": "kpiHeadcountProgress",
+        "value": 92,
+        "label": "92% of 200 target"
+      },
+      {
+        "component": "TextContent",
+        "id": "kpiHeadcountHint",
+        "text": "+6 net new hires this month • 12 open requisitions",
+        "size": "small"
+      },
+      {
+        "component": "TextContent",
+        "id": "kpiTimeTitle",
+        "text": "Average Time to Hire",
+        "size": "small"
+      },
+      {
+        "component": "Heading",
+        "id": "kpiTimeValue",
+        "text": "38 days",
+        "level": "h1"
+      },
+      {
+        "component": "Badge",
+        "id": "kpiTimeBadge",
+        "text": "↓ 4 days vs last quarter",
+        "variant": "secondary"
+      },
+      {
+        "component": "TextContent",
+        "id": "kpiTimeHint",
+        "text": "Target: 35 days • Fastest dept: Engineering (31d)",
+        "size": "small"
+      },
+      {
+        "component": "TextContent",
+        "id": "kpiOpenTitle",
+        "text": "Open Roles",
+        "size": "small"
+      },
+      {
+        "component": "Heading",
+        "id": "kpiOpenValue",
+        "text": "8 roles",
+        "level": "h1"
+      },
+      {
+        "component": "TextContent",
+        "id": "kpiOpenHint",
+        "text": "3 Engineering • 2 Product • 1 Sales • 1 Marketing • 1 HR",
+        "size": "small"
+      },
+      {
+        "component": "Badge",
+        "id": "kpiOpenBadge",
+        "text": "2 urgent",
+        "variant": "destructive"
+      },
+      {
+        "component": "TextContent",
+        "id": "kpiAttritionTitle",
+        "text": "Attrition (6 mo)",
+        "size": "small"
+      },
+      {
+        "component": "Heading",
+        "id": "kpiAttritionValue",
+        "text": "19 exits",
+        "level": "h1"
+      },
+      {
+        "component": "TextContent",
+        "id": "kpiAttritionHint",
+        "text": "10.3% annualized • Peak in May (5)",
+        "size": "small"
+      },
+      {
+        "component": "CardHeader",
+        "id": "pipelineHeader",
+        "title": "Candidates by Pipeline Stage",
+        "subtitle": "246 active candidates • Conversion 6.5% to hired"
+      },
+      {
+        "component": "HorizontalBarChart",
+        "id": "pipelineChart",
+        "labels": [
+          "Sourced",
+          "Screening",
+          "Interview",
+          "Offer",
+          "Hired"
+        ],
+        "series": [
+          "pipelineSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Candidates",
+        "yLabel": "Stage"
+      },
+      {
+        "component": "Series",
+        "id": "pipelineSeries",
+        "category": "Candidates",
+        "values": [
+          124,
+          68,
+          34,
+          12,
+          8
+        ]
+      },
+      {
+        "component": "CardHeader",
+        "id": "deptHeader",
+        "title": "Headcount Split by Department",
+        "subtitle": "184 employees total"
+      },
+      {
+        "component": "PieChart",
+        "id": "deptPieChart",
+        "labels": [
+          "Engineering",
+          "Sales",
+          "Marketing",
+          "Product",
+          "Operations",
+          "HR"
+        ],
+        "values": [
+          68,
+          42,
+          24,
+          22,
+          18,
+          10
+        ],
+        "variant": "donut",
+        "appearance": "circular"
+      },
+      {
+        "component": "CardHeader",
+        "id": "openRolesHeader",
+        "title": "Open Roles by Department",
+        "subtitle": "8 active requisitions • Click to manage"
+      },
+      {
+        "component": "Table",
+        "id": "openRolesTable",
+        "columns": [
+          "colRole",
+          "colDept",
+          "colManager",
+          "colApplicants",
+          "colPriority"
+        ]
+      },
+      {
+        "component": "Col",
+        "id": "colRole",
+        "label": "Role",
+        "data": [
+          "Senior Frontend Engineer",
+          "Product Manager",
+          "Account Executive",
+          "UX Designer",
+          "DevOps Engineer",
+          "Marketing Manager",
+          "Customer Success Manager",
+          "Talent Acquisition Partner"
+        ],
+        "type": "string"
+      },
+      {
+        "component": "Col",
+        "id": "colDept",
+        "label": "Department",
+        "data": [
+          "Engineering",
+          "Product",
+          "Sales",
+          "Product",
+          "Engineering",
+          "Marketing",
+          "Operations",
+          "HR"
+        ],
+        "type": "string"
+      },
+      {
+        "component": "Col",
+        "id": "colManager",
+        "label": "Hiring Manager",
+        "data": [
+          "Sarah Kim",
+          "David Lee",
+          "Priya Patel",
+          "David Lee",
+          "Sarah Kim",
+          "James Wilson",
+          "Maria Garcia",
+          "You"
+        ],
+        "type": "string"
+      },
+      {
+        "component": "Col",
+        "id": "colApplicants",
+        "label": "Applicants",
+        "data": [
+          42,
+          28,
+          35,
+          19,
+          22,
+          31,
+          14,
+          18
+        ],
+        "type": "number"
+      },
+      {
+        "component": "Col",
+        "id": "colPriority",
+        "label": "Priority",
+        "data": [
+          "Urgent",
+          "High",
+          "High",
+          "Medium",
+          "Urgent",
+          "Medium",
+          "Medium",
+          "Low"
+        ],
+        "type": "string"
+      },
+      {
+        "component": "CardHeader",
+        "id": "interviewsHeader",
+        "title": "Interviews Scheduled This Week",
+        "subtitle": "5 interviews • Mon 18 Aug - Fri 22 Aug"
+      },
+      {
+        "component": "ListBlock",
+        "id": "interviewsList",
+        "items": [
+          "interviewItem1",
+          "interviewItem2",
+          "interviewItem3",
+          "interviewItem4",
+          "interviewItem5"
+        ],
+        "variant": "number"
+      },
+      {
+        "component": "ListItem",
+        "id": "interviewItem1",
+        "title": "Alice Chen — Senior Frontend Engineer",
+        "subtitle": "Mon 10:00 AM • Panel with Sarah Kim • Stage: Final Interview"
+      },
+      {
+        "component": "ListItem",
+        "id": "interviewItem2",
+        "title": "Marcus Johnson — Product Manager",
+        "subtitle": "Tue 2:00 PM • With David Lee • Stage: Case Study"
+      },
+      {
+        "component": "ListItem",
+        "id": "interviewItem3",
+        "title": "Sofia Rodriguez — Account Executive",
+        "subtitle": "Wed 11:30 AM • With Priya Patel • Stage: Sales Pitch"
+      },
+      {
+        "component": "ListItem",
+        "id": "interviewItem4",
+        "title": "Ken Tanaka — DevOps Engineer",
+        "subtitle": "Thu 9:00 AM • With Sarah Kim • Stage: Technical"
+      },
+      {
+        "component": "ListItem",
+        "id": "interviewItem5",
+        "title": "Emily Carter — UX Designer",
+        "subtitle": "Fri 1:00 PM • With David Lee • Stage: Portfolio Review"
+      },
+      {
+        "component": "CardHeader",
+        "id": "attritionHeader",
+        "title": "Attrition — Past 6 Months",
+        "subtitle": "Voluntary exits per month • Total 19"
+      },
+      {
+        "component": "AreaChart",
+        "id": "attritionChart",
+        "labels": [
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul"
+        ],
+        "series": [
+          "attritionSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Month",
+        "yLabel": "Exits"
+      },
+      {
+        "component": "Series",
+        "id": "attritionSeries",
+        "category": "Employees Left",
+        "values": [
+          3,
+          2,
+          4,
+          5,
+          3,
+          2
+        ]
+      },
+      {
+        "component": "DialogBlock",
+        "id": "newRoleDialog",
+        "triggerLabel": "+ Open New Role",
+        "title": "Open a New Role",
+        "description": "Create a requisition — it will appear in Open Roles immediately",
+        "content": [
+          "newRoleForm"
+        ],
+        "triggerVariant": "default"
+      },
+      {
+        "component": "Form",
+        "id": "newRoleForm",
+        "name": "newRoleForm",
+        "buttons": "formButtons",
+        "fields": [
+          "fcRoleTitle",
+          "fcDepartment",
+          "fcLocation",
+          "fcHiringManager",
+          "fcDescription"
+        ]
+      },
+      {
+        "component": "Buttons",
+        "id": "formButtons",
+        "buttons": [
+          "btnSubmit",
+          "btnCancel"
+        ],
+        "direction": "row"
+      },
+      {
+        "component": "Button",
+        "id": "btnSubmit",
+        "label": "Create Role",
+        "variant": "primary"
+      },
+      {
+        "component": "Button",
+        "id": "btnCancel",
+        "label": "Cancel",
+        "variant": "secondary"
+      },
+      {
+        "component": "FormControl",
+        "id": "fcRoleTitle",
+        "label": "Role Title",
+        "input": "inputRoleTitle",
+        "hint": "e.g. Senior Backend Engineer"
+      },
+      {
+        "component": "Input",
+        "id": "inputRoleTitle",
+        "name": "roleTitle",
+        "placeholder": "Enter role title",
+        "type": "text"
+      },
+      {
+        "component": "FormControl",
+        "id": "fcDepartment",
+        "label": "Department",
+        "input": "selectDepartment"
+      },
+      {
+        "component": "Select",
+        "id": "selectDepartment",
+        "name": "department",
+        "items": [
+          "selEng",
+          "selProduct",
+          "selSales",
+          "selMarketing",
+          "selOps",
+          "selHR"
+        ],
+        "placeholder": "Select department"
+      },
+      {
+        "component": "SelectItem",
+        "id": "selEng",
+        "value": "Engineering",
+        "label": "Engineering"
+      },
+      {
+        "component": "SelectItem",
+        "id": "selProduct",
+        "value": "Product",
+        "label": "Product"
+      },
+      {
+        "component": "SelectItem",
+        "id": "selSales",
+        "value": "Sales",
+        "label": "Sales"
+      },
+      {
+        "component": "SelectItem",
+        "id": "selMarketing",
+        "value": "Marketing",
+        "label": "Marketing"
+      },
+      {
+        "component": "SelectItem",
+        "id": "selOps",
+        "value": "Operations",
+        "label": "Operations"
+      },
+      {
+        "component": "SelectItem",
+        "id": "selHR",
+        "value": "HR",
+        "label": "HR"
+      },
+      {
+        "component": "FormControl",
+        "id": "fcLocation",
+        "label": "Location",
+        "input": "inputLocation"
+      },
+      {
+        "component": "Input",
+        "id": "inputLocation",
+        "name": "location",
+        "placeholder": "Remote / New York / London",
+        "type": "text"
+      },
+      {
+        "component": "FormControl",
+        "id": "fcHiringManager",
+        "label": "Hiring Manager",
+        "input": "inputHiringManager"
+      },
+      {
+        "component": "Input",
+        "id": "inputHiringManager",
+        "name": "hiringManager",
+        "placeholder": "e.g. Sarah Kim",
+        "type": "text"
+      },
+      {
+        "component": "FormControl",
+        "id": "fcDescription",
+        "label": "Role Description",
+        "input": "textAreaDesc",
+        "hint": "Brief summary for posting"
+      },
+      {
+        "component": "TextArea",
+        "id": "textAreaDesc",
+        "name": "description",
+        "placeholder": "Describe responsibilities and requirements...",
+        "rows": 3
+      }
+    ]
+  }
+}</a2ui-json>

@@ -1,0 +1,41 @@
+root = Card([header, refreshNote, alerts, kpis, transitTable, carrierSplit, volumeTrend, searchForm, flagForm])
+header = CardHeader("Logistics Board", "Live shipment operations")
+refreshNote = TextContent("Last refreshed: Feb 12, 2025 · 09:42 AM", "small")
+
+alerts = Alert("2 delayed shipments", "SH-4821 (Chicago→Denver) and SH-4830 (Miami→Atlanta) are past ETA", "warning")
+
+kpis = Card([onTime, avgCost], "sunk", "row", "l")
+onTime = Progress(94, "On-time this month: 94%")
+avgCost = Card([costLabel, costValue], "clear", "column", "xs")
+costLabel = TextContent("Avg cost per shipment", "small")
+costValue = Heading("$1,284", "h3")
+
+transitTable = Table([colId, colOrigin, colDest, colEta, colStatus])
+colId = Col("Shipment", ["SH-4818", "SH-4821", "SH-4825", "SH-4830", "SH-4833"])
+colOrigin = Col("Origin", ["Seattle", "Chicago", "Dallas", "Miami", "Boston"])
+colDest = Col("Destination", ["Portland", "Denver", "Houston", "Atlanta", "Newark"])
+colEta = Col("ETA", ["Feb 12", "Feb 11", "Feb 13", "Feb 11", "Feb 14"])
+colStatus = Col("Status", ["In transit", "Delayed", "In transit", "Delayed", "In transit"])
+
+carrierSplit = PieChart(["FedEx", "UPS", "DHL", "USPS"], [38, 29, 21, 12], "donut")
+
+volumeTrend = BarChart(["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"], [volSeries], "grouped", "Week", "Shipments")
+volSeries = Series("Volume", [420, 468, 445, 502, 531, 498, 545, 560])
+
+searchForm = Form("route-search", searchButtons, [routeField])
+routeField = FormControl("Search by route", routeInput, "e.g. Seattle → Portland")
+routeInput = Input("route", "Origin → Destination")
+searchButtons = Buttons([searchBtn])
+searchBtn = Button("Search routes", null, "primary")
+
+flagForm = Form("flag-shipment", flagButtons, [flagIdField, flagReasonField])
+flagIdField = FormControl("Shipment ID", flagIdInput)
+flagIdInput = Input("shipment_id", "SH-XXXX")
+flagReasonField = FormControl("Reason", flagReasonSelect)
+flagReasonSelect = Select("reason", [rDelay, rDamage, rMissing, rOther], "Select a reason")
+rDelay = SelectItem("delay", "Delay risk")
+rDamage = SelectItem("damage", "Damaged goods")
+rMissing = SelectItem("missing", "Missing package")
+rOther = SelectItem("other", "Other")
+flagButtons = Buttons([flagBtn])
+flagBtn = Button("Flag shipment", null, "primary", "destructive")

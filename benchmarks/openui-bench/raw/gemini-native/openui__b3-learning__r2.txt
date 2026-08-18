@@ -1,0 +1,78 @@
+root = Card([header, controls, kpis, chartsRow, listsRow, messageSection, followUps], "card", "column", "l")
+
+header = CardHeader("Training Platform Analytics", "Real-time engagement, learner performance, and cohort insights")
+
+controls = Card([cohortFilter], "clear", "row", "m", "center", "between")
+cohortFilter = FormControl("Filter by Cohort", cohortSelect)
+cohortSelect = Select("cohort_select", [cohortAll, cohortQ1, cohortQ2, cohortEng, cohortProduct], "All Cohorts")
+cohortQ1 = SelectItem("q1_2024", "Q1 2024 BootCamp")
+cohortQ2 = SelectItem("q2_2024", "Q2 2024 BootCamp")
+cohortEng = SelectItem("eng_onboarding", "Engineering Onboarding")
+cohortProduct = SelectItem("prod_lead", "Product Leadership")
+cohortAll = SelectItem("all", "All Cohorts")
+
+kpis = Card([activeLearnersCard, completionRateCard, avgQuizScoreCard], "clear", "row", "m", "stretch", "between")
+
+activeLearnersCard = Card([activeLearnersHeader, activeLearnersVal, activeLearnersTag], "sunk", "column", "xs")
+activeLearnersHeader = Heading("Active Learners (This Week)", "h4")
+activeLearnersVal = TextContent("1,420", "large-heavy")
+activeLearnersTag = Tag("+12% vs last week", "trending-up", "sm", "success")
+
+completionRateCard = Card([completionRateHeader, completionRateVal, completionRateProgress], "sunk", "column", "xs")
+completionRateHeader = Heading("Course Completion Rate", "h4")
+completionRateVal = TextContent("78.5%", "large-heavy")
+completionRateProgress = Progress(78.5, "Overall benchmark: 75%")
+
+avgQuizScoreCard = Card([avgQuizScoreHeader, avgQuizScoreVal, avgQuizScoreTag], "sunk", "column", "xs")
+avgQuizScoreHeader = Heading("Average Quiz Score", "h4")
+avgQuizScoreVal = TextContent("84.2%", "large-heavy")
+avgQuizScoreTag = Tag("+3.1% overall grade", "check", "sm", "info")
+
+chartsRow = Tabs([tabEngagement, tabEnrollment])
+
+tabEngagement = TabItem("engagement_tab", "8-Week Engagement Trend", [engagementChart])
+engagementChart = LineChart(["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6", "Week 7", "Week 8"], [activeSeries, submissionSeries], "natural", "Timeline", "Learners")
+activeSeries = Series("Active Users", [950, 1020, 1150, 1100, 1280, 1340, 1390, 1420])
+submissionSeries = Series("Quiz Submissions", [810, 890, 940, 910, 1050, 1120, 1180, 1240])
+
+tabEnrollment = TabItem("enrollment_tab", "Top Courses by Enrollment", [enrollmentChart])
+enrollmentChart = HorizontalBarChart(["Full-Stack Web Dev", "Data Science Fundamentals", "Cloud Architecture", "UX/UI Design Systems", "Cybersecurity Essentials"], [enrollmentSeries], "grouped", "Students Enrolled", "Course")
+enrollmentSeries = Series("Enrolled Learners", [450, 380, 310, 260, 190])
+
+listsRow = Card([atRiskSection], "sunk", "column", "m")
+atRiskSection = SectionBlock([atRiskItem], false)
+atRiskItem = SectionItem("at_risk_list", "Learners at Risk of Dropping Out (5 Identified)", [atRiskTable])
+
+atRiskTable = Table([colName, colCohort, colInactivity, colAvgScore, colAction])
+colName = Col("Learner Name", ["Alex Rivera", "Jordan Smith", "Taylor Chen", "Morgan Reed", "Sam Casey"])
+colCohort = Col("Cohort", ["Q1 2024 BootCamp", "Engineering Onboarding", "Q1 2024 BootCamp", "Product Leadership", "Q2 2024 BootCamp"])
+colInactivity = Col("Days Inactive", [14, 12, 10, 9, 8])
+colAvgScore = Col("Quiz Score", ["45%", "52%", "48%", "58%", "50%"])
+colAction = Col("Status", ["Critical Risk", "High Risk", "High Risk", "Medium Risk", "Medium Risk"])
+
+messageSection = Card([messageHeader, messageForm], "card", "column", "m")
+messageHeader = CardHeader("Message Cohort", "Send an announcement, reminder, or encouragement directly to selected learners")
+messageForm = Form("message_cohort_form", formButtons, [targetCohortField, msgSubjectField, msgBodyField])
+
+targetCohortField = FormControl("Target Cohort", targetSelect)
+targetSelect = Select("target_cohort", [tQ1, tQ2, tEng, tProd, tAtRisk], "Select target cohort")
+tQ1 = SelectItem("q1_2024", "Q1 2024 BootCamp")
+tQ2 = SelectItem("q2_2024", "Q2 2024 BootCamp")
+tEng = SelectItem("eng_onboarding", "Engineering Onboarding")
+tProd = SelectItem("prod_lead", "Product Leadership")
+tAtRisk = SelectItem("at_risk_only", "All At-Risk Learners (Inactivity > 7 Days)")
+
+msgSubjectField = FormControl("Subject", msgSubjectInput)
+msgSubjectInput = Input("subject", "Check-in: How can we support your learning journey?")
+
+msgBodyField = FormControl("Message Body", msgBodyText)
+msgBodyText = TextArea("body", "Hi team, we noticed you haven't logged in recently...", 4)
+
+formButtons = Buttons([sendBtn, draftBtn])
+sendBtn = Button("Send Broadcast", null, "primary")
+draftBtn = Button("Save Draft", null, "tertiary")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Export at-risk learner list to CSV")
+f2 = FollowUpItem("Schedule automated reminder for inactive students")
+f3 = FollowUpItem("View detailed quiz performance breakdown")

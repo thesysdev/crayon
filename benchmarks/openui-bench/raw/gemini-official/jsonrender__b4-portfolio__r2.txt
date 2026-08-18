@@ -1,0 +1,101 @@
+{"op":"add","path":"/root","value":"main-container"}
+{"op":"add","path":"/elements/main-container","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header-card","summary-callout","controls-card","main-tabs"]}}
+{"op":"add","path":"/elements/header-card","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center"},"children":["title-block","header-actions"]}}
+{"op":"add","path":"/elements/title-block","value":{"type":"CardHeader","props":{"title":"PMO Portfolio Review","subtitle":"Q3 2024 Executive Overview & Operational Health"}}}
+{"op":"add","path":"/elements/header-actions","value":{"type":"Buttons","props":{"direction":"row"},"children":["export-btn","resource-request-btn"]}}
+{"op":"add","path":"/elements/export-btn","value":{"type":"Button","props":{"label":"Export Review","variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/alertMessage","value":"Portfolio review report exported successfully (PDF/XLSX)."}}}}}
+{"op":"add","path":"/elements/resource-request-btn","value":{"type":"DialogBlock","props":{"triggerLabel":"Request Resource Allocation","triggerVariant":"default","title":"Resource Allocation Request","description":"Submit a request to the PMO staffing board for additional project capacity.","content":["resource-form"]}}}
+{"op":"add","path":"/elements/resource-form","value":{"type":"Form","props":{"name":"resourceForm","buttons":"resource-form-btns","fields":["rf-project","rf-roles","rf-justification"]},"on":{"submit":{"action":"setState","params":{"statePath":"/alertMessage","value":"Resource request submitted for PMO approval."}}}}}
+{"op":"add","path":"/elements/rf-project","value":{"type":"FormControl","props":{"label":"Target Project","hint":"Select active portfolio project","input":"rf-project-select"}}}
+{"op":"add","path":"/elements/rf-project-select","value":{"type":"Select","props":{"name":"projectSelect","value":{"$bindState":"/resourceForm/project"},"placeholder":"Select project","items":["proj-opt-1","proj-opt-2","proj-opt-3","proj-opt-4"]}}}
+{"op":"add","path":"/elements/proj-opt-1","value":{"type":"SelectItem","props":{"value":"p1","label":"Phoenix Cloud Migration"}}}
+{"op":"add","path":"/elements/proj-opt-2","value":{"type":"SelectItem","props":{"value":"p2","label":"Apollo Mobile App Redesign"}}}
+{"op":"add","path":"/elements/proj-opt-3","value":{"type":"SelectItem","props":{"value":"p3","label":"CyberShield Zero Trust Security"}}}
+{"op":"add","path":"/elements/proj-opt-4","value":{"type":"SelectItem","props":{"value":"p4","label":"DataMesh Enterprise ERP Sync"}}}
+{"op":"add","path":"/elements/rf-roles","value":{"type":"FormControl","props":{"label":"Required FTEs / Roles","hint":"e.g., 2 Senior Backend Engineers","input":"rf-roles-input"}}}
+{"op":"add","path":"/elements/rf-roles-input","value":{"type":"Input","props":{"name":"rolesInput","placeholder":"e.g. 1 Lead DevOps, 2 QA Engineers","value":{"$bindState":"/resourceForm/roles"}}}}
+{"op":"add","path":"/elements/rf-justification","value":{"type":"FormControl","props":{"label":"Business Justification","hint":"Explain why additional capacity is needed to maintain schedule","input":"rf-justification-ta"}}}
+{"op":"add","path":"/elements/rf-justification-ta","value":{"type":"TextArea","props":{"name":"justificationTa","placeholder":"Describe project bottleneck or acceleration goal...","rows":3,"value":{"$bindState":"/resourceForm/justification"}}}}
+{"op":"add","path":"/elements/resource-form-btns","value":{"type":"Buttons","props":{"direction":"row"},"children":["resource-submit-btn"]}}
+{"op":"add","path":"/elements/resource-submit-btn","value":{"type":"Button","props":{"label":"Submit Request","variant":"primary","size":"medium"}}}
+{"op":"add","path":"/elements/summary-callout","value":{"type":"Callout","props":{"variant":"info","title":"1. Portfolio One-Line Health Summary","description":{"$state":"/portfolioSummary"}}}}
+{"op":"add","path":"/state/portfolioSummary","value":"Overall Portfolio Health is AMBER: 4 Active Projects tracking at 82% average delivery pace, but 3 critical risks and 2 overdue milestones require immediate management intervention."}
+{"op":"add","path":"/state/alertMessage","value":""}
+{"op":"add","path":"/elements/controls-card","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["quarter-selector-group","export-status-alert"]}}
+{"op":"add","path":"/elements/quarter-selector-group","value":{"type":"Card","props":{"direction":"row","align":"center","gap":"m"},"children":["quarter-label","quarter-select"]}}
+{"op":"add","path":"/elements/quarter-label","value":{"type":"Label","props":{"text":"Review Period / Quarter:"}}}
+{"op":"add","path":"/elements/quarter-select","value":{"type":"Select","props":{"name":"quarterSelect","value":{"$bindState":"/selectedQuarter"},"items":["q-item-1","q-item-2","q-item-3","q-item-4"]}}}
+{"op":"add","path":"/elements/q-item-1","value":{"type":"SelectItem","props":{"value":"q1-2024","label":"Q1 2024 (Historical)"}}}
+{"op":"add","path":"/elements/q-item-2","value":{"type":"SelectItem","props":{"value":"q2-2024","label":"Q2 2024 (Historical)"}}}
+{"op":"add","path":"/elements/q-item-3","value":{"type":"SelectItem","props":{"value":"q3-2024","label":"Q3 2024 (Current)"}}}
+{"op":"add","path":"/elements/q-item-4","value":{"type":"SelectItem","props":{"value":"q4-2024","label":"Q4 2024 (Upcoming Planning)"}}}
+{"op":"add","path":"/state/selectedQuarter","value":"q3-2024"}
+{"op":"add","path":"/elements/export-status-alert","value":{"type":"Alert","props":{"title":"System Notification","description":{"$state":"/alertMessage"},"variant":"info"},"visible":{"$state":"/alertMessage"}}}
+{"op":"add","path":"/elements/main-tabs","value":{"type":"Tabs","props":{"items":["tab-projects","tab-milestones-risks","tab-capacity-pace"]}}}
+{"op":"add","path":"/elements/tab-projects","value":{"type":"TabItem","props":{"value":"projects","trigger":"Active Projects & Financials","content":["projects-section","archive-dialog"]}}
+{"op":"add","path":"/elements/projects-section","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["projects-heading","projects-table-card"]}}
+{"op":"add","path":"/elements/projects-heading","value":{"type":"Heading","props":{"text":"Active Projects, Budget & Deadlines","level":"h3"}}}
+{"op":"add","path":"/elements/projects-table-card","value":{"type":"Card","props":{"variant":"card"},"repeat":{"statePath":"/projects","key":"id"},"children":["project-item-card"]}}
+{"op":"add","path":"/elements/project-item-card","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["proj-top-row","proj-budget-row"]}}
+{"op":"add","path":"/elements/proj-top-row","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center"},"children":["proj-info","proj-badges"]}}
+{"op":"add","path":"/elements/proj-info","value":{"type":"Card","props":{"direction":"column","gap":"none"},"children":["proj-title","proj-meta"]}}
+{"op":"add","path":"/elements/proj-title","value":{"type":"Heading","props":{"text":{"$item":"name"},"level":"h4"}}}
+{"op":"add","path":"/elements/proj-meta","value":{"type":"TextContent","props":{"text":{"$template":"Owner: **${owner}** | Target Deadline: **${deadline}**"},"size":"small"}}}
+{"op":"add","path":"/elements/proj-badges","value":{"type":"Card","props":{"direction":"row","gap":"s","align":"center"},"children":["proj-health-badge","archive-action-btn"]}}
+{"op":"add","path":"/elements/proj-health-badge","value":{"type":"Badge","props":{"text":{"$item":"health"},"variant":{"$cond":{"$item":"isHealthy"},"$then":"default","$else":"destructive"}}}}
+{"op":"add","path":"/elements/archive-action-btn","value":{"type":"Button","props":{"label":"Archive","variant":"tertiary","size":"extra-small"},"on":{"press":{"action":"setState","params":{"statePath":"/archiveModalProject","value":{"$item":"name"}}}}}}
+{"op":"add","path":"/elements/proj-budget-row","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","gap":"m"},"children":["proj-budget-text","proj-budget-progress"]}}
+{"op":"add","path":"/elements/proj-budget-text","value":{"type":"TextContent","props":{"text":{"$template":"Budget Spent: **$${spent}k** / Allocated: **$${allocated}k**"},"size":"small"}}}
+{"op":"add","path":"/elements/proj-budget-progress","value":{"type":"Progress","props":{"value":{"$item":"budgetPercent"},"label":"Budget Consumption"}}}
+{"op":"add","path":"/state/projects","value":[]}
+{"op":"add","path":"/state/projects/0","value":{"id":"p1","name":"Phoenix Cloud Migration","owner":"Sarah Jenkins (Engineering)","deadline":"2024-11-15","health":"ON TRACK","isHealthy":true,"spent":420,"allocated":500,"budgetPercent":84}}
+{"op":"add","path":"/state/projects/1","value":{"id":"p2","name":"Apollo Mobile App Redesign","owner":"Marcus Vance (Product)","deadline":"2024-10-30","health":"AT RISK","isHealthy":false,"spent":310,"allocated":320,"budgetPercent":97}}
+{"op":"add","path":"/state/projects/2","value":{"id":"p3","name":"CyberShield Zero Trust Security","owner":"Elena Rostova (SecOps)","deadline":"2024-12-01","health":"ON TRACK","isHealthy":true,"spent":150,"allocated":250,"budgetPercent":60}}
+{"op":"add","path":"/state/projects/3","value":{"id":"p4","name":"DataMesh Enterprise ERP Sync","owner":"David Chen (IT Infrastructure)","deadline":"2024-10-15","health":"CRITICAL","isHealthy":false,"spent":580,"allocated":550,"budgetPercent":105}}
+{"op":"add","path":"/state/archiveModalProject","value":""}
+{"op":"add","path":"/elements/archive-dialog","value":{"type":"AlertDialogBlock","props":{"triggerLabel":"Manage Project Archival","title":"Archive Completed Project","description":{"$template":"Are you sure you want to archive '${/archiveModalProject}'? This will lock budget and move artifacts to historical PMO records."},"confirmLabel":"Archive Project","cancelLabel":"Cancel","triggerVariant":"ghost"},"visible":{"$state":"/archiveModalProject"}}}
+{"op":"add","path":"/elements/tab-milestones-risks","value":{"type":"TabItem","props":{"value":"milestones-risks","trigger":"Milestones, Risks & Blockers","content":["milestone-blocker-grid","risks-card"]}}
+{"op":"add","path":"/elements/milestone-blocker-grid","value":{"type":"Card","props":{"direction":"row","gap":"m"},"children":["overdue-milestones-card","upcoming-deadlines-card","blocked-items-card"]}}
+{"op":"add","path":"/elements/overdue-milestones-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["overdue-heading","overdue-list"]}}
+{"op":"add","path":"/elements/overdue-heading","value":{"type":"Heading","props":{"text":"Overdue Milestones","level":"h4"}}}
+{"op":"add","path":"/elements/overdue-list","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"repeat":{"statePath":"/overdueMilestones","key":"id"},"children":["overdue-item"]}}
+{"op":"add","path":"/elements/overdue-item","value":{"type":"TextCallout","props":{"variant":"danger","title":{"$item":"title"},"description":{"$template":"Project: ${project} | Due: ${due} (${daysLate} days late) | Owner: ${owner}"}}}}
+{"op":"add","path":"/state/overdueMilestones","value":[]}
+{"op":"add","path":"/state/overdueMilestones/0","value":{"id":"m1","title":"Stage 2 Security Audit Sign-off","project":"CyberShield","due":"2024-09-10","daysLate":14,"owner":"Elena R."}}
+{"op":"add","path":"/state/overdueMilestones/1","value":{"id":"m2","title":"ERP Legacy Schema Deprecation","project":"DataMesh ERP","due":"2024-09-18","daysLate":6,"owner":"David C."}}
+{"op":"add","path":"/elements/upcoming-deadlines-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["upcoming-heading","upcoming-list"]}}
+{"op":"add","path":"/elements/upcoming-heading","value":{"type":"Heading","props":{"text":"Deadlines (Next 2 Weeks)","level":"h4"}}}
+{"op":"add","path":"/elements/upcoming-list","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"repeat":{"statePath":"/upcomingDeadlines","key":"id"},"children":["upcoming-item"]}}
+{"op":"add","path":"/elements/upcoming-item","value":{"type":"TextCallout","props":{"variant":"warning","title":{"$item":"event"},"description":{"$template":"Project: ${project} | Date: ${date} | Target: ${owner}"}}}}
+{"op":"add","path":"/state/upcomingDeadlines","value":[]}
+{"op":"add","path":"/state/upcomingDeadlines/0","value":{"id":"u1","event":"iOS Beta Release v2.4","project":"Apollo Mobile","date":"2024-09-28","owner":"Marcus V."}}
+{"op":"add","path":"/state/upcomingDeadlines/1","value":{"id":"u2","event":"Database Migration Dry Run","project":"Phoenix Cloud","date":"2024-10-02","owner":"Sarah J."}}
+{"op":"add","path":"/state/upcomingDeadlines/2","value":{"id":"u3","event":"SOC2 Compliance Attestation","project":"CyberShield","date":"2024-10-05","owner":"Elena R."}}
+{"op":"add","path":"/elements/blocked-items-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["blocked-heading","blocked-list"]}}
+{"op":"add","path":"/elements/blocked-heading","value":{"type":"Heading","props":{"text":"Blocked Work Items","level":"h4"}}}
+{"op":"add","path":"/elements/blocked-list","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"repeat":{"statePath":"/blockedItems","key":"id"},"children":["blocked-item"]}}
+{"op":"add","path":"/elements/blocked-item","value":{"type":"TextCallout","props":{"variant":"neutral","title":{"$item":"task"},"description":{"$template":"[${project}] Blocked by: ${blocker} (${owner})"}}}}
+{"op":"add","path":"/state/blockedItems","value":[]}
+{"op":"add","path":"/state/blockedItems/0","value":{"id":"b1","task":"OAuth2 Single Sign-On Integration","project":"Apollo Mobile","blocker":"Third-party API Vendor Token Provisioning","owner":"Dev Team A"}}
+{"op":"add","path":"/state/blockedItems/1","value":{"id":"b2","task":"Cross-Region Disaster Recovery","project":"Phoenix Cloud","blocker":"Cloud Provider Quotas Limit Increase","owner":"Ops Team B"}}
+{"op":"add","path":"/elements/risks-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["risks-heading","risks-table"]}}
+{"op":"add","path":"/elements/risks-heading","value":{"type":"Heading","props":{"text":"Portfolio Risk Register & Severity Matrix","level":"h3"}}}
+{"op":"add","path":"/elements/risks-table","value":{"type":"Table","props":{"columns":["col-risk-id","col-risk-desc","col-risk-proj","col-risk-sev","col-risk-mitigation"]}}}
+{"op":"add","path":"/elements/col-risk-id","value":{"type":"Col","props":{"label":"ID","data":{"$state":"/riskTable/ids"},"type":"string"}}}
+{"op":"add","path":"/elements/col-risk-desc","value":{"type":"Col","props":{"label":"Risk Description","data":{"$state":"/riskTable/descriptions"},"type":"string"}}}
+{"op":"add","path":"/elements/col-risk-proj","value":{"type":"Col","props":{"label":"Project","data":{"$state":"/riskTable/projects"},"type":"string"}}}
+{"op":"add","path":"/elements/col-risk-sev","value":{"type":"Col","props":{"label":"Severity Level","data":{"$state":"/riskTable/severities"},"type":"string"}}}
+{"op":"add","path":"/elements/col-risk-mitigation","value":{"type":"Col","props":{"label":"Mitigation Strategy","data":{"$state":"/riskTable/mitigations"},"type":"string"}}}
+{"op":"add","path":"/state/riskTable","value":{"ids":["RSK-01","RSK-02","RSK-03","RSK-04"],"descriptions":["Key engineer departure delaying backend sync","API rate limit constraints on legacy ERP","Vendor contract renewal delay for SecOps tooling","Data compliance clearance bottleneck"],"projects":["Apollo Mobile","DataMesh ERP","CyberShield","Phoenix Cloud"],"severities":["CRITICAL","HIGH","MEDIUM","LOW"],"mitigations":["Reallocated 2 Senior FTEs from Phoenix Cloud","Architecture redesign to batch background requests","Escalated to VP of Procurement for fast-track","Engaged Legal Privacy Lead for expedited sign-off"]}}
+{"op":"add","path":"/elements/tab-capacity-pace","value":{"type":"TabItem","props":{"value":"capacity-pace","trigger":"Team Utilization & Velocity","content":["analytics-grid"]}}
+{"op":"add","path":"/elements/analytics-grid","value":{"type":"Card","props":{"direction":"row","gap":"m"},"children":["pace-chart-card","utilization-card"]}}
+{"op":"add","path":"/elements/pace-chart-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["pace-heading","pace-chart"]}}
+{"op":"add","path":"/elements/pace-heading","value":{"type":"Heading","props":{"text":"Delivery Pace (Story Points completed past 6 Sprints)","level":"h4"}}}
+{"op":"add","path":"/elements/pace-chart","value":{"type":"LineChart","props":{"labels":["Sprint 18","Sprint 19","Sprint 20","Sprint 21","Sprint 22","Sprint 23"],"series":["series-planned","series-actual"],"xLabel":"Sprint","yLabel":"Story Points Completed"}}}
+{"op":"add","path":"/elements/series-planned","value":{"type":"Series","props":{"category":"Planned Velocity","values":[120,125,130,130,135,140]}}}
+{"op":"add","path":"/elements/series-actual","value":{"type":"Series","props":{"category":"Actual Delivered Velocity","values":[115,128,110,122,138,131]}}}
+{"op":"add","path":"/elements/utilization-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["util-heading","util-chart"]}}
+{"op":"add","path":"/elements/util-heading","value":{"type":"Heading","props":{"text":"Team Resource Utilization (%)","level":"h4"}}}
+{"op":"add","path":"/elements/util-chart","value":{"type":"BarChart","props":{"labels":["Frontend Eng","Backend Eng","DevOps / Infra","QA Automation","Product / PM"],"series":["series-target-util","series-actual-util"],"xLabel":"Functional Track","yLabel":"Allocation %"}}}
+{"op":"add","path":"/elements/series-target-util","value":{"type":"Series","props":{"category":"Optimal Target (85%)","values":[85,85,85,85,85]}}}
+{"op":"add","path":"/elements/series-actual-util","value":{"type":"Series","props":{"category":"Current Utilization","values":[92,108,95,78,88]}}}

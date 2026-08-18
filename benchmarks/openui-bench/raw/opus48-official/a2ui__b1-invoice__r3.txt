@@ -1,0 +1,115 @@
+Here's a clean invoice view for the client covering the amount due, due date, and a way to pay now.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "invoice-view",
+      "catalogId": "thesys.dev:c1-openui"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "invoice-view",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "direction": "column",
+          "gap": "l",
+          "children": ["header", "amountCard", "detailsCard", "payButtons", "footerNote"]
+        },
+        {
+          "id": "header",
+          "component": "CardHeader",
+          "title": "Invoice #INV-2024-0042",
+          "subtitle": "From: Jordan Rivera Design Studio"
+        },
+        {
+          "id": "amountCard",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "align": "center",
+          "children": ["amountLabel", "amountValue", "amountStatus"]
+        },
+        {
+          "id": "amountLabel",
+          "component": "TextContent",
+          "text": "Amount Due",
+          "size": "small-heavy"
+        },
+        {
+          "id": "amountValue",
+          "component": "Heading",
+          "text": "$2,450.00 USD",
+          "level": "h1"
+        },
+        {
+          "id": "amountStatus",
+          "component": "Badge",
+          "text": "Unpaid",
+          "variant": "destructive"
+        },
+        {
+          "id": "detailsCard",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "m",
+          "children": ["dueDateRow", "issuedRow"]
+        },
+        {
+          "id": "dueDateRow",
+          "component": "Alert",
+          "variant": "warning",
+          "title": "Due Date: October 15, 2024",
+          "description": "Payment is due within 7 days. A late fee may apply after this date."
+        },
+        {
+          "id": "issuedRow",
+          "component": "TextContent",
+          "text": "**Issued:** October 8, 2024 &nbsp;•&nbsp; **Terms:** Net 7",
+          "size": "small"
+        },
+        {
+          "id": "payButtons",
+          "component": "Buttons",
+          "direction": "column",
+          "buttons": ["payNowBtn", "viewDetailsBtn"]
+        },
+        {
+          "id": "payNowBtn",
+          "component": "Button",
+          "label": "Pay $2,450.00 Now",
+          "variant": "primary",
+          "size": "large",
+          "action": ["pay_invoice", "INV-2024-0042"]
+        },
+        {
+          "id": "viewDetailsBtn",
+          "component": "Button",
+          "label": "View Line Items",
+          "variant": "secondary",
+          "size": "medium",
+          "action": ["view_details", "INV-2024-0042"]
+        },
+        {
+          "id": "footerNote",
+          "component": "TextContent",
+          "text": "Payments are processed securely. You can pay by card, bank transfer, or ACH.",
+          "size": "small"
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+This screen covers all three required items:
+1. **Amount due and currency** — shown prominently as `$2,450.00 USD` in the highlighted amount card, with an "Unpaid" status badge.
+2. **Due date** — displayed in a warning alert (`Due Date: October 15, 2024`) with terms context.
+3. **A way to pay now** — a large primary "Pay $2,450.00 Now" button, plus a secondary option to view line items.

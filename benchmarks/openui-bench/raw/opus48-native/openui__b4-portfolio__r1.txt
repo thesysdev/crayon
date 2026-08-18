@@ -1,0 +1,81 @@
+root = Card([header, summary, quarterSwitch, alertsSection, projectsTable, budgetChart, utilChart, deliveryChart, risksTable, overdueSection, deadlinesSection, blockedSection, actions, followups])
+
+header = CardHeader("Portfolio Review", "PMO Q2 2024 quarterly review")
+
+summary = Alert("Portfolio health: At risk", "3 of 8 projects off-track, 2 milestones overdue, 4 open blockers — overall delivery pace slowing.", "warning")
+
+quarterSwitch = Form("quarter-switch", quarterButtons, [quarterField])
+quarterField = FormControl("Review period", quarterSelect)
+quarterSelect = Select("quarter", [q1, q2, q3, q4], "Select quarter", null, "Q2 2024")
+q1 = SelectItem("q1-2024", "Q1 2024")
+q2 = SelectItem("q2-2024", "Q2 2024")
+q3 = SelectItem("q3-2024", "Q3 2024")
+q4 = SelectItem("q4-2024", "Q4 2024")
+quarterButtons = Buttons([quarterGo])
+quarterGo = Button("View quarter", null, "secondary")
+
+alertsSection = Callout("error", "2 milestones overdue", "Payments API cutover (5d late) and Data migration sign-off (2d late) require attention.")
+
+projectsTable = Table([pName, pOwner, pDeadline, pHealth])
+pName = Col("Project", ["Orion CRM", "Atlas Migration", "Payments API", "Mobile Revamp", "Insights BI"])
+pOwner = Col("Owner", ["S. Reyes", "D. Kim", "M. Osei", "L. Tran", "P. Novak"])
+pDeadline = Col("Deadline", ["2024-07-12", "2024-06-28", "2024-06-20", "2024-08-05", "2024-07-30"])
+pHealth = Col("Health", ["On track", "At risk", "Off track", "On track", "At risk"])
+
+budgetChart = BarChart(["Orion", "Atlas", "Payments", "Mobile", "Insights"], [allocSeries, spentSeries], "grouped", "Project", "USD (k)")
+allocSeries = Series("Allocated", [420, 300, 260, 380, 220])
+spentSeries = Series("Spent", [310, 290, 275, 190, 160])
+
+utilChart = HorizontalBarChart(["Backend", "Frontend", "Data", "QA", "Design"], [utilSeries], "grouped", "Utilization %", "Team")
+utilSeries = Series("Utilization", [92, 78, 96, 71, 64])
+
+deliveryChart = LineChart(["S1", "S2", "S3", "S4", "S5", "S6"], [velocitySeries], "natural", "Sprint", "Story points")
+velocitySeries = Series("Completed", [82, 88, 79, 74, 68, 61])
+
+risksTable = Table([rName, rSeverity, rOwner])
+rName = Col("Risk", ["Vendor SLA breach", "Key engineer departure", "Scope creep on Mobile", "Data compliance gap"])
+rSeverity = Col("Severity", ["High", "Critical", "Medium", "High"])
+rOwner = Col("Owner", ["M. Osei", "D. Kim", "L. Tran", "P. Novak"])
+
+overdueSection = ListBlock([ov1, ov2], "number")
+ov1 = ListItem("Payments API cutover", "Due 2024-06-15 — 5 days overdue")
+ov2 = ListItem("Data migration sign-off", "Due 2024-06-18 — 2 days overdue")
+
+deadlinesSection = ListBlock([dl1, dl2, dl3], "number")
+dl1 = ListItem("Atlas Migration go-live", "2024-06-28 — in 8 days")
+dl2 = ListItem("Payments API release", "2024-06-20 — in 3 days")
+dl3 = ListItem("Insights BI beta", "2024-07-01 — in 12 days")
+
+blockedSection = ListBlock([bl1, bl2, bl3, bl4], "number")
+bl1 = ListItem("PAY-142 Refund flow", "Blocked by vendor API access")
+bl2 = ListItem("ATL-88 Legacy data cleanup", "Blocked awaiting sign-off")
+bl3 = ListItem("MOB-30 Auth SDK upgrade", "Blocked by security review")
+bl4 = ListItem("BI-19 Warehouse schema", "Blocked by data compliance gap")
+
+actions = Buttons([requestPeople, exportBtn, archiveBtn])
+requestPeople = DialogBlock("Request more people", "Staffing request", "Ask for additional headcount on a project", [staffForm], "secondary")
+staffForm = Form("staffing-request", staffButtons, [projField, roleField, countField, notesField])
+projField = FormControl("Project", projSelect)
+projSelect = Select("project", [sp1, sp2, sp3], "Select project")
+sp1 = SelectItem("orion", "Orion CRM")
+sp2 = SelectItem("payments", "Payments API")
+sp3 = SelectItem("mobile", "Mobile Revamp")
+roleField = FormControl("Role needed", roleSelect)
+roleSelect = Select("role", [ro1, ro2, ro3], "Select role")
+ro1 = SelectItem("backend", "Backend Engineer")
+ro2 = SelectItem("qa", "QA Engineer")
+ro3 = SelectItem("data", "Data Engineer")
+countField = FormControl("Headcount", countInput)
+countInput = Input("count", "2", "number")
+notesField = FormControl("Justification", notesArea)
+notesArea = TextArea("notes", "Why is this needed?", 3)
+staffButtons = Buttons([staffSubmit])
+staffSubmit = Button("Submit request", null, "primary")
+
+exportBtn = Button("Export review", null, "secondary")
+archiveBtn = AlertDialogBlock("Archive project", "Archive finished project?", "This moves the selected completed project out of the active portfolio. You can restore it later.", "Archive", "Cancel", "outline")
+
+followups = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Show mitigation plans for critical risks")
+fu2 = FollowUpItem("Drill into off-track project details")
+fu3 = FollowUpItem("Compare pace to previous quarter")

@@ -1,0 +1,75 @@
+root = Card([header, mainGrid, followUps], "card", "column", "xl")
+header = CardHeader("Editor's Content Studio", "Editorial dashboard, analytics, and workflow management")
+
+mainGrid = Card([quickActions, filterSection, metricsRow, mainContentRow], "clear", "column", "l")
+
+quickActions = Buttons([newDraftBtn, scheduleModalBtn])
+newDraftBtn = Button("Start New Draft", null, "primary")
+scheduleModalBtn = Button("Schedule a Piece", null, "secondary")
+
+filterSection = Card([filterLabel, categorySelect], "sunk", "row", "m", "center")
+filterLabel = Heading("Category:", "h4")
+categorySelect = Select("category_filter", [catAll, catTech, catDesign, catCulture, catBiz], "All Categories")
+catAll = SelectItem("all", "All Categories")
+catTech = SelectItem("tech", "Technology")
+catDesign = SelectItem("design", "Design & UX")
+catCulture = SelectItem("culture", "Culture & Ideas")
+catBiz = SelectItem("biz", "Business & Strategy")
+
+metricsRow = Card([topArticleCard, readershipChartCard], "clear", "row", "l")
+
+topArticleCard = Card([topArticleHeader, topArticleContent, topArticleStats], "sunk", "column", "m")
+topArticleHeader = Heading("Most-Read Article This Month", "h3")
+topArticleContent = TextContent("**The Architecture of Modern Web Interfaces**  \nBy *Elena Rostova* • Published Oct 12", "large")
+topArticleStats = TagBlock(["142,850 Reads", "8.4k Likes", "12 min avg read", "4.2% Conversion"])
+
+readershipChartCard = Card([chartHeader, readershipChart], "sunk", "column", "m")
+chartHeader = Heading("Readership (Past 30 Days)", "h3")
+readershipChart = LineChart(["Oct 1", "Oct 5", "Oct 10", "Oct 15", "Oct 20", "Oct 25", "Oct 30"], [viewsSeries, visitorsSeries], "natural", "Date", "Count")
+viewsSeries = Series("Page Views", [12400, 15800, 14200, 22100, 19800, 28400, 31200])
+visitorsSeries = Series("Unique Visitors", [8200, 9900, 9100, 14500, 12300, 18100, 20500])
+
+mainContentRow = Card([leftColumn, rightColumn], "clear", "row", "l")
+
+leftColumn = Card([draftsHeader, draftsTable], "clear", "column", "m")
+draftsHeader = Heading("Active Drafts", "h3")
+draftsTable = Table([draftTitleCol, draftAuthorCol, draftCategoryCol, draftStatusCol])
+draftTitleCol = Col("Title", ["Designing for Spatial Computing", "The Future of Serverless Datastores", "Ethical AI in Editorial Workflows", "Scaling Micro-frontends in 2024"])
+draftAuthorCol = Col("Author", ["Marcus Chen", "Sarah Jenkins", "Elena Rostova", "Alex Rivera"])
+draftCategoryCol = Col("Category", ["Design & UX", "Technology", "Culture & Ideas", "Technology"])
+draftStatusCol = Col("Status", ["In Review", "Drafting", "Ready to Publish", "In Review"])
+
+rightColumn = Card([publishedSection, commentsSection, scheduleDrawerSection], "clear", "column", "l")
+
+publishedSection = Card([publishedHeader, publishedList], "clear", "column", "m")
+publishedHeader = Heading("Published This Week", "h3")
+publishedList = ListBlock([pubItem1, pubItem2, pubItem3])
+pubItem1 = ListItem("10 Principles of Humane Product Design", "Published Yesterday • Tech & Design • 14.2k views")
+pubItem2 = ListItem("Why We Rebuilt Our Content Engine in Rust", "Published 3 days ago • Technology • 28.9k views")
+pubItem3 = ListItem("Navigating Executive Alignment in 2024", "Published 5 days ago • Business • 9.4k views")
+
+commentsSection = Card([commentsHeader, commentsList], "clear", "column", "m")
+commentsHeader = Heading("Comments Awaiting Reply", "h3")
+commentsList = ListBlock([comment1, comment2])
+comment1 = ListItem("Re: 10 Principles of Humane Product Design", "David K.: 'Would love to see a follow-up on principle #4 regarding cognitive load.'")
+comment2 = ListItem("Re: Why We Rebuilt Our Content Engine...", "Aria M.: 'How did you handle legacy data migration during the switch?'")
+
+scheduleDrawerSection = Card([scheduleDrawer], "clear")
+scheduleDrawer = DrawerBlock("Schedule New Piece", "Schedule Article Publication", "Select a piece and assign an automated publication date & time.", scheduleForm)
+
+scheduleForm = Form("schedule_form", scheduleFormButtons, [scheduleTitleField, scheduleDateField, scheduleCategoryField])
+scheduleTitleField = FormControl("Article Title", scheduleTitleInput, "Enter the full headline of the draft")
+scheduleTitleInput = Input("article_title", "e.g., Understanding Web Components in 2025")
+scheduleDateField = FormControl("Publication Date", scheduleDatePicker, "Choose when this article goes live")
+scheduleDatePicker = DatePicker("publish_date", "single")
+scheduleCategoryField = FormControl("Primary Category", scheduleCatSelect)
+scheduleCatSelect = Select("schedule_cat", [catTech, catDesign, catCulture, catBiz], "Select category")
+
+scheduleFormButtons = Buttons([confirmScheduleBtn, cancelScheduleBtn])
+confirmScheduleBtn = Button("Schedule Publication", null, "primary")
+cancelScheduleBtn = Button("Cancel", null, "tertiary")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Review drafts ready for publication")
+f2 = FollowUpItem("Export monthly readership analytics")
+f3 = FollowUpItem("Manage editorial calendar")

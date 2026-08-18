@@ -1,0 +1,42 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","metrics","controls","tickets-section"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Good morning, Support Lead","subtitle":"Here's your queue at a glance"}}}
+{"op":"add","path":"/elements/metrics","value":{"type":"Card","props":{"direction":"row","gap":"m","justify":"between"},"children":["metric-open","metric-response"]}}
+{"op":"add","path":"/elements/metric-open","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"children":["metric-open-value","metric-open-label"]}}
+{"op":"add","path":"/elements/metric-open-value","value":{"type":"Heading","props":{"level":"h1","text":{"$template":"${/openCount}"}}}}
+{"op":"add","path":"/elements/metric-open-label","value":{"type":"TextContent","props":{"text":"Open tickets","size":"small"}}}
+{"op":"add","path":"/state/openCount","value":18}
+{"op":"add","path":"/elements/metric-response","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"children":["metric-response-value","metric-response-label"]}}
+{"op":"add","path":"/elements/metric-response-value","value":{"type":"Heading","props":{"level":"h1","text":{"$template":"${/avgFirstResponse}"}}}}
+{"op":"add","path":"/elements/metric-response-label","value":{"type":"TextContent","props":{"text":"Avg. first-response time","size":"small"}}}
+{"op":"add","path":"/state/avgFirstResponse","value":"1h 24m"}
+{"op":"add","path":"/elements/controls","value":{"type":"Card","props":{"direction":"row","gap":"m","justify":"between","align":"center","wrap":true},"children":["filter-switch","new-ticket-btn"]}}
+{"op":"add","path":"/elements/filter-switch","value":{"type":"SwitchGroup","props":{"name":"filters","variant":"clear","items":["filter-high"]},"children":["filter-high"]}}
+{"op":"add","path":"/elements/filter-high","value":{"type":"SwitchItem","props":{"name":"highOnly","label":"High priority only","description":"Show only high-priority tickets"},"on":{"change":{"action":"setState","params":{"statePath":"/highOnly","value":{"$state":"/highOnly"}}}}}}
+{"op":"add","path":"/state/highOnly","value":false}
+{"op":"add","path":"/elements/new-ticket-btn","value":{"type":"DialogBlock","props":{"triggerLabel":"+ New Ticket","title":"Open a new ticket","description":"Create a new support ticket","content":["nt-subject-fc","nt-priority-fc","nt-desc-fc","nt-submit"]}}}
+{"op":"add","path":"/elements/nt-subject-fc","value":{"type":"FormControl","props":{"label":"Subject","input":"nt-subject"},"children":["nt-subject"]}}
+{"op":"add","path":"/elements/nt-subject","value":{"type":"Input","props":{"name":"subject","placeholder":"Brief summary","value":{"$bindState":"/newTicket/subject"}}}}
+{"op":"add","path":"/state/newTicket","value":{"subject":"","priority":"","description":""}}
+{"op":"add","path":"/elements/nt-priority-fc","value":{"type":"FormControl","props":{"label":"Priority","input":"nt-priority"},"children":["nt-priority"]}}
+{"op":"add","path":"/elements/nt-priority","value":{"type":"Select","props":{"name":"priority","placeholder":"Select priority","value":{"$bindState":"/newTicket/priority"},"items":["nt-p-high","nt-p-med","nt-p-low"]},"children":["nt-p-high","nt-p-med","nt-p-low"]}}
+{"op":"add","path":"/elements/nt-p-high","value":{"type":"SelectItem","props":{"value":"High","label":"High"}}}
+{"op":"add","path":"/elements/nt-p-med","value":{"type":"SelectItem","props":{"value":"Medium","label":"Medium"}}}
+{"op":"add","path":"/elements/nt-p-low","value":{"type":"SelectItem","props":{"value":"Low","label":"Low"}}}
+{"op":"add","path":"/elements/nt-desc-fc","value":{"type":"FormControl","props":{"label":"Description","input":"nt-desc"},"children":["nt-desc"]}}
+{"op":"add","path":"/elements/nt-desc","value":{"type":"TextArea","props":{"name":"description","placeholder":"Describe the issue","rows":3,"value":{"$bindState":"/newTicket/description"}}}}
+{"op":"add","path":"/elements/nt-submit","value":{"type":"Button","props":{"label":"Create Ticket","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/tickets","value":{"id":"$id","subject":{"$state":"/newTicket/subject"},"priority":{"$state":"/newTicket/priority"},"time":"just now"},"clearStatePath":"/newTicket/subject"}}}}}
+{"op":"add","path":"/elements/tickets-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["tickets-heading","tickets-list"]}}
+{"op":"add","path":"/elements/tickets-heading","value":{"type":"Heading","props":{"level":"h3","text":"Recent tickets"}}}
+{"op":"add","path":"/elements/tickets-list","value":{"type":"Card","props":{"direction":"column","gap":"s","variant":"clear"},"repeat":{"statePath":"/tickets","key":"id"},"children":["ticket-row"]}}
+{"op":"add","path":"/elements/ticket-row","value":{"type":"Card","props":{"direction":"row","gap":"m","justify":"between","align":"center"},"visible":{"$or":[{"$state":"/highOnly","not":true},{"$item":"priority","eq":"High"}]},"children":["ticket-info","ticket-priority"]}}
+{"op":"add","path":"/elements/ticket-info","value":{"type":"Card","props":{"direction":"column","gap":"none","variant":"clear"},"children":["ticket-subject","ticket-time"]}}
+{"op":"add","path":"/elements/ticket-subject","value":{"type":"TextContent","props":{"text":{"$item":"subject"},"size":"default"}}}
+{"op":"add","path":"/elements/ticket-time","value":{"type":"TextContent","props":{"text":{"$template":"Opened ${time}"},"size":"small"}}}
+{"op":"add","path":"/elements/ticket-priority","value":{"type":"Badge","props":{"text":{"$item":"priority"},"variant":{"$cond":{"$item":"priority","eq":"High"},"$then":"destructive","$else":"secondary"}}}}
+{"op":"add","path":"/state/tickets","value":[]}
+{"op":"add","path":"/state/tickets/0","value":{"id":"T-1042","subject":"Login fails after password reset","priority":"High","time":"8 min ago"}}
+{"op":"add","path":"/state/tickets/1","value":{"id":"T-1041","subject":"Invoice PDF not downloading","priority":"Medium","time":"25 min ago"}}
+{"op":"add","path":"/state/tickets/2","value":{"id":"T-1040","subject":"API rate limit questions","priority":"Low","time":"41 min ago"}}
+{"op":"add","path":"/state/tickets/3","value":{"id":"T-1039","subject":"Payment webhook returning 500","priority":"High","time":"1h ago"}}
+{"op":"add","path":"/state/tickets/4","value":{"id":"T-1038","subject":"Dark mode toggle not persisting","priority":"Low","time":"1h 32m ago"}}

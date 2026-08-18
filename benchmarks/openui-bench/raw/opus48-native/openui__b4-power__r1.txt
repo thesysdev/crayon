@@ -1,0 +1,47 @@
+root = Card([header, alerts, kpis, capacity, genSplit, plants, outages, forecast, maintenance, regionFocus, curtailment, emissions])
+
+header = CardHeader("Grid Operations Console", "Real-time network status")
+
+alerts = Callout("warning", "Live Alerts", "14:32 — Feeder F-12 tripped in North grid. 14:28 — Frequency deviation 49.91Hz. 14:20 — Plant Ashfield ramping down.")
+
+kpis = Table([kpiMetric, kpiValue])
+kpiMetric = Col("Metric", ["Current Load", "Price / MWh", "Emissions Today"])
+kpiValue = Col("Value", ["38,420 MW", "$62.40", "9,140 tCO₂"])
+
+capacity = Progress(84, "Network Capacity Utilization (38,420 / 45,600 MW)")
+
+genSplit = PieChart(["Natural Gas", "Nuclear", "Wind", "Solar", "Hydro", "Coal"], [12800, 9600, 6400, 4100, 3200, 2320], "donut")
+
+plants = Table([plantName, plantOutput, plantStatus])
+plantName = Col("Plant", ["Ashfield CCGT", "Brightwater Nuclear", "Cape Wind Farm", "Solaris Array", "Riverdam Hydro", "Old Coal Unit 3"])
+plantOutput = Col("Output (MW)", [4200, 9600, 6400, 4100, 3200, 2320], "number")
+plantStatus = Col("Status", ["Ramping Down", "Online", "Online", "Online", "Online", "Curtailed"])
+
+outages = Table([outageId, outageRegion, outageImpact])
+outageId = Col("Outage", ["F-12 Feeder", "Sub-North 4", "Line L-88"])
+outageRegion = Col("Region", ["North", "North", "Coastal"])
+outageImpact = Col("Affected", ["12,400 homes", "3,100 homes", "Transmission only"])
+
+forecast = LineChart(["00", "03", "06", "09", "12", "15", "18", "21", "24"], [demandSeries], "natural", "Hour", "MW")
+demandSeries = Series("Forecast Demand", [31200, 28900, 30400, 37600, 41200, 40100, 43800, 45200, 39600])
+
+maintenance = ListBlock([maint1, maint2, maint3])
+maint1 = ListItem("Brightwater Nuclear — Unit 2 Inspection", "Scheduled Mar 18–20 · Central region")
+maint2 = ListItem("Sub-West 7 Transformer Swap", "Scheduled Mar 24 · West region")
+maint3 = ListItem("Cape Wind Turbine Servicing", "Scheduled Mar 29 · Coastal region")
+
+regionFocus = Form("region-focus", regionButtons, [regionField])
+regionField = FormControl("Focus Region", regionSelect)
+regionSelect = Select("region", [regNorth, regSouth, regEast, regWest, regCentral, regCoastal], "Select a region")
+regNorth = SelectItem("north", "North")
+regSouth = SelectItem("south", "South")
+regEast = SelectItem("east", "East")
+regWest = SelectItem("west", "West")
+regCentral = SelectItem("central", "Central")
+regCoastal = SelectItem("coastal", "Coastal")
+regionButtons = Buttons([focusBtn])
+focusBtn = Button("Focus", null, "primary")
+
+curtailment = AlertDialogBlock("Order Curtailment", "Confirm Curtailment Order", "This will reduce generation output and may shed load in the selected region. Confirm to dispatch the order.", "Order Curtailment", "Cancel", "destructive")
+
+emissions = TextCallout("info", "Emissions Today", "9,140 tCO₂ emitted so far · 22% below daily average")

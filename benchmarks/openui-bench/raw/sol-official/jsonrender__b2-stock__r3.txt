@@ -1,0 +1,23 @@
+{"op":"add","path":"/root","value":"inventory-screen"}
+{"op":"add","path":"/elements/inventory-screen","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l","align":"stretch"},"children":["header","summary","search-control","inventory-list"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Low inventory","subtitle":"Review items at or below the warning threshold and reorder stock."},"children":[]}}
+{"op":"add","path":"/elements/summary","value":{"type":"Callout","props":{"variant":"warning","title":{"$template":"${/lowInventoryCount} items need attention"},"description":{"$template":"Warnings appear when remaining stock reaches ${/warningThreshold} units or fewer."}},"children":[]}}
+{"op":"add","path":"/state/lowInventoryCount","value":4}
+{"op":"add","path":"/state/warningThreshold","value":10}
+{"op":"add","path":"/elements/search-input","value":{"type":"Input","props":{"name":"inventory-search","placeholder":"Search by item name or SKU","type":"text","value":{"$bindState":"/searchQuery"}},"children":[]}}
+{"op":"add","path":"/state/searchQuery","value":""}
+{"op":"add","path":"/elements/search-control","value":{"type":"FormControl","props":{"label":"Search items","input":"search-input","hint":"Enter a product name or SKU to find low-stock items."},"children":[]}}
+{"op":"add","path":"/elements/item-name","value":{"type":"Heading","props":{"text":{"$item":"name"},"level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/item-sku","value":{"type":"TextContent","props":{"text":{"$template":"SKU: ${sku}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/item-category","value":{"type":"Badge","props":{"text":{"$item":"category"},"variant":"secondary"},"children":[]}}
+{"op":"add","path":"/elements/item-units","value":{"type":"Tag","props":{"text":{"$template":"${remainingUnits} units remaining"},"variant":{"$cond":{"$state":"/warningThreshold","gt":5},"$then":"warning","$else":"danger"},"size":"md"},"children":[]}}
+{"op":"add","path":"/elements/item-threshold","value":{"type":"TextContent","props":{"text":{"$template":"Warning threshold: ${/warningThreshold} units"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/reorder-button","value":{"type":"Button","props":{"label":{"$template":"Reorder ${name}"},"variant":"primary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":{"$item":"reorderStatePath"},"value":true}}},"children":[]}}
+{"op":"add","path":"/elements/reorder-confirmation","value":{"type":"TextCallout","props":{"variant":"success","title":"Reorder requested","description":{"$template":"A replenishment request for ${name} has been queued."}},"visible":{"$item":"reorderRequested"},"children":[]}}
+{"op":"add","path":"/elements/inventory-item","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s","align":"stretch"},"children":["item-name","item-sku","item-category","item-units","item-threshold","reorder-button","reorder-confirmation"]}}
+{"op":"add","path":"/elements/inventory-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m","align":"stretch"},"repeat":{"statePath":"/lowInventoryItems","key":"id"},"children":["inventory-item"]}}
+{"op":"add","path":"/state/lowInventoryItems","value":[]}
+{"op":"add","path":"/state/lowInventoryItems/0","value":{"id":"inv-101","name":"Thermal Shipping Labels","sku":"LBL-4X6-500","category":"Shipping","remainingUnits":3,"reorderRequested":false,"reorderStatePath":"/lowInventoryItems/0/reorderRequested"}}
+{"op":"add","path":"/state/lowInventoryItems/1","value":{"id":"inv-102","name":"Matte Black Travel Mug","sku":"MUG-BLK-16","category":"Drinkware","remainingUnits":5,"reorderRequested":false,"reorderStatePath":"/lowInventoryItems/1/reorderRequested"}}
+{"op":"add","path":"/state/lowInventoryItems/2","value":{"id":"inv-103","name":"Organic Cotton Tote","sku":"TOTE-NAT-01","category":"Accessories","remainingUnits":7,"reorderRequested":false,"reorderStatePath":"/lowInventoryItems/2/reorderRequested"}}
+{"op":"add","path":"/state/lowInventoryItems/3","value":{"id":"inv-104","name":"Cedarwood Candle","sku":"CNDL-CED-08","category":"Home","remainingUnits":9,"reorderRequested":false,"reorderStatePath":"/lowInventoryItems/3/reorderRequested"}}

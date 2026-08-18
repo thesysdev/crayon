@@ -1,0 +1,67 @@
+Here's a support lead morning dashboard covering all five items:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "support-morning",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": { "primaryColor": "#2563EB", "agentDisplayName": "Support Ops" }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "support-morning",
+    "components": [
+      { "id": "root", "component": "Card", "variant": "clear", "direction": "column", "gap": "m", "children": ["header", "statsRow", "filterRow", "ticketsCard", "newTicket"] },
+      { "id": "header", "component": "CardHeader", "title": "Support Morning Briefing", "subtitle": "Tuesday, 8:00 AM — queue overview" },
+
+      { "id": "statsRow", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "children": ["openCard", "frtCard"] },
+      { "id": "openCard", "component": "Card", "variant": "card", "direction": "column", "gap": "xs", "weight": 1, "children": ["openLabel", "openValue"] },
+      { "id": "openLabel", "component": "TextContent", "text": "Open Tickets", "size": "small" },
+      { "id": "openValue", "component": "TextContent", "text": "**42**", "size": "large-heavy" },
+      { "id": "frtCard", "component": "Card", "variant": "card", "direction": "column", "gap": "xs", "weight": 1, "children": ["frtLabel", "frtValue"] },
+      { "id": "frtLabel", "component": "TextContent", "text": "Avg First-Response Time", "size": "small" },
+      { "id": "frtValue", "component": "TextContent", "text": "**18 min**", "size": "large-heavy" },
+
+      { "id": "filterRow", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "align": "center", "justify": "between", "children": ["filterLabel", "priorityFilter"] },
+      { "id": "filterLabel", "component": "TextContent", "text": "Recent Tickets", "size": "large-heavy" },
+      { "id": "priorityFilter", "component": "Select", "name": "priorityFilter", "placeholder": "All priorities", "size": "small", "items": ["fiAll", "fiHigh"], "value": "all" },
+      { "id": "fiAll", "component": "SelectItem", "value": "all", "label": "All priorities" },
+      { "id": "fiHigh", "component": "SelectItem", "value": "high", "label": "High priority only" },
+
+      { "id": "ticketsCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["ticketsTable"] },
+      { "id": "ticketsTable", "component": "Table", "columns": ["colId", "colSubject", "colPriority", "colAge"] },
+      { "id": "colId", "component": "Col", "label": "Ticket", "data": ["#1042", "#1041", "#1040", "#1039", "#1038"] },
+      { "id": "colSubject", "component": "Col", "label": "Subject", "data": ["Login SSO failing for team", "Billing invoice mismatch", "Feature request: dark mode", "API 500 errors on export", "Password reset email delayed"] },
+      { "id": "colPriority", "component": "Col", "label": "Priority", "data": ["High", "Medium", "Low", "High", "Medium"] },
+      { "id": "colAge", "component": "Col", "label": "Opened", "data": ["12 min ago", "34 min ago", "1 hr ago", "2 hr ago", "3 hr ago"] },
+
+      { "id": "newTicket", "component": "DialogBlock", "triggerLabel": "+ New Ticket", "title": "Open a New Ticket", "description": "Fill in the details below to create a ticket.", "triggerVariant": "default", "content": ["newTicketForm"] },
+      { "id": "newTicketForm", "component": "Form", "name": "newTicket", "fields": ["fcSubject", "fcPriority", "fcDesc"], "buttons": "formButtons" },
+      { "id": "fcSubject", "component": "FormControl", "label": "Subject", "input": "inSubject" },
+      { "id": "inSubject", "component": "Input", "name": "subject", "placeholder": "Short summary of the issue", "type": "text" },
+      { "id": "fcPriority", "component": "FormControl", "label": "Priority", "input": "inPriority" },
+      { "id": "inPriority", "component": "Select", "name": "priority", "placeholder": "Select priority", "items": ["pLow", "pMed", "pHigh"] },
+      { "id": "pLow", "component": "SelectItem", "value": "low", "label": "Low" },
+      { "id": "pMed", "component": "SelectItem", "value": "medium", "label": "Medium" },
+      { "id": "pHigh", "component": "SelectItem", "value": "high", "label": "High" },
+      { "id": "fcDesc", "component": "FormControl", "label": "Description", "input": "inDesc" },
+      { "id": "inDesc", "component": "TextArea", "name": "description", "placeholder": "Describe the issue...", "rows": 4 },
+      { "id": "formButtons", "component": "Buttons", "buttons": ["btnSubmit"], "direction": "row" },
+      { "id": "btnSubmit", "component": "Button", "label": "Create Ticket", "variant": "primary" }
+    ]
+  }
+}
+</a2ui-json>
+
+All five requirements are covered:
+1. **Open tickets** — stat card showing 42
+2. **Avg first-response time** — stat card showing 18 min
+3. **Five most recent tickets** — table with ID, subject, priority, and age
+4. **High-priority filter** — dropdown to narrow the list
+5. **New ticket** — button opening a dialog with a creation form

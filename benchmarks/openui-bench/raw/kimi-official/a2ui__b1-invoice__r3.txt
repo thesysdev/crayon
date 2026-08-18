@@ -1,0 +1,87 @@
+Here's a clean, single-screen invoice view for the client:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "invoice-view",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#4F46E5",
+      "agentDisplayName": "Freelancer Invoicing"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "invoice-view",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "l",
+        "children": ["header", "statusRow", "separator1", "amountSection", "dueDateSection", "separator2", "payButton", "note"]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Invoice #INV-2025-041",
+        "subtitle": "From: Jordan Lee — Freelance Design Services"
+      },
+      {
+        "id": "statusRow",
+        "component": "TagBlock",
+        "tags": ["Awaiting Payment", "Issued Oct 28, 2025"]
+      },
+      {
+        "id": "separator1",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "amountSection",
+        "component": "TextContent",
+        "text": "## Amount Due: **$2,400.00 USD**",
+        "size": "large-heavy"
+      },
+      {
+        "id": "dueDateSection",
+        "component": "Callout",
+        "variant": "warning",
+        "title": "Due Date: November 15, 2025",
+        "description": "Please complete payment by this date to avoid a 5% late fee."
+      },
+      {
+        "id": "separator2",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "payButton",
+        "component": "Button",
+        "label": "Pay Now — $2,400.00 USD",
+        "variant": "primary",
+        "size": "large",
+        "action": [{"name": "pay_invoice", "invoiceId": "INV-2025-041", "amount": 2400.00, "currency": "USD"}]
+      },
+      {
+        "id": "note",
+        "component": "TextContent",
+        "text": "Secure payment via card or bank transfer. A receipt will be emailed to you after payment.",
+        "size": "small"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This covers all three requirements:
+1. **Amount due & currency** — displayed prominently as $2,400.00 USD
+2. **Due date** — highlighted in a warning callout (November 15, 2025) with a late-fee note
+3. **Pay now** — a large primary "Pay Now" button wired to a payment action

@@ -1,0 +1,36 @@
+{"op":"add","path":"/root","value":"daily-summary"}
+{"op":"add","path":"/elements/summary-title","value":{"type":"Heading","props":{"text":"Daily Fitness Summary","level":"h1"},"children":[]}}
+{"op":"add","path":"/elements/summary-date","value":{"type":"TextContent","props":{"text":{"$state":"/summary/date"},"size":"default"},"children":[]}}
+{"op":"add","path":"/state/summary","value":{"date":"Tuesday, August 18","steps":7842,"stepGoal":10000,"stepProgress":78,"calories":612}}
+{"op":"add","path":"/elements/steps-heading","value":{"type":"Heading","props":{"text":"Steps","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/steps-count","value":{"type":"TextContent","props":{"text":{"$template":"${/summary/steps} of ${/summary/stepGoal} steps"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/steps-progress","value":{"type":"Progress","props":{"value":{"$state":"/summary/stepProgress"},"label":"78% of daily goal"},"children":[]}}
+{"op":"add","path":"/elements/steps-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["steps-heading","steps-count","steps-progress"]}}
+{"op":"add","path":"/elements/calories-heading","value":{"type":"Heading","props":{"text":"Calories burned","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/calories-value","value":{"type":"TextContent","props":{"text":{"$template":"${/summary/calories} kcal"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/calories-note","value":{"type":"TextContent","props":{"text":"Active calories recorded today","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/calories-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["calories-heading","calories-value","calories-note"]}}
+{"op":"add","path":"/elements/today-metrics","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"stretch","wrap":true},"children":["steps-card","calories-card"]}}
+{"op":"add","path":"/elements/week-heading","value":{"type":"Heading","props":{"text":"Workouts this week","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/week-subtitle","value":{"type":"TextContent","props":{"text":"Minutes trained each day over the past seven days.","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/workout-minutes-series","value":{"type":"Series","props":{"category":"Workout minutes","values":{"$state":"/weeklyMinutes"}},"children":[]}}
+{"op":"add","path":"/state/weeklyMinutes","value":[35,0,48,25,0,62,40]}
+{"op":"add","path":"/elements/week-chart","value":{"type":"BarChart","props":{"labels":{"$state":"/weekLabels"},"series":["workout-minutes-series"],"variant":"grouped","xLabel":"Day","yLabel":"Minutes"},"children":[]}}
+{"op":"add","path":"/state/weekLabels","value":["Wed","Thu","Fri","Sat","Sun","Mon","Tue"]}
+{"op":"add","path":"/elements/week-insight","value":{"type":"Callout","props":{"variant":"success","title":"Strong week","description":"You completed 5 workouts totaling 210 minutes."},"children":[]}}
+{"op":"add","path":"/elements/week-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["week-heading","week-subtitle","week-chart","week-insight"]}}
+{"op":"add","path":"/elements/log-heading","value":{"type":"Heading","props":{"text":"Log a new workout","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/workout-type-input","value":{"type":"Input","props":{"name":"workoutType","placeholder":"e.g. Strength training","type":"text","value":{"$bindState":"/newWorkout/type"},"rules":[{"required":true,"message":"Enter a workout type"}]},"children":[]}}
+{"op":"add","path":"/state/newWorkout","value":{"type":"","duration":"","calories":""}}
+{"op":"add","path":"/elements/workout-type-control","value":{"type":"FormControl","props":{"label":"Workout type","input":"workout-type-input","hint":"Name the activity you completed."},"children":[]}}
+{"op":"add","path":"/elements/workout-duration-input","value":{"type":"Input","props":{"name":"duration","placeholder":"45","type":"number","value":{"$bindState":"/newWorkout/duration"},"rules":[{"required":true,"message":"Enter the duration"}]},"children":[]}}
+{"op":"add","path":"/elements/workout-duration-control","value":{"type":"FormControl","props":{"label":"Duration (minutes)","input":"workout-duration-input"},"children":[]}}
+{"op":"add","path":"/elements/workout-calories-input","value":{"type":"Input","props":{"name":"workoutCalories","placeholder":"300","type":"number","value":{"$bindState":"/newWorkout/calories"},"rules":[{"required":true,"message":"Enter calories burned"}]},"children":[]}}
+{"op":"add","path":"/elements/workout-calories-control","value":{"type":"FormControl","props":{"label":"Calories burned","input":"workout-calories-input"},"children":[]}}
+{"op":"add","path":"/elements/log-workout-button","value":{"type":"Button","props":{"label":"Log workout","variant":"primary","size":"medium"},"on":{"press":{"action":"pushState","params":{"statePath":"/workouts","value":{"id":"$id","type":{"$state":"/newWorkout/type"},"duration":{"$state":"/newWorkout/duration"},"calories":{"$state":"/newWorkout/calories"},"date":"Today"},"clearStatePath":"/newWorkout"}}},"children":[]}}
+{"op":"add","path":"/state/workouts","value":[]}
+{"op":"add","path":"/state/workouts/0","value":{"id":"workout-1","type":"Outdoor run","duration":40,"calories":386,"date":"Today"}}
+{"op":"add","path":"/elements/log-buttons","value":{"type":"Buttons","props":{"buttons":["log-workout-button"],"direction":"row"},"children":[]}}
+{"op":"add","path":"/elements/log-form","value":{"type":"Form","props":{"name":"newWorkoutForm","buttons":"log-buttons","fields":["workout-type-control","workout-duration-control","workout-calories-control"]},"children":[]}}
+{"op":"add","path":"/elements/log-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["log-heading","log-form"]}}
+{"op":"add","path":"/elements/daily-summary","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l","align":"stretch"},"children":["summary-title","summary-date","today-metrics","week-card","log-card"]}}

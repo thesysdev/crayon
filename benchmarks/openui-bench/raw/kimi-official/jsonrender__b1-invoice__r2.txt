@@ -1,0 +1,28 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["header","invoice-card","pay-card"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Invoice #INV-2024-047","subtitle":"From: Jane Doe — Freelance Design Studio"},"children":[]}}
+{"op":"add","path":"/elements/invoice-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["amount-label","amount-due","sep-1","due-row","status-row","sep-2","line-items"]}}
+{"op":"add","path":"/elements/amount-label","value":{"type":"TextContent","props":{"text":"**Amount Due**","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/amount-due","value":{"type":"TextContent","props":{"text":{"$template":"${/invoice/currency} ${/invoice/amount}"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/state/invoice","value":{"amount":"2,450.00","currency":"USD","dueDate":"March 15, 2025","status":"Unpaid","client":"Acme Corp"}}
+{"op":"add","path":"/elements/sep-1","value":{"type":"Separator","props":{},"children":[]}}
+{"op":"add","path":"/elements/due-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center"},"children":["due-label","due-date"]}}
+{"op":"add","path":"/elements/due-label","value":{"type":"TextContent","props":{"text":"**Due Date**","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/due-date","value":{"type":"TextContent","props":{"text":{"$state":"/invoice/dueDate"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/status-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center"},"children":["status-label","status-badge"]}}
+{"op":"add","path":"/elements/status-label","value":{"type":"TextContent","props":{"text":"**Status**","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/status-badge","value":{"type":"Badge","props":{"text":{"$state":"/invoice/status"},"variant":"destructive"},"children":[]}}
+{"op":"add","path":"/elements/sep-2","value":{"type":"Separator","props":{},"children":[]}}
+{"op":"add","path":"/elements/line-items","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s","repeat":{"statePath":"/invoice/items","key":"id"}},"children":["line-item"]}}
+{"op":"add","path":"/state/invoice/items","value":[]}
+{"op":"add","path":"/state/invoice/items/0","value":{"id":"1","description":"Website redesign — homepage & landing pages","amount":"1,500.00"}}
+{"op":"add","path":"/state/invoice/items/1","value":{"id":"2","description":"Brand asset package (logo variations, icons)","amount":"650.00"}}
+{"op":"add","path":"/state/invoice/items/2","value":{"id":"3","description":"Revisions round (2 hours)","amount":"300.00"}}
+{"op":"add","path":"/elements/line-item","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center"},"children":["line-desc","line-amount"]}}
+{"op":"add","path":"/elements/line-desc","value":{"type":"TextContent","props":{"text":{"$item":"description"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/line-amount","value":{"type":"TextContent","props":{"text":{"$template":"${/invoice/currency} ${amount}"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/pay-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["pay-info","pay-buttons","paid-callout"]}}
+{"op":"add","path":"/elements/pay-info","value":{"type":"TextContent","props":{"text":"Pay securely by card or bank transfer. A receipt will be emailed to you immediately after payment."},"children":[]}}
+{"op":"add","path":"/elements/pay-buttons","value":{"type":"Buttons","props":{"buttons":["pay-now-btn"],"direction":"column"},"children":[]}}
+{"op":"add","path":"/elements/pay-now-btn","value":{"type":"Button","props":{"label":{"$template":"Pay Now — ${/invoice/currency} ${/invoice/amount}"},"variant":"primary","size":"large"},"on":{"press":{"action":"setState","params":{"statePath":"/invoice/paid","value":true}}},"children":[]}}
+{"op":"add","path":"/elements/paid-callout","value":{"type":"Callout","props":{"variant":"success","title":"Payment received","description":"Thank you! Your payment of USD 2,450.00 has been processed. A receipt has been sent to your email."},"visible":{"$state":"/invoice/paid"},"children":[]}}

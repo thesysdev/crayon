@@ -1,0 +1,168 @@
+Here's a comprehensive City Operations Center dashboard covering all 17 requirements.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "city-ops-center",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": { "primaryColor": "#0B7BC2", "agentDisplayName": "City Ops Center" }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "city-ops-center",
+      "components": [
+        { "id": "root", "component": "Card", "direction": "column", "gap": "l", "children": ["header", "controlsRow", "topRow", "tabs"] },
+
+        { "id": "header", "component": "CardHeader", "title": "City Operations Center", "subtitle": "Live situational overview" },
+
+        { "id": "controlsRow", "component": "Card", "variant": "sunk", "direction": "row", "gap": "m", "wrap": true, "children": ["districtFocus", "dispatchDialog", "alertDrawer"] },
+
+        { "id": "districtFocus", "component": "FormControl", "label": "Focus District (13)", "input": "districtSelect", "hint": "Filter the whole board to one district" },
+        { "id": "districtSelect", "component": "Select", "name": "focusDistrict", "placeholder": "All districts", "items": ["dsDowntown", "dsNorth", "dsEast", "dsWest", "dsHarbor"] },
+        { "id": "dsDowntown", "component": "SelectItem", "value": "downtown", "label": "Downtown" },
+        { "id": "dsNorth", "component": "SelectItem", "value": "north", "label": "North" },
+        { "id": "dsEast", "component": "SelectItem", "value": "east", "label": "East" },
+        { "id": "dsWest", "component": "SelectItem", "value": "west", "label": "West" },
+        { "id": "dsHarbor", "component": "SelectItem", "value": "harbor", "label": "Harbor" },
+
+        { "id": "dispatchDialog", "component": "DialogBlock", "triggerLabel": "Dispatch Crew (14)", "title": "Dispatch a Crew", "description": "Assign a maintenance or emergency crew", "triggerVariant": "default", "content": ["dispatchForm"] },
+        { "id": "dispatchForm", "component": "Form", "name": "dispatch", "buttons": "dispatchButtons", "fields": ["dfCrew", "dfLocation", "dfPriority"] },
+        { "id": "dfCrew", "component": "FormControl", "label": "Crew", "input": "dfCrewSelect" },
+        { "id": "dfCrewSelect", "component": "Select", "name": "crew", "placeholder": "Select crew", "items": ["crewA", "crewB", "crewC"] },
+        { "id": "crewA", "component": "SelectItem", "value": "roads-1", "label": "Roads Unit 1" },
+        { "id": "crewB", "component": "SelectItem", "value": "medic-3", "label": "Medic Unit 3" },
+        { "id": "crewC", "component": "SelectItem", "value": "power-2", "label": "Power Unit 2" },
+        { "id": "dfLocation", "component": "FormControl", "label": "Location", "input": "dfLocInput" },
+        { "id": "dfLocInput", "component": "Input", "name": "location", "type": "text", "placeholder": "Address or intersection" },
+        { "id": "dfPriority", "component": "FormControl", "label": "Priority", "input": "dfPrioInput" },
+        { "id": "dfPrioInput", "component": "Select", "name": "priority", "placeholder": "Priority", "items": ["pLow", "pMed", "pHigh"] },
+        { "id": "pLow", "component": "SelectItem", "value": "low", "label": "Low" },
+        { "id": "pMed", "component": "SelectItem", "value": "medium", "label": "Medium" },
+        { "id": "pHigh", "component": "SelectItem", "value": "high", "label": "High" },
+        { "id": "dispatchButtons", "component": "Buttons", "buttons": ["dispatchSubmit"] },
+        { "id": "dispatchSubmit", "component": "Button", "label": "Dispatch", "variant": "primary", "action": ["submit"] },
+
+        { "id": "alertDrawer", "component": "DrawerBlock", "triggerLabel": "Send Public Alert (15)", "title": "Send Public Alert", "description": "Broadcast a message to citizens", "content": ["alertForm"] },
+        { "id": "alertForm", "component": "Form", "name": "publicAlert", "buttons": "alertButtons", "fields": ["afSeverity", "afMsg"] },
+        { "id": "afSeverity", "component": "FormControl", "label": "Severity", "input": "afSevSelect" },
+        { "id": "afSevSelect", "component": "Select", "name": "severity", "placeholder": "Severity", "items": ["asInfo", "asWarn", "asEmerg"] },
+        { "id": "asInfo", "component": "SelectItem", "value": "info", "label": "Information" },
+        { "id": "asWarn", "component": "SelectItem", "value": "warning", "label": "Warning" },
+        { "id": "asEmerg", "component": "SelectItem", "value": "emergency", "label": "Emergency" },
+        { "id": "afMsg", "component": "FormControl", "label": "Message", "input": "afMsgArea", "hint": "This will be sent to all subscribed citizens" },
+        { "id": "afMsgArea", "component": "TextArea", "name": "message", "placeholder": "Type the public alert message...", "rows": 4 },
+        { "id": "alertButtons", "component": "Buttons", "buttons": ["alertSend"] },
+        { "id": "alertSend", "component": "Button", "label": "Broadcast Alert", "variant": "primary", "type": "destructive", "action": ["send"] },
+
+        { "id": "topRow", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "wrap": true, "children": ["weatherCard", "congestionCard", "waterCard"] },
+
+        { "id": "weatherCard", "component": "Card", "direction": "column", "gap": "s", "weight": 1, "children": ["weatherHead", "weatherTag", "weatherText"] },
+        { "id": "weatherHead", "component": "Heading", "text": "Current Weather (12)", "level": "h4" },
+        { "id": "weatherTag", "component": "Tag", "text": "18°C · Partly Cloudy", "variant": "info", "size": "lg" },
+        { "id": "weatherText", "component": "TextContent", "text": "Wind 12 km/h · Humidity 64% · UV 3", "size": "small" },
+
+        { "id": "congestionCard", "component": "Card", "direction": "column", "gap": "s", "weight": 1, "children": ["congestionHead", "congestionProg", "congestionTag"] },
+        { "id": "congestionHead", "component": "Heading", "text": "Congestion Now (1)", "level": "h4" },
+        { "id": "congestionProg", "component": "Progress", "value": 72, "label": "Network load 72%" },
+        { "id": "congestionTag", "component": "Tag", "text": "Heavy on Ring Road", "variant": "warning" },
+
+        { "id": "waterCard", "component": "Card", "direction": "column", "gap": "s", "weight": 1, "children": ["waterHead", "waterProg", "waterText"] },
+        { "id": "waterHead", "component": "Heading", "text": "Water Use Today (5)", "level": "h4" },
+        { "id": "waterProg", "component": "Progress", "value": 58, "label": "58% of daily capacity" },
+        { "id": "waterText", "component": "TextContent", "text": "312 ML consumed of 540 ML", "size": "small" },
+
+        { "id": "tabs", "component": "Tabs", "items": ["tabMobility", "tabEnviron", "tabIncidents", "tabCommunity", "tabInfra"] },
+
+        { "id": "tabMobility", "component": "TabItem", "value": "mobility", "trigger": "Mobility", "content": ["transitCard", "parkingCard"] },
+        { "id": "transitCard", "component": "Card", "direction": "column", "gap": "s", "children": ["transitHead", "transitChart"] },
+        { "id": "transitHead", "component": "Heading", "text": "Transit Punctuality (2)", "level": "h4" },
+        { "id": "transitChart", "component": "BarChart", "xLabel": "Line", "yLabel": "% On Time", "labels": ["Line 1", "Line 2", "Line 3", "Line 4", "Bus Rapid"], "series": ["transitSeries"] },
+        { "id": "transitSeries", "component": "Series", "category": "On Time %", "values": [94, 88, 76, 91, 83] },
+        { "id": "parkingCard", "component": "Card", "direction": "column", "gap": "s", "children": ["parkingHead", "parkingChart"] },
+        { "id": "parkingHead", "component": "Heading", "text": "Downtown Parking Availability (8)", "level": "h4" },
+        { "id": "parkingChart", "component": "PieChart", "variant": "donut", "labels": ["Occupied", "Available"], "values": [1420, 380] },
+
+        { "id": "tabEnviron", "component": "TabItem", "value": "environ", "trigger": "Environment & Energy", "content": ["airCard", "energyCard"] },
+        { "id": "airCard", "component": "Card", "direction": "column", "gap": "s", "children": ["airHead", "airChart"] },
+        { "id": "airHead", "component": "Heading", "text": "Air Quality by District (3)", "level": "h4" },
+        { "id": "airChart", "component": "HorizontalBarChart", "xLabel": "AQI", "yLabel": "District", "labels": ["Downtown", "North", "East", "West", "Harbor"], "series": ["airSeries"] },
+        { "id": "airSeries", "component": "Series", "category": "AQI", "values": [82, 45, 63, 51, 97] },
+        { "id": "energyCard", "component": "Card", "direction": "column", "gap": "s", "children": ["energyHead", "energyChart"] },
+        { "id": "energyHead", "component": "Heading", "text": "Energy Use — Past Week (4)", "level": "h4" },
+        { "id": "energyChart", "component": "AreaChart", "variant": "natural", "xLabel": "Day", "yLabel": "GWh", "labels": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], "series": ["energySeries"] },
+        { "id": "energySeries", "component": "Series", "category": "GWh", "values": [38, 41, 40, 44, 47, 35, 33] },
+
+        { "id": "tabIncidents", "component": "TabItem", "value": "incidents", "trigger": "Incidents & Response", "content": ["incidentsCard", "emergencyCard", "backlogCard"] },
+        { "id": "incidentsCard", "component": "Card", "direction": "column", "gap": "s", "children": ["incidentsHead", "incidentsTable"] },
+        { "id": "incidentsHead", "component": "Heading", "text": "Open Incidents (6)", "level": "h4" },
+        { "id": "incidentsTable", "component": "Table", "columns": ["incCol1", "incCol2", "incCol3", "incCol4"] },
+        { "id": "incCol1", "component": "Col", "label": "ID", "type": "string", "data": ["INC-101", "INC-102", "INC-103", "INC-104"] },
+        { "id": "incCol2", "component": "Col", "label": "Type", "type": "string", "data": ["Water main break", "Traffic collision", "Power outage", "Gas leak"] },
+        { "id": "incCol3", "component": "Col", "label": "Location", "type": "string", "data": ["5th & Oak, Downtown", "Ring Rd km 12, East", "Harbor Grid B", "Elm St 44, North"] },
+        { "id": "incCol4", "component": "Col", "label": "Severity", "type": "string", "data": ["High", "Medium", "High", "Critical"] },
+
+        { "id": "emergencyCard", "component": "Card", "direction": "column", "gap": "s", "children": ["emergencyHead", "emergencyList"] },
+        { "id": "emergencyHead", "component": "Heading", "text": "Emergency Vehicle Deployment (7)", "level": "h4" },
+        { "id": "emergencyList", "component": "ListBlock", "variant": "number", "items": ["emItem1", "emItem2", "emItem3"] },
+        { "id": "emItem1", "component": "ListItem", "title": "Medic Unit 3", "subtitle": "En route — Ring Rd km 12 (East)" },
+        { "id": "emItem2", "component": "ListItem", "title": "Fire Engine 7", "subtitle": "On scene — Elm St 44 (North)" },
+        { "id": "emItem3", "component": "ListItem", "title": "Police Unit 12", "subtitle": "Staging — Harbor Grid B" },
+
+        { "id": "backlogCard", "component": "Card", "direction": "column", "gap": "s", "children": ["backlogHead", "backlogProg", "backlogText"] },
+        { "id": "backlogHead", "component": "Heading", "text": "Service Request Backlog (11)", "level": "h4" },
+        { "id": "backlogProg", "component": "Progress", "value": 41, "label": "41% cleared this week" },
+        { "id": "backlogText", "component": "TextContent", "text": "487 open requests · 12 aging over 30 days", "size": "small" },
+
+        { "id": "tabCommunity", "component": "TabItem", "value": "community", "trigger": "Community", "content": ["eventsCard", "reportsCard"] },
+        { "id": "eventsCard", "component": "Card", "direction": "column", "gap": "s", "children": ["eventsHead", "eventsList"] },
+        { "id": "eventsHead", "component": "Heading", "text": "Public Events This Weekend (9)", "level": "h4" },
+        { "id": "eventsList", "component": "ListBlock", "variant": "number", "items": ["evItem1", "evItem2", "evItem3"] },
+        { "id": "evItem1", "component": "ListItem", "title": "Harborfront Music Festival", "subtitle": "Sat 14:00 · Harbor · ~8,000 expected" },
+        { "id": "evItem2", "component": "ListItem", "title": "Downtown Farmers Market", "subtitle": "Sun 09:00 · Downtown Plaza" },
+        { "id": "evItem3", "component": "ListItem", "title": "City Marathon 10K", "subtitle": "Sun 07:00 · North → Downtown route" },
+
+        { "id": "reportsCard", "component": "Card", "direction": "column", "gap": "s", "children": ["reportsHead", "reportsList"] },
+        { "id": "reportsHead", "component": "Heading", "text": "Citizen Reports — Incoming (10)", "level": "h4" },
+        { "id": "reportsList", "component": "ListBlock", "variant": "number", "items": ["rpItem1", "rpItem2", "rpItem3", "rpItem4"] },
+        { "id": "rpItem1", "component": "ListItem", "title": "Pothole reported", "subtitle": "Maple Ave · 2 min ago" },
+        { "id": "rpItem2", "component": "ListItem", "title": "Broken streetlight", "subtitle": "West Park · 6 min ago" },
+        { "id": "rpItem3", "component": "ListItem", "title": "Overflowing bin", "subtitle": "Downtown Plaza · 11 min ago" },
+        { "id": "rpItem4", "component": "ListItem", "title": "Fallen tree branch", "subtitle": "North Elm St · 15 min ago" },
+
+        { "id": "tabInfra", "component": "TabItem", "value": "infra", "trigger": "Infrastructure", "content": ["roadworksCard", "maintenanceCard"] },
+        { "id": "roadworksCard", "component": "Card", "direction": "column", "gap": "s", "children": ["roadworksHead", "roadworksTable"] },
+        { "id": "roadworksHead", "component": "Heading", "text": "Roadworks Planned This Month (16)", "level": "h4" },
+        { "id": "roadworksTable", "component": "Table", "columns": ["rwCol1", "rwCol2", "rwCol3", "rwCol4"] },
+        { "id": "rwCol1", "component": "Col", "label": "Project", "type": "string", "data": ["Ring Rd resurfacing", "Oak St widening", "Harbor bridge joints"] },
+        { "id": "rwCol2", "component": "Col", "label": "District", "type": "string", "data": ["East", "Downtown", "Harbor"] },
+        { "id": "rwCol3", "component": "Col", "label": "Window", "type": "string", "data": ["Jun 3–12", "Jun 10–20", "Jun 18–25"] },
+        { "id": "rwCol4", "component": "Col", "label": "Status", "type": "string", "data": ["Scheduled", "Permitting", "Scheduled"] },
+
+        { "id": "maintenanceCard", "component": "Card", "direction": "column", "gap": "s", "children": ["maintenanceHead", "maintenanceTable"] },
+        { "id": "maintenanceHead", "component": "Heading", "text": "Infrastructure Jobs Due for Maintenance (17)", "level": "h4" },
+        { "id": "maintenanceTable", "component": "Table", "columns": ["mCol1", "mCol2", "mCol3", "mCol4"] },
+        { "id": "mCol1", "component": "Col", "label": "Asset", "type": "string", "data": ["Pump Station 4", "Traffic Signal Grid C", "Substation North", "Water Reservoir 2"] },
+        { "id": "mCol2", "component": "Col", "label": "District", "type": "string", "data": ["Harbor", "Downtown", "North", "West"] },
+        { "id": "mCol3", "component": "Col", "label": "Due", "type": "string", "data": ["Overdue 3d", "In 2d", "In 5d", "In 9d"] },
+        { "id": "mCol4", "component": "Col", "label": "Priority", "type": "string", "data": ["Critical", "High", "Medium", "Low"] }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+This single screen covers every numbered item:
+
+- **Top row:** Current weather (12), congestion now (1), water use today (5)
+- **Controls bar:** District focus selector (13), Dispatch Crew dialog (14), Send Public Alert drawer with message field (15)
+- **Mobility tab:** Transit punctuality (2), downtown parking availability (8)
+- **Environment & Energy tab:** Air quality by district (3), energy use over the past week (4)
+- **Incidents & Response tab:** Open incidents with location & severity (6), emergency vehicle deployment (7), service request backlog (11)
+- **Community tab:** Public events this weekend (9), incoming citizen reports (10)
+- **Infrastructure tab:** Roadworks planned this month (16), maintenance jobs due (17)
+
+Let me know if you'd like any section expanded, real-time data bindings wired in, or the layout reorganized (e.g., all-on-one-page instead of tabbed).

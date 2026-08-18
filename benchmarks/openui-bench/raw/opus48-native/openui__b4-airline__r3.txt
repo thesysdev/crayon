@@ -1,0 +1,63 @@
+root = Card([header, hubSelect, advisory, kpis, otpChart, flightsTable, delayedCallout, gateChanges, crews, connections, rebookAction, footer])
+header = CardHeader("DFW Hub Operations", "Live status — today")
+
+hubSelect = Form("hub-switch", hubButtons, [hubField])
+hubField = FormControl("View another hub", hubDropdown)
+hubDropdown = Select("hub", [hubDFW, hubORD, hubATL, hubDEN], "Select hub")
+hubDFW = SelectItem("dfw", "DFW — Dallas/Fort Worth")
+hubORD = SelectItem("ord", "ORD — Chicago O'Hare")
+hubATL = SelectItem("atl", "ATL — Atlanta")
+hubDEN = SelectItem("den", "DEN — Denver")
+hubButtons = Buttons([hubGo])
+hubGo = Button("Switch hub", null, "secondary")
+
+advisory = Alert("Weather advisory", "Thunderstorms expected 3–6 PM; ground stops possible on north complex. Reduced arrival rate in effect.", "warning")
+
+kpis = Card([otpKpi, loadKpi, turnKpi, cancelKpi], "sunk", "row", "l")
+otpKpi = Progress(82, "On-time performance today: 82%")
+loadKpi = Progress(88, "Average passenger load today: 88%")
+turnKpi = Progress(64, "Avg turnaround time: 46 min (target 40)")
+cancelKpi = Progress(6, "Cancellations today: 7 flights")
+
+otpChart = LineChart(["6a", "8a", "10a", "12p", "2p", "4p"], [otpSeries], "natural", "Hour", "% on-time")
+otpSeries = Series("On-time %", [94, 91, 88, 85, 83, 82])
+
+flightsTable = Table([fFlight, fRoute, fGate, fStatus])
+fFlight = Col("Flight", ["AA118", "AA402", "AA671", "AA930", "AA255", "AA744"])
+fRoute = Col("Route", ["DFW→LAX", "DFW→JFK", "DFW→MIA", "DFW→ORD", "DFW→DEN", "DFW→SEA"])
+fGate = Col("Gate", ["A21", "C14", "D8", "B33", "A5", "C22"])
+fStatus = Col("Status", ["On time", "Delayed 40m", "Boarding", "Delayed 25m", "Cancelled", "On time"])
+
+delayedCallout = Callout("warning", "Delayed flights", "AA402 DFW→JFK delayed 40m (gate C14). AA930 DFW→ORD delayed 25m (gate B33).")
+
+gateChanges = Card([gateHeader, gateList], "sunk", "column", "s")
+gateHeader = Heading("Recent gate changes", "h4")
+gateList = ListBlock([gc1, gc2, gc3])
+gc1 = ListItem("AA671 DFW→MIA", "Gate D12 → D8 · 4 min ago")
+gc2 = ListItem("AA118 DFW→LAX", "Gate A18 → A21 · 11 min ago")
+gc3 = ListItem("AA255 DFW→DEN", "Gate A9 → A5 · 18 min ago (now cancelled)")
+
+crews = Card([crewHeader, crewTable], "sunk", "column", "s")
+crewHeader = Heading("Crews available for reassignment", "h4")
+crewTable = Table([crCrew, crBase, crReady, crQual])
+crCrew = Col("Crew", ["CRW-88", "CRW-31", "CRW-52"])
+crBase = Col("Base", ["DFW", "DFW", "DFW"])
+crReady = Col("Available", ["Now", "13:20", "14:05"])
+crQual = Col("Qualified", ["A320/737", "737", "A320/737/787"])
+
+connections = Card([connHeader, connTable], "sunk", "column", "s")
+connHeader = Heading("Connections at risk", "h4")
+connTable = Table([cnPax, cnIn, cnOut, cnGap])
+cnPax = Col("Pax", [14, 9, 5])
+cnIn = Col("Inbound", ["AA402→JFK arr 15:10", "AA930→ORD arr 14:50", "AA671→MIA arr 14:20"])
+cnOut = Col("Onward", ["AA771 JFK 15:35", "AA610 ORD 15:05", "AA333 MIA 14:40"])
+cnGap = Col("Connect (min)", [25, 15, 20])
+
+rebookAction = Buttons([rebookBtn, holdBtn])
+rebookBtn = Button("Rebook affected passengers", null, "primary")
+holdBtn = Button("Request short hold on onward flights", null, "secondary")
+
+footer = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Show cancellation details for today")
+fu2 = FollowUpItem("Reassign CRW-88 to AA930")
+fu3 = FollowUpItem("View ORD hub operations")

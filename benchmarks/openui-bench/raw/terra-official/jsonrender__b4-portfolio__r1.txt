@@ -1,0 +1,99 @@
+{"op":"add","path":"/root","value":"portfolio-review"}
+{"op":"add","path":"/elements/portfolio-review","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["review-header","portfolio-summary","controls-row","active-projects-section","delivery-budget-row","risk-deadline-row","blocked-work-section","review-actions"]}}
+{"op":"add","path":"/elements/review-header","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["page-title","page-subtitle"]}}
+{"op":"add","path":"/elements/page-title","value":{"type":"Heading","props":{"text":"Project Portfolio Review","level":"h1"},"children":[]}}
+{"op":"add","path":"/elements/page-subtitle","value":{"type":"TextContent","props":{"text":{"$template":"Executive review • ${/selectedQuarter} • Updated 18 Aug 2026"},"size":"default"},"children":[]}}
+{"op":"add","path":"/state/selectedQuarter","value":"Q3 2026"}
+{"op":"add","path":"/elements/portfolio-summary","value":{"type":"Callout","props":{"variant":"warning","title":"Portfolio health: Watch closely","description":{"$state":"/portfolioHealthSummary"}},"children":[]}}
+{"op":"add","path":"/state/portfolioHealthSummary","value":"4 active projects are underway; 2 milestones are overdue, delivery pace is improving, and Atlas needs staffing support to protect its October launch."}
+{"op":"add","path":"/elements/controls-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"end","wrap":true},"children":["quarter-control","export-review"]}}
+{"op":"add","path":"/elements/quarter-control","value":{"type":"FormControl","props":{"label":"Review quarter","hint":"Switch the reporting period","input":"quarter-select"},"children":[]}}
+{"op":"add","path":"/elements/quarter-select","value":{"type":"Select","props":{"name":"quarter","placeholder":"Select quarter","items":["quarter-q2","quarter-q3","quarter-q4"],"value":{"$bindState":"/selectedQuarter"},"size":"medium"},"children":[]}}
+{"op":"add","path":"/elements/quarter-q2","value":{"type":"SelectItem","props":{"value":"Q2 2026","label":"Q2 2026"},"children":[]}}
+{"op":"add","path":"/elements/quarter-q3","value":{"type":"SelectItem","props":{"value":"Q3 2026","label":"Q3 2026"},"children":[]}}
+{"op":"add","path":"/elements/quarter-q4","value":{"type":"SelectItem","props":{"value":"Q4 2026","label":"Q4 2026"},"children":[]}}
+{"op":"add","path":"/elements/export-review","value":{"type":"Button","props":{"label":"Export review","variant":"secondary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/exportRequested","value":true}}},"children":[]}}
+{"op":"add","path":"/state/exportRequested","value":false}
+{"op":"add","path":"/elements/active-projects-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["active-projects-heading","active-projects-list"]}}
+{"op":"add","path":"/elements/active-projects-heading","value":{"type":"CardHeader","props":{"title":"Active projects","subtitle":"Owner, committed deadline, health, budget, and portfolio actions"},"children":[]}}
+{"op":"add","path":"/elements/active-projects-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/projects","key":"id"},"children":["project-row"]}}
+{"op":"add","path":"/elements/project-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","justify":"between","align":"center","wrap":true},"children":["project-details","project-health","project-budget","project-actions"]}}
+{"op":"add","path":"/elements/project-details","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["project-name","project-owner","project-deadline"]}}
+{"op":"add","path":"/elements/project-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/project-owner","value":{"type":"TextContent","props":{"text":{"$template":"Owner: ${owner}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/project-deadline","value":{"type":"TextContent","props":{"text":{"$template":"Deadline: ${deadline}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/project-health","value":{"type":"Tag","props":{"text":{"$item":"health"},"variant":{"$cond":{"$state":"/projects","not":true},"$then":"neutral","$else":"info"},"size":"md"},"children":[]}}
+{"op":"add","path":"/elements/project-budget","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["project-budget-text","project-budget-progress"]}}
+{"op":"add","path":"/elements/project-budget-text","value":{"type":"TextContent","props":{"text":{"$template":"Budget: ${spent} spent of ${allocation}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/project-budget-progress","value":{"type":"Progress","props":{"value":{"$item":"budgetPercent"},"label":{"$template":"${budgetPercent}% allocated budget used"}},"children":[]}}
+{"op":"add","path":"/elements/project-actions","value":{"type":"Buttons","props":{"buttons":["request-people","archive-project"],"direction":"row"},"children":[]}}
+{"op":"add","path":"/elements/request-people","value":{"type":"Button","props":{"label":"Request people","variant":"primary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/staffingRequestProject","value":{"$item":"name"}}}},"children":[]}}
+{"op":"add","path":"/elements/archive-project","value":{"type":"Button","props":{"label":"Archive","variant":"tertiary","type":"destructive","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/archiveCandidate","value":{"$item":"name"}}}},"children":[]}}
+{"op":"add","path":"/state/projects","value":[]}
+{"op":"add","path":"/state/projects/0","value":{"id":"atlas","name":"Atlas Platform Modernization","owner":"Maya Chen","deadline":"16 Oct 2026","health":"At risk","spent":"$684k","allocation":"$900k","budgetPercent":76}}
+{"op":"add","path":"/state/projects/1","value":{"id":"northstar","name":"Northstar Customer Portal","owner":"Daniel Ortiz","deadline":"30 Sep 2026","health":"On track","spent":"$412k","allocation":"$650k","budgetPercent":63}}
+{"op":"add","path":"/state/projects/2","value":{"id":"meridian","name":"Meridian Data Foundation","owner":"Priya Nair","deadline":"21 Nov 2026","health":"Watch","spent":"$531k","allocation":"$720k","budgetPercent":74}}
+{"op":"add","path":"/state/projects/3","value":{"id":"lumen","name":"Lumen Mobile Checkout","owner":"Elliot Brooks","deadline":"12 Sep 2026","health":"On track","spent":"$238k","allocation":"$400k","budgetPercent":60}}
+{"op":"add","path":"/state/staffingRequestProject","value":""}
+{"op":"add","path":"/state/archiveCandidate","value":""}
+{"op":"add","path":"/elements/delivery-budget-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"l","align":"stretch","wrap":true},"children":["delivery-pace-card","team-utilization-card"]}}
+{"op":"add","path":"/elements/delivery-pace-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["delivery-pace-header","delivery-pace-chart"]}}
+{"op":"add","path":"/elements/delivery-pace-header","value":{"type":"CardHeader","props":{"title":"Delivery pace","subtitle":"Completed story points over the past six sprints"},"children":[]}}
+{"op":"add","path":"/elements/delivery-pace-chart","value":{"type":"LineChart","props":{"labels":["Sprint 18","Sprint 19","Sprint 20","Sprint 21","Sprint 22","Sprint 23"],"series":["delivery-series"],"variant":"linear","xLabel":"Sprint","yLabel":"Story points"},"children":[]}}
+{"op":"add","path":"/elements/delivery-series","value":{"type":"Series","props":{"category":"Completed points","values":[72,68,75,81,84,89]},"children":[]}}
+{"op":"add","path":"/elements/team-utilization-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["team-utilization-header","team-utilization-chart"]}}
+{"op":"add","path":"/elements/team-utilization-header","value":{"type":"CardHeader","props":{"title":"Team utilization","subtitle":"Capacity assigned across active delivery teams"},"children":[]}}
+{"op":"add","path":"/elements/team-utilization-chart","value":{"type":"BarChart","props":{"labels":["Engineering","Product","Design","QA","Data"],"series":["utilization-series"],"variant":"grouped","xLabel":"Team","yLabel":"Utilization %"},"children":[]}}
+{"op":"add","path":"/elements/utilization-series","value":{"type":"Series","props":{"category":"Utilization","values":[92,84,78,88,81]},"children":[]}}
+{"op":"add","path":"/elements/risk-deadline-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"l","align":"stretch","wrap":true},"children":["overdue-milestones-card","upcoming-deadlines-card","risks-card"]}}
+{"op":"add","path":"/elements/overdue-milestones-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["overdue-header","overdue-list"]}}
+{"op":"add","path":"/elements/overdue-header","value":{"type":"CardHeader","props":{"title":"Overdue milestones","subtitle":"Requires recovery plan or revised commitment"},"children":[]}}
+{"op":"add","path":"/elements/overdue-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/overdueMilestones","key":"id"},"children":["overdue-item"]}}
+{"op":"add","path":"/elements/overdue-item","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["overdue-title","overdue-detail","overdue-status"]}}
+{"op":"add","path":"/elements/overdue-title","value":{"type":"TextContent","props":{"text":{"$item":"milestone"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/overdue-detail","value":{"type":"TextContent","props":{"text":{"$template":"${project} • Due ${dueDate}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/overdue-status","value":{"type":"Tag","props":{"text":{"$template":"${daysLate} days late"},"variant":"danger","size":"sm"},"children":[]}}
+{"op":"add","path":"/state/overdueMilestones","value":[]}
+{"op":"add","path":"/state/overdueMilestones/0","value":{"id":"m1","milestone":"Identity provider cutover","project":"Atlas Platform Modernization","dueDate":"08 Aug 2026","daysLate":10}}
+{"op":"add","path":"/state/overdueMilestones/1","value":{"id":"m2","milestone":"Data quality sign-off","project":"Meridian Data Foundation","dueDate":"14 Aug 2026","daysLate":4}}
+{"op":"add","path":"/elements/upcoming-deadlines-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["upcoming-header","upcoming-list"]}}
+{"op":"add","path":"/elements/upcoming-header","value":{"type":"CardHeader","props":{"title":"Next two weeks","subtitle":"Key deadlines through 1 Sep 2026"},"children":[]}}
+{"op":"add","path":"/elements/upcoming-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/upcomingDeadlines","key":"id"},"children":["upcoming-item"]}}
+{"op":"add","path":"/elements/upcoming-item","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["upcoming-title","upcoming-detail","upcoming-date"]}}
+{"op":"add","path":"/elements/upcoming-title","value":{"type":"TextContent","props":{"text":{"$item":"deadline"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/upcoming-detail","value":{"type":"TextContent","props":{"text":{"$item":"project"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/upcoming-date","value":{"type":"Tag","props":{"text":{"$item":"date"},"variant":"info","size":"sm"},"children":[]}}
+{"op":"add","path":"/state/upcomingDeadlines","value":[]}
+{"op":"add","path":"/state/upcomingDeadlines/0","value":{"id":"d1","deadline":"Checkout accessibility review","project":"Lumen Mobile Checkout","date":"20 Aug"}}
+{"op":"add","path":"/state/upcomingDeadlines/1","value":{"id":"d2","deadline":"Portal beta release","project":"Northstar Customer Portal","date":"25 Aug"}}
+{"op":"add","path":"/state/upcomingDeadlines/2","value":{"id":"d3","deadline":"Architecture decision review","project":"Atlas Platform Modernization","date":"29 Aug"}}
+{"op":"add","path":"/state/upcomingDeadlines/3","value":{"id":"d4","deadline":"Data lineage demo","project":"Meridian Data Foundation","date":"01 Sep"}}
+{"op":"add","path":"/elements/risks-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["risks-header","risks-list"]}}
+{"op":"add","path":"/elements/risks-header","value":{"type":"CardHeader","props":{"title":"Top risks","subtitle":"Open risks requiring active mitigation"},"children":[]}}
+{"op":"add","path":"/elements/risks-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/risks","key":"id"},"children":["risk-item"]}}
+{"op":"add","path":"/elements/risk-item","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["risk-title","risk-project","risk-severity"]}}
+{"op":"add","path":"/elements/risk-title","value":{"type":"TextContent","props":{"text":{"$item":"risk"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/risk-project","value":{"type":"TextContent","props":{"text":{"$item":"project"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/risk-severity","value":{"type":"Tag","props":{"text":{"$item":"severity"},"variant":"warning","size":"sm"},"children":[]}}
+{"op":"add","path":"/state/risks","value":[]}
+{"op":"add","path":"/state/risks/0","value":{"id":"r1","risk":"Two senior backend vacancies may delay integration testing.","project":"Atlas Platform Modernization","severity":"High"}}
+{"op":"add","path":"/state/risks/1","value":{"id":"r2","risk":"Vendor API rate limits remain unresolved before beta.","project":"Northstar Customer Portal","severity":"Medium"}}
+{"op":"add","path":"/state/risks/2","value":{"id":"r3","risk":"Source-system ownership is slowing lineage approvals.","project":"Meridian Data Foundation","severity":"High"}}
+{"op":"add","path":"/elements/blocked-work-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["blocked-header","blocked-list"]}}
+{"op":"add","path":"/elements/blocked-header","value":{"type":"CardHeader","props":{"title":"Blocked work items","subtitle":"Items that cannot progress without a decision, dependency, or resource"},"children":[]}}
+{"op":"add","path":"/elements/blocked-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/blockedItems","key":"id"},"children":["blocked-item"]}}
+{"op":"add","path":"/elements/blocked-item","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","justify":"between","align":"center","wrap":true},"children":["blocked-details","blocked-tag"]}}
+{"op":"add","path":"/elements/blocked-details","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["blocked-title","blocked-description"]}}
+{"op":"add","path":"/elements/blocked-title","value":{"type":"TextContent","props":{"text":{"$template":"${project}: ${item}"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/blocked-description","value":{"type":"TextContent","props":{"text":{"$item":"blocker"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/blocked-tag","value":{"type":"Tag","props":{"text":{"$template":"Blocked ${daysBlocked} days"},"variant":"danger","size":"sm"},"children":[]}}
+{"op":"add","path":"/state/blockedItems","value":[]}
+{"op":"add","path":"/state/blockedItems/0","value":{"id":"b1","project":"Atlas Platform Modernization","item":"IAM integration test environment","blocker":"Awaiting security approval for production-like credentials.","daysBlocked":7}}
+{"op":"add","path":"/state/blockedItems/1","value":{"id":"b2","project":"Meridian Data Foundation","item":"Customer master data mapping","blocker":"Business owner has not confirmed canonical field definitions.","daysBlocked":5}}
+{"op":"add","path":"/state/blockedItems/2","value":{"id":"b3","project":"Northstar Customer Portal","item":"Payment preference migration","blocker":"Dependency on vendor API quota increase.","daysBlocked":3}}
+{"op":"add","path":"/elements/review-actions","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","justify":"between","align":"center","wrap":true},"children":["action-status","action-buttons"]}}
+{"op":"add","path":"/elements/action-status","value":{"type":"TextContent","props":{"text":{"$template":"Staffing request: ${/staffingRequestProject} • Archive candidate: ${/archiveCandidate}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/action-buttons","value":{"type":"Buttons","props":{"buttons":["submit-staffing-request","confirm-export"],"direction":"row"},"children":[]}}
+{"op":"add","path":"/elements/submit-staffing-request","value":{"type":"Button","props":{"label":"Submit staffing request","variant":"primary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/staffingRequestSubmitted","value":true}}},"children":[]}}
+{"op":"add","path":"/elements/confirm-export","value":{"type":"Button","props":{"label":"Prepare export","variant":"secondary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/exportRequested","value":true}}},"children":[]}}
+{"op":"add","path":"/state/staffingRequestSubmitted","value":false}

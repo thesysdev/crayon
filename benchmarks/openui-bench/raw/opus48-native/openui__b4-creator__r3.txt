@@ -1,0 +1,60 @@
+root = Card([header, filterRow, kpis, growth, bestPosts, audience, schedule, timing, inbox, collabs, composer, followup])
+
+header = CardHeader("Creator Studio", "Cross-platform performance & scheduling")
+
+filterRow = Buttons([allBtn, igBtn, ytBtn, ttBtn, xBtn], "row")
+allBtn = Button("All platforms", null, "primary", "normal", "small")
+igBtn = Button("Instagram", null, "secondary", "normal", "small")
+ytBtn = Button("YouTube", null, "secondary", "normal", "small")
+ttBtn = Button("TikTok", null, "secondary", "normal", "small")
+xBtn = Button("X", null, "secondary", "normal", "small")
+
+kpis = Table([kMetric, kValue, kChange])
+kMetric = Col("Metric", ["Total followers", "Growth (30d)", "Engagement rate", "Earnings (30d)"])
+kValue = Col("Value", ["482,300", "+18,240", "5.4%", "$7,820"])
+kChange = Col("Change", ["+3.9%", "+12.1%", "+0.6pt", "+22%"])
+
+growth = LineChart(["W1", "W2", "W3", "W4"], [followerSeries], "natural", "Week", "Followers")
+followerSeries = Series("Followers", [464060, 470120, 476900, 482300])
+
+bestPosts = Table([postTitle, postPlatform, postReach])
+postTitle = Col("Top posts this month", ["Morning routine reel", "Budget travel guide", "Studio setup tour", "Q&A shorts"])
+postPlatform = Col("Platform", ["Instagram", "YouTube", "TikTok", "YouTube"])
+postReach = Col("Reach", [312400, 208900, 187600, 141200], "number")
+
+audience = PieChart(["Instagram", "YouTube", "TikTok", "X"], [204000, 138000, 112300, 28000], "donut")
+
+schedule = ListBlock([sched1, sched2, sched3], "number")
+sched1 = ListItem("Reel: 5 editing tips", "Instagram · Tue 9:00 AM")
+sched2 = ListItem("Long-form: Gear review", "YouTube · Wed 3:00 PM")
+sched3 = ListItem("Short: Behind the scenes", "TikTok · Fri 6:00 PM")
+
+timing = BarChart(["6AM", "9AM", "12PM", "3PM", "6PM", "9PM"], [engagementByHour], "grouped", "Hour", "Avg engagement %")
+engagementByHour = Series("Engagement", [2.1, 4.8, 3.6, 5.1, 7.9, 6.2])
+
+inbox = Callout("info", "12 comments waiting for a reply", "Oldest is 4 hours old across Instagram and YouTube")
+
+collabs = ListBlock([collab1, collab2, collab3], "number")
+collab1 = ListItem("BrightGear — sponsored reel", "Offer: $2,500 · Pending", null, "Review")
+collab2 = ListItem("Wanderly — travel series", "Offer: $4,000 · Pending", null, "Review")
+collab3 = ListItem("BeanRoast — story mention", "Offer: $800 · Pending", null, "Review")
+
+composer = Form("schedule-post", composerButtons, [platformField, captionField, dateField])
+platformField = FormControl("Platform", platformSelect)
+platformSelect = Select("platform", [pIg, pYt, pTt, pX], "Choose platform")
+pIg = SelectItem("instagram", "Instagram")
+pYt = SelectItem("youtube", "YouTube")
+pTt = SelectItem("tiktok", "TikTok")
+pX = SelectItem("x", "X")
+captionField = FormControl("Caption", captionInput, "Keep it under 200 characters for best reach")
+captionInput = TextArea("caption", "Write your caption...", 4)
+dateField = FormControl("Publish time", dateInput)
+dateInput = DatePicker("publish_at", "single")
+composerButtons = Buttons([scheduleBtn, draftBtn])
+scheduleBtn = Button("Schedule post", null, "primary")
+draftBtn = Button("Save draft", null, "tertiary")
+
+followup = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Show only Instagram performance")
+fu2 = FollowUpItem("Draft replies for waiting comments")
+fu3 = FollowUpItem("Compare earnings to last month")

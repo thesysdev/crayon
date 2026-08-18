@@ -1,0 +1,26 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","threshold-callout","search-section","list-header","items-list","reorder-banner"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Low Inventory Warnings","subtitle":"Items at or below their reorder threshold"}}}
+{"op":"add","path":"/elements/threshold-callout","value":{"type":"Callout","props":{"variant":"warning","title":"Warning threshold: 15 units","description":"Any item with 15 or fewer units remaining triggers a low-inventory warning and is listed below."}}}
+{"op":"add","path":"/state/threshold","value":15}
+{"op":"add","path":"/elements/search-section","value":{"type":"FormControl","props":{"label":"Search items","input":"search-input","hint":"Filter the low-inventory list by name or SKU"}}}
+{"op":"add","path":"/elements/search-input","value":{"type":"Input","props":{"name":"search","placeholder":"Search by name or SKU...","type":"text","value":{"$bindState":"/search"}}}}
+{"op":"add","path":"/state/search","value":""}
+{"op":"add","path":"/elements/list-header","value":{"type":"Heading","props":{"text":"Items running low","level":"h3"}}}
+{"op":"add","path":"/elements/items-list","value":{"type":"Card","props":{"direction":"column","gap":"m"},"repeat":{"statePath":"/items","key":"id"},"children":["item-row"]}}
+{"op":"add","path":"/elements/item-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between"},"children":["item-info","item-meta","reorder-btn"]}}
+{"op":"add","path":"/elements/item-info","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"children":["item-name","item-sku"]}}
+{"op":"add","path":"/elements/item-name","value":{"type":"TextContent","props":{"text":{"$template":"**${name}**"},"size":"large-heavy"}}}
+{"op":"add","path":"/elements/item-sku","value":{"type":"TextContent","props":{"text":{"$template":"SKU: ${sku} · Threshold: ${threshold} units"},"size":"small"}}}
+{"op":"add","path":"/elements/item-meta","value":{"type":"Card","props":{"direction":"column","gap":"xs","align":"end"},"children":["item-units","item-badge"]}}
+{"op":"add","path":"/elements/item-units","value":{"type":"TextContent","props":{"text":{"$template":"${remaining} units left"},"size":"large-heavy"}}}
+{"op":"add","path":"/elements/item-badge","value":{"type":"Badge","props":{"text":"Low stock","variant":"destructive"}}}
+{"op":"add","path":"/elements/reorder-btn","value":{"type":"Button","props":{"label":"Reorder","variant":"primary","size":"small"},"on":{"press":{"action":"pushState","params":{"statePath":"/reorders","value":{"id":"$id","name":{"$item":"name"}}}}}}}
+{"op":"add","path":"/state/items","value":[]}
+{"op":"add","path":"/state/items/0","value":{"id":"1","name":"Organic Coffee Beans 1kg","sku":"COF-1001","remaining":4,"threshold":15}}
+{"op":"add","path":"/state/items/1","value":{"id":"2","name":"Ceramic Mug White","sku":"MUG-2200","remaining":9,"threshold":15}}
+{"op":"add","path":"/state/items/2","value":{"id":"3","name":"Stainless Water Bottle","sku":"BTL-3050","remaining":12,"threshold":15}}
+{"op":"add","path":"/state/items/3","value":{"id":"4","name":"Cotton Tote Bag","sku":"BAG-4120","remaining":2,"threshold":15}}
+{"op":"add","path":"/state/items/4","value":{"id":"5","name":"Notebook A5 Lined","sku":"NBK-5077","remaining":15,"threshold":15}}
+{"op":"add","path":"/state/reorders","value":[]}
+{"op":"add","path":"/elements/reorder-banner","value":{"type":"Callout","props":{"variant":"success","title":"Reorder requested","description":"A purchase order has been queued for the selected item."},"visible":{"$state":"/reorders/0"}}}

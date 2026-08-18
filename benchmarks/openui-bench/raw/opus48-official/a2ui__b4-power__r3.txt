@@ -1,0 +1,132 @@
+I'll build a comprehensive power network operator console covering all 12 requirements.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "grid-console",
+      "catalogId": "thesys.dev:c1-openui"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "grid-console",
+      "components": [
+        { "id": "root", "component": "Card", "variant": "clear", "direction": "column", "gap": "l", "children": ["header", "alerts", "topRow", "genRow", "plantsCard", "outagesCard", "forecastCard", "maintCard", "controlsCard", "footer"] },
+
+        { "id": "header", "component": "CardHeader", "title": "Grid Operations Console", "subtitle": "Real-time network monitoring & control" },
+
+        { "id": "alerts", "component": "Card", "variant": "sunk", "direction": "column", "gap": "s", "children": ["alertsHead", "alert1", "alert2", "alert3"] },
+        { "id": "alertsHead", "component": "Heading", "text": "Live Alerts", "level": "h4" },
+        { "id": "alert1", "component": "Alert", "variant": "destructive", "title": "Frequency deviation 49.82 Hz", "description": "Northern interconnect — automatic response engaged (14:02)" },
+        { "id": "alert2", "component": "Alert", "variant": "warning", "title": "Load approaching peak threshold", "description": "System load at 91% of firm capacity (14:00)" },
+        { "id": "alert3", "component": "Alert", "variant": "info", "title": "Wind ramp detected", "description": "Coastal cluster +240 MW over 15 min (13:55)" },
+
+        { "id": "topRow", "component": "Card", "variant": "clear", "direction": "row", "gap": "l", "wrap": true, "children": ["loadCard", "capacityCard", "priceCard", "emissionsCard"] },
+
+        { "id": "loadCard", "component": "Card", "variant": "card", "direction": "column", "gap": "xs", "weight": 1, "children": ["loadLabel", "loadValue", "loadSub"] },
+        { "id": "loadLabel", "component": "TextContent", "text": "Current Network Load", "size": "small-heavy" },
+        { "id": "loadValue", "component": "Heading", "text": "42,180 MW", "level": "h2" },
+        { "id": "loadSub", "component": "Tag", "text": "▲ 1.4% vs 1h ago", "variant": "info", "size": "sm" },
+
+        { "id": "capacityCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "weight": 1, "children": ["capLabel", "capProgress", "capTag"] },
+        { "id": "capLabel", "component": "TextContent", "text": "Capacity Margin", "size": "small-heavy" },
+        { "id": "capProgress", "component": "Progress", "value": 91, "label": "91% of 46,350 MW firm capacity" },
+        { "id": "capTag", "component": "Tag", "text": "4,170 MW headroom", "variant": "warning", "size": "sm" },
+
+        { "id": "priceCard", "component": "Card", "variant": "card", "direction": "column", "gap": "xs", "weight": 1, "children": ["priceLabel", "priceValue", "priceSub"] },
+        { "id": "priceLabel", "component": "TextContent", "text": "Spot Price", "size": "small-heavy" },
+        { "id": "priceValue", "component": "Heading", "text": "$88.40 /MWh", "level": "h2" },
+        { "id": "priceSub", "component": "Tag", "text": "▲ $12.10 in peak window", "variant": "danger", "size": "sm" },
+
+        { "id": "emissionsCard", "component": "Card", "variant": "card", "direction": "column", "gap": "xs", "weight": 1, "children": ["emLabel", "emValue", "emSub"] },
+        { "id": "emLabel", "component": "TextContent", "text": "Emissions Today", "size": "small-heavy" },
+        { "id": "emValue", "component": "Heading", "text": "18,940 tCO₂", "level": "h2" },
+        { "id": "emSub", "component": "Tag", "text": "Intensity 289 g/kWh", "variant": "success", "size": "sm" },
+
+        { "id": "genRow", "component": "Card", "variant": "clear", "direction": "row", "gap": "l", "wrap": true, "children": ["genMixCard", "forecastMini"] },
+
+        { "id": "genMixCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "weight": 1, "children": ["genHead", "genPie"] },
+        { "id": "genHead", "component": "Heading", "text": "Generation Mix by Source", "level": "h4" },
+        { "id": "genPie", "component": "PieChart", "variant": "donut", "labels": ["Gas", "Nuclear", "Wind", "Solar", "Hydro", "Coal"], "values": [14200, 9800, 7600, 4100, 3900, 2580] },
+
+        { "id": "forecastMini", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "weight": 1, "children": ["fmHead", "fmBar"] },
+        { "id": "fmHead", "component": "Heading", "text": "Reserve vs Load (now)", "level": "h4" },
+        { "id": "fmBar", "component": "SingleStackedBarChart", "labels": ["Served Load", "Spinning Reserve", "Headroom"], "values": [42180, 1200, 2970] },
+
+        { "id": "plantsCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["plantsHead", "plantsTable"] },
+        { "id": "plantsHead", "component": "Heading", "text": "Plant Output & Status", "level": "h4" },
+        { "id": "plantsTable", "component": "Table", "columns": ["colPlant", "colType", "colOut", "colStatus"] },
+        { "id": "colPlant", "component": "Col", "label": "Plant", "type": "string", "data": ["Ravenswood CCGT", "Blackfell Nuclear", "Coastal Wind Cluster", "Sunfield Solar", "Highdam Hydro", "Ashgrove Coal"] },
+        { "id": "colType", "component": "Col", "label": "Source", "type": "string", "data": ["Gas", "Nuclear", "Wind", "Solar", "Hydro", "Coal"] },
+        { "id": "colOut", "component": "Col", "label": "Output (MW)", "type": "number", "data": [3120, 4900, 2540, 1780, 1950, 860] },
+        { "id": "colStatus", "component": "Col", "label": "Status", "type": "string", "data": ["Online", "Online", "Online", "Curtailed", "Online", "Reduced"] },
+
+        { "id": "outagesCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["outHead", "outTable"] },
+        { "id": "outHead", "component": "Heading", "text": "Active Outages", "level": "h4" },
+        { "id": "outTable", "component": "Table", "columns": ["outAsset", "outRegion", "outMw", "outEta"] },
+        { "id": "outAsset", "component": "Col", "label": "Asset", "type": "string", "data": ["Line 220kV L14", "Ashgrove Unit 2", "Eastbridge Transformer"] },
+        { "id": "outRegion", "component": "Col", "label": "Affected Region", "type": "string", "data": ["Northern", "Central", "Eastern"] },
+        { "id": "outMw", "component": "Col", "label": "Lost (MW)", "type": "number", "data": [430, 300, 180] },
+        { "id": "outEta", "component": "Col", "label": "Est. Restore", "type": "string", "data": ["16:30", "Tomorrow 08:00", "15:10"] },
+
+        { "id": "forecastCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["fcHead", "fcChart"] },
+        { "id": "fcHead", "component": "Heading", "text": "24-Hour Demand Forecast", "level": "h4" },
+        { "id": "fcChart", "component": "AreaChart", "variant": "natural", "xLabel": "Hour", "yLabel": "MW", "labels": ["00", "02", "04", "06", "08", "10", "12", "14", "16", "18", "20", "22"], "series": ["fcSeries"] },
+        { "id": "fcSeries", "component": "Series", "category": "Forecast Load", "values": [31000, 29500, 29000, 32000, 38000, 41000, 42500, 43800, 44200, 45100, 43000, 36000] },
+
+        { "id": "maintCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["mHead", "mList"] },
+        { "id": "mHead", "component": "Heading", "text": "Planned Maintenance — This Month", "level": "h4" },
+        { "id": "mList", "component": "ListBlock", "variant": "number", "items": ["m1", "m2", "m3"] },
+        { "id": "m1", "component": "ListItem", "title": "Blackfell Nuclear — Unit 1 refuel", "subtitle": "Mar 12–19 · Northern · -1,200 MW" },
+        { "id": "m2", "component": "ListItem", "title": "Highdam Hydro — turbine inspection", "subtitle": "Mar 21–23 · Western · -650 MW" },
+        { "id": "m3", "component": "ListItem", "title": "Eastbridge substation upgrade", "subtitle": "Mar 26–28 · Eastern · switching only" },
+
+        { "id": "controlsCard", "component": "Card", "variant": "sunk", "direction": "column", "gap": "m", "children": ["ctrlHead", "regionControl", "curtailForm"] },
+        { "id": "ctrlHead", "component": "Heading", "text": "Operator Controls", "level": "h4" },
+        { "id": "regionControl", "component": "FormControl", "label": "Focus Region", "hint": "Filters dashboards to the selected region", "input": "regionSelect" },
+        { "id": "regionSelect", "component": "Select", "name": "region", "placeholder": "All Regions", "items": ["rgAll", "rgN", "rgC", "rgE", "rgW"] },
+        { "id": "rgAll", "component": "SelectItem", "value": "all", "label": "All Regions" },
+        { "id": "rgN", "component": "SelectItem", "value": "north", "label": "Northern" },
+        { "id": "rgC", "component": "SelectItem", "value": "central", "label": "Central" },
+        { "id": "rgE", "component": "SelectItem", "value": "east", "label": "Eastern" },
+        { "id": "rgW", "component": "SelectItem", "value": "west", "label": "Western" },
+
+        { "id": "curtailForm", "component": "Form", "name": "curtailment", "buttons": "curtailBtns", "fields": ["cfPlant", "cfAmount", "cfReason"] },
+        { "id": "cfPlant", "component": "FormControl", "label": "Plant / Feeder", "input": "cfPlantSelect" },
+        { "id": "cfPlantSelect", "component": "Select", "name": "curtailPlant", "placeholder": "Select asset", "items": ["cp1", "cp2", "cp3", "cp4"] },
+        { "id": "cp1", "component": "SelectItem", "value": "ravenswood", "label": "Ravenswood CCGT" },
+        { "id": "cp2", "component": "SelectItem", "value": "coastal", "label": "Coastal Wind Cluster" },
+        { "id": "cp3", "component": "SelectItem", "value": "sunfield", "label": "Sunfield Solar" },
+        { "id": "cp4", "component": "SelectItem", "value": "ashgrove", "label": "Ashgrove Coal" },
+        { "id": "cfAmount", "component": "FormControl", "label": "Curtailment (MW)", "hint": "Amount to reduce output by", "input": "cfAmountInput" },
+        { "id": "cfAmountInput", "component": "Input", "name": "curtailMw", "type": "number", "placeholder": "e.g. 200" },
+        { "id": "cfReason", "component": "FormControl", "label": "Reason", "input": "cfReasonInput" },
+        { "id": "cfReasonInput", "component": "Input", "name": "curtailReason", "type": "text", "placeholder": "Congestion / oversupply / stability" },
+        { "id": "curtailBtns", "component": "Buttons", "direction": "row", "buttons": ["curtailSubmit", "curtailCancel"] },
+        { "id": "curtailSubmit", "component": "Button", "label": "Order Curtailment", "variant": "primary", "type": "destructive", "action": ["submitCurtailment"] },
+        { "id": "curtailCancel", "component": "Button", "label": "Clear", "variant": "tertiary" },
+
+        { "id": "footer", "component": "TextContent", "text": "Data refreshed 14:02:31 · Control area TSO-01 · All times local", "size": "small" }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+Here's your unified operator console. Each numbered requirement is covered:
+
+1. **Current load** — top-left KPI card (42,180 MW)
+2. **Closeness to capacity** — Capacity Margin progress bar (91%, 4,170 MW headroom)
+3. **Generation split by source** — donut chart of the generation mix
+4. **Each plant with output & status** — Plant Output & Status table
+5. **Outages with affected region** — Active Outages table with region column
+6. **24-hour demand forecast** — area chart
+7. **Current price/MWh** — Spot Price KPI card ($88.40)
+8. **Maintenance this month** — numbered planned-maintenance list
+9. **Live alerts** — alert banners at the top (frequency, load, wind ramp)
+10. **Focus on a region** — region Select control
+11. **Order curtailment** — curtailment form with a destructive "Order Curtailment" action
+12. **Emissions today** — Emissions KPI card (18,940 tCO₂)

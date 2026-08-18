@@ -1,0 +1,740 @@
+Here is a comprehensive single-screen analytics dashboard for your training platform, covering all requested features including active learners, completion rate, average quiz scores, cohort filtering, engagement trends, enrollment rankings, at-risk learners, and direct cohort messaging.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "training-analytics",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": {
+        "primaryColor": "#2563EB",
+        "agentDisplayName": "LMS Analytics Engine"
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "training-analytics",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "l",
+          "children": [
+            "header-section",
+            "kpi-section",
+            "main-tabs"
+          ]
+        },
+        {
+          "id": "header-section",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "justify": "between",
+          "align": "center",
+          "children": [
+            "header-titles",
+            "cohort-filter-container"
+          ]
+        },
+        {
+          "id": "header-titles",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "xs",
+          "children": [
+            "main-title",
+            "main-subtitle"
+          ]
+        },
+        {
+          "id": "main-title",
+          "component": "Heading",
+          "level": "h1",
+          "text": "Training Platform Analytics"
+        },
+        {
+          "id": "main-subtitle",
+          "component": "TextContent",
+          "text": "Real-time performance metrics, learner retention insights, and communication tools.",
+          "size": "small"
+        },
+        {
+          "id": "cohort-filter-container",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "align": "center",
+          "gap": "s",
+          "children": [
+            "cohort-select"
+          ]
+        },
+        {
+          "id": "cohort-select",
+          "component": "Select",
+          "name": "cohort_selector",
+          "placeholder": "Filter by Cohort...",
+          "value": "cohort_q1_2025",
+          "items": [
+            "cohort-opt-all",
+            "cohort-opt-q1",
+            "cohort-opt-q4",
+            "cohort-opt-eng",
+            "cohort-opt-exec"
+          ]
+        },
+        {
+          "id": "cohort-opt-all",
+          "component": "SelectItem",
+          "value": "all",
+          "label": "All Cohorts (Global)"
+        },
+        {
+          "id": "cohort-opt-q1",
+          "component": "SelectItem",
+          "value": "cohort_q1_2025",
+          "label": "Q1 2025 - Product Onboarding"
+        },
+        {
+          "id": "cohort-opt-q4",
+          "component": "SelectItem",
+          "value": "cohort_q4_2024",
+          "label": "Q4 2024 - Enterprise Engineering"
+        },
+        {
+          "id": "cohort-opt-eng",
+          "component": "SelectItem",
+          "value": "cohort_eng_lead",
+          "label": "Engineering Leadership Program"
+        },
+        {
+          "id": "cohort-opt-exec",
+          "component": "SelectItem",
+          "value": "cohort_exec_sec",
+          "label": "Security & Compliance 2025"
+        },
+        {
+          "id": "kpi-section",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "children": [
+            "kpi-card-active",
+            "kpi-card-completion",
+            "kpi-card-quiz"
+          ]
+        },
+        {
+          "id": "kpi-card-active",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "xs",
+          "children": [
+            "kpi-active-badge",
+            "kpi-active-value",
+            "kpi-active-label",
+            "kpi-active-trend"
+          ]
+        },
+        {
+          "id": "kpi-active-badge",
+          "component": "Badge",
+          "text": "Active Learners",
+          "variant": "default"
+        },
+        {
+          "id": "kpi-active-value",
+          "component": "Heading",
+          "level": "h2",
+          "text": "1,842"
+        },
+        {
+          "id": "kpi-active-label",
+          "component": "TextContent",
+          "text": "Learners active this week",
+          "size": "small"
+        },
+        {
+          "id": "kpi-active-trend",
+          "component": "Tag",
+          "text": "+12.4% vs last week",
+          "variant": "success",
+          "size": "sm"
+        },
+        {
+          "id": "kpi-card-completion",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "xs",
+          "children": [
+            "kpi-completion-badge",
+            "kpi-completion-value",
+            "kpi-completion-label",
+            "kpi-completion-progress"
+          ]
+        },
+        {
+          "id": "kpi-completion-badge",
+          "component": "Badge",
+          "text": "Completion Rate",
+          "variant": "secondary"
+        },
+        {
+          "id": "kpi-completion-value",
+          "component": "Heading",
+          "level": "h2",
+          "text": "78.5%"
+        },
+        {
+          "id": "kpi-completion-label",
+          "component": "TextContent",
+          "text": "Avg. course completion rate",
+          "size": "small"
+        },
+        {
+          "id": "kpi-completion-progress",
+          "component": "Progress",
+          "value": 78.5,
+          "label": "Target: 80%"
+        },
+        {
+          "id": "kpi-card-quiz",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "xs",
+          "children": [
+            "kpi-quiz-badge",
+            "kpi-quiz-value",
+            "kpi-quiz-label",
+            "kpi-quiz-trend"
+          ]
+        },
+        {
+          "id": "kpi-quiz-badge",
+          "component": "Badge",
+          "text": "Quiz Performance",
+          "variant": "outline"
+        },
+        {
+          "id": "kpi-quiz-value",
+          "component": "Heading",
+          "level": "h2",
+          "text": "84.2%"
+        },
+        {
+          "id": "kpi-quiz-label",
+          "component": "TextContent",
+          "text": "Average assessment score",
+          "size": "small"
+        },
+        {
+          "id": "kpi-quiz-trend",
+          "component": "Tag",
+          "text": "+3.1% overall score boost",
+          "variant": "info",
+          "size": "sm"
+        },
+        {
+          "id": "main-tabs",
+          "component": "Tabs",
+          "items": [
+            "tab-overview",
+            "tab-courses",
+            "tab-risk",
+            "tab-messaging"
+          ]
+        },
+        {
+          "id": "tab-overview",
+          "component": "TabItem",
+          "value": "overview",
+          "trigger": "Engagement & Trends",
+          "content": [
+            "engagement-card"
+          ]
+        },
+        {
+          "id": "engagement-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "engagement-header",
+            "engagement-chart"
+          ]
+        },
+        {
+          "id": "engagement-header",
+          "component": "CardHeader",
+          "title": "Learner Engagement (Past 8 Weeks)",
+          "subtitle": "Weekly active users (WAU) vs lesson completions across selected cohort"
+        },
+        {
+          "id": "engagement-chart",
+          "component": "LineChart",
+          "variant": "natural",
+          "xLabel": "Week",
+          "yLabel": "Learner Activity Count",
+          "labels": [
+            "Week 1",
+            "Week 2",
+            "Week 3",
+            "Week 4",
+            "Week 5",
+            "Week 6",
+            "Week 7",
+            "Week 8"
+          ],
+          "series": [
+            "series-active-users",
+            "series-completions"
+          ]
+        },
+        {
+          "id": "series-active-users",
+          "component": "Series",
+          "category": "Active Learners",
+          "values": [
+            1200,
+            1350,
+            1420,
+            1390,
+            1550,
+            1680,
+            1750,
+            1842
+          ]
+        },
+        {
+          "id": "series-completions",
+          "component": "Series",
+          "category": "Modules Completed",
+          "values": [
+            850,
+            920,
+            1100,
+            1050,
+            1280,
+            1400,
+            1510,
+            1620
+          ]
+        },
+        {
+          "id": "tab-courses",
+          "component": "TabItem",
+          "value": "courses",
+          "trigger": "Courses Ranking",
+          "content": [
+            "courses-card"
+          ]
+        },
+        {
+          "id": "courses-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "courses-header",
+            "courses-chart",
+            "courses-table-callout",
+            "courses-table"
+          ]
+        },
+        {
+          "id": "courses-header",
+          "component": "CardHeader",
+          "title": "Top Courses Ranked by Enrollment",
+          "subtitle": "Overview of total enrollments and completion status for active courses"
+        },
+        {
+          "id": "courses-chart",
+          "component": "HorizontalBarChart",
+          "variant": "grouped",
+          "xLabel": "Number of Learners",
+          "yLabel": "Course Title",
+          "labels": [
+            "Cloud Security Fundamentals",
+            "Full-Stack Web Dev Bootcamp",
+            "AI & Data Science Basics",
+            "DevOps Pipeline Engineering",
+            "Agile Leadership Principles"
+          ],
+          "series": [
+            "series-enrollment-total"
+          ]
+        },
+        {
+          "id": "series-enrollment-total",
+          "component": "Series",
+          "category": "Total Enrolled",
+          "values": [
+            840,
+            720,
+            650,
+            510,
+            430
+          ]
+        },
+        {
+          "id": "courses-table-callout",
+          "component": "TextContent",
+          "text": "Detailed Breakdown",
+          "size": "large-heavy"
+        },
+        {
+          "id": "courses-table",
+          "component": "Table",
+          "columns": [
+            "col-course-name",
+            "col-course-enrolled",
+            "col-course-completion",
+            "col-course-score"
+          ]
+        },
+        {
+          "id": "col-course-name",
+          "component": "Col",
+          "label": "Course Name",
+          "type": "string",
+          "data": [
+            "Cloud Security Fundamentals",
+            "Full-Stack Web Dev Bootcamp",
+            "AI & Data Science Basics",
+            "DevOps Pipeline Engineering",
+            "Agile Leadership Principles"
+          ]
+        },
+        {
+          "id": "col-course-enrolled",
+          "component": "Col",
+          "label": "Enrolled Learners",
+          "type": "number",
+          "data": [
+            840,
+            720,
+            650,
+            510,
+            430
+          ]
+        },
+        {
+          "id": "col-course-completion",
+          "component": "Col",
+          "label": "Completion Rate",
+          "type": "string",
+          "data": [
+            "82%",
+            "74%",
+            "89%",
+            "68%",
+            "91%"
+          ]
+        },
+        {
+          "id": "col-course-score",
+          "component": "Col",
+          "label": "Avg. Score",
+          "type": "string",
+          "data": [
+            "86.5%",
+            "81.0%",
+            "88.2%",
+            "79.4%",
+            "92.1%"
+          ]
+        },
+        {
+          "id": "tab-risk",
+          "component": "TabItem",
+          "value": "at_risk",
+          "trigger": "Learners at Risk",
+          "content": [
+            "risk-card"
+          ]
+        },
+        {
+          "id": "risk-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "risk-alert",
+            "risk-table"
+          ]
+        },
+        {
+          "id": "risk-alert",
+          "component": "Alert",
+          "variant": "warning",
+          "title": "5 Learners Flagged as High Dropout Risk",
+          "description": "Learners flagged below have missed 2+ assignments or had no platform activity for over 10 days."
+        },
+        {
+          "id": "risk-table",
+          "component": "Table",
+          "columns": [
+            "col-risk-learner",
+            "col-risk-cohort",
+            "col-risk-inactivity",
+            "col-risk-score",
+            "col-risk-status"
+          ]
+        },
+        {
+          "id": "col-risk-learner",
+          "component": "Col",
+          "label": "Learner Name",
+          "type": "string",
+          "data": [
+            "Alex Chen",
+            "Sarah Jenkins",
+            "Michael Ross",
+            "Priya Patel",
+            "David Kim"
+          ]
+        },
+        {
+          "id": "col-risk-cohort",
+          "component": "Col",
+          "label": "Current Cohort",
+          "type": "string",
+          "data": [
+            "Q1 2025 - Product Onboarding",
+            "Enterprise Engineering",
+            "Q1 2025 - Product Onboarding",
+            "Security & Compliance 2025",
+            "Engineering Leadership"
+          ]
+        },
+        {
+          "id": "col-risk-inactivity",
+          "component": "Col",
+          "label": "Inactivity Period",
+          "type": "string",
+          "data": [
+            "14 days",
+            "11 days",
+            "12 days",
+            "16 days",
+            "10 days"
+          ]
+        },
+        {
+          "id": "col-risk-score",
+          "component": "Col",
+          "label": "Quiz Avg.",
+          "type": "string",
+          "data": [
+            "52.0%",
+            "58.5%",
+            "61.0%",
+            "49.5%",
+            "64.0%"
+          ]
+        },
+        {
+          "id": "col-risk-status",
+          "component": "Col",
+          "label": "Risk Level",
+          "type": "string",
+          "data": [
+            "Critical",
+            "High",
+            "High",
+            "Critical",
+            "Medium"
+          ]
+        },
+        {
+          "id": "tab-messaging",
+          "component": "TabItem",
+          "value": "messaging",
+          "trigger": "Message Cohort",
+          "content": [
+            "messaging-card"
+          ]
+        },
+        {
+          "id": "messaging-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "messaging-header",
+            "messaging-form"
+          ]
+        },
+        {
+          "id": "messaging-header",
+          "component": "CardHeader",
+          "title": "Broadcast Cohort Communication",
+          "subtitle": "Send direct notifications, email reminders, or study nudges to selected cohort groups."
+        },
+        {
+          "id": "messaging-form",
+          "component": "Form",
+          "name": "cohort_message_form",
+          "fields": [
+            "field-target-cohort",
+            "field-recipient-filter",
+            "field-subject",
+            "field-body"
+          ],
+          "buttons": "form-buttons-group"
+        },
+        {
+          "id": "field-target-cohort",
+          "component": "FormControl",
+          "label": "Target Cohort Group",
+          "hint": "Select which cohort will receive this message.",
+          "input": "msg-select-cohort"
+        },
+        {
+          "id": "msg-select-cohort",
+          "component": "Select",
+          "name": "target_cohort_selection",
+          "placeholder": "Choose cohort...",
+          "value": "cohort_q1_2025",
+          "items": [
+            "msg-opt-q1",
+            "msg-opt-q4",
+            "msg-opt-eng",
+            "msg-opt-exec"
+          ]
+        },
+        {
+          "id": "msg-opt-q1",
+          "component": "SelectItem",
+          "value": "cohort_q1_2025",
+          "label": "Q1 2025 - Product Onboarding (142 learners)"
+        },
+        {
+          "id": "msg-opt-q4",
+          "component": "SelectItem",
+          "value": "cohort_q4_2024",
+          "label": "Q4 2024 - Enterprise Engineering (98 learners)"
+        },
+        {
+          "id": "msg-opt-eng",
+          "component": "SelectItem",
+          "value": "cohort_eng_lead",
+          "label": "Engineering Leadership Program (45 learners)"
+        },
+        {
+          "id": "msg-opt-exec",
+          "component": "SelectItem",
+          "value": "cohort_exec_sec",
+          "label": "Security & Compliance 2025 (210 learners)"
+        },
+        {
+          "id": "field-recipient-filter",
+          "component": "FormControl",
+          "label": "Recipient Sub-Group",
+          "hint": "Filter specific members within the cohort",
+          "input": "msg-radio-recipients"
+        },
+        {
+          "id": "msg-radio-recipients",
+          "component": "RadioGroup",
+          "name": "recipient_filter_type",
+          "defaultValue": "all_cohort",
+          "items": [
+            "radio-opt-all",
+            "radio-opt-atrisk",
+            "radio-opt-behind"
+          ]
+        },
+        {
+          "id": "radio-opt-all",
+          "component": "RadioItem",
+          "value": "all_cohort",
+          "label": "All Members in Cohort",
+          "description": "Send broadcast to every active learner in cohort."
+        },
+        {
+          "id": "radio-opt-atrisk",
+          "component": "RadioItem",
+          "value": "at_risk_only",
+          "label": "At-Risk Learners Only",
+          "description": "Send gentle nudges to members with low activity or missed deadlines."
+        },
+        {
+          "id": "radio-opt-behind",
+          "component": "RadioItem",
+          "value": "behind_schedule",
+          "label": "Behind Schedule",
+          "description": "Target learners who are <50% completed on current modules."
+        },
+        {
+          "id": "field-subject",
+          "component": "FormControl",
+          "label": "Message Title / Subject",
+          "input": "msg-input-subject"
+        },
+        {
+          "id": "msg-input-subject",
+          "component": "Input",
+          "name": "message_subject",
+          "placeholder": "e.g., Important: Weekly Quiz 3 Deadline & Support Resources",
+          "type": "text",
+          "value": "Reminder: Complete Module 4 Exercises & Quiz"
+        },
+        {
+          "id": "field-body",
+          "component": "FormControl",
+          "label": "Message Content",
+          "hint": "Markdown and personalization variables like {{first_name}} are supported.",
+          "input": "msg-textarea-body"
+        },
+        {
+          "id": "msg-textarea-body",
+          "component": "TextArea",
+          "name": "message_body",
+          "placeholder": "Write your announcement or reminder message here...",
+          "rows": 5,
+          "value": "Hi {{first_name}},\n\nWe noticed you haven't had a chance to log in recently. Module 4 is crucial for upcoming projects! Please review the study materials and complete Quiz 4 by Friday midnight.\n\nReach out to your mentor if you need help."
+        },
+        {
+          "id": "form-buttons-group",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": [
+            "btn-send-message",
+            "btn-save-draft"
+          ]
+        },
+        {
+          "id": "btn-send-message",
+          "component": "Button",
+          "label": "Send Message to Cohort",
+          "variant": "primary",
+          "size": "medium"
+        },
+        {
+          "id": "btn-save-draft",
+          "component": "Button",
+          "label": "Save as Announcement Template",
+          "variant": "secondary",
+          "size": "medium"
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>

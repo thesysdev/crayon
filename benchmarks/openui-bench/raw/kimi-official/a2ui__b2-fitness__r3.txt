@@ -1,0 +1,70 @@
+Here's a daily fitness summary screen covering all four items:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "fitness-summary",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#16A34A",
+      "agentDisplayName": "FitTrack"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "fitness-summary",
+    "components": [
+      { "id": "root", "component": "Card", "variant": "clear", "direction": "column", "gap": "l", "children": ["header", "stepsCard", "calCard", "weekCard", "logCard"] },
+
+      { "id": "header", "component": "CardHeader", "title": "Today's Summary", "subtitle": "Tuesday, June 10" },
+
+      { "id": "stepsCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["stepsTitle", "stepsProgress", "stepsText"] },
+      { "id": "stepsTitle", "component": "TextContent", "text": "**Steps** — 8,432 / 10,000", "size": "large-heavy" },
+      { "id": "stepsProgress", "component": "Progress", "value": 84, "label": "84% of daily goal" },
+      { "id": "stepsText", "component": "TextContent", "text": "1,568 steps to go. A 15-minute walk will get you there!", "size": "small" },
+
+      { "id": "calCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["calTitle", "calText"] },
+      { "id": "calTitle", "component": "TextContent", "text": "**Calories Burned**", "size": "large-heavy" },
+      { "id": "calText", "component": "TextContent", "text": "🔥 **612 kcal** total today — 420 from workouts, 192 from daily activity.", "size": "default" },
+
+      { "id": "weekCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["weekTitle", "weekChart", "weekSeries"] },
+      { "id": "weekTitle", "component": "TextContent", "text": "**Workouts — Past 7 Days** (minutes)", "size": "large-heavy" },
+      { "id": "weekChart", "component": "BarChart", "labels": ["Wed", "Thu", "Fri", "Sat", "Sun", "Mon", "Tue"], "series": ["weekSeries"], "xLabel": "Day", "yLabel": "Minutes" },
+      { "id": "weekSeries", "component": "Series", "category": "Workout minutes", "values": [30, 0, 45, 60, 20, 0, 35] },
+
+      { "id": "logCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["logTitle", "logForm"] },
+      { "id": "logTitle", "component": "TextContent", "text": "**Log a New Workout**", "size": "large-heavy" },
+      { "id": "logForm", "component": "Form", "name": "logWorkout", "buttons": "logButtons", "fields": ["typeControl", "durationControl", "intensityControl"] },
+      { "id": "typeControl", "component": "FormControl", "label": "Workout type", "input": "typeSelect", "hint": "Choose the activity you did" },
+      { "id": "typeSelect", "component": "Select", "name": "workoutType", "placeholder": "Select activity", "items": ["typeRun", "typeBike", "typeSwim", "typeLift", "typeYoga"] },
+      { "id": "typeRun", "component": "SelectItem", "value": "run", "label": "Running" },
+      { "id": "typeBike", "component": "SelectItem", "value": "bike", "label": "Cycling" },
+      { "id": "typeSwim", "component": "SelectItem", "value": "swim", "label": "Swimming" },
+      { "id": "typeLift", "component": "SelectItem", "value": "lift", "label": "Strength Training" },
+      { "id": "typeYoga", "component": "SelectItem", "value": "yoga", "label": "Yoga" },
+      { "id": "durationControl", "component": "FormControl", "label": "Duration (minutes)", "input": "durationInput" },
+      { "id": "durationInput", "component": "Input", "name": "duration", "type": "number", "placeholder": "e.g. 30" },
+      { "id": "intensityControl", "component": "FormControl", "label": "Intensity", "input": "intensityGroup" },
+      { "id": "intensityGroup", "component": "RadioGroup", "name": "intensity", "defaultValue": "medium", "items": ["intLow", "intMed", "intHigh"] },
+      { "id": "intLow", "component": "RadioItem", "label": "Light", "description": "Easy pace, can talk comfortably", "value": "low" },
+      { "id": "intMed", "component": "RadioItem", "label": "Moderate", "description": "Steady effort, slightly breathless", "value": "medium" },
+      { "id": "intHigh", "component": "RadioItem", "label": "Intense", "description": "Max effort, hard to talk", "value": "high" },
+      { "id": "logButtons", "component": "Buttons", "buttons": ["logSubmit"] },
+      { "id": "logSubmit", "component": "Button", "label": "Log Workout", "variant": "primary" }
+    ]
+  }
+}
+</a2ui-json>
+
+This single screen covers all four requirements:
+
+1. **Steps vs. goal** — a progress bar showing 8,432 / 10,000 steps (84%) with an encouraging nudge.
+2. **Calories burned** — 612 kcal broken down into workout vs. daily activity calories.
+3. **Weekly workouts** — a bar chart of workout minutes across the past 7 days.
+4. **Log a workout** — a form with activity type, duration, and intensity, plus a submit button.

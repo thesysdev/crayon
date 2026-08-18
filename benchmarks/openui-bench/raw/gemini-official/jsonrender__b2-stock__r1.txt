@@ -1,0 +1,44 @@
+{"op":"add","path":"/root","value":"container"}
+{"op":"add","path":"/elements/container","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","alert-banner","controls-card","inventory-list","followup"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Low Inventory Alerts","subtitle":"Monitor stock thresholds, search items, and generate restock purchase orders."}}}
+{"op":"add","path":"/elements/alert-banner","value":{"type":"Alert","props":{"title":"Stock Level Warning","description":"4 products are currently below their reorder threshold. Immediate restock recommended to prevent stockouts.","variant":"warning"}}}
+{"op":"add","path":"/elements/controls-card","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"m"},"children":["controls-row"]}}
+{"op":"add","path":"/elements/controls-row","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center","justify":"between"},"children":["search-control","threshold-control"]}}
+{"op":"add","path":"/elements/search-control","value":{"type":"FormControl","props":{"label":"Search Inventory","input":"search-input","hint":"Filter by product name or SKU"}}}
+{"op":"add","path":"/elements/search-input","value":{"type":"Input","props":{"name":"search","placeholder":"Search product name or SKU...","value":{"$bindState":"/searchQuery"}}}}
+{"op":"add","path":"/state/searchQuery","value":""}
+{"op":"add","path":"/elements/threshold-control","value":{"type":"FormControl","props":{"label":"Warning Threshold (Units)","input":"threshold-slider","hint":"Set low-stock trigger limit"}}}
+{"op":"add","path":"/elements/threshold-slider","value":{"type":"Slider","props":{"name":"threshold","variant":"discrete","min":5,"max":50,"step":5,"value":{"$bindState":"/globalThreshold"}}}}
+{"op":"add","path":"/state/globalThreshold","value":[15]}
+{"op":"add","path":"/elements/inventory-list","value":{"type":"Card","props":{"direction":"column","gap":"m"},"repeat":{"statePath":"/inventory","key":"id"},"children":["inventory-item-card"]}}
+{"op":"add","path":"/elements/inventory-item-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["item-main-row","reorder-drawer"]}}
+{"op":"add","path":"/elements/item-main-row","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center","justify":"between"},"children":["item-info","stock-metrics","quick-actions"]}}
+{"op":"add","path":"/elements/item-info","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"children":["item-title-row","item-sku"]}}
+{"op":"add","path":"/elements/item-title-row","value":{"type":"Card","props":{"direction":"row","gap":"s","align":"center"},"children":["item-name","item-status-badge"]}}
+{"op":"add","path":"/elements/item-name","value":{"type":"Heading","props":{"text":{"$item":"name"},"level":"h4"}}}
+{"op":"add","path":"/elements/item-status-badge","value":{"type":"Badge","props":{"text":{"$item":"status"},"variant":"destructive"}}}
+{"op":"add","path":"/elements/item-sku","value":{"type":"TextContent","props":{"text":{"$template":"SKU: ${sku} | Category: ${category}"},"size":"small"}}}
+{"op":"add","path":"/elements/stock-metrics","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"children":["units-text","stock-progress"]}}
+{"op":"add","path":"/elements/units-text","value":{"type":"TextContent","props":{"text":{"$template":"**${remaining}** units left (Threshold: ${threshold})"},"size":"default"}}}
+{"op":"add","path":"/elements/stock-progress","value":{"type":"Progress","props":{"value":{"$item":"stockPercent"},"label":"Stock Level"}}}
+{"op":"add","path":"/elements/quick-actions","value":{"type":"Card","props":{"direction":"row","gap":"s","align":"center"},"children":["quick-reorder-button"]}}
+{"op":"add","path":"/elements/quick-reorder-button","value":{"type":"Button","props":{"label":"Instant Reorder (+50)","variant":"primary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/inventory/0/remaining","value":53}}}}}
+{"op":"add","path":"/elements/reorder-drawer","value":{"type":"DrawerBlock","props":{"triggerLabel":"Configure Custom Reorder","title":"Create Purchase Order","description":"Adjust quantity and select supplier to send an automated reorder request.","content":["po-form"]}}}
+{"op":"add","path":"/elements/po-form","value":{"type":"Form","props":{"name":"reorderForm","buttons":"po-buttons","fields":["po-supplier-control","po-qty-control"]}}}
+{"op":"add","path":"/elements/po-supplier-control","value":{"type":"FormControl","props":{"label":"Supplier","input":"po-supplier-select"}}}
+{"op":"add","path":"/elements/po-supplier-select","value":{"type":"Select","props":{"name":"supplier","placeholder":"Select vendor","items":["vendor-1","vendor-2"]}}}
+{"op":"add","path":"/elements/vendor-1","value":{"type":"SelectItem","props":{"label":"Acme Wholesalers Ltd","value":"acme"}}}
+{"op":"add","path":"/elements/vendor-2","value":{"type":"SelectItem","props":{"label":"Global Supply Co","value":"global"}}}
+{"op":"add","path":"/elements/po-qty-control","value":{"type":"FormControl","props":{"label":"Order Quantity","input":"po-qty-input"}}}
+{"op":"add","path":"/elements/po-qty-input","value":{"type":"Input","props":{"name":"quantity","type":"number","placeholder":"100","value":"100"}}}
+{"op":"add","path":"/elements/po-buttons","value":{"type":"Buttons","props":{"buttons":["submit-po-btn"]}}}
+{"op":"add","path":"/elements/submit-po-btn","value":{"type":"Button","props":{"label":"Submit Reorder","variant":"primary"}}}
+{"op":"add","path":"/state/inventory","value":[]}
+{"op":"add","path":"/state/inventory/0","value":{"id":"inv-1","name":"Wireless Mechanical Keyboard","sku":"KBD-WM-001","category":"Electronics","remaining":3,"threshold":15,"stockPercent":20,"status":"Critical Low"}}
+{"op":"add","path":"/state/inventory/1","value":{"id":"inv-2","name":"Ergonomic Noise-Canceling Headphones","sku":"AUD-NC-089","category":"Electronics","remaining":5,"threshold":15,"stockPercent":33,"status":"Low Stock"}}
+{"op":"add","path":"/state/inventory/2","value":{"id":"inv-3","name":"USB-C Fast Charging Hub (7-in-1)","sku":"ACC-HUB-042","category":"Accessories","remaining":8,"threshold":20,"stockPercent":40,"status":"Low Stock"}}
+{"op":"add","path":"/state/inventory/3","value":{"id":"inv-4","name":"Ultra-Slim Monitor Stand","sku":"DSK-MNT-012","category":"Office Furniture","remaining":2,"threshold":10,"stockPercent":20,"status":"Critical Low"}}
+{"op":"add","path":"/elements/followup","value":{"type":"FollowUpBlock","props":{"items":["f1","f2","f3"]}}}
+{"op":"add","path":"/elements/f1","value":{"type":"FollowUpItem","props":{"text":"Show full purchase order history"}}}
+{"op":"add","path":"/elements/f2","value":{"type":"FollowUpItem","props":{"text":"Adjust automatic threshold calculations"}}}
+{"op":"add","path":"/elements/f3","value":{"type":"FollowUpItem","props":{"text":"Export low stock items to CSV"}}}

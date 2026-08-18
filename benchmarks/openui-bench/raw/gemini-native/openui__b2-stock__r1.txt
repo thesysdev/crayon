@@ -1,0 +1,28 @@
+root = Card([header, warningAlert, searchField, inventoryTable, followUps])
+
+header = CardHeader("Low Inventory Warning", "Items requiring immediate reorder or replenishment")
+
+warningAlert = Callout("warning", "Automatic Low Stock Trigger", "Warning threshold is currently set to 15 units. Items at or below this level are flagged below.")
+
+searchField = FormControl("Search Inventory", searchInput, "Filter items by SKU, product name, or category")
+searchInput = Input("item_search", "Search by name, SKU, or category...", "text")
+
+inventoryTable = Table([skuCol, nameCol, categoryCol, stockCol, statusCol, reorderCol])
+
+skuCol = Col("SKU", ["PRD-00124", "PRD-00892", "PRD-00311", "PRD-00543", "PRD-00915"])
+nameCol = Col("Product Name", ["Wireless Ergonomic Mouse", "USB-C Mechanical Keyboard", "27\" 4K Monitor Stand", "Noise-Canceling Headphones", "Braided Charging Cable 6ft"])
+categoryCol = Col("Category", ["Peripherals", "Peripherals", "Accessories", "Audio", "Accessories"])
+stockCol = Col("Remaining Units", [3, 5, 8, 11, 14])
+statusCol = Col("Status", ["Critical (3)", "Critical (5)", "Low (8)", "Low (11)", "Low (14)"])
+reorderCol = Col("Quick Reorder", [reorder1, reorder2, reorder3, reorder4, reorder5])
+
+reorder1 = Button("Reorder Mouse", null, "primary", "normal", "small")
+reorder2 = Button("Reorder Keyboard", null, "primary", "normal", "small")
+reorder3 = Button("Reorder Stand", null, "secondary", "normal", "small")
+reorder4 = Button("Reorder Headphones", null, "secondary", "normal", "small")
+reorder5 = Button("Reorder Cable", null, "secondary", "normal", "small")
+
+followUps = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Adjust low-stock warning threshold")
+fu2 = FollowUpItem("View recent purchase orders")
+fu3 = FollowUpItem("Export low stock report to CSV")

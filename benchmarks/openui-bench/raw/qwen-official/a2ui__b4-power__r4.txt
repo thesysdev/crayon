@@ -1,0 +1,593 @@
+
+
+Here's a comprehensive power network operator's console covering all 12 requirements:
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "power-network-console",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": {
+        "primaryColor": "#0EA5E9",
+        "agentDisplayName": "GridOps Console"
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "power-network-console",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "children": ["header", "alerts-section", "metrics-row", "charts-row", "plants-section", "outages-section", "maintenance-section", "controls-row"],
+          "direction": "column",
+          "gap": "m",
+          "variant": "card"
+        },
+        {
+          "id": "header",
+          "component": "CardHeader",
+          "title": "⚡ Power Network Operations Console",
+          "subtitle": "National Grid — Real-time Monitoring & Control"
+        },
+        {
+          "id": "alerts-section",
+          "component": "Card",
+          "children": ["alert-1", "alert-2", "alert-3"],
+          "direction": "column",
+          "gap": "s",
+          "variant": "sunk"
+        },
+        {
+          "id": "alert-1",
+          "component": "Alert",
+          "variant": "destructive",
+          "title": "CRITICAL: Transformer T-4412 overloaded in North East region",
+          "description": "Load at 112% rated capacity. Automatic load shedding initiated. Dispatch team notified at 14:32 UTC."
+        },
+        {
+          "id": "alert-2",
+          "component": "Alert",
+          "variant": "warning",
+          "title": "WARNING: Wind generation dropping faster than forecast",
+          "description": "Offshore wind output down 340 MW in last 30 minutes. Reserve margin tightening. Gas peakers on standby."
+        },
+        {
+          "id": "alert-3",
+          "component": "Alert",
+          "variant": "info",
+          "title": "INFO: Demand response event triggered — Industrial sector",
+          "description": "45 MW of curtailable load activated across 3 sites. Expected duration: 2 hours."
+        },
+        {
+          "id": "metrics-row",
+          "component": "Card",
+          "children": ["metric-load", "metric-capacity", "metric-price", "metric-emissions"],
+          "direction": "row",
+          "gap": "m",
+          "variant": "clear"
+        },
+        {
+          "id": "metric-load",
+          "component": "Card",
+          "children": ["load-title", "load-value", "load-sub"],
+          "direction": "column",
+          "gap": "xs",
+          "variant": "sunk",
+          "weight": 1
+        },
+        {
+          "id": "load-title",
+          "component": "TextContent",
+          "text": "**Current Network Load**",
+          "size": "small"
+        },
+        {
+          "id": "load-value",
+          "component": "TextContent",
+          "text": "42,847 MW",
+          "size": "large-heavy"
+        },
+        {
+          "id": "load-sub",
+          "component": "TextContent",
+          "text": "↑ 1,203 MW vs. 1 hour ago",
+          "size": "small"
+        },
+        {
+          "id": "metric-capacity",
+          "component": "Card",
+          "children": ["cap-title", "cap-progress", "cap-value"],
+          "direction": "column",
+          "gap": "xs",
+          "variant": "sunk",
+          "weight": 1
+        },
+        {
+          "id": "cap-title",
+          "component": "TextContent",
+          "text": "**Capacity Utilisation**",
+          "size": "small"
+        },
+        {
+          "id": "cap-progress",
+          "component": "Progress",
+          "value": 83.7,
+          "label": "83.7% of 51,200 MW"
+        },
+        {
+          "id": "cap-value",
+          "component": "TextContent",
+          "text": "Reserve margin: 8,353 MW (16.3%)",
+          "size": "small"
+        },
+        {
+          "id": "metric-price",
+          "component": "Card",
+          "children": ["price-title", "price-value", "price-sub"],
+          "direction": "column",
+          "gap": "xs",
+          "variant": "sunk",
+          "weight": 1
+        },
+        {
+          "id": "price-title",
+          "component": "TextContent",
+          "text": "**Spot Price**",
+          "size": "small"
+        },
+        {
+          "id": "price-value",
+          "component": "TextContent",
+          "text": "$67.42 /MWh",
+          "size": "large-heavy"
+        },
+        {
+          "id": "price-sub",
+          "component": "TextContent",
+          "text": "↑ $4.18 from previous settlement period",
+          "size": "small"
+        },
+        {
+          "id": "metric-emissions",
+          "component": "Card",
+          "children": ["em-title", "em-value", "em-sub"],
+          "direction": "column",
+          "gap": "xs",
+          "variant": "sunk",
+          "weight": 1
+        },
+        {
+          "id": "em-title",
+          "component": "TextContent",
+          "text": "**CO₂ Emissions Today**",
+          "size": "small"
+        },
+        {
+          "id": "em-value",
+          "component": "TextContent",
+          "text": "12,847 t",
+          "size": "large-heavy"
+        },
+        {
+          "id": "em-sub",
+          "component": "TextContent",
+          "text": "Carbon intensity: 299 g/kWh",
+          "size": "small"
+        },
+        {
+          "id": "charts-row",
+          "component": "Card",
+          "children": ["gen-split-card", "forecast-card"],
+          "direction": "row",
+          "gap": "m",
+          "variant": "clear"
+        },
+        {
+          "id": "gen-split-card",
+          "component": "Card",
+          "children": ["gen-title", "gen-chart"],
+          "direction": "column",
+          "gap": "s",
+          "variant": "sunk",
+          "weight": 1
+        },
+        {
+          "id": "gen-title",
+          "component": "TextContent",
+          "text": "**Generation Mix by Source**",
+          "size": "default"
+        },
+        {
+          "id": "gen-chart",
+          "component": "PieChart",
+          "labels": ["Natural Gas", "Wind", "Solar", "Nuclear", "Hydro", "Coal"],
+          "values": [16282, 10283, 6427, 5142, 3428, 1285],
+          "variant": "donut"
+        },
+        {
+          "id": "forecast-card",
+          "component": "Card",
+          "children": ["forecast-title", "forecast-chart"],
+          "direction": "column",
+          "gap": "s",
+          "variant": "sunk",
+          "weight": 2
+        },
+        {
+          "id": "forecast-title",
+          "component": "TextContent",
+          "text": "**24-Hour Demand Forecast**",
+          "size": "default"
+        },
+        {
+          "id": "forecast-chart",
+          "component": "AreaChart",
+          "labels": ["00:00", "02:00", "04:00", "06:00", "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00", "22:00", "00:00"],
+          "series": ["forecast-actual", "forecast-predicted"],
+          "variant": "natural",
+          "xLabel": "Time (UTC)",
+          "yLabel": "Demand (MW)"
+        },
+        {
+          "id": "forecast-actual",
+          "component": "Series",
+          "category": "Actual / Nowcast",
+          "values": [31200, 28400, 27100, 29800, 36500, 41200, 43800, 42847, null, null, null, null, null]
+        },
+        {
+          "id": "forecast-predicted",
+          "component": "Series",
+          "category": "Forecast",
+          "values": [null, null, null, null, null, null, null, 42847, 44100, 46800, 45200, 39800, 33500]
+        },
+        {
+          "id": "plants-section",
+          "component": "Card",
+          "children": ["plants-title", "plants-table"],
+          "direction": "column",
+          "gap": "s",
+          "variant": "sunk"
+        },
+        {
+          "id": "plants-title",
+          "component": "TextContent",
+          "text": "**Generation Plant Status**",
+          "size": "default"
+        },
+        {
+          "id": "plants-table",
+          "component": "Table",
+          "columns": ["col-plant", "col-source", "col-output", "col-capacity-pct", "col-status", "col-region"]
+        },
+        {
+          "id": "col-plant",
+          "component": "Col",
+          "label": "Plant",
+          "data": ["Drax Unit 4", "Hornsea Two", "Sizewell B", "Pembroke CCGT", "Cruachan", "Ratcliffe Unit 2", "Dogger Bank A", "West Burton B"],
+          "type": "string"
+        },
+        {
+          "id": "col-source",
+          "component": "Col",
+          "label": "Source",
+          "data": ["Biomass", "Offshore Wind", "Nuclear", "Gas (CCGT)", "Hydro (Pumped)", "Coal", "Offshore Wind", "Gas (CCGT)"],
+          "type": "string"
+        },
+        {
+          "id": "col-output",
+          "component": "Col",
+          "label": "Output (MW)",
+          "data": [645, 1386, 1198, 1240, 220, 485, 897, 612],
+          "type": "number"
+        },
+        {
+          "id": "col-capacity-pct",
+          "component": "Col",
+          "label": "% of Rated",
+          "data": ["92%", "100%", "98%", "78%", "55%", "61%", "75%", "64%"],
+          "type": "string"
+        },
+        {
+          "id": "col-status",
+          "component": "Col",
+          "label": "Status",
+          "data": ["🟢 Online", "🟢 Online", "🟢 Online", "🟢 Online", "🟡 Reduced", "🟢 Online", "🟡 Derated", "🟢 Online"],
+          "type": "string"
+        },
+        {
+          "id": "col-region",
+          "component": "Col",
+          "label": "Region",
+          "data": ["Yorkshire", "North Sea", "East Anglia", "South Wales", "Scotland", "East Midlands", "North Sea", "East Midlands"],
+          "type": "string"
+        },
+        {
+          "id": "outages-section",
+          "component": "Card",
+          "children": ["outages-title", "outages-table"],
+          "direction": "column",
+          "gap": "s",
+          "variant": "sunk"
+        },
+        {
+          "id": "outages-title",
+          "component": "TextContent",
+          "text": "**Active Outages**",
+          "size": "default"
+        },
+        {
+          "id": "outages-table",
+          "component": "Table",
+          "columns": ["col-outage-id", "col-outage-asset", "col-outage-region", "col-outage-impact", "col-outage-started", "col-outage-eta"]
+        },
+        {
+          "id": "col-outage-id",
+          "component": "Col",
+          "label": "ID",
+          "data": ["OUT-2847", "OUT-2851", "OUT-2853"],
+          "type": "string"
+        },
+        {
+          "id": "col-outage-asset",
+          "component": "Col",
+          "label": "Asset",
+          "data": ["400kV Line — Feeder 7A", "Substation Transformer T-4412", "132kV Cable — Section 12C"],
+          "type": "string"
+        },
+        {
+          "id": "col-outage-region",
+          "component": "Col",
+          "label": "Affected Region",
+          "data": ["North East", "North East", "South West"],
+          "type": "string"
+        },
+        {
+          "id": "col-outage-impact",
+          "component": "Col",
+          "label": "Impact",
+          "data": ["~180 MW constrained", "~95 MW at risk", "~42 MW reduced supply"],
+          "type": "string"
+        },
+        {
+          "id": "col-outage-started",
+          "component": "Col",
+          "label": "Started",
+          "data": ["11:42 UTC", "14:32 UTC", "09:15 UTC"],
+          "type": "string"
+        },
+        {
+          "id": "col-outage-eta",
+          "component": "Col",
+          "label": "Est. Restoration",
+          "data": ["18:00 UTC", "22:00 UTC", "Tomorrow 06:00"],
+          "type": "string"
+        },
+        {
+          "id": "maintenance-section",
+          "component": "Card",
+          "children": ["maint-title", "maint-table"],
+          "direction": "column",
+          "gap": "s",
+          "variant": "sunk"
+        },
+        {
+          "id": "maint-title",
+          "component": "TextContent",
+          "text": "**Planned Maintenance — This Month**",
+          "size": "default"
+        },
+        {
+          "id": "maint-table",
+          "component": "Table",
+          "columns": ["col-maint-asset", "col-maint-type", "col-maint-window", "col-maint-capacity", "col-maint-status"]
+        },
+        {
+          "id": "col-maint-asset",
+          "component": "Col",
+          "label": "Asset",
+          "data": ["Sizewell B — Refuelling Outage", "Drax Unit 2 — Boiler Inspection", "400kV OHL — Pylon 118-124 Respray", "Pembroke CCGT — GT13 Hot Gas Path"],
+          "type": "string"
+        },
+        {
+          "id": "col-maint-type",
+          "component": "Col",
+          "label": "Type",
+          "data": ["Planned Outage", "Planned Outage", "Live-line Work", "Planned Outage"],
+          "type": "string"
+        },
+        {
+          "id": "col-maint-window",
+          "component": "Col",
+          "label": "Window",
+          "data": ["Jun 2 – Jun 28", "Jun 10 – Jun 18", "Jun 14 – Jun 16", "Jun 20 – Jul 4"],
+          "type": "string"
+        },
+        {
+          "id": "col-maint-capacity",
+          "component": "Col",
+          "label": "Capacity Out",
+          "data": ["1,198 MW", "660 MW", "0 MW (line work)", "620 MW"],
+          "type": "string"
+        },
+        {
+          "id": "col-maint-status",
+          "component": "Col",
+          "label": "Status",
+          "data": ["🔵 In Progress", "🔵 In Progress", "🟡 Scheduled", "🟡 Scheduled"],
+          "type": "string"
+        },
+        {
+          "id": "controls-row",
+          "component": "Card",
+          "children": ["region-control", "curtailment-control"],
+          "direction": "row",
+          "gap": "m",
+          "variant": "clear"
+        },
+        {
+          "id": "region-control",
+          "component": "Card",
+          "children": ["region-label", "region-select"],
+          "direction": "column",
+          "gap": "s",
+          "variant": "sunk",
+          "weight": 1
+        },
+        {
+          "id": "region-label",
+          "component": "TextContent",
+          "text": "**🔍 Focus Region**",
+          "size": "default"
+        },
+        {
+          "id": "region-select",
+          "component": "Select",
+          "name": "region_focus",
+          "placeholder": "Select a region to filter…",
+          "items": ["region-all", "region-ne", "region-nw", "region-yorks", "region-em", "region-wm", "region-ea", "region-sw", "region-se", "region-scot", "region-wales"]
+        },
+        {
+          "id": "region-all",
+          "component": "SelectItem",
+          "value": "all",
+          "label": "All Regions (National View)"
+        },
+        {
+          "id": "region-ne",
+          "component": "SelectItem",
+          "value": "north_east",
+          "label": "North East"
+        },
+        {
+          "id": "region-nw",
+          "component": "SelectItem",
+          "value": "north_west",
+          "label": "North West"
+        },
+        {
+          "id": "region-yorks",
+          "component": "SelectItem",
+          "value": "yorkshire",
+          "label": "Yorkshire & Humber"
+        },
+        {
+          "id": "region-em",
+          "component": "SelectItem",
+          "value": "east_midlands",
+          "label": "East Midlands"
+        },
+        {
+          "id": "region-wm",
+          "component": "SelectItem",
+          "value": "west_midlands",
+          "label": "West Midlands"
+        },
+        {
+          "id": "region-ea",
+          "component": "SelectItem",
+          "value": "east_anglia",
+          "label": "East Anglia"
+        },
+        {
+          "id": "region-sw",
+          "component": "SelectItem",
+          "value": "south_west",
+          "label": "South West"
+        },
+        {
+          "id": "region-se",
+          "component": "SelectItem",
+          "value": "south_east",
+          "label": "South East"
+        },
+        {
+          "id": "region-scot",
+          "component": "SelectItem",
+          "value": "scotland",
+          "label": "Scotland"
+        },
+        {
+          "id": "region-wales",
+          "component": "SelectItem",
+          "value": "wales",
+          "label": "Wales"
+        },
+        {
+          "id": "curtailment-control",
+          "component": "Card",
+          "children": ["curt-label", "curt-desc", "curt-buttons"],
+          "direction": "column",
+          "gap": "s",
+          "variant": "sunk",
+          "weight": 1
+        },
+        {
+          "id": "curt-label",
+          "component": "TextContent",
+          "text": "**⚠️ Order Curtailment**",
+          "size": "default"
+        },
+        {
+          "id": "curt-desc",
+          "component": "TextContent",
+          "text": "Issue a curtailment order to reduce generation or demand. This action is logged and requires supervisor confirmation for volumes above 100 MW.",
+          "size": "small"
+        },
+        {
+          "id": "curt-buttons",
+          "component": "Buttons",
+          "buttons": ["btn-curtail-demand", "btn-curtail-gen", "btn-curtail-emergency"],
+          "direction": "row"
+        },
+        {
+          "id": "btn-curtail-demand",
+          "component": "Button",
+          "label": "Curtail Demand",
+          "variant": "secondary",
+          "size": "medium",
+          "action": [{"type": "sendMessage", "payload": "Order demand curtailment"}]
+        },
+        {
+          "id": "btn-curtail-gen",
+          "component": "Button",
+          "label": "Curtail Generation",
+          "variant": "secondary",
+          "size": "medium",
+          "action": [{"type": "sendMessage", "payload": "Order generation curtailment"}]
+        },
+        {
+          "id": "btn-curtail-emergency",
+          "component": "Button",
+          "label": "🚨 Emergency Curtailment",
+          "variant": "primary",
+          "type": "destructive",
+          "size": "medium",
+          "action": [{"type": "sendMessage", "payload": "EMERGENCY curtailment order"}]
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+This console covers all 12 requirements:
+
+| # | Requirement | Implementation |
+|---|---|---|
+| 1 | Current load | **42,847 MW** metric card with trend |
+| 2 | Capacity proximity | **Progress bar** at 83.7% of 51,200 MW |
+| 3 | Generation split | **Donut chart** — Gas, Wind, Solar, Nuclear, Hydro, Coal |
+| 4 | Plant status table | **8 plants** with output, % rated, status, region |
+| 5 | Outages | **3 active outages** with affected region, impact, ETA |
+| 6 | 24h forecast | **Area chart** with actual + predicted demand curve |
+| 7 | Price/MWh | **$67.42/MWh** spot price with delta |
+| 8 | Maintenance | **4 planned items** this month with windows |
+| 9 | Live alerts | **3 stacked alerts** (critical, warning, info) |
+| 10 | Region focus | **Dropdown selector** with 11 regions |
+| 11 | Curtailment | **3 action buttons** — demand, generation, emergency |
+| 12 | Emissions | **12,847 t CO₂** with carbon intensity |

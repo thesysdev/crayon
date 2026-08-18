@@ -1,0 +1,149 @@
+Here's a comprehensive operations dashboard for your streaming service, covering all 16 requirements.
+
+<a2ui-json>
+[
+  {"version":"v0.9","createSurface":{"surfaceId":"stream-ops","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#E50914","agentDisplayName":"Streaming Ops Center"}}},
+  {"version":"v0.9","updateComponents":{"surfaceId":"stream-ops","components":[
+    {"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["hdr","kpiRow","regionFocus","chartsTabs","genreTable","deliverySection","opsSection","promoSection","flagsSection"]},
+
+    {"id":"hdr","component":"CardHeader","title":"Streaming Operations Center","subtitle":"Real-time platform health & content performance"},
+
+    {"id":"kpiRow","component":"Card","variant":"clear","direction":"row","gap":"m","wrap":true,"children":["kpiViewers","kpiBuffer","kpiRecClick","kpiDeadSearch"]},
+
+    {"id":"kpiViewers","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["kpiViewersLabel","kpiViewersVal","kpiViewersTag"]},
+    {"id":"kpiViewersLabel","component":"TextContent","text":"Viewers Watching Now","size":"small"},
+    {"id":"kpiViewersVal","component":"Heading","text":"1,284,507","level":"h2"},
+    {"id":"kpiViewersTag","component":"Tag","text":"Live","icon":"activity","variant":"success"},
+
+    {"id":"kpiBuffer","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["kpiBufferLabel","kpiBufferVal","kpiBufferProg"]},
+    {"id":"kpiBufferLabel","component":"TextContent","text":"Buffering Rate","size":"small"},
+    {"id":"kpiBufferVal","component":"Heading","text":"0.42%","level":"h2"},
+    {"id":"kpiBufferProg","component":"Progress","value":4,"label":"Healthy (target < 1%)"},
+
+    {"id":"kpiRecClick","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["kpiRecLabel","kpiRecVal","kpiRecProg"]},
+    {"id":"kpiRecLabel","component":"TextContent","text":"Recommendation Click-Through","size":"small"},
+    {"id":"kpiRecVal","component":"Heading","text":"31.8%","level":"h2"},
+    {"id":"kpiRecProg","component":"Progress","value":32,"label":"CTR on recommended titles"},
+
+    {"id":"kpiDeadSearch","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["kpiDeadLabel","kpiDeadVal","kpiDeadTag"]},
+    {"id":"kpiDeadLabel","component":"TextContent","text":"Searches Without Playback","size":"small"},
+    {"id":"kpiDeadVal","component":"Heading","text":"12.6%","level":"h2"},
+    {"id":"kpiDeadTag","component":"Tag","text":"Watch: dead-end queries","variant":"warning"},
+
+    {"id":"regionFocus","component":"Card","variant":"sunk","direction":"row","gap":"m","align":"end","children":["regionSelectCtrl","regionApplyBtns"]},
+    {"id":"regionSelectCtrl","component":"FormControl","label":"Focus on Region","input":"regionSelect","hint":"Filter all metrics to a single region"},
+    {"id":"regionSelect","component":"Select","name":"region","placeholder":"All Regions","items":["regAll","regNA","regEU","regAPAC","regLATAM","regMEA"]},
+    {"id":"regAll","component":"SelectItem","value":"all","label":"All Regions"},
+    {"id":"regNA","component":"SelectItem","value":"na","label":"North America"},
+    {"id":"regEU","component":"SelectItem","value":"eu","label":"Europe"},
+    {"id":"regAPAC","component":"SelectItem","value":"apac","label":"Asia-Pacific"},
+    {"id":"regLATAM","component":"SelectItem","value":"latam","label":"Latin America"},
+    {"id":"regMEA","component":"SelectItem","value":"mea","label":"Middle East & Africa"},
+    {"id":"regionApplyBtns","component":"Buttons","buttons":["regionApplyBtn"],"direction":"row"},
+    {"id":"regionApplyBtn","component":"Button","label":"Apply Focus","variant":"primary","action":["focusRegion"]},
+
+    {"id":"chartsTabs","component":"Tabs","items":["tabWatch","tabSubs","tabTop","tabRevenue","tabDevice"]},
+
+    {"id":"tabWatch","component":"TabItem","value":"watch","trigger":"Watch Time (30d)","content":["watchChart"]},
+    {"id":"watchChart","component":"AreaChart","variant":"natural","xLabel":"Day","yLabel":"Million Hours","labels":["Wk1-Mon","Wk1-Wed","Wk1-Fri","Wk2-Mon","Wk2-Wed","Wk2-Fri","Wk3-Mon","Wk3-Wed","Wk3-Fri","Wk4-Mon","Wk4-Wed","Wk4-Fri"],"series":["watchSeries"]},
+    {"id":"watchSeries","component":"Series","category":"Watch Hours (M)","values":[42,45,58,44,48,61,46,50,63,49,53,68]},
+
+    {"id":"tabSubs","component":"TabItem","value":"subs","trigger":"Subscribers","content":["subsChart"]},
+    {"id":"subsChart","component":"BarChart","variant":"grouped","xLabel":"Week","yLabel":"Subscribers (K)","labels":["Week 1","Week 2","Week 3","Week 4"],"series":["subsNew","subsCancel"]},
+    {"id":"subsNew","component":"Series","category":"New Subscribers","values":[128,142,135,156]},
+    {"id":"subsCancel","component":"Series","category":"Cancellations","values":[47,52,44,49]},
+
+    {"id":"tabTop","component":"TabItem","value":"top","trigger":"Most-Watched","content":["topChart"]},
+    {"id":"topChart","component":"HorizontalBarChart","xLabel":"Hours Watched (M)","yLabel":"Title","labels":["Crown of Ashes","Neon Drift","The Long Winter","Deep Signal","Harbor Lights","Quiet Storm"],"series":["topSeries"]},
+    {"id":"topSeries","component":"Series","category":"Hours (M)","values":[18.4,15.2,13.9,11.7,9.8,8.3]},
+
+    {"id":"tabRevenue","component":"TabItem","value":"revenue","trigger":"Revenue by Plan","content":["revChart"]},
+    {"id":"revChart","component":"PieChart","variant":"donut","labels":["Premium","Standard","Basic w/ Ads","Annual"],"values":[42,31,15,12]},
+
+    {"id":"tabDevice","component":"TabItem","value":"device","trigger":"Viewing by Device","content":["deviceChart"]},
+    {"id":"deviceChart","component":"PieChart","variant":"pie","labels":["Smart TV","Mobile","Web","Tablet","Console"],"values":[46,27,14,8,5]},
+
+    {"id":"genreTable","component":"Card","variant":"card","direction":"column","gap":"s","children":["genreHdr","genreTbl"]},
+    {"id":"genreHdr","component":"CardHeader","title":"Performance by Genre","subtitle":"Watch hours, completion & trend"},
+    {"id":"genreTbl","component":"Table","columns":["genreCol","genreHoursCol","genreComplCol","genreTrendCol"]},
+    {"id":"genreCol","component":"Col","label":"Genre","type":"string","data":["Drama","Sci-Fi","Comedy","Documentary","Thriller","Kids"]},
+    {"id":"genreHoursCol","component":"Col","label":"Hours (M)","type":"number","data":[58.2,44.1,39.7,22.5,31.8,18.9]},
+    {"id":"genreComplCol","component":"Col","label":"Completion %","type":"number","data":[74,68,61,55,71,82]},
+    {"id":"genreTrendCol","component":"Col","label":"MoM Change %","type":"number","data":[5.2,8.9,-1.4,3.1,6.7,2.2]},
+
+    {"id":"deliverySection","component":"Card","variant":"card","direction":"column","gap":"s","children":["deliveryHdr","deliveryTbl"]},
+    {"id":"deliveryHdr","component":"CardHeader","title":"Delivery Health by Region","subtitle":"CDN performance & error rates"},
+    {"id":"deliveryTbl","component":"Table","columns":["delRegionCol","delUptimeCol","delLatencyCol","delErrCol","delStatusCol"]},
+    {"id":"delRegionCol","component":"Col","label":"Region","type":"string","data":["North America","Europe","Asia-Pacific","Latin America","Middle East & Africa"]},
+    {"id":"delUptimeCol","component":"Col","label":"Uptime %","type":"number","data":[99.98,99.95,99.91,99.87,99.79]},
+    {"id":"delLatencyCol","component":"Col","label":"Avg Latency (ms)","type":"number","data":[38,42,61,74,98]},
+    {"id":"delErrCol","component":"Col","label":"Error Rate %","type":"number","data":[0.03,0.05,0.09,0.14,0.21]},
+    {"id":"delStatusCol","component":"Col","label":"Status","type":"string","data":["Healthy","Healthy","Healthy","Degraded","Degraded"]},
+
+    {"id":"opsSection","component":"Card","variant":"clear","direction":"row","gap":"m","wrap":true,"children":["releasesCard","licensesCard"]},
+
+    {"id":"releasesCard","component":"Card","variant":"card","direction":"column","gap":"s","weight":1,"children":["releasesHdr","releasesList"]},
+    {"id":"releasesHdr","component":"CardHeader","title":"Releases Coming This Month","subtitle":"Scheduled premieres"},
+    {"id":"releasesList","component":"ListBlock","variant":"number","items":["rel1","rel2","rel3","rel4"]},
+    {"id":"rel1","component":"ListItem","title":"Crown of Ashes: Season 2","subtitle":"Drama · Premieres Jun 8","actionLabel":"Details"},
+    {"id":"rel2","component":"ListItem","title":"Orbital","subtitle":"Sci-Fi Film · Premieres Jun 14","actionLabel":"Details"},
+    {"id":"rel3","component":"ListItem","title":"Kitchen Wars: Finale","subtitle":"Reality · Premieres Jun 21","actionLabel":"Details"},
+    {"id":"rel4","component":"ListItem","title":"The Hollow Coast","subtitle":"Thriller · Premieres Jun 28","actionLabel":"Details"},
+
+    {"id":"licensesCard","component":"Card","variant":"card","direction":"column","gap":"s","weight":1,"children":["licensesHdr","licensesTbl"]},
+    {"id":"licensesHdr","component":"CardHeader","title":"Licenses Expiring Soon","subtitle":"Renewal decisions needed"},
+    {"id":"licensesTbl","component":"Table","columns":["licTitleCol","licExpiryCol","licHoursCol"]},
+    {"id":"licTitleCol","component":"Col","label":"Title","type":"string","data":["Midnight Runners","The Glass House","Echoes of Tomorrow","City of Wolves"]},
+    {"id":"licExpiryCol","component":"Col","label":"Expires","type":"string","data":["Jun 12","Jun 19","Jun 25","Jun 30"]},
+    {"id":"licHoursCol","component":"Col","label":"Hours (M)","type":"number","data":[6.1,4.8,3.2,7.4]},
+
+    {"id":"promoSection","component":"Card","variant":"card","direction":"column","gap":"s","children":["promoHdr","promoForm"]},
+    {"id":"promoHdr","component":"CardHeader","title":"Promote a Title on Home Screen","subtitle":"Feature a title in the hero spotlight"},
+    {"id":"promoForm","component":"Form","name":"promoteTitle","buttons":"promoBtns","fields":["promoTitleCtrl","promoSlotCtrl","promoDateCtrl","promoNoteCtrl"]},
+    {"id":"promoTitleCtrl","component":"FormControl","label":"Title to Promote","input":"promoTitleInput","hint":"Search catalog by title name"},
+    {"id":"promoTitleInput","component":"Input","name":"promoTitle","type":"text","placeholder":"e.g. Crown of Ashes: Season 2"},
+    {"id":"promoSlotCtrl","component":"FormControl","label":"Home Screen Slot","input":"promoSlotSelect"},
+    {"id":"promoSlotSelect","component":"Select","name":"slot","placeholder":"Select placement","items":["slotHero","slotTrending","slotBanner","slotRow"]},
+    {"id":"slotHero","component":"SelectItem","value":"hero","label":"Hero Spotlight (Top Banner)"},
+    {"id":"slotTrending","component":"SelectItem","value":"trending","label":"Trending Now Row"},
+    {"id":"slotBanner","component":"SelectItem","value":"banner","label":"Mid-Page Banner"},
+    {"id":"slotRow","component":"SelectItem","value":"row","label":"Featured Row"},
+    {"id":"promoDateCtrl","component":"FormControl","label":"Promotion Window","input":"promoDate"},
+    {"id":"promoDate","component":"DatePicker","name":"window","mode":"range"},
+    {"id":"promoNoteCtrl","component":"FormControl","label":"Promo Note","input":"promoNote","hint":"Optional internal note"},
+    {"id":"promoNote","component":"TextArea","name":"note","placeholder":"Reason for promotion, target audience, etc.","rows":2},
+    {"id":"promoBtns","component":"Buttons","buttons":["promoSubmit","promoPreview"],"direction":"row"},
+    {"id":"promoSubmit","component":"Button","label":"Promote Title","variant":"primary","action":["submitPromo"]},
+    {"id":"promoPreview","component":"Button","label":"Preview","variant":"secondary","action":["previewPromo"]},
+
+    {"id":"flagsSection","component":"Card","variant":"card","direction":"column","gap":"s","children":["flagsHdr","flagsSwitches"]},
+    {"id":"flagsHdr","component":"CardHeader","title":"Feature Flags","subtitle":"Toggle platform features live"},
+    {"id":"flagsSwitches","component":"SwitchGroup","name":"featureFlags","variant":"sunk","items":["flagRec","flagAds","flag4k","flagDownloads","flagLive","flagBeta"]},
+    {"id":"flagRec","component":"SwitchItem","name":"newRecEngine","label":"New Recommendation Engine","description":"ML-based personalization v3","defaultChecked":true},
+    {"id":"flagAds","component":"SwitchItem","name":"adTier","label":"Ad-Supported Tier","description":"Enable ads on Basic plan","defaultChecked":true},
+    {"id":"flag4k","component":"SwitchItem","name":"uhd4k","label":"4K UHD Streaming","description":"Premium plan only","defaultChecked":true},
+    {"id":"flagDownloads","component":"SwitchItem","name":"offlineDownloads","label":"Offline Downloads","description":"Mobile download support","defaultChecked":false},
+    {"id":"flagLive","component":"SwitchItem","name":"liveEvents","label":"Live Events","description":"Live sports & concerts","defaultChecked":false},
+    {"id":"flagBeta","component":"SwitchItem","name":"betaWatchParty","label":"Watch Party (Beta)","description":"Synchronized group viewing","defaultChecked":false}
+  ]}}
+]
+</a2ui-json>
+
+This single-screen dashboard covers all 16 requirements:
+
+1. **Viewers now** — live KPI card (1.28M)
+2. **Most-watched titles with hours** — horizontal bar chart in the "Most-Watched" tab
+3. **Watch time past month** — 30-day area chart
+4. **New subs vs cancellations** — grouped bar chart in the "Subscribers" tab
+5. **Performance by genre** — genre table with hours, completion & trend
+6. **Buffering rate** — KPI card with progress indicator (0.42%)
+7. **Delivery health by region** — table with uptime, latency, error rate & status
+8. **Releases this month** — numbered list of premieres
+9. **Licenses expiring soon** — table with expiry dates
+10. **Recommendation click-through** — KPI card (31.8%)
+11. **Searches without playback** — KPI card (12.6%)
+12. **Revenue by plan** — donut chart tab
+13. **Viewing by device** — pie chart tab
+14. **Focus on one region** — region selector with apply button
+15. **Feature flags with state** — switch group with per-flag toggles
+16. **Promote a title** — form with title, slot, date range & note

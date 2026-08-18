@@ -1,0 +1,73 @@
+root = Card([header, mainCallout, kpiGrid, chartsTabs, tablesSection, accountsSection, actionsSection], "card", "column", "l")
+
+header = CardHeader("Admin SaaS Overview", "Real-time metrics, account health, and administration")
+
+mainCallout = TextCallout("info", "Reporting Period Active", "Currently showing data for Q3 2023. Select a different period using the controls below.")
+
+kpiGrid = Table([kpiMetric, kpiValue, kpiChange])
+kpiMetric = Col("Key Metric", ["Monthly Recurring Revenue (MRR)", "Annual Recurring Revenue (ARR)", "Churn This Month", "Current NPS Score", "Seat Utilization"])
+kpiValue = Col("Current Value", ["$124,500", "$1,494,000", "1.2%", "68", "84%"])
+kpiChange = Col("MoM Change", ["+5.4%", "+8.2%", "-0.3%", "+4 pts", "+2%"])
+
+chartsTabs = Tabs([tabSignups, tabPlans, tabFeatures])
+
+tabSignups = TabItem("signups", "Signups (90 Days)", [signupsChart])
+signupsChart = AreaChart(["M1", "M2", "M3"], [signupsSeries], "natural", "Month", "New Customers")
+signupsSeries = Series("New Signups", [142, 185, 210])
+
+tabPlans = TabItem("plans", "Customers by Plan", [plansChart])
+plansChart = PieChart(["Starter", "Professional", "Enterprise"], [450, 280, 85], "donut")
+
+tabFeatures = TabItem("features", "New Feature Adoption", [featuresChart])
+featuresChart = BarChart(["AI Summary", "Custom Workflows", "SSO Integration"], [featureSeries], "grouped", "Feature", "Active Accounts")
+featureSeries = Series("Adoption Count", [320, 185, 94])
+
+tablesSection = Accordion([accLargest, accFailed])
+
+accLargest = AccordionItem("largest", "Top 10 Largest Customers", [largestTable])
+largestTable = Table([custName, custPlan, custSeats, custARR])
+custName = Col("Customer", ["Acme Corp", "GlobalTech", "SaaSify", "Apex Ltd", "Nexus Inc", "Starlight", "DataDynamics", "CloudScale", "Vanguard", "OmniGroup"])
+custPlan = Col("Plan", ["Enterprise", "Enterprise", "Enterprise", "Enterprise", "Professional", "Enterprise", "Enterprise", "Professional", "Enterprise", "Professional"])
+custSeats = Col("Seats Assigned", [250, 180, 150, 120, 95, 90, 85, 80, 75, 60])
+custSeats = Col("Seats Assigned", [250, 180, 150, 120, 95, 90, 85, 80, 75, 60])
+custARR = Col("Annual Spend", ["$60,000", "$43,200", "$36,000", "$28,800", "$22,800", "$21,600", "$20,400", "$19,200", "$18,000", "$14,400"])
+
+accFailed = AccordionItem("failed", "Failed Payments & Action", [failedTable])
+failedTable = Table([failedCust, failedAmount, failedDate, failedReason, failedAction])
+failedCust = Col("Customer", ["InnoTech Solutions", "BrightMedia", "Quantum Labs"])
+failedAmount = Col("Amount", ["$1,200", "$450", "$2,400"])
+failedDate = Col("Date", ["Oct 12, 2023", "Oct 14, 2023", "Oct 15, 2023"])
+failedReason = Col("Failure Reason", ["Card Expired", "Insufficient Funds", "Generic Decline"])
+failedAction = Col("Action", ["Retry Payment", "Retry Payment", "Retry Payment"], "action")
+
+accountsSection = Accordion([accRisk])
+accRisk = AccordionItem("risk", "Accounts at Risk of Churn", [riskList])
+riskList = ListBlock([risk1, risk2, risk3])
+risk1 = ListItem("HyperScale Systems", "Risk Factor: Drop in seat usage (-45% over 30 days)", null, "Review Account")
+risk2 = ListItem("Synergy Works", "Risk Factor: Unresolved support tickets regarding SSO", null, "Contact CSM")
+risk3 = ListItem("Metro Logistics", "Risk Factor: Champion user departed company", null, "Schedule Call")
+
+actionsSection = Tabs([tabPeriod, tabInvite])
+
+tabPeriod = TabItem("period", "Change Reporting Period", [periodForm])
+periodForm = Form("period-form", periodButtons, [periodControl])
+periodControl = FormControl("Select Timeframe", periodSelect)
+periodSelect = Select("timeframe", [opt30, opt90, optYear, optYtd], "Choose period...")
+opt30 = SelectItem("30", "Last 30 Days")
+opt90 = SelectItem("90", "Last 90 Days")
+optYear = SelectItem("365", "Last 12 Months")
+optYtd = SelectItem("ytd", "Year to Date")
+periodButtons = Buttons([applyBtn])
+applyBtn = Button("Update Dashboard", null, "primary")
+
+tabInvite = TabItem("invite", "Invite New Admin", [inviteForm])
+inviteForm = Form("invite-form", inviteButtons, [emailControl, roleControl])
+emailControl = FormControl("Email Address", emailInput, "An invitation link will be sent")
+emailInput = Input("admin_email", "admin@company.com", "email")
+roleControl = FormControl("Role & Permissions", roleSelect)
+roleSelect = Select("admin_role", [roleSuper, roleBilling, roleRead], "Select role...")
+roleSuper = SelectItem("super", "Super Admin (Full Access)")
+roleBilling = SelectItem("billing", "Billing Admin")
+roleRead = SelectItem("read", "Read-Only Observer")
+inviteButtons = Buttons([sendInviteBtn])
+sendInviteBtn = Button("Send Invitation", null, "primary")

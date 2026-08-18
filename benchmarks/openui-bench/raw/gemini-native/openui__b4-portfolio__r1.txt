@@ -1,0 +1,102 @@
+root = Card([header, summaryCallout, filters, activeProjectsTable, budgetChart, utilizationSection, sprintPaceChart, milestoneAlerts, blockedItemsSection, upcomingDeadlinesSection, risksSection, projectActionsDrawer, followUps])
+
+header = CardHeader("PMO Portfolio Review", "Q3 2024 Executive Overview & Operational Health")
+
+summaryCallout = TextCallout("success", "Portfolio Summary", "Overall portfolio health is STRONG: 85% of projects are on track with budget burn within expected bounds, though resource constraints in Backend Engineering require attention.")
+
+filters = Form("quarter_filter", quarterButtons, [quarterSelectField])
+quarterSelectField = FormControl("Select Reporting Period", quarterSelect)
+quarterSelect = Select("quarter", [q3Option, q4Option, q1Option, q2Option], "Q3 2024 (Current)")
+q3Option = SelectItem("q3_2024", "Q3 2024 (Current)")
+q4Option = SelectItem("q4_2024", "Q4 2024 (Upcoming)")
+q1Option = SelectItem("q1_2025", "Q1 2025")
+q2Option = SelectItem("q2_2025", "Q2 2025")
+
+quarterButtons = Buttons([applyFilterBtn, exportBtn])
+applyFilterBtn = Button("Apply Period", null, "primary")
+exportBtn = Button("Export Review PDF/CSV", null, "secondary")
+
+activeProjectsTable = Table([colProject, colOwner, colDeadline, colHealth])
+colProject = Col("Active Project", ["Cloud Migration Phase 2", "ERP System Upgrade", "Mobile App Redesign", "Data Warehouse Expansion", "Customer Portal v3.0"])
+colOwner = Col("Owner", ["Sarah Jenkins", "Michael Chang", "Elena Rostova", "David Miller", "Priya Patel"])
+colDeadline = Col("Deadline", ["Sep 30, 2024", "Oct 15, 2024", "Nov 01, 2024", "Dec 12, 2024", "Dec 20, 2024"])
+colHealth = Col("Health", ["On Track", "At Risk", "On Track", "On Track", "Critical"])
+
+budgetChart = BarChart(["Cloud Mig.", "ERP Upgrade", "Mobile App", "Data Whse.", "Portal v3"], [budgetAllocatedSeries, budgetSpentSeries], "grouped", "Project", "Budget (USD)")
+budgetAllocatedSeries = Series("Allocated ($k)", [450, 600, 300, 500, 250])
+budgetSpentSeries = Series("Spent ($k)", [380, 580, 210, 340, 245])
+
+utilizationSection = Card([utilHeader, utilDevProgress, utilDesignProgress, utilQAProgress, utilPMProgress], "sunk", "column", "m")
+utilHeader = Heading("Team Resource Utilization", "h3")
+utilDevProgress = Progress(92, "Backend & Cloud Engineering (92%)")
+utilDesignProgress = Progress(78, "UX / Product Design (78%)")
+utilQAProgress = Progress(85, "QA & Automated Testing (85%)")
+utilPMProgress = Progress(65, "Project Management & Scrum (65%)")
+
+sprintPaceChart = LineChart(["Sprint 18", "Sprint 19", "Sprint 20", "Sprint 21", "Sprint 22", "Sprint 23"], [plannedVelocitySeries, completedVelocitySeries], "natural", "Sprint History", "Story Points")
+plannedVelocitySeries = Series("Planned Velocity", [120, 125, 120, 130, 130, 135])
+completedVelocitySeries = Series("Completed Velocity", [115, 122, 108, 128, 132, 130])
+
+milestoneAlerts = Alert("Overdue Milestones Detected (2)", "• ERP Upgrade: Legacy Database Schema Freeze was due Sep 01\n• Customer Portal v3.0: Security Audit Approval was due Sep 10", "destructive")
+
+blockedItemsSection = SectionBlock([blockedItemsSectionItem], true)
+blockedItemsSectionItem = SectionItem("blocked_items", "Blocked Work Items (3)", blockedList)
+blockedList = ListBlock([blockedItem1, blockedItem2, blockedItem3])
+blockedItem1 = ListItem("PR-402: OAuth Multi-Factor Auth Flow", "Customer Portal — Blocked by third-party vendor API access delay")
+blockedItem2 = ListItem("INFRA-89: Staging Cluster Migration", "Cloud Migration — Awaiting SecOps compliance clearance")
+blockedItem3 = ListItem("DATA-301: ETL Pipeline Optimization", "Data Warehouse — Blocked by memory leak bug in Core Service")
+
+upcomingDeadlinesSection = SectionBlock([upcomingDeadlinesSectionItem], false)
+upcomingDeadlinesSectionItem = SectionItem("deadlines", "Deadlines in the Next 2 Weeks", deadlinesList)
+deadlinesList = ListBlock([deadline1, deadline2, deadline3])
+deadline1 = ListItem("Core Database Cutover", "Cloud Migration — Due Sep 20, 2024")
+deadline2 = ListItem("User Acceptance Testing Sign-off", "ERP System Upgrade — Due Sep 24, 2024")
+deadline3 = ListItem("iOS Beta Build Delivery", "Mobile App Redesign — Due Sep 28, 2024")
+
+risksSection = SectionBlock([risksSectionItem], false)
+risksSectionItem = SectionItem("risks", "Identified Risks & Severity", risksTable)
+risksTable = Table([colRiskProject, colRiskDesc, colSeverity])
+colRiskProject = Col("Project", ["Customer Portal v3.0", "ERP System Upgrade", "Cloud Migration Phase 2", "Data Warehouse Expansion"])
+colRiskDesc = Col("Risk Factor", ["Vendor API integration delay", "Key architect single point of failure", "Egress cost spike during data push", "Unclear regulatory requirements"])
+colSeverity = Col("Severity", ["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+
+projectActionsDrawer = DrawerBlock("Project Governance & Change Requests", "Project Management Actions", "Request additional resources or archive completed projects", drawerContent)
+
+drawerContent = Card([resourceFormHeader, resourceForm, archiveSectionHeader, archiveForm], "clear", "column", "l")
+
+resourceFormHeader = Heading("Request Additional Team Members", "h4")
+resourceForm = Form("resource_request", resourceFormButtons, [reqProjectField, reqRoleField, reqCountField, reqJustificationField])
+reqProjectField = FormControl("Target Project", reqProjectSelect)
+reqProjectSelect = Select("req_project", [p1, p2, p3, p4, p5], "Select Project")
+p1 = SelectItem("cloud_mig", "Cloud Migration Phase 2")
+p2 = SelectItem("erp_upg", "ERP System Upgrade")
+p3 = SelectItem("mobile_redesign", "Mobile App Redesign")
+p4 = SelectItem("data_wh", "Data Warehouse Expansion")
+p5 = SelectItem("portal_v3", "Customer Portal v3.0")
+
+reqRoleField = FormControl("Resource Skill / Role", reqRoleInput)
+reqRoleInput = Input("req_role", "e.g., Senior DevOps Engineer")
+
+reqCountField = FormControl("FTE Count", reqCountInput)
+reqCountInput = Input("req_count", "1", "number")
+
+reqJustificationField = FormControl("Business Justification", reqJustificationText)
+reqJustificationText = TextArea("req_reason", "Explain impact if headcount is not added...", 3)
+
+resourceFormButtons = Buttons([submitResourceBtn])
+submitResourceBtn = Button("Submit Resource Request", null, "primary")
+
+archiveSectionHeader = Heading("Archive Finished Project", "h4")
+archiveForm = Form("archive_project_form", archiveFormButtons, [archiveSelectField])
+archiveSelectField = FormControl("Select Completed Project", archiveSelect)
+archiveSelect = Select("archive_project", [arch1, arch2], "Select finished project")
+arch1 = SelectItem("proj_legacy_auth", "Legacy Auth Sunset (Completed Aug 2024)")
+arch2 = SelectItem("proj_crm_sync", "CRM Integration Phase 1 (Completed Jul 2024)")
+
+archiveFormButtons = Buttons([archiveBtn])
+archiveBtn = Button("Archive Project", null, "tertiary", "destructive")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Show resource bottleneck breakdown")
+f2 = FollowUpItem("Filter portfolio by At Risk projects")
+f3 = FollowUpItem("Download executive summary pitch deck")

@@ -1,0 +1,66 @@
+root = Card([header, periodControl, kpis, sep1, signups, planSplit, topCustomers, sep2, atRisk, failedPayments, sep3, adoption, npsProgress, seatUtil, sep4, inviteAdmin])
+
+header = CardHeader("Admin Overview", "Company-wide metrics and account health")
+
+periodControl = Form("reporting-period", periodButtons, [periodField])
+periodField = FormControl("Reporting period", periodSelect)
+periodSelect = Select("period", [pMonth, pQuarter, pYear], "Select period")
+pMonth = SelectItem("month", "This month")
+pQuarter = SelectItem("quarter", "This quarter")
+pYear = SelectItem("year", "This year")
+periodButtons = Buttons([applyPeriod])
+applyPeriod = Button("Apply", null, "primary")
+
+kpis = Table([kpiName, kpiValue, kpiChange])
+kpiName = Col("Metric", ["MRR", "ARR", "Churn (this month)", "Current NPS"])
+kpiValue = Col("Value", ["$248,300", "$2,979,600", "2.3%", "54"])
+kpiChange = Col("Change", ["+4.1%", "+3.8%", "-0.4%", "+6"])
+
+sep1 = Separator("horizontal")
+
+signups = AreaChart(["Day 1", "Day 15", "Day 30", "Day 45", "Day 60", "Day 75", "Day 90"], [signupSeries], "natural", "Past 90 days", "New signups")
+signupSeries = Series("Signups", [82, 96, 74, 110, 128, 141, 137])
+
+planSplit = PieChart(["Starter", "Growth", "Business", "Enterprise"], [412, 286, 158, 47], "donut")
+
+topCustomers = Table([custName, custSeats, custSpend])
+custName = Col("Customer", ["Northwind Corp", "Acme Industries", "Globex", "Initech", "Umbrella LLC", "Hooli", "Stark Systems", "Wayne Group", "Soylent Co", "Massive Dynamic"])
+custSeats = Col("Seats", [420, 385, 340, 310, 290, 265, 240, 220, 205, 190], "number")
+custSpend = Col("Annual Spend", ["$96,000", "$88,400", "$79,200", "$72,500", "$66,800", "$61,000", "$55,200", "$50,600", "$47,100", "$43,700"])
+
+sep2 = Separator("horizontal")
+
+atRisk = ListBlock([risk1, risk2, risk3, risk4])
+risk1 = ListItem("Initech", "Usage down 38% over last 30 days")
+risk2 = ListItem("Umbrella LLC", "Renewal in 12 days, no exec sponsor")
+risk3 = ListItem("Soylent Co", "3 open support escalations")
+risk4 = ListItem("Hooli", "Login activity dropped to near zero")
+
+failedPayments = Table([fpCustomer, fpAmount, fpReason, fpAction])
+fpCustomer = Col("Customer", ["Globex", "Wayne Group", "Massive Dynamic"])
+fpAmount = Col("Amount", ["$6,600", "$4,200", "$3,640"])
+fpReason = Col("Reason", ["Card expired", "Insufficient funds", "Declined by bank"])
+fpAction = Col("Action", ["Retry", "Retry", "Retry"], "action")
+
+sep3 = Separator("horizontal")
+
+adoption = BarChart(["Smart Dashboards", "Audit Logs", "SSO Provisioning"], [adoptSeries], "grouped", "Feature", "% adopted")
+adoptSeries = Series("Adoption", [46, 31, 22])
+
+npsProgress = Progress(54, "Net Promoter Score: 54")
+
+seatUtil = Progress(78, "Seat utilization: 78% (7,410 of 9,500 seats)")
+
+sep4 = Separator("horizontal")
+
+inviteAdmin = DialogBlock("Invite admin", "Invite another admin", "Send an invitation to grant admin access", [inviteForm], "default")
+inviteForm = Form("invite-admin", inviteButtons, [inviteEmailField, inviteRoleField])
+inviteEmailField = FormControl("Email address", inviteEmailInput, "They'll receive an invite link")
+inviteEmailInput = Input("email", "admin@company.com", "email")
+inviteRoleField = FormControl("Role", inviteRoleSelect)
+inviteRoleSelect = Select("role", [roleFull, roleBilling], "Select role")
+roleFull = SelectItem("full", "Full admin")
+roleBilling = SelectItem("billing", "Billing admin")
+inviteButtons = Buttons([sendInvite, cancelInvite])
+sendInvite = Button("Send invite", null, "primary")
+cancelInvite = Button("Cancel", null, "tertiary")

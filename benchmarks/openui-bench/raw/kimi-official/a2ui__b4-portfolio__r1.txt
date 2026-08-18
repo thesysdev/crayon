@@ -1,0 +1,822 @@
+Here's a PMO Portfolio Review dashboard covering all 13 items.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "pmo-review",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#3B5BFD",
+      "agentDisplayName": "PMO Portfolio Review"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "pmo-review",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "controls-row",
+          "health-summary",
+          "projects-card",
+          "charts-row",
+          "mid-row",
+          "bottom-row",
+          "pace-card",
+          "actions-row"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "PMO Project Portfolio Review",
+        "subtitle": "Q3 2025 · 6 active projects · 4 at risk"
+      },
+      {
+        "id": "controls-row",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "align": "center",
+        "variant": "clear",
+        "children": [
+          "quarter-select",
+          "quarter-item-q1",
+          "quarter-item-q2",
+          "quarter-item-q3",
+          "quarter-item-q4",
+          "export-btn"
+        ]
+      },
+      {
+        "id": "quarter-select",
+        "component": "Select",
+        "name": "quarter",
+        "placeholder": "View quarter…",
+        "value": "q3-2025",
+        "items": [
+          "quarter-item-q1",
+          "quarter-item-q2",
+          "quarter-item-q3",
+          "quarter-item-q4"
+        ]
+      },
+      {
+        "id": "quarter-item-q1",
+        "component": "SelectItem",
+        "value": "q1-2025",
+        "label": "Q1 2025"
+      },
+      {
+        "id": "quarter-item-q2",
+        "component": "SelectItem",
+        "value": "q2-2025",
+        "label": "Q2 2025"
+      },
+      {
+        "id": "quarter-item-q3",
+        "component": "SelectItem",
+        "value": "q3-2025",
+        "label": "Q3 2025"
+      },
+      {
+        "id": "quarter-item-q4",
+        "component": "SelectItem",
+        "value": "q4-2025",
+        "label": "Q4 2025"
+      },
+      {
+        "id": "export-btn",
+        "component": "Button",
+        "label": "Export Review (PDF)",
+        "variant": "secondary",
+        "action": ["export_review"]
+      },
+      {
+        "id": "health-summary",
+        "component": "Callout",
+        "variant": "warning",
+        "title": "Portfolio Health Summary",
+        "description": "Portfolio is amber: 2 of 6 projects on track, 4 at risk, driven by 3 overdue milestones and 7 blocked work items."
+      },
+      {
+        "id": "projects-card",
+        "component": "Card",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "projects-header",
+          "projects-table",
+          "col-name",
+          "col-owner",
+          "col-deadline",
+          "col-health",
+          "col-budget",
+          "col-util"
+        ]
+      },
+      {
+        "id": "projects-header",
+        "component": "CardHeader",
+        "title": "1–4. Active Projects: Owner, Deadline, Health, Budget & Utilization",
+        "subtitle": "Budget = spent vs. allocated; Utilization = team capacity used"
+      },
+      {
+        "id": "projects-table",
+        "component": "Table",
+        "columns": [
+          "col-name",
+          "col-owner",
+          "col-deadline",
+          "col-health",
+          "col-budget",
+          "col-util"
+        ]
+      },
+      {
+        "id": "col-name",
+        "component": "Col",
+        "label": "Project",
+        "type": "string",
+        "data": [
+          "Atlas CRM Migration",
+          "Beacon Mobile App",
+          "Core Payments v2",
+          "Data Lake Phase 1",
+          "Engage Portal Redesign",
+          "Forge API Gateway"
+        ]
+      },
+      {
+        "id": "col-owner",
+        "component": "Col",
+        "label": "Owner",
+        "type": "string",
+        "data": [
+          "S. Raman",
+          "L. Torres",
+          "M. Okafor",
+          "J. Kim",
+          "A. Novak",
+          "P. Singh"
+        ]
+      },
+      {
+        "id": "col-deadline",
+        "component": "Col",
+        "label": "Deadline",
+        "type": "string",
+        "data": [
+          "2025-09-12",
+          "2025-08-29",
+          "2025-09-05",
+          "2025-10-03",
+          "2025-09-19",
+          "2025-08-22"
+        ]
+      },
+      {
+        "id": "col-health",
+        "component": "Col",
+        "label": "Health",
+        "type": "string",
+        "data": [
+          "🟢 On Track",
+          "🟡 At Risk",
+          "🔴 Off Track",
+          "🟢 On Track",
+          "🟡 At Risk",
+          "🔴 Off Track"
+        ]
+      },
+      {
+        "id": "col-budget",
+        "component": "Col",
+        "label": "Budget Spent / Allocated",
+        "type": "string",
+        "data": [
+          "$410K / $520K",
+          "$295K / $300K",
+          "$510K / $480K",
+          "$120K / $250K",
+          "$180K / $210K",
+          "$265K / $240K"
+        ]
+      },
+      {
+        "id": "col-util",
+        "component": "Col",
+        "label": "Team Utilization",
+        "type": "string",
+        "data": [
+          "82%",
+          "97%",
+          "104%",
+          "61%",
+          "88%",
+          "112%"
+        ]
+      },
+      {
+        "id": "charts-row",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "variant": "clear",
+        "children": [
+          "budget-card",
+          "util-card"
+        ]
+      },
+      {
+        "id": "budget-card",
+        "component": "Card",
+        "direction": "column",
+        "gap": "s",
+        "weight": 1,
+        "children": [
+          "budget-header",
+          "budget-chart",
+          "ser-allocated",
+          "ser-spent"
+        ]
+      },
+      {
+        "id": "budget-header",
+        "component": "CardHeader",
+        "title": "3. Budget Spent vs. Allocated ($K)"
+      },
+      {
+        "id": "budget-chart",
+        "component": "HorizontalBarChart",
+        "labels": [
+          "Atlas",
+          "Beacon",
+          "Core Pay",
+          "Data Lake",
+          "Engage",
+          "Forge"
+        ],
+        "series": [
+          "ser-allocated",
+          "ser-spent"
+        ],
+        "variant": "grouped",
+        "xLabel": "$K",
+        "yLabel": "Project"
+      },
+      {
+        "id": "ser-allocated",
+        "component": "Series",
+        "category": "Allocated",
+        "values": [520, 300, 480, 250, 210, 240]
+      },
+      {
+        "id": "ser-spent",
+        "component": "Series",
+        "category": "Spent",
+        "values": [410, 295, 510, 120, 180, 265]
+      },
+      {
+        "id": "util-card",
+        "component": "Card",
+        "direction": "column",
+        "gap": "s",
+        "weight": 1,
+        "children": [
+          "util-header",
+          "util-1",
+          "util-2",
+          "util-3",
+          "util-4",
+          "util-5",
+          "util-6"
+        ]
+      },
+      {
+        "id": "util-header",
+        "component": "CardHeader",
+        "title": "4. Team Utilization",
+        "subtitle": ">100% indicates over-allocation"
+      },
+      {
+        "id": "util-1",
+        "component": "Progress",
+        "label": "Atlas CRM Migration — 82%",
+        "value": 82
+      },
+      {
+        "id": "util-2",
+        "component": "Progress",
+        "label": "Beacon Mobile App — 97%",
+        "value": 97
+      },
+      {
+        "id": "util-3",
+        "component": "Progress",
+        "label": "Core Payments v2 — 104%",
+        "value": 100
+      },
+      {
+        "id": "util-4",
+        "component": "Progress",
+        "label": "Data Lake Phase 1 — 61%",
+        "value": 61
+      },
+      {
+        "id": "util-5",
+        "component": "Progress",
+        "label": "Engage Portal Redesign — 88%",
+        "value": 88
+      },
+      {
+        "id": "util-6",
+        "component": "Progress",
+        "label": "Forge API Gateway — 112%",
+        "value": 100
+      },
+      {
+        "id": "mid-row",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "variant": "clear",
+        "children": [
+          "overdue-card",
+          "deadlines-card",
+          "risks-card"
+        ]
+      },
+      {
+        "id": "overdue-card",
+        "component": "Card",
+        "direction": "column",
+        "gap": "s",
+        "weight": 1,
+        "children": [
+          "overdue-header",
+          "overdue-list",
+          "overdue-1",
+          "overdue-2",
+          "overdue-3"
+        ]
+      },
+      {
+        "id": "overdue-header",
+        "component": "CardHeader",
+        "title": "2. Overdue Milestones"
+      },
+      {
+        "id": "overdue-list",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "overdue-1",
+          "overdue-2",
+          "overdue-3"
+        ]
+      },
+      {
+        "id": "overdue-1",
+        "component": "ListItem",
+        "title": "Forge: Gateway cutover",
+        "subtitle": "Due Aug 8 · 14 days overdue"
+      },
+      {
+        "id": "overdue-2",
+        "component": "ListItem",
+        "title": "Core Pay: PCI audit sign-off",
+        "subtitle": "Due Aug 12 · 10 days overdue"
+      },
+      {
+        "id": "overdue-3",
+        "component": "ListItem",
+        "title": "Beacon: App Store submission",
+        "subtitle": "Due Aug 18 · 4 days overdue"
+      },
+      {
+        "id": "deadlines-card",
+        "component": "Card",
+        "direction": "column",
+        "gap": "s",
+        "weight": 1,
+        "children": [
+          "deadlines-header",
+          "deadlines-list",
+          "deadline-1",
+          "deadline-2",
+          "deadline-3",
+          "deadline-4"
+        ]
+      },
+      {
+        "id": "deadlines-header",
+        "component": "CardHeader",
+        "title": "6. Deadlines — Next 2 Weeks"
+      },
+      {
+        "id": "deadlines-list",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "deadline-1",
+          "deadline-2",
+          "deadline-3",
+          "deadline-4"
+        ]
+      },
+      {
+        "id": "deadline-1",
+        "component": "ListItem",
+        "title": "Forge API Gateway — full release",
+        "subtitle": "Aug 22"
+      },
+      {
+        "id": "deadline-2",
+        "component": "ListItem",
+        "title": "Beacon Mobile App — GA launch",
+        "subtitle": "Aug 29"
+      },
+      {
+        "id": "deadline-3",
+        "component": "ListItem",
+        "title": "Core Payments v2 — go-live",
+        "subtitle": "Sep 5"
+      },
+      {
+        "id": "deadline-4",
+        "component": "ListItem",
+        "title": "Atlas CRM Migration — UAT complete",
+        "subtitle": "Sep 5"
+      },
+      {
+        "id": "risks-card",
+        "component": "Card",
+        "direction": "column",
+        "gap": "s",
+        "weight": 1,
+        "children": [
+          "risks-header",
+          "risks-list",
+          "risk-1",
+          "risk-2",
+          "risk-3",
+          "risk-4"
+        ]
+      },
+      {
+        "id": "risks-header",
+        "component": "CardHeader",
+        "title": "5. Top Risks by Severity"
+      },
+      {
+        "id": "risks-list",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "risk-1",
+          "risk-2",
+          "risk-3",
+          "risk-4"
+        ]
+      },
+      {
+        "id": "risk-1",
+        "component": "ListItem",
+        "title": "🔴 High — Vendor delay on payment certification",
+        "subtitle": "Core Payments v2 · threatens Sep 5 go-live"
+      },
+      {
+        "id": "risk-2",
+        "component": "ListItem",
+        "title": "🔴 High — Key engineer departure on Forge",
+        "subtitle": "Knowledge transfer incomplete"
+      },
+      {
+        "id": "risk-3",
+        "component": "ListItem",
+        "title": "🟡 Medium — Scope creep in portal redesign",
+        "subtitle": "Engage · +12% backlog growth"
+      },
+      {
+        "id": "risk-4",
+        "component": "ListItem",
+        "title": "🟢 Low — Data lake infra cost overrun",
+        "subtitle": "Data Lake · within contingency"
+      },
+      {
+        "id": "bottom-row",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "variant": "clear",
+        "children": [
+          "blocked-card",
+          "staffing-card"
+        ]
+      },
+      {
+        "id": "blocked-card",
+        "component": "Card",
+        "direction": "column",
+        "gap": "s",
+        "weight": 1,
+        "children": [
+          "blocked-header",
+          "blocked-list",
+          "blocked-1",
+          "blocked-2",
+          "blocked-3",
+          "blocked-4"
+        ]
+      },
+      {
+        "id": "blocked-header",
+        "component": "CardHeader",
+        "title": "8. Blocked Work Items (7 total)"
+      },
+      {
+        "id": "blocked-list",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "blocked-1",
+          "blocked-2",
+          "blocked-3",
+          "blocked-4"
+        ]
+      },
+      {
+        "id": "blocked-1",
+        "component": "ListItem",
+        "title": "FRG-412: TLS cert provisioning",
+        "subtitle": "Blocked 9 days · waiting on InfoSec"
+      },
+      {
+        "id": "blocked-2",
+        "component": "ListItem",
+        "title": "PAY-238: Settlement API contract",
+        "subtitle": "Blocked 6 days · vendor dependency"
+      },
+      {
+        "id": "blocked-3",
+        "component": "ListItem",
+        "title": "BCN-101: Push notification entitlement",
+        "subtitle": "Blocked 4 days · Apple review"
+      },
+      {
+        "id": "blocked-4",
+        "component": "ListItem",
+        "title": "ATL-556: Legacy data export access",
+        "subtitle": "Blocked 3 days · DBA approval"
+      },
+      {
+        "id": "staffing-card",
+        "component": "Card",
+        "direction": "column",
+        "gap": "s",
+        "weight": 1,
+        "children": [
+          "staffing-header",
+          "staffing-form",
+          "fc-project",
+          "staff-project-select",
+          "sp-atlas",
+          "sp-beacon",
+          "sp-core",
+          "sp-data",
+          "sp-engage",
+          "sp-forge",
+          "fc-count",
+          "staff-count",
+          "staffing-buttons",
+          "staffing-submit"
+        ]
+      },
+      {
+        "id": "staffing-header",
+        "component": "CardHeader",
+        "title": "11. Request Additional Headcount"
+      },
+      {
+        "id": "staffing-form",
+        "component": "Form",
+        "name": "headcount-request",
+        "fields": [
+          "fc-project",
+          "fc-count"
+        ],
+        "buttons": "staffing-buttons"
+      },
+      {
+        "id": "fc-project",
+        "component": "FormControl",
+        "label": "Project",
+        "input": "staff-project-select"
+      },
+      {
+        "id": "staff-project-select",
+        "component": "Select",
+        "name": "project",
+        "placeholder": "Select project",
+        "items": [
+          "sp-atlas",
+          "sp-beacon",
+          "sp-core",
+          "sp-data",
+          "sp-engage",
+          "sp-forge"
+        ]
+      },
+      {
+        "id": "sp-atlas",
+        "component": "SelectItem",
+        "value": "atlas",
+        "label": "Atlas CRM Migration"
+      },
+      {
+        "id": "sp-beacon",
+        "component": "SelectItem",
+        "value": "beacon",
+        "label": "Beacon Mobile App"
+      },
+      {
+        "id": "sp-core",
+        "component": "SelectItem",
+        "value": "core",
+        "label": "Core Payments v2"
+      },
+      {
+        "id": "sp-data",
+        "component": "SelectItem",
+        "value": "data",
+        "label": "Data Lake Phase 1"
+      },
+      {
+        "id": "sp-engage",
+        "component": "SelectItem",
+        "value": "engage",
+        "label": "Engage Portal Redesign"
+      },
+      {
+        "id": "sp-forge",
+        "component": "SelectItem",
+        "value": "forge",
+        "label": "Forge API Gateway"
+      },
+      {
+        "id": "fc-count",
+        "component": "FormControl",
+        "label": "People needed",
+        "input": "staff-count",
+        "hint": "FTE count for the remainder of the quarter"
+      },
+      {
+        "id": "staff-count",
+        "component": "Input",
+        "name": "headcount",
+        "type": "number",
+        "placeholder": "e.g. 2"
+      },
+      {
+        "id": "staffing-buttons",
+        "component": "Buttons",
+        "buttons": [
+          "staffing-submit"
+        ]
+      },
+      {
+        "id": "staffing-submit",
+        "component": "Button",
+        "label": "Submit Request",
+        "variant": "primary",
+        "action": ["request_headcount"]
+      },
+      {
+        "id": "pace-card",
+        "component": "Card",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "pace-header",
+          "pace-chart",
+          "pace-completed",
+          "pace-committed"
+        ]
+      },
+      {
+        "id": "pace-header",
+        "component": "CardHeader",
+        "title": "7. Delivery Pace — Past 6 Sprints",
+        "subtitle": "Story points committed vs. completed across the portfolio"
+      },
+      {
+        "id": "pace-chart",
+        "component": "LineChart",
+        "labels": [
+          "Sprint 19",
+          "Sprint 20",
+          "Sprint 21",
+          "Sprint 22",
+          "Sprint 23",
+          "Sprint 24"
+        ],
+        "series": [
+          "pace-committed",
+          "pace-completed"
+        ],
+        "variant": "linear",
+        "xLabel": "Sprint",
+        "yLabel": "Story points"
+      },
+      {
+        "id": "pace-committed",
+        "component": "Series",
+        "category": "Committed",
+        "values": [142, 150, 148, 155, 160, 158]
+      },
+      {
+        "id": "pace-completed",
+        "component": "Series",
+        "category": "Completed",
+        "values": [128, 139, 121, 140, 149, 132]
+      },
+      {
+        "id": "actions-row",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "variant": "clear",
+        "children": [
+          "archive-dialog",
+          "followups",
+          "fu-1",
+          "fu-2",
+          "fu-3"
+        ]
+      },
+      {
+        "id": "archive-dialog",
+        "component": "AlertDialogBlock",
+        "triggerLabel": "Archive Finished Project",
+        "title": "Archive project?",
+        "description": "Archiving 'Forge API Gateway' (completed) will remove it from the active portfolio. This can be undone from Settings.",
+        "confirmLabel": "Archive",
+        "cancelLabel": "Cancel",
+        "triggerVariant": "destructive"
+      },
+      {
+        "id": "followups",
+        "component": "FollowUpBlock",
+        "items": [
+          "fu-1",
+          "fu-2",
+          "fu-3"
+        ]
+      },
+      {
+        "id": "fu-1",
+        "component": "FollowUpItem",
+        "text": "Show only at-risk projects"
+      },
+      {
+        "id": "fu-2",
+        "component": "FollowUpItem",
+        "text": "Break down budget variance by project"
+      },
+      {
+        "id": "fu-3",
+        "component": "FollowUpItem",
+        "text": "Draft mitigation plan for top risks"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This single screen covers all 13 requirements:
+
+1. **Active projects** — table with owner, deadline, and health (🟢/🟡/🔴) per project
+2. **Overdue milestones** — numbered list with days overdue
+3. **Budget** — spent vs. allocated in both the table and a grouped bar chart
+4. **Team utilization** — progress bars per project, flagging over-allocation
+5. **Risks** — severity-tagged list (High/Medium/Low)
+6. **Next-2-week deadlines** — dedicated list
+7. **Delivery pace** — line chart of committed vs. completed points across 6 sprints
+8. **Blocked work items** — list with blocker reason and duration
+9. **Health summary** — one-line callout at the top
+10. **Quarter switcher** — Q1–Q4 select dropdown
+11. **Headcount request** — form with project picker + count + submit
+12. **Export** — "Export Review (PDF)" button
+13. **Archive** — destructive confirm dialog for a finished project

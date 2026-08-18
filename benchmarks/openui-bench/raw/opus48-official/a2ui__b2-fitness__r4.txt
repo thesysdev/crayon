@@ -1,0 +1,235 @@
+Here's a daily fitness summary screen covering all four items.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "fitness-daily-summary",
+      "catalogId": "thesys.dev:c1-openui"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "fitness-daily-summary",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "direction": "column",
+          "gap": "l",
+          "children": ["header", "topRow", "weekCard", "logCard"]
+        },
+        {
+          "id": "header",
+          "component": "CardHeader",
+          "title": "Today's Summary",
+          "subtitle": "Keep up the great work!"
+        },
+        {
+          "id": "topRow",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "l",
+          "children": ["stepsCard", "caloriesCard"]
+        },
+        {
+          "id": "stepsCard",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "weight": 1,
+          "children": ["stepsHeading", "stepsValue", "stepsProgress", "stepsGoalText"]
+        },
+        {
+          "id": "stepsHeading",
+          "component": "Heading",
+          "text": "Steps",
+          "level": "h4"
+        },
+        {
+          "id": "stepsValue",
+          "component": "TextContent",
+          "text": "**7,842** steps",
+          "size": "large-heavy"
+        },
+        {
+          "id": "stepsProgress",
+          "component": "Progress",
+          "value": 78,
+          "label": "78% of daily goal"
+        },
+        {
+          "id": "stepsGoalText",
+          "component": "TextContent",
+          "text": "Goal: 10,000 steps · 2,158 to go",
+          "size": "small"
+        },
+        {
+          "id": "caloriesCard",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "weight": 1,
+          "children": ["calHeading", "calValue", "calSub"]
+        },
+        {
+          "id": "calHeading",
+          "component": "Heading",
+          "text": "Calories Burned",
+          "level": "h4"
+        },
+        {
+          "id": "calValue",
+          "component": "TextContent",
+          "text": "**512** kcal",
+          "size": "large-heavy"
+        },
+        {
+          "id": "calSub",
+          "component": "TextContent",
+          "text": "Active: 340 kcal · Resting: 172 kcal",
+          "size": "small"
+        },
+        {
+          "id": "weekCard",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "m",
+          "children": ["weekHeading", "weekChart"]
+        },
+        {
+          "id": "weekHeading",
+          "component": "Heading",
+          "text": "This Week's Workouts",
+          "level": "h4"
+        },
+        {
+          "id": "weekChart",
+          "component": "BarChart",
+          "labels": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+          "series": ["weekMinutes"],
+          "xLabel": "Day",
+          "yLabel": "Minutes"
+        },
+        {
+          "id": "weekMinutes",
+          "component": "Series",
+          "category": "Workout Minutes",
+          "values": [45, 30, 0, 60, 25, 50, 40]
+        },
+        {
+          "id": "logCard",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": ["logHeading", "logForm"]
+        },
+        {
+          "id": "logHeading",
+          "component": "Heading",
+          "text": "Log a New Workout",
+          "level": "h4"
+        },
+        {
+          "id": "logForm",
+          "component": "Form",
+          "name": "logWorkout",
+          "buttons": "logButtons",
+          "fields": ["fcType", "fcDuration", "fcCalories", "fcNotes"]
+        },
+        {
+          "id": "fcType",
+          "component": "FormControl",
+          "label": "Workout Type",
+          "input": "inType"
+        },
+        {
+          "id": "inType",
+          "component": "Select",
+          "name": "workoutType",
+          "placeholder": "Select a type",
+          "items": ["optRun", "optCycle", "optStrength", "optYoga", "optSwim"]
+        },
+        { "id": "optRun", "component": "SelectItem", "value": "running", "label": "Running" },
+        { "id": "optCycle", "component": "SelectItem", "value": "cycling", "label": "Cycling" },
+        { "id": "optStrength", "component": "SelectItem", "value": "strength", "label": "Strength Training" },
+        { "id": "optYoga", "component": "SelectItem", "value": "yoga", "label": "Yoga" },
+        { "id": "optSwim", "component": "SelectItem", "value": "swimming", "label": "Swimming" },
+        {
+          "id": "fcDuration",
+          "component": "FormControl",
+          "label": "Duration (minutes)",
+          "input": "inDuration"
+        },
+        {
+          "id": "inDuration",
+          "component": "Input",
+          "name": "duration",
+          "type": "number",
+          "placeholder": "e.g. 45"
+        },
+        {
+          "id": "fcCalories",
+          "component": "FormControl",
+          "label": "Calories Burned",
+          "input": "inCalories",
+          "hint": "Optional"
+        },
+        {
+          "id": "inCalories",
+          "component": "Input",
+          "name": "calories",
+          "type": "number",
+          "placeholder": "e.g. 320"
+        },
+        {
+          "id": "fcNotes",
+          "component": "FormControl",
+          "label": "Notes",
+          "input": "inNotes",
+          "hint": "Optional"
+        },
+        {
+          "id": "inNotes",
+          "component": "TextArea",
+          "name": "notes",
+          "rows": 3,
+          "placeholder": "How did it feel?"
+        },
+        {
+          "id": "logButtons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": ["btnSave", "btnReset"]
+        },
+        {
+          "id": "btnSave",
+          "component": "Button",
+          "label": "Save Workout",
+          "variant": "primary"
+        },
+        {
+          "id": "btnReset",
+          "component": "Button",
+          "label": "Clear",
+          "variant": "tertiary"
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+This screen delivers all four requirements:
+
+1. **Step count vs. goal** — the Steps card shows today's count (7,842) with a progress bar tracking 78% toward the 10,000-step goal and the remaining amount.
+2. **Calories burned** — a dedicated card showing 512 kcal split into active and resting.
+3. **Weekly workouts** — a bar chart of workout minutes across the last seven days.
+4. **Log a new workout** — a form to capture workout type, duration, calories, and notes with save/clear actions.

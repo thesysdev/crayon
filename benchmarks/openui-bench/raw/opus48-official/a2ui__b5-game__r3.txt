@@ -1,0 +1,129 @@
+Here's a comprehensive live-ops dashboard covering all 16 requirements.
+
+<a2ui-json>
+[
+{"version":"v0.9","createSurface":{"surfaceId":"liveops","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#7C4DFF","agentDisplayName":"Live-Ops Room"}}},
+{"version":"v0.9","updateComponents":{"surfaceId":"liveops","components":[
+{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["hdr","kpiRow","midRow","chartsRow","opsTabs","actionsCard"]},
+
+{"id":"hdr","component":"CardHeader","title":"🎮 Live-Ops Room","subtitle":"Real-time studio operations dashboard"},
+
+{"id":"kpiRow","component":"Card","variant":"clear","direction":"row","gap":"m","wrap":true,"children":["kpiOnline","kpiDau","kpiMau","kpiRevToday","kpiArpu"]},
+
+{"id":"kpiOnline","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["kpiOnlineLbl","kpiOnlineVal","kpiOnlineTag"]},
+{"id":"kpiOnlineLbl","component":"TextContent","text":"Players Online Now","size":"small"},
+{"id":"kpiOnlineVal","component":"Heading","text":"48,217","level":"h2"},
+{"id":"kpiOnlineTag","component":"Tag","text":"▲ live","variant":"success","size":"sm"},
+
+{"id":"kpiDau","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["kpiDauLbl","kpiDauVal","kpiDauTag"]},
+{"id":"kpiDauLbl","component":"TextContent","text":"Daily Active (DAU)","size":"small"},
+{"id":"kpiDauVal","component":"Heading","text":"312,540","level":"h2"},
+{"id":"kpiDauTag","component":"Tag","text":"▲ 4.2%","variant":"success","size":"sm"},
+
+{"id":"kpiMau","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["kpiMauLbl","kpiMauVal","kpiMauTag"]},
+{"id":"kpiMauLbl","component":"TextContent","text":"Monthly Active (MAU)","size":"small"},
+{"id":"kpiMauVal","component":"Heading","text":"5.86M","level":"h2"},
+{"id":"kpiMauTag","component":"Tag","text":"▲ 1.8%","variant":"info","size":"sm"},
+
+{"id":"kpiRevToday","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["kpiRevLbl","kpiRevVal","kpiRevTag"]},
+{"id":"kpiRevLbl","component":"TextContent","text":"Revenue Today","size":"small"},
+{"id":"kpiRevVal","component":"Heading","text":"$184,920","level":"h2"},
+{"id":"kpiRevTag","component":"Tag","text":"▲ 6.7%","variant":"success","size":"sm"},
+
+{"id":"kpiArpu","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["kpiArpuLbl","kpiArpuVal","kpiArpuTag"]},
+{"id":"kpiArpuLbl","component":"TextContent","text":"Revenue / User (ARPU)","size":"small"},
+{"id":"kpiArpuVal","component":"Heading","text":"$0.59","level":"h2"},
+{"id":"kpiArpuTag","component":"Tag","text":"ARPPU $8.14","variant":"neutral","size":"sm"},
+
+{"id":"midRow","component":"Card","variant":"clear","direction":"row","gap":"m","wrap":true,"children":["sessionCard","bestSellCard"]},
+
+{"id":"sessionCard","component":"Card","variant":"card","direction":"column","gap":"s","weight":1,"children":["sessionHdr","sessionChart"]},
+{"id":"sessionHdr","component":"CardHeader","title":"Avg Session Length","subtitle":"Past 14 days (minutes)"},
+{"id":"sessionChart","component":"LineChart","xLabel":"Day","yLabel":"Minutes","variant":"natural","labels":["D1","D2","D3","D4","D5","D6","D7","D8","D9","D10","D11","D12","D13","D14"],"series":["sessionSeries"]},
+{"id":"sessionSeries","component":"Series","category":"Minutes","values":[27,29,28,31,30,33,35,34,32,36,38,37,39,41]},
+
+{"id":"bestSellCard","component":"Card","variant":"card","direction":"column","gap":"s","weight":1,"children":["bestSellHdr","bestSellChart"]},
+{"id":"bestSellHdr","component":"CardHeader","title":"Best-Selling Items","subtitle":"Units sold today"},
+{"id":"bestSellChart","component":"HorizontalBarChart","xLabel":"Units","yLabel":"Item","labels":["Neon Skin Pack","Battle Pass S7","500 Gem Bundle","Legendary Blade","XP Booster 24h"],"series":["bestSellSeries"]},
+{"id":"bestSellSeries","component":"Series","category":"Units","values":[8420,6310,5980,4120,3760]},
+
+{"id":"chartsRow","component":"Card","variant":"clear","direction":"row","gap":"m","wrap":true,"children":["crashCard","inflationCard"]},
+
+{"id":"crashCard","component":"Card","variant":"card","direction":"column","gap":"s","weight":1,"children":["crashHdr","crashChart"]},
+{"id":"crashHdr","component":"CardHeader","title":"Crash Rate by App Version","subtitle":"% of sessions crashing"},
+{"id":"crashChart","component":"BarChart","xLabel":"Version","yLabel":"Crash %","variant":"grouped","labels":["v4.1.0","v4.1.1","v4.2.0","v4.2.1","v4.3.0"],"series":["crashSeries"]},
+{"id":"crashSeries","component":"Series","category":"Crash %","values":[0.9,0.7,1.4,0.5,2.1]},
+
+{"id":"inflationCard","component":"Card","variant":"card","direction":"column","gap":"s","weight":1,"children":["inflationHdr","inflationChart","inflationNote"]},
+{"id":"inflationHdr","component":"CardHeader","title":"In-Game Currency Inflation","subtitle":"Avg Gold price index (past 14 days)"},
+{"id":"inflationChart","component":"AreaChart","xLabel":"Day","yLabel":"Index","variant":"natural","labels":["D1","D2","D3","D4","D5","D6","D7","D8","D9","D10","D11","D12","D13","D14"],"series":["inflationSeries"]},
+{"id":"inflationSeries","component":"Series","category":"Price Index","values":[100,101,103,102,105,108,107,110,113,112,116,119,121,124]},
+{"id":"inflationNote","component":"TextCallout","variant":"warning","title":"+24% over 14 days","description":"Gold sink adjustments recommended before next event drop."},
+
+{"id":"opsTabs","component":"Tabs","items":["tabRegions","tabEvents","tabModeration","tabExperiments"]},
+
+{"id":"tabRegions","component":"TabItem","value":"regions","trigger":"Server Regions","content":["regionsTable"]},
+{"id":"regionsTable","component":"Table","columns":["rgnCol","rgnPing","rgnLoad","rgnHealth"]},
+{"id":"rgnCol","component":"Col","label":"Region","type":"string","data":["NA-East","NA-West","EU-Central","Asia-Pacific","South America"]},
+{"id":"rgnPing","component":"Col","label":"Avg Ping (ms)","type":"number","data":[24,31,28,46,72]},
+{"id":"rgnLoad","component":"Col","label":"Load %","type":"number","data":[61,54,73,88,42]},
+{"id":"rgnHealth","component":"Col","label":"Health","type":"string","data":["Healthy","Healthy","Elevated","Degraded","Healthy"]},
+
+{"id":"tabEvents","component":"TabItem","value":"events","trigger":"Live Events","content":["eventsRunning","eventsUpcoming"]},
+{"id":"eventsRunning","component":"ListBlock","variant":"number","items":["evR1","evR2"]},
+{"id":"evR1","component":"ListItem","title":"Summer Blitz Tournament — RUNNING","subtitle":"Ends in 2d 4h · 214k participants"},
+{"id":"evR2","component":"ListItem","title":"Double XP Weekend — RUNNING","subtitle":"Ends in 18h · +38% engagement"},
+{"id":"eventsUpcoming","component":"ListBlock","variant":"number","items":["evU1","evU2"]},
+{"id":"evU1","component":"ListItem","title":"Haunted Harbor (Seasonal) — UPCOMING","subtitle":"Starts in 5d · asset bundle ready"},
+{"id":"evU2","component":"ListItem","title":"Founders Sale — UPCOMING","subtitle":"Starts in 9d · pricing pending review"},
+
+{"id":"tabModeration","component":"TabItem","value":"moderation","trigger":"Moderation Queue","content":["modReports","modAppeals"]},
+{"id":"modReports","component":"Callout","variant":"warning","title":"1,284 Player Reports Awaiting Review","description":"342 flagged as high-priority (cheating / toxicity). Oldest pending: 3h 12m."},
+{"id":"modAppeals","component":"Callout","variant":"info","title":"96 Ban Appeals Awaiting Review","description":"11 escalated to senior mods. Avg turnaround this week: 14h."},
+
+{"id":"tabExperiments","component":"TabItem","value":"experiments","trigger":"Experiments","content":["expCard1","expCard2"]},
+{"id":"expCard1","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["exp1Hdr","exp1Body","exp1Prog"]},
+{"id":"exp1Hdr","component":"CardHeader","title":"Exp A — New Onboarding Flow","subtitle":"Variant B vs Control"},
+{"id":"exp1Body","component":"TextContent","text":"**D1 Retention:** Control 41.2% → Variant B **46.8%** (+5.6pp). Statistically significant (p=0.02).","size":"default"},
+{"id":"exp1Prog","component":"Progress","value":78,"label":"Sample size: 78% of target"},
+{"id":"expCard2","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["exp2Hdr","exp2Body","exp2Prog"]},
+{"id":"exp2Hdr","component":"CardHeader","title":"Exp B — Store Bundle Pricing","subtitle":"$9.99 vs $12.99 tiers"},
+{"id":"exp2Body","component":"TextContent","text":"**Conversion:** $9.99 3.8% vs $12.99 3.1%. **Revenue/user** favors $12.99 (+9%). Not yet significant (p=0.11).","size":"default"},
+{"id":"exp2Prog","component":"Progress","value":54,"label":"Sample size: 54% of target"},
+
+{"id":"actionsCard","component":"Card","variant":"card","direction":"column","gap":"m","children":["actionsHdr","actionsRow"]},
+{"id":"actionsHdr","component":"CardHeader","title":"Operator Actions","subtitle":"Draft, focus, and ship"},
+{"id":"actionsRow","component":"Buttons","direction":"row","buttons":["patchNotesBtn","focusRegionBtn","hotfixBtn"]},
+{"id":"patchNotesBtn","component":"DrawerBlock","triggerLabel":"📝 Draft Patch Notes","title":"Draft Patch Notes","description":"Compose notes for the next release.","content":["patchForm"]},
+{"id":"patchForm","component":"Form","name":"patchNotes","buttons":"patchFormBtns","fields":["patchVerCtl","patchBodyCtl"]},
+{"id":"patchVerCtl","component":"FormControl","label":"Version","input":"patchVerInput","hint":"e.g. v4.3.1"},
+{"id":"patchVerInput","component":"Input","name":"version","type":"text","placeholder":"v4.3.1"},
+{"id":"patchBodyCtl","component":"FormControl","label":"Notes","input":"patchBodyInput","hint":"Markdown supported"},
+{"id":"patchBodyInput","component":"TextArea","name":"body","rows":8,"placeholder":"- Fixed crash on v4.3.0 login\n- Adjusted Gold sinks\n- Balance tweaks..."},
+{"id":"patchFormBtns","component":"Buttons","buttons":["patchSaveBtn"]},
+{"id":"patchSaveBtn","component":"Button","label":"Save Draft","variant":"primary","action":["savePatchNotes"]},
+
+{"id":"focusRegionBtn","component":"DialogBlock","triggerLabel":"🎯 Focus a Region","title":"Focus on One Region","description":"Drill down into a single server region.","triggerVariant":"secondary","content":["focusForm"]},
+{"id":"focusForm","component":"Form","name":"focusRegion","buttons":"focusFormBtns","fields":["focusSelCtl"]},
+{"id":"focusSelCtl","component":"FormControl","label":"Region","input":"focusSelect","hint":"Dashboard will scope to this region"},
+{"id":"focusSelect","component":"Select","name":"region","placeholder":"Select region","items":["fs1","fs2","fs3","fs4","fs5"]},
+{"id":"fs1","component":"SelectItem","value":"na-east","label":"NA-East"},
+{"id":"fs2","component":"SelectItem","value":"na-west","label":"NA-West"},
+{"id":"fs3","component":"SelectItem","value":"eu-central","label":"EU-Central"},
+{"id":"fs4","component":"SelectItem","value":"asia-pacific","label":"Asia-Pacific (Degraded)"},
+{"id":"fs5","component":"SelectItem","value":"south-america","label":"South America"},
+{"id":"focusFormBtns","component":"Buttons","buttons":["focusApplyBtn"]},
+{"id":"focusApplyBtn","component":"Button","label":"Apply Focus","variant":"primary","action":["focusRegion"]},
+
+{"id":"hotfixBtn","component":"AlertDialogBlock","triggerLabel":"🚀 Ship Hotfix","title":"Ship Hotfix to Production?","description":"This deploys the current hotfix build to all live regions immediately. Crash rate on v4.3.0 is elevated (2.1%). Confirm to proceed.","confirmLabel":"Ship Now","cancelLabel":"Cancel","triggerVariant":"destructive"}
+]}}
+]
+</a2ui-json>
+
+This single screen covers every numbered item:
+
+1. **Players online now** & 2. **DAU/MAU** & 3. **Revenue today** & 4. **ARPU** — top KPI row.
+5. **Session length (2 weeks)** — line chart. 6. **Best-selling items + units** — horizontal bar chart.
+7. **Region health** — Regions table. 8. **Crash rate by version** — bar chart. 12. **Currency inflation** — area chart with warning.
+9. **Live events (running/upcoming)** — Events tab. 10. **Player reports** & 11. **Ban appeals** — Moderation tab. 13. **Experiment results** — Experiments tab.
+14. **Draft patch notes** — drawer form. 15. **Focus one region** — dialog with region selector. 16. **Ship a hotfix** — confirm/cancel alert dialog.

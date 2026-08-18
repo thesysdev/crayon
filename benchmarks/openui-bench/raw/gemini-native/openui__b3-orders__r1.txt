@@ -1,0 +1,51 @@
+root = Card([header, metricsGrid, sectionDivider, analyticsTabs, filterForm, ordersTable, followUps], "card", "column", "l")
+
+header = CardHeader("E-Commerce Operations Desk", "Real-time store metrics, fulfillment, and order management")
+
+metricsGrid = SectionBlock([metricsSection])
+metricsSection = SectionItem("metrics", "Key Performance Indicators Today", [kpiCard1, kpiCard2, kpiCard3, kpiCard4])
+kpiCard1 = TextContent("### 1,420\n**Orders Placed Today**\n+12% vs yesterday", "default")
+kpiCard2 = TextContent("### $84,350.00\n**Revenue Today**\n+8.5% vs yesterday", "default")
+kpiCard3 = TextContent("### $59.40\n**Average Order Value**\n+$2.15 vs target", "default")
+kpiCard4 = TextContent("### 2.1%\n**Refund Rate (This Month)**\n-0.4% vs last month", "default")
+
+sectionDivider = Separator("horizontal")
+
+analyticsTabs = Tabs([chartTab, stepTab])
+chartTab = TabItem("charts", "Weekly Volume Trend", [volumeChart])
+volumeChart = BarChart(["Week 1", "Week 2", "Week 3", "Week 4"], [volumeSeries], "grouped", "Past 4 Weeks", "Total Orders")
+volumeSeries = Series("Order Volume", [8400, 9200, 9800, 10450])
+
+stepTab = TabItem("workflow", "Fulfillment Process", [fulfillmentSteps])
+fulfillmentSteps = Steps([step1, step2, step3])
+step1 = StepsItem("Order Received", "Payment verified and inventory allocated")
+step2 = StepsItem("Pick & Pack", "Items gathered from warehouse and packed")
+step3 = StepsItem("Mark Fulfilled", "Tracking assigned and customer notified")
+
+filterForm = Form("order-search-filters", filterButtons, [searchField, statusField])
+searchField = FormControl("Search Customer", searchInput, "Search by customer full name")
+searchInput = Input("customer_name", "e.g. Jane Doe", "text")
+
+statusField = FormControl("Filter by Status", statusSelect, "Narrow orders list")
+statusSelect = Select("status_filter", [optAll, optPending, optProcessing, optFulfilled, optRefunded], "All Statuses")
+optAll = SelectItem("all", "All Statuses")
+optPending = SelectItem("pending", "Pending")
+optProcessing = SelectItem("processing", "Processing")
+optFulfilled = SelectItem("fulfilled", "Fulfilled")
+optRefunded = SelectItem("refunded", "Refunded")
+
+filterButtons = Buttons([applyFiltersBtn, resetFiltersBtn])
+applyFiltersBtn = Button("Apply Filters", null, "primary")
+resetFiltersBtn = Button("Reset", null, "tertiary")
+
+ordersTable = Table([colId, colCustomer, colTotal, colStatus, colAction])
+colId = Col("Order ID", ["#ORD-9481", "#ORD-9482", "#ORD-9483", "#ORD-9484", "#ORD-9485"])
+colCustomer = Col("Customer", ["Sarah Jenkins", "Michael Chang", "Amanda Rossi", "David Kim", "Elena Rostova"])
+colTotal = Col("Total", ["$124.50", "$45.00", "$210.80", "$89.99", "$156.20"])
+colStatus = Col("Status", ["Processing", "Pending", "Fulfilled", "Processing", "Pending"])
+colAction = Col("Fulfillment Action", ["Mark Fulfilled", "Mark Fulfilled", "Completed", "Mark Fulfilled", "Mark Fulfilled"], "action")
+
+followUps = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("View refunded orders details")
+fu2 = FollowUpItem("Export today's fulfillment log")
+fu3 = FollowUpItem("Adjust inventory thresholds")

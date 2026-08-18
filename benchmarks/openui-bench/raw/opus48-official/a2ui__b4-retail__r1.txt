@@ -1,0 +1,680 @@
+Here's a comprehensive daily console for the store manager.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "manager-console",
+      "catalogId": "thesys.dev:c1-openui"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "manager-console",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "l",
+          "children": ["header-card", "store-switch-card", "kpi-row", "traffic-card", "middle-row", "promos-card", "registers-card", "compare-card", "footer-follow"]
+        },
+        {
+          "id": "header-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "xs",
+          "children": ["header-title", "header-sub"]
+        },
+        {
+          "id": "header-title",
+          "component": "Heading",
+          "text": "Store Manager Console — Today",
+          "level": "h1"
+        },
+        {
+          "id": "header-sub",
+          "component": "TextContent",
+          "text": "Downtown Flagship · Live daily overview",
+          "size": "small"
+        },
+        {
+          "id": "store-switch-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "row",
+          "gap": "m",
+          "align": "end",
+          "children": ["store-select", "store-view-btn"]
+        },
+        {
+          "id": "store-select",
+          "component": "FormControl",
+          "label": "View a different store",
+          "input": "store-select-input",
+          "weight": 3
+        },
+        {
+          "id": "store-select-input",
+          "component": "Select",
+          "name": "store",
+          "placeholder": "Choose a store",
+          "value": "downtown",
+          "items": ["store-opt-1", "store-opt-2", "store-opt-3", "store-opt-4"]
+        },
+        {
+          "id": "store-opt-1",
+          "component": "SelectItem",
+          "value": "downtown",
+          "label": "Downtown Flagship"
+        },
+        {
+          "id": "store-opt-2",
+          "component": "SelectItem",
+          "value": "westgate",
+          "label": "Westgate Mall"
+        },
+        {
+          "id": "store-opt-3",
+          "component": "SelectItem",
+          "value": "airport",
+          "label": "Airport Terminal 2"
+        },
+        {
+          "id": "store-opt-4",
+          "component": "SelectItem",
+          "value": "riverside",
+          "label": "Riverside Outlet"
+        },
+        {
+          "id": "store-view-btn",
+          "component": "Button",
+          "label": "View Store",
+          "variant": "primary",
+          "action": ["viewStore"]
+        },
+        {
+          "id": "kpi-row",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "l",
+          "wrap": true,
+          "children": ["sales-card", "basket-card", "returns-card"]
+        },
+        {
+          "id": "sales-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "weight": 2,
+          "children": ["sales-header", "sales-value", "sales-progress", "sales-note"]
+        },
+        {
+          "id": "sales-header",
+          "component": "CardHeader",
+          "title": "Sales Today vs Target"
+        },
+        {
+          "id": "sales-value",
+          "component": "TextContent",
+          "text": "**$18,420** of $25,000 target",
+          "size": "large-heavy"
+        },
+        {
+          "id": "sales-progress",
+          "component": "Progress",
+          "value": 74,
+          "label": "74% of daily target"
+        },
+        {
+          "id": "sales-note",
+          "component": "TextContent",
+          "text": "$6,580 remaining to hit target",
+          "size": "small"
+        },
+        {
+          "id": "basket-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "weight": 1,
+          "children": ["basket-header", "basket-value", "basket-tag"]
+        },
+        {
+          "id": "basket-header",
+          "component": "CardHeader",
+          "title": "Avg Basket Size"
+        },
+        {
+          "id": "basket-value",
+          "component": "TextContent",
+          "text": "**$42.15**",
+          "size": "large-heavy"
+        },
+        {
+          "id": "basket-tag",
+          "component": "Tag",
+          "text": "+3.2% vs yesterday",
+          "variant": "success",
+          "size": "sm"
+        },
+        {
+          "id": "returns-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "weight": 1,
+          "children": ["returns-header", "returns-value", "returns-tag"]
+        },
+        {
+          "id": "returns-header",
+          "component": "CardHeader",
+          "title": "Returns This Week"
+        },
+        {
+          "id": "returns-value",
+          "component": "TextContent",
+          "text": "**37 items** · $1,240",
+          "size": "large-heavy"
+        },
+        {
+          "id": "returns-tag",
+          "component": "Tag",
+          "text": "2.1% of sales",
+          "variant": "warning",
+          "size": "sm"
+        },
+        {
+          "id": "traffic-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": ["traffic-header", "traffic-chart"]
+        },
+        {
+          "id": "traffic-header",
+          "component": "CardHeader",
+          "title": "Foot Traffic Through the Day",
+          "subtitle": "Customers entering per hour"
+        },
+        {
+          "id": "traffic-chart",
+          "component": "LineChart",
+          "labels": ["9a", "10a", "11a", "12p", "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p"],
+          "series": ["traffic-series"],
+          "variant": "natural",
+          "xLabel": "Hour",
+          "yLabel": "Visitors"
+        },
+        {
+          "id": "traffic-series",
+          "component": "Series",
+          "category": "Visitors",
+          "values": [45, 88, 132, 210, 265, 198, 176, 205, 288, 340, 260, 150]
+        },
+        {
+          "id": "middle-row",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "l",
+          "wrap": true,
+          "children": ["bestsellers-card", "stockout-card", "shift-card"]
+        },
+        {
+          "id": "bestsellers-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "weight": 1,
+          "children": ["bestsellers-header", "bestsellers-table"]
+        },
+        {
+          "id": "bestsellers-header",
+          "component": "CardHeader",
+          "title": "Best Sellers Today"
+        },
+        {
+          "id": "bestsellers-table",
+          "component": "Table",
+          "columns": ["bs-col-item", "bs-col-units"]
+        },
+        {
+          "id": "bs-col-item",
+          "component": "Col",
+          "label": "Item",
+          "type": "string",
+          "data": ["Classic Tee — Black", "Denim Jacket", "Canvas Sneakers", "Wool Beanie", "Leather Belt"]
+        },
+        {
+          "id": "bs-col-units",
+          "component": "Col",
+          "label": "Units",
+          "type": "number",
+          "data": [142, 98, 76, 64, 51]
+        },
+        {
+          "id": "stockout-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "weight": 1,
+          "children": ["stockout-header", "stockout-alert", "stockout-list", "reorder-controls"]
+        },
+        {
+          "id": "stockout-header",
+          "component": "CardHeader",
+          "title": "Out of Stock"
+        },
+        {
+          "id": "stockout-alert",
+          "component": "Alert",
+          "title": "4 items need reordering",
+          "description": "These SKUs are at zero on-hand.",
+          "variant": "warning"
+        },
+        {
+          "id": "stockout-list",
+          "component": "ListBlock",
+          "variant": "number",
+          "items": ["so-item-1", "so-item-2", "so-item-3", "so-item-4"]
+        },
+        {
+          "id": "so-item-1",
+          "component": "ListItem",
+          "title": "Slim Chinos — Khaki (32)",
+          "subtitle": "SKU CH-32-KH · 0 on hand"
+        },
+        {
+          "id": "so-item-2",
+          "component": "ListItem",
+          "title": "Cotton Socks 3-pack",
+          "subtitle": "SKU SK-3PK · 0 on hand"
+        },
+        {
+          "id": "so-item-3",
+          "component": "ListItem",
+          "title": "Puffer Vest — Navy (L)",
+          "subtitle": "SKU PV-L-NV · 0 on hand"
+        },
+        {
+          "id": "so-item-4",
+          "component": "ListItem",
+          "title": "Silk Scarf — Rose",
+          "subtitle": "SKU SC-RS · 0 on hand"
+        },
+        {
+          "id": "reorder-controls",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "row",
+          "gap": "m",
+          "align": "end",
+          "children": ["reorder-select", "reorder-qty", "reorder-btn"]
+        },
+        {
+          "id": "reorder-select",
+          "component": "FormControl",
+          "label": "Reorder Item",
+          "input": "reorder-select-input",
+          "weight": 2
+        },
+        {
+          "id": "reorder-select-input",
+          "component": "Select",
+          "name": "reorderItem",
+          "placeholder": "Select item",
+          "items": ["ro-opt-1", "ro-opt-2", "ro-opt-3", "ro-opt-4"]
+        },
+        {
+          "id": "ro-opt-1",
+          "component": "SelectItem",
+          "value": "CH-32-KH",
+          "label": "Slim Chinos — Khaki (32)"
+        },
+        {
+          "id": "ro-opt-2",
+          "component": "SelectItem",
+          "value": "SK-3PK",
+          "label": "Cotton Socks 3-pack"
+        },
+        {
+          "id": "ro-opt-3",
+          "component": "SelectItem",
+          "value": "PV-L-NV",
+          "label": "Puffer Vest — Navy (L)"
+        },
+        {
+          "id": "ro-opt-4",
+          "component": "SelectItem",
+          "value": "SC-RS",
+          "label": "Silk Scarf — Rose"
+        },
+        {
+          "id": "reorder-qty",
+          "component": "FormControl",
+          "label": "Qty",
+          "input": "reorder-qty-input",
+          "weight": 1
+        },
+        {
+          "id": "reorder-qty-input",
+          "component": "Input",
+          "name": "reorderQty",
+          "type": "number",
+          "placeholder": "24"
+        },
+        {
+          "id": "reorder-btn",
+          "component": "Button",
+          "label": "Reorder",
+          "variant": "primary",
+          "action": ["reorderItem"]
+        },
+        {
+          "id": "shift-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "weight": 1,
+          "children": ["shift-header", "shift-list"]
+        },
+        {
+          "id": "shift-header",
+          "component": "CardHeader",
+          "title": "On Shift Today",
+          "subtitle": "6 staff scheduled"
+        },
+        {
+          "id": "shift-list",
+          "component": "Table",
+          "columns": ["shift-col-name", "shift-col-role", "shift-col-hours"]
+        },
+        {
+          "id": "shift-col-name",
+          "component": "Col",
+          "label": "Name",
+          "type": "string",
+          "data": ["Maria Chen", "James Okafor", "Priya Nair", "Tom Brady", "Lena Park", "Sam Diaz"]
+        },
+        {
+          "id": "shift-col-role",
+          "component": "Col",
+          "label": "Role",
+          "type": "string",
+          "data": ["Supervisor", "Cashier", "Cashier", "Floor", "Floor", "Stockroom"]
+        },
+        {
+          "id": "shift-col-hours",
+          "component": "Col",
+          "label": "Shift",
+          "type": "string",
+          "data": ["9a–5p", "9a–3p", "12p–8p", "10a–6p", "2p–9p", "8a–4p"]
+        },
+        {
+          "id": "promos-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": ["promos-header", "promos-table"]
+        },
+        {
+          "id": "promos-header",
+          "component": "CardHeader",
+          "title": "Running Promotions",
+          "subtitle": "Performance so far"
+        },
+        {
+          "id": "promos-table",
+          "component": "Table",
+          "columns": ["promo-col-name", "promo-col-units", "promo-col-rev", "promo-col-status"]
+        },
+        {
+          "id": "promo-col-name",
+          "component": "Col",
+          "label": "Promotion",
+          "type": "string",
+          "data": ["BOGO Tees", "20% Off Denim", "Winter Accessories Bundle", "Loyalty Double Points"]
+        },
+        {
+          "id": "promo-col-units",
+          "component": "Col",
+          "label": "Units Sold",
+          "type": "number",
+          "data": [284, 156, 92, 410]
+        },
+        {
+          "id": "promo-col-rev",
+          "component": "Col",
+          "label": "Revenue",
+          "type": "string",
+          "data": ["$3,120", "$4,680", "$2,760", "$8,900"]
+        },
+        {
+          "id": "promo-col-status",
+          "component": "Col",
+          "label": "Status",
+          "type": "string",
+          "data": ["On track", "Exceeding", "Behind", "Exceeding"]
+        },
+        {
+          "id": "registers-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": ["registers-header", "registers-row"]
+        },
+        {
+          "id": "registers-header",
+          "component": "CardHeader",
+          "title": "Registers",
+          "subtitle": "Open / Closed status"
+        },
+        {
+          "id": "registers-row",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "wrap": true,
+          "children": ["reg-1", "reg-2", "reg-3", "reg-4", "reg-5"]
+        },
+        {
+          "id": "reg-1",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "align": "center",
+          "weight": 1,
+          "children": ["reg-1-name", "reg-1-badge"]
+        },
+        {
+          "id": "reg-1-name",
+          "component": "TextContent",
+          "text": "**Register 1**",
+          "size": "default"
+        },
+        {
+          "id": "reg-1-badge",
+          "component": "Badge",
+          "text": "Open",
+          "variant": "default"
+        },
+        {
+          "id": "reg-2",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "align": "center",
+          "weight": 1,
+          "children": ["reg-2-name", "reg-2-badge"]
+        },
+        {
+          "id": "reg-2-name",
+          "component": "TextContent",
+          "text": "**Register 2**",
+          "size": "default"
+        },
+        {
+          "id": "reg-2-badge",
+          "component": "Badge",
+          "text": "Open",
+          "variant": "default"
+        },
+        {
+          "id": "reg-3",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "align": "center",
+          "weight": 1,
+          "children": ["reg-3-name", "reg-3-badge"]
+        },
+        {
+          "id": "reg-3-name",
+          "component": "TextContent",
+          "text": "**Register 3**",
+          "size": "default"
+        },
+        {
+          "id": "reg-3-badge",
+          "component": "Badge",
+          "text": "Closed",
+          "variant": "secondary"
+        },
+        {
+          "id": "reg-4",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "align": "center",
+          "weight": 1,
+          "children": ["reg-4-name", "reg-4-badge"]
+        },
+        {
+          "id": "reg-4-name",
+          "component": "TextContent",
+          "text": "**Register 4**",
+          "size": "default"
+        },
+        {
+          "id": "reg-4-badge",
+          "component": "Badge",
+          "text": "Open",
+          "variant": "default"
+        },
+        {
+          "id": "reg-5",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "align": "center",
+          "weight": 1,
+          "children": ["reg-5-name", "reg-5-badge"]
+        },
+        {
+          "id": "reg-5-name",
+          "component": "TextContent",
+          "text": "**Register 5**",
+          "size": "default"
+        },
+        {
+          "id": "reg-5-badge",
+          "component": "Badge",
+          "text": "Closed",
+          "variant": "secondary"
+        },
+        {
+          "id": "compare-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": ["compare-header", "compare-chart"]
+        },
+        {
+          "id": "compare-header",
+          "component": "CardHeader",
+          "title": "This Week vs Last Week",
+          "subtitle": "Daily sales comparison"
+        },
+        {
+          "id": "compare-chart",
+          "component": "BarChart",
+          "labels": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+          "series": ["compare-this", "compare-last"],
+          "variant": "grouped",
+          "xLabel": "Day",
+          "yLabel": "Sales ($)"
+        },
+        {
+          "id": "compare-this",
+          "component": "Series",
+          "category": "This Week",
+          "values": [18200, 19500, 21000, 20400, 24800, 31200, 18420]
+        },
+        {
+          "id": "compare-last",
+          "component": "Series",
+          "category": "Last Week",
+          "values": [17100, 18800, 19900, 21500, 23200, 29800, 22100]
+        },
+        {
+          "id": "footer-follow",
+          "component": "FollowUpBlock",
+          "items": ["fu-1", "fu-2", "fu-3"]
+        },
+        {
+          "id": "fu-1",
+          "component": "FollowUpItem",
+          "text": "Show staffing recommendations for tomorrow"
+        },
+        {
+          "id": "fu-2",
+          "component": "FollowUpItem",
+          "text": "Which promotion should I extend?"
+        },
+        {
+          "id": "fu-3",
+          "component": "FollowUpItem",
+          "text": "Break down returns by reason"
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+This single screen covers all twelve items:
+
+1. **Sales vs target** — progress bar showing $18,420 of $25,000 (74%)
+2. **Foot traffic** — hourly line chart across the day
+3. **Best sellers** — table with units per item
+4. **Out of stock** — alert plus numbered list of zero-on-hand SKUs
+5. **On shift today** — staff table with roles and hours
+6. **Avg basket size** — $42.15 KPI card
+7. **Returns this week** — 37 items / $1,240 KPI card
+8. **Promotions** — table with units, revenue, and status per promo
+9. **Registers** — five status cards (Open/Closed badges)
+10. **Reorder** — item select + quantity + Reorder button
+11. **View a different store** — store dropdown + View Store button
+12. **This week vs last week** — grouped bar chart

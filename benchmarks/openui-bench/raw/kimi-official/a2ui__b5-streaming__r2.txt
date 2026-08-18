@@ -1,0 +1,114 @@
+Here's a streaming operations command center covering all 16 requirements.
+
+<a2ui-json>
+{"version":"v0.9","createSurface":{"surfaceId":"ops-room","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#E50914","agentDisplayName":"StreamOps"}}}
+</a2ui-json>
+
+<a2ui-json>
+{"version":"v0.9","updateComponents":{"surfaceId":"ops-room","components":[
+{"id":"root","component":"Card","direction":"column","gap":"l","children":["hdr","rowKpi1","rowKpi2","sep1","rowCharts1","rowCharts2","rowCharts3","sep2","rowOps1","rowOps2","sep3","regionFocus","promoteTitle","flags"]},
+
+{"id":"hdr","component":"CardHeader","title":"StreamOps — Operations Room","subtitle":"Live service health, content, and growth overview"},
+
+{"id":"rowKpi1","component":"Card","direction":"row","gap":"m","variant":"sunk","children":["kpiViewers","kpiBuffer","kpiRecCTR","kpiDeadSearch"]},
+{"id":"kpiViewers","component":"Callout","variant":"info","title":"Watching right now","description":"2,418,337 concurrent viewers (peak 3.1M)"},
+{"id":"kpiBuffer","component":"Callout","variant":"warning","title":"Buffering rate","description":"0.84% of playtime rebuffered (SLO: <1%)"},
+{"id":"kpiRecCTR","component":"Callout","variant":"success","title":"Recommendation CTR","description":"12.6% of home recommendations clicked"},
+{"id":"kpiDeadSearch","component":"Callout","variant":"error","title":"Searches without playback","description":"18.2% of searches end with no play started"},
+
+{"id":"rowKpi2","component":"Card","direction":"row","gap":"m","variant":"clear","children":["subCancelChart","bufferLine"]},
+{"id":"subCancelChart","component":"BarChart","variant":"grouped","labels":["W1","W2","W3","W4"],"series":["sNew","sCancel"],"xLabel":"Week (this month)","yLabel":"Subscribers (k)","weight":1},
+{"id":"sNew","component":"Series","category":"New subscribers","values":[48,52,61,58]},
+{"id":"sCancel","component":"Series","category":"Cancellations","values":[22,19,25,21]},
+{"id":"bufferLine","component":"LineChart","variant":"natural","labels":["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],"series":["sBuf"],"xLabel":"Day","yLabel":"Rebuffer %","weight":1},
+{"id":"sBuf","component":"Series","category":"Buffering rate","values":[0.72,0.81,0.78,0.9,1.05,0.98,0.84]},
+
+{"id":"sep1","component":"Separator","orientation":"horizontal"},
+
+{"id":"rowCharts1","component":"Card","direction":"row","gap":"m","children":["topTitles","watchTime"]},
+{"id":"topTitles","component":"HorizontalBarChart","labels":["Midnight Harbor","Echo Falls","The Long Game","Sundown City","Paper Wolves"],"series":["sHours"],"yLabel":"Hours watched (M)","weight":1},
+{"id":"sHours","component":"Series","category":"Hours watched","values":[42,36,29,24,19]},
+{"id":"watchTime","component":"AreaChart","variant":"natural","labels":["Oct 1","Oct 5","Oct 10","Oct 15","Oct 20","Oct 25","Oct 30"],"series":["sWatch"],"xLabel":"Date","yLabel":"Hours watched (M)","weight":1},
+{"id":"sWatch","component":"Series","category":"Daily watch time","values":[61,58,66,72,69,78,81]},
+
+{"id":"rowCharts2","component":"Card","direction":"row","gap":"m","children":["genreRadar","revenuePie","devicePie"]},
+{"id":"genreRadar","component":"RadarChart","labels":["Engagement","Retention","Hours","Completion","New-viewer pull"],"series":["gDrama","gComedy","gDocs"],"weight":1},
+{"id":"gDrama","component":"Series","category":"Drama","values":[85,78,92,70,66]},
+{"id":"gComedy","component":"Series","category":"Comedy","values":[72,81,64,84,58]},
+{"id":"gDocs","component":"Series","category":"Documentary","values":[60,55,71,62,74]},
+{"id":"revenuePie","component":"PieChart","variant":"donut","labels":["Premium 4K","Standard","Basic w/ Ads"],"values":[54,32,14],"weight":1},
+{"id":"devicePie","component":"PieChart","variant":"pie","labels":["Smart TV","Mobile","Web","Tablet","Console"],"values":[46,27,15,7,5],"weight":1},
+
+{"id":"rowCharts3","component":"Card","direction":"row","gap":"m","children":["regionHealth","recTable"]},
+{"id":"regionHealth","component":"Table","columns":["cRegion","cBitrate","cError","cStatus"],"weight":1},
+{"id":"cRegion","component":"Col","label":"Region","data":["NA-East","NA-West","EU-Central","APAC","LATAM"]},
+{"id":"cBitrate","component":"Col","label":"Avg bitrate (Mbps)","type":"number","data":[14.2,13.8,15.1,11.9,10.4]},
+{"id":"cError","component":"Col","label":"Error rate %","type":"number","data":[0.3,0.4,0.2,0.9,1.2]},
+{"id":"cStatus","component":"Col","label":"Health","data":["Healthy","Healthy","Healthy","Degraded","Degraded"]},
+{"id":"recTable","component":"Table","columns":["cRec","cCTR"],"weight":1},
+{"id":"cRec","component":"Col","label":"Recommendation slot","data":["Hero banner","Because you watched","Trending row","Genre rails","Continue watching"]},
+{"id":"cCTR","component":"Col","label":"Click-through %","type":"number","data":[21.4,14.8,11.2,8.6,18.9]},
+
+{"id":"sep2","component":"Separator","orientation":"horizontal"},
+
+{"id":"rowOps1","component":"Card","direction":"row","gap":"m","children":["releases","expiring"]},
+{"id":"releases","component":"ListBlock","variant":"number","items":["rel1","rel2","rel3","rel4"],"weight":1},
+{"id":"rel1","component":"ListItem","title":"Neon Dynasty S2","subtitle":"Nov 4 — Original series"},
+{"id":"rel2","component":"ListItem","title":"Coastline","subtitle":"Nov 9 — Film premiere"},
+{"id":"rel3","component":"ListItem","title":"Static: A True Story","subtitle":"Nov 15 — Documentary"},
+{"id":"rel4","component":"ListItem","title":"Orbit Nine","subtitle":"Nov 22 — Sci-fi series"},
+{"id":"expiring","component":"Table","columns":["cLic","cExp"],"weight":1},
+{"id":"cLic","component":"Col","label":"Licensed title","data":["Harbor Nights","The Cartographer","Blue Static","Old Money"]},
+{"id":"cExp","component":"Col","label":"License expires","data":["Nov 12","Nov 18","Nov 25","Dec 2"]},
+
+{"id":"rowOps2","component":"Card","direction":"row","gap":"m","children":["deadSearches","flagsPreview"]},
+{"id":"deadSearches","component":"Table","columns":["cQuery","cCount"],"weight":1},
+{"id":"cQuery","component":"Col","label":"Zero-play search term","data":["\"space western\"","\"90s sitcom\"","\"k-drama romance\"","\"nature 4k\""]},
+{"id":"cCount","component":"Col","label":"No-playback searches/day","type":"number","data":[4120,3350,2980,2140]},
+{"id":"flagsPreview","component":"TagBlock","tags":["Flags: 8 on / 4 off"],"weight":1},
+
+{"id":"sep3","component":"Separator","orientation":"horizontal"},
+
+{"id":"regionFocus","component":"Card","variant":"card","children":["rfHead","rfForm"]},
+{"id":"rfHead","component":"CardHeader","title":"Focus on a region","subtitle":"Filter the dashboard by delivery region"},
+{"id":"rfForm","component":"Form","name":"regionFocus","fields":["rfControl"],"buttons":"rfButtons"},
+{"id":"rfControl","component":"FormControl","label":"Region","input":"rfSelect","hint":"All KPIs above will re-scope"},
+{"id":"rfSelect","component":"Select","name":"region","items":["rfAll","rfNaE","rfNaW","rfEu","rfApac","rfLatam"],"placeholder":"Select region"},
+{"id":"rfAll","component":"SelectItem","value":"all","label":"Global (all regions)"},
+{"id":"rfNaE","component":"SelectItem","value":"na-east","label":"NA-East"},
+{"id":"rfNaW","component":"SelectItem","value":"na-west","label":"NA-West"},
+{"id":"rfEu","component":"SelectItem","value":"eu-central","label":"EU-Central"},
+{"id":"rfApac","component":"SelectItem","value":"apac","label":"APAC"},
+{"id":"rfLatam","component":"SelectItem","value":"latam","label":"LATAM"},
+{"id":"rfButtons","component":"Buttons","buttons":["rfApply"]},
+{"id":"rfApply","component":"Button","label":"Apply region filter","variant":"primary","size":"medium"},
+
+{"id":"promoteTitle","component":"Card","variant":"card","children":["ptHead","ptForm"]},
+{"id":"ptHead","component":"CardHeader","title":"Promote a title on the home screen","subtitle":"Pin a title to the hero banner"},
+{"id":"ptForm","component":"Form","name":"promoteTitle","fields":["ptTitleControl","ptSlotControl","ptDurControl"],"buttons":"ptButtons"},
+{"id":"ptTitleControl","component":"FormControl","label":"Title ID or name","input":"ptTitle"},
+{"id":"ptTitle","component":"Input","name":"title","placeholder":"e.g. Neon Dynasty S2","type":"text"},
+{"id":"ptSlotControl","component":"FormControl","label":"Home slot","input":"ptSlot"},
+{"id":"ptSlot","component":"Select","name":"slot","items":["ptHero","ptTrend","ptRail"],"placeholder":"Choose placement"},
+{"id":"ptHero","component":"SelectItem","value":"hero","label":"Hero banner"},
+{"id":"ptTrend","component":"SelectItem","value":"trending","label":"Trending row (top)"},
+{"id":"ptRail","component":"SelectItem","value":"rail","label":"Genre rail boost"},
+{"id":"ptDurControl","component":"FormControl","label":"Duration (days)","input":"ptDur"},
+{"id":"ptDur","component":"Slider","name":"durationDays","variant":"discrete","min":1,"max":14,"step":1,"defaultValue":[3]},
+{"id":"ptButtons","component":"Buttons","buttons":["ptSubmit","ptCancel"]},
+{"id":"ptSubmit","component":"Button","label":"Promote title","variant":"primary"},
+{"id":"ptCancel","component":"Button","label":"Cancel","variant":"tertiary"},
+
+{"id":"flags","component":"Card","variant":"sunk","children":["flagHead","flagGroup"]},
+{"id":"flagHead","component":"CardHeader","title":"Feature flags","subtitle":"Production rollout state"},
+{"id":"flagGroup","component":"SwitchGroup","name":"featureFlags","items":["ff1","ff2","ff3","ff4","ff5","ff6"]},
+{"id":"ff1","component":"SwitchItem","name":"av1_codec","label":"AV1 codec rollout","description":"45% of 4K traffic","defaultChecked":true},
+{"id":"ff2","component":"SwitchItem","name":"new_home_layout","label":"New home layout","description":"A/B test, variant B","defaultChecked":true},
+{"id":"ff3","component":"SwitchItem","name":"ads_interactive","label":"Interactive ads","description":"Basic plan only","defaultChecked":false},
+{"id":"ff4","component":"SwitchItem","name":"offline_hdr","label":"Offline HDR downloads","description":"Mobile apps","defaultChecked":true},
+{"id":"ff5","component":"SwitchItem","name":"ai_dubbing","label":"AI dubbing beta","description":"LATAM pilot","defaultChecked":false},
+{"id":"ff6","component":"SwitchItem","name":"watch_parties","label":"Watch parties","description":"All platforms","defaultChecked":true}
+]}}
+</a2ui-json>
+
+All 16 items are covered: live viewers, buffering, recommendation CTR, and zero-playback search rates as KPI callouts (1, 6, 10, 11); subscribers vs cancellations and weekly buffering trend charts (4, 6); top titles by hours and monthly watch-time area chart (2, 3); genre radar, revenue-by-plan donut, and device split pie (5, 12, 13); regional delivery health table (7); upcoming releases list and expiring licenses table (8, 9); a region-focus form (14); a feature-flag switch group (15); and a home-screen promotion form with slot picker and duration slider (16).

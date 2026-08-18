@@ -1,0 +1,63 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["header","metricsRow","actionsRow","ticketsSection"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Support Lead — Morning View","subtitle":"Monday, Aug 18 • 08:42 AM • Queue health at a glance"},"children":[]}}
+{"op":"add","path":"/elements/metricsRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m"},"children":["metricOpen","metricResponse"]}}
+{"op":"add","path":"/elements/metricOpen","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["metricOpenLabel","metricOpenValue","metricOpenSub"]}}
+{"op":"add","path":"/elements/metricOpenLabel","value":{"type":"TextContent","props":{"text":"OPEN TICKETS","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/metricOpenValue","value":{"type":"Heading","props":{"text":{"$template":"${/metrics/openTickets}"},"level":"h1"},"children":[]}}
+{"op":"add","path":"/elements/metricOpenSub","value":{"type":"TextContent","props":{"text":"12 awaiting assignment • 8 in progress • 27 open total","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/metricResponse","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["metricResponseLabel","metricResponseValue","metricResponseSub","progressResponse"]}}
+{"op":"add","path":"/elements/metricResponseLabel","value":{"type":"TextContent","props":{"text":"AVG FIRST RESPONSE","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/metricResponseValue","value":{"type":"Heading","props":{"text":{"$template":"${/metrics/avgResponse}"},"level":"h1"},"children":[]}}
+{"op":"add","path":"/elements/metricResponseSub","value":{"type":"TextContent","props":{"text":"Target < 2h • SLA 94% met last 24h","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/progressResponse","value":{"type":"Progress","props":{"value":78,"label":"SLA compliance 78% within target"},"children":[]}}
+{"op":"add","path":"/state/metrics","value":{"openTickets":"47","avgResponse":"1h 42m"}}
+{"op":"add","path":"/elements/actionsRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","justify":"between","align":"center"},"children":["actionsHint","newTicketDialog"]}}
+{"op":"add","path":"/elements/actionsHint","value":{"type":"TextContent","props":{"text":"Review the 5 most recent tickets. Filter to focus on what needs you first.","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/newTicketDialog","value":{"type":"DialogBlock","props":{"triggerLabel":"+ New Ticket","title":"Open a new ticket","description":"Create a ticket for the queue. It will appear at the top of recent tickets.","content":["newTicketForm"]},"children":[]}}
+{"op":"add","path":"/elements/newTicketForm","value":{"type":"Form","props":{"name":"newTicket","buttons":"formButtons","fields":["formFieldSubject","formFieldPriority","formFieldDesc"]},"children":[]}}
+{"op":"add","path":"/elements/formFieldSubject","value":{"type":"FormControl","props":{"label":"Subject","input":"inputSubject","hint":"Brief summary of the customer issue"},"children":[]}}
+{"op":"add","path":"/elements/inputSubject","value":{"type":"Input","props":{"name":"subject","placeholder":"e.g. Checkout fails on Safari 17","value":{"$bindState":"/newTicket/subject"}},"children":[]}}
+{"op":"add","path":"/elements/formFieldPriority","value":{"type":"FormControl","props":{"label":"Priority","input":"selectPriority"},"children":[]}}
+{"op":"add","path":"/elements/selectPriority","value":{"type":"Select","props":{"name":"priority","placeholder":"Select priority","items":["selectItemLow","selectItemMedium","selectItemHigh","selectItemUrgent"],"value":{"$bindState":"/newTicket/priority"}},"children":[]}}
+{"op":"add","path":"/elements/selectItemLow","value":{"type":"SelectItem","props":{"value":"Low","label":"Low"},"children":[]}}
+{"op":"add","path":"/elements/selectItemMedium","value":{"type":"SelectItem","props":{"value":"Medium","label":"Medium"},"children":[]}}
+{"op":"add","path":"/elements/selectItemHigh","value":{"type":"SelectItem","props":{"value":"High","label":"High"},"children":[]}}
+{"op":"add","path":"/elements/selectItemUrgent","value":{"type":"SelectItem","props":{"value":"Urgent","label":"Urgent"},"children":[]}}
+{"op":"add","path":"/elements/formFieldDesc","value":{"type":"FormControl","props":{"label":"Description","input":"textAreaDesc"},"children":[]}}
+{"op":"add","path":"/elements/textAreaDesc","value":{"type":"TextArea","props":{"name":"description","placeholder":"Add details, customer email, steps to reproduce...","rows":3,"value":{"$bindState":"/newTicket/description"}},"children":[]}}
+{"op":"add","path":"/elements/formButtons","value":{"type":"Buttons","props":{"buttons":["btnSubmitTicket"],"direction":"row"},"children":[]}}
+{"op":"add","path":"/elements/btnSubmitTicket","value":{"type":"Button","props":{"label":"Create Ticket","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/tickets","value":{"id":"$id","title":{"$state":"/newTicket/subject"},"priority":{"$state":"/newTicket/priority"},"customer":"You (new)","age":"just now","status":"Open"},"clearStatePath":"/newTicket/subject"}}},"children":[]}}
+{"op":"add","path":"/state/newTicket","value":{"subject":"","priority":"High","description":""}}
+{"op":"add","path":"/elements/ticketsSection","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["ticketsHeader","ticketsTabs"]}}
+{"op":"add","path":"/elements/ticketsHeader","value":{"type":"CardHeader","props":{"title":"Five most recent tickets","subtitle":"Sorted by newest first • priority shown for each"},"children":[]}}
+{"op":"add","path":"/elements/ticketsTabs","value":{"type":"Tabs","props":{"items":["tabAll","tabHigh"]},"children":[]}}
+{"op":"add","path":"/elements/tabAll","value":{"type":"TabItem","props":{"value":"all","trigger":"All tickets (5)","content":["ticketsListAll"]},"children":[]}}
+{"op":"add","path":"/elements/tabHigh","value":{"type":"TabItem","props":{"value":"high","trigger":"High priority only (3)","content":["ticketsListHigh","highHint"]},"children":[]}}
+{"op":"add","path":"/elements/ticketsListAll","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/tickets","key":"id"},"children":["ticketCard"]}}
+{"op":"add","path":"/elements/ticketCard","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["ticketTopRow","ticketMetaRow"]}}
+{"op":"add","path":"/elements/ticketTopRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","justify":"between","align":"center"},"children":["ticketTitle","ticketPriorityBadge"]}}
+{"op":"add","path":"/elements/ticketTitle","value":{"type":"TextContent","props":{"text":{"$item":"title"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/ticketPriorityBadge","value":{"type":"Badge","props":{"text":{"$item":"priority"},"variant":{"$cond":{"$item":"priority","eq":"Urgent"},"$then":"destructive","$else":{"$cond":{"$item":"priority","eq":"High"},"$then":"destructive","$else":{"$cond":{"$item":"priority","eq":"Medium"},"$then":"secondary","$else":"outline"}}}}},"children":[]}}
+{"op":"add","path":"/elements/ticketMetaRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","justify":"between","align":"center"},"children":["ticketMeta","ticketAge"]}}
+{"op":"add","path":"/elements/ticketMeta","value":{"type":"TextContent","props":{"text":{"$template":"${customer} • ${status}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/ticketAge","value":{"type":"TextContent","props":{"text":{"$item":"age"},"size":"small"},"children":[]}}
+{"op":"add","path":"/state/tickets","value":[]}
+{"op":"add","path":"/state/tickets/0","value":{"id":"t-1058","title":"Payment webhook double-charging on retry","priority":"Urgent","customer":"acme@corp.com","age":"12 min ago","status":"Open"}}
+{"op":"add","path":"/state/tickets/1","value":{"id":"t-1057","title":"SSO login loop for Okta users","priority":"High","customer":"sarah.k@northwind.io","age":"38 min ago","status":"Open"}}
+{"op":"add","path":"/state/tickets/2","value":{"id":"t-1056","title":"CSV export missing last 200 rows","priority":"Medium","customer":"ops@blueprint.co","age":"1h ago","status":"Open"}}
+{"op":"add","path":"/state/tickets/3","value":{"id":"t-1055","title":"Mobile checkout button hidden on Safari 17","priority":"High","customer":"mike.chen@retailhub.com","age":"2h ago","status":"Open"}}
+{"op":"add","path":"/state/tickets/4","value":{"id":"t-1054","title":"Request: Add bulk edit for tags","priority":"Low","customer":"emma@studio-jane.com","age":"3h ago","status":"Open"}}
+{"op":"add","path":"/elements/ticketsListHigh","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/highPriorityTickets","key":"id"},"children":["ticketCardHigh"]}}
+{"op":"add","path":"/elements/ticketCardHigh","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["ticketTopRowHigh","ticketMetaRowHigh"]}}
+{"op":"add","path":"/elements/ticketTopRowHigh","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","justify":"between","align":"center"},"children":["ticketTitleHigh","ticketPriorityBadgeHigh"]}}
+{"op":"add","path":"/elements/ticketTitleHigh","value":{"type":"TextContent","props":{"text":{"$item":"title"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/ticketPriorityBadgeHigh","value":{"type":"Badge","props":{"text":{"$item":"priority"},"variant":"destructive"},"children":[]}}
+{"op":"add","path":"/elements/ticketMetaRowHigh","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","justify":"between","align":"center"},"children":["ticketMetaHigh","ticketAgeHigh"]}}
+{"op":"add","path":"/elements/ticketMetaHigh","value":{"type":"TextContent","props":{"text":{"$template":"${customer} • ${status}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/ticketAgeHigh","value":{"type":"TextContent","props":{"text":{"$item":"age"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/highHint","value":{"type":"Callout","props":{"variant":"info","title":"Filtered view","description":"Showing only High and Urgent priority tickets that need immediate attention."},"children":[]}}
+{"op":"add","path":"/state/highPriorityTickets","value":[]}
+{"op":"add","path":"/state/highPriorityTickets/0","value":{"id":"t-1058","title":"Payment webhook double-charging on retry","priority":"Urgent","customer":"acme@corp.com","age":"12 min ago","status":"Open"}}
+{"op":"add","path":"/state/highPriorityTickets/1","value":{"id":"t-1057","title":"SSO login loop for Okta users","priority":"High","customer":"sarah.k@northwind.io","age":"38 min ago","status":"Open"}}
+{"op":"add","path":"/state/highPriorityTickets/2","value":{"id":"t-1055","title":"Mobile checkout button hidden on Safari 17","priority":"High","customer":"mike.chen@retailhub.com","age":"2h ago","status":"Open"}}

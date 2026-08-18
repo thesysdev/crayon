@@ -1,0 +1,39 @@
+root = Card([header, filterRow, uptime, errorRate, resourceTrend, incidents, slowest, alertForm, followUps])
+header = CardHeader("Service Health", "Production overview")
+
+filterRow = Form("region-filter", filterButtons, [regionField])
+regionField = FormControl("Region", regionSelect, "Narrow the view to one region")
+regionSelect = Select("region", [regAll, regUsE, regUsW, regEu, regAp], "All regions")
+regAll = SelectItem("all", "All regions")
+regUsE = SelectItem("us-east", "US East")
+regUsW = SelectItem("us-west", "US West")
+regEu = SelectItem("eu-central", "EU Central")
+regAp = SelectItem("ap-south", "AP South")
+filterButtons = Buttons([applyRegionBtn])
+applyRegionBtn = Button("Apply", null, "secondary")
+
+uptime = Progress(99.94, "Uptime this quarter — 99.94%")
+errorRate = Alert("Error rate: 2.3%", "Current 5-minute error rate is elevated above the 1% baseline", "warning")
+
+resourceTrend = LineChart(["-24h", "-20h", "-16h", "-12h", "-8h", "-4h", "now"], [cpuSeries, memSeries], "natural", "Time", "% used")
+cpuSeries = Series("CPU", [42, 55, 61, 48, 72, 68, 74])
+memSeries = Series("Memory", [58, 60, 63, 65, 70, 71, 76])
+
+incidents = Table([incId, incSummary, incSeverity, incAck])
+incId = Col("Incident", ["INC-4821", "INC-4820", "INC-4817"])
+incSummary = Col("Summary", ["Checkout latency spike", "Auth token refresh failures", "Cache node eviction"])
+incSeverity = Col("Severity", ["SEV-1", "SEV-2", "SEV-3"])
+incAck = Col("Action", ["Acknowledge", "Acknowledge", "Acknowledge"], "action")
+
+slowest = HorizontalBarChart(["/api/checkout", "/api/search", "/api/user/orders", "/api/inventory", "/api/recommend"], [latencySeries], "grouped", "p95 latency (ms)", "Endpoint")
+latencySeries = Series("p95 latency", [1240, 980, 870, 640, 590])
+
+alertForm = Form("alert-threshold", alertButtons, [thresholdField])
+thresholdField = FormControl("Error rate alert threshold", thresholdSlider, "Trigger a page when the error rate exceeds this value")
+thresholdSlider = Slider("threshold", "discrete", 0, 10, 0.5, [2], "Threshold %")
+alertButtons = Buttons([saveThresholdBtn])
+saveThresholdBtn = Button("Save threshold", null, "primary")
+
+followUps = FollowUpBlock([fu1, fu2])
+fu1 = FollowUpItem("Acknowledge INC-4821")
+fu2 = FollowUpItem("Show logs for /api/checkout")

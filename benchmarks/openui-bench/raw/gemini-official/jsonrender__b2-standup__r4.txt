@@ -1,0 +1,44 @@
+{"op":"add","path":"/root","value":"container"}
+{"op":"add","path":"/elements/container","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header-card","stats-card","form-card","team-updates-section"]}}
+{"op":"add","path":"/elements/header-card","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","variant":"sunk"},"children":["header-info","date-badge"]}}
+{"op":"add","path":"/elements/header-info","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"children":["title","subtitle"]}}
+{"op":"add","path":"/elements/title","value":{"type":"Heading","props":{"text":"Async Daily Standup","level":"h2"}}}
+{"op":"add","path":"/elements/subtitle","value":{"type":"TextContent","props":{"text":"Engineering & Product Team","size":"small"}}}
+{"op":"add","path":"/elements/date-badge","value":{"type":"Badge","props":{"text":{"$state":"/todayDate"},"variant":"outline"}}}
+{"op":"add","path":"/state/todayDate","value":"Wednesday, Oct 24"}
+{"op":"add","path":"/elements/stats-card","value":{"type":"Card","props":{"direction":"row","gap":"m","justify":"between","align":"center"},"children":["submitted-stat","missing-stat"]}}
+{"op":"add","path":"/elements/submitted-stat","value":{"type":"Card","props":{"direction":"column","gap":"xs","align":"center"},"children":["submitted-count","submitted-label"]}}
+{"op":"add","path":"/elements/submitted-count","value":{"type":"Heading","props":{"text":{"$template":"${/submittedCount}"},"level":"h3"}}}
+{"op":"add","path":"/elements/submitted-label","value":{"type":"TextContent","props":{"text":"Submitted","size":"small"}}}
+{"op":"add","path":"/elements/missing-stat","value":{"type":"Card","props":{"direction":"column","gap":"xs","align":"center"},"children":["missing-count","missing-label"]}}
+{"op":"add","path":"/elements/missing-count","value":{"type":"Heading","props":{"text":{"$template":"${/missingCount}"},"level":"h3"}}}
+{"op":"add","path":"/elements/missing-label","value":{"type":"TextContent","props":{"text":"Updates Missing","size":"small"}}}
+{"op":"add","path":"/state/submittedCount","value":4}
+{"op":"add","path":"/state/missingCount","value":2}
+{"op":"add","path":"/elements/form-card","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["form-title","form-today-control","form-blocker-control","form-submit-button"]}}
+{"op":"add","path":"/elements/form-title","value":{"type":"Heading","props":{"text":"Post Your Update","level":"h4"}}}
+{"op":"add","path":"/elements/form-today-control","value":{"type":"FormControl","props":{"label":"What are you working on today?","input":"form-today-input"}}}
+{"op":"add","path":"/elements/form-today-input","value":{"type":"TextArea","props":{"placeholder":"e.g. Finishing API endpoints for user auth...","rows":2,"value":{"$bindState":"/newUpdate/today"}}}}
+{"op":"add","path":"/elements/form-blocker-control","value":{"type":"FormControl","props":{"label":"Any blockers? (Optional)","input":"form-blocker-input"}}}
+{"op":"add","path":"/elements/form-blocker-input","value":{"type":"Input","props":{"placeholder":"e.g. Waiting on design assets for navbar...","value":{"$bindState":"/newUpdate/blocker"}}}}
+{"op":"add","path":"/elements/form-submit-button","value":{"type":"Button","props":{"label":"Submit Standup","variant":"primary"},"on":{"press":{"action":"pushState","params":{"clearStatePath":"/newUpdate/today","statePath":"/updates","value":{"avatar":"/avatars/you.jpg","blocker":{"$state":"/newUpdate/blocker"},"id":"$id","initials":"YOU","name":"You","role":"Developer","today":{"$state":"/newUpdate/today"}}}}}}}
+{"op":"add","path":"/state/newUpdate","value":{"blocker":"","today":""}}
+{"op":"add","path":"/elements/team-updates-section","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["updates-title","blockers-alert","updates-list"]}}
+{"op":"add","path":"/elements/updates-title","value":{"type":"Heading","props":{"text":"Team Updates","level":"h3"}}}
+{"op":"add","path":"/elements/blockers-alert","value":{"type":"Alert","props":{"description":"1 teammate is currently blocked. See details below.","title":"Attention Needed","variant":"warning"}}}
+{"op":"add","path":"/elements/updates-list","value":{"type":"Card","props":{"direction":"column","gap":"m"},"repeat":{"key":"id","statePath":"/updates"},"children":["update-item-card"]}}
+{"op":"add","path":"/elements/update-item-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["update-header","update-today-text","update-blocker-callout"]}}
+{"op":"add","path":"/elements/update-header","value":{"type":"Card","props":{"align":"center","direction":"row","justify":"between"},"children":["user-info","status-tag"]}}
+{"op":"add","path":"/elements/user-info","value":{"type":"Card","props":{"align":"center","direction":"row","gap":"s"},"children":["user-avatar","user-details"]}}
+{"op":"add","path":"/elements/user-avatar","value":{"type":"Avatar","props":{"fallback":{"$item":"initials"},"src":{"$item":"avatar"}}}}
+{"op":"add","path":"/elements/user-details","value":{"type":"Card","props":{"direction":"column","gap":"none"},"children":["user-name","user-role"]}}
+{"op":"add","path":"/elements/user-name","value":{"type":"TextContent","props":{"size":"small-heavy","text":{"$item":"name"}}}}
+{"op":"add","path":"/elements/user-role","value":{"type":"TextContent","props":{"size":"small","text":{"$item":"role"}}}}
+{"op":"add","path":"/elements/status-tag","value":{"type":"Tag","props":{"size":"sm","text":{"$cond":{"$item":"blocker"},"$else":"On Track","$then":"Blocked"},"variant":{"$cond":{"$item":"blocker"},"$else":"success","$then":"danger"}}}}
+{"op":"add","path":"/elements/update-today-text","value":{"type":"TextContent","props":{"text":{"$template":"**Today:** ${today}"}}}}
+{"op":"add","path":"/elements/update-blocker-callout","value":{"type":"TextCallout","props":{"description":{"$item":"blocker"},"title":"Blocker","variant":"danger"},"visible":{"$item":"blocker"}}}
+{"op":"add","path":"/state/updates","value":[]}
+{"op":"add","path":"/state/updates/0","value":{"avatar":"","blocker":"Waiting for design specs on the checkout flow from Alex.","id":"1","initials":"JD","name":"Jane Doe","role":"Frontend Engineer","today":"Working on refactoring the primary navigation and mobile responsiveness."}}
+{"op":"add","path":"/state/updates/1","value":{"avatar":"","blocker":"","id":"2","initials":"AS","name":"Alex Smith","role":"Product Designer","today":"Finalizing interactive prototypes for the new onboarding experience."}}
+{"op":"add","path":"/state/updates/2","value":{"avatar":"","blocker":"","id":"3","initials":"MC","name":"Michael Chen","role":"Backend Lead","today":"Deploying database migrations and optimizing search query performance."}}
+{"op":"add","path":"/state/updates/3","value":{"avatar":"","blocker":"","id":"4","initials":"SK","name":"Sarah Kim","role":"QA Engineer","today":"Writing automated end-to-end test suites for payment integration."}}

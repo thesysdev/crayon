@@ -1,0 +1,101 @@
+root = Card([header, timeframeCtl, kpis, riskAlert, positionsHdr, positions, sectorHdr, sectorChart, moversHdr, movers, watchHdr, watchlist, ordersHdr, workingOrders, newsHdr, headlines, econHdr, econ, stratHdr, stratChart, ddHdr, ddChart, limitsHdr, limits, actionsHdr, actions])
+
+header = CardHeader("Morning Workspace", "Trading Desk — as of 08:45 ET")
+
+timeframeCtl = Form("timeframe", tfButtons, [tfField])
+tfField = FormControl("Timeframe", tfSelect)
+tfSelect = Select("timeframe", [tf1, tf2, tf3, tf4], "Select timeframe", null, "1D")
+tf1 = SelectItem("1D", "Today")
+tf2 = SelectItem("1W", "This Week")
+tf3 = SelectItem("1M", "This Month")
+tf4 = SelectItem("YTD", "Year to Date")
+tfButtons = Buttons([tfApply])
+tfApply = Button("Apply", null, "secondary")
+
+kpis = Table([kpiMetric, kpiValue])
+kpiMetric = Col("Metric", ["Portfolio Value", "P&L Today", "Value at Risk (95%, 1d)", "Margin In Use"])
+kpiValue = Col("Value", ["$48,720,400", "+$312,880 (+0.65%)", "$1,240,000", "$9,600,000 (32%)"])
+
+riskAlert = Alert("Risk limit near breach", "Tech sector exposure at 27% of 30% cap; single-name AAPL at 8.2% of 10% cap.", "warning")
+
+positionsHdr = Heading("Positions", "h3")
+positions = Table([posTicker, posSize, posEntry, posCurrent, posPnl])
+posTicker = Col("Ticker", ["AAPL", "MSFT", "NVDA", "TSLA", "AMZN", "JPM"])
+posSize = Col("Size", [12000, 8500, 4200, -3000, 6000, 5000], "number")
+posEntry = Col("Entry", [178.40, 402.10, 118.60, 245.80, 172.30, 191.50], "number")
+posCurrent = Col("Current", [182.15, 411.20, 124.90, 238.40, 175.60, 193.20], "number")
+posPnl = Col("P&L", ["+$45,000", "+$77,350", "+$26,460", "+$22,200", "+$19,800", "+$8,500"])
+
+sectorHdr = Heading("Exposure by Sector", "h3")
+sectorChart = PieChart(sectorLabels, sectorValues, "donut")
+sectorLabels = ["Technology", "Financials", "Consumer", "Energy", "Healthcare", "Industrials"]
+sectorValues = [27, 21, 18, 12, 13, 9]
+
+moversHdr = Heading("Biggest Movers Today", "h3")
+movers = HorizontalBarChart(moverLabels, [moverSeries], "grouped", "% Change", "Ticker")
+moverLabels = ["NVDA", "MSFT", "AAPL", "META", "TSLA", "PYPL"]
+moverSeries = Series("% Change", [5.3, 2.3, 2.1, 1.4, -3.0, -4.6])
+
+watchHdr = Heading("Watchlist", "h3")
+watchlist = Table([watchTicker, watchPrice, watchChg])
+watchTicker = Col("Ticker", ["GOOGL", "NFLX", "AMD", "COIN", "SHOP"])
+watchPrice = Col("Price", [141.80, 612.40, 168.20, 248.90, 78.60], "number")
+watchChg = Col("Chg", ["+0.8%", "-1.2%", "+3.4%", "+2.1%", "-0.5%"])
+
+ordersHdr = Heading("Working Orders", "h3")
+workingOrders = Table([ordTicker, ordSide, ordQty, ordType, ordLimit, ordStatus])
+ordTicker = Col("Ticker", ["AAPL", "NVDA", "JPM", "TSLA"])
+ordSide = Col("Side", ["Buy", "Sell", "Buy", "Sell"])
+ordQty = Col("Qty", [2000, 1500, 3000, 1000], "number")
+ordType = Col("Type", ["Limit", "Limit", "Stop", "Limit"])
+ordLimit = Col("Price", [180.00, 126.50, 188.00, 240.00], "number")
+ordStatus = Col("Status", ["Working", "Working", "Working", "Partial"])
+
+newsHdr = Heading("Market Headlines", "h3")
+headlines = ListBlock([news1, news2, news3, news4])
+news1 = ListItem("Fed signals patience on rate cuts", "Sentiment: Neutral — Reuters")
+news2 = ListItem("Chip demand surges on AI capex", "Sentiment: Positive — Bloomberg")
+news3 = ListItem("Oil slips on demand concerns", "Sentiment: Negative — WSJ")
+news4 = ListItem("Retail earnings beat estimates", "Sentiment: Positive — CNBC")
+
+econHdr = Heading("Economic Releases This Week", "h3")
+econ = Table([ecDay, ecEvent, ecTime, ecFcst])
+ecDay = Col("Day", ["Mon", "Tue", "Wed", "Thu", "Fri"])
+ecEvent = Col("Event", ["Factory Orders", "CPI", "FOMC Minutes", "Jobless Claims", "PPI"])
+ecTime = Col("Time (ET)", ["10:00", "08:30", "14:00", "08:30", "08:30"])
+ecFcst = Col("Forecast", ["+0.3%", "+3.1% YoY", "—", "218K", "+0.2%"])
+
+stratHdr = Heading("Strategy Returns (YTD)", "h3")
+stratChart = BarChart(stratLabels, [stratSeries], "grouped", "Strategy", "Return %")
+stratLabels = ["Momentum", "Mean Rev", "Stat Arb", "Macro", "Vol Carry"]
+stratSeries = Series("YTD Return %", [14.2, 6.8, 9.1, -2.3, 11.5])
+
+ddHdr = Heading("Drawdown — Past Year", "h3")
+ddChart = AreaChart(ddLabels, [ddSeries], "natural", "Month", "Drawdown %")
+ddLabels = ["Feb", "Apr", "Jun", "Aug", "Oct", "Dec", "Feb"]
+ddSeries = Series("Drawdown %", [-2.1, -5.4, -3.2, -8.7, -4.1, -1.8, -3.0])
+
+limitsHdr = Heading("Risk Limits Near Breach", "h3")
+limits = Table([limName, limUsed, limCap, limStatus])
+limName = Col("Limit", ["Tech Exposure", "Single-Name AAPL", "Gross Leverage", "VaR"])
+limUsed = Col("Used", ["27%", "8.2%", "2.1x", "$1.24M"])
+limCap = Col("Cap", ["30%", "10%", "2.5x", "$1.50M"])
+limStatus = Col("Status", ["Warning", "Warning", "OK", "OK"])
+
+actionsHdr = Heading("Actions", "h3")
+actions = Card([rebalanceBtn, orderForm], "clear", "column", "m")
+rebalanceBtn = Buttons([rebalance])
+rebalance = Button("Rebalance Portfolio", null, "primary")
+
+orderForm = Form("place-order", orderButtons, [tickerField, sideField, qtyField])
+tickerField = FormControl("Ticker", tickerInput)
+tickerInput = Input("ticker", "e.g. AAPL")
+sideField = FormControl("Side", sideRadio)
+sideRadio = RadioGroup("side", [sideBuy, sideSell], "buy")
+sideBuy = RadioItem("Buy", "Open or add to long", "buy")
+sideSell = RadioItem("Sell", "Reduce or short", "sell")
+qtyField = FormControl("Quantity", qtyInput)
+qtyInput = Input("quantity", "Number of shares", "number")
+orderButtons = Buttons([submitOrder, cancelOrder])
+submitOrder = Button("Place Order", null, "primary")
+cancelOrder = Button("Clear", null, "tertiary")

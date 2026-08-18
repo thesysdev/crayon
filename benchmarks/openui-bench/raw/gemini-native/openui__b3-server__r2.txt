@@ -1,0 +1,91 @@
+root = Card([header, filterSection, alertBanner, metricsGrid, chartsSection, tablesSection, actionForm, followUps], "card", "column", "l")
+
+header = CardHeader("Production Incident & Service Health", "Real-time observability and incident response center")
+
+filterSection = Card([regionControl], "sunk", "row", "m", "center", "between")
+regionControl = FormControl("Filter Region", regionSelect, "Select target region to isolate telemetry")
+regionSelect = Select("region", [regAll, regUsEast, regUsWest, regEuCentral, regApSouth], "All Regions (Global)")
+regAll = SelectItem("global", "All Regions (Global)")
+regUsEast = SelectItem("us-east", "US-East (N. Virginia)")
+regUsWest = SelectItem("us-west", "US-West (Oregon)")
+regEuCentral = SelectItem("eu-central", "EU-Central (Frankfurt)")
+regApSouth = SelectItem("ap-south", "AP-South (Mumbai)")
+
+alertBanner = Callout("error", "Critical Incident Active", "Service 'api-gateway' is currently experiencing elevated 5xx error rates in US-East.")
+
+metricsGrid = Card([uptimeMetric, errorRateMetric, openIncidentsMetric], "clear", "row", "m")
+uptimeMetric = Card([uptimeHeader, uptimeVal, uptimeProgress], "sunk", "column", "xs")
+uptimeHeader = CardHeader("Quarterly Uptime", "Q3 Target: 99.99%")
+uptimeVal = Heading("99.94%", "h2")
+uptimeProgress = Progress(99.94, "SLO Status: Compliant")
+
+errorRateMetric = Card([errorHeader, errorVal, errorBadge], "sunk", "column", "xs")
+errorHeader = CardHeader("Current Error Rate", "Global average (5m window)")
+errorVal = Heading("2.42%", "h2")
+errorBadge = Badge("Above 1.00% SLA", "destructive")
+
+openIncidentsMetric = Card([incHeader, incVal, incBadge], "sunk", "column", "xs")
+incHeader = CardHeader("Active Incidents", "Requires immediate attention")
+incVal = Heading("3 Open", "h2")
+incBadge = Badge("1 Critical, 2 Major", "destructive")
+
+chartsSection = Card([cpuMemChart], "card", "column", "s")
+cpuMemChart = AreaChart(["00:00", "04:00", "08:00", "12:00", "16:00", "20:00", "24:00"], [cpuSeries, memSeries], "natural", "Time (Past 24 Hours)", "Utilization (%)")
+cpuSeries = Series("CPU Usage (%)", [42, 38, 45, 78, 85, 92, 64])
+memSeries = Series("Memory Usage (%)", [60, 61, 63, 71, 75, 82, 79])
+
+tablesSection = Card([incidentsTableCard, latencyTableCard], "clear", "column", "m")
+
+incidentsTableCard = Card([incidentsHeader, incidentsTable], "sunk", "column", "s")
+incidentsHeader = CardHeader("Active Open Incidents", "Severity breakdown and direct operational controls")
+incidentsTable = Table([incIdCol, incServiceCol, incSevCol, incDescCol, incTimeCol, incActionCol])
+incIdCol = Col("Incident ID", ["INC-8492", "INC-8489", "INC-8475"])
+incServiceCol = Col("Service", ["api-gateway", "auth-service", "payment-processor"])
+incSevCol = Col("Severity", ["SEV-1 (Critical)", "SEV-2 (Major)", "SEV-2 (Major)"])
+incDescCol = Col("Impact Description", ["502 Bad Gateway responses spiking", "Token validation latencies > 2000ms", "Webhook delivery retries exhausted"])
+incTimeCol = Col("Duration", ["14m ago", "42m ago", "1h 15m ago"])
+incActionCol = Col("Quick Action", ["Acknowledge", "Acknowledge", "Acknowledged"], "action")
+
+latencyTableCard = Card([latencyHeader, latencyTable], "sunk", "column", "s")
+latencyHeader = CardHeader("Top 5 Slowest Endpoints", "Ranked by p99 response latency over last hour")
+latencyTable = Table([epRankCol, epPathCol, epMethodCol, epP99Col, epStatusCol])
+epRankCol = Col("#", ["1", "2", "3", "4", "5"])
+epPathCol = Col("Endpoint Path", ["/v2/analytics/reports/generate", "/v1/checkout/process", "/v1/auth/mfa/verify", "/v2/users/search", "/v1/orders/history"])
+epMethodCol = Col("Method", ["POST", "POST", "POST", "GET", "GET"])
+epP99Col = Col("p99 Latency", ["3,420 ms", "1,850 ms", "1,240 ms", "980 ms", "850 ms"])
+epStatusCol = Col("SLA Target", ["Exceeded (< 1000ms)", "Exceeded (< 500ms)", "Exceeded (< 300ms)", "Exceeded (< 200ms)", "Warning (< 500ms)"])
+
+actionForm = Card([formHeader, alertForm], "sunk", "column", "s")
+formHeader = CardHeader("Configure Alert Thresholds & Incident Management", "Update monitoring rules or acknowledge incidents manually")
+alertForm = Form("alert-config-form", formButtons, [incAckField, metricSelectField, thresholdField, channelField])
+
+incAckField = FormControl("Acknowledge Incident", incSelect, "Select an active incident to assign to yourself and mark as acknowledged")
+incSelect = Select("ack_incident_id", [ackOpt1, ackOpt2, ackOpt3], "Choose incident to acknowledge...")
+ackOpt1 = SelectItem("INC-8492", "INC-8492 — api-gateway (SEV-1)")
+ackOpt2 = SelectItem("INC-8489", "INC-8489 — auth-service (SEV-2)")
+ackOpt3 = SelectItem("INC-8475", "INC-8475 — payment-processor (SEV-2)")
+
+metricSelectField = FormControl("Alert Metric Target", metricSelect, "Target telemetry metric for custom alert rule")
+metricSelect = Select("alert_metric", [mErr, mCpu, mMem, mLat], "Error Rate (%)")
+mErr = SelectItem("error_rate", "Error Rate (%)")
+mCpu = SelectItem("cpu_usage", "CPU Usage (%)")
+mMem = SelectItem("memory_usage", "Memory Usage (%)")
+mLat = SelectItem("p99_latency", "p99 Latency (ms)")
+
+thresholdField = FormControl("Alert Trigger Threshold", thresholdSlider, "Set the trigger value before pager notification fires")
+thresholdSlider = Slider("threshold_value", "discrete", 0, 100, 5, [5], "Threshold value")
+
+channelField = FormControl("Notification Channel", channelRadio)
+channelRadio = RadioGroup("channel", [chPager, chSlack, chEmail], "pagerduty")
+chPager = RadioItem("PagerDuty (High Urgency)", "Triggers phone call and SMS override", "pagerduty")
+chSlack = RadioItem("Slack (#oncall-alerts)", "Sends rich block message to channel", "slack")
+chEmail = RadioItem("Email Digest", "Sends email notification to team distribution list", "email")
+
+formButtons = Buttons([submitBtn, resetBtn])
+submitBtn = Button("Update Rules & Acknowledge", null, "primary")
+resetBtn = Button("Reset Form", null, "tertiary")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Show thread traces for INC-8492")
+f2 = FollowUpItem("Run automated runbook for api-gateway restart")
+f3 = FollowUpItem("Escalate SEV-1 incident to secondary on-call engineer")

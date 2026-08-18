@@ -1,0 +1,68 @@
+root = Card([header, hubSelect, advisory, kpis, otpChart, flightsTable, delayedCallout, gateChanges, crews, connectionsRisk, rebookForm, followUps])
+
+header = CardHeader("DFW Hub Operations", "Live status · updated 14:32 CT")
+
+hubSelect = Form("hub-switch", hubButtons, [hubField])
+hubField = FormControl("View a different hub", hubDropdown)
+hubDropdown = Select("hub", [hubDFW, hubORD, hubDEN, hubATL], "Select hub", null, "DFW")
+hubDFW = SelectItem("DFW", "Dallas–Fort Worth")
+hubORD = SelectItem("ORD", "Chicago O'Hare")
+hubDEN = SelectItem("DEN", "Denver")
+hubATL = SelectItem("ATL", "Atlanta")
+hubButtons = Buttons([switchBtn])
+switchBtn = Button("Load hub", null, "primary")
+
+advisory = Alert("Weather advisory", "Thunderstorms and 30kt crosswinds expected 15:00–18:00 CT. Ground delay program in effect.", "warning")
+
+kpis = Table([kpiMetric, kpiValue])
+kpiMetric = Col("Metric", ["On-time performance", "Avg passenger load", "Avg turnaround", "Cancellations today"])
+kpiValue = Col("Value", ["82%", "88%", "41 min", "6"])
+
+otpChart = LineChart(["06:00", "08:00", "10:00", "12:00", "14:00"], [otpSeries], "natural", "Time", "On-time %")
+otpSeries = Series("On-time %", [94, 90, 87, 84, 82])
+
+flightsTable = Table([flNum, flRoute, flGate, flStatus])
+flNum = Col("Flight", ["AA118", "AA342", "AA509", "AA771", "AA860", "AA934"])
+flRoute = Col("Route", ["DFW→LAX", "DFW→JFK", "DFW→ORD", "DFW→MIA", "DFW→DEN", "DFW→SEA"])
+flGate = Col("Gate", ["A12", "C21", "D18", "A5", "C34", "B9"])
+flStatus = Col("Status", ["On time", "Delayed", "Boarding", "Delayed", "Cancelled", "On time"])
+
+delayedCallout = TextCallout("warning", "Delayed flights", "AA342 (DFW→JFK) +45m · AA771 (DFW→MIA) +1h20m. Crew and gate impacts under review.")
+
+gateChanges = ListBlock([gc1, gc2, gc3], "number")
+gc1 = ListItem("AA342 → Gate C21", "Moved from C15 · 14:20")
+gc2 = ListItem("AA509 → Gate D18", "Moved from D22 · 14:11")
+gc3 = ListItem("AA118 → Gate A12", "Moved from A8 · 13:55")
+
+crews = ListBlock([crew1, crew2, crew3], "number")
+crew1 = ListItem("Crew 7 — Available", "2 pilots, 4 cabin · rested until 22:00 · Zone A")
+crew2 = ListItem("Crew 12 — Available", "2 pilots, 3 cabin · rested until 20:30 · Zone C")
+crew3 = ListItem("Crew 19 — On standby", "1 pilot, 4 cabin · reserve · Zone B")
+
+connectionsRisk = Table([conFlight, conConn, conArr, conGap])
+conFlight = Col("Inbound", ["AA342", "AA771", "AA342"])
+conConn = Col("Connecting", ["AA509", "AA860", "AA934"])
+conArr = Col("Arr → Dep", ["15:05 → 15:20", "15:40 → 15:55", "15:05 → 15:25"])
+conGap = Col("Gap", ["15m ⚠", "15m ⚠", "20m ⚠"])
+
+rebookForm = Form("rebook", rebookButtons, [pnrField, flightField, optField])
+pnrField = FormControl("Passenger record", pnrInput, "Enter PNR or ticket number")
+pnrInput = Input("pnr", "e.g. 4KZ9QP")
+flightField = FormControl("Affected flight", flightSelect)
+flightSelect = Select("flight", [rbAA342, rbAA771, rbAA860], "Select flight")
+rbAA342 = SelectItem("AA342", "AA342 DFW→JFK (Delayed)")
+rbAA771 = SelectItem("AA771", "AA771 DFW→MIA (Delayed)")
+rbAA860 = SelectItem("AA860", "AA860 DFW→DEN (Cancelled)")
+optField = FormControl("Rebooking option", optRadio)
+optRadio = RadioGroup("option", [optNext, optPartner, optHotel])
+optNext = RadioItem("Next available", "Rebook on next same-route flight", "next")
+optPartner = RadioItem("Partner carrier", "Protect on partner airline", "partner")
+optHotel = RadioItem("Overnight + hotel", "Rebook tomorrow, issue hotel voucher", "hotel")
+rebookButtons = Buttons([rebookBtn, notifyBtn])
+rebookBtn = Button("Rebook passenger", null, "primary")
+notifyBtn = Button("Notify passenger", null, "secondary")
+
+followUps = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Show all cancellations today")
+fu2 = FollowUpItem("Which crews can cover AA860?")
+fu3 = FollowUpItem("Detailed weather timeline for DFW")

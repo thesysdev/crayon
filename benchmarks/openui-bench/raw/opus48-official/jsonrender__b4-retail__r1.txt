@@ -1,0 +1,108 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","kpi-row","traffic-card","mid-row","bottom-row","promo-card","registers-card","weekly-card"]}}
+{"op":"add","path":"/elements/header","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","gap":"m"},"children":["header-title","store-select"]}}
+{"op":"add","path":"/elements/header-title","value":{"type":"CardHeader","props":{"title":"Store Manager Console","subtitle":{"$template":"Daily overview — ${/currentStore}"}}}}
+{"op":"add","path":"/state/currentStore","value":"Downtown Flagship"}
+{"op":"add","path":"/elements/store-select","value":{"type":"Select","props":{"name":"store","placeholder":"Switch store","size":"medium","value":{"$bindState":"/currentStore"},"items":["store-opt-1","store-opt-2","store-opt-3"]},"children":[]}}
+{"op":"add","path":"/elements/store-opt-1","value":{"type":"SelectItem","props":{"value":"Downtown Flagship","label":"Downtown Flagship"}}}
+{"op":"add","path":"/elements/store-opt-2","value":{"type":"SelectItem","props":{"value":"Westfield Mall","label":"Westfield Mall"}}}
+{"op":"add","path":"/elements/store-opt-3","value":{"type":"SelectItem","props":{"value":"Airport Kiosk","label":"Airport Kiosk"}}}
+
+{"op":"add","path":"/elements/kpi-row","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"children":["sales-card","basket-card","returns-card"]}}
+
+{"op":"add","path":"/elements/sales-card","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["sales-head","sales-value","sales-progress"]}}
+{"op":"add","path":"/elements/sales-head","value":{"type":"Heading","props":{"text":"Sales Today vs Target","level":"h4"}}}
+{"op":"add","path":"/elements/sales-value","value":{"type":"TextContent","props":{"text":{"$template":"**$${/sales/today}** of $${/sales/target} target"},"size":"large"}}}
+{"op":"add","path":"/elements/sales-progress","value":{"type":"Progress","props":{"value":{"$state":"/sales/percent"},"label":{"$template":"${/sales/percent}% of daily target"}}}}
+{"op":"add","path":"/state/sales","value":{"today":"18,420","target":"22,000","percent":84}}
+
+{"op":"add","path":"/elements/basket-card","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["basket-head","basket-value","basket-note"]}}
+{"op":"add","path":"/elements/basket-head","value":{"type":"Heading","props":{"text":"Average Basket Size","level":"h4"}}}
+{"op":"add","path":"/elements/basket-value","value":{"type":"TextContent","props":{"text":{"$template":"**$${/basket/avg}**"},"size":"large"}}}
+{"op":"add","path":"/elements/basket-note","value":{"type":"TextContent","props":{"text":{"$template":"${/basket/items} items per transaction avg"},"size":"small"}}}
+{"op":"add","path":"/state/basket","value":{"avg":"46.80","items":"3.2"}}
+
+{"op":"add","path":"/elements/returns-card","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["returns-head","returns-value","returns-note"]}}
+{"op":"add","path":"/elements/returns-head","value":{"type":"Heading","props":{"text":"Returns This Week","level":"h4"}}}
+{"op":"add","path":"/elements/returns-value","value":{"type":"TextContent","props":{"text":{"$template":"**${/returns/count}** returns"},"size":"large"}}}
+{"op":"add","path":"/elements/returns-note","value":{"type":"TextContent","props":{"text":{"$template":"$${/returns/value} refunded • ${/returns/rate}% of sales"},"size":"small"}}}
+{"op":"add","path":"/state/returns","value":{"count":37,"value":"1,240","rate":"2.1"}}
+
+{"op":"add","path":"/elements/traffic-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["traffic-head","traffic-chart"]}}
+{"op":"add","path":"/elements/traffic-head","value":{"type":"Heading","props":{"text":"Foot Traffic Through the Day","level":"h3"}}}
+{"op":"add","path":"/elements/traffic-chart","value":{"type":"AreaChart","props":{"labels":["9am","11am","1pm","3pm","5pm","7pm","9pm"],"series":["traffic-series"],"variant":"natural","xLabel":"Time","yLabel":"Visitors"},"children":["traffic-series"]}}
+{"op":"add","path":"/elements/traffic-series","value":{"type":"Series","props":{"category":"Visitors","values":[42,118,205,176,240,198,90]}}}
+
+{"op":"add","path":"/elements/mid-row","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"children":["bestsellers-card","stock-card"]}}
+
+{"op":"add","path":"/elements/bestsellers-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["best-head","best-chart"]}}
+{"op":"add","path":"/elements/best-head","value":{"type":"Heading","props":{"text":"Best Sellers (units today)","level":"h3"}}}
+{"op":"add","path":"/elements/best-chart","value":{"type":"HorizontalBarChart","props":{"labels":["Classic Tee","Denim Jacket","Sneakers X","Wool Scarf","Cap Logo"],"series":["best-series"],"xLabel":"Units"},"children":["best-series"]}}
+{"op":"add","path":"/elements/best-series","value":{"type":"Series","props":{"category":"Units Sold","values":[84,61,47,39,28]}}}
+
+{"op":"add","path":"/elements/stock-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["stock-head","stock-list"]}}
+{"op":"add","path":"/elements/stock-head","value":{"type":"Heading","props":{"text":"Out of Stock","level":"h3"}}}
+{"op":"add","path":"/elements/stock-list","value":{"type":"Card","props":{"direction":"column","gap":"s"},"repeat":{"statePath":"/outOfStock","key":"id"},"children":["stock-item"]}}
+{"op":"add","path":"/elements/stock-item","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center","gap":"m"},"children":["stock-info","stock-reorder"]}}
+{"op":"add","path":"/elements/stock-info","value":{"type":"Card","props":{"direction":"column","gap":"none"},"children":["stock-name","stock-sku"]}}
+{"op":"add","path":"/elements/stock-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"default"}}}
+{"op":"add","path":"/elements/stock-sku","value":{"type":"TextContent","props":{"text":{"$template":"SKU ${sku} • last sold ${lastSold}"},"size":"small"}}}
+{"op":"add","path":"/elements/stock-reorder","value":{"type":"Button","props":{"label":"Reorder","variant":"primary","size":"small"},"on":{"press":{"action":"pushState","params":{"statePath":"/reorderQueue","value":{"id":"$id","name":{"$item":"name"}}}}},"children":[]}}
+{"op":"add","path":"/state/outOfStock","value":[]}
+{"op":"add","path":"/state/outOfStock/0","value":{"id":"1","name":"Sneakers X (size 9)","sku":"SNX-009","lastSold":"2h ago"}}
+{"op":"add","path":"/state/outOfStock/1","value":{"id":"2","name":"Wool Scarf — Navy","sku":"WSC-NVY","lastSold":"Yesterday"}}
+{"op":"add","path":"/state/outOfStock/2","value":{"id":"3","name":"Denim Jacket (M)","sku":"DNJ-M","lastSold":"3h ago"}}
+{"op":"add","path":"/state/reorderQueue","value":[]}
+
+{"op":"add","path":"/elements/reorder-callout","value":{"type":"Callout","props":{"variant":"success","title":"Reorder placed","description":"Item added to the reorder queue."}}}
+
+{"op":"add","path":"/elements/bottom-row","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"children":["shift-card","reorder-queue-card"]}}
+
+{"op":"add","path":"/elements/shift-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["shift-head","shift-list"]}}
+{"op":"add","path":"/elements/shift-head","value":{"type":"Heading","props":{"text":"On Shift Today","level":"h3"}}}
+{"op":"add","path":"/elements/shift-list","value":{"type":"Card","props":{"direction":"column","gap":"s"},"repeat":{"statePath":"/shift","key":"id"},"children":["shift-item"]}}
+{"op":"add","path":"/elements/shift-item","value":{"type":"Card","props":{"variant":"sunk","direction":"row","align":"center","gap":"m"},"children":["shift-avatar","shift-info"]}}
+{"op":"add","path":"/elements/shift-avatar","value":{"type":"Avatar","props":{"fallback":{"$item":"initials"}}}}
+{"op":"add","path":"/elements/shift-info","value":{"type":"Card","props":{"direction":"column","gap":"none"},"children":["shift-name","shift-role"]}}
+{"op":"add","path":"/elements/shift-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"default"}}}
+{"op":"add","path":"/elements/shift-role","value":{"type":"TextContent","props":{"text":{"$template":"${role} • ${hours}"},"size":"small"}}}
+{"op":"add","path":"/state/shift","value":[]}
+{"op":"add","path":"/state/shift/0","value":{"id":"1","name":"Maria Chen","initials":"MC","role":"Floor Lead","hours":"8am–4pm"}}
+{"op":"add","path":"/state/shift/1","value":{"id":"2","name":"James Okoro","initials":"JO","role":"Cashier","hours":"9am–5pm"}}
+{"op":"add","path":"/state/shift/2","value":{"id":"3","name":"Priya Nair","initials":"PN","role":"Stockroom","hours":"7am–3pm"}}
+{"op":"add","path":"/state/shift/3","value":{"id":"4","name":"Diego Ruiz","initials":"DR","role":"Cashier","hours":"1pm–9pm"}}
+
+{"op":"add","path":"/elements/reorder-queue-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["rq-head","rq-list","rq-empty"]}}
+{"op":"add","path":"/elements/rq-head","value":{"type":"Heading","props":{"text":"Reorder Queue","level":"h3"}}}
+{"op":"add","path":"/elements/rq-list","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"repeat":{"statePath":"/reorderQueue","key":"id"},"children":["rq-item"]}}
+{"op":"add","path":"/elements/rq-item","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["rq-name","rq-remove"]}}
+{"op":"add","path":"/elements/rq-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"default"}}}
+{"op":"add","path":"/elements/rq-remove","value":{"type":"Button","props":{"label":"Remove","variant":"tertiary","size":"extra-small","type":"destructive"},"on":{"press":{"action":"removeState","params":{"statePath":"/reorderQueue","index":{"$index":true}}}},"children":[]}}
+{"op":"add","path":"/elements/rq-empty","value":{"type":"TextContent","props":{"text":"No items queued for reorder yet. Use the Reorder buttons above.","size":"small"},"visible":{"$state":"/reorderQueue/0","not":true}}}
+
+{"op":"add","path":"/elements/promo-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["promo-head","promo-table"]}}
+{"op":"add","path":"/elements/promo-head","value":{"type":"Heading","props":{"text":"Running Promotions","level":"h3"}}}
+{"op":"add","path":"/elements/promo-table","value":{"type":"Table","props":{"columns":["promo-col-name","promo-col-disc","promo-col-uses","promo-col-rev"]},"children":["promo-col-name","promo-col-disc","promo-col-uses","promo-col-rev"]}}
+{"op":"add","path":"/elements/promo-col-name","value":{"type":"Col","props":{"label":"Promotion","type":"string","data":["Summer 20% Off","BOGO Tees","Loyalty $10","Clearance -50%"]}}}
+{"op":"add","path":"/elements/promo-col-disc","value":{"type":"Col","props":{"label":"Discount","type":"string","data":["20%","Buy 1 Get 1","$10 credit","50%"]}}}
+{"op":"add","path":"/elements/promo-col-uses","value":{"type":"Col","props":{"label":"Redemptions","type":"number","data":[142,87,54,203]}}}
+{"op":"add","path":"/elements/promo-col-rev","value":{"type":"Col","props":{"label":"Revenue ($)","type":"number","data":[6820,3120,1980,4450]}}}
+
+{"op":"add","path":"/elements/registers-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["reg-head","reg-list"]}}
+{"op":"add","path":"/elements/reg-head","value":{"type":"Heading","props":{"text":"Registers","level":"h3"}}}
+{"op":"add","path":"/elements/reg-list","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"repeat":{"statePath":"/registers","key":"id"},"children":["reg-item"]}}
+{"op":"add","path":"/elements/reg-item","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs","align":"start"},"children":["reg-name","reg-badge","reg-cashier"]}}
+{"op":"add","path":"/elements/reg-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"default"}}}
+{"op":"add","path":"/elements/reg-badge","value":{"type":"Badge","props":{"text":{"$item":"status"},"variant":{"$cond":{"$item":"open"},"$then":"default","$else":"outline"}}}}
+{"op":"add","path":"/elements/reg-cashier","value":{"type":"TextContent","props":{"text":{"$template":"${cashier}"},"size":"small"}}}
+{"op":"add","path":"/state/registers","value":[]}
+{"op":"add","path":"/state/registers/0","value":{"id":"1","name":"Register 1","open":true,"status":"Open","cashier":"James Okoro"}}
+{"op":"add","path":"/state/registers/1","value":{"id":"2","name":"Register 2","open":true,"status":"Open","cashier":"Diego Ruiz"}}
+{"op":"add","path":"/state/registers/2","value":{"id":"3","name":"Register 3","open":false,"status":"Closed","cashier":"—"}}
+{"op":"add","path":"/state/registers/3","value":{"id":"4","name":"Register 4","open":false,"status":"Closed","cashier":"—"}}
+
+{"op":"add","path":"/elements/weekly-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["weekly-head","weekly-chart"]}}
+{"op":"add","path":"/elements/weekly-head","value":{"type":"Heading","props":{"text":"This Week vs Last Week","level":"h3"}}}
+{"op":"add","path":"/elements/weekly-chart","value":{"type":"BarChart","props":{"labels":["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],"series":["week-this","week-last"],"variant":"grouped","xLabel":"Day","yLabel":"Sales ($)"},"children":["week-this","week-last"]}}
+{"op":"add","path":"/elements/week-this","value":{"type":"Series","props":{"category":"This Week","values":[15200,16800,18420,0,0,0,0]}}}
+{"op":"add","path":"/elements/week-last","value":{"type":"Series","props":{"category":"Last Week","values":[14100,15900,17200,19800,22400,24100,20500]}}}

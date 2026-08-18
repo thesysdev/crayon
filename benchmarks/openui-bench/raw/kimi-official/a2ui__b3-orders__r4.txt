@@ -1,0 +1,57 @@
+Here's a complete e-commerce operations desk covering all nine requirements:
+
+<a2ui-json>
+[
+  {"version":"v0.9","createSurface":{"surfaceId":"ops-desk","catalogId":"thesys.dev:c1-openui","theme":{"agentDisplayName":"Ops Desk"}}},
+  {"version":"v0.9","updateComponents":{"surfaceId":"ops-desk","components":[
+    {"id":"root","component":"Card","variant":"clear","direction":"column","gap":"m","children":["header","statsRow","chartCard","refundCard","controlsCard","ordersCard"]},
+    {"id":"header","component":"CardHeader","title":"E-commerce Operations Desk","subtitle":"Live snapshot — today"},
+    {"id":"statsRow","component":"Card","variant":"clear","direction":"row","gap":"m","children":["statOrders","statRevenue","statAov"]},
+    {"id":"statOrders","component":"Card","variant":"card","children":["statOrdersTxt"],"weight":1},
+    {"id":"statOrdersTxt","component":"TextContent","text":"**Orders Today**\n\n# 128"},
+    {"id":"statRevenue","component":"Card","variant":"card","children":["statRevenueTxt"],"weight":1},
+    {"id":"statRevenueTxt","component":"TextContent","text":"**Revenue Today**\n\n# $14,230"},
+    {"id":"statAov","component":"Card","variant":"card","children":["statAovTxt"],"weight":1},
+    {"id":"statAovTxt","component":"TextContent","text":"**Avg. Order Value**\n\n# $111.17"},
+    {"id":"chartCard","component":"Card","variant":"card","children":["chartHeader","volumeChart","s1","s2","s3","s4"]},
+    {"id":"chartHeader","component":"CardHeader","title":"Order Volume — Past 4 Weeks"},
+    {"id":"volumeChart","component":"LineChart","labels":["Week 1","Week 2","Week 3","Week 4"],"series":["s1","s2","s3","s4"],"xLabel":"Week","yLabel":"Orders"},
+    {"id":"s1","component":"Series","category":"All orders","values":[612,704,668,731]},
+    {"id":"s2","component":"Series","category":"Fulfilled","values":[598,681,640,702]},
+    {"id":"s3","component":"Series","category":"Pending","values":[10,15,20,21]},
+    {"id":"s4","component":"Series","category":"Refunded","values":[4,8,8,8]},
+    {"id":"refundCard","component":"Card","variant":"card","children":["refundHeader","refundProgress"]},
+    {"id":"refundHeader","component":"CardHeader","title":"Refund Rate — This Month"},
+    {"id":"refundProgress","component":"Progress","value":2.4,"label":"2.4% of orders refunded (target < 3%)"},
+    {"id":"controlsCard","component":"Card","variant":"sunk","direction":"row","gap":"m","align":"center","children":["searchControl","statusControl"]},
+    {"id":"searchControl","component":"FormControl","label":"Search by customer","input":"searchInput"},
+    {"id":"searchInput","component":"Input","name":"customerSearch","placeholder":"e.g. Jane Cooper"},
+    {"id":"statusControl","component":"FormControl","label":"Filter by status","input":"statusSelect"},
+    {"id":"statusSelect","component":"Select","name":"statusFilter","placeholder":"All statuses","items":["stAll","stPending","stFulfilled","stShipped","stRefunded"]},
+    {"id":"stAll","component":"SelectItem","value":"all","label":"All"},
+    {"id":"stPending","component":"SelectItem","value":"pending","label":"Pending"},
+    {"id":"stFulfilled","component":"SelectItem","value":"fulfilled","label":"Fulfilled"},
+    {"id":"stShipped","component":"SelectItem","value":"shipped","label":"Shipped"},
+    {"id":"stRefunded","component":"SelectItem","value":"refunded","label":"Refunded"},
+    {"id":"ordersCard","component":"Card","variant":"card","children":["ordersHeader","ordersTable","colId","colCustomer","colTotal","colStatus","fulfillBtn"]},
+    {"id":"ordersHeader","component":"CardHeader","title":"Recent Orders"},
+    {"id":"ordersTable","component":"Table","columns":["colId","colCustomer","colTotal","colStatus"]},
+    {"id":"colId","component":"Col","label":"Order ID","data":["#10231","#10230","#10229","#10228","#10227"],"type":"string"},
+    {"id":"colCustomer","component":"Col","label":"Customer","data":["Jane Cooper","Devon Lane","Ralph Edwards","Kristin Watson","Cody Fisher"],"type":"string"},
+    {"id":"colTotal","component":"Col","label":"Total","data":[189.99,54.5,320.0,89.25,145.75],"type":"number"},
+    {"id":"colStatus","component":"Col","label":"Status","data":["Pending","Fulfilled","Shipped","Pending","Refunded"],"type":"string"},
+    {"id":"fulfillBtn","component":"Button","label":"Mark Selected Order Fulfilled","variant":"primary","action":[{"event":"mark_fulfilled"}]}
+  ]}}
+]
+</a2ui-json>
+
+**Coverage:**
+1. **Orders today** — stat card (128)
+2. **Revenue today** — stat card ($14,230)
+3. **Average order value** — stat card ($111.17)
+4. **Recent orders** — table with ID, customer, total, status
+5. **Narrow by status** — status filter dropdown
+6. **Search by customer** — search input field
+7. **Refund rate this month** — progress bar (2.4%)
+8. **4-week order volume** — multi-series line chart
+9. **Mark fulfilled** — primary action button

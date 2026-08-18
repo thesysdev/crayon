@@ -1,0 +1,206 @@
+Here's a single-screen month-end finance view for the startup, covering all seven items: KPIs for cash, burn, and runway; a category expense breakdown; a large-transactions table; a month switcher; and a statement download action.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "finance-month-end",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": {
+        "primaryColor": "#0E7490",
+        "agentDisplayName": "Startup Finance"
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "finance-month-end",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "direction": "column",
+          "gap": "l",
+          "children": ["hdr", "burnCallout", "controls", "kpis", "chartCard", "txCard", "followups"]
+        },
+        {
+          "id": "hdr",
+          "component": "CardHeader",
+          "title": "Month-End Finance View",
+          "subtitle": "Acme Inc. · September 2025 · All figures in USD"
+        },
+        {
+          "id": "burnCallout",
+          "component": "Callout",
+          "variant": "warning",
+          "title": "Burn up 8.2% vs August",
+          "description": "Driven by one-time legal fees ($11,250) and higher cloud spend. Excluding one-offs, net burn is flat month-over-month."
+        },
+        {
+          "id": "controls",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "justify": "between",
+          "align": "center",
+          "wrap": true,
+          "children": ["monthSelect", "downloadBtn"]
+        },
+        {
+          "id": "monthSelect",
+          "component": "Select",
+          "name": "month",
+          "placeholder": "Choose month",
+          "value": "2025-09",
+          "size": "medium",
+          "items": ["mi-sep", "mi-aug", "mi-jul", "mi-jun", "mi-may", "mi-apr"]
+        },
+        {"id": "mi-sep", "component": "SelectItem", "value": "2025-09", "label": "September 2025"},
+        {"id": "mi-aug", "component": "SelectItem", "value": "2025-08", "label": "August 2025"},
+        {"id": "mi-jul", "component": "SelectItem", "value": "2025-07", "label": "July 2025"},
+        {"id": "mi-jun", "component": "SelectItem", "value": "2025-06", "label": "June 2025"},
+        {"id": "mi-may", "component": "SelectItem", "value": "2025-05", "label": "May 2025"},
+        {"id": "mi-apr", "component": "SelectItem", "value": "2025-04", "label": "April 2025"},
+        {
+          "id": "downloadBtn",
+          "component": "Button",
+          "label": "Download Statement (CSV)",
+          "variant": "primary",
+          "size": "medium",
+          "action": [{"event": "download_statement", "month": "2025-09", "format": "csv"}]
+        },
+        {
+          "id": "kpis",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "wrap": true,
+          "children": ["cashCard", "burnCard", "runwayCard"]
+        },
+        {
+          "id": "cashCard",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["cashLabel", "cashValue", "cashNote"]
+        },
+        {"id": "cashLabel", "component": "TextContent", "text": "Cash on Hand", "size": "small"},
+        {"id": "cashValue", "component": "TextContent", "text": "$1,284,500", "size": "large-heavy"},
+        {"id": "cashNote", "component": "TextContent", "text": "Across 2 operating accounts", "size": "small"},
+        {
+          "id": "burnCard",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["burnLabel", "burnValue", "burnNote"]
+        },
+        {"id": "burnLabel", "component": "TextContent", "text": "Monthly Burn", "size": "small"},
+        {"id": "burnValue", "component": "TextContent", "text": "$104,970", "size": "large-heavy"},
+        {"id": "burnNote", "component": "TextContent", "text": "+8.2% vs August ($96,990)", "size": "small"},
+        {
+          "id": "runwayCard",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["runwayLabel", "runwayValue", "runwayNote"]
+        },
+        {"id": "runwayLabel", "component": "TextContent", "text": "Runway", "size": "small"},
+        {"id": "runwayValue", "component": "TextContent", "text": "12.2 months", "size": "large-heavy"},
+        {"id": "runwayNote", "component": "TextContent", "text": "At current net burn, through mid-Sep 2026", "size": "small"},
+        {
+          "id": "chartCard",
+          "component": "Card",
+          "direction": "column",
+          "gap": "s",
+          "children": ["chartHdr", "expensePie"]
+        },
+        {
+          "id": "chartHdr",
+          "component": "CardHeader",
+          "title": "Expenses by Category",
+          "subtitle": "September 2025 · Total $104,970"
+        },
+        {
+          "id": "expensePie",
+          "component": "PieChart",
+          "variant": "donut",
+          "labels": ["Payroll", "Cloud & Infra", "Legal & Accounting", "Office & Rent", "Marketing", "Software & Tools"],
+          "values": [61840, 13980, 11250, 10500, 4860, 2540]
+        },
+        {
+          "id": "txCard",
+          "component": "Card",
+          "direction": "column",
+          "gap": "s",
+          "children": ["txHdr", "txTable"]
+        },
+        {
+          "id": "txHdr",
+          "component": "CardHeader",
+          "title": "Transactions Over $10,000",
+          "subtitle": "4 transactions · September 2025"
+        },
+        {
+          "id": "txTable",
+          "component": "Table",
+          "columns": ["cDate", "cDesc", "cCat", "cAmt"]
+        },
+        {
+          "id": "cDate",
+          "component": "Col",
+          "label": "Date",
+          "data": ["Sep 2", "Sep 5", "Sep 12", "Sep 18"]
+        },
+        {
+          "id": "cDesc",
+          "component": "Col",
+          "label": "Description",
+          "data": ["Payroll — Gusto", "Amazon Web Services", "Office Rent — 450 Mission St", "Wilson Sonsini — Legal (one-time)"]
+        },
+        {
+          "id": "cCat",
+          "component": "Col",
+          "label": "Category",
+          "data": ["Payroll", "Cloud & Infra", "Office & Rent", "Legal & Accounting"]
+        },
+        {
+          "id": "cAmt",
+          "component": "Col",
+          "label": "Amount (USD)",
+          "type": "number",
+          "data": [61840, 13980, 10500, 11250]
+        },
+        {
+          "id": "followups",
+          "component": "FollowUpBlock",
+          "items": ["f1", "f2", "f3"]
+        },
+        {"id": "f1", "component": "FollowUpItem", "text": "Show August 2025 instead"},
+        {"id": "f2", "component": "FollowUpItem", "text": "Break down cloud & infra spend"},
+        {"id": "f3", "component": "FollowUpItem", "text": "Download statement as PDF"}
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+How each requirement is covered:
+1. **Cash on hand** — KPI card showing $1,284,500 across operating accounts.
+2. **Monthly burn** — KPI card showing $104,970 with the month-over-month delta, plus a warning callout explaining the increase.
+3. **Runway** — KPI card showing 12.2 months at the current burn rate.
+4. **Expenses by category** — Donut chart split across payroll, cloud, legal, rent, marketing, and software.
+5. **Transactions > $10,000** — Table of the four qualifying September transactions with date, description, category, and amount.
+6. **Different month** — Month selector covering April–September 2025.
+7. **Download statement** — Primary button that triggers a CSV statement download for the selected month (with a follow-up option for PDF).
+
+Want me to wire the month selector to actually re-render the figures, or add a cash-flow trend line alongside the category breakdown?

@@ -1,0 +1,94 @@
+root = Card([header, andon, oeeRow, kpiRow, lineTable, defectTrend, downtimeChart, maintTable, stockChart, deliveryTable, shiftChart, safetyRow, qualityHold, energyBlock, workOrders, actions, followups])
+
+header = CardHeader("Factory Floor Console", "Live shift overview")
+
+andon = Alert("Andon: Line 3 stopped", "Material jam at Station B — operator called", "destructive")
+
+oeeRow = Card([oeeAvail, oeePerf, oeeQual, oeeOverall], "sunk", "row", "l")
+oeeAvail = Progress(91, "Availability")
+oeePerf = Progress(87, "Performance")
+oeeQual = Progress(96, "Quality")
+oeeOverall = Progress(76, "Overall OEE")
+
+kpiRow = Card([unitsProgress, unitsBadge], "sunk", "row", "l", "center")
+unitsProgress = Progress(82, "Units produced vs target")
+unitsBadge = Badge("6,540 / 8,000", "secondary")
+
+lineTable = Table([lineName, lineRate, lineStatus])
+lineName = Col("Line", ["Line 1", "Line 2", "Line 3", "Line 4"])
+lineRate = Col("Rate (u/hr)", [420, 395, 0, 410], "number")
+lineStatus = Col("Status", ["Running", "Running", "Stopped", "Running"])
+
+defectTrend = LineChart(["W1", "W2", "W3", "W4"], [defectSeries], "natural", "Week", "Defect %")
+defectSeries = Series("Defect Rate", [3.2, 2.8, 3.5, 2.4])
+
+downtimeChart = PieChart(downtimeLabels, downtimeValues, "donut")
+downtimeLabels = ["Material jam", "Changeover", "Breakdown", "No operator", "Other"]
+downtimeValues = [38, 25, 18, 12, 7]
+
+maintTable = Table([machName, machDue, machHrs])
+machName = Col("Machine", ["Press A", "Welder C", "Conveyor 2", "Robot arm 5"])
+machDue = Col("Due", ["Today", "Tomorrow", "In 3 days", "In 5 days"])
+machHrs = Col("Hours since service", [980, 740, 610, 520], "number")
+
+stockChart = BarChart(stockLabels, [stockSeries], "grouped", "Material", "% of capacity")
+stockLabels = ["Steel", "Resin", "Packaging"]
+stockSeries = Series("Stock level", [72, 34, 58])
+
+deliveryTable = Table([supName, supMat, supDate])
+supName = Col("Supplier", ["MetalCo", "PolyChem", "PackRight"])
+supMat = Col("Material", ["Steel coil", "Resin pellets", "Cartons"])
+supDate = Col("Due", ["Tue", "Wed", "Fri"])
+
+shiftChart = BarChart(shiftLabels, [shiftSeries], "grouped", "Shift", "Units")
+shiftLabels = ["Morning", "Afternoon", "Night"]
+shiftSeries = Series("Output", [2680, 2410, 1450])
+
+safetyRow = Card([safetyIncidents, safetyDays], "sunk", "row", "l", "center")
+safetyIncidents = Badge("Incidents YTD: 3", "destructive")
+safetyDays = Badge("Days since last: 47", "secondary")
+
+qualityHold = ListBlock([holdA, holdB], "number")
+holdA = ListItem("Batch #4821", "Line 2 — dimensional variance")
+holdB = ListItem("Batch #4835", "Line 4 — surface finish review")
+
+energyBlock = Progress(64, "Energy use today (kWh vs baseline)")
+
+workOrders = Table([woId, woDesc, woPriority])
+woId = Col("WO", ["WO-1201", "WO-1202", "WO-1203", "WO-1204"])
+woDesc = Col("Task", ["Replace Press A seal", "Calibrate Welder C", "Inspect Conveyor 2", "Update Robot 5 firmware"])
+woPriority = Col("Priority", ["High", "Medium", "High", "Low"])
+
+actions = Card([schedMaint, focusLine, exportBtn], "clear", "row", "m", "center")
+
+schedMaint = DialogBlock("Schedule Maintenance", "Schedule Maintenance", "Pick a machine and date", [maintForm])
+maintForm = Form("schedule-maint", maintButtons, [maintMachine, maintDate])
+maintMachine = FormControl("Machine", maintSelect)
+maintSelect = Select("machine", [mm1, mm2, mm3, mm4], "Choose machine")
+mm1 = SelectItem("press-a", "Press A")
+mm2 = SelectItem("welder-c", "Welder C")
+mm3 = SelectItem("conveyor-2", "Conveyor 2")
+mm4 = SelectItem("robot-5", "Robot arm 5")
+maintDate = FormControl("Date", maintPicker)
+maintPicker = DatePicker("maint_date", "single")
+maintButtons = Buttons([maintSubmit, maintCancel])
+maintSubmit = Button("Schedule", null, "primary")
+maintCancel = Button("Cancel", null, "tertiary")
+
+focusLine = DrawerBlock("Focus on a line", "Focus Line", "Drill into one production line", [focusForm])
+focusForm = Form("focus-line", focusButtons, [focusField])
+focusField = FormControl("Production line", focusSelect)
+focusSelect = Select("line", [fl1, fl2, fl3, fl4], "Choose line")
+fl1 = SelectItem("line-1", "Line 1")
+fl2 = SelectItem("line-2", "Line 2")
+fl3 = SelectItem("line-3", "Line 3")
+fl4 = SelectItem("line-4", "Line 4")
+focusButtons = Buttons([focusSubmit])
+focusSubmit = Button("Focus", null, "primary")
+
+exportBtn = Button("Export shift report", null, "secondary")
+
+followups = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Show root cause for Line 3 stop")
+fu2 = FollowUpItem("Reorder resin stock")
+fu3 = FollowUpItem("View full maintenance schedule")

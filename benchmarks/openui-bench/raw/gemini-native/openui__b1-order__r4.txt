@@ -1,0 +1,33 @@
+root = Card([header, currentStatusCallout, stepsBlock, sep1, issueCard], "card", "column", "l")
+
+header = CardHeader("Package Tracking", "Tracking #: TRK-982401129-US")
+
+currentStatusCallout = Callout("info", "In Transit - On Schedule", "Your package is currently at the local distribution center and will be out for delivery soon.")
+
+stepsBlock = Steps([step1, step2, step3, step4])
+step1 = StepsItem("Order Placed", "Dec 12, 10:30 AM • Confirmed")
+step2 = StepsItem("Shipped", "Dec 13, 02:15 PM • Origin Facility, Chicago IL")
+step3 = StepsItem("In Transit (Current Location)", "Dec 14, 06:45 AM • Regional Hub, Austin TX")
+step4 = StepsItem("Estimated Delivery", "Friday, Dec 15 by 7:00 PM • Residential Delivery")
+
+sep1 = Separator("horizontal")
+
+issueCard = Card([issueHeader, reportDrawer], "sunk", "column", "m")
+issueHeader = CardHeader("Need Help With This Shipment?", "If your package is delayed, damaged, or missing, let us know.")
+
+reportDrawer = DrawerBlock("Report a Problem", "Report Delivery Issue", "Submit details regarding your shipment issue and our support team will investigate immediately.", [issueForm])
+
+issueForm = Form("report-issue-form", formButtons, [issueTypeField, descriptionField])
+
+issueTypeField = FormControl("Issue Type", issueTypeSelect)
+issueTypeSelect = Select("issue_type", [opt1, opt2, opt3, opt4], "Select the problem you are experiencing")
+opt1 = SelectItem("delayed", "Package is delayed / No tracking updates")
+opt2 = SelectItem("damaged", "Item or packaging arrived damaged")
+opt3 = SelectItem("missing", "Marked as delivered but not received")
+opt4 = SelectItem("other", "Other delivery issue")
+
+descriptionField = FormControl("Additional Details", descriptionInput, "Please provide any relevant details (e.g., safe drop location, damage description).")
+descriptionInput = TextArea("issue_details", "Describe the problem in detail...", 4)
+
+formButtons = Buttons([submitIssueBtn])
+submitIssueBtn = Button("Submit Report", null, "primary")

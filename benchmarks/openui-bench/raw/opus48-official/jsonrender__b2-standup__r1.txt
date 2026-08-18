@@ -1,0 +1,39 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","missing-callout","updates-list","blocked-header","blocked-list","post-form"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Async Standup","subtitle":{"$template":"${/today}"}}}}
+{"op":"add","path":"/state/today","value":"Monday, June 9, 2025"}
+{"op":"add","path":"/elements/missing-callout","value":{"type":"Callout","props":{"variant":"warning","title":{"$template":"${/missingCount} updates still missing"},"description":"Some teammates haven't posted their standup yet today."}}}
+{"op":"add","path":"/state/missingCount","value":2}
+{"op":"add","path":"/elements/updates-list","value":{"type":"Card","props":{"direction":"column","gap":"m"},"repeat":{"statePath":"/updates","key":"id"},"children":["update-card"]}}
+{"op":"add","path":"/elements/update-card","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"start"},"children":["update-avatar","update-body"]}}
+{"op":"add","path":"/elements/update-avatar","value":{"type":"Avatar","props":{"fallback":{"$item":"initials"}}}}
+{"op":"add","path":"/elements/update-body","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["update-name-row","update-status","update-blocked-tag"]}}
+{"op":"add","path":"/elements/update-name-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center"},"children":["update-name","update-status-badge"]}}
+{"op":"add","path":"/elements/update-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"large-heavy"}}}
+{"op":"add","path":"/elements/update-status-badge","value":{"type":"Badge","props":{"text":{"$item":"role"},"variant":"secondary"}}}
+{"op":"add","path":"/elements/update-status","value":{"type":"TextContent","props":{"text":{"$item":"status"}}}}
+{"op":"add","path":"/elements/update-blocked-tag","value":{"type":"Tag","props":{"text":{"$template":"Blocked: ${blocker}"},"variant":"danger","size":"sm"},"visible":{"$item":"blocked"}}}
+{"op":"add","path":"/state/updates","value":[]}
+{"op":"add","path":"/state/updates/0","value":{"id":"1","name":"Ava Chen","initials":"AC","role":"Frontend","status":"Wrapped up the new dashboard layout yesterday. Today I'm polishing the responsive breakpoints and starting on dark mode.","blocked":false,"blocker":""}}
+{"op":"add","path":"/state/updates/1","value":{"id":"2","name":"Marco Silva","initials":"MS","role":"Backend","status":"Finished the auth token refresh flow. Today I'm working on the notifications service but waiting on API keys.","blocked":true,"blocker":"Need prod API keys from DevOps"}}
+{"op":"add","path":"/state/updates/2","value":{"id":"3","name":"Priya Nair","initials":"PN","role":"Design","status":"Shipped the onboarding illustrations. Today I'll finalize the standup screen mockups and hand off assets.","blocked":false,"blocker":""}}
+{"op":"add","path":"/state/updates/3","value":{"id":"4","name":"Leo Park","initials":"LP","role":"QA","status":"Cleared the regression backlog. Blocked on the staging environment being down for the new build.","blocked":true,"blocker":"Staging environment is down"}}
+{"op":"add","path":"/elements/blocked-header","value":{"type":"Heading","props":{"text":"🚧 Currently Blocked","level":"h3"}}}
+{"op":"add","path":"/elements/blocked-list","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"repeat":{"statePath":"/blocked","key":"id"},"children":["blocked-item"]}}
+{"op":"add","path":"/elements/blocked-item","value":{"type":"TextCallout","props":{"variant":"danger","title":{"$item":"name"},"description":{"$item":"blocker"}}}}
+{"op":"add","path":"/state/blocked","value":[]}
+{"op":"add","path":"/state/blocked/0","value":{"id":"2","name":"Marco Silva","blocker":"Need prod API keys from DevOps"}}
+{"op":"add","path":"/state/blocked/1","value":{"id":"4","name":"Leo Park","blocker":"Staging environment is down"}}
+{"op":"add","path":"/elements/post-form","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["post-header","post-name-fc","post-status-fc","post-blocked-switch","post-blocker-fc","post-buttons"]}}
+{"op":"add","path":"/elements/post-header","value":{"type":"Heading","props":{"text":"Post Your Update","level":"h3"}}}
+{"op":"add","path":"/elements/post-name-fc","value":{"type":"FormControl","props":{"label":"Your name","input":"post-name-input"}}}
+{"op":"add","path":"/elements/post-name-input","value":{"type":"Input","props":{"name":"postName","placeholder":"e.g. Sam Rivera","value":{"$bindState":"/draft/name"}}}}
+{"op":"add","path":"/state/draft","value":{"name":"","status":"","blocked":false,"blocker":""}}
+{"op":"add","path":"/elements/post-status-fc","value":{"type":"FormControl","props":{"label":"Today's status","input":"post-status-input","hint":"What did you do, what's next?"}}}
+{"op":"add","path":"/elements/post-status-input","value":{"type":"TextArea","props":{"name":"postStatus","placeholder":"Share your progress...","rows":3,"value":{"$bindState":"/draft/status"}}}}
+{"op":"add","path":"/elements/post-blocked-switch","value":{"type":"SwitchGroup","props":{"name":"postBlockedGroup","items":["post-blocked-item"]}}}
+{"op":"add","path":"/elements/post-blocked-item","value":{"type":"SwitchItem","props":{"name":"blocked","label":"I'm blocked","description":"Flag this to alert the team"}}}
+{"op":"add","path":"/elements/post-blocker-fc","value":{"type":"FormControl","props":{"label":"What's blocking you?","input":"post-blocker-input"},"visible":{"$state":"/draft/blocked"}}}
+{"op":"add","path":"/elements/post-blocker-input","value":{"type":"Input","props":{"name":"postBlocker","placeholder":"Describe the blocker","value":{"$bindState":"/draft/blocker"}}}}
+{"op":"add","path":"/elements/post-buttons","value":{"type":"Buttons","props":{"buttons":["post-submit-btn"]}}}
+{"op":"add","path":"/elements/post-submit-btn","value":{"type":"Button","props":{"label":"Post Update","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/updates","value":{"id":"$id","name":{"$state":"/draft/name"},"initials":"YOU","role":"Team","status":{"$state":"/draft/status"},"blocked":{"$state":"/draft/blocked"},"blocker":{"$state":"/draft/blocker"}},"clearStatePath":"/draft/status"}}}}}

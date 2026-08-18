@@ -1,0 +1,55 @@
+root = Card([header, sep1, kpiCards, sep2, chartsRow, sep3, largeTxTable, followUp], "card", "column", "l")
+
+header = CardHeader("Finance Dashboard", "Month-end summary for October 2023")
+
+sep1 = Separator("horizontal")
+sep2 = Separator("horizontal")
+sep3 = Separator("horizontal")
+
+kpiCards = Card([cashCard, burnCard, runwayCard], "clear", "row", "m")
+
+cashCard = Card([cashHeader, cashVal, cashTag], "sunk", "column", "xs")
+cashHeader = Heading("Cash on Hand", "h4")
+cashVal = TextContent("$1,840,000", "large-heavy")
+cashTag = Tag("Bank Balance", "info", "sm", "info")
+
+burnCard = Card([burnHeader, burnVal, burnTag], "sunk", "column", "xs")
+burnHeader = Heading("Monthly Burn", "h4")
+burnVal = TextContent("$115,000", "large-heavy")
+burnTag = Tag("-4.2% vs last mo", "warning", "sm", "warning")
+
+runwayCard = Card([runwayHeader, runwayVal, runwayTag], "sunk", "column", "xs")
+runwayHeader = Heading("Months of Runway", "h4")
+runwayVal = TextContent("16.0 Months", "large-heavy")
+runwayTag = Tag("Target: >12 mo", "success", "sm", "success")
+
+chartsRow = Card([categoryPie, controlsCard], "clear", "row", "l", "stretch")
+
+categoryPie = PieChart(["Payroll", "Cloud Infra", "Marketing", "Software & Tools", "Office & Admin"], [68000, 22000, 14000, 7000, 4000], "donut")
+
+controlsCard = Card([controlsHeader, monthSelect, actionButtons], "sunk", "column", "m")
+controlsHeader = Heading("Period & Reports", "h3")
+
+monthSelect = Select("selected_month", [m1, m2, m3, m4], "Select Month", null, "oct2023")
+m1 = SelectItem("oct2023", "October 2023")
+m2 = SelectItem("sep2023", "September 2023")
+m3 = SelectItem("aug2023", "August 2023")
+m4 = SelectItem("jul2023", "July 2023")
+
+actionButtons = Buttons([downloadBtn, exportCsvBtn], "column")
+downloadBtn = Button("Download PDF Statement", null, "primary")
+exportCsvBtn = Button("Export CSV Transactions", null, "secondary")
+
+largeTxTable = Card([txHeader, txTable], "sunk", "column", "s")
+txHeader = Heading("Transactions Above $10,000", "h3")
+
+txTable = Table([txDate, txDesc, txCat, txAmount])
+txDate = Col("Date", ["Oct 03, 2023", "Oct 12, 2023", "Oct 15, 2023", "Oct 28, 2023"])
+txDesc = Col("Description", ["Gusto Payroll Run", "AWS Hosting Services", "Google Ads Campaigns", "Gusto Payroll Run"])
+txCat = Col("Category", ["Payroll", "Cloud Infra", "Marketing", "Payroll"])
+txAmount = Col("Amount", ["$34,000", "$18,500", "$12,200", "$34,000"])
+
+followUp = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Show burn rate trend over last 6 months")
+f2 = FollowUpItem("Break down payroll expenses")
+f3 = FollowUpItem("View upcoming vendor renewals")

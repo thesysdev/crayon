@@ -1,0 +1,239 @@
+Here's a remote async standup dashboard covering all five requirements:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "standup-surface",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#4F46E5",
+      "agentDisplayName": "Async Standup"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "standup-surface",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "l",
+        "children": ["header-card", "blocked-card", "missing-card", "post-form"]
+      },
+      {
+        "id": "header-card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "s",
+        "children": ["standup-header", "date-text", "progress-missing"]
+      },
+      {
+        "id": "standup-header",
+        "component": "CardHeader",
+        "title": "🌅 Daily Async Standup",
+        "subtitle": "Team Phoenix — 7 members"
+      },
+      {
+        "id": "date-text",
+        "component": "TextContent",
+        "text": "**Today's date:** Tuesday, March 12, 2025",
+        "size": "default"
+      },
+      {
+        "id": "progress-missing",
+        "component": "Progress",
+        "value": 57,
+        "label": "2 of 7 updates still missing"
+      },
+      {
+        "id": "blocked-card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "s",
+        "children": ["blocked-header", "blocked-list"]
+      },
+      {
+        "id": "blocked-header",
+        "component": "CardHeader",
+        "title": "🚧 Blocked Teammates",
+        "subtitle": "2 people need help today"
+      },
+      {
+        "id": "blocked-list",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": ["blocked-item-1", "blocked-item-2"]
+      },
+      {
+        "id": "blocked-item-1",
+        "component": "ListItem",
+        "title": "Sara Kim — Backend",
+        "subtitle": "🔴 BLOCKED: Waiting on API keys from the payments vendor; billing integration on hold since yesterday."
+      },
+      {
+        "id": "blocked-item-2",
+        "component": "ListItem",
+        "title": "Diego Torres — QA",
+        "subtitle": "🔴 BLOCKED: Staging environment is down; cannot run the release regression suite."
+      },
+      {
+        "id": "missing-card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "s",
+        "children": ["missing-alert", "updates-header", "updates-list"]
+      },
+      {
+        "id": "missing-alert",
+        "component": "Alert",
+        "variant": "warning",
+        "title": "2 updates still missing",
+        "description": "Waiting on: Priya Nair (Design) and Alex Chen (DevOps). Reminder ping scheduled for 3 PM."
+      },
+      {
+        "id": "updates-header",
+        "component": "CardHeader",
+        "title": "✅ Today's Status Updates",
+        "subtitle": "5 of 7 teammates have posted"
+      },
+      {
+        "id": "updates-list",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": ["upd-1", "upd-2", "upd-3", "upd-4", "upd-5"]
+      },
+      {
+        "id": "upd-1",
+        "component": "ListItem",
+        "title": "Maya Johnson — Frontend",
+        "subtitle": "Yesterday: Finished the new onboarding flow. Today: Wiring up analytics events. No blockers. ✅"
+      },
+      {
+        "id": "upd-2",
+        "component": "ListItem",
+        "title": "Sara Kim — Backend",
+        "subtitle": "Yesterday: Billing schema migration done. Today: Payments integration — blocked on vendor API keys. 🚧"
+      },
+      {
+        "id": "upd-3",
+        "component": "ListItem",
+        "title": "Diego Torres — QA",
+        "subtitle": "Yesterday: Smoke tests passed on v2.4. Today: Regression suite — blocked by staging outage. 🚧"
+      },
+      {
+        "id": "upd-4",
+        "component": "ListItem",
+        "title": "Liam O'Connor — Full-stack",
+        "subtitle": "Yesterday: Fixed auth token refresh bug. Today: Code reviews + pair with Maya on analytics. No blockers. ✅"
+      },
+      {
+        "id": "upd-5",
+        "component": "ListItem",
+        "title": "Fatima Al-Sayed — PM",
+        "subtitle": "Yesterday: Sprint retro + roadmap draft. Today: Stakeholder sync at 2 PM. No blockers. ✅"
+      },
+      {
+        "id": "post-form",
+        "component": "Form",
+        "name": "post-update",
+        "fields": ["field-yesterday", "field-today", "field-blocked"],
+        "buttons": "form-buttons"
+      },
+      {
+        "id": "field-yesterday",
+        "component": "FormControl",
+        "label": "Post your update — Yesterday",
+        "input": "input-yesterday",
+        "hint": "What did you complete yesterday?"
+      },
+      {
+        "id": "input-yesterday",
+        "component": "TextArea",
+        "name": "yesterday",
+        "placeholder": "e.g., Finished the dashboard refactor...",
+        "rows": 2
+      },
+      {
+        "id": "field-today",
+        "component": "FormControl",
+        "label": "Today",
+        "input": "input-today",
+        "hint": "What are you working on today?"
+      },
+      {
+        "id": "input-today",
+        "component": "TextArea",
+        "name": "today",
+        "placeholder": "e.g., Starting the search feature...",
+        "rows": 2
+      },
+      {
+        "id": "field-blocked",
+        "component": "FormControl",
+        "label": "Are you blocked?",
+        "input": "input-blocked"
+      },
+      {
+        "id": "input-blocked",
+        "component": "RadioGroup",
+        "name": "blocked",
+        "defaultValue": "no",
+        "items": ["radio-no", "radio-yes"]
+      },
+      {
+        "id": "radio-no",
+        "component": "RadioItem",
+        "label": "No blockers",
+        "description": "I'm good to go",
+        "value": "no"
+      },
+      {
+        "id": "radio-yes",
+        "component": "RadioItem",
+        "label": "Yes, I'm blocked",
+        "description": "I need help from the team",
+        "value": "yes"
+      },
+      {
+        "id": "form-buttons",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": ["btn-submit", "btn-clear"]
+      },
+      {
+        "id": "btn-submit",
+        "component": "Button",
+        "label": "Post My Update",
+        "variant": "primary",
+        "size": "medium"
+      },
+      {
+        "id": "btn-clear",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "tertiary",
+        "size": "medium"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This single screen covers all five requirements:
+
+1. **Teammates with today's status** — A list showing each of the 5 teammates who posted, with their yesterday/today/blocker summaries.
+2. **Blocked called out** — A dedicated "🚧 Blocked Teammates" card highlighting Sara and Diego with their specific blockers.
+3. **Today's date** — Displayed prominently in the header card (Tuesday, March 12, 2025).
+4. **Post your own update** — A form with yesterday/today text areas, a blocked radio toggle, and submit button.
+5. **Missing updates** — A warning alert ("2 updates still missing") naming who hasn't posted, plus a progress bar showing 5 of 7 submitted.

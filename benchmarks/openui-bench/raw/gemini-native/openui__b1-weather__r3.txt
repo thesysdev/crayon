@@ -1,0 +1,41 @@
+root = Card([header, currentCard, sunCard, forecastHeader, forecastAccordion, tipsCallout, followUps], "card", "column", "l")
+header = CardHeader("Bengaluru Weather Brief", "Today's forecast & 3-day outlook")
+
+currentCard = Card([tempStack, condBadge, detailsList], "sunk", "column", "m")
+tempStack = Heading("26°C", "h1")
+condBadge = Tag("Partly Cloudy", "cloud", "md", "info")
+detailsList = ListBlock([humidityItem, windItem, uvItem])
+humidityItem = ListItem("Humidity", "68%", null)
+windItem = ListItem("Wind", "12 km/h ENE", null)
+uvItem = ListItem("UV Index", "6 (Moderate)", null)
+
+sunCard = Card([sunHeader, sunTimes], "clear", "row", "m", "center", "between")
+sunHeader = TextContent("Sun & Daylight", "small-heavy")
+sunTimes = ListBlock([sunriseItem, sunsetItem])
+sunriseItem = ListItem("Sunrise", "06:12 AM", null)
+sunsetItem = ListItem("Sunset", "06:38 PM", null)
+
+forecastHeader = Heading("3-Day Outlook", "h3")
+forecastAccordion = Accordion([day1, day2, day3])
+
+day1 = AccordionItem("today", "Today (Thu) • 28°C / 19°C", [day1Text, day1Chart])
+day1Text = TextContent("Partly cloudy in the morning with a chance of light afternoon showers. Mild evening breeze.", "default")
+day1Chart = LineChart(["6 AM", "9 AM", "12 PM", "3 PM", "6 PM", "9 PM"], [day1TempSeries], "natural", "Time", "°C")
+day1TempSeries = Series("Temperature", [21, 24, 28, 27, 25, 22])
+
+day2 = AccordionItem("tomorrow", "Friday • 29°C / 20°C", [day2Text, day2Chart])
+day2Text = TextContent("Mostly sunny throughout the day. Clear skies expected in the night.", "default")
+day2Chart = LineChart(["6 AM", "9 AM", "12 PM", "3 PM", "6 PM", "9 PM"], [day2TempSeries], "natural", "Time", "°C")
+day2TempSeries = Series("Temperature", [20, 25, 29, 28, 24, 21])
+
+day3 = AccordionItem("saturday", "Saturday • 27°C / 18°C", [day3Text, day3Chart])
+day3Text = TextContent("Scattered thundershowers likely in the late afternoon. Carry an umbrella.", "default")
+day3Chart = LineChart(["6 AM", "9 AM", "12 PM", "3 PM", "6 PM", "9 PM"], [day3TempSeries], "natural", "Time", "°C")
+day3TempSeries = Series("Temperature", [19, 23, 27, 24, 22, 20])
+
+tipsCallout = Callout("info", "Morning Commute Tip", "Light rain expected around 2:00 PM today. Perfect morning for outdoor activities before midday.")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Hourly rain probability today")
+f2 = FollowUpItem("Weekend getaway weather near Bengaluru")
+f3 = FollowUpItem("Air quality index (AQI) report")

@@ -1,0 +1,126 @@
+{"op":"add","path":"/root","value":"hospital-command"}
+{"op":"add","path":"/elements/page-title","value":{"type":"Heading","props":{"text":"Hospital Operations Command","level":"h1"},"children":[]}}
+{"op":"add","path":"/elements/page-status","value":{"type":"TextContent","props":{"text":"Live operational overview • Tuesday, August 18, 2026","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/date-calendar","value":{"type":"CalendarBlock","props":{"mode":"single","defaultMonth":"2026-08-01","numberOfMonths":1,"captionLayout":"dropdown"},"children":[]}}
+{"op":"add","path":"/elements/date-picker","value":{"type":"DialogBlock","props":{"triggerLabel":"Look at another day","title":"Select an operating date","description":"Review hospital operations for another calendar day.","content":["date-calendar"],"triggerVariant":"outline"},"children":[]}}
+{"op":"add","path":"/elements/incident-type","value":{"type":"Input","props":{"name":"incident-type","placeholder":"e.g. Medication delay","type":"text","value":{"$bindState":"/incident/type"},"rules":[{"required":true}]},"children":[]}}
+{"op":"add","path":"/state/incident/type","value":""}
+{"op":"add","path":"/elements/incident-type-control","value":{"type":"FormControl","props":{"label":"Incident type","input":"incident-type"},"children":[]}}
+{"op":"add","path":"/elements/incident-details","value":{"type":"TextArea","props":{"name":"incident-details","placeholder":"Describe what happened, where, and any immediate actions taken.","rows":5,"value":{"$bindState":"/incident/details"},"rules":[{"required":true}]},"children":[]}}
+{"op":"add","path":"/state/incident/details","value":""}
+{"op":"add","path":"/elements/incident-details-control","value":{"type":"FormControl","props":{"label":"Details","input":"incident-details","hint":"Do not include unnecessary protected health information."},"children":[]}}
+{"op":"add","path":"/elements/incident-submit","value":{"type":"Button","props":{"label":"File incident","variant":"primary","type":"normal","size":"medium"},"on":{"press":{"action":"validateForm","params":{"statePath":"/incidentValidation"}}},"children":[]}}
+{"op":"add","path":"/elements/incident-buttons","value":{"type":"Buttons","props":{"buttons":["incident-submit"],"direction":"row"},"children":[]}}
+{"op":"add","path":"/elements/incident-form","value":{"type":"Form","props":{"name":"incident-report","buttons":"incident-buttons","fields":["incident-type-control","incident-details-control"]},"children":[]}}
+{"op":"add","path":"/elements/incident-dialog","value":{"type":"DialogBlock","props":{"triggerLabel":"File an incident","title":"File an operational incident","description":"Submit a report for command-center follow-up.","content":["incident-form"],"triggerVariant":"destructive"},"children":[]}}
+{"op":"add","path":"/elements/transfer-patient","value":{"type":"Input","props":{"name":"transfer-patient","placeholder":"Patient name or MRN","type":"text","value":{"$bindState":"/transfer/patient"},"rules":[{"required":true}]},"children":[]}}
+{"op":"add","path":"/state/transfer/patient","value":""}
+{"op":"add","path":"/elements/transfer-patient-control","value":{"type":"FormControl","props":{"label":"Patient","input":"transfer-patient"},"children":[]}}
+{"op":"add","path":"/elements/transfer-from","value":{"type":"Input","props":{"name":"transfer-from","placeholder":"Current unit","type":"text","value":{"$bindState":"/transfer/from"},"rules":[{"required":true}]},"children":[]}}
+{"op":"add","path":"/state/transfer/from","value":""}
+{"op":"add","path":"/elements/transfer-from-control","value":{"type":"FormControl","props":{"label":"From","input":"transfer-from"},"children":[]}}
+{"op":"add","path":"/elements/transfer-to","value":{"type":"Input","props":{"name":"transfer-to","placeholder":"Requested destination","type":"text","value":{"$bindState":"/transfer/to"},"rules":[{"required":true}]},"children":[]}}
+{"op":"add","path":"/state/transfer/to","value":""}
+{"op":"add","path":"/elements/transfer-to-control","value":{"type":"FormControl","props":{"label":"To","input":"transfer-to"},"children":[]}}
+{"op":"add","path":"/elements/transfer-reason","value":{"type":"TextArea","props":{"name":"transfer-reason","placeholder":"Clinical reason and timing requirements","rows":4,"value":{"$bindState":"/transfer/reason"},"rules":[{"required":true}]},"children":[]}}
+{"op":"add","path":"/state/transfer/reason","value":""}
+{"op":"add","path":"/elements/transfer-reason-control","value":{"type":"FormControl","props":{"label":"Transfer reason","input":"transfer-reason"},"children":[]}}
+{"op":"add","path":"/elements/transfer-submit","value":{"type":"Button","props":{"label":"Request transfer","variant":"primary","type":"normal","size":"medium"},"on":{"press":{"action":"validateForm","params":{"statePath":"/transferValidation"}}},"children":[]}}
+{"op":"add","path":"/elements/transfer-buttons","value":{"type":"Buttons","props":{"buttons":["transfer-submit"],"direction":"row"},"children":[]}}
+{"op":"add","path":"/elements/transfer-form","value":{"type":"Form","props":{"name":"patient-transfer","buttons":"transfer-buttons","fields":["transfer-patient-control","transfer-from-control","transfer-to-control","transfer-reason-control"]},"children":[]}}
+{"op":"add","path":"/elements/transfer-drawer","value":{"type":"DrawerBlock","props":{"triggerLabel":"Request patient transfer","title":"Patient transfer request","description":"Route a patient to another unit or facility.","content":["transfer-form"]},"children":[]}}
+{"op":"add","path":"/elements/header-actions","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center","justify":"end","wrap":true},"children":["date-picker","incident-dialog","transfer-drawer"]}}
+{"op":"add","path":"/elements/header","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["page-title","page-status","header-actions"]}}
+{"op":"add","path":"/elements/occupancy-heading","value":{"type":"Heading","props":{"text":"Bed occupancy","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/occupancy-value","value":{"type":"TextContent","props":{"text":{"$template":"${/metrics/occupiedBeds} of ${/metrics/totalBeds} beds occupied"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/occupancy-progress","value":{"type":"Progress","props":{"value":{"$state":"/metrics/occupancyPercent"},"label":{"$template":"${/metrics/occupancyPercent}% occupancy"}},"children":[]}}
+{"op":"add","path":"/elements/occupancy-note","value":{"type":"TextContent","props":{"text":{"$template":"${/metrics/availableBeds} staffed beds available"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/occupancy-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["occupancy-heading","occupancy-value","occupancy-progress","occupancy-note"]}}
+{"op":"add","path":"/state/metrics/occupiedBeds","value":382}
+{"op":"add","path":"/state/metrics/totalBeds","value":428}
+{"op":"add","path":"/state/metrics/occupancyPercent","value":89}
+{"op":"add","path":"/state/metrics/availableBeds","value":46}
+{"op":"add","path":"/elements/er-heading","value":{"type":"Heading","props":{"text":"Current ER wait","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/er-value","value":{"type":"TextContent","props":{"text":{"$state":"/metrics/erWait"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/er-status","value":{"type":"Badge","props":{"text":{"$state":"/metrics/erStatus"},"variant":"destructive"},"children":[]}}
+{"op":"add","path":"/elements/er-note","value":{"type":"TextContent","props":{"text":{"$template":"${/metrics/erWaiting} patients waiting • ${/metrics/erTriage} awaiting triage"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/er-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["er-heading","er-value","er-status","er-note"]}}
+{"op":"add","path":"/state/metrics/erWait","value":"1 hr 48 min"}
+{"op":"add","path":"/state/metrics/erStatus","value":"Above 60-min target"}
+{"op":"add","path":"/state/metrics/erWaiting","value":31}
+{"op":"add","path":"/state/metrics/erTriage","value":7}
+{"op":"add","path":"/elements/discharge-heading","value":{"type":"Heading","props":{"text":"Ready for discharge","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/discharge-value","value":{"type":"TextContent","props":{"text":{"$template":"${/metrics/dischargeReady} patients"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/discharge-note","value":{"type":"TextContent","props":{"text":{"$template":"${/metrics/dischargeBeforeNoon} expected before noon • ${/metrics/dischargeTransport} need transport"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/discharge-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["discharge-heading","discharge-value","discharge-note"]}}
+{"op":"add","path":"/state/metrics/dischargeReady","value":24}
+{"op":"add","path":"/state/metrics/dischargeBeforeNoon","value":15}
+{"op":"add","path":"/state/metrics/dischargeTransport","value":4}
+{"op":"add","path":"/elements/or-summary-heading","value":{"type":"Heading","props":{"text":"Today's operating rooms","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/or-summary-value","value":{"type":"TextContent","props":{"text":{"$template":"${/metrics/orBooked} bookings"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/or-summary-note","value":{"type":"TextContent","props":{"text":{"$template":"${/metrics/orRoomsActive} rooms active • ${/metrics/orDelayed} delayed"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/or-summary-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["or-summary-heading","or-summary-value","or-summary-note"]}}
+{"op":"add","path":"/state/metrics/orBooked","value":11}
+{"op":"add","path":"/state/metrics/orRoomsActive","value":6}
+{"op":"add","path":"/state/metrics/orDelayed","value":1}
+{"op":"add","path":"/elements/metric-grid","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"stretch","justify":"between","wrap":true},"children":["occupancy-card","er-card","discharge-card","or-summary-card"]}}
+{"op":"add","path":"/elements/admissions-title","value":{"type":"CardHeader","props":{"title":"Admissions — past two weeks","subtitle":"Daily inpatient admissions"},"children":[]}}
+{"op":"add","path":"/elements/admissions-series","value":{"type":"Series","props":{"category":"Admissions","values":[31,35,29,38,42,40,34,36,44,47,41,39,45,49]},"children":[]}}
+{"op":"add","path":"/elements/admissions-chart","value":{"type":"AreaChart","props":{"labels":["Aug 5","Aug 6","Aug 7","Aug 8","Aug 9","Aug 10","Aug 11","Aug 12","Aug 13","Aug 14","Aug 15","Aug 16","Aug 17","Aug 18"],"series":["admissions-series"],"variant":"natural","xLabel":"Date","yLabel":"Admissions"},"children":[]}}
+{"op":"add","path":"/elements/admissions-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["admissions-title","admissions-chart"]}}
+{"op":"add","path":"/elements/departments-title","value":{"type":"CardHeader","props":{"title":"Patients per department","subtitle":"Current census by service"},"children":[]}}
+{"op":"add","path":"/elements/departments-series","value":{"type":"Series","props":{"category":"Patients","values":[72,64,58,51,43,39,31,24]},"children":[]}}
+{"op":"add","path":"/elements/departments-chart","value":{"type":"HorizontalBarChart","props":{"labels":["Internal Medicine","Surgery","Emergency","Cardiology","Orthopedics","Pediatrics","Oncology","Maternity"],"series":["departments-series"],"variant":"grouped","xLabel":"Patients","yLabel":"Department"},"children":[]}}
+{"op":"add","path":"/elements/departments-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["departments-title","departments-chart"]}}
+{"op":"add","path":"/elements/chart-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"stretch","justify":"between","wrap":true},"children":["admissions-card","departments-card"]}}
+{"op":"add","path":"/elements/critical-title","value":{"type":"CardHeader","props":{"title":"Critical patients","subtitle":"Immediate command attention required"},"children":[]}}
+{"op":"add","path":"/elements/critical-callout","value":{"type":"Callout","props":{"variant":"error","title":{"$template":"${name} • ${location}"},"description":{"$template":"${condition} • ${status} • Attending: ${attending}"}},"children":[]}}
+{"op":"add","path":"/elements/critical-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/criticalPatients","key":"id"},"children":["critical-callout"]}}
+{"op":"add","path":"/state/criticalPatients","value":[]}
+{"op":"add","path":"/state/criticalPatients/0","value":{"id":"cp-101","name":"M. Alvarez","location":"ICU 3B","condition":"Septic shock","status":"Escalating vasopressor support","attending":"Dr. N. Chen"}}
+{"op":"add","path":"/state/criticalPatients/1","value":{"id":"cp-102","name":"J. Okafor","location":"ER Resus 2","condition":"Polytrauma","status":"OR activation pending","attending":"Dr. R. Patel"}}
+{"op":"add","path":"/state/criticalPatients/2","value":{"id":"cp-103","name":"S. Bennett","location":"Cardiac ICU 1A","condition":"STEMI with cardiogenic shock","status":"Cath lab team mobilized","attending":"Dr. L. Morgan"}}
+{"op":"add","path":"/elements/critical-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["critical-title","critical-list"]}}
+{"op":"add","path":"/elements/discharge-list-title","value":{"type":"CardHeader","props":{"title":"Patients ready for discharge","subtitle":"Pending final coordination"},"children":[]}}
+{"op":"add","path":"/elements/discharge-list-item","value":{"type":"ListItem","props":{"title":{"$template":"${name} • ${unit}"},"subtitle":{"$template":"Destination: ${destination} • Pending: ${pending}"},"actionLabel":"Review"},"children":[]}}
+{"op":"add","path":"/elements/discharge-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"repeat":{"statePath":"/dischargePatients","key":"id"},"children":["discharge-list-item"]}}
+{"op":"add","path":"/state/dischargePatients","value":[]}
+{"op":"add","path":"/state/dischargePatients/0","value":{"id":"dc-201","name":"A. Wilson","unit":"5 North","destination":"Home","pending":"Pharmacy reconciliation"}}
+{"op":"add","path":"/state/dischargePatients/1","value":{"id":"dc-202","name":"D. Kim","unit":"Orthopedics 4","destination":"Rehabilitation","pending":"Transport at 14:00"}}
+{"op":"add","path":"/state/dischargePatients/2","value":{"id":"dc-203","name":"P. Singh","unit":"Cardiology 2","destination":"Home health","pending":"Education sign-off"}}
+{"op":"add","path":"/state/dischargePatients/3","value":{"id":"dc-204","name":"R. Garcia","unit":"Pediatrics 3","destination":"Home","pending":"Final pediatric review"}}
+{"op":"add","path":"/elements/discharge-list-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["discharge-list-title","discharge-list"]}}
+{"op":"add","path":"/elements/priority-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"stretch","justify":"between","wrap":true},"children":["critical-card","discharge-list-card"]}}
+{"op":"add","path":"/elements/staff-title","value":{"type":"CardHeader","props":{"title":"Staff on shift","subtitle":"Current command and clinical coverage"},"children":[]}}
+{"op":"add","path":"/elements/staff-item","value":{"type":"ListItem","props":{"title":{"$item":"name"},"subtitle":{"$template":"${role} • ${department} • ${shift}"},"actionLabel":"Contact"},"children":[]}}
+{"op":"add","path":"/elements/staff-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"repeat":{"statePath":"/staff","key":"id"},"children":["staff-item"]}}
+{"op":"add","path":"/state/staff","value":[]}
+{"op":"add","path":"/state/staff/0","value":{"id":"st-1","name":"Dr. Maya Brooks","role":"Hospitalist lead","department":"Command Center","shift":"07:00–19:00"}}
+{"op":"add","path":"/state/staff/1","value":{"id":"st-2","name":"Elena Ruiz, RN","role":"House supervisor","department":"Nursing Operations","shift":"07:00–19:00"}}
+{"op":"add","path":"/state/staff/2","value":{"id":"st-3","name":"Dr. Noah Chen","role":"Intensivist","department":"ICU","shift":"08:00–20:00"}}
+{"op":"add","path":"/state/staff/3","value":{"id":"st-4","name":"Jordan Lee, RN","role":"Charge nurse","department":"Emergency","shift":"07:00–19:00"}}
+{"op":"add","path":"/state/staff/4","value":{"id":"st-5","name":"Priya Shah, PharmD","role":"Clinical pharmacist","department":"Pharmacy","shift":"06:00–18:00"}}
+{"op":"add","path":"/state/staff/5","value":{"id":"st-6","name":"Marcus Hill","role":"Bed coordinator","department":"Patient Flow","shift":"07:00–15:00"}}
+{"op":"add","path":"/elements/staff-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["staff-title","staff-list"]}}
+{"op":"add","path":"/elements/or-title","value":{"type":"CardHeader","props":{"title":"Today's operating room bookings","subtitle":"Scheduled procedures and room status"},"children":[]}}
+{"op":"add","path":"/elements/or-item","value":{"type":"ListItem","props":{"title":{"$template":"${time} • ${procedure}"},"subtitle":{"$template":"${room} • ${surgeon} • ${status}"},"actionLabel":"Details"},"children":[]}}
+{"op":"add","path":"/elements/or-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"repeat":{"statePath":"/orBookings","key":"id"},"children":["or-item"]}}
+{"op":"add","path":"/state/orBookings","value":[]}
+{"op":"add","path":"/state/orBookings/0","value":{"id":"or-1","time":"07:30","procedure":"Total knee arthroplasty","room":"OR 2","surgeon":"Dr. E. Foster","status":"In progress"}}
+{"op":"add","path":"/state/orBookings/1","value":{"id":"or-2","time":"09:00","procedure":"Laparoscopic cholecystectomy","room":"OR 4","surgeon":"Dr. A. Rivera","status":"On time"}}
+{"op":"add","path":"/state/orBookings/2","value":{"id":"or-3","time":"10:15","procedure":"CABG ×3","room":"OR 1","surgeon":"Dr. L. Morgan","status":"Delayed 25 min"}}
+{"op":"add","path":"/state/orBookings/3","value":{"id":"or-4","time":"12:30","procedure":"Open reduction internal fixation","room":"OR 3","surgeon":"Dr. H. Ibrahim","status":"Pre-op ready"}}
+{"op":"add","path":"/state/orBookings/4","value":{"id":"or-5","time":"14:00","procedure":"Pediatric tonsillectomy","room":"OR 5","surgeon":"Dr. C. Nguyen","status":"Scheduled"}}
+{"op":"add","path":"/elements/or-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["or-title","or-list"]}}
+{"op":"add","path":"/elements/operations-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"stretch","justify":"between","wrap":true},"children":["staff-card","or-card"]}}
+{"op":"add","path":"/elements/supplies-title","value":{"type":"CardHeader","props":{"title":"Supplies running low","subtitle":"Items below operational threshold"},"children":[]}}
+{"op":"add","path":"/elements/supply-alert","value":{"type":"Alert","props":{"title":{"$template":"${item} • ${remaining} remaining"},"description":{"$template":"Location: ${location} • Reorder point: ${reorderPoint} • ETA: ${eta}"},"variant":{"$cond":{"$state":"/supplyAlertLevel","eq":"critical"},"$then":"destructive","$else":"warning"}},"children":[]}}
+{"op":"add","path":"/elements/supplies-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/lowSupplies","key":"id"},"children":["supply-alert"]}}
+{"op":"add","path":"/state/supplyAlertLevel","value":"critical"}
+{"op":"add","path":"/state/lowSupplies","value":[]}
+{"op":"add","path":"/state/lowSupplies/0","value":{"id":"sp-1","item":"O-negative blood units","remaining":"7 units","location":"Blood Bank","reorderPoint":"12 units","eta":"45 minutes"}}
+{"op":"add","path":"/state/lowSupplies/1","value":{"id":"sp-2","item":"Adult oxygen masks","remaining":"18 units","location":"Central Supply","reorderPoint":"30 units","eta":"Today 16:00"}}
+{"op":"add","path":"/state/lowSupplies/2","value":{"id":"sp-3","item":"Norepinephrine premix","remaining":"14 bags","location":"ICU Pharmacy","reorderPoint":"20 bags","eta":"Today 13:30"}}
+{"op":"add","path":"/state/lowSupplies/3","value":{"id":"sp-4","item":"Sterile surgical gowns","remaining":"26 packs","location":"OR Core","reorderPoint":"40 packs","eta":"Tomorrow 06:00"}}
+{"op":"add","path":"/elements/supplies-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["supplies-title","supplies-list"]}}
+{"op":"add","path":"/elements/hospital-command","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l","align":"stretch"},"children":["header","metric-grid","chart-row","priority-row","operations-row","supplies-card"]}}

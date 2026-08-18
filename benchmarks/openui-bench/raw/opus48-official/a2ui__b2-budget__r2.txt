@@ -1,0 +1,248 @@
+Here's your personal budget check screen covering all five requirements.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "budget-check",
+      "catalogId": "thesys.dev:c1-openui"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "budget-check",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "l",
+          "children": ["header", "month-selector", "budget-summary", "largest-expense", "category-split", "add-expense-drawer"]
+        },
+        {
+          "id": "header",
+          "component": "CardHeader",
+          "title": "Budget Check",
+          "subtitle": "Your spending at a glance"
+        },
+        {
+          "id": "month-selector",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "row",
+          "gap": "m",
+          "align": "center",
+          "children": ["month-label", "month-select"]
+        },
+        {
+          "id": "month-label",
+          "component": "Label",
+          "text": "Viewing month:"
+        },
+        {
+          "id": "month-select",
+          "component": "Select",
+          "name": "month",
+          "value": "2024-06",
+          "size": "medium",
+          "items": ["m-apr", "m-may", "m-jun", "m-jul"]
+        },
+        { "id": "m-apr", "component": "SelectItem", "value": "2024-04", "label": "April 2024" },
+        { "id": "m-may", "component": "SelectItem", "value": "2024-05", "label": "May 2024" },
+        { "id": "m-jun", "component": "SelectItem", "value": "2024-06", "label": "June 2024" },
+        { "id": "m-jul", "component": "SelectItem", "value": "2024-07", "label": "July 2024" },
+        {
+          "id": "budget-summary",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": ["summary-heading", "spent-vs-budget", "budget-progress", "budget-note"]
+        },
+        {
+          "id": "summary-heading",
+          "component": "Heading",
+          "text": "Spent This Month",
+          "level": "h3"
+        },
+        {
+          "id": "spent-vs-budget",
+          "component": "TextContent",
+          "size": "large-heavy",
+          "text": "$2,340 spent of $3,000 budget"
+        },
+        {
+          "id": "budget-progress",
+          "component": "Progress",
+          "value": 78,
+          "label": "78% of budget used"
+        },
+        {
+          "id": "budget-note",
+          "component": "TextContent",
+          "size": "small",
+          "text": "$660 remaining for the rest of the month."
+        },
+        {
+          "id": "largest-expense",
+          "component": "Callout",
+          "variant": "warning",
+          "title": "Largest Expense: Rent — $1,200",
+          "description": "Your single biggest expense this month is Rent, accounting for 51% of total spending."
+        },
+        {
+          "id": "category-split",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": ["split-heading", "category-pie", "category-table"]
+        },
+        {
+          "id": "split-heading",
+          "component": "Heading",
+          "text": "Spending by Category",
+          "level": "h3"
+        },
+        {
+          "id": "category-pie",
+          "component": "PieChart",
+          "variant": "donut",
+          "labels": ["Rent", "Groceries", "Dining", "Transport", "Utilities", "Other"],
+          "values": [1200, 480, 300, 180, 120, 60]
+        },
+        {
+          "id": "category-table",
+          "component": "Table",
+          "columns": ["col-cat", "col-amt", "col-pct"]
+        },
+        {
+          "id": "col-cat",
+          "component": "Col",
+          "label": "Category",
+          "type": "string",
+          "data": ["Rent", "Groceries", "Dining", "Transport", "Utilities", "Other"]
+        },
+        {
+          "id": "col-amt",
+          "component": "Col",
+          "label": "Amount",
+          "type": "string",
+          "data": ["$1,200", "$480", "$300", "$180", "$120", "$60"]
+        },
+        {
+          "id": "col-pct",
+          "component": "Col",
+          "label": "Share",
+          "type": "string",
+          "data": ["51%", "21%", "13%", "8%", "5%", "2%"]
+        },
+        {
+          "id": "add-expense-drawer",
+          "component": "DrawerBlock",
+          "triggerLabel": "＋ Add Expense",
+          "title": "Add an Expense",
+          "description": "Record a new expense for the selected month.",
+          "content": ["expense-form"]
+        },
+        {
+          "id": "expense-form",
+          "component": "Form",
+          "name": "add-expense",
+          "buttons": "expense-buttons",
+          "fields": ["fc-desc", "fc-amount", "fc-category", "fc-date"]
+        },
+        {
+          "id": "fc-desc",
+          "component": "FormControl",
+          "label": "Description",
+          "input": "in-desc",
+          "hint": "What did you spend on?"
+        },
+        {
+          "id": "in-desc",
+          "component": "Input",
+          "name": "description",
+          "type": "text",
+          "placeholder": "e.g. Weekly groceries"
+        },
+        {
+          "id": "fc-amount",
+          "component": "FormControl",
+          "label": "Amount",
+          "input": "in-amount",
+          "hint": "In dollars"
+        },
+        {
+          "id": "in-amount",
+          "component": "Input",
+          "name": "amount",
+          "type": "number",
+          "placeholder": "0.00"
+        },
+        {
+          "id": "fc-category",
+          "component": "FormControl",
+          "label": "Category",
+          "input": "sel-category"
+        },
+        {
+          "id": "sel-category",
+          "component": "Select",
+          "name": "category",
+          "placeholder": "Choose a category",
+          "items": ["c-rent", "c-groceries", "c-dining", "c-transport", "c-utilities", "c-other"]
+        },
+        { "id": "c-rent", "component": "SelectItem", "value": "rent", "label": "Rent" },
+        { "id": "c-groceries", "component": "SelectItem", "value": "groceries", "label": "Groceries" },
+        { "id": "c-dining", "component": "SelectItem", "value": "dining", "label": "Dining" },
+        { "id": "c-transport", "component": "SelectItem", "value": "transport", "label": "Transport" },
+        { "id": "c-utilities", "component": "SelectItem", "value": "utilities", "label": "Utilities" },
+        { "id": "c-other", "component": "SelectItem", "value": "other", "label": "Other" },
+        {
+          "id": "fc-date",
+          "component": "FormControl",
+          "label": "Date",
+          "input": "dp-date"
+        },
+        {
+          "id": "dp-date",
+          "component": "DatePicker",
+          "name": "date",
+          "mode": "single"
+        },
+        {
+          "id": "expense-buttons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": ["btn-save", "btn-cancel"]
+        },
+        {
+          "id": "btn-save",
+          "component": "Button",
+          "label": "Save Expense",
+          "variant": "primary",
+          "action": ["submitExpense"]
+        },
+        {
+          "id": "btn-cancel",
+          "component": "Button",
+          "label": "Cancel",
+          "variant": "tertiary"
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+This single screen covers every item:
+
+1. **Total spent vs. budget** — the summary card shows "$2,340 spent of $3,000 budget" with a progress bar and remaining balance.
+2. **Spending split by category** — a donut chart plus a breakdown table with amounts and percentage share.
+3. **Largest expense highlighted** — a prominent warning callout flagging Rent ($1,200) as the single biggest expense.
+4. **Look at a different month** — a month selector dropdown at the top.
+5. **Add an expense** — an "Add Expense" drawer with a full form (description, amount, category, date, and save action).

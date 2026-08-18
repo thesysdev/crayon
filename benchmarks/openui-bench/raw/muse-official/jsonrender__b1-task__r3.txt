@@ -1,0 +1,33 @@
+{"op":"add","path":"/root","value":"app"}
+{"op":"add","path":"/elements/app","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l","align":"stretch"},"children":["headerBlock","focusCard","statusCard","actionCard","completedCallout"]}}
+{"op":"add","path":"/elements/headerBlock","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs","align":"start"},"children":["headerHeading","headerSub"]}}
+{"op":"add","path":"/elements/headerHeading","value":{"type":"Heading","props":{"text":"Today's Focus","level":"h1"},"children":[]}}
+{"op":"add","path":"/elements/headerSub","value":{"type":"TextContent","props":{"text":"One task at a time. This is your most urgent item — everything else can wait.","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/focusCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m","align":"stretch"},"children":["badgeRow","taskTitle","deadlineRow","taskDesc","metaRow","separator1"]}}
+{"op":"add","path":"/elements/badgeRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center","justify":"between"},"children":["urgentBadge","priorityBadge"]}}
+{"op":"add","path":"/elements/urgentBadge","value":{"type":"Badge","props":{"text":"● MOST URGENT — DO THIS FIRST","variant":"destructive"},"children":[]}}
+{"op":"add","path":"/elements/priorityBadge","value":{"type":"Badge","props":{"text":{"$state":"/task/priority"},"variant":"outline"},"children":[]}}
+{"op":"add","path":"/elements/taskTitle","value":{"type":"Heading","props":{"text":{"$state":"/task/title"},"level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/deadlineRow","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"s","align":"center","justify":"start"},"children":["deadlineIcon","deadlineText","countdownBadge"]}}
+{"op":"add","path":"/elements/deadlineIcon","value":{"type":"TextContent","props":{"text":"⏰","size":"large"},"children":[]}}
+{"op":"add","path":"/elements/deadlineText","value":{"type":"TextContent","props":{"text":{"$template":"Due ${/task/dueDate} at ${/task/dueTime}"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/countdownBadge","value":{"type":"Badge","props":{"text":{"$state":"/task/countdown"},"variant":"destructive"},"children":[]}}
+{"op":"add","path":"/elements/taskDesc","value":{"type":"TextContent","props":{"text":{"$state":"/task/description"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/metaRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center"},"children":["tagProject","tagEffort"]}}
+{"op":"add","path":"/elements/tagProject","value":{"type":"Tag","props":{"text":"Research Proposal","variant":"neutral","size":"sm"},"children":[]}}
+{"op":"add","path":"/elements/tagEffort","value":{"type":"Tag","props":{"text":"~2h focus block","variant":"info","size":"sm"},"children":[]}}
+{"op":"add","path":"/elements/separator1","value":{"type":"Separator","props":{"orientation":"horizontal"},"children":[]}}
+{"op":"add","path":"/state/task","value":{"title":"Submit Q3 Research Proposal — Final Draft","priority":"P0 • Critical","dueDate":"Tuesday, Aug 19","dueTime":"5:00 PM","countdown":"18h left","description":"Final draft + budget appendix + advisor sign-off. This blocks the team review scheduled for Aug 20. Work in one focused block — no context switching.","status":"In Progress","progress":65,"lastUpdated":"Today at 9:42 AM"}}
+{"op":"add","path":"/elements/statusCard","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"m","align":"stretch"},"children":["statusHeader","statusRow","progressWrap"]}}
+{"op":"add","path":"/elements/statusHeader","value":{"type":"TextContent","props":{"text":"CURRENT STATUS","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/statusRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center","justify":"start"},"children":["statusBadge","statusDetail"]}}
+{"op":"add","path":"/elements/statusBadge","value":{"type":"Badge","props":{"text":{"$state":"/task/status"},"variant":{"$cond":{"$state":"/task/status","eq":"Completed"},"$then":"default","$else":"secondary"}},"children":[]}}
+{"op":"add","path":"/elements/statusDetail","value":{"type":"TextContent","props":{"text":{"$template":"Updated ${/task/lastUpdated} • ${/task/status}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/progressWrap","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["progressBar","progressLabel"]}}
+{"op":"add","path":"/elements/progressBar","value":{"type":"Progress","props":{"value":{"$cond":{"$state":"/task/status","eq":"Completed"},"$then":100,"$else":65},"label":"progress"},"children":[]}}
+{"op":"add","path":"/elements/progressLabel","value":{"type":"TextContent","props":{"text":{"$cond":{"$state":"/task/status","eq":"Completed"},"$then":"100% — Complete","$else":"65% — In progress — final review remaining"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/actionCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s","align":"stretch"},"children":["markDoneBtn","undoBtn","actionHint"]}}
+{"op":"add","path":"/elements/markDoneBtn","value":{"type":"Button","props":{"label":"✓ Mark as Done","variant":"primary","size":"large"},"children":[],"visible":{"$state":"/task/status","neq":"Completed"},"on":{"press":{"action":"setState","params":{"statePath":"/task/status","value":"Completed"}}}}}
+{"op":"add","path":"/elements/undoBtn","value":{"type":"Button","props":{"label":"Undo — Mark as Not Done","variant":"secondary","size":"medium"},"children":[],"visible":{"$state":"/task/status","eq":"Completed"},"on":{"press":{"action":"setState","params":{"statePath":"/task/status","value":"In Progress"}}}}}
+{"op":"add","path":"/elements/actionHint","value":{"type":"TextContent","props":{"text":"Marking done will archive this focus and clear your urgent queue for today.","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/completedCallout","value":{"type":"Callout","props":{"variant":"success","title":"Task completed!","description":"Great work. Your focus queue is now clear. Take a break or pull the next priority."},"children":[],"visible":{"$state":"/task/status","eq":"Completed"}}}

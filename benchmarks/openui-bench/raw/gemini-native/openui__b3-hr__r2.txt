@@ -1,0 +1,70 @@
+root = Card([header, kpiGrid, chartsRow, mainSection, formsSection, followUp])
+header = CardHeader("HR Hiring & Workforce Overview", "Q3 Performance & Active Pipeline Insights")
+
+kpiGrid = Card([headcountCallout, openRolesCallout, avgTimeCallout], "clear", "row", "m")
+headcountCallout = TextCallout("info", "1,248", "Current Headcount (+3.2% vs last quarter)")
+openRolesCallout = TextCallout("success", "24 Roles", "Active Open Positions across 5 departments")
+avgTimeCallout = TextCallout("neutral", "38 Days", "Average Time to Hire (Target: <40 days)")
+
+chartsRow = Card([deptPieCard, attritionLineCard], "clear", "row", "m")
+
+deptPieCard = Card([deptPieHeader, deptPie], "card", "column", "s")
+deptPieHeader = CardHeader("Headcount by Department", "Distribution across core divisions")
+deptPie = PieChart(["Engineering", "Sales & Marketing", "Product & Design", "Operations & HR", "Customer Support"], [520, 310, 140, 118, 160], "donut")
+
+attritionLineCard = Card([attritionHeader, attritionLine], "card", "column", "s")
+attritionHeader = CardHeader("Monthly Attrition Rate", "Past 6 months trend (%)")
+attritionLine = LineChart(["Mar", "Apr", "May", "Jun", "Jul", "Aug"], [attritionSeries], "natural", "Month", "% Attrition")
+attritionSeries = Series("Attrition Rate", [1.2, 1.4, 0.9, 1.1, 1.5, 0.8])
+
+mainSection = Tabs([openRolesTab, pipelineTab, interviewsTab])
+
+openRolesTab = TabItem("roles", "Open Roles (24)", [rolesTable])
+rolesTable = Table([roleTitleCol, roleDeptCol, roleApplicantsCol, roleStatusCol])
+roleTitleCol = Col("Role Title", ["Senior Backend Engineer", "Staff Product Designer", "Enterprise Account Executive", "HR Operations Specialist", "DevOps Engineer", "Marketing Lead"])
+roleDeptCol = Col("Department", ["Engineering", "Product & Design", "Sales & Marketing", "Operations & HR", "Engineering", "Sales & Marketing"])
+roleApplicantsCol = Col("Active Applicants", [42, 18, 29, 14, 31, 22])
+roleStatusCol = Col("Status", ["Interviewing", "Screening", "Offer Stage", "Interviewing", "Sourcing", "Interviewing"])
+
+pipelineTab = TabItem("pipeline", "Pipeline Stages", [pipelineBar])
+pipelineBar = HorizontalBarChart(["Sourced", "Screening", "Technical Test", "Panel Interview", "Offer Pending"], [pipelineSeries], "grouped", "Candidates", "Stage")
+pipelineSeries = Series("Candidates", [145, 62, 28, 14, 6])
+
+interviewsTab = TabItem("interviews", "Interviews This Week (12)", [interviewsList])
+interviewsList = ListBlock([interview1, interview2, interview3, interview4])
+interview1 = ListItem("Jane Doe — Senior Backend Engineer", "System Design Interview • Mon, 10:00 AM • Panel: Alex M., Sarah T.")
+interview2 = ListItem("Marcus Chen — Staff Product Designer", "Portfolio Review • Tue, 2:00 PM • Panel: Elena R.")
+interview3 = ListItem("Samantha Ray — Enterprise Account Executive", "Final Executive Pitch • Wed, 11:30 AM • Panel: David K.")
+interview4 = ListItem("Liam O'Connor — DevOps Engineer", "Technical Screen • Thu, 4:00 PM • Panel: Chris P.")
+
+formsSection = Accordion([newRoleAccordion])
+newRoleAccordion = AccordionItem("open-role", "➕ Open a New Role", [newRoleForm])
+
+newRoleForm = Form("open_role_form", formActions, [jobTitleControl, deptControl, headcountTypeControl, reqReasonControl])
+jobTitleControl = FormControl("Job Title", jobTitleInput, "Enter the official position title")
+jobTitleInput = Input("job_title", "e.g. Senior Frontend Engineer")
+
+deptControl = FormControl("Department", deptSelect)
+deptSelect = Select("department", [deptEng, deptProd, deptSales, deptOps, deptSupp], "Select target department")
+deptEng = SelectItem("engineering", "Engineering")
+deptProd = SelectItem("product", "Product & Design")
+deptSales = SelectItem("sales", "Sales & Marketing")
+deptOps = SelectItem("operations", "Operations & HR")
+deptSupp = SelectItem("support", "Customer Support")
+
+headcountTypeControl = FormControl("Headcount Type", headcountRadio)
+headcountRadio = RadioGroup("headcount_type", [typeNew, typeBackfill], "new")
+typeNew = RadioItem("New Budgeted Headcount", "Approved position in Q3/Q4 budget", "new")
+typeBackfill = RadioItem("Backfill Position", "Replacing a departing team member", "backfill")
+
+reqReasonControl = FormControl("Justification & Scope", reqReasonArea, "Provide business context for this role requisition")
+reqReasonArea = TextArea("justification", "Explain key objectives, urgency, and expected impact...", 3)
+
+formActions = Buttons([submitRoleBtn, cancelRoleBtn])
+submitRoleBtn = Button("Submit Requisition", null, "primary")
+cancelRoleBtn = Button("Save Draft", null, "secondary")
+
+followUp = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Download Q3 HR Performance Report")
+f2 = FollowUpItem("Filter open roles by Engineering")
+f3 = FollowUpItem("Schedule emergency sync with Recruiting Team")

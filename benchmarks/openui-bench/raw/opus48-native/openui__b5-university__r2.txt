@@ -1,0 +1,62 @@
+root = Card([header, kpis, enrollTrend, appsChart, acceptRadial, courseFill, teachingLoad, riskTable, scholarship, housing, events, alumni, semesterCompare, waitlist, deptFocus, actions])
+
+header = CardHeader("University Administration Overview", "Academic Year 2024-2025")
+
+kpis = Table([kpiName, kpiValue])
+kpiName = Col("Metric", ["Total Enrollment", "Acceptance Rate", "Tuition Revenue (YTD)"])
+kpiValue = Col("Value", ["24,180 students", "48.2%", "$312.4M"])
+
+enrollTrend = LineChart(["2020", "2021", "2022", "2023", "2024"], [enrollSeries], "natural", "Year", "Students")
+enrollSeries = Series("Total Enrollment", [21400, 22100, 22850, 23600, 24180])
+
+appsChart = HorizontalBarChart(["Engineering", "Business", "Arts & Sciences", "Nursing", "Law"], [appsSeries], "grouped", "Applications", "Program")
+appsSeries = Series("Applications", [9800, 7600, 8900, 4200, 3100])
+
+acceptRadial = RadialChart(["Accepted", "Waitlisted", "Rejected"], [48, 12, 40])
+
+courseFill = BarChart(["CS 101", "BIO 210", "ECON 150", "HIST 220", "MATH 305"], [fillSeries], "grouped", "Course", "% Full")
+fillSeries = Series("Capacity Filled (%)", [98, 87, 74, 62, 91])
+
+teachingLoad = HorizontalBarChart(["Dr. Chen", "Dr. Alvarez", "Dr. Okafor", "Dr. Patel", "Dr. Nguyen"], [loadSeries], "grouped", "Credit Hours", "Faculty")
+loadSeries = Series("Teaching Load (credit hrs)", [12, 15, 9, 18, 11])
+
+riskTable = Table([riskName, riskGpa, riskProgram, riskStatus])
+riskName = Col("Student", ["J. Morgan", "A. Reyes", "K. Brooks", "L. Tanaka"])
+riskGpa = Col("GPA", [1.8, 1.6, 2.0, 1.9])
+riskProgram = Col("Program", ["Engineering", "Business", "Arts & Sciences", "Nursing"])
+riskStatus = Col("Status", ["Probation", "Probation", "Warning", "Warning"])
+
+scholarship = Progress(78, "Scholarship Budget Used — $18.7M of $24M")
+
+housing = Progress(92, "Housing Occupancy — 6,440 of 7,000 beds")
+
+events = ListBlock([ev1, ev2, ev3, ev4], "number")
+ev1 = ListItem("Fall Convocation", "Sept 3 · Main Auditorium")
+ev2 = ListItem("Career & Internship Fair", "Sept 12 · Student Union")
+ev3 = ListItem("Homecoming Weekend", "Sept 20-22 · Campus-wide")
+ev4 = ListItem("Research Symposium", "Sept 28 · Science Building")
+
+alumni = AreaChart(["2021", "2022", "2023", "2024"], [givingSeries], "natural", "Year", "USD (millions)")
+givingSeries = Series("Alumni Giving", [12.4, 14.1, 15.8, 18.3])
+
+semesterCompare = BarChart(["Enrollment", "Avg GPA", "Retention %", "Courses"], [lastSem, thisSem], "grouped", "Metric", "Value")
+lastSem = Series("Last Semester", [23600, 3.1, 88, 1240])
+thisSem = Series("This Semester", [24180, 3.2, 90, 1305])
+
+waitlist = HorizontalBarChart(["Engineering", "Business", "Arts & Sciences", "Nursing", "Law"], [waitSeries], "grouped", "Waitlisted", "Program")
+waitSeries = Series("Waitlisted Students", [340, 210, 180, 420, 95])
+
+deptFocus = Form("dept-focus", deptButtons, [deptField])
+deptField = FormControl("Focus on Department", deptSelect)
+deptSelect = Select("department", [dOpt1, dOpt2, dOpt3, dOpt4, dOpt5], "Select a department")
+dOpt1 = SelectItem("engineering", "Engineering")
+dOpt2 = SelectItem("business", "Business")
+dOpt3 = SelectItem("arts", "Arts & Sciences")
+dOpt4 = SelectItem("nursing", "Nursing")
+dOpt5 = SelectItem("law", "Law")
+deptButtons = Buttons([deptApply])
+deptApply = Button("View Department", null, "primary")
+
+actions = Buttons([approveCourse, messageGroup])
+approveCourse = Button("Approve New Course", null, "primary")
+messageGroup = Button("Message Student Group", null, "secondary")

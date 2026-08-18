@@ -1,0 +1,65 @@
+
+
+Here's a complete City Operations Center console covering all 17 requirements — live KPIs, charts, tables, district filtering, and action dialogs (dispatch crew + public alert) built into the toolbar.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "city-ops-center",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": {
+        "primaryColor": "#0E7490",
+        "agentDisplayName": "City Operations Center"
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "city-ops-center",
+      "components": [
+        { "id": "root", "component": "Card", "direction": "column", "gap": "l", "children": ["topBar", "mobilityRow", "environmentRow", "safetyRow", "servicesRow", "worksRow", "footerNote"] },
+
+        { "id": "topBar", "component": "Card", "direction": "row", "justify": "between", "align": "center", "gap": "m", "wrap": true, "children": ["topBarLeft", "topBarRight"] },
+        { "id": "topBarLeft", "component": "Card", "variant": "clear", "direction": "row", "align": "center", "gap": "m", "children": ["titleHeading", "liveTag"] },
+        { "id": "titleHeading", "component": "Heading", "level": "h2", "text": "City Operations Center" },
+        { "id": "liveTag", "component": "Tag", "variant": "success", "text": "LIVE • All systems nominal" },
+        { "id": "topBarRight", "component": "Card", "variant": "clear", "direction": "row", "align": "center", "gap": "m", "wrap": true, "children": ["districtFocusControl", "dispatchCrewDialog", "publicAlertDialog"] },
+
+        { "id": "districtFocusControl", "component": "FormControl", "label": "Focus on district (req. 13)", "input": "districtSelect", "hint": "Filters every tile below" },
+        { "id": "districtSelect", "component": "Select", "name": "districtFocus", "placeholder": "All districts", "items": ["districtOptAll", "districtOptDowntown", "districtOptNorthside", "districtOptRiverside", "districtOptIndustrial", "districtOptEastgate", "districtOptWesthill"] },
+        { "id": "districtOptAll", "component": "SelectItem", "value": "all", "label": "All districts" },
+        { "id": "districtOptDowntown", "component": "SelectItem", "value": "downtown", "label": "Downtown" },
+        { "id": "districtOptNorthside", "component": "SelectItem", "value": "northside", "label": "Northside" },
+        { "id": "districtOptRiverside", "component": "SelectItem", "value": "riverside", "label": "Riverside" },
+        { "id": "districtOptIndustrial", "component": "SelectItem", "value": "industrial", "label": "Industrial Park" },
+        { "id": "districtOptEastgate", "component": "SelectItem", "value": "eastgate", "label": "Eastgate" },
+        { "id": "districtOptWesthill", "component": "SelectItem", "value": "westhill", "label": "Westhill" },
+
+        { "id": "dispatchCrewDialog", "component": "DialogBlock", "triggerLabel": "Dispatch a crew (req. 14)", "title": "Dispatch a field crew", "description": "Assign a qualified crew to an incident, roadwork, or maintenance job.", "content": ["dispatchCrewForm"] },
+        { "id": "dispatchCrewForm", "component": "Form", "name": "dispatchCrew", "fields": ["crewTypeControl", "crewLocationControl", "crewPriorityControl", "crewNotesControl"], "buttons": "dispatchCrewButtons" },
+        { "id": "crewTypeControl", "component": "FormControl", "label": "Crew team", "input": "crewTypeSelect", "hint": "Nearest qualified unit is auto-suggested" },
+        { "id": "crewTypeSelect", "component": "Select", "name": "crewType", "placeholder": "Select team", "items": ["crewOptWater", "crewOptElectric", "crewOptRoads", "crewOptTrees", "crewOptSanitation"] },
+        { "id": "crewOptWater", "component": "SelectItem", "value": "water", "label": "Water & Drainage" },
+        { "id": "crewOptElectric", "component": "SelectItem", "value": "electric", "label": "Electrical & Streetlights" },
+        { "id": "crewOptRoads", "component": "SelectItem", "value": "roads", "label": "Roads & Signals" },
+        { "id": "crewOptTrees", "component": "SelectItem", "value": "trees", "label": "Trees & Parks" },
+        { "id": "crewOptSanitation", "component": "SelectItem", "value": "sanitation", "label": "Sanitation" },
+        { "id": "crewLocationControl", "component": "FormControl", "label": "Location", "input": "crewLocationInput", "hint": "Address or intersection" },
+        { "id": "crewLocationInput", "component": "Input", "name": "crewLocation", "placeholder": "e.g. 120 River Rd" },
+        { "id": "crewPriorityControl", "component": "FormControl", "label": "Priority", "input": "crewPrioritySelect" },
+        { "id": "crewPrioritySelect", "component": "Select", "name": "crewPriority", "placeholder": "Select priority", "items": ["prioOptCritical", "prioOptHigh", "prioOptMedium", "prioOptLow"] },
+        { "id": "prioOptCritical", "component": "SelectItem", "value": "critical", "label": "Critical — respond now" },
+        { "id": "prioOptHigh", "component": "SelectItem", "value": "high", "label": "High — within 1 hour" },
+        { "id": "prioOptMedium", "component": "SelectItem", "value": "medium", "label": "Medium — today" },
+        { "id": "prioOptLow", "component": "SelectItem", "value": "low", "label": "Low — scheduled" },
+        { "id": "crewNotesControl", "component": "FormControl", "label": "Instructions", "input": "crewNotesArea" },
+        { "id": "crewNotesArea", "component": "TextArea", "name": "crewNotes", "placeholder": "Access notes, hazards, permits…", "rows": 3 },
+        { "id": "dispatchCrewButtons", "component": "Buttons", "buttons": ["dispatchConfirmBtn", "dispatchCancelBtn"] },
+        { "id": "dispatchConfirmBtn", "component": "Button", "label": "Dispatch crew", "variant": "primary" },
+        { "id": "dispatchCancelBtn", "component": "Button", "label": "Cancel", "variant": "secondary" },
+
+        { "id": "publicAlertDialog", "component": "DialogBlock", "triggerLabel": "Send public alert (req. 15)", "title": "Send a public alert", "description": "Broadcast a message to citizens in the affected area.", "content": ["publicAlertForm"] },
+        { "id": "publicAlertForm", "component": "Form", "name": "publicAlert", "fields": ["

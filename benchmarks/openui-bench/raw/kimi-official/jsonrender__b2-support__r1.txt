@@ -1,0 +1,58 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["hdr","sla","metrics","sep","toolbar","list-all","list-high"]}}
+{"op":"add","path":"/elements/hdr","value":{"type":"CardHeader","props":{"title":"Good morning, Alex","subtitle":"Tuesday, May 21 · Support queue briefing"},"children":[]}}
+{"op":"add","path":"/elements/sla","value":{"type":"Callout","props":{"variant":"warning","title":"SLA watch","description":"3 tickets are approaching the 30-minute first-response target. Prioritize the queue before standup."},"children":[]}}
+{"op":"add","path":"/elements/metrics","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m"},"children":["m-open","m-frt"]}}
+{"op":"add","path":"/elements/m-open","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["m-open-l","m-open-v","m-open-n"]}}
+{"op":"add","path":"/elements/m-open-l","value":{"type":"Label","props":{"text":"Open tickets"},"children":[]}}
+{"op":"add","path":"/elements/m-open-v","value":{"type":"TextContent","props":{"text":{"$state":"/openCount"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/state/openCount","value":18}
+{"op":"add","path":"/elements/m-open-n","value":{"type":"TextContent","props":{"text":"+4 since yesterday evening","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/m-frt","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["m-frt-l","m-frt-v","m-frt-n"]}}
+{"op":"add","path":"/elements/m-frt-l","value":{"type":"Label","props":{"text":"Avg first response"},"children":[]}}
+{"op":"add","path":"/elements/m-frt-v","value":{"type":"TextContent","props":{"text":{"$state":"/avgFirstResponse"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/state/avgFirstResponse","value":"14 min"}
+{"op":"add","path":"/elements/m-frt-n","value":{"type":"TextContent","props":{"text":"Target: 30 min · on track","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/sep","value":{"type":"Separator","props":{"orientation":"horizontal"},"children":[]}}
+{"op":"add","path":"/elements/toolbar","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center","wrap":true},"children":["tb-title","tb-actions"]}}
+{"op":"add","path":"/elements/tb-title","value":{"type":"Heading","props":{"text":"Most recent tickets","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/tb-actions","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center"},"children":["filter-btns","dlg"]}}
+{"op":"add","path":"/elements/filter-btns","value":{"type":"Buttons","props":{"buttons":["btn-all","btn-high"],"direction":"row"},"children":[]}}
+{"op":"add","path":"/elements/btn-all","value":{"type":"Button","props":{"label":"All","size":"small","variant":{"$cond":{"$state":"/filter","eq":"all"},"$then":"primary","$else":"secondary"}},"on":{"press":{"action":"setState","params":{"statePath":"/filter","value":"all"}}},"children":[]}}
+{"op":"add","path":"/elements/btn-high","value":{"type":"Button","props":{"label":"High priority only","size":"small","variant":{"$cond":{"$state":"/filter","eq":"high"},"$then":"primary","$else":"secondary"}},"on":{"press":{"action":"setState","params":{"statePath":"/filter","value":"high"}}},"children":[]}}
+{"op":"add","path":"/state/filter","value":"all"}
+{"op":"add","path":"/elements/dlg","value":{"type":"DialogBlock","props":{"triggerLabel":"+ New ticket","title":"Open a new ticket","description":"Log a customer issue into the support queue.","triggerVariant":"default","content":["f-subj","f-prio","f-desc","dlg-create"]},"children":[]}}
+{"op":"add","path":"/elements/f-subj","value":{"type":"FormControl","props":{"label":"Subject","input":"in-subj","hint":"Short summary of the customer issue"},"children":[]}}
+{"op":"add","path":"/elements/in-subj","value":{"type":"Input","props":{"name":"subject","placeholder":"e.g. Login page returns 500","value":{"$bindState":"/new/subject"}},"children":[]}}
+{"op":"add","path":"/state/new/subject","value":""}
+{"op":"add","path":"/elements/f-prio","value":{"type":"FormControl","props":{"label":"Priority","input":"sel-prio"},"children":[]}}
+{"op":"add","path":"/elements/sel-prio","value":{"type":"Select","props":{"name":"priority","items":["si-h","si-m","si-l"],"value":{"$bindState":"/new/priority"}},"children":[]}}
+{"op":"add","path":"/elements/si-h","value":{"type":"SelectItem","props":{"value":"High","label":"High"},"children":[]}}
+{"op":"add","path":"/elements/si-m","value":{"type":"SelectItem","props":{"value":"Medium","label":"Medium"},"children":[]}}
+{"op":"add","path":"/elements/si-l","value":{"type":"SelectItem","props":{"value":"Low","label":"Low"},"children":[]}}
+{"op":"add","path":"/state/new/priority","value":"Medium"}
+{"op":"add","path":"/elements/f-desc","value":{"type":"FormControl","props":{"label":"Description","input":"ta-desc"},"children":[]}}
+{"op":"add","path":"/elements/ta-desc","value":{"type":"TextArea","props":{"name":"description","placeholder":"Steps to reproduce, affected customer, links…","rows":3,"value":{"$bindState":"/new/desc"}},"children":[]}}
+{"op":"add","path":"/state/new/desc","value":""}
+{"op":"add","path":"/elements/dlg-create","value":{"type":"Button","props":{"label":"Create ticket","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/tickets","value":{"id":"$id","title":{"$state":"/new/subject"},"customer":"Unassigned","priority":{"$state":"/new/priority"},"time":"Just now"},"clearStatePath":"/new/subject"}}},"children":[]}}
+{"op":"add","path":"/elements/list-all","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/tickets","key":"id"},"visible":{"$or":[{"$state":"/filter","eq":"all"},{"$state":"/filter","not":true}]},"children":["t-row"]}}
+{"op":"add","path":"/elements/t-row","value":{"type":"Card","props":{"variant":"card","direction":"row","justify":"between","align":"center"},"children":["t-left","t-tag"]}}
+{"op":"add","path":"/elements/t-left","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["t-title","t-meta"]}}
+{"op":"add","path":"/elements/t-title","value":{"type":"TextContent","props":{"text":{"$item":"title"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/t-meta","value":{"type":"TextContent","props":{"text":{"$template":"${id} · ${customer} · ${time}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/t-tag","value":{"type":"Tag","props":{"text":{"$item":"priority"},"size":"sm","variant":"neutral"},"children":[]}}
+{"op":"add","path":"/state/tickets","value":[]}
+{"op":"add","path":"/state/tickets/0","value":{"id":"T-1042","title":"Payment webhook failing on checkout","customer":"Acme Corp","priority":"High","time":"8 min ago"}}
+{"op":"add","path":"/state/tickets/1","value":{"id":"T-1041","title":"SSO login loop after password reset","customer":"Northwind","priority":"High","time":"21 min ago"}}
+{"op":"add","path":"/state/tickets/2","value":{"id":"T-1040","title":"Invoice PDF missing line items","customer":"Globex","priority":"Medium","time":"47 min ago"}}
+{"op":"add","path":"/state/tickets/3","value":{"id":"T-1039","title":"Feature request: export audit log","customer":"Initech","priority":"Low","time":"1 h ago"}}
+{"op":"add","path":"/state/tickets/4","value":{"id":"T-1038","title":"API rate limit errors on /v2/search","customer":"Umbrella","priority":"Medium","time":"2 h ago"}}
+{"op":"add","path":"/elements/list-high","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/highTickets","key":"id"},"visible":{"$state":"/filter","eq":"high"},"children":["h-row"]}}
+{"op":"add","path":"/elements/h-row","value":{"type":"Card","props":{"variant":"card","direction":"row","justify":"between","align":"center"},"children":["h-left","h-tag"]}}
+{"op":"add","path":"/elements/h-left","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["h-title","h-meta"]}}
+{"op":"add","path":"/elements/h-title","value":{"type":"TextContent","props":{"text":{"$item":"title"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/h-meta","value":{"type":"TextContent","props":{"text":{"$template":"${id} · ${customer} · ${time}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/h-tag","value":{"type":"Tag","props":{"text":{"$item":"priority"},"size":"sm","variant":"danger"},"children":[]}}
+{"op":"add","path":"/state/highTickets","value":[]}
+{"op":"add","path":"/state/highTickets/0","value":{"id":"T-1042","title":"Payment webhook failing on checkout","customer":"Acme Corp","priority":"High","time":"8 min ago"}}
+{"op":"add","path":"/state/highTickets/1","value":{"id":"T-1041","title":"SSO login loop after password reset","customer":"Northwind","priority":"High","time":"21 min ago"}}

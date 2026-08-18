@@ -1,0 +1,129 @@
+root = Card([header, mainGrid, incidentsSection, followUps], "sunk", "column", "l")
+
+header = CardHeader("Hospital Operations Command Center", "Real-time Operational Dashboard • Main Campus")
+
+mainGrid = Card([kpiRow, middleRow, bottomRow], "clear", "column", "m")
+
+kpiRow = Card([bedCard, erCard, dischargeCard, criticalCard], "clear", "row", "m")
+
+bedCard = Card([bedTitle, bedProgress, bedDetails], "card", "column", "s")
+bedTitle = TextContent("Bed Occupancy", "small-heavy")
+bedProgress = Progress(88, "378 / 430 Beds Occupied")
+bedDetails = Badge("88% Capacity - High Demand", "destructive")
+
+erCard = Card([erTitle, erVal, erSub], "card", "column", "s")
+erTitle = TextContent("Current ER Wait Time", "small-heavy")
+erVal = Heading("42 min", "h2")
+erSub = Badge("14 Patients in Waiting Room", "secondary")
+
+dischargeCard = Card([dcTitle, dcVal, dcSub], "card", "column", "s")
+dcTitle = TextContent("Ready for Discharge", "small-heavy")
+dcVal = Heading("18 Patients", "h2")
+dcSub = Badge("6 Awaiting Transport", "outline")
+
+criticalCard = Card([critTitle, critVal, critSub], "card", "column", "s")
+critTitle = TextContent("Critical Patients (ICU)", "small-heavy")
+critVal = Heading("12 Alert", "h2")
+critSub = Badge("2 Requiring Ventilators", "destructive")
+
+middleRow = Card([tabsSection], "clear", "column", "m")
+
+tabsSection = Tabs([admissionsTab, deptTab, orTab, staffTab, criticalTab, suppliesTab, actionsTab])
+
+admissionsTab = TabItem("admissions", "Admissions (14 Days)", [admissionsChart])
+admissionsChart = AreaChart(["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Day 6", "Day 7", "Day 8", "Day 9", "Day 10", "Day 11", "Day 12", "Day 13", "Day 14"], [admissionsSeries], "natural", "Past 14 Days", "Admissions")
+admissionsSeries = Series("Daily Admissions", [42, 38, 45, 50, 52, 61, 58, 44, 40, 48, 53, 59, 64, 60])
+
+deptTab = TabItem("depts", "Patients / Dept", [deptChart])
+deptChart = BarChart(["Emergency", "Cardiology", "Orthopedics", "Pediatrics", "Oncology", "Neurology", "ICU"], [deptSeries], "grouped", "Department", "Patients")
+deptSeries = Series("Current Census", [65, 48, 32, 28, 40, 22, 18])
+
+orTab = TabItem("or_bookings", "OR Bookings Today", [orTable])
+orTable = Table([orRoomCol, orProcCol, orSurgeonCol, orTimeCol, orStatusCol])
+orRoomCol = Col("OR Room", ["OR-1", "OR-2", "OR-3", "OR-4", "OR-5"])
+orProcCol = Col("Procedure", ["Coronary Artery Bypass", "Total Knee Arthroplasty", "Appendectomy", "Craniotomy", "Laparoscopic Cholecystectomy"])
+orSurgeonCol = Col("Surgeon", ["Dr. A. Vance", "Dr. R. Sterling", "Dr. M. Chen", "Dr. K. Patel", "Dr. L. Gomez"])
+orTimeCol = Col("Scheduled Time", ["07:30 - 11:30", "08:00 - 10:30", "09:15 - 10:45", "11:00 - 15:00", "13:00 - 14:30"])
+orStatusCol = Col("Status", ["In Progress", "In Progress", "Completed", "Scheduled", "Scheduled"])
+
+staffTab = TabItem("staff", "Staff on Shift", [staffList])
+staffList = ListBlock([staff1, staff2, staff3, staff4, staff5])
+staff1 = ListItem("Dr. Sarah Jenkins", "Attending Physician • ER (Lead)", null, "Active")
+staff2 = ListItem("Marcus Brody, RN", "Charge Nurse • ICU", null, "Active")
+staff3 = ListItem("Dr. Evan Wright", "Chief Surgeon • Operating Room", null, "In Surgery")
+staff4 = ListItem("Elena Rostova, BSN", "Triage Nurse • Emergency", null, "Active")
+staff5 = ListItem("David Kim, RPT", "Senior Physical Therapist • Orthopedics", null, "On Break")
+
+criticalTab = TabItem("critical", "Critical Patients Callouts", [criticalAlertList])
+criticalAlertList = Card([critAlert1, critAlert2], "clear", "column", "s")
+critAlert1 = Callout("error", "Patient #8849 - ICU Bed 04", "STEMI watch. Rapid deterioration in BP (85/50). Attending notified.")
+critAlert2 = Callout("warning", "Patient #9012 - ER Bay 02", "Severe Respiratory Distress. Oxygen saturation dropped to 89%. Prep for intubation.")
+
+suppliesTab = TabItem("supplies", "Supplies Running Low", [suppliesTable])
+suppliesTable = Table([itemCol, deptSupplyCol, stockCol, statusCol])
+itemCol = Col("Item Description", ["N95 Respirator Masks", "IV Normal Saline 1000ml", "Surgical Gloves (Size M)", "EpiPen 0.3mg Auto-Injectors", "Catheter Trays"])
+deptSupplyCol = Col("Department", ["Central Stores", "Pharmacy / ER", "Surgical Suite", "Emergency", "Inpatient Care"])
+stockCol = Col("Stock Level", ["45 boxes remaining", "12 units remaining", "18 boxes remaining", "5 units remaining", "8 kits remaining"])
+statusCol = Col("Status", ["Low", "Critical", "Low", "Critical", "Low"])
+
+actionsTab = TabItem("actions", "Quick Operational Tools", [actionsGrid])
+actionsGrid = Card([dateCard, transferCard], "clear", "row", "m")
+
+dateCard = Card([dateTitle, datePickerForm], "card", "column", "s")
+dateTitle = TextContent("Look at Another Day", "small-heavy")
+datePickerForm = Form("date_select_form", dateFormBtns, [dateControl])
+dateControl = FormControl("Select Date", dateInput)
+dateInput = DatePicker("target_date", "single")
+dateFormBtns = Buttons([changeDateBtn])
+changeDateBtn = Button("Load Operational View", null, "primary")
+
+transferCard = Card([transferTitle, transferForm], "card", "column", "s")
+transferTitle = TextContent("Request Patient Transfer", "small-heavy")
+transferForm = Form("transfer_form", transferFormBtns, [patientIdControl, targetDeptControl, urgencyControl])
+patientIdControl = FormControl("Patient ID / Name", patientIdInput)
+patientIdInput = Input("patient_id", "e.g. #8849 or John Doe")
+targetDeptControl = FormControl("Target Department", targetDeptSelect)
+targetDeptSelect = Select("target_dept", [deptICU, deptCardio, deptOrtho, deptGeneral], "Select destination")
+deptICU = SelectItem("icu", "Intensive Care Unit (ICU)")
+deptCardio = SelectItem("cardio", "Cardiology Ward")
+deptOrtho = SelectItem("ortho", "Orthopedics")
+deptGeneral = SelectItem("general", "General Medical/Surgical")
+urgencyControl = FormControl("Urgency Level", urgencyRadio)
+urgencyRadio = RadioGroup("urgency", [urgencyRoutine, urgencyUrgent, urgencyEmergent], "urgent")
+urgencyRoutine = RadioItem("Routine", "Within 4 hours", "routine")
+urgencyUrgent = RadioItem("Urgent", "Within 1 hour", "urgent")
+urgencyEmergent = RadioItem("Emergent", "Immediate transfer required", "emergent")
+transferFormBtns = Buttons([submitTransferBtn])
+submitTransferBtn = Button("Submit Transfer Request", null, "primary")
+
+bottomRow = Card([incidentCard], "card", "column", "s")
+
+incidentCard = Card([incidentTitle, incidentForm], "clear", "column", "s")
+incidentTitle = TextContent("File an Operational Incident", "small-heavy")
+incidentForm = Form("incident_form", incidentFormBtns, [incidentTypeControl, incidentDescControl, severityControl])
+incidentTypeControl = FormControl("Incident Category", incidentTypeSelect)
+incidentTypeSelect = Select("inc_type", [typeEquipment, typeStaffing, typeSafety, typeSupply], "Select type")
+typeEquipment = SelectItem("equipment", "Equipment Malfunction")
+typeStaffing = SelectItem("staffing", "Staffing Shortage")
+typeSafety = SelectItem("safety", "Patient Safety / Fall")
+typeSupply = SelectItem("supply", "Critical Supply Shortage")
+
+incidentDescControl = FormControl("Incident Description & Details", incidentDescInput)
+incidentDescInput = TextArea("inc_desc", "Describe the incident, immediate actions taken, and location...", 3)
+
+severityControl = FormControl("Severity Level", severityRadio)
+severityRadio = RadioGroup("severity", [sevLow, sevMed, sevHigh], "medium")
+sevLow = RadioItem("Minor", "No patient impact", "low")
+sevMed = RadioItem("Moderate", "Delay in care or minor hazard", "medium")
+sevHigh = RadioItem("Critical", "Immediate risk to safety or care delivery", "high")
+
+incidentFormBtns = Buttons([submitIncidentBtn, clearIncidentBtn])
+submitIncidentBtn = Button("File Official Incident Report", null, "primary", "destructive")
+clearIncidentBtn = Button("Reset Form", null, "tertiary")
+
+incidentsSection = TextCallout("warning", "Active Operations Notice", "Admissions spiked by 18% in the last 4 hours. Diversion protocol is under review for non-emergency ambulances.")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Export daily shift summary report")
+f2 = FollowUpItem("View ICU bed availability details")
+f3 = FollowUpItem("Alert head nurse on supply levels")

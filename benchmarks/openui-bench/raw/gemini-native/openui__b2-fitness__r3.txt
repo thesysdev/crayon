@@ -1,0 +1,55 @@
+root = Card([header, summaryRow, weeklySection, logDrawer, suggestions])
+
+header = CardHeader("Daily Fitness Summary", "Thursday, October 24")
+
+summaryRow = Card([stepsCard, calCard], "sunk", "row", "m", "center", "between")
+
+stepsCard = Card([stepsHeader, stepsProgress, stepsText], "clear", "column", "xs")
+stepsHeader = Heading("Step Count", "h4")
+stepsProgress = Progress(8420, "8,420 / 10,000 steps")
+stepsText = TextContent("1,580 steps to reach your daily goal!", "small")
+
+calCard = Card([calHeader, calBadge, calText], "clear", "column", "xs")
+calHeader = Heading("Active Calories", "h4")
+calBadge = Badge("645 kcal burned", "secondary")
+calText = TextContent("Exceeded daily burn target by 15%", "small")
+
+weeklySection = Card([weeklyHeader, weeklyChart, workoutList], "card", "column", "m")
+weeklyHeader = Heading("Past Week Workouts", "h3")
+weeklyChart = BarChart(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], [calSeries, minSeries], "grouped", "Day", "Value")
+calSeries = Series("Calories (kcal)", [450, 520, 300, 645, 0, 0, 0])
+minSeries = Series("Duration (min)", [45, 50, 30, 60, 0, 0, 0])
+
+workoutList = ListBlock([w1, w2, w3])
+w1 = ListItem("Morning Run", "45 mins • 420 kcal • Outdoor", null, "View GPS")
+w2 = ListItem("HIIT Session", "30 mins • 310 kcal • Gym", null, "Details")
+w3 = ListItem("Evening Walk", "25 mins • 115 kcal • Neighborhood", null, "Details")
+
+logDrawer = DrawerBlock("Log New Workout", "Record Workout", "Fill in your workout details below.", logForm)
+
+logForm = Form("log_workout", formBtns, [typeControl, durationControl, calControl, notesControl])
+typeControl = FormControl("Workout Type", typeSelect)
+typeSelect = Select("type", [t1, t2, t3, t4, t5], "Select activity")
+t1 = SelectItem("running", "Running")
+t2 = SelectItem("cycling", "Cycling")
+t3 = SelectItem("hiit", "HIIT / Crossfit")
+t4 = SelectItem("strength", "Strength Training")
+t5 = SelectItem("walking", "Walking")
+
+durationControl = FormControl("Duration (minutes)", durationInput)
+durationInput = Input("duration", "e.g. 45", "number")
+
+calControl = FormControl("Estimated Calories Burned", calInput)
+calInput = Input("calories", "e.g. 350", "number")
+
+notesControl = FormControl("Notes / Intensity", notesInput)
+notesInput = TextArea("notes", "Felt strong, maintained good pace...")
+
+formBtns = Buttons([saveBtn, cancelBtn])
+saveBtn = Button("Save Workout", null, "primary")
+cancelBtn = Button("Cancel", null, "tertiary")
+
+suggestions = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Show my monthly step trends")
+f2 = FollowUpItem("How many calories should I eat today?")
+f3 = FollowUpItem("Set a new daily step goal")

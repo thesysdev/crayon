@@ -1,0 +1,76 @@
+root = Card([header, balances, txnSection, spendSection, billsSection, goalSection, scoreSection, transferForm, freezeAction, statementForm, alertsForm, disputeAction])
+
+header = CardHeader("Good afternoon, Alex", "Your accounts at a glance")
+
+balances = Table([acctCol, balCol])
+acctCol = Col("Account", ["Checking", "Savings", "Credit"])
+balCol = Col("Balance", ["$4,382.19", "$18,940.55", "-$1,204.77"])
+
+txnSection = ListBlock([txn1, txn2, txn3, txn4, txn5])
+txn1 = ListItem("Whole Foods Market", "Groceries", null, "-$86.42")
+txn2 = ListItem("Shell Gas Station", "Fuel", null, "-$52.10")
+txn3 = ListItem("Netflix", "Subscription", null, "-$15.49")
+txn4 = ListItem("Paycheck - Acme Inc", "Direct deposit", null, "+$3,120.00")
+txn5 = ListItem("Blue Bottle Coffee", "Dining", null, "-$9.75")
+
+spendSection = PieChart(spendLabels, spendValues, "donut")
+spendLabels = ["Groceries", "Dining", "Transport", "Subscriptions", "Shopping", "Utilities"]
+spendValues = [640, 315, 190, 85, 420, 230]
+
+billsSection = Table([billName, billDue, billAmount])
+billName = Col("Bill", ["Rent", "Electric", "Internet", "Credit Card"])
+billDue = Col("Due", ["Jun 1", "Jun 5", "Jun 8", "Jun 12"])
+billAmount = Col("Amount", ["$1,850.00", "$94.30", "$65.00", "$300.00"])
+
+goalSection = Card([goalHeader, goalProgress])
+goalHeader = CardHeader("Vacation Fund", "Goal: $6,000")
+goalProgress = Progress(63, "$3,780 saved")
+
+scoreSection = Card([scoreHeader, scoreBadge])
+scoreHeader = CardHeader("Credit Score", "Updated today")
+scoreBadge = Badge("742 - Very Good", "secondary")
+
+transferForm = Form("transfer", transferButtons, [fromField, toField, amountField])
+fromField = FormControl("From account", fromSelect)
+fromSelect = Select("from", [fChecking, fSavings], "Select source")
+fChecking = SelectItem("checking", "Checking - $4,382.19")
+fSavings = SelectItem("savings", "Savings - $18,940.55")
+toField = FormControl("To account", toSelect)
+toSelect = Select("to", [tChecking, tSavings, tCredit], "Select destination")
+tChecking = SelectItem("checking", "Checking")
+tSavings = SelectItem("savings", "Savings")
+tCredit = SelectItem("credit", "Credit (pay down)")
+amountField = FormControl("Amount", amountInput, "Enter the amount to move")
+amountInput = Input("amount", "$0.00", "number")
+transferButtons = Buttons([transferBtn])
+transferBtn = Button("Move money", null, "primary")
+
+freezeAction = AlertDialogBlock("Freeze credit line", "Freeze credit line?", "This blocks all new charges on your credit account until you unfreeze it.", "Freeze now", "Cancel", "destructive")
+
+statementForm = Form("statement", statementButtons, [periodField])
+periodField = FormControl("Statement period", periodPicker, "Choose a date range")
+periodPicker = DatePicker("period", "range")
+statementButtons = Buttons([statementBtn])
+statementBtn = Button("View statement", null, "secondary")
+
+alertsForm = Form("alerts", alertsButtons, [alertTriggers])
+alertTriggers = FormControl("Alert me when", alertChecks)
+alertChecks = CheckBoxGroup("triggers", [alertLarge, alertLow, alertBill, alertDeposit])
+alertLarge = CheckBoxItem("Large purchases", "Any charge over $200", "large", true)
+alertLow = CheckBoxItem("Low balance", "Checking drops below $500", "low", true)
+alertBill = CheckBoxItem("Bill due", "3 days before a bill is due", "bill", false)
+alertDeposit = CheckBoxItem("Deposits", "Money added to any account", "deposit", true)
+alertsButtons = Buttons([alertsBtn])
+alertsBtn = Button("Save alert settings", null, "primary")
+
+disputeAction = DialogBlock("Dispute a transaction", "Dispute a transaction", "Tell us what went wrong and we'll investigate.", [disputeForm], "outline")
+disputeForm = Form("dispute", disputeButtons, [disputeTxnField, disputeReasonField])
+disputeTxnField = FormControl("Transaction", disputeSelect)
+disputeSelect = Select("txn", [dTxn1, dTxn2, dTxn3], "Select a transaction")
+dTxn1 = SelectItem("wf", "Whole Foods Market - $86.42")
+dTxn2 = SelectItem("shell", "Shell Gas Station - $52.10")
+dTxn3 = SelectItem("netflix", "Netflix - $15.49")
+disputeReasonField = FormControl("Reason", disputeReason)
+disputeReason = TextArea("reason", "Describe the issue with this charge", 4)
+disputeButtons = Buttons([disputeBtn])
+disputeBtn = Button("Submit dispute", null, "primary", "destructive")

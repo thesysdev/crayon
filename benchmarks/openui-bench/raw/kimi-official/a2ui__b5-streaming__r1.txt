@@ -1,0 +1,148 @@
+Here's a complete operations dashboard covering all 16 requirements:
+
+<a2ui-json>
+[
+  {"version":"v0.9","createSurface":{"surfaceId":"ops-room","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#E50914","agentDisplayName":"StreamOps Center"}}},
+  {"version":"v0.9","updateComponents":{"surfaceId":"ops-room","components":[
+    {"id":"root","component":"Card","direction":"column","gap":"m","children":["header","rowLive","rowRegionTools","rowWatchTime","rowGrowth","rowPerf","rowCatalog","rowEngagement","rowBusiness","rowFlags","rowPromote"]},
+    {"id":"header","component":"CardHeader","title":"StreamOps — Operations Room","subtitle":"Live platform overview · All regions · Updated just now"},
+
+    {"id":"rowLive","component":"Card","direction":"row","gap":"m","children":["liveViewers","bufferCard"]},
+    {"id":"liveViewers","component":"Card","variant":"sunk","direction":"column","gap":"xs","weight":1,"children":["liveNum","liveSub","liveProgress"]},
+    {"id":"liveNum","component":"TextContent","text":"# 2,847,312 watching right now","size":"large-heavy"},
+    {"id":"liveSub","component":"TextContent","text":"▲ 6.2% vs same time yesterday · Peak today: 3.1M","size":"small"},
+    {"id":"liveProgress","component":"Progress","value":92,"label":"Capacity headroom"},
+    {"id":"bufferCard","component":"Card","variant":"sunk","direction":"column","gap":"xs","weight":1,"children":["bufNum","bufTrend"]},
+    {"id":"bufNum","component":"TextContent","text":"# Buffering rate: 0.42%","size":"large-heavy"},
+    {"id":"bufTrend","component":"LineChart","labels":["00:00","04:00","08:00","12:00","16:00","20:00","Now"],"series":["bufSeries"]},
+    {"id":"bufSeries","component":"Series","category":"Buffering %","values":[0.31,0.28,0.35,0.44,0.51,0.47,0.42]},
+
+    {"id":"rowRegionTools","component":"Card","direction":"row","gap":"m","children":["regionForm","healthTable"]},
+    {"id":"regionForm","component":"Form","name":"regionFocus","weight":1,"buttons":"regionButtons","fields":["regionField"]},
+    {"id":"regionField","component":"FormControl","label":"Focus on a region","input":"regionSelect","hint":"Filters all widgets on this screen"},
+    {"id":"regionSelect","component":"Select","name":"region","placeholder":"All regions","items":["ri1","ri2","ri3","ri4","ri5"]},
+    {"id":"ri1","component":"SelectItem","value":"na","label":"North America"},
+    {"id":"ri2","component":"SelectItem","value":"eu","label":"Europe"},
+    {"id":"ri3","component":"SelectItem","value":"latam","label":"Latin America"},
+    {"id":"ri4","component":"SelectItem","value":"apac","label":"Asia-Pacific"},
+    {"id":"ri5","component":"SelectItem","value":"mea","label":"Middle East & Africa"},
+    {"id":"regionButtons","component":"Buttons","buttons":["applyRegion"]},
+    {"id":"applyRegion","component":"Button","label":"Apply Region Filter","variant":"primary"},
+    {"id":"healthTable","component":"Card","variant":"sunk","direction":"column","gap":"xs","weight":2,"children":["healthTitle","healthTbl"]},
+    {"id":"healthTitle","component":"TextContent","text":"**Delivery health by region** (CDN uptime % / avg rebuffer)","size":"small-heavy"},
+    {"id":"healthTbl","component":"Table","columns":["hc1","hc2","hc3"]},
+    {"id":"hc1","component":"Col","label":"Region","data":["North America","Europe","Latin America","Asia-Pacific","MEA"]},
+    {"id":"hc2","component":"Col","label":"Uptime %","data":[99.99,99.97,99.91,99.95,99.82],"type":"number"},
+    {"id":"hc3","component":"Col","label":"Rebuffer %","data":[0.31,0.38,0.72,0.55,0.94],"type":"number"},
+
+    {"id":"rowWatchTime","component":"Card","direction":"row","gap":"m","children":["topTitles","watchTime"]},
+    {"id":"topTitles","component":"Card","variant":"sunk","direction":"column","gap":"xs","weight":1,"children":["ttTitle","ttTable"]},
+    {"id":"ttTitle","component":"TextContent","text":"**Most-watched titles (hours, 7d)**","size":"small-heavy"},
+    {"id":"ttTable","component":"Table","columns":["tc1","tc2"]},
+    {"id":"tc1","component":"Col","label":"Title","data":["Crimson Harbor","The Long Night","Grit City","Starfield Nine","Chef's Table: Seoul"]},
+    {"id":"tc2","component":"Col","label":"Hours (M)","data":[42.1,38.7,29.4,24.8,19.2],"type":"number"},
+    {"id":"watchTime","component":"Card","variant":"sunk","direction":"column","gap":"xs","weight":2,"children":["wtTitle","wtChart"]},
+    {"id":"wtTitle","component":"TextContent","text":"**Watch time — past month (hours/day, M)**","size":"small-heavy"},
+    {"id":"wtChart","component":"AreaChart","labels":["Wk1","Wk2","Wk3","Wk4"],"series":["wtSeries"],"xLabel":"Week","yLabel":"Hours (M)"},
+    {"id":"wtSeries","component":"Series","category":"Watch hours","values":[88,94,101,97]},
+
+    {"id":"rowGrowth","component":"Card","direction":"row","gap":"m","children":["subsChart","genreChart"]},
+    {"id":"subsChart","component":"Card","variant":"sunk","direction":"column","gap":"xs","weight":1,"children":["subTitle","subChart"]},
+    {"id":"subTitle","component":"TextContent","text":"**New subscribers vs cancellations (this month)**","size":"small-heavy"},
+    {"id":"subChart","component":"BarChart","labels":["Wk1","Wk2","Wk3","Wk4"],"series":["sNew","sCancel"],"variant":"grouped","yLabel":"Thousands"},
+    {"id":"sNew","component":"Series","category":"New subs","values":[182,205,231,198]},
+    {"id":"sCancel","component":"Series","category":"Cancellations","values":[97,104,99,112]},
+    {"id":"genreChart","component":"Card","variant":"sunk","direction":"column","gap":"xs","weight":1,"children":["gTitle","gChart"]},
+    {"id":"gTitle","component":"TextContent","text":"**Performance by genre (hours watched, M)**","size":"small-heavy"},
+    {"id":"gChart","component":"HorizontalBarChart","labels":["Drama","Comedy","Docs","Sci-Fi","Kids","Reality"],"series":["gSeries"]},
+    {"id":"gSeries","component":"Series","category":"Hours","values":[96,64,52,48,41,33]},
+
+    {"id":"rowPerf","component":"Card","direction":"row","gap":"m","children":["recoCard","searchCard"]},
+    {"id":"recoCard","component":"Card","variant":"sunk","direction":"column","gap":"xs","weight":1,"children":["recoTitle","recoNum","recoChart"]},
+    {"id":"recoTitle","component":"TextContent","text":"**Recommendation click-through**","size":"small-heavy"},
+    {"id":"recoNum","component":"TextContent","text":"CTR 23.4% · Home-row CTR 31.1%","size":"large"},
+    {"id":"recoChart","component":"LineChart","labels":["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],"series":["recoSeries"]},
+    {"id":"recoSeries","component":"Series","category":"CTR %","values":[21.2,22.5,23.1,23.4,24.8,26.3,25.7]},
+    {"id":"searchCard","component":"Card","variant":"sunk","direction":"column","gap":"xs","weight":1,"children":["searchTitle","searchNum","searchTable"]},
+    {"id":"searchTitle","component":"TextContent","text":"**Searches ending without playback**","size":"small-heavy"},
+    {"id":"searchNum","component":"TextContent","text":"11.8% of searches (target < 9%)","size":"large"},
+    {"id":"searchTable","component":"Table","columns":["sc1","sc2"]},
+    {"id":"sc1","component":"Col","label":"Query","data":["dune part 3","the office","saturday night live","nfl highlights"]},
+    {"id":"sc2","component":"Col","label":"No-play %","data":[41,33,29,27],"type":"number"},
+
+    {"id":"rowCatalog","component":"Card","direction":"row","gap":"m","children":["releases","licenses"]},
+    {"id":"releases","component":"Card","variant":"sunk","direction":"column","gap":"xs","weight":1,"children":["relTitle","relList"]},
+    {"id":"relTitle","component":"TextContent","text":"**Releases coming this month**","size":"small-heavy"},
+    {"id":"relList","component":"ListBlock","variant":"number","items":["rli1","rli2","rli3","rli4"]},
+    {"id":"rli1","component":"ListItem","title":"Crimson Harbor S2","subtitle":"Jun 7 · Drama · 8 episodes"},
+    {"id":"rli2","component":"ListItem","title":"Signal Lost","subtitle":"Jun 12 · Sci-Fi film"},
+    {"id":"rli3","component":"ListItem","title":"Laugh Track Live","subtitle":"Jun 18 · Comedy special"},
+    {"id":"rli4","component":"ListItem","title":"Deep Blue Frontier","subtitle":"Jun 25 · Docuseries"},
+    {"id":"licenses","component":"Card","variant":"sunk","direction":"column","gap":"xs","weight":1,"children":["licTitle","licCallout","licList"]},
+    {"id":"licTitle","component":"TextContent","text":"**Licenses expiring soon**","size":"small-heavy"},
+    {"id":"licCallout","component":"Callout","variant":"warning","title":"3 titles expire within 14 days","description":"Renewal decisions needed this week."},
+    {"id":"licList","component":"ListBlock","variant":"number","items":["li1","li2","li3"]},
+    {"id":"li1","component":"ListItem","title":"Galaxy Runners","subtitle":"Expires Jun 9 · 1.2M hrs/mo"},
+    {"id":"li2","component":"ListItem","title":"Old Town Mystery","subtitle":"Expires Jun 14 · 0.8M hrs/mo"},
+    {"id":"li3","component":"ListItem","title":"Kitchen Rivals","subtitle":"Expires Jun 21 · 2.1M hrs/mo"},
+
+    {"id":"rowEngagement","component":"Card","direction":"row","gap":"m","children":["revChart","devChart"]},
+    {"id":"revChart","component":"Card","variant":"sunk","direction":"column","gap":"xs","weight":1,"children":["revTitle","revPie"]},
+    {"id":"revTitle","component":"TextContent","text":"**Revenue split by plan**","size":"small-heavy"},
+    {"id":"revPie","component":"PieChart","labels":["Premium 4K","Standard","Basic w/ Ads","Mobile-only"],"values":[46,31,15,8],"variant":"donut"},
+    {"id":"devChart","component":"Card","variant":"sunk","direction":"column","gap":"xs","weight":1,"children":["devTitle","devPie"]},
+    {"id":"devTitle","component":"TextContent","text":"**Viewing split by device**","size":"small-heavy"},
+    {"id":"devPie","component":"PieChart","labels":["Smart TV","Mobile","Web","Tablet","Console"],"values":[48,26,14,7,5],"variant":"donut"},
+
+    {"id":"rowBusiness","component":"Card","direction":"column","gap":"xs","children":["bizNote"]},
+    {"id":"bizNote","component":"TextCallout","variant":"info","title":"Revenue & device share stable","description":"Plan mix shifted +1.2% toward Premium after the 4K sports launch; console share flat."},
+
+    {"id":"rowFlags","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["flagTitle","flagGroup"]},
+    {"id":"flagTitle","component":"TextContent","text":"**Feature flags**","size":"small-heavy"},
+    {"id":"flagGroup","component":"SwitchGroup","name":"featureFlags","items":["ff1","ff2","ff3","ff4","ff5"]},
+    {"id":"ff1","component":"SwitchItem","name":"newRecEngine","label":"New recommendation engine","description":"ML v4 ranking on home rows","defaultChecked":true},
+    {"id":"ff2","component":"SwitchItem","name":"av1Codec","label":"AV1 codec rollout","description":"4K streams on supported devices","defaultChecked":true},
+    {"id":"ff3","component":"SwitchItem","name":"downloadsV2","label":"Offline downloads v2","description":"Background smart downloads","defaultChecked":false},
+    {"id":"ff4","component":"SwitchItem","name":"kidsProfilesAI","label":"AI kids profile curation","description":"Beta — 10% of accounts","defaultChecked":false},
+    {"id":"ff5","component":"SwitchItem","name":"liveSportsHDR","label":"Live sports HDR","description":"HDR for live events","defaultChecked":true},
+
+    {"id":"rowPromote","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["promoTitle","promoForm"]},
+    {"id":"promoTitle","component":"TextContent","text":"**Promote a title on the home screen**","size":"small-heavy"},
+    {"id":"promoForm","component":"Form","name":"promoteTitle","buttons":"promoButtons","fields":["pf1","pf2","pf3"]},
+    {"id":"pf1","component":"FormControl","label":"Title","input":"promoSelect"},
+    {"id":"promoSelect","component":"Select","name":"title","placeholder":"Choose a title","items":["ps1","ps2","ps3","ps4"]},
+    {"id":"ps1","component":"SelectItem","value":"crimson-s2","label":"Crimson Harbor S2"},
+    {"id":"ps2","component":"SelectItem","value":"signal-lost","label":"Signal Lost"},
+    {"id":"ps3","component":"SelectItem","value":"laugh-track","label":"Laugh Track Live"},
+    {"id":"ps4","component":"SelectItem","value":"deep-blue","label":"Deep Blue Frontier"},
+    {"id":"pf2","component":"FormControl","label":"Home row slot","input":"slotSelect"},
+    {"id":"slotSelect","component":"Select","name":"slot","placeholder":"Choose slot","items":["sl1","sl2","sl3"]},
+    {"id":"sl1","component":"SelectItem","value":"hero","label":"Hero banner"},
+    {"id":"sl2","component":"SelectItem","value":"row1","label":"Row 1 — Trending"},
+    {"id":"sl3","component":"SelectItem","value":"row2","label":"Row 2 — New Releases"},
+    {"id":"pf3","component":"FormControl","label":"Campaign dates","input":"promoDates"},
+    {"id":"promoDates","component":"DatePicker","name":"dates","mode":"range"},
+    {"id":"promoButtons","component":"Buttons","buttons":["promoApply"]},
+    {"id":"promoApply","component":"Button","label":"Schedule Promotion","variant":"primary"}
+  ]}}
+]
+</a2ui-json>
+
+This single screen covers all 16 items:
+
+1. **Live viewers** — headline count with trend and capacity bar
+2. **Most-watched titles** — table with hours per title
+3. **Watch time (month)** — weekly area chart
+4. **Subs vs cancellations** — grouped bar chart
+5. **Genre performance** — horizontal bar chart
+6. **Buffering rate** — current % with intraday trend line
+7. **Delivery health by region** — uptime/rebuffer table
+8. **Upcoming releases** — numbered list with dates
+9. **Expiring licenses** — warning callout + list
+10. **Recommendation CTR** — stat + weekly trend
+11. **Zero-playback searches** — rate + top failing queries
+12. **Revenue by plan** — donut chart
+13. **Viewing by device** — donut chart
+14. **Region focus** — select filter form applied screen-wide
+15. **Feature flags** — switch group showing on/off state each
+16. **Promote a title** — form with title, slot, and date range picker

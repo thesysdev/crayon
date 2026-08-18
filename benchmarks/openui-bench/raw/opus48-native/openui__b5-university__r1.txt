@@ -1,0 +1,88 @@
+root = Card([header, kpis, deptFocus, enrollmentTrend, appsChart, courseFill, teachingLoad, riskList, scholarship, housing, events, alumniGiving, semesterCompare, waitlist, actions])
+
+header = CardHeader("University Administration Overview", "Fall 2024 snapshot")
+
+kpis = Table([kpiName, kpiValue])
+kpiName = Col("Metric", ["Total Enrollment", "Acceptance Rate", "Tuition Revenue (YTD)"])
+kpiValue = Col("Value", ["18,420", "62%", "$284.6M"])
+
+deptFocus = Form("dept-focus", deptButtons, [deptField])
+deptField = FormControl("Focus on a department", deptSelect)
+deptSelect = Select("department", [deptCS, deptEng, deptBio, deptBus, deptArts], "Select a department")
+deptCS = SelectItem("cs", "Computer Science")
+deptEng = SelectItem("eng", "Engineering")
+deptBio = SelectItem("bio", "Biology")
+deptBus = SelectItem("bus", "Business")
+deptArts = SelectItem("arts", "Liberal Arts")
+deptButtons = Buttons([deptApply])
+deptApply = Button("Apply focus", null, "primary")
+
+enrollmentTrend = LineChart(["2020", "2021", "2022", "2023", "2024"], [enrollSeries], "natural", "Year", "Students")
+enrollSeries = Series("Total Enrollment", [16200, 16800, 17300, 17900, 18420])
+
+appsChart = HorizontalBarChart(["Computer Science", "Engineering", "Biology", "Business", "Liberal Arts"], [appsSeries], "grouped", "Applications", "Program")
+appsSeries = Series("Applications", [8400, 6200, 4900, 5600, 3100])
+
+courseFill = BarChart(["CS101", "ENG204", "BIO150", "BUS310", "ART220"], [fillSeries], "grouped", "Course", "Fill %")
+fillSeries = Series("Capacity Filled %", [98, 87, 74, 91, 65])
+
+teachingLoad = Table([facName, facCourses, facHours])
+facName = Col("Faculty", ["Dr. Reyes", "Dr. Chen", "Dr. Okafor", "Dr. Muller", "Dr. Patel"])
+facCourses = Col("Courses", [4, 3, 5, 2, 4], "number")
+facHours = Col("Weekly Hours", [16, 12, 20, 9, 15], "number")
+
+riskList = ListBlock([risk1, risk2, risk3], "number")
+risk1 = ListItem("Jordan Ellis", "GPA 1.7 — 2 failed courses this term")
+risk2 = ListItem("Priya Nair", "GPA 1.9 — attendance below 60%")
+risk3 = ListItem("Marcus Webb", "GPA 1.8 — incomplete midterms")
+
+scholarship = Progress(78, "Scholarship budget used: $9.4M of $12.0M")
+
+housing = SingleStackedBarChart(["Occupied", "Reserved", "Available"], [4820, 610, 470])
+
+events = ListBlock([ev1, ev2, ev3, ev4], "number")
+ev1 = ListItem("Fall Career Fair", "Oct 8 — Main Hall")
+ev2 = ListItem("Homecoming Weekend", "Oct 12–13 — Stadium")
+ev3 = ListItem("Research Symposium", "Oct 21 — Science Center")
+ev4 = ListItem("Board of Trustees Meeting", "Oct 28 — Admin Building")
+
+alumniGiving = AreaChart(["2021", "2022", "2023", "2024"], [givingSeries], "natural", "Year", "USD (millions)")
+givingSeries = Series("Alumni Giving", [14.2, 16.8, 19.5, 22.1])
+
+semesterCompare = BarChart(["Enrollment", "Avg GPA", "Retention %", "New Faculty"], [lastSem, thisSem], "grouped", "Metric", "Value")
+lastSem = Series("Last Semester", [18010, 3.1, 89, 12])
+thisSem = Series("This Semester", [18420, 3.2, 91, 15])
+
+waitlist = HorizontalBarChart(["Computer Science", "Engineering", "Biology", "Business", "Liberal Arts"], [waitSeries], "grouped", "Waitlisted", "Program")
+waitSeries = Series("Waitlisted Students", [340, 210, 95, 180, 40])
+
+actions = Buttons([approveCourse, messageGroup])
+approveCourse = DialogBlock("Approve New Course", "Approve New Course", "Review and approve a proposed course offering", [courseForm], "default")
+courseForm = Form("approve-course", courseButtons, [courseCode, courseTitle, courseDept, courseCap])
+courseCode = FormControl("Course Code", codeInput)
+codeInput = Input("code", "e.g. CS301")
+courseTitle = FormControl("Course Title", titleInput)
+titleInput = Input("title", "Advanced Algorithms")
+courseDept = FormControl("Department", deptInput)
+deptInput = Input("dept", "Computer Science")
+courseCap = FormControl("Capacity", capInput)
+capInput = Input("capacity", "40", "number")
+courseButtons = Buttons([approveBtn, cancelBtn])
+approveBtn = Button("Approve course", null, "primary")
+cancelBtn = Button("Cancel", null, "tertiary")
+
+messageGroup = DrawerBlock("Message a Student Group", "Send a Message", "Compose a message to a student group", [msgForm])
+msgForm = Form("message-group", msgButtons, [msgGroupField, msgSubject, msgBody])
+msgGroupField = FormControl("Recipient group", groupSelect)
+groupSelect = Select("group", [grpAll, grpRisk, grpWait, grpFresh], "Select a group")
+grpAll = SelectItem("all", "All students")
+grpRisk = SelectItem("risk", "At-risk students")
+grpWait = SelectItem("wait", "Waitlisted students")
+grpFresh = SelectItem("fresh", "First-year students")
+msgSubject = FormControl("Subject", subjInput)
+subjInput = Input("subject", "Important update")
+msgBody = FormControl("Message", bodyInput)
+bodyInput = TextArea("body", "Type your message...", 5)
+msgButtons = Buttons([sendBtn, discardBtn])
+sendBtn = Button("Send message", null, "primary")
+discardBtn = Button("Discard", null, "tertiary")

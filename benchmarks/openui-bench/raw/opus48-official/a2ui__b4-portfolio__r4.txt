@@ -1,0 +1,146 @@
+Here's a comprehensive PMO Portfolio Review screen covering all 13 requirements.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "pmo-review",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": { "primaryColor": "#2563EB", "agentDisplayName": "PMO Portfolio Review" }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "pmo-review",
+      "components": [
+        { "id": "root", "component": "Card", "direction": "column", "gap": "l", "children": ["header-row", "health-summary", "controls-row", "tabs-main"] },
+
+        { "id": "header-row", "component": "CardHeader", "title": "Portfolio Review — Q2 FY25", "subtitle": "Program Management Office · 8 active projects" },
+
+        { "id": "health-summary", "component": "Callout", "variant": "warning", "title": "Portfolio Health: Amber", "description": "6 of 8 projects on track; 2 at risk from overdue milestones and budget overruns. Overall delivery pace steady but team utilization trending high." },
+
+        { "id": "controls-row", "component": "Buttons", "direction": "row", "buttons": ["quarter-select-dialog", "export-btn", "archive-dialog", "request-people-dialog"] },
+
+        { "id": "quarter-select-dialog", "component": "DialogBlock", "triggerLabel": "Change Quarter", "triggerVariant": "outline", "title": "Select Quarter", "description": "View the portfolio for a different reporting period.", "content": ["quarter-form"] },
+        { "id": "quarter-form", "component": "Form", "name": "quarterForm", "buttons": "quarter-form-buttons", "fields": ["quarter-control"] },
+        { "id": "quarter-control", "component": "FormControl", "label": "Quarter", "input": "quarter-input" },
+        { "id": "quarter-input", "component": "Select", "name": "quarter", "placeholder": "Choose a quarter", "items": ["q-q1", "q-q2", "q-q3", "q-q4"] },
+        { "id": "q-q1", "component": "SelectItem", "value": "q1", "label": "Q1 FY25" },
+        { "id": "q-q2", "component": "SelectItem", "value": "q2", "label": "Q2 FY25" },
+        { "id": "q-q3", "component": "SelectItem", "value": "q3", "label": "Q3 FY25" },
+        { "id": "q-q4", "component": "SelectItem", "value": "q4", "label": "Q4 FY25" },
+        { "id": "quarter-form-buttons", "component": "Buttons", "buttons": ["quarter-apply-btn"] },
+        { "id": "quarter-apply-btn", "component": "Button", "label": "Apply", "variant": "primary", "action": ["applyQuarter"] },
+
+        { "id": "export-btn", "component": "Button", "label": "Export Review", "variant": "secondary", "action": ["exportReview"] },
+
+        { "id": "archive-dialog", "component": "DialogBlock", "triggerLabel": "Archive Project", "triggerVariant": "outline", "title": "Archive a Finished Project", "description": "Move a completed project out of the active portfolio.", "content": ["archive-form"] },
+        { "id": "archive-form", "component": "Form", "name": "archiveForm", "buttons": "archive-form-buttons", "fields": ["archive-control"] },
+        { "id": "archive-control", "component": "FormControl", "label": "Completed Project", "input": "archive-input", "hint": "Only completed projects can be archived." },
+        { "id": "archive-input", "component": "Select", "name": "projectToArchive", "placeholder": "Select project", "items": ["arc-atlas", "arc-nova"] },
+        { "id": "arc-atlas", "component": "SelectItem", "value": "atlas", "label": "Project Atlas (Delivered)" },
+        { "id": "arc-nova", "component": "SelectItem", "value": "nova", "label": "Project Nova (Delivered)" },
+        { "id": "archive-form-buttons", "component": "Buttons", "buttons": ["archive-confirm-btn"] },
+        { "id": "archive-confirm-btn", "component": "Button", "label": "Archive", "variant": "primary", "type": "destructive", "action": ["archiveProject"] },
+
+        { "id": "request-people-dialog", "component": "DialogBlock", "triggerLabel": "Request More People", "triggerVariant": "default", "title": "Request Additional Resources", "description": "Submit a staffing request for a project.", "content": ["people-form"] },
+        { "id": "people-form", "component": "Form", "name": "peopleForm", "buttons": "people-form-buttons", "fields": ["people-project-control", "people-role-control", "people-count-control", "people-notes-control"] },
+        { "id": "people-project-control", "component": "FormControl", "label": "Project", "input": "people-project-input" },
+        { "id": "people-project-input", "component": "Select", "name": "project", "placeholder": "Select project", "items": ["pp-orion", "pp-titan", "pp-helios", "pp-vega"] },
+        { "id": "pp-orion", "component": "SelectItem", "value": "orion", "label": "Project Orion" },
+        { "id": "pp-titan", "component": "SelectItem", "value": "titan", "label": "Project Titan" },
+        { "id": "pp-helios", "component": "SelectItem", "value": "helios", "label": "Project Helios" },
+        { "id": "pp-vega", "component": "SelectItem", "value": "vega", "label": "Project Vega" },
+        { "id": "people-role-control", "component": "FormControl", "label": "Role Needed", "input": "people-role-input" },
+        { "id": "people-role-input", "component": "Input", "name": "role", "placeholder": "e.g. Backend Engineer", "type": "text" },
+        { "id": "people-count-control", "component": "FormControl", "label": "Headcount", "input": "people-count-input" },
+        { "id": "people-count-input", "component": "Input", "name": "headcount", "placeholder": "e.g. 2", "type": "number" },
+        { "id": "people-notes-control", "component": "FormControl", "label": "Justification", "input": "people-notes-input" },
+        { "id": "people-notes-input", "component": "TextArea", "name": "notes", "placeholder": "Why is this needed?", "rows": 3 },
+        { "id": "people-form-buttons", "component": "Buttons", "buttons": ["people-submit-btn"] },
+        { "id": "people-submit-btn", "component": "Button", "label": "Submit Request", "variant": "primary", "action": ["requestPeople"] },
+
+        { "id": "tabs-main", "component": "Tabs", "items": ["tab-projects", "tab-budget", "tab-risks-blocks", "tab-delivery"] },
+
+        { "id": "tab-projects", "component": "TabItem", "value": "projects", "trigger": "Projects & Deadlines", "content": ["active-projects-table", "overdue-section", "upcoming-deadlines", "utilization-section"] },
+
+        { "id": "active-projects-table", "component": "Table", "columns": ["col-proj", "col-owner", "col-deadline", "col-health"] },
+        { "id": "col-proj", "component": "Col", "label": "Project", "type": "string", "data": ["Orion", "Titan", "Helios", "Vega"] },
+        { "id": "col-owner", "component": "Col", "label": "Owner", "type": "string", "data": ["A. Sharma", "L. Chen", "M. Okafor", "R. Diaz"] },
+        { "id": "col-deadline", "component": "Col", "label": "Deadline", "type": "string", "data": ["2025-07-15", "2025-06-30", "2025-08-05", "2025-06-25"] },
+        { "id": "col-health", "component": "Col", "label": "Health", "type": "string", "data": ["Green", "Amber", "Green", "Red"] },
+
+        { "id": "overdue-section", "component": "Card", "variant": "sunk", "direction": "column", "gap": "s", "children": ["overdue-heading", "overdue-list"] },
+        { "id": "overdue-heading", "component": "Heading", "text": "Overdue Milestones", "level": "h4" },
+        { "id": "overdue-list", "component": "ListBlock", "variant": "number", "items": ["od-1", "od-2", "od-3"] },
+        { "id": "od-1", "component": "ListItem", "title": "Vega — Beta Release", "subtitle": "Due 2025-06-10 · 9 days overdue" },
+        { "id": "od-2", "component": "ListItem", "title": "Titan — Data Migration Sign-off", "subtitle": "Due 2025-06-12 · 7 days overdue" },
+        { "id": "od-3", "component": "ListItem", "title": "Vega — Security Audit", "subtitle": "Due 2025-06-14 · 5 days overdue" },
+
+        { "id": "upcoming-deadlines", "component": "Card", "variant": "sunk", "direction": "column", "gap": "s", "children": ["upcoming-heading", "upcoming-list"] },
+        { "id": "upcoming-heading", "component": "Heading", "text": "Deadlines in the Next Two Weeks", "level": "h4" },
+        { "id": "upcoming-list", "component": "ListBlock", "variant": "number", "items": ["up-1", "up-2", "up-3", "up-4"] },
+        { "id": "up-1", "component": "ListItem", "title": "Vega — Final QA", "subtitle": "2025-06-25" },
+        { "id": "up-2", "component": "ListItem", "title": "Titan — Go-Live", "subtitle": "2025-06-30" },
+        { "id": "up-3", "component": "ListItem", "title": "Orion — Design Review", "subtitle": "2025-07-02" },
+        { "id": "up-4", "component": "ListItem", "title": "Helios — Prototype Demo", "subtitle": "2025-07-03" },
+
+        { "id": "utilization-section", "component": "Card", "variant": "sunk", "direction": "column", "gap": "s", "children": ["util-heading", "util-chart", "util-orion", "util-titan", "util-helios", "util-vega"] },
+        { "id": "util-heading", "component": "Heading", "text": "Team Utilization", "level": "h4" },
+        { "id": "util-chart", "component": "BarChart", "labels": ["Orion", "Titan", "Helios", "Vega"], "series": ["util-series"], "xLabel": "Team", "yLabel": "Utilization %" },
+        { "id": "util-series", "component": "Series", "category": "Utilization %", "values": [78, 95, 72, 102] },
+        { "id": "util-orion", "component": "Progress", "value": 78, "label": "Orion Team — 78%" },
+        { "id": "util-titan", "component": "Progress", "value": 95, "label": "Titan Team — 95%" },
+        { "id": "util-helios", "component": "Progress", "value": 72, "label": "Helios Team — 72%" },
+        { "id": "util-vega", "component": "Progress", "value": 100, "label": "Vega Team — 102% (over capacity)" },
+
+        { "id": "tab-budget", "component": "TabItem", "value": "budget", "trigger": "Budget", "content": ["budget-heading", "budget-chart", "budget-table"] },
+        { "id": "budget-heading", "component": "Heading", "text": "Budget Spent vs. Allocation", "level": "h4" },
+        { "id": "budget-chart", "component": "BarChart", "labels": ["Orion", "Titan", "Helios", "Vega"], "series": ["budget-alloc", "budget-spent"], "variant": "grouped", "xLabel": "Project", "yLabel": "USD (thousands)" },
+        { "id": "budget-alloc", "component": "Series", "category": "Allocated", "values": [500, 400, 350, 300] },
+        { "id": "budget-spent", "component": "Series", "category": "Spent", "values": [320, 390, 180, 310] },
+        { "id": "budget-table", "component": "Table", "columns": ["bcol-proj", "bcol-alloc", "bcol-spent", "bcol-pct"] },
+        { "id": "bcol-proj", "component": "Col", "label": "Project", "type": "string", "data": ["Orion", "Titan", "Helios", "Vega"] },
+        { "id": "bcol-alloc", "component": "Col", "label": "Allocated ($K)", "type": "number", "data": [500, 400, 350, 300] },
+        { "id": "bcol-spent", "component": "Col", "label": "Spent ($K)", "type": "number", "data": [320, 390, 180, 310] },
+        { "id": "bcol-pct", "component": "Col", "label": "% Used", "type": "string", "data": ["64%", "98%", "51%", "103%"] },
+
+        { "id": "tab-risks-blocks", "component": "TabItem", "value": "risks", "trigger": "Risks & Blockers", "content": ["risks-heading", "risks-table", "blocked-heading", "blocked-list"] },
+        { "id": "risks-heading", "component": "Heading", "text": "Risks by Severity", "level": "h4" },
+        { "id": "risks-table", "component": "Table", "columns": ["rcol-risk", "rcol-proj", "rcol-sev"] },
+        { "id": "rcol-risk", "component": "Col", "label": "Risk", "type": "string", "data": ["Key vendor delay", "Scope creep on reporting", "Under-staffed QA", "Compliance sign-off pending"] },
+        { "id": "rcol-proj", "component": "Col", "label": "Project", "type": "string", "data": ["Titan", "Orion", "Vega", "Vega"] },
+        { "id": "rcol-sev", "component": "Col", "label": "Severity", "type": "string", "data": ["High", "Medium", "High", "Critical"] },
+        { "id": "blocked-heading", "component": "Heading", "text": "Blocked Work Items", "level": "h4" },
+        { "id": "blocked-list", "component": "ListBlock", "variant": "number", "items": ["bl-1", "bl-2", "bl-3"] },
+        { "id": "bl-1", "component": "ListItem", "title": "Vega — Payment gateway integration", "subtitle": "Blocked by vendor API access · 6 days" },
+        { "id": "bl-2", "component": "ListItem", "title": "Titan — Prod DB cutover", "subtitle": "Blocked by security approval · 4 days" },
+        { "id": "bl-3", "component": "ListItem", "title": "Orion — Design system tokens", "subtitle": "Blocked by pending brand review · 2 days" },
+
+        { "id": "tab-delivery", "component": "TabItem", "value": "delivery", "trigger": "Delivery Pace", "content": ["delivery-heading", "delivery-chart"] },
+        { "id": "delivery-heading", "component": "Heading", "text": "Delivery Pace — Last 6 Sprints", "level": "h4" },
+        { "id": "delivery-chart", "component": "LineChart", "labels": ["Sprint 1", "Sprint 2", "Sprint 3", "Sprint 4", "Sprint 5", "Sprint 6"], "series": ["delivery-series"], "variant": "natural", "xLabel": "Sprint", "yLabel": "Story Points Completed" },
+        { "id": "delivery-series", "component": "Series", "category": "Completed Points", "values": [42, 48, 45, 51, 47, 55] }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+This single screen covers all 13 items:
+
+1. **Active projects** — table with owner, deadline & health (Projects tab)
+2. **Overdue milestones** — numbered list (Projects tab)
+3. **Budget spent vs allocation** — grouped bar chart + table (Budget tab)
+4. **Team utilization** — bar chart + per-team progress bars (Projects tab)
+5. **Risks with severity** — table (Risks tab)
+6. **Deadlines next two weeks** — numbered list (Projects tab)
+7. **Delivery pace over 6 sprints** — line chart (Delivery tab)
+8. **Blocked work items** — numbered list (Risks tab)
+9. **One-line portfolio health summary** — Amber callout at top
+10. **Look at a different quarter** — "Change Quarter" dialog
+11. **Request more people** — "Request More People" staffing form
+12. **Export the review** — "Export Review" button
+13. **Archive a finished project** — "Archive Project" dialog

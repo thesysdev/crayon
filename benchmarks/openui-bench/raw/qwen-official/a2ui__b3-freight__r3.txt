@@ -1,0 +1,368 @@
+
+
+Here's a complete single-screen logistics coordinator board. It covers every item: an in-transit shipments table with origin/destination/ETA/status, a delayed-shipments alert, on-time % for the month, carrier volume split, route search, average cost per shipment, weekly volume for the past two months, a "Flag a shipment" dialog, and a last-refreshed timestamp (header tag + footer).
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "logistics-board",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": { "primaryColor": "#1A66E6", "agentDisplayName": "OpsBoard" }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "logistics-board",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "direction": "column",
+          "gap": "m",
+          "children": ["header", "kpiRow", "delayedAlert", "searchCard", "shipmentsCard", "chartsRow", "footerNote"]
+        },
+        {
+          "id": "header",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "justify": "between",
+          "align": "center",
+          "gap": "m",
+          "children": ["title", "refreshTag"]
+        },
+        {
+          "id": "title",
+          "component": "Heading",
+          "text": "Logistics Coordination Board",
+          "level": "h2"
+        },
+        {
+          "id": "refreshTag",
+          "component": "Tag",
+          "text": "Last refreshed: Mar 14, 2025 · 09:42 ET",
+          "variant": "info",
+          "accessibility": { "label": "Data refresh time", "description": "When the board figures were last updated" }
+        },
+        {
+          "id": "kpiRow",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "wrap": true,
+          "children": ["kpiOnTime", "kpiCost", "kpiTransit"]
+        },
+        {
+          "id": "kpiOnTime",
+          "component": "Card",
+          "direction": "column",
+          "gap": "s",
+          "children": ["headerOnTime", "onTimeBar", "onTimeNote"]
+        },
+        {
+          "id": "headerOnTime",
+          "component": "CardHeader",
+          "title": "On-Time Delivery %",
+          "subtitle": "March · month to date"
+        },
+        { "id": "onTimeBar", "component": "Progress", "value": 91.2, "label": "91.2%" },
+        {
+          "id": "onTimeNote",
+          "component": "TextContent",
+          "text": "274 of 300 March deliveries on time · target 95%",
+          "size": "small"
+        },
+        {
+          "id": "kpiCost",
+          "component": "Card",
+          "direction": "column",
+          "gap": "s",
+          "children": ["headerCost", "costValue", "costNote"]
+        },
+        {
+          "id": "headerCost",
+          "component": "CardHeader",
+          "title": "Avg Cost per Shipment",
+          "subtitle": "All lanes · March"
+        },
+        { "id": "costValue", "component": "TextContent", "text": "$1,284", "size": "large-heavy" },
+        {
+          "id": "costNote",
+          "component": "TextContent",
+          "text": "▲ 3.1% vs February ($1,246)",
+          "size": "small"
+        },
+        {
+          "id": "kpiTransit",
+          "component": "Card",
+          "direction": "column",
+          "gap": "s",
+          "children": ["headerTransit", "transitValue", "transitNote"]
+        },
+        {
+          "id": "headerTransit",
+          "component": "CardHeader",
+          "title": "In Transit Now",
+          "subtitle": "Active shipments"
+        },
+        { "id": "transitValue", "component": "TextContent", "text": "46", "size": "large-heavy" },
+        {
+          "id": "transitNote",
+          "component": "TextContent",
+          "text": "8 arriving within 24h · 3 delayed",
+          "size": "small"
+        },
+        {
+          "id": "delayedAlert",
+          "component": "Alert",
+          "variant": "warning",
+          "title": "3 shipments delayed right now",
+          "description": "SHP-2475 Shanghai → Los Angeles (+1d · port congestion)  ·  SHP-2463 Memphis → Newark (+4h · severe weather)  ·  SHP-2486 Ho Chi Minh City → Rotterdam (+2d · vessel rollover). Next carrier updates expected 11:00 ET."
+        },
+        {
+          "id": "searchCard",
+          "component": "Card",
+          "direction": "column",
+          "gap": "s",
+          "children": ["searchHeading", "routeSearchForm"]
+        },
+        { "id": "searchHeading", "component": "Heading", "text": "Search by Route", "level": "h3" },
+        {
+          "id": "routeSearchForm",
+          "component": "Form",
+          "name": "route-search",
+          "fields": ["fcRoute"],
+          "buttons": "searchButtons"
+        },
+        {
+          "id": "fcRoute",
+          "component": "FormControl",
+          "label": "Route",
+          "input": "routeInput",
+          "hint": "Origin → destination, e.g. Shanghai → Los Angeles"
+        },
+        {
+          "id": "routeInput",
+          "component": "Input",
+          "name": "route",
+          "type": "text",
+          "placeholder": "Shanghai → Los Angeles",
+          "accessibility": { "label": "Route search", "description": "Filter shipments by origin to destination" }
+        },
+        {
+          "id": "searchButtons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": ["searchBtn", "clearRouteBtn"]
+        },
+        { "id": "searchBtn", "component": "Button", "label": "Search route", "variant": "primary", "size": "medium" },
+        { "id": "clearRouteBtn", "component": "Button", "label": "Clear", "variant": "tertiary", "size": "medium" },
+        {
+          "id": "shipmentsCard",
+          "component": "Card",
+          "direction": "column",
+          "gap": "s",
+          "children": ["shipsHeader", "shipsTable", "dialogFlag"]
+        },
+        {
+          "id": "shipsHeader",
+          "component": "CardHeader",
+          "title": "Shipments in Transit",
+          "subtitle": "6 of 46 shown · ETAs in destination local time"
+        },
+        {
+          "id": "shipsTable",
+          "component": "Table",
+          "columns": ["colId", "colOrigin", "colDest", "colEta", "colStatus", "colCarrier"]
+        },
+        {
+          "id": "colId",
+          "component": "Col",
+          "label": "Shipment ID",
+          "type": "string",
+          "data": ["SHP-2481", "SHP-2475", "SHP-2469", "SHP-2463", "SHP-2486", "SHP-2452"]
+        },
+        {
+          "id": "colOrigin",
+          "component": "Col",
+          "label": "Origin",
+          "type": "string",
+          "data": ["Rotterdam", "Shanghai", "Singapore", "Memphis", "Ho Chi Minh City", "Antwerp"]
+        },
+        {
+          "id": "colDest",
+          "component": "Col",
+          "label": "Destination",
+          "type": "string",
+          "data": ["Chicago", "Los Angeles", "Hamburg", "Newark", "Rotterdam", "New York"]
+        },
+        {
+          "id": "colEta",
+          "component": "Col",
+          "label": "ETA",
+          "type": "string",
+          "data": ["Mar 16 · 14:00", "Mar 15 · 08:30", "Mar 18 · 22:10", "Mar 14 · 18:45", "Mar 19 · 06:00", "Mar 17 · 11:20"]
+        },
+        {
+          "id": "colStatus",
+          "component": "Col",
+          "label": "Status",
+          "type": "string",
+          "data": ["On time", "Delayed (+1d)", "On time", "Delayed (+4h)", "Delayed (+2d) · flagged", "Customs hold"]
+        },
+        {
+          "id": "colCarrier",
+          "component": "Col",
+          "label": "Carrier",
+          "type": "string",
+          "data": ["Maersk", "DHL", "Maersk", "FedEx", "MSC", "FedEx"]
+        },
+        {
+          "id": "dialogFlag",
+          "component": "DialogBlock",
+          "triggerLabel": "Flag a shipment",
+          "triggerVariant": "secondary",
+          "title": "Flag a shipment",
+          "description": "Raised flags notify the carrier ops channel and pin the shipment to the exceptions review queue.",
+          "content": ["flagForm"],
+          "accessibility": { "label": "Flag a shipment", "description": "Report an issue with an active shipment" }
+        },
+        {
+          "id": "flagForm",
+          "component": "Form",
+          "name": "flag-shipment",
+          "fields": ["fcFlagShip", "fcFlagReason", "fcFlagNotes"],
+          "buttons": "flagButtons"
+        },
+        {
+          "id": "fcFlagShip",
+          "component": "FormControl",
+          "label": "Shipment",
+          "input": "selectShip",
+          "hint": "Active shipment IDs only"
+        },
+        {
+          "id": "selectShip",
+          "component": "Select",
+          "name": "shipment",
+          "placeholder": "Select shipment ID",
+          "items": ["si1", "si2", "si3", "si4", "si5", "si6"]
+        },
+        { "id": "si1", "component": "SelectItem", "value": "SHP-2481", "label": "SHP-2481 · Rotterdam → Chicago" },
+        { "id": "si2", "component": "SelectItem", "value": "SHP-2475", "label": "SHP-2475 · Shanghai → Los Angeles" },
+        { "id": "si3", "component": "SelectItem", "value": "SHP-2469", "label": "SHP-2469 · Singapore → Hamburg" },
+        { "id": "si4", "component": "SelectItem", "value": "SHP-2463", "label": "SHP-2463 · Memphis → Newark" },
+        { "id": "si5", "component": "SelectItem", "value": "SHP-2486", "label": "SHP-2486 · Ho Chi Minh City → Rotterdam" },
+        { "id": "si6", "component": "SelectItem", "value": "SHP-2452", "label": "SHP-2452 · Antwerp → New York" },
+        {
+          "id": "fcFlagReason",
+          "component": "FormControl",
+          "label": "Reason",
+          "input": "selectReason"
+        },
+        {
+          "id": "selectReason",
+          "component": "Select",
+          "name": "reason",
+          "placeholder": "Select a reason",
+          "items": ["ri1", "ri2", "ri3", "ri4", "ri5"]
+        },
+        { "id": "ri1", "component": "SelectItem", "value": "delay_risk", "label": "Delay risk / ETA breach" },
+        { "id": "ri2", "component": "SelectItem", "value": "customs", "label": "Customs / documentation issue" },
+        { "id": "ri3", "component": "SelectItem", "value": "damage", "label": "Suspected damage" },
+        { "id": "ri4", "component": "SelectItem", "value": "cost", "label": "Cost / charges dispute" },
+        { "id": "ri5", "component": "SelectItem", "value": "other", "label": "Other" },
+        {
+          "id": "fcFlagNotes",
+          "component": "FormControl",
+          "label": "Notes",
+          "input": "notesArea",
+          "hint": "Optional context for the carrier team"
+        },
+        {
+          "id": "notesArea",
+          "component": "TextArea",
+          "name": "notes",
+          "rows": 3,
+          "placeholder": "e.g. Customer needs delivery before Mar 17, escalate with carrier…"
+        },
+        {
+          "id": "flagButtons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": ["flagSubmit", "flagCancel"]
+        },
+        { "id": "flagSubmit", "component": "Button", "label": "Flag shipment", "variant": "primary" },
+        { "id": "flagCancel", "component": "Button", "label": "Cancel", "variant": "tertiary" },
+        {
+          "id": "chartsRow",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "wrap": true,
+          "children": ["carrierCard", "volumeCard"]
+        },
+        {
+          "id": "carrierCard",
+          "component": "Card",
+          "direction": "column",
+          "gap": "s",
+          "children": ["carrierHeader", "carrierPie"]
+        },
+        {
+          "id": "carrierHeader",
+          "component": "CardHeader",
+          "title": "Volume Split by Carrier",
+          "subtitle": "March · % of shipments"
+        },
+        {
+          "id": "carrierPie",
+          "component": "PieChart",
+          "variant": "donut",
+          "labels": ["Maersk", "DHL", "FedEx", "UPS", "Other"],
+          "values": [34, 22, 18, 14, 12]
+        },
+        {
+          "id": "volumeCard",
+          "component": "Card",
+          "direction": "column",
+          "gap": "s",
+          "children": ["volumeHeader", "volumeBars"]
+        },
+        {
+          "id": "volumeHeader",
+          "component": "CardHeader",
+          "title": "Weekly Volume — Past 2 Months",
+          "subtitle": "Shipments departed per week"
+        },
+        {
+          "id": "volumeBars",
+          "component": "BarChart",
+          "labels": ["Jan 20", "Jan 27", "Feb 3", "Feb 10", "Feb 17", "Feb 24", "Mar 3", "Mar 10"],
+          "series": ["weekSeries"],
+          "yLabel": "Shipments"
+        },
+        {
+          "id": "weekSeries",
+          "component": "Series",
+          "category": "Shipments / week",
+          "values": [208, 236, 198, 244, 262, 231, 274, 250]
+        },
+        {
+          "id": "footerNote",
+          "component": "TextContent",
+          "text": "Sources: TMS + carrier EDI feeds · Last refreshed Mar 14, 2025 · 09:42 ET · auto-refresh every 15 min",
+          "size": "small"
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+Coverage checklist: 1) in-transit table with origin/destination/ETA/status — 2) warning alert calling out the 3 delayed shipments — 3) 91.2% on-time KPI — 4) donut chart of carrier split — 5) route search form — 6) $1,284 avg cost KPI — 7) 8-week bar chart — 8) "Flag a shipment" dialog — 9) refresh tag in the header plus a footer timestamp. Want this wired to a live data feed, or extra lanes/columns added to the table?

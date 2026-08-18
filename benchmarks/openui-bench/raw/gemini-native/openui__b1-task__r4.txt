@@ -1,0 +1,29 @@
+root = Card([header, taskCard, formSection, followUp], "card", "column", "m")
+
+header = CardHeader("Personal Focus View", "Stay locked in on your single top priority")
+
+taskCard = Card([taskContent, taskMeta], "sunk", "column", "s")
+
+taskContent = CardHeader("Q3 Financial Audit & Compliance Report", "High priority task requiring immediate attention before EOD")
+
+taskMeta = Card([statusBadge, deadlineTag], "clear", "row", "m", "center")
+
+statusBadge = Badge("In Progress", "default")
+deadlineTag = Tag("Due Today, 5:00 PM", "clock", "md", "warning")
+
+formSection = Form("complete-task-form", actionButtons, [notesControl, confirmControl])
+
+notesControl = FormControl("Completion Notes", notesInput, "Optional: Add any final links or handoff notes")
+notesInput = TextArea("notes", "Completed final review of balance sheet and attached compliance sign-off document.", 3)
+
+confirmControl = FormControl("Sign-off Confirmation", confirmCheck)
+confirmCheck = CheckBoxGroup("confirmation", [confirmItem])
+confirmItem = CheckBoxItem("I confirm all compliance checks are verified", "Required before marking this task as complete", "verified", true)
+
+actionButtons = Buttons([doneBtn, snoozeBtn], "row")
+doneBtn = Button("Mark Task Done", null, "primary")
+snoozeBtn = Button("Snooze 1 Hour", null, "secondary")
+
+followUp = FollowUpBlock([nextTaskItem, summarizeItem])
+nextTaskItem = FollowUpItem("What is my next most urgent task?")
+summarizeItem = FollowUpItem("Summarize today's completed focus tasks")

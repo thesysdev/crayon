@@ -1,0 +1,208 @@
+Here is a status page dashboard for the platform team showing the current API uptime percentage and details regarding the most recent incident.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "platform-status-page",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": {
+        "primaryColor": "#0F172A",
+        "agentDisplayName": "Platform Engineering Status"
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "platform-status-page",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "l",
+          "children": [
+            "header-card",
+            "metrics-card",
+            "incident-card"
+          ]
+        },
+        {
+          "id": "header-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "children": [
+            "header-title-wrapper"
+          ]
+        },
+        {
+          "id": "header-title-wrapper",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "justify": "between",
+          "align": "center",
+          "children": [
+            "header-text",
+            "system-status-badge"
+          ]
+        },
+        {
+          "id": "header-text",
+          "component": "CardHeader",
+          "title": "Platform Infrastructure Status",
+          "subtitle": "Real-time health, uptime metrics, and incident reports for core API services."
+        },
+        {
+          "id": "system-status-badge",
+          "component": "Tag",
+          "text": "All Systems Operational",
+          "variant": "success",
+          "size": "lg"
+        },
+        {
+          "id": "metrics-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "metrics-header",
+            "uptime-summary-row",
+            "uptime-progress",
+            "metrics-separator",
+            "uptime-chart"
+          ]
+        },
+        {
+          "id": "metrics-header",
+          "component": "CardHeader",
+          "title": "API Uptime (Current Month)",
+          "subtitle": "Target SLA: 99.90%"
+        },
+        {
+          "id": "uptime-summary-row",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "align": "baseline",
+          "gap": "s",
+          "children": [
+            "uptime-percentage",
+            "uptime-status-tag"
+          ]
+        },
+        {
+          "id": "uptime-percentage",
+          "component": "Heading",
+          "text": "99.94%",
+          "level": "h1"
+        },
+        {
+          "id": "uptime-status-tag",
+          "component": "Tag",
+          "text": "Meeting SLA",
+          "variant": "success",
+          "size": "sm"
+        },
+        {
+          "id": "uptime-progress",
+          "component": "Progress",
+          "value": 99.94,
+          "label": "99.94% Uptime across all API clusters"
+        },
+        {
+          "id": "metrics-separator",
+          "component": "Separator",
+          "orientation": "horizontal",
+          "decorative": true
+        },
+        {
+          "id": "uptime-chart",
+          "component": "BarChart",
+          "xLabel": "Week",
+          "yLabel": "Uptime %",
+          "variant": "grouped",
+          "labels": ["Week 1", "Week 2", "Week 3", "Week 4 (Current)"],
+          "series": ["series-uptime"]
+        },
+        {
+          "id": "series-uptime",
+          "component": "Series",
+          "category": "API Availability %",
+          "values": [99.98, 99.89, 99.95, 99.94]
+        },
+        {
+          "id": "incident-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "incident-header",
+            "incident-callout",
+            "incident-details-accordion"
+          ]
+        },
+        {
+          "id": "incident-header",
+          "component": "CardHeader",
+          "title": "Most Recent Incident",
+          "subtitle": "Last reported issue affecting API response times"
+        },
+        {
+          "id": "incident-callout",
+          "component": "Callout",
+          "variant": "success",
+          "title": "Resolved: High Latency on Core API Gateway",
+          "description": "Resolved on Oct 24, 2023 at 14:32 UTC. Connection pool exhaustion caused elevated 5xx error rates for 18 minutes."
+        },
+        {
+          "id": "incident-details-accordion",
+          "component": "Accordion",
+          "items": ["incident-timeline-item"]
+        },
+        {
+          "id": "incident-timeline-item",
+          "component": "AccordionItem",
+          "value": "incident-timeline",
+          "trigger": "View Incident Timeline & Resolution Details",
+          "content": ["incident-steps"]
+        },
+        {
+          "id": "incident-steps",
+          "component": "Steps",
+          "items": [
+            "step-1",
+            "step-2",
+            "step-3"
+          ]
+        },
+        {
+          "id": "step-1",
+          "component": "StepsItem",
+          "title": "14:14 UTC - Incident Identified",
+          "details": "Automated alerts triggered for elevated 504 Gateway Timeouts on /v1/transactions routes."
+        },
+        {
+          "id": "step-2",
+          "component": "StepsItem",
+          "title": "14:22 UTC - Mitigation Applied",
+          "details": "Platform team increased database proxy pool sizes and recycled stalled worker nodes."
+        },
+        {
+          "id": "step-3",
+          "component": "StepsItem",
+          "title": "14:32 UTC - Resolved",
+          "details": "Latency restored to normal parameters (<45ms). Continuous monitoring confirmed stable throughput."
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>

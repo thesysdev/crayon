@@ -1,0 +1,356 @@
+Here's a comprehensive airline hub operations desk covering all 12 items:
+
+<a2ui-json>
+[
+  {
+    "createSurface": {
+      "surfaceId": "hub-ops-desk",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": {
+        "primaryColor": "#1E3A5F",
+        "agentDisplayName": "Hub Operations Center"
+      }
+    },
+    "version": "v0.9"
+  },
+  {
+    "updateComponents": {
+      "surfaceId": "hub-ops-desk",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "children": ["header-row", "metrics-row", "weather-alert", "delay-callout", "flights-section", "gate-changes-section", "connections-section", "crews-section", "rebook-section"],
+          "direction": "column",
+          "gap": "m",
+          "variant": "clear"
+        },
+        {
+          "id": "header-row",
+          "component": "Card",
+          "children": ["header-title", "hub-selector-form"],
+          "direction": "row",
+          "gap": "m",
+          "align": "center",
+          "justify": "between"
+        },
+        {
+          "id": "header-title",
+          "component": "Heading",
+          "text": "✈️ Hub Operations Desk — ATL (Atlanta Hartsfield-Jackson)",
+          "level": "h2"
+        },
+        {
+          "id": "hub-selector-form",
+          "component": "Form",
+          "name": "hub-selector",
+          "fields": ["hub-select-control"],
+          "buttons": "hub-switch-btn"
+        },
+        {
+          "id": "hub-select-control",
+          "component": "FormControl",
+          "label": "Switch Hub",
+          "input": "hub-select"
+        },
+        {
+          "id": "hub-select",
+          "component": "Select",
+          "name": "hub",
+          "placeholder": "Select a hub…",
+          "value": "ATL",
+          "items": ["hub-atl", "hub-ord", "hub-dfw", "hub-den", "hub-lax", "hub-jfk"]
+        },
+        { "id": "hub-atl", "component": "SelectItem", "value": "ATL", "label": "ATL — Atlanta" },
+        { "id": "hub-ord", "component": "SelectItem", "value": "ORD", "label": "ORD — Chicago O'Hare" },
+        { "id": "hub-dfw", "component": "SelectItem", "value": "DFW", "label": "DFW — Dallas/Fort Worth" },
+        { "id": "hub-den", "component": "SelectItem", "value": "DEN", "label": "DEN — Denver" },
+        { "id": "hub-lax", "component": "SelectItem", "value": "LAX", "label": "LAX — Los Angeles" },
+        { "id": "hub-jfk", "component": "SelectItem", "value": "JFK", "label": "JFK — New York" },
+        {
+          "id": "hub-switch-btn",
+          "component": "Button",
+          "label": "Switch Hub",
+          "variant": "secondary",
+          "size": "small"
+        },
+        {
+          "id": "metrics-row",
+          "component": "Card",
+          "children": ["metric-otp", "metric-load", "metric-cancellations", "metric-turnaround"],
+          "direction": "row",
+          "gap": "m",
+          "align": "stretch"
+        },
+        {
+          "id": "metric-otp",
+          "component": "Card",
+          "children": ["otp-label", "otp-progress", "otp-detail"],
+          "direction": "column",
+          "gap": "s",
+          "variant": "sunk"
+        },
+        { "id": "otp-label", "component": "Label", "text": "📊 On-Time Performance Today" },
+        { "id": "otp-progress", "component": "Progress", "value": 78.4, "label": "78.4% on-time" },
+        { "id": "otp-detail", "component": "TextContent", "text": "312 of 398 departures on time • Target: 85%", "size": "small" },
+        {
+          "id": "metric-load",
+          "component": "Card",
+          "children": ["load-label", "load-progress", "load-detail"],
+          "direction": "column",
+          "gap": "s",
+          "variant": "sunk"
+        },
+        { "id": "load-label", "component": "Label", "text": "👥 Avg Passenger Load" },
+        { "id": "load-progress", "component": "Progress", "value": 84.2, "label": "84.2% load factor" },
+        { "id": "load-detail", "component": "TextContent", "text": "42,380 pax boarded • 186 avg/flight", "size": "small" },
+        {
+          "id": "metric-cancellations",
+          "component": "Card",
+          "children": ["cancel-label", "cancel-value", "cancel-detail"],
+          "direction": "column",
+          "gap": "s",
+          "variant": "sunk"
+        },
+        { "id": "cancel-label", "component": "Label", "text": "🚫 Cancellations Today" },
+        { "id": "cancel-value", "component": "TextContent", "text": "7", "size": "large-heavy" },
+        { "id": "cancel-detail", "component": "TextContent", "text": "3 weather • 2 mechanical • 2 crew", "size": "small" },
+        {
+          "id": "metric-turnaround",
+          "component": "Card",
+          "children": ["turn-label", "turn-value", "turn-detail"],
+          "direction": "column",
+          "gap": "s",
+          "variant": "sunk"
+        },
+        { "id": "turn-label", "component": "Label", "text": "⏱️ Avg Turnaround Time" },
+        { "id": "turn-value", "component": "TextContent", "text": "38 min", "size": "large-heavy" },
+        { "id": "turn-detail", "component": "TextContent", "text": "Target: 35 min • +3 min vs. yesterday", "size": "small" },
+        {
+          "id": "weather-alert",
+          "component": "Alert",
+          "title": "⛈️ Weather Advisory — ATL",
+          "description": "Convective SIGMET valid until 21:00Z. Scattered thunderstorms 25NM SW of field, moving NE at 20kt. Expect flow restrictions, possible ground stops on west-side runways. Visibility dropping to 3SM in heavy rain showers.",
+          "variant": "warning"
+        },
+        {
+          "id": "delay-callout",
+          "component": "Callout",
+          "variant": "error",
+          "title": "🔴 14 Flights Currently Delayed",
+          "description": "Average delay: 47 min. Primary causes: weather (8), crew (3), maintenance (2), ATC flow (1). Longest delay: DL 1423 at 1h 52m."
+        },
+        {
+          "id": "flights-section",
+          "component": "Card",
+          "children": ["flights-header", "flights-table"],
+          "direction": "column",
+          "gap": "s"
+        },
+        { "id": "flights-header", "component": "CardHeader", "title": "🛫 Flight Board — Next Departures", "subtitle": "Live status • Auto-refreshes every 60s" },
+        {
+          "id": "flights-table",
+          "component": "Table",
+          "columns": ["col-flight", "col-route", "col-gate", "col-status"]
+        },
+        {
+          "id": "col-flight",
+          "component": "Col",
+          "label": "Flight",
+          "data": ["DL 1423", "DL 0892", "DL 2210", "DL 0455", "DL 1877", "DL 3301", "DL 0644", "DL 2988", "DL 1102", "DL 0761"]
+        },
+        {
+          "id": "col-route",
+          "component": "Col",
+          "label": "Route",
+          "data": ["ATL → LAX", "ATL → JFK", "ATL → ORD", "ATL → MIA", "ATL → SEA", "ATL → BOS", "ATL → SFO", "ATL → MSP", "ATL → DTW", "ATL → PHX"]
+        },
+        {
+          "id": "col-gate",
+          "component": "Col",
+          "label": "Gate",
+          "data": ["B12", "A04", "C22", "D08", "B31", "A17", "C05", "D14", "B22", "A09"]
+        },
+        {
+          "id": "col-status",
+          "component": "Col",
+          "label": "Status",
+          "data": ["DELAYED 1h52m", "ON TIME", "DELAYED 34m", "BOARDING", "ON TIME", "DELAYED 22m", "ON TIME", "DELAYED 47m", "ON TIME", "CANCELLED"]
+        },
+        {
+          "id": "gate-changes-section",
+          "component": "Card",
+          "children": ["gate-header", "gate-list"],
+          "direction": "column",
+          "gap": "s"
+        },
+        { "id": "gate-header", "component": "CardHeader", "title": "🔄 Recent Gate Changes", "subtitle": "Last 2 hours" },
+        {
+          "id": "gate-list",
+          "component": "ListBlock",
+          "variant": "number",
+          "items": ["gate-1", "gate-2", "gate-3", "gate-4"]
+        },
+        { "id": "gate-1", "component": "ListItem", "title": "DL 1423: B07 → B12", "subtitle": "14:22 — Ramp congestion on B concourse" },
+        { "id": "gate-2", "component": "ListItem", "title": "DL 0892: A11 → A04", "subtitle": "13:58 — Aircraft swap (N338DN → N312US)" },
+        { "id": "gate-3", "component": "ListItem", "title": "DL 2988: D03 → D14", "subtitle": "13:41 — Gate occupied by inbound DL 0455" },
+        { "id": "gate-4", "component": "ListItem", "title": "DL 3301: C18 → C05", "subtitle": "13:15 — Maintenance hold on jet bridge C18" },
+        {
+          "id": "connections-section",
+          "component": "Card",
+          "children": ["conn-header", "conn-table"],
+          "direction": "column",
+          "gap": "s"
+        },
+        { "id": "conn-header", "component": "CardHeader", "title": "⚠️ Connections at Risk", "subtitle": "Passengers likely to miss onward flights" },
+        {
+          "id": "conn-table",
+          "component": "Table",
+          "columns": ["col-inbound", "col-outbound", "col-pax", "col-buffer"]
+        },
+        {
+          "id": "col-inbound",
+          "component": "Col",
+          "label": "Inbound",
+          "data": ["DL 2210 (ORD)", "DL 1877 (SEA)", "DL 0644 (SFO)", "DL 1102 (DTW)", "DL 2988 (MSP)"]
+        },
+        {
+          "id": "col-outbound",
+          "component": "Col",
+          "label": "Missed Connection",
+          "data": ["DL 0455 → MIA", "DL 1423 → LAX", "DL 0892 → JFK", "DL 3301 → BOS", "DL 0761 → PHX"]
+        },
+        {
+          "id": "col-pax",
+          "component": "Col",
+          "label": "Pax Affected",
+          "data": ["34", "28", "19", "12", "8"]
+        },
+        {
+          "id": "col-buffer",
+          "component": "Col",
+          "label": "Time Buffer",
+          "data": ["-12 min", "-8 min", "-5 min", "-3 min", "+2 min (tight)"]
+        },
+        {
+          "id": "crews-section",
+          "component": "Card",
+          "children": ["crews-header", "crews-list"],
+          "direction": "column",
+          "gap": "s"
+        },
+        { "id": "crews-header", "component": "CardHeader", "title": "👨‍✈️ Crews Available for Reassignment", "subtitle": "Standing by at crew lounge / reserve" },
+        {
+          "id": "crews-list",
+          "component": "ListBlock",
+          "variant": "number",
+          "items": ["crew-1", "crew-2", "crew-3", "crew-4", "crew-5"]
+        },
+        { "id": "crew-1", "component": "ListItem", "title": "Capt. R. Martinez + FO J. Kim", "subtitle": "B737 rated • Legal until 23:40Z • Ready now" },
+        { "id": "crew-2", "component": "ListItem", "title": "Capt. S. Okafor + FO L. Chen", "subtitle": "A320 rated • Legal until 01:15Z • Ready now" },
+        { "id": "crew-3", "component": "ListItem", "title": "Capt. D. Patel + FO M. Torres", "subtitle": "B757/767 rated • Legal until 22:00Z • Ready in 20 min" },
+        { "id": "crew-4", "component": "ListItem", "title": "FA Team Alpha (6 pax)", "subtitle": "All aircraft • Legal until 00:30Z • Ready now" },
+        { "id": "crew-5", "component": "ListItem", "title": "FA Team Bravo (5 pax)", "subtitle": "All aircraft • Legal until 23:00Z • Ready in 15 min" },
+        {
+          "id": "rebook-section",
+          "component": "Card",
+          "children": ["rebook-header", "rebook-dialog"],
+          "direction": "column",
+          "gap": "s"
+        },
+        { "id": "rebook-header", "component": "CardHeader", "title": "🎫 Passenger Rebooking", "subtitle": "Rebook passengers affected by delays or cancellations" },
+        {
+          "id": "rebook-dialog",
+          "component": "DialogBlock",
+          "triggerLabel": "Open Rebooking Tool",
+          "title": "Rebook Affected Passengers",
+          "description": "Search and rebook passengers impacted by delays, cancellations, or missed connections.",
+          "triggerVariant": "default",
+          "content": ["rebook-form"]
+        },
+        {
+          "id": "rebook-form",
+          "component": "Form",
+          "name": "rebook-form",
+          "fields": ["rebook-flight-control", "rebook-pax-control", "rebook-newflight-control", "rebook-priority-control"],
+          "buttons": "rebook-submit-btn"
+        },
+        {
+          "id": "rebook-flight-control",
+          "component": "FormControl",
+          "label": "Affected Flight",
+          "input": "rebook-flight-input",
+          "hint": "Flight number passengers are booked on"
+        },
+        { "id": "rebook-flight-input", "component": "Input", "name": "affected_flight", "placeholder": "e.g. DL 1423", "type": "text" },
+        {
+          "id": "rebook-pax-control",
+          "component": "FormControl",
+          "label": "Number of Passengers",
+          "input": "rebook-pax-input"
+        },
+        { "id": "rebook-pax-input", "component": "Input", "name": "pax_count", "placeholder": "e.g. 34", "type": "number" },
+        {
+          "id": "rebook-newflight-control",
+          "component": "FormControl",
+          "label": "Rebook Onto",
+          "input": "rebook-newflight-select",
+          "hint": "Available alternatives with open seats"
+        },
+        {
+          "id": "rebook-newflight-select",
+          "component": "Select",
+          "name": "new_flight",
+          "placeholder": "Select alternative flight…",
+          "items": ["rb-opt-1", "rb-opt-2", "rb-opt-3", "rb-opt-4"]
+        },
+        { "id": "rb-opt-1", "component": "SelectItem", "value": "DL1580", "label": "DL 1580 ATL→LAX 19:45 (42 seats open)" },
+        { "id": "rb-opt-2", "component": "SelectItem", "value": "DL2044", "label": "DL 2044 ATL→LAX 21:10 (67 seats open)" },
+        { "id": "rb-opt-3", "component": "SelectItem", "value": "DL0918", "label": "DL 0918 ATL→LAX 07:00+1 (112 seats open)" },
+        { "id": "rb-opt-4", "component": "SelectItem", "value": "UA1222", "label": "UA 1222 ATL→LAX 20:30 (18 seats open)" },
+        {
+          "id": "rebook-priority-control",
+          "component": "FormControl",
+          "label": "Priority Level",
+          "input": "rebook-priority-radio"
+        },
+        {
+          "id": "rebook-priority-radio",
+          "component": "RadioGroup",
+          "name": "priority",
+          "defaultValue": "standard",
+          "items": ["prio-1", "prio-2", "prio-3"]
+        },
+        { "id": "prio-1", "component": "RadioItem", "label": "Critical", "description": "Missed intl. connections, unaccompanied minors", "value": "critical" },
+        { "id": "prio-2", "component": "RadioItem", "label": "High", "description": "Missed domestic connections, premium cabin", "value": "high" },
+        { "id": "prio-3", "component": "RadioItem", "label": "Standard", "description": "General delay rebooking", "value": "standard" },
+        {
+          "id": "rebook-submit-btn",
+          "component": "Button",
+          "label": "Confirm Rebooking",
+          "variant": "primary",
+          "size": "large"
+        }
+      ]
+    },
+    "version": "v0.9"
+  }
+]
+</a2ui-json>
+
+This operations desk covers all 12 requirements:
+
+| # | Requirement | Implementation |
+|---|---|---|
+| 1 | On-time performance | Progress bar showing 78.4% with target comparison |
+| 2 | Flight board | Table with flight #, route, gate, and status |
+| 3 | Delayed flights | Red callout banner with count, avg delay, and causes |
+| 4 | Gate changes | Numbered list with old→new gate, time, and reason |
+| 5 | Crews available | Numbered list with ratings, legality, and readiness |
+| 6 | Weather advisories | Warning alert with SIGMET details |
+| 7 | Avg passenger load | Progress bar at 84.2% with pax counts |
+| 8 | Connections at risk | Table showing inbound→outbound, pax affected, time buffer |
+| 9 | Rebook passengers | Dialog with form (flight, pax count, alt flight, priority) |
+| 10 | Switch hub | Dropdown selector with 6 hubs + switch button |
+| 11 | Cancellations | Metric card showing 7 cancellations with cause breakdown |
+| 12 | Avg turnaround | Metric card showing 38 min vs. 35 min target |

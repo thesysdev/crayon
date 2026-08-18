@@ -1,0 +1,58 @@
+Here's your fitness daily summary screen covering all four items: steps vs. goal, calories burned, the past week's workouts, and a workout logging form.
+
+<a2ui-json>
+{"version":"v0.9","createSurface":{"surfaceId":"fitness-summary","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#22C55E","agentDisplayName":"FitTrack"}}}
+</a2ui-json>
+
+<a2ui-json>
+{"version":"v0.9","updateComponents":{"surfaceId":"fitness-summary","components":[
+{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["header","stepsCard","calCard","weekCard","logCard"]},
+{"id":"header","component":"CardHeader","title":"Today's Summary","subtitle":"Tuesday, your daily fitness overview"},
+
+{"id":"stepsCard","component":"Card","variant":"card","direction":"column","gap":"s","children":["stepsHeader","stepsProgress","stepsText"]},
+{"id":"stepsHeader","component":"CardHeader","title":"Steps","subtitle":"Daily goal: 10,000"},
+{"id":"stepsProgress","component":"Progress","value":72,"label":"7,234 / 10,000 steps"},
+{"id":"stepsText","component":"TextContent","text":"You're **72%** of the way there — about 2,766 steps to go. A 25-minute walk would close the gap.","size":"small"},
+
+{"id":"calCard","component":"Card","variant":"card","direction":"column","gap":"s","children":["calHeader","calChart","calText"]},
+{"id":"calHeader","component":"CardHeader","title":"Calories Burned","subtitle":"Total today"},
+{"id":"calChart","component":"RadialChart","labels":["Active","Resting"],"values":[420,1450]},
+{"id":"calText","component":"TextContent","text":"**1,870 kcal** total — 420 kcal from activity, 1,450 kcal resting.","size":"small"},
+
+{"id":"weekCard","component":"Card","variant":"card","direction":"column","gap":"s","children":["weekHeader","weekChart","weekSeries"]},
+{"id":"weekHeader","component":"CardHeader","title":"Workouts This Week","subtitle":"Minutes of exercise per day"},
+{"id":"weekChart","component":"BarChart","labels":["Wed","Thu","Fri","Sat","Sun","Mon","Tue"],"series":["weekSeries"],"variant":"grouped","xLabel":"Day","yLabel":"Minutes"},
+{"id":"weekSeries","component":"Series","category":"Workout minutes","values":[45,0,30,60,20,40,35]},
+
+{"id":"logCard","component":"Card","variant":"card","direction":"column","gap":"s","children":["logHeader","logForm"]},
+{"id":"logHeader","component":"CardHeader","title":"Log a New Workout"},
+{"id":"logForm","component":"Form","name":"logWorkout","buttons":"logButtons","fields":["typeControl","durationControl","intensityControl","notesControl"]},
+{"id":"typeControl","component":"FormControl","label":"Workout type","input":"typeSelect"},
+{"id":"typeSelect","component":"Select","name":"workoutType","placeholder":"Choose a workout","items":["typeRun","typeBike","typeSwim","typeLift","typeYoga"],"rules":[{"required":true}]},
+{"id":"typeRun","component":"SelectItem","value":"run","label":"Running"},
+{"id":"typeBike","component":"SelectItem","value":"bike","label":"Cycling"},
+{"id":"typeSwim","component":"SelectItem","value":"swim","label":"Swimming"},
+{"id":"typeLift","component":"SelectItem","value":"lift","label":"Strength Training"},
+{"id":"typeYoga","component":"SelectItem","value":"yoga","label":"Yoga"},
+{"id":"durationControl","component":"FormControl","label":"Duration (minutes)","input":"durationInput","hint":"How long was your session?"},
+{"id":"durationInput","component":"Input","name":"duration","type":"number","placeholder":"e.g. 30","rules":[{"required":true}]},
+{"id":"intensityControl","component":"FormControl","label":"Intensity","input":"intensityRadio"},
+{"id":"intensityRadio","component":"RadioGroup","name":"intensity","items":["intLow","intMed","intHigh"],"defaultValue":"medium"},
+{"id":"intLow","component":"RadioItem","label":"Low","description":"Easy pace, could hold a conversation","value":"low"},
+{"id":"intMed","component":"RadioItem","label":"Medium","description":"Moderate effort, slightly breathless","value":"medium"},
+{"id":"intHigh","component":"RadioItem","label":"High","description":"Hard effort, near max","value":"high"},
+{"id":"notesControl","component":"FormControl","label":"Notes (optional)","input":"notesArea"},
+{"id":"notesArea","component":"TextArea","name":"notes","placeholder":"How did it feel? Any PRs?","rows":3},
+{"id":"logButtons","component":"Buttons","buttons":["logSubmit","logCancel"]},
+{"id":"logSubmit","component":"Button","label":"Log Workout","variant":"primary"},
+{"id":"logCancel","component":"Button","label":"Cancel","variant":"tertiary"}
+]}}
+</a2ui-json>
+
+The screen includes:
+1. **Steps** — a progress bar showing 7,234 of 10,000 steps (72%) with guidance on closing the gap.
+2. **Calories** — a radial chart splitting active (420 kcal) vs. resting (1,450 kcal) burn.
+3. **Past week** — a bar chart of workout minutes per day, so rest days and trends are easy to spot.
+4. **Log workout** — a form with workout type, duration, intensity, and optional notes.
+
+Want me to add heart-rate stats, a streak tracker, or weekly goal rings next?

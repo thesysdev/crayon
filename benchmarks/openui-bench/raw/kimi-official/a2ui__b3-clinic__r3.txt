@@ -1,0 +1,79 @@
+Here's a clinic receptionist day-view dashboard covering all seven items.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "clinic-day-view",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": { "primaryColor": "#0E7C7B", "agentDisplayName": "Clinic Front Desk" }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "clinic-day-view",
+    "components": [
+      { "id": "root", "component": "Card", "variant": "clear", "direction": "column", "gap": "m", "children": ["header", "dayNav", "kpiRow", "nextPatientCard", "roomsCard", "apptCard", "checkinCard"] },
+      { "id": "header", "component": "CardHeader", "title": "Front Desk — Day View", "subtitle": "Tuesday, May 14 · Dr. Alvarez & Dr. Chen" },
+
+      { "id": "dayNav", "component": "Buttons", "buttons": ["prevDayBtn", "todayBtn", "nextDayBtn"] },
+      { "id": "prevDayBtn", "component": "Button", "label": "← Previous Day", "variant": "secondary" },
+      { "id": "todayBtn", "component": "Button", "label": "Today", "variant": "tertiary" },
+      { "id": "nextDayBtn", "component": "Button", "label": "Next Day →", "variant": "secondary" },
+
+      { "id": "kpiRow", "component": "Card", "variant": "card", "direction": "row", "gap": "l", "children": ["kpiExpected", "kpiNoShow", "kpiCheckedIn"] },
+      { "id": "kpiExpected", "component": "TextContent", "text": "**18** patients expected today", "size": "large-heavy" },
+      { "id": "kpiNoShow", "component": "TextContent", "text": "**6.2%** no-show rate this month", "size": "large-heavy" },
+      { "id": "kpiCheckedIn", "component": "TextContent", "text": "**7** checked in so far", "size": "large-heavy" },
+
+      { "id": "nextPatientCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["nextHeader", "nextText", "callBtn"] },
+      { "id": "nextHeader", "component": "CardHeader", "title": "Now Calling" },
+      { "id": "nextText", "component": "TextContent", "text": "**Maria Gomez** — 9:30 AM appointment with Dr. Alvarez. Please proceed to Room 2." },
+      { "id": "callBtn", "component": "Button", "label": "Call Next Patient", "variant": "primary" },
+
+      { "id": "roomsCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["roomsHeader", "roomsTags"] },
+      { "id": "roomsHeader", "component": "CardHeader", "title": "Room Status — Right Now" },
+      { "id": "roomsTags", "component": "Card", "variant": "clear", "direction": "row", "gap": "s", "wrap": true, "children": ["room1", "room2", "room3", "room4"] },
+      { "id": "room1", "component": "Tag", "text": "Room 1 — Free", "variant": "success" },
+      { "id": "room2", "component": "Tag", "text": "Room 2 — Occupied", "variant": "danger" },
+      { "id": "room3", "component": "Tag", "text": "Room 3 — Free", "variant": "success" },
+      { "id": "room4", "component": "Tag", "text": "Room 4 — Cleaning", "variant": "warning" },
+
+      { "id": "apptCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["apptHeader", "apptTable"] },
+      { "id": "apptHeader", "component": "CardHeader", "title": "Today's Appointments" },
+      { "id": "apptTable", "component": "Table", "columns": ["colTime", "colPatient", "colDoctor", "colStatus"] },
+      { "id": "colTime", "component": "Col", "label": "Time", "data": ["9:00 AM", "9:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM", "1:00 PM", "1:30 PM"] },
+      { "id": "colPatient", "component": "Col", "label": "Patient", "data": ["James Lee", "Maria Gomez", "Priya Patel", "Tom Baker", "Aisha Khan", "Robert Diaz", "Emily Chen", "Noah Smith"] },
+      { "id": "colDoctor", "component": "Col", "label": "Doctor", "data": ["Dr. Alvarez", "Dr. Alvarez", "Dr. Chen", "Dr. Chen", "Dr. Alvarez", "Dr. Chen", "Dr. Alvarez", "Dr. Chen"] },
+      { "id": "colStatus", "component": "Col", "label": "Status", "data": ["Checked in", "Called", "Checked in", "Waiting", "Confirmed", "Confirmed", "Confirmed", "Unconfirmed"] },
+
+      { "id": "checkinCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["checkinHeader", "checkinForm"] },
+      { "id": "checkinHeader", "component": "CardHeader", "title": "Check In a Patient" },
+      { "id": "checkinForm", "component": "Form", "name": "checkin", "fields": ["fcName", "fcTime"], "buttons": "checkinButtons" },
+      { "id": "fcName", "component": "FormControl", "label": "Patient Name", "input": "nameInput", "hint": "Start typing to search scheduled patients" },
+      { "id": "nameInput", "component": "Input", "name": "patientName", "placeholder": "e.g., Maria Gomez", "type": "text" },
+      { "id": "fcTime", "component": "FormControl", "label": "Appointment Time", "input": "timeSelect" },
+      { "id": "timeSelect", "component": "Select", "name": "apptTime", "placeholder": "Select time", "items": ["t1", "t2", "t3", "t4"] },
+      { "id": "t1", "component": "SelectItem", "value": "10:00", "label": "10:00 AM — Priya Patel" },
+      { "id": "t2", "component": "SelectItem", "value": "10:30", "label": "10:30 AM — Tom Baker" },
+      { "id": "t3", "component": "SelectItem", "value": "11:00", "label": "11:00 AM — Aisha Khan" },
+      { "id": "t4", "component": "SelectItem", "value": "11:30", "label": "11:30 AM — Robert Diaz" },
+      { "id": "checkinButtons", "component": "Buttons", "buttons": ["checkinSubmit"] },
+      { "id": "checkinSubmit", "component": "Button", "label": "Check In", "variant": "primary" }
+    ]
+  }
+}
+</a2ui-json>
+
+All seven requirements are covered:
+1. **Appointments** — table with times, patient names, doctors, and status
+2. **Expected count** — "18 patients expected today" KPI
+3. **No-show rate** — 6.2% this month KPI
+4. **Room status** — live tags showing free/occupied/cleaning rooms
+5. **Next patient** — "Now Calling" card with a Call Next Patient button
+6. **Check-in** — form with patient name, appointment time, and Check In button
+7. **Day navigation** — Previous Day / Today / Next Day buttons

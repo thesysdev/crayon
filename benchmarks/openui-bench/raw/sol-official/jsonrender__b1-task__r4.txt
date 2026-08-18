@@ -1,0 +1,12 @@
+{"op":"add","path":"/root","value":"focus-screen"}
+{"op":"add","path":"/elements/focus-screen","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l","align":"stretch"},"children":["header","urgent-task","completion-message"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Personal Focus","subtitle":"Your single most urgent priority"},"children":[]}}
+{"op":"add","path":"/elements/urgent-task","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m","align":"stretch"},"children":["urgency-tag","task-title","task-deadline","task-status","task-progress","mark-done"]}}
+{"op":"add","path":"/elements/urgency-tag","value":{"type":"Tag","props":{"text":"Most urgent","icon":"clock","size":"md","variant":"danger"},"children":[]}}
+{"op":"add","path":"/elements/task-title","value":{"type":"Heading","props":{"text":{"$state":"/task/title"},"level":"h2"},"children":[]}}
+{"op":"add","path":"/state/task","value":{"id":"task-urgent-1","title":"Submit the quarterly strategy brief","deadline":"Today at 4:00 PM","status":"In progress","progress":65,"done":false}}
+{"op":"add","path":"/elements/task-deadline","value":{"type":"Callout","props":{"variant":"warning","title":"Deadline","description":{"$state":"/task/deadline"}},"children":[]}}
+{"op":"add","path":"/elements/task-status","value":{"type":"Badge","props":{"text":{"$cond":{"$state":"/task/done","eq":true},"$then":"Done","$else":{"$state":"/task/status"}},"variant":{"$cond":{"$state":"/task/done","eq":true},"$then":"secondary","$else":"default"}},"children":[]}}
+{"op":"add","path":"/elements/task-progress","value":{"type":"Progress","props":{"value":{"$cond":{"$state":"/task/done","eq":true},"$then":100,"$else":{"$state":"/task/progress"}},"label":{"$cond":{"$state":"/task/done","eq":true},"$then":"Complete","$else":"Current progress"}},"children":[]}}
+{"op":"add","path":"/elements/mark-done","value":{"type":"Button","props":{"label":"Mark as done","variant":"primary","size":"large"},"visible":{"$state":"/task/done","not":true},"on":{"press":{"action":"setState","params":{"statePath":"/task/done","value":true}}},"children":[]}}
+{"op":"add","path":"/elements/completion-message","value":{"type":"Alert","props":{"title":"Task completed","description":"Great work—your most urgent task is now marked done.","variant":"success"},"visible":{"$state":"/task/done","eq":true},"children":[]}}

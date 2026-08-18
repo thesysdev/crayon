@@ -1,0 +1,37 @@
+root = Card([header, kpis, filterControl, ticketTable, actions, suggestions], "card", "column", "m")
+
+header = CardHeader("Support Lead Dashboard", "Morning Overview & Queue Management")
+
+kpis = Table([metricCol, valueCol, statusCol])
+metricCol = Col("Metric", ["Open Tickets", "Avg First-Response Time", "Unassigned Escalations", "CSAT This Week"])
+valueCol = Col("Current", ["42", "14 min", "3", "94.8%"])
+statusCol = Col("Target / Trend", ["< 50 (In Range)", "< 15 min (On Track)", "0 (Requires Action)", "90% Goal"])
+
+filterControl = Form("filter-form", filterButtons, [priorityFilter])
+priorityFilter = FormControl("Queue Filter", prioritySelect, "Filter queue by priority level")
+prioritySelect = Select("priority_filter", [optAll, optHigh, optUrgent, optNormal], "Show All Priorities")
+optAll = SelectItem("all", "All Priorities (42)")
+optHigh = SelectItem("high", "High Priority Only (12)")
+optUrgent = SelectItem("urgent", "Urgent Priority Only (3)")
+optNormal = SelectItem("normal", "Normal / Low Priority (27)")
+filterButtons = Buttons([applyFilterBtn, resetFilterBtn])
+applyFilterBtn = Button("Apply Filter", null, "primary", "normal", "small")
+resetFilterBtn = Button("Clear Filter", null, "tertiary", "normal", "small")
+
+ticketTable = Table([idCol, subjectCol, customerCol, priorityCol, statusTableCol, ageCol])
+idCol = Col("Ticket ID", ["#TK-8941", "#TK-8940", "#TK-8939", "#TK-8938", "#TK-8937"])
+subjectCol = Col("Subject", ["SSO Login failure across EU region", "API rate limiting returning 500 error", "Billing invoice discrepancies - Q3", "Webhook delivery delays on webhooks-2", "Request for custom SOC2 report access"])
+customerCol = Col("Customer", ["Acme Corp", "TechFlow Inc", "GlobalLogistics", "DevStudio", "FinTech Solutions"])
+priorityCol = Col("Priority", ["URGENT", "HIGH", "HIGH", "MEDIUM", "LOW"])
+statusTableCol = Col("Status", ["Open", "In Progress", "Open", "In Progress", "Pending Customer"])
+ageCol = Col("Wait Time", ["12m", "28m", "45m", "1h 10m", "2h 05m"])
+
+actions = Buttons([newTicketBtn, assignQueueBtn, exportQueueBtn])
+newTicketBtn = Button("Create New Ticket", null, "primary")
+assignQueueBtn = Button("Auto-Assign Unassigned", null, "secondary")
+exportQueueBtn = Button("Export Shift Summary", null, "tertiary")
+
+suggestions = FollowUpBlock([sug1, sug2, sug3])
+sug1 = FollowUpItem("Show high priority tickets only")
+sug2 = FollowUpItem("Assign ticket #TK-8941 to on-call engineer")
+sug3 = FollowUpItem("View first-response time trend for this week")

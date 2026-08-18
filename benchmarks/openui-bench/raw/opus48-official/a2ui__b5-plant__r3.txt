@@ -1,0 +1,130 @@
+Here's a comprehensive factory floor supervisor's console covering all 17 requirements.
+
+<a2ui-json>
+[
+{"version":"v0.9","createSurface":{"surfaceId":"factory-console","catalogId":"thesys.dev:c1-openui"}},
+{"version":"v0.9","updateComponents":{"surfaceId":"factory-console","components":[
+{"id":"root","component":"Card","direction":"column","gap":"l","children":["header","andon-alert","top-kpis","tabs","footer-actions"]},
+
+{"id":"header","component":"CardHeader","title":"Factory Floor Supervisor Console","subtitle":"Live production monitoring — Plant 4, Shift A"},
+
+{"id":"andon-alert","component":"Alert","variant":"destructive","title":"🔴 Live Andon Alert — Line 3","description":"Conveyor jam detected at Station 12. Line stopped. Maintenance notified 2 min ago."},
+
+{"id":"top-kpis","component":"Card","variant":"clear","direction":"row","gap":"m","wrap":true,"children":["kpi-oee","kpi-units","kpi-energy","kpi-safety-days"]},
+
+{"id":"kpi-oee","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["kpi-oee-h","kpi-oee-gauge"]},
+{"id":"kpi-oee-h","component":"TextContent","text":"Overall Equipment Effectiveness","size":"small-heavy"},
+{"id":"kpi-oee-gauge","component":"RadialChart","labels":["OEE %"],"values":[82]},
+
+{"id":"kpi-units","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["kpi-units-h","kpi-units-val","kpi-units-prog"]},
+{"id":"kpi-units-h","component":"TextContent","text":"Units vs Target (Today)","size":"small-heavy"},
+{"id":"kpi-units-val","component":"Heading","text":"6,240 / 8,000","level":"h3"},
+{"id":"kpi-units-prog","component":"Progress","value":78,"label":"78% of target"},
+
+{"id":"kpi-energy","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["kpi-energy-h","kpi-energy-val","kpi-energy-prog"]},
+{"id":"kpi-energy-h","component":"TextContent","text":"Energy Use (Today)","size":"small-heavy"},
+{"id":"kpi-energy-val","component":"Heading","text":"14,320 kWh","level":"h3"},
+{"id":"kpi-energy-prog","component":"Progress","value":64,"label":"64% of daily budget"},
+
+{"id":"kpi-safety-days","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["kpi-safety-h","kpi-safety-val","kpi-safety-inc"]},
+{"id":"kpi-safety-h","component":"TextContent","text":"Safety","size":"small-heavy"},
+{"id":"kpi-safety-val","component":"Heading","text":"37 days since last incident","level":"h4"},
+{"id":"kpi-safety-inc","component":"Badge","text":"3 incidents this year","variant":"destructive"},
+
+{"id":"tabs","component":"Tabs","items":["tab-production","tab-quality","tab-maintenance","tab-supply","tab-shifts"]},
+
+{"id":"tab-production","component":"TabItem","value":"production","trigger":"Production","content":["prod-lines-header","prod-lines-table","focus-line-form","downtime-header","downtime-chart"]},
+{"id":"prod-lines-header","component":"Heading","text":"Production Lines — Rate & Status","level":"h4"},
+{"id":"prod-lines-table","component":"Table","columns":["col-line","col-rate","col-status"]},
+{"id":"col-line","component":"Col","label":"Line","type":"string","data":["Line 1","Line 2","Line 3","Line 4"]},
+{"id":"col-rate","component":"Col","label":"Rate (units/hr)","type":"number","data":[420,395,0,410]},
+{"id":"col-status","component":"Col","label":"Status","type":"string","data":["Running","Running","Stopped","Running"]},
+
+{"id":"focus-line-form","component":"Form","name":"focusLine","buttons":"focus-line-buttons","fields":["focus-line-fc"]},
+{"id":"focus-line-fc","component":"FormControl","label":"Focus on a Line","input":"focus-line-select","hint":"View detailed metrics for a single line"},
+{"id":"focus-line-select","component":"Select","name":"line","placeholder":"Select a line","items":["fl1","fl2","fl3","fl4"]},
+{"id":"fl1","component":"SelectItem","value":"line1","label":"Line 1"},
+{"id":"fl2","component":"SelectItem","value":"line2","label":"Line 2"},
+{"id":"fl3","component":"SelectItem","value":"line3","label":"Line 3"},
+{"id":"fl4","component":"SelectItem","value":"line4","label":"Line 4"},
+{"id":"focus-line-buttons","component":"Buttons","buttons":["focus-line-btn"]},
+{"id":"focus-line-btn","component":"Button","label":"Focus Line","variant":"primary","action":["focusLine"]},
+
+{"id":"downtime-header","component":"Heading","text":"Downtime by Cause","level":"h4"},
+{"id":"downtime-chart","component":"PieChart","labels":["Mechanical","Changeover","Material Wait","Operator","Power"],"values":[38,22,18,14,8],"variant":"donut"},
+
+{"id":"tab-quality","component":"TabItem","value":"quality","trigger":"Quality","content":["defect-header","defect-chart","qhold-header","qhold-table"]},
+{"id":"defect-header","component":"Heading","text":"Defect Rate — Past Month","level":"h4"},
+{"id":"defect-chart","component":"LineChart","labels":["Wk1","Wk2","Wk3","Wk4"],"series":["defect-series"],"variant":"natural","xLabel":"Week","yLabel":"Defect %"},
+{"id":"defect-series","component":"Series","category":"Defect %","values":[2.4,2.1,1.8,1.5]},
+{"id":"qhold-header","component":"Heading","text":"Batches on Quality Hold","level":"h4"},
+{"id":"qhold-table","component":"Table","columns":["qh-batch","qh-line","qh-reason"]},
+{"id":"qh-batch","component":"Col","label":"Batch","type":"string","data":["B-2291","B-2288","B-2277"]},
+{"id":"qh-line","component":"Col","label":"Line","type":"string","data":["Line 2","Line 4","Line 1"]},
+{"id":"qh-reason","component":"Col","label":"Reason","type":"string","data":["Dimensional variance","Surface finish","Awaiting lab result"]},
+
+{"id":"tab-maintenance","component":"TabItem","value":"maintenance","trigger":"Maintenance","content":["maint-due-header","maint-due-table","sched-maint-form","wo-header","wo-table"]},
+{"id":"maint-due-header","component":"Heading","text":"Machines Due for Maintenance","level":"h4"},
+{"id":"maint-due-table","component":"Table","columns":["md-machine","md-due","md-type"]},
+{"id":"md-machine","component":"Col","label":"Machine","type":"string","data":["Press A-12","Injector R-4","Conveyor C-3","Robot Arm K-7"]},
+{"id":"md-due","component":"Col","label":"Due Date","type":"string","data":["2024-06-14","2024-06-15","2024-06-16","2024-06-20"]},
+{"id":"md-type","component":"Col","label":"Type","type":"string","data":["Preventive","Preventive","Inspection","Calibration"]},
+
+{"id":"sched-maint-form","component":"Form","name":"scheduleMaintenance","buttons":"sched-buttons","fields":["sched-machine-fc","sched-date-fc"]},
+{"id":"sched-machine-fc","component":"FormControl","label":"Machine","input":"sched-machine-select"},
+{"id":"sched-machine-select","component":"Select","name":"machine","placeholder":"Select machine","items":["sm1","sm2","sm3","sm4"]},
+{"id":"sm1","component":"SelectItem","value":"pressA12","label":"Press A-12"},
+{"id":"sm2","component":"SelectItem","value":"injectorR4","label":"Injector R-4"},
+{"id":"sm3","component":"SelectItem","value":"conveyorC3","label":"Conveyor C-3"},
+{"id":"sm4","component":"SelectItem","value":"robotK7","label":"Robot Arm K-7"},
+{"id":"sched-date-fc","component":"FormControl","label":"Date","input":"sched-date-input"},
+{"id":"sched-date-input","component":"DatePicker","name":"date","mode":"single"},
+{"id":"sched-buttons","component":"Buttons","buttons":["sched-submit"]},
+{"id":"sched-submit","component":"Button","label":"Schedule Maintenance","variant":"primary","action":["scheduleMaintenance"]},
+
+{"id":"wo-header","component":"Heading","text":"Open Work Orders","level":"h4"},
+{"id":"wo-table","component":"Table","columns":["wo-id","wo-desc","wo-priority"]},
+{"id":"wo-id","component":"Col","label":"WO #","type":"string","data":["WO-5012","WO-5013","WO-5014","WO-5015"]},
+{"id":"wo-desc","component":"Col","label":"Description","type":"string","data":["Replace belt Line 3","Lubricate press A-12","Recalibrate scale","Fix guard sensor"]},
+{"id":"wo-priority","component":"Col","label":"Priority","type":"string","data":["Critical","High","Medium","Low"]},
+
+{"id":"tab-supply","component":"TabItem","value":"supply","trigger":"Supply & Inventory","content":["stock-header","stock-chart","deliveries-header","deliveries-table"]},
+{"id":"stock-header","component":"Heading","text":"Raw Material Stock","level":"h4"},
+{"id":"stock-chart","component":"BarChart","labels":["Steel","Resin","Packaging"],"series":["stock-series"],"xLabel":"Material","yLabel":"% of capacity"},
+{"id":"stock-series","component":"Series","category":"Stock %","values":[72,45,88]},
+{"id":"deliveries-header","component":"Heading","text":"Supplier Deliveries Due This Week","level":"h4"},
+{"id":"deliveries-table","component":"Table","columns":["del-supplier","del-item","del-date"]},
+{"id":"del-supplier","component":"Col","label":"Supplier","type":"string","data":["SteelCo","PolyResin Ltd","BoxPack Inc"]},
+{"id":"del-item","component":"Col","label":"Item","type":"string","data":["Steel coils","Resin pellets","Cartons"]},
+{"id":"del-date","component":"Col","label":"Due","type":"string","data":["Wed","Thu","Fri"]},
+
+{"id":"tab-shifts","component":"TabItem","value":"shifts","trigger":"Shifts","content":["shift-header","shift-chart"]},
+{"id":"shift-header","component":"Heading","text":"Shift Output Comparison","level":"h4"},
+{"id":"shift-chart","component":"BarChart","labels":["Shift A","Shift B","Shift C"],"series":["shift-series"],"xLabel":"Shift","yLabel":"Units"},
+{"id":"shift-series","component":"Series","category":"Units Produced","values":[6240,5980,5410]},
+
+{"id":"footer-actions","component":"Buttons","direction":"row","buttons":["export-btn"]},
+{"id":"export-btn","component":"Button","label":"Export Shift Report","variant":"secondary","action":["exportShiftReport"]}
+]}}
+]
+</a2ui-json>
+
+This console covers all 17 items:
+
+1. **OEE** — radial gauge (82%)
+2. **Units vs target** — 6,240 / 8,000 with progress bar
+3. **Production lines** — table with rate & status per line
+4. **Defect rate** — line chart over 4 weeks
+5. **Downtime by cause** — donut chart
+6. **Maintenance due** — table of machines with dates
+7. **Material stock** — bar chart for steel, resin, packaging
+8. **Supplier deliveries** — table due this week
+9. **Shift output** — comparison bar chart
+10. **Safety** — 3 incidents this year, 37 days since last
+11. **Quality holds** — batches table
+12. **Energy use** — 14,320 kWh today with budget bar
+13. **Open work orders** — table with priority
+14. **Schedule maintenance** — form with machine select + date picker
+15. **Focus on a line** — select + focus button
+16. **Live andon alert** — prominent red banner
+17. **Export shift report** — footer button

@@ -1,0 +1,60 @@
+root = Card([header, storeSwitcher, salesProgress, basketSize, trafficChart, weekCompare, bestSellers, promoChart, registers, staff, outOfStock, returns, reorderForm, followUp])
+
+header = CardHeader("Store Console — Downtown", "Today's operations at a glance")
+
+storeSwitcher = Form("store-switch", switchButtons, [storeField])
+storeField = FormControl("View store", storeSelect)
+storeSelect = Select("store", [storeA, storeB, storeC], "Choose a store", null, "downtown")
+storeA = SelectItem("downtown", "Downtown")
+storeB = SelectItem("uptown", "Uptown")
+storeC = SelectItem("mall", "Mall Plaza")
+switchButtons = Buttons([switchBtn])
+switchBtn = Button("View store", null, "secondary")
+
+salesProgress = Progress(78, "Sales today: $15,600 of $20,000 target")
+
+basketSize = Callout("info", "Average Basket Size", "$42.30 per transaction today (368 transactions)")
+
+trafficChart = LineChart(["8am", "10am", "12pm", "2pm", "4pm", "6pm", "8pm"], [trafficSeries], "natural", "Time", "Visitors")
+trafficSeries = Series("Foot Traffic", [40, 95, 180, 150, 130, 210, 160])
+
+weekCompare = BarChart(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], [thisWeek, lastWeek], "grouped", "Day", "Sales $")
+thisWeek = Series("This Week", [15600, 14200, 13800, 16100, 18900, 22400, 19800])
+lastWeek = Series("Last Week", [14100, 13500, 14000, 15200, 17600, 21000, 18700])
+
+bestSellers = Table([bsName, bsUnits])
+bsName = Col("Best Seller", ["Cold Brew 16oz", "Blueberry Muffin", "Almond Croissant", "House Blend Bag", "Iced Latte"])
+bsUnits = Col("Units Sold", [142, 118, 96, 74, 63], "number")
+
+promoChart = HorizontalBarChart(["BOGO Pastries", "20% Off Bags", "Happy Hour Drinks", "Loyalty Double Points"], [promoSeries], "grouped", "Redemptions", "Promotion")
+promoSeries = Series("Redemptions", [210, 95, 340, 180])
+
+registers = Table([regId, regStatus])
+regId = Col("Register", ["Reg 1", "Reg 2", "Reg 3", "Reg 4"])
+regStatus = Col("Status", ["Open", "Open", "Closed", "Open"])
+
+staff = ListBlock([staff1, staff2, staff3, staff4], "number")
+staff1 = ListItem("Maria Lopez", "Shift Lead · 7am–3pm")
+staff2 = ListItem("James Chen", "Barista · 8am–4pm")
+staff3 = ListItem("Priya Nair", "Cashier · 10am–6pm")
+staff4 = ListItem("Tom Byrne", "Cashier · 2pm–10pm")
+
+outOfStock = Alert("Out of Stock", "Oat Milk 1L, Pumpkin Spice Syrup, and Ceramic Mug 12oz are out of stock", "destructive")
+
+returns = TextCallout("warning", "Returns This Week", "24 returns totaling $980 — up 6% from last week")
+
+reorderForm = Form("reorder", reorderButtons, [reorderItem, reorderQty])
+reorderItem = FormControl("Item to reorder", reorderSelect)
+reorderSelect = Select("item", [ri1, ri2, ri3], "Select an item")
+ri1 = SelectItem("oat-milk", "Oat Milk 1L")
+ri2 = SelectItem("pumpkin-syrup", "Pumpkin Spice Syrup")
+ri3 = SelectItem("mug-12oz", "Ceramic Mug 12oz")
+reorderQty = FormControl("Quantity", qtyInput)
+qtyInput = Input("qty", "24", "number")
+reorderButtons = Buttons([reorderBtn])
+reorderBtn = Button("Place reorder", null, "primary")
+
+followUp = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Show hourly sales breakdown")
+fu2 = FollowUpItem("Compare with all stores")
+fu3 = FollowUpItem("Forecast tomorrow's traffic")

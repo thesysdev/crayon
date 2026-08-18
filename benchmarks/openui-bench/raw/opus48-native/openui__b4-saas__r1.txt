@@ -1,0 +1,52 @@
+root = Card([header, kpis, periodForm, trend, planSplit, topCustomers, atRisk, failedPayments, featureAdoption, seatUtil, inviteAdmin])
+
+header = CardHeader("Admin Overview", "Company health at a glance")
+
+kpis = Table([kpiName, kpiValue])
+kpiName = Col("Metric", ["MRR", "ARR", "Churn (this month)", "NPS"])
+kpiValue = Col("Value", ["$248,600", "$2,983,200", "2.4%", "62"])
+
+periodForm = Form("reporting-period", periodButtons, [periodField])
+periodField = FormControl("Reporting period", periodSelect)
+periodSelect = Select("period", [periodMonth, periodQuarter, periodYear], "Select period")
+periodMonth = SelectItem("month", "This month")
+periodQuarter = SelectItem("quarter", "This quarter")
+periodYear = SelectItem("year", "This year")
+periodButtons = Buttons([applyPeriod])
+applyPeriod = Button("Apply", null, "primary")
+
+trend = AreaChart(["Days 1-30", "Days 31-60", "Days 61-90"], [signupSeries], "natural", "Period", "New signups")
+signupSeries = Series("New signups", [312, 428, 501])
+
+planSplit = PieChart(["Starter", "Growth", "Enterprise"], [640, 380, 92], "donut")
+
+topCustomers = Table([custName, custSeats, custSpend])
+custName = Col("Customer", ["Acme Corp", "Globex", "Initech", "Umbrella", "Stark Industries", "Wayne Enterprises", "Hooli", "Wonka Ltd", "Cyberdyne", "Soylent Co"])
+custSeats = Col("Seats", [420, 380, 310, 295, 260, 240, 205, 180, 165, 150], "number")
+custSpend = Col("Annual spend", ["$180,000", "$162,000", "$138,000", "$121,000", "$110,000", "$98,000", "$84,000", "$72,000", "$66,000", "$60,000"])
+
+atRisk = ListBlock([risk1, risk2, risk3])
+risk1 = ListItem("Globex", "Usage down 40% over 30 days")
+risk2 = ListItem("Initech", "Support tickets unresolved for 14+ days")
+risk3 = ListItem("Cyberdyne", "Executive sponsor left the company")
+
+failedPayments = Table([payCustomer, payAmount, payRetry])
+payCustomer = Col("Customer", ["Wonka Ltd", "Soylent Co", "Hooli"])
+payAmount = Col("Amount", ["$6,000", "$5,000", "$7,000"])
+payRetry = Col("Action", ["Retry", "Retry", "Retry"], "action")
+
+featureAdoption = HorizontalBarChart(["AI Insights", "Bulk Export", "SSO Login"], [adoptionSeries], "grouped", "Adoption %", "Feature")
+adoptionSeries = Series("Adoption", [48, 34, 71])
+
+seatUtil = Progress(78, "Seat utilization (78% of purchased seats active)")
+
+inviteAdmin = DialogBlock("Invite admin", "Invite another admin", "Send an invitation to grant admin access", [inviteForm])
+inviteForm = Form("invite-admin", inviteButtons, [inviteEmail, inviteRole])
+inviteEmail = FormControl("Admin email", inviteEmailInput)
+inviteEmailInput = Input("email", "admin@company.com", "email")
+inviteRole = FormControl("Role", inviteRoleSelect)
+inviteRoleSelect = Select("role", [roleFull, roleBilling], "Select role")
+roleFull = SelectItem("full", "Full admin")
+roleBilling = SelectItem("billing", "Billing admin")
+inviteButtons = Buttons([sendInvite])
+sendInvite = Button("Send invite", null, "primary")

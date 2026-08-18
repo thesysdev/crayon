@@ -1,0 +1,44 @@
+root = Card([header, alertCallout, missingProgress, updatesList, formSection, followUps], "card", "column", "l")
+
+header = CardHeader("Async Standup", "Wednesday, October 25, 2023")
+
+alertCallout = Callout("warning", "Blocker Reported", "Alex is currently blocked on API Rate Limiting for the analytics sync.")
+
+missingProgress = Progress(75, "6 of 8 team members submitted today (2 pending)")
+
+updatesList = ListBlock([dev1, dev2, dev3, dev4, dev5, dev6], "image")
+
+dev1 = ListItem("Alex Rivera (Backend)", "Yesterday: Database migration. Today: Analytics sync. BLOCKED: Need higher rate limits on third-party API.", [alexImg])
+dev2 = ListItem("Sarah Chen (Frontend)", "Yesterday: User profile refactor. Today: Implementing standup screen design. Blockers: None.", [sarahImg])
+dev3 = ListItem("Marcus Johnson (Mobile)", "Yesterday: Push notification bugfix. Today: Testing iOS release candidate. Blockers: None.", [marcusImg])
+dev4 = ListItem("Elena Rostova (Design)", "Yesterday: Dashboard design system update. Today: Reviewing async standup specs. Blockers: None.", [elenaImg])
+dev5 = ListItem("David Kim (DevOps)", "Yesterday: CI/CD pipeline optimization. Today: Kubernetes cluster upgrading. Blockers: None.", [davidImg])
+dev6 = ListItem("Priya Patel (QA)", "Yesterday: Regression suite execution. Today: Mobile build testing. Blockers: None.", [priyaImg])
+
+alexImg = "https://picsum.photos/seed/alex/100/100"
+sarahImg = "https://picsum.photos/seed/sarah/100/100"
+marcusImg = "https://picsum.photos/seed/marcus/100/100"
+elenaImg = "https://picsum.photos/seed/elena/100/100"
+davidImg = "https://picsum.photos/seed/david/100/100"
+priyaImg = "https://picsum.photos/seed/priya/100/100"
+
+formSection = SectionBlock([formSectionItem], false)
+formSectionItem = SectionItem("post-update", "Post Your Update", [updateForm])
+
+updateForm = Form("standup-submission", formButtons, [yesterdayField, todayField, blockerField])
+
+yesterdayField = FormControl("What did you do yesterday?", yesterdayInput)
+yesterdayInput = TextArea("yesterday", "Completed user auth flow...", 2)
+
+todayField = FormControl("What are you doing today?", todayInput)
+todayInput = TextArea("today", "Working on UI components...", 2)
+
+blockerField = FormControl("Any blockers?", blockerInput, "Leave blank if no blockers")
+blockerInput = Input("blockers", "None", "text")
+
+formButtons = Buttons([submitBtn])
+submitBtn = Button("Submit Standup", null, "primary")
+
+followUps = FollowUpBlock([reminderAction, summaryAction])
+reminderAction = FollowUpItem("Send Slack reminder to missing members")
+summaryAction = FollowUpItem("Generate AI summary of today's standup")

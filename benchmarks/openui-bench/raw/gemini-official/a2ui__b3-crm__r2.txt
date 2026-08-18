@@ -1,0 +1,657 @@
+Here is the complete sales representative account page dashboard incorporating all 9 requested features, including account overview, metrics, deal tracking, recent activity, contact details, open follow-ups, note-taking, call logging, and a renewal warning.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "sales-account-page",
+      "catalogId": "thesys.dev:c1-openui"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "sales-account-page",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "l",
+          "children": [
+            "account-header-card",
+            "renewal-warning-callout",
+            "tabs-container"
+          ]
+        },
+        {
+          "id": "account-header-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "account-header-info",
+            "separator-top",
+            "key-metrics-container"
+          ]
+        },
+        {
+          "id": "account-header-info",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "justify": "between",
+          "align": "center",
+          "children": [
+            "header-title-group",
+            "quick-actions-buttons"
+          ]
+        },
+        {
+          "id": "header-title-group",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "xs",
+          "children": [
+            "account-heading",
+            "account-owner-text"
+          ]
+        },
+        {
+          "id": "account-heading",
+          "component": "Heading",
+          "text": "Acme Corporation",
+          "level": "h1"
+        },
+        {
+          "id": "account-owner-text",
+          "component": "TextContent",
+          "text": "Account Owner: **Sarah Jenkins** | Enterprise Sales",
+          "size": "small"
+        },
+        {
+          "id": "quick-actions-buttons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": [
+            "log-call-dialog",
+            "add-note-dialog"
+          ]
+        },
+        {
+          "id": "log-call-dialog",
+          "component": "DialogBlock",
+          "triggerLabel": "Log Call",
+          "triggerVariant": "default",
+          "title": "Log a Phone Call",
+          "description": "Record details of your recent communication with Acme Corp.",
+          "content": [
+            "log-call-form"
+          ]
+        },
+        {
+          "id": "log-call-form",
+          "component": "Form",
+          "name": "logCallForm",
+          "fields": [
+            "call-contact-control",
+            "call-outcome-control",
+            "call-notes-control"
+          ],
+          "buttons": "log-call-submit-buttons"
+        },
+        {
+          "id": "call-contact-control",
+          "component": "FormControl",
+          "label": "Contact Met With",
+          "input": "call-contact-select"
+        },
+        {
+          "id": "call-contact-select",
+          "component": "Select",
+          "name": "callContact",
+          "placeholder": "Select a contact...",
+          "items": [
+            "select-contact-1",
+            "select-contact-2",
+            "select-contact-3"
+          ]
+        },
+        {
+          "id": "select-contact-1",
+          "component": "SelectItem",
+          "value": "john_doe",
+          "label": "John Doe (VP of Technology)"
+        },
+        {
+          "id": "select-contact-2",
+          "component": "SelectItem",
+          "value": "jane_smith",
+          "label": "Jane Smith (Procurement Director)"
+        },
+        {
+          "id": "select-contact-3",
+          "component": "SelectItem",
+          "value": "alex_rivera",
+          "label": "Alex Rivera (Lead Engineer)"
+        },
+        {
+          "id": "call-outcome-control",
+          "component": "FormControl",
+          "label": "Call Outcome",
+          "input": "call-outcome-select"
+        },
+        {
+          "id": "call-outcome-select",
+          "component": "Select",
+          "name": "callOutcome",
+          "placeholder": "Select outcome...",
+          "items": [
+            "outcome-1",
+            "outcome-2",
+            "outcome-3"
+          ]
+        },
+        {
+          "id": "outcome-1",
+          "component": "SelectItem",
+          "value": "connected",
+          "label": "Connected / Productive"
+        },
+        {
+          "id": "outcome-2",
+          "component": "SelectItem",
+          "value": "left_voicemail",
+          "label": "Left Voicemail"
+        },
+        {
+          "id": "outcome-3",
+          "component": "SelectItem",
+          "value": "no_answer",
+          "label": "No Answer"
+        },
+        {
+          "id": "call-notes-control",
+          "component": "FormControl",
+          "label": "Call Notes",
+          "input": "call-notes-textarea"
+        },
+        {
+          "id": "call-notes-textarea",
+          "component": "TextArea",
+          "name": "callNotes",
+          "placeholder": "Summarize key points discussed and action items...",
+          "rows": 4
+        },
+        {
+          "id": "log-call-submit-buttons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": [
+            "submit-call-button"
+          ]
+        },
+        {
+          "id": "submit-call-button",
+          "component": "Button",
+          "label": "Save Call Log",
+          "variant": "primary"
+        },
+        {
+          "id": "add-note-dialog",
+          "component": "DialogBlock",
+          "triggerLabel": "Jot Note",
+          "triggerVariant": "outline",
+          "title": "Jot Down a Note",
+          "description": "Add an internal note or reminder to this account.",
+          "content": [
+            "jot-note-form"
+          ]
+        },
+        {
+          "id": "jot-note-form",
+          "component": "Form",
+          "name": "jotNoteForm",
+          "fields": [
+            "note-text-control"
+          ],
+          "buttons": "jot-note-submit-buttons"
+        },
+        {
+          "id": "note-text-control",
+          "component": "FormControl",
+          "label": "Account Note",
+          "input": "note-textarea"
+        },
+        {
+          "id": "note-textarea",
+          "component": "TextArea",
+          "name": "noteText",
+          "placeholder": "Enter confidential background, strategy notes, or quick reminders...",
+          "rows": 4
+        },
+        {
+          "id": "jot-note-submit-buttons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": [
+            "submit-note-button"
+          ]
+        },
+        {
+          "id": "submit-note-button",
+          "component": "Button",
+          "label": "Save Note",
+          "variant": "primary"
+        },
+        {
+          "id": "separator-top",
+          "component": "Separator",
+          "orientation": "horizontal",
+          "decorative": true
+        },
+        {
+          "id": "key-metrics-container",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "justify": "between",
+          "gap": "m",
+          "children": [
+            "metric-deal-value",
+            "metric-deal-stage",
+            "metric-renewal-date"
+          ]
+        },
+        {
+          "id": "metric-deal-value",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "children": [
+            "deal-value-label",
+            "deal-value-heading"
+          ]
+        },
+        {
+          "id": "deal-value-label",
+          "component": "Label",
+          "text": "Total Deal Value"
+        },
+        {
+          "id": "deal-value-heading",
+          "component": "Heading",
+          "text": "$450,000",
+          "level": "h2"
+        },
+        {
+          "id": "metric-deal-stage",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "children": [
+            "deal-stage-label",
+            "deal-stage-badge"
+          ]
+        },
+        {
+          "id": "deal-stage-label",
+          "component": "Label",
+          "text": "Current Deal Stage"
+        },
+        {
+          "id": "deal-stage-badge",
+          "component": "Badge",
+          "text": "Contract Proposal Sent",
+          "variant": "default"
+        },
+        {
+          "id": "metric-renewal-date",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "children": [
+            "renewal-date-label",
+            "renewal-date-badge"
+          ]
+        },
+        {
+          "id": "renewal-date-label",
+          "component": "Label",
+          "text": "Contract Renewal Date"
+        },
+        {
+          "id": "renewal-date-badge",
+          "component": "Badge",
+          "text": "Nov 15, 2024 (12 Days)",
+          "variant": "destructive"
+        },
+        {
+          "id": "renewal-warning-callout",
+          "component": "Callout",
+          "variant": "warning",
+          "title": "Upcoming Renewal Warning",
+          "description": "The annual contract renewal is in 12 days. Complete security review follow-ups immediately to avoid delay in signature."
+        },
+        {
+          "id": "tabs-container",
+          "component": "Tabs",
+          "items": [
+            "tab-overview",
+            "tab-contacts",
+            "tab-followups",
+            "tab-notes"
+          ]
+        },
+        {
+          "id": "tab-overview",
+          "component": "TabItem",
+          "value": "overview",
+          "trigger": "Activity & Overview",
+          "content": [
+            "recent-activity-card"
+          ]
+        },
+        {
+          "id": "recent-activity-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "activity-card-header",
+            "recent-activity-steps"
+          ]
+        },
+        {
+          "id": "activity-card-header",
+          "component": "CardHeader",
+          "title": "Recent Activity Timeline",
+          "subtitle": "Chronological history of recent touchpoints and interactions"
+        },
+        {
+          "id": "recent-activity-steps",
+          "component": "Steps",
+          "items": [
+            "activity-step-1",
+            "activity-step-2",
+            "activity-step-3",
+            "activity-step-4"
+          ]
+        },
+        {
+          "id": "activity-step-1",
+          "component": "StepsItem",
+          "title": "Contract Proposal Revised (Today, 10:30 AM)",
+          "details": "Sent updated enterprise pricing breakdown reflecting a 15% multi-year discount to Jane Smith."
+        },
+        {
+          "id": "activity-step-2",
+          "component": "StepsItem",
+          "title": "Executive Discovery Call Logged (Yesterday, 3:15 PM)",
+          "details": "Logged call with VP John Doe. Confirmed Q4 budget approval and aligned on deployment schedule."
+        },
+        {
+          "id": "activity-step-3",
+          "component": "StepsItem",
+          "title": "Security Questionnaire Submitted (Oct 28, 2024)",
+          "details": "Completed InfoSec audit responses and shared SOC2 Type II compliance reports."
+        },
+        {
+          "id": "activity-step-4",
+          "component": "StepsItem",
+          "title": "Initial Demo Session (Oct 20, 2024)",
+          "details": "Conducted technical product walkthrough for Alex Rivera and engineering team lead."
+        },
+        {
+          "id": "tab-contacts",
+          "component": "TabItem",
+          "value": "contacts",
+          "trigger": "Account Contacts",
+          "content": [
+            "contacts-card"
+          ]
+        },
+        {
+          "id": "contacts-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "contacts-card-header",
+            "contacts-table"
+          ]
+        },
+        {
+          "id": "contacts-card-header",
+          "component": "CardHeader",
+          "title": "Key Account Contacts",
+          "subtitle": "Key stakeholders, buyers, and decision makers"
+        },
+        {
+          "id": "contacts-table",
+          "component": "Table",
+          "columns": [
+            "col-contact-name",
+            "col-contact-role",
+            "col-contact-email",
+            "col-contact-phone"
+          ]
+        },
+        {
+          "id": "col-contact-name",
+          "component": "Col",
+          "label": "Name",
+          "type": "string",
+          "data": [
+            "John Doe",
+            "Jane Smith",
+            "Alex Rivera"
+          ]
+        },
+        {
+          "id": "col-contact-role",
+          "component": "Col",
+          "label": "Role",
+          "type": "string",
+          "data": [
+            "Executive Sponsor (VP of Tech)",
+            "Economic Buyer (Procurement)",
+            "Technical Evaluator (Lead Engineer)"
+          ]
+        },
+        {
+          "id": "col-contact-email",
+          "component": "Col",
+          "label": "Email",
+          "type": "string",
+          "data": [
+            "j.doe@acme.com",
+            "j.smith@acme.com",
+            "a.rivera@acme.com"
+          ]
+        },
+        {
+          "id": "col-contact-phone",
+          "component": "Col",
+          "label": "Phone",
+          "type": "string",
+          "data": [
+            "+1 (555) 019-2834",
+            "+1 (555) 019-5821",
+            "+1 (555) 019-9942"
+          ]
+        },
+        {
+          "id": "tab-followups",
+          "component": "TabItem",
+          "value": "followups",
+          "trigger": "Open Follow-ups",
+          "content": [
+            "followups-card"
+          ]
+        },
+        {
+          "id": "followups-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "followups-card-header",
+            "followups-list"
+          ]
+        },
+        {
+          "id": "followups-card-header",
+          "component": "CardHeader",
+          "title": "Action Items & Open Follow-ups",
+          "subtitle": "Pending tasks required to advance deal and secure renewal"
+        },
+        {
+          "id": "followups-list",
+          "component": "ListBlock",
+          "variant": "number",
+          "items": [
+            "followup-item-1",
+            "followup-item-2",
+            "followup-item-3"
+          ]
+        },
+        {
+          "id": "followup-item-1",
+          "component": "ListItem",
+          "title": "Send Master Services Agreement (MSA) redline response",
+          "subtitle": "Due: Nov 5, 2024 | Assigned to: Sarah Jenkins",
+          "actionLabel": "High Priority"
+        },
+        {
+          "id": "followup-item-2",
+          "component": "ListItem",
+          "title": "Schedule Renewal Strategy Check-in with Executive Sponsor",
+          "subtitle": "Due: Nov 8, 2024 | Assigned to: Sarah Jenkins",
+          "actionLabel": "Pending"
+        },
+        {
+          "id": "followup-item-3",
+          "component": "ListItem",
+          "title": "Deliver custom API Integration architecture diagram",
+          "subtitle": "Due: Nov 12, 2024 | Assigned to: Technical Sales Specialist",
+          "actionLabel": "In Progress"
+        },
+        {
+          "id": "tab-notes",
+          "component": "TabItem",
+          "value": "notes",
+          "trigger": "Notes & Jotter",
+          "content": [
+            "notes-card"
+          ]
+        },
+        {
+          "id": "notes-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "notes-card-header",
+            "quick-jotter-form",
+            "separator-notes",
+            "saved-notes-section"
+          ]
+        },
+        {
+          "id": "notes-card-header",
+          "component": "CardHeader",
+          "title": "Account Notes & Strategy Jotter",
+          "subtitle": "Quickly capture informal observations, meeting notes, and internal strategies"
+        },
+        {
+          "id": "quick-jotter-form",
+          "component": "Form",
+          "name": "inlineJotterForm",
+          "fields": [
+            "inline-note-control"
+          ],
+          "buttons": "inline-note-submit-buttons"
+        },
+        {
+          "id": "inline-note-control",
+          "component": "FormControl",
+          "label": "Quick Note",
+          "input": "inline-note-textarea",
+          "hint": "Notes added here are private to your sales team."
+        },
+        {
+          "id": "inline-note-textarea",
+          "component": "TextArea",
+          "name": "inlineNoteText",
+          "placeholder": "Jot a quick note about Acme Corp...",
+          "rows": 3
+        },
+        {
+          "id": "inline-note-submit-buttons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": [
+            "save-inline-note-button"
+          ]
+        },
+        {
+          "id": "save-inline-note-button",
+          "component": "Button",
+          "label": "Save Note to Account",
+          "variant": "primary"
+        },
+        {
+          "id": "separator-notes",
+          "component": "Separator",
+          "orientation": "horizontal",
+          "decorative": true
+        },
+        {
+          "id": "saved-notes-section",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "s",
+          "children": [
+            "saved-notes-heading",
+            "note-entry-1",
+            "note-entry-2"
+          ]
+        },
+        {
+          "id": "saved-notes-heading",
+          "component": "Heading",
+          "text": "Saved Notes History",
+          "level": "h4"
+        },
+        {
+          "id": "note-entry-1",
+          "component": "TextCallout",
+          "variant": "neutral",
+          "title": "Pricing Sensitivity (Oct 25, 2024)",
+          "description": "Jane mentioned procurement is looking closely at tier pricing options. Emphasized multi-year bundle savings to maintain deal size."
+        },
+        {
+          "id": "note-entry-2",
+          "component": "TextCallout",
+          "variant": "neutral",
+          "title": "Champion Engagement (Oct 18, 2024)",
+          "description": "John is driving internal adoption. He recommended highlighting our SSO and automated reporting capabilities during executive review."
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>

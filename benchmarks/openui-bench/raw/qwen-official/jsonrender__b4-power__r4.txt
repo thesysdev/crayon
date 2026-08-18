@@ -1,0 +1,107 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["title","metrics-row","capacity-section","region-section","generation-section","forecast-section","plants-section","outages-section","maintenance-section","alerts-section","curtailment-section"]}}
+{"op":"add","path":"/elements/title","value":{"type":"Heading","props":{"text":"⚡ Power Network Operations Console","level":"h1"},"children":[]}}
+{"op":"add","path":"/elements/metrics-row","value":{"type":"Card","props":{"direction":"row","gap":"m","variant":"clear"},"children":["metric-load","metric-price","metric-emissions"]}}
+{"op":"add","path":"/elements/metric-load","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs","align":"center"},"children":["metric-load-label","metric-load-value"]}}
+{"op":"add","path":"/elements/metric-load-label","value":{"type":"TextContent","props":{"text":"Current Load","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/metric-load-value","value":{"type":"TextContent","props":{"text":{"$template":"${/load/current} GW"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/metric-price","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs","align":"center"},"children":["metric-price-label","metric-price-value"]}}
+{"op":"add","path":"/elements/metric-price-label","value":{"type":"TextContent","props":{"text":"Spot Price","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/metric-price-value","value":{"type":"TextContent","props":{"text":{"$template":"€${/price/value} /MWh"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/metric-emissions","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs","align":"center"},"children":["metric-emissions-label","metric-emissions-value","metric-emissions-target"]}}
+{"op":"add","path":"/elements/metric-emissions-label","value":{"type":"TextContent","props":{"text":"Emissions Today","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/metric-emissions-value","value":{"type":"TextContent","props":{"text":{"$template":"${/emissions/today} t CO₂"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/metric-emissions-target","value":{"type":"TextContent","props":{"text":{"$template":"Target: ${/emissions/target} t"},"size":"small"},"children":[]}}
+{"op":"add","path":"/state/load","value":{"current":42.7,"capacity":52.0,"utilization":82.1}}
+{"op":"add","path":"/state/price","value":{"value":87.42,"trend":"up"}}
+{"op":"add","path":"/state/emissions","value":{"today":12840,"target":15000}}
+{"op":"add","path":"/elements/capacity-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["capacity-header","capacity-progress","capacity-text"]}}
+{"op":"add","path":"/elements/capacity-header","value":{"type":"CardHeader","props":{"title":"Network Capacity Utilisation","subtitle":"How close the grid is to maximum load"},"children":[]}}
+{"op":"add","path":"/elements/capacity-progress","value":{"type":"Progress","props":{"value":{"$state":"/load/utilization"},"label":"Capacity"},"children":[]}}
+{"op":"add","path":"/elements/capacity-text","value":{"type":"TextContent","props":{"text":{"$template":"${/load/current} GW of ${/load/capacity} GW capacity in use (${/load/utilization}%)"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/region-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["region-header","region-select","region-focus-indicator"]}}
+{"op":"add","path":"/elements/region-header","value":{"type":"CardHeader","props":{"title":"Region Focus","subtitle":"Select a region to filter the view"},"children":[]}}
+{"op":"add","path":"/elements/region-select","value":{"type":"Select","props":{"name":"region","placeholder":"All Regions","value":{"$bindState":"/selectedRegion"},"items":["region-opt-all","region-opt-north","region-opt-south","region-opt-east","region-opt-west","region-opt-central"]},"children":["region-opt-all","region-opt-north","region-opt-south","region-opt-east","region-opt-west","region-opt-central"]}}
+{"op":"add","path":"/elements/region-opt-all","value":{"type":"SelectItem","props":{"value":"all","label":"All Regions"},"children":[]}}
+{"op":"add","path":"/elements/region-opt-north","value":{"type":"SelectItem","props":{"value":"north","label":"North"},"children":[]}}
+{"op":"add","path":"/elements/region-opt-south","value":{"type":"SelectItem","props":{"value":"south","label":"South"},"children":[]}}
+{"op":"add","path":"/elements/region-opt-east","value":{"type":"SelectItem","props":{"value":"east","label":"East"},"children":[]}}
+{"op":"add","path":"/elements/region-opt-west","value":{"type":"SelectItem","props":{"value":"west","label":"West"},"children":[]}}
+{"op":"add","path":"/elements/region-opt-central","value":{"type":"SelectItem","props":{"value":"central","label":"Central"},"children":[]}}
+{"op":"add","path":"/elements/region-focus-indicator","value":{"type":"Tag","props":{"text":{"$template":"Focused: ${/selectedRegion}"},"variant":"info","size":"md"},"visible":{"$state":"/selectedRegion","neq":"all"},"children":[]}}
+{"op":"add","path":"/state/selectedRegion","value":"all"}
+{"op":"add","path":"/elements/generation-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["generation-header","generation-chart"]}}
+{"op":"add","path":"/elements/generation-header","value":{"type":"CardHeader","props":{"title":"Generation Mix","subtitle":"Current output by source"},"children":[]}}
+{"op":"add","path":"/elements/generation-chart","value":{"type":"PieChart","props":{"variant":"donut","labels":["Gas","Wind","Solar","Nuclear","Hydro","Coal"],"values":[18.2,12.4,7.1,6.8,3.9,2.1]},"children":["slice-gas","slice-wind","slice-solar","slice-nuclear","slice-hydro","slice-coal"]}}
+{"op":"add","path":"/elements/slice-gas","value":{"type":"Slice","props":{"category":"Gas","value":18.2},"children":[]}}
+{"op":"add","path":"/elements/slice-wind","value":{"type":"Slice","props":{"category":"Wind","value":12.4},"children":[]}}
+{"op":"add","path":"/elements/slice-solar","value":{"type":"Slice","props":{"category":"Solar","value":7.1},"children":[]}}
+{"op":"add","path":"/elements/slice-nuclear","value":{"type":"Slice","props":{"category":"Nuclear","value":6.8},"children":[]}}
+{"op":"add","path":"/elements/slice-hydro","value":{"type":"Slice","props":{"category":"Hydro","value":3.9},"children":[]}}
+{"op":"add","path":"/elements/slice-coal","value":{"type":"Slice","props":{"category":"Coal","value":2.1},"children":[]}}
+{"op":"add","path":"/elements/forecast-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["forecast-header","forecast-chart"]}}
+{"op":"add","path":"/elements/forecast-header","value":{"type":"CardHeader","props":{"title":"24-Hour Demand Forecast","subtitle":"Projected load vs available capacity"},"children":[]}}
+{"op":"add","path":"/elements/forecast-chart","value":{"type":"AreaChart","props":{"labels":["00:00","02:00","04:00","06:00","08:00","10:00","12:00","14:00","16:00","18:00","20:00","22:00"],"series":["forecast-series-demand","forecast-series-capacity"],"xLabel":"Time","yLabel":"GW"},"children":["forecast-series-demand","forecast-series-capacity"]}}
+{"op":"add","path":"/elements/forecast-series-demand","value":{"type":"Series","props":{"category":"Forecast Demand","values":[31.2,29.8,28.5,32.1,38.4,41.2,42.7,43.1,44.5,47.2,45.8,38.6]},"children":[]}}
+{"op":"add","path":"/elements/forecast-series-capacity","value":{"type":"Series","props":{"category":"Available Capacity","values":[52,52,52,52,52,52,52,52,52,52,52,52]},"children":[]}}
+{"op":"add","path":"/elements/plants-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["plants-header","plants-table"]}}
+{"op":"add","path":"/elements/plants-header","value":{"type":"CardHeader","props":{"title":"Generation Plants","subtitle":"Real-time output and operational status"},"children":[]}}
+{"op":"add","path":"/elements/plants-table","value":{"type":"Table","props":{"columns":["col-name","col-output","col-capacity","col-status","col-region"]},"children":["col-name","col-output","col-capacity","col-status","col-region"]}}
+{"op":"add","path":"/elements/col-name","value":{"type":"Col","props":{"label":"Plant","data":["Drax Gas CCGT","Hornsea Wind","Cleve Hill Solar","Sizewell B Nuclear","Cruachan Hydro","Ratcliffe Coal"],"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/col-output","value":{"type":"Col","props":{"label":"Output (MW)","data":["1,420","2,850","1,120","1,680","440","380"],"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/col-capacity","value":{"type":"Col","props":{"label":"Capacity (MW)","data":["1,800","3,200","1,400","1,720","520","610"],"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/col-status","value":{"type":"Col","props":{"label":"Status","data":["Online","Online","Online","Online","Derated","Derated"],"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/col-region","value":{"type":"Col","props":{"label":"Region","data":["North","East","South","East","North","Central"],"type":"string"},"children":[]}}
+{"op":"add","path":"/elements/outages-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["outages-header","outages-list"]}}
+{"op":"add","path":"/elements/outages-header","value":{"type":"CardHeader","props":{"title":"Active Outages","subtitle":"Current network faults and affected regions"},"children":[]}}
+{"op":"add","path":"/elements/outages-list","value":{"type":"Card","props":{"direction":"column","gap":"s","variant":"clear"},"repeat":{"statePath":"/outages","key":"id"},"children":["outage-card"]}}
+{"op":"add","path":"/elements/outage-card","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center"},"children":["outage-severity","outage-info"]}}
+{"op":"add","path":"/elements/outage-severity","value":{"type":"Tag","props":{"text":{"$item":"severity"},"variant":{"$cond":{"$item":"severity","eq":"Critical"},"$then":"danger","$else":"warning"},"size":"md"},"children":[]}}
+{"op":"add","path":"/elements/outage-info","value":{"type":"Card","props":{"direction":"column","gap":"xs","variant":"clear"},"children":["outage-desc","outage-meta"]}}
+{"op":"add","path":"/elements/outage-desc","value":{"type":"TextContent","props":{"text":{"$item":"description"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/outage-meta","value":{"type":"TextContent","props":{"text":{"$template":"Region: ${region} | Since: ${started}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/state/outages","value":[]}
+{"op":"add","path":"/state/outages/0","value":{"id":"o1","severity":"Critical","description":"Transformer failure at 132kV substation","region":"North","started":"06:42"}}
+{"op":"add","path":"/state/outages/1","value":{"id":"o2","severity":"Major","description":"Overhead line fault — vegetation contact","region":"West","started":"08:15"}}
+{"op":"add","path":"/state/outages/2","value":{"id":"o3","severity":"Minor","description":"Underground cable degradation — reduced rating","region":"Central","started":"11:30"}}
+{"op":"add","path":"/elements/maintenance-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["maintenance-header","maintenance-list"]}}
+{"op":"add","path":"/elements/maintenance-header","value":{"type":"CardHeader","props":{"title":"Planned Maintenance — June 2025","subtitle":"Scheduled works this month"},"children":[]}}
+{"op":"add","path":"/elements/maintenance-list","value":{"type":"Card","props":{"direction":"column","gap":"s","variant":"clear"},"repeat":{"statePath":"/maintenance","key":"id"},"children":["maintenance-card"]}}
+{"op":"add","path":"/elements/maintenance-card","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between"},"children":["maintenance-info","maintenance-badge"]}}
+{"op":"add","path":"/elements/maintenance-info","value":{"type":"Card","props":{"direction":"column","gap":"xs","variant":"clear"},"children":["maintenance-plant","maintenance-task","maintenance-date"]}}
+{"op":"add","path":"/elements/maintenance-plant","value":{"type":"TextContent","props":{"text":{"$item":"plant"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/maintenance-task","value":{"type":"TextContent","props":{"text":{"$item":"task"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/maintenance-date","value":{"type":"TextContent","props":{"text":{"$item":"date"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/maintenance-badge","value":{"type":"Badge","props":{"text":{"$item":"status"},"variant":"secondary"},"children":[]}}
+{"op":"add","path":"/state/maintenance","value":[]}
+{"op":"add","path":"/state/maintenance/0","value":{"id":"m1","plant":"Drax Gas CCGT","task":"Turbine blade inspection — Unit 2","date":"Jun 12–14","status":"Scheduled"}}
+{"op":"add","path":"/state/maintenance/1","value":{"id":"m2","plant":"Hornsea Wind","task":"Gearbox replacement — Turbine 47","date":"Jun 18–22","status":"Scheduled"}}
+{"op":"add","path":"/state/maintenance/2","value":{"id":"m3","plant":"Sizewell B Nuclear","task":"Annual refuelling outage","date":"Jun 25 – Jul 10","status":"Confirmed"}}
+{"op":"add","path":"/state/maintenance/3","value":{"id":"m4","plant":"Cruachan Hydro","task":"Penstock valve overhaul","date":"Jun 8–9","status":"In Progress"}}
+{"op":"add","path":"/elements/alerts-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["alerts-header","alerts-list","alert-add-btn"]}}
+{"op":"add","path":"/elements/alerts-header","value":{"type":"CardHeader","props":{"title":"Live Alerts","subtitle":"Real-time system notifications"},"children":[]}}
+{"op":"add","path":"/elements/alerts-list","value":{"type":"Card","props":{"direction":"column","gap":"s","variant":"clear"},"repeat":{"statePath":"/alerts","key":"id"},"children":["alert-item"]}}
+{"op":"add","path":"/elements/alert-item","value":{"type":"Callout","props":{"variant":{"$cond":{"$item":"severity","eq":"critical"},"$then":"error","$else":{"$cond":{"$item":"severity","eq":"warning"},"$then":"warning","$else":"info"}},"title":{"$template":"[${time}] ${title}"},"description":{"$item":"message"}},"children":[]}}
+{"op":"add","path":"/elements/alert-add-btn","value":{"type":"Button","props":{"label":"Simulate Incoming Alert","variant":"secondary","size":"small"},"on":{"press":{"action":"pushState","params":{"statePath":"/alerts","value":{"id":"$id","severity":"warning","title":"Frequency deviation","message":"System frequency dropped to 49.82 Hz — reserve activation triggered","time":"NOW"}}}},"children":[]}}
+{"op":"add","path":"/state/alerts","value":[]}
+{"op":"add","path":"/state/alerts/0","value":{"id":"a1","severity":"critical","title":"Loss of Generation","message":"Hornsea Wind output dropped 800 MW due to grid fault. Spinning reserve dispatched.","time":"09:47"}}
+{"op":"add","path":"/state/alerts/1","value":{"id":"a2","severity":"warning","title":"High Demand Warning","message":"Demand approaching 90% of capacity in Central region. Consider demand-side response.","time":"10:12"}}
+{"op":"add","path":"/state/alerts/2","value":{"id":"a3","severity":"info","title":"Interconnector Update","message":"IFA2 interconnector import reduced to 600 MW due to French grid constraints.","time":"10:35"}}
+{"op":"add","path":"/elements/curtailment-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["curtailment-header","curtailment-dialog"]}}
+{"op":"add","path":"/elements/curtailment-header","value":{"type":"CardHeader","props":{"title":"Curtailment Order","subtitle":"Issue a generation curtailment instruction"},"children":[]}}
+{"op":"add","path":"/elements/curtailment-dialog","value":{"type":"DialogBlock","props":{"triggerLabel":"⚠️ Order Curtailment","triggerVariant":"destructive","title":"Issue Curtailment Order","description":"This will instruct the selected plant to reduce output immediately. This action is logged and requires supervisor acknowledgement."},"content":["curtailment-form"],"children":["curtailment-form"]}}
+{"op":"add","path":"/elements/curtailment-form","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["curtailment-plant-field","curtailment-amount-field","curtailment-reason-field","curtailment-buttons"]}}
+{"op":"add","path":"/elements/curtailment-plant-field","value":{"type":"FormControl","props":{"label":"Target Plant","input":"curtailment-plant-select"},"children":["curtailment-plant-select"]}}
+{"op":"add","path":"/elements/curtailment-plant-select","value":{"type":"Select","props":{"name":"curtailmentPlant","placeholder":"Select plant...","value":{"$bindState":"/curtailment/plant"},"items":["cp-drax","cp-hornsea","cp-cleve","cp-ratcliffe"]},"children":["cp-drax","cp-hornsea","cp-cleve","cp-ratcliffe"]}}
+{"op":"add","path":"/elements/cp-drax","value":{"type":"SelectItem","props":{"value":"drax","label":"Drax Gas CCGT"},"children":[]}}
+{"op":"add","path":"/elements/cp-hornsea","value":{"type":"SelectItem","props":{"value":"hornsea","label":"Hornsea Wind"},"children":[]}}
+{"op":"add","path":"/elements/cp-cleve","value":{"type":"SelectItem","props":{"value":"cleve","label":"Cleve Hill Solar"},"children":[]}}
+{"op":"add","path":"/elements/cp-ratcliffe","value":{"type":"SelectItem","props":{"value":"ratcliffe","label":"Ratcliffe Coal"},"children":[]}}
+{"op":"add","path":"/elements/curtailment-amount-field","value":{"type":"FormControl","props":{"label":"Curtailment Amount (MW)","input":"curtailment-amount-input","hint":"Maximum reduction in megawatts"},"children":["curtailment-amount-input"]}}
+{"op":"add","path":"/elements/curtailment-amount-input","value":{"type":"Input","props":{"name":"curtailmentAmount","type":"number","placeholder":"e.g. 500","value":{"$bindState":"/curtailment/amount"}},"children":[]}}
+{"op":"add","path":"/elements/curtailment-reason-field","value":{"type":"FormControl","props":{"label":"Reason","input":"curtailment-reason-input"},"children":["curtailment-reason-input"]}}
+{"op":"add","path":"/elements/curtailment-reason-input","value":{"type":"TextArea","props":{"name":"curtailmentReason","placeholder":"Operational justification...","rows":3,"value":{"$bindState":"/curtailment/reason"}},"children":[]}}
+{"op":"add","path":"/elements/curtailment-buttons","value":{"type":"Buttons","props":{"direction":"row","buttons":["curtailment-submit","curtailment-cancel"]},"children":["curtailment-submit","curtailment-cancel"]}}
+{"op":"add","path":"/elements/curtailment-submit","value":{"type":"Button","props":{"label":"Confirm Curtailment","variant":"primary","type":"destructive"},"on":{"press":{"action":"pushState","params":{"statePath":"/alerts","value":{"id":"$id","severity":"critical","title":"Curtailment Issued","message":{"$template":"Curtailment order: ${/curtailment/plant} reduced by ${/curtailment/amount} MW"},"time":"NOW"}},"clearStatePath":"/curtailment/reason"}},"children":[]}}
+{"op":"add","path":"/elements/curtailment-cancel","value":{"type":"Button","props":{"label":"Cancel","variant":"secondary"},"children":[]}}
+{"op":"add","path":"/state/curtailment","value":{"plant":"","amount":"","reason":""}}

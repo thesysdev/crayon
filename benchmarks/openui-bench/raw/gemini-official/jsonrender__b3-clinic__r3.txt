@@ -1,0 +1,79 @@
+{"op":"add","path":"/root","value":"main-container"}
+{"op":"add","path":"/elements/main-container","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header-card","kpi-row","current-patient-card","main-content-tabs"]}}
+{"op":"add","path":"/elements/header-card","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["title-block","date-controls"]}}
+{"op":"add","path":"/elements/title-block","value":{"type":"CardHeader","props":{"title":"Clinic Reception Desk","subtitle":"Daily Patient Flow & Room Overview"}}}
+{"op":"add","path":"/elements/date-controls","value":{"type":"Card","props":{"direction":"row","gap":"s","align":"center"},"children":["prev-day-btn","date-picker","next-day-btn"]}}
+{"op":"add","path":"/elements/prev-day-btn","value":{"type":"Button","props":{"label":"‹ Prev Day","variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/selectedDate","value":"2023-10-23"}}}}}
+{"op":"add","path":"/elements/date-picker","value":{"type":"DatePicker","props":{"name":"selectedDate","mode":"single","value":{"$bindState":"/selectedDate"}}}}
+{"op":"add","path":"/elements/next-day-btn","value":{"type":"Button","props":{"label":"Next Day ›","variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/selectedDate","value":"2023-10-25"}}}}}
+{"op":"add","path":"/state/selectedDate","value":"2023-10-24"}
+{"op":"add","path":"/elements/kpi-row","value":{"type":"Card","props":{"direction":"row","gap":"m"},"children":["kpi-expected","kpi-checked-in","kpi-noshow"]}}
+{"op":"add","path":"/elements/kpi-expected","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["kpi-expected-title","kpi-expected-val"]}}
+{"op":"add","path":"/elements/kpi-expected-title","value":{"type":"Heading","props":{"text":"Expected Today","level":"h4"}}}
+{"op":"add","path":"/elements/kpi-expected-val","value":{"type":"TextContent","props":{"text":{"$template":"**${/kpi/expectedToday}** Patients"},"size":"large"}}}
+{"op":"add","path":"/elements/kpi-checked-in","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["kpi-checked-title","kpi-checked-val"]}}
+{"op":"add","path":"/elements/kpi-checked-title","value":{"type":"Heading","props":{"text":"Checked In","level":"h4"}}}
+{"op":"add","path":"/elements/kpi-checked-val","value":{"type":"TextContent","props":{"text":{"$template":"**${/kpi/checkedInCount}** / ${/kpi/expectedToday}"},"size":"large"}}}
+{"op":"add","path":"/elements/kpi-noshow","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["kpi-noshow-title","kpi-noshow-val"]}}
+{"op":"add","path":"/elements/kpi-noshow-title","value":{"type":"Heading","props":{"text":"Monthly No-Show Rate","level":"h4"}}}
+{"op":"add","path":"/elements/kpi-noshow-val","value":{"type":"TextContent","props":{"text":{"$template":"**${/kpi/noShowRate}** (${/kpi/noShowCount} patients)"},"size":"large"}}}
+{"op":"add","path":"/state/kpi","value":{"expectedToday":18,"checkedInCount":6,"noShowRate":"4.2%","noShowCount":12}}
+{"op":"add","path":"/elements/current-patient-card","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["next-patient-info","call-next-btn"]}}
+{"op":"add","path":"/elements/next-patient-info","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"children":["next-patient-label","next-patient-details"]}}
+{"op":"add","path":"/elements/next-patient-label","value":{"type":"Tag","props":{"text":"NEXT PATIENT TO BE CALLED","variant":"info","size":"sm"}}}
+{"op":"add","path":"/elements/next-patient-details","value":{"type":"TextContent","props":{"text":{"$template":"**${/nextPatient/name}** (Appt: ${/nextPatient/time}) — Dr. ${/nextPatient/doctor} (${/nextPatient/reason})"},"size":"large"}}}
+{"op":"add","path":"/elements/call-next-btn","value":{"type":"Button","props":{"label":"Call Patient Out","variant":"primary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/nextPatient/called","value":true}}}}}
+{"op":"add","path":"/state/nextPatient","value":{"id":"p-103","name":"Eleanor Vance","time":"10:30 AM","doctor":"Smith","reason":"Annual Checkup","called":false}}
+{"op":"add","path":"/elements/main-content-tabs","value":{"type":"Tabs","props":{"items":["tab-appts","tab-rooms","tab-checkin"]}}}
+{"op":"add","path":"/elements/tab-appts","value":{"type":"TabItem","props":{"value":"appts","trigger":"Schedule & Appointments"},"children":["appts-section"]}}
+{"op":"add","path":"/elements/appts-section","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["appts-header","appts-list"]}}
+{"op":"add","path":"/elements/appts-header","value":{"type":"Heading","props":{"text":"Today's Appointment List","level":"h3"}}}
+{"op":"add","path":"/elements/appts-list","value":{"type":"Card","props":{"direction":"column","gap":"s"},"repeat":{"statePath":"/appointments","key":"id"},"children":["appt-item-row"]}}
+{"op":"add","path":"/elements/appt-item-row","value":{"type":"Card","props":{"variant":"card","direction":"row","justify":"between","align":"center"},"children":["appt-left-info","appt-status-badge"]}}
+{"op":"add","path":"/elements/appt-left-info","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center"},"children":["appt-time","appt-details"]}}
+{"op":"add","path":"/elements/appt-time","value":{"type":"Tag","props":{"text":{"$item":"time"},"variant":"neutral"}}}
+{"op":"add","path":"/elements/appt-details","value":{"type":"Card","props":{"direction":"column","gap":"none"},"children":["appt-patient-name","appt-subtext"]}}
+{"op":"add","path":"/elements/appt-patient-name","value":{"type":"TextContent","props":{"text":{"$item":"patientName"},"size":"large-heavy"}}}
+{"op":"add","path":"/elements/appt-subtext","value":{"type":"TextContent","props":{"text":{"$template":"Dr. ${doctor} • ${type}"},"size":"small"}}}
+{"op":"add","path":"/elements/appt-status-badge","value":{"type":"Badge","props":{"text":{"$item":"status"},"variant":{"$cond":{"$item":"status","eq":"Checked In"},"$then":"default","$else":"outline"}}}}
+{"op":"add","path":"/state/appointments","value":[]}
+{"op":"add","path":"/state/appointments/0","value":{"id":"1","time":"09:00 AM","patientName":"Sarah Jenkins","doctor":"Smith","type":"General Consultation","status":"Completed"}}
+{"op":"add","path":"/state/appointments/1","value":{"id":"2","time":"09:30 AM","patientName":"Marcus Brody","doctor":"Adams","type":"Follow-up","status":"Completed"}}
+{"op":"add","path":"/state/appointments/2","value":{"id":"3","time":"10:00 AM","patientName":"Arthur Dent","doctor":"Smith","type":"Routine Exam","status":"Checked In"}}
+{"op":"add","path":"/state/appointments/3","value":{"id":"4","time":"10:30 AM","patientName":"Eleanor Vance","doctor":"Smith","type":"Annual Checkup","status":"Waiting"}}
+{"op":"add","path":"/state/appointments/4","value":{"id":"5","time":"11:00 AM","patientName":"Clara Oswald","doctor":"Taylor","type":"Dermatology Check","status":"Scheduled"}}
+{"op":"add","path":"/state/appointments/5","value":{"id":"6","time":"11:30 AM","patientName":"Bruce Wayne","doctor":"Adams","type":"Physiotherapy","status":"Scheduled"}}
+{"op":"add","path":"/elements/tab-rooms","value":{"type":"TabItem","props":{"value":"rooms","trigger":"Room Availability"},"children":["rooms-section"]}}
+{"op":"add","path":"/elements/rooms-section","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["rooms-header","rooms-grid"]}}
+{"op":"add","path":"/elements/rooms-header","value":{"type":"Heading","props":{"text":"Current Room Status","level":"h3"}}}
+{"op":"add","path":"/elements/rooms-grid","value":{"type":"Card","props":{"direction":"row","wrap":true,"gap":"m"},"repeat":{"statePath":"/rooms","key":"id"},"children":["room-card"]}}
+{"op":"add","path":"/elements/room-card","value":{"type":"Card","props":{"variant":{"$cond":{"$item":"isFree"},"$then":"card","$else":"sunk"},"direction":"column","gap":"s"},"children":["room-title-row","room-status-info"]}}
+{"op":"add","path":"/elements/room-title-row","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center"},"children":["room-name","room-status-tag"]}}
+{"op":"add","path":"/elements/room-name","value":{"type":"Heading","props":{"text":{"$item":"name"},"level":"h4"}}}
+{"op":"add","path":"/elements/room-status-tag","value":{"type":"Tag","props":{"text":{"$cond":{"$item":"isFree"},"$then":"AVAILABLE","$else":"OCCUPIED"},"variant":{"$cond":{"$item":"isFree"},"$then":"success","$else":"danger"}}}}
+{"op":"add","path":"/elements/room-status-info","value":{"type":"TextContent","props":{"text":{"$cond":{"$item":"isFree"},"$then":"Ready for next patient","$else":{"$template":"Occupied by ${occupant}"}},"size":"small"}}}
+{"op":"add","path":"/state/rooms","value":[]}
+{"op":"add","path":"/state/rooms/0","value":{"id":"r1","name":"Exam Room 1","isFree":true,"occupant":""}}
+{"op":"add","path":"/state/rooms/1","value":{"id":"r2","name":"Exam Room 2","isFree":false,"occupant":"Marcus Brody"}}
+{"op":"add","path":"/state/rooms/2","value":{"id":"r3","name":"Exam Room 3","isFree":true,"occupant":""}}
+{"op":"add","path":"/state/rooms/3","value":{"id":"r4","name":"Procedure Room A","isFree":false,"occupant":"Sarah Jenkins"}}
+{"op":"add","path":"/state/rooms/4","value":{"id":"r5","name":"Procedure Room B","isFree":true,"occupant":""}}
+{"op":"add","path":"/elements/tab-checkin","value":{"type":"TabItem","props":{"value":"checkin","trigger":"Patient Check-In"},"children":["checkin-section"]}}
+{"op":"add","path":"/elements/checkin-section","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["checkin-header","checkin-form"]}}
+{"op":"add","path":"/elements/checkin-header","value":{"type":"CardHeader","props":{"title":"Rapid Patient Check-In","subtitle":"Check in arriving patients and update their status immediately"}}}
+{"op":"add","path":"/elements/checkin-form","value":{"type":"Form","props":{"name":"patientCheckInForm","buttons":"checkin-actions","fields":["field-patient-select","field-room-select","field-notes"]}}}
+{"op":"add","path":"/elements/field-patient-select","value":{"type":"FormControl","props":{"label":"Select Arriving Patient","input":"input-patient-select","hint":"Only un-checked appointments shown"}}}
+{"op":"add","path":"/elements/input-patient-select","value":{"type":"Select","props":{"name":"checkInPatient","placeholder":"Choose patient...","items":["p-opt-1","p-opt-2","p-opt-3"],"value":{"$bindState":"/checkInForm/patientId"}}}}
+{"op":"add","path":"/elements/p-opt-1","value":{"type":"SelectItem","props":{"value":"p103","label":"Eleanor Vance (10:30 AM - Dr. Smith)"}}}
+{"op":"add","path":"/elements/p-opt-2","value":{"type":"SelectItem","props":{"value":"p104","label":"Clara Oswald (11:00 AM - Dr. Taylor)"}}}
+{"op":"add","path":"/elements/p-opt-3","value":{"type":"SelectItem","props":{"value":"p105","label":"Bruce Wayne (11:30 AM - Dr. Adams)"}}}
+{"op":"add","path":"/elements/field-room-select","value":{"type":"FormControl","props":{"label":"Assign Initial Waiting/Exam Room","input":"input-room-select"}}}
+{"op":"add","path":"/elements/input-room-select","value":{"type":"Select","props":{"name":"checkInRoom","placeholder":"Select free room...","items":["r-opt-1","r-opt-3","r-opt-5"],"value":{"$bindState":"/checkInForm/roomId"}}}}
+{"op":"add","path":"/elements/r-opt-1","value":{"type":"SelectItem","props":{"value":"r1","label":"Exam Room 1 (Free)"}}}
+{"op":"add","path":"/elements/r-opt-3","value":{"type":"SelectItem","props":{"value":"r3","label":"Exam Room 3 (Free)"}}}
+{"op":"add","path":"/elements/r-opt-5","value":{"type":"SelectItem","props":{"value":"r5","label":"Procedure Room B (Free)"}}}
+{"op":"add","path":"/elements/field-notes","value":{"type":"FormControl","props":{"label":"Arrival Notes","input":"input-notes"}}}
+{"op":"add","path":"/elements/input-notes","value":{"type":"Input","props":{"name":"notes","placeholder":"e.g. Copay collected, insurance updated","value":{"$bindState":"/checkInForm/notes"}}}}
+{"op":"add","path":"/elements/checkin-actions","value":{"type":"Buttons","props":{"buttons":["btn-submit-checkin"]}}}
+{"op":"add","path":"/elements/btn-submit-checkin","value":{"type":"Button","props":{"label":"Complete Check-In","variant":"primary"},"on":{"press":{"action":"setState","params":{"statePath":"/kpi/checkedInCount","value":7}}}}}
+{"op":"add","path":"/state/checkInForm","value":{"patientId":"p103","roomId":"r1","notes":""}}

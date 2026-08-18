@@ -1,0 +1,856 @@
+Operator console covering all 12 requested items — live load, capacity, generation, plants, outages, forecast, price, maintenance, alerts, region focus and curtailment.
+
+<a2ui-json>[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "power-console-001",
+      "catalogId": "thesys.dev:c1-openui"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "power-console-001",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "header",
+            "regionCard",
+            "kpiRow",
+            "middleRow",
+            "plantsCard",
+            "outagesMaintenanceRow",
+            "curtailmentCard",
+            "alertsCard"
+          ]
+        },
+        {
+          "id": "header",
+          "component": "CardHeader",
+          "title": "Power Network Operator Console",
+          "subtitle": "National Grid • Live SCADA • 14:42 UTC • Auto-refresh 5s"
+        },
+        {
+          "id": "regionCard",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "row",
+          "gap": "m",
+          "align": "center",
+          "justify": "between",
+          "children": [
+            "regionSelect",
+            "btnFocusRegionContainer"
+          ]
+        },
+        {
+          "id": "regionSelect",
+          "component": "Select",
+          "name": "regionFocus",
+          "placeholder": "Focus on region...",
+          "value": "all",
+          "items": [
+            "regionAll",
+            "regionNorth",
+            "regionSouth",
+            "regionEast",
+            "regionWest",
+            "regionCentral"
+          ]
+        },
+        {
+          "id": "regionAll",
+          "component": "SelectItem",
+          "value": "all",
+          "label": "All Regions (National)"
+        },
+        {
+          "id": "regionNorth",
+          "component": "SelectItem",
+          "value": "north",
+          "label": "North Region"
+        },
+        {
+          "id": "regionSouth",
+          "component": "SelectItem",
+          "value": "south",
+          "label": "South Region"
+        },
+        {
+          "id": "regionEast",
+          "component": "SelectItem",
+          "value": "east",
+          "label": "East Region"
+        },
+        {
+          "id": "regionWest",
+          "component": "SelectItem",
+          "value": "west",
+          "label": "West Region"
+        },
+        {
+          "id": "regionCentral",
+          "component": "SelectItem",
+          "value": "central",
+          "label": "Central Region"
+        },
+        {
+          "id": "btnFocusRegionContainer",
+          "component": "Buttons",
+          "buttons": [
+            "btnFocusRegion"
+          ]
+        },
+        {
+          "id": "btnFocusRegion",
+          "component": "Button",
+          "label": "Focus View",
+          "variant": "primary"
+        },
+        {
+          "id": "kpiRow",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "children": [
+            "kpiLoadCard",
+            "kpiCapacityCard",
+            "kpiPriceCard",
+            "kpiEmissionsCard"
+          ]
+        },
+        {
+          "id": "kpiLoadCard",
+          "component": "Card",
+          "children": [
+            "kpiLoadHeading",
+            "kpiLoadValue",
+            "kpiLoadSub"
+          ]
+        },
+        {
+          "id": "kpiLoadHeading",
+          "component": "TextContent",
+          "text": "1 — CURRENT LOAD",
+          "size": "small"
+        },
+        {
+          "id": "kpiLoadValue",
+          "component": "Heading",
+          "text": "4,850 MW",
+          "level": "h1"
+        },
+        {
+          "id": "kpiLoadSub",
+          "component": "TextContent",
+          "text": "▲ +124 MW vs 5min ago • Frequency 50.02 Hz",
+          "size": "small"
+        },
+        {
+          "id": "kpiCapacityCard",
+          "component": "Card",
+          "children": [
+            "kpiCapacityHeading",
+            "kpiCapacityProgress",
+            "kpiCapacityText"
+          ]
+        },
+        {
+          "id": "kpiCapacityHeading",
+          "component": "TextContent",
+          "text": "2 — CAPACITY HEADROOM",
+          "size": "small"
+        },
+        {
+          "id": "kpiCapacityProgress",
+          "component": "Progress",
+          "value": 78,
+          "label": "78% of 6,200 MW firm capacity"
+        },
+        {
+          "id": "kpiCapacityText",
+          "component": "TextContent",
+          "text": "1,350 MW remaining • Reserve margin: 12.4% • Status: AMBER",
+          "size": "small"
+        },
+        {
+          "id": "kpiPriceCard",
+          "component": "Card",
+          "children": [
+            "kpiPriceHeading",
+            "kpiPriceValue",
+            "kpiPriceSub"
+          ]
+        },
+        {
+          "id": "kpiPriceHeading",
+          "component": "TextContent",
+          "text": "7 — SPOT PRICE",
+          "size": "small"
+        },
+        {
+          "id": "kpiPriceValue",
+          "component": "Heading",
+          "text": "$112.40 / MWh",
+          "level": "h2"
+        },
+        {
+          "id": "kpiPriceSub",
+          "component": "TextContent",
+          "text": "▲ $8.20 (7.9%) last hour • Peak: $118.10",
+          "size": "small"
+        },
+        {
+          "id": "kpiEmissionsCard",
+          "component": "Card",
+          "children": [
+            "kpiEmissionsHeading",
+            "kpiEmissionsValue",
+            "kpiEmissionsSub"
+          ]
+        },
+        {
+          "id": "kpiEmissionsHeading",
+          "component": "TextContent",
+          "text": "12 — EMISSIONS TODAY",
+          "size": "small"
+        },
+        {
+          "id": "kpiEmissionsValue",
+          "component": "Heading",
+          "text": "1,840 tCO₂",
+          "level": "h2"
+        },
+        {
+          "id": "kpiEmissionsSub",
+          "component": "TextContent",
+          "text": "Intensity 379 g/kWh • -6.2% vs yesterday",
+          "size": "small"
+        },
+        {
+          "id": "middleRow",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "children": [
+            "generationCard",
+            "forecastCard"
+          ]
+        },
+        {
+          "id": "generationCard",
+          "component": "Card",
+          "children": [
+            "generationHeader",
+            "generationPie",
+            "generationLegend"
+          ]
+        },
+        {
+          "id": "generationHeader",
+          "component": "CardHeader",
+          "title": "3 — Generation Split by Source",
+          "subtitle": "Total 4,850 MW dispatched now"
+        },
+        {
+          "id": "generationPie",
+          "component": "PieChart",
+          "labels": [
+            "Gas CCGT",
+            "Wind",
+            "Solar",
+            "Hydro",
+            "Coal",
+            "Nuclear"
+          ],
+          "values": [
+            1850,
+            1200,
+            950,
+            480,
+            320,
+            50
+          ],
+          "variant": "donut"
+        },
+        {
+          "id": "generationLegend",
+          "component": "TextContent",
+          "text": "Gas 38.1% • Wind 24.7% • Solar 19.6% • Hydro 9.9% • Coal 6.6% • Nuclear 1.0%",
+          "size": "small"
+        },
+        {
+          "id": "forecastCard",
+          "component": "Card",
+          "children": [
+            "forecastHeader",
+            "forecastChart",
+            "forecastNote"
+          ]
+        },
+        {
+          "id": "forecastHeader",
+          "component": "CardHeader",
+          "title": "6 — Demand Forecast (Next 24 Hours)",
+          "subtitle": "MW • Weather-adjusted • Peak 5,420 MW @ 18:00"
+        },
+        {
+          "id": "forecastSeries",
+          "component": "Series",
+          "category": "Forecast MW",
+          "values": [
+            4850,
+            4720,
+            4580,
+            4450,
+            4380,
+            4420,
+            4680,
+            4950,
+            5180,
+            5280,
+            5350,
+            5380,
+            5300,
+            5250,
+            5320,
+            5420,
+            5380,
+            5200,
+            4980,
+            4750,
+            4620,
+            4550,
+            4480,
+            4400
+          ]
+        },
+        {
+          "id": "forecastChart",
+          "component": "AreaChart",
+          "labels": [
+            "15:00",
+            "16:00",
+            "17:00",
+            "18:00",
+            "19:00",
+            "20:00",
+            "21:00",
+            "22:00",
+            "23:00",
+            "00:00",
+            "01:00",
+            "02:00",
+            "03:00",
+            "04:00",
+            "05:00",
+            "06:00",
+            "07:00",
+            "08:00",
+            "09:00",
+            "10:00",
+            "11:00",
+            "12:00",
+            "13:00",
+            "14:00"
+          ],
+          "series": [
+            "forecastSeries"
+          ],
+          "variant": "natural",
+          "yLabel": "MW",
+          "xLabel": "Hour"
+        },
+        {
+          "id": "forecastNote",
+          "component": "TextContent",
+          "text": "Evening ramp +570 MW expected. Wind drop-off 18:00-20:00.",
+          "size": "small"
+        },
+        {
+          "id": "plantsCard",
+          "component": "Card",
+          "children": [
+            "plantsHeader",
+            "plantsTable"
+          ]
+        },
+        {
+          "id": "plantsHeader",
+          "component": "CardHeader",
+          "title": "4 — Each Plant: Output & Status",
+          "subtitle": "Filtered by selected region • 6 units shown"
+        },
+        {
+          "id": "plantsTable",
+          "component": "Table",
+          "columns": [
+            "colPlant",
+            "colSource",
+            "colOutput",
+            "colCapacity",
+            "colStatus",
+            "colRegion"
+          ]
+        },
+        {
+          "id": "colPlant",
+          "component": "Col",
+          "label": "Plant",
+          "data": [
+            "Northfield CCGT",
+            "Seabreeze Wind Farm",
+            "Sunridge Solar Park",
+            "Highland Hydro",
+            "Riverside Coal",
+            "Bayview Nuclear"
+          ],
+          "type": "string"
+        },
+        {
+          "id": "colSource",
+          "component": "Col",
+          "label": "Source",
+          "data": [
+            "Gas",
+            "Wind",
+            "Solar",
+            "Hydro",
+            "Coal",
+            "Nuclear"
+          ],
+          "type": "string"
+        },
+        {
+          "id": "colOutput",
+          "component": "Col",
+          "label": "Output (MW)",
+          "data": [
+            850,
+            620,
+            480,
+            310,
+            320,
+            50
+          ],
+          "type": "number"
+        },
+        {
+          "id": "colCapacity",
+          "component": "Col",
+          "label": "Capacity",
+          "data": [
+            950,
+            800,
+            600,
+            400,
+            450,
+            500
+          ],
+          "type": "number"
+        },
+        {
+          "id": "colStatus",
+          "component": "Col",
+          "label": "Status",
+          "data": [
+            "Online",
+            "Online - Curtailed",
+            "Online",
+            "Online",
+            "Offline - Outage",
+            "Online - Derated"
+          ],
+          "type": "string"
+        },
+        {
+          "id": "colRegion",
+          "component": "Col",
+          "label": "Region",
+          "data": [
+            "North",
+            "West",
+            "South",
+            "Central",
+            "East",
+            "South"
+          ],
+          "type": "string"
+        },
+        {
+          "id": "outagesMaintenanceRow",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "children": [
+            "outagesCard",
+            "maintenanceCard"
+          ]
+        },
+        {
+          "id": "outagesCard",
+          "component": "Card",
+          "children": [
+            "outagesHeader",
+            "outagesTable"
+          ]
+        },
+        {
+          "id": "outagesHeader",
+          "component": "CardHeader",
+          "title": "5 — Active Outages",
+          "subtitle": "Affected region for each"
+        },
+        {
+          "id": "outagesTable",
+          "component": "Table",
+          "columns": [
+            "colOutageId",
+            "colOutageAsset",
+            "colOutageRegion",
+            "colOutageMW",
+            "colOutageETA"
+          ]
+        },
+        {
+          "id": "colOutageId",
+          "component": "Col",
+          "label": "ID",
+          "data": [
+            "OUT-1842",
+            "OUT-1845",
+            "OUT-1847"
+          ],
+          "type": "string"
+        },
+        {
+          "id": "colOutageAsset",
+          "component": "Col",
+          "label": "Asset",
+          "data": [
+            "Riverside Coal U2",
+            "West 132kV Line W-7",
+            "Bayview Nuclear P1"
+          ],
+          "type": "string"
+        },
+        {
+          "id": "colOutageRegion",
+          "component": "Col",
+          "label": "Affected Region",
+          "data": [
+            "East",
+            "West",
+            "South"
+          ],
+          "type": "string"
+        },
+        {
+          "id": "colOutageMW",
+          "component": "Col",
+          "label": "Lost MW",
+          "data": [
+            320,
+            180,
+            450
+          ],
+          "type": "number"
+        },
+        {
+          "id": "colOutageETA",
+          "component": "Col",
+          "label": "ETA Restore",
+          "data": [
+            "Today 22:00",
+            "Tomorrow 06:00",
+            "Aug 28"
+          ],
+          "type": "string"
+        },
+        {
+          "id": "maintenanceCard",
+          "component": "Card",
+          "children": [
+            "maintenanceHeader",
+            "maintenanceTable"
+          ]
+        },
+        {
+          "id": "maintenanceHeader",
+          "component": "CardHeader",
+          "title": "8 — Maintenance Planned This Month",
+          "subtitle": "August 2026 • 4 scheduled"
+        },
+        {
+          "id": "maintenanceTable",
+          "component": "Table",
+          "columns": [
+            "colMaintDate",
+            "colMaintAsset",
+            "colMaintRegion",
+            "colMaintType"
+          ]
+        },
+        {
+          "id": "colMaintDate",
+          "component": "Col",
+          "label": "Date",
+          "data": [
+            "Aug 20",
+            "Aug 22-23",
+            "Aug 26",
+            "Aug 29"
+          ],
+          "type": "string"
+        },
+        {
+          "id": "colMaintAsset",
+          "component": "Col",
+          "label": "Asset",
+          "data": [
+            "Northfield CCGT - Turbine insp.",
+            "Seabreeze WF - Blade service",
+            "Central Substation TR-3",
+            "Highland Hydro - Gate test"
+          ],
+          "type": "string"
+        },
+        {
+          "id": "colMaintRegion",
+          "component": "Col",
+          "label": "Region",
+          "data": [
+            "North",
+            "West",
+            "Central",
+            "Central"
+          ],
+          "type": "string"
+        },
+        {
+          "id": "colMaintType",
+          "component": "Col",
+          "label": "Type",
+          "data": [
+            "Preventive",
+            "Corrective",
+            "Planned Outage",
+            "Test"
+          ],
+          "type": "string"
+        },
+        {
+          "id": "curtailmentCard",
+          "component": "Card",
+          "children": [
+            "curtailmentHeader",
+            "curtailmentForm"
+          ]
+        },
+        {
+          "id": "curtailmentHeader",
+          "component": "CardHeader",
+          "title": "11 — Order Curtailment",
+          "subtitle": "Dispatch instruction to reduce output • Requires confirmation"
+        },
+        {
+          "id": "curtailmentForm",
+          "component": "Form",
+          "name": "curtailmentOrder",
+          "buttons": "curtailmentButtons",
+          "fields": [
+            "fcPlant",
+            "fcAmount",
+            "fcReason",
+            "fcNotes"
+          ]
+        },
+        {
+          "id": "curtailmentButtons",
+          "component": "Buttons",
+          "buttons": [
+            "btnCurtail",
+            "btnCancelCurtail"
+          ]
+        },
+        {
+          "id": "btnCurtail",
+          "component": "Button",
+          "label": "Issue Curtailment Order",
+          "variant": "primary"
+        },
+        {
+          "id": "btnCancelCurtail",
+          "component": "Button",
+          "label": "Cancel",
+          "variant": "secondary"
+        },
+        {
+          "id": "fcPlant",
+          "component": "FormControl",
+          "label": "Plant to Curtail",
+          "input": "selectPlant"
+        },
+        {
+          "id": "selectPlant",
+          "component": "Select",
+          "name": "plant",
+          "placeholder": "Select plant",
+          "items": [
+            "siPlant1",
+            "siPlant2",
+            "siPlant3",
+            "siPlant4"
+          ]
+        },
+        {
+          "id": "siPlant1",
+          "component": "SelectItem",
+          "value": "seabreeze",
+          "label": "Seabreeze Wind Farm (620 MW)"
+        },
+        {
+          "id": "siPlant2",
+          "component": "SelectItem",
+          "value": "sunridge",
+          "label": "Sunridge Solar Park (480 MW)"
+        },
+        {
+          "id": "siPlant3",
+          "component": "SelectItem",
+          "value": "northfield",
+          "label": "Northfield CCGT (850 MW)"
+        },
+        {
+          "id": "siPlant4",
+          "component": "SelectItem",
+          "value": "highland",
+          "label": "Highland Hydro (310 MW)"
+        },
+        {
+          "id": "fcAmount",
+          "component": "FormControl",
+          "label": "Curtail by (MW)",
+          "hint": "Slide to set reduction 0-300 MW",
+          "input": "sliderAmount"
+        },
+        {
+          "id": "sliderAmount",
+          "component": "Slider",
+          "name": "amount",
+          "variant": "discrete",
+          "min": 0,
+          "max": 300,
+          "step": 10,
+          "defaultValue": [
+            50
+          ],
+          "label": "MW"
+        },
+        {
+          "id": "fcReason",
+          "component": "FormControl",
+          "label": "Reason",
+          "input": "radioReason"
+        },
+        {
+          "id": "radioReason",
+          "component": "RadioGroup",
+          "name": "reason",
+          "items": [
+            "riReason1",
+            "riReason2",
+            "riReason3"
+          ],
+          "defaultValue": "congestion"
+        },
+        {
+          "id": "riReason1",
+          "component": "RadioItem",
+          "label": "Network Congestion",
+          "description": "Line overload / thermal limit",
+          "value": "congestion"
+        },
+        {
+          "id": "riReason2",
+          "component": "RadioItem",
+          "label": "Oversupply",
+          "description": "Generation exceeds demand",
+          "value": "oversupply"
+        },
+        {
+          "id": "riReason3",
+          "component": "RadioItem",
+          "label": "Frequency Control",
+          "description": "Ancillary service dispatch",
+          "value": "frequency"
+        },
+        {
+          "id": "fcNotes",
+          "component": "FormControl",
+          "label": "Operator Notes (optional)",
+          "input": "textNotes"
+        },
+        {
+          "id": "textNotes",
+          "component": "TextArea",
+          "name": "notes",
+          "placeholder": "e.g., Curtail Seabreeze 80MW due to W-7 line limit until 22:00...",
+          "rows": 2
+        },
+        {
+          "id": "alertsCard",
+          "component": "Card",
+          "children": [
+            "alertsHeader",
+            "alertLive1",
+            "alertLive2",
+            "alertLive3",
+            "alertsFooter"
+          ]
+        },
+        {
+          "id": "alertsHeader",
+          "component": "CardHeader",
+          "title": "9 — Live Alerts",
+          "subtitle": "Streaming • Last 3 events • Auto-dismiss after ack"
+        },
+        {
+          "id": "alertLive1",
+          "component": "Alert",
+          "title": "14:41:22 • WARNING • West Region",
+          "description": "Line W-7 loading 96% - approaching thermal limit. Wind curtailment recommended.",
+          "variant": "warning"
+        },
+        {
+          "id": "alertLive2",
+          "component": "Alert",
+          "title": "14:38:05 • CRITICAL • East Region",
+          "description": "Riverside Coal U2 trip - 320 MW lost. Frequency dip to 49.88 Hz, recovered.",
+          "variant": "destructive"
+        },
+        {
+          "id": "alertLive3",
+          "component": "Alert",
+          "title": "14:35:11 • INFO • System",
+          "description": "Demand forecast revised +120 MW for 18:00 peak due to temperature rise.",
+          "variant": "info"
+        },
+        {
+          "id": "alertsFooter",
+          "component": "TextContent",
+          "text": "● Live feed connected • 3 unacknowledged • Use region focus (10) to filter alerts and data above.",
+          "size": "small"
+        }
+      ]
+    }
+  }
+]</a2ui-json>

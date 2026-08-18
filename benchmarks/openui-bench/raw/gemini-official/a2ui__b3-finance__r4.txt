@@ -1,0 +1,462 @@
+Here is a complete month-end finance view dashboard tailored for a startup, covering all requested metrics, expense categorization, large transaction auditing, month selection, and statement download capabilities.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "startup-finance-dashboard",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": {
+        "primaryColor": "#0F172A",
+        "agentDisplayName": "Finance Ops"
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "startup-finance-dashboard",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "l",
+          "children": [
+            "header-card",
+            "kpi-summary-card",
+            "breakdown-and-transactions-tabs",
+            "action-footer"
+          ]
+        },
+        {
+          "id": "header-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "row",
+          "align": "center",
+          "justify": "between",
+          "gap": "m",
+          "children": [
+            "header-titles",
+            "month-select-control"
+          ]
+        },
+        {
+          "id": "header-titles",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "column",
+          "gap": "xs",
+          "children": [
+            "heading-title",
+            "header-subtitle"
+          ]
+        },
+        {
+          "id": "heading-title",
+          "component": "Heading",
+          "level": "h2",
+          "text": "Month-End Financial Overview"
+        },
+        {
+          "id": "header-subtitle",
+          "component": "TextContent",
+          "size": "small",
+          "text": "Acme Tech Inc. • Financial Summary & Runway Intelligence"
+        },
+        {
+          "id": "month-select-control",
+          "component": "Select",
+          "name": "selectedMonth",
+          "value": "2023-10",
+          "placeholder": "Select Month",
+          "size": "medium",
+          "items": [
+            "month-opt-1",
+            "month-opt-2",
+            "month-opt-3",
+            "month-opt-4"
+          ]
+        },
+        {
+          "id": "month-opt-1",
+          "component": "SelectItem",
+          "value": "2023-10",
+          "label": "October 2023 (Latest)"
+        },
+        {
+          "id": "month-opt-2",
+          "component": "SelectItem",
+          "value": "2023-09",
+          "label": "September 2023"
+        },
+        {
+          "id": "month-opt-3",
+          "component": "SelectItem",
+          "value": "2023-08",
+          "label": "August 2023"
+        },
+        {
+          "id": "month-opt-4",
+          "component": "SelectItem",
+          "value": "2023-07",
+          "label": "July 2023"
+        },
+        {
+          "id": "kpi-summary-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "row",
+          "gap": "m",
+          "wrap": true,
+          "children": [
+            "kpi-cash",
+            "kpi-burn",
+            "kpi-runway"
+          ]
+        },
+        {
+          "id": "kpi-cash",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": [
+            "kpi-cash-label",
+            "kpi-cash-val",
+            "kpi-cash-badge"
+          ]
+        },
+        {
+          "id": "kpi-cash-label",
+          "component": "TextContent",
+          "size": "small-heavy",
+          "text": "1. CASH ON HAND"
+        },
+        {
+          "id": "kpi-cash-val",
+          "component": "Heading",
+          "level": "h3",
+          "text": "$3,450,000"
+        },
+        {
+          "id": "kpi-cash-badge",
+          "component": "Tag",
+          "text": "Verified • SVB & Mercury",
+          "variant": "success",
+          "size": "sm"
+        },
+        {
+          "id": "kpi-burn",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": [
+            "kpi-burn-label",
+            "kpi-burn-val",
+            "kpi-burn-badge"
+          ]
+        },
+        {
+          "id": "kpi-burn-label",
+          "component": "TextContent",
+          "size": "small-heavy",
+          "text": "2. MONTHLY BURN"
+        },
+        {
+          "id": "kpi-burn-val",
+          "component": "Heading",
+          "level": "h3",
+          "text": "$185,000"
+        },
+        {
+          "id": "kpi-burn-badge",
+          "component": "Tag",
+          "text": "-4.2% vs last month",
+          "variant": "info",
+          "size": "sm"
+        },
+        {
+          "id": "kpi-runway",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": [
+            "kpi-runway-label",
+            "kpi-runway-val",
+            "kpi-runway-badge"
+          ]
+        },
+        {
+          "id": "kpi-runway-label",
+          "component": "TextContent",
+          "size": "small-heavy",
+          "text": "3. MONTHS OF RUNWAY"
+        },
+        {
+          "id": "kpi-runway-val",
+          "component": "Heading",
+          "level": "h3",
+          "text": "18.6 Months"
+        },
+        {
+          "id": "kpi-runway-badge",
+          "component": "Tag",
+          "text": "Target Range (>12m)",
+          "variant": "success",
+          "size": "sm"
+        },
+        {
+          "id": "breakdown-and-transactions-tabs",
+          "component": "Tabs",
+          "items": [
+            "tab-expenses",
+            "tab-transactions"
+          ]
+        },
+        {
+          "id": "tab-expenses",
+          "component": "TabItem",
+          "value": "expenses",
+          "trigger": "4. Expense Categories",
+          "content": [
+            "expenses-card"
+          ]
+        },
+        {
+          "id": "expenses-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "expenses-header",
+            "expenses-chart",
+            "expenses-table"
+          ]
+        },
+        {
+          "id": "expenses-header",
+          "component": "CardHeader",
+          "title": "Expense Breakdown by Category",
+          "subtitle": "Total Operating Expenses: $185,000 for October 2023"
+        },
+        {
+          "id": "expenses-chart",
+          "component": "HorizontalBarChart",
+          "variant": "grouped",
+          "xLabel": "Amount ($)",
+          "yLabel": "Category",
+          "labels": [
+            "Payroll & Benefits",
+            "Cloud Infrastructure",
+            "Marketing & Growth",
+            "Software & SaaS",
+            "Office & Operations"
+          ],
+          "series": [
+            "exp-series-current"
+          ]
+        },
+        {
+          "id": "exp-series-current",
+          "component": "Series",
+          "category": "October Spend",
+          "values": [
+            115000,
+            28000,
+            18500,
+            14000,
+            9500
+          ]
+        },
+        {
+          "id": "expenses-table",
+          "component": "Table",
+          "columns": [
+            "col-exp-cat",
+            "col-exp-amt",
+            "col-exp-pct"
+          ]
+        },
+        {
+          "id": "col-exp-cat",
+          "component": "Col",
+          "label": "Category",
+          "type": "string",
+          "data": [
+            "Payroll & Benefits",
+            "Cloud Infrastructure",
+            "Marketing & Growth",
+            "Software & SaaS",
+            "Office & Operations"
+          ]
+        },
+        {
+          "id": "col-exp-amt",
+          "component": "Col",
+          "label": "Amount ($)",
+          "type": "number",
+          "data": [
+            115000,
+            28000,
+            18500,
+            14000,
+            9500
+          ]
+        },
+        {
+          "id": "col-exp-pct",
+          "component": "Col",
+          "label": "% of Total",
+          "type": "string",
+          "data": [
+            "62.2%",
+            "15.1%",
+            "10.0%",
+            "7.6%",
+            "5.1%"
+          ]
+        },
+        {
+          "id": "tab-transactions",
+          "component": "TabItem",
+          "value": "large-transactions",
+          "trigger": "5. Transactions > $10,000",
+          "content": [
+            "transactions-card"
+          ]
+        },
+        {
+          "id": "transactions-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": [
+            "tx-header",
+            "tx-alert",
+            "tx-table"
+          ]
+        },
+        {
+          "id": "tx-header",
+          "component": "CardHeader",
+          "title": "Large Transactions Audit",
+          "subtitle": "All disbursements and transfers exceeding $10,000 threshold"
+        },
+        {
+          "id": "tx-alert",
+          "component": "Alert",
+          "variant": "info",
+          "title": "3 Transactions Flagged",
+          "description": "These transactions account for $142,500 (77.0%) of total monthly spend."
+        },
+        {
+          "id": "tx-table",
+          "component": "Table",
+          "columns": [
+            "col-tx-date",
+            "col-tx-desc",
+            "col-tx-cat",
+            "col-tx-amt"
+          ]
+        },
+        {
+          "id": "col-tx-date",
+          "component": "Col",
+          "label": "Date",
+          "type": "string",
+          "data": [
+            "Oct 01, 2023",
+            "Oct 12, 2023",
+            "Oct 15, 2023"
+          ]
+        },
+        {
+          "id": "col-tx-desc",
+          "component": "Col",
+          "label": "Vendor / Description",
+          "type": "string",
+          "data": [
+            "Gusto Payroll Run (Semi-Monthly)",
+            "Amazon Web Services (Cloud Infra)",
+            "Gusto Payroll Run (Semi-Monthly)"
+          ]
+        },
+        {
+          "id": "col-tx-cat",
+          "component": "Col",
+          "label": "Category",
+          "type": "string",
+          "data": [
+            "Payroll & Benefits",
+            "Cloud Infrastructure",
+            "Payroll & Benefits"
+          ]
+        },
+        {
+          "id": "col-tx-amt",
+          "component": "Col",
+          "label": "Amount ($)",
+          "type": "number",
+          "data": [
+            57500,
+            27500,
+            57500
+          ]
+        },
+        {
+          "id": "action-footer",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "row",
+          "align": "center",
+          "justify": "between",
+          "children": [
+            "footer-text",
+            "download-buttons"
+          ]
+        },
+        {
+          "id": "footer-text",
+          "component": "TextContent",
+          "size": "small",
+          "text": "7. Export official month-end statement and raw reconciliation reports."
+        },
+        {
+          "id": "download-buttons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": [
+            "btn-download-pdf",
+            "btn-download-csv"
+          ]
+        },
+        {
+          "id": "btn-download-pdf",
+          "component": "Button",
+          "label": "Download Statement (PDF)",
+          "variant": "primary",
+          "size": "medium"
+        },
+        {
+          "id": "btn-download-csv",
+          "component": "Button",
+          "label": "Export CSV Data",
+          "variant": "secondary",
+          "size": "medium"
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>

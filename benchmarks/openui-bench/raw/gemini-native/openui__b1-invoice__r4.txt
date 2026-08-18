@@ -1,0 +1,44 @@
+root = Card([header, statusBanner, overviewCard, itemsTable, paymentSection, downloadDrawer, followUps])
+
+header = CardHeader("Invoice #INV-2024-008", "Issued on October 12, 2024 by Sarah Jenkins (UX/UI Designer)")
+
+statusBanner = Alert("Payment Pending", "This invoice is due in 5 days. Please review details below.", "warning")
+
+overviewCard = Card([dueBadge, totalAmountText, dueDateText], "sunk", "column", "s")
+dueBadge = Badge("Amount Due", "outline")
+totalAmountText = TextContent("## $4,850.00 USD", "large")
+dueDateText = TextContent("**Due Date:** October 27, 2024", "default")
+
+itemsTable = Table([colDesc, colHours, colRate, colTotal])
+colDesc = Col("Description", ["E-commerce Mobile App Redesign - Phase 2", "Design System Documentation & Component Library", "User Testing & Usability Report"])
+colHours = Col("Hours / Qty", [40, 15, 10], "number")
+colRate = Col("Rate", ["$80.00/hr", "$80.00/hr", "$85.00/hr"], "string")
+colTotal = Col("Line Total", ["$3,200.00", "$1,200.00", "$850.00"], "string")
+
+paymentSection = Card([paymentTitle, paymentForm], "card", "column", "m")
+paymentTitle = Heading("Pay Invoice Now", "h3")
+paymentForm = Form("pay-invoice", payButtons, [methodField, cardNameField, cardNumberField])
+
+methodField = FormControl("Payment Method", methodSelect)
+methodSelect = Select("payment_method", [optCredit, optBank, optPaypal], "Select payment method")
+optCredit = SelectItem("card", "Credit / Debit Card (Instant)")
+optBank = SelectItem("ach", "ACH Bank Transfer (1-3 Business Days)")
+optPaypal = SelectItem("paypal", "PayPal")
+
+cardNameField = FormControl("Name on Card", cardNameInput)
+cardNameInput = Input("card_name", "e.g. Alex Morgan")
+
+cardNumberField = FormControl("Card Number", cardNumberInput)
+cardNumberInput = Input("card_number", "•••• •••• •••• 4242")
+
+payButtons = Buttons([submitPayBtn, clearBtn])
+submitPayBtn = Button("Pay $4,850.00 USD Now", null, "primary")
+clearBtn = Button("Cancel", null, "tertiary")
+
+downloadDrawer = DrawerBlock("View Full Breakdown & Terms", "Invoice Terms & Payment History", "Standard 15-day payment terms apply.", termsContent)
+termsContent = TextContent("Late payments are subject to a 1.5% monthly interest fee. For queries regarding this invoice, contact sarah@jenkinsdesign.com.", "small")
+
+followUps = FollowUpBlock([askReceipt, askItemized, askExtension])
+askReceipt = FollowUpItem("Send payment receipt to accounting")
+askItemized = FollowUpItem("Request detailed time log")
+askExtension = FollowUpItem("Request payment extension")

@@ -1,0 +1,37 @@
+root = Card([header, nextPatient, expectedRow, appointments, roomsSection, checkInForm, dayNav])
+
+header = CardHeader("Front Desk — Today", "Tuesday, June 10")
+
+nextPatient = Alert("Next up: Maria Alvarez", "Room 3 · 10:30 AM · Dr. Patel", "info")
+
+expectedRow = Card([expectedProg, noShowProg], "clear", "row", "l")
+expectedProg = Progress(68, "Expected patients: 24 checked-in of 35")
+noShowProg = Progress(9, "No-show rate this month: 9%")
+
+appointments = Table([apptTime, apptPatient, apptProvider, apptStatus])
+apptTime = Col("Time", ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30"])
+apptPatient = Col("Patient", ["James Okafor", "Lena Ruiz", "Tom Becker", "Maria Alvarez", "Priya Shah", "Dan Wolfe"])
+apptProvider = Col("Provider", ["Dr. Kim", "Dr. Kim", "Dr. Patel", "Dr. Patel", "Dr. Nguyen", "Dr. Nguyen"])
+apptStatus = Col("Status", ["Checked in", "Checked in", "No-show", "Next", "Scheduled", "Scheduled"])
+
+roomsSection = Card([roomsHeading, roomTags], "sunk", "column", "s")
+roomsHeading = Heading("Rooms free right now", "h4")
+roomTags = TagBlock(["Room 1", "Room 2", "Room 5"])
+
+checkInForm = Form("check-in", checkInButtons, [patientField, apptField])
+patientField = FormControl("Patient name", patientInput)
+patientInput = Input("patient", "Search patient")
+apptField = FormControl("Appointment", apptSelect)
+apptSelect = Select("appt", [optOkafor, optRuiz, optBecker, optAlvarez], "Select appointment")
+optOkafor = SelectItem("okafor", "09:00 — James Okafor")
+optRuiz = SelectItem("ruiz", "09:30 — Lena Ruiz")
+optBecker = SelectItem("becker", "10:00 — Tom Becker")
+optAlvarez = SelectItem("alvarez", "10:30 — Maria Alvarez")
+checkInButtons = Buttons([checkInBtn, clearBtn])
+checkInBtn = Button("Check in patient", null, "primary")
+clearBtn = Button("Clear", null, "tertiary")
+
+dayNav = Buttons([prevDay, todayBtn, nextDay])
+prevDay = Button("← Previous day", null, "secondary")
+todayBtn = Button("Today", null, "tertiary")
+nextDay = Button("Next day →", null, "secondary")

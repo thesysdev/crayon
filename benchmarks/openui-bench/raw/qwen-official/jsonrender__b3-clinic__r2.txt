@@ -1,0 +1,56 @@
+
+
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["header-nav","metrics-row","next-patient","rooms-section","appointments-section"]}}
+{"op":"add","path":"/elements/header-nav","value":{"type":"Card","props":{"direction":"row","align":"center","justify":"between","variant":"sunk"},"children":["btn-prev-day","date-display","btn-next-day"]}}
+{"op":"add","path":"/elements/btn-prev-day","value":{"type":"Button","props":{"label":"← Prev Day","variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/currentDate","value":"2024-01-14"}}},"children":[]}}
+{"op":"add","path":"/elements/date-display","value":{"type":"TextContent","props":{"text":{"$template":"📅 ${/currentDate} — ${/dayLabel}"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/btn-next-day","value":{"type":"Button","props":{"label":"Next Day →","variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/currentDate","value":"2024-01-16"}}},"children":[]}}
+{"op":"add","path":"/state/currentDate","value":"2024-01-15"}
+{"op":"add","path":"/state/dayLabel","value":"Monday"}
+{"op":"add","path":"/elements/metrics-row","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"stretch"},"children":["metric-expected","metric-noshow"]}}
+{"op":"add","path":"/elements/metric-expected","value":{"type":"Card","props":{"direction":"column","align":"center","justify":"center","variant":"sunk"},"children":["metric-expected-value","metric-expected-label"]}}
+{"op":"add","path":"/elements/metric-expected-value","value":{"type":"TextContent","props":{"text":{"$template":"${/expectedCount}"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/metric-expected-label","value":{"type":"TextContent","props":{"text":"Patients Expected Today","size":"small"},"children":[]}}
+{"op":"add","path":"/state/expectedCount","value":12}
+{"op":"add","path":"/elements/metric-noshow","value":{"type":"Card","props":{"direction":"column","align":"center","justify":"center","variant":"sunk"},"children":["metric-noshow-value","metric-noshow-label"]}}
+{"op":"add","path":"/elements/metric-noshow-value","value":{"type":"TextContent","props":{"text":{"$template":"${/noShowRate}%"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/metric-noshow-label","value":{"type":"TextContent","props":{"text":"No-Show Rate (This Month)","size":"small"},"children":[]}}
+{"op":"add","path":"/state/noShowRate","value":8.3}
+{"op":"add","path":"/elements/next-patient","value":{"type":"Callout","props":{"variant":"info","title":"🔔 Next Patient Called","description":{"$template":"${/nextPatient/name} — ${/nextPatient/time} — Room ${/nextPatient/room}. Please proceed to the waiting area."}},"children":[]}}
+{"op":"add","path":"/state/nextPatient","value":{"name":"Maria Gonzalez","time":"10:30 AM","room":"B2"}}
+{"op":"add","path":"/elements/rooms-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["rooms-header","rooms-grid"]}}
+{"op":"add","path":"/elements/rooms-header","value":{"type":"CardHeader","props":{"title":"🚪 Room Availability","subtitle":"Live status — updated in real time"},"children":[]}}
+{"op":"add","path":"/elements/rooms-grid","value":{"type":"Card","props":{"direction":"row","gap":"s","wrap":true},"repeat":{"statePath":"/rooms","key":"id"},"children":["room-chip"]}}
+{"op":"add","path":"/elements/room-chip","value":{"type":"Tag","props":{"text":{"$template":"${name} — ${status}"},"variant":{"$cond":{"$state":"/rooms/$item/status","eq":"Free"},"$then":"success","$else":"danger"},"size":"md"},"children":[]}}
+{"op":"add","path":"/state/rooms","value":[]}
+{"op":"add","path":"/state/rooms/0","value":{"id":"r1","name":"Room A1","status":"Occupied"}}
+{"op":"add","path":"/state/rooms/1","value":{"id":"r2","name":"Room A2","status":"Free"}}
+{"op":"add","path":"/state/rooms/2","value":{"id":"r3","name":"Room B1","status":"Occupied"}}
+{"op":"add","path":"/state/rooms/3","value":{"id":"r4","name":"Room B2","status":"Free"}}
+{"op":"add","path":"/state/rooms/4","value":{"id":"r5","name":"Room C1","status":"Free"}}
+{"op":"add","path":"/state/rooms/5","value":{"id":"r6","name":"Room C2","status":"Cleaning"}}
+{"op":"add","path":"/elements/appointments-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["appt-header","appt-list"]}}
+{"op":"add","path":"/elements/appt-header","value":{"type":"CardHeader","props":{"title":"📋 Today's Appointments","subtitle":"Tap ✓ to check in a patient"},"children":[]}}
+{"op":"add","path":"/elements/appt-list","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"repeat":{"statePath":"/appointments","key":"id"},"children":["appt-row"]}}
+{"op":"add","path":"/elements/appt-row","value":{"type":"Card","props":{"direction":"row","align":"center","justify":"between","variant":"sunk"},"children":["appt-info","appt-status-area"]}}
+{"op":"add","path":"/elements/appt-info","value":{"type":"Card","props":{"direction":"row","align":"center","gap":"m","variant":"clear"},"children":["appt-time","appt-name","appt-room-tag"]}}
+{"op":"add","path":"/elements/appt-time","value":{"type":"TextContent","props":{"text":{"$item":"time"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/appt-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/appt-room-tag","value":{"type":"Badge","props":{"text":{"$template":"Room ${room}"},"variant":"outline"},"children":[]}}
+{"op":"add","path":"/elements/appt-status-area","value":{"type":"Card","props":{"direction":"row","align":"center","gap":"s","variant":"clear"},"children":["btn-checkin","status-badge"]}}
+{"op":"add","path":"/elements/btn-checkin","value":{"type":"Button","props":{"label":"✓ Check In","variant":"primary","size":"extra-small"},"visible":{"$item":"status","eq":"waiting"},"on":{"press":{"action":"setState","params":{"statePath":{"$template":"/appointments/${$index}/status"},"value":"checked-in"}}},"children":[]}}
+{"op":"add","path":"/elements/status-badge","value":{"type":"Badge","props":{"text":{"$item":"status"},"variant":{"$cond":{"$item":"status","eq":"checked-in"},"$then":"success","$else":"secondary"}},"visible":{"$item":"status","neq":"waiting"},"children":[]}}
+{"op":"add","path":"/state/appointments","value":[]}
+{"op":"add","path":"/state/appointments/0","value":{"id":"a1","time":"8:00 AM","name":"James Whitfield","room":"A1","status":"checked-in"}}
+{"op":"add","path":"/state/appointments/1","value":{"id":"a2","time":"8:30 AM","name":"Sarah Chen","room":"A2","status":"checked-in"}}
+{"op":"add","path":"/state/appointments/2","value":{"id":"a3","time":"9:00 AM","name":"Robert Williams","room":"B1","status":"checked-in"}}
+{"op":"add","path":"/state/appointments/3","value":{"id":"a4","time":"9:30 AM","name":"Emily Dawson","room":"A1","status":"waiting"}}
+{"op":"add","path":"/state/appointments/4","value":{"id":"a5","time":"10:00 AM","name":"Michael Torres","room":"C1","status":"waiting"}}
+{"op":"add","path":"/state/appointments/5","value":{"id":"a6","time":"10:30 AM","name":"Maria Gonzalez","room":"B2","status":"waiting"}}
+{"op":"add","path":"/state/appointments/6","value":{"id":"a7","time":"11:00 AM","name":"David Kim","room":"A2","status":"waiting"}}
+{"op":"add","path":"/state/appointments/7","value":{"id":"a8","time":"11:30 AM","name":"Lisa Thompson","room":"B1","status":"waiting"}}
+{"op":"add","path":"/state/appointments/8","value":{"id":"a9","time":"1:00 PM","name":"Ahmed Hassan","room":"C1","status":"waiting"}}
+{"op":"add","path":"/state/appointments/9","value":{"id":"a10","time":"1:30 PM","name":"Karen Mitchell","room":"A1","status":"waiting"}}
+{"op":"add","path":"/state/appointments/10","value":{"id":"a11","time":"2:00 PM","name":"Thomas Baker","room":"B2","status":"waiting"}}
+{"op":"add","path":"/state/appointments/11","value":{"id":"a12","time":"2:30 PM","name":"Nancy Rivera","room":"C2","status":"waiting"}}

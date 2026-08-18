@@ -1,0 +1,63 @@
+
+
+root = Card([header, tags, snapshot, stageProgress, renewalAlert, sep1, actHeading, activity, sep2, contactsHeading, contacts, sep3, fuHeading, followups, sep4, actionsHeading, actionsRow], "card", "column", "l")
+
+header = CardHeader("Northwind Logistics", "Account owner: Sarah Chen • Enterprise segment • since 2021")
+tags = TagBlock(["Logistics", "Enterprise", "Health: Green", "Expansion target"])
+
+snapshot = Table([metricCol, valueCol])
+metricCol = Col("Metric", ["Total deal value", "Current deal stage", "Win probability", "Last activity", "Renewal date"])
+valueCol = Col("Value", ["$468,500", "Negotiation (Stage 4 of 5)", "75%", "Today, 9:42 AM", "June 18, 2025"])
+
+stageProgress = Progress(80, "Deal stage: Negotiation — 4 of 5")
+
+renewalAlert = Callout("warning", "Renewal approaching", "Contract renews June 18, 2025 — about 3 weeks out. Start renewal paperwork and confirm expansion terms with Dan Whitfield.")
+
+sep1 = Separator()
+actHeading = Heading("Recent activity", "h3")
+activity = ListBlock([act1, act2, act3, act4, act5])
+act1 = ListItem("Proposal v2 sent to procurement", "Today, 9:42 AM — Sarah Chen")
+act2 = ListItem("Legal redlines received from Alison Reed", "Yesterday, 4:10 PM — Legal")
+act3 = ListItem("Pricing call with Maria Lopez (CFO)", "May 22 — 45 min, agreed on TCV range")
+act4 = ListItem("Security questionnaire completed", "May 20 — Solutions Engineering")
+act5 = ListItem("Stakeholder demo for operations team", "May 16 — Sarah Chen + SE")
+
+sep2 = Separator()
+contactsHeading = Heading("Contacts", "h3")
+contacts = Table([contactName, contactRole, contactEmail])
+contactName = Col("Name", ["Maria Lopez", "Dan Whitfield", "Priya Nair", "Tom Becker", "Alison Reed"])
+contactRole = Col("Role", ["CFO — Economic buyer", "VP Operations — Champion", "Procurement Lead", "IT Director — Technical evaluator", "Legal Counsel"])
+contactEmail = Col("Email", ["maria.lopez@northwind.io", "dan.whitfield@northwind.io", "priya.nair@northwind.io", "tom.becker@northwind.io", "alison.reed@northwind.io"])
+
+sep3 = Separator()
+fuHeading = Heading("Open follow-ups", "h3")
+followups = Table([fuTask, fuOwner, fuDue, fuPriority])
+fuTask = Col("Task", ["Send revised pricing to Maria Lopez", "Book legal redline walkthrough", "Prepare QBR deck for exec sponsor", "Confirm security sign-off from IT"])
+fuOwner = Col("Owner", ["Sarah Chen", "Sarah Chen", "Alex Rivera", "Solutions Engineering"])
+fuDue = Col("Due date", ["May 30", "Jun 2", "Jun 5", "Jun 6"])
+fuPriority = Col("Priority", ["High", "Medium", "Medium", "Low"])
+
+sep4 = Separator()
+actionsHeading = Heading("Notes & call log", "h3")
+actionsRow = Card([noteForm, callForm], "sunk", "row", "l", "stretch")
+
+noteForm = Form("quick-note", noteButtons, [noteField])
+noteField = FormControl("Jot a note", noteInput, "Saved to the account activity feed")
+noteInput = TextArea("note", "e.g. Maria flagged a Q3 budget freeze risk — keep expansion scoped to current fiscal year.", 4)
+noteButtons = Buttons([saveNoteBtn])
+saveNoteBtn = Button("Save note", null, "primary")
+
+callForm = Form("log-call", callButtons, [callDateField, outcomeField, callNotesField])
+callDateField = FormControl("Call date", callDateInput)
+callDateInput = DatePicker("call_date", "single")
+outcomeField = FormControl("Outcome", outcomeRadio)
+outcomeRadio = RadioGroup("call_outcome", [ocConnected, ocVoicemail, ocGatekeeper, ocMeetingSet], "connected")
+ocConnected = RadioItem("Connected", "Reached the right person live", "connected")
+ocVoicemail = RadioItem("Voicemail", "Left a message", "voicemail")
+ocGatekeeper = RadioItem("Gatekeeper", "Reached assistant / front desk", "gatekeeper")
+ocMeetingSet = RadioItem("Meeting set", "Booked a follow-up", "meeting_set")
+callNotesField = FormControl("Summary", callNotesInput)
+callNotesInput = TextArea("call_summary", "Key points, objections, next steps...", 3)
+callButtons = Buttons([logCallBtn, clearCallBtn])
+logCallBtn = Button("Log call", null, "primary")
+clearCallBtn = Button("Clear", null, "tertiary")

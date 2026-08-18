@@ -1,0 +1,38 @@
+Here's a single-screen async standup board covering all five requirements.
+
+<a2ui-json>
+{"version":"v0.9","createSurface":{"surfaceId":"standup","catalogId":"thesys.dev:c1-openui","theme":{"agentDisplayName":"Async Standup"}}}
+</a2ui-json>
+
+<a2ui-json>
+{"version":"v0.9","updateComponents":{"surfaceId":"standup","components":[
+{"id":"root","component":"Card","direction":"column","gap":"l","children":["header","dateTag","blockedCallout","missingCard","teamHeader","teamTable","postHeader","postForm"]},
+{"id":"header","component":"Heading","text":"Daily Async Standup — Engineering Team","level":"h1"},
+{"id":"dateTag","component":"Tag","text":"Today: Tuesday, June 10, 2025","icon":"calendar","size":"lg","variant":"info"},
+{"id":"blockedCallout","component":"Callout","variant":"error","title":"🚫 Blocked: Priya Sharma","description":"Waiting on API credentials from the DevOps team to deploy the payments service. Needs attention before EOD."},
+{"id":"missingCard","component":"Alert","title":"Missing Updates","description":"2 of 6 teammates haven't posted today's standup update yet: Sam Lee and Maria Gomez.","variant":"warning"},
+{"id":"teamHeader","component":"Heading","text":"Teammate Updates","level":"h3"},
+{"id":"teamTable","component":"Table","columns":["colName","colStatus","colBlocked"]},
+{"id":"colName","component":"Col","label":"Teammate","data":["Alex Chen","Priya Sharma","Jordan Rivera","Taylor Kim","Sam Lee","Maria Gomez"],"type":"string"},
+{"id":"colStatus","component":"Col","label":"Today's Update","data":["Finished auth refactor, starting unit tests.","Deploying payments service (see blocker).","Reviewing 3 PRs, then docs update.","Completed onboarding flow UI polish.","—","—"],"type":"string"},
+{"id":"colBlocked","component":"Col","label":"Blocked?","data":["No","Yes ⚠️","No","No","No update","No update"],"type":"string"},
+{"id":"postHeader","component":"Heading","text":"Post Your Update","level":"h3"},
+{"id":"postForm","component":"Form","name":"standupForm","fields":["fcName","fcUpdate","fcBlocked"],"buttons":"formButtons"},
+{"id":"fcName","component":"FormControl","label":"Your Name","input":"nameInput"},
+{"id":"nameInput","component":"Input","name":"name","placeholder":"e.g. Alex Chen","type":"text"},
+{"id":"fcUpdate","component":"FormControl","label":"Today's Status Update","input":"updateInput","hint":"What did you do, what's next, anything notable?"},
+{"id":"updateInput","component":"TextArea","name":"update","placeholder":"Yesterday I..., today I will...","rows":4},
+{"id":"fcBlocked","component":"FormControl","label":"Are you blocked?","input":"blockedGroup"},
+{"id":"blockedGroup","component":"CheckBoxGroup","name":"blocked","items":["blockedItem"]},
+{"id":"blockedItem","component":"CheckBoxItem","label":"Yes, I'm blocked","description":"Check this if something is preventing your progress","name":"isBlocked"},
+{"id":"formButtons","component":"Buttons","buttons":["submitBtn"],"direction":"row"},
+{"id":"submitBtn","component":"Button","label":"Post Update","variant":"primary","action":[]}
+]}}
+</a2ui-json>
+
+**How each requirement is covered:**
+1. **Teammate updates** — a table listing all 6 teammates with today's status text.
+2. **Blocked callout** — a red `Callout` flags Priya's blocker, plus a "Blocked?" column in the table.
+3. **Today's date** — shown in an info tag near the top.
+4. **Post your own update** — a form with name, status text, a "blocked?" checkbox, and a Post Update button.
+5. **Missing updates** — a warning alert counts 2 of 6 missing (Sam and Maria), also reflected as "—" in the table.

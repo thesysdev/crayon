@@ -1,0 +1,29 @@
+root = Card([header, monthPicker, kpis, expenses, largeTxns, actions])
+header = CardHeader("Finance Overview", "Month-end summary — March 2024")
+
+monthPicker = Form("month-select", monthButtons, [monthField])
+monthField = FormControl("View a different month", monthSelect)
+monthSelect = Select("month", [mJan, mFeb, mMar, mApr], "Select month", null, "2024-03")
+mJan = SelectItem("2024-01", "January 2024")
+mFeb = SelectItem("2024-02", "February 2024")
+mMar = SelectItem("2024-03", "March 2024")
+mApr = SelectItem("2024-04", "April 2024")
+monthButtons = Buttons([viewBtn])
+viewBtn = Button("View month", null, "primary")
+
+kpis = Table([kpiMetric, kpiValue])
+kpiMetric = Col("Metric", ["Cash on hand", "Monthly burn", "Months of runway"])
+kpiValue = Col("Value", ["$1,240,000", "$186,000", "6.7 months"])
+
+expenses = PieChart(expLabels, expValues, "donut")
+expLabels = ["Payroll", "Cloud & Infra", "Marketing", "Office & Ops", "Software"]
+expValues = [112000, 34000, 21000, 12000, 7000]
+
+largeTxns = Table([txnDate, txnVendor, txnCategory, txnAmount])
+txnDate = Col("Date", ["Mar 03", "Mar 12", "Mar 20", "Mar 28"])
+txnVendor = Col("Vendor", ["ADP Payroll", "AWS", "Series-A Legal", "Ad Agency Q1"])
+txnCategory = Col("Category", ["Payroll", "Cloud & Infra", "Legal", "Marketing"])
+txnAmount = Col("Amount", ["$98,400", "$31,200", "$18,500", "$14,750"], "number")
+
+actions = Buttons([downloadBtn])
+downloadBtn = Button("Download statement (PDF)", null, "secondary")

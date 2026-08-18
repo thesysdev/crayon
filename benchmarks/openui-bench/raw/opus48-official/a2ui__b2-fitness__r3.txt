@@ -1,0 +1,196 @@
+Here's your fitness daily summary screen covering all four items.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "fitness-summary",
+      "catalogId": "thesys.dev:c1-openui"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "fitness-summary",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "direction": "column",
+          "gap": "l",
+          "children": ["header", "steps-card", "calories-card", "week-card", "log-card"]
+        },
+        {
+          "id": "header",
+          "component": "CardHeader",
+          "title": "Daily Summary",
+          "subtitle": "Your activity at a glance"
+        },
+        {
+          "id": "steps-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "children": ["steps-heading", "steps-value", "steps-progress"]
+        },
+        {
+          "id": "steps-heading",
+          "component": "Heading",
+          "text": "Steps Today",
+          "level": "h3"
+        },
+        {
+          "id": "steps-value",
+          "component": "TextContent",
+          "text": "**7,842** / 10,000 steps",
+          "size": "large"
+        },
+        {
+          "id": "steps-progress",
+          "component": "Progress",
+          "value": 78,
+          "label": "78% of daily goal"
+        },
+        {
+          "id": "calories-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "children": ["cal-heading", "cal-value", "cal-tags"]
+        },
+        {
+          "id": "cal-heading",
+          "component": "Heading",
+          "text": "Calories Burned",
+          "level": "h3"
+        },
+        {
+          "id": "cal-value",
+          "component": "TextContent",
+          "text": "**486 kcal** burned today",
+          "size": "large-heavy"
+        },
+        {
+          "id": "cal-tags",
+          "component": "TagBlock",
+          "tags": ["Active: 320 kcal", "Resting: 166 kcal"]
+        },
+        {
+          "id": "week-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "children": ["week-heading", "week-chart"]
+        },
+        {
+          "id": "week-heading",
+          "component": "Heading",
+          "text": "This Week's Workouts",
+          "level": "h3"
+        },
+        {
+          "id": "week-chart",
+          "component": "BarChart",
+          "labels": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+          "series": ["week-series"],
+          "xLabel": "Day",
+          "yLabel": "Minutes"
+        },
+        {
+          "id": "week-series",
+          "component": "Series",
+          "category": "Workout Minutes",
+          "values": [45, 30, 0, 60, 25, 90, 50]
+        },
+        {
+          "id": "log-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "children": ["log-form"]
+        },
+        {
+          "id": "log-form",
+          "component": "Form",
+          "name": "logWorkout",
+          "fields": ["fc-type", "fc-duration", "fc-intensity"],
+          "buttons": "log-buttons"
+        },
+        {
+          "id": "fc-type",
+          "component": "FormControl",
+          "label": "Workout Type",
+          "input": "input-type"
+        },
+        {
+          "id": "input-type",
+          "component": "Select",
+          "name": "workoutType",
+          "placeholder": "Choose an activity",
+          "items": ["opt-run", "opt-cycle", "opt-strength", "opt-yoga", "opt-swim"]
+        },
+        { "id": "opt-run", "component": "SelectItem", "value": "running", "label": "Running" },
+        { "id": "opt-cycle", "component": "SelectItem", "value": "cycling", "label": "Cycling" },
+        { "id": "opt-strength", "component": "SelectItem", "value": "strength", "label": "Strength Training" },
+        { "id": "opt-yoga", "component": "SelectItem", "value": "yoga", "label": "Yoga" },
+        { "id": "opt-swim", "component": "SelectItem", "value": "swimming", "label": "Swimming" },
+        {
+          "id": "fc-duration",
+          "component": "FormControl",
+          "label": "Duration (minutes)",
+          "input": "input-duration",
+          "hint": "Enter total workout time"
+        },
+        {
+          "id": "input-duration",
+          "component": "Input",
+          "name": "duration",
+          "type": "number",
+          "placeholder": "e.g. 45"
+        },
+        {
+          "id": "fc-intensity",
+          "component": "FormControl",
+          "label": "Intensity",
+          "input": "input-intensity"
+        },
+        {
+          "id": "input-intensity",
+          "component": "Slider",
+          "name": "intensity",
+          "variant": "discrete",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "defaultValue": [3],
+          "label": "1 = Easy, 5 = Max effort"
+        },
+        {
+          "id": "log-buttons",
+          "component": "Buttons",
+          "buttons": ["btn-log"]
+        },
+        {
+          "id": "btn-log",
+          "component": "Button",
+          "label": "Log Workout",
+          "variant": "primary",
+          "action": ["submitWorkout"]
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+This screen delivers all four requirements:
+
+1. **Steps today vs. goal** — the "Steps Today" card shows 7,842 / 10,000 with a progress bar at 78%.
+2. **Calories burned** — a dedicated card highlighting 486 kcal with an active/resting breakdown.
+3. **Weekly workouts** — a bar chart plotting workout minutes across the past 7 days.
+4. **Log a new workout** — a form with activity type, duration, intensity, and a submit button.

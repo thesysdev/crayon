@@ -1,0 +1,299 @@
+Here's a service health view covering all eight requirements.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "service-health",
+      "catalogId": "thesys.dev:c1-openui"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "service-health",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "direction": "column",
+          "gap": "l",
+          "children": [
+            "header",
+            "region-filter-control",
+            "top-metrics-row",
+            "resource-usage-card",
+            "incidents-card",
+            "slowest-endpoints-card",
+            "alert-threshold-card"
+          ]
+        },
+        {
+          "id": "header",
+          "component": "CardHeader",
+          "title": "Service Health — On-Call View",
+          "subtitle": "Live overview of reliability, load, and active incidents"
+        },
+
+        {
+          "id": "region-filter-control",
+          "component": "FormControl",
+          "label": "Region",
+          "hint": "Narrow all metrics to a single region",
+          "input": "region-select"
+        },
+        {
+          "id": "region-select",
+          "component": "Select",
+          "name": "region",
+          "placeholder": "All regions",
+          "value": "us-east-1",
+          "items": ["region-all", "region-use1", "region-usw2", "region-euw1", "region-apse1"]
+        },
+        { "id": "region-all", "component": "SelectItem", "value": "all", "label": "All regions" },
+        { "id": "region-use1", "component": "SelectItem", "value": "us-east-1", "label": "US East (us-east-1)" },
+        { "id": "region-usw2", "component": "SelectItem", "value": "us-west-2", "label": "US West (us-west-2)" },
+        { "id": "region-euw1", "component": "SelectItem", "value": "eu-west-1", "label": "EU West (eu-west-1)" },
+        { "id": "region-apse1", "component": "SelectItem", "value": "ap-southeast-1", "label": "Asia Pacific (ap-southeast-1)" },
+
+        {
+          "id": "top-metrics-row",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "wrap": true,
+          "children": ["uptime-card", "error-rate-card"]
+        },
+
+        {
+          "id": "uptime-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "weight": 1,
+          "children": ["uptime-label", "uptime-value", "uptime-progress"]
+        },
+        { "id": "uptime-label", "component": "TextContent", "text": "Uptime — This Quarter", "size": "small-heavy" },
+        { "id": "uptime-value", "component": "Heading", "text": "99.982%", "level": "h2" },
+        { "id": "uptime-progress", "component": "Progress", "value": 99.982, "label": "SLA target: 99.95%" },
+
+        {
+          "id": "error-rate-card",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "weight": 1,
+          "children": ["error-rate-label", "error-rate-value", "error-rate-badge"]
+        },
+        { "id": "error-rate-label", "component": "TextContent", "text": "Error Rate — Now", "size": "small-heavy" },
+        { "id": "error-rate-value", "component": "Heading", "text": "0.47%", "level": "h2" },
+        { "id": "error-rate-badge", "component": "Badge", "text": "Elevated — last 5 min", "variant": "destructive" },
+
+        {
+          "id": "resource-usage-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": ["resource-usage-header", "resource-usage-chart"]
+        },
+        {
+          "id": "resource-usage-header",
+          "component": "CardHeader",
+          "title": "CPU & Memory — Past 24 Hours",
+          "subtitle": "Percentage utilization sampled hourly"
+        },
+        {
+          "id": "resource-usage-chart",
+          "component": "LineChart",
+          "variant": "natural",
+          "xLabel": "Hours ago",
+          "yLabel": "% utilization",
+          "labels": ["-24h", "-21h", "-18h", "-15h", "-12h", "-9h", "-6h", "-3h", "now"],
+          "series": ["cpu-series", "mem-series"]
+        },
+        {
+          "id": "cpu-series",
+          "component": "Series",
+          "category": "CPU %",
+          "values": [42, 48, 55, 61, 58, 67, 72, 81, 76]
+        },
+        {
+          "id": "mem-series",
+          "component": "Series",
+          "category": "Memory %",
+          "values": [63, 64, 66, 68, 67, 70, 73, 78, 80]
+        },
+
+        {
+          "id": "incidents-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": ["incidents-header", "incidents-table", "ack-control"]
+        },
+        {
+          "id": "incidents-header",
+          "component": "CardHeader",
+          "title": "Open Incidents",
+          "subtitle": "Active incidents with assigned severity"
+        },
+        {
+          "id": "incidents-table",
+          "component": "Table",
+          "columns": ["inc-id-col", "inc-title-col", "inc-sev-col", "inc-age-col"]
+        },
+        {
+          "id": "inc-id-col",
+          "component": "Col",
+          "label": "ID",
+          "type": "string",
+          "data": ["INC-2041", "INC-2039", "INC-2033"]
+        },
+        {
+          "id": "inc-title-col",
+          "component": "Col",
+          "label": "Summary",
+          "type": "string",
+          "data": ["Checkout API 5xx spike", "Cache node flapping", "Elevated p99 on search"]
+        },
+        {
+          "id": "inc-sev-col",
+          "component": "Col",
+          "label": "Severity",
+          "type": "string",
+          "data": ["SEV-1", "SEV-2", "SEV-3"]
+        },
+        {
+          "id": "inc-age-col",
+          "component": "Col",
+          "label": "Age",
+          "type": "string",
+          "data": ["18m", "1h 5m", "3h 22m"]
+        },
+        {
+          "id": "ack-control",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "row",
+          "gap": "m",
+          "align": "end",
+          "wrap": true,
+          "children": ["ack-select", "ack-button"]
+        },
+        {
+          "id": "ack-select",
+          "component": "Select",
+          "name": "ackIncident",
+          "placeholder": "Select an incident to acknowledge",
+          "weight": 1,
+          "items": ["ack-item-1", "ack-item-2", "ack-item-3"]
+        },
+        { "id": "ack-item-1", "component": "SelectItem", "value": "INC-2041", "label": "INC-2041 — Checkout API 5xx spike (SEV-1)" },
+        { "id": "ack-item-2", "component": "SelectItem", "value": "INC-2039", "label": "INC-2039 — Cache node flapping (SEV-2)" },
+        { "id": "ack-item-3", "component": "SelectItem", "value": "INC-2033", "label": "INC-2033 — Elevated p99 on search (SEV-3)" },
+        {
+          "id": "ack-button",
+          "component": "Button",
+          "label": "Acknowledge Incident",
+          "variant": "primary",
+          "size": "medium",
+          "action": ["acknowledgeIncident"]
+        },
+
+        {
+          "id": "slowest-endpoints-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": ["slowest-header", "slowest-chart"]
+        },
+        {
+          "id": "slowest-header",
+          "component": "CardHeader",
+          "title": "5 Slowest Endpoints",
+          "subtitle": "p95 latency in milliseconds"
+        },
+        {
+          "id": "slowest-chart",
+          "component": "HorizontalBarChart",
+          "xLabel": "p95 latency (ms)",
+          "yLabel": "Endpoint",
+          "labels": [
+            "POST /checkout",
+            "GET /search",
+            "GET /recommendations",
+            "POST /orders",
+            "GET /user/profile"
+          ],
+          "series": ["latency-series"]
+        },
+        {
+          "id": "latency-series",
+          "component": "Series",
+          "category": "p95 latency (ms)",
+          "values": [1840, 1220, 960, 740, 520]
+        },
+
+        {
+          "id": "alert-threshold-card",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "m",
+          "children": ["alert-header", "alert-threshold-slider", "alert-buttons"]
+        },
+        {
+          "id": "alert-header",
+          "component": "CardHeader",
+          "title": "Alert Threshold",
+          "subtitle": "Trigger a page when error rate exceeds this value"
+        },
+        {
+          "id": "alert-threshold-slider",
+          "component": "Slider",
+          "name": "errorRateThreshold",
+          "variant": "discrete",
+          "label": "Error rate threshold (%)",
+          "min": 0,
+          "max": 5,
+          "step": 0.1,
+          "defaultValue": [1.0],
+          "value": [1.0]
+        },
+        {
+          "id": "alert-buttons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": ["alert-save-button"]
+        },
+        {
+          "id": "alert-save-button",
+          "component": "Button",
+          "label": "Save Threshold",
+          "variant": "secondary",
+          "size": "medium",
+          "action": ["saveAlertThreshold"]
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+Everything requested is covered on one screen:
+
+1. **Uptime this quarter** — headline stat card with progress bar against the SLA target.
+2. **CPU & memory over 24h** — dual-line chart sampled hourly.
+3. **Error rate now** — live stat with an "Elevated" badge.
+4. **Open incidents with severity** — table listing each incident and its SEV level.
+5. **Narrow to one region** — region selector at the top affecting the view.
+6. **Five slowest endpoints with latency** — horizontal bar chart of p95 latency.
+7. **Set an alert threshold** — discrete slider plus a save action.
+8. **Acknowledge an incident** — incident picker with an Acknowledge button.

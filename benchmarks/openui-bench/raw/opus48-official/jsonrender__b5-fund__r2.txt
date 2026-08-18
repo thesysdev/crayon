@@ -1,0 +1,118 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","kpis","controls","cols"]}}
+{"op":"add","path":"/elements/header","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center"},"children":["title","tf"]}}
+{"op":"add","path":"/elements/title","value":{"type":"Heading","props":{"text":"Morning Workspace","level":"h1"},"children":[]}}
+{"op":"add","path":"/elements/tf","value":{"type":"Select","props":{"name":"timeframe","items":["tf1","tf2","tf3","tf4"],"value":{"$bindState":"/timeframe"},"size":"small"},"children":["tf1","tf2","tf3","tf4"]}}
+{"op":"add","path":"/elements/tf1","value":{"type":"SelectItem","props":{"value":"1D","label":"1 Day"},"children":[]}}
+{"op":"add","path":"/elements/tf2","value":{"type":"SelectItem","props":{"value":"1W","label":"1 Week"},"children":[]}}
+{"op":"add","path":"/elements/tf3","value":{"type":"SelectItem","props":{"value":"1M","label":"1 Month"},"children":[]}}
+{"op":"add","path":"/elements/tf4","value":{"type":"SelectItem","props":{"value":"YTD","label":"Year to Date"},"children":[]}}
+{"op":"add","path":"/state/timeframe","value":"1D"}
+{"op":"add","path":"/elements/kpis","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"children":["kpi-pv","kpi-pnl","kpi-var","kpi-margin"]}}
+{"op":"add","path":"/elements/kpi-pv","value":{"type":"Card","props":{"variant":"sunk","direction":"column"},"children":["kpi-pv-l","kpi-pv-v"]}}
+{"op":"add","path":"/elements/kpi-pv-l","value":{"type":"TextContent","props":{"text":"Portfolio Value","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/kpi-pv-v","value":{"type":"Heading","props":{"text":{"$template":"$${/portfolioValue}"},"level":"h2"},"children":[]}}
+{"op":"add","path":"/state/portfolioValue","value":"24,850,120"}
+{"op":"add","path":"/elements/kpi-pnl","value":{"type":"Card","props":{"variant":"sunk","direction":"column"},"children":["kpi-pnl-l","kpi-pnl-v"]}}
+{"op":"add","path":"/elements/kpi-pnl-l","value":{"type":"TextContent","props":{"text":"P&L Today","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/kpi-pnl-v","value":{"type":"Heading","props":{"text":{"$template":"+$${/pnlToday} (+${/pnlPct}%)"},"level":"h2"},"children":[]}}
+{"op":"add","path":"/state/pnlToday","value":"128,430"}
+{"op":"add","path":"/state/pnlPct","value":"0.52"}
+{"op":"add","path":"/elements/kpi-var","value":{"type":"Card","props":{"variant":"sunk","direction":"column"},"children":["kpi-var-l","kpi-var-v"]}}
+{"op":"add","path":"/elements/kpi-var-l","value":{"type":"TextContent","props":{"text":"Value at Risk (95%, 1D)","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/kpi-var-v","value":{"type":"Heading","props":{"text":{"$template":"$${/var}"},"level":"h2"},"children":[]}}
+{"op":"add","path":"/state/var","value":"412,000"}
+{"op":"add","path":"/elements/kpi-margin","value":{"type":"Card","props":{"variant":"sunk","direction":"column"},"children":["kpi-margin-l","kpi-margin-v","kpi-margin-p"]}}
+{"op":"add","path":"/elements/kpi-margin-l","value":{"type":"TextContent","props":{"text":"Margin In Use","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/kpi-margin-v","value":{"type":"Heading","props":{"text":{"$template":"$${/marginUsed}"},"level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/kpi-margin-p","value":{"type":"Progress","props":{"value":64,"label":"64% of available"},"children":[]}}
+{"op":"add","path":"/state/marginUsed","value":"8,420,000"}
+{"op":"add","path":"/elements/controls","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"children":["order-dialog","rebalance-dialog"]}}
+{"op":"add","path":"/elements/order-dialog","value":{"type":"DialogBlock","props":{"triggerLabel":"Place Order","title":"New Order","description":"Enter order details","content":["order-form"],"triggerVariant":"default"},"children":["order-form"]}}
+{"op":"add","path":"/elements/order-form","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["fc-ticker","fc-side","fc-qty","order-submit"]}}
+{"op":"add","path":"/elements/fc-ticker","value":{"type":"FormControl","props":{"label":"Ticker","input":"in-ticker"},"children":["in-ticker"]}}
+{"op":"add","path":"/elements/in-ticker","value":{"type":"Input","props":{"name":"ticker","placeholder":"AAPL","value":{"$bindState":"/orderForm/ticker"}},"children":[]}}
+{"op":"add","path":"/elements/fc-side","value":{"type":"FormControl","props":{"label":"Side","input":"in-side"},"children":["in-side"]}}
+{"op":"add","path":"/elements/in-side","value":{"type":"Select","props":{"name":"side","items":["side-b","side-s"],"value":{"$bindState":"/orderForm/side"}},"children":["side-b","side-s"]}}
+{"op":"add","path":"/elements/side-b","value":{"type":"SelectItem","props":{"value":"BUY","label":"Buy"},"children":[]}}
+{"op":"add","path":"/elements/side-s","value":{"type":"SelectItem","props":{"value":"SELL","label":"Sell"},"children":[]}}
+{"op":"add","path":"/elements/fc-qty","value":{"type":"FormControl","props":{"label":"Quantity","input":"in-qty"},"children":["in-qty"]}}
+{"op":"add","path":"/elements/in-qty","value":{"type":"Input","props":{"name":"qty","type":"number","placeholder":"100","value":{"$bindState":"/orderForm/qty"}},"children":[]}}
+{"op":"add","path":"/elements/order-submit","value":{"type":"Button","props":{"label":"Submit Order","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/workingOrders","value":{"id":"$id","ticker":{"$state":"/orderForm/ticker"},"side":{"$state":"/orderForm/side"},"qty":{"$state":"/orderForm/qty"},"status":"Working"},"clearStatePath":"/orderForm/ticker"}}},"children":[]}}
+{"op":"add","path":"/state/orderForm","value":{"ticker":"","side":"BUY","qty":""}}
+{"op":"add","path":"/elements/rebalance-dialog","value":{"type":"AlertDialogBlock","props":{"triggerLabel":"Rebalance Portfolio","title":"Rebalance","description":"This will realign holdings to target sector weights. Proceed?","confirmLabel":"Rebalance Now","cancelLabel":"Cancel","triggerVariant":"secondary"},"children":[]}}
+{"op":"add","path":"/elements/cols","value":{"type":"Card","props":{"direction":"row","gap":"l","wrap":true,"align":"stretch"},"children":["colL","colR"]}}
+{"op":"add","path":"/elements/colL","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["positions-sec","exposure-sec","risklimit-sec","movers-sec","dd-sec"]}}
+{"op":"add","path":"/elements/colR","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["watch-sec","orders-sec","strat-sec","news-sec","econ-sec"]}}
+{"op":"add","path":"/elements/positions-sec","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["positions-h","positions-table"]}}
+{"op":"add","path":"/elements/positions-h","value":{"type":"Heading","props":{"text":"Positions","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/positions-table","value":{"type":"Table","props":{"columns":["pc-tkr","pc-size","pc-entry","pc-curr"]},"children":["pc-tkr","pc-size","pc-entry","pc-curr"]}}
+{"op":"add","path":"/elements/pc-tkr","value":{"type":"Col","props":{"label":"Ticker","type":"string","data":["AAPL","MSFT","NVDA","TSLA","JPM"]},"children":[]}}
+{"op":"add","path":"/elements/pc-size","value":{"type":"Col","props":{"label":"Size","type":"number","data":[5000,3200,1800,2500,4000]},"children":[]}}
+{"op":"add","path":"/elements/pc-entry","value":{"type":"Col","props":{"label":"Entry","type":"number","data":[172.4,398.1,610.2,242.5,188.3]},"children":[]}}
+{"op":"add","path":"/elements/pc-curr","value":{"type":"Col","props":{"label":"Current","type":"number","data":[178.9,412.6,635.4,238.1,192.7]},"children":[]}}
+{"op":"add","path":"/elements/exposure-sec","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["exposure-h","exposure-chart"]}}
+{"op":"add","path":"/elements/exposure-h","value":{"type":"Heading","props":{"text":"Exposure by Sector","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/exposure-chart","value":{"type":"PieChart","props":{"variant":"donut","labels":["Tech","Financials","Energy","Healthcare","Consumer"],"values":[42,23,12,14,9]},"children":[]}}
+{"op":"add","path":"/elements/risklimit-sec","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["risklimit-h","risklimit-alert","risklimit-list"]}}
+{"op":"add","path":"/elements/risklimit-h","value":{"type":"Heading","props":{"text":"Risk Limits","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/risklimit-alert","value":{"type":"Alert","props":{"variant":"warning","title":"2 limits near breach","description":"Tech sector concentration and single-name exposure approaching thresholds."},"children":[]}}
+{"op":"add","path":"/elements/risklimit-list","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"repeat":{"statePath":"/riskLimits","key":"id"},"children":["risklimit-row"]}}
+{"op":"add","path":"/elements/risklimit-row","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center"},"children":["risklimit-name","risklimit-prog"]}}
+{"op":"add","path":"/elements/risklimit-name","value":{"type":"TextContent","props":{"text":{"$template":"${name} — ${used}/${limit}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/risklimit-prog","value":{"type":"Badge","props":{"text":{"$item":"status"},"variant":"destructive"},"children":[]}}
+{"op":"add","path":"/state/riskLimits","value":[]}
+{"op":"add","path":"/state/riskLimits/0","value":{"id":"1","name":"Tech Concentration","used":"42%","limit":"45%","status":"93% near breach"}}
+{"op":"add","path":"/state/riskLimits/1","value":{"id":"2","name":"Single Name (NVDA)","used":"11.4%","limit":"12%","status":"95% near breach"}}
+{"op":"add","path":"/state/riskLimits/2","value":{"id":"3","name":"Gross Leverage","used":"2.1x","limit":"3.0x","status":"OK"}}
+{"op":"add","path":"/elements/movers-sec","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["movers-h","movers-chart"]}}
+{"op":"add","path":"/elements/movers-h","value":{"type":"Heading","props":{"text":"Biggest Gainers & Losers","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/movers-chart","value":{"type":"HorizontalBarChart","props":{"labels":["NVDA","MSFT","AAPL","JPM","TSLA"],"series":["movers-series"]},"children":["movers-series"]}}
+{"op":"add","path":"/elements/movers-series","value":{"type":"Series","props":{"category":"% Change","values":[4.1,3.6,3.8,2.3,-1.8]},"children":[]}}
+{"op":"add","path":"/elements/dd-sec","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["dd-h","dd-chart"]}}
+{"op":"add","path":"/elements/dd-h","value":{"type":"Heading","props":{"text":"Drawdown (12M)","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/dd-chart","value":{"type":"AreaChart","props":{"labels":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"series":["dd-series"],"variant":"natural","yLabel":"% from peak"},"children":["dd-series"]}}
+{"op":"add","path":"/elements/dd-series","value":{"type":"Series","props":{"category":"Drawdown","values":[0,-2.1,-5.4,-3.2,-1.1,-6.8,-4.3,-2.0,-8.1,-3.5,-1.2,-0.4]},"children":[]}}
+{"op":"add","path":"/elements/watch-sec","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["watch-h","watch-list"]}}
+{"op":"add","path":"/elements/watch-h","value":{"type":"Heading","props":{"text":"Watchlist","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/watch-list","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"repeat":{"statePath":"/watchlist","key":"ticker"},"children":["watch-row"]}}
+{"op":"add","path":"/elements/watch-row","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center"},"children":["watch-tkr","watch-px"]}}
+{"op":"add","path":"/elements/watch-tkr","value":{"type":"TextContent","props":{"text":{"$item":"ticker"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/watch-px","value":{"type":"TextContent","props":{"text":{"$template":"$${price}"},"size":"default"},"children":[]}}
+{"op":"add","path":"/state/watchlist","value":[]}
+{"op":"add","path":"/state/watchlist/0","value":{"ticker":"AMD","price":"162.40"}}
+{"op":"add","path":"/state/watchlist/1","value":{"ticker":"GOOGL","price":"178.22"}}
+{"op":"add","path":"/state/watchlist/2","value":{"ticker":"META","price":"512.90"}}
+{"op":"add","path":"/state/watchlist/3","value":{"ticker":"XOM","price":"118.05"}}
+{"op":"add","path":"/elements/orders-sec","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["orders-h","orders-list"]}}
+{"op":"add","path":"/elements/orders-h","value":{"type":"Heading","props":{"text":"Working Orders","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/orders-list","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"repeat":{"statePath":"/workingOrders","key":"id"},"children":["orders-row"]}}
+{"op":"add","path":"/elements/orders-row","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center"},"children":["orders-info","orders-cancel"]}}
+{"op":"add","path":"/elements/orders-info","value":{"type":"TextContent","props":{"text":{"$template":"${side} ${qty} ${ticker} — ${status}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/orders-cancel","value":{"type":"Button","props":{"label":"Cancel","variant":"tertiary","size":"extra-small","type":"destructive"},"on":{"press":{"action":"removeState","params":{"statePath":"/workingOrders","index":{"$index":true}}}},"children":[]}}
+{"op":"add","path":"/state/workingOrders","value":[]}
+{"op":"add","path":"/state/workingOrders/0","value":{"id":"o1","ticker":"AAPL","side":"BUY","qty":"1000","status":"Working"}}
+{"op":"add","path":"/state/workingOrders/1","value":{"id":"o2","ticker":"NVDA","side":"SELL","qty":"500","status":"Partial"}}
+{"op":"add","path":"/state/workingOrders/2","value":{"id":"o3","ticker":"JPM","side":"BUY","qty":"2000","status":"Working"}}
+{"op":"add","path":"/elements/strat-sec","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["strat-h","strat-chart"]}}
+{"op":"add","path":"/elements/strat-h","value":{"type":"Heading","props":{"text":"Strategy Returns YTD","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/strat-chart","value":{"type":"BarChart","props":{"labels":["Momentum","Mean Rev","Stat Arb","Macro","Vol"],"series":["strat-series"],"yLabel":"% return"},"children":["strat-series"]}}
+{"op":"add","path":"/elements/strat-series","value":{"type":"Series","props":{"category":"YTD %","values":[14.2,6.8,9.1,-2.4,11.5]},"children":[]}}
+{"op":"add","path":"/elements/news-sec","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["news-h","news-list"]}}
+{"op":"add","path":"/elements/news-h","value":{"type":"Heading","props":{"text":"Market Headlines","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/news-list","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"repeat":{"statePath":"/headlines","key":"id"},"children":["news-row"]}}
+{"op":"add","path":"/elements/news-row","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","gap":"s"},"children":["news-txt","news-tag"]}}
+{"op":"add","path":"/elements/news-txt","value":{"type":"TextContent","props":{"text":{"$item":"title"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/news-tag","value":{"type":"Tag","props":{"text":{"$item":"sentiment"},"size":"sm","variant":{"$cond":{"$item":"positive"},"$then":"success","$else":"danger"}},"children":[]}}
+{"op":"add","path":"/state/headlines","value":[]}
+{"op":"add","path":"/state/headlines/0","value":{"id":"1","title":"Fed signals patience on rate cuts","sentiment":"Positive","positive":true}}
+{"op":"add","path":"/state/headlines/1","value":{"id":"2","title":"NVDA supply constraints ease","sentiment":"Positive","positive":true}}
+{"op":"add","path":"/state/headlines/2","value":{"id":"3","title":"Oil slips on demand worries","sentiment":"Negative","positive":false}}
+{"op":"add","path":"/state/headlines/3","value":{"id":"4","title":"Bank earnings beat estimates","sentiment":"Positive","positive":true}}
+{"op":"add","path":"/state/headlines/4","value":{"id":"5","title":"China PMI contracts again","sentiment":"Negative","positive":false}}
+{"op":"add","path":"/elements/econ-sec","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["econ-h","econ-table"]}}
+{"op":"add","path":"/elements/econ-h","value":{"type":"Heading","props":{"text":"Economic Releases This Week","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/econ-table","value":{"type":"Table","props":{"columns":["ec-day","ec-event","ec-fcst"]},"children":["ec-day","ec-event","ec-fcst"]}}
+{"op":"add","path":"/elements/ec-day","value":{"type":"Col","props":{"label":"Day","type":"string","data":["Mon","Tue","Wed","Thu","Fri"]},"children":[]}}
+{"op":"add","path":"/elements/ec-event","value":{"type":"Col","props":{"label":"Event","type":"string","data":["ISM Mfg","JOLTS","FOMC Minutes","Jobless Claims","Nonfarm Payrolls"]},"children":[]}}
+{"op":"add","path":"/elements/ec-fcst","value":{"type":"Col","props":{"label":"Forecast","type":"string","data":["48.5","8.7M","—","215K","180K"]},"children":[]}}

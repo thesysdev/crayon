@@ -1,0 +1,55 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","metrics-row","filter-bar","tickets-all","tickets-high","new-ticket-dialog"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"☀️ Morning Dashboard","subtitle":"Support Lead Overview — Today at a Glance"},"children":[]}}
+{"op":"add","path":"/elements/metrics-row","value":{"type":"Card","props":{"direction":"row","gap":"m"},"children":["metric-open","metric-response"]}}
+{"op":"add","path":"/elements/metric-open","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs","align":"center"},"children":["metric-open-value","metric-open-label"]}}
+{"op":"add","path":"/elements/metric-open-value","value":{"type":"TextContent","props":{"text":{"$template":"${/openTicketCount}"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/metric-open-label","value":{"type":"TextContent","props":{"text":"Open Tickets","size":"small"},"children":[]}}
+{"op":"add","path":"/state/openTicketCount","value":23}
+{"op":"add","path":"/elements/metric-response","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs","align":"center"},"children":["metric-response-value","metric-response-label"]}}
+{"op":"add","path":"/elements/metric-response-value","value":{"type":"TextContent","props":{"text":{"$state":"/avgResponseTime"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/metric-response-label","value":{"type":"TextContent","props":{"text":"Avg First-Response Time","size":"small"},"children":[]}}
+{"op":"add","path":"/state/avgResponseTime","value":"2h 14m"}
+{"op":"add","path":"/elements/filter-bar","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","variant":"clear"},"children":["filter-label","filter-buttons"]}}
+{"op":"add","path":"/elements/filter-label","value":{"type":"TextContent","props":{"text":"Recent Tickets","size":"default"},"children":[]}}
+{"op":"add","path":"/elements/filter-buttons","value":{"type":"Buttons","props":{"direction":"row"},"children":["btn-all","btn-high"]}}
+{"op":"add","path":"/elements/btn-all","value":{"type":"Button","props":{"label":"All Priorities","variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/showHighPriority","value":false}}},"children":[]}}
+{"op":"add","path":"/elements/btn-high","value":{"type":"Button","props":{"label":"🔴 High Priority Only","variant":"primary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/showHighPriority","value":true}}},"children":[]}}
+{"op":"add","path":"/state/showHighPriority","value":false}
+{"op":"add","path":"/elements/tickets-all","value":{"type":"Card","props":{"direction":"column","gap":"s"},"visible":{"$state":"/showHighPriority","not":true},"repeat":{"statePath":"/tickets","key":"id"},"children":["ticket-row"]}}
+{"op":"add","path":"/elements/ticket-row","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","variant":"sunk","gap":"m"},"children":["ticket-info","ticket-priority"]}}
+{"op":"add","path":"/elements/ticket-info","value":{"type":"Card","props":{"direction":"column","gap":"none","variant":"clear"},"children":["ticket-subject","ticket-meta"]}}
+{"op":"add","path":"/elements/ticket-subject","value":{"type":"TextContent","props":{"text":{"$template":"#${id} — ${subject}"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/ticket-meta","value":{"type":"TextContent","props":{"text":{"$template":"Opened by ${requester} · ${timeAgo}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/ticket-priority","value":{"type":"Tag","props":{"text":{"$item":"priority"},"variant":{"$cond":{"$state":"/showHighPriority","eq":true},"$then":"danger","$else":"neutral"}},"children":[]}}
+{"op":"add","path":"/state/tickets","value":[]}
+{"op":"add","path":"/state/tickets/0","value":{"id":"4821","subject":"Payment gateway returning 502 errors","requester":"Maria Chen","timeAgo":"12 min ago","priority":"Critical"}}
+{"op":"add","path":"/state/tickets/1","value":{"id":"4820","subject":"Cannot reset password via SSO","requester":"James Okafor","timeAgo":"28 min ago","priority":"High"}}
+{"op":"add","path":"/state/tickets/2","value":{"id":"4819","subject":"Dashboard widgets not loading on Safari","requester":"Anika Patel","timeAgo":"1 hr ago","priority":"Medium"}}
+{"op":"add","path":"/state/tickets/3","value":{"id":"4818","subject":"Export to CSV includes duplicate rows","requester":"Tom Eriksen","timeAgo":"2 hr ago","priority":"High"}}
+{"op":"add","path":"/state/tickets/4","value":{"id":"4817","subject":"Feature request: dark mode for mobile app","requester":"Sofia Reyes","timeAgo":"3 hr ago","priority":"Low"}}
+{"op":"add","path":"/elements/tickets-high","value":{"type":"Card","props":{"direction":"column","gap":"s"},"visible":{"$state":"/showHighPriority","eq":true},"repeat":{"statePath":"/highPriorityTickets","key":"id"},"children":["ticket-row-high"]}}
+{"op":"add","path":"/elements/ticket-row-high","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","variant":"sunk","gap":"m"},"children":["ticket-info-high","ticket-priority-high"]}}
+{"op":"add","path":"/elements/ticket-info-high","value":{"type":"Card","props":{"direction":"column","gap":"none","variant":"clear"},"children":["ticket-subject-high","ticket-meta-high"]}}
+{"op":"add","path":"/elements/ticket-subject-high","value":{"type":"TextContent","props":{"text":{"$template":"#${id} — ${subject}"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/ticket-meta-high","value":{"type":"TextContent","props":{"text":{"$template":"Opened by ${requester} · ${timeAgo}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/ticket-priority-high","value":{"type":"Tag","props":{"text":{"$item":"priority"},"variant":"danger"},"children":[]}}
+{"op":"add","path":"/state/highPriorityTickets","value":[]}
+{"op":"add","path":"/state/highPriorityTickets/0","value":{"id":"4821","subject":"Payment gateway returning 502 errors","requester":"Maria Chen","timeAgo":"12 min ago","priority":"Critical"}}
+{"op":"add","path":"/state/highPriorityTickets/1","value":{"id":"4820","subject":"Cannot reset password via SSO","requester":"James Okafor","timeAgo":"28 min ago","priority":"High"}}
+{"op":"add","path":"/state/highPriorityTickets/2","value":{"id":"4818","subject":"Export to CSV includes duplicate rows","requester":"Tom Eriksen","timeAgo":"2 hr ago","priority":"High"}}
+{"op":"add","path":"/elements/new-ticket-dialog","value":{"type":"DialogBlock","props":{"triggerLabel":"＋ New Ticket","title":"Create New Ticket","description":"Fill in the details to open a new support ticket.","triggerVariant":"default","content":["new-ticket-form"]},"children":[]}}
+{"op":"add","path":"/elements/new-ticket-form","value":{"type":"Form","props":{"name":"newTicket","fields":["field-subject","field-requester","field-priority"],"buttons":"form-buttons"},"children":[]}}
+{"op":"add","path":"/elements/field-subject","value":{"type":"FormControl","props":{"label":"Subject","input":"input-subject"},"children":[]}}
+{"op":"add","path":"/elements/input-subject","value":{"type":"Input","props":{"name":"subject","placeholder":"Brief description of the issue","value":{"$bindState":"/newTicket/subject"}},"children":[]}}
+{"op":"add","path":"/elements/field-requester","value":{"type":"FormControl","props":{"label":"Requester","input":"input-requester"},"children":[]}}
+{"op":"add","path":"/elements/input-requester","value":{"type":"Input","props":{"name":"requester","placeholder":"Customer name or email","value":{"$bindState":"/newTicket/requester"}},"children":[]}}
+{"op":"add","path":"/elements/field-priority","value":{"type":"FormControl","props":{"label":"Priority","input":"select-priority"},"children":[]}}
+{"op":"add","path":"/elements/select-priority","value":{"type":"Select","props":{"name":"priority","placeholder":"Select priority","value":{"$bindState":"/newTicket/priority"},"items":["opt-critical","opt-high","opt-medium","opt-low"]},"children":[]}}
+{"op":"add","path":"/elements/opt-critical","value":{"type":"SelectItem","props":{"value":"Critical","label":"Critical"},"children":[]}}
+{"op":"add","path":"/elements/opt-high","value":{"type":"SelectItem","props":{"value":"High","label":"High"},"children":[]}}
+{"op":"add","path":"/elements/opt-medium","value":{"type":"SelectItem","props":{"value":"Medium","label":"Medium"},"children":[]}}
+{"op":"add","path":"/elements/opt-low","value":{"type":"SelectItem","props":{"value":"Low","label":"Low"},"children":[]}}
+{"op":"add","path":"/elements/form-buttons","value":{"type":"Buttons","props":{"direction":"row"},"children":["btn-submit-ticket"]}}
+{"op":"add","path":"/elements/btn-submit-ticket","value":{"type":"Button","props":{"label":"Create Ticket","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/tickets","value":{"id":"$id","subject":{"$state":"/newTicket/subject"},"requester":{"$state":"/newTicket/requester"},"priority":{"$state":"/newTicket/priority"},"timeAgo":"Just now"},"clearStatePath":"/newTicket"}}},"children":[]}}
+{"op":"add","path":"/state/newTicket","value":{"subject":"","requester":"","priority":""}}

@@ -1,0 +1,444 @@
+
+
+Here's a complete streaming operations room covering all 16 requirements — live viewership, titles, growth, QoE, catalog ops, monetization, and ops controls — in a single surface.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "stream-ops-room",
+      "catalogId": "thesys.dev:c1-openui",
+      "sendDataModel": false
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "stream-ops-room",
+      "components": [
+        {
+          "component": "Card",
+          "id": "root",
+          "direction": "column",
+          "gap": "m",
+          "children": ["headerRow", "kpiRow", "chartsRow1", "contentRow1", "contentRow2", "contentRow3", "opsRow", "footerNote"]
+        },
+        {
+          "component": "Card",
+          "id": "headerRow",
+          "direction": "row",
+          "align": "center",
+          "justify": "between",
+          "gap": "m",
+          "children": ["headerTitle", "regionForm"]
+        },
+        {
+          "component": "CardHeader",
+          "id": "headerTitle",
+          "title": "Streamline Ops Room",
+          "subtitle": "Live operations · Friday, July 25 · 14:32 UTC"
+        },
+        {
+          "component": "Form",
+          "id": "regionForm",
+          "name": "focus-region",
+          "fields": ["regionCtrl"],
+          "buttons": "regionBtns"
+        },
+        {
+          "component": "FormControl",
+          "id": "regionCtrl",
+          "label": "Focus region",
+          "input": "regionSelect",
+          "hint": "Scopes KPIs, delivery health and alerts to one region"
+        },
+        {
+          "component": "Select",
+          "id": "regionSelect",
+          "name": "region",
+          "value": "global",
+          "placeholder": "All regions",
+          "items": ["rg", "r1", "r2", "r3", "r4", "r5", "r6", "r7"]
+        },
+        { "component": "SelectItem", "id": "rg", "value": "global", "label": "Global (all regions)" },
+        { "component": "SelectItem", "id": "r1", "value": "na-east", "label": "NA East" },
+        { "component": "SelectItem", "id": "r2", "value": "na-west", "label": "NA West" },
+        { "component": "SelectItem", "id": "r3", "value": "eu-west", "label": "EU West" },
+        { "component": "SelectItem", "id": "r4", "value": "eu-central", "label": "EU Central" },
+        { "component": "SelectItem", "id": "r5", "value": "sa-east", "label": "SA East" },
+        { "component": "SelectItem", "id": "r6", "value": "apac-se", "label": "APAC Southeast" },
+        { "component": "SelectItem", "id": "r7", "value": "apac-ne", "label": "APAC Northeast" },
+        {
+          "component": "Buttons",
+          "id": "regionBtns",
+          "buttons": ["regionBtn"]
+        },
+        {
+          "component": "Button",
+          "id": "regionBtn",
+          "label": "Apply focus",
+          "variant": "secondary",
+          "size": "small"
+        },
+        {
+          "component": "Card",
+          "id": "kpiRow",
+          "direction": "row",
+          "gap": "m",
+          "children": ["kpiLive", "kpiBuffer", "kpiRec", "kpiDead"]
+        },
+        {
+          "component": "Card",
+          "id": "kpiLive",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "children": ["kpiLiveL", "kpiLiveV", "kpiLiveT"]
+        },
+        { "component": "Label", "id": "kpiLiveL", "text": "Viewers right now" },
+        { "component": "TextContent", "id": "kpiLiveV", "text": "418,392", "size": "large-heavy" },
+        { "component": "Tag", "id": "kpiLiveT", "text": "+3.4% vs last hour", "variant": "success", "size": "sm" },
+        {
+          "component": "Card",
+          "id": "kpiBuffer",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "children": ["kpiBufferL", "kpiBufferV", "kpiBufferT"]
+        },
+        { "component": "Label", "id": "kpiBufferL", "text": "Buffering rate" },
+        { "component": "TextContent", "id": "kpiBufferV", "text": "0.42%", "size": "large-heavy" },
+        { "component": "Tag", "id": "kpiBufferT", "text": "-0.03 pts vs 7-day avg", "variant": "success", "size": "sm" },
+        {
+          "component": "Card",
+          "id": "kpiRec",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "children": ["kpiRecL", "kpiRecV", "kpiRecT"]
+        },
+        { "component": "Label", "id": "kpiRecL", "text": "Recommendation CTR" },
+        { "component": "TextContent", "id": "kpiRecV", "text": "27.9%", "size": "large-heavy" },
+        { "component": "Tag", "id": "kpiRecT", "text": "-0.6 pts this week", "variant": "warning", "size": "sm" },
+        {
+          "component": "Card",
+          "id": "kpiDead",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "children": ["kpiDeadL", "kpiDeadV", "kpiDeadT"]
+        },
+        { "component": "Label", "id": "kpiDeadL", "text": "Dead-end searches" },
+        { "component": "TextContent", "id": "kpiDeadV", "text": "8.7%", "size": "large-heavy" },
+        { "component": "Tag", "id": "kpiDeadT", "text": "+0.4 pts vs last week", "variant": "danger", "size": "sm" },
+        {
+          "component": "Card",
+          "id": "chartsRow1",
+          "direction": "row",
+          "gap": "m",
+          "children": ["watchCard", "subsCard"]
+        },
+        {
+          "component": "Card",
+          "id": "watchCard",
+          "weight": 1,
+          "direction": "column",
+          "gap": "s",
+          "children": ["watchHeader", "watchChart", "watchNote"]
+        },
+        {
+          "component": "CardHeader",
+          "id": "watchHeader",
+          "title": "Watch time — past month",
+          "subtitle": "Combined VOD + live hours"
+        },
+        {
+          "component": "AreaChart",
+          "id": "watchChart",
+          "variant": "natural",
+          "xLabel": "Date",
+          "yLabel": "Hours (millions)",
+          "labels": ["Jun 26", "Jun 29", "Jul 2", "Jul 5", "Jul 8", "Jul 11", "Jul 14", "Jul 17", "Jul 20", "Jul 23", "Jul 25"],
+          "series": ["watchVodSeries", "watchLiveSeries"]
+        },
+        {
+          "component": "Series",
+          "id": "watchVodSeries",
+          "category": "VOD",
+          "values": [78, 76, 80, 82, 88, 84, 94, 99, 90, 101, 112]
+        },
+        {
+          "component": "Series",
+          "id": "watchLiveSeries",
+          "category": "Live",
+          "values": [14, 12, 15, 15, 16, 15, 18, 19, 19, 20, 22]
+        },
+        {
+          "component": "TextContent",
+          "id": "watchNote",
+          "size": "small",
+          "text": "Peak on Jul 25: Neon Tides S2 premiere drove ~23% above trend."
+        },
+        {
+          "component": "Card",
+          "id": "subsCard",
+          "weight": 1,
+          "direction": "column",
+          "gap": "s",
+          "children": ["subsHeader", "subsChart", "subsNote"]
+        },
+        {
+          "component": "CardHeader",
+          "id": "subsHeader",
+          "title": "New subscribers vs cancellations",
+          "subtitle": "Weekly cohort · accounts in thousands"
+        },
+        {
+          "component": "LineChart",
+          "id": "subsChart",
+          "variant": "natural",
+          "yLabel": "Accounts (K)",
+          "labels": ["Jun 2", "Jun 9", "Jun 16", "Jun 23", "Jun 30", "Jul 7", "Jul 14", "Jul 21"],
+          "series": ["newSubsSeries", "churnSeries"]
+        },
+        {
+          "component": "Series",
+          "id": "newSubsSeries",
+          "category": "New subscribers",
+          "values": [96, 104, 99, 118, 126, 121, 133, 141]
+        },
+        {
+          "component": "Series",
+          "id": "churnSeries",
+          "category": "Cancellations",
+          "values": [62, 58, 66, 61, 72, 69, 74, 70]
+        },
+        {
+          "component": "TextContent",
+          "id": "subsNote",
+          "size": "small",
+          "text": "Net adds last 4 weeks: +236K · monthly churn rate 2.1%"
+        },
+        {
+          "component": "Card",
+          "id": "contentRow1",
+          "direction": "row",
+          "gap": "m",
+          "children": ["topCard", "relCard"]
+        },
+        {
+          "component": "Card",
+          "id": "topCard",
+          "weight": 2,
+          "direction": "column",
+          "gap": "s",
+          "children": ["topHeader", "topTable", "topNote"]
+        },
+        {
+          "component": "CardHeader",
+          "id": "topHeader",
+          "title": "Most-watched titles",
+          "subtitle": "Past 28 days"
+        },
+        {
+          "component": "Table",
+          "id": "topTable",
+          "columns": ["colTitle", "colHours", "colViewers", "colComp"]
+        },
+        {
+          "component": "Col",
+          "id": "colTitle",
+          "label": "Title",
+          "type": "string",
+          "data": ["Neon Tides — S2", "The Last Orchard", "Midnight Diner", "Cobalt Protocol", "Bake It Brilliant — S4", "Static"]
+        },
+        {
+          "component": "Col",
+          "id": "colHours",
+          "label": "Hours (M)",
+          "type": "number",
+          "data": [84.2, 61.7, 48.9, 41.3, 37.6, 29.8]
+        },
+        {
+          "component": "Col",
+          "id": "colViewers",
+          "label": "Viewers (M)",
+          "type": "number",
+          "data": [12.4, 9.8, 8.1, 7.7, 6.9, 5.2]
+        },
+        {
+          "component": "Col",
+          "id": "colComp",
+          "label": "Completion",
+          "type": "string",
+          "data": ["92%", "88%", "95%", "86%", "90%", "81%"]
+        },
+        {
+          "component": "TextContent",
+          "id": "topNote",
+          "size": "small",
+          "text": "Midnight Diner (#3) leaves the catalog in 9 days — see 'Licenses expiring soon'."
+        },
+        {
+          "component": "Card",
+          "id": "relCard",
+          "weight": 1,
+          "direction": "column",
+          "gap": "s",
+          "children": ["relHeader", "relTable"]
+        },
+        {
+          "component": "CardHeader",
+          "id": "relHeader",
+          "title": "Releases coming this month",
+          "subtitle": "July 28 – August 14"
+        },
+        {
+          "component": "Table",
+          "id": "relTable",
+          "columns": ["colRelT", "colRelD", "colRelType", "colRelEps"]
+        },
+        {
+          "component": "Col",
+          "id": "colRelT",
+          "label": "Title",
+          "type": "string",
+          "data": ["Cobalt Protocol S2", "Sunlight & Static", "Bake It Brilliant S5", "The Hollow Crown of Mars", "Neon Tides S2 — Finale", "Pacific Rim: Zero"]
+        },
+        {
+          "component": "Col",
+          "id": "colRelD",
+          "label": "Release",
+          "type": "string",
+          "data": ["Jul 28", "Jul 30", "Aug 2", "Aug 5", "Aug 9", "Aug 14"]
+        },
+        {
+          "component": "Col",
+          "id": "colRelType",
+          "label": "Type",
+          "type": "string",
+          "data": ["Series", "Film", "Series", "Film", "Episode", "Series"]
+        },
+        {
+          "component": "Col",
+          "id": "colRelEps",
+          "label": "Episodes",
+          "type": "number",
+          "data": [8, 1, 10, 1, 1, 6]
+        },
+        {
+          "component": "Card",
+          "id": "contentRow2",
+          "direction": "row",
+          "gap": "m",
+          "children": ["genreCard", "revCard", "devCard"]
+        },
+        {
+          "component": "Card",
+          "id": "genreCard",
+          "weight": 1,
+          "direction": "column",
+          "gap": "s",
+          "children": ["genreHeader", "genreChart"]
+        },
+        {
+          "component": "CardHeader",
+          "id": "genreHeader",
+          "title": "Performance by genre",
+          "subtitle": "Hours viewed, past 28 days"
+        },
+        {
+          "component": "HorizontalBarChart",
+          "id": "genreChart",
+          "xLabel": "Hours (millions)",
+          "labels": ["Drama", "Comedy", "Thriller & Crime", "Kids & Family", "Sci-Fi & Fantasy", "Documentary", "Reality", "Romance"],
+          "series": ["genreSeries"]
+        },
+        {
+          "component": "Series",
+          "id": "genreSeries",
+          "category": "Hours (M)",
+          "values": [312, 246, 221, 158, 149, 97, 88, 74]
+        },
+        {
+          "component": "Card",
+          "id": "revCard",
+          "weight": 1,
+          "direction": "column",
+          "gap": "s",
+          "children": ["revHeader", "revChart", "revNote"]
+        },
+        {
+          "component": "CardHeader",
+          "id": "revHeader",
+          "title": "Revenue by plan",
+          "subtitle": "July MTD · USD millions"
+        },
+        {
+          "component": "PieChart",
+          "id": "revChart",
+          "variant": "donut",
+          "labels": ["Premium 4K", "Standard", "Basic + Ads", "Free trial"],
+          "values": [18.4, 26.1, 9.7, 2.3]
+        },
+        {
+          "component": "TextContent",
+          "id": "revNote",
+          "size": "small",
+          "text": "Ads tier up 41% MoM — now 16.6% of total revenue."
+        },
+        {
+          "component": "Card",
+          "id": "devCard",
+          "weight": 1,
+          "direction": "column",
+          "gap": "s",
+          "children": ["devHeader", "devChart", "devNote"]
+        },
+        {
+          "component": "CardHeader",
+          "id": "devHeader",
+          "title": "Viewing by device",
+          "subtitle": "Share of watch time"
+        },
+        {
+          "component": "PieChart",
+          "id": "devChart",
+          "variant": "pie",
+          "labels": ["TV apps", "Mobile", "Web", "Console & STB", "Tablet"],
+          "values": [44, 27, 14, 8, 7]
+        },
+        {
+          "component": "TextContent",
+          "id": "devNote",
+          "size": "small",
+          "text": "TV apps hold 44% of watch time; living-room viewing keeps growing."
+        },
+        {
+          "component": "Card",
+          "id": "contentRow3",
+          "direction": "row",
+          "gap": "m",
+          "children": ["deliveryCard", "licCard", "searchCard"]
+        },
+        {
+          "component": "Card",
+          "id": "deliveryCard",
+          "weight": 1,
+          "direction": "column",
+          "gap": "s",
+          "children": ["deliveryHeader", "deliveryCallout", "deliveryTable"]
+        },
+        {
+          "component": "CardHeader",
+          "id": "deliveryHeader",
+          "title": "Delivery health by region",
+          "subtitle": "Edge CDN · last 15 minutes"
+        },
+        {
+          "component": "Callout",
+          "id": "deliveryCallout",
+          "variant": "error",
+          "title": "SA East degraded",
+          "description": "Buffering

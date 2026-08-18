@@ -1,0 +1,31 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","threshold-callout","search-section","list-header","items-list","reorder-confirm"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Low Inventory Warnings","subtitle":"Items at or below the reorder threshold"}}}
+{"op":"add","path":"/elements/threshold-callout","value":{"type":"Callout","props":{"variant":"warning","title":"Reorder Threshold","description":{"$template":"Items with ${/threshold} units or fewer are flagged for reorder. Adjust the threshold below to change what triggers this warning."}}}}
+{"op":"add","path":"/state/threshold","value":10}
+{"op":"add","path":"/elements/search-section","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"m"},"children":["threshold-control","search-control"]}}
+{"op":"add","path":"/elements/threshold-control","value":{"type":"FormControl","props":{"label":"Warning threshold (units)","input":"threshold-slider","hint":"Items at or below this level appear in the list"}}}
+{"op":"add","path":"/elements/threshold-slider","value":{"type":"Slider","props":{"name":"threshold","variant":"discrete","min":1,"max":50,"step":1,"label":"Threshold","value":[{"$bindState":"/threshold"}]}}}
+{"op":"add","path":"/elements/search-control","value":{"type":"FormControl","props":{"label":"Search items","input":"search-input","hint":"Filter by product name or SKU"}}}
+{"op":"add","path":"/elements/search-input","value":{"type":"Input","props":{"name":"search","type":"text","placeholder":"Search by name or SKU...","value":{"$bindState":"/search"}}}}
+{"op":"add","path":"/state/search","value":""}
+{"op":"add","path":"/elements/list-header","value":{"type":"Heading","props":{"text":"Items Running Low","level":"h3"}}}
+{"op":"add","path":"/elements/items-list","value":{"type":"Card","props":{"direction":"column","gap":"m"},"repeat":{"statePath":"/items","key":"id"},"children":["item-card"]}}
+{"op":"add","path":"/elements/item-card","value":{"type":"Card","props":{"variant":"card","direction":"row","gap":"m","align":"center","justify":"between"},"children":["item-info","item-stock","item-reorder"]}}
+{"op":"add","path":"/elements/item-info","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["item-name","item-sku"]}}
+{"op":"add","path":"/elements/item-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"large-heavy"}}}
+{"op":"add","path":"/elements/item-sku","value":{"type":"TextContent","props":{"text":{"$template":"SKU: ${sku}"},"size":"small"}}}
+{"op":"add","path":"/elements/item-stock","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs","align":"center"},"children":["item-remaining","item-badge"]}}
+{"op":"add","path":"/elements/item-remaining","value":{"type":"TextContent","props":{"text":{"$template":"${remaining} units left"},"size":"default"}}}
+{"op":"add","path":"/elements/item-badge","value":{"type":"Badge","props":{"text":{"$template":"Threshold: ${/threshold}"},"variant":"destructive"}}}
+{"op":"add","path":"/elements/item-reorder","value":{"type":"Button","props":{"label":"Reorder","variant":"primary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/reorderItem","value":{"$item":"name"}}}}}}
+{"op":"add","path":"/state/items","value":[]}
+{"op":"add","path":"/state/items/0","value":{"id":"1","name":"Organic Whole Milk 1L","sku":"DAIRY-1042","remaining":3}}
+{"op":"add","path":"/state/items/1","value":{"id":"2","name":"Free-Range Eggs (Dozen)","sku":"DAIRY-2087","remaining":5}}
+{"op":"add","path":"/state/items/2","value":{"id":"3","name":"Sourdough Bread Loaf","sku":"BAKE-3311","remaining":2}}
+{"op":"add","path":"/state/items/3","value":{"id":"4","name":"Cold Brew Coffee 500ml","sku":"BEV-5520","remaining":8}}
+{"op":"add","path":"/state/items/4","value":{"id":"5","name":"Dark Chocolate Bar 90%","sku":"SNACK-7712","remaining":6}}
+{"op":"add","path":"/elements/reorder-confirm","value":{"type":"Callout","props":{"variant":"success","title":"Reorder Placed","description":{"$template":"A reorder request was submitted for ${/reorderItem}."}},"visible":{"$state":"/reorderItem"}}}
+{"op":"add","path":"/state/reorderItem","value":""}
+
+Every numbered requirement is covered: (1) each item card shows its name, SKU, and remaining units; (2) a Reorder button per item; (3) the threshold is shown in the callout, per-item badge, and controllable via slider; (4) the search input filters items.

@@ -1,0 +1,561 @@
+An interactive, comprehensive marketing dashboard generated below satisfies all required views and controls including date range selection, metric tracking, campaign performance highlights, traffic source breakdowns, subscriber growth, and report export functionality.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "marketing_dashboard_surface",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#2563EB",
+      "agentDisplayName": "Marketing Analytics Engine"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "marketing_dashboard_surface",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header_card",
+          "metrics_summary_card",
+          "tabs_overview"
+        ]
+      },
+      {
+        "id": "header_card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "header_title",
+          "header_actions_card",
+          "best_campaign_alert"
+        ]
+      },
+      {
+        "id": "header_title",
+        "component": "CardHeader",
+        "title": "Weekly Marketing Performance Dashboard",
+        "subtitle": "Overview of traffic, campaign ROI, conversion rates, and audience growth"
+      },
+      {
+        "id": "header_actions_card",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "align": "center",
+        "justify": "between",
+        "gap": "m",
+        "children": [
+          "date_range_select",
+          "export_buttons"
+        ]
+      },
+      {
+        "id": "date_range_select",
+        "component": "Select",
+        "name": "date_range",
+        "placeholder": "Select Date Range",
+        "value": "last_30_days",
+        "size": "small",
+        "items": [
+          "range_opt_7d",
+          "range_opt_30d",
+          "range_opt_90d",
+          "range_opt_mtd"
+        ]
+      },
+      {
+        "id": "range_opt_7d",
+        "component": "SelectItem",
+        "value": "last_7_days",
+        "label": "Last 7 Days"
+      },
+      {
+        "id": "range_opt_30d",
+        "component": "SelectItem",
+        "value": "last_30_days",
+        "label": "Last 30 Days"
+      },
+      {
+        "id": "range_opt_90d",
+        "component": "SelectItem",
+        "value": "last_90_days",
+        "label": "Last 90 Days"
+      },
+      {
+        "id": "range_opt_mtd",
+        "component": "SelectItem",
+        "value": "month_to_date",
+        "label": "Month to Date"
+      },
+      {
+        "id": "export_buttons",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": [
+          "btn_export_pdf",
+          "btn_export_csv"
+        ]
+      },
+      {
+        "id": "btn_export_pdf",
+        "component": "Button",
+        "label": "Export PDF Report",
+        "variant": "primary",
+        "size": "small"
+      },
+      {
+        "id": "btn_export_csv",
+        "component": "Button",
+        "label": "Export Raw CSV",
+        "variant": "secondary",
+        "size": "small"
+      },
+      {
+        "id": "best_campaign_alert",
+        "component": "Alert",
+        "variant": "success",
+        "title": "Top Performing Campaign: Q3 Search Retargeting",
+        "description": "Outperforming benchmark with 4.8% CTR, generating 340 direct conversions at $24.50 CPA ($18,500 budget utilized)."
+      },
+      {
+        "id": "metrics_summary_card",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "kpi_visitors",
+          "kpi_conversion",
+          "kpi_subscribers",
+          "kpi_spend"
+        ]
+      },
+      {
+        "id": "kpi_visitors",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "kpi_visitors_title",
+          "kpi_visitors_val",
+          "kpi_visitors_badge"
+        ]
+      },
+      {
+        "id": "kpi_visitors_title",
+        "component": "TextContent",
+        "text": "Site Visitors (30d)",
+        "size": "small"
+      },
+      {
+        "id": "kpi_visitors_val",
+        "component": "Heading",
+        "text": "128,450",
+        "level": "h2"
+      },
+      {
+        "id": "kpi_visitors_badge",
+        "component": "Badge",
+        "text": "+14.2% vs last month",
+        "variant": "default"
+      },
+      {
+        "id": "kpi_conversion",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "kpi_conv_title",
+          "kpi_conv_val",
+          "kpi_conv_badge"
+        ]
+      },
+      {
+        "id": "kpi_conv_title",
+        "component": "TextContent",
+        "text": "Avg. Conversion Rate",
+        "size": "small"
+      },
+      {
+        "id": "kpi_conv_val",
+        "component": "Heading",
+        "text": "3.42%",
+        "level": "h2"
+      },
+      {
+        "id": "kpi_conv_badge",
+        "component": "Badge",
+        "text": "+0.45% MoM",
+        "variant": "default"
+      },
+      {
+        "id": "kpi_subscribers",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "kpi_sub_title",
+          "kpi_sub_val",
+          "kpi_sub_badge"
+        ]
+      },
+      {
+        "id": "kpi_sub_title",
+        "component": "TextContent",
+        "text": "Subscriber Growth (MTD)",
+        "size": "small"
+      },
+      {
+        "id": "kpi_sub_val",
+        "component": "Heading",
+        "text": "+4,820",
+        "level": "h2"
+      },
+      {
+        "id": "kpi_sub_badge",
+        "component": "Badge",
+        "text": "80.3% of monthly target",
+        "variant": "secondary"
+      },
+      {
+        "id": "kpi_spend",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "kpi_spend_title",
+          "kpi_spend_val",
+          "kpi_spend_badge"
+        ]
+      },
+      {
+        "id": "kpi_spend_title",
+        "component": "TextContent",
+        "text": "Active Campaign Spend",
+        "size": "small"
+      },
+      {
+        "id": "kpi_spend_val",
+        "component": "Heading",
+        "text": "$42,800",
+        "level": "h2"
+      },
+      {
+        "id": "kpi_spend_badge",
+        "component": "Badge",
+        "text": "4 Campaigns Active",
+        "variant": "outline"
+      },
+      {
+        "id": "tabs_overview",
+        "component": "Tabs",
+        "items": [
+          "tab_traffic_growth",
+          "tab_campaigns",
+          "tab_sources"
+        ]
+      },
+      {
+        "id": "tab_traffic_growth",
+        "component": "TabItem",
+        "value": "traffic_growth",
+        "trigger": "Traffic & Subscribers",
+        "content": [
+          "traffic_chart_card",
+          "subscribers_growth_card"
+        ]
+      },
+      {
+        "id": "traffic_chart_card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "traffic_chart_header",
+          "visitors_line_chart"
+        ]
+      },
+      {
+        "id": "traffic_chart_header",
+        "component": "CardHeader",
+        "title": "Site Visitors (Last 30 Days)",
+        "subtitle": "Daily trend of unique site visitors across all channels"
+      },
+      {
+        "id": "visitors_line_chart",
+        "component": "LineChart",
+        "xLabel": "Date Range (Past 30 Days)",
+        "yLabel": "Visitors",
+        "variant": "natural",
+        "labels": [
+          "Day 1-5",
+          "Day 6-10",
+          "Day 11-15",
+          "Day 16-20",
+          "Day 21-25",
+          "Day 26-30"
+        ],
+        "series": [
+          "series_daily_visitors"
+        ]
+      },
+      {
+        "id": "series_daily_visitors",
+        "component": "Series",
+        "category": "Unique Visitors",
+        "values": [
+          18200,
+          21400,
+          19800,
+          24100,
+          21900,
+          23050
+        ]
+      },
+      {
+        "id": "subscribers_growth_card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "sub_growth_header",
+          "sub_progress_bar",
+          "sub_area_chart"
+        ]
+      },
+      {
+        "id": "sub_growth_header",
+        "component": "CardHeader",
+        "title": "Email Subscriber Growth This Month",
+        "subtitle": "Cumulative new email signups targeting 6,000 goal"
+      },
+      {
+        "id": "sub_progress_bar",
+        "component": "Progress",
+        "label": "Monthly Goal Progress (4,820 / 6,000 New Subscribers)",
+        "value": 80
+      },
+      {
+        "id": "sub_area_chart",
+        "component": "AreaChart",
+        "xLabel": "Weeks in Current Month",
+        "yLabel": "Net New Subscribers",
+        "variant": "natural",
+        "labels": [
+          "Week 1",
+          "Week 2",
+          "Week 3",
+          "Week 4 (Current)"
+        ],
+        "series": [
+          "series_subscribers"
+        ]
+      },
+      {
+        "id": "series_subscribers",
+        "component": "Series",
+        "category": "New Subscribers",
+        "values": [
+          1100,
+          2350,
+          3600,
+          4820
+        ]
+      },
+      {
+        "id": "tab_campaigns",
+        "component": "TabItem",
+        "value": "running_campaigns",
+        "trigger": "Active Campaigns",
+        "content": [
+          "campaigns_card"
+        ]
+      },
+      {
+        "id": "campaigns_card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "campaigns_header",
+          "campaigns_table"
+        ]
+      },
+      {
+        "id": "campaigns_header",
+        "component": "CardHeader",
+        "title": "Running Campaigns & Spend Breakdown",
+        "subtitle": "Current live marketing efforts and associated performance metrics"
+      },
+      {
+        "id": "campaigns_table",
+        "component": "Table",
+        "columns": [
+          "col_camp_name",
+          "col_camp_status",
+          "col_camp_spend",
+          "col_camp_conv",
+          "col_camp_cpa"
+        ]
+      },
+      {
+        "id": "col_camp_name",
+        "component": "Col",
+        "label": "Campaign Name",
+        "type": "string",
+        "data": [
+          "Q3 Search Retargeting (Best)",
+          "Social Video Awareness",
+          "Partner Newsletter Co-Op",
+          "Display B2B Remarketing"
+        ]
+      },
+      {
+        "id": "col_camp_status",
+        "component": "Col",
+        "label": "Status",
+        "type": "string",
+        "data": [
+          "Active (Top)",
+          "Active",
+          "Active",
+          "Active"
+        ]
+      },
+      {
+        "id": "col_camp_spend",
+        "component": "Col",
+        "label": "Total Spend",
+        "type": "number",
+        "data": [
+          18500,
+          12400,
+          7500,
+          4400
+        ]
+      },
+      {
+        "id": "col_camp_conv",
+        "component": "Col",
+        "label": "Conversions",
+        "type": "number",
+        "data": [
+          340,
+          185,
+          112,
+          48
+        ]
+      },
+      {
+        "id": "col_camp_cpa",
+        "component": "Col",
+        "label": "CPA ($)",
+        "type": "number",
+        "data": [
+          24.5,
+          67.03,
+          66.96,
+          91.66
+        ]
+      },
+      {
+        "id": "tab_sources",
+        "component": "TabItem",
+        "value": "traffic_sources",
+        "trigger": "Top Traffic Sources",
+        "content": [
+          "sources_card"
+        ]
+      },
+      {
+        "id": "sources_card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "sources_header",
+          "sources_pie_chart",
+          "sources_bar_chart"
+        ]
+      },
+      {
+        "id": "sources_header",
+        "component": "CardHeader",
+        "title": "Top 5 Traffic Sources",
+        "subtitle": "Share of total site traffic by acquisition channel"
+      },
+      {
+        "id": "sources_pie_chart",
+        "component": "PieChart",
+        "variant": "donut",
+        "appearance": "circular",
+        "labels": [
+          "Organic Search (42%)",
+          "Paid Search (26%)",
+          "Direct (15%)",
+          "Social Media (10%)",
+          "Referral & Email (7%)"
+        ],
+        "values": [
+          42,
+          26,
+          15,
+          10,
+          7
+        ]
+      },
+      {
+        "id": "sources_bar_chart",
+        "component": "HorizontalBarChart",
+        "xLabel": "Traffic Share (%)",
+        "yLabel": "Source Channel",
+        "variant": "grouped",
+        "labels": [
+          "Organic Search",
+          "Paid Search",
+          "Direct",
+          "Social Media",
+          "Referral & Email"
+        ],
+        "series": [
+          "series_sources_share"
+        ]
+      },
+      {
+        "id": "series_sources_share",
+        "component": "Series",
+        "category": "% Share",
+        "values": [
+          42,
+          26,
+          15,
+          10,
+          7
+        ]
+      }
+    ]
+  }
+}
+</a2ui-json>

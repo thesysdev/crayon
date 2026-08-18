@@ -1,0 +1,76 @@
+{"op":"add","path":"/root","value":"invoice-app"}
+{"op":"add","path":"/elements/invoice-app","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["invoice-header","pay-now-alert","invoice-summary-card","invoice-details-tabs","invoice-actions"]}}
+{"op":"add","path":"/elements/invoice-header","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center"},"children":["header-info","invoice-status-badge"]}}
+{"op":"add","path":"/elements/header-info","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["freelancer-title","invoice-number-text"]}}
+{"op":"add","path":"/elements/freelancer-title","value":{"type":"Heading","props":{"text":"Apex Design Studio","level":"h2"}}}
+{"op":"add","path":"/elements/invoice-number-text","value":{"type":"TextContent","props":{"text":"Invoice #INV-2023-089","size":"small"}}}
+{"op":"add","path":"/elements/invoice-status-badge","value":{"type":"Badge","props":{"text":"Payment Due","variant":"destructive"}}}
+{"op":"add","path":"/elements/pay-now-alert","value":{"type":"Alert","props":{"title":"Action Required: Payment Due","description":"Please review the details below and proceed with the payment before the due date to avoid service interruption.","variant":"warning"}}}
+{"op":"add","path":"/elements/invoice-summary-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["summary-top-row","separator-1","summary-bottom-row","pay-now-button"]}}
+{"op":"add","path":"/elements/summary-top-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"baseline"},"children":["amount-due-group","due-date-group"]}}
+{"op":"add","path":"/elements/amount-due-group","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["amount-label","amount-value"]}}
+{"op":"add","path":"/elements/amount-label","value":{"type":"TextContent","props":{"text":"Amount Due","size":"small"}}}
+{"op":"add","path":"/elements/amount-value","value":{"type":"Heading","props":{"text":{"$template":"${/invoice/currencySymbol}${/invoice/amountDue} ${/invoice/currency}"},"level":"h1"}}}
+{"op":"add","path":"/elements/due-date-group","value":{"type":"Card","props":{"variant":"clear","direction":"column","align":"end","gap":"xs"},"children":["due-date-label","due-date-value"]}}
+{"op":"add","path":"/elements/due-date-label","value":{"type":"TextContent","props":{"text":"Due Date","size":"small"}}}
+{"op":"add","path":"/elements/due-date-value","value":{"type":"Heading","props":{"text":{"$state":"/invoice/dueDate"},"level":"h3"}}}
+{"op":"add","path":"/elements/separator-1","value":{"type":"Separator","props":{"orientation":"horizontal"}}}
+{"op":"add","path":"/elements/summary-bottom-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center"},"children":["billed-to-group","issue-date-group"]}}
+{"op":"add","path":"/elements/billed-to-group","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["billed-to-label","billed-to-value"]}}
+{"op":"add","path":"/elements/billed-to-label","value":{"type":"TextContent","props":{"text":"Billed To","size":"small"}}}
+{"op":"add","path":"/elements/billed-to-value","value":{"type":"TextContent","props":{"text":{"$state":"/invoice/clientName"},"size":"default"}}}
+{"op":"add","path":"/elements/issue-date-group","value":{"type":"Card","props":{"variant":"clear","direction":"column","align":"end","gap":"xs"},"children":["issue-date-label","issue-date-value"]}}
+{"op":"add","path":"/elements/issue-date-label","value":{"type":"TextContent","props":{"text":"Issued Date","size":"small"}}}
+{"op":"add","path":"/elements/issue-date-value","value":{"type":"TextContent","props":{"text":{"$state":"/invoice/issueDate"},"size":"default"}}}
+{"op":"add","path":"/elements/pay-now-button","value":{"type":"Button","props":{"label":"Pay Now","variant":"primary","size":"large"},"on":{"press":{"action":"setState","params":{"statePath":"/isPaymentModalOpen","value":true}}}}}
+{"op":"add","path":"/state/invoice","value":{"id":"INV-2023-089","amountDue":"3,450.00","currency":"USD","currencySymbol":"$","dueDate":"October 28, 2023","issueDate":"October 14, 2023","clientName":"Acme Corporation","freelancerName":"Apex Design Studio"}}
+{"op":"add","path":"/state/isPaymentModalOpen","value":false}
+{"op":"add","path":"/elements/invoice-details-tabs","value":{"type":"Tabs","props":{"items":["tab-line-items","tab-payment-methods","tab-notes"]}}}
+{"op":"add","path":"/elements/tab-line-items","value":{"type":"TabItem","props":{"value":"line-items","trigger":"Line Items","content":["line-items-card"]}}
+{"op":"add","path":"/elements/line-items-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["line-items-heading","line-items-list","separator-2","breakdown-summary"]}}
+{"op":"add","path":"/elements/line-items-heading","value":{"type":"Heading","props":{"text":"Services Rendered","level":"h4"}}}
+{"op":"add","path":"/elements/line-items-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/lineItems","key":"id"},"children":["line-item-row"]}}
+{"op":"add","path":"/elements/line-item-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["item-info","item-total"]}}
+{"op":"add","path":"/elements/item-info","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["item-title","item-meta"]}}
+{"op":"add","path":"/elements/item-title","value":{"type":"TextContent","props":{"text":{"$item":"description"},"size":"default"}}}
+{"op":"add","path":"/elements/item-meta","value":{"type":"TextContent","props":{"text":{"$template":"${quantity} hrs @ $${rate}/hr"},"size":"small"}}}
+{"op":"add","path":"/elements/item-total","value":{"type":"TextContent","props":{"text":{"$template":"$${amount}"},"size":"default"}}}
+{"op":"add","path":"/elements/separator-2","value":{"type":"Separator","props":{"orientation":"horizontal"}}}
+{"op":"add","path":"/elements/breakdown-summary","value":{"type":"Card","props":{"variant":"clear","direction":"column","align":"end","gap":"xs"},"children":["subtotal-row","tax-row","total-row"]}}
+{"op":"add","path":"/elements/subtotal-row","value":{"type":"TextContent","props":{"text":{"$template":"Subtotal: $${/invoice/subtotal}"},"size":"small"}}}
+{"op":"add","path":"/elements/tax-row","value":{"type":"TextContent","props":{"text":{"$template":"Tax (0%): $0.00"},"size":"small"}}}
+{"op":"add","path":"/elements/total-row","value":{"type":"TextContent","props":{"text":{"$template":"Total Due: $${/invoice/amountDue}"},"size":"large-heavy"}}}
+{"op":"add","path":"/state/lineItems","value":[]}
+{"op":"add","path":"/state/lineItems/0","value":{"id":"1","description":"UI/UX Design - Brand Identity & Web App Wireframes","quantity":25,"rate":90,"amount":"2,250.00"}}
+{"op":"add","path":"/state/lineItems/1","value":{"id":"2","description":"Frontend Development - React Component Library","quantity":12,"rate":100,"amount":"1,200.00"}}
+{"op":"add","path":"/state/invoice/subtotal","value":"3,450.00"}
+{"op":"add","path":"/elements/tab-payment-methods","value":{"type":"TabItem","props":{"value":"payment-methods","trigger":"Payment Info","content":["payment-methods-card"]}}
+{"op":"add","path":"/elements/payment-methods-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["payment-instructions-heading","wire-transfer-info","stripe-info"]}}
+{"op":"add","path":"/elements/payment-instructions-heading","value":{"type":"Heading","props":{"text":"Alternative Payment Methods","level":"h4"}}}
+{"op":"add","path":"/elements/wire-transfer-info","value":{"type":"TextCallout","props":{"variant":"info","title":"Bank Wire Transfer","description":"Bank: Chase Bank N.A.\nAccount: **** 4829\nRouting: **** 0210\nSWIFT: CHASUS33xxx"}}}
+{"op":"add","path":"/elements/stripe-info","value":{"type":"TextCallout","props":{"variant":"neutral","title":"Instant Credit Card Payment","description":"Click the 'Pay Now' button above or below to complete secure payment via Credit Card, Apple Pay, or ACH Direct Debit."}}}
+{"op":"add","path":"/elements/tab-notes","value":{"type":"TabItem","props":{"value":"notes","trigger":"Notes & Terms","content":["notes-card"]}}
+{"op":"add","path":"/elements/notes-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["notes-heading","notes-text","terms-heading","terms-text"]}}
+{"op":"add","path":"/elements/notes-heading","value":{"type":"Heading","props":{"text":"Notes from Freelancer","level":"h4"}}}
+{"op":"add","path":"/elements/notes-text","value":{"type":"TextContent","props":{"text":"Thank you for your business! It was a pleasure working on the web app redesign project. Please reach out if you have any questions regarding this invoice."}}}
+{"op":"add","path":"/elements/terms-heading","value":{"type":"Heading","props":{"text":"Terms & Conditions","level":"h4"}}}
+{"op":"add","path":"/elements/terms-text","value":{"type":"TextContent","props":{"text":"Payment is due within 14 days of issue date. Late payments are subject to a 1.5% monthly fee."}}}
+{"op":"add","path":"/elements/invoice-actions","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center"},"children":["download-button","pay-now-footer-button"]}}
+{"op":"add","path":"/elements/download-button","value":{"type":"Button","props":{"label":"Download PDF","variant":"secondary","size":"medium"}}}
+{"op":"add","path":"/elements/pay-now-footer-button","value":{"type":"Button","props":{"label":"Pay $3,450.00 Now","variant":"primary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/isPaymentModalOpen","value":true}}}}}
+{"op":"add","path":"/elements/payment-dialog","value":{"type":"DialogBlock","props":{"triggerLabel":"","title":"Complete Payment","description":"Choose your preferred payment method to process $3,450.00 USD.","content":["payment-form-container"]},"visible":{"$state":"/isPaymentModalOpen"}}}
+{"op":"add","path":"/elements/payment-form-container","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"children":["payment-method-selector","card-details-form","modal-action-buttons"]}}
+{"op":"add","path":"/elements/payment-method-selector","value":{"type":"RadioGroup","props":{"name":"paymentMethod","items":["pay-card","pay-ach"],"defaultValue":"pay-card"}}}
+{"op":"add","path":"/elements/pay-card","value":{"type":"RadioItem","props":{"label":"Credit / Debit Card","description":"Pay instantly with Visa, Mastercard, or Amex","value":"card"}}}
+{"op":"add","path":"/elements/pay-ach","value":{"type":"RadioItem","props":{"label":"ACH Bank Transfer","description":"Direct transfer from your US bank account","value":"ach"}}}
+{"op":"add","path":"/elements/card-details-form","value":{"type":"Form","props":{"name":"paymentDetails","buttons":"submit-buttons","fields":["card-number-control","card-exp-cvv-row"]}}}
+{"op":"add","path":"/elements/card-number-control","value":{"type":"FormControl","props":{"label":"Card Number","input":"card-number-input"}}}
+{"op":"add","path":"/elements/card-number-input","value":{"type":"Input","props":{"name":"cardNumber","placeholder":"4242 •••• •••• 4242","type":"text"}}}
+{"op":"add","path":"/elements/card-exp-cvv-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m"},"children":["exp-control","cvv-control"]}}
+{"op":"add","path":"/elements/exp-control","value":{"type":"FormControl","props":{"label":"Expiration","input":"exp-input"}}}
+{"op":"add","path":"/elements/exp-input","value":{"type":"Input","props":{"name":"cardExp","placeholder":"MM/YY","type":"text"}}}
+{"op":"add","path":"/elements/cvv-control","value":{"type":"FormControl","props":{"label":"CVC","input":"cvv-input"}}}
+{"op":"add","path":"/elements/cvv-input","value":{"type":"Input","props":{"name":"cardCvv","placeholder":"123","type":"text"}}}
+{"op":"add","path":"/elements/submit-buttons","value":{"type":"Buttons","props":{"buttons":["cancel-pay-button","confirm-pay-button"],"direction":"row"}}}
+{"op":"add","path":"/elements/cancel-pay-button","value":{"type":"Button","props":{"label":"Cancel","variant":"tertiary"},"on":{"press":{"action":"setState","params":{"statePath":"/isPaymentModalOpen","value":false}}}}}
+{"op":"add","path":"/elements/confirm-pay-button","value":{"type":"Button","props":{"label":"Submit Payment ($3,450.00)","variant":"primary"},"on":{"press":{"action":"setState","params":{"statePath":"/isPaymentModalOpen","value":false}}}}}

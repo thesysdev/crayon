@@ -1,0 +1,56 @@
+root = Card([header, sep1, overview, sep2, largestSection, sep3, catHeader, catChart, sep4, monthForm, sep5, addForm], "card", "column", "l")
+
+header = CardHeader("Personal Budget Check", "March 2025 Spending Overview")
+
+sep1 = Separator("horizontal")
+
+overview = Card([kpiGroup, budgetProgress], "sunk", "column", "m")
+kpiGroup = Table([kpiCol, valCol])
+kpiCol = Col("Metric", ["Monthly Budget", "Total Spent", "Remaining"])
+valCol = Col("Amount", ["$4,500.00", "$3,240.50", "$1,259.50"])
+budgetProgress = Progress(72, "72% of $4,500 monthly budget used")
+
+sep2 = Separator("horizontal")
+
+largestSection = Card([largestHeader, largestCallout], "clear", "column", "xs")
+largestHeader = Heading("Highlight", "h3")
+largestCallout = TextCallout("warning", "Largest Single Expense", "Rent Payment — $1,650.00 on March 1st (Housing)")
+
+sep3 = Separator("horizontal")
+
+catHeader = Heading("Spending by Category", "h3")
+catChart = HorizontalBarChart(["Housing", "Food & Dining", "Utilities", "Transportation", "Entertainment", "Shopping"], [catSeries], "grouped", "Category", "Amount ($)")
+catSeries = Series("Spent", [1650, 620, 310, 280, 210, 170.50])
+
+sep4 = Separator("horizontal")
+
+monthForm = Form("month-select-form", monthButtons, [monthField])
+monthField = FormControl("View Different Month", monthSelect, "Select a month to load historical budget data")
+monthSelect = Select("selected_month", [m1, m2, m3, m4], "Choose month", null, "March 2025")
+m1 = SelectItem("2025-01", "January 2025")
+m2 = SelectItem("2025-02", "February 2025")
+m3 = SelectItem("2025-03", "March 2025")
+m4 = SelectItem("2025-04", "April 2025")
+monthButtons = Buttons([changeMonthBtn])
+changeMonthBtn = Button("Switch Month", null, "secondary")
+
+sep5 = Separator("horizontal")
+
+addForm = Form("add-expense-form", addButtons, [descField, amountField, catField, dateField])
+descField = FormControl("Expense Description", descInput)
+descInput = Input("description", "e.g., Grocery run")
+amountField = FormControl("Amount ($)", amountInput)
+amountInput = Input("amount", "0.00", "number")
+catField = FormControl("Category", catSelect)
+catSelect = Select("category", [c1, c2, c3, c4, c5, c6], "Select category")
+c1 = SelectItem("housing", "Housing")
+c2 = SelectItem("food", "Food & Dining")
+c3 = SelectItem("utilities", "Utilities")
+c4 = SelectItem("transport", "Transportation")
+c5 = SelectItem("entertainment", "Entertainment")
+c6 = SelectItem("shopping", "Shopping")
+dateField = FormControl("Date", datePicker)
+datePicker = DatePicker("expense_date", "single")
+addButtons = Buttons([addExpenseBtn, clearBtn])
+addExpenseBtn = Button("Add Expense", null, "primary")
+clearBtn = Button("Clear Form", null, "tertiary")

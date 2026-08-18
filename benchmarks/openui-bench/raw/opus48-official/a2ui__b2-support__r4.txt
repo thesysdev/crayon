@@ -1,0 +1,188 @@
+Here's a support lead's morning dashboard covering all five requirements:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "support-morning",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "support-morning",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "l",
+        "children": ["header", "metricsRow", "actionsRow", "recentSection"]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Good morning — Support Overview",
+        "subtitle": "Your queue at a glance"
+      },
+      {
+        "id": "metricsRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": ["openTicketsCard", "responseTimeCard"]
+      },
+      {
+        "id": "openTicketsCard",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "xs",
+        "weight": 1,
+        "children": ["openLabel", "openValue", "openBadge"]
+      },
+      {
+        "id": "openLabel",
+        "component": "TextContent",
+        "text": "Open Tickets",
+        "size": "small-heavy"
+      },
+      {
+        "id": "openValue",
+        "component": "Heading",
+        "text": "37",
+        "level": "h1"
+      },
+      {
+        "id": "openBadge",
+        "component": "Badge",
+        "text": "8 unassigned",
+        "variant": "destructive"
+      },
+      {
+        "id": "responseTimeCard",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "xs",
+        "weight": 1,
+        "children": ["respLabel", "respValue", "respBadge"]
+      },
+      {
+        "id": "respLabel",
+        "component": "TextContent",
+        "text": "Avg. First-Response Time",
+        "size": "small-heavy"
+      },
+      {
+        "id": "respValue",
+        "component": "Heading",
+        "text": "1h 24m",
+        "level": "h1"
+      },
+      {
+        "id": "respBadge",
+        "component": "Badge",
+        "text": "Within SLA",
+        "variant": "secondary"
+      },
+      {
+        "id": "actionsRow",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": ["highPriorityBtn", "newTicketBtn"]
+      },
+      {
+        "id": "highPriorityBtn",
+        "component": "Button",
+        "label": "Show High-Priority Only",
+        "variant": "secondary",
+        "action": [
+          {
+            "call": "filterTickets",
+            "args": { "priority": "high" }
+          }
+        ]
+      },
+      {
+        "id": "newTicketBtn",
+        "component": "Button",
+        "label": "＋ New Ticket",
+        "variant": "primary",
+        "action": [
+          {
+            "call": "openNewTicket",
+            "args": {}
+          }
+        ]
+      },
+      {
+        "id": "recentSection",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "s",
+        "children": ["recentHeader", "recentTable"]
+      },
+      {
+        "id": "recentHeader",
+        "component": "CardHeader",
+        "title": "5 Most Recent Tickets"
+      },
+      {
+        "id": "recentTable",
+        "component": "Table",
+        "columns": ["colId", "colSubject", "colPriority", "colTime"]
+      },
+      {
+        "id": "colId",
+        "component": "Col",
+        "label": "Ticket",
+        "type": "string",
+        "data": ["#4821", "#4820", "#4819", "#4818", "#4817"]
+      },
+      {
+        "id": "colSubject",
+        "component": "Col",
+        "label": "Subject",
+        "type": "string",
+        "data": [
+          "Login fails after password reset",
+          "Invoice PDF not downloading",
+          "API rate limit questions",
+          "Feature request: dark mode",
+          "Cannot update billing address"
+        ]
+      },
+      {
+        "id": "colPriority",
+        "component": "Col",
+        "label": "Priority",
+        "type": "string",
+        "data": ["High", "High", "Medium", "Low", "Medium"]
+      },
+      {
+        "id": "colTime",
+        "component": "Col",
+        "label": "Received",
+        "type": "string",
+        "data": ["7:52 AM", "7:41 AM", "7:15 AM", "6:58 AM", "6:30 AM"]
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This single screen covers every requirement:
+
+1. **Open tickets** — the "Open Tickets" metric card showing **37** (with 8 unassigned flagged).
+2. **Average first-response time** — the "Avg. First-Response Time" card showing **1h 24m** with an SLA status.
+3. **Five most recent tickets with priority** — a table listing the 5 latest tickets, each with a Priority column (High / Medium / Low) and time received.
+4. **Narrow to high-priority only** — the **"Show High-Priority Only"** button triggers a filter action.
+5. **Open a new ticket** — the primary **"＋ New Ticket"** button triggers the new-ticket flow.

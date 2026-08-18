@@ -1,0 +1,72 @@
+Here's a service health dashboard covering all eight requirements.
+
+<a2ui-json>
+{"version":"v0.9","createSurface":{"surfaceId":"service-health","catalogId":"thesys.dev:c1-openui"}}
+</a2ui-json>
+
+<a2ui-json>
+{"version":"v0.9","updateComponents":{"surfaceId":"service-health","components":[
+{"id":"root","component":"Card","direction":"column","gap":"m","children":["header","regionControl","metricsRow","chartCard","errorRateCard","incidentsCard","endpointsCard","thresholdForm"]},
+{"id":"header","component":"CardHeader","title":"Service Health — Payments API","subtitle":"On-call view · last refreshed 30s ago"},
+{"id":"regionControl","component":"FormControl","label":"Filter by region","input":"regionSelect","hint":"Narrow all metrics and incidents to a single region"},
+{"id":"regionSelect","component":"Select","name":"region","placeholder":"All regions","items":["rAll","rUsEast","rUsWest","rEuWest","rApSe"]},
+{"id":"rAll","component":"SelectItem","value":"all","label":"All regions"},
+{"id":"rUsEast","component":"SelectItem","value":"us-east-1","label":"US East (us-east-1)"},
+{"id":"rUsWest","component":"SelectItem","value":"us-west-2","label":"US West (us-west-2)"},
+{"id":"rEuWest","component":"SelectItem","value":"eu-west-1","label":"EU West (eu-west-1)"},
+{"id":"rApSe","component":"SelectItem","value":"ap-southeast-2","label":"AP Southeast (ap-southeast-2)"},
+{"id":"metricsRow","component":"Card","direction":"row","gap":"m","children":["uptimeCard","errNowCard"]},
+{"id":"uptimeCard","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["uptimeTitle","uptimeValue","uptimeBar"],"weight":1},
+{"id":"uptimeTitle","component":"TextContent","text":"**Uptime this quarter**","size":"small"},
+{"id":"uptimeValue","component":"TextContent","text":"99.97%","size":"large-heavy"},
+{"id":"uptimeBar","component":"Progress","value":99.97,"label":"Target: 99.9%"},
+{"id":"errNowCard","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["errTitle","errValue","errTag"],"weight":1},
+{"id":"errTitle","component":"TextContent","text":"**Error rate (right now)**","size":"small"},
+{"id":"errValue","component":"TextContent","text":"0.42% of requests (last 5 min)","size":"large-heavy"},
+{"id":"errTag","component":"Tag","text":"Within SLO","variant":"success"},
+{"id":"chartCard","component":"Card","direction":"column","gap":"s","children":["chartTitle","cpuChart","memChart"]},
+{"id":"chartTitle","component":"TextContent","text":"**Resource usage — past 24 hours**","size":"small-heavy"},
+{"id":"cpuChart","component":"LineChart","labels":["00:00","04:00","08:00","12:00","16:00","20:00","Now"],"series":["cpuSeries"],"xLabel":"Time","yLabel":"CPU %"},
+{"id":"cpuSeries","component":"Series","category":"CPU %","values":[31,28,45,62,58,49,44]},
+{"id":"memChart","component":"LineChart","labels":["00:00","04:00","08:00","12:00","16:00","20:00","Now"],"series":["memSeries"],"xLabel":"Time","yLabel":"Memory %"},
+{"id":"memSeries","component":"Series","category":"Memory %","values":[55,54,61,70,68,66,64]},
+{"id":"incidentsCard","component":"Card","direction":"column","gap":"s","children":["incTitle","incTable","ackNote"]},
+{"id":"incTitle","component":"TextContent","text":"**Open incidents**","size":"small-heavy"},
+{"id":"incTable","component":"Table","columns":["incIdCol","incTitleCol","incSevCol","incAgeCol","incAckCol"]},
+{"id":"incIdCol","component":"Col","label":"ID","data":["INC-1042","INC-1045","INC-1047"]},
+{"id":"incTitleCol","component":"Col","label":"Title","data":["Elevated 5xx on /checkout","DB replica lag in eu-west-1","Webhook delivery delays"]},
+{"id":"incSevCol","component":"Col","label":"Severity","data":["SEV1","SEV2","SEV3"]},
+{"id":"incAgeCol","component":"Col","label":"Open for","data":["42 min","2 h 10 min","5 h 30 min"]},
+{"id":"incAckCol","component":"Col","label":"Acknowledge","type":"action","data":["Ack","Ack","Ack"]},
+{"id":"ackNote","component":"TextContent","text":"Click **Ack** on a row to acknowledge an incident and stop paging.","size":"small"},
+{"id":"endpointsCard","component":"Card","direction":"column","gap":"s","children":["epTitle","epTable"]},
+{"id":"epTitle","component":"TextContent","text":"**Slowest endpoints (p95 latency)**","size":"small-heavy"},
+{"id":"epTable","component":"Table","columns":["epPathCol","epLatCol"]},
+{"id":"epPathCol","component":"Col","label":"Endpoint","data":["POST /v1/payments/authorize","GET /v1/settlements/export","POST /v1/refunds","GET /v1/customers/search","POST /v1/webhooks/retry"]},
+{"id":"epLatCol","component":"Col","label":"p95 latency","type":"number","data":[1840,1620,1210,980,870]},
+{"id":"thresholdForm","component":"Form","name":"alert-threshold","buttons":"thresholdButtons","fields":["threshType","threshValue"]},
+{"id":"threshType","component":"FormControl","label":"Alert on","input":"threshTypeSelect"},
+{"id":"threshTypeSelect","component":"Select","name":"metric","items":["tErr","tCpu","tMem","tLat"],"value":"error_rate"},
+{"id":"tErr","component":"SelectItem","value":"error_rate","label":"Error rate (%)"},
+{"id":"tCpu","component":"SelectItem","value":"cpu","label":"CPU (%)"},
+{"id":"tMem","component":"SelectItem","value":"memory","label":"Memory (%)"},
+{"id":"tLat","component":"SelectItem","value":"latency","label":"p95 latency (ms)"},
+{"id":"threshValue","component":"FormControl","label":"Threshold","input":"threshInput","hint":"Page the on-call when this value is exceeded for 5 minutes"},
+{"id":"threshInput","component":"Input","name":"threshold","type":"number","placeholder":"e.g. 1.0"},
+{"id":"thresholdButtons","component":"Buttons","buttons":["saveThresh"]},
+{"id":"saveThresh","component":"Button","label":"Save alert threshold","variant":"primary"}
+]}}
+</a2ui-json>
+
+All eight items are covered:
+
+1. **Uptime this quarter** — 99.97% with a progress bar against the 99.9% SLO
+2. **CPU & memory (24h)** — two line charts
+3. **Error rate now** — 0.42% with an SLO status tag
+4. **Open incidents** — table with SEV1/2/3 severity per incident
+5. **Region filter** — select to narrow the view
+6. **Five slowest endpoints** — ranked table with p95 latency
+7. **Alert threshold form** — pick a metric, set a value, save
+8. **Acknowledge** — per-row "Ack" action in the incidents table
+
+Want me to wire the region filter to actually re-scope the charts, or add a paging escalation policy view?

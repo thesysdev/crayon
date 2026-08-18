@@ -1,0 +1,33 @@
+root = Card([header, warningAlert, thresholdInfo, searchSection, inventoryTable, followUp])
+
+header = CardHeader("Low Inventory Alerts", "Manage stock levels and replenish depleted inventory")
+
+warningAlert = Callout("warning", "Stock Action Required", "5 items have fallen below safety thresholds and require immediate reordering.")
+
+thresholdInfo = TextCallout("info", "Automatic Alert Threshold", "Items trigger a low-stock warning when inventory drops below 15 units (or custom reorder point).")
+
+searchSection = Form("search-form", searchButtons, [searchInputControl, categorySelectControl])
+searchInputControl = FormControl("Search Inventory", searchInput, "Search by SKU, product name, or location")
+searchInput = Input("search_query", "e.g., Ergonomic Chair or SKU-8492")
+categorySelectControl = FormControl("Filter Category", categorySelect)
+categorySelect = Select("category_filter", [catAll, catFurniture, catElectronics, catOffice], "All Categories")
+catAll = SelectItem("all", "All Categories")
+catFurniture = SelectItem("furniture", "Furniture")
+catElectronics = SelectItem("electronics", "Electronics & Accessories")
+catOffice = SelectItem("office", "Office Supplies")
+searchButtons = Buttons([searchBtn, resetBtn])
+searchBtn = Button("Filter Items", null, "primary")
+resetBtn = Button("Reset", null, "tertiary")
+
+inventoryTable = Table([skuCol, itemCol, categoryCol, stockCol, statusCol, actionCol])
+skuCol = Col("SKU", ["SKU-1082", "SKU-4920", "SKU-3104", "SKU-8821", "SKU-5542"])
+itemCol = Col("Item Name", ["Ergonomic Desk Chair", "Wireless Bluetooth Headset", "USB-C Multi-Port Hub", "Mechanical Keyboard", "Standing Desk Mat"])
+categoryCol = Col("Category", ["Furniture", "Electronics", "Electronics", "Electronics", "Furniture"])
+stockCol = Col("Remaining Units", ["3 units", "5 units", "8 units", "12 units", "14 units"])
+statusCol = Col("Status", ["Critical", "Critical", "Low", "Low", "Low"])
+actionCol = Col("Action", ["Reorder 50 units", "Reorder 30 units", "Reorder 40 units", "Reorder 25 units", "Reorder 20 units"])
+
+followUp = FollowUpBlock([suggestBulk, suggestThreshold, suggestHistory])
+suggestBulk = FollowUpItem("Reorder all critical items")
+suggestThreshold = FollowUpItem("Adjust safety threshold levels")
+suggestHistory = FollowUpItem("View recent purchase order history")

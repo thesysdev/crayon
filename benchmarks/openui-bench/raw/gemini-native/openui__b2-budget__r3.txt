@@ -1,0 +1,63 @@
+root = Card([header, controls, summaryCards, largestExpenseCallout, categoryChart, breakdownTable, followUps])
+
+header = CardHeader("Personal Budget Tracker", "Monthly overview & spending analysis")
+
+controls = Card([monthSelectField, addExpenseDrawer], "sunk", "row", "m", "center", "between")
+
+monthSelectField = FormControl("Select Period", monthSelect)
+monthSelect = Select("selected_month", [m1, m2, m3, m4], "Choose month", null, "oct_2023", "small")
+m1 = SelectItem("oct_2023", "October 2023")
+m2 = SelectItem("sep_2023", "September 2023")
+m3 = SelectItem("aug_2023", "August 2023")
+m4 = SelectItem("jul_2023", "July 2023")
+
+addExpenseDrawer = DrawerBlock("Add New Expense", "Log an Expense", "Enter details of your transaction below.", expenseForm)
+
+expenseForm = Form("add_expense_form", formButtons, [expenseDescField, expenseAmountField, expenseCatField, expenseDateField])
+expenseDescField = FormControl("Description", expenseDescInput)
+expenseDescInput = Input("description", "e.g., Grocery store", "text")
+expenseAmountField = FormControl("Amount ($)", expenseAmountInput)
+expenseAmountInput = Input("amount", "0.00", "number")
+expenseCatField = FormControl("Category", expenseCatSelect)
+expenseCatSelect = Select("category", [cat1, cat2, cat3, cat4, cat5], "Select category")
+cat1 = SelectItem("housing", "Housing & Rent")
+cat2 = SelectItem("food", "Food & Dining")
+cat3 = SelectItem("transport", "Transportation")
+cat4 = SelectItem("entertainment", "Entertainment")
+cat5 = SelectItem("utilities", "Utilities & Bills")
+expenseDateField = FormControl("Date", expenseDatePicker)
+expenseDatePicker = DatePicker("date", "single")
+
+formButtons = Buttons([submitExpenseBtn, cancelExpenseBtn])
+submitExpenseBtn = Button("Save Expense", null, "primary")
+cancelExpenseBtn = Button("Cancel", null, "tertiary")
+
+summaryCards = Card([spentMetric, budgetMetric, progressMetric], "clear", "row", "m", "center", "between")
+spentMetric = Card([spentTitle, spentValue], "card", "column", "xs")
+spentTitle = TextContent("Total Spent", "small")
+spentValue = Heading("$3,420.50", "h2")
+
+budgetMetric = Card([budgetTitle, budgetValue], "card", "column", "xs")
+budgetTitle = TextContent("Monthly Budget", "small")
+budgetValue = Heading("$4,000.00", "h2")
+
+progressMetric = Card([progressTitle, budgetProgress], "card", "column", "xs")
+progressTitle = TextContent("Budget Used (85.5%)", "small")
+budgetProgress = Progress(85.5, "$3,420 / $4,000")
+
+largestExpenseCallout = TextCallout("warning", "Largest Single Expense", "Monthly Rent Payment — $1,600.00 (46.8% of total monthly spend)")
+
+categoryChart = PieChart(catLabels, catValues, "donut", "circular")
+catLabels = ["Housing", "Food & Dining", "Transportation", "Utilities", "Entertainment"]
+catValues = [1600, 650, 420, 310, 440.50]
+
+breakdownTable = Table([catCol, spentCol, budgetCol, statusCol])
+catCol = Col("Category", ["Housing", "Food & Dining", "Transportation", "Utilities", "Entertainment"])
+spentCol = Col("Spent", ["$1,600.00", "$650.00", "$420.00", "$310.00", "$440.50"])
+budgetCol = Col("Budget", ["$1,600.00", "$800.00", "$500.00", "$350.00", "$400.00"])
+statusCol = Col("Status", ["100% Used", "81% Used", "84% Used", "88% Used", "110% (Over)"])
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("How can I adjust my budget limits?")
+f2 = FollowUpItem("Show September 2023 breakdown")
+f3 = FollowUpItem("Export spending report as CSV")

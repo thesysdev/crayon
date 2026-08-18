@@ -1,0 +1,371 @@
+Here's a single-screen editor's content studio dashboard with all eight items wired up.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "content-studio",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": {
+        "primaryColor": "#0F766E",
+        "agentDisplayName": "Content Studio"
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "content-studio",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "direction": "column",
+          "gap": "l",
+          "children": [
+            "header",
+            "controlsCard",
+            "statsRow",
+            "chartCard",
+            "mainRow",
+            "scheduleCard"
+          ]
+        },
+        {
+          "id": "header",
+          "component": "CardHeader",
+          "title": "Content Studio",
+          "subtitle": "Drafts, readership, and scheduling — the editor's desk."
+        },
+        {
+          "id": "controlsCard",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "align": "end",
+          "justify": "between",
+          "children": ["categoryControl", "newDraftBtn"]
+        },
+        {
+          "id": "categoryControl",
+          "component": "FormControl",
+          "label": "Narrow by category",
+          "input": "categorySelect",
+          "hint": "Filters drafts, stats, and readership."
+        },
+        {
+          "id": "categorySelect",
+          "component": "Select",
+          "name": "category",
+          "placeholder": "All categories",
+          "size": "medium",
+          "items": ["catAll", "catNews", "catFeatures", "catOpinion", "catReviews"]
+        },
+        {
+          "id": "catAll",
+          "component": "SelectItem",
+          "value": "all",
+          "label": "All categories"
+        },
+        {
+          "id": "catNews",
+          "component": "SelectItem",
+          "value": "news",
+          "label": "News"
+        },
+        {
+          "id": "catFeatures",
+          "component": "SelectItem",
+          "value": "features",
+          "label": "Features"
+        },
+        {
+          "id": "catOpinion",
+          "component": "SelectItem",
+          "value": "opinion",
+          "label": "Opinion"
+        },
+        {
+          "id": "catReviews",
+          "component": "SelectItem",
+          "value": "reviews",
+          "label": "Reviews"
+        },
+        {
+          "id": "newDraftBtn",
+          "component": "Button",
+          "label": "＋ Start new draft",
+          "variant": "primary",
+          "size": "medium",
+          "action": ["new_draft"]
+        },
+        {
+          "id": "statsRow",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "children": ["publishedCard", "mostReadCard"]
+        },
+        {
+          "id": "publishedCard",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "weight": 1,
+          "children": ["publishedHeader", "publishedCount", "publishedNote"]
+        },
+        {
+          "id": "publishedHeader",
+          "component": "CardHeader",
+          "title": "Published this week"
+        },
+        {
+          "id": "publishedCount",
+          "component": "TextContent",
+          "text": "12 pieces live",
+          "size": "large-heavy"
+        },
+        {
+          "id": "publishedNote",
+          "component": "TextContent",
+          "text": "Up from 9 last week — 3 News, 4 Features, 2 Opinion, 3 Reviews.",
+          "size": "small"
+        },
+        {
+          "id": "mostReadCard",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "s",
+          "weight": 1,
+          "children": ["mostReadHeader", "mostReadTitle", "mostReadMeta"]
+        },
+        {
+          "id": "mostReadHeader",
+          "component": "CardHeader",
+          "title": "Most-read this month"
+        },
+        {
+          "id": "mostReadTitle",
+          "component": "TextContent",
+          "text": "“The Quiet Rebuild of Downtown” — 84.2K reads · 6:40 avg. read time",
+          "size": "default"
+        },
+        {
+          "id": "mostReadMeta",
+          "component": "Tag",
+          "text": "Features",
+          "variant": "info",
+          "size": "md"
+        },
+        {
+          "id": "chartCard",
+          "component": "Card",
+          "variant": "card",
+          "direction": "column",
+          "gap": "s",
+          "children": ["chartHeader", "readershipChart"]
+        },
+        {
+          "id": "chartHeader",
+          "component": "CardHeader",
+          "title": "Readership — past 30 days",
+          "subtitle": "Daily page views across the site"
+        },
+        {
+          "id": "readershipChart",
+          "component": "LineChart",
+          "labels": ["Oct 6", "Oct 7", "Oct 8", "Oct 9", "Oct 10", "Oct 11", "Oct 12", "Oct 13", "Oct 14", "Oct 15", "Oct 16", "Oct 17", "Oct 18", "Oct 19", "Oct 20", "Oct 21", "Oct 22", "Oct 23", "Oct 24", "Oct 25", "Oct 26", "Oct 27", "Oct 28", "Oct 29", "Oct 30", "Oct 31", "Nov 1", "Nov 2", "Nov 3", "Nov 4"],
+          "series": ["readersSeries"],
+          "variant": "natural",
+          "xLabel": "Day",
+          "yLabel": "Views"
+        },
+        {
+          "id": "readersSeries",
+          "component": "Series",
+          "category": "Views",
+          "values": [9200, 10400, 11500, 10800, 12100, 13200, 9800, 10100, 11700, 12600, 13900, 15100, 12400, 11800, 12900, 14100, 15600, 16200, 13400, 12800, 13700, 14900, 16300, 17100, 14500, 13900, 15200, 16600, 17800, 16900]
+        },
+        {
+          "id": "mainRow",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "children": ["draftsCard", "commentsCard"]
+        },
+        {
+          "id": "draftsCard",
+          "component": "Card",
+          "direction": "column",
+          "gap": "s",
+          "weight": 3,
+          "children": ["draftsHeader", "draftsTable"]
+        },
+        {
+          "id": "draftsHeader",
+          "component": "CardHeader",
+          "title": "Drafts",
+          "subtitle": "Current status per piece"
+        },
+        {
+          "id": "draftsTable",
+          "component": "Table",
+          "columns": ["colDraft", "colStatus", "colUpdated"]
+        },
+        {
+          "id": "colDraft",
+          "component": "Col",
+          "label": "Draft",
+          "type": "string",
+          "data": [
+            "Harbor ferry pilot, explained",
+            "Opinion: the zoning vote ahead",
+            "Five chefs redefining late night",
+            "School board recall — what we know",
+            "Photo essay: Diwali in the city"
+          ]
+        },
+        {
+          "id": "colStatus",
+          "component": "Col",
+          "label": "Status",
+          "type": "string",
+          "data": ["In review", "Needs edits", "Ready", "Draft", "In review"]
+        },
+        {
+          "id": "colUpdated",
+          "component": "Col",
+          "label": "Last updated",
+          "type": "string",
+          "data": ["Today, 9:41 AM", "Yesterday", "Yesterday", "Nov 2", "Oct 31"]
+        },
+        {
+          "id": "commentsCard",
+          "component": "Card",
+          "direction": "column",
+          "gap": "s",
+          "weight": 2,
+          "children": ["commentsHeader", "commentsList"]
+        },
+        {
+          "id": "commentsHeader",
+          "component": "CardHeader",
+          "title": "Comments awaiting reply",
+          "subtitle": "4 unanswered"
+        },
+        {
+          "id": "commentsList",
+          "component": "ListBlock",
+          "variant": "number",
+          "items": ["comment1", "comment2", "comment3", "comment4"]
+        },
+        {
+          "id": "comment1",
+          "component": "ListItem",
+          "title": "Marta K. — “Loved the ferry piece; when is part two?”",
+          "subtitle": "On “Harbor ferry pilot, explained” · 2h ago",
+          "actionLabel": "Reply"
+        },
+        {
+          "id": "comment2",
+          "component": "ListItem",
+          "title": "DeShawn R. — “The rent chart is misleading without 2019 baselines.”",
+          "subtitle": "On “Opinion: the zoning vote ahead” · 5h ago",
+          "actionLabel": "Reply"
+        },
+        {
+          "id": "comment3",
+          "component": "ListItem",
+          "title": "Priya S. — “Can you link the source data?”",
+          "subtitle": "On “The Quiet Rebuild of Downtown” · 8h ago",
+          "actionLabel": "Reply"
+        },
+        {
+          "id": "comment4",
+          "component": "ListItem",
+          "title": "Tom W. — “Typo in para 3: ‘principle’ should be ‘principal’.”",
+          "subtitle": "On “School board recall — what we know” · 1d ago",
+          "actionLabel": "Reply"
+        },
+        {
+          "id": "scheduleCard",
+          "component": "Card",
+          "direction": "column",
+          "gap": "s",
+          "children": ["scheduleHeader", "scheduleForm"]
+        },
+        {
+          "id": "scheduleHeader",
+          "component": "CardHeader",
+          "title": "Schedule a piece",
+          "subtitle": "Set the headline and a publish date"
+        },
+        {
+          "id": "scheduleForm",
+          "component": "Form",
+          "name": "schedulePiece",
+          "fields": ["titleControl", "dateControl"],
+          "buttons": "scheduleButtons"
+        },
+        {
+          "id": "titleControl",
+          "component": "FormControl",
+          "label": "Title",
+          "input": "titleInput",
+          "hint": "Working headline for the piece."
+        },
+        {
+          "id": "titleInput",
+          "component": "Input",
+          "name": "title",
+          "placeholder": "e.g. City Hall's next budget fight",
+          "type": "text"
+        },
+        {
+          "id": "dateControl",
+          "component": "FormControl",
+          "label": "Publish date",
+          "input": "publishDate"
+        },
+        {
+          "id": "publishDate",
+          "component": "DatePicker",
+          "name": "publishDate",
+          "mode": "single"
+        },
+        {
+          "id": "scheduleButtons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": ["scheduleBtn"]
+        },
+        {
+          "id": "scheduleBtn",
+          "component": "Button",
+          "label": "Schedule piece",
+          "variant": "primary",
+          "size": "medium",
+          "action": ["schedule_piece"]
+        }
+      ]
+    }
+  }
+]
+</a2ui-json>
+
+How the eight items map to the screen:
+
+1. **Drafts with status** — the *Drafts* table lists each piece with a Status column (In review, Needs edits, Ready, Draft) and last-updated time.
+2. **Published this week** — a stat card showing "12 pieces live" with a weekly comparison.
+3. **Most-read this month** — a stat card highlighting "The Quiet Rebuild of Downtown" with reads, read time, and a category tag.
+4. **Readership, past 30 days** — a natural line chart of daily page views.
+5. **Narrow by category** — a category Select (All, News, Features, Opinion, Reviews) in the top controls.
+6. **Schedule a piece** — a form with a title input and a single-date DatePicker plus a Schedule button.
+7. **Comments awaiting reply** — a numbered list with commenter, excerpt, source article, age, and a Reply action.
+8. **Start a new draft** — the primary "＋ Start new draft" button in the top-right.

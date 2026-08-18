@@ -1,0 +1,43 @@
+root = Card([header, alertCallout, missingBanner, teammatesList, formSection, followUps], "card", "column", "l")
+
+header = CardHeader("Async Standup", "Wednesday, October 25, 2023")
+
+alertCallout = Callout("error", "Blocker Reported", "Alex Rivera is blocked on database migration permissions for the staging environment.")
+
+missingBanner = Callout("neutral", "Standup Progress", "3 of 5 teammates have posted their updates. 2 updates are still missing (David and Sarah).")
+
+teammatesList = ListBlock([item1, item2, item3], "image")
+
+item1 = ListItem("Alex Rivera — Frontend Lead", "Blocked: Need AWS IAM permissions for staging database migration. Completed user profile UI components.", [alexAvatar], "Help Alex")
+alexAvatar = "https://picsum.photos/seed/alex/100/100"
+
+item2 = ListItem("Maria Chen — Backend Engineer", "On Track: Deployed API v2 endpoints to production. Today: Writing unit tests and updating Swagger docs.", [mariaAvatar])
+mariaAvatar = "https://picsum.photos/seed/maria/100/100"
+
+item3 = ListItem("James Wilson — Product Designer", "On Track: Finalized Figma tokens for dark mode. Today: User testing synthesis and handover to mobile team.", [jamesAvatar])
+jamesAvatar = "https://picsum.photos/seed/james/100/100"
+
+formSection = Form("standupUpdate", submitButtons, [statusField, yesterdayField, todayField, blockerField])
+
+statusField = FormControl("Your Status Today", statusSelect)
+statusSelect = Select("status", [statusOnTrack, statusBlocked, statusOoo], "Select your status")
+statusOnTrack = SelectItem("ontrack", "🟢 On Track")
+statusBlocked = SelectItem("blocked", "🔴 Blocked")
+statusOoo = SelectItem("ooo", "🟡 Out of Office")
+
+yesterdayField = FormControl("What did you accomplish yesterday?", yesterdayInput)
+yesterdayInput = TextArea("yesterday", "Completed user auth flow refactoring...", 2)
+
+todayField = FormControl("What are you working on today?", todayInput)
+todayInput = TextArea("today", "Fixing edge cases in token refresh...", 2)
+
+blockerField = FormControl("Any blockers?", blockerInput, "Leave empty if none")
+blockerInput = Input("blockers", "None")
+
+submitButtons = Buttons([submitBtn, draftBtn])
+submitBtn = Button("Post Update", null, "primary")
+draftBtn = Button("Save Draft", null, "secondary")
+
+followUps = FollowUpBlock([followUp1, followUp2])
+followUp1 = FollowUpItem("Nudge missing teammates")
+followUp2 = FollowUpItem("View yesterday's standup summary")

@@ -1,0 +1,64 @@
+root = Card([header, mainGrid, workoutSection, logForm, followUps])
+header = CardHeader("Daily Fitness Summary", "Wednesday, October 24 • Goal: Active & Healthy")
+
+mainGrid = Card([metricCards, weeklyTrendSection], "clear", "column", "l")
+
+metricCards = Card([stepsCard, calsCard, activeCard], "clear", "row", "m")
+
+stepsCard = Card([stepsHeader, stepsProgress, stepsBadge], "card", "column", "s")
+stepsHeader = CardHeader("Steps Today", "8,450 / 10,000 steps")
+stepsProgress = Progress(84.5, "84.5% of daily goal")
+stepsBadge = Badge("1,550 steps remaining", "secondary")
+
+calsCard = Card([calsHeader, calsProgress, calsBadge], "card", "column", "s")
+calsHeader = CardHeader("Calories Burned", "620 / 750 kcal")
+calsProgress = Progress(82.6, "82.6% of active burn goal")
+calsBadge = Badge("130 kcal remaining", "secondary")
+
+activeCard = Card([activeHeader, activeProgress, activeBadge], "card", "column", "s")
+activeHeader = CardHeader("Active Time", "48 / 45 mins")
+activeProgress = Progress(100, "Goal achieved!")
+activeBadge = Badge("Goal Smashed! +3 mins", "default")
+
+weeklyTrendSection = Card([weeklyHeader, weeklyChart], "card", "column", "m")
+weeklyHeader = CardHeader("Past Week Workouts", "Duration & estimated calories burned per day")
+weeklyChart = BarChart(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], [durationSeries, caloriesSeries], "grouped", "Day of Week", "Value")
+durationSeries = Series("Duration (mins)", [45, 60, 30, 50, 45, 75, 48])
+caloriesSeries = Series("Calories (kcal)", [420, 680, 310, 550, 490, 820, 620])
+
+workoutSection = Card([logAccordion], "clear")
+logAccordion = Accordion([recentItem])
+recentItem = AccordionItem("recent", "View Recent Workout Logs", [workoutTable])
+workoutTable = Table([colDate, colType, colDuration, colCals])
+colDate = Col("Date", ["Today, 08:30 AM", "Yesterday, 06:00 PM", "Oct 22, 07:15 AM", "Oct 21, 05:30 PM"])
+colType = Col("Activity", ["Morning Run", "HIIT Session", "Yoga Flow", "Cycling"])
+colDuration = Col("Duration", ["30 mins", "45 mins", "30 mins", "50 mins"])
+colCals = Col("Calories", ["380 kcal", "490 kcal", "180 kcal", "550 kcal"])
+
+logForm = Form("log-workout", formButtons, [typeControl, durationControl, caloriesControl, notesControl])
+typeControl = FormControl("Activity Type", typeSelect)
+typeSelect = Select("activity_type", [typeRun, typeWalk, typeHIIT, typeYoga, typeCycle, typeStrength], "Select activity")
+typeRun = SelectItem("running", "Running")
+typeWalk = SelectItem("walking", "Walking")
+typeHIIT = SelectItem("hiit", "HIIT / Cardio")
+typeYoga = SelectItem("yoga", "Yoga / Stretching")
+typeCycle = SelectItem("cycling", "Cycling")
+typeStrength = SelectItem("strength", "Strength Training")
+
+durationControl = FormControl("Duration (minutes)", durationInput)
+durationInput = Input("duration", "30", "number")
+
+caloriesControl = FormControl("Calories Burned (kcal)", caloriesInput)
+caloriesInput = Input("calories", "250", "number")
+
+notesControl = FormControl("Notes / Intensity", notesInput, "Optional details about your session")
+notesInput = Input("notes", "e.g. Felt great, pushed hard on final sprint")
+
+formButtons = Buttons([submitBtn, resetBtn])
+submitBtn = Button("Log Workout", null, "primary")
+resetBtn = Button("Clear Form", null, "tertiary")
+
+followUps = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("How many steps did I take yesterday?")
+fu2 = FollowUpItem("Show my workout history for this month")
+fu3 = FollowUpItem("Adjust my daily step goal")

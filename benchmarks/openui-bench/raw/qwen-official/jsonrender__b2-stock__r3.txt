@@ -1,0 +1,26 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["header","threshold-callout","search-control","items-list","summary"]}}
+{"op":"add","path":"/elements/header","value":{"type":"Heading","props":{"text":"⚠️ Low Inventory Alert","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/threshold-callout","value":{"type":"Callout","props":{"variant":"warning","title":"Reorder Threshold Active","description":{"$template":"Items with fewer than ${/threshold} remaining units are flagged below. Reorder promptly to avoid stockouts."}},"children":[]}}
+{"op":"add","path":"/state/threshold","value":10}
+{"op":"add","path":"/elements/search-control","value":{"type":"FormControl","props":{"label":"Search Items","hint":"Filter by name or SKU"},"children":["search-input"]}}
+{"op":"add","path":"/elements/search-input","value":{"type":"Input","props":{"name":"search","placeholder":"e.g. Wireless Mouse, SKU-4401…","value":{"$bindState":"/searchText"}},"children":[]}}
+{"op":"add","path":"/state/searchText","value":""}
+{"op":"add","path":"/elements/items-list","value":{"type":"Card","props":{"direction":"column","gap":"s"},"repeat":{"statePath":"/items","key":"id"},"children":["item-row"]}}
+{"op":"add","path":"/elements/item-row","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","variant":"sunk"},"children":["item-details","item-actions"]}}
+{"op":"add","path":"/elements/item-details","value":{"type":"Card","props":{"direction":"column","gap":"xs","variant":"clear"},"children":["item-name","item-meta"]}}
+{"op":"add","path":"/elements/item-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/item-meta","value":{"type":"TextContent","props":{"text":{"$template":"SKU: ${sku} · Category: ${category}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/item-actions","value":{"type":"Card","props":{"direction":"row","gap":"s","align":"center","variant":"clear"},"children":["units-badge","reorder-btn"]}}
+{"op":"add","path":"/elements/units-badge","value":{"type":"Badge","props":{"text":{"$template":"${remaining} left"},"variant":"destructive"},"children":[]}}
+{"op":"add","path":"/elements/reorder-btn","value":{"type":"Button","props":{"label":"Reorder","variant":"primary","size":"small"},"on":{"press":{"action":"pushState","params":{"statePath":"/reorderQueue","value":{"id":"$id","itemId":{"$item":"id"},"itemName":{"$item":"name"},"quantity":{"$item":"reorderQty"},"timestamp":"now"}}}},"children":[]}}
+{"op":"add","path":"/state/items","value":[]}
+{"op":"add","path":"/state/items/0","value":{"id":"1","name":"Wireless Mouse MX-200","sku":"SKU-4401","category":"Electronics","remaining":3,"reorderQty":50}}
+{"op":"add","path":"/state/items/1","value":{"id":"2","name":"USB-C Charging Cable 2m","sku":"SKU-1187","category":"Accessories","remaining":7,"reorderQty":100}}
+{"op":"add","path":"/state/items/2","value":{"id":"3","name":"Mechanical Keyboard K87","sku":"SKU-3320","category":"Electronics","remaining":2,"reorderQty":30}}
+{"op":"add","path":"/state/items/3","value":{"id":"4","name":"Laptop Stand Aluminum","sku":"SKU-7754","category":"Furniture","remaining":5,"reorderQty":25}}
+{"op":"add","path":"/state/items/4","value":{"id":"5","name":"27\" IPS Monitor Panel","sku":"SKU-9902","category":"Displays","remaining":1,"reorderQty":15}}
+{"op":"add","path":"/state/reorderQueue","value":[]}
+{"op":"add","path":"/elements/summary","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","variant":"clear"},"children":["summary-text","queue-badge"]}}
+{"op":"add","path":"/elements/summary-text","value":{"type":"TextContent","props":{"text":{"$template":"${/items.length} items below threshold of ${/threshold} units"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/queue-badge","value":{"type":"Tag","props":{"text":"Reorder queue: pending","variant":"info","size":"sm"},"children":[]}}

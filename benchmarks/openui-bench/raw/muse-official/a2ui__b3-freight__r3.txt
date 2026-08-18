@@ -1,0 +1,484 @@
+Logistics Coordinator board built — all 9 items covered with live transit tracking, alerts, and operational controls.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "logistics-board",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#0E5A8A",
+      "agentDisplayName": "Logistics Ops"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "logistics-board",
+    "components": [
+      {
+        "component": "Card",
+        "id": "root",
+        "children": [
+          "header",
+          "lastRefreshed",
+          "delayedAlert",
+          "kpiRow",
+          "searchCard",
+          "shipmentsTableCard",
+          "chartsRow",
+          "flagCard"
+        ],
+        "direction": "column",
+        "gap": "m"
+      },
+      {
+        "component": "CardHeader",
+        "id": "header",
+        "title": "Logistics Coordinator Board",
+        "subtitle": "In-transit control tower • 6 active shipments • 4 carriers"
+      },
+      {
+        "component": "TextContent",
+        "id": "lastRefreshed",
+        "text": "Last refreshed: Aug 18, 2026 • 09:42 UTC • Auto-refresh every 5 min • Source: TMS + Carrier EDI",
+        "size": "small"
+      },
+      {
+        "component": "Alert",
+        "id": "delayedAlert",
+        "title": "2 Delayed Shipments Require Attention",
+        "description": "SHP-8822 (Los Angeles → Dallas) — 18h delay (weather, I-40 closure) • New ETA Aug 19, 18:30. SHP-8824 (Seattle → Denver) — 32h delay (carrier breakdown) • New ETA Aug 19, 02:15. Notifications sent to consignees.",
+        "variant": "warning"
+      },
+      {
+        "component": "Card",
+        "id": "kpiRow",
+        "children": [
+          "onTimeCard",
+          "avgCostCard"
+        ],
+        "direction": "row",
+        "gap": "m",
+        "variant": "clear"
+      },
+      {
+        "component": "Card",
+        "id": "onTimeCard",
+        "children": [
+          "onTimeTitle",
+          "onTimeProgress",
+          "onTimeDesc"
+        ],
+        "direction": "column",
+        "gap": "s",
+        "variant": "card"
+      },
+      {
+        "component": "Card",
+        "id": "avgCostCard",
+        "children": [
+          "avgCostTitle",
+          "avgCostValue",
+          "avgCostDesc"
+        ],
+        "direction": "column",
+        "gap": "s",
+        "variant": "card"
+      },
+      {
+        "component": "Card",
+        "id": "searchCard",
+        "children": [
+          "searchLabel",
+          "searchInputControl"
+        ],
+        "direction": "column",
+        "gap": "s",
+        "variant": "sunk"
+      },
+      {
+        "component": "Card",
+        "id": "shipmentsTableCard",
+        "children": [
+          "shipmentsHeader",
+          "shipmentsTable",
+          "shipmentsHint"
+        ],
+        "direction": "column",
+        "gap": "s",
+        "variant": "card"
+      },
+      {
+        "component": "Card",
+        "id": "chartsRow",
+        "children": [
+          "carrierChartCard",
+          "weeklyVolumeCard"
+        ],
+        "direction": "row",
+        "gap": "m",
+        "variant": "clear"
+      },
+      {
+        "component": "Card",
+        "id": "flagCard",
+        "children": [
+          "flagHeader",
+          "flagForm"
+        ],
+        "direction": "column",
+        "gap": "s",
+        "variant": "card"
+      },
+      {
+        "component": "TextContent",
+        "id": "onTimeTitle",
+        "text": "On-Time Performance — This Month",
+        "size": "small-heavy"
+      },
+      {
+        "component": "Progress",
+        "id": "onTimeProgress",
+        "value": 89.4,
+        "label": "89.4% on-time (303 / 339 shipments)"
+      },
+      {
+        "component": "TextContent",
+        "id": "onTimeDesc",
+        "text": "Target 95% • -2.1% vs July • 36 exceptions (18 weather, 12 carrier, 6 customs)",
+        "size": "small"
+      },
+      {
+        "component": "TextContent",
+        "id": "avgCostTitle",
+        "text": "Average Cost per Shipment",
+        "size": "small-heavy"
+      },
+      {
+        "component": "Heading",
+        "id": "avgCostValue",
+        "text": "$1,247",
+        "level": "h2"
+      },
+      {
+        "component": "TextContent",
+        "id": "avgCostDesc",
+        "text": "MTD avg • $1,189 last month • +4.9% • Fuel surcharge +$62 avg",
+        "size": "small"
+      },
+      {
+        "component": "TextContent",
+        "id": "searchLabel",
+        "text": "Search by Route",
+        "size": "small-heavy"
+      },
+      {
+        "component": "FormControl",
+        "id": "searchInputControl",
+        "label": "Filter shipments",
+        "input": "searchInput",
+        "hint": "Type origin, destination, or route e.g. 'LA → Dallas' or 'Seattle'"
+      },
+      {
+        "component": "Input",
+        "id": "searchInput",
+        "name": "routeSearch",
+        "placeholder": "Filter by origin, destination or route (e.g. LA → Dallas)",
+        "type": "text"
+      },
+      {
+        "component": "CardHeader",
+        "id": "shipmentsHeader",
+        "title": "Shipments in Transit (6)",
+        "subtitle": "Origin • Destination • ETA • Status — delayed rows highlighted in alert above"
+      },
+      {
+        "component": "Table",
+        "id": "shipmentsTable",
+        "columns": [
+          "colShipmentId",
+          "colOrigin",
+          "colDestination",
+          "colETA",
+          "colStatus"
+        ]
+      },
+      {
+        "component": "Col",
+        "id": "colShipmentId",
+        "label": "Shipment ID",
+        "data": [
+          "SHP-8821",
+          "SHP-8822",
+          "SHP-8823",
+          "SHP-8824",
+          "SHP-8825",
+          "SHP-8826"
+        ],
+        "type": "string"
+      },
+      {
+        "component": "Col",
+        "id": "colOrigin",
+        "label": "Origin",
+        "data": [
+          "New York, NY",
+          "Los Angeles, CA",
+          "Miami, FL",
+          "Seattle, WA",
+          "Houston, TX",
+          "Boston, MA"
+        ],
+        "type": "string"
+      },
+      {
+        "component": "Col",
+        "id": "colDestination",
+        "label": "Destination",
+        "data": [
+          "Chicago, IL",
+          "Dallas, TX",
+          "Atlanta, GA",
+          "Denver, CO",
+          "Phoenix, AZ",
+          "Philadelphia, PA"
+        ],
+        "type": "string"
+      },
+      {
+        "component": "Col",
+        "id": "colETA",
+        "label": "ETA",
+        "data": [
+          "Aug 20, 18:00",
+          "Aug 19, 18:30 *",
+          "Aug 22, 09:00",
+          "Aug 19, 02:15 *",
+          "Aug 21, 14:00",
+          "Aug 20, 11:30"
+        ],
+        "type": "string"
+      },
+      {
+        "component": "Col",
+        "id": "colStatus",
+        "label": "Status",
+        "data": [
+          "In Transit",
+          "Delayed",
+          "In Transit",
+          "Delayed",
+          "Customs Hold",
+          "In Transit"
+        ],
+        "type": "string"
+      },
+      {
+        "component": "TextContent",
+        "id": "shipmentsHint",
+        "text": "* Revised ETA • Use search above to filter table • Flag shipments below to escalate",
+        "size": "small"
+      },
+      {
+        "component": "Card",
+        "id": "carrierChartCard",
+        "children": [
+          "carrierHeader",
+          "carrierPie"
+        ],
+        "direction": "column",
+        "gap": "s",
+        "variant": "card"
+      },
+      {
+        "component": "Card",
+        "id": "weeklyVolumeCard",
+        "children": [
+          "weeklyHeader",
+          "weeklyArea"
+        ],
+        "direction": "column",
+        "gap": "s",
+        "variant": "card"
+      },
+      {
+        "component": "CardHeader",
+        "id": "carrierHeader",
+        "title": "Volume Split by Carrier",
+        "subtitle": "MTD shipments: 339 total"
+      },
+      {
+        "component": "PieChart",
+        "id": "carrierPie",
+        "labels": [
+          "FedEx Freight",
+          "UPS Supply Chain",
+          "XPO Logistics",
+          "Old Dominion"
+        ],
+        "values": [
+          142,
+          95,
+          61,
+          41
+        ],
+        "variant": "donut"
+      },
+      {
+        "component": "CardHeader",
+        "id": "weeklyHeader",
+        "title": "Weekly Volume — Past 2 Months",
+        "subtitle": "Jun 23 – Aug 11 • 8 weeks • Avg 175 / week"
+      },
+      {
+        "component": "AreaChart",
+        "id": "weeklyArea",
+        "labels": [
+          "Jun 23",
+          "Jun 30",
+          "Jul 7",
+          "Jul 14",
+          "Jul 21",
+          "Jul 28",
+          "Aug 4",
+          "Aug 11"
+        ],
+        "series": [
+          "weeklySeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Week starting",
+        "yLabel": "Shipments"
+      },
+      {
+        "component": "Series",
+        "id": "weeklySeries",
+        "category": "Shipments",
+        "values": [
+          142,
+          165,
+          158,
+          172,
+          188,
+          175,
+          192,
+          205
+        ]
+      },
+      {
+        "component": "CardHeader",
+        "id": "flagHeader",
+        "title": "Flag a Shipment",
+        "subtitle": "Escalate for review, hold, or customer notification"
+      },
+      {
+        "component": "Form",
+        "id": "flagForm",
+        "name": "flagShipment",
+        "buttons": "flagButtons",
+        "fields": [
+          "flagShipmentSelectControl",
+          "flagReasonControl"
+        ]
+      },
+      {
+        "component": "FormControl",
+        "id": "flagShipmentSelectControl",
+        "label": "Shipment to flag",
+        "input": "flagShipmentSelect",
+        "hint": "Select from in-transit list"
+      },
+      {
+        "component": "Select",
+        "id": "flagShipmentSelect",
+        "name": "shipmentId",
+        "items": [
+          "sel8821",
+          "sel8822",
+          "sel8823",
+          "sel8824",
+          "sel8825",
+          "sel8826"
+        ],
+        "placeholder": "Choose shipment ID"
+      },
+      {
+        "component": "SelectItem",
+        "id": "sel8821",
+        "value": "SHP-8821",
+        "label": "SHP-8821 — NY → Chicago"
+      },
+      {
+        "component": "SelectItem",
+        "id": "sel8822",
+        "value": "SHP-8822",
+        "label": "SHP-8822 — LA → Dallas (Delayed)"
+      },
+      {
+        "component": "SelectItem",
+        "id": "sel8823",
+        "value": "SHP-8823",
+        "label": "SHP-8823 — Miami → Atlanta"
+      },
+      {
+        "component": "SelectItem",
+        "id": "sel8824",
+        "value": "SHP-8824",
+        "label": "SHP-8824 — Seattle → Denver (Delayed)"
+      },
+      {
+        "component": "SelectItem",
+        "id": "sel8825",
+        "value": "SHP-8825",
+        "label": "SHP-8825 — Houston → Phoenix"
+      },
+      {
+        "component": "SelectItem",
+        "id": "sel8826",
+        "value": "SHP-8826",
+        "label": "SHP-8826 — Boston → Philadelphia"
+      },
+      {
+        "component": "FormControl",
+        "id": "flagReasonControl",
+        "label": "Flag reason",
+        "input": "flagReason",
+        "hint": "Will be added to shipment timeline and alert ops lead"
+      },
+      {
+        "component": "TextArea",
+        "id": "flagReason",
+        "name": "flagReason",
+        "placeholder": "e.g. Customer requesting expedite, temp-sensitive, damage risk...",
+        "rows": 3
+      },
+      {
+        "component": "Buttons",
+        "id": "flagButtons",
+        "buttons": [
+          "flagSubmitBtn",
+          "flagCancelBtn"
+        ],
+        "direction": "row"
+      },
+      {
+        "component": "Button",
+        "id": "flagSubmitBtn",
+        "label": "Flag Shipment",
+        "variant": "primary"
+      },
+      {
+        "component": "Button",
+        "id": "flagCancelBtn",
+        "label": "Clear",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>

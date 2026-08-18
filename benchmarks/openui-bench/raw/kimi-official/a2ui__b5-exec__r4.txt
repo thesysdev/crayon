@@ -1,0 +1,116 @@
+Here's your CEO Quarterly Command View — a single screen covering all 18 items:
+
+<a2ui-json>
+{"version":"v0.9","createSurface":{"surfaceId":"ceo-command","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#1E40AF","agentDisplayName":"CEO Command View"}}}
+</a2ui-json>
+
+<a2ui-json>
+{"version":"v0.9","updateComponents":{"surfaceId":"ceo-command","components":[
+{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["hdr","controls","kpiRow","trendRow","deptRow","riskInitRow","salesRow","custRow","boardCard"]},
+
+{"id":"hdr","component":"CardHeader","title":"CEO Quarterly Command View — Q3 FY2025","subtitle":"All figures in $M unless noted. Data as of quarter close."},
+
+{"id":"controls","component":"Card","variant":"sunk","direction":"row","gap":"m","align":"end","children":["fcQ","fcR","fcExp"]},
+{"id":"fcQ","component":"FormControl","label":"Quarter","input":"selQ"},
+{"id":"selQ","component":"Select","name":"quarter","items":["q1","q2","q3","q4"],"value":"Q3 FY2025"},
+{"id":"q1","component":"SelectItem","value":"Q1 FY2025","label":"Q1 FY2025"},
+{"id":"q2","component":"SelectItem","value":"Q2 FY2025","label":"Q2 FY2025"},
+{"id":"q3","component":"SelectItem","value":"Q3 FY2025","label":"Q3 FY2025"},
+{"id":"q4","component":"SelectItem","value":"Q4 FY2025","label":"Q4 FY2025"},
+{"id":"fcR","component":"FormControl","label":"Region focus","input":"selR"},
+{"id":"selR","component":"Select","name":"region","items":["rAll","rNA","rEU","rAPAC"],"value":"All Regions"},
+{"id":"rAll","component":"SelectItem","value":"All Regions","label":"All Regions"},
+{"id":"rNA","component":"SelectItem","value":"North America","label":"North America"},
+{"id":"rEU","component":"SelectItem","value":"Europe","label":"Europe"},
+{"id":"rAPAC","component":"SelectItem","value":"APAC","label":"APAC"},
+{"id":"fcExp","component":"FormControl","label":"Board pack","input":"btnExp"},
+{"id":"btnExp","component":"Button","label":"Export Pack (PDF)","variant":"primary","action":[{"action":"export_pack","format":"pdf"}]},
+
+{"id":"kpiRow","component":"Card","variant":"card","direction":"row","gap":"m","children":["kpiRev","kpiCost","kpiProfit","kpiRunway"]},
+{"id":"kpiRev","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["kpiRevT","kpiRevV","kpiRevB"]},
+{"id":"kpiRevT","component":"TextContent","text":"Revenue","size":"small"},
+{"id":"kpiRevV","component":"TextContent","text":"$48.2M","size":"large-heavy"},
+{"id":"kpiRevB","component":"Badge","text":"+12% QoQ","variant":"default"},
+{"id":"kpiCost","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["kpiCostT","kpiCostV","kpiCostB"]},
+{"id":"kpiCostT","component":"TextContent","text":"Costs","size":"small"},
+{"id":"kpiCostV","component":"TextContent","text":"$31.5M","size":"large-heavy"},
+{"id":"kpiCostB","component":"Badge","text":"+4% QoQ","variant":"secondary"},
+{"id":"kpiProfit","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["kpiProfT","kpiProfV","kpiProfB"]},
+{"id":"kpiProfT","component":"TextContent","text":"Profit","size":"small"},
+{"id":"kpiProfV","component":"TextContent","text":"$16.7M","size":"large-heavy"},
+{"id":"kpiProfB","component":"Badge","text":"34.6% margin","variant":"default"},
+{"id":"kpiRunway","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["kpiRunT","kpiRunV","kpiRunB"]},
+{"id":"kpiRunT","component":"TextContent","text":"Runway","size":"small"},
+{"id":"kpiRunV","component":"TextContent","text":"22 months","size":"large-heavy"},
+{"id":"kpiRunB","component":"Badge","text":"Cash $92M","variant":"outline"},
+
+{"id":"trendRow","component":"Card","variant":"card","direction":"row","gap":"m","children":["revChartCard","costChartCard"]},
+{"id":"revChartCard","component":"Card","variant":"sunk","direction":"column","gap":"s","children":["revChartH","revChart"]},
+{"id":"revChartH","component":"TextContent","text":"Revenue — Last 4 Quarters ($M)","size":"small-heavy"},
+{"id":"revChart","component":"BarChart","labels":["Q4 FY24","Q1 FY25","Q2 FY25","Q3 FY25"],"series":["revSeries"],"yLabel":"$M"},
+{"id":"revSeries","component":"Series","category":"Revenue","values":[38.5,41.0,43.1,48.2]},
+{"id":"costChartCard","component":"Card","variant":"sunk","direction":"column","gap":"s","children":["costChartH","costChart"]},
+{"id":"costChartH","component":"TextContent","text":"Costs — Last 4 Quarters ($M)","size":"small-heavy"},
+{"id":"costChart","component":"BarChart","labels":["Q4 FY24","Q1 FY25","Q2 FY25","Q3 FY25"],"series":["costSeries"],"yLabel":"$M"},
+{"id":"costSeries","component":"Series","category":"Costs","values":[28.2,29.4,30.3,31.5]},
+
+{"id":"deptRow","component":"Card","variant":"card","direction":"row","gap":"m","children":["budgetCard","hcCard"]},
+{"id":"budgetCard","component":"Card","variant":"sunk","direction":"column","gap":"s","children":["budgetH","budgetChart"]},
+{"id":"budgetH","component":"TextContent","text":"Budget by Department vs Plan ($M)","size":"small-heavy"},
+{"id":"budgetChart","component":"HorizontalBarChart","labels":["Engineering","Sales","Marketing","G&A","Customer Success"],"series":["budgetActual","budgetPlan"],"variant":"grouped"},
+{"id":"budgetActual","component":"Series","category":"Actual","values":[12.4,8.9,4.6,3.1,2.5]},
+{"id":"budgetPlan","component":"Series","category":"Plan","values":[12.0,9.5,5.0,3.0,2.4]},
+{"id":"hcCard","component":"Card","variant":"sunk","direction":"column","gap":"s","children":["hcH","hcChart"]},
+{"id":"hcH","component":"TextContent","text":"Headcount by Department","size":"small-heavy"},
+{"id":"hcChart","component":"PieChart","labels":["Engineering","Sales","Marketing","G&A","Customer Success"],"values":[210,120,45,38,62],"variant":"donut"},
+
+{"id":"riskInitRow","component":"Card","variant":"card","direction":"row","gap":"m","children":["riskCard","initCard"]},
+{"id":"riskCard","component":"Card","variant":"sunk","direction":"column","gap":"s","children":["riskH","riskTable"]},
+{"id":"riskH","component":"TextContent","text":"Top Risks & Owners","size":"small-heavy"},
+{"id":"riskTable","component":"Table","columns":["riskCol","sevCol","ownerCol"]},
+{"id":"riskCol","component":"Col","label":"Risk","data":["Key customer concentration (top 3 = 31% of ARR)","Cloud cost overrun on AI workloads","Senior eng attrition in platform team"],"type":"string"},
+{"id":"sevCol","component":"Col","label":"Severity","data":["High","Medium","Medium"],"type":"string"},
+{"id":"ownerCol","component":"Col","label":"Owner","data":["CRO — J. Alvarez","CTO — P. Nguyen","VP Eng — S. Okafor"],"type":"string"},
+{"id":"initCard","component":"Card","variant":"sunk","direction":"column","gap":"s","children":["initH","initList"]},
+{"id":"initH","component":"TextContent","text":"Strategic Initiatives","size":"small-heavy"},
+{"id":"initList","component":"ListBlock","variant":"number","items":["init1","init2","init3","init4"]},
+{"id":"init1","component":"ListItem","title":"Enterprise tier launch","subtitle":"Status: On track — GA in Q4"},
+{"id":"init2","component":"ListItem","title":"APAC market entry","subtitle":"Status: At risk — hiring behind plan"},
+{"id":"init3","component":"ListItem","title":"AI copilot in core product","subtitle":"Status: On track — beta NPS 61"},
+{"id":"init4","component":"ListItem","title":"ERP integration partnership","subtitle":"Status: Delayed — legal review"},
+
+{"id":"salesRow","component":"Card","variant":"card","direction":"row","gap":"m","children":["pipeCard","winCard"]},
+{"id":"pipeCard","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["pipeT","pipeV","pipeB"]},
+{"id":"pipeT","component":"TextContent","text":"Sales Pipeline Value","size":"small"},
+{"id":"pipeV","component":"TextContent","text":"$86.4M","size":"large-heavy"},
+{"id":"pipeB","component":"Badge","text":"3.2x coverage","variant":"default"},
+{"id":"winCard","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["winT","winV","winProg"]},
+{"id":"winT","component":"TextContent","text":"Win Rate","size":"small"},
+{"id":"winV","component":"TextContent","text":"27%","size":"large-heavy"},
+{"id":"winProg","component":"Progress","value":27,"label":"vs 25% target"},
+
+{"id":"custRow","component":"Card","variant":"card","direction":"row","gap":"m","children":["custCard","churnCard","npsCard"]},
+{"id":"custCard","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["custT","custV","custB"]},
+{"id":"custT","component":"TextContent","text":"Customers","size":"small"},
+{"id":"custV","component":"TextContent","text":"1,842","size":"large-heavy"},
+{"id":"custB","component":"Badge","text":"+96 net adds","variant":"default"},
+{"id":"churnCard","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["churnT","churnV","churnB"]},
+{"id":"churnT","component":"TextContent","text":"Churn (logo, quarterly)","size":"small"},
+{"id":"churnV","component":"TextContent","text":"2.1%","size":"large-heavy"},
+{"id":"churnB","component":"Badge","text":"Improved from 2.6%","variant":"default"},
+{"id":"npsCard","component":"Card","variant":"sunk","direction":"column","gap":"xs","children":["npsT","npsV","npsProg"]},
+{"id":"npsT","component":"TextContent","text":"NPS","size":"small"},
+{"id":"npsV","component":"TextContent","text":"54","size":"large-heavy"},
+{"id":"npsProg","component":"Progress","value":54,"label":"Up 6 pts YoY"},
+
+{"id":"boardCard","component":"Card","variant":"card","direction":"column","gap":"s","children":["boardH","boardList"]},
+{"id":"boardH","component":"TextContent","text":"Items for Next Board Meeting","size":"small-heavy"},
+{"id":"boardList","component":"ListBlock","variant":"number","items":["bd1","bd2","bd3","bd4"]},
+{"id":"bd1","component":"ListItem","title":"Approve FY2026 annual operating plan","subtitle":"Decision required"},
+{"id":"bd2","component":"ListItem","title":"Series D timing and size","subtitle":"Discussion — runway at 22 months"},
+{"id":"bd3","component":"ListItem","title":"APAC entry revised budget","subtitle":"Decision required — initiative at risk"},
+{"id":"bd4","component":"ListItem","title":"Customer concentration mitigation plan","subtitle":"Update from CRO"}
+]}}
+</a2ui-json>
+
+The screen covers all 18 items: **1–3** revenue/costs/profit KPI cards, **4–5** four-quarter revenue and cost bar charts, **6** department budget vs. plan (grouped bars), **7** headcount donut, **8** risks table with owners, **9** initiatives with status, **10** runway card, **11** pipeline value, **12** win rate, **13** customer count + churn, **14** NPS, **15** board agenda list, **16** quarter selector, **17** region focus selector, and **18** the Export Pack button. Want me to adjust figures, add a region filter effect, or restructure the layout?

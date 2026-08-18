@@ -1,0 +1,650 @@
+Here is a comprehensive cross-platform studio dashboard designed for creators to manage their content, track metrics, schedule posts, and handle interactions across platforms.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "creator_studio_dashboard",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#6366F1",
+      "agentDisplayName": "Creator Studio AI"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "creator_studio_dashboard",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header_card",
+          "kpi_grid_card",
+          "middle_row_card",
+          "bottom_row_card"
+        ]
+      },
+      {
+        "id": "header_card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "row",
+        "align": "center",
+        "justify": "between",
+        "children": [
+          "header_title_section",
+          "header_controls"
+        ]
+      },
+      {
+        "id": "header_title_section",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "main_heading",
+          "sub_heading"
+        ]
+      },
+      {
+        "id": "main_heading",
+        "component": "Heading",
+        "level": "h2",
+        "text": "Creator Studio"
+      },
+      {
+        "id": "sub_heading",
+        "component": "TextContent",
+        "text": "Cross-platform analytics, content scheduling, and community hub",
+        "size": "small"
+      },
+      {
+        "id": "header_controls",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "align": "center",
+        "gap": "m",
+        "children": [
+          "platform_filter_control",
+          "schedule_modal_block"
+        ]
+      },
+      {
+        "id": "platform_filter_control",
+        "component": "FormControl",
+        "label": "Filter Platform",
+        "hint": "Narrow down studio analytics",
+        "input": "platform_select"
+      },
+      {
+        "id": "platform_select",
+        "component": "Select",
+        "name": "platform_filter",
+        "placeholder": "All Platforms",
+        "value": "all",
+        "items": [
+          "opt_all",
+          "opt_yt",
+          "opt_ig",
+          "opt_tt",
+          "opt_tw"
+        ]
+      },
+      {
+        "id": "opt_all",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All Platforms"
+      },
+      {
+        "id": "opt_yt",
+        "component": "SelectItem",
+        "value": "youtube",
+        "label": "YouTube"
+      },
+      {
+        "id": "opt_ig",
+        "component": "SelectItem",
+        "value": "instagram",
+        "label": "Instagram"
+      },
+      {
+        "id": "opt_tt",
+        "component": "SelectItem",
+        "value": "tiktok",
+        "label": "TikTok"
+      },
+      {
+        "id": "opt_tw",
+        "component": "SelectItem",
+        "value": "x_twitter",
+        "label": "X / Twitter"
+      },
+      {
+        "id": "schedule_modal_block",
+        "component": "DialogBlock",
+        "triggerLabel": "+ Schedule Post",
+        "triggerVariant": "default",
+        "title": "Schedule New Post",
+        "description": "Compose your text/caption and select target platform & time.",
+        "content": [
+          "schedule_form"
+        ]
+      },
+      {
+        "id": "schedule_form",
+        "component": "Form",
+        "name": "schedule_post_form",
+        "fields": [
+          "form_platform_ctrl",
+          "form_caption_ctrl",
+          "form_date_ctrl"
+        ],
+        "buttons": "form_buttons"
+      },
+      {
+        "id": "form_platform_ctrl",
+        "component": "FormControl",
+        "label": "Target Platform",
+        "input": "form_platform_select"
+      },
+      {
+        "id": "form_platform_select",
+        "component": "Select",
+        "name": "target_platform",
+        "placeholder": "Select Platform",
+        "items": [
+          "f_opt_yt",
+          "f_opt_ig",
+          "f_opt_tt",
+          "f_opt_tw"
+        ]
+      },
+      {
+        "id": "f_opt_yt",
+        "component": "SelectItem",
+        "value": "youtube",
+        "label": "YouTube"
+      },
+      {
+        "id": "f_opt_ig",
+        "component": "SelectItem",
+        "value": "instagram",
+        "label": "Instagram"
+      },
+      {
+        "id": "f_opt_tt",
+        "component": "SelectItem",
+        "value": "tiktok",
+        "label": "TikTok"
+      },
+      {
+        "id": "f_opt_tw",
+        "component": "SelectItem",
+        "value": "x_twitter",
+        "label": "X / Twitter"
+      },
+      {
+        "id": "form_caption_ctrl",
+        "component": "FormControl",
+        "label": "Post Caption",
+        "hint": "Add your text, hashtags, and links.",
+        "input": "form_caption_input"
+      },
+      {
+        "id": "form_caption_input",
+        "component": "TextArea",
+        "name": "caption",
+        "placeholder": "Write your post caption here...",
+        "rows": 4
+      },
+      {
+        "id": "form_date_ctrl",
+        "component": "FormControl",
+        "label": "Publish Date & Time",
+        "hint": "Select scheduled date",
+        "input": "form_date_picker"
+      },
+      {
+        "id": "form_date_picker",
+        "component": "DatePicker",
+        "name": "schedule_time",
+        "mode": "single"
+      },
+      {
+        "id": "form_buttons",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": [
+          "submit_post_btn"
+        ]
+      },
+      {
+        "id": "submit_post_btn",
+        "component": "Button",
+        "label": "Confirm Schedule",
+        "variant": "primary"
+      },
+      {
+        "id": "kpi_grid_card",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "followers_kpi",
+          "engagement_kpi",
+          "earnings_kpi",
+          "best_time_kpi"
+        ]
+      },
+      {
+        "id": "followers_kpi",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "xs",
+        "weight": 1,
+        "children": [
+          "followers_head",
+          "followers_val",
+          "followers_tag"
+        ]
+      },
+      {
+        "id": "followers_head",
+        "component": "CardHeader",
+        "title": "Total Followers",
+        "subtitle": "Across all channels"
+      },
+      {
+        "id": "followers_val",
+        "component": "Heading",
+        "level": "h2",
+        "text": "482,500"
+      },
+      {
+        "id": "followers_tag",
+        "component": "Tag",
+        "text": "+24,800 (+5.4%) past month",
+        "variant": "success"
+      },
+      {
+        "id": "engagement_kpi",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "xs",
+        "weight": 1,
+        "children": [
+          "eng_head",
+          "eng_val",
+          "eng_tag"
+        ]
+      },
+      {
+        "id": "eng_head",
+        "component": "CardHeader",
+        "title": "Engagement Rate",
+        "subtitle": "Avg likes, shares & comments"
+      },
+      {
+        "id": "eng_val",
+        "component": "Heading",
+        "level": "h2",
+        "text": "6.82%"
+      },
+      {
+        "id": "eng_tag",
+        "component": "Tag",
+        "text": "+0.9% vs industry avg (5.9%)",
+        "variant": "info"
+      },
+      {
+        "id": "earnings_kpi",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "xs",
+        "weight": 1,
+        "children": [
+          "earn_head",
+          "earn_val",
+          "earn_tag"
+        ]
+      },
+      {
+        "id": "earn_head",
+        "component": "CardHeader",
+        "title": "Earnings (This Month)",
+        "subtitle": "Ad Revenue + Sponsorships"
+      },
+      {
+        "id": "earn_val",
+        "component": "Heading",
+        "level": "h2",
+        "text": "$12,450.00"
+      },
+      {
+        "id": "earn_tag",
+        "component": "Tag",
+        "text": "+18.2% vs last month",
+        "variant": "success"
+      },
+      {
+        "id": "best_time_kpi",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "xs",
+        "weight": 1,
+        "children": [
+          "time_head",
+          "time_val",
+          "time_tag"
+        ]
+      },
+      {
+        "id": "time_head",
+        "component": "CardHeader",
+        "title": "Best Hour to Post",
+        "subtitle": "Historical engagement peak"
+      },
+      {
+        "id": "time_val",
+        "component": "Heading",
+        "level": "h2",
+        "text": "6:00 PM - 7:00 PM"
+      },
+      {
+        "id": "time_tag",
+        "component": "Tag",
+        "text": "Thursdays & Fridays peak highest",
+        "variant": "neutral"
+      },
+      {
+        "id": "middle_row_card",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "l",
+        "children": [
+          "audience_split_card",
+          "best_posts_card"
+        ]
+      },
+      {
+        "id": "audience_split_card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "weight": 1,
+        "children": [
+          "audience_head",
+          "audience_pie"
+        ]
+      },
+      {
+        "id": "audience_head",
+        "component": "CardHeader",
+        "title": "Audience Split by Platform",
+        "subtitle": "Distribution of 482.5k total followers"
+      },
+      {
+        "id": "audience_pie",
+        "component": "PieChart",
+        "variant": "donut",
+        "appearance": "circular",
+        "labels": [
+          "YouTube",
+          "Instagram",
+          "TikTok",
+          "X / Twitter"
+        ],
+        "values": [
+          210000,
+          145000,
+          82000,
+          45500
+        ]
+      },
+      {
+        "id": "best_posts_card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "weight": 2,
+        "children": [
+          "best_posts_head",
+          "best_posts_table"
+        ]
+      },
+      {
+        "id": "best_posts_head",
+        "component": "CardHeader",
+        "title": "Best Posts This Month",
+        "subtitle": "Top performing content ranked by total organic reach"
+      },
+      {
+        "id": "best_posts_table",
+        "component": "Table",
+        "columns": [
+          "col_post_title",
+          "col_post_platform",
+          "col_post_reach",
+          "col_post_eng"
+        ]
+      },
+      {
+        "id": "col_post_title",
+        "component": "Col",
+        "label": "Post Content / Title",
+        "type": "string",
+        "data": [
+          "Building a Custom AI Assistant in 10 Mins",
+          "Day in the Life of a Full-time Creator #vlog",
+          "My Entire Camera Setup for 2025",
+          "Top 5 UI Trends you can't ignore"
+        ]
+      },
+      {
+        "id": "col_post_platform",
+        "component": "Col",
+        "label": "Platform",
+        "type": "string",
+        "data": [
+          "YouTube",
+          "TikTok",
+          "Instagram",
+          "X / Twitter"
+        ]
+      },
+      {
+        "id": "col_post_reach",
+        "component": "Col",
+        "label": "Total Reach",
+        "type": "string",
+        "data": [
+          "284,500 views",
+          "192,100 views",
+          "143,800 reach",
+          "88,200 impressions"
+        ]
+      },
+      {
+        "id": "col_post_eng",
+        "component": "Col",
+        "label": "Engagement",
+        "type": "string",
+        "data": [
+          "12.4%",
+          "9.1%",
+          "7.8%",
+          "5.2%"
+        ]
+      },
+      {
+        "id": "bottom_row_card",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "l",
+        "children": [
+          "scheduled_card",
+          "comments_card",
+          "collabs_card"
+        ]
+      },
+      {
+        "id": "scheduled_card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "weight": 1,
+        "children": [
+          "scheduled_head",
+          "scheduled_list"
+        ]
+      },
+      {
+        "id": "scheduled_head",
+        "component": "CardHeader",
+        "title": "Posts Scheduled This Week",
+        "subtitle": "Upcoming automated queue"
+      },
+      {
+        "id": "scheduled_list",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "sched_item_1",
+          "sched_item_2",
+          "sched_item_3"
+        ]
+      },
+      {
+        "id": "sched_item_1",
+        "component": "ListItem",
+        "title": "How I Structure My Desk Setup",
+        "subtitle": "YouTube • Tomorrow at 6:00 PM"
+      },
+      {
+        "id": "sched_item_2",
+        "component": "ListItem",
+        "title": "Quick Productivity Tips Thread",
+        "subtitle": "X / Twitter • Friday at 6:30 PM"
+      },
+      {
+        "id": "sched_item_3",
+        "component": "ListItem",
+        "title": "Studio Office Tour Reel",
+        "subtitle": "Instagram • Sunday at 5:45 PM"
+      },
+      {
+        "id": "comments_card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "weight": 1,
+        "children": [
+          "comments_head",
+          "comments_callout",
+          "comments_list"
+        ]
+      },
+      {
+        "id": "comments_head",
+        "component": "CardHeader",
+        "title": "Comments Waiting for Reply",
+        "subtitle": "High-priority viewer engagement"
+      },
+      {
+        "id": "comments_callout",
+        "component": "Callout",
+        "variant": "warning",
+        "title": "14 Urgent Unanswered Comments",
+        "description": "Replying within 1 hour boosts algorithmic post distribution by up to 25%."
+      },
+      {
+        "id": "comments_list",
+        "component": "ListBlock",
+        "variant": "image",
+        "items": [
+          "comment_item_1",
+          "comment_item_2"
+        ]
+      },
+      {
+        "id": "comment_item_1",
+        "component": "ListItem",
+        "title": "\"What mic arm are you using in this video?\"",
+        "subtitle": "by @alex_tech • YouTube (AI Assistant Video)",
+        "actionLabel": "Reply"
+      },
+      {
+        "id": "comment_item_2",
+        "component": "ListItem",
+        "title": "\"Can you do a tutorial on the color grading next?\"",
+        "subtitle": "by @design_sarah • Instagram Reel",
+        "actionLabel": "Reply"
+      },
+      {
+        "id": "collabs_card",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "weight": 1,
+        "children": [
+          "collabs_head",
+          "collabs_list"
+        ]
+      },
+      {
+        "id": "collabs_head",
+        "component": "CardHeader",
+        "title": "Pending Collaborations",
+        "subtitle": "Brand deals & sponsor requests"
+      },
+      {
+        "id": "collabs_list",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "collab_item_1",
+          "collab_item_2"
+        ]
+      },
+      {
+        "id": "collab_item_1",
+        "component": "ListItem",
+        "title": "TechGear Co. — $3,500 Budget",
+        "subtitle": "Dedicated video review & 60s Instagram Reel integration.",
+        "actionLabel": "Review Offer"
+      },
+      {
+        "id": "collab_item_2",
+        "component": "ListItem",
+        "title": "SaaSFlow App — $1,800 Budget",
+        "subtitle": "X/Twitter thread sponsorship + newsletter mention.",
+        "actionLabel": "Review Offer"
+      }
+    ]
+  }
+}
+</a2ui-json>

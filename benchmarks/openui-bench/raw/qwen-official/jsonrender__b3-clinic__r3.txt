@@ -1,0 +1,58 @@
+
+
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["header","stats-row","next-patient-section","rooms-section","appointments-section"]}}
+{"op":"add","path":"/elements/header","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","variant":"clear"},"children":["btn-prev","date-display","btn-next"]}}
+{"op":"add","path":"/elements/btn-prev","value":{"type":"Button","props":{"label":"← Previous Day","variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/currentDate","value":"2024-01-14"}}},"children":[]}}
+{"op":"add","path":"/elements/date-display","value":{"type":"TextContent","props":{"text":{"$template":"📅 ${/currentDateDisplay}"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/btn-next","value":{"type":"Button","props":{"label":"Next Day →","variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/currentDate","value":"2024-01-16"}}},"children":[]}}
+{"op":"add","path":"/state/currentDate","value":"2024-01-15"}
+{"op":"add","path":"/state/currentDateDisplay","value":"Monday, January 15, 2024"}
+{"op":"add","path":"/elements/stats-row","value":{"type":"Card","props":{"direction":"row","gap":"m","variant":"clear"},"children":["stat-patients","stat-noshow"]}}
+{"op":"add","path":"/elements/stat-patients","value":{"type":"Card","props":{"variant":"sunk","direction":"column","align":"center","gap":"xs"},"children":["stat-patients-label","stat-patients-value"]}}
+{"op":"add","path":"/elements/stat-patients-label","value":{"type":"TextContent","props":{"text":"Patients Expected Today","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/stat-patients-value","value":{"type":"TextContent","props":{"text":{"$template":"${/stats/expectedCount} patients"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/stat-noshow","value":{"type":"Card","props":{"variant":"sunk","direction":"column","align":"center","gap":"xs"},"children":["stat-noshow-label","stat-noshow-value"]}}
+{"op":"add","path":"/elements/stat-noshow-label","value":{"type":"TextContent","props":{"text":"No-Show Rate (This Month)","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/stat-noshow-value","value":{"type":"TextContent","props":{"text":{"$template":"${/stats/noShowRate}%"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/state/stats","value":{"expectedCount":12,"noShowRate":8.3}}
+{"op":"add","path":"/elements/next-patient-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["next-patient-heading","next-patient-callout"]}}
+{"op":"add","path":"/elements/next-patient-heading","value":{"type":"Heading","props":{"text":"🔔 Next Patient to Call","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/next-patient-callout","value":{"type":"Callout","props":{"variant":"info","title":{"$template":"${/nextPatient/name}"},"description":{"$template":"Room ${/nextPatient/room} · ${/nextPatient/time} · ${/nextPatient/reason}"}},"children":[]}}
+{"op":"add","path":"/state/nextPatient","value":{"name":"Margaret Chen","room":"204","time":"10:30 AM","reason":"Follow-up – Blood Pressure"}}
+{"op":"add","path":"/elements/rooms-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["rooms-heading","rooms-grid"]}}
+{"op":"add","path":"/elements/rooms-heading","value":{"type":"Heading","props":{"text":"🚪 Room Availability","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/rooms-grid","value":{"type":"Card","props":{"direction":"row","gap":"s","wrap":true,"variant":"clear"},"repeat":{"statePath":"/rooms","key":"id"},"children":["room-chip"]}}
+{"op":"add","path":"/elements/room-chip","value":{"type":"Tag","props":{"text":{"$template":"${name}"},"variant":{"$cond":{"$item":"available"},"$then":"success","$else":"danger"},"icon":"door-open","size":"md"},"children":[]}}
+{"op":"add","path":"/state/rooms","value":[]}
+{"op":"add","path":"/state/rooms/0","value":{"id":"r1","name":"Room 201","available":true}}
+{"op":"add","path":"/state/rooms/1","value":{"id":"r2","name":"Room 202","available":false}}
+{"op":"add","path":"/state/rooms/2","value":{"id":"r3","name":"Room 203","available":true}}
+{"op":"add","path":"/state/rooms/3","value":{"id":"r4","name":"Room 204","available":false}}
+{"op":"add","path":"/state/rooms/4","value":{"id":"r5","name":"Room 205","available":true}}
+{"op":"add","path":"/state/rooms/5","value":{"id":"r6","name":"Room 206","available":false}}
+{"op":"add","path":"/elements/appointments-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["appt-heading","appt-list"]}}
+{"op":"add","path":"/elements/appt-heading","value":{"type":"Heading","props":{"text":"📋 Today's Appointments","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/appt-list","value":{"type":"Card","props":{"direction":"column","gap":"xs","variant":"clear"},"repeat":{"statePath":"/appointments","key":"id"},"children":["appt-card"]}}
+{"op":"add","path":"/elements/appt-card","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","gap":"m"},"children":["appt-info","appt-actions"]}}
+{"op":"add","path":"/elements/appt-info","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center","variant":"clear"},"children":["appt-time","appt-details"]}}
+{"op":"add","path":"/elements/appt-time","value":{"type":"Badge","props":{"text":{"$item":"time"},"variant":"secondary"},"children":[]}}
+{"op":"add","path":"/elements/appt-details","value":{"type":"Card","props":{"direction":"column","gap":"none","variant":"clear"},"children":["appt-name","appt-reason"]}}
+{"op":"add","path":"/elements/appt-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/appt-reason","value":{"type":"TextContent","props":{"text":{"$item":"reason"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/appt-actions","value":{"type":"Card","props":{"direction":"row","gap":"s","align":"center","variant":"clear"},"children":["appt-status-badge","btn-checkin"]}}
+{"op":"add","path":"/elements/appt-status-badge","value":{"type":"Badge","props":{"text":{"$item":"status"},"variant":{"$cond":{"$item":"status","eq":"checked-in"},"$then":"default","$else":"outline"}},"visible":{"$state":"/appointments","not":false},"children":[]}}
+{"op":"add","path":"/elements/btn-checkin","value":{"type":"Button","props":{"label":"Check In","variant":"primary","size":"small"},"visible":{"$item":"status","neq":"checked-in"},"on":{"press":{"action":"setState","params":{"statePath":{"$template":"/appointments/${$index}/status"},"value":"checked-in"}}},"children":[]}}
+{"op":"add","path":"/state/appointments","value":[]}
+{"op":"add","path":"/state/appointments/0","value":{"id":"a1","time":"8:00 AM","name":"James Whitfield","reason":"Annual Physical","room":"201","status":"checked-in"}}
+{"op":"add","path":"/state/appointments/1","value":{"id":"a2","time":"8:30 AM","name":"Sarah Okonkwo","reason":"Diabetes Management","room":"203","status":"checked-in"}}
+{"op":"add","path":"/state/appointments/2","value":{"id":"a3","time":"9:00 AM","name":"Robert Tanaka","reason":"Knee Pain – X-Ray Review","room":"205","status":"checked-in"}}
+{"op":"add","path":"/state/appointments/3","value":{"id":"a4","time":"9:30 AM","name":"Lisa Moreau","reason":"Migraine Follow-up","room":"201","status":"waiting"}}
+{"op":"add","path":"/state/appointments/4","value":{"id":"a5","time":"10:00 AM","name":"David Kim","reason":"Allergy Testing","room":"203","status":"waiting"}}
+{"op":"add","path":"/state/appointments/5","value":{"id":"a6","time":"10:30 AM","name":"Margaret Chen","reason":"Follow-up – Blood Pressure","room":"204","status":"waiting"}}
+{"op":"add","path":"/state/appointments/6","value":{"id":"a7","time":"11:00 AM","name":"Ahmed Hassan","reason":"New Patient – Intake","room":"205","status":"scheduled"}}
+{"op":"add","path":"/state/appointments/7","value":{"id":"a8","time":"11:30 AM","name":"Emily Vasquez","reason":"Pre-op Consultation","room":"201","status":"scheduled"}}
+{"op":"add","path":"/state/appointments/8","value":{"id":"a9","time":"1:00 PM","name":"Thomas Berg","reason":"Lab Results Review","room":"202","status":"scheduled"}}
+{"op":"add","path":"/state/appointments/9","value":{"id":"a10","time":"1:30 PM","name":"Nancy Liu","reason":"Vaccination – Flu Shot","room":"204","status":"scheduled"}}
+{"op":"add","path":"/state/appointments/10","value":{"id":"a11","time":"2:00 PM","name":"Carlos Mendez","reason":"Back Pain – Referral","room":"203","status":"scheduled"}}
+{"op":"add","path":"/state/appointments/11","value":{"id":"a12","time":"2:30 PM","name":"Patricia Adams","reason":"Thyroid Panel Results","room":"205","status":"scheduled"}}

@@ -1,0 +1,100 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["header","balances","actions-row","txn-section","charts-row","bills-section","goals-row","settings-section"]}}
+{"op":"add","path":"/elements/header","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center"},"children":["greeting","score-badge"]}}
+{"op":"add","path":"/elements/greeting","value":{"type":"CardHeader","props":{"title":"Good morning, Alex","subtitle":"Here's your money at a glance"},"children":[]}}
+{"op":"add","path":"/elements/score-badge","value":{"type":"Badge","props":{"text":{"$template":"Credit Score: ${/creditScore}"},"variant":"secondary"},"children":[]}}
+{"op":"add","path":"/state/creditScore","value":742}
+{"op":"add","path":"/elements/balances","value":{"type":"Card","props":{"direction":"row","gap":"m"},"children":["bal-checking","bal-savings","bal-credit"]}}
+{"op":"add","path":"/elements/bal-checking","value":{"type":"Card","props":{"variant":"sunk","gap":"xs"},"children":["bal-checking-label","bal-checking-val"]}}
+{"op":"add","path":"/elements/bal-checking-label","value":{"type":"TextContent","props":{"text":"Checking","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/bal-checking-val","value":{"type":"TextContent","props":{"text":{"$template":"$${/balances/checking}"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/bal-savings","value":{"type":"Card","props":{"variant":"sunk","gap":"xs"},"children":["bal-savings-label","bal-savings-val"]}}
+{"op":"add","path":"/elements/bal-savings-label","value":{"type":"TextContent","props":{"text":"Savings","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/bal-savings-val","value":{"type":"TextContent","props":{"text":{"$template":"$${/balances/savings}"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/bal-credit","value":{"type":"Card","props":{"variant":"sunk","gap":"xs"},"children":["bal-credit-label","bal-credit-val","bal-credit-status"]}}
+{"op":"add","path":"/elements/bal-credit-label","value":{"type":"TextContent","props":{"text":"Credit Card Balance","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/bal-credit-val","value":{"type":"TextContent","props":{"text":{"$template":"$${/balances/credit}"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/bal-credit-status","value":{"type":"Tag","props":{"text":{"$cond":{"$state":"/creditFrozen"},"$then":"Frozen","$else":"Active"},"variant":{"$cond":{"$state":"/creditFrozen"},"$then":"danger","$else":"success"}},"children":[]}}
+{"op":"add","path":"/state/balances","value":{"checking":4285.17,"savings":12840.50,"credit":-1234.88}}
+{"op":"add","path":"/state/creditFrozen","value":false}
+{"op":"add","path":"/elements/actions-row","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"children":["transfer-card","freeze-card","statement-card"]}}
+{"op":"add","path":"/elements/transfer-card","value":{"type":"Card","props":{"gap":"s"},"children":["transfer-header","transfer-from","transfer-to","transfer-amount","transfer-btn","transfer-status"]}}
+{"op":"add","path":"/elements/transfer-header","value":{"type":"CardHeader","props":{"title":"Move Money","subtitle":"Transfer between your accounts"},"children":[]}}
+{"op":"add","path":"/elements/transfer-from","value":{"type":"Select","props":{"name":"from","placeholder":"From account","value":{"$bindState":"/transfer/from"},"items":["transfer-from-1","transfer-from-2","transfer-from-3"]},"children":[]}}
+{"op":"add","path":"/elements/transfer-from-1","value":{"type":"SelectItem","props":{"value":"checking","label":"Checking ($4,285.17)"},"children":[]}}
+{"op":"add","path":"/elements/transfer-from-2","value":{"type":"SelectItem","props":{"value":"savings","label":"Savings ($12,840.50)"},"children":[]}}
+{"op":"add","path":"/elements/transfer-from-3","value":{"type":"SelectItem","props":{"value":"credit","label":"Credit Card"},"children":[]}}
+{"op":"add","path":"/elements/transfer-to","value":{"type":"Select","props":{"name":"to","placeholder":"To account","value":{"$bindState":"/transfer/to"},"items":["transfer-to-1","transfer-to-2","transfer-to-3"]},"children":[]}}
+{"op":"add","path":"/elements/transfer-to-1","value":{"type":"SelectItem","props":{"value":"checking","label":"Checking"},"children":[]}}
+{"op":"add","path":"/elements/transfer-to-2","value":{"type":"SelectItem","props":{"value":"savings","label":"Savings"},"children":[]}}
+{"op":"add","path":"/elements/transfer-to-3","value":{"type":"SelectItem","props":{"value":"credit","label":"Credit Card (payment)"},"children":[]}}
+{"op":"add","path":"/elements/transfer-amount","value":{"type":"Input","props":{"name":"amount","placeholder":"Amount ($)","type":"number","value":{"$bindState":"/transfer/amount"}},"children":[]}}
+{"op":"add","path":"/elements/transfer-btn","value":{"type":"Button","props":{"label":"Transfer","variant":"primary"},"on":{"press":{"action":"setState","params":{"statePath":"/transfer/status","value":"Transfer submitted — it will complete within 1 business day."}}},"children":[]}}
+{"op":"add","path":"/elements/transfer-status","value":{"type":"TextContent","props":{"text":{"$state":"/transfer/status"},"size":"small"},"visible":{"$state":"/transfer/status"},"children":[]}}
+{"op":"add","path":"/state/transfer","value":{"from":"","to":"","amount":"","status":""}}
+{"op":"add","path":"/elements/freeze-card","value":{"type":"Card","props":{"gap":"s"},"children":["freeze-header","freeze-switch"]}}
+{"op":"add","path":"/elements/freeze-header","value":{"type":"CardHeader","props":{"title":"Credit Line Controls","subtitle":"Instantly freeze or unfreeze your credit line"},"children":[]}}
+{"op":"add","path":"/elements/freeze-switch","value":{"type":"SwitchGroup","props":{"name":"freeze","variant":"sunk","items":["freeze-item"]},"children":[]}}
+{"op":"add","path":"/elements/freeze-item","value":{"type":"SwitchItem","props":{"label":"Freeze credit line","description":"Blocks all new charges on your credit card","name":"freezeCredit","defaultChecked":false},"children":[]}}
+{"op":"add","path":"/elements/statement-card","value":{"type":"Card","props":{"gap":"s"},"children":["statement-header","statement-select","statement-note"]}}
+{"op":"add","path":"/elements/statement-header","value":{"type":"CardHeader","props":{"title":"Statement Period","subtitle":"Choose which period to view"},"children":[]}}
+{"op":"add","path":"/elements/statement-select","value":{"type":"Select","props":{"name":"period","value":{"$bindState":"/statementPeriod"},"items":["period-1","period-2","period-3","period-4"]},"children":[]}}
+{"op":"add","path":"/elements/period-1","value":{"type":"SelectItem","props":{"value":"2025-06","label":"June 2025 (current)"},"children":[]}}
+{"op":"add","path":"/elements/period-2","value":{"type":"SelectItem","props":{"value":"2025-05","label":"May 2025"},"children":[]}}
+{"op":"add","path":"/elements/period-3","value":{"type":"SelectItem","props":{"value":"2025-04","label":"April 2025"},"children":[]}}
+{"op":"add","path":"/elements/period-4","value":{"type":"SelectItem","props":{"value":"2025-03","label":"March 2025"},"children":[]}}
+{"op":"add","path":"/elements/statement-note","value":{"type":"TextContent","props":{"text":{"$template":"Viewing statement: ${/statementPeriod}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/state/statementPeriod","value":"2025-06"}
+{"op":"add","path":"/elements/txn-section","value":{"type":"Card","props":{"gap":"s"},"children":["txn-header","txn-list"]}}
+{"op":"add","path":"/elements/txn-header","value":{"type":"CardHeader","props":{"title":"Recent Transactions","subtitle":"Tap Dispute on any charge you don't recognize"},"children":[]}}
+{"op":"add","path":"/elements/txn-list","value":{"type":"Card","props":{"variant":"clear","gap":"s"},"repeat":{"statePath":"/transactions","key":"id"},"children":["txn-row"]}}
+{"op":"add","path":"/elements/txn-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["txn-info","txn-right"]}}
+{"op":"add","path":"/elements/txn-info","value":{"type":"Card","props":{"variant":"clear","gap":"none"},"children":["txn-merchant","txn-date"]}}
+{"op":"add","path":"/elements/txn-merchant","value":{"type":"TextContent","props":{"text":{"$item":"merchant"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/txn-date","value":{"type":"TextContent","props":{"text":{"$item":"date"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/txn-right","value":{"type":"Card","props":{"variant":"clear","direction":"row","align":"center","gap":"m"},"children":["txn-amount","txn-dispute"]}}
+{"op":"add","path":"/elements/txn-amount","value":{"type":"TextContent","props":{"text":{"$template":"$${amount}"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/txn-dispute","value":{"type":"Button","props":{"label":"Dispute","variant":"tertiary","size":"small"},"on":{"press":{"action":"pushState","params":{"statePath":"/disputes","value":{"id":"$id","merchant":{"$item":"merchant"},"amount":{"$item":"amount"}}}}},"children":[]}}
+{"op":"add","path":"/state/transactions","value":[]}
+{"op":"add","path":"/state/transactions/0","value":{"id":"t1","merchant":"Whole Foods Market","date":"Jun 12, 2025","amount":"84.32"}}
+{"op":"add","path":"/state/transactions/1","value":{"id":"t2","merchant":"Shell Gas Station","date":"Jun 11, 2025","amount":"52.10"}}
+{"op":"add","path":"/state/transactions/2","value":{"id":"t3","merchant":"Netflix","date":"Jun 10, 2025","amount":"15.49"}}
+{"op":"add","path":"/state/transactions/3","value":{"id":"t4","merchant":"Delta Airlines","date":"Jun 9, 2025","amount":"312.00"}}
+{"op":"add","path":"/state/transactions/4","value":{"id":"t5","merchant":"Starbucks","date":"Jun 8, 2025","amount":"6.75"}}
+{"op":"add","path":"/state/disputes","value":[]}
+{"op":"add","path":"/elements/charts-row","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"children":["spending-card","score-card"]}}
+{"op":"add","path":"/elements/spending-card","value":{"type":"Card","props":{"gap":"s"},"children":["spending-header","spending-chart"]}}
+{"op":"add","path":"/elements/spending-header","value":{"type":"CardHeader","props":{"title":"Spending This Month","subtitle":"Split by category"},"children":[]}}
+{"op":"add","path":"/elements/spending-chart","value":{"type":"PieChart","props":{"labels":{"$state":"/spending/categories"},"values":{"$state":"/spending/values"},"variant":"donut"},"children":[]}}
+{"op":"add","path":"/state/spending/categories","value":["Groceries","Dining","Transport","Travel","Subscriptions","Other"]}
+{"op":"add","path":"/state/spending/values","value":[620,340,210,480,95,155]}
+{"op":"add","path":"/elements/score-card","value":{"type":"Card","props":{"gap":"s"},"children":["score-header","score-value","score-progress","score-note"]}}
+{"op":"add","path":"/elements/score-header","value":{"type":"CardHeader","props":{"title":"Credit Score","subtitle":"Updated weekly from Experian"},"children":[]}}
+{"op":"add","path":"/elements/score-value","value":{"type":"TextContent","props":{"text":{"$template":"${/creditScore} — Very Good"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/score-progress","value":{"type":"Progress","props":{"value":74,"label":"742 / 850"},"children":[]}}
+{"op":"add","path":"/elements/score-note","value":{"type":"TextContent","props":{"text":"Up 6 points since last month. Keep utilization under 30% to keep improving.","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/bills-section","value":{"type":"Card","props":{"gap":"s"},"children":["bills-header","bills-list"]}}
+{"op":"add","path":"/elements/bills-header","value":{"type":"CardHeader","props":{"title":"Bills Due Soon","subtitle":"Next 14 days"},"children":[]}}
+{"op":"add","path":"/elements/bills-list","value":{"type":"Card","props":{"variant":"clear","gap":"s"},"repeat":{"statePath":"/bills","key":"id"},"children":["bill-row"]}}
+{"op":"add","path":"/elements/bill-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["bill-info","bill-amount"]}}
+{"op":"add","path":"/elements/bill-info","value":{"type":"Card","props":{"variant":"clear","gap":"none"},"children":["bill-name","bill-due"]}}
+{"op":"add","path":"/elements/bill-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/bill-due","value":{"type":"TextContent","props":{"text":{"$template":"Due ${due}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/bill-amount","value":{"type":"Tag","props":{"text":{"$template":"$${amount}"},"variant":"warning"},"children":[]}}
+{"op":"add","path":"/state/bills","value":[]}
+{"op":"add","path":"/state/bills/0","value":{"id":"b1","name":"Electric Utility","due":"Jun 16","amount":"118.40"}}
+{"op":"add","path":"/state/bills/1","value":{"id":"b2","name":"Internet (Comcast)","due":"Jun 19","amount":"79.99"}}
+{"op":"add","path":"/state/bills/2","value":{"id":"b3","name":"Auto Insurance","due":"Jun 22","amount":"142.00"}}
+{"op":"add","path":"/state/bills/3","value":{"id":"b4","name":"Credit Card Minimum","due":"Jun 25","amount":"35.00"}}
+{"op":"add","path":"/elements/goals-row","value":{"type":"Card","props":{"gap":"s"},"children":["goal-header","goal-progress","goal-note"]}}
+{"op":"add","path":"/elements/goal-header","value":{"type":"CardHeader","props":{"title":"Vacation Savings Goal","subtitle":"Hawaii trip — December 2025"},"children":[]}}
+{"op":"add","path":"/elements/goal-progress","value":{"type":"Progress","props":{"value":{"$state":"/goal/percent"},"label":{"$template":"$${/goal/saved} of $${/goal/target} saved"}},"children":[]}}
+{"op":"add","path":"/elements/goal-note","value":{"type":"TextContent","props":{"text":"You're on track! $250/month auto-transfer keeps you on schedule.","size":"small"},"children":[]}}
+{"op":"add","path":"/state/goal","value":{"saved":3250,"target":5000,"percent":65}}
+{"op":"add","path":"/elements/settings-section","value":{"type":"Card","props":{"gap":"s"},"children":["alerts-header","alerts-group"]}}
+{"op":"add","path":"/elements/alerts-header","value":{"type":"CardHeader","props":{"title":"Alert Preferences","subtitle":"Choose what triggers a notification"},"children":[]}}
+{"op":"add","path":"/elements/alerts-group","value":{"type":"SwitchGroup","props":{"name":"alerts","variant":"sunk","items":["alert-1","alert-2","alert-3","alert-4"]},"children":[]}}
+{"op":"add","path":"/elements/alert-1","value":{"type":"SwitchItem","props":{"label":"Large purchases","description":"Any transaction over $200","name":"alertLarge","defaultChecked":true},"children":[]}}
+{"op":"add","path":"/elements/alert-2","value":{"type":"SwitchItem","props":{"label":"Low balance","description":"Checking drops below $500","name":"alertLow","defaultChecked":true},"children":[]}}
+{"op":"add","path":"/elements/alert-3","value":{"type":"SwitchItem","props":{"label":"Bill reminders","description":"3 days before a bill is due","name":"alertBills","defaultChecked":true},"children":[]}}
+{"op":"add","path":"/elements/alert-4","value":{"type":"SwitchItem","props":{"label":"Credit score changes","description":"Notify when your score moves","name":"alertScore","defaultChecked":false},"children":[]}}

@@ -1,0 +1,594 @@
+
+
+Here's a complete hospital operations command screen covering all 12 requirements — KPI strip (bed occupancy, ER wait), critical patient callout, admissions trend, department census, staff roster with roles, OR schedule, discharge queue, low-supply alerts, plus dialogs to file incidents, switch the view date, and request patient transfers.
+
+<a2ui-json>
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "hospital-ops-command",
+      "catalogId": "thesys.dev:c1-openui",
+      "theme": { "primaryColor": "#0E7C86" }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "hospital-ops-command",
+      "components": [
+        {
+          "id": "root",
+          "component": "Card",
+          "direction": "column",
+          "gap": "l",
+          "children": ["headerBar", "kpiRow", "criticalAlert", "chartsRow", "tablesRow", "listsRow"]
+        },
+        {
+          "id": "headerBar",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "justify": "between",
+          "align": "center",
+          "wrap": true,
+          "gap": "m",
+          "children": ["headerTitle", "incidentDialog", "dateDialog", "transferDialog"]
+        },
+        {
+          "id": "headerTitle",
+          "component": "CardHeader",
+          "title": "Metro General Hospital — Operations Command",
+          "subtitle": "Sunday, Oct 19, 2025 · Data refreshed 14:05 · Charge: A. Ramirez, MSN"
+        },
+        {
+          "id": "incidentDialog",
+          "component": "DialogBlock",
+          "triggerLabel": "File Incident",
+          "triggerVariant": "destructive",
+          "title": "File an Incident Report",
+          "description": "Fielded reports route to Risk Management. High/Critical severity pages the on-call supervisor immediately.",
+          "accessibility": { "label": "File incident", "description": "Opens a form to report a safety or operational incident" },
+          "content": ["incidentForm", "incidentButtons"]
+        },
+        {
+          "id": "dateDialog",
+          "component": "DialogBlock",
+          "triggerLabel": "View Another Day",
+          "triggerVariant": "secondary",
+          "title": "Switch Operational Date",
+          "description": "Occupancy, admissions, OR bookings and staffing will load for the selected date. Historical data is read-only.",
+          "accessibility": { "label": "View another day", "description": "Opens a calendar to pick a different date for this command view" },
+          "content": ["viewCalendar", "viewDateButtons"]
+        },
+        {
+          "id": "transferDialog",
+          "component": "DialogBlock",
+          "triggerLabel": "Request Patient Transfer",
+          "triggerVariant": "default",
+          "title": "Request a Patient Transfer",
+          "description": "Routing bed management, the charge nurse and transport. STAT requests page the accepting unit directly.",
+          "accessibility": { "label": "Request patient transfer", "description": "Opens a transfer request form" },
+          "content": ["transferForm", "transferButtons"]
+        },
+
+        {
+          "id": "kpiRow",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "wrap": true,
+          "children": ["kpiBedsCard", "kpiErCard", "kpiStaffCard", "kpiCritCard"]
+        },
+        {
+          "id": "kpiBedsCard",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["kpiBedsTitle", "kpiBedsValue", "kpiBedsProgress"]
+        },
+        { "id": "kpiBedsTitle", "component": "TextContent", "text": "**BED OCCUPANCY**", "size": "small" },
+        { "id": "kpiBedsValue", "component": "TextContent", "text": "90%", "size": "large-heavy" },
+        { "id": "kpiBedsProgress", "component": "Progress", "value": 90, "label": "378 / 420 beds occupied · 42 open" },
+
+        {
+          "id": "kpiErCard",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["kpiErTitle", "kpiErValue", "kpiErDetail"]
+        },
+        { "id": "kpiErTitle", "component": "TextContent", "text": "**CURRENT ER WAIT**", "size": "small" },
+        { "id": "kpiErValue", "component": "TextContent", "text": "42 min", "size": "large-heavy" },
+        { "id": "kpiErDetail", "component": "TextContent", "text": "avg door-to-provider · 28 waiting · 3 in triage · longest 96 min", "size": "small" },
+
+        {
+          "id": "kpiStaffCard",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["kpiStaffTitle", "kpiStaffValue", "kpiStaffDetail"]
+        },
+        { "id": "kpiStaffTitle", "component": "TextContent", "text": "**STAFF ON SHIFT**", "size": "small" },
+        { "id": "kpiStaffValue", "component": "TextContent", "text": "214", "size": "large-heavy" },
+        { "id": "kpiStaffDetail", "component": "TextContent", "text": "118 nursing · 42 physicians · 34 allied health · 20 support", "size": "small" },
+
+        {
+          "id": "kpiCritCard",
+          "component": "Card",
+          "variant": "sunk",
+          "direction": "column",
+          "gap": "xs",
+          "weight": 1,
+          "children": ["kpiCritTitle", "kpiCritValue", "kpiCritDetail"]
+        },
+        { "id": "kpiCritTitle", "component": "TextContent", "text": "**CRITICAL PATIENTS**", "size": "small" },
+        { "id": "kpiCritValue", "component": "TextContent", "text": "5", "size": "large-heavy" },
+        { "id": "kpiCritDetail", "component": "TextContent", "text": "ICU 3 · Step-down 1 · ED resus 1 · 1 new this shift", "size": "small" },
+
+        {
+          "id": "criticalAlert",
+          "component": "Alert",
+          "variant": "destructive",
+          "title": "CRITICAL PATIENTS — 5 ACTIVE",
+          "description": "R. Alvarez · ICU-04 · Septic shock on vasopressors, intensivist at bedside\nM. Chen · ICU-06 · Post–cardiac arrest, targeted temperature management\nL. Brooks · ED Resus 2 · Massive transfusion protocol active\nP. Ivanova · Step-down 7 · GI bleed, Hgb 6.2 — awaiting ICU bed (see below)\nS. Diallo · ICU-09 · ARDS on ventilator, proning scheduled 15:00"
+        },
+
+        {
+          "id": "chartsRow",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "wrap": true,
+          "children": ["admissionsCard", "deptCard"]
+        },
+        {
+          "id": "admissionsCard",
+          "component": "Card",
+          "direction": "column",
+          "gap": "s",
+          "weight": 1,
+          "children": ["admissionsHeader", "admissionsChart"]
+        },
+        {
+          "id": "admissionsHeader",
+          "component": "CardHeader",
+          "title": "Admissions — Past Two Weeks",
+          "subtitle": "Daily admits across all units · 14-day total: 985"
+        },
+        {
+          "id": "admissionsChart",
+          "component": "LineChart",
+          "variant": "natural",
+          "yLabel": "Admits/day",
+          "labels": ["Oct 6", "Oct 7", "Oct 8", "Oct 9", "Oct 10", "Oct 11", "Oct 12", "Oct 13", "Oct 14", "Oct 15", "Oct 16", "Oct 17", "Oct 18", "Oct 19"],
+          "series": ["admissionsSeries"]
+        },
+        {
+          "id": "admissionsSeries",
+          "component": "Series",
+          "category": "Admissions",
+          "values": [62, 58, 71, 66, 64, 75, 80, 69, 61, 68, 72, 77, 74, 82]
+        },
+        {
+          "id": "deptCard",
+          "component": "Card",
+          "direction": "column",
+          "gap": "s",
+          "weight": 1,
+          "children": ["deptHeader", "deptChart"]
+        },
+        {
+          "id": "deptHeader",
+          "component": "CardHeader",
+          "title": "Patients per Department",
+          "subtitle": "Census as of 14:00 · 8 departments"
+        },
+        {
+          "id": "deptChart",
+          "component": "HorizontalBarChart",
+          "variant": "grouped",
+          "xLabel": "Patients",
+          "labels": ["Emergency", "Medicine", "Surgery", "ICU", "Pediatrics", "Obstetrics", "Oncology", "Psychiatry"],
+          "series": ["deptSeries"]
+        },
+        {
+          "id": "deptSeries",
+          "component": "Series",
+          "category": "Census",
+          "values": [48, 86, 58, 16, 49, 36, 48, 37]
+        },
+
+        {
+          "id": "tablesRow",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "wrap": true,
+          "children": ["staffCard", "orCard"]
+        },
+        {
+          "id": "staffCard",
+          "component": "Card",
+          "direction": "column",
+          "gap": "s",
+          "weight": 1,
+          "children": ["staffHeader", "staffTable"]
+        },
+        {
+          "id": "staffHeader",
+          "component": "CardHeader",
+          "title": "Staff on Shift",
+          "subtitle": "10 of 214 shown · sorted by unit"
+        },
+        {
+          "id": "staffTable",
+          "component": "Table",
+          "columns": ["staffColName", "staffColRole", "staffColUnit"]
+        },
+        {
+          "id": "staffColName",
+          "component": "Col",
+          "label": "Name",
+          "type": "string",
+          "data": ["A. Ramirez", "T. Nguyen", "E. Fontaine", "J. Alvarez", "Dr. S. Whitfield", "Dr. K. Patel", "M. Osei", "D. Hughes", "R. Kowalski", "Dr. L. Amari"]
+        },
+        {
+          "id": "staffColRole",
+          "component": "Col",
+          "label": "Role",
+          "type": "string",
+          "data": ["Charge Nurse", "RN · Triage", "RN", "Respiratory Therapist", "Cardiothoracic Surgeon", "Hospitalist", "Clinical Pharmacist", "Patient Care Tech", "Radiology Technologist", "OB/GYN"]
+        },
+        {
+          "id": "staffColUnit",
+          "component": "Col",
+          "label": "Unit",
+          "type": "string",
+          "data": ["Emergency", "Emergency", "Step-down 7", "ICU", "OR-3", "Medicine 5", "Central Pharmacy", "ICU", "Imaging", "OB/L&D"]
+        },
+        {
+          "id": "orCard",
+          "component": "Card",
+          "direction": "column",
+          "gap": "s",
+          "weight": 1,
+          "children": ["orHeader", "orTable"]
+        },
+        {
+          "id": "orHeader",
+          "component": "CardHeader",
+          "title": "Operating Room Bookings — Today",
+          "subtitle": "7 cases · 2 complete · 2 running · 3 upcoming"
+        },
+        {
+          "id": "orTable",
+          "component": "Table",
+          "columns": ["orColRoom", "orColTime", "orColProc", "orColSurgeon", "orColStatus"]
+        },
+        {
+          "id": "orColRoom",
+          "component": "Col",
+          "label": "Room",
+          "type": "string",
+          "data": ["OR-1", "OR-2", "OR-3", "OR-4", "OR-5", "OR-6", "OR-1"]
+        },
+        {
+          "id": "orColTime",
+          "component": "Col",
+          "label": "Time",
+          "type": "string",
+          "data": ["07:30", "08:00", "08:15", "09:00", "11:30", "13:00", "15:30"]
+        },
+        {
+          "id": "orColProc",
+          "component": "Col",
+          "label": "Procedure",
+          "type": "string",
+          "data": ["Lap cholecystectomy", "Total knee replacement", "CABG ×3", "C-section (urgent)", "Appendectomy", "Hip fracture repair", "ORIF forearm"]
+        },
+        {
+          "id": "orColSurgeon",
+          "component": "Col",
+          "label": "Surgeon",
+          "type": "string",
+          "data": ["Dr. Reyes", "Dr. Novak", "Dr. Whitfield", "Dr. Amari", "Dr. Osei", "Dr. Novak", "Dr. Chen"]
+        },
+        {
+          "id": "orColStatus",
+          "component": "Col",
+          "label": "Status",
+          "type": "string",
+          "data": ["Complete", "In progress", "In progress", "Complete", "Scheduled", "Scheduled", "Scheduled"]
+        },
+
+        {
+          "id": "listsRow",
+          "component": "Card",
+          "variant": "clear",
+          "direction": "row",
+          "gap": "m",
+          "wrap": true,
+          "children": ["dischargeCard", "suppliesCard"]
+        },
+        {
+          "id": "dischargeCard",
+          "component": "Card",
+          "direction": "column",
+          "gap": "s",
+          "weight": 1,
+          "children": ["dischargeHeader", "dischargeList"]
+        },
+        {
+          "id": "dischargeHeader",
+          "component": "CardHeader",
+          "title": "Ready for Discharge",
+          "subtitle": "5 patients cleared · longest waiting 2h"
+        },
+        {
+          "id": "dischargeList",
+          "component": "ListBlock",
+          "variant": "number",
+          "items": ["discharge-1", "discharge-2", "discharge-3", "discharge-4", "discharge-5"]
+        },
+        {
+          "id": "discharge-1",
+          "component": "ListItem",
+          "title": "J. Okafor · Med-Surg 4B, Rm 412",
+          "subtitle": "Discharge order signed 10:40 · awaiting ride",
+          "actionLabel": "Track"
+        },
+        {
+          "id": "discharge-2",
+          "component": "ListItem",
+          "title": "H. Tanaka · Oncology 6A, Rm 610",
+          "subtitle": "Meds delivered · family pickup 15:15",
+          "actionLabel": "Track"
+        },
+        {
+          "id": "discharge-3",
+          "component": "ListItem",
+          "title": "R. Mehta · Step-down 7, Rm 704",
+          "subtitle": "Education complete · pending final vitals",
+          "actionLabel": "Track"
+        },
+        {
+          "id": "discharge-4",
+          "component": "ListItem",
+          "title": "C. Dubois · OB/L&D, Rm L3",
+          "subtitle": "Mom & baby ready · transport at 14:30",
+          "actionLabel": "Track"
+        },
+        {
+          "id": "discharge-5",
+          "component": "ListItem",
+          "title": "W. Freeman · Med-Surg 4A, Rm 428",
+          "subtitle": "In discharge lounge since 12:05",
+          "actionLabel": "Track"
+        },
+        {
+          "id": "suppliesCard",
+          "component": "Card",
+          "direction": "column",
+          "gap": "s",
+          "weight": 1,
+          "children": ["suppliesHeader", "suppliesList"]
+        },
+        {
+          "id": "suppliesHeader",
+          "component": "CardHeader",
+          "title": "Supplies Running Low",
+          "subtitle": "5 items below par · 1 critical"
+        },
+        {
+          "id": "suppliesList",
+          "component": "ListBlock",
+          "variant": "number",
+          "items": ["supply-1", "supply-2", "supply-3", "supply-4", "supply-5"]
+        },
+        {
+          "id": "supply-1",
+          "component": "ListItem",
+          "title": "N95 respirators (fit-tested)",
+          "subtitle": "Central Supply · 40 on hand / 150 par · CRITICAL",
+          "actionLabel": "Reorder"
+        },
+        {
+          "id": "supply-2",
+          "component": "ListItem",
+          "title": "Nitrile gloves, medium",
+          "subtitle": "Central Supply · 12 boxes / 60 par (~1 shift)",
+          "actionLabel": "Reorder"
+        },
+        {
+          "id": "supply-3",
+          "component": "ListItem",
+          "title": "Normal saline 0.9% 1L bags",
+          "subtitle": "Pharmacy · 85 / 300 par",
+          "actionLabel": "Reorder"
+        },
+        {
+          "id": "supply-4",
+          "component": "ListItem",
+          "title": "IV start kits",
+          "subtitle": "ED fast-stock · 22 / 80 par",
+          "actionLabel": "Reorder"
+        },
+        {
+          "id": "supply-5",
+          "component": "ListItem",
+          "title": "Stapler cartridges 45mm",
+          "subtitle": "OR core · 6 / 24 par · affects today's cases",
+          "actionLabel": "Reorder"
+        },
+
+        {
+          "id": "viewCalendar",
+          "component": "CalendarBlock",
+          "mode": "single",
+          "defaultMonth": "2025-10"
+        },
+        {
+          "id": "viewDateButtons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": ["loadDateBtn", "todayBtn"]
+        },
+        {
+          "id": "loadDateBtn",
+          "component": "Button",
+          "label": "Load Selected Day",
+          "variant": "primary",
+          "action": [{ "type": "loadDate" }]
+        },
+        {
+          "id": "todayBtn",
+          "component": "Button",
+          "label": "Return to Today",
+          "variant": "secondary",
+          "action": [{ "type": "resetToToday" }]
+        },
+
+        {
+          "id": "incidentForm",
+          "component": "Form",
+          "name": "incident-report",
+          "buttons": "incidentButtons",
+          "fields": ["incTypeCtrl", "incLocCtrl", "incSevCtrl", "incWhenCtrl", "incDescCtrl"]
+        },
+        {
+          "id": "incidentButtons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": ["incSubmitBtn", "incCancelBtn"]
+        },
+        {
+          "id": "incSubmitBtn",
+          "component": "Button",
+          "label": "Submit Report",
+          "variant": "primary",
+          "action": [{ "type": "submit" }]
+        },
+        {
+          "id": "incCancelBtn",
+          "component": "Button",
+          "label": "Cancel",
+          "variant": "tertiary",
+          "action": [{ "type": "dismiss" }]
+        },
+        {
+          "id": "incTypeCtrl",
+          "component": "FormControl",
+          "label": "Incident type",
+          "input": "incType"
+        },
+        {
+          "id": "incType",
+          "component": "Select",
+          "name": "incidentType",
+          "placeholder": "Select type…",
+          "items": ["incTypeOpt1", "incTypeOpt2", "incTypeOpt3", "incTypeOpt4", "incTypeOpt5"]
+        },
+        { "id": "incTypeOpt1", "component": "SelectItem", "value": "patient-safety", "label": "Patient safety" },
+        { "id": "incTypeOpt2", "component": "SelectItem", "value": "medication-error", "label": "Medication error" },
+        { "id": "incTypeOpt3", "component": "SelectItem", "value": "equipment-failure", "label": "Equipment failure" },
+        { "id": "incTypeOpt4", "component": "SelectItem", "value": "staff-injury", "label": "Staff injury" },
+        { "id": "incTypeOpt5", "component": "SelectItem", "value": "other", "label": "Other" },
+        {
+          "id": "incLocCtrl",
+          "component": "FormControl",
+          "label": "Location / department",
+          "input": "incLoc"
+        },
+        {
+          "id": "incLoc",
+          "component": "Select",
+          "name": "incidentLocation",
+          "placeholder": "Select location…",
+          "items": ["incLocOpt1", "incLocOpt2", "incLocOpt3", "incLocOpt4", "incLocOpt5", "incLocOpt6"]
+        },
+        { "id": "incLocOpt1", "component": "SelectItem", "value": "ed", "label": "Emergency Department" },
+        { "id": "incLocOpt2", "component": "SelectItem", "value": "icu", "label": "ICU" },
+        { "id": "incLocOpt3", "component": "SelectItem", "value": "or", "label": "Operating Rooms" },
+        { "id": "incLocOpt4", "component": "SelectItem", "value": "med-surg", "label": "Med-Surg" },
+        { "id": "incLocOpt5", "component": "SelectItem", "value": "obstetrics", "label": "Obstetrics" },
+        { "id": "incLocOpt6", "component": "SelectItem", "value": "other", "label": "Other location" },
+        {
+          "id": "incSevCtrl",
+          "component": "FormControl",
+          "label": "Severity",
+          "hint": "High and Critical notify Risk Management and may page the on-call supervisor.",
+          "input": "incSeverity"
+        },
+        {
+          "id": "incSeverity",
+          "component": "Select",
+          "name": "incidentSeverity",
+          "placeholder": "Select severity…",
+          "items": ["incSevOpt1", "incSevOpt2", "incSevOpt3", "incSevOpt4"]
+        },
+        { "id": "incSevOpt1", "component": "SelectItem", "value": "low", "label": "Low — logged only" },
+        { "id": "incSevOpt2", "component": "SelectItem", "value": "moderate", "label": "Moderate — department review" },
+        { "id": "incSevOpt3", "component": "SelectItem", "value": "high", "label": "High — Risk Management notified" },
+        { "id": "incSevOpt4", "component": "SelectItem", "value": "critical", "label": "Critical — immediate page" },
+        {
+          "id": "incWhenCtrl",
+          "component": "FormControl",
+          "label": "Date & time of incident",
+          "input": "incWhen"
+        },
+        {
+          "id": "incWhen",
+          "component": "DatePicker",
+          "name": "incidentWhen",
+          "mode": "single"
+        },
+        {
+          "id": "incDescCtrl",
+          "component": "FormControl",
+          "label": "Description",
+          "hint": "Include patient/staff involved, equipment IDs, and immediate actions taken.",
+          "input": "incDesc"
+        },
+        {
+          "id": "incDesc",
+          "component": "TextArea",
+          "name": "incidentDescription",
+          "rows": 4,
+          "placeholder": "Describe what happened, who was involved, and immediate response…"
+        },
+
+        {
+          "id": "transferForm",
+          "component": "Form",
+          "name": "transfer-request",
+          "buttons": "transferButtons",
+          "fields": ["trPatientCtrl", "trFromCtrl", "trDestCtrl", "trPrioCtrl", "trReasonCtrl"]
+        },
+        {
+          "id": "transferButtons",
+          "component": "Buttons",
+          "direction": "row",
+          "buttons": ["trSubmitBtn", "trCancelBtn"]
+        },
+        {
+          "id": "trSubmitBtn",
+          "component": "Button",
+          "label": "Send Request",
+          "variant": "primary",
+          "action": [{ "type": "submit" }]
+        },
+        {
+          "id": "trCancelBtn",
+          "component": "Button",
+          "label": "Cancel",
+          "

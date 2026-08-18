@@ -1,0 +1,28 @@
+Here's a low-inventory warning screen covering all four requirements:
+
+<a2ui-json>
+{"version":"v0.9","createSurface":{"surfaceId":"low-inventory","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#D97706","agentDisplayName":"Inventory Monitor"}}}
+</a2ui-json>
+
+<a2ui-json>
+{"version":"v0.9","updateComponents":{"surfaceId":"low-inventory","components":[
+{"id":"root","component":"Card","direction":"column","gap":"m","children":["header","thresholdAlert","searchControl","itemsTable","reorderAll"]},
+{"id":"header","component":"CardHeader","title":"Low Inventory Warning","subtitle":"Items below reorder threshold — action required"},
+{"id":"thresholdAlert","component":"Alert","variant":"warning","title":"Reorder threshold: 20 units","description":"Any item with 20 or fewer units remaining triggers this warning."},
+{"id":"searchControl","component":"FormControl","label":"Search items","input":"searchInput","hint":"Filter low-stock items by name or SKU"},
+{"id":"searchInput","component":"Input","name":"search","placeholder":"e.g. USB-C Cable or SKU-1042","type":"text"},
+{"id":"itemsTable","component":"Table","columns":["colItem","colSku","colRemaining","colReorder"]},
+{"id":"colItem","component":"Col","label":"Item","data":["USB-C Cable 1m","Wireless Mouse","AA Batteries (24-pack)","HDMI Adapter","Laptop Stand"],"type":"string"},
+{"id":"colSku","component":"Col","label":"SKU","data":["SKU-1042","SKU-2210","SKU-0331","SKU-1890","SKU-2744"],"type":"string"},
+{"id":"colRemaining","component":"Col","label":"Remaining Units","data":[5,12,3,18,9],"type":"number"},
+{"id":"colReorder","component":"Col","label":"Reorder","data":["Reorder","Reorder","Reorder","Reorder","Reorder"],"type":"action"},
+{"id":"reorderAll","component":"Buttons","buttons":["btnReorderAll"],"direction":"row"},
+{"id":"btnReorderAll","component":"Button","label":"Reorder All Low Items","variant":"primary","action":[{"event":"reorder_all"}]}
+]}}
+</a2ui-json>
+
+This screen includes:
+1. **Low items with remaining units** — a table listing 5 items with their remaining unit counts
+2. **Reorder per item** — an action column with a "Reorder" button per row, plus a "Reorder All" button
+3. **Warning threshold** — an alert banner stating the 20-unit reorder threshold
+4. **Search** — a search input to filter items by name or SKU

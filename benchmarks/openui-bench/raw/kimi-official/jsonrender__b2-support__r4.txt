@@ -1,0 +1,46 @@
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["header","metrics","controls","list-all","list-high","new-ticket-dialog"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Support Morning Briefing","subtitle":"Live overview of the support queue"},"children":[]}}
+{"op":"add","path":"/elements/metrics","value":{"type":"Card","props":{"direction":"row","gap":"m"},"children":["metric-open","metric-frt"]}}
+{"op":"add","path":"/elements/metric-open","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["metric-open-value","metric-open-label"]}}
+{"op":"add","path":"/elements/metric-open-value","value":{"type":"TextContent","props":{"text":{"$state":"/metrics/openTickets"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/state/metrics","value":{}}
+{"op":"add","path":"/state/metrics/openTickets","value":"18"}
+{"op":"add","path":"/elements/metric-open-label","value":{"type":"TextContent","props":{"text":"Open tickets","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/metric-frt","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["metric-frt-value","metric-frt-label"]}}
+{"op":"add","path":"/elements/metric-frt-value","value":{"type":"TextContent","props":{"text":{"$state":"/metrics/avgFirstResponse"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/state/metrics/avgFirstResponse","value":"24 min"}
+{"op":"add","path":"/elements/metric-frt-label","value":{"type":"TextContent","props":{"text":"Avg. first-response time","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/controls","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center"},"children":["controls-title","filter-switch"]}}
+{"op":"add","path":"/elements/controls-title","value":{"type":"Heading","props":{"text":"5 Most Recent Tickets","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/filter-switch","value":{"type":"SwitchGroup","props":{"name":"priorityFilter","items":["filter-switch-item"],"variant":"clear"},"children":[]}}
+{"op":"add","path":"/elements/filter-switch-item","value":{"type":"SwitchItem","props":{"label":"High priority only","name":"highOnly"},"children":[],"on":{"change":{"action":"setState","params":{"statePath":"/highPriorityOnly","value":{"$state":"/highPriorityOnly","not":true}}}}}}
+{"op":"add","path":"/state/highPriorityOnly","value":false}
+{"op":"add","path":"/elements/list-all","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/tickets","key":"id"},"visible":{"$state":"/highPriorityOnly","not":true},"children":["ticket-row"]}}
+{"op":"add","path":"/state/tickets","value":[]}
+{"op":"add","path":"/state/tickets/0","value":{"id":"T-1042","title":"Login loop after SSO update","customer":"Acme Corp","priority":"High","time":"8:12 AM"}}
+{"op":"add","path":"/state/tickets/1","value":{"id":"T-1041","title":"Invoice PDF missing line items","customer":"Brightline Ltd","priority":"Medium","time":"7:58 AM"}}
+{"op":"add","path":"/state/tickets/2","value":{"id":"T-1040","title":"API rate limit errors on sync","customer":"Northwind","priority":"High","time":"7:41 AM"}}
+{"op":"add","path":"/state/tickets/3","value":{"id":"T-1039","title":"Feature request: dark mode","customer":"Globex","priority":"Low","time":"7:20 AM"}}
+{"op":"add","path":"/state/tickets/4","value":{"id":"T-1038","title":"Password reset email delayed","customer":"Initech","priority":"Medium","time":"6:55 AM"}}
+{"op":"add","path":"/elements/ticket-row","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","gap":"m"},"children":["ticket-info","ticket-priority"]}}
+{"op":"add","path":"/elements/ticket-info","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["ticket-title","ticket-meta"]}}
+{"op":"add","path":"/elements/ticket-title","value":{"type":"TextContent","props":{"text":{"$template":"${id} — ${title}"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/ticket-meta","value":{"type":"TextContent","props":{"text":{"$template":"${customer} · ${time}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/ticket-priority","value":{"type":"Tag","props":{"text":{"$item":"priority"},"variant":{"$cond":{"$item":"priority","eq":"High"},"$then":"danger","$else":"neutral"}},"children":[]}}
+{"op":"add","path":"/elements/list-high","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/highTickets","key":"id"},"visible":{"$state":"/highPriorityOnly"},"children":["ticket-row"]}}
+{"op":"add","path":"/state/highTickets","value":[]}
+{"op":"add","path":"/state/highTickets/0","value":{"id":"T-1042","title":"Login loop after SSO update","customer":"Acme Corp","priority":"High","time":"8:12 AM"}}
+{"op":"add","path":"/state/highTickets/1","value":{"id":"T-1040","title":"API rate limit errors on sync","customer":"Northwind","priority":"High","time":"7:41 AM"}}
+{"op":"add","path":"/elements/new-ticket-dialog","value":{"type":"DialogBlock","props":{"triggerLabel":"+ New Ticket","title":"Open a New Ticket","description":"Log a new support ticket into the queue.","content":["nt-title","nt-customer","nt-priority","nt-submit"],"triggerVariant":"default"},"children":[]}}
+{"op":"add","path":"/elements/nt-title","value":{"type":"FormControl","props":{"label":"Subject","input":"nt-title-input"},"children":[]}}
+{"op":"add","path":"/elements/nt-title-input","value":{"type":"Input","props":{"name":"subject","placeholder":"Brief description of the issue","value":{"$bindState":"/newTicket/title"}},"children":[]}}
+{"op":"add","path":"/state/newTicket","value":{"title":"","customer":"","priority":"Medium"}}
+{"op":"add","path":"/elements/nt-customer","value":{"type":"FormControl","props":{"label":"Customer","input":"nt-customer-input"},"children":[]}}
+{"op":"add","path":"/elements/nt-customer-input","value":{"type":"Input","props":{"name":"customer","placeholder":"Customer name","value":{"$bindState":"/newTicket/customer"}},"children":[]}}
+{"op":"add","path":"/elements/nt-priority","value":{"type":"FormControl","props":{"label":"Priority","input":"nt-priority-select"},"children":[]}}
+{"op":"add","path":"/elements/nt-priority-select","value":{"type":"Select","props":{"name":"priority","items":["nt-p-low","nt-p-med","nt-p-high"],"value":{"$bindState":"/newTicket/priority"}},"children":[]}}
+{"op":"add","path":"/elements/nt-p-low","value":{"type":"SelectItem","props":{"value":"Low","label":"Low"},"children":[]}}
+{"op":"add","path":"/elements/nt-p-med","value":{"type":"SelectItem","props":{"value":"Medium","label":"Medium"},"children":[]}}
+{"op":"add","path":"/elements/nt-p-high","value":{"type":"SelectItem","props":{"value":"High","label":"High"},"children":[]}}
+{"op":"add","path":"/elements/nt-submit","value":{"type":"Button","props":{"label":"Create Ticket","variant":"primary"},"children":[],"on":{"press":{"action":"pushState","params":{"statePath":"/tickets","value":{"id":"$id","title":{"$state":"/newTicket/title"},"customer":{"$state":"/newTicket/customer"},"priority":{"$state":"/newTicket/priority"},"time":"Now"}}}}}

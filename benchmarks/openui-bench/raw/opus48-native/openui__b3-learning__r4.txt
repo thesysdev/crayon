@@ -1,0 +1,42 @@
+root = Card([header, cohortFilter, kpis, engagement, enrollment, atRisk, messageCohort])
+
+header = CardHeader("Learning Analytics", "Cohort performance overview")
+
+cohortFilter = Form("cohort-filter", filterButtons, [cohortField])
+cohortField = FormControl("Cohort", cohortSelect, "Narrow all metrics to one cohort")
+cohortSelect = Select("cohort", [cohAll, cohSpring, cohSummer, cohFall], "All cohorts")
+cohAll = SelectItem("all", "All cohorts")
+cohSpring = SelectItem("spring25", "Spring 2025")
+cohSummer = SelectItem("summer25", "Summer 2025")
+cohFall = SelectItem("fall25", "Fall 2025")
+filterButtons = Buttons([applyBtn])
+applyBtn = Button("Apply filter", null, "primary")
+
+kpis = Table([kpiMetric, kpiValue])
+kpiMetric = Col("Metric", ["Active learners this week", "Course completion rate", "Average quiz score"])
+kpiValue = Col("Value", ["1,284", "72%", "84%"])
+
+engagement = LineChart(["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"], [engSeries], "natural", "Week", "Active learners")
+engSeries = Series("Engagement", [860, 940, 1010, 1120, 1075, 1180, 1240, 1284])
+
+enrollment = HorizontalBarChart(["Intro to Python", "Data Science 101", "UX Fundamentals", "Cloud Basics", "SQL Mastery"], [enrollSeries], "grouped", "Enrollments", "Course")
+enrollSeries = Series("Enrollments", [1420, 1180, 960, 810, 640])
+
+atRisk = ListBlock([risk1, risk2, risk3, risk4])
+risk1 = ListItem("Jordan Lee", "No activity in 12 days · 20% complete", null, "Reach out")
+risk2 = ListItem("Priya Nair", "3 missed quizzes · 35% complete", null, "Reach out")
+risk3 = ListItem("Marcus Chen", "Low quiz scores · 45% complete", null, "Reach out")
+risk4 = ListItem("Sofia Ramos", "No login in 9 days · 15% complete", null, "Reach out")
+
+messageCohort = Form("message-cohort", messageButtons, [recipientField, messageField])
+recipientField = FormControl("Send to cohort", recipientSelect)
+recipientSelect = Select("recipient", [cohAll2, cohSpring2, cohSummer2, cohFall2], "Choose a cohort")
+cohAll2 = SelectItem("all", "All cohorts")
+cohSpring2 = SelectItem("spring25", "Spring 2025")
+cohSummer2 = SelectItem("summer25", "Summer 2025")
+cohFall2 = SelectItem("fall25", "Fall 2025")
+messageField = FormControl("Message", messageArea)
+messageArea = TextArea("body", "Write a note to encourage this cohort...", 4)
+messageButtons = Buttons([sendBtn, clearBtn])
+sendBtn = Button("Send message", null, "primary")
+clearBtn = Button("Clear", null, "tertiary")

@@ -1,0 +1,111 @@
+root = Card([header, mainGrid, followUps])
+header = CardHeader("National Grid Power Console", "Live Telemetry & Control System | Node: Alpha-1")
+
+mainGrid = Card([topStats, alertSection, mainTabs], "clear", "column", "l")
+
+topStats = Card([loadKpi, capacityKpi, priceKpi, emissionsKpi], "sunk", "row", "m")
+
+loadKpi = Card([loadHeader, loadVal, loadSub], "card", "column", "xs")
+loadHeader = TextContent("Current Demand", "small-heavy")
+loadVal = Heading("38,420 MW", "h2")
+loadSub = TextContent("Peak Expected: 41,200 MW", "small")
+
+capacityKpi = Card([capHeader, capVal, capProgress], "card", "column", "xs")
+capHeader = TextContent("Grid Reserve Margin", "small-heavy")
+capVal = Heading("88.3%", "h2")
+capProgress = Progress(88.3, "Capacity Threshold")
+
+priceKpi = Card([priceHeader, priceVal, priceSub], "card", "column", "xs")
+priceHeader = TextContent("Wholesale Price", "small-heavy")
+priceVal = Heading("$64.20", "h2")
+priceSub = TextContent("USD / MWh (Spot)", "small")
+
+emissionsKpi = Card([emHeader, emVal, emSub], "card", "column", "xs")
+emHeader = TextContent("Emissions Today", "small-heavy")
+emVal = Heading("142.8 kt", "h2")
+emSub = Badge("12% vs Yesterday", "secondary")
+
+alertSection = Callout("warning", "Grid Alert: High Load in Eastern Region", "Substation E-42 operating at 96% rating. Secondary spinning reserves activated. Automated monitoring active.")
+
+mainTabs = Tabs([overviewTab, plantsTab, outagesTab, actionsTab])
+
+overviewTab = TabItem("overview", "Grid Status & Forecast", [overviewContent])
+overviewContent = Card([regionSelect, genAndForecast], "clear", "column", "m")
+
+regionSelect = Card([regionLabel, regionButtons], "card", "row", "m", "center")
+regionLabel = TextContent("Focus Region:", "small-heavy")
+regionButtons = Buttons([regAll, regNorth, regEast, regSouth, regWest])
+regAll = Button("All Regions", null, "primary")
+regNorth = Button("North", null, "tertiary")
+regEast = Button("East", null, "tertiary")
+regSouth = Button("South", null, "tertiary")
+regWest = Button("West", null, "tertiary")
+
+genAndForecast = Card([genCard, forecastCard], "clear", "row", "m")
+
+genCard = Card([genTitle, genChart], "card", "column", "s")
+genTitle = Heading("Generation Mix (MW)", "h4")
+genChart = PieChart(["Gas", "Nuclear", "Wind", "Solar", "Hydro", "Coal"], [14200, 11500, 6400, 3100, 2800, 1200], "donut")
+
+forecastCard = Card([forecastTitle, forecastChart], "card", "column", "s")
+forecastTitle = Heading("24-Hour Demand Forecast vs Capacity", "h4")
+forecastChart = LineChart(["00:00", "04:00", "08:00", "12:00", "16:00", "20:00", "24:00"], [demandSeries, capSeries], "natural", "Time", "Megawatts (MW)")
+demandSeries = Series("Demand Forecast", [31000, 28500, 34200, 40100, 41200, 39500, 33000])
+capSeries = Series("Available Capacity", [43500, 43500, 43500, 43500, 43500, 43500, 43500])
+
+plantsTab = TabItem("plants", "Power Plants", [plantsTable])
+plantsTable = Table([pName, pType, pRegion, pOutput, pStatus])
+pName = Col("Facility Name", ["Highland Nuclear", "Bayfront Gas", "Prairie Wind Farm", "Valley Hydro", "Solar Array One", "Cedar Coal Plant"])
+pType = Col("Type", ["Nuclear", "CCGT Gas", "Wind", "Hydro", "Solar", "Thermal Coal"])
+pRegion = Col("Region", ["North", "East", "West", "North", "South", "East"])
+pOutput = Col("Current Output", ["2,400 MW", "1,850 MW", "1,240 MW", "820 MW", "450 MW", "0 MW"])
+pStatus = Col("Status", ["ONLINE", "ONLINE", "ONLINE", "ONLINE", "ONLINE", "OFFLINE"])
+
+outagesTab = TabItem("outages", "Outages & Maintenance", [outageContent])
+outageContent = Card([outageTitle, outageTable, maintTitle, maintTable], "clear", "column", "m")
+
+outageTitle = Heading("Active Unplanned Outages", "h4")
+outageTable = Table([oId, oRegion, oAsset, oImpact, oEta])
+oId = Col("Incident ID", ["OUT-8821", "OUT-8834"])
+oRegion = Col("Affected Region", ["East Substation-12", "South Metro Grid"])
+oAsset = Col("Asset Affected", ["500kV Feeder Line B", "33kV Distribution Sub"])
+oImpact = Col("Load Lost", ["140 MW", "45 MW"])
+oEta = Col("Est. Restoration", ["14:30 EST", "16:00 EST"])
+
+maintTitle = Heading("Planned Maintenance (This Month)", "h4")
+maintTable = Table([mId, mRegion, mScope, mDates, mStatus])
+mId = Col("Job ID", ["MNT-402", "MNT-409", "MNT-415"])
+mRegion = Col("Region", ["West", "North", "East"])
+mScope = Col("Scope of Work", ["Turbine overhaul Unit 2", "Transformer replacement", "Scada node firmware update"])
+mDates = Col("Schedule Window", ["Oct 12 - Oct 18", "Oct 22 - Oct 23", "Oct 28 - Oct 29"])
+mStatus = Col("Approval", ["APPROVED", "SCHEDULED", "PENDING"])
+
+actionsTab = TabItem("curtailment", "Load Control & Dispatch", [curtailForm])
+curtailForm = Form("curtailment-order", curtailButtons, [targetRegion, loadAmount, protocolSelect, reasonInput])
+targetRegion = FormControl("Target Grid Region", regionSelectInput, "Select region requiring immediate load shed")
+regionSelectInput = Select("region", [optEast, optNorth, optSouth, optWest], "Select region...")
+optEast = SelectItem("east", "Eastern Grid (High Load Warning)")
+optNorth = SelectItem("north", "Northern Grid")
+optSouth = SelectItem("south", "Southern Grid")
+optWest = SelectItem("west", "Western Grid")
+
+loadAmount = FormControl("Curtailment Volume (MW)", loadInput, "Specify capacity to trip or ramp down")
+loadInput = Input("load_mw", "e.g. 250", "number")
+
+protocolSelect = FormControl("Dispatch Protocol", protocolRadio)
+protocolRadio = RadioGroup("protocol", [p1, p2, p3])
+p1 = RadioItem("Tier 1 - Interruptible Industrial Tariffs", "Sheds voluntary commercial loads first", "t1")
+p2 = RadioItem("Tier 2 - Battery Storage Discharge", "Calls upon grid-scale battery reserves", "t2")
+p3 = RadioItem("Tier 3 - Rolling Rotational Curtailment", "Emergency residential load shedding", "t3")
+
+reasonInput = FormControl("Operational Justification", reasonArea, "Mandatory logging requirement for grid auditors")
+reasonArea = TextArea("justification", "Describe grid conditions triggering this emergency dispatch...")
+
+curtailButtons = Buttons([submitCurtail, emergencyTrip])
+submitCurtail = Button("Execute Curtailment Order", null, "primary", "destructive")
+emergencyTrip = Button("Manual Grid Trip (Full Reset)", null, "tertiary")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Isolate Eastern Region telemetry")
+f2 = FollowUpItem("Export daily emissions report")
+f3 = FollowUpItem("Simulate 500 MW wind drop-off")
