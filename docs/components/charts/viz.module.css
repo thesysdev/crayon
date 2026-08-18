@@ -1,0 +1,116 @@
+/* Chart design language — reviewed cards in Figma (13:600), revised.
+   Card   white fill, 18px radius, no border, 24px padding
+   Type   title 18/500 · subtitle 16/400 muted · body/values/table 14/500 · notes 14/400 tertiary
+   Ink    muted = ink 50% · dividers = ink 12% · chips = ink 6%
+   Marks  square corners everywhere except the 4px logo chip */
+
+.viz {
+  --c1: #7c3aed; /* OpenUI Lang */
+  --c2: #e03060; /* A2UI */
+  --c3: #c98500; /* json-render */
+
+  --ink: var(--openui-text-neutral-primary, #000);
+  --ink-muted: color-mix(in srgb, var(--ink) 50%, transparent);
+  --ink-note: var(--openui-text-neutral-tertiary, #8f8da3);
+  --rule: color-mix(in srgb, var(--ink) 6%, transparent);
+  --chip: color-mix(in srgb, var(--ink) 6%, transparent);
+  /* the card surface token — distinct from the page background in both modes */
+  --surface: var(--openui-foreground, #fff);
+
+  margin: 2.5rem 0;
+  padding: 20px 28px;
+  border-radius: 18px;
+  background: var(--surface);
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.viz.tight { gap: 16px; }
+
+.s1 { --c: var(--c1); }
+.s2 { --c: var(--c2); }
+.s3 { --c: var(--c3); }
+
+.head { display: flex; flex-direction: column; gap: 0.5rem; }
+.title { margin: 0; font-size: 1.125rem; font-weight: 500; color: var(--ink); }
+.sub { margin: 0; font-size: 1rem; line-height: 1.5; color: var(--ink-muted); }
+
+.note { margin: 0; font-size: 0.875rem; line-height: 1.55; color: var(--ink-muted); }
+
+.legend { display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; font-size: 0.875rem; font-weight: 400; color: var(--ink-muted); }
+.legendVal { font-weight: 500; color: var(--ink); }
+.key { display: flex; align-items: center; gap: 0.5rem; }
+.key svg { width: 16px; height: 16px; opacity: 0.6; }
+.dot { width: 10px; height: 10px; background: var(--c); flex: none; }
+
+/* rows -------------------------------------------------------------- */
+
+.rows { display: flex; flex-direction: column; gap: 12px; }
+.row { display: flex; align-items: center; gap: 12px; min-height: 32px; }
+
+.rowName { width: 172px; flex: none; display: flex; align-items: center; gap: 12px; min-width: 0; }
+.chip {
+  width: 20px; height: 20px; flex: none;
+  border-radius: 4px;
+  background: var(--chip);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink);
+}
+.chip svg { width: 15px; height: 15px; }
+.rowLabel {
+  font-size: 1rem; font-weight: 500; color: var(--ink);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.rowBody { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.bar { height: 32px; background: var(--c); flex: none; min-width: 2px; }
+.value { font-size: 1rem; font-weight: 500; color: var(--ink-muted); white-space: nowrap; flex: none; }
+.valueHi { font-weight: 600; color: var(--c); }
+
+.groupHead { font-size: 1rem; font-weight: 500; color: var(--ink); }
+.groupHead span { color: var(--ink-muted); font-weight: 400; }
+
+/* table -------------------------------------------------------------- */
+
+.tableWrap { overflow-x: auto; }
+.table { width: 100%; border-collapse: collapse; font-size: 1rem; margin: 0; background: transparent; }
+.table th, .table td, .table tr, .table thead, .table tbody {
+  background: transparent;
+  border: 0;
+  font-weight: 500;
+}
+/* rows are inset 8px inside the full-width separator */
+.table th, .table td { padding: 12px 8px; text-align: center; white-space: nowrap; }
+.table th:first-child, .table td:first-child { padding-left: 8px; width: 34%; min-width: 0; text-align: left; }
+.table:not(.tableWide) th:first-child, .table:not(.tableWide) td:first-child { width: auto; }
+.table th:last-child, .table td:last-child { padding-right: 8px; }
+.tableWide th:not(:first-child), .tableWide td:not(:first-child) { min-width: 112px; }
+.table thead th { font-weight: 600; color: var(--ink); }
+.table thead th:first-child { font-weight: 500; color: var(--ink-muted); }
+.table thead tr, .table tbody tr { border-bottom: 1px solid var(--rule); }
+.table tbody tr:last-child { border-bottom: 0; }
+.table tbody td { color: var(--ink-muted); }
+.colHead { display: inline-flex; align-items: center; gap: 0.5rem; }
+.colHead svg { width: 16px; height: 16px; opacity: 0.6; }
+.model { display: flex; align-items: center; gap: 0.625rem; color: var(--ink); font-weight: 500; }
+.vendor { color: var(--ink-muted); font-weight: 400; }
+.best { color: var(--c); font-weight: 600; }
+.avgRow th, .avgRow td { color: var(--ink); background: color-mix(in srgb, var(--ink) 3%, transparent); }
+
+/* line chart ---------------------------------------------------------- */
+
+.svg { display: block; overflow: visible; }
+.endTag { font-size: 13px; font-weight: 600; }
+
+.stageList { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.stageList li { display: flex; gap: 10px; font-size: 1rem; line-height: 1.5; color: var(--ink-muted); }
+.stageList .keySwatch { width: 10px; height: 10px; flex: none; margin-top: 7px; }
+.stageList strong { color: var(--ink); font-weight: 600; }
+.shipped { margin: 0; font-size: 1rem; font-weight: 600; color: var(--ink); }
+
+@media (max-width: 640px) {
+  .viz { padding: 16px 18px; gap: 20px; }
+  .rowName { width: 120px; }
+}
