@@ -5,7 +5,8 @@ import { fileURLToPath } from "node:url";
 const require = createRequire(import.meta.url);
 const HERE = dirname(fileURLToPath(import.meta.url));
 
-// This directory carries no node_modules; resolve zod through a workspace package that owns it.
+// Resolve zod through lang-core so the catalog and the parser share one zod
+// module instance (two instances break instanceof checks inside the library).
 const { z } = require(require.resolve("zod/v4", { paths: [join(HERE, "../../../../packages/lang-core")] }));
 
 export type PropSpec = {
@@ -1185,9 +1186,3 @@ export const ROOT = "Card";
 export const CATALOG: Record<string, CatalogEntry> = toCatalog(COMPONENTS);
 
 export const COMPONENT_GROUPS: ComponentGroup[] = checkGroups(componentGroups, CATALOG);
-
-export const REF_PROPS = new Set(
-  Object.values(CATALOG).flatMap((c) =>
-    c.props.filter(([, s]) => s.t === "ref" || s.t === "refs").map(([n]) => n),
-  ),
-);

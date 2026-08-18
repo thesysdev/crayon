@@ -11,8 +11,8 @@ import { fileURLToPath } from "node:url";
 import { evalA2uiRenderer, scoreRaw } from "./validator.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const RAW_ROOT = process.env.A2UI_RAW_ROOT ?? join(__dirname, "../../raw");
-const RESULTS_ROOT = process.env.A2UI_RESULTS_ROOT ?? join(__dirname, "../../results");
+const RAW_ROOT = join(__dirname, "../../raw");
+const RESULTS_ROOT = join(__dirname, "../../results");
 const LABELS = process.argv.slice(2);
 
 if (!LABELS.length) {

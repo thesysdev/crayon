@@ -15,11 +15,7 @@ const CUSTOM_RULES = [
 ];
 
 export function systemPrompt(): string {
-  // BENCH_JR_EXTRA_RULE: one additional rule appended through the same official
-  // customRules option, disclosed per run label.
-  return catalog.prompt({
-    customRules: process.env.BENCH_JR_EXTRA_RULE ? [...CUSTOM_RULES, process.env.BENCH_JR_EXTRA_RULE] : CUSTOM_RULES,
-  });
+  return catalog.prompt({ customRules: CUSTOM_RULES });
 }
 
 export function userPrompt(brief: string): string {

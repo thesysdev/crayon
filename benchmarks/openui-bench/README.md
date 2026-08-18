@@ -16,10 +16,13 @@ raw model output, and the scored verdicts.
 - 70-component catalog derived from OpenUI's public component library: the
   open-source chat set, six chat blocks from the same library, and twelve
   components from the public shadcn-chat example. `catalog/public-catalog.json`
-  is the single source all three protocol surfaces derive from.
+  is the reference surface all three protocol catalogs mirror;
+  `node tools/check-catalogs.mjs` verifies the three stay equivalent to it
+  (names, props, required flags, enums).
 - 6 models, one seat per company: GPT-5.6 Sol, Claude Opus 4.8, Kimi K3,
-  Gemini 3.6 Flash, Qwen3.8 2.4T, Muse Spark 1.2 (plus an extra Terra run kept
-  out of the averages, one OpenAI seat only).
+  Gemini 3.6 Flash, Qwen3.8 2.4T, Muse Spark 1.2. A seventh run (GPT-5.6
+  Terra) is committed but excluded from the averages so OpenAI holds one seat
+  like every other company.
 - One uniform condition for every model and format: 4 generations per brief,
   temperature 0.7 (Anthropic runs its model default; the API rejects setting
   it), reasoning minimal/none, 16,384-token output ceiling. 1,104 scored runs
@@ -43,7 +46,7 @@ raw model output, and the scored verdicts.
 | `catalog/public-catalog.json` | The shared 70-component catalog. |
 | `protocols/openui/` | catalog, prompt (lang-core `generatePrompt`), validator (lang-core parser). |
 | `protocols/jsonrender/` | catalog (`defineCatalog` with Zod), prompt (`catalog.prompt()`), validator (their stream compiler, `validateSpec`, Zod gate). |
-| `protocols/a2ui/` | catalog + prompt generation (official python SDK), scorer (`score.py`), renderer gate (`validator.mjs`, `@a2ui/web_core` MessageProcessor), and the generated `catalog-a2ui.json` / `system-prompt.txt` the runs consumed. |
+| `protocols/a2ui/` | catalog + prompt generation (official python SDK), scorer (`score.py`), renderer gate (`validator.mjs`, `@a2ui/web_core` MessageProcessor), and the generated `catalog-a2ui.json` / `system-prompt.txt` the runs consumed. Unlike the other two protocols, which generate their prompts at runtime from TypeScript, A2UI's generator needs the python SDK, so its generated artifacts are committed byte-stable. |
 | `run.mjs` | Generation runner (any OpenAI-compatible provider, Anthropic, Google). |
 | `score.mjs` | Offline scorer: replays every raw through the validators, no API keys needed. |
 | `tools/` | Token counts, cost estimates, blank-screen floor. |
@@ -52,25 +55,45 @@ raw model output, and the scored verdicts.
 
 ## Reproduce the scores (no API keys)
 
+Prerequisites: Node >= 22.18 (the harness imports TypeScript modules
+directly), and the monorepo's OpenUI SDK built once at the repo root, since
+the openui protocol scores with the same lang-core parser the product ships:
+
 ```bash
+# from the repo root
+pnpm install
+pnpm --filter @openuidev/lang-core build
+
+# in benchmarks/openui-bench
 npm install
 
-# A2UI's scorer needs the official python SDK:
+# A2UI's scorer needs the official python SDK, pinned to the revision the
+# benchmark ran against:
 python3 -m venv .venv
 .venv/bin/pip install antlr4-tools          # their build hook needs the antlr4 binary
-.venv/bin/pip install "a2ui_agent @ git+https://github.com/a2ui-project/a2ui#subdirectory=agent_sdks/python/a2ui_agent"
+.venv/bin/pip install "a2ui_agent @ git+https://github.com/a2ui-project/a2ui@29b715fa89fc5bb8351d2ea0116f03d4f2e212f2#subdirectory=agent_sdks/python/a2ui_agent"
 
 A2UI_PYTHON=.venv/bin/python node score.mjs           # all models, ~15 min
 A2UI_PYTHON=.venv/bin/python node score.mjs gemini    # one model
 ```
 
+Without `A2UI_PYTHON`, `score.mjs` still scores the openui and json-render
+rows but skips a2ui and leaves the results files untouched.
+
 `score.mjs` rewrites `results/results-<model>.json` from the raws alone, so a
-diff against the committed results is the integrity check. `raw/*/truncated.json`
+diff against the committed results is the integrity check. `raw/<label>/truncated.json`
 records the generations that hit the output ceiling, the one generation-time
-fact a raw file cannot carry.
+fact a raw file cannot carry; a label without one had no truncations.
+
+Results-row vocabulary, for historical continuity with the committed data:
+each row calls its brief `scenario`, carries a constant legacy `axis` field,
+and has a `tokens` field holding generation-time output-token counts where the
+original run recorded them (partially populated, openui rows only). Token
+analysis uses `tools/count-tokens.mjs`, which counts the raws directly.
 
 Token and cost tables, and the conservative A2UI blank-screen count
-(`score.mjs` already prints per-format renderable counts):
+(`score.mjs` already prints per-format renderable counts). The cost table
+covers the five models with public list prices; Sol and Terra have none:
 
 ```bash
 node tools/count-tokens.mjs
@@ -142,6 +165,11 @@ Everything that is not the SDKs' own code, in one place:
 
 The method builds on Mobile Reality's
 [MDMA benchmark](https://github.com/MobileReality/mdma); the shared-layer
-leniencies for json-render match theirs. All three SDK versions are pinned in
-`package.json`, and the A2UI catalog id embedded in the raws' prompts is kept
-verbatim so the committed raws stay reproducible.
+leniencies for json-render match theirs. SDK versions: the npm packages
+(`@json-render/core`, `@a2ui/web_core`) are pinned by the committed
+`package-lock.json`, the A2UI python SDK by the commit in the install command
+above, and OpenUI's lang-core is this repository at the same commit as the
+benchmark itself. The A2UI catalog id and title embedded in the raws' prompts
+are kept verbatim so the committed raws stay reproducible. The files under
+`raw/` are verbatim large-language-model outputs generated for this benchmark
+and are published here as its data record.

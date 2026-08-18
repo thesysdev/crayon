@@ -2,7 +2,7 @@
 // merged with the row verdict built from score.py's official SDK output.
 import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import { execFileSync } from "node:child_process";
 
@@ -11,9 +11,6 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 // @a2ui/web_core composes its schemas with its own bundled zod v3; mixing in
 // another zod instance fails its schema checks, so both come from its install.
 function webCoreBase() {
-  if (process.env.A2UI_WEBCORE_DIR) {
-    return pathToFileURL(join(process.env.A2UI_WEBCORE_DIR, "/"));
-  }
   try {
     return new URL("../../", import.meta.resolve("@a2ui/web_core/v0_9"));
   } catch {
@@ -34,12 +31,12 @@ const {
 const { z } = createRequire(new URL("package.json", WEBCORE))("zod");
 
 const CATALOG = JSON.parse(
-  readFileSync(process.env.BENCH_CATALOG ?? join(__dirname, "catalog-surface.json"), "utf8"),
+  readFileSync(join(__dirname, "catalog-surface.json"), "utf8"),
 );
 // Fallback for messages that declare no catalogId. Single-sourced from the
 // compiled catalog so the renderer gate cannot drift from the prompt.
 const CATALOG_ID = JSON.parse(
-  readFileSync(process.env.A2UI_CATALOG ?? join(__dirname, "catalog-a2ui.json"), "utf8"),
+  readFileSync(join(__dirname, "catalog-a2ui.json"), "utf8"),
 ).catalogId;
 const PY = process.env.A2UI_PYTHON ?? "python3";
 
@@ -162,7 +159,7 @@ export function rowFromScore(s, { reqs = 0 } = {}) {
 
 // Stage 1: the official python SDK scorer, which owns parsing and healing.
 export function scoreRaw(rawPath) {
-  return JSON.parse(execFileSync(PY, [join(__dirname, "score.py"), rawPath], { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 }));
+  return JSON.parse(execFileSync(PY, [join(__dirname, "score.py"), rawPath], { encoding: "utf8", maxBuffer: 64 * 1024 * 1024, stdio: ["ignore", "pipe", "pipe"] }));
 }
 
 export function evalA2ui(rawPath, opts) {

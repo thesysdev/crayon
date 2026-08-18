@@ -544,6 +544,6 @@ Requirement count N is the scenario's complexity value. Bands:
 18. a way to file a situation report
 ## Generated file
 
-`briefs.mjs` is the mechanical transform of the scenario set below (no
+`briefs.mjs` is the mechanical transform of the scenario set above (no
 rewording): one entry per brief with name, band, requirement count, and the
 assembled prompt text.

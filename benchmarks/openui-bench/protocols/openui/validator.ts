@@ -46,7 +46,7 @@ const parser = core.createParser(openuiSchema());
 // Lenient prop lookup: accept props both under .props and at the node level, as a
 // tolerant renderer would. EXCEPT the reserved wire keys type and id, where the
 // fallback would read a discriminator as a prop value and invent enum errors.
-export function getProp(c: any, pn: string) {
+function getProp(c: any, pn: string) {
   if (c.props?.[pn] !== undefined) return c.props[pn];
   if (pn === "type" || pn === "id") return undefined;
   return c[pn];

@@ -93,7 +93,7 @@ const REASONING = MODEL.includes("gemini")
   ? { effort: "minimal" }
   : MODEL.includes("claude")
     ? { enabled: false }
-    : MODEL.includes("gpt-") || MODEL.includes("deepseek") || MODEL.includes("qwen") || MODEL.includes("kimi")
+    : MODEL.includes("gpt-") || MODEL.includes("qwen") || MODEL.includes("kimi")
       ? { effort: "minimal" }
       : undefined;
 const REASONING_OVERRIDE =
@@ -111,8 +111,8 @@ async function generate(systemText, userText) {
   const body =
     PROVIDER === "anthropic"
       ? {
-          // No temperature: the API rejects it for Opus 5 ("deprecated for
-          // this model"); it runs at the model default.
+          // No temperature: the Anthropic API rejects setting it for this model
+          // generation ("deprecated"); it runs at the model default.
           model: MODEL,
           max_tokens: MAX_TOKENS,
           system: systemText,

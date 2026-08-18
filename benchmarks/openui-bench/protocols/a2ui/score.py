@@ -28,8 +28,7 @@ from a2ui.validation.validator import extract_component_ref_fields
 
 from catalog import CATALOG_NAME, CATALOG_PATH
 
-# A2UI_CATALOG overrides the compiled A2UI catalog (catalog-size ladder tiers).
-CATALOG = os.environ.get("A2UI_CATALOG") or CATALOG_PATH
+CATALOG = CATALOG_PATH
 
 MESSAGE_COMPONENT_KEYS = ("createSurface", "updateComponents")
 

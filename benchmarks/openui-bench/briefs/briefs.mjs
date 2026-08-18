@@ -1,4 +1,4 @@
-// 46 screen briefs in 5 size bands, generated from DESIGN.md. Do not edit by hand: briefs are frozen; a changed brief invalidates every raw generated against it.
+// 46 screen briefs in 5 size bands, generated from DESIGN.md. Existing briefs are frozen (a change invalidates every raw generated against them); append new briefs following DESIGN.md.
 export const SCENARIOS = [
   {
     "name": "b1-uptime",

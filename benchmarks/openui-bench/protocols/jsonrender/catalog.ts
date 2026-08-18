@@ -11,9 +11,7 @@ import { fileURLToPath } from "node:url";
 // this file first, and fall back to that install when this file is imported
 // from elsewhere. Every dependency goes through one require function: two Zod
 // module instances would break the library's internal instanceof checks.
-const OFFICIAL_ANCHOR =
-  process.env.BENCH_JR_MODULES ??
-  fileURLToPath(new URL("../../package.json", import.meta.url));
+const OFFICIAL_ANCHOR = fileURLToPath(new URL("../../package.json", import.meta.url));
 
 function jsonRenderRequire() {
   const local = createRequire(import.meta.url);

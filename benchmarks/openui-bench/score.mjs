@@ -19,7 +19,22 @@ const RAW = join(__dirname, "raw");
 const briefByName = new Map(SCENARIOS.map((s) => [s.name, s]));
 const MAXREP = Number(process.env.BENCH_MAX_REP) || 4;
 
-const labels = process.argv.slice(2).length ? process.argv.slice(2) : readdirSync(RAW).sort();
+const args = process.argv.slice(2);
+if (args.some((a) => a.startsWith("-"))) {
+  console.error("usage: node score.mjs [label ...]   (labels are directories under raw/)");
+  process.exit(2);
+}
+const labels = args.length ? args : readdirSync(RAW).sort();
+for (const label of labels) {
+  if (!existsSync(join(RAW, label))) {
+    console.error(`no raw/${label}/ directory; labels: ${readdirSync(RAW).sort().join(", ")}`);
+    process.exit(2);
+  }
+}
+
+// A2UI scoring shells to the official python SDK. Probe once so a missing venv
+// degrades to skipping a2ui rows instead of crashing mid-scoring.
+let a2uiReady = true;
 
 // Row order in the results files: openui, a2ui, jsonrender, each sorted by
 // filename. Keep stable so rescoring committed raws reproduces the committed
@@ -53,12 +68,26 @@ for (const label of labels) {
     const reqs = briefByName.get(scn)?.reqs ?? 0;
     const path = join(dir, f);
     const text = readFileSync(path, "utf8");
-    const res =
-      fmt === "openui"
-        ? evalOpenui(text, { truncated: truncated.has(id), reqs })
-        : fmt === "jsonrender"
-          ? evalJr(text, { reqs })
-          : evalA2ui(path, { reqs });
+    if (fmt === "a2ui" && !a2uiReady) continue;
+    let res;
+    try {
+      res =
+        fmt === "openui"
+          ? evalOpenui(text, { truncated: truncated.has(id), reqs })
+          : fmt === "jsonrender"
+            ? evalJr(text, { reqs })
+            : evalA2ui(path, { reqs });
+    } catch (e) {
+      if (fmt === "a2ui") {
+        a2uiReady = false;
+        console.error(
+          `a2ui scoring unavailable (${String(e.message).split("\n")[0].slice(0, 80)}). ` +
+            "Set A2UI_PYTHON to a venv with the official SDK (see README); skipping a2ui rows.",
+        );
+        continue;
+      }
+      throw e;
+    }
     rows.push({
       fmt,
       scenario: scn,
@@ -73,7 +102,11 @@ for (const label of labels) {
     });
   }
 
-  writeFileSync(resultsPath, JSON.stringify(rows, null, 1));
+  if (a2uiReady) {
+    writeFileSync(resultsPath, JSON.stringify(rows, null, 1));
+  } else {
+    console.error(`${label}: a2ui rows were skipped; ${resultsPath} left untouched.`);
+  }
 
   const fmts = {};
   for (const row of rows) {
