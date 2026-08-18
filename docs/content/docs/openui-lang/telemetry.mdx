@@ -3,27 +3,48 @@ title: Telemetry
 description: What OpenUI Lang collects, why it is collected, and how to control installation and runtime telemetry.
 ---
 
-OpenUI Lang Core has two types of telemetry:
+OpenUI Lang collects limited telemetry about how `@openuidev/lang-core` is installed and used. Installation telemetry is on by default and can be disabled. Runtime telemetry is off by default and must be enabled explicitly.
 
-- **Installation telemetry** is on by default. You can turn it off.
-- **Runtime telemetry** is off by default. You can choose to turn it on.
+## Why is telemetry collected?
 
-## Why we collect it
+OpenUI Lang runs across different operating systems, package managers, server runtimes, and CI environments. Telemetry helps us understand which environments people use and where to focus compatibility, reliability, and performance improvements.
 
-Telemetry helps us understand how OpenUI Lang is used, which environments we should support, and where to focus reliability and performance work.
+## What is being collected?
 
-## Installation telemetry
+### During installation
 
-Installation telemetry runs when `@openuidev/lang-core` is installed. It does not run during your application build unless that build also installs dependencies.
+When `@openuidev/lang-core` is installed, we collect:
 
-### What we collect
-
-- A random ID for the installation
+- A random installation ID
 - A project identifier created locally so the original repository URL or path is not sent
 - OpenUI Lang Core, Node.js, operating system, and package manager versions
 - Whether the installation is running in CI or Docker
 
-### Opt out
+This runs during package installation. It does not run during your application build unless the build also installs dependencies.
+
+### At runtime
+
+Runtime telemetry is off by default. When enabled, OpenUI Lang samples successful prompt generations on your server and sends telemetry for about 1 in 10 of them. Browser calls never send runtime telemetry.
+
+We collect:
+
+- OpenUI Lang Core and server runtime versions
+- Environment and CI information
+- The number of components and tools in the prompt setup
+- Project and prompt-setup identifiers created locally so the original values are not sent
+
+## What about sensitive data?
+
+We do not collect:
+
+- Prompts, messages, preambles, examples, additional rules, or generated output
+- Source code or full component, tool, or schema definitions
+- Repository URLs, project names, file paths, branches, or commits
+- Names, email addresses, usernames, user IDs, or chat data
+- Credentials, API keys, environment values, errors, logs, or stack traces
+- Routes, DOM data, or UI interactions
+
+## How do I opt out of installation telemetry?
 
 Set either variable when installing dependencies:
 
@@ -39,18 +60,7 @@ DO_NOT_TRACK=1 pnpm install
 
 These variables also work with npm, Yarn, and Bun. In CI, set one before the dependency-install step.
 
-## Runtime telemetry
-
-Runtime telemetry is off by default. When enabled, OpenUI Lang samples successful prompt generations on your server and sends telemetry for about 1 in 10 of them. Browser calls never send runtime telemetry.
-
-### What we collect
-
-- OpenUI Lang Core and server runtime versions
-- Environment and CI information
-- The number of components and tools in the prompt setup
-- Project and prompt-setup identifiers created locally; the original values are not sent
-
-### Opt in
+## How do I opt in to runtime telemetry?
 
 1. Set this variable in your server environment:
 
@@ -61,14 +71,3 @@ OPENUI_RUNTIME_TELEMETRY_ENABLED=1
 2. Restart your server or redeploy your application.
 
 To turn it off, remove `OPENUI_RUNTIME_TELEMETRY_ENABLED`. The global `OPENUI_TELEMETRY_DISABLED` and `DO_NOT_TRACK` settings always take priority.
-
-## What we never collect
-
-Neither telemetry flow sends:
-
-- Prompts, messages, preambles, examples, additional rules, or generated output
-- Source code or full component, tool, or schema definitions
-- Repository URLs, project names, file paths, branches, or commits
-- Names, email addresses, usernames, user IDs, or chat data
-- Credentials, API keys, environment values, errors, logs, or stack traces
-- Routes, DOM data, or UI interactions
