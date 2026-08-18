@@ -206,9 +206,7 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     gap: 6,
-    borderTop: "1px solid var(--oui-dt-border-subtle)",
     marginTop: 4,
-    paddingTop: 12,
   },
   stack: {
     maxHeight: 260,
