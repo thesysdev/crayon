@@ -1,6 +1,6 @@
 ---
-title: "Generative UI reliability benchmark"
-description: "Six flagship models, three generative UI formats, 46 screens. OpenUI Lang vs Vercel's json-render vs Google's A2UI, each prompted and judged by its own SDK. Completion, blank screens, tokens, and cost."
+title: Generative UI Reliability benchmark
+description: "We evaluated the 3 popular Generative UI frameworks - OpenUI, A2UI & json-render against a real world component library to test how well they perform, how often they break and what are the common failure scenarios."
 date: "2026-08-17"
 author: "Thesys Engineering Team"
 featured: false
@@ -10,7 +10,7 @@ We ran the same 46 prompts through the 3 different Generative UI formats, OpenUI
 <br /> OpenUI rendered the most screens on an average (84.1%) compared to A2UI (82.5%) and json-render (71.2%) while consuming half the tokens.
 <br /> A2UI performed the worst when it came to blank screens, with 89 out of 828 runs resulting in a fully blank screen while OpenUI only failed to render 4 times vs json-render's 11.
 
-![Score table across six flagship models. OpenUI Lang averages 84.1 percent complete, A2UI 82.5, json-render 71.2. OpenUI wins Sol, Gemini and Muse; A2UI wins Kimi and Qwen; json-render wins Claude Opus 4.8.](./images/bench-table.svg)
+![Score table across six flagship models. OpenUI averages 84.1, A2UI 82.5, json-render 71.2](./images/bench-table.svg)
 
 
 ## Methodology
@@ -19,8 +19,8 @@ For all of these combinations we used the same component catalog of 73 component
 For each format we used the official prompt and parser from the SDK's documentation.
 In total 46 different prompts were used that mirror real life requests. None of them name a component or a layout to mimic real life user queries.
 
-For evaluation we used the following metrics:
-- Completeness: Every prompt is rendered, every reference is resolved without silently dropping anything. Higher is better
+For evaluation we used the following rubrics:
+- Completeness: Every prompt is rendered, every reference should be resolved without silently dropping anything. Higher is better
 - Empty responses: Whether the user saw anything at all. If the response completely failed to render then we count that separately from completeness.
   Naturally the lower the score in this rubric, the better.
 
@@ -29,24 +29,25 @@ For evaluation we used the following metrics:
 ### No format wins on every model
 
 - GPT-5.6 Sol is nearly flawless with OpenUI at 98.4%.
-- Claude Opus 4.8 was the result we didn't expect: 96.2% with json-render, the best json-render number from any model, with OpenUI last on the same screens.
+- Claude Opus 4.8 was the result we didn't expect: 96.2% with json-render, the best json-render number from any model, with OpenUI being last on the same prompts.
 - Kimi K3 is a coin flip: 90.2 (A2UI), 89.1 (json-render), and 87.0 (OpenUI) are all within error margins at this sample size.
 - Gemini 3.6 Flash, a small lightweight model, splits hardest: 76.1% with OpenUI against 57.8 (A2UI) and 55.9 (json-render).
 
-We suspect heavy JSON post-training explains part of the spread, making JSON scaffolding strong on some models while a compact line-based DSL wins on the rest, but we haven't tested that hypothesis.
-If you use a fixed model, benchmark that model. If you support several, the average matters more.
+We suspect heavy JSON post-training explains part of the spread, making JSON scaffolding strong on some models while a compact line-based DSL wins on the rest.
+The key takeway is if you use a fixed model, benchmark that model. If you support several, the average matters more and it becomes harder to achieve the highest quality across various different model families.
 
 ### Screens get harder as they grow
 
-![Completed screens by number of components, averaged across the six models. All three formats decline as requirements grow. json-render falls fastest, from 88 percent on small screens to 61 on the largest.](./images/bench-average.svg)
+![Completed screens by number of components, averaged across the six models. json-render falls fastest, from 88 percent on small screens to 61 on the largest.](./images/bench-average.svg)
 
 Every format degrades as generations become complicated to involve more components (which is expected).
-<br /> json-render scores fall steeply, from 88% on 2-3 requirement screens to 61% on 16-20.
+<br /> json-render scores fall steeply, from 88% on screens involving 2-3 components to 61% on 16-20.
 <br /> OpenUI & A2UI closely tail each other with OpenUI slightly outperforming A2UI at most points.
 
-The odd one out is Meta's Muse Spark: it essentially can't write json-render (22.8% completeness; it loses track of the props-versus-children split and drops required fields 122 times across its runs) yet completes 82.1% in OpenUI, the widest gap across the same model-format choice.
+The odd one out is Meta's Muse Spark: it essentially can't write json-render (22.8% completeness; it loses track of the props-versus-children split and drops required fields 122 times across its runs) yet completes 82.1% in OpenUI.
+This is the widest gap we observed across the same model-format choice.
 
-Note: When we added a rule telling the model to "attach every component it defines" it added 13 points to OpenUI on Kimi meaning that each model+format combination needs prompt tuning to ensure we get the most out of it.
+*Note: When we added a rule telling the model to "attach every component it defines" it added 13 points to OpenUI on Kimi meaning that each model+format combination needs prompt tuning to ensure we get the most out of it.*
 
 ### When it fails, what does the user see?
 
@@ -59,7 +60,7 @@ OpenUI failed to render only 4 times out of 828 runs and all four were one model
 A2UI's default renderer, which drops the whole updateComponents message if it has any invalid component structure, blanked out 100 times. Counting conservatively - only payloads that were completely broken because the JSON itself fails to parse - we still get 89 completely blank screens.
 json-render failed 11 times.
 
-The main difference in how these formats are interpreted: each OpenUI component is one line, so a parse error costs that line, while a JSON document has no smaller unit to fall back to.
+The main difference in how these formats are interpreted: each OpenUI component is one line, so a parse error only costs that line while a JSON document has no smaller unit to fall back to.
 This does lead to OpenUI trading blank screens for partial ones which can be harder to notice which is why we track the completion rubric separately.
 Rescoring scripts for both these rubrics are in the repo.
 
@@ -72,7 +73,7 @@ Given input tokens & tool definitions are developer defined in all three formats
 - **Output Tokens** become a factor of format verbosity. The same header is one line in OpenUI, a patch operation in json-render, a wrapped message in A2UI.
 
 The same header, in each format's wire shape
-```shell
+```json
 # openui-lang: one line
 header = Header("Executive Revenue Dashboard", "Q4 Performance Overview")
 
