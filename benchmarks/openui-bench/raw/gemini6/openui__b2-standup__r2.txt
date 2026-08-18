@@ -1,0 +1,44 @@
+root = Card([header, missingAlert, blockedCallout, statusSection, updateSection, followUps])
+
+header = CardHeader("Async Standup", "Wednesday, October 25, 2023 • 4 of 6 updates submitted")
+
+missingAlert = Callout("warning", "Missing Updates", "2 team members haven't submitted their standup yet today: Alex Rivera and Maya Lin.")
+
+blockedCallout = Alert("Blocker Reported", "David Chen is blocked on 'Auth Service DB Migration' due to pending AWS permission approval.", "destructive")
+
+statusSection = Card([statusHeading, teamList], "sunk")
+statusHeading = Heading("Today's Updates", "h3")
+
+teamList = ListBlock([item1, item2, item3, item4])
+item1 = ListItem("Sarah Jenkins (Product Lead)", "Done: PRD review for v2.4 • Today: Q4 Roadmap sync • No blockers", null, "View Details")
+item2 = ListItem("David Chen (Senior Backend)", "BLOCKED: Auth Service DB Migration • Waiting on Devops AWS IAM access • Today: PR reviews", null, "Offer Help")
+item3 = ListItem("Elena Rostova (Lead UX Designer)", "Done: User testing synthesis • Today: Design system tokens & component specs • No blockers", null, "View Details")
+item4 = ListItem("Marcus Vance (Frontend Developer)", "Done: Fixed mobile navigation bug • Today: Integrating new dashboard widgets • No blockers", null, "View Details")
+
+updateSection = Card([updateHeading, standupForm])
+updateHeading = Heading("Post Your Standup Update", "h3")
+
+standupForm = Form("standup-submission", formButtons, [yesterdayField, todayField, blockerField, statusField])
+yesterdayField = FormControl("What did you accomplish yesterday?", yesterdayInput)
+yesterdayInput = TextArea("yesterday", "Completed unit tests for checkout flow...", 2)
+
+todayField = FormControl("What are you working on today?", todayInput)
+todayInput = TextArea("today", "Building UI components for standup view...", 2)
+
+blockerField = FormControl("Are you facing any blockers?", blockerInput, "Leave blank if clear")
+blockerInput = Input("blockers", "e.g., Need review on PR #142")
+
+statusField = FormControl("Your Availability Status", statusSelect)
+statusSelect = Select("status", [optActive, optFocus, optOoO], "Select current status")
+optActive = SelectItem("active", "Available / Working")
+optFocus = SelectItem("focus", "Deep Focus / Do Not Disturb")
+optOoO = SelectItem("ooo", "Out of Office / Half Day")
+
+formButtons = Buttons([submitBtn, draftBtn])
+submitBtn = Button("Submit Standup", null, "primary")
+draftBtn = Button("Save Draft", null, "tertiary")
+
+followUps = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Nudge missing teammates on Slack")
+fu2 = FollowUpItem("Filter updates by engineering team")
+fu3 = FollowUpItem("View past standup archive")

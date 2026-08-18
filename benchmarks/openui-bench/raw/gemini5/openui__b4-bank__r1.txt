@@ -1,0 +1,112 @@
+root = Card([header, mainGrid, managementSection, actionDrawers])
+
+header = CardHeader("Welcome back, Alex", "Personal Banking Dashboard • Updated Today, 9:41 AM")
+
+mainGrid = Card([balanceSection, rightColumn], "clear", "column", "l")
+
+balanceSection = Card([checkingCard, savingsCard, creditCard], "clear", "row", "m")
+
+checkingCard = Card([checkingHeader, checkingBalance, checkingMeta], "card", "column", "xs")
+checkingHeader = Heading("Checking Account", "h4")
+checkingBalance = TextContent("$5,420.50", "large-heavy")
+checkingMeta = Badge("•••• 4821", "secondary")
+
+savingsCard = Card([savingsHeader, savingsBalance, savingsMeta], "card", "column", "xs")
+savingsHeader = Heading("Savings Account", "h4")
+savingsBalance = TextContent("$12,850.75", "large-heavy")
+savingsMeta = Badge("1.45% APY", "outline")
+
+creditCard = Card([creditHeader, creditBalance, creditMeta], "card", "column", "xs")
+creditHeader = Heading("Credit Card", "h4")
+creditBalance = TextContent("$1,240.30", "large-heavy")
+creditMeta = Badge("Limit: $10,000", "secondary")
+
+rightColumn = Card([tabsSection, sidePanel], "clear", "row", "l")
+
+tabsSection = Tabs([transactionsTab, spendingTab, billsTab])
+
+transactionsTab = TabItem("tx", "Recent Transactions", [txTable])
+txTable = Table([txMerchantCol, txDateCol, txCategoryCol, txAmountCol])
+txMerchantCol = Col("Merchant", ["Whole Foods Market", "Netflix Subscription", "Electric Utility", "Starbucks Coffee", "Uber Trip"])
+txDateCol = Col("Date", ["Oct 24", "Oct 22", "Oct 20", "Oct 19", "Oct 18"])
+txCategoryCol = Col("Category", ["Groceries", "Entertainment", "Utilities", "Dining", "Transport"])
+txAmountCol = Col("Amount", ["-$142.50", "-$15.99", "-$84.20", "-$5.75", "-$24.30"])
+
+spendingTab = TabItem("spending", "Spending Breakdown", [spendingChart])
+spendingChart = PieChart(["Groceries", "Entertainment", "Utilities", "Dining", "Shopping"], [450, 120, 210, 310, 150], "donut", "circular")
+
+billsTab = TabItem("bills", "Upcoming Bills", [billsList])
+billsList = ListBlock([bill1, bill2, bill3])
+bill1 = ListItem("Auto Insurance", "Due Oct 28 • Automatic Pay", null, "$145.00")
+bill2 = ListItem("Internet Service", "Due Nov 01 • Pending", null, "$69.99")
+bill3 = ListItem("Gym Membership", "Due Nov 05 • Automatic Pay", null, "$29.99")
+
+sidePanel = Card([goalCard, creditScoreCard], "clear", "column", "m")
+
+goalCard = Card([goalTitle, goalProgress, goalDetails], "card", "column", "s")
+goalTitle = Heading("Vacation Savings Goal", "h4")
+goalProgress = Progress(64, "Target: $5,000")
+goalDetails = TextContent("$3,200 saved of $5,000 target", "small")
+
+creditScoreCard = Card([scoreTitle, scoreBadge, scoreText], "card", "column", "xs")
+scoreTitle = Heading("Credit Score", "h4")
+scoreBadge = Badge("768 - Excellent", "default")
+scoreText = TextContent("Updated Oct 1 • Equifax", "small")
+
+managementSection = Card([mgmtHeader, mgmtGrid], "sunk", "column", "m")
+mgmtHeader = CardHeader("Account Controls & Services", "Manage transfers, security, statements, and alerts")
+mgmtGrid = Card([transferForm, controlStack], "clear", "row", "l")
+
+transferForm = Form("transfer-form", transferButtons, [fromField, toField, amountField])
+fromField = FormControl("From Account", fromSelect)
+fromSelect = Select("from_acc", [optCheck, optSave], "Select source account")
+optCheck = SelectItem("checking", "Checking (•••• 4821)")
+optSave = SelectItem("savings", "Savings (•••• 9102)")
+
+toField = FormControl("To Account", toSelect)
+toSelect = Select("to_acc", [optSave2, optCheck2, optCredit], "Select destination account")
+optCheck2 = SelectItem("checking", "Checking (•••• 4821)")
+optSave2 = SelectItem("savings", "Savings (•••• 9102)")
+optCredit = SelectItem("credit", "Credit Card (•••• 1134)")
+
+amountField = FormControl("Amount ($)", amountInput)
+amountInput = Input("amount", "0.00", "number")
+
+transferButtons = Buttons([submitTransferBtn])
+submitTransferBtn = Button("Transfer Funds", null, "primary")
+
+controlStack = Card([freezeControl, statementControl, alertControl], "clear", "column", "m")
+
+freezeControl = Card([freezeHeader, freezeSwitchGroup], "card", "row", "m", "center", "between")
+freezeHeader = TextContent("Credit Line Security", "small-heavy")
+freezeSwitchGroup = SwitchGroup("freeze_group", [freezeSwitch])
+freezeSwitch = SwitchItem("Freeze Credit Card", "Instantly block new transactions", "freeze_credit", false)
+
+statementControl = Card([statementLabel, periodSelect], "card", "column", "xs")
+statementLabel = TextContent("Statement Period", "small-heavy")
+periodSelect = Select("statement_period", [p1, p2, p3], "Select period")
+p1 = SelectItem("sep_2024", "September 2024")
+p2 = SelectItem("aug_2024", "August 2024")
+p3 = SelectItem("jul_2024", "July 2024")
+
+alertControl = Card([alertLabel, alertSwitches], "card", "column", "xs")
+alertLabel = TextContent("Notification Triggers", "small-heavy")
+alertSwitches = SwitchGroup("alerts", [alert1, alert2])
+alert1 = SwitchItem("Large Purchases", "Transactions over $500", "alert_large", true)
+alert2 = SwitchItem("Low Balance Warning", "Balance drops below $500", "alert_low", true)
+
+actionDrawers = Card([disputeDrawer], "clear", "row", "s")
+disputeDrawer = DialogBlock("Dispute a Transaction", "Submit a Transaction Dispute", "Select the transaction you wish to dispute and provide details.", disputeFormContent, "outline")
+
+disputeFormContent = Form("dispute-form", disputeButtons, [disputeTxField, disputeReasonField])
+disputeTxField = FormControl("Select Transaction", disputeTxSelect)
+disputeTxSelect = Select("dispute_tx", [txOpt1, txOpt2, txOpt3], "Choose transaction")
+txOpt1 = SelectItem("tx1", "Whole Foods Market - $142.50 (Oct 24)")
+txOpt2 = SelectItem("tx2", "Netflix Subscription - $15.99 (Oct 22)")
+txOpt3 = SelectItem("tx3", "Uber Trip - $24.30 (Oct 18)")
+
+disputeReasonField = FormControl("Reason for Dispute", disputeReasonInput, "Please describe why you are disputing this charge")
+disputeReasonInput = TextArea("dispute_reason", "e.g., Incorrect amount charged or unauthorized purchase", 3)
+
+disputeButtons = Buttons([submitDisputeBtn])
+submitDisputeBtn = Button("Submit Dispute Claim", null, "primary")

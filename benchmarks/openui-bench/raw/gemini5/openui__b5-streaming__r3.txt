@@ -1,0 +1,138 @@
+root = Card([header, filterSection, calloutAlert, topMetricsRow, contentPerfTabs, techOpsGrid, bizAnalyticsGrid, managementGrid, followUp])
+
+header = CardHeader("Global Operations Control Center", "Real-time streaming telemetry, platform health, and content operations")
+
+filterSection = Card([regionSelectControl], "sunk", "row", "m", "center", "between")
+regionSelectControl = FormControl("Focus Region", regionSelect, "Filter dashboard metrics by delivery zone")
+regionSelect = Select("region_filter", [regAll, regNA, regEU, regAPAC, regLATAM], "Select region...", null, "all")
+regAll = SelectItem("all", "Global (All Regions)")
+regNA = SelectItem("na", "North America (US-EAST / US-WEST)")
+regEU = SelectItem("eu", "Europe (EU-WEST / EU-CENTRAL)")
+regAPAC = SelectItem("apac", "Asia-Pacific (APAC-SOUTH / APAC-EAST)")
+regLATAM = SelectItem("latam", "Latin America (SA-EAST)")
+
+calloutAlert = Callout("warning", "CDN Latency Spike - APAC-SOUTH", "Buffering rate in APAC-SOUTH increased to 1.4% (Threshold: 1.0%). Automated traffic rerouting initiated.")
+
+topMetricsRow = Card([metricViewers, metricBuffering, metricRecClick, metricZeroSearch], "clear", "row", "m")
+metricViewers = Card([viewersHeader, viewersVal, viewersTag], "card", "column", "xs")
+viewersHeader = TextContent("Concurrent Viewers", "small")
+viewersVal = Heading("2,481,920", "h2")
+viewersTag = Tag("+12.4% vs peak avg", null, "sm", "success")
+
+metricBuffering = Card([bufferHeader, bufferVal, bufferTag], "card", "column", "xs")
+bufferHeader = TextContent("Global Buffering Rate", "small")
+bufferVal = Heading("0.42%", "h2")
+bufferTag = Tag("Target <0.50%", null, "sm", "success")
+
+metricRecClick = Card([recHeader, recVal, recTag], "card", "column", "xs")
+recHeader = TextContent("Rec. Click-Through Rate", "small")
+recVal = Heading("34.8%", "h2")
+recTag = Tag("+2.1% from ML v4.2", null, "sm", "info")
+
+metricZeroSearch = Card([zeroHeader, zeroVal, zeroTag], "card", "column", "xs")
+zeroHeader = TextContent("Zero-Playback Searches", "small")
+zeroVal = Heading("4.15%", "h2")
+zeroTag = Tag("-0.8% failure rate", null, "sm", "success")
+
+contentPerfTabs = Tabs([tabMostWatched, tabWatchTime, tabGenrePerf])
+
+tabMostWatched = TabItem("top_titles", "Most-Watched Titles", [topTitlesTable])
+topTitlesTable = Table([colRank, colTitle, colGenre, colHours, colTrend])
+colRank = Col("Rank", ["1", "2", "3", "4", "5"])
+colTitle = Col("Title", ["Cyber Pulse: Season 3", "The Midnight Kingdom", "Velocity Auto Live", "Shadows of the Deep", "Chef's Horizon: Japan"])
+colGenre = Col("Genre", ["Sci-Fi / Drama", "Fantasy", "Sports / Live", "Thriller", "Documentary"])
+colHours = Col("Watch Time (Hours)", ["48,290,100", "39,120,450", "31,800,900", "22,450,100", "18,910,000"])
+colTrend = Col("Weekly Delta", ["+18%", "+5%", "+42%", "-2%", "+11%"])
+
+tabWatchTime = TabItem("watch_time", "Past Month Watch Time", [watchTimeChart])
+watchTimeChart = LineChart(["Week 1", "Week 2", "Week 3", "Week 4"], [wtSeriesTotal, wtSeries4K], "natural", "Month (Weeks)", "Total Hours (Millions)")
+wtSeriesTotal = Series("Total Watch Hours (M)", [142.5, 158.2, 164.8, 178.4])
+wtSeries4K = Series("4K / UHD Stream Hours (M)", [48.1, 54.3, 59.0, 66.2])
+
+tabGenrePerf = TabItem("genre_perf", "Genre Performance", [genreBarChart])
+genreBarChart = BarChart(["Sci-Fi", "Drama", "Action", "Documentary", "Comedy", "Reality"], [genreWatchHours, genreCompletion], "grouped", "Content Category", "Score / Hours (M)")
+genreWatchHours = Series("Watch Hours (M)", [84.2, 72.1, 65.4, 41.8, 38.2, 29.5])
+genreCompletion = Series("Completion Rate (%)", [78.4, 82.1, 69.5, 88.0, 71.2, 64.8])
+
+techOpsGrid = Card([regHealthBlock, zeroSearchBlock], "clear", "row", "l")
+
+regHealthBlock = Card([regHealthTitle, regHealthTable], "card", "column", "s")
+regHealthTitle = CardHeader("Delivery Health by Region", "Edge CDN status, latency, and active stream distribution")
+regHealthTable = Table([colReg, colStatus, colLatency, colEdgeLoad])
+colReg = Col("Region", ["North America", "Europe West", "Asia Pacific", "Latin America", "Middle East"])
+colStatus = Col("Status", ["Operational", "Operational", "Degraded (High Buffer)", "Operational", "Operational"])
+colLatency = Col("Avg Latency", ["18ms", "24ms", "82ms", "45ms", "52ms"])
+colEdgeLoad = Col("Edge Bandwidth", ["14.2 Tbps", "11.8 Tbps", "9.4 Tbps", "5.1 Tbps", "3.2 Tbps"])
+
+zeroSearchBlock = Card([zeroSearchTitle, zeroSearchTable], "card", "column", "s")
+zeroSearchTitle = CardHeader("Top Zero-Playback Searches", "Queries yielding no video playback (content gap or licensing search)")
+zeroSearchTable = Table([colQuery, colVolume, colPrimaryReason])
+colQuery = Col("Search Query", ["Dune Part Two", "The Bear S3", "Formula 1 Live", "Elden Ring Movie", "Interstellar 4K"])
+colVolume = Col("Monthly Searches", ["342,100", "289,400", "215,000", "184,200", "121,900"])
+colPrimaryReason = Col("Likely Cause", ["Unlicensed / Competitor", "Not Yet Released", "Rights Expired", "No Matching Title", "Catalog Gap"])
+
+bizAnalyticsGrid = Card([subChurnBlock, revDeviceBlock], "clear", "row", "l")
+
+subChurnBlock = Card([subTitle, subChart], "card", "column", "s")
+subTitle = CardHeader("Subscriber Dynamics (Past Month)", "New organic/promo subscriptions vs. cancellations")
+subChart = AreaChart(["W1", "W2", "W3", "W4"], [seriesNewSub, seriesCancels], "natural", "Week", "Subscriber Count")
+seriesNewSub = Series("New Subscribers", [124000, 142000, 138000, 165000])
+seriesCancels = Series("Cancellations", [31000, 28500, 34000, 29800])
+
+revDeviceBlock = Card([revDevHeader, revPieCard, devPieCard], "card", "column", "s")
+revDevHeader = CardHeader("Revenue & Viewing Split", "Plan tier distribution and device breakdown")
+revPieCard = PieChart(["Basic (Ads)", "Standard (1080p)", "Premium (4K HDR)", "Family Bundle"], [18.4, 42.1, 31.5, 8.0], "donut")
+devPieCard = SingleStackedBarChart(["Smart TV", "Mobile / Tablet", "Desktop / Web", "Console"], [58, 24, 12, 6])
+
+managementGrid = Card([contentLifecycleSection, opsControlsSection], "clear", "row", "l")
+
+contentLifecycleSection = Card([lifecycleHeader, lifecycleAccordion], "card", "column", "m")
+lifecycleHeader = CardHeader("Content Lifecycle Management", "Upcoming platform premieres and contract expirations")
+lifecycleAccordion = Accordion([accReleases, accLicenses])
+
+accReleases = AccordionItem("upcoming_releases", "Releases Coming This Month (5)", [releasesList])
+releasesList = ListBlock([rel1, rel2, rel3])
+rel1 = ListItem("Chronos: The Origin", "Sci-Fi Series Premiere • Drops Oct 15", null, "View Asset Package")
+rel2 = ListItem("World Cup Qualifiers Live", "Live Sports Stream • Drops Oct 22", null, "Configure Stream")
+rel3 = ListItem("Dark Harvest", "Horror Feature Film • Drops Oct 28", null, "Promote Title")
+
+accLicenses = AccordionItem("expiring_licenses", "Licenses Expiring Soon (3)", [licensesTable])
+licensesTable = Table([colLicTitle, colExpiry, colRights, colAction])
+colLicTitle = Col("Title", ["Inception", "The Office (S1-S9)", "Breaking Bad"])
+colExpiry = Col("Expires In", ["12 Days", "28 Days", "41 Days"])
+colRights = Col("Territory", ["Global", "NA / EU Only", "LATAM Only"])
+colAction = Col("Renewal Status", ["Under Negotiation", "Pending Final Signoff", "Offer Rejected"])
+
+opsControlsSection = Card([controlsHeader, featureFlagsBlock, promoteForm], "card", "column", "m")
+controlsHeader = CardHeader("Operations & Home Screen Control", "Manage live system flags and hero carousel promotions")
+
+featureFlagsBlock = Card([flagsTitle, flagsGroup], "sunk", "column", "s")
+flagsTitle = Heading("Platform Feature Flags", "h4")
+flagsGroup = SwitchGroup("feature_flags", [flagAV1, flagRecV5, flag4KMobile, flagAdSkip], "card")
+flagAV1 = SwitchItem("AV1 Codec Auto-Fallback", "Dynamically degrade codec on high jitter edge nodes", "flag_av1", true)
+flagRecV5 = SwitchItem("Rec-Engine v5.1 Beta", "Enable multi-armed bandit recommendation model", "flag_rec_v5", true)
+flag4KMobile = SwitchItem("4K Mobile Streaming", "Allow UHD bitrate delivery on cellular networks", "flag_4k_mobile", false)
+flagAdSkip = SwitchItem("Interactive Ad Overlays", "Render interactive sponsor widgets during live sports", "flag_ad_skip", true)
+
+promoteForm = Form("promote_hero_form", formButtons, [promoteTitleControl, promotePosControl, promoteTargetControl])
+promoteTitleControl = FormControl("Promote Title on Home Screen", promoteInput, "Enter title ID or exact name to feature in top hero slot")
+promoteInput = Input("title_to_promote", "Cyber Pulse: Season 3")
+promotePosControl = FormControl("Placement Slot", promoteSelect)
+promoteSelect = Select("slot_position", [slotHero, slotTrending, slotBanner], "Select placement slot")
+slotHero = SelectItem("hero_1", "Main Hero Carousel (#1)")
+slotTrending = SelectItem("trending_top", "Top 10 Trending Rail (#1)")
+slotBanner = SelectItem("category_banner", "Genre Category Header Banner")
+promoteTargetControl = FormControl("Target Audience Segment", promoteRadio)
+promoteRadio = RadioGroup("target_audience", [audAll, audSubs, audLapsed])
+audAll = RadioItem("All Users", "Visible to every user globally", "all_users")
+audSubs = RadioItem("Active Subscribers", "Excludes trial and ad-supported users", "active_subs")
+audLapsed = RadioItem("Lapsed / Trial", "Target for re-engagement", "lapsed_trial")
+
+formButtons = Buttons([btnPromote, btnPreview])
+btnPromote = Button("Apply Promotion", null, "primary")
+btnPreview = Button("Preview Home Screen", null, "secondary")
+
+followUp = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Show APAC-SOUTH latency logs for the last 4 hours")
+fu2 = FollowUpItem("Generate licensing renewal report for expiring titles")
+fu3 = FollowUpItem("Simulate load impact of turning on 4K Mobile Streaming")

@@ -1,0 +1,58 @@
+root = Card([header, mainCallout, kpiGrid, chartsSection, txSection, actionRow])
+
+header = CardHeader("Finance Dashboard", "Month-end overview for October 2023")
+
+mainCallout = TextCallout("success", "Strong Runway Position", "With $1.25M in cash and current burn rates, runway extends well into Q1 2025.")
+
+kpiGrid = Card([cashCard, burnCard, runwayCard], "clear", "row", "m")
+
+cashCard = Card([cashHeader, cashVal, cashSub], "sunk")
+cashHeader = TextContent("Cash on Hand", "small-heavy")
+cashVal = Heading("$1,250,000", "h2")
+cashSub = Tag("+$150k vs last month", null, "sm", "success")
+
+burnCard = Card([burnHeader, burnVal, burnSub], "sunk")
+burnHeader = TextContent("Monthly Net Burn", "small-heavy")
+burnVal = Heading("$85,000", "h2")
+burnSub = Tag("-12% vs avg", null, "sm", "info")
+
+runwayCard = Card([runwayHeader, runwayVal, runwaySub], "sunk")
+runwayHeader = TextContent("Runway", "small-heavy")
+runwayVal = Heading("14.7 Mos", "h2")
+runwaySub = Tag("Target: >12 mos", null, "sm", "success")
+
+chartsSection = Card([chartHeader, expenseChart], "sunk")
+chartHeader = Heading("Expense Breakdown by Category", "h3")
+expenseChart = HorizontalBarChart(["Payroll & Benefits", "Cloud & Infra", "Sales & Marketing", "Software & Tools", "Legal & Prof. Services", "Office & Admin"], [expenseSeries], "grouped", "Amount ($USD)", "Category")
+expenseSeries = Series("Expenses", [62000, 18500, 14200, 8400, 5500, 2400])
+
+txSection = Card([txHeader, txTable], "sunk")
+txHeader = Heading("Transactions Above $10,000 (October)", "h3")
+txTable = Table([txDate, txDesc, txCat, txAmount])
+txDate = Col("Date", ["Oct 01, 2023", "Oct 03, 2023", "Oct 12, 2023", "Oct 28, 2023"])
+txDesc = Col("Description", ["Gusto Payroll - Mid Month", "AWS Cloud Services", "Gusto Payroll - End Month", "Acme Corp Enterprise Revenue"])
+txCat = Col("Category", ["Payroll", "Infrastructure", "Payroll", "Income"])
+txAmount = Col("Amount", ["-$31,000.00", "-$18,500.00", "-$31,000.00", "+$150,000.00"])
+
+actionRow = Card([monthDrawer, downloadDialog], "clear", "row", "m", "center", "between")
+
+monthDrawer = DrawerBlock("Change Month", "Select Statement Month", "Choose a historical month to view financial reports and breakdown.", monthForm)
+monthForm = Form("select-month-form", monthButtons, [monthSelect])
+monthSelect = FormControl("Statement Period", monthDropdown)
+monthDropdown = Select("period", [m1, m2, m3, m4], "Select month")
+m1 = SelectItem("oct-2023", "October 2023 (Current)")
+m2 = SelectItem("sep-2023", "September 2023")
+m3 = SelectItem("aug-2023", "August 2023")
+m4 = SelectItem("jul-2023", "July 2023")
+monthButtons = Buttons([applyMonthBtn])
+applyMonthBtn = Button("Apply Selection", null, "primary")
+
+downloadDialog = DialogBlock("Download Statement", "Export Financial Statement", "Select your preferred format for the October 2023 statement.", downloadForm)
+downloadForm = Form("download-form", downloadButtons, [formatRadio])
+formatRadio = FormControl("Export Format", formatGroup)
+formatGroup = RadioGroup("format", [fmtPdf, fmtCsv, fmtExcel], "pdf")
+fmtPdf = RadioItem("PDF Summary", "Official month-end statement with breakdown", "pdf")
+fmtCsv = RadioItem("Raw CSV", "Detailed transaction list for accounting", "csv")
+fmtExcel = RadioItem("Excel Model", "Formatted spreadsheet with historical tabs", "xlsx")
+downloadButtons = Buttons([confirmDlBtn])
+confirmDlBtn = Button("Download Report", null, "primary")

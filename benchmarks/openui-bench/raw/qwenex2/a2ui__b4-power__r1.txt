@@ -1,0 +1,516 @@
+
+
+Here's a complete single-screen operator console covering all 12 requirements — numbered section headers map directly to your list.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "metaRow",
+          "kpiRow",
+          "forecastCard",
+          "mixRow",
+          "plantsCard",
+          "outagesCard",
+          "maintenanceCard",
+          "alertsCard",
+          "curtailmentCard",
+          "footer"
+        ]
+      },
+
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Grid Operations Console",
+        "subtitle": "National control room · System demand, generation, constraints and dispatch · Tuesday 16 Dec"
+      },
+
+      {
+        "id": "metaRow",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "align": "center",
+        "justify": "between",
+        "wrap": true,
+        "children": ["regionControl", "statusCluster", "updatedAt"]
+      },
+      {
+        "id": "regionControl",
+        "component": "Card",
+        "variant": "clear",
+        "children": ["regionField"]
+      },
+      {
+        "id": "regionField",
+        "component": "FormControl",
+        "label": "⑩ Region focus",
+        "hint": "Filters plant, outage and alert views to one region",
+        "input": "regionSelect"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region",
+        "placeholder": "All regions (system view)",
+        "items": ["regionAll", "regionNorth", "regionSouth", "regionEast", "regionWest", "regionCentral"]
+      },
+      { "id": "regionAll", "component": "SelectItem", "value": "all", "label": "All regions (system view)" },
+      { "id": "regionNorth", "component": "SelectItem", "value": "north", "label": "North Valley" },
+      { "id": "regionSouth", "component": "SelectItem", "value": "south", "label": "Southport" },
+      { "id": "regionEast", "component": "SelectItem", "value": "east", "label": "East Harbour" },
+      { "id": "regionWest", "component": "SelectItem", "value": "west", "label": "West Mesa" },
+      { "id": "regionCentral", "component": "SelectItem", "value": "central", "label": "Central City" },
+
+      {
+        "id": "statusCluster",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "s",
+        "wrap": true,
+        "children": ["badgeLive", "badgeFreq", "badgePrice"]
+      },
+      { "id": "badgeLive", "component": "Badge", "text": "● LIVE TELEMETRY", "variant": "secondary" },
+      { "id": "badgeFreq", "component": "Badge", "text": "Freq 49.92 Hz ⚠", "variant": "destructive" },
+      { "id": "badgePrice", "component": "Badge", "text": "$84.60 / MWh", "variant": "default" },
+      {
+        "id": "updatedAt",
+        "component": "TextContent",
+        "size": "small",
+        "text": "Last update 14:05:12 · auto-refresh ~5 s"
+      },
+
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "align": "stretch",
+        "wrap": true,
+        "children": ["loadCard", "capacityCard", "priceCard", "emissionsCard"]
+      },
+
+      {
+        "id": "loadCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": ["loadHeader", "loadValue", "loadDelta"]
+      },
+      { "id": "loadHeader", "component": "CardHeader", "title": "① Current load" },
+      { "id": "loadValue", "component": "Heading", "level": "h2", "text": "12,480 MW" },
+      { "id": "loadDelta", "component": "TextContent", "size": "small", "text": "▲ +2.3% vs previous hour" },
+
+      {
+        "id": "capacityCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": ["capacityHeader", "capacityProgress", "capacityNote"]
+      },
+      { "id": "capacityHeader", "component": "CardHeader", "title": "② Capacity utilisation" },
+      { "id": "capacityProgress", "component": "Progress", "value": 78, "label": "78% — 12,480 of 16,000 MW" },
+      { "id": "capacityNote", "component": "TextContent", "size": "small", "text": "3,520 MW headroom · peak watch at 19:00 (87%)" },
+
+      {
+        "id": "priceCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": ["priceHeader", "priceValue", "priceNote"]
+      },
+      { "id": "priceHeader", "component": "CardHeader", "title": "⑦ Spot price" },
+      { "id": "priceValue", "component": "Heading", "level": "h2", "text": "$84.60 / MWh" },
+      { "id": "priceNote", "component": "TextContent", "size": "small", "text": "5-min interval · ▲ +$3.10 vs last interval" },
+
+      {
+        "id": "emissionsCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": ["emissionsHeader", "emissionsValue", "emissionsNote"]
+      },
+      { "id": "emissionsHeader", "component": "CardHeader", "title": "⑫ CO₂e today" },
+      { "id": "emissionsValue", "component": "Heading", "level": "h2", "text": "18,420 t" },
+      { "id": "emissionsNote", "component": "TextContent", "size": "small", "text": "Intensity 1.47 t/MWh · ▼ 12.4% vs same hour yesterday" },
+
+      {
+        "id": "forecastCard",
+        "component": "Card",
+        "children": ["forecastHeader", "forecastChart"]
+      },
+      { "id": "forecastHeader", "component": "CardHeader", "title": "⑥ Demand forecast — next 24 hours", "subtitle": "Now = 14:00 · evening peak 13,920 MW at 19:00" },
+      {
+        "id": "forecastChart",
+        "component": "AreaChart",
+        "variant": "natural",
+        "xLabel": "Hour of day",
+        "yLabel": "MW",
+        "labels": ["00:00","01:00","02:00","03:00","04:00","05:00","06:00","07:00","08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00","21:00","22:00","23:00"],
+        "series": ["flowSeries", "capacityLine"]
+      },
+      {
+        "id": "flowSeries",
+        "component": "Series",
+        "category": "Forecast demand (MW)",
+        "values": [7950,7600,7420,7350,7420,7800,8650,9800,10900,11650,12100,12380,12480,12760,13120,13400,13650,13880,13920,13480,12850,11900,10600,9400]
+      },
+      {
+        "id": "capacityLine",
+        "component": "Series",
+        "category": "Network capacity (MW)",
+        "values": [16000,16000,16000,16000,16000,16000,16000,16000,16000,16000,16000,16000,16000,16000,16000,16000,16000,16000,16000,16000,16000,16000,16000,16000]
+      },
+
+      {
+        "id": "mixRow",
+        "component": "Card",
+        "direction": "row",
+        "gap": "l",
+        "align": "stretch",
+        "wrap": true,
+        "children": ["mixCard", "rankCard"]
+      },
+      {
+        "id": "mixCard",
+        "component": "Card",
+        "weight": 1,
+        "children": ["mixHeader", "mixPie"]
+      },
+      { "id": "mixHeader", "component": "CardHeader", "title": "③ Generation mix by source", "subtitle": "Right now · 12,480 MW total" },
+      {
+        "id": "mixPie",
+        "component": "PieChart",
+        "variant": "donut",
+        "labels": ["Gas · 4,100 MW", "Wind · 3,120 MW", "Imports · 1,980 MW", "Solar · 1,640 MW", "Hydro · 1,020 MW", "Biomass · 620 MW"],
+        "values": [4100, 3120, 1980, 1640, 1020, 620]
+      },
+      {
+        "id": "rankCard",
+        "component": "Card",
+        "weight": 1,
+        "children": ["rankHeader", "rankBars"]
+      },
+      { "id": "rankHeader", "component": "CardHeader", "title": "Output ranked by source", "subtitle": "MW contribution at 14:00" },
+      {
+        "id": "rankBars",
+        "component": "HorizontalBarChart",
+        "variant": "grouped",
+        "xLabel": "MW",
+        "yLabel": "Source",
+        "labels": ["Gas", "Wind", "Imports", "Solar", "Hydro", "Biomass"],
+        "series": ["rankSeries"]
+      },
+      {
+        "id": "rankSeries",
+        "component": "Series",
+        "category": "Output (MW)",
+        "values": [4100, 3120, 1980, 1640, 1020, 620]
+      },
+
+      {
+        "id": "plantsCard",
+        "component": "Card",
+        "children": ["plantsHeader", "plantsTable"]
+      },
+      { "id": "plantsHeader", "component": "CardHeader", "title": "④ Plants — output & status", "subtitle": "9 monitored units · 8,960 MW domestic + 3,520 MW interconnector" },
+      {
+        "id": "plantsTable",
+        "component": "Table",
+        "columns": ["plantName", "plantType", "plantRegion", "plantOutput", "plantStatus"]
+      },
+      {
+        "id": "plantName",
+        "component": "Col",
+        "label": "Plant",
+        "data": ["Greenfield CCGT U1+U2", "Southport Peaking GT", "Northgate Dam (×4 units)", "West Mesa Wind I", "West Mesa Wind II", "Eastcliff Offshore Wind", "Sunfield Solar Array", "East Harbour Solar", "Millbrook Biomass", "North–South Interconnector"]
+      },
+      {
+        "id": "plantType",
+        "component": "Col",
+        "label": "Type",
+        "data": ["Gas", "Gas", "Hydro", "Wind", "Wind", "Wind", "Solar", "Solar", "Biomass", "Import"]
+      },
+      {
+        "id": "plantRegion",
+        "component": "Col",
+        "label": "Region",
+        "data": ["North Valley", "Southport", "North Valley", "West Mesa", "West Mesa", "North Valley", "Central City", "East Harbour", "East Harbour", "National"]
+      },
+      {
+        "id": "plantOutput",
+        "component": "Col",
+        "label": "Output (MW)",
+        "type": "number",
+        "data": [4100, 0, 1020, 640, 720, 1120, 910, 730, 620, 1980]
+      },
+      {
+        "id": "plantStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": ["● ONLINE 96%", "○ OUTAGE — feeder trip, crew en route", "● ONLINE", "◐ CURTAILED ↓ 80% (order WO-8821)", "● ONLINE", "● ONLINE", "● ONLINE", "◐ REDUCED ↓ 62% (landline fault)", "● ONLINE", "● ONLINE"]
+      },
+
+      {
+        "id": "outagesCard",
+        "component": "Card",
+        "children": ["outagesHeader", "outagesTable"]
+      },
+      { "id": "outagesHeader", "component": "CardHeader", "title": "⑤ Active outages", "subtitle": "2 active · 1 restored this shift" },
+      {
+        "id": "outagesTable",
+        "component": "Table",
+        "columns": ["outageEvent", "outageStatus", "outageRegion", "outageMW", "outageSince", "outageEta"]
+      },
+      {
+        "id": "outageEvent",
+        "component": "Col",
+        "label": "Event",
+        "data": ["132 kV feeder trip NV-7", "Southport Peaking GT offline", "East Harbour 33 kV feeder (RESTORED)"]
+      },
+      {
+        "id": "outageStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": ["CREW ON SITE", "UNDER REPAIR", "RESTORED"]
+      },
+      {
+        "id": "outageRegion",
+        "component": "Col",
+        "label": "Affected region",
+        "data": ["North Valley — Harlow District", "Southport — Industrial Park", "East Harbour — Docklands"]
+      },
+      {
+        "id": "outageMW",
+        "component": "Col",
+        "label": "Load lost (MW)",
+        "type": "number",
+        "data": [210, 900, 0]
+      },
+      {
+        "id": "outageSince",
+        "component": "Col",
+        "label": "Since",
+        "data": ["13:21", "11:47", "11:48 → 14:02"]
+      },
+      {
+        "id": "outageEta",
+        "component": "Col",
+        "label": "Est. restoration",
+        "data": ["16:30", "Tomorrow 06:00", "—"]
+      },
+
+      {
+        "id": "maintenanceCard",
+        "component": "Card",
+        "children": ["maintenanceHeader", "maintenanceTable"]
+      },
+      { "id": "maintenanceHeader", "component": "CardHeader", "title": "⑧ Maintenance planned — December", "subtitle": "5 scheduled jobs · 7 live days · up to 13.5 MW unavailable at peak" },
+      {
+        "id": "maintenanceTable",
+        "component": "Table",
+        "columns": ["moId", "moDate", "moWindow", "moAsset", "moScope", "moImpact"]
+      },
+      {
+        "id": "moId",
+        "component": "Col",
+        "label": "Work order",
+        "data": ["WO-9102", "WO-9088", "WO-9115", "WO-9097", "WO-9121"]
+      },
+      {
+        "id": "moDate",
+        "component": "Col",
+        "label": "Date",
+        "data": ["Dec 18", "Dec 19", "Dec 22", "Dec 28", "Dec 30"]
+      },
+      {
+        "id": "moWindow",
+        "component": "Col",
+        "label": "Window",
+        "data": ["09:00–15:00", "22:00–04:00", "08:00–18:00", "06:00–14:00", "00:00–06:00"]
+      },
+      {
+        "id": "moAsset",
+        "component": "Col",
+        "label": "Plant / asset",
+        "data": ["Transformer T2 — Central City", "West Mesa Wind III gearbox", "Northgate Dam spillway gate", "Line section NV-12 (132 kV)", "Greenfield CCGT U1"]
+      },
+      {
+        "id": "moScope",
+        "component": "Col",
+        "label": "Scope",
+        "data": ["Bushing replacement", "Gearbox overhaul", "Hydraulic service", "Conductor re-tensioning", "Combustion inspection"]
+      },
+      {
+        "id": "moImpact",
+        "component": "Col",
+        "label": "Impact",
+        "data": ["13.5 MW unavailable at peak", "480 MW offline 6 h", "None (n–1 maintained)", "None (spare path available)", "800 MW offline 8 h"]
+      },
+
+      {
+        "id": "alertsCard",
+        "component": "Card",
+        "children": ["alertsHeader", "alertFreq", "alertCurtail", "alertTrip", "alertRestored"]
+      },
+      { "id": "alertsHeader", "component": "CardHeader", "title": "⑨ Live alerts", "subtitle": "Newest first · streamed from SCADA/EMS" },
+      {
+        "id": "alertFreq",
+        "component": "Alert",
+        "variant": "warning",
+        "title": "14:05 · FREQUENCY EXCURSION 49.92 Hz",
+        "description": "Below 50.00 Hz nominal. Governors responding, reserve dispatched. Monitor for further drift."
+      },
+      {
+        "id": "alertCurtail",
+        "component": "Alert",
+        "variant": "info",
+        "title": "13:58 · West Mesa Wind I curtailed to 80%",
+        "description": "Manual curtailment active per dispatch order WO-8821 (congestion on NV bus)."
+      },
+      {
+        "id": "alertTrip",
+        "component": "Alert",
+        "variant": "destructive",
+        "title": "13:21 · 132 kV feeder trip — North Valley",
+        "description": "210 MW load isolated in Harlow District. Crew on site, ETA 16:30."
+      },
+      {
+        "id": "alertRestored",
+        "component": "Alert",
+        "variant": "success",
+        "title": "14:02 · RESTORED — East Harbour feeder",
+        "description": "Docklands re-energised after 2 h 14 m. Normal configuration regained."
+      },
+
+      {
+        "id": "curtailmentCard",
+        "component": "Card",
+        "children": ["curtailmentHeader", "curtailmentForm"]
+      },
+      { "id": "curtailmentHeader", "component": "CardHeader", "title": "⑪ Order curtailment", "subtitle": "Raises a dispatch instruction to the selected unit" },
+      {
+        "id": "curtailmentForm",
+        "component": "Form",
+        "name": "curtailment-order",
+        "fields": ["plantField", "amountField", "effectiveField", "reasonField", "notesField"],
+        "buttons": "curtailmentButtons"
+      },
+      {
+        "id": "plantField",
+        "component": "FormControl",
+        "label": "Plant to curtail",
+        "input": "plantSelect"
+      },
+      {
+        "id": "plantSelect",
+        "component": "Select",
+        "name": "plant",
+        "placeholder": "Select a unit",
+        "items": ["cpGreenfield", "cpWindI", "cpEH", "cpMill"]
+      },
+      { "id": "cpGreenfield", "component": "SelectItem", "value": "greenfield-u1", "label": "Greenfield CCGT U1 (4,100 MW avail)" },
+      { "id": "cpWindI", "component": "SelectItem", "value": "west-mesa-i", "label": "West Mesa Wind I (640 MW avail)" },
+      { "id": "cpEH", "component": "SelectItem", "value": "east-harbour-solar", "label": "East Harbour Solar (730 MW avail)" },
+      { "id": "cpMill", "component": "SelectItem", "value": "millbrook-bio", "label": "Millbrook Biomass (620 MW avail)" },
+      {
+        "id": "amountField",
+        "component": "FormControl",
+        "label": "Reduce output by (MW)",
+        "hint": "Leave the plant a stable minimum for restart and frequency response",
+        "input": "amountInput"
+      },
+      {
+        "id": "amountInput",
+        "component": "Input",
+        "name": "trim_mw",
+        "type": "number",
+        "placeholder": "e.g. 120"
+      },
+      {
+        "id": "effectiveField",
+        "component": "FormControl",
+        "label": "Effective from",
+        "input": "effectiveSelect"
+      },
+      {
+        "id": "effectiveSelect",
+        "component": "Select",
+        "name": "effective",
+        "placeholder": "Immediately",
+        "items": ["effNow", "eff15", "eff30", "eff60"]
+      },
+      { "id": "effNow", "component": "SelectItem", "value": "now", "label": "Immediately" },
+      { "id": "eff15", "component": "SelectItem", "value": "15", "label": "In 15 minutes" },
+      { "id": "eff30", "component": "SelectItem", "value": "30", "label": "In 30 minutes" },
+      { "id": "eff60", "component": "SelectItem", "value": "60", "label": "Next dispatch interval (60 min)" },
+      {
+        "id": "reasonField",
+        "component": "FormControl",
+        "label": "Reason",
+        "input": "reasonSelect"
+      },
+      {
+        "id": "reasonSelect",
+        "component": "Select",
+        "name": "reason",
+        "placeholder": "Choose a reason",
+        "items": ["rsCong", "rsFreq", "rsVolt", "rsMarket"]
+      },
+      { "id": "rsCong", "component": "SelectItem", "value": "congestion", "label": "Transmission congestion" },
+      { "id": "rsFreq", "component": "SelectItem", "value": "frequency", "label": "Frequency control" },
+      { "id": "rsVolt", "component": "SelectItem", "value": "voltage", "label": "Voltage support" },
+      { "id": "rsMarket", "component": "SelectItem", "value": "market", "label": "Market instruction" },
+      {
+        "id": "notesField",
+        "component": "FormControl",
+        "label": "Dispatcher notes (optional)",
+        "input": "notesInput"
+      },
+      {
+        "id": "notesInput",
+        "component": "TextArea",
+        "name": "notes",
+        "rows": 3,
+        "placeholder": "Operational notes for the plant operator"
+      },
+      {
+        "id": "curtailmentButtons",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": ["submitCurtail", "resetCurtail"]
+      },
+      { "id": "submitCurtail", "component": "Button", "label": "Issue curtailment order", "variant": "primary" },
+      { "id": "resetCurtail", "component": "Button", "label": "Clear form", "variant": "tertiary" },
+
+      {
+        "id": "footer",
+        "component": "TextContent",
+        "size": "small",
+        "text": "Feed: SCADA/EMS aggregator · all times local · item mapping: ① loadCard · ② capacityCard · ③ mixRow · ④ plantsCard · ⑤ outagesCard · ⑥ forecastCard · ⑦ priceCard · ⑧ maintenanceCard · ⑨ alertsCard · ⑩ regionSelect · ⑪ curtailmentCard · ⑫ emissionsCard"
+      }
+    ]
+  }
+}
+</a2ui-json>

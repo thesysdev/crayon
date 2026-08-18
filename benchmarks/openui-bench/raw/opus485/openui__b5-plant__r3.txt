@@ -1,0 +1,81 @@
+root = Card([header, andonAlert, kpis, oeeProgress, prodProgress, energyProgress, lineSection, defectTrend, downtimeChart, shiftChart, maintTable, stockChart, supplierTable, qualityHold, workOrders, safetyBlock, focusForm, schedForm, actions])
+
+header = CardHeader("Floor Supervisor Console", "Line A — Live Overview")
+
+andonAlert = Alert("Andon: Line 3 stopped", "Operator pull — material jam at station 4. Response requested.", "destructive")
+
+kpis = Table([kpiName, kpiValue])
+kpiName = Col("Metric", ["OEE", "Units Today", "Target", "Energy Today", "Safety Incidents YTD", "Days Since Incident"])
+kpiValue = Col("Value", ["82%", "6,420", "8,000", "3,140 kWh", "3", "47"])
+
+oeeProgress = Progress(82, "Overall Equipment Effectiveness")
+prodProgress = Progress(80, "Units Produced vs Target (6,420 / 8,000)")
+energyProgress = Progress(63, "Energy Use Today (3,140 / 5,000 kWh)")
+
+lineSection = SectionBlock([lineSecItem])
+lineSecItem = SectionItem("lines", "Production Lines — Rate & Status", [lineTable])
+lineTable = Table([lineName, lineRate, lineStatus])
+lineName = Col("Line", ["Line 1", "Line 2", "Line 3", "Line 4"])
+lineRate = Col("Rate (units/hr)", [420, 388, 0, 405], "number")
+lineStatus = Col("Status", ["Running", "Running", "Stopped", "Running"])
+
+defectTrend = LineChart(["W1", "W2", "W3", "W4"], [defectSeries], "natural", "Week", "Defect %")
+defectSeries = Series("Defect Rate", [2.4, 1.9, 2.1, 1.6])
+
+downtimeChart = PieChart(downtimeLabels, downtimeValues, "donut")
+downtimeLabels = ["Changeover", "Material Jam", "Maintenance", "Breaks", "Other"]
+downtimeValues = [38, 27, 19, 11, 5]
+
+shiftChart = BarChart(["Morning", "Afternoon", "Night"], [shiftSeries], "grouped", "Shift", "Units")
+shiftSeries = Series("Output", [2650, 2410, 1360])
+
+maintTable = Table([machName, machDue, machHours])
+machName = Col("Machine", ["Press 02", "Conveyor 05", "Injector 01", "Packer 03"])
+machDue = Col("Due", ["Today", "Tomorrow", "In 3 days", "In 5 days"])
+machHours = Col("Runtime (hrs)", [1980, 1420, 2510, 890], "number")
+
+stockChart = HorizontalBarChart(["Steel", "Resin", "Packaging"], [stockSeries], "grouped", "Units", "Material")
+stockSeries = Series("Stock", [420, 180, 950])
+
+supplierTable = Table([supName, supMat, supEta])
+supName = Col("Supplier", ["SteelCorp", "PolyChem", "BoxWorks"])
+supMat = Col("Material", ["Steel", "Resin", "Packaging"])
+supEta = Col("ETA", ["Tue", "Wed", "Fri"])
+
+qualityHold = ListBlock([qh1, qh2, qh3])
+qh1 = ListItem("Batch #B-2291", "On hold — dimensional tolerance review")
+qh2 = ListItem("Batch #B-2288", "On hold — surface finish inspection")
+qh3 = ListItem("Batch #B-2275", "On hold — awaiting lab results")
+
+workOrders = Table([woId, woTask, woPriority])
+woId = Col("WO", ["WO-1042", "WO-1039", "WO-1035", "WO-1030"])
+woTask = Col("Task", ["Replace press seal", "Calibrate injector", "Clean conveyor", "Inspect guarding"])
+woPriority = Col("Priority", ["High", "High", "Medium", "Low"])
+
+safetyBlock = Callout("info", "Safety Status", "3 incidents this year — 47 days since the last recordable incident.")
+
+focusForm = Form("focus-line", focusButtons, [focusField])
+focusField = FormControl("Focus on line", focusSelect)
+focusSelect = Select("line", [fl1, fl2, fl3, fl4], "Select a line")
+fl1 = SelectItem("1", "Line 1")
+fl2 = SelectItem("2", "Line 2")
+fl3 = SelectItem("3", "Line 3")
+fl4 = SelectItem("4", "Line 4")
+focusButtons = Buttons([focusBtn])
+focusBtn = Button("Focus", null, "primary")
+
+schedForm = Form("schedule-maint", schedButtons, [smMachine, smDate])
+smMachine = FormControl("Machine", smSelect)
+smSelect = Select("machine", [sm1, sm2, sm3, sm4], "Select machine")
+sm1 = SelectItem("press02", "Press 02")
+sm2 = SelectItem("conv05", "Conveyor 05")
+sm3 = SelectItem("inj01", "Injector 01")
+sm4 = SelectItem("pack03", "Packer 03")
+smDate = FormControl("Date", smDatePicker)
+smDatePicker = DatePicker("maint_date", "single")
+schedButtons = Buttons([schedBtn])
+schedBtn = Button("Schedule Maintenance", null, "primary")
+
+actions = Buttons([exportBtn, ackBtn])
+exportBtn = Button("Export Shift Report", null, "secondary")
+ackBtn = Button("Acknowledge Andon", null, "primary", "destructive")

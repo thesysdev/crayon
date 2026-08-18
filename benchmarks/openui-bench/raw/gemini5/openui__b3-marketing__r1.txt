@@ -1,0 +1,73 @@
+root = Card([header, mainGrid, followUps])
+
+header = CardHeader("Weekly Marketing Dashboard", "Overview of performance, traffic, and campaign metrics")
+
+mainGrid = Card([controlsCallout, kpiGrid, trendSection, middleSection, campaignsSection], "clear", "column", "l")
+
+controlsCallout = Card([dateRangeField, exportBtn], "sunk", "row", "m", "center", "between")
+dateRangeField = FormControl("Date Range", dateSelect)
+dateSelect = Select("date_range", [d30, d7, d90, dYtd], "Select range", null, "30d", "small")
+d7 = SelectItem("7d", "Last 7 Days")
+d30 = SelectItem("30d", "Last 30 Days")
+d90 = SelectItem("90d", "Last 90 Days")
+dYtd = SelectItem("ytd", "Year to Date")
+exportBtn = Button("Export Report", null, "secondary", "normal", "small")
+
+kpiGrid = Card([kpi1, kpi2, kpi3, kpi4], "clear", "row", "m", "stretch", "between", true)
+
+kpi1 = Card([kpi1Title, kpi1Val, kpi1Tag], "card", "column", "xs")
+kpi1Title = TextContent("Site Visitors (30d)", "small")
+kpi1Val = Heading("124,850", "h2")
+kpi1Tag = Tag("+12.4% vs last period", null, "sm", "success")
+
+kpi2 = Card([kpi2Title, kpi2Val, kpi2Tag], "card", "column", "xs")
+kpi2Title = TextContent("Conversion Rate", "small")
+kpi2Val = Heading("3.42%", "h2")
+kpi2Tag = Tag("+0.5% vs last period", null, "sm", "success")
+
+kpi3 = Card([kpi3Title, kpi3Val, kpi3Tag], "card", "column", "xs")
+kpi3Title = TextContent("Subscribers (MTD)", "small")
+kpi3Val = Heading("14,210", "h2")
+kpi3Tag = Tag("+2,150 this month", null, "sm", "info")
+
+kpi4 = Card([kpi4Title, kpi4Val, kpi4Tag], "card", "column", "xs")
+kpi4Title = TextContent("Total Spend", "small")
+kpi4Val = Heading("$42,500", "h2")
+kpi4Tag = Tag("On budget", null, "sm", "neutral")
+
+trendSection = Card([trendHeader, visitorsChart], "card", "column", "m")
+trendHeader = CardHeader("Site Visitors (Last 30 Days)", "Daily traffic breakdown across all channels")
+visitorsChart = AreaChart(["Day 1", "Day 5", "Day 10", "Day 15", "Day 20", "Day 25", "Day 30"], [visitorSeries], "natural", "Days", "Visitors")
+visitorSeries = Series("Visitors", [3200, 3800, 4100, 3900, 4500, 4800, 5200])
+
+middleSection = Card([sourcesCard, subscriberCard], "clear", "row", "m", "stretch", "between", true)
+
+sourcesCard = Card([sourcesHeader, trafficTable], "card", "column", "m")
+sourcesHeader = CardHeader("Top 5 Traffic Sources", "Share of total traffic for the last 30 days")
+trafficTable = Table([colSource, colVisitors, colShare])
+colSource = Col("Source", ["Organic Search", "Direct", "Paid Search", "Social Media", "Referral"])
+colVisitors = Col("Visitors", ["49,940", "31,210", "22,470", "12,480", "8,750"])
+colShare = Col("Share", ["40%", "25%", "18%", "10%", "7%"])
+
+subscriberCard = Card([subHeader, subChart, subProgress], "card", "column", "m")
+subHeader = CardHeader("Email Subscriber Growth", "Monthly target vs actual growth")
+subChart = LineChart(["Week 1", "Week 2", "Week 3", "Week 4"], [subSeries], "linear", "Week", "Subscribers")
+subSeries = Series("New Subscribers", [380, 890, 1420, 2150])
+subProgress = Progress(86, "Monthly Goal: 2,500 new subscribers (86% achieved)")
+
+campaignsSection = Card([campaignsHeader, bestCallout, campaignTable], "card", "column", "m")
+campaignsHeader = CardHeader("Running Campaigns & Spend", "Active paid initiatives and performance highlights")
+
+bestCallout = Callout("success", "Top Performing Campaign: Q3 Retargeting Push", "Delivered the highest ROI with a 5.2% conversion rate and generated 410 conversions at $31.70 CPA.")
+
+campaignTable = Table([campName, campStatus, campSpend, campConv, campCPA])
+campName = Col("Campaign", ["Q3 Retargeting Push", "Google Brand Search", "Summer Social Promo", "LinkedIn B2B LeadGen"])
+campStatus = Col("Status", ["Active", "Active", "Active", "Paused"])
+campSpend = Col("Spend", ["$13,000", "$15,500", "$8,000", "$6,000"])
+campConv = Col("Conversions", ["410", "380", "190", "95"])
+campCPA = Col("CPA", ["$31.70", "$40.78", "$42.10", "$63.15"])
+
+followUps = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Deep dive into Q3 Retargeting Push campaign")
+fu2 = FollowUpItem("Compare traffic sources with previous month")
+fu3 = FollowUpItem("Download full subscriber growth report")

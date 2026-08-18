@@ -1,0 +1,37 @@
+root = Card([header, warningAlert, thresholdInfo, searchSection, inventoryTable, actions, followUps])
+
+header = CardHeader("Low Inventory Warning", "Automated stock alerts and quick replenishment")
+
+warningAlert = Callout("warning", "Attention Required", "5 items have fallen below their minimum stock thresholds and require immediate reordering.")
+
+thresholdInfo = TextCallout("info", "Stock Threshold Policy", "Warnings are automatically triggered when stock drops below 15 units (Standard) or 25 units (High-Velocity).")
+
+searchSection = Form("search-form", searchButtons, [searchInputField, categoryFilterField])
+searchInputField = FormControl("Search Inventory", searchInput)
+searchInput = Input("search", "Search by item name or SKU...", "text")
+categoryFilterField = FormControl("Filter Category", categorySelect)
+categorySelect = Select("category", [catAll, catElectronics, catApparel, catHome], "All Categories")
+catAll = SelectItem("all", "All Categories")
+catElectronics = SelectItem("electronics", "Electronics")
+catApparel = SelectItem("apparel", "Apparel & Accessories")
+catHome = SelectItem("home", "Home Goods")
+searchButtons = Buttons([searchBtn, resetBtn])
+searchBtn = Button("Filter Results", null, "primary")
+resetBtn = Button("Reset", null, "tertiary")
+
+inventoryTable = Table([itemCol, skuCol, stockCol, thresholdCol, statusCol, actionCol])
+itemCol = Col("Item Name", ["Wireless Ergonomic Mouse", "USB-C Fast Charging Cable", "Mechanical Gaming Keyboard", "Smart Desk Lamp", "Bluetooth Earbuds"])
+skuCol = Col("SKU", ["ELE-2041", "CAB-1088", "KEY-5520", "HOM-8831", "EAR-3012"])
+stockCol = Col("Remaining Units", [4, 8, 12, 14, 18])
+thresholdCol = Col("Warning Threshold", [15, 25, 15, 15, 25])
+statusCol = Col("Status", ["Critical", "Critical", "Low", "Low", "Low"])
+actionCol = Col("Quick Action", ["Reorder (50 units)", "Reorder (100 units)", "Reorder (30 units)", "Reorder (40 units)", "Reorder (60 units)"])
+
+actions = Buttons([reorderAllBtn, exportReportBtn])
+reorderAllBtn = Button("Reorder All Low Stock Items", null, "primary")
+exportReportBtn = Button("Export Inventory Report", null, "secondary")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Adjust warning thresholds for all items")
+f2 = FollowUpItem("View order history for critical items")
+f3 = FollowUpItem("Configure automated reordering rules")

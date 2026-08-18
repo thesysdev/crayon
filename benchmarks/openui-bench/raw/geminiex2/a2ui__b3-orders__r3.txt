@@ -1,0 +1,431 @@
+Here is a complete, interactive UI surface for the e-commerce operations desk covering all your requested requirements (KPIs, status filtering, customer search, recent orders table with fulfillment actions, refund rate callout, order volume trends, and quick operations).
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "ops-desk",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "ops-desk",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "kpiOverview",
+          "refundAlert",
+          "volumeChartCard",
+          "ordersSectionHeader",
+          "filterBar",
+          "ordersTableCard",
+          "followUps"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "E-Commerce Operations Desk",
+        "subtitle": "Real-time order monitoring, analytics, and fulfillment management"
+      },
+      {
+        "id": "kpiOverview",
+        "component": "Table",
+        "columns": [
+          "kpiMetricCol",
+          "kpiValueCol",
+          "kpiTrendCol"
+        ]
+      },
+      {
+        "id": "kpiMetricCol",
+        "component": "Col",
+        "label": "Operational Metric",
+        "data": [
+          "1. Orders Placed Today",
+          "2. Revenue Today",
+          "3. Average Order Value (AOV)",
+          "7. Refund Rate (This Month)"
+        ]
+      },
+      {
+        "id": "kpiValueCol",
+        "component": "Col",
+        "label": "Today's Value",
+        "data": [
+          "1,248 orders",
+          "$48,920.00",
+          "$39.20",
+          "1.85%"
+        ]
+      },
+      {
+        "id": "kpiTrendCol",
+        "component": "Col",
+        "label": "vs Previous Period",
+        "data": [
+          "+14% vs yesterday",
+          "+8.5% vs target",
+          "+$2.40 increase",
+          "-0.3% vs last month (Target < 2.5%)"
+        ]
+      },
+      {
+        "id": "refundAlert",
+        "component": "Callout",
+        "variant": "success",
+        "title": "Item 7: Monthly Refund Rate Healthy",
+        "description": "Current refund rate is 1.85% (42 refunds out of 2,270 total orders this month), well within the safe operational limit of 2.5%."
+      },
+      {
+        "id": "volumeChartCard",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "chartHeader",
+          "weeklyVolumeChart"
+        ]
+      },
+      {
+        "id": "chartHeader",
+        "component": "CardHeader",
+        "title": "8. Order Volume Across Past 4 Weeks",
+        "subtitle": "Weekly order counts categorized by fulfillment status"
+      },
+      {
+        "id": "weeklyVolumeChart",
+        "component": "BarChart",
+        "labels": [
+          "Week 1",
+          "Week 2",
+          "Week 3",
+          "Week 4 (Current)"
+        ],
+        "series": [
+          "fulfilledSeries",
+          "pendingSeries"
+        ],
+        "variant": "stacked",
+        "xLabel": "Past 4 Weeks",
+        "yLabel": "Total Orders"
+      },
+      {
+        "id": "fulfilledSeries",
+        "component": "Series",
+        "category": "Fulfilled / Delivered",
+        "values": [
+          6800,
+          7200,
+          7900,
+          8100
+        ]
+      },
+      {
+        "id": "pendingSeries",
+        "component": "Series",
+        "category": "Processing / Pending",
+        "values": [
+          450,
+          510,
+          480,
+          640
+        ]
+      },
+      {
+        "id": "ordersSectionHeader",
+        "component": "Heading",
+        "level": "h3",
+        "text": "Recent Orders & Fulfillment Management"
+      },
+      {
+        "id": "filterBar",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "align": "center",
+        "children": [
+          "searchControl",
+          "statusControl"
+        ]
+      },
+      {
+        "id": "searchControl",
+        "component": "FormControl",
+        "label": "6. Search by Customer Name",
+        "input": "searchInput",
+        "hint": "Filters table by customer full name"
+      },
+      {
+        "id": "searchInput",
+        "component": "Input",
+        "name": "customer_search",
+        "placeholder": "e.g., Sarah Jenkins...",
+        "type": "text"
+      },
+      {
+        "id": "statusControl",
+        "component": "FormControl",
+        "label": "5. Narrow by Status",
+        "input": "statusSelect",
+        "hint": "Filter view by fulfillment stage"
+      },
+      {
+        "id": "statusSelect",
+        "component": "Select",
+        "name": "status_filter",
+        "placeholder": "All Statuses",
+        "items": [
+          "optAll",
+          "optPending",
+          "optProcessing",
+          "optFulfilled",
+          "optCancelled"
+        ]
+      },
+      {
+        "id": "optAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All Statuses"
+      },
+      {
+        "id": "optPending",
+        "component": "SelectItem",
+        "value": "pending",
+        "label": "Pending"
+      },
+      {
+        "id": "optProcessing",
+        "component": "SelectItem",
+        "value": "processing",
+        "label": "Processing"
+      },
+      {
+        "id": "optFulfilled",
+        "component": "SelectItem",
+        "value": "fulfilled",
+        "label": "Fulfilled"
+      },
+      {
+        "id": "optCancelled",
+        "component": "SelectItem",
+        "value": "cancelled",
+        "label": "Cancelled"
+      },
+      {
+        "id": "ordersTableCard",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "children": [
+          "recentOrdersTable",
+          "fulfillmentDrawer"
+        ]
+      },
+      {
+        "id": "recentOrdersTable",
+        "component": "Table",
+        "columns": [
+          "colOrderId",
+          "colCustomer",
+          "colTotal",
+          "colStatus",
+          "colAction"
+        ]
+      },
+      {
+        "id": "colOrderId",
+        "component": "Col",
+        "label": "Order ID",
+        "data": [
+          "#ORD-9481",
+          "#ORD-9480",
+          "#ORD-9479",
+          "#ORD-9478",
+          "#ORD-9477"
+        ]
+      },
+      {
+        "id": "colCustomer",
+        "component": "Col",
+        "label": "4. Customer Name",
+        "data": [
+          "Sarah Jenkins",
+          "Marcus Vance",
+          "Elena Rostova",
+          "David Chen",
+          "Amara Okafor"
+        ]
+      },
+      {
+        "id": "colTotal",
+        "component": "Col",
+        "label": "4. Order Total",
+        "data": [
+          "$142.50",
+          "$89.00",
+          "$215.10",
+          "$34.99",
+          "$560.00"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "4. Status",
+        "data": [
+          "Pending",
+          "Processing",
+          "Fulfilled",
+          "Pending",
+          "Fulfilled"
+        ]
+      },
+      {
+        "id": "colAction",
+        "component": "Col",
+        "label": "Quick Action",
+        "data": [
+          "Action Required",
+          "Action Required",
+          "Complete",
+          "Action Required",
+          "Complete"
+        ]
+      },
+      {
+        "id": "fulfillmentDrawer",
+        "component": "DrawerBlock",
+        "triggerLabel": "9. Mark Orders as Fulfilled",
+        "title": "Order Fulfillment Action Center",
+        "description": "Select pending orders to batch fulfill or dispatch to logistics provider.",
+        "content": [
+          "fulfillForm"
+        ]
+      },
+      {
+        "id": "fulfillForm",
+        "component": "Form",
+        "name": "fulfill_orders_form",
+        "buttons": "fulfillButtons",
+        "fields": [
+          "orderSelectField",
+          "carrierField",
+          "trackingField"
+        ]
+      },
+      {
+        "id": "orderSelectField",
+        "component": "FormControl",
+        "label": "Select Order to Fulfill",
+        "input": "unfulfilledSelect",
+        "hint": "Displays only pending or processing orders"
+      },
+      {
+        "id": "unfulfilledSelect",
+        "component": "Select",
+        "name": "selected_order_id",
+        "placeholder": "Choose an order",
+        "items": [
+          "itemOrd9481",
+          "itemOrd9480",
+          "itemOrd9478"
+        ]
+      },
+      {
+        "id": "itemOrd9481",
+        "component": "SelectItem",
+        "value": "ORD-9481",
+        "label": "#ORD-9481 - Sarah Jenkins ($142.50)"
+      },
+      {
+        "id": "itemOrd9480",
+        "component": "SelectItem",
+        "value": "ORD-9480",
+        "label": "#ORD-9480 - Marcus Vance ($89.00)"
+      },
+      {
+        "id": "itemOrd9478",
+        "component": "SelectItem",
+        "value": "ORD-9478",
+        "label": "#ORD-9478 - David Chen ($34.99)"
+      },
+      {
+        "id": "carrierField",
+        "component": "FormControl",
+        "label": "Shipping Carrier",
+        "input": "carrierInput"
+      },
+      {
+        "id": "carrierInput",
+        "component": "Input",
+        "name": "carrier",
+        "placeholder": "e.g., FedEx, UPS, DHL"
+      },
+      {
+        "id": "trackingField",
+        "component": "FormControl",
+        "label": "Tracking Number",
+        "input": "trackingInput"
+      },
+      {
+        "id": "trackingInput",
+        "component": "Input",
+        "name": "tracking_number",
+        "placeholder": "e.g., 1Z9999999999999999"
+      },
+      {
+        "id": "fulfillButtons",
+        "component": "Buttons",
+        "buttons": [
+          "confirmFulfillBtn"
+        ]
+      },
+      {
+        "id": "confirmFulfillBtn",
+        "component": "Button",
+        "label": "Confirm & Mark Fulfilled",
+        "variant": "primary"
+      },
+      {
+        "id": "followUps",
+        "component": "FollowUpBlock",
+        "items": [
+          "followUp1",
+          "followUp2",
+          "followUp3"
+        ]
+      },
+      {
+        "id": "followUp1",
+        "component": "FollowUpItem",
+        "text": "Export today's orders report to CSV"
+      },
+      {
+        "id": "followUp2",
+        "component": "FollowUpItem",
+        "text": "Show detailed breakdown of unfulfilled orders"
+      },
+      {
+        "id": "followUp3",
+        "component": "FollowUpItem",
+        "text": "View refund details for this month"
+      }
+    ]
+  }
+}
+</a2ui-json>

@@ -1,0 +1,26 @@
+root = Card([header, uptimeCard, incidentCard, servicesStatus, quickActions])
+
+header = CardHeader("Platform Infrastructure Status", "Real-time systems operational overview and incident history")
+
+uptimeCard = Card([uptimeHeader, uptimeProgress, uptimeDetails], "sunk", "column", "m")
+uptimeHeader = CardHeader("API Availability", "Current month: 99.94% uptime (SLA Target: 99.90%)")
+uptimeProgress = Progress(99.94, "Monthly API Uptime Metric")
+uptimeDetails = Table([metricCol, valueCol, statusCol])
+metricCol = Col("Metric", ["Target SLA", "Current Month", "Total Requests", "Failed Requests"])
+valueCol = Col("Value", ["99.90%", "99.94%", "142,850,210", "85,710"])
+statusCol = Col("Status", ["Met", "Exceeding", "Normal", "Acceptable"])
+
+incidentCard = Card([incidentCallout, incidentDetails], "card", "column", "s")
+incidentCallout = Callout("info", "Recent Incident Resolved", "Database Connection Pool Exhaustion")
+incidentDetails = MarkDownRenderer("**Incident Ref:** INC-8492  \n**Impact:** API Gateway 504 Gateway Timeouts (~4.2% of traffic affected)  \n**Resolved:** October 24, 2023 at 14:32 UTC (Duration: 18 minutes)  \n**Root Cause:** A spike in analytical traffic caused worker processes to saturate the primary PostgreSQL connection pool.  \n**Resolution:** Connection pool size increased dynamically and auto-scaling rules updated to prevent recurrence.")
+
+servicesStatus = Table([serviceCol, regionCol, uptimeServiceCol, stateCol])
+serviceCol = Col("Component", ["REST API Gateway", "GraphQL Service", "Authentication (OAuth2)", "Core Database Cluster", "Cache Layer (Redis)"])
+regionCol = Col("Region", ["US-East (Primary)", "US-East (Primary)", "Global Edge", "US-East / US-West", "US-East (Primary)"])
+uptimeServiceCol = Col("30-Day Uptime", ["99.94%", "99.98%", "100.00%", "99.99%", "100.00%"])
+stateCol = Col("Current Status", ["Operational", "Operational", "Operational", "Operational", "Operational"])
+
+quickActions = Buttons([refreshBtn, subscribeBtn, historyBtn])
+refreshBtn = Button("Refresh Status", null, "primary")
+subscribeBtn = Button("Subscribe to Updates", null, "secondary")
+historyBtn = Button("View Incident Archives", null, "tertiary")

@@ -1,0 +1,92 @@
+root = Card([header, storeInfoCallout, mainKpis, storeSwitchDrawer, mainTabs, followUp])
+
+header = CardHeader("Store #402 - Downtown Flagship", "Daily Manager Console | Thursday, October 24")
+
+storeInfoCallout = TextCallout("info", "Morning Shift Active", "Register 3 requires paper roll replacement. Promotion 'Fall Bundle' ending today.")
+
+mainKpis = Card([salesKpi, basketKpi, returnsKpi, shiftKpi], "sunk", "row", "m", "center", "between")
+salesKpi = TextContent("**Today's Sales**\n\n$14,250 / $16,000 (89%)", "large-heavy")
+basketKpi = TextContent("**Avg Basket Size**\n\n$68.50 (+4.2%)", "large-heavy")
+returnsKpi = TextContent("**Returns (This Wk)**\n\n42 items ($1,240)", "large-heavy")
+shiftKpi = TextContent("**On Shift Today**\n\n6 Active Staff", "large-heavy")
+
+storeSwitchDrawer = DrawerBlock("Switch Store Location", "Select Store Location", "Choose a store to view its daily dashboard console.", [storeForm])
+storeForm = Form("switch-store-form", storeFormButtons, [storeSelectControl])
+storeSelectControl = FormControl("Target Store", storeSelect)
+storeSelect = Select("store_id", [storeOpt1, storeOpt2, storeOpt3], "Select store...")
+storeOpt1 = SelectItem("402", "Store #402 - Downtown Flagship")
+storeOpt2 = SelectItem("108", "Store #108 - Westside Mall")
+storeOpt3 = SelectItem("215", "Store #215 - Airport Terminal")
+storeFormButtons = Buttons([switchBtn])
+switchBtn = Button("Load Store Console", null, "primary")
+
+mainTabs = Tabs([tabOverview, tabInventory, tabOperations])
+
+tabOverview = TabItem("overview", "Performance & Sales", [overviewContent])
+overviewContent = Card([weeklyComparisonHeading, weeklyChart, salesTrafficHeading, trafficChart, promoHeading, promoTable], "clear", "column", "m")
+
+weeklyComparisonHeading = Heading("This Week vs Last Week (Sales)", "h3")
+weeklyChart = BarChart(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], [thisWeekSeries, lastWeekSeries], "grouped", "Day", "Sales ($)")
+thisWeekSeries = Series("This Week", [12400, 13100, 15200, 14250, 0, 0, 0])
+lastWeekSeries = Series("Last Week", [11800, 12500, 14000, 13800, 18500, 21000, 16200])
+
+salesTrafficHeading = Heading("Foot Traffic Through the Day (Hourly)", "h3")
+trafficChart = LineChart(["8 AM", "10 AM", "12 PM", "2 PM", "4 PM", "6 PM", "8 PM"], [trafficSeries], "natural", "Time", "Visitors")
+trafficSeries = Series("Hourly Foot Traffic", [45, 120, 280, 310, 220, 340, 150])
+
+promoHeading = Heading("Active Running Promotions Performance", "h3")
+promoTable = Table([promoNameCol, promoSalesCol, promoTargetCol, promoStatusCol])
+promoNameCol = Col("Promotion", ["Fall Bundle 20%", "Footwear BOGO 50%", "Loyalty Double Pts"])
+promoSalesCol = Col("Sales Gen.", ["$4,200", "$6,850", "$3,100"])
+promoTargetCol = Col("Target", ["$4,000", "$8,000", "$2,500"])
+promoStatusCol = Col("Status", ["Exceeded", "On Track", "Exceeded"])
+
+tabInventory = TabItem("inventory", "Inventory & Reorder", [inventoryContent])
+inventoryContent = Card([bestSellersHeading, bestSellersTable, outOfStockHeading, outOfStockTable, reorderDialog], "clear", "column", "m")
+
+bestSellersHeading = Heading("Today's Best Sellers", "h3")
+bestSellersTable = Table([bestItemCol, bestUnitsCol, bestRevenueCol])
+bestItemCol = Col("Item Description", ["Classic Denim Jacket", "Leather Sneakers", "Graphic Tee Black", "Canvas Tote Bag"])
+bestUnitsCol = Col("Units Sold", [48, 35, 29, 22])
+bestRevenueCol = Col("Total Revenue", ["$4,224", "$4,165", "$841", "$440"])
+
+outOfStockHeading = Heading("Items Out of Stock", "h3")
+outOfStockTable = Table([oosItemCol, oosSkuCol, oosCategoryCol, oosStatusCol])
+oosItemCol = Col("Item Name", ["Slim Fit Chinos - Navy (M)", "Wool Blend Beanie - Grey", "Wireless Earbuds Case"])
+oosSkuCol = Col("SKU", ["SKU-8821", "SKU-4419", "SKU-9012"])
+oosCategoryCol = Col("Category", ["Apparel", "Accessories", "Electronics"])
+oosStatusCol = Col("Stock Level", ["0 units", "0 units", "0 units"])
+
+reorderDialog = DialogBlock("Quick Reorder Item", "Create Stock Reorder Request", "Place an urgent restock request for out of stock items.", [reorderForm])
+reorderForm = Form("reorder-item-form", reorderFormButtons, [reorderItemControl, reorderQtyControl])
+reorderItemControl = FormControl("Select Item to Reorder", reorderSelect)
+reorderSelect = Select("reorder_sku", [reorderOpt1, reorderOpt2, reorderOpt3], "Choose item...")
+reorderOpt1 = SelectItem("SKU-8821", "Slim Fit Chinos - Navy (M)")
+reorderOpt2 = SelectItem("SKU-4419", "Wool Blend Beanie - Grey")
+reorderOpt3 = SelectItem("SKU-9012", "Wireless Earbuds Case")
+reorderQtyControl = FormControl("Quantity to Order", reorderInput)
+reorderInput = Input("order_qty", "50", "number")
+reorderFormButtons = Buttons([submitReorderBtn])
+submitReorderBtn = Button("Submit Reorder Request", null, "primary")
+
+tabOperations = TabItem("operations", "Staff & Registers", [operationsContent])
+operationsContent = Card([registerHeading, registerTable, staffHeading, staffList], "clear", "column", "m")
+
+registerHeading = Heading("POS Registers Status", "h3")
+registerTable = Table([regIdCol, regStatusCol, regCashierCol])
+regIdCol = Col("Register ID", ["Register 1 (Main)", "Register 2 (Main)", "Register 3 (Express)", "Register 4 (Returns)"])
+regStatusCol = Col("Status", ["OPEN", "OPEN", "OPEN (Maintenance Req)", "CLOSED"])
+regCashierCol = Col("Assigned Staff", ["Sarah T.", "Mike R.", "David K.", "Unassigned"])
+
+staffHeading = Heading("Staff On Shift Today", "h3")
+staffList = ListBlock([staff1, staff2, staff3, staff4, staff5])
+staff1 = ListItem("Sarah Jenkins", "Store Manager | Shift: 7:30 AM - 4:00 PM")
+staff2 = ListItem("Mike Ross", "Senior Associate | Shift: 8:00 AM - 4:30 PM")
+staff3 = ListItem("David Kim", "Cashier | Shift: 9:00 AM - 5:30 PM")
+staff4 = ListItem("Elena Rostova", "Inventory Lead | Shift: 6:00 AM - 2:30 PM")
+staff5 = ListItem("Marcus Vance", "Sales Floor | Shift: 12:00 PM - 8:30 PM")
+
+followUp = FollowUpBlock([followUp1, followUp2, followUp3])
+followUp1 = FollowUpItem("View hourly sales details")
+followUp2 = FollowUpItem("Generate EOD register audit report")
+followUp3 = FollowUpItem("Adjust safety stock levels for SKU-8821")

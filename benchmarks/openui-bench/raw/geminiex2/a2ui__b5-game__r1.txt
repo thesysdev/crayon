@@ -1,0 +1,781 @@
+Here is a complete, interactive Live-Ops Dashboard designed for a game studio's operations room, covering all 16 required items in a single cohesive view.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "topControls",
+          "kpiAlertRow",
+          "mainTabs"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "🎮 Live-Ops Control Center",
+        "subtitle": "Real-time Game Operations, Analytics & Administration"
+      },
+      {
+        "id": "topControls",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "align": "center",
+        "justify": "between",
+        "gap": "m",
+        "children": [
+          "regionSelectorGroup",
+          "hotfixDialog"
+        ]
+      },
+      {
+        "id": "regionSelectorGroup",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "align": "center",
+        "gap": "s",
+        "children": [
+          "regionLabel",
+          "regionSelect"
+        ]
+      },
+      {
+        "id": "regionLabel",
+        "component": "Label",
+        "text": "Focus Region (#15):"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region_focus",
+        "placeholder": "All Regions (Global)",
+        "items": [
+          "regGlobal",
+          "regNA",
+          "regEU",
+          "regASIA",
+          "regSA"
+        ]
+      },
+      {
+        "id": "regGlobal",
+        "component": "SelectItem",
+        "value": "global",
+        "label": "Global (All Regions)"
+      },
+      {
+        "id": "regNA",
+        "component": "SelectItem",
+        "value": "na",
+        "label": "North America (us-east/west)"
+      },
+      {
+        "id": "regEU",
+        "component": "SelectItem",
+        "value": "eu",
+        "label": "Europe (eu-central)"
+      },
+      {
+        "id": "regASIA",
+        "component": "SelectItem",
+        "value": "asia",
+        "label": "Asia-Pacific (ap-east)"
+      },
+      {
+        "id": "regSA",
+        "component": "SelectItem",
+        "value": "sa",
+        "label": "South America (sa-east)"
+      },
+      {
+        "id": "hotfixDialog",
+        "component": "AlertDialogBlock",
+        "triggerLabel": "🚨 Ship Emergency Hotfix (#16)",
+        "triggerVariant": "destructive",
+        "title": "Ship Global Hotfix",
+        "description": "This action will push patch v2.4.1b to all selected server clusters. Network connections may momentarily drop for active matches.",
+        "confirmLabel": "Deploy Hotfix Now",
+        "cancelLabel": "Abort"
+      },
+      {
+        "id": "kpiAlertRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "kpiTable",
+          "currencyAlert"
+        ]
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": [
+          "colMetric",
+          "colValue",
+          "colTarget"
+        ]
+      },
+      {
+        "id": "colMetric",
+        "component": "Col",
+        "label": "Live Operations Metric",
+        "data": [
+          "1. CCU (Players Online Right Now)",
+          "2. Daily Active Players (DAU)",
+          "2. Monthly Active Players (MAU)",
+          "3. Revenue Today",
+          "4. ARPU / ARPPU Today"
+        ]
+      },
+      {
+        "id": "colValue",
+        "component": "Col",
+        "label": "Current Value",
+        "data": [
+          "142,850 online",
+          "1,240,000",
+          "8,650,000",
+          "$184,500.00",
+          "$0.15 / $12.40"
+        ]
+      },
+      {
+        "id": "colTarget",
+        "component": "Col",
+        "label": "Status / Target",
+        "data": [
+          "Peak hours (+8% vs last wk)",
+          "Target: 1.2M (On track)",
+          "Target: 8.5M (+1.7%)",
+          "Target: $175,000 (+5.4%)",
+          "Healthy monetization"
+        ]
+      },
+      {
+        "id": "currencyAlert",
+        "component": "Alert",
+        "title": "12. In-Game Currency Inflation Watch",
+        "description": "Gold sink efficiency dropped by 3.2% after the weekend event. Soft currency pool sitting at 1.4B Gold (+8.4% WoW inflation rate). Hotfix or new sink recommended.",
+        "variant": "warning"
+      },
+      {
+        "id": "mainTabs",
+        "component": "Tabs",
+        "items": [
+          "tabSystemHealth",
+          "tabEconomyEvents",
+          "tabModerationExp",
+          "tabPatchNotes"
+        ]
+      },
+      {
+        "id": "tabSystemHealth",
+        "component": "TabItem",
+        "value": "health",
+        "trigger": "🖥️ Infra, Session & Crashes",
+        "content": [
+          "healthCard"
+        ]
+      },
+      {
+        "id": "healthCard",
+        "component": "Card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "healthHeader",
+          "serverTable",
+          "sessionChartHeader",
+          "sessionChart",
+          "crashHeader",
+          "crashTable"
+        ]
+      },
+      {
+        "id": "healthHeader",
+        "component": "Heading",
+        "level": "h3",
+        "text": "7. Server Region & Cluster Health"
+      },
+      {
+        "id": "serverTable",
+        "component": "Table",
+        "columns": [
+          "colRegion",
+          "colStatus",
+          "colLatency",
+          "colLoad"
+        ]
+      },
+      {
+        "id": "colRegion",
+        "component": "Col",
+        "label": "Region",
+        "data": [
+          "US-East (N. Virginia)",
+          "US-West (Oregon)",
+          "EU-Central (Frankfurt)",
+          "AP-East (Tokyo)",
+          "SA-East (São Paulo)"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Health Status",
+        "data": [
+          "Operational 🟢",
+          "Operational 🟢",
+          "High Load 🟡",
+          "Operational 🟢",
+          "Operational 🟢"
+        ]
+      },
+      {
+        "id": "colLatency",
+        "component": "Col",
+        "label": "Avg Latency",
+        "data": [
+          "24 ms",
+          "38 ms",
+          "42 ms",
+          "65 ms",
+          "88 ms"
+        ]
+      },
+      {
+        "id": "colLoad",
+        "component": "Col",
+        "label": "Capacity",
+        "data": [
+          "68%",
+          "54%",
+          "89%",
+          "72%",
+          "41%"
+        ]
+      },
+      {
+        "id": "sessionChartHeader",
+        "component": "Heading",
+        "level": "h3",
+        "text": "5. Average Session Length (Past 2 Weeks, in Minutes)"
+      },
+      {
+        "id": "sessionChart",
+        "component": "LineChart",
+        "labels": [
+          "Day 1",
+          "Day 2",
+          "Day 3",
+          "Day 4",
+          "Day 5",
+          "Day 6",
+          "Day 7",
+          "Day 8",
+          "Day 9",
+          "Day 10",
+          "Day 11",
+          "Day 12",
+          "Day 13",
+          "Day 14"
+        ],
+        "series": [
+          "sessionSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Past 14 Days",
+        "yLabel": "Minutes / Session"
+      },
+      {
+        "id": "sessionSeries",
+        "component": "Series",
+        "category": "Avg Session Length (Mins)",
+        "values": [
+          32,
+          34,
+          31,
+          35,
+          42,
+          48,
+          45,
+          33,
+          36,
+          34,
+          38,
+          44,
+          50,
+          47
+        ]
+      },
+      {
+        "id": "crashHeader",
+        "component": "Heading",
+        "level": "h3",
+        "text": "8. Crash Rate by App Version"
+      },
+      {
+        "id": "crashTable",
+        "component": "Table",
+        "columns": [
+          "colVer",
+          "colPlatform",
+          "colCrashRate",
+          "colImpact"
+        ]
+      },
+      {
+        "id": "colVer",
+        "component": "Col",
+        "label": "App Version",
+        "data": [
+          "v2.4.1 (Current Prod)",
+          "v2.4.0 (Legacy Prod)",
+          "v2.3.9 (Deprecating)"
+        ]
+      },
+      {
+        "id": "colPlatform",
+        "component": "Col",
+        "label": "Platform",
+        "data": [
+          "PC / iOS / Android",
+          "PC / Console",
+          "Mobile"
+        ]
+      },
+      {
+        "id": "colCrashRate",
+        "component": "Col",
+        "label": "Crash Rate (%)",
+        "data": [
+          "0.12% (Healthy)",
+          "0.45% (Elevated)",
+          "1.82% (Critical)"
+        ]
+      },
+      {
+        "id": "colImpact",
+        "component": "Col",
+        "label": "Active Users Share",
+        "data": [
+          "88.4%",
+          "9.1%",
+          "2.5%"
+        ]
+      },
+      {
+        "id": "tabEconomyEvents",
+        "component": "TabItem",
+        "value": "economy",
+        "trigger": "🛒 Store & Live Events",
+        "content": [
+          "economyCard"
+        ]
+      },
+      {
+        "id": "economyCard",
+        "component": "Card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "storeHeader",
+          "storeTable",
+          "eventsHeader",
+          "eventsTable"
+        ]
+      },
+      {
+        "id": "storeHeader",
+        "component": "Heading",
+        "level": "h3",
+        "text": "6. Best-Selling In-Game Items (Today)"
+      },
+      {
+        "id": "storeTable",
+        "component": "Table",
+        "columns": [
+          "colItem",
+          "colCategory",
+          "colUnits",
+          "colRev"
+        ]
+      },
+      {
+        "id": "colItem",
+        "component": "Col",
+        "label": "Item Name",
+        "data": [
+          "Battle Pass: Season 5",
+          "Cyber Dragon Skin Bundle",
+          "1,000 (+100 Bonus) Gems Pack",
+          "XP Boost 7-Day Pass",
+          "Mythic Emote Wheel"
+        ]
+      },
+      {
+        "id": "colCategory",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Pass",
+          "Cosmetic",
+          "Currency",
+          "Consumable",
+          "Cosmetic"
+        ]
+      },
+      {
+        "id": "colUnits",
+        "component": "Col",
+        "label": "Units Sold",
+        "data": [
+          "14,250 units",
+          "8,920 units",
+          "6,110 units",
+          "4,300 units",
+          "3,850 units"
+        ]
+      },
+      {
+        "id": "colRev",
+        "component": "Col",
+        "label": "Gross Revenue",
+        "data": [
+          "$142,500.00",
+          "$133,800.00",
+          "$61,100.00",
+          "$21,500.00",
+          "$19,250.00"
+        ]
+      },
+      {
+        "id": "eventsHeader",
+        "component": "Heading",
+        "level": "h3",
+        "text": "9. Live Events (Running & Upcoming)"
+      },
+      {
+        "id": "eventsTable",
+        "component": "Table",
+        "columns": [
+          "colEventName",
+          "colEventStatus",
+          "colEventDuration",
+          "colEventModifiers"
+        ]
+      },
+      {
+        "id": "colEventName",
+        "component": "Col",
+        "label": "Event Title",
+        "data": [
+          "Double XP Weekend",
+          "Dragon's Lair Raid Boss Challenge",
+          "Lunar New Year Cosmetic Showcase",
+          "Spring Tournament Qualifiers"
+        ]
+      },
+      {
+        "id": "colEventStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "LIVE NOW 🟢",
+          "LIVE NOW 🟢",
+          "UPCOMING 🗓️",
+          "UPCOMING 🗓️"
+        ]
+      },
+      {
+        "id": "colEventDuration",
+        "component": "Col",
+        "label": "Schedule",
+        "data": [
+          "Ends in 14h 22m",
+          "Ends in 3d 10h",
+          "Starts Feb 1, 00:00 UTC",
+          "Starts Feb 15, 12:00 UTC"
+        ]
+      },
+      {
+        "id": "colEventModifiers",
+        "component": "Col",
+        "label": "Global Modifiers",
+        "data": [
+          "+100% XP, +50% Gold drop",
+          "Limited Edition Mount Drop",
+          "Exclusive Store Discount",
+          "Ranked Points x1.5"
+        ]
+      },
+      {
+        "id": "tabModerationExp",
+        "component": "TabItem",
+        "value": "moderation",
+        "trigger": "🛡️ Moderation & Experiments",
+        "content": [
+          "moderationCard"
+        ]
+      },
+      {
+        "id": "moderationCard",
+        "component": "Card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "queuesHeader",
+          "queueMetrics",
+          "expHeader",
+          "expCard1",
+          "expCard2"
+        ]
+      },
+      {
+        "id": "queuesHeader",
+        "component": "Heading",
+        "level": "h3",
+        "text": "Moderation Queues Awaiting Review"
+      },
+      {
+        "id": "queueMetrics",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "l",
+        "children": [
+          "reportBlock",
+          "appealBlock"
+        ]
+      },
+      {
+        "id": "reportBlock",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "reportTitle",
+          "reportBadge",
+          "reportAction"
+        ]
+      },
+      {
+        "id": "reportTitle",
+        "component": "Label",
+        "text": "10. Player Reports Awaiting Review"
+      },
+      {
+        "id": "reportBadge",
+        "component": "Badge",
+        "text": "342 Pending Reports (Avg response: 18m)",
+        "variant": "destructive"
+      },
+      {
+        "id": "reportAction",
+        "component": "Button",
+        "label": "Open Moderation Queue",
+        "variant": "secondary",
+        "size": "small"
+      },
+      {
+        "id": "appealBlock",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "appealTitle",
+          "appealBadge",
+          "appealAction"
+        ]
+      },
+      {
+        "id": "appealTitle",
+        "component": "Label",
+        "text": "11. Ban Appeals Awaiting Review"
+      },
+      {
+        "id": "appealBadge",
+        "component": "Badge",
+        "text": "28 Pending Appeals (Avg response: 4h)",
+        "variant": "secondary"
+      },
+      {
+        "id": "appealAction",
+        "component": "Button",
+        "label": "Open Appeals Queue",
+        "variant": "secondary",
+        "size": "small"
+      },
+      {
+        "id": "expHeader",
+        "component": "Heading",
+        "level": "h3",
+        "text": "13. Active A/B Experiments Results"
+      },
+      {
+        "id": "expCard1",
+        "component": "Callout",
+        "variant": "info",
+        "title": "Experiment A: New Player Tutorial Onboarding Flow (50/50 Split)",
+        "description": "Variant B (Streamlined Video Intro) shows +14.2% Day-1 Retention and +8.1% tutorial completion rate compared to Variant A (Interactive Text). Sample size: 120k users. Statistical confidence: 99.4%."
+      },
+      {
+        "id": "expCard2",
+        "component": "Callout",
+        "variant": "success",
+        "title": "Experiment B: Matchmaking MMR Weighting adjustments (20/80 Split)",
+        "description": "Variant B (Strict Latency vs Skill) resulted in -18% queue times with no statistically significant impact on post-match toxicity reports. Winner: Variant B."
+      },
+      {
+        "tabPatchNotes",
+        "component": "TabItem",
+        "value": "patch",
+        "trigger": "📝 Draft Patch Notes",
+        "content": [
+          "patchCard"
+        ]
+      },
+      {
+        "id": "patchCard",
+        "component": "Card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "patchFormHeader",
+          "patchForm"
+        ]
+      },
+      {
+        "id": "patchFormHeader",
+        "component": "Heading",
+        "level": "h3",
+        "text": "14. Patch Notes Editor & Publisher"
+      },
+      {
+        "id": "patchForm",
+        "component": "Form",
+        "name": "patch_notes_form",
+        "buttons": "patchButtons",
+        "fields": [
+          "versionField",
+          "targetPlatformField",
+          "notesContentField"
+        ]
+      },
+      {
+        "id": "versionField",
+        "component": "FormControl",
+        "label": "Patch Version Tag",
+        "input": "versionInput",
+        "hint": "Follow Semantic Versioning (e.g. v2.4.2)"
+      },
+      {
+        "id": "versionInput",
+        "component": "Input",
+        "name": "patch_version",
+        "placeholder": "v2.4.2"
+      },
+      {
+        "id": "targetPlatformField",
+        "component": "FormControl",
+        "label": "Target Platforms",
+        "input": "platformSelect"
+      },
+      {
+        "id": "platformSelect",
+        "component": "Select",
+        "name": "patch_platforms",
+        "placeholder": "Select platforms...",
+        "items": [
+          "platAll",
+          "platPC",
+          "platConsole",
+          "platMobile"
+        ]
+      },
+      {
+        "id": "platAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All Platforms (Cross-play)"
+      },
+      {
+        "id": "platPC",
+        "component": "SelectItem",
+        "value": "pc",
+        "label": "PC (Steam / Epic)"
+      },
+      {
+        "id": "platConsole",
+        "component": "SelectItem",
+        "value": "console",
+        "label": "Consoles (PS5 / Xbox Series X)"
+      },
+      {
+        "id": "platMobile",
+        "component": "SelectItem",
+        "value": "mobile",
+        "label": "Mobile (iOS / Android)"
+      },
+      {
+        "id": "notesContentField",
+        "component": "FormControl",
+        "label": "Patch Notes Content (Markdown Supported)",
+        "input": "notesTextArea",
+        "hint": "Include bug fixes, balance changes, and known issues."
+      },
+      {
+        "id": "notesTextArea",
+        "component": "TextArea",
+        "name": "patch_content",
+        "rows": 6,
+        "placeholder": "## Version 2.4.2 Release Notes\n\n### General Bug Fixes\n- Fixed gold sink overflow bug in shop.\n- Resolved high latency spikes on EU-Central servers.\n\n### Balance Changes\n- Cyber Dragon Skin weapon glow adjusted."
+      },
+      {
+        "id": "patchButtons",
+        "component": "Buttons",
+        "buttons": [
+          "saveDraftBtn",
+          "publishPatchBtn"
+        ]
+      },
+      {
+        "id": "saveDraftBtn",
+        "component": "Button",
+        "label": "Save Draft",
+        "variant": "secondary"
+      },
+      {
+        "id": "publishPatchBtn",
+        "component": "Button",
+        "label": "Publish Patch Notes to Launcher & Steam",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>

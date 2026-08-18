@@ -1,0 +1,70 @@
+root = Card([header, liveNow, topTitles, watchTrend, subsChurn, genrePerf, bufferRate, regionHealth, upcoming, licenses, recoClicks, deadSearches, revenueSplit, deviceSplit, regionFocus, featureFlags, promoteAction])
+
+header = CardHeader("Operations Room", "Live streaming platform overview")
+
+liveNow = Callout("info", "Viewers Watching Now", "1,284,592 concurrent viewers across all regions")
+
+topTitles = Table([titleName, titleHours])
+titleName = Col("Title", ["Nebula Drift", "The Long Fall", "Kitchen Wars", "Midnight Line", "Echo Valley"])
+titleHours = Col("Hours Watched", [4820000, 3910000, 3105000, 2740000, 2180000], "number")
+
+watchTrend = AreaChart(["Wk 1", "Wk 2", "Wk 3", "Wk 4"], [watchSeries], "natural", "Week", "Million Hours")
+watchSeries = Series("Watch Time", [82, 88, 91, 97])
+
+subsChurn = BarChart(["Wk 1", "Wk 2", "Wk 3", "Wk 4"], [newSubs, cancels], "grouped", "Week", "Accounts")
+newSubs = Series("New Subscribers", [42000, 38500, 45100, 51200])
+cancels = Series("Cancellations", [12800, 14200, 11900, 13400])
+
+genrePerf = RadarChart(["Drama", "Comedy", "Action", "Docs", "Kids", "Horror"], [genreSeries])
+genreSeries = Series("Engagement Index", [88, 74, 91, 63, 70, 55])
+
+bufferRate = Progress(2.4, "Buffering rate: 2.4% of sessions")
+
+regionHealth = HorizontalBarChart(["North America", "Europe", "Asia Pacific", "Latin America", "Middle East"], [healthSeries], "grouped", "Health Score", "Region")
+healthSeries = Series("Delivery Health", [98, 96, 92, 89, 85])
+
+upcoming = ListBlock([rel1, rel2, rel3], "number")
+rel1 = ListItem("Nebula Drift: Season 2", "Releases Mar 14")
+rel2 = ListItem("The Analyst", "Releases Mar 21")
+rel3 = ListItem("Sunset Boulevard Live", "Releases Mar 28")
+
+licenses = Table([licTitle, licDate])
+licTitle = Col("Title", ["Classic Noir Collection", "World Cup 2018 Replays", "Retro Sitcoms Bundle"])
+licDate = Col("Expires", ["Mar 30", "Apr 08", "Apr 15"])
+
+recoClicks = Progress(31.7, "Recommendation click-through: 31.7%")
+
+deadSearches = Callout("warning", "Searches Without Playback", "18.2% of searches ended without any title being played")
+
+revenueSplit = PieChart(["Basic", "Standard", "Premium", "Ad-Supported"], [3.2, 6.8, 5.1, 2.4], "donut")
+
+deviceSplit = PieChart(["Smart TV", "Mobile", "Web", "Tablet", "Console"], [47, 28, 14, 7, 4], "pie")
+
+regionFocus = Form("region-focus", regionButtons, [regionField])
+regionField = FormControl("Focus Region", regionSelect)
+regionSelect = Select("region", [rNA, rEU, rAP, rLA, rME], "Select a region")
+rNA = SelectItem("na", "North America")
+rEU = SelectItem("eu", "Europe")
+rAP = SelectItem("ap", "Asia Pacific")
+rLA = SelectItem("la", "Latin America")
+rME = SelectItem("me", "Middle East")
+regionButtons = Buttons([applyRegion])
+applyRegion = Button("Apply Focus", null, "primary")
+
+featureFlags = SwitchGroup("feature-flags", [ffDownloads, ffSkip, ff4k, ffParty], "card")
+ffDownloads = SwitchItem("Offline Downloads", "Allow saving titles for offline", "downloads", true)
+ffSkip = SwitchItem("Skip Intro", "Show skip-intro button", "skip_intro", true)
+ff4k = SwitchItem("4K Streaming", "Enable ultra HD for premium", "uhd", false)
+ffParty = SwitchItem("Watch Party", "Synced group viewing beta", "watch_party", false)
+
+promoteAction = DialogBlock("Promote a Title", "Promote to Home Screen", "Feature a title on the home carousel", [promoteForm], "default")
+promoteForm = Form("promote-title", promoteButtons, [promoteTitleField, promoteSlotField])
+promoteTitleField = FormControl("Title", promoteTitleInput)
+promoteTitleInput = Input("title", "Nebula Drift")
+promoteSlotField = FormControl("Home Slot", promoteSlotSelect)
+promoteSlotSelect = Select("slot", [slotHero, slotRow1, slotTrending], "Choose placement")
+slotHero = SelectItem("hero", "Hero Banner")
+slotRow1 = SelectItem("row1", "Top Row")
+slotTrending = SelectItem("trending", "Trending Now")
+promoteButtons = Buttons([promoteSubmit])
+promoteSubmit = Button("Promote", null, "primary")

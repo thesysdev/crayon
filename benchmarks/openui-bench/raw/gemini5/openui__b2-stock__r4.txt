@@ -1,0 +1,38 @@
+root = Card([header, warningAlert, thresholdInfo, searchSection, inventoryTable, bulkActions, followUp])
+
+header = CardHeader("Low Inventory Alerts", "Manage stock levels and replenish depleted inventory")
+
+warningAlert = Alert("Low Stock Warning", "8 items have fallen below their minimum stock threshold and require immediate reordering.", "warning")
+
+thresholdInfo = Callout("info", "Stock Threshold Policy", "Automatic low-inventory warnings are triggered when stock drops below 15 units. Reorder points are calculated based on 14-day lead times.")
+
+searchSection = Form("search-form", searchButtons, [searchInputControl, filterCategoryControl])
+searchInputControl = FormControl("Search Inventory", searchInput)
+searchInput = Input("query", "Search by SKU, product name, or category...")
+filterCategoryControl = FormControl("Category Filter", categorySelect)
+categorySelect = Select("category", [catAll, catElec, catApp, catHome, catOffice], "All Categories")
+catAll = SelectItem("all", "All Categories")
+catElec = SelectItem("electronics", "Electronics")
+catApp = SelectItem("apparel", "Apparel & Gear")
+catHome = SelectItem("home", "Home Goods")
+catOffice = SelectItem("office", "Office Supplies")
+searchButtons = Buttons([searchBtn, resetBtn])
+searchBtn = Button("Filter Items", null, "primary", "normal", "small")
+resetBtn = Button("Clear Filters", null, "tertiary", "normal", "small")
+
+inventoryTable = Table([skuCol, itemCol, catCol, stockCol, statusCol, actionCol])
+skuCol = Col("SKU", ["SKU-1082", "SKU-2491", "SKU-3012", "SKU-4105", "SKU-5201", "SKU-6330", "SKU-7114", "SKU-8902"])
+itemCol = Col("Product Name", ["Wireless Ergonomic Mouse", "USB-C Fast Charger 65W", "Mechanical Keyboard (RGB)", "27\" 4K Monitor Stand", "Thermal Label Printer Paper", "Noise-Cancelling Headset", "Desk LED Task Light", "Heavy-Duty Cable Sleeves"])
+catCol = Col("Category", ["Electronics", "Electronics", "Electronics", "Office Supplies", "Office Supplies", "Electronics", "Home Goods", "Office Supplies"])
+stockCol = Col("Remaining Units", ["3 units", "5 units", "2 units", "8 units", "12 units", "4 units", "9 units", "14 units"])
+statusCol = Col("Status", ["Critical (3/15)", "Critical (5/15)", "Critical (2/15)", "Warning (8/15)", "Warning (12/15)", "Critical (4/15)", "Warning (9/15)", "Warning (14/15)"])
+actionCol = Col("Reorder Action", ["Reorder 50 units", "Reorder 100 units", "Reorder 30 units", "Reorder 20 units", "Reorder 200 units", "Reorder 40 units", "Reorder 35 units", "Reorder 150 units"], "action")
+
+bulkActions = Buttons([reorderAllBtn, exportListBtn])
+reorderAllBtn = Button("Reorder All Low-Stock Items (8)", null, "primary")
+exportListBtn = Button("Export Low-Stock Report", null, "secondary")
+
+followUp = FollowUpBlock([suggest1, suggest2, suggest3])
+suggest1 = FollowUpItem("Change warning threshold from 15 units")
+suggest2 = FollowUpItem("View automated purchase order history")
+suggest3 = FollowUpItem("Show out-of-stock items only")

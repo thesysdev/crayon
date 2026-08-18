@@ -1,0 +1,317 @@
+Low-inventory warning screen with live search, threshold context, and per-item reorder:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "thresholdCallout",
+          "searchFormCard",
+          "tableCard",
+          "chartCard",
+          "quickReorderCard",
+          "footerHelp"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Low Inventory Warning",
+        "subtitle": "6 items need attention • Last checked today 9:42 AM"
+      },
+      {
+        "id": "thresholdCallout",
+        "component": "TextCallout",
+        "variant": "warning",
+        "title": "Warning threshold: ≤ 10 units",
+        "description": "Any item at or below 10 units remaining automatically appears in this view. Restock soon to avoid stockouts."
+      },
+      {
+        "id": "searchFormCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "searchForm"
+        ]
+      },
+      {
+        "id": "searchForm",
+        "component": "Form",
+        "name": "low-stock-search",
+        "buttons": "searchButtons",
+        "fields": [
+          "searchField"
+        ]
+      },
+      {
+        "id": "searchField",
+        "component": "FormControl",
+        "label": "Search low-stock items",
+        "hint": "Filter by product name or SKU",
+        "input": "searchInput"
+      },
+      {
+        "id": "searchInput",
+        "component": "Input",
+        "name": "query",
+        "placeholder": "Search items — e.g. 'Milk' or 'DAI-042'"
+      },
+      {
+        "id": "searchButtons",
+        "component": "Buttons",
+        "buttons": [
+          "searchBtn",
+          "clearBtn"
+        ]
+      },
+      {
+        "id": "searchBtn",
+        "component": "Button",
+        "label": "Search",
+        "variant": "primary"
+      },
+      {
+        "id": "clearBtn",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "secondary"
+      },
+      {
+        "id": "tableCard",
+        "component": "Card",
+        "children": [
+          "tableHeader",
+          "inventoryTable",
+          "tableHint"
+        ]
+      },
+      {
+        "id": "tableHeader",
+        "component": "CardHeader",
+        "title": "Items running low",
+        "subtitle": "Remaining units for each item — sorted by most urgent"
+      },
+      {
+        "id": "inventoryTable",
+        "component": "Table",
+        "columns": [
+          "colProduct",
+          "colSku",
+          "colRemaining",
+          "colThreshold",
+          "colStatus"
+        ]
+      },
+      {
+        "id": "colProduct",
+        "component": "Col",
+        "label": "Product",
+        "data": [
+          "Sourdough Loaf",
+          "Free-Range Eggs 12pk",
+          "Organic Whole Milk",
+          "Cold Brew Concentrate",
+          "Almond Butter 16oz",
+          "Avocado Hass"
+        ]
+      },
+      {
+        "id": "colSku",
+        "component": "Col",
+        "label": "SKU",
+        "data": [
+          "BAK-118",
+          "DAI-089",
+          "DAI-042",
+          "BEV-057",
+          "PAN-311",
+          "PRO-203"
+        ]
+      },
+      {
+        "id": "colRemaining",
+        "component": "Col",
+        "label": "Remaining",
+        "type": "number",
+        "data": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "id": "colThreshold",
+        "component": "Col",
+        "label": "Threshold",
+        "type": "number",
+        "data": [
+          10,
+          10,
+          10,
+          10,
+          10,
+          10
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Critical",
+          "Critical",
+          "Critical",
+          "Low",
+          "Low",
+          "Low"
+        ]
+      },
+      {
+        "id": "tableHint",
+        "component": "TextContent",
+        "text": "Tip: Use the search above to filter this table. Use the reorder buttons below to restock any item instantly.",
+        "size": "small"
+      },
+      {
+        "id": "chartCard",
+        "component": "Card",
+        "variant": "clear",
+        "children": [
+          "chartHeader",
+          "remainingChart"
+        ]
+      },
+      {
+        "id": "chartHeader",
+        "component": "CardHeader",
+        "title": "Stock vs. threshold",
+        "subtitle": "Visual gap to 10-unit warning line"
+      },
+      {
+        "id": "remainingChart",
+        "component": "HorizontalBarChart",
+        "labels": [
+          "Sourdough Loaf",
+          "Eggs 12pk",
+          "Whole Milk",
+          "Cold Brew",
+          "Almond Butter",
+          "Avocado"
+        ],
+        "series": [
+          "seriesRemaining"
+        ],
+        "variant": "grouped",
+        "xLabel": "Units remaining",
+        "yLabel": "Product"
+      },
+      {
+        "id": "seriesRemaining",
+        "component": "Series",
+        "category": "Units left",
+        "values": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "id": "quickReorderCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "reorderHeader",
+          "reorderButtons",
+          "reorderHint"
+        ]
+      },
+      {
+        "id": "reorderHeader",
+        "component": "CardHeader",
+        "title": "Reorder each item",
+        "subtitle": "One tap to create a purchase order — quantity defaults to restock to 30 units"
+      },
+      {
+        "id": "reorderButtons",
+        "component": "Buttons",
+        "buttons": [
+          "btnBread",
+          "btnEggs",
+          "btnMilk",
+          "btnBrew",
+          "btnButter",
+          "btnAvocado"
+        ]
+      },
+      {
+        "id": "btnBread",
+        "component": "Button",
+        "label": "Reorder Sourdough — 2 left"
+      },
+      {
+        "id": "btnEggs",
+        "component": "Button",
+        "label": "Reorder Eggs — 3 left"
+      },
+      {
+        "id": "btnMilk",
+        "component": "Button",
+        "label": "Reorder Milk — 4 left"
+      },
+      {
+        "id": "btnBrew",
+        "component": "Button",
+        "label": "Reorder Cold Brew — 5 left",
+        "variant": "secondary"
+      },
+      {
+        "id": "btnButter",
+        "component": "Button",
+        "label": "Reorder Almond Butter — 6 left",
+        "variant": "secondary"
+      },
+      {
+        "id": "btnAvocado",
+        "component": "Button",
+        "label": "Reorder Avocado — 7 left",
+        "variant": "secondary"
+      },
+      {
+        "id": "reorderHint",
+        "component": "TextContent",
+        "text": "Reorder actions are per-item. Orders are drafted as pending and require manager approval.",
+        "size": "small"
+      },
+      {
+        "id": "footerHelp",
+        "component": "Alert",
+        "title": "Threshold setting",
+        "description": "Current threshold is 10 units for all categories. To change it, go to Settings → Inventory → Low-stock threshold.",
+        "variant": "info"
+      }
+    ]
+  }
+}
+</a2ui-json>

@@ -1,0 +1,312 @@
+
+
+Here's a single-screen personal budget check covering all five items: a budget-usage bar with summary (1), a donut chart for category split (2), a highlighted alert for the largest expense (3), a month selector (4), and an "Add expense" dialog with a full entry form (5).
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "header",
+          "monthField",
+          "budgetBar",
+          "budgetText",
+          "budgetBadge",
+          "divider",
+          "catHeading",
+          "categoryChart",
+          "largestAlert",
+          "addExpense"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Personal Budget Check",
+        "subtitle": "Your spending against your monthly budget"
+      },
+      {
+        "id": "monthField",
+        "component": "FormControl",
+        "label": "Viewing month",
+        "input": "monthSelect",
+        "hint": "Switch to review a different month"
+      },
+      {
+        "id": "budgetBar",
+        "component": "SingleStackedBarChart",
+        "labels": [
+          "Spent",
+          "Remaining"
+        ],
+        "values": [
+          2340,
+          660
+        ]
+      },
+      {
+        "id": "budgetText",
+        "component": "TextContent",
+        "text": "**$2,340** spent of **$3,000** budget · **$660** remaining this month"
+      },
+      {
+        "id": "budgetBadge",
+        "component": "Badge",
+        "text": "78% of budget used",
+        "variant": "secondary"
+      },
+      {
+        "id": "divider",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "catHeading",
+        "component": "Heading",
+        "text": "Spending by category",
+        "level": "h3"
+      },
+      {
+        "id": "categoryChart",
+        "component": "PieChart",
+        "variant": "donut",
+        "labels": [
+          "Housing",
+          "Groceries",
+          "Transport",
+          "Dining",
+          "Entertainment"
+        ],
+        "values": [
+          1200,
+          480,
+          260,
+          220,
+          180
+        ]
+      },
+      {
+        "id": "largestAlert",
+        "component": "Alert",
+        "variant": "warning",
+        "title": "Largest expense: Rent — $1,200",
+        "description": "Housing · Jun 1 · 51% of everything you spent this month"
+      },
+      {
+        "id": "addExpense",
+        "component": "DialogBlock",
+        "triggerLabel": "Add expense",
+        "triggerVariant": "default",
+        "title": "Add an expense",
+        "description": "Log a new expense for the month you are viewing.",
+        "content": [
+          "expenseForm"
+        ]
+      },
+      {
+        "id": "monthSelect",
+        "component": "Select",
+        "name": "month",
+        "value": "2025-06",
+        "placeholder": "Select a month",
+        "items": [
+          "mJan",
+          "mFeb",
+          "mMar",
+          "mApr",
+          "mMay",
+          "mJun"
+        ]
+      },
+      {
+        "id": "mJan",
+        "component": "SelectItem",
+        "value": "2025-01",
+        "label": "January 2025"
+      },
+      {
+        "id": "mFeb",
+        "component": "SelectItem",
+        "value": "2025-02",
+        "label": "February 2025"
+      },
+      {
+        "id": "mMar",
+        "component": "SelectItem",
+        "value": "2025-03",
+        "label": "March 2025"
+      },
+      {
+        "id": "mApr",
+        "component": "SelectItem",
+        "value": "2025-04",
+        "label": "April 2025"
+      },
+      {
+        "id": "mMay",
+        "component": "SelectItem",
+        "value": "2025-05",
+        "label": "May 2025"
+      },
+      {
+        "id": "mJun",
+        "component": "SelectItem",
+        "value": "2025-06",
+        "label": "June 2025"
+      },
+      {
+        "id": "expenseForm",
+        "component": "Form",
+        "name": "add-expense",
+        "buttons": "formButtons",
+        "fields": [
+          "amountField",
+          "categoryField",
+          "dateField",
+          "noteField"
+        ]
+      },
+      {
+        "id": "amountField",
+        "component": "FormControl",
+        "label": "Amount",
+        "input": "amountInput"
+      },
+      {
+        "id": "amountInput",
+        "component": "Input",
+        "name": "amount",
+        "type": "number",
+        "placeholder": "0.00"
+      },
+      {
+        "id": "categoryField",
+        "component": "FormControl",
+        "label": "Category",
+        "input": "categorySelect"
+      },
+      {
+        "id": "categorySelect",
+        "component": "Select",
+        "name": "category",
+        "placeholder": "Choose a category",
+        "items": [
+          "cHousing",
+          "cGroceries",
+          "cTransport",
+          "cDining",
+          "cEntertainment",
+          "cOther"
+        ]
+      },
+      {
+        "id": "cHousing",
+        "component": "SelectItem",
+        "value": "housing",
+        "label": "Housing"
+      },
+      {
+        "id": "cGroceries",
+        "component": "SelectItem",
+        "value": "groceries",
+        "label": "Groceries"
+      },
+      {
+        "id": "cTransport",
+        "component": "SelectItem",
+        "value": "transport",
+        "label": "Transport"
+      },
+      {
+        "id": "cDining",
+        "component": "SelectItem",
+        "value": "dining",
+        "label": "Dining"
+      },
+      {
+        "id": "cEntertainment",
+        "component": "SelectItem",
+        "value": "entertainment",
+        "label": "Entertainment"
+      },
+      {
+        "id": "cOther",
+        "component": "SelectItem",
+        "value": "other",
+        "label": "Other"
+      },
+      {
+        "id": "dateField",
+        "component": "FormControl",
+        "label": "Date",
+        "input": "dateInput"
+      },
+      {
+        "id": "dateInput",
+        "component": "DatePicker",
+        "name": "date",
+        "mode": "single"
+      },
+      {
+        "id": "noteField",
+        "component": "FormControl",
+        "label": "Description",
+        "input": "noteInput"
+      },
+      {
+        "id": "noteInput",
+        "component": "Input",
+        "name": "description",
+        "type": "text",
+        "placeholder": "e.g., Weekly groceries"
+      },
+      {
+        "id": "formButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitBtn",
+          "cancelBtn"
+        ]
+      },
+      {
+        "id": "submitBtn",
+        "component": "Button",
+        "label": "Save expense",
+        "variant": "primary"
+      },
+      {
+        "id": "cancelBtn",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+How each requirement is covered:
+
+1. **Total spent vs. budget** — the stacked bar shows $2,340 spent against $660 remaining, with a text summary and a "78% of budget used" badge.
+2. **Category split** — a donut chart breaks spending into Housing, Groceries, Transport, Dining, and Entertainment.
+3. **Largest expense** — a warning alert highlights Rent at $1,200, including its share of total spending.
+4. **Different month** — the "Viewing month" dropdown lets you switch between months of 2025.
+5. **Add an expense** — the "Add expense" button opens a dialog with a form for amount, category, date, and description.

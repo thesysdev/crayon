@@ -1,0 +1,72 @@
+root = Card([header, sep1, metricsRow, sep2, mainTabs, followUp])
+
+header = CardHeader("Async Standup", "Thursday, October 24, 2024")
+
+sep1 = Separator("horizontal", true)
+
+metricsRow = Card([blockerAlert, missingCallout], "clear", "row", "m", "center", "between")
+
+blockerAlert = Callout("error", "1 Teammate Blocked", "Alex Rivera requires help with DB migrations before the release.")
+
+missingCallout = TextCallout("warning", "3 Updates Missing", "3 of 8 team members have not submitted their standup yet.")
+
+sep2 = Separator("horizontal", true)
+
+mainTabs = Tabs([updatesTab, postTab, summaryTab])
+
+updatesTab = TabItem("updates", "Team Updates (5/8)", [updatesList])
+
+updatesList = ListBlock([item1, item2, item3, item4, item5])
+
+item1 = ListItem("Alex Rivera — Lead Backend", "BLOCKED: Database migration script failing on staging cluster. Need DevOps review.", [alexAvatar], "Offer Help")
+alexAvatar = Avatar("https://picsum.photos/seed/alex/100/100", "Alex Rivera", "AR")
+
+item2 = ListItem("Sarah Chen — Frontend Engineer", "Completed user profile UI. Today: Integrating GraphQL subscriptions for real-time chat.", [sarahAvatar])
+sarahAvatar = Avatar("https://picsum.photos/seed/sarah/100/100", "Sarah Chen", "SC")
+
+item3 = ListItem("Marcus Vance — Product Designer", "Finished Figma prototypes for checkout v2. Today: User testing interviews (3 scheduled).", [marcusAvatar])
+marcusAvatar = Avatar("https://picsum.photos/seed/marcus/100/100", "Marcus Vance", "MV")
+
+item4 = ListItem("Elena Rostova — QA Automation", "E2E test suite green. Today: Writing regression tests for auth edge cases.", [elenaAvatar])
+elenaAvatar = Avatar("https://picsum.photos/seed/elena/100/100", "Elena Rostova", "ER")
+
+item5 = ListItem("David Kim — DevOps Engineer", "Upgraded Kubernetes cluster to v1.28. Today: Investigating Alex's DB migration blocker.", [davidAvatar])
+davidAvatar = Avatar("https://picsum.photos/seed/david/100/100", "David Kim", "DK")
+
+postTab = TabItem("post", "Post Your Update", [postForm])
+
+postForm = Form("standup-entry", formButtons, [yesterdayField, todayField, blockersField, statusSelectField])
+
+yesterdayField = FormControl("What did you accomplish yesterday?", yesterdayInput)
+yesterdayInput = TextArea("yesterday", "Merged pull request for user onboarding flow...", 3)
+
+todayField = FormControl("What will you work on today?", todayInput)
+todayInput = TextArea("today", "Plan to implement dark mode toggle and review PRs...", 3)
+
+blockersField = FormControl("Are you blocked by anything?", blockersInput, "Leave blank if you have no blockers")
+blockersInput = Input("blockers", "e.g., Waiting on API specs from backend team")
+
+statusSelectField = FormControl("Current Work Status", statusRadio)
+statusRadio = RadioGroup("work_status", [statusClear, statusBlocked], "clear")
+statusClear = RadioItem("Clear / On Track", "Everything is moving smoothly", "clear")
+statusBlocked = RadioItem("Blocked", "I need attention/help from team members", "blocked")
+
+formButtons = Buttons([submitBtn, draftBtn])
+submitBtn = Button("Submit Standup Update", null, "primary")
+draftBtn = Button("Save as Draft", null, "secondary")
+
+summaryTab = TabItem("summary", "Missing Updates (3)", [missingList])
+
+missingList = ListBlock([missing1, missing2, missing3])
+missing1 = ListItem("Jessica Taylor — Mobile Engineer", "No update submitted today", [jessicaAvatar], "Nudge")
+jessicaAvatar = Avatar("https://picsum.photos/seed/jessica/100/100", "Jessica Taylor", "JT")
+
+missing2 = ListItem("Tom Harper — Product Manager", "No update submitted today", [tomAvatar], "Nudge")
+tomAvatar = Avatar("https://picsum.photos/seed/tom/100/100", "Tom Harper", "TH")
+
+missing3 = ListItem("Priya Patel — Data Analyst", "No update submitted today", [priyaAvatar], "Nudge")
+priyaAvatar = Avatar("https://picsum.photos/seed/priya/100/100", "Priya Patel", "PP")
+
+followUp = FollowUpBlock([f1, f2])
+f1 = FollowUpItem("Nudge all missing teammates")
+f2 = FollowUpItem("View yesterday's standup summary")

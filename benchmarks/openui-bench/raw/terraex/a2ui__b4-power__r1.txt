@@ -1,0 +1,772 @@
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#0F766E",
+      "agentDisplayName": "Grid Operations Console"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "variant": "clear",
+        "gap": "l",
+        "children": [
+          "header",
+          "liveAlert",
+          "controls",
+          "overview",
+          "generationSection",
+          "plantsSection",
+          "outagesSection",
+          "forecastSection",
+          "maintenanceSection",
+          "emissionsSection",
+          "curtailmentSection"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Power Network Operations",
+        "subtitle": "Live system view • Updated 14:32 local time"
+      },
+      {
+        "id": "liveAlert",
+        "component": "Alert",
+        "title": "Live alert: North transmission constraint",
+        "description": "Line N-17 is operating at 92% thermal limit. Dispatch teams are monitoring conditions.",
+        "variant": "warning"
+      },
+      {
+        "id": "controls",
+        "component": "Card",
+        "direction": "row",
+        "align": "end",
+        "gap": "m",
+        "children": [
+          "regionControl",
+          "refreshButton"
+        ]
+      },
+      {
+        "id": "regionControl",
+        "component": "FormControl",
+        "label": "Focus region",
+        "input": "regionSelect",
+        "hint": "Filter operational details by region"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region",
+        "placeholder": "All regions",
+        "items": [
+          "allRegions",
+          "northRegion",
+          "centralRegion",
+          "southRegion",
+          "coastalRegion"
+        ]
+      },
+      {
+        "id": "allRegions",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All regions"
+      },
+      {
+        "id": "northRegion",
+        "component": "SelectItem",
+        "value": "north",
+        "label": "North"
+      },
+      {
+        "id": "centralRegion",
+        "component": "SelectItem",
+        "value": "central",
+        "label": "Central"
+      },
+      {
+        "id": "southRegion",
+        "component": "SelectItem",
+        "value": "south",
+        "label": "South"
+      },
+      {
+        "id": "coastalRegion",
+        "component": "SelectItem",
+        "value": "coastal",
+        "label": "Coastal"
+      },
+      {
+        "id": "refreshButton",
+        "component": "Button",
+        "label": "Refresh live data",
+        "variant": "secondary"
+      },
+      {
+        "id": "overview",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "loadKpi",
+          "capacityKpi",
+          "priceKpi"
+        ]
+      },
+      {
+        "id": "loadKpi",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "s",
+        "children": [
+          "loadTitle",
+          "loadValue",
+          "loadDetail"
+        ]
+      },
+      {
+        "id": "loadTitle",
+        "component": "TextContent",
+        "text": "Current network load",
+        "size": "small"
+      },
+      {
+        "id": "loadValue",
+        "component": "Heading",
+        "text": "38.4 GW",
+        "level": "h2"
+      },
+      {
+        "id": "loadDetail",
+        "component": "TextContent",
+        "text": "Up 1.8% from the prior hour",
+        "size": "small"
+      },
+      {
+        "id": "capacityKpi",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "s",
+        "children": [
+          "capacityTitle",
+          "capacityValue",
+          "capacityProgress"
+        ]
+      },
+      {
+        "id": "capacityTitle",
+        "component": "TextContent",
+        "text": "Network capacity utilization",
+        "size": "small"
+      },
+      {
+        "id": "capacityValue",
+        "component": "Heading",
+        "text": "84%",
+        "level": "h2"
+      },
+      {
+        "id": "capacityProgress",
+        "component": "Progress",
+        "value": 84,
+        "label": "38.4 GW of 45.7 GW available capacity"
+      },
+      {
+        "id": "priceKpi",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "s",
+        "children": [
+          "priceTitle",
+          "priceValue",
+          "priceDetail"
+        ]
+      },
+      {
+        "id": "priceTitle",
+        "component": "TextContent",
+        "text": "Current wholesale price",
+        "size": "small"
+      },
+      {
+        "id": "priceValue",
+        "component": "Heading",
+        "text": "$86.40/MWh",
+        "level": "h2"
+      },
+      {
+        "id": "priceDetail",
+        "component": "TextContent",
+        "text": "Day-ahead reference: $79.10/MWh",
+        "size": "small"
+      },
+      {
+        "id": "generationSection",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "generationHeader",
+          "generationSplit"
+        ]
+      },
+      {
+        "id": "generationHeader",
+        "component": "CardHeader",
+        "title": "Generation split by source",
+        "subtitle": "Total dispatched generation: 39.1 GW"
+      },
+      {
+        "id": "generationSplit",
+        "component": "PieChart",
+        "labels": [
+          "Natural gas",
+          "Wind",
+          "Solar",
+          "Nuclear",
+          "Hydro",
+          "Coal",
+          "Battery"
+        ],
+        "values": [
+          14.2,
+          8.1,
+          5.6,
+          4.8,
+          3.2,
+          2.1,
+          1.1
+        ],
+        "variant": "donut",
+        "appearance": "circular"
+      },
+      {
+        "id": "plantsSection",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "plantsHeader",
+          "plantsTable"
+        ]
+      },
+      {
+        "id": "plantsHeader",
+        "component": "CardHeader",
+        "title": "Plant dispatch",
+        "subtitle": "Current output and operating status"
+      },
+      {
+        "id": "plantsTable",
+        "component": "Table",
+        "columns": [
+          "plantNameCol",
+          "plantRegionCol",
+          "plantSourceCol",
+          "plantOutputCol",
+          "plantStatusCol"
+        ]
+      },
+      {
+        "id": "plantNameCol",
+        "component": "Col",
+        "label": "Plant",
+        "data": [
+          "Riverside CCGT",
+          "North Ridge Wind",
+          "Canyon Solar",
+          "Lakeview Nuclear",
+          "Eastbank Hydro",
+          "Harbor Battery"
+        ]
+      },
+      {
+        "id": "plantRegionCol",
+        "component": "Col",
+        "label": "Region",
+        "data": [
+          "Central",
+          "North",
+          "South",
+          "Central",
+          "Coastal",
+          "Coastal"
+        ]
+      },
+      {
+        "id": "plantSourceCol",
+        "component": "Col",
+        "label": "Source",
+        "data": [
+          "Natural gas",
+          "Wind",
+          "Solar",
+          "Nuclear",
+          "Hydro",
+          "Battery"
+        ]
+      },
+      {
+        "id": "plantOutputCol",
+        "component": "Col",
+        "label": "Output",
+        "data": [
+          "1,240 MW",
+          "684 MW",
+          "412 MW",
+          "1,180 MW",
+          "560 MW",
+          "180 MW"
+        ]
+      },
+      {
+        "id": "plantStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Online",
+          "Online",
+          "Derated",
+          "Online",
+          "Online",
+          "Charging"
+        ]
+      },
+      {
+        "id": "outagesSection",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "outagesHeader",
+          "outagesTable"
+        ]
+      },
+      {
+        "id": "outagesHeader",
+        "component": "CardHeader",
+        "title": "Active outages",
+        "subtitle": "Current incidents and affected regions"
+      },
+      {
+        "id": "outagesTable",
+        "component": "Table",
+        "columns": [
+          "outageAssetCol",
+          "outageRegionCol",
+          "outageImpactCol",
+          "outageStatusCol",
+          "outageEtaCol"
+        ]
+      },
+      {
+        "id": "outageAssetCol",
+        "component": "Col",
+        "label": "Asset / incident",
+        "data": [
+          "Northline 500 kV N-17",
+          "South Valley Unit 3",
+          "Coastal Substation C-4"
+        ]
+      },
+      {
+        "id": "outageRegionCol",
+        "component": "Col",
+        "label": "Affected region",
+        "data": [
+          "North",
+          "South",
+          "Coastal"
+        ]
+      },
+      {
+        "id": "outageImpactCol",
+        "component": "Col",
+        "label": "Impact",
+        "data": [
+          "420 MW transfer limit",
+          "310 MW unavailable",
+          "18,000 customers on backup feed"
+        ]
+      },
+      {
+        "id": "outageStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Investigating",
+          "Repair in progress",
+          "Crew dispatched"
+        ]
+      },
+      {
+        "id": "outageEtaCol",
+        "component": "Col",
+        "label": "Estimated restoration",
+        "data": [
+          "18:30",
+          "Tomorrow 05:00",
+          "16:15"
+        ]
+      },
+      {
+        "id": "forecastSection",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "forecastHeader",
+          "demandForecast",
+          "forecastNote"
+        ]
+      },
+      {
+        "id": "forecastHeader",
+        "component": "CardHeader",
+        "title": "24-hour demand forecast",
+        "subtitle": "Forecast peak: 42.6 GW at 19:00"
+      },
+      {
+        "id": "demandForecast",
+        "component": "AreaChart",
+        "labels": [
+          "15:00",
+          "17:00",
+          "19:00",
+          "21:00",
+          "23:00",
+          "01:00",
+          "03:00",
+          "05:00",
+          "07:00",
+          "09:00",
+          "11:00",
+          "13:00"
+        ],
+        "series": [
+          "forecastSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Local time",
+        "yLabel": "Demand (GW)"
+      },
+      {
+        "id": "forecastSeries",
+        "component": "Series",
+        "category": "Forecast demand",
+        "values": [
+          38.8,
+          40.9,
+          42.6,
+          41.2,
+          36.7,
+          32.4,
+          30.8,
+          31.6,
+          35.9,
+          39.3,
+          40.1,
+          39.0
+        ]
+      },
+      {
+        "id": "forecastNote",
+        "component": "TextCallout",
+        "variant": "info",
+        "title": "Reserve outlook",
+        "description": "Projected operating reserve remains above 12% through the evening peak, assuming scheduled imports remain available."
+      },
+      {
+        "id": "maintenanceSection",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "maintenanceHeader",
+          "maintenanceList"
+        ]
+      },
+      {
+        "id": "maintenanceHeader",
+        "component": "CardHeader",
+        "title": "Planned maintenance this month",
+        "subtitle": "Scheduled work with expected system impact"
+      },
+      {
+        "id": "maintenanceList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "maintenanceOne",
+          "maintenanceTwo",
+          "maintenanceThree"
+        ]
+      },
+      {
+        "id": "maintenanceOne",
+        "component": "ListItem",
+        "title": "Aug 21–22 • Central 230 kV transformer inspection",
+        "subtitle": "Expected transfer reduction: 180 MW • Central region"
+      },
+      {
+        "id": "maintenanceTwo",
+        "component": "ListItem",
+        "title": "Aug 25 • North Ridge Wind turbine servicing",
+        "subtitle": "Expected generation reduction: 240 MW • North region"
+      },
+      {
+        "id": "maintenanceThree",
+        "component": "ListItem",
+        "title": "Aug 29–31 • Eastbank Hydro spillway maintenance",
+        "subtitle": "Expected generation reduction: 150 MW • Coastal region"
+      },
+      {
+        "id": "emissionsSection",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "emissionsSummary",
+          "emissionsChart"
+        ]
+      },
+      {
+        "id": "emissionsSummary",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "s",
+        "children": [
+          "emissionsHeader",
+          "emissionsValue",
+          "emissionsDetail",
+          "emissionsTag"
+        ]
+      },
+      {
+        "id": "emissionsHeader",
+        "component": "TextContent",
+        "text": "Emissions today",
+        "size": "small"
+      },
+      {
+        "id": "emissionsValue",
+        "component": "Heading",
+        "text": "18,420 tCO₂e",
+        "level": "h2"
+      },
+      {
+        "id": "emissionsDetail",
+        "component": "TextContent",
+        "text": "Average carbon intensity: 286 gCO₂e/kWh",
+        "size": "small"
+      },
+      {
+        "id": "emissionsTag",
+        "component": "Tag",
+        "text": "6% below daily baseline",
+        "variant": "success"
+      },
+      {
+        "id": "emissionsChart",
+        "component": "BarChart",
+        "labels": [
+          "Gas",
+          "Coal",
+          "Other"
+        ],
+        "series": [
+          "emissionsSeries"
+        ],
+        "variant": "stacked",
+        "xLabel": "Generation source",
+        "yLabel": "tCO₂e"
+      },
+      {
+        "id": "emissionsSeries",
+        "component": "Series",
+        "category": "Today's emissions",
+        "values": [
+          11940,
+          6150,
+          330
+        ]
+      },
+      {
+        "id": "curtailmentSection",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "curtailmentHeader",
+          "curtailmentAlert",
+          "curtailmentForm"
+        ]
+      },
+      {
+        "id": "curtailmentHeader",
+        "component": "CardHeader",
+        "title": "Curtailment order",
+        "subtitle": "Issue a controlled demand reduction instruction"
+      },
+      {
+        "id": "curtailmentAlert",
+        "component": "Alert",
+        "title": "Operator authorization required",
+        "description": "Curtailment orders affect participating customers and must be issued only when operational criteria are met.",
+        "variant": "info"
+      },
+      {
+        "id": "curtailmentForm",
+        "component": "Form",
+        "name": "curtailment-order",
+        "fields": [
+          "curtailmentRegionField",
+          "curtailmentAmountField",
+          "curtailmentDurationField",
+          "curtailmentReasonField"
+        ],
+        "buttons": "curtailmentButtons"
+      },
+      {
+        "id": "curtailmentRegionField",
+        "component": "FormControl",
+        "label": "Target region",
+        "input": "curtailmentRegionSelect"
+      },
+      {
+        "id": "curtailmentRegionSelect",
+        "component": "Select",
+        "name": "curtailment_region",
+        "placeholder": "Choose a region",
+        "items": [
+          "curtailNorth",
+          "curtailCentral",
+          "curtailSouth",
+          "curtailCoastal"
+        ]
+      },
+      {
+        "id": "curtailNorth",
+        "component": "SelectItem",
+        "value": "north",
+        "label": "North"
+      },
+      {
+        "id": "curtailCentral",
+        "component": "SelectItem",
+        "value": "central",
+        "label": "Central"
+      },
+      {
+        "id": "curtailSouth",
+        "component": "SelectItem",
+        "value": "south",
+        "label": "South"
+      },
+      {
+        "id": "curtailCoastal",
+        "component": "SelectItem",
+        "value": "coastal",
+        "label": "Coastal"
+      },
+      {
+        "id": "curtailmentAmountField",
+        "component": "FormControl",
+        "label": "Requested reduction (MW)",
+        "input": "curtailmentAmountInput"
+      },
+      {
+        "id": "curtailmentAmountInput",
+        "component": "Input",
+        "name": "curtailment_mw",
+        "type": "number",
+        "placeholder": "e.g. 250"
+      },
+      {
+        "id": "curtailmentDurationField",
+        "component": "FormControl",
+        "label": "Duration",
+        "input": "curtailmentDurationSelect"
+      },
+      {
+        "id": "curtailmentDurationSelect",
+        "component": "Select",
+        "name": "curtailment_duration",
+        "placeholder": "Choose duration",
+        "items": [
+          "duration30",
+          "duration60",
+          "duration120",
+          "durationPeak"
+        ]
+      },
+      {
+        "id": "duration30",
+        "component": "SelectItem",
+        "value": "30",
+        "label": "30 minutes"
+      },
+      {
+        "id": "duration60",
+        "component": "SelectItem",
+        "value": "60",
+        "label": "1 hour"
+      },
+      {
+        "id": "duration120",
+        "component": "SelectItem",
+        "value": "120",
+        "label": "2 hours"
+      },
+      {
+        "id": "durationPeak",
+        "component": "SelectItem",
+        "value": "peak",
+        "label": "Until peak period ends"
+      },
+      {
+        "id": "curtailmentReasonField",
+        "component": "FormControl",
+        "label": "Operational reason",
+        "input": "curtailmentReasonInput"
+      },
+      {
+        "id": "curtailmentReasonInput",
+        "component": "TextArea",
+        "name": "curtailment_reason",
+        "placeholder": "Describe the grid condition and dispatch rationale",
+        "rows": 3
+      },
+      {
+        "id": "curtailmentButtons",
+        "component": "Buttons",
+        "buttons": [
+          "reviewCurtailmentButton",
+          "cancelCurtailmentButton"
+        ]
+      },
+      {
+        "id": "reviewCurtailmentButton",
+        "component": "Button",
+        "label": "Review curtailment order",
+        "variant": "primary"
+      },
+      {
+        "id": "cancelCurtailmentButton",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>

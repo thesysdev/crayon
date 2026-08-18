@@ -1,0 +1,466 @@
+Here's a power network operations console covering all 12 items:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "liveAlerts",
+          "kpiTable",
+          "capacityProgress",
+          "genSplit",
+          "forecast",
+          "plants",
+          "outages",
+          "maintenance",
+          "regionFocus",
+          "curtailment",
+          "emissions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Power Network Operations Console",
+        "subtitle": "Grid status — live feed, updated 30s ago"
+      },
+      {
+        "id": "liveAlerts",
+        "component": "Alert",
+        "title": "LIVE ALERT: Frequency deviation on North feeder",
+        "description": "49.82 Hz at 14:32 — North region. Load shedding stage 1 armed. (9) New alerts stream here as they arrive.",
+        "variant": "warning"
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": [
+          "kpiName",
+          "kpiValue"
+        ]
+      },
+      {
+        "id": "kpiName",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "(1) Current network load",
+          "(7) Price per MWh",
+          "(2) Capacity utilization",
+          "(12) Emissions today"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "18,420 MW",
+          "$84.60 /MWh",
+          "82% of 22,500 MW",
+          "41,200 t CO₂e"
+        ]
+      },
+      {
+        "id": "capacityProgress",
+        "component": "Progress",
+        "value": 82,
+        "label": "(2) Network capacity: 18,420 / 22,500 MW (82%) — headroom 4,080 MW"
+      },
+      {
+        "id": "genSplit",
+        "component": "PieChart",
+        "labels": [
+          "Gas",
+          "Wind",
+          "Solar",
+          "Nuclear",
+          "Hydro",
+          "Coal"
+        ],
+        "values": [
+          6800,
+          4200,
+          2100,
+          3900,
+          950,
+          470
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "forecast",
+        "component": "LineChart",
+        "labels": [
+          "00",
+          "02",
+          "04",
+          "06",
+          "08",
+          "10",
+          "12",
+          "14",
+          "16",
+          "18",
+          "20",
+          "22"
+        ],
+        "series": [
+          "forecastSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "(6) Next 24 hours",
+        "yLabel": "Demand (MW)"
+      },
+      {
+        "id": "forecastSeries",
+        "component": "Series",
+        "category": "Forecast demand",
+        "values": [
+          14200,
+          13100,
+          12800,
+          13900,
+          17200,
+          19100,
+          19800,
+          18400,
+          18900,
+          21300,
+          19600,
+          16100
+        ]
+      },
+      {
+        "id": "plants",
+        "component": "Table",
+        "columns": [
+          "plantName",
+          "plantOutput",
+          "plantStatus"
+        ]
+      },
+      {
+        "id": "plantName",
+        "component": "Col",
+        "label": "(4) Plant",
+        "data": [
+          "Riverside CCGT",
+          "Highland Wind Farm",
+          "Desert Sun Solar",
+          "Corepoint Nuclear",
+          "Lakeside Hydro",
+          "Old Mill Coal"
+        ]
+      },
+      {
+        "id": "plantOutput",
+        "component": "Col",
+        "label": "Output (MW)",
+        "data": [
+          "6,800",
+          "4,200",
+          "2,100",
+          "3,900",
+          "950",
+          "470"
+        ]
+      },
+      {
+        "id": "plantStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Online",
+          "Online",
+          "Online (ramping down)",
+          "Online",
+          "Online",
+          "Standby reserve"
+        ]
+      },
+      {
+        "id": "outages",
+        "component": "Table",
+        "columns": [
+          "outageId",
+          "outageRegion",
+          "outageDetail"
+        ]
+      },
+      {
+        "id": "outageId",
+        "component": "Col",
+        "label": "(5) Outage",
+        "data": [
+          "OUT-2201",
+          "OUT-2202",
+          "OUT-2203"
+        ]
+      },
+      {
+        "id": "outageRegion",
+        "component": "Col",
+        "label": "Affected region",
+        "data": [
+          "North",
+          "East",
+          "South-West"
+        ]
+      },
+      {
+        "id": "outageDetail",
+        "component": "Col",
+        "label": "Detail",
+        "data": [
+          "Feeder fault — 12,400 customers, ETR 16:00",
+          "Transformer trip — 3,100 customers, ETR 15:15",
+          "Line maintenance overrun — 800 customers, ETR 18:30"
+        ]
+      },
+      {
+        "id": "maintenance",
+        "component": "Table",
+        "columns": [
+          "maintDate",
+          "maintAsset",
+          "maintScope"
+        ]
+      },
+      {
+        "id": "maintDate",
+        "component": "Col",
+        "label": "(8) Date",
+        "data": [
+          "Mar 4",
+          "Mar 11",
+          "Mar 18",
+          "Mar 25"
+        ]
+      },
+      {
+        "id": "maintAsset",
+        "component": "Col",
+        "label": "Asset",
+        "data": [
+          "Old Mill Coal",
+          "East 400kV line",
+          "Lakeside Hydro Unit 2",
+          "Riverside CCGT GT-1"
+        ]
+      },
+      {
+        "id": "maintScope",
+        "component": "Col",
+        "label": "Scope",
+        "data": [
+          "Boiler inspection (planned outage)",
+          "Insulator replacement",
+          "Turbine bearing service",
+          "Combustion inspection"
+        ]
+      },
+      {
+        "id": "regionFocus",
+        "component": "Form",
+        "name": "region-focus",
+        "buttons": "regionButtons",
+        "fields": [
+          "regionField"
+        ]
+      },
+      {
+        "id": "regionField",
+        "component": "FormControl",
+        "label": "(10) Focus on a region",
+        "input": "regionSelect"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region",
+        "placeholder": "All regions",
+        "items": [
+          "rNorth",
+          "rSouth",
+          "rEast",
+          "rWest"
+        ]
+      },
+      {
+        "id": "rNorth",
+        "component": "SelectItem",
+        "value": "north",
+        "label": "North"
+      },
+      {
+        "id": "rSouth",
+        "component": "SelectItem",
+        "value": "south",
+        "label": "South"
+      },
+      {
+        "id": "rEast",
+        "component": "SelectItem",
+        "value": "east",
+        "label": "East"
+      },
+      {
+        "id": "rWest",
+        "component": "SelectItem",
+        "value": "west",
+        "label": "West"
+      },
+      {
+        "id": "regionButtons",
+        "component": "Buttons",
+        "buttons": [
+          "regionApply"
+        ]
+      },
+      {
+        "id": "regionApply",
+        "component": "Button",
+        "label": "Apply focus",
+        "variant": "secondary"
+      },
+      {
+        "id": "curtailment",
+        "component": "Form",
+        "name": "curtailment-order",
+        "buttons": "curtailButtons",
+        "fields": [
+          "curtRegionField",
+          "curtAmountField",
+          "curtReasonField"
+        ]
+      },
+      {
+        "id": "curtRegionField",
+        "component": "FormControl",
+        "label": "(11) Curtailment — target region",
+        "input": "curtRegionSelect"
+      },
+      {
+        "id": "curtRegionSelect",
+        "component": "Select",
+        "name": "curtail_region",
+        "placeholder": "Select region",
+        "items": [
+          "crNorth",
+          "crSouth",
+          "crEast",
+          "crWest"
+        ]
+      },
+      {
+        "id": "crNorth",
+        "component": "SelectItem",
+        "value": "north",
+        "label": "North"
+      },
+      {
+        "id": "crSouth",
+        "component": "SelectItem",
+        "value": "south",
+        "label": "South"
+      },
+      {
+        "id": "crEast",
+        "component": "SelectItem",
+        "value": "east",
+        "label": "East"
+      },
+      {
+        "id": "crWest",
+        "component": "SelectItem",
+        "value": "west",
+        "label": "West"
+      },
+      {
+        "id": "curtAmountField",
+        "component": "FormControl",
+        "label": "Curtailment volume (MW)",
+        "input": "curtAmountInput",
+        "hint": "Max available headroom: 4,080 MW"
+      },
+      {
+        "id": "curtAmountInput",
+        "component": "Input",
+        "name": "curtail_mw",
+        "type": "number",
+        "placeholder": "e.g. 500"
+      },
+      {
+        "id": "curtReasonField",
+        "component": "FormControl",
+        "label": "Reason",
+        "input": "curtReasonInput"
+      },
+      {
+        "id": "curtReasonInput",
+        "component": "Input",
+        "name": "curtail_reason",
+        "placeholder": "e.g. Frequency stabilization"
+      },
+      {
+        "id": "curtailButtons",
+        "component": "Buttons",
+        "buttons": [
+          "curtailSubmit"
+        ]
+      },
+      {
+        "id": "curtailSubmit",
+        "component": "Button",
+        "label": "Issue curtailment order",
+        "variant": "primary",
+        "type": "destructive"
+      },
+      {
+        "id": "emissions",
+        "component": "BarChart",
+        "labels": [
+          "Gas",
+          "Coal",
+          "Other"
+        ],
+        "series": [
+          "emissionsSeries"
+        ],
+        "variant": "stacked",
+        "xLabel": "(12) Emissions today by source (t CO₂e)",
+        "yLabel": "t CO₂e"
+      },
+      {
+        "id": "emissionsSeries",
+        "component": "Series",
+        "category": "Emissions",
+        "values": [
+          27400,
+          12800,
+          1000
+        ]
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+All 12 items are covered: (1) current load and (7) price in the KPI table, (2) capacity proximity via the progress bar, (3) generation split donut, (4) plant output/status table, (5) outages with regions, (6) 24-hour demand forecast line chart, (8) this month's maintenance schedule, (9) live alerts banner, (10) region focus selector, (11) curtailment order form, and (12) today's emissions chart.

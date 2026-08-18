@@ -1,0 +1,35 @@
+root = Card([header, kpis, refundRow, volume, filters, ordersTable, actions])
+header = CardHeader("Operations Desk", "Today's fulfillment snapshot")
+
+kpis = Table([kpiMetric, kpiValue])
+kpiMetric = Col("Metric", ["Orders Today", "Revenue Today", "Avg Order Value"])
+kpiValue = Col("Value", ["342", "$28,540", "$83.45"])
+
+refundRow = Progress(2.4, "Refund rate this month: 2.4%")
+
+volume = BarChart(["Wk 1", "Wk 2", "Wk 3", "Wk 4"], [volumeSeries], "grouped", "Week", "Orders")
+volumeSeries = Series("Orders", [1820, 2010, 1975, 2394])
+
+filters = Form("order-filters", filterButtons, [statusField, searchField])
+statusField = FormControl("Filter by status", statusSelect)
+statusSelect = Select("status", [stAll, stPending, stFulfilled, stRefunded, stCancelled], "All statuses")
+stAll = SelectItem("all", "All")
+stPending = SelectItem("pending", "Pending")
+stFulfilled = SelectItem("fulfilled", "Fulfilled")
+stRefunded = SelectItem("refunded", "Refunded")
+stCancelled = SelectItem("cancelled", "Cancelled")
+searchField = FormControl("Search by customer", searchInput)
+searchInput = Input("customer", "e.g. Jane Smith")
+filterButtons = Buttons([applyBtn, resetBtn])
+applyBtn = Button("Apply", null, "primary")
+resetBtn = Button("Reset", null, "tertiary")
+
+ordersTable = Table([colId, colCustomer, colTotal, colStatus])
+colId = Col("Order ID", ["#10432", "#10431", "#10430", "#10429", "#10428"])
+colCustomer = Col("Customer", ["Jane Smith", "Marcus Lee", "Priya Patel", "Tom Nguyen", "Sara Cohen"])
+colTotal = Col("Total", ["$124.00", "$58.20", "$212.75", "$34.99", "$96.40"], "number")
+colStatus = Col("Status", ["Pending", "Fulfilled", "Pending", "Refunded", "Fulfilled"])
+
+actions = Buttons([fulfillBtn, viewBtn])
+fulfillBtn = Button("Mark order fulfilled", null, "primary")
+viewBtn = Button("Export orders", null, "secondary")

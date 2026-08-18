@@ -1,0 +1,367 @@
+
+
+Here's a full logistics coordinator's board covering all nine requirements:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "refreshNote",
+          "delayAlert",
+          "kpis",
+          "searchSection",
+          "shipmentTable",
+          "flagDialog",
+          "chartsRow",
+          "carrierChart",
+          "volumeChart"
+        ],
+        "direction": "column",
+        "gap": "m"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Logistics Coordinator Board",
+        "subtitle": "Live shipment operations overview"
+      },
+      {
+        "id": "refreshNote",
+        "component": "TextContent",
+        "text": "Last refreshed: 2025-06-14 at 09:42 UTC",
+        "size": "small"
+      },
+      {
+        "id": "delayAlert",
+        "component": "Alert",
+        "title": "3 Delayed Shipments",
+        "description": "SHP-4821 (Chicago → Atlanta) delayed 6 hrs due to weather. SHP-4835 (Dallas → Phoenix) delayed 3 hrs — carrier capacity issue. SHP-4842 (Seattle → Denver) delayed 12 hrs — customs hold.",
+        "variant": "warning"
+      },
+      {
+        "id": "kpis",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "l",
+        "children": [
+          "onTimeKpi",
+          "avgCostKpi"
+        ]
+      },
+      {
+        "id": "onTimeKpi",
+        "component": "Card",
+        "variant": "clear",
+        "children": [
+          "onTimeLabel",
+          "onTimeProgress"
+        ],
+        "direction": "column",
+        "gap": "xs"
+      },
+      {
+        "id": "onTimeLabel",
+        "component": "TextContent",
+        "text": "**On-Time Delivery Rate (June)**",
+        "size": "small"
+      },
+      {
+        "id": "onTimeProgress",
+        "component": "Progress",
+        "value": 87.4,
+        "label": "87.4%"
+      },
+      {
+        "id": "avgCostKpi",
+        "component": "Card",
+        "variant": "clear",
+        "children": [
+          "avgCostLabel",
+          "avgCostValue"
+        ],
+        "direction": "column",
+        "gap": "xs"
+      },
+      {
+        "id": "avgCostLabel",
+        "component": "TextContent",
+        "text": "**Average Cost per Shipment**",
+        "size": "small"
+      },
+      {
+        "id": "avgCostValue",
+        "component": "TextContent",
+        "text": "$1,247",
+        "size": "large-heavy"
+      },
+      {
+        "id": "searchSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "searchForm"
+        ],
+        "direction": "column",
+        "gap": "s"
+      },
+      {
+        "id": "searchForm",
+        "component": "Form",
+        "name": "route-search",
+        "fields": [
+          "routeField"
+        ],
+        "buttons": "searchButtons"
+      },
+      {
+        "id": "routeField",
+        "component": "FormControl",
+        "label": "Search by route",
+        "input": "routeInput",
+        "hint": "Enter origin, destination, or both (e.g. \"Chicago → Atlanta\")"
+      },
+      {
+        "id": "routeInput",
+        "component": "Input",
+        "name": "route",
+        "placeholder": "e.g. Chicago → Atlanta"
+      },
+      {
+        "id": "searchButtons",
+        "component": "Buttons",
+        "buttons": [
+          "searchBtn"
+        ]
+      },
+      {
+        "id": "searchBtn",
+        "component": "Button",
+        "label": "Search",
+        "variant": "primary"
+      },
+      {
+        "id": "shipmentTable",
+        "component": "Table",
+        "columns": [
+          "colId",
+          "colOrigin",
+          "colDest",
+          "colEta",
+          "colStatus"
+        ]
+      },
+      {
+        "id": "colId",
+        "component": "Col",
+        "label": "Shipment",
+        "data": [
+          "SHP-4810",
+          "SHP-4815",
+          "SHP-4821",
+          "SHP-4828",
+          "SHP-4835",
+          "SHP-4842",
+          "SHP-4850"
+        ]
+      },
+      {
+        "id": "colOrigin",
+        "component": "Col",
+        "label": "Origin",
+        "data": [
+          "Los Angeles",
+          "New York",
+          "Chicago",
+          "Houston",
+          "Dallas",
+          "Seattle",
+          "Miami"
+        ]
+      },
+      {
+        "id": "colDest",
+        "component": "Col",
+        "label": "Destination",
+        "data": [
+          "San Francisco",
+          "Boston",
+          "Atlanta",
+          "Nashville",
+          "Phoenix",
+          "Denver",
+          "Charlotte"
+        ]
+      },
+      {
+        "id": "colEta",
+        "component": "Col",
+        "label": "ETA",
+        "data": [
+          "Jun 14, 14:00",
+          "Jun 14, 18:30",
+          "Jun 15, 02:00 ⚠️",
+          "Jun 14, 20:00",
+          "Jun 15, 06:00 ⚠️",
+          "Jun 15, 18:00 ⚠️",
+          "Jun 14, 22:00"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "In Transit",
+          "In Transit",
+          "Delayed",
+          "In Transit",
+          "Delayed",
+          "Delayed",
+          "In Transit"
+        ]
+      },
+      {
+        "id": "flagDialog",
+        "component": "AlertDialogBlock",
+        "triggerLabel": "🚩 Flag a Shipment",
+        "title": "Flag Shipment for Review",
+        "description": "Enter the shipment ID you want to flag. The operations team will be notified immediately.",
+        "confirmLabel": "Flag Shipment",
+        "cancelLabel": "Cancel",
+        "triggerVariant": "destructive"
+      },
+      {
+        "id": "chartsRow",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "l",
+        "children": [
+          "carrierSection",
+          "volumeSection"
+        ]
+      },
+      {
+        "id": "carrierSection",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "carrierTitle",
+          "carrierChart"
+        ]
+      },
+      {
+        "id": "carrierTitle",
+        "component": "TextContent",
+        "text": "**Volume Split by Carrier**",
+        "size": "small"
+      },
+      {
+        "id": "carrierChart",
+        "component": "PieChart",
+        "labels": [
+          "FedEx",
+          "UPS",
+          "DHL",
+          "XPO",
+          "Other"
+        ],
+        "values": [
+          34,
+          28,
+          18,
+          12,
+          8
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "volumeSection",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "volumeTitle",
+          "volumeChart"
+        ]
+      },
+      {
+        "id": "volumeTitle",
+        "component": "TextContent",
+        "text": "**Weekly Shipment Volume (Past 8 Weeks)**",
+        "size": "small"
+      },
+      {
+        "id": "volumeChart",
+        "component": "BarChart",
+        "labels": [
+          "Apr 21",
+          "Apr 28",
+          "May 5",
+          "May 12",
+          "May 19",
+          "May 26",
+          "Jun 2",
+          "Jun 9"
+        ],
+        "series": [
+          "volSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Week",
+        "yLabel": "Shipments"
+      },
+      {
+        "id": "volSeries",
+        "component": "Series",
+        "category": "Shipments",
+        "values": [
+          142,
+          158,
+          165,
+          149,
+          171,
+          183,
+          176,
+          192
+        ]
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This board covers every requirement:
+
+| # | Requirement | Component Used |
+|---|---|---|
+| 1 | Shipments in transit | **Table** with Origin, Destination, ETA, Status columns |
+| 2 | Delayed shipments called out | **Alert** (warning variant) listing all 3 delayed shipments with reasons |
+| 3 | On-time percentage | **Progress** bar showing 87.4% |
+| 4 | Volume split by carrier | **PieChart** (donut) with 5 carriers |
+| 5 | Search by route | **Form** with text input and search button |
+| 6 | Average cost per shipment | **TextContent** displaying $1,247 |
+| 7 | Weekly volume (2 months) | **BarChart** with 8 weeks of data |
+| 8 | Flag a shipment | **AlertDialogBlock** with destructive trigger button |
+| 9 | Last refreshed timestamp | **TextContent** (small) at the top |

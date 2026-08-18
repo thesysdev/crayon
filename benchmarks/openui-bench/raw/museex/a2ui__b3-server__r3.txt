@@ -1,0 +1,664 @@
+On-call health view covering all 8 items — uptime, resource trends, error rate, incidents + severity, region filter, slowest endpoints, threshold control, and incident acknowledgement.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "regionCard",
+          "kpiRow",
+          "resourceCard",
+          "incidentsCard",
+          "endpointsCard",
+          "thresholdCard",
+          "footerSeparator",
+          "followUp"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Service Health — On-Call View",
+        "subtitle": "payments-api • Production • Last refreshed: just now • Q3 2026 (Jul 1 - Sep 30)"
+      },
+      {
+        "id": "regionCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "regionFilterControl",
+          "regionHint"
+        ]
+      },
+      {
+        "id": "regionFilterControl",
+        "component": "FormControl",
+        "label": "5. Narrow to one region",
+        "input": "regionSelect",
+        "hint": "Filters all metrics, charts, and incidents below"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region",
+        "placeholder": "All regions",
+        "items": [
+          "regionAll",
+          "regionUse1",
+          "regionUsw2",
+          "regionEuw1",
+          "regionAps1"
+        ],
+        "value": "regionAll"
+      },
+      {
+        "id": "regionAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All regions (global)"
+      },
+      {
+        "id": "regionUse1",
+        "component": "SelectItem",
+        "value": "us-east-1",
+        "label": "us-east-1 (N. Virginia)"
+      },
+      {
+        "id": "regionUsw2",
+        "component": "SelectItem",
+        "value": "us-west-2",
+        "label": "us-west-2 (Oregon)"
+      },
+      {
+        "id": "regionEuw1",
+        "component": "SelectItem",
+        "value": "eu-west-1",
+        "label": "eu-west-1 (Ireland)"
+      },
+      {
+        "id": "regionAps1",
+        "component": "SelectItem",
+        "value": "ap-southeast-1",
+        "label": "ap-southeast-1 (Singapore)"
+      },
+      {
+        "id": "regionHint",
+        "component": "TextContent",
+        "text": "Currently viewing: **All regions** — switch to isolate a single region's health.",
+        "size": "small"
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "uptimeCard",
+          "errorCard",
+          "sloCard"
+        ]
+      },
+      {
+        "id": "uptimeCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "uptimeHeader",
+          "uptimeValue",
+          "uptimeProgress",
+          "uptimeBadge"
+        ]
+      },
+      {
+        "id": "uptimeHeader",
+        "component": "CardHeader",
+        "title": "1. Uptime this quarter",
+        "subtitle": "Q3 2026 • SLO 99.9%"
+      },
+      {
+        "id": "uptimeValue",
+        "component": "TextContent",
+        "text": "99.94%",
+        "size": "large-heavy"
+      },
+      {
+        "id": "uptimeProgress",
+        "component": "Progress",
+        "value": 99.94,
+        "label": "99.94% up • 47m downtime (2 incidents)"
+      },
+      {
+        "id": "uptimeBadge",
+        "component": "Badge",
+        "text": "SLO met • +0.04% buffer",
+        "variant": "secondary"
+      },
+      {
+        "id": "errorCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "errorHeader",
+          "errorValue",
+          "errorBadge",
+          "errorCallout"
+        ]
+      },
+      {
+        "id": "errorHeader",
+        "component": "CardHeader",
+        "title": "3. Error rate right now",
+        "subtitle": "5-min rolling • payments-api"
+      },
+      {
+        "id": "errorValue",
+        "component": "TextContent",
+        "text": "0.82%",
+        "size": "large-heavy"
+      },
+      {
+        "id": "errorBadge",
+        "component": "Tag",
+        "text": "Elevated • threshold 0.5%",
+        "variant": "warning",
+        "size": "md"
+      },
+      {
+        "id": "errorCallout",
+        "component": "Alert",
+        "title": "Above alert threshold",
+        "description": "Error rate breached 0.5% at 14:32 UTC in us-east-1. Check open incidents below.",
+        "variant": "warning"
+      },
+      {
+        "id": "sloCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "sloHeader",
+          "sloText",
+          "sloStats"
+        ]
+      },
+      {
+        "id": "sloHeader",
+        "component": "CardHeader",
+        "title": "Health summary",
+        "subtitle": "Current window"
+      },
+      {
+        "id": "sloText",
+        "component": "TextContent",
+        "text": "Requests (24h): **2.84M**\nSuccess: **99.18%**\nP95 latency: **342ms**",
+        "size": "small"
+      },
+      {
+        "id": "sloStats",
+        "component": "TagBlock",
+        "tags": [
+          "us-east-1: degraded",
+          "us-west-2: healthy",
+          "eu-west-1: healthy"
+        ]
+      },
+      {
+        "id": "resourceCard",
+        "component": "Card",
+        "children": [
+          "resourceHeader",
+          "resourceChart",
+          "resourceLegend"
+        ]
+      },
+      {
+        "id": "resourceHeader",
+        "component": "CardHeader",
+        "title": "2. CPU and memory usage — Past 24 hours",
+        "subtitle": "Avg across pods • sampled every 2 hours • region: All"
+      },
+      {
+        "id": "resourceChart",
+        "component": "LineChart",
+        "labels": [
+          "00:00",
+          "04:00",
+          "08:00",
+          "12:00",
+          "16:00",
+          "20:00",
+          "Now"
+        ],
+        "series": [
+          "cpuSeries",
+          "memSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Time (UTC)",
+        "yLabel": "% Utilization"
+      },
+      {
+        "id": "cpuSeries",
+        "component": "Series",
+        "category": "CPU",
+        "values": [
+          42,
+          38,
+          61,
+          78,
+          72,
+          68,
+          64
+        ]
+      },
+      {
+        "id": "memSeries",
+        "component": "Series",
+        "category": "Memory",
+        "values": [
+          58,
+          56,
+          59,
+          66,
+          71,
+          69,
+          67
+        ]
+      },
+      {
+        "id": "resourceLegend",
+        "component": "TextContent",
+        "text": "Peak CPU 78% at 12:00 UTC (deployment). Memory stable 56-71%.",
+        "size": "small"
+      },
+      {
+        "id": "incidentsCard",
+        "component": "Card",
+        "children": [
+          "incidentsHeader",
+          "incidentsTable",
+          "incidentsActions",
+          "ackDialog"
+        ]
+      },
+      {
+        "id": "incidentsHeader",
+        "component": "CardHeader",
+        "title": "4. Open incidents with severity",
+        "subtitle": "3 open • Sorted by severity • Filtered by region"
+      },
+      {
+        "id": "incidentsTable",
+        "component": "Table",
+        "columns": [
+          "colIncident",
+          "colSeverity",
+          "colService",
+          "colRegionInc",
+          "colOpened",
+          "colStatus"
+        ]
+      },
+      {
+        "id": "colIncident",
+        "component": "Col",
+        "label": "Incident",
+        "data": [
+          "INC-1024",
+          "INC-1027",
+          "INC-1031"
+        ]
+      },
+      {
+        "id": "colSeverity",
+        "component": "Col",
+        "label": "Severity",
+        "data": [
+          "SEV-1 Critical",
+          "SEV-2 Major",
+          "SEV-3 Minor"
+        ]
+      },
+      {
+        "id": "colService",
+        "component": "Col",
+        "label": "Service",
+        "data": [
+          "payments-api",
+          "payments-api",
+          "auth-service"
+        ]
+      },
+      {
+        "id": "colRegionInc",
+        "component": "Col",
+        "label": "Region",
+        "data": [
+          "us-east-1",
+          "us-east-1",
+          "eu-west-1"
+        ]
+      },
+      {
+        "id": "colOpened",
+        "component": "Col",
+        "label": "Opened",
+        "data": [
+          "14:32 UTC (23m ago)",
+          "13:10 UTC (1h 45m ago)",
+          "09:05 UTC (5h ago)"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Investigating",
+          "Mitigating",
+          "Monitoring"
+        ]
+      },
+      {
+        "id": "incidentsActions",
+        "component": "Buttons",
+        "buttons": [
+          "ackBtnINC1024",
+          "ackBtnINC1027",
+          "ackBtnINC1031"
+        ]
+      },
+      {
+        "id": "ackBtnINC1024",
+        "component": "Button",
+        "label": "Acknowledge INC-1024",
+        "variant": "primary"
+      },
+      {
+        "id": "ackBtnINC1027",
+        "component": "Button",
+        "label": "Acknowledge INC-1027",
+        "variant": "secondary"
+      },
+      {
+        "id": "ackBtnINC1031",
+        "component": "Button",
+        "label": "Acknowledge INC-1031",
+        "variant": "secondary"
+      },
+      {
+        "id": "ackDialog",
+        "component": "AlertDialogBlock",
+        "triggerLabel": "8. Acknowledge incident (confirm)",
+        "title": "Acknowledge incident?",
+        "description": "This will assign the incident to you, silence paging for 30 min, and post to #on-call. You can still escalate.",
+        "confirmLabel": "Acknowledge & Assign to me",
+        "cancelLabel": "Cancel",
+        "triggerVariant": "outline"
+      },
+      {
+        "id": "endpointsCard",
+        "component": "Card",
+        "children": [
+          "endpointsHeader",
+          "endpointsChart",
+          "endpointsTable"
+        ]
+      },
+      {
+        "id": "endpointsHeader",
+        "component": "CardHeader",
+        "title": "6. Five slowest endpoints",
+        "subtitle": "P95 latency • Past 1 hour • All regions"
+      },
+      {
+        "id": "endpointsChart",
+        "component": "HorizontalBarChart",
+        "labels": [
+          "POST /v1/payments/charge",
+          "GET /v1/payments/search",
+          "POST /v1/refunds",
+          "GET /v1/customers/:id",
+          "GET /v1/invoices/list"
+        ],
+        "series": [
+          "endpointSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "P95 latency (ms)",
+        "yLabel": "Endpoint"
+      },
+      {
+        "id": "endpointSeries",
+        "component": "Series",
+        "category": "P95 latency",
+        "values": [
+          1240,
+          842,
+          621,
+          498,
+          412
+        ]
+      },
+      {
+        "id": "endpointsTable",
+        "component": "Table",
+        "columns": [
+          "colEndpoint",
+          "colLatency",
+          "colP95",
+          "colRequests"
+        ]
+      },
+      {
+        "id": "colEndpoint",
+        "component": "Col",
+        "label": "Endpoint",
+        "data": [
+          "POST /v1/payments/charge",
+          "GET /v1/payments/search",
+          "POST /v1/refunds",
+          "GET /v1/customers/:id",
+          "GET /v1/invoices/list"
+        ]
+      },
+      {
+        "id": "colLatency",
+        "component": "Col",
+        "label": "P95 latency",
+        "data": [
+          "1,240 ms",
+          "842 ms",
+          "621 ms",
+          "498 ms",
+          "412 ms"
+        ]
+      },
+      {
+        "id": "colP95",
+        "component": "Col",
+        "label": "P99",
+        "data": [
+          "2,105 ms",
+          "1,430 ms",
+          "980 ms",
+          "812 ms",
+          "705 ms"
+        ]
+      },
+      {
+        "id": "colRequests",
+        "component": "Col",
+        "label": "Req / min",
+        "data": [
+          "342",
+          "1,204",
+          "89",
+          "2,310",
+          "876"
+        ]
+      },
+      {
+        "id": "thresholdCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "thresholdHeader",
+          "thresholdForm"
+        ]
+      },
+      {
+        "id": "thresholdHeader",
+        "component": "CardHeader",
+        "title": "7. Set alert threshold",
+        "subtitle": "Configure when to page on-call for error rate"
+      },
+      {
+        "id": "thresholdForm",
+        "component": "Form",
+        "name": "alert-threshold",
+        "buttons": "thresholdButtons",
+        "fields": [
+          "thresholdSliderControl",
+          "thresholdInputControl",
+          "notifyChannelControl"
+        ]
+      },
+      {
+        "id": "thresholdSliderControl",
+        "component": "FormControl",
+        "label": "Error rate threshold (%)",
+        "input": "thresholdSlider",
+        "hint": "Drag to set paging threshold. Current live: 0.82%"
+      },
+      {
+        "id": "thresholdSlider",
+        "component": "Slider",
+        "name": "error_threshold",
+        "variant": "discrete",
+        "min": 0.1,
+        "max": 5,
+        "step": 0.1,
+        "defaultValue": [
+          0.5
+        ],
+        "label": "Threshold"
+      },
+      {
+        "id": "thresholdInputControl",
+        "component": "FormControl",
+        "label": "Or enter exact value",
+        "input": "thresholdInput"
+      },
+      {
+        "id": "thresholdInput",
+        "component": "Input",
+        "name": "error_threshold_exact",
+        "placeholder": "0.5",
+        "type": "number",
+        "value": "0.5"
+      },
+      {
+        "id": "notifyChannelControl",
+        "component": "FormControl",
+        "label": "Notify channel",
+        "input": "notifySelect"
+      },
+      {
+        "id": "notifySelect",
+        "component": "Select",
+        "name": "notify_channel",
+        "items": [
+          "notifyPager",
+          "notifySlack",
+          "notifyEmail"
+        ],
+        "placeholder": "PagerDuty"
+      },
+      {
+        "id": "notifyPager",
+        "component": "SelectItem",
+        "value": "pagerduty",
+        "label": "PagerDuty — payments-oncall"
+      },
+      {
+        "id": "notifySlack",
+        "component": "SelectItem",
+        "value": "slack",
+        "label": "Slack #on-call-alerts"
+      },
+      {
+        "id": "notifyEmail",
+        "component": "SelectItem",
+        "value": "email",
+        "label": "Email"
+      },
+      {
+        "id": "thresholdButtons",
+        "component": "Buttons",
+        "buttons": [
+          "saveThresholdBtn",
+          "resetThresholdBtn"
+        ]
+      },
+      {
+        "id": "saveThresholdBtn",
+        "component": "Button",
+        "label": "Save threshold",
+        "variant": "primary"
+      },
+      {
+        "id": "resetThresholdBtn",
+        "component": "Button",
+        "label": "Reset to default (0.5%)",
+        "variant": "tertiary"
+      },
+      {
+        "id": "footerSeparator",
+        "component": "Separator"
+      },
+      {
+        "id": "followUp",
+        "component": "FollowUpBlock",
+        "items": [
+          "fuViewLogs",
+          "fuEscalate",
+          "fuSnooze"
+        ]
+      },
+      {
+        "id": "fuViewLogs",
+        "component": "FollowUpItem",
+        "text": "View logs for us-east-1"
+      },
+      {
+        "id": "fuEscalate",
+        "component": "FollowUpItem",
+        "text": "Escalate INC-1024 to SEV-1"
+      },
+      {
+        "id": "fuSnooze",
+        "component": "FollowUpItem",
+        "text": "Snooze alerts for 30 minutes"
+      }
+    ]
+  }
+}
+</a2ui-json>

@@ -1,0 +1,94 @@
+root = Card([header, kpis, riskAlert, timeframe, positionsHead, positions, sectorHead, sectorChart, moversHead, movers, watchHead, watchlist, ordersHead, orders, headlinesHead, headlines, econHead, econ, stratHead, stratChart, ddHead, ddChart, actionsHead, actions])
+
+header = CardHeader("Morning Workspace", "Trading Desk — Live")
+
+kpis = Table([kpiName, kpiValue])
+kpiName = Col("Metric", ["Portfolio Value", "P&L Today", "Value at Risk (95%)", "Margin In Use"])
+kpiValue = Col("Value", ["$48,320,500", "+$412,880 (+0.86%)", "$1,240,000", "$8,150,000 (17%)"])
+
+riskAlert = Alert("Risk limits near breach", "Tech sector exposure at 92% of cap; single-name limit on NVDA at 88%", "warning")
+
+timeframe = Buttons([tf1d, tf1w, tf1m, tf1y])
+tf1d = Button("1D", null, "secondary", null, "small")
+tf1w = Button("1W", null, "tertiary", null, "small")
+tf1m = Button("1M", null, "tertiary", null, "small")
+tf1y = Button("1Y", null, "tertiary", null, "small")
+
+positionsHead = Heading("Positions", "h3")
+positions = Table([posTicker, posSize, posEntry, posCurrent])
+posTicker = Col("Ticker", ["AAPL", "NVDA", "MSFT", "AMZN", "JPM"])
+posSize = Col("Size", [12000, 8500, 6000, 4200, 9000], "number")
+posEntry = Col("Entry", [178.40, 610.20, 402.15, 168.75, 192.30], "number")
+posCurrent = Col("Current", [182.10, 638.90, 398.40, 172.10, 195.80], "number")
+
+sectorHead = Heading("Exposure by Sector", "h3")
+sectorChart = PieChart(sectorLabels, sectorValues, "donut")
+sectorLabels = ["Technology", "Financials", "Consumer", "Energy", "Healthcare"]
+sectorValues = [42, 21, 16, 12, 9]
+
+moversHead = Heading("Biggest Gainers & Losers", "h3")
+movers = Table([moverTicker, moverChange])
+moverTicker = Col("Ticker", ["NVDA", "AMZN", "AAPL", "TSLA", "MSFT"])
+moverChange = Col("Change %", ["+4.71", "+1.98", "+2.07", "-3.42", "-0.93"])
+
+watchHead = Heading("Watchlist", "h3")
+watchlist = Table([watchTicker, watchPrice])
+watchTicker = Col("Ticker", ["META", "GOOGL", "AMD", "NFLX", "COIN"])
+watchPrice = Col("Price", [512.40, 176.85, 168.20, 642.10, 248.55], "number")
+
+ordersHead = Heading("Working Orders", "h3")
+orders = Table([ordTicker, ordSide, ordQty, ordLimit, ordStatus])
+ordTicker = Col("Ticker", ["AAPL", "MSFT", "JPM"])
+ordSide = Col("Side", ["Buy", "Sell", "Buy"])
+ordQty = Col("Qty", [2000, 1500, 3000], "number")
+ordLimit = Col("Limit", [180.00, 400.00, 194.50], "number")
+ordStatus = Col("Status", ["Working", "Working", "Partial"])
+
+headlinesHead = Heading("Market Headlines", "h3")
+headlines = ListBlock([hl1, hl2, hl3, hl4])
+hl1 = ListItem("Fed signals patience on rate cuts", "Sentiment: Neutral")
+hl2 = ListItem("NVDA guidance beats on AI demand", "Sentiment: Positive")
+hl3 = ListItem("Oil slips on demand concerns", "Sentiment: Negative")
+hl4 = ListItem("Retail sales top expectations", "Sentiment: Positive")
+
+econHead = Heading("Economic Releases This Week", "h3")
+econ = Table([econDay, econEvent, econForecast])
+econDay = Col("Day", ["Mon", "Wed", "Thu", "Fri"])
+econEvent = Col("Event", ["ISM Manufacturing", "FOMC Minutes", "CPI (m/m)", "Nonfarm Payrolls"])
+econForecast = Col("Forecast", ["48.9", "—", "0.3%", "185K"])
+
+stratHead = Heading("Strategy Returns YTD", "h3")
+stratChart = BarChart(stratLabels, [stratSeries], "grouped", "Strategy", "Return %")
+stratLabels = ["Momentum", "Mean Rev", "Stat Arb", "Macro", "Vol Carry"]
+stratSeries = Series("YTD Return %", [14.2, 6.8, 9.5, -2.1, 11.3])
+
+ddHead = Heading("Drawdown — Past Year", "h3")
+ddChart = AreaChart(ddLabels, [ddSeries], "natural", "Month", "Drawdown %")
+ddLabels = ["Feb", "Apr", "Jun", "Aug", "Oct", "Dec"]
+ddSeries = Series("Drawdown %", [-2.1, -4.8, -3.2, -7.5, -5.1, -1.9])
+
+actionsHead = Heading("Desk Actions", "h3")
+actions = Card([rebalanceBtn, orderDrawer], "clear", "row", "m")
+rebalanceBtn = DialogBlock("Rebalance Portfolio", "Rebalance", "Confirm target weights across sectors before executing", [rebalanceForm])
+rebalanceForm = Form("rebalance", rebalanceButtons, [rbTech, rbFin])
+rbTech = FormControl("Technology target %", rbTechInput)
+rbTechInput = Input("tech_target", "40", "number")
+rbFin = FormControl("Financials target %", rbFinInput)
+rbFinInput = Input("fin_target", "22", "number")
+rebalanceButtons = Buttons([rbSubmit, rbCancel])
+rbSubmit = Button("Preview Rebalance", null, "primary")
+rbCancel = Button("Cancel", null, "tertiary")
+
+orderDrawer = DrawerBlock("Place Order", "New Order", "Enter order details", [orderForm])
+orderForm = Form("place-order", orderButtons, [ordTickerField, ordSideField, ordQtyField])
+ordTickerField = FormControl("Ticker", ordTickerInput)
+ordTickerInput = Input("ticker", "e.g. AAPL")
+ordSideField = FormControl("Side", ordSideRadio)
+ordSideRadio = RadioGroup("side", [sideBuy, sideSell])
+sideBuy = RadioItem("Buy", "Open or add to a long", "buy")
+sideSell = RadioItem("Sell", "Reduce or short", "sell")
+ordQtyField = FormControl("Quantity", ordQtyInput)
+ordQtyInput = Input("quantity", "Shares", "number")
+orderButtons = Buttons([orderSubmit, orderCancel])
+orderSubmit = Button("Submit Order", null, "primary")
+orderCancel = Button("Cancel", null, "tertiary")

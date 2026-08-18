@@ -1,0 +1,61 @@
+root = Card([header, mainGrid, followup])
+
+header = CardHeader("Weekly Marketing Dashboard", "Performance metrics, campaign ROI, and traffic analytics")
+
+mainGrid = Card([controls, calloutBest, kpiRow, trafficSection, campaignSection], "clear", "column", "l")
+
+controls = Card([dateControl, exportBtn], "clear", "row", "m", "center", "between")
+dateControl = FormControl("Date Range", dateSelect)
+dateSelect = Select("date_range", [d7, d30, d90, dYtd], "Select range", null, "30d", "medium")
+d7 = SelectItem("7d", "Last 7 Days")
+d30 = SelectItem("30d", "Last 30 Days")
+d90 = SelectItem("90d", "Last 90 Days")
+dYtd = SelectItem("ytd", "Year to Date")
+
+exportBtn = Buttons([exportAction])
+exportAction = Button("Export Report", null, "secondary", "normal", "small")
+
+calloutBest = Callout("success", "Top Performing Campaign", "Summer Sale Retargeting achieved the highest ROI this week with a 4.2% conversion rate and $14,200 in attributed revenue.")
+
+kpiRow = Card([kpi1, kpi2, kpi3], "sunk", "row", "m")
+kpi1 = Card([kpi1Title, kpi1Val, kpi1Sub], "clear", "column", "xs")
+kpi1Title = TextContent("Conversion Rate", "small")
+kpi1Val = Heading("3.42%", "h2")
+kpi1Sub = Badge("+0.6% vs last week", "default")
+
+kpi2 = Card([kpi2Title, kpi2Val, kpi2Sub], "clear", "column", "xs")
+kpi2Title = TextContent("Avg. Daily Visitors", "small")
+kpi2Val = Heading("4,180", "h2")
+kpi2Sub = Badge("+12% vs last week", "default")
+
+kpi3 = Card([kpi3Title, kpi3Val, kpi3Sub], "clear", "column", "xs")
+kpi3Title = TextContent("Email Subscribers (MTD)", "small")
+kpi3Val = Heading("+2,840", "h2")
+kpi3Sub = Badge("12.4% MoM Growth", "default")
+
+trafficSection = Card([trafficHeader, trafficRow], "card", "column", "m")
+trafficHeader = Heading("Traffic & Visitor Analytics", "h3")
+trafficRow = Card([visitorsChart, sourcesChart], "clear", "row", "l")
+
+visitorsChart = Card([visitorsTitle, visitorsLine], "clear", "column", "s")
+visitorsTitle = TextContent("Site Visitors (Last 30 Days)", "small-heavy")
+visitorsLine = LineChart(["Day 1", "Day 5", "Day 10", "Day 15", "Day 20", "Day 25", "Day 30"], [visitorSeries], "natural", "Timeline", "Visitors")
+visitorSeries = Series("Daily Visitors", [3200, 3800, 3500, 4100, 4600, 4300, 5100])
+
+sourcesChart = Card([sourcesTitle, sourcesPie], "clear", "column", "s")
+sourcesTitle = TextContent("Top 5 Traffic Sources Share", "small-heavy")
+sourcesPie = PieChart(["Organic Search", "Paid Search", "Direct", "Social Media", "Referral"], [40, 25, 15, 12, 8], "donut")
+
+campaignSection = Card([campaignHeader, campaignTable], "card", "column", "m")
+campaignHeader = Heading("Running Campaigns & Spend", "h3")
+campaignTable = Table([colName, colStatus, colSpend, colConversions, colConvRate])
+colName = Col("Campaign Name", ["Summer Sale Retargeting", "Q3 Brand Awareness", "Product Launch - Search", "Email Newsletter Spons.", "Social Video Ads"])
+colStatus = Col("Status", ["Active", "Active", "Active", "Active", "Paused"])
+colSpend = Col("Spend (USD)", ["$3,200", "$5,400", "$4,100", "$1,200", "$850"])
+colConversions = Col("Conversions", ["480", "210", "390", "145", "32"])
+colConvRate = Col("Conv. Rate", ["4.2%", "1.8%", "3.1%", "2.9%", "1.1%"])
+
+followup = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Deep dive into Traffic Source ROI")
+f2 = FollowUpItem("Compare with previous month's campaign spend")
+f3 = FollowUpItem("Schedule automated weekly email report")

@@ -1,0 +1,68 @@
+root = Card([header, platformFilter, kpiRow, growth, engagement, bestPosts, audience, schedule, bestHour, comments, earnings, collabs, scheduleForm])
+
+header = CardHeader("Creator Studio", "Cross-platform overview · October")
+
+platformFilter = Form("platform-filter", filterButtons, [platformField])
+platformField = FormControl("Focus platform", platformSelect, "Narrow every metric below to one platform")
+platformSelect = Select("platform", [pAll, pIg, pYt, pTt, pX], "All platforms")
+pAll = SelectItem("all", "All platforms")
+pIg = SelectItem("instagram", "Instagram")
+pYt = SelectItem("youtube", "YouTube")
+pTt = SelectItem("tiktok", "TikTok")
+pX = SelectItem("x", "X")
+filterButtons = Buttons([applyFilter])
+applyFilter = Button("Apply filter", null, "primary")
+
+kpiRow = Card([followersTag, engagementTag, earningsTag, commentsTag], "clear", "row", "m", "center", "start", true)
+followersTag = Tag("487.2K followers", null, "lg", "info")
+engagementTag = Tag("5.8% engagement", null, "lg", "success")
+earningsTag = Tag("$12,480 this month", null, "lg", "success")
+commentsTag = Tag("34 replies pending", null, "lg", "warning")
+
+growth = LineChart(["Wk 1", "Wk 2", "Wk 3", "Wk 4"], [followerSeries], "natural", "Week", "Followers")
+followerSeries = Series("Followers", [463100, 471800, 479600, 487200])
+
+engagement = Progress(58, "Engagement rate 5.8% (goal 10%)")
+
+bestPosts = Table([postCol, platformCol, reachCol])
+postCol = Col("Top post", ["Morning routine reel", "Studio setup tour", "Q&A: gear on a budget", "Behind the edit"])
+platformCol = Col("Platform", ["Instagram", "YouTube", "TikTok", "Instagram"])
+reachCol = Col("Reach", [214300, 188900, 162400, 121700], "number")
+
+audience = PieChart(["Instagram", "YouTube", "TikTok", "X"], [42, 28, 22, 8], "donut")
+
+schedule = ListBlock([sch1, sch2, sch3, sch4], "number")
+sch1 = ListItem("Weekend vlog teaser", "Tue 9:00 AM · YouTube")
+sch2 = ListItem("3 quick editing tips", "Wed 12:30 PM · TikTok")
+sch3 = ListItem("Gear giveaway announcement", "Thu 6:00 PM · Instagram")
+sch4 = ListItem("Live session reminder", "Sat 11:00 AM · X")
+
+bestHour = BarChart(["6a", "9a", "12p", "3p", "6p", "9p"], [hourSeries], "grouped", "Hour", "Avg engagement %")
+hourSeries = Series("Engagement", [3.1, 5.4, 6.2, 4.8, 8.9, 7.3])
+
+comments = Callout("info", "34 comments waiting", "Oldest unanswered comment is 2 days old — reply to keep engagement high.")
+
+earnings = AreaChart(["Wk 1", "Wk 2", "Wk 3", "Wk 4"], [earnSeries], "natural", "Week", "USD")
+earnSeries = Series("Earnings", [2680, 3120, 3040, 3640])
+
+collabs = ListBlock([collab1, collab2, collab3], "number")
+collab1 = ListItem("LumaTech — camera sponsorship", "Budget $4,000 · Awaiting your reply", null, "Review")
+collab2 = ListItem("BrewCo — 3-post series", "Budget $2,500 · Awaiting your reply", null, "Review")
+collab3 = ListItem("FitGear — affiliate deal", "Commission 12% · Awaiting your reply", null, "Review")
+
+scheduleForm = Form("schedule-post", scheduleButtons, [captionField, platformPostField, dateField, timeField])
+captionField = FormControl("Caption", captionInput, "Write the post caption")
+captionInput = TextArea("caption", "Share what this post is about...", 4)
+platformPostField = FormControl("Platform", postPlatformSelect)
+postPlatformSelect = Select("post_platform", [ppIg, ppYt, ppTt, ppX], "Choose platform")
+ppIg = SelectItem("instagram", "Instagram")
+ppYt = SelectItem("youtube", "YouTube")
+ppTt = SelectItem("tiktok", "TikTok")
+ppX = SelectItem("x", "X")
+dateField = FormControl("Date", dateInput)
+dateInput = DatePicker("post_date", "single")
+timeField = FormControl("Time", timeInput, "Suggested best time: 6:00 PM")
+timeInput = Input("post_time", "6:00 PM")
+scheduleButtons = Buttons([schedBtn, draftBtn])
+schedBtn = Button("Schedule post", null, "primary")
+draftBtn = Button("Save as draft", null, "tertiary")

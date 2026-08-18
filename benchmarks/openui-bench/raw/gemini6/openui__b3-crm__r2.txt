@@ -1,0 +1,83 @@
+root = Card([header, mainGrid, followUpsSection, quickActions, noteSection, followUpPrompt])
+
+header = CardHeader("Acme Corporation", "Account Owner: Sarah Jenkins (Senior Enterprise AE)")
+
+mainGrid = Card([kpiGrid, contactsSection, activitySection], "clear", "column", "m")
+
+kpiGrid = Card([dealValueCard, stageCard, renewalCard], "clear", "row", "m")
+
+dealValueCard = Card([dealValHeader, dealValText, dealValBadge], "card", "column", "xs")
+dealValHeader = Heading("Total Deal Value", "h4")
+dealValText = TextContent("$450,000 ARR", "large-heavy")
+dealValBadge = Badge("Enterprise Tier", "secondary")
+
+stageCard = Card([stageHeader, stageText, stageProgress], "card", "column", "xs")
+stageHeader = Heading("Current Stage", "h4")
+stageText = TextContent("Negotiation / Procurement", "default")
+stageProgress = Progress(75, "75% to Close")
+
+renewalCard = Card([renewalHeader, renewalText, renewalAlert], "card", "column", "xs")
+renewalHeader = Heading("Renewal Date", "h4")
+renewalText = TextContent("October 15, 2024", "default")
+renewalAlert = TextCallout("warning", "Renewal Approaching", "Contract expires in 28 days. Security review pending.")
+
+contactsSection = Card([contactsHeading, contactsTable], "card", "column", "s")
+contactsHeading = Heading("Key Contacts", "h3")
+contactsTable = Table([contactNameCol, contactRoleCol, contactEmailCol])
+contactNameCol = Col("Name", ["Elena Rostova", "Marcus Chen", "Sarah Jenkins"])
+contactRoleCol = Col("Role / Title", ["VP of Infrastructure (Economic Buyer)", "Lead Architect (Technical Evaluator)", "Procurement Manager"])
+contactEmailCol = Col("Email", ["elena@acme.com", "m.chen@acme.com", "s.jenkins@acme.com"])
+
+activitySection = Card([activityHeading, activityList], "card", "column", "s")
+activityHeading = Heading("Recent Activity History", "h3")
+activityList = ListBlock([act1, act2, act3, act4])
+act1 = ListItem("Executive Alignment Call", "Yesterday at 3:30 PM — Reviewed redlines with Legal & Elena Rostova")
+act2 = ListItem("Security Questionnaire Submitted", "Sep 12, 2024 — Sent completed SOC2 Type II report to Marcus Chen")
+act3 = ListItem("Pricing Proposal Sent", "Sep 8, 2024 — $450k/yr 3-year term agreement quote delivered")
+act4 = ListItem("Initial Technical Discovery", "Aug 28, 2024 — Scoped multi-region deployment requirements")
+
+followUpsSection = Card([followUpHeading, followUpTable], "card", "column", "s")
+followUpHeading = Heading("Open Follow-ups & Tasks", "h3")
+followUpTable = Table([taskCol, dueCol, ownerCol, priorityCol])
+taskCol = Col("Task Description", ["Send updated DPA amendment", "Schedule final security review sync", "Confirm MSA signature timeline"])
+dueCol = Col("Due Date", ["Tomorrow (Sep 18)", "Sep 20, 2024", "Sep 24, 2024"])
+ownerCol = Col("Assignee", ["Sarah Jenkins", "Marcus Chen", "Sarah Jenkins"])
+priorityCol = Col("Status", ["High Priority", "Pending Schedule", "Upcoming"])
+
+quickActions = Card([actionsHeading, callDialog], "sunk", "row", "m", "center", "between")
+actionsHeading = Heading("Quick Actions", "h4")
+callDialog = DialogBlock("Log a Call", "Log Recent Call Activity", "Record details from your latest phone conversation or meeting with Acme Corp.", callForm)
+
+callForm = Form("log_call_form", callFormButtons, [callTypeControl, callOutcomeControl, callNotesControl])
+callTypeControl = FormControl("Call Type", callTypeSelect)
+callTypeSelect = Select("call_type", [type1, type2, type3], "Select call type")
+type1 = SelectItem("discovery", "Discovery Call")
+type2 = SelectItem("demo", "Product Demo")
+type3 = SelectItem("negotiation", "Pricing / Contract Negotiation")
+
+callOutcomeControl = FormControl("Call Outcome", callOutcomeSelect)
+callOutcomeSelect = Select("outcome", [out1, out2, out3], "Select outcome")
+out1 = SelectItem("connected", "Connected & Advanced Deal")
+out2 = SelectItem("left_vm", "Left Voicemail")
+out3 = SelectItem("rescheduled", "Requested Reschedule")
+
+callNotesControl = FormControl("Call Summary / Notes", callNotesInput, "Brief overview of what was discussed")
+callNotesInput = TextArea("call_summary", "Discussed security updates and key timeline goals...", 3)
+
+callFormButtons = Buttons([saveCallBtn, cancelCallBtn])
+saveCallBtn = Button("Save Call Log", null, "primary")
+cancelCallBtn = Button("Cancel", null, "tertiary")
+
+noteSection = Card([noteHeading, noteForm], "card", "column", "s")
+noteHeading = Heading("Jot a Quick Account Note", "h3")
+noteForm = Form("quick_note_form", noteFormButtons, [noteControl])
+noteControl = FormControl("Note Details", noteInput, "Visible to all sales team members assigned to this account")
+noteInput = TextArea("account_note", "Elena mentioned budget approval is finalized, just waiting on legal review of indemnity clauses...", 3)
+
+noteFormButtons = Buttons([saveNoteBtn])
+saveNoteBtn = Button("Save Note to Account", null, "secondary")
+
+followUpPrompt = FollowUpBlock([prompt1, prompt2, prompt3])
+prompt1 = FollowUpItem("Draft an email to Elena regarding MSA legal review")
+prompt2 = FollowUpItem("Generate executive summary for quarterly review")
+prompt3 = FollowUpItem("View account analytics and usage metrics")

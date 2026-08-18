@@ -1,0 +1,420 @@
+Your month-end finance view is ready — runway, burn, and large transactions at a glance. Use the month selector to switch periods and download for the full statement.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "controls",
+          "kpisRow",
+          "runwayDetail",
+          "expensesCard",
+          "transactionsCard",
+          "footerActions"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Month-End Finance — April 2026",
+        "subtitle": "Startup financial health • Cash, burn, runway and spend breakdown"
+      },
+      {
+        "id": "controls",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "align": "end",
+        "justify": "between",
+        "wrap": true,
+        "children": [
+          "monthControl",
+          "downloadActions"
+        ]
+      },
+      {
+        "id": "monthControl",
+        "component": "FormControl",
+        "label": "View different month",
+        "hint": "Change period to update all metrics",
+        "input": "monthSelect"
+      },
+      {
+        "id": "monthSelect",
+        "component": "Select",
+        "name": "month",
+        "value": "2026-04",
+        "placeholder": "Select month",
+        "items": [
+          "monthApr",
+          "monthMar",
+          "monthFeb",
+          "monthJan",
+          "monthDec"
+        ]
+      },
+      {
+        "id": "monthApr",
+        "component": "SelectItem",
+        "value": "2026-04",
+        "label": "April 2026"
+      },
+      {
+        "id": "monthMar",
+        "component": "SelectItem",
+        "value": "2026-03",
+        "label": "March 2026"
+      },
+      {
+        "id": "monthFeb",
+        "component": "SelectItem",
+        "value": "2026-02",
+        "label": "February 2026"
+      },
+      {
+        "id": "monthJan",
+        "component": "SelectItem",
+        "value": "2026-01",
+        "label": "January 2026"
+      },
+      {
+        "id": "monthDec",
+        "component": "SelectItem",
+        "value": "2025-12",
+        "label": "December 2025"
+      },
+      {
+        "id": "downloadActions",
+        "component": "Buttons",
+        "buttons": [
+          "downloadBtn"
+        ]
+      },
+      {
+        "id": "downloadBtn",
+        "component": "Button",
+        "label": "Download Statement (PDF)",
+        "variant": "primary"
+      },
+      {
+        "id": "kpisRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "cashCard",
+          "burnCard",
+          "runwayKpiCard"
+        ]
+      },
+      {
+        "id": "cashCard",
+        "component": "Card",
+        "children": [
+          "cashHeader",
+          "cashValue",
+          "cashSub"
+        ]
+      },
+      {
+        "id": "cashHeader",
+        "component": "TextContent",
+        "text": "💰 Cash on Hand",
+        "size": "small"
+      },
+      {
+        "id": "cashValue",
+        "component": "Heading",
+        "text": "$1,240,000",
+        "level": "h1"
+      },
+      {
+        "id": "cashSub",
+        "component": "TextContent",
+        "text": "As of Apr 30, 2026 • +$42k vs Mar",
+        "size": "small"
+      },
+      {
+        "id": "burnCard",
+        "component": "Card",
+        "children": [
+          "burnHeader",
+          "burnValue",
+          "burnSub"
+        ]
+      },
+      {
+        "id": "burnHeader",
+        "component": "TextContent",
+        "text": "🔥 Monthly Burn",
+        "size": "small"
+      },
+      {
+        "id": "burnValue",
+        "component": "Heading",
+        "text": "$98,500",
+        "level": "h1"
+      },
+      {
+        "id": "burnSub",
+        "component": "TextContent",
+        "text": "April 2026 • -6.2% vs Mar ($104,900)",
+        "size": "small"
+      },
+      {
+        "id": "runwayKpiCard",
+        "component": "Card",
+        "children": [
+          "runwayHeaderSmall",
+          "runwayValue",
+          "runwaySub"
+        ]
+      },
+      {
+        "id": "runwayHeaderSmall",
+        "component": "TextContent",
+        "text": "✈️ Months of Runway",
+        "size": "small"
+      },
+      {
+        "id": "runwayValue",
+        "component": "Heading",
+        "text": "12.6 months",
+        "level": "h1"
+      },
+      {
+        "id": "runwaySub",
+        "component": "TextContent",
+        "text": "At current burn • Cash / Burn",
+        "size": "small"
+      },
+      {
+        "id": "runwayDetail",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "runwayDetailHeader",
+          "runwayProgress",
+          "runwayDetailText"
+        ]
+      },
+      {
+        "id": "runwayDetailHeader",
+        "component": "CardHeader",
+        "title": "Runway Health",
+        "subtitle": "12.6 months remaining — Healthy (target >12 months)"
+      },
+      {
+        "id": "runwayProgress",
+        "component": "Progress",
+        "value": 70,
+        "label": "70% of 18-month target"
+      },
+      {
+        "id": "runwayDetailText",
+        "component": "TextContent",
+        "text": "Based on $1,240,000 cash ÷ $98,500 burn. At current burn, zero cash around May 2027. Reduce burn by $15k to extend to 14.8 months.",
+        "size": "small"
+      },
+      {
+        "id": "expensesCard",
+        "component": "Card",
+        "children": [
+          "expensesHeader",
+          "expensesPie",
+          "expensesTable"
+        ]
+      },
+      {
+        "id": "expensesHeader",
+        "component": "CardHeader",
+        "title": "Expenses Split by Category",
+        "subtitle": "April 2026 total: $98,500"
+      },
+      {
+        "id": "expensesPie",
+        "component": "PieChart",
+        "labels": [
+          "Payroll",
+          "Marketing",
+          "Rent",
+          "Software & Cloud",
+          "Legal & Admin"
+        ],
+        "values": [
+          52000,
+          18500,
+          12000,
+          12400,
+          3600
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "expensesTable",
+        "component": "Table",
+        "columns": [
+          "expCatCol",
+          "expAmtCol",
+          "expPctCol"
+        ]
+      },
+      {
+        "id": "expCatCol",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Payroll",
+          "Marketing",
+          "Software & Cloud",
+          "Rent",
+          "Legal & Admin"
+        ]
+      },
+      {
+        "id": "expAmtCol",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "$52,000",
+          "$18,500",
+          "$12,400",
+          "$12,000",
+          "$3,600"
+        ]
+      },
+      {
+        "id": "expPctCol",
+        "component": "Col",
+        "label": "% of Burn",
+        "data": [
+          "52.8%",
+          "18.8%",
+          "12.6%",
+          "12.2%",
+          "3.7%"
+        ]
+      },
+      {
+        "id": "transactionsCard",
+        "component": "Card",
+        "children": [
+          "transactionsHeader",
+          "transactionsAlert",
+          "transactionsTable"
+        ]
+      },
+      {
+        "id": "transactionsHeader",
+        "component": "CardHeader",
+        "title": "Transactions > $10,000 — April 2026",
+        "subtitle": "5 transactions flagged • Sorted by date"
+      },
+      {
+        "id": "transactionsAlert",
+        "component": "Alert",
+        "title": "Largest outflow: Payroll",
+        "description": "$52,000 via Gusto on Apr 08 — 52.8% of monthly burn. All transactions above threshold require dual approval.",
+        "variant": "info"
+      },
+      {
+        "id": "transactionsTable",
+        "component": "Table",
+        "columns": [
+          "txnDateCol",
+          "txnDescCol",
+          "txnCatCol",
+          "txnAmountCol"
+        ]
+      },
+      {
+        "id": "txnDateCol",
+        "component": "Col",
+        "label": "Date",
+        "data": [
+          "Apr 03",
+          "Apr 08",
+          "Apr 15",
+          "Apr 22",
+          "Apr 28"
+        ]
+      },
+      {
+        "id": "txnDescCol",
+        "component": "Col",
+        "label": "Description",
+        "data": [
+          "AWS Enterprise — Cloud",
+          "Gusto — Payroll",
+          "Office Rent — Mission St",
+          "Brand Agency — Campaign",
+          "Legal Retainer — Wilson LLP"
+        ]
+      },
+      {
+        "id": "txnCatCol",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Software",
+          "Payroll",
+          "Rent",
+          "Marketing",
+          "Legal"
+        ]
+      },
+      {
+        "id": "txnAmountCol",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "$12,400",
+          "$52,000",
+          "$12,000",
+          "$18,500",
+          "$11,200"
+        ]
+      },
+      {
+        "id": "footerActions",
+        "component": "Buttons",
+        "buttons": [
+          "exportCsvBtn",
+          "shareBtn"
+        ]
+      },
+      {
+        "id": "exportCsvBtn",
+        "component": "Button",
+        "label": "Download CSV",
+        "variant": "secondary"
+      },
+      {
+        "id": "shareBtn",
+        "component": "Button",
+        "label": "Email Statement",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>

@@ -1,0 +1,404 @@
+Here's a single-screen hiring overview dashboard covering all eight items — KPIs up top (headcount, time-to-hire, open roles, interviews), then open roles by department, pipeline funnel, department split, attrition trend, this week's interview schedule, and an "Open a new role" dialog with a form.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "gap": "l",
+        "children": [
+          "header",
+          "kpis",
+          "rolesHeading",
+          "rolesTable",
+          "pipelineHeading",
+          "pipelineChart",
+          "deptHeading",
+          "deptPie",
+          "attritionHeading",
+          "attritionChart",
+          "interviewsHeading",
+          "interviewsList",
+          "newRoleDialog"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Hiring Overview",
+        "subtitle": "People team snapshot — updated this week"
+      },
+      {
+        "id": "kpis",
+        "component": "Table",
+        "columns": [
+          "kpiName",
+          "kpiValue"
+        ]
+      },
+      {
+        "id": "kpiName",
+        "component": "Col",
+        "label": "Key metric",
+        "data": [
+          "Current headcount",
+          "Avg. time to hire",
+          "Open roles",
+          "Interviews this week"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "248",
+          "32 days",
+          "6",
+          "5"
+        ]
+      },
+      {
+        "id": "rolesHeading",
+        "component": "Heading",
+        "text": "Open roles",
+        "level": "h3"
+      },
+      {
+        "id": "rolesTable",
+        "component": "Table",
+        "columns": [
+          "roleCol",
+          "deptCol",
+          "candCol"
+        ]
+      },
+      {
+        "id": "roleCol",
+        "component": "Col",
+        "label": "Role",
+        "data": [
+          "Senior Backend Engineer",
+          "Product Designer",
+          "Data Analyst",
+          "Account Executive",
+          "Engineering Manager",
+          "HR Business Partner"
+        ]
+      },
+      {
+        "id": "deptCol",
+        "component": "Col",
+        "label": "Department",
+        "data": [
+          "Engineering",
+          "Design",
+          "Data",
+          "Sales",
+          "Engineering",
+          "People"
+        ]
+      },
+      {
+        "id": "candCol",
+        "component": "Col",
+        "label": "Active candidates",
+        "type": "number",
+        "data": [
+          14,
+          9,
+          22,
+          11,
+          6,
+          8
+        ]
+      },
+      {
+        "id": "pipelineHeading",
+        "component": "Heading",
+        "text": "Candidates by pipeline stage",
+        "level": "h3"
+      },
+      {
+        "id": "pipelineChart",
+        "component": "BarChart",
+        "labels": [
+          "Applied",
+          "Screening",
+          "Interview",
+          "Offer",
+          "Hired"
+        ],
+        "series": [
+          "pipelineSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Stage",
+        "yLabel": "Candidates"
+      },
+      {
+        "id": "pipelineSeries",
+        "component": "Series",
+        "category": "Candidates",
+        "values": [
+          320,
+          96,
+          41,
+          12,
+          5
+        ]
+      },
+      {
+        "id": "deptHeading",
+        "component": "Heading",
+        "text": "Headcount by department",
+        "level": "h3"
+      },
+      {
+        "id": "deptPie",
+        "component": "PieChart",
+        "labels": [
+          "Engineering",
+          "Sales",
+          "Marketing",
+          "Design",
+          "Data",
+          "People"
+        ],
+        "values": [
+          98,
+          52,
+          41,
+          24,
+          18,
+          15
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "attritionHeading",
+        "component": "Heading",
+        "text": "Attrition — past 6 months",
+        "level": "h3"
+      },
+      {
+        "id": "attritionChart",
+        "component": "LineChart",
+        "labels": [
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep"
+        ],
+        "series": [
+          "attritionSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Month",
+        "yLabel": "Attrition rate (%)"
+      },
+      {
+        "id": "attritionSeries",
+        "component": "Series",
+        "category": "Monthly attrition",
+        "values": [
+          1.2,
+          0.8,
+          1.5,
+          1.1,
+          0.9,
+          1.3
+        ]
+      },
+      {
+        "id": "interviewsHeading",
+        "component": "Heading",
+        "text": "Interviews scheduled this week",
+        "level": "h3"
+      },
+      {
+        "id": "interviewsList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "int1",
+          "int2",
+          "int3",
+          "int4",
+          "int5"
+        ]
+      },
+      {
+        "id": "int1",
+        "component": "ListItem",
+        "title": "Ana Chen — Senior Backend Engineer",
+        "subtitle": "Mon 10:00 · Technical panel"
+      },
+      {
+        "id": "int2",
+        "component": "ListItem",
+        "title": "Marcus Reid — Product Designer",
+        "subtitle": "Mon 14:30 · Portfolio review"
+      },
+      {
+        "id": "int3",
+        "component": "ListItem",
+        "title": "Priya Nair — Data Analyst",
+        "subtitle": "Tue 11:00 · Hiring manager screen"
+      },
+      {
+        "id": "int4",
+        "component": "ListItem",
+        "title": "Tom Alvarez — Account Executive",
+        "subtitle": "Wed 15:00 · Final round"
+      },
+      {
+        "id": "int5",
+        "component": "ListItem",
+        "title": "Lena Fischer — HR Business Partner",
+        "subtitle": "Fri 09:30 · Culture interview"
+      },
+      {
+        "id": "newRoleDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Open a new role",
+        "title": "Create a new role",
+        "description": "Fill in the details below to post a new opening.",
+        "content": [
+          "roleForm"
+        ]
+      },
+      {
+        "id": "roleForm",
+        "component": "Form",
+        "name": "new-role",
+        "buttons": "roleFormButtons",
+        "fields": [
+          "fTitle",
+          "fDept",
+          "fManager"
+        ]
+      },
+      {
+        "id": "fTitle",
+        "component": "FormControl",
+        "label": "Job title",
+        "input": "titleInput",
+        "hint": "As it should appear on the job posting"
+      },
+      {
+        "id": "titleInput",
+        "component": "Input",
+        "name": "title",
+        "placeholder": "e.g. Senior Backend Engineer"
+      },
+      {
+        "id": "fDept",
+        "component": "FormControl",
+        "label": "Department",
+        "input": "deptSelect"
+      },
+      {
+        "id": "deptSelect",
+        "component": "Select",
+        "name": "department",
+        "placeholder": "Select a department",
+        "items": [
+          "dEng",
+          "dSales",
+          "dMarketing",
+          "dDesign",
+          "dData",
+          "dPeople"
+        ]
+      },
+      {
+        "id": "dEng",
+        "component": "SelectItem",
+        "value": "engineering",
+        "label": "Engineering"
+      },
+      {
+        "id": "dSales",
+        "component": "SelectItem",
+        "value": "sales",
+        "label": "Sales"
+      },
+      {
+        "id": "dMarketing",
+        "component": "SelectItem",
+        "value": "marketing",
+        "label": "Marketing"
+      },
+      {
+        "id": "dDesign",
+        "component": "SelectItem",
+        "value": "design",
+        "label": "Design"
+      },
+      {
+        "id": "dData",
+        "component": "SelectItem",
+        "value": "data",
+        "label": "Data"
+      },
+      {
+        "id": "dPeople",
+        "component": "SelectItem",
+        "value": "people",
+        "label": "People"
+      },
+      {
+        "id": "fManager",
+        "component": "FormControl",
+        "label": "Hiring manager",
+        "input": "managerInput"
+      },
+      {
+        "id": "managerInput",
+        "component": "Input",
+        "name": "hiring_manager",
+        "placeholder": "e.g. Jordan Lee"
+      },
+      {
+        "id": "roleFormButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitRole",
+          "cancelRole"
+        ]
+      },
+      {
+        "id": "submitRole",
+        "component": "Button",
+        "label": "Create role",
+        "variant": "primary"
+      },
+      {
+        "id": "cancelRole",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+All eight items are covered: (1) headcount of 248 in the KPI table, (2) six open roles each with their department, (3) a bar chart of candidates across the five pipeline stages, (4) 32-day average time to hire, (5) a donut chart splitting headcount by department (sums to 248), (6) this week's five scheduled interviews, (7) a 6-month attrition trend line, and (8) an "Open a new role" button that opens a dialog with a submission form. Want me to add anything, like time-to-hire trended by month or a filter by department?

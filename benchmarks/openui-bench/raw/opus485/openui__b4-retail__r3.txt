@@ -1,0 +1,60 @@
+root = Card([header, storeSelect, salesProgress, basketTag, trafficChart, weekCompare, bestSellers, outOfStock, staffList, returnsChart, promos, registers, reorderForm, followups])
+
+header = CardHeader("Store Console", "Daily overview — Downtown #204")
+
+storeSelect = DialogBlock("View a different store", "Select store", "Switch to another location", [storeList], "outline")
+storeList = ListBlock([store1, store2, store3], "number")
+store1 = ListItem("Downtown #204", "Current store", null, "Selected")
+store2 = ListItem("Riverside #118", "3.2mi away", null, "View")
+store3 = ListItem("Airport #341", "8.7mi away", null, "View")
+
+salesProgress = Progress(72, "Sales today: $18,240 of $25,000 target")
+
+basketTag = Tag("Avg basket size: $42.15", null, "lg", "info")
+
+trafficChart = LineChart(["8a","10a","12p","2p","4p","6p","8p"], [trafficSeries], "natural", "Hour", "Visitors")
+trafficSeries = Series("Foot traffic", [42, 88, 165, 130, 148, 210, 96])
+
+weekCompare = BarChart(["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], [thisWeek, lastWeek], "grouped", "Day", "Sales $")
+thisWeek = Series("This week", [3200, 2980, 3410, 3600, 4800, 6200, 4100])
+lastWeek = Series("Last week", [3000, 3100, 3050, 3300, 4400, 5900, 3800])
+
+bestSellers = Table([bsName, bsUnits])
+bsName = Col("Best seller", ["Cold Brew 16oz", "Almond Croissant", "Oat Latte", "Blueberry Muffin"])
+bsUnits = Col("Units", [148, 122, 110, 87], "number")
+
+outOfStock = Callout("warning", "Out of stock", "Vanilla Syrup, Matcha Powder, and Sourdough Loaf are unavailable.")
+
+staffList = ListBlock([staff1, staff2, staff3, staff4], "number")
+staff1 = ListItem("Maria Lopez", "Shift lead — 7a-3p")
+staff2 = ListItem("James Chen", "Barista — 8a-4p")
+staff3 = ListItem("Aisha Khan", "Cashier — 10a-6p")
+staff4 = ListItem("Tom Reid", "Stock — 6a-2p")
+
+returnsChart = BarChart(["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], [returnsSeries], "grouped", "Day", "Returns")
+returnsSeries = Series("Returns this week", [4, 2, 6, 3, 5, 8, 1])
+
+promos = Table([promoName, promoUplift, promoStatus])
+promoName = Col("Promotion", ["BOGO Pastries", "Happy Hour 3-5p", "Loyalty 2x Points"])
+promoUplift = Col("Uplift %", [18, 24, 12], "number")
+promoStatus = Col("Status", ["Strong", "Strong", "Steady"])
+
+registers = Table([regId, regState])
+regId = Col("Register", ["R1", "R2", "R3", "R4"])
+regState = Col("Status", ["Open", "Open", "Closed", "Open"])
+
+reorderForm = Form("reorder", reorderButtons, [reorderItem, reorderQty])
+reorderItem = FormControl("Item to reorder", reorderSelect)
+reorderSelect = Select("item", [ri1, ri2, ri3], "Choose an item")
+ri1 = SelectItem("vanilla-syrup", "Vanilla Syrup")
+ri2 = SelectItem("matcha", "Matcha Powder")
+ri3 = SelectItem("sourdough", "Sourdough Loaf")
+reorderQty = FormControl("Quantity (units)", reorderQtyInput)
+reorderQtyInput = Input("qty", "24", "number")
+reorderButtons = Buttons([reorderSubmit])
+reorderSubmit = Button("Place reorder", null, "primary")
+
+followups = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Show yesterday's numbers")
+fu2 = FollowUpItem("Schedule next week's shifts")
+fu3 = FollowUpItem("Export today's report")

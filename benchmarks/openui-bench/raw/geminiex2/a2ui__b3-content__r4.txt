@@ -1,0 +1,637 @@
+Here is a complete, interactive Editor's Content Studio dashboard built with A2UI components. It covers all 8 features, including content tracking, category filtering, analytics, scheduling, comment management, and quick drafting.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "studioHeader",
+          "quickActions",
+          "alertNotice",
+          "categoryFilterCard",
+          "studioTabs"
+        ]
+      },
+      {
+        "id": "studioHeader",
+        "component": "CardHeader",
+        "title": "Editor's Content Studio",
+        "subtitle": "Manage drafts, track readership performance, schedule releases, and moderate community feedback."
+      },
+      {
+        "id": "quickActions",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": [
+          "newDraftBtn",
+          "scheduleDialogBtn"
+        ]
+      },
+      {
+        "id": "newDraftBtn",
+        "component": "Button",
+        "label": "+ Start New Draft",
+        "variant": "primary"
+      },
+      {
+        "id": "scheduleDialogBtn",
+        "component": "DialogBlock",
+        "triggerLabel": "Schedule a Piece",
+        "triggerVariant": "outline",
+        "title": "Schedule Article for Publication",
+        "description": "Enter the article details and pick a future publish date.",
+        "content": [
+          "scheduleForm"
+        ]
+      },
+      {
+        "id": "scheduleForm",
+        "component": "Form",
+        "name": "schedule_article_form",
+        "fields": [
+          "schedTitleControl",
+          "schedCategoryControl",
+          "schedDateControl"
+        ],
+        "buttons": "schedFormButtons"
+      },
+      {
+        "id": "schedTitleControl",
+        "component": "FormControl",
+        "label": "Article Title",
+        "hint": "Enter the complete working title.",
+        "input": "schedTitleInput"
+      },
+      {
+        "id": "schedTitleInput",
+        "component": "Input",
+        "name": "article_title",
+        "placeholder": "e.g., The Future of Generative AI in Journalism"
+      },
+      {
+        "id": "schedCategoryControl",
+        "component": "FormControl",
+        "label": "Category",
+        "input": "schedCategorySelect"
+      },
+      {
+        "id": "schedCategorySelect",
+        "component": "Select",
+        "name": "article_category",
+        "placeholder": "Select category",
+        "items": [
+          "catOptTech",
+          "catOptDesign",
+          "catOptCulture",
+          "catOptBusiness"
+        ]
+      },
+      {
+        "id": "catOptTech",
+        "component": "SelectItem",
+        "label": "Technology",
+        "value": "tech"
+      },
+      {
+        "id": "catOptDesign",
+        "component": "SelectItem",
+        "label": "Design",
+        "value": "design"
+      },
+      {
+        "id": "catOptCulture",
+        "component": "SelectItem",
+        "label": "Culture",
+        "value": "culture"
+      },
+      {
+        "id": "catOptBusiness",
+        "component": "SelectItem",
+        "label": "Business",
+        "value": "business"
+      },
+      {
+        "id": "schedDateControl",
+        "component": "FormControl",
+        "label": "Publish Date",
+        "input": "schedDatePicker"
+      },
+      {
+        "id": "schedDatePicker",
+        "component": "DatePicker",
+        "name": "publish_date",
+        "mode": "single"
+      },
+      {
+        "id": "schedFormButtons",
+        "component": "Buttons",
+        "buttons": [
+          "confirmScheduleBtn"
+        ]
+      },
+      {
+        "id": "confirmScheduleBtn",
+        "component": "Button",
+        "label": "Confirm Schedule",
+        "variant": "primary"
+      },
+      {
+        "id": "alertNotice",
+        "component": "Alert",
+        "title": "Editorial Priority",
+        "description": "3 comments require editor response. 2 drafts are currently awaiting final sign-off for Friday publication.",
+        "variant": "warning"
+      },
+      {
+        "id": "categoryFilterCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "filterControl"
+        ]
+      },
+      {
+        "id": "filterControl",
+        "component": "FormControl",
+        "label": "Filter Studio Dashboard by Category",
+        "hint": "Narrow down readership stats, drafts, and published pieces.",
+        "input": "categorySelect"
+      },
+      {
+        "id": "categorySelect",
+        "component": "Select",
+        "name": "global_category_filter",
+        "placeholder": "All Categories",
+        "items": [
+          "filterAll",
+          "filterTech",
+          "filterDesign",
+          "filterCulture",
+          "filterBusiness"
+        ]
+      },
+      {
+        "id": "filterAll",
+        "component": "SelectItem",
+        "label": "All Categories",
+        "value": "all"
+      },
+      {
+        "id": "filterTech",
+        "component": "SelectItem",
+        "label": "Technology",
+        "value": "tech"
+      },
+      {
+        "id": "filterDesign",
+        "component": "SelectItem",
+        "label": "Design",
+        "value": "design"
+      },
+      {
+        "id": "filterCulture",
+        "component": "SelectItem",
+        "label": "Culture",
+        "value": "culture"
+      },
+      {
+        "id": "filterBusiness",
+        "component": "SelectItem",
+        "label": "Business",
+        "value": "business"
+      },
+      {
+        "id": "studioTabs",
+        "component": "Tabs",
+        "items": [
+          "tabOverview",
+          "tabDrafts",
+          "tabPublished",
+          "tabComments"
+        ]
+      },
+      {
+        "id": "tabOverview",
+        "component": "TabItem",
+        "value": "overview",
+        "trigger": "Analytics & Featured",
+        "content": [
+          "mostReadCard",
+          "readershipCard"
+        ]
+      },
+      {
+        "id": "mostReadCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "mostReadHeader",
+          "mostReadBadge",
+          "mostReadDetail",
+          "mostReadStats"
+        ]
+      },
+      {
+        "id": "mostReadHeader",
+        "component": "CardHeader",
+        "title": "🏆 Most-Read Article This Month",
+        "subtitle": "Top performing long-form piece across all channels"
+      },
+      {
+        "id": "mostReadBadge",
+        "component": "Badge",
+        "text": "Technology • Published Oct 4",
+        "variant": "secondary"
+      },
+      {
+        "id": "mostReadDetail",
+        "component": "TextContent",
+        "text": "### **\"The Architecture of Modern Web Interfaces\"**\n\n*By Sarah Jenkins* — An in-depth analysis of component-driven UIs, real-time dynamic rendering, and design systems in enterprise web applications.",
+        "size": "large"
+      },
+      {
+        "id": "mostReadStats",
+        "component": "Table",
+        "columns": [
+          "mrMetricCol",
+          "mrValueCol"
+        ]
+      },
+      {
+        "id": "mrMetricCol",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Total Pageviews",
+          "Unique Readers",
+          "Avg. Time on Page",
+          "Social Shares"
+        ]
+      },
+      {
+        "id": "mrValueCol",
+        "component": "Col",
+        "label": "Performance",
+        "data": [
+          "142,850",
+          "98,200",
+          "4m 32s",
+          "3,410"
+        ]
+      },
+      {
+        "id": "readershipCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "readershipHeader",
+          "readershipChart"
+        ]
+      },
+      {
+        "id": "readershipHeader",
+        "component": "CardHeader",
+        "title": "Readership Over the Past 30 Days",
+        "subtitle": "Daily total readers and pageviews trend"
+      },
+      {
+        "id": "readershipChart",
+        "component": "LineChart",
+        "variant": "natural",
+        "xLabel": "Timeline",
+        "yLabel": "Views",
+        "labels": [
+          "Week 1",
+          "Week 2",
+          "Week 3",
+          "Week 4"
+        ],
+        "series": [
+          "viewsSeries",
+          "visitorsSeries"
+        ]
+      },
+      {
+        "id": "viewsSeries",
+        "component": "Series",
+        "category": "Pageviews",
+        "values": [
+          45000,
+          62000,
+          58000,
+          81000
+        ]
+      },
+      {
+        "id": "visitorsSeries",
+        "component": "Series",
+        "category": "Unique Visitors",
+        "values": [
+          31000,
+          44000,
+          39000,
+          57000
+        ]
+      },
+      {
+        "id": "tabDrafts",
+        "component": "TabItem",
+        "value": "drafts",
+        "trigger": "Drafts Workflow",
+        "content": [
+          "draftsCard"
+        ]
+      },
+      {
+        "id": "draftsCard",
+        "component": "Card",
+        "children": [
+          "draftsHeader",
+          "draftsTable"
+        ]
+      },
+      {
+        "id": "draftsHeader",
+        "component": "CardHeader",
+        "title": "Active Content Drafts",
+        "subtitle": "Track stage, word count, and editorial progress for pending articles."
+      },
+      {
+        "id": "draftsTable",
+        "component": "Table",
+        "columns": [
+          "draftTitleCol",
+          "draftAuthorCol",
+          "draftCategoryCol",
+          "draftStatusCol",
+          "draftUpdatedCol"
+        ]
+      },
+      {
+        "id": "draftTitleCol",
+        "component": "Col",
+        "label": "Title",
+        "data": [
+          "Designing for Accessibility at Scale",
+          "2025 Tech Leadership Trends",
+          "The Psychology of Minimalist UX",
+          "Building Resilient Serverless APIs"
+        ]
+      },
+      {
+        "id": "draftAuthorCol",
+        "component": "Col",
+        "label": "Author",
+        "data": [
+          "Alex Rivera",
+          "Marcus Chen",
+          "Elena Rostova",
+          "David Kim"
+        ]
+      },
+      {
+        "id": "draftCategoryCol",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Design",
+          "Business",
+          "Design",
+          "Technology"
+        ]
+      },
+      {
+        "id": "draftStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "In Review",
+          "Drafting",
+          "Copy Editing",
+          "Scheduled"
+        ]
+      },
+      {
+        "id": "draftUpdatedCol",
+        "component": "Col",
+        "label": "Last Edit",
+        "data": [
+          "2 hours ago",
+          "5 hours ago",
+          "Yesterday",
+          "Oct 22"
+        ]
+      },
+      {
+        "id": "tabPublished",
+        "component": "TabItem",
+        "value": "published",
+        "trigger": "Published This Week",
+        "content": [
+          "publishedCard"
+        ]
+      },
+      {
+        "id": "publishedCard",
+        "component": "Card",
+        "children": [
+          "publishedHeader",
+          "publishedList"
+        ]
+      },
+      {
+        "id": "publishedHeader",
+        "component": "CardHeader",
+        "title": "Pieces Published This Week",
+        "subtitle": "Recently live articles and initial engagement metrics"
+      },
+      {
+        "id": "publishedList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "pubItem1",
+          "pubItem2",
+          "pubItem3"
+        ]
+      },
+      {
+        "id": "pubItem1",
+        "component": "ListItem",
+        "title": "Understanding Vector Databases in 2024",
+        "subtitle": "Published Oct 23 • Tech • 12,400 reads • 45 comments",
+        "actionLabel": "View Article"
+      },
+      {
+        "id": "pubItem2",
+        "component": "ListItem",
+        "title": "How Remote Work Changed Modern Office Culture",
+        "subtitle": "Published Oct 21 • Culture • 8,910 reads • 28 comments",
+        "actionLabel": "View Article"
+      },
+      {
+        "id": "pubItem3",
+        "component": "ListItem",
+        "title": "Mastering Micro-Interactions in Mobile Apps",
+        "subtitle": "Published Oct 20 • Design • 15,200 reads • 62 comments",
+        "actionLabel": "View Article"
+      },
+      {
+        "id": "tabComments",
+        "component": "TabItem",
+        "value": "comments",
+        "trigger": "Comments Awaiting Reply",
+        "content": [
+          "commentsCard"
+        ]
+      },
+      {
+        "id": "commentsCard",
+        "component": "Card",
+        "children": [
+          "commentsHeader",
+          "commentSection1",
+          "commentSection2"
+        ]
+      },
+      {
+        "id": "commentsHeader",
+        "component": "CardHeader",
+        "title": "Comments Awaiting Editor Response",
+        "subtitle": "Engage with readers who asked questions or requested follow-ups."
+      },
+      {
+        "id": "commentSection1",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "commentAvatar1",
+          "commentText1",
+          "replyForm1"
+        ]
+      },
+      {
+        "id": "commentAvatar1",
+        "component": "Avatar",
+        "fallback": "JD",
+        "alt": "John Doe"
+      },
+      {
+        "id": "commentText1",
+        "component": "TextContent",
+        "text": "**John Doe** on *\"Understanding Vector Databases in 2024\"*\n> \"Great post! Could you expand on how chunking strategies impact search precision when using hybrid embeddings?\"",
+        "size": "default"
+      },
+      {
+        "id": "replyForm1",
+        "component": "Form",
+        "name": "reply_form_1",
+        "fields": [
+          "replyControl1"
+        ],
+        "buttons": "replyBtns1"
+      },
+      {
+        "id": "replyControl1",
+        "component": "FormControl",
+        "label": "Your Reply",
+        "input": "replyArea1"
+      },
+      {
+        "id": "replyArea1",
+        "component": "TextArea",
+        "name": "reply_1",
+        "placeholder": "Write an editor response...",
+        "rows": 2
+      },
+      {
+        "id": "replyBtns1",
+        "component": "Buttons",
+        "buttons": [
+          "sendReplyBtn1"
+        ]
+      },
+      {
+        "id": "sendReplyBtn1",
+        "component": "Button",
+        "label": "Post Reply",
+        "variant": "primary",
+        "size": "small"
+      },
+      {
+        "id": "commentSection2",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "commentAvatar2",
+          "commentText2",
+          "replyForm2"
+        ]
+      },
+      {
+        "id": "commentAvatar2",
+        "component": "Avatar",
+        "fallback": "AS",
+        "alt": "Anna Smith"
+      },
+      {
+        "id": "commentText2",
+        "component": "TextContent",
+        "text": "**Anna Smith** on *\"Mastering Micro-Interactions in Mobile Apps\"*\n> \"Will there be a follow-up piece covering haptic feedback design guidelines for iOS and Android?\"",
+        "size": "default"
+      },
+      {
+        "id": "replyForm2",
+        "component": "Form",
+        "name": "reply_form_2",
+        "fields": [
+          "replyControl2"
+        ],
+        "buttons": "replyBtns2"
+      },
+      {
+        "id": "replyControl2",
+        "component": "FormControl",
+        "label": "Your Reply",
+        "input": "replyArea2"
+      },
+      {
+        "id": "replyArea2",
+        "component": "TextArea",
+        "name": "reply_2",
+        "placeholder": "Write an editor response...",
+        "rows": 2
+      },
+      {
+        "id": "replyBtns2",
+        "component": "Buttons",
+        "buttons": [
+          "sendReplyBtn2"
+        ]
+      },
+      {
+        "id": "sendReplyBtn2",
+        "component": "Button",
+        "label": "Post Reply",
+        "variant": "primary",
+        "size": "small"
+      }
+    ]
+  }
+}
+</a2ui-json>

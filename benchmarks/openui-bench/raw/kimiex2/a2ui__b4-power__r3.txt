@@ -1,0 +1,526 @@
+Here's a complete power network operator console covering all 12 requirements:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "liveAlert",
+          "kpis",
+          "capacityProgress",
+          "rowCharts",
+          "plantsTable",
+          "outagesTable",
+          "forecastChart",
+          "maintenanceList",
+          "regionFocus",
+          "curtailmentForm",
+          "followups"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Grid Operations Console",
+        "subtitle": "National power network — live status"
+      },
+      {
+        "id": "liveAlert",
+        "component": "Alert",
+        "title": "Live Alert — 14:32 UTC",
+        "description": "Frequency deviation detected on Northern interconnect (-0.18 Hz). Auto-response engaged. Monitoring.",
+        "variant": "warning"
+      },
+      {
+        "id": "kpis",
+        "component": "Table",
+        "columns": [
+          "kpiName",
+          "kpiValue",
+          "kpiNote"
+        ]
+      },
+      {
+        "id": "kpiName",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Current Network Load",
+          "Capacity Utilization",
+          "Spot Price",
+          "Emissions Today"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "34.2 GW",
+          "82% of 41.7 GW",
+          "$68.40 / MWh",
+          "412,000 tCO₂e"
+        ]
+      },
+      {
+        "id": "kpiNote",
+        "component": "Col",
+        "label": "Trend",
+        "data": [
+          "▲ +1.8 GW vs 1h ago",
+          "Peak expected 18:00",
+          "▲ +$4.20 vs day avg",
+          "On pace vs daily target"
+        ]
+      },
+      {
+        "id": "capacityProgress",
+        "component": "Progress",
+        "value": 82,
+        "label": "Network capacity utilization — 34.2 GW of 41.7 GW available"
+      },
+      {
+        "id": "rowCharts",
+        "component": "Card",
+        "variant": "clear",
+        "children": [
+          "genSplitChart",
+          "emissionsChart"
+        ]
+      },
+      {
+        "id": "genSplitChart",
+        "component": "PieChart",
+        "labels": [
+          "Gas",
+          "Nuclear",
+          "Wind",
+          "Solar",
+          "Hydro",
+          "Coal",
+          "Imports"
+        ],
+        "values": [
+          11200,
+          8900,
+          6400,
+          3100,
+          2200,
+          1400,
+          1000
+        ],
+        "variant": "donut",
+        "appearance": "circular"
+      },
+      {
+        "id": "emissionsChart",
+        "component": "RadialChart",
+        "labels": [
+          "CO₂e emitted",
+          "Remaining budget"
+        ],
+        "values": [
+          412,
+          188
+        ]
+      },
+      {
+        "id": "plantsTable",
+        "component": "Table",
+        "columns": [
+          "plantName",
+          "plantType",
+          "plantOutput",
+          "plantStatus"
+        ]
+      },
+      {
+        "id": "plantName",
+        "component": "Col",
+        "label": "Plant",
+        "data": [
+          "Riverside CCGT",
+          "Northgate Nuclear",
+          "Highland Wind Farm",
+          "Solara PV Park",
+          "Cascade Hydro",
+          "Blackrock Coal"
+        ]
+      },
+      {
+        "id": "plantType",
+        "component": "Col",
+        "label": "Source",
+        "data": [
+          "Gas",
+          "Nuclear",
+          "Wind",
+          "Solar",
+          "Hydro",
+          "Coal"
+        ]
+      },
+      {
+        "id": "plantOutput",
+        "component": "Col",
+        "label": "Output (MW)",
+        "data": [
+          "1,850",
+          "2,400",
+          "940",
+          "620",
+          "780",
+          "410"
+        ]
+      },
+      {
+        "id": "plantStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Online",
+          "Online",
+          "Online — derated (low wind)",
+          "Online",
+          "Online",
+          "Standby"
+        ]
+      },
+      {
+        "id": "outagesTable",
+        "component": "Table",
+        "columns": [
+          "outageId",
+          "outageAsset",
+          "outageRegion",
+          "outageImpact"
+        ]
+      },
+      {
+        "id": "outageId",
+        "component": "Col",
+        "label": "Outage",
+        "data": [
+          "OUT-2291",
+          "OUT-2287",
+          "OUT-2284"
+        ]
+      },
+      {
+        "id": "outageAsset",
+        "component": "Col",
+        "label": "Asset",
+        "data": [
+          "275kV line — Pine Crossing",
+          "Distribution feeder F-114",
+          "Transformer T-9 substation"
+        ]
+      },
+      {
+        "id": "outageRegion",
+        "component": "Col",
+        "label": "Affected Region",
+        "data": [
+          "Northern",
+          "Eastern Metro",
+          "Coastal"
+        ]
+      },
+      {
+        "id": "outageImpact",
+        "component": "Col",
+        "label": "Customers Affected",
+        "data": [
+          "12,400",
+          "3,100",
+          "8,750"
+        ]
+      },
+      {
+        "id": "forecastChart",
+        "component": "LineChart",
+        "labels": [
+          "00:00",
+          "03:00",
+          "06:00",
+          "09:00",
+          "12:00",
+          "15:00",
+          "18:00",
+          "21:00"
+        ],
+        "series": [
+          "forecastSeries",
+          "capacitySeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Time (next 24h)",
+        "yLabel": "Demand (GW)"
+      },
+      {
+        "id": "forecastSeries",
+        "component": "Series",
+        "category": "Forecast Demand",
+        "values": [
+          22.1,
+          19.8,
+          21.4,
+          30.2,
+          34.6,
+          36.1,
+          39.8,
+          33.4
+        ]
+      },
+      {
+        "id": "capacitySeries",
+        "component": "Series",
+        "category": "Available Capacity",
+        "values": [
+          41.7,
+          41.7,
+          41.7,
+          41.7,
+          41.7,
+          41.7,
+          41.7,
+          41.7
+        ]
+      },
+      {
+        "id": "maintenanceList",
+        "component": "ListBlock",
+        "items": [
+          "maint1",
+          "maint2",
+          "maint3"
+        ],
+        "variant": "number"
+      },
+      {
+        "id": "maint1",
+        "component": "ListItem",
+        "title": "Blackrock Coal — boiler inspection",
+        "subtitle": "Mar 4–8 · Unit offline, 410 MW unavailable"
+      },
+      {
+        "id": "maint2",
+        "component": "ListItem",
+        "title": "275kV line — Eastern corridor upgrade",
+        "subtitle": "Mar 12 · Planned outage 06:00–14:00, Eastern region"
+      },
+      {
+        "id": "maint3",
+        "component": "ListItem",
+        "title": "Cascade Hydro — turbine bearing replacement",
+        "subtitle": "Mar 20–22 · Output reduced to 400 MW"
+      },
+      {
+        "id": "regionFocus",
+        "component": "FormControl",
+        "label": "Focus on region",
+        "input": "regionSelect",
+        "hint": "Filters plants, outages and alerts to the selected region"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region",
+        "items": [
+          "regAll",
+          "regNorth",
+          "regEast",
+          "regCoastal",
+          "regSouth"
+        ],
+        "placeholder": "All regions"
+      },
+      {
+        "id": "regAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All regions"
+      },
+      {
+        "id": "regNorth",
+        "component": "SelectItem",
+        "value": "northern",
+        "label": "Northern"
+      },
+      {
+        "id": "regEast",
+        "component": "SelectItem",
+        "value": "eastern",
+        "label": "Eastern Metro"
+      },
+      {
+        "id": "regCoastal",
+        "component": "SelectItem",
+        "value": "coastal",
+        "label": "Coastal"
+      },
+      {
+        "id": "regSouth",
+        "component": "SelectItem",
+        "value": "southern",
+        "label": "Southern"
+      },
+      {
+        "id": "curtailmentForm",
+        "component": "Form",
+        "name": "curtailment-order",
+        "buttons": "curtailButtons",
+        "fields": [
+          "curtRegionField",
+          "curtAmountField",
+          "curtDurationField"
+        ]
+      },
+      {
+        "id": "curtRegionField",
+        "component": "FormControl",
+        "label": "Curtailment region",
+        "input": "curtRegionSelect"
+      },
+      {
+        "id": "curtRegionSelect",
+        "component": "Select",
+        "name": "curtail_region",
+        "items": [
+          "curtRegNorth",
+          "curtRegEast",
+          "curtRegCoastal",
+          "curtRegSouth"
+        ],
+        "placeholder": "Select region"
+      },
+      {
+        "id": "curtRegNorth",
+        "component": "SelectItem",
+        "value": "northern",
+        "label": "Northern"
+      },
+      {
+        "id": "curtRegEast",
+        "component": "SelectItem",
+        "value": "eastern",
+        "label": "Eastern Metro"
+      },
+      {
+        "id": "curtRegCoastal",
+        "component": "SelectItem",
+        "value": "coastal",
+        "label": "Coastal"
+      },
+      {
+        "id": "curtRegSouth",
+        "component": "SelectItem",
+        "value": "southern",
+        "label": "Southern"
+      },
+      {
+        "id": "curtAmountField",
+        "component": "FormControl",
+        "label": "Load to shed (MW)",
+        "input": "curtAmountInput"
+      },
+      {
+        "id": "curtAmountInput",
+        "component": "Input",
+        "name": "curtail_mw",
+        "placeholder": "e.g. 250",
+        "type": "number"
+      },
+      {
+        "id": "curtDurationField",
+        "component": "FormControl",
+        "label": "Duration (minutes)",
+        "input": "curtDurationInput"
+      },
+      {
+        "id": "curtDurationInput",
+        "component": "Input",
+        "name": "curtail_minutes",
+        "placeholder": "e.g. 60",
+        "type": "number"
+      },
+      {
+        "id": "curtailButtons",
+        "component": "Buttons",
+        "buttons": [
+          "curtIssueBtn",
+          "curtCancelBtn"
+        ]
+      },
+      {
+        "id": "curtIssueBtn",
+        "component": "Button",
+        "label": "Issue curtailment order",
+        "variant": "primary",
+        "type": "destructive"
+      },
+      {
+        "id": "curtCancelBtn",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      },
+      {
+        "id": "followups",
+        "component": "FollowUpBlock",
+        "items": [
+          "fu1",
+          "fu2",
+          "fu3"
+        ]
+      },
+      {
+        "id": "fu1",
+        "component": "FollowUpItem",
+        "text": "Show detailed forecast for the 18:00 peak"
+      },
+      {
+        "id": "fu2",
+        "component": "FollowUpItem",
+        "text": "What is the status of outage OUT-2291?"
+      },
+      {
+        "id": "fu3",
+        "component": "FollowUpItem",
+        "text": "Simulate losing Northgate Nuclear — can we meet demand?"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This console covers all 12 items:
+
+1. **Current load** — 34.2 GW in the KPI table
+2. **Capacity proximity** — 82% utilization with a progress bar (34.2 / 41.7 GW)
+3. **Generation split** — donut chart by source (gas, nuclear, wind, solar, hydro, coal, imports)
+4. **Plants** — table with output (MW) and status per plant
+5. **Outages** — table with asset, affected region, and customer impact
+6. **24h demand forecast** — line chart with forecast vs. available capacity overlay
+7. **Price** — $68.40/MWh in the KPI table
+8. **Maintenance** — numbered list of this month's planned work
+9. **Live alerts** — alert banner showing the latest incoming event
+10. **Region focus** — dropdown to filter by region
+11. **Curtailment order** — form with region, MW to shed, and duration, plus a destructive-styled issue button
+12. **Emissions** — 412,000 tCO₂e today with a radial chart against daily budget

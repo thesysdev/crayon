@@ -1,0 +1,72 @@
+root = Card([header, filterBar, kpis, growthTrend, platformSplit, bestPosts, schedule, bestHour, engagementSection, collabSection, scheduleForm, followUp])
+
+header = CardHeader("Creator Studio", "Cross-platform performance · March 2025")
+
+filterBar = Form("platform-filter", filterButtons, [platformField])
+platformField = FormControl("Narrow to one platform", platformSelect, "Applies to all metrics below")
+platformSelect = Select("platform", [pfAll, pfIg, pfTt, pfYt, pfX], "All platforms")
+pfAll = SelectItem("all", "All platforms")
+pfIg = SelectItem("instagram", "Instagram")
+pfTt = SelectItem("tiktok", "TikTok")
+pfYt = SelectItem("youtube", "YouTube")
+pfX = SelectItem("x", "X / Twitter")
+filterButtons = Buttons([applyFilter, resetFilter])
+applyFilter = Button("Apply filter", null, "primary")
+resetFilter = Button("Reset", null, "tertiary")
+
+kpis = Table([kpiMetric, kpiValue, kpiChange])
+kpiMetric = Col("Metric", ["Total followers", "Growth (30d)", "Engagement rate", "Earnings (month)"])
+kpiValue = Col("Value", ["482,190", "+18,640", "6.4%", "$7,820"])
+kpiChange = Col("Change", ["+4.0%", "+12%", "+0.8pts", "+23%"])
+
+growthTrend = AreaChart(["Wk 1", "Wk 2", "Wk 3", "Wk 4"], [followerSeries], "natural", "Week", "Followers")
+followerSeries = Series("Followers", [463550, 469200, 476010, 482190])
+
+platformSplit = PieChart(splitLabels, splitValues, "donut")
+splitLabels = ["Instagram", "TikTok", "YouTube", "X / Twitter"]
+splitValues = [201400, 168900, 82600, 29290]
+
+bestPosts = ListBlock([post1, post2, post3], "number")
+post1 = ListItem("Studio setup reveal", "TikTok · 342K reach", null, "View")
+post2 = ListItem("30-day glowup thread", "Instagram · 288K reach", null, "View")
+post3 = ListItem("Editing tips livestream", "YouTube · 154K reach", null, "View")
+
+schedule = Table([schDay, schPost, schPlatform, schTime])
+schDay = Col("Day", ["Mon", "Tue", "Thu", "Fri", "Sat"])
+schPost = Col("Post", ["Q&A carousel", "Behind the scenes", "Gear review", "Weekly recap", "Collab teaser"])
+schPlatform = Col("Platform", ["Instagram", "TikTok", "YouTube", "X", "Instagram"])
+schTime = Col("Time", ["09:00", "18:30", "12:00", "17:00", "11:00"])
+
+bestHour = Callout("info", "Best time to post: 6:00 PM", "Historically your 6 PM posts earn 41% more engagement than average. Wednesdays and Saturdays perform best.")
+
+engagementSection = ListBlock([comment1, comment2, comment3], "number")
+comment1 = ListItem("@mia_creates", "Which mic do you use? · 2h ago", null, "Reply")
+comment2 = ListItem("@leo.films", "Can you drop the preset pack? · 5h ago", null, "Reply")
+comment3 = ListItem("@studiofox", "This helped so much, thank you! · 8h ago", null, "Reply")
+
+collabSection = ListBlock([collab1, collab2, collab3], "number")
+collab1 = ListItem("Aurora Skincare", "Paid partnership · $2,500 · pending", null, "Review")
+collab2 = ListItem("PixelPro Cameras", "Product gifting + reel · pending", null, "Review")
+collab3 = ListItem("BrewHaus Coffee", "3-post campaign · $1,800 · pending", null, "Review")
+
+scheduleForm = Form("schedule-post", scheduleButtons, [captionField, platformPostField, dateField, timeField])
+captionField = FormControl("Caption", captionInput, "Add hashtags and mentions")
+captionInput = TextArea("caption", "Write your caption...", 3)
+platformPostField = FormControl("Platform", postPlatformSelect)
+postPlatformSelect = Select("post_platform", [ppIg, ppTt, ppYt, ppX], "Choose platform")
+ppIg = SelectItem("instagram", "Instagram")
+ppTt = SelectItem("tiktok", "TikTok")
+ppYt = SelectItem("youtube", "YouTube")
+ppX = SelectItem("x", "X / Twitter")
+dateField = FormControl("Date", dateInput)
+dateInput = DatePicker("post_date", "single")
+timeField = FormControl("Time", timeInput, "Tip: 6 PM performs best")
+timeInput = Input("post_time", "18:00", "text")
+scheduleButtons = Buttons([schedulePost, saveDraft])
+schedulePost = Button("Schedule post", null, "primary")
+saveDraft = Button("Save draft", null, "secondary")
+
+followUp = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Show me last month's earnings breakdown")
+fu2 = FollowUpItem("Draft captions for my scheduled posts")
+fu3 = FollowUpItem("Compare Instagram vs TikTok engagement")

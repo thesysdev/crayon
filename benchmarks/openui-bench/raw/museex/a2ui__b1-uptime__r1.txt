@@ -1,0 +1,243 @@
+Here's your platform status page — single-screen overview covering live uptime and the latest incident:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "uptimeSection",
+          "incidentSection",
+          "historySection",
+          "footerActions"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Platform Status",
+        "subtitle": "API & Infrastructure • Live • Updated just now"
+      },
+      {
+        "id": "uptimeSection",
+        "component": "Card",
+        "children": [
+          "uptimeHeader",
+          "uptimeBadgeRow",
+          "uptimeProgress",
+          "uptimeStats",
+          "uptimeSeparator",
+          "uptimeDetailRow"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "uptimeHeader",
+        "component": "CardHeader",
+        "title": "API Uptime — This Month",
+        "subtitle": "August 1–18, 2026 • SLA target: 99.90%"
+      },
+      {
+        "id": "uptimeBadgeRow",
+        "component": "Card",
+        "children": [
+          "uptimeBadge",
+          "uptimeValue",
+          "uptimeTargetTag"
+        ],
+        "variant": "clear",
+        "direction": "row",
+        "align": "center",
+        "gap": "s"
+      },
+      {
+        "id": "uptimeBadge",
+        "component": "Badge",
+        "text": "Operational",
+        "variant": "secondary"
+      },
+      {
+        "id": "uptimeValue",
+        "component": "TextContent",
+        "text": "99.97%",
+        "size": "large-heavy"
+      },
+      {
+        "id": "uptimeTargetTag",
+        "component": "Tag",
+        "text": "Above SLA",
+        "variant": "success",
+        "size": "sm"
+      },
+      {
+        "id": "uptimeProgress",
+        "component": "Progress",
+        "value": 99.97,
+        "label": "99.97% uptime this month"
+      },
+      {
+        "id": "uptimeStats",
+        "component": "TextContent",
+        "text": "432,100 successful requests • 8m 42s total downtime • Longest incident-free streak: 12 days",
+        "size": "small"
+      },
+      {
+        "id": "uptimeSeparator",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "uptimeDetailRow",
+        "component": "TextContent",
+        "text": "Current uptime percentage for the **API** this month is **99.97%**, exceeding the 99.90% SLA. Downtime was limited to a single 18-minute window on Aug 17.",
+        "size": "small"
+      },
+      {
+        "id": "incidentSection",
+        "component": "Card",
+        "children": [
+          "incidentHeader",
+          "incidentAlert",
+          "incidentNote",
+          "incidentMeta"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "incidentHeader",
+        "component": "CardHeader",
+        "title": "Most Recent Incident",
+        "subtitle": "Incident #INC-4821 • Resolved 22 hours ago"
+      },
+      {
+        "id": "incidentAlert",
+        "component": "Alert",
+        "title": "Resolved: Elevated API Latency (US-East-1)",
+        "description": "Resolved on Aug 17, 2026 at 14:42 UTC — Duration: 18 minutes (14:24–14:42 UTC)",
+        "variant": "success"
+      },
+      {
+        "id": "incidentNote",
+        "component": "TextContent",
+        "text": "Short note: On Aug 17 at 14:24 UTC, p95 latency for API v2 (/orders & /search) spiked to ~1.8s after a config deploy exhausted the primary DB connection pool. Traffic was auto-failed over to read replicas, the config was rolled back, and latency returned to ~180ms by 14:42 UTC. No data loss or failed writes. Follow-up: pool limits increased and deploy guardrail added.",
+        "size": "default"
+      },
+      {
+        "id": "incidentMeta",
+        "component": "TagBlock",
+        "tags": [
+          "Severity: Minor",
+          "Affected: API v2",
+          "Resolved: Aug 17, 14:42 UTC"
+        ]
+      },
+      {
+        "id": "historySection",
+        "component": "Card",
+        "children": [
+          "historyHeader",
+          "historyTable"
+        ],
+        "variant": "sunk",
+        "gap": "s"
+      },
+      {
+        "id": "historyHeader",
+        "component": "CardHeader",
+        "title": "Daily Uptime — Last 7 Days",
+        "subtitle": "Supporting context for monthly 99.97%"
+      },
+      {
+        "id": "historyTable",
+        "component": "Table",
+        "columns": [
+          "colDate",
+          "colUptime",
+          "colStatus"
+        ]
+      },
+      {
+        "id": "colDate",
+        "component": "Col",
+        "label": "Date",
+        "data": [
+          "Aug 18",
+          "Aug 17",
+          "Aug 16",
+          "Aug 15",
+          "Aug 14",
+          "Aug 13",
+          "Aug 12"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colUptime",
+        "component": "Col",
+        "label": "Uptime",
+        "data": [
+          "100%",
+          "99.87%",
+          "100%",
+          "100%",
+          "99.99%",
+          "100%",
+          "100%"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "No incidents",
+          "1 incident — resolved 14:42 UTC",
+          "No incidents",
+          "No incidents",
+          "Brief blip (47s)",
+          "No incidents",
+          "No incidents"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "footerActions",
+        "component": "Buttons",
+        "buttons": [
+          "refreshBtn",
+          "subscribeBtn"
+        ]
+      },
+      {
+        "id": "refreshBtn",
+        "component": "Button",
+        "label": "Refresh status",
+        "variant": "primary"
+      },
+      {
+        "id": "subscribeBtn",
+        "component": "Button",
+        "label": "Subscribe to updates",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>

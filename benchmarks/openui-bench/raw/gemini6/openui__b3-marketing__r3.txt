@@ -1,0 +1,42 @@
+root = Card([headerSection, filterBar, calloutSection, metricsGrid, chartsSection, listsSection])
+
+headerSection = Card([titleBlock, actionButtons], "clear", "row", "m", "center", "between")
+titleBlock = CardHeader("Marketing Performance Dashboard", "Weekly overview and campaign analytics")
+actionButtons = Buttons([exportBtn, shareBtn])
+exportBtn = Button("Export Report", null, "primary")
+shareBtn = Button("Share", null, "secondary")
+
+filterBar = Card([dateControl], "sunk", "row", "m", "center", "between")
+dateControl = FormControl("Date Range", datePicker)
+datePicker = DatePicker("date_range", "range")
+
+calloutSection = Callout("success", "Top Performing Campaign", "Summer Blast 2024 achieved the highest ROI at 340% with $14,200 total revenue generated.")
+
+metricsGrid = Card([conversionCard, subscriberCard], "clear", "row", "m")
+conversionCard = Card([conversionHeader, conversionValue, conversionBadge], "card", "column", "xs")
+conversionHeader = Heading("Conversion Rate", "h4")
+conversionValue = TextContent("4.28%", "large-heavy")
+conversionBadge = Badge("+0.6% vs last week", "default")
+
+subscriberCard = Card([subscriberHeader, subscriberValue, subscriberProgress], "card", "column", "xs")
+subscriberHeader = Heading("Email Subscriber Growth", "h4")
+subscriberValue = TextContent("+2,450 New Subscribers", "large-heavy")
+subscriberProgress = Progress(82, "Monthly Goal: 3,000 subscribers (82%)")
+
+chartsSection = Card([visitorsChartCard, trafficShareCard], "clear", "row", "m")
+visitorsChartCard = Card([visitorsHeader, visitorsChart], "card", "column", "m")
+visitorsHeader = Heading("Site Visitors (Last 30 Days)", "h3")
+visitorsChart = LineChart(["Day 1", "Day 5", "Day 10", "Day 15", "Day 20", "Day 25", "Day 30"], [visitorSeries], "natural", "Days", "Visitors")
+visitorSeries = Series("Daily Visitors", [1200, 1450, 1320, 1800, 2100, 1950, 2400])
+
+trafficShareCard = Card([trafficHeader, trafficChart], "card", "column", "m")
+trafficHeader = Heading("Top 5 Traffic Sources Share", "h3")
+trafficChart = PieChart(["Organic Search", "Paid Ads", "Social Media", "Direct", "Referral"], [40, 25, 15, 12, 8], "donut")
+
+listsSection = Card([campaignsHeader, campaignsTable], "card", "column", "m")
+campaignsHeader = Heading("Active Campaigns & Spend", "h3")
+campaignsTable = Table([colName, colStatus, colSpend, colConversions])
+colName = Col("Campaign Name", ["Summer Blast 2024", "Retargeting Q3", "Product Launch - Pro", "Brand Awareness", "Email Nurture Flow"])
+colStatus = Col("Status", ["Active", "Active", "Active", "Paused", "Active"])
+colSpend = Col("Spend (USD)", ["$4,500", "$3,200", "$6,100", "$1,800", "$950"])
+colConversions = Col("Conversions", ["412", "285", "530", "94", "165"])

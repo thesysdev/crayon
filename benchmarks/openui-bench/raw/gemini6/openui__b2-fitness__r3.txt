@@ -1,0 +1,76 @@
+root = Card([header, mainGrid, workoutSection, logWorkoutSection, followUp])
+
+header = CardHeader("Daily Fitness Summary", "Thursday, October 24 • Keep up the great momentum!")
+
+mainGrid = Card([todayHeading, progressRow, kpiRow], "sunk", "column", "m")
+todayHeading = Heading("Today's Progress", "h3")
+
+progressRow = Card([stepsProgress], "clear")
+stepsProgress = Progress(8420, "Daily Step Goal: 8,420 / 10,000 steps (84%)")
+
+kpiRow = Card([calCard, activeCard, distanceCard], "clear", "row", "m")
+calCard = Card([calHeader, calVal, calTag], "card", "column", "xs")
+calHeader = TextContent("Calories Burned", "small-heavy")
+calVal = Heading("645 kcal", "h2")
+calTag = Tag("Goal: 600 kcal", "flame", "sm", "success")
+
+activeCard = Card([activeHeader, activeVal, activeTag], "card", "column", "xs")
+activeHeader = TextContent("Active Time", "small-heavy")
+activeVal = Heading("48 mins", "h2")
+activeTag = Tag("+12% vs avg", "trending-up", "sm", "info")
+
+distanceCard = Card([distHeader, distVal, distTag], "card", "column", "xs")
+distHeader = TextContent("Distance", "small-heavy")
+distVal = Heading("6.2 km", "h2")
+distTag = Tag("Walk + Run", "map-pin", "sm", "neutral")
+
+workoutSection = Card([weeklyHeading, weeklyChart, historyAccordion], "card", "column", "m")
+weeklyHeading = Heading("Past Week Workouts", "h3")
+
+weeklyChart = BarChart(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], [calSeries, durationSeries], "grouped", "Day", "Value")
+calSeries = Series("Calories (kcal)", [420, 580, 310, 645, 0, 500, 350])
+durationSeries = Series("Duration (mins)", [35, 50, 25, 48, 0, 45, 30])
+
+historyAccordion = Accordion([accThu, accTue, accMon])
+accThu = AccordionItem("thu", "Thursday: Morning Run & Core Workout (645 kcal)", thuDetails)
+thuDetails = TextContent("• **Outdoor Run**: 4.2 km in 28 mins (avg pace 6:40/km)\n• **Core Blast**: 20 mins HIIT session, avg heart rate 142 bpm")
+
+accTue = AccordionItem("tue", "Tuesday: Upper Body Strength (580 kcal)", tueDetails)
+tueDetails = TextContent("• **Bench Press**: 4 sets x 8 reps (65 kg)\n• **Pull-ups**: 3 sets x 10 reps\n• **Dumbbell Rows**: 3 sets x 12 reps")
+
+accMon = AccordionItem("mon", "Monday: Evening Yoga & Recovery (420 kcal)", monDetails)
+monDetails = TextContent("• **Vinyasa Flow**: 35 mins flexibility and balance focus")
+
+logWorkoutSection = Card([logHeading, logForm], "card", "column", "m")
+logHeading = Heading("Log a New Workout", "h3")
+
+logForm = Form("log_workout_form", formButtons, [typeField, durationField, caloriesField, dateField, notesField])
+
+typeField = FormControl("Workout Type", typeSelect)
+typeSelect = Select("workout_type", [typeRun, typeStrength, typeYoga, typeCycling, typeHIIT], "Select activity")
+typeRun = SelectItem("running", "Running")
+typeStrength = SelectItem("strength", "Strength Training")
+typeYoga = SelectItem("yoga", "Yoga / Stretching")
+typeCycling = SelectItem("cycling", "Cycling")
+typeHIIT = SelectItem("hiit", "HIIT / Cardio")
+
+durationField = FormControl("Duration (minutes)", durationInput)
+durationInput = Input("duration", "e.g. 45", "number")
+
+caloriesField = FormControl("Estimated Calories Burned", calInput)
+calInput = Input("calories", "e.g. 350", "number")
+
+dateField = FormControl("Date & Time", datePicker)
+datePicker = DatePicker("workout_date", "single")
+
+notesField = FormControl("Notes / Exercises", notesInput, "Optional performance notes or exercise breakdown")
+notesInput = TextArea("notes", "Felt strong today, increased bench press weight...", 3)
+
+formButtons = Buttons([submitBtn, resetBtn])
+submitBtn = Button("Save Workout", null, "primary")
+resetBtn = Button("Reset", null, "tertiary")
+
+followUp = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Show my monthly step trends")
+f2 = FollowUpItem("Set new calorie goal")
+f3 = FollowUpItem("View strength workout history")

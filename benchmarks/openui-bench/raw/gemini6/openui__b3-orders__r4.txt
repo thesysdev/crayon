@@ -1,0 +1,76 @@
+root = Card([header, metricsGrid, mainContent, followUps])
+
+header = CardHeader("E-Commerce Operations Desk", "Real-time order management and performance metrics")
+
+metricsGrid = Card([metricOrders, metricRevenue, metricAOV, metricRefunds], "clear", "row", "m")
+
+metricOrders = Card([mOrdersTitle, mOrdersValue, mOrdersTag], "sunk", "column", "xs")
+mOrdersTitle = TextContent("Orders Today", "small-heavy")
+mOrdersValue = TextContent("142", "large-heavy")
+mOrdersTag = Tag("+12% vs yesterday", null, "sm", "success")
+
+metricRevenue = Card([mRevTitle, mRevValue, mRevTag], "sunk", "column", "xs")
+mRevTitle = TextContent("Revenue Today", "small-heavy")
+mRevValue = TextContent("$18,450.00", "large-heavy")
+mRevTag = Tag("+8% vs target", null, "sm", "success")
+
+metricAOV = Card([mAovTitle, mAovValue, mAovTag], "sunk", "column", "xs")
+mAovTitle = TextContent("Avg Order Value", "small-heavy")
+mAovValue = TextContent("$129.93", "large-heavy")
+mAovTag = Tag("-$2.10 vs avg", null, "sm", "warning")
+
+metricRefunds = Card([mRefTitle, mRefValue, mRefProgress], "sunk", "column", "xs")
+mRefTitle = TextContent("Refund Rate (This Month)", "small-heavy")
+mRefValue = TextContent("1.8%", "large-heavy")
+mRefProgress = Progress(1.8, "Target < 2.5%")
+
+mainContent = Tabs([ordersTab, analyticsTab])
+
+ordersTab = TabItem("orders", "Recent Orders & Fulfillment", [filterForm, ordersTable, fulfillSection])
+
+filterForm = Form("search-filter-form", filterButtons, [customerSearchField, statusFilterField])
+customerSearchField = FormControl("Search Customer", customerSearchInput, "Filter by full or partial customer name")
+customerSearchInput = Input("customer_search", "e.g. Sarah Jenkins")
+statusFilterField = FormControl("Filter by Status", statusSelect)
+statusSelect = Select("status_filter", [statusAll, statusPending, statusProcessing, statusFulfilled, statusCancelled], "Select status...")
+statusAll = SelectItem("all", "All Statuses")
+statusPending = SelectItem("pending", "Pending")
+statusProcessing = SelectItem("processing", "Processing")
+statusFulfilled = SelectItem("fulfilled", "Fulfilled")
+statusCancelled = SelectItem("cancelled", "Cancelled")
+
+filterButtons = Buttons([applyFilterBtn, resetFilterBtn])
+applyFilterBtn = Button("Apply Filters", null, "primary")
+resetFilterBtn = Button("Reset", null, "tertiary")
+
+ordersTable = Table([colOrderId, colCustomer, colTotal, colStatus])
+colOrderId = Col("Order ID", ["#ORD-9482", "#ORD-9481", "#ORD-9480", "#ORD-9479", "#ORD-9478", "#ORD-9477"])
+colCustomer = Col("Customer", ["Sarah Jenkins", "Michael Chang", "Amanda Rossi", "David Kim", "Elena Rostova", "James Wilson"])
+colTotal = Col("Total", ["$249.50", "$84.00", "$412.10", "$129.00", "$67.25", "$310.00"])
+colStatus = Col("Status", ["Processing", "Pending", "Fulfilled", "Processing", "Fulfilled", "Pending"])
+
+fulfillSection = Card([fulfillHeading, fulfillForm], "sunk")
+fulfillHeading = Heading("Quick Order Fulfillment", "h4")
+fulfillForm = Form("fulfill-form", fulfillButtons, [fulfillOrderSelect, trackingInput])
+fulfillOrderSelect = FormControl("Select Order to Fulfill", fulfillSelect)
+fulfillSelect = Select("order_id", [opt1, opt2, opt3], "Select unfulfilled order...")
+opt1 = SelectItem("ORD-9482", "#ORD-9482 - Sarah Jenkins ($249.50)")
+opt2 = SelectItem("ORD-9481", "#ORD-9481 - Michael Chang ($84.00)")
+opt3 = SelectItem("ORD-9479", "#ORD-9479 - David Kim ($129.00)")
+
+trackingInput = FormControl("Tracking Number", trackNumInput, "Optional carrier tracking code")
+trackNumInput = Input("tracking_number", "e.g. 1Z9999999999999999")
+
+fulfillButtons = Buttons([markFulfilledBtn])
+markFulfilledBtn = Button("Mark Order as Fulfilled", null, "primary")
+
+analyticsTab = TabItem("analytics", "4-Week Volume Trends", [chartHeading, volumeChart])
+chartHeading = Heading("Order Volume Across Past 4 Weeks", "h3")
+volumeChart = BarChart(["Week 1", "Week 2", "Week 3", "Week 4 (Current)"], [seriesOrders, seriesFulfilled], "grouped", "Weeks", "Number of Orders")
+seriesOrders = Series("Orders Placed", [840, 920, 890, 960])
+seriesFulfilled = Series("Orders Fulfilled", [825, 910, 875, 912])
+
+followUps = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Export today's orders to CSV")
+fu2 = FollowUpItem("View high-risk or flagged orders")
+fu3 = FollowUpItem("Manage inventory thresholds")

@@ -1,0 +1,92 @@
+root = Card([header, refreshNotice, kpiCards, alertSection, searchForm, tableHeading, shipmentsTable, analyticsTabs, followUps], "card", "column", "m")
+
+header = CardHeader("Logistics Coordinator Board", "Real-time dispatch, carrier performance, and shipment management")
+
+refreshNotice = Callout("info", "Data Refreshed", "Numbers were last refreshed today at 14:32 EST (Automated feed via EDI)")
+
+kpiCards = Card([costKpi, onTimeKpi, activeKpi], "clear", "row", "m", "stretch")
+
+costKpi = Card([costTitle, costValue, costSub], "sunk", "column", "xs")
+costTitle = TextContent("Avg Cost / Shipment", "small")
+costValue = Heading("$1,245.80", "h2")
+costSub = Tag("-3.2% vs last month", null, "sm", "success")
+
+onTimeKpi = Card([onTimeTitle, onTimeValue, onTimeSub], "sunk", "column", "xs")
+onTimeTitle = TextContent("On-Time % (This Month)", "small")
+onTimeValue = Heading("94.2%", "h2")
+onTimeSub = Tag("Target: 92.0%", null, "sm", "success")
+
+activeKpi = Card([activeTitle, activeValue, activeSub], "sunk", "column", "xs")
+activeTitle = TextContent("Active Shipments", "small")
+activeValue = Heading("1,842", "h2")
+activeSub = Tag("4 Delayed", null, "sm", "danger")
+
+alertSection = Callout("error", "Attention Required: 2 Delayed Shipments", "SHP-8802 (LAX to ORD) delayed by severe weather; SHP-8805 (SEA to DEN) delayed by mechanical issue. Rerouting options available.")
+
+searchForm = Form("search-route", searchButtons, [routeInput, carrierSelect, statusSelect])
+routeInput = FormControl("Search Route", routeInputControl, "Enter origin or destination (e.g. CHI, LAX, JFK)")
+routeInputControl = Input("route", "e.g. Chicago to New York", "text")
+
+carrierSelect = FormControl("Carrier Filter", carrierSelectControl)
+carrierSelectControl = Select("carrier", [cAll, cFedEx, cDHL, cUPS, cXPO], "All Carriers")
+cAll = SelectItem("all", "All Carriers")
+cFedEx = SelectItem("fedex", "FedEx Freight")
+cDHL = SelectItem("dhl", "DHL Express")
+cUPS = SelectItem("ups", "UPS Supply Chain")
+cXPO = SelectItem("xpo", "XPO Logistics")
+
+statusSelect = FormControl("Status Filter", statusSelectControl)
+statusSelectControl = Select("status", [sAll, sTransit, sDelayed, sCustoms], "All Statuses")
+sAll = SelectItem("all", "All Statuses")
+sTransit = SelectItem("transit", "In Transit")
+sDelayed = SelectItem("delayed", "Delayed")
+sCustoms = SelectItem("customs", "Customs Hold")
+
+searchButtons = Buttons([btnSearch, btnReset, btnFlag])
+btnSearch = Button("Filter Board", null, "primary")
+btnReset = Button("Reset Filters", null, "secondary")
+btnFlag = Button("Flag Selected Shipment", null, "tertiary")
+
+tableHeading = Card([tableTitle, flagDialog], "clear", "row", "none", "center", "between")
+tableTitle = Heading("Shipments in Transit", "h3")
+
+flagDialog = DialogBlock("Flag Shipment", "Flag Shipment for Priority Escallation", "Submit an exception report or flag a delayed shipment for priority handling.", flagForm, "outline")
+
+flagForm = Form("flag-shipment", flagButtons, [flagIdControl, flagReasonControl, flagNotesControl])
+flagIdControl = FormControl("Shipment ID", flagIdInput)
+flagIdInput = Input("shipment_id", "e.g. SHP-8802", "text")
+flagReasonControl = FormControl("Reason for Flagging", flagReasonSelect)
+flagReasonSelect = Select("reason", [rDelay, rDamage, rRoute, rOther], "Select reason")
+rDelay = SelectItem("delay", "Severe Delay")
+rDamage = SelectItem("damage", "Damaged Cargo Alert")
+rRoute = SelectItem("reroute", "Reroute / Intervention Required")
+rOther = SelectItem("other", "Customer Escalation")
+flagNotesControl = FormControl("Additional Details", flagNotesInput)
+flagNotesInput = TextArea("notes", "Provide context for the logistics dispatch team...", 3)
+flagButtons = Buttons([btnSubmitFlag])
+btnSubmitFlag = Button("Submit Exception Flag", null, "primary")
+
+shipmentsTable = Table([colId, colOrigin, colDest, colCarrier, colETA, colStatus, colFlagAction])
+colId = Col("Tracking ID", ["SHP-8801", "SHP-8802", "SHP-8803", "SHP-8804", "SHP-8805", "SHP-8806"])
+colOrigin = Col("Origin", ["Los Angeles, CA", "Los Angeles, CA", "Dallas, TX", "Chicago, IL", "Seattle, WA", "Miami, FL"])
+colDest = Col("Destination", ["New York, NY", "Chicago, IL", "Atlanta, GA", "Dallas, TX", "Denver, CO", "New York, NY"])
+colCarrier = Col("Carrier", ["FedEx Freight", "DHL Express", "UPS Supply", "XPO Logistics", "FedEx Freight", "DHL Express"])
+colETA = Col("ETA", ["Today, 18:00", "Tomorrow, 09:30", "Oct 24, 14:00", "Oct 25, 11:15", "Oct 26, 16:45", "Oct 27, 08:00"])
+colStatus = Col("Status", ["In Transit", "DELAYED (Weather)", "In Transit", "In Transit", "DELAYED (Mechanical)", "In Transit"])
+colFlagAction = Col("Action", ["Flagged", "Flagged (Priority)", "Standard", "Standard", "Flagged (Priority)", "Standard"])
+
+analyticsTabs = Tabs([tabVolume, tabCarrier])
+
+tabVolume = TabItem("volume", "Weekly Volume (8 Weeks)", [weeklyChartText, weeklyChart])
+weeklyChartText = TextContent("Shipment volume over the past two months across all carrier routes.")
+weeklyChart = BarChart(["Wk 1", "Wk 2", "Wk 3", "Wk 4", "Wk 5", "Wk 6", "Wk 7", "Wk 8"], [volSeries], "grouped", "Past 8 Weeks", "Total Shipments")
+volSeries = Series("Total Shipments Delivered", [410, 435, 460, 420, 485, 510, 495, 530])
+
+tabCarrier = TabItem("carrier", "Volume Split by Carrier", [carrierPieText, carrierPie])
+carrierPieText = TextContent("Distribution of total monthly volume handled per carrier partner.")
+carrierPie = PieChart(["FedEx Freight", "DHL Express", "UPS Supply Chain", "XPO Logistics"], [38, 27, 21, 14], "donut")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Show detailed route options for delayed SHP-8802")
+f2 = FollowUpItem("Export monthly carrier performance summary to CSV")
+f3 = FollowUpItem("View average cost breakdown by regional transit corridor")

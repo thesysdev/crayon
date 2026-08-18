@@ -1,0 +1,270 @@
+Here is a mid-morning performance dashboard for your shop, featuring today's revenue, a comparison to yesterday's pace, top sales categories, recent activity, and quick actions.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "shop-midmorning-checkin",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "shop-midmorning-checkin",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "header",
+          "alert-pacing",
+          "table-summary",
+          "chart-revenue-pace",
+          "tabs-details",
+          "actions-bar",
+          "follow-ups"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Mid-Morning Dashboard",
+        "subtitle": "Today, Oct 24 • As of 10:30 AM"
+      },
+      {
+        "id": "alert-pacing",
+        "component": "Alert",
+        "title": "Ahead of Yesterday's Pace",
+        "description": "Revenue is up +18.5% compared to 10:30 AM yesterday (+$240.00).",
+        "variant": "success"
+      },
+      {
+        "id": "table-summary",
+        "component": "Table",
+        "columns": [
+          "col-metric",
+          "col-today",
+          "col-yesterday",
+          "col-diff"
+        ]
+      },
+      {
+        "id": "col-metric",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Revenue (So Far)",
+          "Completed Orders",
+          "Average Order Value",
+          "Foot Traffic (Est.)"
+        ]
+      },
+      {
+        "id": "col-today",
+        "component": "Col",
+        "label": "Today (by 10:30 AM)",
+        "data": [
+          "$1,535.00",
+          "42 orders",
+          "$36.55",
+          "115 visitors"
+        ]
+      },
+      {
+        "id": "col-yesterday",
+        "component": "Col",
+        "label": "Yesterday (by 10:30 AM)",
+        "data": [
+          "$1,295.00",
+          "36 orders",
+          "$35.97",
+          "98 visitors"
+        ]
+      },
+      {
+        "id": "col-diff",
+        "component": "Col",
+        "label": "Change",
+        "data": [
+          "+$240.00 (+18.5%)",
+          "+6 (+16.7%)",
+          "+$0.58 (+1.6%)",
+          "+17 (+17.3%)"
+        ]
+      },
+      {
+        "id": "chart-revenue-pace",
+        "component": "LineChart",
+        "xLabel": "Time of Day",
+        "yLabel": "Cumulative Revenue ($)",
+        "variant": "natural",
+        "labels": [
+          "7:00 AM",
+          "8:00 AM",
+          "9:00 AM",
+          "10:00 AM",
+          "10:30 AM"
+        ],
+        "series": [
+          "series-today",
+          "series-yesterday"
+        ]
+      },
+      {
+        "id": "series-today",
+        "component": "Series",
+        "category": "Today",
+        "values": [
+          120,
+          450,
+          890,
+          1320,
+          1535
+        ]
+      },
+      {
+        "id": "series-yesterday",
+        "component": "Series",
+        "category": "Yesterday",
+        "values": [
+          95,
+          380,
+          740,
+          1150,
+          1295
+        ]
+      },
+      {
+        "id": "tabs-details",
+        "component": "Tabs",
+        "items": [
+          "tab-categories",
+          "tab-recent-orders"
+        ]
+      },
+      {
+        "id": "tab-categories",
+        "component": "TabItem",
+        "value": "categories",
+        "trigger": "Top Categories",
+        "content": [
+          "chart-categories"
+        ]
+      },
+      {
+        "id": "chart-categories",
+        "component": "HorizontalBarChart",
+        "xLabel": "Sales ($)",
+        "yLabel": "Category",
+        "variant": "grouped",
+        "labels": [
+          "Coffee & Drinks",
+          "Pastries & Bakery",
+          "Breakfast Items",
+          "Retail Merchandise"
+        ],
+        "series": [
+          "series-cat-sales"
+        ]
+      },
+      {
+        "id": "series-cat-sales",
+        "component": "Series",
+        "category": "Today's Revenue",
+        "values": [
+          680,
+          490,
+          265,
+          100
+        ]
+      },
+      {
+        "id": "tab-recent-orders",
+        "component": "TabItem",
+        "value": "orders",
+        "trigger": "Recent Activity",
+        "content": [
+          "recent-list"
+        ]
+      },
+      {
+        "id": "recent-list",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "order-1",
+          "order-2",
+          "order-3"
+        ]
+      },
+      {
+        "id": "order-1",
+        "component": "ListItem",
+        "title": "Order #1042 — $48.50",
+        "subtitle": "10:28 AM • 4x Oat Milk Lattes, 2x Almond Croissants",
+        "actionLabel": "View"
+      },
+      {
+        "id": "order-2",
+        "component": "ListItem",
+        "title": "Order #1041 — $18.00",
+        "subtitle": "10:24 AM • 1x Cold Brew, 1x Breakfast Sandwich",
+        "actionLabel": "View"
+      },
+      {
+        "id": "order-3",
+        "component": "ListItem",
+        "title": "Order #1040 — $62.00",
+        "subtitle": "10:19 AM • 1x Whole Bean Bag, 2x Cappuccinos, 1x Mug",
+        "actionLabel": "View"
+      },
+      {
+        "id": "actions-bar",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": [
+          "btn-refresh",
+          "btn-export"
+        ]
+      },
+      {
+        "id": "btn-refresh",
+        "component": "Button",
+        "label": "Refresh Data",
+        "variant": "primary"
+      },
+      {
+        "id": "btn-export",
+        "component": "Button",
+        "label": "Export Morning Summary",
+        "variant": "secondary"
+      },
+      {
+        "id": "follow-ups",
+        "component": "FollowUpBlock",
+        "items": [
+          "follow-1",
+          "follow-2"
+        ]
+      },
+      {
+        "id": "follow-1",
+        "component": "FollowUpItem",
+        "text": "Show hourly sales breakdown for yesterday"
+      },
+      {
+        "id": "follow-2",
+        "component": "FollowUpItem",
+        "text": "Compare top-selling items instead of categories"
+      }
+    ]
+  }
+}
+</a2ui-json>

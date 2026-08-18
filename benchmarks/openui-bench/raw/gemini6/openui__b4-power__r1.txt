@@ -1,0 +1,103 @@
+root = Card([header, alertsCallout, kpiGrid, regionFilter, tabs], "card", "column", "m")
+
+header = CardHeader("Power Network Operations Console", "National Grid Control Center • Live Telemetry")
+
+alertsCallout = Callout("warning", "Grid Frequency Instability Warning", "Substation B-12 reporting minor frequency variance (49.85 Hz). Automated response active.")
+
+kpiGrid = Card([loadKpi, capacityKpi, priceKpi, emissionsKpi], "sunk", "row", "m")
+loadKpi = Card([loadTitle, loadValue, loadBadge], "clear", "column", "xs")
+loadTitle = TextContent("Current Demand", "small")
+loadValue = Heading("32,450 MW", "h2")
+loadBadge = Badge("+2.4% vs yesterday", "outline")
+
+capacityKpi = Card([capTitle, capValue, capProgress], "clear", "column", "xs")
+capTitle = TextContent("Capacity Usage", "small")
+capValue = Heading("86.5%", "h2")
+capProgress = Progress(86, "4,550 MW Reserve")
+
+priceKpi = Card([priceTitle, priceValue, priceBadge], "clear", "column", "xs")
+priceTitle = TextContent("Current Spot Price", "small")
+priceValue = Heading("$64.20", "h2")
+priceBadge = Badge("per MWh", "secondary")
+
+emissionsKpi = Card([emissionsTitle, emissionsValue, emissionsBadge], "clear", "column", "xs")
+emissionsTitle = TextContent("Emissions Today", "small")
+emissionsValue = Heading("142.8 kt", "h2")
+emissionsBadge = Badge("-12% CO2 intensity", "default")
+
+regionFilter = Card([regionLabel, regionSelect], "clear", "row", "s", "center")
+regionLabel = TextContent("Focus Region:", "small-heavy")
+regionSelect = Select("region_focus", [regAll, regNorth, regSouth, regEast, regWest, regCentral], "All Regions (National)")
+regAll = SelectItem("all", "All Regions (National)")
+regNorth = SelectItem("north", "Northern Zone")
+regSouth = SelectItem("south", "Southern Metro")
+regEast = SelectItem("east", "Eastern Industrial Grid")
+regWest = SelectItem("west", "Western Highlands")
+regCentral = SelectItem("central", "Central Valley")
+
+tabs = Tabs([tabOverview, tabPlants, tabOutages, tabActions])
+
+tabOverview = TabItem("overview", "Overview & Forecast", [forecastHeading, forecastChart, sep1, genHeading, genChart])
+forecastHeading = Heading("24-Hour Demand Forecast", "h3")
+forecastChart = LineChart(["00:00", "04:00", "08:00", "12:00", "16:00", "20:00", "24:00"], [actualSeries, forecastSeries], "natural", "Time", "Megawatts (MW)")
+actualSeries = Series("Actual Load", [28000, 26500, 31000, 32450])
+forecastSeries = Series("Forecasted Load", [28000, 26000, 31500, 34000, 35200, 33000, 29500])
+
+sep1 = Separator("horizontal")
+
+genHeading = Heading("Generation Mix by Source", "h3")
+genChart = SingleStackedBarChart(["Solar", "Wind", "Nuclear", "Hydro", "Natural Gas", "Coal"], [8200, 11400, 6500, 3100, 2800, 450])
+
+tabPlants = TabItem("plants", "Power Plants", [plantsHeading, plantsTable])
+plantsHeading = Heading("Active Generation Facilities", "h3")
+plantsTable = Table([plantNameCol, plantTypeCol, plantRegionCol, plantOutputCol, plantCapacityCol, plantStatusCol])
+plantNameCol = Col("Plant Name", ["Highland Wind Farm", "Thunder Valley Solar", "Riverdale Nuclear Station", "Blue Ridge Hydro", "Pine Creek Gas Peaker", "Oakhaven Coal Unit 2"])
+plantTypeCol = Col("Type", ["Wind", "Solar", "Nuclear", "Hydro", "Natural Gas", "Coal"])
+plantRegionCol = Col("Region", ["Western Highlands", "Central Valley", "Southern Metro", "Northern Zone", "Eastern Industrial", "Eastern Industrial"])
+plantOutputCol = Col("Current Output", ["3,200 MW", "4,100 MW", "2,400 MW", "1,800 MW", "800 MW", "150 MW"])
+plantCapacityCol = Col("Max Capacity", ["3,500 MW", "4,500 MW", "2,400 MW", "2,000 MW", "1,200 MW", "600 MW"])
+plantStatusCol = Col("Status", ["Optimal", "Optimal", "Optimal", "Optimal", "Standby", "Curtailment Active"])
+
+tabOutages = TabItem("outages", "Outages & Maintenance", [outageHeading, outageTable, sep2, maintHeading, maintList])
+outageHeading = Heading("Active Network Outages", "h3")
+outageTable = Table([outageIdCol, outageRegionCol, outageSubstationCol, outageAffectedCol, outageStatusCol, outageEtaCol])
+outageIdCol = Col("Incident ID", ["OUT-8821", "OUT-8834", "OUT-8840"])
+outageRegionCol = Col("Affected Region", ["Northern Zone", "Southern Metro", "Eastern Industrial"])
+outageSubstationCol = Col("Substation / Line", ["Substation N-04", "Feeder Line S-12", "Transformer E-09"])
+outageAffectedCol = Col("Customers Affected", ["14,200", "2,150", "850"])
+outageStatusCol = Col("Status", ["Crew Dispatched", "Under Repair", "Investigating"])
+outageEtaCol = Col("Est. Restoration", ["14:30 EST", "16:15 EST", "18:00 EST"])
+
+sep2 = Separator("horizontal")
+
+maintHeading = Heading("Planned Maintenance (This Month)", "h3")
+maintList = ListBlock([maintItem1, maintItem2, maintItem3])
+maintItem1 = ListItem("Substation B-12 Transformer Replacement", "Northern Zone • Scheduled Oct 18 - Oct 20 • Planned Capacity Shift: -400 MW")
+maintItem2 = ListItem("Transmission Line 402 Insulator Inspection", "Western Highlands • Scheduled Oct 22 • No load impact expected")
+maintItem3 = ListItem("Riverdale Unit 1 Annual Overhaul", "Southern Metro • Scheduled Oct 28 - Nov 05 • Planned Capacity Shift: -1,200 MW")
+
+tabActions = TabItem("actions", "Control & Curtailment", [curtailHeading, curtailDesc, curtailForm])
+curtailHeading = Heading("Order Emergency Curtailment", "h3")
+curtailDesc = TextContent("Issue direct shedding or curtailment commands to specific regions, industrial facilities, or flexible generation sources.", "default")
+curtailForm = Form("curtailment_order", formButtons, [curtailTargetField, curtailAmountField, curtailTypeField, curtailReasonField])
+
+curtailTargetField = FormControl("Target Region / Facility", curtailTargetInput)
+curtailTargetInput = Select("target", [t1, t2, t3], "Select target...")
+t1 = SelectItem("east_ind", "Eastern Industrial Grid (Large Load Center)")
+t2 = SelectItem("oakhaven", "Oakhaven Coal Unit 2 (Generation)")
+t3 = SelectItem("central_flex", "Central Valley Commercial Direct Shed")
+
+curtailAmountField = FormControl("Curtailment Target (MW)", curtailAmountInput, "Specify amount of load or generation to reduce")
+curtailAmountInput = Input("amount", "250", "number")
+
+curtailTypeField = FormControl("Execution Mode", curtailTypeRadio)
+curtailTypeRadio = RadioGroup("mode", [m1, m2])
+m1 = RadioItem("Immediate (Emergency)", "Executes automatically within 60 seconds", "immediate")
+m2 = RadioItem("Scheduled Ramp Down", "Ramps down over 15-30 minutes", "scheduled")
+
+curtailReasonField = FormControl("Grid Operational Reason", curtailReasonInput)
+curtailReasonInput = TextArea("reason", "Enter mandatory grid log justification...", 3)
+
+formButtons = Buttons([submitCurtail, cancelCurtail])
+submitCurtail = Button("Issue Curtailment Order", null, "primary")
+cancelCurtail = Button("Cancel", null, "tertiary")

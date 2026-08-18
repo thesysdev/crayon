@@ -1,0 +1,295 @@
+Here's a single-screen e-commerce operations dashboard covering all nine items.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "kpis",
+          "trend",
+          "filters",
+          "ordersTable",
+          "fulfillForm"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "E-commerce Operations Desk",
+        "subtitle": "Live snapshot of today's store performance"
+      },
+      {
+        "id": "kpis",
+        "component": "Table",
+        "columns": [
+          "kpiName",
+          "kpiValue"
+        ]
+      },
+      {
+        "id": "kpiName",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Orders placed today",
+          "Revenue today",
+          "Average order value",
+          "Refund rate this month"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "142",
+          "$18,940",
+          "$133.38",
+          "2.4%"
+        ]
+      },
+      {
+        "id": "trend",
+        "component": "LineChart",
+        "labels": [
+          "Week 1",
+          "Week 2",
+          "Week 3",
+          "Week 4"
+        ],
+        "series": [
+          "volumeSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Past four weeks",
+        "yLabel": "Orders"
+      },
+      {
+        "id": "volumeSeries",
+        "component": "Series",
+        "category": "Order volume",
+        "values": [
+          610,
+          684,
+          702,
+          765
+        ]
+      },
+      {
+        "id": "filters",
+        "component": "Form",
+        "name": "order-filters",
+        "buttons": "filterButtons",
+        "fields": [
+          "statusField",
+          "searchField"
+        ]
+      },
+      {
+        "id": "statusField",
+        "component": "FormControl",
+        "label": "Narrow by status",
+        "input": "statusSelect"
+      },
+      {
+        "id": "statusSelect",
+        "component": "Select",
+        "name": "status",
+        "placeholder": "All statuses",
+        "items": [
+          "stAll",
+          "stPending",
+          "stProcessing",
+          "stShipped",
+          "stFulfilled",
+          "stRefunded"
+        ]
+      },
+      {
+        "id": "stAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All"
+      },
+      {
+        "id": "stPending",
+        "component": "SelectItem",
+        "value": "pending",
+        "label": "Pending"
+      },
+      {
+        "id": "stProcessing",
+        "component": "SelectItem",
+        "value": "processing",
+        "label": "Processing"
+      },
+      {
+        "id": "stShipped",
+        "component": "SelectItem",
+        "value": "shipped",
+        "label": "Shipped"
+      },
+      {
+        "id": "stFulfilled",
+        "component": "SelectItem",
+        "value": "fulfilled",
+        "label": "Fulfilled"
+      },
+      {
+        "id": "stRefunded",
+        "component": "SelectItem",
+        "value": "refunded",
+        "label": "Refunded"
+      },
+      {
+        "id": "searchField",
+        "component": "FormControl",
+        "label": "Search by customer name",
+        "input": "searchInput",
+        "hint": "Type a full or partial name"
+      },
+      {
+        "id": "searchInput",
+        "component": "Input",
+        "name": "customer_search",
+        "placeholder": "e.g. Jane Smith",
+        "type": "text"
+      },
+      {
+        "id": "filterButtons",
+        "component": "Buttons",
+        "buttons": [
+          "applyFiltersBtn"
+        ]
+      },
+      {
+        "id": "applyFiltersBtn",
+        "component": "Button",
+        "label": "Apply filters",
+        "variant": "secondary"
+      },
+      {
+        "id": "ordersTable",
+        "component": "Table",
+        "columns": [
+          "colId",
+          "colCustomer",
+          "colTotal",
+          "colStatus"
+        ]
+      },
+      {
+        "id": "colId",
+        "component": "Col",
+        "label": "Order ID",
+        "data": [
+          "#10482",
+          "#10481",
+          "#10480",
+          "#10479",
+          "#10478"
+        ]
+      },
+      {
+        "id": "colCustomer",
+        "component": "Col",
+        "label": "Customer",
+        "data": [
+          "Jane Smith",
+          "Marcus Lee",
+          "Priya Nair",
+          "Tom Alvarez",
+          "Sofia Rossi"
+        ]
+      },
+      {
+        "id": "colTotal",
+        "component": "Col",
+        "label": "Total",
+        "data": [
+          "$212.40",
+          "$89.99",
+          "$154.00",
+          "$310.75",
+          "$67.20"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Pending",
+          "Processing",
+          "Shipped",
+          "Pending",
+          "Fulfilled"
+        ]
+      },
+      {
+        "id": "fulfillForm",
+        "component": "Form",
+        "name": "mark-fulfilled",
+        "buttons": "fulfillButtons",
+        "fields": [
+          "fulfillField"
+        ]
+      },
+      {
+        "id": "fulfillField",
+        "component": "FormControl",
+        "label": "Mark an order as fulfilled",
+        "input": "fulfillInput",
+        "hint": "Enter the order ID, e.g. #10482"
+      },
+      {
+        "id": "fulfillInput",
+        "component": "Input",
+        "name": "order_id",
+        "placeholder": "#10482",
+        "type": "text"
+      },
+      {
+        "id": "fulfillButtons",
+        "component": "Buttons",
+        "buttons": [
+          "fulfillBtn"
+        ]
+      },
+      {
+        "id": "fulfillBtn",
+        "component": "Button",
+        "label": "Mark fulfilled",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+All nine requirements are covered:
+1. **Orders today** — KPI table (142)
+2. **Revenue today** — KPI table ($18,940)
+3. **Average order value** — KPI table ($133.38)
+4. **Recent orders** — table with ID, customer, total, and status columns
+5. **Narrow by status** — status dropdown filter
+6. **Search by customer** — customer name search input
+7. **Refund rate this month** — KPI table (2.4%)
+8. **Four-week order volume** — line chart
+9. **Mark fulfilled** — order ID form with a "Mark fulfilled" button

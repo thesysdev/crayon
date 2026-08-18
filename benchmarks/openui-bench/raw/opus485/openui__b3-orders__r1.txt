@@ -1,0 +1,42 @@
+root = Card([header, kpis, refundRow, filters, orders, volume, actions, followups])
+header = CardHeader("Operations Desk", "Today's order activity")
+
+kpis = Table([kpiName, kpiValue])
+kpiName = Col("Metric", ["Orders Today", "Revenue Today", "Avg Order Value"])
+kpiValue = Col("Value", ["342", "$28,940", "$84.62"])
+
+refundRow = Callout("info", "Refund Rate (This Month)", "2.8% of orders refunded — down 0.4% from last month")
+
+filters = Form("order-filters", filterButtons, [statusField, searchField])
+statusField = FormControl("Filter by status", statusSelect)
+statusSelect = Select("status", [stAll, stPending, stFulfilled, stCancelled, stRefunded], "All statuses")
+stAll = SelectItem("all", "All statuses")
+stPending = SelectItem("pending", "Pending")
+stFulfilled = SelectItem("fulfilled", "Fulfilled")
+stCancelled = SelectItem("cancelled", "Cancelled")
+stRefunded = SelectItem("refunded", "Refunded")
+searchField = FormControl("Search by customer", searchInput)
+searchInput = Input("customer", "e.g. Jane Smith", "text")
+filterButtons = Buttons([applyBtn, resetBtn])
+applyBtn = Button("Apply filters", null, "primary")
+resetBtn = Button("Reset", null, "tertiary")
+
+orders = Table([ordId, ordCustomer, ordTotal, ordStatus])
+ordId = Col("Order ID", ["#10482", "#10481", "#10480", "#10479", "#10478"])
+ordCustomer = Col("Customer", ["Jane Smith", "Omar Reyes", "Lucia Fontaine", "Ben Carter", "Priya Nair"])
+ordTotal = Col("Total", ["$128.40", "$54.90", "$212.00", "$36.75", "$99.99"], "number")
+ordStatus = Col("Status", ["Pending", "Fulfilled", "Pending", "Refunded", "Fulfilled"])
+
+volume = BarChart(["Week 1", "Week 2", "Week 3", "Week 4"], [volSeries], "grouped", "Week", "Orders")
+volSeries = Series("Orders", [1840, 2010, 1975, 2296])
+
+actions = Form("fulfill-order", fulfillButtons, [fulfillField])
+fulfillField = FormControl("Order to fulfill", fulfillInput, "Enter the order ID to mark as fulfilled")
+fulfillInput = Input("order_id", "e.g. #10482", "text")
+fulfillButtons = Buttons([fulfillBtn])
+fulfillBtn = Button("Mark fulfilled", null, "primary")
+
+followups = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Show pending orders only")
+fu2 = FollowUpItem("Break down revenue by product category")
+fu3 = FollowUpItem("List all refunds this month")

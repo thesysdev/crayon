@@ -1,0 +1,109 @@
+root = Card([header, kpis, weatherAlert, mainTabs, followUps], "card", "column", "l")
+
+header = CardHeader("Hub Operations Control Center", "Chicago O'Hare (ORD) — Live Desk Overview")
+
+kpis = Table([kpiMetric, kpiValue, kpiTarget, kpiStatus])
+kpiMetric = Col("Key Metric", ["On-Time Performance (OTP)", "Avg Passenger Load", "Avg Turnaround Time", "Cancellations Today"])
+kpiValue = Col("Today's Actual", ["78.4%", "86.2%", "42 mins", "4 flights (1.2%)"])
+kpiTarget = Col("Hub Benchmark", ["85.0%", "82.0%", "38 mins", "< 1.0%"])
+kpiStatus = Col("Status", ["Below Target", "Above Target", "Slight Delay", "Attention Required"])
+
+weatherAlert = Alert("Hub Weather Advisory — Heavy Snowfall & De-icing Delays", "Active ground stop risk between 14:00 - 16:30 CST. Runway 10C/28C operating at 50% capacity due to continuous sweeping. De-icing hold times currently averaging 18 minutes per aircraft.", "warning")
+
+mainTabs = Tabs([flightsTab, connectionsTab, crewsTab, gateChangesTab, hubSelectorTab])
+
+flightsTab = TabItem("flights", "Active Flights & Delays", [delayCallout, flightTable])
+
+delayCallout = Callout("error", "4 Priority Delays Require Ramp Dispatch", "Flights AA-1042, AA-492, AA-881, and AA-309 are delayed past 45 minutes due to inbound late arrivals and de-icing queues. Immediate ground crew coordination required.")
+
+flightTable = Table([fltNum, fltRoute, fltGate, fltSched, fltEst, fltStatus])
+fltNum = Col("Flight", ["AA-1042", "AA-492", "AA-881", "AA-309", "AA-1205", "AA-774", "AA-219", "AA-940"])
+fltRoute = Col("Route", ["DFW -> ORD", "MIA -> ORD", "LGA -> ORD", "LAX -> ORD", "ORD -> BOS", "ORD -> CLT", "ORD -> DEN", "ORD -> SFO"])
+fltGate = Col("Gate", ["B12", "C20", "B18", "C14", "B4", "B8", "C2", "C8"])
+fltSched = Col("Sched", ["10:15", "10:30", "11:05", "11:20", "12:00", "12:15", "12:30", "12:45"])
+fltEst = Col("Estimated", ["11:25", "11:15", "12:00", "12:10", "12:00", "12:15", "12:30", "12:45"])
+fltStatus = Col("Status", ["Delayed (+70m)", "Delayed (+45m)", "Delayed (+55m)", "Delayed (+50m)", "On Time", "On Time", "On Time", "Boarding"])
+
+connectionsTab = TabItem("connections", "Connections at Risk & Rebooking", [riskCallout, riskTable, rebookForm])
+
+riskCallout = Callout("warning", "38 Passengers at High Risk of Missing Connecting Flights", "Short tight connection windows at Concourse B & C due to inbound arrival delays. Automatic protection holds active for 14 passengers.")
+
+riskTable = Table([paxName, inboundFlt, outboundFlt, connGate, tightWindow, paxCount])
+paxName = Col("Passenger Group", ["Miller Party (3)", "Chen / W.", "Vance Corp Group (8)", "Kowalczyk Family (4)", "Single Connections (21)"])
+inboundFlt = Col("Inbound", ["AA-1042 (Arr 11:25)", "AA-1042 (Arr 11:25)", "AA-492 (Arr 11:15)", "AA-881 (Arr 12:00)", "AA-309 (Arr 12:10)"])
+outboundFlt = Col("Connecting To", ["AA-1205 (Dep 12:00)", "AA-774 (Dep 12:15)", "AA-219 (Dep 12:30)", "AA-940 (Dep 12:45)", "Various Outbounds"])
+connGate = Col("Gates", ["B12 -> B4", "B12 -> B8", "C20 -> C2", "B18 -> C8", "Terminal Transfer"])
+tightWindow = Col("Transfer Time", ["35 mins (TIGHT)", "50 mins (OK)", "75 mins (OK)", "45 mins (TIGHT)", "< 30 mins (CRITICAL)"])
+paxCount = Col("Action Status", ["Rebook Required", "Holding Gate", "Holding Gate", "Rebook Required", "Auto-Protected"])
+
+rebookForm = Form("rebook-passengers", rebookFormBtns, [paxSelectField, targetFlightField, protectionTypeField, rebookNotesField])
+paxSelectField = FormControl("Select Passenger / PNR Group", paxSelectInput, "Choose affected passenger record for immediate rebooking")
+paxSelectInput = Select("pax_group", [paxOpt1, paxOpt2, paxOpt3], "Select PNR...")
+paxOpt1 = SelectItem("pnr1", "Miller Party (PNR: H89K2L) - 3 Pax - AA-1205")
+paxOpt2 = SelectItem("pnr2", "Kowalczyk Family (PNR: P34M9A) - 4 Pax - AA-940")
+paxOpt3 = SelectItem("pnr3", "Unassigned Misconnect Pool (21 Pax)")
+
+targetFlightField = FormControl("Rebook Outbound Flight", targetFlightInput, "Available seats on next outbound legs")
+targetFlightInput = Select("target_flight", [fltOpt1, fltOpt2, fltOpt3], "Select alternative flight...")
+fltOpt1 = SelectItem("opt1", "AA-1410 to BOS (Dep 14:10 CST) - 12 seats open")
+fltOpt2 = SelectItem("opt2", "AA-1892 to SFO (Dep 15:30 CST) - 5 seats open")
+fltOpt3 = SelectItem("opt3", "AA-2044 to SFO (Dep 17:00 CST) - 18 seats open")
+
+protectionTypeField = FormControl("Protection & Voucher Options", protectionTypeInput)
+protectionTypeInput = CheckBoxGroup("protection_opts", [voucherFood, voucherHotel, autoBaggage])
+voucherFood = CheckBoxItem("Issue Meal Voucher ($25)", "Digital voucher sent via SMS", "meal_voucher", true)
+voucherHotel = CheckBoxItem("Issue Hotel Voucher", "Overnight stay for evening misconnects", "hotel_voucher")
+autoBaggage = CheckBoxItem("Reroute Checked Baggage", "Priority luggage tag re-assignment", "auto_baggage", true)
+
+rebookNotesField = FormControl("Agent Dispatch Notes", rebookNotesInput)
+rebookNotesInput = TextArea("agent_notes", "Rebooking due to inbound weather delay at ORD. Confirmation SMS generated.", 2)
+
+rebookFormBtns = Buttons([confirmRebookBtn, printPassesBtn])
+confirmRebookBtn = Button("Confirm Passenger Rebooking", null, "primary")
+printPassesBtn = Button("Issue Digital Boarding Passes", null, "secondary")
+
+crewsTab = TabItem("crews", "Crew Availability & Standby", [crewSummary, crewTable])
+
+crewSummary = TextContent("Standby flight crews currently staged at ORD Terminal 3 Crew Lounge available for immediate flight swap or delay mitigation.", "default")
+
+crewTable = Table([crewID, crewRole, crewQual, crewDutyTime, crewStatus])
+crewID = Col("Crew Member / Team", ["Capt. R. Davis", "FO M. Jenkins", "Cabin Crew Team Alpha (4)", "Capt. S. Patel", "FO E. Torres", "Cabin Crew Team Bravo (3)"])
+crewRole = Col("Role", ["Captain", "First Officer", "Flight Attendants", "Captain", "First Officer", "Flight Attendants"])
+crewQual = Col("Aircraft Cert.", ["B737 / A320", "B737", "Narrowbody", "B787 / B777", "B787", "Widebody"])
+crewDutyTime = Col("Remaining Duty", ["7h 45m", "8h 10m", "6h 30m", "4h 15m", "5h 50m", "7h 00m"])
+crewStatus = Col("Availability", ["Immediate Standby", "Immediate Standby", "Available in 15m", "Immediate Standby", "Available in 30m", "Immediate Standby"])
+
+gateChangesTab = TabItem("gate_changes", "Recent Gate Changes", [gateList])
+
+gateList = ListBlock([gateItem1, gateItem2, gateItem3, gateItem4], "number")
+gateItem1 = ListItem("AA-1205 (BOS) changed from Gate B10 to Gate B4", "Moved at 10:42 CST — De-icing equipment position optimization", null, "Notify Ramp")
+gateItem2 = ListItem("AA-492 (MIA) changed from Gate C12 to Gate C20", "Moved at 10:35 CST — Previous aircraft extended gate occupancy", null, "Notify Ramp")
+gateItem3 = ListItem("AA-881 (LGA) changed from Gate B2 to Gate B18", "Moved at 10:18 CST — Gate B2 jetbridge mechanical maintenance", null, "Notify Ramp")
+gateItem4 = ListItem("AA-309 (LAX) changed from Gate C6 to Gate C14", "Moved at 09:55 CST — Inbound heavy aircraft swap", null, "Notify Ramp")
+
+hubSelectorTab = TabItem("hub_switch", "Switch Active Hub Desk", [hubSwitchHeader, hubForm])
+
+hubSwitchHeader = CardHeader("Select Regional Hub Operations View", "Switch desk parameters, live telemetry, and regional routing maps")
+
+hubForm = Form("hub-selection", hubFormBtns, [hubField, viewModeField])
+hubField = FormControl("Target Airport Hub", hubSelectInput)
+hubSelectInput = Select("hub_code", [ordHub, dfwHub, cltHub, miaHub, phxHub], "Select Airport...")
+ordHub = SelectItem("ORD", "Chicago O'Hare (ORD) — Current Active Hub")
+dfwHub = SelectItem("DFW", "Dallas/Fort Worth (DFW) — South Central Hub")
+cltHub = SelectItem("CLT", "Charlotte Douglas (CLT) — East Coast Hub")
+miaHub = SelectItem("MIA", "Miami International (MIA) — Latin America Gateway")
+phxHub = SelectItem("PHX", "Phoenix Sky Harbor (PHX) — Southwest Hub")
+
+viewModeField = FormControl("Operations Console Layout Mode", viewModeInput)
+viewModeInput = RadioGroup("view_mode", [modeFull, modeQuick, modeEmergency], "full")
+modeFull = RadioItem("Full Controller Mode", "All metrics, active rebooking, gate management, and crew data", "full")
+modeQuick = RadioItem("Executive KPI Summary", "High-level OTP, weather alerts, and volume metrics only", "quick")
+modeEmergency = RadioItem("IRROPS Crisis Management", "Focused strictly on cancellations, delays, and misconnect protection", "irrops")
+
+hubFormBtns = Buttons([switchHubBtn])
+switchHubBtn = Button("Switch Active Hub Desk", null, "primary")
+
+followUps = FollowUpBlock([followUp1, followUp2, followUp3])
+followUp1 = FollowUpItem("Show detailed de-icing queue times at ORD Gate B & C")
+followUp2 = FollowUpItem("Initiate automatic rebooking run for all 38 misconnecting passengers")
+followUp3 = FollowUpItem("Display crew fatigue limit warnings for remaining duty shifts")

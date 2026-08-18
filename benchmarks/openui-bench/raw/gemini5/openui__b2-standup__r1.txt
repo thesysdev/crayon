@@ -1,0 +1,44 @@
+root = Card([header, summaryRow, blockerCallout, updatesTab, formSection, followUps])
+
+header = CardHeader("Async Daily Standup", "Engineering & Product Team • Today: Oct 24, 2023")
+
+summaryRow = Table([statMetric, statValue])
+statMetric = Col("Status", ["Total Members", "Submitted Today", "Updates Pending"])
+statValue = Col("Count", ["8", "6", "2 missing"])
+
+blockerCallout = Callout("warning", "Attention Required: 1 Blocker Reported", "Alex Rivera is currently blocked on API Gateway authentication timeout errors.")
+
+updatesTab = Tabs([tabAll, tabBlockers])
+
+tabAll = TabItem("all", "All Updates (6)", [listUpdates])
+tabBlockers = TabItem("blockers", "Blockers (1)", [listBlockers])
+
+listUpdates = ListBlock([item1, item2, item3, item4, item5, item6])
+
+item1 = ListItem("Alex Rivera — Frontend Lead", "Yesterday: Finished UI layout. Today: Integrating auth. BLOCKER: API Gateway throwing 504 gateway timeout on login endpoint.")
+item2 = ListItem("Sarah Chen — Backend Eng", "Yesterday: DB migration scripts. Today: Debugging auth timeout for Alex; deploying patch to staging. Blocker: None.")
+item3 = ListItem("Marcus Johnson — Product Manager", "Yesterday: User interview synthesis. Today: Finalizing Q4 roadmap scope and sync with design. Blocker: None.")
+item4 = ListItem("Elena Rostova — UX Designer", "Yesterday: Mobile checkout wireframes. Today: Design system updates & component tokens. Blocker: None.")
+item5 = ListItem("David Kim — DevOps", "Yesterday: Kubernetes cluster upgrade. Today: CI/CD pipeline optimization & monitoring alerts. Blocker: None.")
+item6 = ListItem("Priya Patel — QA Lead", "Yesterday: Regression suite execution. Today: Automation scripts for checkout flow. Blocker: None.")
+
+listBlockers = ListBlock([item1])
+
+formSection = Form("standup-post", formButtons, [ydayField, todayField, blockerField])
+ydayField = FormControl("What did you accomplish yesterday?", ydayInput)
+ydayInput = TextArea("yesterday", "Completed unit tests and merged PR #402...", 3)
+
+todayField = FormControl("What are you working on today?", todayInput)
+todayInput = TextArea("today", "Fixing login redirect bug and reviewing Sarah's backend PR...", 3)
+
+blockerField = FormControl("Are you blocked on anything?", blockerRadio)
+blockerRadio = RadioGroup("blocked_status", [radioNo, radioYes], "no")
+radioNo = RadioItem("No blockers", "I am clear to make progress", "no")
+radioYes = RadioItem("I am blocked", "Need assistance from team member", "yes")
+
+formButtons = Buttons([submitBtn])
+submitBtn = Button("Submit Standup Update", null, "primary")
+
+followUps = FollowUpBlock([fu1, fu2])
+fu1 = FollowUpItem("Nudge missing teammates")
+fu2 = FollowUpItem("Help Alex unblock API Gateway")

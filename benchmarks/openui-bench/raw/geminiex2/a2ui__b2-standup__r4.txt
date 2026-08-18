@@ -1,0 +1,234 @@
+Here is a single-screen dashboard for your remote team's asynchronous daily standup. It highlights today's date, missing updates, blocked teammates, team updates, and provides a direct form to post your own status.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "missingAlert",
+          "blockedAlert",
+          "standupTabs"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Async Daily Standup",
+        "subtitle": "Wednesday, October 24, 2024 • Engineering & Product Team"
+      },
+      {
+        "id": "missingAlert",
+        "component": "Callout",
+        "variant": "info",
+        "title": "3 of 8 Updates Pending",
+        "description": "5 team members have submitted their standup. 3 updates are still missing for today."
+      },
+      {
+        "id": "blockedAlert",
+        "component": "Alert",
+        "variant": "destructive",
+        "title": "1 Teammate Blocked",
+        "description": "Marcus Chen is blocked on API gateway permissions. Needs DevOps support."
+      },
+      {
+        "id": "standupTabs",
+        "component": "Tabs",
+        "items": [
+          "updatesTab",
+          "postTab"
+        ]
+      },
+      {
+        "id": "updatesTab",
+        "component": "TabItem",
+        "value": "updates",
+        "trigger": "Team Updates (5)",
+        "content": [
+          "updatesList"
+        ]
+      },
+      {
+        "id": "updatesList",
+        "component": "ListBlock",
+        "variant": "image",
+        "items": [
+          "updateItem1",
+          "updateItem2",
+          "updateItem3",
+          "updateItem4",
+          "updateItem5"
+        ]
+      },
+      {
+        "id": "updateItem1",
+        "component": "ListItem",
+        "title": "Marcus Chen (Frontend Lead) — 🔴 BLOCKED",
+        "subtitle": "Yesterday: Completed UI mockups for checkout. | Today: Integrating Auth API. | Blocked: Waiting on IAM role permissions from DevOps.",
+        "actionLabel": "Offer Help"
+      },
+      {
+        "id": "updateItem2",
+        "component": "ListItem",
+        "title": "Sarah Jenkins (Product Manager) — 🟢 On Track",
+        "subtitle": "Yesterday: Finalized Q4 roadmap draft. | Today: User interviews for onboarding flow. | Blocked: None.",
+        "actionLabel": "View Notes"
+      },
+      {
+        "id": "updateItem3",
+        "component": "ListItem",
+        "title": "Alex Rivera (Backend Dev) — 🟢 On Track",
+        "subtitle": "Yesterday: Deployed database migration v2.4. | Today: Optimizing GraphQL query response times. | Blocked: None.",
+        "actionLabel": "View PR"
+      },
+      {
+        "id": "updateItem4",
+        "component": "ListItem",
+        "title": "Elena Rostova (UX Designer) — 🟢 On Track",
+        "subtitle": "Yesterday: Handed off design tokens to dev team. | Today: Reviewing user testing videos. | Blocked: None.",
+        "actionLabel": "Figma"
+      },
+      {
+        "id": "updateItem5",
+        "component": "ListItem",
+        "title": "David Kim (QA Engineer) — 🟢 On Track",
+        "subtitle": "Yesterday: Ran regression test suite for release 1.8. | Today: Automating E2E payment tests. | Blocked: None.",
+        "actionLabel": "Test Suite"
+      },
+      {
+        "id": "postTab",
+        "component": "TabItem",
+        "value": "post",
+        "trigger": "Post Your Update",
+        "content": [
+          "updateForm"
+        ]
+      },
+      {
+        "id": "updateForm",
+        "component": "Form",
+        "name": "daily-standup-submit",
+        "buttons": "formActions",
+        "fields": [
+          "yesterdayField",
+          "todayField",
+          "blockedField",
+          "statusField"
+        ]
+      },
+      {
+        "id": "yesterdayField",
+        "component": "FormControl",
+        "label": "What did you accomplish yesterday?",
+        "input": "yesterdayInput",
+        "hint": "Keep it concise and highlight key deliverables"
+      },
+      {
+        "id": "yesterdayInput",
+        "component": "TextArea",
+        "name": "yesterday_text",
+        "placeholder": "e.g., Finished code review for PR #142 and merged feature flag setup...",
+        "rows": 2
+      },
+      {
+        "id": "todayField",
+        "component": "FormControl",
+        "label": "What are you working on today?",
+        "input": "todayInput",
+        "hint": "Mention your primary focus for the day"
+      },
+      {
+        "id": "todayInput",
+        "component": "TextArea",
+        "name": "today_text",
+        "placeholder": "e.g., Implementing the new dashboard widgets and writing unit tests...",
+        "rows": 2
+      },
+      {
+        "id": "blockedField",
+        "component": "FormControl",
+        "label": "Are you blocked on anything?",
+        "input": "blockedInput",
+        "hint": "Specify who or what is needed to unblock you"
+      },
+      {
+        "id": "blockedInput",
+        "component": "Input",
+        "name": "blockers",
+        "placeholder": "e.g., None, or 'Need design approval from @Elena'",
+        "type": "text"
+      },
+      {
+        "id": "statusField",
+        "component": "FormControl",
+        "label": "Overall Status",
+        "input": "statusSelect"
+      },
+      {
+        "id": "statusSelect",
+        "component": "Select",
+        "name": "overall_status",
+        "placeholder": "Select your status",
+        "items": [
+          "statusClear",
+          "statusBlocked",
+          "statusAFK"
+        ]
+      },
+      {
+        "id": "statusClear",
+        "component": "SelectItem",
+        "value": "clear",
+        "label": "🟢 On Track / Clear"
+      },
+      {
+        "id": "statusBlocked",
+        "component": "SelectItem",
+        "value": "blocked",
+        "label": "🔴 Blocked"
+      },
+      {
+        "id": "statusAFK",
+        "component": "SelectItem",
+        "value": "afk",
+        "label": "🟡 Partial / OOO Today"
+      },
+      {
+        "id": "formActions",
+        "component": "Buttons",
+        "buttons": [
+          "submitStandupBtn",
+          "saveDraftBtn"
+        ]
+      },
+      {
+        "id": "submitStandupBtn",
+        "component": "Button",
+        "label": "Submit Standup",
+        "variant": "primary"
+      },
+      {
+        "id": "saveDraftBtn",
+        "component": "Button",
+        "label": "Save Draft",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>

@@ -1,0 +1,156 @@
+root = Card([header, mainGrid, followUps])
+
+# Header Section
+header = CardHeader("Live-Ops Command Center", "Vanguard Studios • Apex Legends Division • Real-Time Systems")
+
+# Main Dashboard Container Grid
+mainGrid = Card([topKpis, serverRegionSection, playerRetentionSessionSection, liveEventsExperimentsSection, moderationSection, economyPatchSection], "clear", "column", "l")
+
+# Top Level KPI Row (Items 1, 2, 3, 4, 12)
+topKpis = Card([ccuCard, activeUsersCard, revenueCard, arpuCard, economyCard], "clear", "row", "m")
+
+ccuCard = Card([ccuHeader, ccuValue, ccuBadge], "card", "column", "xs")
+ccuHeader = TextContent("PLAYERS ONLINE RIGHT NOW", "small-heavy")
+ccuValue = TextContent("142,890", "large-heavy")
+ccuBadge = Badge("+12% vs last hour", "secondary")
+
+activeUsersCard = Card([auHeader, dauValue, mauValue], "card", "column", "xs")
+auHeader = TextContent("ACTIVE PLAYERS", "small-heavy")
+dauValue = TextContent("DAU: 1.24M", "default")
+mauValue = TextContent("MAU: 8.65M", "small")
+
+revenueCard = Card([revHeader, revValue, revBadge], "card", "column", "xs")
+revHeader = TextContent("REVENUE TODAY", "small-heavy")
+revValue = TextContent("$84,320", "large-heavy")
+revBadge = Badge("On target ($90k est)", "default")
+
+arpuCard = Card([arpuHeader, arpuValue, arpuDetail], "card", "column", "xs")
+arpuHeader = TextContent("REVENUE PER USER (ARPU)", "small-heavy")
+arpuValue = TextContent("$0.068", "large-heavy")
+arpuDetail = TextContent("ARPPU: $14.20", "small")
+
+economyCard = Card([econHeader, econValue, econProg], "card", "column", "xs")
+econHeader = TextContent("CURRENCY INFLATION", "small-heavy")
+econValue = TextContent("+2.4% MoM (Gold)", "default")
+econProg = Progress(24, "Target Max: 5.0%")
+
+# Item 7 & 15: Server Regions & Focus Selector
+serverRegionSection = Card([serverHeader, regionFocusBar, serverTable], "card", "column", "m")
+serverHeader = CardHeader("Server Regions & Infrastructure Health", "Real-time cluster status and latency metrics")
+regionFocusBar = Buttons([btnAllRegion, btnNA, btnEU, btnASIA, btnSA, btnOCE])
+btnAllRegion = Button("All Regions (Global)", null, "primary")
+btnNA = Button("NA-East / West", null, "secondary")
+btnEU = Button("EU-Central", null, "secondary")
+btnASIA = Button("ASIA-East", null, "secondary")
+btnSA = Button("SA-Brazil", null, "secondary")
+btnOCE = Button("OCE-Australia", null, "secondary")
+
+serverTable = Table([colRegion, colStatus, colLoad, colLatency, colAction])
+colRegion = Col("Region", ["NA-East (Virginia)", "NA-West (Oregon)", "EU-Central (Frankfurt)", "ASIA-East (Tokyo)", "SA-Brazil (São Paulo)", "OCE-Australia (Sydney)"])
+colStatus = Col("Status", ["Healthy", "Healthy", "Degraded", "Healthy", "Healthy", "Maintenance"])
+colLatency = Col("Ping Avg", ["24 ms", "38 ms", "82 ms", "45 ms", "110 ms", "64 ms"])
+colLoad = Col("Server Capacity", ["78%", "64%", "92%", "81%", "42%", "15%"])
+colAction = Col("Quick Action", ["Inspect", "Inspect", "Reroute Traffic", "Inspect", "Inspect", "Bring Online"])
+
+# Item 5, 6 & 8: Sessions, Best Sellers, Crash Rates
+playerRetentionSessionSection = Card([sessionCard, bestSellersCard, crashCard], "clear", "row", "m")
+
+sessionCard = Card([sessionHeader, sessionChart], "card", "column", "s")
+sessionHeader = CardHeader("Avg Session Length (Past 2 Weeks)", "Minutes per unique active player")
+sessionChart = LineChart(["Day 1", "Day 3", "Day 5", "Day 7", "Day 9", "Day 11", "Day 14"], [sessionSeries], "natural", "Days Ago", "Minutes")
+sessionSeries = Series("Avg Duration", [42, 45, 41, 58, 62, 48, 51])
+
+bestSellersCard = Card([bestSellersHeader, bestSellersTable], "card", "column", "s")
+bestSellersHeader = CardHeader("Best-Selling Items Today", "Top microtransactions in store")
+bestSellersTable = Table([colItem, colUnits, colRev])
+colItem = Col("Item Name", ["Cyber-Ninja Skin", "Battle Pass S12", "500 Apex Coins", "Shadow Blade", "XP Boost (24h)"])
+colUnits = Col("Units Sold", ["14,200", "9,850", "8,110", "5,400", "3,920"])
+colRev = Col("Total Rev", ["$284,000", "$98,500", "$40,550", "$54,000", "$7,840"])
+
+crashCard = Card([crashHeader, crashBarChart], "card", "column", "s")
+crashHeader = CardHeader("Crash Rate by App Version", "Crashes per 1,000 sessions")
+crashBarChart = BarChart(["v2.4.0 (Latest)", "v2.3.9 (Prev)", "v2.3.5 (Legacy)", "v2.4.1-rc1"], [crashSeries], "grouped", "Version", "Crash %")
+crashSeries = Series("Crash Rate %", [0.12, 0.45, 1.85, 0.05])
+
+# Item 9 & 13: Live Events & A/B Experiments
+liveEventsExperimentsSection = Card([eventsCard, expCard], "clear", "row", "m")
+
+eventsCard = Card([eventsHeader, eventsTable], "card", "column", "s")
+eventsHeader = CardHeader("Live & Upcoming Events", "In-game scheduled seasonal content")
+eventsTable = Table([colEvent, colStatusEv, colTime])
+colEvent = Col("Event Name", ["Neon Nights Festival", "Double XP Weekend", "Boss Raid: Leviathan", "Winter Clash 2025"])
+colStatusEv = Col("Status", ["RUNNING NOW", "RUNNING NOW", "UPCOMING (In 2 days)", "UPCOMING (Dec 20)"])
+colTime = Col("Time Window", ["Ends in 4 days", "Ends in 12 hours", "Starts Oct 28", "Starts Dec 20"])
+
+expCard = Card([expHeader, exp1Callout, exp2Callout], "card", "column", "s")
+expHeader = CardHeader("Active Experiments (A/B Tests)", "2 live split tests running globally")
+exp1Callout = Callout("success", "Exp #104: Dynamic Shop Offers", "Variant B shows +14.2% higher conversion rate vs Control (p < 0.01). Recommended for full rollout.")
+exp2Callout = Callout("info", "Exp #105: Tutorial Skip Button", "Variant A (Immediate Skip) shows -3% D1 retention but +8% D7 completion. Test ongoing (48h remaining).")
+
+# Item 10 & 11: Moderation Queue
+moderationSection = Card([modHeader, modGrid], "card", "column", "m")
+modHeader = CardHeader("Moderation & Player Trust", "Pending queues requiring community team action")
+modGrid = Card([reportsCard, appealsCard], "clear", "row", "m")
+
+reportsCard = Card([repTitle, repCount, repDesc, repButtons], "sunk", "column", "xs")
+repTitle = TextContent("PLAYER REPORTS AWAITING REVIEW", "small-heavy")
+repCount = TextContent("1,428 Pending", "large-heavy")
+repDesc = TextContent("Toxicity (62%), Cheating/Hacks (28%), AFK (10%)", "small")
+repButtons = Buttons([btnReviewReports])
+btnReviewReports = Button("Open Report Queue", null, "primary")
+
+appealsCard = Card([appTitle, appCount, appDesc, appButtons], "sunk", "column", "xs")
+appTitle = TextContent("BAN APPEALS AWAITING REVIEW", "small-heavy")
+appCount = TextContent("184 Pending", "large-heavy")
+appDesc = TextContent("Avg resolution time: 4.2 hours", "small")
+appButtons = Buttons([btnReviewAppeals])
+btnReviewAppeals = Button("Open Appeal Queue", null, "secondary")
+
+# Item 14 & 16: Live-Ops Action Center (Hotfix & Patch Notes)
+economyPatchSection = Card([actionCenterHeader, actionGrid], "card", "column", "m")
+actionCenterHeader = CardHeader("Live-Ops Actions & Release Management", "Tools to deploy fixes and communicate with players")
+
+actionGrid = Card([hotfixFormCard, patchNotesCard], "clear", "row", "m")
+
+hotfixFormCard = Card([hotfixTitle, hotfixForm], "sunk", "column", "s")
+hotfixTitle = TextContent("Ship Immediate Hotfix (Item 16)", "large-heavy")
+hotfixForm = Form("hotfix-deploy", hotfixButtons, [hotfixTargetField, hotfixVersionField, hotfixNoteField])
+hotfixTargetField = FormControl("Target Platform/Region", hotfixTargetSelect)
+hotfixTargetSelect = Select("platform", [optGlobal, optPC, optConsole, optEUOnly], "Select scope")
+optGlobal = SelectItem("global", "Global (All Platforms & Regions)")
+optPC = SelectItem("pc", "PC Steam / EA App Only")
+optConsole = SelectItem("console", "PlayStation / Xbox Only")
+optEUOnly = SelectItem("eu", "EU-Central Region Only")
+
+hotfixVersionField = FormControl("Hotfix Version Tag", hotfixInput)
+hotfixInput = Input("version", "v2.4.0-hotfix1")
+
+hotfixNoteField = FormControl("Deployment Reason", hotfixReasonInput)
+hotfixReasonInput = Input("reason", "Address server memory leak in EU-Central")
+
+hotfixButtons = Buttons([btnDeployHotfix])
+btnDeployHotfix = Button("Deploy Hotfix Now", null, "primary", "destructive")
+
+patchNotesCard = Card([patchTitle, patchForm], "sunk", "column", "s")
+patchTitle = TextContent("Draft Patch Notes (Item 14)", "large-heavy")
+patchForm = Form("patch-draft", patchButtons, [patchTitleField, patchBodyField, patchStatusField])
+patchTitleField = FormControl("Patch Title", patchTitleInput)
+patchTitleInput = Input("title", "Update v2.4.1 - Balance Changes & Bug Fixes")
+
+patchBodyField = FormControl("Patch Body Content", patchBodyText)
+patchBodyText = TextArea("body", "### Highlights\n- Weapon rebalance: Reduced R-99 damage by 1.\n- Server stability improvements.\n- Fixed crash when viewing shop items.", 4)
+
+patchStatusField = FormControl("Publish State", patchSelect)
+patchSelect = Select("state", [optDraft, optSchedule, optPublishNow], "Select state")
+optDraft = SelectItem("draft", "Save as Draft")
+optSchedule = SelectItem("schedule", "Schedule for Release")
+optPublishNow = SelectItem("now", "Publish Immediately to Launcher & Site")
+
+patchButtons = Buttons([btnSavePatch])
+btnSavePatch = Button("Save Draft Patch Notes", null, "secondary")
+
+# Suggested Follow-up Actions
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Focus metrics on EU-Central region due to high latency")
+f2 = FollowUpItem("Review the dynamic shop A/B experiment details")
+f3 = FollowUpItem("Open the cheat reports moderation queue")

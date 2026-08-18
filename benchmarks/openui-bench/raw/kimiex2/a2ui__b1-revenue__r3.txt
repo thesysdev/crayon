@@ -1,0 +1,127 @@
+Here's a mid-morning check-in screen for the shop owner, covering (1) today's revenue so far and (2) how it compares with the same time yesterday.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "revenueToday",
+          "compareBadge",
+          "summaryTable",
+          "hourlyChart",
+          "insight"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Mid-morning check-in",
+        "subtitle": "Today · as of 10:30 AM"
+      },
+      {
+        "id": "revenueToday",
+        "component": "TextContent",
+        "text": "**$1,284** taken so far today",
+        "size": "large-heavy"
+      },
+      {
+        "id": "compareBadge",
+        "component": "Badge",
+        "text": "+16% vs same time yesterday ($1,102)",
+        "variant": "secondary"
+      },
+      {
+        "id": "summaryTable",
+        "component": "Table",
+        "columns": [
+          "metricCol",
+          "valueCol"
+        ]
+      },
+      {
+        "id": "metricCol",
+        "component": "Col",
+        "label": "Measure",
+        "data": [
+          "Revenue today so far",
+          "Yesterday at same time",
+          "Difference"
+        ]
+      },
+      {
+        "id": "valueCol",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "$1,284",
+          "$1,102",
+          "+$182 (+16.5%)"
+        ]
+      },
+      {
+        "id": "hourlyChart",
+        "component": "LineChart",
+        "labels": [
+          "8 AM",
+          "9 AM",
+          "10 AM"
+        ],
+        "series": [
+          "todaySeries",
+          "yesterdaySeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Time of day",
+        "yLabel": "Cumulative revenue (USD)"
+      },
+      {
+        "id": "todaySeries",
+        "component": "Series",
+        "category": "Today",
+        "values": [
+          320,
+          715,
+          1284
+        ]
+      },
+      {
+        "id": "yesterdaySeries",
+        "component": "Series",
+        "category": "Yesterday",
+        "values": [
+          298,
+          640,
+          1102
+        ]
+      },
+      {
+        "id": "insight",
+        "component": "Alert",
+        "title": "Ahead of yesterday",
+        "description": "Sales are tracking 16% above where they were at 10:30 AM yesterday.",
+        "variant": "success"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This single screen covers both items:
+1. **Revenue so far today** — shown prominently ($1,284) and in the summary table.
+2. **Comparison with the same time yesterday** — a badge with the % change, a side-by-side table row (yesterday at same time: $1,102, difference +$182), and a line chart plotting today's cumulative revenue against yesterday's hour by hour.

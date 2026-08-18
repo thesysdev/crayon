@@ -1,0 +1,367 @@
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#2563EB",
+      "agentDisplayName": "Logistics Operations"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "refreshStatus",
+          "routeSearchForm",
+          "delayedAlert",
+          "metrics",
+          "carrierVolume",
+          "weeklyVolume",
+          "shipmentsHeader",
+          "shipmentsTable",
+          "flagForm"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Logistics Coordinator Board",
+        "subtitle": "In-transit shipment performance and exceptions"
+      },
+      {
+        "id": "refreshStatus",
+        "component": "Badge",
+        "text": "Last refreshed: Aug 18, 2026 at 10:42 UTC",
+        "variant": "outline"
+      },
+      {
+        "id": "routeSearchForm",
+        "component": "Form",
+        "name": "route-search",
+        "buttons": "routeSearchButtons",
+        "fields": [
+          "routeSearchControl"
+        ]
+      },
+      {
+        "id": "routeSearchButtons",
+        "component": "Buttons",
+        "buttons": [
+          "routeSearchButton",
+          "routeClearButton"
+        ]
+      },
+      {
+        "id": "routeSearchButton",
+        "component": "Button",
+        "label": "Search route",
+        "variant": "primary"
+      },
+      {
+        "id": "routeClearButton",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "tertiary"
+      },
+      {
+        "id": "routeSearchControl",
+        "component": "FormControl",
+        "label": "Search by route",
+        "input": "routeSearchInput",
+        "hint": "Enter an origin, destination, or route such as Chicago → Dallas"
+      },
+      {
+        "id": "routeSearchInput",
+        "component": "Input",
+        "name": "route",
+        "placeholder": "Origin or destination",
+        "type": "text"
+      },
+      {
+        "id": "delayedAlert",
+        "component": "Alert",
+        "title": "2 delayed shipments require attention",
+        "description": "SHP-1048 is delayed by 6 hours due to severe weather. SHP-1056 is delayed by 11 hours due to a missed connection.",
+        "variant": "warning"
+      },
+      {
+        "id": "metrics",
+        "component": "Table",
+        "columns": [
+          "metricName",
+          "metricValue"
+        ]
+      },
+      {
+        "id": "metricName",
+        "component": "Col",
+        "label": "Monthly KPI",
+        "data": [
+          "On-time percentage",
+          "Average cost per shipment",
+          "Shipments in transit"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "metricValue",
+        "component": "Col",
+        "label": "Current value",
+        "data": [
+          "94.2%",
+          "$1,284",
+          "6"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "carrierVolume",
+        "component": "PieChart",
+        "labels": [
+          "NorthStar Freight",
+          "BlueLine Logistics",
+          "Atlas Transport",
+          "SwiftHaul"
+        ],
+        "values": [
+          38,
+          27,
+          21,
+          14
+        ],
+        "variant": "donut",
+        "appearance": "circular"
+      },
+      {
+        "id": "weeklyVolume",
+        "component": "BarChart",
+        "labels": [
+          "Jun 29",
+          "Jul 6",
+          "Jul 13",
+          "Jul 20",
+          "Jul 27",
+          "Aug 3",
+          "Aug 10",
+          "Aug 17"
+        ],
+        "series": [
+          "weeklyVolumeSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Week starting",
+        "yLabel": "Shipments"
+      },
+      {
+        "id": "weeklyVolumeSeries",
+        "component": "Series",
+        "category": "Weekly shipment volume",
+        "values": [
+          184,
+          201,
+          196,
+          223,
+          218,
+          237,
+          229,
+          245
+        ]
+      },
+      {
+        "id": "shipmentsHeader",
+        "component": "Heading",
+        "text": "Shipments in transit",
+        "level": "h2"
+      },
+      {
+        "id": "shipmentsTable",
+        "component": "Table",
+        "columns": [
+          "shipmentIdCol",
+          "originCol",
+          "destinationCol",
+          "etaCol",
+          "statusCol"
+        ]
+      },
+      {
+        "id": "shipmentIdCol",
+        "component": "Col",
+        "label": "Shipment",
+        "data": [
+          "SHP-1042",
+          "SHP-1048",
+          "SHP-1051",
+          "SHP-1056",
+          "SHP-1060",
+          "SHP-1063"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "originCol",
+        "component": "Col",
+        "label": "Origin",
+        "data": [
+          "Chicago, IL",
+          "Seattle, WA",
+          "Atlanta, GA",
+          "Los Angeles, CA",
+          "Newark, NJ",
+          "Memphis, TN"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "destinationCol",
+        "component": "Col",
+        "label": "Destination",
+        "data": [
+          "Dallas, TX",
+          "Denver, CO",
+          "Miami, FL",
+          "Phoenix, AZ",
+          "Boston, MA",
+          "Nashville, TN"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "etaCol",
+        "component": "Col",
+        "label": "ETA",
+        "data": [
+          "Aug 18, 14:30",
+          "Aug 18, 21:00",
+          "Aug 19, 09:15",
+          "Aug 19, 18:45",
+          "Aug 18, 16:20",
+          "Aug 18, 13:10"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "statusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "On time",
+          "Delayed 6h",
+          "On time",
+          "Delayed 11h",
+          "Ahead 1h",
+          "On time"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "flagForm",
+        "component": "Form",
+        "name": "flag-shipment",
+        "buttons": "flagButtons",
+        "fields": [
+          "flagShipmentControl",
+          "flagReasonControl"
+        ]
+      },
+      {
+        "id": "flagButtons",
+        "component": "Buttons",
+        "buttons": [
+          "flagButton"
+        ]
+      },
+      {
+        "id": "flagButton",
+        "component": "Button",
+        "label": "Flag shipment",
+        "variant": "primary",
+        "type": "destructive"
+      },
+      {
+        "id": "flagShipmentControl",
+        "component": "FormControl",
+        "label": "Shipment to flag",
+        "input": "flagShipmentSelect"
+      },
+      {
+        "id": "flagShipmentSelect",
+        "component": "Select",
+        "name": "shipment_id",
+        "items": [
+          "flag1042",
+          "flag1048",
+          "flag1051",
+          "flag1056",
+          "flag1060",
+          "flag1063"
+        ],
+        "placeholder": "Select a shipment"
+      },
+      {
+        "id": "flag1042",
+        "component": "SelectItem",
+        "value": "SHP-1042",
+        "label": "SHP-1042 — Chicago to Dallas"
+      },
+      {
+        "id": "flag1048",
+        "component": "SelectItem",
+        "value": "SHP-1048",
+        "label": "SHP-1048 — Seattle to Denver"
+      },
+      {
+        "id": "flag1051",
+        "component": "SelectItem",
+        "value": "SHP-1051",
+        "label": "SHP-1051 — Atlanta to Miami"
+      },
+      {
+        "id": "flag1056",
+        "component": "SelectItem",
+        "value": "SHP-1056",
+        "label": "SHP-1056 — Los Angeles to Phoenix"
+      },
+      {
+        "id": "flag1060",
+        "component": "SelectItem",
+        "value": "SHP-1060",
+        "label": "SHP-1060 — Newark to Boston"
+      },
+      {
+        "id": "flag1063",
+        "component": "SelectItem",
+        "value": "SHP-1063",
+        "label": "SHP-1063 — Memphis to Nashville"
+      },
+      {
+        "id": "flagReasonControl",
+        "component": "FormControl",
+        "label": "Reason",
+        "input": "flagReasonInput",
+        "hint": "Add context for the operations team"
+      },
+      {
+        "id": "flagReasonInput",
+        "component": "TextArea",
+        "name": "flag_reason",
+        "placeholder": "Describe the issue or follow-up needed",
+        "rows": 3
+      }
+    ]
+  }
+}
+</a2ui-json>

@@ -1,0 +1,94 @@
+root = Card([header, timeframe, kpis, riskAlert, positions, sector, gainersLosers, watchlist, orders, headlines, econ, strategyReturns, drawdown, riskLimits, actions])
+
+header = CardHeader("Morning Workspace", "Trading Desk — Fixed Income & Equities")
+
+timeframe = Form("timeframe", tfButtons, [tfField])
+tfField = FormControl("Timeframe", tfSelect)
+tfSelect = Select("range", [tf1, tf2, tf3, tf4], "Select timeframe")
+tf1 = SelectItem("1d", "Today")
+tf2 = SelectItem("1w", "This week")
+tf3 = SelectItem("1m", "This month")
+tf4 = SelectItem("ytd", "Year to date")
+tfButtons = Buttons([tfApply])
+tfApply = Button("Apply", null, "secondary")
+
+kpis = Table([kpiName, kpiValue])
+kpiName = Col("Metric", ["Portfolio Value", "P&L Today", "Value at Risk (95%)", "Margin in Use"])
+kpiValue = Col("Value", ["$48,720,400", "+$312,880 (+0.65%)", "$1,240,000", "$9,180,000 (42%)"])
+
+riskAlert = Alert("VaR nearing threshold", "95% VaR is at $1.24M against a $1.30M limit (95% utilized)", "warning")
+
+positions = Table([posTicker, posSize, posEntry, posCurrent])
+posTicker = Col("Ticker", ["AAPL", "MSFT", "NVDA", "TSLA", "JPM", "XOM"])
+posSize = Col("Size", [12000, 8500, 4200, -3000, 15000, 9800], "number")
+posEntry = Col("Entry", [212.40, 402.10, 118.75, 245.60, 198.30, 108.90], "number")
+posCurrent = Col("Current", [219.85, 411.30, 124.10, 238.20, 201.75, 112.40], "number")
+
+sector = PieChart(sectorLabels, sectorValues, "donut")
+sectorLabels = ["Technology", "Financials", "Energy", "Consumer", "Healthcare"]
+sectorValues = [38, 24, 15, 13, 10]
+
+gainersLosers = BarChart(glLabels, [glSeries], "grouped", "Ticker", "% Change")
+glLabels = ["NVDA", "MSFT", "AAPL", "XOM", "TSLA"]
+glSeries = Series("% Change Today", [4.5, 2.3, 1.8, -1.2, -3.0])
+
+watchlist = Table([wlTicker, wlPrice])
+wlTicker = Col("Instrument", ["GOOGL", "META", "AMZN", "GLD", "US10Y", "BTC"])
+wlPrice = Col("Price", ["$174.20", "$512.60", "$186.40", "$238.15", "4.28%", "$67,840"])
+
+orders = Table([ordTicker, ordSide, ordQty, ordType, ordStatus])
+ordTicker = Col("Ticker", ["AAPL", "NVDA", "JPM", "TSLA"])
+ordSide = Col("Side", ["Buy", "Sell", "Buy", "Sell"])
+ordQty = Col("Qty", [5000, 2000, 6000, 1500], "number")
+ordType = Col("Type", ["Limit 218.00", "Limit 126.50", "Market", "Stop 232.00"])
+ordStatus = Col("Status", ["Working", "Working", "Working", "Working"])
+
+headlines = ListBlock([hl1, hl2, hl3, hl4])
+hl1 = ListItem("Fed holds rates, signals two cuts in 2025", "Positive — risk assets rally")
+hl2 = ListItem("NVDA beats on data center revenue", "Positive — chip sector bid")
+hl3 = ListItem("Oil slips on demand concerns", "Negative — energy under pressure")
+hl4 = ListItem("Jobless claims tick higher than expected", "Neutral — mixed reaction")
+
+econ = Table([ecDay, ecEvent, ecForecast])
+ecDay = Col("Day", ["Mon", "Tue", "Wed", "Thu", "Fri"])
+ecEvent = Col("Release", ["ISM Manufacturing", "JOLTS Openings", "FOMC Minutes", "CPI y/y", "Non-Farm Payrolls"])
+ecForecast = Col("Forecast", ["48.5", "8.1M", "—", "3.1%", "185K"])
+
+strategyReturns = HorizontalBarChart(stratLabels, [stratSeries], "grouped", "Return YTD %", "Strategy")
+stratLabels = ["Momentum", "Mean Reversion", "Stat Arb", "Macro Overlay", "Vol Carry"]
+stratSeries = Series("Return YTD %", [18.4, 9.2, 6.7, 12.1, -3.5])
+
+drawdown = AreaChart(ddLabels, [ddSeries], "natural", "Month", "Drawdown %")
+ddLabels = ["Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun"]
+ddSeries = Series("Drawdown %", [-2.1, -4.8, -3.2, -6.5, -5.1, -2.8, -1.5, -3.9, -7.2, -4.4, -2.0, -1.1])
+
+riskLimits = Table([rlName, rlUtil, rlStatus])
+rlName = Col("Limit", ["95% VaR", "Sector Concentration (Tech)", "Gross Leverage", "Single Name (JPM)"])
+rlUtil = Col("Utilization", ["95%", "88%", "72%", "91%"])
+rlStatus = Col("Status", ["Near breach", "Near breach", "OK", "Near breach"])
+
+actions = Buttons([rebalanceBtn, orderBtn])
+rebalanceBtn = DialogBlock("Rebalance Portfolio", "Rebalance", "Adjust target weights and submit rebalance", [rebalanceForm], "default")
+rebalanceForm = Form("rebalance", rebalButtons, [rebalTech, rebalFin, rebalCash])
+rebalTech = FormControl("Technology target %", rebalTechSlider)
+rebalTechSlider = Slider("tech_pct", "discrete", 0, 60, 5, [38], "Technology")
+rebalFin = FormControl("Financials target %", rebalFinSlider)
+rebalFinSlider = Slider("fin_pct", "discrete", 0, 60, 5, [24], "Financials")
+rebalCash = FormControl("Cash buffer %", rebalCashSlider)
+rebalCashSlider = Slider("cash_pct", "discrete", 0, 30, 1, [5], "Cash")
+rebalButtons = Buttons([rebalSubmit])
+rebalSubmit = Button("Submit Rebalance", null, "primary")
+
+orderBtn = DialogBlock("Place Order", "New Order", "Enter order details", [orderForm], "secondary")
+orderForm = Form("place-order", orderFormButtons, [orderTicker, orderSide, orderQty])
+orderTicker = FormControl("Ticker", orderTickerInput)
+orderTickerInput = Input("ticker", "e.g. AAPL")
+orderSide = FormControl("Side", orderSideRadio)
+orderSideRadio = RadioGroup("side", [sideBuy, sideSell], "buy")
+sideBuy = RadioItem("Buy", "Open or add to long", "buy")
+sideSell = RadioItem("Sell", "Reduce or open short", "sell")
+orderQty = FormControl("Quantity", orderQtyInput)
+orderQtyInput = Input("quantity", "Number of shares", "number")
+orderFormButtons = Buttons([orderSubmit, orderCancel])
+orderSubmit = Button("Place Order", null, "primary")
+orderCancel = Button("Cancel", null, "tertiary")

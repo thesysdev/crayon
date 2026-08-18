@@ -1,0 +1,60 @@
+root = Card([header, sep1, overviewGrid, sep2, categoriesSection, sep3, highlightCallout, sep4, monthFilter, sep5, addExpenseForm], "card", "column", "l")
+
+header = CardHeader("Personal Budget Overview", "Track your monthly spending and expenses")
+sep1 = Separator("horizontal")
+
+overviewGrid = Card([budgetProgress, kpiTable], "sunk", "column", "m")
+budgetProgress = Progress(78, "Monthly Spending Limit: $3,280 / $4,200 Spent (78%)")
+kpiTable = Table([kpiCol, valCol])
+kpiCol = Col("Metric", ["Monthly Budget", "Total Spent", "Remaining", "Daily Average"])
+valCol = Col("Amount", ["$4,200.00", "$3,280.00", "$920.00", "$109.33"])
+
+sep2 = Separator("horizontal")
+
+categoriesSection = Card([catHeading, catChart, catTable], "clear", "column", "m")
+catHeading = Heading("Spending by Category", "h3")
+catChart = HorizontalBarChart(["Housing", "Food & Dining", "Transportation", "Utilities", "Entertainment", "Shopping"], [catSeries], "grouped", "Category", "Amount ($)")
+catSeries = Series("Spent", [1450, 620, 380, 290, 240, 300])
+catTable = Table([catCol, spentCol, limitCol, statusCol])
+catCol = Col("Category", ["Housing", "Food & Dining", "Transportation", "Utilities", "Entertainment", "Shopping"])
+spentCol = Col("Spent", ["$1,450.00", "$620.00", "$380.00", "$290.00", "$240.00", "$300.00"])
+limitCol = Col("Budget", ["$1,450.00", "$600.00", "$400.00", "$300.00", "$250.00", "$350.00"])
+statusCol = Col("Status", ["On Target", "Over Budget", "Under Budget", "Under Budget", "Under Budget", "Under Budget"])
+
+sep3 = Separator("horizontal")
+
+highlightCallout = Callout("warning", "Largest Single Expense", "Rent Payment: $1,450.00 on Oct 1st (Housing category - 44.2% of total monthly spend)")
+
+sep4 = Separator("horizontal")
+
+monthFilter = Card([filterHeading, filterButtons], "sunk", "row", "m", "center", "between")
+filterHeading = Heading("Selected Month: October 2023", "h4")
+filterButtons = Buttons([prevMonthBtn, currentMonthBtn, nextMonthBtn])
+prevMonthBtn = Button("Sep 2023", null, "secondary")
+currentMonthBtn = Button("Oct 2023", null, "primary")
+nextMonthBtn = Button("Nov 2023", null, "secondary")
+
+sep5 = Separator("horizontal")
+
+addExpenseForm = Form("add-expense", formActions, [descControl, amountControl, categoryControl, dateControl])
+descControl = FormControl("Expense Description", descInput)
+descInput = Input("description", "e.g., Grocery store run")
+
+amountControl = FormControl("Amount ($)", amountInput)
+amountInput = Input("amount", "0.00", "number")
+
+categoryControl = FormControl("Category", categorySelect)
+categorySelect = Select("category", [opt1, opt2, opt3, opt4, opt5, opt6], "Select category")
+opt1 = SelectItem("housing", "Housing")
+opt2 = SelectItem("food", "Food & Dining")
+opt3 = SelectItem("transport", "Transportation")
+opt4 = SelectItem("utilities", "Utilities")
+opt5 = SelectItem("entertainment", "Entertainment")
+opt6 = SelectItem("shopping", "Shopping")
+
+dateControl = FormControl("Date", datePicker)
+datePicker = DatePicker("expense_date", "single")
+
+formActions = Buttons([submitExpenseBtn, clearFormBtn])
+submitExpenseBtn = Button("Add Expense", null, "primary")
+clearFormBtn = Button("Clear", null, "tertiary")

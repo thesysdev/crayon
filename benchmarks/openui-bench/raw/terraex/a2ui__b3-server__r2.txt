@@ -1,0 +1,413 @@
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#2563EB",
+      "agentDisplayName": "Service Health"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "gap": "l",
+        "children": [
+          "header",
+          "regionControl",
+          "summary",
+          "resourceSection",
+          "cpuMemoryChart",
+          "incidentsSection",
+          "incidentsTable",
+          "endpointsSection",
+          "endpointsTable",
+          "thresholdSection",
+          "thresholdForm"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "On-call Service Health",
+        "subtitle": "Live operational status across production services"
+      },
+      {
+        "id": "regionControl",
+        "component": "FormControl",
+        "label": "Region",
+        "hint": "Narrow this view to a single deployment region",
+        "input": "regionSelect"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region",
+        "placeholder": "All regions",
+        "items": [
+          "regionAll",
+          "regionUsEast",
+          "regionUsWest",
+          "regionEurope",
+          "regionAsia"
+        ],
+        "value": "all"
+      },
+      {
+        "id": "regionAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All regions"
+      },
+      {
+        "id": "regionUsEast",
+        "component": "SelectItem",
+        "value": "us-east-1",
+        "label": "US East"
+      },
+      {
+        "id": "regionUsWest",
+        "component": "SelectItem",
+        "value": "us-west-2",
+        "label": "US West"
+      },
+      {
+        "id": "regionEurope",
+        "component": "SelectItem",
+        "value": "eu-west-1",
+        "label": "Europe"
+      },
+      {
+        "id": "regionAsia",
+        "component": "SelectItem",
+        "value": "ap-southeast-1",
+        "label": "Asia Pacific"
+      },
+      {
+        "id": "summary",
+        "component": "Table",
+        "columns": [
+          "summaryMetric",
+          "summaryValue",
+          "summaryStatus"
+        ]
+      },
+      {
+        "id": "summaryMetric",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Uptime this quarter",
+          "Error rate right now"
+        ]
+      },
+      {
+        "id": "summaryValue",
+        "component": "Col",
+        "label": "Current value",
+        "data": [
+          "99.982%",
+          "0.42%"
+        ]
+      },
+      {
+        "id": "summaryStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Within 99.95% SLO",
+          "Elevated"
+        ]
+      },
+      {
+        "id": "resourceSection",
+        "component": "Heading",
+        "text": "CPU and memory usage",
+        "level": "h2"
+      },
+      {
+        "id": "cpuMemoryChart",
+        "component": "LineChart",
+        "labels": [
+          "00:00",
+          "03:00",
+          "06:00",
+          "09:00",
+          "12:00",
+          "15:00",
+          "18:00",
+          "21:00",
+          "Now"
+        ],
+        "series": [
+          "cpuSeries",
+          "memorySeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Past 24 hours",
+        "yLabel": "Utilization (%)"
+      },
+      {
+        "id": "cpuSeries",
+        "component": "Series",
+        "category": "CPU",
+        "values": [
+          42,
+          38,
+          44,
+          57,
+          61,
+          54,
+          68,
+          73,
+          66
+        ]
+      },
+      {
+        "id": "memorySeries",
+        "component": "Series",
+        "category": "Memory",
+        "values": [
+          58,
+          59,
+          60,
+          63,
+          65,
+          67,
+          69,
+          72,
+          71
+        ]
+      },
+      {
+        "id": "incidentsSection",
+        "component": "Heading",
+        "text": "Open incidents",
+        "level": "h2"
+      },
+      {
+        "id": "incidentsTable",
+        "component": "Table",
+        "columns": [
+          "incidentIdCol",
+          "incidentTitleCol",
+          "incidentSeverityCol",
+          "incidentStartedCol",
+          "incidentActionCol"
+        ]
+      },
+      {
+        "id": "incidentIdCol",
+        "component": "Col",
+        "label": "Incident",
+        "data": [
+          "INC-4821",
+          "INC-4817",
+          "INC-4809"
+        ]
+      },
+      {
+        "id": "incidentTitleCol",
+        "component": "Col",
+        "label": "Summary",
+        "data": [
+          "Elevated API 5xx responses",
+          "Payment queue processing delay",
+          "Intermittent cache connection failures"
+        ]
+      },
+      {
+        "id": "incidentSeverityCol",
+        "component": "Col",
+        "label": "Severity",
+        "data": [
+          "Critical",
+          "High",
+          "Medium"
+        ]
+      },
+      {
+        "id": "incidentStartedCol",
+        "component": "Col",
+        "label": "Started",
+        "data": [
+          "18 minutes ago",
+          "46 minutes ago",
+          "2 hours ago"
+        ]
+      },
+      {
+        "id": "incidentActionCol",
+        "component": "Col",
+        "label": "Action",
+        "type": "action",
+        "data": [
+          "Acknowledge INC-4821",
+          "Acknowledge INC-4817",
+          "Acknowledge INC-4809"
+        ]
+      },
+      {
+        "id": "endpointsSection",
+        "component": "Heading",
+        "text": "Five slowest endpoints",
+        "level": "h2"
+      },
+      {
+        "id": "endpointsTable",
+        "component": "Table",
+        "columns": [
+          "endpointRankCol",
+          "endpointPathCol",
+          "endpointLatencyCol",
+          "endpointP95Col"
+        ]
+      },
+      {
+        "id": "endpointRankCol",
+        "component": "Col",
+        "label": "Rank",
+        "data": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+        ]
+      },
+      {
+        "id": "endpointPathCol",
+        "component": "Col",
+        "label": "Endpoint",
+        "data": [
+          "POST /v1/payments/authorize",
+          "GET /v1/reports/export",
+          "POST /v1/orders",
+          "GET /v1/users/{id}/activity",
+          "GET /v1/search"
+        ]
+      },
+      {
+        "id": "endpointLatencyCol",
+        "component": "Col",
+        "label": "Average latency",
+        "data": [
+          "2.84 s",
+          "2.31 s",
+          "1.96 s",
+          "1.72 s",
+          "1.48 s"
+        ]
+      },
+      {
+        "id": "endpointP95Col",
+        "component": "Col",
+        "label": "p95 latency",
+        "data": [
+          "4.92 s",
+          "4.17 s",
+          "3.64 s",
+          "3.18 s",
+          "2.81 s"
+        ]
+      },
+      {
+        "id": "thresholdSection",
+        "component": "Heading",
+        "text": "Alert threshold",
+        "level": "h2"
+      },
+      {
+        "id": "thresholdForm",
+        "component": "Form",
+        "name": "alert-threshold",
+        "fields": [
+          "thresholdMetricField",
+          "thresholdValueField"
+        ],
+        "buttons": "thresholdButtons"
+      },
+      {
+        "id": "thresholdMetricField",
+        "component": "FormControl",
+        "label": "Alert metric",
+        "input": "thresholdMetricSelect"
+      },
+      {
+        "id": "thresholdMetricSelect",
+        "component": "Select",
+        "name": "alert_metric",
+        "items": [
+          "metricErrorRate",
+          "metricCpu",
+          "metricMemory",
+          "metricLatency"
+        ],
+        "value": "error_rate"
+      },
+      {
+        "id": "metricErrorRate",
+        "component": "SelectItem",
+        "value": "error_rate",
+        "label": "Error rate"
+      },
+      {
+        "id": "metricCpu",
+        "component": "SelectItem",
+        "value": "cpu",
+        "label": "CPU utilization"
+      },
+      {
+        "id": "metricMemory",
+        "component": "SelectItem",
+        "value": "memory",
+        "label": "Memory utilization"
+      },
+      {
+        "id": "metricLatency",
+        "component": "SelectItem",
+        "value": "latency",
+        "label": "p95 endpoint latency"
+      },
+      {
+        "id": "thresholdValueField",
+        "component": "FormControl",
+        "label": "Trigger threshold",
+        "hint": "Alert when the selected metric exceeds this value",
+        "input": "thresholdInput"
+      },
+      {
+        "id": "thresholdInput",
+        "component": "Input",
+        "name": "threshold_value",
+        "type": "number",
+        "value": "1.00",
+        "placeholder": "Enter threshold"
+      },
+      {
+        "id": "thresholdButtons",
+        "component": "Buttons",
+        "buttons": [
+          "saveThresholdButton"
+        ]
+      },
+      {
+        "id": "saveThresholdButton",
+        "component": "Button",
+        "label": "Save alert threshold",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>

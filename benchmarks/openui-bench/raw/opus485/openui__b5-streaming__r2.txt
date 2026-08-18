@@ -1,0 +1,87 @@
+root = Card([header, liveStatus, focusRegion, kpiRow, topTitles, watchTrend, subsChart, genrePerf, healthSection, releasesSection, expiringSection, funnelSection, splitSection, flagsSection, promoSection, actions])
+
+header = CardHeader("Operations Room", "Live streaming service overview")
+
+liveStatus = Alert("Live now", "2,481,930 viewers watching right now", "info")
+
+focusRegion = Form("region-focus", focusButtons, [regionField])
+regionField = FormControl("Focus on a region", regionSelect)
+regionSelect = Select("region", [regNA, regEU, regAPAC, regLATAM, regMEA], "Select a region")
+regNA = SelectItem("na", "North America")
+regEU = SelectItem("eu", "Europe")
+regAPAC = SelectItem("apac", "Asia-Pacific")
+regLATAM = SelectItem("latam", "Latin America")
+regMEA = SelectItem("mea", "Middle East & Africa")
+focusButtons = Buttons([applyFocus])
+applyFocus = Button("Apply focus", null, "primary")
+
+kpiRow = Card([bufferProg, recProg, searchProg], "sunk", "row", "m")
+bufferProg = Progress(1.8, "Buffering rate: 1.8%")
+recProg = Progress(23, "Recommendation click-through: 23%")
+searchProg = Progress(12, "Searches without playback: 12%")
+
+topTitles = Table([titleName, titleHours])
+titleName = Col("Title", ["Nova Frontier", "The Last Harbor", "Midnight Circuit", "Echoes of Ash", "Paper Kingdoms"])
+titleHours = Col("Hours watched", [4820000, 3910000, 3450000, 2980000, 2510000], "number")
+
+watchTrend = AreaChart(["W1", "W2", "W3", "W4"], [watchSeries], "natural", "Week", "Hours (millions)")
+watchSeries = Series("Watch time", [212, 238, 261, 289])
+
+subsChart = BarChart(["W1", "W2", "W3", "W4"], [newSubs, cancels], "grouped", "Week", "Accounts")
+newSubs = Series("New subscribers", [82000, 91000, 76000, 88000])
+cancels = Series("Cancellations", [31000, 28000, 34000, 29000])
+
+genrePerf = RadarChart(["Drama", "Comedy", "Action", "Documentary", "Sci-Fi", "Kids"], [genreSeries])
+genreSeries = Series("Engagement score", [88, 74, 91, 63, 85, 70])
+
+healthSection = SectionBlock([healthItem], true)
+healthItem = SectionItem("health", "Delivery health by region", [healthTable])
+healthTable = Table([hRegion, hHealth, hLatency])
+hRegion = Col("Region", ["North America", "Europe", "Asia-Pacific", "Latin America", "Middle East & Africa"])
+hHealth = Col("Health", ["Healthy", "Healthy", "Degraded", "Healthy", "Watch"])
+hLatency = Col("Avg latency (ms)", [42, 58, 96, 71, 84], "number")
+
+releasesSection = SectionBlock([releasesItem], true)
+releasesItem = SectionItem("releases", "Releases coming this month", [releasesList])
+releasesList = ListBlock([relA, relB, relC], "number")
+relA = ListItem("Nova Frontier: Season 2", "Original series — Mar 8")
+relB = ListItem("Silent Tide", "Feature film — Mar 15")
+relC = ListItem("City of Glass", "Limited series — Mar 22")
+
+expiringSection = SectionBlock([expiringItem], true)
+expiringItem = SectionItem("expiring", "Licenses expiring soon", [expTable])
+expTable = Table([expTitle, expDate, expDays])
+expTitle = Col("Title", ["Golden Age", "Broken Compass", "Winter Roads"])
+expDate = Col("Expires", ["Mar 12", "Mar 18", "Mar 27"])
+expDays = Col("Days left", [6, 12, 21], "number")
+
+funnelSection = SectionBlock([funnelItem], true)
+funnelItem = SectionItem("funnel", "Engagement funnels", [recCallout, searchCallout])
+recCallout = TextCallout("info", "Recommendation clicks", "23% of surfaced recommendations were clicked this week")
+searchCallout = TextCallout("warning", "Zero-result searches", "12% of searches ended without any playback")
+
+splitSection = Card([revenueSplit, deviceSplit], "clear", "row", "l")
+revenueSplit = PieChart(["Basic", "Standard", "Premium", "Ad-supported"], [38, 92, 74, 41], "donut")
+deviceSplit = PieChart(["Smart TV", "Mobile", "Web", "Console"], [52, 27, 14, 7], "donut")
+
+flagsSection = SectionBlock([flagsItem], true)
+flagsItem = SectionItem("flags", "Feature flags", [flagSwitches])
+flagSwitches = SwitchGroup("feature-flags", [flagNewUI, flagOfflineDL, flagLiveEvents, flag4K], "sunk")
+flagNewUI = SwitchItem("New home layout", "Redesigned home screen", "flag_new_ui", true)
+flagOfflineDL = SwitchItem("Offline downloads", "Download for mobile viewing", "flag_offline", true)
+flagLiveEvents = SwitchItem("Live events", "Live sports and concerts", "flag_live", false)
+flag4K = SwitchItem("4K streaming", "Ultra HD on Premium", "flag_4k", true)
+
+promoSection = Form("promote-title", promoButtons, [promoField])
+promoField = FormControl("Promote a title on the home screen", promoSelect)
+promoSelect = Select("title", [pmA, pmB, pmC, pmD], "Choose a title to feature")
+pmA = SelectItem("nova", "Nova Frontier")
+pmB = SelectItem("harbor", "The Last Harbor")
+pmC = SelectItem("circuit", "Midnight Circuit")
+pmD = SelectItem("echoes", "Echoes of Ash")
+promoButtons = Buttons([promoBtn])
+promoBtn = Button("Feature on home", null, "primary")
+
+actions = Buttons([refreshBtn, reportBtn])
+refreshBtn = Button("Refresh data")
+reportBtn = Button("Export report", null, "secondary")

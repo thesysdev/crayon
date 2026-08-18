@@ -1,0 +1,446 @@
+Here's a complete live-ops command center covering all 16 items:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "liveops",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "liveops",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "alertCrash",
+          "kpis",
+          "regionFocus",
+          "tabs",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Live-Ops Command Center — Nebula Realms",
+        "subtitle": "All systems nominal · Updated 30s ago"
+      },
+      {
+        "id": "alertCrash",
+        "component": "Alert",
+        "title": "Crash spike on v2.4.1",
+        "description": "Crash rate 2.8% on v2.4.1 (Android) — 3x baseline. Hotfix recommended.",
+        "variant": "warning"
+      },
+      {
+        "id": "kpis",
+        "component": "Table",
+        "columns": ["kpiName", "kpiValue", "kpiTrend"]
+      },
+      {
+        "id": "kpiName",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Players online now",
+          "DAU",
+          "MAU",
+          "Revenue today",
+          "ARPDAU",
+          "Reports awaiting review",
+          "Ban appeals awaiting review",
+          "Currency inflation (7d)"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "48,213",
+          "312,450",
+          "1,842,900",
+          "$86,420",
+          "$0.28",
+          "37",
+          "12",
+          "+4.6%"
+        ]
+      },
+      {
+        "id": "kpiTrend",
+        "component": "Col",
+        "label": "Trend",
+        "data": ["▲ 6%", "▲ 2%", "▲ 5%", "▲ 11%", "▲ 3%", "▲ 9 new", "▼ 3 resolved", "⚠ above 3% target"]
+      },
+      {
+        "id": "regionFocus",
+        "component": "Form",
+        "name": "region-focus",
+        "buttons": "regionButtons",
+        "fields": ["regionField"]
+      },
+      {
+        "id": "regionField",
+        "component": "FormControl",
+        "label": "Focus on region",
+        "input": "regionSelect",
+        "hint": "Filters all charts and tables to one server region"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region",
+        "placeholder": "All regions",
+        "items": ["regAll", "regNA", "regEU", "regAPAC", "regSA"]
+      },
+      {
+        "id": "regAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All regions"
+      },
+      {
+        "id": "regNA",
+        "component": "SelectItem",
+        "value": "na-east",
+        "label": "NA-East"
+      },
+      {
+        "id": "regEU",
+        "component": "SelectItem",
+        "value": "eu-west",
+        "label": "EU-West"
+      },
+      {
+        "id": "regAPAC",
+        "component": "SelectItem",
+        "value": "apac",
+        "label": "APAC"
+      },
+      {
+        "id": "regSA",
+        "component": "SelectItem",
+        "value": "sa",
+        "label": "South America"
+      },
+      {
+        "id": "regionButtons",
+        "component": "Buttons",
+        "buttons": ["regionApplyBtn"]
+      },
+      {
+        "id": "regionApplyBtn",
+        "component": "Button",
+        "label": "Apply focus",
+        "variant": "secondary"
+      },
+      {
+        "id": "tabs",
+        "component": "Tabs",
+        "items": ["tabEngage", "tabCommerce", "tabInfra", "tabTrust", "tabExperiments", "tabPatch"]
+      },
+      {
+        "id": "tabEngage",
+        "component": "TabItem",
+        "value": "engagement",
+        "trigger": "Engagement",
+        "content": ["sessionChart", "sessionSeries", "eventsTable", "evName", "evStatus", "evWindow"]
+      },
+      {
+        "id": "sessionChart",
+        "component": "LineChart",
+        "labels": ["D-13", "D-12", "D-11", "D-10", "D-9", "D-8", "D-7", "D-6", "D-5", "D-4", "D-3", "D-2", "D-1", "Today"],
+        "series": ["sessionSeries"],
+        "variant": "natural",
+        "xLabel": "Day",
+        "yLabel": "Avg session (min)"
+      },
+      {
+        "id": "sessionSeries",
+        "component": "Series",
+        "category": "Avg session length",
+        "values": [22, 23, 21, 24, 26, 25, 27, 26, 28, 27, 29, 31, 30, 32]
+      },
+      {
+        "id": "eventsTable",
+        "component": "Table",
+        "columns": ["evName", "evStatus", "evWindow"]
+      },
+      {
+        "id": "evName",
+        "component": "Col",
+        "label": "Live event",
+        "data": ["Double XP Weekend", "Frost Festival", "Ranked Season 9", "Lunar New Year", "Boss Rush: Titanfall"]
+      },
+      {
+        "id": "evStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": ["🟢 Live", "🟢 Live", "🟢 Live", "🟡 Starts in 2d", "⚪ Scheduled (6d)"]
+      },
+      {
+        "id": "evWindow",
+        "component": "Col",
+        "label": "Window",
+        "data": ["Ends in 18h", "Ends in 5d", "Ends in 21d", "Jan 28 – Feb 4", "Feb 2 – Feb 9"]
+      },
+      {
+        "id": "tabCommerce",
+        "component": "TabItem",
+        "value": "commerce",
+        "trigger": "Commerce",
+        "content": ["itemsChart", "itemsSeries", "inflationChart", "inflationSeries"]
+      },
+      {
+        "id": "itemsChart",
+        "component": "HorizontalBarChart",
+        "labels": ["Dragon Skin Bundle", "XP Booster x10", "Gem Pack (Large)", "Battle Pass S9", "Pet: Ember Fox"],
+        "series": ["itemsSeries"],
+        "xLabel": "Units sold (24h)",
+        "yLabel": "Item"
+      },
+      {
+        "id": "itemsSeries",
+        "component": "Series",
+        "category": "Units",
+        "values": [4210, 3875, 3120, 2980, 1745]
+      },
+      {
+        "id": "inflationChart",
+        "component": "AreaChart",
+        "labels": ["W1", "W2", "W3", "W4"],
+        "series": ["inflationSeries"],
+        "variant": "natural",
+        "xLabel": "Week",
+        "yLabel": "Currency supply (B gold)"
+      },
+      {
+        "id": "inflationSeries",
+        "component": "Series",
+        "category": "Gold in circulation",
+        "values": [41.2, 42.8, 44.1, 46.1]
+      },
+      {
+        "id": "tabInfra",
+        "component": "TabItem",
+        "value": "infra",
+        "trigger": "Infra & Stability",
+        "content": ["regionTable", "rgName", "rgHealth", "rgPlayers", "crashChart", "crashSeries"]
+      },
+      {
+        "id": "regionTable",
+        "component": "Table",
+        "columns": ["rgName", "rgHealth", "rgPlayers"]
+      },
+      {
+        "id": "rgName",
+        "component": "Col",
+        "label": "Region",
+        "data": ["NA-East", "NA-West", "EU-West", "EU-Central", "APAC", "South America"]
+      },
+      {
+        "id": "rgHealth",
+        "component": "Col",
+        "label": "Health",
+        "data": ["🟢 Healthy (99.98%)", "🟢 Healthy (99.95%)", "🟢 Healthy (99.97%)", "🟡 Degraded (97.2%)", "🟢 Healthy (99.99%)", "🟢 Healthy (99.91%)"]
+      },
+      {
+        "id": "rgPlayers",
+        "component": "Col",
+        "label": "Players",
+        "data": ["14,820", "9,410", "11,230", "6,120", "5,480", "1,153"]
+      },
+      {
+        "id": "crashChart",
+        "component": "BarChart",
+        "labels": ["v2.3.2", "v2.4.0", "v2.4.1"],
+        "series": ["crashSeries"],
+        "xLabel": "App version",
+        "yLabel": "Crash rate (%)"
+      },
+      {
+        "id": "crashSeries",
+        "component": "Series",
+        "category": "Crash rate",
+        "values": [0.8, 0.9, 2.8]
+      },
+      {
+        "id": "tabTrust",
+        "component": "TabItem",
+        "value": "trust",
+        "trigger": "Trust & Safety",
+        "content": ["reportsTable", "repType", "repCount", "repOldest"]
+      },
+      {
+        "id": "reportsTable",
+        "component": "Table",
+        "columns": ["repType", "repCount", "repOldest"]
+      },
+      {
+        "id": "repType",
+        "component": "Col",
+        "label": "Queue",
+        "data": ["Cheating reports", "Harassment reports", "Exploit reports", "Ban appeals"]
+      },
+      {
+        "id": "repCount",
+        "component": "Col",
+        "label": "Awaiting review",
+        "data": ["19", "11", "7", "12"]
+      },
+      {
+        "id": "repOldest",
+        "component": "Col",
+        "label": "Oldest item",
+        "data": ["14h", "2d", "6h", "3d"]
+      },
+      {
+        "id": "tabExperiments",
+        "component": "TabItem",
+        "value": "experiments",
+        "trigger": "Experiments",
+        "content": ["expTable", "expName", "expVariant", "expResult"]
+      },
+      {
+        "id": "expTable",
+        "component": "Table",
+        "columns": ["expName", "expVariant", "expResult"]
+      },
+      {
+        "id": "expName",
+        "component": "Col",
+        "label": "Experiment",
+        "data": ["EXP-118: Onboarding flow", "EXP-121: Shop layout"]
+      },
+      {
+        "id": "expVariant",
+        "component": "Col",
+        "label": "Variants",
+        "data": ["Control vs. Guided tutorial", "Grid vs. Featured carousel"]
+      },
+      {
+        "id": "expResult",
+        "component": "Col",
+        "label": "Result so far",
+        "data": ["Guided: +9.4% D7 retention (p=0.03) ✅", "Carousel: +4.1% conversion (p=0.18) — inconclusive"]
+      },
+      {
+        "id": "tabPatch",
+        "component": "TabItem",
+        "value": "patch",
+        "trigger": "Patch Notes",
+        "content": ["patchForm", "pnTitleField", "pnTitleInput", "pnVersionField", "pnVersionInput", "pnBodyField", "pnBodyInput", "patchButtons", "pnDraftBtn", "pnPublishBtn"]
+      },
+      {
+        "id": "patchForm",
+        "component": "Form",
+        "name": "patch-notes",
+        "buttons": "patchButtons",
+        "fields": ["pnTitleField", "pnVersionField", "pnBodyField"]
+      },
+      {
+        "id": "pnTitleField",
+        "component": "FormControl",
+        "label": "Title",
+        "input": "pnTitleInput"
+      },
+      {
+        "id": "pnTitleInput",
+        "component": "Input",
+        "name": "title",
+        "placeholder": "e.g. Hotfix 2.4.2 — Crash fixes"
+      },
+      {
+        "id": "pnVersionField",
+        "component": "FormControl",
+        "label": "Version",
+        "input": "pnVersionInput"
+      },
+      {
+        "id": "pnVersionInput",
+        "component": "Input",
+        "name": "version",
+        "placeholder": "2.4.2"
+      },
+      {
+        "id": "pnBodyField",
+        "component": "FormControl",
+        "label": "Notes",
+        "input": "pnBodyInput",
+        "hint": "Markdown supported"
+      },
+      {
+        "id": "pnBodyInput",
+        "component": "TextArea",
+        "name": "notes",
+        "placeholder": "- Fixed crash on Android when opening guild menu\n- Balance: reduced Titan boss HP by 8%",
+        "rows": 6
+      },
+      {
+        "id": "patchButtons",
+        "component": "Buttons",
+        "buttons": ["pnDraftBtn", "pnPublishBtn"]
+      },
+      {
+        "id": "pnDraftBtn",
+        "component": "Button",
+        "label": "Save draft",
+        "variant": "secondary"
+      },
+      {
+        "id": "pnPublishBtn",
+        "component": "Button",
+        "label": "Publish notes",
+        "variant": "primary"
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": ["hotfixBtn", "rollbackBtn"]
+      },
+      {
+        "id": "hotfixBtn",
+        "component": "Button",
+        "label": "🚀 Ship hotfix 2.4.2",
+        "variant": "primary"
+      },
+      {
+        "id": "rollbackBtn",
+        "component": "Button",
+        "label": "Rollback v2.4.1",
+        "variant": "tertiary",
+        "type": "destructive"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This single screen covers everything:
+
+1. **Players online** — KPI table (48,213)
+2. **DAU/MAU** — KPI table
+3. **Revenue today** — KPI table
+4. **Revenue per user** — ARPDAU in KPI table
+5. **Session length, 14 days** — line chart in Engagement tab
+6. **Best-selling items + units** — horizontal bar chart in Commerce tab
+7. **Server regions + health** — region table in Infra tab
+8. **Crash rate by version** — bar chart (flags the v2.4.1 spike, echoed in the top alert)
+9. **Live/upcoming events** — events table in Engagement tab
+10. **Player reports queue** — Trust & Safety table
+11. **Ban appeals queue** — Trust & Safety table
+12. **Currency inflation** — KPI warning + gold supply area chart
+13. **Two running experiments** — Experiments tab with significance
+14. **Draft patch notes** — Patch Notes tab with a full form
+15. **Region focus** — selector form at the top
+16. **Ship hotfix** — primary action button (plus a destructive rollback option)

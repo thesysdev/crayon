@@ -1,0 +1,77 @@
+root = Card([header, controlsCard, alertCallout, mainContent, followUp])
+
+header = CardHeader("Weekly Marketing Dashboard", "Performance overview, acquisition channels, and campaign tracking")
+
+controlsCard = Card([controlsHeading, dateRangeForm], "sunk", "column", "s")
+controlsHeading = Heading("Dashboard Controls", "h4")
+dateRangeForm = Form("controls", exportButtons, [dateRangeField, presetField])
+dateRangeField = FormControl("Date Range", datePickerInput)
+datePickerInput = DatePicker("date_range", "range")
+presetField = FormControl("Quick Preset", presetSelect)
+presetSelect = Select("preset", [preset30, preset7, preset90, presetYtd], "Select preset")
+preset30 = SelectItem("30d", "Last 30 Days")
+preset7 = SelectItem("7d", "Last 7 Days")
+preset90 = SelectItem("90d", "Last 90 Days")
+presetYtd = SelectItem("ytd", "Year to Date")
+exportButtons = Buttons([exportCsvBtn, exportPdfBtn])
+exportCsvBtn = Button("Export CSV", null, "primary")
+exportPdfBtn = Button("Export PDF Report", null, "secondary")
+
+alertCallout = TextCallout("success", "Top Performing Campaign Highlight", "Summer Launch '24 achieved an exceptional ROI of 412% with $14,200 total spend and 3.8% CVR, outperforming all other active campaigns by 45%.")
+
+mainContent = Tabs([overviewTab, sourcesTab, campaignsTab])
+
+overviewTab = TabItem("overview", "Overview & Traffic", [overviewGrid])
+overviewGrid = Card([metricsRow, visitorsChartCard, subscriberCard], "clear", "column", "l")
+
+metricsRow = Card([cvrCard, subscriberKpiCard, totalVisitorsCard], "clear", "row", "m")
+cvrCard = Card([cvrHeader, cvrProgress, cvrBadge], "card", "column", "s")
+cvrHeader = CardHeader("Conversion Rate", "2.84% Overall (+0.4% vs last period)")
+cvrProgress = Progress(71, "Target: 4.0%")
+cvrBadge = Tag("Above Target", null, "sm", "success")
+
+subscriberKpiCard = Card([subKpiHeader, subKpiProgress, subKpiBadge], "card", "column", "s")
+subKpiHeader = CardHeader("Subscriber Growth", "+2,450 New Subscribers")
+subKpiProgress = Progress(82, "Monthly Goal: 3,000")
+subKpiBadge = Tag("On Track", null, "sm", "info")
+
+totalVisitorsCard = Card([visitorsKpiHeader, totalVisitorsBadge], "card", "column", "s")
+visitorsKpiHeader = CardHeader("Total Visitors (30d)", "128,450 Unique Users")
+totalVisitorsBadge = Tag("+12.3% YoY", null, "sm", "success")
+
+visitorsChartCard = Card([visitorsHeading, visitorsChart], "sunk", "column", "m")
+visitorsHeading = Heading("Site Visitors (Last 30 Days)", "h3")
+visitorsChart = LineChart(["Day 1", "Day 5", "Day 10", "Day 15", "Day 20", "Day 25", "Day 30"], [visitorsSeries], "natural", "Days", "Visitors")
+visitorsSeries = Series("Daily Visitors", [3200, 3800, 4100, 3900, 4600, 5200, 4850])
+
+subscriberCard = Card([subHeading, subChart], "sunk", "column", "m")
+subHeading = Heading("Email Subscriber Growth This Month", "h3")
+subChart = AreaChart(["Week 1", "Week 2", "Week 3", "Week 4"], [subSeries], "natural", "Week", "Subscribers")
+subSeries = Series("Net New Subscribers", [450, 980, 1650, 2450])
+
+sourcesTab = TabItem("sources", "Traffic Sources", [sourcesCard])
+sourcesCard = Card([sourcesHeading, sourcesPie, sourcesTable], "sunk", "column", "l")
+sourcesHeading = Heading("Top 5 Traffic Sources Share", "h3")
+sourcesPie = PieChart(["Organic Search", "Paid Social", "Direct", "Referral", "Email Marketing"], [42, 25, 15, 10, 8], "donut")
+sourcesTable = Table([sourceCol, shareCol, visitorsCol])
+sourceCol = Col("Source Channel", ["Organic Search", "Paid Social", "Direct", "Referral", "Email Marketing"])
+shareCol = Col("Share (%)", ["42%", "25%", "15%", "10%", "8%"])
+visitorsCol = Col("Visitors", [53949, 32112, 19267, 12845, 10276])
+
+campaignsTab = TabItem("campaigns", "Running Campaigns", [campaignsCard])
+campaignsCard = Card([campaignsHeading, campaignsTable, campaignChart], "sunk", "column", "l")
+campaignsHeading = Heading("Active Campaigns & Spend", "h3")
+campaignsTable = Table([campNameCol, campStatusCol, campSpendCol, campCvrCol, campRoiCol])
+campNameCol = Col("Campaign Name", ["Summer Launch '24", "Q3 Retargeting", "Brand Awareness", "Search Intent Ads", "Newsletter Promo"])
+campStatusCol = Col("Status", ["Active (Top Performer)", "Active", "Active", "Active", "Active"])
+campSpendCol = Col("Spend (USD)", ["$14,200", "$8,500", "$12,000", "$6,400", "$2,100"])
+campCvrCol = Col("CVR", ["3.8%", "2.9%", "1.4%", "3.1%", "2.2%"])
+campRoiCol = Col("ROI", ["412%", "280%", "115%", "240%", "190%"])
+
+campaignChart = HorizontalBarChart(["Summer Launch '24", "Q3 Retargeting", "Brand Awareness", "Search Intent Ads", "Newsletter Promo"], [spendSeries], "grouped", "Campaign", "USD ($)")
+spendSeries = Series("Campaign Spend", [14200, 8500, 12000, 6400, 2100])
+
+followUp = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Deep dive into Summer Launch '24 performance")
+f2 = FollowUpItem("Schedule automated weekly PDF report via email")
+f3 = FollowUpItem("Compare traffic sources against Q2 benchmarks")

@@ -1,0 +1,205 @@
+Your low-inventory warning view is ready — search, threshold, and per-item reorder in one screen.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "thresholdCallout",
+          "searchForm",
+          "tableAlert",
+          "inventoryTable",
+          "reorderActions",
+          "helpText"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Low Inventory Warning",
+        "subtitle": "6 items at or below threshold • Last checked just now"
+      },
+      {
+        "id": "thresholdCallout",
+        "component": "Callout",
+        "variant": "warning",
+        "title": "Reorder threshold: ≤ 10 units",
+        "description": "Any item with 10 or fewer units remaining triggers this warning. Adjust threshold to change sensitivity."
+      },
+      {
+        "id": "searchForm",
+        "component": "Form",
+        "name": "inventory-search",
+        "buttons": "searchButtons",
+        "fields": [
+          "searchField"
+        ]
+      },
+      {
+        "id": "searchField",
+        "component": "FormControl",
+        "label": "Search low-stock items",
+        "hint": "Filter by item name or SKU",
+        "input": "searchInput"
+      },
+      {
+        "id": "searchInput",
+        "component": "Input",
+        "name": "search",
+        "placeholder": "Search e.g. Almond Milk, SKU-2041..."
+      },
+      {
+        "id": "searchButtons",
+        "component": "Buttons",
+        "buttons": [
+          "searchBtn",
+          "clearBtn"
+        ]
+      },
+      {
+        "id": "searchBtn",
+        "component": "Button",
+        "label": "Search",
+        "variant": "primary"
+      },
+      {
+        "id": "clearBtn",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "secondary"
+      },
+      {
+        "id": "tableAlert",
+        "component": "Alert",
+        "title": "Action required",
+        "description": "6 items running low — reorder soon to avoid stockout. Tap Reorder on each item to create a purchase order.",
+        "variant": "warning"
+      },
+      {
+        "id": "inventoryTable",
+        "component": "Table",
+        "columns": [
+          "colItem",
+          "colSku",
+          "colRemaining",
+          "colStatus",
+          "colAction"
+        ]
+      },
+      {
+        "id": "colItem",
+        "component": "Col",
+        "label": "Item",
+        "data": [
+          "Free-Range Eggs (12pk)",
+          "Sourdough Loaf",
+          "Organic Almond Milk",
+          "Avocado Hass",
+          "Cold Brew Concentrate",
+          "Oat Milk Barista"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colSku",
+        "component": "Col",
+        "label": "SKU",
+        "data": [
+          "SKU-1024",
+          "SKU-2041",
+          "SKU-3108",
+          "SKU-4155",
+          "SKU-5092",
+          "SKU-6110"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colRemaining",
+        "component": "Col",
+        "label": "Remaining",
+        "data": [
+          2,
+          3,
+          4,
+          6,
+          7,
+          9
+        ],
+        "type": "number"
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Critical",
+          "Critical",
+          "Low",
+          "Low",
+          "Low",
+          "Low"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colAction",
+        "component": "Col",
+        "label": "Reorder",
+        "data": [
+          "Reorder",
+          "Reorder",
+          "Reorder",
+          "Reorder",
+          "Reorder",
+          "Reorder"
+        ],
+        "type": "action"
+      },
+      {
+        "id": "reorderActions",
+        "component": "Buttons",
+        "buttons": [
+          "reorderAllBtn",
+          "thresholdBtn"
+        ]
+      },
+      {
+        "id": "reorderAllBtn",
+        "component": "Button",
+        "label": "Reorder All Low Items",
+        "variant": "primary"
+      },
+      {
+        "id": "thresholdBtn",
+        "component": "Button",
+        "label": "Adjust Threshold",
+        "variant": "secondary"
+      },
+      {
+        "id": "helpText",
+        "component": "TextContent",
+        "text": "Threshold is set to **10 units**. Items in the table are sorted by fewest remaining. Use Search to quickly find an item, then tap **Reorder** in its row to restock.",
+        "size": "small"
+      }
+    ]
+  }
+}
+</a2ui-json>

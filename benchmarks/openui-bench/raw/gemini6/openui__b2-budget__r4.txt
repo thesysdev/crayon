@@ -1,0 +1,51 @@
+root = Card([header, summaryRow, mainGrid, actions])
+
+header = CardHeader("Personal Budget", "Overview & Tracking")
+
+summaryRow = Card([totalProgress, largestCallout], "sunk", "row", "m", "center")
+totalProgress = Progress(68, "Spent $2,380 of $3,500 Budget (68%)")
+largestCallout = TextCallout("warning", "Largest Expense", "Rent Payment: $1,200.00 on Oct 1st")
+
+mainGrid = Card([categoryChart, breakdownTable], "clear", "column", "m")
+
+categoryChart = HorizontalBarChart(["Rent & Housing", "Food & Dining", "Utilities", "Transportation", "Entertainment", "Shopping"], [catSeries], "grouped", "Amount ($)", "Category")
+catSeries = Series("Spent", [1200, 450, 280, 180, 150, 120])
+
+breakdownTable = Table([catCol, spentCol, budgetCol, statusCol])
+catCol = Col("Category", ["Rent & Housing", "Food & Dining", "Utilities", "Transportation", "Entertainment", "Shopping"])
+spentCol = Col("Spent ($)", [1200, 450, 280, 180, 150, 120])
+budgetCol = Col("Budget ($)", [1200, 500, 300, 200, 200, 250])
+statusCol = Col("Status", ["On Target", "Under Budget", "Under Budget", "Under Budget", "Under Budget", "Under Budget"])
+
+actions = Card([monthSelector, addExpenseDialog], "clear", "row", "m", "center", "between")
+
+monthSelector = Select("selected_month", [m1, m2, m3, m4], "Select Month", null, "October 2023", "medium")
+m1 = SelectItem("2023-08", "August 2023")
+m2 = SelectItem("2023-09", "September 2023")
+m3 = SelectItem("2023-10", "October 2023")
+m4 = SelectItem("2023-11", "November 2023")
+
+addExpenseDialog = DialogBlock("Add Expense", "Record New Expense", "Enter the details of your transaction below.", expenseForm, "default")
+
+expenseForm = Form("add-expense-form", formButtons, [amountField, categoryField, dateField, noteField])
+amountField = FormControl("Amount ($)", amountInput)
+amountInput = Input("amount", "0.00", "number")
+
+categoryField = FormControl("Category", categorySelect)
+categorySelect = Select("category", [c1, c2, c3, c4, c5, c6], "Select category")
+c1 = SelectItem("housing", "Rent & Housing")
+c2 = SelectItem("food", "Food & Dining")
+c3 = SelectItem("utilities", "Utilities")
+c4 = SelectItem("transport", "Transportation")
+c5 = SelectItem("entertainment", "Entertainment")
+c6 = SelectItem("shopping", "Shopping")
+
+dateField = FormControl("Date", datePicker)
+datePicker = DatePicker("expense_date", "single")
+
+noteField = FormControl("Description / Merchant", noteInput)
+noteInput = Input("description", "e.g., Grocery Store")
+
+formButtons = Buttons([submitBtn, cancelBtn])
+submitBtn = Button("Save Expense", null, "primary")
+cancelBtn = Button("Cancel", null, "tertiary")

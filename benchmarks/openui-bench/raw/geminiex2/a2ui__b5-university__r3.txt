@@ -1,0 +1,1149 @@
+Here is a comprehensive dashboard tailored for a university administrator, incorporating all requested metrics, data visualizations, and operational actions into a unified view.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "admin-dashboard",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "admin-dashboard",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "deptSelectControl",
+          "quickActions",
+          "alertNotice",
+          "tabs"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "University Administrator Overview",
+        "subtitle": "Academic Year 2024–2025 | Institutional Performance & Operations"
+      },
+      {
+        "id": "deptSelectControl",
+        "component": "FormControl",
+        "label": "Focus Department Filter",
+        "input": "deptSelect",
+        "hint": "Select a department to filter institutional metrics"
+      },
+      {
+        "id": "deptSelect",
+        "component": "Select",
+        "name": "department_filter",
+        "placeholder": "All Departments (University-Wide)",
+        "items": [
+          "deptAll",
+          "deptCS",
+          "deptEng",
+          "deptBus",
+          "deptBio",
+          "deptArts"
+        ]
+      },
+      {
+        "id": "deptAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All Departments (University-Wide)"
+      },
+      {
+        "id": "deptCS",
+        "component": "SelectItem",
+        "value": "cs",
+        "label": "Computer Science & Engineering"
+      },
+      {
+        "id": "deptEng",
+        "component": "SelectItem",
+        "value": "eng",
+        "label": "School of Engineering"
+      },
+      {
+        "id": "deptBus",
+        "component": "SelectItem",
+        "value": "bus",
+        "label": "Business & Management"
+      },
+      {
+        "id": "deptBio",
+        "component": "SelectItem",
+        "value": "bio",
+        "label": "Biological Sciences"
+      },
+      {
+        "id": "deptArts",
+        "component": "SelectItem",
+        "value": "arts",
+        "label": "Arts & Humanities"
+      },
+      {
+        "id": "quickActions",
+        "component": "Buttons",
+        "buttons": [
+          "approveCourseModal",
+          "sendMessageModal"
+        ]
+      },
+      {
+        "id": "approveCourseModal",
+        "component": "DialogBlock",
+        "triggerLabel": "Approve New Course",
+        "title": "Approve New Course Proposal",
+        "description": "Review details and confirm approval for newly submitted curriculum proposals.",
+        "triggerVariant": "default",
+        "content": [
+          "approveForm"
+        ]
+      },
+      {
+        "id": "approveForm",
+        "component": "Form",
+        "name": "approve_course_form",
+        "buttons": "approveFormButtons",
+        "fields": [
+          "courseSelectField",
+          "deptAssignField",
+          "creditsField",
+          "notesField"
+        ]
+      },
+      {
+        "id": "courseSelectField",
+        "component": "FormControl",
+        "label": "Pending Course Proposal",
+        "input": "courseSelect"
+      },
+      {
+        "id": "courseSelect",
+        "component": "Select",
+        "name": "pending_course",
+        "placeholder": "Select a pending proposal",
+        "items": [
+          "course1",
+          "course2",
+          "course3"
+        ]
+      },
+      {
+        "id": "course1",
+        "component": "SelectItem",
+        "value": "cs495",
+        "label": "CS 495: Applied Machine Learning (4 Credits)"
+      },
+      {
+        "id": "course2",
+        "component": "SelectItem",
+        "value": "bio320",
+        "label": "BIO 320: Advanced Genomics Lab (3 Credits)"
+      },
+      {
+        "id": "course3",
+        "component": "SelectItem",
+        "value": "bus210",
+        "label": "BUS 210: Global Supply Chains (3 Credits)"
+      },
+      {
+        "id": "deptAssignField",
+        "component": "FormControl",
+        "label": "Department",
+        "input": "deptAssignInput"
+      },
+      {
+        "id": "deptAssignInput",
+        "component": "Input",
+        "name": "assigned_dept",
+        "placeholder": "e.g., Computer Science"
+      },
+      {
+        "id": "creditsField",
+        "component": "FormControl",
+        "label": "Capacity Limit",
+        "input": "capacityInput"
+      },
+      {
+        "id": "capacityInput",
+        "component": "Input",
+        "name": "course_capacity",
+        "placeholder": "35",
+        "type": "number"
+      },
+      {
+        "id": "notesField",
+        "component": "FormControl",
+        "label": "Review Notes",
+        "input": "notesInput"
+      },
+      {
+        "id": "notesInput",
+        "component": "TextArea",
+        "name": "review_notes",
+        "placeholder": "Add any required prerequisite notes or room allocations...",
+        "rows": 3
+      },
+      {
+        "id": "approveFormButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitApproveBtn"
+        ]
+      },
+      {
+        "id": "submitApproveBtn",
+        "component": "Button",
+        "label": "Approve & Publish Course",
+        "variant": "primary"
+      },
+      {
+        "id": "sendMessageModal",
+        "component": "DialogBlock",
+        "triggerLabel": "Broadcast Message to Student Group",
+        "title": "Send Announcement to Student Group",
+        "description": "Send notifications directly to specific student cohorts, majors, or academic risk groups.",
+        "triggerVariant": "secondary",
+        "content": [
+          "messageForm"
+        ]
+      },
+      {
+        "id": "messageForm",
+        "component": "Form",
+        "name": "send_message_form",
+        "buttons": "msgFormButtons",
+        "fields": [
+          "groupSelectField",
+          "msgSubjectField",
+          "msgBodyField"
+        ]
+      },
+      {
+        "id": "groupSelectField",
+        "component": "FormControl",
+        "label": "Target Student Group",
+        "input": "groupSelect"
+      },
+      {
+        "id": "groupSelect",
+        "component": "Select",
+        "name": "target_group",
+        "placeholder": "Choose student group",
+        "items": [
+          "grpRisk",
+          "grpFreshmen",
+          "grpGrad",
+          "grpHonors",
+          "grpWaitlist"
+        ]
+      },
+      {
+        "id": "grpRisk",
+        "component": "SelectItem",
+        "value": "at_risk",
+        "label": "At-Risk Academic Warning Group (GPA < 2.2)"
+      },
+      {
+        "id": "grpFreshmen",
+        "component": "SelectItem",
+        "value": "freshmen",
+        "label": "Incoming Freshman Class 2028"
+      },
+      {
+        "id": "grpGrad",
+        "component": "SelectItem",
+        "value": "graduates",
+        "label": "Graduating Seniors (Spring 2025)"
+      },
+      {
+        "id": "grpHonors",
+        "component": "SelectItem",
+        "value": "honors",
+        "label": "University Honors Program"
+      },
+      {
+        "id": "grpWaitlist",
+        "component": "SelectItem",
+        "value": "waitlisted",
+        "label": "Students on Course Waitlists"
+      },
+      {
+        "id": "msgSubjectField",
+        "component": "FormControl",
+        "label": "Subject",
+        "input": "msgSubjectInput"
+      },
+      {
+        "id": "msgSubjectInput",
+        "component": "Input",
+        "name": "subject",
+        "placeholder": "Important Academic Advisory Notice"
+      },
+      {
+        "id": "msgBodyField",
+        "component": "FormControl",
+        "label": "Message Content",
+        "input": "msgBodyInput"
+      },
+      {
+        "id": "msgBodyInput",
+        "component": "TextArea",
+        "name": "message_body",
+        "placeholder": "Write your announcement or instructions here...",
+        "rows": 4
+      },
+      {
+        "id": "msgFormButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitMsgBtn"
+        ]
+      },
+      {
+        "id": "submitMsgBtn",
+        "component": "Button",
+        "label": "Send Broadcast Message",
+        "variant": "primary"
+      },
+      {
+        "id": "alertNotice",
+        "component": "Alert",
+        "title": "Academic Term Status: Spring 2025 Active",
+        "description": "Current enrollment is up 4.2% vs last semester. 3 course approval requests pending review.",
+        "variant": "info"
+      },
+      {
+        "id": "tabs",
+        "component": "Tabs",
+        "items": [
+          "tabAdmissions",
+          "tabAcademics",
+          "tabFinancials",
+          "tabCampusLife"
+        ]
+      },
+      {
+        "id": "tabAdmissions",
+        "component": "TabItem",
+        "value": "admissions",
+        "trigger": "Admissions & Enrollment",
+        "content": [
+          "enrollmentHeader",
+          "fiveYearEnrollmentChart",
+          "termComparisonTable",
+          "appsHeader",
+          "appsAndWaitlistTable",
+          "acceptanceRateHeading",
+          "acceptanceRateChart"
+        ]
+      },
+      {
+        "id": "enrollmentHeader",
+        "component": "Heading",
+        "text": "1. 5-Year Enrollment History & Term Comparison",
+        "level": "h3"
+      },
+      {
+        "id": "fiveYearEnrollmentChart",
+        "component": "LineChart",
+        "labels": [
+          "2020-21",
+          "2021-22",
+          "2022-23",
+          "2023-24",
+          "2024-25"
+        ],
+        "series": [
+          "undergradSeries",
+          "gradSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Academic Year",
+        "yLabel": "Total Enrolled Students"
+      },
+      {
+        "id": "undergradSeries",
+        "component": "Series",
+        "category": "Undergraduate",
+        "values": [
+          9200,
+          9450,
+          9800,
+          10150,
+          10600
+        ]
+      },
+      {
+        "id": "gradSeries",
+        "component": "Series",
+        "category": "Postgraduate",
+        "values": [
+          3100,
+          3250,
+          3400,
+          3600,
+          3850
+        ]
+      },
+      {
+        "id": "termComparisonTable",
+        "component": "Table",
+        "columns": [
+          "termColMetric",
+          "termColLast",
+          "termColThis",
+          "termColChange"
+        ]
+      },
+      {
+        "id": "termColMetric",
+        "component": "Col",
+        "label": "13. Term Metrics",
+        "data": [
+          "Total Enrolled Students",
+          "New Freshman Intake",
+          "Transfer Students",
+          "Retention Rate",
+          "Avg Credit Load"
+        ]
+      },
+      {
+        "id": "termColLast",
+        "component": "Col",
+        "label": "Fall 2024 (Last Semester)",
+        "data": [
+          "13,950",
+          "2,840",
+          "410",
+          "88.5%",
+          "14.2 hrs"
+        ]
+      },
+      {
+        "id": "termColThis",
+        "component": "Col",
+        "label": "Spring 2025 (This Semester)",
+        "data": [
+          "14,450",
+          "2,980",
+          "465",
+          "91.2%",
+          "14.6 hrs"
+        ]
+      },
+      {
+        "id": "termColChange",
+        "component": "Col",
+        "label": "Change",
+        "data": [
+          "+3.6%",
+          "+4.9%",
+          "+13.4%",
+          "+2.7%",
+          "+0.4 hrs"
+        ]
+      },
+      {
+        "id": "appsHeader",
+        "component": "Heading",
+        "text": "2 & 14. Applications & Waitlists by Academic Program",
+        "level": "h3"
+      },
+      {
+        "id": "appsAndWaitlistTable",
+        "component": "Table",
+        "columns": [
+          "progNameCol",
+          "progAppsCol",
+          "progAdmittedCol",
+          "progWaitlistCol",
+          "progYieldCol"
+        ]
+      },
+      {
+        "id": "progNameCol",
+        "component": "Col",
+        "label": "Program / Major",
+        "data": [
+          "Computer Science & AI",
+          "Mechanical Engineering",
+          "Business Administration",
+          "Biomedical Sciences",
+          "Psychology & Neuroscience",
+          "Fine Arts & Design"
+        ]
+      },
+      {
+        "id": "progAppsCol",
+        "component": "Col",
+        "label": "Applications Received",
+        "data": [
+          "4,850",
+          "3,420",
+          "4,100",
+          "2,950",
+          "2,100",
+          "1,250"
+        ]
+      },
+      {
+        "id": "progAdmittedCol",
+        "component": "Col",
+        "label": "Admitted",
+        "data": [
+          "1,115",
+          "950",
+          "1,394",
+          "826",
+          "840",
+          "562"
+        ]
+      },
+      {
+        "id": "progWaitlistCol",
+        "component": "Col",
+        "label": "14. Waitlisted Students",
+        "data": [
+          "420",
+          "280",
+          "310",
+          "195",
+          "140",
+          "65"
+        ]
+      },
+      {
+        "id": "progYieldCol",
+        "component": "Col",
+        "label": "Acceptance Rate",
+        "data": [
+          "23.0%",
+          "27.8%",
+          "34.0%",
+          "28.0%",
+          "40.0%",
+          "45.0%"
+        ]
+      },
+      {
+        "id": "acceptanceRateHeading",
+        "component": "Heading",
+        "text": "3. Overall Institutional Acceptance Rate Trend",
+        "level": "h3"
+      },
+      {
+        "id": "acceptanceRateChart",
+        "component": "LineChart",
+        "labels": [
+          "2021",
+          "2022",
+          "2023",
+          "2024",
+          "2025"
+        ],
+        "series": [
+          "acceptanceRateSeries"
+        ],
+        "variant": "linear",
+        "xLabel": "Admissions Year",
+        "yLabel": "Acceptance Rate (%)"
+      },
+      {
+        "id": "acceptanceRateSeries",
+        "component": "Series",
+        "category": "Acceptance Rate %",
+        "values": [
+          34.5,
+          32.8,
+          31.0,
+          29.4,
+          28.2
+        ]
+      },
+      {
+        "id": "tabAcademics",
+        "component": "TabItem",
+        "value": "academics",
+        "trigger": "Academics & Faculty",
+        "content": [
+          "courseFullnessHeading",
+          "courseFullnessTable",
+          "facultyLoadHeading",
+          "facultyLoadTable",
+          "atRiskHeading",
+          "atRiskTable"
+        ]
+      },
+      {
+        "id": "courseFullnessHeading",
+        "component": "Heading",
+        "text": "5. Course Capacity & Fullness Rates",
+        "level": "h3"
+      },
+      {
+        "id": "courseFullnessTable",
+        "component": "Table",
+        "columns": [
+          "courseCodeCol",
+          "courseTitleCol",
+          "courseCapCol",
+          "courseEnrolledCol",
+          "courseFullPctCol"
+        ]
+      },
+      {
+        "id": "courseCodeCol",
+        "component": "Col",
+        "label": "Course Code",
+        "data": [
+          "CS 101",
+          "ENG 201",
+          "BUS 305",
+          "BIO 110",
+          "MATH 220",
+          "ART 150"
+        ]
+      },
+      {
+        "id": "courseTitleCol",
+        "component": "Col",
+        "label": "Course Title",
+        "data": [
+          "Intro to Computer Science",
+          "Thermodynamics I",
+          "Corporate Finance",
+          "Cellular Biology",
+          "Differential Equations",
+          "Digital Studio Art"
+        ]
+      },
+      {
+        "id": "courseCapCol",
+        "component": "Col",
+        "label": "Max Seat Cap",
+        "data": [
+          "250",
+          "120",
+          "180",
+          "200",
+          "150",
+          "40"
+        ]
+      },
+      {
+        "id": "courseEnrolledCol",
+        "component": "Col",
+        "label": "Enrolled",
+        "data": [
+          "248",
+          "118",
+          "165",
+          "196",
+          "132",
+          "40"
+        ]
+      },
+      {
+        "id": "courseFullPctCol",
+        "component": "Col",
+        "label": "Fullness Status",
+        "data": [
+          "99.2% (Full)",
+          "98.3% (Full)",
+          "91.7% (Near Full)",
+          "98.0% (Full)",
+          "88.0% (Open)",
+          "100% (Capped)"
+        ]
+      },
+      {
+        "id": "facultyLoadHeading",
+        "component": "Heading",
+        "text": "6. Teaching Load by Faculty Member",
+        "level": "h3"
+      },
+      {
+        "id": "facultyLoadTable",
+        "component": "Table",
+        "columns": [
+          "facNameCol",
+          "facDeptCol",
+          "facCoursesCol",
+          "facCreditsCol",
+          "facStudentsCol",
+          "facStatusCol"
+        ]
+      },
+      {
+        "id": "facNameCol",
+        "component": "Col",
+        "label": "Faculty Member",
+        "data": [
+          "Dr. Aris Thorne",
+          "Prof. Elena Rostova",
+          "Dr. Marcus Vance",
+          "Dr. Sarah Jenkins",
+          "Prof. David Chen"
+        ]
+      },
+      {
+        "id": "facDeptCol",
+        "component": "Col",
+        "label": "Department",
+        "data": [
+          "Computer Science",
+          "Engineering",
+          "Business",
+          "Biology",
+          "Mathematics"
+        ]
+      },
+      {
+        "id": "facCoursesCol",
+        "component": "Col",
+        "label": "Sections Taught",
+        "data": [
+          "3 Sections",
+          "4 Sections",
+          "3 Sections",
+          "2 Sections",
+          "4 Sections"
+        ]
+      },
+      {
+        "id": "facCreditsCol",
+        "component": "Col",
+        "label": "Teaching Hours / Wk",
+        "data": [
+          "12 Credits",
+          "16 Credits",
+          "11 Credits",
+          "9 Credits",
+          "15 Credits"
+        ]
+      },
+      {
+        "id": "facStudentsCol",
+        "component": "Col",
+        "label": "Total Students",
+        "data": [
+          "340",
+          "210",
+          "275",
+          "180",
+          "310"
+        ]
+      },
+      {
+        "id": "facStatusCol",
+        "component": "Col",
+        "label": "Load Balance",
+        "data": [
+          "Optimal",
+          "High Load",
+          "Optimal",
+          "Research Reduced",
+          "High Load"
+        ]
+      },
+      {
+        "id": "atRiskHeading",
+        "component": "Heading",
+        "text": "7. Students At Academic Risk",
+        "level": "h3"
+      },
+      {
+        "id": "atRiskTable",
+        "component": "Table",
+        "columns": [
+          "riskStudentCol",
+          "riskYearCol",
+          "riskDeptCol",
+          "riskGpaCol",
+          "riskFlagsCol"
+        ]
+      },
+      {
+        "id": "riskStudentCol",
+        "component": "Col",
+        "label": "Student Name / ID",
+        "data": [
+          "Jordan Blake (#8492)",
+          "Samantha Cruz (#3910)",
+          "Tyler Nguyen (#1102)",
+          "Morgan Reed (#7721)",
+          "Alex Patel (#5039)"
+        ]
+      },
+      {
+        "id": "riskYearCol",
+        "component": "Col",
+        "label": "Class Year",
+        "data": [
+          "Sophomore",
+          "Freshman",
+          "Junior",
+          "Freshman",
+          "Senior"
+        ]
+      },
+      {
+        "id": "riskDeptCol",
+        "component": "Col",
+        "label": "Department",
+        "data": [
+          "Engineering",
+          "Computer Science",
+          "Business",
+          "Biology",
+          "Arts & Humanities"
+        ]
+      },
+      {
+        "id": "riskGpaCol",
+        "component": "Col",
+        "label": "Current GPA",
+        "data": [
+          "1.85",
+          "1.92",
+          "2.05",
+          "1.78",
+          "2.10"
+        ]
+      },
+      {
+        "id": "riskFlagsCol",
+        "component": "Col",
+        "label": "Warning Trigger",
+        "data": [
+          "2 Failed Prerequisites",
+          "Low Attendance & Homework Risk",
+          "Midterm Academic Probation",
+          "Multiple Course Deficiencies",
+          "Credit Deficit for Graduation"
+        ]
+      },
+      {
+        "id": "tabFinancials",
+        "component": "TabItem",
+        "value": "financials",
+        "trigger": "Tuition, Budget & Giving",
+        "content": [
+          "financialsOverviewHeading",
+          "tuitionCallout",
+          "scholarshipProgress",
+          "scholarshipDetailsTable",
+          "alumniGivingHeading",
+          "alumniGivingChart"
+        ]
+      },
+      {
+        "id": "financialsOverviewHeading",
+        "component": "Heading",
+        "text": "4. Current Year Tuition Revenue & Financial Health",
+        "level": "h3"
+      },
+      {
+        "id": "tuitionCallout",
+        "component": "Callout",
+        "variant": "success",
+        "title": "YTD Tuition Revenue Collected: $142,850,000",
+        "description": "On track to reach annual budgeted target of $148.5M (96.2% collected with 3 months remaining in fiscal period)."
+      },
+      {
+        "id": "scholarshipProgress",
+        "component": "Progress",
+        "value": 84,
+        "label": "8. Scholarship Budget Utilization: $29.4M used of $35.0M Total Allocations (84%)"
+      },
+      {
+        "id": "scholarshipDetailsTable",
+        "component": "Table",
+        "columns": [
+          "scholCategoryCol",
+          "scholAllocatedCol",
+          "scholDisbursedCol",
+          "scholRemainCol"
+        ]
+      },
+      {
+        "id": "scholCategoryCol",
+        "component": "Col",
+        "label": "Scholarship Category",
+        "data": [
+          "Merit-Based Academic Aid",
+          "Need-Based Institutional Grants",
+          "Athletic Scholarships",
+          "Departmental Research Awards",
+          "Endowed Alumni Scholarships"
+        ]
+      },
+      {
+        "id": "scholAllocatedCol",
+        "component": "Col",
+        "label": "Total Allocated Budget",
+        "data": [
+          "$14,000,000",
+          "$12,500,000",
+          "$4,500,000",
+          "$2,000,000",
+          "$2,000,000"
+        ]
+      },
+      {
+        "id": "scholDisbursedCol",
+        "component": "Col",
+        "label": "Disbursed to Date",
+        "data": [
+          "$12,100,000",
+          "$10,800,000",
+          "$3,900,000",
+          "$1,400,000",
+          "$1,200,000"
+        ]
+      },
+      {
+        "id": "scholRemainCol",
+        "component": "Col",
+        "label": "Remaining Balance",
+        "data": [
+          "$1,900,000 (13.6%)",
+          "$1,700,000 (13.6%)",
+          "$600,000 (13.3%)",
+          "$600,000 (30.0%)",
+          "$800,000 (40.0%)"
+        ]
+      },
+      {
+        "id": "alumniGivingHeading",
+        "component": "Heading",
+        "text": "11. Alumni Giving & Advancement (Past 4 Years)",
+        "level": "h3"
+      },
+      {
+        "id": "alumniGivingChart",
+        "component": "BarChart",
+        "labels": [
+          "FY 2021",
+          "FY 2022",
+          "FY 2023",
+          "FY 2024 (YTD)"
+        ],
+        "series": [
+          "annualFundSeries",
+          "endowmentSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Fiscal Year",
+        "yLabel": "Total Giving ($ Millions)"
+      },
+      {
+        "id": "annualFundSeries",
+        "component": "Series",
+        "category": "Annual Unrestricted Fund ($M)",
+        "values": [
+          8.4,
+          9.2,
+          10.8,
+          12.5
+        ]
+      },
+      {
+        "id": "endowmentSeries",
+        "component": "Series",
+        "category": "Endowment & Capital Gifts ($M)",
+        "values": [
+          14.2,
+          16.5,
+          19.0,
+          22.8
+        ]
+      },
+      {
+        "id": "tabCampusLife",
+        "component": "TabItem",
+        "value": "campus",
+        "trigger": "Campus Life & Facilities",
+        "content": [
+          "housingHeading",
+          "housingProgress",
+          "housingTable",
+          "eventsHeading",
+          "eventsTable"
+        ]
+      },
+      {
+        "id": "housingHeading",
+        "component": "Heading",
+        "text": "9. Residential Housing Occupancy Status",
+        "level": "h3"
+      },
+      {
+        "id": "housingProgress",
+        "component": "Progress",
+        "value": 94.6,
+        "label": "Overall Campus Residence Occupancy: 94.6% (4,730 / 5,000 Total Beds)"
+      },
+      {
+        "id": "housingTable",
+        "component": "Table",
+        "columns": [
+          "hallNameCol",
+          "hallTypeCol",
+          "hallBedsCol",
+          "hallOccCol",
+          "hallPctCol"
+        ]
+      },
+      {
+        "id": "hallNameCol",
+        "component": "Col",
+        "label": "Residence Hall",
+        "data": [
+          "Founder's Quad Hall",
+          "North Campus Suites",
+          "West Village Apartments",
+          "University Honors House",
+          "Graduate Housing Complex"
+        ]
+      },
+      {
+        "id": "hallTypeCol",
+        "component": "Col",
+        "label": "Resident Type",
+        "data": [
+          "Freshman Traditional",
+          "Sophomore / Junior",
+          "Upperclassman Apartments",
+          "Honors Undergrads",
+          "Graduate & Family"
+        ]
+      },
+      {
+        "id": "hallBedsCol",
+        "component": "Col",
+        "label": "Total Capacity",
+        "data": [
+          "1,500",
+          "1,200",
+          "1,000",
+          "500",
+          "800"
+        ]
+      },
+      {
+        "id": "hallOccCol",
+        "component": "Col",
+        "label": "Occupied Beds",
+        "data": [
+          "1,475",
+          "1,140",
+          "950",
+          "485",
+          "680"
+        ]
+      },
+      {
+        "id": "hallPctCol",
+        "component": "Col",
+        "label": "Occupancy Rate",
+        "data": [
+          "98.3%",
+          "95.0%",
+          "95.0%",
+          "97.0%",
+          "85.0%"
+        ]
+      },
+      {
+        "id": "eventsHeading",
+        "component": "Heading",
+        "text": "10. Major Campus Events Scheduled This Month",
+        "level": "h3"
+      },
+      {
+        "id": "eventsTable",
+        "component": "Table",
+        "columns": [
+          "evtDateCol",
+          "evtTitleCol",
+          "evtLocCol",
+          "evtAudienceCol",
+          "evtStatusCol"
+        ]
+      },
+      {
+        "id": "evtDateCol",
+        "component": "Col",
+        "label": "Date",
+        "data": [
+          "March 12, 2025",
+          "March 18, 2025",
+          "March 22, 2025",
+          "March 27, 2025",
+          "March 30, 2025"
+        ]
+      },
+      {
+        "id": "evtTitleCol",
+        "component": "Col",
+        "label": "Event Title",
+        "data": [
+          "Annual Career & Industry Expo",
+          "Spring Undergraduate Research Symposium",
+          "Presidential Lecture Series: AI in Society",
+          "Alumni Networking Gala",
+          "Campus Sustainability Day & Tree Planting"
+        ]
+      },
+      {
+        "id": "evtLocCol",
+        "component": "Col",
+        "label": "Location",
+        "data": [
+          "Student Union Center",
+          "Science & Technology Atrium",
+          "Grand Auditorium",
+          "Alumni Hall Ballroom",
+          "University Quad"
+        ]
+      },
+      {
+        "id": "evtAudienceCol",
+        "component": "Col",
+        "label": "Expected Attendance",
+        "data": [
+          "2,500 Students & Employers",
+          "800 Presenters & Guests",
+          "1,200 Community Members",
+          "450 Alumni & Donors",
+          "600 Students & Staff"
+        ]
+      },
+      {
+        "id": "evtStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Confirmed",
+          "Registration Open",
+          "Sold Out",
+          "RSVP Active",
+          "Confirmed"
+        ]
+      }
+    ]
+  }
+}
+</a2ui-json>

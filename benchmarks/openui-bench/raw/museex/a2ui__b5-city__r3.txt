@@ -1,0 +1,1236 @@
+City Operations Center — single-screen overview covering live congestion, transit, environment, utilities, incidents and community.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "districtFilterCard",
+          "kpiHighlights",
+          "mainTabs",
+          "operationsActions",
+          "footerText",
+          "followups"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "City Operations Center",
+        "subtitle": "Live city-wide overview • Aug 18, 2026 14:02 UTC • All systems operational"
+      },
+      {
+        "id": "districtFilterCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "districtFilterHeader",
+          "districtFilterControl"
+        ]
+      },
+      {
+        "id": "districtFilterHeader",
+        "component": "CardHeader",
+        "title": "Focus on one district",
+        "subtitle": "Filter all modules below by district"
+      },
+      {
+        "id": "districtFilterControl",
+        "component": "FormControl",
+        "label": "Select district to focus view",
+        "input": "districtSelect"
+      },
+      {
+        "id": "districtSelect",
+        "component": "Select",
+        "name": "district_focus",
+        "items": [
+          "districtAll",
+          "districtDowntown",
+          "districtNorth",
+          "districtEast",
+          "districtWest",
+          "districtSouth",
+          "districtRiverside"
+        ],
+        "placeholder": "All City (default)",
+        "value": "all"
+      },
+      {
+        "id": "districtAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All City"
+      },
+      {
+        "id": "districtDowntown",
+        "component": "SelectItem",
+        "value": "downtown",
+        "label": "Downtown"
+      },
+      {
+        "id": "districtNorth",
+        "component": "SelectItem",
+        "value": "northside",
+        "label": "Northside"
+      },
+      {
+        "id": "districtEast",
+        "component": "SelectItem",
+        "value": "east",
+        "label": "East End"
+      },
+      {
+        "id": "districtWest",
+        "component": "SelectItem",
+        "value": "westfield",
+        "label": "Westfield"
+      },
+      {
+        "id": "districtSouth",
+        "component": "SelectItem",
+        "value": "southport",
+        "label": "Southport"
+      },
+      {
+        "id": "districtRiverside",
+        "component": "SelectItem",
+        "value": "riverside",
+        "label": "Riverside"
+      },
+      {
+        "id": "kpiHighlights",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "congestionCard",
+          "transitCard",
+          "waterCard",
+          "parkingCard"
+        ]
+      },
+      {
+        "id": "congestionCard",
+        "component": "Card",
+        "children": [
+          "congestionHeader",
+          "congestionProgress",
+          "congestionText"
+        ]
+      },
+      {
+        "id": "congestionHeader",
+        "component": "CardHeader",
+        "title": "1. Congestion Right Now",
+        "subtitle": "Downtown core • Live"
+      },
+      {
+        "id": "congestionProgress",
+        "component": "Progress",
+        "value": 68,
+        "label": "68% network load — Heavy"
+      },
+      {
+        "id": "congestionText",
+        "component": "TextContent",
+        "text": "Avg speed 18 km/h • 12 arterials congested • Worst: 5th Ave (82%)"
+      },
+      {
+        "id": "transitCard",
+        "component": "Card",
+        "children": [
+          "transitHeader",
+          "transitBadge",
+          "transitText"
+        ]
+      },
+      {
+        "id": "transitHeader",
+        "component": "CardHeader",
+        "title": "2. Transit Punctuality",
+        "subtitle": "On-time performance today"
+      },
+      {
+        "id": "transitBadge",
+        "component": "Badge",
+        "text": "87.4% on-time",
+        "variant": "secondary"
+      },
+      {
+        "id": "transitText",
+        "component": "TextContent",
+        "text": "Metro 89.5% • Bus 81.5% • Tram 93% • 4 delays active"
+      },
+      {
+        "id": "waterCard",
+        "component": "Card",
+        "children": [
+          "waterHeader",
+          "waterProgress",
+          "waterText"
+        ]
+      },
+      {
+        "id": "waterHeader",
+        "component": "CardHeader",
+        "title": "5. Water Use Today",
+        "subtitle": "vs daily allocation 42 ML"
+      },
+      {
+        "id": "waterProgress",
+        "component": "Progress",
+        "value": 74,
+        "label": "31.1 ML used — 74%"
+      },
+      {
+        "id": "waterText",
+        "component": "TextContent",
+        "text": "Peak 09:00-11:00 • On track • No restrictions"
+      },
+      {
+        "id": "parkingCard",
+        "component": "Card",
+        "children": [
+          "parkingHeader",
+          "parkingProgress",
+          "parkingText"
+        ]
+      },
+      {
+        "id": "parkingHeader",
+        "component": "CardHeader",
+        "title": "8. Parking Downtown",
+        "subtitle": "5 garages • Live"
+      },
+      {
+        "id": "parkingProgress",
+        "component": "Progress",
+        "value": 81,
+        "label": "81% occupied — 509 free"
+      },
+      {
+        "id": "parkingText",
+        "component": "TextContent",
+        "text": "Riverfront Full (96%) • Central Plaza 92% • City Hall 74%"
+      },
+      {
+        "id": "mainTabs",
+        "component": "Tabs",
+        "items": [
+          "tabMobility",
+          "tabEnvironment",
+          "tabOperations",
+          "tabCommunity"
+        ]
+      },
+      {
+        "id": "tabMobility",
+        "component": "TabItem",
+        "value": "mobility",
+        "trigger": "Mobility",
+        "content": [
+          "mobilityCongestionChartCard",
+          "mobilityTransitChartCard",
+          "parkingDetailCard",
+          "roadworksCard"
+        ]
+      },
+      {
+        "id": "tabEnvironment",
+        "component": "TabItem",
+        "value": "environment",
+        "trigger": "Environment & Utilities",
+        "content": [
+          "airQualityCard",
+          "energyCard",
+          "weatherDetailCard"
+        ]
+      },
+      {
+        "id": "tabOperations",
+        "component": "TabItem",
+        "value": "operations",
+        "trigger": "Incidents & Response",
+        "content": [
+          "incidentsCard",
+          "vehiclesCard",
+          "backlogCard",
+          "maintenanceCard"
+        ]
+      },
+      {
+        "id": "tabCommunity",
+        "component": "TabItem",
+        "value": "community",
+        "trigger": "Community",
+        "content": [
+          "eventsCard",
+          "citizenReportsCard"
+        ]
+      },
+      {
+        "id": "mobilityCongestionChartCard",
+        "component": "Card",
+        "children": [
+          "mobilityCongestionHeader",
+          "congestionBarChart",
+          "congestionSeries"
+        ]
+      },
+      {
+        "id": "mobilityCongestionHeader",
+        "component": "CardHeader",
+        "title": "Congestion by Corridor — Now",
+        "subtitle": "Congestion index %"
+      },
+      {
+        "id": "congestionBarChart",
+        "component": "HorizontalBarChart",
+        "labels": [
+          "5th Ave",
+          "River Bridge",
+          "Central Pkwy",
+          "Harbor Dr",
+          "North Loop"
+        ],
+        "series": [
+          "congestionSeries"
+        ],
+        "xLabel": "Congestion %",
+        "yLabel": "Corridor"
+      },
+      {
+        "id": "congestionSeries",
+        "component": "Series",
+        "category": "Congestion %",
+        "values": [
+          82,
+          68,
+          71,
+          54,
+          61
+        ]
+      },
+      {
+        "id": "mobilityTransitChartCard",
+        "component": "Card",
+        "children": [
+          "transitChartHeader",
+          "transitBarChart",
+          "transitSeries"
+        ]
+      },
+      {
+        "id": "transitChartHeader",
+        "component": "CardHeader",
+        "title": "Transit Punctuality by Line",
+        "subtitle": "On-time % today"
+      },
+      {
+        "id": "transitBarChart",
+        "component": "BarChart",
+        "labels": [
+          "Metro Red",
+          "Metro Blue",
+          "Bus 101",
+          "Bus 204",
+          "Tram A"
+        ],
+        "series": [
+          "transitSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Route",
+        "yLabel": "On-time %"
+      },
+      {
+        "id": "transitSeries",
+        "component": "Series",
+        "category": "On-time %",
+        "values": [
+          91,
+          88,
+          84,
+          79,
+          93
+        ]
+      },
+      {
+        "id": "parkingDetailCard",
+        "component": "Card",
+        "children": [
+          "parkingDetailHeader",
+          "parkingTable"
+        ]
+      },
+      {
+        "id": "parkingDetailHeader",
+        "component": "CardHeader",
+        "title": "Parking Availability — Downtown Garages",
+        "subtitle": "Free spaces / total capacity"
+      },
+      {
+        "id": "parkingTable",
+        "component": "Table",
+        "columns": [
+          "parkingColGarage",
+          "parkingColAvail",
+          "parkingColStatus"
+        ]
+      },
+      {
+        "id": "parkingColGarage",
+        "component": "Col",
+        "label": "Garage",
+        "data": [
+          "Central Plaza",
+          "Riverfront",
+          "City Hall",
+          "Market Sq",
+          "Union Station"
+        ]
+      },
+      {
+        "id": "parkingColAvail",
+        "component": "Col",
+        "label": "Spaces Free",
+        "data": [
+          "42 / 500",
+          "18 / 420",
+          "156 / 600",
+          "89 / 350",
+          "204 / 800"
+        ]
+      },
+      {
+        "id": "parkingColStatus",
+        "component": "Col",
+        "label": "Occupancy",
+        "data": [
+          "92%",
+          "96%",
+          "74%",
+          "75%",
+          "75%"
+        ]
+      },
+      {
+        "id": "roadworksCard",
+        "component": "Card",
+        "children": [
+          "roadworksHeader",
+          "roadworksTable"
+        ]
+      },
+      {
+        "id": "roadworksHeader",
+        "component": "CardHeader",
+        "title": "16. Roadworks Planned This Month",
+        "subtitle": "16 scheduled • 4 shown"
+      },
+      {
+        "id": "roadworksTable",
+        "component": "Table",
+        "columns": [
+          "roadworksColRoad",
+          "roadworksColDates",
+          "roadworksColImpact"
+        ]
+      },
+      {
+        "id": "roadworksColRoad",
+        "component": "Col",
+        "label": "Location / Project",
+        "data": [
+          "5th Ave (3rd-7th)",
+          "Harbor Bridge deck",
+          "North Loop resurfacing",
+          "Westfield Ave utilities"
+        ]
+      },
+      {
+        "id": "roadworksColDates",
+        "component": "Col",
+        "label": "Dates",
+        "data": [
+          "Aug 20-27",
+          "Aug 22-Sep 02",
+          "Aug 25-30",
+          "Aug 18-24"
+        ]
+      },
+      {
+        "id": "roadworksColImpact",
+        "component": "Col",
+        "label": "Impact",
+        "data": [
+          "Lane closure",
+          "Night closure 22-05",
+          "Detour via 2nd St",
+          "Single lane"
+        ]
+      },
+      {
+        "id": "airQualityCard",
+        "component": "Card",
+        "children": [
+          "airQualityHeader",
+          "airQualityChart",
+          "airQualitySeries"
+        ]
+      },
+      {
+        "id": "airQualityHeader",
+        "component": "CardHeader",
+        "title": "3. Air Quality by District",
+        "subtitle": "AQI • Lower is better • Updated 13:45"
+      },
+      {
+        "id": "airQualityChart",
+        "component": "HorizontalBarChart",
+        "labels": [
+          "Downtown",
+          "Northside",
+          "East End",
+          "Westfield",
+          "Southport",
+          "Riverside"
+        ],
+        "series": [
+          "airQualitySeries"
+        ],
+        "xLabel": "AQI",
+        "yLabel": "District"
+      },
+      {
+        "id": "airQualitySeries",
+        "component": "Series",
+        "category": "AQI",
+        "values": [
+          68,
+          42,
+          89,
+          55,
+          112,
+          38
+        ]
+      },
+      {
+        "id": "energyCard",
+        "component": "Card",
+        "children": [
+          "energyHeader",
+          "energyAreaChart",
+          "energySeries"
+        ]
+      },
+      {
+        "id": "energyHeader",
+        "component": "CardHeader",
+        "title": "4. Energy Use — Past 7 Days",
+        "subtitle": "City-wide MWh per day"
+      },
+      {
+        "id": "energyAreaChart",
+        "component": "AreaChart",
+        "labels": [
+          "Aug 12",
+          "Aug 13",
+          "Aug 14",
+          "Aug 15",
+          "Aug 16",
+          "Aug 17",
+          "Aug 18"
+        ],
+        "series": [
+          "energySeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Date",
+        "yLabel": "MWh"
+      },
+      {
+        "id": "energySeries",
+        "component": "Series",
+        "category": "Consumption",
+        "values": [
+          14200,
+          13850,
+          15100,
+          14900,
+          13200,
+          12800,
+          14500
+        ]
+      },
+      {
+        "id": "weatherDetailCard",
+        "component": "Card",
+        "children": [
+          "weatherHeader",
+          "weatherTags",
+          "weatherText",
+          "weatherAlert"
+        ]
+      },
+      {
+        "id": "weatherHeader",
+        "component": "CardHeader",
+        "title": "12. Current Weather",
+        "subtitle": "Downtown station • 14:00 • Partly Cloudy"
+      },
+      {
+        "id": "weatherTags",
+        "component": "TagBlock",
+        "tags": [
+          "26°C Partly Cloudy",
+          "Feels 28°C",
+          "Humidity 58%",
+          "Wind 14 km/h NW",
+          "UV 5 Moderate"
+        ]
+      },
+      {
+        "id": "weatherText",
+        "component": "TextContent",
+        "text": "Pressure 1012 hPa • Visibility 10 km • No precipitation until 18:00. Heat advisory remains until 17:00. Good air quality except Southport (AQI 112 Unhealthy for Sensitive)."
+      },
+      {
+        "id": "weatherAlert",
+        "component": "Alert",
+        "title": "Heat Advisory Active",
+        "description": "High 31°C expected 15:00-17:00. Advise hydration for outdoor crews and event staff.",
+        "variant": "warning"
+      },
+      {
+        "id": "incidentsCard",
+        "component": "Card",
+        "children": [
+          "incidentsHeader",
+          "incidentsTable"
+        ]
+      },
+      {
+        "id": "incidentsHeader",
+        "component": "CardHeader",
+        "title": "6. Open Incidents — Location & Severity",
+        "subtitle": "7 active • 2 critical • Sorted by severity"
+      },
+      {
+        "id": "incidentsTable",
+        "component": "Table",
+        "columns": [
+          "incidentsColId",
+          "incidentsColLoc",
+          "incidentsColType",
+          "incidentsColSev"
+        ]
+      },
+      {
+        "id": "incidentsColId",
+        "component": "Col",
+        "label": "ID",
+        "data": [
+          "INC-2841",
+          "INC-2849",
+          "INC-2843",
+          "INC-2845",
+          "INC-2846"
+        ]
+      },
+      {
+        "id": "incidentsColLoc",
+        "component": "Col",
+        "label": "Location",
+        "data": [
+          "5th & Main",
+          "Central Station",
+          "Harbor Bridge N",
+          "Westfield Ave 120",
+          "Riverside Park"
+        ]
+      },
+      {
+        "id": "incidentsColType",
+        "component": "Col",
+        "label": "Type",
+        "data": [
+          "Traffic collision",
+          "Power outage",
+          "Signal failure",
+          "Water main leak",
+          "Tree down"
+        ]
+      },
+      {
+        "id": "incidentsColSev",
+        "component": "Col",
+        "label": "Severity",
+        "data": [
+          "Critical",
+          "Critical",
+          "High",
+          "High",
+          "Medium"
+        ]
+      },
+      {
+        "id": "vehiclesCard",
+        "component": "Card",
+        "children": [
+          "vehiclesHeader",
+          "vehiclesTable"
+        ]
+      },
+      {
+        "id": "vehiclesHeader",
+        "component": "CardHeader",
+        "title": "7. Emergency Vehicles Deployed",
+        "subtitle": "9 units active • Live GPS"
+      },
+      {
+        "id": "vehiclesTable",
+        "component": "Table",
+        "columns": [
+          "vehiclesColVehicle",
+          "vehiclesColType",
+          "vehiclesColLocation",
+          "vehiclesColStatus"
+        ]
+      },
+      {
+        "id": "vehiclesColVehicle",
+        "component": "Col",
+        "label": "Vehicle",
+        "data": [
+          "Engine 4",
+          "Ambulance 12",
+          "Police 31",
+          "Engine 7",
+          "Rescue 2"
+        ]
+      },
+      {
+        "id": "vehiclesColType",
+        "component": "Col",
+        "label": "Type",
+        "data": [
+          "Fire",
+          "EMS",
+          "Police",
+          "Fire",
+          "EMS"
+        ]
+      },
+      {
+        "id": "vehiclesColLocation",
+        "component": "Col",
+        "label": "Deployed To",
+        "data": [
+          "INC-2841 5th & Main",
+          "INC-2849 Central Station",
+          "INC-2841 Traffic control",
+          "INC-2845 Westfield Ave",
+          "Riverside Park standby"
+        ]
+      },
+      {
+        "id": "vehiclesColStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "On scene",
+          "En route 2 min",
+          "On scene",
+          "On scene",
+          "Standby"
+        ]
+      },
+      {
+        "id": "backlogCard",
+        "component": "Card",
+        "children": [
+          "backlogHeader",
+          "backlogTable"
+        ]
+      },
+      {
+        "id": "backlogHeader",
+        "component": "CardHeader",
+        "title": "11. Service Request Backlog",
+        "subtitle": "342 open • 47 overdue • Last 30 days"
+      },
+      {
+        "id": "backlogTable",
+        "component": "Table",
+        "columns": [
+          "backlogColService",
+          "backlogColOpen",
+          "backlogColOverdue"
+        ]
+      },
+      {
+        "id": "backlogColService",
+        "component": "Col",
+        "label": "Service",
+        "data": [
+          "Pothole repair",
+          "Streetlight",
+          "Waste collection",
+          "Graffiti",
+          "Drainage"
+        ]
+      },
+      {
+        "id": "backlogColOpen",
+        "component": "Col",
+        "label": "Open",
+        "data": [
+          "84",
+          "61",
+          "52",
+          "73",
+          "72"
+        ]
+      },
+      {
+        "id": "backlogColOverdue",
+        "component": "Col",
+        "label": "Overdue",
+        "data": [
+          "12",
+          "9",
+          "3",
+          "15",
+          "8"
+        ]
+      },
+      {
+        "id": "maintenanceCard",
+        "component": "Card",
+        "children": [
+          "maintenanceHeader",
+          "maintenanceTable"
+        ]
+      },
+      {
+        "id": "maintenanceHeader",
+        "component": "CardHeader",
+        "title": "17. Infrastructure Jobs Due for Maintenance",
+        "subtitle": "Due within 14 days • 5 priority jobs"
+      },
+      {
+        "id": "maintenanceTable",
+        "component": "Table",
+        "columns": [
+          "maintenanceColAsset",
+          "maintenanceColDue",
+          "maintenanceColPriority"
+        ]
+      },
+      {
+        "id": "maintenanceColAsset",
+        "component": "Col",
+        "label": "Asset / Job",
+        "data": [
+          "Harbor Bridge expansion joint",
+          "North Water Pump #3",
+          "Central Traffic Controller",
+          "Southport Substation",
+          "Riverside Levee gate"
+        ]
+      },
+      {
+        "id": "maintenanceColDue",
+        "component": "Col",
+        "label": "Due",
+        "data": [
+          "Aug 22",
+          "Aug 24",
+          "Aug 26",
+          "Aug 28",
+          "Aug 30"
+        ]
+      },
+      {
+        "id": "maintenanceColPriority",
+        "component": "Col",
+        "label": "Priority",
+        "data": [
+          "High",
+          "Critical",
+          "Medium",
+          "High",
+          "Medium"
+        ]
+      },
+      {
+        "id": "eventsCard",
+        "component": "Card",
+        "children": [
+          "eventsHeader",
+          "eventsList"
+        ]
+      },
+      {
+        "id": "eventsHeader",
+        "component": "CardHeader",
+        "title": "9. Public Events This Weekend",
+        "subtitle": "Aug 23-24 • 4 permitted events"
+      },
+      {
+        "id": "eventsList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "event1",
+          "event2",
+          "event3",
+          "event4"
+        ]
+      },
+      {
+        "id": "event1",
+        "component": "ListItem",
+        "title": "Riverfront Jazz Festival",
+        "subtitle": "Riverside Park • Sat-Sun 14:00-22:00 • 15k expected • Harbor Dr closures"
+      },
+      {
+        "id": "event2",
+        "component": "ListItem",
+        "title": "Downtown Farmers Market",
+        "subtitle": "Market Sq • Sat 08:00-13:00 • 3k expected • No road closure"
+      },
+      {
+        "id": "event3",
+        "component": "ListItem",
+        "title": "City Marathon — Half Course",
+        "subtitle": "Central Pkwy • Sun 06:00-11:00 • Rolling closures • 8k runners"
+      },
+      {
+        "id": "event4",
+        "component": "ListItem",
+        "title": "Westfield Food Truck Rally",
+        "subtitle": "Westfield Plaza • Sat 17:00-23:00 • 5k expected • Local traffic only"
+      },
+      {
+        "id": "citizenReportsCard",
+        "component": "Card",
+        "children": [
+          "citizenReportsHeader",
+          "citizenReportsTable"
+        ]
+      },
+      {
+        "id": "citizenReportsHeader",
+        "component": "CardHeader",
+        "title": "10. Citizen Reports — As They Come In",
+        "subtitle": "Live feed • Auto-refresh 30s • 5 most recent"
+      },
+      {
+        "id": "citizenReportsTable",
+        "component": "Table",
+        "columns": [
+          "citizenColReport",
+          "citizenColLocation",
+          "citizenColTime",
+          "citizenColCategory"
+        ]
+      },
+      {
+        "id": "citizenColReport",
+        "component": "Col",
+        "label": "Report",
+        "data": [
+          "Pothole near crosswalk",
+          "Overflowing bin",
+          "Flickering streetlight",
+          "Illegal dumping",
+          "Blocked drain"
+        ]
+      },
+      {
+        "id": "citizenColLocation",
+        "component": "Col",
+        "label": "Location",
+        "data": [
+          "East End - 8th St",
+          "Downtown - Market Sq",
+          "Northside - Elm Rd",
+          "Southport - Pier 4",
+          "Westfield Ave 45"
+        ]
+      },
+      {
+        "id": "citizenColTime",
+        "component": "Col",
+        "label": "Time",
+        "data": [
+          "14:02",
+          "13:58",
+          "13:47",
+          "13:33",
+          "13:21"
+        ]
+      },
+      {
+        "id": "citizenColCategory",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Roads",
+          "Waste",
+          "Lighting",
+          "Waste",
+          "Drainage"
+        ]
+      },
+      {
+        "id": "operationsActions",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "dispatchCard",
+          "alertCard"
+        ]
+      },
+      {
+        "id": "dispatchCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "dispatchHeader",
+          "dispatchForm"
+        ]
+      },
+      {
+        "id": "dispatchHeader",
+        "component": "CardHeader",
+        "title": "14. Dispatch a Crew",
+        "subtitle": "Assign crew to incident or location"
+      },
+      {
+        "id": "dispatchForm",
+        "component": "Form",
+        "name": "dispatch-crew",
+        "buttons": "dispatchButtons",
+        "fields": [
+          "dispatchCrewField",
+          "dispatchTargetField",
+          "dispatchNotesField"
+        ]
+      },
+      {
+        "id": "dispatchCrewField",
+        "component": "FormControl",
+        "label": "Crew / Unit",
+        "input": "dispatchCrewSelect"
+      },
+      {
+        "id": "dispatchCrewSelect",
+        "component": "Select",
+        "name": "crew_type",
+        "items": [
+          "dispatchCrewOpt1",
+          "dispatchCrewOpt2",
+          "dispatchCrewOpt3"
+        ],
+        "placeholder": "Select crew"
+      },
+      {
+        "id": "dispatchCrewOpt1",
+        "component": "SelectItem",
+        "value": "roads",
+        "label": "Roads Crew A"
+      },
+      {
+        "id": "dispatchCrewOpt2",
+        "component": "SelectItem",
+        "value": "utilities",
+        "label": "Utilities Crew B"
+      },
+      {
+        "id": "dispatchCrewOpt3",
+        "component": "SelectItem",
+        "value": "electrical",
+        "label": "Electrical Crew C"
+      },
+      {
+        "id": "dispatchTargetField",
+        "component": "FormControl",
+        "label": "Target location / Incident ID",
+        "input": "dispatchTargetInput",
+        "hint": "e.g., INC-2841 or Westfield Ave 120"
+      },
+      {
+        "id": "dispatchTargetInput",
+        "component": "Input",
+        "name": "target",
+        "placeholder": "Enter location or ID"
+      },
+      {
+        "id": "dispatchNotesField",
+        "component": "FormControl",
+        "label": "Instructions",
+        "input": "dispatchNotesArea"
+      },
+      {
+        "id": "dispatchNotesArea",
+        "component": "TextArea",
+        "name": "notes",
+        "placeholder": "Add dispatch details...",
+        "rows": 3
+      },
+      {
+        "id": "dispatchButtons",
+        "component": "Buttons",
+        "buttons": [
+          "dispatchBtn"
+        ]
+      },
+      {
+        "id": "dispatchBtn",
+        "component": "Button",
+        "label": "Dispatch Crew",
+        "variant": "primary"
+      },
+      {
+        "id": "alertCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "alertHeader",
+          "alertForm"
+        ]
+      },
+      {
+        "id": "alertHeader",
+        "component": "CardHeader",
+        "title": "15. Send Public Alert",
+        "subtitle": "Broadcast via SMS, app & street boards"
+      },
+      {
+        "id": "alertForm",
+        "component": "Form",
+        "name": "public-alert",
+        "buttons": "alertButtons",
+        "fields": [
+          "alertDistrictField",
+          "alertMessageField"
+        ]
+      },
+      {
+        "id": "alertDistrictField",
+        "component": "FormControl",
+        "label": "Audience",
+        "input": "alertDistrictSelect"
+      },
+      {
+        "id": "alertDistrictSelect",
+        "component": "Select",
+        "name": "alert_district",
+        "items": [
+          "alertDistrictAll",
+          "alertDistrictDowntown",
+          "alertDistrictRiverside"
+        ],
+        "placeholder": "Choose audience"
+      },
+      {
+        "id": "alertDistrictAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All City"
+      },
+      {
+        "id": "alertDistrictDowntown",
+        "component": "SelectItem",
+        "value": "downtown",
+        "label": "Downtown only"
+      },
+      {
+        "id": "alertDistrictRiverside",
+        "component": "SelectItem",
+        "value": "riverside",
+        "label": "Riverside only"
+      },
+      {
+        "id": "alertMessageField",
+        "component": "FormControl",
+        "label": "Alert message",
+        "input": "alertMessageArea",
+        "hint": "Max 280 characters • Will be sent immediately"
+      },
+      {
+        "id": "alertMessageArea",
+        "component": "TextArea",
+        "name": "message",
+        "placeholder": "Type alert message...",
+        "rows": 3
+      },
+      {
+        "id": "alertButtons",
+        "component": "Buttons",
+        "buttons": [
+          "alertBtn"
+        ]
+      },
+      {
+        "id": "alertBtn",
+        "component": "Button",
+        "label": "Send Alert",
+        "variant": "primary",
+        "type": "destructive"
+      },
+      {
+        "id": "footerText",
+        "component": "TextContent",
+        "size": "small",
+        "text": "Data refresh: Congestion 1m • Transit 2m • Air/Water/Energy 15m • Incidents live • Last sync 14:00:12 UTC • District filter (13) applies to all modules."
+      },
+      {
+        "id": "followups",
+        "component": "FollowUpBlock",
+        "items": [
+          "fu1",
+          "fu2",
+          "fu3"
+        ]
+      },
+      {
+        "id": "fu1",
+        "component": "FollowUpItem",
+        "text": "Show only critical incidents"
+      },
+      {
+        "id": "fu2",
+        "component": "FollowUpItem",
+        "text": "Dispatch Roads Crew to INC-2845"
+      },
+      {
+        "id": "fu3",
+        "component": "FollowUpItem",
+        "text": "Send heat advisory alert to Riverside"
+      }
+    ]
+  }
+}
+</a2ui-json>

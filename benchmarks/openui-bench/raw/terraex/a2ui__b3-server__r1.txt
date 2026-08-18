@@ -1,0 +1,504 @@
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#2563EB",
+      "agentDisplayName": "Service Health"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "variant": "clear",
+        "gap": "l",
+        "children": [
+          "header",
+          "regionControl",
+          "summary",
+          "metricsTabs",
+          "incidentsSection",
+          "endpointsSection",
+          "alertSettings"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "On-call service health",
+        "subtitle": "Production status and performance monitoring"
+      },
+      {
+        "id": "regionControl",
+        "component": "FormControl",
+        "label": "Region",
+        "input": "regionSelect",
+        "hint": "Filter health signals to a single deployment region"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region",
+        "placeholder": "All regions",
+        "items": [
+          "regionAll",
+          "regionUsEast",
+          "regionUsWest",
+          "regionEuWest",
+          "regionApSouth"
+        ]
+      },
+      {
+        "id": "regionAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All regions"
+      },
+      {
+        "id": "regionUsEast",
+        "component": "SelectItem",
+        "value": "us-east-1",
+        "label": "US East (N. Virginia)"
+      },
+      {
+        "id": "regionUsWest",
+        "component": "SelectItem",
+        "value": "us-west-2",
+        "label": "US West (Oregon)"
+      },
+      {
+        "id": "regionEuWest",
+        "component": "SelectItem",
+        "value": "eu-west-1",
+        "label": "EU West (Ireland)"
+      },
+      {
+        "id": "regionApSouth",
+        "component": "SelectItem",
+        "value": "ap-south-1",
+        "label": "Asia Pacific (Mumbai)"
+      },
+      {
+        "id": "summary",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "uptimeCard",
+          "errorRateCard",
+          "statusCard"
+        ]
+      },
+      {
+        "id": "uptimeCard",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "s",
+        "children": [
+          "uptimeLabel",
+          "uptimeValue",
+          "uptimeProgress"
+        ]
+      },
+      {
+        "id": "uptimeLabel",
+        "component": "TextContent",
+        "text": "Uptime this quarter",
+        "size": "small"
+      },
+      {
+        "id": "uptimeValue",
+        "component": "Heading",
+        "text": "99.982%",
+        "level": "h2"
+      },
+      {
+        "id": "uptimeProgress",
+        "component": "Progress",
+        "value": 99.982,
+        "label": "Quarterly availability"
+      },
+      {
+        "id": "errorRateCard",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "s",
+        "children": [
+          "errorRateLabel",
+          "errorRateValue",
+          "errorRateStatus"
+        ]
+      },
+      {
+        "id": "errorRateLabel",
+        "component": "TextContent",
+        "text": "Error rate right now",
+        "size": "small"
+      },
+      {
+        "id": "errorRateValue",
+        "component": "Heading",
+        "text": "1.8%",
+        "level": "h2"
+      },
+      {
+        "id": "errorRateStatus",
+        "component": "Badge",
+        "text": "Above target",
+        "variant": "destructive"
+      },
+      {
+        "id": "statusCard",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "s",
+        "children": [
+          "statusLabel",
+          "statusValue",
+          "statusDetail"
+        ]
+      },
+      {
+        "id": "statusLabel",
+        "component": "TextContent",
+        "text": "Current service status",
+        "size": "small"
+      },
+      {
+        "id": "statusValue",
+        "component": "Badge",
+        "text": "Degraded",
+        "variant": "destructive"
+      },
+      {
+        "id": "statusDetail",
+        "component": "TextContent",
+        "text": "Two active incidents require attention",
+        "size": "small"
+      },
+      {
+        "id": "metricsTabs",
+        "component": "Tabs",
+        "items": [
+          "cpuTab",
+          "memoryTab"
+        ]
+      },
+      {
+        "id": "cpuTab",
+        "component": "TabItem",
+        "value": "cpu",
+        "trigger": "CPU usage · past 24 hours",
+        "content": [
+          "cpuChart",
+          "cpuSeries"
+        ]
+      },
+      {
+        "id": "cpuChart",
+        "component": "AreaChart",
+        "labels": [
+          "00:00",
+          "03:00",
+          "06:00",
+          "09:00",
+          "12:00",
+          "15:00",
+          "18:00",
+          "21:00",
+          "Now"
+        ],
+        "series": [
+          "cpuSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Time",
+        "yLabel": "CPU utilization (%)"
+      },
+      {
+        "id": "cpuSeries",
+        "component": "Series",
+        "category": "CPU utilization",
+        "values": [
+          38,
+          35,
+          41,
+          57,
+          63,
+          72,
+          68,
+          76,
+          81
+        ]
+      },
+      {
+        "id": "memoryTab",
+        "component": "TabItem",
+        "value": "memory",
+        "trigger": "Memory usage · past 24 hours",
+        "content": [
+          "memoryChart",
+          "memorySeries"
+        ]
+      },
+      {
+        "id": "memoryChart",
+        "component": "AreaChart",
+        "labels": [
+          "00:00",
+          "03:00",
+          "06:00",
+          "09:00",
+          "12:00",
+          "15:00",
+          "18:00",
+          "21:00",
+          "Now"
+        ],
+        "series": [
+          "memorySeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Time",
+        "yLabel": "Memory utilization (%)"
+      },
+      {
+        "id": "memorySeries",
+        "component": "Series",
+        "category": "Memory utilization",
+        "values": [
+          52,
+          54,
+          55,
+          59,
+          61,
+          64,
+          67,
+          69,
+          73
+        ]
+      },
+      {
+        "id": "incidentsSection",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "incidentsHeader",
+          "incidentsTable",
+          "incidentNameCol",
+          "incidentSeverityCol",
+          "incidentStartedCol",
+          "incidentActionCol",
+          "acknowledgeDialog"
+        ]
+      },
+      {
+        "id": "incidentsHeader",
+        "component": "CardHeader",
+        "title": "Open incidents",
+        "subtitle": "3 incidents currently affecting production"
+      },
+      {
+        "id": "incidentsTable",
+        "component": "Table",
+        "columns": [
+          "incidentNameCol",
+          "incidentSeverityCol",
+          "incidentStartedCol",
+          "incidentActionCol"
+        ]
+      },
+      {
+        "id": "incidentNameCol",
+        "component": "Col",
+        "label": "Incident",
+        "data": [
+          "Elevated API 5xx responses",
+          "Checkout queue processing delay",
+          "EU West cache node instability"
+        ]
+      },
+      {
+        "id": "incidentSeverityCol",
+        "component": "Col",
+        "label": "Severity",
+        "data": [
+          "SEV-1 Critical",
+          "SEV-2 High",
+          "SEV-3 Medium"
+        ]
+      },
+      {
+        "id": "incidentStartedCol",
+        "component": "Col",
+        "label": "Started",
+        "data": [
+          "12 minutes ago",
+          "38 minutes ago",
+          "1 hour ago"
+        ]
+      },
+      {
+        "id": "incidentActionCol",
+        "component": "Col",
+        "label": "Status",
+        "type": "action",
+        "data": [
+          "Unacknowledged",
+          "Acknowledged",
+          "Unacknowledged"
+        ]
+      },
+      {
+        "id": "acknowledgeDialog",
+        "component": "AlertDialogBlock",
+        "triggerLabel": "Acknowledge selected incident",
+        "title": "Acknowledge incident",
+        "description": "Confirm that you are taking ownership of the selected incident. This will notify the on-call team.",
+        "confirmLabel": "Acknowledge",
+        "cancelLabel": "Cancel",
+        "triggerVariant": "destructive"
+      },
+      {
+        "id": "endpointsSection",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "endpointsHeader",
+          "endpointsTable",
+          "endpointPathCol",
+          "endpointLatencyCol",
+          "endpointRequestsCol",
+          "endpointTrendCol"
+        ]
+      },
+      {
+        "id": "endpointsHeader",
+        "component": "CardHeader",
+        "title": "Five slowest endpoints",
+        "subtitle": "Ranked by p95 latency over the last 15 minutes"
+      },
+      {
+        "id": "endpointsTable",
+        "component": "Table",
+        "columns": [
+          "endpointPathCol",
+          "endpointLatencyCol",
+          "endpointRequestsCol",
+          "endpointTrendCol"
+        ]
+      },
+      {
+        "id": "endpointPathCol",
+        "component": "Col",
+        "label": "Endpoint",
+        "data": [
+          "POST /v1/checkout",
+          "GET /v1/reports/export",
+          "POST /v1/search",
+          "GET /v1/orders/{id}",
+          "POST /v1/auth/token"
+        ]
+      },
+      {
+        "id": "endpointLatencyCol",
+        "component": "Col",
+        "label": "p95 latency",
+        "data": [
+          "2.84 s",
+          "2.31 s",
+          "1.96 s",
+          "1.72 s",
+          "1.48 s"
+        ]
+      },
+      {
+        "id": "endpointRequestsCol",
+        "component": "Col",
+        "label": "Requests/min",
+        "data": [
+          "184",
+          "22",
+          "317",
+          "492",
+          "88"
+        ]
+      },
+      {
+        "id": "endpointTrendCol",
+        "component": "Col",
+        "label": "Trend",
+        "data": [
+          "Rising",
+          "Stable",
+          "Rising",
+          "Improving",
+          "Stable"
+        ]
+      },
+      {
+        "id": "alertSettings",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "alertSettingsHeader",
+          "thresholdControl",
+          "thresholdSlider",
+          "thresholdNote",
+          "saveThresholdButton"
+        ]
+      },
+      {
+        "id": "alertSettingsHeader",
+        "component": "CardHeader",
+        "title": "Alert threshold",
+        "subtitle": "Set the error-rate level that triggers an on-call notification"
+      },
+      {
+        "id": "thresholdControl",
+        "component": "FormControl",
+        "label": "Error rate threshold",
+        "input": "thresholdSlider",
+        "hint": "Current threshold: 2.0% of requests over a 5-minute window"
+      },
+      {
+        "id": "thresholdSlider",
+        "component": "Slider",
+        "name": "error_rate_threshold",
+        "variant": "discrete",
+        "min": 0.5,
+        "max": 10,
+        "step": 0.5,
+        "defaultValue": [
+          2
+        ],
+        "label": "Error rate percentage"
+      },
+      {
+        "id": "thresholdNote",
+        "component": "Alert",
+        "title": "Current error rate is 1.8%",
+        "description": "Lowering the threshold below 1.8% will immediately place this service in alert state.",
+        "variant": "warning"
+      },
+      {
+        "id": "saveThresholdButton",
+        "component": "Button",
+        "label": "Save alert threshold",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>

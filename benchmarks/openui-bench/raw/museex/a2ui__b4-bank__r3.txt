@@ -1,0 +1,699 @@
+Personal banking home — all 11 items on one screen:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "balancesCard",
+          "transactionsCard",
+          "spendingCard",
+          "billsGoalRow",
+          "creditFreezeRow",
+          "transferCard",
+          "settingsCard"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Personal Banking",
+        "subtitle": "Welcome back, Alex • Last login today 9:42 AM • Secure session"
+      },
+      {
+        "id": "balancesCard",
+        "component": "Card",
+        "children": [
+          "balancesHeader",
+          "balancesTable",
+          "balancesTags"
+        ]
+      },
+      {
+        "id": "balancesHeader",
+        "component": "CardHeader",
+        "title": "Account Balances",
+        "subtitle": "Available as of Aug 18, 2026"
+      },
+      {
+        "id": "balancesTable",
+        "component": "Table",
+        "columns": [
+          "colAccount",
+          "colBalance",
+          "colAvailable"
+        ]
+      },
+      {
+        "id": "colAccount",
+        "component": "Col",
+        "label": "Account",
+        "data": [
+          "Checking ••4821",
+          "Savings ••7734",
+          "Credit ••9012"
+        ]
+      },
+      {
+        "id": "colBalance",
+        "component": "Col",
+        "label": "Current Balance",
+        "data": [
+          "$8,420.50",
+          "$22,150.00",
+          "-$1,840.75"
+        ]
+      },
+      {
+        "id": "colAvailable",
+        "component": "Col",
+        "label": "Available / Limit",
+        "data": [
+          "$8,420.50 available",
+          "$22,150.00 • 4.10% APY",
+          "$10,159.25 available of $12,000"
+        ]
+      },
+      {
+        "id": "balancesTags",
+        "component": "TagBlock",
+        "tags": [
+          "Checking: No fees",
+          "Savings: +$18.42 interest this month",
+          "Credit: Due Aug 28"
+        ]
+      },
+      {
+        "id": "transactionsCard",
+        "component": "Card",
+        "children": [
+          "transactionsHeader",
+          "transactionsTable",
+          "disputeDialog"
+        ]
+      },
+      {
+        "id": "transactionsHeader",
+        "component": "CardHeader",
+        "title": "Recent Transactions",
+        "subtitle": "Merchant and amount • Tap Dispute to flag an issue"
+      },
+      {
+        "id": "transactionsTable",
+        "component": "Table",
+        "columns": [
+          "colMerchant",
+          "colDate",
+          "colAmount",
+          "colCategory"
+        ]
+      },
+      {
+        "id": "colMerchant",
+        "component": "Col",
+        "label": "Merchant",
+        "data": [
+          "Whole Foods Market",
+          "Shell Gas",
+          "Netflix",
+          "Rent Payment",
+          "Starbucks"
+        ]
+      },
+      {
+        "id": "colDate",
+        "component": "Col",
+        "label": "Date",
+        "data": [
+          "Aug 16",
+          "Aug 15",
+          "Aug 14",
+          "Aug 12",
+          "Aug 11"
+        ]
+      },
+      {
+        "id": "colAmount",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "-$84.32",
+          "-$52.10",
+          "-$15.99",
+          "-$1,850.00",
+          "-$6.45"
+        ]
+      },
+      {
+        "id": "colCategory",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Groceries",
+          "Transport",
+          "Entertainment",
+          "Housing",
+          "Dining"
+        ]
+      },
+      {
+        "id": "disputeDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Dispute a transaction",
+        "title": "Dispute Transaction",
+        "description": "Select the merchant and tell us what went wrong. We’ll file it instantly.",
+        "content": [
+          "disputeForm"
+        ],
+        "triggerVariant": "outline"
+      },
+      {
+        "id": "disputeForm",
+        "component": "Form",
+        "name": "dispute-form",
+        "buttons": "disputeButtons",
+        "fields": [
+          "disputeTxField",
+          "disputeReasonField"
+        ]
+      },
+      {
+        "id": "disputeTxField",
+        "component": "FormControl",
+        "label": "Transaction to dispute",
+        "input": "disputeTxSelect"
+      },
+      {
+        "id": "disputeTxSelect",
+        "component": "Select",
+        "name": "transaction",
+        "items": [
+          "disputeTx1",
+          "disputeTx2",
+          "disputeTx3",
+          "disputeTx4",
+          "disputeTx5"
+        ],
+        "placeholder": "Choose transaction"
+      },
+      {
+        "id": "disputeTx1",
+        "component": "SelectItem",
+        "value": "wholefoods_8432",
+        "label": "Whole Foods - $84.32 • Aug 16"
+      },
+      {
+        "id": "disputeTx2",
+        "component": "SelectItem",
+        "value": "shell_5210",
+        "label": "Shell Gas - $52.10 • Aug 15"
+      },
+      {
+        "id": "disputeTx3",
+        "component": "SelectItem",
+        "value": "netflix_1599",
+        "label": "Netflix - $15.99 • Aug 14"
+      },
+      {
+        "id": "disputeTx4",
+        "component": "SelectItem",
+        "value": "rent_1850",
+        "label": "Rent Payment - $1,850.00 • Aug 12"
+      },
+      {
+        "id": "disputeTx5",
+        "component": "SelectItem",
+        "value": "starbucks_645",
+        "label": "Starbucks - $6.45 • Aug 11"
+      },
+      {
+        "id": "disputeReasonField",
+        "component": "FormControl",
+        "label": "Reason",
+        "input": "disputeReasonInput",
+        "hint": "e.g., Duplicate charge, wrong amount, didn’t authorize"
+      },
+      {
+        "id": "disputeReasonInput",
+        "component": "TextArea",
+        "name": "reason",
+        "placeholder": "Describe the issue...",
+        "rows": 3
+      },
+      {
+        "id": "disputeButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitDisputeBtn"
+        ]
+      },
+      {
+        "id": "submitDisputeBtn",
+        "component": "Button",
+        "label": "Submit dispute",
+        "variant": "primary"
+      },
+      {
+        "id": "spendingCard",
+        "component": "Card",
+        "children": [
+          "spendingHeader",
+          "spendingChart"
+        ]
+      },
+      {
+        "id": "spendingHeader",
+        "component": "CardHeader",
+        "title": "Spending Split — This Month",
+        "subtitle": "August 1–18 • $3,400 total spent"
+      },
+      {
+        "id": "spendingChart",
+        "component": "PieChart",
+        "labels": [
+          "Housing",
+          "Groceries",
+          "Transport",
+          "Dining",
+          "Entertainment",
+          "Bills"
+        ],
+        "values": [
+          1850,
+          420,
+          310,
+          285,
+          195,
+          340
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "billsGoalRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "billsCard",
+          "goalCard"
+        ]
+      },
+      {
+        "id": "billsCard",
+        "component": "Card",
+        "children": [
+          "billsHeader",
+          "billsList"
+        ]
+      },
+      {
+        "id": "billsHeader",
+        "component": "CardHeader",
+        "title": "Bills Due Soon",
+        "subtitle": "Next 10 days"
+      },
+      {
+        "id": "billsList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "bill1",
+          "bill2",
+          "bill3"
+        ]
+      },
+      {
+        "id": "bill1",
+        "component": "ListItem",
+        "title": "PG&E Electric",
+        "subtitle": "Due Aug 22 • $128.40 • Autopay off"
+      },
+      {
+        "id": "bill2",
+        "component": "ListItem",
+        "title": "Xfinity Internet",
+        "subtitle": "Due Aug 25 • $79.99 • Autopay on"
+      },
+      {
+        "id": "bill3",
+        "component": "ListItem",
+        "title": "Credit Card Payment",
+        "subtitle": "Due Aug 28 • $450.00 minimum • $1,840.75 statement"
+      },
+      {
+        "id": "goalCard",
+        "component": "Card",
+        "children": [
+          "goalHeader",
+          "goalProgress",
+          "goalText"
+        ]
+      },
+      {
+        "id": "goalHeader",
+        "component": "CardHeader",
+        "title": "Vacation Savings Goal",
+        "subtitle": "Bali Trip • $5,000 target"
+      },
+      {
+        "id": "goalProgress",
+        "component": "Progress",
+        "value": 68,
+        "label": "68% — $3,400 of $5,000"
+      },
+      {
+        "id": "goalText",
+        "component": "TextContent",
+        "text": "You're **$1,600 away**. Auto-transfer $150 on the 1st is on track to hit goal by December. Boost with a one-time transfer above.",
+        "size": "small"
+      },
+      {
+        "id": "creditFreezeRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "creditCard",
+          "freezeCard"
+        ]
+      },
+      {
+        "id": "creditCard",
+        "component": "Card",
+        "children": [
+          "creditHeader",
+          "creditScoreChart",
+          "creditScoreText"
+        ]
+      },
+      {
+        "id": "creditHeader",
+        "component": "CardHeader",
+        "title": "Current Credit Score",
+        "subtitle": "TransUnion • Excellent"
+      },
+      {
+        "id": "creditScoreChart",
+        "component": "RadialChart",
+        "labels": [
+          "Score",
+          "Remaining"
+        ],
+        "values": [
+          780,
+          70
+        ]
+      },
+      {
+        "id": "creditScoreText",
+        "component": "TextContent",
+        "text": "**780** / 850 • Updated Aug 17 • Next update Sep 17 • +12 pts last 3 months",
+        "size": "small"
+      },
+      {
+        "id": "freezeCard",
+        "component": "Card",
+        "children": [
+          "freezeHeader",
+          "freezeSwitch",
+          "freezeNote"
+        ]
+      },
+      {
+        "id": "freezeHeader",
+        "component": "CardHeader",
+        "title": "Credit Line Controls",
+        "subtitle": "Instantly lock new purchases"
+      },
+      {
+        "id": "freezeSwitch",
+        "component": "SwitchGroup",
+        "name": "credit_controls",
+        "items": [
+          "freezeItem"
+        ],
+        "variant": "card"
+      },
+      {
+        "id": "freezeItem",
+        "component": "SwitchItem",
+        "label": "Freeze credit line ••9012",
+        "description": "Block new purchases. Recurring bills still process. Tap again to unfreeze.",
+        "name": "freeze_credit"
+      },
+      {
+        "id": "freezeNote",
+        "component": "TextCallout",
+        "variant": "warning",
+        "title": "When frozen",
+        "description": "Declined transactions show as 'Card locked'. ATM and Apple Pay are also paused."
+      },
+      {
+        "id": "transferCard",
+        "component": "Card",
+        "children": [
+          "transferHeader",
+          "transferForm"
+        ]
+      },
+      {
+        "id": "transferHeader",
+        "component": "CardHeader",
+        "title": "Move Money Between Accounts",
+        "subtitle": "Transfer instantly with no fees"
+      },
+      {
+        "id": "transferForm",
+        "component": "Form",
+        "name": "transfer-money",
+        "buttons": "transferButtons",
+        "fields": [
+          "fromField",
+          "toField",
+          "amountField"
+        ]
+      },
+      {
+        "id": "fromField",
+        "component": "FormControl",
+        "label": "From account",
+        "input": "fromSelect"
+      },
+      {
+        "id": "fromSelect",
+        "component": "Select",
+        "name": "from_account",
+        "items": [
+          "fromChecking",
+          "fromSavings",
+          "fromCredit"
+        ],
+        "placeholder": "Select source"
+      },
+      {
+        "id": "fromChecking",
+        "component": "SelectItem",
+        "value": "checking_4821",
+        "label": "Checking ••4821 — $8,420.50"
+      },
+      {
+        "id": "fromSavings",
+        "component": "SelectItem",
+        "value": "savings_7734",
+        "label": "Savings ••7734 — $22,150.00"
+      },
+      {
+        "id": "fromCredit",
+        "component": "SelectItem",
+        "value": "credit_9012",
+        "label": "Credit ••9012 — owes $1,840.75"
+      },
+      {
+        "id": "toField",
+        "component": "FormControl",
+        "label": "To account",
+        "input": "toSelect"
+      },
+      {
+        "id": "toSelect",
+        "component": "Select",
+        "name": "to_account",
+        "items": [
+          "toChecking",
+          "toSavings",
+          "toCredit"
+        ],
+        "placeholder": "Select destination"
+      },
+      {
+        "id": "toChecking",
+        "component": "SelectItem",
+        "value": "checking_4821",
+        "label": "Checking ••4821"
+      },
+      {
+        "id": "toSavings",
+        "component": "SelectItem",
+        "value": "savings_7734",
+        "label": "Savings ••7734 (Vacation goal)"
+      },
+      {
+        "id": "toCredit",
+        "component": "SelectItem",
+        "value": "credit_9012",
+        "label": "Credit ••9012 — Pay balance"
+      },
+      {
+        "id": "amountField",
+        "component": "FormControl",
+        "label": "Amount",
+        "input": "amountInput",
+        "hint": "Available to move: Checking $8,420.50 • Daily limit $10,000"
+      },
+      {
+        "id": "amountInput",
+        "component": "Input",
+        "name": "amount",
+        "placeholder": "$0.00",
+        "type": "number"
+      },
+      {
+        "id": "transferButtons",
+        "component": "Buttons",
+        "buttons": [
+          "transferBtn"
+        ]
+      },
+      {
+        "id": "transferBtn",
+        "component": "Button",
+        "label": "Transfer now",
+        "variant": "primary"
+      },
+      {
+        "id": "settingsCard",
+        "component": "Card",
+        "children": [
+          "settingsHeader",
+          "statementControl",
+          "alertsControl",
+          "alertsGroup"
+        ]
+      },
+      {
+        "id": "settingsHeader",
+        "component": "CardHeader",
+        "title": "Statements & Alerts",
+        "subtitle": "Customize periods and notifications"
+      },
+      {
+        "id": "statementControl",
+        "component": "FormControl",
+        "label": "Statement period",
+        "input": "statementSelect",
+        "hint": "Pick a period to view or download PDF"
+      },
+      {
+        "id": "statementSelect",
+        "component": "Select",
+        "name": "statement_period",
+        "items": [
+          "stmtAug",
+          "stmtJul",
+          "stmtJun",
+          "stmtQ2"
+        ],
+        "placeholder": "Choose period"
+      },
+      {
+        "id": "stmtAug",
+        "component": "SelectItem",
+        "value": "2026-08",
+        "label": "Aug 1–18, 2026 (Current)"
+      },
+      {
+        "id": "stmtJul",
+        "component": "SelectItem",
+        "value": "2026-07",
+        "label": "July 2026 • Closed"
+      },
+      {
+        "id": "stmtJun",
+        "component": "SelectItem",
+        "value": "2026-06",
+        "label": "June 2026 • Closed"
+      },
+      {
+        "id": "stmtQ2",
+        "component": "SelectItem",
+        "value": "2026-Q2",
+        "label": "Q2 2026 • Apr-Jun"
+      },
+      {
+        "id": "alertsControl",
+        "component": "TextContent",
+        "text": "**Manage what triggers alerts** — toggle notifications for your accounts",
+        "size": "small-heavy"
+      },
+      {
+        "id": "alertsGroup",
+        "component": "CheckBoxGroup",
+        "name": "alert_triggers",
+        "items": [
+          "alertLarge",
+          "alertLowBal",
+          "alertDue",
+          "alertLogin"
+        ]
+      },
+      {
+        "id": "alertLarge",
+        "component": "CheckBoxItem",
+        "label": "Large transactions > $500",
+        "description": "Instant push + email",
+        "name": "alert_large_tx"
+      },
+      {
+        "id": "alertLowBal",
+        "component": "CheckBoxItem",
+        "label": "Low balance < $500",
+        "description": "Daily check at 8am",
+        "name": "alert_low_balance"
+      },
+      {
+        "id": "alertDue",
+        "component": "CheckBoxItem",
+        "label": "Bill due in 3 days",
+        "description": "Reminder for upcoming bills",
+        "name": "alert_bill_due"
+      },
+      {
+        "id": "alertLogin",
+        "component": "CheckBoxItem",
+        "label": "New login or device",
+        "description": "Security alert via SMS",
+        "name": "alert_new_login"
+      }
+    ]
+  }
+}
+</a2ui-json>

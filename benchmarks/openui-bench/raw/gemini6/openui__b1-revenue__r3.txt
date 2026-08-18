@@ -1,0 +1,21 @@
+root = Card([header, kpiGrid, chartSection, comparisonTable], "card", "column", "l")
+
+header = CardHeader("Mid-Morning Shop Dashboard", "Today vs. Yesterday (As of 10:30 AM)")
+
+kpiGrid = Card([todayKpi, yesterdayKpi, diffKpi], "sunk", "row", "m")
+todayKpi = TextCallout("success", "Today's Revenue", "$1,245.50 (182 orders)")
+yesterdayKpi = TextCallout("neutral", "Yesterday at 10:30 AM", "$980.00 (145 orders)")
+diffKpi = TextCallout("info", "Pacing", "+27.1% (+$265.50)")
+
+chartSection = Card([chartHeading, revChart], "clear", "column", "s")
+chartHeading = Heading("Hourly Cumulative Revenue", "h3")
+revChart = LineChart(["6 AM", "7 AM", "8 AM", "9 AM", "10 AM"], [todaySeries, yesterdaySeries], "natural", "Time of Day", "Revenue ($)")
+
+todaySeries = Series("Today", [45, 180, 490, 870, 1245])
+yesterdaySeries = Series("Yesterday", [30, 140, 380, 690, 980])
+
+comparisonTable = Table([timeCol, todayCol, yestCol, statusCol])
+timeCol = Col("Hour Slot", ["6:00 - 7:00 AM", "7:00 - 8:00 AM", "8:00 - 9:00 AM", "9:00 - 10:00 AM", "10:00 - 10:30 AM"])
+todayCol = Col("Today ($)", [45.00, 135.00, 310.00, 380.00, 375.50])
+yestCol = Col("Yesterday ($)", [30.00, 110.00, 240.00, 310.00, 290.00])
+statusCol = Col("Variance", ["+$15.00", "+$25.00", "+$70.00", "+$70.00", "+$85.50"])

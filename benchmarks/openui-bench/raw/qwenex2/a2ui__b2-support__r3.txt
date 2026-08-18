@@ -1,0 +1,233 @@
+
+
+Here's a single-screen morning view for a support lead, covering all five requirements — KPI stats, recent tickets with priorities, a priority filter, and a "new ticket" dialog.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "kpis",
+          "divider",
+          "filterField",
+          "recentHeading",
+          "ticketsTable",
+          "newTicketDialog"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Support Queue — Morning View",
+        "subtitle": "Live snapshot of the support queue"
+      },
+      {
+        "id": "kpis",
+        "component": "Table",
+        "columns": ["kpiMetric", "kpiValue"]
+      },
+      {
+        "id": "kpiMetric",
+        "component": "Col",
+        "label": "Metric",
+        "data": ["Open tickets", "Avg. first-response time"]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": ["23", "38 min (last 24h)"]
+      },
+      {
+        "id": "divider",
+        "component": "Separator",
+        "decorative": true
+      },
+      {
+        "id": "filterField",
+        "component": "FormControl",
+        "label": "Narrow the queue",
+        "input": "priorityRadio",
+        "hint": "Applies to the ticket list below"
+      },
+      {
+        "id": "priorityRadio",
+        "component": "RadioGroup",
+        "name": "priority_scope",
+        "defaultValue": "all",
+        "items": ["scopeAll", "scopeHigh"]
+      },
+      {
+        "id": "scopeAll",
+        "component": "RadioItem",
+        "label": "All tickets",
+        "description": "Show everything in the queue",
+        "value": "all"
+      },
+      {
+        "id": "scopeHigh",
+        "component": "RadioItem",
+        "label": "High priority only",
+        "description": "Only Urgent and High tickets",
+        "value": "high"
+      },
+      {
+        "id": "recentHeading",
+        "component": "Heading",
+        "text": "Most recent tickets",
+        "level": "h3"
+      },
+      {
+        "id": "ticketsTable",
+        "component": "Table",
+        "columns": ["tId", "tSubject", "tReceived", "tPriority"]
+      },
+      {
+        "id": "tId",
+        "component": "Col",
+        "label": "Ticket",
+        "data": ["T-1042", "T-1041", "T-1040", "T-1039", "T-1038"]
+      },
+      {
+        "id": "tSubject",
+        "component": "Col",
+        "label": "Subject",
+        "data": [
+          "Checkout page returns 500 error",
+          "Password-reset email not arriving",
+          "Billing question on March invoice",
+          "API rate-limit errors on sync job",
+          "SSO login loop for enterprise user"
+        ]
+      },
+      {
+        "id": "tReceived",
+        "component": "Col",
+        "label": "Received",
+        "data": ["8:12 AM", "8:03 AM", "7:55 AM", "7:41 AM", "Yesterday 5:18 PM"]
+      },
+      {
+        "id": "tPriority",
+        "component": "Col",
+        "label": "Priority",
+        "data": ["Urgent", "High", "Medium", "Low", "High"]
+      },
+      {
+        "id": "newTicketDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Open new ticket",
+        "title": "New support ticket",
+        "description": "Log an issue into the queue",
+        "content": ["ticketForm"]
+      },
+      {
+        "id": "ticketForm",
+        "component": "Form",
+        "name": "new-ticket",
+        "fields": ["subjectField", "priorityField", "detailsField"],
+        "buttons": "ticketFormButtons"
+      },
+      {
+        "id": "subjectField",
+        "component": "FormControl",
+        "label": "Subject",
+        "input": "subjectInput"
+      },
+      {
+        "id": "subjectInput",
+        "component": "Input",
+        "name": "subject",
+        "placeholder": "Short summary of the issue"
+      },
+      {
+        "id": "priorityField",
+        "component": "FormControl",
+        "label": "Priority",
+        "input": "prioritySelect"
+      },
+      {
+        "id": "prioritySelect",
+        "component": "Select",
+        "name": "priority",
+        "placeholder": "Select a priority",
+        "items": ["pUrgent", "pHigh", "pMedium", "pLow"]
+      },
+      {
+        "id": "pUrgent",
+        "component": "SelectItem",
+        "value": "urgent",
+        "label": "Urgent"
+      },
+      {
+        "id": "pHigh",
+        "component": "SelectItem",
+        "value": "high",
+        "label": "High"
+      },
+      {
+        "id": "pMedium",
+        "component": "SelectItem",
+        "value": "medium",
+        "label": "Medium"
+      },
+      {
+        "id": "pLow",
+        "component": "SelectItem",
+        "value": "low",
+        "label": "Low"
+      },
+      {
+        "id": "detailsField",
+        "component": "FormControl",
+        "label": "Details",
+        "input": "detailsArea"
+      },
+      {
+        "id": "detailsArea",
+        "component": "TextArea",
+        "name": "details",
+        "placeholder": "What happened? Include steps to reproduce and relevant links.",
+        "rows": 4
+      },
+      {
+        "id": "ticketFormButtons",
+        "component": "Buttons",
+        "buttons": ["createTicketBtn", "cancelTicketBtn"]
+      },
+      {
+        "id": "createTicketBtn",
+        "component": "Button",
+        "label": "Create ticket",
+        "variant": "primary"
+      },
+      {
+        "id": "cancelTicketBtn",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      }
+    ]
+  }
+</a2ui-json>
+
+Coverage recap:
+1. **Open ticket count** + 2. **Avg first-response time** → KPI table at the top.
+3. **Five most recent tickets** → table with a priority column for each.
+4. **Narrow to high-priority only** → "High priority only" radio toggle above the list.
+5. **Open a new ticket** → "Open new ticket" button launches a dialog with a subject/priority/details form.

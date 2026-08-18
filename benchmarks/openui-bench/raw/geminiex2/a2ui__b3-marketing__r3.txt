@@ -1,0 +1,445 @@
+Here is a comprehensive weekly dashboard designed for a marketing manager, covering performance metrics, campaign analysis, traffic sources, subscriber growth, and controls for exporting and filtering data.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "controls",
+          "bestCampaignAlert",
+          "kpiOverview",
+          "tabsSection",
+          "actionFooter"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Weekly Marketing Performance Dashboard",
+        "subtitle": "Overview of traffic, conversions, campaigns, and audience growth"
+      },
+      {
+        "id": "controls",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "align": "center",
+        "justify": "between",
+        "gap": "m",
+        "children": [
+          "datePickerControl",
+          "exportButtons"
+        ]
+      },
+      {
+        "id": "datePickerControl",
+        "component": "FormControl",
+        "label": "Date Range Filter",
+        "hint": "Item 6: Change date range",
+        "input": "datePicker"
+      },
+      {
+        "id": "datePicker",
+        "component": "DatePicker",
+        "name": "dashboard_date_range",
+        "mode": "range",
+        "value": [
+          "2023-10-01",
+          "2023-10-31"
+        ]
+      },
+      {
+        "id": "exportButtons",
+        "component": "Buttons",
+        "buttons": [
+          "exportPdfBtn",
+          "exportCsvBtn"
+        ]
+      },
+      {
+        "id": "exportPdfBtn",
+        "component": "Button",
+        "label": "Export PDF",
+        "variant": "primary",
+        "size": "small"
+      },
+      {
+        "id": "exportCsvBtn",
+        "component": "Button",
+        "label": "Export CSV",
+        "variant": "secondary",
+        "size": "small"
+      },
+      {
+        "id": "bestCampaignAlert",
+        "component": "Alert",
+        "title": "Item 5: Best Performing Campaign",
+        "description": "🏆 Fall Product Launch — Generated 420 conversions with a ROI of 340% ($12,400 spent).",
+        "variant": "success"
+      },
+      {
+        "id": "kpiOverview",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "conversionCard",
+          "subscriberCard"
+        ]
+      },
+      {
+        "id": "conversionCard",
+        "component": "Card",
+        "children": [
+          "conversionBadge",
+          "conversionHeader",
+          "conversionProgress"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "conversionBadge",
+        "component": "Badge",
+        "text": "Item 2: Conversion Rate",
+        "variant": "default"
+      },
+      {
+        "id": "conversionHeader",
+        "component": "CardHeader",
+        "title": "3.84%",
+        "subtitle": "+0.4% from last week (Goal: 3.5%)"
+      },
+      {
+        "id": "conversionProgress",
+        "component": "Progress",
+        "value": 85,
+        "label": "Quarterly Target Progress"
+      },
+      {
+        "id": "subscriberCard",
+        "component": "Card",
+        "children": [
+          "subscriberBadge",
+          "subscriberHeader",
+          "subscriberProgress"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "subscriberBadge",
+        "component": "Badge",
+        "text": "Item 7: Email Subscriber Growth",
+        "variant": "secondary"
+      },
+      {
+        "id": "subscriberHeader",
+        "component": "CardHeader",
+        "title": "+2,450 New Subscribers",
+        "subtitle": "14.2% MoM Growth (Total: 48,200)"
+      },
+      {
+        "id": "subscriberProgress",
+        "component": "Progress",
+        "value": 70,
+        "label": "Monthly Goal (3,500 new)"
+      },
+      {
+        "id": "tabsSection",
+        "component": "Tabs",
+        "items": [
+          "tabVisitors",
+          "tabTraffic",
+          "tabCampaigns"
+        ]
+      },
+      {
+        "id": "tabVisitors",
+        "component": "TabItem",
+        "value": "visitors",
+        "trigger": "1. Site Visitors (30 Days)",
+        "content": [
+          "visitorsChartCard"
+        ]
+      },
+      {
+        "id": "visitorsChartCard",
+        "component": "Card",
+        "children": [
+          "visitorsHeader",
+          "visitorsChart"
+        ]
+      },
+      {
+        "id": "visitorsHeader",
+        "component": "CardHeader",
+        "title": "Site Visitors Trend",
+        "subtitle": "Daily traffic over the last 30 days (Total: 124,500 visitors)"
+      },
+      {
+        "id": "visitorsChart",
+        "component": "LineChart",
+        "labels": [
+          "Day 1",
+          "Day 5",
+          "Day 10",
+          "Day 15",
+          "Day 20",
+          "Day 25",
+          "Day 30"
+        ],
+        "series": [
+          "visitorsSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Timeline",
+        "yLabel": "Visitors"
+      },
+      {
+        "id": "visitorsSeries",
+        "component": "Series",
+        "category": "Daily Visitors",
+        "values": [
+          3200,
+          3500,
+          4100,
+          3900,
+          4800,
+          4300,
+          5100
+        ]
+      },
+      {
+        "id": "tabTraffic",
+        "component": "TabItem",
+        "value": "traffic",
+        "trigger": "3. Top Traffic Sources",
+        "content": [
+          "trafficCard"
+        ]
+      },
+      {
+        "id": "trafficCard",
+        "component": "Card",
+        "direction": "row",
+        "gap": "l",
+        "children": [
+          "trafficChartCard",
+          "trafficTableCard"
+        ]
+      },
+      {
+        "id": "trafficChartCard",
+        "component": "Card",
+        "weight": 1,
+        "children": [
+          "trafficChartHeader",
+          "trafficPieChart"
+        ]
+      },
+      {
+        "id": "trafficChartHeader",
+        "component": "CardHeader",
+        "title": "Traffic Share Breakdown",
+        "subtitle": "Top 5 Channels"
+      },
+      {
+        "id": "trafficPieChart",
+        "component": "PieChart",
+        "variant": "donut",
+        "labels": [
+          "Organic Search",
+          "Paid Search",
+          "Direct Traffic",
+          "Social Media",
+          "Email Campaigns"
+        ],
+        "values": [
+          42,
+          25,
+          15,
+          11,
+          7
+        ]
+      },
+      {
+        "id": "trafficTableCard",
+        "component": "Card",
+        "weight": 1,
+        "children": [
+          "trafficTableHeader",
+          "trafficTable"
+        ]
+      },
+      {
+        "id": "trafficTableHeader",
+        "component": "CardHeader",
+        "title": "Source Details",
+        "subtitle": "Percentage share per channel"
+      },
+      {
+        "id": "trafficTable",
+        "component": "Table",
+        "columns": [
+          "sourceCol",
+          "shareCol"
+        ]
+      },
+      {
+        "id": "sourceCol",
+        "component": "Col",
+        "label": "Source Channel",
+        "data": [
+          "Organic Search",
+          "Paid Search",
+          "Direct Traffic",
+          "Social Media",
+          "Email Campaigns"
+        ]
+      },
+      {
+        "id": "shareCol",
+        "component": "Col",
+        "label": "Share (%)",
+        "data": [
+          "42%",
+          "25%",
+          "15%",
+          "11%",
+          "7%"
+        ]
+      },
+      {
+        "id": "tabCampaigns",
+        "component": "TabItem",
+        "value": "campaigns",
+        "trigger": "4. Running Campaigns",
+        "content": [
+          "campaignsCard"
+        ]
+      },
+      {
+        "id": "campaignsCard",
+        "component": "Card",
+        "children": [
+          "campaignsHeader",
+          "campaignsTable"
+        ]
+      },
+      {
+        "id": "campaignsHeader",
+        "component": "CardHeader",
+        "title": "Active Campaigns & Spend",
+        "subtitle": "Current budget allocation and status"
+      },
+      {
+        "id": "campaignsTable",
+        "component": "Table",
+        "columns": [
+          "campNameCol",
+          "campSpendCol",
+          "campStatusCol",
+          "campPerfCol"
+        ]
+      },
+      {
+        "id": "campNameCol",
+        "component": "Col",
+        "label": "Campaign Name",
+        "data": [
+          "Fall Product Launch",
+          "Retargeting - Q4",
+          "Brand Awareness Video",
+          "Newsletter Sponsorship"
+        ]
+      },
+      {
+        "id": "campSpendCol",
+        "component": "Col",
+        "label": "Spend to Date",
+        "data": [
+          "$12,400",
+          "$8,150",
+          "$5,300",
+          "$2,000"
+        ]
+      },
+      {
+        "id": "campStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Active",
+          "Active",
+          "Active",
+          "Active"
+        ]
+      },
+      {
+        "id": "campPerfCol",
+        "component": "Col",
+        "label": "Performance Rating",
+        "data": [
+          "Top Performer 🏆",
+          "Good",
+          "Average",
+          "Good"
+        ]
+      },
+      {
+        "id": "actionFooter",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "justify": "between",
+        "align": "center",
+        "children": [
+          "footerText",
+          "followUps"
+        ]
+      },
+      {
+        "id": "footerText",
+        "component": "TextContent",
+        "text": "Data last updated: **5 minutes ago**",
+        "size": "small"
+      },
+      {
+        "id": "followUps",
+        "component": "FollowUpBlock",
+        "items": [
+          "followUp1",
+          "followUp2"
+        ]
+      },
+      {
+        "id": "followUp1",
+        "component": "FollowUpItem",
+        "text": "Download full campaign ROI analysis"
+      },
+      {
+        "id": "followUp2",
+        "component": "FollowUpItem",
+        "text": "Schedule email report to stakeholders"
+      }
+    ]
+  }
+}
+</a2ui-json>

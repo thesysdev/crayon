@@ -1,0 +1,538 @@
+I have created a comprehensive analytics dashboard for your training platform.
+
+It includes:
+- **Cohort Selector**: Quick dropdown to filter metrics by specific cohorts (e.g., Q1 Engineering Cohort, Sales Onboarding).
+- **Key Metric Indicators**: At-a-glance KPI summary for active learners, completion rates, and average quiz scores.
+- **Engagement Trend**: An 8-week area chart tracking active learner trends over time.
+- **Top Courses & Risk Management**: Side-by-side view showing courses ranked by enrollment and a table of learners at risk of dropping out.
+- **Action Center**: A direct tool to compose and send messages to selected cohorts.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "cohortFilterCard",
+          "kpiTabs",
+          "engagementCard",
+          "dataBreakdownTabs",
+          "messagingCard"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Training Platform Analytics",
+        "subtitle": "Performance, engagement metrics, and cohort management"
+      },
+      {
+        "id": "cohortFilterCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "cohortControl"
+        ]
+      },
+      {
+        "id": "cohortControl",
+        "component": "FormControl",
+        "label": "Filter by Cohort",
+        "hint": "Select a specific group to narrow analytics and targeted actions",
+        "input": "cohortSelect"
+      },
+      {
+        "id": "cohortSelect",
+        "component": "Select",
+        "name": "selected_cohort",
+        "placeholder": "All Cohorts (Global View)",
+        "items": [
+          "optAll",
+          "optEngQ1",
+          "optSalesOnboard",
+          "optDataSci2024",
+          "optLeadDev"
+        ]
+      },
+      {
+        "id": "optAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All Cohorts (Global View)"
+      },
+      {
+        "id": "optEngQ1",
+        "component": "SelectItem",
+        "value": "eng-q1",
+        "label": "Q1 Engineering Cohort"
+      },
+      {
+        "id": "optSalesOnboard",
+        "component": "SelectItem",
+        "value": "sales-onboard",
+        "label": "Sales Onboarding 2024"
+      },
+      {
+        "id": "optDataSci2024",
+        "component": "SelectItem",
+        "value": "data-sci",
+        "label": "Data Science Fundamentals"
+      },
+      {
+        "id": "optLeadDev",
+        "component": "SelectItem",
+        "value": "leadership",
+        "label": "Leadership Development"
+      },
+      {
+        "id": "kpiTabs",
+        "component": "Tabs",
+        "items": [
+          "kpiSummaryTab"
+        ]
+      },
+      {
+        "id": "kpiSummaryTab",
+        "component": "TabItem",
+        "value": "summary",
+        "trigger": "Key Performance Indicators",
+        "content": [
+          "kpiTable",
+          "kpiBadges"
+        ]
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": [
+          "kpiMetricCol",
+          "kpiValueCol",
+          "kpiChangeCol",
+          "kpiTargetCol"
+        ]
+      },
+      {
+        "id": "kpiMetricCol",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Active Learners (This Week)",
+          "Course Completion Rate",
+          "Average Quiz Score"
+        ]
+      },
+      {
+        "id": "kpiValueCol",
+        "component": "Col",
+        "label": "Current Value",
+        "data": [
+          "1,420",
+          "78.5%",
+          "84.2%"
+        ]
+      },
+      {
+        "id": "kpiChangeCol",
+        "component": "Col",
+        "label": "Vs Last Week",
+        "data": [
+          "+12%",
+          "+3.2%",
+          "+1.5%"
+        ]
+      },
+      {
+        "id": "kpiTargetCol",
+        "component": "Col",
+        "label": "Target",
+        "data": [
+          "1,200",
+          "75.0%",
+          "80.0%"
+        ]
+      },
+      {
+        "id": "kpiBadges",
+        "component": "TagBlock",
+        "tags": [
+          "Active Target Exceeded",
+          "Completion On Track",
+          "Quiz Average High"
+        ]
+      },
+      {
+        "id": "engagementCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "engagementHeader",
+          "engagementChart"
+        ]
+      },
+      {
+        "id": "engagementHeader",
+        "component": "CardHeader",
+        "title": "Engagement Across Past 8 Weeks",
+        "subtitle": "Weekly active learners participating in modules and assessments"
+      },
+      {
+        "id": "engagementChart",
+        "component": "AreaChart",
+        "labels": [
+          "Week 1",
+          "Week 2",
+          "Week 3",
+          "Week 4",
+          "Week 5",
+          "Week 6",
+          "Week 7",
+          "Week 8"
+        ],
+        "series": [
+          "activeLearnersSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Timeline",
+        "yLabel": "Active Learners"
+      },
+      {
+        "id": "activeLearnersSeries",
+        "component": "Series",
+        "category": "Active Learners",
+        "values": [
+          920,
+          1050,
+          1100,
+          1020,
+          1250,
+          1310,
+          1380,
+          1420
+        ]
+      },
+      {
+        "id": "dataBreakdownTabs",
+        "component": "Tabs",
+        "items": [
+          "coursesTab",
+          "atRiskTab"
+        ]
+      },
+      {
+        "id": "coursesTab",
+        "component": "TabItem",
+        "value": "courses",
+        "trigger": "Courses Ranked by Enrollment",
+        "content": [
+          "coursesChart",
+          "coursesTable"
+        ]
+      },
+      {
+        "id": "coursesChart",
+        "component": "HorizontalBarChart",
+        "labels": [
+          "Full-Stack Web Dev",
+          "Cloud Infrastructure",
+          "Data Science 101",
+          "Cybersecurity Essentials",
+          "Product Leadership"
+        ],
+        "series": [
+          "enrollmentSeries"
+        ],
+        "xLabel": "Enrolled Students",
+        "yLabel": "Course Title"
+      },
+      {
+        "id": "enrollmentSeries",
+        "component": "Series",
+        "category": "Total Enrolled",
+        "values": [
+          450,
+          380,
+          310,
+          240,
+          190
+        ]
+      },
+      {
+        "id": "coursesTable",
+        "component": "Table",
+        "columns": [
+          "courseRankCol",
+          "courseTitleCol",
+          "courseCategoryCol",
+          "courseEnrollmentCol"
+        ]
+      },
+      {
+        "id": "courseRankCol",
+        "component": "Col",
+        "label": "Rank",
+        "data": [
+          "#1",
+          "#2",
+          "#3",
+          "#4",
+          "#5"
+        ]
+      },
+      {
+        "id": "courseTitleCol",
+        "component": "Col",
+        "label": "Course Name",
+        "data": [
+          "Full-Stack Web Development",
+          "Cloud Infrastructure & DevOps",
+          "Data Science 101",
+          "Cybersecurity Essentials",
+          "Product Leadership"
+        ]
+      },
+      {
+        "id": "courseCategoryCol",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Engineering",
+          "Operations",
+          "Analytics",
+          "Security",
+          "Management"
+        ]
+      },
+      {
+        "id": "courseEnrollmentCol",
+        "component": "Col",
+        "label": "Active Learners",
+        "data": [
+          "450",
+          "380",
+          "310",
+          "240",
+          "190"
+        ]
+      },
+      {
+        "id": "atRiskTab",
+        "component": "TabItem",
+        "value": "at-risk",
+        "trigger": "Learners at Risk of Dropping Out",
+        "content": [
+          "atRiskAlert",
+          "atRiskTable"
+        ]
+      },
+      {
+        "id": "atRiskAlert",
+        "component": "Alert",
+        "title": "Attention Required",
+        "description": "5 learners have been inactive for >10 days or have quiz scores below 60%. Intervention recommended.",
+        "variant": "warning"
+      },
+      {
+        "id": "atRiskTable",
+        "component": "Table",
+        "columns": [
+          "learnerNameCol",
+          "learnerCohortCol",
+          "lastActiveCol",
+          "quizAvgCol",
+          "riskStatusCol"
+        ]
+      },
+      {
+        "id": "learnerNameCol",
+        "component": "Col",
+        "label": "Learner Name",
+        "data": [
+          "Alex Morgan",
+          "David Chen",
+          "Sarah Jenkins",
+          "Michael Scott",
+          "Elena Rostova"
+        ]
+      },
+      {
+        "id": "learnerCohortCol",
+        "component": "Col",
+        "label": "Cohort",
+        "data": [
+          "Q1 Engineering",
+          "Data Science 2024",
+          "Sales Onboarding",
+          "Leadership Dev",
+          "Q1 Engineering"
+        ]
+      },
+      {
+        "id": "lastActiveCol",
+        "component": "Col",
+        "label": "Days Inactive",
+        "data": [
+          "12 days",
+          "14 days",
+          "9 days",
+          "16 days",
+          "11 days"
+        ]
+      },
+      {
+        "id": "quizAvgCol",
+        "component": "Col",
+        "label": "Avg Score",
+        "data": [
+          "52%",
+          "48%",
+          "58%",
+          "45%",
+          "55%"
+        ]
+      },
+      {
+        "id": "riskStatusCol",
+        "component": "Col",
+        "label": "Risk Level",
+        "data": [
+          "High",
+          "Critical",
+          "Medium",
+          "Critical",
+          "High"
+        ]
+      },
+      {
+        "id": "messagingCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "msgHeader",
+          "msgForm"
+        ]
+      },
+      {
+        "id": "msgHeader",
+        "component": "CardHeader",
+        "title": "Broadcast Message to Cohort",
+        "subtitle": "Send announcements, reminders, or encouragement directly to learner inboxes"
+      },
+      {
+        "id": "msgForm",
+        "component": "Form",
+        "name": "cohort-messaging",
+        "buttons": "msgButtons",
+        "fields": [
+          "targetCohortControl",
+          "msgSubjectControl",
+          "msgBodyControl"
+        ]
+      },
+      {
+        "id": "targetCohortControl",
+        "component": "FormControl",
+        "label": "Target Recipient Group",
+        "input": "msgTargetSelect"
+      },
+      {
+        "id": "msgTargetSelect",
+        "component": "Select",
+        "name": "target_group",
+        "placeholder": "Select cohort or segment",
+        "items": [
+          "msgOptAll",
+          "msgOptAtRisk",
+          "msgOptEngQ1",
+          "msgOptSales"
+        ]
+      },
+      {
+        "id": "msgOptAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All Active Learners"
+      },
+      {
+        "id": "msgOptAtRisk",
+        "component": "SelectItem",
+        "value": "at-risk-only",
+        "label": "At-Risk Learners Only (All Cohorts)"
+      },
+      {
+        "id": "msgOptEngQ1",
+        "component": "SelectItem",
+        "value": "eng-q1",
+        "label": "Q1 Engineering Cohort"
+      },
+      {
+        "id": "msgOptSales",
+        "component": "SelectItem",
+        "value": "sales-onboard",
+        "label": "Sales Onboarding 2024"
+      },
+      {
+        "id": "msgSubjectControl",
+        "component": "FormControl",
+        "label": "Subject Line",
+        "input": "msgSubjectInput"
+      },
+      {
+        "id": "msgSubjectInput",
+        "component": "Input",
+        "name": "subject",
+        "placeholder": "e.g., Important update regarding your upcoming quiz deadline"
+      },
+      {
+        "id": "msgBodyControl",
+        "component": "FormControl",
+        "label": "Message Content",
+        "hint": "Supports plain text and markdown formatting",
+        "input": "msgBodyTextArea"
+      },
+      {
+        "id": "msgBodyTextArea",
+        "component": "TextArea",
+        "name": "body",
+        "placeholder": "Write your message here...",
+        "rows": 4
+      },
+      {
+        "id": "msgButtons",
+        "component": "Buttons",
+        "buttons": [
+          "sendMsgBtn",
+          "draftMsgBtn"
+        ]
+      },
+      {
+        "id": "sendMsgBtn",
+        "component": "Button",
+        "label": "Send Cohort Message",
+        "variant": "primary"
+      },
+      {
+        "id": "draftMsgBtn",
+        "component": "Button",
+        "label": "Save as Draft",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>

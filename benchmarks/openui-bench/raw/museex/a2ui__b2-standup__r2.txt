@@ -1,0 +1,309 @@
+Your async standup board is ready — blocked teammates highlighted, progress tracked, and posting enabled.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "statsCard",
+          "blockedAlert",
+          "teamHeading",
+          "teamTable",
+          "separator1",
+          "postHeader",
+          "postForm"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Async Standup — Remote Team",
+        "subtitle": "Tuesday, August 18, 2026 • 9:00 AM UTC • Daily async check-in"
+      },
+      {
+        "id": "statsCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "statsTitle",
+          "progress",
+          "statsDetailRow"
+        ]
+      },
+      {
+        "id": "statsTitle",
+        "component": "TextContent",
+        "text": "**Standup Progress** — Track who has posted today",
+        "size": "small-heavy"
+      },
+      {
+        "id": "progress",
+        "component": "Progress",
+        "value": 66,
+        "label": "4 of 6 updates submitted — 2 still missing"
+      },
+      {
+        "id": "statsDetailRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "s",
+        "children": [
+          "missingBadge",
+          "submittedBadge",
+          "blockedBadge"
+        ]
+      },
+      {
+        "id": "missingBadge",
+        "component": "Badge",
+        "text": "2 missing",
+        "variant": "destructive"
+      },
+      {
+        "id": "submittedBadge",
+        "component": "Badge",
+        "text": "4 submitted",
+        "variant": "secondary"
+      },
+      {
+        "id": "blockedBadge",
+        "component": "Badge",
+        "text": "2 blocked",
+        "variant": "outline"
+      },
+      {
+        "id": "blockedAlert",
+        "component": "Alert",
+        "title": "Blocked teammates need help",
+        "description": "Alex Rivera — Waiting on design tokens for dashboard (needs Design). Samir Patel — CI pipeline failing on main, infra ticket #482 (needs DevOps).",
+        "variant": "warning"
+      },
+      {
+        "id": "teamHeading",
+        "component": "Heading",
+        "text": "Today's updates by teammate",
+        "level": "h3"
+      },
+      {
+        "id": "teamTable",
+        "component": "Table",
+        "columns": [
+          "teammateCol",
+          "statusCol",
+          "yesterdayCol",
+          "todayCol",
+          "blockerCol"
+        ]
+      },
+      {
+        "id": "teammateCol",
+        "component": "Col",
+        "label": "Teammate",
+        "data": [
+          "Maya Chen",
+          "Alex Rivera",
+          "Priya Nair",
+          "Jordan Kim",
+          "Samir Patel",
+          "Casey Lee"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "statusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "✅ Submitted",
+          "🚧 Blocked",
+          "✅ Submitted",
+          "⏳ Missing",
+          "🚧 Blocked",
+          "⏳ Missing"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "yesterdayCol",
+        "component": "Col",
+        "label": "Yesterday",
+        "data": [
+          "Shipped checkout API v2",
+          "Built dashboard layout",
+          "QA pass for release 2.4",
+          "— No update —",
+          "Fixed auth bug #341",
+          "— No update —"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "todayCol",
+        "component": "Col",
+        "label": "Today",
+        "data": [
+          "Implement payment webhooks",
+          "Integrate design tokens",
+          "Write release notes & demo",
+          "— Awaiting update —",
+          "Deploy to staging",
+          "— Awaiting update —"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "blockerCol",
+        "component": "Col",
+        "label": "Blocker",
+        "data": [
+          "—",
+          "Waiting on design tokens",
+          "—",
+          "Missing update",
+          "CI pipeline failing #482",
+          "Missing update"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "separator1",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "postHeader",
+        "component": "CardHeader",
+        "title": "Post your update",
+        "subtitle": "Share your standup for Tuesday, Aug 18 — visible to the whole team instantly"
+      },
+      {
+        "id": "postForm",
+        "component": "Form",
+        "name": "async-standup-form",
+        "buttons": "formButtons",
+        "fields": [
+          "yesterdayField",
+          "todayField",
+          "blockerField",
+          "statusField"
+        ]
+      },
+      {
+        "id": "yesterdayField",
+        "component": "FormControl",
+        "label": "What did you do yesterday?",
+        "input": "yesterdayInput",
+        "hint": "Keep it to 1-2 bullets"
+      },
+      {
+        "id": "yesterdayInput",
+        "component": "TextArea",
+        "name": "yesterday",
+        "placeholder": "e.g., Finished user onboarding flow, reviewed PR #128",
+        "rows": 2
+      },
+      {
+        "id": "todayField",
+        "component": "FormControl",
+        "label": "What are you doing today?",
+        "input": "todayInput",
+        "hint": "Your plan for today, Aug 18"
+      },
+      {
+        "id": "todayInput",
+        "component": "TextArea",
+        "name": "today",
+        "placeholder": "e.g., Building empty states for analytics, pairing with Maya",
+        "rows": 2
+      },
+      {
+        "id": "blockerField",
+        "component": "FormControl",
+        "label": "Any blockers?",
+        "input": "blockerInput",
+        "hint": "Leave blank if none — blocked updates are highlighted at the top"
+      },
+      {
+        "id": "blockerInput",
+        "component": "TextArea",
+        "name": "blockers",
+        "placeholder": "e.g., Need API keys for Stripe sandbox",
+        "rows": 2
+      },
+      {
+        "id": "statusField",
+        "component": "FormControl",
+        "label": "Overall status",
+        "input": "statusSelect"
+      },
+      {
+        "id": "statusSelect",
+        "component": "Select",
+        "name": "status",
+        "placeholder": "Select your status",
+        "items": [
+          "statusOnTrack",
+          "statusBlocked",
+          "statusNeedsReview"
+        ]
+      },
+      {
+        "id": "statusOnTrack",
+        "component": "SelectItem",
+        "value": "on_track",
+        "label": "On track — no blockers"
+      },
+      {
+        "id": "statusBlocked",
+        "component": "SelectItem",
+        "value": "blocked",
+        "label": "Blocked — need help"
+      },
+      {
+        "id": "statusNeedsReview",
+        "component": "SelectItem",
+        "value": "needs_review",
+        "label": "Needs review"
+      },
+      {
+        "id": "formButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitBtn",
+          "saveDraftBtn"
+        ]
+      },
+      {
+        "id": "submitBtn",
+        "component": "Button",
+        "label": "Post update",
+        "variant": "primary"
+      },
+      {
+        "id": "saveDraftBtn",
+        "component": "Button",
+        "label": "Save draft",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>

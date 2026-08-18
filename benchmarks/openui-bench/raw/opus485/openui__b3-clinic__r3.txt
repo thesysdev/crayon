@@ -1,0 +1,35 @@
+root = Card([header, nextUp, stats, appts, rooms, checkin, dayNav])
+header = CardHeader("Front Desk — Today", "Tuesday, June 18")
+
+nextUp = Callout("info", "Next patient", "Room 3 — Maria Delgado, 9:30 AM")
+
+stats = Card([statExpected, statNoShow], "sunk", "row", "l")
+statExpected = Progress(14, "14 patients expected today")
+statNoShow = Tag("No-show rate this month: 6.2%", null, "lg", "warning")
+
+appts = Table([apptTime, apptPatient, apptStatus])
+apptTime = Col("Time", ["9:00 AM", "9:30 AM", "10:00 AM", "10:30 AM", "11:15 AM", "1:00 PM"])
+apptPatient = Col("Patient", ["James Carter", "Maria Delgado", "Aisha Khan", "Robert Lin", "Priya Nair", "Tom Becker"])
+apptStatus = Col("Status", ["Checked in", "Called", "Waiting", "Waiting", "Confirmed", "Confirmed"])
+
+rooms = Card([roomsHeading, roomTags], "clear", "column", "s")
+roomsHeading = Heading("Rooms free now", "h4")
+roomTags = Card([room1, room2, room4], "clear", "row", "s")
+room1 = Tag("Room 1", null, "md", "success")
+room2 = Tag("Room 2", null, "md", "success")
+room4 = Tag("Room 4", null, "md", "success")
+
+checkin = Form("check-in", checkinButtons, [patientField])
+patientField = FormControl("Check in a patient", patientSelect, "Select an arriving patient to mark as checked in")
+patientSelect = Select("patient", [pAisha, pRobert, pPriya, pTom], "Choose patient")
+pAisha = SelectItem("aisha", "Aisha Khan — 10:00 AM")
+pRobert = SelectItem("robert", "Robert Lin — 10:30 AM")
+pPriya = SelectItem("priya", "Priya Nair — 11:15 AM")
+pTom = SelectItem("tom", "Tom Becker — 1:00 PM")
+checkinButtons = Buttons([checkinBtn])
+checkinBtn = Button("Check in", null, "primary")
+
+dayNav = Buttons([prevDay, pickDay, nextDay])
+prevDay = Button("← Previous day", null, "secondary")
+pickDay = Button("Pick a date", null, "tertiary")
+nextDay = Button("Next day →", null, "secondary")

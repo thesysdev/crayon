@@ -1,0 +1,40 @@
+root = Card([header, cohortFilter, kpis, engagement, ranking, atRisk, messageAction])
+
+header = CardHeader("Learning Analytics", "Cohort performance overview")
+
+cohortFilter = Form("cohort-filter", filterButtons, [cohortField])
+cohortField = FormControl("Cohort", cohortSelect, "Narrow all metrics to one cohort")
+cohortSelect = Select("cohort", [cohortAll, cohortA, cohortB, cohortC], "Select cohort")
+cohortAll = SelectItem("all", "All learners")
+cohortA = SelectItem("spring25", "Spring 2025")
+cohortB = SelectItem("winter25", "Winter 2025")
+cohortC = SelectItem("fall24", "Fall 2024")
+filterButtons = Buttons([applyBtn])
+applyBtn = Button("Apply filter", null, "primary")
+
+kpis = Card([kpiTable, completionProgress], "sunk")
+kpiTable = Table([kpiMetric, kpiValue])
+kpiMetric = Col("Metric", ["Active learners this week", "Average quiz score"])
+kpiValue = Col("Value", ["1,284", "82%"])
+completionProgress = Progress(68, "Course completion rate")
+
+engagement = LineChart(["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"], [engagementSeries], "natural", "Week", "Active learners")
+engagementSeries = Series("Engagement", [980, 1040, 1120, 1075, 1190, 1210, 1250, 1284])
+
+ranking = HorizontalBarChart(["Intro to Python", "Data Foundations", "Cloud Basics", "UX Design", "Cybersecurity 101"], [enrollSeries], "grouped", "Enrollments", "Course")
+enrollSeries = Series("Enrollments", [842, 731, 690, 512, 448])
+
+atRisk = ListBlock([risk1, risk2, risk3], "number")
+risk1 = ListItem("Jordan Lee", "No activity in 12 days · 2 courses stalled", null, "Message")
+risk2 = ListItem("Priya Nair", "Quiz scores dropped to 41% · low engagement", null, "Message")
+risk3 = ListItem("Marcus Reed", "Missed 3 deadlines · last login 9 days ago", null, "Message")
+
+messageAction = DrawerBlock("Message cohort", "Send a message", "Reach every learner in the selected cohort", [messageForm])
+messageForm = Form("cohort-message", messageButtons, [subjectField, bodyField])
+subjectField = FormControl("Subject", subjectInput)
+subjectInput = Input("subject", "Check-in and next steps")
+bodyField = FormControl("Message", bodyInput)
+bodyInput = TextArea("body", "Write your message to the cohort...", 5)
+messageButtons = Buttons([sendBtn, cancelBtn])
+sendBtn = Button("Send to cohort", null, "primary")
+cancelBtn = Button("Cancel", null, "tertiary")

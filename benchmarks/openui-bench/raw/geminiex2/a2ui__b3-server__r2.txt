@@ -1,0 +1,514 @@
+Here is a complete, single-screen Service Health dashboard tailored for an on-call engineer, satisfying all 8 required items:
+
+1. **Uptime this quarter** (KPI Card / Metric block)
+2. **CPU and memory usage over the past 24h** (Line Chart with multiple series)
+3. **Current Error Rate** (Callout / Metric indicator)
+4. **Open Incidents with Severity** (Interactive Table)
+5. **Region Selector** (Form dropdown filter)
+6. **Top 5 Slowest Endpoints with Latency** (Horizontal Bar Chart & Table view)
+7. **Alert Threshold Setting** (Form control with slider and input)
+8. **Acknowledge Incident Action** (Actionable dialog / trigger button)
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "regionFilterCard",
+          "alertCallout",
+          "kpiTabs",
+          "incidentSection",
+          "latencySection",
+          "thresholdSection"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Service Health & Incident Dashboard",
+        "subtitle": "Real-time system telemetry and incident response control center"
+      },
+      {
+        "id": "regionFilterCard",
+        "component": "Form",
+        "name": "region-selector-form",
+        "fields": [
+          "regionControl"
+        ],
+        "buttons": "regionApplyButtons"
+      },
+      {
+        "id": "regionControl",
+        "component": "FormControl",
+        "label": "Filter by Region",
+        "hint": "Narrow telemetry and incidents to a specific cloud region",
+        "input": "regionSelect"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region",
+        "placeholder": "Global (All Regions)",
+        "items": [
+          "regGlobal",
+          "regUsEast",
+          "regUsWest",
+          "regEuWest",
+          "regApSouth"
+        ]
+      },
+      {
+        "id": "regGlobal",
+        "component": "SelectItem",
+        "value": "global",
+        "label": "Global (All Regions)"
+      },
+      {
+        "id": "regUsEast",
+        "component": "SelectItem",
+        "value": "us-east-1",
+        "label": "US East (N. Virginia)"
+      },
+      {
+        "id": "regUsWest",
+        "component": "SelectItem",
+        "value": "us-west-2",
+        "label": "US West (Oregon)"
+      },
+      {
+        "id": "regEuWest",
+        "component": "SelectItem",
+        "value": "eu-west-1",
+        "label": "EU West (Ireland)"
+      },
+      {
+        "id": "regApSouth",
+        "component": "SelectItem",
+        "value": "ap-southeast-1",
+        "label": "AP Southeast (Singapore)"
+      },
+      {
+        "id": "regionApplyButtons",
+        "component": "Buttons",
+        "buttons": [
+          "applyRegionBtn"
+        ]
+      },
+      {
+        "id": "applyRegionBtn",
+        "component": "Button",
+        "label": "Apply Region Filter",
+        "variant": "secondary",
+        "size": "small"
+      },
+      {
+        "id": "alertCallout",
+        "component": "Callout",
+        "variant": "warning",
+        "title": "Active Incident Alert",
+        "description": "High error rate detected in payment gateway service. 2 open incidents requiring acknowledgement."
+      },
+      {
+        "id": "kpiTabs",
+        "component": "Tabs",
+        "items": [
+          "tabMetrics",
+          "tabTelemetry"
+        ]
+      },
+      {
+        "id": "tabMetrics",
+        "component": "TabItem",
+        "value": "overview",
+        "trigger": "Core Health Metrics",
+        "content": [
+          "kpiSummaryTable"
+        ]
+      },
+      {
+        "id": "kpiSummaryTable",
+        "component": "Table",
+        "columns": [
+          "colMetricName",
+          "colMetricValue",
+          "colMetricStatus"
+        ]
+      },
+      {
+        "id": "colMetricName",
+        "component": "Col",
+        "label": "Health Metric",
+        "data": [
+          "Uptime (Q3 Current)",
+          "Error Rate (Right Now)",
+          "Active Incidents",
+          "Avg P99 Latency"
+        ]
+      },
+      {
+        "id": "colMetricValue",
+        "component": "Col",
+        "label": "Current Value",
+        "data": [
+          "99.982%",
+          "0.14%",
+          "2 Open",
+          "240 ms"
+        ]
+      },
+      {
+        "id": "colMetricStatus",
+        "component": "Col",
+        "label": "Target / Status",
+        "data": [
+          "SLA: 99.95% (Healthy)",
+          "Threshold: < 0.50% (Nominal)",
+          "SEV-2 Alert Active",
+          "SLA: < 300 ms"
+        ]
+      },
+      {
+        "id": "tabTelemetry",
+        "component": "TabItem",
+        "value": "telemetry",
+        "trigger": "CPU & Memory (Past 24h)",
+        "content": [
+          "usageChart"
+        ]
+      },
+      {
+        "id": "usageChart",
+        "component": "LineChart",
+        "xLabel": "Time (Past 24 Hours)",
+        "yLabel": "Utilization (%)",
+        "variant": "natural",
+        "labels": [
+          "00:00",
+          "04:00",
+          "08:00",
+          "12:00",
+          "16:00",
+          "20:00",
+          "Now"
+        ],
+        "series": [
+          "cpuSeries",
+          "memSeries"
+        ]
+      },
+      {
+        "id": "cpuSeries",
+        "component": "Series",
+        "category": "CPU Usage (%)",
+        "values": [
+          32,
+          28,
+          45,
+          78,
+          65,
+          52,
+          48
+        ]
+      },
+      {
+        "id": "memSeries",
+        "component": "Series",
+        "category": "Memory Usage (%)",
+        "values": [
+          60,
+          61,
+          64,
+          72,
+          75,
+          71,
+          69
+        ]
+      },
+      {
+        "id": "incidentSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "incidentHeader",
+          "incidentTable",
+          "ackDialog"
+        ],
+        "gap": "s"
+      },
+      {
+        "id": "incidentHeader",
+        "component": "CardHeader",
+        "title": "Open Incidents",
+        "subtitle": "Active alerts requiring responder acknowledgement"
+      },
+      {
+        "id": "incidentTable",
+        "component": "Table",
+        "columns": [
+          "colIncId",
+          "colIncSev",
+          "colIncDesc",
+          "colIncTime",
+          "colIncState"
+        ]
+      },
+      {
+        "id": "colIncId",
+        "component": "Col",
+        "label": "Incident ID",
+        "data": [
+          "INC-8492",
+          "INC-8488"
+        ]
+      },
+      {
+        "id": "colIncSev",
+        "component": "Col",
+        "label": "Severity",
+        "data": [
+          "SEV-1 (Critical)",
+          "SEV-2 (Major)"
+        ]
+      },
+      {
+        "id": "colIncDesc",
+        "component": "Col",
+        "label": "Description",
+        "data": [
+          "Database connection pool exhaustion on Auth Service",
+          "High HTTP 500 error spike in Checkout endpoint"
+        ]
+      },
+      {
+        "id": "colIncTime",
+        "component": "Col",
+        "label": "Triggered",
+        "data": [
+          "14 mins ago",
+          "42 mins ago"
+        ]
+      },
+      {
+        "id": "colIncState",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Unacknowledged",
+          "Acknowledged by @alex"
+        ]
+      },
+      {
+        "id": "ackDialog",
+        "component": "AlertDialogBlock",
+        "triggerLabel": "Acknowledge Incident",
+        "triggerVariant": "destructive",
+        "title": "Acknowledge Incident INC-8492?",
+        "description": "By acknowledging, you confirm taking ownership of INC-8492 (SEV-1). PagerDuty on-call escalation will be paused.",
+        "confirmLabel": "Confirm ACK",
+        "cancelLabel": "Cancel"
+      },
+      {
+        "id": "latencySection",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "latencyHeader",
+          "slowEndpointsChart",
+          "slowEndpointsTable"
+        ],
+        "gap": "s"
+      },
+      {
+        "id": "latencyHeader",
+        "component": "CardHeader",
+        "title": "Top 5 Slowest Endpoints",
+        "subtitle": "Ranked by P99 response latency over the selected window"
+      },
+      {
+        "id": "slowEndpointsChart",
+        "component": "HorizontalBarChart",
+        "xLabel": "Latency (ms)",
+        "yLabel": "Endpoint",
+        "variant": "grouped",
+        "labels": [
+          "POST /api/v2/checkout",
+          "GET /api/v1/reports/pdf",
+          "POST /api/v2/auth/token",
+          "GET /api/v1/search",
+          "PUT /api/v1/user/profile"
+        ],
+        "series": [
+          "latencySeries"
+        ]
+      },
+      {
+        "id": "latencySeries",
+        "component": "Series",
+        "category": "P99 Latency (ms)",
+        "values": [
+          1420,
+          980,
+          650,
+          490,
+          380
+        ]
+      },
+      {
+        "id": "slowEndpointsTable",
+        "component": "Table",
+        "columns": [
+          "colEpPath",
+          "colEpLatency",
+          "colEpRps",
+          "colEpSla"
+        ]
+      },
+      {
+        "id": "colEpPath",
+        "component": "Col",
+        "label": "Endpoint Path",
+        "data": [
+          "POST /api/v2/checkout",
+          "GET /api/v1/reports/pdf",
+          "POST /api/v2/auth/token",
+          "GET /api/v1/search",
+          "PUT /api/v1/user/profile"
+        ]
+      },
+      {
+        "id": "colEpLatency",
+        "component": "Col",
+        "label": "P99 Latency",
+        "data": [
+          "1,420 ms",
+          "980 ms",
+          "650 ms",
+          "490 ms",
+          "380 ms"
+        ]
+      },
+      {
+        "id": "colEpRps",
+        "component": "Col",
+        "label": "Throughput",
+        "data": [
+          "450 rps",
+          "22 rps",
+          "1,200 rps",
+          "3,100 rps",
+          "180 rps"
+        ]
+      },
+      {
+        "id": "colEpSla",
+        "component": "Col",
+        "label": "SLA Status",
+        "data": [
+          "BREACHED (>500ms)",
+          "BREACHED (>500ms)",
+          "BREACHED (>500ms)",
+          "Warning",
+          "Healthy"
+        ]
+      },
+      {
+        "id": "thresholdSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "thresholdHeader",
+          "thresholdForm"
+        ],
+        "gap": "s"
+      },
+      {
+        "id": "thresholdHeader",
+        "component": "CardHeader",
+        "title": "Alert Threshold Configuration",
+        "subtitle": "Dynamically adjust paging thresholds for error rate and latency alerts"
+      },
+      {
+        "id": "thresholdForm",
+        "component": "Form",
+        "name": "alert-threshold-form",
+        "fields": [
+          "errThresholdControl",
+          "latencyThresholdControl"
+        ],
+        "buttons": "thresholdFormButtons"
+      },
+      {
+        "id": "errThresholdControl",
+        "component": "FormControl",
+        "label": "Error Rate Paging Threshold (%)",
+        "hint": "Triggers SEV-1 alert when instantaneous error rate exceeds this value",
+        "input": "errSlider"
+      },
+      {
+        "id": "errSlider",
+        "component": "Slider",
+        "name": "error_rate_threshold",
+        "variant": "continuous",
+        "min": 0.1,
+        "max": 5.0,
+        "step": 0.1,
+        "defaultValue": [
+          1.0
+        ]
+      },
+      {
+        "id": "latencyThresholdControl",
+        "component": "FormControl",
+        "label": "P99 Latency Threshold (ms)",
+        "hint": "Triggers SEV-2 alert when 5-min rolling latency exceeds target",
+        "input": "latencyInput"
+      },
+      {
+        "id": "latencyInput",
+        "component": "Input",
+        "name": "latency_threshold_ms",
+        "type": "number",
+        "placeholder": "500",
+        "value": "500"
+      },
+      {
+        "id": "thresholdFormButtons",
+        "component": "Buttons",
+        "buttons": [
+          "saveThresholdBtn",
+          "resetThresholdBtn"
+        ]
+      },
+      {
+        "id": "saveThresholdBtn",
+        "component": "Button",
+        "label": "Update Alert Thresholds",
+        "variant": "primary"
+      },
+      {
+        "id": "resetThresholdBtn",
+        "component": "Button",
+        "label": "Reset to Defaults",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>

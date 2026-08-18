@@ -1,0 +1,349 @@
+Your async standup board is ready — tracking today's updates, blockers, and missing submissions in one view.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "dateRow",
+          "summaryCard",
+          "blockedAlert",
+          "teamHeading",
+          "teamTable",
+          "postHeader",
+          "postForm"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Remote Team Async Standup",
+        "subtitle": "Tuesday, August 18, 2026 • Daily check-in • 9:00 AM UTC"
+      },
+      {
+        "id": "dateRow",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "align": "center",
+        "justify": "between",
+        "children": [
+          "dateBadge",
+          "dateText",
+          "timeBadge"
+        ]
+      },
+      {
+        "id": "dateBadge",
+        "component": "Badge",
+        "text": "Today • Aug 18, 2026",
+        "variant": "secondary"
+      },
+      {
+        "id": "dateText",
+        "component": "TextContent",
+        "text": "Updates close at 10:00 AM UTC — async, no meeting required",
+        "size": "small"
+      },
+      {
+        "id": "timeBadge",
+        "component": "Tag",
+        "text": "TUESDAY",
+        "variant": "info",
+        "size": "sm"
+      },
+      {
+        "id": "summaryCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "summaryHeader",
+          "progress",
+          "missingRow"
+        ]
+      },
+      {
+        "id": "summaryHeader",
+        "component": "CardHeader",
+        "title": "Submission Status",
+        "subtitle": "5 of 6 teammates have posted"
+      },
+      {
+        "id": "progress",
+        "component": "Progress",
+        "value": 83,
+        "label": "5 of 6 updates received — 83% complete"
+      },
+      {
+        "id": "missingRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "align": "center",
+        "gap": "s",
+        "children": [
+          "missingBadge",
+          "missingText"
+        ]
+      },
+      {
+        "id": "missingBadge",
+        "component": "Badge",
+        "text": "1 missing",
+        "variant": "destructive"
+      },
+      {
+        "id": "missingText",
+        "component": "TextContent",
+        "text": "Waiting on **Eva Müller** — last reminder sent 12 min ago. Nudge in Slack?",
+        "size": "small"
+      },
+      {
+        "id": "blockedAlert",
+        "component": "Alert",
+        "title": "2 teammates blocked — needs attention",
+        "description": "Clara Singh (waiting on design tokens for dashboard) and Frank Okafor (CI pipeline failing on main) are blocked. Please offer help in thread.",
+        "variant": "warning"
+      },
+      {
+        "id": "teamHeading",
+        "component": "Heading",
+        "text": "Today's updates by teammate",
+        "level": "h3"
+      },
+      {
+        "id": "teamTable",
+        "component": "Table",
+        "columns": [
+          "colTeammate",
+          "colStatus",
+          "colUpdate",
+          "colBlocked"
+        ]
+      },
+      {
+        "id": "colTeammate",
+        "component": "Col",
+        "label": "Teammate",
+        "data": [
+          "Alice Chen",
+          "Ben Torres",
+          "Clara Singh",
+          "David Kim",
+          "Eva Müller",
+          "Frank Okafor"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "✅ Done",
+          "🟡 In Progress",
+          "🔴 Blocked",
+          "✅ Done",
+          "⚪ Missing",
+          "🔴 Blocked"
+        ]
+      },
+      {
+        "id": "colUpdate",
+        "component": "Col",
+        "label": "Today's Update",
+        "data": [
+          "Shipped onboarding flow v2, starting QA with design today",
+          "API rate limiting — 80% done, PR expected EOD",
+          "Dashboard redesign — waiting on design tokens from brand team",
+          "Fixed checkout bug #482, deployed to staging",
+          "— No update yet",
+          "CI pipeline failing on main — cannot merge release"
+        ]
+      },
+      {
+        "id": "colBlocked",
+        "component": "Col",
+        "label": "Blocked?",
+        "data": [
+          "No",
+          "No",
+          "YES — Design tokens",
+          "No",
+          "—",
+          "YES — CI failure"
+        ]
+      },
+      {
+        "id": "postHeader",
+        "component": "CardHeader",
+        "title": "Post your own update",
+        "subtitle": "Share what you did, what you're doing, and any blockers"
+      },
+      {
+        "id": "postForm",
+        "component": "Form",
+        "name": "standup-update",
+        "buttons": "formButtons",
+        "fields": [
+          "nameField",
+          "statusField",
+          "updateField",
+          "blockerField"
+        ]
+      },
+      {
+        "id": "nameField",
+        "component": "FormControl",
+        "label": "Your name",
+        "input": "nameSelect"
+      },
+      {
+        "id": "nameSelect",
+        "component": "Select",
+        "name": "teammate",
+        "placeholder": "Select your name",
+        "items": [
+          "nameAlice",
+          "nameBen",
+          "nameEva",
+          "nameYou"
+        ]
+      },
+      {
+        "id": "nameAlice",
+        "component": "SelectItem",
+        "value": "alice",
+        "label": "Alice Chen"
+      },
+      {
+        "id": "nameBen",
+        "component": "SelectItem",
+        "value": "ben",
+        "label": "Ben Torres"
+      },
+      {
+        "id": "nameEva",
+        "component": "SelectItem",
+        "value": "eva",
+        "label": "Eva Müller"
+      },
+      {
+        "id": "nameYou",
+        "component": "SelectItem",
+        "value": "me",
+        "label": "Post as me"
+      },
+      {
+        "id": "statusField",
+        "component": "FormControl",
+        "label": "Status for today",
+        "input": "statusRadio"
+      },
+      {
+        "id": "statusRadio",
+        "component": "RadioGroup",
+        "name": "status",
+        "items": [
+          "statusDone",
+          "statusProgress",
+          "statusBlocked"
+        ],
+        "defaultValue": "statusProgress"
+      },
+      {
+        "id": "statusDone",
+        "component": "RadioItem",
+        "label": "Done",
+        "description": "Completed yesterday's work",
+        "value": "done"
+      },
+      {
+        "id": "statusProgress",
+        "component": "RadioItem",
+        "label": "In Progress",
+        "description": "Actively working",
+        "value": "in_progress"
+      },
+      {
+        "id": "statusBlocked",
+        "component": "RadioItem",
+        "label": "Blocked",
+        "description": "Need help to proceed",
+        "value": "blocked"
+      },
+      {
+        "id": "updateField",
+        "component": "FormControl",
+        "label": "Today's update",
+        "hint": "Keep it to 1-2 sentences. What did you do / what next?",
+        "input": "updateInput"
+      },
+      {
+        "id": "updateInput",
+        "component": "TextArea",
+        "name": "update_text",
+        "placeholder": "e.g., Finished API docs, starting auth refactor today...",
+        "rows": 3
+      },
+      {
+        "id": "blockerField",
+        "component": "FormControl",
+        "label": "Blockers",
+        "input": "blockerCheck"
+      },
+      {
+        "id": "blockerCheck",
+        "component": "CheckBoxGroup",
+        "name": "blockers",
+        "items": [
+          "blockerItem"
+        ]
+      },
+      {
+        "id": "blockerItem",
+        "component": "CheckBoxItem",
+        "label": "I'm blocked and need help",
+        "description": "This will highlight your update in the blocked alert",
+        "name": "is_blocked"
+      },
+      {
+        "id": "formButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitBtn",
+          "clearBtn"
+        ]
+      },
+      {
+        "id": "submitBtn",
+        "component": "Button",
+        "label": "Post update",
+        "variant": "primary"
+      },
+      {
+        "id": "clearBtn",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>

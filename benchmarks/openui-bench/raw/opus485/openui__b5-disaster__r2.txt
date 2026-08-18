@@ -1,0 +1,97 @@
+root = Card([header, focusForm, alerts, incidents, sevSummary, resources, shelters, routes, weather, casualties, volunteers, donations, aidRequests, channels, roadsClosed, hospitals, tasks, actions])
+
+header = CardHeader("Emergency Response Coordination Center", "Live operational overview")
+
+focusForm = Form("focus-zone", focusButtons, [zoneField])
+zoneField = FormControl("Focus on zone", zoneSelect)
+zoneSelect = Select("zone", [zA, zB, zC, zD], "Select a zone")
+zA = SelectItem("north", "North Zone")
+zB = SelectItem("south", "South Zone")
+zC = SelectItem("east", "East Zone")
+zD = SelectItem("west", "West Zone")
+focusButtons = Buttons([focusBtn])
+focusBtn = Button("Focus zone", null, "primary")
+
+alerts = Alert("Critical incident", "Flooding escalating in East Zone — immediate response required", "destructive")
+
+incidents = Table([incZone, incType, incSev])
+incZone = Col("Zone", ["North", "South", "East", "West"])
+incType = Col("Incident", ["Building fire", "Gas leak", "Flooding", "Landslide"])
+incSev = Col("Severity", ["High", "Medium", "Critical", "High"])
+
+sevSummary = PieChart(["Critical", "High", "Medium", "Low"], [1, 2, 1, 0], "donut")
+
+resources = Table([resName, resAvail])
+resName = Col("Resource", ["Vehicles", "Personnel", "Supplies (units)"])
+resAvail = Col("Available", [42, 318, 1560], "number")
+
+shelters = Table([shName, shCap, shOcc])
+shName = Col("Shelter", ["Central High", "Riverside Gym", "Community Hall", "West Church"])
+shCap = Col("Capacity", [500, 300, 200, 150], "number")
+shOcc = Col("Occupancy", [420, 285, 90, 60], "number")
+
+routes = Table([rtName, rtStatus])
+rtName = Col("Evacuation Route", ["Route A - Highway 1", "Route B - Coastal Rd", "Route C - Ridge Pass", "Route D - Downtown"])
+rtStatus = Col("Status", ["Open", "Congested", "Blocked", "Open"])
+
+weather = LineChart(["0h", "12h", "24h", "36h", "48h"], [tempSeries, rainSeries], "natural", "Time", "Value")
+tempSeries = Series("Temp (°C)", [18, 16, 15, 17, 19])
+rainSeries = Series("Rain (mm)", [40, 65, 80, 45, 20])
+
+casualties = Table([casLabel, casCount])
+casLabel = Col("Metric", ["People rescued", "Casualties"])
+casCount = Col("Count", [214, 12], "number")
+
+volunteers = ListBlock([vol1, vol2, vol3, vol4], "number")
+vol1 = ListItem("Maria Chen", "Assignment: East Zone triage")
+vol2 = ListItem("David Okoro", "Assignment: Riverside Gym logistics")
+vol3 = ListItem("Sofia Reyes", "Assignment: North Zone search & rescue")
+vol4 = ListItem("Liam Novak", "Assignment: Central High supplies")
+
+donations = Table([donType, donAmount])
+donType = Col("Donation", ["Cash", "Food (units)", "Water (units)", "Blankets"])
+donAmount = Col("Received", [84500, 12000, 18000, 3400], "number")
+
+aidRequests = ListBlock([aid1, aid2, aid3], "number")
+aid1 = ListItem("Medical supplies — East Zone", "Awaiting dispatch • Priority: High")
+aid2 = ListItem("Drinking water — West Church shelter", "Awaiting approval • Priority: Medium")
+aid3 = ListItem("Generators — South Zone", "Awaiting sourcing • Priority: High")
+
+channels = Table([chName, chStatus])
+chName = Col("Channel", ["Radio Net 1", "Cellular", "Satellite", "Internet"])
+chStatus = Col("Status", ["Up", "Degraded", "Up", "Down"])
+
+roadsClosed = TagBlock(["Highway 1 North", "Ridge Pass", "Bridge St", "5th Ave", "Coastal Rd Exit 4"])
+
+hospitals = Table([hospName, hospBeds])
+hospName = Col("Hospital", ["St. Mary's", "General Hospital", "Riverside Clinic", "North Medical"])
+hospBeds = Col("Free Beds", [24, 8, 15, 3], "number")
+
+tasks = ListBlock([task1, task2, task3, task4], "number")
+task1 = ListItem("Deploy pumps to East Zone", "Assignee: Field Team 3")
+task2 = ListItem("Restock Riverside Gym", "Assignee: Logistics Unit A")
+task3 = ListItem("Repair Radio Net comms", "Assignee: Comms Tech B")
+task4 = ListItem("Coordinate hospital transfers", "Assignee: Medical Lead")
+
+actions = Card([resourceReq, broadcastForm, sitrepAction], "clear", "column", "l")
+
+resourceReq = Form("request-resources", reqButtons, [reqTypeField, reqQtyField])
+reqTypeField = FormControl("Resource type", reqTypeSelect)
+reqTypeSelect = Select("resource_type", [rt1, rt2, rt3, rt4], "Select type")
+rt1 = SelectItem("vehicles", "Vehicles")
+rt2 = SelectItem("personnel", "Personnel")
+rt3 = SelectItem("medical", "Medical supplies")
+rt4 = SelectItem("water", "Water")
+reqQtyField = FormControl("Quantity", reqQtyInput)
+reqQtyInput = Input("quantity", "e.g. 20", "number")
+reqButtons = Buttons([reqBtn])
+reqBtn = Button("Request resources", null, "primary")
+
+broadcastForm = Form("broadcast-update", bcButtons, [bcField])
+bcField = FormControl("Broadcast message", bcArea)
+bcArea = TextArea("message", "Enter update to broadcast to all channels", 3)
+bcButtons = Buttons([bcBtn])
+bcBtn = Button("Broadcast update", null, "primary")
+
+sitrepAction = Buttons([sitrepBtn])
+sitrepBtn = Button("File situation report", null, "secondary")

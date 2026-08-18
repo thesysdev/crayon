@@ -1,0 +1,90 @@
+root = Card([header, mainCallout, kpiGrid, deptSplitSection, pipelineSection, rolesAndInterviews, attritionSection, newRoleDrawer, followUps], "card", "column", "l")
+
+header = CardHeader("HR & Talent Acquisition Dashboard", "Q3 Hiring & Workforce Analytics Overview")
+
+mainCallout = TextCallout("info", "Hiring Target Update", "Engineering and Product departments are currently prioritizing senior technical roles to support Q4 roadmap initiatives.")
+
+kpiGrid = Card([headcountKpi, avgTimeToHireKpi, openRolesKpi, interviewsKpi], "sunk", "row", "m", "center", "between", true)
+
+headcountKpi = Card([headcountTag, headcountVal, headcountSub], "clear", "column", "xs")
+headcountTag = Badge("Total Headcount", "secondary")
+headcountVal = Heading("342", "h2")
+headcountSub = TextContent("Active Employees", "small")
+
+avgTimeToHireKpi = Card([timeToHireTag, timeToHireVal, timeToHireSub], "clear", "column", "xs")
+timeToHireTag = Badge("Avg Time to Hire", "secondary")
+timeToHireVal = Heading("38 Days", "h2")
+timeToHireSub = TextContent("-4 days from last quarter", "small")
+
+openRolesKpi = Card([openRolesTag, openRolesVal, openRolesSub], "clear", "column", "xs")
+openRolesTag = Badge("Open Positions", "secondary")
+openRolesVal = Heading("18", "h2")
+openRolesSub = TextContent("Across 5 departments", "small")
+
+interviewsKpi = Card([interviewsTag, interviewsVal, interviewsSub], "clear", "column", "xs")
+interviewsTag = Badge("Interviews This Week", "secondary")
+interviewsVal = Heading("24", "h2")
+interviewsSub = TextContent("12 candidates advancing", "small")
+
+deptSplitSection = Card([deptSplitHeader, deptSplitChart], "card", "column", "m")
+deptSplitHeader = CardHeader("Headcount Split by Department", "Distribution of current 342 active team members")
+deptSplitChart = SingleStackedBarChart(["Engineering", "Sales & Mktg", "Product", "Operations", "HR & Admin"], [125, 85, 45, 52, 35])
+
+pipelineSection = Card([pipelineHeader, pipelineChart], "card", "column", "m")
+pipelineHeader = CardHeader("Candidate Pipeline Stage Distribution", "Active candidates across all 18 open positions")
+pipelineChart = HorizontalBarChart(["Sourced", "Screening", "1st Interview", "Tech Assessment", "Final Round", "Offer Sent"], [pipelineSeries])
+pipelineSeries = Series("Candidates", [142, 68, 34, 21, 11, 5])
+
+rolesAndInterviews = Card([openRolesCard, interviewsCard], "clear", "row", "l", "start", "stretch", true)
+
+openRolesCard = Card([openRolesHeader, openRolesTable], "card", "column", "m")
+openRolesHeader = CardHeader("Open Roles", "Active requisitions currently accepting applications")
+openRolesTable = Table([roleTitleCol, roleDeptCol, roleStatusCol])
+roleTitleCol = Col("Role Title", ["Staff Backend Engineer", "Senior Product Designer", "Account Executive", "DevOps Specialist", "Talent Acquisition Lead", "QA Automation Engineer"])
+roleDeptCol = Col("Department", ["Engineering", "Product", "Sales & Mktg", "Engineering", "HR & Admin", "Engineering"])
+roleStatusCol = Col("Priority", ["High", "High", "Medium", "Medium", "High", "Low"])
+
+interviewsCard = Card([interviewsHeader, interviewsList], "card", "column", "m")
+interviewsHeader = CardHeader("Interviews Scheduled This Week", "Upcoming candidate conversations")
+interviewsList = ListBlock([interview1, interview2, interview3, interview4])
+interview1 = ListItem("Sarah Jenkins — Staff Backend Engineer", "Mon, 10:00 AM • Tech Assessment Review with VP Eng")
+interview2 = ListItem("Marcus Chen — Senior Product Designer", "Tue, 2:30 PM • Portfolio Presentation with Design Team")
+interview3 = ListItem("Elena Rostova — Account Executive", "Wed, 11:15 AM • Final Culture & Values Interview")
+interview4 = ListItem("David Kalu — DevOps Specialist", "Thu, 4:00 PM • System Architecture Whiteboarding")
+
+attritionSection = Card([attritionHeader, attritionChart], "card", "column", "m")
+attritionHeader = CardHeader("Employee Attrition (Past 6 Months)", "Monthly voluntary vs. involuntary departures")
+attritionChart = BarChart(["Apr", "May", "Jun", "Jul", "Aug", "Sep"], [volSeries, involSeries], "stacked", "Month", "Employees Left")
+volSeries = Series("Voluntary", [2, 1, 3, 2, 1, 2])
+involSeries = Series("Involuntary", [1, 0, 1, 0, 1, 0])
+
+newRoleDrawer = DrawerBlock("Open New Role Requisition", "Open a New Job Requisition", "Submit formal details to kick off recruitment for a new position.", newRoleForm)
+
+newRoleForm = Form("new_role_form", formButtons, [roleTitleControl, deptControl, priorityControl, hiringMgrControl, jobDescControl])
+roleTitleControl = FormControl("Job Title", roleTitleInput, "Enter official role title")
+roleTitleInput = Input("title", "e.g., Senior Data Engineer", "text")
+deptControl = FormControl("Department", deptSelect)
+deptSelect = Select("department", [deptEng, deptSales, deptProd, deptOps, deptHR], "Select Department")
+deptEng = SelectItem("engineering", "Engineering")
+deptSales = SelectItem("sales", "Sales & Marketing")
+deptProd = SelectItem("product", "Product")
+deptOps = SelectItem("operations", "Operations")
+deptHR = SelectItem("hr", "HR & Admin")
+priorityControl = FormControl("Hiring Priority", priorityRadio)
+priorityRadio = RadioGroup("priority", [prioHigh, prioMed, prioLow], "high")
+prioHigh = RadioItem("High", "Urgent business need, immediate fill required", "high")
+prioMed = RadioItem("Medium", "Standard backlog recruitment timeline", "medium")
+prioLow = RadioItem("Low", "Future capability building", "low")
+hiringMgrControl = FormControl("Hiring Manager Email", hiringMgrInput)
+hiringMgrInput = Input("hiring_mgr", "manager@company.com", "email")
+jobDescControl = FormControl("Job Summary / Requirements", jobDescArea, "Outline key responsibilities and required experience")
+jobDescArea = TextArea("description", "Describe the role goals, key deliverables, and qualification requirements...", 4)
+
+formButtons = Buttons([submitRoleBtn, cancelRoleBtn])
+submitRoleBtn = Button("Submit Requisition", null, "primary")
+cancelRoleBtn = Button("Save Draft", null, "secondary")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Export hiring pipeline summary report")
+f2 = FollowUpItem("Filter open roles by Engineering department")
+f3 = FollowUpItem("View detailed attrition breakdown by tenure")

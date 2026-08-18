@@ -1,0 +1,29 @@
+root = Card([header, kpis, openRoles, pipeline, deptSplit, interviews, attrition, actions])
+header = CardHeader("Hiring Overview", "Recruiting snapshot for this quarter")
+
+kpis = Table([kpiMetric, kpiValue])
+kpiMetric = Col("Metric", ["Current headcount", "Average time to hire"])
+kpiValue = Col("Value", ["842 employees", "34 days"])
+
+openRoles = Table([roleTitle, roleDept, roleStatus])
+roleTitle = Col("Open Role", ["Senior Backend Engineer", "Product Designer", "Sales Development Rep", "Data Analyst", "Engineering Manager"])
+roleDept = Col("Department", ["Engineering", "Design", "Sales", "Data", "Engineering"])
+roleStatus = Col("Openings", [2, 1, 3, 1, 1], "number")
+
+pipeline = BarChart(["Applied", "Screening", "Interview", "Offer", "Hired"], [pipelineSeries], "stacked", "Stage", "Candidates")
+pipelineSeries = Series("Candidates", [128, 46, 22, 8, 5])
+
+deptSplit = PieChart(["Engineering", "Sales", "Design", "Data", "Operations", "Marketing"], [312, 168, 74, 61, 142, 85], "donut")
+
+interviews = ListBlock([intMon, intTue, intWed, intThu, intFri], "number")
+intMon = ListItem("Mon — Senior Backend Engineer", "2 interviews · Engineering panel")
+intTue = ListItem("Tue — Product Designer", "1 interview · Design portfolio review")
+intWed = ListItem("Wed — Sales Development Rep", "3 interviews · Sales screening")
+intThu = ListItem("Thu — Data Analyst", "1 interview · Take-home debrief")
+intFri = ListItem("Fri — Engineering Manager", "2 interviews · Leadership loop")
+
+attrition = LineChart(["Jan", "Feb", "Mar", "Apr", "May", "Jun"], [attritionSeries], "natural", "Month", "Attrition %")
+attritionSeries = Series("Attrition rate", [1.8, 2.1, 1.6, 2.4, 2.0, 1.5])
+
+actions = Buttons([openRoleBtn])
+openRoleBtn = Button("Open a new role", null, "primary")

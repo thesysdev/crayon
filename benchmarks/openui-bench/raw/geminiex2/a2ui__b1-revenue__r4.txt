@@ -1,0 +1,172 @@
+Here is a mid-morning performance dashboard for your shop, comparing today's revenue so far against yesterday's performance at the exact same time.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "alert",
+          "kpiTable",
+          "sep",
+          "chartHeading",
+          "hourlyChart",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Mid-Morning Shop Check-In",
+        "subtitle": "Live status as of 10:30 AM today vs. yesterday"
+      },
+      {
+        "id": "alert",
+        "component": "Alert",
+        "title": "Ahead of Yesterday",
+        "description": "Revenue so far today is up $340 (+18.4%) compared to 10:30 AM yesterday.",
+        "variant": "success"
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": [
+          "metricCol",
+          "todayCol",
+          "yesterdayCol",
+          "diffCol"
+        ]
+      },
+      {
+        "id": "metricCol",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Revenue (So Far)",
+          "Orders Processed",
+          "Avg. Order Value"
+        ]
+      },
+      {
+        "id": "todayCol",
+        "component": "Col",
+        "label": "Today (by 10:30 AM)",
+        "data": [
+          "$2,180",
+          "42",
+          "$51.90"
+        ]
+      },
+      {
+        "id": "yesterdayCol",
+        "component": "Col",
+        "label": "Yesterday (by 10:30 AM)",
+        "data": [
+          "$1,840",
+          "38",
+          "$48.42"
+        ]
+      },
+      {
+        "id": "diffCol",
+        "component": "Col",
+        "label": "Pacing Difference",
+        "data": [
+          "+$340 (+18.4%)",
+          "+4 orders (+10.5%)",
+          "+$3.48 (+7.2%)"
+        ]
+      },
+      {
+        "id": "sep",
+        "component": "Separator",
+        "decorative": true,
+        "orientation": "horizontal"
+      },
+      {
+        "id": "chartHeading",
+        "component": "Heading",
+        "level": "h4",
+        "text": "Hourly Cumulative Revenue Comparison"
+      },
+      {
+        "id": "hourlyChart",
+        "component": "LineChart",
+        "labels": [
+          "7:00 AM",
+          "8:00 AM",
+          "9:00 AM",
+          "10:00 AM",
+          "10:30 AM (Now)"
+        ],
+        "series": [
+          "todaySeries",
+          "yesterdaySeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Time of Day",
+        "yLabel": "Revenue ($)"
+      },
+      {
+        "id": "todaySeries",
+        "component": "Series",
+        "category": "Today",
+        "values": [
+          150,
+          520,
+          1120,
+          1890,
+          2180
+        ]
+      },
+      {
+        "id": "yesterdaySeries",
+        "component": "Series",
+        "category": "Yesterday",
+        "values": [
+          120,
+          410,
+          950,
+          1600,
+          1840
+        ]
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": [
+          "refreshBtn",
+          "detailsBtn"
+        ]
+      },
+      {
+        "id": "refreshBtn",
+        "component": "Button",
+        "label": "Refresh Data",
+        "variant": "primary"
+      },
+      {
+        "id": "detailsBtn",
+        "component": "Button",
+        "label": "View Sales Breakdown",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>

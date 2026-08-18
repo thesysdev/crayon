@@ -1,0 +1,64 @@
+root = Card([header, summaryRow, detailsCard, lineItemsHeading, lineItemsTable, notesCallout, followUp])
+
+header = CardHeader("Invoice #INV-2024-042", "Issued by Alex Morgan Studio • October 24, 2024")
+
+summaryRow = Card([amountSection, dueDateSection, payActionSection], "sunk", "row", "m", "center", "between")
+
+amountSection = Card([amountLabel, amountValue], "clear", "column", "xs")
+amountLabel = TextContent("Amount Due", "small")
+amountValue = Heading("$3,450.00 USD", "h1")
+
+dueDateSection = Card([dueDateLabel, dueDateValue, statusBadge], "clear", "column", "xs")
+dueDateLabel = TextContent("Due Date", "small")
+dueDateValue = Heading("Nov 15, 2024", "h3")
+statusBadge = Badge("Payment Due in 12 Days", "outline")
+
+payActionSection = Card([payNowModal, downloadBtn], "clear", "column", "s", "stretch")
+payNowModal = DialogBlock("Pay Now", "Complete Invoice Payment", "Select your preferred payment method to settle this invoice immediately.", payForm, "default")
+downloadBtn = Button("Download PDF", null, "secondary", "normal", "small")
+
+payForm = Form("payment-form", payFormButtons, [paymentMethodField, cardNumField, nameOnCardField])
+paymentMethodField = FormControl("Payment Method", paymentSelect)
+paymentSelect = Select("pay_method", [optCredit, optBank, optPaypal], "Select payment method")
+optCredit = SelectItem("card", "Credit / Debit Card")
+optBank = SelectItem("ach", "ACH Bank Transfer (US)")
+optPaypal = SelectItem("paypal", "PayPal / Venmo")
+
+cardNumField = FormControl("Card Number / Account Details", cardInput)
+cardInput = Input("card_num", "•••• •••• •••• 4242")
+
+nameOnCardField = FormControl("Account Holder Name", nameInput)
+nameInput = Input("card_name", "Acme Corp / Billing Dept")
+
+payFormButtons = Buttons([submitPaymentBtn])
+submitPaymentBtn = Button("Confirm & Pay $3,450.00", null, "primary")
+
+detailsCard = Card([clientHeading, sep1, partyDetails], "card", "column", "m")
+clientHeading = Heading("Billed To", "h4")
+sep1 = Separator("horizontal")
+partyDetails = Card([clientInfo, providerInfo], "clear", "row", "l", "start", "between")
+
+clientInfo = Card([clientName, clientCompany, clientEmail], "clear", "column", "xs")
+clientName = TextContent("Attn: Sarah Jenkins", "default")
+clientCompany = TextContent("Acme Technologies Inc.", "small-heavy")
+clientEmail = TextContent("billing@acme-tech.io", "small")
+
+providerInfo = Card([providerName, providerRole, providerEmail], "clear", "column", "xs", "end")
+providerName = TextContent("Alex Morgan", "default")
+providerRole = TextContent("UI/UX Design & Frontend Development", "small-heavy")
+providerEmail = TextContent("alex@morgan-design.com", "small")
+
+lineItemsHeading = Heading("Invoice Items", "h3")
+
+lineItemsTable = Table([colDesc, colQty, colRate, colTotal])
+colDesc = Col("Description", ["Brand Identity Design System", "Interactive Prototype (Figma)", "React Component Library Implementation", "Responsive Mobile Polish & QA"])
+colQty = Col("Hours / Qty", [20, 15, 30, 8])
+colRate = Col("Rate", ["$50.00/hr", "$60.00/hr", "$50.00/hr", "$50.00/hr"])
+colTotal = Col("Amount", ["$1,000.00", "$900.00", "$1,500.00", "$400.00"])
+
+notesCallout = Callout("info", "Payment Terms & Notes", "Thank you for your business! Payments received after November 15, 2024 are subject to a 1.5% monthly late fee. Please send wire remittance advice to alex@morgan-design.com.")
+
+followUp = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Download receipt for tax records")
+f2 = FollowUpItem("Request a change or revision to this invoice")
+f3 = FollowUpItem("Contact freelancer directly")

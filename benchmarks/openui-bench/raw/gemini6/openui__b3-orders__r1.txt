@@ -1,0 +1,78 @@
+root = Card([header, alertBanner, kpiGrid, analyticsSection, operationsSection, followUps])
+
+header = CardHeader("E-Commerce Operations Desk", "Real-time order management and performance metrics")
+
+alertBanner = Alert("High Fulfillment Queue", "14 orders require urgent processing to meet today's SLA cutoff.", "warning")
+
+kpiGrid = Card([kpiTodayOrders, kpiTodayRevenue, kpiAov, kpiRefundRate], "sunk", "row", "m", "stretch")
+
+kpiTodayOrders = Card([kpiOrdersTitle, kpiOrdersValue, kpiOrdersBadge], "card", "column", "xs")
+kpiOrdersTitle = TextContent("Orders Today", "small-heavy")
+kpiOrdersValue = Heading("342", "h2")
+kpiOrdersBadge = Tag("+12% vs yesterday", null, "sm", "success")
+
+kpiTodayRevenue = Card([kpiRevTitle, kpiRevValue, kpiRevBadge], "card", "column", "xs")
+kpiRevTitle = TextContent("Revenue Today", "small-heavy")
+kpiRevValue = Heading("$28,450.00", "h2")
+kpiRevBadge = Tag("+8% vs yesterday", null, "sm", "success")
+
+kpiAov = Card([kpiAovTitle, kpiAovValue, kpiAovBadge], "card", "column", "xs")
+kpiAovTitle = TextContent("Avg Order Value", "small-heavy")
+kpiAovValue = Heading("$83.18", "h2")
+kpiAovBadge = Tag("-1.5% vs avg", null, "sm", "neutral")
+
+kpiRefundRate = Card([kpiRefundTitle, kpiRefundValue, kpiRefundBadge], "card", "column", "xs")
+kpiRefundTitle = TextContent("Refund Rate (This Month)", "small-heavy")
+kpiRefundValue = Heading("1.82%", "h2")
+kpiRefundBadge = Tag("Target < 2.0%", null, "sm", "info")
+
+analyticsSection = Card([analyticsHeader, weeklyVolumeChart], "card")
+analyticsHeader = CardHeader("Order Volume Trend", "Weekly completed and returned units over the past 4 weeks")
+weeklyVolumeChart = BarChart(["Week 1", "Week 2", "Week 3", "Week 4"], [chartOrdersSeries, chartRefundsSeries], "grouped", "Past Weeks", "Units")
+chartOrdersSeries = Series("Total Orders", [1850, 2100, 1980, 2450])
+chartRefundsSeries = Series("Refunded Units", [35, 42, 31, 45])
+
+operationsSection = Card([opsHeader, filterForm, ordersTable, fulfillActionSection], "card")
+opsHeader = CardHeader("Recent Orders Management", "Search, filter, and process daily orders")
+
+filterForm = Form("order-filters", filterButtons, [searchField, statusField])
+searchField = FormControl("Search Customer", customerInput, "Filter by full customer name")
+customerInput = Input("customer_name", "e.g. Sarah Jenkins")
+
+statusField = FormControl("Order Status", statusSelect, "Narrow orders by workflow status")
+statusSelect = Select("order_status", [statusAll, statusPending, statusProcessing, statusFulfilled, statusCancelled], "All Statuses")
+statusAll = SelectItem("all", "All Statuses")
+statusPending = SelectItem("pending", "Pending Payment")
+statusProcessing = SelectItem("processing", "Processing")
+statusFulfilled = SelectItem("fulfilled", "Fulfilled")
+statusCancelled = SelectItem("cancelled", "Cancelled")
+
+filterButtons = Buttons([applyFiltersBtn, resetFiltersBtn])
+applyFiltersBtn = Button("Apply Filters", null, "primary")
+resetFiltersBtn = Button("Reset", null, "tertiary")
+
+ordersTable = Table([colOrderId, colCustomer, colTotal, colStatus])
+colOrderId = Col("Order ID", ["#ORD-9482", "#ORD-9481", "#ORD-9480", "#ORD-9479", "#ORD-9478", "#ORD-9477"])
+colCustomer = Col("Customer Name", ["Sarah Jenkins", "Michael Chang", "Elena Rostova", "David Miller", "Amira Patel", "Lucas Vance"])
+colTotal = Col("Total Amount", ["$142.50", "$68.00", "$310.20", "$45.99", "$215.00", "$89.50"])
+colStatus = Col("Status", ["Processing", "Processing", "Fulfilled", "Pending Payment", "Processing", "Fulfilled"])
+
+fulfillActionSection = Card([fulfillHeader, fulfillForm], "sunk")
+fulfillHeader = CardHeader("Quick Mark Order Fulfilled", "Update order status directly to send tracking info")
+fulfillForm = Form("fulfill-action", fulfillButtons, [fulfillOrderField, trackingField])
+fulfillOrderField = FormControl("Select Order ID", fulfillSelect)
+fulfillSelect = Select("fulfill_order_id", [ord1, ord2, ord3], "Choose pending order...")
+ord1 = SelectItem("ORD-9482", "#ORD-9482 - Sarah Jenkins ($142.50)")
+ord2 = SelectItem("ORD-9481", "#ORD-9481 - Michael Chang ($68.00)")
+ord3 = SelectItem("ORD-9478", "#ORD-9478 - Amira Patel ($215.00)")
+
+trackingField = FormControl("Tracking Number", trackingInput, "Optional carrier tracking code")
+trackingInput = Input("tracking_number", "e.g. TRK-98320491")
+
+fulfillButtons = Buttons([markFulfilledBtn])
+markFulfilledBtn = Button("Mark as Fulfilled", null, "primary")
+
+followUps = FollowUpBlock([suggest1, suggest2, suggest3])
+suggest1 = FollowUpItem("View low stock inventory alerts")
+suggest2 = FollowUpItem("Generate daily sales digest report")
+suggest3 = FollowUpItem("Review recent high-value refund requests")

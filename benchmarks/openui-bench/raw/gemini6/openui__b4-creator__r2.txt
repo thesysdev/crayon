@@ -1,0 +1,99 @@
+root = Card([header, mainGrid, followUps])
+
+header = Card([headerTop, platformFilter], "clear", "column", "s")
+headerTop = CardHeader("Creator Studio Dashboard", "Cross-platform analytics, scheduling, and community hub")
+platformFilter = Tabs([tabAll, tabYouTube, tabInsta, tabTikTok, tabX])
+
+tabAll = TabItem("all", "All Platforms", [filterAllText])
+filterAllText = TextContent("Showing aggregated cross-platform metrics")
+tabYouTube = TabItem("yt", "YouTube", [filterYTText])
+filterYTText = TextContent("Filtered to YouTube Channel")
+tabInsta = TabItem("ig", "Instagram", [filterIGText])
+filterIGText = TextContent("Filtered to Instagram Account")
+tabTikTok = TabItem("tt", "TikTok", [filterTTText])
+filterTTText = TextContent("Filtered to TikTok Account")
+tabX = TabItem("x", "X / Twitter", [filterXText])
+filterXText = TextContent("Filtered to X / Twitter Feed")
+
+mainGrid = Card([metricsSection, audienceSection, postsGrid, engagementSection, scheduleFormSection], "clear", "column", "l")
+
+metricsSection = Card([metricsHeading, kpiGrid, followerChart], "sunk", "column", "m")
+metricsHeading = Heading("Performance Overview", "h3")
+
+kpiGrid = Table([kpiMetricCol, kpiValueCol, kpiChangeCol])
+kpiMetricCol = Col("Metric", ["Total Followers", "Avg Engagement Rate", "Earnings This Month", "Best Time to Post"])
+kpiValueCol = Col("Current Value", ["1,248,500", "4.82%", "$14,250.00", "6:00 PM EST"])
+kpiChangeCol = Col("Status / MoM", ["+45,200 (+3.7%)", "+0.6% vs avg", "+18.4% vs last mo", "Based on 90-day history"])
+
+followerChart = LineChart(["Week 1", "Week 2", "Week 3", "Week 4"], [ytFollowers, igFollowers, ttFollowers], "natural", "Month", "Followers")
+ytFollowers = Series("YouTube", [410000, 415000, 421000, 428000])
+igFollowers = Series("Instagram", [510000, 514000, 519000, 525000])
+ttFollowers = Series("TikTok", [283000, 288000, 291000, 295500])
+
+audienceSection = Card([audienceHeading, audienceSplit], "card", "column", "m")
+audienceHeading = Heading("Audience Split by Platform", "h3")
+audienceSplit = PieChart(["Instagram", "YouTube", "TikTok", "X / Twitter"], [525000, 428000, 295500, 85000], "donut")
+
+postsGrid = Card([bestPostsCard, scheduledPostsCard], "clear", "row", "m", "start", "stretch")
+
+bestPostsCard = Card([bestPostsHeading, bestPostsList], "sunk", "column", "m")
+bestPostsHeading = Heading("Top Performing Posts This Month", "h3")
+bestPostsList = ListBlock([bestPost1, bestPost2, bestPost3])
+bestPost1 = ListItem("10 Design Tips for 2025 (YouTube)", "845,000 Reach • 68k Likes • 4.2k Shares", ["https://picsum.photos/seed/yt1/100/100"])
+bestPost2 = ListItem("Studio Setup Tour Reel (Instagram)", "620,000 Reach • 51k Likes • 8.9k Saves", ["https://picsum.photos/seed/ig1/100/100"])
+bestPost3 = ListItem("Day in the Life Vlog (TikTok)", "410,000 Reach • 39k Likes • 1.2k Comments", ["https://picsum.photos/seed/tt1/100/100"])
+
+scheduledPostsCard = Card([scheduledHeading, scheduledList], "sunk", "column", "m")
+scheduledHeading = Heading("Scheduled Posts This Week", "h3")
+scheduledList = ListBlock([schedPost1, schedPost2, schedPost3])
+schedPost1 = ListItem("Thu, 6:00 PM • Instagram Carousel", "Caption: 'My top 5 typography pairings for dark UI...'")
+schedPost2 = ListItem("Fri, 2:00 PM • YouTube Video", "Caption: 'Building a SaaS in 24 Hours Challenge'")
+schedPost3 = ListItem("Sat, 11:00 AM • TikTok Short", "Caption: '3 desk setup mistakes you are making'")
+
+engagementSection = Card([collabsCard, commentsCard], "clear", "row", "m", "start", "stretch")
+
+collabsCard = Card([collabsHeading, collabsCallout, collabsList], "sunk", "column", "m")
+collabsHeading = Heading("Pending Collaboration Requests", "h3")
+collabsCallout = Callout("info", "3 New Requests", "Brand deals waiting for review before end of week.")
+collabsList = ListBlock([collab1, collab2, collab3])
+collab1 = ListItem("Keychron Keyboards", "$3,500 budget • Dedicated YouTube Review • Target: Oct 15")
+collab2 = ListItem("Figma Community", "Sponsorship • Instagram Story + Reel • Target: Oct 20")
+collab3 = ListItem("Notion App", "$2,000 budget • TikTok Integration • Target: Oct 28")
+
+commentsCard = Card([commentsHeading, commentsCallout, commentsList], "sunk", "column", "m")
+commentsHeading = Heading("Comments Waiting for Reply", "h3")
+commentsCallout = TextCallout("warning", "12 Unanswered Comments", "Replying within 2 hours boosts algorithm ranking by 15%.")
+commentsList = ListBlock([comment1, comment2, comment3])
+comment1 = ListItem("@alex_design: What camera lens are you using here?", "On: Studio Setup Tour Reel (Instagram)")
+comment2 = ListItem("@tech_guru: Can you share the source code link?", "On: 10 Design Tips for 2025 (YouTube)")
+comment3 = ListItem("@creative_sarah: Would love a tutorial on lighting!", "On: Day in the Life Vlog (TikTok)")
+
+scheduleFormSection = Card([formHeading, scheduleForm], "card", "column", "m")
+formHeading = Heading("Schedule a New Post", "h3")
+scheduleForm = Form("schedule_post_form", formButtons, [platformControl, captionControl, mediaControl, dateTimeControl])
+
+platformControl = FormControl("Target Platform", platformSelect)
+platformSelect = Select("platform", [optAll, optIG, optYT, optTT, optX], "Select platform")
+optAll = SelectItem("all", "Cross-Post to All")
+optIG = SelectItem("instagram", "Instagram")
+optYT = SelectItem("youtube", "YouTube")
+optTT = SelectItem("tiktok", "TikTok")
+optX = SelectItem("x", "X / Twitter")
+
+captionControl = FormControl("Caption & Hashtags", captionInput, "Use high-performing hashtags for better reach")
+captionInput = TextArea("caption", "Write your post caption here...", 4)
+
+mediaControl = FormControl("Upload Media URL", mediaInput)
+mediaInput = Input("media_url", "https://...", "url")
+
+dateTimeControl = FormControl("Schedule Date & Time (Best: Today at 6:00 PM)", datePicker)
+datePicker = DatePicker("scheduled_at", "single")
+
+formButtons = Buttons([submitBtn, draftBtn])
+submitBtn = Button("Schedule Post", null, "primary")
+draftBtn = Button("Save as Draft", null, "secondary")
+
+followUps = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Show detailed income breakdown by platform")
+fu2 = FollowUpItem("Optimize best posting time by platform")
+fu3 = FollowUpItem("View draft posts queue")

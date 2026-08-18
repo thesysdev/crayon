@@ -1,0 +1,461 @@
+E-commerce Operations Desk — single-screen view covering today's KPIs, refund health, 4-week volume trend, filterable recent orders and fulfillment action.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "kpiRow",
+          "refundCallout",
+          "chartCard",
+          "filterCard",
+          "ordersTable",
+          "fulfillCard"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "E-commerce Operations Desk",
+        "subtitle": "Monitor today's performance, review recent orders, and take action"
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "kpiOrdersCard",
+          "kpiRevenueCard",
+          "kpiAovCard",
+          "kpiRefundCard"
+        ]
+      },
+      {
+        "id": "refundCallout",
+        "component": "Alert",
+        "title": "Refund rate watch",
+        "description": "Refund rate this month is 3.8% — below 5% threshold. 42 refunds out of 1,105 orders.",
+        "variant": "info"
+      },
+      {
+        "id": "chartCard",
+        "component": "Card",
+        "children": [
+          "chartHeader",
+          "volumeChart"
+        ]
+      },
+      {
+        "id": "filterCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "filterHeader",
+          "filterForm"
+        ]
+      },
+      {
+        "id": "ordersTable",
+        "component": "Table",
+        "columns": [
+          "colId",
+          "colCustomer",
+          "colTotal",
+          "colStatus"
+        ]
+      },
+      {
+        "id": "fulfillCard",
+        "component": "Card",
+        "children": [
+          "fulfillHeader",
+          "fulfillForm"
+        ]
+      },
+      {
+        "id": "kpiOrdersCard",
+        "component": "Card",
+        "children": [
+          "kpiOrdersLabel",
+          "kpiOrdersValue",
+          "kpiOrdersHint"
+        ]
+      },
+      {
+        "id": "kpiRevenueCard",
+        "component": "Card",
+        "children": [
+          "kpiRevenueLabel",
+          "kpiRevenueValue",
+          "kpiRevenueHint"
+        ]
+      },
+      {
+        "id": "kpiAovCard",
+        "component": "Card",
+        "children": [
+          "kpiAovLabel",
+          "kpiAovValue",
+          "kpiAovHint"
+        ]
+      },
+      {
+        "id": "kpiRefundCard",
+        "component": "Card",
+        "children": [
+          "kpiRefundLabel",
+          "kpiRefundValue",
+          "kpiRefundProgress",
+          "kpiRefundHint"
+        ]
+      },
+      {
+        "id": "kpiOrdersLabel",
+        "component": "TextContent",
+        "text": "Orders placed today",
+        "size": "small"
+      },
+      {
+        "id": "kpiOrdersValue",
+        "component": "TextContent",
+        "text": "342",
+        "size": "large-heavy"
+      },
+      {
+        "id": "kpiOrdersHint",
+        "component": "TextContent",
+        "text": "+12% vs yesterday • 08:00-17:00 UTC",
+        "size": "small"
+      },
+      {
+        "id": "kpiRevenueLabel",
+        "component": "TextContent",
+        "text": "Revenue today",
+        "size": "small"
+      },
+      {
+        "id": "kpiRevenueValue",
+        "component": "TextContent",
+        "text": "$28,450.00",
+        "size": "large-heavy"
+      },
+      {
+        "id": "kpiRevenueHint",
+        "component": "TextContent",
+        "text": "Updated 2 min ago • 342 orders",
+        "size": "small"
+      },
+      {
+        "id": "kpiAovLabel",
+        "component": "TextContent",
+        "text": "Average order value",
+        "size": "small"
+      },
+      {
+        "id": "kpiAovValue",
+        "component": "TextContent",
+        "text": "$83.19",
+        "size": "large-heavy"
+      },
+      {
+        "id": "kpiAovHint",
+        "component": "TextContent",
+        "text": "Revenue / Orders today",
+        "size": "small"
+      },
+      {
+        "id": "kpiRefundLabel",
+        "component": "TextContent",
+        "text": "Refund rate this month",
+        "size": "small"
+      },
+      {
+        "id": "kpiRefundValue",
+        "component": "TextContent",
+        "text": "3.8%",
+        "size": "large-heavy"
+      },
+      {
+        "id": "kpiRefundProgress",
+        "component": "Progress",
+        "value": 3.8,
+        "label": "3.8% of 1,105 orders refunded"
+      },
+      {
+        "id": "kpiRefundHint",
+        "component": "TextContent",
+        "text": "Target <5% • 42 refunds in May",
+        "size": "small"
+      },
+      {
+        "id": "chartHeader",
+        "component": "CardHeader",
+        "title": "Order volume — past 4 weeks",
+        "subtitle": "Total orders per week, Apr 21 - May 18"
+      },
+      {
+        "id": "volumeChart",
+        "component": "LineChart",
+        "labels": [
+          "W1 Apr 21",
+          "W2 Apr 28",
+          "W3 May 5",
+          "W4 May 12"
+        ],
+        "series": [
+          "volumeSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Week",
+        "yLabel": "Orders"
+      },
+      {
+        "id": "volumeSeries",
+        "component": "Series",
+        "category": "Orders",
+        "values": [
+          1840,
+          2105,
+          1988,
+          2342
+        ]
+      },
+      {
+        "id": "filterHeader",
+        "component": "CardHeader",
+        "title": "Recent orders",
+        "subtitle": "Search by customer and narrow by status"
+      },
+      {
+        "id": "filterForm",
+        "component": "Form",
+        "name": "order-filters",
+        "buttons": "filterButtons",
+        "fields": [
+          "searchField",
+          "statusField"
+        ]
+      },
+      {
+        "id": "searchField",
+        "component": "FormControl",
+        "label": "Search by customer name",
+        "input": "searchInput",
+        "hint": "Type to filter the table below (e.g., Maya, James)"
+      },
+      {
+        "id": "searchInput",
+        "component": "Input",
+        "name": "customer_search",
+        "placeholder": "Search customer name...",
+        "type": "text"
+      },
+      {
+        "id": "statusField",
+        "component": "FormControl",
+        "label": "Narrow by status",
+        "input": "statusSelect",
+        "hint": "Filter recent orders by fulfillment status"
+      },
+      {
+        "id": "statusSelect",
+        "component": "Select",
+        "name": "status_filter",
+        "placeholder": "All statuses",
+        "items": [
+          "statusAll",
+          "statusPending",
+          "statusFulfilled",
+          "statusShipped",
+          "statusCancelled"
+        ]
+      },
+      {
+        "id": "statusAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All statuses"
+      },
+      {
+        "id": "statusPending",
+        "component": "SelectItem",
+        "value": "pending",
+        "label": "Pending"
+      },
+      {
+        "id": "statusFulfilled",
+        "component": "SelectItem",
+        "value": "fulfilled",
+        "label": "Fulfilled"
+      },
+      {
+        "id": "statusShipped",
+        "component": "SelectItem",
+        "value": "shipped",
+        "label": "Shipped"
+      },
+      {
+        "id": "statusCancelled",
+        "component": "SelectItem",
+        "value": "cancelled",
+        "label": "Cancelled"
+      },
+      {
+        "id": "filterButtons",
+        "component": "Buttons",
+        "buttons": [
+          "filterBtn",
+          "clearBtn"
+        ]
+      },
+      {
+        "id": "filterBtn",
+        "component": "Button",
+        "label": "Apply filters",
+        "variant": "primary"
+      },
+      {
+        "id": "clearBtn",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "secondary"
+      },
+      {
+        "id": "colId",
+        "component": "Col",
+        "label": "Order ID",
+        "data": [
+          "ORD-88291",
+          "ORD-88288",
+          "ORD-88285",
+          "ORD-88282",
+          "ORD-88279",
+          "ORD-88276"
+        ]
+      },
+      {
+        "id": "colCustomer",
+        "component": "Col",
+        "label": "Customer",
+        "data": [
+          "Maya Chen",
+          "James Wilson",
+          "Sofia Reyes",
+          "Daniel Kim",
+          "Aisha Patel",
+          "Luis Garcia"
+        ]
+      },
+      {
+        "id": "colTotal",
+        "component": "Col",
+        "label": "Total",
+        "data": [
+          "$124.50",
+          "$89.00",
+          "$245.20",
+          "$67.30",
+          "$152.75",
+          "$310.00"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Pending",
+          "Fulfilled",
+          "Shipped",
+          "Pending",
+          "Cancelled",
+          "Pending"
+        ]
+      },
+      {
+        "id": "fulfillHeader",
+        "component": "CardHeader",
+        "title": "Mark order fulfilled",
+        "subtitle": "Select a pending order and confirm fulfillment"
+      },
+      {
+        "id": "fulfillForm",
+        "component": "Form",
+        "name": "fulfill-order",
+        "buttons": "fulfillButtons",
+        "fields": [
+          "fulfillOrderField"
+        ]
+      },
+      {
+        "id": "fulfillOrderField",
+        "component": "FormControl",
+        "label": "Pending order",
+        "input": "fulfillOrderSelect",
+        "hint": "Only pending orders are listed"
+      },
+      {
+        "id": "fulfillOrderSelect",
+        "component": "Select",
+        "name": "order_to_fulfill",
+        "placeholder": "Choose order ID",
+        "items": [
+          "fulfillOpt1",
+          "fulfillOpt2",
+          "fulfillOpt3"
+        ]
+      },
+      {
+        "id": "fulfillOpt1",
+        "component": "SelectItem",
+        "value": "ORD-88291",
+        "label": "ORD-88291 — Maya Chen ($124.50)"
+      },
+      {
+        "id": "fulfillOpt2",
+        "component": "SelectItem",
+        "value": "ORD-88282",
+        "label": "ORD-88282 — Daniel Kim ($67.30)"
+      },
+      {
+        "id": "fulfillOpt3",
+        "component": "SelectItem",
+        "value": "ORD-88276",
+        "label": "ORD-88276 — Luis Garcia ($310.00)"
+      },
+      {
+        "id": "fulfillButtons",
+        "component": "Buttons",
+        "buttons": [
+          "fulfillBtn"
+        ]
+      },
+      {
+        "id": "fulfillBtn",
+        "component": "Button",
+        "label": "Mark as Fulfilled",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>

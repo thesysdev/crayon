@@ -1,0 +1,868 @@
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#2563EB",
+      "agentDisplayName": "Store Operations"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "variant": "clear",
+        "gap": "l",
+        "children": [
+          "header",
+          "storeControls",
+          "salesSummary",
+          "trafficCard",
+          "performanceRow",
+          "inventoryRow",
+          "operationsRow",
+          "promotionsCard"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Daily Store Console",
+        "subtitle": "Tuesday, August 18, 2026 · Updated 2:45 PM"
+      },
+      {
+        "id": "storeControls",
+        "component": "Form",
+        "name": "store-selector",
+        "buttons": "storeButtons",
+        "fields": [
+          "storeField"
+        ]
+      },
+      {
+        "id": "storeField",
+        "component": "FormControl",
+        "label": "Viewing store",
+        "input": "storeSelect"
+      },
+      {
+        "id": "storeSelect",
+        "component": "Select",
+        "name": "store",
+        "value": "downtown",
+        "items": [
+          "storeDowntown",
+          "storeMall",
+          "storeAirport"
+        ]
+      },
+      {
+        "id": "storeDowntown",
+        "component": "SelectItem",
+        "value": "downtown",
+        "label": "Downtown · Store 014"
+      },
+      {
+        "id": "storeMall",
+        "component": "SelectItem",
+        "value": "mall",
+        "label": "Westfield Mall · Store 027"
+      },
+      {
+        "id": "storeAirport",
+        "component": "SelectItem",
+        "value": "airport",
+        "label": "Airport Terminal · Store 031"
+      },
+      {
+        "id": "storeButtons",
+        "component": "Buttons",
+        "buttons": [
+          "viewStoreButton"
+        ]
+      },
+      {
+        "id": "viewStoreButton",
+        "component": "Button",
+        "label": "View store",
+        "variant": "secondary",
+        "action": [
+          {
+            "event": "view_store",
+            "store": "selected"
+          }
+        ]
+      },
+      {
+        "id": "salesSummary",
+        "component": "Card",
+        "direction": "row",
+        "gap": "l",
+        "wrap": true,
+        "children": [
+          "salesTodayCard",
+          "basketCard",
+          "returnsCard",
+          "weekComparisonCard"
+        ]
+      },
+      {
+        "id": "salesTodayCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": [
+          "salesTodayHeader",
+          "salesTodayValue",
+          "salesTodayProgress",
+          "salesTodayStatus"
+        ]
+      },
+      {
+        "id": "salesTodayHeader",
+        "component": "Heading",
+        "text": "Sales today",
+        "level": "h3"
+      },
+      {
+        "id": "salesTodayValue",
+        "component": "TextContent",
+        "text": "**$18,420** of $25,000 target",
+        "size": "large-heavy"
+      },
+      {
+        "id": "salesTodayProgress",
+        "component": "Progress",
+        "value": 73.7,
+        "label": "74% of daily target"
+      },
+      {
+        "id": "salesTodayStatus",
+        "component": "Badge",
+        "text": "$6,580 remaining",
+        "variant": "secondary"
+      },
+      {
+        "id": "basketCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": [
+          "basketHeader",
+          "basketValue",
+          "basketChange"
+        ]
+      },
+      {
+        "id": "basketHeader",
+        "component": "Heading",
+        "text": "Average basket",
+        "level": "h3"
+      },
+      {
+        "id": "basketValue",
+        "component": "TextContent",
+        "text": "**$46.80**",
+        "size": "large-heavy"
+      },
+      {
+        "id": "basketChange",
+        "component": "Tag",
+        "text": "↑ 4.2% vs last week",
+        "variant": "success"
+      },
+      {
+        "id": "returnsCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": [
+          "returnsHeader",
+          "returnsValue",
+          "returnsChange"
+        ]
+      },
+      {
+        "id": "returnsHeader",
+        "component": "Heading",
+        "text": "Returns this week",
+        "level": "h3"
+      },
+      {
+        "id": "returnsValue",
+        "component": "TextContent",
+        "text": "**$1,284** · 31 items",
+        "size": "large-heavy"
+      },
+      {
+        "id": "returnsChange",
+        "component": "Tag",
+        "text": "↓ 8.1% vs last week",
+        "variant": "success"
+      },
+      {
+        "id": "weekComparisonCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": [
+          "weekComparisonHeader",
+          "weekComparisonValue",
+          "weekComparisonDetail"
+        ]
+      },
+      {
+        "id": "weekComparisonHeader",
+        "component": "Heading",
+        "text": "This week vs last week",
+        "level": "h3"
+      },
+      {
+        "id": "weekComparisonValue",
+        "component": "TextContent",
+        "text": "**$92,640** vs $87,310",
+        "size": "large-heavy"
+      },
+      {
+        "id": "weekComparisonDetail",
+        "component": "Tag",
+        "text": "↑ 6.1% week over week",
+        "variant": "success"
+      },
+      {
+        "id": "trafficCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "trafficHeader",
+          "trafficChart"
+        ]
+      },
+      {
+        "id": "trafficHeader",
+        "component": "CardHeader",
+        "title": "Foot traffic through the day",
+        "subtitle": "1,126 visitors so far · Peak at 1 PM"
+      },
+      {
+        "id": "trafficChart",
+        "component": "AreaChart",
+        "labels": [
+          "9 AM",
+          "10 AM",
+          "11 AM",
+          "12 PM",
+          "1 PM",
+          "2 PM"
+        ],
+        "series": [
+          "trafficSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Time",
+        "yLabel": "Visitors"
+      },
+      {
+        "id": "trafficSeries",
+        "component": "Series",
+        "category": "Visitors",
+        "values": [
+          84,
+          121,
+          176,
+          238,
+          274,
+          233
+        ]
+      },
+      {
+        "id": "performanceRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "l",
+        "wrap": true,
+        "children": [
+          "bestSellersCard",
+          "weekTrendCard"
+        ]
+      },
+      {
+        "id": "bestSellersCard",
+        "component": "Card",
+        "weight": 1,
+        "children": [
+          "bestSellersHeader",
+          "bestSellersTable"
+        ]
+      },
+      {
+        "id": "bestSellersHeader",
+        "component": "CardHeader",
+        "title": "Best sellers",
+        "subtitle": "Units sold today"
+      },
+      {
+        "id": "bestSellersTable",
+        "component": "Table",
+        "columns": [
+          "bestSellerRank",
+          "bestSellerItem",
+          "bestSellerUnits"
+        ]
+      },
+      {
+        "id": "bestSellerRank",
+        "component": "Col",
+        "label": "#",
+        "type": "number",
+        "data": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "id": "bestSellerItem",
+        "component": "Col",
+        "label": "Item",
+        "data": [
+          "Classic Crew Tee",
+          "Everyday Tote",
+          "Slim Chino",
+          "Canvas Sneaker",
+          "Ribbed Tank"
+        ]
+      },
+      {
+        "id": "bestSellerUnits",
+        "component": "Col",
+        "label": "Units",
+        "type": "number",
+        "data": [
+          48,
+          37,
+          31,
+          26,
+          22
+        ]
+      },
+      {
+        "id": "weekTrendCard",
+        "component": "Card",
+        "weight": 1,
+        "children": [
+          "weekTrendHeader",
+          "weekTrendChart"
+        ]
+      },
+      {
+        "id": "weekTrendHeader",
+        "component": "CardHeader",
+        "title": "Weekly sales comparison",
+        "subtitle": "This week is 6.1% ahead"
+      },
+      {
+        "id": "weekTrendChart",
+        "component": "BarChart",
+        "labels": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat",
+          "Sun"
+        ],
+        "series": [
+          "thisWeekSeries",
+          "lastWeekSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Day",
+        "yLabel": "Sales (USD)"
+      },
+      {
+        "id": "thisWeekSeries",
+        "component": "Series",
+        "category": "This week",
+        "values": [
+          21400,
+          18420,
+          13200,
+          12600,
+          11800,
+          9200,
+          6020
+        ]
+      },
+      {
+        "id": "lastWeekSeries",
+        "component": "Series",
+        "category": "Last week",
+        "values": [
+          19800,
+          17350,
+          12400,
+          11900,
+          11200,
+          8700,
+          5960
+        ]
+      },
+      {
+        "id": "inventoryRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "l",
+        "wrap": true,
+        "children": [
+          "outOfStockCard",
+          "reorderCard"
+        ]
+      },
+      {
+        "id": "outOfStockCard",
+        "component": "Card",
+        "weight": 1,
+        "children": [
+          "outOfStockHeader",
+          "outOfStockAlert",
+          "outOfStockTable"
+        ]
+      },
+      {
+        "id": "outOfStockHeader",
+        "component": "CardHeader",
+        "title": "Out of stock",
+        "subtitle": "4 items require attention"
+      },
+      {
+        "id": "outOfStockAlert",
+        "component": "Alert",
+        "title": "Inventory action needed",
+        "description": "Two items are also unavailable at nearby stores.",
+        "variant": "warning"
+      },
+      {
+        "id": "outOfStockTable",
+        "component": "Table",
+        "columns": [
+          "stockItem",
+          "stockSku",
+          "stockSince"
+        ]
+      },
+      {
+        "id": "stockItem",
+        "component": "Col",
+        "label": "Item",
+        "data": [
+          "Classic Crew Tee · Black · M",
+          "Canvas Sneaker · White · 9",
+          "Everyday Tote · Natural",
+          "Slim Chino · Navy · 32"
+        ]
+      },
+      {
+        "id": "stockSku",
+        "component": "Col",
+        "label": "SKU",
+        "data": [
+          "CT-BLK-M",
+          "CS-WHT-09",
+          "ET-NAT-OS",
+          "SC-NVY-32"
+        ]
+      },
+      {
+        "id": "stockSince",
+        "component": "Col",
+        "label": "Out since",
+        "data": [
+          "10:20 AM",
+          "Yesterday",
+          "12:05 PM",
+          "Monday"
+        ]
+      },
+      {
+        "id": "reorderCard",
+        "component": "Card",
+        "weight": 1,
+        "children": [
+          "reorderHeader",
+          "reorderForm"
+        ]
+      },
+      {
+        "id": "reorderHeader",
+        "component": "CardHeader",
+        "title": "Reorder an item",
+        "subtitle": "Create a replenishment request"
+      },
+      {
+        "id": "reorderForm",
+        "component": "Form",
+        "name": "inventory-reorder",
+        "buttons": "reorderButtons",
+        "fields": [
+          "reorderItemField",
+          "reorderQuantityField"
+        ]
+      },
+      {
+        "id": "reorderItemField",
+        "component": "FormControl",
+        "label": "Item",
+        "input": "reorderItemSelect"
+      },
+      {
+        "id": "reorderItemSelect",
+        "component": "Select",
+        "name": "item_sku",
+        "placeholder": "Select an out-of-stock item",
+        "items": [
+          "reorderTee",
+          "reorderSneaker",
+          "reorderTote",
+          "reorderChino"
+        ]
+      },
+      {
+        "id": "reorderTee",
+        "component": "SelectItem",
+        "value": "CT-BLK-M",
+        "label": "Classic Crew Tee · Black · M"
+      },
+      {
+        "id": "reorderSneaker",
+        "component": "SelectItem",
+        "value": "CS-WHT-09",
+        "label": "Canvas Sneaker · White · 9"
+      },
+      {
+        "id": "reorderTote",
+        "component": "SelectItem",
+        "value": "ET-NAT-OS",
+        "label": "Everyday Tote · Natural"
+      },
+      {
+        "id": "reorderChino",
+        "component": "SelectItem",
+        "value": "SC-NVY-32",
+        "label": "Slim Chino · Navy · 32"
+      },
+      {
+        "id": "reorderQuantityField",
+        "component": "FormControl",
+        "label": "Quantity",
+        "input": "reorderQuantity",
+        "hint": "Enter the number of units needed"
+      },
+      {
+        "id": "reorderQuantity",
+        "component": "Input",
+        "name": "quantity",
+        "type": "number",
+        "placeholder": "24"
+      },
+      {
+        "id": "reorderButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitReorderButton"
+        ]
+      },
+      {
+        "id": "submitReorderButton",
+        "component": "Button",
+        "label": "Submit reorder",
+        "variant": "primary",
+        "action": [
+          {
+            "event": "submit_reorder"
+          }
+        ]
+      },
+      {
+        "id": "operationsRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "l",
+        "wrap": true,
+        "children": [
+          "shiftCard",
+          "registerCard"
+        ]
+      },
+      {
+        "id": "shiftCard",
+        "component": "Card",
+        "weight": 1,
+        "children": [
+          "shiftHeader",
+          "shiftTable"
+        ]
+      },
+      {
+        "id": "shiftHeader",
+        "component": "CardHeader",
+        "title": "On shift today",
+        "subtitle": "6 team members scheduled"
+      },
+      {
+        "id": "shiftTable",
+        "component": "Table",
+        "columns": [
+          "shiftName",
+          "shiftRole",
+          "shiftHours",
+          "shiftStatus"
+        ]
+      },
+      {
+        "id": "shiftName",
+        "component": "Col",
+        "label": "Team member",
+        "data": [
+          "Maya Chen",
+          "Noah Williams",
+          "Ava Patel",
+          "Liam Brooks",
+          "Sofia Rivera",
+          "Ethan Kim"
+        ]
+      },
+      {
+        "id": "shiftRole",
+        "component": "Col",
+        "label": "Role",
+        "data": [
+          "Manager",
+          "Keyholder",
+          "Sales",
+          "Sales",
+          "Stock",
+          "Cashier"
+        ]
+      },
+      {
+        "id": "shiftHours",
+        "component": "Col",
+        "label": "Shift",
+        "data": [
+          "8 AM–5 PM",
+          "9 AM–6 PM",
+          "10 AM–7 PM",
+          "11 AM–8 PM",
+          "7 AM–4 PM",
+          "12 PM–9 PM"
+        ]
+      },
+      {
+        "id": "shiftStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "On floor",
+          "On floor",
+          "Break",
+          "On floor",
+          "Stockroom",
+          "Register 3"
+        ]
+      },
+      {
+        "id": "registerCard",
+        "component": "Card",
+        "weight": 1,
+        "children": [
+          "registerHeader",
+          "registerTable"
+        ]
+      },
+      {
+        "id": "registerHeader",
+        "component": "CardHeader",
+        "title": "Registers",
+        "subtitle": "3 of 5 currently open"
+      },
+      {
+        "id": "registerTable",
+        "component": "Table",
+        "columns": [
+          "registerName",
+          "registerStatus",
+          "registerOperator",
+          "registerSales"
+        ]
+      },
+      {
+        "id": "registerName",
+        "component": "Col",
+        "label": "Register",
+        "data": [
+          "Register 1",
+          "Register 2",
+          "Register 3",
+          "Register 4",
+          "Register 5"
+        ]
+      },
+      {
+        "id": "registerStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Open",
+          "Open",
+          "Open",
+          "Closed",
+          "Closed"
+        ]
+      },
+      {
+        "id": "registerOperator",
+        "component": "Col",
+        "label": "Operator",
+        "data": [
+          "Ava Patel",
+          "Noah Williams",
+          "Ethan Kim",
+          "—",
+          "—"
+        ]
+      },
+      {
+        "id": "registerSales",
+        "component": "Col",
+        "label": "Sales today",
+        "data": [
+          "$6,840",
+          "$5,920",
+          "$4,110",
+          "$1,550",
+          "$0"
+        ]
+      },
+      {
+        "id": "promotionsCard",
+        "component": "Card",
+        "children": [
+          "promotionsHeader",
+          "promotionsTable",
+          "promotionChart"
+        ]
+      },
+      {
+        "id": "promotionsHeader",
+        "component": "CardHeader",
+        "title": "Running promotions",
+        "subtitle": "Performance for active offers"
+      },
+      {
+        "id": "promotionsTable",
+        "component": "Table",
+        "columns": [
+          "promotionName",
+          "promotionRedemptions",
+          "promotionRevenue",
+          "promotionTarget",
+          "promotionStatus"
+        ]
+      },
+      {
+        "id": "promotionName",
+        "component": "Col",
+        "label": "Promotion",
+        "data": [
+          "Buy 2 Tees, Save 20%",
+          "Back-to-School Bundle",
+          "Members: Double Points"
+        ]
+      },
+      {
+        "id": "promotionRedemptions",
+        "component": "Col",
+        "label": "Redemptions",
+        "type": "number",
+        "data": [
+          64,
+          29,
+          118
+        ]
+      },
+      {
+        "id": "promotionRevenue",
+        "component": "Col",
+        "label": "Attributed sales",
+        "data": [
+          "$4,920",
+          "$3,180",
+          "$6,740"
+        ]
+      },
+      {
+        "id": "promotionTarget",
+        "component": "Col",
+        "label": "Target progress",
+        "data": [
+          "82%",
+          "58%",
+          "112%"
+        ]
+      },
+      {
+        "id": "promotionStatus",
+        "component": "Col",
+        "label": "Performance",
+        "data": [
+          "On track",
+          "Needs attention",
+          "Ahead"
+        ]
+      },
+      {
+        "id": "promotionChart",
+        "component": "HorizontalBarChart",
+        "labels": [
+          "Buy 2 Tees, Save 20%",
+          "Back-to-School Bundle",
+          "Members: Double Points"
+        ],
+        "series": [
+          "promotionProgressSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Percent of target",
+        "yLabel": "Promotion"
+      },
+      {
+        "id": "promotionProgressSeries",
+        "component": "Series",
+        "category": "Target progress",
+        "values": [
+          82,
+          58,
+          112
+        ]
+      }
+    ]
+  }
+}
+</a2ui-json>

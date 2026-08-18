@@ -1,0 +1,391 @@
+Here's a single-screen airline hub operations desk covering all 12 items:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "hubSelector",
+          "alerts",
+          "kpis",
+          "otpChart",
+          "flightsTable",
+          "delayedTable",
+          "gateChanges",
+          "crews",
+          "connections",
+          "rebookForm",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Hub Operations Desk — DFW",
+        "subtitle": "Live operations overview · Today"
+      },
+      {
+        "id": "hubSelector",
+        "component": "Select",
+        "name": "hub",
+        "placeholder": "View a different hub",
+        "value": "DFW",
+        "items": ["hubDFW", "hubATL", "hubORD", "hubDEN", "hubJFK"]
+      },
+      {
+        "id": "hubDFW",
+        "component": "SelectItem",
+        "value": "DFW",
+        "label": "Dallas/Fort Worth (DFW)"
+      },
+      {
+        "id": "hubATL",
+        "component": "SelectItem",
+        "value": "ATL",
+        "label": "Atlanta (ATL)"
+      },
+      {
+        "id": "hubORD",
+        "component": "SelectItem",
+        "value": "ORD",
+        "label": "Chicago O'Hare (ORD)"
+      },
+      {
+        "id": "hubDEN",
+        "component": "SelectItem",
+        "value": "DEN",
+        "label": "Denver (DEN)"
+      },
+      {
+        "id": "hubJFK",
+        "component": "SelectItem",
+        "value": "JFK",
+        "label": "New York JFK (JFK)"
+      },
+      {
+        "id": "alerts",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["weatherAlert", "delayAlert", "cancelAlert"]
+      },
+      {
+        "id": "weatherAlert",
+        "component": "Alert",
+        "title": "Weather Advisory — Thunderstorms",
+        "description": "Convective activity expected 15:00–18:00 local. Ground stop possible; expect arrival/departure metering.",
+        "variant": "warning"
+      },
+      {
+        "id": "delayAlert",
+        "component": "Alert",
+        "title": "5 flights currently delayed",
+        "description": "Primary cause: late inbound aircraft and weather flow restrictions.",
+        "variant": "destructive"
+      },
+      {
+        "id": "cancelAlert",
+        "component": "Alert",
+        "title": "Cancellations today: 3",
+        "description": "AA2214 (DFW–MCI), AA887 (DFW–ABQ), AA3091 (DFW–PSP). 412 passengers affected.",
+        "variant": "default"
+      },
+      {
+        "id": "kpis",
+        "component": "Table",
+        "columns": ["kpiName", "kpiValue"]
+      },
+      {
+        "id": "kpiName",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "On-time performance today",
+          "Average passenger load",
+          "Average turnaround time",
+          "Cancellations today",
+          "Crews available for reassignment"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": ["82.4%", "78%", "47 min", "3", "6 crews (14 crew members)"]
+      },
+      {
+        "id": "otpChart",
+        "component": "LineChart",
+        "labels": ["06:00", "09:00", "12:00", "15:00", "18:00"],
+        "series": ["otpSeries"],
+        "variant": "natural",
+        "xLabel": "Time",
+        "yLabel": "OTP %"
+      },
+      {
+        "id": "otpSeries",
+        "component": "Series",
+        "category": "On-time %",
+        "values": [94, 89, 84, 78, 82]
+      },
+      {
+        "id": "flightsTable",
+        "component": "Table",
+        "columns": ["fNum", "fRoute", "fGate", "fStatus"]
+      },
+      {
+        "id": "fNum",
+        "component": "Col",
+        "label": "Flight",
+        "data": ["AA1024", "AA556", "AA2214", "AA1710", "AA887", "AA2401"]
+      },
+      {
+        "id": "fRoute",
+        "component": "Col",
+        "label": "Route",
+        "data": ["DFW–LAX", "DFW–SEA", "DFW–MCI", "DFW–BOS", "DFW–ABQ", "DFW–MIA"]
+      },
+      {
+        "id": "fGate",
+        "component": "Col",
+        "label": "Gate",
+        "data": ["A12", "C7", "—", "B22", "—", "D18"]
+      },
+      {
+        "id": "fStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": ["On time", "Delayed 25m", "Cancelled", "Boarding", "Cancelled", "Delayed 40m"]
+      },
+      {
+        "id": "delayedTable",
+        "component": "Table",
+        "columns": ["dNum", "dReason", "dEta"]
+      },
+      {
+        "id": "dNum",
+        "component": "Col",
+        "label": "Delayed Flight",
+        "data": ["AA556", "AA2401", "AA1330", "AA912", "AA2760"]
+      },
+      {
+        "id": "dReason",
+        "component": "Col",
+        "label": "Cause",
+        "data": ["Late inbound", "Weather flow", "Crew legality", "Maintenance", "Late inbound"]
+      },
+      {
+        "id": "dEta",
+        "component": "Col",
+        "label": "Delay",
+        "data": ["25 min", "40 min", "55 min", "30 min", "20 min"]
+      },
+      {
+        "id": "gateChanges",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": ["gc1", "gc2", "gc3"]
+      },
+      {
+        "id": "gc1",
+        "component": "ListItem",
+        "title": "AA1710: B14 → B22",
+        "subtitle": "14:32 · Equipment swap to A321"
+      },
+      {
+        "id": "gc2",
+        "component": "ListItem",
+        "title": "AA2401: D6 → D18",
+        "subtitle": "14:15 · Gate conflict with delayed inbound"
+      },
+      {
+        "id": "gc3",
+        "component": "ListItem",
+        "title": "AA1024: A8 → A12",
+        "subtitle": "13:50 · Jet bridge maintenance at A8"
+      },
+      {
+        "id": "crews",
+        "component": "Table",
+        "columns": ["crewId", "crewBase", "crewQual"]
+      },
+      {
+        "id": "crewId",
+        "component": "Col",
+        "label": "Crew",
+        "data": ["CRW-118", "CRW-204", "CRW-317", "CRW-402", "CRW-455", "CRW-509"]
+      },
+      {
+        "id": "crewBase",
+        "component": "Col",
+        "label": "Status",
+        "data": ["Ready now", "Ready now", "Ready 15:30", "Ready now", "Ready 16:00", "Ready now"]
+      },
+      {
+        "id": "crewQual",
+        "component": "Col",
+        "label": "Qualification",
+        "data": ["A320 family", "737", "A320 family", "777", "737", "A320 family"]
+      },
+      {
+        "id": "connections",
+        "component": "Table",
+        "columns": ["cxPax", "cxRoute", "cxRisk"]
+      },
+      {
+        "id": "cxPax",
+        "component": "Col",
+        "label": "Passengers",
+        "data": ["12 pax", "8 pax", "5 pax", "21 pax"]
+      },
+      {
+        "id": "cxRoute",
+        "component": "Col",
+        "label": "Connection",
+        "data": ["AA556 → AA731 (SEA)", "AA2401 → AA88 (MIA–LHR)", "AA1330 → AA415 (SAT)", "AA912 → AA1099 (ONT)"]
+      },
+      {
+        "id": "cxRisk",
+        "component": "Col",
+        "label": "Risk",
+        "data": ["High — 18 min window", "High — 22 min window", "Medium — 31 min window", "High — 15 min window"]
+      },
+      {
+        "id": "rebookForm",
+        "component": "Form",
+        "name": "rebook-passengers",
+        "buttons": "rebookButtons",
+        "fields": ["rbFlightField", "rbPaxField", "rbOptionField"]
+      },
+      {
+        "id": "rbFlightField",
+        "component": "FormControl",
+        "label": "Affected flight",
+        "input": "rbFlightSelect"
+      },
+      {
+        "id": "rbFlightSelect",
+        "component": "Select",
+        "name": "affected_flight",
+        "placeholder": "Select cancelled/delayed flight",
+        "items": ["rbF1", "rbF2", "rbF3"]
+      },
+      {
+        "id": "rbF1",
+        "component": "SelectItem",
+        "value": "AA2214",
+        "label": "AA2214 (DFW–MCI) — Cancelled"
+      },
+      {
+        "id": "rbF2",
+        "component": "SelectItem",
+        "value": "AA887",
+        "label": "AA887 (DFW–ABQ) — Cancelled"
+      },
+      {
+        "id": "rbF3",
+        "component": "SelectItem",
+        "value": "AA3091",
+        "label": "AA3091 (DFW–PSP) — Cancelled"
+      },
+      {
+        "id": "rbPaxField",
+        "component": "FormControl",
+        "label": "Passenger name or PNR",
+        "input": "rbPaxInput",
+        "hint": "Leave blank to rebook all affected passengers"
+      },
+      {
+        "id": "rbPaxInput",
+        "component": "Input",
+        "name": "passenger",
+        "placeholder": "e.g. Smith / ABC123"
+      },
+      {
+        "id": "rbOptionField",
+        "component": "FormControl",
+        "label": "Rebooking option",
+        "input": "rbOptionRadio"
+      },
+      {
+        "id": "rbOptionRadio",
+        "component": "RadioGroup",
+        "name": "rebook_option",
+        "items": ["rbO1", "rbO2", "rbO3"]
+      },
+      {
+        "id": "rbO1",
+        "component": "RadioItem",
+        "label": "Next available flight",
+        "description": "Auto-protect on earliest departure",
+        "value": "next"
+      },
+      {
+        "id": "rbO2",
+        "component": "RadioItem",
+        "label": "Same-day alternate route",
+        "description": "Via another hub if needed",
+        "value": "alternate"
+      },
+      {
+        "id": "rbO3",
+        "component": "RadioItem",
+        "label": "Refund / travel credit",
+        "description": "Issue credit to passenger",
+        "value": "refund"
+      },
+      {
+        "id": "rebookButtons",
+        "component": "Buttons",
+        "buttons": ["rbSubmit", "rbCancel"]
+      },
+      {
+        "id": "rbSubmit",
+        "component": "Button",
+        "label": "Rebook passengers",
+        "variant": "primary"
+      },
+      {
+        "id": "rbCancel",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "tertiary"
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": ["exportBtn", "refreshBtn"]
+      },
+      {
+        "id": "exportBtn",
+        "component": "Button",
+        "label": "Export ops report",
+        "variant": "secondary"
+      },
+      {
+        "id": "refreshBtn",
+        "component": "Button",
+        "label": "Refresh data",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+All 12 items are covered: (1) OTP KPI + trend chart, (2) full flights table with number/route/gate/status, (3) delayed flights alert + dedicated table, (4) recent gate changes list, (5) available crews table, (6) weather advisory alert, (7) average passenger load KPI, (8) at-risk connections table, (9) rebooking form with flight/passenger/option fields, (10) hub selector dropdown, (11) cancellations alert + KPI, and (12) average turnaround time KPI.

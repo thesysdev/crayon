@@ -1,0 +1,44 @@
+root = Card([header, controls, kpis, sep1, chartsHeading, chartsRow, sep2, txHeading, txTable])
+
+header = CardHeader("Finance Overview", "Month-end report for Acme Inc.")
+
+controls = Card([monthSelectField, downloadBtn], "clear", "row", "m", "center", "between")
+monthSelectField = FormControl("Period", monthSelect)
+monthSelect = Select("month", [m1, m2, m3], "Select month", null, "Nov 2024", "small")
+m1 = SelectItem("Nov 2024", "November 2024")
+m2 = SelectItem("Oct 2024", "October 2024")
+m3 = SelectItem("Sep 2024", "September 2024")
+downloadBtn = Buttons([downloadAction])
+downloadAction = Button("Download Statement", null, "secondary", "normal", "small")
+
+kpis = Card([cashCard, burnCard, runwayCard], "clear", "row", "m")
+cashCard = Card([cashLabel, cashVal, cashTag], "card", "column", "xs")
+cashLabel = TextContent("Cash on Hand", "small")
+cashVal = Heading("$2,450,000", "h2")
+cashTag = Tag("+ $150k ARR billing", null, "sm", "success")
+
+burnCard = Card([burnLabel, burnVal, burnTag], "card", "column", "xs")
+burnLabel = TextContent("Monthly Burn", "small")
+burnVal = Heading("$140,000", "h2")
+burnTag = Tag("Net Burn", null, "sm", "neutral")
+
+runwayCard = Card([runwayLabel, runwayVal, runwayTag], "card", "column", "xs")
+runwayLabel = TextContent("Runway", "small")
+runwayVal = Heading("17.5 mos", "h2")
+runwayTag = Tag("Target: > 12 mos", null, "sm", "info")
+
+sep1 = Separator("horizontal")
+
+chartsHeading = Heading("Expense Breakdown", "h3")
+chartsRow = PieChart(expCategories, expValues, "donut")
+expCategories = ["Payroll & Benefits", "Cloud Infrastructure", "Marketing & Growth", "Software & Tools", "Legal & Admin", "Office & Travel"]
+expValues = [85000, 24000, 18000, 8500, 4500, 3000]
+
+sep2 = Separator("horizontal")
+
+txHeading = Heading("Large Transactions (>$10,000)", "h3")
+txTable = Table([txDate, txDesc, txCat, txAmount])
+txDate = Col("Date", ["Nov 28, 2024", "Nov 15, 2024", "Nov 10, 2024", "Nov 03, 2024"])
+txDesc = Col("Description", ["Gusto Payroll Services", "Amazon Web Services", "Google Ads Marketing", "WeWork Office Lease"])
+txCat = Col("Category", ["Payroll & Benefits", "Cloud Infrastructure", "Marketing & Growth", "Office & Travel"])
+txAmount = Col("Amount", ["$85,000.00", "$24,120.50", "$15,400.00", "$12,000.00"])

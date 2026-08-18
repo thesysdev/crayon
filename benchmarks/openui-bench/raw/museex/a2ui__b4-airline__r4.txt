@@ -1,0 +1,781 @@
+Hub Operations Desk for ORD — all 12 operational items on one screen with live KPIs, flight board, and rebooking actions.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "hubSelectorCard",
+          "alertDelayed",
+          "alertWeather",
+          "weatherCallout",
+          "kpiRow",
+          "flightsCard",
+          "gateChangesCard",
+          "crewConnRow",
+          "rebookCard"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Hub Operations Desk — ORD",
+        "subtitle": "Chicago O'Hare • Mon Aug 18, 2026 • 14:32 CDT • Operational Day • 144 Scheduled Flights"
+      },
+      {
+        "id": "hubSelectorCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "hubForm"
+        ]
+      },
+      {
+        "id": "hubForm",
+        "component": "Form",
+        "name": "hub-switcher",
+        "buttons": "hubButtons",
+        "fields": [
+          "hubField"
+        ]
+      },
+      {
+        "id": "hubField",
+        "component": "FormControl",
+        "label": "View different hub",
+        "hint": "Switch hub to load its flights, crews and weather",
+        "input": "hubSelect"
+      },
+      {
+        "id": "hubSelect",
+        "component": "Select",
+        "name": "hub",
+        "placeholder": "ORD - Chicago O'Hare (Current)",
+        "items": [
+          "hubORD",
+          "hubATL",
+          "hubDFW",
+          "hubDEN",
+          "hubLAX",
+          "hubJFK"
+        ],
+        "value": "ORD"
+      },
+      {
+        "id": "hubORD",
+        "component": "SelectItem",
+        "value": "ORD",
+        "label": "ORD - Chicago O'Hare"
+      },
+      {
+        "id": "hubATL",
+        "component": "SelectItem",
+        "value": "ATL",
+        "label": "ATL - Atlanta"
+      },
+      {
+        "id": "hubDFW",
+        "component": "SelectItem",
+        "value": "DFW",
+        "label": "DFW - Dallas/Fort Worth"
+      },
+      {
+        "id": "hubDEN",
+        "component": "SelectItem",
+        "value": "DEN",
+        "label": "DEN - Denver"
+      },
+      {
+        "id": "hubLAX",
+        "component": "SelectItem",
+        "value": "LAX",
+        "label": "LAX - Los Angeles"
+      },
+      {
+        "id": "hubJFK",
+        "component": "SelectItem",
+        "value": "JFK",
+        "label": "JFK - New York"
+      },
+      {
+        "id": "hubButtons",
+        "component": "Buttons",
+        "buttons": [
+          "switchHubBtn",
+          "refreshBtn"
+        ]
+      },
+      {
+        "id": "switchHubBtn",
+        "component": "Button",
+        "label": "Switch Hub",
+        "variant": "primary"
+      },
+      {
+        "id": "refreshBtn",
+        "component": "Button",
+        "label": "Refresh Data",
+        "variant": "secondary"
+      },
+      {
+        "id": "alertDelayed",
+        "component": "Alert",
+        "title": "Delayed Flights — 9 Active",
+        "description": "UA881 (ORD→DEN), AA419 (ORD→MIA), AA772 (ORD→JFK) + 6 more. Longest delay: AA419 +87 min. 3 delays due to weather, 4 due to late inbound, 2 due to crew.",
+        "variant": "warning"
+      },
+      {
+        "id": "alertWeather",
+        "component": "Alert",
+        "title": "Weather Advisory — Thunderstorm Watch",
+        "description": "ORD: TSRA and wind gusts 35kt 14:00-18:00 CDT. Ground Delay Program in effect (avg +38 min). De-icing not required. Crosswinds favor runways 10L/10R.",
+        "variant": "destructive"
+      },
+      {
+        "id": "weatherCallout",
+        "component": "TextCallout",
+        "variant": "warning",
+        "title": "Hub Weather Impact",
+        "description": "FAA GDP rate 84/hr (normal 110). Expect gate holds. Recommend proactive rebooking for connections <45 min."
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "kpiOnTime",
+          "kpiCancel",
+          "kpiLoad",
+          "kpiTurn"
+        ]
+      },
+      {
+        "id": "kpiOnTime",
+        "component": "Card",
+        "children": [
+          "onTimeHeader",
+          "onTimeProgress",
+          "onTimeText",
+          "onTimeBadge"
+        ]
+      },
+      {
+        "id": "onTimeHeader",
+        "component": "CardHeader",
+        "title": "On-Time Performance",
+        "subtitle": "Today"
+      },
+      {
+        "id": "onTimeProgress",
+        "component": "Progress",
+        "value": 78,
+        "label": "78% on-time"
+      },
+      {
+        "id": "onTimeText",
+        "component": "TextContent",
+        "text": "112 of 144 flights on-time (within 15 min). Target 80%.",
+        "size": "small"
+      },
+      {
+        "id": "onTimeBadge",
+        "component": "Badge",
+        "text": "2% below target",
+        "variant": "destructive"
+      },
+      {
+        "id": "kpiCancel",
+        "component": "Card",
+        "children": [
+          "cancelHeader",
+          "cancelText",
+          "cancelBadge",
+          "cancelSub"
+        ]
+      },
+      {
+        "id": "cancelHeader",
+        "component": "CardHeader",
+        "title": "Cancellations",
+        "subtitle": "Today"
+      },
+      {
+        "id": "cancelText",
+        "component": "TextContent",
+        "text": "3 flights",
+        "size": "large-heavy"
+      },
+      {
+        "id": "cancelBadge",
+        "component": "Badge",
+        "text": "2.1% of schedule",
+        "variant": "outline"
+      },
+      {
+        "id": "cancelSub",
+        "component": "TextContent",
+        "text": "UA512 (SFO), AA608 (BOS), DL114 (DTW) — all weather/crew",
+        "size": "small"
+      },
+      {
+        "id": "kpiLoad",
+        "component": "Card",
+        "children": [
+          "loadHeader",
+          "loadProgress",
+          "loadText",
+          "loadBadge"
+        ]
+      },
+      {
+        "id": "loadHeader",
+        "component": "CardHeader",
+        "title": "Avg Passenger Load",
+        "subtitle": "Today"
+      },
+      {
+        "id": "loadProgress",
+        "component": "Progress",
+        "value": 84,
+        "label": "84% load factor"
+      },
+      {
+        "id": "loadText",
+        "component": "TextContent",
+        "text": "12,840 passengers • 15,285 seats",
+        "size": "small"
+      },
+      {
+        "id": "loadBadge",
+        "component": "Badge",
+        "text": "High load",
+        "variant": "secondary"
+      },
+      {
+        "id": "kpiTurn",
+        "component": "Card",
+        "children": [
+          "turnHeader",
+          "turnText",
+          "turnBadge",
+          "turnSub"
+        ]
+      },
+      {
+        "id": "turnHeader",
+        "component": "CardHeader",
+        "title": "Avg Turnaround Time",
+        "subtitle": "Gate in → Gate out"
+      },
+      {
+        "id": "turnText",
+        "component": "TextContent",
+        "text": "42 min",
+        "size": "large-heavy"
+      },
+      {
+        "id": "turnBadge",
+        "component": "Badge",
+        "text": "+7 min vs target 35",
+        "variant": "destructive"
+      },
+      {
+        "id": "turnSub",
+        "component": "TextContent",
+        "text": "Weather + late catering driving delays at B/C concourses",
+        "size": "small"
+      },
+      {
+        "id": "flightsCard",
+        "component": "Card",
+        "children": [
+          "flightsHeader",
+          "flightsTable"
+        ]
+      },
+      {
+        "id": "flightsHeader",
+        "component": "CardHeader",
+        "title": "Today's Flights",
+        "subtitle": "Number • Route • Gate • Status — 8 of 144 shown"
+      },
+      {
+        "id": "flightsTable",
+        "component": "Table",
+        "columns": [
+          "colFlight",
+          "colRoute",
+          "colGate",
+          "colStatus",
+          "colSched"
+        ]
+      },
+      {
+        "id": "colFlight",
+        "component": "Col",
+        "label": "Flight",
+        "data": [
+          "AA1420",
+          "UA881",
+          "DL204",
+          "AA419",
+          "SW338",
+          "UA512",
+          "AA772",
+          "DL891"
+        ]
+      },
+      {
+        "id": "colRoute",
+        "component": "Col",
+        "label": "Route",
+        "data": [
+          "ORD → LGA",
+          "ORD → DEN",
+          "ORD → ATL",
+          "ORD → MIA",
+          "ORD → DAL",
+          "ORD → SFO",
+          "ORD → JFK",
+          "ORD → SEA"
+        ]
+      },
+      {
+        "id": "colGate",
+        "component": "Col",
+        "label": "Gate",
+        "data": [
+          "B12",
+          "A12*",
+          "C16*",
+          "B6",
+          "D5*",
+          "A9",
+          "B9*",
+          "C9"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "On-Time",
+          "Delayed +42m",
+          "Boarding",
+          "Delayed +87m",
+          "On-Time",
+          "Cancelled",
+          "Delayed +55m",
+          "On-Time"
+        ]
+      },
+      {
+        "id": "colSched",
+        "component": "Col",
+        "label": "Sched / Est",
+        "data": [
+          "08:15 / 08:15",
+          "09:30 / 10:12",
+          "10:05 / 10:05",
+          "11:20 / 12:47",
+          "12:45 / 12:45",
+          "13:10 / —",
+          "14:00 / 14:55",
+          "15:25 / 15:25"
+        ]
+      },
+      {
+        "id": "gateChangesCard",
+        "component": "Card",
+        "children": [
+          "gateChangesHeader",
+          "gateChangesTable"
+        ]
+      },
+      {
+        "id": "gateChangesHeader",
+        "component": "CardHeader",
+        "title": "Recent Gate Changes",
+        "subtitle": "Last 4 changes — * denotes updated gate in flights table"
+      },
+      {
+        "id": "gateChangesTable",
+        "component": "Table",
+        "columns": [
+          "colGCFlight",
+          "colGCRoute",
+          "colGCOldGate",
+          "colGCNewGate",
+          "colGCTime"
+        ]
+      },
+      {
+        "id": "colGCFlight",
+        "component": "Col",
+        "label": "Flight",
+        "data": [
+          "UA881",
+          "DL204",
+          "AA772",
+          "SW338"
+        ]
+      },
+      {
+        "id": "colGCRoute",
+        "component": "Col",
+        "label": "Route",
+        "data": [
+          "ORD→DEN",
+          "ORD→ATL",
+          "ORD→JFK",
+          "ORD→DAL"
+        ]
+      },
+      {
+        "id": "colGCOldGate",
+        "component": "Col",
+        "label": "Old Gate",
+        "data": [
+          "A7",
+          "C14",
+          "B11",
+          "D3"
+        ]
+      },
+      {
+        "id": "colGCNewGate",
+        "component": "Col",
+        "label": "New Gate",
+        "data": [
+          "A12",
+          "C16",
+          "B9",
+          "D5"
+        ]
+      },
+      {
+        "id": "colGCTime",
+        "component": "Col",
+        "label": "Changed",
+        "data": [
+          "09:12 CDT",
+          "09:45 CDT",
+          "13:42 CDT",
+          "11:58 CDT"
+        ]
+      },
+      {
+        "id": "crewConnRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "crewCard",
+          "connectionsCard"
+        ]
+      },
+      {
+        "id": "crewCard",
+        "component": "Card",
+        "children": [
+          "crewHeader",
+          "crewTable"
+        ]
+      },
+      {
+        "id": "crewHeader",
+        "component": "CardHeader",
+        "title": "Crews Available for Reassignment",
+        "subtitle": "5 reserve crews on duty"
+      },
+      {
+        "id": "crewTable",
+        "component": "Table",
+        "columns": [
+          "colCrewId",
+          "colCrewRole",
+          "colCrewStatus",
+          "colCrewAvail"
+        ]
+      },
+      {
+        "id": "colCrewId",
+        "component": "Col",
+        "label": "Crew ID",
+        "data": [
+          "CRW-041",
+          "CRW-089",
+          "CRW-112",
+          "CRW-067",
+          "CRW-103"
+        ]
+      },
+      {
+        "id": "colCrewRole",
+        "component": "Col",
+        "label": "Composition",
+        "data": [
+          "CA + FO (A320)",
+          "FA Team 3 (B737)",
+          "CA + FO (B737)",
+          "FA Team 2 (A320)",
+          "CA + FO + FA (CRJ)"
+        ]
+      },
+      {
+        "id": "colCrewStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Reserve - Ready",
+          "Reserve - Ready",
+          "Rest Complete",
+          "On Call (15m)",
+          "Reserve - Ready"
+        ]
+      },
+      {
+        "id": "colCrewAvail",
+        "component": "Col",
+        "label": "Available Since",
+        "data": [
+          "08:00",
+          "09:30",
+          "11:15",
+          "13:00",
+          "13:45"
+        ]
+      },
+      {
+        "id": "connectionsCard",
+        "component": "Card",
+        "children": [
+          "connectionsHeader",
+          "connectionsTable"
+        ]
+      },
+      {
+        "id": "connectionsHeader",
+        "component": "CardHeader",
+        "title": "Connections at Risk",
+        "subtitle": "4 connections <45 min due to delays — action required"
+      },
+      {
+        "id": "connectionsTable",
+        "component": "Table",
+        "columns": [
+          "colConnFlight",
+          "colConnInbound",
+          "colConnOutbound",
+          "colConnPax",
+          "colConnRisk"
+        ]
+      },
+      {
+        "id": "colConnFlight",
+        "component": "Col",
+        "label": "Passenger Group",
+        "data": [
+          "UA881 → UA442",
+          "AA419 → AA281",
+          "AA772 → BA182",
+          "DL204 → DL412"
+        ]
+      },
+      {
+        "id": "colConnInbound",
+        "component": "Col",
+        "label": "Inbound (ETA)",
+        "data": [
+          "UA881 10:12 A12",
+          "AA419 12:47 B6",
+          "AA772 14:55 B9",
+          "DL204 10:05 C16"
+        ]
+      },
+      {
+        "id": "colConnOutbound",
+        "component": "Col",
+        "label": "Outbound (ETD)",
+        "data": [
+          "UA442 to DEN 10:35 A3",
+          "AA281 to LHR 13:40 B14",
+          "BA182 to LHR 15:50 B14",
+          "DL412 to MSP 10:40 C22"
+        ]
+      },
+      {
+        "id": "colConnPax",
+        "component": "Col",
+        "label": "Pax",
+        "data": [
+          "12",
+          "8",
+          "22",
+          "6"
+        ]
+      },
+      {
+        "id": "colConnRisk",
+        "component": "Col",
+        "label": "Risk",
+        "data": [
+          "23 min - CRITICAL",
+          "53 min - HIGH (customs)",
+          "55 min - HIGH",
+          "35 min - MEDIUM"
+        ]
+      },
+      {
+        "id": "rebookCard",
+        "component": "Card",
+        "children": [
+          "rebookHeader",
+          "rebookForm"
+        ]
+      },
+      {
+        "id": "rebookHeader",
+        "component": "CardHeader",
+        "title": "Rebook Affected Passengers",
+        "subtitle": "Select disrupted flight and re-accommodate connections & cancellations"
+      },
+      {
+        "id": "rebookForm",
+        "component": "Form",
+        "name": "rebook",
+        "buttons": "rebookButtons",
+        "fields": [
+          "rebookFlightField",
+          "rebookPaxField",
+          "rebookActionField"
+        ]
+      },
+      {
+        "id": "rebookFlightField",
+        "component": "FormControl",
+        "label": "Disrupted flight",
+        "input": "rebookFlightSelect"
+      },
+      {
+        "id": "rebookFlightSelect",
+        "component": "Select",
+        "name": "disrupted_flight",
+        "placeholder": "Choose flight to rebook",
+        "items": [
+          "rebookOpt1",
+          "rebookOpt2",
+          "rebookOpt3",
+          "rebookOpt4"
+        ]
+      },
+      {
+        "id": "rebookOpt1",
+        "component": "SelectItem",
+        "value": "UA881",
+        "label": "UA881 ORD→DEN (Delayed +42m) - 12 connections"
+      },
+      {
+        "id": "rebookOpt2",
+        "component": "SelectItem",
+        "value": "AA419",
+        "label": "AA419 ORD→MIA (Delayed +87m) - 8 connections"
+      },
+      {
+        "id": "rebookOpt3",
+        "component": "SelectItem",
+        "value": "UA512",
+        "label": "UA512 ORD→SFO (Cancelled) - 34 pax"
+      },
+      {
+        "id": "rebookOpt4",
+        "component": "SelectItem",
+        "value": "AA772",
+        "label": "AA772 ORD→JFK (Delayed +55m) - 22 connections"
+      },
+      {
+        "id": "rebookPaxField",
+        "component": "FormControl",
+        "label": "Passengers to rebook",
+        "hint": "Leave blank to rebook all affected on selected flight",
+        "input": "rebookPaxInput"
+      },
+      {
+        "id": "rebookPaxInput",
+        "component": "Input",
+        "name": "pax_count",
+        "placeholder": "e.g., 12 or ALL"
+      },
+      {
+        "id": "rebookActionField",
+        "component": "FormControl",
+        "label": "Rebooking action",
+        "input": "rebookActionSelect"
+      },
+      {
+        "id": "rebookActionSelect",
+        "component": "Select",
+        "name": "action",
+        "items": [
+          "rebookAct1",
+          "rebookAct2"
+        ],
+        "placeholder": "Select action"
+      },
+      {
+        "id": "rebookAct1",
+        "component": "SelectItem",
+        "value": "next_available",
+        "label": "Next available flight (auto)"
+      },
+      {
+        "id": "rebookAct2",
+        "component": "SelectItem",
+        "value": "manual",
+        "label": "Show alternatives to choose"
+      },
+      {
+        "id": "rebookButtons",
+        "component": "Buttons",
+        "buttons": [
+          "rebookBtn",
+          "viewManifestBtn"
+        ]
+      },
+      {
+        "id": "rebookBtn",
+        "component": "Button",
+        "label": "Rebook Affected Passengers",
+        "variant": "primary"
+      },
+      {
+        "id": "viewManifestBtn",
+        "component": "Button",
+        "label": "View Manifest",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>

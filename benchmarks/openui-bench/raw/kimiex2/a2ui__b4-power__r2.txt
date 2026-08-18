@@ -1,0 +1,482 @@
+Here's the power network operator console covering all 12 items:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#0E7490",
+      "agentDisplayName": "GridOps Console"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "liveAlert",
+          "kpis",
+          "capacityBar",
+          "genSplit",
+          "forecast",
+          "plantsTable",
+          "outagesTable",
+          "maintenance",
+          "regionFocus",
+          "curtailForm",
+          "emissions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Power Network Operations Console",
+        "subtitle": "National grid — live status as of 14:32 UTC"
+      },
+      {
+        "id": "liveAlert",
+        "component": "Alert",
+        "title": "LIVE ALERT: Frequency deviation on North feeder",
+        "description": "Grid frequency at 49.87 Hz (nominal 50 Hz). North region. Auto-response engaged; reserve ramping +120 MW.",
+        "variant": "warning"
+      },
+      {
+        "id": "kpis",
+        "component": "Table",
+        "columns": [
+          "kpiName",
+          "kpiValue"
+        ]
+      },
+      {
+        "id": "kpiName",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Current network load",
+          "Capacity utilisation",
+          "Price per MWh",
+          "Emissions today"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "34.2 GW",
+          "81% of 42 GW capacity",
+          "$68.40 / MWh",
+          "412 kt CO₂e"
+        ]
+      },
+      {
+        "id": "capacityBar",
+        "component": "Progress",
+        "value": 81,
+        "label": "Network load vs capacity: 34.2 GW / 42 GW (81%) — margin 7.8 GW"
+      },
+      {
+        "id": "genSplit",
+        "component": "PieChart",
+        "labels": [
+          "Gas",
+          "Nuclear",
+          "Wind",
+          "Solar",
+          "Hydro",
+          "Coal"
+        ],
+        "values": [
+          12.4,
+          8.1,
+          7.6,
+          3.2,
+          2.1,
+          0.8
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "forecast",
+        "component": "LineChart",
+        "labels": [
+          "15:00",
+          "18:00",
+          "21:00",
+          "00:00",
+          "03:00",
+          "06:00",
+          "09:00",
+          "12:00",
+          "14:00"
+        ],
+        "series": [
+          "demandSeries",
+          "capacitySeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Time (next 24h)",
+        "yLabel": "GW"
+      },
+      {
+        "id": "demandSeries",
+        "component": "Series",
+        "category": "Forecast demand",
+        "values": [
+          35.1,
+          38.4,
+          36.2,
+          30.8,
+          28.5,
+          29.9,
+          33.7,
+          35.9,
+          34.8
+        ]
+      },
+      {
+        "id": "capacitySeries",
+        "component": "Series",
+        "category": "Available capacity",
+        "values": [
+          41.5,
+          41.5,
+          41.0,
+          41.0,
+          41.0,
+          41.5,
+          42.0,
+          42.0,
+          42.0
+        ]
+      },
+      {
+        "id": "plantsTable",
+        "component": "Table",
+        "columns": [
+          "plantName",
+          "plantOutput",
+          "plantStatus"
+        ]
+      },
+      {
+        "id": "plantName",
+        "component": "Col",
+        "label": "Plant",
+        "data": [
+          "Riverside CCGT",
+          "Hartwell Nuclear",
+          "Northwind Offshore",
+          "Solara PV Farm",
+          "Highland Hydro",
+          "Blackrock Coal"
+        ]
+      },
+      {
+        "id": "plantOutput",
+        "component": "Col",
+        "label": "Output (GW)",
+        "data": [
+          "6.8",
+          "8.1",
+          "7.6",
+          "3.2",
+          "2.1",
+          "0.8"
+        ]
+      },
+      {
+        "id": "plantStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Online",
+          "Online",
+          "Online",
+          "Online",
+          "Online",
+          "Standby"
+        ]
+      },
+      {
+        "id": "outagesTable",
+        "component": "Table",
+        "columns": [
+          "outageId",
+          "outageRegion",
+          "outageImpact"
+        ]
+      },
+      {
+        "id": "outageId",
+        "component": "Col",
+        "label": "Outage",
+        "data": [
+          "OUT-1042: Feeder trip",
+          "OUT-1043: Transformer fault",
+          "OUT-1044: Line maintenance"
+        ]
+      },
+      {
+        "id": "outageRegion",
+        "component": "Col",
+        "label": "Affected region",
+        "data": [
+          "North",
+          "East",
+          "West"
+        ]
+      },
+      {
+        "id": "outageImpact",
+        "component": "Col",
+        "label": "Customers affected",
+        "data": [
+          "12,400",
+          "3,100",
+          "0 (planned)"
+        ]
+      },
+      {
+        "id": "maintenance",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "maint1",
+          "maint2",
+          "maint3"
+        ]
+      },
+      {
+        "id": "maint1",
+        "component": "ListItem",
+        "title": "Blackrock Coal — boiler inspection",
+        "subtitle": "This month, days 5–9 — unit offline (standby now)"
+      },
+      {
+        "id": "maint2",
+        "component": "ListItem",
+        "title": "West 400 kV line — insulator replacement",
+        "subtitle": "This month, days 12–14 — planned outage, no customer impact"
+      },
+      {
+        "id": "maint3",
+        "component": "ListItem",
+        "title": "Hartwell Nuclear — turbine valve service",
+        "subtitle": "This month, days 20–22 — output reduced to 6.5 GW"
+      },
+      {
+        "id": "regionFocus",
+        "component": "Form",
+        "name": "region-focus",
+        "buttons": "regionButtons",
+        "fields": [
+          "regionField"
+        ]
+      },
+      {
+        "id": "regionField",
+        "component": "FormControl",
+        "label": "Focus on region",
+        "input": "regionSelect",
+        "hint": "Filters plants, outages and alerts to the selected region"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region",
+        "placeholder": "All regions",
+        "items": [
+          "regAll",
+          "regNorth",
+          "regSouth",
+          "regEast",
+          "regWest"
+        ]
+      },
+      {
+        "id": "regAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All regions"
+      },
+      {
+        "id": "regNorth",
+        "component": "SelectItem",
+        "value": "north",
+        "label": "North"
+      },
+      {
+        "id": "regSouth",
+        "component": "SelectItem",
+        "value": "south",
+        "label": "South"
+      },
+      {
+        "id": "regEast",
+        "component": "SelectItem",
+        "value": "east",
+        "label": "East"
+      },
+      {
+        "id": "regWest",
+        "component": "SelectItem",
+        "value": "west",
+        "label": "West"
+      },
+      {
+        "id": "regionButtons",
+        "component": "Buttons",
+        "buttons": [
+          "regionApply"
+        ]
+      },
+      {
+        "id": "regionApply",
+        "component": "Button",
+        "label": "Apply region focus",
+        "variant": "secondary"
+      },
+      {
+        "id": "curtailForm",
+        "component": "Form",
+        "name": "curtailment-order",
+        "buttons": "curtailButtons",
+        "fields": [
+          "curtailRegionField",
+          "curtailAmountField",
+          "curtailDurationField"
+        ]
+      },
+      {
+        "id": "curtailRegionField",
+        "component": "FormControl",
+        "label": "Curtailment region",
+        "input": "curtailRegionSelect"
+      },
+      {
+        "id": "curtailRegionSelect",
+        "component": "Select",
+        "name": "curtail_region",
+        "placeholder": "Select region",
+        "items": [
+          "curtNorth",
+          "curtSouth",
+          "curtEast",
+          "curtWest"
+        ]
+      },
+      {
+        "id": "curtNorth",
+        "component": "SelectItem",
+        "value": "north",
+        "label": "North"
+      },
+      {
+        "id": "curtSouth",
+        "component": "SelectItem",
+        "value": "south",
+        "label": "South"
+      },
+      {
+        "id": "curtEast",
+        "component": "SelectItem",
+        "value": "east",
+        "label": "East"
+      },
+      {
+        "id": "curtWest",
+        "component": "SelectItem",
+        "value": "west",
+        "label": "West"
+      },
+      {
+        "id": "curtailAmountField",
+        "component": "FormControl",
+        "label": "Load to shed (MW)",
+        "input": "curtailAmount"
+      },
+      {
+        "id": "curtailAmount",
+        "component": "Input",
+        "name": "curtail_mw",
+        "type": "number",
+        "placeholder": "e.g. 250"
+      },
+      {
+        "id": "curtailDurationField",
+        "component": "FormControl",
+        "label": "Duration (minutes)",
+        "input": "curtailDuration"
+      },
+      {
+        "id": "curtailDuration",
+        "component": "Input",
+        "name": "curtail_duration",
+        "type": "number",
+        "placeholder": "e.g. 60"
+      },
+      {
+        "id": "curtailButtons",
+        "component": "Buttons",
+        "buttons": [
+          "curtailSubmit",
+          "curtailCancel"
+        ]
+      },
+      {
+        "id": "curtailSubmit",
+        "component": "Button",
+        "label": "Issue curtailment order",
+        "variant": "primary",
+        "type": "destructive"
+      },
+      {
+        "id": "curtailCancel",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      },
+      {
+        "id": "emissions",
+        "component": "RadialChart",
+        "labels": [
+          "CO₂e emitted (kt)",
+          "Remaining daily budget (kt)"
+        ],
+        "values": [
+          412,
+          188
+        ]
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+All 12 items are covered:
+
+1. **Current load** — 34.2 GW in the KPI table
+2. **Capacity proximity** — progress bar showing 81% of 42 GW with 7.8 GW margin
+3. **Generation split** — donut chart by source (gas, nuclear, wind, solar, hydro, coal)
+4. **Plants** — table with each plant's output and status
+5. **Outages** — table with affected region and customer impact per outage
+6. **Demand forecast** — 24-hour line chart with demand vs available capacity
+7. **Price** — $68.40/MWh in the KPI table
+8. **Maintenance** — numbered list of this month's planned work
+9. **Live alerts** — warning alert banner for the frequency deviation
+10. **Region focus** — region selector form to filter the view
+11. **Curtailment** — order form with region, MW to shed, duration, and a destructive-styled issue button
+12. **Emissions** — radial chart of today's CO₂e vs daily budget

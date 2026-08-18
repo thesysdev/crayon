@@ -1,0 +1,98 @@
+root = Card([header, mainCallout, regionalFocus, topMetrics, liveAlerts, middleGrid, lowerGrid, actionsSection, followUps], "card", "column", "m")
+
+header = CardHeader("Grid Operations Console", "National Electricity Transmission System Control")
+
+mainCallout = Callout("warning", "High Grid Demand Warning", "Regional load peak approaching critical threshold in Northern Sector. Capacity margin currently at 8.8%.")
+
+regionalFocus = Form("region-filter", focusButtons, [regionSelectField])
+regionSelectField = FormControl("Active Region Focus", regionSelect, "Filter live telemetry and curtailment targeting by sector")
+regionSelect = Select("region", [regNational, regNorth, regCentral, regSouth, regEast, regWest], "National (All Sectors)")
+regNational = SelectItem("national", "National (All Sectors)")
+regNorth = SelectItem("north", "Northern Sector (High Load)")
+regCentral = SelectItem("central", "Central Industrial Belt")
+regSouth = SelectItem("south", "Southern Metropolitan")
+regEast = SelectItem("east", "Eastern Coastal Zone")
+regWest = SelectItem("west", "Western Renewables Hub")
+focusButtons = Buttons([applyFocusBtn])
+applyFocusBtn = Button("Apply Regional Filter", null, "secondary", "normal", "small")
+
+topMetrics = Table([metricCol, valueCol, statusCol])
+metricCol = Col("Metric", ["Current System Load (1)", "Capacity Margin (2)", "Spot Price / MWh (7)", "Today's CO2 Emissions (12)"])
+valueCol = Col("Live Value", ["41,850 MW", "91.2% Utilized (3,850 MW reserve)", "£142.50 / MWh", "118.4 kt CO2e"])
+statusCol = Col("Status / Target", ["Peak Demand Window", "Close to Capacity (Threshold 92%)", "High (+18% vs 24h avg)", "Intensity: 142 g/kWh"])
+
+liveAlerts = SectionBlock([alertSectionItem], true)
+alertSectionItem = SectionItem("alerts", "Live System Alerts (9) - 3 Active Events", alertsContent)
+alertsContent = ListBlock([alertItem1, alertItem2, alertItem3])
+alertItem1 = ListItem("CRITICAL: Substation B-12 Voltage Sag", "14:22:05 UTC - Northern Sector - Transformer 2 primary tap changer failure", null, "Acknowledge")
+alertItem2 = ListItem("WARNING: Offshore Wind Ramp Down", "14:18:40 UTC - Eastern Zone - Wind speed drop causing -450 MW delta", null, "View Telemetry")
+alertItem3 = ListItem("INFO: Battery Storage Dispatching", "14:05:12 UTC - Southern Metro - 200 MW discharge active for peak shaving", null, "Details")
+
+middleGrid = Tabs([genTab, forecastTab, outagesTab])
+
+genTab = TabItem("gen", "Generation Split & Plants (3, 4)", genContent)
+genContent = SectionBlock([genMixItem, plantTableItem])
+genMixItem = SectionItem("genmix", "Generation Split by Source (3)", genPie)
+genPie = PieChart(genCategories, genValues, "donut")
+genCategories = ["Gas (CCGT)", "Nuclear", "Offshore Wind", "Solar PV", "Hydro & Pumped", "Biomass", "Imports (Interconnects)"]
+genValues = [16200, 6400, 9800, 3200, 1800, 2150, 2300]
+
+plantTableItem = SectionItem("plants", "Power Plant Status & Output (4)", plantTable)
+plantTable = Table([plantCol, typeCol, outputCol, maxCol, plantStatusCol])
+plantCol = Col("Plant Name", ["Severn Power CCGT", "Heysham 2 Nuclear", "Hornsea Wind Farm Phase 2", "Dinorwig Pumped Hydro", "Drax Biomass Unit 3", "Moyle Interconnector"])
+typeCol = Col("Type", ["Gas", "Nuclear", "Offshore Wind", "Hydro", "Biomass", "Import"])
+outputCol = Col("Current Output", ["1,850 MW", "1,220 MW", "1,120 MW", "1,320 MW", "610 MW", "450 MW"])
+maxCol = Col("Max Capacity", ["2,000 MW", "1,230 MW", "1,380 MW", "1,728 MW", "650 MW", "500 MW"])
+plantStatusCol = Col("Status", ["ONLINE - LOAD FOLLOWING", "ONLINE - BASELOAD", "ONLINE - CURTAILED (90%)", "ONLINE - PEAKING", "ONLINE - FULL", "ONLINE - IMPORTING"])
+
+forecastTab = TabItem("forecast", "24-Hour Demand Forecast (6)", forecastContent)
+forecastContent = LineChart(forecastHours, [forecastSeries, genCapSeries], "natural", "Hour (UTC)", "Megawatts (MW)")
+forecastHours = ["15:00", "17:00", "19:00", "21:00", "23:00", "01:00", "03:00", "05:00", "07:00", "09:00", "11:00", "13:00"]
+forecastSeries = Series("Forecasted Demand (MW)", [41850, 44200, 45100, 42300, 36500, 31200, 29800, 32400, 38900, 42100, 43500, 42000])
+genCapSeries = Series("Available Generation Capacity (MW)", [45700, 45700, 46000, 46000, 46000, 46000, 46000, 46000, 46000, 46000, 46000, 46000])
+
+outagesTab = TabItem("outages", "Active Outages & Maintenance (5, 8)", outagesContent)
+outagesContent = SectionBlock([outagesItem, maintItem])
+
+outagesItem = SectionItem("outages_list", "Active Unplanned Outages (5)", outagesTable)
+outagesTable = Table([outageRegionCol, assetCol, impactedCustomersCol, estRestoreCol])
+outageRegionCol = Col("Affected Region", ["Northern Sector (Substation B-12)", "Eastern Zone (Feeder 4A)", "Western Hub (Grid Link 9)"])
+assetCol = Col("Asset Dropped", ["132kV Transformer T2", "33kV Distribution Feeder", "HVDC Converter Station"])
+impactedCustomersCol = Col("Affected Customers", ["14,200", "3,850", "0 (Industrial Bypass)"])
+estRestoreCol = Col("Est. Restoration", ["16:30 UTC", "15:45 UTC", "18:00 UTC"])
+
+maintItem = SectionItem("maint_list", "Planned Maintenance This Month (8)", maintTable)
+maintTable = Table([maintAssetCol, maintRegionCol, datesCol, impactCol])
+maintAssetCol = Col("Scheduled Asset", ["Sizewell B Refueling Outage", "Midlands Line 3 OHL Inspection", "Metro West Substation Upgrade"])
+maintRegionCol = Col("Region", ["Eastern Zone", "Central Belt", "Southern Metro"])
+datesCol = Col("Planned Dates", ["Oct 12 - Oct 28", "Oct 18 - Oct 20", "Oct 24 - Oct 25"])
+impactCol = Col("Capacity Impact", ["-1,200 MW (Planned)", "-400 MW Transfer Limit", "None (Redundant N-2)"])
+
+lowerGrid = CardHeader("Emergency Grid Controls", "Direct Operator Action Panel")
+
+actionsSection = Form("curtailment-form", actionButtons, [curtailTargetField, curtailMWField, reasonField])
+curtailTargetField = FormControl("Order Curtailment Target (11)", curtailTargetSelect, "Select regional industrial load or generator asset to curtail")
+curtailTargetSelect = Select("curtail_target", [targetNorthInd, targetSteelWorks, targetWindFarm1, targetCentralGrid], "Select Target Facility")
+targetNorthInd = SelectItem("target_north_ind", "Northern Sector - Heavy Industry Direct Feeder")
+targetSteelWorks = SelectItem("target_steel", "Central Belt - Arc Furnace Industrial Park")
+targetWindFarm1 = SelectItem("target_wind_1", "Eastern Zone - Hornsea Wind Farm Phase 2")
+targetCentralGrid = SelectItem("target_central_grid", "General Demand Response - Contracted Shedding Class A")
+
+curtailMWField = FormControl("Curtailment Volume (MW)", curtailMWInput, "Specify shed volume between 10 MW and 1000 MW")
+curtailMWInput = Input("curtail_mw", "250", "number")
+
+reasonField = FormControl("Regulatory Reason Code", reasonSelect)
+reasonSelect = Select("reason_code", [reasonMargin, reasonFrequency, reasonVoltage, reasonThermal], "Grid Code Compliance Reason")
+reasonMargin = SelectItem("margin", "Operating Reserve Margin Below Threshold (<10%)")
+reasonFrequency = SelectItem("freq", "Frequency Stabilization (Under-frequency trip prevention)")
+reasonThermal = SelectItem("thermal", "Thermal Overload Constraint on Transmission Line")
+reasonVoltage = SelectItem("voltage", "Local Voltage Stability Control")
+
+actionButtons = Buttons([issueCurtailmentBtn, emergencyDispatchBtn])
+issueCurtailmentBtn = Button("ISSUE CURTAILMENT ORDER", null, "primary", "destructive")
+emergencyDispatchBtn = Button("Trigger Battery Fast Reserve", null, "secondary")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Focus telemetry on Northern Sector only")
+f2 = FollowUpItem("Show 7-day price and demand historical trends")
+f3 = FollowUpItem("Simulate 500 MW loss at Severn Power CCGT")

@@ -1,0 +1,301 @@
+
+
+Here's a complete month-end finance screen covering all seven items: KPI cards for cash, burn, and runway; a donut chart for the expense split; a table of large transactions; a month switcher; and a download button.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "controls",
+          "kpis",
+          "expHeading",
+          "expChart",
+          "txHeading",
+          "txTable",
+          "footnote"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Month-End Finance",
+        "subtitle": "Acme Inc. · June 2025 close"
+      },
+      {
+        "id": "controls",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "align": "end",
+        "justify": "between",
+        "children": [
+          "monthField",
+          "downloadBtn"
+        ]
+      },
+      {
+        "id": "monthField",
+        "component": "FormControl",
+        "label": "Viewing month",
+        "input": "monthSelect",
+        "hint": "Switch to review a different close"
+      },
+      {
+        "id": "monthSelect",
+        "component": "Select",
+        "name": "month",
+        "value": "2025-06",
+        "items": [
+          "m202506",
+          "m202505",
+          "m202504",
+          "m202503",
+          "m202502"
+        ]
+      },
+      {
+        "id": "m202506",
+        "component": "SelectItem",
+        "value": "2025-06",
+        "label": "June 2025"
+      },
+      {
+        "id": "m202505",
+        "component": "SelectItem",
+        "value": "2025-05",
+        "label": "May 2025"
+      },
+      {
+        "id": "m202504",
+        "component": "SelectItem",
+        "value": "2025-04",
+        "label": "April 2025"
+      },
+      {
+        "id": "m202503",
+        "component": "SelectItem",
+        "value": "2025-03",
+        "label": "March 2025"
+      },
+      {
+        "id": "m202502",
+        "component": "SelectItem",
+        "value": "2025-02",
+        "label": "February 2025"
+      },
+      {
+        "id": "downloadBtn",
+        "component": "Button",
+        "label": "Download statement",
+        "variant": "secondary"
+      },
+      {
+        "id": "kpis",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "cashCard",
+          "burnCard",
+          "runwayCard"
+        ]
+      },
+      {
+        "id": "cashCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": [
+          "cashLabel",
+          "cashValue"
+        ]
+      },
+      {
+        "id": "cashLabel",
+        "component": "TextContent",
+        "text": "Cash on hand",
+        "size": "small"
+      },
+      {
+        "id": "cashValue",
+        "component": "TextContent",
+        "text": "$842,300",
+        "size": "large-heavy"
+      },
+      {
+        "id": "burnCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": [
+          "burnLabel",
+          "burnValue"
+        ]
+      },
+      {
+        "id": "burnLabel",
+        "component": "TextContent",
+        "text": "Monthly burn",
+        "size": "small"
+      },
+      {
+        "id": "burnValue",
+        "component": "TextContent",
+        "text": "$146,500",
+        "size": "large-heavy"
+      },
+      {
+        "id": "runwayCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": [
+          "runwayLabel",
+          "runwayValue"
+        ]
+      },
+      {
+        "id": "runwayLabel",
+        "component": "TextContent",
+        "text": "Months of runway",
+        "size": "small"
+      },
+      {
+        "id": "runwayValue",
+        "component": "TextContent",
+        "text": "5.7",
+        "size": "large-heavy"
+      },
+      {
+        "id": "expHeading",
+        "component": "Heading",
+        "text": "Expenses by category",
+        "level": "h3"
+      },
+      {
+        "id": "expChart",
+        "component": "PieChart",
+        "variant": "donut",
+        "labels": [
+          "Payroll",
+          "Cloud & infra",
+          "Marketing",
+          "Sales",
+          "G&A",
+          "Other"
+        ],
+        "values": [
+          82000,
+          21500,
+          16000,
+          11000,
+          9500,
+          6500
+        ]
+      },
+      {
+        "id": "txHeading",
+        "component": "Heading",
+        "text": "Transactions above $10,000",
+        "level": "h3"
+      },
+      {
+        "id": "txTable",
+        "component": "Table",
+        "columns": [
+          "txDate",
+          "txDesc",
+          "txCat",
+          "txAmount"
+        ]
+      },
+      {
+        "id": "txDate",
+        "component": "Col",
+        "label": "Date",
+        "data": [
+          "Jun 28",
+          "Jun 25",
+          "Jun 21",
+          "Jun 15",
+          "Jun 12"
+        ]
+      },
+      {
+        "id": "txDesc",
+        "component": "Col",
+        "label": "Description",
+        "data": [
+          "Payroll run",
+          "AWS invoice",
+          "Paid media — Q2 push",
+          "Office lease — HQ",
+          "CRM annual renewal"
+        ]
+      },
+      {
+        "id": "txCat",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Payroll",
+          "Cloud & infra",
+          "Marketing",
+          "G&A",
+          "Sales"
+        ]
+      },
+      {
+        "id": "txAmount",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "$82,000",
+          "$21,500",
+          "$16,000",
+          "$12,400",
+          "$11,800"
+        ]
+      },
+      {
+        "id": "footnote",
+        "component": "TextContent",
+        "text": "Runway = cash on hand ÷ current monthly burn. Figures as of Jun 30, 2025.",
+        "size": "small"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+How each requirement is covered:
+
+1. **Cash on hand** — $842,300 in the first KPI card
+2. **Monthly burn** — $146,500 in the second KPI card
+3. **Months of runway** — 5.7 months (cash ÷ burn), with the formula noted in the footnote
+4. **Expenses by category** — donut chart across six categories, summing to the monthly burn
+5. **Transactions above $10,000** — table with date, description, category, and amount
+6. **Different month** — the "Viewing month" dropdown (defaults to June 2025)
+7. **Download statement** — the "Download statement" button next to the month selector
+
+Want me to wire the month selector to actually swap the data, or add a burn-trend chart across months?

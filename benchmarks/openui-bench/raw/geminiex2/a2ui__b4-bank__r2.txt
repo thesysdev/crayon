@@ -1,0 +1,794 @@
+Here is a complete personal banking dashboard UI that incorporates all 11 required elements, including account balances, transaction history with dispute actions, spending analysis, bill tracking, savings goals, credit score monitoring, quick transfers, card security controls, statement downloads, and alert management.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "gap": "l",
+        "children": [
+          "header",
+          "quickActions",
+          "topSection",
+          "midSection",
+          "tabsSection",
+          "followUps"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Welcome back, Sarah",
+        "subtitle": "Financial overview & account management"
+      },
+      {
+        "id": "quickActions",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "align": "center",
+        "justify": "between",
+        "gap": "m",
+        "children": [
+          "creditScoreSummary",
+          "statementPicker"
+        ]
+      },
+      {
+        "id": "creditScoreSummary",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "align": "center",
+        "gap": "m",
+        "children": [
+          "creditBadge",
+          "creditDetails"
+        ]
+      },
+      {
+        "id": "creditBadge",
+        "component": "Badge",
+        "text": "765",
+        "variant": "default"
+      },
+      {
+        "id": "creditDetails",
+        "component": "TextContent",
+        "text": "**Credit Score: Excellent** (Updated yesterday)",
+        "size": "small"
+      },
+      {
+        "id": "statementPicker",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "align": "center",
+        "gap": "s",
+        "children": [
+          "stmtLabel",
+          "stmtSelect"
+        ]
+      },
+      {
+        "id": "stmtLabel",
+        "component": "Label",
+        "text": "Statement Period:"
+      },
+      {
+        "id": "stmtSelect",
+        "component": "Select",
+        "name": "statement_period",
+        "placeholder": "Select Period",
+        "size": "small",
+        "items": [
+          "stmtOct",
+          "stmtSep",
+          "stmtAug"
+        ]
+      },
+      {
+        "id": "stmtOct",
+        "component": "SelectItem",
+        "value": "2023-10",
+        "label": "October 2023"
+      },
+      {
+        "id": "stmtSep",
+        "component": "SelectItem",
+        "value": "2023-09",
+        "label": "September 2023"
+      },
+      {
+        "id": "stmtAug",
+        "component": "SelectItem",
+        "value": "2023-08",
+        "label": "August 2023"
+      },
+      {
+        "id": "topSection",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "balancesHeading",
+          "balancesGrid"
+        ]
+      },
+      {
+        "id": "balancesHeading",
+        "component": "Heading",
+        "text": "Account Balances",
+        "level": "h3"
+      },
+      {
+        "id": "balancesGrid",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "checkingCard",
+          "savingsCard",
+          "creditCard"
+        ]
+      },
+      {
+        "id": "checkingCard",
+        "component": "Card",
+        "variant": "card",
+        "gap": "xs",
+        "children": [
+          "chkTitle",
+          "chkBal",
+          "chkSub"
+        ]
+      },
+      {
+        "id": "chkTitle",
+        "component": "TextContent",
+        "text": "Checking (...4821)",
+        "size": "small"
+      },
+      {
+        "id": "chkBal",
+        "component": "Heading",
+        "text": "$4,250.80",
+        "level": "h2"
+      },
+      {
+        "id": "chkSub",
+        "component": "Badge",
+        "text": "Available",
+        "variant": "secondary"
+      },
+      {
+        "id": "savingsCard",
+        "component": "Card",
+        "variant": "card",
+        "gap": "xs",
+        "children": [
+          "savTitle",
+          "savBal",
+          "savSub"
+        ]
+      },
+      {
+        "id": "savTitle",
+        "component": "TextContent",
+        "text": "Savings (...9032)",
+        "size": "small"
+      },
+      {
+        "id": "savBal",
+        "component": "Heading",
+        "text": "$18,620.15",
+        "level": "h2"
+      },
+      {
+        "id": "savSub",
+        "component": "Badge",
+        "text": "4.35% APY",
+        "variant": "secondary"
+      },
+      {
+        "id": "creditCard",
+        "component": "Card",
+        "variant": "card",
+        "gap": "xs",
+        "children": [
+          "credTitle",
+          "credBal",
+          "credSub"
+        ]
+      },
+      {
+        "id": "credTitle",
+        "component": "TextContent",
+        "text": "Credit Card (...1154)",
+        "size": "small"
+      },
+      {
+        "id": "credBal",
+        "component": "Heading",
+        "text": "$1,120.40",
+        "level": "h2"
+      },
+      {
+        "id": "credSub",
+        "component": "Badge",
+        "text": "Limit: $10,000",
+        "variant": "outline"
+      },
+      {
+        "id": "midSection",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "spendingCard",
+          "goalsAndBillsCard"
+        ]
+      },
+      {
+        "id": "spendingCard",
+        "component": "Card",
+        "variant": "card",
+        "gap": "s",
+        "children": [
+          "spendingHeader",
+          "spendingChart"
+        ]
+      },
+      {
+        "id": "spendingHeader",
+        "component": "Heading",
+        "text": "Monthly Spending Breakdown",
+        "level": "h4"
+      },
+      {
+        "id": "spendingChart",
+        "component": "PieChart",
+        "variant": "donut",
+        "labels": [
+          "Groceries",
+          "Dining",
+          "Utilities",
+          "Shopping",
+          "Entertainment"
+        ],
+        "values": [
+          650,
+          320,
+          210,
+          450,
+          180
+        ]
+      },
+      {
+        "id": "goalsAndBillsCard",
+        "component": "Card",
+        "variant": "card",
+        "gap": "m",
+        "children": [
+          "vacationGoalCard",
+          "billsCard"
+        ]
+      },
+      {
+        "id": "vacationGoalCard",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "xs",
+        "children": [
+          "goalHeader",
+          "vacationProgress"
+        ]
+      },
+      {
+        "id": "goalHeader",
+        "component": "Heading",
+        "text": "Vacation Goal: $3,200 / $5,000",
+        "level": "h4"
+      },
+      {
+        "id": "vacationProgress",
+        "component": "Progress",
+        "value": 64,
+        "label": "64% saved for Hawaii 2024"
+      },
+      {
+        "id": "billsCard",
+        "component": "Card",
+        "variant": "clear",
+        "gap": "s",
+        "children": [
+          "billsHeader",
+          "billsList"
+        ]
+      },
+      {
+        "id": "billsHeader",
+        "component": "Heading",
+        "text": "Bills Due Soon",
+        "level": "h4"
+      },
+      {
+        "id": "billsList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "bill1",
+          "bill2",
+          "bill3"
+        ]
+      },
+      {
+        "id": "bill1",
+        "component": "ListItem",
+        "title": "Electric Utility - $142.50",
+        "subtitle": "Due in 3 days (Oct 28)",
+        "actionLabel": "Pay Now"
+      },
+      {
+        "id": "bill2",
+        "component": "ListItem",
+        "title": "Internet Service - $79.99",
+        "subtitle": "Due in 6 days (Oct 31)",
+        "actionLabel": "Autopay On"
+      },
+      {
+        "id": "bill3",
+        "component": "ListItem",
+        "title": "Streaming Subscription - $14.99",
+        "subtitle": "Due in 8 days (Nov 02)",
+        "actionLabel": "Autopay On"
+      },
+      {
+        "id": "tabsSection",
+        "component": "Tabs",
+        "items": [
+          "tabTx",
+          "tabTransfer",
+          "tabControls",
+          "tabAlerts"
+        ]
+      },
+      {
+        "id": "tabTx",
+        "component": "TabItem",
+        "value": "transactions",
+        "trigger": "Recent Transactions",
+        "content": [
+          "txTable",
+          "disputeDialog"
+        ]
+      },
+      {
+        "id": "txTable",
+        "component": "Table",
+        "columns": [
+          "colDate",
+          "colMerchant",
+          "colCategory",
+          "colAmount"
+        ]
+      },
+      {
+        "id": "colDate",
+        "component": "Col",
+        "label": "Date",
+        "data": [
+          "Oct 24",
+          "Oct 23",
+          "Oct 22",
+          "Oct 21"
+        ]
+      },
+      {
+        "id": "colMerchant",
+        "component": "Col",
+        "label": "Merchant",
+        "data": [
+          "Whole Foods Market",
+          "Uber Technologies",
+          "Target Store",
+          "Unknown Online Merchant"
+        ]
+      },
+      {
+        "id": "colCategory",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Groceries",
+          "Transport",
+          "Shopping",
+          "Uncategorized"
+        ]
+      },
+      {
+        "id": "colAmount",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "-$124.50",
+          "-$28.40",
+          "-$84.12",
+          "-$149.99"
+        ]
+      },
+      {
+        "id": "disputeDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Dispute a Transaction",
+        "triggerVariant": "outline",
+        "title": "Dispute Transaction",
+        "description": "Select an unrecognized charge to submit a dispute request to our fraud team.",
+        "content": [
+          "disputeForm"
+        ]
+      },
+      {
+        "id": "disputeForm",
+        "component": "Form",
+        "name": "dispute_form",
+        "buttons": "disputeButtons",
+        "fields": [
+          "disputeSelectField",
+          "disputeReasonField"
+        ]
+      },
+      {
+        "id": "disputeSelectField",
+        "component": "FormControl",
+        "label": "Select Transaction",
+        "input": "disputeSelect"
+      },
+      {
+        "id": "disputeSelect",
+        "component": "Select",
+        "name": "tx_to_dispute",
+        "placeholder": "Choose transaction...",
+        "items": [
+          "dTx1",
+          "dTx2",
+          "dTx3"
+        ]
+      },
+      {
+        "id": "dTx1",
+        "component": "SelectItem",
+        "value": "tx_unknown",
+        "label": "Oct 21 - Unknown Online Merchant (-$149.99)"
+      },
+      {
+        "id": "dTx2",
+        "component": "SelectItem",
+        "value": "tx_target",
+        "label": "Oct 22 - Target Store (-$84.12)"
+      },
+      {
+        "id": "dTx3",
+        "component": "SelectItem",
+        "value": "tx_uber",
+        "label": "Oct 23 - Uber Technologies (-$28.40)"
+      },
+      {
+        "id": "disputeReasonField",
+        "component": "FormControl",
+        "label": "Reason for Dispute",
+        "hint": "Provide additional details regarding why you are disputing this charge.",
+        "input": "disputeReasonInput"
+      },
+      {
+        "id": "disputeReasonInput",
+        "component": "TextArea",
+        "name": "dispute_reason",
+        "placeholder": "I did not authorize this charge / Incorrect amount...",
+        "rows": 3
+      },
+      {
+        "id": "disputeButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitDisputeBtn"
+        ]
+      },
+      {
+        "id": "submitDisputeBtn",
+        "component": "Button",
+        "label": "Submit Dispute Claim",
+        "variant": "primary",
+        "type": "destructive"
+      },
+      {
+        "id": "tabTransfer",
+        "component": "TabItem",
+        "value": "transfer",
+        "trigger": "Move Money",
+        "content": [
+          "transferFormCard"
+        ]
+      },
+      {
+        "id": "transferFormCard",
+        "component": "Card",
+        "variant": "clear",
+        "gap": "m",
+        "children": [
+          "transferForm"
+        ]
+      },
+      {
+        "id": "transferForm",
+        "component": "Form",
+        "name": "transfer_form",
+        "buttons": "transferButtons",
+        "fields": [
+          "fromAccountField",
+          "toAccountField",
+          "amountField"
+        ]
+      },
+      {
+        "id": "fromAccountField",
+        "component": "FormControl",
+        "label": "From Account",
+        "input": "fromAccountSelect"
+      },
+      {
+        "id": "fromAccountSelect",
+        "component": "Select",
+        "name": "from_account",
+        "placeholder": "Select Source",
+        "items": [
+          "optChkFrom",
+          "optSavFrom"
+        ]
+      },
+      {
+        "id": "optChkFrom",
+        "component": "SelectItem",
+        "value": "checking",
+        "label": "Checking (...4821) - $4,250.80"
+      },
+      {
+        "id": "optSavFrom",
+        "component": "SelectItem",
+        "value": "savings",
+        "label": "Savings (...9032) - $18,620.15"
+      },
+      {
+        "id": "toAccountField",
+        "component": "FormControl",
+        "label": "To Account",
+        "input": "toAccountSelect"
+      },
+      {
+        "id": "toAccountSelect",
+        "component": "Select",
+        "name": "to_account",
+        "placeholder": "Select Destination",
+        "items": [
+          "optSavTo",
+          "optCredTo",
+          "optChkTo"
+        ]
+      },
+      {
+        "id": "optSavTo",
+        "component": "SelectItem",
+        "value": "savings",
+        "label": "Savings (...9032)"
+      },
+      {
+        "id": "optCredTo",
+        "component": "SelectItem",
+        "value": "credit",
+        "label": "Credit Card (...1154) - Pay Balance"
+      },
+      {
+        "id": "optChkTo",
+        "component": "SelectItem",
+        "value": "checking",
+        "label": "Checking (...4821)"
+      },
+      {
+        "id": "amountField",
+        "component": "FormControl",
+        "label": "Amount ($)",
+        "input": "amountInput"
+      },
+      {
+        "id": "amountInput",
+        "component": "Input",
+        "name": "amount",
+        "type": "number",
+        "placeholder": "0.00"
+      },
+      {
+        "id": "transferButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitTransferBtn"
+        ]
+      },
+      {
+        "id": "submitTransferBtn",
+        "component": "Button",
+        "label": "Transfer Funds",
+        "variant": "primary"
+      },
+      {
+        "id": "tabControls",
+        "component": "TabItem",
+        "value": "card_controls",
+        "trigger": "Card Security",
+        "content": [
+          "freezeCard"
+        ]
+      },
+      {
+        "id": "freezeCard",
+        "component": "Card",
+        "variant": "card",
+        "gap": "m",
+        "children": [
+          "freezeTitle",
+          "freezeSwitchGroup",
+          "freezeAlert"
+        ]
+      },
+      {
+        "id": "freezeTitle",
+        "component": "Heading",
+        "text": "Credit Line Security Controls",
+        "level": "h4"
+      },
+      {
+        "id": "freezeSwitchGroup",
+        "component": "SwitchGroup",
+        "name": "card_security_switches",
+        "items": [
+          "switchFreezeCredit",
+          "switchIntl"
+        ]
+      },
+      {
+        "id": "switchFreezeCredit",
+        "component": "SwitchItem",
+        "name": "freeze_credit_line",
+        "label": "Freeze Credit Line",
+        "description": "Instantly block all new transactions and authorizations on Credit Card (...1154).",
+        "defaultChecked": false
+      },
+      {
+        "id": "switchIntl",
+        "component": "SwitchItem",
+        "name": "block_intl",
+        "label": "Block International Transactions",
+        "description": "Decline any charges originating outside your home region.",
+        "defaultChecked": true
+      },
+      {
+        "id": "freezeAlert",
+        "component": "Alert",
+        "title": "Card Status Active",
+        "description": "Your credit line is currently unfrozen and active for purchases.",
+        "variant": "info"
+      },
+      {
+        "id": "tabAlerts",
+        "component": "TabItem",
+        "value": "alerts",
+        "trigger": "Manage Alerts",
+        "content": [
+          "alertsCard"
+        ]
+      },
+      {
+        "id": "alertsCard",
+        "component": "Card",
+        "variant": "card",
+        "gap": "m",
+        "children": [
+          "alertsTitle",
+          "alertsSwitchGroup",
+          "saveAlertsBtn"
+        ]
+      },
+      {
+        "id": "alertsTitle",
+        "component": "Heading",
+        "text": "Notification & Alert Triggers",
+        "level": "h4"
+      },
+      {
+        "id": "alertsSwitchGroup",
+        "component": "SwitchGroup",
+        "name": "alert_triggers",
+        "items": [
+          "altLargeTx",
+          "altLowBal",
+          "altBillDue",
+          "altCreditChange"
+        ]
+      },
+      {
+        "id": "altLargeTx",
+        "component": "SwitchItem",
+        "name": "alert_large_tx",
+        "label": "Large Transaction Alerts",
+        "description": "Notify when any transaction exceeds $500.",
+        "defaultChecked": true
+      },
+      {
+        "id": "altLowBal",
+        "component": "SwitchItem",
+        "name": "alert_low_bal",
+        "label": "Low Balance Warning",
+        "description": "Alert when Checking balance drops below $500.",
+        "defaultChecked": true
+      },
+      {
+        "id": "altBillDue",
+        "component": "SwitchItem",
+        "name": "alert_bill_due",
+        "label": "Upcoming Bill Reminders",
+        "description": "Send a push notification 3 days prior to bill due date.",
+        "defaultChecked": true
+      },
+      {
+        "id": "altCreditChange",
+        "component": "SwitchItem",
+        "name": "alert_credit_score",
+        "label": "Credit Score Changes",
+        "description": "Notify when monthly credit updates are published.",
+        "defaultChecked": false
+      },
+      {
+        "id": "saveAlertsBtn",
+        "component": "Button",
+        "label": "Save Alert Preferences",
+        "variant": "secondary"
+      },
+      {
+        "id": "followUps",
+        "component": "FollowUpBlock",
+        "items": [
+          "fu1",
+          "fu2"
+        ]
+      },
+      {
+        "id": "fu1",
+        "component": "FollowUpItem",
+        "text": "How can I increase my credit limit?"
+      },
+      {
+        "id": "fu2",
+        "component": "FollowUpItem",
+        "text": "Set up an automatic monthly deposit to my Vacation Goal"
+      }
+    ]
+  }
+}
+</a2ui-json>

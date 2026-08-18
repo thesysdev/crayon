@@ -1,0 +1,405 @@
+Your personal budget dashboard is ready — track spend vs budget, category breakdown, largest expense, and add new transactions all in one place.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "monthSelectorSection",
+          "budgetOverviewCard",
+          "categorySplitCard",
+          "largestExpenseCard",
+          "addExpenseSection"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Personal Budget Check",
+        "subtitle": "Single-screen overview • August 2026"
+      },
+      {
+        "id": "monthSelectorSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "monthSelectorText",
+          "monthFormControl"
+        ]
+      },
+      {
+        "id": "monthSelectorText",
+        "component": "TextContent",
+        "text": "**4. Change month** — Select a different month to review past or planned spending. Currently viewing: **August 2026**",
+        "size": "small"
+      },
+      {
+        "id": "monthFormControl",
+        "component": "FormControl",
+        "label": "View month",
+        "input": "monthSelect",
+        "hint": "Switch to see historical budgets"
+      },
+      {
+        "id": "monthSelect",
+        "component": "Select",
+        "name": "view_month",
+        "items": [
+          "monthOptAug",
+          "monthOptJuly",
+          "monthOptJune",
+          "monthOptSept"
+        ],
+        "placeholder": "August 2026",
+        "value": "2026-08"
+      },
+      {
+        "id": "monthOptAug",
+        "component": "SelectItem",
+        "value": "2026-08",
+        "label": "August 2026 — Current"
+      },
+      {
+        "id": "monthOptJuly",
+        "component": "SelectItem",
+        "value": "2026-07",
+        "label": "July 2026"
+      },
+      {
+        "id": "monthOptJune",
+        "component": "SelectItem",
+        "value": "2026-06",
+        "label": "June 2026"
+      },
+      {
+        "id": "monthOptSept",
+        "component": "SelectItem",
+        "value": "2026-09",
+        "label": "September 2026 (Forecast)"
+      },
+      {
+        "id": "budgetOverviewCard",
+        "component": "Card",
+        "children": [
+          "budgetHeader",
+          "budgetProgress",
+          "budgetTable",
+          "budgetCallout"
+        ]
+      },
+      {
+        "id": "budgetHeader",
+        "component": "CardHeader",
+        "title": "1. Total Spent vs Budget",
+        "subtitle": "August 1-18 • Budget resets on the 1st"
+      },
+      {
+        "id": "budgetProgress",
+        "component": "Progress",
+        "value": 81,
+        "label": "$2,840 spent of $3,500 budget (81%)"
+      },
+      {
+        "id": "budgetTable",
+        "component": "Table",
+        "columns": [
+          "colBudgetMetric",
+          "colBudgetAmount"
+        ]
+      },
+      {
+        "id": "colBudgetMetric",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Monthly Budget",
+          "Total Spent",
+          "Remaining",
+          "Daily Avg. So Far"
+        ]
+      },
+      {
+        "id": "colBudgetAmount",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "$3,500.00",
+          "$2,840.00",
+          "$660.00",
+          "$157.78 / day"
+        ]
+      },
+      {
+        "id": "budgetCallout",
+        "component": "TextCallout",
+        "variant": "warning",
+        "title": "$660 left for 13 days",
+        "description": "You're on pace to exceed budget by ~$210 if spending continues. Consider reducing Dining & Entertainment."
+      },
+      {
+        "id": "categorySplitCard",
+        "component": "Card",
+        "children": [
+          "categoryHeader",
+          "categoryPie",
+          "categoryNote"
+        ]
+      },
+      {
+        "id": "categoryHeader",
+        "component": "CardHeader",
+        "title": "2. Spending Split by Category",
+        "subtitle": "Where your $2,840 went this month"
+      },
+      {
+        "id": "categoryPie",
+        "component": "PieChart",
+        "labels": [
+          "Housing (Rent)",
+          "Groceries",
+          "Dining Out",
+          "Transportation",
+          "Entertainment",
+          "Shopping",
+          "Utilities"
+        ],
+        "values": [
+          1200,
+          420,
+          310,
+          285,
+          245,
+          200,
+          180
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "categoryNote",
+        "component": "TextContent",
+        "text": "Housing is 42.3% of spend. Tap chart slices to see details. Largest non-fixed category is Groceries at $420.",
+        "size": "small"
+      },
+      {
+        "id": "largestExpenseCard",
+        "component": "Card",
+        "children": [
+          "largestHeader",
+          "largestAlert",
+          "largestTable"
+        ]
+      },
+      {
+        "id": "largestHeader",
+        "component": "CardHeader",
+        "title": "3. Largest Expense Highlighted",
+        "subtitle": "Your single biggest transaction this month"
+      },
+      {
+        "id": "largestAlert",
+        "component": "Alert",
+        "title": "🔴 $1,200.00 — Apartment Rent",
+        "description": "Aug 1, 2026 • Housing • Paid via Autopay • 42% of total monthly spend",
+        "variant": "destructive"
+      },
+      {
+        "id": "largestTable",
+        "component": "Table",
+        "columns": [
+          "colLargestField",
+          "colLargestValue"
+        ]
+      },
+      {
+        "id": "colLargestField",
+        "component": "Col",
+        "label": "Detail",
+        "data": [
+          "Merchant",
+          "Category",
+          "Date",
+          "Payment Method",
+          "Note"
+        ]
+      },
+      {
+        "id": "colLargestValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "Avalon Apartments",
+          "Housing",
+          "Aug 1, 2026",
+          "Bank Transfer",
+          "Next rent due Sept 1"
+        ]
+      },
+      {
+        "id": "addExpenseSection",
+        "component": "Card",
+        "children": [
+          "addExpenseHeader",
+          "addExpenseForm"
+        ]
+      },
+      {
+        "id": "addExpenseHeader",
+        "component": "CardHeader",
+        "title": "5. Add an Expense",
+        "subtitle": "Log a new purchase to update totals instantly"
+      },
+      {
+        "id": "addExpenseForm",
+        "component": "Form",
+        "name": "add-expense",
+        "buttons": "formButtons",
+        "fields": [
+          "amountField",
+          "expCategoryField",
+          "dateField",
+          "noteField"
+        ]
+      },
+      {
+        "id": "amountField",
+        "component": "FormControl",
+        "label": "Amount ($)",
+        "input": "amountInput",
+        "hint": "Enter amount e.g. 45.99"
+      },
+      {
+        "id": "amountInput",
+        "component": "Input",
+        "name": "amount",
+        "placeholder": "0.00",
+        "type": "number"
+      },
+      {
+        "id": "expCategoryField",
+        "component": "FormControl",
+        "label": "Category",
+        "input": "expCategorySelect"
+      },
+      {
+        "id": "expCategorySelect",
+        "component": "Select",
+        "name": "category",
+        "items": [
+          "catRent",
+          "catGroceries",
+          "catDining",
+          "catTransport",
+          "catEntertainment",
+          "catShopping",
+          "catUtilities"
+        ],
+        "placeholder": "Choose category"
+      },
+      {
+        "id": "catRent",
+        "component": "SelectItem",
+        "value": "housing",
+        "label": "Housing"
+      },
+      {
+        "id": "catGroceries",
+        "component": "SelectItem",
+        "value": "groceries",
+        "label": "Groceries"
+      },
+      {
+        "id": "catDining",
+        "component": "SelectItem",
+        "value": "dining",
+        "label": "Dining Out"
+      },
+      {
+        "id": "catTransport",
+        "component": "SelectItem",
+        "value": "transport",
+        "label": "Transportation"
+      },
+      {
+        "id": "catEntertainment",
+        "component": "SelectItem",
+        "value": "entertainment",
+        "label": "Entertainment"
+      },
+      {
+        "id": "catShopping",
+        "component": "SelectItem",
+        "value": "shopping",
+        "label": "Shopping"
+      },
+      {
+        "id": "catUtilities",
+        "component": "SelectItem",
+        "value": "utilities",
+        "label": "Utilities"
+      },
+      {
+        "id": "dateField",
+        "component": "FormControl",
+        "label": "Date",
+        "input": "datePicker"
+      },
+      {
+        "id": "datePicker",
+        "component": "DatePicker",
+        "name": "expense_date",
+        "mode": "single"
+      },
+      {
+        "id": "noteField",
+        "component": "FormControl",
+        "label": "Description (optional)",
+        "input": "noteInput"
+      },
+      {
+        "id": "noteInput",
+        "component": "TextArea",
+        "name": "description",
+        "placeholder": "e.g., Trader Joe's weekly groceries",
+        "rows": 2
+      },
+      {
+        "id": "formButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitBtn",
+          "cancelBtn"
+        ]
+      },
+      {
+        "id": "submitBtn",
+        "component": "Button",
+        "label": "Add Expense",
+        "variant": "primary"
+      },
+      {
+        "id": "cancelBtn",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>

@@ -1,0 +1,865 @@
+Here's a complete emergency response coordination dashboard covering all 18 requirements, organized into tabs.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#DC2626",
+      "agentDisplayName": "Emergency Coordination Center"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "alertCritical",
+          "tabs"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Emergency Response Coordination Center",
+        "subtitle": "Regional disaster response — live operational picture"
+      },
+      {
+        "id": "alertCritical",
+        "component": "Alert",
+        "title": "CRITICAL: Zone C dam integrity compromised",
+        "description": "Mandatory evacuation in effect for Zones C and D. All units report to staging area 2.",
+        "variant": "destructive"
+      },
+      {
+        "id": "tabs",
+        "component": "Tabs",
+        "items": [
+          "tabOverview",
+          "tabIncidents",
+          "tabResources",
+          "tabShelters",
+          "tabOps",
+          "tabActions"
+        ]
+      },
+
+      {
+        "id": "tabOverview",
+        "component": "TabItem",
+        "value": "overview",
+        "trigger": "Overview",
+        "content": [
+          "severitySummary",
+          "rescueStats",
+          "weather",
+          "zoneFocus"
+        ]
+      },
+      {
+        "id": "severitySummary",
+        "component": "PieChart",
+        "labels": ["Critical", "High", "Moderate", "Low"],
+        "values": [3, 5, 7, 4],
+        "variant": "donut"
+      },
+      {
+        "id": "rescueStats",
+        "component": "Table",
+        "columns": ["rescueMetric", "rescueValue"]
+      },
+      {
+        "id": "rescueMetric",
+        "component": "Col",
+        "label": "Outcome (so far)",
+        "data": ["People rescued", "Casualties", "Missing", "Injured treated on site"]
+      },
+      {
+        "id": "rescueValue",
+        "component": "Col",
+        "label": "Count",
+        "data": ["1,247", "38", "112", "460"]
+      },
+      {
+        "id": "weather",
+        "component": "Table",
+        "columns": ["wxPeriod", "wxCond", "wxTemp", "wxWind", "wxPrecip"]
+      },
+      {
+        "id": "wxPeriod",
+        "component": "Col",
+        "label": "48h Forecast",
+        "data": ["Next 6h", "6–12h", "12–24h", "24–36h", "36–48h"]
+      },
+      {
+        "id": "wxCond",
+        "component": "Col",
+        "label": "Conditions",
+        "data": ["Heavy rain", "Rain, thunder", "Clearing", "Overcast", "Light showers"]
+      },
+      {
+        "id": "wxTemp",
+        "component": "Col",
+        "label": "Temp",
+        "data": ["14°C", "12°C", "16°C", "18°C", "15°C"]
+      },
+      {
+        "id": "wxWind",
+        "component": "Col",
+        "label": "Wind",
+        "data": ["45 km/h", "60 km/h gusts", "30 km/h", "20 km/h", "15 km/h"]
+      },
+      {
+        "id": "wxPrecip",
+        "component": "Col",
+        "label": "Precip %",
+        "data": ["95%", "80%", "30%", "20%", "40%"]
+      },
+      {
+        "id": "zoneFocus",
+        "component": "Form",
+        "name": "zone-focus",
+        "buttons": "zoneFocusButtons",
+        "fields": ["zoneFocusField"]
+      },
+      {
+        "id": "zoneFocusField",
+        "component": "FormControl",
+        "label": "Focus on a zone",
+        "input": "zoneFocusSelect",
+        "hint": "Filters all views to the selected zone"
+      },
+      {
+        "id": "zoneFocusSelect",
+        "component": "Select",
+        "name": "focus_zone",
+        "placeholder": "Select zone",
+        "items": ["zfAll", "zfA", "zfB", "zfC", "zfD", "zfE"]
+      },
+      {
+        "id": "zfAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All zones"
+      },
+      {
+        "id": "zfA",
+        "component": "SelectItem",
+        "value": "A",
+        "label": "Zone A — North Ridge"
+      },
+      {
+        "id": "zfB",
+        "component": "SelectItem",
+        "value": "B",
+        "label": "Zone B — Riverside"
+      },
+      {
+        "id": "zfC",
+        "component": "SelectItem",
+        "value": "C",
+        "label": "Zone C — Dam District"
+      },
+      {
+        "id": "zfD",
+        "component": "SelectItem",
+        "value": "D",
+        "label": "Zone D — Lowlands"
+      },
+      {
+        "id": "zfE",
+        "component": "SelectItem",
+        "value": "E",
+        "label": "Zone E — Hillside"
+      },
+      {
+        "id": "zoneFocusButtons",
+        "component": "Buttons",
+        "buttons": ["zoneFocusBtn"]
+      },
+      {
+        "id": "zoneFocusBtn",
+        "component": "Button",
+        "label": "Focus zone",
+        "variant": "primary"
+      },
+
+      {
+        "id": "tabIncidents",
+        "component": "TabItem",
+        "value": "incidents",
+        "trigger": "Incidents",
+        "content": ["incidentsTable", "aidRequestsTable", "sitrepForm"]
+      },
+      {
+        "id": "incidentsTable",
+        "component": "Table",
+        "columns": ["incId", "incZone", "incType", "incSeverity", "incStatus"]
+      },
+      {
+        "id": "incId",
+        "component": "Col",
+        "label": "Incident",
+        "data": ["INC-101", "INC-102", "INC-103", "INC-104", "INC-105", "INC-106", "INC-107"]
+      },
+      {
+        "id": "incZone",
+        "component": "Col",
+        "label": "Zone",
+        "data": ["C — Dam District", "D — Lowlands", "B — Riverside", "A — North Ridge", "C — Dam District", "E — Hillside", "D — Lowlands"]
+      },
+      {
+        "id": "incType",
+        "component": "Col",
+        "label": "Type",
+        "data": ["Dam breach risk", "Flash flooding", "Bridge collapse", "Landslide", "Building collapse", "Mudslide", "Power substation fire"]
+      },
+      {
+        "id": "incSeverity",
+        "component": "Col",
+        "label": "Severity",
+        "data": ["CRITICAL", "CRITICAL", "High", "High", "CRITICAL", "Moderate", "High"]
+      },
+      {
+        "id": "incStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": ["Evacuating", "Rescue ongoing", "Contained", "Monitoring", "Search & rescue", "Monitoring", "Crews dispatched"]
+      },
+      {
+        "id": "aidRequestsTable",
+        "component": "Table",
+        "columns": ["aidId", "aidZone", "aidNeed", "aidWait"]
+      },
+      {
+        "id": "aidId",
+        "component": "Col",
+        "label": "Aid requests awaiting action",
+        "data": ["REQ-501", "REQ-502", "REQ-503", "REQ-504", "REQ-505"]
+      },
+      {
+        "id": "aidZone",
+        "component": "Col",
+        "label": "Zone",
+        "data": ["C", "D", "B", "D", "A"]
+      },
+      {
+        "id": "aidNeed",
+        "component": "Col",
+        "label": "Need",
+        "data": ["Water rescue boats ×4", "Medical team", "Sandbags ×2000", "Drinking water", "Search dogs ×2"]
+      },
+      {
+        "id": "aidWait",
+        "component": "Col",
+        "label": "Waiting",
+        "data": ["25 min", "40 min", "1h 10m", "2h 05m", "3h 20m"]
+      },
+      {
+        "id": "sitrepForm",
+        "component": "Form",
+        "name": "sitrep",
+        "buttons": "sitrepButtons",
+        "fields": ["sitrepZoneField", "sitrepSummaryField", "sitrepSeverityField"]
+      },
+      {
+        "id": "sitrepZoneField",
+        "component": "FormControl",
+        "label": "File a situation report — Zone",
+        "input": "sitrepZoneSelect"
+      },
+      {
+        "id": "sitrepZoneSelect",
+        "component": "Select",
+        "name": "sitrep_zone",
+        "placeholder": "Select zone",
+        "items": ["srA", "srB", "srC", "srD", "srE"]
+      },
+      {
+        "id": "srA",
+        "component": "SelectItem",
+        "value": "A",
+        "label": "Zone A"
+      },
+      {
+        "id": "srB",
+        "component": "SelectItem",
+        "value": "B",
+        "label": "Zone B"
+      },
+      {
+        "id": "srC",
+        "component": "SelectItem",
+        "value": "C",
+        "label": "Zone C"
+      },
+      {
+        "id": "srD",
+        "component": "SelectItem",
+        "value": "D",
+        "label": "Zone D"
+      },
+      {
+        "id": "srE",
+        "component": "SelectItem",
+        "value": "E",
+        "label": "Zone E"
+      },
+      {
+        "id": "sitrepSummaryField",
+        "component": "FormControl",
+        "label": "Situation summary",
+        "input": "sitrepSummaryInput"
+      },
+      {
+        "id": "sitrepSummaryInput",
+        "component": "TextArea",
+        "name": "sitrep_summary",
+        "placeholder": "Describe current conditions, needs and actions taken…",
+        "rows": 4
+      },
+      {
+        "id": "sitrepSeverityField",
+        "component": "FormControl",
+        "label": "Severity assessment",
+        "input": "sitrepSeverityRadio"
+      },
+      {
+        "id": "sitrepSeverityRadio",
+        "component": "RadioGroup",
+        "name": "sitrep_severity",
+        "items": ["srSevCrit", "srSevHigh", "srSevMod", "srSevLow"]
+      },
+      {
+        "id": "srSevCrit",
+        "component": "RadioItem",
+        "label": "Critical",
+        "description": "Life-threatening, immediate action",
+        "value": "critical"
+      },
+      {
+        "id": "srSevHigh",
+        "component": "RadioItem",
+        "label": "High",
+        "description": "Serious, action within hours",
+        "value": "high"
+      },
+      {
+        "id": "srSevMod",
+        "component": "RadioItem",
+        "label": "Moderate",
+        "description": "Monitor and prepare",
+        "value": "moderate"
+      },
+      {
+        "id": "srSevLow",
+        "component": "RadioItem",
+        "label": "Low",
+        "description": "Stable",
+        "value": "low"
+      },
+      {
+        "id": "sitrepButtons",
+        "component": "Buttons",
+        "buttons": ["sitrepSubmitBtn"]
+      },
+      {
+        "id": "sitrepSubmitBtn",
+        "component": "Button",
+        "label": "File situation report",
+        "variant": "primary"
+      },
+
+      {
+        "id": "tabResources",
+        "component": "TabItem",
+        "value": "resources",
+        "trigger": "Resources",
+        "content": ["resourcesTable", "hospitalsTable", "donationsTable", "resourceRequestForm"]
+      },
+      {
+        "id": "resourcesTable",
+        "component": "Table",
+        "columns": ["resCat", "resType", "resAvail", "resTotal"]
+      },
+      {
+        "id": "resCat",
+        "component": "Col",
+        "label": "Category",
+        "data": ["Vehicle", "Vehicle", "Vehicle", "Vehicle", "Personnel", "Personnel", "Personnel", "Supplies", "Supplies", "Supplies", "Supplies"]
+      },
+      {
+        "id": "resType",
+        "component": "Col",
+        "label": "Type",
+        "data": ["Ambulances", "Fire trucks", "Rescue boats", "Helicopters", "Paramedics", "Firefighters", "Search & rescue", "Water (liters)", "Meals (MRE)", "Blankets", "Medical kits"]
+      },
+      {
+        "id": "resAvail",
+        "component": "Col",
+        "label": "Available",
+        "data": ["12", "8", "6", "2", "64", "92", "45", "18,000", "9,500", "4,200", "310"]
+      },
+      {
+        "id": "resTotal",
+        "component": "Col",
+        "label": "Total deployed",
+        "data": ["20", "14", "10", "3", "110", "160", "78", "40,000", "22,000", "10,000", "800"]
+      },
+      {
+        "id": "hospitalsTable",
+        "component": "Table",
+        "columns": ["hospName", "hospDist", "hospBeds", "hospIcu"]
+      },
+      {
+        "id": "hospName",
+        "component": "Col",
+        "label": "Nearby hospitals",
+        "data": ["St. Mary's General", "Regional Medical Center", "County Hospital", "Veterans Memorial"]
+      },
+      {
+        "id": "hospDist",
+        "component": "Col",
+        "label": "Distance",
+        "data": ["8 km", "14 km", "22 km", "30 km"]
+      },
+      {
+        "id": "hospBeds",
+        "component": "Col",
+        "label": "Free beds",
+        "data": ["24", "41", "12", "7"]
+      },
+      {
+        "id": "hospIcu",
+        "component": "Col",
+        "label": "Free ICU",
+        "data": ["3", "6", "1", "0"]
+      },
+      {
+        "id": "donationsTable",
+        "component": "Table",
+        "columns": ["donSource", "donItem", "donValue"]
+      },
+      {
+        "id": "donSource",
+        "component": "Col",
+        "label": "Donations received",
+        "data": ["Red Cross", "Local businesses fund", "Community drive", "National relief fund", "Faith groups coalition"]
+      },
+      {
+        "id": "donItem",
+        "component": "Col",
+        "label": "Item / Type",
+        "data": ["Cash", "Cash", "Food & clothing", "Cash", "Hygiene kits"]
+      },
+      {
+        "id": "donValue",
+        "component": "Col",
+        "label": "Value",
+        "data": ["$250,000", "$87,500", "12 pallets", "$500,000", "3,000 kits"]
+      },
+      {
+        "id": "resourceRequestForm",
+        "component": "Form",
+        "name": "resource-request",
+        "buttons": "resourceRequestButtons",
+        "fields": ["rrTypeField", "rrQtyField", "rrZoneField"]
+      },
+      {
+        "id": "rrTypeField",
+        "component": "FormControl",
+        "label": "Request more resources — Type",
+        "input": "rrTypeSelect"
+      },
+      {
+        "id": "rrTypeSelect",
+        "component": "Select",
+        "name": "resource_type",
+        "placeholder": "Resource type",
+        "items": ["rrAmb", "rrBoat", "rrHeli", "rrMed", "rrFire", "rrWater", "rrMeals", "rrBlankets"]
+      },
+      {
+        "id": "rrAmb",
+        "component": "SelectItem",
+        "value": "ambulance",
+        "label": "Ambulance"
+      },
+      {
+        "id": "rrBoat",
+        "component": "SelectItem",
+        "value": "rescue_boat",
+        "label": "Rescue boat"
+      },
+      {
+        "id": "rrHeli",
+        "component": "SelectItem",
+        "value": "helicopter",
+        "label": "Helicopter"
+      },
+      {
+        "id": "rrMed",
+        "component": "SelectItem",
+        "value": "paramedics",
+        "label": "Paramedics"
+      },
+      {
+        "id": "rrFire",
+        "component": "SelectItem",
+        "value": "firefighters",
+        "label": "Firefighters"
+      },
+      {
+        "id": "rrWater",
+        "component": "SelectItem",
+        "value": "water",
+        "label": "Drinking water (liters)"
+      },
+      {
+        "id": "rrMeals",
+        "component": "SelectItem",
+        "value": "meals",
+        "label": "Meals (MRE)"
+      },
+      {
+        "id": "rrBlankets",
+        "component": "SelectItem",
+        "value": "blankets",
+        "label": "Blankets"
+      },
+      {
+        "id": "rrQtyField",
+        "component": "FormControl",
+        "label": "Quantity",
+        "input": "rrQtyInput"
+      },
+      {
+        "id": "rrQtyInput",
+        "component": "Input",
+        "name": "quantity",
+        "placeholder": "e.g. 4",
+        "type": "number"
+      },
+      {
+        "id": "rrZoneField",
+        "component": "FormControl",
+        "label": "Destination zone",
+        "input": "rrZoneSelect"
+      },
+      {
+        "id": "rrZoneSelect",
+        "component": "Select",
+        "name": "request_zone",
+        "placeholder": "Select zone",
+        "items": ["rrzA", "rrzB", "rrzC", "rrzD", "rrzE"]
+      },
+      {
+        "id": "rrzA",
+        "component": "SelectItem",
+        "value": "A",
+        "label": "Zone A"
+      },
+      {
+        "id": "rrzB",
+        "component": "SelectItem",
+        "value": "B",
+        "label": "Zone B"
+      },
+      {
+        "id": "rrzC",
+        "component": "SelectItem",
+        "value": "C",
+        "label": "Zone C"
+      },
+      {
+        "id": "rrzD",
+        "component": "SelectItem",
+        "value": "D",
+        "label": "Zone D"
+      },
+      {
+        "id": "rrzE",
+        "component": "SelectItem",
+        "value": "E",
+        "label": "Zone E"
+      },
+      {
+        "id": "resourceRequestButtons",
+        "component": "Buttons",
+        "buttons": ["rrSubmitBtn"]
+      },
+      {
+        "id": "rrSubmitBtn",
+        "component": "Button",
+        "label": "Submit resource request",
+        "variant": "primary"
+      },
+
+      {
+        "id": "tabShelters",
+        "component": "TabItem",
+        "value": "shelters",
+        "trigger": "Shelters & Evac",
+        "content": ["sheltersTable", "evacTable", "roadsTable"]
+      },
+      {
+        "id": "sheltersTable",
+        "component": "Table",
+        "columns": ["shName", "shCap", "shOcc", "shFree"]
+      },
+      {
+        "id": "shName",
+        "component": "Col",
+        "label": "Shelter",
+        "data": ["Central High School", "Community Center East", "Sports Arena", "St. Luke's Church Hall", "Fairgrounds Pavilion"]
+      },
+      {
+        "id": "shCap",
+        "component": "Col",
+        "label": "Capacity",
+        "data": ["500", "300", "1,200", "150", "800"]
+      },
+      {
+        "id": "shOcc",
+        "component": "Col",
+        "label": "Occupancy",
+        "data": ["462", "187", "1,050", "150", "390"]
+      },
+      {
+        "id": "shFree",
+        "component": "Col",
+        "label": "Free space",
+        "data": ["38", "113", "150", "0 (FULL)", "410"]
+      },
+      {
+        "id": "evacTable",
+        "component": "Table",
+        "columns": ["evRoute", "evZones", "evStatus"]
+      },
+      {
+        "id": "evRoute",
+        "component": "Col",
+        "label": "Evacuation route",
+        "data": ["Route 1 — Hwy 9 North", "Route 2 — River Rd", "Route 3 — Old Mill Rd", "Route 4 — Hillcrest Ave", "Route 5 — Valley Bypass"]
+      },
+      {
+        "id": "evZones",
+        "component": "Col",
+        "label": "Serves zones",
+        "data": ["A, C", "B, D", "C, D", "E", "B, E"]
+      },
+      {
+        "id": "evStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": ["OPEN", "FLOODED — CLOSED", "OPEN (one lane)", "OPEN", "CONGESTED — 45 min delay"]
+      },
+      {
+        "id": "roadsTable",
+        "component": "Table",
+        "columns": ["rdName", "rdReason"]
+      },
+      {
+        "id": "rdName",
+        "component": "Col",
+        "label": "Roads closed",
+        "data": ["River Rd (Bridge St–5th Ave)", "Dam Access Rd", "Lowland Causeway", "Pine St underpass", "County Rd 12"]
+      },
+      {
+        "id": "rdReason",
+        "component": "Col",
+        "label": "Reason",
+        "data": ["Flooding", "Dam hazard zone", "Washed out", "Structural damage", "Landslide debris"]
+      },
+
+      {
+        "id": "tabOps",
+        "component": "TabItem",
+        "value": "ops",
+        "trigger": "Personnel & Comms",
+        "content": ["volunteersTable", "tasksTable", "commsTable"]
+      },
+      {
+        "id": "volunteersTable",
+        "component": "Table",
+        "columns": ["volName", "volAssign", "volZone"]
+      },
+      {
+        "id": "volName",
+        "component": "Col",
+        "label": "Volunteers on duty",
+        "data": ["M. Alvarez", "J. Chen", "S. Okafor", "L. Novak", "R. Patel", "T. Nguyen", "K. Brooks", "A. Haddad"]
+      },
+      {
+        "id": "volAssign",
+        "component": "Col",
+        "label": "Assignment",
+        "data": ["Shelter intake", "Sandbagging crew lead", "Boat rescue support", "Supply distribution", "Medical triage aide", "Comms relay", "Traffic control", "Kitchen / meals"]
+      },
+      {
+        "id": "volZone",
+        "component": "Col",
+        "label": "Zone",
+        "data": ["Central HS", "C", "D", "Sports Arena", "D", "HQ", "Route 4", "Fairgrounds"]
+      },
+      {
+        "id": "tasksTable",
+        "component": "Table",
+        "columns": ["taskDesc", "taskAssignee", "taskDue"]
+      },
+      {
+        "id": "taskDesc",
+        "component": "Col",
+        "label": "Open tasks",
+        "data": ["Reinforce dam spillway barriers", "Clear Route 5 congestion", "Restock Zone D water", "Set up overflow shelter cots", "Inspect Hillcrest bridge", "Coordinate hospital transfers"]
+      },
+      {
+        "id": "taskAssignee",
+        "component": "Col",
+        "label": "Assignee",
+        "data": ["Engineering Unit 3", "Traffic Team B", "Logistics — R. Patel", "Shelter Ops — M. Alvarez", "Structural Team 1", "MedCom — Dr. Reyes"]
+      },
+      {
+        "id": "taskDue",
+        "component": "Col",
+        "label": "Due",
+        "data": ["2h", "1h", "4h", "Tonight", "6h", "Ongoing"]
+      },
+      {
+        "id": "commsTable",
+        "component": "Table",
+        "columns": ["commChannel", "commStatus"]
+      },
+      {
+        "id": "commChannel",
+        "component": "Col",
+        "label": "Communication channel",
+        "data": ["VHF Radio Net 1", "VHF Radio Net 2", "Cell network", "Satellite uplink", "Public alert SMS", "HAM emergency net"]
+      },
+      {
+        "id": "commStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": ["UP", "UP", "DEGRADED (Zone C towers down)", "UP", "UP", "UP"]
+      },
+
+      {
+        "id": "tabActions",
+        "component": "TabItem",
+        "value": "actions",
+        "trigger": "Broadcast",
+        "content": ["broadcastForm"]
+      },
+      {
+        "id": "broadcastForm",
+        "component": "Form",
+        "name": "broadcast",
+        "buttons": "broadcastButtons",
+        "fields": ["bcChannelField", "bcMsgField"]
+      },
+      {
+        "id": "bcChannelField",
+        "component": "FormControl",
+        "label": "Broadcast an update — Channels",
+        "input": "bcChannelGroup"
+      },
+      {
+        "id": "bcChannelGroup",
+        "component": "CheckBoxGroup",
+        "name": "broadcast_channels",
+        "items": ["bcChRadio", "bcChSms", "bcChSat", "bcChAll"]
+      },
+      {
+        "id": "bcChRadio",
+        "component": "CheckBoxItem",
+        "label": "VHF radio nets",
+        "description": "All field units",
+        "name": "ch_radio",
+        "defaultChecked": true
+      },
+      {
+        "id": "bcChSms",
+        "component": "CheckBoxItem",
+        "label": "Public alert SMS",
+        "description": "Residents in affected zones",
+        "name": "ch_sms"
+      },
+      {
+        "id": "bcChSat",
+        "component": "CheckBoxItem",
+        "label": "Satellite uplink",
+        "description": "Regional & national coordination",
+        "name": "ch_sat"
+      },
+      {
+        "id": "bcChAll",
+        "component": "CheckBoxItem",
+        "label": "All channels",
+        "description": "Maximum reach",
+        "name": "ch_all"
+      },
+      {
+        "id": "bcMsgField",
+        "component": "FormControl",
+        "label": "Message",
+        "input": "bcMsgInput"
+      },
+      {
+        "id": "bcMsgInput",
+        "component": "TextArea",
+        "name": "broadcast_message",
+        "placeholder": "Type the update to broadcast…",
+        "rows": 4
+      },
+      {
+        "id": "broadcastButtons",
+        "component": "Buttons",
+        "buttons": ["bcSubmitBtn", "bcCancelBtn"]
+      },
+      {
+        "id": "bcSubmitBtn",
+        "component": "Button",
+        "label": "Broadcast now",
+        "variant": "primary"
+      },
+      {
+        "id": "bcCancelBtn",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+All 18 items are covered:
+
+1. **Incidents by zone + severity** — Incidents tab table
+2. **Severity summary** — Overview donut chart
+3. **Vehicles/personnel/supplies** — Resources tab table
+4. **Shelters (capacity/occupancy)** — Shelters & Evac tab
+5. **Evacuation route status** — Shelters & Evac tab
+6. **48-hour weather forecast** — Overview tab
+7. **Rescued & casualties** — Overview tab stats
+8. **Volunteers + assignments** — Personnel & Comms tab
+9. **Donations received** — Resources tab
+10. **Pending aid requests** — Incidents tab
+11. **Comms channel status** — Personnel & Comms tab
+12. **Roads closed** — Shelters & Evac tab
+13. **Hospitals with free beds** — Resources tab
+14. **Open tasks + assignees** — Personnel & Comms tab
+15. **Resource request form** (type + quantity) — Resources tab
+16. **Broadcast form** (message + channels) — Broadcast tab
+17. **Zone focus selector** — Overview tab
+18. **Situation report form** — Incidents tab

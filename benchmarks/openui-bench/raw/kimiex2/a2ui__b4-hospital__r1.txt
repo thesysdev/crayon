@@ -1,0 +1,321 @@
+Here's a hospital operations command center covering all 12 requirements:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "erWait",
+          "occupancy",
+          "admissionsChart",
+          "deptChart",
+          "staffTable",
+          "criticalCallout",
+          "dischargeTable",
+          "orTable",
+          "supplies",
+          "datePicker",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Hospital Operations Command",
+        "subtitle": "Live overview — updated 5 min ago"
+      },
+      {
+        "id": "erWait",
+        "component": "Alert",
+        "title": "Current ER Wait: 42 minutes",
+        "description": "18 patients waiting, 6 in triage. Above the 30-min target.",
+        "variant": "warning"
+      },
+      {
+        "id": "occupancy",
+        "component": "RadialChart",
+        "labels": ["ICU", "General Ward", "ER", "Pediatrics", "Maternity"],
+        "values": [92, 78, 64, 45, 58]
+      },
+      {
+        "id": "admissionsChart",
+        "component": "LineChart",
+        "labels": ["Apr 1", "Apr 2", "Apr 3", "Apr 4", "Apr 5", "Apr 6", "Apr 7", "Apr 8", "Apr 9", "Apr 10", "Apr 11", "Apr 12", "Apr 13", "Apr 14"],
+        "series": ["admSeries"],
+        "variant": "natural",
+        "xLabel": "Day",
+        "yLabel": "Admissions"
+      },
+      {
+        "id": "admSeries",
+        "component": "Series",
+        "category": "Admissions",
+        "values": [34, 41, 38, 52, 47, 29, 33, 45, 50, 44, 39, 56, 48, 43]
+      },
+      {
+        "id": "deptChart",
+        "component": "PieChart",
+        "labels": ["Cardiology", "Orthopedics", "Neurology", "Oncology", "General Medicine", "Pediatrics"],
+        "values": [62, 48, 35, 41, 88, 29],
+        "variant": "donut"
+      },
+      {
+        "id": "staffTable",
+        "component": "Table",
+        "columns": ["staffName", "staffRole", "staffUnit"]
+      },
+      {
+        "id": "staffName",
+        "component": "Col",
+        "label": "Staff Member",
+        "data": ["Dr. A. Reyes", "Dr. S. Chen", "Nurse J. Okafor", "Nurse M. Patel", "Tech L. Gomez", "Dr. K. Nguyen"]
+      },
+      {
+        "id": "staffRole",
+        "component": "Col",
+        "label": "Role",
+        "data": ["Attending Physician", "Surgeon", "Charge Nurse", "ER Nurse", "Radiology Tech", "Anesthesiologist"]
+      },
+      {
+        "id": "staffUnit",
+        "component": "Col",
+        "label": "Unit",
+        "data": ["ER", "OR", "ICU", "ER", "Imaging", "OR"]
+      },
+      {
+        "id": "criticalCallout",
+        "component": "Callout",
+        "variant": "error",
+        "title": "3 Critical Patients",
+        "description": "Bed ICU-04: post-op cardiac, unstable vitals. Bed ICU-07: sepsis, on vasopressors. Bed ER-12: trauma, awaiting OR slot."
+      },
+      {
+        "id": "dischargeTable",
+        "component": "Table",
+        "columns": ["disPat", "disRoom", "disStatus"]
+      },
+      {
+        "id": "disPat",
+        "component": "Col",
+        "label": "Ready for Discharge",
+        "data": ["Patient #4821", "Patient #4790", "Patient #4855", "Patient #4862"]
+      },
+      {
+        "id": "disRoom",
+        "component": "Col",
+        "label": "Room",
+        "data": ["GW-201", "GW-114", "PED-08", "MAT-03"]
+      },
+      {
+        "id": "disStatus",
+        "component": "Col",
+        "label": "Pending",
+        "data": ["Pharmacy", "Transport", "Paperwork", "Final vitals"]
+      },
+      {
+        "id": "orTable",
+        "component": "Table",
+        "columns": ["orTime", "orProc", "orRoom"]
+      },
+      {
+        "id": "orTime",
+        "component": "Col",
+        "label": "Time",
+        "data": ["07:30", "09:00", "11:30", "13:00", "15:30"]
+      },
+      {
+        "id": "orProc",
+        "component": "Col",
+        "label": "Procedure",
+        "data": ["Appendectomy", "Knee replacement", "CABG", "C-section", "Tumor resection"]
+      },
+      {
+        "id": "orRoom",
+        "component": "Col",
+        "label": "OR",
+        "data": ["OR-2", "OR-1", "OR-3", "OR-4", "OR-1"]
+      },
+      {
+        "id": "supplies",
+        "component": "TagBlock",
+        "tags": ["LOW: IV saline bags (12 left)", "LOW: N95 masks (2 boxes)", "LOW: Blood type O- (4 units)", "LOW: Surgical gloves size M", "LOW: Insulin pens (9 left)"]
+      },
+      {
+        "id": "datePicker",
+        "component": "DatePicker",
+        "name": "view_date",
+        "mode": "single"
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": ["incidentDialog", "transferDrawer"]
+      },
+      {
+        "id": "incidentDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "File an Incident",
+        "title": "Incident Report",
+        "description": "Log a new operational incident",
+        "content": ["incidentForm"],
+        "triggerVariant": "destructive"
+      },
+      {
+        "id": "incidentForm",
+        "component": "Form",
+        "name": "incident-report",
+        "buttons": "incidentButtons",
+        "fields": ["incType", "incDesc"]
+      },
+      {
+        "id": "incType",
+        "component": "FormControl",
+        "label": "Incident type",
+        "input": "incTypeSelect"
+      },
+      {
+        "id": "incTypeSelect",
+        "component": "Select",
+        "name": "incident_type",
+        "items": ["incT1", "incT2", "incT3"],
+        "placeholder": "Select type"
+      },
+      {
+        "id": "incT1",
+        "component": "SelectItem",
+        "value": "patient_safety",
+        "label": "Patient safety"
+      },
+      {
+        "id": "incT2",
+        "component": "SelectItem",
+        "value": "equipment",
+        "label": "Equipment failure"
+      },
+      {
+        "id": "incT3",
+        "component": "SelectItem",
+        "value": "staffing",
+        "label": "Staffing issue"
+      },
+      {
+        "id": "incDesc",
+        "component": "FormControl",
+        "label": "Description",
+        "input": "incDescInput"
+      },
+      {
+        "id": "incDescInput",
+        "component": "TextArea",
+        "name": "description",
+        "placeholder": "Describe what happened...",
+        "rows": 4
+      },
+      {
+        "id": "incidentButtons",
+        "component": "Buttons",
+        "buttons": ["incSubmit"]
+      },
+      {
+        "id": "incSubmit",
+        "component": "Button",
+        "label": "Submit Incident",
+        "variant": "primary"
+      },
+      {
+        "id": "transferDrawer",
+        "component": "DrawerBlock",
+        "triggerLabel": "Request Patient Transfer",
+        "title": "Patient Transfer Request",
+        "description": "Move a patient between units or facilities",
+        "content": ["transferForm"]
+      },
+      {
+        "id": "transferForm",
+        "component": "Form",
+        "name": "transfer-request",
+        "buttons": "transferButtons",
+        "fields": ["trPatient", "trFrom", "trTo", "trReason"]
+      },
+      {
+        "id": "trPatient",
+        "component": "FormControl",
+        "label": "Patient ID",
+        "input": "trPatientInput"
+      },
+      {
+        "id": "trPatientInput",
+        "component": "Input",
+        "name": "patient_id",
+        "placeholder": "e.g. #4821"
+      },
+      {
+        "id": "trFrom",
+        "component": "FormControl",
+        "label": "From unit",
+        "input": "trFromInput"
+      },
+      {
+        "id": "trFromInput",
+        "component": "Input",
+        "name": "from_unit",
+        "placeholder": "e.g. ER"
+      },
+      {
+        "id": "trTo",
+        "component": "FormControl",
+        "label": "To unit",
+        "input": "trToInput"
+      },
+      {
+        "id": "trToInput",
+        "component": "Input",
+        "name": "to_unit",
+        "placeholder": "e.g. ICU"
+      },
+      {
+        "id": "trReason",
+        "component": "FormControl",
+        "label": "Reason",
+        "input": "trReasonInput"
+      },
+      {
+        "id": "trReasonInput",
+        "component": "TextArea",
+        "name": "reason",
+        "placeholder": "Clinical justification...",
+        "rows": 3
+      },
+      {
+        "id": "transferButtons",
+        "component": "Buttons",
+        "buttons": ["trSubmit"]
+      },
+      {
+        "id": "trSubmit",
+        "component": "Button",
+        "label": "Submit Transfer Request",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+All 12 items are covered: (1) bed occupancy radial chart by unit, (2) ER wait alert, (3) 14-day admissions line chart, (4) patients-per-department donut, (5) staff-on-shift table with roles, (6) critical patients callout, (7) discharge-ready table, (8) today's OR bookings table, (9) low-supplies tag block, (10) incident filing via dialog form, (11) date picker to view another day, and (12) transfer request via drawer form.

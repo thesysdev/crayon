@@ -1,0 +1,60 @@
+root = Card([header, sep1, missingAlert, mainGrid, sep2, myUpdateForm, followUps], "card", "column", "l")
+
+header = CardHeader("Async Standup", "Wednesday, Oct 25, 2023 • Engineering & Design")
+sep1 = Separator("horizontal")
+
+missingAlert = Callout("warning", "3 Updates Missing", "3 of 8 team members have not submitted their standup yet today.")
+
+mainGrid = Accordion([sectionAlex, sectionSarah, sectionMarcus, sectionElena, sectionDavid])
+
+sectionAlex = AccordionItem("alex", "🔴 Alex Chen — Backend Lead (BLOCKED)", [alexBlockedCallout, alexUpdateContent])
+alexBlockedCallout = TextCallout("danger", "Blocker: Staging API Down", "Waiting on DevOps to resolve database connection timeouts on staging-2 environment before continuing load testing.")
+alexUpdateContent = ListBlock([alexYesterday, alexToday])
+alexYesterday = ListItem("Yesterday", "Completed auth service refactoring and merged PR #402.")
+alexToday = ListItem("Today", "Investigating load testing failures; blocked until staging API is restored.")
+
+sectionSarah = AccordionItem("sarah", "🟢 Sarah Jenkins — Frontend Lead", [sarahUpdateContent])
+sarahUpdateContent = ListBlock([sarahYesterday, sarahToday])
+sarahYesterday = ListItem("Yesterday", "Finished mobile responsive views for Dashboard v2.")
+sarahToday = ListItem("Today", "Reviewing open PRs and pairing with Elena on dark mode theme tokens.")
+
+sectionMarcus = AccordionItem("marcus", "🟢 Marcus Vance — Product Design", [marcusUpdateContent])
+marcusUpdateContent = ListBlock([marcusYesterday, marcusToday])
+marcusYesterday = ListItem("Yesterday", "Finalized user flows for onboarding checkout redesign.")
+marcusToday = ListItem("Today", "Conducting usability tests with 4 customer feedback participants.")
+
+sectionElena = AccordionItem("elena", "🟢 Elena Rostova — Frontend Engineer", [elenaUpdateContent])
+elenaUpdateContent = ListBlock([elenaYesterday, elenaToday])
+elenaYesterday = ListItem("Yesterday", "Fixed high-priority accessibility bugs in navigation dropdown.")
+elenaToday = ListItem("Today", "Implementing dark mode CSS variable structure.")
+
+sectionDavid = AccordionItem("david", "🔴 David Kim — DevOps Engineer (BLOCKED)", [davidBlockedCallout, davidUpdateContent])
+davidBlockedCallout = TextCallout("danger", "Blocker: AWS Quota Limit", "Submitted ticket to AWS Support for vCPU limit increase; pending approval.")
+davidUpdateContent = ListBlock([davidYesterday, davidToday])
+davidYesterday = ListItem("Yesterday", "Migrated Kubernetes clusters to v1.27.")
+davidToday = ListItem("Today", "Optimizing CI/CD build speeds; blocked on AWS quota increase.")
+
+sep2 = Separator("horizontal")
+
+myUpdateForm = Form("post-standup", formButtons, [fieldYesterday, fieldToday, fieldBlockers, fieldMood])
+fieldYesterday = FormControl("What did you accomplish yesterday?", inputYesterday)
+inputYesterday = TextArea("yesterday", "E.g., Shipped feature X, reviewed PR #123...", 2)
+
+fieldToday = FormControl("What are you working on today?", inputToday)
+inputToday = TextArea("today", "E.g., Implementing API endpoints for...", 2)
+
+fieldBlockers = FormControl("Any blockers?", inputBlockers, "Leave blank if you have no blockers")
+inputBlockers = Input("blockers", "E.g., Waiting on design approval...")
+
+fieldMood = FormControl("How are you feeling today?", selectMood)
+selectMood = Select("mood", [mood1, mood2, mood3], "Select mood...")
+mood1 = SelectItem("great", "🚀 Great / High Energy")
+mood2 = SelectItem("good", "🟢 Good / Steady")
+mood3 = SelectItem("blocked", "🔴 Blocked / Need Help")
+
+formButtons = Buttons([submitBtn])
+submitBtn = Button("Submit Today's Standup", null, "primary")
+
+followUps = FollowUpBlock([fu1, fu2])
+fu1 = FollowUpItem("Nudge missing team members")
+fu2 = FollowUpItem("View standup history for this week")

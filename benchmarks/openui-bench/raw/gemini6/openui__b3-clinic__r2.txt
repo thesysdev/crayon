@@ -1,0 +1,60 @@
+root = Card([header, metricsGrid, currentAlert, mainSection, checkInForm, followUps], "card", "column", "m")
+
+header = CardHeader("Clinic Reception Desk", "Today's Schedule & Room Management")
+
+metricsGrid = Card([expectedCard, noShowCard, freeRoomsCard], "clear", "row", "m", "stretch")
+
+expectedCard = Card([expectedVal, expectedLabel], "sunk", "column", "xs", "center", "center")
+expectedVal = Heading("24", "h2")
+expectedLabel = TextContent("Expected Patients Today", "small")
+
+noShowCard = Card([noShowVal, noShowLabel], "sunk", "column", "xs", "center", "center")
+noShowVal = Heading("4.2%", "h2")
+noShowLabel = TextContent("No-Show Rate (This Month)", "small")
+
+freeRoomsCard = Card([freeRoomsVal, freeRoomsLabel, freeRoomsList], "sunk", "column", "xs", "center", "center")
+freeRoomsVal = Heading("3 Free", "h2")
+freeRoomsLabel = TextContent("Rooms Available Now", "small")
+freeRoomsList = TagBlock(["Room 102", "Room 105", "Exam B"])
+
+currentAlert = Alert("NEXT PATIENT TO CALL", "Arthur Dent — 10:15 AM (Dr. Adams, Exam Room 101)", "info")
+
+mainSection = Card([dateNav, appointmentsTable], "clear", "column", "s")
+
+dateNav = Buttons([prevBtn, todayBtn, nextBtn, datePickerBtn])
+prevBtn = Button("◄ Previous Day", null, "secondary")
+todayBtn = Button("Today (Oct 24)", null, "primary")
+nextBtn = Button("Next Day ►", null, "secondary")
+datePickerBtn = Button("Select Date...", null, "tertiary")
+
+appointmentsTable = Table([timeCol, patientCol, providerCol, roomCol, statusCol])
+timeCol = Col("Time", ["08:30 AM", "09:00 AM", "09:30 AM", "10:00 AM", "10:15 AM", "11:00 AM", "11:30 AM"])
+patientCol = Col("Patient Name", ["Sarah Connor", "James T. Kirk", "Ellen Ripley", "Bruce Wayne", "Arthur Dent", "Clark Kent", "Diana Prince"])
+providerCol = Col("Provider", ["Dr. Adams", "Dr. Baker", "Dr. Adams", "Dr. Evans", "Dr. Adams", "Dr. Baker", "Dr. Evans"])
+roomCol = Col("Room", ["Exam A", "Room 101", "Exam A", "Room 103", "Room 101", "Room 102", "Exam B"])
+statusCol = Col("Status", ["Completed", "Completed", "In Progress", "Checked In", "Call Next", "Scheduled", "Scheduled"])
+
+checkInForm = Form("patient-checkin", formActions, [patientSelectField, roomSelectField, notesField])
+patientSelectField = FormControl("Quick Patient Check-In", patientSelect, "Select arrived patient to update status")
+patientSelect = Select("patient_id", [p1, p2, p3], "Choose patient...")
+p1 = SelectItem("p1", "Arthur Dent (10:15 AM)")
+p2 = SelectItem("p2", "Clark Kent (11:00 AM)")
+p3 = SelectItem("p3", "Diana Prince (11:30 AM)")
+
+roomSelectField = FormControl("Assign Room", roomSelect)
+roomSelect = Select("room_id", [r1, r2, r3], "Assign available room...")
+r1 = SelectItem("r102", "Room 102")
+r2 = SelectItem("r105", "Room 105")
+r3 = SelectItem("reb", "Exam B")
+
+notesField = FormControl("Arrival Notes", notesInput)
+notesInput = Input("notes", "e.g., Copay collected, updated insurance form")
+
+formActions = Buttons([submitCheckIn, printBadgeBtn])
+submitCheckIn = Button("Check In Patient", null, "primary")
+printBadgeBtn = Button("Print Visitor Badge", null, "secondary")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("View afternoon schedule")
+f2 = FollowUpItem("Print daily appointment summary")
+f3 = FollowUpItem("Filter by Dr. Adams")

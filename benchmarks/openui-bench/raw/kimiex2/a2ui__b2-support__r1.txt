@@ -1,0 +1,183 @@
+Here's a morning dashboard for the support lead covering all five items.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "alert",
+          "kpis",
+          "filterLabel",
+          "filterSwitch",
+          "ticketsTable",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Support Morning View",
+        "subtitle": "Queue snapshot as of 8:00 AM"
+      },
+      {
+        "id": "alert",
+        "component": "Alert",
+        "title": "SLA watch",
+        "description": "2 high-priority tickets are approaching their first-response SLA",
+        "variant": "warning"
+      },
+      {
+        "id": "kpis",
+        "component": "Table",
+        "columns": [
+          "kpiName",
+          "kpiValue"
+        ]
+      },
+      {
+        "id": "kpiName",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Open tickets",
+          "Avg first-response time"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "47",
+          "22 min"
+        ]
+      },
+      {
+        "id": "filterLabel",
+        "component": "Label",
+        "text": "5 most recent tickets"
+      },
+      {
+        "id": "filterSwitch",
+        "component": "SwitchGroup",
+        "name": "priority_filter",
+        "items": [
+          "highOnlySwitch"
+        ],
+        "variant": "clear"
+      },
+      {
+        "id": "highOnlySwitch",
+        "component": "SwitchItem",
+        "name": "high_priority_only",
+        "label": "High priority only",
+        "description": "Narrow the list to high-priority tickets",
+        "defaultChecked": false
+      },
+      {
+        "id": "ticketsTable",
+        "component": "Table",
+        "columns": [
+          "ticketId",
+          "ticketSubject",
+          "ticketPriority",
+          "ticketAge"
+        ]
+      },
+      {
+        "id": "ticketId",
+        "component": "Col",
+        "label": "Ticket",
+        "data": [
+          "#4821",
+          "#4820",
+          "#4819",
+          "#4818",
+          "#4817"
+        ]
+      },
+      {
+        "id": "ticketSubject",
+        "component": "Col",
+        "label": "Subject",
+        "data": [
+          "Login failing on mobile app",
+          "Invoice amount incorrect",
+          "Feature request: dark mode",
+          "API returning 500 errors",
+          "Password reset email not received"
+        ]
+      },
+      {
+        "id": "ticketPriority",
+        "component": "Col",
+        "label": "Priority",
+        "data": [
+          "High",
+          "Medium",
+          "Low",
+          "High",
+          "Medium"
+        ]
+      },
+      {
+        "id": "ticketAge",
+        "component": "Col",
+        "label": "Age",
+        "data": [
+          "5 min",
+          "12 min",
+          "28 min",
+          "41 min",
+          "1 hr"
+        ]
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": [
+          "newTicketBtn",
+          "viewAllBtn"
+        ]
+      },
+      {
+        "id": "newTicketBtn",
+        "component": "Button",
+        "label": "Open new ticket",
+        "variant": "primary"
+      },
+      {
+        "id": "viewAllBtn",
+        "component": "Button",
+        "label": "View full queue",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This covers each requirement:
+1. **Open tickets** — 47, shown in the KPI table
+2. **Avg first-response time** — 22 min, same table
+3. **Five most recent tickets** — table with ID, subject, priority, and age
+4. **High-priority filter** — the "High priority only" toggle switch
+5. **New ticket** — the primary "Open new ticket" button
+
+I also added an SLA warning alert since two high-priority tickets are near their response deadline — useful context for a morning triage.

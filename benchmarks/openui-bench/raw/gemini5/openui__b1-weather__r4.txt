@@ -1,0 +1,63 @@
+root = Card([header, currentCard, separator1, forecastHeading, forecastTabs, separator2, sunHeading, sunCard, followUps])
+
+header = CardHeader("Morning Weather Brief", "Bengaluru, Karnataka • Today's Outlook")
+
+currentCard = Card([tempStack, condStack], "sunk", "row", "m", "center", "between")
+tempStack = Card([currentTemp, highLowText], "clear", "column", "xs")
+currentTemp = Heading("24°C", "h1")
+highLowText = TextContent("High 28°C • Low 19°C", "small")
+
+condStack = Card([condBadge, condDesc], "clear", "column", "xs", "end")
+condBadge = Badge("Partly Cloudy", "default")
+condDesc = TextContent("Humidity 68% • Wind 12 km/h", "small")
+
+separator1 = Separator("horizontal")
+
+forecastHeading = Heading("3-Day Forecast", "h3")
+
+forecastTabs = Tabs([day1Tab, day2Tab, day3Tab])
+
+day1Tab = TabItem("today", "Today (Thu)", [day1Card])
+day1Card = Card([day1Header, day1Chart, day1Text], "clear", "column", "s")
+day1Header = TextContent("Expect scattered afternoon showers with moderate breeze.", "default")
+day1Chart = AreaChart(["6 AM", "9 AM", "12 PM", "3 PM", "6 PM", "9 PM"], [day1TempSeries, day1RainSeries], "natural", "Time", "Value")
+day1TempSeries = Series("Temp (°C)", [19, 22, 27, 28, 25, 21])
+day1RainSeries = Series("Rain Prob (%)", [5, 10, 30, 60, 40, 15])
+day1Text = TextContent("Peak rainfall chance around 3:00 PM.", "small")
+
+day2Tab = TabItem("tomorrow", "Fri", [day2Card])
+day2Card = Card([day2Header, day2Chart, day2Text], "clear", "column", "s")
+day2Header = TextContent("Mostly sunny with clear skies throughout the day.", "default")
+day2Chart = AreaChart(["6 AM", "9 AM", "12 PM", "3 PM", "6 PM", "9 PM"], [day2TempSeries, day2RainSeries], "natural", "Time", "Value")
+day2TempSeries = Series("Temp (°C)", [18, 23, 28, 29, 26, 22])
+day2RainSeries = Series("Rain Prob (%)", [0, 5, 10, 10, 5, 0])
+day2Text = TextContent("Great day for outdoor activities.", "small")
+
+day3Tab = TabItem("sat", "Sat", [day3Card])
+day3Card = Card([day3Header, day3Chart, day3Text], "clear", "column", "s")
+day3Header = TextContent("Pleasant morning turning overcast by late afternoon.", "default")
+day3Chart = AreaChart(["6 AM", "9 AM", "12 PM", "3 PM", "6 PM", "9 PM"], [day3TempSeries, day3RainSeries], "natural", "Time", "Value")
+day3TempSeries = Series("Temp (°C)", [20, 24, 27, 27, 24, 21])
+day3RainSeries = Series("Rain Prob (%)", [10, 15, 20, 35, 30, 20])
+day3Text = TextContent("Light drizzle possible in the evening.", "small")
+
+separator2 = Separator("horizontal")
+
+sunHeading = Heading("Sun & Daylight", "h3")
+
+sunCard = Card([sunriseCard, sunsetCard], "clear", "row", "m", "center", "between")
+
+sunriseCard = Card([sunriseTag, sunriseTime, sunriseSub], "sunk", "column", "xs", "center")
+sunriseTag = Tag("Sunrise", null, "sm", "warning")
+sunriseTime = Heading("06:09 AM", "h2")
+sunriseSub = TextContent("Dawn at 05:48 AM", "small")
+
+sunsetCard = Card([sunsetTag, sunsetTime, sunsetSub], "sunk", "column", "xs", "center")
+sunsetTag = Tag("Sunset", null, "sm", "info")
+sunsetTime = Heading("06:33 PM", "h2")
+sunsetSub = TextContent("Dusk at 06:54 PM • 12h 24m light", "small")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("What is the air quality index in Bengaluru today?")
+f2 = FollowUpItem("Should I carry an umbrella this afternoon?")
+f3 = FollowUpItem("Show the weekend weather outlook")

@@ -1,0 +1,562 @@
+Here's your comprehensive trading desk morning workspace covering all 17 items:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "timeframeControl",
+          "kpiSection",
+          "riskAlerts",
+          "positionsSection",
+          "sectorSection",
+          "moversSection",
+          "watchlistSection",
+          "ordersSection",
+          "headlinesSection",
+          "econSection",
+          "perfSection",
+          "drawdownSection",
+          "actionsSection"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Trading Desk — Morning Workspace",
+        "subtitle": "Monday, June 16 2025 · 07:42 ET"
+      },
+      {
+        "id": "timeframeControl",
+        "component": "FormControl",
+        "label": "Timeframe",
+        "input": "timeframeSelect"
+      },
+      {
+        "id": "timeframeSelect",
+        "component": "Select",
+        "name": "timeframe",
+        "placeholder": "Select timeframe",
+        "items": ["tf1d", "tf1w", "tf1m", "tf3m", "tf1y", "tfYTD"]
+      },
+      {
+        "id": "tf1d",
+        "component": "SelectItem",
+        "value": "1D",
+        "label": "1 Day"
+      },
+      {
+        "id": "tf1w",
+        "component": "SelectItem",
+        "value": "1W",
+        "label": "1 Week"
+      },
+      {
+        "id": "tf1m",
+        "component": "SelectItem",
+        "value": "1M",
+        "label": "1 Month"
+      },
+      {
+        "id": "tf3m",
+        "component": "SelectItem",
+        "value": "3M",
+        "label": "3 Months"
+      },
+      {
+        "id": "tf1y",
+        "component": "SelectItem",
+        "value": "1Y",
+        "label": "1 Year"
+      },
+      {
+        "id": "tfYTD",
+        "component": "SelectItem",
+        "value": "YTD",
+        "label": "Year to Date"
+      },
+      {
+        "id": "kpiSection",
+        "component": "Table",
+        "columns": ["kpiMetric", "kpiValue"]
+      },
+      {
+        "id": "kpiMetric",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Portfolio Value",
+          "P&L Today",
+          "Value at Risk (95%)",
+          "Margin in Use"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "$48,231,750",
+          "+$312,480 (+0.65%)",
+          "$1,142,000",
+          "72% ($34.7M / $48.0M)"
+        ]
+      },
+      {
+        "id": "marginProgress",
+        "component": "Progress",
+        "value": 72,
+        "label": "Margin Utilization"
+      },
+      {
+        "id": "riskAlerts",
+        "component": "Alert",
+        "title": "Risk Limits Near Breach",
+        "description": "⚠️ Sector concentration: Technology at 34.2% (limit 35%). ⚠️ Single-name exposure: NVDA at 9.8% (limit 10%). ⚠️ Gross leverage at 2.9x (limit 3.0x).",
+        "variant": "warning"
+      },
+      {
+        "id": "positionsSection",
+        "component": "SectionBlock",
+        "isFoldable": true,
+        "sections": ["positionsAccordion"]
+      },
+      {
+        "id": "positionsAccordion",
+        "component": "SectionItem",
+        "value": "positions",
+        "trigger": "Open Positions (12)",
+        "content": ["positionsTable"]
+      },
+      {
+        "id": "positionsTable",
+        "component": "Table",
+        "columns": ["posTicker", "posSize", "posEntry", "posCurrent", "posPnl"]
+      },
+      {
+        "id": "posTicker",
+        "component": "Col",
+        "label": "Ticker",
+        "data": ["AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA", "JPM", "GS", "XOM", "UNH", "BRK.B"]
+      },
+      {
+        "id": "posSize",
+        "component": "Col",
+        "label": "Size",
+        "data": ["12,500", "8,200", "4,100", "6,800", "9,400", "5,600", "3,200", "7,100", "2,800", "11,000", "1,900", "4,500"]
+      },
+      {
+        "id": "posEntry",
+        "component": "Col",
+        "label": "Entry",
+        "data": ["$198.40", "$442.10", "$128.75", "$192.30", "$176.80", "$512.60", "$248.90", "$214.50", "$468.20", "$112.40", "$528.30", "$428.60"]
+      },
+      {
+        "id": "posCurrent",
+        "component": "Col",
+        "label": "Current",
+        "data": ["$212.35", "$458.90", "$141.20", "$198.75", "$182.40", "$534.80", "$232.10", "$221.80", "$482.60", "$118.90", "$541.20", "$445.30"]
+      },
+      {
+        "id": "posPnl",
+        "component": "Col",
+        "label": "Unrealized P&L",
+        "data": ["+$174,375", "+$137,760", "+$51,045", "+$43,860", "+$52,640", "+$124,320", "-$53,760", "+$51,830", "+$40,320", "+$71,500", "+$24,510", "+$75,150"]
+      },
+      {
+        "id": "sectorSection",
+        "component": "SectionBlock",
+        "isFoldable": true,
+        "sections": ["sectorAccordion"]
+      },
+      {
+        "id": "sectorAccordion",
+        "component": "SectionItem",
+        "value": "sector",
+        "trigger": "Exposure by Sector",
+        "content": ["sectorChart"]
+      },
+      {
+        "id": "sectorChart",
+        "component": "PieChart",
+        "labels": ["Technology", "Financials", "Energy", "Healthcare", "Consumer Disc.", "Industrials"],
+        "values": [34.2, 22.1, 14.8, 12.5, 9.6, 6.8],
+        "variant": "donut"
+      },
+      {
+        "id": "moversSection",
+        "component": "SectionBlock",
+        "isFoldable": true,
+        "sections": ["moversAccordion"]
+      },
+      {
+        "id": "moversAccordion",
+        "component": "SectionItem",
+        "value": "movers",
+        "trigger": "Today's Biggest Gainers & Losers",
+        "content": ["moversTable"]
+      },
+      {
+        "id": "moversTable",
+        "component": "Table",
+        "columns": ["moverTicker", "moverDirection", "moverChange"]
+      },
+      {
+        "id": "moverTicker",
+        "component": "Col",
+        "label": "Ticker",
+        "data": ["NVDA", "META", "AAPL", "TSLA", "XOM", "GS"]
+      },
+      {
+        "id": "moverDirection",
+        "component": "Col",
+        "label": "Direction",
+        "data": ["▲ Gainer", "▲ Gainer", "▲ Gainer", "▼ Loser", "▼ Loser", "▼ Loser"]
+      },
+      {
+        "id": "moverChange",
+        "component": "Col",
+        "label": "Change",
+        "data": ["+4.82%", "+3.14%", "+2.31%", "-3.67%", "-1.92%", "-1.45%"]
+      },
+      {
+        "id": "watchlistSection",
+        "component": "SectionBlock",
+        "isFoldable": true,
+        "sections": ["watchAccordion"]
+      },
+      {
+        "id": "watchAccordion",
+        "component": "SectionItem",
+        "value": "watchlist",
+        "trigger": "Watchlist",
+        "content": ["watchTable"]
+      },
+      {
+        "id": "watchTable",
+        "component": "Table",
+        "columns": ["watchTicker", "watchPrice", "watchChange"]
+      },
+      {
+        "id": "watchTicker",
+        "component": "Col",
+        "label": "Ticker",
+        "data": ["PLTR", "COIN", "ARM", "SMCI", "MSTR", "SOFI"]
+      },
+      {
+        "id": "watchPrice",
+        "component": "Col",
+        "label": "Price",
+        "data": ["$28.45", "$242.80", "$168.30", "$42.15", "$1,842.00", "$12.85"]
+      },
+      {
+        "id": "watchChange",
+        "component": "Col",
+        "label": "Change",
+        "data": ["+1.2%", "-0.8%", "+2.4%", "+5.1%", "+3.3%", "-1.1%"]
+      },
+      {
+        "id": "ordersSection",
+        "component": "SectionBlock",
+        "isFoldable": true,
+        "sections": ["ordersAccordion"]
+      },
+      {
+        "id": "ordersAccordion",
+        "component": "SectionItem",
+        "value": "orders",
+        "trigger": "Working Orders (4)",
+        "content": ["ordersTable"]
+      },
+      {
+        "id": "ordersTable",
+        "component": "Table",
+        "columns": ["ordTicker", "ordSide", "ordQty", "ordType", "ordLimit", "ordStatus"]
+      },
+      {
+        "id": "ordTicker",
+        "component": "Col",
+        "label": "Ticker",
+        "data": ["AAPL", "NVDA", "TSLA", "AMZN"]
+      },
+      {
+        "id": "ordSide",
+        "component": "Col",
+        "label": "Side",
+        "data": ["BUY", "BUY", "SELL", "BUY"]
+      },
+      {
+        "id": "ordQty",
+        "component": "Col",
+        "label": "Qty",
+        "data": ["2,000", "1,500", "1,000", "3,000"]
+      },
+      {
+        "id": "ordType",
+        "component": "Col",
+        "label": "Type",
+        "data": ["Limit", "Limit", "Stop-Loss", "Limit"]
+      },
+      {
+        "id": "ordLimit",
+        "component": "Col",
+        "label": "Price",
+        "data": ["$210.00", "$138.50", "$228.00", "$195.00"]
+      },
+      {
+        "id": "ordStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": ["Open", "Open", "Open", "Open"]
+      },
+      {
+        "id": "headlinesSection",
+        "component": "SectionBlock",
+        "isFoldable": true,
+        "sections": ["headlinesAccordion"]
+      },
+      {
+        "id": "headlinesAccordion",
+        "component": "SectionItem",
+        "value": "headlines",
+        "trigger": "Market Headlines",
+        "content": ["headlinesTable"]
+      },
+      {
+        "id": "headlinesTable",
+        "component": "Table",
+        "columns": ["hlTime", "hlHeadline", "hlSentiment"]
+      },
+      {
+        "id": "hlTime",
+        "component": "Col",
+        "label": "Time",
+        "data": ["07:32", "07:15", "06:58", "06:41", "06:22"]
+      },
+      {
+        "id": "hlHeadline",
+        "component": "Col",
+        "label": "Headline",
+        "data": [
+          "Fed officials signal patience on rate cuts amid sticky inflation",
+          "NVIDIA unveils next-gen AI chip, beats expectations",
+          "China retail sales miss forecasts, yuan weakens",
+          "Oil prices rise on OPEC+ supply concerns",
+          "S&P 500 futures edge higher ahead of retail sales data"
+        ]
+      },
+      {
+        "id": "hlSentiment",
+        "component": "Col",
+        "label": "Sentiment",
+        "data": ["Bearish", "Bullish", "Bearish", "Bullish", "Neutral"]
+      },
+      {
+        "id": "econSection",
+        "component": "SectionBlock",
+        "isFoldable": true,
+        "sections": ["econAccordion"]
+      },
+      {
+        "id": "econAccordion",
+        "component": "SectionItem",
+        "value": "econ",
+        "trigger": "Economic Releases This Week",
+        "content": ["econTable"]
+      },
+      {
+        "id": "econTable",
+        "component": "Table",
+        "columns": ["econDay", "econEvent", "econTime", "econImpact"]
+      },
+      {
+        "id": "econDay",
+        "component": "Col",
+        "label": "Day",
+        "data": ["Mon", "Tue", "Wed", "Thu", "Fri"]
+      },
+      {
+        "id": "econEvent",
+        "component": "Col",
+        "label": "Event",
+        "data": ["NY Empire State Mfg", "Retail Sales (MoM)", "FOMC Rate Decision", "Initial Jobless Claims", "U. of Michigan Sentiment"]
+      },
+      {
+        "id": "econTime",
+        "component": "Col",
+        "label": "Time (ET)",
+        "data": ["08:30", "08:30", "14:00", "08:30", "10:00"]
+      },
+      {
+        "id": "econImpact",
+        "component": "Col",
+        "label": "Impact",
+        "data": ["Low", "High", "High", "Medium", "Medium"]
+      },
+      {
+        "id": "perfSection",
+        "component": "SectionBlock",
+        "isFoldable": true,
+        "sections": ["perfAccordion"]
+      },
+      {
+        "id": "perfAccordion",
+        "component": "SectionItem",
+        "value": "perf",
+        "trigger": "Strategy Returns YTD",
+        "content": ["strategyChart"]
+      },
+      {
+        "id": "strategyChart",
+        "component": "BarChart",
+        "labels": ["Long/Short Equity", "Global Macro", "Event-Driven", "Quant Momentum", "Vol Arbitrage"],
+        "series": ["stratSeries"],
+        "variant": "grouped",
+        "yLabel": "Return %"
+      },
+      {
+        "id": "stratSeries",
+        "component": "Series",
+        "category": "YTD Return %",
+        "values": [14.2, 8.7, 11.3, 18.6, 5.4]
+      },
+      {
+        "id": "drawdownSection",
+        "component": "SectionBlock",
+        "isFoldable": true,
+        "sections": ["drawdownAccordion"]
+      },
+      {
+        "id": "drawdownAccordion",
+        "component": "SectionItem",
+        "value": "drawdown",
+        "trigger": "Drawdown — Past 12 Months",
+        "content": ["drawdownChart"]
+      },
+      {
+        "id": "drawdownChart",
+        "component": "AreaChart",
+        "labels": ["Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+        "series": ["ddSeries"],
+        "variant": "natural",
+        "yLabel": "Drawdown %"
+      },
+      {
+        "id": "ddSeries",
+        "component": "Series",
+        "category": "Drawdown",
+        "values": [0, -2.1, -4.8, -3.2, -1.4, 0, -1.8, -6.3, -8.1, -5.4, -2.2, -0.9]
+      },
+      {
+        "id": "actionsSection",
+        "component": "SectionBlock",
+        "isFoldable": false,
+        "sections": ["actionsAccordion"]
+      },
+      {
+        "id": "actionsAccordion",
+        "component": "SectionItem",
+        "value": "actions",
+        "trigger": "Actions",
+        "content": ["rebalanceBtn", "orderForm"]
+      },
+      {
+        "id": "rebalanceBtn",
+        "component": "Buttons",
+        "buttons": ["rebalanceButton"]
+      },
+      {
+        "id": "rebalanceButton",
+        "component": "Button",
+        "label": "Rebalance Portfolio",
+        "variant": "secondary"
+      },
+      {
+        "id": "orderForm",
+        "component": "Form",
+        "name": "place-order",
+        "buttons": "orderFormButtons",
+        "fields": ["orderTickerField", "orderSideField", "orderQtyField"]
+      },
+      {
+        "id": "orderTickerField",
+        "component": "FormControl",
+        "label": "Ticker",
+        "input": "orderTickerInput"
+      },
+      {
+        "id": "orderTickerInput",
+        "component": "Input",
+        "name": "ticker",
+        "placeholder": "e.g. AAPL"
+      },
+      {
+        "id": "orderSideField",
+        "component": "FormControl",
+        "label": "Side",
+        "input": "orderSideRadio"
+      },
+      {
+        "id": "orderSideRadio",
+        "component": "RadioGroup",
+        "name": "side",
+        "items": ["sideBuy", "sideSell"]
+      },
+      {
+        "id": "sideBuy",
+        "component": "RadioItem",
+        "label": "Buy",
+        "description": "Open or add to long",
+        "value": "buy"
+      },
+      {
+        "id": "sideSell",
+        "component": "RadioItem",
+        "label": "Sell",
+        "description": "Close or short",
+        "value": "sell"
+      },
+      {
+        "id": "orderQtyField",
+        "component": "FormControl",
+        "label": "Quantity",
+        "input": "orderQtyInput"
+      },
+      {
+        "id": "orderQtyInput",
+        "component": "Input",
+        "name": "quantity",
+        "placeholder": "e.g. 1000",
+        "type": "number"
+      },
+      {
+        "id": "orderFormButtons",
+        "component": "Buttons",
+        "buttons": ["submitOrderBtn"]
+      },
+      {
+        "id": "submitOrderBtn",
+        "component": "Button",
+        "label": "Submit Order",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>

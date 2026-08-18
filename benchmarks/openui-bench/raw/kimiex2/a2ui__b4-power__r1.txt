@@ -1,0 +1,231 @@
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "alertsSection",
+          "kpiTable",
+          "capacityProgress",
+          "genSplit",
+          "forecast",
+          "plantsTable",
+          "outagesTable",
+          "maintenanceTable",
+          "regionControl",
+          "curtailment"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Power Network Operations Console",
+        "subtitle": "Grid status — live"
+      },
+      {
+        "id": "alertsSection",
+        "component": "Alert",
+        "title": "LIVE ALERT: Voltage sag detected",
+        "description": "Feeder 12, North region — 14:02 UTC. Crew dispatched.",
+        "variant": "warning"
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": ["kpiName", "kpiValue"]
+      },
+      {
+        "id": "kpiName",
+        "component": "Col",
+        "label": "Metric",
+        "data": ["Current load", "Capacity utilization", "Spot price", "Emissions today"]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": ["4,820 MW", "87%", "$64.20 / MWh", "9,340 t CO₂"]
+      },
+      {
+        "id": "capacityProgress",
+        "component": "Progress",
+        "value": 87,
+        "label": "Network capacity used (5,540 MW max)"
+      },
+      {
+        "id": "genSplit",
+        "component": "PieChart",
+        "labels": ["Gas", "Wind", "Solar", "Nuclear", "Hydro", "Coal"],
+        "values": [1850, 1200, 640, 780, 250, 100],
+        "variant": "donut"
+      },
+      {
+        "id": "forecast",
+        "component": "LineChart",
+        "labels": ["00", "03", "06", "09", "12", "15", "18", "21", "24"],
+        "series": ["forecastSeries"],
+        "variant": "natural",
+        "xLabel": "Hour (next 24h)",
+        "yLabel": "MW"
+      },
+      {
+        "id": "forecastSeries",
+        "component": "Series",
+        "category": "Forecast demand",
+        "values": [3900, 3700, 4200, 5100, 5300, 4900, 5350, 4700, 4100]
+      },
+      {
+        "id": "plantsTable",
+        "component": "Table",
+        "columns": ["plantName", "plantOutput", "plantStatus"]
+      },
+      {
+        "id": "plantName",
+        "component": "Col",
+        "label": "Plant",
+        "data": ["Riverbend CCGT", "Northwind Wind Farm", "Solara PV", "Corepoint Nuclear", "Lakeside Hydro", "Ashford Coal"]
+      },
+      {
+        "id": "plantOutput",
+        "component": "Col",
+        "label": "Output (MW)",
+        "data": [1850, 1200, 640, 780, 250, 100]
+      },
+      {
+        "id": "plantStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": ["Online", "Online", "Online", "Online", "Derated", "Standby"]
+      },
+      {
+        "id": "outagesTable",
+        "component": "Table",
+        "columns": ["outageDesc", "outageRegion", "outageStart"]
+      },
+      {
+        "id": "outageDesc",
+        "component": "Col",
+        "label": "Outage",
+        "data": ["Feeder 12 trip", "Transformer T7 failure"]
+      },
+      {
+        "id": "outageRegion",
+        "component": "Col",
+        "label": "Affected region",
+        "data": ["North", "East"]
+      },
+      {
+        "id": "outageStart",
+        "component": "Col",
+        "label": "Since",
+        "data": ["14:02 UTC", "11:47 UTC"]
+      },
+      {
+        "id": "maintenanceTable",
+        "component": "Table",
+        "columns": ["maintItem", "maintDate"]
+      },
+      {
+        "id": "maintItem",
+        "component": "Col",
+        "label": "Planned maintenance (this month)",
+        "data": ["Lakeside Hydro turbine inspection", "Corepoint refueling prep", "North-South line upgrade"]
+      },
+      {
+        "id": "maintDate",
+        "component": "Col",
+        "label": "Date",
+        "data": ["Jun 8", "Jun 15", "Jun 21–23"]
+      },
+      {
+        "id": "regionControl",
+        "component": "Form",
+        "name": "region-focus",
+        "buttons": "regionButtons",
+        "fields": ["regionField"]
+      },
+      {
+        "id": "regionField",
+        "component": "FormControl",
+        "label": "Focus on region",
+        "input": "regionSelect"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region",
+        "items": ["rAll", "rNorth", "rSouth", "rEast", "rWest"],
+        "placeholder": "Select region"
+      },
+      {
+        "id": "rAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All regions"
+      },
+      {
+        "id": "rNorth",
+        "component": "SelectItem",
+        "value": "north",
+        "label": "North"
+      },
+      {
+        "id": "rSouth",
+        "component": "SelectItem",
+        "value": "south",
+        "label": "South"
+      },
+      {
+        "id": "rEast",
+        "component": "SelectItem",
+        "value": "east",
+        "label": "East"
+      },
+      {
+        "id": "rWest",
+        "component": "SelectItem",
+        "value": "west",
+        "label": "West"
+      },
+      {
+        "id": "regionButtons",
+        "component": "Buttons",
+        "buttons": ["applyRegion"]
+      },
+      {
+        "id": "applyRegion",
+        "component": "Button",
+        "label": "Apply filter",
+        "variant": "primary"
+      },
+      {
+        "id": "curtailment",
+        "component": "AlertDialogBlock",
+        "triggerLabel": "Order load curtailment",
+        "title": "Confirm curtailment order",
+        "description": "This will shed 200 MW of interruptible load in the selected region. Confirm?",
+        "confirmLabel": "Issue curtailment",
+        "cancelLabel": "Cancel",
+        "triggerVariant": "destructive"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This console covers all 12 items: live load, capacity utilization (KPI + progress bar), generation split (donut chart), plant table with output/status, outages by region, 24-hour demand forecast, spot price, monthly maintenance schedule, live alerts banner, region focus selector, curtailment order with confirmation, and today's emissions.

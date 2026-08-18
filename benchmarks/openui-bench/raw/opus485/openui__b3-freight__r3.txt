@@ -1,0 +1,45 @@
+root = Card([header, refreshed, alerts, kpis, transit, carrierSplit, weeklyVolume, searchForm, flagForm, actions])
+header = CardHeader("Logistics Coordination Board", "Live shipment operations")
+refreshed = TextContent("Last refreshed: today at 09:42 AM", "small")
+
+alerts = Alert("2 shipments delayed", "SHP-4471 (Chicago→Denver) and SHP-4488 (Dallas→Phoenix) are behind ETA", "warning")
+
+kpis = Card([onTime, avgCost], "sunk", "row", "l")
+onTime = Progress(94, "On-time this month: 94%")
+avgCost = Card([costLabel, costValue], "clear", "column", "xs")
+costLabel = TextContent("Avg cost per shipment", "small")
+costValue = Heading("$286.40", "h3")
+
+transit = Table([colId, colOrigin, colDest, colEta, colStatus])
+colId = Col("Shipment", ["SHP-4460", "SHP-4471", "SHP-4485", "SHP-4488", "SHP-4490"])
+colOrigin = Col("Origin", ["Seattle", "Chicago", "Atlanta", "Dallas", "Miami"])
+colDest = Col("Destination", ["Portland", "Denver", "Boston", "Phoenix", "Newark"])
+colEta = Col("ETA", ["Today 3:00 PM", "Overdue 2h", "Tomorrow 10:00 AM", "Overdue 5h", "Tomorrow 6:00 PM"])
+colStatus = Col("Status", ["In transit", "Delayed", "In transit", "Delayed", "In transit"])
+
+carrierSplit = PieChart(["FedEx", "UPS", "DHL", "USPS", "Regional"], [34, 28, 18, 12, 8], "donut")
+
+weeklyVolume = BarChart(["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"], [volSeries], "grouped", "Week", "Shipments")
+volSeries = Series("Volume", [420, 465, 510, 480, 530, 495, 560, 585])
+
+searchForm = Form("route-search", searchButtons, [routeField])
+routeField = FormControl("Search by route", routeInput, "Enter origin and destination")
+routeInput = Input("route", "Seattle → Portland")
+searchButtons = Buttons([searchBtn])
+searchBtn = Button("Search routes", null, "primary")
+
+flagForm = Form("flag-shipment", flagButtons, [flagIdField, flagReasonField])
+flagIdField = FormControl("Shipment ID", flagIdInput)
+flagIdInput = Input("shipment_id", "SHP-4471")
+flagReasonField = FormControl("Reason", flagReasonSelect)
+flagReasonSelect = Select("reason", [reasonDelay, reasonDamage, reasonAddress, reasonOther], "Select a reason")
+reasonDelay = SelectItem("delay", "Delayed / overdue")
+reasonDamage = SelectItem("damage", "Damaged goods")
+reasonAddress = SelectItem("address", "Address issue")
+reasonOther = SelectItem("other", "Other")
+flagButtons = Buttons([flagBtn])
+flagBtn = Button("Flag shipment", null, "primary", "destructive")
+
+actions = Buttons([refreshBtn, exportBtn])
+refreshBtn = Button("Refresh data")
+exportBtn = Button("Export report", null, "secondary")

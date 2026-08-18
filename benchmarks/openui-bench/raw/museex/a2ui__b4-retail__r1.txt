@@ -1,0 +1,669 @@
+Store manager console covering all 12 required items — sales vs target, traffic, best sellers, stock, shifts, basket, returns, promos, registers, reorder & store switcher.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "storeSwitcherCard",
+          "kpiRow",
+          "footTrafficHeader",
+          "footTrafficChart",
+          "weeklyHeader",
+          "weeklyChart",
+          "bestSellersHeader",
+          "bestSellersChart",
+          "bestSellersTable",
+          "outOfStockHeader",
+          "outOfStockList",
+          "reorderForm",
+          "shiftHeader",
+          "shiftList",
+          "promoHeader",
+          "promoTable",
+          "registersHeader",
+          "registersTable"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Daily Store Console",
+        "subtitle": "Downtown Flagship • Tuesday, Aug 18 • Manager view • All data live as of 3:45 PM"
+      },
+      {
+        "id": "storeSwitcherCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "storeSelectControl",
+          "storeBadge"
+        ],
+        "direction": "row",
+        "align": "center",
+        "justify": "between",
+        "gap": "m"
+      },
+      {
+        "id": "storeSelectControl",
+        "component": "FormControl",
+        "label": "View a different store",
+        "input": "storeSelect",
+        "hint": "Switch location to view its console (Item 11)"
+      },
+      {
+        "id": "storeSelect",
+        "component": "Select",
+        "name": "store_id",
+        "items": [
+          "storeDowntown",
+          "storeMall",
+          "storeAirport",
+          "storeWestside"
+        ],
+        "placeholder": "Downtown Flagship (current)",
+        "value": "downtown"
+      },
+      {
+        "id": "storeDowntown",
+        "component": "SelectItem",
+        "value": "downtown",
+        "label": "Downtown Flagship"
+      },
+      {
+        "id": "storeMall",
+        "component": "SelectItem",
+        "value": "mall",
+        "label": "Mall Central - #042"
+      },
+      {
+        "id": "storeAirport",
+        "component": "SelectItem",
+        "value": "airport",
+        "label": "Airport Express - #109"
+      },
+      {
+        "id": "storeWestside",
+        "component": "SelectItem",
+        "value": "westside",
+        "label": "Westside Market - #033"
+      },
+      {
+        "id": "storeBadge",
+        "component": "Badge",
+        "text": "Store #001 • Open 8AM-9PM",
+        "variant": "secondary"
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "variant": "clear",
+        "children": [
+          "salesCard",
+          "basketCard",
+          "returnsCard"
+        ],
+        "direction": "row",
+        "gap": "m",
+        "wrap": true
+      },
+      {
+        "id": "salesCard",
+        "component": "Card",
+        "children": [
+          "salesTitle",
+          "salesProgress",
+          "salesText",
+          "salesTargetText"
+        ],
+        "gap": "s"
+      },
+      {
+        "id": "salesTitle",
+        "component": "TextContent",
+        "text": "1. Sales Today vs Target",
+        "size": "small-heavy"
+      },
+      {
+        "id": "salesProgress",
+        "component": "Progress",
+        "value": 76.8,
+        "label": "76.8% of daily target"
+      },
+      {
+        "id": "salesText",
+        "component": "TextContent",
+        "text": "$8,450 / $11,000",
+        "size": "large-heavy"
+      },
+      {
+        "id": "salesTargetText",
+        "component": "TextContent",
+        "text": "$2,550 to target • +8.2% vs yesterday • Pace: on track to close at $10,900",
+        "size": "small"
+      },
+      {
+        "id": "basketCard",
+        "component": "Card",
+        "children": [
+          "basketTitle",
+          "basketText",
+          "basketSub"
+        ],
+        "gap": "s"
+      },
+      {
+        "id": "basketTitle",
+        "component": "TextContent",
+        "text": "6. Average Basket Size",
+        "size": "small-heavy"
+      },
+      {
+        "id": "basketText",
+        "component": "TextContent",
+        "text": "$47.30 • 3.4 items",
+        "size": "large-heavy"
+      },
+      {
+        "id": "basketSub",
+        "component": "TextContent",
+        "text": "Avg. basket value up $2.10 vs yesterday • 187 transactions today",
+        "size": "small"
+      },
+      {
+        "id": "returnsCard",
+        "component": "Card",
+        "children": [
+          "returnsTitle",
+          "returnsText",
+          "returnsSub"
+        ],
+        "gap": "s"
+      },
+      {
+        "id": "returnsTitle",
+        "component": "TextContent",
+        "text": "7. Returns This Week",
+        "size": "small-heavy"
+      },
+      {
+        "id": "returnsText",
+        "component": "TextContent",
+        "text": "18 returns • $412.00",
+        "size": "large-heavy"
+      },
+      {
+        "id": "returnsSub",
+        "component": "TextContent",
+        "text": "1.8% return rate • -3 vs last week • Top reason: perishable damage",
+        "size": "small"
+      },
+      {
+        "id": "footTrafficHeader",
+        "component": "CardHeader",
+        "title": "2. Foot Traffic Through the Day",
+        "subtitle": "In-store visitors by hour • Total today: 584 • Peak 3PM (72 visitors)"
+      },
+      {
+        "id": "footTrafficChart",
+        "component": "AreaChart",
+        "labels": [
+          "9AM",
+          "10AM",
+          "11AM",
+          "12PM",
+          "1PM",
+          "2PM",
+          "3PM",
+          "4PM",
+          "5PM",
+          "6PM",
+          "7PM",
+          "8PM"
+        ],
+        "series": [
+          "footTrafficSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Hour",
+        "yLabel": "Visitors"
+      },
+      {
+        "id": "footTrafficSeries",
+        "component": "Series",
+        "category": "Visitors",
+        "values": [
+          22,
+          35,
+          48,
+          62,
+          58,
+          65,
+          72,
+          68,
+          55,
+          40,
+          28,
+          18
+        ]
+      },
+      {
+        "id": "weeklyHeader",
+        "component": "CardHeader",
+        "title": "12. This Week vs Last Week",
+        "subtitle": "Daily sales comparison • This week $42,180 vs Last week $39,740 (+6.1%)"
+      },
+      {
+        "id": "weeklyChart",
+        "component": "BarChart",
+        "labels": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat",
+          "Sun"
+        ],
+        "series": [
+          "weeklyThisWeek",
+          "weeklyLastWeek"
+        ],
+        "variant": "grouped",
+        "xLabel": "Day",
+        "yLabel": "Sales $"
+      },
+      {
+        "id": "weeklyThisWeek",
+        "component": "Series",
+        "category": "This Week",
+        "values": [
+          6200,
+          8450,
+          5800,
+          7100,
+          8200,
+          6400,
+          0
+        ]
+      },
+      {
+        "id": "weeklyLastWeek",
+        "component": "Series",
+        "category": "Last Week",
+        "values": [
+          5900,
+          7200,
+          6100,
+          6800,
+          7900,
+          5850,
+          0
+        ]
+      },
+      {
+        "id": "bestSellersHeader",
+        "component": "CardHeader",
+        "title": "3. Best Sellers Today",
+        "subtitle": "Top 5 by units sold • Ranked"
+      },
+      {
+        "id": "bestSellersChart",
+        "component": "HorizontalBarChart",
+        "labels": [
+          "Organic Bananas",
+          "Sourdough Loaf",
+          "Oat Milk 1L",
+          "Free-Range Eggs",
+          "Avocado Hass"
+        ],
+        "series": [
+          "bestSellersSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Units",
+        "yLabel": "Product"
+      },
+      {
+        "id": "bestSellersSeries",
+        "component": "Series",
+        "category": "Units Sold",
+        "values": [
+          142,
+          98,
+          87,
+          76,
+          64
+        ]
+      },
+      {
+        "id": "bestSellersTable",
+        "component": "Table",
+        "columns": [
+          "colBestProduct",
+          "colBestUnits"
+        ]
+      },
+      {
+        "id": "colBestProduct",
+        "component": "Col",
+        "label": "Product",
+        "data": [
+          "Organic Bananas",
+          "Sourdough Loaf",
+          "Oat Milk 1L",
+          "Free-Range Eggs (12pk)",
+          "Avocado Hass"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colBestUnits",
+        "component": "Col",
+        "label": "Units",
+        "data": [
+          "142",
+          "98",
+          "87",
+          "76",
+          "64"
+        ],
+        "type": "number"
+      },
+      {
+        "id": "outOfStockHeader",
+        "component": "CardHeader",
+        "title": "4. Items Out of Stock",
+        "subtitle": "4 SKUs requiring attention • Reorder below"
+      },
+      {
+        "id": "outOfStockList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "oos1",
+          "oos2",
+          "oos3",
+          "oos4"
+        ]
+      },
+      {
+        "id": "oos1",
+        "component": "ListItem",
+        "title": "Almond Butter 340g",
+        "subtitle": "SKU #8821 • 0 on hand • Last sold 2 hrs ago",
+        "actionLabel": "Critical"
+      },
+      {
+        "id": "oos2",
+        "component": "ListItem",
+        "title": "Cherry Tomatoes 500g",
+        "subtitle": "SKU #4419 • 0 on hand • Expected delivery tomorrow 7AM",
+        "actionLabel": "Critical"
+      },
+      {
+        "id": "oos3",
+        "component": "ListItem",
+        "title": "Greek Yogurt 1kg - Plain",
+        "subtitle": "SKU #7734 • 0 on hand • 3 customers asked today",
+        "actionLabel": "High"
+      },
+      {
+        "id": "oos4",
+        "component": "ListItem",
+        "title": "Sparkling Water Lime 6pk",
+        "subtitle": "SKU #2098 • 0 on hand • Substitute available",
+        "actionLabel": "Medium"
+      },
+      {
+        "id": "reorderForm",
+        "component": "Form",
+        "name": "reorder-item",
+        "buttons": "reorderButtons",
+        "fields": [
+          "reorderField"
+        ]
+      },
+      {
+        "id": "reorderField",
+        "component": "FormControl",
+        "label": "10. Reorder an Item",
+        "input": "reorderSelect",
+        "hint": "Select an out-of-stock item to create a purchase order"
+      },
+      {
+        "id": "reorderSelect",
+        "component": "Select",
+        "name": "reorder_sku",
+        "items": [
+          "reorderOpt1",
+          "reorderOpt2",
+          "reorderOpt3",
+          "reorderOpt4"
+        ],
+        "placeholder": "Choose item to reorder"
+      },
+      {
+        "id": "reorderOpt1",
+        "component": "SelectItem",
+        "value": "8821",
+        "label": "Almond Butter 340g (SKU #8821)"
+      },
+      {
+        "id": "reorderOpt2",
+        "component": "SelectItem",
+        "value": "4419",
+        "label": "Cherry Tomatoes 500g (SKU #4419)"
+      },
+      {
+        "id": "reorderOpt3",
+        "component": "SelectItem",
+        "value": "7734",
+        "label": "Greek Yogurt 1kg (SKU #7734)"
+      },
+      {
+        "id": "reorderOpt4",
+        "component": "SelectItem",
+        "value": "2098",
+        "label": "Sparkling Water Lime 6pk (SKU #2098)"
+      },
+      {
+        "id": "reorderButtons",
+        "component": "Buttons",
+        "buttons": [
+          "reorderBtn"
+        ]
+      },
+      {
+        "id": "reorderBtn",
+        "component": "Button",
+        "label": "Reorder Now",
+        "variant": "primary"
+      },
+      {
+        "id": "shiftHeader",
+        "component": "CardHeader",
+        "title": "5. Who Is On Shift Today",
+        "subtitle": "5 staff • Shift 8AM-4PM / 12PM-8PM"
+      },
+      {
+        "id": "shiftList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "shift1",
+          "shift2",
+          "shift3",
+          "shift4",
+          "shift5"
+        ]
+      },
+      {
+        "id": "shift1",
+        "component": "ListItem",
+        "title": "Maya Chen — Store Manager",
+        "subtitle": "8:00 AM - 5:00 PM • On floor",
+        "actionLabel": "On Duty"
+      },
+      {
+        "id": "shift2",
+        "component": "ListItem",
+        "title": "Jamal Ortiz — Cashier (Lead)",
+        "subtitle": "9:00 AM - 6:00 PM • Register 1",
+        "actionLabel": "On Duty"
+      },
+      {
+        "id": "shift3",
+        "component": "ListItem",
+        "title": "Priya Singh — Floor Associate",
+        "subtitle": "10:00 AM - 7:00 PM • Aisle 3-6",
+        "actionLabel": "On Break"
+      },
+      {
+        "id": "shift4",
+        "component": "ListItem",
+        "title": "Leo Park — Stock & Receiving",
+        "subtitle": "7:00 AM - 3:00 PM • Backroom",
+        "actionLabel": "On Duty"
+      },
+      {
+        "id": "shift5",
+        "component": "ListItem",
+        "title": "Sofia Reyes — Cashier",
+        "subtitle": "12:00 PM - 8:00 PM • Self-Checkout",
+        "actionLabel": "On Duty"
+      },
+      {
+        "id": "promoHeader",
+        "component": "CardHeader",
+        "title": "8. Running Promotions Performance",
+        "subtitle": "3 active promos • Updated hourly"
+      },
+      {
+        "id": "promoTable",
+        "component": "Table",
+        "columns": [
+          "promoColName",
+          "promoColStatus",
+          "promoColRedemptions",
+          "promoColLift"
+        ]
+      },
+      {
+        "id": "promoColName",
+        "component": "Col",
+        "label": "Promotion",
+        "data": [
+          "Summer Saver 15% Off",
+          "Buy 2 Get 1 Free - Oat Milk",
+          "Weekend BBQ Bundle $24.99"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "promoColStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Active",
+          "Active",
+          "Active"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "promoColRedemptions",
+        "component": "Col",
+        "label": "Redemptions",
+        "data": [
+          "214",
+          "87",
+          "52"
+        ],
+        "type": "number"
+      },
+      {
+        "id": "promoColLift",
+        "component": "Col",
+        "label": "Sales Lift",
+        "data": [
+          "+12.4% ($1,840)",
+          "+8.1% ($760)",
+          "+15.7% ($1,298)"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "registersHeader",
+        "component": "CardHeader",
+        "title": "9. Registers & Status",
+        "subtitle": "5 terminals • 4 open, 1 closed"
+      },
+      {
+        "id": "registersTable",
+        "component": "Table",
+        "columns": [
+          "regColId",
+          "regColStatus",
+          "regColCashier"
+        ]
+      },
+      {
+        "id": "regColId",
+        "component": "Col",
+        "label": "Register",
+        "data": [
+          "Register 1",
+          "Register 2",
+          "Register 3",
+          "Self-Checkout 1",
+          "Self-Checkout 2"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "regColStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "● Open",
+          "● Open",
+          "○ Closed",
+          "● Open",
+          "● Open"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "regColCashier",
+        "component": "Col",
+        "label": "Cashier / Note",
+        "data": [
+          "Jamal Ortiz",
+          "Sofia Reyes (until 6PM)",
+          "Closed for maintenance",
+          "Unattended - OK",
+          "Unattended - OK"
+        ],
+        "type": "string"
+      }
+    ]
+  }
+}
+</a2ui-json>

@@ -1,0 +1,74 @@
+root = Card([header, kpiGrid, deptHeadcountCard, pipelineCard, attritionCard, openRolesCard, interviewsCard, followUp])
+
+header = CardHeader("HR & Talent Overview", "Q3 Hiring & Workforce Analytics")
+
+kpiGrid = Card([headcountStat, timeToHireStat], "sunk", "row", "m", "center", "between")
+headcountStat = Card([headcountTitle, headcountValue, headcountBadge], "clear", "column", "xs")
+headcountTitle = TextContent("Current Headcount", "small")
+headcountValue = Heading("284", "h2")
+headcountBadge = Tag("+12 this quarter", null, "sm", "success")
+
+timeToHireStat = Card([timeTitle, timeValue, timeBadge], "clear", "column", "xs")
+timeTitle = TextContent("Avg. Time to Hire", "small")
+timeValue = Heading("34 Days", "h2")
+timeBadge = Tag("-3 days vs Q2", null, "sm", "info")
+
+deptHeadcountCard = Card([deptHeadcountHeader, deptHeadcountChart], "card")
+deptHeadcountHeader = Heading("Headcount Split by Department", "h3")
+deptHeadcountChart = HorizontalBarChart(deptLabels, [deptSeries], "grouped", "Department", "Employees")
+deptLabels = ["Engineering", "Product & Design", "Sales & Mktg", "Operations", "HR & Admin"]
+deptSeries = Series("Headcount", [112, 45, 68, 38, 21])
+
+pipelineCard = Card([pipelineHeader, pipelineChart], "card")
+pipelineHeader = Heading("Candidates by Pipeline Stage", "h3")
+pipelineChart = SingleStackedBarChart(pipelineLabels, pipelineValues)
+pipelineLabels = ["Sourced", "Screening", "Interview", "Offer", "Hired"]
+pipelineValues = [142, 68, 34, 12, 8]
+
+attritionCard = Card([attritionHeader, attritionChart], "card")
+attritionHeader = Heading("Attrition Rate (Past 6 Months)", "h3")
+attritionChart = LineChart(months, [attritionSeries], "natural", "Month", "Rate (%)")
+months = ["Mar", "Apr", "May", "Jun", "Jul", "Aug"]
+attritionSeries = Series("Attrition Rate (%)", [1.8, 1.5, 2.1, 1.2, 1.4, 0.9])
+
+openRolesCard = Card([openRolesHeader, openRolesTable], "card")
+openRolesHeader = CardHeader("Open Roles", "Active requisitions across all departments")
+openRolesTable = Table([roleCol, deptCol, locationCol, statusCol])
+roleCol = Col("Role Title", ["Senior Backend Engineer", "Lead Product Designer", "Account Executive", "DevOps Specialist", "HR Business Partner"])
+deptCol = Col("Department", ["Engineering", "Product & Design", "Sales & Mktg", "Engineering", "HR & Admin"])
+locationCol = Col("Location", ["Remote", "New York, NY", "San Francisco, CA", "Remote", "New York, NY"])
+statusCol = Col("Pipeline Status", ["Interviewing", "Sourcing", "Offer Stage", "Screening", "Interviewing"])
+
+interviewsCard = Card([interviewsHeader, interviewsList], "card")
+interviewsHeader = Heading("Interviews Scheduled This Week", "h3")
+interviewsList = ListBlock([interview1, interview2, interview3, interview4], "number")
+interview1 = ListItem("Senior Backend Engineer - Technical Sync", "Candidate: Alex Rivera • Mon, 10:00 AM • Panel: Eng Team")
+interview2 = ListItem("Lead Product Designer - Portfolio Review", "Candidate: Sarah Chen • Tue, 2:00 PM • Panel: Design Lead")
+interview3 = ListItem("Account Executive - Final Culture Fit", "Candidate: Marcus Vance • Wed, 11:30 AM • Panel: VP Sales")
+interview4 = ListItem("DevOps Specialist - System Architecture", "Candidate: David Kim • Thu, 3:30 PM • Panel: Infra Team")
+
+newRoleDialog = DialogBlock("Open New Role", "Create Requisition", "Fill out the details to open a new job requisition.", newRoleForm, "default")
+newRoleForm = Form("create-role-form", formActions, [roleTitleField, deptField, headcountTypeField, descField])
+roleTitleField = FormControl("Job Title", roleTitleInput)
+roleTitleInput = Input("role_title", "e.g. Senior Frontend Developer")
+deptField = FormControl("Department", deptSelect)
+deptSelect = Select("department", [deptEng, deptProd, deptSales, deptOps, deptHR], "Select department")
+deptEng = SelectItem("eng", "Engineering")
+deptProd = SelectItem("prod", "Product & Design")
+deptSales = SelectItem("sales", "Sales & Mktg")
+deptOps = SelectItem("ops", "Operations")
+deptHR = SelectItem("hr", "HR & Admin")
+headcountTypeField = FormControl("Employment Type", headcountTypeRadio)
+headcountTypeRadio = RadioGroup("emp_type", [typeFull, typeContract])
+typeFull = RadioItem("Full-Time", "Permanent headcount budget", "fulltime")
+typeContract = RadioItem("Contractor", "Temporary or project-based", "contract")
+descField = FormControl("Role Justification & Notes", descInput, "Briefly describe the business need for this position.")
+descInput = TextArea("justification", "Explain why this role is needed...", 3)
+formActions = Buttons([submitRoleBtn, cancelRoleBtn])
+submitRoleBtn = Button("Submit Requisition", null, "primary")
+cancelRoleBtn = Button("Cancel", null, "tertiary")
+
+followUp = FollowUpBlock([suggestion1, suggestion2, suggestion3])
+suggestion1 = FollowUpItem("Export hiring report to CSV")
+suggestion2 = FollowUpItem("View offer acceptance rate breakdown")
+suggestion3 = FollowUpItem("Schedule time-to-hire deep dive")

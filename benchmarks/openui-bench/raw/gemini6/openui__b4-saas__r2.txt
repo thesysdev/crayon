@@ -1,0 +1,98 @@
+root = Card([header, kpis, periodFilter, chartsSection, tableTabs, alertsSection, adoptionSection, followUps], "card", "column", "m")
+
+header = CardHeader("SaaS Executive Overview", "Real-time performance, customer health, and administrative controls")
+
+kpis = Card([kpi1, kpi2, kpi3, kpi4, kpi5, kpi6], "sunk", "row", "m", "center", "between", true)
+kpi1 = Card([mrrTitle, mrrVal], "clear", "column", "xs")
+mrrTitle = TextContent("Monthly Recurring Revenue", "small")
+mrrVal = TextContent("$128,400", "large-heavy")
+
+kpi2 = Card([arrTitle, arrVal], "clear", "column", "xs")
+arrTitle = TextContent("Annual Recurring Revenue", "small")
+arrVal = TextContent("$1.54M", "large-heavy")
+
+kpi3 = Card([churnTitle, churnVal], "clear", "column", "xs")
+churnTitle = TextContent("Churn (This Month)", "small")
+churnVal = TextContent("1.2%", "large-heavy")
+
+kpi4 = Card([npsTitle, npsVal], "clear", "column", "xs")
+npsTitle = TextContent("Current NPS", "small")
+npsVal = TextContent("+48", "large-heavy")
+
+kpi5 = Card([utilTitle, utilProgress], "clear", "column", "xs")
+utilTitle = TextContent("Seat Utilization", "small")
+utilProgress = Progress(82, "82% Active")
+
+kpi6 = DrawerBlock("Invite Admin", "Invite New Administrator", "Grant admin privileges to a new team member", inviteForm)
+
+periodFilter = Card([filterHeading, filterButtons], "clear", "row", "m", "center", "between", true)
+filterHeading = Heading("Reporting Period", "h4")
+filterButtons = Buttons([btn30, btn90, btn365])
+btn30 = Button("30 Days", null, "tertiary")
+btn90 = Button("90 Days", null, "primary")
+btn365 = Button("1 Year", null, "tertiary")
+
+chartsSection = Card([chartRow1, chartRow2], "clear", "column", "m")
+chartRow1 = Card([signupChartCard, planChartCard], "clear", "row", "m")
+
+signupChartCard = Card([signupHeading, signupChart], "sunk", "column", "s")
+signupHeading = Heading("New Signups (Past 90 Days)", "h4")
+signupChart = LineChart(["Month 1", "Month 2", "Month 3"], [signupSeries], "natural", "Month", "Signups")
+signupSeries = Series("Signups", [140, 210, 315])
+
+planChartCard = Card([planHeading, planChart], "sunk", "column", "s")
+planHeading = Heading("Customers Split by Plan", "h4")
+planChart = PieChart(["Starter", "Professional", "Enterprise"], [450, 320, 110], "donut")
+
+chartRow2 = Card([adoptionHeading, featureAdoptionChart], "sunk", "column", "s")
+adoptionHeading = Heading("Newest Feature Adoption Rate", "h4")
+featureAdoptionChart = BarChart(["AI Copilot", "Advanced Analytics", "Custom Workflows"], [adoptionSeries], "grouped", "Feature", "Active Accounts")
+adoptionSeries = Series("Active Users", [540, 320, 180])
+
+tableTabs = Tabs([tabTopCust, tabAtRisk, tabFailedPay])
+
+tabTopCust = TabItem("top-cust", "Top 10 Customers", [topCustTable])
+topCustTable = Table([colCustName, colCustPlan, colCustSeats, colCustSpend])
+colCustName = Col("Customer", ["Acme Corp", "GlobalTech", "Apex Dynamics", "Nexus Systems", "Starlight Inc", "Vanguard Ltd", "Horizon Media", "Omni Health", "Quantum Soft", "Pulse Cloud"])
+colCustPlan = Col("Plan", ["Enterprise", "Enterprise", "Enterprise", "Enterprise", "Enterprise", "Professional", "Enterprise", "Professional", "Enterprise", "Professional"])
+colCustSeats = Col("Seats", [450, 380, 310, 280, 250, 220, 200, 190, 175, 150])
+colCustSpend = Col("Annual Spend", ["$108,000", "$91,200", "$74,400", "$67,200", "$60,000", "$39,600", "$48,000", "$34,200", "$42,000", "$27,000"])
+
+tabAtRisk = TabItem("at-risk", "Accounts at Risk", [atRiskList])
+atRiskList = ListBlock([risk1, risk2, risk3, risk4])
+risk1 = ListItem("DataDrive Inc ($45k/yr)", "Risk Reason: Executive Sponsor Left / Low Login Activity")
+risk2 = ListItem("Synergy Systems ($32k/yr)", "Risk Reason: Multiple Unresolved Critical Support Tickets")
+risk3 = ListItem("BioHealth Labs ($28k/yr)", "Risk Reason: Utilization Dropped below 20% in last 30 days")
+risk4 = ListItem("CloudScale Tech ($50k/yr)", "Risk Reason: Pending Contract Renewal - No Response")
+
+tabFailedPay = TabItem("failed-pay", "Failed Payments", [failedPayCallout, failedPayTable])
+failedPayCallout = Callout("warning", "Attention Required", "3 payment failures detected in the current billing cycle.")
+failedPayTable = Table([colPayCust, colPayAmount, colPayDate, colPayReason, colPayAction])
+colPayCust = Col("Customer", ["BrightEdge Inc", "Delta Logistics", "FinTech Solutions"])
+colPayAmount = Col("Amount", ["$2,400", "$1,200", "$4,800"])
+colPayDate = Col("Failed Date", ["2023-10-12", "2023-10-14", "2023-10-15"])
+colPayReason = Col("Reason", ["Card Expired", "Insufficient Funds", "Generic Decline"])
+colPayAction = Col("Action", ["Retry Payment", "Retry Payment", "Retry Payment"])
+
+alertsSection = Card([alertChangelog], "clear")
+alertChangelog = TextCallout("info", "System Status", "All regional services operational. Automated retry sequences active for 3 failed transactions.")
+
+adoptionSection = SectionBlock([secAdoptionDetail], true)
+secAdoptionDetail = SectionItem("sec-1", "Detailed Feature Adoption Notes", [adoptionText])
+adoptionText = TextContent("AI Copilot has reached 54% adoption among Enterprise users within 30 days of release. Advanced Analytics shows steady grow in Pro tier.", "small")
+
+inviteForm = Form("invite-admin-form", inviteFormBtns, [inviteEmailControl, inviteRoleControl])
+inviteEmailControl = FormControl("Email Address", inviteEmailInput)
+inviteEmailInput = Input("admin_email", "colleague@company.com", "email")
+inviteRoleControl = FormControl("Role", inviteRoleSelect)
+inviteRoleSelect = Select("admin_role", [roleSuper, roleBilling, roleSupport], "Select admin role")
+roleSuper = SelectItem("super", "Super Admin")
+roleBilling = SelectItem("billing", "Billing Admin")
+roleSupport = SelectItem("support", "Support Admin")
+inviteFormBtns = Buttons([sendInviteBtn])
+sendInviteBtn = Button("Send Invitation", null, "primary")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Export Churn Analysis Report")
+f2 = FollowUpItem("View Seat Utilization breakdown by department")
+f3 = FollowUpItem("Schedule outreach for Accounts at Risk")

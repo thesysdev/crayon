@@ -1,0 +1,368 @@
+A complete month-end finance view covering cash, burn, runway, expenses and large transactions.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "controlsCard",
+          "kpiSection",
+          "expenseSection",
+          "transactionsSection",
+          "footerSeparator",
+          "footerButtons"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Month-End Finance — May 2026",
+        "subtitle": "Startup cash position, burn and spend breakdown"
+      },
+      {
+        "id": "controlsCard",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "align": "end",
+        "justify": "between",
+        "children": [
+          "monthControl",
+          "downloadButtons"
+        ]
+      },
+      {
+        "id": "monthControl",
+        "component": "FormControl",
+        "label": "View different month",
+        "hint": "Select a month to refresh all figures",
+        "input": "monthSelect"
+      },
+      {
+        "id": "monthSelect",
+        "component": "Select",
+        "name": "month",
+        "value": "2026-05",
+        "placeholder": "Choose month",
+        "items": [
+          "mayItem",
+          "aprItem",
+          "marItem",
+          "febItem"
+        ]
+      },
+      {
+        "id": "mayItem",
+        "component": "SelectItem",
+        "value": "2026-05",
+        "label": "May 2026 — Current"
+      },
+      {
+        "id": "aprItem",
+        "component": "SelectItem",
+        "value": "2026-04",
+        "label": "April 2026"
+      },
+      {
+        "id": "marItem",
+        "component": "SelectItem",
+        "value": "2026-03",
+        "label": "March 2026"
+      },
+      {
+        "id": "febItem",
+        "component": "SelectItem",
+        "value": "2026-02",
+        "label": "February 2026"
+      },
+      {
+        "id": "downloadButtons",
+        "component": "Buttons",
+        "buttons": [
+          "downloadBtn"
+        ]
+      },
+      {
+        "id": "downloadBtn",
+        "component": "Button",
+        "label": "Download Statement (PDF)",
+        "variant": "primary"
+      },
+      {
+        "id": "kpiSection",
+        "component": "Card",
+        "children": [
+          "kpiHeader",
+          "kpiTable",
+          "runwayProgress",
+          "runwayAlert"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "kpiHeader",
+        "component": "CardHeader",
+        "title": "Cash Position",
+        "subtitle": "As of May 31, 2026 · All figures in USD"
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": [
+          "metricCol",
+          "valueCol",
+          "noteCol"
+        ]
+      },
+      {
+        "id": "metricCol",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "1. Cash on Hand",
+          "2. Monthly Burn",
+          "3. Months of Runway"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "valueCol",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "$842,000",
+          "$68,500",
+          "12.3 months"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "noteCol",
+        "component": "Col",
+        "label": "Context",
+        "data": [
+          "Bank + Mercury as of 5/31",
+          "May net outflow",
+          "$842k ÷ $68.5k"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "runwayProgress",
+        "component": "Progress",
+        "value": 68,
+        "label": "Runway: 12.3 / 18 months target (68%)"
+      },
+      {
+        "id": "runwayAlert",
+        "component": "Alert",
+        "variant": "success",
+        "title": "Healthy runway",
+        "description": "At current burn, cash lasts until May 2027. Burn down 7% vs April ($73,800)."
+      },
+      {
+        "id": "expenseSection",
+        "component": "Card",
+        "children": [
+          "expenseHeader",
+          "expensePie",
+          "expenseTable"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "expenseHeader",
+        "component": "CardHeader",
+        "title": "4. Expenses Split by Category",
+        "subtitle": "Total May expenses: $68,500 · 100% of burn"
+      },
+      {
+        "id": "expensePie",
+        "component": "PieChart",
+        "labels": [
+          "Payroll",
+          "Cloud Infra (AWS/GCP)",
+          "Marketing",
+          "Office & Ops",
+          "Legal & Finance"
+        ],
+        "values": [
+          41800,
+          14200,
+          5800,
+          4200,
+          2500
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "expenseTable",
+        "component": "Table",
+        "columns": [
+          "expCatCol",
+          "expAmtCol",
+          "expShareCol"
+        ]
+      },
+      {
+        "id": "expCatCol",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Payroll",
+          "Cloud Infra",
+          "Marketing",
+          "Office & Ops",
+          "Legal & Finance"
+        ]
+      },
+      {
+        "id": "expAmtCol",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "$41,800",
+          "$14,200",
+          "$5,800",
+          "$4,200",
+          "$2,500"
+        ]
+      },
+      {
+        "id": "expShareCol",
+        "component": "Col",
+        "label": "Share",
+        "data": [
+          "61.0%",
+          "20.7%",
+          "8.5%",
+          "6.1%",
+          "3.6%"
+        ]
+      },
+      {
+        "id": "transactionsSection",
+        "component": "Card",
+        "children": [
+          "txHeader",
+          "txCallout",
+          "txTable"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "txHeader",
+        "component": "CardHeader",
+        "title": "5. Transactions > $10,000 — May 2026",
+        "subtitle": "Filtered to show only large outflows this month (5 transactions)"
+      },
+      {
+        "id": "txCallout",
+        "component": "TextCallout",
+        "variant": "info",
+        "title": "Threshold applied",
+        "description": "Showing 5 of 47 total transactions. Filter: amount > $10,000."
+      },
+      {
+        "id": "txTable",
+        "component": "Table",
+        "columns": [
+          "txDateCol",
+          "txDescCol",
+          "txAmountCol",
+          "txCategoryCol"
+        ]
+      },
+      {
+        "id": "txDateCol",
+        "component": "Col",
+        "label": "Date",
+        "data": [
+          "May 02",
+          "May 09",
+          "May 15",
+          "May 22",
+          "May 28"
+        ]
+      },
+      {
+        "id": "txDescCol",
+        "component": "Col",
+        "label": "Description",
+        "data": [
+          "Rippling — Payroll",
+          "AWS — Cloud Billing",
+          "WeWork — Office Lease",
+          "NoGood — Marketing Retainer",
+          "Cooley — Legal Retainer"
+        ]
+      },
+      {
+        "id": "txAmountCol",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "$41,800",
+          "$14,200",
+          "$11,500",
+          "$12,800",
+          "$10,500"
+        ]
+      },
+      {
+        "id": "txCategoryCol",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Payroll",
+          "Cloud Infra",
+          "Office & Ops",
+          "Marketing",
+          "Legal & Finance"
+        ]
+      },
+      {
+        "id": "footerSeparator",
+        "component": "Separator"
+      },
+      {
+        "id": "footerButtons",
+        "component": "Buttons",
+        "buttons": [
+          "exportCsvBtn",
+          "downloadStatementFooterBtn"
+        ]
+      },
+      {
+        "id": "exportCsvBtn",
+        "component": "Button",
+        "label": "Export CSV",
+        "variant": "secondary"
+      },
+      {
+        "id": "downloadStatementFooterBtn",
+        "component": "Button",
+        "label": "Download Full Statement",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>

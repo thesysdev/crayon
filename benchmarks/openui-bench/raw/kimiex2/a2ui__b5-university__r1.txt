@@ -1,0 +1,361 @@
+Here's a single-screen university administration dashboard. All 16 items are covered: enrollment KPI + 5-year trend (1), applications and waitlists by program (2, 14), acceptance rate (3), tuition revenue (4), course fill table (5), faculty teaching load chart (6), at-risk students alert + table (7), scholarship progress bar (8), housing donut (9), events list (10), alumni giving chart (11), department focus selector (12), semester-over-semester comparison table (13), course approval dialog (15), and a group messaging form (16).
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "deptForm",
+          "kpiTable",
+          "enrollHeading",
+          "enrollmentChart",
+          "admHeading",
+          "appsChart",
+          "semHeading",
+          "semTable",
+          "acadHeading",
+          "courseTable",
+          "facHeading",
+          "facultyChart",
+          "riskHeading",
+          "riskAlert",
+          "riskTable",
+          "finHeading",
+          "scholarshipProgress",
+          "alumniChart",
+          "lifeHeading",
+          "housingChart",
+          "eventsList",
+          "actHeading",
+          "courseDialog",
+          "messageForm"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "University Administration Overview",
+        "subtitle": "Fall 2025 • Office of the Registrar"
+      },
+      {
+        "id": "deptForm",
+        "component": "Form",
+        "name": "department-focus",
+        "buttons": "deptButtons",
+        "fields": ["deptControl"]
+      },
+      {
+        "id": "deptControl",
+        "component": "FormControl",
+        "label": "Focus on a department",
+        "input": "deptSelect",
+        "hint": "Filters all figures on this page"
+      },
+      {
+        "id": "deptSelect",
+        "component": "Select",
+        "name": "department",
+        "placeholder": "Choose a department",
+        "items": ["deptAll", "deptArts", "deptBus", "deptCS", "deptEng", "deptMed"]
+      },
+      { "id": "deptAll", "component": "SelectItem", "value": "all", "label": "All departments" },
+      { "id": "deptArts", "component": "SelectItem", "value": "arts", "label": "Arts & Sciences" },
+      { "id": "deptBus", "component": "SelectItem", "value": "business", "label": "Business" },
+      { "id": "deptCS", "component": "SelectItem", "value": "cs", "label": "Computer Science" },
+      { "id": "deptEng", "component": "SelectItem", "value": "engineering", "label": "Engineering" },
+      { "id": "deptMed", "component": "SelectItem", "value": "medicine", "label": "Medicine" },
+      {
+        "id": "deptButtons",
+        "component": "Buttons",
+        "buttons": ["applyBtn", "resetBtn"]
+      },
+      { "id": "applyBtn", "component": "Button", "label": "Apply focus", "variant": "primary" },
+      { "id": "resetBtn", "component": "Button", "label": "Reset", "variant": "tertiary" },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": ["kpiMetric", "kpiValue"]
+      },
+      {
+        "id": "kpiMetric",
+        "component": "Col",
+        "label": "Key metric",
+        "data": ["Total enrollment (Fall 2025)", "Acceptance rate", "Tuition revenue (FY 2025)"]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": ["18,742", "31.6%", "$86.4M"]
+      },
+      { "id": "enrollHeading", "component": "Heading", "text": "Enrollment — five-year trend", "level": "h3" },
+      {
+        "id": "enrollmentChart",
+        "component": "LineChart",
+        "labels": ["2021", "2022", "2023", "2024", "2025"],
+        "series": ["enrollSeries"],
+        "variant": "natural",
+        "xLabel": "Year",
+        "yLabel": "Students"
+      },
+      {
+        "id": "enrollSeries",
+        "component": "Series",
+        "category": "Total enrollment",
+        "values": [16820, 17240, 17510, 18030, 18742]
+      },
+      { "id": "admHeading", "component": "Heading", "text": "Admissions — applications & waitlists by program", "level": "h3" },
+      {
+        "id": "appsChart",
+        "component": "HorizontalBarChart",
+        "labels": ["Computer Science", "Business", "Engineering", "Arts & Sciences", "Medicine"],
+        "series": ["appsSeries", "waitSeries"],
+        "variant": "grouped",
+        "xLabel": "Applicants",
+        "yLabel": "Program"
+      },
+      {
+        "id": "appsSeries",
+        "component": "Series",
+        "category": "Applications",
+        "values": [5420, 4810, 3960, 6120, 2140]
+      },
+      {
+        "id": "waitSeries",
+        "component": "Series",
+        "category": "Waitlisted",
+        "values": [380, 290, 210, 340, 260]
+      },
+      { "id": "semHeading", "component": "Heading", "text": "This semester vs last", "level": "h3" },
+      {
+        "id": "semTable",
+        "component": "Table",
+        "columns": ["semMetric", "semLast", "semThis"]
+      },
+      {
+        "id": "semMetric",
+        "component": "Col",
+        "label": "Metric",
+        "data": ["Enrollment", "Applications", "Acceptance rate", "First-year retention", "Avg. class size"]
+      },
+      {
+        "id": "semLast",
+        "component": "Col",
+        "label": "Fall 2024",
+        "data": ["18,030", "24,310", "33.1%", "91.2%", "27"]
+      },
+      {
+        "id": "semThis",
+        "component": "Col",
+        "label": "Fall 2025",
+        "data": ["18,742", "26,540", "31.6%", "92.4%", "25"]
+      },
+      { "id": "acadHeading", "component": "Heading", "text": "Course offerings — how full", "level": "h3" },
+      {
+        "id": "courseTable",
+        "component": "Table",
+        "columns": ["cCourse", "cEnr", "cCap", "cFull"]
+      },
+      {
+        "id": "cCourse",
+        "component": "Col",
+        "label": "Course",
+        "data": ["CS 401 — Machine Learning", "BIO 210 — Genetics", "ECON 305 — Game Theory", "HIST 112 — Modern Europe", "ME 220 — Thermodynamics"]
+      },
+      { "id": "cEnr", "component": "Col", "label": "Enrolled", "type": "number", "data": [142, 96, 44, 28, 88] },
+      { "id": "cCap", "component": "Col", "label": "Capacity", "type": "number", "data": [120, 100, 60, 40, 90] },
+      { "id": "cFull", "component": "Col", "label": "% Full", "type": "number", "data": [118, 96, 73, 70, 98] },
+      { "id": "facHeading", "component": "Heading", "text": "Teaching load by faculty member", "level": "h3" },
+      {
+        "id": "facultyChart",
+        "component": "BarChart",
+        "labels": ["Dr. Chen", "Dr. Patel", "Dr. Garcia", "Dr. Kim", "Dr. Novak"],
+        "series": ["loadCourses", "loadAdvisees"],
+        "variant": "grouped",
+        "yLabel": "Count"
+      },
+      { "id": "loadCourses", "component": "Series", "category": "Courses taught", "values": [4, 3, 5, 2, 4] },
+      { "id": "loadAdvisees", "component": "Series", "category": "Thesis advisees", "values": [6, 2, 8, 1, 5] },
+      { "id": "riskHeading", "component": "Heading", "text": "Students at academic risk", "level": "h3" },
+      {
+        "id": "riskAlert",
+        "component": "Alert",
+        "title": "17 students flagged at academic risk",
+        "description": "Advising recommends outreach within the next two weeks. The five highest-risk cases are shown below.",
+        "variant": "warning"
+      },
+      {
+        "id": "riskTable",
+        "component": "Table",
+        "columns": ["rName", "rProg", "rGpa", "rFlag"]
+      },
+      {
+        "id": "rName",
+        "component": "Col",
+        "label": "Student",
+        "data": ["A. Rivera", "J. Okafor", "M. Haddad", "S. Lindqvist", "T. Nguyen"]
+      },
+      {
+        "id": "rProg",
+        "component": "Col",
+        "label": "Program",
+        "data": ["Biology", "Computer Science", "Business", "Engineering", "Arts & Sciences"]
+      },
+      { "id": "rGpa", "component": "Col", "label": "GPA", "type": "number", "data": [1.9, 2.0, 1.7, 2.1, 1.8] },
+      {
+        "id": "rFlag",
+        "component": "Col",
+        "label": "Risk factor",
+        "data": ["Attendance < 60%", "Failed midterm", "2 incomplete courses", "Advisor referral", "Missed advising sessions"]
+      },
+      { "id": "finHeading", "component": "Heading", "text": "Finance & advancement", "level": "h3" },
+      {
+        "id": "scholarshipProgress",
+        "component": "Progress",
+        "value": 78,
+        "label": "Scholarship budget used — $4.68M of $6.0M (78%)"
+      },
+      {
+        "id": "alumniChart",
+        "component": "BarChart",
+        "labels": ["2022", "2023", "2024", "2025"],
+        "series": ["givingSeries"],
+        "variant": "grouped",
+        "xLabel": "Year",
+        "yLabel": "USD (millions)"
+      },
+      {
+        "id": "givingSeries",
+        "component": "Series",
+        "category": "Alumni giving",
+        "values": [12.4, 14.1, 13.2, 16.8]
+      },
+      { "id": "lifeHeading", "component": "Heading", "text": "Housing & campus events", "level": "h3" },
+      {
+        "id": "housingChart",
+        "component": "PieChart",
+        "labels": ["Occupied beds", "Available beds"],
+        "values": [2840, 360],
+        "variant": "donut"
+      },
+      {
+        "id": "eventsList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": ["ev1", "ev2", "ev3", "ev4", "ev5"]
+      },
+      { "id": "ev1", "component": "ListItem", "title": "Homecoming Football Game", "subtitle": "Oct 12 • Stadium • 7,000 expected" },
+      { "id": "ev2", "component": "ListItem", "title": "Undergraduate Research Symposium", "subtitle": "Oct 15 • Science Center" },
+      { "id": "ev3", "component": "ListItem", "title": "Fall Career Fair", "subtitle": "Oct 18 • Field House • 120 employers" },
+      { "id": "ev4", "component": "ListItem", "title": "Alumni Giving Gala", "subtitle": "Oct 24 • Grand Hall" },
+      { "id": "ev5", "component": "ListItem", "title": "Autumn Choral Concert", "subtitle": "Oct 27 • Arts Auditorium" },
+      { "id": "actHeading", "component": "Heading", "text": "Actions", "level": "h3" },
+      {
+        "id": "courseDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Approve a new course",
+        "title": "New course approval",
+        "description": "Review the proposal below. Approving adds the course to the Fall 2026 catalog.",
+        "content": ["courseForm"]
+      },
+      {
+        "id": "courseForm",
+        "component": "Form",
+        "name": "course-approval",
+        "buttons": "courseFormButtons",
+        "fields": ["cnControl", "ccControl", "crControl", "cdControl"]
+      },
+      { "id": "cnControl", "component": "FormControl", "label": "Course title", "input": "cnInput" },
+      { "id": "cnInput", "component": "Input", "name": "course_title", "placeholder": "e.g. Applied Data Ethics" },
+      { "id": "ccControl", "component": "FormControl", "label": "Course code", "input": "ccInput" },
+      { "id": "ccInput", "component": "Input", "name": "course_code", "placeholder": "e.g. CS 415" },
+      { "id": "crControl", "component": "FormControl", "label": "Credits", "input": "crSelect" },
+      {
+        "id": "crSelect",
+        "component": "Select",
+        "name": "credits",
+        "placeholder": "Select credits",
+        "items": ["cr2", "cr3", "cr4"]
+      },
+      { "id": "cr2", "component": "SelectItem", "value": "2", "label": "2 credits" },
+      { "id": "cr3", "component": "SelectItem", "value": "3", "label": "3 credits" },
+      { "id": "cr4", "component": "SelectItem", "value": "4", "label": "4 credits" },
+      { "id": "cdControl", "component": "FormControl", "label": "Description", "input": "cdArea" },
+      {
+        "id": "cdArea",
+        "component": "TextArea",
+        "name": "description",
+        "placeholder": "Course summary and learning outcomes",
+        "rows": 3
+      },
+      {
+        "id": "courseFormButtons",
+        "component": "Buttons",
+        "buttons": ["approveBtn", "changesBtn"]
+      },
+      { "id": "approveBtn", "component": "Button", "label": "Approve course", "variant": "primary" },
+      { "id": "changesBtn", "component": "Button", "label": "Request changes", "variant": "secondary" },
+      {
+        "id": "messageForm",
+        "component": "Form",
+        "name": "group-message",
+        "buttons": "msgButtons",
+        "fields": ["grpControl", "subControl", "bodyControl"]
+      },
+      { "id": "grpControl", "component": "FormControl", "label": "Student group", "input": "grpSelect" },
+      {
+        "id": "grpSelect",
+        "component": "Select",
+        "name": "group",
+        "placeholder": "Choose a group",
+        "items": ["gAll", "gFirst", "gGrad", "gIntl", "gAth"]
+      },
+      { "id": "gAll", "component": "SelectItem", "value": "all", "label": "All students" },
+      { "id": "gFirst", "component": "SelectItem", "value": "first-year", "label": "First-year students" },
+      { "id": "gGrad", "component": "SelectItem", "value": "graduate", "label": "Graduate students" },
+      { "id": "gIntl", "component": "SelectItem", "value": "international", "label": "International students" },
+      { "id": "gAth", "component": "SelectItem", "value": "athletes", "label": "Student athletes" },
+      { "id": "subControl", "component": "FormControl", "label": "Subject", "input": "subInput" },
+      { "id": "subInput", "component": "Input", "name": "subject", "placeholder": "Subject line" },
+      { "id": "bodyControl", "component": "FormControl", "label": "Message", "input": "bodyArea" },
+      {
+        "id": "bodyArea",
+        "component": "TextArea",
+        "name": "message",
+        "placeholder": "Write your announcement…",
+        "rows": 4
+      },
+      {
+        "id": "msgButtons",
+        "component": "Buttons",
+        "buttons": ["sendBtn", "draftBtn"]
+      },
+      { "id": "sendBtn", "component": "Button", "label": "Send message", "variant": "primary" },
+      { "id": "draftBtn", "component": "Button", "label": "Save draft", "variant": "tertiary" }
+    ]
+  }
+}
+</a2ui-json>
+
+A few notes on how the items map to the screen:
+
+- **Items 2 + 14** share one grouped horizontal bar chart (applications and waitlisted per program) so you can compare demand and backlog side by side.
+- **Item 12** (department focus) sits at the top as a selector with Apply/Reset, intended to filter everything below it.
+- **Item 15** lives behind an "Approve a new course" dialog button under Actions, so the approval form doesn't clutter the overview.
+- **Item 8** is a progress bar since it's inherently a part-to-figure; **item 9** is a donut for the same reason.

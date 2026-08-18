@@ -1,0 +1,795 @@
+Here's a complete streaming operations room covering all 16 requirements:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "regionControl",
+          "liveKpis",
+          "bufferAlert",
+          "tabs"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "StreamOps — Operations Room",
+        "subtitle": "Live service overview · updated 2 min ago"
+      },
+      {
+        "id": "regionControl",
+        "component": "Form",
+        "name": "region-focus",
+        "buttons": "regionButtons",
+        "fields": [
+          "regionField"
+        ]
+      },
+      {
+        "id": "regionField",
+        "component": "FormControl",
+        "label": "Focus on region",
+        "input": "regionSelect",
+        "hint": "Filters all panels to a single region"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region",
+        "placeholder": "All regions",
+        "items": [
+          "rAll",
+          "rNA",
+          "rEU",
+          "rLATAM",
+          "rAPAC"
+        ]
+      },
+      {
+        "id": "rAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All regions"
+      },
+      {
+        "id": "rNA",
+        "component": "SelectItem",
+        "value": "na",
+        "label": "North America"
+      },
+      {
+        "id": "rEU",
+        "component": "SelectItem",
+        "value": "eu",
+        "label": "Europe"
+      },
+      {
+        "id": "rLATAM",
+        "component": "SelectItem",
+        "value": "latam",
+        "label": "Latin America"
+      },
+      {
+        "id": "rAPAC",
+        "component": "SelectItem",
+        "value": "apac",
+        "label": "Asia-Pacific"
+      },
+      {
+        "id": "regionButtons",
+        "component": "Buttons",
+        "buttons": [
+          "regionApplyBtn"
+        ]
+      },
+      {
+        "id": "regionApplyBtn",
+        "component": "Button",
+        "label": "Apply region filter",
+        "variant": "primary"
+      },
+      {
+        "id": "liveKpis",
+        "component": "Table",
+        "columns": [
+          "kpiName",
+          "kpiValue",
+          "kpiDelta"
+        ]
+      },
+      {
+        "id": "kpiName",
+        "component": "Col",
+        "label": "Live metric",
+        "data": [
+          "Viewers watching now",
+          "Buffering rate",
+          "Recommendation CTR",
+          "Searches with no playback"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "1,284,502",
+          "0.84%",
+          "12.6%",
+          "8.3% of searches"
+        ]
+      },
+      {
+        "id": "kpiDelta",
+        "component": "Col",
+        "label": "vs. yesterday",
+        "data": [
+          "+4.1%",
+          "+0.12 pts",
+          "-0.4 pts",
+          "+1.1 pts"
+        ]
+      },
+      {
+        "id": "bufferAlert",
+        "component": "Alert",
+        "title": "Buffering elevated in APAC",
+        "description": "Buffering rate in APAC is 1.9%, above the 1.5% threshold. CDN node ap-south-2 under investigation.",
+        "variant": "warning"
+      },
+      {
+        "id": "tabs",
+        "component": "Tabs",
+        "items": [
+          "tabContent",
+          "tabGrowth",
+          "tabHealth",
+          "tabDiscovery",
+          "tabBusiness",
+          "tabOps"
+        ]
+      },
+      {
+        "id": "tabContent",
+        "component": "TabItem",
+        "value": "content",
+        "trigger": "Content",
+        "content": [
+          "topTitlesTable",
+          "watchTimeChart",
+          "genreChart",
+          "releasesTable",
+          "licensesTable"
+        ]
+      },
+      {
+        "id": "topTitlesTable",
+        "component": "Table",
+        "columns": [
+          "titleCol",
+          "hoursCol"
+        ]
+      },
+      {
+        "id": "titleCol",
+        "component": "Col",
+        "label": "Most-watched titles (7d)",
+        "data": [
+          "Midnight Harbor",
+          "The Last Cartographer",
+          "Static Bloom",
+          "Kingdom of Ash",
+          "Chef's Table: Seoul"
+        ]
+      },
+      {
+        "id": "hoursCol",
+        "component": "Col",
+        "label": "Hours watched",
+        "data": [
+          "18.2M",
+          "14.7M",
+          "11.3M",
+          "9.8M",
+          "7.1M"
+        ]
+      },
+      {
+        "id": "watchTimeChart",
+        "component": "AreaChart",
+        "labels": [
+          "W1",
+          "W2",
+          "W3",
+          "W4"
+        ],
+        "series": [
+          "watchTimeSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Past month (weeks)",
+        "yLabel": "Hours watched (M)"
+      },
+      {
+        "id": "watchTimeSeries",
+        "component": "Series",
+        "category": "Total watch time",
+        "values": [
+          182,
+          195,
+          201,
+          214
+        ]
+      },
+      {
+        "id": "genreChart",
+        "component": "HorizontalBarChart",
+        "labels": [
+          "Drama",
+          "Comedy",
+          "Documentary",
+          "Action",
+          "Kids",
+          "Sci-Fi"
+        ],
+        "series": [
+          "genreSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Hours watched (M)",
+        "yLabel": "Genre"
+      },
+      {
+        "id": "genreSeries",
+        "component": "Series",
+        "category": "Watch hours",
+        "values": [
+          96,
+          74,
+          52,
+          68,
+          41,
+          47
+        ]
+      },
+      {
+        "id": "releasesTable",
+        "component": "Table",
+        "columns": [
+          "relTitle",
+          "relDate",
+          "relType"
+        ]
+      },
+      {
+        "id": "relTitle",
+        "component": "Col",
+        "label": "Upcoming release",
+        "data": [
+          "Glass Empire S2",
+          "Paper Moons",
+          "Deep Field",
+          "Laugh Track Live"
+        ]
+      },
+      {
+        "id": "relDate",
+        "component": "Col",
+        "label": "Release date",
+        "data": [
+          "Jun 6",
+          "Jun 13",
+          "Jun 20",
+          "Jun 27"
+        ]
+      },
+      {
+        "id": "relType",
+        "component": "Col",
+        "label": "Type",
+        "data": [
+          "Series",
+          "Film",
+          "Documentary",
+          "Special"
+        ]
+      },
+      {
+        "id": "licensesTable",
+        "component": "Table",
+        "columns": [
+          "licTitle",
+          "licExpiry",
+          "licRisk"
+        ]
+      },
+      {
+        "id": "licTitle",
+        "component": "Col",
+        "label": "License expiring",
+        "data": [
+          "Neon Divide",
+          "Harbor Nights",
+          "The Long Way Home"
+        ]
+      },
+      {
+        "id": "licExpiry",
+        "component": "Col",
+        "label": "Expires",
+        "data": [
+          "Jun 9",
+          "Jun 18",
+          "Jul 2"
+        ]
+      },
+      {
+        "id": "licRisk",
+        "component": "Col",
+        "label": "Renewal status",
+        "data": [
+          "At risk",
+          "In negotiation",
+          "Renewal pending"
+        ]
+      },
+      {
+        "id": "tabGrowth",
+        "component": "TabItem",
+        "value": "growth",
+        "trigger": "Growth",
+        "content": [
+          "subsChart",
+          "subsNote"
+        ]
+      },
+      {
+        "id": "subsChart",
+        "component": "BarChart",
+        "labels": [
+          "W1",
+          "W2",
+          "W3",
+          "W4"
+        ],
+        "series": [
+          "newSubsSeries",
+          "cancelSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Past month (weeks)",
+        "yLabel": "Subscribers (K)"
+      },
+      {
+        "id": "newSubsSeries",
+        "component": "Series",
+        "category": "New subscribers",
+        "values": [
+          84,
+          91,
+          78,
+          103
+        ]
+      },
+      {
+        "id": "cancelSeries",
+        "component": "Series",
+        "category": "Cancellations",
+        "values": [
+          39,
+          42,
+          51,
+          44
+        ]
+      },
+      {
+        "id": "subsNote",
+        "component": "TextContent",
+        "text": "Net adds this month: **+172K**. Cancellation spike in W3 correlates with the price change announcement.",
+        "size": "small"
+      },
+      {
+        "id": "tabHealth",
+        "component": "TabItem",
+        "value": "health",
+        "trigger": "Delivery Health",
+        "content": [
+          "bufferChart",
+          "regionHealthTable"
+        ]
+      },
+      {
+        "id": "bufferChart",
+        "component": "LineChart",
+        "labels": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat",
+          "Sun"
+        ],
+        "series": [
+          "bufferSeries"
+        ],
+        "variant": "linear",
+        "xLabel": "Past week",
+        "yLabel": "Buffering rate (%)"
+      },
+      {
+        "id": "bufferSeries",
+        "component": "Series",
+        "category": "Buffering rate",
+        "values": [
+          0.7,
+          0.72,
+          0.81,
+          0.78,
+          0.9,
+          1.1,
+          0.84
+        ]
+      },
+      {
+        "id": "regionHealthTable",
+        "component": "Table",
+        "columns": [
+          "rhRegion",
+          "rhStatus",
+          "rhLatency",
+          "rhError"
+        ]
+      },
+      {
+        "id": "rhRegion",
+        "component": "Col",
+        "label": "Region",
+        "data": [
+          "North America",
+          "Europe",
+          "Latin America",
+          "Asia-Pacific"
+        ]
+      },
+      {
+        "id": "rhStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Healthy",
+          "Healthy",
+          "Degraded",
+          "Warning"
+        ]
+      },
+      {
+        "id": "rhLatency",
+        "component": "Col",
+        "label": "Median startup (ms)",
+        "data": [
+          820,
+          910,
+          1480,
+          1320
+        ]
+      },
+      {
+        "id": "rhError",
+        "component": "Col",
+        "label": "Error rate",
+        "data": [
+          "0.3%",
+          "0.4%",
+          "1.2%",
+          "1.8%"
+        ]
+      },
+      {
+        "id": "tabDiscovery",
+        "component": "TabItem",
+        "value": "discovery",
+        "trigger": "Discovery",
+        "content": [
+          "ctrChart",
+          "zeroSearchTable"
+        ]
+      },
+      {
+        "id": "ctrChart",
+        "component": "LineChart",
+        "labels": [
+          "W1",
+          "W2",
+          "W3",
+          "W4"
+        ],
+        "series": [
+          "ctrSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Past month (weeks)",
+        "yLabel": "Recommendation CTR (%)"
+      },
+      {
+        "id": "ctrSeries",
+        "component": "Series",
+        "category": "Recommendation click-through",
+        "values": [
+          11.8,
+          12.4,
+          13.1,
+          12.6
+        ]
+      },
+      {
+        "id": "zeroSearchTable",
+        "component": "Table",
+        "columns": [
+          "zsQuery",
+          "zsCount"
+        ]
+      },
+      {
+        "id": "zsQuery",
+        "component": "Col",
+        "label": "Search with no playback",
+        "data": [
+          "sunderland til i die",
+          "the office",
+          "spirited away",
+          "friends",
+          "live cricket"
+        ]
+      },
+      {
+        "id": "zsCount",
+        "component": "Col",
+        "label": "Searches (7d)",
+        "data": [
+          14200,
+          11800,
+          9600,
+          8900,
+          7400
+        ]
+      },
+      {
+        "id": "tabBusiness",
+        "component": "TabItem",
+        "value": "business",
+        "trigger": "Business",
+        "content": [
+          "revenueChart",
+          "deviceChart"
+        ]
+      },
+      {
+        "id": "revenueChart",
+        "component": "PieChart",
+        "labels": [
+          "Standard",
+          "Premium",
+          "Basic with ads",
+          "Annual bundle"
+        ],
+        "values": [
+          46,
+          28,
+          17,
+          9
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "deviceChart",
+        "component": "PieChart",
+        "labels": [
+          "Smart TV",
+          "Mobile",
+          "Web",
+          "Tablet",
+          "Console"
+        ],
+        "values": [
+          44,
+          27,
+          15,
+          8,
+          6
+        ],
+        "variant": "pie"
+      },
+      {
+        "id": "tabOps",
+        "component": "TabItem",
+        "value": "ops",
+        "trigger": "Ops Controls",
+        "content": [
+          "flagsGroup",
+          "promoteForm"
+        ]
+      },
+      {
+        "id": "flagsGroup",
+        "component": "SwitchGroup",
+        "name": "feature_flags",
+        "items": [
+          "flagRecs",
+          "flagDownloads",
+          "flagHDR",
+          "flagAds",
+          "flagProfiles"
+        ],
+        "variant": "card"
+      },
+      {
+        "id": "flagRecs",
+        "component": "SwitchItem",
+        "name": "recs_v3",
+        "label": "Recommendations engine v3",
+        "description": "New ranking model on home screen",
+        "defaultChecked": true
+      },
+      {
+        "id": "flagDownloads",
+        "component": "SwitchItem",
+        "name": "mobile_downloads",
+        "label": "Mobile downloads",
+        "description": "Offline viewing on iOS/Android",
+        "defaultChecked": true
+      },
+      {
+        "id": "flagHDR",
+        "component": "SwitchItem",
+        "name": "hdr_streaming",
+        "label": "HDR streaming",
+        "description": "Dolby Vision on supported devices",
+        "defaultChecked": false
+      },
+      {
+        "id": "flagAds",
+        "component": "SwitchItem",
+        "name": "ad_tier",
+        "label": "Ad-supported tier",
+        "description": "Serve ads to Basic plan",
+        "defaultChecked": true
+      },
+      {
+        "id": "flagProfiles",
+        "component": "SwitchItem",
+        "name": "kids_profiles",
+        "label": "Kids profiles v2",
+        "description": "New parental controls UI",
+        "defaultChecked": false
+      },
+      {
+        "id": "promoteForm",
+        "component": "Form",
+        "name": "promote-title",
+        "buttons": "promoteButtons",
+        "fields": [
+          "promoteTitleField",
+          "promoteSlotField",
+          "promoteDateField"
+        ]
+      },
+      {
+        "id": "promoteTitleField",
+        "component": "FormControl",
+        "label": "Promote a title on the home screen",
+        "input": "promoteTitleInput"
+      },
+      {
+        "id": "promoteTitleInput",
+        "component": "Input",
+        "name": "title",
+        "placeholder": "e.g. Glass Empire S2"
+      },
+      {
+        "id": "promoteSlotField",
+        "component": "FormControl",
+        "label": "Home screen slot",
+        "input": "promoteSlotSelect"
+      },
+      {
+        "id": "promoteSlotSelect",
+        "component": "Select",
+        "name": "slot",
+        "placeholder": "Choose a slot",
+        "items": [
+          "slotHero",
+          "slotRow1",
+          "slotRow2"
+        ]
+      },
+      {
+        "id": "slotHero",
+        "component": "SelectItem",
+        "value": "hero",
+        "label": "Hero banner"
+      },
+      {
+        "id": "slotRow1",
+        "component": "SelectItem",
+        "value": "row1",
+        "label": "Top row — Trending"
+      },
+      {
+        "id": "slotRow2",
+        "component": "SelectItem",
+        "value": "row2",
+        "label": "Second row — New releases"
+      },
+      {
+        "id": "promoteDateField",
+        "component": "FormControl",
+        "label": "Promotion window",
+        "input": "promoteDatePicker"
+      },
+      {
+        "id": "promoteDatePicker",
+        "component": "DatePicker",
+        "name": "promo_window",
+        "mode": "range"
+      },
+      {
+        "id": "promoteButtons",
+        "component": "Buttons",
+        "buttons": [
+          "promoteSubmit",
+          "promoteCancel"
+        ]
+      },
+      {
+        "id": "promoteSubmit",
+        "component": "Button",
+        "label": "Schedule promotion",
+        "variant": "primary"
+      },
+      {
+        "id": "promoteCancel",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+All 16 items are covered:
+
+1. **Viewers now** — live KPI table (1,284,502)
+2. **Top titles + hours** — Content tab table
+3. **Watch time, past month** — area chart
+4. **New subs vs cancellations** — grouped bar chart in Growth tab
+5. **Genre performance** — horizontal bar chart
+6. **Buffering rate** — KPI + alert + weekly line chart
+7. **Delivery health by region** — status/latency/error table
+8. **Upcoming releases** — releases table
+9. **Expiring licenses** — licenses table with renewal status
+10. **Recommendation CTR** — KPI + trend chart
+11. **Zero-playback searches** — table of failed queries
+12. **Revenue by plan** — donut chart
+13. **Viewing by device** — pie chart
+14. **Region focus** — region selector form at top
+15. **Feature flags** — switch group with on/off state
+16. **Promote a title** — form with title, slot, and date range

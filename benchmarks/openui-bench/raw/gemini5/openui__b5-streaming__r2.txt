@@ -1,0 +1,128 @@
+root = Card([header, mainGrid, followUps], "sunk", "column", "m")
+header = CardHeader("Operations Center", "Real-time streaming metrics, delivery health, and content controls")
+mainGrid = Card([topSection, middleSection, bottomSection, controlSection], "clear", "column", "l")
+
+topSection = Card([regionFilter, kpiRow], "card", "column", "m")
+regionFilter = Form("region-filter", filterButtons, [regionControl])
+regionControl = FormControl("Focus Region", regionSelect, "Filter operations data by region")
+regionSelect = Select("region", [regAll, regNA, regEU, regAPAC, regLATAM], "Select Region", null, "all")
+regAll = SelectItem("all", "Global (All Regions)")
+regNA = SelectItem("na", "North America (NA-EAST / NA-WEST)")
+regEU = SelectItem("eu", "Europe (EU-CENTRAL / EU-WEST)")
+regAPAC = SelectItem("apac", "Asia-Pacific (APAC-SOUTH / APAC-EAST)")
+regLATAM = SelectItem("latam", "Latin America (LATAM-SOUTH)")
+filterButtons = Buttons([applyFilterBtn])
+applyFilterBtn = Button("Apply Region Filter", null, "secondary", "normal", "small")
+
+kpiRow = Card([v1, v2, v3], "clear", "row", "m", "stretch")
+v1 = Card([v1Title, v1Value, v1Badge], "card", "column", "xs", "center")
+v1Title = TextContent("Live Viewers Now", "small-heavy")
+v1Value = Heading("4,285,190", "h2")
+v1Badge = Badge("Peak Today", "default")
+
+v2 = Card([v2Title, v2Value, v2Badge], "card", "column", "xs", "center")
+v2Title = TextContent("Global Buffering Rate", "small-heavy")
+v2Value = Heading("0.42%", "h2")
+v2Badge = Badge("Optimal (<0.5%)", "outline")
+
+v3 = Card([v3Title, v3Value, v3Badge], "card", "column", "xs", "center")
+v3Title = TextContent("Rec. Click-Through", "small-heavy")
+v3Value = Heading("34.8%", "h2")
+v3Badge = Badge("+2.4% vs last week", "secondary")
+
+middleSection = Card([analyticsTabs], "clear", "column", "m")
+analyticsTabs = Tabs([tabPerformance, tabAudience, tabContent, tabSystem])
+
+tabPerformance = TabItem("perf", "Performance & Delivery", [perfCard])
+perfCard = Card([watchTimeChart, subChart, genreChart], "clear", "column", "l")
+
+watchTimeChart = AreaChart(["Week 1", "Week 2", "Week 3", "Week 4"], [wtSeries], "natural", "Past Month", "Million Hours")
+wtSeries = Series("Watch Time", [142, 158, 165, 189])
+
+subChart = BarChart(["Week 1", "Week 2", "Week 3", "Week 4"], [subSeries, churnSeries], "grouped", "Past Month", "Subscribers")
+subSeries = Series("New Subscribers", [45000, 52000, 48000, 61000])
+churnSeries = Series("Cancellations", [12000, 14000, 11000, 13500])
+
+genreChart = HorizontalBarChart(["Sci-Fi", "Drama", "Comedy", "Action", "Documentary", "Horror"], [genreSeries], "grouped", "Hours Watched (M)", "Genre")
+genreSeries = Series("Watch Time by Genre", [84, 65, 52, 48, 29, 18])
+
+tabAudience = TabItem("audience", "Audience & Revenue", [audCard])
+audCard = Card([topTitlesTable, splitsCard, failedSearchesCard], "clear", "column", "l")
+
+topTitlesTable = Table([tCol1, tCol2, tCol3])
+tCol1 = Col("Most-Watched Titles", ["CyberPulse 2099 (Season 2)", "The Last Kingdom: Awakening", "Kitchen Confidential Live", "Solaris Paradox", "Midnight Mystery"])
+tCol2 = Col("Hours Watched", ["42.5M hrs", "38.1M hrs", "29.4M hrs", "24.0M hrs", "19.8M hrs"])
+tCol3 = Col("Completion Rate", ["88%", "82%", "91%", "76%", "79%"])
+
+splitsCard = Card([revPie, devPie], "clear", "row", "m")
+revPie = PieChart(["Premium 4K", "Standard HD", "Basic w/ Ads", "Mobile Plan"], [45, 35, 15, 5], "donut")
+devPie = PieChart(["Smart TV", "Mobile Phone", "Streaming Stick", "PC / Laptop", "Tablet"], [52, 22, 14, 8, 4], "pie")
+
+failedSearchesCard = ListBlock([s1, s2, s3, s4], "number")
+s1 = ListItem("Searches Ended Without Playback: 'Unreleased Sequel X'", "142,500 zero-click queries this week")
+s2 = ListItem("Searches Ended Without Playback: 'Live Sports Cup'", "98,200 zero-click queries this week")
+s3 = ListItem("Searches Ended Without Playback: 'Classic Show S8'", "64,100 zero-click queries this week")
+s4 = ListItem("Searches Ended Without Playback: 'Anime Movie 2024'", "41,800 zero-click queries this week")
+
+tabContent = TabItem("content", "Content & Licensing", [contentCard])
+contentCard = Card([releasesBlock, licensesBlock], "clear", "column", "l")
+
+releasesBlock = ListBlock([r1, r2, r3], "image")
+r1 = ListItem("Upcoming Release: Neon Dreams (Movie)", "Release Date: Oct 18 • Global Premiere • 4K HDR", ["https://picsum.photos/seed/neon/200/200"])
+r2 = ListItem("Upcoming Release: Deep Sea Mysteries (Docuseries)", "Release Date: Oct 24 • 6 Episodes • Atmos", ["https://picsum.photos/seed/ocean/200/200"])
+r3 = ListItem("Upcoming Release: The Grand Finale (Live Event)", "Release Date: Oct 30 • Interactive Stream", ["https://picsum.photos/seed/stage/200/200"])
+
+licensesBlock = Table([lCol1, lCol2, lCol3])
+lCol1 = Col("Licensing Expiring Soon", ["SuperHero Saga Vol 1", "Indie Flicks Collection", "90s Sitcom Classics", "World Cinema Anthology"])
+lCol2 = Col("Expiry Date", ["In 5 days", "In 12 days", "In 18 days", "In 27 days"])
+lCol3 = Col("Status", ["Renewal Pending", "Under Negotiation", "Do Not Renew", "Renewal Signed"])
+
+tabSystem = TabItem("system", "System Health & Ops", [sysCard])
+sysCard = Card([regionHealthTable, flagsCard], "clear", "column", "l")
+
+regionHealthTable = Table([rCol1, rCol2, rCol3, rCol4])
+rCol1 = Col("Delivery Health by Region", ["NA-EAST", "NA-WEST", "EU-CENTRAL", "EU-WEST", "APAC-SOUTH", "LATAM-SOUTH"])
+rCol2 = Col("CDN Cache Hit", ["98.4%", "97.9%", "99.1%", "98.8%", "94.2%", "93.8%"])
+rCol3 = Col("Latency (ms)", ["18ms", "22ms", "15ms", "19ms", "45ms", "52ms"])
+rCol4 = Col("Health Status", ["Healthy", "Healthy", "Healthy", "Healthy", "Degraded (CDN Edge)", "Warning (Buffer Spike)"])
+
+flagsCard = SwitchGroup("feature_flags", [flag1, flag2, flag3, flag4], "card")
+flag1 = SwitchItem("AV1 Codec Auto-Fallback", "Enable AV1 stream fallback on supported smart TVs", "flag_av1", true)
+flag2 = SwitchItem("4K High Frame Rate (60fps)", "Enable 60fps profile for live sporting events", "flag_hfr", true)
+flag3 = SwitchItem("AI Search & Discovery v3", "Enable LLM-powered natural language search bar", "flag_ai_search", false)
+flag4 = SwitchItem("Low-Bandwidth Mobile Mode", "Aggressive compression for cellular users", "flag_mobile_comp", true)
+
+bottomSection = Card([promoteHeader, promoteForm], "card", "column", "m")
+promoteHeader = CardHeader("Home Screen Spotlight Management", "Promote a title to the primary featured banner globally or by region")
+promoteForm = Form("promote-title", promoteButtons, [promoteSelectControl, promoteRegionControl, promoteSlotControl])
+promoteSelectControl = FormControl("Select Title to Promote", promoteSelect, "Choose from catalog or upcoming releases")
+promoteSelect = Select("title_id", [p1, p2, p3, p4], "Select Title")
+p1 = SelectItem("cyberpulse", "CyberPulse 2099 (Season 2)")
+p2 = SelectItem("neon", "Neon Dreams (Movie Premiere)")
+p3 = SelectItem("deepsea", "Deep Sea Mysteries")
+p4 = SelectItem("lastkingdom", "The Last Kingdom: Awakening")
+
+promoteRegionControl = FormControl("Target Placement Region", promoteRegionSelect)
+promoteRegionSelect = Select("promote_region", [prAll, prNA, prEU, prAPAC], "Select Target", null, "all")
+prAll = SelectItem("all", "Global Banner")
+prNA = SelectItem("na", "North America Only")
+prEU = SelectItem("eu", "Europe Only")
+prAPAC = SelectItem("apac", "APAC Only")
+
+promoteSlotControl = FormControl("Featured Slot Position", promoteSlotSelect)
+promoteSlotSelect = Select("slot_pos", [slot1, slot2, slot3], "Position", null, "hero")
+slot1 = SelectItem("hero", "Hero Banner #1 (Main)")
+slot2 = SelectItem("spotlight2", "Spotlight Carousel #2")
+slot3 = SelectItem("spotlight3", "Spotlight Carousel #3")
+
+promoteButtons = Buttons([submitPromoteBtn, clearPromoteBtn])
+submitPromoteBtn = Button("Publish to Home Screen", null, "primary")
+clearPromoteBtn = Button("Reset Spotlights", null, "tertiary")
+
+controlSection = DialogBlock("View Full Operations Emergency Guide", "Standard Operating Procedures", "Use these guidelines during CDN degradation or stream outages", SOPText)
+SOPText = MarkDownRenderer("### SOP Guidelines\n1. **CDN Outage:** Trigger fallback edge provider via feature flags.\n2. **Buffer Spikes (>1%):** Force lower bitrate profile capping.\n3. **Licensing Warnings:** Notify content ops team 14 days prior to expiry.")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Show CDN edge server latency breakdown")
+f2 = FollowUpItem("Export subscriber churn analysis report")
+f3 = FollowUpItem("Manage homepage hero banner schedule")

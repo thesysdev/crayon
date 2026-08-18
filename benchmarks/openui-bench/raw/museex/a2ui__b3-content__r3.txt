@@ -1,0 +1,562 @@
+Editor's studio — all 8 items on one screen with category filtering, draft status, scheduling, and comment queue.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "filterBar",
+          "draftsSection",
+          "publishedSection",
+          "mostReadSection",
+          "readershipSection",
+          "scheduleSection",
+          "commentsSection"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Editor's Content Studio",
+        "subtitle": "Manage drafts, publishing, and audience engagement in one place"
+      },
+      {
+        "id": "filterBar",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "m",
+        "align": "end",
+        "justify": "between",
+        "children": [
+          "categoryFilterControl",
+          "newDraftButtons"
+        ]
+      },
+      {
+        "id": "categoryFilterControl",
+        "component": "FormControl",
+        "label": "Narrow by category",
+        "hint": "Filters drafts, published pieces, and comments",
+        "input": "categorySelect"
+      },
+      {
+        "id": "categorySelect",
+        "component": "Select",
+        "name": "category_filter",
+        "placeholder": "All categories",
+        "items": [
+          "catAll",
+          "catNews",
+          "catFeatures",
+          "catCulture",
+          "catTech",
+          "catOpinion"
+        ],
+        "value": "All categories"
+      },
+      {
+        "id": "catAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All categories"
+      },
+      {
+        "id": "catNews",
+        "component": "SelectItem",
+        "value": "news",
+        "label": "News"
+      },
+      {
+        "id": "catFeatures",
+        "component": "SelectItem",
+        "value": "features",
+        "label": "Features"
+      },
+      {
+        "id": "catCulture",
+        "component": "SelectItem",
+        "value": "culture",
+        "label": "Culture"
+      },
+      {
+        "id": "catTech",
+        "component": "SelectItem",
+        "value": "technology",
+        "label": "Technology"
+      },
+      {
+        "id": "catOpinion",
+        "component": "SelectItem",
+        "value": "opinion",
+        "label": "Opinion"
+      },
+      {
+        "id": "newDraftButtons",
+        "component": "Buttons",
+        "buttons": [
+          "newDraftBtn",
+          "viewCalendarBtn"
+        ]
+      },
+      {
+        "id": "newDraftBtn",
+        "component": "Button",
+        "label": "+ Start New Draft",
+        "variant": "primary"
+      },
+      {
+        "id": "viewCalendarBtn",
+        "component": "Button",
+        "label": "View Editorial Calendar",
+        "variant": "secondary"
+      },
+      {
+        "id": "draftsSection",
+        "component": "Card",
+        "children": [
+          "draftsHeader",
+          "draftsTable",
+          "draftsHint"
+        ]
+      },
+      {
+        "id": "draftsHeader",
+        "component": "CardHeader",
+        "title": "Drafts",
+        "subtitle": "6 active drafts • status updated live"
+      },
+      {
+        "id": "draftsTable",
+        "component": "Table",
+        "columns": [
+          "draftsColTitle",
+          "draftsColCategory",
+          "draftsColStatus",
+          "draftsColUpdated"
+        ]
+      },
+      {
+        "id": "draftsColTitle",
+        "component": "Col",
+        "label": "Title",
+        "data": [
+          "The Future of Remote Work",
+          "Midnight in Marfa: Photo Essay",
+          "AI and the Archive",
+          "Summer Recipes, Revisited",
+          "The Ballot After the Ballot",
+          "What Listening Does to the Brain"
+        ]
+      },
+      {
+        "id": "draftsColCategory",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Features",
+          "Culture",
+          "Technology",
+          "Culture",
+          "News",
+          "Opinion"
+        ]
+      },
+      {
+        "id": "draftsColStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "In Review",
+          "Draft",
+          "Needs Edits",
+          "Draft",
+          "Ready to Publish",
+          "In Review"
+        ]
+      },
+      {
+        "id": "draftsColUpdated",
+        "component": "Col",
+        "label": "Last Updated",
+        "data": [
+          "2 hours ago",
+          "Yesterday • 4:12 PM",
+          "Aug 14 • 11:03 AM",
+          "Aug 13 • 9:45 AM",
+          "Aug 12 • 6:20 PM",
+          "Aug 11 • 3:30 PM"
+        ]
+      },
+      {
+        "id": "draftsHint",
+        "component": "TextContent",
+        "text": "Filtered by category above. Click any draft to continue editing.",
+        "size": "small"
+      },
+      {
+        "id": "publishedSection",
+        "component": "Card",
+        "children": [
+          "publishedHeader",
+          "publishedTable"
+        ]
+      },
+      {
+        "id": "publishedHeader",
+        "component": "CardHeader",
+        "title": "Published This Week",
+        "subtitle": "Aug 12 – Aug 18 • 5 pieces • 84.2k total views"
+      },
+      {
+        "id": "publishedTable",
+        "component": "Table",
+        "columns": [
+          "pubColTitle",
+          "pubColCategory",
+          "pubColDate",
+          "pubColViews"
+        ]
+      },
+      {
+        "id": "pubColTitle",
+        "component": "Col",
+        "label": "Title",
+        "data": [
+          "The City That Learned to Breathe",
+          "Why Your Feed Feels Quieter",
+          "A Dispatch From the Desert Biennial",
+          "The Week in Policy: 5 Takeaways",
+          "How We Tested 30 Headphones"
+        ]
+      },
+      {
+        "id": "pubColCategory",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Features",
+          "Technology",
+          "Culture",
+          "News",
+          "Technology"
+        ]
+      },
+      {
+        "id": "pubColDate",
+        "component": "Col",
+        "label": "Published",
+        "data": [
+          "Aug 18 • 7:00 AM",
+          "Aug 16 • 2:30 PM",
+          "Aug 15 • 10:00 AM",
+          "Aug 14 • 6:00 AM",
+          "Aug 12 • 9:00 AM"
+        ]
+      },
+      {
+        "id": "pubColViews",
+        "component": "Col",
+        "label": "Views",
+        "data": [
+          "18,420",
+          "22,105",
+          "9,840",
+          "14,210",
+          "19,650"
+        ]
+      },
+      {
+        "id": "mostReadSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "mostReadHeader",
+          "mostReadBadge",
+          "mostReadContent",
+          "mostReadStats"
+        ]
+      },
+      {
+        "id": "mostReadHeader",
+        "component": "CardHeader",
+        "title": "Most-Read This Month",
+        "subtitle": "August 1 – August 18 • Ranked by pageviews"
+      },
+      {
+        "id": "mostReadBadge",
+        "component": "Badge",
+        "text": "🔥 #1 • 42,810 views",
+        "variant": "default"
+      },
+      {
+        "id": "mostReadContent",
+        "component": "TextContent",
+        "text": "## Why Your Feed Feels Quieter\nBy Maya Chen • Technology • Published Aug 16\n\nAn investigation into algorithmic throttling and user fatigue drove 42.8k views, 1,240 shares, and 312 comments — 3.2x the monthly average. Avg. read time: 6m 42s.",
+        "size": "default"
+      },
+      {
+        "id": "mostReadStats",
+        "component": "TagBlock",
+        "tags": [
+          "42.8k views",
+          "1,240 shares",
+          "312 comments",
+          "6m 42s avg read"
+        ]
+      },
+      {
+        "id": "readershipSection",
+        "component": "Card",
+        "children": [
+          "readershipHeader",
+          "readershipChart"
+        ]
+      },
+      {
+        "id": "readershipHeader",
+        "component": "CardHeader",
+        "title": "Readership — Past 30 Days",
+        "subtitle": "Daily unique readers • Jul 20 – Aug 18 • +18% vs prior 30 days"
+      },
+      {
+        "id": "readershipChart",
+        "component": "LineChart",
+        "labels": [
+          "Jul 20",
+          "Jul 25",
+          "Jul 30",
+          "Aug 04",
+          "Aug 09",
+          "Aug 14",
+          "Aug 18"
+        ],
+        "series": [
+          "readershipSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Date",
+        "yLabel": "Readers"
+      },
+      {
+        "id": "readershipSeries",
+        "component": "Series",
+        "category": "Unique Readers",
+        "values": [
+          12400,
+          18200,
+          16500,
+          22100,
+          24800,
+          31500,
+          28900
+        ]
+      },
+      {
+        "id": "scheduleSection",
+        "component": "Card",
+        "children": [
+          "scheduleHeader",
+          "scheduleForm"
+        ]
+      },
+      {
+        "id": "scheduleHeader",
+        "component": "CardHeader",
+        "title": "Schedule a Piece",
+        "subtitle": "Set title and publish date — adds directly to editorial calendar"
+      },
+      {
+        "id": "scheduleForm",
+        "component": "Form",
+        "name": "schedule-piece",
+        "buttons": "scheduleFormButtons",
+        "fields": [
+          "scheduleTitleControl",
+          "scheduleDateControl",
+          "scheduleCategoryControl"
+        ]
+      },
+      {
+        "id": "scheduleTitleControl",
+        "component": "FormControl",
+        "label": "Article title",
+        "input": "scheduleTitleInput"
+      },
+      {
+        "id": "scheduleTitleInput",
+        "component": "Input",
+        "name": "title",
+        "placeholder": "e.g., The Future of Remote Work"
+      },
+      {
+        "id": "scheduleDateControl",
+        "component": "FormControl",
+        "label": "Publish date",
+        "hint": "Timezone: ET • Time defaults to 7:00 AM",
+        "input": "scheduleDatePicker"
+      },
+      {
+        "id": "scheduleDatePicker",
+        "component": "DatePicker",
+        "name": "publish_date",
+        "mode": "single"
+      },
+      {
+        "id": "scheduleCategoryControl",
+        "component": "FormControl",
+        "label": "Category",
+        "input": "scheduleCategorySelect"
+      },
+      {
+        "id": "scheduleCategorySelect",
+        "component": "Select",
+        "name": "schedule_category",
+        "placeholder": "Choose category",
+        "items": [
+          "schedCatNews",
+          "schedCatFeatures",
+          "schedCatCulture",
+          "schedCatTech"
+        ]
+      },
+      {
+        "id": "schedCatNews",
+        "component": "SelectItem",
+        "value": "news",
+        "label": "News"
+      },
+      {
+        "id": "schedCatFeatures",
+        "component": "SelectItem",
+        "value": "features",
+        "label": "Features"
+      },
+      {
+        "id": "schedCatCulture",
+        "component": "SelectItem",
+        "value": "culture",
+        "label": "Culture"
+      },
+      {
+        "id": "schedCatTech",
+        "component": "SelectItem",
+        "value": "technology",
+        "label": "Technology"
+      },
+      {
+        "id": "scheduleFormButtons",
+        "component": "Buttons",
+        "buttons": [
+          "scheduleBtn",
+          "scheduleClearBtn"
+        ]
+      },
+      {
+        "id": "scheduleBtn",
+        "component": "Button",
+        "label": "Schedule Piece",
+        "variant": "primary"
+      },
+      {
+        "id": "scheduleClearBtn",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "secondary"
+      },
+      {
+        "id": "commentsSection",
+        "component": "Card",
+        "children": [
+          "commentsHeader",
+          "commentsAlert",
+          "commentsTable"
+        ]
+      },
+      {
+        "id": "commentsHeader",
+        "component": "CardHeader",
+        "title": "Comments Awaiting Reply",
+        "subtitle": "9 pending • oldest from 6 hours ago"
+      },
+      {
+        "id": "commentsAlert",
+        "component": "Alert",
+        "title": "Reply needed",
+        "description": "3 comments on your most-read article are unanswered and trending.",
+        "variant": "warning"
+      },
+      {
+        "id": "commentsTable",
+        "component": "Table",
+        "columns": [
+          "commentsColArticle",
+          "commentsColCommenter",
+          "commentsColComment",
+          "commentsColTime"
+        ]
+      },
+      {
+        "id": "commentsColArticle",
+        "component": "Col",
+        "label": "Article",
+        "data": [
+          "Why Your Feed Feels Quieter",
+          "The City That Learned to Breathe",
+          "How We Tested 30 Headphones",
+          "A Dispatch From the Desert Biennial"
+        ]
+      },
+      {
+        "id": "commentsColCommenter",
+        "component": "Col",
+        "label": "Reader",
+        "data": [
+          "alex.p • 2 replies",
+          "sarah_j",
+          "mike_doe",
+          "curator_lee"
+        ]
+      },
+      {
+        "id": "commentsColComment",
+        "component": "Col",
+        "label": "Comment",
+        "data": [
+          "Great reporting — do you have data on Gen Z vs Millennials?",
+          "Loved the opening anecdote. Will there be a follow-up?",
+          "Which pair won for noise cancelling under $150?",
+          "The photos are stunning. Who was the photographer?"
+        ]
+      },
+      {
+        "id": "commentsColTime",
+        "component": "Col",
+        "label": "Waiting",
+        "data": [
+          "6h ago",
+          "8h ago",
+          "11h ago",
+          "14h ago"
+        ]
+      }
+    ]
+  }
+}
+</a2ui-json>

@@ -1,0 +1,926 @@
+Here's a complete city operations center dashboard covering all 17 requirements, organized into tabs with district filtering, crew dispatch, and public alert tools.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "liveAlert",
+          "districtControl",
+          "mainTabs"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "City Operations Center",
+        "subtitle": "Live citywide status — updated 2 min ago"
+      },
+      {
+        "id": "liveAlert",
+        "component": "Alert",
+        "title": "Major incident: Downtown flooding",
+        "description": "Crews dispatched to 5th & Main. Expect road closures until 18:00.",
+        "variant": "warning"
+      },
+      {
+        "id": "districtControl",
+        "component": "Form",
+        "name": "district-focus",
+        "buttons": "districtButtons",
+        "fields": [
+          "districtField"
+        ]
+      },
+      {
+        "id": "districtField",
+        "component": "FormControl",
+        "label": "Focus on district",
+        "input": "districtSelect",
+        "hint": "Filters all panels to a single district"
+      },
+      {
+        "id": "districtSelect",
+        "component": "Select",
+        "name": "district",
+        "placeholder": "All districts",
+        "items": [
+          "dAll",
+          "dNorth",
+          "dSouth",
+          "dEast",
+          "dWest",
+          "dDowntown"
+        ]
+      },
+      {
+        "id": "dAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All districts"
+      },
+      {
+        "id": "dNorth",
+        "component": "SelectItem",
+        "value": "north",
+        "label": "North District"
+      },
+      {
+        "id": "dSouth",
+        "component": "SelectItem",
+        "value": "south",
+        "label": "South District"
+      },
+      {
+        "id": "dEast",
+        "component": "SelectItem",
+        "value": "east",
+        "label": "East District"
+      },
+      {
+        "id": "dWest",
+        "component": "SelectItem",
+        "value": "west",
+        "label": "West District"
+      },
+      {
+        "id": "dDowntown",
+        "component": "SelectItem",
+        "value": "downtown",
+        "label": "Downtown"
+      },
+      {
+        "id": "districtButtons",
+        "component": "Buttons",
+        "buttons": [
+          "districtApplyBtn"
+        ]
+      },
+      {
+        "id": "districtApplyBtn",
+        "component": "Button",
+        "label": "Apply district focus",
+        "variant": "primary"
+      },
+      {
+        "id": "mainTabs",
+        "component": "Tabs",
+        "items": [
+          "tabOverview",
+          "tabIncidents",
+          "tabOperations",
+          "tabPlanning"
+        ]
+      },
+      {
+        "id": "tabOverview",
+        "component": "TabItem",
+        "value": "overview",
+        "trigger": "Overview",
+        "content": [
+          "weatherRow",
+          "congestionBadge",
+          "congestionChart",
+          "transitChart",
+          "airQualityChart",
+          "energyChart",
+          "waterRadial"
+        ]
+      },
+      {
+        "id": "weatherRow",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "weatherText",
+          "weatherTags"
+        ]
+      },
+      {
+        "id": "weatherText",
+        "component": "TextContent",
+        "text": "**Current weather:** 18°C, light rain, wind 22 km/h NW, humidity 71%. Rain expected to clear by 20:00.",
+        "size": "default"
+      },
+      {
+        "id": "weatherTags",
+        "component": "TagBlock",
+        "tags": [
+          "18°C",
+          "Light rain",
+          "Wind 22 km/h NW",
+          "Humidity 71%",
+          "UV Low"
+        ]
+      },
+      {
+        "id": "congestionBadge",
+        "component": "Badge",
+        "text": "Congestion now: HIGH — index 7.8/10",
+        "variant": "destructive"
+      },
+      {
+        "id": "congestionChart",
+        "component": "LineChart",
+        "labels": [
+          "06:00",
+          "08:00",
+          "10:00",
+          "12:00",
+          "14:00",
+          "16:00",
+          "Now"
+        ],
+        "series": [
+          "congSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Time today",
+        "yLabel": "Congestion index"
+      },
+      {
+        "id": "congSeries",
+        "component": "Series",
+        "category": "Citywide congestion",
+        "values": [
+          3.1,
+          8.4,
+          5.2,
+          4.8,
+          5.6,
+          7.9,
+          7.8
+        ]
+      },
+      {
+        "id": "transitChart",
+        "component": "BarChart",
+        "labels": [
+          "Bus",
+          "Metro",
+          "Tram",
+          "Rail"
+        ],
+        "series": [
+          "transitSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Transit mode",
+        "yLabel": "On-time %"
+      },
+      {
+        "id": "transitSeries",
+        "component": "Series",
+        "category": "Punctuality today",
+        "values": [
+          82,
+          94,
+          88,
+          91
+        ]
+      },
+      {
+        "id": "airQualityChart",
+        "component": "HorizontalBarChart",
+        "labels": [
+          "North",
+          "South",
+          "East",
+          "West",
+          "Downtown"
+        ],
+        "series": [
+          "aqiSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "AQI (lower is better)",
+        "yLabel": "District"
+      },
+      {
+        "id": "aqiSeries",
+        "component": "Series",
+        "category": "Air Quality Index",
+        "values": [
+          42,
+          55,
+          68,
+          38,
+          81
+        ]
+      },
+      {
+        "id": "energyChart",
+        "component": "AreaChart",
+        "labels": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat",
+          "Sun"
+        ],
+        "series": [
+          "energySeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Past week",
+        "yLabel": "MWh"
+      },
+      {
+        "id": "energySeries",
+        "component": "Series",
+        "category": "Energy use",
+        "values": [
+          4120,
+          4380,
+          4210,
+          4450,
+          4600,
+          3890,
+          3650
+        ]
+      },
+      {
+        "id": "waterRadial",
+        "component": "RadialChart",
+        "labels": [
+          "Residential",
+          "Commercial",
+          "Industrial",
+          "Public services"
+        ],
+        "values": [
+          46,
+          27,
+          18,
+          9
+        ]
+      },
+      {
+        "id": "waterNote",
+        "component": "TextContent",
+        "text": "Water use today: 182 ML total (percentage split shown above), 4% below the daily target.",
+        "size": "small"
+      },
+      {
+        "id": "tabIncidents",
+        "component": "TabItem",
+        "value": "incidents",
+        "trigger": "Incidents & Reports",
+        "content": [
+          "incidentsTable",
+          "vehiclesTable",
+          "parkingChart",
+          "eventsList",
+          "reportsList"
+        ]
+      },
+      {
+        "id": "incidentsTable",
+        "component": "Table",
+        "columns": [
+          "incId",
+          "incType",
+          "incLocation",
+          "incSeverity"
+        ]
+      },
+      {
+        "id": "incId",
+        "component": "Col",
+        "label": "ID",
+        "data": [
+          "INC-2041",
+          "INC-2042",
+          "INC-2043",
+          "INC-2044",
+          "INC-2045"
+        ]
+      },
+      {
+        "id": "incType",
+        "component": "Col",
+        "label": "Type",
+        "data": [
+          "Flooding",
+          "Traffic collision",
+          "Power outage",
+          "Gas leak",
+          "Fallen tree"
+        ]
+      },
+      {
+        "id": "incLocation",
+        "component": "Col",
+        "label": "Location",
+        "data": [
+          "5th & Main, Downtown",
+          "Harbor Bridge, East",
+          "Elm St, North",
+          "Oak Ave, South",
+          "Riverside Dr, West"
+        ]
+      },
+      {
+        "id": "incSeverity",
+        "component": "Col",
+        "label": "Severity",
+        "data": [
+          "Critical",
+          "High",
+          "Medium",
+          "Critical",
+          "Low"
+        ]
+      },
+      {
+        "id": "vehiclesTable",
+        "component": "Table",
+        "columns": [
+          "vehUnit",
+          "vehType",
+          "vehLocation",
+          "vehStatus"
+        ]
+      },
+      {
+        "id": "vehUnit",
+        "component": "Col",
+        "label": "Unit",
+        "data": [
+          "ENG-3",
+          "AMB-7",
+          "POL-12",
+          "ENG-5",
+          "AMB-2",
+          "POL-4"
+        ]
+      },
+      {
+        "id": "vehType",
+        "component": "Col",
+        "label": "Type",
+        "data": [
+          "Fire",
+          "Ambulance",
+          "Police",
+          "Fire",
+          "Ambulance",
+          "Police"
+        ]
+      },
+      {
+        "id": "vehLocation",
+        "component": "Col",
+        "label": "Deployed at",
+        "data": [
+          "5th & Main, Downtown",
+          "Harbor Bridge, East",
+          "Oak Ave, South",
+          "Station 5, North",
+          "General Hospital, Downtown",
+          "Riverside Dr, West"
+        ]
+      },
+      {
+        "id": "vehStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "On scene",
+          "On scene",
+          "En route",
+          "Standby",
+          "Standby",
+          "On scene"
+        ]
+      },
+      {
+        "id": "parkingChart",
+        "component": "PieChart",
+        "labels": [
+          "Occupied",
+          "Available"
+        ],
+        "values": [
+          3420,
+          1180
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "parkingNote",
+        "component": "TextContent",
+        "text": "Downtown parking: 1,180 of 4,600 spaces available (26%).",
+        "size": "small"
+      },
+      {
+        "id": "eventsList",
+        "component": "ListBlock",
+        "items": [
+          "event1",
+          "event2",
+          "event3",
+          "event4"
+        ],
+        "variant": "number"
+      },
+      {
+        "id": "event1",
+        "component": "ListItem",
+        "title": "City Marathon — Saturday 07:00",
+        "subtitle": "Downtown loop, road closures 05:00–14:00, ~12,000 participants"
+      },
+      {
+        "id": "event2",
+        "component": "ListItem",
+        "title": "Farmers Market — Saturday 08:00",
+        "subtitle": "Union Square, North District"
+      },
+      {
+        "id": "event3",
+        "component": "ListItem",
+        "title": "Open-air Concert — Sunday 18:00",
+        "subtitle": "Riverside Park, West District, expected crowd 8,000"
+      },
+      {
+        "id": "event4",
+        "component": "ListItem",
+        "title": "Street Food Festival — Sat–Sun",
+        "subtitle": "Harbor District, partial lane closures"
+      },
+      {
+        "id": "reportsList",
+        "component": "ListBlock",
+        "items": [
+          "report1",
+          "report2",
+          "report3",
+          "report4"
+        ],
+        "variant": "number"
+      },
+      {
+        "id": "report1",
+        "component": "ListItem",
+        "title": "Pothole reported — 2 min ago",
+        "subtitle": "Cedar Lane, North District · via mobile app"
+      },
+      {
+        "id": "report2",
+        "component": "ListItem",
+        "title": "Broken streetlight — 9 min ago",
+        "subtitle": "Pine St & 3rd, Downtown · via hotline"
+      },
+      {
+        "id": "report3",
+        "component": "ListItem",
+        "title": "Overflowing bins — 15 min ago",
+        "subtitle": "Market Square, East District · via web form"
+      },
+      {
+        "id": "report4",
+        "component": "ListItem",
+        "title": "Noise complaint — 22 min ago",
+        "subtitle": "Harbor View, South District · via mobile app"
+      },
+      {
+        "id": "tabOperations",
+        "component": "TabItem",
+        "value": "operations",
+        "trigger": "Operations",
+        "content": [
+          "backlogChart",
+          "dispatchForm",
+          "alertForm"
+        ]
+      },
+      {
+        "id": "backlogChart",
+        "component": "BarChart",
+        "labels": [
+          "Roads",
+          "Water",
+          "Parks",
+          "Lighting",
+          "Sanitation"
+        ],
+        "series": [
+          "backlogOpen",
+          "backlogInProgress"
+        ],
+        "variant": "stacked",
+        "xLabel": "Service category",
+        "yLabel": "Open requests"
+      },
+      {
+        "id": "backlogOpen",
+        "component": "Series",
+        "category": "Open",
+        "values": [
+          64,
+          38,
+          22,
+          41,
+          29
+        ]
+      },
+      {
+        "id": "backlogInProgress",
+        "component": "Series",
+        "category": "In progress",
+        "values": [
+          31,
+          19,
+          12,
+          17,
+          15
+        ]
+      },
+      {
+        "id": "dispatchForm",
+        "component": "Form",
+        "name": "dispatch-crew",
+        "buttons": "dispatchButtons",
+        "fields": [
+          "dispatchCrewField",
+          "dispatchIncidentField",
+          "dispatchPriorityField"
+        ]
+      },
+      {
+        "id": "dispatchCrewField",
+        "component": "FormControl",
+        "label": "Dispatch a crew",
+        "input": "dispatchCrewSelect"
+      },
+      {
+        "id": "dispatchCrewSelect",
+        "component": "Select",
+        "name": "crew",
+        "placeholder": "Select crew",
+        "items": [
+          "crewA",
+          "crewB",
+          "crewC"
+        ]
+      },
+      {
+        "id": "crewA",
+        "component": "SelectItem",
+        "value": "crew-a",
+        "label": "Crew A — Roads (available)"
+      },
+      {
+        "id": "crewB",
+        "component": "SelectItem",
+        "value": "crew-b",
+        "label": "Crew B — Water (available)"
+      },
+      {
+        "id": "crewC",
+        "component": "SelectItem",
+        "value": "crew-c",
+        "label": "Crew C — Electrical (on job until 17:00)"
+      },
+      {
+        "id": "dispatchIncidentField",
+        "component": "FormControl",
+        "label": "Incident / location",
+        "input": "dispatchIncidentInput"
+      },
+      {
+        "id": "dispatchIncidentInput",
+        "component": "Input",
+        "name": "incident",
+        "placeholder": "e.g. INC-2043 — Elm St, North"
+      },
+      {
+        "id": "dispatchPriorityField",
+        "component": "FormControl",
+        "label": "Priority",
+        "input": "dispatchPriorityRadio"
+      },
+      {
+        "id": "dispatchPriorityRadio",
+        "component": "RadioGroup",
+        "name": "priority",
+        "items": [
+          "prioLow",
+          "prioMed",
+          "prioHigh"
+        ]
+      },
+      {
+        "id": "prioLow",
+        "component": "RadioItem",
+        "label": "Standard",
+        "description": "Within 48 hours",
+        "value": "standard"
+      },
+      {
+        "id": "prioMed",
+        "component": "RadioItem",
+        "label": "Urgent",
+        "description": "Within 4 hours",
+        "value": "urgent"
+      },
+      {
+        "id": "prioHigh",
+        "component": "RadioItem",
+        "label": "Emergency",
+        "description": "Immediate response",
+        "value": "emergency"
+      },
+      {
+        "id": "dispatchButtons",
+        "component": "Buttons",
+        "buttons": [
+          "dispatchBtn"
+        ]
+      },
+      {
+        "id": "dispatchBtn",
+        "component": "Button",
+        "label": "Dispatch crew",
+        "variant": "primary"
+      },
+      {
+        "id": "alertForm",
+        "component": "Form",
+        "name": "public-alert",
+        "buttons": "alertButtons",
+        "fields": [
+          "alertMsgField",
+          "alertChannelField"
+        ]
+      },
+      {
+        "id": "alertMsgField",
+        "component": "FormControl",
+        "label": "Send public alert",
+        "input": "alertMsgInput",
+        "hint": "Broadcast to residents in affected districts"
+      },
+      {
+        "id": "alertMsgInput",
+        "component": "TextArea",
+        "name": "message",
+        "placeholder": "e.g. Road closure on 5th & Main due to flooding. Use alternate routes until 18:00.",
+        "rows": 3
+      },
+      {
+        "id": "alertChannelField",
+        "component": "FormControl",
+        "label": "Channels",
+        "input": "alertChannels"
+      },
+      {
+        "id": "alertChannels",
+        "component": "CheckBoxGroup",
+        "name": "channels",
+        "items": [
+          "chSms",
+          "chApp",
+          "chRadio"
+        ]
+      },
+      {
+        "id": "chSms",
+        "component": "CheckBoxItem",
+        "label": "SMS",
+        "description": "Text message to registered residents",
+        "name": "sms",
+        "defaultChecked": true
+      },
+      {
+        "id": "chApp",
+        "component": "CheckBoxItem",
+        "label": "App push",
+        "description": "City app notification",
+        "name": "app",
+        "defaultChecked": true
+      },
+      {
+        "id": "chRadio",
+        "component": "CheckBoxItem",
+        "label": "Radio & signage",
+        "description": "Local radio and road signs",
+        "name": "radio"
+      },
+      {
+        "id": "alertButtons",
+        "component": "Buttons",
+        "buttons": [
+          "alertSendBtn"
+        ]
+      },
+      {
+        "id": "alertSendBtn",
+        "component": "Button",
+        "label": "Send public alert",
+        "variant": "primary"
+      },
+      {
+        "id": "tabPlanning",
+        "component": "TabItem",
+        "value": "planning",
+        "trigger": "Planning",
+        "content": [
+          "roadworksTable",
+          "maintenanceTable"
+        ]
+      },
+      {
+        "id": "roadworksTable",
+        "component": "Table",
+        "columns": [
+          "rwProject",
+          "rwLocation",
+          "rwDates",
+          "rwImpact"
+        ]
+      },
+      {
+        "id": "rwProject",
+        "component": "Col",
+        "label": "Roadworks this month",
+        "data": [
+          "Resurfacing",
+          "Water main replacement",
+          "Bike lane extension",
+          "Bridge inspection"
+        ]
+      },
+      {
+        "id": "rwLocation",
+        "component": "Col",
+        "label": "Location",
+        "data": [
+          "King St, Downtown",
+          "Elm St, North",
+          "Riverside Dr, West",
+          "Harbor Bridge, East"
+        ]
+      },
+      {
+        "id": "rwDates",
+        "component": "Col",
+        "label": "Dates",
+        "data": [
+          "3–9 Jun",
+          "10–21 Jun",
+          "12–18 Jun",
+          "24–25 Jun"
+        ]
+      },
+      {
+        "id": "rwImpact",
+        "component": "Col",
+        "label": "Traffic impact",
+        "data": [
+          "Lane closure",
+          "Full closure (nights)",
+          "Minimal",
+          "Contraflow"
+        ]
+      },
+      {
+        "id": "maintenanceTable",
+        "component": "Table",
+        "columns": [
+          "mtAsset",
+          "mtLocation",
+          "mtDue",
+          "mtStatus"
+        ]
+      },
+      {
+        "id": "mtAsset",
+        "component": "Col",
+        "label": "Infrastructure job",
+        "data": [
+          "Pump station P-7",
+          "Substation S-12",
+          "Water tower WT-3",
+          "Traffic signal array",
+          "Storm drain network"
+        ]
+      },
+      {
+        "id": "mtLocation",
+        "component": "Col",
+        "label": "District",
+        "data": [
+          "South",
+          "East",
+          "North",
+          "Downtown",
+          "West"
+        ]
+      },
+      {
+        "id": "mtDue",
+        "component": "Col",
+        "label": "Due",
+        "data": [
+          "Overdue by 3 days",
+          "Due in 2 days",
+          "Due in 1 week",
+          "Due in 2 weeks",
+          "Due this month"
+        ]
+      },
+      {
+        "id": "mtStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Escalated",
+          "Scheduled",
+          "Scheduled",
+          "Pending parts",
+          "Inspection booked"
+        ]
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+All 17 items are covered:
+
+1. **Congestion now** — badge + live line chart (Overview)
+2. **Transit punctuality** — on-time % bar chart by mode
+3. **Air quality by district** — horizontal bar chart of AQI
+4. **Energy past week** — area chart, Mon–Sun
+5. **Water today** — radial chart with usage split and total
+6. **Open incidents** — table with location and severity
+7. **Emergency vehicles** — deployment table with unit, location, status
+8. **Downtown parking** — donut chart with availability count
+9. **Weekend events** — numbered list with times and closures
+10. **Citizen reports** — live feed list with timestamps
+11. **Service backlog** — stacked bar chart by category
+12. **Weather** — current conditions with tags
+13. **District focus** — selector at top filtering all panels
+14. **Dispatch a crew** — form with crew, incident, and priority
+15. **Public alert** — message form with SMS/app/radio channels
+16. **Roadworks this month** — table with dates and traffic impact
+17. **Maintenance jobs** — table with due dates and status

@@ -1,0 +1,931 @@
+Here is the live-ops dashboard for your game studio, covering all 16 specified telemetry metrics, active events, moderation queues, experiment results, and regional control actions.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "quickActions",
+          "tabSystem"
+        ],
+        "direction": "column",
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Live-Ops Command Center",
+        "subtitle": "Real-time game telemetry, economy tracking, moderation queues, and hotfix dispatch"
+      },
+      {
+        "id": "quickActions",
+        "component": "Card",
+        "children": [
+          "hotfixDialog",
+          "patchDrawer"
+        ],
+        "direction": "row",
+        "gap": "m",
+        "variant": "sunk"
+      },
+      {
+        "id": "hotfixDialog",
+        "component": "AlertDialogBlock",
+        "triggerLabel": "Ship Emergency Hotfix",
+        "title": "Confirm Hotfix Deployment",
+        "description": "This will trigger zero-downtime rolling deploys to selected server clusters and force client asset manifest reloads.",
+        "confirmLabel": "Deploy Hotfix Now",
+        "cancelLabel": "Cancel",
+        "triggerVariant": "destructive"
+      },
+      {
+        "id": "patchDrawer",
+        "component": "DrawerBlock",
+        "triggerLabel": "Draft Patch Notes",
+        "title": "Draft & Publish Patch Notes",
+        "description": "Prepare release notes for the upcoming client v2.4.1 build.",
+        "content": [
+          "patchForm"
+        ]
+      },
+      {
+        "id": "patchForm",
+        "component": "Form",
+        "name": "patchNotesForm",
+        "fields": [
+          "versionField",
+          "notesField",
+          "typeField"
+        ],
+        "buttons": "patchFormButtons"
+      },
+      {
+        "id": "versionField",
+        "component": "FormControl",
+        "label": "Target Build Version",
+        "input": "versionInput"
+      },
+      {
+        "id": "versionInput",
+        "component": "Input",
+        "name": "buildVersion",
+        "placeholder": "v2.4.1-b109"
+      },
+      {
+        "id": "notesField",
+        "component": "FormControl",
+        "label": "Patch Notes Content (Markdown supported)",
+        "input": "notesArea"
+      },
+      {
+        "id": "notesArea",
+        "component": "TextArea",
+        "name": "patchContent",
+        "placeholder": "- Fixed exploit in Raid Boss loot table\n- Adjusted mana cost of Fireball from 40 to 35\n- Resolved client crash on iOS 17.4",
+        "rows": 6
+      },
+      {
+        "id": "typeField",
+        "component": "FormControl",
+        "label": "Release Type",
+        "input": "typeSelect"
+      },
+      {
+        "id": "typeSelect",
+        "component": "Select",
+        "name": "releaseType",
+        "items": [
+          "optHotfix",
+          "optMinor",
+          "optMajor"
+        ],
+        "placeholder": "Select type"
+      },
+      {
+        "id": "optHotfix",
+        "component": "SelectItem",
+        "value": "hotfix",
+        "label": "Server Hotfix (No downtime)"
+      },
+      {
+        "id": "optMinor",
+        "component": "SelectItem",
+        "value": "minor",
+        "label": "Minor Client Patch (v2.4.x)"
+      },
+      {
+        "id": "optMajor",
+        "component": "SelectItem",
+        "value": "major",
+        "label": "Major Content Update (v2.5.0)"
+      },
+      {
+        "id": "patchFormButtons",
+        "component": "Buttons",
+        "buttons": [
+          "saveDraftBtn",
+          "publishBtn"
+        ]
+      },
+      {
+        "id": "saveDraftBtn",
+        "component": "Button",
+        "label": "Save Draft",
+        "variant": "secondary"
+      },
+      {
+        "id": "publishBtn",
+        "component": "Button",
+        "label": "Publish Patch Notes",
+        "variant": "primary"
+      },
+      {
+        "id": "tabSystem",
+        "component": "Tabs",
+        "items": [
+          "tabOverview",
+          "tabServers",
+          "tabEventsEconomy",
+          "tabModeration"
+        ]
+      },
+      {
+        "id": "tabOverview",
+        "component": "TabItem",
+        "value": "overview",
+        "trigger": "Core Telemetry & Metrics",
+        "content": [
+          "overviewCard"
+        ]
+      },
+      {
+        "id": "overviewCard",
+        "component": "Card",
+        "children": [
+          "kpiHeader",
+          "kpiTable",
+          "sessionChartHeader",
+          "sessionChart",
+          "crashHeader",
+          "crashTable"
+        ],
+        "direction": "column",
+        "gap": "m"
+      },
+      {
+        "id": "kpiHeader",
+        "component": "Heading",
+        "text": "Live Player & Revenue Overview",
+        "level": "h3"
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": [
+          "kpiMetricCol",
+          "kpiValueCol",
+          "kpiStatusCol"
+        ]
+      },
+      {
+        "id": "kpiMetricCol",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "1. Players Online (CCU)",
+          "2. Daily Active Players (DAU)",
+          "2. Monthly Active Players (MAU)",
+          "3. Revenue Today (Gross)",
+          "4. ARPU (Average Revenue Per User)",
+          "4. ARPPU (Paying User)"
+        ]
+      },
+      {
+        "id": "kpiValueCol",
+        "component": "Col",
+        "label": "Current Value",
+        "data": [
+          "142,850 CCU",
+          "1,240,500 DAU",
+          "8,650,000 MAU",
+          "$84,320.50",
+          "$0.068",
+          "$4.12"
+        ]
+      },
+      {
+        "id": "kpiStatusCol",
+        "component": "Col",
+        "label": "Trend vs Target",
+        "data": [
+          "+12% vs last week peak",
+          "On track (+5% WoW)",
+          "+2.4% MoM",
+          "+18% vs daily target",
+          "+4% vs 14d avg",
+          "+8% campaign impact"
+        ]
+      },
+      {
+        "id": "sessionChartHeader",
+        "component": "Heading",
+        "text": "5. Session Length Trend (Past 14 Days)",
+        "level": "h3"
+      },
+      {
+        "id": "sessionChart",
+        "component": "LineChart",
+        "labels": [
+          "Day 1",
+          "Day 2",
+          "Day 3",
+          "Day 4",
+          "Day 5",
+          "Day 6",
+          "Day 7",
+          "Day 8",
+          "Day 9",
+          "Day 10",
+          "Day 11",
+          "Day 12",
+          "Day 13",
+          "Today"
+        ],
+        "series": [
+          "avgSessionSeries",
+          "medianSessionSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Date",
+        "yLabel": "Minutes"
+      },
+      {
+        "id": "avgSessionSeries",
+        "component": "Series",
+        "category": "Mean Session Length (min)",
+        "values": [
+          24,
+          25,
+          23,
+          26,
+          31,
+          34,
+          32,
+          25,
+          26,
+          27,
+          29,
+          35,
+          38,
+          36
+        ]
+      },
+      {
+        "id": "medianSessionSeries",
+        "component": "Series",
+        "category": "Median Session Length (min)",
+        "values": [
+          18,
+          19,
+          17,
+          20,
+          24,
+          26,
+          25,
+          19,
+          20,
+          21,
+          22,
+          28,
+          30,
+          29
+        ]
+      },
+      {
+        "id": "crashHeader",
+        "component": "Heading",
+        "text": "8. Crash Rate by App Version",
+        "level": "h3"
+      },
+      {
+        "id": "crashTable",
+        "component": "Table",
+        "columns": [
+          "verCol",
+          "platformCol",
+          "adoptionCol",
+          "crashRateCol",
+          "statusCol"
+        ]
+      },
+      {
+        "id": "verCol",
+        "component": "Col",
+        "label": "App Version",
+        "data": [
+          "v2.4.0 (Latest)",
+          "v2.3.9",
+          "v2.3.8",
+          "v2.3.5 (Legacy)"
+        ]
+      },
+      {
+        "id": "platformCol",
+        "component": "Col",
+        "label": "Platform",
+        "data": [
+          "iOS / Android / Win",
+          "iOS / Android",
+          "Windows / macOS",
+          "Android"
+        ]
+      },
+      {
+        "id": "adoptionCol",
+        "component": "Col",
+        "label": "Active Population %",
+        "data": [
+          "78.4%",
+          "16.1%",
+          "4.3%",
+          "1.2%"
+        ]
+      },
+      {
+        "id": "crashRateCol",
+        "component": "Col",
+        "label": "Crash-Free Session Rate",
+        "data": [
+          "99.82%",
+          "99.91%",
+          "98.45%",
+          "94.10%"
+        ]
+      },
+      {
+        "id": "statusCol",
+        "component": "Col",
+        "label": "Health Status",
+        "data": [
+          "Healthy (<0.2% crashes)",
+          "Nominal",
+          "Warning (Memory Leak)",
+          "Critical - Force Update Recommended"
+        ]
+      },
+      {
+        "id": "tabServers",
+        "component": "TabItem",
+        "value": "servers",
+        "trigger": "Server Regions & Focus",
+        "content": [
+          "serversCard"
+        ]
+      },
+      {
+        "id": "serversCard",
+        "component": "Card",
+        "children": [
+          "regionHeader",
+          "regionControlForm",
+          "regionTable"
+        ],
+        "direction": "column",
+        "gap": "m"
+      },
+      {
+        "id": "regionHeader",
+        "component": "Heading",
+        "text": "7. Region Infrastructure & 15. Regional Focus Selector",
+        "level": "h3"
+      },
+      {
+        "id": "regionControlForm",
+        "component": "Form",
+        "name": "regionFocusForm",
+        "fields": [
+          "regionControlControl"
+        ],
+        "buttons": "regionControlButtons"
+      },
+      {
+        "id": "regionControlControl",
+        "component": "FormControl",
+        "label": "Focus Region View & Traffic Isolation",
+        "input": "regionSelect",
+        "hint": "Select a region to isolate logs, adjust matchmaking parameters, or spin up emergency capacity."
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "selectedRegion",
+        "items": [
+          "rAll",
+          "rNaEast",
+          "rNaWest",
+          "rEuCentral",
+          "rApEast",
+          "rSaEast"
+        ],
+        "placeholder": "Select Region Focus"
+      },
+      {
+        "id": "rAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All Global Regions (Global View)"
+      },
+      {
+        "id": "rNaEast",
+        "component": "SelectItem",
+        "value": "us-east",
+        "label": "North America East (us-east-1)"
+      },
+      {
+        "id": "rNaWest",
+        "component": "SelectItem",
+        "value": "us-west",
+        "label": "North America West (us-west-2)"
+      },
+      {
+        "id": "rEuCentral",
+        "component": "SelectItem",
+        "value": "eu-central",
+        "label": "Europe Central (eu-central-1)"
+      },
+      {
+        "id": "rApEast",
+        "component": "SelectItem",
+        "value": "ap-east",
+        "label": "Asia Pacific East (ap-northeast-1)"
+      },
+      {
+        "id": "rSaEast",
+        "component": "SelectItem",
+        "value": "sa-east",
+        "label": "South America East (sa-east-1)"
+      },
+      {
+        "id": "regionControlButtons",
+        "component": "Buttons",
+        "buttons": [
+          "applyFocusBtn",
+          "drainRegionBtn"
+        ]
+      },
+      {
+        "id": "applyFocusBtn",
+        "component": "Button",
+        "label": "Apply Regional Focus",
+        "variant": "primary"
+      },
+      {
+        "id": "drainRegionBtn",
+        "component": "Button",
+        "label": "Graceful Node Drain",
+        "variant": "secondary"
+      },
+      {
+        "id": "regionTable",
+        "component": "Table",
+        "columns": [
+          "rNameCol",
+          "rNodesCol",
+          "rLatencyCol",
+          "rTickRateCol",
+          "rHealthCol"
+        ]
+      },
+      {
+        "id": "rNameCol",
+        "component": "Col",
+        "label": "Region Name",
+        "data": [
+          "NA East (us-east-1)",
+          "NA West (us-west-2)",
+          "EU Central (eu-central-1)",
+          "Asia Pacific (ap-northeast-1)",
+          "South America (sa-east-1)"
+        ]
+      },
+      {
+        "id": "rNodesCol",
+        "component": "Col",
+        "label": "Active Instances",
+        "data": [
+          "412 / 500",
+          "280 / 350",
+          "510 / 600",
+          "390 / 400",
+          "115 / 150"
+        ]
+      },
+      {
+        "id": "rLatencyCol",
+        "component": "Col",
+        "label": "Avg Latency (ms)",
+        "data": [
+          "24ms",
+          "31ms",
+          "19ms",
+          "48ms",
+          "82ms"
+        ]
+      },
+      {
+        "id": "rTickRateCol",
+        "component": "Col",
+        "label": "Server Tickrate",
+        "data": [
+          "60.0 Hz",
+          "59.8 Hz",
+          "60.0 Hz",
+          "58.2 Hz",
+          "54.1 Hz"
+        ]
+      },
+      {
+        "id": "rHealthCol",
+        "component": "Col",
+        "label": "Health Status",
+        "data": [
+          "100% Healthy",
+          "100% Healthy",
+          "100% Healthy",
+          "98.4% (Degraded matchmaking)",
+          "92.0% (High load alert)"
+        ]
+      },
+      {
+        "id": "tabEventsEconomy",
+        "component": "TabItem",
+        "value": "economy",
+        "trigger": "Economy, Sales & Experiments",
+        "content": [
+          "economyCard"
+        ]
+      },
+      {
+        "id": "economyCard",
+        "component": "Card",
+        "children": [
+          "salesHeader",
+          "salesChart",
+          "inflationAlert",
+          "eventsHeader",
+          "eventsTable",
+          "abHeader",
+          "abTable"
+        ],
+        "direction": "column",
+        "gap": "m"
+      },
+      {
+        "id": "salesHeader",
+        "component": "Heading",
+        "text": "6. Best-Selling Store Items & Units Sold Today",
+        "level": "h3"
+      },
+      {
+        "id": "salesChart",
+        "component": "HorizontalBarChart",
+        "labels": [
+          "Battle Pass Season 4",
+          "Cyber Dragon Skin",
+          "1,000 Gem Pack",
+          "XP Boost 7-Day",
+          "Starter Founder Bundle"
+        ],
+        "series": [
+          "salesUnitsSeries"
+        ],
+        "xLabel": "Units Sold",
+        "yLabel": "Store Catalog Item"
+      },
+      {
+        "id": "salesUnitsSeries",
+        "component": "Series",
+        "category": "Units Sold Today",
+        "values": [
+          14250,
+          9820,
+          8400,
+          5120,
+          3900
+        ]
+      },
+      {
+        "id": "inflationAlert",
+        "component": "Alert",
+        "title": "12. In-Game Currency Inflation Monitor",
+        "description": "Gold Faucet: +4.2M gold/hr | Gold Sink: -3.6M gold/hr -> Net Inflation Rate: +16.6% MoM. Gold sink burn recommended in next weekly event.",
+        "variant": "warning"
+      },
+      {
+        "id": "eventsHeader",
+        "component": "Heading",
+        "text": "9. Live & Upcoming Live Events",
+        "level": "h3"
+      },
+      {
+        "id": "eventsTable",
+        "component": "Table",
+        "columns": [
+          "eventNameCol",
+          "eventStatusCol",
+          "eventWindowCol",
+          "eventParticipationCol"
+        ]
+      },
+      {
+        "id": "eventNameCol",
+        "component": "Col",
+        "label": "Event Name",
+        "data": [
+          "Double XP Weekend",
+          "Lunar New Year Boss Hunt",
+          "Mid-Season PvP Tournament",
+          "Guild Warfare Trial"
+        ]
+      },
+      {
+        "id": "eventStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "LIVE (Ends in 8h)",
+          "LIVE (Ends in 3d)",
+          "UPCOMING (Starts in 2d)",
+          "UPCOMING (Starts in 6d)"
+        ]
+      },
+      {
+        "id": "eventWindowCol",
+        "component": "Col",
+        "label": "Schedule Window",
+        "data": [
+          "Oct 24 - Oct 27",
+          "Oct 20 - Oct 30",
+          "Oct 29 - Nov 02",
+          "Nov 02 - Nov 09"
+        ]
+      },
+      {
+        "id": "eventParticipationCol",
+        "component": "Col",
+        "label": "Active Participants",
+        "data": [
+          "94,120 active DAU",
+          "62,800 active DAU",
+          "34,000 pre-registered",
+          "120 guilds registered"
+        ]
+      },
+      {
+        "id": "abHeader",
+        "component": "Heading",
+        "text": "13. Running Experiments (A/B Tests)",
+        "level": "h3"
+      },
+      {
+        "id": "abTable",
+        "component": "Table",
+        "columns": [
+          "expNameCol",
+          "expVariantCol",
+          "expMetricsCol",
+          "expConfidenceCol"
+        ]
+      },
+      {
+        "id": "expNameCol",
+        "component": "Col",
+        "label": "Experiment Name",
+        "data": [
+          "EXP-104: Dynamic Onboarding Flow",
+          "EXP-104: Dynamic Onboarding Flow",
+          "EXP-109: Store Layout v2 (Grid vs List)",
+          "EXP-109: Store Layout v2 (Grid vs List)"
+        ]
+      },
+      {
+        "id": "expVariantCol",
+        "component": "Col",
+        "label": "Variant Group",
+        "data": [
+          "Control (50% traffic)",
+          "Variant A - Interactive Tutorial (50%)",
+          "Control - Original List (50%)",
+          "Variant B - Card Grid Layout (50%)"
+        ]
+      },
+      {
+        "id": "expMetricsCol",
+        "component": "Col",
+        "label": "D1 Retention / Conversion Rate",
+        "data": [
+          "D1 Retention: 41.2%",
+          "D1 Retention: 46.8% (+5.6%)",
+          "Store Conv Rate: 3.8%",
+          "Store Conv Rate: 4.9% (+1.1%)"
+        ]
+      },
+      {
+        "id": "expConfidenceCol",
+        "component": "Col",
+        "label": "Statistical Significance",
+        "data": [
+          "Baseline",
+          "98.4% Confidence (Stat Sig Winner)",
+          "Baseline",
+          "94.1% Confidence (Collecting sample)"
+        ]
+      },
+      {
+        "id": "tabModeration",
+        "component": "TabItem",
+        "value": "moderation",
+        "trigger": "Moderation & Community Queues",
+        "content": [
+          "moderationCard"
+        ]
+      },
+      {
+        "id": "moderationCard",
+        "component": "Card",
+        "children": [
+          "modOverviewCallout",
+          "reportsHeader",
+          "reportsTable",
+          "appealsHeader",
+          "appealsTable"
+        ],
+        "direction": "column",
+        "gap": "m"
+      },
+      {
+        "id": "modOverviewCallout",
+        "component": "TextCallout",
+        "variant": "info",
+        "title": "Community Moderation SLA Alert",
+        "description": "Report resolution time average: 18 minutes. Appeals queue peak load detected for EU region."
+      },
+      {
+        "id": "reportsHeader",
+        "component": "Heading",
+        "text": "10. Player Reports Awaiting Review (Queue: 142 Pending)",
+        "level": "h3"
+      },
+      {
+        "id": "reportsTable",
+        "component": "Table",
+        "columns": [
+          "repIdCol",
+          "repReasonCol",
+          "reportedPlayerCol",
+          "repTimeCol",
+          "repUrgencyCol"
+        ]
+      },
+      {
+        "id": "repIdCol",
+        "component": "Col",
+        "label": "Ticket ID",
+        "data": [
+          "#REP-9481",
+          "#REP-9482",
+          "#REP-9485",
+          "#REP-9489"
+        ]
+      },
+      {
+        "id": "repReasonCol",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Speedhack / Movement Exploit",
+          "Toxicity in Global Chat",
+          "Win-trading in Ranked PvP",
+          "Inappropriate Guild Name"
+        ]
+      },
+      {
+        "id": "reportedPlayerCol",
+        "component": "Col",
+        "label": "Target User",
+        "data": [
+          "ShadowNinja_99",
+          "X_ToxicLord_X",
+          "ArenaMaster2024",
+          "GuildLeader_Dark"
+        ]
+      },
+      {
+        "id": "repTimeCol",
+        "component": "Col",
+        "label": "Wait Time",
+        "data": [
+          "4m ago",
+          "12m ago",
+          "25m ago",
+          "42m ago"
+        ]
+      },
+      {
+        "id": "repUrgencyCol",
+        "component": "Col",
+        "label": "Severity",
+        "data": [
+          "High (Auto-detected anti-cheat flag)",
+          "Medium",
+          "High (Ranked integrity)",
+          "Low"
+        ]
+      },
+      {
+        "id": "appealsHeader",
+        "component": "Heading",
+        "text": "11. Ban Appeals Awaiting Review (Queue: 28 Pending)",
+        "level": "h3"
+      },
+      {
+        "id": "appealsTable",
+        "component": "Table",
+        "columns": [
+          "appIdCol",
+          "bannedPlayerCol",
+          "originalBanReasonCol",
+          "appealStatementCol",
+          "appealStatusCol"
+        ]
+      },
+      {
+        "id": "appIdCol",
+        "component": "Col",
+        "label": "Appeal ID",
+        "data": [
+          "#APL-1042",
+          "#APL-1044",
+          "#APL-1047"
+        ]
+      },
+      {
+        "id": "bannedPlayerCol",
+        "component": "Col",
+        "label": "Banned Player",
+        "data": [
+          "FrostByte_PvP",
+          "GamerGuy_01",
+          "DragonSlayer_X"
+        ]
+      },
+      {
+        "id": "originalBanReasonCol",
+        "component": "Col",
+        "label": "Original Ban Reason",
+        "data": [
+          "3rd Party Software Injection",
+          "Chargeback / Payment Dispute",
+          "Chat Harassment (7-Day Temp)"
+        ]
+      },
+      {
+        "id": "appealStatementCol",
+        "component": "Col",
+        "label": "Player Submission Note",
+        "data": [
+          "False positive from VPN software background process...",
+          "Bank resolved unauthorized transaction, happy to repay balance...",
+          "Served 5 days, requesting early unban for weekend event..."
+        ]
+      },
+      {
+        "id": "appealStatusCol",
+        "component": "Col",
+        "label": "Review Status",
+        "data": [
+          "Under Review by Anti-Cheat Ops",
+          "Awaiting Finance Verification",
+          "Pending Senior Mod Approval"
+        ]
+      }
+    ]
+  }
+}
+</a2ui-json>

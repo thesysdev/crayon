@@ -1,0 +1,484 @@
+Here's a complete airline hub operations desk covering all 12 requirements on a single screen.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "hubPicker",
+          "weatherAlert",
+          "kpiTable",
+          "delayAlert",
+          "tabs",
+          "rebookForm"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Hub Operations Desk — ATL",
+        "subtitle": "Live operations overview for today"
+      },
+      {
+        "id": "hubPicker",
+        "component": "Form",
+        "name": "hub-selector",
+        "buttons": "hubButtons",
+        "fields": [
+          "hubField"
+        ]
+      },
+      {
+        "id": "hubField",
+        "component": "FormControl",
+        "label": "View a different hub",
+        "input": "hubSelect"
+      },
+      {
+        "id": "hubSelect",
+        "component": "Select",
+        "name": "hub",
+        "placeholder": "Select hub",
+        "value": "ATL",
+        "items": [
+          "hubATL",
+          "hubDFW",
+          "hubORD",
+          "hubDEN",
+          "hubJFK"
+        ]
+      },
+      {
+        "id": "hubATL",
+        "component": "SelectItem",
+        "value": "ATL",
+        "label": "Atlanta (ATL)"
+      },
+      {
+        "id": "hubDFW",
+        "component": "SelectItem",
+        "value": "DFW",
+        "label": "Dallas/Fort Worth (DFW)"
+      },
+      {
+        "id": "hubORD",
+        "component": "SelectItem",
+        "value": "ORD",
+        "label": "Chicago O'Hare (ORD)"
+      },
+      {
+        "id": "hubDEN",
+        "component": "SelectItem",
+        "value": "DEN",
+        "label": "Denver (DEN)"
+      },
+      {
+        "id": "hubJFK",
+        "component": "SelectItem",
+        "value": "JFK",
+        "label": "New York (JFK)"
+      },
+      {
+        "id": "hubButtons",
+        "component": "Buttons",
+        "buttons": [
+          "hubGoBtn"
+        ]
+      },
+      {
+        "id": "hubGoBtn",
+        "component": "Button",
+        "label": "Switch hub",
+        "variant": "primary"
+      },
+      {
+        "id": "weatherAlert",
+        "component": "Alert",
+        "title": "Weather advisories at ATL",
+        "description": "Thunderstorms expected 16:00–19:00 local; ground stop possible. Low visibility advisory in effect until 10:30.",
+        "variant": "warning"
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": [
+          "kpiName",
+          "kpiValue"
+        ]
+      },
+      {
+        "id": "kpiName",
+        "component": "Col",
+        "label": "Metric (Today)",
+        "data": [
+          "On-time performance",
+          "Average passenger load",
+          "Cancellations today",
+          "Average turnaround time"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "82%",
+          "87%",
+          "6 flights",
+          "42 minutes"
+        ]
+      },
+      {
+        "id": "delayAlert",
+        "component": "Alert",
+        "title": "Delayed flights",
+        "description": "DL1024 (ATL→BOS) +45 min, DL2210 (ATL→MIA) +60 min, DL887 (ATL→SEA) +30 min — 3 flights currently delayed.",
+        "variant": "destructive"
+      },
+      {
+        "id": "tabs",
+        "component": "Tabs",
+        "items": [
+          "tabFlights",
+          "tabGateChanges",
+          "tabCrews",
+          "tabConnections"
+        ]
+      },
+      {
+        "id": "tabFlights",
+        "component": "TabItem",
+        "value": "flights",
+        "trigger": "Flights",
+        "content": [
+          "flightsTable"
+        ]
+      },
+      {
+        "id": "flightsTable",
+        "component": "Table",
+        "columns": [
+          "fNum",
+          "fRoute",
+          "fGate",
+          "fStatus"
+        ]
+      },
+      {
+        "id": "fNum",
+        "component": "Col",
+        "label": "Flight",
+        "data": [
+          "DL1024",
+          "DL2210",
+          "DL887",
+          "DL553",
+          "DL1390"
+        ]
+      },
+      {
+        "id": "fRoute",
+        "component": "Col",
+        "label": "Route",
+        "data": [
+          "ATL → BOS",
+          "ATL → MIA",
+          "ATL → SEA",
+          "ATL → LAX",
+          "ATL → DCA"
+        ]
+      },
+      {
+        "id": "fGate",
+        "component": "Col",
+        "label": "Gate",
+        "data": [
+          "B12",
+          "C7",
+          "A3",
+          "T5",
+          "B21"
+        ]
+      },
+      {
+        "id": "fStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Delayed +45m",
+          "Delayed +60m",
+          "Delayed +30m",
+          "On time",
+          "Boarding"
+        ]
+      },
+      {
+        "id": "tabGateChanges",
+        "component": "TabItem",
+        "value": "gates",
+        "trigger": "Gate Changes",
+        "content": [
+          "gateList"
+        ]
+      },
+      {
+        "id": "gateList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "gc1",
+          "gc2",
+          "gc3"
+        ]
+      },
+      {
+        "id": "gc1",
+        "component": "ListItem",
+        "title": "DL1024 moved B12 → B18",
+        "subtitle": "14:22 — aircraft swap"
+      },
+      {
+        "id": "gc2",
+        "component": "ListItem",
+        "title": "DL553 moved T5 → T9",
+        "subtitle": "13:50 — maintenance at T5"
+      },
+      {
+        "id": "gc3",
+        "component": "ListItem",
+        "title": "DL887 moved A3 → A11",
+        "subtitle": "12:35 — congestion on A concourse"
+      },
+      {
+        "id": "tabCrews",
+        "component": "TabItem",
+        "value": "crews",
+        "trigger": "Crews Available",
+        "content": [
+          "crewTable"
+        ]
+      },
+      {
+        "id": "crewTable",
+        "component": "Table",
+        "columns": [
+          "crewName",
+          "crewRole",
+          "crewStatus"
+        ]
+      },
+      {
+        "id": "crewName",
+        "component": "Col",
+        "label": "Crew",
+        "data": [
+          "Team Alpha (Capt. Reyes)",
+          "Team Delta (Capt. Okafor)",
+          "Team Foxtrot (Capt. Lin)"
+        ]
+      },
+      {
+        "id": "crewRole",
+        "component": "Col",
+        "label": "Qualification",
+        "data": [
+          "A320 family",
+          "B737 / A220",
+          "Widebody (B767)"
+        ]
+      },
+      {
+        "id": "crewStatus",
+        "component": "Col",
+        "label": "Availability",
+        "data": [
+          "Available now",
+          "Available 15:30",
+          "Standby reserve"
+        ]
+      },
+      {
+        "id": "tabConnections",
+        "component": "TabItem",
+        "value": "connections",
+        "trigger": "Connections at Risk",
+        "content": [
+          "connTable"
+        ]
+      },
+      {
+        "id": "connTable",
+        "component": "Table",
+        "columns": [
+          "connPax",
+          "connItin",
+          "connRisk"
+        ]
+      },
+      {
+        "id": "connPax",
+        "component": "Col",
+        "label": "Passengers",
+        "data": [
+          "14 pax",
+          "9 pax",
+          "22 pax"
+        ]
+      },
+      {
+        "id": "connItin",
+        "component": "Col",
+        "label": "Connection",
+        "data": [
+          "DL1024 (BOS) → DL88 (AMS)",
+          "DL2210 (MIA) → DL412 (GIG)",
+          "DL887 (SEA) → DL167 (NRT)"
+        ]
+      },
+      {
+        "id": "connRisk",
+        "component": "Col",
+        "label": "Risk",
+        "data": [
+          "High — 12 min margin",
+          "High — misconnect likely",
+          "Medium — 25 min margin"
+        ]
+      },
+      {
+        "id": "rebookForm",
+        "component": "Form",
+        "name": "rebook-passengers",
+        "buttons": "rebookButtons",
+        "fields": [
+          "rebookFlightField",
+          "rebookPaxField",
+          "rebookOptionField"
+        ]
+      },
+      {
+        "id": "rebookFlightField",
+        "component": "FormControl",
+        "label": "Affected flight",
+        "input": "rebookFlightSelect"
+      },
+      {
+        "id": "rebookFlightSelect",
+        "component": "Select",
+        "name": "affected_flight",
+        "placeholder": "Choose flight",
+        "items": [
+          "rb1",
+          "rb2",
+          "rb3"
+        ]
+      },
+      {
+        "id": "rb1",
+        "component": "SelectItem",
+        "value": "DL1024",
+        "label": "DL1024 (ATL→BOS)"
+      },
+      {
+        "id": "rb2",
+        "component": "SelectItem",
+        "value": "DL2210",
+        "label": "DL2210 (ATL→MIA)"
+      },
+      {
+        "id": "rb3",
+        "component": "SelectItem",
+        "value": "DL887",
+        "label": "DL887 (ATL→SEA)"
+      },
+      {
+        "id": "rebookPaxField",
+        "component": "FormControl",
+        "label": "Passenger name or PNR",
+        "input": "rebookPaxInput"
+      },
+      {
+        "id": "rebookPaxInput",
+        "component": "Input",
+        "name": "passenger",
+        "placeholder": "e.g. Smith / ABC123"
+      },
+      {
+        "id": "rebookOptionField",
+        "component": "FormControl",
+        "label": "Rebooking option",
+        "input": "rebookRadio"
+      },
+      {
+        "id": "rebookRadio",
+        "component": "RadioGroup",
+        "name": "rebook_option",
+        "items": [
+          "rbNext",
+          "rbAlt",
+          "rbRefund"
+        ]
+      },
+      {
+        "id": "rbNext",
+        "component": "RadioItem",
+        "label": "Next available flight",
+        "description": "Auto-book earliest seat",
+        "value": "next"
+      },
+      {
+        "id": "rbAlt",
+        "component": "RadioItem",
+        "label": "Alternate routing",
+        "description": "Via another hub",
+        "value": "alternate"
+      },
+      {
+        "id": "rbRefund",
+        "component": "RadioItem",
+        "label": "Refund / travel credit",
+        "description": "Cancel itinerary",
+        "value": "refund"
+      },
+      {
+        "id": "rebookButtons",
+        "component": "Buttons",
+        "buttons": [
+          "rebookSubmit",
+          "rebookBulk"
+        ]
+      },
+      {
+        "id": "rebookSubmit",
+        "component": "Button",
+        "label": "Rebook passenger",
+        "variant": "primary"
+      },
+      {
+        "id": "rebookBulk",
+        "component": "Button",
+        "label": "Rebook all at-risk connections",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+All 12 items are covered: (1) on-time performance, (7) passenger load, (11) cancellations, and (12) turnaround time in the KPI table; (2) the flights table with number/route/gate/status; (3) delayed flights called out in a destructive alert; (4) recent gate changes list; (5) crews available for reassignment; (6) weather advisory alert; (8) connections at risk; (9) the rebooking form; and (10) the hub switcher.

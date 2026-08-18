@@ -1,0 +1,49 @@
+root = Card([header, statusBanner, overviewTable, invoiceDetails, paymentForm, actions, followUps], "card", "column", "m")
+
+header = CardHeader("Invoice #INV-2024-004", "Issued by Alex Morgan (UX/UI Design & Frontend)")
+
+statusBanner = Alert("Payment Pending", "Invoice is due in 5 days. Please review and pay below.", "info")
+
+overviewTable = Table([colMetric, colDetail])
+colMetric = Col("Summary Item", ["Client", "Invoice Date", "Due Date", "Total Amount Due", "Status"])
+colDetail = Col("Details", ["Acme Corp", "Oct 12, 2024", "Oct 27, 2024", "$3,450.00 USD", "Unpaid"])
+
+invoiceDetails = SectionBlock([lineItemsSection, termsSection], false)
+lineItemsSection = SectionItem("items", "Line Items & Services Break Down", [lineItemsTable])
+
+lineItemsTable = Table([colDesc, colHours, colRate, colAmount])
+colDesc = Col("Description", ["Design System Components & Documentation", "Responsive Landing Page Development", "Usability Testing & Revisions"])
+colHours = Col("Hours / Qty", ["20 hrs", "25 hrs", "5 hrs"])
+colRate = Col("Rate", ["$70.00/hr", "$70.00/hr", "$60.00/hr"])
+colAmount = Col("Line Total", ["$1,400.00", "$1,750.00", "$300.00"])
+
+termsSection = SectionItem("terms", "Payment Terms & Notes", [termsText])
+termsText = TextContent("Payment is due within 15 days of issue. Late payments subject to a 1.5% monthly fee. Bank transfers and major credit cards accepted.")
+
+paymentForm = Form("pay-now-form", formButtons, [methodControl, cardNumControl, expDateControl, zipControl])
+
+methodControl = FormControl("Select Payment Method", methodRadio)
+methodRadio = RadioGroup("payment_method", [cardOpt, bankOpt], "card")
+cardOpt = RadioItem("Credit / Debit Card", "Instant processing (Visa, Mastercard, Amex)", "card")
+bankOpt = RadioItem("Bank Transfer (ACH)", "1-3 business days processing", "ach")
+
+cardNumControl = FormControl("Card Number", cardInput)
+cardInput = Input("card_number", "4111 2222 3333 4444", "text")
+
+expDateControl = FormControl("Expiration Date", expInput)
+expInput = Input("exp_date", "MM/YY", "text")
+
+zipControl = FormControl("Billing Postal Code", zipInput)
+zipInput = Input("zip_code", "90210", "text")
+
+formButtons = Buttons([payNowBtn])
+payNowBtn = Button("Pay $3,450.00 USD Now", null, "primary")
+
+actions = Buttons([downloadBtn, printBtn, contactBtn], "row")
+downloadBtn = Button("Download PDF", null, "secondary")
+printBtn = Button("Print Invoice", null, "tertiary")
+contactBtn = Button("Contact Freelancer", null, "tertiary")
+
+followUps = FollowUpBlock([f1, f2])
+f1 = FollowUpItem("Request receipt for this invoice")
+f2 = FollowUpItem("Schedule a payment reminder")

@@ -1,0 +1,133 @@
+root = Card([header, tfBar, kpiRow, alertSection, mainTabs, followUps], "sunk", "column", "m")
+
+header = CardHeader("Trading Desk Workspace", "Global Multi-Asset Execution & Portfolio Analytics | Morning Session")
+
+tfBar = Buttons([tf1D, tf1W, tf1M, tfYTD, tf1Y], "row")
+tf1D = Button("1D", null, "primary", "normal", "small")
+tf1W = Button("1W", null, "secondary", "normal", "small")
+tf1M = Button("1M", null, "secondary", "normal", "small")
+tfYTD = Button("YTD", null, "secondary", "normal", "small")
+tf1Y = Button("1Y", null, "secondary", "normal", "small")
+
+kpiRow = Card([kpi1, kpi2, kpi3, kpi4], "clear", "row", "m")
+kpi1 = TextCallout("neutral", "Portfolio Value", "$24,850,200.00")
+kpi2 = TextCallout("success", "P&L Today", "+$342,150.00 (+1.40%)")
+kpi3 = TextCallout("warning", "Value at Risk (VaR 95%)", "$485,000.00 (1.95%)")
+kpi4 = TextCallout("info", "Margin In Use", "$8,240,000 / $12,500,000 (65.9%)")
+
+alertSection = Callout("warning", "Risk Limit Alert: 2 Limits Near Breach", "US Tech Sector Exposure is at 38.5% (Max Limit: 40.0%). Daily Max Drawdown threshold is at -1.85% (Limit: -2.00%).")
+
+mainTabs = Tabs([tabOverview, tabTrading, tabRiskStrats, tabMacro])
+
+tabOverview = TabItem("overview", "Overview & Watchlist", [overviewCard])
+overviewCard = Card([moversHeading, moversTable, sep1, watchHeading, watchList], "card", "column", "m")
+
+moversHeading = Heading("Biggest Gainers & Losers Today", "h3")
+moversTable = Table([movTicker, movName, movPrice, movChange, movType])
+movTicker = Col("Ticker", ["NVDA", "AAPL", "MSFT", "TSLA", "AMZN", "META"])
+movName = Col("Asset", ["NVIDIA Corp", "Apple Inc", "Microsoft Corp", "Tesla Inc", "Amazon.com Inc", "Meta Platforms"])
+movPrice = Col("Price", ["$128.50", "$224.20", "$448.90", "$248.10", "$186.40", "$502.30"])
+movChange = Col("Change (%)", ["+4.85%", "+2.10%", "+1.75%", "-3.40%", "-2.15%", "-1.80%"])
+movType = Col("Status", ["Top Gainer", "Gainer", "Gainer", "Top Loser", "Loser", "Loser"])
+
+sep1 = Separator("horizontal", true)
+
+watchHeading = Heading("Monitored Instruments", "h3")
+watchList = ListBlock([w1, w2, w3, w4, w5])
+w1 = ListItem("EUR/USD", "FX Spot | Bid: 1.0885 / Ask: 1.0887 | Change: +0.12%", null, "Trade")
+w2 = ListItem("US 10Y Treasury", "Yield: 4.225% | Spread: +2.5 bps", null, "Trade")
+w3 = ListItem("Brent Crude Oil", "Commodity Spot | Price: $85.40/bbl | Change: -0.85%", null, "Trade")
+w4 = ListItem("Gold Spot (XAU/USD)", "Commodity Spot | Price: $2,382.10/oz | Change: +0.45%", null, "Trade")
+w5 = ListItem("S&P 500 E-mini (ES1!)", "Index Future | Price: 5,580.25 | Change: +0.38%", null, "Trade")
+
+tabTrading = TabItem("trading", "Positions & Execution", [tradingCard])
+tradingCard = Card([posHeading, posTable, sep2, orderFormCard, sep3, workOrdersHeading, workOrdersTable], "card", "column", "m")
+
+posHeading = Heading("Current Positions", "h3")
+posTable = Table([posTicker, posSize, posEntry, posCurr, posUnrealized])
+posTicker = Col("Ticker", ["NVDA", "AAPL", "MSFT", "JPM", "GOOGL"])
+posSize = Col("Size (Qty)", ["15,000", "25,000", "10,000", "18,000", "12,000"])
+posEntry = Col("Entry Price", ["$112.40", "$210.50", "$430.00", "$198.20", "$172.00"])
+posCurr = Col("Current Price", ["$128.50", "$224.20", "$448.90", "$204.50", "$178.10"])
+posUnrealized = Col("Unrealized P&L", ["+$241,500", "+$342,500", "+$189,000", "+$113,400", "+$73,200"])
+
+sep2 = Separator("horizontal", true)
+
+orderFormCard = Card([orderHeading, rebalanceDrawer, orderForm], "sunk", "column", "s")
+orderHeading = Heading("Quick Order Execution & Portfolio Rebalance", "h3")
+rebalanceDrawer = DrawerBlock("Open Rebalance Assistant", "Portfolio Rebalancing", "Adjust asset weights to target allocations", [rebalanceContent])
+rebalanceContent = Card([rebalanceInfo, rebalanceBtn], "clear", "column", "m")
+rebalanceInfo = TextContent("Target model: **60/40 Equity Risk Parity**. Rebalancing will trim US Tech exposure (-3.5%) and overweight Fixed Income (+3.5%). Estimated execution cost: ~$1,200.")
+rebalanceBtn = Buttons([execRebalanceBtn])
+execRebalanceBtn = Button("Execute Portfolio Rebalance", null, "primary")
+
+orderForm = Form("place-order-form", orderFormButtons, [fcTicker, fcSide, fcQty])
+fcTicker = FormControl("Ticker Symbol", inputTicker)
+inputTicker = Input("ticker", "e.g. NVDA")
+fcSide = FormControl("Order Side", selectSide)
+selectSide = Select("side", [sideBuy, sideSell], "Select Buy or Sell")
+sideBuy = SelectItem("BUY", "Buy / Long")
+sideSell = SelectItem("SELL", "Sell / Short")
+fcQty = FormControl("Quantity / Shares", inputQty)
+inputQty = Input("quantity", "1000", "number")
+
+orderFormButtons = Buttons([submitOrderBtn, clearOrderBtn])
+submitOrderBtn = Button("Submit Order", null, "primary")
+clearOrderBtn = Button("Reset Form", null, "tertiary")
+
+sep3 = Separator("horizontal", true)
+
+workOrdersHeading = Heading("Working Orders", "h3")
+workOrdersTable = Table([woId, woTicker, woSide, woQty, woType, woLimit, woStatus])
+woId = Col("Order ID", ["ORD-9021", "ORD-9024", "ORD-9025"])
+woTicker = Col("Ticker", ["NVDA", "AMZN", "TLT"])
+woSide = Col("Side", ["BUY", "SELL", "BUY"])
+woQty = Col("Quantity", ["2,500", "5,000", "10,000"])
+woType = Col("Type", ["Limit", "Stop Limit", "Limit"])
+woLimit = Col("Limit Price", ["$125.00", "$182.00", "$94.50"])
+woStatus = Col("Status", ["Working", "Working", "Partial Fill"])
+
+tabRiskStrats = TabItem("risk", "Risk & Strategy Performance", [riskCard])
+riskCard = Card([sectorHeading, sectorChart, sep4, stratHeading, stratTable, sep5, ddHeading, ddChart], "card", "column", "m")
+
+sectorHeading = Heading("Sector Exposure Breakdown", "h3")
+sectorChart = HorizontalBarChart(["Tech", "Financials", "Healthcare", "Energy", "Consumer", "Fixed Income"], [sectorSeries], "grouped", "Allocation (%)", "Sector")
+sectorSeries = Series("Exposure %", [38.5, 18.2, 12.4, 10.1, 8.8, 12.0])
+
+sep4 = Separator("horizontal", true)
+
+stratHeading = Heading("Strategy Returns Year-To-Date (2024)", "h3")
+stratTable = Table([stratName, stratReturn, stratSharpe, stratMaxDD])
+stratName = Col("Strategy Name", ["Quant Momentum", "US Long/Short Equity", "Global Macro FX", "Stat-Arb Neutral", "Fixed Income Yield"])
+stratReturn = Col("YTD Return (%)", ["+24.8%", "+16.2%", "+11.5%", "+8.4%", "+3.2%"])
+stratSharpe = Col("Sharpe Ratio", ["2.10", "1.75", "1.42", "2.85", "0.95"])
+stratMaxDD = Col("Max Drawdown", ["-6.2%", "-4.8%", "-5.1%", "-1.9%", "-2.8%"])
+
+sep5 = Separator("horizontal", true)
+
+ddHeading = Heading("Portfolio Drawdown History (Past 12 Months)", "h3")
+ddChart = AreaChart(["Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun"], [ddSeries], "natural", "Month", "Drawdown (%)")
+ddSeries = Series("Drawdown %", [0.0, -1.2, -2.8, -4.5, -2.1, -0.5, 0.0, -1.1, -0.3, -3.2, -1.8, -0.4])
+
+tabMacro = TabItem("macro", "Market News & Economic Calendar", [macroCard])
+macroCard = Card([newsHeading, news1, news2, news3, sep6, ecoHeading, ecoTable], "card", "column", "m")
+
+newsHeading = Heading("Market Headlines & Sentiment Analysis", "h3")
+news1 = Callout("success", "Bullish | Tech Sector", "Semiconductor demand surges on next-gen AI chip architecture announcements; hyperscalers increase CapEx guidance.")
+news2 = Callout("warning", "Neutral/Caution | Federal Reserve", "Fed officials signal patience on interest rate cuts, awaiting clearer signs of inflation cooling toward 2% target.")
+news3 = Callout("error", "Bearish | Automotive / EV", "EV manufacturer margins remain under pressure amid price competition and slowing regional delivery growth.")
+
+sep6 = Separator("horizontal", true)
+
+ecoHeading = Heading("Economic Releases This Week", "h3")
+ecoTable = Table([ecoDate, ecoEvent, ecoCountry, ecoForecast, ecoPrior])
+ecoDate = Col("Date / Time", ["Wed 08:30", "Wed 14:00", "Thu 08:30", "Thu 10:00", "Fri 08:30"])
+ecoEvent = Col("Event / Indicator", ["Core CPI (MoM)", "FOMC Meeting Minutes", "Initial Jobless Claims", "Existing Home Sales", "Non-Farm Payrolls"])
+ecoCountry = Col("Region", ["US", "US", "US", "US", "US"])
+ecoForecast = Col("Forecast", ["0.2%", "N/A", "225K", "4.10M", "180K"])
+ecoPrior = Col("Prior", ["0.3%", "N/A", "222K", "4.11M", "206K"])
+
+followUps = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Flatten all tech positions")
+fu2 = FollowUpItem("Show detailed risk limit breakdown")
+fu3 = FollowUpItem("Export execution log to CSV")

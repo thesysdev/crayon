@@ -1,0 +1,179 @@
+Here's a single-screen async standup covering all five items: today's date, per-teammate updates, blocked callouts, missing-update count, and a form to post your own update.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "dateBadge",
+          "missingAlert",
+          "blockedAlert",
+          "updatesTable",
+          "postForm"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Async Standup",
+        "subtitle": "Remote team daily check-in"
+      },
+      {
+        "id": "dateBadge",
+        "component": "Badge",
+        "text": "Today: Tuesday, May 20, 2025",
+        "variant": "secondary"
+      },
+      {
+        "id": "missingAlert",
+        "component": "Alert",
+        "title": "2 updates still missing",
+        "description": "Waiting on Priya and Marco to post their standup updates",
+        "variant": "warning"
+      },
+      {
+        "id": "blockedAlert",
+        "component": "Alert",
+        "title": "Blocked teammates",
+        "description": "Sam is blocked on API access credentials. Ana is blocked on design review sign-off.",
+        "variant": "destructive"
+      },
+      {
+        "id": "updatesTable",
+        "component": "Table",
+        "columns": [
+          "colName",
+          "colStatus",
+          "colBlocked"
+        ]
+      },
+      {
+        "id": "colName",
+        "component": "Col",
+        "label": "Teammate",
+        "data": [
+          "Sam",
+          "Ana",
+          "Jordan",
+          "Priya",
+          "Marco"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Today's update",
+        "data": [
+          "Finished auth refactor; starting password reset flow",
+          "Shipped onboarding emails; reviewing new dashboard mockups",
+          "Fixed checkout bug; load testing payment service",
+          "No update posted yet",
+          "No update posted yet"
+        ]
+      },
+      {
+        "id": "colBlocked",
+        "component": "Col",
+        "label": "Blocked?",
+        "data": [
+          "Yes — API access credentials",
+          "Yes — design review sign-off",
+          "No",
+          "—",
+          "—"
+        ]
+      },
+      {
+        "id": "postForm",
+        "component": "Form",
+        "name": "standup-update",
+        "buttons": "formButtons",
+        "fields": [
+          "updateField",
+          "blockedField"
+        ]
+      },
+      {
+        "id": "updateField",
+        "component": "FormControl",
+        "label": "Your update for today",
+        "input": "updateInput",
+        "hint": "What did you do, and what's next?"
+      },
+      {
+        "id": "updateInput",
+        "component": "TextArea",
+        "name": "update",
+        "placeholder": "Yesterday I..., today I will...",
+        "rows": 3
+      },
+      {
+        "id": "blockedField",
+        "component": "FormControl",
+        "label": "Are you blocked?",
+        "input": "blockedRadio"
+      },
+      {
+        "id": "blockedRadio",
+        "component": "RadioGroup",
+        "name": "blocked",
+        "items": [
+          "blockedNo",
+          "blockedYes"
+        ],
+        "defaultValue": "no"
+      },
+      {
+        "id": "blockedNo",
+        "component": "RadioItem",
+        "label": "No",
+        "description": "Nothing is blocking me",
+        "value": "no"
+      },
+      {
+        "id": "blockedYes",
+        "component": "RadioItem",
+        "label": "Yes",
+        "description": "Describe the blocker in your update",
+        "value": "yes"
+      },
+      {
+        "id": "formButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitBtn"
+        ]
+      },
+      {
+        "id": "submitBtn",
+        "component": "Button",
+        "label": "Post my update",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+Coverage of each requirement:
+1. **Teammate updates** — the table lists all five teammates with today's status.
+2. **Blocked callout** — a destructive alert plus a "Blocked?" column flags Sam and Ana.
+3. **Today's date** — shown in a badge under the header.
+4. **Post your own update** — the form includes a textarea, blocked yes/no radio, and submit button.
+5. **Missing updates** — a warning alert notes 2 updates are still outstanding.

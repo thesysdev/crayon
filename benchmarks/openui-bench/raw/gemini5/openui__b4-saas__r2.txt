@@ -1,0 +1,102 @@
+root = Card([header, mainCallout, kpiCards, periodCard, chartGrid, tableGrid, riskAndPaymentGrid, adoptionAndNpsGrid, inviteSection, followUps], "clear", "column", "l")
+
+header = CardHeader("SaaS Executive Admin Dashboard", "Real-time revenue, customer health, and feature adoption metrics")
+
+mainCallout = TextCallout("info", "Monthly Overview", "Overall ARR is up 12.4% this quarter. 2 high-value accounts require immediate attention due to failed payments.")
+
+periodCard = Card([periodHeader, periodButtons], "card", "row", "m", "center", "between")
+periodHeader = TextContent("Reporting Period", "small-heavy")
+periodButtons = Buttons([p30, p90, p365], "row")
+p30 = Button("30 Days", null, "tertiary", "normal", "small")
+p90 = Button("90 Days", null, "primary", "normal", "small")
+p365 = Button("1 Year", null, "tertiary", "normal", "small")
+
+kpiCards = Card([mrrCard, arrCard, churnCard, npsCard, utilCard], "clear", "row", "m", "stretch", "between", true)
+
+mrrCard = Card([mrrTitle, mrrVal, mrrBadge], "card", "column", "xs")
+mrrTitle = TextContent("Monthly Recurring Revenue", "small")
+mrrVal = TextContent("$128,500", "large-heavy")
+mrrBadge = Tag("+4.2% vs last month", null, "sm", "success")
+
+arrCard = Card([arrTitle, arrVal, arrBadge], "card", "column", "xs")
+arrTitle = TextContent("Annual Recurring Revenue", "small")
+arrVal = TextContent("$1,542,000", "large-heavy")
+arrBadge = Tag("+12.4% YoY", null, "sm", "success")
+
+churnCard = Card([churnTitle, churnVal, churnBadge], "card", "column", "xs")
+churnTitle = TextContent("Churn This Month", "small")
+churnVal = TextContent("1.2%", "large-heavy")
+churnBadge = Tag("-0.3% improvement", null, "sm", "success")
+
+npsCard = Card([npsTitle, npsVal, npsBadge], "card", "column", "xs")
+npsTitle = TextContent("Net Promoter Score (NPS)", "small")
+npsVal = TextContent("64", "large-heavy")
+npsBadge = Tag("Excellent", null, "sm", "info")
+
+utilCard = Card([utilTitle, utilVal, utilProgress], "card", "column", "xs")
+utilTitle = TextContent("Seat Utilization", "small")
+utilVal = TextContent("82%", "large-heavy")
+utilProgress = Progress(82, "8,200 / 10,000 active seats")
+
+chartGrid = Card([signupsCard, plansCard], "clear", "row", "l", "stretch", "between", true)
+
+signupsCard = Card([signupsHeader, signupsChart], "card", "column", "m")
+signupsHeader = CardHeader("New Signups (Past 90 Days)", "Daily registrations trend")
+signupsChart = LineChart(["Month 1", "Month 2", "Month 3"], [signupsSeries], "natural", "Timeline", "Signups")
+signupsSeries = Series("New Customers", [340, 410, 520])
+
+plansCard = Card([plansHeader, plansChart], "card", "column", "m")
+plansHeader = CardHeader("Customers Split by Plan", "Distribution across subscription tiers")
+plansChart = PieChart(["Starter", "Professional", "Enterprise"], [450, 320, 110], "donut", "circular")
+
+tableGrid = Card([topCustomersCard], "clear", "column", "m")
+topCustomersCard = Card([topCustHeader, topCustTable], "card", "column", "m")
+topCustHeader = CardHeader("Top 10 Largest Customers", "Ranked by annual spend and seat allocation")
+topCustTable = Table([cRank, cName, cPlan, cSeats, cSpend])
+cRank = Col("#", [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+cName = Col("Customer", ["Acme Corp", "GlobalTech", "Nexus Ltd", "Starlight Inc", "DataDynamics", "Vertex Media", "CloudScale", "Alpha Omega", "Omni Health", "CyberShield"])
+cPlan = Col("Plan", ["Enterprise", "Enterprise", "Enterprise", "Enterprise", "Enterprise", "Pro", "Pro", "Pro", "Pro", "Pro"])
+cSeats = Col("Seats", [450, 380, 310, 290, 250, 180, 160, 150, 140, 120])
+cSpend = Col("Annual Spend", ["$54,000", "$45,600", "$37,200", "$34,800", "$30,000", "$21,600", "$19,200", "$18,000", "$16,800", "$14,400"])
+
+riskAndPaymentGrid = Card([atRiskCard, failedPaymentsCard], "clear", "row", "l", "stretch", "between", true)
+
+atRiskCard = Card([atRiskHeader, atRiskTable], "card", "column", "m")
+atRiskHeader = CardHeader("Accounts at Risk", "Customers displaying churn signals")
+atRiskTable = Table([rName, rArr, rReason, rRiskLevel])
+rName = Col("Account", ["BrightPath Logistics", "Apex Software", "Hyperion Dynamics"])
+rArr = Col("ARR", ["$18,000", "$24,000", "$12,000"])
+rReason = Col("Risk Factor", ["Low usage (-60% 30d)", "Executive sponsor left", "Unresolved support tickets"])
+rRiskLevel = Col("Status", ["High Risk", "High Risk", "Medium Risk"])
+
+failedPaymentsCard = Card([failedHeader, failedList], "card", "column", "m")
+failedHeader = CardHeader("Failed Payments", "Immediate action required")
+failedList = ListBlock([payItem1, payItem2], "image")
+payItem1 = ListItem("Krypton Systems - $2,400", "Card expired on Oct 12 • Past due 3 days", null, "Retry Payment")
+payItem2 = ListItem("Synergy Works - $1,150", "Insufficient funds • Past due 5 days", null, "Retry Payment")
+
+adoptionAndNpsGrid = Card([adoptionCard], "clear", "column", "m")
+adoptionCard = Card([adoptionHeader, adoptionList], "card", "column", "m")
+adoptionHeader = CardHeader("Adoption of Newest Features", "Usage metrics across the active user base over the last 30 days")
+adoptionList = ListBlock([feat1, feat2, feat3], "number")
+feat1 = ListItem("AI Analytics Copilot", "64% active team adoption (5,248 active users)", null, "View Feature Docs")
+feat2 = ListItem("Automated Workflows v2", "42% active team adoption (3,444 active users)", null, "View Feature Docs")
+feat3 = ListItem("SSO & SAML Integration", "88% enterprise plan adoption (97 enterprise accounts)", null, "View Feature Docs")
+
+inviteSection = Card([inviteHeader, inviteForm], "card", "column", "m")
+inviteHeader = CardHeader("Invite New Administrator", "Grant executive access to team members")
+inviteForm = Form("invite-admin-form", inviteButtons, [inviteEmailField, inviteRoleField])
+inviteEmailField = FormControl("Work Email Address", inviteEmailInput, "An invitation link will be sent to this email")
+inviteEmailInput = Input("email", "colleague@company.com", "email")
+inviteRoleField = FormControl("Role Permission", inviteRoleSelect)
+inviteRoleSelect = Select("role", [roleAdmin, roleBilling, roleReadonly], "Select role level")
+roleAdmin = SelectItem("full_admin", "Full Super Admin")
+roleBilling = SelectItem("billing_admin", "Billing Admin")
+roleReadonly = SelectItem("readonly_admin", "Read-Only Executive")
+inviteButtons = Buttons([sendInviteBtn])
+sendInviteBtn = Button("Send Admin Invitation", null, "primary")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Export Churn & Risk Report to CSV")
+f2 = FollowUpItem("Trigger automated dunning emails for failed payments")
+f3 = FollowUpItem("Filter seat utilization by department")

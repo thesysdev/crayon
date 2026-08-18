@@ -1,0 +1,114 @@
+root = Card([header, mainKpis, middleLayout, serverAndQuality, liveOpsAndEconomy, experimentation, moderationSection, patchDraftForm, focusRegionDrawer, hotfixModal])
+
+header = CardHeader("Live-Ops Command Center", "Real-time game telemetries, server status & player operations")
+
+# 1. CCU, 2. DAU/MAU, 3. Revenue Today, 4. ARPU
+mainKpis = Card([kpiGrid], "sunk")
+kpiGrid = Table([kpiMetricCol, kpiValueCol, kpiTargetCol])
+kpiMetricCol = Col("Metric", ["Players Online (CCU)", "Daily Active Players (DAU)", "Monthly Active Players (MAU)", "Revenue Today (USD)", "Average Revenue Per User (ARPU)"])
+kpiValueCol = Col("Current", ["142,850", "1.24M", "8.65M", "$48,290", "$1.45"])
+kpiTargetCol = Col("Status / Target", ["Peak Hours (+12%)", "Target: 1.20M", "Target: 8.50M", "Daily Goal: $45,000", "Monthly Target: $1.40"])
+
+# 5. Session length over past two weeks & 6. Best selling items
+middleLayout = Card([sessionTrendCard, bestSellersCard], "clear", "row", "m")
+
+sessionTrendCard = Card([sessionHeading, sessionChart], "sunk")
+sessionHeading = Heading("Avg Session Length (Past 14 Days)", "h4")
+sessionChart = LineChart(["D1", "D2", "D3", "D4", "D5", "D6", "D7", "D8", "D9", "D10", "D11", "D12", "D13", "D14"], [sessionSeries], "natural", "Days", "Minutes")
+sessionSeries = Series("Duration (Min)", [22, 24, 23, 25, 28, 32, 35, 24, 23, 25, 26, 30, 34, 29])
+
+bestSellersCard = Card([bestSellersHeading, bestSellersTable], "sunk")
+bestSellersHeading = Heading("Best-Selling Items (Today)", "h4")
+bestSellersTable = Table([itemNameCol, itemCategoryCol, itemUnitsCol])
+itemNameCol = Col("Item Name", ["Battle Pass Season 4", "Shadow Dragon Skin", "500 Gem Pack", "Starter Bundle", "XP Booster (3D)"])
+itemCategoryCol = Col("Category", ["Pass", "Cosmetic", "Currency", "Bundle", "Consumable"])
+itemUnitsCol = Col("Units Sold", ["12,450", "8,120", "6,400", "3,890", "2,100"])
+
+# 7. Server region health & 8. Crash rate by app version
+serverAndQuality = Card([serverCard, crashCard], "clear", "row", "m")
+
+serverCard = Card([serverHeading, serverTable], "sunk")
+serverHeading = Heading("7. Server Region Health", "h4")
+serverTable = Table([regionCol, statusCol, latencyCol, loadCol])
+regionCol = Col("Region", ["US-East", "US-West", "EU-Central", "AP-East", "SA-East"])
+statusCol = Col("Status", ["HEALTHY", "HEALTHY", "DEGRADED", "HEALTHY", "HEALTHY"])
+latencyCol = Col("Latency", ["24ms", "38ms", "112ms", "65ms", "88ms"])
+loadCol = Col("Server Load", ["68%", "72%", "94%", "45%", "32%"])
+
+crashCard = Card([crashHeading, crashChart], "sunk")
+crashHeading = Heading("8. Crash Rate by App Version", "h4")
+crashChart = BarChart(["v2.4.0 (Live)", "v2.3.9 (Old)", "v2.4.1-rc"], [crashSeries], "grouped", "App Version", "Crash %")
+crashSeries = Series("Crash Rate %", [0.42, 0.18, 1.85])
+
+# 9. Live Events & 12. In-game Currency Inflation
+liveOpsAndEconomy = Card([eventsCard, economyCard], "clear", "row", "m")
+
+eventsCard = Card([eventsHeading, eventsTable], "sunk")
+eventsHeading = Heading("9. Live & Upcoming Events", "h4")
+eventsTable = Table([eventNameCol, eventTypeCol, eventStatusCol])
+eventNameCol = Col("Event", ["Lunar Festival Drop", "Double Gold Weekend", "Boss Raid Season 2"])
+eventTypeCol = Col("Type", ["In-Game Loot", "Economy Boost", "PvE Event"])
+eventStatusCol = Col("State", ["LIVE NOW", "UPCOMING (2d)", "UPCOMING (5d)"])
+
+economyCard = Card([economyHeading, inflationCallout, economyMetricsTable], "sunk")
+economyHeading = Heading("12. Currency Inflation & Economy", "h4")
+inflationCallout = TextCallout("warning", "Gold Inflation Alert (+4.2%)", "Daily gold faucet output exceeded sink drain by 14.8M Gold.")
+economyMetricsTable = Table([currCol, faucetCol, sinkCol])
+currCol = Col("Currency", ["Gold", "Gems", "Raid Badges"])
+faucetCol = Col("24h Minted", ["142.5M", "1.2M", "450K"])
+sinkCol = Col("24h Burned", ["127.7M", "1.1M", "442K"])
+
+# 13. Results of two running experiments
+experimentation = Card([expHeading, expTabs], "sunk")
+expHeading = Heading("13. Active A/B Experiments", "h3")
+expTabs = Tabs([exp1Tab, exp2Tab])
+
+exp1Tab = TabItem("exp1", "EXP-104: Onboarding Flow V2", [exp1Content])
+exp1Content = Card([exp1Desc, exp1Table])
+exp1Desc = TextContent("Testing streamlined 3-step tutorial against legacy 5-step flow.")
+exp1Table = Table([exp1VariantCol, exp1ConvCol, exp1RetentionCol])
+exp1VariantCol = Col("Variant", ["Control (Legacy)", "Variant A (3-Step)"])
+exp1ConvCol = Col("Tutorial Finish", ["64.2%", "78.9%"])
+exp1RetentionCol = Col("D1 Retention", ["32.1%", "39.4%"])
+
+exp2Tab = TabItem("exp2", "EXP-109: Dynamic Shop Layout", [exp2Content])
+exp2Content = Card([exp2Desc, exp2Table])
+exp2Desc = TextContent("Testing personalized shop front-page vs standard curated grid.")
+exp2Table = Table([exp2VariantCol, exp2ArpuCol, exp2ConversionCol])
+exp2VariantCol = Col("Variant", ["Control (Standard)", "Variant B (Personalized)"])
+exp2ArpuCol = Col("ARPU", ["$1.20", "$1.58"])
+exp2ConversionCol = Col("Payer Conv %", ["2.4%", "3.8%"])
+
+# 10. Player Reports & 11. Ban Appeals Awaiting Review
+moderationSection = Card([modHeading, modKpis], "sunk")
+modHeading = Heading("Moderation Queue", "h3")
+modKpis = Table([modQueueCol, modPendingCol, modSlaCol])
+modQueueCol = Col("Queue Type", ["10. Player Toxicity & Cheat Reports", "11. Ban Appeals"])
+modPendingCol = Col("Awaiting Review", ["342 cases", "89 cases"])
+modSlaCol = Col("Oldest Pending", ["2 hours ago", "14 hours ago"])
+
+# Actions & Inputs
+# 14. Draft Patch Notes Form
+patchDraftForm = Form("patch-notes-draft", patchFormButtons, [patchTitleControl, patchVersionControl, patchContentControl])
+patchTitleControl = FormControl("Patch Title", patchTitleInput)
+patchTitleInput = Input("title", "v2.4.1 Emergency Stability Patch")
+patchVersionControl = FormControl("Target Version", patchVersionSelect)
+patchVersionSelect = Select("version", [v1, v2], "v2.4.1")
+v1 = SelectItem("v2.4.1", "v2.4.1 (Next)")
+v2 = SelectItem("v2.5.0", "v2.5.0 (Major)")
+patchContentControl = FormControl("Patch Notes Summary", patchContentArea)
+patchContentArea = TextArea("content", "- Fixed memory leak in EU-Central server nodes\n- Adjusted Gold sink prices for Tier 3 weapons\n- Resolved crashing bug on iOS 17.4", 4)
+patchFormButtons = Buttons([saveDraftBtn])
+saveDraftBtn = Button("14. Save Patch Notes Draft", null, "secondary")
+
+# 15. Focus on one region (Drawer) & 16. Ship a hotfix (AlertDialog)
+focusRegionDrawer = DrawerBlock("15. Focus on Region", "Region Deep Dive Inspector", "Select and analyze isolated regional clusters", regionDrawerContent)
+regionDrawerContent = Card([regionSelectControl, regionDetailsText])
+regionSelectControl = FormControl("Select Region to Focus", regionSelect)
+regionSelect = Select("region_id", [r1, r2, r3], "EU-Central")
+r1 = SelectItem("EU-Central", "EU-Central (Degraded)")
+r2 = SelectItem("US-East", "US-East (Healthy)")
+r3 = SelectItem("AP-East", "AP-East (Healthy)")
+regionDetailsText = TextContent("Currently focusing on EU-Central. Node #4 reporting high memory fragmentation. Traffic rerouting initiated.")
+
+hotfixModal = AlertDialogBlock("16. Ship Hotfix", "Deploy Live Hotfix?", "This will push build v2.4.1-hotfix directly to production servers without taking downtime.", "Deploy Hotfix Now", "Cancel Trigger", "destructive")

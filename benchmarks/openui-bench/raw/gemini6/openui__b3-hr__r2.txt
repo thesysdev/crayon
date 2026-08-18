@@ -1,0 +1,105 @@
+root = Card([header, kpiRow, mainGrid, formSection, followUp])
+
+header = CardHeader("HR Hiring & Workforce Overview", "Q3 Recruiting Dashboard & Metrics")
+
+kpiRow = Card([kpiHeadcount, kpiOpenRoles, kpiTimeToHire, kpiInterviews], "sunk", "row", "m")
+kpiHeadcount = Card([headcountTag, headcountVal, headcountSub], "card")
+headcountTag = Badge("Current Headcount", "outline")
+headcountVal = Heading("248", "h2")
+headcountSub = TextContent("+12 this quarter", "small")
+
+kpiOpenRoles = Card([openRolesTag, openRolesVal, openRolesSub], "card")
+openRolesTag = Badge("Open Roles", "outline")
+openRolesVal = Heading("14", "h2")
+openRolesSub = TextContent("Across 5 departments", "small")
+
+kpiTimeToHire = Card([timeToHireTag, timeToHireVal, timeToHireSub], "card")
+timeToHireTag = Badge("Avg Time to Hire", "outline")
+timeToHireVal = Heading("32 Days", "h2")
+timeToHireSub = TextContent("-4 days vs last quarter", "small")
+
+kpiInterviews = Card([interviewsTag, interviewsVal, interviewsSub], "card")
+interviewsTag = Badge("Interviews This Week", "outline")
+interviewsVal = Heading("18", "h2")
+interviewsSub = TextContent("6 final rounds", "small")
+
+mainGrid = Tabs([tabPipeline, tabHeadcount, tabRoles, tabInterviews])
+
+tabPipeline = TabItem("pipeline", "Pipeline & Attrition", [pipelineHeading, pipelineChart, sep1, attritionHeading, attritionChart])
+pipelineHeading = Heading("Candidates by Pipeline Stage", "h3")
+pipelineChart = HorizontalBarChart(["Sourced", "Screening", "Technical Interview", "Culture Fit", "Offer Stage"], [pipelineSeries], "grouped", "Candidates", "Stage")
+pipelineSeries = Series("Active Candidates", [42, 28, 15, 8, 4])
+
+sep1 = Separator("horizontal")
+attritionHeading = Heading("Monthly Attrition (Past 6 Months)", "h3")
+attritionChart = LineChart(["Jan", "Feb", "Mar", "Apr", "May", "Jun"], [voluntarySeries, involuntarySeries], "natural", "Month", "Employees")
+voluntarySeries = Series("Voluntary Resignations", [2, 1, 3, 2, 1, 2])
+involuntarySeries = Series("Involuntary / Role Changes", [1, 0, 1, 0, 1, 0])
+
+tabHeadcount = TabItem("dept_headcount", "Department Split", [deptHeading, deptChart, deptTable])
+deptHeading = Heading("Headcount Split by Department", "h3")
+deptChart = PieChart(["Engineering", "Product & Design", "Sales & Marketing", "Customer Success", "G&A"], [102, 38, 54, 32, 22], "donut")
+deptTable = Table([colDept, colCount, colPct, colOpen])
+colDept = Col("Department", ["Engineering", "Product & Design", "Sales & Marketing", "Customer Success", "General & Admin"])
+colCount = Col("Headcount", [102, 38, 54, 32, 22])
+colPct = Col("Share", ["41%", "15%", "22%", "13%", "9%"])
+colOpen = Col("Open Roles", [6, 2, 4, 1, 1])
+
+tabRoles = TabItem("roles", "Open Roles", [rolesHeading, rolesTable])
+rolesHeading = Heading("Active Job Openings", "h3")
+rolesTable = Table([colRoleTitle, colRoleDept, colRoleApplicants, colRoleDaysOpen, colRoleStatus])
+colRoleTitle = Col("Role Title", ["Senior Backend Engineer", "Lead Product Designer", "Account Executive", "DevOps Engineer", "Customer Support Lead", "HR Business Partner"])
+colRoleDept = Col("Department", ["Engineering", "Product & Design", "Sales & Marketing", "Engineering", "Customer Success", "G&A"])
+colRoleApplicants = Col("Applicants", [38, 24, 45, 19, 29, 14])
+colRoleDaysOpen = Col("Days Open", [18, 25, 12, 34, 8, 15])
+colRoleStatus = Col("Status", ["Interviewing", "Offer Sent", "Screening", "Interviewing", "Sourced", "Screening"])
+
+tabInterviews = TabItem("interviews", "Scheduled Interviews", [interviewsHeading, interviewsList])
+interviewsHeading = Heading("Interviews Scheduled This Week", "h3")
+interviewsList = ListBlock([int1, int2, int3, int4, int5])
+int1 = ListItem("Senior Backend Engineer — Tech Round", "Candidate: Alex Rivera | Intervuer: Dan K. | Mon, 2:00 PM")
+int2 = ListItem("Account Executive — Final Pitch", "Candidate: Sarah Chen | Intervuer: Maria G. | Tue, 10:30 AM")
+int3 = ListItem("Lead Product Designer — Portfolio Review", "Candidate: Marcus Vance | Intervuer: Elena R. | Wed, 1:00 PM")
+int4 = ListItem("DevOps Engineer — System Architecture", "Candidate: Priya Patel | Intervuer: Sam L. | Thu, 11:00 AM")
+int5 = ListItem("Customer Support Lead — Culture Fit", "Candidate: Jordan Blake | Intervuer: HR Team | Fri, 3:30 PM")
+
+formSection = Card([newRoleDrawer], "sunk")
+newRoleDrawer = DrawerBlock("Open New Role", "Create a Job Requisition", "Fill in the details below to publish a new job opening for approval.", [roleForm])
+
+roleForm = Form("create-role", formActions, [roleTitleField, deptField, typeField, headcountTypeField, salaryField, descField])
+roleTitleField = FormControl("Job Title", roleTitleInput)
+roleTitleInput = Input("title", "e.g. Senior Frontend Engineer")
+
+deptField = FormControl("Department", deptSelect)
+deptSelect = Select("department", [deptEng, deptProd, deptSales, deptCS, deptGA], "Select department")
+deptEng = SelectItem("eng", "Engineering")
+deptProd = SelectItem("product", "Product & Design")
+deptSales = SelectItem("sales", "Sales & Marketing")
+deptCS = SelectItem("cs", "Customer Success")
+deptGA = SelectItem("ga", "General & Admin")
+
+typeField = FormControl("Employment Type", typeRadio)
+typeRadio = RadioGroup("emp_type", [typeFull, typeContract, typePart])
+typeFull = RadioItem("Full-time", "Standard 40h/week position", "full_time")
+typeContract = RadioItem("Contract", "Fixed term engagement", "contract")
+typePart = RadioItem("Part-time", "Under 30h/week", "part_time")
+
+headcountTypeField = FormControl("Requisition Reason", headTypeSelect)
+headTypeSelect = Select("req_reason", [reqGrowth, reqReplacement], "Choose reason")
+reqGrowth = SelectItem("growth", "New Headcount (Growth)")
+reqReplacement = SelectItem("backfill", "Replacement (Backfill)")
+
+salaryField = FormControl("Target Base Salary Range", salaryInput)
+salaryInput = Input("salary", "$120,000 - $150,000")
+
+descField = FormControl("Role Justification / Notes", descText)
+descText = TextArea("justification", "Describe team need and key responsibilities...", 3)
+
+formActions = Buttons([submitRoleBtn, cancelRoleBtn])
+submitRoleBtn = Button("Submit Requisition", null, "primary")
+cancelRoleBtn = Button("Save Draft", null, "tertiary")
+
+followUp = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Export hiring pipeline summary report")
+f2 = FollowUpItem("View upcoming interviews for next week")
+f3 = FollowUpItem("Show time-to-hire breakdown by department")

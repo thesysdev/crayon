@@ -1,0 +1,507 @@
+Here's a comprehensive live-ops dashboard covering all 16 items, organized into tabs for clarity:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": ["header", "tabs"]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Live-Ops Command Center",
+        "subtitle": "Real-time game operations dashboard"
+      },
+      {
+        "id": "tabs",
+        "component": "Tabs",
+        "items": ["tabMetrics", "tabMonetization", "tabInfra", "tabOps", "tabActions"]
+      },
+      {
+        "id": "tabMetrics",
+        "component": "TabItem",
+        "value": "metrics",
+        "trigger": "Live Metrics",
+        "content": ["kpiTable", "sessionHeading", "sessionChart", "inflationHeading", "inflationChart"]
+      },
+      {
+        "id": "tabMonetization",
+        "component": "TabItem",
+        "value": "monetization",
+        "trigger": "Monetization & Experiments",
+        "content": ["shopHeading", "shopTable", "expHeading", "expTable"]
+      },
+      {
+        "id": "tabInfra",
+        "component": "TabItem",
+        "value": "infra",
+        "trigger": "Infrastructure",
+        "content": ["regionHeading", "regionTable", "crashHeading", "crashChart"]
+      },
+      {
+        "id": "tabOps",
+        "component": "TabItem",
+        "value": "ops",
+        "trigger": "Operations",
+        "content": ["eventsHeading", "eventsList", "queueHeading", "queueTable"]
+      },
+      {
+        "id": "tabActions",
+        "component": "TabItem",
+        "value": "actions",
+        "trigger": "Actions",
+        "content": ["patchHeading", "patchForm", "regionFocusHeading", "regionFocusForm", "hotfixHeading", "hotfixDialog"]
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": ["kpiMetric", "kpiValue"]
+      },
+      {
+        "id": "kpiMetric",
+        "component": "Col",
+        "label": "Metric",
+        "data": ["Players Online Now", "Daily Active Players", "Monthly Active Players", "Revenue Today", "Revenue Per User (ARPU)"]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": ["48,217", "312,450", "1,847,300", "$284,920", "$0.91"]
+      },
+      {
+        "id": "sessionHeading",
+        "component": "Heading",
+        "text": "Avg Session Length — Past 14 Days",
+        "level": "h3"
+      },
+      {
+        "id": "sessionChart",
+        "component": "LineChart",
+        "labels": ["Jun 1", "Jun 2", "Jun 3", "Jun 4", "Jun 5", "Jun 6", "Jun 7", "Jun 8", "Jun 9", "Jun 10", "Jun 11", "Jun 12", "Jun 13", "Jun 14"],
+        "series": ["sessionSeries"],
+        "variant": "natural",
+        "xLabel": "Date",
+        "yLabel": "Minutes"
+      },
+      {
+        "id": "sessionSeries",
+        "component": "Series",
+        "category": "Avg Session (min)",
+        "values": [22, 23, 21, 24, 25, 27, 26, 24, 23, 25, 26, 28, 27, 29]
+      },
+      {
+        "id": "inflationHeading",
+        "component": "Heading",
+        "text": "In-Game Currency Inflation Index",
+        "level": "h3"
+      },
+      {
+        "id": "inflationChart",
+        "component": "AreaChart",
+        "labels": ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"],
+        "series": ["inflationSeries"],
+        "variant": "natural",
+        "xLabel": "Week",
+        "yLabel": "Index (baseline=100)"
+      },
+      {
+        "id": "inflationSeries",
+        "component": "Series",
+        "category": "Gold Supply Index",
+        "values": [100, 103, 107, 112, 118, 124, 131, 139]
+      },
+      {
+        "id": "shopHeading",
+        "component": "Heading",
+        "text": "Best-Selling Items (Today)",
+        "level": "h3"
+      },
+      {
+        "id": "shopTable",
+        "component": "Table",
+        "columns": ["shopItem", "shopUnits", "shopRevenue"]
+      },
+      {
+        "id": "shopItem",
+        "component": "Col",
+        "label": "Item",
+        "data": ["Legendary Chest Key", "Battle Pass Tier Skip", "Phoenix Skin Bundle", "XP Booster (24h)", "Starter Gem Pack"]
+      },
+      {
+        "id": "shopUnits",
+        "component": "Col",
+        "label": "Units Sold",
+        "data": ["4,821", "3,190", "2,744", "2,105", "1,863"]
+      },
+      {
+        "id": "shopRevenue",
+        "component": "Col",
+        "label": "Revenue",
+        "data": ["$48,210", "$31,900", "$41,160", "$10,525", "$9,315"]
+      },
+      {
+        "id": "expHeading",
+        "component": "Heading",
+        "text": "Running Experiments",
+        "level": "h3"
+      },
+      {
+        "id": "expTable",
+        "component": "Table",
+        "columns": ["expName", "expVariant", "expMetric", "expLift", "expStatus"]
+      },
+      {
+        "id": "expName",
+        "component": "Col",
+        "label": "Experiment",
+        "data": ["Lobby Music A/B", "Dynamic Pricing Test"]
+      },
+      {
+        "id": "expVariant",
+        "component": "Col",
+        "label": "Winning Variant",
+        "data": ["Variant B (orchestral)", "Tiered discount"]
+      },
+      {
+        "id": "expMetric",
+        "component": "Col",
+        "label": "Primary Metric",
+        "data": ["Session length", "Conversion rate"]
+      },
+      {
+        "id": "expLift",
+        "component": "Col",
+        "label": "Lift",
+        "data": ["+8.3%", "+12.1%"]
+      },
+      {
+        "id": "expStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": ["Significant (p<0.01)", "Significant (p<0.05)"]
+      },
+      {
+        "id": "regionHeading",
+        "component": "Heading",
+        "text": "Server Region Health",
+        "level": "h3"
+      },
+      {
+        "id": "regionTable",
+        "component": "Table",
+        "columns": ["regionName", "regionStatus", "regionPlayers", "regionLatency"]
+      },
+      {
+        "id": "regionName",
+        "component": "Col",
+        "label": "Region",
+        "data": ["NA-East", "NA-West", "EU-West", "EU-Central", "APAC-Tokyo", "APAC-Sydney", "SA-East"]
+      },
+      {
+        "id": "regionStatus",
+        "component": "Col",
+        "label": "Health",
+        "data": ["✅ Healthy", "✅ Healthy", "⚠️ Degraded", "✅ Healthy", "✅ Healthy", "✅ Healthy", "🔴 Critical"]
+      },
+      {
+        "id": "regionPlayers",
+        "component": "Col",
+        "label": "Players",
+        "data": ["14,200", "9,800", "11,450", "6,300", "4,100", "1,520", "847"]
+      },
+      {
+        "id": "regionLatency",
+        "component": "Col",
+        "label": "Avg Latency",
+        "data": ["32ms", "28ms", "89ms", "41ms", "35ms", "44ms", "210ms"]
+      },
+      {
+        "id": "crashHeading",
+        "component": "Heading",
+        "text": "Crash Rate by App Version",
+        "level": "h3"
+      },
+      {
+        "id": "crashChart",
+        "component": "BarChart",
+        "labels": ["v3.2.0", "v3.2.1", "v3.3.0", "v3.3.1", "v3.4.0-beta"],
+        "series": ["crashSeries"],
+        "variant": "grouped",
+        "xLabel": "Version",
+        "yLabel": "Crash Rate (%)"
+      },
+      {
+        "id": "crashSeries",
+        "component": "Series",
+        "category": "Crash Rate",
+        "values": [0.12, 0.08, 0.15, 0.06, 0.42]
+      },
+      {
+        "id": "eventsHeading",
+        "component": "Heading",
+        "text": "Live & Upcoming Events",
+        "level": "h3"
+      },
+      {
+        "id": "eventsList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": ["event1", "event2", "event3", "event4"]
+      },
+      {
+        "id": "event1",
+        "component": "ListItem",
+        "title": "🔥 Summer Blaze Festival",
+        "subtitle": "LIVE — ends in 2d 14h | 67% participation"
+      },
+      {
+        "id": "event2",
+        "component": "ListItem",
+        "title": "⚔️ Guild Wars Season 4",
+        "subtitle": "LIVE — ends in 5d 3h | 42% participation"
+      },
+      {
+        "id": "event3",
+        "component": "ListItem",
+        "title": "🎃 Phantom Nights (Halloween)",
+        "subtitle": "UPCOMING — starts Oct 25 | assets 80% ready"
+      },
+      {
+        "id": "event4",
+        "component": "ListItem",
+        "title": "🏆 Ranked Season Reset",
+        "subtitle": "UPCOMING — starts Nov 1 | config pending QA"
+      },
+      {
+        "id": "queueHeading",
+        "component": "Heading",
+        "text": "Review Queues",
+        "level": "h3"
+      },
+      {
+        "id": "queueTable",
+        "component": "Table",
+        "columns": ["queueType", "queueCount", "queueOldest"]
+      },
+      {
+        "id": "queueType",
+        "component": "Col",
+        "label": "Queue",
+        "data": ["Player Reports", "Ban Appeals"]
+      },
+      {
+        "id": "queueCount",
+        "component": "Col",
+        "label": "Awaiting Review",
+        "data": ["1,247", "89"]
+      },
+      {
+        "id": "queueOldest",
+        "component": "Col",
+        "label": "Oldest Item",
+        "data": ["3 days ago", "12 hours ago"]
+      },
+      {
+        "id": "patchHeading",
+        "component": "Heading",
+        "text": "Draft Patch Notes",
+        "level": "h3"
+      },
+      {
+        "id": "patchForm",
+        "component": "Form",
+        "name": "patch-notes",
+        "buttons": "patchButtons",
+        "fields": ["patchVersionField", "patchTitleField", "patchBodyField"]
+      },
+      {
+        "id": "patchVersionField",
+        "component": "FormControl",
+        "label": "Version",
+        "input": "patchVersionInput"
+      },
+      {
+        "id": "patchVersionInput",
+        "component": "Input",
+        "name": "version",
+        "placeholder": "v3.4.1"
+      },
+      {
+        "id": "patchTitleField",
+        "component": "FormControl",
+        "label": "Title",
+        "input": "patchTitleInput"
+      },
+      {
+        "id": "patchTitleInput",
+        "component": "Input",
+        "name": "title",
+        "placeholder": "Hotfix: Memory leak in lobby"
+      },
+      {
+        "id": "patchBodyField",
+        "component": "FormControl",
+        "label": "Notes (Markdown)",
+        "input": "patchBodyInput",
+        "hint": "Use markdown for formatting"
+      },
+      {
+        "id": "patchBodyInput",
+        "component": "TextArea",
+        "name": "body",
+        "placeholder": "## Bug Fixes\n- Fixed memory leak in lobby scene\n- Resolved crash on Android 14 devices\n\n## Balance\n- Reduced Phoenix skin damage by 5%",
+        "rows": 6
+      },
+      {
+        "id": "patchButtons",
+        "component": "Buttons",
+        "buttons": ["patchSaveBtn", "patchPreviewBtn"]
+      },
+      {
+        "id": "patchSaveBtn",
+        "component": "Button",
+        "label": "Save Draft",
+        "variant": "primary"
+      },
+      {
+        "id": "patchPreviewBtn",
+        "component": "Button",
+        "label": "Preview",
+        "variant": "secondary"
+      },
+      {
+        "id": "regionFocusHeading",
+        "component": "Heading",
+        "text": "Focus on Region",
+        "level": "h3"
+      },
+      {
+        "id": "regionFocusForm",
+        "component": "Form",
+        "name": "region-focus",
+        "buttons": "regionFocusButtons",
+        "fields": ["regionSelectField"]
+      },
+      {
+        "id": "regionSelectField",
+        "component": "FormControl",
+        "label": "Select region to drill into",
+        "input": "regionSelect"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region",
+        "placeholder": "Choose a region",
+        "items": ["regionNA_E", "regionNA_W", "regionEU_W", "regionEU_C", "regionAPAC_T", "regionAPAC_S", "regionSA_E"]
+      },
+      {
+        "id": "regionNA_E",
+        "component": "SelectItem",
+        "value": "na-east",
+        "label": "NA-East"
+      },
+      {
+        "id": "regionNA_W",
+        "component": "SelectItem",
+        "value": "na-west",
+        "label": "NA-West"
+      },
+      {
+        "id": "regionEU_W",
+        "component": "SelectItem",
+        "value": "eu-west",
+        "label": "EU-West"
+      },
+      {
+        "id": "regionEU_C",
+        "component": "SelectItem",
+        "value": "eu-central",
+        "label": "EU-Central"
+      },
+      {
+        "id": "regionAPAC_T",
+        "component": "SelectItem",
+        "value": "apac-tokyo",
+        "label": "APAC-Tokyo"
+      },
+      {
+        "id": "regionAPAC_S",
+        "component": "SelectItem",
+        "value": "apac-sydney",
+        "label": "APAC-Sydney"
+      },
+      {
+        "id": "regionSA_E",
+        "component": "SelectItem",
+        "value": "sa-east",
+        "label": "SA-East"
+      },
+      {
+        "id": "regionFocusButtons",
+        "component": "Buttons",
+        "buttons": ["regionFocusBtn"]
+      },
+      {
+        "id": "regionFocusBtn",
+        "component": "Button",
+        "label": "Open Region Detail",
+        "variant": "primary"
+      },
+      {
+        "id": "hotfixHeading",
+        "component": "Heading",
+        "text": "Emergency Hotfix",
+        "level": "h3"
+      },
+      {
+        "id": "hotfixDialog",
+        "component": "AlertDialogBlock",
+        "triggerLabel": "🚨 Ship Hotfix Now",
+        "triggerVariant": "destructive",
+        "title": "Confirm Hotfix Deployment",
+        "description": "This will push the latest hotfix build (v3.4.1-hotfix) to all regions immediately. Players will be disconnected and prompted to update. Estimated downtime: 4 minutes.",
+        "confirmLabel": "Deploy Hotfix",
+        "cancelLabel": "Cancel"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This dashboard covers all 16 requirements across five tabs:
+
+| # | Requirement | Where |
+|---|---|---|
+| 1 | Players online | Live Metrics → KPI table |
+| 2 | DAU / MAU | Live Metrics → KPI table |
+| 3 | Revenue today | Live Metrics → KPI table |
+| 4 | Revenue per user | Live Metrics → KPI table |
+| 5 | Session length (14d) | Live Metrics → Line chart |
+| 6 | Best-selling items | Monetization → Table with units |
+| 7 | Server region health | Infrastructure → Table with status |
+| 8 | Crash rate by version | Infrastructure → Bar chart |
+| 9 | Live & upcoming events | Operations → Numbered list |
+| 10 | Player reports queue | Operations → Review Queues table |
+| 11 | Ban appeals queue | Operations → Review Queues table |
+| 12 | Currency inflation | Live Metrics → Area chart |
+| 13 | Experiment results | Monetization → Experiments table |
+| 14 | Draft patch notes | Actions → Markdown form |
+| 15 | Focus on a region | Actions → Region selector |
+| 16 | Ship a hotfix | Actions → Destructive confirm dialog |

@@ -1,0 +1,60 @@
+root = Card([header, cohortFilter, kpis, sep1, enrollChart, engagementChart, sep2, riskHeading, riskList, sep3, messageForm])
+header = CardHeader("Learning Analytics", "Cohort performance overview")
+
+cohortFilter = Form("cohort-filter", filterButtons, [cohortField])
+cohortField = FormControl("Cohort", cohortSelect, "Narrow all metrics to one cohort")
+cohortSelect = Select("cohort", [cohortAll, cohortA, cohortB, cohortC], "Select a cohort")
+cohortAll = SelectItem("all", "All cohorts")
+cohortA = SelectItem("2024-spring", "Spring 2024")
+cohortB = SelectItem("2024-summer", "Summer 2024")
+cohortC = SelectItem("2024-fall", "Fall 2024")
+filterButtons = Buttons([applyBtn])
+applyBtn = Button("Apply filter", null, "primary")
+
+kpis = Card([activeCard, completionCard, quizCard], "clear", "row", "m")
+activeCard = Card([activeLabel, activeValue], "sunk", "column", "xs")
+activeLabel = TextContent("Active learners this week", "small")
+activeValue = TextContent("1,284", "large-heavy")
+completionCard = Card([completionLabel, completionValue, completionBar], "sunk", "column", "xs")
+completionLabel = TextContent("Course completion rate", "small")
+completionValue = TextContent("72%", "large-heavy")
+completionBar = Progress(72)
+quizCard = Card([quizLabel, quizValue], "sunk", "column", "xs")
+quizLabel = TextContent("Average quiz score", "small")
+quizValue = TextContent("84.6%", "large-heavy")
+
+sep1 = Separator("horizontal")
+
+enrollChart = HorizontalBarChart(courseLabels, [enrollSeries], "grouped", "Enrollments", "Course")
+courseLabels = ["Intro to Python", "Data Analysis", "UX Foundations", "Cloud Basics", "Machine Learning"]
+enrollSeries = Series("Enrollments", [842, 631, 574, 498, 356])
+
+engagementChart = LineChart(weekLabels, [engagementSeries], "natural", "Week", "Active learners")
+weekLabels = ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"]
+engagementSeries = Series("Engagement", [980, 1042, 1110, 1075, 1160, 1220, 1198, 1284])
+
+sep2 = Separator("horizontal")
+
+riskHeading = Heading("Learners at risk of dropping out", "h3")
+riskList = ListBlock([risk1, risk2, risk3, risk4])
+risk1 = ListItem("Jordan Lee", "No activity in 12 days · 18% complete", null, "Message")
+risk2 = ListItem("Priya Nair", "Missed 3 quizzes · 24% complete", null, "Message")
+risk3 = ListItem("Marcus Bell", "No login this week · 9% complete", null, "Message")
+risk4 = ListItem("Sofia Ruiz", "Dropped from 2 courses · 31% complete", null, "Message")
+
+sep3 = Separator("horizontal")
+
+messageForm = Form("message-cohort", messageButtons, [msgCohortField, subjectField, bodyField])
+msgCohortField = FormControl("To cohort", msgCohortSelect)
+msgCohortSelect = Select("target_cohort", [mcAll, mcA, mcB, mcC], "Choose recipients")
+mcAll = SelectItem("all", "All cohorts")
+mcA = SelectItem("2024-spring", "Spring 2024")
+mcB = SelectItem("2024-summer", "Summer 2024")
+mcC = SelectItem("at-risk", "At-risk learners")
+subjectField = FormControl("Subject", subjectInput)
+subjectInput = Input("subject", "Check in on your progress")
+bodyField = FormControl("Message", bodyInput)
+bodyInput = TextArea("body", "Write your message to the cohort...", 4)
+messageButtons = Buttons([sendBtn, draftBtn])
+sendBtn = Button("Send message", null, "primary")
+draftBtn = Button("Save draft", null, "tertiary")

@@ -1,0 +1,681 @@
+Hiring overview for HR lead — all 8 hiring metrics in one screen with live pipeline and quick role creation.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "kpiRow",
+          "alertHiring",
+          "openRolesCard",
+          "pipelineCard",
+          "deptSplitCard",
+          "attritionCard",
+          "interviewsCard",
+          "actionCard",
+          "followUpBlock"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Hiring Overview",
+        "subtitle": "HR Lead • Headcount, pipeline & hiring health — updated today 9:00 AM"
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "kpiHeadcountCard",
+          "kpiTimeCard",
+          "kpiInterviewCard"
+        ]
+      },
+      {
+        "id": "kpiHeadcountCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "kpiHeadcountValue",
+          "kpiHeadcountLabel",
+          "kpiHeadcountBadge"
+        ],
+        "gap": "xs"
+      },
+      {
+        "id": "kpiTimeCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "kpiTimeValue",
+          "kpiTimeLabel",
+          "kpiTimeBadge"
+        ],
+        "gap": "xs"
+      },
+      {
+        "id": "kpiInterviewCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "kpiInterviewValue",
+          "kpiInterviewLabel",
+          "kpiInterviewBadge"
+        ],
+        "gap": "xs"
+      },
+      {
+        "id": "kpiHeadcountValue",
+        "component": "TextContent",
+        "text": "342",
+        "size": "large-heavy"
+      },
+      {
+        "id": "kpiHeadcountLabel",
+        "component": "TextContent",
+        "text": "Current headcount",
+        "size": "small"
+      },
+      {
+        "id": "kpiHeadcountBadge",
+        "component": "Badge",
+        "text": "+12 vs last quarter",
+        "variant": "secondary"
+      },
+      {
+        "id": "kpiTimeValue",
+        "component": "TextContent",
+        "text": "38 days",
+        "size": "large-heavy"
+      },
+      {
+        "id": "kpiTimeLabel",
+        "component": "TextContent",
+        "text": "Average time to hire",
+        "size": "small"
+      },
+      {
+        "id": "kpiTimeBadge",
+        "component": "Badge",
+        "text": "Target: 35 days",
+        "variant": "outline"
+      },
+      {
+        "id": "kpiInterviewValue",
+        "component": "TextContent",
+        "text": "24",
+        "size": "large-heavy"
+      },
+      {
+        "id": "kpiInterviewLabel",
+        "component": "TextContent",
+        "text": "Interviews scheduled this week",
+        "size": "small"
+      },
+      {
+        "id": "kpiInterviewBadge",
+        "component": "Badge",
+        "text": "6 today • 8 tomorrow",
+        "variant": "secondary"
+      },
+      {
+        "id": "alertHiring",
+        "component": "Callout",
+        "variant": "info",
+        "title": "Hiring velocity alert",
+        "description": "Engineering has 7 open roles — longest open is Senior Backend Engineer (42 days). Consider prioritizing sourcing."
+      },
+      {
+        "id": "openRolesCard",
+        "component": "Card",
+        "children": [
+          "openRolesHeader",
+          "openRolesTable"
+        ]
+      },
+      {
+        "id": "openRolesHeader",
+        "component": "CardHeader",
+        "title": "Open roles by department",
+        "subtitle": "18 open roles • 6 shown — sorted by oldest open"
+      },
+      {
+        "id": "openRolesTable",
+        "component": "Table",
+        "columns": [
+          "colRole",
+          "colDept",
+          "colManager",
+          "colStatus"
+        ]
+      },
+      {
+        "id": "colRole",
+        "component": "Col",
+        "label": "Role",
+        "data": [
+          "Senior Backend Engineer",
+          "Product Designer",
+          "Enterprise AE",
+          "Growth Marketing Manager",
+          "Product Manager",
+          "DevOps Engineer"
+        ]
+      },
+      {
+        "id": "colDept",
+        "component": "Col",
+        "label": "Department",
+        "data": [
+          "Engineering",
+          "Design",
+          "Sales",
+          "Marketing",
+          "Product",
+          "Engineering"
+        ]
+      },
+      {
+        "id": "colManager",
+        "component": "Col",
+        "label": "Hiring Manager",
+        "data": [
+          "Priya Nair",
+          "Marcus Chen",
+          "Sofia Reyes",
+          "James Park",
+          "Aisha Khan",
+          "David Kim"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Stage",
+        "data": [
+          "Interviewing",
+          "Sourcing",
+          "Offer",
+          "Screening",
+          "Sourcing",
+          "Screening"
+        ]
+      },
+      {
+        "id": "pipelineCard",
+        "component": "Card",
+        "children": [
+          "pipelineHeader",
+          "pipelineChart",
+          "pipelineSeries",
+          "pipelineTable"
+        ]
+      },
+      {
+        "id": "pipelineHeader",
+        "component": "CardHeader",
+        "title": "Candidates by pipeline stage",
+        "subtitle": "174 active candidates across 5 stages"
+      },
+      {
+        "id": "pipelineChart",
+        "component": "BarChart",
+        "labels": [
+          "Applied",
+          "Screening",
+          "Interview",
+          "Offer",
+          "Hired"
+        ],
+        "series": [
+          "pipelineSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Stage",
+        "yLabel": "Candidates"
+      },
+      {
+        "id": "pipelineSeries",
+        "component": "Series",
+        "category": "Candidates",
+        "values": [
+          84,
+          42,
+          28,
+          11,
+          9
+        ]
+      },
+      {
+        "id": "pipelineTable",
+        "component": "Table",
+        "columns": [
+          "colStage",
+          "colCandidates"
+        ]
+      },
+      {
+        "id": "colStage",
+        "component": "Col",
+        "label": "Stage",
+        "data": [
+          "Applied",
+          "Screening",
+          "Interview",
+          "Offer",
+          "Hired"
+        ]
+      },
+      {
+        "id": "colCandidates",
+        "component": "Col",
+        "label": "Candidates",
+        "data": [
+          84,
+          42,
+          28,
+          11,
+          9
+        ]
+      },
+      {
+        "id": "deptSplitCard",
+        "component": "Card",
+        "children": [
+          "deptSplitHeader",
+          "deptSplitPie",
+          "deptSplitTable"
+        ]
+      },
+      {
+        "id": "deptSplitHeader",
+        "component": "CardHeader",
+        "title": "Headcount split by department",
+        "subtitle": "342 total employees — Engineering 41.5%"
+      },
+      {
+        "id": "deptSplitPie",
+        "component": "PieChart",
+        "labels": [
+          "Engineering",
+          "Product",
+          "Design",
+          "Marketing",
+          "Sales",
+          "Ops"
+        ],
+        "values": [
+          142,
+          38,
+          24,
+          41,
+          68,
+          29
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "deptSplitTable",
+        "component": "Table",
+        "columns": [
+          "colDeptName",
+          "colDeptHeadcount"
+        ]
+      },
+      {
+        "id": "colDeptName",
+        "component": "Col",
+        "label": "Department",
+        "data": [
+          "Engineering",
+          "Sales",
+          "Marketing",
+          "Product",
+          "Ops",
+          "Design"
+        ]
+      },
+      {
+        "id": "colDeptHeadcount",
+        "component": "Col",
+        "label": "Headcount",
+        "data": [
+          142,
+          68,
+          41,
+          38,
+          29,
+          24
+        ]
+      },
+      {
+        "id": "attritionCard",
+        "component": "Card",
+        "children": [
+          "attritionHeader",
+          "attritionChart",
+          "attritionSeries"
+        ]
+      },
+      {
+        "id": "attritionHeader",
+        "component": "CardHeader",
+        "title": "Attrition — past 6 months",
+        "subtitle": "Voluntary exits per month • Avg 4.0/mo • Trend stable"
+      },
+      {
+        "id": "attritionChart",
+        "component": "AreaChart",
+        "labels": [
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug"
+        ],
+        "series": [
+          "attritionSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Month",
+        "yLabel": "Exits"
+      },
+      {
+        "id": "attritionSeries",
+        "component": "Series",
+        "category": "Attrition",
+        "values": [
+          4,
+          3,
+          5,
+          2,
+          6,
+          4
+        ]
+      },
+      {
+        "id": "interviewsCard",
+        "component": "Card",
+        "children": [
+          "interviewsHeader",
+          "interviewsList"
+        ]
+      },
+      {
+        "id": "interviewsHeader",
+        "component": "CardHeader",
+        "title": "Interviews scheduled this week",
+        "subtitle": "24 total • Next 5 shown • Aug 18-22"
+      },
+      {
+        "id": "interviewsList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "interviewItem1",
+          "interviewItem2",
+          "interviewItem3",
+          "interviewItem4",
+          "interviewItem5"
+        ]
+      },
+      {
+        "id": "interviewItem1",
+        "component": "ListItem",
+        "title": "Elena Torres — Senior Backend Engineer",
+        "subtitle": "Tue Aug 19, 10:00 AM • Panel with Priya Nair • Engineering"
+      },
+      {
+        "id": "interviewItem2",
+        "component": "ListItem",
+        "title": "Raj Patel — Product Designer",
+        "subtitle": "Tue Aug 19, 2:30 PM • Portfolio review with Marcus Chen • Design"
+      },
+      {
+        "id": "interviewItem3",
+        "component": "ListItem",
+        "title": "Maya Johnson — Enterprise AE",
+        "subtitle": "Wed Aug 20, 11:00 AM • Final with Sofia Reyes • Sales"
+      },
+      {
+        "id": "interviewItem4",
+        "component": "ListItem",
+        "title": "Leo Zhang — Growth Marketing Manager",
+        "subtitle": "Thu Aug 21, 9:30 AM • Case presentation • Marketing"
+      },
+      {
+        "id": "interviewItem5",
+        "component": "ListItem",
+        "title": "Samir Ahmed — DevOps Engineer",
+        "subtitle": "Thu Aug 21, 3:00 PM • Technical with David Kim • Engineering"
+      },
+      {
+        "id": "actionCard",
+        "component": "Card",
+        "children": [
+          "actionHeader",
+          "actionText",
+          "newRoleDialog"
+        ]
+      },
+      {
+        "id": "actionHeader",
+        "component": "CardHeader",
+        "title": "Need to hire?",
+        "subtitle": "Create and publish a new role in under 2 minutes"
+      },
+      {
+        "id": "actionText",
+        "component": "TextContent",
+        "text": "Opening a new role will notify Finance, create a Greenhouse requisition, and assign the hiring manager.",
+        "size": "small"
+      },
+      {
+        "id": "newRoleDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Open New Role",
+        "title": "Open a new role",
+        "description": "Fill in the details to create a requisition. You can edit approvals after creation.",
+        "content": [
+          "newRoleForm"
+        ],
+        "triggerVariant": "default"
+      },
+      {
+        "id": "newRoleForm",
+        "component": "Form",
+        "name": "new-role-form",
+        "buttons": "newRoleFormButtons",
+        "fields": [
+          "fieldRoleTitle",
+          "fieldDept",
+          "fieldLevel",
+          "fieldHiringManager"
+        ]
+      },
+      {
+        "id": "fieldRoleTitle",
+        "component": "FormControl",
+        "label": "Role title",
+        "input": "inputRoleTitle"
+      },
+      {
+        "id": "inputRoleTitle",
+        "component": "Input",
+        "name": "role_title",
+        "placeholder": "e.g. Senior Frontend Engineer"
+      },
+      {
+        "id": "fieldDept",
+        "component": "FormControl",
+        "label": "Department",
+        "input": "selectDept"
+      },
+      {
+        "id": "selectDept",
+        "component": "Select",
+        "name": "department",
+        "placeholder": "Choose department",
+        "items": [
+          "itemEng",
+          "itemProduct",
+          "itemDesign",
+          "itemMarketing",
+          "itemSales",
+          "itemOps"
+        ]
+      },
+      {
+        "id": "itemEng",
+        "component": "SelectItem",
+        "value": "engineering",
+        "label": "Engineering"
+      },
+      {
+        "id": "itemProduct",
+        "component": "SelectItem",
+        "value": "product",
+        "label": "Product"
+      },
+      {
+        "id": "itemDesign",
+        "component": "SelectItem",
+        "value": "design",
+        "label": "Design"
+      },
+      {
+        "id": "itemMarketing",
+        "component": "SelectItem",
+        "value": "marketing",
+        "label": "Marketing"
+      },
+      {
+        "id": "itemSales",
+        "component": "SelectItem",
+        "value": "sales",
+        "label": "Sales"
+      },
+      {
+        "id": "itemOps",
+        "component": "SelectItem",
+        "value": "ops",
+        "label": "Ops"
+      },
+      {
+        "id": "fieldLevel",
+        "component": "FormControl",
+        "label": "Level",
+        "input": "selectLevel"
+      },
+      {
+        "id": "selectLevel",
+        "component": "Select",
+        "name": "level",
+        "placeholder": "Select level",
+        "items": [
+          "itemJunior",
+          "itemMid",
+          "itemSenior",
+          "itemLead"
+        ]
+      },
+      {
+        "id": "itemJunior",
+        "component": "SelectItem",
+        "value": "junior",
+        "label": "Junior"
+      },
+      {
+        "id": "itemMid",
+        "component": "SelectItem",
+        "value": "mid",
+        "label": "Mid"
+      },
+      {
+        "id": "itemSenior",
+        "component": "SelectItem",
+        "value": "senior",
+        "label": "Senior"
+      },
+      {
+        "id": "itemLead",
+        "component": "SelectItem",
+        "value": "lead",
+        "label": "Lead / Staff"
+      },
+      {
+        "id": "fieldHiringManager",
+        "component": "FormControl",
+        "label": "Hiring manager",
+        "input": "inputHiringManager",
+        "hint": "Person responsible for interviews and offer"
+      },
+      {
+        "id": "inputHiringManager",
+        "component": "Input",
+        "name": "hiring_manager",
+        "placeholder": "e.g. Priya Nair"
+      },
+      {
+        "id": "newRoleFormButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitNewRoleBtn",
+          "cancelNewRoleBtn"
+        ]
+      },
+      {
+        "id": "submitNewRoleBtn",
+        "component": "Button",
+        "label": "Create role",
+        "variant": "primary"
+      },
+      {
+        "id": "cancelNewRoleBtn",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      },
+      {
+        "id": "followUpBlock",
+        "component": "FollowUpBlock",
+        "items": [
+          "followUpItem1",
+          "followUpItem2"
+        ]
+      },
+      {
+        "id": "followUpItem1",
+        "component": "FollowUpItem",
+        "text": "Show time-to-hire by department"
+      },
+      {
+        "id": "followUpItem2",
+        "component": "FollowUpItem",
+        "text": "Export pipeline report"
+      }
+    ]
+  }
+}
+</a2ui-json>

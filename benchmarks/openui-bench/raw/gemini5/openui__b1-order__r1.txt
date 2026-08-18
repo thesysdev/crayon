@@ -1,0 +1,35 @@
+root = Card([header, currentStatusCallout, etaBadge, separator1, trackingSteps, separator2, reportProblemSection], "card", "column", "m")
+
+header = CardHeader("Package Tracking", "Order #TRK-8940219")
+
+currentStatusCallout = Callout("info", "Current Location", "In Transit - Regional Distribution Center, Chicago, IL")
+
+etaBadge = Alert("Estimated Delivery", "Thursday, Oct 24 by 7:00 PM", "success")
+
+separator1 = Separator("horizontal")
+
+trackingSteps = Steps([step1, step2, step3, step4])
+step1 = StepsItem("Order Placed", "Oct 21, 9:30 AM - Merchant notified")
+step2 = StepsItem("Shipped", "Oct 22, 2:15 PM - Carrier picked up package")
+step3 = StepsItem("In Transit", "Oct 23, 6:40 AM - Arrived at Chicago Sorting Facility")
+step4 = StepsItem("Out for Delivery", "Pending - Scheduled for Oct 24")
+
+separator2 = Separator("horizontal")
+
+reportProblemSection = SectionBlock([reportProblemSectionItem], true)
+reportProblemSectionItem = SectionItem("report-issue", "Need help with this delivery?", [problemForm])
+
+problemForm = Form("report_problem_form", formButtons, [issueTypeControl, commentControl])
+
+issueTypeControl = FormControl("What is the issue?", issueSelect)
+issueSelect = Select("issue_type", [issue1, issue2, issue3, issue4], "Select an issue")
+issue1 = SelectItem("delayed", "Package is delayed")
+issue2 = SelectItem("wrong_address", "Incorrect delivery address")
+issue3 = SelectItem("damaged", "Item marked delivered but missing")
+issue4 = SelectItem("other", "Other issue")
+
+commentControl = FormControl("Additional Details", commentInput, "Provide any extra info to help us resolve this quickly")
+commentInput = TextArea("issue_details", "Describe your issue here...", 3)
+
+formButtons = Buttons([submitBtn])
+submitBtn = Button("Submit Report", null, "primary")

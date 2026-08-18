@@ -1,0 +1,83 @@
+root = Card([header, refreshNotice, kpiRow, mainTabs, followUp])
+
+header = CardHeader("Logistics Coordinator Board", "Fleet operations, carrier performance, and real-time tracking")
+
+refreshNotice = Callout("info", "Data Synchronized", "System data was last refreshed today at 14:32 UTC. Live tracking updates every 5 minutes.")
+
+kpiRow = Card([onTimeKpi, avgCostKpi], "sunk", "row", "m")
+onTimeKpi = Card([onTimeTitle, onTimeProgress, onTimeBadge], "clear", "column", "xs")
+onTimeTitle = TextContent("Monthly On-Time Delivery Rate", "small-heavy")
+onTimeProgress = Progress(91, "91.4% Target: 90.0%")
+onTimeBadge = Badge("Above Target (+1.4%)", "default")
+
+avgCostKpi = Card([costTitle, costValue, costSubtitle], "clear", "column", "xs")
+costTitle = TextContent("Average Cost per Shipment", "small-heavy")
+costValue = Heading("$1,245.80", "h2")
+costSubtitle = TextContent("-3.2% vs previous month ($1,287.10)", "small")
+
+mainTabs = Tabs([trackingTab, carrierTab, volumeTab, searchTab])
+
+trackingTab = TabItem("shipments", "Active Shipments", [delayAlert, shipmentTable, flagSection])
+
+delayAlert = Alert("Critical Shipment Delays Detected", "3 active shipments are currently experiencing delays due to severe weather and port congestion on the West Coast.", "warning")
+
+shipmentTable = Table([shipmentIdCol, originCol, destCol, etaCol, statusCol])
+shipmentIdCol = Col("Shipment ID", ["SH-8901", "SH-8902", "SH-8903", "SH-8904", "SH-8905", "SH-8906"])
+originCol = Col("Origin", ["Port of LA, CA", "Chicago, IL", "Savannah, GA", "Dallas, TX", "Seattle, WA", "Miami, FL"])
+destCol = Col("Destination", ["Dallas, TX", "New York, NY", "Rotterdam, NL", "Phoenix, AZ", "Tokyo, JP", "Atlanta, GA"])
+etaCol = Col("ETA", ["Oct 24, 18:00", "Oct 25, 09:30", "Oct 28, 14:00", "Oct 24, 11:15", "Nov 02, 08:00", "Oct 24, 16:45"])
+statusCol = Col("Status", ["Delayed (+4h)", "In Transit", "Delayed (+24h)", "In Transit", "Delayed (+12h)", "In Transit"])
+
+flagSection = Form("flag_shipment_form", flagButtons, [flagShipmentSelect, flagReasonInput, flagPrioritySelect])
+flagShipmentSelect = FormControl("Select Shipment to Flag", flagShipmentDropdown, "Choose an active shipment requiring immediate action")
+flagShipmentDropdown = Select("shipment_id", [opt1, opt2, opt3, opt4, opt5, opt6], "Select shipment ID...")
+opt1 = SelectItem("SH-8901", "SH-8901 (LA to Dallas) - Delayed")
+opt2 = SelectItem("SH-8902", "SH-8902 (Chicago to NY) - In Transit")
+opt3 = SelectItem("SH-8903", "SH-8903 (Savannah to Rotterdam) - Delayed")
+opt4 = SelectItem("SH-8904", "SH-8904 (Dallas to Phoenix) - In Transit")
+opt5 = SelectItem("SH-8905", "SH-8905 (Seattle to Tokyo) - Delayed")
+opt6 = SelectItem("SH-8906", "SH-8906 (Miami to Atlanta) - In Transit")
+
+flagReasonInput = FormControl("Reason for Flagging", flagReasonText, "Provide details regarding customs, delay, or damage")
+flagReasonText = TextArea("flag_reason", "e.g., Temperature anomaly reported by carrier sensory node", 3)
+
+flagPrioritySelect = FormControl("Priority Level", flagPriorityRadio)
+flagPriorityRadio = RadioGroup("priority", [pLow, pMed, pHigh])
+pLow = RadioItem("Low Priority", "Routine monitoring", "low")
+pMed = RadioItem("Medium Priority", "Requires carrier follow-up", "medium")
+pHigh = RadioItem("High Priority / Escalation", "Immediate dispatcher action needed", "high")
+
+flagButtons = Buttons([submitFlagBtn, clearFlagBtn])
+submitFlagBtn = Button("Submit Flag Alert", null, "primary")
+clearFlagBtn = Button("Reset Form", null, "tertiary")
+
+carrierTab = TabItem("carriers", "Carrier Split & Performance", [carrierHeader, carrierPieChart])
+carrierHeader = Heading("Volume Distribution by Carrier", "h3")
+carrierPieChart = PieChart(["Maersk Line", "FedEx Freight", "DHL Supply Chain", "XPO Logistics", "JB Hunt"], [35, 25, 18, 12, 10], "donut", "circular")
+
+volumeTab = TabItem("history", "Weekly Volume Trends", [volumeHeader, volumeChart])
+volumeHeader = Heading("Weekly Shipment Volume (Past 8 Weeks)", "h3")
+volumeChart = BarChart(["Wk 1", "Wk 2", "Wk 3", "Wk 4", "Wk 5", "Wk 6", "Wk 7", "Wk 8"], [completedVolume, inTransitVolume], "stacked", "Week Period", "Shipment Count")
+completedVolume = Series("Completed", [420, 450, 480, 410, 500, 520, 490, 510])
+inTransitVolume = Series("In Transit / Active", [65, 70, 55, 80, 60, 75, 85, 92])
+
+searchTab = TabItem("search", "Route Search", [routeSearchForm, routeResultsTable])
+routeSearchForm = Form("route_search_form", searchButtons, [originSearchControl, destSearchControl])
+originSearchControl = FormControl("Origin City / Port", originInput)
+originInput = Input("origin_query", "e.g. Chicago, LA, Seattle")
+destSearchControl = FormControl("Destination City / Port", destInput)
+destInput = Input("dest_query", "e.g. Dallas, New York, Tokyo")
+
+searchButtons = Buttons([executeSearchBtn])
+executeSearchBtn = Button("Search Active Routes", null, "primary")
+
+routeResultsTable = Table([rIdCol, rRouteCol, rCarrierCol, rAvgDaysCol])
+rIdCol = Col("Route ID", ["RT-101", "RT-104", "RT-208"])
+rRouteCol = Col("Matched Route", ["Port of LA -> Dallas, TX", "Seattle, WA -> Tokyo, JP", "Chicago, IL -> New York, NY"])
+rCarrierCol = Col("Primary Carrier", ["JB Hunt", "Maersk Line", "FedEx Freight"])
+rAvgDaysCol = Col("Avg Transit Time", ["3.2 Days", "14.5 Days", "2.1 Days"])
+
+followUp = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Filter delayed shipments by carrier")
+f2 = FollowUpItem("Export monthly logistics cost report")
+f3 = FollowUpItem("Schedule driver alert broadcast")

@@ -1,0 +1,99 @@
+root = Card([header, kpiGroup, deptTabs, roleDialog, followUps], "card", "column", "l")
+
+header = CardHeader("HR Hiring & Workforce Overview", "Q3 Recruiting Metrics, Pipeline & Retention Analysis")
+
+# KPI Summary Row
+kpiGroup = Card([headcountCard, timeToHireCard, interviewsCard], "clear", "row", "m", "stretch", "between")
+
+headcountCard = Card([hcTitle, hcValue, hcBadge], "sunk", "column", "xs", "start")
+hcTitle = TextContent("Current Headcount", "small")
+hcValue = Heading("284", "h2")
+hcBadge = Badge("+12 this quarter", "secondary")
+
+timeToHireCard = Card([tthTitle, tthValue, tthBadge], "sunk", "column", "xs", "start")
+tthTitle = TextContent("Avg. Time to Hire", "small")
+tthValue = Heading("34 Days", "h2")
+tthBadge = Badge("-4 days vs last month", "default")
+
+interviewsCard = Card([intTitle, intValue, intBadge], "sunk", "column", "xs", "start")
+intTitle = TextContent("Interviews This Week", "small")
+intValue = Heading("18", "h2")
+intBadge = Badge("6 scheduled today", "outline")
+
+# Department Tabs for detailed breakdowns
+deptTabs = Tabs([pipelineTab, openRolesTab, headcountDeptTab, attritionTab, interviewsTab])
+
+# Tab 1: Pipeline Stages
+pipelineTab = TabItem("pipeline", "Pipeline Stages", [pipelineHeader, pipelineChart, pipelineText])
+pipelineHeader = Heading("Candidates by Pipeline Stage", "h3")
+pipelineChart = HorizontalBarChart(stageLabels, [stageSeries], "grouped", "Candidates", "Stage")
+stageLabels = ["Sourced", "Screening", "Technical Interview", "Culture Fit", "Offer Extended"]
+stageSeries = Series("Active Candidates", [45, 28, 14, 8, 3])
+pipelineText = TextContent("Currently **98 total active candidates** in the pipeline across all open requisitions.")
+
+# Tab 2: Open Roles
+openRolesTab = TabItem("roles", "Open Roles", [rolesHeader, rolesTable])
+rolesHeader = Heading("Active Job Requisitions", "h3")
+rolesTable = Table([roleCol, deptCol, locationCol, statusCol])
+roleCol = Col("Role Title", ["Senior Backend Engineer", "Product Designer", "Account Executive", "DevOps Specialist", "HR Business Partner", "Marketing Manager"])
+deptCol = Col("Department", ["Engineering", "Design", "Sales", "Engineering", "People", "Marketing"])
+locationCol = Col("Location", ["Remote (US)", "New York, NY", "Austin, TX", "Remote (US)", "New York, NY", "San Francisco, CA"])
+statusCol = Col("Status", ["Interviewing", "Screening", "Offer Stage", "Sourced", "Interviewing", "Sourced"])
+
+# Tab 3: Headcount Split by Department
+headcountDeptTab = TabItem("headcount", "Dept Breakdown", [deptHeader, deptChart])
+deptHeader = Heading("Headcount Distribution by Department", "h3")
+deptChart = PieChart(deptLabels, deptValues, "donut", "circular")
+deptLabels = ["Engineering", "Sales", "Product & Design", "Marketing", "People & Ops", "Customer Success"]
+deptValues = [110, 65, 35, 25, 20, 29]
+
+# Tab 4: Attrition Trend
+attritionTab = TabItem("attrition", "Attrition Trend", [attritionHeader, attritionChart, attritionAlert])
+attritionHeader = Heading("6-Month Attrition Rate (%)", "h3")
+attritionChart = LineChart(["Feb", "Mar", "Apr", "May", "Jun", "Jul"], [attritionSeries, targetSeries], "natural", "Month", "Percentage (%)")
+attritionSeries = Series("Actual Attrition", [1.8, 2.1, 1.4, 1.2, 0.9, 1.1])
+targetSeries = Series("Target Threshold", [2.0, 2.0, 2.0, 2.0, 2.0, 2.0])
+attritionAlert = TextCallout("success", "Attrition Rate Stable", "Monthly attrition has remained consistently below the 2.0% annual benchmark for the past 4 months.")
+
+# Tab 5: Interviews Scheduled
+interviewsTab = TabItem("interviews", "Weekly Schedule", [intHeader, intList])
+intHeader = Heading("Interviews Scheduled This Week", "h3")
+intList = ListBlock([int1, int2, int3, int4])
+int1 = ListItem("Senior Backend Engineer - Technical Interview", "Today at 2:00 PM • Candidate: Alex Rivera • Panel: Lead Architect")
+int2 = ListItem("Product Designer - Portfolio Review", "Today at 4:30 PM • Candidate: Sarah Chen • Panel: Design Director")
+int3 = ListItem("Account Executive - Final Culture Fit", "Tomorrow at 10:00 AM • Candidate: Michael Todd • Panel: VP of Sales")
+int4 = ListItem("DevOps Specialist - Recruiter Screen", "Thursday at 11:15 AM • Candidate: David Kim • Panel: HR Lead")
+
+# Way to Open a New Role (Dialog Button Trigger)
+roleDialog = DialogBlock("Open New Requisition", "Create a New Job Requisition", "Fill in the details below to submit a new role for finance and HR approval.", roleForm, "default")
+
+roleForm = Form("new-role-form", formButtons, [roleTitleControl, deptControl, typeControl, descControl])
+roleTitleControl = FormControl("Job Title", roleTitleInput)
+roleTitleInput = Input("job_title", "e.g. Senior Data Engineer")
+
+deptControl = FormControl("Department", deptSelect)
+deptSelect = Select("department", [d1, d2, d3, d4, d5], "Select department")
+d1 = SelectItem("engineering", "Engineering")
+d2 = SelectItem("product", "Product & Design")
+d3 = SelectItem("sales", "Sales & Marketing")
+d4 = SelectItem("people", "People & Operations")
+d5 = SelectItem("finance", "Finance & Legal")
+
+typeControl = FormControl("Employment Type", typeRadio)
+typeRadio = RadioGroup("emp_type", [t1, t2, t3], "full_time")
+t1 = RadioItem("Full-Time", "Standard 40h/week position", "full_time")
+t2 = RadioItem("Contract", "Fixed term contract", "contract")
+t3 = RadioItem("Part-Time", "Flexible schedule", "part_time")
+
+descControl = FormControl("Role Justification & Notes", descInput, "Briefly explain the necessity of this headcount.")
+descInput = TextArea("justification", "Explain why this position is required...", 3)
+
+formButtons = Buttons([submitRoleBtn, cancelRoleBtn])
+submitRoleBtn = Button("Submit Requisition", null, "primary")
+cancelRoleBtn = Button("Cancel", null, "tertiary")
+
+# Follow-up actions
+followUps = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Export recruiting report to PDF")
+fu2 = FollowUpItem("View candidates nearing offer stage")
+fu3 = FollowUpItem("Adjust target time-to-hire benchmarks")

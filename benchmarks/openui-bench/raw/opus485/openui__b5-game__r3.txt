@@ -1,0 +1,87 @@
+root = Card([header, kpiRow, sessionTrend, itemsAndRegions, crashAndEvents, moderation, economyExp, actions])
+
+header = CardHeader("Live-Ops Command Center", "Real-time studio operations")
+
+kpiRow = Table([kpiName, kpiValue])
+kpiName = Col("Metric", ["Players Online Now", "Daily Active Users", "Monthly Active Users", "Revenue Today", "Revenue Per User (ARPU)"])
+kpiValue = Col("Value", ["48,210", "612,400", "8,940,000", "$184,720", "$0.30"])
+
+sessionTrend = LineChart(sessionDays, [sessionSeries], "natural", "Day", "Minutes")
+sessionDays = ["D1","D2","D3","D4","D5","D6","D7","D8","D9","D10","D11","D12","D13","D14"]
+sessionSeries = Series("Avg Session Length", [22,24,23,25,26,24,27,28,26,29,30,28,31,32])
+
+itemsAndRegions = Card([bestSellers, regionHealth], "clear", "row", "l")
+
+bestSellers = Card([bestSellersHead, bestSellersTable], "sunk", "column", "m")
+bestSellersHead = Heading("Best-Selling Items", "h4")
+bestSellersTable = Table([itemName, itemUnits])
+itemName = Col("Item", ["Aurora Skin Bundle", "1000 Gems Pack", "Battle Pass S7", "Phoenix Mount", "XP Booster (7d)"])
+itemUnits = Col("Units", [12840, 9620, 8410, 5230, 4980], "number")
+
+regionHealth = Card([regionHead, regionTable], "sunk", "column", "m")
+regionHead = Heading("Server Regions & Health", "h4")
+regionTable = Table([regionName, regionStatus, regionLatency])
+regionName = Col("Region", ["NA-East", "NA-West", "EU-Central", "Asia-Pacific", "South America"])
+regionStatus = Col("Health", ["Healthy", "Healthy", "Degraded", "Healthy", "Critical"])
+regionLatency = Col("Latency (ms)", [42, 55, 118, 88, 210], "number")
+
+crashAndEvents = Card([crashCard, eventsCard], "clear", "row", "l")
+
+crashCard = Card([crashHead, crashChart], "sunk", "column", "m")
+crashHead = Heading("Crash Rate by App Version", "h4")
+crashChart = BarChart(crashVersions, [crashSeries], "grouped", "Version", "Crash %")
+crashVersions = ["v7.0.1","v7.0.2","v7.1.0","v7.1.1","v7.2.0"]
+crashSeries = Series("Crash Rate", [1.8, 1.2, 2.4, 0.9, 0.6])
+
+eventsCard = Card([eventsHead, eventsList], "sunk", "column", "m")
+eventsHead = Heading("Live Events", "h4")
+eventsList = ListBlock([evt1, evt2, evt3, evt4])
+evt1 = ListItem("Phoenix Festival", "Running · ends in 2d 4h")
+evt2 = ListItem("Double XP Weekend", "Running · ends in 18h")
+evt3 = ListItem("Winter Siege", "Upcoming · starts in 3d")
+evt4 = ListItem("Founders Sale", "Upcoming · starts in 5d")
+
+moderation = Card([modHead, modTable], "sunk", "column", "m")
+modHead = Heading("Moderation Queue", "h4")
+modTable = Table([modType, modCount])
+modType = Col("Queue", ["Player Reports Awaiting Review", "Ban Appeals Awaiting Review"])
+modCount = Col("Pending", [1284, 342], "number")
+
+economyExp = Card([economyCard, expCard], "clear", "row", "l")
+
+economyCard = Card([ecoHead, ecoProgress, ecoNote], "sunk", "column", "m")
+ecoHead = Heading("In-Game Currency Inflation", "h4")
+ecoProgress = Progress(6.4, "Gem inflation (30d): 6.4%")
+ecoNote = TextContent("Target band is 2-5%. Currently above target — review sink balance.", "small")
+
+expCard = Card([expHead, expTable], "sunk", "column", "m")
+expHead = Heading("Running Experiments", "h4")
+expTable = Table([expName, expResult, expLift])
+expName = Col("Experiment", ["Store Layout B", "Onboarding Flow C"])
+expResult = Col("Status", ["Winning", "Flat"])
+expLift = Col("Conversion Lift", ["+8.2%", "+0.3%"])
+
+actions = Buttons([patchBtn, focusBtn, hotfixBtn])
+patchBtn = DialogBlock("Draft Patch Notes", "Draft Patch Notes", "Compose notes for the next release", [patchForm])
+patchForm = Form("patch-notes", patchFormBtns, [patchVersionField, patchBodyField])
+patchVersionField = FormControl("Version", patchVersionInput)
+patchVersionInput = Input("version", "v7.2.1")
+patchBodyField = FormControl("Notes", patchBodyInput)
+patchBodyInput = TextArea("notes", "Bug fixes and balance changes...", 6)
+patchFormBtns = Buttons([patchSave, patchCancel])
+patchSave = Button("Save Draft", null, "primary")
+patchCancel = Button("Cancel", null, "tertiary")
+
+focusBtn = DrawerBlock("Focus Region", "Focus on a Region", "Isolate metrics for a single region", [focusForm])
+focusForm = Form("focus-region", focusFormBtns, [focusField])
+focusField = FormControl("Region", focusSelect)
+focusSelect = Select("region", [rNAE, rNAW, rEU, rAP, rSA], "Select a region")
+rNAE = SelectItem("na-east", "NA-East")
+rNAW = SelectItem("na-west", "NA-West")
+rEU = SelectItem("eu-central", "EU-Central")
+rAP = SelectItem("asia-pacific", "Asia-Pacific")
+rSA = SelectItem("south-america", "South America")
+focusFormBtns = Buttons([focusApply])
+focusApply = Button("Apply Focus", null, "primary")
+
+hotfixBtn = AlertDialogBlock("Ship Hotfix", "Ship Hotfix Now?", "This deploys the current hotfix build to all live regions immediately.", "Ship It", "Cancel", "destructive")

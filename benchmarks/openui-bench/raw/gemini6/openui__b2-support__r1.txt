@@ -1,0 +1,61 @@
+root = Card([header, metricsRow, mainSection, followUps])
+
+header = CardHeader("Support Lead Dashboard", "Morning Overview & Queue Management")
+
+metricsRow = Card([openTicketsCard, responseTimeCard], "sunk", "row", "m")
+
+openTicketsCard = Card([openCountHeading, openBadge], "card", "column", "s")
+openCountHeading = Heading("42 Open Tickets", "h2")
+openBadge = Badge("12 require immediate attention", "destructive")
+
+responseTimeCard = Card([responseTimeHeading, responseTag], "card", "column", "s")
+responseTimeHeading = Heading("14m Avg First Response", "h2")
+responseTag = Tag("2m faster than target", null, "md", "success")
+
+mainSection = Tabs([allTicketsTab, highPriorityTab, newTicketTab])
+
+allTicketsTab = TabItem("all", "All Recent Tickets (5)", [ticketsTable])
+
+ticketsTable = Table([idCol, subjectCol, customerCol, priorityCol, statusCol])
+idCol = Col("Ticket ID", ["#T-1092", "#T-1091", "#T-1090", "#T-1089", "#T-1088"])
+subjectCol = Col("Subject", ["API Gateway 502 errors", "Billing invoice mismatch", "SSO integration help", "Dashboard load timeout", "Export CSV failing"])
+customerCol = Col("Customer", ["Acme Corp", "TechStart Inc", "Global Logistics", "DataViz LLC", "Apex Systems"])
+priorityCol = Col("Priority", ["P1 - Urgent", "P3 - Low", "P2 - High", "P1 - Urgent", "P4 - Minor"])
+statusCol = Col("Status", ["Open", "In Progress", "Open", "Open", "In Progress"])
+
+highPriorityTab = TabItem("high_priority", "High Priority Only", [highPriorityNotice, highPriorityTable])
+highPriorityNotice = TextCallout("warning", "High Priority Queue", "Showing P1 and P2 tickets requiring immediate response.")
+highPriorityTable = Table([hpIdCol, hpSubjectCol, hpCustomerCol, hpPriorityCol, hpStatusCol])
+hpIdCol = Col("Ticket ID", ["#T-1092", "#T-1090"])
+hpSubjectCol = Col("Subject", ["API Gateway 502 errors", "SSO integration help"])
+hpCustomerCol = Col("Customer", ["Acme Corp", "Global Logistics"])
+hpPriorityCol = Col("Priority", ["P1 - Urgent", "P2 - High"])
+hpStatusCol = Col("Status", ["Open", "Open"])
+
+newTicketTab = TabItem("new_ticket", "Create New Ticket", [newTicketForm])
+
+newTicketForm = Form("create_ticket", formButtons, [subjectControl, customerControl, priorityControl, descriptionControl])
+subjectControl = FormControl("Subject", subjectInput, "Brief summary of the issue")
+subjectInput = Input("subject", "e.g., Unable to access API")
+
+customerControl = FormControl("Customer", customerInput)
+customerInput = Input("customer", "Customer or account name")
+
+priorityControl = FormControl("Priority Level", prioritySelect)
+prioritySelect = Select("priority", [p1Opt, p2Opt, p3Opt, p4Opt], "Select priority")
+p1Opt = SelectItem("p1", "P1 - Urgent (SLA: 15m)")
+p2Opt = SelectItem("p2", "P2 - High (SLA: 1h)")
+p3Opt = SelectItem("p3", "P3 - Medium (SLA: 4h)")
+p4Opt = SelectItem("p4", "P4 - Low (SLA: 24h)")
+
+descriptionControl = FormControl("Description", descriptionArea, "Provide full context and reproduction steps")
+descriptionArea = TextArea("description", "Enter details here...", 4)
+
+formButtons = Buttons([submitBtn, cancelBtn])
+submitBtn = Button("Submit Ticket", null, "primary")
+cancelBtn = Button("Clear Form", null, "tertiary")
+
+followUps = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Assign all P1 tickets to Tier 2 support")
+fu2 = FollowUpItem("Export morning SLA response report")
+fu3 = FollowUpItem("View team agent workload distribution")

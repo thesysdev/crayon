@@ -1,0 +1,29 @@
+root = Card([header, configNotice, searchBar, lowStockTable, batchActions, followUp])
+
+header = CardHeader("Low Inventory Alerts", "Automated stock monitoring and restock management")
+
+configNotice = TextCallout("warning", "Reorder Threshold Active", "Items are flagged for reorder when stock falls below 15 units. You can adjust this threshold in Store Settings.")
+
+searchBar = Form("search-form", searchButtons, [searchInputControl])
+searchInputControl = FormControl("Search Inventory", searchInput, "Search by SKU, product name, or category")
+searchInput = Input("query", "e.g. Espresso Beans, SKU-104...")
+searchButtons = Buttons([searchBtn, clearBtn], "row")
+searchBtn = Button("Search", null, "primary", "normal", "small")
+clearBtn = Button("Reset Filters", null, "tertiary", "normal", "small")
+
+lowStockTable = Table([skuCol, nameCol, categoryCol, stockCol, statusCol, actionCol])
+skuCol = Col("SKU", ["SKU-8821", "SKU-4092", "SKU-1104", "SKU-7739", "SKU-3012"])
+nameCol = Col("Item Name", ["Arabica Dark Roast (1lb)", "Oat Milk 32oz (Case)", "Paper Cups 12oz (1000ct)", "Vanilla Syrup (750ml)", "Eco Stirrers (500ct)"])
+categoryCol = Col("Category", ["Coffee Beans", "Dairy & Alternatives", "Packaging", "Syrups & Flavors", "Packaging"])
+stockCol = Col("Remaining Units", [3, 5, 8, 11, 14])
+statusCol = Col("Status", ["Critical (3 left)", "Critical (5 left)", "Low Stock (8 left)", "Low Stock (11 left)", "Low Stock (14 left)"])
+actionCol = Col("Quick Reorder", ["Reorder 50 units", "Reorder 20 cases", "Reorder 10 boxes", "Reorder 12 bottles", "Reorder 15 packs"])
+
+batchActions = Buttons([reorderAllBtn, exportBtn], "row")
+reorderAllBtn = Button("Reorder All Flagged Items", null, "primary")
+exportBtn = Button("Export Inventory Report", null, "secondary")
+
+followUp = FollowUpBlock([suggest1, suggest2, suggest3])
+suggest1 = FollowUpItem("Change reorder threshold settings")
+suggest2 = FollowUpItem("View pending purchase orders")
+suggest3 = FollowUpItem("View full inventory list")

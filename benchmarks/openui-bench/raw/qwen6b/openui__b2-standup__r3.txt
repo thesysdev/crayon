@@ -1,0 +1,52 @@
+
+
+root = Card([header, dateLine, summaryCard, blockedCard, updatesCard, postCard], "card", "column", "l")
+
+header = CardHeader("Async Standup", "Remote team check-in, blockers, and missing updates")
+
+dateLine = TextContent("**Today's date:** Friday, June 20, 2025", "large-heavy")
+
+summaryCard = Card([summaryHeading, missingCallout, updateProgress], "sunk", "column", "m")
+summaryHeading = Heading("Today at a glance", "h3")
+missingCallout = Callout("warning", "Missing updates", "2 updates are still missing: Marcus Lee and Priya Nair.")
+updateProgress = Progress(71, "5 of 7 updates posted")
+
+blockedCard = Card([blockedHeading, blockedAlert, blockerTable], "card", "column", "m")
+blockedHeading = Heading("Blocked teammates", "h3")
+blockedAlert = Alert("2 teammates need help today", "These blockers should be resolved before end of day.", "warning")
+blockerTable = Table([blockerNameCol, blockerNeedCol])
+blockerNameCol = Col("Teammate", ["Dana Kim", "Luis Patel"])
+blockerNeedCol = Col("Blocker", ["Waiting for API rate-limit increase", "Waiting for design sign-off on empty states"])
+
+updatesCard = Card([updatesHeading, updatesTable, missingNotes], "card", "column", "m")
+updatesHeading = Heading("All teammate updates", "h3")
+updatesTable = Table([nameCol, updateCol, statusCol])
+nameCol = Col("Teammate", ["Ava Chen", "Ben Ortiz", "Dana Kim", "Luis Patel", "Sofia Rossi", "Marcus Lee", "Priya Nair"])
+updateCol = Col("Today's update", ["Shipped the auth-flow fix and is monitoring error rates.", "Drafted the migration plan and will share it for review.", "Blocked while waiting for an API rate-limit increase.", "Blocked waiting for design sign-off on empty states.", "Completed survey analysis and posted the findings.", "No update posted yet.", "No update posted yet."])
+statusCol = Col("Status", ["On track", "On track", "Blocked", "Blocked", "On track", "Missing", "Missing"])
+missingNotes = TextContent("Still missing updates from **Marcus Lee** and **Priya Nair**.", "small")
+
+postCard = Card([postHeading, postIntro, form], "sunk", "column", "m")
+postHeading = Heading("Post your update", "h3")
+postIntro = TextContent("Add your standup update for today. If you are blocked, explain what you need.", "default")
+
+form = Form("async-standup-update", formButtons, [nameField, updateField, statusField, blockerField])
+
+nameField = FormControl("Your name", nameInput)
+nameInput = Input("name", "e.g. Ava Chen", "text")
+
+updateField = FormControl("Today's update", updateTextArea, "What did you complete, what is next, and are there any risks?")
+updateTextArea = TextArea("update", "Yesterday I... Today I...", 4)
+
+statusField = FormControl("Status", statusRadio)
+statusRadio = RadioGroup("status", [onTrackRadio, atRiskRadio, blockedRadio], "on-track")
+onTrackRadio = RadioItem("On track", "No blockers and work is moving forward.", "on-track")
+atRiskRadio = RadioItem("At risk", "There is a risk to delivery.", "at-risk")
+blockedRadio = RadioItem("Blocked", "You need help or input before continuing.", "blocked")
+
+blockerField = FormControl("Blocker details", blockerInput, "Fill in only if your status is blocked.")
+blockerInput = Input("blocker", "e.g. Waiting for API credentials", "text")
+
+formButtons = Buttons([postButton, clearButton], "row")
+postButton = Button("Post update", null, "primary")
+clearButton = Button("Clear draft", null, "tertiary")

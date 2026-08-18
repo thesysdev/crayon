@@ -1,0 +1,407 @@
+Here is the UI board designed for the logistics coordinator, including all metrics, charts, tables, and search/action capabilities.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "gap": "l",
+        "children": [
+          "header",
+          "kpisBlock",
+          "delayAlert",
+          "weeklyVolumeCard",
+          "carrierSplitCard",
+          "shipmentsCard"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Logistics Operations Dashboard",
+        "subtitle": "Real-time tracking, performance metrics, and fleet volume"
+      },
+      {
+        "id": "kpisBlock",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "variant": "clear",
+        "children": [
+          "ontimeCard",
+          "costCard",
+          "refreshedCard"
+        ]
+      },
+      {
+        "id": "ontimeCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": [
+          "ontimeHeader",
+          "ontimeProgress"
+        ]
+      },
+      {
+        "id": "ontimeHeader",
+        "component": "CardHeader",
+        "title": "94.2%",
+        "subtitle": "On-Time Delivery (This Month)"
+      },
+      {
+        "id": "ontimeProgress",
+        "component": "Progress",
+        "value": 94,
+        "label": "Target: 95.0%"
+      },
+      {
+        "id": "costCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": [
+          "costHeader",
+          "costBadge"
+        ]
+      },
+      {
+        "id": "costHeader",
+        "component": "CardHeader",
+        "title": "$1,485",
+        "subtitle": "Avg. Cost Per Shipment"
+      },
+      {
+        "id": "costBadge",
+        "component": "Badge",
+        "text": "-3.2% vs last month",
+        "variant": "secondary"
+      },
+      {
+        "id": "refreshedCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": [
+          "refreshedHeader",
+          "refreshBtnGroup"
+        ]
+      },
+      {
+        "id": "refreshedHeader",
+        "component": "CardHeader",
+        "title": "Live Data Feed",
+        "subtitle": "Last refreshed: Just now (10:42 AM EST)"
+      },
+      {
+        "id": "refreshBtnGroup",
+        "component": "Buttons",
+        "buttons": [
+          "refreshBtn"
+        ]
+      },
+      {
+        "id": "refreshBtn",
+        "component": "Button",
+        "label": "Sync Now",
+        "variant": "tertiary",
+        "size": "small"
+      },
+      {
+        "id": "delayAlert",
+        "component": "Alert",
+        "title": "Delayed Shipments Attention Required (2 Active)",
+        "description": "SHP-8841 (Chicago → Seattle) delayed by severe weather (+18h). SHP-8844 (Dallas → Atlanta) delayed due to mechanical breakdown (+6h).",
+        "variant": "destructive"
+      },
+      {
+        "id": "weeklyVolumeCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "weeklyVolumeHeader",
+          "weeklyVolumeChart"
+        ]
+      },
+      {
+        "id": "weeklyVolumeHeader",
+        "component": "CardHeader",
+        "title": "Weekly Volume (Past 8 Weeks)",
+        "subtitle": "Total shipments processed per week across all transit corridors"
+      },
+      {
+        "id": "weeklyVolumeChart",
+        "component": "BarChart",
+        "labels": [
+          "W1",
+          "W2",
+          "W3",
+          "W4",
+          "W5",
+          "W6",
+          "W7",
+          "W8"
+        ],
+        "series": [
+          "volumeSeries"
+        ],
+        "xLabel": "Week",
+        "yLabel": "Shipments"
+      },
+      {
+        "id": "volumeSeries",
+        "component": "Series",
+        "category": "Shipments",
+        "values": [
+          420,
+          450,
+          390,
+          510,
+          480,
+          530,
+          490,
+          560
+        ]
+      },
+      {
+        "id": "carrierSplitCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "carrierSplitHeader",
+          "carrierPieChart"
+        ]
+      },
+      {
+        "id": "carrierSplitHeader",
+        "component": "CardHeader",
+        "title": "Volume Split by Carrier",
+        "subtitle": "Distribution of active load assignments"
+      },
+      {
+        "id": "carrierPieChart",
+        "component": "PieChart",
+        "labels": [
+          "Swift Transport",
+          "FedEx Freight",
+          "JB Hunt",
+          "XPO Logistics",
+          "Schneider"
+        ],
+        "values": [
+          35,
+          25,
+          20,
+          12,
+          8
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "shipmentsCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "shipmentsHeader",
+          "searchControl",
+          "shipmentsTable",
+          "flagActionGroup"
+        ]
+      },
+      {
+        "id": "shipmentsHeader",
+        "component": "CardHeader",
+        "title": "Shipments in Transit",
+        "subtitle": "Live tracking table with route search and issue flagging"
+      },
+      {
+        "id": "searchControl",
+        "component": "FormControl",
+        "label": "Search by Route or City",
+        "input": "searchInput",
+        "hint": "Filter shipments by origin, destination, or corridor (e.g. 'Chicago', 'LAX')"
+      },
+      {
+        "id": "searchInput",
+        "component": "Input",
+        "name": "route_search",
+        "placeholder": "Enter origin or destination city..."
+      },
+      {
+        "id": "shipmentsTable",
+        "component": "Table",
+        "columns": [
+          "colId",
+          "colOrigin",
+          "colDest",
+          "colEta",
+          "colStatus",
+          "colCarrier"
+        ]
+      },
+      {
+        "id": "colId",
+        "component": "Col",
+        "label": "Shipment ID",
+        "data": [
+          "SHP-8840",
+          "SHP-8841",
+          "SHP-8842",
+          "SHP-8843",
+          "SHP-8844"
+        ]
+      },
+      {
+        "id": "colOrigin",
+        "component": "Col",
+        "label": "Origin",
+        "data": [
+          "Los Angeles, CA",
+          "Chicago, IL",
+          "Atlanta, GA",
+          "New York, NY",
+          "Dallas, TX"
+        ]
+      },
+      {
+        "id": "colDest",
+        "component": "Col",
+        "label": "Destination",
+        "data": [
+          "Phoenix, AZ",
+          "Seattle, WA",
+          "Miami, FL",
+          "Chicago, IL",
+          "Atlanta, GA"
+        ]
+      },
+      {
+        "id": "colEta",
+        "component": "Col",
+        "label": "ETA",
+        "data": [
+          "Today, 4:00 PM",
+          "Tomorrow, 10:00 AM (Delayed)",
+          "Oct 24, 2:30 PM",
+          "Oct 25, 11:00 AM",
+          "Today, 9:00 PM (Delayed)"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "On Time",
+          "Delayed - Weather",
+          "On Time",
+          "On Time",
+          "Delayed - Breakdown"
+        ]
+      },
+      {
+        "id": "colCarrier",
+        "component": "Col",
+        "label": "Carrier",
+        "data": [
+          "Swift Transport",
+          "FedEx Freight",
+          "JB Hunt",
+          "XPO Logistics",
+          "Schneider"
+        ]
+      },
+      {
+        "id": "flagActionGroup",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "align": "center",
+        "justify": "between",
+        "children": [
+          "flagForm",
+          "flagButtons"
+        ]
+      },
+      {
+        "id": "flagForm",
+        "component": "FormControl",
+        "label": "Flag Shipment for Inspection / Exception Handling",
+        "input": "flagSelect",
+        "hint": "Select a load to place an immediate operational hold or flag for review"
+      },
+      {
+        "id": "flagSelect",
+        "component": "Select",
+        "name": "shipment_to_flag",
+        "placeholder": "Choose shipment ID...",
+        "items": [
+          "item8840",
+          "item8841",
+          "item8842",
+          "item8843",
+          "item8844"
+        ]
+      },
+      {
+        "id": "item8840",
+        "component": "SelectItem",
+        "value": "SHP-8840",
+        "label": "SHP-8840 (Los Angeles → Phoenix)"
+      },
+      {
+        "id": "item8841",
+        "component": "SelectItem",
+        "value": "SHP-8841",
+        "label": "SHP-8841 (Chicago → Seattle) [DELAYED]"
+      },
+      {
+        "id": "item8842",
+        "component": "SelectItem",
+        "value": "SHP-8842",
+        "label": "SHP-8842 (Atlanta → Miami)"
+      },
+      {
+        "id": "item8843",
+        "component": "SelectItem",
+        "value": "SHP-8843",
+        "label": "SHP-8843 (New York → Chicago)"
+      },
+      {
+        "id": "item8844",
+        "component": "SelectItem",
+        "value": "SHP-8844",
+        "label": "SHP-8844 (Dallas → Atlanta) [DELAYED]"
+      },
+      {
+        "id": "flagButtons",
+        "component": "Buttons",
+        "buttons": [
+          "flagBtn"
+        ]
+      },
+      {
+        "id": "flagBtn",
+        "component": "Button",
+        "label": "Flag Shipment",
+        "variant": "primary",
+        "type": "destructive"
+      }
+    ]
+  }
+}
+</a2ui-json>

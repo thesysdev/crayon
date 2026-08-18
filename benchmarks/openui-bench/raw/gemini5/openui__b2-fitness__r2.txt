@@ -1,0 +1,49 @@
+root = Card([header, summaryRow, weeklyChart, logWorkoutDrawer, followUps], "card", "column", "l")
+header = CardHeader("Daily Fitness Summary", "Today, Oct 24 • Keep pushing towards your goals!")
+
+summaryRow = Card([stepsCard, caloriesCard], "clear", "row", "m", "stretch")
+
+stepsCard = Card([stepsTitle, stepsProgress, stepsSub], "sunk", "column", "s")
+stepsTitle = TextContent("Step Count", "small-heavy")
+stepsProgress = Progress(8420, "8,420 / 10,000 steps")
+stepsSub = TextContent("1,580 steps remaining to reach your daily goal", "small")
+
+caloriesCard = Card([calTitle, calValue, calBadge], "sunk", "column", "s")
+calTitle = TextContent("Calories Burned", "small-heavy")
+calValue = TextContent("645 kcal", "large-heavy")
+calBadge = Badge("On Track • +12% vs avg", "secondary")
+
+weeklyChart = Card([chartHeader, barChart], "sunk", "column", "m")
+chartHeader = CardHeader("Weekly Workout Performance", "Active calories burned per day (Past 7 Days)")
+barChart = BarChart(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], [calSeries, durationSeries], "grouped", "Day", "Value")
+calSeries = Series("Calories (kcal)", [420, 580, 310, 645, 500, 750, 645])
+durationSeries = Series("Duration (mins)", [45, 60, 30, 65, 50, 80, 60])
+
+logWorkoutDrawer = DrawerBlock("Log New Workout", "Workout Tracker", "Record your latest session details below", form)
+
+form = Form("log-workout", formButtons, [typeField, durationField, caloriesField, notesField])
+typeField = FormControl("Workout Type", typeSelect)
+typeSelect = Select("type", [optRunning, optCycling, optStrength, optHIIT, optYoga], "Select activity")
+optRunning = SelectItem("running", "Running")
+optCycling = SelectItem("cycling", "Cycling")
+optStrength = SelectItem("strength", "Strength Training")
+optHIIT = SelectItem("hiit", "HIIT")
+optYoga = SelectItem("yoga", "Yoga / Stretching")
+
+durationField = FormControl("Duration (minutes)", durationInput)
+durationInput = Input("duration", "45", "number")
+
+caloriesField = FormControl("Estimated Calories Burned", caloriesInput)
+caloriesInput = Input("calories", "350", "number")
+
+notesField = FormControl("Notes / Intensity", notesInput)
+notesInput = TextArea("notes", "Felt great, pushed hard on the final set!")
+
+formButtons = Buttons([submitBtn, cancelBtn])
+submitBtn = Button("Save Workout", null, "primary")
+cancelBtn = Button("Cancel", null, "tertiary")
+
+followUps = FollowUpBlock([suggest1, suggest2, suggest3])
+suggest1 = FollowUpItem("How many active minutes did I get this week?")
+suggest2 = FollowUpItem("Show my heart rate zones for today")
+suggest3 = FollowUpItem("Adjust my daily step goal")

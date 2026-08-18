@@ -1,0 +1,66 @@
+root = Card([header, topBar, callout, overviewGrid, chartsSection, campaignsSection, followUp])
+
+header = CardHeader("Weekly Marketing Dashboard", "Performance metrics, traffic distribution, and active campaigns")
+
+topBar = Card([dateControl, exportControl], "clear", "row", "m", "center", "between")
+dateControl = Form("date_range_form", dateButtons, [dateRangeField])
+dateRangeField = FormControl("Date Range", datePicker)
+datePicker = DatePicker("date_range", "range")
+dateButtons = Buttons([applyDateBtn])
+applyDateBtn = Button("Apply Range", null, "secondary", "normal", "small")
+
+exportControl = Buttons([exportPdfBtn, exportCsvBtn])
+exportPdfBtn = Button("Export PDF", null, "primary", "normal", "small")
+exportCsvBtn = Button("Export CSV", null, "secondary", "normal", "small")
+
+callout = Callout("success", "Top Performing Campaign: 'Summer Sale Promo'", "Generated $42,500 in revenue with a 4.8% conversion rate and $12.40 CPA — outperforming target ROI by 35%.")
+
+overviewGrid = Card([kpi1, kpi2, kpi3, kpi4], "sunk", "row", "m", "center", "around")
+
+kpi1 = Card([kpi1Title, kpi1Val, kpi1Tag], "clear", "column", "xs")
+kpi1Title = TextContent("Site Visitors (30d)", "small")
+kpi1Val = Heading("124,500", "h2")
+kpi1Tag = Badge("+12.4% vs prev period", "default")
+
+kpi2 = Card([kpi2Title, kpi2Val, kpi2Tag], "clear", "column", "xs")
+kpi2Title = TextContent("Avg. Conversion Rate", "small")
+kpi2Val = Heading("3.42%", "h2")
+kpi2Tag = Badge("+0.5% target met", "default")
+
+kpi3 = Card([kpi3Title, kpi3Val, kpi3Tag], "clear", "column", "xs")
+kpi3Title = TextContent("Email Subscribers", "small")
+kpi3Val = Heading("28,450", "h2")
+kpi3Tag = Badge("+2,150 this month", "secondary")
+
+kpi4 = Card([kpi4Title, kpi4Val, kpi4Tag], "clear", "column", "xs")
+kpi4Title = TextContent("Total Campaign Spend", "small")
+kpi4Val = Heading("$34,800", "h2")
+kpi4Tag = Badge("78% of monthly budget", "outline")
+
+chartsSection = Card([visitorsCard, sourcesCard], "clear", "row", "m")
+
+visitorsCard = Card([visitorsHeading, visitorsChart], "card", "column", "m")
+visitorsHeading = Heading("Site Visitors & Email Subscriber Growth (Last 30 Days)", "h3")
+visitorsChart = AreaChart(["Day 1-5", "Day 6-10", "Day 11-15", "Day 16-20", "Day 21-25", "Day 26-30"], [visitorsSeries, subscribersSeries], "natural", "Time Period", "Count")
+visitorsSeries = Series("Site Visitors", [18200, 19500, 21000, 20400, 22800, 22600])
+subscribersSeries = Series("Email Subscribers Growth", [310, 380, 420, 390, 480, 520])
+
+sourcesCard = Card([sourcesHeading, sourcesChart], "card", "column", "m")
+sourcesHeading = Heading("Top 5 Traffic Sources Share", "h3")
+sourcesChart = PieChart(["Organic Search", "Paid Search", "Social Media", "Direct", "Referral"], [42, 24, 16, 11, 7], "donut", "circular")
+
+campaignsSection = Card([campaignsHeading, campaignsTable], "card", "column", "m")
+campaignsHeading = Heading("Running Campaigns & Spend Breakdown", "h3")
+campaignsTable = Table([cName, cStatus, cBudget, cSpend, cConversions, cCR])
+
+cName = Col("Campaign Name", ["Summer Sale Promo", "Q3 Brand Awareness", "Retargeting - Cart Abandoners", "LinkedIn B2B Outreach", "Influencer Partnership"])
+cStatus = Col("Status", ["Active (Best)", "Active", "Active", "Active", "Paused"])
+cBudget = Col("Budget", ["$15,000", "$10,000", "$6,000", "$5,000", "$4,000"])
+cSpend = Col("Spend to Date", ["$12,400", "$8,200", "$5,100", "$4,300", "$4,800"])
+cConversions = Col("Conversions", ["1,240", "410", "380", "190", "210"])
+cCR = Col("Conv. Rate", ["4.8%", "1.9%", "3.6%", "2.1%", "2.4%"])
+
+followUp = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Deep dive into Summer Sale Promo performance")
+f2 = FollowUpItem("Compare traffic sources month-over-month")
+f3 = FollowUpItem("Schedule automated weekly email report")

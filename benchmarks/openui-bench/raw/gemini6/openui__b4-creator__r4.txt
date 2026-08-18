@@ -1,0 +1,95 @@
+root = Card([header, mainStats, perfSection, opsSection, scheduleModal, followUp])
+
+header = CardHeader("Creator Studio", "Cross-Platform Dashboard & Operations")
+
+filterSelect = Select("platform_filter", [fAll, fYt, fIg, fTt, fLi], "Filter by Platform")
+fAll = SelectItem("all", "All Platforms")
+fYt = SelectItem("yt", "YouTube")
+fIg = SelectItem("ig", "Instagram")
+fTt = SelectItem("tt", "TikTok")
+fLi = SelectItem("li", "LinkedIn")
+filterControl = FormControl("Platform View", filterSelect, "Narrow analytics and scheduling to a single platform")
+
+mainStats = Card([filterControl, statRow1, statRow2], "sunk", "column", "m")
+
+statRow1 = Card([followersCard, engagementCard, earningsCard], "clear", "row", "m")
+
+followersCard = Card([followersHeader, followersBadge], "card", "column", "xs")
+followersHeader = CardHeader("348,200", "+12.4% past month (38.4k new)")
+followersBadge = Badge("Total Followers", "default")
+
+engagementCard = Card([engagementHeader, engagementBadge], "card", "column", "xs")
+engagementHeader = CardHeader("5.8%", "+0.6% vs last month")
+engagementBadge = Badge("Avg Engagement Rate", "secondary")
+
+earningsCard = Card([earningsHeader, earningsBadge], "card", "column", "xs")
+earningsHeader = CardHeader("$12,450.00", "Estimated earnings this month")
+earningsBadge = Badge("Revenue", "outline")
+
+statRow2 = Card([bestTimeCard, audienceCard], "clear", "row", "m")
+
+bestTimeCard = Card([bestTimeHeader, bestTimeText], "card", "column", "xs")
+bestTimeHeader = CardHeader("Best Time to Post", "Based on historical engagement")
+bestTimeText = TextContent("**6:00 PM - 8:00 PM EST** (Thursdays & Fridays peak highest)")
+
+audienceCard = Card([audienceHeader, audienceChart], "card", "column", "xs")
+audienceHeader = CardHeader("Audience Split by Platform", "Distribution across connected accounts")
+audienceChart = PieChart(["YouTube", "Instagram", "TikTok", "LinkedIn"], [145000, 112000, 68000, 23200], "donut")
+
+perfSection = Card([perfHeader, bestPostsTable], "card", "column", "m")
+perfHeader = CardHeader("Best Posts This Month", "Top performing content ranked by total reach")
+
+bestPostsTable = Table([colTitle, colPlatform, colReach, colLikes, colComments])
+colTitle = Col("Post Title / Hook", ["10 AI Tools I Use Daily", "Day in the Life of a Solopreneur", "How to Scale YouTube in 2025", "My Tech Stack Breakdown"])
+colPlatform = Col("Platform", ["YouTube", "Instagram", "TikTok", "LinkedIn"])
+colReach = Col("Total Reach", ["142,000", "98,500", "84,200", "41,000"])
+colLikes = Col("Likes", ["12,400", "8,900", "7,100", "2,300"])
+colComments = Col("Comments", ["840", "512", "620", "195"])
+
+opsSection = Card([opsTabs], "clear")
+
+opsTabs = Tabs([tabComments, tabCollabs, tabScheduled])
+
+tabComments = TabItem("comments", "Unanswered Comments (3)", [commentsList])
+commentsList = ListBlock([comment1, comment2, comment3])
+comment1 = ListItem("Sarah M. (YouTube)", "Great video! What microphone are you using?", null, "Reply")
+comment2 = ListItem("Alex Tech (Instagram)", "Is this workflow compatible with Mac OS?", null, "Reply")
+comment3 = ListItem("DevGuru (TikTok)", "Part 2 please!! Need to see the backend setup.", null, "Reply")
+
+tabCollabs = TabItem("collabs", "Pending Collabs (2)", [collabsList])
+collabsList = ListBlock([collab1, collab2])
+collab1 = ListItem("Notion Creator Grant", "Sponsorship offer: $2,500 for dedicated video segment", null, "Review Brief")
+collab2 = ListItem("Podcast Guest Invite", "Tech Unfiltered Podcast - 45 min interview on monetization", null, "Accept")
+
+tabScheduled = TabItem("scheduled", "Scheduled This Week (4)", [scheduledTable])
+scheduledTable = Table([schedTitle, schedPlatform, schedTime, schedStatus])
+schedTitle = Col("Content", ["Weekly Tech Newsletter Recap", "Workspace Setup Tour Short", "5 Productivity Hacks Reel", "Monetization Guide Thread"])
+schedPlatform = Col("Platform", ["YouTube", "TikTok", "Instagram", "LinkedIn"])
+schedTime = Col("Scheduled Date & Time", ["Tomorrow, 6:00 PM", "Fri, 7:00 PM", "Sat, 6:30 PM", "Sun, 10:00 AM"])
+schedStatus = Col("Status", ["Ready", "Ready", "Draft", "Ready"])
+
+scheduleModal = Card([modalTrigger], "clear")
+modalTrigger = DrawerBlock("Schedule New Post", "Schedule Content", "Set up a new post across any platform with caption and publishing time.", [scheduleForm])
+
+scheduleForm = Form("schedule_post_form", formBtns, [platField, captionField, dateField])
+platField = FormControl("Target Platform", platSelect)
+platSelect = Select("post_platform", [pYt, pIg, pTt, pLi], "Select Platform")
+pYt = SelectItem("yt", "YouTube")
+pIg = SelectItem("ig", "Instagram")
+pTt = SelectItem("tt", "TikTok")
+pLi = SelectItem("li", "LinkedIn")
+
+captionField = FormControl("Caption / Script Notes", captionInput, "Include hashtags, mentions, or links")
+captionInput = TextArea("caption", "Excited to share my latest breakdown...", 4)
+
+dateField = FormControl("Publish Date & Time", datePicker)
+datePicker = DatePicker("publish_date", "single")
+
+formBtns = Buttons([submitPostBtn, cancelPostBtn])
+submitPostBtn = Button("Schedule Post", null, "primary")
+cancelPostBtn = Button("Save Draft", null, "tertiary")
+
+followUp = FollowUpBlock([fUp1, fUp2, fUp3])
+fUp1 = FollowUpItem("Show detailed analytics for YouTube")
+fUp2 = FollowUpItem("Draft replies for unanswered comments")
+fUp3 = FollowUpItem("Optimize posting schedule based on audience location")

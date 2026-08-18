@@ -1,0 +1,100 @@
+root = Card([header, kpis, periodFilter, chartsSection, listsSection, riskAndPaymentsSection, adoptionSection, followUps])
+
+header = CardHeader("SaaS Executive Dashboard", "Real-time performance, revenue, and customer health metrics")
+
+kpis = Card([kpiRow1, kpiRow2], "clear", "column", "m")
+kpiRow1 = Card([mrrCard, arrCard, churnCard, npsCard], "clear", "row", "m")
+kpiRow2 = Card([signupsCard, utilizationCard], "clear", "row", "m")
+
+mrrCard = Card([mrrHeader, mrrVal, mrrBadge], "sunk", "column", "xs")
+mrrHeader = TextContent("Monthly Recurring Revenue (MRR)", "small")
+mrrVal = Heading("$148,500", "h2")
+mrrBadge = Badge("+8.4% vs last month", "default")
+
+arrCard = Card([arrHeader, arrVal, arrBadge], "sunk", "column", "xs")
+arrHeader = TextContent("Annual Recurring Revenue (ARR)", "small")
+arrVal = Heading("$1.78M", "h2")
+arrBadge = Badge("Pacing to $2.0M target", "secondary")
+
+churnCard = Card([churnHeader, churnVal, churnBadge], "sunk", "column", "xs")
+churnHeader = TextContent("Churn This Month", "small")
+churnVal = Heading("1.2%", "h2")
+churnBadge = Badge("0.4% lower than avg", "outline")
+
+npsCard = Card([npsHeader, npsVal, npsBadge], "sunk", "column", "xs")
+npsHeader = TextContent("Current Net Promoter Score", "small")
+npsVal = Heading("64", "h2")
+npsBadge = Badge("Excellent (62+ Industry Avg)", "default")
+
+signupsCard = Card([signupsHeader, signupsVal, signupsProgress], "sunk", "column", "xs")
+signupsHeader = TextContent("New Signups (Past 90 Days)", "small")
+signupsVal = Heading("1,248 Users", "h3")
+signupsProgress = Progress(83, "83% of Q3 Growth Goal (1,500)")
+
+utilizationCard = Card([utilHeader, utilVal, utilProgress], "sunk", "column", "xs")
+utilHeader = TextContent("Company-wide Seat Utilization", "small")
+utilVal = Heading("87.4%", "h3")
+utilProgress = Progress(87, "4,370 of 5,000 Active Seats")
+
+periodFilter = Card([periodHeader, periodButtons, adminModalTrigger], "card", "row", "m", "center", "between")
+periodHeader = TextContent("Reporting Period", "small-heavy")
+periodButtons = Buttons([p30Btn, p90Btn, pYrBtn])
+p30Btn = Button("Last 30 Days", null, "secondary")
+p90Btn = Button("Past 90 Days", null, "primary")
+pYrBtn = Button("Year to Date", null, "tertiary")
+
+adminModalTrigger = DialogBlock("Invite Admin", "Invite New SaaS Administrator", "Grant full management access to team members.", adminForm)
+adminForm = Form("invite-admin", adminFormButtons, [adminEmailField, adminRoleField])
+adminEmailField = FormControl("Email Address", adminEmailInput, "An invitation link will be sent immediately")
+adminEmailInput = Input("email", "admin@company.com", "email")
+adminRoleField = FormControl("Admin Role", adminRoleSelect)
+adminRoleSelect = Select("role", [role1, role2, role3], "Select permission tier")
+role1 = SelectItem("super_admin", "Super Admin (Full Control)")
+role2 = SelectItem("billing_admin", "Billing Admin (Finance Only)")
+role3 = SelectItem("read_only", "Read-Only Admin")
+adminFormButtons = Buttons([sendInviteBtn])
+sendInviteBtn = Button("Send Invitation", null, "primary")
+
+chartsSection = Card([chartTabs], "clear")
+chartTabs = Tabs([planTabItem, signupsTabItem])
+
+planTabItem = TabItem("plans", "Customers Split by Plan", [planChart])
+planChart = PieChart(["Enterprise", "Pro Team", "Starter", "Free Tier"], [120, 450, 890, 2100], "donut")
+
+signupsTabItem = TabItem("signups", "New Signups Trend (90 Days)", [signupsChart])
+signupsChart = LineChart(["Month 1", "Month 2", "Month 3"], [signupsSeries], "natural", "Timeline", "Signups")
+signupsSeries = Series("Signups", [380, 418, 450])
+
+listsSection = Card([topCustomersHeader, topCustomersTable], "sunk")
+topCustomersHeader = Heading("Ten Largest Customers (by Spend & Seats)", "h3")
+topCustomersTable = Table([cName, cPlan, cSeats, cSpend])
+cName = Col("Customer Account", ["Acme Corp", "TechGlobe", "Apex Logistics", "Starlight Media", "Nexus Health", "DataFlow Inc", "Sovereign Financial", "CloudScale", "Vanguard Systems", "OmniTech"])
+cPlan = Col("Plan Tier", ["Enterprise Custom", "Enterprise", "Enterprise", "Pro Team", "Enterprise Custom", "Enterprise", "Enterprise Custom", "Pro Team", "Enterprise", "Pro Team"])
+cSeats = Col("Active Seats", [350, 280, 220, 190, 185, 160, 150, 140, 125, 110])
+cSpend = Col("Monthly Spend", ["$12,500", "$9,800", "$7,700", "$6,650", "$6,475", "$5,600", "$5,250", "$4,900", "$4,375", "$3,850"])
+
+riskAndPaymentsSection = Card([atRiskCard, failedPaymentsCard], "clear", "row", "m")
+
+atRiskCard = Card([atRiskHeader, atRiskCallout1, atRiskCallout2, atRiskCallout3], "sunk", "column", "s")
+atRiskHeader = Heading("Accounts At Risk", "h3")
+atRiskCallout1 = TextCallout("danger", "Alpha Cloud Systems ($4,200/mo)", "Risk Reason: Low seat usage (<15%) and key stakeholder left 3 weeks ago.")
+atRiskCallout2 = TextCallout("warning", "Omni Global ($2,900/mo)", "Risk Reason: Unresolved high-priority support ticket open for 12 days.")
+atRiskCallout3 = TextCallout("warning", "Synergy Networks ($1,800/mo)", "Risk Reason: Renewal upcoming in 14 days, contract negotiation stalled.")
+
+failedPaymentsCard = Card([failedPaymentsHeader, failedPaymentsList], "sunk", "column", "s")
+failedPaymentsHeader = Heading("Failed Payments & Retries", "h3")
+failedPaymentsList = ListBlock([payItem1, payItem2, payItem3])
+payItem1 = ListItem("Hyperion Tech ($1,450.00)", "Card Expired • Failed yesterday", null, "Retry Payment")
+payItem2 = ListItem("Quantum Solutions ($850.00)", "Insufficient Funds • Failed 2 days ago", null, "Retry Payment")
+payItem3 = ListItem("Zenith Digital ($2,100.00)", "Bank Gateway Timeout • Failed today", null, "Retry Payment")
+
+adoptionSection = Card([adoptionHeader, adoptionChart], "sunk")
+adoptionHeader = Heading("Adoption of Newest Features", "h3")
+adoptionChart = BarChart(["AI Summary Assistant", "Custom Workflows v2", "SSO & SAML Integration"], [seriesActive, seriesTrial], "grouped", "Feature Name", "Active Accounts")
+seriesActive = Series("Fully Adopted", [640, 420, 310])
+seriesTrial = Series("In Trial / Testing", [180, 290, 95])
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Export accounts at risk to CSV")
+f2 = FollowUpItem("View churn analysis report")
+f3 = FollowUpItem("Adjust seat limits for Enterprise tier")

@@ -1,0 +1,45 @@
+root = Card([header, kpis, openRoles, pipeline, deptSplit, interviews, attrition, actions])
+header = CardHeader("Hiring Overview", "Talent acquisition at a glance")
+
+kpis = Table([kpiMetric, kpiValue])
+kpiMetric = Col("Metric", ["Current headcount", "Average time to hire", "Interviews this week"])
+kpiValue = Col("Value", ["482 employees", "34 days", "17 scheduled"])
+
+openRoles = Table([roleTitle, roleDept, roleStatus])
+roleTitle = Col("Open Role", ["Senior Backend Engineer", "Product Designer", "Sales Development Rep", "Data Analyst", "HR Business Partner"])
+roleDept = Col("Department", ["Engineering", "Design", "Sales", "Data", "People"])
+roleStatus = Col("Status", ["Interviewing", "Sourcing", "Offer out", "Screening", "Sourcing"])
+
+pipeline = BarChart(["Applied", "Screen", "Interview", "Offer", "Hired"], [pipelineSeries], "stacked", "Stage", "Candidates")
+pipelineSeries = Series("Candidates", [214, 96, 42, 11, 6])
+
+deptSplit = PieChart(deptLabels, deptValues, "donut")
+deptLabels = ["Engineering", "Sales", "Design", "Data", "People", "Operations"]
+deptValues = [168, 94, 46, 38, 22, 114]
+
+interviews = Table([intCand, intRole, intDay])
+intCand = Col("Candidate", ["A. Rivera", "M. Chen", "J. Okafor", "S. Patel", "L. Nguyen"])
+intRole = Col("Role", ["Senior Backend Engineer", "Product Designer", "Sales Development Rep", "Data Analyst", "Senior Backend Engineer"])
+intDay = Col("Day", ["Mon", "Tue", "Wed", "Thu", "Fri"])
+
+attrition = LineChart(["Jan", "Feb", "Mar", "Apr", "May", "Jun"], [attritionSeries], "natural", "Month", "Attrition %")
+attritionSeries = Series("Attrition", [1.8, 2.1, 1.6, 2.4, 2.0, 1.5])
+
+actions = Buttons([newRoleBtn])
+newRoleBtn = DialogBlock("Open a new role", "Create New Role", "Define the role and department to add it to the pipeline", [newRoleForm])
+newRoleForm = Form("new-role", roleFormButtons, [titleField, deptField, countField])
+titleField = FormControl("Role title", titleInput)
+titleInput = Input("title", "e.g. Senior Backend Engineer")
+deptField = FormControl("Department", deptSelect)
+deptSelect = Select("department", [deptEng, deptSales, deptDesign, deptData, deptPeople, deptOps], "Choose a department")
+deptEng = SelectItem("engineering", "Engineering")
+deptSales = SelectItem("sales", "Sales")
+deptDesign = SelectItem("design", "Design")
+deptData = SelectItem("data", "Data")
+deptPeople = SelectItem("people", "People")
+deptOps = SelectItem("operations", "Operations")
+countField = FormControl("Number of openings", countInput)
+countInput = Input("openings", "1", "number")
+roleFormButtons = Buttons([createBtn, cancelBtn])
+createBtn = Button("Create role", null, "primary")
+cancelBtn = Button("Cancel", null, "tertiary")

@@ -1,0 +1,221 @@
+Here is the low-inventory warning dashboard for your store management system, including low-stock items with direct reorder triggers, warning threshold controls, and search filtering functionality.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "alertBanner",
+          "controlsForm",
+          "separator1",
+          "inventoryTable",
+          "separator2",
+          "bulkActions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Low Inventory Alerts",
+        "subtitle": "Monitor stock levels, manage warning thresholds, and place supplier reorders."
+      },
+      {
+        "id": "alertBanner",
+        "component": "Alert",
+        "title": "5 Items Below Reorder Threshold",
+        "description": "Stock levels have fallen below your set trigger points. Action is recommended to prevent stockouts.",
+        "variant": "warning"
+      },
+      {
+        "id": "controlsForm",
+        "component": "Form",
+        "name": "inventory-controls",
+        "buttons": "applyFiltersBtnGroup",
+        "fields": [
+          "searchField",
+          "thresholdField"
+        ]
+      },
+      {
+        "id": "searchField",
+        "component": "FormControl",
+        "label": "Search Inventory",
+        "hint": "Filter by item name, SKU, or category",
+        "input": "searchInput"
+      },
+      {
+        "id": "searchInput",
+        "component": "Input",
+        "name": "search_query",
+        "placeholder": "e.g. Organic Coffee, SKU-8841..."
+      },
+      {
+        "id": "thresholdField",
+        "component": "FormControl",
+        "label": "Global Warning Threshold (Units)",
+        "hint": "Triggers alert when stock falls below this level",
+        "input": "thresholdSlider"
+      },
+      {
+        "id": "thresholdSlider",
+        "component": "Slider",
+        "name": "warning_threshold",
+        "variant": "discrete",
+        "min": 5,
+        "max": 50,
+        "step": 5,
+        "defaultValue": [
+          15
+        ]
+      },
+      {
+        "id": "applyFiltersBtnGroup",
+        "component": "Buttons",
+        "buttons": [
+          "updateThresholdBtn"
+        ]
+      },
+      {
+        "id": "updateThresholdBtn",
+        "component": "Button",
+        "label": "Update Threshold Settings",
+        "variant": "secondary",
+        "size": "small"
+      },
+      {
+        "id": "separator1",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "inventoryTable",
+        "component": "Table",
+        "columns": [
+          "colItem",
+          "colSku",
+          "colRemaining",
+          "colThreshold",
+          "colStatus",
+          "colAction"
+        ]
+      },
+      {
+        "id": "colItem",
+        "component": "Col",
+        "label": "Item Name",
+        "data": [
+          "Espresso Dark Roast (1kg)",
+          "Oat Milk Barista Edition (1L)",
+          "Biodegradable Cups 12oz",
+          "Matcha Powder Grade A (250g)",
+          "Vanilla Syrup (750ml)"
+        ]
+      },
+      {
+        "id": "colSku",
+        "component": "Col",
+        "label": "SKU",
+        "data": [
+          "CB-DR-001",
+          "DY-OM-012",
+          "PK-BC-112",
+          "TEA-MP-004",
+          "SY-VN-089"
+        ]
+      },
+      {
+        "id": "colRemaining",
+        "component": "Col",
+        "label": "Remaining Units",
+        "data": [
+          "3 units",
+          "8 units",
+          "12 units",
+          "2 units",
+          "5 units"
+        ]
+      },
+      {
+        "id": "colThreshold",
+        "component": "Col",
+        "label": "Warning Threshold",
+        "data": [
+          "15 units",
+          "15 units",
+          "20 units",
+          "10 units",
+          "15 units"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Critical Low",
+          "Low Stock",
+          "Low Stock",
+          "Critical Low",
+          "Critical Low"
+        ]
+      },
+      {
+        "id": "colAction",
+        "component": "Col",
+        "label": "Reorder Action",
+        "data": [
+          "Reorder 50 units",
+          "Reorder 40 units",
+          "Reorder 100 units",
+          "Reorder 20 units",
+          "Reorder 30 units"
+        ],
+        "type": "action"
+      },
+      {
+        "id": "separator2",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "bulkActions",
+        "component": "Buttons",
+        "buttons": [
+          "reorderAllBtn",
+          "exportListBtn"
+        ]
+      },
+      {
+        "id": "reorderAllBtn",
+        "component": "Button",
+        "label": "Reorder All Low Stock Items",
+        "variant": "primary"
+      },
+      {
+        "id": "exportListBtn",
+        "component": "Button",
+        "label": "Export Stock Report",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>

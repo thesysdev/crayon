@@ -1,0 +1,71 @@
+root = Card([header, filterRow, kpiRow, mainRow1, mainRow2, followUp])
+
+header = CardHeader("Training Analytics Dashboard", "Enterprise Learning & Development Performance")
+
+filterRow = Card([cohortFilter], "clear", "row", "m", "center", "between")
+cohortFilter = FormControl("Select Cohort", cohortSelect)
+cohortSelect = Select("cohort_id", [cAll, cEng, cProduct, cDesign, cSales], "Filter by cohort...", null, "all")
+cAll = SelectItem("all", "All Cohorts (Global)")
+cEng = SelectItem("eng_q1", "Engineering - 2024 Q1")
+cProduct = SelectItem("prod_q1", "Product Management - 2024 Q1")
+cDesign = SelectItem("design_q1", "UX Design - Spring 2024")
+cSales = SelectItem("sales_q1", "Sales Enablement - H1")
+
+kpiRow = Card([kpi1, kpi2, kpi3], "sunk", "row", "l", "center", "between")
+
+kpi1 = Card([kpi1Tag, kpi1Val, kpi1Sub], "card", "column", "xs")
+kpi1Tag = Tag("Weekly Active", null, "sm", "info")
+kpi1Val = Heading("1,284", "h2")
+kpi1Sub = TextContent("+12% from last week", "small")
+
+kpi2 = Card([kpi2Tag, kpi2Val, kpi2Progress], "card", "column", "xs")
+kpi2Tag = Tag("Completion Rate", null, "sm", "success")
+kpi2Val = Heading("78.4%", "h2")
+kpi2Progress = Progress(78, "Goal: 80%")
+
+kpi3 = Card([kpi3Tag, kpi3Val, kpi3Sub], "card", "column", "xs")
+kpi3Tag = Tag("Avg Quiz Score", null, "sm", "neutral")
+kpi3Val = Heading("86.2%", "h2")
+kpi3Sub = TextContent("Across 4,120 attempts", "small")
+
+mainRow1 = Card([chartCard, riskCard], "clear", "row", "l", "stretch")
+
+chartCard = Card([chartTitle, engagementChart], "card", "column", "m")
+chartTitle = Heading("Engagement Trend (Past 8 Weeks)", "h3")
+engagementChart = LineChart(["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"], [activeSeries, submissionSeries], "natural", "Week", "Active Count")
+activeSeries = Series("Active Learners", [850, 920, 980, 1050, 1100, 1180, 1220, 1284])
+submissionSeries = Series("Quiz Submissions", [620, 710, 750, 890, 910, 990, 1040, 1120])
+
+riskCard = Card([riskHeader, riskCallout, riskTable], "card", "column", "m")
+riskHeader = Heading("Learners at Risk of Dropping Out", "h3")
+riskCallout = Alert("3 Learners Require Intervention", "Inactivity detected (>10 days) with quiz scores below 60%.", "warning")
+riskTable = Table([riskName, riskCohort, riskInactivity, riskScore])
+riskName = Col("Learner", ["Alex Rivera", "Jordan Smith", "Taylor Chen"])
+riskCohort = Col("Cohort", ["Engineering Q1", "Sales H1", "UX Design"])
+riskInactivity = Col("Inactive", ["12 days", "14 days", "10 days"])
+riskScore = Col("Avg Score", ["48%", "52%", "55%"])
+
+mainRow2 = Card([rankingCard, messageCard], "clear", "row", "l", "stretch")
+
+rankingCard = Card([rankingTitle, rankingChart], "card", "column", "m")
+rankingTitle = Heading("Top Courses Ranked by Enrollment", "h3")
+rankingChart = HorizontalBarChart(["Cybersecurity 101", "Data Science Fundamentals", "Cloud Architecture", "Agile Leadership", "React Native Deep Dive"], [enrollmentSeries], "grouped", "Enrollments", "Course")
+enrollmentSeries = Series("Enrolled Learners", [650, 540, 480, 410, 320])
+
+messageCard = Card([messageTitle, messageForm], "card", "column", "m")
+messageTitle = Heading("Message Cohort", "h3")
+messageForm = Form("cohort_message", formButtons, [targetCohortField, subjectField, messageField])
+targetCohortField = FormControl("Target Cohort", targetCohortSelect)
+targetCohortSelect = Select("target_cohort", [cAll, cEng, cProduct, cDesign, cSales], "Select recipient cohort...")
+subjectField = FormControl("Subject", subjectInput)
+subjectInput = Input("subject", "Weekly Update & Action Required")
+messageField = FormControl("Message", messageArea, "Message will be delivered via email and in-app notification.")
+messageArea = TextArea("message_body", "Hi team, please complete your pending quizzes by Friday...", 4)
+formButtons = Buttons([sendBtn, draftBtn])
+sendBtn = Button("Send Announcement", null, "primary")
+draftBtn = Button("Save Draft", null, "secondary")
+
+followUp = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Export at-risk learner list to CSV")
+f2 = FollowUpItem("View detailed quiz analytics for Engineering Q1")
+f3 = FollowUpItem("Schedule automated reminder for inactive users")

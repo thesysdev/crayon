@@ -1,0 +1,153 @@
+
+
+Here's a complete emergency response coordination dashboard covering all 18 requirements:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      { "id": "root", "component": "Card", "gap": "s", "children": [
+        "hdr", "sitrepNotice", "zoneFocus", "tabs"
+      ]},
+      { "id": "hdr", "component": "CardHeader", "title": "Emergency Response Coordination Center", "subtitle": "Region North · Operation Floodgate · 14:32 local" },
+      { "id": "sitrepNotice", "component": "Alert", "variant": "warning", "title": "Regional emergency declared 06:15", "description": "Flash flooding across riverside zones. ESCC fully activated at Level 3." },
+
+      { "id": "zoneFocus", "component": "FormControl", "label": "Focus on zone (17)", "input": "zoneSelect", "hint": "Select a zone to concentrate the operation around it" },
+      { "id": "zoneSelect", "component": "Select", "name": "focus_zone", "placeholder": "Zone B – Riverside (currently focused)",
+        "items": ["zfocusA","zfocusB","zfocusC","zfocusD","zfocusE"] },
+      { "id": "zfocusA", "component": "SelectItem", "value": "A", "label": "Zone A – Downtown Core" },
+      { "id": "zfocusB", "component": "SelectItem", "value": "B", "label": "Zone B – Riverside (current)" },
+      { "id": "zfocusC", "component": "SelectItem", "value": "C", "label": "Zone C – North Hills" },
+      { "id": "zfocusD", "component": "SelectItem", "value": "D", "label": "Zone D – Industrial Park" },
+      { "id": "zfocusE", "component": "SelectItem", "value": "E", "label": "Zone E – Lakeside" },
+
+      { "id": "tabs", "component": "Tabs", "items": ["tSit","tRes","tOps","tPeople","tGov"] },
+
+      { "id": "tSit", "component": "TabItem", "value": "situation", "trigger": "Situation", "content": ["t1incidents","t1casField","severityChart","t1routeTable","t1wxFc","t1roads"] },
+      { "id": "tRes", "component": "TabItem", "value": "resources", "trigger": "Resources", "content": ["t2assetTable","t2shelterChart","t2donBag","t2hospTable"] },
+      { "id": "tOps", "component": "TabItem", "value": "operations", "trigger": "Operations", "content": ["t3varTable","t3tasks","t3comms","t3aidTable"] },
+      { "id": "tPeople", "component": "TabItem", "value": "people", "trigger": "People", "content": ["t4humField","t4volTable"] },
+      { "id": "tGov", "component": "TabItem", "value": "governance", "trigger": "Actions", "content": ["t5resourceForm","t5resourceButtons","t5broadcastForm","t5broadcastButtons","t5contactButtons"] },
+
+      { "id": "t1incidents", "component": "Heading", "level": "h3", "text": "Active incidents by zone (1)" },
+      { "id": "t1incTable", "component": "Table", "columns": ["incZone","incCount","incWorst"] },
+      { "id": "incZone", "component": "Col", "label": "Zone", "data": ["Zone A – Downtown Core","Zone B – Riverside","Zone C – North Hills","Zone D – Industrial Park","Zone E – Lakeside"] },
+      { "id": "incCount", "component": "Col", "label": "Active incidents", "type": "number", "data": [4,7,2,3,2] },
+      { "id": "incWorst", "component": "Col", "label": "Worst severity", "data": ["Major","Critical","Moderate","Critical","Minor"] },
+
+      { "id": "t1casField", "component": "FormControl", "label": "People rescued & casualties (7)", "input": "casFieldText", "hint": "Situation-totals summary" },
+      { "id": "casFieldText", "component": "TextArea", "name": "cas_snapshot", "rows": 3,
+        "value": "Rescued: 1,284 (live ops ongoing)\nCasualties: 9 confirmed dead · 87 injured (31 critical, 56 stable)\nUnaccounted: 14 names under verification" },
+
+      { "id": "severityChart", "component": "BarChart", "xLabel": "Severity level", "yLabel": "Incidents",
+        "labels": ["Critical","Major","Moderate","Minor"], "series": ["sevS"] },
+      { "id": "sevS", "component": "Series", "category": "Overall severity summary (2)", "values": [5,6,4,3] },
+
+      { "id": "t1routeTable", "component": "Table", "columns": ["rtName","rtStatus","rtNotes"] },
+      { "id": "rtName", "component": "Col", "label": "Route (5)", "data": ["R1 Airport Expressway","R2 East Bridge","R3 River Road","R4 North Pass","R5 Lakeside Causeway"] },
+      { "id": "rtStatus", "component": "Col", "label": "Status", "data": ["Open – high priority","Open","Closed – flooded","Open – single lane","Closed – structure check"] },
+      { "id": "rtNotes", "component": "Col", "label": "Notes", "data": ["Convoy priority 06:00–20:00","30 min headway","Detour via R4","12:00–13:00 daily hold","Engineers on site"] },
+
+      { "id": "t1wxFc", "component": "LineChart", "xLabel": "Hour offset", "yLabel": "mm/h",
+        "labels": ["0","6","12","18","24","30","36","42","48"], "series": ["wxSeries"] },
+      { "id": "wxSeries", "component": "Series", "category": "48h rainfall forecast (6): heavy band 0–12h, easing 12–24h, dry after", "values": [22,31,38,26,9,4,1,0,0] },
+
+      { "id": "t1roads", "component": "Table", "columns": ["rdName","rdReason","rdReopen"] },
+      { "id": "rdName", "component": "Col", "label": "Road closed (12)", "data": ["R3 River Road","R5 Lakeside Causeway","Main St between 1st–3rd","N4 Off-Ramp 7"] },
+      { "id": "rdReason", "component": "Col", "label": "Reason", "data": ["Flood water 1.2 m","Structural inspection","Debris + levee work","Landslide"] },
+      { "id": "rdReopen", "component": "Col", "label": "Est. reopening", "data": ["Unknown","Tomorrow 08:00","Today 18:00","Rear clear"] },
+
+      { "id": "t2assetTable", "component": "Table", "columns": ["asType","asTotal","asAvail"] },
+      { "id": "asType", "component": "Col", "label": "Asset (3)", "data": ["Vehicles (ambulance/fire/engine)","Personnel (certified)","Supply pallets (water/meals/meds/blankets)"] },
+      { "id": "asTotal", "component": "Col", "label": "Total deployed", "type": "number", "data": [118,2450,4540] },
+      { "id": "asAvail", "component": "Col", "label": "Available now", "type": "number", "data": [42,620,2900] },
+
+      { "id": "t2shelterChart", "component": "BarChart", "xLabel": "Shelter", "yLabel": "People",
+        "labels": ["High School Gym","Community Center","Stadium Hall","Northfield Church"], "series": ["shCap","shOcc"] },
+      { "id": "shCap", "component": "Series", "category": "Capacity (4)", "values": [400,300,850,250] },
+      { "id": "shOcc", "component": "Series", "category": "Occupancy (4)", "values": [318,266,612,148] },
+
+      { "id": "t2donBag", "component": "TagBlock", "tags": ["Donations (9): Water 12,400 L","Meals 3,800","Blankets 2,150","Hygiene kits 980","Med kits 640"] },
+
+      { "id": "t2hospTable", "component": "Table", "columns": ["hpName","hpBeds","hpStatus"] },
+      { "id": "hpName", "component": "Col", "label": "Hospital (13)", "data": ["City General","Riverside Medical","North Hills Regional"] },
+      { "id": "hpBeds", "component": "Col", "label": "Free beds", "type": "number", "data": [48,12,35] },
+      { "id": "hpStatus", "component": "Col", "label": "Status", "data": ["Accepting","Divert non-critical","Accepting"] },
+
+      { "id": "t3varTable", "component": "Table", "columns": ["vName","vAssign"] },
+      { "id": "vName", "component": "Col", "label": "Volunteer on duty (8)", "data": ["T. Alvarez","M. Chen","K. Okafor","S. Petrova","D. Ruiz"] },
+      { "id": "vAssign", "component": "Col", "label": "Assignment", "data": ["Shelter: Stadium Hall","Comms desk","Donation intake","Route R1 marshal","Constant-flow R4"] },
+
+      { "id": "t3tasks", "component": "Table", "columns": ["tkTask","tkOwner","tkPri"] },
+      { "id": "tkTask", "component": "Col", "label": "Open task (14)", "data": ["Pump-out Main St duct","Gen to Northfield shelter","Sandbag LTS dm","Replace R5 inspection team"] },
+      { "id": "tkOwner", "component": "Col", "label": "Assignee", "data": ["Public Works – J. Whit","Engineering – P. An","Ops – R. Cole","Fire – Capt. Boone"] },
+      { "id": "tkPri", "component": "Col", "label": "Priority", "data": ["P1 – 30 min","P2 – 2 hrs","P2 – end shift","P1 – 1 hr"] },
+
+      { "id": "t3comms", "component": "Table", "columns": ["chName","chStatus","chNotes"] },
+      { "id": "chName", "component": "Col", "label": "Channel (11)", "data": ["Radio – VHF Tac 1","Radio – UHF Tac 2","Cell network","Satellite uplink","Public PA system"] },
+      { "id": "chStatus", "component": "Col", "label": "Status", "data": ["Up","Up","Degraded (40%)","Up","Down (Zone E)"] },
+      { "id": "chNotes", "component": "Col", "label": "Notes", "data": ["Primary","Backup","Intermittent zone gaps","Reserve under 500 kbps","Repair crew en-route"] },
+
+      { "id": "t3aidTable", "component": "Table", "columns": ["arId","arReq","arZone","arStatus"] },
+      { "id": "arId", "component": "Col", "label": "Request (10)", "type": "number", "data": ["AR-1041","AR-1042","AR-1043","AR-1044"] },
+      { "id": "arReq", "component": "Col", "label": "Aid requested", "data": ["Medical team + stretcher","Water pallet x2","Sandbags 500","Boat assist – rooftop"] },
+      { "id": "arZone", "component": "Col", "label": "Zone", "data": ["B Riverside","A Downtown","D Industrial","E Lakeside"] },
+      { "id": "arStatus", "component": "Col", "label": "Awaiting action", "data": ["Unassigned – 22 min","Queued – 35 min","Queued – 50 min","Escalated – 8 min"] },
+
+      { "id": "t4humField", "component": "FormControl", "label": "People rescued & casualties (7)", "input": "humFieldText", "hint": "Situation-totals summary" },
+      { "id": "humFieldText", "component": "TextArea", "name": "cas_snapshot", "rows": 3,
+        "value": "Rescued: 1,284 (live ops ongoing)\nCasualties: 9 confirmed dead · 87 injured (31 critical, 56 stable)\nUnaccounted: 14 names under verification" },
+
+      { "id": "t4volTable", "component": "Table", "columns": ["vName","vAssign"] },
+      { "id": "t5resourceForm", "component": "Form", "name": "resource-request", "fields": ["rfType","rfQty","rfReason","rfUrgency"], "buttons": "t5resourceButtons" },
+      { "id": "rfType", "component": "FormControl", "label": "Resource type (15)", "input": "rfTypeSel" },
+      { "id": "rfTypeSel", "component": "Select", "name": "res_type", "placeholder": "Select resource",
+        "items": ["rtBoat","rtMed","rtPump","rtGen","rtSandbag","rtWater"] },
+      { "id": "rtBoat", "component": "SelectItem", "value": "boats", "label": "Rescue boats" },
+      { "id": "rtMed", "component": "SelectItem", "value": "medkits", "label": "Medical kits" },
+      { "id": "rtPump", "component": "SelectItem", "value": "pumps", "label": "Water pumps" },
+      { "id": "rtGen", "component": "SelectItem", "value": "generators", "label": "Generators" },
+      { "id": "rtSandbag", "component": "SelectItem", "value": "sandbags", "label": "Sandbags (bags)" },
+      { "id": "rtWater", "component": "SelectItem", "value": "water", "label": "Drinking water (L)" },
+      { "id": "rfQty", "component": "FormControl", "label": "Quantity", "input": "rfQtyIn" },
+      { "id": "rfQtyIn", "component": "Input", "name": "res_qty", "type": "number", "placeholder": "e.g. 20" },
+      { "id": "rfReason", "component": "FormControl", "label": "Justification", "input": "rfReasonIn" },
+      { "id": "rfReasonIn", "component": "Input", "name": "res_reason", "placeholder": "Zone, incident ref, need" },
+      { "id": "rfUrgency", "component": "FormControl", "label": "Delivery urgency", "input": "rfUrgIn" },
+      { "id": "rfUrgIn", "component": "Input", "name": "res_urgency", "type": "text", "placeholder": "e.g. within 2 hours" },
+      { "id": "t5resourceButtons", "component": "Buttons", "buttons": ["resSubmit","resCancel"] },
+      { "id": "resSubmit", "component": "Button", "label": "Request resources (15)", "variant": "primary" },
+      { "id": "resCancel", "component": "Button", "label": "Cancel", "variant": "tertiary" },
+
+      { "id": "t5broadcastForm", "component": "Form", "name": "broadcast-update", "fields": ["bcMsg","bcChan"], "buttons": "t5broadcastButtons" },
+      { "id": "bcMsg", "component": "FormControl", "label": "Broadcast update (16)", "input": "bcMsgArea", "hint": "Message sent through operational and public channels" },
+      { "id": "bcMsgArea", "component": "TextArea", "name": "broadcast_message", "rows": 4, "placeholder": "Example: Inches will continue for the next 6 hrs. On R2 bridge keep out movement marquez." },
+      { "id": "bcChan", "component": "CheckBoxGroup", "name": "broadcast_channels", "items": ["bcChRadio","bcChCell","bcChPA","bcChSat"] },
+      { "id": "bcChRadio", "component": "CheckBoxItem", "name": "ch_radio", "label": "Radio VHF", "description": "All tactical units", "defaultChecked": true },
+      { "id": "bcChCell", "component": "CheckBoxItem", "name": "ch_cell", "label": "Cell broadcast", "description": "Public alerts", "defaultChecked": true },
+      { "id": "bcChPA", "component": "CheckBoxItem", "name": "ch_pa", "label": "Public PA", "description": "Zones A–D (lower: Zone E down)", "defaultChecked": false },
+      { "id": "bcChSat", "component": "CheckBoxItem", "name": "ch_sat", "label": "Satellite backup", "description": "Only if mail network is degraded", "defaultChecked": false },
+      { "id": "t5broadcastButtons", "component": "Buttons", "buttons": ["bcSend","bcSave"] },
+      { "id": "bcSend", "component": "Button", "label": "Broadcast update (16)", "variant": "primary" },
+      { "id": "bcSave", "component": "Button", "label": "Save draft", "variant": "secondary" },
+
+      { "id": "t5contactButtons", "component": "Buttons", "buttons": ["sitrepBtn","incidentBtn","handoffBtn"] },
+      { "id": "sitrepBtn", "component": "Button", "label": "Prepare SITREP (18)", "variant": "secondary" },
+      { "id": "incidentBtn", "component": "Button", "label": "Submit incident report", "variant": "secondary" },
+      { "id": "handoffBtn", "component": "Button", "label": "Schedule handoff briefing", "variant": "secondary" }
+    ]
+  }
+}
+</a2ui-json>

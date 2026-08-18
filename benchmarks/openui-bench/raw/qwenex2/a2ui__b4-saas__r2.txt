@@ -1,0 +1,606 @@
+
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "controlsCard",
+          "kpiHeading",
+          "kpis",
+          "signupsHeading",
+          "signupsChart",
+          "planHeading",
+          "planChart",
+          "largestHeading",
+          "largestTable",
+          "riskHeading",
+          "riskTable",
+          "failedHeading",
+          "failedHint",
+          "failedTable",
+          "adoptionHeading",
+          "adoptionChart",
+          "npsHeading",
+          "npsChart",
+          "npsDetail",
+          "utilizationHeading",
+          "utilizationProgress"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Admin Overview",
+        "subtitle": "SaaS performance, customers, billing, and adoption"
+      },
+      {
+        "id": "controlsCard",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "align": "end",
+        "justify": "between",
+        "wrap": true,
+        "children": [
+          "periodField",
+          "inviteDialog"
+        ]
+      },
+      {
+        "id": "periodField",
+        "component": "FormControl",
+        "label": "Reporting period",
+        "input": "periodSelect",
+        "hint": "Applies to the whole overview"
+      },
+      {
+        "id": "periodSelect",
+        "component": "Select",
+        "name": "reporting_period",
+        "placeholder": "Select reporting period",
+        "value": "90d",
+        "items": [
+          "period30",
+          "period90",
+          "periodQtd",
+          "periodYtd"
+        ]
+      },
+      {
+        "id": "period30",
+        "component": "SelectItem",
+        "value": "30d",
+        "label": "Last 30 days"
+      },
+      {
+        "id": "period90",
+        "component": "SelectItem",
+        "value": "90d",
+        "label": "Last 90 days"
+      },
+      {
+        "id": "periodQtd",
+        "component": "SelectItem",
+        "value": "qtd",
+        "label": "Quarter to date"
+      },
+      {
+        "id": "periodYtd",
+        "component": "SelectItem",
+        "value": "ytd",
+        "label": "Year to date"
+      },
+      {
+        "id": "inviteDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Invite another admin",
+        "title": "Invite another admin",
+        "description": "Invite a teammate to manage billing, settings, and admins.",
+        "triggerVariant": "default",
+        "content": [
+          "inviteForm"
+        ]
+      },
+      {
+        "id": "inviteForm",
+        "component": "Form",
+        "name": "invite-admin",
+        "buttons": "inviteFormButtons",
+        "fields": [
+          "inviteEmailField",
+          "inviteRoleField"
+        ]
+      },
+      {
+        "id": "inviteEmailField",
+        "component": "FormControl",
+        "label": "Admin work email",
+        "input": "inviteEmailInput",
+        "hint": "We will send an invitation to this email"
+      },
+      {
+        "id": "inviteEmailInput",
+        "component": "Input",
+        "name": "admin_email",
+        "type": "email",
+        "placeholder": "admin@company.com"
+      },
+      {
+        "id": "inviteRoleField",
+        "component": "FormControl",
+        "label": "Admin role",
+        "input": "inviteRoleSelect"
+      },
+      {
+        "id": "inviteRoleSelect",
+        "component": "Select",
+        "name": "admin_role",
+        "placeholder": "Choose a role",
+        "items": [
+          "roleOwner",
+          "roleBilling",
+          "roleSupport"
+        ]
+      },
+      {
+        "id": "roleOwner",
+        "component": "SelectItem",
+        "value": "owner",
+        "label": "Owner"
+      },
+      {
+        "id": "roleBilling",
+        "component": "SelectItem",
+        "value": "billing",
+        "label": "Billing admin"
+      },
+      {
+        "id": "roleSupport",
+        "component": "SelectItem",
+        "value": "support",
+        "label": "Support admin"
+      },
+      {
+        "id": "inviteFormButtons",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": [
+          "inviteSubmitBtn",
+          "inviteCancelBtn"
+        ]
+      },
+      {
+        "id": "inviteSubmitBtn",
+        "component": "Button",
+        "label": "Send invite",
+        "variant": "primary"
+      },
+      {
+        "id": "inviteCancelBtn",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "secondary"
+      },
+      {
+        "id": "kpiHeading",
+        "component": "Heading",
+        "text": "Revenue and churn",
+        "level": "h2"
+      },
+      {
+        "id": "kpis",
+        "component": "Table",
+        "columns": [
+          "kpiName",
+          "kpiValue",
+          "kpiChange"
+        ]
+      },
+      {
+        "id": "kpiName",
+        "component": "Col",
+        "label": "Metric",
+        "type": "string",
+        "data": [
+          "Monthly recurring revenue",
+          "Annual recurring revenue",
+          "Churn this month"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "type": "string",
+        "data": [
+          "$286,400",
+          "$3,436,800",
+          "1.9%"
+        ]
+      },
+      {
+        "id": "kpiChange",
+        "component": "Col",
+        "label": "Context",
+        "type": "string",
+        "data": [
+          "+6.2% vs last month",
+          "+8.4% vs last year",
+          "23 lost customers"
+        ]
+      },
+      {
+        "id": "signupsHeading",
+        "component": "Heading",
+        "text": "New signups over the past 90 days",
+        "level": "h2"
+      },
+      {
+        "id": "signupsChart",
+        "component": "LineChart",
+        "labels": [
+          "May 6",
+          "May 13",
+          "May 20",
+          "May 27",
+          "Jun 3",
+          "Jun 10",
+          "Jun 17",
+          "Jun 24",
+          "Jul 1",
+          "Jul 8",
+          "Jul 15",
+          "Jul 22",
+          "Jul 29"
+        ],
+        "series": [
+          "signupsSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Week",
+        "yLabel": "New signups"
+      },
+      {
+        "id": "signupsSeries",
+        "component": "Series",
+        "category": "New signups",
+        "values": [
+          41,
+          38,
+          45,
+          52,
+          47,
+          44,
+          58,
+          51,
+          49,
+          63,
+          57,
+          61,
+          49
+        ]
+      },
+      {
+        "id": "planHeading",
+        "component": "Heading",
+        "text": "Customers split by plan",
+        "level": "h2"
+      },
+      {
+        "id": "planChart",
+        "component": "PieChart",
+        "labels": [
+          "Starter",
+          "Growth",
+          "Scale",
+          "Enterprise"
+        ],
+        "values": [
+          487,
+          342,
+          156,
+          68
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "largestHeading",
+        "component": "Heading",
+        "text": "Ten largest customers",
+        "level": "h2"
+      },
+      {
+        "id": "largestTable",
+        "component": "Table",
+        "columns": [
+          "largestCustomer",
+          "largestSeats",
+          "largestSpend"
+        ]
+      },
+      {
+        "id": "largestCustomer",
+        "component": "Col",
+        "label": "Customer",
+        "type": "string",
+        "data": [
+          "Northwind Robotics",
+          "Atlas Logistics",
+          "Brightline Health",
+          "Vantage Financial",
+          "Corelink Systems",
+          "Halo Retail",
+          "Nimbus Media",
+          "Quantia Labs",
+          "Summit Manufacturing",
+          "Verdant Analytics"
+        ]
+      },
+      {
+        "id": "largestSeats",
+        "component": "Col",
+        "label": "Seats",
+        "type": "number",
+        "data": [
+          820,
+          640,
+          590,
+          510,
+          480,
+          430,
+          390,
+          360,
+          340,
+          310
+        ]
+      },
+      {
+        "id": "largestSpend",
+        "component": "Col",
+        "label": "Monthly spend",
+        "type": "string",
+        "data": [
+          "$86,100",
+          "$74,200",
+          "$68,900",
+          "$61,400",
+          "$57,200",
+          "$50,900",
+          "$46,300",
+          "$43,700",
+          "$41,200",
+          "$38,800"
+        ]
+      },
+      {
+        "id": "riskHeading",
+        "component": "Heading",
+        "text": "Accounts at risk",
+        "level": "h2"
+      },
+      {
+        "id": "riskTable",
+        "component": "Table",
+        "columns": [
+          "riskAccount",
+          "riskReason",
+          "riskScore"
+        ]
+      },
+      {
+        "id": "riskAccount",
+        "component": "Col",
+        "label": "Account",
+        "type": "string",
+        "data": [
+          "Bluepeak Media",
+          "Cedarline Retail",
+          "Fusion Legal",
+          "Orbit Education",
+          "Pinegrove Insurance",
+          "Slatefield Energy"
+        ]
+      },
+      {
+        "id": "riskReason",
+        "component": "Col",
+        "label": "Reason",
+        "type": "string",
+        "data": [
+          "Low weekly active seats for 3 weeks",
+          "Executive sponsor left",
+          "Downgrade requested at renewal",
+          "Support ticket backlog after outage",
+          "Billing dispute unresolved",
+          "Usage dropped 28% month over month"
+        ]
+      },
+      {
+        "id": "riskScore",
+        "component": "Col",
+        "label": "Health score",
+        "type": "number",
+        "data": [
+          38,
+          41,
+          43,
+          46,
+          48,
+          52
+        ]
+      },
+      {
+        "id": "failedHeading",
+        "component": "Heading",
+        "text": "Failed payments",
+        "level": "h2"
+      },
+      {
+        "id": "failedHint",
+        "component": "TextContent",
+        "text": "Use Retry payment to re-charge the saved payment method for each invoice.",
+        "size": "small"
+      },
+      {
+        "id": "failedTable",
+        "component": "Table",
+        "columns": [
+          "failedCustomer",
+          "failedInvoice",
+          "failedAmount",
+          "failedDate",
+          "failedAction"
+        ]
+      },
+      {
+        "id": "failedCustomer",
+        "component": "Col",
+        "label": "Customer",
+        "type": "string",
+        "data": [
+          "Cedarline Retail",
+          "Orbit Education",
+          "Pinegrove Insurance",
+          "Slatefield Energy",
+          "Fusion Legal"
+        ]
+      },
+      {
+        "id": "failedInvoice",
+        "component": "Col",
+        "label": "Invoice",
+        "type": "string",
+        "data": [
+          "INV-20417",
+          "INV-20423",
+          "INV-20431",
+          "INV-20436",
+          "INV-20442"
+        ]
+      },
+      {
+        "id": "failedAmount",
+        "component": "Col",
+        "label": "Amount",
+        "type": "string",
+        "data": [
+          "$12,400",
+          "$6,800",
+          "$9,150",
+          "$4,280",
+          "$7,940"
+        ]
+      },
+      {
+        "id": "failedDate",
+        "component": "Col",
+        "label": "Failed date",
+        "type": "string",
+        "data": [
+          "Aug 1, 2025",
+          "Aug 2, 2025",
+          "Aug 2, 2025",
+          "Aug 3, 2025",
+          "Aug 4, 2025"
+        ]
+      },
+      {
+        "id": "failedAction",
+        "component": "Col",
+        "label": "Action",
+        "type": "action",
+        "data": [
+          "Retry payment",
+          "Retry payment",
+          "Retry payment",
+          "Retry payment",
+          "Retry payment"
+        ]
+      },
+      {
+        "id": "adoptionHeading",
+        "component": "Heading",
+        "text": "Adoption of the three newest features",
+        "level": "h2"
+      },
+      {
+        "id": "adoptionChart",
+        "component": "HorizontalBarChart",
+        "labels": [
+          "AI Meeting Summaries",
+          "Workflow Approvals",
+          "Customer Health Scores"
+        ],
+        "series": [
+          "adoptionSeries"
+        ],
+        "xLabel": "% of active accounts"
+      },
+      {
+        "id": "adoptionSeries",
+        "component": "Series",
+        "category": "Adoption",
+        "values": [
+          58,
+          42,
+          31
+        ]
+      },
+      {
+        "id": "npsHeading",
+        "component": "Heading",
+        "text": "Current NPS",
+        "level": "h2"
+      },
+      {
+        "id": "npsChart",
+        "component": "RadialChart",
+        "labels": [
+          "Current NPS"
+        ],
+        "values": [
+          62
+        ]
+      },
+      {
+        "id": "npsDetail",
+        "component": "TextContent",
+        "text": "62 from 318 responses in the current reporting period.",
+        "size": "small"
+      },
+      {
+        "id": "utilizationHeading",
+        "component": "Heading",
+        "text": "Seat utilization across the company",
+        "level": "h2"
+      },
+      {
+        "id": "utilizationProgress",
+        "component": "Progress",
+        "value": 73,
+        "label": "4,318 of 5,912 seats active (73%)"
+      }
+    ]
+  }
+}
+</a2ui-json>

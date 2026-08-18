@@ -1,0 +1,73 @@
+root = Card([header, summaryCallout, filters, tabs, followUps])
+
+header = CardHeader("PMO Project Portfolio Review", "Q3 2024 Executive Dashboard & Operational Status")
+
+summaryCallout = TextCallout("warning", "Portfolio Health: AMBER", "8 active projects overall are tracking well, but 2 critical milestones are overdue and Cloud Migration faces high-severity risks.")
+
+filters = Buttons([quarterSelect, exportBtn, resourcingBtn, archiveBtn])
+quarterSelect = Button("Filter Quarter: Q3 2024 (Current)", null, "secondary", "normal", "small")
+exportBtn = Button("Export Review (PDF/CSV)", null, "primary", "normal", "small")
+resourcingBtn = Button("Request Resource Allocation", null, "secondary", "normal", "small")
+archiveBtn = Button("Archive Completed Project", null, "tertiary", "normal", "small")
+
+tabs = Tabs([overviewTab, financialsTab, risksOpsTab])
+
+overviewTab = TabItem("overview", "Overview & Deadlines", [activeProjectsHeading, activeProjectsTable, upcomingDeadlinesHeading, upcomingDeadlinesTable, deliveryPaceHeading, deliveryPaceChart])
+
+activeProjectsHeading = Heading("Active Projects Status", "h3")
+activeProjectsTable = Table([colProjName, colProjOwner, colProjDeadline, colProjHealth])
+colProjName = Col("Project Name", ["Cloud Migration Phase 2", "Mobile App Redesign", "ERP Systems Upgrade", "Data Warehouse Expansion", "Customer Portal V2"])
+colProjOwner = Col("Project Owner", ["Sarah Jenkins", "Michael Chang", "David Ross", "Elena Rostova", "Alex Morgan"])
+colProjDeadline = Col("Deadline", ["2024-09-30", "2024-10-15", "2024-11-30", "2024-12-15", "2024-09-25"])
+colProjHealth = Col("Health Status", ["RED", "GREEN", "AMBER", "GREEN", "AMBER"])
+
+upcomingDeadlinesHeading = Heading("Upcoming Deadlines (Next 2 Weeks)", "h3")
+upcomingDeadlinesTable = Table([colDeadProj, colDeadTask, colDeadDate, colDeadOwner])
+colDeadProj = Col("Project", ["Customer Portal V2", "Cloud Migration Phase 2", "Mobile App Redesign"])
+colDeadTask = Col("Deliverable / Deadline", ["UAT Sign-off", "Database Cutover Plan", "iOS Beta Release"])
+colDeadDate = Col("Due Date", ["2024-09-25", "2024-09-28", "2024-10-02"])
+colDeadOwner = Col("Owner", ["Alex Morgan", "Sarah Jenkins", "Michael Chang"])
+
+deliveryPaceHeading = Heading("Delivery Pace (Completed Velocity vs Target)", "h3")
+deliveryPaceChart = BarChart(["Sprint 14", "Sprint 15", "Sprint 16", "Sprint 17", "Sprint 18", "Sprint 19"], [seriesCompleted, seriesTarget], "grouped", "Sprint", "Story Points")
+seriesCompleted = Series("Completed Points", [42, 48, 38, 52, 45, 50])
+seriesTarget = Series("Target Capacity", [45, 45, 45, 50, 50, 50])
+
+financialsTab = TabItem("financials", "Financials & Resources", [budgetHeading, budgetChart, utilizationHeading, utilizationChart])
+
+budgetHeading = Heading("Budget Spent vs Allocation ($k)", "h3")
+budgetChart = HorizontalBarChart(["Cloud Migration", "Mobile App", "ERP Upgrade", "Data Warehouse", "Customer Portal"], [seriesBudgetSpent, seriesBudgetAlloc], "grouped", "Amount ($k)", "Project")
+seriesBudgetSpent = Series("Spent ($k)", [320, 180, 450, 120, 210])
+seriesBudgetAlloc = Series("Allocated ($k)", [350, 200, 600, 250, 220])
+
+utilizationHeading = Heading("Team Capacity & Utilization (%)", "h3")
+utilizationChart = HorizontalBarChart(["DevOps Team", "Frontend Team", "Backend Team", "QA / Testing", "Data Engineering"], [seriesUtilRate], "grouped", "Utilization %", "Team")
+seriesUtilRate = Series("Utilization %", [112, 95, 88, 105, 78])
+
+risksOpsTab = TabItem("risks", "Risks & Blockers", [overdueHeading, overdueTable, blockersHeading, blockersTable, risksHeading, risksTable])
+
+overdueHeading = Heading("Overdue Milestones", "h3")
+overdueTable = Table([colOverProj, colOverMs, colOverDue, colOverDays])
+colOverProj = Col("Project", ["Cloud Migration Phase 2", "ERP Systems Upgrade"])
+colOverMs = Col("Overdue Milestone", ["Legacy Infra Audit", "Vendor Contract Finalization"])
+colOverDue = Col("Target Date", ["2024-09-01", "2024-09-10"])
+colOverDays = Col("Days Overdue", [21, 12])
+
+blockersHeading = Heading("Blocked Work Items", "h3")
+blockersTable = Table([colBlockId, colBlockTitle, colBlockProj, colBlockReason])
+colBlockId = Col("Ticket ID", ["CLM-402", "ERP-118", "CP-89"])
+colBlockTitle = Col("Blocked Item", ["AWS Security Group Approval", "SAP API Gateway Access", "Payment Gateway Staging Credentials"])
+colBlockProj = Col("Project", ["Cloud Migration Phase 2", "ERP Systems Upgrade", "Customer Portal V2"])
+colBlockReason = Col("Blocker Detail", ["Pending InfoSec review", "Third-party dependency delayed", "Awaiting vendor clearance"])
+
+risksHeading = Heading("Key Portfolio Risks", "h3")
+risksTable = Table([colRiskProj, colRiskDesc, colRiskSev, colRiskMitigation])
+colRiskProj = Col("Project", ["Cloud Migration Phase 2", "ERP Systems Upgrade", "Mobile App Redesign"])
+colRiskDesc = Col("Risk Description", ["Data center bandwidth constraints during migration", "Legacy system data schema mismatch", "App Store guideline changes for biometrics"])
+colRiskSev = Col("Severity", ["HIGH", "HIGH", "MEDIUM"])
+colRiskMitigation = Col("Mitigation Strategy", ["Schedule off-peak delta syncs", "Build custom ETL transformation mapping", "Update SDK to compliant v3.2"])
+
+followUps = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Request resource reallocation for Cloud Migration")
+fu2 = FollowUpItem("Download detailed Q3 financial variance report")
+fu3 = FollowUpItem("Schedule risk mitigation meeting for ERP Upgrade")

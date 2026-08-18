@@ -1,0 +1,228 @@
+Here's an async standup screen covering all five requirements.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "metaRow",
+          "blockedAlert",
+          "updatesHeading",
+          "updatesTable",
+          "postDivider",
+          "postForm"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Async Standup",
+        "subtitle": "Team Orbit — daily check-in"
+      },
+      {
+        "id": "metaRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "s",
+        "align": "center",
+        "children": [
+          "dateBadge",
+          "missingBadge"
+        ]
+      },
+      {
+        "id": "dateBadge",
+        "component": "Tag",
+        "text": "Monday, June 9, 2025",
+        "icon": "calendar",
+        "variant": "info"
+      },
+      {
+        "id": "missingBadge",
+        "component": "Tag",
+        "text": "2 updates still missing",
+        "icon": "clock",
+        "variant": "warning"
+      },
+      {
+        "id": "blockedAlert",
+        "component": "Alert",
+        "title": "1 person is blocked",
+        "description": "Priya is blocked waiting on API access — needs help to unblock the payments task.",
+        "variant": "warning"
+      },
+      {
+        "id": "updatesHeading",
+        "component": "Heading",
+        "text": "Today's updates",
+        "level": "h3"
+      },
+      {
+        "id": "updatesTable",
+        "component": "Table",
+        "columns": [
+          "colName",
+          "colStatus",
+          "colUpdate"
+        ]
+      },
+      {
+        "id": "colName",
+        "component": "Col",
+        "label": "Teammate",
+        "type": "string",
+        "data": [
+          "Alex Chen",
+          "Priya Nair",
+          "Marco Silva",
+          "Dana Kim",
+          "Sofia Rossi"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "type": "string",
+        "data": [
+          "Posted",
+          "Blocked",
+          "Posted",
+          "Missing",
+          "Missing"
+        ]
+      },
+      {
+        "id": "colUpdate",
+        "component": "Col",
+        "label": "Update",
+        "type": "string",
+        "data": [
+          "Shipped the onboarding redesign; starting on analytics dashboard next.",
+          "BLOCKED — waiting on API access for payments integration. Reviewed 3 PRs meanwhile.",
+          "Fixed the flaky CI tests; pairing with Alex this afternoon.",
+          "—",
+          "—"
+        ]
+      },
+      {
+        "id": "postDivider",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "postForm",
+        "component": "Form",
+        "name": "standup-update",
+        "buttons": "postButtons",
+        "fields": [
+          "statusField",
+          "updateField",
+          "blockerField"
+        ]
+      },
+      {
+        "id": "statusField",
+        "component": "FormControl",
+        "label": "Your status",
+        "input": "statusSelect"
+      },
+      {
+        "id": "statusSelect",
+        "component": "Select",
+        "name": "status",
+        "placeholder": "Select status",
+        "items": [
+          "statusOnTrack",
+          "statusBlocked",
+          "statusOff"
+        ]
+      },
+      {
+        "id": "statusOnTrack",
+        "component": "SelectItem",
+        "value": "on_track",
+        "label": "On track"
+      },
+      {
+        "id": "statusBlocked",
+        "component": "SelectItem",
+        "value": "blocked",
+        "label": "Blocked"
+      },
+      {
+        "id": "statusOff",
+        "component": "SelectItem",
+        "value": "off",
+        "label": "Out / off today"
+      },
+      {
+        "id": "updateField",
+        "component": "FormControl",
+        "label": "What did you do / what's next?",
+        "input": "updateInput",
+        "hint": "Keep it short — yesterday, today, next steps"
+      },
+      {
+        "id": "updateInput",
+        "component": "TextArea",
+        "name": "update",
+        "placeholder": "Yesterday I… Today I'll…",
+        "rows": 3
+      },
+      {
+        "id": "blockerField",
+        "component": "FormControl",
+        "label": "Any blockers? (optional)",
+        "input": "blockerInput",
+        "hint": "Mention who or what you're waiting on"
+      },
+      {
+        "id": "blockerInput",
+        "component": "Input",
+        "name": "blocker",
+        "type": "text",
+        "placeholder": "e.g. Waiting on design review"
+      },
+      {
+        "id": "postButtons",
+        "component": "Buttons",
+        "buttons": [
+          "postBtn"
+        ]
+      },
+      {
+        "id": "postBtn",
+        "component": "Button",
+        "label": "Post my update",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This screen covers each requirement:
+
+1. **Teammates with today's status** — the updates table lists each person and their update text.
+2. **Blocked call-out** — a warning `Alert` names Priya and why she's blocked (also flagged in the table's Status column).
+3. **Today's date** — shown in the info tag at the top.
+4. **Post your own update** — the form with status, update, and blocker fields plus a "Post my update" button.
+5. **Missing update count** — the warning tag "2 updates still missing" (matching the two "Missing" rows in the table).

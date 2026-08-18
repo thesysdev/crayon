@@ -1,0 +1,36 @@
+root = Card([header, kpis, trendSection, topProductsSection, downloadActions, followUps], "card", "column", "m")
+header = CardHeader("Monthly Sales Dashboard", "Founder's performance snapshot for October 2023")
+
+kpis = Card([revKpi, convKpi], "clear", "row", "m")
+revKpi = Card([revLabel, revValue, revBadge], "sunk", "column", "xs")
+revLabel = TextContent("Revenue This Month", "small")
+revValue = Heading("$48,250", "h2")
+revBadge = Tag("+12% vs last month", null, "sm", "success")
+
+convKpi = Card([convLabel, convValue, convBadge], "sunk", "column", "xs")
+convLabel = TextContent("Conversion Rate", "small")
+convValue = Heading("3.8%", "h2")
+convBadge = Tag("+0.4% vs last month", null, "sm", "success")
+
+trendSection = Card([trendHeader, revenueChart], "sunk", "column", "s")
+trendHeader = CardHeader("Revenue Trend", "Last 6 Months (May - Oct 2023)")
+revenueChart = AreaChart(trendLabels, [revSeries], "natural", "Month", "Revenue ($)")
+trendLabels = ["May", "Jun", "Jul", "Aug", "Sep", "Oct"]
+revSeries = Series("Revenue ($)", [31000, 34500, 38000, 36500, 43000, 48250])
+
+topProductsSection = Card([productsHeader, productsTable], "sunk", "column", "s")
+productsHeader = CardHeader("Top 3 Best-Selling Products", "Ranked by units sold this month")
+productsTable = Table([rankCol, productCol, unitsCol, revShareCol])
+rankCol = Col("#", [1, 2, 3], "number")
+productCol = Col("Product", ["SaaS Pro Tier", "Starter Kit Bundle", "Enterprise Add-on"])
+unitsCol = Col("Units Sold", [320, 215, 84], "number")
+revShareCol = Col("Total Revenue", ["$19,200", "$10,750", "$12,600"])
+
+downloadActions = Buttons([downloadCsvBtn, downloadPdfBtn], "row")
+downloadCsvBtn = Button("Download CSV Report", null, "primary")
+downloadPdfBtn = Button("Export PDF Summary", null, "secondary")
+
+followUps = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Show customer acquisition cost")
+fu2 = FollowUpItem("Breakdown revenue by region")
+fu3 = FollowUpItem("Compare against quarterly targets")

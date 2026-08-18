@@ -1,0 +1,61 @@
+root = Card([header, mainGrid, calloutSection, followUp])
+header = CardHeader("Personal Budget Overview", "Monthly spending tracker & insights")
+
+mainGrid = Card([controlsRow, sep1, kpiRow, sep2, categorySection], "clear", "column", "m")
+
+controlsRow = Card([monthSelectField, addExpenseModal], "clear", "row", "m", "center", "between")
+
+monthSelectField = FormControl("Select Month", monthSelect)
+monthSelect = Select("selected_month", [m1, m2, m3], "Choose month", null, "2023-10", "small")
+m1 = SelectItem("2023-08", "August 2023")
+m2 = SelectItem("2023-09", "September 2023")
+m3 = SelectItem("2023-10", "October 2023")
+
+addExpenseModal = DialogBlock("Add Expense", "Record New Expense", "Enter details of your transaction below.", addExpenseForm, "default")
+
+addExpenseForm = Form("add_expense_form", formBtns, [expAmountField, expCatField, expDateField, expNoteField])
+expAmountField = FormControl("Amount ($)", expAmountInput)
+expAmountInput = Input("amount", "0.00", "number")
+expCatField = FormControl("Category", expCatSelect)
+expCatSelect = Select("category", [cat1, cat2, cat3, cat4, cat5], "Select category")
+cat1 = SelectItem("housing", "Housing & Rent")
+cat2 = SelectItem("groceries", "Groceries")
+cat3 = SelectItem("dining", "Dining & Entertainment")
+cat4 = SelectItem("transport", "Transportation")
+cat5 = SelectItem("utilities", "Utilities & Bills")
+
+expDateField = FormControl("Date", expDatePicker)
+expDatePicker = DatePicker("date", "single")
+
+expNoteField = FormControl("Description / Merchant", expNoteInput)
+expNoteInput = Input("description", "e.g. Trader Joe's")
+
+formBtns = Buttons([submitExpBtn])
+submitExpBtn = Button("Save Expense", null, "primary")
+
+sep1 = Separator("horizontal")
+
+kpiRow = Card([budgetProgressCard, budgetDetailsCard], "clear", "row", "l", "center")
+
+budgetProgressCard = Card([progTitle, mainProg, progSub], "sunk", "column", "xs")
+progTitle = Heading("Monthly Spend vs Budget", "h4")
+mainProg = Progress(78, "$3,120 / $4,000 Spent")
+progSub = TextContent("You have **$880** remaining for the rest of October.", "small")
+
+budgetDetailsCard = Card([badgeStatus, detailText], "sunk", "column", "s")
+badgeStatus = Badge("On Track (78%)", "secondary")
+detailText = TextContent("Daily average: **$100.64**. Recommended daily cap to stay within budget: **$80.00**.", "small")
+
+sep2 = Separator("horizontal")
+
+categorySection = Card([catHeader, catChart], "clear", "column", "s")
+catHeader = Heading("Spending Breakdown by Category", "h4")
+catChart = HorizontalBarChart(["Housing", "Groceries", "Dining", "Transportation", "Utilities"], [catSeries], "grouped", "Amount Spent ($)", "Category")
+catSeries = Series("October Spend", [1450, 620, 430, 380, 240])
+
+calloutSection = Callout("warning", "Largest Single Expense", "Rent Payment of $1,450.00 on Oct 1st (Housing category). Accounts for 46.5% of your total spend this month.")
+
+followUp = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Set up spend alerts for Dining")
+f2 = FollowUpItem("Export October report as PDF")
+f3 = FollowUpItem("Adjust monthly budget limit")

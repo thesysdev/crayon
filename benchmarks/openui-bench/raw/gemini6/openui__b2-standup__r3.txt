@@ -1,0 +1,42 @@
+root = Card([header, mainSection, postUpdateSection])
+
+header = CardHeader("Async Standup", "Date: October 24, 2023")
+
+mainSection = Card([statusCallout, teamListHeading, teamList], "sunk")
+
+statusCallout = Callout("warning", "Blockers & Missing Updates", "1 team member is currently blocked. 2 updates are still missing for today.")
+
+teamListHeading = Heading("Team Updates", "h3")
+
+teamList = ListBlock([item1, item2, item3, item4], "image")
+
+item1 = ListItem("Alex Chen (Frontend)", "Yesterday: Completed auth flow | Today: Integrating API endpoints | BLOCKED: Waiting for user service deployment", [avatar1], "Offer Help")
+avatar1 = "https://picsum.photos/seed/alex/100/100"
+
+item2 = ListItem("Sarah Jenkins (Design)", "Yesterday: Figma tokens | Today: Reviewing PRs and updating UI kit | Blockers: None", [avatar2])
+avatar2 = "https://picsum.photos/seed/sarah/100/100"
+
+item3 = ListItem("Michael Scott (Backend)", "Yesterday: DB migrations | Today: Optimizing query performance | Blockers: None", [avatar3])
+avatar3 = "https://picsum.photos/seed/michael/100/100"
+
+item4 = ListItem("Emma Watson (QA)", "Status: Update missing for today", [avatar4], "Remind")
+avatar4 = "https://picsum.photos/seed/emma/100/100"
+
+postUpdateSection = SectionBlock([postUpdateSectionItem])
+
+postUpdateSectionItem = SectionItem("post-update", "Post Your Update", [updateForm])
+
+updateForm = Form("standup_form", formButtons, [fieldYesterday, fieldToday, fieldBlockers])
+
+fieldYesterday = FormControl("What did you do yesterday?", inputYesterday)
+inputYesterday = TextArea("yesterday", "Briefly describe your accomplishments...")
+
+fieldToday = FormControl("What are you working on today?", inputToday)
+inputToday = TextArea("today", "Briefly describe your planned tasks...")
+
+fieldBlockers = FormControl("Any blockers?", inputBlockers, "Leave blank if no blockers")
+inputBlockers = Input("blockers", "e.g., Waiting for code review, API access issue...")
+
+formButtons = Buttons([submitBtn, draftBtn])
+submitBtn = Button("Submit Update", null, "primary")
+draftBtn = Button("Save Draft", null, "secondary")

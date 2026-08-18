@@ -1,0 +1,165 @@
+Here's a low-inventory warning screen with a search bar, the trigger threshold, a per-item table with remaining units, and reorder actions on every row.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "alert",
+          "thresholdInfo",
+          "searchInput",
+          "itemsTable",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Low Inventory Warnings",
+        "subtitle": "Main warehouse · updated 5 minutes ago"
+      },
+      {
+        "id": "alert",
+        "component": "Alert",
+        "title": "6 items are running low",
+        "description": "The items below have fallen under the reorder threshold and need restocking soon.",
+        "variant": "warning"
+      },
+      {
+        "id": "thresholdInfo",
+        "component": "TextContent",
+        "text": "**Warning threshold:** an item is flagged when its stock drops below **20 units**.",
+        "size": "small"
+      },
+      {
+        "id": "searchInput",
+        "component": "Input",
+        "name": "search",
+        "placeholder": "Search items by name or SKU…",
+        "type": "text"
+      },
+      {
+        "id": "itemsTable",
+        "component": "Table",
+        "columns": [
+          "colItem",
+          "colSku",
+          "colUnits",
+          "colStatus",
+          "colReorder"
+        ]
+      },
+      {
+        "id": "colItem",
+        "component": "Col",
+        "label": "Item",
+        "data": [
+          "Wireless Mouse",
+          "USB-C Cable 1m",
+          "Notebook A5",
+          "Gel Pens (10-pack)",
+          "Desk Lamp",
+          "Keyboard Wrist Rest"
+        ]
+      },
+      {
+        "id": "colSku",
+        "component": "Col",
+        "label": "SKU",
+        "data": [
+          "WM-2041",
+          "UC-1180",
+          "NB-3305",
+          "GP-5520",
+          "DL-7712",
+          "KW-9918"
+        ]
+      },
+      {
+        "id": "colUnits",
+        "component": "Col",
+        "label": "Units left",
+        "type": "number",
+        "data": [
+          4,
+          9,
+          12,
+          3,
+          17,
+          6
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Critical",
+          "Low",
+          "Low",
+          "Critical",
+          "Low",
+          "Critical"
+        ]
+      },
+      {
+        "id": "colReorder",
+        "component": "Col",
+        "label": "Reorder",
+        "type": "action",
+        "data": [
+          "Reorder",
+          "Reorder",
+          "Reorder",
+          "Reorder",
+          "Reorder",
+          "Reorder"
+        ]
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": [
+          "reorderAllBtn",
+          "exportBtn"
+        ]
+      },
+      {
+        "id": "reorderAllBtn",
+        "component": "Button",
+        "label": "Reorder all low items",
+        "variant": "primary"
+      },
+      {
+        "id": "exportBtn",
+        "component": "Button",
+        "label": "Export list",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+How each requirement is covered:
+
+1. **Low items + remaining units** — the table lists all 6 flagged items with a "Units left" column (e.g., Wireless Mouse: 4 units) plus a severity status.
+2. **Reorder per item** — every row has its own "Reorder" action button in the last column, with a bulk "Reorder all low items" button as a bonus.
+3. **Trigger threshold** — stated explicitly in the info line and the alert: the warning fires when stock drops below 20 units.
+4. **Search** — a search input above the table filters items by name or SKU.

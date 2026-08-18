@@ -1,0 +1,404 @@
+Here is your daily fitness summary interface, featuring your step count progress, calorie breakdown, weekly workout trend, and a quick logger for new activities.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "summaryAlert",
+          "tabs",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Daily Summary",
+        "subtitle": "Track your progress and log today's activities"
+      },
+      {
+        "id": "summaryAlert",
+        "component": "Callout",
+        "variant": "success",
+        "title": "Goal Achieved!",
+        "description": "You've exceeded your daily step goal by 520 steps. Great work!"
+      },
+      {
+        "id": "tabs",
+        "component": "Tabs",
+        "items": [
+          "overviewTab",
+          "weeklyTab",
+          "logTab"
+        ]
+      },
+      {
+        "id": "overviewTab",
+        "component": "TabItem",
+        "value": "overview",
+        "trigger": "Today's Stats",
+        "content": [
+          "stepsHeading",
+          "stepProgress",
+          "stepText",
+          "sep1",
+          "caloriesHeading",
+          "calorieBreakdown",
+          "statsTable"
+        ]
+      },
+      {
+        "id": "stepsHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "Step Count"
+      },
+      {
+        "id": "stepProgress",
+        "component": "Progress",
+        "value": 105,
+        "label": "10,520 / 10,000 steps"
+      },
+      {
+        "id": "stepText",
+        "component": "TextContent",
+        "size": "small",
+        "text": "**105%** of daily target reached"
+      },
+      {
+        "id": "sep1",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "caloriesHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "Calories Burned"
+      },
+      {
+        "id": "calorieBreakdown",
+        "component": "SingleStackedBarChart",
+        "labels": [
+          "Active Burn",
+          "Resting Burn"
+        ],
+        "values": [
+          650,
+          1850
+        ]
+      },
+      {
+        "id": "statsTable",
+        "component": "Table",
+        "columns": [
+          "metricCol",
+          "valueCol",
+          "statusCol"
+        ]
+      },
+      {
+        "id": "metricCol",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Active Calories",
+          "Resting Calories",
+          "Total Energy",
+          "Active Time"
+        ]
+      },
+      {
+        "id": "valueCol",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "650 kcal",
+          "1,850 kcal",
+          "2,500 kcal",
+          "45 mins"
+        ]
+      },
+      {
+        "id": "statusCol",
+        "component": "Col",
+        "label": "Goal Status",
+        "data": [
+          "Exceeded",
+          "Baseline",
+          "On Track",
+          "Met"
+        ]
+      },
+      {
+        "id": "weeklyTab",
+        "component": "TabItem",
+        "value": "weekly",
+        "trigger": "Weekly Trend",
+        "content": [
+          "trendHeading",
+          "workoutChart",
+          "trendCallout"
+        ]
+      },
+      {
+        "id": "trendHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "Workouts Over the Past Week"
+      },
+      {
+        "id": "workoutChart",
+        "component": "BarChart",
+        "labels": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat",
+          "Sun"
+        ],
+        "series": [
+          "cardioSeries",
+          "strengthSeries"
+        ],
+        "variant": "stacked",
+        "xLabel": "Day",
+        "yLabel": "Duration (mins)"
+      },
+      {
+        "id": "cardioSeries",
+        "component": "Series",
+        "category": "Cardio",
+        "values": [
+          30,
+          0,
+          45,
+          20,
+          30,
+          60,
+          0
+        ]
+      },
+      {
+        "id": "strengthSeries",
+        "component": "Series",
+        "category": "Strength",
+        "values": [
+          20,
+          45,
+          0,
+          40,
+          0,
+          30,
+          20
+        ]
+      },
+      {
+        "id": "trendCallout",
+        "component": "TextCallout",
+        "variant": "info",
+        "title": "Weekly Performance",
+        "description": "Total workout duration: 340 minutes across 6 active days. Saturday was your highest activity day!"
+      },
+      {
+        "id": "logTab",
+        "component": "TabItem",
+        "value": "log",
+        "trigger": "Log Workout",
+        "content": [
+          "workoutForm"
+        ]
+      },
+      {
+        "id": "workoutForm",
+        "component": "Form",
+        "name": "log-workout-form",
+        "buttons": "formButtons",
+        "fields": [
+          "typeControl",
+          "durationControl",
+          "intensityControl",
+          "notesControl"
+        ]
+      },
+      {
+        "id": "typeControl",
+        "component": "FormControl",
+        "label": "Workout Type",
+        "input": "typeSelect"
+      },
+      {
+        "id": "typeSelect",
+        "component": "Select",
+        "name": "workout_type",
+        "placeholder": "Select activity type",
+        "items": [
+          "itemRunning",
+          "itemCycling",
+          "itemStrength",
+          "itemYoga",
+          "itemHIIT",
+          "itemWalking"
+        ]
+      },
+      {
+        "id": "itemRunning",
+        "component": "SelectItem",
+        "value": "running",
+        "label": "Running"
+      },
+      {
+        "id": "itemCycling",
+        "component": "SelectItem",
+        "value": "cycling",
+        "label": "Cycling"
+      },
+      {
+        "id": "itemStrength",
+        "component": "SelectItem",
+        "value": "strength",
+        "label": "Strength Training"
+      },
+      {
+        "id": "itemYoga",
+        "component": "SelectItem",
+        "value": "yoga",
+        "label": "Yoga / Mobility"
+      },
+      {
+        "id": "itemHIIT",
+        "component": "SelectItem",
+        "value": "hiit",
+        "label": "HIIT"
+      },
+      {
+        "id": "itemWalking",
+        "component": "SelectItem",
+        "value": "walking",
+        "label": "Brisk Walking"
+      },
+      {
+        "id": "durationControl",
+        "component": "FormControl",
+        "label": "Duration (minutes)",
+        "input": "durationSlider",
+        "hint": "Drag to set duration in minutes"
+      },
+      {
+        "id": "durationSlider",
+        "component": "Slider",
+        "name": "duration",
+        "variant": "discrete",
+        "min": 5,
+        "max": 180,
+        "step": 5,
+        "defaultValue": [
+          30
+        ]
+      },
+      {
+        "id": "intensityControl",
+        "component": "FormControl",
+        "label": "Intensity Level",
+        "input": "intensityRadio"
+      },
+      {
+        "id": "intensityRadio",
+        "component": "RadioGroup",
+        "name": "intensity",
+        "defaultValue": "moderate",
+        "items": [
+          "intensityLight",
+          "intensityMod",
+          "intensityVig"
+        ]
+      },
+      {
+        "id": "intensityLight",
+        "component": "RadioItem",
+        "label": "Light",
+        "description": "Easy pace, normal breathing",
+        "value": "light"
+      },
+      {
+        "id": "intensityMod",
+        "component": "RadioItem",
+        "label": "Moderate",
+        "description": "Increased heart rate, light sweating",
+        "value": "moderate"
+      },
+      {
+        "id": "intensityVig",
+        "component": "RadioItem",
+        "label": "Vigorous",
+        "description": "High exertion, heavy breathing",
+        "value": "vigorous"
+      },
+      {
+        "id": "notesControl",
+        "component": "FormControl",
+        "label": "Workout Notes (Optional)",
+        "input": "notesInput"
+      },
+      {
+        "id": "notesInput",
+        "component": "TextArea",
+        "name": "notes",
+        "placeholder": "How did it feel? E.g., Outdoor run, felt strong on hills...",
+        "rows": 3
+      },
+      {
+        "id": "formButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitLogBtn"
+        ]
+      },
+      {
+        "id": "submitLogBtn",
+        "component": "Button",
+        "label": "Save Workout",
+        "variant": "primary"
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": [
+          "shareProgressBtn",
+          "syncDeviceBtn"
+        ]
+      },
+      {
+        "id": "shareProgressBtn",
+        "component": "Button",
+        "label": "Share Today's Summary",
+        "variant": "secondary"
+      },
+      {
+        "id": "syncDeviceBtn",
+        "component": "Button",
+        "label": "Sync Fitness Tracker",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>

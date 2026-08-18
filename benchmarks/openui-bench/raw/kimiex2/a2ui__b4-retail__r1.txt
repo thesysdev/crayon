@@ -1,0 +1,562 @@
+Here's a complete daily console for a store manager, covering all 12 requirements:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "storePicker",
+          "salesAlert",
+          "salesProgress",
+          "weekCompare",
+          "trafficChart",
+          "bestSellers",
+          "outOfStock",
+          "shiftTable",
+          "returnsCard",
+          "promoTable",
+          "registers",
+          "reorderCard"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Store #214 — Daily Console",
+        "subtitle": "Tuesday, live as of 3:40 PM"
+      },
+      {
+        "id": "storePicker",
+        "component": "FormControl",
+        "label": "Viewing store",
+        "input": "storeSelect",
+        "hint": "Switch to view a different location"
+      },
+      {
+        "id": "storeSelect",
+        "component": "Select",
+        "name": "store",
+        "value": "214",
+        "items": [
+          "st214",
+          "st307",
+          "st512"
+        ]
+      },
+      {
+        "id": "st214",
+        "component": "SelectItem",
+        "value": "214",
+        "label": "Store #214 — Downtown"
+      },
+      {
+        "id": "st307",
+        "component": "SelectItem",
+        "value": "307",
+        "label": "Store #307 — Riverside Mall"
+      },
+      {
+        "id": "st512",
+        "component": "SelectItem",
+        "value": "512",
+        "label": "Store #512 — Airport Plaza"
+      },
+      {
+        "id": "salesAlert",
+        "component": "Alert",
+        "title": "Sales today: $18,450 of $22,000 target (84%)",
+        "description": "Pacing slightly behind — need ~$1,200/hr for the remaining 3 hours",
+        "variant": "warning"
+      },
+      {
+        "id": "salesProgress",
+        "component": "Progress",
+        "value": 84,
+        "label": "Progress to daily sales target"
+      },
+      {
+        "id": "weekCompare",
+        "component": "BarChart",
+        "labels": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat",
+          "Sun"
+        ],
+        "series": [
+          "thisWeek",
+          "lastWeek"
+        ],
+        "variant": "grouped",
+        "xLabel": "Day",
+        "yLabel": "Sales (USD)"
+      },
+      {
+        "id": "thisWeek",
+        "component": "Series",
+        "category": "This week",
+        "values": [
+          17200,
+          18450
+        ]
+      },
+      {
+        "id": "lastWeek",
+        "component": "Series",
+        "category": "Last week",
+        "values": [
+          15800,
+          16900,
+          18100,
+          19500,
+          24300,
+          28700,
+          14600
+        ]
+      },
+      {
+        "id": "trafficChart",
+        "component": "AreaChart",
+        "labels": [
+          "9am",
+          "10am",
+          "11am",
+          "12pm",
+          "1pm",
+          "2pm",
+          "3pm"
+        ],
+        "series": [
+          "footTraffic"
+        ],
+        "variant": "natural",
+        "xLabel": "Hour",
+        "yLabel": "Visitors"
+      },
+      {
+        "id": "footTraffic",
+        "component": "Series",
+        "category": "Foot traffic today",
+        "values": [
+          42,
+          68,
+          91,
+          134,
+          121,
+          96,
+          88
+        ]
+      },
+      {
+        "id": "bestSellers",
+        "component": "Table",
+        "columns": [
+          "bsProduct",
+          "bsUnits",
+          "bsRevenue"
+        ]
+      },
+      {
+        "id": "bsProduct",
+        "component": "Col",
+        "label": "Best sellers today",
+        "data": [
+          "Classic Denim Jacket",
+          "Organic Cotton Tee",
+          "Canvas Tote Bag",
+          "Running Sneakers",
+          "Wool Beanie"
+        ]
+      },
+      {
+        "id": "bsUnits",
+        "component": "Col",
+        "label": "Units sold",
+        "data": [
+          34,
+          61,
+          27,
+          19,
+          23
+        ],
+        "type": "number"
+      },
+      {
+        "id": "bsRevenue",
+        "component": "Col",
+        "label": "Revenue",
+        "data": [
+          "$2,380",
+          "$1,220",
+          "$945",
+          "$2,090",
+          "$575"
+        ]
+      },
+      {
+        "id": "outOfStock",
+        "component": "Table",
+        "columns": [
+          "oosItem",
+          "oosSince",
+          "oosEta"
+        ]
+      },
+      {
+        "id": "oosItem",
+        "component": "Col",
+        "label": "Out of stock",
+        "data": [
+          "Leather Wallet — Brown",
+          "Yoga Mat — Teal",
+          "Water Bottle 1L"
+        ]
+      },
+      {
+        "id": "oosSince",
+        "component": "Col",
+        "label": "Out since",
+        "data": [
+          "Yesterday",
+          "2 days ago",
+          "Today"
+        ]
+      },
+      {
+        "id": "oosEta",
+        "component": "Col",
+        "label": "Restock ETA",
+        "data": [
+          "Thursday",
+          "Friday",
+          "Next Monday"
+        ]
+      },
+      {
+        "id": "shiftTable",
+        "component": "Table",
+        "columns": [
+          "shiftName",
+          "shiftRole",
+          "shiftHours"
+        ]
+      },
+      {
+        "id": "shiftName",
+        "component": "Col",
+        "label": "On shift today",
+        "data": [
+          "Maria Lopez",
+          "Dev Patel",
+          "Aisha Khan",
+          "Tom Reyes",
+          "Grace Wu"
+        ]
+      },
+      {
+        "id": "shiftRole",
+        "component": "Col",
+        "label": "Role",
+        "data": [
+          "Floor lead",
+          "Cashier",
+          "Cashier",
+          "Stock",
+          "Fitting rooms"
+        ]
+      },
+      {
+        "id": "shiftHours",
+        "component": "Col",
+        "label": "Hours",
+        "data": [
+          "8am–5pm",
+          "9am–6pm",
+          "12pm–9pm",
+          "8am–4pm",
+          "1pm–9pm"
+        ]
+      },
+      {
+        "id": "returnsCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "returnsHeader",
+          "returnsStats"
+        ]
+      },
+      {
+        "id": "returnsHeader",
+        "component": "CardHeader",
+        "title": "Returns this week",
+        "subtitle": "Also: average basket size $46.20 (up 3.1% vs last week)"
+      },
+      {
+        "id": "returnsStats",
+        "component": "Table",
+        "columns": [
+          "retMetric",
+          "retValue"
+        ]
+      },
+      {
+        "id": "retMetric",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Return count",
+          "Return value",
+          "Return rate",
+          "Top returned item"
+        ]
+      },
+      {
+        "id": "retValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "23",
+          "$1,140",
+          "2.4% of sales",
+          "Running Sneakers (sizing)"
+        ]
+      },
+      {
+        "id": "promoTable",
+        "component": "Table",
+        "columns": [
+          "promoName",
+          "promoPerf",
+          "promoStatus"
+        ]
+      },
+      {
+        "id": "promoName",
+        "component": "Col",
+        "label": "Running promotion",
+        "data": [
+          "BOGO 50% on tees",
+          "20% off outerwear",
+          "Loyalty double points"
+        ]
+      },
+      {
+        "id": "promoPerf",
+        "component": "Col",
+        "label": "Performance",
+        "data": [
+          "61 redemptions, $1,220 revenue",
+          "12 redemptions, $840 revenue",
+          "88 signups, +$3,400 attributed"
+        ]
+      },
+      {
+        "id": "promoStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Above plan",
+          "Below plan",
+          "On plan"
+        ]
+      },
+      {
+        "id": "registers",
+        "component": "Table",
+        "columns": [
+          "regId",
+          "regStatus",
+          "regCashier"
+        ]
+      },
+      {
+        "id": "regId",
+        "component": "Col",
+        "label": "Register",
+        "data": [
+          "Register 1",
+          "Register 2",
+          "Register 3",
+          "Register 4",
+          "Self-checkout"
+        ]
+      },
+      {
+        "id": "regStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Open",
+          "Open",
+          "Closed",
+          "Open",
+          "Open"
+        ]
+      },
+      {
+        "id": "regCashier",
+        "component": "Col",
+        "label": "Staffed by",
+        "data": [
+          "Dev Patel",
+          "Aisha Khan",
+          "—",
+          "Maria Lopez",
+          "Unattended"
+        ]
+      },
+      {
+        "id": "reorderCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "reorderHeader",
+          "reorderForm"
+        ]
+      },
+      {
+        "id": "reorderHeader",
+        "component": "CardHeader",
+        "title": "Reorder an item",
+        "subtitle": "Submit a restock request to the warehouse"
+      },
+      {
+        "id": "reorderForm",
+        "component": "Form",
+        "name": "reorder",
+        "fields": [
+          "reorderItemField",
+          "reorderQtyField",
+          "reorderUrgencyField"
+        ],
+        "buttons": "reorderButtons"
+      },
+      {
+        "id": "reorderItemField",
+        "component": "FormControl",
+        "label": "Item",
+        "input": "reorderItem"
+      },
+      {
+        "id": "reorderItem",
+        "component": "Select",
+        "name": "item",
+        "placeholder": "Choose an item",
+        "items": [
+          "riWallet",
+          "riMat",
+          "riBottle"
+        ]
+      },
+      {
+        "id": "riWallet",
+        "component": "SelectItem",
+        "value": "wallet",
+        "label": "Leather Wallet — Brown"
+      },
+      {
+        "id": "riMat",
+        "component": "SelectItem",
+        "value": "yoga-mat",
+        "label": "Yoga Mat — Teal"
+      },
+      {
+        "id": "riBottle",
+        "component": "SelectItem",
+        "value": "bottle",
+        "label": "Water Bottle 1L"
+      },
+      {
+        "id": "reorderQtyField",
+        "component": "FormControl",
+        "label": "Quantity",
+        "input": "reorderQty"
+      },
+      {
+        "id": "reorderQty",
+        "component": "Input",
+        "name": "quantity",
+        "type": "number",
+        "placeholder": "e.g. 24"
+      },
+      {
+        "id": "reorderUrgencyField",
+        "component": "FormControl",
+        "label": "Urgency",
+        "input": "reorderUrgency"
+      },
+      {
+        "id": "reorderUrgency",
+        "component": "RadioGroup",
+        "name": "urgency",
+        "items": [
+          "urgStandard",
+          "urgRush"
+        ]
+      },
+      {
+        "id": "urgStandard",
+        "component": "RadioItem",
+        "label": "Standard",
+        "description": "Next scheduled delivery",
+        "value": "standard"
+      },
+      {
+        "id": "urgRush",
+        "component": "RadioItem",
+        "label": "Rush",
+        "description": "Expedited, extra fee applies",
+        "value": "rush"
+      },
+      {
+        "id": "reorderButtons",
+        "component": "Buttons",
+        "buttons": [
+          "reorderSubmit"
+        ]
+      },
+      {
+        "id": "reorderSubmit",
+        "component": "Button",
+        "label": "Submit reorder",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This console covers everything:
+
+1. **Sales vs target** — alert + progress bar ($18,450 of $22,000, 84%)
+2. **Foot traffic** — hourly area chart through the day
+3. **Best sellers** — table with units and revenue per item
+4. **Out of stock** — table with out-since dates and restock ETAs
+5. **On shift** — staff table with roles and hours
+6. **Average basket size** — $46.20, shown in the returns card subtitle
+7. **Returns this week** — count, value, rate, and top returned item
+8. **Promotions** — each running promo with performance and status
+9. **Registers** — all five with open/closed status and staffing
+10. **Reorder** — a form with item, quantity, and urgency
+11. **Switch store** — the store selector at the top
+12. **This week vs last week** — grouped bar chart comparison

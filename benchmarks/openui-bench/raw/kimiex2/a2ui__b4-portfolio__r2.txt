@@ -1,0 +1,419 @@
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": ["header", "summary", "quarterRow", "mainTabs", "actions"]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "PMO Portfolio Review — Q3 2024",
+        "subtitle": "Quarterly review · 8 active projects"
+      },
+      {
+        "id": "summary",
+        "component": "Callout",
+        "variant": "warning",
+        "title": "Portfolio Health: At Risk",
+        "description": "3 of 8 projects off track, 2 critical risks, 5 overdue milestones, and utilization running above 90%."
+      },
+      {
+        "id": "quarterRow",
+        "component": "Form",
+        "name": "quarter-picker",
+        "buttons": "quarterButtons",
+        "fields": ["quarterField"]
+      },
+      {
+        "id": "quarterField",
+        "component": "FormControl",
+        "label": "Review a different quarter",
+        "input": "quarterSelect"
+      },
+      {
+        "id": "quarterSelect",
+        "component": "Select",
+        "name": "quarter",
+        "items": ["q1", "q2", "q3", "q4"],
+        "value": "Q3 2024"
+      },
+      {
+        "id": "q1",
+        "component": "SelectItem",
+        "value": "q1",
+        "label": "Q1 2024"
+      },
+      {
+        "id": "q2",
+        "component": "SelectItem",
+        "value": "q2",
+        "label": "Q2 2024"
+      },
+      {
+        "id": "q3",
+        "component": "SelectItem",
+        "value": "q3",
+        "label": "Q3 2024"
+      },
+      {
+        "id": "q4",
+        "component": "SelectItem",
+        "value": "q4",
+        "label": "Q4 2024"
+      },
+      {
+        "id": "quarterButtons",
+        "component": "Buttons",
+        "buttons": ["loadQuarterBtn"]
+      },
+      {
+        "id": "loadQuarterBtn",
+        "component": "Button",
+        "label": "Load quarter",
+        "variant": "secondary"
+      },
+      {
+        "id": "mainTabs",
+        "component": "Tabs",
+        "items": ["tabProjects", "tabBudget", "tabPeople", "tabRisks", "tabDelivery"]
+      },
+      {
+        "id": "tabProjects",
+        "component": "TabItem",
+        "value": "projects",
+        "trigger": "Projects & Milestones",
+        "content": ["projectsTable", "overdueAlert", "upcomingList", "archiveRow"]
+      },
+      {
+        "id": "projectsTable",
+        "component": "Table",
+        "columns": ["colProject", "colOwner", "colDeadline", "colHealth"]
+      },
+      {
+        "id": "colProject",
+        "component": "Col",
+        "label": "Project",
+        "data": ["Phoenix CRM", "Atlas Mobile App", "Data Platform v2", "Billing Migration", "Partner Portal", "AI Search Pilot", "Infra Refresh", "SSO Rollout"]
+      },
+      {
+        "id": "colOwner",
+        "component": "Col",
+        "label": "Owner",
+        "data": ["A. Mehta", "S. Rivera", "D. Chen", "L. Osei", "P. Novak", "R. Iyer", "M. Silva", "K. Tanaka"]
+      },
+      {
+        "id": "colDeadline",
+        "component": "Col",
+        "label": "Deadline",
+        "data": ["Oct 14", "Oct 02", "Nov 08", "Sep 30", "Dec 01", "Oct 28", "Nov 15", "Oct 10"]
+      },
+      {
+        "id": "colHealth",
+        "component": "Col",
+        "label": "Health",
+        "data": ["On track", "At risk", "Off track", "Off track", "On track", "At risk", "On track", "Done"]
+      },
+      {
+        "id": "overdueAlert",
+        "component": "Alert",
+        "title": "Overdue milestones (5)",
+        "description": "Billing Migration: schema cutover (12d late) · Atlas: beta sign-off (7d) · Phoenix: API freeze (5d) · Data Platform: CDC pipeline (4d) · Infra Refresh: DC failover test (2d)",
+        "variant": "destructive"
+      },
+      {
+        "id": "upcomingList",
+        "component": "ListBlock",
+        "items": ["dl1", "dl2", "dl3", "dl4"],
+        "variant": "number"
+      },
+      {
+        "id": "dl1",
+        "component": "ListItem",
+        "title": "Atlas Mobile App — v2.0 release",
+        "subtitle": "Due Oct 02 · S. Rivera"
+      },
+      {
+        "id": "dl2",
+        "component": "ListItem",
+        "title": "SSO Rollout — final cutover",
+        "subtitle": "Due Oct 10 · K. Tanaka"
+      },
+      {
+        "id": "dl3",
+        "component": "ListItem",
+        "title": "Phoenix CRM — go-live",
+        "subtitle": "Due Oct 14 · A. Mehta"
+      },
+      {
+        "id": "dl4",
+        "component": "ListItem",
+        "title": "Data Platform v2 — load test gate",
+        "subtitle": "Due Oct 12 · D. Chen"
+      },
+      {
+        "id": "archiveRow",
+        "component": "AlertDialogBlock",
+        "triggerLabel": "Archive finished project (SSO Rollout)",
+        "title": "Archive SSO Rollout?",
+        "description": "The project is marked Done. Archiving removes it from the active portfolio but keeps its history.",
+        "confirmLabel": "Archive project",
+        "cancelLabel": "Keep active"
+      },
+      {
+        "id": "tabBudget",
+        "component": "TabItem",
+        "value": "budget",
+        "trigger": "Budget",
+        "content": ["budgetChart", "budgetNote"]
+      },
+      {
+        "id": "budgetChart",
+        "component": "BarChart",
+        "labels": ["Phoenix", "Atlas", "DataPlat", "Billing", "Portal", "AI Search", "Infra", "SSO"],
+        "series": ["spentSeries", "allocatedSeries"],
+        "variant": "grouped",
+        "xLabel": "Project",
+        "yLabel": "USD (k)"
+      },
+      {
+        "id": "spentSeries",
+        "component": "Series",
+        "category": "Spent",
+        "values": [420, 310, 265, 190, 120, 95, 240, 80]
+      },
+      {
+        "id": "allocatedSeries",
+        "component": "Series",
+        "category": "Allocated",
+        "values": [450, 280, 300, 160, 180, 150, 300, 90]
+      },
+      {
+        "id": "budgetNote",
+        "component": "Alert",
+        "title": "Over-allocation projects",
+        "description": "Atlas is $30k over budget (111%); Billing Migration is $30k over (119%). Others remain within allocation.",
+        "variant": "warning"
+      },
+      {
+        "id": "tabPeople",
+        "component": "TabItem",
+        "value": "people",
+        "trigger": "Team & Staffing",
+        "content": ["utilChart", "staffForm"]
+      },
+      {
+        "id": "utilChart",
+        "component": "HorizontalBarChart",
+        "labels": ["Eng", "Design", "QA", "Data", "DevOps", "PM"],
+        "series": ["utilSeries"],
+        "xLabel": "Utilization %",
+        "yLabel": "Team"
+      },
+      {
+        "id": "utilSeries",
+        "component": "Series",
+        "category": "Utilization",
+        "values": [94, 71, 96, 88, 102, 79]
+      },
+      {
+        "id": "staffForm",
+        "component": "Form",
+        "name": "staffing-request",
+        "buttons": "staffButtons",
+        "fields": ["staffProjectField", "staffCountField", "staffReasonField"]
+      },
+      {
+        "id": "staffProjectField",
+        "component": "FormControl",
+        "label": "Request more people for",
+        "input": "staffProjectSelect"
+      },
+      {
+        "id": "staffProjectSelect",
+        "component": "Select",
+        "name": "project",
+        "items": ["pPhoenix", "pAtlas", "pData", "pBilling"],
+        "placeholder": "Select a project"
+      },
+      {
+        "id": "pPhoenix",
+        "component": "SelectItem",
+        "value": "phoenix",
+        "label": "Phoenix CRM"
+      },
+      {
+        "id": "pAtlas",
+        "component": "SelectItem",
+        "value": "atlas",
+        "label": "Atlas Mobile App"
+      },
+      {
+        "id": "pData",
+        "component": "SelectItem",
+        "value": "dataplat",
+        "label": "Data Platform v2"
+      },
+      {
+        "id": "pBilling",
+        "component": "SelectItem",
+        "value": "billing",
+        "label": "Billing Migration"
+      },
+      {
+        "id": "staffCountField",
+        "component": "FormControl",
+        "label": "Headcount needed",
+        "input": "staffCountInput"
+      },
+      {
+        "id": "staffCountInput",
+        "component": "Input",
+        "name": "headcount",
+        "placeholder": "e.g. 2",
+        "type": "number"
+      },
+      {
+        "id": "staffReasonField",
+        "component": "FormControl",
+        "label": "Justification",
+        "input": "staffReasonInput",
+        "hint": "Why is extra capacity needed?"
+      },
+      {
+        "id": "staffReasonInput",
+        "component": "TextArea",
+        "name": "reason",
+        "placeholder": "Describe the gap, e.g. QA bottleneck on Atlas beta sign-off",
+        "rows": 3
+      },
+      {
+        "id": "staffButtons",
+        "component": "Buttons",
+        "buttons": ["staffSubmitBtn"]
+      },
+      {
+        "id": "staffSubmitBtn",
+        "component": "Button",
+        "label": "Submit staffing request",
+        "variant": "primary"
+      },
+      {
+        "id": "tabRisks",
+        "component": "TabItem",
+        "value": "risks",
+        "trigger": "Risks",
+        "content": ["risksTable"]
+      },
+      {
+        "id": "risksTable",
+        "component": "Table",
+        "columns": ["colRisk", "colRiskProject", "colSeverity"]
+      },
+      {
+        "id": "colRisk",
+        "component": "Col",
+        "label": "Risk",
+        "data": ["Vendor API deprecation", "Key engineer attrition", "Billing data reconciliation", "Compliance review delay", "Scope creep on portal"]
+      },
+      {
+        "id": "colRiskProject",
+        "component": "Col",
+        "label": "Project",
+        "data": ["Phoenix CRM", "Atlas Mobile", "Billing Migration", "Partner Portal", "Partner Portal"]
+      },
+      {
+        "id": "colSeverity",
+        "component": "Col",
+        "label": "Severity",
+        "data": ["Critical", "Critical", "High", "Medium", "Low"]
+      },
+      {
+        "id": "tabDelivery",
+        "component": "TabItem",
+        "value": "delivery",
+        "trigger": "Delivery Pace & Blockers",
+        "content": ["paceChart", "blockedList"]
+      },
+      {
+        "id": "paceChart",
+        "component": "LineChart",
+        "labels": ["Sprint 19", "Sprint 20", "Sprint 21", "Sprint 22", "Sprint 23", "Sprint 24"],
+        "series": ["paceSeries"],
+        "variant": "linear",
+        "xLabel": "Sprint",
+        "yLabel": "Story points"
+      },
+      {
+        "id": "paceSeries",
+        "component": "Series",
+        "category": "Completed points",
+        "values": [86, 92, 78, 95, 84, 71]
+      },
+      {
+        "id": "blockedList",
+        "component": "ListBlock",
+        "items": ["b1", "b2", "b3", "b4"],
+        "variant": "number"
+      },
+      {
+        "id": "b1",
+        "component": "ListItem",
+        "title": "BILL-402 — Reconciliation job fails on legacy schema",
+        "subtitle": "Blocked 6 days · Waiting on vendor"
+      },
+      {
+        "id": "b2",
+        "component": "ListItem",
+        "title": "ATL-217 — App Store review credentials",
+        "subtitle": "Blocked 4 days · Waiting on legal"
+      },
+      {
+        "id": "b3",
+        "component": "ListItem",
+        "title": "DPL-133 — CDC connector license",
+        "subtitle": "Blocked 3 days · Procurement approval pending"
+      },
+      {
+        "id": "b4",
+        "component": "ListItem",
+        "title": "PHX-88 — Sandbox access for integration partner",
+        "subtitle": "Blocked 2 days · IT ticket open"
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": ["exportBtn", "exportPdfBtn"]
+      },
+      {
+        "id": "exportBtn",
+        "component": "Button",
+        "label": "Export review (CSV)",
+        "variant": "primary"
+      },
+      {
+        "id": "exportPdfBtn",
+        "component": "Button",
+        "label": "Export as PDF deck",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+All 13 items are covered: (1) active projects table with owner, deadline, health; (2) overdue milestones alert; (3) budget spent vs. allocated grouped bar chart plus an over-allocation warning; (4) team utilization chart; (5) risks table with severity; (6) next-two-weeks deadlines list; (7) six-sprint delivery pace line chart; (8) blocked work items list; (9) one-line portfolio health callout; (10) quarter selector with load button; (11) staffing request form; (12) CSV/PDF export buttons; (13) archive dialog for the finished SSO project.

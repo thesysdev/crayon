@@ -1,0 +1,48 @@
+root = Card([header, statusCallout, trackingSection, reportDrawer, followUp])
+
+header = CardHeader("Package Tracking", "Order #4820-91823")
+
+statusCallout = Callout("info", "In Transit", "Your package is currently on the way and on schedule for delivery.")
+
+trackingSection = SectionBlock([currentLocationItem, deliveryDateItem, timelineItem])
+
+currentLocationItem = SectionItem("location", "1. Current Location", [locationCard])
+locationCard = ListBlock([locationDetail, facilityDetail])
+locationDetail = ListItem("Regional Sorting Hub", "Oakland, CA — Processed at 08:45 AM")
+facilityDetail = ListItem("Next Destination", "Local Delivery Center — San Francisco, CA")
+
+deliveryDateItem = SectionItem("eta", "2. Estimated Delivery Date", [etaText, etaBadge, separator1, progressBlock])
+etaText = TextContent("Estimated Arrival: **Thursday, Oct 24 by 7:00 PM**", "large-heavy")
+etaBadge = Badge("On Time", "default")
+separator1 = Separator("horizontal")
+progressBlock = Progress(65, "Transit Progress: 3 of 4 steps completed")
+
+timelineItem = SectionItem("timeline", "Detailed Tracking History", [timelineSteps])
+timelineSteps = Steps([step1, step2, step3, step4])
+step1 = StepsItem("Order Placed", "Oct 21, 10:30 AM — Payment confirmed")
+step2 = StepsItem("Shipped", "Oct 22, 02:15 PM — Picked up by carrier")
+step3 = StepsItem("In Transit", "Oct 23, 08:45 AM — Oakland Sorting Facility")
+step4 = StepsItem("Out for Delivery", "Pending — Estimated Oct 24 morning")
+
+reportDrawer = DrawerBlock("3. Report a Problem", "Report an Issue with your Delivery", "Please select the problem you are experiencing and provide details below.", [problemForm])
+
+problemForm = Form("report-issue", formButtons, [issueTypeField, detailsField])
+
+issueTypeField = FormControl("Issue Type", issueSelect, "Select the option that best describes your issue")
+issueSelect = Select("issue_type", [opt1, opt2, opt3, opt4], "Select an issue...")
+opt1 = SelectItem("delayed", "Package Delayed")
+opt2 = SelectItem("wrong_address", "Incorrect Shipping Address")
+opt3 = SelectItem("damaged", "Package Marked Delivered But Not Received")
+opt4 = SelectItem("other", "Other Issue")
+
+detailsField = FormControl("Additional Details", detailsInput, "Provide any extra context to help us resolve this quickly")
+detailsInput = TextArea("details", "Describe what happened...", 4)
+
+formButtons = Buttons([submitBtn, cancelBtn])
+submitBtn = Button("Submit Report", null, "primary")
+cancelBtn = Button("Cancel", null, "tertiary")
+
+followUp = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Change delivery address")
+fu2 = FollowUpItem("View carrier contact info")
+fu3 = FollowUpItem("Request driver delivery instructions")

@@ -1,0 +1,43 @@
+root = Card([header, countdown, agenda, speakers, tiers, register, followups])
+
+header = CardHeader("DevConf 2025", "March 14, 2025 · Metro Convention Center, San Francisco")
+
+countdown = Progress(72, "42 days remaining until DevConf 2025")
+
+agenda = Card([agendaHeader, agendaTable], "sunk")
+agendaHeader = Heading("Agenda", "h3")
+agendaTable = Table([agendaTime, agendaSession])
+agendaTime = Col("Time", ["09:00", "10:30", "12:00", "13:30", "15:00", "16:30"])
+agendaSession = Col("Session", ["Registration & Coffee", "Keynote: The Future of the Web", "Lunch Break", "Scaling Systems Workshop", "AI in Production", "Closing Panel"])
+
+speakers = Card([speakersHeader, speakerList], "sunk")
+speakersHeader = Heading("Speakers", "h3")
+speakerList = ListBlock([sp1, sp2, sp3, sp4])
+sp1 = ListItem("Dr. Amara Okafor", "Principal Engineer at Cloudscale, keynote on web platform evolution")
+sp2 = ListItem("Liang Chen", "Staff SRE, teaches practical patterns for scaling distributed systems")
+sp3 = ListItem("Sofia Marchetti", "ML Lead at Nyra AI, shipping models to production reliably")
+sp4 = ListItem("James Whitfield", "CTO & panel host, on where the industry is heading next")
+
+tiers = Card([tiersHeader, tiersTable], "sunk")
+tiersHeader = Heading("Ticket Tiers", "h3")
+tiersTable = Table([tierName, tierPrice, tierIncludes])
+tierName = Col("Tier", ["Early Bird", "Standard", "VIP"])
+tierPrice = Col("Price", ["$149", "$249", "$499"])
+tierIncludes = Col("Includes", ["All talks", "All talks + workshops", "Front row + speaker dinner"])
+
+register = Form("register", regButtons, [nameField, emailField, tierField])
+nameField = FormControl("Full name", nameInput)
+nameInput = Input("name", "Jane Smith")
+emailField = FormControl("Email", emailInput, "We'll send your ticket here")
+emailInput = Input("email", "jane@company.com", "email")
+tierField = FormControl("Ticket tier", tierSelect)
+tierSelect = Select("tier", [optEarly, optStd, optVip], "Choose a tier")
+optEarly = SelectItem("early", "Early Bird — $149")
+optStd = SelectItem("standard", "Standard — $249")
+optVip = SelectItem("vip", "VIP — $499")
+regButtons = Buttons([submitBtn])
+submitBtn = Button("Register now", null, "primary")
+
+followups = FollowUpBlock([fu1, fu2])
+fu1 = FollowUpItem("Show the full session descriptions")
+fu2 = FollowUpItem("How do I get to the venue?")

@@ -1,0 +1,331 @@
+Your delivery tracking screen is ready — current location, ETA, and problem reporting in one view:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "statusCard",
+          "locationCard",
+          "etaCard",
+          "separator1",
+          "reportCard",
+          "helpActions"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Package Tracking",
+        "subtitle": "Tracking # 1Z999AA10123456784 • 2 items • Ordered Mar 10"
+      },
+      {
+        "id": "statusCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "statusBadge",
+          "statusText",
+          "statusProgress"
+        ],
+        "direction": "column",
+        "gap": "s"
+      },
+      {
+        "id": "statusBadge",
+        "component": "Badge",
+        "text": "● In Transit — On Time",
+        "variant": "secondary"
+      },
+      {
+        "id": "statusText",
+        "component": "TextContent",
+        "text": "Last scan: Today at 8:42 AM CDT • Carrier: UPS Ground",
+        "size": "small"
+      },
+      {
+        "id": "statusProgress",
+        "component": "Progress",
+        "value": 65,
+        "label": "65% to delivery"
+      },
+      {
+        "id": "locationCard",
+        "component": "Card",
+        "children": [
+          "locationHeader",
+          "locationCallout",
+          "locationSteps"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "locationHeader",
+        "component": "CardHeader",
+        "title": "1. Where your package is right now",
+        "subtitle": "Live location and scan history"
+      },
+      {
+        "id": "locationCallout",
+        "component": "Callout",
+        "variant": "info",
+        "title": "Currently in Chicago, IL",
+        "description": "Chicago Regional Distribution Center — Scanned at 08:42 AM CDT. Departed facility and en route to Milwaukee Local Facility. Next scan expected within 6 hours."
+      },
+      {
+        "id": "locationSteps",
+        "component": "Steps",
+        "items": [
+          "stepOrdered",
+          "stepShipped",
+          "stepTransit",
+          "stepOutForDelivery",
+          "stepDelivered"
+        ]
+      },
+      {
+        "id": "stepOrdered",
+        "component": "StepsItem",
+        "title": "Order Placed",
+        "details": "Mar 11 — Memphis, TN — Order confirmed"
+      },
+      {
+        "id": "stepShipped",
+        "component": "StepsItem",
+        "title": "Shipped",
+        "details": "Mar 12 — Louisville, KY — Picked up by carrier"
+      },
+      {
+        "id": "stepTransit",
+        "component": "StepsItem",
+        "title": "In Transit — CURRENT LOCATION",
+        "details": "Today 8:42 AM — Chicago, IL Regional Facility — In transit to destination"
+      },
+      {
+        "id": "stepOutForDelivery",
+        "component": "StepsItem",
+        "title": "Out for Delivery",
+        "details": "Pending — Milwaukee, WI"
+      },
+      {
+        "id": "stepDelivered",
+        "component": "StepsItem",
+        "title": "Delivered",
+        "details": "Pending — 123 Oak St, Milwaukee, WI 53202"
+      },
+      {
+        "id": "etaCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "etaHeader",
+          "etaHighlight",
+          "etaDetails",
+          "etaCalendar"
+        ],
+        "gap": "s"
+      },
+      {
+        "id": "etaHeader",
+        "component": "CardHeader",
+        "title": "2. Estimated Delivery Date",
+        "subtitle": "On time — No delays reported"
+      },
+      {
+        "id": "etaHighlight",
+        "component": "TextContent",
+        "text": "## Thursday, August 21, 2026\n**by 9:00 PM** — UPS Ground",
+        "size": "large"
+      },
+      {
+        "id": "etaDetails",
+        "component": "TextContent",
+        "text": "Delivery window: 10:00 AM - 9:00 PM CDT • Signature not required • You'll get an SMS when it's out for delivery.",
+        "size": "small"
+      },
+      {
+        "id": "etaCalendar",
+        "component": "CalendarBlock",
+        "mode": "single",
+        "defaultMonth": "2026-08-01",
+        "numberOfMonths": 1,
+        "captionLayout": "label"
+      },
+      {
+        "id": "separator1",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "reportCard",
+        "component": "Card",
+        "children": [
+          "reportHeader",
+          "reportIntro",
+          "reportForm"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "reportHeader",
+        "component": "CardHeader",
+        "title": "3. Report a problem with this delivery",
+        "subtitle": "Get help fast — responses within 2 hours"
+      },
+      {
+        "id": "reportIntro",
+        "component": "TextContent",
+        "text": "Is your package damaged, missing, delayed, or delivered to the wrong address? Tell us what happened and we'll open a support case instantly.",
+        "size": "small"
+      },
+      {
+        "id": "reportForm",
+        "component": "Form",
+        "name": "report-delivery-problem",
+        "buttons": "formButtons",
+        "fields": [
+          "issueTypeControl",
+          "detailsControl",
+          "contactControl"
+        ]
+      },
+      {
+        "id": "issueTypeControl",
+        "component": "FormControl",
+        "label": "What went wrong?",
+        "input": "issueTypeSelect",
+        "hint": "Select the issue that best describes your problem"
+      },
+      {
+        "id": "issueTypeSelect",
+        "component": "Select",
+        "name": "issue_type",
+        "items": [
+          "issueDamaged",
+          "issueMissing",
+          "issueDelayed",
+          "issueWrongAddress",
+          "issueOther"
+        ],
+        "placeholder": "Choose an issue"
+      },
+      {
+        "id": "issueDamaged",
+        "component": "SelectItem",
+        "value": "damaged",
+        "label": "Package damaged"
+      },
+      {
+        "id": "issueMissing",
+        "component": "SelectItem",
+        "value": "missing",
+        "label": "Package missing / not received"
+      },
+      {
+        "id": "issueDelayed",
+        "component": "SelectItem",
+        "value": "delayed",
+        "label": "Delivery is late"
+      },
+      {
+        "id": "issueWrongAddress",
+        "component": "SelectItem",
+        "value": "wrong_address",
+        "label": "Delivered to wrong address"
+      },
+      {
+        "id": "issueOther",
+        "component": "SelectItem",
+        "value": "other",
+        "label": "Something else"
+      },
+      {
+        "id": "detailsControl",
+        "component": "FormControl",
+        "label": "Describe the problem",
+        "input": "detailsInput",
+        "hint": "Include details like damage photos, missing items, or delivery notes"
+      },
+      {
+        "id": "detailsInput",
+        "component": "TextArea",
+        "name": "details",
+        "placeholder": "e.g., Box was crushed on arrival, items inside are broken...",
+        "rows": 4
+      },
+      {
+        "id": "contactControl",
+        "component": "FormControl",
+        "label": "Contact for updates (optional)",
+        "input": "contactInput",
+        "hint": "We'll send case updates here"
+      },
+      {
+        "id": "contactInput",
+        "component": "Input",
+        "name": "contact_email",
+        "placeholder": "you@example.com",
+        "type": "email"
+      },
+      {
+        "id": "formButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitBtn",
+          "cancelBtn"
+        ]
+      },
+      {
+        "id": "submitBtn",
+        "component": "Button",
+        "label": "Report Problem",
+        "variant": "primary"
+      },
+      {
+        "id": "cancelBtn",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "tertiary"
+      },
+      {
+        "id": "helpActions",
+        "component": "Buttons",
+        "buttons": [
+          "trackAnotherBtn",
+          "contactSupportBtn"
+        ]
+      },
+      {
+        "id": "trackAnotherBtn",
+        "component": "Button",
+        "label": "Contact Support via Chat",
+        "variant": "secondary"
+      },
+      {
+        "id": "contactSupportBtn",
+        "component": "Button",
+        "label": "Call Carrier: 1-800-742-5877",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>

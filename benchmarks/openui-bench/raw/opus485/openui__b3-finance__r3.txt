@@ -1,0 +1,33 @@
+root = Card([header, monthPicker, kpis, expenseSection, txnSection, actions])
+header = CardHeader("Finance Overview", "Month-end close · February 2024")
+
+monthPicker = Form("month-select", monthButtons, [monthField])
+monthField = FormControl("View a different month", monthSelect)
+monthSelect = Select("month", [mFeb, mJan, mDec, mNov], "Select month", null, "2024-02")
+mFeb = SelectItem("2024-02", "February 2024")
+mJan = SelectItem("2024-01", "January 2024")
+mDec = SelectItem("2023-12", "December 2023")
+mNov = SelectItem("2023-11", "November 2023")
+monthButtons = Buttons([applyBtn])
+applyBtn = Button("Apply", null, "secondary", "normal", "small")
+
+kpis = Table([kpiMetric, kpiValue])
+kpiMetric = Col("Metric", ["Cash on hand", "Monthly burn", "Months of runway"])
+kpiValue = Col("Value", ["$1,842,000", "$214,500", "8.6 months"])
+
+expenseSection = Card([expenseHeader, expenseChart], "sunk")
+expenseHeader = CardHeader("Expenses by Category", "February 2024")
+expenseChart = PieChart(expLabels, expValues, "donut")
+expLabels = ["Payroll", "Cloud & Infra", "Marketing", "Office & Ops", "Software", "Other"]
+expValues = [128000, 34500, 22000, 12500, 9800, 7700]
+
+txnSection = Card([txnHeader, txnTable], "sunk")
+txnHeader = CardHeader("Large Transactions", "Above $10,000 · February 2024")
+txnTable = Table([txnDate, txnVendor, txnCategory, txnAmount])
+txnDate = Col("Date", ["Feb 01", "Feb 05", "Feb 12", "Feb 20", "Feb 26"])
+txnVendor = Col("Vendor", ["ADP Payroll", "AWS", "Google Ads", "WeWork", "Salesforce"])
+txnCategory = Col("Category", ["Payroll", "Cloud & Infra", "Marketing", "Office & Ops", "Software"])
+txnAmount = Col("Amount", [128000, 34500, 18200, 12500, 11400], "number")
+
+actions = Buttons([downloadBtn])
+downloadBtn = Button("Download statement (PDF)", null, "primary")

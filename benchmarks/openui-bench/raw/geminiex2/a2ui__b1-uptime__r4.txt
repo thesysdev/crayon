@@ -1,0 +1,183 @@
+Here is a status page interface for the platform team showing the current API uptime percentage for the month alongside the latest incident resolution note.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "statusAlert",
+          "uptimeSection",
+          "separator1",
+          "incidentHeader",
+          "incidentCard",
+          "followUps"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Platform Service Status",
+        "subtitle": "Real-time system health and performance overview"
+      },
+      {
+        "id": "statusAlert",
+        "component": "Alert",
+        "title": "All Core Systems Operational",
+        "description": "API Services, Database Clusters, and Edge Networks are performing within normal parameters.",
+        "variant": "success"
+      },
+      {
+        "id": "uptimeSection",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "uptimeTitle",
+          "uptimeProgress",
+          "uptimeMetrics"
+        ]
+      },
+      {
+        "id": "uptimeTitle",
+        "component": "Heading",
+        "level": "h3",
+        "text": "API Uptime (Current Month)"
+      },
+      {
+        "id": "uptimeProgress",
+        "component": "Progress",
+        "value": 99.94,
+        "label": "99.94% Uptime"
+      },
+      {
+        "id": "uptimeMetrics",
+        "component": "Table",
+        "columns": [
+          "colMetric",
+          "colTarget",
+          "colActual",
+          "colStatus"
+        ]
+      },
+      {
+        "id": "colMetric",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Core API Gateway",
+          "Authentication Service",
+          "Database Operations"
+        ]
+      },
+      {
+        "id": "colTarget",
+        "component": "Col",
+        "label": "SLO Target",
+        "data": [
+          "99.90%",
+          "99.95%",
+          "99.90%"
+        ]
+      },
+      {
+        "id": "colActual",
+        "component": "Col",
+        "label": "MTTD / MTTR",
+        "data": [
+          "2m / 14m",
+          "1m / 5m",
+          "0m / 0m"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Current Month Uptime",
+        "data": [
+          "99.94%",
+          "99.98%",
+          "100.00%"
+        ]
+      },
+      {
+        "id": "separator1",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "incidentHeader",
+        "component": "Heading",
+        "level": "h3",
+        "text": "Most Recent Incident"
+      },
+      {
+        "id": "incidentCard",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "incidentBadge",
+          "incidentText",
+          "incidentResolutionTime"
+        ]
+      },
+      {
+        "id": "incidentBadge",
+        "component": "Badge",
+        "text": "Resolved — INC-4821",
+        "variant": "secondary"
+      },
+      {
+        "id": "incidentText",
+        "component": "TextContent",
+        "size": "default",
+        "text": "**Elevated Latency on REST API Endpoints**\nA misconfigured connection pool during the v2.14.0 deployment caused increased 504 gateway timeouts for standard API requests."
+      },
+      {
+        "id": "incidentResolutionTime",
+        "component": "TextCallout",
+        "variant": "info",
+        "title": "Resolved on Oct 24, 2023 at 14:32 UTC",
+        "description": "Duration: 18 minutes. Traffic was re-routed to stable nodes and connection pools were rolled back. Permanent fix deployed in v2.14.1."
+      },
+      {
+        "id": "followUps",
+        "component": "FollowUpBlock",
+        "items": [
+          "followUp1",
+          "followUp2"
+        ]
+      },
+      {
+        "id": "followUp1",
+        "component": "FollowUpItem",
+        "text": "View Post-Mortem Report for INC-4821"
+      },
+      {
+        "id": "followUp2",
+        "component": "FollowUpItem",
+        "text": "Subscribe to Platform Status Notifications"
+      }
+    ]
+  }
+}
+</a2ui-json>

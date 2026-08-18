@@ -1,0 +1,891 @@
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#2563EB",
+      "agentDisplayName": "Grid Operations Console"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "variant": "clear",
+        "gap": "l",
+        "children": [
+          "header",
+          "liveAlerts",
+          "controls",
+          "overview",
+          "generation",
+          "operationsTabs",
+          "forecast",
+          "maintenance",
+          "curtailment"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "Card",
+        "variant": "card",
+        "direction": "row",
+        "gap": "m",
+        "align": "center",
+        "justify": "between",
+        "children": [
+          "headerTitle",
+          "systemStatus"
+        ]
+      },
+      {
+        "id": "headerTitle",
+        "component": "CardHeader",
+        "title": "Power Network Operations",
+        "subtitle": "Live system view · Updated 14:32 UTC"
+      },
+      {
+        "id": "systemStatus",
+        "component": "Badge",
+        "text": "System stable",
+        "variant": "secondary"
+      },
+      {
+        "id": "liveAlerts",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "s",
+        "children": [
+          "alertsHeader",
+          "alertOne",
+          "alertTwo"
+        ]
+      },
+      {
+        "id": "alertsHeader",
+        "component": "Heading",
+        "text": "Live alerts",
+        "level": "h2"
+      },
+      {
+        "id": "alertOne",
+        "component": "Alert",
+        "title": "North interconnector constrained",
+        "description": "Transfer limit reduced to 820 MW at 14:31 UTC. Operators are monitoring.",
+        "variant": "warning"
+      },
+      {
+        "id": "alertTwo",
+        "component": "Alert",
+        "title": "Demand forecast updated",
+        "description": "Evening peak revised upward by 240 MW at 14:29 UTC.",
+        "variant": "info"
+      },
+      {
+        "id": "controls",
+        "component": "Form",
+        "name": "regional-focus",
+        "buttons": "regionButtons",
+        "fields": [
+          "regionControl"
+        ]
+      },
+      {
+        "id": "regionControl",
+        "component": "FormControl",
+        "label": "Focus region",
+        "input": "regionSelect",
+        "hint": "Filter plants, outages, forecasts, and alerts"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region",
+        "items": [
+          "regionAll",
+          "regionNorth",
+          "regionCentral",
+          "regionEast",
+          "regionSouth",
+          "regionWest"
+        ],
+        "value": "all",
+        "size": "medium"
+      },
+      {
+        "id": "regionAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All regions"
+      },
+      {
+        "id": "regionNorth",
+        "component": "SelectItem",
+        "value": "north",
+        "label": "North"
+      },
+      {
+        "id": "regionCentral",
+        "component": "SelectItem",
+        "value": "central",
+        "label": "Central"
+      },
+      {
+        "id": "regionEast",
+        "component": "SelectItem",
+        "value": "east",
+        "label": "East"
+      },
+      {
+        "id": "regionSouth",
+        "component": "SelectItem",
+        "value": "south",
+        "label": "South"
+      },
+      {
+        "id": "regionWest",
+        "component": "SelectItem",
+        "value": "west",
+        "label": "West"
+      },
+      {
+        "id": "regionButtons",
+        "component": "Buttons",
+        "buttons": [
+          "applyRegion",
+          "resetRegion"
+        ]
+      },
+      {
+        "id": "applyRegion",
+        "component": "Button",
+        "label": "Apply focus",
+        "variant": "primary",
+        "action": [
+          {
+            "type": "filter",
+            "target": "region"
+          }
+        ]
+      },
+      {
+        "id": "resetRegion",
+        "component": "Button",
+        "label": "Reset",
+        "variant": "tertiary",
+        "action": [
+          {
+            "type": "reset",
+            "target": "regional-focus"
+          }
+        ]
+      },
+      {
+        "id": "overview",
+        "component": "Card",
+        "variant": "card",
+        "direction": "row",
+        "gap": "m",
+        "align": "stretch",
+        "children": [
+          "loadCard",
+          "capacityCard",
+          "priceCard",
+          "emissionsCard"
+        ]
+      },
+      {
+        "id": "loadCard",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "xs",
+        "weight": 1,
+        "children": [
+          "loadLabel",
+          "loadValue",
+          "loadTrend"
+        ]
+      },
+      {
+        "id": "loadLabel",
+        "component": "Label",
+        "text": "Current network load"
+      },
+      {
+        "id": "loadValue",
+        "component": "Heading",
+        "text": "18,420 MW",
+        "level": "h2"
+      },
+      {
+        "id": "loadTrend",
+        "component": "Tag",
+        "text": "↑ 2.8% in 1 hour",
+        "variant": "warning",
+        "size": "sm"
+      },
+      {
+        "id": "capacityCard",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "xs",
+        "weight": 1,
+        "children": [
+          "capacityLabel",
+          "capacityValue",
+          "capacityProgress"
+        ]
+      },
+      {
+        "id": "capacityLabel",
+        "component": "Label",
+        "text": "Network capacity used"
+      },
+      {
+        "id": "capacityValue",
+        "component": "Heading",
+        "text": "82%",
+        "level": "h2"
+      },
+      {
+        "id": "capacityProgress",
+        "component": "Progress",
+        "value": 82,
+        "label": "18,420 of 22,500 MW"
+      },
+      {
+        "id": "priceCard",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "xs",
+        "weight": 1,
+        "children": [
+          "priceLabel",
+          "priceValue",
+          "priceNote"
+        ]
+      },
+      {
+        "id": "priceLabel",
+        "component": "Label",
+        "text": "Current wholesale price"
+      },
+      {
+        "id": "priceValue",
+        "component": "Heading",
+        "text": "$74.60/MWh",
+        "level": "h2"
+      },
+      {
+        "id": "priceNote",
+        "component": "TextContent",
+        "text": "Up $6.20 since 13:00",
+        "size": "small"
+      },
+      {
+        "id": "emissionsCard",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "xs",
+        "weight": 1,
+        "children": [
+          "emissionsLabel",
+          "emissionsValue",
+          "emissionsNote"
+        ]
+      },
+      {
+        "id": "emissionsLabel",
+        "component": "Label",
+        "text": "Emissions today"
+      },
+      {
+        "id": "emissionsValue",
+        "component": "Heading",
+        "text": "42,680 tCO₂e",
+        "level": "h2"
+      },
+      {
+        "id": "emissionsNote",
+        "component": "TextContent",
+        "text": "Grid intensity: 318 kgCO₂e/MWh",
+        "size": "small"
+      },
+      {
+        "id": "generation",
+        "component": "Card",
+        "variant": "card",
+        "gap": "m",
+        "children": [
+          "generationHeader",
+          "generationChart"
+        ]
+      },
+      {
+        "id": "generationHeader",
+        "component": "CardHeader",
+        "title": "Generation split by source",
+        "subtitle": "Total generation: 18,760 MW"
+      },
+      {
+        "id": "generationChart",
+        "component": "PieChart",
+        "labels": [
+          "Gas",
+          "Wind",
+          "Nuclear",
+          "Solar",
+          "Hydro",
+          "Imports"
+        ],
+        "values": [
+          31,
+          24,
+          20,
+          12,
+          8,
+          5
+        ],
+        "variant": "donut",
+        "appearance": "circular"
+      },
+      {
+        "id": "operationsTabs",
+        "component": "Tabs",
+        "items": [
+          "plantsTab",
+          "outagesTab"
+        ]
+      },
+      {
+        "id": "plantsTab",
+        "component": "TabItem",
+        "value": "plants",
+        "trigger": "Plants",
+        "content": [
+          "plantsTable"
+        ]
+      },
+      {
+        "id": "plantsTable",
+        "component": "Table",
+        "columns": [
+          "plantName",
+          "plantRegion",
+          "plantSource",
+          "plantOutput",
+          "plantStatus"
+        ]
+      },
+      {
+        "id": "plantName",
+        "component": "Col",
+        "label": "Plant",
+        "data": [
+          "Riverside CCGT",
+          "North Ridge Wind",
+          "Coastal Nuclear",
+          "Sunfield Solar",
+          "Highland Hydro",
+          "Eastbank Peaker"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "plantRegion",
+        "component": "Col",
+        "label": "Region",
+        "data": [
+          "Central",
+          "North",
+          "East",
+          "South",
+          "West",
+          "East"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "plantSource",
+        "component": "Col",
+        "label": "Source",
+        "data": [
+          "Gas",
+          "Wind",
+          "Nuclear",
+          "Solar",
+          "Hydro",
+          "Gas"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "plantOutput",
+        "component": "Col",
+        "label": "Output",
+        "data": [
+          "2,840 MW",
+          "1,920 MW",
+          "3,610 MW",
+          "1,140 MW",
+          "980 MW",
+          "620 MW"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "plantStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Online",
+          "Online",
+          "Online",
+          "Online",
+          "Limited",
+          "Standby"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "outagesTab",
+        "component": "TabItem",
+        "value": "outages",
+        "trigger": "Outages (3)",
+        "content": [
+          "outagesTable"
+        ]
+      },
+      {
+        "id": "outagesTable",
+        "component": "Table",
+        "columns": [
+          "outageAsset",
+          "outageRegion",
+          "outageImpact",
+          "outageEta"
+        ]
+      },
+      {
+        "id": "outageAsset",
+        "component": "Col",
+        "label": "Affected asset",
+        "data": [
+          "North–Central 400 kV line",
+          "Westgate Substation T2",
+          "Bayview Wind Unit 4"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "outageRegion",
+        "component": "Col",
+        "label": "Affected region",
+        "data": [
+          "North / Central",
+          "West",
+          "South"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "outageImpact",
+        "component": "Col",
+        "label": "Impact",
+        "data": [
+          "620 MW transfer reduction",
+          "18,400 customers at risk",
+          "90 MW unavailable"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "outageEta",
+        "component": "Col",
+        "label": "Estimated restoration",
+        "data": [
+          "18:00 today",
+          "16:45 today",
+          "20 Aug, 09:00"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "forecast",
+        "component": "Card",
+        "variant": "card",
+        "gap": "m",
+        "children": [
+          "forecastHeader",
+          "forecastChart",
+          "forecastPeak"
+        ]
+      },
+      {
+        "id": "forecastHeader",
+        "component": "CardHeader",
+        "title": "24-hour demand forecast",
+        "subtitle": "Forecast from 15:00 today to 14:00 tomorrow"
+      },
+      {
+        "id": "forecastChart",
+        "component": "LineChart",
+        "labels": [
+          "15:00",
+          "17:00",
+          "19:00",
+          "21:00",
+          "23:00",
+          "01:00",
+          "03:00",
+          "05:00",
+          "07:00",
+          "09:00",
+          "11:00",
+          "13:00",
+          "14:00"
+        ],
+        "series": [
+          "demandSeries",
+          "capacitySeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Time",
+        "yLabel": "MW"
+      },
+      {
+        "id": "demandSeries",
+        "component": "Series",
+        "category": "Forecast demand",
+        "values": [
+          18720,
+          19980,
+          21140,
+          20260,
+          18400,
+          16620,
+          15480,
+          15120,
+          16340,
+          17780,
+          18560,
+          19120,
+          19340
+        ]
+      },
+      {
+        "id": "capacitySeries",
+        "component": "Series",
+        "category": "Available capacity",
+        "values": [
+          22500,
+          22500,
+          22500,
+          22500,
+          22500,
+          22500,
+          22500,
+          22500,
+          22500,
+          22500,
+          22500,
+          22500,
+          22500
+        ]
+      },
+      {
+        "id": "forecastPeak",
+        "component": "TextCallout",
+        "variant": "warning",
+        "title": "Forecast peak: 21,140 MW at 19:00",
+        "description": "Expected headroom is 1,360 MW, or 6% of available capacity."
+      },
+      {
+        "id": "maintenance",
+        "component": "Card",
+        "variant": "card",
+        "gap": "m",
+        "children": [
+          "maintenanceHeader",
+          "maintenanceTable"
+        ]
+      },
+      {
+        "id": "maintenanceHeader",
+        "component": "CardHeader",
+        "title": "Planned maintenance this month",
+        "subtitle": "Approved and provisional work affecting network availability"
+      },
+      {
+        "id": "maintenanceTable",
+        "component": "Table",
+        "columns": [
+          "maintenanceAsset",
+          "maintenanceRegion",
+          "maintenanceWindow",
+          "maintenanceImpact",
+          "maintenanceState"
+        ]
+      },
+      {
+        "id": "maintenanceAsset",
+        "component": "Col",
+        "label": "Asset",
+        "data": [
+          "Coastal Nuclear Unit 2",
+          "Central 275 kV Busbar",
+          "Highland Hydro Unit 3",
+          "South Ring Circuit"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "maintenanceRegion",
+        "component": "Col",
+        "label": "Region",
+        "data": [
+          "East",
+          "Central",
+          "West",
+          "South"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "maintenanceWindow",
+        "component": "Col",
+        "label": "Window",
+        "data": [
+          "20–22 Aug",
+          "24 Aug, 01:00–05:00",
+          "26–28 Aug",
+          "30 Aug, 00:00–06:00"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "maintenanceImpact",
+        "component": "Col",
+        "label": "Capacity impact",
+        "data": [
+          "1,200 MW",
+          "450 MW transfer",
+          "280 MW",
+          "300 MW transfer"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "maintenanceState",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Approved",
+          "Approved",
+          "Provisional",
+          "Approved"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "curtailment",
+        "component": "Card",
+        "variant": "card",
+        "gap": "m",
+        "children": [
+          "curtailmentHeader",
+          "curtailmentWarning",
+          "curtailmentForm"
+        ]
+      },
+      {
+        "id": "curtailmentHeader",
+        "component": "CardHeader",
+        "title": "Order curtailment",
+        "subtitle": "Issue a controlled demand-reduction instruction"
+      },
+      {
+        "id": "curtailmentWarning",
+        "component": "Alert",
+        "title": "Operator authorization required",
+        "description": "Review the selected region, amount, duration, and reason before opening confirmation.",
+        "variant": "warning"
+      },
+      {
+        "id": "curtailmentForm",
+        "component": "Form",
+        "name": "curtailment-order",
+        "buttons": "curtailmentButtons",
+        "fields": [
+          "curtailRegionControl",
+          "curtailAmountControl",
+          "curtailDurationControl",
+          "curtailReasonControl"
+        ]
+      },
+      {
+        "id": "curtailRegionControl",
+        "component": "FormControl",
+        "label": "Target region",
+        "input": "curtailRegion"
+      },
+      {
+        "id": "curtailRegion",
+        "component": "Select",
+        "name": "target_region",
+        "items": [
+          "curtailNorth",
+          "curtailCentral",
+          "curtailEast",
+          "curtailSouth",
+          "curtailWest"
+        ],
+        "placeholder": "Select region"
+      },
+      {
+        "id": "curtailNorth",
+        "component": "SelectItem",
+        "value": "north",
+        "label": "North"
+      },
+      {
+        "id": "curtailCentral",
+        "component": "SelectItem",
+        "value": "central",
+        "label": "Central"
+      },
+      {
+        "id": "curtailEast",
+        "component": "SelectItem",
+        "value": "east",
+        "label": "East"
+      },
+      {
+        "id": "curtailSouth",
+        "component": "SelectItem",
+        "value": "south",
+        "label": "South"
+      },
+      {
+        "id": "curtailWest",
+        "component": "SelectItem",
+        "value": "west",
+        "label": "West"
+      },
+      {
+        "id": "curtailAmountControl",
+        "component": "FormControl",
+        "label": "Curtailment amount (MW)",
+        "input": "curtailAmount",
+        "hint": "Enter the requested demand reduction"
+      },
+      {
+        "id": "curtailAmount",
+        "component": "Input",
+        "name": "amount_mw",
+        "type": "number",
+        "placeholder": "250"
+      },
+      {
+        "id": "curtailDurationControl",
+        "component": "FormControl",
+        "label": "Duration",
+        "input": "curtailDuration"
+      },
+      {
+        "id": "curtailDuration",
+        "component": "Select",
+        "name": "duration",
+        "items": [
+          "duration30",
+          "duration60",
+          "duration120",
+          "duration240"
+        ],
+        "placeholder": "Select duration"
+      },
+      {
+        "id": "duration30",
+        "component": "SelectItem",
+        "value": "30",
+        "label": "30 minutes"
+      },
+      {
+        "id": "duration60",
+        "component": "SelectItem",
+        "value": "60",
+        "label": "1 hour"
+      },
+      {
+        "id": "duration120",
+        "component": "SelectItem",
+        "value": "120",
+        "label": "2 hours"
+      },
+      {
+        "id": "duration240",
+        "component": "SelectItem",
+        "value": "240",
+        "label": "4 hours"
+      },
+      {
+        "id": "curtailReasonControl",
+        "component": "FormControl",
+        "label": "Operational reason",
+        "input": "curtailReason"
+      },
+      {
+        "id": "curtailReason",
+        "component": "TextArea",
+        "name": "reason",
+        "placeholder": "Describe the system condition and authorization reference",
+        "rows": 3
+      },
+      {
+        "id": "curtailmentButtons",
+        "component": "Buttons",
+        "buttons": [
+          "reviewCurtailment",
+          "clearCurtailment"
+        ]
+      },
+      {
+        "id": "reviewCurtailment",
+        "component": "Button",
+        "label": "Review and confirm order",
+        "variant": "primary",
+        "type": "destructive",
+        "action": [
+          {
+            "type": "review",
+            "target": "curtailment-order",
+            "requiresConfirmation": true
+          }
+        ]
+      },
+      {
+        "id": "clearCurtailment",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "tertiary",
+        "action": [
+          {
+            "type": "reset",
+            "target": "curtailment-order"
+          }
+        ]
+      }
+    ]
+  }
+}
+</a2ui-json>

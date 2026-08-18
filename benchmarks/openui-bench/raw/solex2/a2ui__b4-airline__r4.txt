@@ -1,0 +1,632 @@
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#1455D9",
+      "agentDisplayName": "Airline Hub Operations"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "hubForm",
+          "weatherAlert",
+          "delayedAlert",
+          "kpiTable",
+          "operationsTabs",
+          "rebookDialog"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Hub Operations Desk — Chicago O’Hare",
+        "subtitle": "Live operating picture · Today · Updated 14:32 local"
+      },
+      {
+        "id": "hubForm",
+        "component": "Form",
+        "name": "hub-selector",
+        "buttons": "hubButtons",
+        "fields": [
+          "hubField"
+        ]
+      },
+      {
+        "id": "hubField",
+        "component": "FormControl",
+        "label": "View a different hub",
+        "input": "hubSelect",
+        "hint": "Switch the operating picture to another hub"
+      },
+      {
+        "id": "hubSelect",
+        "component": "Select",
+        "name": "hub",
+        "items": [
+          "hubOrd",
+          "hubDfw",
+          "hubLax",
+          "hubJfk",
+          "hubAtl"
+        ],
+        "value": "ORD",
+        "size": "medium"
+      },
+      {
+        "id": "hubOrd",
+        "component": "SelectItem",
+        "value": "ORD",
+        "label": "ORD — Chicago O’Hare"
+      },
+      {
+        "id": "hubDfw",
+        "component": "SelectItem",
+        "value": "DFW",
+        "label": "DFW — Dallas/Fort Worth"
+      },
+      {
+        "id": "hubLax",
+        "component": "SelectItem",
+        "value": "LAX",
+        "label": "LAX — Los Angeles"
+      },
+      {
+        "id": "hubJfk",
+        "component": "SelectItem",
+        "value": "JFK",
+        "label": "JFK — New York"
+      },
+      {
+        "id": "hubAtl",
+        "component": "SelectItem",
+        "value": "ATL",
+        "label": "ATL — Atlanta"
+      },
+      {
+        "id": "hubButtons",
+        "component": "Buttons",
+        "buttons": [
+          "loadHubButton"
+        ]
+      },
+      {
+        "id": "loadHubButton",
+        "component": "Button",
+        "label": "Load hub",
+        "variant": "secondary",
+        "action": [
+          {
+            "type": "submit",
+            "form": "hub-selector"
+          }
+        ]
+      },
+      {
+        "id": "weatherAlert",
+        "component": "Alert",
+        "title": "Weather advisory — ORD",
+        "description": "Thunderstorms west of the field through 17:00. Ground stops possible; arrival spacing increased to 12 miles. Gusts up to 28 kt.",
+        "variant": "warning"
+      },
+      {
+        "id": "delayedAlert",
+        "component": "Alert",
+        "title": "7 delayed flights require attention",
+        "description": "Longest active delay: AO218 to Denver, 67 minutes. Three delayed departures have connections at risk.",
+        "variant": "destructive"
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": [
+          "kpiMetric",
+          "kpiValue",
+          "kpiContext"
+        ]
+      },
+      {
+        "id": "kpiMetric",
+        "component": "Col",
+        "label": "Today’s metric",
+        "data": [
+          "On-time performance",
+          "Average passenger load",
+          "Cancellations",
+          "Average turnaround time",
+          "Connections at risk"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Current",
+        "data": [
+          "82.4%",
+          "86.7%",
+          "3",
+          "41 min",
+          "28 passengers"
+        ]
+      },
+      {
+        "id": "kpiContext",
+        "component": "Col",
+        "label": "Operational context",
+        "data": [
+          "Target 85.0% · 214 of 260 completed",
+          "Across 31,420 booked seats",
+          "2 weather · 1 maintenance",
+          "Target 38 min · 3 min above target",
+          "Across 6 inbound connections"
+        ]
+      },
+      {
+        "id": "operationsTabs",
+        "component": "Tabs",
+        "items": [
+          "flightsTab",
+          "gateChangesTab",
+          "crewsTab",
+          "connectionsTab"
+        ]
+      },
+      {
+        "id": "flightsTab",
+        "component": "TabItem",
+        "value": "flights",
+        "trigger": "Flights",
+        "content": [
+          "flightsHeading",
+          "flightsTable"
+        ]
+      },
+      {
+        "id": "gateChangesTab",
+        "component": "TabItem",
+        "value": "gate-changes",
+        "trigger": "Gate changes",
+        "content": [
+          "gateHeading",
+          "gateChangesTable"
+        ]
+      },
+      {
+        "id": "crewsTab",
+        "component": "TabItem",
+        "value": "crews",
+        "trigger": "Available crews",
+        "content": [
+          "crewsHeading",
+          "crewsTable"
+        ]
+      },
+      {
+        "id": "connectionsTab",
+        "component": "TabItem",
+        "value": "connections",
+        "trigger": "At-risk connections",
+        "content": [
+          "connectionsHeading",
+          "connectionsTable"
+        ]
+      },
+      {
+        "id": "flightsHeading",
+        "component": "Heading",
+        "text": "Active flight board",
+        "level": "h3"
+      },
+      {
+        "id": "flightsTable",
+        "component": "Table",
+        "columns": [
+          "flightNumberCol",
+          "flightRouteCol",
+          "flightGateCol",
+          "flightStatusCol"
+        ]
+      },
+      {
+        "id": "flightNumberCol",
+        "component": "Col",
+        "label": "Flight",
+        "data": [
+          "AO102",
+          "AO218",
+          "AO431",
+          "AO556",
+          "AO708",
+          "AO842",
+          "AO915"
+        ]
+      },
+      {
+        "id": "flightRouteCol",
+        "component": "Col",
+        "label": "Route",
+        "data": [
+          "ORD → BOS",
+          "ORD → DEN",
+          "MIA → ORD",
+          "ORD → SEA",
+          "LGA → ORD",
+          "ORD → SFO",
+          "ORD → MSP"
+        ]
+      },
+      {
+        "id": "flightGateCol",
+        "component": "Col",
+        "label": "Gate",
+        "data": [
+          "C12",
+          "B7",
+          "H14",
+          "C21",
+          "K3",
+          "B18",
+          "C9"
+        ]
+      },
+      {
+        "id": "flightStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Boarding · On time",
+          "Delayed 67 min",
+          "Arrived · 8 min early",
+          "Delayed 34 min",
+          "Inbound delayed 22 min",
+          "Final call · On time",
+          "Cancelled"
+        ]
+      },
+      {
+        "id": "gateHeading",
+        "component": "Heading",
+        "text": "Recent gate changes",
+        "level": "h3"
+      },
+      {
+        "id": "gateChangesTable",
+        "component": "Table",
+        "columns": [
+          "gateTimeCol",
+          "gateFlightCol",
+          "gateRouteCol",
+          "gateMoveCol"
+        ]
+      },
+      {
+        "id": "gateTimeCol",
+        "component": "Col",
+        "label": "Changed",
+        "data": [
+          "14:25",
+          "14:11",
+          "13:58",
+          "13:42"
+        ]
+      },
+      {
+        "id": "gateFlightCol",
+        "component": "Col",
+        "label": "Flight",
+        "data": [
+          "AO556",
+          "AO842",
+          "AO301",
+          "AO708"
+        ]
+      },
+      {
+        "id": "gateRouteCol",
+        "component": "Col",
+        "label": "Route",
+        "data": [
+          "ORD → SEA",
+          "ORD → SFO",
+          "ORD → DCA",
+          "LGA → ORD"
+        ]
+      },
+      {
+        "id": "gateMoveCol",
+        "component": "Col",
+        "label": "Gate change",
+        "data": [
+          "C17 → C21",
+          "B22 → B18",
+          "H6 → H10",
+          "K7 → K3"
+        ]
+      },
+      {
+        "id": "crewsHeading",
+        "component": "Heading",
+        "text": "Crews available for reassignment",
+        "level": "h3"
+      },
+      {
+        "id": "crewsTable",
+        "component": "Table",
+        "columns": [
+          "crewIdCol",
+          "crewTypeCol",
+          "crewQualifiedCol",
+          "crewAvailableCol"
+        ]
+      },
+      {
+        "id": "crewIdCol",
+        "component": "Col",
+        "label": "Crew",
+        "data": [
+          "FC-114",
+          "FC-209",
+          "CC-087",
+          "CC-142"
+        ]
+      },
+      {
+        "id": "crewTypeCol",
+        "component": "Col",
+        "label": "Type",
+        "data": [
+          "Flight deck",
+          "Flight deck",
+          "Cabin · 4",
+          "Cabin · 3"
+        ]
+      },
+      {
+        "id": "crewQualifiedCol",
+        "component": "Col",
+        "label": "Qualified",
+        "data": [
+          "A320 family",
+          "B737 family",
+          "A320 / B737",
+          "E175"
+        ]
+      },
+      {
+        "id": "crewAvailableCol",
+        "component": "Col",
+        "label": "Available / limits",
+        "data": [
+          "Now · 5h 20m duty remaining",
+          "15:05 · 4h 45m duty remaining",
+          "Now · 6h 10m duty remaining",
+          "14:50 · 5h 05m duty remaining"
+        ]
+      },
+      {
+        "id": "connectionsHeading",
+        "component": "Heading",
+        "text": "Connections at risk of being missed",
+        "level": "h3"
+      },
+      {
+        "id": "connectionsTable",
+        "component": "Table",
+        "columns": [
+          "connectionInboundCol",
+          "connectionOutboundCol",
+          "connectionPassengersCol",
+          "connectionRiskCol"
+        ]
+      },
+      {
+        "id": "connectionInboundCol",
+        "component": "Col",
+        "label": "Inbound",
+        "data": [
+          "AO708 · LGA → ORD",
+          "AO431 · MIA → ORD",
+          "AO620 · MCO → ORD",
+          "AO774 · YYZ → ORD"
+        ]
+      },
+      {
+        "id": "connectionOutboundCol",
+        "component": "Col",
+        "label": "Connecting to",
+        "data": [
+          "AO556 · SEA",
+          "AO218 · DEN",
+          "AO842 · SFO",
+          "AO990 · PDX"
+        ]
+      },
+      {
+        "id": "connectionPassengersCol",
+        "component": "Col",
+        "label": "Passengers",
+        "data": [
+          9,
+          7,
+          8,
+          4
+        ],
+        "type": "number"
+      },
+      {
+        "id": "connectionRiskCol",
+        "component": "Col",
+        "label": "Risk",
+        "data": [
+          "Critical · 12 min transfer",
+          "High · 19 min transfer",
+          "High · 21 min transfer",
+          "Moderate · 29 min transfer"
+        ]
+      },
+      {
+        "id": "rebookDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Rebook affected passengers",
+        "title": "Start passenger reaccommodation",
+        "description": "Select the affected flight or connection, then search protected inventory and issue rebooking options.",
+        "content": [
+          "rebookForm"
+        ],
+        "triggerVariant": "default"
+      },
+      {
+        "id": "rebookForm",
+        "component": "Form",
+        "name": "passenger-rebooking",
+        "buttons": "rebookButtons",
+        "fields": [
+          "affectedFlightField",
+          "passengerField",
+          "rebookPriorityField"
+        ]
+      },
+      {
+        "id": "affectedFlightField",
+        "component": "FormControl",
+        "label": "Affected flight or connection",
+        "input": "affectedFlightSelect"
+      },
+      {
+        "id": "affectedFlightSelect",
+        "component": "Select",
+        "name": "affected_flight",
+        "items": [
+          "affected218",
+          "affected556",
+          "affected842",
+          "affected915"
+        ],
+        "placeholder": "Choose an affected service"
+      },
+      {
+        "id": "affected218",
+        "component": "SelectItem",
+        "value": "AO218",
+        "label": "AO218 · ORD → DEN · Delayed 67 min"
+      },
+      {
+        "id": "affected556",
+        "component": "SelectItem",
+        "value": "AO556",
+        "label": "AO556 · ORD → SEA · Delayed 34 min"
+      },
+      {
+        "id": "affected842",
+        "component": "SelectItem",
+        "value": "AO842",
+        "label": "AO842 · ORD → SFO · At-risk connections"
+      },
+      {
+        "id": "affected915",
+        "component": "SelectItem",
+        "value": "AO915",
+        "label": "AO915 · ORD → MSP · Cancelled"
+      },
+      {
+        "id": "passengerField",
+        "component": "FormControl",
+        "label": "Passenger record or group",
+        "input": "passengerInput",
+        "hint": "Enter a record locator, passenger name, or disruption group ID"
+      },
+      {
+        "id": "passengerInput",
+        "component": "Input",
+        "name": "passenger_record",
+        "placeholder": "e.g. H7K2LM or AO915-ALL"
+      },
+      {
+        "id": "rebookPriorityField",
+        "component": "FormControl",
+        "label": "Rebooking priority",
+        "input": "rebookPriority"
+      },
+      {
+        "id": "rebookPriority",
+        "component": "RadioGroup",
+        "name": "priority",
+        "items": [
+          "priorityEarliest",
+          "prioritySameCabin",
+          "priorityConnections"
+        ],
+        "defaultValue": "earliest"
+      },
+      {
+        "id": "priorityEarliest",
+        "component": "RadioItem",
+        "label": "Earliest arrival",
+        "description": "Prioritize the soonest arrival at the destination",
+        "value": "earliest"
+      },
+      {
+        "id": "prioritySameCabin",
+        "component": "RadioItem",
+        "label": "Preserve cabin",
+        "description": "Keep passengers in the ticketed cabin when possible",
+        "value": "same-cabin"
+      },
+      {
+        "id": "priorityConnections",
+        "component": "RadioItem",
+        "label": "Protect onward connections",
+        "description": "Prioritize itineraries with viable onward connections",
+        "value": "connections"
+      },
+      {
+        "id": "rebookButtons",
+        "component": "Buttons",
+        "buttons": [
+          "searchRebookingButton",
+          "clearRebookingButton"
+        ]
+      },
+      {
+        "id": "searchRebookingButton",
+        "component": "Button",
+        "label": "Find rebooking options",
+        "variant": "primary",
+        "action": [
+          {
+            "type": "submit",
+            "form": "passenger-rebooking"
+          }
+        ]
+      },
+      {
+        "id": "clearRebookingButton",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "tertiary",
+        "action": [
+          {
+            "type": "reset",
+            "form": "passenger-rebooking"
+          }
+        ]
+      }
+    ]
+  }
+}
+</a2ui-json>

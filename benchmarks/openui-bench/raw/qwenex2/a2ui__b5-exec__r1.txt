@@ -1,0 +1,311 @@
+
+
+Here's a single-screen quarterly command view that covers all 18 items — KPIs (revenue, costs, profit, runway, pipeline, win rate, customers/churn, NPS), trend charts, department budget vs. plan, headcount, risks with owners, initiatives with status, board agenda, plus controls to switch quarter, filter by region, and export the pack.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "ceo-command-q3",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "ceo-command-q3",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "gap": "l",
+        "children": [
+          "header",
+          "controls",
+          "kpiHeading",
+          "kpiTable",
+          "gauges",
+          "trendHeading",
+          "trendChart",
+          "budgetHeading",
+          "budgetChart",
+          "headcountHeading",
+          "headcountTable",
+          "riskHeading",
+          "riskTable",
+          "initHeading",
+          "initTable",
+          "boardHeading",
+          "boardList"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "CEO Command View — Q3 FY25",
+        "subtitle": "All regions • Figures in USD millions • Updated Sep 30"
+      },
+      {
+        "id": "controls",
+        "component": "Form",
+        "name": "view-controls",
+        "fields": ["quarterField", "regionField"],
+        "buttons": "controlButtons"
+      },
+      {
+        "id": "quarterField",
+        "component": "FormControl",
+        "label": "Reporting quarter",
+        "input": "quarterSelect",
+        "hint": "Changes every metric and chart on this screen"
+      },
+      {
+        "id": "quarterSelect",
+        "component": "Select",
+        "name": "quarter",
+        "value": "q3",
+        "placeholder": "Select quarter",
+        "items": ["q1Item", "q2Item", "q3Item", "q4Item"]
+      },
+      { "id": "q1Item", "component": "SelectItem", "value": "q1", "label": "Q1 FY25 (actual)" },
+      { "id": "q2Item", "component": "SelectItem", "value": "q2", "label": "Q2 FY25 (actual)" },
+      { "id": "q3Item", "component": "SelectItem", "value": "q3", "label": "Q3 FY25 (actual)" },
+      { "id": "q4Item", "component": "SelectItem", "value": "q4", "label": "Q4 FY25 (projection)" },
+      {
+        "id": "regionField",
+        "component": "FormControl",
+        "label": "Region focus",
+        "input": "regionSelect"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region",
+        "value": "all",
+        "placeholder": "Filter by region",
+        "items": ["regionAll", "regionNa", "regionEmea", "regionApac", "regionLatam"]
+      },
+      { "id": "regionAll", "component": "SelectItem", "value": "all", "label": "All regions" },
+      { "id": "regionNa", "component": "SelectItem", "value": "na", "label": "North America" },
+      { "id": "regionEmea", "component": "SelectItem", "value": "emea", "label": "EMEA" },
+      { "id": "regionApac", "component": "SelectItem", "value": "apac", "label": "APAC" },
+      { "id": "regionLatam", "component": "SelectItem", "value": "latam", "label": "LATAM" },
+      {
+        "id": "controlButtons",
+        "component": "Buttons",
+        "buttons": ["exportBtn"]
+      },
+      {
+        "id": "exportBtn",
+        "component": "Button",
+        "label": "Export board pack (PDF + CSV)",
+        "variant": "primary",
+        "action": [{ "type": "export", "format": "pdf", "scope": "board-pack" }]
+      },
+      {
+        "id": "kpiHeading",
+        "component": "Heading",
+        "level": "h2",
+        "text": "Financial & operating KPIs"
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": ["kpiNameCol", "kpiValueCol"]
+      },
+      {
+        "id": "kpiNameCol",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Revenue (Q3 actual)",
+          "Operating costs",
+          "Net profit",
+          "Months of runway",
+          "Sales pipeline value",
+          "Win rate",
+          "Customer count",
+          "Quarterly churn",
+          "NPS"
+        ]
+      },
+      {
+        "id": "kpiValueCol",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "$12.6M",
+          "$8.1M",
+          "$4.5M",
+          "22 months",
+          "$58.4M",
+          "24%",
+          "1,284",
+          "3.1%",
+          "62"
+        ]
+      },
+      {
+        "id": "gauges",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "s",
+        "children": ["runwayProg", "winProg", "npsProg"]
+      },
+      { "id": "runwayProg", "component": "Progress", "value": 73, "label": "Runway: 22 of 30-month target" },
+      { "id": "winProg", "component": "Progress", "value": 24, "label": "Win rate: 24% (target 30%)" },
+      { "id": "npsProg", "component": "Progress", "value": 62, "label": "NPS: 62 (+4 QoQ)" },
+      {
+        "id": "trendHeading",
+        "component": "Heading",
+        "level": "h2",
+        "text": "Revenue vs. costs — FY25 by quarter"
+      },
+      {
+        "id": "trendChart",
+        "component": "BarChart",
+        "variant": "grouped",
+        "xLabel": "Quarter",
+        "yLabel": "USD (M)",
+        "labels": ["Q1 FY25", "Q2 FY25", "Q3 FY25", "Q4 FY25 (proj.)"],
+        "series": ["revSeries", "costSeries"]
+      },
+      { "id": "revSeries", "component": "Series", "category": "Revenue", "values": [10.2, 11.0, 12.6, 14.3] },
+      { "id": "costSeries", "component": "Series", "category": "Costs", "values": [7.4, 7.8, 8.1, 8.9] },
+      {
+        "id": "budgetHeading",
+        "component": "Heading",
+        "level": "h2",
+        "text": "Q3 budget by department — actual vs. plan"
+      },
+      {
+        "id": "budgetChart",
+        "component": "HorizontalBarChart",
+        "variant": "grouped",
+        "xLabel": "USD (M)",
+        "yLabel": "Department",
+        "labels": ["Engineering", "Sales & Marketing", "G&A", "Customer Success", "R&D"],
+        "series": ["actualSpend", "planBudget"]
+      },
+      { "id": "actualSpend", "component": "Series", "category": "Actual", "values": [4.2, 2.6, 1.1, 1.4, 0.9] },
+      { "id": "planBudget", "component": "Series", "category": "Plan", "values": [4.0, 2.8, 1.2, 1.3, 1.0] },
+      {
+        "id": "headcountHeading",
+        "component": "Heading",
+        "level": "h2",
+        "text": "Headcount by department (total: 272)"
+      },
+      {
+        "id": "headcountTable",
+        "component": "Table",
+        "columns": ["hcDeptCol", "hcCountCol"]
+      },
+      {
+        "id": "hcDeptCol",
+        "component": "Col",
+        "label": "Department",
+        "data": ["Engineering", "Sales & Marketing", "G&A", "Customer Success", "R&D"]
+      },
+      {
+        "id": "hcCountCol",
+        "component": "Col",
+        "label": "Headcount",
+        "type": "number",
+        "data": [96, 74, 28, 41, 33]
+      },
+      {
+        "id": "riskHeading",
+        "component": "Heading",
+        "level": "h2",
+        "text": "Top risks & owners"
+      },
+      {
+        "id": "riskTable",
+        "component": "Table",
+        "columns": ["riskCol", "sevCol", "ownerCol"]
+      },
+      {
+        "id": "riskCol",
+        "component": "Col",
+        "label": "Risk",
+        "data": [
+          "Enterprise deal slippage into Q4+",
+          "Senior engineering attrition",
+          "EU data-act compliance exposure",
+          "Cloud infrastructure cost overrun",
+          "Competitor price war in SMB tier"
+        ]
+      },
+      {
+        "id": "sevCol",
+        "component": "Col",
+        "label": "Severity",
+        "data": ["High", "Medium", "Medium", "High", "Low"]
+      },
+      {
+        "id": "ownerCol",
+        "component": "Col",
+        "label": "Owner",
+        "data": ["Sarah Chen (CRO)", "Marcus Webb (CTO)", "Priya Nair (GC)", "Dana Alvarez (CFO)", "Tomás Ruiz (CMO)"]
+      },
+      {
+        "id": "initHeading",
+        "component": "Heading",
+        "level": "h2",
+        "text": "Strategic initiatives & status"
+      },
+      {
+        "id": "initTable",
+        "component": "Table",
+        "columns": ["initCol", "initStatusCol", "initOwnerCol"]
+      },
+      {
+        "id": "initCol",
+        "component": "Col",
+        "label": "Initiative",
+        "data": [
+          "Enterprise upmarket motion",
+          "Self-serve PLG launch",
+          "Partner channel build-out",
+          "AI copilot GA",
+          "EMEA localization"
+        ]
+      },
+      {
+        "id": "initStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": ["On track", "At risk", "On track", "On track", "Deferred"]
+      },
+      {
+        "id": "initOwnerCol",
+        "component": "Col",
+        "label": "Owner",
+        "data": ["Sarah Chen", "Marcus Webb", "Tomás Ruiz", "Marcus Webb", "Elena Fischer (GM EMEA)"]
+      },
+      {
+        "id": "boardHeading",
+        "component": "Heading",
+        "level": "h2",
+        "text": "Agenda — next board meeting (Oct 24)"
+      },
+      {
+        "id": "boardList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": ["b1", "b2", "b3", "b4", "b5"]
+      },
+      { "id": "b1", "component": "ListItem", "title": "Q3 financial review & FY25 re-forecast", "subtitle": "CFO walk-through, 15 min" },
+      { "id": "b2", "component": "ListItem", "title": "Series C timing & runway scenarios", "subtitle": "Decision needed on raise window" },
+      { "id": "b3", "component": "ListItem", "title": "Enterprise pricing change approval", "subtitle": "Effective-date decision required" },
+      { "id": "b4", "component": "ListItem", "title": "EU compliance remediation plan", "subtitle": "Vendor selection & budget ask" },
+      { "id": "b5", "component": "ListItem", "title": "Executive talent update", "subtitle": "Rev-org design & hiring plan" }
+    ]
+  }
+}
+</a2ui-json>
+
+Coverage map: **1–3** in the KPI table, **4–5** in the quarterly trend chart, **6** budget-vs-plan chart, **7** headcount table, **8** risk table with owners, **9** initiatives with status, **10** runway (KPI + progress gauge), **11–12** pipeline & win rate, **13** customer count & churn, **14** NPS, **15** numbered board agenda, **16** quarter selector, **17** region selector, **18** export board pack button. Adjust the selectors to re-scope the view, or hit export to generate the pack.

@@ -1,0 +1,780 @@
+I have created a comprehensive daily console for the store manager covering all 12 requested metrics and management functions.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "quickActions",
+          "alertOos",
+          "kpiOverview",
+          "tabs"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Store Manager Daily Console",
+        "subtitle": "Store #402 - Downtown Flagship • Thursday, Oct 24"
+      },
+      {
+        "id": "quickActions",
+        "component": "Buttons",
+        "buttons": [
+          "storeSelectBtn",
+          "reorderDialogBtn"
+        ],
+        "direction": "row"
+      },
+      {
+        "id": "storeSelectBtn",
+        "component": "DrawerBlock",
+        "triggerLabel": "11. Switch Store Location",
+        "title": "Select Store Location",
+        "description": "Choose a different store to view its live daily console.",
+        "content": [
+          "storeList"
+        ]
+      },
+      {
+        "id": "storeList",
+        "component": "ListBlock",
+        "items": [
+          "store1",
+          "store2",
+          "store3"
+        ]
+      },
+      {
+        "id": "store1",
+        "component": "ListItem",
+        "title": "Store #402 - Downtown Flagship (Current)",
+        "subtitle": "Sales: $14,280 • Open • 12 Staff On Duty",
+        "actionLabel": "Selected"
+      },
+      {
+        "id": "store2",
+        "component": "ListItem",
+        "title": "Store #108 - Westside Mall",
+        "subtitle": "Sales: $9,450 • Open • 8 Staff On Duty",
+        "actionLabel": "Switch"
+      },
+      {
+        "id": "store3",
+        "component": "ListItem",
+        "title": "Store #215 - Northside Galleria",
+        "subtitle": "Sales: $11,120 • Open • 10 Staff On Duty",
+        "actionLabel": "Switch"
+      },
+      {
+        "id": "reorderDialogBtn",
+        "component": "DialogBlock",
+        "triggerLabel": "10. Quick Reorder Item",
+        "triggerVariant": "outline",
+        "title": "Stock Reorder Request",
+        "description": "Submit an urgent restock purchase order for depleted inventory.",
+        "content": [
+          "reorderForm"
+        ]
+      },
+      {
+        "id": "reorderForm",
+        "component": "Form",
+        "name": "reorderForm",
+        "buttons": "reorderButtons",
+        "fields": [
+          "itemField",
+          "qtyField",
+          "supplierField"
+        ]
+      },
+      {
+        "id": "itemField",
+        "component": "FormControl",
+        "label": "Select Out of Stock Item",
+        "input": "itemSelect"
+      },
+      {
+        "id": "itemSelect",
+        "component": "Select",
+        "name": "item",
+        "placeholder": "Choose item to reorder",
+        "items": [
+          "itemOpt1",
+          "itemOpt2",
+          "itemOpt3"
+        ]
+      },
+      {
+        "id": "itemOpt1",
+        "component": "SelectItem",
+        "value": "organic-oat-milk",
+        "label": "Organic Oat Milk 1L (OOS)"
+      },
+      {
+        "id": "itemOpt2",
+        "component": "SelectItem",
+        "value": "artisan-sourdough",
+        "label": "Artisan Sourdough Bread (OOS)"
+      },
+      {
+        "id": "itemOpt3",
+        "component": "SelectItem",
+        "value": "cold-brew-250ml",
+        "label": "Cold Brew Coffee 250ml (OOS)"
+      },
+      {
+        "id": "qtyField",
+        "component": "FormControl",
+        "label": "Reorder Quantity (Units)",
+        "input": "qtyInput"
+      },
+      {
+        "id": "qtyInput",
+        "component": "Input",
+        "name": "quantity",
+        "placeholder": "e.g. 50",
+        "type": "number"
+      },
+      {
+        "id": "supplierField",
+        "component": "FormControl",
+        "label": "Fulfillment Route",
+        "input": "supplierRadio"
+      },
+      {
+        "id": "supplierRadio",
+        "component": "RadioGroup",
+        "name": "supplier",
+        "defaultValue": "dc",
+        "items": [
+          "supDc",
+          "supDirect"
+        ]
+      },
+      {
+        "id": "supDc",
+        "component": "RadioItem",
+        "label": "Central Distribution Center",
+        "description": "Standard overnight delivery",
+        "value": "dc"
+      },
+      {
+        "id": "supDirect",
+        "component": "RadioItem",
+        "label": "Direct Vendor Rush Delivery",
+        "description": "Same day dispatch (+15% surcharge)",
+        "value": "direct"
+      },
+      {
+        "id": "reorderButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitOrderBtn"
+        ]
+      },
+      {
+        "id": "submitOrderBtn",
+        "component": "Button",
+        "label": "Submit Purchase Order",
+        "variant": "primary"
+      },
+      {
+        "id": "alertOos",
+        "component": "Alert",
+        "title": "4. Out of Stock Notice (3 Urgent Items)",
+        "description": "Organic Oat Milk, Artisan Sourdough, and Cold Brew Coffee are completely sold out today.",
+        "variant": "destructive"
+      },
+      {
+        "id": "kpiOverview",
+        "component": "Table",
+        "columns": [
+          "kpiColMetric",
+          "kpiColValue",
+          "kpiColStatus"
+        ]
+      },
+      {
+        "id": "kpiColMetric",
+        "component": "Col",
+        "label": "Key Performance Indicator",
+        "data": [
+          "1. Sales Today vs Target",
+          "6. Average Basket Size",
+          "7. Returns This Week"
+        ]
+      },
+      {
+        "id": "kpiColValue",
+        "component": "Col",
+        "label": "Current Value",
+        "data": [
+          "$14,280 / $16,000",
+          "$42.50",
+          "38 items ($1,240)"
+        ]
+      },
+      {
+        "id": "kpiColStatus",
+        "component": "Col",
+        "label": "Pacing / Target Context",
+        "data": [
+          "89.25% of Daily Target (Pacing +4%)",
+          "+$3.20 vs Weekly Avg ($39.30)",
+          "1.4% Return Rate (Below 2.0% Threshold)"
+        ]
+      },
+      {
+        "id": "tabs",
+        "component": "Tabs",
+        "items": [
+          "tabOperations",
+          "tabPerformance",
+          "tabInventory"
+        ]
+      },
+      {
+        "id": "tabOperations",
+        "component": "TabItem",
+        "value": "operations",
+        "trigger": "Operations & Staffing",
+        "content": [
+          "registersCard",
+          "staffCard"
+        ]
+      },
+      {
+        "id": "registersCard",
+        "component": "Card",
+        "children": [
+          "registersHeader",
+          "registersTable"
+        ],
+        "variant": "sunk"
+      },
+      {
+        "id": "registersHeader",
+        "component": "CardHeader",
+        "title": "9. Register Status",
+        "subtitle": "Real-time POS terminal activity"
+      },
+      {
+        "id": "registersTable",
+        "component": "Table",
+        "columns": [
+          "regName",
+          "regStatus",
+          "regCashier",
+          "regTrans"
+        ]
+      },
+      {
+        "id": "regName",
+        "component": "Col",
+        "label": "Register",
+        "data": [
+          "Register 1 (Express)",
+          "Register 2 (Main)",
+          "Register 3 (Main)",
+          "Register 4 (Returns/CS)",
+          "Self-Checkout Station A"
+        ]
+      },
+      {
+        "id": "regStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "OPEN",
+          "OPEN",
+          "CLOSED",
+          "OPEN",
+          "OPEN"
+        ]
+      },
+      {
+        "id": "regCashier",
+        "component": "Col",
+        "label": "Assigned Staff",
+        "data": [
+          "Sarah Jenkins",
+          "Marcus Chen",
+          "Unassigned",
+          "David Ross",
+          "Automated (Monitored by Alex)"
+        ]
+      },
+      {
+        "id": "regTrans",
+        "component": "Col",
+        "label": "Today's Volume",
+        "data": [
+          "142 Txns",
+          "98 Txns",
+          "0 Txns",
+          "45 Txns",
+          "210 Txns"
+        ]
+      },
+      {
+        "id": "staffCard",
+        "component": "Card",
+        "children": [
+          "staffHeader",
+          "staffTable"
+        ],
+        "variant": "sunk"
+      },
+      {
+        "id": "staffHeader",
+        "component": "CardHeader",
+        "title": "5. Today's Staff Shift Roster",
+        "subtitle": "Active and scheduled team members"
+      },
+      {
+        "id": "staffTable",
+        "component": "Table",
+        "columns": [
+          "staffName",
+          "staffRole",
+          "staffShift",
+          "staffStatus"
+        ]
+      },
+      {
+        "id": "staffName",
+        "component": "Col",
+        "label": "Name",
+        "data": [
+          "Elena Rostova",
+          "Sarah Jenkins",
+          "Marcus Chen",
+          "David Ross",
+          "Alex Rivera",
+          "James Wilson"
+        ]
+      },
+      {
+        "id": "staffRole",
+        "component": "Col",
+        "label": "Role",
+        "data": [
+          "Store Manager",
+          "Head Cashier",
+          "Cashier",
+          "Customer Service Lead",
+          "Floor Associate",
+          "Inventory Specialist"
+        ]
+      },
+      {
+        "id": "staffShift",
+        "component": "Col",
+        "label": "Shift Time",
+        "data": [
+          "07:30 AM - 04:00 PM",
+          "08:00 AM - 04:30 PM",
+          "09:00 AM - 05:30 PM",
+          "08:00 AM - 04:30 PM",
+          "10:00 AM - 06:30 PM",
+          "01:00 PM - 09:30 PM"
+        ]
+      },
+      {
+        "id": "staffStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "On Shift",
+          "On Shift",
+          "On Break",
+          "On Shift",
+          "On Shift",
+          "Scheduled (Upcoming)"
+        ]
+      },
+      {
+        "id": "tabPerformance",
+        "component": "TabItem",
+        "value": "performance",
+        "trigger": "Traffic, Sales & Promos",
+        "content": [
+          "trafficCard",
+          "weeklyCompCard",
+          "promosCard"
+        ]
+      },
+      {
+        "id": "trafficCard",
+        "component": "Card",
+        "children": [
+          "trafficHeader",
+          "trafficChart"
+        ],
+        "variant": "sunk"
+      },
+      {
+        "id": "trafficHeader",
+        "component": "CardHeader",
+        "title": "2. Foot Traffic Through the Day",
+        "subtitle": "Hourly visitor count from sensor analytics"
+      },
+      {
+        "id": "trafficChart",
+        "component": "LineChart",
+        "labels": [
+          "8 AM",
+          "9 AM",
+          "10 AM",
+          "11 AM",
+          "12 PM",
+          "1 PM",
+          "2 PM",
+          "3 PM",
+          "4 PM (Est)",
+          "5 PM (Est)"
+        ],
+        "series": [
+          "trafficSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Hour",
+        "yLabel": "Visitors"
+      },
+      {
+        "id": "trafficSeries",
+        "component": "Series",
+        "category": "Visitor Count",
+        "values": [
+          45,
+          110,
+          230,
+          340,
+          480,
+          510,
+          390,
+          310,
+          420,
+          490
+        ]
+      },
+      {
+        "id": "weeklyCompCard",
+        "component": "Card",
+        "children": [
+          "weeklyHeader",
+          "weeklyChart"
+        ],
+        "variant": "sunk"
+      },
+      {
+        "id": "weeklyHeader",
+        "component": "CardHeader",
+        "title": "12. Weekly Comparison: This Week vs Last Week",
+        "subtitle": "Daily revenue breakdown in USD"
+      },
+      {
+        "id": "weeklyChart",
+        "component": "BarChart",
+        "labels": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu (So Far)",
+          "Fri",
+          "Sat",
+          "Sun"
+        ],
+        "series": [
+          "thisWeekSeries",
+          "lastWeekSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Day of Week",
+        "yLabel": "Sales ($)"
+      },
+      {
+        "id": "thisWeekSeries",
+        "component": "Series",
+        "category": "This Week",
+        "values": [
+          15200,
+          16100,
+          15800,
+          14280,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "id": "lastWeekSeries",
+        "component": "Series",
+        "category": "Last Week",
+        "values": [
+          14100,
+          14800,
+          15200,
+          15900,
+          18400,
+          21000,
+          17500
+        ]
+      },
+      {
+        "id": "promosCard",
+        "component": "Card",
+        "children": [
+          "promosHeader",
+          "promosTable"
+        ],
+        "variant": "sunk"
+      },
+      {
+        "id": "promosHeader",
+        "component": "CardHeader",
+        "title": "8. Running Promotions Performance",
+        "subtitle": "Conversion and revenue uplift for active campaigns"
+      },
+      {
+        "id": "promosTable",
+        "component": "Table",
+        "columns": [
+          "promoName",
+          "promoDiscount",
+          "promoRedemptions",
+          "promoRevenue",
+          "promoStatus"
+        ]
+      },
+      {
+        "id": "promoName",
+        "component": "Col",
+        "label": "Promotion Name",
+        "data": [
+          "Fall Bakery Bundle",
+          "BOGO Cold Brew",
+          "Loyalty Double Points"
+        ]
+      },
+      {
+        "id": "promoDiscount",
+        "component": "Col",
+        "label": "Discount Type",
+        "data": [
+          "20% Off Mix & Match",
+          "Buy 1 Get 1 Free",
+          "2x Points on $30+"
+        ]
+      },
+      {
+        "id": "promoRedemptions",
+        "component": "Col",
+        "label": "Redemptions Today",
+        "data": [
+          "114",
+          "86",
+          "203"
+        ]
+      },
+      {
+        "id": "promoRevenue",
+        "component": "Col",
+        "label": "Attributed Revenue",
+        "data": [
+          "$1,820",
+          "$645",
+          "$4,910"
+        ]
+      },
+      {
+        "id": "promoStatus",
+        "component": "Col",
+        "label": "Performance",
+        "data": [
+          "Exceeding Target (+18%)",
+          "On Target",
+          "Exceeding Target (+25%)"
+        ]
+      },
+      {
+        "id": "tabInventory",
+        "component": "TabItem",
+        "value": "inventory",
+        "trigger": "Best Sellers & Stock Alerts",
+        "content": [
+          "bestSellersCard",
+          "oosCard"
+        ]
+      },
+      {
+        "id": "bestSellersCard",
+        "component": "Card",
+        "children": [
+          "bestSellersHeader",
+          "bestSellersTable"
+        ],
+        "variant": "sunk"
+      },
+      {
+        "id": "bestSellersHeader",
+        "component": "CardHeader",
+        "title": "3. Best Sellers Today",
+        "subtitle": "Top moving items by unit sales"
+      },
+      {
+        "id": "bestSellersTable",
+        "component": "Table",
+        "columns": [
+          "bestItem",
+          "bestCategory",
+          "bestUnits",
+          "bestRev"
+        ]
+      },
+      {
+        "id": "bestItem",
+        "component": "Col",
+        "label": "Item Name",
+        "data": [
+          "House Blend Espresso Beans (500g)",
+          "Artisan Butter Croissant",
+          "Organic Almond Milk 1L",
+          "Avocado Toast Box",
+          "Sparkling Mineral Water 500ml"
+        ]
+      },
+      {
+        "id": "bestCategory",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Packaged Coffee",
+          "Bakery",
+          "Dairy & Alternatives",
+          "Prepared Foods",
+          "Beverages"
+        ]
+      },
+      {
+        "id": "bestUnits",
+        "component": "Col",
+        "label": "Units Sold",
+        "data": [
+          "184 units",
+          "162 units",
+          "128 units",
+          "95 units",
+          "88 units"
+        ]
+      },
+      {
+        "id": "bestRev",
+        "component": "Col",
+        "label": "Gross Sales",
+        "data": [
+          "$2,760",
+          "$729",
+          "$640",
+          "$855",
+          "$220"
+        ]
+      },
+      {
+        "id": "oosCard",
+        "component": "Card",
+        "children": [
+          "oosHeader",
+          "oosTable"
+        ],
+        "variant": "sunk"
+      },
+      {
+        "id": "oosHeader",
+        "component": "CardHeader",
+        "title": "4. Out of Stock Items & Restock Status",
+        "subtitle": "Items requiring immediate reorder action"
+      },
+      {
+        "id": "oosTable",
+        "component": "Table",
+        "columns": [
+          "oosItem",
+          "oosCategory",
+          "oosLastSold",
+          "oosEstLoss",
+          "oosStatus"
+        ]
+      },
+      {
+        "id": "oosItem",
+        "component": "Col",
+        "label": "Item Name",
+        "data": [
+          "Organic Oat Milk 1L",
+          "Artisan Sourdough Bread",
+          "Cold Brew Coffee 250ml"
+        ]
+      },
+      {
+        "id": "oosCategory",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Dairy Alternatives",
+          "Bakery",
+          "Beverages"
+        ]
+      },
+      {
+        "id": "oosLastSold",
+        "component": "Col",
+        "label": "Stock Reached 0",
+        "data": [
+          "11:15 AM",
+          "01:30 PM",
+          "02:10 PM"
+        ]
+      },
+      {
+        "id": "oosEstLoss",
+        "component": "Col",
+        "label": "Estimated Lost Revenue",
+        "data": [
+          "$210.00",
+          "$85.00",
+          "$140.00"
+        ]
+      },
+      {
+        "id": "oosStatus",
+        "component": "Col",
+        "label": "Action Needed",
+        "data": [
+          "Pending Manager Reorder",
+          "Pending Manager Reorder",
+          "Pending Manager Reorder"
+        ]
+      }
+    ]
+  }
+}
+</a2ui-json>

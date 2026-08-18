@@ -1,0 +1,70 @@
+root = Card([headerSection, statusAlert, kpiRow, mainTabs, followUpSection, noteSection, callDialog], "card", "column", "m")
+
+headerSection = CardHeader("Acme Corporation", "Account Owner: Sarah Jenkins | Tier 1 Enterprise")
+
+statusAlert = Alert("Renewal Date Approaching", "Contract expires on November 15, 2024 (18 days remaining). Action required for renewal quote.", "warning")
+
+kpiRow = Card([dealValueCard, stageCard, renewalCard], "clear", "row", "m")
+dealValueCard = Card([dealValueTitle, dealValueText], "sunk")
+dealValueTitle = Heading("$450,000", "h2")
+dealValueText = TextContent("Total Deal Value", "small")
+
+stageCard = Card([stageTitle, stageBadge], "sunk")
+stageTitle = Heading("Negotiation", "h2")
+stageBadge = Badge("Stage 4 of 5", "secondary")
+
+renewalCard = Card([renewalTitle, renewalText], "sunk")
+renewalTitle = Heading("Nov 15, 2024", "h2")
+renewalText = TextContent("Contract Renewal Date", "small")
+
+mainTabs = Tabs([activityTab, contactsTab])
+
+activityTab = TabItem("activity", "Recent Activity", [activityList])
+activityList = ListBlock([act1, act2, act3, act4])
+act1 = ListItem("Security Assessment Approved", "Oct 24, 2024 - SecOps team cleared technical requirements", null, "View Report")
+act2 = ListItem("Executive Briefing Call", "Oct 22, 2024 - Discussed multi-year expansion with VP of IT", null, "Call Notes")
+act3 = ListItem("Proposal v2 Sent", "Oct 18, 2024 - Updated pricing tiers based on user seat feedback", null, "View PDF")
+act4 = ListItem("Initial Discovery Demo", "Oct 10, 2024 - Platform demo with procurement and engineering", null, "Recording")
+
+contactsTab = TabItem("contacts", "Contacts & Roles", [contactsTable])
+contactsTable = Table([colName, colTitle, colRole, colEmail])
+colName = Col("Contact Name", ["Marcus Vance", "Elena Rostova", "David Chen"])
+colTitle = Col("Title", ["Chief Technology Officer", "VP of Infrastructure", "Lead Procurement Manager"])
+colRole = Col("Role in Deal", ["Executive Sponsor", "Technical Evaluator", "Economic Buyer"])
+colEmail = Col("Email", ["m.vance@acme.com", "e.rostova@acme.com", "d.chen@acme.com"])
+
+followUpSection = SectionBlock([followUpItem])
+followUpItem = SectionItem("open-tasks", "Open Follow-ups (3)", [tasksTable])
+tasksTable = Table([colTask, colDue, colAssignee, colStatus])
+colTask = Col("Task Description", ["Send revised MSA clause 4.2", "Schedule legal team sync", "Send Q3 benchmark case study"])
+colDue = Col("Due Date", ["Oct 29, 2024", "Nov 01, 2024", "Nov 05, 2024"])
+colAssignee = Col("Assignee", ["Sarah Jenkins", "Sarah Jenkins", "Mike Ross"])
+colStatus = Col("Status", ["In Progress", "Pending Schedule", "Not Started"])
+
+noteSection = Card([noteHeading, noteForm], "sunk")
+noteHeading = Heading("Jot Quick Note", "h4")
+noteForm = Form("quick-note-form", noteButtons, [noteInput])
+noteInput = FormControl("Note Content", noteTextArea, "Notes are automatically pinned to account timeline")
+noteTextArea = TextArea("note_text", "Type meeting notes, key takeaways, or account updates...", 3)
+noteButtons = Buttons([saveNoteBtn])
+saveNoteBtn = Button("Save Note", null, "primary")
+
+callDialog = DialogBlock("Log a Call", "Log Recent Call", "Record phone outreach or client meetings for the account history.", callForm)
+callForm = Form("log-call-form", callButtons, [callTypeControl, callOutcomeControl, callSummaryControl])
+callTypeControl = FormControl("Call Type", callTypeSelect)
+callTypeSelect = Select("call_type", [typeDiscovery, typeDemo, typeNegotiation], "Select call type")
+typeDiscovery = SelectItem("discovery", "Discovery Call")
+typeDemo = SelectItem("demo", "Product Demo")
+typeNegotiation = SelectItem("negotiation", "Pricing / Negotiation")
+
+callOutcomeControl = FormControl("Outcome", callOutcomeSelect)
+callOutcomeSelect = Select("call_outcome", [outConnected, outVoicemail, outScheduled], "Select outcome")
+outConnected = SelectItem("connected", "Connected / Spoke with Prospect")
+outVoicemail = SelectItem("voicemail", "Left Voicemail")
+outScheduled = SelectItem("scheduled", "Follow-up Scheduled")
+
+callSummaryControl = FormControl("Summary & Action Items", callSummaryText)
+callSummaryText = TextArea("call_summary", "Key discussion points and next steps...", 3)
+
+callButtons = Buttons([submitCallBtn])
+submitCallBtn = Button("Log Call Entry", null, "primary")

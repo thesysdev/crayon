@@ -1,0 +1,74 @@
+root = Card([header, mainStats, workoutSection, logWorkoutSection, followUp])
+
+header = CardHeader("Daily Fitness Summary", "Thursday, October 24")
+
+mainStats = Card([stepProgress, statGrid], "sunk", "column", "m")
+stepProgress = Progress(8420, "Daily Step Goal: 8,420 / 10,000 steps (84%)")
+
+statGrid = Card([calCard, activeTimeCard, distCard], "clear", "row", "m", "center", "between")
+calCard = Card([calBadge, calValue, calLabel], "card", "column", "xs", "center")
+calBadge = Tag("Active", null, "sm", "success")
+calValue = Heading("645 kcal", "h3")
+calLabel = TextContent("Calories Burned", "small")
+
+activeTimeCard = Card([timeBadge, timeValue, timeLabel], "card", "column", "xs", "center")
+timeBadge = Tag("Target Hit", null, "sm", "info")
+timeValue = Heading("48 min", "h3")
+timeLabel = TextContent("Active Time", "small")
+
+distCard = Card([distBadge, distValue, distLabel], "card", "column", "xs", "center")
+distBadge = Tag("Distance", null, "sm", "neutral")
+distValue = Heading("6.2 km", "h3")
+distLabel = TextContent("Total Distance", "small")
+
+workoutSection = Card([workoutHeader, weeklyChart, workoutHistory], "card", "column", "m")
+workoutHeader = CardHeader("Weekly Workout Activity", "Calories burned per daily session")
+
+weeklyChart = BarChart(["Fri", "Sat", "Sun", "Mon", "Tue", "Wed", "Thu"], [calSeries], "grouped", "Day", "Calories")
+calSeries = Series("Burned Calories", [420, 580, 310, 500, 620, 450, 645])
+
+workoutHistory = Accordion([accItem1, accItem2, accItem3])
+
+accItem1 = AccordionItem("today", "Today: Morning Run & Core Workout", [todayDetail])
+todayDetail = TextContent("Completed 45 mins of outdoor running (5.2 km) followed by a 15 min core strength routine. Peak heart rate: 165 bpm.")
+
+accItem2 = AccordionItem("wed", "Yesterday: HIIT & Upper Body", [wedDetail])
+wedDetail = TextContent("30 min High-Intensity Interval Training session. Total burned: 450 kcal. Average heart rate: 142 bpm.")
+
+accItem3 = AccordionItem("tue", "Tuesday: Cycling Endurance", [tueDetail])
+tueDetail = TextContent("60 min indoor cycling session covering 18 km. Total burned: 620 kcal. Great stamina maintenance.")
+
+logWorkoutSection = Card([logHeader, logForm], "sunk", "column", "m")
+logHeader = CardHeader("Log New Workout", "Record your latest exercise session")
+
+logForm = Form("workout-log", formBtns, [typeControl, durationControl, calControl, intensityControl])
+
+typeControl = FormControl("Workout Type", typeSelect)
+typeSelect = Select("workout_type", [optRun, optCycle, optHIIT, optStrength, optYoga, optWalk], "Select exercise type")
+optRun = SelectItem("running", "Running")
+optCycle = SelectItem("cycling", "Cycling")
+optHIIT = SelectItem("hiit", "HIIT Session")
+optStrength = SelectItem("strength", "Strength Training")
+optYoga = SelectItem("yoga", "Yoga / Mobility")
+optWalk = SelectItem("walking", "Walking")
+
+durationControl = FormControl("Duration (minutes)", durationInput)
+durationInput = Input("duration", "30", "number")
+
+calControl = FormControl("Estimated Calories Burned", calInput)
+calInput = Input("calories", "250", "number")
+
+intensityControl = FormControl("Perceived Intensity Level", intensityRadio)
+intensityRadio = RadioGroup("intensity", [intLight, intMod, intVig], "moderate")
+intLight = RadioItem("Light", "Easy pace, minimal strain", "light")
+intMod = RadioItem("Moderate", "Steady effort, raised heart rate", "moderate")
+intVig = RadioItem("Vigorous", "Maximum effort, heavy breathing", "vigorous")
+
+formBtns = Buttons([submitBtn, resetBtn])
+submitBtn = Button("Save Workout", null, "primary")
+resetBtn = Button("Cancel", null, "tertiary")
+
+followUp = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("View monthly step trends")
+f2 = FollowUpItem("Set a new daily calorie target")
+f3 = FollowUpItem("Export weekly exercise report")

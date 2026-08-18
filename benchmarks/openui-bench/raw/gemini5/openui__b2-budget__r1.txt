@@ -1,0 +1,66 @@
+root = Card([header, monthSelector, overviewGrid, spendingBreakdown, highlightCallout, addExpenseDrawer, followUps], "card", "column", "m")
+
+header = CardHeader("Personal Budget Tracker", "Monthly overview and expense management")
+
+monthSelector = Tabs([m0Item, m1Item, m2Item])
+m0Item = TabItem("oct23", "October 2023", [octSummary])
+m1Item = TabItem("nov23", "November 2023", [novSummary])
+m2Item = TabItem("dec23", "December 2023", [decSummary])
+
+octSummary = TextContent("October Total: **$3,120** spent of $3,500 budget (89%)", "small")
+novSummary = TextContent("November Total: **$3,450** spent of $3,500 budget (98%)", "small")
+decSummary = TextContent("December Total: **$2,840** spent of $3,500 budget (81%)", "small")
+
+overviewGrid = Card([budgetProgress, budgetTable], "sunk", "column", "m")
+budgetProgress = Progress(81, "December Budget: $2,840 spent of $3,500 ($660 remaining)")
+
+budgetTable = Table([colMetric, colAmount])
+colMetric = Col("Metric", ["Monthly Budget", "Total Spent", "Remaining", "Daily Average"])
+colAmount = Col("Amount", ["$3,500.00", "$2,840.00", "$660.00", "$91.61"])
+
+spendingBreakdown = Card([breakdownHeader, categoryPie, categoryTable], "clear", "column", "s")
+breakdownHeader = Heading("Spending by Category", "h3")
+
+categoryPie = PieChart(catLabels, catValues, "donut")
+catLabels = ["Housing", "Food & Dining", "Transportation", "Utilities", "Entertainment", "Shopping"]
+catValues = [1200, 540, 320, 210, 180, 390]
+
+categoryTable = Table([catCol, spentCol, budgetCatCol])
+catCol = Col("Category", ["Housing", "Food & Dining", "Shopping", "Transportation", "Utilities", "Entertainment"])
+spentCol = Col("Spent", ["$1,200.00", "$540.00", "$390.00", "$320.00", "$210.00", "$180.00"])
+budgetCatCol = Col("Target Budget", ["$1,200.00", "$500.00", "$300.00", "$350.00", "$250.00", "$200.00"])
+
+highlightCallout = TextCallout("warning", "Largest Single Expense", "Rent Payment: $1,200.00 paid on Dec 1st (Housing category - 42.2% of total monthly spend)")
+
+addExpenseDrawer = DrawerBlock("Add New Expense", "Log an Expense", "Enter the details of your transaction below", [expenseForm])
+
+expenseForm = Form("add-expense", formButtons, [amountField, categoryField, dateField, merchantField, notesField])
+amountField = FormControl("Amount ($)", amountInput)
+amountInput = Input("amount", "0.00", "number")
+
+categoryField = FormControl("Category", categorySelect)
+categorySelect = Select("category", [cat1, cat2, cat3, cat4, cat5, cat6], "Select category")
+cat1 = SelectItem("housing", "Housing")
+cat2 = SelectItem("food", "Food & Dining")
+cat3 = SelectItem("transport", "Transportation")
+cat4 = SelectItem("utilities", "Utilities")
+cat5 = SelectItem("entertainment", "Entertainment")
+cat6 = SelectItem("shopping", "Shopping")
+
+dateField = FormControl("Date", datePicker)
+datePicker = DatePicker("expense_date", "single")
+
+merchantField = FormControl("Merchant / Payee", merchantInput)
+merchantInput = Input("merchant", "e.g., Grocery Store")
+
+notesField = FormControl("Notes (Optional)", notesInput)
+notesInput = Input("notes", "e.g., Weekly groceries")
+
+formButtons = Buttons([submitBtn, cancelBtn])
+submitBtn = Button("Save Expense", null, "primary")
+cancelBtn = Button("Cancel", null, "tertiary")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("How does this compare to last month?")
+f2 = FollowUpItem("Export budget summary to CSV")
+f3 = FollowUpItem("Set up budget alerts for Food & Dining")

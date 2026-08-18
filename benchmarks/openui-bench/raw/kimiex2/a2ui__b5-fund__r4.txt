@@ -1,0 +1,517 @@
+Here's your trading desk morning workspace — a single screen covering all 17 items:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "timeframeRow",
+          "kpiTable",
+          "riskAlert",
+          "tabs"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Trading Desk — Morning Workspace",
+        "subtitle": "Tuesday, 08:45 ET · All systems nominal"
+      },
+      {
+        "id": "timeframeRow",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "align": "center",
+        "gap": "m",
+        "children": [
+          "tfLabel",
+          "tfSelect"
+        ]
+      },
+      {
+        "id": "tfLabel",
+        "component": "Label",
+        "text": "Timeframe:"
+      },
+      {
+        "id": "tfSelect",
+        "component": "Select",
+        "name": "timeframe",
+        "placeholder": "1D",
+        "items": ["tf1h", "tf1d", "tf1w", "tf1m", "tfytd"]
+      },
+      {
+        "id": "tf1h",
+        "component": "SelectItem",
+        "value": "1h",
+        "label": "1 Hour"
+      },
+      {
+        "id": "tf1d",
+        "component": "SelectItem",
+        "value": "1d",
+        "label": "1 Day"
+      },
+      {
+        "id": "tf1w",
+        "component": "SelectItem",
+        "value": "1w",
+        "label": "1 Week"
+      },
+      {
+        "id": "tf1m",
+        "component": "SelectItem",
+        "value": "1m",
+        "label": "1 Month"
+      },
+      {
+        "id": "tfytd",
+        "component": "SelectItem",
+        "value": "ytd",
+        "label": "Year to Date"
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": ["kpiName", "kpiValue", "kpiNote"]
+      },
+      {
+        "id": "kpiName",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Portfolio Value",
+          "P&L Today",
+          "Value at Risk (95%, 1d)",
+          "Margin in Use"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": ["$48.2M", "+$312,400 (+0.65%)", "$1.9M (3.9% of NAV)", "$12.4M / $20M limit"]
+      },
+      {
+        "id": "kpiNote",
+        "component": "Col",
+        "label": "Status",
+        "data": ["—", "Green", "Within tolerance", "62% utilized"]
+      },
+      {
+        "id": "riskAlert",
+        "component": "Alert",
+        "title": "Risk limits nearing breach",
+        "description": "Single-name concentration in NVDA at 9.4% (limit 10%). Sector VaR for Tech at 88% of limit. Rates DV01 at 91% of limit.",
+        "variant": "warning"
+      },
+      {
+        "id": "tabs",
+        "component": "Tabs",
+        "items": [
+          "tabPositions",
+          "tabRisk",
+          "tabMovers",
+          "tabOrders",
+          "tabNews",
+          "tabStrategies",
+          "tabActions"
+        ]
+      },
+      {
+        "id": "tabPositions",
+        "component": "TabItem",
+        "value": "positions",
+        "trigger": "Positions & Exposure",
+        "content": ["posTable", "sectorChart", "watchTable"]
+      },
+      {
+        "id": "posTable",
+        "component": "Table",
+        "columns": ["posTicker", "posSize", "posEntry", "posCurrent"]
+      },
+      {
+        "id": "posTicker",
+        "component": "Col",
+        "label": "Ticker",
+        "data": ["AAPL", "NVDA", "MSFT", "XOM", "JPM", "TLT"]
+      },
+      {
+        "id": "posSize",
+        "component": "Col",
+        "label": "Size",
+        "data": ["12,000 sh", "8,500 sh", "6,200 sh", "15,000 sh", "9,000 sh", "$4M notional"]
+      },
+      {
+        "id": "posEntry",
+        "component": "Col",
+        "label": "Entry",
+        "data": ["$218.40", "$112.75", "$402.10", "$118.60", "$198.25", "$92.40"]
+      },
+      {
+        "id": "posCurrent",
+        "component": "Col",
+        "label": "Current",
+        "data": ["$231.10", "$131.20", "$415.80", "$112.30", "$205.40", "$90.85"]
+      },
+      {
+        "id": "sectorChart",
+        "component": "PieChart",
+        "labels": ["Technology", "Financials", "Energy", "Fixed Income", "Cash"],
+        "values": [42, 18, 14, 16, 10],
+        "variant": "donut"
+      },
+      {
+        "id": "watchTable",
+        "component": "Table",
+        "columns": ["watchTicker", "watchPrice"]
+      },
+      {
+        "id": "watchTicker",
+        "component": "Col",
+        "label": "Watchlist",
+        "data": ["AMD", "GOOGL", "META", "US10Y", "CL (WTI)"]
+      },
+      {
+        "id": "watchPrice",
+        "component": "Col",
+        "label": "Price",
+        "data": ["$164.20", "$178.55", "$512.30", "4.28%", "$78.40"]
+      },
+      {
+        "id": "tabRisk",
+        "component": "TabItem",
+        "value": "risk",
+        "trigger": "Risk",
+        "content": ["ddChart", "limitsTable"]
+      },
+      {
+        "id": "ddChart",
+        "component": "AreaChart",
+        "labels": ["Jan", "Mar", "May", "Jul", "Sep", "Nov", "Jan"],
+        "series": ["ddSeries"],
+        "variant": "natural",
+        "xLabel": "Past 12 months",
+        "yLabel": "Drawdown %"
+      },
+      {
+        "id": "ddSeries",
+        "component": "Series",
+        "category": "Drawdown",
+        "values": [-2.1, -4.8, -3.2, -7.5, -5.1, -2.8, -1.4]
+      },
+      {
+        "id": "limitsTable",
+        "component": "Table",
+        "columns": ["limitName", "limitUse", "limitStatus"]
+      },
+      {
+        "id": "limitName",
+        "component": "Col",
+        "label": "Limit",
+        "data": ["NVDA concentration", "Tech sector VaR", "Rates DV01", "Gross leverage", "Overnight delta"]
+      },
+      {
+        "id": "limitUse",
+        "component": "Col",
+        "label": "Utilization",
+        "data": ["94%", "88%", "91%", "54%", "47%"]
+      },
+      {
+        "id": "limitStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": ["⚠ Near breach", "⚠ Elevated", "⚠ Elevated", "OK", "OK"]
+      },
+      {
+        "id": "tabMovers",
+        "component": "TabItem",
+        "value": "movers",
+        "trigger": "Movers",
+        "content": ["gainersChart", "econTable"]
+      },
+      {
+        "id": "gainersChart",
+        "component": "HorizontalBarChart",
+        "labels": ["NVDA", "AAPL", "JPM", "MSFT", "XOM", "TLT"],
+        "series": ["moversSeries"],
+        "variant": "grouped",
+        "xLabel": "% move today",
+        "yLabel": "Position"
+      },
+      {
+        "id": "moversSeries",
+        "component": "Series",
+        "category": "Today's move %",
+        "values": [3.4, 1.2, 0.8, 0.6, -1.4, -1.7]
+      },
+      {
+        "id": "econTable",
+        "component": "Table",
+        "columns": ["econDay", "econEvent", "econConsensus"]
+      },
+      {
+        "id": "econDay",
+        "component": "Col",
+        "label": "Day",
+        "data": ["Wed", "Wed", "Thu", "Thu", "Fri"]
+      },
+      {
+        "id": "econEvent",
+        "component": "Col",
+        "label": "Release",
+        "data": ["CPI (YoY)", "FOMC Minutes", "Initial Claims", "PPI (MoM)", "Retail Sales"]
+      },
+      {
+        "id": "econConsensus",
+        "component": "Col",
+        "label": "Consensus",
+        "data": ["2.9%", "—", "215K", "0.2%", "0.4%"]
+      },
+      {
+        "id": "tabOrders",
+        "component": "TabItem",
+        "value": "orders",
+        "trigger": "Working Orders",
+        "content": ["ordersTable"]
+      },
+      {
+        "id": "ordersTable",
+        "component": "Table",
+        "columns": ["ordTicker", "ordSide", "ordQty", "ordType", "ordStatus"]
+      },
+      {
+        "id": "ordTicker",
+        "component": "Col",
+        "label": "Ticker",
+        "data": ["MSFT", "XOM", "TLT"]
+      },
+      {
+        "id": "ordSide",
+        "component": "Col",
+        "label": "Side",
+        "data": ["Buy", "Sell", "Buy"]
+      },
+      {
+        "id": "ordQty",
+        "component": "Col",
+        "label": "Qty",
+        "data": ["1,500", "5,000", "$1M"]
+      },
+      {
+        "id": "ordType",
+        "component": "Col",
+        "label": "Type",
+        "data": ["Limit @ $410.00", "Limit @ $114.00", "VWAP"]
+      },
+      {
+        "id": "ordStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": ["Working", "Partially filled (40%)", "Working"]
+      },
+      {
+        "id": "tabNews",
+        "component": "TabItem",
+        "value": "news",
+        "trigger": "Headlines",
+        "content": ["newsTable"]
+      },
+      {
+        "id": "newsTable",
+        "component": "Table",
+        "columns": ["newsHeadline", "newsSentiment"]
+      },
+      {
+        "id": "newsHeadline",
+        "component": "Col",
+        "label": "Headline",
+        "data": [
+          "Fed officials signal patience on rate cuts",
+          "NVDA unveils next-gen AI chip, shares jump premarket",
+          "Oil slides on inventory build, OPEC+ meeting eyed",
+          "Bank earnings beat expectations across the board"
+        ]
+      },
+      {
+        "id": "newsSentiment",
+        "component": "Col",
+        "label": "Sentiment",
+        "data": ["Neutral", "Positive", "Negative", "Positive"]
+      },
+      {
+        "id": "tabStrategies",
+        "component": "TabItem",
+        "value": "strategies",
+        "trigger": "Strategies",
+        "content": ["stratChart"]
+      },
+      {
+        "id": "stratChart",
+        "component": "BarChart",
+        "labels": ["Momentum", "Mean Reversion", "Carry", "Market Making", "Event Driven"],
+        "series": ["stratSeries"],
+        "variant": "grouped",
+        "xLabel": "Strategy",
+        "yLabel": "YTD Return %"
+      },
+      {
+        "id": "stratSeries",
+        "component": "Series",
+        "category": "YTD Return %",
+        "values": [8.4, 3.1, 5.6, 2.2, -1.3]
+      },
+      {
+        "id": "tabActions",
+        "component": "TabItem",
+        "value": "actions",
+        "trigger": "Trade & Rebalance",
+        "content": ["orderForm", "rebalanceCard"]
+      },
+      {
+        "id": "orderForm",
+        "component": "Form",
+        "name": "place-order",
+        "buttons": "orderButtons",
+        "fields": ["ordTickerField", "ordSideField", "ordQtyField"]
+      },
+      {
+        "id": "ordTickerField",
+        "component": "FormControl",
+        "label": "Ticker",
+        "input": "ordTickerInput"
+      },
+      {
+        "id": "ordTickerInput",
+        "component": "Input",
+        "name": "ticker",
+        "placeholder": "e.g. AAPL"
+      },
+      {
+        "id": "ordSideField",
+        "component": "FormControl",
+        "label": "Side",
+        "input": "ordSideRadio"
+      },
+      {
+        "id": "ordSideRadio",
+        "component": "RadioGroup",
+        "name": "side",
+        "items": ["sideBuy", "sideSell"]
+      },
+      {
+        "id": "sideBuy",
+        "component": "RadioItem",
+        "label": "Buy",
+        "description": "Go long / add",
+        "value": "buy"
+      },
+      {
+        "id": "sideSell",
+        "component": "RadioItem",
+        "label": "Sell",
+        "description": "Reduce / go short",
+        "value": "sell"
+      },
+      {
+        "id": "ordQtyField",
+        "component": "FormControl",
+        "label": "Quantity",
+        "input": "ordQtyInput"
+      },
+      {
+        "id": "ordQtyInput",
+        "component": "Input",
+        "name": "quantity",
+        "placeholder": "e.g. 1000",
+        "type": "number"
+      },
+      {
+        "id": "orderButtons",
+        "component": "Buttons",
+        "buttons": ["submitOrderBtn", "clearOrderBtn"]
+      },
+      {
+        "id": "submitOrderBtn",
+        "component": "Button",
+        "label": "Place Order",
+        "variant": "primary"
+      },
+      {
+        "id": "clearOrderBtn",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "tertiary"
+      },
+      {
+        "id": "rebalanceCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["rebalanceText", "rebalanceButtons"]
+      },
+      {
+        "id": "rebalanceText",
+        "component": "TextContent",
+        "text": "**Rebalance:** Current allocation drifts +4% toward Tech vs target. Proposed rebalance trims NVDA by 1.2% of NAV and adds to Fixed Income.",
+        "size": "small"
+      },
+      {
+        "id": "rebalanceButtons",
+        "component": "Buttons",
+        "buttons": ["rebalanceBtn", "previewBtn"]
+      },
+      {
+        "id": "rebalanceBtn",
+        "component": "Button",
+        "label": "Execute Rebalance",
+        "variant": "primary"
+      },
+      {
+        "id": "previewBtn",
+        "component": "Button",
+        "label": "Preview Trades",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+All 17 items are covered:
+
+1. **Portfolio value** — KPI table ($48.2M)
+2. **P&L today** — KPI table (+$312,400)
+3. **Positions** — ticker/size/entry/current table
+4. **Sector exposure** — donut chart
+5. **VaR** — KPI table ($1.9M, 95% 1-day)
+6. **Gainers/losers** — horizontal bar chart in Movers tab
+7. **Watchlist** — instruments with prices
+8. **Working orders** — orders table with status
+9. **Margin** — KPI table (62% of limit)
+10. **Headlines + sentiment** — news table
+11. **Economic releases** — this week's calendar table
+12. **Strategy YTD returns** — bar chart
+13. **Drawdown** — 12-month area chart in Risk tab
+14. **Risk limits near breach** — warning alert + limits utilization table
+15. **Rebalance** — preview + execute buttons
+16. **Order entry** — form with ticker, buy/sell side, quantity
+17. **Timeframe** — selector at the top (1H → YTD)
+
+The tabs keep everything on one screen without overwhelming the layout. Want me to adjust any data, add a position-level P&L column, or wire the timeframe selector to filter the charts?

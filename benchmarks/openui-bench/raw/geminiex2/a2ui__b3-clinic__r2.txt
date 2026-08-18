@@ -1,0 +1,410 @@
+Here is the interactive day view interface designed for the clinic receptionist. It includes real-time status highlights, patient check-in controls, date navigation, current room availability, and monthly metrics.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "nextPatientAlert",
+          "kpiOverview",
+          "separator1",
+          "checkInAccordion",
+          "separator2",
+          "appointmentsHeader",
+          "appointmentsTable",
+          "separator3",
+          "roomHeader",
+          "roomStatusGroup"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Receptionist Dashboard — Day View",
+        "subtitle": "Manage daily schedules, room allocations, and patient check-ins"
+      },
+      {
+        "id": "nextPatientAlert",
+        "component": "Alert",
+        "title": "Next Patient Called Out: Sarah Jenkins",
+        "description": "Scheduled for 10:30 AM with Dr. Adams in Exam Room 2 (General Checkup).",
+        "variant": "info"
+      },
+      {
+        "id": "kpiOverview",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "variant": "sunk",
+        "children": [
+          "expectedCard",
+          "noshowCard",
+          "dateNavCard"
+        ]
+      },
+      {
+        "id": "expectedCard",
+        "component": "Card",
+        "children": [
+          "expectedHeading",
+          "expectedText"
+        ],
+        "variant": "clear"
+      },
+      {
+        "id": "expectedHeading",
+        "component": "Heading",
+        "level": "h4",
+        "text": "Expected Today"
+      },
+      {
+        "id": "expectedText",
+        "component": "TextContent",
+        "size": "large-heavy",
+        "text": "18 Patients"
+      },
+      {
+        "id": "noshowCard",
+        "component": "Card",
+        "children": [
+          "noshowHeading",
+          "noshowText"
+        ],
+        "variant": "clear"
+      },
+      {
+        "id": "noshowHeading",
+        "component": "Heading",
+        "level": "h4",
+        "text": "Monthly No-Show Rate"
+      },
+      {
+        "id": "noshowText",
+        "component": "TextContent",
+        "size": "large-heavy",
+        "text": "4.2%"
+      },
+      {
+        "id": "dateNavCard",
+        "component": "Card",
+        "children": [
+          "dateNavHeading",
+          "dateNavButtons"
+        ],
+        "variant": "clear"
+      },
+      {
+        "id": "dateNavHeading",
+        "component": "Heading",
+        "level": "h4",
+        "text": "Schedule Date"
+      },
+      {
+        "id": "dateNavButtons",
+        "component": "Buttons",
+        "buttons": [
+          "prevDayBtn",
+          "todayBtn",
+          "nextDayBtn"
+        ],
+        "direction": "row"
+      },
+      {
+        "id": "prevDayBtn",
+        "component": "Button",
+        "label": "‹ Prev",
+        "variant": "secondary",
+        "size": "small"
+      },
+      {
+        "id": "todayBtn",
+        "component": "Button",
+        "label": "Today (Oct 24)",
+        "variant": "primary",
+        "size": "small"
+      },
+      {
+        "id": "nextDayBtn",
+        "component": "Button",
+        "label": "Next ›",
+        "variant": "secondary",
+        "size": "small"
+      },
+      {
+        "id": "separator1",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "checkInAccordion",
+        "component": "Accordion",
+        "items": [
+          "checkInItem"
+        ]
+      },
+      {
+        "id": "checkInItem",
+        "component": "AccordionItem",
+        "value": "check-in-form",
+        "trigger": "⚡ Quick Patient Check-In",
+        "content": [
+          "checkInForm"
+        ]
+      },
+      {
+        "id": "checkInForm",
+        "component": "Form",
+        "name": "patientCheckIn",
+        "buttons": "checkInButtons",
+        "fields": [
+          "patientSelectField",
+          "roomSelectField"
+        ]
+      },
+      {
+        "id": "patientSelectField",
+        "component": "FormControl",
+        "label": "Select Arriving Patient",
+        "input": "patientSelect"
+      },
+      {
+        "id": "patientSelect",
+        "component": "Select",
+        "name": "patient_id",
+        "placeholder": "Choose patient...",
+        "items": [
+          "p1",
+          "p2",
+          "p3"
+        ]
+      },
+      {
+        "id": "p1",
+        "component": "SelectItem",
+        "label": "Sarah Jenkins (10:30 AM - Dr. Adams)",
+        "value": "jenkins_s"
+      },
+      {
+        "id": "p2",
+        "component": "SelectItem",
+        "label": "Michael Chang (11:00 AM - Dr. Baker)",
+        "value": "chang_m"
+      },
+      {
+        "id": "p3",
+        "component": "SelectItem",
+        "label": "Elena Rostova (11:30 AM - Dr. Adams)",
+        "value": "rostova_e"
+      },
+      {
+        "id": "roomSelectField",
+        "component": "FormControl",
+        "label": "Assign Available Room",
+        "input": "roomSelect"
+      },
+      {
+        "id": "roomSelect",
+        "component": "Select",
+        "name": "assigned_room",
+        "placeholder": "Choose free room...",
+        "items": [
+          "r1",
+          "r3",
+          "r5"
+        ]
+      },
+      {
+        "id": "r1",
+        "component": "SelectItem",
+        "label": "Exam Room 1 (Free)",
+        "value": "room_1"
+      },
+      {
+        "id": "r3",
+        "component": "SelectItem",
+        "label": "Exam Room 3 (Free)",
+        "value": "room_3"
+      },
+      {
+        "id": "r5",
+        "component": "SelectItem",
+        "label": "Consultation Room B (Free)",
+        "value": "room_5"
+      },
+      {
+        "id": "checkInButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitCheckInBtn"
+        ]
+      },
+      {
+        "id": "submitCheckInBtn",
+        "component": "Button",
+        "label": "Complete Check-In & Call Patient",
+        "variant": "primary"
+      },
+      {
+        "id": "separator2",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "appointmentsHeader",
+        "component": "Heading",
+        "level": "h3",
+        "text": "Today's Appointment Schedule"
+      },
+      {
+        "id": "appointmentsTable",
+        "component": "Table",
+        "columns": [
+          "colTime",
+          "colPatient",
+          "colDoctor",
+          "colType",
+          "colStatus"
+        ]
+      },
+      {
+        "id": "colTime",
+        "component": "Col",
+        "label": "Time",
+        "data": [
+          "09:00 AM",
+          "09:30 AM",
+          "10:00 AM",
+          "10:30 AM",
+          "11:00 AM",
+          "11:30 AM"
+        ]
+      },
+      {
+        "id": "colPatient",
+        "component": "Col",
+        "label": "Patient Name",
+        "data": [
+          "Robert Fox",
+          "Emily Stone",
+          "David Miller",
+          "Sarah Jenkins",
+          "Michael Chang",
+          "Elena Rostova"
+        ]
+      },
+      {
+        "id": "colDoctor",
+        "component": "Col",
+        "label": "Practitioner",
+        "data": [
+          "Dr. Adams",
+          "Dr. Baker",
+          "Dr. Adams",
+          "Dr. Adams",
+          "Dr. Baker",
+          "Dr. Adams"
+        ]
+      },
+      {
+        "id": "colType",
+        "component": "Col",
+        "label": "Appointment Type",
+        "data": [
+          "Follow-up",
+          "Annual Physical",
+          "Consultation",
+          "General Checkup",
+          "Routine Exam",
+          "Blood Work"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Completed",
+          "Completed",
+          "In Progress",
+          "Next Up / Ready",
+          "Scheduled",
+          "Scheduled"
+        ]
+      },
+      {
+        "id": "separator3",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "roomHeader",
+        "component": "Heading",
+        "level": "h3",
+        "text": "Current Room Availability"
+      },
+      {
+        "id": "roomStatusGroup",
+        "component": "Card",
+        "direction": "row",
+        "gap": "s",
+        "wrap": true,
+        "variant": "clear",
+        "children": [
+          "tagRoom1",
+          "tagRoom2",
+          "tagRoom3",
+          "tagRoom4",
+          "tagRoom5"
+        ]
+      },
+      {
+        "id": "tagRoom1",
+        "component": "Tag",
+        "text": "Exam Room 1: Free",
+        "variant": "success"
+      },
+      {
+        "id": "tagRoom2",
+        "component": "Tag",
+        "text": "Exam Room 2: Occupied (Dr. Adams)",
+        "variant": "danger"
+      },
+      {
+        "id": "tagRoom3",
+        "component": "Tag",
+        "text": "Exam Room 3: Free",
+        "variant": "success"
+      },
+      {
+        "id": "tagRoom4",
+        "component": "Tag",
+        "text": "Exam Room 4: Occupied (Dr. Baker)",
+        "variant": "danger"
+      },
+      {
+        "id": "tagRoom5",
+        "component": "Tag",
+        "text": "Consultation B: Free",
+        "variant": "success"
+      }
+    ]
+  }
+}
+</a2ui-json>

@@ -1,0 +1,294 @@
+Here's a comprehensive streaming operations dashboard covering all 16 items, organized into tabs for clarity:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": ["header", "regionControl", "tabs"]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "StreamOps Command Center",
+        "subtitle": "Real-time operations dashboard"
+      },
+      {
+        "id": "regionControl",
+        "component": "FormControl",
+        "label": "Focus Region",
+        "input": "regionSelect"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region",
+        "placeholder": "All regions",
+        "items": ["regionAll", "regionNA", "regionEU", "regionAPAC", "regionLATAM"]
+      },
+      { "id": "regionAll", "component": "SelectItem", "value": "all", "label": "All Regions" },
+      { "id": "regionNA", "component": "SelectItem", "value": "na", "label": "North America" },
+      { "id": "regionEU", "component": "SelectItem", "value": "eu", "label": "Europe" },
+      { "id": "regionAPAC", "component": "SelectItem", "value": "apac", "label": "Asia-Pacific" },
+      { "id": "regionLATAM", "component": "SelectItem", "value": "latam", "label": "Latin America" },
+      {
+        "id": "tabs",
+        "component": "Tabs",
+        "items": ["tabLive", "tabContent", "tabGrowth", "tabEngagement", "tabPlatform"]
+      },
+      {
+        "id": "tabLive",
+        "component": "TabItem",
+        "value": "live",
+        "trigger": "Live Ops",
+        "content": ["liveKpiCard", "deliveryTable"]
+      },
+      {
+        "id": "liveKpiCard",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "xl",
+        "children": ["viewersBlock", "bufferingBlock"]
+      },
+      {
+        "id": "viewersBlock",
+        "component": "Card",
+        "variant": "clear",
+        "children": ["viewersLabel", "viewersValue"]
+      },
+      { "id": "viewersLabel", "component": "Label", "text": "Viewers Watching Now" },
+      { "id": "viewersValue", "component": "TextContent", "text": "**2,847,391** concurrent viewers", "size": "large" },
+      {
+        "id": "bufferingBlock",
+        "component": "Card",
+        "variant": "clear",
+        "children": ["bufferingLabel", "bufferingProgress"]
+      },
+      { "id": "bufferingLabel", "component": "Label", "text": "Buffering Rate" },
+      { "id": "bufferingProgress", "component": "Progress", "value": 1.2, "label": "1.2% (target < 2%)" },
+      {
+        "id": "deliveryTable",
+        "component": "Table",
+        "columns": ["deliveryRegion", "deliveryStatus", "deliveryLatency", "deliveryUptime", "deliveryErrors"]
+      },
+      { "id": "deliveryRegion", "component": "Col", "label": "Region", "data": ["North America", "Europe", "Asia-Pacific", "Latin America", "Middle East"] },
+      { "id": "deliveryStatus", "component": "Col", "label": "Status", "data": ["Healthy", "Healthy", "Degraded", "Healthy", "Healthy"] },
+      { "id": "deliveryLatency", "component": "Col", "label": "Avg Latency", "data": ["42ms", "58ms", "112ms", "67ms", "74ms"] },
+      { "id": "deliveryUptime", "component": "Col", "label": "Uptime", "data": ["99.98%", "99.95%", "99.71%", "99.92%", "99.89%"] },
+      { "id": "deliveryErrors", "component": "Col", "label": "Error Rate", "data": ["0.02%", "0.04%", "0.31%", "0.07%", "0.09%"] },
+      {
+        "id": "tabContent",
+        "component": "TabItem",
+        "value": "content",
+        "trigger": "Content",
+        "content": ["topTitlesChart", "releasesTable", "licensesTable", "promoteForm"]
+      },
+      {
+        "id": "topTitlesChart",
+        "component": "HorizontalBarChart",
+        "labels": ["The Last Frontier S2", "Midnight Protocol", "Cooking with Fire", "Dark Tides", "The Heist Plan"],
+        "series": ["topTitlesSeries"],
+        "xLabel": "Hours Watched (millions)",
+        "yLabel": "Title"
+      },
+      {
+        "id": "topTitlesSeries",
+        "component": "Series",
+        "category": "Hours (M)",
+        "values": [84.2, 71.5, 63.8, 52.1, 47.3]
+      },
+      {
+        "id": "releasesTable",
+        "component": "Table",
+        "columns": ["releaseTitle", "releaseDate", "releaseType", "releaseRegion"]
+      },
+      { "id": "releaseTitle", "component": "Col", "label": "Title", "data": ["Neon Nights", "The Deep End", "Warrior's Path S3", "Comedy Special: Live", "Documentary: Ice"] },
+      { "id": "releaseDate", "component": "Col", "label": "Release Date", "data": ["Jun 5", "Jun 12", "Jun 18", "Jun 22", "Jun 28"] },
+      { "id": "releaseType", "component": "Col", "label": "Type", "data": ["Series", "Film", "Series", "Special", "Documentary"] },
+      { "id": "releaseRegion", "component": "Col", "label": "Regions", "data": ["Global", "NA, EU", "Global", "NA", "Global"] },
+      {
+        "id": "licensesTable",
+        "component": "Table",
+        "columns": ["licenseTitle", "licenseExpiry", "licenseDaysLeft", "licenseAction"]
+      },
+      { "id": "licenseTitle", "component": "Col", "label": "Title", "data": ["Friends (all seasons)", "The Office US", "Breaking Bad", "Stranger Things S1-3", "Marvel Collection"] },
+      { "id": "licenseExpiry", "component": "Col", "label": "Expiry Date", "data": ["Jun 8", "Jun 15", "Jun 21", "Jul 1", "Jul 3"] },
+      { "id": "licenseDaysLeft", "component": "Col", "label": "Days Left", "data": ["5", "12", "18", "28", "30"] },
+      { "id": "licenseAction", "component": "Col", "label": "Status", "data": ["Renewal pending", "Negotiating", "Renewed", "Under review", "At risk"] },
+      {
+        "id": "promoteForm",
+        "component": "Form",
+        "name": "promote-title",
+        "fields": ["promoteTitleField", "promotePositionField", "promoteDurationField"],
+        "buttons": "promoteButtons"
+      },
+      {
+        "id": "promoteTitleField",
+        "component": "FormControl",
+        "label": "Title to Promote",
+        "input": "promoteTitleInput",
+        "hint": "Enter the exact title name"
+      },
+      { "id": "promoteTitleInput", "component": "Input", "name": "title", "placeholder": "e.g. The Last Frontier S2" },
+      {
+        "id": "promotePositionField",
+        "component": "FormControl",
+        "label": "Home Screen Position",
+        "input": "promotePositionSelect"
+      },
+      {
+        "id": "promotePositionSelect",
+        "component": "Select",
+        "name": "position",
+        "placeholder": "Select placement",
+        "items": ["promotePos1", "promotePos2", "promotePos3"]
+      },
+      { "id": "promotePos1", "component": "SelectItem", "value": "hero", "label": "Hero Banner (top)" },
+      { "id": "promotePos2", "component": "SelectItem", "value": "row1", "label": "First Row" },
+      { "id": "promotePos3", "component": "SelectItem", "value": "trending", "label": "Trending Section" },
+      {
+        "id": "promoteDurationField",
+        "component": "FormControl",
+        "label": "Duration (days)",
+        "input": "promoteDurationInput"
+      },
+      { "id": "promoteDurationInput", "component": "Input", "name": "duration", "type": "number", "placeholder": "7" },
+      {
+        "id": "promoteButtons",
+        "component": "Buttons",
+        "buttons": ["promoteSubmit", "promoteCancel"]
+      },
+      { "id": "promoteSubmit", "component": "Button", "label": "Promote Title", "variant": "primary" },
+      { "id": "promoteCancel", "component": "Button", "label": "Cancel", "variant": "tertiary" },
+      {
+        "id": "tabGrowth",
+        "component": "TabItem",
+        "value": "growth",
+        "trigger": "Growth & Revenue",
+        "content": ["subChart", "revenuePie", "devicePie"]
+      },
+      {
+        "id": "subChart",
+        "component": "BarChart",
+        "labels": ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+        "series": ["subNewSeries", "subCancelSeries"],
+        "variant": "grouped",
+        "xLabel": "Month",
+        "yLabel": "Subscribers (thousands)"
+      },
+      { "id": "subNewSeries", "component": "Series", "category": "New Subscribers", "values": [312, 287, 341, 298, 356, 324] },
+      { "id": "subCancelSeries", "component": "Series", "category": "Cancellations", "values": [145, 132, 158, 141, 127, 119] },
+      {
+        "id": "revenuePie",
+        "component": "PieChart",
+        "labels": ["Premium ($19.99)", "Standard ($13.99)", "Basic ($8.99)", "Ad-Supported ($5.99)"],
+        "values": [42, 31, 17, 10],
+        "variant": "donut"
+      },
+      {
+        "id": "devicePie",
+        "component": "PieChart",
+        "labels": ["Smart TV", "Mobile", "Tablet", "Desktop", "Streaming Box", "Game Console"],
+        "values": [38, 27, 12, 10, 8, 5],
+        "variant": "pie"
+      },
+      {
+        "id": "tabEngagement",
+        "component": "TabItem",
+        "value": "engagement",
+        "trigger": "Engagement",
+        "content": ["watchTimeChart", "genreChart", "recCTRCard", "zeroSearchCallout"]
+      },
+      {
+        "id": "watchTimeChart",
+        "component": "AreaChart",
+        "labels": ["W1", "W2", "W3", "W4"],
+        "series": ["watchTimeSeries"],
+        "variant": "natural",
+        "xLabel": "Week",
+        "yLabel": "Hours (millions)"
+      },
+      { "id": "watchTimeSeries", "component": "Series", "category": "Total Watch Time", "values": [142, 158, 149, 171] },
+      {
+        "id": "genreChart",
+        "component": "RadarChart",
+        "labels": ["Drama", "Comedy", "Action", "Documentary", "Horror", "Romance"],
+        "series": ["genreSeries"]
+      },
+      { "id": "genreSeries", "component": "Series", "category": "Engagement Score", "values": [92, 78, 85, 64, 71, 58] },
+      {
+        "id": "recCTRCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["recCTRLabel", "recCTRProgress", "recCTRNote"]
+      },
+      { "id": "recCTRLabel", "component": "Label", "text": "Recommendation Click-Through Rate" },
+      { "id": "recCTRProgress", "component": "Progress", "value": 34, "label": "34% of recommendations clicked" },
+      { "id": "recCTRNote", "component": "TextContent", "text": "Up 2.1pp from last month. Target: 40%", "size": "small" },
+      {
+        "id": "zeroSearchCallout",
+        "component": "TextCallout",
+        "variant": "warning",
+        "title": "Zero-Result Searches: 8.2%",
+        "description": "1 in 12 searches ends without playback. Top missed queries: 'the bear s4', 'one piece live action s2', 'squid game s3'. Consider adding these to the catalog or improving search synonyms."
+      },
+      {
+        "id": "tabPlatform",
+        "component": "TabItem",
+        "value": "platform",
+        "trigger": "Platform",
+        "content": ["featureFlags"]
+      },
+      {
+        "id": "featureFlags",
+        "component": "SwitchGroup",
+        "name": "feature_flags",
+        "variant": "card",
+        "items": ["flag1", "flag2", "flag3", "flag4", "flag5", "flag6"]
+      },
+      { "id": "flag1", "component": "SwitchItem", "name": "new_player_ui", "label": "New Player UI", "description": "Redesigned video player with gesture controls", "defaultChecked": true },
+      { "id": "flag2", "component": "SwitchItem", "name": "ai_subtitles", "label": "AI Auto-Subtitles", "description": "Real-time AI-generated subtitles for live content", "defaultChecked": false },
+      { "id": "flag3", "component": "SwitchItem", "name": "social_watch", "label": "Social Watch Party", "description": "Synchronized viewing with chat for up to 8 users", "defaultChecked": true },
+      { "id": "flag4", "component": "SwitchItem", "name": "adaptive_thumbs", "label": "Adaptive Thumbnails", "description": "Personalized thumbnail selection based on viewing history", "defaultChecked": true },
+      { "id": "flag5", "component": "SwitchItem", "name": "offline_dl_v2", "label": "Offline Downloads v2", "description": "Smart pre-download of next episodes on WiFi", "defaultChecked": false },
+      { "id": "flag6", "component": "SwitchItem", "name": "cdn_edge_cache", "label": "Edge CDN Caching", "description": "Aggressive edge caching for top 100 titles per region", "defaultChecked": true }
+    ]
+  }
+}
+</a2ui-json>
+
+This dashboard covers all 16 requirements:
+
+| # | Requirement | Implementation |
+|---|---|---|
+| 1 | Viewers now | Large KPI in Live Ops tab |
+| 2 | Most-watched titles | Horizontal bar chart with hours |
+| 3 | Watch time (month) | Area chart with weekly data |
+| 4 | New subs vs cancellations | Grouped bar chart |
+| 5 | Genre performance | Radar chart |
+| 6 | Buffering rate | Progress bar with target |
+| 7 | Delivery health by region | Table with status, latency, uptime |
+| 8 | Upcoming releases | Table with dates and types |
+| 9 | Expiring licenses | Table with days remaining |
+| 10 | Recommendation CTR | Progress bar + trend note |
+| 11 | Zero-result searches | Warning callout with top missed queries |
+| 12 | Revenue by plan | Donut chart |
+| 13 | Device split | Pie chart |
+| 14 | Region filter | Select dropdown at top |
+| 15 | Feature flags | Switch group with on/off states |
+| 16 | Promote a title | Form with title, position, and duration |

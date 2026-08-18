@@ -1,0 +1,331 @@
+
+
+Here's a single-screen editor content studio covering all eight items — drafts + statuses, this week's publications, the month's top article, a 30-day readership trend, a category filter, a scheduling form, the comment reply queue, and a new-draft action.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "topActions",
+          "spotlight",
+          "divider1",
+          "readershipHeading",
+          "readershipChart",
+          "divider2",
+          "filterControl",
+          "draftsHeading",
+          "draftsTable",
+          "publishedHeading",
+          "publishedTable",
+          "commentsHeading",
+          "commentsList",
+          "divider3",
+          "scheduleHeading",
+          "scheduleForm"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Content Studio",
+        "subtitle": "Editorial overview · Tuesday, June 10"
+      },
+      {
+        "id": "topActions",
+        "component": "Buttons",
+        "buttons": ["newDraftBtn"]
+      },
+      {
+        "id": "newDraftBtn",
+        "component": "Button",
+        "label": "Start new draft",
+        "variant": "primary"
+      },
+      {
+        "id": "spotlight",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "s",
+        "children": ["spotlightBadge", "spotlightTitle", "spotlightStats"]
+      },
+      {
+        "id": "spotlightBadge",
+        "component": "Badge",
+        "text": "Most-read article this month",
+        "variant": "secondary"
+      },
+      {
+        "id": "spotlightTitle",
+        "component": "TextContent",
+        "size": "large-heavy",
+        "text": "The quiet rise of asynchronous design reviews"
+      },
+      {
+        "id": "spotlightStats",
+        "component": "TagBlock",
+        "tags": ["Design", "24,318 views", "6 min avg. read", "+38% vs. last month"]
+      },
+      {
+        "id": "divider1",
+        "component": "Separator",
+        "decorative": true
+      },
+      {
+        "id": "readershipHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "Readership — past 30 days"
+      },
+      {
+        "id": "readershipChart",
+        "component": "AreaChart",
+        "variant": "natural",
+        "xLabel": "Date",
+        "yLabel": "Reads",
+        "labels": [
+          "May 9", "May 10", "May 11", "May 12", "May 13", "May 14", "May 15",
+          "May 16", "May 17", "May 18", "May 19", "May 20", "May 21", "May 22",
+          "May 23", "May 24", "May 25", "May 26", "May 27", "May 28", "May 29",
+          "May 30", "May 31", "Jun 1", "Jun 2", "Jun 3", "Jun 4", "Jun 5", "Jun 6", "Jun 7"
+        ],
+        "series": ["readershipSeries"]
+      },
+      {
+        "id": "readershipSeries",
+        "component": "Series",
+        "category": "Reads",
+        "values": [
+          1840, 1620, 2210, 2480, 2390, 1730, 1510,
+          1980, 2620, 2840, 2795, 2910, 2050, 1880,
+          2340, 3020, 3260, 3180, 3390, 2460, 2230,
+          2780, 3510, 3720, 3640, 3890, 2980, 2740, 3120, 3450
+        ]
+      },
+      {
+        "id": "divider2",
+        "component": "Separator",
+        "decorative": true
+      },
+      {
+        "id": "filterControl",
+        "component": "FormControl",
+        "label": "Narrow by category",
+        "hint": "Applies to the drafts and published lists below",
+        "input": "categorySelect"
+      },
+      {
+        "id": "categorySelect",
+        "component": "Select",
+        "name": "category",
+        "placeholder": "All categories",
+        "items": ["catAll", "catProduct", "catEngineering", "catDesign", "catMarketing", "catCulture"]
+      },
+      { "id": "catAll", "component": "SelectItem", "value": "all", "label": "All categories" },
+      { "id": "catProduct", "component": "SelectItem", "value": "product", "label": "Product" },
+      { "id": "catEngineering", "component": "SelectItem", "value": "engineering", "label": "Engineering" },
+      { "id": "catDesign", "component": "SelectItem", "value": "design", "label": "Design" },
+      { "id": "catMarketing", "component": "SelectItem", "value": "marketing", "label": "Marketing" },
+      { "id": "catCulture", "component": "SelectItem", "value": "culture", "label": "Culture" },
+      {
+        "id": "draftsHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "Drafts"
+      },
+      {
+        "id": "draftsTable",
+        "component": "Table",
+        "columns": ["draftTitleCol", "draftCategoryCol", "draftStatusCol", "draftUpdatedCol"]
+      },
+      {
+        "id": "draftTitleCol",
+        "component": "Col",
+        "label": "Draft",
+        "data": [
+          "Designing calmer notification systems",
+          "How we cut CI build times by 40%",
+          "Q3 product roadmap, explained",
+          "Voices from the support desk",
+          "The launch week playbook"
+        ]
+      },
+      {
+        "id": "draftCategoryCol",
+        "component": "Col",
+        "label": "Category",
+        "data": ["Design", "Engineering", "Product", "Culture", "Marketing"]
+      },
+      {
+        "id": "draftStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": ["In review", "In progress", "Needs edits", "Ready to publish", "In progress"]
+      },
+      {
+        "id": "draftUpdatedCol",
+        "component": "Col",
+        "label": "Last edited",
+        "data": ["2h ago", "Yesterday", "2 days ago", "3 days ago", "4 days ago"]
+      },
+      {
+        "id": "publishedHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "Published this week"
+      },
+      {
+        "id": "publishedTable",
+        "component": "Table",
+        "columns": ["pubTitleCol", "pubDateCol", "pubViewsCol"]
+      },
+      {
+        "id": "pubTitleCol",
+        "component": "Col",
+        "label": "Article",
+        "data": [
+          "Typography that scales",
+          "The quiet rise of asynchronous design reviews",
+          "Ship logs: May edition",
+          "Why we rewrote our onboarding"
+        ]
+      },
+      {
+        "id": "pubDateCol",
+        "component": "Col",
+        "label": "Published",
+        "data": ["Jun 2", "Jun 3", "Jun 5", "Jun 6"]
+      },
+      {
+        "id": "pubViewsCol",
+        "component": "Col",
+        "label": "Views",
+        "data": ["1,988", "8,912", "3,204", "2,761"]
+      },
+      {
+        "id": "commentsHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "Comments awaiting reply"
+      },
+      {
+        "id": "commentsList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": ["comment1", "comment2", "comment3", "comment4"]
+      },
+      {
+        "id": "comment1",
+        "component": "ListItem",
+        "title": "Maya R. — “Why we rewrote our onboarding”",
+        "subtitle": "“Does the new flow support SSO setups for enterprise accounts?”",
+        "actionLabel": "Reply"
+      },
+      {
+        "id": "comment2",
+        "component": "ListItem",
+        "title": "Jon P. — “Ship logs: May edition”",
+        "subtitle": "“The rollback tooling section was gold — any chance of a deeper dive?”",
+        "actionLabel": "Reply"
+      },
+      {
+        "id": "comment3",
+        "component": "ListItem",
+        "title": "Priya S. — “Typography that scales”",
+        "subtitle": "“Could you share the spacing tokens as a reference sheet?”",
+        "actionLabel": "Reply"
+      },
+      {
+        "id": "comment4",
+        "component": "ListItem",
+        "title": "Tom W. — “The quiet rise of asynchronous design reviews”",
+        "subtitle": "“We tried this last sprint and hit a snag with handoffs…”",
+        "actionLabel": "Reply"
+      },
+      {
+        "id": "divider3",
+        "component": "Separator",
+        "decorative": true
+      },
+      {
+        "id": "scheduleHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "Schedule a piece"
+      },
+      {
+        "id": "scheduleForm",
+        "component": "Form",
+        "name": "schedule-piece",
+        "fields": ["titleField", "dateField"],
+        "buttons": "scheduleButtons"
+      },
+      {
+        "id": "titleField",
+        "component": "FormControl",
+        "label": "Article title",
+        "hint": "A working title is fine",
+        "input": "titleInput"
+      },
+      {
+        "id": "titleInput",
+        "component": "Input",
+        "name": "title",
+        "placeholder": "e.g. Inside our new release process"
+      },
+      {
+        "id": "dateField",
+        "component": "FormControl",
+        "label": "Publish date",
+        "input": "publishDate"
+      },
+      {
+        "id": "publishDate",
+        "component": "DatePicker",
+        "name": "publish_date",
+        "mode": "single"
+      },
+      {
+        "id": "scheduleButtons",
+        "component": "Buttons",
+        "buttons": ["scheduleBtn"]
+      },
+      {
+        "id": "scheduleBtn",
+        "component": "Button",
+        "label": "Schedule piece",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+How each requirement is covered:
+
+1. **Drafts + status** — Drafts table with a status per row (In review, In progress, Needs edits, Ready to publish)
+2. **Published this week** — Table with publish date and view counts
+3. **Most-read this month** — Highlighted spotlight card with views, read time, and growth
+4. **30-day readership** — Area chart across May 9 – Jun 7
+5. **Narrow by category** — Category select above the content lists
+6. **Schedule a piece** — Form with title input + publish-date picker and a Schedule button
+7. **Comments awaiting reply** — Numbered queue with excerpts and Reply actions
+8. **Start a new draft** — Primary button at the top of the screen

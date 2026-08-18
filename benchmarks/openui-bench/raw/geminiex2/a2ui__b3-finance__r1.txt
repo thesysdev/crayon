@@ -1,0 +1,407 @@
+Here is a complete UI component layout for the startup's month-end finance view, including cash metrics, expenses breakdown, large transaction flags, monthly selection, and statement export capabilities.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "controls",
+          "kpis",
+          "burnAlert",
+          "tabs",
+          "actions"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Month-End Financial Overview",
+        "subtitle": "Financial performance, runway analysis, and flagged transactions"
+      },
+      {
+        "id": "controls",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "align": "center",
+        "justify": "between",
+        "children": [
+          "monthControl",
+          "downloadBtn"
+        ]
+      },
+      {
+        "id": "monthControl",
+        "component": "FormControl",
+        "label": "Select Statement Month",
+        "input": "monthSelect"
+      },
+      {
+        "id": "monthSelect",
+        "component": "Select",
+        "name": "statement_month",
+        "value": "2023-10",
+        "placeholder": "Choose month",
+        "items": [
+          "monthOct",
+          "monthSep",
+          "monthAug",
+          "monthJul"
+        ]
+      },
+      {
+        "id": "monthOct",
+        "component": "SelectItem",
+        "value": "2023-10",
+        "label": "October 2023 (Latest)"
+      },
+      {
+        "id": "monthSep",
+        "component": "SelectItem",
+        "value": "2023-09",
+        "label": "September 2023"
+      },
+      {
+        "id": "monthAug",
+        "component": "SelectItem",
+        "value": "2023-08",
+        "label": "August 2023"
+      },
+      {
+        "id": "monthJul",
+        "component": "SelectItem",
+        "value": "2023-07",
+        "label": "July 2023"
+      },
+      {
+        "id": "downloadBtn",
+        "component": "Button",
+        "label": "Download Statement (PDF)",
+        "variant": "secondary"
+      },
+      {
+        "id": "kpis",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "cashCard",
+          "burnCard",
+          "runwayCard"
+        ]
+      },
+      {
+        "id": "cashCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "cashHeader",
+          "cashVal",
+          "cashBadge"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "cashHeader",
+        "component": "Heading",
+        "level": "h4",
+        "text": "1. Cash on Hand"
+      },
+      {
+        "id": "cashVal",
+        "component": "Heading",
+        "level": "h2",
+        "text": "$1,250,000"
+      },
+      {
+        "id": "cashBadge",
+        "component": "Badge",
+        "text": "Verified across 3 accounts",
+        "variant": "secondary"
+      },
+      {
+        "id": "burnCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "burnHeader",
+          "burnVal",
+          "burnBadge"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "burnHeader",
+        "component": "Heading",
+        "level": "h4",
+        "text": "2. Monthly Burn"
+      },
+      {
+        "id": "burnVal",
+        "component": "Heading",
+        "level": "h2",
+        "text": "$85,000"
+      },
+      {
+        "id": "burnBadge",
+        "component": "Badge",
+        "text": "-4% vs last month",
+        "variant": "outline"
+      },
+      {
+        "id": "runwayCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "runwayHeader",
+          "runwayVal",
+          "runwayProgress"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "runwayHeader",
+        "component": "Heading",
+        "level": "h4",
+        "text": "3. Months of Runway"
+      },
+      {
+        "id": "runwayVal",
+        "component": "Heading",
+        "level": "h2",
+        "text": "14.7 Months"
+      },
+      {
+        "id": "runwayProgress",
+        "component": "Progress",
+        "value": 73,
+        "label": "Target: 18 Months"
+      },
+      {
+        "id": "burnAlert",
+        "component": "Alert",
+        "title": "Healthy Runway Status",
+        "description": "At current burn rate, zero cash date is projected for December 2024. Next funding round recommended by Q3 2024.",
+        "variant": "info"
+      },
+      {
+        "id": "tabs",
+        "component": "Tabs",
+        "items": [
+          "expensesTab",
+          "largeTxTab"
+        ]
+      },
+      {
+        "id": "expensesTab",
+        "component": "TabItem",
+        "value": "expenses",
+        "trigger": "4. Expenses by Category",
+        "content": [
+          "expensesChartCard"
+        ]
+      },
+      {
+        "id": "expensesChartCard",
+        "component": "Card",
+        "children": [
+          "expensesChart",
+          "expensesSeparator",
+          "expensesTable"
+        ]
+      },
+      {
+        "id": "expensesChart",
+        "component": "HorizontalBarChart",
+        "labels": [
+          "Payroll & Benefits",
+          "Cloud & Infrastructure",
+          "Marketing & Ads",
+          "Software & Tools",
+          "Office & Admin"
+        ],
+        "series": [
+          "expenseSeries"
+        ],
+        "xLabel": "Amount (USD)",
+        "yLabel": "Category"
+      },
+      {
+        "id": "expenseSeries",
+        "component": "Series",
+        "category": "October Expenses",
+        "values": [
+          52000,
+          14500,
+          9200,
+          6100,
+          3200
+        ]
+      },
+      {
+        "id": "expensesSeparator",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "expensesTable",
+        "component": "Table",
+        "columns": [
+          "catCol",
+          "amtCol",
+          "pctCol"
+        ]
+      },
+      {
+        "id": "catCol",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Payroll & Benefits",
+          "Cloud & Infrastructure",
+          "Marketing & Ads",
+          "Software & Tools",
+          "Office & Admin"
+        ]
+      },
+      {
+        "id": "amtCol",
+        "component": "Col",
+        "label": "Spent",
+        "data": [
+          "$52,000",
+          "$14,500",
+          "$9,200",
+          "$6,100",
+          "$3,200"
+        ]
+      },
+      {
+        "id": "pctCol",
+        "component": "Col",
+        "label": "% of Total",
+        "data": [
+          "61.2%",
+          "17.1%",
+          "10.8%",
+          "7.2%",
+          "3.7%"
+        ]
+      },
+      {
+        "id": "largeTxTab",
+        "component": "TabItem",
+        "value": "transactions",
+        "trigger": "5. Flagged Transactions (>$10,000)",
+        "content": [
+          "largeTxCard"
+        ]
+      },
+      {
+        "id": "largeTxCard",
+        "component": "Card",
+        "children": [
+          "txCallout",
+          "txTable"
+        ]
+      },
+      {
+        "id": "txCallout",
+        "component": "Callout",
+        "variant": "warning",
+        "title": "Large Outflow Review",
+        "description": "3 transactions exceeding $10,000 were recorded this month totaling $78,500."
+      },
+      {
+        "id": "txTable",
+        "component": "Table",
+        "columns": [
+          "dateCol",
+          "vendorCol",
+          "categoryCol",
+          "txAmtCol"
+        ]
+      },
+      {
+        "id": "dateCol",
+        "component": "Col",
+        "label": "Date",
+        "data": [
+          "Oct 01, 2023",
+          "Oct 12, 2023",
+          "Oct 28, 2023"
+        ]
+      },
+      {
+        "id": "vendorCol",
+        "component": "Col",
+        "label": "Vendor / Entity",
+        "data": [
+          "Gusto Payroll",
+          "Amazon Web Services",
+          "Salesforce Annual Renewal"
+        ]
+      },
+      {
+        "id": "categoryCol",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Payroll & Benefits",
+          "Cloud & Infrastructure",
+          "Software & Tools"
+        ]
+      },
+      {
+        "id": "txAmtCol",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "$52,000",
+          "$14,500",
+          "$12,000"
+        ]
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": [
+          "reconcileBtn",
+          "shareBoardBtn"
+        ]
+      },
+      {
+        "id": "reconcileBtn",
+        "component": "Button",
+        "label": "Mark Month as Reconciled",
+        "variant": "primary"
+      },
+      {
+        "id": "shareBoardBtn",
+        "component": "Button",
+        "label": "Share Board Report",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>

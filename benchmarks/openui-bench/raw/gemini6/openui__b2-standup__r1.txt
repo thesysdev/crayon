@@ -1,0 +1,33 @@
+root = Card([header, missingAlert, blockedCallout, updatesSection, addUpdateSection, followUps])
+
+header = CardHeader("Daily Async Standup", "Wednesday, October 24, 2023 • Engineering & Product")
+
+missingAlert = Alert("Missing Updates", "2 of 6 team members have not submitted their update yet today.", "warning")
+
+blockedCallout = TextCallout("danger", "Teammate Blocked", "Alex Chen (Frontend) is currently blocked on: 'Waiting for updated Figma tokens for dark mode theme switch.'")
+
+updatesSection = Card([updatesHeading, updatesList], "sunk")
+updatesHeading = Heading("Team Updates (4/6 Submitted)", "h3")
+
+updatesList = ListBlock([update1, update2, update3, update4])
+update1 = ListItem("Alex Chen — Frontend Engineer", "Yesterday: Built auth flow | Today: Nav refactor | Blocked: Figma tokens missing", null, "Offer Help")
+update2 = ListItem("Sarah Jenkins — Product Designer", "Yesterday: User testing interviews | Today: Finalize mobile checkout designs | Blocked: None", null, "View Designs")
+update3 = ListItem("Marcus Vance — Backend Lead", "Yesterday: Migrated DB schema | Today: API rate limiting & docs | Blocked: None", null, "Review PR")
+update4 = ListItem("Elena Rostova — QA Engineer", "Yesterday: Automated smoke tests | Today: Regression testing v2.4 | Blocked: None", null, "View Board")
+
+addUpdateSection = Form("standup-form", formButtons, [todayField, yesterdayField, blockerField])
+todayField = FormControl("What will you do today?", todayInput, "Be brief and specific")
+todayInput = TextArea("today_plan", "E.g., Finishing the payment gateway integration...", 2)
+yesterdayField = FormControl("What did you do yesterday?", yesterdayInput)
+yesterdayInput = TextArea("yesterday_done", "E.g., Merged PR #402, reviewed backend API specs...", 2)
+blockerField = FormControl("Are you blocked on anything?", blockerInput)
+blockerInput = Input("blockers", "Leave blank if none")
+
+formButtons = Buttons([submitBtn, draftBtn])
+submitBtn = Button("Submit Standup Update", null, "primary")
+draftBtn = Button("Save Draft", null, "tertiary")
+
+followUps = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Ping missing team members on Slack")
+fu2 = FollowUpItem("View Alex's blocker on Jira")
+fu3 = FollowUpItem("Export standup summary to Notion")

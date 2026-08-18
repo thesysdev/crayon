@@ -1,0 +1,65 @@
+root = Card([header, quickActions, topPerformance, draftsSection, publishWeeklySection, engagementSection, filterSection, readershipSection, scheduleSection], "card", "column", "m")
+
+header = CardHeader("Editor's Content Studio", "Manage drafts, published stories, analytics, and workflow")
+
+quickActions = Buttons([newDraftBtn, refreshStudioBtn])
+newDraftBtn = Button("Start New Draft", null, "primary")
+refreshStudioBtn = Button("Refresh Studio Data", null, "secondary")
+
+topPerformance = TextCallout("success", "Most-Read Article This Month", "The Future of Generative AI in Journalism — 142,500 Views (88% Completion Rate)")
+
+draftsSection = SectionBlock([draftsSectionItem])
+draftsSectionItem = SectionItem("drafts", "Active Drafts & Status", [draftsTable])
+
+draftsTable = Table([draftTitleCol, draftAuthorCol, draftCategoryCol, draftStatusCol, draftWordsCol])
+draftTitleCol = Col("Title", ["The Rise of Autonomous Agents", "Designing for Spatial Computing", "Understanding Quantum Supremacy", "Sustainable Tech Infrastructure"])
+draftAuthorCol = Col("Author", ["Alex Rivera", "Sam Chen", "Elena Rostova", "Marcus Vance"])
+draftCategoryCol = Col("Category", ["Technology", "Design", "Science", "Environment"])
+draftStatusCol = Col("Status", ["In Review", "Drafting", "Fact Checking", "Pending Edits"])
+draftWordsCol = Col("Word Count", [1850, 920, 2400, 1150])
+
+publishWeeklySection = SectionBlock([publishWeeklyItem])
+publishWeeklyItem = SectionItem("weekly", "Pieces Published This Week", [publishedList])
+
+publishedList = ListBlock([pubItem1, pubItem2, pubItem3])
+pubItem1 = ListItem("10 Breakthroughs in Clean Energy", "Published Oct 24 • Tech & Climate • 4.2k reads")
+pubItem2 = ListItem("The Architecture of Modern Web Apps", "Published Oct 22 • Software • 8.9k reads")
+pubItem3 = ListItem("Ethics in Autonomous Driving Systems", "Published Oct 20 • Mobility • 6.1k reads")
+
+engagementSection = SectionBlock([commentsItem])
+commentsItem = SectionItem("comments", "Comments Awaiting Reply", [commentsTable])
+
+commentsTable = Table([commentArticleCol, commentUserCol, commentTextCol, commentTimeCol])
+commentArticleCol = Col("Article", ["The Architecture of Modern Web Apps", "10 Breakthroughs in Clean Energy", "Ethics in Autonomous Driving Systems"])
+commentUserCol = Col("Commenter", ["Sarah L.", "David K.", "Elena P."])
+commentTextCol = Col("Comment", ["Great breakdown! Will there be a follow-up on backend frameworks?", "How does this scale for commercial applications?", "The ethical dilemma around safety edge-cases needs more coverage."])
+commentTimeCol = Col("Received", ["2h ago", "5h ago", "1d ago"])
+
+filterSection = Card([filterHeading, filterForm], "sunk", "column", "s")
+filterHeading = Heading("Narrow Content by Category", "h4")
+filterForm = Form("category-filter-form", filterButtons, [categoryControl])
+categoryControl = FormControl("Select Category Focus", categorySelect)
+categorySelect = Select("category", [catAll, catTech, catDesign, catScience, catEnv], "All Categories")
+catAll = SelectItem("all", "All Categories")
+catTech = SelectItem("tech", "Technology")
+catDesign = SelectItem("design", "Design")
+catScience = SelectItem("science", "Science")
+catEnv = SelectItem("env", "Environment")
+filterButtons = Buttons([applyFilterBtn])
+applyFilterBtn = Button("Apply Filter", null, "secondary")
+
+readershipSection = Card([readershipHeading, readershipChart], "sunk", "column", "s")
+readershipHeading = Heading("Readership Over the Past 30 Days", "h4")
+readershipChart = LineChart(["Oct 1", "Oct 5", "Oct 10", "Oct 15", "Oct 20", "Oct 25", "Oct 30"], [viewsSeries, visitorsSeries], "natural", "Date", "Count")
+viewsSeries = Series("Page Views", [12000, 18500, 15000, 24000, 31000, 28000, 42000])
+visitorsSeries = Series("Unique Visitors", [8500, 12000, 10500, 16000, 21000, 19500, 29000])
+
+scheduleSection = Card([scheduleHeading, scheduleForm], "sunk", "column", "s")
+scheduleHeading = Heading("Schedule a Piece", "h4")
+scheduleForm = Form("schedule-form", scheduleButtons, [titleControl, dateControl])
+titleControl = FormControl("Article Title", titleInput, "Enter the full headline")
+titleInput = Input("title", "e.g., Next Generation AI Workflows")
+dateControl = FormControl("Publish Date", datePicker)
+datePicker = DatePicker("publish_date", "single")
+scheduleButtons = Buttons([scheduleBtn])
+scheduleBtn = Button("Schedule Publication", null, "primary")

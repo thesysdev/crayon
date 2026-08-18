@@ -1,0 +1,57 @@
+root = Card([header, mainGrid, calloutSection, followUps], "card", "column", "l")
+
+header = CardHeader("Personal Budget Tracker", "Monthly financial overview and spending analytics")
+
+mainGrid = Card([monthSelector, kpiCard, categoryChart, topExpenseCard], "clear", "column", "m")
+
+monthSelector = Form("month_filter", filterButtons, [monthField])
+monthField = FormControl("Select View Month", monthSelect)
+monthSelect = Select("selected_month", [m1, m2, m3, m4], "Choose month...", null, "October 2023", "medium")
+m1 = SelectItem("2023-08", "August 2023")
+m2 = SelectItem("2023-09", "September 2023")
+m3 = SelectItem("2023-10", "October 2023")
+m4 = SelectItem("2023-11", "November 2023")
+filterButtons = Buttons([changeMonthBtn, addExpenseDialog])
+changeMonthBtn = Button("Update View", null, "secondary", "normal", "medium")
+
+addExpenseDialog = DialogBlock("Add Expense", "Record New Expense", "Enter details for your new transaction.", [addExpenseForm], "default")
+
+addExpenseForm = Form("add_expense", formActionButtons, [descField, amountField, catField, dateField])
+descField = FormControl("Description", descInput, "e.g. Grocery Store")
+descInput = Input("description", "Enter item name...", "text")
+amountField = FormControl("Amount ($)", amountInput)
+amountInput = Input("amount", "0.00", "number")
+catField = FormControl("Category", catSelect)
+catSelect = Select("category", [c1, c2, c3, c4, c5], "Select category")
+c1 = SelectItem("housing", "Housing & Utilities")
+c2 = SelectItem("food", "Food & Dining")
+c3 = SelectItem("transport", "Transportation")
+c4 = SelectItem("entertainment", "Entertainment")
+c5 = SelectItem("shopping", "Shopping & Misc")
+dateField = FormControl("Date", datePicker)
+datePicker = DatePicker("expense_date", "single")
+formActionButtons = Buttons([submitExpenseBtn])
+submitExpenseBtn = Button("Save Expense", null, "primary", "normal", "medium")
+
+kpiCard = Card([kpiTitle, budgetProgress, kpiTable], "sunk", "column", "s")
+kpiTitle = Heading("Monthly Overview: October 2023", "h3")
+budgetProgress = Progress(78, "Spent $3,120 of $4,000 Budget (78%)")
+kpiTable = Table([colMetric, colVal])
+colMetric = Col("Metric", ["Total Budget", "Total Spent", "Remaining"])
+colVal = Col("Amount", ["$4,000.00", "$3,120.00", "$880.00"])
+
+categoryChart = Card([chartTitle, catPie], "sunk", "column", "s")
+chartTitle = Heading("Spending Split by Category", "h3")
+catPie = PieChart(["Housing", "Food & Dining", "Transportation", "Entertainment", "Shopping"], [1450, 680, 320, 240, 430], "donut", "circular")
+
+topExpenseCard = Card([topCallout, topExpenseDetail], "sunk", "column", "xs")
+topCallout = Callout("warning", "Largest Single Expense Highlighted", "Your highest expenditure this month was Housing Rent.")
+topExpenseDetail = ListBlock([topItem], "image")
+topItem = ListItem("Housing Rent", "$1,250.00 • Paid on Oct 1st (Housing & Utilities)", null, "View Receipt")
+
+calloutSection = TextCallout("info", "Budget Insight", "You have spent 78% of your total budget with 8 days remaining. Food & Dining is currently 12% over your planned allocation.")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Set spending alert for Food & Dining")
+f2 = FollowUpItem("Download October expense report")
+f3 = FollowUpItem("Compare with September spending")

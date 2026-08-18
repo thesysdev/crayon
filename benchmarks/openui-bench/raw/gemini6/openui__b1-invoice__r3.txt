@@ -1,0 +1,47 @@
+root = Card([header, summaryRow, calloutBox, detailTabs, followUps], "card", "column", "m")
+
+header = CardHeader("Invoice #INV-2024-008", "Issued by Alex Morgan (UX/UI Design & Frontend)")
+
+summaryRow = Card([amountSection, statusSection], "sunk", "row", "l", "center", "between")
+
+amountSection = Card([amountLabel, amountValue, currencyTag], "clear", "column", "xs")
+amountLabel = TextContent("Total Amount Due", "small")
+amountValue = Heading("$3,450.00", "h1")
+currencyTag = Badge("USD - US Dollar", "secondary")
+
+statusSection = Card([dueDateBlock, statusBadge, payButtonBox], "clear", "column", "s", "end")
+dueDateBlock = TextContent("Due Date: **October 24, 2024**", "default")
+statusBadge = Tag("Payment Pending", null, "md", "warning")
+payButtonBox = Buttons([payNowBtn])
+payNowBtn = Button("Pay Now ($3,450.00)", null, "primary", "normal", "large")
+
+calloutBox = Callout("info", "Early Payment Discount Available", "Pay within the next 48 hours to receive a 2% discount ($69.00 deduction).")
+
+detailTabs = Tabs([itemsTab, paymentMethodsTab, notesTab])
+
+itemsTab = TabItem("items", "Line Items", [itemsTable])
+itemsTable = Table([descCol, hoursCol, rateCol, totalCol])
+descCol = Col("Description", ["Design System Component Library (Figma)", "React & Tailwind Implementation", "User Testing & Accessibility Audit"])
+hoursCol = Col("Hours", [20, 25, 10])
+rateCol = Col("Rate", ["$60.00/hr", "$60.00/hr", "$75.00/hr"])
+totalCol = Col("Amount", ["$1,200.00", "$1,500.00", "$750.00"])
+
+paymentMethodsTab = TabItem("methods", "Payment Options", [paymentForm])
+paymentForm = Form("payment-selection", formActions, [methodControl, referenceControl])
+methodControl = FormControl("Select Payment Method", methodSelect)
+methodSelect = Select("payment_method", [cardOption, achOption, wireOption], "Choose how to pay")
+cardOption = SelectItem("card", "Credit / Debit Card (Instant)")
+achOption = SelectItem("ach", "ACH Bank Transfer (1-2 business days)")
+wireOption = SelectItem("wire", "International Wire Transfer")
+referenceControl = FormControl("PO / Reference Number (Optional)", referenceInput, "Include your internal tracking code if required")
+referenceInput = Input("po_number", "e.g. PO-99210")
+formActions = Buttons([submitPaymentBtn, downloadPdfBtn])
+submitPaymentBtn = Button("Proceed to Payment", null, "primary")
+downloadPdfBtn = Button("Download PDF Invoice", null, "secondary")
+
+notesTab = TabItem("notes", "Notes & Terms", [termsText])
+termsText = MarkDownRenderer("### Payment Terms\n\n- **Net 15** payment terms apply to this invoice.\n- Late payments are subject to a **1.5% fee per month**.\n- Please send remittance advice to `billing@alexmorgan.design`.\n\nThank you for your business!")
+
+followUps = FollowUpBlock([followUp1, followUp2])
+followUp1 = FollowUpItem("Download PDF receipt")
+followUp2 = FollowUpItem("Contact freelancer regarding this invoice")

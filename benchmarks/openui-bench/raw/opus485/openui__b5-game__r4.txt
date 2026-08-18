@@ -1,0 +1,67 @@
+root = Card([header, kpiRow, sessionTrend, regionSection, crashChart, eventsSection, moderationSection, economySection, experimentsSection, opsActions])
+
+header = CardHeader("Live-Ops Command Center", "Real-time studio operations")
+
+kpiRow = Table([kpiMetric, kpiValue])
+kpiMetric = Col("Metric", ["Players Online Now", "Daily Active Players", "Monthly Active Players", "Revenue Today", "Revenue Per User (ARPU)"])
+kpiValue = Col("Value", ["42,318", "1,204,900", "18,740,220", "$284,610", "$0.24"])
+
+sessionTrend = LineChart(["D1", "D2", "D3", "D4", "D5", "D6", "D7", "D8", "D9", "D10", "D11", "D12", "D13", "D14"], [sessionSeries], "natural", "Day", "Avg session (min)")
+sessionSeries = Series("Avg Session Length", [28, 30, 27, 31, 33, 29, 34, 36, 32, 35, 38, 37, 33, 39])
+
+regionSection = Table([regionName, regionHealth, regionPing])
+regionName = Col("Region", ["NA-East", "NA-West", "EU-Central", "EU-West", "Asia-Pacific", "South America"])
+regionHealth = Col("Health", ["Healthy", "Healthy", "Degraded", "Healthy", "Critical", "Healthy"])
+regionPing = Col("Avg Ping (ms)", [38, 44, 72, 51, 118, 96])
+
+crashChart = BarChart(["v4.2.0", "v4.2.1", "v4.3.0", "v4.3.1", "v4.4.0"], [crashSeries], "grouped", "App Version", "Crash rate (%)")
+crashSeries = Series("Crash Rate", [1.8, 1.2, 0.9, 2.4, 0.6])
+
+eventsSection = Table([eventName, eventStatus, eventWindow])
+eventName = Col("Event", ["Summer Blaze Festival", "Double XP Weekend", "Legendary Vault Drop", "Founders Anniversary"])
+eventStatus = Col("Status", ["Running", "Running", "Upcoming", "Upcoming"])
+eventWindow = Col("Window", ["Now - Jul 20", "Now - Jul 14", "Jul 22 - Jul 25", "Aug 01 - Aug 07"])
+
+bestSellers = Table([itemName, itemUnits])
+itemName = Col("Item", ["Dragonfire Skin", "Mega Loot Crate", "Season Pass Gold", "Phoenix Emote", "XP Booster x10"])
+itemUnits = Col("Units Sold", [18420, 15230, 12980, 9840, 7610], "number")
+
+moderationSection = Table([modType, modQueue])
+modType = Col("Queue", ["Player Reports Awaiting Review", "Ban Appeals Awaiting Review"])
+modQueue = Col("Pending", [1382, 217], "number")
+
+economySection = Card([economyHeader, inflationProgress, bestSellers], "sunk")
+economyHeader = Heading("Economy & Sales", "h3")
+inflationProgress = Progress(63, "In-Game Currency Inflation (63% above baseline)")
+
+experimentsSection = Table([expName, expVariantA, expVariantB, expResult])
+expName = Col("Experiment", ["Store Layout Test", "Onboarding Flow Test"])
+expVariantA = Col("Control", ["$0.22 ARPU", "41% D1 retention"])
+expVariantB = Col("Variant", ["$0.27 ARPU", "48% D1 retention"])
+expResult = Col("Result", ["Variant +22% (significant)", "Variant +7% (significant)"])
+
+opsActions = Buttons([patchNotesBtn, focusRegionBtn, hotfixBtn])
+patchNotesBtn = DrawerBlock("Draft Patch Notes", "Draft Patch Notes", "Compose notes for the next release", [patchForm])
+patchForm = Form("patch-notes", patchButtons, [versionField, notesField])
+versionField = FormControl("Version", versionInput)
+versionInput = Input("version", "v4.4.1")
+notesField = FormControl("Notes", notesArea)
+notesArea = TextArea("notes", "- Fixed crash on region select\n- Balanced Dragonfire Skin drop rates", 6)
+patchButtons = Buttons([savePatchBtn, cancelPatchBtn])
+savePatchBtn = Button("Save Draft", null, "primary")
+cancelPatchBtn = Button("Cancel", null, "tertiary")
+
+focusRegionBtn = DialogBlock("Focus on a Region", "Focus Region", "Isolate metrics for a single server region", [regionForm], "secondary")
+regionForm = Form("focus-region", regionButtons, [regionSelectField])
+regionSelectField = FormControl("Region", regionSelect)
+regionSelect = Select("region", [rNaE, rNaW, rEuC, rEuW, rApac, rSam], "Choose a region")
+rNaE = SelectItem("na-east", "NA-East")
+rNaW = SelectItem("na-west", "NA-West")
+rEuC = SelectItem("eu-central", "EU-Central")
+rEuW = SelectItem("eu-west", "EU-West")
+rApac = SelectItem("apac", "Asia-Pacific")
+rSam = SelectItem("sam", "South America")
+regionButtons = Buttons([applyRegionBtn])
+applyRegionBtn = Button("Focus", null, "primary")
+
+hotfixBtn = AlertDialogBlock("Ship Hotfix", "Ship Hotfix to Production", "This will deploy the current hotfix build to all live regions immediately. Continue?", "Deploy Now", "Cancel", "destructive")

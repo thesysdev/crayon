@@ -1,0 +1,266 @@
+
+
+Here's a morning dashboard for the support lead — open count and first-response KPIs up top, the five latest tickets with priorities, a high-priority-only toggle, and a "New ticket" dialog with a quick form.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "header",
+          "kpis",
+          "highPrioTag",
+          "recentHeading",
+          "filterSwitch",
+          "recentTable",
+          "newTicketDialog"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Morning view",
+        "subtitle": "Support lead · Today at a glance"
+      },
+      {
+        "id": "kpis",
+        "component": "Table",
+        "columns": [
+          "kpiMetric",
+          "kpiValue"
+        ]
+      },
+      {
+        "id": "kpiMetric",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Open tickets",
+          "Avg first-response time"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "42 open",
+          "1h 12m"
+        ]
+      },
+      {
+        "id": "highPrioTag",
+        "component": "Tag",
+        "text": "9 high-priority tickets open",
+        "variant": "danger"
+      },
+      {
+        "id": "recentHeading",
+        "component": "Heading",
+        "text": "Five most recent tickets",
+        "level": "h3"
+      },
+      {
+        "id": "filterSwitch",
+        "component": "SwitchGroup",
+        "name": "ticket_filter",
+        "items": [
+          "highOnlySwitch"
+        ]
+      },
+      {
+        "id": "highOnlySwitch",
+        "component": "SwitchItem",
+        "name": "high_priority_only",
+        "label": "High-priority only",
+        "description": "Hide Medium and Low tickets from the list below"
+      },
+      {
+        "id": "recentTable",
+        "component": "Table",
+        "columns": [
+          "ticketIdCol",
+          "subjectCol",
+          "priorityCol",
+          "receivedCol"
+        ]
+      },
+      {
+        "id": "ticketIdCol",
+        "component": "Col",
+        "label": "Ticket",
+        "data": [
+          "T-1042",
+          "T-1041",
+          "T-1040",
+          "T-1039",
+          "T-1038"
+        ]
+      },
+      {
+        "id": "subjectCol",
+        "component": "Col",
+        "label": "Subject",
+        "data": [
+          "Checkout page returns 500 errors",
+          "Password reset email never arrives",
+          "Invoice PDF shows wrong tax amount",
+          "Question about API rate limits",
+          "SSO login loop after upgrade"
+        ]
+      },
+      {
+        "id": "priorityCol",
+        "component": "Col",
+        "label": "Priority",
+        "data": [
+          "High",
+          "High",
+          "Medium",
+          "Low",
+          "High"
+        ]
+      },
+      {
+        "id": "receivedCol",
+        "component": "Col",
+        "label": "Received",
+        "data": [
+          "8 min ago",
+          "22 min ago",
+          "41 min ago",
+          "1 hr ago",
+          "2 hr ago"
+        ]
+      },
+      {
+        "id": "newTicketDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Open new ticket",
+        "title": "Open a new ticket",
+        "description": "Log a ticket on behalf of a customer.",
+        "content": [
+          "ticketForm"
+        ]
+      },
+      {
+        "id": "ticketForm",
+        "component": "Form",
+        "name": "new-ticket",
+        "buttons": "formButtons",
+        "fields": [
+          "subjectField",
+          "priorityField",
+          "detailsField"
+        ]
+      },
+      {
+        "id": "subjectField",
+        "component": "FormControl",
+        "label": "Subject",
+        "input": "subjectInput"
+      },
+      {
+        "id": "subjectInput",
+        "component": "Input",
+        "name": "subject",
+        "placeholder": "Short summary of the issue"
+      },
+      {
+        "id": "priorityField",
+        "component": "FormControl",
+        "label": "Priority",
+        "input": "prioritySelect"
+      },
+      {
+        "id": "prioritySelect",
+        "component": "Select",
+        "name": "priority",
+        "placeholder": "Select priority",
+        "items": [
+          "prioLow",
+          "prioMedium",
+          "prioHigh",
+          "prioUrgent"
+        ]
+      },
+      {
+        "id": "prioLow",
+        "component": "SelectItem",
+        "value": "low",
+        "label": "Low"
+      },
+      {
+        "id": "prioMedium",
+        "component": "SelectItem",
+        "value": "medium",
+        "label": "Medium"
+      },
+      {
+        "id": "prioHigh",
+        "component": "SelectItem",
+        "value": "high",
+        "label": "High"
+      },
+      {
+        "id": "prioUrgent",
+        "component": "SelectItem",
+        "value": "urgent",
+        "label": "Urgent"
+      },
+      {
+        "id": "detailsField",
+        "component": "FormControl",
+        "label": "Details",
+        "input": "detailsArea",
+        "hint": "What happened, who is affected, steps to reproduce"
+      },
+      {
+        "id": "detailsArea",
+        "component": "TextArea",
+        "name": "details",
+        "rows": 4,
+        "placeholder": "Describe the issue…"
+      },
+      {
+        "id": "formButtons",
+        "component": "Buttons",
+        "buttons": [
+          "createBtn",
+          "cancelBtn"
+        ]
+      },
+      {
+        "id": "createBtn",
+        "component": "Button",
+        "label": "Create ticket",
+        "variant": "primary"
+      },
+      {
+        "id": "cancelBtn",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+All five items are covered: the KPI table shows **42 open tickets** and a **1h 12m average first-response time**, the recent-tickets table lists the **five latest tickets with priorities**, the **"High-priority only" toggle** narrows the list, and the **"Open new ticket"** button launches a dialog with a subject/priority/details form.

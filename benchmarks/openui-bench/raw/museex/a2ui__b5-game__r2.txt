@@ -1,0 +1,820 @@
+Live-ops command center covering all 16 signals — KPIs, health, economy and ship controls in one screen.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "controlBar",
+          "alertCritical",
+          "kpiOverview",
+          "chartsRow",
+          "commerceRow",
+          "opsRow",
+          "experimentsCard",
+          "patchNotesCard"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Live-Ops Command Center",
+        "subtitle": "Studio Live Room • All regions • Updated just now • Build 2.8.4"
+      },
+      {
+        "id": "controlBar",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "m",
+        "align": "center",
+        "justify": "between",
+        "children": [
+          "regionFocusControl",
+          "hotfixDialog",
+          "refreshBtn"
+        ]
+      },
+      {
+        "id": "regionFocusControl",
+        "component": "FormControl",
+        "label": "15. Focus on one region",
+        "input": "regionFocusSelect",
+        "hint": "Filters all KPIs, health and charts"
+      },
+      {
+        "id": "regionFocusSelect",
+        "component": "Select",
+        "name": "region_focus",
+        "placeholder": "All Regions",
+        "items": [
+          "regionAll",
+          "regionUSEast",
+          "regionUSWest",
+          "regionEU",
+          "regionAP",
+          "regionSA"
+        ],
+        "value": "All Regions"
+      },
+      {
+        "id": "regionAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All Regions"
+      },
+      {
+        "id": "regionUSEast",
+        "component": "SelectItem",
+        "value": "us-east",
+        "label": "US-East"
+      },
+      {
+        "id": "regionUSWest",
+        "component": "SelectItem",
+        "value": "us-west",
+        "label": "US-West"
+      },
+      {
+        "id": "regionEU",
+        "component": "SelectItem",
+        "value": "eu-central",
+        "label": "EU-Central"
+      },
+      {
+        "id": "regionAP",
+        "component": "SelectItem",
+        "value": "ap-southeast",
+        "label": "AP-Southeast"
+      },
+      {
+        "id": "regionSA",
+        "component": "SelectItem",
+        "value": "sa-brazil",
+        "label": "SA-Brazil"
+      },
+      {
+        "id": "hotfixDialog",
+        "component": "AlertDialogBlock",
+        "triggerLabel": "16. Ship Hotfix",
+        "title": "Ship hotfix to production?",
+        "description": "This will push build 2.8.5 to all regions (or focused region) and restart matchmakers. Crash fix for 2.9.0-beta included.",
+        "confirmLabel": "Ship 2.8.5 Now",
+        "cancelLabel": "Cancel",
+        "triggerVariant": "destructive"
+      },
+      {
+        "id": "refreshBtn",
+        "component": "Button",
+        "label": "Refresh live data",
+        "variant": "secondary"
+      },
+      {
+        "id": "alertCritical",
+        "component": "Alert",
+        "title": "SA-Brazil degraded • EU-Central latency spike",
+        "description": "SA-Brazil health: Critical (142ms) — 6,800 players affected. EU-Central: 68ms. Crash rate on 2.9.0-beta at 1.24% exceeds 1% threshold.",
+        "variant": "warning"
+      },
+      {
+        "id": "kpiOverview",
+        "component": "Card",
+        "children": [
+          "kpiHeader",
+          "kpiTable",
+          "inflationRow"
+        ]
+      },
+      {
+        "id": "kpiHeader",
+        "component": "CardHeader",
+        "title": "Core KPIs",
+        "subtitle": "1. Players online now • 2. DAU / MAU • 3. Revenue today • 4. Revenue per user • 12. Currency inflation"
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": [
+          "colMetric",
+          "colValue",
+          "colTrend",
+          "colVsAvg"
+        ]
+      },
+      {
+        "id": "colMetric",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "1. Players Online Now",
+          "2. Daily Active (DAU)",
+          "2. Monthly Active (MAU)",
+          "3. Revenue Today",
+          "4. Revenue / User (ARPU)"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "84,320",
+          "342,100",
+          "4.21M",
+          "$127,450",
+          "$0.37"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colTrend",
+        "component": "Col",
+        "label": "vs Yesterday",
+        "data": [
+          "▲ +6.2% (peak hour)",
+          "▲ +2.1% WoW",
+          "→ Stable",
+          "▲ +8.4%",
+          "▲ $0.02"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colVsAvg",
+        "component": "Col",
+        "label": "7-Day Avg",
+        "data": [
+          "79,100 avg",
+          "335,400 avg",
+          "4.18M avg",
+          "$118,200 avg",
+          "$0.42 avg"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "inflationRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "align": "center",
+        "children": [
+          "inflationProgress",
+          "inflationText",
+          "inflationBadge"
+        ]
+      },
+      {
+        "id": "inflationProgress",
+        "component": "Progress",
+        "value": 38,
+        "label": "12. Currency Inflation: 3.8% weekly"
+      },
+      {
+        "id": "inflationText",
+        "component": "TextContent",
+        "text": "Gold inflation 3.8% / week — Target <2.0% • Sinks down 12% after patch 2.8.3. Faucet: Quest rewards +22%.",
+        "size": "small"
+      },
+      {
+        "id": "inflationBadge",
+        "component": "Badge",
+        "text": "Above target",
+        "variant": "destructive"
+      },
+      {
+        "id": "chartsRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "sessionCard",
+          "crashCard"
+        ]
+      },
+      {
+        "id": "sessionCard",
+        "component": "Card",
+        "children": [
+          "sessionHeader",
+          "sessionChart"
+        ]
+      },
+      {
+        "id": "sessionHeader",
+        "component": "CardHeader",
+        "title": "5. Avg Session Length — Past 14 Days",
+        "subtitle": "Minutes per session • Peak 19.0m on May 17"
+      },
+      {
+        "id": "sessionChart",
+        "component": "LineChart",
+        "labels": [
+          "May 6",
+          "May 7",
+          "May 8",
+          "May 9",
+          "May 10",
+          "May 11",
+          "May 12",
+          "May 13",
+          "May 14",
+          "May 15",
+          "May 16",
+          "May 17",
+          "May 18",
+          "May 19"
+        ],
+        "series": [
+          "sessionSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Date",
+        "yLabel": "Minutes"
+      },
+      {
+        "id": "sessionSeries",
+        "component": "Series",
+        "category": "Avg Session",
+        "values": [
+          16.2,
+          17.1,
+          16.8,
+          17.4,
+          18,
+          17.6,
+          18.2,
+          18.4,
+          17.9,
+          18.1,
+          18.6,
+          19,
+          18.4,
+          18.7
+        ]
+      },
+      {
+        "id": "crashCard",
+        "component": "Card",
+        "children": [
+          "crashHeader",
+          "crashChart",
+          "crashHint"
+        ]
+      },
+      {
+        "id": "crashHeader",
+        "component": "CardHeader",
+        "title": "8. Crash Rate by App Version",
+        "subtitle": "% of sessions crashing • Threshold 1.0%"
+      },
+      {
+        "id": "crashChart",
+        "component": "BarChart",
+        "labels": [
+          "2.7.9 stable",
+          "2.8.3",
+          "2.8.4 live",
+          "2.9.0-beta"
+        ],
+        "series": [
+          "crashSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Version",
+        "yLabel": "%"
+      },
+      {
+        "id": "crashSeries",
+        "component": "Series",
+        "category": "Crash Rate",
+        "values": [
+          0.35,
+          0.81,
+          0.42,
+          1.24
+        ]
+      },
+      {
+        "id": "crashHint",
+        "component": "TextContent",
+        "text": "2.9.0-beta at 1.24% — hotfix 2.8.5 addresses ANR on Android 14. 2.8.4 healthy at 0.42%.",
+        "size": "small"
+      },
+      {
+        "id": "commerceRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "bestSellersCard",
+          "regionHealthCard"
+        ]
+      },
+      {
+        "id": "bestSellersCard",
+        "component": "Card",
+        "children": [
+          "bestSellersHeader",
+          "bestSellersTable"
+        ]
+      },
+      {
+        "id": "bestSellersHeader",
+        "component": "CardHeader",
+        "title": "6. Best-Selling Items (Today)",
+        "subtitle": "Units sold + revenue • Top 5 SKUs"
+      },
+      {
+        "id": "bestSellersTable",
+        "component": "Table",
+        "columns": [
+          "colItem",
+          "colUnits",
+          "colRevenue"
+        ]
+      },
+      {
+        "id": "colItem",
+        "component": "Col",
+        "label": "Item",
+        "data": [
+          "XP Boost 7d",
+          "Dragonfire Crate",
+          "Season Pass S14",
+          "Gem Bundle 5000",
+          "Skin: Neon Ronin"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colUnits",
+        "component": "Col",
+        "label": "Units",
+        "data": [
+          "14,800",
+          "12,430",
+          "8,910",
+          "5,240",
+          "3,120"
+        ],
+        "type": "number"
+      },
+      {
+        "id": "colRevenue",
+        "component": "Col",
+        "label": "Revenue",
+        "data": [
+          "$14,800",
+          "$48,200",
+          "$44,550",
+          "$26,200",
+          "$18,720"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "regionHealthCard",
+        "component": "Card",
+        "children": [
+          "regionHealthHeader",
+          "regionHealthTable"
+        ]
+      },
+      {
+        "id": "regionHealthHeader",
+        "component": "CardHeader",
+        "title": "7. Server Regions & Health",
+        "subtitle": "Players online, health status, latency"
+      },
+      {
+        "id": "regionHealthTable",
+        "component": "Table",
+        "columns": [
+          "colRegion",
+          "colPlayers",
+          "colHealth",
+          "colLatency"
+        ]
+      },
+      {
+        "id": "colRegion",
+        "component": "Col",
+        "label": "Region",
+        "data": [
+          "US-East",
+          "US-West",
+          "EU-Central",
+          "AP-Southeast",
+          "SA-Brazil"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colPlayers",
+        "component": "Col",
+        "label": "Online",
+        "data": [
+          "28,400",
+          "19,100",
+          "22,700",
+          "14,120",
+          "6,800"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colHealth",
+        "component": "Col",
+        "label": "Health",
+        "data": [
+          "Healthy",
+          "Healthy",
+          "Degraded",
+          "Healthy",
+          "Critical"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colLatency",
+        "component": "Col",
+        "label": "Latency",
+        "data": [
+          "32ms",
+          "38ms",
+          "68ms",
+          "44ms",
+          "142ms"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "opsRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "eventsCard",
+          "moderationCard"
+        ]
+      },
+      {
+        "id": "eventsCard",
+        "component": "Card",
+        "children": [
+          "eventsHeader",
+          "eventsTable"
+        ]
+      },
+      {
+        "id": "eventsHeader",
+        "component": "CardHeader",
+        "title": "9. Live Events",
+        "subtitle": "Running and upcoming • 2 live now"
+      },
+      {
+        "id": "eventsTable",
+        "component": "Table",
+        "columns": [
+          "colEvent",
+          "colStatus",
+          "colEnds"
+        ]
+      },
+      {
+        "id": "colEvent",
+        "component": "Col",
+        "label": "Event",
+        "data": [
+          "Double XP Weekend",
+          "Guild Raid: Crimson Citadel",
+          "Summer Splash Teaser",
+          "Ranked Season 14"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Running",
+          "Running",
+          "Upcoming",
+          "Upcoming"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colEnds",
+        "component": "Col",
+        "label": "Ends / Starts",
+        "data": [
+          "Ends in 14h",
+          "Ends in 2d 4h",
+          "Starts May 22",
+          "Starts May 26"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "moderationCard",
+        "component": "Card",
+        "children": [
+          "moderationHeader",
+          "moderationTable",
+          "moderationButtons"
+        ]
+      },
+      {
+        "id": "moderationHeader",
+        "component": "CardHeader",
+        "title": "10 & 11. Moderation Queues",
+        "subtitle": "Requires immediate review"
+      },
+      {
+        "id": "moderationTable",
+        "component": "Table",
+        "columns": [
+          "colQueue",
+          "colCount",
+          "colSLA"
+        ]
+      },
+      {
+        "id": "colQueue",
+        "component": "Col",
+        "label": "Queue",
+        "data": [
+          "10. Player Reports",
+          "11. Ban Appeals"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colCount",
+        "component": "Col",
+        "label": "Awaiting Review",
+        "data": [
+          "247",
+          "89"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colSLA",
+        "component": "Col",
+        "label": "SLA",
+        "data": [
+          "18h oldest • 52 high priority",
+          "26h oldest • 12 escalated"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "moderationButtons",
+        "component": "Buttons",
+        "buttons": [
+          "reviewReportsBtn",
+          "reviewAppealsBtn"
+        ]
+      },
+      {
+        "id": "reviewReportsBtn",
+        "component": "Button",
+        "label": "Review Reports (247)",
+        "variant": "secondary"
+      },
+      {
+        "id": "reviewAppealsBtn",
+        "component": "Button",
+        "label": "Review Appeals (89)",
+        "variant": "secondary"
+      },
+      {
+        "id": "experimentsCard",
+        "component": "Card",
+        "children": [
+          "experimentsHeader",
+          "experimentsTabs"
+        ]
+      },
+      {
+        "id": "experimentsHeader",
+        "component": "CardHeader",
+        "title": "13. Running Experiments (A/B)",
+        "subtitle": "Two active experiments • 50/50 split • 7 days elapsed"
+      },
+      {
+        "id": "experimentsTabs",
+        "component": "Tabs",
+        "items": [
+          "expA",
+          "expB"
+        ]
+      },
+      {
+        "id": "expA",
+        "component": "TabItem",
+        "value": "expA",
+        "trigger": "Exp A: Loot +15%",
+        "content": [
+          "expAText",
+          "expAStats"
+        ]
+      },
+      {
+        "id": "expAText",
+        "component": "MarkDownRenderer",
+        "textMarkdown": "**Treatment:** Loot drop rate +15% vs Control\n\n- **Retention D7:** +2.3% (p=0.04) ✅\n- **ARPU:** +$0.04 (+11%)\n- **Session length:** +1.1m\n- **Sample:** 84k users per variant\n\n**Verdict:** Promising — recommend ship to 100% after economy check.",
+        "variant": "clear"
+      },
+      {
+        "id": "expAStats",
+        "component": "TextContent",
+        "text": "Control 18.1m / Treatment 19.2m • Inflation impact +0.4% included",
+        "size": "small"
+      },
+      {
+        "id": "expB",
+        "component": "TabItem",
+        "value": "expB",
+        "trigger": "Exp B: New Tutorial",
+        "content": [
+          "expBText",
+          "expBStats"
+        ]
+      },
+      {
+        "id": "expBText",
+        "component": "MarkDownRenderer",
+        "textMarkdown": "**Treatment:** New 3-step tutorial vs Old 5-step\n\n- **FTUE Completion:** 71% → 84% (+13pp) ✅\n- **D1 Retention:** +1.8% (p=0.12) — not sig yet\n- **Crash rate:** No change (0.41% vs 0.42%)\n- **Sample:** 62k users per variant\n\n**Verdict:** Hold — needs 3 more days for retention significance.",
+        "variant": "clear"
+      },
+      {
+        "id": "expBStats",
+        "component": "TextContent",
+        "text": "Control 71% / Treatment 84% completion • Recommend extend to May 22",
+        "size": "small"
+      },
+      {
+        "id": "patchNotesCard",
+        "component": "Card",
+        "children": [
+          "patchNotesHeader",
+          "patchForm"
+        ]
+      },
+      {
+        "id": "patchNotesHeader",
+        "component": "CardHeader",
+        "title": "14. Draft Patch Notes",
+        "subtitle": "Write, preview and stage notes for next hotfix or release"
+      },
+      {
+        "id": "patchForm",
+        "component": "Form",
+        "name": "patch-notes",
+        "buttons": "patchButtons",
+        "fields": [
+          "patchVersionControl",
+          "patchNotesControl"
+        ]
+      },
+      {
+        "id": "patchVersionControl",
+        "component": "FormControl",
+        "label": "Target version",
+        "input": "patchVersionSelect"
+      },
+      {
+        "id": "patchVersionSelect",
+        "component": "Select",
+        "name": "patch_version",
+        "items": [
+          "patchVerHotfix",
+          "patchVerMinor",
+          "patchVerMajor"
+        ],
+        "placeholder": "Choose version",
+        "value": "2.8.5 Hotfix"
+      },
+      {
+        "id": "patchVerHotfix",
+        "component": "SelectItem",
+        "value": "2.8.5-hotfix",
+        "label": "2.8.5 Hotfix (recommended)"
+      },
+      {
+        "id": "patchVerMinor",
+        "component": "SelectItem",
+        "value": "2.9.0",
+        "label": "2.9.0 Minor"
+      },
+      {
+        "id": "patchVerMajor",
+        "component": "SelectItem",
+        "value": "3.0.0",
+        "label": "3.0.0 Major"
+      },
+      {
+        "id": "patchNotesControl",
+        "component": "FormControl",
+        "label": "Patch notes draft",
+        "input": "patchNotesInput",
+        "hint": "Markdown supported. Will be published to launcher and Discord."
+      },
+      {
+        "id": "patchNotesInput",
+        "component": "TextArea",
+        "name": "patch_notes",
+        "placeholder": "## 2.8.5 Hotfix - May 19\n- Fixed crash on Android 14 (ANR in 2.9.0-beta)\n- Reduced SA-Brazil latency, rerouted via US-East\n- Economy: -5% quest gold to curb 3.8% inflation\n- Double XP extended 12h...",
+        "rows": 5,
+        "value": "## 2.8.5 Hotfix — Draft\n- Fix: Crash on Android 14 (1.24% → expected 0.4%)\n- Infra: SA-Brazil failover to US-East, EU-Central scaling\n- Balance: Loot +15% experiment results pending\n- Event: Double XP +12h extension"
+      },
+      {
+        "id": "patchButtons",
+        "component": "Buttons",
+        "buttons": [
+          "patchDraftBtn",
+          "patchPreviewBtn"
+        ]
+      },
+      {
+        "id": "patchDraftBtn",
+        "component": "Button",
+        "label": "Save Draft",
+        "variant": "primary"
+      },
+      {
+        "id": "patchPreviewBtn",
+        "component": "Button",
+        "label": "Preview & Stage",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>

@@ -1,0 +1,57 @@
+root = Card([header, metricsGrid, mainContent, followUp])
+header = CardHeader("E-Commerce Operations Desk", "Live order management, analytics, and fulfillment tracking")
+
+metricsGrid = Table([metricCol, valueCol, changeCol])
+metricCol = Col("Metric", ["Orders Placed Today", "Revenue Today", "Average Order Value (AOV)", "Refund Rate (This Month)"])
+valueCol = Col("Value", ["342", "$28,450.00", "$83.18", "1.8%"])
+changeCol = Col("Status / Target", ["+14% vs yesterday", "+8% vs target ($26k)", "+$4.20 vs avg", "Optimal (<2.5%)"])
+
+mainContent = Tabs([ordersTab, analyticsTab])
+
+ordersTab = TabItem("orders", "Orders & Fulfillment", [filterForm, ordersTable, fulfillmentSection])
+
+filterForm = Form("order-filters", filterButtons, [searchField, statusField])
+searchField = FormControl("Search Customer", customerInput, "Search by customer full name")
+customerInput = Input("customer_name", "e.g. Jane Doe")
+statusField = FormControl("Filter by Status", statusSelect)
+statusSelect = Select("order_status", [optAll, optPending, optProcessing, optShipped, optDelivered, optRefunded], "All Statuses")
+optAll = SelectItem("all", "All Statuses")
+optPending = SelectItem("pending", "Pending Fulfillment")
+optProcessing = SelectItem("processing", "Processing")
+optShipped = SelectItem("shipped", "Shipped")
+optDelivered = SelectItem("delivered", "Delivered")
+optRefunded = SelectItem("refunded", "Refunded")
+
+filterButtons = Buttons([applyFiltersBtn, resetFiltersBtn])
+applyFiltersBtn = Button("Apply Filters", null, "primary")
+resetFiltersBtn = Button("Reset", null, "tertiary")
+
+ordersTable = Table([colOrderId, colCustomer, colTotal, colStatus])
+colOrderId = Col("Order ID", ["#ORD-8941", "#ORD-8940", "#ORD-8939", "#ORD-8938", "#ORD-8937"])
+colCustomer = Col("Customer", ["Sarah Jenkins", "Michael Chang", "Amanda Ross", "David Smith", "Elena Rostova"])
+colTotal = Col("Total", ["$142.50", "$89.00", "$215.10", "$45.00", "$312.80"])
+colStatus = Col("Status", ["Pending", "Processing", "Shipped", "Pending", "Delivered"])
+
+fulfillmentSection = Form("fulfill-order", fulfillButtons, [fulfillOrderSelect, fulfillCarrierInput, fulfillNotesInput])
+fulfillOrderSelect = FormControl("Select Order to Fulfill", fulfillOrderDropdown, "Choose an unfulfilled order")
+fulfillOrderDropdown = Select("fulfill_order_id", [fOpt1, fOpt2], "Select order...")
+fOpt1 = SelectItem("ORD-8941", "#ORD-8941 - Sarah Jenkins ($142.50)")
+fOpt2 = SelectItem("ORD-8938", "#ORD-8938 - David Smith ($45.00)")
+fulfillCarrierInput = FormControl("Carrier & Tracking #", carrierInput, "Optional tracking code")
+carrierInput = Input("tracking_number", "e.g. FedEx 7812345678")
+fulfillNotesInput = FormControl("Fulfillment Notes", notesInput)
+notesInput = TextArea("fulfillment_notes", "Packed with care...", 2)
+
+fulfillButtons = Buttons([markFulfilledBtn])
+markFulfilledBtn = Button("Mark Order Fulfilled", null, "primary")
+
+analyticsTab = TabItem("analytics", "Weekly Volume & Trends", [chartHeader, volumeChart])
+chartHeader = CardHeader("Order Volume Across Past 4 Weeks", "Total completed vs pending orders by week")
+volumeChart = BarChart(["Week 1", "Week 2", "Week 3", "Week 4"], [seriesCompleted, seriesPending], "grouped", "Past Weeks", "Number of Orders")
+seriesCompleted = Series("Completed Orders", [1820, 2100, 1950, 2240])
+seriesPending = Series("Pending/Processing", [140, 95, 110, 130])
+
+followUp = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Export todays orders to CSV")
+fu2 = FollowUpItem("View refund report for this month")
+fu3 = FollowUpItem("Manage inventory stock levels")

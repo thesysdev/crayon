@@ -1,0 +1,259 @@
+Here is a UI for tracking your package delivery, showing its current status, estimated delivery date, and an easy way to report any issues.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "delivery-tracker",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "delivery-tracker",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "header",
+          "alertStatus",
+          "etaProgressCard",
+          "trackingTabs",
+          "problemDialog"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Package Tracking",
+        "subtitle": "Tracking ID: #TRK-98420511"
+      },
+      {
+        "id": "alertStatus",
+        "component": "Alert",
+        "title": "Package In Transit",
+        "description": "Currently at Regional Sorting Hub - Chicago, IL",
+        "variant": "info"
+      },
+      {
+        "id": "etaProgressCard",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "etaHeader",
+          "progressBar",
+          "currentLocationBadge"
+        ]
+      },
+      {
+        "id": "etaHeader",
+        "component": "Heading",
+        "text": "Estimated Delivery: Thursday, Oct 24 by 7:00 PM",
+        "level": "h3"
+      },
+      {
+        "id": "progressBar",
+        "component": "Progress",
+        "value": 65,
+        "label": "In Transit (Step 3 of 4)"
+      },
+      {
+        "id": "currentLocationBadge",
+        "component": "Tag",
+        "text": "Current Location: Chicago Regional Hub (Arrived 08:30 AM)",
+        "variant": "info",
+        "size": "md"
+      },
+      {
+        "id": "trackingTabs",
+        "component": "Tabs",
+        "items": [
+          "tabTimeline",
+          "tabDetails"
+        ]
+      },
+      {
+        "id": "tabTimeline",
+        "component": "TabItem",
+        "value": "timeline",
+        "trigger": "Tracking Steps",
+        "content": [
+          "trackingSteps"
+        ]
+      },
+      {
+        "id": "trackingSteps",
+        "component": "Steps",
+        "items": [
+          "step1",
+          "step2",
+          "step3",
+          "step4"
+        ]
+      },
+      {
+        "id": "step1",
+        "component": "StepsItem",
+        "title": "Order Processed",
+        "details": "Oct 21, 10:15 AM - Fulfillment Center, Columbus OH"
+      },
+      {
+        "id": "step2",
+        "component": "StepsItem",
+        "title": "Shipped with Carrier",
+        "details": "Oct 22, 02:30 PM - Carrier Facility, Columbus OH"
+      },
+      {
+        "id": "step3",
+        "component": "StepsItem",
+        "title": "In Transit (Current)",
+        "details": "Oct 23, 08:30 AM - Regional Sorting Hub, Chicago IL"
+      },
+      {
+        "id": "step4",
+        "component": "StepsItem",
+        "title": "Out for Delivery",
+        "details": "Pending arrival at local distribution facility"
+      },
+      {
+        "id": "tabDetails",
+        "component": "TabItem",
+        "value": "details",
+        "trigger": "Shipment Details",
+        "content": [
+          "detailsTable"
+        ]
+      },
+      {
+        "id": "detailsTable",
+        "component": "Table",
+        "columns": [
+          "colAttribute",
+          "colValue"
+        ]
+      },
+      {
+        "id": "colAttribute",
+        "component": "Col",
+        "label": "Attribute",
+        "data": [
+          "Carrier",
+          "Weight",
+          "Delivery Address",
+          "Signature Required"
+        ]
+      },
+      {
+        "id": "colValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "Express Courier",
+          "2.4 lbs",
+          "123 Main Street, Apt 4B, Chicago, IL",
+          "No"
+        ]
+      },
+      {
+        "id": "problemDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Report a Problem",
+        "triggerVariant": "destructive",
+        "title": "Report Delivery Problem",
+        "description": "Please let us know what issue you are experiencing with this package.",
+        "content": [
+          "problemForm"
+        ]
+      },
+      {
+        "id": "problemForm",
+        "component": "Form",
+        "name": "report-problem",
+        "buttons": "formActionButtons",
+        "fields": [
+          "issueTypeControl",
+          "issueDetailsControl"
+        ]
+      },
+      {
+        "id": "issueTypeControl",
+        "component": "FormControl",
+        "label": "What is the issue?",
+        "input": "issueSelect"
+      },
+      {
+        "id": "issueSelect",
+        "component": "Select",
+        "name": "issue_type",
+        "placeholder": "Select an issue...",
+        "items": [
+          "optDelayed",
+          "optWrongAddress",
+          "optDamaged",
+          "optOther"
+        ]
+      },
+      {
+        "id": "optDelayed",
+        "component": "SelectItem",
+        "value": "delayed",
+        "label": "Package is delayed / No recent updates"
+      },
+      {
+        "id": "optWrongAddress",
+        "component": "SelectItem",
+        "value": "wrong_address",
+        "label": "Incorrect delivery address"
+      },
+      {
+        "id": "optDamaged",
+        "component": "SelectItem",
+        "value": "damaged",
+        "label": "Package marked as damaged"
+      },
+      {
+        "id": "optOther",
+        "component": "SelectItem",
+        "value": "other",
+        "label": "Other inquiry"
+      },
+      {
+        "id": "issueDetailsControl",
+        "component": "FormControl",
+        "label": "Additional Details",
+        "input": "issueTextArea",
+        "hint": "Provide any additional context to help our support team resolve this quickly."
+      },
+      {
+        "id": "issueTextArea",
+        "component": "TextArea",
+        "name": "issue_description",
+        "placeholder": "Describe what went wrong...",
+        "rows": 3
+      },
+      {
+        "id": "formActionButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitIssueBtn"
+        ]
+      },
+      {
+        "id": "submitIssueBtn",
+        "component": "Button",
+        "label": "Submit Report",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>

@@ -173,3 +173,25 @@ benchmark itself. The A2UI catalog id and title embedded in the raws' prompts
 are kept verbatim so the committed raws stay reproducible. The files under
 `raw/` are verbatim large-language-model outputs generated for this benchmark
 and are published here as its data record.
+
+## Update runs (Aug 19): equal worked examples and replicates
+
+The blog post's update section is backed by additional committed runs. The
+shipped protocol prompts now carry the update conditions: the OpenUI prompt
+gained a status-color routing note, a closed-enum rule and a nested-section
+example; json-render and A2UI carry the same two worked examples through
+`customRules` and `role_description`. Labels:
+
+| Label | What it is |
+|---|---|
+| `raw/<model>5` | OpenUI, revised-prompt iteration 1 (prompt snapshot: `archive/openui-prompt-iteration1.txt`) |
+| `raw/<model>6`, `raw/<model>6b` | OpenUI, final prompt (the shipped one), replicates 1 and 2 |
+| `raw/<model>ex` | json-render and A2UI with worked examples, replicate 1 |
+| `raw/<model>ex2` | A2UI with worked examples, replicate 2 |
+
+The update's headline numbers are the mean of the two replicates per format;
+both replicates are committed and reported. json-render was not replicated
+(15 points back, outside any variance band). The original post's runs remain
+under `raw/<model>/` untouched; note their prompts are the ORIGINAL
+conditions, which `score.mjs` still reproduces verbatim from the raws, while
+the shipped prompt generators now produce the update conditions.

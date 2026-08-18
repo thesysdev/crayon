@@ -1,0 +1,86 @@
+root = Card([header, quickActions, topAlert, metricsGrid, mainTabs, followUp])
+
+header = CardHeader("Editor's Content Studio", "Editorial dashboard, content performance, and publishing workflow")
+
+quickActions = Buttons([newDraftBtn, scheduleModalBtn])
+newDraftBtn = Button("Start New Draft", null, "primary")
+scheduleModalBtn = DialogBlock("Schedule a Piece", "Schedule Content Publication", "Enter details to schedule an article for future release.", scheduleForm, "outline")
+
+topAlert = TextCallout("warning", "3 Comments Awaiting Reply", "Pending reader engagement on recent publications requires moderation.")
+
+metricsGrid = Table([metricCol, valueCol, statusCol])
+metricCol = Col("Performance Summary", ["Readership (30 Days)", "Published This Week", "Top Article This Month"])
+valueCol = Col("Metric", ["128,450 Total Reads", "12 Articles Published", "The Future of AI Design (42.5k reads)"])
+statusCol = Col("Trend / Details", ["+14.2% vs last month", "100% of weekly goal reached", "Published Oct 12 • 98% positive sentiment"])
+
+mainTabs = Tabs([tab1, tab2, tab3, tab4])
+
+tab1 = TabItem("drafts", "Drafts & Moderation", [categoryFilter, draftsTable, commentsSection])
+
+categoryFilter = Form("filter-form", filterButtons, [categorySelect])
+categorySelect = FormControl("Filter Content by Category", filterSelectInput)
+filterSelectInput = Select("category", [catAll, catTech, catDesign, catCulture, catBusiness], "All Categories")
+catAll = SelectItem("all", "All Categories")
+catTech = SelectItem("tech", "Technology")
+catDesign = SelectItem("design", "Design & UX")
+catCulture = SelectItem("culture", "Culture & Essay")
+catBusiness = SelectItem("business", "Business & Strategy")
+filterButtons = Buttons([applyFilterBtn])
+applyFilterBtn = Button("Apply Filter", null, "secondary")
+
+draftsTable = Table([draftTitleCol, draftCatCol, draftAuthorCol, draftStatusCol])
+draftTitleCol = Col("Draft Title", ["Navigating the Synthetic Web", "Designing for Spatial Audio", "The Modular Codebase Era", "Ethical Frameworks in AI"])
+draftCatCol = Col("Category", ["Technology", "Design & UX", "Technology", "Culture & Essay"])
+draftAuthorCol = Col("Author", ["Alex Chen", "Elena Rostova", "Marcus Vance", "Sarah Jenkins"])
+draftStatusCol = Col("Status", ["In Review", "Draft", "Changes Requested", "Approved"])
+
+commentsSection = SectionBlock([commentSecItem], true)
+commentSecItem = SectionItem("comments", "Comments Awaiting Reply (3)", [commentsList])
+
+commentsList = ListBlock([comment1, comment2, comment3])
+comment1 = ListItem("Re: Navigating the Synthetic Web", "David K.: 'Does this account for multi-modal latency issues?'", null, "Reply")
+comment2 = ListItem("Re: The Future of AI Design", "Maya L.: 'Great insights on token limits, would love a follow-up on UI patterns.'", null, "Reply")
+comment3 = ListItem("Re: Designing for Spatial Audio", "Julian P.: 'Which spatial audio SDKs did you benchmark for this piece?'", null, "Reply")
+
+tab2 = TabItem("published", "Published This Week", [publishedTable])
+
+publishedTable = Table([pubTitleCol, pubCatCol, pubDateCol, pubReadsCol])
+pubTitleCol = Col("Article Title", ["The Future of AI Design", "Scaling Vector Databases", "Micro-Frontends in 2024", "Product Management Mindset", "Typography in Digital Products"])
+pubCatCol = Col("Category", ["Design & UX", "Technology", "Technology", "Business & Strategy", "Design & UX"])
+pubDateCol = Col("Publish Date", ["Oct 24, 2024", "Oct 23, 2024", "Oct 22, 2024", "Oct 21, 2024", "Oct 20, 2024"])
+pubReadsCol = Col("Total Reads", ["42,500", "18,200", "14,100", "9,800", "11,300"])
+
+tab3 = TabItem("analytics", "Readership Analytics", [chartHeader, readershipChart])
+chartHeader = Heading("Readership Trajectory (Past 30 Days)", "h3")
+readershipChart = AreaChart(["Week 1", "Week 2", "Week 3", "Week 4"], [readershipSeries], "natural", "Timeline", "Unique Readers")
+readershipSeries = Series("Total Readers", [24500, 31200, 34800, 37950])
+
+tab4 = TabItem("schedule", "Schedule Publication", [scheduleFormDirect])
+
+scheduleForm = Form("schedule-form-dialog", dialogFormButtons, [scheduleTitleControl, scheduleDateControl, scheduleCategoryControl])
+scheduleTitleControl = FormControl("Article Title", scheduleTitleInput)
+scheduleTitleInput = Input("title", "e.g., Understanding Next-Gen Layouts")
+scheduleDateControl = FormControl("Publish Date", scheduleDatePicker)
+scheduleDatePicker = DatePicker("publish_date", "single")
+scheduleCategoryControl = FormControl("Category", scheduleCatSelect)
+scheduleCatSelect = Select("category", [catTech, catDesign, catCulture, catBusiness], "Select Category")
+
+dialogFormButtons = Buttons([submitScheduleBtn])
+submitScheduleBtn = Button("Confirm Schedule", null, "primary")
+
+scheduleFormDirect = Form("schedule-form-direct", directFormButtons, [directTitleControl, directDateControl, directCategoryControl])
+directTitleControl = FormControl("Article Title", directTitleInput)
+directTitleInput = Input("direct_title", "Enter the full working title")
+directDateControl = FormControl("Publish Date & Time", directDatePicker)
+directDatePicker = DatePicker("direct_publish_date", "single")
+directCategoryControl = FormControl("Target Category", directCatSelect)
+directCatSelect = Select("direct_category", [catTech, catDesign, catCulture, catBusiness], "Select Category")
+
+directFormButtons = Buttons([directScheduleSubmit, directSaveDraft])
+directScheduleSubmit = Button("Schedule Piece", null, "primary")
+directSaveDraft = Button("Save as Unscheduled Draft", null, "secondary")
+
+followUp = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Show analytics for top performing category")
+f2 = FollowUpItem("Export weekly publishing report")
+f3 = FollowUpItem("Manage reader comment moderation rules")

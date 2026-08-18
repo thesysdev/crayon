@@ -1,0 +1,295 @@
+Here is the support lead's morning view dashboard with all requested items: summary metrics (open tickets & average response time), high-priority filter, recent tickets table, and quick action to create a new ticket.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "support-morning-view",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "support-morning-view",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "metricsTable",
+          "separator1",
+          "controlsGroup",
+          "separator2",
+          "ticketsHeading",
+          "recentTicketsTable"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Support Dashboard — Morning Overview",
+        "subtitle": "Daily triage, team performance, and ticket tracking"
+      },
+      {
+        "id": "metricsTable",
+        "component": "Table",
+        "columns": [
+          "metricLabelCol",
+          "metricValCol",
+          "metricStatusCol"
+        ]
+      },
+      {
+        "id": "metricLabelCol",
+        "component": "Col",
+        "label": "Key Metric",
+        "data": [
+          "Open Tickets",
+          "Avg First-Response Time"
+        ]
+      },
+      {
+        "id": "metricValCol",
+        "component": "Col",
+        "label": "Current Value",
+        "data": [
+          "42",
+          "14 mins"
+        ]
+      },
+      {
+        "id": "metricStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "5 high priority",
+          "-3 mins vs yesterday"
+        ]
+      },
+      {
+        "id": "separator1",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "controlsGroup",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": [
+          "filterHighPriorityBtn",
+          "filterAllBtn",
+          "newTicketModal"
+        ]
+      },
+      {
+        "id": "filterHighPriorityBtn",
+        "component": "Button",
+        "label": "Show High Priority Only (5)",
+        "variant": "secondary"
+      },
+      {
+        "id": "filterAllBtn",
+        "component": "Button",
+        "label": "Show All Tickets",
+        "variant": "tertiary"
+      },
+      {
+        "id": "newTicketModal",
+        "component": "DialogBlock",
+        "triggerLabel": "+ Create New Ticket",
+        "triggerVariant": "default",
+        "title": "Create Support Ticket",
+        "description": "Fill out the details below to log a new customer support ticket.",
+        "content": [
+          "newTicketForm"
+        ]
+      },
+      {
+        "id": "newTicketForm",
+        "component": "Form",
+        "name": "create-ticket-form",
+        "fields": [
+          "subjectField",
+          "customerField",
+          "priorityField",
+          "detailsField"
+        ],
+        "buttons": "formActions"
+      },
+      {
+        "id": "subjectField",
+        "component": "FormControl",
+        "label": "Subject",
+        "input": "subjectInput"
+      },
+      {
+        "id": "subjectInput",
+        "component": "Input",
+        "name": "subject",
+        "placeholder": "Brief summary of the issue"
+      },
+      {
+        "id": "customerField",
+        "component": "FormControl",
+        "label": "Customer Email",
+        "input": "customerInput"
+      },
+      {
+        "id": "customerInput",
+        "component": "Input",
+        "name": "customer_email",
+        "type": "email",
+        "placeholder": "customer@company.com"
+      },
+      {
+        "id": "priorityField",
+        "component": "FormControl",
+        "label": "Priority Level",
+        "input": "prioritySelect"
+      },
+      {
+        "id": "prioritySelect",
+        "component": "Select",
+        "name": "priority",
+        "placeholder": "Select priority",
+        "items": [
+          "pHigh",
+          "pMedium",
+          "pLow"
+        ]
+      },
+      {
+        "id": "pHigh",
+        "component": "SelectItem",
+        "label": "High Priority",
+        "value": "high"
+      },
+      {
+        "id": "pMedium",
+        "component": "SelectItem",
+        "label": "Medium Priority",
+        "value": "medium"
+      },
+      {
+        "id": "pLow",
+        "component": "SelectItem",
+        "label": "Low Priority",
+        "value": "low"
+      },
+      {
+        "id": "detailsField",
+        "component": "FormControl",
+        "label": "Description",
+        "input": "detailsTextArea"
+      },
+      {
+        "id": "detailsTextArea",
+        "component": "TextArea",
+        "name": "description",
+        "placeholder": "Provide additional context...",
+        "rows": 4
+      },
+      {
+        "id": "formActions",
+        "component": "Buttons",
+        "buttons": [
+          "submitTicketBtn"
+        ]
+      },
+      {
+        "id": "submitTicketBtn",
+        "component": "Button",
+        "label": "Submit Ticket",
+        "variant": "primary"
+      },
+      {
+        "id": "separator2",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "ticketsHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "5 Most Recent Tickets"
+      },
+      {
+        "id": "recentTicketsTable",
+        "component": "Table",
+        "columns": [
+          "ticketIdCol",
+          "subjectCol",
+          "customerCol",
+          "priorityCol",
+          "createdCol"
+        ]
+      },
+      {
+        "id": "ticketIdCol",
+        "component": "Col",
+        "label": "Ticket ID",
+        "data": [
+          "TCK-1089",
+          "TCK-1088",
+          "TCK-1087",
+          "TCK-1086",
+          "TCK-1085"
+        ]
+      },
+      {
+        "id": "subjectCol",
+        "component": "Col",
+        "label": "Subject",
+        "data": [
+          "SSO Login failure across EU region",
+          "Billing discrepancy on invoice #4920",
+          "API rate limit exceeded unexpectedly",
+          "Request for custom SLA addendum",
+          "Webhook delivery delay on event push"
+        ]
+      },
+      {
+        "id": "customerCol",
+        "component": "Col",
+        "label": "Customer",
+        "data": [
+          "Acme Corp",
+          "Starlight Media",
+          "Nexus Dynamics",
+          "Global Logix",
+          "Fintech One"
+        ]
+      },
+      {
+        "id": "priorityCol",
+        "component": "Col",
+        "label": "Priority",
+        "data": [
+          "High",
+          "High",
+          "High",
+          "Medium",
+          "Low"
+        ]
+      },
+      {
+        "id": "createdCol",
+        "component": "Col",
+        "label": "Created",
+        "data": [
+          "12 mins ago",
+          "25 mins ago",
+          "41 mins ago",
+          "1 hour ago",
+          "2 hours ago"
+        ]
+      }
+    ]
+  }
+}
+</a2ui-json>

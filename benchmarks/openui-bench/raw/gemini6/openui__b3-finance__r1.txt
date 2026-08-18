@@ -1,0 +1,50 @@
+root = Card([header, mainCallout, kpiGrid, expenseSection, largeTxSection, navSeparator, footerActions], "card", "column", "l")
+
+header = CardHeader("Month-End Financial Summary", "October 2023 • Acme Tech Inc.")
+
+mainCallout = TextCallout("success", "Healthy Runway", "Runway increased by 1.2 months following the Q3 enterprise contract renewals.")
+
+kpiGrid = Card([cashCard, burnCard, runwayCard], "clear", "row", "m", "stretch", "between", true)
+
+cashCard = Card([cashHeader, cashBadge], "sunk", "column", "s")
+cashHeader = CardHeader("$1,850,000", "Cash on Hand")
+cashBadge = Tag("+ $120k vs last month", null, "sm", "success")
+
+burnCard = Card([burnHeader, burnBadge], "sunk", "column", "s")
+burnHeader = CardHeader("$125,000", "Monthly Net Burn")
+burnBadge = Tag("- 8% vs prior avg", null, "sm", "success")
+
+runwayCard = Card([runwayHeader, runwayBadge], "sunk", "column", "s")
+runwayHeader = CardHeader("14.8 Months", "Estimated Runway")
+runwayBadge = Tag("Target: > 12 mos", null, "sm", "info")
+
+expenseSection = Card([expenseHeading, expenseChart], "sunk", "column", "m")
+expenseHeading = Heading("October Expenses by Category", "h3")
+expenseChart = HorizontalBarChart(["Payroll & Benefits", "Cloud & Infra", "Sales & Marketing", "Software & Tools", "Legal & Admin", "Office & Travel"], [expenseSeries], "grouped", "Category", "Amount ($)")
+expenseSeries = Series("Expenses ($)", [78000, 24500, 18200, 8500, 5000, 3800])
+
+largeTxSection = Card([txHeading, txTable], "sunk", "column", "m")
+txHeading = Heading("Transactions > $10,000 (October)", "h3")
+txTable = Table([txDateCol, txVendorCol, txCatCol, txAmountCol])
+txDateCol = Col("Date", ["Oct 01, 2023", "Oct 05, 2023", "Oct 12, 2023", "Oct 18, 2023"])
+txVendorCol = Col("Vendor / Entity", ["Gusto Payroll", "AWS Cloud Services", "Google Ads", "WeWork Workspace"])
+txCatCol = Col("Category", ["Payroll", "Infrastructure", "Marketing", "Office & Travel"])
+txAmountCol = Col("Amount", ["$78,000.00", "$18,450.00", "$12,200.00", "$10,500.00"])
+
+navSeparator = Separator("horizontal", true)
+
+footerActions = Card([monthSelectorForm, downloadButtons], "clear", "row", "m", "center", "between", true)
+
+monthSelectorForm = Form("month_select", formBtn, [monthField])
+monthField = FormControl("Select Period", monthSelect)
+monthSelect = Select("period", [m1, m2, m3, m4], "October 2023")
+m1 = SelectItem("2023-10", "October 2023")
+m2 = SelectItem("2023-09", "September 2023")
+m3 = SelectItem("2023-08", "August 2023")
+m4 = SelectItem("2023-07", "July 2023")
+formBtn = Buttons([applyBtn])
+applyBtn = Button("View Month", null, "secondary")
+
+downloadButtons = Buttons([dlCsvBtn, dlPdfBtn])
+dlCsvBtn = Button("Download CSV", null, "secondary")
+dlPdfBtn = Button("Download Statement (PDF)", null, "primary")

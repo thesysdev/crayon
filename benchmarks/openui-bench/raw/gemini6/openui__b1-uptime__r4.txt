@@ -1,0 +1,39 @@
+root = Card([header, currentStatusCallout, uptimeSection, recentIncidentCard, followUps])
+
+header = CardHeader("Platform Status", "Real-time system health and service metrics")
+
+currentStatusCallout = Callout("success", "All Systems Operational", "Core API services, database clusters, and edge networks are running without issues.")
+
+uptimeSection = Card([uptimeHeader, uptimeMetrics, uptimeProgress, uptimeChart], "sunk", "column", "m")
+uptimeHeader = Heading("API Availability (This Month)", "h3")
+
+uptimeMetrics = Table([metricCol, valueCol, targetCol])
+metricCol = Col("Metric", ["Current Uptime", "Total Downtime", "Target SLA"])
+valueCol = Col("Value", ["99.94%", "26 mins", "99.90%"])
+targetCol = Col("Status", ["Passing", "Within Budget", "Met"])
+
+uptimeProgress = Progress(99.94, "Monthly API Availability (Goal: 99.90%)")
+
+uptimeChart = LineChart(["Week 1", "Week 2", "Week 3", "Week 4 (Current)"], [uptimeSeries], "natural", "Timeline", "Uptime %")
+uptimeSeries = Series("API Availability", [99.98, 99.85, 99.96, 99.97])
+
+recentIncidentCard = Card([incidentHeader, incidentMeta, incidentSeparator, incidentDescription, incidentTimeline], "card", "column", "s")
+incidentHeader = Heading("Most Recent Incident", "h3")
+
+incidentMeta = Card([incidentBadge, incidentServiceBadge], "clear", "row", "s")
+incidentBadge = Badge("Resolved", "outline")
+incidentServiceBadge = Tag("API Gateway", null, "sm", "neutral")
+
+incidentSeparator = Separator("horizontal", true)
+
+incidentDescription = TextContent("Incident #INC-8492: Elevated latency and intermittent 502 errors observed on authentication endpoints during peak traffic deployment.", "default")
+
+incidentTimeline = ListBlock([incidentItemResolved, incidentItemIdentified, incidentItemStarted])
+incidentItemResolved = ListItem("Resolved", "October 24, 2023 at 14:42 UTC — Hotfix deployed and latency normalized.")
+incidentItemIdentified = ListItem("Identified", "October 24, 2023 at 14:18 UTC — Root cause traced to connection pool exhaustion.")
+incidentItemStarted = ListItem("Investigating", "October 24, 2023 at 14:05 UTC — Automated alerts triggered high error rate notifications.")
+
+followUps = FollowUpBlock([followUp1, followUp2, followUp3])
+followUp1 = FollowUpItem("View past 90 days uptime history")
+followUp2 = FollowUpItem("Subscribe to incident notifications")
+followUp3 = FollowUpItem("View API response time metrics")

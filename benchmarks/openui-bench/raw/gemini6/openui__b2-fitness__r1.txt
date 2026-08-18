@@ -1,0 +1,43 @@
+root = Card([header, mainStats, weekChartSection, logWorkoutSection], "card", "column", "l")
+
+header = CardHeader("Daily Fitness Summary", "Track your activity and log your progress")
+
+mainStats = Card([stepsCard, caloriesCard], "sunk", "row", "m")
+
+stepsCard = Card([stepsTitle, stepsProgress], "card", "column", "s")
+stepsTitle = TextContent("Step Count Today", "large-heavy")
+stepsProgress = Progress(78, "7,800 / 10,000 steps")
+
+caloriesCard = Card([calTitle, calValue, calSub], "card", "column", "xs")
+calTitle = TextContent("Calories Burned", "large-heavy")
+calValue = Heading("640 kcal", "h2")
+calSub = Badge("Active Burn", "secondary")
+
+weekChartSection = Card([chartHeader, weekChart], "sunk", "column", "m")
+chartHeader = CardHeader("Weekly Workout Volume", "Duration in minutes over the past 7 days")
+weekChart = BarChart(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], [durationSeries], "grouped", "Day", "Minutes")
+durationSeries = Series("Workout Duration", [45, 30, 60, 0, 50, 75, 40])
+
+logWorkoutSection = Card([logHeader, workoutForm], "sunk", "column", "m")
+logHeader = CardHeader("Log a New Workout", "Record your latest session")
+
+workoutForm = Form("log_workout", formButtons, [typeControl, durationControl, intensityControl])
+
+typeControl = FormControl("Workout Type", typeSelect)
+typeSelect = Select("workout_type", [typeCardio, typeStrength, typeYoga, typeHIIT], "Select type")
+typeCardio = SelectItem("cardio", "Cardio / Running")
+typeStrength = SelectItem("strength", "Strength Training")
+typeYoga = SelectItem("yoga", "Yoga / Flexibility")
+typeHIIT = SelectItem("hiit", "HIIT")
+
+durationControl = FormControl("Duration (minutes)", durationInput)
+durationInput = Input("duration", "45", "number")
+
+intensityControl = FormControl("Intensity", intensityRadio)
+intensityRadio = RadioGroup("intensity", [intLow, intMed, intHigh], "medium")
+intLow = RadioItem("Low", "Light exertion", "low")
+intMed = RadioItem("Medium", "Moderate effort", "medium")
+intHigh = RadioItem("High", "Maximal effort", "high")
+
+formButtons = Buttons([submitBtn])
+submitBtn = Button("Save Workout", null, "primary")

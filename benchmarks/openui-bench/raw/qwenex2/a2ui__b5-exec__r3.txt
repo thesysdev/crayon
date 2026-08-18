@@ -1,0 +1,403 @@
+Here's your CEO Quarterly Command View — a single-screen dashboard covering all 18 requirements, organized into four tabs with global controls for quarter, region, and export.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": ["header", "controls", "mainTabs"]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "CEO Quarterly Command View",
+        "subtitle": "Q2 2025 · All Regions · Last updated Jun 30, 2025"
+      },
+      {
+        "id": "controls",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "align": "end",
+        "children": ["quarterField", "regionField", "exportBtn"]
+      },
+      {
+        "id": "quarterField",
+        "component": "FormControl",
+        "label": "Quarter",
+        "input": "quarterSelect"
+      },
+      {
+        "id": "quarterSelect",
+        "component": "Select",
+        "name": "quarter",
+        "items": ["q1opt", "q2opt", "q3opt", "q4opt"],
+        "value": "Q2 2025",
+        "size": "small"
+      },
+      {
+        "id": "q1opt",
+        "component": "SelectItem",
+        "value": "Q1 2025",
+        "label": "Q1 2025"
+      },
+      {
+        "id": "q2opt",
+        "component": "SelectItem",
+        "value": "Q2 2025",
+        "label": "Q2 2025"
+      },
+      {
+        "id": "q3opt",
+        "component": "SelectItem",
+        "value": "Q3 2025",
+        "label": "Q3 2025"
+      },
+      {
+        "id": "q4opt",
+        "component": "SelectItem",
+        "value": "Q4 2025",
+        "label": "Q4 2025"
+      },
+      {
+        "id": "regionField",
+        "component": "FormControl",
+        "label": "Region",
+        "input": "regionSelect"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region",
+        "items": ["regAll", "regNA", "regEMEA", "regAPAC"],
+        "value": "all",
+        "size": "small"
+      },
+      {
+        "id": "regAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All Regions"
+      },
+      {
+        "id": "regNA",
+        "component": "SelectItem",
+        "value": "na",
+        "label": "North America"
+      },
+      {
+        "id": "regEMEA",
+        "component": "SelectItem",
+        "value": "emea",
+        "label": "EMEA"
+      },
+      {
+        "id": "regAPAC",
+        "component": "SelectItem",
+        "value": "apac",
+        "label": "APAC"
+      },
+      {
+        "id": "exportBtn",
+        "component": "Button",
+        "label": "Export Board Pack",
+        "variant": "secondary",
+        "size": "small"
+      },
+      {
+        "id": "mainTabs",
+        "component": "Tabs",
+        "items": ["tabFin", "tabOps", "tabGrowth", "tabBoard"]
+      },
+      {
+        "id": "tabFin",
+        "component": "TabItem",
+        "value": "financials",
+        "trigger": "Financials",
+        "content": ["finKpis", "revChart", "costChart", "budgetChart"]
+      },
+      {
+        "id": "finKpis",
+        "component": "Table",
+        "columns": ["finMetric", "finValue", "finDelta"]
+      },
+      {
+        "id": "finMetric",
+        "component": "Col",
+        "label": "Metric",
+        "data": ["Revenue", "Costs", "Profit", "Months of Runway"]
+      },
+      {
+        "id": "finValue",
+        "component": "Col",
+        "label": "Value",
+        "data": ["$48.2M", "$31.7M", "$16.5M", "18 months"]
+      },
+      {
+        "id": "finDelta",
+        "component": "Col",
+        "label": "vs Q1",
+        "data": ["+17.0%", "+8.9%", "+36.4%", "+2 months"]
+      },
+      {
+        "id": "revChart",
+        "component": "BarChart",
+        "labels": ["Q1 '25", "Q2 '25", "Q3 '25 (fc)", "Q4 '25 (fc)"],
+        "series": ["revSeries"],
+        "variant": "grouped",
+        "xLabel": "Quarter",
+        "yLabel": "Revenue ($M)"
+      },
+      {
+        "id": "revSeries",
+        "component": "Series",
+        "category": "Revenue",
+        "values": [41.2, 48.2, 52.8, 58.1]
+      },
+      {
+        "id": "costChart",
+        "component": "BarChart",
+        "labels": ["Q1 '25", "Q2 '25", "Q3 '25 (fc)", "Q4 '25 (fc)"],
+        "series": ["costSeries"],
+        "variant": "grouped",
+        "xLabel": "Quarter",
+        "yLabel": "Costs ($M)"
+      },
+      {
+        "id": "costSeries",
+        "component": "Series",
+        "category": "Costs",
+        "values": [29.1, 31.7, 33.4, 35.2]
+      },
+      {
+        "id": "budgetChart",
+        "component": "BarChart",
+        "labels": ["Engineering", "Sales", "Marketing", "Operations", "G&A"],
+        "series": ["budgetPlan", "budgetActual"],
+        "variant": "grouped",
+        "xLabel": "Department",
+        "yLabel": "Budget ($M)"
+      },
+      {
+        "id": "budgetPlan",
+        "component": "Series",
+        "category": "Plan",
+        "values": [12.0, 8.0, 5.0, 4.0, 3.0]
+      },
+      {
+        "id": "budgetActual",
+        "component": "Series",
+        "category": "Actual",
+        "values": [11.4, 8.6, 4.8, 3.9, 3.1]
+      },
+      {
+        "id": "tabOps",
+        "component": "TabItem",
+        "value": "operations",
+        "trigger": "Operations",
+        "content": ["headcountChart", "risksTable", "initiativesTable"]
+      },
+      {
+        "id": "headcountChart",
+        "component": "HorizontalBarChart",
+        "labels": ["Engineering", "Sales", "Marketing", "Operations", "G&A"],
+        "series": ["hcSeries"],
+        "xLabel": "Headcount",
+        "yLabel": "Department"
+      },
+      {
+        "id": "hcSeries",
+        "component": "Series",
+        "category": "Headcount",
+        "values": [142, 68, 34, 28, 18]
+      },
+      {
+        "id": "risksTable",
+        "component": "Table",
+        "columns": ["riskDesc", "riskOwner", "riskSev"]
+      },
+      {
+        "id": "riskDesc",
+        "component": "Col",
+        "label": "Risk",
+        "data": [
+          "Key enterprise deal at risk ($4.2M ARR)",
+          "Engineering talent attrition (12% annualized)",
+          "Regulatory compliance deadline (GDPR Art. 22)",
+          "Supply chain disruption – APAC hardware"
+        ]
+      },
+      {
+        "id": "riskOwner",
+        "component": "Col",
+        "label": "Owner",
+        "data": ["VP Sales", "CHRO", "General Counsel", "COO"]
+      },
+      {
+        "id": "riskSev",
+        "component": "Col",
+        "label": "Severity",
+        "data": ["High", "High", "Medium", "Medium"]
+      },
+      {
+        "id": "initiativesTable",
+        "component": "Table",
+        "columns": ["initName", "initStatus", "initOwner"]
+      },
+      {
+        "id": "initName",
+        "component": "Col",
+        "label": "Initiative",
+        "data": [
+          "Platform v3.0 Launch",
+          "APAC Market Entry",
+          "Enterprise Upsell Program",
+          "AI-Powered Analytics Module"
+        ]
+      },
+      {
+        "id": "initStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": ["On Track", "At Risk", "On Track", "Delayed"]
+      },
+      {
+        "id": "initOwner",
+        "component": "Col",
+        "label": "Owner",
+        "data": ["CPO", "VP Intl", "VP Sales", "CTO"]
+      },
+      {
+        "id": "tabGrowth",
+        "component": "TabItem",
+        "value": "growth",
+        "trigger": "Growth & Customers",
+        "content": ["growthKpis", "pipelineProgress", "npsProgress"]
+      },
+      {
+        "id": "growthKpis",
+        "component": "Table",
+        "columns": ["growthMetric", "growthValue", "growthDelta"]
+      },
+      {
+        "id": "growthMetric",
+        "component": "Col",
+        "label": "Metric",
+        "data": ["Sales Pipeline Value", "Win Rate", "Customer Count", "Monthly Churn Rate", "NPS Score"]
+      },
+      {
+        "id": "growthValue",
+        "component": "Col",
+        "label": "Value",
+        "data": ["$12.4M", "34%", "1,247", "3.2%", "62"]
+      },
+      {
+        "id": "growthDelta",
+        "component": "Col",
+        "label": "vs Q1",
+        "data": ["+22%", "+3pp", "+89 net new", "-0.4pp", "+5 pts"]
+      },
+      {
+        "id": "pipelineProgress",
+        "component": "Progress",
+        "label": "Pipeline vs Target ($15M)",
+        "value": 82.7
+      },
+      {
+        "id": "npsProgress",
+        "component": "Progress",
+        "label": "NPS vs Target (70)",
+        "value": 88.6
+      },
+      {
+        "id": "tabBoard",
+        "component": "TabItem",
+        "value": "board",
+        "trigger": "Board Prep",
+        "content": ["boardAlert", "boardList"]
+      },
+      {
+        "id": "boardAlert",
+        "component": "Alert",
+        "title": "Next Board Meeting",
+        "description": "July 18, 2025 · 9:00 AM PT · Virtual",
+        "variant": "info"
+      },
+      {
+        "id": "boardList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": ["board1", "board2", "board3", "board4", "board5"]
+      },
+      {
+        "id": "board1",
+        "component": "ListItem",
+        "title": "Approve Series D term sheet",
+        "subtitle": "Lead: CFO · Decision required"
+      },
+      {
+        "id": "board2",
+        "component": "ListItem",
+        "title": "Review APAC market entry strategy",
+        "subtitle": "Lead: VP Intl · Info + discussion"
+      },
+      {
+        "id": "board3",
+        "component": "ListItem",
+        "title": "Engineering retention plan",
+        "subtitle": "Lead: CHRO · Approval requested"
+      },
+      {
+        "id": "board4",
+        "component": "ListItem",
+        "title": "Q3 hiring plan & budget amendment",
+        "subtitle": "Lead: COO · Decision required"
+      },
+      {
+        "id": "board5",
+        "component": "ListItem",
+        "title": "Regulatory compliance update (GDPR)",
+        "subtitle": "Lead: General Counsel · Info"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+**Coverage checklist:**
+
+| # | Requirement | Where |
+|---|---|---|
+| 1 | Revenue | Financials tab → KPI table |
+| 2 | Costs | Financials tab → KPI table |
+| 3 | Profit | Financials tab → KPI table |
+| 4 | Revenue over 4 quarters | Financials tab → Bar chart |
+| 5 | Costs over 4 quarters | Financials tab → Bar chart |
+| 6 | Budget by dept vs plan | Financials tab → Grouped bar chart |
+| 7 | Headcount by dept | Operations tab → Horizontal bar chart |
+| 8 | Top risks + owner | Operations tab → Table |
+| 9 | Strategic initiatives + status | Operations tab → Table |
+| 10 | Months of runway | Financials tab → KPI table |
+| 11 | Sales pipeline value | Growth tab → KPI table + progress bar |
+| 12 | Win rate | Growth tab → KPI table |
+| 13 | Customer count & churn | Growth tab → KPI table |
+| 14 | NPS | Growth tab → KPI table + progress bar |
+| 15 | Board meeting items | Board Prep tab → Numbered list |
+| 16 | Change quarter | Top controls → Quarter select |
+| 17 | Focus on region | Top controls → Region select |
+| 18 | Export the pack | Top controls → "Export Board Pack" button |

@@ -1,0 +1,303 @@
+Here's the logistics coordinator board, covering all 9 items:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "refreshed",
+          "alert",
+          "kpis",
+          "shipmentsTable",
+          "carrierSplit",
+          "weeklyVolume",
+          "searchForm",
+          "flagForm"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Logistics Coordinator Board",
+        "subtitle": "Live shipment operations overview"
+      },
+      {
+        "id": "refreshed",
+        "component": "Badge",
+        "text": "Last refreshed: Today, 09:42 UTC",
+        "variant": "outline"
+      },
+      {
+        "id": "alert",
+        "component": "Alert",
+        "title": "2 delayed shipments",
+        "description": "SHP-1042 (Chicago → Denver) delayed 14h due to weather. SHP-1057 (Atlanta → Miami) delayed 6h due to carrier breakdown.",
+        "variant": "warning"
+      },
+      {
+        "id": "kpis",
+        "component": "Table",
+        "columns": [
+          "kpiName",
+          "kpiValue"
+        ]
+      },
+      {
+        "id": "kpiName",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "On-time % (this month)",
+          "Avg cost per shipment",
+          "Active shipments",
+          "Delayed shipments"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "94.2%",
+          "$1,284",
+          "38",
+          "2"
+        ]
+      },
+      {
+        "id": "shipmentsTable",
+        "component": "Table",
+        "columns": [
+          "colId",
+          "colOrigin",
+          "colDest",
+          "colEta",
+          "colStatus"
+        ]
+      },
+      {
+        "id": "colId",
+        "component": "Col",
+        "label": "Shipment",
+        "data": [
+          "SHP-1041",
+          "SHP-1042",
+          "SHP-1049",
+          "SHP-1057",
+          "SHP-1063"
+        ]
+      },
+      {
+        "id": "colOrigin",
+        "component": "Col",
+        "label": "Origin",
+        "data": [
+          "Seattle",
+          "Chicago",
+          "Dallas",
+          "Atlanta",
+          "Phoenix"
+        ]
+      },
+      {
+        "id": "colDest",
+        "component": "Col",
+        "label": "Destination",
+        "data": [
+          "Portland",
+          "Denver",
+          "Houston",
+          "Miami",
+          "San Diego"
+        ]
+      },
+      {
+        "id": "colEta",
+        "component": "Col",
+        "label": "ETA",
+        "data": [
+          "Jun 12, 14:00",
+          "Jun 13, 09:30",
+          "Jun 12, 18:15",
+          "Jun 14, 07:45",
+          "Jun 12, 22:00"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "In transit",
+          "Delayed",
+          "In transit",
+          "Delayed",
+          "In transit"
+        ]
+      },
+      {
+        "id": "carrierSplit",
+        "component": "PieChart",
+        "labels": [
+          "FastFreight",
+          "RoadRunner",
+          "BlueHaul",
+          "Other"
+        ],
+        "values": [
+          42,
+          31,
+          18,
+          9
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "weeklyVolume",
+        "component": "BarChart",
+        "labels": [
+          "W1",
+          "W2",
+          "W3",
+          "W4",
+          "W5",
+          "W6",
+          "W7",
+          "W8"
+        ],
+        "series": [
+          "volSeries"
+        ],
+        "xLabel": "Week (past 2 months)",
+        "yLabel": "Shipments"
+      },
+      {
+        "id": "volSeries",
+        "component": "Series",
+        "category": "Weekly volume",
+        "values": [
+          120,
+          135,
+          128,
+          142,
+          150,
+          138,
+          161,
+          149
+        ]
+      },
+      {
+        "id": "searchForm",
+        "component": "Form",
+        "name": "route-search",
+        "buttons": "searchButtons",
+        "fields": [
+          "routeField"
+        ]
+      },
+      {
+        "id": "routeField",
+        "component": "FormControl",
+        "label": "Search by route",
+        "input": "routeInput",
+        "hint": "e.g. Chicago → Denver"
+      },
+      {
+        "id": "routeInput",
+        "component": "Input",
+        "name": "route",
+        "placeholder": "Origin → Destination"
+      },
+      {
+        "id": "searchButtons",
+        "component": "Buttons",
+        "buttons": [
+          "searchBtn"
+        ]
+      },
+      {
+        "id": "searchBtn",
+        "component": "Button",
+        "label": "Search",
+        "variant": "primary"
+      },
+      {
+        "id": "flagForm",
+        "component": "Form",
+        "name": "flag-shipment",
+        "buttons": "flagButtons",
+        "fields": [
+          "flagIdField",
+          "flagReasonField"
+        ]
+      },
+      {
+        "id": "flagIdField",
+        "component": "FormControl",
+        "label": "Flag a shipment",
+        "input": "flagIdInput",
+        "hint": "Enter shipment ID to flag for review"
+      },
+      {
+        "id": "flagIdInput",
+        "component": "Input",
+        "name": "shipment_id",
+        "placeholder": "e.g. SHP-1042"
+      },
+      {
+        "id": "flagReasonField",
+        "component": "FormControl",
+        "label": "Reason",
+        "input": "flagReasonInput"
+      },
+      {
+        "id": "flagReasonInput",
+        "component": "TextArea",
+        "name": "reason",
+        "placeholder": "Why is this shipment being flagged?",
+        "rows": 2
+      },
+      {
+        "id": "flagButtons",
+        "component": "Buttons",
+        "buttons": [
+          "flagBtn"
+        ]
+      },
+      {
+        "id": "flagBtn",
+        "component": "Button",
+        "label": "Flag shipment",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+Coverage of each item:
+1. **Shipments in transit** — table with origin, destination, ETA, and status per shipment
+2. **Delayed shipments** — warning alert calling out SHP-1042 and SHP-1057 with causes
+3. **On-time %** — 94.2% in the KPI table
+4. **Volume by carrier** — donut chart split across FastFreight, RoadRunner, BlueHaul, Other
+5. **Search by route** — route search form
+6. **Avg cost per shipment** — $1,284 in the KPI table
+7. **Weekly volume (2 months)** — 8-week bar chart
+8. **Flag a shipment** — flag form with shipment ID and reason
+9. **Last refreshed** — badge showing "Today, 09:42 UTC"

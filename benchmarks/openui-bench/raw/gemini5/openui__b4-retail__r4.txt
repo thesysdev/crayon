@@ -1,0 +1,115 @@
+root = Card([header, storeInfo, kpiRow, mainTabs, followUp])
+
+header = CardHeader("Daily Store Console", "Store #104 - Downtown Flagship | Live Dashboard")
+
+storeInfo = Card([storeSelector, alertBanner], "sunk", "row", "m", "center", "between")
+storeSelector = Form("store-select", switchStoreBtn, [storeField])
+storeField = FormControl("Location", storeSelect)
+storeSelect = Select("store_id", [st1, st2, st3, st4], "Select Location", null, "104")
+st1 = SelectItem("104", "Store #104 - Downtown Flagship")
+st2 = SelectItem("105", "Store #105 - Westside Mall")
+st3 = SelectItem("108", "Store #108 - Northside Plaza")
+st4 = SelectItem("112", "Store #112 - Metro Center")
+switchStoreBtn = Buttons([switchBtn])
+switchBtn = Button("Switch Store", null, "secondary", "normal", "small")
+alertBanner = Badge("Live Sync Active", "outline")
+
+kpiRow = Card([salesProgressCard, basketCard, returnsCard], "clear", "row", "m", "stretch", "between")
+
+salesProgressCard = Card([salesProgressHeader, salesProgress], "card", "column", "s")
+salesProgressHeader = CardHeader("$14,250 / $18,000", "Daily Sales Target (79% Achieved)")
+salesProgress = Progress(79, "Sales vs Target")
+
+basketCard = Card([basketHeader, basketBadge], "card", "column", "s")
+basketHeader = CardHeader("$68.50", "Average Basket Size Today")
+basketBadge = Badge("+5.2% vs Yesterday", "secondary")
+
+returnsCard = Card([returnsHeader, returnsBadge], "card", "column", "s")
+returnsHeader = CardHeader("42 Units ($1,840)", "Returns This Week")
+returnsBadge = Badge("-12% vs Last Week", "default")
+
+mainTabs = Tabs([overviewTab, operationsTab, inventoryTab])
+
+overviewTab = TabItem("overview", "Overview & Comparison", [overviewCard])
+overviewCard = Card([compHeader, compChart, trafficHeader, trafficChart, promoHeader, promoTable], "clear", "column", "m")
+
+compHeader = CardHeader("This Week vs Last Week Performance", "Daily revenue comparison in USD")
+compChart = GroupedBarChart(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], [thisWeekSeries, lastWeekSeries], "grouped", "Day of Week", "Revenue ($)")
+thisWeekSeries = Series("This Week", [12400, 13800, 14250, 0, 0, 0, 0])
+lastWeekSeries = Series("Last Week", [11200, 12900, 13100, 14500, 16800, 19200, 15400])
+
+trafficHeader = CardHeader("Foot Traffic Through the Day", "Hourly customer count in-store")
+trafficChart = AreaChart(["8 AM", "10 AM", "12 PM", "2 PM", "4 PM", "6 PM", "8 PM"], [trafficSeries], "natural", "Hour", "Visitors")
+trafficSeries = Series("Foot Traffic", [45, 120, 280, 210, 310, 240, 95])
+
+promoHeader = CardHeader("Running Promotions Performance", "Real-time campaign uplift and redemption tracking")
+promoTable = Table([promoName, promoRedeemed, promoSales, promoStatus])
+promoName = Col("Promotion Name", ["Spring Apparel BOGO", "Tech clearance 20%", "Coffee Combo $5", "Loyalty Bonus 2x"])
+promoRedeemed = Col("Redemptions", [142, 89, 215, 310])
+promoSales = Col("Revenue Generated", ["$4,260", "$3,560", "$1,075", "$8,680"])
+promoStatus = Col("Status", ["Active", "Active", "Ending Today", "Active"])
+
+operationsTab = TabItem("operations", "Registers & Staff", [opsCard])
+opsCard = Card([registersHeader, registersTable, staffHeader, staffList], "clear", "column", "m")
+
+registersHeader = CardHeader("Register Status", "Live status of point-of-sale terminals")
+registersTable = Table([regId, regCashier, regStatus, regTxCount])
+regId = Col("Register #", ["Reg 01 - Main", "Reg 02 - Main", "Reg 03 - Express", "Reg 04 - Express", "Reg 05 - Returns"])
+regCashier = Col("Assigned Cashier", ["Sarah T.", "Michael R.", "Unassigned", "Elena P.", "David K."])
+regStatus = Col("Status", ["OPEN", "OPEN", "CLOSED", "OPEN", "OPEN"])
+regTxCount = Col("Transactions Today", [112, 98, 0, 145, 42])
+
+staffHeader = CardHeader("Who is On Shift Today", "Scheduled staff and shift hours")
+staffList = ListBlock([staff1, staff2, staff3, staff4, staff5])
+staff1 = ListItem("Sarah T. - Shift Lead", "08:00 AM - 04:00 PM | Floor / Reg 01")
+staff2 = ListItem("Michael R. - Associate", "08:00 AM - 04:00 PM | Reg 02")
+staff3 = ListItem("Elena P. - Associate", "10:00 AM - 06:00 PM | Reg 04 / Customer Service")
+staff4 = ListItem("David K. - Cashier", "12:00 PM - 08:00 PM | Reg 05 Returns Desk")
+staff5 = ListItem("Marcus L. - Stockroom", "07:00 AM - 03:00 PM | Inventory & Logistics")
+
+inventoryTab = TabItem("inventory", "Best Sellers & Out of Stock", [inventoryCard])
+inventoryCard = Card([bestSellersHeader, bestSellersTable, separator1, oosHeader, oosTable, reorderFormCard], "clear", "column", "m")
+
+bestSellersHeader = CardHeader("Top Best Sellers Today", "Units sold and revenue by item")
+bestSellersTable = Table([bsRank, bsItem, bsCategory, bsUnits, bsRevenue])
+bsRank = Col("Rank", [1, 2, 3, 4, 5])
+bsItem = Col("Product Name", ["Organic Dark Roast Coffee 12oz", "Wireless Noise-Canceling Earbuds", "Cotton Everyday Crew Tee - L", "Stainless Steel Water Bottle 32oz", "Avocado Toast To-Go Box"])
+bsCategory = Col("Category", ["Grocery", "Electronics", "Apparel", "Home", "Fresh Food"])
+bsUnits = Col("Units Sold", [84, 42, 39, 31, 28])
+bsRevenue = Col("Total Revenue", ["$1,008.00", "$3,780.00", "$780.00", "$620.00", "$252.00"])
+
+separator1 = Separator("horizontal")
+
+oosHeader = CardHeader("Items Out of Stock", "Requires immediate reorder")
+oosTable = Table([oosSku, oosItem, oosCat, oosMin, oosStatus])
+oosSku = Col("SKU", ["SKU-8821", "SKU-4402", "SKU-1093", "SKU-6629"])
+oosItem = Col("Product Name", ["Gluten-Free Almond Granola", "USB-C Fast Charger 65W", "Denim Jacket - Medium", "Sparkling Water Peach 12pk"])
+oosCat = Col("Category", ["Pantry", "Electronics", "Apparel", "Beverages"])
+oosMin = Col("Min Stock Threshold", [15, 10, 8, 20])
+oosStatus = Col("Stock Level", [0, 0, 0, 0])
+
+reorderFormCard = Card([reorderHeader, reorderForm], "sunk", "column", "s")
+reorderHeader = CardHeader("Quick Reorder Item", "Submit a stock transfer or supplier purchase order")
+reorderForm = Form("reorder-form", reorderButtons, [itemControl, qtyControl, supplierControl])
+itemControl = FormControl("Select Out-of-Stock Item", itemSelect)
+itemSelect = Select("reorder_sku", [opt1, opt2, opt3, opt4], "Choose item to reorder")
+opt1 = SelectItem("SKU-8821", "SKU-8821 - Gluten-Free Almond Granola")
+opt2 = SelectItem("SKU-4402", "SKU-4402 - USB-C Fast Charger 65W")
+opt3 = SelectItem("SKU-1093", "SKU-1093 - Denim Jacket - Medium")
+opt4 = SelectItem("SKU-6629", "SKU-6629 - Sparkling Water Peach 12pk")
+
+qtyControl = FormControl("Order Quantity", qtyInput)
+qtyInput = Input("order_qty", "50", "number")
+
+supplierControl = FormControl("Delivery Preference", supplierSelect)
+supplierSelect = Select("delivery_type", [del1, del2], "Select fulfillment speed")
+del1 = SelectItem("express", "Express Distribution Center (Tomorrow AM)")
+del2 = SelectItem("standard", "Standard Direct Supplier (2-3 Days)")
+
+reorderButtons = Buttons([submitReorderBtn])
+submitReorderBtn = Button("Submit Reorder Request", null, "primary")
+
+followUp = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("View hourly sales breakdown for Register 01")
+f2 = FollowUpItem("Generate inventory replenishment report")
+f3 = FollowUpItem("Schedule staff shift changes for tomorrow")

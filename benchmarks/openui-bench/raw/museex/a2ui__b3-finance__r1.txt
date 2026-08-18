@@ -1,0 +1,435 @@
+Single-screen month-end finance view with runway, burn, and high-value transaction review:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "controlsCard",
+          "kpiRow",
+          "alertRunway",
+          "expensesCard",
+          "transactionsCard",
+          "separator",
+          "followUpBlock"
+        ],
+        "gap": "l",
+        "direction": "column"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Month-End Finance — May 2026",
+        "subtitle": "Cash, burn, runway and spend breakdown for the startup"
+      },
+      {
+        "id": "controlsCard",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "align": "end",
+        "justify": "between",
+        "gap": "m",
+        "children": [
+          "monthFormControl",
+          "downloadButtons"
+        ]
+      },
+      {
+        "id": "monthFormControl",
+        "component": "FormControl",
+        "label": "View different month",
+        "hint": "Switch statement period",
+        "input": "monthSelect"
+      },
+      {
+        "id": "monthSelect",
+        "component": "Select",
+        "name": "statement_month",
+        "placeholder": "Choose month",
+        "value": "2026-05",
+        "items": [
+          "monthOptMar",
+          "monthOptApr",
+          "monthOptMay",
+          "monthOptJun"
+        ]
+      },
+      {
+        "id": "monthOptMar",
+        "component": "SelectItem",
+        "value": "2026-03",
+        "label": "March 2026"
+      },
+      {
+        "id": "monthOptApr",
+        "component": "SelectItem",
+        "value": "2026-04",
+        "label": "April 2026"
+      },
+      {
+        "id": "monthOptMay",
+        "component": "SelectItem",
+        "value": "2026-05",
+        "label": "May 2026 — Current"
+      },
+      {
+        "id": "monthOptJun",
+        "component": "SelectItem",
+        "value": "2026-06",
+        "label": "June 2026 (Forecast)"
+      },
+      {
+        "id": "downloadButtons",
+        "component": "Buttons",
+        "buttons": [
+          "downloadBtn",
+          "exportBtn"
+        ]
+      },
+      {
+        "id": "downloadBtn",
+        "component": "Button",
+        "label": "Download Statement (PDF)",
+        "variant": "primary"
+      },
+      {
+        "id": "exportBtn",
+        "component": "Button",
+        "label": "Export CSV",
+        "variant": "secondary"
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "cashCard",
+          "burnCard",
+          "runwayCard"
+        ]
+      },
+      {
+        "id": "cashCard",
+        "component": "Card",
+        "children": [
+          "cashHeader",
+          "cashValue",
+          "cashBadge"
+        ],
+        "gap": "xs"
+      },
+      {
+        "id": "cashHeader",
+        "component": "CardHeader",
+        "title": "Cash on Hand",
+        "subtitle": "Total bank balance as of May 31"
+      },
+      {
+        "id": "cashValue",
+        "component": "TextContent",
+        "text": "$1,420,000",
+        "size": "large-heavy"
+      },
+      {
+        "id": "cashBadge",
+        "component": "Badge",
+        "text": "↑ $42k vs April",
+        "variant": "secondary"
+      },
+      {
+        "id": "burnCard",
+        "component": "Card",
+        "children": [
+          "burnHeader",
+          "burnValue",
+          "burnBadge"
+        ],
+        "gap": "xs"
+      },
+      {
+        "id": "burnHeader",
+        "component": "CardHeader",
+        "title": "Monthly Burn",
+        "subtitle": "May 2026 net outflow"
+      },
+      {
+        "id": "burnValue",
+        "component": "TextContent",
+        "text": "$118,500",
+        "size": "large-heavy"
+      },
+      {
+        "id": "burnBadge",
+        "component": "Badge",
+        "text": "↓ 4.2% vs April",
+        "variant": "outline"
+      },
+      {
+        "id": "runwayCard",
+        "component": "Card",
+        "children": [
+          "runwayHeader",
+          "runwayValue",
+          "runwayProgress",
+          "runwayBadge"
+        ],
+        "gap": "xs"
+      },
+      {
+        "id": "runwayHeader",
+        "component": "CardHeader",
+        "title": "Months of Runway",
+        "subtitle": "Cash on hand / Monthly burn"
+      },
+      {
+        "id": "runwayValue",
+        "component": "TextContent",
+        "text": "12.0 months",
+        "size": "large-heavy"
+      },
+      {
+        "id": "runwayProgress",
+        "component": "Progress",
+        "value": 66,
+        "label": "12 of 18 month target"
+      },
+      {
+        "id": "runwayBadge",
+        "component": "Badge",
+        "text": "Healthy — >12 month buffer",
+        "variant": "secondary"
+      },
+      {
+        "id": "alertRunway",
+        "component": "Alert",
+        "title": "Runway status: Stable",
+        "description": "At current burn ($118.5k/mo), cash lasts until May 2027. Fundraise window opens in ~6 months.",
+        "variant": "success"
+      },
+      {
+        "id": "expensesCard",
+        "component": "Card",
+        "children": [
+          "expensesHeader",
+          "expensesGrid"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "expensesHeader",
+        "component": "CardHeader",
+        "title": "Expenses Split by Category",
+        "subtitle": "May burn breakdown — $118,500 total"
+      },
+      {
+        "id": "expensesGrid",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "l",
+        "align": "start",
+        "children": [
+          "pieChart",
+          "expensesTable"
+        ]
+      },
+      {
+        "id": "pieChart",
+        "component": "PieChart",
+        "labels": [
+          "Salaries",
+          "Cloud Infra",
+          "Insurance",
+          "Marketing",
+          "Legal",
+          "Other"
+        ],
+        "values": [
+          58000,
+          18200,
+          14300,
+          12500,
+          11800,
+          3700
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "expensesTable",
+        "component": "Table",
+        "columns": [
+          "expCatCol",
+          "expAmountCol",
+          "expShareCol"
+        ]
+      },
+      {
+        "id": "expCatCol",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Salaries",
+          "Cloud Infra (AWS/GCP)",
+          "Insurance (Annual)",
+          "Marketing",
+          "Legal — Series A",
+          "Other"
+        ]
+      },
+      {
+        "id": "expAmountCol",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "$58,000",
+          "$18,200",
+          "$14,300",
+          "$12,500",
+          "$11,800",
+          "$3,700"
+        ]
+      },
+      {
+        "id": "expShareCol",
+        "component": "Col",
+        "label": "Share",
+        "data": [
+          "48.9%",
+          "15.4%",
+          "12.1%",
+          "10.5%",
+          "10.0%",
+          "3.1%"
+        ]
+      },
+      {
+        "id": "transactionsCard",
+        "component": "Card",
+        "children": [
+          "transHeader",
+          "transTable",
+          "transFooter"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "transHeader",
+        "component": "CardHeader",
+        "title": "Transactions Above $10,000 — May 2026",
+        "subtitle": "5 transactions flagged for review (threshold > $10,000)"
+      },
+      {
+        "id": "transTable",
+        "component": "Table",
+        "columns": [
+          "transDateCol",
+          "transDescCol",
+          "transCatCol",
+          "transAmountCol"
+        ]
+      },
+      {
+        "id": "transDateCol",
+        "component": "Col",
+        "label": "Date",
+        "data": [
+          "2026-05-03",
+          "2026-05-07",
+          "2026-05-12",
+          "2026-05-22",
+          "2026-05-28"
+        ]
+      },
+      {
+        "id": "transDescCol",
+        "component": "Col",
+        "label": "Description",
+        "data": [
+          "Payroll — Salaries",
+          "AWS / GCP — Cloud Infra",
+          "Annual Insurance Premium",
+          "Marketing Agency Retainer",
+          "Legal — Series A Prep (Cooley LLP)"
+        ]
+      },
+      {
+        "id": "transCatCol",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Salaries",
+          "Cloud Infra",
+          "Insurance",
+          "Marketing",
+          "Legal"
+        ]
+      },
+      {
+        "id": "transAmountCol",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "$58,000.00",
+          "$18,200.00",
+          "$14,300.00",
+          "$12,500.00",
+          "$11,800.00"
+        ]
+      },
+      {
+        "id": "transFooter",
+        "component": "TextContent",
+        "text": "Showing 5 of 5 transactions > $10,000. Total flagged: $114,800 (96.9% of May burn). Remaining 18 transactions under threshold hidden.",
+        "size": "small"
+      },
+      {
+        "id": "separator",
+        "component": "Separator"
+      },
+      {
+        "id": "followUpBlock",
+        "component": "FollowUpBlock",
+        "items": [
+          "follow1",
+          "follow2",
+          "follow3"
+        ]
+      },
+      {
+        "id": "follow1",
+        "component": "FollowUpItem",
+        "text": "Forecast runway if burn increases 20%?"
+      },
+      {
+        "id": "follow2",
+        "component": "FollowUpItem",
+        "text": "Show April vs May expense comparison"
+      },
+      {
+        "id": "follow3",
+        "component": "FollowUpItem",
+        "text": "Email this statement to investors"
+      }
+    ]
+  }
+}
+</a2ui-json>

@@ -1,0 +1,45 @@
+root = Card([header, alerts, kpis, capacity, genSplit, plants, outages, forecast, maintenance, controls])
+header = CardHeader("Grid Operations Console", "Real-time network status")
+
+alerts = Alert("Frequency deviation on Line 7", "Detected 49.82 Hz, auto-correction engaged", "warning")
+
+kpis = Table([kpiMetric, kpiValue])
+kpiMetric = Col("Metric", ["Current Load", "Price / MWh", "Emissions Today"])
+kpiValue = Col("Value", ["32,480 MW", "$58.40", "18,240 tCO2"])
+
+capacity = Progress(81, "Network Capacity: 32,480 / 40,000 MW")
+
+genSplit = PieChart(["Gas", "Nuclear", "Wind", "Solar", "Hydro", "Coal"], [11200, 8600, 5400, 3200, 2680, 1400], "donut")
+
+plants = Table([plantName, plantOutput, plantStatus])
+plantName = Col("Plant", ["Ravenswood Gas", "Indian Point Nuclear", "Maple Ridge Wind", "Desert Sun Solar", "Niagara Hydro", "Ashford Coal"])
+plantOutput = Col("Output (MW)", [11200, 8600, 5400, 3200, 2680, 1400], "number")
+plantStatus = Col("Status", ["Online", "Online", "Online", "Curtailed", "Online", "Offline"])
+
+outages = ListBlock([outage1, outage2, outage3])
+outage1 = ListItem("Ashford Coal Unit 2", "Region: Southwest — Forced outage, turbine fault")
+outage2 = ListItem("Feeder Line 14", "Region: Coastal North — Storm damage, crews dispatched")
+outage3 = ListItem("Substation B7", "Region: Central — Transformer overheating")
+
+forecast = LineChart(["00h", "04h", "08h", "12h", "16h", "20h", "24h"], [demandSeries], "natural", "Hour", "MW")
+demandSeries = Series("Forecast Demand", [28400, 26800, 31200, 35600, 34800, 38200, 30100])
+
+maintenance = SectionBlock([maintSection])
+maintSection = SectionItem("maint", "Planned Maintenance This Month", [maintList])
+maintList = ListBlock([maint1, maint2, maint3])
+maint1 = ListItem("Niagara Hydro Turbine 3", "Mar 8-10 — Scheduled inspection")
+maint2 = ListItem("Maple Ridge Wind Array C", "Mar 15 — Blade servicing")
+maint3 = ListItem("Indian Point Cooling Loop", "Mar 22-24 — Valve replacement")
+
+controls = Card([regionControl, curtailControl])
+regionControl = Form("region-focus", regionButtons, [regionField])
+regionField = FormControl("Focus Region", regionSelect)
+regionSelect = Select("region", [regNE, regSW, regCoastal, regCentral], "Select a region")
+regNE = SelectItem("ne", "Northeast")
+regSW = SelectItem("sw", "Southwest")
+regCoastal = SelectItem("coastal", "Coastal North")
+regCentral = SelectItem("central", "Central")
+regionButtons = Buttons([applyRegionBtn])
+applyRegionBtn = Button("Focus Region", null, "secondary")
+
+curtailControl = AlertDialogBlock("Order Curtailment", "Confirm Curtailment Order", "This will reduce generation output across selected sources. Confirm to proceed.", "Order Curtailment", "Cancel", "destructive")

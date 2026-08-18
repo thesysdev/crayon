@@ -1,0 +1,91 @@
+root = Card([header, periodFilter, kpiRow1, kpiRow2, mainContentRow, customerSectionsRow, risksAndPaymentsRow, featureAndNpsRow, followUp], "card", "column", "l")
+
+header = CardHeader("SaaS Executive Admin Overview", "Platform health, revenue metrics, and customer analytics")
+
+periodFilter = Card([periodLabel, periodSelect, inviteAdminDrawer], "sunk", "row", "m", "center", "between")
+periodLabel = TextContent("Reporting Period:", "small-heavy")
+periodSelect = Select("reporting_period", [p30, p90, p365], "Select Period", null, "90d", "small")
+p30 = SelectItem("30d", "Last 30 Days")
+p90 = SelectItem("90d", "Last 90 Days")
+p365 = SelectItem("1y", "Last 12 Months")
+
+inviteAdminDrawer = DrawerBlock("Invite Admin", "Invite New Admin User", "Grant administrative access to a team member.", [inviteForm])
+inviteForm = Form("invite_admin_form", inviteButtons, [emailControl, roleControl])
+emailControl = FormControl("Work Email", emailInput)
+emailInput = Input("admin_email", "colleague@company.com", "email")
+roleControl = FormControl("Admin Role", roleSelect)
+roleSelect = Select("admin_role", [roleOps, roleBilling, roleSuper], "Select role")
+roleOps = SelectItem("ops", "Operations Admin")
+roleBilling = SelectItem("billing", "Billing Admin")
+roleSuper = SelectItem("super", "Super Admin")
+inviteButtons = Buttons([sendInviteBtn])
+sendInviteBtn = Button("Send Invitation", null, "primary")
+
+kpiRow1 = Card([mrrCard, arrCard, churnCard], "clear", "row", "m")
+mrrCard = Card([mrrHeader, mrrTag], "sunk", "column", "s")
+mrrHeader = CardHeader("$148,500", "Monthly Recurring Revenue (+8.2%)")
+mrrTag = Tag("MRR On Track", null, "sm", "success")
+
+arrCard = Card([arrHeader, arrTag], "sunk", "column", "s")
+arrHeader = CardHeader("$1,782,000", "Annual Recurring Revenue (+14.5% YoY)")
+arrTag = Tag("ARR Growth High", null, "sm", "success")
+
+churnCard = Card([churnHeader, churnTag], "sunk", "column", "s")
+churnHeader = CardHeader("1.4%", "MRR Churn This Month ($2,100)")
+churnTag = Tag("Within Target (<2%)", null, "sm", "info")
+
+kpiRow2 = Card([npsCard, seatUtilCard], "clear", "row", "m")
+npsCard = Card([npsHeader, npsTag], "sunk", "column", "s")
+npsHeader = CardHeader("+58 NPS", "Current Net Promoter Score (n=412)")
+npsTag = Tag("Excellent (Target >50)", null, "sm", "success")
+
+seatUtilCard = Card([seatUtilHeader, seatUtilProgress], "sunk", "column", "s")
+seatUtilHeader = CardHeader("84% Seat Utilization", "14,280 assigned of 17,000 paid seats")
+seatUtilProgress = Progress(84, "Global Seat Allocation")
+
+mainContentRow = Card([signupsCard, planSplitCard], "clear", "row", "m")
+
+signupsCard = Card([signupsTitle, signupsChart], "sunk", "column", "m")
+signupsTitle = Heading("New Signups (Past 90 Days)", "h3")
+signupsChart = AreaChart(["Month 1", "Month 2", "Month 3"], [signupsSeries], "natural", "Timeline", "Signups")
+signupsSeries = Series("Signups", [340, 410, 520])
+
+planSplitCard = Card([planSplitTitle, planSplitChart], "sunk", "column", "m")
+planSplitTitle = Heading("Customers Split by Plan", "h3")
+planSplitChart = PieChart(["Starter", "Professional", "Enterprise"], [180, 420, 95], "donut")
+
+customerSectionsRow = Card([topCustomersCard], "clear", "column", "m")
+topCustomersCard = Card([topCustomersTitle, topCustomersTable], "sunk", "column", "m")
+topCustomersTitle = Heading("Top 10 Largest Customers", "h3")
+topCustomersTable = Table([colCompany, colPlan, colSeats, colArr])
+colCompany = Col("Customer Name", ["Acme Corp", "TechNova", "GlobalLogistics", "Apex Media", "CloudScale", "BioHealth Systems", "FinTech Dynamics", "OmniRetail", "CyberShield", "DataSphere"])
+colPlan = Col("Plan", ["Enterprise", "Enterprise", "Enterprise", "Enterprise", "Enterprise", "Professional", "Enterprise", "Professional", "Enterprise", "Professional"])
+colSeats = Col("Active Seats", [1200, 950, 850, 720, 680, 540, 500, 480, 450, 410])
+colArr = Col("Annual Spend", ["$144,000", "$114,000", "$102,000", "$86,400", "$81,600", "$64,800", "$60,000", "$57,600", "$54,000", "$49,200"])
+
+risksAndPaymentsRow = Card([atRiskCard, failedPaymentsCard], "clear", "row", "m")
+
+atRiskCard = Card([atRiskTitle, atRiskList], "sunk", "column", "m")
+atRiskTitle = Heading("Accounts at Risk", "h3")
+atRiskList = ListBlock([riskItem1, riskItem2, riskItem3])
+riskItem1 = ListItem("Hyperion Soft ($48k ARR)", "Low seat utilization (<20%) & executive sponsor departed")
+riskItem2 = ListItem("Vanguard Labs ($36k ARR)", "3 open priority support tickets unresolved >14 days")
+riskItem3 = ListItem("Nexis Media ($24k ARR)", "Contract renewal in 30 days, zero login activity this week")
+
+failedPaymentsCard = Card([failedPaymentsTitle, failedPaymentsList], "sunk", "column", "m")
+failedPaymentsTitle = Heading("Failed Payments", "h3")
+failedPaymentsList = ListBlock([failItem1, failItem2, failItem3])
+failItem1 = ListItem("Starlight Inc - $4,200", "Card Expired (Attempt 2 failed)", null, "Retry Payment")
+failItem2 = ListItem("Pulse Analytics - $1,800", "Insufficient Funds", null, "Retry Payment")
+failItem3 = ListItem("Krypton Systems - $850", "Generic Payment Gateway Error", null, "Retry Payment")
+
+featureAndNpsRow = Card([featureAdoptionCard], "clear", "column", "m")
+featureAdoptionCard = Card([featureTitle, featureChart], "sunk", "column", "m")
+featureTitle = Heading("Adoption of Newest Features (% Active Accounts)", "h3")
+featureChart = HorizontalBarChart(["AI Copilot Studio", "Workflow Automation v2", "SSO & SAML Security"], [featureSeries], "grouped", "Adoption Rate (%)", "Feature")
+featureSeries = Series("Adoption %", [68, 45, 82])
+
+followUp = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Export revenue report as CSV")
+f2 = FollowUpItem("View detailed churn breakdown")
+f3 = FollowUpItem("Filter metrics by region")

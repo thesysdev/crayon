@@ -1,0 +1,787 @@
+Streaming operations control room — live health, content, and monetization in one view.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "bufferingAlert",
+          "regionFilterCard",
+          "liveStatsCard",
+          "topTitlesChart",
+          "watchTimeChart",
+          "subsChart",
+          "genreChart",
+          "deliveryTable",
+          "releasesBlock",
+          "licensesTable",
+          "recCTRChart",
+          "failedSearchesTable",
+          "revenuePie",
+          "devicePie",
+          "featureFlagsGroup",
+          "promoForm",
+          "followUpBlock"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Streaming Operations — Live Control Room",
+        "subtitle": "Real-time platform health • Last sync: 12:42 UTC • Auto-refresh 15s"
+      },
+      {
+        "id": "bufferingAlert",
+        "component": "Alert",
+        "title": "Buffering rate nominal",
+        "description": "Global buffering at 0.42% — well under 1.0% SLO. APAC edge showing brief spike to 0.71%.",
+        "variant": "success"
+      },
+      {
+        "id": "regionFilterCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "regionFilterHeader",
+          "regionSelectControl",
+          "regionHint"
+        ]
+      },
+      {
+        "id": "regionFilterHeader",
+        "component": "CardHeader",
+        "title": "Focus view by region",
+        "subtitle": "Filter all charts and delivery health (14)"
+      },
+      {
+        "id": "regionSelectControl",
+        "component": "FormControl",
+        "label": "Selected region",
+        "input": "regionSelect",
+        "hint": "Applies to viewers, watch time, buffering, and delivery health"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region",
+        "placeholder": "Global (all regions)",
+        "items": [
+          "regionAll",
+          "regionUSEast",
+          "regionUSWest",
+          "regionEUWest",
+          "regionAPAC",
+          "regionLATAM"
+        ],
+        "value": "global"
+      },
+      {
+        "id": "regionAll",
+        "component": "SelectItem",
+        "value": "global",
+        "label": "Global — All regions"
+      },
+      {
+        "id": "regionUSEast",
+        "component": "SelectItem",
+        "value": "us-east",
+        "label": "US-East"
+      },
+      {
+        "id": "regionUSWest",
+        "component": "SelectItem",
+        "value": "us-west",
+        "label": "US-West"
+      },
+      {
+        "id": "regionEUWest",
+        "component": "SelectItem",
+        "value": "eu-west",
+        "label": "EU-West"
+      },
+      {
+        "id": "regionAPAC",
+        "component": "SelectItem",
+        "value": "apac",
+        "label": "APAC"
+      },
+      {
+        "id": "regionLATAM",
+        "component": "SelectItem",
+        "value": "latam",
+        "label": "LATAM"
+      },
+      {
+        "id": "regionHint",
+        "component": "TextContent",
+        "text": "Currently showing: **Global**. Change to isolate buffering, viewers, and CDN health per edge.",
+        "size": "small"
+      },
+      {
+        "id": "liveStatsCard",
+        "component": "Card",
+        "children": [
+          "liveHeader",
+          "viewersCount",
+          "viewersSub",
+          "viewersBadgeRow",
+          "bufferingLabel",
+          "bufferingProgress",
+          "recCtrLabel",
+          "recCtrValue",
+          "recCtrProgress"
+        ]
+      },
+      {
+        "id": "liveHeader",
+        "component": "CardHeader",
+        "title": "Viewers watching right now (1)",
+        "subtitle": "Concurrent streams • Live from edge telemetry"
+      },
+      {
+        "id": "viewersCount",
+        "component": "TextContent",
+        "text": "284,732 viewers",
+        "size": "large-heavy"
+      },
+      {
+        "id": "viewersSub",
+        "component": "TextContent",
+        "text": "Peak today 312,041 at 21:00 UTC • +6.2% vs yesterday • 1.9M sessions today",
+        "size": "small"
+      },
+      {
+        "id": "viewersBadgeRow",
+        "component": "TagBlock",
+        "tags": [
+          "● LIVE",
+          "Stable",
+          "4K: 38% of streams"
+        ]
+      },
+      {
+        "id": "bufferingLabel",
+        "component": "Label",
+        "text": "Buffering rate (6) — global average"
+      },
+      {
+        "id": "bufferingProgress",
+        "component": "Progress",
+        "value": 0.42,
+        "label": "0.42% buffering (SLO <1.0%) — 1.2s avg rebuffer time"
+      },
+      {
+        "id": "recCtrLabel",
+        "component": "Label",
+        "text": "Recommendation click-through (10)"
+      },
+      {
+        "id": "recCtrValue",
+        "component": "TextContent",
+        "text": "18.4% of impressions clicked • 52,391 clicks / 284,732 impressions (last hour)",
+        "size": "small-heavy"
+      },
+      {
+        "id": "recCtrProgress",
+        "component": "Progress",
+        "value": 18.4,
+        "label": "18.4% CTR — Target 20%"
+      },
+      {
+        "id": "topTitlesChart",
+        "component": "HorizontalBarChart",
+        "labels": [
+          "The Night Protocol",
+          "Echoes of Tomorrow",
+          "Crown & Conspiracy",
+          "Midnight Diner: Seoul",
+          "Quantum Heist"
+        ],
+        "series": [
+          "topTitlesSeries"
+        ],
+        "xLabel": "Hours watched (millions)",
+        "yLabel": "Title"
+      },
+      {
+        "id": "topTitlesSeries",
+        "component": "Series",
+        "category": "Hours (M)",
+        "values": [
+          4.2,
+          3.8,
+          3.1,
+          2.7,
+          2.4
+        ]
+      },
+      {
+        "id": "watchTimeChart",
+        "component": "AreaChart",
+        "labels": [
+          "Apr 20",
+          "Apr 27",
+          "May 04",
+          "May 11",
+          "May 18",
+          "May 25",
+          "Jun 01",
+          "Jun 08"
+        ],
+        "series": [
+          "watchTimeSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Week (past month highlighted)",
+        "yLabel": "Watch time (M hours)"
+      },
+      {
+        "id": "watchTimeSeries",
+        "component": "Series",
+        "category": "Total watch time",
+        "values": [
+          16.8,
+          17.4,
+          18.2,
+          19.5,
+          21.3,
+          22.7,
+          23.1,
+          22.9
+        ]
+      },
+      {
+        "id": "subsChart",
+        "component": "BarChart",
+        "labels": [
+          "W1 May",
+          "W2 May",
+          "W3 May",
+          "W4 May"
+        ],
+        "series": [
+          "subsNewSeries",
+          "subsChurnSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Week",
+        "yLabel": "Subscribers"
+      },
+      {
+        "id": "subsNewSeries",
+        "component": "Series",
+        "category": "New subscribers (4)",
+        "values": [
+          12400,
+          13800,
+          11200,
+          14500
+        ]
+      },
+      {
+        "id": "subsChurnSeries",
+        "component": "Series",
+        "category": "Cancellations (4)",
+        "values": [
+          8200,
+          9100,
+          7800,
+          8900
+        ]
+      },
+      {
+        "id": "genreChart",
+        "component": "RadarChart",
+        "labels": [
+          "Drama",
+          "Comedy",
+          "Sci-Fi",
+          "Documentary",
+          "Action",
+          "Kids",
+          "Thriller"
+        ],
+        "series": [
+          "genreSeries"
+        ]
+      },
+      {
+        "id": "genreSeries",
+        "component": "Series",
+        "category": "Performance score (5) — watch hrs + completion",
+        "values": [
+          82,
+          68,
+          91,
+          54,
+          88,
+          73,
+          79
+        ]
+      },
+      {
+        "id": "deliveryTable",
+        "component": "Table",
+        "columns": [
+          "deliveryRegionCol",
+          "deliveryHealthCol",
+          "deliveryLatencyCol",
+          "deliveryErrorCol",
+          "deliveryStreamsCol"
+        ]
+      },
+      {
+        "id": "deliveryRegionCol",
+        "component": "Col",
+        "label": "Region (7)",
+        "data": [
+          "US-East",
+          "US-West",
+          "EU-West",
+          "APAC",
+          "LATAM"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "deliveryHealthCol",
+        "component": "Col",
+        "label": "Delivery health",
+        "data": [
+          "Healthy 99.98%",
+          "Healthy 99.96%",
+          "Degraded 99.41%",
+          "Healthy 99.89%",
+          "Healthy 99.92%"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "deliveryLatencyCol",
+        "component": "Col",
+        "label": "p95 Latency",
+        "data": [
+          "42ms",
+          "48ms",
+          "112ms",
+          "67ms",
+          "89ms"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "deliveryErrorCol",
+        "component": "Col",
+        "label": "Error rate",
+        "data": [
+          "0.02%",
+          "0.04%",
+          "0.59%",
+          "0.11%",
+          "0.08%"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "deliveryStreamsCol",
+        "component": "Col",
+        "label": "Active streams",
+        "data": [
+          "98,420",
+          "76,103",
+          "61,204",
+          "32,890",
+          "16,115"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "releasesBlock",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "release1",
+          "release2",
+          "release3",
+          "release4"
+        ]
+      },
+      {
+        "id": "release1",
+        "component": "ListItem",
+        "title": "Jun 14 — The Night Protocol: S2 Finale",
+        "subtitle": "Original • 4K HDR • Global premiere 00:00 UTC"
+      },
+      {
+        "id": "release2",
+        "component": "ListItem",
+        "title": "Jun 19 — Midnight Diner: Seoul — Film",
+        "subtitle": "Licensed • APAC first window • Marketing push"
+      },
+      {
+        "id": "release3",
+        "component": "ListItem",
+        "title": "Jun 22 — Quantum Heist: Director's Cut",
+        "subtitle": "Catalog upgrade • New audio tracks"
+      },
+      {
+        "id": "release4",
+        "component": "ListItem",
+        "title": "Jun 28 — Kids: Ludo Galaxy S3",
+        "subtitle": "Original • 12 episodes drop at once"
+      },
+      {
+        "id": "licensesTable",
+        "component": "Table",
+        "columns": [
+          "licenseTitleCol",
+          "licenseExpiryCol",
+          "licenseDaysCol",
+          "licenseActionCol"
+        ]
+      },
+      {
+        "id": "licenseTitleCol",
+        "component": "Col",
+        "label": "License expiring soon (9)",
+        "data": [
+          "Crown & Conspiracy S1",
+          "Neon Drift (Film)",
+          "Comedy Vault: 90s Pack",
+          "Nature: Deep Blue"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "licenseExpiryCol",
+        "component": "Col",
+        "label": "Expiry",
+        "data": [
+          "2026-06-18",
+          "2026-06-24",
+          "2026-07-02",
+          "2026-07-05"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "licenseDaysCol",
+        "component": "Col",
+        "label": "Days left",
+        "data": [
+          "4 days",
+          "10 days",
+          "18 days",
+          "21 days"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "licenseActionCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Renewal pending",
+          "Negotiating",
+          "Expiring",
+          "Expiring"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "recCTRChart",
+        "component": "SingleStackedBarChart",
+        "labels": [
+          "Clicked",
+          "Ignored"
+        ],
+        "values": [
+          18.4,
+          81.6
+        ]
+      },
+      {
+        "id": "failedSearchesTable",
+        "component": "Table",
+        "columns": [
+          "searchQueryCol",
+          "searchCountCol",
+          "searchFailCol"
+        ]
+      },
+      {
+        "id": "searchQueryCol",
+        "component": "Col",
+        "label": "Searches without playback (11)",
+        "data": [
+          "free movies",
+          "midnight diner season 2",
+          "quantum heist 4k",
+          "korean drama 2026",
+          "ludo galaxy toys"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "searchCountCol",
+        "component": "Col",
+        "label": "Searches",
+        "data": [
+          "12,430",
+          "8,920",
+          "7,105",
+          "6,840",
+          "5,210"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "searchFailCol",
+        "component": "Col",
+        "label": "Zero-play rate",
+        "data": [
+          "68%",
+          "54%",
+          "41%",
+          "37%",
+          "62%"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "revenuePie",
+        "component": "PieChart",
+        "labels": [
+          "Premium 4K",
+          "Standard",
+          "Basic with Ads",
+          "Mobile Only"
+        ],
+        "values": [
+          52,
+          28,
+          15,
+          5
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "devicePie",
+        "component": "PieChart",
+        "labels": [
+          "Smart TV",
+          "Mobile",
+          "Web",
+          "Console / Other"
+        ],
+        "values": [
+          48,
+          31,
+          14,
+          7
+        ],
+        "variant": "pie"
+      },
+      {
+        "id": "featureFlagsGroup",
+        "component": "SwitchGroup",
+        "name": "feature_flags",
+        "variant": "card",
+        "items": [
+          "flagAutoplay",
+          "flagPreview",
+          "flagAds",
+          "flagNewRecs",
+          "flagOffline"
+        ]
+      },
+      {
+        "id": "flagAutoplay",
+        "component": "SwitchItem",
+        "label": "Autoplay next episode",
+        "description": "Enabled — 100% rollout",
+        "name": "autoplay",
+        "defaultChecked": true
+      },
+      {
+        "id": "flagPreview",
+        "component": "SwitchItem",
+        "label": "Hover previews (muted)",
+        "description": "Enabled — 75% rollout",
+        "name": "hover_preview",
+        "defaultChecked": true
+      },
+      {
+        "id": "flagAds",
+        "component": "SwitchItem",
+        "label": "Ad personalization v2",
+        "description": "Disabled — testing in EU-West only",
+        "name": "ads_v2",
+        "defaultChecked": false
+      },
+      {
+        "id": "flagNewRecs",
+        "component": "SwitchItem",
+        "label": "New recommendation model (T-9)",
+        "description": "Enabled — 20% rollout, CTR +1.2% lift",
+        "name": "recs_t9",
+        "defaultChecked": true
+      },
+      {
+        "id": "flagOffline",
+        "component": "SwitchItem",
+        "label": "Offline downloads",
+        "description": "Enabled — Premium only",
+        "name": "offline",
+        "defaultChecked": true
+      },
+      {
+        "id": "promoForm",
+        "component": "Form",
+        "name": "promote-title",
+        "buttons": "promoButtons",
+        "fields": [
+          "promoTitleControl",
+          "promoDateControl",
+          "promoPriorityControl"
+        ]
+      },
+      {
+        "id": "promoTitleControl",
+        "component": "FormControl",
+        "label": "Promote title on home hero (16)",
+        "input": "promoTitleSelect",
+        "hint": "Pushes title to top carousel for selected region"
+      },
+      {
+        "id": "promoTitleSelect",
+        "component": "Select",
+        "name": "promo_title",
+        "placeholder": "Choose title to promote",
+        "items": [
+          "promoOpt1",
+          "promoOpt2",
+          "promoOpt3",
+          "promoOpt4"
+        ]
+      },
+      {
+        "id": "promoOpt1",
+        "component": "SelectItem",
+        "value": "night_protocol_s2",
+        "label": "The Night Protocol S2"
+      },
+      {
+        "id": "promoOpt2",
+        "component": "SelectItem",
+        "value": "midnight_diner_film",
+        "label": "Midnight Diner: Seoul (Film)"
+      },
+      {
+        "id": "promoOpt3",
+        "component": "SelectItem",
+        "value": "quantum_heist_dc",
+        "label": "Quantum Heist: Director's Cut"
+      },
+      {
+        "id": "promoOpt4",
+        "component": "SelectItem",
+        "value": "ludo_galaxy_s3",
+        "label": "Ludo Galaxy S3"
+      },
+      {
+        "id": "promoDateControl",
+        "component": "FormControl",
+        "label": "Hero slot date",
+        "input": "promoDatePicker"
+      },
+      {
+        "id": "promoDatePicker",
+        "component": "DatePicker",
+        "name": "promo_date",
+        "mode": "single"
+      },
+      {
+        "id": "promoPriorityControl",
+        "component": "FormControl",
+        "label": "Priority / weight",
+        "input": "promoPrioritySlider",
+        "hint": "Higher = more prominent placement"
+      },
+      {
+        "id": "promoPrioritySlider",
+        "component": "Slider",
+        "name": "promo_weight",
+        "variant": "discrete",
+        "min": 1,
+        "max": 10,
+        "step": 1,
+        "defaultValue": [
+          7
+        ],
+        "label": "7"
+      },
+      {
+        "id": "promoButtons",
+        "component": "Buttons",
+        "buttons": [
+          "promoBtn",
+          "resetBtn"
+        ]
+      },
+      {
+        "id": "promoBtn",
+        "component": "Button",
+        "label": "Promote to Home",
+        "variant": "primary"
+      },
+      {
+        "id": "resetBtn",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "secondary"
+      },
+      {
+        "id": "followUpBlock",
+        "component": "FollowUpBlock",
+        "items": [
+          "fu1",
+          "fu2",
+          "fu3"
+        ]
+      },
+      {
+        "id": "fu1",
+        "component": "FollowUpItem",
+        "text": "Show buffering details for EU-West"
+      },
+      {
+        "id": "fu2",
+        "component": "FollowUpItem",
+        "text": "Renew Crown & Conspiracy license"
+      },
+      {
+        "id": "fu3",
+        "component": "FollowUpItem",
+        "text": "Promote Midnight Diner film in APAC"
+      }
+    ]
+  }
+}
+</a2ui-json>

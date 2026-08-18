@@ -1,0 +1,220 @@
+
+
+Here's a complete account page for a sales rep, covering all nine items: account name/owner in the header, deal value + stage as stat cards, renewal date flagged with an approaching-renewal warning, activity timeline, contacts table with buying roles, follow-ups with due dates, and a tabbed area to jot a note or log a call.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "renewalAlert",
+          "statsRow",
+          "sep1",
+          "activityHead",
+          "activityNote",
+          "activityList",
+          "sep2",
+          "contactsHead",
+          "contactsTable",
+          "sep3",
+          "followHead",
+          "followTable",
+          "sep4",
+          "captureHead",
+          "logTabs"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Northwind Robotics, Inc.",
+        "subtitle": "Account owner: Maya Rodriguez · Tier: Enterprise · Region: West"
+      },
+      {
+        "id": "renewalAlert",
+        "component": "Callout",
+        "variant": "warning",
+        "title": "Renewal approaching",
+        "description": "This account renews April 18, 2026 — roughly 4 weeks away. Kick off renewal outreach now to avoid a lapse."
+      },
+      {
+        "id": "statsRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "align": "stretch",
+        "children": ["valueCard", "stageCard", "renewalCard"]
+      },
+      {
+        "id": "valueCard",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "weight": 1,
+        "children": ["valueHead", "valueLabel"]
+      },
+      { "id": "valueHead", "component": "Heading", "level": "h2", "text": "$482,500" },
+      { "id": "valueLabel", "component": "TextContent", "size": "small", "text": "Total deal value · 3 open opportunities" },
+      {
+        "id": "stageCard",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "weight": 1,
+        "children": ["stageBadge", "stageProgress", "stageLabel"]
+      },
+      { "id": "stageBadge", "component": "Badge", "text": "Negotiation", "variant": "secondary" },
+      { "id": "stageProgress", "component": "Progress", "value": 80, "label": "Stage 4 of 5" },
+      { "id": "stageLabel", "component": "TextContent", "size": "small", "text": "Current deal stage" },
+      {
+        "id": "renewalCard",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "weight": 1,
+        "children": ["renewHead", "renewTag", "renewLabel"]
+      },
+      { "id": "renewHead", "component": "Heading", "level": "h2", "text": "Apr 18, 2026" },
+      { "id": "renewTag", "component": "Tag", "text": "Renews in 28 days", "variant": "warning" },
+      { "id": "renewLabel", "component": "TextContent", "size": "small", "text": "Renewal date" },
+
+      { "id": "sep1", "component": "Separator" },
+      { "id": "activityHead", "component": "Heading", "level": "h3", "text": "Recent activity" },
+      { "id": "activityNote", "component": "TextContent", "size": "small", "text": "Newest first" },
+      {
+        "id": "activityList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": ["act1", "act2", "act3", "act4"]
+      },
+      { "id": "act1", "component": "ListItem", "title": "Proposal v3 sent", "subtitle": "Mar 3 · Sent to Priya Nair (CTO) with revised pricing tiers" },
+      { "id": "act2", "component": "ListItem", "title": "Pricing objection reviewed", "subtitle": "Feb 28 · Internal note — Maya Rodriguez aligned with sales engineering" },
+      { "id": "act3", "component": "ListItem", "title": "Product demo completed", "subtitle": "Feb 26 · Full walkthrough with the engineering team (7 attendees)" },
+      { "id": "act4", "component": "ListItem", "title": "Discovery call", "subtitle": "Feb 20 · Intro call with Priya Nair — mapped requirements and budget" },
+
+      { "id": "sep2", "component": "Separator" },
+      { "id": "contactsHead", "component": "Heading", "level": "h3", "text": "Contacts" },
+      {
+        "id": "contactsTable",
+        "component": "Table",
+        "columns": ["ctContact", "ctTitle", "ctRole", "ctEmail"]
+      },
+      { "id": "ctContact", "component": "Col", "label": "Contact", "data": ["Priya Nair", "Dan Okafor", "Sheila Grant", "Tomás Alvarez"] },
+      { "id": "ctTitle", "component": "Col", "label": "Title", "data": ["CTO", "VP Engineering", "Procurement Lead", "Security Manager"] },
+      { "id": "ctRole", "component": "Col", "label": "Buying role", "data": ["Decision maker", "Champion", "Buyer", "Influencer"] },
+      { "id": "ctEmail", "component": "Col", "label": "Email", "data": ["priya.nair@northwind-robotics.com", "dan.okafor@northwind-robotics.com", "sheila.grant@northwind-robotics.com", "t.alvarez@northwind-robotics.com"] },
+
+      { "id": "sep3", "component": "Separator" },
+      { "id": "followHead", "component": "Heading", "level": "h3", "text": "Open follow-ups" },
+      {
+        "id": "followTable",
+        "component": "Table",
+        "columns": ["fuTask", "fuDue", "fuStatus"]
+      },
+      { "id": "fuTask", "component": "Col", "label": "Follow-up", "data": ["Send security & compliance packet to Sheila Grant", "Confirm contract redlines with legal", "Schedule exec sponsor intro call"] },
+      { "id": "fuDue", "component": "Col", "label": "Due date", "data": ["Mar 6, 2026", "Mar 12, 2026", "Mar 20, 2026"] },
+      { "id": "fuStatus", "component": "Col", "label": "Status", "data": ["Overdue", "Due soon", "Scheduled"] },
+
+      { "id": "sep4", "component": "Separator" },
+      { "id": "captureHead", "component": "Heading", "level": "h3", "text": "Capture activity" },
+      {
+        "id": "logTabs",
+        "component": "Tabs",
+        "items": ["noteTab", "callTab"]
+      },
+      {
+        "id": "noteTab",
+        "component": "TabItem",
+        "value": "note",
+        "trigger": "Jot a note",
+        "content": ["noteForm"]
+      },
+      {
+        "id": "noteForm",
+        "component": "Form",
+        "name": "jot-note",
+        "fields": ["noteTypeField", "noteField"],
+        "buttons": "noteButtons"
+      },
+      { "id": "noteTypeField", "component": "FormControl", "label": "Category", "input": "noteTypeSelect" },
+      {
+        "id": "noteTypeSelect",
+        "component": "Select",
+        "name": "note_category",
+        "placeholder": "Pick a category",
+        "items": ["ntGeneral", "ntRisk", "ntMeeting"]
+      },
+      { "id": "ntGeneral", "component": "SelectItem", "value": "general", "label": "General" },
+      { "id": "ntRisk", "component": "SelectItem", "value": "risk", "label": "Risk / blocker" },
+      { "id": "ntMeeting", "component": "SelectItem", "value": "meeting", "label": "Meeting recap" },
+      { "id": "noteField", "component": "FormControl", "label": "Note", "hint": "Saved to the account activity feed", "input": "noteArea" },
+      { "id": "noteArea", "component": "TextArea", "name": "note", "rows": 3, "placeholder": "e.g. Priya wants a revised rollout plan before sign-off…" },
+      { "id": "noteButtons", "component": "Buttons", "buttons": ["saveNoteBtn"] },
+      { "id": "saveNoteBtn", "component": "Button", "label": "Add note", "variant": "primary" },
+
+      {
+        "id": "callTab",
+        "component": "TabItem",
+        "value": "call",
+        "trigger": "Log a call",
+        "content": ["callForm"]
+      },
+      {
+        "id": "callForm",
+        "component": "Form",
+        "name": "log-call",
+        "fields": ["callContactField", "callSummaryField", "callNextField"],
+        "buttons": "callButtons"
+      },
+      { "id": "callContactField", "component": "FormControl", "label": "Contact", "input": "callContactSelect" },
+      {
+        "id": "callContactSelect",
+        "component": "Select",
+        "name": "call_contact",
+        "placeholder": "Who did you speak with?",
+        "items": ["ccPriya", "ccDan", "ccSheila", "ccTom"]
+      },
+      { "id": "ccPriya", "component": "SelectItem", "value": "priya", "label": "Priya Nair — CTO" },
+      { "id": "ccDan", "component": "SelectItem", "value": "dan", "label": "Dan Okafor — VP Engineering" },
+      { "id": "ccSheila", "component": "SelectItem", "value": "sheila", "label": "Sheila Grant — Procurement Lead" },
+      { "id": "ccTom", "component": "SelectItem", "value": "tomas", "label": "Tomás Alvarez — Security Manager" },
+      { "id": "callSummaryField", "component": "FormControl", "label": "Call summary", "input": "callSummaryArea" },
+      { "id": "callSummaryArea", "component": "TextArea", "name": "call_summary", "rows": 3, "placeholder": "What was discussed, decisions made, next steps…" },
+      { "id": "callNextField", "component": "FormControl", "label": "Next step (optional)", "input": "callNextInput" },
+      { "id": "callNextInput", "component": "Input", "name": "next_step", "type": "text", "placeholder": "e.g. Send final pricing by Friday" },
+      { "id": "callButtons", "component": "Buttons", "buttons": ["logCallBtn"] },
+      { "id": "logCallBtn", "component": "Button", "label": "Log call", "variant": "primary" }
+    ]
+  }
+}
+</a2ui-json>
+
+Coverage notes:
+- **1–3:** Header shows account name + owner; the stat row shows total deal value, current stage (Negotiation, with progress), and the renewal date.
+- **4:** Recent activity is an ordered list, newest first.
+- **5:** Contacts table includes job title and buying role.
+- **6:** Follow-ups include due dates, with one flagged overdue.
+- **7 & 9:** The "Capture activity" tabs provide both a note form and a call-logging form.
+- **8:** The warning Callout plus the "Renews in 28 days" tag flag the approaching renewal.

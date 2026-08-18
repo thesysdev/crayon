@@ -1,0 +1,988 @@
+Operations room for live streaming — all 16 signals on one screen with region focus and home-screen promotion controls.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "regionFilterCard",
+          "viewersCard",
+          "bufferingCard",
+          "recCard",
+          "mostWatchedCard",
+          "watchTimeCard",
+          "subsCard",
+          "genreCard",
+          "healthCard",
+          "releasesCard",
+          "licensesCard",
+          "searchesCard",
+          "revenueDeviceRow",
+          "featureFlagsCard",
+          "promoteCard"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Streaming Operations Room",
+        "subtitle": "Live platform health • Content performance • Growth • Monetization — Jun 17, 2026 14:32 UTC"
+      },
+      {
+        "id": "regionFilterCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "regionFilterHeader",
+          "regionSelectControl",
+          "regionHint"
+        ]
+      },
+      {
+        "id": "regionFilterHeader",
+        "component": "CardHeader",
+        "title": "Focus on one region",
+        "subtitle": "Filter buffering, delivery health and viewing metrics by region"
+      },
+      {
+        "id": "regionSelectControl",
+        "component": "FormControl",
+        "label": "Active region",
+        "input": "regionSelect"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region",
+        "placeholder": "All regions",
+        "value": "all",
+        "items": [
+          "regionAll",
+          "regionUsEast",
+          "regionUsWest",
+          "regionEuWest",
+          "regionApac",
+          "regionSa"
+        ]
+      },
+      {
+        "id": "regionAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All regions (global)"
+      },
+      {
+        "id": "regionUsEast",
+        "component": "SelectItem",
+        "value": "us-east",
+        "label": "US-East"
+      },
+      {
+        "id": "regionUsWest",
+        "component": "SelectItem",
+        "value": "us-west",
+        "label": "US-West"
+      },
+      {
+        "id": "regionEuWest",
+        "component": "SelectItem",
+        "value": "eu-west",
+        "label": "EU-West"
+      },
+      {
+        "id": "regionApac",
+        "component": "SelectItem",
+        "value": "apac",
+        "label": "APAC"
+      },
+      {
+        "id": "regionSa",
+        "component": "SelectItem",
+        "value": "sa",
+        "label": "South America"
+      },
+      {
+        "id": "regionHint",
+        "component": "TextContent",
+        "text": "Currently showing: **Global**. Switch to isolate buffering, health and device splits. Last refreshed 12s ago.",
+        "size": "small"
+      },
+      {
+        "id": "viewersCard",
+        "component": "Card",
+        "children": [
+          "viewersHeader",
+          "viewersValueRow",
+          "viewersMeta"
+        ]
+      },
+      {
+        "id": "viewersHeader",
+        "component": "CardHeader",
+        "title": "Viewers watching right now",
+        "subtitle": "Live concurrent streams"
+      },
+      {
+        "id": "viewersValueRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "align": "center",
+        "children": [
+          "viewersValue",
+          "liveBadge"
+        ]
+      },
+      {
+        "id": "viewersValue",
+        "component": "TextContent",
+        "text": "184,720",
+        "size": "large-heavy"
+      },
+      {
+        "id": "liveBadge",
+        "component": "Badge",
+        "text": "● LIVE",
+        "variant": "destructive"
+      },
+      {
+        "id": "viewersMeta",
+        "component": "TextContent",
+        "text": "Peak today 212,430 at 21:04 UTC • +8.2% vs same time yesterday • 42,118 active sessions on TV",
+        "size": "small"
+      },
+      {
+        "id": "bufferingCard",
+        "component": "Card",
+        "children": [
+          "bufferingHeader",
+          "bufferingProgress",
+          "bufferingMeta"
+        ]
+      },
+      {
+        "id": "bufferingHeader",
+        "component": "CardHeader",
+        "title": "Buffering rate",
+        "subtitle": "Rebuffer events / total playtime — SLO <1.0%"
+      },
+      {
+        "id": "bufferingProgress",
+        "component": "Progress",
+        "value": 0.82,
+        "label": "0.82% — healthy"
+      },
+      {
+        "id": "bufferingMeta",
+        "component": "TextContent",
+        "text": "p95 start time 1.2s • p95 rebuffer 0.4s • Worst region: SA 1.41% (see delivery health)",
+        "size": "small"
+      },
+      {
+        "id": "recCard",
+        "component": "Card",
+        "children": [
+          "recHeader",
+          "recProgress",
+          "recMeta"
+        ]
+      },
+      {
+        "id": "recHeader",
+        "component": "CardHeader",
+        "title": "How often recommendations get clicked",
+        "subtitle": "Recommendation CTR — home & up-next"
+      },
+      {
+        "id": "recProgress",
+        "component": "Progress",
+        "value": 18.4,
+        "label": "18.4% clicked ( +1.2pp WoW )"
+      },
+      {
+        "id": "recMeta",
+        "component": "TextContent",
+        "text": "18,420 clicks / 100,140 impressions today • Top rail: 'Because you watched' 22.1% CTR",
+        "size": "small"
+      },
+      {
+        "id": "mostWatchedCard",
+        "component": "Card",
+        "children": [
+          "mostWatchedHeader",
+          "mostWatchedChart"
+        ]
+      },
+      {
+        "id": "mostWatchedHeader",
+        "component": "CardHeader",
+        "title": "Most-watched titles",
+        "subtitle": "Total hours watched — last 28 days"
+      },
+      {
+        "id": "mostWatchedChart",
+        "component": "HorizontalBarChart",
+        "labels": [
+          "Stranger Shadows S3",
+          "The Crown Heist",
+          "Galaxy Drift",
+          "Midnight Kitchen",
+          "Neon Pulse"
+        ],
+        "series": [
+          "hoursSeries"
+        ],
+        "xLabel": "Hours (millions)",
+        "yLabel": "Title"
+      },
+      {
+        "id": "hoursSeries",
+        "component": "Series",
+        "category": "Hours (M)",
+        "values": [
+          12.4,
+          9.8,
+          8.2,
+          7.1,
+          6.5
+        ]
+      },
+      {
+        "id": "watchTimeCard",
+        "component": "Card",
+        "children": [
+          "watchTimeHeader",
+          "watchTimeChart"
+        ]
+      },
+      {
+        "id": "watchTimeHeader",
+        "component": "CardHeader",
+        "title": "Watch time over the past month",
+        "subtitle": "Total hours streamed per week (M)"
+      },
+      {
+        "id": "watchTimeChart",
+        "component": "AreaChart",
+        "labels": [
+          "May 20",
+          "May 27",
+          "Jun 03",
+          "Jun 10",
+          "Jun 17"
+        ],
+        "series": [
+          "watchTimeSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Week",
+        "yLabel": "Hours (M)"
+      },
+      {
+        "id": "watchTimeSeries",
+        "component": "Series",
+        "category": "Watch hours",
+        "values": [
+          42.1,
+          45.3,
+          48.7,
+          51.2,
+          49.4
+        ]
+      },
+      {
+        "id": "subsCard",
+        "component": "Card",
+        "children": [
+          "subsHeader",
+          "subsChart",
+          "subsMeta"
+        ]
+      },
+      {
+        "id": "subsHeader",
+        "component": "CardHeader",
+        "title": "New subscribers against cancellations",
+        "subtitle": "Weekly net growth — last 4 weeks"
+      },
+      {
+        "id": "subsChart",
+        "component": "BarChart",
+        "labels": [
+          "W1 May 20",
+          "W2 May 27",
+          "W3 Jun 03",
+          "W4 Jun 10"
+        ],
+        "series": [
+          "newSubsSeries",
+          "churnSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Week",
+        "yLabel": "Accounts"
+      },
+      {
+        "id": "newSubsSeries",
+        "component": "Series",
+        "category": "New subscribers",
+        "values": [
+          12400,
+          13800,
+          15200,
+          14100
+        ]
+      },
+      {
+        "id": "churnSeries",
+        "component": "Series",
+        "category": "Cancellations",
+        "values": [
+          8200,
+          7900,
+          9100,
+          8800
+        ]
+      },
+      {
+        "id": "subsMeta",
+        "component": "TextContent",
+        "text": "Net +5,300 last week • Churn rate 1.8% • Trial conversions 34%",
+        "size": "small"
+      },
+      {
+        "id": "genreCard",
+        "component": "Card",
+        "children": [
+          "genreHeader",
+          "genreChart"
+        ]
+      },
+      {
+        "id": "genreHeader",
+        "component": "CardHeader",
+        "title": "Performance by genre",
+        "subtitle": "Avg. completion rate % — last 28 days"
+      },
+      {
+        "id": "genreChart",
+        "component": "RadarChart",
+        "labels": [
+          "Drama",
+          "Comedy",
+          "Sci-Fi",
+          "Thriller",
+          "Documentary",
+          "Kids",
+          "Reality"
+        ],
+        "series": [
+          "genreSeries"
+        ]
+      },
+      {
+        "id": "genreSeries",
+        "component": "Series",
+        "category": "Completion %",
+        "values": [
+          78,
+          72,
+          91,
+          84,
+          64,
+          88,
+          69
+        ]
+      },
+      {
+        "id": "healthCard",
+        "component": "Card",
+        "children": [
+          "healthHeader",
+          "healthTable"
+        ]
+      },
+      {
+        "id": "healthHeader",
+        "component": "CardHeader",
+        "title": "Delivery health by region",
+        "subtitle": "CDN availability, median latency, error rate"
+      },
+      {
+        "id": "healthTable",
+        "component": "Table",
+        "columns": [
+          "healthRegionCol",
+          "healthAvailCol",
+          "healthLatencyCol",
+          "healthErrorCol",
+          "healthStatusCol"
+        ]
+      },
+      {
+        "id": "healthRegionCol",
+        "component": "Col",
+        "label": "Region",
+        "data": [
+          "US-East",
+          "US-West",
+          "EU-West",
+          "APAC",
+          "South America"
+        ]
+      },
+      {
+        "id": "healthAvailCol",
+        "component": "Col",
+        "label": "Availability",
+        "data": [
+          "99.94%",
+          "99.88%",
+          "99.92%",
+          "99.71%",
+          "99.65%"
+        ]
+      },
+      {
+        "id": "healthLatencyCol",
+        "component": "Col",
+        "label": "Median latency",
+        "data": [
+          "42ms",
+          "48ms",
+          "38ms",
+          "67ms",
+          "89ms"
+        ]
+      },
+      {
+        "id": "healthErrorCol",
+        "component": "Col",
+        "label": "Error rate",
+        "data": [
+          "0.12%",
+          "0.18%",
+          "0.09%",
+          "0.34%",
+          "0.41%"
+        ]
+      },
+      {
+        "id": "healthStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Healthy",
+          "Healthy",
+          "Healthy",
+          "Watch",
+          "Degraded"
+        ]
+      },
+      {
+        "id": "releasesCard",
+        "component": "Card",
+        "children": [
+          "releasesHeader",
+          "releasesList"
+        ]
+      },
+      {
+        "id": "releasesHeader",
+        "component": "CardHeader",
+        "title": "Releases coming this month",
+        "subtitle": "Scheduled premieres — June 2026"
+      },
+      {
+        "id": "releasesList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "rel1",
+          "rel2",
+          "rel3",
+          "rel4"
+        ]
+      },
+      {
+        "id": "rel1",
+        "component": "ListItem",
+        "title": "Echoes of Tomorrow — Jun 22",
+        "subtitle": "Sci-Fi • S1 • Global premiere • Assets ready"
+      },
+      {
+        "id": "rel2",
+        "component": "ListItem",
+        "title": "Chef's Table: Night Market — Jun 25",
+        "subtitle": "Documentary • 4K HDR • Subtitles 12 langs"
+      },
+      {
+        "id": "rel3",
+        "component": "ListItem",
+        "title": "Midnight Kitchen S2 — Jun 28",
+        "subtitle": "Drama • Returning • Promo cut approved"
+      },
+      {
+        "id": "rel4",
+        "component": "ListItem",
+        "title": "Tiny Detectives — Jun 30",
+        "subtitle": "Kids • New IP • Needs home-screen slot"
+      },
+      {
+        "id": "licensesCard",
+        "component": "Card",
+        "children": [
+          "licensesHeader",
+          "licensesTable",
+          "licensesAlert"
+        ]
+      },
+      {
+        "id": "licensesHeader",
+        "component": "CardHeader",
+        "title": "Licenses expiring soon",
+        "subtitle": "Renewal required within 30 days"
+      },
+      {
+        "id": "licensesTable",
+        "component": "Table",
+        "columns": [
+          "licTitleCol",
+          "licExpiryCol",
+          "licDaysCol",
+          "licOwnerCol"
+        ]
+      },
+      {
+        "id": "licTitleCol",
+        "component": "Col",
+        "label": "Title",
+        "data": [
+          "Ocean's Echo (2019)",
+          "The Last Signal",
+          "Comedy Vault S1-3",
+          "Anime: Star Blazers"
+        ]
+      },
+      {
+        "id": "licExpiryCol",
+        "component": "Col",
+        "label": "Expiry",
+        "data": [
+          "Jun 24, 2026",
+          "Jun 29, 2026",
+          "Jul 08, 2026",
+          "Jul 14, 2026"
+        ]
+      },
+      {
+        "id": "licDaysCol",
+        "component": "Col",
+        "label": "Days left",
+        "data": [
+          "7",
+          "12",
+          "21",
+          "27"
+        ]
+      },
+      {
+        "id": "licOwnerCol",
+        "component": "Col",
+        "label": "Licensor",
+        "data": [
+          "Studio Canal",
+          "NBCU",
+          "Paramount",
+          "Toei"
+        ]
+      },
+      {
+        "id": "licensesAlert",
+        "component": "Alert",
+        "title": "Action needed",
+        "description": "2 titles expire within 14 days and are in Top 50 most-watched. Renewal talks in progress.",
+        "variant": "warning"
+      },
+      {
+        "id": "searchesCard",
+        "component": "Card",
+        "children": [
+          "searchesHeader",
+          "searchesTable",
+          "searchesCallout"
+        ]
+      },
+      {
+        "id": "searchesHeader",
+        "component": "CardHeader",
+        "title": "Searches that ended without playback",
+        "subtitle": "Top zero-play queries — last 24h"
+      },
+      {
+        "id": "searchesTable",
+        "component": "Table",
+        "columns": [
+          "searchQueryCol",
+          "searchCountCol",
+          "searchZeroCol"
+        ]
+      },
+      {
+        "id": "searchQueryCol",
+        "component": "Col",
+        "label": "Query",
+        "data": [
+          "dune 2 extended",
+          "k-drama romance 2024",
+          "free football live",
+          "cooking show japanese"
+        ]
+      },
+      {
+        "id": "searchCountCol",
+        "component": "Col",
+        "label": "Searches",
+        "data": [
+          "4,210",
+          "3,880",
+          "3,410",
+          "2,970"
+        ]
+      },
+      {
+        "id": "searchZeroCol",
+        "component": "Col",
+        "label": "No playback",
+        "data": [
+          "68%",
+          "54%",
+          "91%",
+          "47%"
+        ]
+      },
+      {
+        "id": "searchesCallout",
+        "component": "TextCallout",
+        "variant": "info",
+        "title": "Insight",
+        "description": "'free football live' has 91% abandonment — no licensed content. Consider merchandising or search synonym."
+      },
+      {
+        "id": "revenueDeviceRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "revenueCard",
+          "deviceCard"
+        ]
+      },
+      {
+        "id": "revenueCard",
+        "component": "Card",
+        "children": [
+          "revenueHeader",
+          "revenueChart",
+          "revenueLegend"
+        ]
+      },
+      {
+        "id": "revenueHeader",
+        "component": "CardHeader",
+        "title": "Revenue split by plan",
+        "subtitle": "MRR share — June MTD"
+      },
+      {
+        "id": "revenueChart",
+        "component": "PieChart",
+        "labels": [
+          "Standard $13.99",
+          "Premium $19.99",
+          "Basic $8.99",
+          "Ad-Lite $6.99"
+        ],
+        "values": [
+          38,
+          32,
+          22,
+          8
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "revenueLegend",
+        "component": "TextContent",
+        "text": "Total MRR $4.82M • Premium ARPU highest, Ad-Lite growing +12% MoM",
+        "size": "small"
+      },
+      {
+        "id": "deviceCard",
+        "component": "Card",
+        "children": [
+          "deviceHeader",
+          "deviceChart",
+          "deviceLegend"
+        ]
+      },
+      {
+        "id": "deviceHeader",
+        "component": "CardHeader",
+        "title": "Viewing split by device",
+        "subtitle": "Hours watched by endpoint"
+      },
+      {
+        "id": "deviceChart",
+        "component": "PieChart",
+        "labels": [
+          "TV",
+          "Mobile",
+          "Web",
+          "Console"
+        ],
+        "values": [
+          54,
+          26,
+          14,
+          6
+        ],
+        "variant": "pie"
+      },
+      {
+        "id": "deviceLegend",
+        "component": "TextContent",
+        "text": "TV dominates prime time • Mobile peaks 07:00-09:00 commute window",
+        "size": "small"
+      },
+      {
+        "id": "featureFlagsCard",
+        "component": "Card",
+        "children": [
+          "flagsHeader",
+          "flagsSwitchGroup",
+          "flagsMeta"
+        ]
+      },
+      {
+        "id": "flagsHeader",
+        "component": "CardHeader",
+        "title": "Feature flags with state for each",
+        "subtitle": "Toggle rollout — changes apply instantly"
+      },
+      {
+        "id": "flagsSwitchGroup",
+        "component": "SwitchGroup",
+        "name": "feature_flags",
+        "items": [
+          "flagAutoplay",
+          "flagSkipIntro",
+          "flagHdrPreview",
+          "flagNewRecs",
+          "flagAdLite"
+        ]
+      },
+      {
+        "id": "flagAutoplay",
+        "component": "SwitchItem",
+        "name": "autoplay_next",
+        "label": "Autoplay next episode",
+        "description": "Enabled for 100% — stable",
+        "defaultChecked": true
+      },
+      {
+        "id": "flagSkipIntro",
+        "component": "SwitchItem",
+        "name": "skip_intro",
+        "label": "Skip intro detection",
+        "description": "Enabled for 85% — canary in EU-West",
+        "defaultChecked": true
+      },
+      {
+        "id": "flagHdrPreview",
+        "component": "SwitchItem",
+        "name": "hdr_preview",
+        "label": "HDR preview on browse",
+        "description": "Disabled — high buffering on SA",
+        "defaultChecked": false
+      },
+      {
+        "id": "flagNewRecs",
+        "component": "SwitchItem",
+        "name": "new_recs_engine",
+        "label": "New recommendations engine v2.4",
+        "description": "Enabled for 25% — A/B test",
+        "defaultChecked": true
+      },
+      {
+        "id": "flagAdLite",
+        "component": "SwitchItem",
+        "name": "ad_lite_pause",
+        "label": "Ad-Lite pause ads",
+        "description": "Disabled — legal review pending",
+        "defaultChecked": false
+      },
+      {
+        "id": "flagsMeta",
+        "component": "TextContent",
+        "text": "Last change: new_recs_engine enabled for APAC 2h ago by ops@stream.co",
+        "size": "small"
+      },
+      {
+        "id": "promoteCard",
+        "component": "Card",
+        "children": [
+          "promoteHeader",
+          "promoteForm"
+        ]
+      },
+      {
+        "id": "promoteHeader",
+        "component": "CardHeader",
+        "title": "Promote a title on the home screen",
+        "subtitle": "Schedule a hero placement — requires approval"
+      },
+      {
+        "id": "promoteForm",
+        "component": "Form",
+        "name": "promote-title",
+        "buttons": "promoteButtons",
+        "fields": [
+          "promoteTitleField",
+          "promoteSlotField",
+          "promoteDatesField"
+        ]
+      },
+      {
+        "id": "promoteTitleField",
+        "component": "FormControl",
+        "label": "Title to promote",
+        "input": "promoteTitleSelect"
+      },
+      {
+        "id": "promoteTitleSelect",
+        "component": "Select",
+        "name": "promo_title",
+        "placeholder": "Choose a title",
+        "items": [
+          "promoEchoes",
+          "promoMidnight",
+          "promoTiny",
+          "promoGalaxy"
+        ]
+      },
+      {
+        "id": "promoEchoes",
+        "component": "SelectItem",
+        "value": "echoes_tomorrow",
+        "label": "Echoes of Tomorrow"
+      },
+      {
+        "id": "promoMidnight",
+        "component": "SelectItem",
+        "value": "midnight_kitchen_s2",
+        "label": "Midnight Kitchen S2"
+      },
+      {
+        "id": "promoTiny",
+        "component": "SelectItem",
+        "value": "tiny_detectives",
+        "label": "Tiny Detectives"
+      },
+      {
+        "id": "promoGalaxy",
+        "component": "SelectItem",
+        "value": "galaxy_drift",
+        "label": "Galaxy Drift"
+      },
+      {
+        "id": "promoteSlotField",
+        "component": "FormControl",
+        "label": "Placement",
+        "input": "promoteSlotGroup"
+      },
+      {
+        "id": "promoteSlotGroup",
+        "component": "RadioGroup",
+        "name": "slot",
+        "items": [
+          "slotHero",
+          "slotRow1",
+          "slotContinue"
+        ]
+      },
+      {
+        "id": "slotHero",
+        "component": "RadioItem",
+        "label": "Hero banner",
+        "description": "Top of home — highest visibility",
+        "value": "hero"
+      },
+      {
+        "id": "slotRow1",
+        "component": "RadioItem",
+        "label": "Row 1 — Trending now",
+        "description": "Below hero, first carousel",
+        "value": "row1"
+      },
+      {
+        "id": "slotContinue",
+        "component": "RadioItem",
+        "label": "Continue watching boost",
+        "description": "Pin for users who sampled",
+        "value": "continue"
+      },
+      {
+        "id": "promoteDatesField",
+        "component": "FormControl",
+        "label": "Schedule",
+        "hint": "Select start and end dates for promotion",
+        "input": "promoteDates"
+      },
+      {
+        "id": "promoteDates",
+        "component": "DatePicker",
+        "name": "promo_dates",
+        "mode": "range"
+      },
+      {
+        "id": "promoteButtons",
+        "component": "Buttons",
+        "buttons": [
+          "promoteSubmit",
+          "promotePreview"
+        ]
+      },
+      {
+        "id": "promoteSubmit",
+        "component": "Button",
+        "label": "Promote title",
+        "variant": "primary"
+      },
+      {
+        "id": "promotePreview",
+        "component": "Button",
+        "label": "Preview on staging",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>

@@ -1,0 +1,363 @@
+Here's a single-screen service health view covering all eight requirements:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "kpiRow",
+          "usageChart",
+          "incidentsTable",
+          "slowestTable",
+          "regionForm",
+          "alertForm"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Service Health — payments-api",
+        "subtitle": "On-call view · all regions"
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "l",
+        "children": [
+          "uptimeCard",
+          "errorCard"
+        ]
+      },
+      {
+        "id": "uptimeCard",
+        "component": "Card",
+        "children": [
+          "uptimeLabel",
+          "uptimeValue",
+          "uptimeProgress"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "uptimeLabel",
+        "component": "Label",
+        "text": "1. Uptime this quarter"
+      },
+      {
+        "id": "uptimeValue",
+        "component": "TextContent",
+        "text": "**99.97%**",
+        "size": "large-heavy"
+      },
+      {
+        "id": "uptimeProgress",
+        "component": "Progress",
+        "value": 99.97,
+        "label": "SLO target 99.95%"
+      },
+      {
+        "id": "errorCard",
+        "component": "Card",
+        "children": [
+          "errorLabel",
+          "errorValue",
+          "errorAlert"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "errorLabel",
+        "component": "Label",
+        "text": "3. Error rate right now"
+      },
+      {
+        "id": "errorValue",
+        "component": "TextContent",
+        "text": "**1.8%** (5xx + timeouts, last 5 min)",
+        "size": "large-heavy"
+      },
+      {
+        "id": "errorAlert",
+        "component": "Alert",
+        "title": "Above threshold",
+        "description": "Error rate exceeds the 1.0% alert threshold",
+        "variant": "warning"
+      },
+      {
+        "id": "usageChart",
+        "component": "LineChart",
+        "labels": [
+          "00:00",
+          "04:00",
+          "08:00",
+          "12:00",
+          "16:00",
+          "20:00",
+          "Now"
+        ],
+        "series": [
+          "cpuSeries",
+          "memSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "2. Past 24 hours",
+        "yLabel": "% utilization"
+      },
+      {
+        "id": "cpuSeries",
+        "component": "Series",
+        "category": "CPU %",
+        "values": [
+          32,
+          28,
+          45,
+          61,
+          58,
+          49,
+          52
+        ]
+      },
+      {
+        "id": "memSeries",
+        "component": "Series",
+        "category": "Memory %",
+        "values": [
+          54,
+          55,
+          60,
+          67,
+          71,
+          69,
+          70
+        ]
+      },
+      {
+        "id": "incidentsTable",
+        "component": "Table",
+        "columns": [
+          "incId",
+          "incTitle",
+          "incSeverity",
+          "incAck"
+        ]
+      },
+      {
+        "id": "incId",
+        "component": "Col",
+        "label": "4. Incident",
+        "data": [
+          "INC-1042",
+          "INC-1043",
+          "INC-1044"
+        ]
+      },
+      {
+        "id": "incTitle",
+        "component": "Col",
+        "label": "Title",
+        "data": [
+          "Elevated 5xx in us-east-1",
+          "DB replica lag > 30s",
+          "Queue backlog growing"
+        ]
+      },
+      {
+        "id": "incSeverity",
+        "component": "Col",
+        "label": "Severity",
+        "data": [
+          "SEV1",
+          "SEV2",
+          "SEV3"
+        ]
+      },
+      {
+        "id": "incAck",
+        "component": "Col",
+        "label": "8. Acknowledge",
+        "type": "action",
+        "data": [
+          "Acknowledge",
+          "Acknowledge",
+          "Acknowledge"
+        ]
+      },
+      {
+        "id": "slowestTable",
+        "component": "Table",
+        "columns": [
+          "slowEndpoint",
+          "slowLatency"
+        ]
+      },
+      {
+        "id": "slowEndpoint",
+        "component": "Col",
+        "label": "6. Slowest endpoints",
+        "data": [
+          "POST /v1/payments",
+          "GET /v1/settlements/export",
+          "POST /v1/refunds",
+          "GET /v1/merchants/:id",
+          "POST /v1/webhooks/retry"
+        ]
+      },
+      {
+        "id": "slowLatency",
+        "component": "Col",
+        "label": "p95 latency",
+        "data": [
+          "1,240 ms",
+          "980 ms",
+          "860 ms",
+          "720 ms",
+          "640 ms"
+        ]
+      },
+      {
+        "id": "regionForm",
+        "component": "Form",
+        "name": "region-filter",
+        "buttons": "regionButtons",
+        "fields": [
+          "regionField"
+        ]
+      },
+      {
+        "id": "regionField",
+        "component": "FormControl",
+        "label": "5. Narrow to one region",
+        "input": "regionSelect",
+        "hint": "Filters all metrics and incidents on this page"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region",
+        "placeholder": "All regions",
+        "items": [
+          "regionAll",
+          "regionUsEast",
+          "regionUsWest",
+          "regionEuWest",
+          "regionApSe"
+        ]
+      },
+      {
+        "id": "regionAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All regions"
+      },
+      {
+        "id": "regionUsEast",
+        "component": "SelectItem",
+        "value": "us-east-1",
+        "label": "us-east-1"
+      },
+      {
+        "id": "regionUsWest",
+        "component": "SelectItem",
+        "value": "us-west-2",
+        "label": "us-west-2"
+      },
+      {
+        "id": "regionEuWest",
+        "component": "SelectItem",
+        "value": "eu-west-1",
+        "label": "eu-west-1"
+      },
+      {
+        "id": "regionApSe",
+        "component": "SelectItem",
+        "value": "ap-southeast-2",
+        "label": "ap-southeast-2"
+      },
+      {
+        "id": "regionButtons",
+        "component": "Buttons",
+        "buttons": [
+          "regionApply"
+        ]
+      },
+      {
+        "id": "regionApply",
+        "component": "Button",
+        "label": "Apply region filter",
+        "variant": "secondary"
+      },
+      {
+        "id": "alertForm",
+        "component": "Form",
+        "name": "alert-threshold",
+        "buttons": "alertButtons",
+        "fields": [
+          "thresholdField"
+        ]
+      },
+      {
+        "id": "thresholdField",
+        "component": "FormControl",
+        "label": "7. Error-rate alert threshold",
+        "input": "thresholdSlider",
+        "hint": "Page the on-call when error rate exceeds this value"
+      },
+      {
+        "id": "thresholdSlider",
+        "component": "Slider",
+        "name": "error_threshold",
+        "variant": "discrete",
+        "min": 0.5,
+        "max": 10,
+        "step": 0.5,
+        "defaultValue": [
+          1.0
+        ],
+        "label": "Threshold (%)"
+      },
+      {
+        "id": "alertButtons",
+        "component": "Buttons",
+        "buttons": [
+          "alertSave"
+        ]
+      },
+      {
+        "id": "alertSave",
+        "component": "Button",
+        "label": "Save threshold",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+How each item is covered:
+
+1. **Uptime this quarter** — KPI card showing 99.97% with a progress bar against the 99.95% SLO.
+2. **CPU & memory, 24h** — Line chart with two series (CPU % and Memory %) across the past day.
+3. **Error rate right now** — KPI card showing 1.8% (last 5 min) with a warning alert that it's above threshold.
+4. **Open incidents with severity** — Table listing INC-1042/43/44 with SEV1/2/3 severity levels.
+5. **Narrow to one region** — Region select form (us-east-1, us-west-2, eu-west-1, ap-southeast-2) with an apply button.
+6. **Five slowest endpoints** — Table with p95 latency for each endpoint.
+7. **Set alert threshold** — Discrete slider (0.5–10%) with a save button.
+8. **Acknowledge an incident** — Action column in the incidents table with an "Acknowledge" action per row.

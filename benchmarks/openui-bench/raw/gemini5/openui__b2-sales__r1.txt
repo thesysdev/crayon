@@ -1,0 +1,31 @@
+root = Card([header, kpiRow, chartHeader, salesTrend, topProductsSection, downloadActions])
+
+header = CardHeader("Monthly Sales Overview", "October 2023 Performance Dashboard")
+
+kpiRow = Card([revKpi, convKpi], "clear", "row", "m", "stretch")
+
+revKpi = Card([revHeader, revValue, revBadge], "sunk", "column", "xs")
+revHeader = TextContent("Revenue This Month", "small")
+revValue = TextContent("$84,500", "large-heavy")
+revBadge = Badge("+12% vs last month", "default")
+
+convKpi = Card([convHeader, convValue, convBadge], "sunk", "column", "xs")
+convHeader = TextContent("Conversion Rate", "small")
+convValue = TextContent("3.8%", "large-heavy")
+convBadge = Badge("+0.4% vs last month", "default")
+
+chartHeader = Heading("6-Month Revenue Trend", "h3")
+salesTrend = AreaChart(trendLabels, [trendSeries], "natural", "Month", "Revenue ($)")
+trendLabels = ["May", "Jun", "Jul", "Aug", "Sep", "Oct"]
+trendSeries = Series("Revenue", [52000, 58000, 64000, 71000, 75500, 84500])
+
+topProductsSection = Card([productsHeader, topProductsTable], "sunk", "column", "s")
+productsHeader = Heading("Top 3 Best-Selling Products", "h4")
+topProductsTable = Table([productCol, unitsCol, salesCol])
+productCol = Col("Product", ["Pro Subscription Plan", "Enterprise Add-on", "Starter Kit"])
+unitsCol = Col("Units Sold", [420, 185, 95], "number")
+salesCol = Col("Total Revenue", ["$42,000", $27,750, "$14,250"], "string")
+
+downloadActions = Buttons([downloadCsvBtn, downloadPdfBtn], "row")
+downloadCsvBtn = Button("Download CSV", null, "primary")
+downloadPdfBtn = Button("Download PDF Summary", null, "secondary")

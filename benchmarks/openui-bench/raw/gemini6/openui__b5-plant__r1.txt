@@ -1,0 +1,128 @@
+root = Card([header, liveAndon, safetyBanner, topKpiGrid, lineFocusTabs, analyticsSection, inventoryAndDeliveries, maintenanceAndWorkOrders, followUp], "sunk", "column", "m")
+
+header = CardHeader("Factory Floor Supervisor Console", "Plant #4 - Plant Supervisor Dashboard (Live)")
+
+liveAndon = Callout("error", "LIVE ANDON ALERT: Line B - Stamping Press #2", "E-Stop triggered due to material jam at Feed Station 3. Technician dispatched.")
+
+safetyBanner = Card([safetyTitle, safetyMetrics], "card", "row", "m", "center", "between")
+safetyTitle = Heading("Safety Tracker (YTD)", "h4")
+safetyMetrics = Card([daysSinceTag, incidentsTag], "clear", "row", "s")
+daysSinceTag = Tag("142 Days Incident-Free", null, "md", "success")
+incidentsTag = Tag("2 Total Incidents YTD", null, "md", "warning")
+
+topKpiGrid = Card([oeeCard, outputCard, energyCard], "clear", "row", "m")
+
+oeeCard = Card([oeeHeader, oeeProgress, oeeBreakdown], "card", "column", "s")
+oeeHeader = CardHeader("Overall Equipment Effectiveness (OEE)", "Target: 85.0%")
+oeeProgress = Progress(82, "Current Plant OEE: 82.4%")
+oeeBreakdown = TagBlock(["Availability: 88%", "Performance: 91%", "Quality: 98.2%"])
+
+outputCard = Card([outputHeader, outputProgress, outputDetails], "card", "column", "s")
+outputHeader = CardHeader("Today's Output Target", "Shift 1 & 2")
+outputProgress = Progress(76, "15,200 / 20,000 Units")
+outputDetails = TextContent("**On Track** - 76% of daily quota completed with 3.5 hours remaining.")
+
+energyCard = Card([energyHeader, energyProgress, energyDetails], "card", "column", "s")
+energyHeader = CardHeader("Today's Energy Use", "Max Limit: 18.5 MWh")
+energyProgress = Progress(68, "12.6 MWh Consumed")
+energyDetails = TextContent("Peak demand: **2.1 MW** at 11:15 AM. Operating within green efficiency zone.")
+
+lineFocusTabs = Tabs([allLinesTab, lineATab, lineBTab, lineCTab])
+
+allLinesTab = TabItem("all", "All Lines Overview", [linesTable, qualityHoldCallout])
+linesTable = Table([lineCol, statusCol, rateCol, oeeCol, currentBatchCol])
+lineCol = Col("Production Line", ["Line A - Assembly", "Line B - Stamping", "Line C - Packaging", "Line D - Machining"])
+statusCol = Col("Status", ["RUNNING", "ANDON HALT", "RUNNING", "MAINTENANCE"])
+rateCol = Col("Current Rate", ["450 units/hr", "0 units/hr", "620 units/hr", "0 units/hr"])
+oeeCol = Col("Line OEE", ["88.5%", "42.1%", "91.2%", "0.0%"])
+currentBatchCol = Col("Active Batch", ["#BAT-9082", "#BAT-9083", "#BAT-9079", "None"])
+
+qualityHoldCallout = TextCallout("warning", "Batches Currently on Quality Hold (2)", "Batch #BAT-9041 (Resin contamination pending lab analysis) | Batch #BAT-8992 (Dimensional variance on Line B)")
+
+lineATab = TabItem("lineA", "Focus: Line A", [lineAHeader, lineADetails])
+lineAHeader = CardHeader("Line A - Primary Assembly", "Status: Optimal")
+lineADetails = TextContent("**Current Output:** 3,600 units today | **Target:** 4,000 units\n**Speed:** 450 units/hr (100% rated capacity)\n**Active Operator:** M. Jenkins\n**Quality Rate:** 99.4%")
+
+lineBTab = TabItem("lineB", "Focus: Line B", [lineBHeader, lineBDetails])
+lineBHeader = CardHeader("Line B - Stamping Press", "Status: Stopped (Andon)")
+lineBDetails = TextContent("**Current Output:** 1,200 units today | **Target:** 5,000 units\n**Speed:** 0 units/hr (Halted)\n**Active Operator:** R. Chen\n**Issue:** Material Jam - E-Stop Active")
+
+lineCTab = TabItem("lineC", "Focus: Line C", [lineCHeader, lineCDetails])
+lineCHeader = CardHeader("Line C - High-Speed Packaging", "Status: Optimal")
+lineCDetails = TextContent("**Current Output:** 4,960 units today | **Target:** 6,000 units\n**Speed:** 620 units/hr (103% rated capacity)\n**Active Operator:** S. Patel\n**Quality Rate:** 99.8%")
+
+analyticsSection = Card([analyticsTitle, analyticsGrid], "card", "column", "m")
+analyticsTitle = Heading("Performance & Quality Analytics", "h3")
+analyticsGrid = Card([defectChart, downtimeChart, shiftChart], "clear", "row", "m")
+
+defectChart = AreaChart(["Week 1", "Week 2", "Week 3", "Week 4"], [defectSeries], "natural", "Past Month", "Defect Rate %")
+defectSeries = Series("Defect Rate (%)", [2.4, 1.8, 1.5, 1.2])
+
+downtimeChart = PieChart(["Mechanical Jam", "Sensor Failure", "Material Shortage", "Operator Delay", "Changeover"], [140, 85, 45, 30, 90], "donut")
+
+shiftChart = BarChart(["Shift 1 (Morning)", "Shift 2 (Evening)", "Shift 3 (Night)"], [targetSeries, actualSeries], "grouped", "Shift", "Units Produced")
+targetSeries = Series("Target Units", [7500, 7500, 5000])
+actualSeries = Series("Actual Units", [7820, 7380, 4850])
+
+inventoryAndDeliveries = Card([invDelGrid], "clear", "row", "m")
+
+invDelGrid = Card([inventoryCard, deliveriesCard], "clear", "row", "m")
+
+inventoryCard = Card([invHeader, invTable], "card", "column", "s")
+invHeader = CardHeader("Raw Material Stock Levels", "Key Production Consumables")
+invTable = Table([matCol, stockCol, statusMatCol])
+matCol = Col("Material", ["Structural Steel Coil", "Polypropylene Resin", "Corrugated Packaging"])
+stockCol = Col("Current Stock", ["142 Tons", "18.5 Tons", "42,000 Units"])
+statusMatCol = Col("Stock Status", ["OK (12 days)", "LOW (2 days)", "OK (8 days)"])
+
+deliveriesCard = Card([delHeader, delTable], "card", "column", "s")
+delHeader = CardHeader("Supplier Deliveries Due This Week", "Inbound Logistics")
+delTable = Table([supplierCol, matDelCol, qtyCol, etaCol])
+supplierCol = Col("Supplier", ["Apex Steel Corp", "ResinChem Ltd", "PacPro Solutions"])
+matDelCol = Col("Item", ["Steel Coil 3mm", "PP Resin Pellets", "Export Cartons"])
+qtyCol = Col("Quantity", ["40 Tons", "12 Tons", "15,000 Units"])
+etaCol = Col("Expected ETA", ["Tomorrow 08:00", "Thu 14:00", "Fri 10:30"])
+
+maintenanceAndWorkOrders = Card([maintGrid], "clear", "row", "m")
+
+maintGrid = Card([openWoCard, pmDueCard, scheduleDialogCard], "clear", "row", "m")
+
+openWoCard = Card([woHeader, woTable], "card", "column", "s")
+woHeader = CardHeader("Open Work Orders", "Active Shopfloor Maintenance")
+woTable = Table([woIdCol, woMachineCol, woIssueCol, woPriorityCol])
+woIdCol = Col("WO #", ["WO-4102", "WO-4108", "WO-4115", "WO-4119"])
+woMachineCol = Col("Machine", ["Stamping Press #2", "Conveyor C-3", "CNC Mill #4", "Robotic Welder 1"])
+woIssueCol = Col("Issue Description", ["Feeder Jam / Sensor", "Belt Tension Slack", "Spindle Vibration", "Tip Replacement"])
+woPriorityCol = Col("Priority", ["CRITICAL", "MEDIUM", "LOW", "HIGH"])
+
+pmDueCard = Card([pmHeader, pmTable], "card", "column", "s")
+pmHeader = CardHeader("Machines Due for Maintenance", "Preventive Schedule")
+pmTable = Table([pmMachineCol, pmTypeCol, pmDueCol])
+pmMachineCol = Col("Machine Name", ["Hydraulic Press #1", "Packaging Sealer B", "CNC Router #2"])
+pmTypeCol = Col("Service Type", ["250-Hr Hydraulic Flush", "Heating Element Check", "Axis Recalibration"])
+pmDueCol = Col("Overdue/Due", ["Overdue by 2 days", "Due Today", "Due in 3 days"])
+
+scheduleDialogCard = Card([schedHeader, schedForm], "card", "column", "s")
+schedHeader = CardHeader("Quick Maintenance Scheduler", "Assign Work Order")
+schedForm = Form("schedule_maint", formBtns, [machControl, dateControl, techControl])
+machControl = FormControl("Select Machine", machSelect)
+machSelect = Select("machine", [m1, m2, m3, m4], "Choose equipment...")
+m1 = SelectItem("press2", "Stamping Press #2")
+m2 = SelectItem("press1", "Hydraulic Press #1")
+m3 = SelectItem("sealerB", "Packaging Sealer B")
+m4 = SelectItem("cnc2", "CNC Router #2")
+
+dateControl = FormControl("Scheduled Date", datePicker)
+datePicker = DatePicker("maint_date", "single")
+
+techControl = FormControl("Assign Technician", techInput)
+techInput = Input("tech_name", "e.g. J. Doe")
+
+formBtns = Buttons([submitSchedBtn, exportReportBtn])
+submitSchedBtn = Button("Schedule Maintenance", null, "primary")
+exportReportBtn = Button("Export Shift Report (PDF/CSV)", null, "secondary")
+
+followUp = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Acknowledge Line B Andon alert and notify lead technician")
+f2 = FollowUpItem("Reassign 2 operators from Line D to Line A")
+f3 = FollowUpItem("Generate supplier expedited order for Polypropylene Resin")

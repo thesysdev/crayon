@@ -1,0 +1,633 @@
+A complete hub operations desk — on-time, loads, turnarounds, cancellations, flights, delays, gates, crews, weather and at-risk connections in one view.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "hubSelectorCard",
+          "kpiRow",
+          "alertDelayed",
+          "weatherCallout",
+          "flightsCard",
+          "midRow",
+          "connectionsCard",
+          "actionsCard"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Hub Operations — ORD • Chicago O'Hare",
+        "subtitle": "Live desk • Today 11:42 AM CDT • 86 flights scheduled"
+      },
+      {
+        "id": "hubSelectorCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "hubForm"
+        ]
+      },
+      {
+        "id": "hubForm",
+        "component": "Form",
+        "name": "hub-switcher",
+        "buttons": "hubButtons",
+        "fields": [
+          "hubFormControl"
+        ]
+      },
+      {
+        "id": "hubFormControl",
+        "component": "FormControl",
+        "label": "View different hub",
+        "input": "hubSelect",
+        "hint": "Switch to monitor another hub without leaving this screen"
+      },
+      {
+        "id": "hubSelect",
+        "component": "Select",
+        "name": "hub",
+        "placeholder": "ORD - Chicago O'Hare (current)",
+        "items": [
+          "hubORD",
+          "hubDFW",
+          "hubATL",
+          "hubLAX",
+          "hubDEN"
+        ],
+        "value": "ORD"
+      },
+      {
+        "id": "hubORD",
+        "component": "SelectItem",
+        "value": "ORD",
+        "label": "ORD - Chicago O'Hare"
+      },
+      {
+        "id": "hubDFW",
+        "component": "SelectItem",
+        "value": "DFW",
+        "label": "DFW - Dallas/Fort Worth"
+      },
+      {
+        "id": "hubATL",
+        "component": "SelectItem",
+        "value": "ATL",
+        "label": "ATL - Atlanta"
+      },
+      {
+        "id": "hubLAX",
+        "component": "SelectItem",
+        "value": "LAX",
+        "label": "LAX - Los Angeles"
+      },
+      {
+        "id": "hubDEN",
+        "component": "SelectItem",
+        "value": "DEN",
+        "label": "DEN - Denver"
+      },
+      {
+        "id": "hubButtons",
+        "component": "Buttons",
+        "buttons": [
+          "hubApplyBtn"
+        ]
+      },
+      {
+        "id": "hubApplyBtn",
+        "component": "Button",
+        "label": "Switch Hub",
+        "variant": "secondary"
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "kpiOTP",
+          "kpiLoad",
+          "kpiTurn",
+          "kpiCancel"
+        ]
+      },
+      {
+        "id": "kpiOTP",
+        "component": "Card",
+        "children": [
+          "otpHeading",
+          "otpProgress",
+          "otpBadge",
+          "otpSub"
+        ],
+        "gap": "s"
+      },
+      {
+        "id": "otpHeading",
+        "component": "Heading",
+        "text": "On-Time Performance Today",
+        "level": "h4"
+      },
+      {
+        "id": "otpProgress",
+        "component": "Progress",
+        "value": 78,
+        "label": "78% on-time"
+      },
+      {
+        "id": "otpBadge",
+        "component": "Badge",
+        "text": "Below target 85%",
+        "variant": "destructive"
+      },
+      {
+        "id": "otpSub",
+        "component": "TextContent",
+        "text": "61 of 78 operated flights on-time • 14 delayed • 3 cancelled",
+        "size": "small"
+      },
+      {
+        "id": "kpiLoad",
+        "component": "Card",
+        "children": [
+          "loadHeading",
+          "loadProgress",
+          "loadSub"
+        ],
+        "gap": "s"
+      },
+      {
+        "id": "loadHeading",
+        "component": "Heading",
+        "text": "Avg Passenger Load",
+        "level": "h4"
+      },
+      {
+        "id": "loadProgress",
+        "component": "Progress",
+        "value": 84,
+        "label": "84% load factor"
+      },
+      {
+        "id": "loadSub",
+        "component": "TextContent",
+        "text": "9,420 pax today • 11,210 seats • LF +3% vs yesterday",
+        "size": "small"
+      },
+      {
+        "id": "kpiTurn",
+        "component": "Card",
+        "children": [
+          "turnHeading",
+          "turnText",
+          "turnSub2"
+        ],
+        "gap": "s"
+      },
+      {
+        "id": "turnHeading",
+        "component": "Heading",
+        "text": "Avg Turnaround Time",
+        "level": "h4"
+      },
+      {
+        "id": "turnText",
+        "component": "TextContent",
+        "text": "42 min",
+        "size": "large-heavy"
+      },
+      {
+        "id": "turnSub2",
+        "component": "TextContent",
+        "text": "Target 38 min • 6 aircraft currently in turn • Longest: UA4509 (58 min at A04)",
+        "size": "small"
+      },
+      {
+        "id": "kpiCancel",
+        "component": "Card",
+        "children": [
+          "cancelHeading",
+          "cancelBadge",
+          "cancelSub"
+        ],
+        "gap": "s"
+      },
+      {
+        "id": "cancelHeading",
+        "component": "Heading",
+        "text": "Cancellations Today",
+        "level": "h4"
+      },
+      {
+        "id": "cancelBadge",
+        "component": "Badge",
+        "text": "3 CANCELLED",
+        "variant": "destructive"
+      },
+      {
+        "id": "cancelSub",
+        "component": "TextContent",
+        "text": "UA772 SFO-ORD (crew) • AA412 ORD-MIA (mech) • DL109 ORD-JFK (weather)",
+        "size": "small"
+      },
+      {
+        "id": "alertDelayed",
+        "component": "Alert",
+        "title": "Delayed Flights — 4 requiring attention",
+        "description": "AA1243 JFK→ORD (Gate C07) +50m • SW3317 ATL→ORD (B22) +35m • DL4401 SEA→ORD (B08) +28m • AA1987 MIA→ORD (C14) +18m. 47 passengers with at-risk connections.",
+        "variant": "warning"
+      },
+      {
+        "id": "weatherCallout",
+        "component": "TextCallout",
+        "variant": "warning",
+        "title": "Weather Advisory — ORD Hub",
+        "description": "⚡ Thunderstorm Watch until 15:00 CDT. Ground Delay Program active (avg +22 min). Crosswinds 18kt gusting 28kt on 10L/28R. Lightning risk 13:00-14:30. De-icing not required."
+      },
+      {
+        "id": "flightsCard",
+        "component": "Card",
+        "children": [
+          "flightsHeader",
+          "flightsTable"
+        ]
+      },
+      {
+        "id": "flightsHeader",
+        "component": "CardHeader",
+        "title": "Today's Flights",
+        "subtitle": "8 next arrivals/departures • Status live • Gate changes highlighted"
+      },
+      {
+        "id": "flightsTable",
+        "component": "Table",
+        "columns": [
+          "colFlight",
+          "colRoute",
+          "colGate",
+          "colStatus",
+          "colSched"
+        ]
+      },
+      {
+        "id": "colFlight",
+        "component": "Col",
+        "label": "Flight",
+        "data": [
+          "AA1243",
+          "DL8821",
+          "UA4509",
+          "SW3317",
+          "AA1987",
+          "UA772",
+          "DL4401",
+          "AA302"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colRoute",
+        "component": "Col",
+        "label": "Route",
+        "data": [
+          "JFK → ORD",
+          "LAX → ORD",
+          "DEN → ORD",
+          "ATL → ORD",
+          "MIA → ORD",
+          "SFO → ORD",
+          "SEA → ORD",
+          "BOS → ORD"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colGate",
+        "component": "Col",
+        "label": "Gate",
+        "data": [
+          "C07*",
+          "B12",
+          "A04",
+          "B22*",
+          "C14",
+          "A11",
+          "B08*",
+          "C03"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Delayed",
+          "On Time",
+          "Boarding",
+          "Delayed",
+          "On Time",
+          "Cancelled",
+          "Delayed",
+          "On Time"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colSched",
+        "component": "Col",
+        "label": "Scheduled",
+        "data": [
+          "09:15 → 10:05",
+          "09:40",
+          "10:05",
+          "10:20 → 10:55",
+          "10:45",
+          "11:10",
+          "11:30 → 11:58",
+          "11:55"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "midRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "gateChangesCard",
+          "crewCard"
+        ]
+      },
+      {
+        "id": "gateChangesCard",
+        "component": "Card",
+        "children": [
+          "gateChangesHeader",
+          "gateChangesList"
+        ]
+      },
+      {
+        "id": "gateChangesHeader",
+        "component": "CardHeader",
+        "title": "Recent Gate Changes",
+        "subtitle": "Last 60 minutes • 3 changes"
+      },
+      {
+        "id": "gateChangesList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "gateItem1",
+          "gateItem2",
+          "gateItem3"
+        ]
+      },
+      {
+        "id": "gateItem1",
+        "component": "ListItem",
+        "title": "AA1243: B12 → C07",
+        "subtitle": "10:42 AM • JFK→ORD • Reason: Accommodate widebody • Pax notified"
+      },
+      {
+        "id": "gateItem2",
+        "component": "ListItem",
+        "title": "SW3317: B14 → B22",
+        "subtitle": "09:58 AM • ATL→ORD • Reason: B14 ground equipment issue"
+      },
+      {
+        "id": "gateItem3",
+        "component": "ListItem",
+        "title": "DL4401: C09 → B08",
+        "subtitle": "09:33 AM • SEA→ORD • Reason: C09 jet bridge maintenance"
+      },
+      {
+        "id": "crewCard",
+        "component": "Card",
+        "children": [
+          "crewHeader",
+          "crewTable"
+        ]
+      },
+      {
+        "id": "crewHeader",
+        "component": "CardHeader",
+        "title": "Crews Available for Reassignment",
+        "subtitle": "4 crews on reserve/ready • Tap to assign"
+      },
+      {
+        "id": "crewTable",
+        "component": "Table",
+        "columns": [
+          "crewColId",
+          "crewColRole",
+          "crewColAvail",
+          "crewColBase"
+        ]
+      },
+      {
+        "id": "crewColId",
+        "component": "Col",
+        "label": "Crew",
+        "data": [
+          "CR-07",
+          "CR-14",
+          "CR-19",
+          "CR-22"
+        ]
+      },
+      {
+        "id": "crewColRole",
+        "component": "Col",
+        "label": "Composition",
+        "data": [
+          "Capt + FO",
+          "3 FA",
+          "Capt + FO",
+          "2 FA"
+        ]
+      },
+      {
+        "id": "crewColAvail",
+        "component": "Col",
+        "label": "Available",
+        "data": [
+          "Now",
+          "11:30",
+          "Now (Reserve)",
+          "12:00 (Reserve)"
+        ]
+      },
+      {
+        "id": "crewColBase",
+        "component": "Col",
+        "label": "Duty Left",
+        "data": [
+          "6h 20m",
+          "8h 10m",
+          "9h 00m",
+          "7h 45m"
+        ]
+      },
+      {
+        "id": "connectionsCard",
+        "component": "Card",
+        "children": [
+          "connectionsHeader",
+          "connectionsTable"
+        ]
+      },
+      {
+        "id": "connectionsHeader",
+        "component": "CardHeader",
+        "title": "Connections at Risk of Being Missed",
+        "subtitle": "4 connections • 48 passengers • Auto-flagged <60 min window"
+      },
+      {
+        "id": "connectionsTable",
+        "component": "Table",
+        "columns": [
+          "connColPax",
+          "connColInbound",
+          "connColOutbound",
+          "connColWindow",
+          "connColRisk"
+        ]
+      },
+      {
+        "id": "connColPax",
+        "component": "Col",
+        "label": "Pax",
+        "data": [
+          "12",
+          "8",
+          "23",
+          "5"
+        ],
+        "type": "number"
+      },
+      {
+        "id": "connColInbound",
+        "component": "Col",
+        "label": "Inbound (Status)",
+        "data": [
+          "AA1243 Delayed",
+          "SW3317 Delayed",
+          "DL4401 Delayed",
+          "UA772 Cancelled"
+        ]
+      },
+      {
+        "id": "connColOutbound",
+        "component": "Col",
+        "label": "Outbound",
+        "data": [
+          "AA3021 ORD→LHR 10:40 C12",
+          "SW881 ORD→PHX 11:05 B22",
+          "DL210 ORD→AMS 12:10 B08",
+          "UA445 ORD→DEN 12:00 A04"
+        ]
+      },
+      {
+        "id": "connColWindow",
+        "component": "Col",
+        "label": "Connect Time",
+        "data": [
+          "35 min",
+          "45 min",
+          "40 min",
+          "—"
+        ]
+      },
+      {
+        "id": "connColRisk",
+        "component": "Col",
+        "label": "Risk",
+        "data": [
+          "HIGH",
+          "MEDIUM",
+          "HIGH",
+          "CRITICAL"
+        ]
+      },
+      {
+        "id": "actionsCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "actionsHeader",
+          "rebookDialog",
+          "quickButtons"
+        ]
+      },
+      {
+        "id": "actionsHeader",
+        "component": "CardHeader",
+        "title": "Rebook Affected Passengers",
+        "subtitle": "47 passengers impacted by delays + cancellations • 4 connections at risk"
+      },
+      {
+        "id": "rebookDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Rebook 47 Affected Passengers",
+        "title": "Rebook Affected Passengers",
+        "description": "Rebook HIGH/CRITICAL connections and UA772 cancelled flight. System will propose next available flights with seat protection.",
+        "content": [
+          "rebookDialogText"
+        ],
+        "triggerVariant": "default"
+      },
+      {
+        "id": "rebookDialogText",
+        "component": "TextContent",
+        "text": "Proposed: AA3021 → AA3023 (13:20) for 12 pax, DL210 → DL212 (15:40) for 23 pax, UA772 → UA445/UA449 for 5 pax. Auto-notify via SMS/app. Crew CR-07 and CR-19 available to cover.",
+        "size": "small"
+      },
+      {
+        "id": "quickButtons",
+        "component": "Buttons",
+        "buttons": [
+          "standbyBtn",
+          "refreshBtn"
+        ]
+      },
+      {
+        "id": "standbyBtn",
+        "component": "Button",
+        "label": "View Standby & Alternate Flights",
+        "variant": "secondary"
+      },
+      {
+        "id": "refreshBtn",
+        "component": "Button",
+        "label": "Refresh Ops Data",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>

@@ -1,0 +1,104 @@
+root = Card([header, mainGrid, formsSection, followUps])
+
+header = CardHeader("Hospital Operations Command Center", "Real-time facility monitoring & operational dashboard")
+
+mainGrid = Card([topMetrics, criticalAlerts, capacitySection, clinicalOpsSection, logisticsSection], "clear", "column", "m")
+
+topMetrics = Card([bedOccupancyCard, erWaitCard, dischargeCard], "clear", "row", "m")
+
+bedOccupancyCard = Card([bedHeader, bedProgress, bedDetails], "card", "column", "s")
+bedHeader = CardHeader("Bed Occupancy", "92% Capacity")
+bedProgress = Progress(92, "414 / 450 Beds Occupied")
+bedDetails = TagBlock(["ICU: 98%", "Med-Surg: 90%", "Pediatrics: 75%"])
+
+erWaitCard = Card([erHeader, erWaitTime, erCallout], "card", "column", "s")
+erHeader = CardHeader("Current ER Wait", "Level 1 Trauma Center")
+erWaitTime = TextContent("42 mins", "large-heavy")
+erCallout = TextCallout("warning", "High Triage Volume", "14 patients currently in waiting area. 3 high acuity.")
+
+dischargeCard = Card([dischargeHeader, dischargeList], "card", "column", "s")
+dischargeHeader = CardHeader("Ready for Discharge", "8 Patients Pending Transport")
+dischargeList = ListBlock([discharge1, discharge2, discharge3])
+discharge1 = ListItem("Eleanor Vance", "Bed 302-B • Med-Surg • Transport Confirmed")
+discharge2 = ListItem("Marcus Brody", "Bed 412-A • Cardiology • Awaiting Rx")
+discharge3 = ListItem("Sophia Chen", "Bed 108-C • Pediatrics • Papers Signed")
+
+criticalAlerts = Callout("error", "Critical Patient Escalations", "2 ICU patients require immediate attending review: Bed 601 (Sepsis Protocol) & Bed 604 (Post-Op Cardiac Arrest).")
+
+capacitySection = Card([admissionsChart, deptChart], "clear", "row", "m")
+
+admissionsChart = LineChart(["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Day 6", "Day 7", "Day 8", "Day 9", "Day 10", "Day 11", "Day 12", "Day 13", "Day 14"], [admissionsSeries], "natural", "Past 14 Days", "Admissions")
+admissionsSeries = Series("Daily Admissions", [42, 38, 45, 50, 52, 61, 48, 44, 49, 53, 58, 65, 51, 47])
+
+deptChart = BarChart(["Emergency", "Cardiology", "Orthopedics", "Pediatrics", "Neurology", "ICU"], [deptSeries], "grouped", "Department", "Patients")
+deptSeries = Series("Current Census", [45, 62, 38, 28, 34, 24])
+
+clinicalOpsSection = Card([orBookingsTable, staffListCard], "clear", "row", "m")
+
+orBookingsTable = Card([orHeader, orTable], "card", "column", "s")
+orHeader = CardHeader("Today's OR Schedule", "Operating Rooms 1 - 4")
+orTable = Table([orRoomCol, orProcedureCol, orSurgeonCol, orStatusCol])
+orRoomCol = Col("OR", ["OR-1", "OR-2", "OR-3", "OR-4"])
+orProcedureCol = Col("Procedure", ["Coronary Bypass", "Total Hip Arthroplasty", "Emergency Appendectomy", "Craniotomy"])
+orSurgeonCol = Col("Surgeon", ["Dr. Reynolds", "Dr. Vance", "Dr. Patel", "Dr. Zhang"])
+orStatusCol = Col("Status", ["In Progress", "Pre-Op Prep", "Scheduled (13:00)", "Scheduled (14:30)"])
+
+staffListCard = Card([staffHeader, staffList], "card", "column", "s")
+staffHeader = CardHeader("Active Staff on Shift", "Day Shift • 07:00 - 19:00")
+staffList = ListBlock([staff1, staff2, staff3, staff4])
+staff1 = ListItem("Dr. Sarah Jenkins", "Attending Physician • Emergency")
+staff2 = ListItem("Robert Miller, RN", "Charge Nurse • ICU")
+staff3 = ListItem("Elena Rostova, RT", "Respiratory Therapist • Critical Care")
+staff4 = ListItem("Dr. James Wilson", "Chief Anesthesiologist • OR Block")
+
+logisticsSection = Card([suppliesCard, dateSelectCard], "clear", "row", "m")
+
+suppliesCard = Card([suppliesHeader, suppliesCallout, suppliesList], "card", "column", "s")
+suppliesHeader = CardHeader("Supplies Running Low", "Inventory Alerts")
+suppliesCallout = TextCallout("danger", "Restock Required", "Critical stock thresholds reached in ER & ICU central supply.")
+suppliesList = TagBlock(["N95 Masks: 12% Left", "IV Cannula 20G: 8% Left", "Saline Bags 1000ml: 15% Left", "Surgical Gloves (M): 5% Left"])
+
+dateSelectCard = Card([dateHeader, datePickerComp], "card", "column", "s")
+dateHeader = CardHeader("Historical View", "Select date to inspect past command logs")
+datePickerComp = DatePicker("view_date", "single")
+
+formsSection = Card([incidentFormCard, transferFormCard], "clear", "row", "m")
+
+incidentFormCard = Card([incidentHeader, incidentForm], "card", "column", "s")
+incidentHeader = CardHeader("File Safety / Operational Incident", "Logs directly to Risk Management")
+incidentForm = Form("incident_form", incidentBtns, [incLocationField, incSeverityField, incDescField])
+incLocationField = FormControl("Location", incLocInput)
+incLocInput = Input("incident_location", "e.g. ER Bay 3, OR Hallway B")
+incSeverityField = FormControl("Severity Level", incSevSelect)
+incSevSelect = Select("severity", [sev1, sev2, sev3], "Select severity")
+sev1 = SelectItem("low", "Low - Minor issue / Near miss")
+sev2 = SelectItem("medium", "Medium - Disruptive / Non-critical injury")
+sev3 = SelectItem("high", "High - Severe safety compromise / Critical event")
+incDescField = FormControl("Incident Description", incDescInput)
+incDescInput = TextArea("incident_desc", "Describe what happened...", 3)
+incidentBtns = Buttons([submitIncidentBtn])
+submitIncidentBtn = Button("Submit Incident Report", null, "primary")
+
+transferFormCard = Card([transferHeader, transferForm], "card", "column", "s")
+transferHeader = CardHeader("Request Patient Transfer", "Inter-unit or external facility transfer")
+transferForm = Form("transfer_form", transferBtns, [transPatientField, transDestField, transPriorityField])
+transPatientField = FormControl("Patient Name / MRN", transPatientInput)
+transPatientInput = Input("patient_id", "e.g. John Doe #94821")
+transDestField = FormControl("Destination Unit", transDestSelect)
+transDestSelect = Select("destination", [dest1, dest2, dest3, dest4], "Select destination unit")
+dest1 = SelectItem("icu", "Intensive Care Unit (ICU)")
+dest2 = SelectItem("medsurg", "General Med-Surg")
+dest3 = SelectItem("peds", "Pediatric Wing")
+dest4 = SelectItem("external", "External Specialty Hospital")
+transPriorityField = FormControl("Transfer Priority", transPriorityRadio)
+transPriorityRadio = RadioGroup("priority", [prioRoutine, prioUrgent, prioStat])
+prioRoutine = RadioItem("Routine", "Within 4 hours", "routine")
+prioUrgent = RadioItem("Urgent", "Within 1 hour", "urgent")
+prioStat = RadioItem("STAT", "Immediate transport required", "stat")
+transferBtns = Buttons([submitTransferBtn])
+submitTransferBtn = Button("Request Transfer", null, "primary")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Show detailed ICU bed breakdown")
+f2 = FollowUpItem("View staff directory for night shift")
+f3 = FollowUpItem("Print today's OR surgical roster")

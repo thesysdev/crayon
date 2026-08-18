@@ -1,0 +1,408 @@
+Here is a complete month-end finance overview dashboard designed specifically for a startup, covering cash metrics, expense breakdowns, high-value transactions, date controls, and export capability.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "topControls",
+          "kpisContainer",
+          "expensesAndChartTabs",
+          "largeTransactionsCard",
+          "followUps"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Month-End Finance View",
+        "subtitle": "Overview of cash, burn rate, expense breakdown, and large transactions"
+      },
+      {
+        "id": "topControls",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "align": "center",
+        "justify": "between",
+        "gap": "m",
+        "children": [
+          "monthSelectorField",
+          "actionButtons"
+        ]
+      },
+      {
+        "id": "monthSelectorField",
+        "component": "FormControl",
+        "label": "Select Statement Month",
+        "input": "monthSelect",
+        "hint": "Viewing data for the selected calendar month"
+      },
+      {
+        "id": "monthSelect",
+        "component": "Select",
+        "name": "selectedMonth",
+        "placeholder": "Choose month",
+        "value": "2023-10",
+        "items": [
+          "monthOct",
+          "monthSep",
+          "monthAug",
+          "monthJul"
+        ]
+      },
+      {
+        "id": "monthOct",
+        "component": "SelectItem",
+        "value": "2023-10",
+        "label": "October 2023 (Current)"
+      },
+      {
+        "id": "monthSep",
+        "component": "SelectItem",
+        "value": "2023-09",
+        "label": "September 2023"
+      },
+      {
+        "id": "monthAug",
+        "component": "SelectItem",
+        "value": "2023-08",
+        "label": "August 2023"
+      },
+      {
+        "id": "monthJul",
+        "component": "SelectItem",
+        "value": "2023-07",
+        "label": "July 2023"
+      },
+      {
+        "id": "actionButtons",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": [
+          "downloadBtn",
+          "shareBtn"
+        ]
+      },
+      {
+        "id": "downloadBtn",
+        "component": "Button",
+        "label": "Download Statement",
+        "variant": "primary"
+      },
+      {
+        "id": "shareBtn",
+        "component": "Button",
+        "label": "Export CSV",
+        "variant": "secondary"
+      },
+      {
+        "id": "kpisContainer",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "cashCard",
+          "burnCard",
+          "runwayCard"
+        ]
+      },
+      {
+        "id": "cashCard",
+        "component": "Card",
+        "variant": "card",
+        "weight": 1,
+        "children": [
+          "cashBadge",
+          "cashHeading",
+          "cashSub"
+        ]
+      },
+      {
+        "id": "cashBadge",
+        "component": "Badge",
+        "text": "1. Cash on Hand",
+        "variant": "default"
+      },
+      {
+        "id": "cashHeading",
+        "component": "Heading",
+        "text": "$1,245,000",
+        "level": "h2"
+      },
+      {
+        "id": "cashSub",
+        "component": "TextContent",
+        "text": "Checking: $445,000 | Treasury: $800,000",
+        "size": "small"
+      },
+      {
+        "id": "burnCard",
+        "component": "Card",
+        "variant": "card",
+        "weight": 1,
+        "children": [
+          "burnBadge",
+          "burnHeading",
+          "burnSub"
+        ]
+      },
+      {
+        "id": "burnBadge",
+        "component": "Badge",
+        "text": "2. Monthly Burn Rate",
+        "variant": "secondary"
+      },
+      {
+        "id": "burnHeading",
+        "component": "Heading",
+        "text": "$85,000 / mo",
+        "level": "h2"
+      },
+      {
+        "id": "burnSub",
+        "component": "TextContent",
+        "text": "-4.2% vs. previous month ($88,700)",
+        "size": "small"
+      },
+      {
+        "id": "runwayCard",
+        "component": "Card",
+        "variant": "card",
+        "weight": 1,
+        "children": [
+          "runwayBadge",
+          "runwayHeading",
+          "runwayProgress"
+        ]
+      },
+      {
+        "id": "runwayBadge",
+        "component": "Badge",
+        "text": "3. Months of Runway",
+        "variant": "outline"
+      },
+      {
+        "id": "runwayHeading",
+        "component": "Heading",
+        "text": "14.6 Months",
+        "level": "h2"
+      },
+      {
+        "id": "runwayProgress",
+        "component": "Progress",
+        "value": 73,
+        "label": "Target: >12 Months"
+      },
+      {
+        "id": "expensesAndChartTabs",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "expensesHeader",
+          "expensesPieChart",
+          "expensesTable"
+        ]
+      },
+      {
+        "id": "expensesHeader",
+        "component": "CardHeader",
+        "title": "4. Expenses Split by Category",
+        "subtitle": "Total monthly operating expenses: $112,500"
+      },
+      {
+        "id": "expensesPieChart",
+        "component": "PieChart",
+        "variant": "donut",
+        "appearance": "circular",
+        "labels": [
+          "Payroll & Benefits",
+          "Cloud & Infrastructure",
+          "Software & SaaS",
+          "Marketing & Growth",
+          "Office & Legal"
+        ],
+        "values": [
+          62000,
+          18500,
+          14000,
+          11000,
+          7000
+        ]
+      },
+      {
+        "id": "expensesTable",
+        "component": "Table",
+        "columns": [
+          "colCategory",
+          "colAmount",
+          "colShare"
+        ]
+      },
+      {
+        "id": "colCategory",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Payroll & Benefits",
+          "Cloud & Infrastructure",
+          "Software & SaaS",
+          "Marketing & Growth",
+          "Office & Legal"
+        ]
+      },
+      {
+        "id": "colAmount",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "$62,000",
+          "$18,500",
+          "$14,000",
+          "$11,000",
+          "$7,000"
+        ]
+      },
+      {
+        "id": "colShare",
+        "component": "Col",
+        "label": "% of Total",
+        "data": [
+          "55.1%",
+          "16.4%",
+          "12.4%",
+          "9.8%",
+          "6.2%"
+        ]
+      },
+      {
+        "id": "largeTransactionsCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "largeTxHeader",
+          "txAlert",
+          "largeTxTable"
+        ]
+      },
+      {
+        "id": "largeTxHeader",
+        "component": "CardHeader",
+        "title": "5. Transactions Above $10,000 This Month",
+        "subtitle": "High-value debits and credits requiring verification"
+      },
+      {
+        "id": "txAlert",
+        "component": "Alert",
+        "title": "3 High-Value Transactions Flagged",
+        "description": "Transactions over $10,000 total $65,500 this month.",
+        "variant": "info"
+      },
+      {
+        "id": "largeTxTable",
+        "component": "Table",
+        "columns": [
+          "txDate",
+          "txVendor",
+          "txCategory",
+          "txAmount",
+          "txStatus"
+        ]
+      },
+      {
+        "id": "txDate",
+        "component": "Col",
+        "label": "Date",
+        "data": [
+          "Oct 01, 2023",
+          "Oct 12, 2023",
+          "Oct 24, 2023"
+        ]
+      },
+      {
+        "id": "txVendor",
+        "component": "Col",
+        "label": "Vendor / Payee",
+        "data": [
+          "Gusto Payroll Services",
+          "Amazon Web Services (AWS)",
+          "Google Ads Manager"
+        ]
+      },
+      {
+        "id": "txCategory",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Payroll & Benefits",
+          "Cloud & Infrastructure",
+          "Marketing & Growth"
+        ]
+      },
+      {
+        "id": "txAmount",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "$42,000.00",
+          "$12,500.00",
+          "$11,000.00"
+        ]
+      },
+      {
+        "id": "txStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Verified",
+          "Verified",
+          "Pending Review"
+        ]
+      },
+      {
+        "id": "followUps",
+        "component": "FollowUpBlock",
+        "items": [
+          "followUp1",
+          "followUp2",
+          "followUp3"
+        ]
+      },
+      {
+        "id": "followUp1",
+        "component": "FollowUpItem",
+        "text": "Email month-end summary to investors"
+      },
+      {
+        "id": "followUp2",
+        "component": "FollowUpItem",
+        "text": "View burn rate projections for next quarter"
+      },
+      {
+        "id": "followUp3",
+        "component": "FollowUpItem",
+        "text": "Categorize remaining pending expenses"
+      }
+    ]
+  }
+}
+</a2ui-json>

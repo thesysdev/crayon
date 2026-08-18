@@ -1,0 +1,35 @@
+root = Card([header, kpis, sep1, filterCard, sep2, ticketTable, followUps])
+header = CardHeader("Support Lead Dashboard", "Morning Overview & Queue Management")
+
+kpis = Card([openKpi, respKpi], "clear", "row", "m")
+openKpi = Card([openVal, openLabel], "sunk", "column", "xs", "center", "center")
+openVal = Heading("42", "h1")
+openLabel = TextContent("Open Tickets", "small-heavy")
+
+respKpi = Card([respVal, respLabel], "sunk", "column", "xs", "center", "center")
+respVal = Heading("18m", "h1")
+respLabel = TextContent("Avg First-Response Time", "small-heavy")
+
+sep1 = Separator("horizontal")
+
+filterCard = Card([filterHeading, filterButtons], "clear", "row", "m", "center", "between")
+filterHeading = Heading("Ticket Queue", "h3")
+filterButtons = Buttons([allBtn, highPriBtn, newTicketBtn])
+allBtn = Button("All Tickets", null, "secondary", "normal", "small")
+highPriBtn = Button("High Priority Only", null, "primary", "normal", "small")
+newTicketBtn = Button("+ New Ticket", null, "tertiary", "normal", "small")
+
+sep2 = Separator("horizontal")
+
+ticketTable = Table([colId, colSubject, colCustomer, colPriority, colStatus, colCreated])
+colId = Col("Ticket ID", ["#TK-1092", "#TK-1091", "#TK-1090", "#TK-1089", "#TK-1088"])
+colSubject = Col("Subject", ["SSO Login failure on Mobile App", "Billing API returning 500 error", "Request for extra seat licenses", "Dashboard metrics not updating", "Export CSV failing on large datasets"])
+colCustomer = Col("Customer", ["Acme Corp", "TechStart Inc", "GlobalLogistics", "Nexus Systems", "DataFlow LLC"])
+colPriority = Col("Priority", ["HIGH", "HIGH", "Medium", "HIGH", "Low"])
+colStatus = Col("Status", ["Open", "In Progress", "Open", "Open", "Pending Vendor"])
+colCreated = Col("Created", ["10m ago", "24m ago", "45m ago", "1h ago", "2h ago"])
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Show high priority tickets only")
+f2 = FollowUpItem("Assign #TK-1092 to senior engineer")
+f3 = FollowUpItem("View first-response time trend for this week")

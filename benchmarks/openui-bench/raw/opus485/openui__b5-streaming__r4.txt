@@ -1,0 +1,77 @@
+root = Card([header, liveNow, healthAlert, topTitles, watchTrend, subsVsCancels, genrePerf, buffering, regionHealth, upcoming, licenses, recoClicks, deadSearches, revenueByPlan, deviceSplit, regionFocus, featureFlags, promoteAction, followups])
+
+header = CardHeader("Operations Room", "Live streaming health & content overview")
+
+liveNow = Callout("info", "Viewers Watching Now", "1,284,930 concurrent viewers across all regions")
+
+healthAlert = Alert("Buffering elevated in APAC", "Buffering rate in APAC is above target at 2.4%", "warning")
+
+topTitles = Table([titleName, titleHours])
+titleName = Col("Title", ["Nebula Drift", "The Long Winter", "Chef's Table Live", "Quantum Heist", "Harbor Lights"])
+titleHours = Col("Hours Watched", [4820000, 3910000, 3120000, 2870000, 2210000], "number")
+
+watchTrend = AreaChart(["Wk1", "Wk2", "Wk3", "Wk4"], [watchSeries], "natural", "Week", "Million Hours")
+watchSeries = Series("Watch Time", [182, 196, 210, 233])
+
+subsVsCancels = BarChart(["Wk1", "Wk2", "Wk3", "Wk4"], [newSubs, cancels], "grouped", "Week", "Accounts")
+newSubs = Series("New Subscribers", [84200, 91500, 78300, 96800])
+cancels = Series("Cancellations", [31200, 28900, 34100, 30500])
+
+genrePerf = RadarChart(["Drama", "Comedy", "Action", "Docs", "Kids", "Horror"], [genreSeries])
+genreSeries = Series("Avg Watch Score", [88, 74, 91, 66, 79, 58])
+
+buffering = Progress(2.4, "Global Buffering Rate: 2.4%")
+
+regionHealth = HorizontalBarChart(["North America", "Europe", "LATAM", "APAC", "MENA"], [healthSeries], "grouped", "Health Score", "Region")
+healthSeries = Series("Delivery Health %", [99.2, 98.7, 97.4, 95.1, 96.8])
+
+upcoming = ListBlock([rel1, rel2, rel3])
+rel1 = ListItem("Nebula Drift: Season 2", "Original series • Mar 14")
+rel2 = ListItem("The Silent Coast", "Feature film • Mar 21")
+rel3 = ListItem("Comedy Central Roast", "Live special • Mar 28")
+
+licenses = Table([licTitle, licDate])
+licTitle = Col("Licensed Title", ["Retro Classics Pack", "Sports Archive 2019", "Indie Film Bundle"])
+licDate = Col("Expires", ["Mar 30", "Apr 08", "Apr 15"])
+
+recoClicks = RadialChart(["Recommendation CTR"], [37])
+
+deadSearches = SingleStackedBarChart(["Played", "No Playback"], [812000, 148000])
+
+revenueByPlan = PieChart(["Basic", "Standard", "Premium", "Ads"], [12.4, 28.9, 41.2, 17.5], "donut")
+
+deviceSplit = PieChart(["Smart TV", "Mobile", "Web", "Tablet", "Console"], [46, 24, 15, 8, 7], "pie")
+
+regionFocus = Form("region-focus", focusButtons, [regionField])
+regionField = FormControl("Focus Region", regionSelect)
+regionSelect = Select("region", [rNA, rEU, rLATAM, rAPAC, rMENA], "Select a region")
+rNA = SelectItem("na", "North America")
+rEU = SelectItem("eu", "Europe")
+rLATAM = SelectItem("latam", "LATAM")
+rAPAC = SelectItem("apac", "APAC")
+rMENA = SelectItem("mena", "MENA")
+focusButtons = Buttons([applyFocus])
+applyFocus = Button("Apply Focus", null, "primary")
+
+featureFlags = SwitchGroup("feature-flags", [flagUI, flagReco, flag4k, flagOffline], "card")
+flagUI = SwitchItem("New Home UI", "Redesigned landing experience", "new_ui", true)
+flagReco = SwitchItem("ML Recommendations v3", "Upgraded ranking model", "reco_v3", true)
+flag4k = SwitchItem("4K on Mobile", "High-res on cellular", "mobile_4k", false)
+flagOffline = SwitchItem("Offline Downloads", "Save titles for offline", "offline_dl", true)
+
+promoteAction = DialogBlock("Promote Title on Home Screen", "Promote a Title", "Feature a title in the hero banner", [promoteForm], "default")
+promoteForm = Form("promote-title", promoteButtons, [promoTitleField, promoSlotField])
+promoTitleField = FormControl("Title to Promote", promoTitleInput)
+promoTitleInput = Input("promo_title", "e.g. Nebula Drift")
+promoSlotField = FormControl("Placement Slot", promoSlotSelect)
+promoSlotSelect = Select("slot", [slotHero, slotRow1, slotTrend], "Choose placement")
+slotHero = SelectItem("hero", "Hero Banner")
+slotRow1 = SelectItem("row1", "Top Row Spotlight")
+slotTrend = SelectItem("trend", "Trending Now")
+promoteButtons = Buttons([promoteConfirm])
+promoteConfirm = Button("Promote", null, "primary")
+
+followups = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Drill into APAC buffering causes")
+fu2 = FollowUpItem("Show churn reasons for cancellations")
+fu3 = FollowUpItem("Compare device split by region")

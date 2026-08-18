@@ -1,0 +1,491 @@
+Here is a comprehensive service health dashboard tailored for an on-call engineer, covering all specified requirements including metrics, region filtering, incident management, latency tracking, and threshold configuration.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "regionSelect",
+          "kpiTable",
+          "metricsTabs",
+          "incidentsCard",
+          "slowEndpointsCard",
+          "alertConfigCard"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "On-Call Service Health Overview",
+        "subtitle": "Real-time production monitoring & incident response"
+      },
+      {
+        "id": "regionSelect",
+        "component": "FormControl",
+        "label": "Filter by Region",
+        "hint": "Select a region to narrow down all metrics and incident telemetry",
+        "input": "regionDropdown"
+      },
+      {
+        "id": "regionDropdown",
+        "component": "Select",
+        "name": "region",
+        "placeholder": "All Regions (Global)",
+        "items": [
+          "optGlobal",
+          "optUsEast",
+          "optUsWest",
+          "optEuCentral",
+          "optApSouth"
+        ]
+      },
+      {
+        "id": "optGlobal",
+        "component": "SelectItem",
+        "value": "global",
+        "label": "All Regions (Global)"
+      },
+      {
+        "id": "optUsEast",
+        "component": "SelectItem",
+        "value": "us-east-1",
+        "label": "US East (N. Virginia)"
+      },
+      {
+        "id": "optUsWest",
+        "component": "SelectItem",
+        "value": "us-west-2",
+        "label": "US West (Oregon)"
+      },
+      {
+        "id": "optEuCentral",
+        "component": "SelectItem",
+        "value": "eu-central-1",
+        "label": "EU Central (Frankfurt)"
+      },
+      {
+        "id": "optApSouth",
+        "component": "SelectItem",
+        "value": "ap-south-1",
+        "label": "AP South (Mumbai)"
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": [
+          "colMetric",
+          "colValue",
+          "colStatus"
+        ]
+      },
+      {
+        "id": "colMetric",
+        "component": "Col",
+        "label": "Key Health Metric",
+        "data": [
+          "Uptime (Q3 Current Quarter)",
+          "Current Error Rate",
+          "Active Incidents"
+        ]
+      },
+      {
+        "id": "colValue",
+        "component": "Col",
+        "label": "Current Value",
+        "data": [
+          "99.94%",
+          "0.04%",
+          "2 Open"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "SLA Target Met (>=99.90%)",
+          "Normal (<0.10%)",
+          "Action Required"
+        ]
+      },
+      {
+        "id": "metricsTabs",
+        "component": "Tabs",
+        "items": [
+          "tabCpu",
+          "tabMem"
+        ]
+      },
+      {
+        "id": "tabCpu",
+        "component": "TabItem",
+        "value": "cpu",
+        "trigger": "CPU Usage (Past 24h)",
+        "content": [
+          "cpuChart"
+        ]
+      },
+      {
+        "id": "cpuChart",
+        "component": "LineChart",
+        "xLabel": "Time (Hours Ago)",
+        "yLabel": "Usage (%)",
+        "variant": "natural",
+        "labels": [
+          "-24h",
+          "-20h",
+          "-16h",
+          "-12h",
+          "-8h",
+          "-4h",
+          "Now"
+        ],
+        "series": [
+          "seriesCpu"
+        ]
+      },
+      {
+        "id": "seriesCpu",
+        "component": "Series",
+        "category": "CPU Utilization (%)",
+        "values": [
+          42,
+          45,
+          38,
+          65,
+          82,
+          54,
+          48
+        ]
+      },
+      {
+        "id": "tabMem",
+        "component": "TabItem",
+        "value": "memory",
+        "trigger": "Memory Usage (Past 24h)",
+        "content": [
+          "memChart"
+        ]
+      },
+      {
+        "id": "memChart",
+        "component": "LineChart",
+        "xLabel": "Time (Hours Ago)",
+        "yLabel": "Usage (%)",
+        "variant": "natural",
+        "labels": [
+          "-24h",
+          "-20h",
+          "-16h",
+          "-12h",
+          "-8h",
+          "-4h",
+          "Now"
+        ],
+        "series": [
+          "seriesMem"
+        ]
+      },
+      {
+        "id": "seriesMem",
+        "component": "Series",
+        "category": "Memory Usage (%)",
+        "values": [
+          60,
+          61,
+          63,
+          68,
+          75,
+          72,
+          70
+        ]
+      },
+      {
+        "id": "incidentsCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "incidentsHeader",
+          "incidentAlert",
+          "incidentsTable",
+          "ackForm"
+        ]
+      },
+      {
+        "id": "incidentsHeader",
+        "component": "CardHeader",
+        "title": "Open Incidents & Triage",
+        "subtitle": "Active production alerts requiring engineer intervention"
+      },
+      {
+        "id": "incidentAlert",
+        "component": "Alert",
+        "variant": "warning",
+        "title": "SEV-1 Incident Active",
+        "description": "Database connection pool exhaustion detected in us-east-1."
+      },
+      {
+        "id": "incidentsTable",
+        "component": "Table",
+        "columns": [
+          "colIncId",
+          "colIncSev",
+          "colIncTitle",
+          "colIncState"
+        ]
+      },
+      {
+        "id": "colIncId",
+        "component": "Col",
+        "label": "Incident ID",
+        "data": [
+          "INC-4092",
+          "INC-4088"
+        ]
+      },
+      {
+        "id": "colIncSev",
+        "component": "Col",
+        "label": "Severity",
+        "data": [
+          "SEV-1 (Critical)",
+          "SEV-3 (Minor)"
+        ]
+      },
+      {
+        "id": "colIncTitle",
+        "component": "Col",
+        "label": "Description",
+        "data": [
+          "DB Pool Exhaustion - us-east-1",
+          "Elevated Latency on /api/v1/checkout"
+        ]
+      },
+      {
+        "id": "colIncState",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Unacknowledged",
+          "Investigating"
+        ]
+      },
+      {
+        "id": "ackForm",
+        "component": "Form",
+        "name": "acknowledge-incident-form",
+        "fields": [
+          "ackSelectControl",
+          "ackNotesControl"
+        ],
+        "buttons": "ackFormButtons"
+      },
+      {
+        "id": "ackSelectControl",
+        "component": "FormControl",
+        "label": "Acknowledge Incident",
+        "input": "ackSelect"
+      },
+      {
+        "id": "ackSelect",
+        "component": "Select",
+        "name": "incident_id",
+        "placeholder": "Select incident to acknowledge",
+        "items": [
+          "ackItem1",
+          "ackItem2"
+        ]
+      },
+      {
+        "id": "ackItem1",
+        "component": "SelectItem",
+        "value": "INC-4092",
+        "label": "INC-4092 - DB Pool Exhaustion (SEV-1)"
+      },
+      {
+        "id": "ackItem2",
+        "component": "SelectItem",
+        "value": "INC-4088",
+        "label": "INC-4088 - Elevated Latency (SEV-3)"
+      },
+      {
+        "id": "ackNotesControl",
+        "component": "FormControl",
+        "label": "Acknowledgement Note / Status Update",
+        "input": "ackNotesInput"
+      },
+      {
+        "id": "ackNotesInput",
+        "component": "Input",
+        "name": "ack_notes",
+        "placeholder": "e.g., Investigating connection leak in auth service."
+      },
+      {
+        "id": "ackFormButtons",
+        "component": "Buttons",
+        "buttons": [
+          "btnAck"
+        ]
+      },
+      {
+        "id": "btnAck",
+        "component": "Button",
+        "label": "Acknowledge Incident",
+        "variant": "primary"
+      },
+      {
+        "id": "slowEndpointsCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "slowHeader",
+          "slowChart"
+        ]
+      },
+      {
+        "id": "slowHeader",
+        "component": "CardHeader",
+        "title": "Top 5 Slowest Endpoints",
+        "subtitle": "p99 Response latency over the past 1 hour"
+      },
+      {
+        "id": "slowChart",
+        "component": "HorizontalBarChart",
+        "xLabel": "Latency (ms)",
+        "yLabel": "Endpoint",
+        "variant": "grouped",
+        "labels": [
+          "/api/v2/reports/generate",
+          "/api/v1/checkout/process",
+          "/api/v1/search/query",
+          "/api/v1/users/batch-import",
+          "/api/v2/analytics/export"
+        ],
+        "series": [
+          "seriesLatency"
+        ]
+      },
+      {
+        "id": "seriesLatency",
+        "component": "Series",
+        "category": "p99 Latency (ms)",
+        "values": [
+          1420,
+          890,
+          650,
+          520,
+          480
+        ]
+      },
+      {
+        "id": "alertConfigCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "alertConfigHeader",
+          "alertConfigForm"
+        ]
+      },
+      {
+        "id": "alertConfigHeader",
+        "component": "CardHeader",
+        "title": "Configure Alert Thresholds",
+        "subtitle": "Update automated pager trigger parameters for active service"
+      },
+      {
+        "id": "alertConfigForm",
+        "component": "Form",
+        "name": "set-alert-threshold-form",
+        "fields": [
+          "metricSelectControl",
+          "thresholdSliderControl"
+        ],
+        "buttons": "alertConfigButtons"
+      },
+      {
+        "id": "metricSelectControl",
+        "component": "FormControl",
+        "label": "Target Metric",
+        "input": "alertMetricSelect"
+      },
+      {
+        "id": "alertMetricSelect",
+        "component": "Select",
+        "name": "metric_name",
+        "placeholder": "Select metric",
+        "items": [
+          "mErrRate",
+          "mCpu",
+          "mLatency"
+        ]
+      },
+      {
+        "id": "mErrRate",
+        "component": "SelectItem",
+        "value": "error_rate",
+        "label": "Error Rate (%)"
+      },
+      {
+        "id": "mCpu",
+        "component": "SelectItem",
+        "value": "cpu_utilization",
+        "label": "CPU Utilization (%)"
+      },
+      {
+        "id": "mLatency",
+        "component": "SelectItem",
+        "value": "p99_latency",
+        "label": "p99 Latency (ms)"
+      },
+      {
+        "id": "thresholdSliderControl",
+        "component": "FormControl",
+        "label": "Alert Threshold Value",
+        "hint": "Triggers a PagerDuty alert when exceeded for > 5 mins",
+        "input": "thresholdSlider"
+      },
+      {
+        "id": "thresholdSlider",
+        "component": "Slider",
+        "name": "threshold_value",
+        "variant": "discrete",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "defaultValue": [
+          80
+        ]
+      },
+      {
+        "id": "alertConfigButtons",
+        "component": "Buttons",
+        "buttons": [
+          "btnSaveThreshold"
+        ]
+      },
+      {
+        "id": "btnSaveThreshold",
+        "component": "Button",
+        "label": "Save Alert Threshold",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>

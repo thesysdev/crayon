@@ -1,0 +1,82 @@
+root = Card([header, cohortFilter, kpiGrid, chartsSection, listsSection, actionButtons, followUps])
+
+header = CardHeader("Training Analytics Dashboard", "Enterprise Learning & Development Insights")
+
+cohortFilter = Form("cohort-selector", filterButtons, [cohortControl])
+cohortControl = FormControl("Selected Cohort", cohortSelect)
+cohortSelect = Select("cohort", [cAll, cEng, cSales, cProduct, cDesign], "Select a cohort to narrow view...")
+cAll = SelectItem("all", "All Cohorts (Global)")
+cEng = SelectItem("eng_2024", "Engineering - Q1 2024")
+cSales = SelectItem("sales_q2", "Sales Onboarding - Q2")
+cProduct = SelectItem("prod_lead", "Product Leadership - Cohort 3")
+cDesign = SelectItem("design_ux", "UX Design Bootcamp - Spring")
+filterButtons = Buttons([applyFilterBtn])
+applyFilterBtn = Button("Apply Filter", null, "secondary", "normal", "small")
+
+kpiGrid = Card([kpi1, kpi2, kpi3], "sunk", "row", "m", "stretch")
+
+kpi1 = Card([kpi1Header, kpi1Val, kpi1Badge], "card", "column", "xs")
+kpi1Header = TextContent("Active Learners (This Week)", "small-heavy")
+kpi1Val = Heading("1,248", "h2")
+kpi1Badge = Badge("+12% vs last week", "secondary")
+
+kpi2 = Card([kpi2Header, kpi2Val, kpi2Progress], "card", "column", "xs")
+kpi2Header = TextContent("Course Completion Rate", "small-heavy")
+kpi2Val = Heading("78.5%", "h2")
+kpi2Progress = Progress(78.5, "Target: 80%")
+
+kpi3 = Card([kpi3Header, kpi3Val, kpi3Tag], "card", "column", "xs")
+kpi3Header = TextContent("Average Quiz Score", "small-heavy")
+kpi3Val = Heading("84.2%", "h2")
+kpi3Tag = Tag("Passing standard: 70%", null, "sm", "success")
+
+chartsSection = Card([trendHeader, engagementChart], "card", "column", "m")
+trendHeader = Heading("Learner Engagement (Past 8 Weeks)", "h3")
+engagementChart = LineChart(["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6", "Week 7", "Week 8"], [activeSeries, completionSeries], "natural", "Timeline", "Learners / Percent")
+activeSeries = Series("Active Users", [820, 910, 950, 1040, 1100, 1150, 1210, 1248])
+completionSeries = Series("Module Completions", [450, 520, 610, 580, 720, 810, 890, 940])
+
+listsSection = Card([tabSection], "clear")
+tabSection = Tabs([tabCourses, tabAtRisk])
+
+tabCourses = TabItem("ranked_courses", "Courses by Enrollment", [courseRankTable])
+courseRankTable = Table([colRank, colTitle, colCategory, colEnrolled, colCompRate])
+colRank = Col("Rank", ["#1", "#2", "#3", "#4", "#5"])
+colTitle = Col("Course Name", ["Cybersecurity Fundamentals", "Data Science & Python 101", "Effective Executive Leadership", "Cloud Architecture Masterclass", "Agile & Scrum Best Practices"])
+colCategory = Col("Category", ["Security", "Data & AI", "Management", "DevOps", "Methodology"])
+colEnrolled = Col("Enrolled Learners", [342, 289, 215, 198, 164])
+colCompRate = Col("Completion", ["91%", "74%", "82%", "68%", "88%"])
+
+tabAtRisk = TabItem("at_risk_learners", "Learners At Risk", [atRiskCallout, atRiskList])
+atRiskCallout = TextCallout("warning", "Intervention Needed", "4 learners are falling behind engagement thresholds and risk dropping out.")
+atRiskList = ListBlock([risk1, risk2, risk3, risk4])
+risk1 = ListItem("Alex Morgan", "Sales Onboarding — Inactive for 12 days • Last quiz score: 45%", null, "Review Profile")
+risk2 = ListItem("David Chen", "Engineering Q1 — Stuck on Module 3 • 2 failed attempts", null, "Review Profile")
+risk3 = ListItem("Sarah Jenkins", "UX Design Bootcamp — Attendance: 40% • 3 pending assignments", null, "Review Profile")
+risk4 = ListItem("Marcus Vance", "Product Leadership — Inactive for 18 days • Low engagement", null, "Review Profile")
+
+actionButtons = Buttons([messageCohortDrawer, exportReportBtn])
+messageCohortDrawer = DrawerBlock("Message Cohort", "Send Broadcast Message", "Communicate directly with all learners or specific sub-groups in the selected cohort.", [messageForm])
+
+messageForm = Form("cohort-message-form", messageButtons, [msgRecipientField, msgSubjectField, msgBodyField])
+msgRecipientField = FormControl("Recipients", msgRecipientSelect)
+msgRecipientSelect = Select("recipients", [rAll, rRisk, rIncomplete], "Select message audience")
+rAll = SelectItem("all", "Entire Cohort (All Enrolled)")
+rRisk = SelectItem("at_risk", "At-Risk Learners Only")
+rIncomplete = SelectItem("behind", "Learners Behind Schedule")
+
+msgSubjectField = FormControl("Subject", msgSubjectInput)
+msgSubjectInput = Input("subject", "e.g., Weekly Reminder: Check out Module 4")
+
+msgBodyField = FormControl("Message Body", msgBodyArea)
+msgBodyArea = TextArea("body", "Write your notification or announcement here...", 4)
+
+messageButtons = Buttons([sendMsgBtn])
+sendMsgBtn = Button("Send Announcement", null, "primary")
+
+exportReportBtn = Button("Export Analytics Summary", null, "tertiary")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Show breakdown by department")
+f2 = FollowUpItem("Generate retention forecast for next month")
+f3 = FollowUpItem("List top performing course instructors")

@@ -1,0 +1,432 @@
+Here is a day view dashboard tailored for a clinic receptionist, covering all scheduled appointments, stats, room availability, next patient callout, check-in functionality, and date navigation.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "navAndAlert",
+          "kpiTabs",
+          "roomAndNextCall",
+          "checkInAccordion",
+          "appointmentsTable"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Clinic Receptionist Dashboard",
+        "subtitle": "Daily Schedule & Operational Overview"
+      },
+      {
+        "id": "navAndAlert",
+        "component": "Card",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "datePickerControl",
+          "alertNotice"
+        ]
+      },
+      {
+        "id": "datePickerControl",
+        "component": "FormControl",
+        "label": "Select Schedule Date",
+        "hint": "Navigate to view or manage appointments for a different day",
+        "input": "datePicker"
+      },
+      {
+        "id": "datePicker",
+        "component": "DatePicker",
+        "name": "schedule_date",
+        "mode": "single",
+        "value": [
+          "2023-10-24"
+        ]
+      },
+      {
+        "id": "alertNotice",
+        "component": "Alert",
+        "title": "Current View: Today (Tuesday, Oct 24)",
+        "description": "3 patients currently waiting in lobby. Next call queued.",
+        "variant": "info"
+      },
+      {
+        "id": "kpiTabs",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "kpiCardExpected",
+          "kpiCardNoShow"
+        ]
+      },
+      {
+        "id": "kpiCardExpected",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "expectedHeader",
+          "expectedBadge",
+          "expectedProgress"
+        ]
+      },
+      {
+        "id": "expectedHeader",
+        "component": "CardHeader",
+        "title": "24",
+        "subtitle": "Expected Patients Today"
+      },
+      {
+        "id": "expectedBadge",
+        "component": "Badge",
+        "text": "14 Checked In • 10 Remaining",
+        "variant": "secondary"
+      },
+      {
+        "id": "expectedProgress",
+        "component": "Progress",
+        "label": "58% arrived",
+        "value": 58
+      },
+      {
+        "id": "kpiCardNoShow",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "noShowHeader",
+          "noShowBadge",
+          "noShowProgress"
+        ]
+      },
+      {
+        "id": "noShowHeader",
+        "component": "CardHeader",
+        "title": "4.2%",
+        "subtitle": "No-Show Rate (This Month)"
+      },
+      {
+        "id": "noShowBadge",
+        "component": "Badge",
+        "text": "Target: < 5.0%",
+        "variant": "default"
+      },
+      {
+        "id": "noShowProgress",
+        "component": "Progress",
+        "label": "11 no-shows out of 262 booked",
+        "value": 4.2
+      },
+      {
+        "id": "roomAndNextCall",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "nextCallCard",
+          "roomsCard"
+        ]
+      },
+      {
+        "id": "nextCallCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "nextCallHeader",
+          "nextPatientBadge",
+          "callActions"
+        ]
+      },
+      {
+        "id": "nextCallHeader",
+        "component": "CardHeader",
+        "title": "Next Patient to Call",
+        "subtitle": "Assigned to Room 102"
+      },
+      {
+        "id": "nextPatientBadge",
+        "component": "Tag",
+        "text": "Eleanor Vance (09:15 AM - Dr. Smith)",
+        "variant": "warning",
+        "size": "lg"
+      },
+      {
+        "id": "callActions",
+        "component": "Buttons",
+        "buttons": [
+          "callBtn",
+          "notifyDoctorBtn"
+        ]
+      },
+      {
+        "id": "callBtn",
+        "component": "Button",
+        "label": "Call Patient to Room 102",
+        "variant": "primary"
+      },
+      {
+        "id": "notifyDoctorBtn",
+        "component": "Button",
+        "label": "Notify Doctor",
+        "variant": "secondary"
+      },
+      {
+        "id": "roomsCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "roomsHeader",
+          "roomTags"
+        ]
+      },
+      {
+        "id": "roomsHeader",
+        "component": "CardHeader",
+        "title": "Room Availability Right Now",
+        "subtitle": "3 of 5 rooms free"
+      },
+      {
+        "id": "roomTags",
+        "component": "TagBlock",
+        "tags": [
+          "🟢 Room 101: Available",
+          "🟢 Room 102: Available",
+          "🔴 Room 103: Occupied (Dr. Adams)",
+          "🟢 Room 104: Available",
+          "🔴 Room 105: Occupied (Dr. Patel)"
+        ]
+      },
+      {
+        "id": "checkInAccordion",
+        "component": "Accordion",
+        "items": [
+          "checkInAccordionItem"
+        ]
+      },
+      {
+        "id": "checkInAccordionItem",
+        "component": "AccordionItem",
+        "value": "check-in-form",
+        "trigger": "⚡ Quick Patient Check-In Form",
+        "content": [
+          "checkInForm"
+        ]
+      },
+      {
+        "id": "checkInForm",
+        "component": "Form",
+        "name": "patient_check_in",
+        "buttons": "checkInButtons",
+        "fields": [
+          "patientSelectField",
+          "arrivedTimeField",
+          "assignRoomField"
+        ]
+      },
+      {
+        "id": "patientSelectField",
+        "component": "FormControl",
+        "label": "Patient Name",
+        "input": "patientSelect",
+        "hint": "Select arriving patient from scheduled list"
+      },
+      {
+        "id": "patientSelect",
+        "component": "Select",
+        "name": "patient_id",
+        "placeholder": "Choose patient...",
+        "items": [
+          "p1",
+          "p2",
+          "p3"
+        ]
+      },
+      {
+        "id": "p1",
+        "component": "SelectItem",
+        "value": "eleanor_vance",
+        "label": "Eleanor Vance (09:15 AM)"
+      },
+      {
+        "id": "p2",
+        "component": "SelectItem",
+        "value": "marcus_brody",
+        "label": "Marcus Brody (09:30 AM)"
+      },
+      {
+        "id": "p3",
+        "component": "SelectItem",
+        "value": "sophia_chen",
+        "label": "Sophia Chen (10:00 AM)"
+      },
+      {
+        "id": "arrivedTimeField",
+        "component": "FormControl",
+        "label": "Arrival Time",
+        "input": "arrivedTimeInput"
+      },
+      {
+        "id": "arrivedTimeInput",
+        "component": "Input",
+        "name": "arrival_time",
+        "placeholder": "e.g. 09:10 AM",
+        "type": "text"
+      },
+      {
+        "id": "assignRoomField",
+        "component": "FormControl",
+        "label": "Assign Room",
+        "input": "roomSelect"
+      },
+      {
+        "id": "roomSelect",
+        "component": "Select",
+        "name": "assigned_room",
+        "placeholder": "Select available room...",
+        "items": [
+          "r101",
+          "r102",
+          "r104"
+        ]
+      },
+      {
+        "id": "r101",
+        "component": "SelectItem",
+        "value": "101",
+        "label": "Room 101 (Free)"
+      },
+      {
+        "id": "r102",
+        "component": "SelectItem",
+        "value": "102",
+        "label": "Room 102 (Free)"
+      },
+      {
+        "id": "r104",
+        "component": "SelectItem",
+        "value": "104",
+        "label": "Room 104 (Free)"
+      },
+      {
+        "id": "checkInButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitCheckInBtn"
+        ]
+      },
+      {
+        "id": "submitCheckInBtn",
+        "component": "Button",
+        "label": "Confirm Check-In",
+        "variant": "primary"
+      },
+      {
+        "id": "appointmentsTable",
+        "component": "Card",
+        "children": [
+          "appointmentsHeader",
+          "table"
+        ]
+      },
+      {
+        "id": "appointmentsHeader",
+        "component": "CardHeader",
+        "title": "Today's Schedule & Appointment Status",
+        "subtitle": "All booked slots for October 24"
+      },
+      {
+        "id": "table",
+        "component": "Table",
+        "columns": [
+          "colTime",
+          "colPatient",
+          "colDoctor",
+          "colStatus",
+          "colRoom"
+        ]
+      },
+      {
+        "id": "colTime",
+        "component": "Col",
+        "label": "Time",
+        "data": [
+          "08:30 AM",
+          "09:00 AM",
+          "09:15 AM",
+          "09:30 AM",
+          "10:00 AM",
+          "10:30 AM"
+        ]
+      },
+      {
+        "id": "colPatient",
+        "component": "Col",
+        "label": "Patient Name",
+        "data": [
+          "Arthur Pendelton",
+          "Beatrice Ramos",
+          "Eleanor Vance",
+          "Marcus Brody",
+          "Sophia Chen",
+          "David Miller"
+        ]
+      },
+      {
+        "id": "colDoctor",
+        "component": "Col",
+        "label": "Practitioner",
+        "data": [
+          "Dr. Adams",
+          "Dr. Patel",
+          "Dr. Smith",
+          "Dr. Adams",
+          "Dr. Patel",
+          "Dr. Smith"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Completed",
+          "In Room",
+          "Waiting (Next)",
+          "Checked In",
+          "Scheduled",
+          "Scheduled"
+        ]
+      },
+      {
+        "id": "colRoom",
+        "component": "Col",
+        "label": "Room",
+        "data": [
+          "Room 101",
+          "Room 105",
+          "Room 102 (Assigned)",
+          "Lobby",
+          "-",
+          "-"
+        ]
+      }
+    ]
+  }
+}
+</a2ui-json>

@@ -1,0 +1,58 @@
+root = Card([header, mainSection, expensesSection, transactionsSection, actionsSection, followUp])
+
+header = CardHeader("Finance Overview", "Month-end summary and metrics")
+
+mainSection = Card([kpiGrid, monthSelectorCard], "clear", "column", "m")
+
+monthSelectorCard = Card([monthForm], "sunk", "row", "m", "center", "between")
+monthForm = Form("month-filter", monthButtons, [monthField])
+monthField = FormControl("Select Reporting Period", monthSelect)
+monthSelect = Select("month", [m1, m2, m3, m4], "October 2023")
+m1 = SelectItem("2023-10", "October 2023")
+m2 = SelectItem("2023-09", "September 2023")
+m3 = SelectItem("2023-08", "August 2023")
+m4 = SelectItem("2023-07", "July 2023")
+monthButtons = Buttons([applyMonthBtn])
+applyMonthBtn = Button("Update View", null, "secondary", "normal", "small")
+
+kpiGrid = Card([cashCard, burnCard, runwayCard], "clear", "row", "m")
+
+cashCard = Card([cashTitle, cashValue, cashBadge], "card", "column", "xs")
+cashTitle = TextContent("Cash on Hand", "small")
+cashValue = Heading("$1,245,000", "h2")
+cashBadge = Tag("+ $150k vs last month", null, "sm", "success")
+
+burnCard = Card([burnTitle, burnValue, burnBadge], "card", "column", "xs")
+burnTitle = TextContent("Monthly Burn", "small")
+burnValue = Heading("$85,000", "h2")
+burnBadge = Tag("- 5% vs last month", null, "sm", "success")
+
+runwayCard = Card([runwayTitle, runwayValue, runwayBadge], "card", "column", "xs")
+runwayTitle = TextContent("Runway", "small")
+runwayValue = Heading("14.6 Months", "h2")
+runwayBadge = Tag("Target: 12+ Months", null, "sm", "info")
+
+expensesSection = Card([expensesHeader, expensesChart], "card", "column", "m")
+expensesHeader = Heading("Expenses Split by Category", "h3")
+expensesChart = PieChart(["Payroll & Benefits", "Cloud & Infra", "Marketing & Sales", "Office & Admin", "Software & Tools"], [52000, 15000, 10000, 5000, 3000], "donut", "circular")
+
+transactionsSection = Card([transactionsHeader, transactionsTable], "card", "column", "m")
+transactionsHeader = Heading("Transactions Above $10,000", "h3")
+transactionsTable = Table([txDate, txVendor, txCategory, txAmount])
+txDate = Col("Date", ["Oct 12, 2023", "Oct 15, 2023", "Oct 28, 2023"])
+txVendor = Col("Vendor / Entity", ["Gusto Payroll", "AWS Cloud Services", "Google Ads"])
+txCategory = Col("Category", ["Payroll", "Infrastructure", "Marketing"])
+txAmount = Col("Amount", ["$48,500.00", "$12,400.00", "$10,000.00"])
+
+actionsSection = Card([downloadBanner], "clear", "row", "m", "center", "between")
+downloadBanner = TextCallout("info", "Monthly Statement Ready", "The finalized statement for October 2023 is available for audit and download.")
+
+downloadBtn = Button("Download Full Statement (.PDF)", null, "primary")
+exportCsvBtn = Button("Export CSV Data", null, "secondary")
+
+actionsSectionBtns = Buttons([downloadBtn, exportCsvBtn])
+
+followUp = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("How does this burn rate compare to Q2?")
+f2 = FollowUpItem("Show detailed breakdown of Payroll")
+f3 = FollowUpItem("Generate runway projection model")

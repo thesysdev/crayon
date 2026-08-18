@@ -1,0 +1,107 @@
+root = Card([header, mainTabs])
+
+header = CardHeader("Apex Studios Live-Ops Command", "Real-time Operations & Telemetry")
+
+mainTabs = Tabs([overviewTab, serversEventsTab, moderationTab, economyExpsTab, toolsTab])
+
+overviewTab = TabItem("overview", "Overview & Metrics", [overviewCallout, overviewSep, kpiGroup, chartGroup, itemsGroup])
+
+overviewCallout = TextCallout("info", "Live Operational Status", "All critical systems normal. Peak concurrent player wave active across EU and NA regions.")
+overviewSep = Separator()
+
+kpiGroup = Card([kpiHeader, kpiTable], "sunk")
+kpiHeader = Heading("Core Metrics & Revenue", "h3")
+kpiTable = Table([kpiNameCol, kpiValueCol, kpiTrendCol])
+kpiNameCol = Col("Metric", ["Players Online Right Now", "Daily Active Players (DAP)", "Monthly Active Players (MAP)", "Revenue Today", "Average Revenue Per User (ARPU)"])
+kpiValueCol = Col("Current Value", ["142,850", "1,240,500", "8,950,000", "$48,250.00", "$4.85"])
+kpiTrendCol = Col("24h Change", ["+12.4%", "+3.1%", "+8.2%", "+15.3%", "+0.45"])
+
+chartGroup = Card([sessionChartHeader, sessionChart, crashChartHeader, crashChart], "sunk")
+sessionChartHeader = Heading("Avg Session Length (Past 2 Weeks)", "h3")
+sessionChart = LineChart(["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Day 6", "Day 7", "Day 8", "Day 9", "Day 10", "Day 11", "Day 12", "Day 13", "Day 14"], [sessionSeries], "natural", "Days Ago", "Minutes")
+sessionSeries = Series("Avg Duration (mins)", [32, 34, 31, 35, 42, 48, 45, 33, 36, 34, 38, 41, 50, 46])
+
+crashChartHeader = Heading("Crash Rate by App Version", "h3")
+crashChart = BarChart(["v2.4.0 (Latest)", "v2.3.9", "v2.3.5", "v2.2.0 (Legacy)"], [crashSeries], "grouped", "App Version", "Crash Rate %")
+crashSeries = Series("Crash Rate %", [0.12, 0.28, 0.45, 1.15])
+
+itemsGroup = Card([itemsHeader, itemsTable], "sunk")
+itemsHeader = Heading("Best-Selling In-Game Items (Today)", "h3")
+itemsTable = Table([itemNameCol, itemUnitsCol, itemRevCol])
+itemNameCol = Col("Item Name", ["Cybernetic Dragon Skin", "Battle Pass Season 8", "1,000 Gem Bundle", "Mythic Weapon Effect", "XP Boost (24h)"])
+itemUnitsCol = Col("Units Sold", [14200, 9850, 8400, 5100, 3900])
+itemRevCol = Col("Total Revenue", ["$284,000", "$98,500", "$84,000", "$76,500", "$11,700"])
+
+serversEventsTab = TabItem("servers_events", "Servers & Events", [serverSection, eventSection])
+
+serverSection = Card([serverHeader, regionFocusDrawer, serverTable], "sunk")
+serverHeader = Heading("Server Region Health", "h3")
+regionFocusDrawer = DrawerBlock("Focus on Region", "Regional Deep-Dive", "Select and isolate server telemetry for specific regions.", regionFocusForm)
+regionFocusForm = Form("region_focus_form", regionFocusBtns, [regionSelectField])
+regionSelectField = FormControl("Select Target Region", regionSelect)
+regionSelect = Select("focused_region", [regNAE, regNAW, regEU, regASIA, regSA], "Choose region...")
+regNAE = SelectItem("nae", "North America East")
+regNAW = SelectItem("naw", "North America West")
+regEU = SelectItem("eu", "Europe Central")
+regASIA = SelectItem("asia", "Asia East")
+regSA = SelectItem("sa", "South America")
+regionFocusBtns = Buttons([regionApplyBtn])
+regionApplyBtn = Button("Apply Region Focus", null, "primary")
+
+serverTable = Table([serverRegCol, serverHealthCol, serverLatencyCol, serverLoadCol])
+serverRegCol = Col("Region", ["NA-East", "NA-West", "EU-Central", "Asia-East", "SA-Brazil"])
+serverHealthCol = Col("Status", ["Healthy", "Healthy", "Degraded", "Healthy", "Operational"])
+serverLatencyCol = Col("Avg Ping", ["24ms", "38ms", "85ms", "42ms", "68ms"])
+serverLoadCol = Col("Capacity", ["78%", "65%", "94%", "81%", "45%"])
+
+eventSection = Card([eventHeader, eventList], "sunk")
+eventHeader = Heading("Live & Upcoming Events", "h3")
+eventList = ListBlock([event1, event2, event3])
+event1 = ListItem("Cyber Festival (Live Now)", "Active: Ends in 2 days | Double XP & Exclusive Drops Enabled")
+event2 = ListItem("Lunar New Year Siege (Upcoming)", "Scheduled: Starts in 5 days | Special Raid Boss & Currency Boost")
+event3 = ListItem("Ranked Season 8 Sprint (Upcoming)", "Scheduled: Starts in 12 days | Final Leaderboards Push")
+
+moderationTab = TabItem("moderation", "Moderation Queues", [modOverview, modTabsCard])
+modOverview = Callout("warning", "Queue Attention Required", "Ban appeals count elevated following recent anti-cheat automated wave.")
+
+modTabsCard = Card([modQueuesHeader, modQueueList], "sunk")
+modQueuesHeader = Heading("Awaiting Review", "h3")
+modQueueList = ListBlock([reportsItem, appealsItem])
+reportsItem = ListItem("Player Reports Awaiting Review", "148 pending tickets | Griefing, Hacking, Offensive Chat", null, "Review Reports")
+appealsItem = ListItem("Ban Appeals Awaiting Review", "42 pending appeals | Anti-Cheat Automated Wave #44", null, "Review Appeals")
+
+economyExpsTab = TabItem("economy_exps", "Economy & Experiments", [econSection, expsSection])
+
+econSection = Card([econHeader, econAlert, econChart], "sunk")
+econHeader = Heading("In-Game Currency Inflation Tracker", "h3")
+econAlert = Alert("Mild Gold Inflation Detected", "Gold faucet output exceeded sink burn rate by 4.2% over last 7 days.", "info")
+econChart = LineChart(["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6"], [faucetSeries, sinkSeries], "linear", "Time", "Gold (Millions)")
+faucetSeries = Series("Currency Minted (Faucet)", [12.4, 13.1, 13.8, 14.5, 15.2, 16.1])
+sinkSeries = Series("Currency Burned (Sink)", [11.8, 12.2, 12.9, 13.1, 13.5, 14.0])
+
+expsSection = Card([expsHeader, expsTable], "sunk")
+expsHeader = Heading("Active A/B Experiments", "h3")
+expsTable = Table([expNameCol, expVarCol, expMetricsCol, expStatusCol])
+expNameCol = Col("Experiment Name", ["EXP-104: Onboarding Flow Redesign", "EXP-108: Store Discount Dynamic Placement"])
+expVarCol = Col("Variants", ["Control (50%) / Guided Tutorial (50%)", "Grid Layout (50%) / Hero Carousel (50%)"])
+expMetricsCol = Col("Key Results", ["+8.4% D1 Retention in Variant", "+12.1% Conversion Rate in Variant"])
+expStatusCol = Col("Status", ["95% Confidence - Winning", "Collecting Data (60% target)"])
+
+toolsTab = TabItem("tools", "Operations & Deployment", [hotfixCard, patchNotesCard])
+
+hotfixCard = Card([hotfixHeader, hotfixAlertDlg], "sunk")
+hotfixHeader = Heading("Hotfix Deployment Center", "h3")
+hotfixAlertDlg = AlertDialogBlock("Ship Hotfix", "Confirm Immediate Hotfix Ship?", "This will deploy build v2.4.1 hotfix to live edge servers without scheduled downtime.", "Deploy Hotfix Now", "Cancel Hotfix", "destructive")
+
+patchNotesCard = Card([patchHeader, patchForm], "sunk")
+patchHeader = Heading("Draft Patch Notes", "h3")
+patchForm = Form("patch_form", patchBtns, [patchVersionField, patchTitleField, patchContentField])
+patchVersionField = FormControl("Patch Version Tag", patchVersionInput)
+patchVersionInput = Input("patch_version", "v2.4.1-hotfix")
+patchTitleField = FormControl("Patch Release Title", patchTitleInput)
+patchTitleInput = Input("patch_title", "Emergency Stability & Server Performance Fixes")
+patchContentField = FormControl("Release Notes Content", patchContentArea, "Supports markdown formatting")
+patchContentArea = TextArea("patch_content", "### Bug Fixes\n- Resolved memory leak in EU-Central server clusters.\n- Fixed crash when equipping Cybernetic Dragon Skin in lobby.", 6)
+patchBtns = Buttons([saveDraftBtn, publishNotesBtn])
+saveDraftBtn = Button("Save Draft", null, "secondary")
+publishNotesBtn = Button("Publish Patch Notes", null, "primary")

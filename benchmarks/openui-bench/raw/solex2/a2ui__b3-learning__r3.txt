@@ -1,0 +1,440 @@
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#4F46E5",
+      "agentDisplayName": "Training Analytics"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "cohortForm",
+          "kpiTable",
+          "engagementHeader",
+          "engagementChart",
+          "rankingsHeader",
+          "enrollmentChart",
+          "riskHeader",
+          "riskAlert",
+          "riskTable",
+          "messageDialog"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Learning Analytics",
+        "subtitle": "Weekly learner performance, engagement, and retention"
+      },
+      {
+        "id": "cohortForm",
+        "component": "Form",
+        "name": "cohort-filter",
+        "buttons": "filterButtons",
+        "fields": [
+          "cohortControl"
+        ]
+      },
+      {
+        "id": "cohortControl",
+        "component": "FormControl",
+        "label": "Cohort",
+        "input": "cohortSelect",
+        "hint": "Narrow all analytics to one cohort"
+      },
+      {
+        "id": "cohortSelect",
+        "component": "Select",
+        "name": "cohort",
+        "items": [
+          "cohortAll",
+          "cohortSpring",
+          "cohortSummer",
+          "cohortEnterprise"
+        ],
+        "value": "all",
+        "size": "medium"
+      },
+      {
+        "id": "cohortAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All cohorts"
+      },
+      {
+        "id": "cohortSpring",
+        "component": "SelectItem",
+        "value": "spring-2026",
+        "label": "Spring 2026"
+      },
+      {
+        "id": "cohortSummer",
+        "component": "SelectItem",
+        "value": "summer-2026",
+        "label": "Summer 2026"
+      },
+      {
+        "id": "cohortEnterprise",
+        "component": "SelectItem",
+        "value": "enterprise-onboarding",
+        "label": "Enterprise onboarding"
+      },
+      {
+        "id": "filterButtons",
+        "component": "Buttons",
+        "buttons": [
+          "applyFilter"
+        ]
+      },
+      {
+        "id": "applyFilter",
+        "component": "Button",
+        "label": "Apply cohort filter",
+        "variant": "primary"
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": [
+          "kpiMetric",
+          "kpiValue",
+          "kpiChange"
+        ]
+      },
+      {
+        "id": "kpiMetric",
+        "component": "Col",
+        "label": "Key metric",
+        "data": [
+          "Active learners this week",
+          "Course completion rate",
+          "Average quiz score"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Current",
+        "data": [
+          "1,284",
+          "72.6%",
+          "84.1%"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "kpiChange",
+        "component": "Col",
+        "label": "Change",
+        "data": [
+          "+8.4% vs last week",
+          "+3.2 pts",
+          "+1.7 pts"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "engagementHeader",
+        "component": "Heading",
+        "text": "Engagement across the past eight weeks",
+        "level": "h2"
+      },
+      {
+        "id": "engagementChart",
+        "component": "LineChart",
+        "labels": [
+          "Jun 22",
+          "Jun 29",
+          "Jul 6",
+          "Jul 13",
+          "Jul 20",
+          "Jul 27",
+          "Aug 3",
+          "Aug 10"
+        ],
+        "series": [
+          "activeSeries",
+          "sessionSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Week starting",
+        "yLabel": "Engagement index"
+      },
+      {
+        "id": "activeSeries",
+        "component": "Series",
+        "category": "Active learner rate (%)",
+        "values": [
+          61,
+          64,
+          63,
+          68,
+          70,
+          69,
+          74,
+          78
+        ]
+      },
+      {
+        "id": "sessionSeries",
+        "component": "Series",
+        "category": "Lessons completed per 100 learners",
+        "values": [
+          58,
+          62,
+          66,
+          64,
+          71,
+          73,
+          76,
+          81
+        ]
+      },
+      {
+        "id": "rankingsHeader",
+        "component": "Heading",
+        "text": "Courses ranked by enrollment",
+        "level": "h2"
+      },
+      {
+        "id": "enrollmentChart",
+        "component": "HorizontalBarChart",
+        "labels": [
+          "Leadership Essentials",
+          "Data Literacy",
+          "Cybersecurity Basics",
+          "Project Management",
+          "Customer Success Foundations"
+        ],
+        "series": [
+          "enrollmentSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Enrolled learners",
+        "yLabel": "Course"
+      },
+      {
+        "id": "enrollmentSeries",
+        "component": "Series",
+        "category": "Enrollment",
+        "values": [
+          842,
+          716,
+          653,
+          588,
+          471
+        ]
+      },
+      {
+        "id": "riskHeader",
+        "component": "Heading",
+        "text": "Learners at risk of dropping out",
+        "level": "h2"
+      },
+      {
+        "id": "riskAlert",
+        "component": "Alert",
+        "title": "27 learners need attention",
+        "description": "Risk is based on inactivity, missed deadlines, and declining assessment performance.",
+        "variant": "warning"
+      },
+      {
+        "id": "riskTable",
+        "component": "Table",
+        "columns": [
+          "learnerName",
+          "learnerCohort",
+          "riskReason",
+          "lastActive",
+          "riskLevel"
+        ]
+      },
+      {
+        "id": "learnerName",
+        "component": "Col",
+        "label": "Learner",
+        "data": [
+          "Maya Chen",
+          "Jordan Lee",
+          "Priya Shah",
+          "Diego Alvarez",
+          "Sam Wilson"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "learnerCohort",
+        "component": "Col",
+        "label": "Cohort",
+        "data": [
+          "Spring 2026",
+          "Enterprise onboarding",
+          "Spring 2026",
+          "Summer 2026",
+          "Enterprise onboarding"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "riskReason",
+        "component": "Col",
+        "label": "Primary signal",
+        "data": [
+          "No activity for 12 days",
+          "3 missed deadlines",
+          "Quiz average fell 18 pts",
+          "Course progress stalled",
+          "No activity for 9 days"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "lastActive",
+        "component": "Col",
+        "label": "Last active",
+        "data": [
+          "Aug 6",
+          "Aug 8",
+          "Aug 12",
+          "Aug 9",
+          "Aug 9"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "riskLevel",
+        "component": "Col",
+        "label": "Risk",
+        "data": [
+          "High",
+          "High",
+          "Medium",
+          "Medium",
+          "Medium"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "messageDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Message a cohort",
+        "title": "Send a cohort message",
+        "description": "Choose a cohort and compose an announcement or check-in.",
+        "content": [
+          "messageForm"
+        ],
+        "triggerVariant": "default"
+      },
+      {
+        "id": "messageForm",
+        "component": "Form",
+        "name": "cohort-message",
+        "buttons": "messageButtons",
+        "fields": [
+          "recipientControl",
+          "subjectControl",
+          "messageControl"
+        ]
+      },
+      {
+        "id": "recipientControl",
+        "component": "FormControl",
+        "label": "Recipient cohort",
+        "input": "recipientSelect"
+      },
+      {
+        "id": "recipientSelect",
+        "component": "Select",
+        "name": "recipient_cohort",
+        "items": [
+          "recipientSpring",
+          "recipientSummer",
+          "recipientEnterprise"
+        ],
+        "placeholder": "Select a cohort"
+      },
+      {
+        "id": "recipientSpring",
+        "component": "SelectItem",
+        "value": "spring-2026",
+        "label": "Spring 2026"
+      },
+      {
+        "id": "recipientSummer",
+        "component": "SelectItem",
+        "value": "summer-2026",
+        "label": "Summer 2026"
+      },
+      {
+        "id": "recipientEnterprise",
+        "component": "SelectItem",
+        "value": "enterprise-onboarding",
+        "label": "Enterprise onboarding"
+      },
+      {
+        "id": "subjectControl",
+        "component": "FormControl",
+        "label": "Subject",
+        "input": "subjectInput"
+      },
+      {
+        "id": "subjectInput",
+        "component": "Input",
+        "name": "subject",
+        "placeholder": "Weekly learning check-in"
+      },
+      {
+        "id": "messageControl",
+        "component": "FormControl",
+        "label": "Message",
+        "input": "messageInput",
+        "hint": "This message will be sent to every learner in the selected cohort."
+      },
+      {
+        "id": "messageInput",
+        "component": "TextArea",
+        "name": "message",
+        "placeholder": "Share an update, reminder, or offer of support...",
+        "rows": 6
+      },
+      {
+        "id": "messageButtons",
+        "component": "Buttons",
+        "buttons": [
+          "sendMessage",
+          "saveDraft"
+        ]
+      },
+      {
+        "id": "sendMessage",
+        "component": "Button",
+        "label": "Send message",
+        "variant": "primary"
+      },
+      {
+        "id": "saveDraft",
+        "component": "Button",
+        "label": "Save draft",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>

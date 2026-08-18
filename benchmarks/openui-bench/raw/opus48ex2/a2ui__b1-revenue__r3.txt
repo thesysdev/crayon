@@ -1,0 +1,173 @@
+Here's a mid-morning revenue check-in screen for your shop.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "revToday",
+          "compareCallout",
+          "compareTable",
+          "trendChart"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Morning Check-in",
+        "subtitle": "Today, 10:30 AM"
+      },
+      {
+        "id": "revToday",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "revLabel",
+          "revValue",
+          "revBadge"
+        ]
+      },
+      {
+        "id": "revLabel",
+        "component": "TextContent",
+        "text": "Revenue so far today",
+        "size": "small"
+      },
+      {
+        "id": "revValue",
+        "component": "Heading",
+        "text": "$1,840",
+        "level": "h1"
+      },
+      {
+        "id": "revBadge",
+        "component": "Badge",
+        "text": "138 transactions",
+        "variant": "secondary"
+      },
+      {
+        "id": "compareCallout",
+        "component": "Callout",
+        "variant": "success",
+        "title": "Ahead of yesterday",
+        "description": "You're up $240 (+15%) versus the same time yesterday ($1,600)."
+      },
+      {
+        "id": "compareTable",
+        "component": "Table",
+        "columns": [
+          "cmpMetric",
+          "cmpToday",
+          "cmpYesterday",
+          "cmpDelta"
+        ]
+      },
+      {
+        "id": "cmpMetric",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Revenue",
+          "Transactions",
+          "Avg. basket"
+        ]
+      },
+      {
+        "id": "cmpToday",
+        "component": "Col",
+        "label": "Today (10:30 AM)",
+        "data": [
+          "$1,840",
+          "138",
+          "$13.33"
+        ]
+      },
+      {
+        "id": "cmpYesterday",
+        "component": "Col",
+        "label": "Yesterday (10:30 AM)",
+        "data": [
+          "$1,600",
+          "126",
+          "$12.70"
+        ]
+      },
+      {
+        "id": "cmpDelta",
+        "component": "Col",
+        "label": "Change",
+        "data": [
+          "+15%",
+          "+12",
+          "+5%"
+        ]
+      },
+      {
+        "id": "trendChart",
+        "component": "LineChart",
+        "labels": [
+          "7 AM",
+          "8 AM",
+          "9 AM",
+          "10 AM",
+          "10:30 AM"
+        ],
+        "series": [
+          "todaySeries",
+          "yesterdaySeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Time",
+        "yLabel": "Cumulative revenue (USD)"
+      },
+      {
+        "id": "todaySeries",
+        "component": "Series",
+        "category": "Today",
+        "values": [
+          180,
+          520,
+          1010,
+          1560,
+          1840
+        ]
+      },
+      {
+        "id": "yesterdaySeries",
+        "component": "Series",
+        "category": "Yesterday",
+        "values": [
+          160,
+          470,
+          900,
+          1380,
+          1600
+        ]
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This screen covers both items:
+
+1. **Revenue so far today** — shown prominently at the top ($1,840) with transaction count.
+2. **Comparison with the same time yesterday** — summarized in the success callout, broken down metric-by-metric in the table, and visualized as two cumulative revenue lines so you can see how today is pacing against yesterday.

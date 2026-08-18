@@ -1,0 +1,119 @@
+root = Card([header, alertsCallout, topMetrics, regionFilter, tabs, followUps], "card", "column", "l")
+
+header = CardHeader("National Grid Operator Console", "Live Transmission & Generation Oversight — Sector 4 Control")
+
+alertsCallout = Callout("warning", "Grid Frequency Deviation Detected", "Frequency dropped to 49.82 Hz at 14:22 UTC. Frequency Response Reserves deployed automatically in Southern Sector.")
+
+topMetrics = Card([loadKpi, capacityKpi, priceKpi, emissionsKpi], "sunk", "row", "m", "center", "between")
+
+loadKpi = Card([loadTitle, loadValue, loadTag], "clear", "column", "xs")
+loadTitle = TextContent("Current Network Load", "small")
+loadValue = Heading("32,450 MW", "h2")
+loadTag = Tag("+2.4% vs last hour", "trending-up", "sm", "info")
+
+capacityKpi = Card([capTitle, capValue, capProgress], "clear", "column", "xs")
+capTitle = TextContent("Capacity Utilization", "small")
+capValue = Heading("86.5%", "h2")
+capProgress = Progress(86, "Peak Cap: 37,500 MW")
+
+priceKpi = Card([priceTitle, priceValue, priceTag], "clear", "column", "xs")
+priceTitle = TextContent("Current Spot Price", "small")
+priceValue = Heading("$68.40 / MWh", "h2")
+priceTag = Tag("Spike Warning", null, "sm", "warning")
+
+emissionsKpi = Card([emTitle, emValue, emTag], "clear", "column", "xs")
+emTitle = TextContent("Emissions Today", "small")
+emValue = Heading("142,800 tCO₂e", "h2")
+emTag = Tag("182 g/kWh avg", null, "sm", "success")
+
+regionFilter = Card([regionHeader, regionSelectForm], "clear", "row", "m", "center", "between")
+regionHeader = TextContent("Select Regional Control Area:", "large-heavy")
+regionSelectForm = Form("region-focus", regionFormButtons, [regionSelectControl])
+regionSelectControl = FormControl("Region Focus", regionSelect)
+regionSelect = Select("region", [regAll, regNorth, regSouth, regEast, regWest, regCentral], "Showing All Regions")
+regAll = SelectItem("all", "All Regions (National)")
+regNorth = SelectItem("north", "Northern Grid")
+regSouth = SelectItem("south", "Southern Corridor")
+regEast = SelectItem("east", "Eastern Maritime")
+regWest = SelectItem("west", "Western Highlands")
+regCentral = SelectItem("central", "Central Metro Area")
+regionFormButtons = Buttons([applyRegionBtn])
+applyRegionBtn = Button("Apply Region Focus", null, "secondary", "normal", "small")
+
+tabs = Tabs([tabOverview, tabPlants, tabOutages, tabCurtailment])
+
+tabOverview = TabItem("overview", "Demand Forecast & Generation", [forecastSection, genSplitSection])
+
+forecastSection = Card([forecastHeading, forecastChart], "sunk", "column", "m")
+forecastHeading = Heading("24-Hour Network Demand Forecast (MW)", "h3")
+forecastChart = LineChart(["00:00", "03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00"], [actualDemandSeries, forecastDemandSeries], "natural", "Time (UTC)", "Megawatts (MW)")
+actualDemandSeries = Series("Actual Load", [24100, 22500, 25800, 31200, 32450])
+forecastDemandSeries = Series("Forecasted Load", [24000, 22200, 26000, 30800, 32000, 34100, 36200, 29500])
+
+genSplitSection = Card([genHeading, genChart], "sunk", "column", "m")
+genHeading = Heading("Current Generation Split by Source", "h3")
+genChart = PieChart(["Nuclear", "Natural Gas", "Wind Hydro", "Solar", "Coal Backup"], [9200, 11500, 7800, 3150, 800], "donut")
+
+tabPlants = TabItem("plants", "Power Plants & Maintenance", [plantSection, maintenanceSection])
+
+plantSection = Card([plantHeading, plantTable], "sunk", "column", "m")
+plantHeading = Heading("Power Generation Facilities", "h3")
+plantTable = Table([plantNameCol, plantTypeCol, plantRegionCol, plantOutputCol, plantStatusCol])
+plantNameCol = Col("Plant Name", ["Apex Nuclear Stn", "Rivermouth Combined Cycle", "Highland Wind Array 1", "Valley Solar Farm B", "Blackwood Thermal"])
+plantTypeCol = Col("Primary Source", ["Nuclear", "Natural Gas", "Wind", "Solar", "Coal"])
+plantRegionCol = Col("Region", ["Northern", "Southern", "Western", "Central", "Eastern"])
+plantOutputCol = Col("Output / Max (MW)", ["2,400 / 2,400", "1,850 / 2,100", "1,240 / 1,500", "410 / 600", "0 / 800"])
+plantStatusCol = Col("Operational Status", ["Online - 100%", "Online - Throttle 88%", "Online - Curtailable", "Online - Intermittent", "Offline - Cold Reserve"])
+
+maintenanceSection = Card([maintHeading, maintList], "sunk", "column", "m")
+maintHeading = Heading("Maintenance Planned This Month", "h3")
+maintList = ListBlock([maintItem1, maintItem2, maintItem3])
+maintItem1 = ListItem("Blackwood Thermal Unit 2 Overhaul", "Oct 12 - Oct 26 • Eastern Region • Planned Outage for Turbine Blade Inspection")
+maintItem2 = ListItem("Highland Substation Sub-5 Transformer Replacement", "Oct 18 • Western Region • 6-Hour Scheduled Isolation Window")
+maintItem3 = ListItem("Coastal HVDC Interconnector Cable Diagnostics", "Oct 29 • Southern Region • Reduced Transfer Capacity (-500 MW)")
+
+tabOutages = TabItem("outages", "Live Grid Outages", [outageSection])
+
+outageSection = Card([outageHeading, outageTable], "sunk", "column", "m")
+outageHeading = Heading("Active Transmission & Distribution Outages", "h3")
+outageTable = Table([outageIdCol, outageRegionCol, outageAffectedCol, outageCustomersCol, outageEstReturnCol, outageSeverityCol])
+outageIdCol = Col("Incident ID", ["OUT-8821", "OUT-8834", "OUT-8840"])
+outageRegionCol = Col("Affected Region", ["Southern Corridor", "Central Metro", "Western Highlands"])
+outageAffectedCol = Col("Substation / Line", ["Sub-42 Oakridge", "Feeder 12B Eastside", "High-Voltage Line 109"])
+outageCustomersCol = Col("Affected Customers", ["14,230", "2,150", "450"])
+outageEstReturnCol = Col("Est. Restoration", ["16:30 UTC Today", "15:15 UTC Today", "18:00 UTC Today"])
+outageSeverityCol = Col("Priority Level", ["CRITICAL", "MEDIUM", "LOW"])
+
+tabCurtailment = TabItem("curtailment", "Order Emergency Curtailment", [curtailIntro, curtailForm])
+
+curtailIntro = TextCallout("warning", "Emergency Load Shedding & Curtailment Protocol", "Issuing a curtailment order will immediately signal industrial consumers and non-essential feeders to drop specified megawatt loads. Proceed with authorization.")
+
+curtailForm = Form("curtailment-order", curtailButtons, [curtailRegionControl, curtailAmountControl, curtailReasonControl, curtailConfirmControl])
+curtailRegionControl = FormControl("Target Region for Curtailment", curtailRegionSelect)
+curtailRegionSelect = Select("curtail_region", [curtRegS, curtRegN, curtRegE, curtRegW], "Select Target Grid Sector")
+curtRegS = SelectItem("south", "Southern Corridor (High Grid Load)")
+curtRegN = SelectItem("north", "Northern Grid")
+curtRegE = SelectItem("east", "Eastern Maritime")
+curtRegW = SelectItem("west", "Western Highlands")
+
+curtailAmountControl = FormControl("Curtailment Target Load (MW)", curtailAmountSlider, "Set required megawatt reduction")
+curtailAmountSlider = Slider("curtail_mw", "discrete", 50, 1000, 50, [250], "MW Load Reduction")
+
+curtailReasonControl = FormControl("Curtailment Justification", curtailReasonSelect)
+curtailReasonSelect = Select("reason", [reasonFreq, reasonCapacity, reasonLineOverload], "Select Directive Reason")
+reasonFreq = SelectItem("freq", "Automatic Frequency Stabilization Directive")
+reasonCapacity = SelectItem("cap", "Peak Demand Capacity Threshold Exceeded")
+reasonLineOverload = SelectItem("overload", "Thermal Transmission Line Constraint")
+
+curtailConfirmControl = FormControl("Operator Directives", curtailCheckBox)
+curtailCheckBox = CheckBoxGroup("confirm", [curtailCheckItem])
+curtailCheckItem = CheckBoxItem("Notify Regional ISO Dispatchers Immediately", "Transmission operators will receive automated SCADA override flags.", "notify_iso", true)
+
+curtailButtons = Buttons([executeCurtailBtn, clearCurtailBtn])
+executeCurtailBtn = Button("EXECUTE CURTAILMENT ORDER", null, "primary", "destructive", "medium")
+clearCurtailBtn = Button("Reset Form", null, "tertiary", "normal", "medium")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Isolate Southern Corridor regional view")
+f2 = FollowUpItem("Generate daily emissions report PDF")
+f3 = FollowUpItem("Dispatch emergency crew to Substation 42")

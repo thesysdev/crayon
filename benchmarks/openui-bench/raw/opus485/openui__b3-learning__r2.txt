@@ -1,0 +1,45 @@
+root = Card([header, cohortFilter, kpis, enrollChart, engagement, atRisk, messageForm])
+header = CardHeader("Learning Analytics", "This week's overview")
+
+cohortFilter = Form("cohort-filter", filterButtons, [cohortField])
+cohortField = FormControl("Cohort", cohortSelect, "Narrow all metrics to one cohort")
+cohortSelect = Select("cohort", [cohortAll, cohortA, cohortB, cohortC], "All cohorts")
+cohortAll = SelectItem("all", "All cohorts")
+cohortA = SelectItem("spring", "Spring 2024")
+cohortB = SelectItem("summer", "Summer 2024")
+cohortC = SelectItem("fall", "Fall 2024")
+filterButtons = Buttons([applyBtn])
+applyBtn = Button("Apply filter", null, "primary")
+
+kpis = Card([kpiTable, completionProgress], "sunk", "column", "m")
+kpiTable = Table([kpiName, kpiValue])
+kpiName = Col("Metric", ["Active learners", "Avg quiz score"])
+kpiValue = Col("Value", ["1,284", "82%"])
+completionProgress = Progress(67, "Course completion rate")
+
+enrollChart = HorizontalBarChart(courseLabels, [enrollSeries], "grouped", "Enrollments", "Course")
+courseLabels = ["Intro to Python", "Data Analysis", "Leadership 101", "Cloud Basics", "UX Foundations"]
+enrollSeries = Series("Enrollments", [942, 780, 655, 512, 398])
+
+engagement = AreaChart(weekLabels, [engageSeries], "natural", "Week", "Active learners")
+weekLabels = ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"]
+engageSeries = Series("Engagement", [910, 985, 1040, 1120, 1075, 1180, 1230, 1284])
+
+atRisk = ListBlock([risk1, risk2, risk3, risk4], "number")
+risk1 = ListItem("Jordan Lee", "No activity in 12 days · 20% complete", null, "Reach out")
+risk2 = ListItem("Priya Nair", "2 missed deadlines · 35% complete", null, "Reach out")
+risk3 = ListItem("Marcus Cole", "Quiz avg 41% · falling behind", null, "Reach out")
+risk4 = ListItem("Ana Ruiz", "No logins this week · 15% complete", null, "Reach out")
+
+messageForm = Form("message-cohort", messageButtons, [msgCohortField, msgBodyField])
+msgCohortField = FormControl("Send to cohort", msgCohortSelect)
+msgCohortSelect = Select("target_cohort", [msgAll, msgSpring, msgSummer, msgFall], "Choose a cohort")
+msgAll = SelectItem("all", "All cohorts")
+msgSpring = SelectItem("spring", "Spring 2024")
+msgSummer = SelectItem("summer", "Summer 2024")
+msgFall = SelectItem("fall", "Fall 2024")
+msgBodyField = FormControl("Message", msgBodyInput)
+msgBodyInput = TextArea("body", "Write a message to the cohort...", 4)
+messageButtons = Buttons([sendBtn, clearBtn])
+sendBtn = Button("Send message", null, "primary")
+clearBtn = Button("Clear", null, "tertiary")

@@ -1,0 +1,30 @@
+root = Card([header, warningAlert, searchField, itemsTable, thresholdCard, batchActions, followUps])
+
+header = CardHeader("Low Inventory Warning", "Items at or below restock threshold")
+
+warningAlert = Alert("Inventory Action Required", "3 items are critically low and require immediate reordering to prevent stockouts.", "warning")
+
+searchField = FormControl("Search Inventory", searchInput)
+searchInput = Input("search", "Search by item name or SKU...", "text")
+
+itemsTable = Table([colItem, colSku, colStock, colThreshold, colAction])
+colItem = Col("Item Name", ["Wireless Ergonomic Mouse", "Mechanical Keyboard (RGB)", "USB-C Hub 7-in-1", "27\" 4K Monitor Stand", "Bluetooth Headset Pro"])
+colSku = Col("SKU", ["WEM-9021", "MKB-4432", "UCH-7011", "MNS-2700", "BHP-8812"])
+colStock = Col("Remaining Units", ["2 units", "5 units", "8 units", "12 units", "15 units"])
+colThreshold = Col("Warning Threshold", ["10 units", "10 units", "15 units", "15 units", "20 units"])
+colAction = Col("Action", ["Reorder Now", "Reorder Now", "Reorder Now", "Review Order", "Review Order"])
+
+thresholdCard = SectionBlock([thresholdSection], false)
+thresholdSection = SectionItem("threshold-info", "Threshold Settings & Rules", [thresholdDetails, updateThresholdBtn])
+thresholdDetails = MarkDownRenderer("### Warning Rules\n- **Default Critical Threshold:** 10 units\n- **Default Warning Threshold:** 15 units\n- **Lead Time Alert:** Triggered automatically when estimated stock out date is within 7 days based on 30-day velocity.")
+updateThresholdBtn = Buttons([configBtn])
+configBtn = Button("Configure Thresholds", null, "secondary")
+
+batchActions = Buttons([reorderAllBtn, exportBtn])
+reorderAllBtn = Button("Reorder All Low Stock Items", null, "primary")
+exportBtn = Button("Export Inventory Report", null, "tertiary")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Show reorder history for Wireless Ergonomic Mouse")
+f2 = FollowUpItem("Adjust global low-stock threshold to 20 units")
+f3 = FollowUpItem("Filter inventory by vendor")

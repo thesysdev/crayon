@@ -1,0 +1,83 @@
+root = Card([headerSection, dealOverviewCard, renewalWarning, mainTabs, followUpSection, quickActionsSection, followUpSuggestions])
+
+headerSection = Card([header, ownerBadge], "clear", "row", "m", "center", "between")
+header = CardHeader("Acme Corporation", "Enterprise Customer Account")
+ownerBadge = Tag("Owner: Sarah Jenkins", null, "md", "info")
+
+dealOverviewCard = Card([dealTitle, kpiRow], "sunk", "column", "m")
+dealTitle = Heading("Deal Overview", "h3")
+kpiRow = Card([totalValueCol, stageCol], "clear", "row", "l", "center", "around")
+
+totalValueCol = Card([valueLabel, valueText], "clear", "column", "xs", "center")
+valueLabel = TextContent("Total Deal Value", "small")
+valueText = Heading("$450,000", "h2")
+
+stageCol = Card([stageLabel, stageBadge], "clear", "column", "xs", "center")
+stageLabel = TextContent("Current Stage", "small")
+stageBadge = Badge("Negotiation & Legal Review", "default")
+
+renewalWarning = TextCallout("warning", "Upcoming Renewal Alert", "Account contract expires in 18 days (October 30, 2024). Renewal discussion required.")
+
+mainTabs = Tabs([activityTab, contactsTab, notesTab])
+
+activityTab = TabItem("activity", "Recent Activity", [activityList])
+activityList = ListBlock([act1, act2, act3, act4])
+act1 = ListItem("Contract Redline Returned", "Legal team sent back revised terms with minor indemnification edits — 2 hours ago")
+act2 = ListItem("Executive Alignment Call", "VP of Sales met with Acme CTO regarding deployment roadmap — Yesterday")
+act3 = ListItem("Pricing Proposal Sent", "Updated quote reflecting 15% multi-year discount delivered — Oct 8, 2024")
+act4 = ListItem("Discovery Workshop", "Technical deep dive with 6 engineering stakeholders — Oct 3, 2024")
+
+contactsTab = TabItem("contacts", "Contacts", [contactsTable])
+contactsTable = Table([colName, colTitle, colRole, colEmail])
+colName = Col("Name", ["Elena Rostova", "Marcus Vance", "David Chen", "Sarah Miller"])
+colTitle = Col("Title", ["Chief Technology Officer", "VP of Procurement", "Lead Enterprise Architect", "Legal Counsel"])
+colRole = Col("Decision Role", ["Economic Buyer", "Decision Maker", "Technical Evaluator", "Legal Sign-off"])
+colEmail = Col("Email", ["elena@acme.com", "m.vance@acme.com", "d.chen@acme.com", "smiller@acme.com"])
+
+notesTab = TabItem("notes", "Jot a Note", [noteForm])
+noteForm = Form("add-note-form", noteFormButtons, [noteInputControl])
+noteInputControl = FormControl("Account Note", noteArea, "Notes are shared with all team members assigned to this account")
+noteArea = TextArea("note_text", "e.g., Elena mentioned budget approval is expected by Thursday...", 4)
+noteFormButtons = Buttons([saveNoteBtn, clearNoteBtn])
+saveNoteBtn = Button("Save Note", null, "primary")
+clearNoteBtn = Button("Clear", null, "tertiary")
+
+followUpSection = Card([followUpHeading, followUpList], "card", "column", "m")
+followUpHeading = Heading("Open Follow-ups", "h3")
+followUpList = Table([fTask, fAssignee, fDueDate, fStatus])
+fTask = Col("Action Item", ["Schedule final security compliance review", "Send updated MSA draft to Marcus", "Confirm kickoff target date"])
+fAssignee = Col("Assigned To", ["Sarah Jenkins", "Sarah Jenkins", "Tom Brady"])
+fDueDate = Col("Due Date", ["Oct 15, 2024", "Oct 18, 2024", "Oct 22, 2024"])
+fStatus = Col("Priority", ["High", "High", "Medium"])
+
+quickActionsSection = Card([actionsHeading, actionButtons], "sunk", "column", "m")
+actionsHeading = Heading("Quick Actions", "h4")
+actionButtons = Buttons([logCallBtn, scheduleMeetingBtn, sendEmailBtn])
+logCallBtn = DialogBlock("Log a Call", "Log Call Activity", "Record notes and outcomes from a recent phone call.", callForm)
+scheduleMeetingBtn = Button("Schedule Meeting", null, "secondary")
+sendEmailBtn = Button("Send Email", null, "secondary")
+
+callForm = Form("log-call-form", callFormButtons, [callTypeControl, callOutcomeControl, callNotesControl])
+callTypeControl = FormControl("Call Type", callTypeSelect)
+callTypeSelect = Select("call_type", [typeDiscovery, typeDemo, typeNegotiation, typeCheckIn], "Select call type")
+typeDiscovery = SelectItem("discovery", "Discovery")
+typeDemo = SelectItem("demo", "Product Demo")
+typeNegotiation = SelectItem("negotiation", "Negotiation")
+typeCheckIn = SelectItem("check_in", "Check-in")
+
+callOutcomeControl = FormControl("Outcome", callOutcomeRadio)
+callOutcomeRadio = RadioGroup("call_outcome", [outcomeConnected, outcomeLeftVM, outcomeNoAnswer])
+outcomeConnected = RadioItem("Connected", "Spoke directly with stakeholder", "connected")
+outcomeLeftVM = RadioItem("Left Voicemail", "Left message requesting callback", "voicemail")
+outcomeNoAnswer = RadioItem("No Answer", "Call not answered", "no_answer")
+
+callNotesControl = FormControl("Call Summary", callNotesArea)
+callNotesArea = TextArea("call_summary", "Summary of key discussion points...", 3)
+
+callFormButtons = Buttons([submitCallBtn])
+submitCallBtn = Button("Save Call Log", null, "primary")
+
+followUpSuggestions = FollowUpBlock([su1, su2, su3])
+su1 = FollowUpItem("Draft renewal proposal for Acme")
+su2 = FollowUpItem("View full activity history for this account")
+su3 = FollowUpItem("Export account summary report")

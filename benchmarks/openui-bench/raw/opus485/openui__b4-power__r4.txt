@@ -1,0 +1,60 @@
+root = Card([header, alerts, kpis, capacity, genSplit, plants, outages, forecast, maintenance, controls])
+header = CardHeader("Grid Operations Console", "Real-time network status")
+
+alerts = Alert("Frequency deviation", "North zone frequency dropped to 49.82 Hz — auto-response engaged", "warning")
+
+kpis = Card([loadTag, priceTag, emissionsTag], "sunk", "row", "m", "center", "between", true)
+loadTag = Tag("Load: 42,180 MW", null, "lg", "info")
+priceTag = Tag("Price: $58.40 / MWh", null, "lg", "success")
+emissionsTag = Tag("Emissions today: 18,240 tCO2", null, "lg", "warning")
+
+capacity = Card([capHeading, capProgress], "clear", "column", "s")
+capHeading = Heading("Capacity Utilization", "h3")
+capProgress = Progress(87, "42,180 MW of 48,500 MW capacity (87%)")
+
+genSplit = Card([genHeading, genChart], "clear", "column", "s")
+genHeading = Heading("Generation Mix by Source", "h3")
+genChart = PieChart(genLabels, genValues, "donut")
+genLabels = ["Gas", "Wind", "Solar", "Nuclear", "Hydro", "Coal"]
+genValues = [12400, 9800, 6200, 8100, 3900, 1780]
+
+plants = Card([plantHeading, plantTable], "clear", "column", "s")
+plantHeading = Heading("Plant Output & Status", "h3")
+plantTable = Table([plantName, plantOutput, plantStatus])
+plantName = Col("Plant", ["Harborside CCGT", "Ridgeline Wind", "Sunfield Solar", "Kesler Nuclear", "Glenmoor Hydro", "Blackrock Coal"])
+plantOutput = Col("Output (MW)", [12400, 9800, 6200, 8100, 3900, 1780], "number")
+plantStatus = Col("Status", ["Online", "Online", "Online", "Online", "Derated", "Standby"])
+
+outages = Card([outageHeading, outageList], "clear", "column", "s")
+outageHeading = Heading("Active Outages", "h3")
+outageList = ListBlock([outage1, outage2, outage3])
+outage1 = ListItem("Feeder 22 fault", "North Ridge — 4,200 customers affected")
+outage2 = ListItem("Transformer T-14 trip", "East Valley — 1,850 customers affected")
+outage3 = ListItem("Line 9 clearance", "Coastal South — 620 customers affected")
+
+forecast = Card([fcHeading, fcChart], "clear", "column", "s")
+fcHeading = Heading("24-Hour Demand Forecast", "h3")
+fcChart = LineChart(fcHours, [fcSeries], "natural", "Hour", "MW")
+fcHours = ["00", "03", "06", "09", "12", "15", "18", "21"]
+fcSeries = Series("Forecast Load", [36800, 34200, 38900, 44100, 45600, 44800, 47200, 41300])
+
+maintenance = Card([maintHeading, maintTable], "clear", "column", "s")
+maintHeading = Heading("Planned Maintenance This Month", "h3")
+maintTable = Table([maintAsset, maintWindow, maintImpact])
+maintAsset = Col("Asset", ["Harborside Unit 2", "Ridgeline Turbines 4-6", "Substation SS-07"])
+maintWindow = Col("Window", ["Mar 12-14", "Mar 18", "Mar 25-26"])
+maintImpact = Col("Derate (MW)", [3100, 1200, 900], "number")
+
+controls = Card([focusForm, curtailControls], "clear", "column", "m")
+focusForm = Form("region-focus", focusButtons, [regionField])
+regionField = FormControl("Focus on region", regionSelect)
+regionSelect = Select("region", [regNorth, regEast, regCoastal, regCentral], "Select a region")
+regNorth = SelectItem("north", "North Ridge")
+regEast = SelectItem("east", "East Valley")
+regCoastal = SelectItem("coastal", "Coastal South")
+regCentral = SelectItem("central", "Central Grid")
+focusButtons = Buttons([focusBtn])
+focusBtn = Button("Apply focus", null, "primary")
+
+curtailControls = Buttons([curtailBtn])
+curtailBtn = AlertDialogBlock("Order Curtailment", "Confirm load curtailment", "This will shed up to 2,000 MW of load in the selected region. Confirm to proceed.", "Order curtailment", "Cancel", "destructive")

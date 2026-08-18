@@ -1,0 +1,513 @@
+Here is a comprehensive HR Hiring Overview dashboard that covers all your requested metrics, including headcount, pipeline stats, department breakdowns, interviews scheduled, attrition trends, and an interactive action to open a new role.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "hr-hiring-overview",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "hr-hiring-overview",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "headerSection",
+          "kpiSection",
+          "tabsSection",
+          "actionsSection"
+        ]
+      },
+      {
+        "id": "headerSection",
+        "component": "CardHeader",
+        "title": "HR & Talent Acquisition Dashboard",
+        "subtitle": "Overview of global headcount, recruiting pipeline, and hiring analytics"
+      },
+      {
+        "id": "kpiSection",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "headcountCard",
+          "timeToHireCard",
+          "interviewsCard"
+        ]
+      },
+      {
+        "id": "headcountCard",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "xs",
+        "weight": 1,
+        "children": [
+          "headcountTitle",
+          "headcountValue",
+          "headcountBadge"
+        ]
+      },
+      {
+        "id": "headcountTitle",
+        "component": "Heading",
+        "level": "h4",
+        "text": "Current Headcount"
+      },
+      {
+        "id": "headcountValue",
+        "component": "Heading",
+        "level": "h1",
+        "text": "452"
+      },
+      {
+        "id": "headcountBadge",
+        "component": "Badge",
+        "text": "+12 net growth this quarter",
+        "variant": "secondary"
+      },
+      {
+        "id": "timeToHireCard",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "xs",
+        "weight": 1,
+        "children": [
+          "timeToHireTitle",
+          "timeToHireValue",
+          "timeToHireBadge"
+        ]
+      },
+      {
+        "id": "timeToHireTitle",
+        "component": "Heading",
+        "level": "h4",
+        "text": "Avg. Time to Hire"
+      },
+      {
+        "id": "timeToHireValue",
+        "component": "Heading",
+        "level": "h1",
+        "text": "34 Days"
+      },
+      {
+        "id": "timeToHireBadge",
+        "component": "Badge",
+        "text": "-3 days vs last quarter",
+        "variant": "default"
+      },
+      {
+        "id": "interviewsCard",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "xs",
+        "weight": 1,
+        "children": [
+          "interviewsTitle",
+          "interviewsValue",
+          "interviewsBadge"
+        ]
+      },
+      {
+        "id": "interviewsTitle",
+        "component": "Heading",
+        "level": "h4",
+        "text": "Interviews This Week"
+      },
+      {
+        "id": "interviewsValue",
+        "component": "Heading",
+        "level": "h1",
+        "text": "28 Scheduled"
+      },
+      {
+        "id": "interviewsBadge",
+        "component": "Badge",
+        "text": "14 screen, 10 tech, 4 final",
+        "variant": "outline"
+      },
+      {
+        "id": "tabsSection",
+        "component": "Tabs",
+        "items": [
+          "tabRoles",
+          "tabPipeline",
+          "tabDept",
+          "tabAttrition"
+        ]
+      },
+      {
+        "id": "tabRoles",
+        "component": "TabItem",
+        "value": "open-roles",
+        "trigger": "Open Roles",
+        "content": [
+          "openRolesTable"
+        ]
+      },
+      {
+        "id": "openRolesTable",
+        "component": "Table",
+        "columns": [
+          "colRoleTitle",
+          "colRoleDept",
+          "colRoleLocation",
+          "colRoleApplicants",
+          "colRoleStatus"
+        ]
+      },
+      {
+        "id": "colRoleTitle",
+        "component": "Col",
+        "label": "Role Title",
+        "data": [
+          "Senior Frontend Engineer",
+          "Product Marketing Manager",
+          "Staff Data Scientist",
+          "Account Executive (Enterprise)",
+          "HR Operations Specialist",
+          "UX Lead"
+        ]
+      },
+      {
+        "id": "colRoleDept",
+        "component": "Col",
+        "label": "Department",
+        "data": [
+          "Engineering",
+          "Marketing",
+          "Data & AI",
+          "Sales",
+          "People & HR",
+          "Design"
+        ]
+      },
+      {
+        "id": "colRoleLocation",
+        "component": "Col",
+        "label": "Location",
+        "data": [
+          "Remote (US)",
+          "New York, NY",
+          "San Francisco, CA",
+          "Chicago, IL",
+          "London, UK",
+          "Remote (US)"
+        ]
+      },
+      {
+        "id": "colRoleApplicants",
+        "component": "Col",
+        "label": "Active Applicants",
+        "data": [
+          "42",
+          "28",
+          "19",
+          "56",
+          "14",
+          "31"
+        ]
+      },
+      {
+        "id": "colRoleStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Interviewing",
+          "Sourcing",
+          "Final Stage",
+          "Interviewing",
+          "Sourcing",
+          "Offer Sent"
+        ]
+      },
+      {
+        "id": "tabPipeline",
+        "component": "TabItem",
+        "value": "pipeline",
+        "trigger": "Pipeline Stage Breakdown",
+        "content": [
+          "pipelineChart"
+        ]
+      },
+      {
+        "id": "pipelineChart",
+        "component": "HorizontalBarChart",
+        "xLabel": "Candidates",
+        "yLabel": "Stage",
+        "labels": [
+          "Sourcing / Applied",
+          "Recruiter Screen",
+          "Hiring Manager Review",
+          "Technical / Assessment",
+          "On-site / Panel",
+          "Offer Extended"
+        ],
+        "series": [
+          "pipelineSeries"
+        ]
+      },
+      {
+        "id": "pipelineSeries",
+        "component": "Series",
+        "category": "Active Candidates",
+        "values": [
+          185,
+          64,
+          38,
+          24,
+          12,
+          5
+        ]
+      },
+      {
+        "id": "tabDept",
+        "component": "TabItem",
+        "value": "dept-split",
+        "trigger": "Headcount by Department",
+        "content": [
+          "deptPieChart"
+        ]
+      },
+      {
+        "id": "deptPieChart",
+        "component": "PieChart",
+        "variant": "donut",
+        "labels": [
+          "Engineering",
+          "Sales",
+          "Product & Design",
+          "Marketing",
+          "Operations & HR",
+          "Customer Support"
+        ],
+        "values": [
+          180,
+          95,
+          52,
+          40,
+          35,
+          50
+        ]
+      },
+      {
+        "id": "tabAttrition",
+        "component": "TabItem",
+        "value": "attrition",
+        "trigger": "6-Month Attrition",
+        "content": [
+          "attritionChart"
+        ]
+      },
+      {
+        "id": "attritionChart",
+        "component": "LineChart",
+        "xLabel": "Month",
+        "yLabel": "Attrition Rate (%)",
+        "labels": [
+          "Oct",
+          "Nov",
+          "Dec",
+          "Jan",
+          "Feb",
+          "Mar"
+        ],
+        "series": [
+          "attritionSeries"
+        ]
+      },
+      {
+        "id": "attritionSeries",
+        "component": "Series",
+        "category": "Monthly Attrition Rate (%)",
+        "values": [
+          1.8,
+          1.5,
+          2.1,
+          1.2,
+          0.9,
+          1.1
+        ]
+      },
+      {
+        "id": "actionsSection",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "justify": "between",
+        "align": "center",
+        "children": [
+          "actionsText",
+          "openRoleDialog"
+        ]
+      },
+      {
+        "id": "actionsText",
+        "component": "TextContent",
+        "text": "Need to expand your team? Initiate a new headcount requisition.",
+        "size": "default"
+      },
+      {
+        "id": "openRoleDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Open New Role",
+        "triggerVariant": "default",
+        "title": "Create Requisition for New Role",
+        "description": "Fill out the position details below to submit for hiring manager approval.",
+        "content": [
+          "newRoleForm"
+        ]
+      },
+      {
+        "id": "newRoleForm",
+        "component": "Form",
+        "name": "open-new-role",
+        "fields": [
+          "roleTitleControl",
+          "deptControl",
+          "employmentTypeControl",
+          "justificationControl"
+        ],
+        "buttons": "formButtons"
+      },
+      {
+        "id": "roleTitleControl",
+        "component": "FormControl",
+        "label": "Job Title",
+        "input": "roleTitleInput"
+      },
+      {
+        "id": "roleTitleInput",
+        "component": "Input",
+        "name": "job_title",
+        "placeholder": "e.g., Senior Infrastructure Engineer"
+      },
+      {
+        "id": "deptControl",
+        "component": "FormControl",
+        "label": "Department",
+        "input": "deptSelect"
+      },
+      {
+        "id": "deptSelect",
+        "component": "Select",
+        "name": "department",
+        "placeholder": "Select department",
+        "items": [
+          "deptEng",
+          "deptSales",
+          "deptMktg",
+          "deptProd",
+          "deptOps"
+        ]
+      },
+      {
+        "id": "deptEng",
+        "component": "SelectItem",
+        "value": "engineering",
+        "label": "Engineering"
+      },
+      {
+        "id": "deptSales",
+        "component": "SelectItem",
+        "value": "sales",
+        "label": "Sales"
+      },
+      {
+        "id": "deptMktg",
+        "component": "SelectItem",
+        "value": "marketing",
+        "label": "Marketing"
+      },
+      {
+        "id": "deptProd",
+        "component": "SelectItem",
+        "value": "product",
+        "label": "Product & Design"
+      },
+      {
+        "id": "deptOps",
+        "component": "SelectItem",
+        "value": "operations",
+        "label": "Operations & HR"
+      },
+      {
+        "id": "employmentTypeControl",
+        "component": "FormControl",
+        "label": "Employment Type",
+        "input": "employmentTypeRadio"
+      },
+      {
+        "id": "employmentTypeRadio",
+        "component": "RadioGroup",
+        "name": "employment_type",
+        "items": [
+          "typeFullTime",
+          "typeContract"
+        ]
+      },
+      {
+        "id": "typeFullTime",
+        "component": "RadioItem",
+        "label": "Full-Time",
+        "description": "Permanent role with full benefits",
+        "value": "full_time"
+      },
+      {
+        "id": "typeContract",
+        "component": "RadioItem",
+        "label": "Contract / Temporary",
+        "description": "Time-bound engagement",
+        "value": "contract"
+      },
+      {
+        "id": "justificationControl",
+        "component": "FormControl",
+        "label": "Business Justification",
+        "hint": "Briefly describe why this role is required",
+        "input": "justificationArea"
+      },
+      {
+        "id": "justificationArea",
+        "component": "TextArea",
+        "name": "justification",
+        "placeholder": "Describe team capacity constraints, strategic goals, etc.",
+        "rows": 3
+      },
+      {
+        "id": "formButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitRoleBtn",
+          "cancelRoleBtn"
+        ]
+      },
+      {
+        "id": "submitRoleBtn",
+        "component": "Button",
+        "label": "Submit Requisition",
+        "variant": "primary"
+      },
+      {
+        "id": "cancelRoleBtn",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>

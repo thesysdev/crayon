@@ -1,0 +1,40 @@
+root = Card([header, profileCard, messageSection], "card", "column", "m")
+
+header = CardHeader("Company Directory", "Employee Profile")
+
+profileCard = Card([bioSection, detailsList], "sunk", "column", "s")
+
+bioSection = Card([avatarRow, bioText], "clear", "column", "s")
+avatarRow = Card([userAvatar, nameAndRole], "clear", "row", "m", "center")
+userAvatar = Avatar("https://picsum.photos/seed/alexprofile/200/200", "Alex Morgan", "AM")
+nameAndRole = Card([personName, personRole, statusBadge], "clear", "column", "xs")
+personName = Heading("Alex Morgan", "h2")
+personRole = TextContent("Senior Product Designer • Design Systems", "default")
+statusBadge = Badge("Available for projects", "outline")
+
+bioText = MarkDownRenderer("Alex has over 8 years of experience building scalable design systems and accessible user interfaces. Currently leading the core UI component library and collaborating closely with engineering teams to bridge design and code.")
+
+detailsList = ListBlock([emailItem, locationItem, teamItem], "image")
+emailItem = ListItem("Email", "alex.morgan@company.com")
+locationItem = ListItem("Location", "San Francisco, CA (Hybrid)")
+teamItem = ListItem("Department", "Product Experience & Operations")
+
+messageSection = Card([messageHeader, messageForm], "card", "column", "s")
+messageHeader = Heading("Send a Message", "h3")
+
+messageForm = Form("send-message-form", formButtons, [subjectField, bodyField, urgentField])
+
+subjectField = FormControl("Subject", subjectInput)
+subjectInput = Input("subject", "e.g., Design System Review")
+
+bodyField = FormControl("Message", bodyTextArea, "Direct messages are sent to Alex's Slack and email.")
+bodyTextArea = TextArea("message_body", "Write your message here...", 4)
+
+urgentField = FormControl("Priority", prioritySelect)
+prioritySelect = Select("priority", [normOpt, highOpt], "Select priority")
+normOpt = SelectItem("normal", "Normal Priority")
+highOpt = SelectItem("high", "High Priority")
+
+formButtons = Buttons([sendBtn, clearBtn], "row")
+sendBtn = Button("Send Message", null, "primary")
+clearBtn = Button("Clear", null, "tertiary")

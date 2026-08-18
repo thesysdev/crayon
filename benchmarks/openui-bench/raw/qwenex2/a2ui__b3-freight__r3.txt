@@ -1,0 +1,319 @@
+
+
+Here's a complete logistics coordinator's board covering all 9 requirements:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "refreshBadge",
+          "delayAlert",
+          "kpis",
+          "searchSection",
+          "shipmentTable",
+          "flagDialog",
+          "chartsRow",
+          "carrierChart",
+          "volumeChart"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Logistics Coordinator Board",
+        "subtitle": "Live shipment tracking & performance"
+      },
+      {
+        "id": "refreshBadge",
+        "component": "Badge",
+        "text": "Last refreshed: 2025-01-15 09:42 UTC",
+        "variant": "outline"
+      },
+      {
+        "id": "delayAlert",
+        "component": "Alert",
+        "title": "2 Delayed Shipments",
+        "description": "SHP-4821 (Chicago → Miami) delayed 6 hrs due to weather. SHP-4795 (Seattle → Denver) delayed 3 hrs — carrier capacity issue.",
+        "variant": "warning"
+      },
+      {
+        "id": "kpis",
+        "component": "Table",
+        "columns": ["kpiName", "kpiValue"]
+      },
+      {
+        "id": "kpiName",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "On-Time Delivery Rate (Jan)",
+          "Average Cost per Shipment",
+          "Active Shipments in Transit",
+          "Delayed Shipments"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "87.3%",
+          "$1,247",
+          "6",
+          "2"
+        ]
+      },
+      {
+        "id": "searchSection",
+        "component": "Form",
+        "name": "route-search",
+        "buttons": "searchButtons",
+        "fields": ["routeField"]
+      },
+      {
+        "id": "routeField",
+        "component": "FormControl",
+        "label": "Search by route",
+        "input": "routeInput",
+        "hint": "Enter origin or destination city (e.g. \"Chicago\" or \"Miami\")"
+      },
+      {
+        "id": "routeInput",
+        "component": "Input",
+        "name": "route",
+        "placeholder": "e.g. Chicago → Miami",
+        "type": "text"
+      },
+      {
+        "id": "searchButtons",
+        "component": "Buttons",
+        "buttons": ["searchBtn"]
+      },
+      {
+        "id": "searchBtn",
+        "component": "Button",
+        "label": "Search Route",
+        "variant": "primary"
+      },
+      {
+        "id": "shipmentTable",
+        "component": "Table",
+        "columns": ["colId", "colOrigin", "colDest", "colEta", "colStatus"]
+      },
+      {
+        "id": "colId",
+        "component": "Col",
+        "label": "Shipment ID",
+        "data": [
+          "SHP-4830",
+          "SHP-4828",
+          "SHP-4825",
+          "SHP-4821",
+          "SHP-4819",
+          "SHP-4795"
+        ]
+      },
+      {
+        "id": "colOrigin",
+        "component": "Col",
+        "label": "Origin",
+        "data": [
+          "Los Angeles",
+          "New York",
+          "Dallas",
+          "Chicago",
+          "Atlanta",
+          "Seattle"
+        ]
+      },
+      {
+        "id": "colDest",
+        "component": "Col",
+        "label": "Destination",
+        "data": [
+          "Phoenix",
+          "Boston",
+          "Houston",
+          "Miami",
+          "Nashville",
+          "Denver"
+        ]
+      },
+      {
+        "id": "colEta",
+        "component": "Col",
+        "label": "ETA",
+        "data": [
+          "Jan 15, 14:00",
+          "Jan 15, 16:30",
+          "Jan 15, 18:00",
+          "Jan 15, 22:00 ⚠️",
+          "Jan 16, 08:00",
+          "Jan 16, 11:00 ⚠️"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "In Transit",
+          "In Transit",
+          "In Transit",
+          "Delayed",
+          "In Transit",
+          "Delayed"
+        ]
+      },
+      {
+        "id": "flagDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "🚩 Flag a Shipment",
+        "title": "Flag Shipment for Review",
+        "description": "Select a shipment and provide a reason for flagging.",
+        "content": ["flagForm"]
+      },
+      {
+        "id": "flagForm",
+        "component": "Form",
+        "name": "flag-shipment",
+        "buttons": "flagButtons",
+        "fields": ["flagShipmentField", "flagReasonField"]
+      },
+      {
+        "id": "flagShipmentField",
+        "component": "FormControl",
+        "label": "Shipment ID",
+        "input": "flagShipmentSelect"
+      },
+      {
+        "id": "flagShipmentSelect",
+        "component": "Select",
+        "name": "shipment_id",
+        "placeholder": "Choose shipment",
+        "items": ["fs1", "fs2", "fs3", "fs4", "fs5", "fs6"]
+      },
+      {
+        "id": "fs1",
+        "component": "SelectItem",
+        "value": "SHP-4830",
+        "label": "SHP-4830 (LA → Phoenix)"
+      },
+      {
+        "id": "fs2",
+        "component": "SelectItem",
+        "value": "SHP-4828",
+        "label": "SHP-4828 (NY → Boston)"
+      },
+      {
+        "id": "fs3",
+        "component": "SelectItem",
+        "value": "SHP-4825",
+        "label": "SHP-4825 (Dallas → Houston)"
+      },
+      {
+        "id": "fs4",
+        "component": "SelectItem",
+        "value": "SHP-4821",
+        "label": "SHP-4821 (Chicago → Miami)"
+      },
+      {
+        "id": "fs5",
+        "component": "SelectItem",
+        "value": "SHP-4819",
+        "label": "SHP-4819 (Atlanta → Nashville)"
+      },
+      {
+        "id": "fs6",
+        "component": "SelectItem",
+        "value": "SHP-4795",
+        "label": "SHP-4795 (Seattle → Denver)"
+      },
+      {
+        "id": "flagReasonField",
+        "component": "FormControl",
+        "label": "Reason",
+        "input": "flagReasonInput"
+      },
+      {
+        "id": "flagReasonInput",
+        "component": "TextArea",
+        "name": "reason",
+        "placeholder": "e.g. Customer escalation, damaged goods suspected…",
+        "rows": 3
+      },
+      {
+        "id": "flagButtons",
+        "component": "Buttons",
+        "buttons": ["flagSubmitBtn"]
+      },
+      {
+        "id": "flagSubmitBtn",
+        "component": "Button",
+        "label": "Submit Flag",
+        "variant": "primary",
+        "type": "destructive"
+      },
+      {
+        "id": "chartsRow",
+        "component": "Heading",
+        "text": "Analytics",
+        "level": "h3"
+      },
+      {
+        "id": "carrierChart",
+        "component": "PieChart",
+        "labels": ["FedEx", "UPS", "DHL", "USPS"],
+        "values": [38, 31, 19, 12],
+        "variant": "donut"
+      },
+      {
+        "id": "volumeChart",
+        "component": "AreaChart",
+        "labels": ["W1 Nov", "W2 Nov", "W3 Nov", "W4 Nov", "W1 Dec", "W2 Dec", "W3 Dec", "W4 Dec"],
+        "series": ["volSeries"],
+        "variant": "natural",
+        "xLabel": "Week",
+        "yLabel": "Shipments"
+      },
+      {
+        "id": "volSeries",
+        "component": "Series",
+        "category": "Weekly Volume",
+        "values": [142, 158, 165, 171, 149, 163, 178, 184]
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This board covers all 9 items:
+
+| # | Requirement | Component Used |
+|---|---|---|
+| 1 | Shipments in transit (origin, dest, ETA, status) | **Table** with 5 columns |
+| 2 | Delayed shipments called out | **Alert** (warning variant) naming both delayed shipments |
+| 3 | On-time percentage this month | **KPI Table** row showing 87.3% |
+| 4 | Volume split by carrier | **PieChart** (donut) — FedEx / UPS / DHL / USPS |
+| 5 | Search by route | **Form** with text input + search button |
+| 6 | Average cost per shipment | **KPI Table** row showing $1,247 |
+| 7 | Weekly volume (past 2 months) | **AreaChart** with 8 weeks of data |
+| 8 | Flag a shipment | **DialogBlock** with a select + reason form |
+| 9 | Last refreshed timestamp | **Badge** at the top with UTC timestamp |

@@ -1,0 +1,32 @@
+root = Card([header, warningAlert, thresholdInfo, searchSection, inventoryTable, actionsGroup, followUps])
+
+header = CardHeader("Low Inventory Warning", "Automated stock monitoring and restock management")
+
+warningAlert = Alert("Critical Stock Level Reached", "3 items have fallen below safety thresholds and require immediate reorder.", "warning")
+
+thresholdInfo = TextCallout("info", "Global Warning Threshold", "Items are automatically flagged when available stock drops to 15 units or fewer.")
+
+searchSection = Form("search-form", searchButtons, [searchInputField])
+searchInputField = FormControl("Search Inventory", searchInput, "Search by SKU, item name, or category")
+searchInput = Input("search_query", "e.g., Wireless Mouse, SKU-9081...")
+searchButtons = Buttons([searchBtn, resetBtn])
+searchBtn = Button("Filter Items", null, "primary", "normal", "small")
+resetBtn = Button("Clear", null, "tertiary", "normal", "small")
+
+inventoryTable = Table([colSku, colItem, colCategory, colStock, colThreshold, colStatus, colAction])
+colSku = Col("SKU", ["SKU-4821", "SKU-9081", "SKU-1102", "SKU-3349", "SKU-7720"])
+colItem = Col("Item Name", ["Ergonomic Mechanical Keyboard", "USB-C Dual Docking Station", "Ultra-Wide Monitor 34\"", "Wireless Noise-Canceling Headphones", "Vertical Ergonomic Mouse"])
+colCategory = Col("Category", ["Peripherals", "Accessories", "Monitors", "Audio", "Peripherals"])
+colStock = Col("Remaining Units", [4, 8, 12, 18, 22])
+colThreshold = Col("Threshold", [15, 15, 15, 15, 15])
+colStatus = Col("Status", ["Critical", "Low Stock", "Low Stock", "Adequate", "Adequate"])
+colAction = Col("Reorder Action", ["Reorder 50 Units", "Reorder 30 Units", "Reorder 20 Units", "Restock Managed", "Restock Managed"])
+
+actionsGroup = Buttons([bulkReorderBtn, exportReportBtn])
+bulkReorderBtn = Button("Bulk Reorder Low Stock Items", null, "primary")
+exportReportBtn = Button("Export Inventory Report", null, "secondary")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Adjust global warning threshold")
+f2 = FollowUpItem("View pending purchase orders")
+f3 = FollowUpItem("Configure supplier auto-reorder rules")

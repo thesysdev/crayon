@@ -1,0 +1,77 @@
+root = Card([header, metricsGrid, quickActions, activeAlert, appointmentsSection, checkInDrawer, followUp], "card", "column", "m")
+
+header = CardHeader("Clinic Receptionist Dashboard", "Dr. Smith & Partners Medical Group | Dr. Sarah Jenkins (General Practice)")
+
+metricsGrid = Card([expectedCard, noShowCard, roomsCard, nextPatientCard], "clear", "row", "m")
+
+expectedCard = Card([expectedHeader, expectedBadge], "sunk", "column", "xs")
+expectedHeader = CardHeader("24", "Expected Today")
+expectedBadge = Badge("18 Checked In", "secondary")
+
+noShowCard = Card([noShowHeader, noShowBadge], "sunk", "column", "xs")
+noShowHeader = CardHeader("4.2%", "No-Show Rate")
+noShowBadge = Badge("↓ 1.1% vs Last Month", "outline")
+
+roomsCard = Card([roomsHeader, roomTags], "sunk", "column", "xs")
+roomsHeader = CardHeader("Free Rooms", "Available Right Now")
+roomTags = TagBlock(["Room 102 (Exam)", "Room 105 (Triage)", "Room 108 (Pediatrics)"])
+
+nextPatientCard = Card([nextHeader, callNextBtn], "sunk", "column", "xs")
+nextHeader = CardHeader("Next Patient Called", "Arthur Pendelton (10:15 AM - Room 101)")
+callNextBtn = Buttons([callBtn])
+callBtn = Button("Call Next Patient", null, "primary", "normal", "small")
+
+quickActions = Card([dateSectionTitle, datePickerControl, dateNavButtons], "sunk", "row", "m", "center", "between")
+dateSectionTitle = Heading("Select Date View", "h4")
+datePickerControl = DatePicker("selected_date", "single", null, ["2023-10-24"])
+dateNavButtons = Buttons([prevDayBtn, todayBtn, nextDayBtn])
+prevDayBtn = Button("← Previous Day", null, "tertiary", "normal", "small")
+todayBtn = Button("Today", null, "secondary", "normal", "small")
+nextDayBtn = Button("Next Day →", null, "tertiary", "normal", "small")
+
+activeAlert = Callout("info", "Up Next", "Arthur Pendelton is waiting in Lobby Area B for Room 101.")
+
+appointmentsSection = Card([apptHeader, apptTable], "clear", "column", "s")
+apptHeader = Heading("Today's Appointment Schedule", "h3")
+
+apptTable = Table([timeCol, patientCol, doctorCol, typeCol, statusCol])
+timeCol = Col("Time", ["08:30 AM", "09:00 AM", "09:30 AM", "10:00 AM", "10:15 AM", "11:00 AM", "11:30 AM", "01:00 PM"])
+patientCol = Col("Patient Name", ["Eleanor Vance", "Marcus Brody", "Sophia Martinez", "David Kim", "Arthur Pendelton", "Clara Oswald", "James Wilson", "Emma Watson"])
+doctorCol = Col("Physician", ["Dr. Jenkins", "Dr. Jenkins", "Dr. Patel", "Dr. Jenkins", "Dr. Jenkins", "Dr. Patel", "Dr. Jenkins", "Dr. Patel"])
+typeCol = Col("Appointment Type", ["Annual Physical", "Follow-up", "Consultation", "Routine Checkup", "Urgent Care", "Follow-up", "Lab Review", "Pediatric Check"])
+statusCol = Col("Status", ["Completed", "Completed", "Checked In", "No-Show", "Calling Next", "Waiting", "Confirmed", "Confirmed"])
+
+checkInDrawer = DrawerBlock("Patient Fast Check-In", "Check In Arriving Patient", "Search and confirm arrival details for today's appointment", checkInFormContent)
+
+checkInFormContent = Card([checkInForm])
+checkInForm = Form("checkin_form", checkInFormButtons, [patientSelectField, arrivalTimeField, roomSelectField, notesField])
+
+patientSelectField = FormControl("Select Patient", patientSelectInput, "Select patient arriving at reception")
+patientSelectInput = Select("patient_id", [p1, p2, p3], "Choose patient...")
+p1 = SelectItem("p1", "Arthur Pendelton (10:15 AM)")
+p2 = SelectItem("p2", "Clara Oswald (11:00 AM)")
+p3 = SelectItem("p3", "James Wilson (11:30 AM)")
+
+arrivalTimeField = FormControl("Arrival Status", arrivalTimeInput)
+arrivalTimeInput = RadioGroup("arrival_status", [arr1, arr2])
+arr1 = RadioItem("On Time", "Arrived within scheduled window", "ontime")
+arr2 = RadioItem("Late Arrival", "Arrived >15 mins post scheduled time", "late")
+
+roomSelectField = FormControl("Assign Room / Area", roomSelectInput)
+roomSelectInput = Select("assigned_room", [r1, r2, r3, r4], "Select destination...")
+r1 = SelectItem("lobby", "Main Waiting Lobby")
+r2 = SelectItem("r102", "Room 102 (Exam)")
+r3 = SelectItem("r105", "Room 105 (Triage)")
+r4 = SelectItem("r108", "Room 108 (Pediatrics)")
+
+notesField = FormControl("Receptionist Notes", notesInput, "Optional check-in comments or special assistance requests")
+notesInput = TextArea("notes", "e.g. Patient requires assistance, co-pay collected", 2)
+
+checkInFormButtons = Buttons([confirmCheckInBtn, cancelCheckInBtn])
+confirmCheckInBtn = Button("Confirm Check-In", null, "primary")
+cancelCheckInBtn = Button("Cancel", null, "tertiary")
+
+followUp = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("View Room Occupancy Map")
+f2 = FollowUpItem("Print Daily Schedule Summary")
+f3 = FollowUpItem("Filter Schedule by Physician")

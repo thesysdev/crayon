@@ -1,0 +1,47 @@
+root = Card([header, alerts, kpis, capacity, genSplit, plants, outages, forecast, maintenance, controls])
+header = CardHeader("Grid Operations Console", "National transmission network — live status")
+
+alerts = Alert("Frequency deviation on Northern interconnect", "Load imbalance detected at 14:32 — automatic reserves engaged", "warning")
+
+kpis = Table([kpiName, kpiValue])
+kpiName = Col("Metric", ["Current load", "Price / MWh", "Emissions today", "Available reserve"])
+kpiValue = Col("Value", ["48,720 MW", "$62.40", "9,840 tCO₂", "6,310 MW"])
+
+capacity = Progress(87, "Network load vs capacity — 48,720 / 56,000 MW (87%)")
+
+genSplit = PieChart(genLabels, genValues, "donut")
+genLabels = ["Gas", "Nuclear", "Wind", "Solar", "Hydro", "Coal"]
+genValues = [16800, 11200, 9400, 5200, 3900, 2220]
+
+plants = Table([plantName, plantOutput, plantStatus])
+plantName = Col("Plant", ["Ashford Gas", "Belmont Nuclear", "Cape Wind", "Delta Solar", "Ridge Hydro", "Kingsley Coal"])
+plantOutput = Col("Output (MW)", [16800, 11200, 9400, 5200, 3900, 2220], "number")
+plantStatus = Col("Status", ["Online", "Online", "Online", "Curtailed", "Online", "Maintenance"])
+
+outages = ListBlock([o1, o2, o3])
+o1 = ListItem("Line 220kV Northgate", "Region: North Highlands — unplanned trip", null, "Investigating")
+o2 = ListItem("Substation Millbrook", "Region: East Vale — transformer fault", null, "Crew dispatched")
+o3 = ListItem("Feeder 33kV Oakridge", "Region: South Basin — storm damage", null, "Restoration ETA 18:00")
+
+forecast = AreaChart(forecastHours, [demandSeries], "natural", "Hour", "MW")
+forecastHours = ["00", "02", "04", "06", "08", "10", "12", "14", "16", "18", "20", "22"]
+demandSeries = Series("Forecast demand", [41200, 38600, 37400, 40100, 46800, 51200, 52400, 53800, 55100, 56400, 52900, 47300])
+
+maintenance = ListBlock([m1, m2, m3])
+m1 = ListItem("Kingsley Coal — boiler overhaul", "Apr 8–14 · 2,220 MW offline")
+m2 = ListItem("Belmont Nuclear — Unit 2 inspection", "Apr 19–22 · partial derate")
+m3 = ListItem("Cape Wind — turbine servicing", "Apr 25 · 400 MW reduced")
+
+controls = Buttons([focusRegion, curtail])
+focusRegion = DrawerBlock("Focus on region", "Region focus", "Select a region to isolate its load, generation and outages", [regionForm])
+regionForm = Form("region-focus", regionButtons, [regionField])
+regionField = FormControl("Region", regionSelect)
+regionSelect = Select("region", [rNorth, rEast, rSouth, rWest, rCentral], "Choose a region")
+rNorth = SelectItem("north", "North Highlands")
+rEast = SelectItem("east", "East Vale")
+rSouth = SelectItem("south", "South Basin")
+rWest = SelectItem("west", "West Coast")
+rCentral = SelectItem("central", "Central Metro")
+regionButtons = Buttons([applyFocus])
+applyFocus = Button("Apply focus", null, "primary")
+curtail = AlertDialogBlock("Order curtailment", "Confirm curtailment order", "This will reduce generation output across selected plants to relieve grid stress. Operators will be notified immediately.", "Order curtailment", "Cancel", "destructive")

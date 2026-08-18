@@ -1,0 +1,698 @@
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#1D4ED8",
+      "agentDisplayName": "Personal Banking"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "balanceSection",
+          "transferSection",
+          "activitySection",
+          "insightsRow",
+          "billsSection",
+          "creditSection",
+          "settingsSection"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Good morning, Alex",
+        "subtitle": "Your financial overview for August"
+      },
+      {
+        "id": "balanceSection",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "balanceTitle",
+          "balanceTable"
+        ]
+      },
+      {
+        "id": "balanceTitle",
+        "component": "Heading",
+        "text": "Account balances",
+        "level": "h2"
+      },
+      {
+        "id": "balanceTable",
+        "component": "Table",
+        "columns": [
+          "accountCol",
+          "typeCol",
+          "balanceCol"
+        ]
+      },
+      {
+        "id": "accountCol",
+        "component": "Col",
+        "label": "Account",
+        "data": [
+          "Everyday Checking",
+          "High-Yield Savings",
+          "Platinum Credit Card"
+        ]
+      },
+      {
+        "id": "typeCol",
+        "component": "Col",
+        "label": "Type",
+        "data": [
+          "Checking",
+          "Savings",
+          "Credit available"
+        ]
+      },
+      {
+        "id": "balanceCol",
+        "component": "Col",
+        "label": "Balance",
+        "data": [
+          "$4,280.16",
+          "$12,640.00",
+          "$6,840.00"
+        ]
+      },
+      {
+        "id": "transferSection",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "transferTitle",
+          "transferForm"
+        ]
+      },
+      {
+        "id": "transferTitle",
+        "component": "Heading",
+        "text": "Move money",
+        "level": "h2"
+      },
+      {
+        "id": "transferForm",
+        "component": "Form",
+        "name": "move-money",
+        "fields": [
+          "fromControl",
+          "toControl",
+          "amountControl"
+        ],
+        "buttons": "transferButtons"
+      },
+      {
+        "id": "fromControl",
+        "component": "FormControl",
+        "label": "From",
+        "input": "fromSelect"
+      },
+      {
+        "id": "fromSelect",
+        "component": "Select",
+        "name": "transfer_from",
+        "placeholder": "Choose an account",
+        "items": [
+          "fromChecking",
+          "fromSavings"
+        ]
+      },
+      {
+        "id": "fromChecking",
+        "component": "SelectItem",
+        "value": "checking",
+        "label": "Everyday Checking · $4,280.16"
+      },
+      {
+        "id": "fromSavings",
+        "component": "SelectItem",
+        "value": "savings",
+        "label": "High-Yield Savings · $12,640.00"
+      },
+      {
+        "id": "toControl",
+        "component": "FormControl",
+        "label": "To",
+        "input": "toSelect"
+      },
+      {
+        "id": "toSelect",
+        "component": "Select",
+        "name": "transfer_to",
+        "placeholder": "Choose a destination",
+        "items": [
+          "toChecking",
+          "toSavings",
+          "toCredit"
+        ]
+      },
+      {
+        "id": "toChecking",
+        "component": "SelectItem",
+        "value": "checking",
+        "label": "Everyday Checking"
+      },
+      {
+        "id": "toSavings",
+        "component": "SelectItem",
+        "value": "savings",
+        "label": "High-Yield Savings"
+      },
+      {
+        "id": "toCredit",
+        "component": "SelectItem",
+        "value": "credit",
+        "label": "Platinum Credit Card"
+      },
+      {
+        "id": "amountControl",
+        "component": "FormControl",
+        "label": "Amount",
+        "input": "transferAmount",
+        "hint": "Transfers between your accounts are available immediately."
+      },
+      {
+        "id": "transferAmount",
+        "component": "Input",
+        "name": "transfer_amount",
+        "type": "number",
+        "placeholder": "0.00"
+      },
+      {
+        "id": "transferButtons",
+        "component": "Buttons",
+        "buttons": [
+          "reviewTransfer"
+        ]
+      },
+      {
+        "id": "reviewTransfer",
+        "component": "Button",
+        "label": "Review transfer",
+        "variant": "primary"
+      },
+      {
+        "id": "activitySection",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "activityTitle",
+          "statementPeriodControl",
+          "transactionsTable",
+          "disputeDialog"
+        ]
+      },
+      {
+        "id": "activityTitle",
+        "component": "Heading",
+        "text": "Recent transactions",
+        "level": "h2"
+      },
+      {
+        "id": "statementPeriodControl",
+        "component": "FormControl",
+        "label": "Statement period",
+        "input": "statementPeriod"
+      },
+      {
+        "id": "statementPeriod",
+        "component": "DatePicker",
+        "name": "statement_period",
+        "mode": "range"
+      },
+      {
+        "id": "transactionsTable",
+        "component": "Table",
+        "columns": [
+          "transactionDateCol",
+          "merchantCol",
+          "transactionCategoryCol",
+          "transactionAmountCol"
+        ]
+      },
+      {
+        "id": "transactionDateCol",
+        "component": "Col",
+        "label": "Date",
+        "data": [
+          "Aug 17",
+          "Aug 16",
+          "Aug 15",
+          "Aug 14",
+          "Aug 13"
+        ]
+      },
+      {
+        "id": "merchantCol",
+        "component": "Col",
+        "label": "Merchant",
+        "data": [
+          "Fresh Market",
+          "Metro Transit",
+          "CloudStream",
+          "Oak & Bean Coffee",
+          "Northside Pharmacy"
+        ]
+      },
+      {
+        "id": "transactionCategoryCol",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Groceries",
+          "Transportation",
+          "Entertainment",
+          "Dining",
+          "Health"
+        ]
+      },
+      {
+        "id": "transactionAmountCol",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "-$84.26",
+          "-$22.50",
+          "-$15.99",
+          "-$6.75",
+          "-$31.42"
+        ]
+      },
+      {
+        "id": "disputeDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Dispute a transaction",
+        "title": "Start a transaction dispute",
+        "description": "Select the transaction you do not recognize or want to dispute.",
+        "triggerVariant": "outline",
+        "content": [
+          "disputeForm"
+        ]
+      },
+      {
+        "id": "disputeForm",
+        "component": "Form",
+        "name": "transaction-dispute",
+        "fields": [
+          "disputeTransactionControl",
+          "disputeReasonControl"
+        ],
+        "buttons": "disputeButtons"
+      },
+      {
+        "id": "disputeTransactionControl",
+        "component": "FormControl",
+        "label": "Transaction",
+        "input": "disputeTransaction"
+      },
+      {
+        "id": "disputeTransaction",
+        "component": "Select",
+        "name": "dispute_transaction",
+        "placeholder": "Choose a transaction",
+        "items": [
+          "disputeFreshMarket",
+          "disputeMetro",
+          "disputeCloudStream",
+          "disputeCoffee",
+          "disputePharmacy"
+        ]
+      },
+      {
+        "id": "disputeFreshMarket",
+        "component": "SelectItem",
+        "value": "fresh-market",
+        "label": "Fresh Market · Aug 17 · $84.26"
+      },
+      {
+        "id": "disputeMetro",
+        "component": "SelectItem",
+        "value": "metro-transit",
+        "label": "Metro Transit · Aug 16 · $22.50"
+      },
+      {
+        "id": "disputeCloudStream",
+        "component": "SelectItem",
+        "value": "cloudstream",
+        "label": "CloudStream · Aug 15 · $15.99"
+      },
+      {
+        "id": "disputeCoffee",
+        "component": "SelectItem",
+        "value": "oak-bean",
+        "label": "Oak & Bean Coffee · Aug 14 · $6.75"
+      },
+      {
+        "id": "disputePharmacy",
+        "component": "SelectItem",
+        "value": "northside-pharmacy",
+        "label": "Northside Pharmacy · Aug 13 · $31.42"
+      },
+      {
+        "id": "disputeReasonControl",
+        "component": "FormControl",
+        "label": "Reason",
+        "input": "disputeReason"
+      },
+      {
+        "id": "disputeReason",
+        "component": "TextArea",
+        "name": "dispute_reason",
+        "placeholder": "Tell us what is wrong with this transaction.",
+        "rows": 3
+      },
+      {
+        "id": "disputeButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitDispute"
+        ]
+      },
+      {
+        "id": "submitDispute",
+        "component": "Button",
+        "label": "Submit dispute",
+        "variant": "primary"
+      },
+      {
+        "id": "insightsRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "spendingSection",
+          "vacationSection"
+        ]
+      },
+      {
+        "id": "spendingSection",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "spendingTitle",
+          "spendingChart"
+        ]
+      },
+      {
+        "id": "spendingTitle",
+        "component": "Heading",
+        "text": "August spending",
+        "level": "h2"
+      },
+      {
+        "id": "spendingChart",
+        "component": "PieChart",
+        "variant": "donut",
+        "labels": [
+          "Housing",
+          "Groceries",
+          "Dining",
+          "Transportation",
+          "Entertainment",
+          "Other"
+        ],
+        "values": [
+          1450,
+          486,
+          238,
+          164,
+          132,
+          210
+        ]
+      },
+      {
+        "id": "vacationSection",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "vacationTitle",
+          "vacationDescription",
+          "vacationProgress",
+          "vacationTag"
+        ]
+      },
+      {
+        "id": "vacationTitle",
+        "component": "Heading",
+        "text": "Vacation fund",
+        "level": "h2"
+      },
+      {
+        "id": "vacationDescription",
+        "component": "TextContent",
+        "text": "$3,240 saved of your $5,000 goal",
+        "size": "large-heavy"
+      },
+      {
+        "id": "vacationProgress",
+        "component": "Progress",
+        "value": 65,
+        "label": "65% complete"
+      },
+      {
+        "id": "vacationTag",
+        "component": "Tag",
+        "text": "On pace for June",
+        "variant": "success"
+      },
+      {
+        "id": "billsSection",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "billsTitle",
+          "billsTable"
+        ]
+      },
+      {
+        "id": "billsTitle",
+        "component": "Heading",
+        "text": "Bills due soon",
+        "level": "h2"
+      },
+      {
+        "id": "billsTable",
+        "component": "Table",
+        "columns": [
+          "billNameCol",
+          "billDueCol",
+          "billAmountCol",
+          "billStatusCol"
+        ]
+      },
+      {
+        "id": "billNameCol",
+        "component": "Col",
+        "label": "Bill",
+        "data": [
+          "Electricity",
+          "Internet",
+          "Credit card payment"
+        ]
+      },
+      {
+        "id": "billDueCol",
+        "component": "Col",
+        "label": "Due",
+        "data": [
+          "Aug 20",
+          "Aug 23",
+          "Aug 28"
+        ]
+      },
+      {
+        "id": "billAmountCol",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "$96.14",
+          "$65.00",
+          "$412.38"
+        ]
+      },
+      {
+        "id": "billStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Scheduled",
+          "Not scheduled",
+          "Not scheduled"
+        ]
+      },
+      {
+        "id": "creditSection",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "creditTitle",
+          "creditScore",
+          "creditScoreText",
+          "freezeCredit"
+        ]
+      },
+      {
+        "id": "creditTitle",
+        "component": "Heading",
+        "text": "Credit overview",
+        "level": "h2"
+      },
+      {
+        "id": "creditScore",
+        "component": "Progress",
+        "value": 78,
+        "label": "Credit score: 742"
+      },
+      {
+        "id": "creditScoreText",
+        "component": "TextContent",
+        "text": "742 · Good · Updated August 12",
+        "size": "default"
+      },
+      {
+        "id": "freezeCredit",
+        "component": "AlertDialogBlock",
+        "triggerLabel": "Freeze credit line",
+        "title": "Freeze your credit line?",
+        "description": "New purchases and cash advances will be declined until you unfreeze your card.",
+        "confirmLabel": "Freeze line",
+        "cancelLabel": "Keep active",
+        "triggerVariant": "destructive"
+      },
+      {
+        "id": "settingsSection",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "settingsTitle",
+          "alertsForm"
+        ]
+      },
+      {
+        "id": "settingsTitle",
+        "component": "Heading",
+        "text": "Alert preferences",
+        "level": "h2"
+      },
+      {
+        "id": "alertsForm",
+        "component": "Form",
+        "name": "alert-preferences",
+        "fields": [
+          "alertTriggersControl"
+        ],
+        "buttons": "alertButtons"
+      },
+      {
+        "id": "alertTriggersControl",
+        "component": "FormControl",
+        "label": "Notify me about",
+        "input": "alertTriggers",
+        "hint": "Choose the account activity that should trigger an alert."
+      },
+      {
+        "id": "alertTriggers",
+        "component": "CheckBoxGroup",
+        "name": "alert_triggers",
+        "items": [
+          "largePurchaseAlert",
+          "lowBalanceAlert",
+          "billDueAlert",
+          "cardDeclinedAlert",
+          "creditScoreAlert"
+        ]
+      },
+      {
+        "id": "largePurchaseAlert",
+        "component": "CheckBoxItem",
+        "name": "large_purchase",
+        "label": "Large purchases",
+        "description": "When a card purchase is over $250",
+        "defaultChecked": true
+      },
+      {
+        "id": "lowBalanceAlert",
+        "component": "CheckBoxItem",
+        "name": "low_balance",
+        "label": "Low checking balance",
+        "description": "When checking falls below $500",
+        "defaultChecked": true
+      },
+      {
+        "id": "billDueAlert",
+        "component": "CheckBoxItem",
+        "name": "bill_due",
+        "label": "Upcoming bills",
+        "description": "Three days before a bill is due",
+        "defaultChecked": true
+      },
+      {
+        "id": "cardDeclinedAlert",
+        "component": "CheckBoxItem",
+        "name": "card_declined",
+        "label": "Declined card activity",
+        "description": "Whenever a card transaction is declined",
+        "defaultChecked": true
+      },
+      {
+        "id": "creditScoreAlert",
+        "component": "CheckBoxItem",
+        "name": "credit_score",
+        "label": "Credit score changes",
+        "description": "When your score changes by 10 points or more",
+        "defaultChecked": false
+      },
+      {
+        "id": "alertButtons",
+        "component": "Buttons",
+        "buttons": [
+          "saveAlerts"
+        ]
+      },
+      {
+        "id": "saveAlerts",
+        "component": "Button",
+        "label": "Save alert preferences",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>

@@ -1,0 +1,92 @@
+root = Card([header, mainCallout, quarterSection, kpiOverview, chartsSection, budgetSection, teamSection, executionSection, boardSection, actionButtons, followUps], "card", "column", "l")
+
+header = CardHeader("CEO Command Center", "Executive Quarterly Performance & Strategic Alignment")
+
+mainCallout = TextCallout("info", "Q3 Performance Summary", "Revenue exceeded target by 8.5% driven by Enterprise expansion. Runway remains strong at 22 months.")
+
+quarterSection = Card([filterHeading, filtersForm], "sunk", "column", "s")
+filterHeading = Heading("Dashboard Controls", "h4")
+filtersForm = Form("controls-form", filterButtons, [quarterField, regionField])
+quarterField = FormControl("Select Quarter", quarterSelect)
+quarterSelect = Select("quarter", [q1Opt, q2Opt, q3Opt, q4Opt], "Choose quarter", null, "Q3-2024")
+q1Opt = SelectItem("Q1-2024", "Q1 2024")
+q2Opt = SelectItem("Q2-2024", "Q2 2024")
+q3Opt = SelectItem("Q3-2024", "Q3 2024 (Current)")
+q4Opt = SelectItem("Q4-2024", "Q4 2024 (Forecast)")
+
+regionField = FormControl("Focus Region", regionSelect)
+regionSelect = Select("region", [regGlobal, regNA, regEMEA, regAPAC], "Select region", null, "global")
+regGlobal = SelectItem("global", "Global (All Regions)")
+regNA = SelectItem("na", "North America")
+regEMEA = SelectItem("emea", "EMEA")
+regAPAC = SelectItem("apac", "APAC")
+
+filterButtons = Buttons([applyFiltersBtn])
+applyFiltersBtn = Button("Update View", null, "secondary", "normal", "small")
+
+kpiOverview = Card([kpiHeading, kpiTable], "clear", "column", "s")
+kpiHeading = Heading("Key Financials & Operating Metrics", "h3")
+kpiTable = Table([kpiMetricCol, kpiValueCol, kpiStatusCol])
+kpiMetricCol = Col("Metric", ["Q3 Revenue", "Q3 Costs", "Q3 Profit (EBITDA)", "Months of Runway", "Sales Pipeline", "Win Rate", "Total Customers", "Customer Churn (Net)", "NPS"])
+kpiValueCol = Col("Current Value", ["$14.2M", "$9.8M", "$4.4M", "22 Months", "$42.5M", "31.4%", "1,420", "1.2%", "64"])
+kpiStatusCol = Col("vs Plan / Target", ["+8.5% vs Plan", "-2.1% (Under Budget)", "+38.0% YoY", "+4 Mo. vs Target", "+15% QoQ", "+2.1% YoY", "+115 Net New", "-0.4% YoY Improvement", "+6 pts YoY"])
+
+chartsSection = Tabs([financialTab, growthTab])
+
+financialTab = TabItem("fin-trends", "Financial Performance (4 Quarters)", [finChartHeader, finChart])
+finChartHeader = CardHeader("Quarterly Revenue & Costs Trend", "Trailing 4 Quarters Performance ($ Millions)")
+finChart = BarChart(["Q4-23", "Q1-24", "Q2-24", "Q3-24"], [revSeries, costSeries], "grouped", "Quarter", "USD ($M)")
+revSeries = Series("Revenue ($M)", [11.5, 12.2, 13.1, 14.2])
+costSeries = Series("Costs ($M)", [8.9, 9.1, 9.4, 9.8])
+
+growthTab = TabItem("pipe-trends", "Pipeline & Retention", [pipeHeader, pipeProgress])
+pipeHeader = CardHeader("Pipeline Coverage", "Target: $40M")
+pipeProgress = Progress(106, "Pipeline Target Attainment (106%)")
+
+budgetSection = Card([budgetHeading, budgetTable], "sunk", "column", "s")
+budgetHeading = Heading("Departmental Budget vs. Plan ($k)", "h3")
+budgetTable = Table([deptCol, planCol, actualCol, varianceCol])
+deptCol = Col("Department", ["Engineering", "Sales & Marketing", "Product", "Operations", "G&A"])
+planCol = Col("Planned Budget", ["$3,800k", "$3,200k", "$1,200k", "$1,000k", "$800k"])
+actualCol = Col("Actual Spend", ["$3,650k", "$3,350k", "$1,150k", "$920k", "$730k"])
+varianceCol = Col("Variance", ["-$150k (Favorable)", "+$150k (Over)", "-$50k (Favorable)", "-$80k (Favorable)", "-$70k (Favorable)"])
+
+teamSection = Card([teamHeading, teamTable], "clear", "column", "s")
+teamHeading = Heading("Headcount Distribution", "h3")
+teamTable = Table([teamDeptCol, headCountCol, hiringPlanCol])
+teamDeptCol = Col("Department", ["Engineering", "Sales & Marketing", "Product", "Operations", "G&A", "Total"])
+headCountCol = Col("Current Headcount", [84, 52, 22, 18, 12, 188])
+hiringPlanCol = Col("Open Reqs (Q4)", [8, 5, 2, 1, 1, 17])
+
+executionSection = SectionBlock([strategicSection, riskSection], false)
+
+strategicSection = SectionItem("sec-strat", "Strategic Initiatives & Execution Status", [stratTable])
+stratTable = Table([initCol, ownerCol, statusCol, progressCol])
+initCol = Col("Initiative", ["Enterprise Multi-Cloud Launch", "EMEA Expansion Phase 2", "SOC2 Type II Certification", "Self-Serve Billing Redesign"])
+ownerCol = Col("Executive Lead", ["CTO (M. Chen)", "CRO (D. Vance)", "CISO (A. Patel)", "CPO (S. Ruiz)"])
+statusCol = Col("Status", ["On Track", "Delayed (1 wk)", "Completed", "In Progress"])
+progressCol = Col("Completion", ["85%", "60%", "100%", "40%"])
+
+riskSection = SectionItem("sec-risk", "Top Enterprise Risks", [riskTable])
+riskTable = Table([riskItemCol, riskOwnerCol, impactCol, mitigationCol])
+riskItemCol = Col("Identified Risk", ["Key Personnel Churn in AI Team", "Procurement Delays in EU Enterprise", "Cloud Infrastructure Cost Spike"])
+riskOwnerCol = Col("Risk Owner", ["VP People (L. Taylor)", "VP Sales EMEA (K. Becker)", "VP Infra (R. Gomez)"])
+impactCol = Col("Impact Level", ["High", "Medium", "Medium"])
+mitigationCol = Col("Mitigation Strategy", ["Revised equity retention packages", "Local legal partner engaged for speed", "Reserved instances contract signed"])
+
+boardSection = Card([boardHeader, boardList], "sunk", "column", "s")
+boardHeader = CardHeader("Next Board Meeting Agenda", "Scheduled for Nov 14, 2024")
+boardList = ListBlock([boardItem1, boardItem2, boardItem3, boardItem4], "number")
+boardItem1 = ListItem("Q4 Budget & 2025 Operating Plan Approval", "Presentation of 3-year financial model and headcount expansion")
+boardItem2 = ListItem("Series C Funding Readiness & Timing", "Evaluating market conditions and advisor engagement")
+boardItem3 = ListItem("M&A Pipeline Review", "Discussion on two early-stage tuck-in acquisition targets")
+boardItem4 = ListItem("Executive Compensation & Equity Plan", "Annual review of leadership benchmark and pool expansion")
+
+actionButtons = Buttons([exportPackBtn, shareBoardBtn])
+exportPackBtn = Button("Export Board Pack (PDF)", null, "primary", "normal", "medium")
+shareBoardBtn = Button("Share Dashboard Link", null, "secondary", "normal", "medium")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Deep dive into Sales pipeline by territory")
+f2 = FollowUpItem("Show headcount cost projection for 2025")
+f3 = FollowUpItem("Generate Board Meeting slide deck outline")

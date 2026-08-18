@@ -1,0 +1,117 @@
+root = Card([portfolioHeader, healthSummaryCallout, topControls, mainTabs, followUpSuggestions], "card", "column", "l")
+
+portfolioHeader = CardHeader("PMO Project Portfolio Review", "Q3 2024 Executive Overview & Resource Governance")
+
+healthSummaryCallout = TextCallout("success", "Portfolio Status: Healthy", "83% of projects are on track, sprint velocity increased by 12% over Q3, but 2 critical risks in Project Titan require immediate mitigation.")
+
+topControls = Card([controlsGroup], "sunk", "row", "m", "center", "between")
+controlsGroup = Buttons([quarterSelector, exportBtn, resourceRequestDialog, archiveProjectDialog])
+quarterSelector = Button("Quarter: Q3 2024 (Active)")
+exportBtn = Button("Export Portfolio Report", null, "secondary")
+
+resourceRequestDialog = DialogBlock("Request Staffing Allocation", "Submit Resource Allocation Request", "Request additional personnel or specialized roles for your project.", resourceForm, "outline")
+
+resourceForm = Form("resource-request-form", formButtons, [projSelectField, headcountField, roleField, justificationField])
+projSelectField = FormControl("Select Project", projSelect)
+projSelect = Select("project_id", [p1Opt, p2Opt, p3Opt], "Choose project...")
+p1Opt = SelectItem("titan", "Project Titan")
+p2Opt = SelectItem("apollo", "Project Apollo")
+p3Opt = SelectItem("atlas", "Project Atlas")
+
+headcountField = FormControl("Requested Staff Count", headcountInput)
+headcountInput = Input("headcount", "1", "number")
+
+roleField = FormControl("Required Role / Skillset", roleInput)
+roleInput = Input("role_title", "Senior Backend Engineer")
+
+justificationField = FormControl("Business Justification", justificationInput, "Explain impact on timeline or deliverables if unstaffed")
+justificationInput = TextArea("justification", "Required to resolve technical debt blocking Sprint 14 security audit.")
+
+formButtons = Buttons([submitReqBtn, cancelReqBtn])
+submitReqBtn = Button("Submit Request", null, "primary")
+cancelReqBtn = Button("Cancel", null, "tertiary")
+
+archiveProjectDialog = DialogBlock("Archive Completed Project", "Archive Project Record", "Select a completed project to move it into historical archives.", archiveForm, "ghost")
+
+archiveForm = Form("archive-form", archiveFormButtons, [archiveSelectField, archiveReasonField])
+archiveSelectField = FormControl("Completed Project", archiveSelect)
+archiveSelect = Select("archive_proj_id", [archOpt1, archOpt2], "Select project to archive...")
+archOpt1 = SelectItem("nebula", "Project Nebula (Completed Q2)")
+archOpt2 = SelectItem("mercury", "Project Mercury (Completed Q2)")
+
+archiveReasonField = FormControl("Archival Notes / Retrospective Summary", archiveReasonInput)
+archiveReasonInput = TextArea("archive_notes", "All deliverables handed over to operations team. Post-mortem completed.")
+
+archiveFormButtons = Buttons([confirmArchiveBtn])
+confirmArchiveBtn = Button("Confirm Archival", null, "primary")
+
+mainTabs = Tabs([overviewTab, financialsTab, risksTab])
+
+overviewTab = TabItem("overview", "Overview & Delivery", [projectsHeading, activeProjectsTable, deadlinessSeparator, deadlinesSection, paceSection])
+
+projectsHeading = Heading("Active Projects Health & Allocation", "h3")
+activeProjectsTable = Table([colProj, colOwner, colDeadline, colHealth, colBudgetSpent, colBudgetAlloc])
+colProj = Col("Project", ["Project Titan", "Project Apollo", "Project Atlas", "Project Orion", "Project Artemis"])
+colOwner = Col("Owner", ["Sarah Jenkins", "Michael Chang", "Elena Rostova", "David Kim", "Marcus Vance"])
+colDeadline = Col("Target Deadline", ["Oct 15, 2024", "Nov 30, 2024", "Dec 12, 2024", "Oct 02, 2024", "Jan 15, 2025"])
+colHealth = Col("Health Status", ["On Track", "At Risk", "On Track", "Delayed", "On Track"])
+colBudgetSpent = Col("Budget Spent", ["$240,000", "$410,000", "$120,000", "$310,000", "$90,000"])
+colBudgetAlloc = Col("Allocation", ["$300,000", "$450,000", "$180,000", "$320,000", "$250,000"])
+
+deadlinessSeparator = Separator("horizontal")
+
+deadlinesSection = Card([deadlinesRow], "clear", "row", "m")
+deadlinesRow = Card([upcomingDeadlinesCard, overdueMilestonesCard], "clear", "row", "m")
+
+upcomingDeadlinesCard = Card([upcomingHeading, upcomingList], "sunk")
+upcomingHeading = Heading("Deadlines in Next 2 Weeks", "h4")
+upcomingList = ListBlock([deadItem1, deadItem2, deadItem3])
+deadItem1 = ListItem("Security Audit Sign-off", "Project Titan • Sep 28, 2024")
+deadItem2 = ListItem("Beta API Integration", "Project Apollo • Oct 01, 2024")
+deadItem3 = ListItem("UAT Sign-off Phase 1", "Project Orion • Oct 04, 2024")
+
+overdueMilestonesCard = Card([overdueHeading, overdueList], "sunk")
+overdueHeading = Heading("Overdue Milestones", "h4")
+overdueList = ListBlock([overdueItem1, overdueItem2])
+overdueItem1 = ListItem("Database Migration Phase 2", "Project Orion • 6 days overdue • Owner: D. Kim")
+overdueItem2 = ListItem("Vendor Contract Finalization", "Project Apollo • 12 days overdue • Owner: M. Chang")
+
+paceSection = Card([paceHeading, velocityChart], "clear")
+paceHeading = Heading("Delivery Pace (Completed Story Points / Last 6 Sprints)", "h3")
+velocityChart = BarChart(["Sprint 8", "Sprint 9", "Sprint 10", "Sprint 11", "Sprint 12", "Sprint 13"], [plannedSeries, completedSeries], "grouped", "Sprint", "Story Points")
+plannedSeries = Series("Planned Velocity", [120, 125, 130, 130, 135, 140])
+completedSeries = Series("Completed Velocity", [115, 122, 118, 129, 134, 138])
+
+financialsTab = TabItem("financials", "Budget & Utilization", [finHeading, budgetChart, utilHeading, utilizationChart])
+
+finHeading = Heading("Budget Spent vs Total Allocation", "h3")
+budgetChart = HorizontalBarChart(["Project Titan", "Project Apollo", "Project Atlas", "Project Orion", "Project Artemis"], [spentSeries, totalAllocSeries], "grouped", "USD ($)", "Project")
+spentSeries = Series("Spent ($)", [240000, 410000, 120000, 310000, 90000])
+totalAllocSeries = Series("Total Allocation ($)", [300000, 450000, 180000, 320000, 250000])
+
+utilHeading = Heading("Team Utilization Rate (%)", "h3")
+utilizationChart = BarChart(["Frontend Engineering", "Backend Engineering", "DevOps & Cloud", "UX Design", "QA & Testing", "Product Management"], [utilSeries], "grouped", "Department", "Utilization %")
+utilSeries = Series("Current Utilization (%)", [92, 108, 85, 78, 95, 88])
+
+risksTab = TabItem("risks", "Risks & Blockers", [blockersHeading, blockedItemsList, riskSep, risksHeading, risksTable])
+
+blockersHeading = Heading("Currently Blocked Work Items", "h3")
+blockedItemsList = ListBlock([block1, block2, block3])
+block1 = ListItem("PR-402: Auth Gateway Failover", "Blocked by third-party vendor SSL clearance • Project Titan")
+block2 = ListItem("MIG-109: Legacy Schema Conversion", "Blocked waiting on DBA resource availability • Project Orion")
+block3 = ListItem("DES-88: Billing Flow Wireframes", "Blocked pending Legal approval of compliance terms • Project Apollo")
+
+riskSep = Separator("horizontal")
+
+risksHeading = Heading("Active Portfolio Risks", "h3")
+risksTable = Table([colRiskId, colRiskDesc, colRiskProj, colSeverity, colMitigation])
+colRiskId = Col("Risk ID", ["RSK-01", "RSK-02", "RSK-03", "RSK-04"])
+colRiskDesc = Col("Risk Description", ["Third-party API latency impact on SLA", "Backend staff turnover causing velocity drop", "Cloud infrastructure costs exceeding budget projection", "Compliance delay due to updated EU regulations"])
+colRiskProj = Col("Project", ["Project Titan", "Project Apollo", "Project Orion", "Project Atlas"])
+colSeverity = Col("Severity", ["Critical", "High", "Medium", "Low"])
+colMitigation = Col("Mitigation Strategy", ["Cache layer implementation in Sprint 14", "Contractor onboarding approved", "Instance rightsizing scheduled", "External legal counsel engaged"])
+
+followUpSuggestions = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Show resource bottlenecks for Backend Engineering")
+f2 = FollowUpItem("Generate detailed budget variance report for Project Orion")
+f3 = FollowUpItem("Compare Q2 2024 vs Q3 2024 portfolio performance")

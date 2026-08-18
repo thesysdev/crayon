@@ -1,0 +1,83 @@
+root = Card([header, filterSection, callouts, kpiGrid, analyticsTabs, contentGrid, actionForm, followUps], "card", "column", "l")
+header = CardHeader("Creator Studio", "Cross-Platform Analytics & Management Dashboard")
+
+filterSection = Card([filterLabel, platformSelect], "clear", "row", "m", "center", "between")
+filterLabel = Heading("Platform View", "h4")
+platformSelect = Select("platform_filter", [pAll, pYouTube, pInstagram, pTikTok, pX], "Select Platform")
+pAll = SelectItem("all", "All Platforms (Cross-Platform)")
+pYouTube = SelectItem("yt", "YouTube")
+pInstagram = SelectItem("ig", "Instagram")
+pTikTok = SelectItem("tt", "TikTok")
+pX = SelectItem("x", "X (Twitter)")
+
+callouts = Card([timingCallout, collabCallout], "clear", "row", "m")
+timingCallout = Callout("info", "Best Hour to Post", "Based on your global audience activity over the past 90 days, your optimal posting time is Thursdays at 6:00 PM EST (+24% engagement boost).")
+collabCallout = Callout("neutral", "Pending Collaborations", "You have 3 pending sponsor & collab requests awaiting review (Total potential value: $4,500).")
+
+kpiGrid = Table([kpiMetric, kpiValue, kpiChange])
+kpiMetric = Col("Metric", ["Total Followers", "Avg. Engagement Rate", "Total Earnings (This Month)", "Unreplied Comments"])
+kpiValue = Col("Value", ["1.24M", "5.8%", "$14,850.00", "42"])
+kpiChange = Col("MoM Growth", ["+4.2% (+50.2k)", "+0.6%", "+18.4% vs last mo.", "12 high priority"])
+
+analyticsTabs = Tabs([tabAudience, tabTopPosts, tabScheduled])
+
+tabAudience = TabItem("audience", "Audience Split", [audienceChart])
+audienceChart = PieChart(["YouTube", "Instagram", "TikTok", "X (Twitter)"], [520000, 380000, 240000, 100000], "donut")
+
+tabTopPosts = TabItem("top_posts", "Best Posts This Month", [topPostsTable])
+topPostsTable = Table([postTitle, postPlatform, postReach, postEng])
+postTitle = Col("Post Title", ["10 Tech Tips for 2025", "Day in the Life Vlog", "Setup Tour 2025", "AI Workflow Guide"])
+postPlatform = Col("Platform", ["YouTube", "Instagram", "TikTok", "X (Twitter)"])
+postReach = Col("Reach / Views", ["450,000", "280,000", "195,000", "85,000"])
+postEng = Col("Engagement Rate", ["8.4%", "6.2%", "7.1%", "4.9%"])
+
+tabScheduled = TabItem("scheduled", "Scheduled This Week", [scheduledList])
+scheduledList = ListBlock([schedItem1, schedItem2, schedItem3])
+schedItem1 = ListItem("Behind the Scenes Studio Build", "Tomorrow at 6:00 PM • Instagram Reel")
+schedItem2 = ListItem("Top 5 Productivity Apps", "Friday at 10:00 AM • YouTube Video")
+schedItem3 = ListItem("Quick Automation Tutorial", "Saturday at 2:00 PM • TikTok Shorts")
+
+contentGrid = Card([commentsSection, collabSection], "sunk", "row", "l")
+
+commentsSection = Card([commentsHeader, commentsList, replyBtnGroup], "clear", "column", "m")
+commentsHeader = Heading("Comments Needing Reply", "h3")
+commentsList = ListBlock([comment1, comment2])
+comment1 = ListItem("Alex M.: 'What mic are you using in this setup?'", "Instagram • 2 hours ago")
+comment2 = ListItem("Sarah K.: 'Could you share the template link?'", "YouTube • 4 hours ago")
+replyBtnGroup = Buttons([quickReplyBtn])
+quickReplyBtn = Button("Open Inbox & Reply All", null, "secondary")
+
+collabSection = Card([collabHeader, collabList, collabBtnGroup], "clear", "column", "m")
+collabHeader = Heading("Pending Collaboration Requests", "h3")
+collabList = ListBlock([collab1, collab2, collab3])
+collab1 = ListItem("TechGear Co. — Dedicated Video Review", "Offered: $2,500 • YouTube")
+collab2 = ListItem("AppPulse — Sponsored Reel", "Offered: $1,200 • Instagram")
+collab3 = ListItem("SaaSify — Newsletter & X Thread", "Offered: $800 • X (Twitter)")
+collabBtnGroup = Buttons([reviewCollabsBtn])
+reviewCollabsBtn = Button("Review Collaboration Offers", null, "secondary")
+
+actionForm = Card([formHeader, postForm], "card", "column", "m")
+formHeader = Heading("Schedule a New Post", "h3")
+postForm = Form("schedule_post_form", formButtons, [platformField, captionField, datePickerField])
+
+platformField = FormControl("Target Platform", platformInput, "Select where to publish")
+platformInput = Select("post_platform", [selYT, selIG, selTT, selX], "Select Platform")
+selYT = SelectItem("yt", "YouTube")
+selIG = SelectItem("ig", "Instagram")
+selTT = SelectItem("tt", "TikTok")
+selX = SelectItem("x", "X (Twitter)")
+
+captionField = FormControl("Post Caption & Hashtags", captionInput)
+captionInput = TextArea("post_caption", "Write your post caption here...", 3)
+
+datePickerField = FormControl("Schedule Date & Time", dateInput, "Recommended: Thursday at 6:00 PM EST")
+dateInput = DatePicker("post_schedule_time", "single")
+
+formButtons = Buttons([submitPostBtn, draftPostBtn])
+submitPostBtn = Button("Schedule Post", null, "primary")
+draftPostBtn = Button("Save as Draft", null, "tertiary")
+
+followUps = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Show detailed audience demographics by country")
+fu2 = FollowUpItem("Generate AI captions for Instagram Reel")
+fu3 = FollowUpItem("Export monthly earnings tax report")

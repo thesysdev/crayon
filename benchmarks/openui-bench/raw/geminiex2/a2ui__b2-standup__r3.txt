@@ -1,0 +1,238 @@
+Here is a UI for your remote team's async standup, featuring team updates, highlighted blockers, missing update counts, and a form to submit your own update.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "blockerAlert",
+          "standupTabs",
+          "actionsGroup"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Daily Async Standup",
+        "subtitle": "Wednesday, October 24, 2023 • Engineering & Design Team"
+      },
+      {
+        "id": "blockerAlert",
+        "component": "Alert",
+        "title": "1 Teammate Blocked",
+        "description": "Marcus Vance needs assistance with API Gateway rate limiting configurations.",
+        "variant": "destructive"
+      },
+      {
+        "id": "standupTabs",
+        "component": "Tabs",
+        "items": [
+          "tabUpdates",
+          "tabPost"
+        ]
+      },
+      {
+        "id": "tabUpdates",
+        "component": "TabItem",
+        "value": "updates",
+        "trigger": "Team Updates (3/5)",
+        "content": [
+          "missingNotice",
+          "sep1",
+          "updatesList"
+        ]
+      },
+      {
+        "id": "missingNotice",
+        "component": "Callout",
+        "variant": "warning",
+        "title": "2 updates still missing today",
+        "description": "Awaiting daily updates from Sarah Jenkins and David Kim."
+      },
+      {
+        "id": "sep1",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "updatesList",
+        "component": "ListBlock",
+        "variant": "image",
+        "items": [
+          "itemMarcus",
+          "itemAlex",
+          "itemElena"
+        ]
+      },
+      {
+        "id": "itemMarcus",
+        "component": "ListItem",
+        "title": "Marcus Vance — Backend Engineer 🚨 BLOCKED",
+        "subtitle": "Yesterday: Implemented Auth Middleware. Today: API Gateway Integration. Blocker: Waiting on DevOps for rate limit config permissions.",
+        "actionLabel": "Offer Help"
+      },
+      {
+        "id": "itemAlex",
+        "component": "ListItem",
+        "title": "Alex Chen — Frontend Lead",
+        "subtitle": "Yesterday: Shipped dashboard charts. Today: Integrating WebSocket notifications. Blocker: None.",
+        "actionLabel": "View PR"
+      },
+      {
+        "id": "itemElena",
+        "component": "ListItem",
+        "title": "Elena Rostova — Product Designer",
+        "subtitle": "Yesterday: Finalized Mobile UI mocks. Today: Creating design tokens for dark mode. Blocker: None.",
+        "actionLabel": "Figma Link"
+      },
+      {
+        "id": "tabPost",
+        "component": "TabItem",
+        "value": "post",
+        "trigger": "Post Your Update",
+        "content": [
+          "standupForm"
+        ]
+      },
+      {
+        "id": "standupForm",
+        "component": "Form",
+        "name": "post-standup",
+        "buttons": "formActions",
+        "fields": [
+          "yesterdayField",
+          "todayField",
+          "blockerField",
+          "isBlockedField"
+        ]
+      },
+      {
+        "id": "yesterdayField",
+        "component": "FormControl",
+        "label": "What did you complete yesterday?",
+        "input": "yesterdayInput"
+      },
+      {
+        "id": "yesterdayInput",
+        "component": "TextArea",
+        "name": "yesterday",
+        "placeholder": "Finished PR #402, reviewed Figma specs...",
+        "rows": 2
+      },
+      {
+        "id": "todayField",
+        "component": "FormControl",
+        "label": "What are you working on today?",
+        "input": "todayInput"
+      },
+      {
+        "id": "todayInput",
+        "component": "TextArea",
+        "name": "today",
+        "placeholder": "Drafting technical docs, pairing on API specs...",
+        "rows": 2
+      },
+      {
+        "id": "isBlockedField",
+        "component": "FormControl",
+        "label": "Are you currently blocked?",
+        "input": "isBlockedRadio"
+      },
+      {
+        "id": "isBlockedRadio",
+        "component": "RadioGroup",
+        "name": "is_blocked",
+        "defaultValue": "no",
+        "items": [
+          "radioNo",
+          "radioYes"
+        ]
+      },
+      {
+        "id": "radioNo",
+        "component": "RadioItem",
+        "label": "No blockers",
+        "description": "Ready to proceed smoothly",
+        "value": "no"
+      },
+      {
+        "id": "radioYes",
+        "component": "RadioItem",
+        "label": "Yes, I am blocked",
+        "description": "Requires help or review from another teammate",
+        "value": "yes"
+      },
+      {
+        "id": "blockerField",
+        "component": "FormControl",
+        "label": "Blocker Details (Optional)",
+        "hint": "Specify who or what you are waiting on",
+        "input": "blockerInput"
+      },
+      {
+        "id": "blockerInput",
+        "component": "Input",
+        "name": "blocker_details",
+        "placeholder": "Waiting on database credentials / PR review..."
+      },
+      {
+        "id": "formActions",
+        "component": "Buttons",
+        "buttons": [
+          "submitBtn",
+          "clearBtn"
+        ]
+      },
+      {
+        "id": "submitBtn",
+        "component": "Button",
+        "label": "Submit Update",
+        "variant": "primary"
+      },
+      {
+        "id": "clearBtn",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "tertiary"
+      },
+      {
+        "id": "actionsGroup",
+        "component": "Buttons",
+        "buttons": [
+          "remindBtn",
+          "exportBtn"
+        ]
+      },
+      {
+        "id": "remindBtn",
+        "component": "Button",
+        "label": "Send Ping to Missing Teammates (2)",
+        "variant": "secondary"
+      },
+      {
+        "id": "exportBtn",
+        "component": "Button",
+        "label": "Copy Summary to Slack",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>

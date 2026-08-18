@@ -1,0 +1,178 @@
+This low-inventory view highlights at-risk stock, lets you search and reorder instantly, and makes the warning threshold explicit.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "thresholdCallout",
+          "separator1",
+          "searchSection",
+          "inventoryTable",
+          "actions",
+          "footer"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Low Inventory Warning",
+        "subtitle": "5 items at or below threshold • Last synced just now • Store #042 - Downtown"
+      },
+      {
+        "id": "thresholdCallout",
+        "component": "TextCallout",
+        "variant": "warning",
+        "title": "Reorder threshold: ≤ 10 units",
+        "description": "Any item with 10 or fewer units remaining triggers this warning. Threshold is set globally by Inventory Manager. All items below are sorted by most critical first."
+      },
+      {
+        "id": "separator1",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "searchSection",
+        "component": "Card",
+        "variant": "clear",
+        "children": [
+          "searchControl"
+        ]
+      },
+      {
+        "id": "searchControl",
+        "component": "FormControl",
+        "label": "Search low-stock items",
+        "hint": "Filter by item name or SKU (e.g., 'Almond' or 'BEV-0421')",
+        "input": "searchInput"
+      },
+      {
+        "id": "searchInput",
+        "component": "Input",
+        "name": "search",
+        "placeholder": "Search by item name or SKU...",
+        "type": "text"
+      },
+      {
+        "id": "inventoryTable",
+        "component": "Table",
+        "columns": [
+          "colItem",
+          "colSku",
+          "colRemaining",
+          "colStatus",
+          "colAction"
+        ]
+      },
+      {
+        "id": "colItem",
+        "component": "Col",
+        "label": "Item",
+        "data": [
+          "Oat Milk Barista - 1L",
+          "Organic Almond Milk - 1L",
+          "Sourdough Loaf",
+          "Free-Range Eggs (12pk)",
+          "Cold Brew Concentrate"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colSku",
+        "component": "Col",
+        "label": "SKU",
+        "data": [
+          "BEV-0424",
+          "BEV-0421",
+          "BAK-1183",
+          "DAI-0092",
+          "BEV-0991"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colRemaining",
+        "component": "Col",
+        "label": "Remaining",
+        "data": [
+          "2 units",
+          "3 units",
+          "5 units",
+          "8 units",
+          "10 units"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Critical",
+          "Critical",
+          "Low",
+          "Low",
+          "At Threshold"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colAction",
+        "component": "Col",
+        "label": "Reorder",
+        "data": [
+          "Reorder",
+          "Reorder",
+          "Reorder",
+          "Reorder",
+          "Reorder"
+        ],
+        "type": "action"
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": [
+          "reorderAllBtn",
+          "adjustThresholdBtn"
+        ]
+      },
+      {
+        "id": "reorderAllBtn",
+        "component": "Button",
+        "label": "Reorder All Low Items",
+        "variant": "primary"
+      },
+      {
+        "id": "adjustThresholdBtn",
+        "component": "Button",
+        "label": "Adjust Threshold",
+        "variant": "secondary"
+      },
+      {
+        "id": "footer",
+        "component": "TextContent",
+        "text": "Tip: Tap **Reorder** in the table to create a purchase order for that item. Use search above to quickly find an SKU. Threshold applies to all categories.",
+        "size": "small"
+      }
+    ]
+  }
+}
+</a2ui-json>

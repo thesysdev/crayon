@@ -1,0 +1,730 @@
+Here is the complete interface for the Airline Hub Operations Desk, covering all 12 operational requirements in a single comprehensive layout.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "hubSelectorForm",
+          "kpisSeparator",
+          "kpiSectionHeader",
+          "kpisTable",
+          "weatherAlert",
+          "tabs"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Hub Operations Control Center",
+        "subtitle": "Real-time hub monitoring, flight status, passenger connections & resource management"
+      },
+      {
+        "id": "hubSelectorForm",
+        "component": "Form",
+        "name": "hub_selector",
+        "buttons": "hubSelectButtons",
+        "fields": [
+          "hubControl"
+        ]
+      },
+      {
+        "id": "hubControl",
+        "component": "FormControl",
+        "label": "Active Hub Station",
+        "input": "hubSelect",
+        "hint": "Switch operational view to a different hub airport"
+      },
+      {
+        "id": "hubSelect",
+        "component": "Select",
+        "name": "hub_code",
+        "placeholder": "Select Hub...",
+        "value": "ORD",
+        "items": [
+          "hubORD",
+          "hubATL",
+          "hubDFW",
+          "hubDEN",
+          "hubLAX"
+        ]
+      },
+      {
+        "id": "hubORD",
+        "component": "SelectItem",
+        "value": "ORD",
+        "label": "Chicago O'Hare (ORD) - Primary Hub"
+      },
+      {
+        "id": "hubATL",
+        "component": "SelectItem",
+        "value": "ATL",
+        "label": "Atlanta Hartsfield-Jackson (ATL)"
+      },
+      {
+        "id": "hubDFW",
+        "component": "SelectItem",
+        "value": "DFW",
+        "label": "Dallas/Fort Worth (DFW)"
+      },
+      {
+        "id": "hubDEN",
+        "component": "SelectItem",
+        "value": "DEN",
+        "label": "Denver International (DEN)"
+      },
+      {
+        "id": "hubLAX",
+        "component": "SelectItem",
+        "value": "LAX",
+        "label": "Los Angeles International (LAX)"
+      },
+      {
+        "id": "hubSelectButtons",
+        "component": "Buttons",
+        "buttons": [
+          "switchHubBtn"
+        ]
+      },
+      {
+        "id": "switchHubBtn",
+        "component": "Button",
+        "label": "Switch Hub View",
+        "variant": "secondary"
+      },
+      {
+        "id": "kpisSeparator",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "kpiSectionHeader",
+        "component": "Heading",
+        "text": "Daily Key Performance Indicators (Item 1, 7, 11, 12)",
+        "level": "h3"
+      },
+      {
+        "id": "kpisTable",
+        "component": "Table",
+        "columns": [
+          "kpiMetricCol",
+          "kpiValueCol",
+          "kpiStatusCol"
+        ]
+      },
+      {
+        "id": "kpiMetricCol",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "On-Time Performance (OTP)",
+          "Average Passenger Load",
+          "Cancellations Today",
+          "Average Turnaround Time"
+        ]
+      },
+      {
+        "id": "kpiValueCol",
+        "component": "Col",
+        "label": "Current Value",
+        "data": [
+          "84.2%",
+          "88.6%",
+          "3 Flights",
+          "42 mins"
+        ]
+      },
+      {
+        "id": "kpiStatusCol",
+        "component": "Col",
+        "label": "Target / Status",
+        "data": [
+          "Target: 85.0% (-0.8%)",
+          "Capacity: 142,500 seats",
+          "0.6% of daily departures",
+          "Target: 45 mins (-3 mins)"
+        ]
+      },
+      {
+        "id": "weatherAlert",
+        "component": "Alert",
+        "title": "Hub Weather Advisory (Item 6)",
+        "description": "ORD: Thunderstorm cell approaching from WNW. Ground stop probable between 16:30 - 17:45 CST. De-icing crews on standby for evening freeze.",
+        "variant": "warning"
+      },
+      {
+        "id": "tabs",
+        "component": "Tabs",
+        "items": [
+          "tabFlights",
+          "tabDelaysGateChanges",
+          "tabConnectionsRebook",
+          "tabCrews"
+        ]
+      },
+      {
+        "id": "tabFlights",
+        "component": "TabItem",
+        "value": "flights",
+        "trigger": "All Flights Status (Item 2)",
+        "content": [
+          "allFlightsTable"
+        ]
+      },
+      {
+        "id": "allFlightsTable",
+        "component": "Table",
+        "columns": [
+          "fltNumCol",
+          "fltRouteCol",
+          "fltGateCol",
+          "fltSchedCol",
+          "fltEstCol",
+          "fltStatusCol"
+        ]
+      },
+      {
+        "id": "fltNumCol",
+        "component": "Col",
+        "label": "Flight",
+        "data": [
+          "AA 1042",
+          "AA 0488",
+          "AA 2109",
+          "AA 1205",
+          "AA 0892",
+          "AA 1540"
+        ]
+      },
+      {
+        "id": "fltRouteCol",
+        "component": "Col",
+        "label": "Route",
+        "data": [
+          "LGA -> ORD",
+          "ORD -> DFW",
+          "MIA -> ORD",
+          "ORD -> LAX",
+          "BOS -> ORD",
+          "ORD -> SEA"
+        ]
+      },
+      {
+        "id": "fltGateCol",
+        "component": "Col",
+        "label": "Gate",
+        "data": [
+          "H12",
+          "K08",
+          "G14",
+          "H04",
+          "L02",
+          "K15"
+        ]
+      },
+      {
+        "id": "fltSchedCol",
+        "component": "Col",
+        "label": "Scheduled",
+        "data": [
+          "14:15",
+          "14:30",
+          "14:45",
+          "15:10",
+          "15:25",
+          "15:40"
+        ]
+      },
+      {
+        "id": "fltEstCol",
+        "component": "Col",
+        "label": "Estimated",
+        "data": [
+          "14:15",
+          "15:25 (Delayed)",
+          "14:45",
+          "15:10",
+          "16:40 (Delayed)",
+          "Cancelled"
+        ]
+      },
+      {
+        "id": "fltStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "On Time",
+          "Delayed - Maintenance",
+          "On Time",
+          "Boarding",
+          "Delayed - Weather",
+          "Cancelled"
+        ]
+      },
+      {
+        "id": "tabDelaysGateChanges",
+        "component": "TabItem",
+        "value": "delays_gates",
+        "trigger": "Delays & Gate Changes (Items 3, 4)",
+        "content": [
+          "delayedFlightsHeading",
+          "delayedCallout",
+          "delayedTable",
+          "gateChangesHeading",
+          "gateChangesTable"
+        ]
+      },
+      {
+        "id": "delayedFlightsHeading",
+        "component": "Heading",
+        "text": "Delayed Flights Exception Report (Item 3)",
+        "level": "h3"
+      },
+      {
+        "id": "delayedCallout",
+        "component": "Callout",
+        "variant": "error",
+        "title": "2 Active Delays Exceeding 45 Minutes",
+        "description": "AA 0488 (+55m, Maintenance) and AA 0892 (+75m, Inbound Weather) require immediate passenger connection audit."
+      },
+      {
+        "id": "delayedTable",
+        "component": "Table",
+        "columns": [
+          "dFltCol",
+          "dRouteCol",
+          "dGateCol",
+          "dDelayCol",
+          "dReasonCol"
+        ]
+      },
+      {
+        "id": "dFltCol",
+        "component": "Col",
+        "label": "Flight",
+        "data": [
+          "AA 0488",
+          "AA 0892"
+        ]
+      },
+      {
+        "id": "dRouteCol",
+        "component": "Col",
+        "label": "Route",
+        "data": [
+          "ORD -> DFW",
+          "BOS -> ORD"
+        ]
+      },
+      {
+        "id": "dGateCol",
+        "component": "Col",
+        "label": "Gate",
+        "data": [
+          "K08",
+          "L02"
+        ]
+      },
+      {
+        "id": "dDelayCol",
+        "component": "Col",
+        "label": "Delay",
+        "data": [
+          "+55 mins",
+          "+75 mins"
+        ]
+      },
+      {
+        "id": "dReasonCol",
+        "component": "Col",
+        "label": "Primary Cause",
+        "data": [
+          "Hydraulic Actuator Check",
+          "Ground Hold at Origin (BOS)"
+        ]
+      },
+      {
+        "id": "gateChangesHeading",
+        "component": "Heading",
+        "text": "Recent Gate Changes (Item 4)",
+        "level": "h3"
+      },
+      {
+        "id": "gateChangesTable",
+        "component": "Table",
+        "columns": [
+          "gcFltCol",
+          "gcTimeCol",
+          "gcOldCol",
+          "gcNewCol",
+          "gcReasonCol"
+        ]
+      },
+      {
+        "id": "gcFltCol",
+        "component": "Col",
+        "label": "Flight",
+        "data": [
+          "AA 1205",
+          "AA 0312",
+          "AA 1891"
+        ]
+      },
+      {
+        "id": "gcTimeCol",
+        "component": "Col",
+        "label": "Time",
+        "data": [
+          "14:02 CST",
+          "13:48 CST",
+          "13:30 CST"
+        ]
+      },
+      {
+        "id": "gcOldCol",
+        "component": "Col",
+        "label": "Original Gate",
+        "data": [
+          "G06",
+          "H10",
+          "K02"
+        ]
+      },
+      {
+        "id": "gcNewCol",
+        "component": "Col",
+        "label": "New Gate",
+        "data": [
+          "H04",
+          "H18",
+          "K12"
+        ]
+      },
+      {
+        "id": "gcReasonCol",
+        "component": "Col",
+        "label": "Reason",
+        "data": [
+          "Avoid dual-aisle conflict",
+          "Inbound plane maintenance",
+          "Early arrival request"
+        ]
+      },
+      {
+        "id": "tabConnectionsRebook",
+        "component": "TabItem",
+        "value": "rebook",
+        "trigger": "At-Risk Connections & Rebooking (Items 8, 9)",
+        "content": [
+          "riskHeading",
+          "riskAlert",
+          "riskTable",
+          "rebookSeparator",
+          "rebookHeading",
+          "rebookForm"
+        ]
+      },
+      {
+        "id": "riskHeading",
+        "component": "Heading",
+        "text": "Connections at Risk of Being Missed (Item 8)",
+        "level": "h3"
+      },
+      {
+        "id": "riskAlert",
+        "component": "Alert",
+        "title": "High Risk Notice",
+        "description": "18 passengers on inbound AA 0892 have layover times under 15 minutes to outbound flights.",
+        "variant": "destructive"
+      },
+      {
+        "id": "riskTable",
+        "component": "Table",
+        "columns": [
+          "paxCountCol",
+          "inboundCol",
+          "outboundCol",
+          "layoverCol",
+          "riskLevelCol"
+        ]
+      },
+      {
+        "id": "paxCountCol",
+        "component": "Col",
+        "label": "Passengers",
+        "data": [
+          "12 PAX",
+          "6 PAX",
+          "4 PAX"
+        ]
+      },
+      {
+        "id": "inboundCol",
+        "component": "Col",
+        "label": "Inbound Flight (Gate)",
+        "data": [
+          "AA 0892 (L02)",
+          "AA 0892 (L02)",
+          "AA 0488 (K08)"
+        ]
+      },
+      {
+        "id": "outboundCol",
+        "component": "Col",
+        "label": "Connecting Flight (Gate)",
+        "data": [
+          "AA 1402 to PHX (H16)",
+          "AA 0611 to SFO (K19)",
+          "AA 2390 to MCO (G12)"
+        ]
+      },
+      {
+        "id": "layoverCol",
+        "component": "Col",
+        "label": "Available Connection Time",
+        "data": [
+          "11 mins (Tight)",
+          "8 mins (Critical)",
+          "-12 mins (MISSED)"
+        ]
+      },
+      {
+        "id": "riskLevelCol",
+        "component": "Col",
+        "label": "Risk Status",
+        "data": [
+          "Runner Required",
+          "Auto-Protection Pending",
+          "Missed - Rebook Req."
+        ]
+      },
+      {
+        "id": "rebookSeparator",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "rebookHeading",
+        "component": "Heading",
+        "text": "Passenger Rebooking Console (Item 9)",
+        "level": "h3"
+      },
+      {
+        "id": "rebookForm",
+        "component": "Form",
+        "name": "passenger_rebook",
+        "buttons": "rebookButtons",
+        "fields": [
+          "paxPnrField",
+          "newFltField",
+          "rebookReasonField"
+        ]
+      },
+      {
+        "id": "paxPnrField",
+        "component": "FormControl",
+        "label": "Passenger Record Locator / PNR",
+        "input": "paxPnrInput",
+        "hint": "Enter 6-character booking code (e.g., K9X2PL)"
+      },
+      {
+        "id": "paxPnrInput",
+        "component": "Input",
+        "name": "pnr",
+        "placeholder": "e.g. K9X2PL"
+      },
+      {
+        "id": "newFltField",
+        "component": "FormControl",
+        "label": "Protected / Alternative Flight Options",
+        "input": "newFltSelect",
+        "hint": "Select best available itinerary for automatic rebooking"
+      },
+      {
+        "id": "newFltSelect",
+        "component": "Select",
+        "name": "target_flight",
+        "placeholder": "Choose target flight...",
+        "items": [
+          "opt1",
+          "opt2",
+          "opt3"
+        ]
+      },
+      {
+        "id": "opt1",
+        "component": "SelectItem",
+        "value": "AA1740",
+        "label": "AA 1740 - Dep 17:10 (Seats available: 14)"
+      },
+      {
+        "id": "opt2",
+        "component": "SelectItem",
+        "value": "AA2014",
+        "label": "AA 2014 - Dep 18:45 (Seats available: 8)"
+      },
+      {
+        "id": "opt3",
+        "component": "SelectItem",
+        "value": "UA0412",
+        "label": "UA 0412 (OA Partner) - Dep 17:35 (Seats available: 4)"
+      },
+      {
+        "id": "rebookReasonField",
+        "component": "FormControl",
+        "label": "Rebook Reason & Vouchers",
+        "input": "rebookReasonSelect"
+      },
+      {
+        "id": "rebookReasonSelect",
+        "component": "Select",
+        "name": "rebook_reason",
+        "placeholder": "Select reason...",
+        "items": [
+          "r1",
+          "r2",
+          "r3"
+        ]
+      },
+      {
+        "id": "r1",
+        "component": "SelectItem",
+        "value": "inbound_delay",
+        "label": "Inbound Connection Delay + Issue Meal Voucher"
+      },
+      {
+        "id": "r2",
+        "component": "SelectItem",
+        "value": "cancellation",
+        "label": "Flight Cancellation + Meal & Hotel Voucher"
+      },
+      {
+        "id": "r3",
+        "component": "SelectItem",
+        "value": "voluntary",
+        "label": "Voluntary Standby"
+      },
+      {
+        "id": "rebookButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitRebookBtn",
+          "clearRebookBtn"
+        ]
+      },
+      {
+        "id": "submitRebookBtn",
+        "component": "Button",
+        "label": "Confirm Rebooking & Send Mobile Boarding Pass",
+        "variant": "primary"
+      },
+      {
+        "id": "clearRebookBtn",
+        "component": "Button",
+        "label": "Reset Form",
+        "variant": "tertiary"
+      },
+      {
+        "id": "tabCrews",
+        "component": "TabItem",
+        "value": "crews",
+        "trigger": "Available Crew Reserves (Item 5)",
+        "content": [
+          "crewsHeading",
+          "crewsTable"
+        ]
+      },
+      {
+        "id": "crewsHeading",
+        "component": "Heading",
+        "text": "Hub Reserve Crew Availability (Item 5)",
+        "level": "h3"
+      },
+      {
+        "id": "crewsTable",
+        "component": "Table",
+        "columns": [
+          "crewIdCol",
+          "crewRoleCol",
+          "crewFleetCol",
+          "crewDutyCol",
+          "crewStatusCol"
+        ]
+      },
+      {
+        "id": "crewIdCol",
+        "component": "Col",
+        "label": "Crew Member / ID",
+        "data": [
+          "Capt. R. Vance (#4021)",
+          "FO M. Chen (#8819)",
+          "Purser L. Torres (#1104)",
+          "FA Group Delta (4 Crew)"
+        ]
+      },
+      {
+        "id": "crewRoleCol",
+        "component": "Col",
+        "label": "Role",
+        "data": [
+          "Captain",
+          "First Officer",
+          "Lead Flight Attendant",
+          "Cabin Crew Team"
+        ]
+      },
+      {
+        "id": "crewFleetCol",
+        "component": "Col",
+        "label": "Qualifications / Fleet",
+        "data": [
+          "B737, A320",
+          "B737",
+          "A319/A320/A321",
+          "Narrowbody All"
+        ]
+      },
+      {
+        "id": "crewDutyCol",
+        "component": "Col",
+        "label": "Duty Hours Remaining",
+        "data": [
+          "7h 45m",
+          "9h 10m",
+          "6h 15m",
+          "8h 00m"
+        ]
+      },
+      {
+        "id": "crewStatusCol",
+        "component": "Col",
+        "label": "Availability",
+        "data": [
+          "Standby at Hub Lounge",
+          "Ready - Gate Area H",
+          "On 30-min Callout",
+          "Ready - Ops Desk"
+        ]
+      }
+    ]
+  }
+}
+</a2ui-json>

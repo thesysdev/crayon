@@ -1,0 +1,80 @@
+root = Card([header, filterSection, alertBanner, kpiGrid, chartsSection, listGrid, followUps])
+
+header = CardHeader("Learning Analytics Dashboard", "Weekly overview, student engagement, and cohort insights")
+
+filterSection = Card([filterForm], "sunk")
+filterForm = Form("cohort-filter", filterButtons, [cohortField])
+cohortField = FormControl("Active Cohort", cohortSelect)
+cohortSelect = Select("cohort", [cAll, c2024Q1, c2024Q2, cBootcamp, cExec], "All Cohorts (Default)", null, "All Cohorts")
+cAll = SelectItem("all", "All Cohorts")
+c2024Q1 = SelectItem("2024-q1", "2024 Q1 - Software Engineering")
+c2024Q2 = SelectItem("2024-q2", "2024 Q2 - Data Science")
+cBootcamp = SelectItem("bootcamp", "Intensive UX/UI Bootcamp")
+cExec = SelectItem("exec", "Executive Leadership 2024")
+filterButtons = Buttons([applyFilterBtn, messageCohortModal])
+applyFilterBtn = Button("Apply Filter", null, "secondary", "normal", "small")
+
+messageCohortModal = DialogBlock("Message Selected Cohort", "Send Announcement", "Reach out directly to all learners in the currently selected cohort.", messageForm)
+messageForm = Form("message-cohort", messageButtons, [msgSubjectField, msgBodyField])
+msgSubjectField = FormControl("Subject", msgSubjectInput)
+msgSubjectInput = Input("subject", "Important Update regarding your course schedule")
+msgBodyField = FormControl("Message Body", msgBodyInput)
+msgBodyInput = TextArea("message", "Hi everyone,\n\nPlease make sure to complete Module 4 by this Friday...", 4)
+messageButtons = Buttons([sendMsgBtn])
+sendMsgBtn = Button("Send Broadcast Message", null, "primary")
+
+alertBanner = Alert("Action Required: 5 At-Risk Learners", "Learners with <50% completion and no login in 7 days require immediate follow-up.", "warning")
+
+kpiGrid = Card([kpiLearners, kpiCompletion, kpiQuiz], "clear", "row", "m")
+
+kpiLearners = Card([kpiLearnersHeader, kpiLearnersVal, kpiLearnersTag], "card")
+kpiLearnersHeader = Heading("Active Learners (This Week)", "h4")
+kpiLearnersVal = TextContent("1,248", "large-heavy")
+kpiLearnersTag = Tag("+12% vs last week", "arrow-up", "sm", "success")
+
+kpiCompletion = Card([kpiCompHeader, kpiCompVal, kpiCompProgress], "card")
+kpiCompHeader = Heading("Course Completion Rate", "h4")
+kpiCompVal = TextContent("78.4%", "large-heavy")
+kpiCompProgress = Progress(78, "Overall progress across active courses")
+
+kpiQuiz = Card([kpiQuizHeader, kpiQuizVal, kpiQuizTag], "card")
+kpiQuizHeader = Heading("Average Quiz Score", "h4")
+kpiQuizVal = TextContent("84.2%", "large-heavy")
+kpiQuizTag = Tag("Target: >80%", "check", "sm", "info")
+
+chartsSection = Card([engagementCard, enrollmentCard], "clear", "row", "m")
+
+engagementCard = Card([engagementHeader, engagementChart], "sunk")
+engagementHeader = CardHeader("Engagement Trend (Past 8 Weeks)", "Weekly active sessions and submission rates")
+engagementChart = LineChart(["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"], [activeSessionsSeries, submissionsSeries], "natural", "Week", "Volume")
+activeSessionsSeries = Series("Active Sessions", [850, 920, 1100, 1050, 1300, 1280, 1420, 1560])
+submissionsSeries = Series("Assignment Submissions", [620, 710, 800, 790, 950, 910, 1120, 1240])
+
+enrollmentCard = Card([enrollmentHeader, enrollmentChart], "sunk")
+enrollmentHeader = CardHeader("Top Courses by Enrollment", "Ranked total student count")
+enrollmentChart = HorizontalBarChart(["Full-Stack Web Dev", "Data Science Fundamentals", "UX/UI Design System", "Cloud Architecture", "Cybersecurity Essentials"], [enrollmentSeries], "grouped", "Students", "Course")
+enrollmentSeries = Series("Enrolled Learners", [450, 380, 290, 210, 160])
+
+listGrid = Card([atRiskSection, topRankedSection], "clear", "row", "m")
+
+atRiskSection = Card([atRiskHeader, atRiskList], "card")
+atRiskHeader = CardHeader("Learners at Risk of Dropping Out", "High inactivity & low module progress")
+atRiskList = ListBlock([riskUser1, riskUser2, riskUser3, riskUser4, riskUser5])
+riskUser1 = ListItem("Alex Chen", "Last active: 8 days ago • Progress: 32% • Quiz Avg: 54%", null, "View Profile")
+riskUser2 = ListItem("Samantha Taylor", "Last active: 11 days ago • Progress: 28% • Quiz Avg: 48%", null, "View Profile")
+riskUser3 = ListItem("Marcus Brody", "Last active: 9 days ago • Progress: 41% • Quiz Avg: 52%", null, "View Profile")
+riskUser4 = ListItem("Elena Rostova", "Last active: 14 days ago • Progress: 19% • Quiz Avg: 38%", null, "View Profile")
+riskUser5 = ListItem("David Kim", "Last active: 7 days ago • Progress: 45% • Quiz Avg: 58%", null, "View Profile")
+
+topRankedSection = Card([rankedHeader, rankedTable], "card")
+rankedHeader = CardHeader("Course Performance Breakdown", "Completion rates and average scores")
+rankedTable = Table([courseCol, totalLearnersCol, completionCol, scoreCol])
+courseCol = Col("Course Name", ["Full-Stack Web Dev", "Data Science Fundamentals", "UX/UI Design System", "Cloud Architecture", "Cybersecurity Essentials"])
+totalLearnersCol = Col("Learners", [450, 380, 290, 210, 160], "number")
+completionCol = Col("Completion", ["82%", "75%", "88%", "69%", "71%"], "string")
+scoreCol = Col("Avg Score", ["86%", "81%", "91%", "78%", "82%"], "string")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Export at-risk learner list to CSV")
+f2 = FollowUpItem("View engagement breakdown by module")
+f3 = FollowUpItem("Schedule automated reminder emails")

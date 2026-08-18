@@ -1,0 +1,489 @@
+Here is a interactive logistics coordinator dashboard covering all your required metrics, active shipments, volume trends, carrier breakdowns, search capabilities, and flagging controls.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "refreshInfo",
+          "delayedAlert",
+          "kpiTabs",
+          "weeklyChartCard",
+          "carrierChartCard",
+          "shipmentsCard"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Logistics Coordinator Dashboard",
+        "subtitle": "Real-time fleet, route performance, and shipment monitoring"
+      },
+      {
+        "id": "refreshInfo",
+        "component": "TagBlock",
+        "tags": [
+          "Last Refreshed: Today at 14:32 EST",
+          "Status: Live Sync Active"
+        ]
+      },
+      {
+        "id": "delayedAlert",
+        "component": "Alert",
+        "title": "Delayed Shipments Attention Required",
+        "description": "3 shipments are currently experiencing delays due to weather and port congestion: SHP-1002 (Dallas-Denver), SHP-1006 (Chicago-Seattle), and SHP-1008 (Miami-Atlanta).",
+        "variant": "destructive"
+      },
+      {
+        "id": "kpiTabs",
+        "component": "Tabs",
+        "items": [
+          "tabOnTime",
+          "tabCost"
+        ]
+      },
+      {
+        "id": "tabOnTime",
+        "component": "TabItem",
+        "value": "ontime",
+        "trigger": "On-Time Performance",
+        "content": [
+          "onTimeCard"
+        ]
+      },
+      {
+        "id": "onTimeCard",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "onTimeHeader",
+          "onTimeProgress",
+          "onTimeBadge"
+        ]
+      },
+      {
+        "id": "onTimeHeader",
+        "component": "Heading",
+        "level": "h3",
+        "text": "Monthly On-Time Delivery Rate: 94.2%"
+      },
+      {
+        "id": "onTimeProgress",
+        "component": "Progress",
+        "value": 94,
+        "label": "94.2% On-time target (Goal: >92%)"
+      },
+      {
+        "id": "onTimeBadge",
+        "component": "Badge",
+        "text": "+2.4% vs Previous Month",
+        "variant": "default"
+      },
+      {
+        "id": "tabCost",
+        "component": "TabItem",
+        "value": "cost",
+        "trigger": "Cost Metrics",
+        "content": [
+          "costCard"
+        ]
+      },
+      {
+        "id": "costCard",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "costHeader",
+          "costText",
+          "costBadge"
+        ]
+      },
+      {
+        "id": "costHeader",
+        "component": "Heading",
+        "level": "h3",
+        "text": "Average Cost per Shipment: $1,245"
+      },
+      {
+        "id": "costText",
+        "component": "TextContent",
+        "text": "Calculated across 1,420 total shipments in the past 30 days. Fuel surcharge impact: +$38/load.",
+        "size": "default"
+      },
+      {
+        "id": "costBadge",
+        "component": "Badge",
+        "text": "-$32 vs Last Month Avg",
+        "variant": "secondary"
+      },
+      {
+        "id": "weeklyChartCard",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "weeklyChartHeader",
+          "weeklyChart"
+        ]
+      },
+      {
+        "id": "weeklyChartHeader",
+        "component": "CardHeader",
+        "title": "Weekly Shipment Volume (Past 8 Weeks)",
+        "subtitle": "Total completed and in-transit loads across October and November"
+      },
+      {
+        "id": "weeklyChart",
+        "component": "BarChart",
+        "labels": [
+          "Wk 1",
+          "Wk 2",
+          "Wk 3",
+          "Wk 4",
+          "Wk 5",
+          "Wk 6",
+          "Wk 7",
+          "Wk 8"
+        ],
+        "series": [
+          "volumeSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Week",
+        "yLabel": "Shipment Volume"
+      },
+      {
+        "id": "volumeSeries",
+        "component": "Series",
+        "category": "Loads Delivered",
+        "values": [
+          142,
+          158,
+          165,
+          150,
+          172,
+          180,
+          168,
+          185
+        ]
+      },
+      {
+        "id": "carrierChartCard",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "carrierHeader",
+          "carrierPieChart"
+        ]
+      },
+      {
+        "id": "carrierHeader",
+        "component": "CardHeader",
+        "title": "Volume Split by Carrier",
+        "subtitle": "Share of total shipments across primary logistics partners"
+      },
+      {
+        "id": "carrierPieChart",
+        "component": "PieChart",
+        "labels": [
+          "FedEx Freight",
+          "DHL Express",
+          "JB Hunt",
+          "XPO Logistics",
+          "Schneider"
+        ],
+        "values": [
+          35,
+          25,
+          20,
+          12,
+          8
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "shipmentsCard",
+        "component": "Card",
+        "variant": "card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "shipmentsHeader",
+          "searchForm",
+          "shipmentsTable",
+          "flagActionForm"
+        ]
+      },
+      {
+        "id": "shipmentsHeader",
+        "component": "CardHeader",
+        "title": "Active Shipments in Transit",
+        "subtitle": "Track status, route details, ETAs, and flag priority loads"
+      },
+      {
+        "id": "searchForm",
+        "component": "Form",
+        "name": "route-search-form",
+        "buttons": "searchButtons",
+        "fields": [
+          "searchField"
+        ]
+      },
+      {
+        "id": "searchField",
+        "component": "FormControl",
+        "label": "Search by Route or City",
+        "hint": "e.g., 'Chicago', 'LAX', 'New York'",
+        "input": "searchInput"
+      },
+      {
+        "id": "searchInput",
+        "component": "Input",
+        "name": "route_query",
+        "placeholder": "Enter origin or destination city..."
+      },
+      {
+        "id": "searchButtons",
+        "component": "Buttons",
+        "buttons": [
+          "filterBtn",
+          "resetBtn"
+        ]
+      },
+      {
+        "id": "filterBtn",
+        "component": "Button",
+        "label": "Filter Routes",
+        "variant": "primary"
+      },
+      {
+        "id": "resetBtn",
+        "component": "Button",
+        "label": "Clear Search",
+        "variant": "tertiary"
+      },
+      {
+        "id": "shipmentsTable",
+        "component": "Table",
+        "columns": [
+          "colId",
+          "colOrigin",
+          "colDest",
+          "colCarrier",
+          "colEta",
+          "colStatus",
+          "colFlag"
+        ]
+      },
+      {
+        "id": "colId",
+        "component": "Col",
+        "label": "Shipment ID",
+        "data": [
+          "SHP-1001",
+          "SHP-1002",
+          "SHP-1003",
+          "SHP-1004",
+          "SHP-1005",
+          "SHP-1006"
+        ]
+      },
+      {
+        "id": "colOrigin",
+        "component": "Col",
+        "label": "Origin",
+        "data": [
+          "Los Angeles, CA",
+          "Dallas, TX",
+          "Atlanta, GA",
+          "Seattle, WA",
+          "New York, NY",
+          "Chicago, IL"
+        ]
+      },
+      {
+        "id": "colDest",
+        "component": "Col",
+        "label": "Destination",
+        "data": [
+          "Chicago, IL",
+          "Denver, CO",
+          "New York, NY",
+          "Phoenix, AZ",
+          "Miami, FL",
+          "Seattle, WA"
+        ]
+      },
+      {
+        "id": "colCarrier",
+        "component": "Col",
+        "label": "Carrier",
+        "data": [
+          "FedEx Freight",
+          "JB Hunt",
+          "DHL Express",
+          "Schneider",
+          "XPO Logistics",
+          "FedEx Freight"
+        ]
+      },
+      {
+        "id": "colEta",
+        "component": "Col",
+        "label": "ETA",
+        "data": [
+          "Today, 18:00",
+          "Tomorrow, 09:00",
+          "Nov 24, 14:30",
+          "Nov 25, 11:00",
+          "Nov 25, 16:00",
+          "Nov 26, 08:00"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "On Schedule",
+          "DELAYED (Severe Weather)",
+          "On Schedule",
+          "On Schedule",
+          "On Schedule",
+          "DELAYED (Mechanical)"
+        ]
+      },
+      {
+        "id": "colFlag",
+        "component": "Col",
+        "label": "Flagged",
+        "data": [
+          "No",
+          "YES - Urgent",
+          "No",
+          "No",
+          "No",
+          "YES - Review"
+        ]
+      },
+      {
+        "id": "flagActionForm",
+        "component": "Form",
+        "name": "flag-shipment-form",
+        "buttons": "flagButtons",
+        "fields": [
+          "selectShipmentField",
+          "flagReasonField"
+        ]
+      },
+      {
+        "id": "selectShipmentField",
+        "component": "FormControl",
+        "label": "Flag Shipment for Attention",
+        "input": "shipmentSelect"
+      },
+      {
+        "id": "shipmentSelect",
+        "component": "Select",
+        "name": "selected_shipment_id",
+        "placeholder": "Select a shipment ID to flag",
+        "items": [
+          "sel1",
+          "sel2",
+          "sel3",
+          "sel4",
+          "sel5",
+          "sel6"
+        ]
+      },
+      {
+        "id": "sel1",
+        "component": "SelectItem",
+        "value": "SHP-1001",
+        "label": "SHP-1001 (LA to Chicago)"
+      },
+      {
+        "id": "sel2",
+        "component": "SelectItem",
+        "value": "SHP-1002",
+        "label": "SHP-1002 (Dallas to Denver)"
+      },
+      {
+        "id": "sel3",
+        "component": "SelectItem",
+        "value": "SHP-1003",
+        "label": "SHP-1003 (Atlanta to New York)"
+      },
+      {
+        "id": "sel4",
+        "component": "SelectItem",
+        "value": "SHP-1004",
+        "label": "SHP-1004 (Seattle to Phoenix)"
+      },
+      {
+        "id": "sel5",
+        "component": "SelectItem",
+        "value": "SHP-1005",
+        "label": "SHP-1005 (New York to Miami)"
+      },
+      {
+        "id": "sel6",
+        "component": "SelectItem",
+        "value": "SHP-1006",
+        "label": "SHP-1006 (Chicago to Seattle)"
+      },
+      {
+        "id": "flagReasonField",
+        "component": "FormControl",
+        "label": "Reason / Action Note",
+        "hint": "Provide context for dispatchers or customer service",
+        "input": "flagReasonInput"
+      },
+      {
+        "id": "flagReasonInput",
+        "component": "Input",
+        "name": "flag_reason",
+        "placeholder": "e.g., Escalated delay, temperature exception, route re-assignment"
+      },
+      {
+        "id": "flagButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitFlagBtn"
+        ]
+      },
+      {
+        "id": "submitFlagBtn",
+        "component": "Button",
+        "label": "Apply Flag",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>

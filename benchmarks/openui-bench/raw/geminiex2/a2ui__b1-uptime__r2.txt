@@ -1,0 +1,168 @@
+Here is the status page dashboard for the platform team detailing current API uptime and recent incident status.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "systemStatusBadge",
+          "separator1",
+          "uptimeHeader",
+          "uptimeProgress",
+          "uptimeStats",
+          "separator2",
+          "incidentHeader",
+          "incidentAlert",
+          "incidentDetails",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Platform Status Dashboard",
+        "subtitle": "Real-time health and operational metrics for Core API Infrastructure"
+      },
+      {
+        "id": "systemStatusBadge",
+        "component": "Badge",
+        "text": "All Systems Operational",
+        "variant": "default"
+      },
+      {
+        "id": "separator1",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "uptimeHeader",
+        "component": "Heading",
+        "text": "API Uptime (Current Month)",
+        "level": "h3"
+      },
+      {
+        "id": "uptimeProgress",
+        "component": "Progress",
+        "label": "99.94% Uptime Target: 99.90%",
+        "value": 99.94
+      },
+      {
+        "id": "uptimeStats",
+        "component": "Table",
+        "columns": [
+          "metricCol",
+          "valueCol",
+          "targetCol"
+        ]
+      },
+      {
+        "id": "metricCol",
+        "component": "Col",
+        "label": "Service",
+        "data": [
+          "REST Gateway API",
+          "GraphQL Engine",
+          "Auth & Identity Service"
+        ]
+      },
+      {
+        "id": "valueCol",
+        "component": "Col",
+        "label": "Current Uptime",
+        "data": [
+          "99.94%",
+          "99.98%",
+          "100.00%"
+        ]
+      },
+      {
+        "id": "targetCol",
+        "component": "Col",
+        "label": "SLA Target",
+        "data": [
+          "99.90%",
+          "99.90%",
+          "99.95%"
+        ]
+      },
+      {
+        "id": "separator2",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "incidentHeader",
+        "component": "Heading",
+        "text": "Most Recent Incident",
+        "level": "h3"
+      },
+      {
+        "id": "incidentAlert",
+        "component": "Alert",
+        "title": "INC-8492: Increased Latency on REST Gateway API",
+        "description": "Resolved on October 24, 2023 at 14:32 UTC (Duration: 18 minutes)",
+        "variant": "info"
+      },
+      {
+        "id": "incidentDetails",
+        "component": "Accordion",
+        "items": [
+          "incidentSummary"
+        ]
+      },
+      {
+        "id": "incidentSummary",
+        "component": "AccordionItem",
+        "value": "inc-8492-details",
+        "trigger": "View Incident Post-Mortem & Timeline",
+        "content": [
+          "incidentMarkdown"
+        ]
+      },
+      {
+        "id": "incidentMarkdown",
+        "component": "MarkDownRenderer",
+        "textMarkdown": "**Root Cause:** A misconfigured connection pool limit during the v2.14.0 deployment caused queued requests on the primary REST Gateway.\n\n**Timeline:**\n- **14:14 UTC** - Automated alert triggered for elevated HTTP 504 responses.\n- **14:18 UTC** - On-call engineer identified connection pool exhaustion.\n- **14:26 UTC** - Hotfix deployed rolling back connection configuration.\n- **14:32 UTC** - Traffic normalized and all health checks green. Incident marked resolved."
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": [
+          "refreshBtn",
+          "subscribeBtn"
+        ]
+      },
+      {
+        "id": "refreshBtn",
+        "component": "Button",
+        "label": "Refresh Data",
+        "variant": "primary"
+      },
+      {
+        "id": "subscribeBtn",
+        "component": "Button",
+        "label": "Subscribe to Incident Updates",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>

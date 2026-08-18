@@ -1,0 +1,567 @@
+
+
+Here's a comprehensive airline hub operations dashboard covering all 12 requirements:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "hubSelector",
+          "kpis",
+          "weatherAlert",
+          "delayedAlert",
+          "flightTable",
+          "gateChanges",
+          "connectionsAtRisk",
+          "crewsAvailable",
+          "rebookActions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Hub Operations Desk",
+        "subtitle": "Live operational overview — updated 14:32 UTC"
+      },
+      {
+        "id": "hubSelector",
+        "component": "Select",
+        "name": "hub",
+        "placeholder": "Switch hub",
+        "items": [
+          "hubATL",
+          "hubORD",
+          "hubDFW",
+          "hubDEN",
+          "hubLAX"
+        ]
+      },
+      {
+        "id": "hubATL",
+        "component": "SelectItem",
+        "value": "ATL",
+        "label": "Atlanta (ATL)"
+      },
+      {
+        "id": "hubORD",
+        "component": "SelectItem",
+        "value": "ORD",
+        "label": "Chicago O'Hare (ORD)"
+      },
+      {
+        "id": "hubDFW",
+        "component": "SelectItem",
+        "value": "DFW",
+        "label": "Dallas/Fort Worth (DFW)"
+      },
+      {
+        "id": "hubDEN",
+        "component": "SelectItem",
+        "value": "DEN",
+        "label": "Denver (DEN)"
+      },
+      {
+        "id": "hubLAX",
+        "component": "SelectItem",
+        "value": "LAX",
+        "label": "Los Angeles (LAX)"
+      },
+      {
+        "id": "kpis",
+        "component": "Table",
+        "columns": [
+          "kpiMetric",
+          "kpiValue",
+          "kpiTrend"
+        ]
+      },
+      {
+        "id": "kpiMetric",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "On-Time Performance",
+          "Avg Passenger Load",
+          "Cancellations Today",
+          "Avg Turnaround Time"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "78.4%",
+          "82.6%",
+          "11 flights",
+          "38 min"
+        ]
+      },
+      {
+        "id": "kpiTrend",
+        "component": "Col",
+        "label": "vs. Yesterday",
+        "data": [
+          "▼ 4.2 pts",
+          "▲ 1.8 pts",
+          "▲ 3 more",
+          "▲ 5 min"
+        ]
+      },
+      {
+        "id": "weatherAlert",
+        "component": "Alert",
+        "title": "Weather Advisory — ATL",
+        "description": "Thunderstorms expected 15:00–19:00 local. Gusts to 45 kt. Ground stop possible for Runways 8L/8R. De-icing not required. Monitor SIGMET WS-4471.",
+        "variant": "warning"
+      },
+      {
+        "id": "delayedAlert",
+        "component": "Alert",
+        "title": "14 Flights Currently Delayed",
+        "description": "DL1422 (+52 min, weather), DL0387 (+38 min, crew), DL2291 (+25 min, maintenance), DL0918 (+61 min, ATC flow), DL1744 (+19 min, late inbound), DL0553 (+44 min, weather), DL2088 (+33 min, baggage), DL1109 (+27 min, fueling), DL0671 (+55 min, crew), DL1893 (+22 min, late inbound), DL0442 (+48 min, weather), DL2350 (+31 min, ATC), DL0789 (+40 min, maintenance), DL1567 (+18 min, catering).",
+        "variant": "destructive"
+      },
+      {
+        "id": "flightTable",
+        "component": "Table",
+        "columns": [
+          "fltNumber",
+          "fltRoute",
+          "fltGate",
+          "fltStatus"
+        ]
+      },
+      {
+        "id": "fltNumber",
+        "component": "Col",
+        "label": "Flight",
+        "data": [
+          "DL1422",
+          "DL0387",
+          "DL2291",
+          "DL0918",
+          "DL1744",
+          "DL0553",
+          "DL2088",
+          "DL1109",
+          "DL0671",
+          "DL1893",
+          "DL0442",
+          "DL2350",
+          "DL0789",
+          "DL1567",
+          "DL0201",
+          "DL1634",
+          "DL0845",
+          "DL2110",
+          "DL0093",
+          "DL1478"
+        ]
+      },
+      {
+        "id": "fltRoute",
+        "component": "Col",
+        "label": "Route",
+        "data": [
+          "ATL → JFK",
+          "ATL → LAX",
+          "ATL → ORD",
+          "ATL → MIA",
+          "ATL → BOS",
+          "ATL → SFO",
+          "ATL → DFW",
+          "ATL → MSP",
+          "ATL → SEA",
+          "ATL → DTW",
+          "ATL → PHX",
+          "ATL → IAH",
+          "ATL → SAN",
+          "ATL → CLT",
+          "ATL → LGA",
+          "ATL → EWR",
+          "ATL → PHL",
+          "ATL → AUS",
+          "ATL → MCO",
+          "ATL → SLT"
+        ]
+      },
+      {
+        "id": "fltGate",
+        "component": "Col",
+        "label": "Gate",
+        "data": [
+          "B12",
+          "A04",
+          "C22",
+          "B31",
+          "A18",
+          "D07",
+          "C15",
+          "B28",
+          "A09",
+          "D14",
+          "C03",
+          "B19",
+          "A22",
+          "D01",
+          "B05",
+          "C11",
+          "A14",
+          "D19",
+          "B24",
+          "C08"
+        ]
+      },
+      {
+        "id": "fltStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "DELAYED +52m",
+          "DELAYED +38m",
+          "DELAYED +25m",
+          "DELAYED +61m",
+          "DELAYED +19m",
+          "DELAYED +44m",
+          "DELAYED +33m",
+          "DELAYED +27m",
+          "DELAYED +55m",
+          "DELAYED +22m",
+          "DELAYED +48m",
+          "DELAYED +31m",
+          "DELAYED +40m",
+          "DELAYED +18m",
+          "ON TIME",
+          "ON TIME",
+          "BOARDING",
+          "DEPARTED",
+          "ON TIME",
+          "CANCELLED"
+        ]
+      },
+      {
+        "id": "gateChanges",
+        "component": "Table",
+        "columns": [
+          "gcFlight",
+          "gcFrom",
+          "gcTo",
+          "gcReason",
+          "gcTime"
+        ]
+      },
+      {
+        "id": "gcFlight",
+        "component": "Col",
+        "label": "Flight",
+        "data": [
+          "DL1422",
+          "DL0918",
+          "DL2088",
+          "DL0671",
+          "DL0442"
+        ]
+      },
+      {
+        "id": "gcFrom",
+        "component": "Col",
+        "label": "From",
+        "data": [
+          "B08",
+          "A12",
+          "C19",
+          "B33",
+          "D05"
+        ]
+      },
+      {
+        "id": "gcTo",
+        "component": "Col",
+        "label": "To",
+        "data": [
+          "B12",
+          "B31",
+          "C15",
+          "A09",
+          "C03"
+        ]
+      },
+      {
+        "id": "gcReason",
+        "component": "Col",
+        "label": "Reason",
+        "data": [
+          "Equipment swap",
+          "Runway closure",
+          "Jet bridge fault",
+          "Gate conflict",
+          "Weather repositioning"
+        ]
+      },
+      {
+        "id": "gcTime",
+        "component": "Col",
+        "label": "Changed At",
+        "data": [
+          "13:45",
+          "13:22",
+          "12:58",
+          "12:31",
+          "11:47"
+        ]
+      },
+      {
+        "id": "connectionsAtRisk",
+        "component": "Table",
+        "columns": [
+          "connInbound",
+          "connOutbound",
+          "connMCT",
+          "connActual",
+          "connPax",
+          "connRisk"
+        ]
+      },
+      {
+        "id": "connInbound",
+        "component": "Col",
+        "label": "Inbound",
+        "data": [
+          "DL0918 (MIA→ATL)",
+          "DL0671 (SEA→ATL)",
+          "DL1422 (JFK→ATL)",
+          "DL0442 (PHX→ATL)",
+          "DL0553 (SFO→ATL)",
+          "DL2350 (IAH→ATL)",
+          "DL0789 (SAN→ATL)"
+        ]
+      },
+      {
+        "id": "connOutbound",
+        "component": "Col",
+        "label": "Outbound",
+        "data": [
+          "DL2291 (ATL→ORD)",
+          "DL1893 (ATL→DTW)",
+          "DL1109 (ATL→MSP)",
+          "DL0201 (ATL→LGA)",
+          "DL1634 (ATL→EWR)",
+          "DL0845 (ATL→PHL)",
+          "DL2110 (ATL→AUS)"
+        ]
+      },
+      {
+        "id": "connMCT",
+        "component": "Col",
+        "label": "MCT",
+        "data": [
+          "35 min",
+          "35 min",
+          "35 min",
+          "30 min",
+          "30 min",
+          "30 min",
+          "35 min"
+        ]
+      },
+      {
+        "id": "connActual",
+        "component": "Col",
+        "label": "Available",
+        "data": [
+          "12 min",
+          "18 min",
+          "22 min",
+          "25 min",
+          "28 min",
+          "29 min",
+          "31 min"
+        ]
+      },
+      {
+        "id": "connPax",
+        "component": "Col",
+        "label": "Pax at Risk",
+        "data": [
+          "47",
+          "33",
+          "28",
+          "19",
+          "22",
+          "15",
+          "12"
+        ]
+      },
+      {
+        "id": "connRisk",
+        "component": "Col",
+        "label": "Risk Level",
+        "data": [
+          "CRITICAL",
+          "HIGH",
+          "HIGH",
+          "MODERATE",
+          "MODERATE",
+          "LOW",
+          "LOW"
+        ]
+      },
+      {
+        "id": "crewsAvailable",
+        "component": "Table",
+        "columns": [
+          "crewName",
+          "crewRole",
+          "crewBase",
+          "crewStatus",
+          "crewDutyEnd"
+        ]
+      },
+      {
+        "id": "crewName",
+        "component": "Col",
+        "label": "Crew",
+        "data": [
+          "Capt. R. Martinez",
+          "FO J. Chen",
+          "Capt. L. Okafor",
+          "FA T. Nguyen",
+          "FA S. Williams",
+          "Capt. D. Petrov",
+          "FO A. Kim",
+          "FA M. Johnson"
+        ]
+      },
+      {
+        "id": "crewRole",
+        "component": "Col",
+        "label": "Role",
+        "data": [
+          "Captain (B737)",
+          "First Officer (B737)",
+          "Captain (A321)",
+          "Flight Attendant",
+          "Flight Attendant",
+          "Captain (B757)",
+          "First Officer (A321)",
+          "Flight Attendant"
+        ]
+      },
+      {
+        "id": "crewBase",
+        "component": "Col",
+        "label": "Base",
+        "data": [
+          "ATL",
+          "ATL",
+          "ATL",
+          "ATL",
+          "MCO",
+          "ATL",
+          "ATL",
+          "ATL"
+        ]
+      },
+      {
+        "id": "crewStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Reserve — Ready",
+          "Reserve — Ready",
+          "Reserve — Ready",
+          "Reserve — Ready",
+          "Deadhead avail",
+          "Reserve — Ready",
+          "Reserve — Ready",
+          "Reserve — Ready"
+        ]
+      },
+      {
+        "id": "crewDutyEnd",
+        "component": "Col",
+        "label": "Duty Ends",
+        "data": [
+          "22:00",
+          "23:30",
+          "21:15",
+          "22:45",
+          "20:00",
+          "23:00",
+          "22:30",
+          "21:45"
+        ]
+      },
+      {
+        "id": "rebookActions",
+        "component": "Buttons",
+        "buttons": [
+          "rebookBtn",
+          "holdBtn",
+          "notifyBtn",
+          "escalateBtn"
+        ]
+      },
+      {
+        "id": "rebookBtn",
+        "component": "Button",
+        "label": "Rebook Affected Passengers",
+        "variant": "primary"
+      },
+      {
+        "id": "holdBtn",
+        "component": "Button",
+        "label": "Hold Connections",
+        "variant": "secondary"
+      },
+      {
+        "id": "notifyBtn",
+        "component": "Button",
+        "label": "Notify Passengers",
+        "variant": "secondary"
+      },
+      {
+        "id": "escalateBtn",
+        "component": "Button",
+        "label": "Escalate to Duty Manager",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This dashboard covers all 12 requirements:
+
+| # | Requirement | Component Used |
+|---|---|---|
+| 1 | On-time performance | KPI table row: **78.4%** (▼4.2 pts vs yesterday) |
+| 2 | Flight details | 20-row table with flight #, route, gate, status |
+| 3 | Delayed flights called out | Red alert listing all 14 delayed flights with reasons |
+| 4 | Recent gate changes | Dedicated table with from/to/reason/time |
+| 5 | Crews available | Table of 8 reserve/deadhead crew with roles & duty limits |
+| 6 | Weather advisories | Warning alert with SIGMET reference and timing |
+| 7 | Avg passenger load | KPI table row: **82.6%** |
+| 8 | Connections at risk | Table with MCT vs actual time, pax count, risk level |
+| 9 | Rebook passengers | Primary "Rebook Affected Passengers" button + hold/notify |
+| 10 | Switch hub | Select dropdown with 5 hubs (ATL, ORD, DFW, DEN, LAX) |
+| 11 | Cancellations today | KPI table row: **11 flights** (▲3 vs yesterday) |
+| 12 | Avg turnaround time | KPI table row: **38 min** (▲5 min vs yesterday) |

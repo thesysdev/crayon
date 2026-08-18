@@ -1,0 +1,21 @@
+
+
+root = Card([header, status, keyMetrics, comparisonTable, trendSection, note], "card", "column", "l")
+header = CardHeader("Mid-morning revenue", "Today vs same time yesterday")
+status = Callout("success", "Ahead of yesterday", "Revenue is $247.40 higher than at the same time yesterday.")
+keyMetrics = Card([todayRevenueText, yesterdayRevenueText, deltaText], "sunk", "column", "s")
+todayRevenueText = TextContent("**Revenue so far today:** $1,482.50", "large-heavy")
+yesterdayRevenueText = TextContent("**Same time yesterday:** $1,235.10", "default")
+deltaText = TextContent("**Change:** +$247.40 (+20.0%)", "default")
+comparisonTable = Table([metricCol, todayCol, yesterdayCol, changeCol])
+metricCol = Col("Metric", ["Revenue", "Orders", "Average order value"], "string")
+todayCol = Col("Today by 11:00", ["$1,482.50", "38", "$39.01"], "string")
+yesterdayCol = Col("Yesterday by 11:00", ["$1,235.10", "33", "$37.43"], "string")
+changeCol = Col("Change", ["+$247.40", "+5", "+$1.58"], "string")
+trendSection = Card([trendHeading, trendChart], "clear", "column", "s")
+trendHeading = Heading("Cumulative sales through mid-morning", "h3")
+trendChart = LineChart(timeLabels, [todaySeries, yesterdaySeries], "natural", "Time", "Revenue")
+timeLabels = ["8:00", "9:00", "10:00", "11:00"]
+todaySeries = Series("Today", [310.5, 690.25, 1090.75, 1482.5])
+yesterdaySeries = Series("Yesterday", [260.2, 570.4, 910.6, 1235.1])
+note = TextContent("Amounts are net of refunds and include card, cash, and online orders.", "small")

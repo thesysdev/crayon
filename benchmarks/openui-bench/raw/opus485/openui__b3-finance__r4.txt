@@ -1,0 +1,28 @@
+root = Card([header, monthPicker, kpis, expenseSplit, largeTxns, actions])
+header = CardHeader("Finance — Month End", "March 2024 close")
+
+monthPicker = Form("month-select", monthButtons, [monthField])
+monthField = FormControl("Reporting month", monthSelect)
+monthSelect = Select("month", [mMar, mFeb, mJan], "Select month", null, "2024-03")
+mMar = SelectItem("2024-03", "March 2024")
+mFeb = SelectItem("2024-02", "February 2024")
+mJan = SelectItem("2024-01", "January 2024")
+monthButtons = Buttons([viewBtn])
+viewBtn = Button("View month", null, "secondary")
+
+kpis = Table([kpiMetric, kpiValue])
+kpiMetric = Col("Metric", ["Cash on hand", "Monthly burn", "Runway"])
+kpiValue = Col("Value", ["$842,000", "$96,500", "8.7 months"])
+
+expenseSplit = PieChart(expenseLabels, expenseValues, "donut")
+expenseLabels = ["Payroll", "Infrastructure", "Marketing", "Software", "Office", "Other"]
+expenseValues = [52000, 14500, 12000, 8500, 5500, 4000]
+
+largeTxns = Table([txnDate, txnVendor, txnCategory, txnAmount])
+txnDate = Col("Date", ["Mar 03", "Mar 11", "Mar 19", "Mar 26"])
+txnVendor = Col("Vendor", ["ADP Payroll", "AWS", "Google Ads", "Salesforce"])
+txnCategory = Col("Category", ["Payroll", "Infrastructure", "Marketing", "Software"])
+txnAmount = Col("Amount", ["$52,000", "$14,500", "$12,000", "$11,200"], "number")
+
+actions = Buttons([downloadBtn])
+downloadBtn = Button("Download statement (PDF)", null, "primary")

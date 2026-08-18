@@ -1,0 +1,429 @@
+Here is a comprehensive dashboard tailored for a logistics coordinator, featuring shipment tracking, status alerts, carrier breakdowns, cost/volume analytics, and interactive search and flagging tools.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "metricsTabs",
+          "searchSection",
+          "delayAlert",
+          "shipmentsSection",
+          "volumeChartSection",
+          "carrierBreakdownSection"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Logistics Operations Dashboard",
+        "subtitle": "Real-time fleet tracking & performance metrics | Last refreshed: Today at 14:32 EST"
+      },
+      {
+        "id": "metricsTabs",
+        "component": "Tabs",
+        "items": [
+          "tabKpis",
+          "tabQuickActions"
+        ]
+      },
+      {
+        "id": "tabKpis",
+        "component": "TabItem",
+        "value": "kpis",
+        "trigger": "Key Performance Indicators",
+        "content": [
+          "kpiTable"
+        ]
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": [
+          "kpiMetricCol",
+          "kpiValueCol",
+          "kpiStatusCol"
+        ]
+      },
+      {
+        "id": "kpiMetricCol",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "On-Time Delivery (MTD)",
+          "Average Cost per Shipment",
+          "Active Shipments in Transit",
+          "Critical Delayed Units"
+        ]
+      },
+      {
+        "id": "kpiValueCol",
+        "component": "Col",
+        "label": "Current Value",
+        "data": [
+          "94.2%",
+          "$1,245.50",
+          "142 shipments",
+          "3 shipments"
+        ]
+      },
+      {
+        "id": "kpiStatusCol",
+        "component": "Col",
+        "label": "Target / Status",
+        "data": [
+          "Target: ≥ 95.0% (Near Target)",
+          "Budget: $1,300.00 (-4.2%)",
+          "Normal Capacity",
+          "Action Required"
+        ]
+      },
+      {
+        "id": "tabQuickActions",
+        "component": "TabItem",
+        "value": "actions",
+        "trigger": "Coordinator Actions",
+        "content": [
+          "quickActionsButtons"
+        ]
+      },
+      {
+        "id": "quickActionsButtons",
+        "component": "Buttons",
+        "buttons": [
+          "refreshBtn",
+          "exportBtn"
+        ]
+      },
+      {
+        "id": "refreshBtn",
+        "component": "Button",
+        "label": "Refresh Data Now",
+        "variant": "primary"
+      },
+      {
+        "id": "exportBtn",
+        "component": "Button",
+        "label": "Export Manifest (CSV)",
+        "variant": "secondary"
+      },
+      {
+        "id": "searchSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "searchTitle",
+          "searchForm"
+        ]
+      },
+      {
+        "id": "searchTitle",
+        "component": "Heading",
+        "level": "h4",
+        "text": "Filter & Search Route"
+      },
+      {
+        "id": "searchForm",
+        "component": "Form",
+        "name": "route-search",
+        "buttons": "searchButtons",
+        "fields": [
+          "routeInputControl",
+          "carrierSelectControl"
+        ]
+      },
+      {
+        "id": "routeInputControl",
+        "component": "FormControl",
+        "label": "Search by Route (Origin / Destination / ID)",
+        "input": "routeInput",
+        "hint": "e.g., 'Chicago', 'LAX', or 'SH-8902'"
+      },
+      {
+        "id": "routeInput",
+        "component": "Input",
+        "name": "route_query",
+        "placeholder": "Enter origin, destination, or tracking ID..."
+      },
+      {
+        "id": "carrierSelectControl",
+        "component": "FormControl",
+        "label": "Filter by Carrier",
+        "input": "carrierSelect"
+      },
+      {
+        "id": "carrierSelect",
+        "component": "Select",
+        "name": "carrier_filter",
+        "placeholder": "All Carriers",
+        "items": [
+          "optAll",
+          "optFedEx",
+          "optDHL",
+          "optUPS",
+          "optMaersk"
+        ]
+      },
+      {
+        "id": "optAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All Carriers"
+      },
+      {
+        "id": "optFedEx",
+        "component": "SelectItem",
+        "value": "fedex",
+        "label": "FedEx Freight"
+      },
+      {
+        "id": "optDHL",
+        "component": "SelectItem",
+        "value": "dhl",
+        "label": "DHL Global"
+      },
+      {
+        "id": "optUPS",
+        "component": "SelectItem",
+        "value": "ups",
+        "label": "UPS Supply Chain"
+      },
+      {
+        "id": "optMaersk",
+        "component": "SelectItem",
+        "value": "maersk",
+        "label": "Maersk Logistics"
+      },
+      {
+        "id": "searchButtons",
+        "component": "Buttons",
+        "buttons": [
+          "applySearchBtn"
+        ]
+      },
+      {
+        "id": "applySearchBtn",
+        "component": "Button",
+        "label": "Apply Filter",
+        "variant": "secondary"
+      },
+      {
+        "id": "delayAlert",
+        "component": "Alert",
+        "variant": "warning",
+        "title": "Delayed Shipments Attention Required (3 Active Exceptions)",
+        "description": "Shipment #SH-8904 (Chicago -> Dallas) is delayed by 18h due to weather. SH-8907 and SH-8910 have border clearance holds."
+      },
+      {
+        "id": "shipmentsSection",
+        "component": "Card",
+        "children": [
+          "shipmentsHeading",
+          "shipmentsTable"
+        ]
+      },
+      {
+        "id": "shipmentsHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "Active Shipments in Transit"
+      },
+      {
+        "id": "shipmentsTable",
+        "component": "Table",
+        "columns": [
+          "colId",
+          "colOrigin",
+          "colDest",
+          "colEta",
+          "colCarrier",
+          "colStatus",
+          "colAction"
+        ]
+      },
+      {
+        "id": "colId",
+        "component": "Col",
+        "label": "Shipment ID",
+        "data": [
+          "SH-8901",
+          "SH-8904",
+          "SH-8905",
+          "SH-8907",
+          "SH-8910"
+        ]
+      },
+      {
+        "id": "colOrigin",
+        "component": "Col",
+        "label": "Origin",
+        "data": [
+          "Seattle, WA",
+          "Chicago, IL",
+          "Atlanta, GA",
+          "Los Angeles, CA",
+          "Miami, FL"
+        ]
+      },
+      {
+        "id": "colDest",
+        "component": "Col",
+        "label": "Destination",
+        "data": [
+          "New York, NY",
+          "Dallas, TX",
+          "Boston, MA",
+          "Denver, CO",
+          "Houston, TX"
+        ]
+      },
+      {
+        "id": "colEta",
+        "component": "Col",
+        "label": "ETA",
+        "data": [
+          "Today, 18:00",
+          "Tomorrow, 10:30 (Delayed)",
+          "Oct 26, 14:00",
+          "Oct 27, 09:00 (Delayed)",
+          "Oct 28, 11:30 (Delayed)"
+        ]
+      },
+      {
+        "id": "colCarrier",
+        "component": "Col",
+        "label": "Carrier",
+        "data": [
+          "FedEx Freight",
+          "UPS Supply",
+          "DHL Global",
+          "Maersk",
+          "FedEx Freight"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "On Schedule",
+          "DELAYED - Weather",
+          "On Schedule",
+          "DELAYED - Customs",
+          "DELAYED - Mechanical"
+        ]
+      },
+      {
+        "id": "colAction",
+        "component": "Col",
+        "label": "Flag Shipment",
+        "type": "action",
+        "data": [
+          "Flag Issue",
+          "Flagged (High)",
+          "Flag Issue",
+          "Flagged (High)",
+          "Flagged (Medium)"
+        ]
+      },
+      {
+        "id": "volumeChartSection",
+        "component": "Card",
+        "children": [
+          "volumeHeading",
+          "volumeChart"
+        ]
+      },
+      {
+        "id": "volumeHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "Weekly Volume (Past 8 Weeks / 2 Months)"
+      },
+      {
+        "id": "volumeChart",
+        "component": "BarChart",
+        "xLabel": "Week",
+        "yLabel": "Total Units Shipped",
+        "labels": [
+          "W1 (Sep)",
+          "W2 (Sep)",
+          "W3 (Sep)",
+          "W4 (Sep)",
+          "W5 (Oct)",
+          "W6 (Oct)",
+          "W7 (Oct)",
+          "W8 (Oct)"
+        ],
+        "series": [
+          "volumeSeries"
+        ]
+      },
+      {
+        "id": "volumeSeries",
+        "component": "Series",
+        "category": "Shipment Volume",
+        "values": [
+          320,
+          350,
+          310,
+          380,
+          410,
+          395,
+          430,
+          460
+        ]
+      },
+      {
+        "id": "carrierBreakdownSection",
+        "component": "Card",
+        "children": [
+          "carrierHeading",
+          "carrierChart"
+        ]
+      },
+      {
+        "id": "carrierHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "Volume Split by Carrier (%)"
+      },
+      {
+        "id": "carrierChart",
+        "component": "PieChart",
+        "variant": "donut",
+        "labels": [
+          "FedEx Freight",
+          "DHL Global",
+          "UPS Supply Chain",
+          "Maersk Logistics",
+          "Others"
+        ],
+        "values": [
+          38,
+          27,
+          20,
+          10,
+          5
+        ]
+      }
+    ]
+  }
+}
+</a2ui-json>

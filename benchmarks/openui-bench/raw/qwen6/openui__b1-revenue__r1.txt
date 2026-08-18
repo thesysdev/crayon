@@ -1,0 +1,16 @@
+
+
+root = Card([header, status, kpiTable, comparisonAlert, hourlyTrend, followups])
+header = CardHeader("Today's Revenue", "Mid-morning check — revenue so far today vs. same time yesterday")
+status = Tag("Live store snapshot", null, null, "info")
+kpiTable = Table([metricCol, valueCol])
+metricCol = Col("Metric", ["Revenue so far today", "Same time yesterday", "Difference"])
+valueCol = Col("Value", ["$1,842", "$1,576", "+$266 (+16.9%)"])
+comparisonAlert = Alert("Ahead of yesterday", "Revenue is 16.9% higher than at the same time yesterday.", "success")
+hourlyTrend = LineChart(timeLabels, [todaySeries, yesterdaySeries], "natural", "Time", "Cumulative revenue")
+timeLabels = ["8 AM", "9 AM", "10 AM", "11 AM", "11:30 AM"]
+todaySeries = Series("Today", [210, 560, 1020, 1580, 1842])
+yesterdaySeries = Series("Yesterday", [190, 520, 940, 1410, 1576])
+followups = FollowUpBlock([askDrivers, askForecast])
+askDrivers = FollowUpItem("What drove the higher revenue this morning?")
+askForecast = FollowUpItem("Forecast total revenue for today")

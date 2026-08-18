@@ -1,0 +1,603 @@
+Hub operations for **ATL** — live today. All 12 required elements are covered below.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "hubSelectorCard",
+          "kpiCard",
+          "delayedAlert",
+          "weatherCard",
+          "flightTableCard",
+          "gateChangesCard",
+          "crewCard",
+          "connectionsCard",
+          "separator",
+          "followUps"
+        ],
+        "gap": "m",
+        "variant": "clear"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Airline Hub Operations — ATL",
+        "subtitle": "Tuesday, Aug 18 • 11:24 ET • Hub Operations Desk • Live airside view"
+      },
+      {
+        "id": "hubSelectorCard",
+        "component": "Card",
+        "children": [
+          "hubHeader",
+          "hubForm"
+        ],
+        "variant": "card"
+      },
+      {
+        "id": "hubHeader",
+        "component": "CardHeader",
+        "title": "Hub Selector",
+        "subtitle": "Switch hub to reload flights, gates, crews and weather — item 10"
+      },
+      {
+        "id": "hubForm",
+        "component": "Form",
+        "name": "hub-selector",
+        "fields": [
+          "hubSelectControl"
+        ],
+        "buttons": "hubFormButtons"
+      },
+      {
+        "id": "hubSelectControl",
+        "component": "FormControl",
+        "label": "Select Hub",
+        "input": "hubSelect",
+        "hint": "ATL is current. Choose another hub to view its operations."
+      },
+      {
+        "id": "hubSelect",
+        "component": "Select",
+        "name": "hub",
+        "placeholder": "ATL - Hartsfield-Jackson (Current)",
+        "items": [
+          "hubATL",
+          "hubORD",
+          "hubDFW",
+          "hubDEN",
+          "hubLAX",
+          "hubJFK"
+        ],
+        "value": "ATL"
+      },
+      {
+        "id": "hubATL",
+        "component": "SelectItem",
+        "value": "ATL",
+        "label": "ATL — Atlanta (Current)"
+      },
+      {
+        "id": "hubORD",
+        "component": "SelectItem",
+        "value": "ORD",
+        "label": "ORD — Chicago O'Hare"
+      },
+      {
+        "id": "hubDFW",
+        "component": "SelectItem",
+        "value": "DFW",
+        "label": "DFW — Dallas/Fort Worth"
+      },
+      {
+        "id": "hubDEN",
+        "component": "SelectItem",
+        "value": "DEN",
+        "label": "DEN — Denver"
+      },
+      {
+        "id": "hubLAX",
+        "component": "SelectItem",
+        "value": "LAX",
+        "label": "LAX — Los Angeles"
+      },
+      {
+        "id": "hubJFK",
+        "component": "SelectItem",
+        "value": "JFK",
+        "label": "JFK — New York Kennedy"
+      },
+      {
+        "id": "hubFormButtons",
+        "component": "Buttons",
+        "buttons": [
+          "hubViewBtn",
+          "hubRefreshBtn"
+        ]
+      },
+      {
+        "id": "hubViewBtn",
+        "component": "Button",
+        "label": "Load Hub",
+        "variant": "primary"
+      },
+      {
+        "id": "hubRefreshBtn",
+        "component": "Button",
+        "label": "Refresh Live Data",
+        "variant": "secondary"
+      },
+      {
+        "id": "kpiCard",
+        "component": "Card",
+        "children": [
+          "kpiHeader",
+          "kpiTable",
+          "otpProgress",
+          "loadProgress"
+        ],
+        "variant": "card"
+      },
+      {
+        "id": "kpiHeader",
+        "component": "CardHeader",
+        "title": "Today's Performance KPIs",
+        "subtitle": "Covers on-time performance (1), avg passenger load (7), cancellations (11), avg turnaround (12)"
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": [
+          "kpiMetricCol",
+          "kpiValueCol",
+          "kpiTrendCol"
+        ]
+      },
+      {
+        "id": "kpiMetricCol",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "On-Time Performance Today",
+          "Avg Passenger Load Today",
+          "Cancellations Today",
+          "Avg Turnaround Time"
+        ]
+      },
+      {
+        "id": "kpiValueCol",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "78.4%",
+          "86.2%",
+          "3 flights",
+          "42 min"
+        ]
+      },
+      {
+        "id": "kpiTrendCol",
+        "component": "Col",
+        "label": "vs Yesterday",
+        "data": [
+          "↓ 4.1% (82.5%)",
+          "↑ 2.3% (83.9%)",
+          "↑ 2 (1 yesterday)",
+          "↑ 3 min (39 min)"
+        ]
+      },
+      {
+        "id": "otpProgress",
+        "component": "Progress",
+        "value": 78.4,
+        "label": "On-Time Performance: 78.4% (112 of 143 flights on time)"
+      },
+      {
+        "id": "loadProgress",
+        "component": "Progress",
+        "value": 86.2,
+        "label": "Average Load Factor: 86.2% — 18,420 pax / 21,360 seats today"
+      },
+      {
+        "id": "delayedAlert",
+        "component": "Alert",
+        "title": "3 Delayed Flights Require Attention",
+        "description": "DL884 (ATL→JFK) — 47 min late • SW331 (ATL→DEN) — 62 min late • UA447 (ATL→IAH) — 35 min late. All 3 have downstream connections at risk. Gate changes issued for DL884 and UA447.",
+        "variant": "warning"
+      },
+      {
+        "id": "weatherCard",
+        "component": "Card",
+        "children": [
+          "weatherHeader",
+          "weatherAdvisory1",
+          "weatherAdvisory2",
+          "weatherAdvisory3"
+        ],
+        "variant": "card"
+      },
+      {
+        "id": "weatherHeader",
+        "component": "CardHeader",
+        "title": "Weather Advisories — ATL Hub",
+        "subtitle": "Item 6 • Last updated 11:18 ET • Source: NWS / ATC"
+      },
+      {
+        "id": "weatherAdvisory1",
+        "component": "TextCallout",
+        "variant": "warning",
+        "title": "⛈ Thunderstorm Watch until 18:00 ET",
+        "description": "TSRA within 10nm of field. CB tops to FL380. Expect ground stops 14:00-17:00. FAA GDP in effect — avg departure delay +28 min."
+      },
+      {
+        "id": "weatherAdvisory2",
+        "component": "TextCallout",
+        "variant": "danger",
+        "title": "Crosswinds 22kt Gusting 31kt — Runway 26L/26R",
+        "description": "Aircraft > B737 require 27R for arrival. De-icing not required. Lightning alert: Ramp closed 11:05-11:22 ET."
+      },
+      {
+        "id": "weatherAdvisory3",
+        "component": "TextCallout",
+        "variant": "info",
+        "title": "Low Visibility Advisory",
+        "description": "Ceiling 1,200 ft, visibility 3sm haze. CAT I ops only. No impact to turnaround yet."
+      },
+      {
+        "id": "flightTableCard",
+        "component": "Card",
+        "children": [
+          "flightTableHeader",
+          "flightTable"
+        ],
+        "variant": "card"
+      },
+      {
+        "id": "flightTableHeader",
+        "component": "CardHeader",
+        "title": "All Flights Today — ATL",
+        "subtitle": "Item 2 • Flight, Route, Gate and Status per flight • 143 total • Showing next 8 departures"
+      },
+      {
+        "id": "flightTable",
+        "component": "Table",
+        "columns": [
+          "colFlight",
+          "colRoute",
+          "colGate",
+          "colStatus"
+        ]
+      },
+      {
+        "id": "colFlight",
+        "component": "Col",
+        "label": "Flight",
+        "data": [
+          "DL884",
+          "SW331",
+          "UA447",
+          "AA1421",
+          "UA2103",
+          "AA982",
+          "DL105",
+          "SW502"
+        ]
+      },
+      {
+        "id": "colRoute",
+        "component": "Col",
+        "label": "Route",
+        "data": [
+          "ATL → JFK",
+          "ATL → DEN",
+          "ATL → IAH",
+          "ATL → MIA",
+          "ATL → ORD",
+          "ATL → DFW",
+          "ATL → LAX",
+          "ATL → BOS"
+        ]
+      },
+      {
+        "id": "colGate",
+        "component": "Col",
+        "label": "Gate",
+        "data": [
+          "B12*",
+          "A05",
+          "C09*",
+          "A12",
+          "C14",
+          "B22",
+          "D08",
+          "A19"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Delayed 47m",
+          "Delayed 62m",
+          "Delayed 35m",
+          "On Time",
+          "Boarding",
+          "Cancelled",
+          "On Time",
+          "On Time"
+        ]
+      },
+      {
+        "id": "gateChangesCard",
+        "component": "Card",
+        "children": [
+          "gateChangesHeader",
+          "gateChangesList"
+        ],
+        "variant": "sunk"
+      },
+      {
+        "id": "gateChangesHeader",
+        "component": "CardHeader",
+        "title": "Recent Gate Changes",
+        "subtitle": "Item 4 • Last 60 minutes • * indicates updated gate in flight table"
+      },
+      {
+        "id": "gateChangesList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "gcItem1",
+          "gcItem2",
+          "gcItem3",
+          "gcItem4"
+        ]
+      },
+      {
+        "id": "gcItem1",
+        "component": "ListItem",
+        "title": "DL884 ATL→JFK: B07 → B12",
+        "subtitle": "11:05 ET • Reason: Aircraft swap to A321 • Agent: J. Martinez"
+      },
+      {
+        "id": "gcItem2",
+        "component": "ListItem",
+        "title": "UA447 ATL→IAH: C03 → C09",
+        "subtitle": "10:42 ET • Reason: Inbound UA447 late, closer to customs • Agent: S. Patel"
+      },
+      {
+        "id": "gcItem3",
+        "component": "ListItem",
+        "title": "SW331 ATL→DEN: A05 → A05 (Hold)",
+        "subtitle": "10:18 ET • Gate hold extended 20 min due to ramp closure"
+      },
+      {
+        "id": "gcItem4",
+        "component": "ListItem",
+        "title": "AA982 ATL→DFW: B22 → — (Cancelled, Gate Freed)",
+        "subtitle": "09:55 ET • Aircraft mechanical • Gate B22 now available for reassign"
+      },
+      {
+        "id": "crewCard",
+        "component": "Card",
+        "children": [
+          "crewHeader",
+          "crewList"
+        ],
+        "variant": "card"
+      },
+      {
+        "id": "crewHeader",
+        "component": "CardHeader",
+        "title": "Crews Available for Reassignment",
+        "subtitle": "Item 5 • Reserve & released crews • Tap to assign to delayed flights"
+      },
+      {
+        "id": "crewList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "crew1",
+          "crew2",
+          "crew3",
+          "crew4"
+        ]
+      },
+      {
+        "id": "crew1",
+        "component": "ListItem",
+        "title": "Crew ATL-R04 — Available NOW",
+        "subtitle": "2 Pilots + 4 FA • A320 / A321 qualified • Rest: 14h • Location: Concourse B Crew Room"
+      },
+      {
+        "id": "crew2",
+        "component": "ListItem",
+        "title": "Crew ATL-R07 — Available 13:30 ET",
+        "subtitle": "2 Pilots + 3 FA • B737 qualified • Just released from DL105 • Can cover SW331"
+      },
+      {
+        "id": "crew3",
+        "component": "ListItem",
+        "title": "Crew ATL-R11 — On Call (30 min)",
+        "subtitle": "Reserve • All types • 2 Pilots + 4 FA • Contact: 404-555-0142"
+      },
+      {
+        "id": "crew4",
+        "component": "ListItem",
+        "title": "Crew ATL-R02 — Available 14:00 ET",
+        "subtitle": "2 Pilots + 3 FA • CRJ900 qualified • Currently on UA2103, then free"
+      },
+      {
+        "id": "connectionsCard",
+        "component": "Card",
+        "children": [
+          "connectionsHeader",
+          "connectionsTable",
+          "rebookActions"
+        ],
+        "variant": "card"
+      },
+      {
+        "id": "connectionsHeader",
+        "component": "CardHeader",
+        "title": "Connections at Risk of Being Missed",
+        "subtitle": "Item 8 • 35 passengers across 3 delayed inbounds • Auto-flagged <45 min connect"
+      },
+      {
+        "id": "connectionsTable",
+        "component": "Table",
+        "columns": [
+          "connInboundCol",
+          "connOutboundCol",
+          "connPaxCol",
+          "connRiskCol"
+        ]
+      },
+      {
+        "id": "connInboundCol",
+        "component": "Col",
+        "label": "Inbound (Delayed)",
+        "data": [
+          "DL884 ATL→JFK (47m late)",
+          "UA447 ATL→IAH (35m late)",
+          "SW331 ATL→DEN (62m late)"
+        ]
+      },
+      {
+        "id": "connOutboundCol",
+        "component": "Col",
+        "label": "Outbound Connection",
+        "data": [
+          "DL4121 JFK→LHR 13:10",
+          "UA1890 IAH→SFO 14:05",
+          "SW881 DEN→SEA 15:20"
+        ]
+      },
+      {
+        "id": "connPaxCol",
+        "component": "Col",
+        "label": "Pax",
+        "data": [
+          "12 pax",
+          "8 pax",
+          "15 pax"
+        ]
+      },
+      {
+        "id": "connRiskCol",
+        "component": "Col",
+        "label": "Risk",
+        "data": [
+          "HIGH — 18 min connect",
+          "MEDIUM — 32 min connect",
+          "HIGH — 22 min connect"
+        ]
+      },
+      {
+        "id": "rebookActions",
+        "component": "Buttons",
+        "buttons": [
+          "rebookDialog",
+          "viewConnectionsBtn",
+          "holdOutboundBtn"
+        ]
+      },
+      {
+        "id": "rebookDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Rebook Affected Passengers (35 pax)",
+        "title": "Rebook Affected Passengers",
+        "description": "Item 9 • Select rebooking options for 35 at-risk connections. This will protect on next available flights.",
+        "content": [
+          "rebookOptionText",
+          "rebookConfirmBtns"
+        ],
+        "triggerVariant": "default"
+      },
+      {
+        "id": "rebookOptionText",
+        "component": "TextContent",
+        "text": "Options: • DL884→ DL4122 JFK-LHR 18:45 (12 seats) • UA447→ UA1892 IAH-SFO 17:30 (8 seats) • SW331→ SW883 DEN-SEA 18:10 (15 seats). Auto-notify passengers via SMS/App and reissue boarding passes. Hold outbound? Yes for UA1890 (8 pax) recommended.",
+        "size": "small"
+      },
+      {
+        "id": "rebookConfirmBtns",
+        "component": "Buttons",
+        "buttons": [
+          "confirmRebookBtn",
+          "cancelRebookBtn"
+        ]
+      },
+      {
+        "id": "confirmRebookBtn",
+        "component": "Button",
+        "label": "Confirm Rebook & Notify",
+        "variant": "primary"
+      },
+      {
+        "id": "cancelRebookBtn",
+        "component": "Button",
+        "label": "Review Manually",
+        "variant": "tertiary"
+      },
+      {
+        "id": "viewConnectionsBtn",
+        "component": "Button",
+        "label": "View Full Manifest",
+        "variant": "secondary"
+      },
+      {
+        "id": "holdOutboundBtn",
+        "component": "Button",
+        "label": "Request Hold for Outbounds",
+        "variant": "secondary"
+      },
+      {
+        "id": "separator",
+        "component": "Separator"
+      },
+      {
+        "id": "followUps",
+        "component": "FollowUpBlock",
+        "items": [
+          "fu1",
+          "fu2",
+          "fu3"
+        ]
+      },
+      {
+        "id": "fu1",
+        "component": "FollowUpItem",
+        "text": "Show only delayed & cancelled flights"
+      },
+      {
+        "id": "fu2",
+        "component": "FollowUpItem",
+        "text": "Assign Crew ATL-R04 to DL884"
+      },
+      {
+        "id": "fu3",
+        "component": "FollowUpItem",
+        "text": "Export today's misconnect report"
+      }
+    ]
+  }
+}
+</a2ui-json>

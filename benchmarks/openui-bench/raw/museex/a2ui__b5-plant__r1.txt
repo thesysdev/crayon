@@ -1,0 +1,1052 @@
+Factory floor console covering all 17 items — live OEE, production, lines, quality and maintenance in one view.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "andonCard",
+          "kpiRow",
+          "lineFocusCard",
+          "lineTableCard",
+          "defectDowntimeRow",
+          "maintInventoryRow",
+          "deliveriesShiftsRow",
+          "safetyHoldsRow",
+          "energyCard",
+          "workOrdersCard",
+          "scheduleCard",
+          "exportCard"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Factory Floor Supervisor Console",
+        "subtitle": "Plant 1 • Live • 18 Aug 2026 14:32 UTC • Shift B"
+      },
+      {
+        "id": "andonCard",
+        "component": "Card",
+        "children": [
+          "andonHeader",
+          "andonAlert1",
+          "andonAlert2",
+          "andonAlert3"
+        ],
+        "variant": "card"
+      },
+      {
+        "id": "andonHeader",
+        "component": "CardHeader",
+        "title": "Live Andon Alerts",
+        "subtitle": "16 • Real-time — auto-refresh 10s • 3 active"
+      },
+      {
+        "id": "andonAlert1",
+        "component": "Alert",
+        "title": "LINE 3 STOP — Station 4",
+        "description": "Andon pulled 14:28 by J. Reyes — Torque fault on fastener gun (NG-04). Line stopped.",
+        "variant": "destructive"
+      },
+      {
+        "id": "andonAlert2",
+        "component": "Alert",
+        "title": "LINE 1 — Material Starvation",
+        "description": "Resin hopper <15% — Auto-feed paused 14:30. Refill ETA 14:45. Rate limited to 60%.",
+        "variant": "warning"
+      },
+      {
+        "id": "andonAlert3",
+        "component": "Alert",
+        "title": "LINE 2 — Quality Alert",
+        "description": "Vision system flagged 3 consecutive defects. Line auto-slowed to 80% for inspection.",
+        "variant": "info"
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "children": [
+          "oeeCard",
+          "prodCard"
+        ],
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m"
+      },
+      {
+        "id": "oeeCard",
+        "component": "Card",
+        "children": [
+          "oeeHeader",
+          "oeeProgress",
+          "oeeText",
+          "oeeTable"
+        ],
+        "variant": "sunk"
+      },
+      {
+        "id": "oeeHeader",
+        "component": "CardHeader",
+        "title": "Overall Equipment Effectiveness",
+        "subtitle": "1 • OEE = Availability × Performance × Quality"
+      },
+      {
+        "id": "oeeProgress",
+        "component": "Progress",
+        "value": 84.2,
+        "label": "84.2% OEE (Target 85%)"
+      },
+      {
+        "id": "oeeText",
+        "component": "TextContent",
+        "text": "Availability 92.1% • Performance 94.5% • Quality 96.8% — 0.8% below target, +1.4% vs yesterday",
+        "size": "small"
+      },
+      {
+        "id": "oeeTable",
+        "component": "Table",
+        "columns": [
+          "colOeeMetric",
+          "colOeeValue"
+        ]
+      },
+      {
+        "id": "colOeeMetric",
+        "component": "Col",
+        "label": "Factor",
+        "data": [
+          "Availability",
+          "Performance",
+          "Quality"
+        ]
+      },
+      {
+        "id": "colOeeValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "92.1%",
+          "94.5%",
+          "96.8%"
+        ]
+      },
+      {
+        "id": "prodCard",
+        "component": "Card",
+        "children": [
+          "prodHeader",
+          "prodProgress",
+          "prodText",
+          "prodChart"
+        ],
+        "variant": "sunk"
+      },
+      {
+        "id": "prodHeader",
+        "component": "CardHeader",
+        "title": "Units Produced vs Today's Target",
+        "subtitle": "2 • Plan 8,000 units"
+      },
+      {
+        "id": "prodProgress",
+        "component": "Progress",
+        "value": 85.25,
+        "label": "6,820 / 8,000 units (85.3%)"
+      },
+      {
+        "id": "prodText",
+        "component": "TextContent",
+        "text": "Remaining: 1,180 • Pace: +2.4% ahead • Projected EOD: 8,192 • Takt 18.5s",
+        "size": "small"
+      },
+      {
+        "id": "prodChart",
+        "component": "SingleStackedBarChart",
+        "labels": [
+          "Produced",
+          "Remaining"
+        ],
+        "values": [
+          6820,
+          1180
+        ]
+      },
+      {
+        "id": "lineFocusCard",
+        "component": "Card",
+        "children": [
+          "lineFocusHeader",
+          "lineFocusControl"
+        ],
+        "variant": "clear"
+      },
+      {
+        "id": "lineFocusHeader",
+        "component": "CardHeader",
+        "title": "Focus on One Line",
+        "subtitle": "15 • Filter line table, defects and energy views"
+      },
+      {
+        "id": "lineFocusControl",
+        "component": "FormControl",
+        "label": "Select line to focus",
+        "input": "lineFocusSelect",
+        "hint": "Choose a line to highlight its metrics across the console"
+      },
+      {
+        "id": "lineFocusSelect",
+        "component": "Select",
+        "name": "focus_line",
+        "items": [
+          "liAll",
+          "li1",
+          "li2",
+          "li3",
+          "li4"
+        ],
+        "placeholder": "All lines (overview)"
+      },
+      {
+        "id": "liAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All lines"
+      },
+      {
+        "id": "li1",
+        "component": "SelectItem",
+        "value": "line1",
+        "label": "Line 1 - Chassis"
+      },
+      {
+        "id": "li2",
+        "component": "SelectItem",
+        "value": "line2",
+        "label": "Line 2 - Assembly"
+      },
+      {
+        "id": "li3",
+        "component": "SelectItem",
+        "value": "line3",
+        "label": "Line 3 - Paint"
+      },
+      {
+        "id": "li4",
+        "component": "SelectItem",
+        "value": "line4",
+        "label": "Line 4 - Pack"
+      },
+      {
+        "id": "lineTableCard",
+        "component": "Card",
+        "children": [
+          "lineTableHeader",
+          "lineTable"
+        ]
+      },
+      {
+        "id": "lineTableHeader",
+        "component": "CardHeader",
+        "title": "Production Lines — Rate & Status",
+        "subtitle": "3 • 4 lines • Live rates"
+      },
+      {
+        "id": "lineTable",
+        "component": "Table",
+        "columns": [
+          "colLine",
+          "colRate",
+          "colStatus",
+          "colOeeLine"
+        ]
+      },
+      {
+        "id": "colLine",
+        "component": "Col",
+        "label": "Line",
+        "data": [
+          "Line 1 - Chassis",
+          "Line 2 - Assembly",
+          "Line 3 - Paint",
+          "Line 4 - Pack"
+        ]
+      },
+      {
+        "id": "colRate",
+        "component": "Col",
+        "label": "Rate (u/hr)",
+        "data": [
+          "186",
+          "142",
+          "98",
+          "210"
+        ],
+        "type": "number"
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Running",
+          "Running (Degraded)",
+          "STOPPED",
+          "Running"
+        ]
+      },
+      {
+        "id": "colOeeLine",
+        "component": "Col",
+        "label": "Line OEE",
+        "data": [
+          "88%",
+          "81%",
+          "—",
+          "90%"
+        ]
+      },
+      {
+        "id": "defectDowntimeRow",
+        "component": "Card",
+        "children": [
+          "defectCard",
+          "downtimeCard"
+        ],
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m"
+      },
+      {
+        "id": "defectCard",
+        "component": "Card",
+        "children": [
+          "defectHeader",
+          "defectChart"
+        ]
+      },
+      {
+        "id": "defectHeader",
+        "component": "CardHeader",
+        "title": "Defect Rate — Past Month",
+        "subtitle": "4 • % defective per week"
+      },
+      {
+        "id": "defectChart",
+        "component": "LineChart",
+        "labels": [
+          "Wk 1",
+          "Wk 2",
+          "Wk 3",
+          "Wk 4"
+        ],
+        "series": [
+          "defectSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Week",
+        "yLabel": "Defect %"
+      },
+      {
+        "id": "defectSeries",
+        "component": "Series",
+        "category": "Defect %",
+        "values": [
+          2.8,
+          2.4,
+          1.9,
+          1.6
+        ]
+      },
+      {
+        "id": "downtimeCard",
+        "component": "Card",
+        "children": [
+          "downtimeHeader",
+          "downtimeChart"
+        ]
+      },
+      {
+        "id": "downtimeHeader",
+        "component": "CardHeader",
+        "title": "Downtime Split by Cause",
+        "subtitle": "5 • Last 7 days — 51.2 hrs total"
+      },
+      {
+        "id": "downtimeChart",
+        "component": "PieChart",
+        "labels": [
+          "Mechanical",
+          "Changeover",
+          "Material Shortage",
+          "Electrical",
+          "Quality Hold"
+        ],
+        "values": [
+          18.5,
+          12,
+          9,
+          7.5,
+          4.2
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "maintInventoryRow",
+        "component": "Card",
+        "children": [
+          "maintenanceCard",
+          "inventoryCard"
+        ],
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m"
+      },
+      {
+        "id": "maintenanceCard",
+        "component": "Card",
+        "children": [
+          "maintenanceHeader",
+          "maintenanceTable"
+        ]
+      },
+      {
+        "id": "maintenanceHeader",
+        "component": "CardHeader",
+        "title": "Machines Due for Maintenance",
+        "subtitle": "6 • Next 7 days"
+      },
+      {
+        "id": "maintenanceTable",
+        "component": "Table",
+        "columns": [
+          "colMaintMachine",
+          "colMaintDue",
+          "colMaintHours"
+        ]
+      },
+      {
+        "id": "colMaintMachine",
+        "component": "Col",
+        "label": "Machine",
+        "data": [
+          "CNC-07",
+          "Press-12",
+          "Robot WR-4",
+          "Conveyor B2"
+        ]
+      },
+      {
+        "id": "colMaintDue",
+        "component": "Col",
+        "label": "Due",
+        "data": [
+          "Tomorrow",
+          "In 2 days",
+          "In 3 days",
+          "In 5 days"
+        ]
+      },
+      {
+        "id": "colMaintHours",
+        "component": "Col",
+        "label": "Hrs Since Service",
+        "data": [
+          "482",
+          "610",
+          "395",
+          "520"
+        ],
+        "type": "number"
+      },
+      {
+        "id": "inventoryCard",
+        "component": "Card",
+        "children": [
+          "inventoryHeader",
+          "inventoryChart",
+          "inventoryText"
+        ]
+      },
+      {
+        "id": "inventoryHeader",
+        "component": "CardHeader",
+        "title": "Raw Material Stock",
+        "subtitle": "7 • Steel, Resin & Packaging"
+      },
+      {
+        "id": "inventoryChart",
+        "component": "BarChart",
+        "labels": [
+          "Steel (t)",
+          "Resin (kg)",
+          "Packaging (units)"
+        ],
+        "series": [
+          "stockSeries",
+          "reorderSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Material",
+        "yLabel": "Qty"
+      },
+      {
+        "id": "stockSeries",
+        "component": "Series",
+        "category": "Current",
+        "values": [
+          42,
+          1850,
+          12400
+        ]
+      },
+      {
+        "id": "reorderSeries",
+        "component": "Series",
+        "category": "Reorder Point",
+        "values": [
+          20,
+          1000,
+          8000
+        ]
+      },
+      {
+        "id": "inventoryText",
+        "component": "TextContent",
+        "text": "Steel 42t (52% cap) • Resin 1,850kg (38% — reorder soon) • Packaging 12,400 (62%)",
+        "size": "small"
+      },
+      {
+        "id": "deliveriesShiftsRow",
+        "component": "Card",
+        "children": [
+          "deliveriesCard",
+          "shiftsCard"
+        ],
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m"
+      },
+      {
+        "id": "deliveriesCard",
+        "component": "Card",
+        "children": [
+          "deliveriesHeader",
+          "deliveriesTable"
+        ]
+      },
+      {
+        "id": "deliveriesHeader",
+        "component": "CardHeader",
+        "title": "Supplier Deliveries Due This Week",
+        "subtitle": "8 • 5 inbound"
+      },
+      {
+        "id": "deliveriesTable",
+        "component": "Table",
+        "columns": [
+          "colDelSupplier",
+          "colDelMaterial",
+          "colDelEta",
+          "colDelQty"
+        ]
+      },
+      {
+        "id": "colDelSupplier",
+        "component": "Col",
+        "label": "Supplier",
+        "data": [
+          "Arcelor Steel",
+          "PolyChem",
+          "BoxCo",
+          "Arcelor Steel",
+          "Fasteners Inc"
+        ]
+      },
+      {
+        "id": "colDelMaterial",
+        "component": "Col",
+        "label": "Material",
+        "data": [
+          "Steel Coil",
+          "Resin Pellets",
+          "Cartons",
+          "Sheet Steel",
+          "Bolts M8"
+        ]
+      },
+      {
+        "id": "colDelEta",
+        "component": "Col",
+        "label": "ETA",
+        "data": [
+          "Tue 08:00",
+          "Wed 14:00",
+          "Thu 09:30",
+          "Fri 11:00",
+          "Fri 16:00"
+        ]
+      },
+      {
+        "id": "colDelQty",
+        "component": "Col",
+        "label": "Qty",
+        "data": [
+          "20t",
+          "2,000kg",
+          "5,000",
+          "10t",
+          "12k pcs"
+        ]
+      },
+      {
+        "id": "shiftsCard",
+        "component": "Card",
+        "children": [
+          "shiftsHeader",
+          "shiftsChart"
+        ]
+      },
+      {
+        "id": "shiftsHeader",
+        "component": "CardHeader",
+        "title": "Shift Output Compared",
+        "subtitle": "9 • Last 24h — 3 shifts"
+      },
+      {
+        "id": "shiftsChart",
+        "component": "BarChart",
+        "labels": [
+          "Shift A 06-14",
+          "Shift B 14-22",
+          "Shift C 22-06"
+        ],
+        "series": [
+          "shiftSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Shift",
+        "yLabel": "Units"
+      },
+      {
+        "id": "shiftSeries",
+        "component": "Series",
+        "category": "Units",
+        "values": [
+          2680,
+          2450,
+          1690
+        ]
+      },
+      {
+        "id": "safetyHoldsRow",
+        "component": "Card",
+        "children": [
+          "safetyCard",
+          "holdsCard"
+        ],
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m"
+      },
+      {
+        "id": "safetyCard",
+        "component": "Card",
+        "children": [
+          "safetyHeader",
+          "safetyBadge",
+          "safetyText",
+          "safetyProgress"
+        ],
+        "variant": "sunk"
+      },
+      {
+        "id": "safetyHeader",
+        "component": "CardHeader",
+        "title": "Safety — Year to Date",
+        "subtitle": "10 • Incidents & days since last"
+      },
+      {
+        "id": "safetyBadge",
+        "component": "Badge",
+        "text": "42 days since last incident",
+        "variant": "secondary"
+      },
+      {
+        "id": "safetyText",
+        "component": "TextContent",
+        "text": "Incidents YTD: 3 (Target <5) • Lost-time: 1 • Near misses: 7 • Last: 07-Jul-2026 Hand injury Line 2",
+        "size": "small"
+      },
+      {
+        "id": "safetyProgress",
+        "component": "Progress",
+        "value": 60,
+        "label": "3 of 5 allowed incidents"
+      },
+      {
+        "id": "holdsCard",
+        "component": "Card",
+        "children": [
+          "holdsHeader",
+          "holdsTable"
+        ]
+      },
+      {
+        "id": "holdsHeader",
+        "component": "CardHeader",
+        "title": "Batches on Quality Hold",
+        "subtitle": "11 • 3 batches quarantined"
+      },
+      {
+        "id": "holdsTable",
+        "component": "Table",
+        "columns": [
+          "colHoldBatch",
+          "colHoldLine",
+          "colHoldReason",
+          "colHoldSince"
+        ]
+      },
+      {
+        "id": "colHoldBatch",
+        "component": "Col",
+        "label": "Batch",
+        "data": [
+          "B-8841",
+          "B-8847",
+          "B-8850"
+        ]
+      },
+      {
+        "id": "colHoldLine",
+        "component": "Col",
+        "label": "Line",
+        "data": [
+          "Line 2",
+          "Line 3",
+          "Line 1"
+        ]
+      },
+      {
+        "id": "colHoldReason",
+        "component": "Col",
+        "label": "Reason",
+        "data": [
+          "Torque variance",
+          "Paint blemish",
+          "Weight out of spec"
+        ]
+      },
+      {
+        "id": "colHoldSince",
+        "component": "Col",
+        "label": "Hold Since",
+        "data": [
+          "17 Aug 09:15",
+          "18 Aug 06:40",
+          "18 Aug 11:20"
+        ]
+      },
+      {
+        "id": "energyCard",
+        "component": "Card",
+        "children": [
+          "energyHeader",
+          "energyText",
+          "energyChart"
+        ]
+      },
+      {
+        "id": "energyHeader",
+        "component": "CardHeader",
+        "title": "Energy Use Today",
+        "subtitle": "12 • Total 2,840 kWh"
+      },
+      {
+        "id": "energyText",
+        "component": "TextContent",
+        "text": "Peak 14:00 (420 kWh) • Avg 236 kWh/hr • vs Yesterday +6% • Est. cost $341",
+        "size": "small"
+      },
+      {
+        "id": "energyChart",
+        "component": "AreaChart",
+        "labels": [
+          "06:00",
+          "08:00",
+          "10:00",
+          "12:00",
+          "14:00",
+          "16:00"
+        ],
+        "series": [
+          "energySeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Hour",
+        "yLabel": "kWh"
+      },
+      {
+        "id": "energySeries",
+        "component": "Series",
+        "category": "kWh",
+        "values": [
+          180,
+          310,
+          380,
+          410,
+          420,
+          390
+        ]
+      },
+      {
+        "id": "workOrdersCard",
+        "component": "Card",
+        "children": [
+          "workOrdersHeader",
+          "workOrdersTable"
+        ]
+      },
+      {
+        "id": "workOrdersHeader",
+        "component": "CardHeader",
+        "title": "Open Work Orders",
+        "subtitle": "13 • Priority flagged"
+      },
+      {
+        "id": "workOrdersTable",
+        "component": "Table",
+        "columns": [
+          "colWoId",
+          "colWoMachine",
+          "colWoIssue",
+          "colWoPriority"
+        ]
+      },
+      {
+        "id": "colWoId",
+        "component": "Col",
+        "label": "WO",
+        "data": [
+          "WO-1042",
+          "WO-1045",
+          "WO-1048",
+          "WO-1051"
+        ]
+      },
+      {
+        "id": "colWoMachine",
+        "component": "Col",
+        "label": "Machine",
+        "data": [
+          "Press-12",
+          "CNC-07",
+          "Robot WR-4",
+          "Line 3 Station 4"
+        ]
+      },
+      {
+        "id": "colWoIssue",
+        "component": "Col",
+        "label": "Issue",
+        "data": [
+          "Hydraulic leak",
+          "Tool wear",
+          "Calibration drift",
+          "Torque gun fault"
+        ]
+      },
+      {
+        "id": "colWoPriority",
+        "component": "Col",
+        "label": "Priority",
+        "data": [
+          "High",
+          "Medium",
+          "Medium",
+          "Critical"
+        ]
+      },
+      {
+        "id": "scheduleCard",
+        "component": "Card",
+        "children": [
+          "scheduleHeader",
+          "scheduleForm"
+        ]
+      },
+      {
+        "id": "scheduleHeader",
+        "component": "CardHeader",
+        "title": "Schedule Maintenance",
+        "subtitle": "14 • Create work order with machine & date"
+      },
+      {
+        "id": "scheduleForm",
+        "component": "Form",
+        "name": "schedule-maintenance",
+        "fields": [
+          "fcMachine",
+          "fcDate",
+          "fcNotes"
+        ],
+        "buttons": "scheduleButtons"
+      },
+      {
+        "id": "fcMachine",
+        "component": "FormControl",
+        "label": "Machine",
+        "input": "schedMachineSelect"
+      },
+      {
+        "id": "schedMachineSelect",
+        "component": "Select",
+        "name": "machine",
+        "items": [
+          "smCNC07",
+          "smPress12",
+          "smRobot",
+          "smConv",
+          "smLine3"
+        ],
+        "placeholder": "Choose machine"
+      },
+      {
+        "id": "smCNC07",
+        "component": "SelectItem",
+        "value": "CNC-07",
+        "label": "CNC-07"
+      },
+      {
+        "id": "smPress12",
+        "component": "SelectItem",
+        "value": "Press-12",
+        "label": "Press-12"
+      },
+      {
+        "id": "smRobot",
+        "component": "SelectItem",
+        "value": "Robot WR-4",
+        "label": "Robot WR-4"
+      },
+      {
+        "id": "smConv",
+        "component": "SelectItem",
+        "value": "Conveyor B2",
+        "label": "Conveyor B2"
+      },
+      {
+        "id": "smLine3",
+        "component": "SelectItem",
+        "value": "Line3-St4",
+        "label": "Line 3 Station 4"
+      },
+      {
+        "id": "fcDate",
+        "component": "FormControl",
+        "label": "Date",
+        "input": "schedDatePicker",
+        "hint": "Select due date for maintenance window"
+      },
+      {
+        "id": "schedDatePicker",
+        "component": "DatePicker",
+        "name": "maintenance_date",
+        "mode": "single"
+      },
+      {
+        "id": "fcNotes",
+        "component": "FormControl",
+        "label": "Notes",
+        "input": "schedNotes",
+        "hint": "Describe task, duration, parts needed"
+      },
+      {
+        "id": "schedNotes",
+        "component": "TextArea",
+        "name": "notes",
+        "placeholder": "e.g., Replace hydraulic seals, 4hr window, needs kit HK-42"
+      },
+      {
+        "id": "scheduleButtons",
+        "component": "Buttons",
+        "buttons": [
+          "scheduleBtn",
+          "clearBtn"
+        ]
+      },
+      {
+        "id": "scheduleBtn",
+        "component": "Button",
+        "label": "Schedule Maintenance",
+        "variant": "primary"
+      },
+      {
+        "id": "clearBtn",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "secondary"
+      },
+      {
+        "id": "exportCard",
+        "component": "Card",
+        "children": [
+          "exportHeader",
+          "exportText",
+          "exportButtons"
+        ],
+        "variant": "sunk"
+      },
+      {
+        "id": "exportHeader",
+        "component": "CardHeader",
+        "title": "Shift Report",
+        "subtitle": "17 • Export for handover"
+      },
+      {
+        "id": "exportText",
+        "component": "TextContent",
+        "text": "Export today's OEE, production vs target, downtime, defects, energy and andon log as PDF/CSV for the next supervisor.",
+        "size": "small"
+      },
+      {
+        "id": "exportButtons",
+        "component": "Buttons",
+        "buttons": [
+          "exportBtn",
+          "shareBtn"
+        ]
+      },
+      {
+        "id": "exportBtn",
+        "component": "Button",
+        "label": "Export Shift Report",
+        "variant": "primary"
+      },
+      {
+        "id": "shareBtn",
+        "component": "Button",
+        "label": "Print Andon Log",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>

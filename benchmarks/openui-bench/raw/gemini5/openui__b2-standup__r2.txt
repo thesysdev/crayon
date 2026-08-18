@@ -1,0 +1,47 @@
+root = Card([header, sep1, missingAlert, blockedCallout, updatesSection, sep2, formSection, followUps])
+
+header = CardHeader("Async Daily Standup", "Wednesday, October 25, 2023")
+sep1 = Separator("horizontal")
+
+missingAlert = Callout("info", "3 Updates Missing", "3 of 8 team members haven't submitted their daily standup yet.")
+
+blockedCallout = Callout("error", "Blocked Teammate: Sarah Chen", " Sarah is blocked on 'Auth Service Migration' due to waiting on API credentials from the Security Team.")
+
+updatesSection = SectionBlock([sec1, sec2, sec3, sec4, sec5])
+
+sec1 = SectionItem("p1", "Sarah Chen - Tech Lead (Blocked ⚠️)", [sarahDetails])
+sarahDetails = MarkDownRenderer("**Yesterday:** Completed JWT validation library update.\n**Today:** Unblock Auth Service Migration.\n**Blockers:** Waiting on API credentials from the Security Team.")
+
+sec2 = SectionItem("p2", "Alex Rivera - Frontend Engineer", [alexDetails])
+alexDetails = MarkDownRenderer("**Yesterday:** Built dashboard overview widgets.\n**Today:** Implement async standup submission form.\n**Blockers:** None.")
+
+sec3 = SectionItem("p3", "Marcus Vance - Backend Engineer", [marcusDetails])
+marcusDetails = MarkDownRenderer("**Yesterday:** Optimized database queries for user feeds.\n**Today:** Refactor notification dispatch queue.\n**Blockers:** None.")
+
+sec4 = SectionItem("p4", "Elena Rostova - Product Designer", [elenaDetails])
+elenaDetails = MarkDownRenderer("**Yesterday:** Finalized high-fidelity mocks for team settings.\n**Today:** Design review with engineering & user testing prep.\n**Blockers:** None.")
+
+sec5 = SectionItem("p5", "David Kim - DevOps Engineer", [davidDetails])
+davidDetails = MarkDownRenderer("**Yesterday:** Upgraded Kubernetes clusters to v1.28.\n**Today:** Configure automated rollback metrics.\n**Blockers:** None.")
+
+sep2 = Separator("horizontal")
+
+formSection = Form("post-standup", formActions, [formHeader, yesterdayCtrl, todayCtrl, blockersCtrl])
+
+formHeader = Heading("Post Your Update", "h3")
+
+yesterdayCtrl = FormControl("What did you do yesterday?", yesterdayInput)
+yesterdayInput = TextArea("yesterday", "Completed user profile API...", 3)
+
+todayCtrl = FormControl("What will you do today?", todayInput)
+todayInput = TextArea("today", "Working on UI components...", 3)
+
+blockersCtrl = FormControl("Any blockers?", blockersInput, "Leave empty or write 'None' if clear")
+blockersInput = Input("blockers", "None")
+
+formActions = Buttons([submitBtn])
+submitBtn = Button("Submit Standup", null, "primary")
+
+followUps = FollowUpBlock([f1, f2])
+f1 = FollowUpItem("Ping missing team members on Slack")
+f2 = FollowUpItem("Help Sarah with Security Team credentials")

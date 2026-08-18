@@ -1,0 +1,439 @@
+Here's a complete airline hub operations desk covering all 12 items:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "hubSwitcher",
+          "otpBadge",
+          "otpProgress",
+          "kpiTable",
+          "delayAlert",
+          "weatherAlert",
+          "flightsTable",
+          "gateChanges",
+          "connectionsTable",
+          "crewsTable",
+          "turnaroundChart",
+          "rebookForm",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Hub Operations Desk — ORD",
+        "subtitle": "Chicago O'Hare · Today · All times local (CT)"
+      },
+      {
+        "id": "hubSwitcher",
+        "component": "Form",
+        "name": "hub-switch",
+        "buttons": "hubButtons",
+        "fields": ["hubField"]
+      },
+      {
+        "id": "hubField",
+        "component": "FormControl",
+        "label": "View a different hub",
+        "input": "hubSelect"
+      },
+      {
+        "id": "hubSelect",
+        "component": "Select",
+        "name": "hub",
+        "items": ["hubORD", "hubDFW", "hubATL", "hubDEN", "hubJFK"],
+        "value": "ORD"
+      },
+      {
+        "id": "hubORD",
+        "component": "SelectItem",
+        "value": "ORD",
+        "label": "Chicago O'Hare (ORD)"
+      },
+      {
+        "id": "hubDFW",
+        "component": "SelectItem",
+        "value": "DFW",
+        "label": "Dallas/Fort Worth (DFW)"
+      },
+      {
+        "id": "hubATL",
+        "component": "SelectItem",
+        "value": "ATL",
+        "label": "Atlanta (ATL)"
+      },
+      {
+        "id": "hubDEN",
+        "component": "SelectItem",
+        "value": "DEN",
+        "label": "Denver (DEN)"
+      },
+      {
+        "id": "hubJFK",
+        "component": "SelectItem",
+        "value": "JFK",
+        "label": "New York JFK (JFK)"
+      },
+      {
+        "id": "hubButtons",
+        "component": "Buttons",
+        "buttons": ["hubGoBtn"]
+      },
+      {
+        "id": "hubGoBtn",
+        "component": "Button",
+        "label": "Switch hub",
+        "variant": "secondary",
+        "size": "small"
+      },
+      {
+        "id": "otpBadge",
+        "component": "Badge",
+        "text": "On-time performance today: 78.4%",
+        "variant": "secondary"
+      },
+      {
+        "id": "otpProgress",
+        "component": "Progress",
+        "value": 78.4,
+        "label": "On-time departures (target 85%)"
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": ["kpiName", "kpiValue"]
+      },
+      {
+        "id": "kpiName",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "On-time performance",
+          "Cancellations today",
+          "Avg passenger load",
+          "Avg turnaround time",
+          "Crews available for reassignment",
+          "Connections at risk"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": ["78.4%", "9 flights", "82% load factor", "47 min", "6 crews", "14 connections"]
+      },
+      {
+        "id": "delayAlert",
+        "component": "Alert",
+        "title": "Delayed flights: 7 active",
+        "description": "UA1421 (+45m), UA887 (+60m), UA2330 (+35m), UA512 (+90m), UA1904 (+25m), UA778 (+40m), UA310 (+55m). Longest delay: UA512 to SFO due to inbound aircraft.",
+        "variant": "warning"
+      },
+      {
+        "id": "weatherAlert",
+        "component": "Alert",
+        "title": "Weather advisories at ORD",
+        "description": "Lake-effect snow bands 18:00–22:00 CT; expect de-ice delays. Ground stop possible for arrivals after 19:00. Crosswind advisory on Runway 28C until 16:00.",
+        "variant": "destructive"
+      },
+      {
+        "id": "flightsTable",
+        "component": "Table",
+        "columns": ["fNum", "fRoute", "fGate", "fStatus"]
+      },
+      {
+        "id": "fNum",
+        "component": "Col",
+        "label": "Flight",
+        "data": ["UA1421", "UA887", "UA2330", "UA512", "UA1904", "UA778", "UA310", "UA650"]
+      },
+      {
+        "id": "fRoute",
+        "component": "Col",
+        "label": "Route",
+        "data": [
+          "ORD → LAX",
+          "ORD → LHR",
+          "ORD → DFW",
+          "ORD → SFO",
+          "ORD → BOS",
+          "ORD → MIA",
+          "ORD → SEA",
+          "ORD → DEN"
+        ]
+      },
+      {
+        "id": "fGate",
+        "component": "Col",
+        "label": "Gate",
+        "data": ["C18", "C11", "B7", "C24", "B14", "C9", "B22", "C3"]
+      },
+      {
+        "id": "fStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Delayed +45m",
+          "Delayed +60m",
+          "Delayed +35m",
+          "Delayed +90m",
+          "Delayed +25m",
+          "Delayed +40m",
+          "Delayed +55m",
+          "On time"
+        ]
+      },
+      {
+        "id": "gateChanges",
+        "component": "ListBlock",
+        "items": ["gc1", "gc2", "gc3"],
+        "variant": "number"
+      },
+      {
+        "id": "gc1",
+        "component": "ListItem",
+        "title": "UA512: C24 → C9",
+        "subtitle": "14:32 CT · Equipment swap to 737-900"
+      },
+      {
+        "id": "gc2",
+        "component": "ListItem",
+        "title": "UA2330: B7 → B14",
+        "subtitle": "14:15 CT · Gate conflict with delayed inbound"
+      },
+      {
+        "id": "gc3",
+        "component": "ListItem",
+        "title": "UA778: C9 → C22",
+        "subtitle": "13:58 CT · Jet bridge maintenance at C9"
+      },
+      {
+        "id": "connectionsTable",
+        "component": "Table",
+        "columns": ["cxPax", "cxFrom", "cxTo", "cxWindow"]
+      },
+      {
+        "id": "cxPax",
+        "component": "Col",
+        "label": "Passengers",
+        "data": ["4 pax", "6 pax", "3 pax", "1 pax"]
+      },
+      {
+        "id": "cxFrom",
+        "component": "Col",
+        "label": "Inbound",
+        "data": ["UA512 (SFO)", "UA887 (LHR)", "UA1421 (LAX)", "UA310 (SEA)"]
+      },
+      {
+        "id": "cxTo",
+        "component": "Col",
+        "label": "Outbound",
+        "data": ["UA650 (DEN)", "UA1904 (BOS)", "UA778 (MIA)", "UA2330 (DFW)"]
+      },
+      {
+        "id": "cxWindow",
+        "component": "Col",
+        "label": "Connection window",
+        "data": ["12 min", "18 min", "22 min", "9 min"]
+      },
+      {
+        "id": "crewsTable",
+        "component": "Table",
+        "columns": ["crewId", "crewQual", "crewBase"]
+      },
+      {
+        "id": "crewId",
+        "component": "Col",
+        "label": "Crew",
+        "data": ["CRW-104", "CRW-217", "CRW-339", "CRW-412", "CRW-508", "CRW-621"]
+      },
+      {
+        "id": "crewQual",
+        "component": "Col",
+        "label": "Qualification",
+        "data": ["737 / A320", "777 / 787", "737", "A320 / A321", "787", "737 / 777"]
+      },
+      {
+        "id": "crewBase",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Available until 22:00",
+          "Available until 20:30",
+          "Available until 23:59",
+          "Available until 19:00",
+          "Available until 21:15",
+          "Available until 23:00"
+        ]
+      },
+      {
+        "id": "turnaroundChart",
+        "component": "BarChart",
+        "labels": ["06–09", "09–12", "12–15", "15–18", "18–21"],
+        "series": ["taSeries"],
+        "variant": "grouped",
+        "xLabel": "Time block (CT)",
+        "yLabel": "Avg turnaround (min)"
+      },
+      {
+        "id": "taSeries",
+        "component": "Series",
+        "category": "Turnaround time",
+        "values": [42, 45, 51, 49, 44]
+      },
+      {
+        "id": "rebookForm",
+        "component": "Form",
+        "name": "rebook-passengers",
+        "buttons": "rebookButtons",
+        "fields": ["rebookFlightField", "rebookPaxField", "rebookPrefField"]
+      },
+      {
+        "id": "rebookFlightField",
+        "component": "FormControl",
+        "label": "Rebook affected passengers",
+        "input": "rebookFlightSelect",
+        "hint": "Select the disrupted flight"
+      },
+      {
+        "id": "rebookFlightSelect",
+        "component": "Select",
+        "name": "disrupted_flight",
+        "items": ["rbF1", "rbF2", "rbF3"],
+        "placeholder": "Choose a flight"
+      },
+      {
+        "id": "rbF1",
+        "component": "SelectItem",
+        "value": "UA512",
+        "label": "UA512 (ORD→SFO, +90m)"
+      },
+      {
+        "id": "rbF2",
+        "component": "SelectItem",
+        "value": "UA887",
+        "label": "UA887 (ORD→LHR, +60m)"
+      },
+      {
+        "id": "rbF3",
+        "component": "SelectItem",
+        "value": "UA310",
+        "label": "UA310 (ORD→SEA, +55m)"
+      },
+      {
+        "id": "rebookPaxField",
+        "component": "FormControl",
+        "label": "Passenger names or record locators",
+        "input": "rebookPaxInput"
+      },
+      {
+        "id": "rebookPaxInput",
+        "component": "TextArea",
+        "name": "passengers",
+        "placeholder": "e.g. Smith/Jane (ABC123), Doe/John (DEF456)",
+        "rows": 3
+      },
+      {
+        "id": "rebookPrefField",
+        "component": "FormControl",
+        "label": "Rebooking preference",
+        "input": "rebookPrefRadio"
+      },
+      {
+        "id": "rebookPrefRadio",
+        "component": "RadioGroup",
+        "name": "preference",
+        "items": ["rbNext", "rbAlt", "rbRefund"]
+      },
+      {
+        "id": "rbNext",
+        "component": "RadioItem",
+        "label": "Next available flight",
+        "description": "Same route, earliest seat",
+        "value": "next"
+      },
+      {
+        "id": "rbAlt",
+        "component": "RadioItem",
+        "label": "Alternate routing",
+        "description": "Via another hub if faster",
+        "value": "alternate"
+      },
+      {
+        "id": "rbRefund",
+        "component": "RadioItem",
+        "label": "Refund / travel credit",
+        "description": "For passengers who no longer wish to travel",
+        "value": "refund"
+      },
+      {
+        "id": "rebookButtons",
+        "component": "Buttons",
+        "buttons": ["rebookSubmitBtn", "rebookCancelBtn"]
+      },
+      {
+        "id": "rebookSubmitBtn",
+        "component": "Button",
+        "label": "Rebook passengers",
+        "variant": "primary"
+      },
+      {
+        "id": "rebookCancelBtn",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": ["irropsBtn", "refreshBtn"]
+      },
+      {
+        "id": "irropsBtn",
+        "component": "Button",
+        "label": "Open IRROPS playbook",
+        "variant": "secondary"
+      },
+      {
+        "id": "refreshBtn",
+        "component": "Button",
+        "label": "Refresh data",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This single screen covers all 12 items:
+
+1. **On-time performance** — badge + progress bar (78.4% vs 85% target)
+2. **Flight list** — table with flight number, route, gate, and status
+3. **Delayed flights** — warning alert calling out all 7 delayed flights with delay lengths
+4. **Recent gate changes** — numbered list with times and reasons
+5. **Crews available** — table of 6 crews with qualifications and availability windows
+6. **Weather advisories** — destructive alert for snow bands, de-ice, and crosswind
+7. **Avg passenger load** — 82% load factor in the KPI table
+8. **Connections at risk** — table showing pax counts, inbound/outbound flights, and tight connection windows
+9. **Rebooking** — form with disrupted-flight selector, passenger entry, and preference (next flight / alternate routing / refund)
+10. **Different hub** — hub selector form (ORD, DFW, ATL, DEN, JFK)
+11. **Cancellations today** — 9 flights in the KPI table
+12. **Avg turnaround time** — 47 min in KPIs plus a bar chart by time block

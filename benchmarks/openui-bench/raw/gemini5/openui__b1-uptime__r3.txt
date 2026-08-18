@@ -1,0 +1,44 @@
+root = Card([header, currentStatus, metricsGrid, recentIncidentCard, uptimeTrend, servicesList, followUp])
+
+header = CardHeader("Platform Status", "Real-time system health and performance monitoring")
+
+currentStatus = Callout("success", "All Systems Operational", "API services, core database, and global CDN are performing within normal parameters.")
+
+metricsGrid = Table([metricCol, valueCol, statusCol])
+metricCol = Col("Metric", ["Monthly Uptime (API)", "Current Latency (p95)", "Error Rate (24h)", "Active Incident Count"])
+valueCol = Col("Value", ["99.94%", "42 ms", "0.002%", "0"])
+statusCol = Col("Status", ["Target: >99.90%", "Optimal", "Normal", "Clear"])
+
+recentIncidentCard = Accordion([incidentItem])
+incidentItem = AccordionItem("inc-1042", "Most Recent Incident: API Latency Spike (Resolved)", [incidentDetails, incidentMeta])
+incidentDetails = MarkDownRenderer("### Incident #1042: Intermittent 504 Gateway Timeouts\n\n**Impact:** During a database index rebuilder migration, API requests experienced elevated p99 latency up to 1,200ms and a 0.8% error rate for a subset of endpoints in `us-east-1`.\n\n**Root Cause:** Lock contention on the primary database cluster during scheduled schema maintenance.\n\n**Resolution:** The migration process was paused, query pooling parameters were adjusted, and connection limits were updated to isolate maintenance worker processes.")
+incidentMeta = Table([incMetaKey, incMetaVal])
+incMetaKey = Col("Detail", ["Severity", "Impact Window", "Resolved At", "Total Downtime"])
+incMetaVal = Col("Value", ["Minor (Degraded Performance)", "Feb 24, 2025 · 14:12 - 14:38 UTC", "Feb 24, 2025 · 14:38 UTC", "26 minutes"])
+
+uptimeTrend = LineChart(["Feb 1", "Feb 5", "Feb 10", "Feb 15", "Feb 20", "Feb 25"], [uptimeSeries], "natural", "Date", "Uptime %")
+uptimeSeries = Series("API Availability", [100.0, 99.98, 100.0, 99.85, 100.0, 99.95])
+
+servicesList = SectionBlock([apiSection, dbSection, edgeSection])
+apiSection = SectionItem("sec-api", "Core API & Gateway Services", [apiTable])
+apiTable = Table([apiName, apiStatus, apiUptime])
+apiName = Col("Service", ["REST API Gateway", "GraphQL API", "Authentication Service", "Webhooks Processing"])
+apiStatus = Col("Status", ["Operational", "Operational", "Operational", "Operational"])
+apiUptime = Col("30-Day Uptime", ["99.94%", "99.98%", "100.0%", "99.91%"])
+
+dbSection = SectionItem("sec-db", "Data & Storage Layers", [dbTable])
+dbTable = Table([dbName, dbStatus, dbUptime])
+dbName = Col("Service", ["Primary PostgreSQL Cluster", "Redis Caching Layer", "Elasticsearch Cluster", "Object Storage (S3)"])
+dbStatus = Col("Status", ["Operational", "Operational", "Operational", "Operational"])
+dbUptime = Col("30-Day Uptime", ["99.99%", "100.0%", "99.92%", "100.0%"])
+
+edgeSection = SectionItem("sec-edge", "Edge & CDN Infrastructure", [edgeTable])
+edgeTable = Table([edgeName, edgeStatus, edgeUptime])
+edgeName = Col("Region", ["North America (US-East / US-West)", "Europe (EU-Central)", "Asia-Pacific (AP-South)", "South America (SA-East)"])
+edgeStatus = Col("Status", ["Operational", "Operational", "Operational", "Operational"])
+edgeUptime = Col("30-Day Uptime", ["100.0%", "99.97%", "99.95%", "99.89%"])
+
+followUp = FollowUpBlock([subOption, reportOption, historyOption])
+subOption = FollowUpItem("Subscribe to status notifications")
+reportOption = FollowUpItem("Report an API issue")
+historyOption = FollowUpItem("View past incident archives")

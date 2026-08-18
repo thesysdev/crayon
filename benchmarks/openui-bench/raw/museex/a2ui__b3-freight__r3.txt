@@ -1,0 +1,506 @@
+A logistics command center for in-transit visibility, delays, and carrier performance — all in one board.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "lastRefreshed",
+          "alertDelayed",
+          "kpiRow",
+          "chartsRow",
+          "searchCard",
+          "shipmentsCard",
+          "flagCard",
+          "followUpBlock"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Logistics Coordinator Board",
+        "subtitle": "In-transit shipments, delays, carrier split & weekly volume"
+      },
+      {
+        "id": "lastRefreshed",
+        "component": "TextContent",
+        "text": "Last refreshed: Aug 18, 2026 • 09:42 UTC • Auto-refresh every 15 min",
+        "size": "small"
+      },
+      {
+        "id": "alertDelayed",
+        "component": "Alert",
+        "title": "2 Delayed Shipments Require Attention",
+        "description": "SH-8842 Rotterdam → Chicago (ETA Aug 19) — 18h delay, customs hold. SH-8829 Shanghai → Long Beach (ETA Aug 20) — 26h delay, rerouted via Oakland.",
+        "variant": "warning"
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "onTimeCard",
+          "avgCostCard"
+        ]
+      },
+      {
+        "id": "onTimeCard",
+        "component": "Card",
+        "children": [
+          "onTimeHeader",
+          "onTimeProgress",
+          "onTimeBadge",
+          "onTimeDesc"
+        ]
+      },
+      {
+        "id": "avgCostCard",
+        "component": "Card",
+        "children": [
+          "avgCostHeader",
+          "avgCostValue",
+          "avgCostTrend"
+        ]
+      },
+      {
+        "id": "chartsRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "carrierCard",
+          "weeklyCard"
+        ]
+      },
+      {
+        "id": "carrierCard",
+        "component": "Card",
+        "children": [
+          "carrierHeader",
+          "carrierPie"
+        ]
+      },
+      {
+        "id": "weeklyCard",
+        "component": "Card",
+        "children": [
+          "weeklyHeader",
+          "weeklyChart"
+        ]
+      },
+      {
+        "id": "searchCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "searchHeader",
+          "searchForm"
+        ]
+      },
+      {
+        "id": "shipmentsCard",
+        "component": "Card",
+        "children": [
+          "shipmentsHeader",
+          "shipmentsTable"
+        ]
+      },
+      {
+        "id": "flagCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "flagHeader",
+          "flagForm"
+        ]
+      },
+      {
+        "id": "onTimeHeader",
+        "component": "CardHeader",
+        "title": "On-Time Performance",
+        "subtitle": "This month (Aug 1-18)"
+      },
+      {
+        "id": "onTimeProgress",
+        "component": "Progress",
+        "value": 92.4,
+        "label": "92.4% on-time"
+      },
+      {
+        "id": "onTimeBadge",
+        "component": "Badge",
+        "text": "Above target 90%",
+        "variant": "secondary"
+      },
+      {
+        "id": "onTimeDesc",
+        "component": "TextContent",
+        "text": "344 of 372 shipments delivered on time. 2 currently delayed, 4 at risk.",
+        "size": "small"
+      },
+      {
+        "id": "avgCostHeader",
+        "component": "CardHeader",
+        "title": "Average Cost per Shipment",
+        "subtitle": "All modes • Last 30 days"
+      },
+      {
+        "id": "avgCostValue",
+        "component": "TextContent",
+        "text": "$1,847 per shipment",
+        "size": "large-heavy"
+      },
+      {
+        "id": "avgCostTrend",
+        "component": "TextContent",
+        "text": "↓ $63 vs. July ($1,910) • Fuel surcharge down 4.2%",
+        "size": "small"
+      },
+      {
+        "id": "carrierHeader",
+        "component": "CardHeader",
+        "title": "Volume Split by Carrier",
+        "subtitle": "374 shipments this month"
+      },
+      {
+        "id": "carrierPie",
+        "component": "PieChart",
+        "labels": [
+          "DHL Freight",
+          "Maersk Logistics",
+          "FedEx Freight",
+          "XPO"
+        ],
+        "values": [
+          142,
+          101,
+          71,
+          60
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "weeklyHeader",
+        "component": "CardHeader",
+        "title": "Weekly Volume — Past 2 Months",
+        "subtitle": "Jun 24 - Aug 12 • Shipments per week"
+      },
+      {
+        "id": "weeklyChart",
+        "component": "AreaChart",
+        "labels": [
+          "Jun 24",
+          "Jul 1",
+          "Jul 8",
+          "Jul 15",
+          "Jul 22",
+          "Jul 29",
+          "Aug 5",
+          "Aug 12"
+        ],
+        "series": [
+          "weeklySeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Week starting",
+        "yLabel": "Shipments"
+      },
+      {
+        "id": "weeklySeries",
+        "component": "Series",
+        "category": "Shipments",
+        "values": [
+          118,
+          135,
+          142,
+          128,
+          156,
+          149,
+          167,
+          172
+        ]
+      },
+      {
+        "id": "searchHeader",
+        "component": "CardHeader",
+        "title": "Search by Route",
+        "subtitle": "Filter the in-transit table by origin or destination"
+      },
+      {
+        "id": "searchForm",
+        "component": "Form",
+        "name": "route-search",
+        "buttons": "searchButtons",
+        "fields": [
+          "searchInputControl"
+        ]
+      },
+      {
+        "id": "searchInputControl",
+        "component": "FormControl",
+        "label": "Route",
+        "hint": "Try 'Rotterdam → Chicago' or 'Shanghai'",
+        "input": "searchInput"
+      },
+      {
+        "id": "searchInput",
+        "component": "Input",
+        "name": "route_query",
+        "placeholder": "e.g., Rotterdam → Chicago"
+      },
+      {
+        "id": "searchButtons",
+        "component": "Buttons",
+        "buttons": [
+          "searchBtn",
+          "clearBtn"
+        ]
+      },
+      {
+        "id": "searchBtn",
+        "component": "Button",
+        "label": "Search route",
+        "variant": "primary"
+      },
+      {
+        "id": "clearBtn",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "secondary"
+      },
+      {
+        "id": "shipmentsHeader",
+        "component": "CardHeader",
+        "title": "Shipments in Transit",
+        "subtitle": "6 active shipments • Origin, destination, ETA and live status"
+      },
+      {
+        "id": "shipmentsTable",
+        "component": "Table",
+        "columns": [
+          "colShipment",
+          "colOrigin",
+          "colDestination",
+          "colEta",
+          "colStatus"
+        ]
+      },
+      {
+        "id": "colShipment",
+        "component": "Col",
+        "label": "Shipment",
+        "data": [
+          "SH-8842",
+          "SH-8829",
+          "SH-8851",
+          "SH-8834",
+          "SH-8860",
+          "SH-8815"
+        ]
+      },
+      {
+        "id": "colOrigin",
+        "component": "Col",
+        "label": "Origin",
+        "data": [
+          "Rotterdam",
+          "Shanghai",
+          "Hamburg",
+          "Busan",
+          "Antwerp",
+          "Singapore"
+        ]
+      },
+      {
+        "id": "colDestination",
+        "component": "Col",
+        "label": "Destination",
+        "data": [
+          "Chicago",
+          "Long Beach",
+          "Memphis",
+          "Seattle",
+          "Dallas",
+          "New York"
+        ]
+      },
+      {
+        "id": "colEta",
+        "component": "Col",
+        "label": "ETA",
+        "data": [
+          "Aug 19, 14:30",
+          "Aug 20, 08:15",
+          "Aug 22, 11:00",
+          "Aug 21, 16:45",
+          "Aug 23, 09:20",
+          "Aug 19, 19:10"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Delayed — Customs",
+          "Delayed — Rerouted",
+          "In Transit",
+          "In Transit",
+          "In Transit",
+          "In Transit — At Risk"
+        ]
+      },
+      {
+        "id": "flagHeader",
+        "component": "CardHeader",
+        "title": "Flag a Shipment",
+        "subtitle": "Escalate for review or hold at destination"
+      },
+      {
+        "id": "flagForm",
+        "component": "Form",
+        "name": "flag-shipment",
+        "buttons": "flagButtons",
+        "fields": [
+          "flagSelectControl",
+          "flagReasonControl"
+        ]
+      },
+      {
+        "id": "flagSelectControl",
+        "component": "FormControl",
+        "label": "Select shipment to flag",
+        "input": "flagSelect"
+      },
+      {
+        "id": "flagSelect",
+        "component": "Select",
+        "name": "shipment_id",
+        "placeholder": "Choose shipment",
+        "items": [
+          "flagOpt8842",
+          "flagOpt8829",
+          "flagOpt8851",
+          "flagOpt8834",
+          "flagOpt8860",
+          "flagOpt8815"
+        ]
+      },
+      {
+        "id": "flagOpt8842",
+        "component": "SelectItem",
+        "value": "SH-8842",
+        "label": "SH-8842 — Rotterdam → Chicago (Delayed)"
+      },
+      {
+        "id": "flagOpt8829",
+        "component": "SelectItem",
+        "value": "SH-8829",
+        "label": "SH-8829 — Shanghai → Long Beach (Delayed)"
+      },
+      {
+        "id": "flagOpt8851",
+        "component": "SelectItem",
+        "value": "SH-8851",
+        "label": "SH-8851 — Hamburg → Memphis"
+      },
+      {
+        "id": "flagOpt8834",
+        "component": "SelectItem",
+        "value": "SH-8834",
+        "label": "SH-8834 — Busan → Seattle"
+      },
+      {
+        "id": "flagOpt8860",
+        "component": "SelectItem",
+        "value": "SH-8860",
+        "label": "SH-8860 — Antwerp → Dallas"
+      },
+      {
+        "id": "flagOpt8815",
+        "component": "SelectItem",
+        "value": "SH-8815",
+        "label": "SH-8815 — Singapore → New York"
+      },
+      {
+        "id": "flagReasonControl",
+        "component": "FormControl",
+        "label": "Reason",
+        "hint": "Added to shipment timeline and alerts coordinator",
+        "input": "flagReason"
+      },
+      {
+        "id": "flagReason",
+        "component": "TextArea",
+        "name": "flag_reason",
+        "placeholder": "e.g., Hold for QA inspection, missing BOL, customer escalation..."
+      },
+      {
+        "id": "flagButtons",
+        "component": "Buttons",
+        "buttons": [
+          "flagBtn",
+          "cancelBtn"
+        ]
+      },
+      {
+        "id": "flagBtn",
+        "component": "Button",
+        "label": "Flag shipment",
+        "variant": "primary"
+      },
+      {
+        "id": "cancelBtn",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      },
+      {
+        "id": "followUpBlock",
+        "component": "FollowUpBlock",
+        "items": [
+          "followUp1",
+          "followUp2",
+          "followUp3"
+        ]
+      },
+      {
+        "id": "followUp1",
+        "component": "FollowUpItem",
+        "text": "Show only delayed shipments"
+      },
+      {
+        "id": "followUp2",
+        "component": "FollowUpItem",
+        "text": "Export in-transit list as CSV"
+      },
+      {
+        "id": "followUp3",
+        "component": "FollowUpItem",
+        "text": "Notify carrier for SH-8842"
+      }
+    ]
+  }
+}
+</a2ui-json>

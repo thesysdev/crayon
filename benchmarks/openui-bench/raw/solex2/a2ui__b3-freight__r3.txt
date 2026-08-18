@@ -1,0 +1,467 @@
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#2563EB",
+      "agentDisplayName": "Logistics Control Board"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "refreshStatus",
+          "delayedAlert",
+          "kpiRow",
+          "separator1",
+          "searchSection",
+          "shipmentTable",
+          "flagDialog",
+          "separator2",
+          "chartsRow"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Logistics Control Board",
+        "subtitle": "In-transit shipment performance and carrier activity"
+      },
+      {
+        "id": "refreshStatus",
+        "component": "Badge",
+        "text": "Last refreshed Aug 18, 2026 at 10:42 AM UTC",
+        "variant": "outline"
+      },
+      {
+        "id": "delayedAlert",
+        "component": "Alert",
+        "title": "2 delayed shipments require attention",
+        "description": "SHP-1048 is delayed at Chicago and SHP-1052 is delayed near Memphis. Review updated ETAs below.",
+        "variant": "warning"
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "children": [
+          "onTimeKpi",
+          "costKpi"
+        ],
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "l"
+      },
+      {
+        "id": "onTimeKpi",
+        "component": "Card",
+        "children": [
+          "onTimeLabel",
+          "onTimeValue",
+          "onTimeProgress"
+        ],
+        "variant": "clear",
+        "gap": "xs",
+        "weight": 1
+      },
+      {
+        "id": "onTimeLabel",
+        "component": "TextContent",
+        "text": "On-time this month",
+        "size": "small-heavy"
+      },
+      {
+        "id": "onTimeValue",
+        "component": "Heading",
+        "text": "94.2%",
+        "level": "h2"
+      },
+      {
+        "id": "onTimeProgress",
+        "component": "Progress",
+        "value": 94.2,
+        "label": "94.2% of shipments delivered on time"
+      },
+      {
+        "id": "costKpi",
+        "component": "Card",
+        "children": [
+          "costLabel",
+          "costValue",
+          "costDetail"
+        ],
+        "variant": "clear",
+        "gap": "xs",
+        "weight": 1
+      },
+      {
+        "id": "costLabel",
+        "component": "TextContent",
+        "text": "Average cost per shipment",
+        "size": "small-heavy"
+      },
+      {
+        "id": "costValue",
+        "component": "Heading",
+        "text": "$1,284",
+        "level": "h2"
+      },
+      {
+        "id": "costDetail",
+        "component": "TextContent",
+        "text": "Month to date across all carriers",
+        "size": "small"
+      },
+      {
+        "id": "separator1",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "searchSection",
+        "component": "Card",
+        "children": [
+          "searchHeading",
+          "routeSearchForm"
+        ],
+        "variant": "clear",
+        "gap": "s"
+      },
+      {
+        "id": "searchHeading",
+        "component": "Heading",
+        "text": "Shipments in transit",
+        "level": "h2"
+      },
+      {
+        "id": "routeSearchForm",
+        "component": "Form",
+        "name": "route-search",
+        "buttons": "searchButtons",
+        "fields": [
+          "routeSearchControl"
+        ]
+      },
+      {
+        "id": "routeSearchControl",
+        "component": "FormControl",
+        "label": "Search by route",
+        "input": "routeSearchInput",
+        "hint": "Enter an origin, destination, or route such as Seattle to Denver"
+      },
+      {
+        "id": "routeSearchInput",
+        "component": "Input",
+        "name": "route",
+        "placeholder": "Search origin or destination",
+        "type": "text"
+      },
+      {
+        "id": "searchButtons",
+        "component": "Buttons",
+        "buttons": [
+          "searchButton",
+          "clearButton"
+        ]
+      },
+      {
+        "id": "searchButton",
+        "component": "Button",
+        "label": "Search routes",
+        "variant": "primary",
+        "size": "medium"
+      },
+      {
+        "id": "clearButton",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "tertiary",
+        "size": "medium"
+      },
+      {
+        "id": "shipmentTable",
+        "component": "Table",
+        "columns": [
+          "shipmentIdCol",
+          "originCol",
+          "destinationCol",
+          "etaCol",
+          "statusCol",
+          "flagCol"
+        ]
+      },
+      {
+        "id": "shipmentIdCol",
+        "component": "Col",
+        "label": "Shipment",
+        "data": [
+          "SHP-1048",
+          "SHP-1049",
+          "SHP-1050",
+          "SHP-1051",
+          "SHP-1052",
+          "SHP-1053"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "originCol",
+        "component": "Col",
+        "label": "Origin",
+        "data": [
+          "Newark, NJ",
+          "Seattle, WA",
+          "Dallas, TX",
+          "Los Angeles, CA",
+          "Atlanta, GA",
+          "Miami, FL"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "destinationCol",
+        "component": "Col",
+        "label": "Destination",
+        "data": [
+          "Chicago, IL",
+          "Denver, CO",
+          "Phoenix, AZ",
+          "Portland, OR",
+          "Nashville, TN",
+          "Charlotte, NC"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "etaCol",
+        "component": "Col",
+        "label": "ETA",
+        "data": [
+          "Aug 19, 6:30 PM",
+          "Aug 19, 2:15 PM",
+          "Aug 20, 9:00 AM",
+          "Aug 20, 4:45 PM",
+          "Aug 21, 11:30 AM",
+          "Aug 21, 3:00 PM"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "statusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Delayed · +5h",
+          "On time",
+          "On time",
+          "In transit",
+          "Delayed · +8h",
+          "On time"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "flagCol",
+        "component": "Col",
+        "label": "Flag",
+        "data": [
+          "Flag",
+          "Flag",
+          "Flag",
+          "Flag",
+          "Flag",
+          "Flag"
+        ],
+        "type": "action"
+      },
+      {
+        "id": "flagDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Flag a shipment",
+        "title": "Flag shipment for follow-up",
+        "description": "Enter the shipment ID and reason. The operations team will be notified.",
+        "content": [
+          "flagForm"
+        ],
+        "triggerVariant": "outline"
+      },
+      {
+        "id": "flagForm",
+        "component": "Form",
+        "name": "flag-shipment",
+        "buttons": "flagButtons",
+        "fields": [
+          "flagIdControl",
+          "flagReasonControl"
+        ]
+      },
+      {
+        "id": "flagIdControl",
+        "component": "FormControl",
+        "label": "Shipment ID",
+        "input": "flagIdInput"
+      },
+      {
+        "id": "flagIdInput",
+        "component": "Input",
+        "name": "shipment_id",
+        "placeholder": "SHP-1048",
+        "type": "text"
+      },
+      {
+        "id": "flagReasonControl",
+        "component": "FormControl",
+        "label": "Reason for flag",
+        "input": "flagReasonInput"
+      },
+      {
+        "id": "flagReasonInput",
+        "component": "TextArea",
+        "name": "flag_reason",
+        "placeholder": "Describe the issue or follow-up needed",
+        "rows": 3
+      },
+      {
+        "id": "flagButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitFlagButton",
+          "cancelFlagButton"
+        ]
+      },
+      {
+        "id": "submitFlagButton",
+        "component": "Button",
+        "label": "Flag shipment",
+        "variant": "primary"
+      },
+      {
+        "id": "cancelFlagButton",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      },
+      {
+        "id": "separator2",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "chartsRow",
+        "component": "Card",
+        "children": [
+          "carrierPanel",
+          "weeklyPanel"
+        ],
+        "variant": "clear",
+        "direction": "row",
+        "gap": "l"
+      },
+      {
+        "id": "carrierPanel",
+        "component": "Card",
+        "children": [
+          "carrierHeading",
+          "carrierChart"
+        ],
+        "variant": "sunk",
+        "gap": "s",
+        "weight": 1
+      },
+      {
+        "id": "carrierHeading",
+        "component": "CardHeader",
+        "title": "Volume split by carrier",
+        "subtitle": "Month to date · 1,248 shipments"
+      },
+      {
+        "id": "carrierChart",
+        "component": "PieChart",
+        "labels": [
+          "UPS",
+          "FedEx",
+          "DHL",
+          "Maersk",
+          "Other"
+        ],
+        "values": [
+          34,
+          29,
+          18,
+          12,
+          7
+        ],
+        "variant": "donut",
+        "appearance": "circular"
+      },
+      {
+        "id": "weeklyPanel",
+        "component": "Card",
+        "children": [
+          "weeklyHeading",
+          "weeklyChart"
+        ],
+        "variant": "sunk",
+        "gap": "s",
+        "weight": 2
+      },
+      {
+        "id": "weeklyHeading",
+        "component": "CardHeader",
+        "title": "Weekly shipment volume",
+        "subtitle": "Past two months"
+      },
+      {
+        "id": "weeklyChart",
+        "component": "BarChart",
+        "labels": [
+          "Jun 22",
+          "Jun 29",
+          "Jul 6",
+          "Jul 13",
+          "Jul 20",
+          "Jul 27",
+          "Aug 3",
+          "Aug 10"
+        ],
+        "series": [
+          "weeklyVolumeSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Week starting",
+        "yLabel": "Shipments"
+      },
+      {
+        "id": "weeklyVolumeSeries",
+        "component": "Series",
+        "category": "Shipment volume",
+        "values": [
+          276,
+          301,
+          294,
+          328,
+          315,
+          342,
+          359,
+          371
+        ]
+      }
+    ]
+  }
+}
+</a2ui-json>

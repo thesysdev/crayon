@@ -1,0 +1,661 @@
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#1D4ED8",
+      "agentDisplayName": "Hub Operations Desk"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "variant": "clear",
+        "gap": "l",
+        "children": [
+          "headerRow",
+          "hubSelector",
+          "weatherAdvisory",
+          "kpiRow",
+          "delayedAlert",
+          "operationsTabs"
+        ]
+      },
+      {
+        "id": "headerRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "justify": "between",
+        "align": "center",
+        "children": [
+          "pageHeader",
+          "liveStatus"
+        ]
+      },
+      {
+        "id": "pageHeader",
+        "component": "CardHeader",
+        "title": "Hub Operations Desk — ATL",
+        "subtitle": "Tuesday, August 18 • Live operational overview"
+      },
+      {
+        "id": "liveStatus",
+        "component": "Badge",
+        "text": "Live updates",
+        "variant": "secondary"
+      },
+      {
+        "id": "hubSelector",
+        "component": "FormControl",
+        "label": "View a different hub",
+        "input": "hubSelect",
+        "hint": "Switch the operations view to another hub"
+      },
+      {
+        "id": "hubSelect",
+        "component": "Select",
+        "name": "hub",
+        "placeholder": "Atlanta (ATL)",
+        "value": "ATL",
+        "items": [
+          "hubATL",
+          "hubDTW",
+          "hubMSP",
+          "hubSLC",
+          "hubLAX"
+        ]
+      },
+      {
+        "id": "hubATL",
+        "component": "SelectItem",
+        "value": "ATL",
+        "label": "Atlanta (ATL)"
+      },
+      {
+        "id": "hubDTW",
+        "component": "SelectItem",
+        "value": "DTW",
+        "label": "Detroit (DTW)"
+      },
+      {
+        "id": "hubMSP",
+        "component": "SelectItem",
+        "value": "MSP",
+        "label": "Minneapolis–Saint Paul (MSP)"
+      },
+      {
+        "id": "hubSLC",
+        "component": "SelectItem",
+        "value": "SLC",
+        "label": "Salt Lake City (SLC)"
+      },
+      {
+        "id": "hubLAX",
+        "component": "SelectItem",
+        "value": "LAX",
+        "label": "Los Angeles (LAX)"
+      },
+      {
+        "id": "weatherAdvisory",
+        "component": "Alert",
+        "title": "Weather advisory: thunderstorms expected 15:00–19:00",
+        "description": "Ground-stop risk is moderate. Ramp operations may be restricted during lightning activity. Review tight connections and turnaround plans.",
+        "variant": "warning"
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "otpKpi",
+          "loadKpi",
+          "cancellationsKpi",
+          "turnaroundKpi",
+          "connectionsKpi"
+        ]
+      },
+      {
+        "id": "otpKpi",
+        "component": "Card",
+        "children": [
+          "otpLabel",
+          "otpProgress"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "otpLabel",
+        "component": "TextContent",
+        "text": "**On-time performance today**\n87.4% • Target 90%",
+        "size": "default"
+      },
+      {
+        "id": "otpProgress",
+        "component": "Progress",
+        "value": 87.4,
+        "label": "87.4% on time"
+      },
+      {
+        "id": "loadKpi",
+        "component": "Card",
+        "children": [
+          "loadText"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "loadText",
+        "component": "TextContent",
+        "text": "**Average passenger load**\n84.6% • 31,208 passengers",
+        "size": "default"
+      },
+      {
+        "id": "cancellationsKpi",
+        "component": "Card",
+        "children": [
+          "cancellationsText"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "cancellationsText",
+        "component": "TextContent",
+        "text": "**Cancellations today**\n6 flights • 1.3% of schedule",
+        "size": "default"
+      },
+      {
+        "id": "turnaroundKpi",
+        "component": "Card",
+        "children": [
+          "turnaroundText"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "turnaroundText",
+        "component": "TextContent",
+        "text": "**Average turnaround**\n46 min • 4 min above plan",
+        "size": "default"
+      },
+      {
+        "id": "connectionsKpi",
+        "component": "Card",
+        "children": [
+          "connectionsText"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "connectionsText",
+        "component": "TextContent",
+        "text": "**Connections at risk**\n142 passengers • 18 itineraries",
+        "size": "default"
+      },
+      {
+        "id": "delayedAlert",
+        "component": "Callout",
+        "variant": "warning",
+        "title": "12 delayed flights require attention",
+        "description": "Three departures are delayed more than 60 minutes. Prioritize customer rebooking and crew coverage for the 16:00–18:00 departure bank."
+      },
+      {
+        "id": "operationsTabs",
+        "component": "Tabs",
+        "items": [
+          "flightsTab",
+          "gatesTab",
+          "crewsTab",
+          "connectionsTab"
+        ]
+      },
+      {
+        "id": "flightsTab",
+        "component": "TabItem",
+        "value": "flights",
+        "trigger": "Flights",
+        "content": [
+          "flightsHeader",
+          "flightsTable",
+          "rebookButtons"
+        ]
+      },
+      {
+        "id": "flightsHeader",
+        "component": "Heading",
+        "text": "Current flight operations",
+        "level": "h3"
+      },
+      {
+        "id": "flightsTable",
+        "component": "Table",
+        "columns": [
+          "flightNumberCol",
+          "routeCol",
+          "gateCol",
+          "scheduleCol",
+          "statusCol"
+        ]
+      },
+      {
+        "id": "flightNumberCol",
+        "component": "Col",
+        "label": "Flight",
+        "data": [
+          "DL 412",
+          "DL 1887",
+          "DL 926",
+          "DL 1540",
+          "DL 2371",
+          "DL 608"
+        ]
+      },
+      {
+        "id": "routeCol",
+        "component": "Col",
+        "label": "Route",
+        "data": [
+          "ATL → LGA",
+          "ATL → MCO",
+          "ATL → BOS",
+          "ATL → DFW",
+          "ATL → SEA",
+          "ATL → ORD"
+        ]
+      },
+      {
+        "id": "gateCol",
+        "component": "Col",
+        "label": "Gate",
+        "data": [
+          "B18",
+          "A04",
+          "C29",
+          "B06",
+          "E14",
+          "T09"
+        ]
+      },
+      {
+        "id": "scheduleCol",
+        "component": "Col",
+        "label": "Scheduled",
+        "data": [
+          "15:20",
+          "15:35",
+          "15:50",
+          "16:05",
+          "16:20",
+          "16:30"
+        ]
+      },
+      {
+        "id": "statusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Boarding",
+          "Delayed 35 min",
+          "On time",
+          "Delayed 1h 10m",
+          "Gate change",
+          "Cancelled"
+        ]
+      },
+      {
+        "id": "rebookButtons",
+        "component": "Buttons",
+        "buttons": [
+          "rebookAffectedBtn",
+          "viewAllFlightsBtn"
+        ]
+      },
+      {
+        "id": "rebookAffectedBtn",
+        "component": "Button",
+        "label": "Rebook affected passengers",
+        "variant": "primary"
+      },
+      {
+        "id": "viewAllFlightsBtn",
+        "component": "Button",
+        "label": "View full flight board",
+        "variant": "secondary"
+      },
+      {
+        "id": "gatesTab",
+        "component": "TabItem",
+        "value": "gates",
+        "trigger": "Gate changes",
+        "content": [
+          "gateChangesHeader",
+          "gateChangesTable"
+        ]
+      },
+      {
+        "id": "gateChangesHeader",
+        "component": "Heading",
+        "text": "Recent gate changes",
+        "level": "h3"
+      },
+      {
+        "id": "gateChangesTable",
+        "component": "Table",
+        "columns": [
+          "gateFlightCol",
+          "gateRouteCol",
+          "previousGateCol",
+          "newGateCol",
+          "changeTimeCol",
+          "reasonCol"
+        ]
+      },
+      {
+        "id": "gateFlightCol",
+        "component": "Col",
+        "label": "Flight",
+        "data": [
+          "DL 2371",
+          "DL 775",
+          "DL 328",
+          "DL 1190"
+        ]
+      },
+      {
+        "id": "gateRouteCol",
+        "component": "Col",
+        "label": "Route",
+        "data": [
+          "ATL → SEA",
+          "ATL → RDU",
+          "ATL → DEN",
+          "ATL → MIA"
+        ]
+      },
+      {
+        "id": "previousGateCol",
+        "component": "Col",
+        "label": "Previous gate",
+        "data": [
+          "E08",
+          "A19",
+          "C12",
+          "B24"
+        ]
+      },
+      {
+        "id": "newGateCol",
+        "component": "Col",
+        "label": "New gate",
+        "data": [
+          "E14",
+          "A07",
+          "C34",
+          "B16"
+        ]
+      },
+      {
+        "id": "changeTimeCol",
+        "component": "Col",
+        "label": "Changed",
+        "data": [
+          "14:42",
+          "14:28",
+          "14:10",
+          "13:56"
+        ]
+      },
+      {
+        "id": "reasonCol",
+        "component": "Col",
+        "label": "Reason",
+        "data": [
+          "Inbound aircraft delay",
+          "Gate maintenance",
+          "Aircraft swap",
+          "Connection protection"
+        ]
+      },
+      {
+        "id": "crewsTab",
+        "component": "TabItem",
+        "value": "crews",
+        "trigger": "Crew coverage",
+        "content": [
+          "crewHeader",
+          "crewTable",
+          "crewActionButtons"
+        ]
+      },
+      {
+        "id": "crewHeader",
+        "component": "Heading",
+        "text": "Crews available for reassignment",
+        "level": "h3"
+      },
+      {
+        "id": "crewTable",
+        "component": "Table",
+        "columns": [
+          "crewIdCol",
+          "crewTypeCol",
+          "locationCol",
+          "availableCol",
+          "dutyTimeCol",
+          "qualificationCol"
+        ]
+      },
+      {
+        "id": "crewIdCol",
+        "component": "Col",
+        "label": "Crew",
+        "data": [
+          "Crew 482",
+          "Crew 917",
+          "Crew 306",
+          "Crew 741"
+        ]
+      },
+      {
+        "id": "crewTypeCol",
+        "component": "Col",
+        "label": "Type",
+        "data": [
+          "A320 Flight deck",
+          "B737 Cabin",
+          "A321 Cabin",
+          "B737 Flight deck"
+        ]
+      },
+      {
+        "id": "locationCol",
+        "component": "Col",
+        "label": "Current location",
+        "data": [
+          "Concourse B",
+          "Concourse A",
+          "Concourse C",
+          "Terminal T"
+        ]
+      },
+      {
+        "id": "availableCol",
+        "component": "Col",
+        "label": "Available",
+        "data": [
+          "Now",
+          "15:40",
+          "16:05",
+          "16:15"
+        ]
+      },
+      {
+        "id": "dutyTimeCol",
+        "component": "Col",
+        "label": "Duty remaining",
+        "data": [
+          "6h 20m",
+          "5h 45m",
+          "7h 10m",
+          "4h 55m"
+        ]
+      },
+      {
+        "id": "qualificationCol",
+        "component": "Col",
+        "label": "Qualification",
+        "data": [
+          "Domestic / ETOPS",
+          "Domestic",
+          "Domestic / International",
+          "Domestic"
+        ]
+      },
+      {
+        "id": "crewActionButtons",
+        "component": "Buttons",
+        "buttons": [
+          "assignCrewBtn",
+          "viewCrewRosterBtn"
+        ]
+      },
+      {
+        "id": "assignCrewBtn",
+        "component": "Button",
+        "label": "Assign crew",
+        "variant": "primary"
+      },
+      {
+        "id": "viewCrewRosterBtn",
+        "component": "Button",
+        "label": "View crew roster",
+        "variant": "secondary"
+      },
+      {
+        "id": "connectionsTab",
+        "component": "TabItem",
+        "value": "connections",
+        "trigger": "At-risk connections",
+        "content": [
+          "connectionsHeader",
+          "connectionsAlert",
+          "connectionsTable",
+          "connectionsRebookBtn"
+        ]
+      },
+      {
+        "id": "connectionsHeader",
+        "component": "Heading",
+        "text": "Connections at risk of being missed",
+        "level": "h3"
+      },
+      {
+        "id": "connectionsAlert",
+        "component": "Alert",
+        "title": "18 itineraries need rebooking review",
+        "description": "Passengers connecting through Concourses A, B, and E have less than 20 minutes of projected connection time.",
+        "variant": "destructive"
+      },
+      {
+        "id": "connectionsTable",
+        "component": "Table",
+        "columns": [
+          "inboundCol",
+          "outboundCol",
+          "passengersCol",
+          "connectionTimeCol",
+          "riskCol",
+          "recommendedActionCol"
+        ]
+      },
+      {
+        "id": "inboundCol",
+        "component": "Col",
+        "label": "Inbound",
+        "data": [
+          "DL 1887 from MCO",
+          "DL 1540 from DFW",
+          "DL 775 from RDU",
+          "DL 328 from DEN"
+        ]
+      },
+      {
+        "id": "outboundCol",
+        "component": "Col",
+        "label": "Connecting flight",
+        "data": [
+          "DL 926 to BOS",
+          "DL 2371 to SEA",
+          "DL 608 to ORD",
+          "DL 412 to LGA"
+        ]
+      },
+      {
+        "id": "passengersCol",
+        "component": "Col",
+        "label": "Passengers",
+        "data": [
+          "46",
+          "33",
+          "28",
+          "35"
+        ],
+        "type": "number"
+      },
+      {
+        "id": "connectionTimeCol",
+        "component": "Col",
+        "label": "Projected connection",
+        "data": [
+          "18 min",
+          "12 min",
+          "16 min",
+          "9 min"
+        ]
+      },
+      {
+        "id": "riskCol",
+        "component": "Col",
+        "label": "Risk",
+        "data": [
+          "High",
+          "High",
+          "Medium",
+          "Critical"
+        ]
+      },
+      {
+        "id": "recommendedActionCol",
+        "component": "Col",
+        "label": "Recommended action",
+        "data": [
+          "Protect on next BOS departure",
+          "Hold gate 8 minutes",
+          "Send connection escort",
+          "Rebook immediately"
+        ]
+      },
+      {
+        "id": "connectionsRebookBtn",
+        "component": "Button",
+        "label": "Open passenger rebooking queue",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>

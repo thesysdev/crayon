@@ -1,0 +1,280 @@
+Async standup board ready — today's date, blockers surfaced, and missing updates tracked:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "dateRow",
+          "missingCard",
+          "blockedAlert",
+          "teamCard",
+          "postCard"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Async Standup",
+        "subtitle": "Remote team • All updates in one place"
+      },
+      {
+        "id": "dateRow",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "dateBadge",
+          "dateText"
+        ],
+        "direction": "row",
+        "align": "center",
+        "justify": "between"
+      },
+      {
+        "id": "dateBadge",
+        "component": "Badge",
+        "text": "Today • Tuesday, August 18, 2026",
+        "variant": "secondary"
+      },
+      {
+        "id": "dateText",
+        "component": "TextContent",
+        "text": "Async window closes at 11:00 AM PT • Updates auto-post to #standup",
+        "size": "small"
+      },
+      {
+        "id": "missingCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "missingHeader",
+          "missingProgress",
+          "missingDetail"
+        ],
+        "gap": "s"
+      },
+      {
+        "id": "missingHeader",
+        "component": "TextContent",
+        "text": "**2 updates still missing** — 4 of 6 teammates have posted",
+        "size": "default"
+      },
+      {
+        "id": "missingProgress",
+        "component": "Progress",
+        "value": 66,
+        "label": "4 / 6 submitted"
+      },
+      {
+        "id": "missingDetail",
+        "component": "TextContent",
+        "text": "Missing: Priya Sharma, Jordan Lee • Nudge sent 23 min ago",
+        "size": "small"
+      },
+      {
+        "id": "blockedAlert",
+        "component": "Alert",
+        "title": "🚧 2 teammates blocked — needs attention",
+        "description": "Jamal Okoro → Waiting on Figma handoff for pricing page • Samir Patel → DB migration failed (permissions error). Tap teammate row to offer help.",
+        "variant": "warning"
+      },
+      {
+        "id": "teamCard",
+        "component": "Card",
+        "children": [
+          "teamHeader",
+          "teamTable",
+          "blockedTags"
+        ],
+        "gap": "s"
+      },
+      {
+        "id": "teamHeader",
+        "component": "CardHeader",
+        "title": "Today's status updates",
+        "subtitle": "Each teammate's plan for today — blocked teammates highlighted"
+      },
+      {
+        "id": "teamTable",
+        "component": "Table",
+        "columns": [
+          "teammateCol",
+          "todayUpdateCol",
+          "statusCol"
+        ]
+      },
+      {
+        "id": "teammateCol",
+        "component": "Col",
+        "label": "Teammate",
+        "data": [
+          "Maya Chen",
+          "Jamal Okoro",
+          "Priya Sharma",
+          "Alex Rivera",
+          "Samir Patel",
+          "Jordan Lee"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "todayUpdateCol",
+        "component": "Col",
+        "label": "Today's Update",
+        "data": [
+          "Building checkout API integration + writing tests",
+          "Waiting on design review — pricing page handoff",
+          "— No update yet —",
+          "E2E testing for payments flow",
+          "DB migration — blocked on permissions error",
+          "— No update yet —"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "statusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "✅ On track",
+          "🚧 Blocked",
+          "⏳ Missing",
+          "✅ On track",
+          "🚧 Blocked",
+          "⏳ Missing"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "blockedTags",
+        "component": "TagBlock",
+        "tags": [
+          "🚧 Jamal: Figma handoff",
+          "🚧 Samir: DB permissions"
+        ]
+      },
+      {
+        "id": "postCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "postHeader",
+          "postForm"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "postHeader",
+        "component": "CardHeader",
+        "title": "Post your update",
+        "subtitle": "Share yesterday / today / blockers — posts instantly to the table above"
+      },
+      {
+        "id": "postForm",
+        "component": "Form",
+        "name": "standup-post",
+        "buttons": "formButtons",
+        "fields": [
+          "yesterdayField",
+          "todayField",
+          "blockerField"
+        ]
+      },
+      {
+        "id": "yesterdayField",
+        "component": "FormControl",
+        "label": "Yesterday",
+        "hint": "What you completed",
+        "input": "yesterdayInput"
+      },
+      {
+        "id": "yesterdayInput",
+        "component": "TextArea",
+        "name": "yesterday",
+        "placeholder": "e.g., Shipped auth fix, reviewed PR #482",
+        "rows": 2
+      },
+      {
+        "id": "todayField",
+        "component": "FormControl",
+        "label": "Today",
+        "hint": "What you plan to do today",
+        "input": "todayInput"
+      },
+      {
+        "id": "todayInput",
+        "component": "TextArea",
+        "name": "today",
+        "placeholder": "e.g., Finish checkout API, add unit tests",
+        "rows": 2
+      },
+      {
+        "id": "blockerField",
+        "component": "FormControl",
+        "label": "Blocked?",
+        "hint": "Flag if you need help",
+        "input": "blockerSelect"
+      },
+      {
+        "id": "blockerSelect",
+        "component": "Select",
+        "name": "blocked",
+        "placeholder": "Select status",
+        "items": [
+          "blockerNo",
+          "blockerYes"
+        ]
+      },
+      {
+        "id": "blockerNo",
+        "component": "SelectItem",
+        "value": "no",
+        "label": "No blockers ✅"
+      },
+      {
+        "id": "blockerYes",
+        "component": "SelectItem",
+        "value": "yes",
+        "label": "Yes — I'm blocked 🚧"
+      },
+      {
+        "id": "formButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitBtn",
+          "laterBtn"
+        ]
+      },
+      {
+        "id": "submitBtn",
+        "component": "Button",
+        "label": "Post update",
+        "variant": "primary"
+      },
+      {
+        "id": "laterBtn",
+        "component": "Button",
+        "label": "Remind me later",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>

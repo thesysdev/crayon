@@ -1,0 +1,36 @@
+root = Card([header, kpiRow, comparisonCard, hourlyChart, followUps], "card", "column", "m")
+
+header = CardHeader("Mid-Morning Store Performance", "Today vs. Yesterday (As of 10:30 AM)")
+
+kpiRow = Card([todayRevenueCol, ordersCol, avgOrderCol], "sunk", "row", "m", "center", "between")
+
+todayRevenueCol = Card([revenueLabel, revenueValue, revenueBadge], "clear", "column", "xs")
+revenueLabel = TextContent("Revenue Today", "small-heavy")
+revenueValue = TextContent("$1,485.50", "large-heavy")
+revenueBadge = Badge("+18.4% vs yesterday", "default")
+
+ordersCol = Card([ordersLabel, ordersValue], "clear", "column", "xs")
+ordersLabel = TextContent("Orders Placed", "small-heavy")
+ordersValue = TextContent("42", "large-heavy")
+
+avgOrderCol = Card([avgLabel, avgValue], "clear", "column", "xs")
+avgLabel = TextContent("Avg. Order Value", "small-heavy")
+avgValue = TextContent("$35.37", "large-heavy")
+
+comparisonCard = Card([compHeader, compTable], "clear", "column", "s")
+compHeader = Heading("Mid-Morning Benchmark", "h4")
+compTable = Table([metricCol, yesterdayCol, todayCol, changeCol])
+
+metricCol = Col("Metric (by 10:30 AM)", ["Total Revenue", "Transactions", "Avg. Ticket Size", "Top Category"])
+yesterdayCol = Col("Yesterday", ["$1,254.00", "38", "$33.00", "Coffee & Bakery"])
+todayCol = Col("Today", ["$1,485.50", "42", "$35.37", "Coffee & Bakery"])
+changeCol = Col("Pacing", ["+$231.50 (+18.4%)", "+4 (+10.5%)", "+$2.37 (+7.2%)", "Same (Steady)"])
+
+hourlyChart = BarChart(["7:00 AM", "8:00 AM", "9:00 AM", "10:00 AM"], [yesterdaySeries, todaySeries], "grouped", "Hour", "Revenue ($)")
+yesterdaySeries = Series("Yesterday", [120, 310, 440, 384])
+todaySeries = Series("Today", [145, 380, 510, 450])
+
+followUps = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("View itemized sales breakdown")
+fu2 = FollowUpItem("Compare foot traffic data")
+fu3 = FollowUpItem("Check current inventory status")

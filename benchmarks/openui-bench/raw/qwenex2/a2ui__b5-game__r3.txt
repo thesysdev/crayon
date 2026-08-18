@@ -1,0 +1,519 @@
+
+
+Here's a complete live-ops command center for the studio — KPIs up top, telemetry in the middle, moderation/experiments below, and an ops action bar for region focus, patch notes, and hotfix shipping.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "header",
+          "kpiRow",
+          "chartsRow",
+          "economyRow",
+          "infraRow",
+          "modRow",
+          "actionsCard"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Live Ops — Starfall Raiders",
+        "subtitle": "Global view • updated 12s ago • 2 experiments running • 2 events live"
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": ["kpiOnline", "kpiActives", "kpiRevenue", "kpiArpu"]
+      },
+      {
+        "id": "kpiOnline",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "xs",
+        "weight": 1,
+        "children": ["kpiOnlineLabel", "kpiOnlineValue", "kpiOnlineTrend"]
+      },
+      { "id": "kpiOnlineLabel", "component": "TextContent", "size": "small", "text": "Players online right now" },
+      { "id": "kpiOnlineValue", "component": "TextContent", "size": "large-heavy", "text": "48,213" },
+      { "id": "kpiOnlineTrend", "component": "Badge", "text": "+12% vs yesterday", "variant": "secondary" },
+      {
+        "id": "kpiActives",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "xs",
+        "weight": 1,
+        "children": ["activesLabel", "dauValue", "mauValue"]
+      },
+      { "id": "activesLabel", "component": "TextContent", "size": "small", "text": "Active players" },
+      { "id": "dauValue", "component": "TextContent", "size": "large-heavy", "text": "1.42M DAU" },
+      { "id": "mauValue", "component": "TextContent", "size": "small", "text": "6.83M MAU • DAU/MAU 20.8%" },
+      {
+        "id": "kpiRevenue",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "xs",
+        "weight": 1,
+        "children": ["revLabel", "revValue", "revTrend"]
+      },
+      { "id": "revLabel", "component": "TextContent", "size": "small", "text": "Revenue today" },
+      { "id": "revValue", "component": "TextContent", "size": "large-heavy", "text": "$284,310" },
+      { "id": "revTrend", "component": "Badge", "text": "+9% vs target", "variant": "secondary" },
+      {
+        "id": "kpiArpu",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "xs",
+        "weight": 1,
+        "children": ["arpuLabel", "arpuValue", "arpuSub"]
+      },
+      { "id": "arpuLabel", "component": "TextContent", "size": "small", "text": "Revenue per user (ARPDAU)" },
+      { "id": "arpuValue", "component": "TextContent", "size": "large-heavy", "text": "$0.20" },
+      { "id": "arpuSub", "component": "TextContent", "size": "small", "text": "ARPPU $4.86 • 4.1% payers" },
+      {
+        "id": "chartsRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": ["sessionCard", "crashCard"]
+      },
+      {
+        "id": "sessionCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": ["sessionHeader", "sessionChart"]
+      },
+      {
+        "id": "sessionHeader",
+        "component": "CardHeader",
+        "title": "Session length — last 14 days",
+        "subtitle": "Average minutes per session"
+      },
+      {
+        "id": "sessionChart",
+        "component": "LineChart",
+        "variant": "natural",
+        "yLabel": "minutes",
+        "labels": ["Jun 3", "Jun 4", "Jun 5", "Jun 6", "Jun 7", "Jun 8", "Jun 9", "Jun 10", "Jun 11", "Jun 12", "Jun 13", "Jun 14", "Jun 15", "Jun 16"],
+        "series": ["sessionSeries"]
+      },
+      {
+        "id": "sessionSeries",
+        "component": "Series",
+        "category": "Avg session (min)",
+        "values": [24.1, 23.6, 22.9, 23.4, 26.8, 28.2, 25.0, 24.3, 23.8, 24.6, 27.5, 29.4, 26.1, 25.3]
+      },
+      {
+        "id": "crashCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": ["crashHeader", "crashChart"]
+      },
+      {
+        "id": "crashHeader",
+        "component": "CardHeader",
+        "title": "Crash rate by app version",
+        "subtitle": "% of sessions ending in crash"
+      },
+      {
+        "id": "crashChart",
+        "component": "BarChart",
+        "variant": "grouped",
+        "yLabel": "%",
+        "labels": ["v3.0.4", "v3.1.2", "v3.2.0", "v3.2.1", "v3.3.0-beta"],
+        "series": ["crashSeries"]
+      },
+      {
+        "id": "crashSeries",
+        "component": "Series",
+        "category": "Crash rate",
+        "values": [0.4, 0.6, 1.1, 0.8, 3.4]
+      },
+      {
+        "id": "economyRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": ["storeCard", "inflationCard"]
+      },
+      {
+        "id": "storeCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": ["storeHeader", "storeTable"]
+      },
+      {
+        "id": "storeHeader",
+        "component": "CardHeader",
+        "title": "Best-selling items",
+        "subtitle": "Today, all regions"
+      },
+      {
+        "id": "storeTable",
+        "component": "Table",
+        "columns": ["storeItemCol", "storeUnitsCol", "storeRevCol"]
+      },
+      {
+        "id": "storeItemCol",
+        "component": "Col",
+        "label": "Item",
+        "data": ["Dragonfire Skin Bundle", "Battle Pass S12", "Starter Pack", "Gem Pouch ×500", "Lucky Crate Key ×10"]
+      },
+      {
+        "id": "storeUnitsCol",
+        "component": "Col",
+        "label": "Units",
+        "type": "number",
+        "data": [8412, 6930, 4102, 3388, 2764]
+      },
+      {
+        "id": "storeRevCol",
+        "component": "Col",
+        "label": "Revenue",
+        "data": ["$168,240", "$69,231", "$20,469", "$33,846", "$13,792"]
+      },
+      {
+        "id": "inflationCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": ["inflationHeader", "inflStat", "inflChart", "inflCallout"]
+      },
+      {
+        "id": "inflationHeader",
+        "component": "CardHeader",
+        "title": "Currency inflation",
+        "subtitle": "Gold supply index, last 8 weeks"
+      },
+      { "id": "inflStat", "component": "TextContent", "size": "large-heavy", "text": "+8.4% supply WoW" },
+      {
+        "id": "inflChart",
+        "component": "LineChart",
+        "variant": "natural",
+        "yLabel": "index",
+        "labels": ["W-7", "W-6", "W-5", "W-4", "W-3", "W-2", "W-1", "Now"],
+        "series": ["inflSeries"]
+      },
+      {
+        "id": "inflSeries",
+        "component": "Series",
+        "category": "Gold supply index",
+        "values": [100, 103, 106, 109, 113, 117, 122, 131]
+      },
+      {
+        "id": "inflCallout",
+        "component": "TextCallout",
+        "variant": "warning",
+        "title": "Faucets outpacing sinks",
+        "description": "Faucet/sink ratio is 1.27. Consider adding a gold sink to the Lunar Festival event."
+      },
+      {
+        "id": "infraRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": ["regionsCard", "eventsCard"]
+      },
+      {
+        "id": "regionsCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": ["regionsHeader", "regionsTable"]
+      },
+      {
+        "id": "regionsHeader",
+        "component": "CardHeader",
+        "title": "Server regions",
+        "subtitle": "Health, latency and load"
+      },
+      {
+        "id": "regionsTable",
+        "component": "Table",
+        "columns": ["regionNameCol", "regionHealthCol", "regionPingCol", "regionPlayersCol"]
+      },
+      {
+        "id": "regionNameCol",
+        "component": "Col",
+        "label": "Region",
+        "data": ["NA East", "NA West", "EU Central", "Asia Pacific", "SA East"]
+      },
+      {
+        "id": "regionHealthCol",
+        "component": "Col",
+        "label": "Health",
+        "data": ["Healthy", "Healthy", "Degraded", "Healthy", "Healthy"]
+      },
+      {
+        "id": "regionPingCol",
+        "component": "Col",
+        "label": "Ping",
+        "data": ["34 ms", "41 ms", "88 ms", "52 ms", "63 ms"]
+      },
+      {
+        "id": "regionPlayersCol",
+        "component": "Col",
+        "label": "Online",
+        "type": "number",
+        "data": [18204, 9882, 11447, 7013, 1667]
+      },
+      {
+        "id": "eventsCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": ["eventsHeader", "eventsTable"]
+      },
+      {
+        "id": "eventsHeader",
+        "component": "CardHeader",
+        "title": "Live & upcoming events",
+        "subtitle": "Event calendar"
+      },
+      {
+        "id": "eventsTable",
+        "component": "Table",
+        "columns": ["eventNameCol", "eventStatusCol", "eventWindowCol"]
+      },
+      {
+        "id": "eventNameCol",
+        "component": "Col",
+        "label": "Event",
+        "data": ["Double XP Weekend", "Guild War: Season 12", "Flash Sale: Gems", "Lunar Festival"]
+      },
+      {
+        "id": "eventStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": ["LIVE", "LIVE", "Upcoming", "Upcoming"]
+      },
+      {
+        "id": "eventWindowCol",
+        "component": "Col",
+        "label": "Window",
+        "data": ["Ends in 6h", "Ends in 5d", "Starts in 22h", "Starts Jun 19"]
+      },
+      {
+        "id": "modRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": ["reportsCard", "appealsCard", "experimentsCard"]
+      },
+      {
+        "id": "reportsCard",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "s",
+        "weight": 1,
+        "children": ["reportsHeader", "reportsCount", "reportsBreakdown", "reportsBtn"]
+      },
+      {
+        "id": "reportsHeader",
+        "component": "CardHeader",
+        "title": "Player reports",
+        "subtitle": "Awaiting review"
+      },
+      { "id": "reportsCount", "component": "TextContent", "size": "large-heavy", "text": "237" },
+      {
+        "id": "reportsBreakdown",
+        "component": "TextContent",
+        "size": "small",
+        "text": "128 cheating • 76 harassment • 21 exploits • 12 other"
+      },
+      { "id": "reportsBtn", "component": "Button", "label": "Open report queue", "variant": "secondary" },
+      {
+        "id": "appealsCard",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "s",
+        "weight": 1,
+        "children": ["appealsHeader", "appealsCount", "appealsBreakdown", "appealsBtn"]
+      },
+      {
+        "id": "appealsHeader",
+        "component": "CardHeader",
+        "title": "Ban appeals",
+        "subtitle": "Awaiting review"
+      },
+      { "id": "appealsCount", "component": "TextContent", "size": "large-heavy", "text": "41" },
+      {
+        "id": "appealsBreakdown",
+        "component": "TextContent",
+        "size": "small",
+        "text": "29 account bans • 12 mutes • oldest ticket 2d"
+      },
+      { "id": "appealsBtn", "component": "Button", "label": "Review ban appeals", "variant": "secondary" },
+      {
+        "id": "experimentsCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": ["expHeader", "expTable"]
+      },
+      {
+        "id": "expHeader",
+        "component": "CardHeader",
+        "title": "Running experiments",
+        "subtitle": "A/B results so far"
+      },
+      {
+        "id": "expTable",
+        "component": "Table",
+        "columns": ["expNameCol", "expLiftCol", "expConfCol", "expVerdictCol"]
+      },
+      {
+        "id": "expNameCol",
+        "component": "Col",
+        "label": "Experiment",
+        "data": ["Storefront redesign", "+10% soft currency rewards"]
+      },
+      {
+        "id": "expLiftCol",
+        "component": "Col",
+        "label": "Lift",
+        "data": ["+6.2% conversion", "+0.4% D7 retention"]
+      },
+      {
+        "id": "expConfCol",
+        "component": "Col",
+        "label": "Confidence",
+        "data": ["96%", "71%"]
+      },
+      {
+        "id": "expVerdictCol",
+        "component": "Col",
+        "label": "Verdict",
+        "data": ["Winning — roll out", "Inconclusive — keep running"]
+      },
+      {
+        "id": "actionsCard",
+        "component": "Card",
+        "children": ["actionsHeader", "actionsRow"]
+      },
+      {
+        "id": "actionsHeader",
+        "component": "CardHeader",
+        "title": "Ops actions",
+        "subtitle": "Focus a region, draft patch notes, or ship a hotfix"
+      },
+      {
+        "id": "actionsRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "align": "end",
+        "children": ["focusField", "patchDialog", "hotfixDialog"]
+      },
+      {
+        "id": "focusField",
+        "component": "FormControl",
+        "label": "Focus region",
+        "hint": "Filters every widget to one region",
+        "input": "focusSelect"
+      },
+      {
+        "id": "focusSelect",
+        "component": "Select",
+        "name": "focus_region",
+        "placeholder": "All regions (global)",
+        "items": ["focusNAE", "focusNAW", "focusEUC", "focusAPAC", "focusSAE"]
+      },
+      { "id": "focusNAE", "component": "SelectItem", "value": "na-east", "label": "NA East" },
+      { "id": "focusNAW", "component": "SelectItem", "value": "na-west", "label": "NA West" },
+      { "id": "focusEUC", "component": "SelectItem", "value": "eu-central", "label": "EU Central" },
+      { "id": "focusAPAC", "component": "SelectItem", "value": "apac", "label": "Asia Pacific" },
+      { "id": "focusSAE", "component": "SelectItem", "value": "sa-east", "label": "SA East" },
+      {
+        "id": "patchDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Draft patch notes",
+        "title": "Draft patch notes",
+        "description": "Summarize fixes for players. Publishing pushes to the patch notes staging page.",
+        "content": ["patchForm"]
+      },
+      {
+        "id": "patchForm",
+        "component": "Form",
+        "name": "patch-notes",
+        "fields": ["versionField", "notesField"],
+        "buttons": "patchButtons"
+      },
+      {
+        "id": "versionField",
+        "component": "FormControl",
+        "label": "Version",
+        "input": "versionInput"
+      },
+      {
+        "id": "versionInput",
+        "component": "Input",
+        "name": "version",
+        "placeholder": "v3.2.2"
+      },
+      {
+        "id": "notesField",
+        "component": "FormControl",
+        "label": "Highlights",
+        "hint": "One bullet per fix or feature",
+        "input": "notesInput"
+      },
+      {
+        "id": "notesInput",
+        "component": "TextArea",
+        "name": "notes",
+        "rows": 6,
+        "placeholder": "- Fixed crash on Android 14 when opening the store\n- Buffed Dragonfire skin particle effects\n- Reduced EU Central matchmaking latency"
+      },
+      {
+        "id": "patchButtons",
+        "component": "Buttons",
+        "buttons": ["saveDraftBtn", "publishBtn"]
+      },
+      { "id": "saveDraftBtn", "component": "Button", "label": "Save draft", "variant": "secondary" },
+      { "id": "publishBtn", "component": "Button", "label": "Publish to staging", "variant": "primary" },
+      {
+        "id": "hotfixDialog",
+        "component": "AlertDialogBlock",
+        "triggerLabel": "Ship hotfix",
+        "triggerVariant": "destructive",
+        "title": "Ship hotfix v3.2.2?",
+        "description": "Deploys immediately to all regions. Estimated rollout: 14 minutes. No downtime expected. Requires on-call sign-off.",
+        "confirmLabel": "Ship to all regions",
+        "cancelLabel": "Cancel"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+Everything maps to your checklist: the four KPI tiles cover 1–4, the session trend and crash-rate charts cover 5 and 8, best-sellers and inflation cover 6 and 12, regions and events cover 7 and 9, the moderation tiles cover 10–11, the experiments table covers 13, and the bottom action bar handles 14–16. Note that EU Central is flagged as degraded and v3.3.0-beta has a 3.4% crash rate — good candidates to investigate first.

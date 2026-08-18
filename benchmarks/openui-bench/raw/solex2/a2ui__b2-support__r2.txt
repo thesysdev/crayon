@@ -1,0 +1,322 @@
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "metrics",
+          "controls",
+          "recentHeader",
+          "tickets"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Support morning view",
+        "subtitle": "Queue status and most recent tickets"
+      },
+      {
+        "id": "metrics",
+        "component": "Card",
+        "children": [
+          "openTickets",
+          "responseTime"
+        ],
+        "direction": "row",
+        "gap": "m"
+      },
+      {
+        "id": "openTickets",
+        "component": "Card",
+        "children": [
+          "openTicketsLabel",
+          "openTicketsValue"
+        ],
+        "variant": "sunk",
+        "gap": "xs",
+        "weight": 1
+      },
+      {
+        "id": "openTicketsLabel",
+        "component": "TextContent",
+        "text": "Open tickets",
+        "size": "small"
+      },
+      {
+        "id": "openTicketsValue",
+        "component": "Heading",
+        "text": "42",
+        "level": "h2"
+      },
+      {
+        "id": "responseTime",
+        "component": "Card",
+        "children": [
+          "responseTimeLabel",
+          "responseTimeValue"
+        ],
+        "variant": "sunk",
+        "gap": "xs",
+        "weight": 1
+      },
+      {
+        "id": "responseTimeLabel",
+        "component": "TextContent",
+        "text": "Average first-response time",
+        "size": "small"
+      },
+      {
+        "id": "responseTimeValue",
+        "component": "Heading",
+        "text": "18 min",
+        "level": "h2"
+      },
+      {
+        "id": "controls",
+        "component": "Card",
+        "children": [
+          "priorityFilter",
+          "newTicket"
+        ],
+        "variant": "clear",
+        "direction": "row",
+        "align": "center",
+        "justify": "between",
+        "gap": "m"
+      },
+      {
+        "id": "priorityFilter",
+        "component": "SwitchGroup",
+        "name": "ticket_priority_filter",
+        "items": [
+          "highPriorityOnly"
+        ],
+        "variant": "clear"
+      },
+      {
+        "id": "highPriorityOnly",
+        "component": "SwitchItem",
+        "name": "high_priority_only",
+        "label": "High priority only",
+        "description": "Show only high-priority tickets",
+        "defaultChecked": false
+      },
+      {
+        "id": "newTicket",
+        "component": "DialogBlock",
+        "triggerLabel": "Open new ticket",
+        "title": "New support ticket",
+        "description": "Enter the ticket details and priority.",
+        "content": [
+          "newTicketForm"
+        ],
+        "triggerVariant": "default"
+      },
+      {
+        "id": "newTicketForm",
+        "component": "Form",
+        "name": "new-ticket",
+        "buttons": "newTicketButtons",
+        "fields": [
+          "subjectField",
+          "requesterField",
+          "descriptionField",
+          "priorityField"
+        ]
+      },
+      {
+        "id": "subjectField",
+        "component": "FormControl",
+        "label": "Subject",
+        "input": "subjectInput"
+      },
+      {
+        "id": "subjectInput",
+        "component": "Input",
+        "name": "subject",
+        "placeholder": "Briefly describe the issue"
+      },
+      {
+        "id": "requesterField",
+        "component": "FormControl",
+        "label": "Requester email",
+        "input": "requesterInput"
+      },
+      {
+        "id": "requesterInput",
+        "component": "Input",
+        "name": "requester_email",
+        "placeholder": "customer@example.com",
+        "type": "email"
+      },
+      {
+        "id": "descriptionField",
+        "component": "FormControl",
+        "label": "Description",
+        "input": "descriptionInput"
+      },
+      {
+        "id": "descriptionInput",
+        "component": "TextArea",
+        "name": "description",
+        "placeholder": "Add context, symptoms, and troubleshooting details",
+        "rows": 4
+      },
+      {
+        "id": "priorityField",
+        "component": "FormControl",
+        "label": "Priority",
+        "input": "prioritySelect"
+      },
+      {
+        "id": "prioritySelect",
+        "component": "Select",
+        "name": "priority",
+        "items": [
+          "priorityLow",
+          "priorityMedium",
+          "priorityHigh"
+        ],
+        "placeholder": "Choose priority"
+      },
+      {
+        "id": "priorityLow",
+        "component": "SelectItem",
+        "value": "low",
+        "label": "Low"
+      },
+      {
+        "id": "priorityMedium",
+        "component": "SelectItem",
+        "value": "medium",
+        "label": "Medium"
+      },
+      {
+        "id": "priorityHigh",
+        "component": "SelectItem",
+        "value": "high",
+        "label": "High"
+      },
+      {
+        "id": "newTicketButtons",
+        "component": "Buttons",
+        "buttons": [
+          "createTicketButton",
+          "cancelTicketButton"
+        ]
+      },
+      {
+        "id": "createTicketButton",
+        "component": "Button",
+        "label": "Create ticket",
+        "variant": "primary"
+      },
+      {
+        "id": "cancelTicketButton",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      },
+      {
+        "id": "recentHeader",
+        "component": "Heading",
+        "text": "Five most recent tickets",
+        "level": "h3"
+      },
+      {
+        "id": "tickets",
+        "component": "Table",
+        "columns": [
+          "ticketId",
+          "ticketSubject",
+          "ticketRequester",
+          "ticketOpened",
+          "ticketPriority"
+        ]
+      },
+      {
+        "id": "ticketId",
+        "component": "Col",
+        "label": "Ticket",
+        "data": [
+          "#1048",
+          "#1047",
+          "#1046",
+          "#1045",
+          "#1044"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "ticketSubject",
+        "component": "Col",
+        "label": "Subject",
+        "data": [
+          "Checkout fails after card verification",
+          "Unable to reset account password",
+          "Invoice shows duplicate line item",
+          "Team members cannot access workspace",
+          "Request to update billing address"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "ticketRequester",
+        "component": "Col",
+        "label": "Requester",
+        "data": [
+          "Maya Chen",
+          "Ethan Brooks",
+          "Sofia Alvarez",
+          "Noah Williams",
+          "Ava Patel"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "ticketOpened",
+        "component": "Col",
+        "label": "Opened",
+        "data": [
+          "8:42 AM",
+          "8:31 AM",
+          "8:18 AM",
+          "7:56 AM",
+          "7:40 AM"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "ticketPriority",
+        "component": "Col",
+        "label": "Priority",
+        "data": [
+          "High",
+          "Medium",
+          "Low",
+          "High",
+          "Medium"
+        ],
+        "type": "string"
+      }
+    ]
+  }
+}
+</a2ui-json>

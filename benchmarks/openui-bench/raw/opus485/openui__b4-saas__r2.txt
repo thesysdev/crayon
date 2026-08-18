@@ -1,0 +1,53 @@
+root = Card([header, periodForm, kpis, signupsTrend, planSplit, topCustomers, atRisk, failedPayments, featureAdoption, npsSection, seatUtil, inviteSection])
+
+header = CardHeader("Admin Overview", "Company health at a glance")
+
+periodForm = Form("reporting-period", periodButtons, [periodField])
+periodField = FormControl("Reporting period", periodSelect, "Applies to all metrics below")
+periodSelect = Select("period", [pMonth, pQuarter, pYear], "This month")
+pMonth = SelectItem("month", "This month")
+pQuarter = SelectItem("quarter", "This quarter")
+pYear = SelectItem("year", "This year")
+periodButtons = Buttons([applyPeriod])
+applyPeriod = Button("Apply period", null, "primary")
+
+kpis = Table([kpiName, kpiValue])
+kpiName = Col("Metric", ["MRR", "ARR", "Churn (this month)", "Current NPS"])
+kpiValue = Col("Value", ["$412,900", "$4,954,800", "2.4%", "+52"])
+
+signupsTrend = LineChart(["Days 1-15", "16-30", "31-45", "46-60", "61-75", "76-90"], [signupSeries], "natural", "Past 90 days", "New signups")
+signupSeries = Series("New signups", [180, 210, 240, 205, 268, 312])
+
+planSplit = PieChart(["Starter", "Growth", "Scale", "Enterprise"], [1240, 860, 410, 95], "donut")
+
+topCustomers = Table([custName, custSeats, custSpend])
+custName = Col("Customer", ["Acme Corp", "Globex", "Initech", "Umbrella", "Stark Ind.", "Wayne Ent.", "Hooli", "Pied Piper", "Cyberdyne", "Soylent"], "string")
+custSeats = Col("Seats", [820, 640, 590, 510, 470, 430, 390, 340, 300, 275], "number")
+custSpend = Col("Annual Spend", ["$196,800", "$153,600", "$141,600", "$122,400", "$112,800", "$103,200", "$93,600", "$81,600", "$72,000", "$66,000"], "string")
+
+atRisk = Table([riskName, riskReason])
+riskName = Col("Account", ["Vandelay Ind.", "Massive Dynamic", "Gekko Capital", "Oscorp"], "string")
+riskReason = Col("Risk reason", ["Usage down 40% MoM", "Support tickets spiking, low CSAT", "Contract renewal overdue 30 days", "Champion left the company"], "string")
+
+failedPayments = Table([fpAccount, fpAmount, fpAction])
+fpAccount = Col("Account", ["Delos Inc.", "Tyrell Corp", "Nakatomi", "Bluth Company"], "string")
+fpAmount = Col("Amount", ["$4,800", "$2,400", "$1,200", "$960"], "string")
+fpAction = Col("Action", ["Retry", "Retry", "Retry", "Retry"], "action")
+
+featureAdoption = HorizontalBarChart(["AI Insights", "Bulk Export", "Audit Log"], [adoptionSeries], "grouped", "Adoption %", "Feature")
+adoptionSeries = Series("Adoption", [46, 63, 38])
+
+npsSection = Progress(76, "NPS distribution: 76% promoters")
+
+seatUtil = Progress(78, "Seat utilization: 4,912 of 6,300 seats active")
+
+inviteSection = Form("invite-admin", inviteButtons, [inviteEmail, inviteRole])
+inviteEmail = FormControl("Admin email", inviteEmailInput, "They'll receive an invitation link")
+inviteEmailInput = Input("admin_email", "admin@company.com", "email")
+inviteRole = FormControl("Role", roleSelect)
+roleSelect = Select("role", [roleOwner, roleAdmin, roleBilling], "Admin")
+roleOwner = SelectItem("owner", "Owner")
+roleAdmin = SelectItem("admin", "Admin")
+roleBilling = SelectItem("billing", "Billing admin")
+inviteButtons = Buttons([sendInvite])
+sendInvite = Button("Send invite", null, "primary")

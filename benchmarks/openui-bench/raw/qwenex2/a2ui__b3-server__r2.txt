@@ -1,0 +1,300 @@
+
+
+Here's a single service-health screen for the on-call engineer — uptime, 24h resource usage, live error rate, incident table with acknowledge flow, region filter, slowest endpoints, and an alert-threshold form.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "gap": "l",
+        "children": [
+          "header",
+          "controlsRow",
+          "statsRow",
+          "usageCard",
+          "incidentsCard",
+          "latencyCard",
+          "thresholdCard"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Service Health — payments-api",
+        "subtitle": "On-call view • q3 • updated 40s ago"
+      },
+      {
+        "id": "controlsRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "children": ["regionField"]
+      },
+      {
+        "id": "regionField",
+        "component": "FormControl",
+        "label": "Region filter",
+        "input": "regionSelect",
+        "hint": "Narrows metrics, incidents, and latency to one region"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region",
+        "placeholder": "All regions",
+        "value": "all",
+        "items": ["rAll", "rUsEast", "rEuWest", "rApSouth"]
+      },
+      { "id": "rAll", "component": "SelectItem", "value": "all", "label": "All regions" },
+      { "id": "rUsEast", "component": "SelectItem", "value": "us-east-1", "label": "us-east-1" },
+      { "id": "rEuWest", "component": "SelectItem", "value": "eu-west-1", "label": "eu-west-1" },
+      { "id": "rApSouth", "component": "SelectItem", "value": "ap-south-1", "label": "ap-south-1" },
+      {
+        "id": "statsRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": ["uptimeCard", "errorCard"]
+      },
+      {
+        "id": "uptimeCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "gap": "s",
+        "children": ["uptimeTitle", "uptimeValue", "uptimeBar"]
+      },
+      { "id": "uptimeTitle", "component": "Label", "text": "Uptime this quarter" },
+      { "id": "uptimeValue", "component": "TextContent", "text": "99.97%", "size": "large-heavy" },
+      {
+        "id": "uptimeBar",
+        "component": "Progress",
+        "value": 99.97,
+        "label": "Quarter target: 99.95% — 42 min total downtime"
+      },
+      {
+        "id": "errorCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "gap": "s",
+        "children": ["errorTitle", "errorValue", "errorTag"]
+      },
+      { "id": "errorTitle", "component": "Label", "text": "Error rate right now (5xx)" },
+      { "id": "errorValue", "component": "TextContent", "text": "0.42%", "size": "large-heavy" },
+      { "id": "errorTag", "component": "Tag", "text": "Within SLO (≤ 1%)", "variant": "success" },
+      {
+        "id": "usageCard",
+        "component": "Card",
+        "gap": "m",
+        "children": ["usageHeader", "usageChart"]
+      },
+      {
+        "id": "usageHeader",
+        "component": "CardHeader",
+        "title": "CPU & memory — last 24 hours",
+        "subtitle": "3-hour rolling averages, fleet-wide"
+      },
+      {
+        "id": "usageChart",
+        "component": "LineChart",
+        "variant": "natural",
+        "xLabel": "Time (UTC)",
+        "yLabel": "Utilization %",
+        "labels": ["00:00", "03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00"],
+        "series": ["cpuSeries", "memSeries"]
+      },
+      {
+        "id": "cpuSeries",
+        "component": "Series",
+        "category": "CPU",
+        "values": [38, 42, 40, 55, 63, 58, 61, 47]
+      },
+      {
+        "id": "memSeries",
+        "component": "Series",
+        "category": "Memory",
+        "values": [62, 63, 64, 68, 74, 72, 71, 69]
+      },
+      {
+        "id": "incidentsCard",
+        "component": "Card",
+        "gap": "m",
+        "children": ["incidentsHeader", "incidentsTable", "ackField", "ackDialog"]
+      },
+      {
+        "id": "incidentsHeader",
+        "component": "CardHeader",
+        "title": "Open incidents",
+        "subtitle": "3 active across all regions"
+      },
+      {
+        "id": "incidentsTable",
+        "component": "Table",
+        "columns": ["incName", "incSev", "incSince"]
+      },
+      {
+        "id": "incName",
+        "component": "Col",
+        "label": "Incident",
+        "data": [
+          "INC-3041 · checkout-api 5xx spike",
+          "INC-3042 · DB replica lag on reads-replica-2",
+          "INC-3043 · Payouts queue backlog"
+        ]
+      },
+      {
+        "id": "incSev",
+        "component": "Col",
+        "label": "Severity",
+        "data": ["SEV1", "SEV2", "SEV3"]
+      },
+      {
+        "id": "incSince",
+        "component": "Col",
+        "label": "Opened",
+        "data": ["04:12 UTC", "06:48 UTC", "09:05 UTC"]
+      },
+      {
+        "id": "ackField",
+        "component": "FormControl",
+        "label": "Acknowledge an incident",
+        "input": "ackSelect",
+        "hint": "Pick the incident, then confirm acknowledgment"
+      },
+      {
+        "id": "ackSelect",
+        "component": "Select",
+        "name": "incident_to_ack",
+        "placeholder": "Choose an incident",
+        "items": ["aInc1", "aInc2", "aInc3"]
+      },
+      {
+        "id": "aInc1",
+        "component": "SelectItem",
+        "value": "INC-3041",
+        "label": "INC-3041 · SEV1 · checkout-api 5xx spike"
+      },
+      {
+        "id": "aInc2",
+        "component": "SelectItem",
+        "value": "INC-3042",
+        "label": "INC-3042 · SEV2 · DB replica lag"
+      },
+      {
+        "id": "aInc3",
+        "component": "SelectItem",
+        "value": "INC-3043",
+        "label": "INC-3043 · SEV3 · Payouts queue backlog"
+      },
+      {
+        "id": "ackDialog",
+        "component": "AlertDialogBlock",
+        "triggerLabel": "Acknowledge incident",
+        "triggerVariant": "outline",
+        "title": "Acknowledge this incident?",
+        "description": "The incident will be assigned to you and moved to the Acknowledged state. Pages stop, but timers keep running until it is resolved.",
+        "confirmLabel": "Acknowledge",
+        "cancelLabel": "Cancel"
+      },
+      {
+        "id": "latencyCard",
+        "component": "Card",
+        "gap": "m",
+        "children": ["latencyHeader", "latencyTable"]
+      },
+      {
+        "id": "latencyHeader",
+        "component": "CardHeader",
+        "title": "5 slowest endpoints",
+        "subtitle": "p95 latency over the last hour"
+      },
+      {
+        "id": "latencyTable",
+        "component": "Table",
+        "columns": ["epName", "epLatency"]
+      },
+      {
+        "id": "epName",
+        "component": "Col",
+        "label": "Endpoint",
+        "data": [
+          "POST /v1/checkout",
+          "POST /v1/payouts",
+          "GET /v1/receipts/{id}",
+          "POST /v1/refunds",
+          "GET /v1/balance"
+        ]
+      },
+      {
+        "id": "epLatency",
+        "component": "Col",
+        "label": "p95 latency",
+        "data": ["2,410 ms", "1,875 ms", "1,540 ms", "1,210 ms", "985 ms"]
+      },
+      {
+        "id": "thresholdCard",
+        "component": "Card",
+        "gap": "m",
+        "children": ["thresholdHeader", "thresholdForm"]
+      },
+      {
+        "id": "thresholdHeader",
+        "component": "CardHeader",
+        "title": "Alert threshold",
+        "subtitle": "Page on-call when the error rate exceeds this value"
+      },
+      {
+        "id": "thresholdForm",
+        "component": "Form",
+        "name": "set-alert-threshold",
+        "fields": ["thresholdField"],
+        "buttons": "thresholdButtons"
+      },
+      {
+        "id": "thresholdField",
+        "component": "FormControl",
+        "label": "Error rate threshold (%)",
+        "input": "thresholdInput",
+        "hint": "Current error rate: 0.42%. Recommended: 0.75%"
+      },
+      {
+        "id": "thresholdInput",
+        "component": "Input",
+        "name": "alert_threshold",
+        "type": "number",
+        "placeholder": "0.75"
+      },
+      {
+        "id": "thresholdButtons",
+        "component": "Buttons",
+        "buttons": ["saveBtn"]
+      },
+      {
+        "id": "saveBtn",
+        "component": "Button",
+        "label": "Save threshold",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+Coverage of every requirement: uptime for the quarter with target progress (1), CPU/memory line chart over the past 24h (2), live error-rate card (3), open incidents table with a severity column (4), region select to narrow scope (5), top-5 slowest endpoints with p95 latency (6), alert-threshold form (7), and a pick-an-incident select with a confirm dialog to acknowledge (8).

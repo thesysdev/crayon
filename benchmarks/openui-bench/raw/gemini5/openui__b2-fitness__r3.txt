@@ -1,0 +1,44 @@
+root = Card([header, kpiRow, progressSection, chartSection, formSection, followUps])
+
+header = CardHeader("Daily Fitness Summary", "Track your activity, workouts, and progress")
+
+kpiRow = Card([stepBadge, calBadge], "clear", "row", "m", "center", "start")
+stepBadge = Tag("Steps: 8,420 / 10,000", null, "lg", "info")
+calBadge = Tag("Calories: 640 kcal", null, "lg", "success")
+
+progressSection = Card([stepHeading, stepProgress], "sunk", "column", "s")
+stepHeading = Heading("Daily Step Goal", "h4")
+stepProgress = Progress(84, "8,420 of 10,000 steps (84%)")
+
+chartSection = Card([chartHeading, workoutChart], "sunk", "column", "m")
+chartHeading = Heading("Weekly Calories Burned", "h4")
+workoutChart = BarChart(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], [calSeries], "grouped", "Day of Week", "Calories (kcal)")
+calSeries = Series("Burned", [450, 520, 380, 600, 710, 850, 640])
+
+formSection = Card([formHeading, workoutForm], "card", "column", "m")
+formHeading = Heading("Log New Workout", "h3")
+workoutForm = Form("log-workout", formButtons, [typeControl, durationControl, intensityControl])
+
+typeControl = FormControl("Workout Type", typeSelect)
+typeSelect = Select("workout_type", [type1, type2, type3, type4], "Select activity")
+type1 = SelectItem("running", "Running")
+type2 = SelectItem("cycling", "Cycling")
+type3 = SelectItem("hiit", "HIIT / Cardio")
+type4 = SelectItem("strength", "Strength Training")
+
+durationControl = FormControl("Duration (minutes)", durationInput)
+durationInput = Input("duration", "45", "number")
+
+intensityControl = FormControl("Intensity Level", intensityRadio)
+intensityRadio = RadioGroup("intensity", [intLow, intMed, intHigh], "medium")
+intLow = RadioItem("Low", "Light exertion, conversational pace", "low")
+intMed = RadioItem("Moderate", "Increased heart rate and breathing", "medium")
+intHigh = RadioItem("High", "Vigorous effort, maximum endurance", "high")
+
+formButtons = Buttons([submitBtn, resetBtn])
+submitBtn = Button("Log Workout", null, "primary")
+resetBtn = Button("Reset", null, "tertiary")
+
+followUps = FollowUpBlock([f1, f2])
+f1 = FollowUpItem("View monthly workout trends")
+f2 = FollowUpItem("Adjust daily step goal")

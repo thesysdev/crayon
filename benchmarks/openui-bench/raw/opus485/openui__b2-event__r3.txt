@@ -1,0 +1,37 @@
+root = Card([header, countdown, agenda, speakers, tickets, registration, followups])
+
+header = CardHeader("DevWave 2025", "March 14, 2025 · Moscone Center, San Francisco")
+
+countdown = Progress(74, "42 days remaining until DevWave 2025")
+
+agenda = Table([agendaTime, agendaSession])
+agendaTime = Col("Time", ["09:00", "10:00", "11:30", "13:00", "14:30", "16:00"])
+agendaSession = Col("Session", ["Registration & Coffee", "Opening Keynote", "Scaling Frontends", "Lunch Break", "AI in Production", "Closing Panel"])
+
+speakers = ListBlock([sp1, sp2, sp3, sp4])
+sp1 = ListItem("Ada Rivera", "Principal Engineer at Vercel — building resilient edge systems")
+sp2 = ListItem("Kenji Watanabe", "Staff ML Engineer — deploying models that don't break at 3am")
+sp3 = ListItem("Priya Nair", "Design Systems Lead — scaling UI across 40 product teams")
+sp4 = ListItem("Marcus Bell", "CTO at Streamline — lessons from 10x traffic growth")
+
+tickets = Table([tierName, tierPrice])
+tierName = Col("Tier", ["Early Bird", "Standard", "VIP", "Team (5+)"])
+tierPrice = Col("Price", ["$149", "$249", "$499", "$199/seat"], "string")
+
+registration = Form("register", regButtons, [nameField, emailField, tierField])
+nameField = FormControl("Full name", nameInput)
+nameInput = Input("name", "Jane Smith")
+emailField = FormControl("Email", emailInput, "Your ticket confirmation goes here")
+emailInput = Input("email", "jane@company.com", "email")
+tierField = FormControl("Ticket tier", tierSelect)
+tierSelect = Select("tier", [optEarly, optStandard, optVip, optTeam], "Select a tier")
+optEarly = SelectItem("early", "Early Bird — $149")
+optStandard = SelectItem("standard", "Standard — $249")
+optVip = SelectItem("vip", "VIP — $499")
+optTeam = SelectItem("team", "Team (5+) — $199/seat")
+regButtons = Buttons([submitBtn])
+submitBtn = Button("Register now", null, "primary")
+
+followups = FollowUpBlock([fu1, fu2])
+fu1 = FollowUpItem("Show the full session descriptions")
+fu2 = FollowUpItem("What's included with a VIP ticket?")

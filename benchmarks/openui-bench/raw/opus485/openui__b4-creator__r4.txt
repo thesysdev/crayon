@@ -1,0 +1,72 @@
+root = Card([header, filterBar, kpis, growthChart, engagementNote, topPosts, audienceSplit, bestHour, schedule, replies, earnings, collabs, composer, followups])
+
+header = CardHeader("Creator Studio", "Cross-platform overview · This month")
+
+filterBar = Form("platform-filter", filterButtons, [platformField])
+platformField = FormControl("Narrow to a platform", platformSelect, "Filters every panel on this screen")
+platformSelect = Select("platform", [pAll, pIg, pTt, pYt, pX], "All platforms")
+pAll = SelectItem("all", "All platforms")
+pIg = SelectItem("instagram", "Instagram")
+pTt = SelectItem("tiktok", "TikTok")
+pYt = SelectItem("youtube", "YouTube")
+pX = SelectItem("x", "X / Twitter")
+filterButtons = Buttons([applyBtn, resetBtn])
+applyBtn = Button("Apply filter", null, "primary")
+resetBtn = Button("Reset", null, "tertiary")
+
+kpis = Table([kpiMetric, kpiValue])
+kpiMetric = Col("Metric", ["Total followers", "Growth (30d)", "Engagement rate", "Earnings (mo)"])
+kpiValue = Col("Value", ["248,300", "+12,480", "5.8%", "$8,240"])
+
+growthChart = AreaChart(["W1", "W2", "W3", "W4"], [followerSeries], "natural", "Week", "Followers")
+followerSeries = Series("Followers", [235820, 240100, 244600, 248300])
+
+engagementNote = TextCallout("success", "Engagement holding strong", "5.8% average this month, up 0.4 points from last month.")
+
+topPosts = ListBlock([post1, post2, post3], "number")
+post1 = ListItem("Behind the scenes reel", "Instagram · Reach 92,400", null, "View")
+post2 = ListItem("Studio setup tour", "YouTube · Reach 78,100", null, "View")
+post3 = ListItem("Quick tips carousel", "TikTok · Reach 64,900", null, "View")
+
+audienceSplit = PieChart(["Instagram", "TikTok", "YouTube", "X / Twitter"], [102000, 71000, 54000, 21300], "donut")
+
+bestHour = Callout("info", "Best hour to post", "Based on history, 7:00–8:00 PM local drives your highest engagement.")
+
+schedule = SectionBlock([scheduledSection])
+scheduledSection = SectionItem("scheduled", "Scheduled this week", [scheduledList])
+scheduledList = ListBlock([sched1, sched2, sched3], "number")
+sched1 = ListItem("Mon · New gear unboxing", "Instagram · 7:30 PM")
+sched2 = ListItem("Wed · Q&A short", "TikTok · 6:00 PM")
+sched3 = ListItem("Fri · Full tutorial", "YouTube · 7:00 PM")
+
+replies = Callout("warning", "Comments waiting for a reply", "37 comments are pending across your platforms.")
+
+earnings = BarChart(["Sponsorships", "Ad revenue", "Affiliate", "Tips"], [earningsSeries], "grouped", "Source", "USD")
+earningsSeries = Series("Earnings", [4200, 2600, 980, 460])
+
+collabs = ListBlock([collab1, collab2, collab3], "number")
+collab1 = ListItem("Aura Skincare", "Pending · Paid partnership", null, "Review")
+collab2 = ListItem("PixelGear", "Pending · Product gifting", null, "Review")
+collab3 = ListItem("BrewLab Coffee", "Pending · Affiliate deal", null, "Review")
+
+composer = Form("schedule-post", composerButtons, [captionField, platformPostField, dateField, timeField])
+captionField = FormControl("Caption", captionInput, "Keep it under 2,200 characters")
+captionInput = TextArea("caption", "Write your caption...", 4)
+platformPostField = FormControl("Platform", postPlatformSelect)
+postPlatformSelect = Select("post_platform", [ppIg, ppTt, ppYt, ppX], "Choose platform")
+ppIg = SelectItem("instagram", "Instagram")
+ppTt = SelectItem("tiktok", "TikTok")
+ppYt = SelectItem("youtube", "YouTube")
+ppX = SelectItem("x", "X / Twitter")
+dateField = FormControl("Date", dateInput)
+dateInput = DatePicker("post_date", "single")
+timeField = FormControl("Time", timeInput, "Tip: 7:00–8:00 PM performs best")
+timeInput = Input("post_time", "19:30", "text")
+composerButtons = Buttons([scheduleBtn, draftBtn])
+scheduleBtn = Button("Schedule post", null, "primary")
+draftBtn = Button("Save draft", null, "tertiary")
+
+followups = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Show me only Instagram performance")
+fu2 = FollowUpItem("Draft captions for this week's posts")
+fu3 = FollowUpItem("Which collab request should I accept first?")

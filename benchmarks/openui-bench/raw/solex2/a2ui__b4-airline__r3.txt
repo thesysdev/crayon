@@ -1,0 +1,620 @@
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#175CD3",
+      "agentDisplayName": "Airline Hub Operations"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "hubForm",
+          "weatherAlert",
+          "delayAlert",
+          "kpiTable",
+          "operationsTabs",
+          "rebookDialog"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Hub Operations Desk — Chicago O'Hare (ORD)",
+        "subtitle": "Live operating picture · Updated 14:32 local"
+      },
+      {
+        "id": "hubForm",
+        "component": "Form",
+        "name": "hub-selector",
+        "buttons": "hubButtons",
+        "fields": [
+          "hubField"
+        ]
+      },
+      {
+        "id": "hubButtons",
+        "component": "Buttons",
+        "buttons": [
+          "switchHubButton"
+        ]
+      },
+      {
+        "id": "switchHubButton",
+        "component": "Button",
+        "label": "View selected hub",
+        "variant": "secondary",
+        "action": [
+          {
+            "type": "switch_hub"
+          }
+        ]
+      },
+      {
+        "id": "hubField",
+        "component": "FormControl",
+        "label": "Operating hub",
+        "input": "hubSelect",
+        "hint": "Choose another hub to load its operating picture"
+      },
+      {
+        "id": "hubSelect",
+        "component": "Select",
+        "name": "hub",
+        "items": [
+          "hubOrd",
+          "hubDfw",
+          "hubAtl",
+          "hubLax",
+          "hubJfk"
+        ],
+        "value": "ORD",
+        "size": "medium"
+      },
+      {
+        "id": "hubOrd",
+        "component": "SelectItem",
+        "value": "ORD",
+        "label": "Chicago O'Hare (ORD)"
+      },
+      {
+        "id": "hubDfw",
+        "component": "SelectItem",
+        "value": "DFW",
+        "label": "Dallas/Fort Worth (DFW)"
+      },
+      {
+        "id": "hubAtl",
+        "component": "SelectItem",
+        "value": "ATL",
+        "label": "Atlanta (ATL)"
+      },
+      {
+        "id": "hubLax",
+        "component": "SelectItem",
+        "value": "LAX",
+        "label": "Los Angeles (LAX)"
+      },
+      {
+        "id": "hubJfk",
+        "component": "SelectItem",
+        "value": "JFK",
+        "label": "New York–JFK (JFK)"
+      },
+      {
+        "id": "weatherAlert",
+        "component": "Alert",
+        "title": "Weather advisory at ORD",
+        "description": "Thunderstorms expected 16:00–19:00 local. West flow restrictions are active; anticipate 25–40 minute arrival spacing delays.",
+        "variant": "warning"
+      },
+      {
+        "id": "delayAlert",
+        "component": "Alert",
+        "title": "4 delayed flights require attention",
+        "description": "AA1847 to Boston is delayed 95 minutes. AA2219 to Denver, AA306 to Miami, and AA4172 to Nashville are also outside schedule tolerance.",
+        "variant": "destructive"
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": [
+          "kpiMetric",
+          "kpiValue",
+          "kpiContext"
+        ]
+      },
+      {
+        "id": "kpiMetric",
+        "component": "Col",
+        "label": "Today's KPI",
+        "data": [
+          "On-time performance",
+          "Average passenger load",
+          "Cancellations",
+          "Average turnaround time"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Current",
+        "data": [
+          "82.4%",
+          "87.1%",
+          "3",
+          "41 min"
+        ]
+      },
+      {
+        "id": "kpiContext",
+        "component": "Col",
+        "label": "Target / context",
+        "data": [
+          "Target 85% · 2.6 pts below",
+          "Network average 84.6%",
+          "0.7% of 428 scheduled flights",
+          "Target 38 min · 3 min above"
+        ]
+      },
+      {
+        "id": "operationsTabs",
+        "component": "Tabs",
+        "items": [
+          "flightsTab",
+          "changesTab",
+          "connectionsTab",
+          "crewsTab"
+        ]
+      },
+      {
+        "id": "flightsTab",
+        "component": "TabItem",
+        "value": "flights",
+        "trigger": "Flights",
+        "content": [
+          "flightsHeading",
+          "flightsTable"
+        ]
+      },
+      {
+        "id": "changesTab",
+        "component": "TabItem",
+        "value": "gate-changes",
+        "trigger": "Gate changes",
+        "content": [
+          "gateHeading",
+          "gateChangesTable"
+        ]
+      },
+      {
+        "id": "connectionsTab",
+        "component": "TabItem",
+        "value": "connections",
+        "trigger": "Connections at risk",
+        "content": [
+          "connectionsAlert",
+          "connectionsTable"
+        ]
+      },
+      {
+        "id": "crewsTab",
+        "component": "TabItem",
+        "value": "crews",
+        "trigger": "Available crews",
+        "content": [
+          "crewsHeading",
+          "crewsTable"
+        ]
+      },
+      {
+        "id": "flightsHeading",
+        "component": "Heading",
+        "text": "Active flight board",
+        "level": "h3"
+      },
+      {
+        "id": "flightsTable",
+        "component": "Table",
+        "columns": [
+          "flightNumber",
+          "flightRoute",
+          "flightGate",
+          "flightStatus"
+        ]
+      },
+      {
+        "id": "flightNumber",
+        "component": "Col",
+        "label": "Flight",
+        "data": [
+          "AA102",
+          "AA1847",
+          "AA2219",
+          "AA306",
+          "AA4172",
+          "AA890",
+          "AA1455",
+          "AA2330"
+        ]
+      },
+      {
+        "id": "flightRoute",
+        "component": "Col",
+        "label": "Route",
+        "data": [
+          "ORD → LGA",
+          "ORD → BOS",
+          "ORD → DEN",
+          "ORD → MIA",
+          "ORD → BNA",
+          "ORD → DFW",
+          "ORD → SEA",
+          "ORD → PHX"
+        ]
+      },
+      {
+        "id": "flightGate",
+        "component": "Col",
+        "label": "Gate",
+        "data": [
+          "H12",
+          "K7",
+          "G14",
+          "H6",
+          "L3",
+          "K15",
+          "H18",
+          "G8"
+        ]
+      },
+      {
+        "id": "flightStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Boarding · On time",
+          "Delayed 95 min",
+          "Delayed 48 min",
+          "Delayed 35 min",
+          "Delayed 27 min",
+          "Gate open · On time",
+          "Departed",
+          "Cancelled"
+        ]
+      },
+      {
+        "id": "gateHeading",
+        "component": "Heading",
+        "text": "Recent gate changes",
+        "level": "h3"
+      },
+      {
+        "id": "gateChangesTable",
+        "component": "Table",
+        "columns": [
+          "gateTime",
+          "gateFlight",
+          "gateRoute",
+          "gateMove"
+        ]
+      },
+      {
+        "id": "gateTime",
+        "component": "Col",
+        "label": "Changed",
+        "data": [
+          "14:27",
+          "14:18",
+          "14:03",
+          "13:51"
+        ]
+      },
+      {
+        "id": "gateFlight",
+        "component": "Col",
+        "label": "Flight",
+        "data": [
+          "AA890",
+          "AA1847",
+          "AA1455",
+          "AA306"
+        ]
+      },
+      {
+        "id": "gateRoute",
+        "component": "Col",
+        "label": "Route",
+        "data": [
+          "ORD → DFW",
+          "ORD → BOS",
+          "ORD → SEA",
+          "ORD → MIA"
+        ]
+      },
+      {
+        "id": "gateMove",
+        "component": "Col",
+        "label": "Gate change",
+        "data": [
+          "K11 → K15",
+          "H8 → K7",
+          "H16 → H18",
+          "G2 → H6"
+        ]
+      },
+      {
+        "id": "connectionsAlert",
+        "component": "Alert",
+        "title": "37 passengers across 5 connections are at risk",
+        "description": "Prioritize AA1847 to AA731: 12 passengers have only 18 minutes of projected connection time.",
+        "variant": "warning"
+      },
+      {
+        "id": "connectionsTable",
+        "component": "Table",
+        "columns": [
+          "connectionInbound",
+          "connectionOutbound",
+          "connectionPassengers",
+          "connectionTime",
+          "connectionRisk"
+        ]
+      },
+      {
+        "id": "connectionInbound",
+        "component": "Col",
+        "label": "Inbound",
+        "data": [
+          "AA1847 BOS",
+          "AA2219 DEN",
+          "AA306 MIA",
+          "AA4172 BNA",
+          "AA552 MSP"
+        ]
+      },
+      {
+        "id": "connectionOutbound",
+        "component": "Col",
+        "label": "Outbound",
+        "data": [
+          "AA731 SFO",
+          "AA102 LGA",
+          "AA890 DFW",
+          "AA1455 SEA",
+          "AA2330 PHX"
+        ]
+      },
+      {
+        "id": "connectionPassengers",
+        "component": "Col",
+        "label": "Passengers",
+        "data": [
+          12,
+          9,
+          7,
+          5,
+          4
+        ],
+        "type": "number"
+      },
+      {
+        "id": "connectionTime",
+        "component": "Col",
+        "label": "Projected connect",
+        "data": [
+          "18 min",
+          "24 min",
+          "29 min",
+          "31 min",
+          "34 min"
+        ]
+      },
+      {
+        "id": "connectionRisk",
+        "component": "Col",
+        "label": "Risk",
+        "data": [
+          "Critical",
+          "Critical",
+          "High",
+          "High",
+          "Moderate"
+        ]
+      },
+      {
+        "id": "crewsHeading",
+        "component": "Heading",
+        "text": "Crews available for reassignment",
+        "level": "h3"
+      },
+      {
+        "id": "crewsTable",
+        "component": "Table",
+        "columns": [
+          "crewId",
+          "crewType",
+          "crewCount",
+          "crewLocation",
+          "crewWindow"
+        ]
+      },
+      {
+        "id": "crewId",
+        "component": "Col",
+        "label": "Crew",
+        "data": [
+          "ORD-FLT-17",
+          "ORD-CAB-42",
+          "ORD-FLT-09",
+          "ORD-CAB-31"
+        ]
+      },
+      {
+        "id": "crewType",
+        "component": "Col",
+        "label": "Qualification",
+        "data": [
+          "A320 flight deck",
+          "B737 cabin",
+          "B737 flight deck",
+          "A320 cabin"
+        ]
+      },
+      {
+        "id": "crewCount",
+        "component": "Col",
+        "label": "Members",
+        "data": [
+          2,
+          4,
+          2,
+          4
+        ],
+        "type": "number"
+      },
+      {
+        "id": "crewLocation",
+        "component": "Col",
+        "label": "Current location",
+        "data": [
+          "Terminal 3 crew room",
+          "Gate K4",
+          "Operations center",
+          "Gate H10"
+        ]
+      },
+      {
+        "id": "crewWindow",
+        "component": "Col",
+        "label": "Available until",
+        "data": [
+          "19:20",
+          "18:45",
+          "20:10",
+          "17:55"
+        ]
+      },
+      {
+        "id": "rebookDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Rebook affected passengers",
+        "title": "Passenger disruption rebooking",
+        "description": "Search an affected flight or passenger record and start assisted rebooking.",
+        "content": [
+          "rebookForm"
+        ],
+        "triggerVariant": "default"
+      },
+      {
+        "id": "rebookForm",
+        "component": "Form",
+        "name": "passenger-rebooking",
+        "buttons": "rebookButtons",
+        "fields": [
+          "affectedFlightField",
+          "recordLocatorField",
+          "rebookPreferenceField"
+        ]
+      },
+      {
+        "id": "rebookButtons",
+        "component": "Buttons",
+        "buttons": [
+          "findOptionsButton",
+          "closeRebookButton"
+        ]
+      },
+      {
+        "id": "findOptionsButton",
+        "component": "Button",
+        "label": "Find rebooking options",
+        "variant": "primary",
+        "action": [
+          {
+            "type": "find_rebooking_options"
+          }
+        ]
+      },
+      {
+        "id": "closeRebookButton",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      },
+      {
+        "id": "affectedFlightField",
+        "component": "FormControl",
+        "label": "Affected flight",
+        "input": "affectedFlightInput"
+      },
+      {
+        "id": "affectedFlightInput",
+        "component": "Input",
+        "name": "affected_flight",
+        "placeholder": "e.g. AA1847",
+        "type": "text"
+      },
+      {
+        "id": "recordLocatorField",
+        "component": "FormControl",
+        "label": "Record locator",
+        "input": "recordLocatorInput",
+        "hint": "Optional when rebooking all affected passengers"
+      },
+      {
+        "id": "recordLocatorInput",
+        "component": "Input",
+        "name": "record_locator",
+        "placeholder": "6-character locator",
+        "type": "text"
+      },
+      {
+        "id": "rebookPreferenceField",
+        "component": "FormControl",
+        "label": "Rebooking scope",
+        "input": "rebookPreference"
+      },
+      {
+        "id": "rebookPreference",
+        "component": "RadioGroup",
+        "name": "rebooking_scope",
+        "items": [
+          "rebookSingle",
+          "rebookAll"
+        ],
+        "defaultValue": "single"
+      },
+      {
+        "id": "rebookSingle",
+        "component": "RadioItem",
+        "label": "Single booking",
+        "description": "Find options for the supplied record locator",
+        "value": "single"
+      },
+      {
+        "id": "rebookAll",
+        "component": "RadioItem",
+        "label": "All affected passengers",
+        "description": "Review bulk reaccommodation options for the flight",
+        "value": "all"
+      }
+    ]
+  }
+}
+</a2ui-json>

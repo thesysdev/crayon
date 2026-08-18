@@ -1,0 +1,689 @@
+Store Manager Daily Console — covering all 12 requested metrics in a single operational view.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "storeSelectorCard",
+          "salesCard",
+          "basketCard",
+          "returnsCard",
+          "trafficCard",
+          "weekCompareCard",
+          "bestsellersCard",
+          "outOfStockCard",
+          "shiftCard",
+          "promoCard",
+          "registersCard"
+        ],
+        "gap": "m",
+        "direction": "column"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Store Manager Console — Daily View",
+        "subtitle": "Tuesday, Aug 18, 2026 • 3:42 PM • All data live"
+      },
+      {
+        "id": "storeSelectorCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "storeSelectorControl"
+        ]
+      },
+      {
+        "id": "storeSelectorControl",
+        "component": "FormControl",
+        "label": "Viewing Store (11) — Switch location",
+        "input": "storeSelect",
+        "hint": "Change to view a different store's live console"
+      },
+      {
+        "id": "storeSelect",
+        "component": "Select",
+        "name": "store",
+        "placeholder": "Downtown Flagship",
+        "value": "downtown",
+        "items": [
+          "storeDowntown",
+          "storeWestside",
+          "storeAirport",
+          "storeRiverside"
+        ]
+      },
+      {
+        "id": "storeDowntown",
+        "component": "SelectItem",
+        "value": "downtown",
+        "label": "Downtown Flagship (Current)"
+      },
+      {
+        "id": "storeWestside",
+        "component": "SelectItem",
+        "value": "westside",
+        "label": "Westside Mall"
+      },
+      {
+        "id": "storeAirport",
+        "component": "SelectItem",
+        "value": "airport",
+        "label": "Airport Outlet"
+      },
+      {
+        "id": "storeRiverside",
+        "component": "SelectItem",
+        "value": "riverside",
+        "label": "Riverside Plaza"
+      },
+      {
+        "id": "salesCard",
+        "component": "Card",
+        "children": [
+          "salesHeader",
+          "salesProgress",
+          "salesDetails"
+        ]
+      },
+      {
+        "id": "salesHeader",
+        "component": "CardHeader",
+        "title": "1. Sales Today vs Target",
+        "subtitle": "Target: $23,500 • Sales so far: $18,420"
+      },
+      {
+        "id": "salesProgress",
+        "component": "Progress",
+        "value": 78,
+        "label": "$18,420 of $23,500 — 78% to target"
+      },
+      {
+        "id": "salesDetails",
+        "component": "TextContent",
+        "text": "**$5,080 remaining** to hit target • On pace to exceed by ~$1.2k • Closes in 4h 18m • Transactions: 430",
+        "size": "small"
+      },
+      {
+        "id": "basketCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "basketHeader",
+          "basketValue",
+          "basketTagBlock"
+        ]
+      },
+      {
+        "id": "basketHeader",
+        "component": "CardHeader",
+        "title": "6. Average Basket Size",
+        "subtitle": "Today's average per transaction"
+      },
+      {
+        "id": "basketValue",
+        "component": "TextContent",
+        "text": "# 3.4 items  •  $42.80 per basket  •  ↑ 0.3 vs yesterday",
+        "size": "large-heavy"
+      },
+      {
+        "id": "basketTagBlock",
+        "component": "TagBlock",
+        "tags": [
+          "430 transactions today",
+          "Basket value +6.2% WoW",
+          "Goal: 3.5 items"
+        ]
+      },
+      {
+        "id": "returnsCard",
+        "component": "Card",
+        "children": [
+          "returnsHeader",
+          "returnsChart",
+          "returnsSummary"
+        ]
+      },
+      {
+        "id": "returnsHeader",
+        "component": "CardHeader",
+        "title": "7. Returns This Week",
+        "subtitle": "Mon–Sun • 26 returns • 1.8% of sales"
+      },
+      {
+        "id": "returnsChart",
+        "component": "BarChart",
+        "labels": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat",
+          "Sun"
+        ],
+        "series": [
+          "returnsSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Day",
+        "yLabel": "Returns"
+      },
+      {
+        "id": "returnsSeries",
+        "component": "Series",
+        "category": "Returns (units)",
+        "values": [
+          4,
+          6,
+          3,
+          5,
+          8,
+          0,
+          0
+        ]
+      },
+      {
+        "id": "returnsSummary",
+        "component": "TextContent",
+        "text": "Most common reason: Wrong size (42%) • Today: 6 returns ($214) • No spike vs last week",
+        "size": "small"
+      },
+      {
+        "id": "trafficCard",
+        "component": "Card",
+        "children": [
+          "trafficHeader",
+          "trafficChart"
+        ]
+      },
+      {
+        "id": "trafficHeader",
+        "component": "CardHeader",
+        "title": "2. Foot Traffic Through the Day",
+        "subtitle": "Live door counter • 1,042 visitors so far • Peak: 12 PM (198)"
+      },
+      {
+        "id": "trafficChart",
+        "component": "LineChart",
+        "labels": [
+          "8 AM",
+          "9 AM",
+          "10 AM",
+          "11 AM",
+          "12 PM",
+          "1 PM",
+          "2 PM",
+          "3 PM",
+          "4 PM",
+          "6 PM",
+          "8 PM"
+        ],
+        "series": [
+          "trafficSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Time",
+        "yLabel": "Visitors"
+      },
+      {
+        "id": "trafficSeries",
+        "component": "Series",
+        "category": "Visitors",
+        "values": [
+          45,
+          78,
+          112,
+          165,
+          198,
+          182,
+          165,
+          148,
+          142,
+          210,
+          95
+        ]
+      },
+      {
+        "id": "weekCompareCard",
+        "component": "Card",
+        "children": [
+          "weekCompareHeader",
+          "weekCompareChart"
+        ]
+      },
+      {
+        "id": "weekCompareHeader",
+        "component": "CardHeader",
+        "title": "12. This Week vs Last Week",
+        "subtitle": "Sales comparison • This week $19,042 vs $18,100 last week (+5.2%)"
+      },
+      {
+        "id": "weekCompareChart",
+        "component": "LineChart",
+        "labels": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat",
+          "Sun"
+        ],
+        "series": [
+          "thisWeekSeries",
+          "lastWeekSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Day",
+        "yLabel": "Sales $"
+      },
+      {
+        "id": "thisWeekSeries",
+        "component": "Series",
+        "category": "This Week",
+        "values": [
+          3420,
+          3890,
+          4120,
+          3980,
+          4620,
+          5210,
+          1842
+        ]
+      },
+      {
+        "id": "lastWeekSeries",
+        "component": "Series",
+        "category": "Last Week",
+        "values": [
+          3100,
+          3650,
+          3980,
+          3750,
+          4400,
+          4980,
+          5120
+        ]
+      },
+      {
+        "id": "bestsellersCard",
+        "component": "Card",
+        "children": [
+          "bestsellersHeader",
+          "bestsellersChart",
+          "bestsellersTable"
+        ]
+      },
+      {
+        "id": "bestsellersHeader",
+        "component": "CardHeader",
+        "title": "3. Best Sellers Today — Units Sold",
+        "subtitle": "Top 5 by quantity"
+      },
+      {
+        "id": "bestsellersChart",
+        "component": "HorizontalBarChart",
+        "labels": [
+          "Cold Brew 12oz",
+          "Everything Bagel",
+          "Avocado Toast",
+          "Latte Large",
+          "Blueberry Muffin"
+        ],
+        "series": [
+          "bestsellersSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Units",
+        "yLabel": "Product"
+      },
+      {
+        "id": "bestsellersSeries",
+        "component": "Series",
+        "category": "Units",
+        "values": [
+          87,
+          64,
+          52,
+          48,
+          41
+        ]
+      },
+      {
+        "id": "bestsellersTable",
+        "component": "Table",
+        "columns": [
+          "colBestName",
+          "colBestUnits"
+        ]
+      },
+      {
+        "id": "colBestName",
+        "component": "Col",
+        "label": "Product",
+        "data": [
+          "Cold Brew 12oz",
+          "Everything Bagel",
+          "Avocado Toast",
+          "Latte Large",
+          "Blueberry Muffin"
+        ]
+      },
+      {
+        "id": "colBestUnits",
+        "component": "Col",
+        "label": "Units Sold",
+        "data": [
+          "87",
+          "64",
+          "52",
+          "48",
+          "41"
+        ],
+        "type": "number"
+      },
+      {
+        "id": "outOfStockCard",
+        "component": "Card",
+        "children": [
+          "outOfStockHeader",
+          "outOfStockAlert",
+          "outOfStockTable",
+          "reorderButtons"
+        ]
+      },
+      {
+        "id": "outOfStockHeader",
+        "component": "CardHeader",
+        "title": "4. Items Out of Stock",
+        "subtitle": "4 SKUs at zero — action required"
+      },
+      {
+        "id": "outOfStockAlert",
+        "component": "Alert",
+        "title": "Restock needed",
+        "description": "Oat Milk and Almond Croissant have been out since 11 AM. Customers asked 9 times.",
+        "variant": "warning"
+      },
+      {
+        "id": "outOfStockTable",
+        "component": "Table",
+        "columns": [
+          "colOosItem",
+          "colOosCat",
+          "colOosStock"
+        ]
+      },
+      {
+        "id": "colOosItem",
+        "component": "Col",
+        "label": "Item",
+        "data": [
+          "Oat Milk 1L - Oatly",
+          "Almond Croissant",
+          "Everything Bagel",
+          "Cold Cups 16oz"
+        ]
+      },
+      {
+        "id": "colOosCat",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Dairy Alt",
+          "Bakery",
+          "Bakery",
+          "Supplies"
+        ]
+      },
+      {
+        "id": "colOosStock",
+        "component": "Col",
+        "label": "On Hand",
+        "data": [
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        "type": "number"
+      },
+      {
+        "id": "reorderButtons",
+        "component": "Buttons",
+        "buttons": [
+          "reorderBtnOatMilk",
+          "reorderBtnBagel",
+          "reorderBtnAlmondCroissant",
+          "reorderBtnCups"
+        ]
+      },
+      {
+        "id": "reorderBtnOatMilk",
+        "component": "Button",
+        "label": "10. Reorder Oat Milk",
+        "variant": "primary"
+      },
+      {
+        "id": "reorderBtnBagel",
+        "component": "Button",
+        "label": "Reorder Bagels",
+        "variant": "secondary"
+      },
+      {
+        "id": "reorderBtnAlmondCroissant",
+        "component": "Button",
+        "label": "Reorder Croissant",
+        "variant": "secondary"
+      },
+      {
+        "id": "reorderBtnCups",
+        "component": "Button",
+        "label": "Reorder Cups",
+        "variant": "secondary"
+      },
+      {
+        "id": "shiftCard",
+        "component": "Card",
+        "children": [
+          "shiftHeader",
+          "shiftList"
+        ]
+      },
+      {
+        "id": "shiftHeader",
+        "component": "CardHeader",
+        "title": "5. Who Is On Shift Today",
+        "subtitle": "6 staff • Next shift change: 4:00 PM"
+      },
+      {
+        "id": "shiftList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "shiftAlice",
+          "shiftBen",
+          "shiftCarla",
+          "shiftDavid",
+          "shiftEva",
+          "shiftFrank"
+        ]
+      },
+      {
+        "id": "shiftAlice",
+        "component": "ListItem",
+        "title": "Alice Chen — Manager",
+        "subtitle": "8:00 AM - 4:00 PM • Floor Lead"
+      },
+      {
+        "id": "shiftBen",
+        "component": "ListItem",
+        "title": "Ben Torres — Barista",
+        "subtitle": "7:00 AM - 3:00 PM • Bar"
+      },
+      {
+        "id": "shiftCarla",
+        "component": "ListItem",
+        "title": "Carla Kim — Cashier",
+        "subtitle": "9:00 AM - 5:00 PM • Register 1"
+      },
+      {
+        "id": "shiftDavid",
+        "component": "ListItem",
+        "title": "David Park — Barista",
+        "subtitle": "11:00 AM - 7:00 PM • Bar"
+      },
+      {
+        "id": "shiftEva",
+        "component": "ListItem",
+        "title": "Eva Müller — Stock",
+        "subtitle": "10:00 AM - 6:00 PM • Back of House"
+      },
+      {
+        "id": "shiftFrank",
+        "component": "ListItem",
+        "title": "Frank Okafor — Cashier",
+        "subtitle": "2:00 PM - 10:00 PM • Register 2"
+      },
+      {
+        "id": "promoCard",
+        "component": "Card",
+        "children": [
+          "promoHeader",
+          "promoTable"
+        ]
+      },
+      {
+        "id": "promoHeader",
+        "component": "CardHeader",
+        "title": "8. Running Promotions Performance",
+        "subtitle": "3 active promos • Best: Morning Bundle"
+      },
+      {
+        "id": "promoTable",
+        "component": "Table",
+        "columns": [
+          "colPromoName",
+          "colPromoType",
+          "colPromoSales",
+          "colPromoLift"
+        ]
+      },
+      {
+        "id": "colPromoName",
+        "component": "Col",
+        "label": "Promotion",
+        "data": [
+          "Morning Bundle (Coffee + Pastry)",
+          "Summer Cold Brew $1 Off",
+          "Loyalty Double Points"
+        ]
+      },
+      {
+        "id": "colPromoType",
+        "component": "Col",
+        "label": "Offer",
+        "data": [
+          "$5.99",
+          "$1 Off",
+          "2x Points"
+        ]
+      },
+      {
+        "id": "colPromoSales",
+        "component": "Col",
+        "label": "Redemptions / Sales",
+        "data": [
+          "112 / $671",
+          "87 / $348",
+          "203 / $1,240"
+        ]
+      },
+      {
+        "id": "colPromoLift",
+        "component": "Col",
+        "label": "Lift vs Baseline",
+        "data": [
+          "+18%",
+          "+9%",
+          "+12%"
+        ]
+      },
+      {
+        "id": "registersCard",
+        "component": "Card",
+        "children": [
+          "registersHeader",
+          "registersTable"
+        ]
+      },
+      {
+        "id": "registersHeader",
+        "component": "CardHeader",
+        "title": "9. Registers — Open / Closed Status",
+        "subtitle": "4 registers • 3 open • 1 closed for cash count"
+      },
+      {
+        "id": "registersTable",
+        "component": "Table",
+        "columns": [
+          "colRegId",
+          "colRegStatus",
+          "colRegCashier"
+        ]
+      },
+      {
+        "id": "colRegId",
+        "component": "Col",
+        "label": "Register",
+        "data": [
+          "Register 1",
+          "Register 2",
+          "Register 3",
+          "Register 4 (Self-Checkout)"
+        ]
+      },
+      {
+        "id": "colRegStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "🟢 OPEN",
+          "🟢 OPEN",
+          "🔴 CLOSED",
+          "🟢 OPEN"
+        ]
+      },
+      {
+        "id": "colRegCashier",
+        "component": "Col",
+        "label": "Cashier / Note",
+        "data": [
+          "Carla Kim",
+          "Frank Okafor (from 2PM)",
+          "Cash count — reopens 4 PM",
+          "Unattended"
+        ]
+      }
+    ]
+  }
+}
+</a2ui-json>

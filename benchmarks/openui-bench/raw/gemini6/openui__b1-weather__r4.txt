@@ -1,0 +1,32 @@
+root = Card([header, currentSection, sep1, forecastHeading, forecastSection, sep2, astroSection, followUp], "card", "column", "m")
+
+header = CardHeader("Morning Weather Brief", "Bengaluru, India • Today's Outlook")
+
+currentSection = Card([currentMain, currentStats], "sunk", "column", "m")
+currentMain = Card([tempBadge, conditionText], "clear", "row", "m", "center")
+tempBadge = Badge("24°C", "default")
+conditionText = TextContent("Partly Cloudy • Feels like 25°C", "large-heavy")
+
+currentStats = Table([statLabelCol, statValueCol])
+statLabelCol = Col("Metric", ["Humidity", "Wind", "UV Index", "Air Quality"])
+statValueCol = Col("Value", ["68%", "12 km/h ENE", "6 (Moderate)", "72 (Moderate)"])
+
+sep1 = Separator("horizontal")
+
+forecastHeading = Heading("3-Day Outlook", "h3")
+forecastSection = AreaChart(["Today", "Tomorrow", "Day 3"], [tempMaxSeries, tempMinSeries], "natural", "Day", "Temperature (°C)")
+tempMaxSeries = Series("High", [28, 29, 27])
+tempMinSeries = Series("Low", [19, 18, 19])
+
+sep2 = Separator("horizontal")
+
+astroSection = Card([astroHeading, astroGrid], "clear", "column", "s")
+astroHeading = Heading("Sun & Astronomy", "h4")
+astroGrid = Card([sunriseCallout, sunsetCallout], "clear", "row", "m")
+sunriseCallout = Callout("info", "Sunrise", "06:18 AM")
+sunsetCallout = Callout("neutral", "Sunset", "06:32 PM")
+
+followUp = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Will it rain in Bengaluru today?")
+f2 = FollowUpItem("Show hourly temperature breakdown")
+f3 = FollowUpItem("Compare with last week's weather")

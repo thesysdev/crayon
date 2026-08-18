@@ -1,0 +1,892 @@
+I have created the Live-Ops Command Center dashboard covering all 16 requested metrics and operational controls.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "alertHotfix",
+          "quickActions",
+          "sep1",
+          "kpiOverview",
+          "sep2",
+          "analyticsTabs",
+          "sep3",
+          "opsGridCard",
+          "sep4",
+          "patchNotesSection"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Live-Ops Command Center",
+        "subtitle": "Real-time game performance, server health, player moderation & deployment controls"
+      },
+      {
+        "id": "alertHotfix",
+        "component": "Alert",
+        "title": "Hotfix Pipeline Ready",
+        "description": "v2.4.1 hotfix binary staged. Requires manual trigger for region rollout.",
+        "variant": "warning"
+      },
+      {
+        "id": "quickActions",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": [
+          "shipHotfixBtn",
+          "focusRegionBtn"
+        ]
+      },
+      {
+        "id": "shipHotfixBtn",
+        "component": "DialogBlock",
+        "triggerLabel": "Ship Hotfix (v2.4.1)",
+        "triggerVariant": "destructive",
+        "title": "Deploy Hotfix v2.4.1",
+        "description": "Select target region and deployment parameters to ship immediately.",
+        "content": [
+          "hotfixForm"
+        ]
+      },
+      {
+        "id": "hotfixForm",
+        "component": "Form",
+        "name": "hotfix-deploy",
+        "buttons": "hotfixFormBtns",
+        "fields": [
+          "hotfixRegionField",
+          "hotfixNotesField"
+        ]
+      },
+      {
+        "id": "hotfixRegionField",
+        "component": "FormControl",
+        "label": "Target Region",
+        "input": "hotfixRegionSelect"
+      },
+      {
+        "id": "hotfixRegionSelect",
+        "component": "Select",
+        "name": "target_region",
+        "items": [
+          "regAll",
+          "regNA",
+          "regEU",
+          "regASIA",
+          "regLATAM"
+        ],
+        "placeholder": "Select deployment scope"
+      },
+      {
+        "id": "regAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "Global (All Regions)"
+      },
+      {
+        "id": "regNA",
+        "component": "SelectItem",
+        "value": "na",
+        "label": "North America (NA-East / NA-West)"
+      },
+      {
+        "id": "regEU",
+        "component": "SelectItem",
+        "value": "eu",
+        "label": "Europe (EU-Central)"
+      },
+      {
+        "id": "regASIA",
+        "component": "SelectItem",
+        "value": "asia",
+        "label": "Asia Pacific (AP-East)"
+      },
+      {
+        "id": "regLATAM",
+        "component": "SelectItem",
+        "value": "latam",
+        "label": "Latin America (SA-East)"
+      },
+      {
+        "id": "hotfixNotesField",
+        "component": "FormControl",
+        "label": "Hotfix Summary",
+        "input": "hotfixNotesInput"
+      },
+      {
+        "id": "hotfixNotesInput",
+        "component": "Input",
+        "name": "hotfix_summary",
+        "placeholder": "e.g., Fix memory leak in matchmaker v2.4"
+      },
+      {
+        "id": "hotfixFormBtns",
+        "component": "Buttons",
+        "buttons": [
+          "confirmHotfixBtn"
+        ]
+      },
+      {
+        "id": "confirmHotfixBtn",
+        "component": "Button",
+        "label": "Confirm & Roll Out Hotfix",
+        "type": "destructive",
+        "variant": "primary"
+      },
+      {
+        "id": "focusRegionBtn",
+        "component": "DrawerBlock",
+        "triggerLabel": "Focus Server Region",
+        "title": "Region Focus & Isolator",
+        "description": "Inspect and manage specific regional cluster performance.",
+        "content": [
+          "regionSelectorControl",
+          "regionFocusDetail"
+        ]
+      },
+      {
+        "id": "regionSelectorControl",
+        "component": "FormControl",
+        "label": "Select Active Focus Region",
+        "input": "regionFocusSelect"
+      },
+      {
+        "id": "regionFocusSelect",
+        "component": "Select",
+        "name": "focus_region",
+        "items": [
+          "fNA",
+          "fEU",
+          "fASIA",
+          "fLATAM"
+        ],
+        "placeholder": "Choose region..."
+      },
+      {
+        "id": "fNA",
+        "component": "SelectItem",
+        "value": "na",
+        "label": "NA-East (99.98% Health - 42k online)"
+      },
+      {
+        "id": "fEU",
+        "component": "SelectItem",
+        "value": "eu",
+        "label": "EU-Central (98.40% Health - 38k online)"
+      },
+      {
+        "id": "fASIA",
+        "component": "SelectItem",
+        "value": "asia",
+        "label": "AP-East (99.95% Health - 54k online)"
+      },
+      {
+        "id": "fLATAM",
+        "component": "SelectItem",
+        "value": "latam",
+        "label": "SA-East (94.10% Health - Warning - 11k online)"
+      },
+      {
+        "id": "regionFocusDetail",
+        "component": "Callout",
+        "title": "Region Detail: SA-East (LATAM)",
+        "description": "Degraded routing detected on ISP Gateway #4. Automated traffic failover active. 11,240 active CCU shifted to SA-North.",
+        "variant": "warning"
+      },
+      {
+        "id": "sep1",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "kpiOverview",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "kpiHeader",
+          "kpiTable"
+        ]
+      },
+      {
+        "id": "kpiHeader",
+        "component": "Heading",
+        "text": "1. Live Active Audience & Key Revenue Metrics",
+        "level": "h3"
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": [
+          "kpiMetricCol",
+          "kpiValCol",
+          "kpiChangeCol",
+          "kpiStatusCol"
+        ]
+      },
+      {
+        "id": "kpiMetricCol",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Concurrent Players Online Right Now",
+          "Daily Active Users (DAU)",
+          "Monthly Active Users (MAU)",
+          "Revenue Today (Gross)",
+          "Average Revenue Per User (ARPU)",
+          "Average Revenue Per Paying User (ARPPU)",
+          "In-Game Currency Inflation Rate"
+        ]
+      },
+      {
+        "id": "kpiValCol",
+        "component": "Col",
+        "label": "Current Value",
+        "data": [
+          "145,820 CCU",
+          "1,420,500 DAU",
+          "8,850,000 MAU",
+          "$184,250",
+          "$0.130 / DAU",
+          "$14.20 / paying",
+          "+2.4% / week"
+        ]
+      },
+      {
+        "id": "kpiChangeCol",
+        "component": "Col",
+        "label": "Vs Target / Last Wk",
+        "data": [
+          "+8.4%",
+          "+3.1%",
+          "+5.2%",
+          "+12.8%",
+          "+1.5%",
+          "+0.8%",
+          "-0.4% (Stabilized)"
+        ]
+      },
+      {
+        "id": "kpiStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Healthy",
+          "Healthy",
+          "Healthy",
+          "Exceeding",
+          "On Track",
+          "On Track",
+          "Monitored"
+        ]
+      },
+      {
+        "id": "sep2",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "analyticsTabs",
+        "component": "Tabs",
+        "items": [
+          "tabEngagement",
+          "tabEconomy",
+          "tabHealth"
+        ]
+      },
+      {
+        "id": "tabEngagement",
+        "component": "TabItem",
+        "value": "engagement",
+        "trigger": "5. Session Length (14 Days)",
+        "content": [
+          "sessionChartCard"
+        ]
+      },
+      {
+        "id": "sessionChartCard",
+        "component": "Card",
+        "children": [
+          "sessionHeader",
+          "sessionChart"
+        ]
+      },
+      {
+        "id": "sessionHeader",
+        "component": "CardHeader",
+        "title": "Average Session Length (Minutes)",
+        "subtitle": "Daily trend over the past two weeks across all platforms"
+      },
+      {
+        "id": "sessionChart",
+        "component": "LineChart",
+        "labels": [
+          "Day 1",
+          "Day 2",
+          "Day 3",
+          "Day 4",
+          "Day 5",
+          "Day 6",
+          "Day 7",
+          "Day 8",
+          "Day 9",
+          "Day 10",
+          "Day 11",
+          "Day 12",
+          "Day 13",
+          "Day 14"
+        ],
+        "series": [
+          "sessionSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Past 14 Days",
+        "yLabel": "Minutes / Session"
+      },
+      {
+        "id": "sessionSeries",
+        "component": "Series",
+        "category": "Avg Session Length",
+        "values": [
+          38,
+          40,
+          39,
+          42,
+          48,
+          54,
+          51,
+          41,
+          43,
+          44,
+          46,
+          52,
+          58,
+          55
+        ]
+      },
+      {
+        "id": "tabEconomy",
+        "component": "TabItem",
+        "value": "economy",
+        "trigger": "6 & 12. Economy & Best Sellers",
+        "content": [
+          "economyCard"
+        ]
+      },
+      {
+        "id": "economyCard",
+        "component": "Card",
+        "children": [
+          "economyHeader",
+          "inflationCallout",
+          "bestSellersChart"
+        ]
+      },
+      {
+        "id": "economyHeader",
+        "component": "CardHeader",
+        "title": "In-Game Store & Economy Health",
+        "subtitle": "Best-selling store items (Units Sold) & Gold sink efficiency"
+      },
+      {
+        "id": "inflationCallout",
+        "component": "TextCallout",
+        "title": "Currency Inflation Index: +2.4%",
+        "description": "Gold faucet vs sink ratio sits at 1.08. Weekend raid event successfully removed 14.2M gold via repairs.",
+        "variant": "info"
+      },
+      {
+        "id": "bestSellersChart",
+        "component": "HorizontalBarChart",
+        "labels": [
+          "Battle Pass S4",
+          "Cyber Dragon Skin",
+          "1,000 Gem Bundle",
+          "Mythic Key Pack",
+          "XP Booster (3D)"
+        ],
+        "series": [
+          "itemUnitsSeries"
+        ],
+        "xLabel": "Units Sold Today",
+        "yLabel": "Item Name"
+      },
+      {
+        "id": "itemUnitsSeries",
+        "component": "Series",
+        "category": "Units Sold Today",
+        "values": [
+          18400,
+          12300,
+          9800,
+          7400,
+          5100
+        ]
+      },
+      {
+        "id": "tabHealth",
+        "component": "TabItem",
+        "value": "health",
+        "trigger": "7 & 8. Servers & Crash Rates",
+        "content": [
+          "healthCard"
+        ]
+      },
+      {
+        "id": "healthCard",
+        "component": "Card",
+        "children": [
+          "healthHeader",
+          "serverTable",
+          "crashChart"
+        ]
+      },
+      {
+        "id": "healthHeader",
+        "component": "CardHeader",
+        "title": "Infrastructure & Stability",
+        "subtitle": "Regional server clusters and crash rates grouped by app version"
+      },
+      {
+        "id": "serverTable",
+        "component": "Table",
+        "columns": [
+          "serverRegionCol",
+          "serverStatusCol",
+          "serverPingCol",
+          "serverLoadCol"
+        ]
+      },
+      {
+        "id": "serverRegionCol",
+        "component": "Col",
+        "label": "Server Region",
+        "data": [
+          "NA-East (Virginia)",
+          "NA-West (Oregon)",
+          "EU-Central (Frankfurt)",
+          "AP-East (Tokyo)",
+          "SA-East (São Paulo)"
+        ]
+      },
+      {
+        "id": "serverStatusCol",
+        "component": "Col",
+        "label": "Health Status",
+        "data": [
+          "Operational (99.99%)",
+          "Operational (99.97%)",
+          "Operational (98.40%)",
+          "Operational (99.95%)",
+          "Degraded (94.10%)"
+        ]
+      },
+      {
+        "id": "serverPingCol",
+        "component": "Col",
+        "label": "Avg Latency",
+        "data": [
+          "22ms",
+          "31ms",
+          "38ms",
+          "45ms",
+          "112ms"
+        ]
+      },
+      {
+        "id": "serverLoadCol",
+        "component": "Col",
+        "label": "Capacity",
+        "data": [
+          "68%",
+          "54%",
+          "82%",
+          "71%",
+          "89%"
+        ]
+      },
+      {
+        "id": "crashChart",
+        "component": "BarChart",
+        "labels": [
+          "v2.4.0 (Latest)",
+          "v2.3.8 (Mobile)",
+          "v2.3.5 (Legacy PC)",
+          "v2.4.1 (Beta Hotfix)"
+        ],
+        "series": [
+          "crashRateSeries"
+        ],
+        "xLabel": "App Version",
+        "yLabel": "Crash Rate (%)"
+      },
+      {
+        "id": "crashRateSeries",
+        "component": "Series",
+        "category": "Crash Rate %",
+        "values": [
+          1.82,
+          0.45,
+          0.21,
+          0.08
+        ]
+      },
+      {
+        "id": "sep3",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "opsGridCard",
+        "component": "Card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "opsHeader",
+          "opsAccordion"
+        ]
+      },
+      {
+        "id": "opsHeader",
+        "component": "Heading",
+        "text": "Live Operations, Moderation & Experiments",
+        "level": "h3"
+      },
+      {
+        "id": "opsAccordion",
+        "component": "Accordion",
+        "items": [
+          "accEvents",
+          "accModeration",
+          "accExperiments"
+        ]
+      },
+      {
+        "id": "accEvents",
+        "component": "AccordionItem",
+        "value": "events",
+        "trigger": "9. Live Events (Running & Upcoming)",
+        "content": [
+          "eventsTable"
+        ]
+      },
+      {
+        "id": "eventsTable",
+        "component": "Table",
+        "columns": [
+          "eventNameCol",
+          "eventStateCol",
+          "eventTimeCol",
+          "eventImpactCol"
+        ]
+      },
+      {
+        "id": "eventNameCol",
+        "component": "Col",
+        "label": "Event Name",
+        "data": [
+          "Solar Eclipse Boss Raid",
+          "Double XP Weekend",
+          "Shadow Realm Invasion (Teaser)",
+          "Season 4 Championship Final"
+        ]
+      },
+      {
+        "id": "eventStateCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "RUNNING NOW",
+          "RUNNING NOW",
+          "Upcoming (In 2 Days)",
+          "Upcoming (Next Week)"
+        ]
+      },
+      {
+        "id": "eventTimeCol",
+        "component": "Col",
+        "label": "Duration / Schedule",
+        "data": [
+          "Ends in 4h 12m",
+          "Ends in 1d 8h",
+          "Starts Oct 28, 00:00 UTC",
+          "Starts Nov 02, 18:00 UTC"
+        ]
+      },
+      {
+        "id": "eventImpactCol",
+        "component": "Col",
+        "label": "CCU Impact",
+        "data": [
+          "+22% CCU Peak",
+          "+15% DAU Retention",
+          "Expected +30% CCU",
+          "Expected +50% CCU"
+        ]
+      },
+      {
+        "id": "accModeration",
+        "component": "AccordionItem",
+        "value": "moderation",
+        "trigger": "10 & 11. Moderation Queue (Player Reports & Ban Appeals)",
+        "content": [
+          "moderationSummary",
+          "moderationTable"
+        ]
+      },
+      {
+        "id": "moderationSummary",
+        "component": "Callout",
+        "title": "Awaiting Review: 342 Reports | 89 Ban Appeals",
+        "description": "High priority: 14 speed-hack reports flagged by Anti-Cheat auto-detection in NA-East.",
+        "variant": "warning"
+      },
+      {
+        "id": "moderationTable",
+        "component": "Table",
+        "columns": [
+          "modTypeCol",
+          "modCountCol",
+          "modAvgAgeCol",
+          "modActionCol"
+        ]
+      },
+      {
+        "id": "modTypeCol",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Player Reports (Toxic Behavior / Voice)",
+          "Player Reports (Cheating / Exploits)",
+          "Player Reports (AFK / Griefing)",
+          "Ban Appeals (First-time Offense)",
+          "Ban Appeals (Permaban Disputes)"
+        ]
+      },
+      {
+        "id": "modCountCol",
+        "component": "Col",
+        "label": "Pending Tickets",
+        "data": [
+          "184 awaiting review",
+          "112 awaiting review",
+          "46 awaiting review",
+          "62 awaiting review",
+          "27 awaiting review"
+        ]
+      },
+      {
+        "id": "modAvgAgeCol",
+        "component": "Col",
+        "label": "Oldest Ticket",
+        "data": [
+          "2.4 hours ago",
+          "45 minutes ago",
+          "5.1 hours ago",
+          "12.0 hours ago",
+          "1.2 days ago"
+        ]
+      },
+      {
+        "id": "modActionCol",
+        "component": "Col",
+        "label": "Queue Priority",
+        "data": [
+          "Medium",
+          "CRITICAL",
+          "Low",
+          "High",
+          "Medium"
+        ]
+      },
+      {
+        "id": "accExperiments",
+        "component": "AccordionItem",
+        "value": "experiments",
+        "trigger": "13. Active A/B Experiments",
+        "content": [
+          "expTable"
+        ]
+      },
+      {
+        "id": "expTable",
+        "component": "Table",
+        "columns": [
+          "expNameCol",
+          "expVariantCol",
+          "expSampleCol",
+          "expResultCol",
+          "expStatusCol"
+        ]
+      },
+      {
+        "id": "expNameCol",
+        "component": "Col",
+        "label": "Experiment Name",
+        "data": [
+          "EXP-104: Onboarding Flow Redesign",
+          "EXP-104: Onboarding Flow Redesign",
+          "EXP-108: Dynamic Store Pricing vs Flat",
+          "EXP-108: Dynamic Store Pricing vs Flat"
+        ]
+      },
+      {
+        "id": "expVariantCol",
+        "component": "Col",
+        "label": "Variant",
+        "data": [
+          "Control (Original 5-step tutorial)",
+          "Variant B (Interactive 2-step battle)",
+          "Control (Flat $9.99 Starter Pack)",
+          "Variant B (Personalized Discount Pack)"
+        ]
+      },
+      {
+        "id": "expSampleCol",
+        "component": "Col",
+        "label": "Sample Size",
+        "data": [
+          "50,000 players",
+          "50,000 players",
+          "25,000 players",
+          "25,000 players"
+        ]
+      },
+      {
+        "id": "expResultCol",
+        "component": "Col",
+        "label": "Primary Metric Result",
+        "data": [
+          "D1 Retention: 34.2%",
+          "D1 Retention: 41.8% (+22.2%)",
+          "Conversion Rate: 3.1%",
+          "Conversion Rate: 4.8% (+54.8%)"
+        ]
+      },
+      {
+        "id": "expStatusCol",
+        "component": "Col",
+        "label": "Significance",
+        "data": [
+          "Baseline",
+          "p < 0.01 (Statistically Significant)",
+          "Baseline",
+          "p < 0.01 (Statistically Significant)"
+        ]
+      },
+      {
+        "id": "sep4",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "patchNotesSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "patchHeader",
+          "patchForm"
+        ]
+      },
+      {
+        "id": "patchHeader",
+        "component": "CardHeader",
+        "title": "14. Patch Notes Drafter",
+        "subtitle": "Draft, preview, and stage upcoming release notes for client launch"
+      },
+      {
+        "id": "patchForm",
+        "component": "Form",
+        "name": "patch-notes-form",
+        "buttons": "patchFormButtons",
+        "fields": [
+          "patchVersionField",
+          "patchTitleField",
+          "patchContentField"
+        ]
+      },
+      {
+        "id": "patchVersionField",
+        "component": "FormControl",
+        "label": "Target Version Tag",
+        "input": "patchVersionInput"
+      },
+      {
+        "id": "patchVersionInput",
+        "component": "Input",
+        "name": "version_tag",
+        "placeholder": "e.g., v2.4.1-hotfix or v2.5.0-major"
+      },
+      {
+        "id": "patchTitleField",
+        "component": "FormControl",
+        "label": "Release Headline",
+        "input": "patchTitleInput"
+      },
+      {
+        "id": "patchTitleInput",
+        "component": "Input",
+        "name": "headline",
+        "placeholder": "e.g., Shadow Realm Balance Changes & Server Latency Improvements"
+      },
+      {
+        "id": "patchContentField",
+        "component": "FormControl",
+        "label": "Patch Notes Content (Markdown Supported)",
+        "input": "patchContentArea",
+        "hint": "Include bug fixes, hero rebalancing, and economy updates."
+      },
+      {
+        "id": "patchContentArea",
+        "component": "TextArea",
+        "name": "patch_markdown",
+        "rows": 5,
+        "placeholder": "### Hero Adjustments\n- **Aethelgard**: Health reduced by 5%.\n- **Nyx**: Shadow step cooldown reduced from 12s to 10s.\n\n### Bug Fixes\n- Resolved memory leak during region switching."
+      },
+      {
+        "id": "patchFormButtons",
+        "component": "Buttons",
+        "buttons": [
+          "saveDraftBtn",
+          "publishPatchBtn"
+        ]
+      },
+      {
+        "id": "saveDraftBtn",
+        "component": "Button",
+        "label": "Save Draft",
+        "variant": "secondary"
+      },
+      {
+        "id": "publishPatchBtn",
+        "component": "Button",
+        "label": "Stage for Next Deploy",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>

@@ -1,0 +1,795 @@
+Here's a comprehensive university administrator dashboard covering all 16 items, organized into five tabs for clarity.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": ["header", "mainTabs"]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "University Administration Dashboard",
+        "subtitle": "Fall 2024 · Updated today at 8:45 AM"
+      },
+      {
+        "id": "mainTabs",
+        "component": "Tabs",
+        "items": ["tabOverview", "tabAcademics", "tabStudents", "tabAlumni", "tabActions"]
+      },
+
+      {
+        "id": "tabOverview",
+        "component": "TabItem",
+        "value": "overview",
+        "trigger": "Overview",
+        "content": ["enrollCard", "kpiCard", "semCard"]
+      },
+      {
+        "id": "enrollCard",
+        "component": "Card",
+        "children": ["enrollHeader", "enrollChart"]
+      },
+      {
+        "id": "enrollHeader",
+        "component": "CardHeader",
+        "title": "Total Enrollment — 5-Year Trend",
+        "subtitle": "Item 1 · Headcount across all programs"
+      },
+      {
+        "id": "enrollChart",
+        "component": "LineChart",
+        "labels": ["2020", "2021", "2022", "2023", "2024"],
+        "series": ["enrollSeries"],
+        "variant": "natural",
+        "xLabel": "Year",
+        "yLabel": "Students"
+      },
+      {
+        "id": "enrollSeries",
+        "component": "Series",
+        "category": "Total Enrollment",
+        "values": [18200, 18850, 19400, 20100, 21350]
+      },
+      {
+        "id": "kpiCard",
+        "component": "Card",
+        "direction": "row",
+        "gap": "l",
+        "children": ["acceptanceText", "tuitionText"]
+      },
+      {
+        "id": "acceptanceText",
+        "component": "TextContent",
+        "text": "**Acceptance Rate (Item 3)**\n\n# 34%\nDown from 37% last cycle. 7,320 offers extended from 21,540 applications.",
+        "size": "default"
+      },
+      {
+        "id": "tuitionText",
+        "component": "TextContent",
+        "text": "**Tuition Revenue This Year (Item 4)**\n\n# $142.6M\nUp 6.2% YoY. Net of discounts and waivers: $118.3M.",
+        "size": "default"
+      },
+      {
+        "id": "semCard",
+        "component": "Card",
+        "children": ["semHeader", "semTable"]
+      },
+      {
+        "id": "semHeader",
+        "component": "CardHeader",
+        "title": "This Semester vs. Last (Item 13)",
+        "subtitle": "Key metrics comparison"
+      },
+      {
+        "id": "semTable",
+        "component": "Table",
+        "columns": ["semColMetric", "semColCurrent", "semColPrev", "semColChange"]
+      },
+      {
+        "id": "semColMetric",
+        "component": "Col",
+        "label": "Metric",
+        "data": ["Enrollment", "Credit Hours", "Avg Class Size", "Retention Rate", "Sections Offered"]
+      },
+      {
+        "id": "semColCurrent",
+        "component": "Col",
+        "label": "Fall 2024",
+        "data": ["21,350", "287,400", "28.4", "91.2%", "1,142"]
+      },
+      {
+        "id": "semColPrev",
+        "component": "Col",
+        "label": "Spring 2024",
+        "data": ["20,890", "279,100", "27.1", "90.5%", "1,098"]
+      },
+      {
+        "id": "semColChange",
+        "component": "Col",
+        "label": "Change",
+        "data": ["+460 (+2.2%)", "+8,300 (+3.0%)", "+1.3", "+0.7 pp", "+44 (+4.0%)"]
+      },
+
+      {
+        "id": "tabAcademics",
+        "component": "TabItem",
+        "value": "academics",
+        "trigger": "Academics",
+        "content": ["appsCard", "fullnessCard", "loadCard", "waitCard"]
+      },
+      {
+        "id": "appsCard",
+        "component": "Card",
+        "children": ["appsHeader", "appsChart"]
+      },
+      {
+        "id": "appsHeader",
+        "component": "CardHeader",
+        "title": "Applications by Program (Item 2)",
+        "subtitle": "Fall 2024 admissions cycle"
+      },
+      {
+        "id": "appsChart",
+        "component": "HorizontalBarChart",
+        "labels": ["Engineering", "Business", "Computer Science", "Health Sciences", "Liberal Arts", "Education"],
+        "series": ["appsSeries"],
+        "xLabel": "Applications",
+        "yLabel": "Program"
+      },
+      {
+        "id": "appsSeries",
+        "component": "Series",
+        "category": "Applications",
+        "values": [4200, 3800, 3600, 3100, 2400, 1200]
+      },
+      {
+        "id": "fullnessCard",
+        "component": "Card",
+        "children": ["fullnessHeader", "fullnessTable"]
+      },
+      {
+        "id": "fullnessHeader",
+        "component": "CardHeader",
+        "title": "Course Offering Capacity (Item 5)",
+        "subtitle": "Top sections by enrollment pressure"
+      },
+      {
+        "id": "fullnessTable",
+        "component": "Table",
+        "columns": ["fullColCourse", "fullColCap", "fullColEnrolled", "fullColPct"]
+      },
+      {
+        "id": "fullColCourse",
+        "component": "Col",
+        "label": "Course",
+        "data": ["CS 101 – Intro to Programming", "BUS 210 – Financial Accounting", "ENG 150 – Composition", "BIO 301 – Genetics", "MATH 220 – Linear Algebra", "PSY 100 – Intro Psychology"]
+      },
+      {
+        "id": "fullColCap",
+        "component": "Col",
+        "label": "Capacity",
+        "data": [120, 90, 80, 60, 75, 200]
+      },
+      {
+        "id": "fullColEnrolled",
+        "component": "Col",
+        "label": "Enrolled",
+        "data": [120, 88, 79, 58, 71, 196]
+      },
+      {
+        "id": "fullColPct",
+        "component": "Col",
+        "label": "% Full",
+        "data": ["100%", "98%", "99%", "97%", "95%", "98%"]
+      },
+      {
+        "id": "loadCard",
+        "component": "Card",
+        "children": ["loadHeader", "loadTable"]
+      },
+      {
+        "id": "loadHeader",
+        "component": "CardHeader",
+        "title": "Teaching Load by Faculty (Item 6)",
+        "subtitle": "Current semester assignment"
+      },
+      {
+        "id": "loadTable",
+        "component": "Table",
+        "columns": ["loadColFaculty", "loadColDept", "loadColCourses", "loadColCredits"]
+      },
+      {
+        "id": "loadColFaculty",
+        "component": "Col",
+        "label": "Faculty Member",
+        "data": ["Dr. Sarah Chen", "Prof. James Okafor", "Dr. Maria Lopez", "Prof. David Kim", "Dr. Emily Watson", "Prof. Alan Reeves"]
+      },
+      {
+        "id": "loadColDept",
+        "component": "Col",
+        "label": "Department",
+        "data": ["Computer Science", "Business", "Biology", "Mathematics", "English", "Psychology"]
+      },
+      {
+        "id": "loadColCourses",
+        "component": "Col",
+        "label": "Courses",
+        "data": [4, 3, 3, 4, 3, 2]
+      },
+      {
+        "id": "loadColCredits",
+        "component": "Col",
+        "label": "Credit Hours",
+        "data": [12, 9, 10, 12, 9, 6]
+      },
+      {
+        "id": "waitCard",
+        "component": "Card",
+        "children": ["waitHeader", "waitTable"]
+      },
+      {
+        "id": "waitHeader",
+        "component": "CardHeader",
+        "title": "Waitlisted Students per Program (Item 14)",
+        "subtitle": "Students currently on waitlists"
+      },
+      {
+        "id": "waitTable",
+        "component": "Table",
+        "columns": ["waitColProgram", "waitColCount", "waitColTrend"]
+      },
+      {
+        "id": "waitColProgram",
+        "component": "Col",
+        "label": "Program",
+        "data": ["Computer Science", "Engineering", "Business", "Health Sciences", "Liberal Arts", "Education"]
+      },
+      {
+        "id": "waitColCount",
+        "component": "Col",
+        "label": "Waitlisted",
+        "data": [142, 98, 76, 64, 23, 11]
+      },
+      {
+        "id": "waitColTrend",
+        "component": "Col",
+        "label": "vs. Last Week",
+        "data": ["+18", "+7", "−3", "+12", "−1", "0"]
+      },
+
+      {
+        "id": "tabStudents",
+        "component": "TabItem",
+        "value": "students",
+        "trigger": "Students & Campus",
+        "content": ["riskCard", "scholarCard", "housingCard", "eventsCard"]
+      },
+      {
+        "id": "riskCard",
+        "component": "Card",
+        "children": ["riskHeader", "riskAlert", "riskTable"]
+      },
+      {
+        "id": "riskHeader",
+        "component": "CardHeader",
+        "title": "Students at Academic Risk (Item 7)",
+        "subtitle": "GPA below 2.0 or on academic probation"
+      },
+      {
+        "id": "riskAlert",
+        "component": "Alert",
+        "title": "87 students flagged",
+        "description": "12 more than last semester. 34 are first-year students requiring mandatory advising.",
+        "variant": "warning"
+      },
+      {
+        "id": "riskTable",
+        "component": "Table",
+        "columns": ["riskColName", "riskColGPA", "riskColProgram", "riskColStatus"]
+      },
+      {
+        "id": "riskColName",
+        "component": "Col",
+        "label": "Student",
+        "data": ["A. Martinez", "J. Thompson", "K. Patel", "L. Nguyen", "R. Johnson"]
+      },
+      {
+        "id": "riskColGPA",
+        "component": "Col",
+        "label": "GPA",
+        "data": ["1.42", "1.68", "1.75", "1.81", "1.93"]
+      },
+      {
+        "id": "riskColProgram",
+        "component": "Col",
+        "label": "Program",
+        "data": ["Engineering", "Business", "Biology", "Liberal Arts", "Computer Science"]
+      },
+      {
+        "id": "riskColStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": ["Probation", "Probation", "Warning", "Warning", "Warning"]
+      },
+      {
+        "id": "scholarCard",
+        "component": "Card",
+        "children": ["scholarHeader", "scholarProgress", "scholarText"]
+      },
+      {
+        "id": "scholarHeader",
+        "component": "CardHeader",
+        "title": "Scholarship Budget Utilization (Item 8)",
+        "subtitle": "Academic year 2024–2025"
+      },
+      {
+        "id": "scholarProgress",
+        "component": "Progress",
+        "value": 68,
+        "label": "$8.2M used of $12.0M total"
+      },
+      {
+        "id": "scholarText",
+        "component": "TextContent",
+        "text": "68% utilized with 62% of the academic year elapsed. Pacing is slightly ahead of plan — projected year-end usage: **$13.1M** (109% of budget).",
+        "size": "small"
+      },
+      {
+        "id": "housingCard",
+        "component": "Card",
+        "children": ["housingHeader", "housingProgress", "housingText"]
+      },
+      {
+        "id": "housingHeader",
+        "component": "CardHeader",
+        "title": "Housing Occupancy (Item 9)",
+        "subtitle": "All residence halls"
+      },
+      {
+        "id": "housingProgress",
+        "component": "Progress",
+        "value": 94,
+        "label": "4,812 of 5,120 beds occupied"
+      },
+      {
+        "id": "housingText",
+        "component": "TextContent",
+        "text": "308 beds remain available. North Hall is at 100% capacity; South Hall has the most availability (72 beds).",
+        "size": "small"
+      },
+      {
+        "id": "eventsCard",
+        "component": "Card",
+        "children": ["eventsHeader", "eventsList"]
+      },
+      {
+        "id": "eventsHeader",
+        "component": "CardHeader",
+        "title": "Campus Events This Month (Item 10)",
+        "subtitle": "October 2024"
+      },
+      {
+        "id": "eventsList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": ["event1", "event2", "event3", "event4", "event5"]
+      },
+      {
+        "id": "event1",
+        "component": "ListItem",
+        "title": "Homecoming Weekend",
+        "subtitle": "Oct 5–6 · Main Quad · Est. 8,000 attendees"
+      },
+      {
+        "id": "event2",
+        "component": "ListItem",
+        "title": "Research Symposium",
+        "subtitle": "Oct 12 · Science Center · 42 poster presentations"
+      },
+      {
+        "id": "event3",
+        "component": "ListItem",
+        "title": "Career Fair",
+        "subtitle": "Oct 17 · Student Union · 120+ employers"
+      },
+      {
+        "id": "event4",
+        "component": "ListItem",
+        "title": "Guest Lecture: AI Ethics",
+        "subtitle": "Oct 22 · Auditorium A · Dr. Fei-Fei Li"
+      },
+      {
+        "id": "event5",
+        "component": "ListItem",
+        "title": "Fall Concert Series",
+        "subtitle": "Oct 28 · Amphitheater · Open to all students"
+      },
+
+      {
+        "id": "tabAlumni",
+        "component": "TabItem",
+        "value": "alumni",
+        "trigger": "Alumni & Giving",
+        "content": ["alumniCard"]
+      },
+      {
+        "id": "alumniCard",
+        "component": "Card",
+        "children": ["alumniHeader", "alumniChart", "alumniSummary"]
+      },
+      {
+        "id": "alumniHeader",
+        "component": "CardHeader",
+        "title": "Alumni Giving — Past 4 Years (Item 11)",
+        "subtitle": "Annual fund totals"
+      },
+      {
+        "id": "alumniChart",
+        "component": "BarChart",
+        "labels": ["2021", "2022", "2023", "2024"],
+        "series": ["alumniSeries"],
+        "xLabel": "Year",
+        "yLabel": "USD (Millions)"
+      },
+      {
+        "id": "alumniSeries",
+        "component": "Series",
+        "category": "Alumni Giving",
+        "values": [18.2, 21.5, 19.8, 24.1]
+      },
+      {
+        "id": "alumniSummary",
+        "component": "TextContent",
+        "text": "2024 is on pace to be the strongest year on record, up **21.7%** over 2023. Participation rate: 14.2% (target: 15%).",
+        "size": "small"
+      },
+
+      {
+        "id": "tabActions",
+        "component": "TabItem",
+        "value": "actions",
+        "trigger": "Actions",
+        "content": ["deptCard", "approveCard", "msgCard"]
+      },
+      {
+        "id": "deptCard",
+        "component": "Card",
+        "children": ["deptHeader", "deptForm"]
+      },
+      {
+        "id": "deptHeader",
+        "component": "CardHeader",
+        "title": "Focus on a Department (Item 12)",
+        "subtitle": "Select a department to drill into detailed metrics"
+      },
+      {
+        "id": "deptForm",
+        "component": "Form",
+        "name": "department-focus",
+        "buttons": "deptButtons",
+        "fields": ["deptField"]
+      },
+      {
+        "id": "deptField",
+        "component": "FormControl",
+        "label": "Department",
+        "input": "deptSelect"
+      },
+      {
+        "id": "deptSelect",
+        "component": "Select",
+        "name": "department",
+        "placeholder": "Choose a department",
+        "items": ["deptCS", "deptEng", "deptBus", "deptBio", "deptMath", "deptEngl", "deptPsych"]
+      },
+      {
+        "id": "deptCS",
+        "component": "SelectItem",
+        "value": "cs",
+        "label": "Computer Science"
+      },
+      {
+        "id": "deptEng",
+        "component": "SelectItem",
+        "value": "engineering",
+        "label": "Engineering"
+      },
+      {
+        "id": "deptBus",
+        "component": "SelectItem",
+        "value": "business",
+        "label": "Business"
+      },
+      {
+        "id": "deptBio",
+        "component": "SelectItem",
+        "value": "biology",
+        "label": "Biology"
+      },
+      {
+        "id": "deptMath",
+        "component": "SelectItem",
+        "value": "math",
+        "label": "Mathematics"
+      },
+      {
+        "id": "deptEngl",
+        "component": "SelectItem",
+        "value": "english",
+        "label": "English"
+      },
+      {
+        "id": "deptPsych",
+        "component": "SelectItem",
+        "value": "psychology",
+        "label": "Psychology"
+      },
+      {
+        "id": "deptButtons",
+        "component": "Buttons",
+        "buttons": ["deptBtn"]
+      },
+      {
+        "id": "deptBtn",
+        "component": "Button",
+        "label": "View Department Details",
+        "variant": "primary"
+      },
+      {
+        "id": "approveCard",
+        "component": "Card",
+        "children": ["approveHeader", "approveForm"]
+      },
+      {
+        "id": "approveHeader",
+        "component": "CardHeader",
+        "title": "Approve a New Course (Item 15)",
+        "subtitle": "Submit a course proposal for review"
+      },
+      {
+        "id": "approveForm",
+        "component": "Form",
+        "name": "approve-course",
+        "buttons": "approveButtons",
+        "fields": ["approveNameField", "approveDeptField", "approveCreditsField", "approveDescField"]
+      },
+      {
+        "id": "approveNameField",
+        "component": "FormControl",
+        "label": "Course Title",
+        "input": "approveNameInput"
+      },
+      {
+        "id": "approveNameInput",
+        "component": "Input",
+        "name": "course_title",
+        "placeholder": "e.g., CS 450 – Machine Learning"
+      },
+      {
+        "id": "approveDeptField",
+        "component": "FormControl",
+        "label": "Department",
+        "input": "approveDeptSelect"
+      },
+      {
+        "id": "approveDeptSelect",
+        "component": "Select",
+        "name": "course_dept",
+        "placeholder": "Select department",
+        "items": ["apDeptCS", "apDeptEng", "apDeptBus", "apDeptBio", "apDeptMath"]
+      },
+      {
+        "id": "apDeptCS",
+        "component": "SelectItem",
+        "value": "cs",
+        "label": "Computer Science"
+      },
+      {
+        "id": "apDeptEng",
+        "component": "SelectItem",
+        "value": "engineering",
+        "label": "Engineering"
+      },
+      {
+        "id": "apDeptBus",
+        "component": "SelectItem",
+        "value": "business",
+        "label": "Business"
+      },
+      {
+        "id": "apDeptBio",
+        "component": "SelectItem",
+        "value": "biology",
+        "label": "Biology"
+      },
+      {
+        "id": "apDeptMath",
+        "component": "SelectItem",
+        "value": "math",
+        "label": "Mathematics"
+      },
+      {
+        "id": "approveCreditsField",
+        "component": "FormControl",
+        "label": "Credit Hours",
+        "input": "approveCreditsInput"
+      },
+      {
+        "id": "approveCreditsInput",
+        "component": "Input",
+        "name": "credit_hours",
+        "placeholder": "e.g., 3",
+        "type": "number"
+      },
+      {
+        "id": "approveDescField",
+        "component": "FormControl",
+        "label": "Course Description",
+        "input": "approveDescArea",
+        "hint": "Include learning objectives and prerequisites"
+      },
+      {
+        "id": "approveDescArea",
+        "component": "TextArea",
+        "name": "course_description",
+        "placeholder": "Describe the course content, objectives, and prerequisites…",
+        "rows": 4
+      },
+      {
+        "id": "approveButtons",
+        "component": "Buttons",
+        "buttons": ["approveBtn", "approveCancelBtn"]
+      },
+      {
+        "id": "approveBtn",
+        "component": "Button",
+        "label": "Submit for Approval",
+        "variant": "primary"
+      },
+      {
+        "id": "approveCancelBtn",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      },
+      {
+        "id": "msgCard",
+        "component": "Card",
+        "children": ["msgHeader", "msgForm"]
+      },
+      {
+        "id": "msgHeader",
+        "component": "CardHeader",
+        "title": "Send Message to Student Group (Item 16)",
+        "subtitle": "Compose and send an announcement"
+      },
+      {
+        "id": "msgForm",
+        "component": "Form",
+        "name": "send-message",
+        "buttons": "msgButtons",
+        "fields": ["msgGroupField", "msgSubjectField", "msgBodyField"]
+      },
+      {
+        "id": "msgGroupField",
+        "component": "FormControl",
+        "label": "Recipient Group",
+        "input": "msgGroupSelect"
+      },
+      {
+        "id": "msgGroupSelect",
+        "component": "Select",
+        "name": "recipient_group",
+        "placeholder": "Select a student group",
+        "items": ["grpAll", "grpFresh", "grpSoph", "grpJunior", "grpSenior", "grpGrad", "grpIntl", "grpAthletes"]
+      },
+      {
+        "id": "grpAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All Students"
+      },
+      {
+        "id": "grpFresh",
+        "component": "SelectItem",
+        "value": "freshmen",
+        "label": "First-Year Students"
+      },
+      {
+        "id": "grpSoph",
+        "component": "SelectItem",
+        "value": "sophomores",
+        "label": "Sophomores"
+      },
+      {
+        "id": "grpJunior",
+        "component": "SelectItem",
+        "value": "juniors",
+        "label": "Juniors"
+      },
+      {
+        "id": "grpSenior",
+        "component": "SelectItem",
+        "value": "seniors",
+        "label": "Seniors"
+      },
+      {
+        "id": "grpGrad",
+        "component": "SelectItem",
+        "value": "graduate",
+        "label": "Graduate Students"
+      },
+      {
+        "id": "grpIntl",
+        "component": "SelectItem",
+        "value": "international",
+        "label": "International Students"
+      },
+      {
+        "id": "grpAthletes",
+        "component": "SelectItem",
+        "value": "athletes",
+        "label": "Student Athletes"
+      },
+      {
+        "id": "msgSubjectField",
+        "component": "FormControl",
+        "label": "Subject",
+        "input": "msgSubjectInput"
+      },
+      {
+        "id": "msgSubjectInput",
+        "component": "Input",
+        "name": "subject",
+        "placeholder": "e.g., Registration deadline reminder"
+      },
+      {
+        "id": "msgBodyField",
+        "component": "FormControl",
+        "label": "Message",
+        "input": "msgBodyArea"
+      },
+      {
+        "id": "msgBodyArea",
+        "component": "TextArea",
+        "name": "message_body",
+        "placeholder": "Write your message here…",
+        "rows": 5
+      },
+      {
+        "id": "msgButtons",
+        "component": "Buttons",
+        "buttons": ["msgSendBtn", "msgDraftBtn"]
+      },
+      {
+        "id": "msgSendBtn",
+        "component": "Button",
+        "label": "Send Message",
+        "variant": "primary"
+      },
+      {
+        "id": "msgDraftBtn",
+        "component": "Button",
+        "label": "Save as Draft",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>

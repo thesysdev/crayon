@@ -1,0 +1,590 @@
+I have generated a comprehensive UI dashboard for the logistics coordinator. It includes all 9 requested features, ranging from active shipment status and delay alerts to carrier volume distributions, historical volume trends, search controls, and quick flagging actions.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "alertDelay",
+          "kpiRow",
+          "searchSection",
+          "tabsSection",
+          "chartsRow",
+          "flagDialog"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Logistics Operations Dashboard",
+        "subtitle": "Real-time dispatch tracking, performance metrics, and fleet overview"
+      },
+      {
+        "id": "alertDelay",
+        "component": "Alert",
+        "title": "3 Delayed Shipments Require Attention",
+        "description": "Shipment #SH-8802 (CHI -> NYC) and 2 others are currently experiencing weather delays exceeding 4 hours.",
+        "variant": "warning"
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "kpiOnTime",
+          "kpiAvgCost",
+          "kpiRefresh"
+        ]
+      },
+      {
+        "id": "kpiOnTime",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "kpiOnTimeHeading",
+          "kpiOnTimeProgress",
+          "kpiOnTimeBadge"
+        ]
+      },
+      {
+        "id": "kpiOnTimeHeading",
+        "component": "Heading",
+        "text": "On-Time Performance (MTD)",
+        "level": "h4"
+      },
+      {
+        "id": "kpiOnTimeProgress",
+        "component": "Progress",
+        "value": 94,
+        "label": "94.2% On-Time"
+      },
+      {
+        "id": "kpiOnTimeBadge",
+        "component": "Badge",
+        "text": "+2.1% vs last month",
+        "variant": "secondary"
+      },
+      {
+        "id": "kpiAvgCost",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "kpiAvgCostHeading",
+          "kpiAvgCostValue",
+          "kpiAvgCostSub"
+        ]
+      },
+      {
+        "id": "kpiAvgCostHeading",
+        "component": "Heading",
+        "text": "Avg Cost Per Shipment",
+        "level": "h4"
+      },
+      {
+        "id": "kpiAvgCostValue",
+        "component": "Heading",
+        "text": "$1,248.50",
+        "level": "h2"
+      },
+      {
+        "id": "kpiAvgCostSub",
+        "component": "TextContent",
+        "text": "Target: < $1,300.00",
+        "size": "small"
+      },
+      {
+        "id": "kpiRefresh",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "kpiRefreshHeading",
+          "kpiRefreshValue",
+          "kpiRefreshTag"
+        ]
+      },
+      {
+        "id": "kpiRefreshHeading",
+        "component": "Heading",
+        "text": "Data Status",
+        "level": "h4"
+      },
+      {
+        "id": "kpiRefreshValue",
+        "component": "TextContent",
+        "text": "Last Refreshed: Just now",
+        "size": "default"
+      },
+      {
+        "id": "kpiRefreshTag",
+        "component": "Tag",
+        "text": "Live Stream Active",
+        "variant": "success"
+      },
+      {
+        "id": "searchSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "searchForm"
+        ]
+      },
+      {
+        "id": "searchForm",
+        "component": "Form",
+        "name": "routeSearch",
+        "buttons": "searchButtons",
+        "fields": [
+          "originControl",
+          "destControl"
+        ]
+      },
+      {
+        "id": "originControl",
+        "component": "FormControl",
+        "label": "Filter Route - Origin",
+        "input": "originInput"
+      },
+      {
+        "id": "originInput",
+        "component": "Input",
+        "name": "origin",
+        "placeholder": "e.g. Chicago, IL or Hub A"
+      },
+      {
+        "id": "destControl",
+        "component": "FormControl",
+        "label": "Filter Route - Destination",
+        "input": "destInput"
+      },
+      {
+        "id": "destInput",
+        "component": "Input",
+        "name": "destination",
+        "placeholder": "e.g. New York, NY or Port 4"
+      },
+      {
+        "id": "searchButtons",
+        "component": "Buttons",
+        "buttons": [
+          "searchBtn",
+          "clearBtn"
+        ]
+      },
+      {
+        "id": "searchBtn",
+        "component": "Button",
+        "label": "Search Routes",
+        "variant": "primary"
+      },
+      {
+        "id": "clearBtn",
+        "component": "Button",
+        "label": "Reset",
+        "variant": "tertiary"
+      },
+      {
+        "id": "tabsSection",
+        "component": "Tabs",
+        "items": [
+          "tabActive",
+          "tabDelayed"
+        ]
+      },
+      {
+        "id": "tabActive",
+        "component": "TabItem",
+        "value": "active_shipments",
+        "trigger": "All Active Shipments (5)",
+        "content": [
+          "activeTable"
+        ]
+      },
+      {
+        "id": "activeTable",
+        "component": "Table",
+        "columns": [
+          "colId",
+          "colOrigin",
+          "colDest",
+          "colCarrier",
+          "colETA",
+          "colStatus"
+        ]
+      },
+      {
+        "id": "colId",
+        "component": "Col",
+        "label": "Shipment ID",
+        "data": [
+          "SH-8801",
+          "SH-8802",
+          "SH-8803",
+          "SH-8804",
+          "SH-8805"
+        ]
+      },
+      {
+        "id": "colOrigin",
+        "component": "Col",
+        "label": "Origin",
+        "data": [
+          "Seattle, WA",
+          "Chicago, IL",
+          "Dallas, TX",
+          "Atlanta, GA",
+          "Los Angeles, CA"
+        ]
+      },
+      {
+        "id": "colDest",
+        "component": "Col",
+        "label": "Destination",
+        "data": [
+          "Los Angeles, CA",
+          "New York, NY",
+          "Miami, FL",
+          "Chicago, IL",
+          "Denver, CO"
+        ]
+      },
+      {
+        "id": "colCarrier",
+        "component": "Col",
+        "label": "Carrier",
+        "data": [
+          "Swift Freight",
+          "Apex Logistics",
+          "Pacific Rail",
+          "Swift Freight",
+          "National Haul"
+        ]
+      },
+      {
+        "id": "colETA",
+        "component": "Col",
+        "label": "ETA",
+        "data": [
+          "Today, 16:00",
+          "Tomorrow, 09:30 (Delayed)",
+          "Oct 28, 11:00",
+          "Oct 29, 14:15",
+          "Oct 30, 08:00"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "In Transit - On Time",
+          "In Transit - Delayed",
+          "In Transit - On Time",
+          "In Transit - On Time",
+          "In Transit - Delayed"
+        ]
+      },
+      {
+        "id": "tabDelayed",
+        "component": "TabItem",
+        "value": "delayed_shipments",
+        "trigger": "Delayed Shipments (2)",
+        "content": [
+          "delayedTable"
+        ]
+      },
+      {
+        "id": "delayedTable",
+        "component": "Table",
+        "columns": [
+          "colDelivId",
+          "colDelivRoute",
+          "colDelivCarrier",
+          "colDelivReason",
+          "colDelivETA"
+        ]
+      },
+      {
+        "id": "colDelivId",
+        "component": "Col",
+        "label": "Shipment ID",
+        "data": [
+          "SH-8802",
+          "SH-8805"
+        ]
+      },
+      {
+        "id": "colDelivRoute",
+        "component": "Col",
+        "label": "Route",
+        "data": [
+          "Chicago, IL -> New York, NY",
+          "Los Angeles, CA -> Denver, CO"
+        ]
+      },
+      {
+        "id": "colDelivCarrier",
+        "component": "Col",
+        "label": "Carrier",
+        "data": [
+          "Apex Logistics",
+          "National Haul"
+        ]
+      },
+      {
+        "id": "colDelivReason",
+        "component": "Col",
+        "label": "Delay Reason",
+        "data": [
+          "Severe Weather (Midwest)",
+          "Engine Maintenance"
+        ]
+      },
+      {
+        "id": "colDelivETA",
+        "component": "Col",
+        "label": "Revised ETA",
+        "data": [
+          "Tomorrow, 09:30",
+          "Oct 30, 18:00"
+        ]
+      },
+      {
+        "id": "chartsRow",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "weeklyVolumeCard",
+          "carrierSplitCard"
+        ]
+      },
+      {
+        "id": "weeklyVolumeCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "weeklyVolumeHeader",
+          "weeklyVolumeChart"
+        ]
+      },
+      {
+        "id": "weeklyVolumeHeader",
+        "component": "CardHeader",
+        "title": "Weekly Volume (Past 8 Weeks)",
+        "subtitle": "Total shipments processed across past 2 months"
+      },
+      {
+        "id": "weeklyVolumeChart",
+        "component": "BarChart",
+        "labels": [
+          "Wk 1",
+          "Wk 2",
+          "Wk 3",
+          "Wk 4",
+          "Wk 5",
+          "Wk 6",
+          "Wk 7",
+          "Wk 8"
+        ],
+        "series": [
+          "volSeries"
+        ],
+        "xLabel": "Week",
+        "yLabel": "Shipment Count"
+      },
+      {
+        "id": "volSeries",
+        "component": "Series",
+        "category": "Volume",
+        "values": [
+          320,
+          345,
+          310,
+          390,
+          410,
+          385,
+          425,
+          450
+        ]
+      },
+      {
+        "id": "carrierSplitCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "carrierSplitHeader",
+          "carrierPieChart"
+        ]
+      },
+      {
+        "id": "carrierSplitHeader",
+        "component": "CardHeader",
+        "title": "Volume Split by Carrier",
+        "subtitle": "Percentage share of current load distribution"
+      },
+      {
+        "id": "carrierPieChart",
+        "component": "PieChart",
+        "labels": [
+          "Swift Freight",
+          "Apex Logistics",
+          "Pacific Rail",
+          "National Haul"
+        ],
+        "values": [
+          40,
+          25,
+          20,
+          15
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "flagDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Flag / Issue Incident Report",
+        "triggerVariant": "destructive",
+        "title": "Flag Shipment Incident",
+        "description": "Submit a priority exception flag to alert dispatch and operations teams.",
+        "content": [
+          "flagForm"
+        ]
+      },
+      {
+        "id": "flagForm",
+        "component": "Form",
+        "name": "flagShipmentForm",
+        "buttons": "flagFormButtons",
+        "fields": [
+          "flagShipmentIdControl",
+          "flagReasonControl",
+          "flagNotesControl"
+        ]
+      },
+      {
+        "id": "flagShipmentIdControl",
+        "component": "FormControl",
+        "label": "Shipment ID",
+        "input": "flagShipmentSelect"
+      },
+      {
+        "id": "flagShipmentSelect",
+        "component": "Select",
+        "name": "shipmentId",
+        "placeholder": "Select shipment...",
+        "items": [
+          "item1",
+          "item2",
+          "item3"
+        ]
+      },
+      {
+        "id": "item1",
+        "component": "SelectItem",
+        "value": "SH-8801",
+        "label": "SH-8801 (Seattle -> LA)"
+      },
+      {
+        "id": "item2",
+        "component": "SelectItem",
+        "value": "SH-8802",
+        "label": "SH-8802 (Chicago -> NYC)"
+      },
+      {
+        "id": "item3",
+        "component": "SelectItem",
+        "value": "SH-8805",
+        "label": "SH-8805 (LA -> Denver)"
+      },
+      {
+        "id": "flagReasonControl",
+        "component": "FormControl",
+        "label": "Flag Type",
+        "input": "flagReasonSelect"
+      },
+      {
+        "id": "flagReasonSelect",
+        "component": "Select",
+        "name": "reason",
+        "placeholder": "Select flag type...",
+        "items": [
+          "reasonWeather",
+          "reasonDamage",
+          "reasonBreakdown",
+          "reasonCustoms"
+        ]
+      },
+      {
+        "id": "reasonWeather",
+        "component": "SelectItem",
+        "value": "weather",
+        "label": "Weather Delay"
+      },
+      {
+        "id": "reasonDamage",
+        "component": "SelectItem",
+        "value": "damage",
+        "label": "Cargo Damage Reported"
+      },
+      {
+        "id": "reasonBreakdown",
+        "component": "SelectItem",
+        "value": "breakdown",
+        "label": "Vehicle Mechanical Failure"
+      },
+      {
+        "id": "reasonCustoms",
+        "component": "SelectItem",
+        "value": "customs",
+        "label": "Customs / Documentation Hold"
+      },
+      {
+        "id": "flagNotesControl",
+        "component": "FormControl",
+        "label": "Coordinator Notes",
+        "input": "flagNotesArea"
+      },
+      {
+        "id": "flagNotesArea",
+        "component": "TextArea",
+        "name": "notes",
+        "placeholder": "Describe the issue and recommended action steps...",
+        "rows": 3
+      },
+      {
+        "id": "flagFormButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitFlagBtn"
+        ]
+      },
+      {
+        "id": "submitFlagBtn",
+        "component": "Button",
+        "label": "Submit Exception Flag",
+        "variant": "primary",
+        "type": "destructive"
+      }
+    ]
+  }
+}
+</a2ui-json>

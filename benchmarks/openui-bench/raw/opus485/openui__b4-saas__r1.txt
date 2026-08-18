@@ -1,0 +1,57 @@
+root = Card([header, periodForm, kpis, signupsTrend, planSplit, topCustomers, atRisk, failedPayments, featureAdoption, npsProgress, seatUtil, inviteDrawer])
+
+header = CardHeader("Admin Overview", "SaaS company health at a glance")
+
+periodForm = Form("reporting-period", periodButtons, [periodField])
+periodField = FormControl("Reporting period", periodSelect)
+periodSelect = Select("period", [pMonth, pQuarter, pYear], "Select period", null, "month")
+pMonth = SelectItem("month", "This month")
+pQuarter = SelectItem("quarter", "This quarter")
+pYear = SelectItem("year", "This year")
+periodButtons = Buttons([applyPeriod])
+applyPeriod = Button("Apply", null, "primary")
+
+kpis = Table([kpiName, kpiValue, kpiChange])
+kpiName = Col("Metric", ["MRR", "ARR", "Churn (month)", "NPS"])
+kpiValue = Col("Value", ["$142,800", "$1,713,600", "2.4%", "48"])
+kpiChange = Col("Change", ["+6.1%", "+6.1%", "-0.3%", "+4"])
+
+signupsTrend = LineChart(["Days 1-30", "Days 31-60", "Days 61-90"], [signupSeries], "natural", "Past 90 days", "Signups")
+signupSeries = Series("New signups", [412, 468, 531])
+
+planSplit = PieChart(["Starter", "Growth", "Business", "Enterprise"], [640, 380, 210, 74], "donut")
+
+topCustomers = Table([custName, custSeats, custSpend])
+custName = Col("Customer", ["Northwind Co", "Acme Corp", "Globex", "Initech", "Umbrella", "Hooli", "Soylent", "Stark Ind", "Wayne Ent", "Wonka Inc"])
+custSeats = Col("Seats", [480, 420, 360, 340, 300, 285, 260, 240, 220, 205], "number")
+custSpend = Col("Annual spend", ["$96,000", "$84,000", "$72,000", "$68,000", "$60,000", "$57,000", "$52,000", "$48,000", "$44,000", "$41,000"])
+
+atRisk = Table([riskAccount, riskReason, riskAction])
+riskAccount = Col("Account", ["Globex", "Initech", "Soylent", "Wonka Inc"])
+riskReason = Col("Reason", ["Usage down 40% MoM", "Support escalation unresolved", "Contract renewal overdue", "Champion left company"])
+riskAction = Col("Action", ["Review", "Review", "Review", "Review"], "action")
+
+failedPayments = Table([fpCustomer, fpAmount, fpReason, fpRetry])
+fpCustomer = Col("Customer", ["Hooli", "Umbrella", "Stark Ind"])
+fpAmount = Col("Amount", ["$4,750", "$5,000", "$4,000"])
+fpReason = Col("Reason", ["Card declined", "Insufficient funds", "Expired card"])
+fpRetry = Col("Retry", ["Retry", "Retry", "Retry"], "action")
+
+featureAdoption = BarChart(["Smart Insights", "Bulk Actions", "Audit Log"], [adoptionSeries], "grouped", "Feature", "% adopted")
+adoptionSeries = Series("Adoption", [37, 52, 21])
+
+npsProgress = Progress(48, "Current NPS: 48")
+
+seatUtil = Progress(78, "Seat utilization: 3,210 / 4,120 seats")
+
+inviteDrawer = DrawerBlock("Invite admin", "Invite another admin", "Send an invitation to a new administrator", [inviteForm])
+inviteForm = Form("invite-admin", inviteButtons, [inviteEmailField, inviteRoleField])
+inviteEmailField = FormControl("Admin email", inviteEmailInput)
+inviteEmailInput = Input("email", "admin@company.com", "email")
+inviteRoleField = FormControl("Role", inviteRoleSelect)
+inviteRoleSelect = Select("role", [roleOwner, roleAdmin, roleBilling], "Select role")
+roleOwner = SelectItem("owner", "Owner")
+roleAdmin = SelectItem("admin", "Admin")
+roleBilling = SelectItem("billing", "Billing admin")
+inviteButtons = Buttons([sendInvite])
+sendInvite = Button("Send invite", null, "primary")

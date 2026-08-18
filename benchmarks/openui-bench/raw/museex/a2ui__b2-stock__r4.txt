@@ -1,0 +1,154 @@
+Low-inventory warning screen ready — search, threshold, remaining units and per-item reorder all in one view.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "thresholdAlert",
+          "searchControl",
+          "inventoryTable",
+          "bulkActions",
+          "footerNote"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Low Inventory Warning",
+        "subtitle": "6 items below reorder threshold • Action required"
+      },
+      {
+        "id": "thresholdAlert",
+        "component": "Alert",
+        "title": "Reorder threshold: ≤ 10 units",
+        "description": "Any item at or below 10 units triggers this warning. Last checked today at 9:42 AM. Adjust threshold if you want earlier or later alerts.",
+        "variant": "warning"
+      },
+      {
+        "id": "searchControl",
+        "component": "FormControl",
+        "label": "Search low-stock items",
+        "hint": "Filter by item name, SKU, or category",
+        "input": "searchInput"
+      },
+      {
+        "id": "searchInput",
+        "component": "Input",
+        "name": "search",
+        "placeholder": "Search by item name or SKU…",
+        "type": "text"
+      },
+      {
+        "id": "inventoryTable",
+        "component": "Table",
+        "columns": [
+          "colItem",
+          "colSku",
+          "colRemaining",
+          "colAction"
+        ]
+      },
+      {
+        "id": "colItem",
+        "component": "Col",
+        "label": "Item",
+        "data": [
+          "Organic Almond Milk 1L",
+          "Free-Range Eggs 12pk",
+          "Sourdough Loaf",
+          "Cold-Pressed Orange Juice 1L",
+          "Greek Yogurt 500g",
+          "Hass Avocados"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colSku",
+        "component": "Col",
+        "label": "SKU",
+        "data": [
+          "DRY-1024",
+          "DAI-2041",
+          "BAK-3301",
+          "DRY-1029",
+          "DAI-2055",
+          "PRO-4102"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colRemaining",
+        "component": "Col",
+        "label": "Remaining Units",
+        "data": [
+          3,
+          5,
+          2,
+          8,
+          4,
+          6
+        ],
+        "type": "number"
+      },
+      {
+        "id": "colAction",
+        "component": "Col",
+        "label": "Reorder",
+        "data": [
+          "Reorder",
+          "Reorder",
+          "Reorder",
+          "Reorder",
+          "Reorder",
+          "Reorder"
+        ],
+        "type": "action"
+      },
+      {
+        "id": "bulkActions",
+        "component": "Buttons",
+        "buttons": [
+          "reorderAllBtn",
+          "adjustThresholdBtn"
+        ]
+      },
+      {
+        "id": "reorderAllBtn",
+        "component": "Button",
+        "label": "Reorder All (6 items)",
+        "variant": "primary"
+      },
+      {
+        "id": "adjustThresholdBtn",
+        "component": "Button",
+        "label": "Adjust Threshold",
+        "variant": "secondary"
+      },
+      {
+        "id": "footerNote",
+        "component": "TextContent",
+        "text": "Tip: Use search to quickly find an item, then tap **Reorder** in its row. Threshold is set to 10 units — items shown are ≤ 10.",
+        "size": "small"
+      }
+    ]
+  }
+}
+</a2ui-json>

@@ -1,0 +1,49 @@
+root = Card([header, statusBanner, trackerSection, deliveryInfoSection, supportSection])
+
+header = CardHeader("Track Your Package", "Order #ORD-98241-CX")
+
+statusBanner = Alert("In Transit - On Time", "Your package is moving through the network and is scheduled for delivery soon.", "info")
+
+trackerSection = Card([trackerHeading, progressTrack, stepsTracker], "sunk", "column", "m")
+trackerHeading = Heading("Package Progress", "h3")
+progressTrack = Progress(65, "Step 3 of 4: Out for Delivery")
+stepsTracker = Steps([step1, step2, step3, step4])
+step1 = StepsItem("Order Placed", "Confirmed on Oct 24, 8:30 AM")
+step2 = StepsItem("Shipped", "Departed sorting facility in Chicago, IL on Oct 25, 2:15 PM")
+step3 = StepsItem("Out for Delivery", "Loaded onto delivery vehicle at Local Hub on Oct 27, 6:45 AM")
+step4 = StepsItem("Delivered", "Pending arrival at destination")
+
+deliveryInfoSection = Card([infoHeading, infoTable], "card", "column", "s")
+infoHeading = Heading("Delivery Details", "h3")
+infoTable = Table([colLabels, colValues])
+colLabels = Col("Detail", ["Estimated Delivery", "Carrier", "Tracking Number", "Destination"])
+colValues = Col("Information", ["Today, Oct 27 by 7:00 PM", "Express Courier Service", "TRK-482910492-US", "742 Evergreen Terrace, Springfield"])
+
+supportSection = Card([supportHeading, supportDesc, problemFormDrawer, followUps], "clear", "column", "m")
+supportHeading = Heading("Need Help?", "h3")
+supportDesc = TextContent("If your package is delayed, damaged, or missing, let us know right away.")
+
+problemFormDrawer = DrawerBlock("Report a Problem", "Report Delivery Issue", "Please tell us what went wrong with your shipment.", [problemForm])
+
+problemForm = Form("report_issue_form", formButtons, [issueTypeField, descriptionField, contactEmailField])
+issueTypeField = FormControl("Issue Type", issueTypeSelect)
+issueTypeSelect = Select("issue_type", [opt1, opt2, opt3, opt4], "Select an issue")
+opt1 = SelectItem("late", "Package is delayed / late")
+opt2 = SelectItem("damaged", "Package arrived damaged")
+opt3 = SelectItem("missing", "Marked delivered but missing")
+opt4 = SelectItem("wrong_item", "Incorrect item delivered")
+
+descriptionField = FormControl("Details", descriptionInput, "Provide any helpful details for our support team")
+descriptionInput = TextArea("issue_details", "Describe the problem here...", 4)
+
+contactEmailField = FormControl("Contact Email", emailInput, "We will send updates regarding this report here")
+emailInput = Input("contact_email", "user@example.com", "email")
+
+formButtons = Buttons([submitProblemBtn, cancelProblemBtn])
+submitProblemBtn = Button("Submit Report", null, "primary")
+cancelProblemBtn = Button("Cancel", null, "tertiary")
+
+followUps = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Where is the driver right now?")
+fu2 = FollowUpItem("Change delivery instructions")
+fu3 = FollowUpItem("Request package hold at hub")

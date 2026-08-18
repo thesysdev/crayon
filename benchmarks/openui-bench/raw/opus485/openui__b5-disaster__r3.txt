@@ -1,0 +1,118 @@
+root = Card([header, alerts, sections, forms, followups])
+
+header = CardHeader("Emergency Response Coordination Center", "Live operational overview")
+
+alerts = Alert("Active Emergency", "Multiple incidents in progress across 5 zones", "destructive")
+
+sections = SectionBlock([secIncidents, secSeverity, secResources, secShelters, secRoutes, secWeather, secRescue, secVolunteers, secDonations, secAid, secComms, secRoads, secHospitals, secTasks], true)
+
+secIncidents = SectionItem("incidents", "Active Incidents by Zone", [incidentsTable])
+incidentsTable = Table([incZone, incType, incSeverity])
+incZone = Col("Zone", ["Zone A", "Zone B", "Zone C", "Zone D", "Zone E"])
+incType = Col("Incident", ["Flooding", "Structural collapse", "Wildfire", "Gas leak", "Landslide"])
+incSeverity = Col("Severity", ["Critical", "High", "Critical", "Moderate", "High"])
+
+secSeverity = SectionItem("severity", "Overall Severity Summary", [severityChart])
+severityChart = PieChart(["Critical", "High", "Moderate", "Low"], [2, 2, 1, 0], "donut")
+
+secResources = SectionItem("resources", "Available Resources", [resTable])
+resTable = Table([resType, resCount])
+resType = Col("Resource", ["Vehicles", "Personnel", "Supplies (units)"])
+resCount = Col("Available", [42, 318, 12500], "number")
+
+secShelters = SectionItem("shelters", "Shelters", [shelterTable])
+shelterTable = Table([shName, shCap, shOcc])
+shName = Col("Shelter", ["Central High", "Riverside Gym", "North Arena", "West Chapel"])
+shCap = Col("Capacity", [500, 300, 800, 200], "number")
+shOcc = Col("Occupancy", [420, 295, 610, 88], "number")
+
+secRoutes = SectionItem("routes", "Evacuation Routes", [routeTable])
+routeTable = Table([rtName, rtStatus])
+rtName = Col("Route", ["Highway 9 North", "Route 12 East", "Coastal Bypass", "Ridge Road"])
+rtStatus = Col("Status", ["Open", "Congested", "Closed", "Open"])
+
+secWeather = SectionItem("weather", "48-Hour Weather Forecast", [weatherChart])
+weatherChart = LineChart(["0h", "12h", "24h", "36h", "48h"], [rainSeries, windSeries], "natural", "Time", "Value")
+rainSeries = Series("Rain (mm)", [22, 35, 18, 9, 4])
+windSeries = Series("Wind (km/h)", [40, 55, 48, 30, 20])
+
+secRescue = SectionItem("rescue", "Rescue & Casualties", [rescueTable])
+rescueTable = Table([rcMetric, rcValue])
+rcMetric = Col("Metric", ["People rescued", "Casualties", "Missing"])
+rcValue = Col("Count", [1247, 38, 21], "number")
+
+secVolunteers = SectionItem("volunteers", "Volunteers on Duty", [volTable])
+volTable = Table([volName, volAssign])
+volName = Col("Volunteer", ["M. Ortiz", "K. Chen", "P. Adeyemi", "L. Rossi", "S. Kaur"])
+volAssign = Col("Assignment", ["Zone A rescue", "Shelter logistics", "Zone C fire line", "Medical triage", "Comms relay"])
+
+secDonations = SectionItem("donations", "Donations Received", [donTable])
+donTable = Table([donType, donAmt])
+donType = Col("Category", ["Monetary", "Food (kg)", "Water (L)", "Blankets"])
+donAmt = Col("Amount", [284000, 9500, 42000, 3100], "number")
+
+secAid = SectionItem("aid", "Aid Requests Awaiting Action", [aidList])
+aidList = ListBlock([aid1, aid2, aid3], "number")
+aid1 = ListItem("Water delivery — Zone C", "Requested 6h ago · High priority")
+aid2 = ListItem("Medical supplies — Riverside Gym", "Requested 3h ago · Critical")
+aid3 = ListItem("Generator — North Arena", "Requested 1h ago · Moderate")
+
+secComms = SectionItem("comms", "Communication Channels", [commsTable])
+commsTable = Table([chName, chStatus])
+chName = Col("Channel", ["Radio Net 1", "Satellite Uplink", "Cellular", "Emergency Hotline"])
+chStatus = Col("Status", ["Up", "Up", "Degraded", "Up"])
+
+secRoads = SectionItem("roads", "Roads Closed", [roadsTags])
+roadsTags = TagBlock(["Coastal Bypass", "Main St Bridge", "Route 12 Overpass", "Hillcrest Ave", "Dam Access Rd"])
+
+secHospitals = SectionItem("hospitals", "Nearby Hospitals", [hospTable])
+hospTable = Table([hospName, hospBeds])
+hospName = Col("Hospital", ["St. Mary General", "Riverside Medical", "North County", "Unity Trauma"])
+hospBeds = Col("Free Beds", [18, 4, 27, 9], "number")
+
+secTasks = SectionItem("tasks", "Open Tasks", [taskTable])
+taskTable = Table([taskName, taskAssignee])
+taskName = Col("Task", ["Clear debris Zone D", "Set up field kitchen", "Restore cellular", "Evacuate Ridge Road"])
+taskAssignee = Col("Assignee", ["Team Bravo", "Volunteer Corps", "Comms Unit", "Team Alpha"])
+
+forms = Card([resourceForm, broadcastForm, zoneForm, sitrepForm], "clear", "column", "l")
+
+resourceForm = Form("request-resources", resourceButtons, [resTypeField, resQtyField])
+resTypeField = FormControl("Resource type", resTypeSelect)
+resTypeSelect = Select("resource_type", [rtVeh, rtPer, rtSup, rtMed], "Select resource")
+rtVeh = SelectItem("vehicles", "Vehicles")
+rtPer = SelectItem("personnel", "Personnel")
+rtSup = SelectItem("supplies", "Supplies")
+rtMed = SelectItem("medical", "Medical kits")
+resQtyField = FormControl("Quantity", resQtyInput)
+resQtyInput = Input("quantity", "e.g. 10", "number")
+resourceButtons = Buttons([resSubmit])
+resSubmit = Button("Request resources", null, "primary")
+
+broadcastForm = Form("broadcast-update", broadcastButtons, [bcMsgField])
+bcMsgField = FormControl("Broadcast message", bcMsgArea, "Sent to all field units")
+bcMsgArea = TextArea("message", "Type update to broadcast...", 3)
+broadcastButtons = Buttons([bcSubmit])
+bcSubmit = Button("Broadcast update", null, "primary")
+
+zoneForm = Form("focus-zone", zoneButtons, [zoneField])
+zoneField = FormControl("Focus on zone", zoneSelect)
+zoneSelect = Select("zone", [zA, zB, zC, zD, zE], "Select zone")
+zA = SelectItem("a", "Zone A")
+zB = SelectItem("b", "Zone B")
+zC = SelectItem("c", "Zone C")
+zD = SelectItem("d", "Zone D")
+zE = SelectItem("e", "Zone E")
+zoneButtons = Buttons([zoneSubmit])
+zoneSubmit = Button("Focus zone", null, "secondary")
+
+sitrepForm = Form("situation-report", sitrepButtons, [srField])
+srField = FormControl("Situation report", srArea)
+srArea = TextArea("report", "Summarize current situation...", 4)
+sitrepButtons = Buttons([srSubmit])
+srSubmit = Button("File situation report", null, "primary")
+
+followups = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Show critical incidents only")
+fu2 = FollowUpItem("Reallocate personnel to Zone C")
+fu3 = FollowUpItem("Generate shift handover report")

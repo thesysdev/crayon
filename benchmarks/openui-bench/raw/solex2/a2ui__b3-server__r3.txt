@@ -1,0 +1,659 @@
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#2563EB",
+      "agentDisplayName": "Service Health"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "regionForm",
+          "summaryRow",
+          "resourceSection",
+          "incidentsSection",
+          "endpointsSection",
+          "thresholdSection"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Service health",
+        "subtitle": "Production · Updated just now"
+      },
+      {
+        "id": "regionForm",
+        "component": "Form",
+        "name": "region-filter",
+        "buttons": "regionButtons",
+        "fields": [
+          "regionField"
+        ]
+      },
+      {
+        "id": "regionButtons",
+        "component": "Buttons",
+        "buttons": [
+          "applyRegionButton"
+        ]
+      },
+      {
+        "id": "applyRegionButton",
+        "component": "Button",
+        "label": "Apply region",
+        "variant": "secondary",
+        "size": "small"
+      },
+      {
+        "id": "regionField",
+        "component": "FormControl",
+        "label": "Region",
+        "input": "regionSelect",
+        "hint": "Narrow all health metrics to one region"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region",
+        "items": [
+          "regionAll",
+          "regionUSEast",
+          "regionUSWest",
+          "regionEUWest",
+          "regionAPSoutheast"
+        ],
+        "value": "all",
+        "size": "medium"
+      },
+      {
+        "id": "regionAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All regions"
+      },
+      {
+        "id": "regionUSEast",
+        "component": "SelectItem",
+        "value": "us-east-1",
+        "label": "US East (N. Virginia)"
+      },
+      {
+        "id": "regionUSWest",
+        "component": "SelectItem",
+        "value": "us-west-2",
+        "label": "US West (Oregon)"
+      },
+      {
+        "id": "regionEUWest",
+        "component": "SelectItem",
+        "value": "eu-west-1",
+        "label": "EU West (Ireland)"
+      },
+      {
+        "id": "regionAPSoutheast",
+        "component": "SelectItem",
+        "value": "ap-southeast-1",
+        "label": "Asia Pacific (Singapore)"
+      },
+      {
+        "id": "summaryRow",
+        "component": "Card",
+        "children": [
+          "uptimeCard",
+          "errorCard"
+        ],
+        "direction": "row",
+        "gap": "m"
+      },
+      {
+        "id": "uptimeCard",
+        "component": "Card",
+        "children": [
+          "uptimeHeading",
+          "uptimeValue",
+          "uptimeProgress",
+          "uptimeTarget"
+        ],
+        "variant": "sunk",
+        "gap": "s",
+        "weight": 1
+      },
+      {
+        "id": "uptimeHeading",
+        "component": "Heading",
+        "text": "Uptime this quarter",
+        "level": "h3"
+      },
+      {
+        "id": "uptimeValue",
+        "component": "TextContent",
+        "text": "99.97%",
+        "size": "large-heavy"
+      },
+      {
+        "id": "uptimeProgress",
+        "component": "Progress",
+        "value": 99.97,
+        "label": "Quarterly uptime"
+      },
+      {
+        "id": "uptimeTarget",
+        "component": "TextContent",
+        "text": "SLO target: 99.95%",
+        "size": "small"
+      },
+      {
+        "id": "errorCard",
+        "component": "Card",
+        "children": [
+          "errorHeading",
+          "errorValue",
+          "errorStatus",
+          "errorWindow"
+        ],
+        "variant": "sunk",
+        "gap": "s",
+        "weight": 1
+      },
+      {
+        "id": "errorHeading",
+        "component": "Heading",
+        "text": "Error rate right now",
+        "level": "h3"
+      },
+      {
+        "id": "errorValue",
+        "component": "TextContent",
+        "text": "1.82%",
+        "size": "large-heavy"
+      },
+      {
+        "id": "errorStatus",
+        "component": "Tag",
+        "text": "Above baseline",
+        "variant": "warning"
+      },
+      {
+        "id": "errorWindow",
+        "component": "TextContent",
+        "text": "5-minute rolling window · baseline 0.40%",
+        "size": "small"
+      },
+      {
+        "id": "resourceSection",
+        "component": "Card",
+        "children": [
+          "resourceHeader",
+          "resourceChart"
+        ],
+        "variant": "clear",
+        "gap": "m"
+      },
+      {
+        "id": "resourceHeader",
+        "component": "CardHeader",
+        "title": "CPU and memory usage",
+        "subtitle": "Past 24 hours · Percent utilization"
+      },
+      {
+        "id": "resourceChart",
+        "component": "LineChart",
+        "labels": [
+          "00:00",
+          "02:00",
+          "04:00",
+          "06:00",
+          "08:00",
+          "10:00",
+          "12:00",
+          "14:00",
+          "16:00",
+          "18:00",
+          "20:00",
+          "22:00",
+          "Now"
+        ],
+        "series": [
+          "cpuSeries",
+          "memorySeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Time",
+        "yLabel": "Usage (%)"
+      },
+      {
+        "id": "cpuSeries",
+        "component": "Series",
+        "category": "CPU",
+        "values": [
+          38,
+          34,
+          31,
+          36,
+          52,
+          61,
+          58,
+          66,
+          72,
+          64,
+          57,
+          69,
+          76
+        ]
+      },
+      {
+        "id": "memorySeries",
+        "component": "Series",
+        "category": "Memory",
+        "values": [
+          62,
+          61,
+          60,
+          63,
+          67,
+          70,
+          72,
+          74,
+          76,
+          75,
+          73,
+          77,
+          79
+        ]
+      },
+      {
+        "id": "incidentsSection",
+        "component": "Card",
+        "children": [
+          "incidentsHeader",
+          "incidentAlert",
+          "incidentsTable",
+          "acknowledgeForm"
+        ],
+        "variant": "clear",
+        "gap": "m"
+      },
+      {
+        "id": "incidentsHeader",
+        "component": "CardHeader",
+        "title": "Open incidents",
+        "subtitle": "3 incidents require attention"
+      },
+      {
+        "id": "incidentAlert",
+        "component": "Alert",
+        "title": "SEV-1 incident active",
+        "description": "Elevated API errors are affecting checkout traffic in US East.",
+        "variant": "destructive"
+      },
+      {
+        "id": "incidentsTable",
+        "component": "Table",
+        "columns": [
+          "incidentIdCol",
+          "incidentSeverityCol",
+          "incidentSummaryCol",
+          "incidentRegionCol",
+          "incidentAgeCol"
+        ]
+      },
+      {
+        "id": "incidentIdCol",
+        "component": "Col",
+        "label": "Incident",
+        "data": [
+          "INC-2841",
+          "INC-2839",
+          "INC-2834"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "incidentSeverityCol",
+        "component": "Col",
+        "label": "Severity",
+        "data": [
+          "SEV-1",
+          "SEV-2",
+          "SEV-3"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "incidentSummaryCol",
+        "component": "Col",
+        "label": "Summary",
+        "data": [
+          "Elevated checkout API errors",
+          "Queue processing delay",
+          "Intermittent cache misses"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "incidentRegionCol",
+        "component": "Col",
+        "label": "Region",
+        "data": [
+          "us-east-1",
+          "eu-west-1",
+          "us-west-2"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "incidentAgeCol",
+        "component": "Col",
+        "label": "Open for",
+        "data": [
+          "18 min",
+          "42 min",
+          "1 hr 16 min"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "acknowledgeForm",
+        "component": "Form",
+        "name": "acknowledge-incident",
+        "buttons": "acknowledgeButtons",
+        "fields": [
+          "incidentField"
+        ]
+      },
+      {
+        "id": "acknowledgeButtons",
+        "component": "Buttons",
+        "buttons": [
+          "acknowledgeButton"
+        ]
+      },
+      {
+        "id": "acknowledgeButton",
+        "component": "Button",
+        "label": "Acknowledge incident",
+        "variant": "primary"
+      },
+      {
+        "id": "incidentField",
+        "component": "FormControl",
+        "label": "Incident to acknowledge",
+        "input": "incidentSelect",
+        "hint": "Acknowledgement records you as the responding engineer"
+      },
+      {
+        "id": "incidentSelect",
+        "component": "Select",
+        "name": "incident_id",
+        "items": [
+          "incident2841",
+          "incident2839",
+          "incident2834"
+        ],
+        "placeholder": "Select an open incident"
+      },
+      {
+        "id": "incident2841",
+        "component": "SelectItem",
+        "value": "INC-2841",
+        "label": "INC-2841 · SEV-1 · Checkout API errors"
+      },
+      {
+        "id": "incident2839",
+        "component": "SelectItem",
+        "value": "INC-2839",
+        "label": "INC-2839 · SEV-2 · Queue processing delay"
+      },
+      {
+        "id": "incident2834",
+        "component": "SelectItem",
+        "value": "INC-2834",
+        "label": "INC-2834 · SEV-3 · Cache misses"
+      },
+      {
+        "id": "endpointsSection",
+        "component": "Card",
+        "children": [
+          "endpointsHeader",
+          "endpointsChart",
+          "endpointsTable"
+        ],
+        "variant": "clear",
+        "gap": "m"
+      },
+      {
+        "id": "endpointsHeader",
+        "component": "CardHeader",
+        "title": "Five slowest endpoints",
+        "subtitle": "Current p95 latency"
+      },
+      {
+        "id": "endpointsChart",
+        "component": "HorizontalBarChart",
+        "labels": [
+          "POST /v1/checkout",
+          "GET /v1/orders/:id",
+          "POST /v1/search",
+          "GET /v1/catalog",
+          "PATCH /v1/users/:id"
+        ],
+        "series": [
+          "latencySeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Latency (ms)",
+        "yLabel": "Endpoint"
+      },
+      {
+        "id": "latencySeries",
+        "component": "Series",
+        "category": "p95 latency",
+        "values": [
+          1840,
+          1320,
+          980,
+          760,
+          640
+        ]
+      },
+      {
+        "id": "endpointsTable",
+        "component": "Table",
+        "columns": [
+          "endpointCol",
+          "latencyCol"
+        ]
+      },
+      {
+        "id": "endpointCol",
+        "component": "Col",
+        "label": "Endpoint",
+        "data": [
+          "POST /v1/checkout",
+          "GET /v1/orders/:id",
+          "POST /v1/search",
+          "GET /v1/catalog",
+          "PATCH /v1/users/:id"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "latencyCol",
+        "component": "Col",
+        "label": "p95 latency",
+        "data": [
+          "1,840 ms",
+          "1,320 ms",
+          "980 ms",
+          "760 ms",
+          "640 ms"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "thresholdSection",
+        "component": "Card",
+        "children": [
+          "thresholdHeader",
+          "thresholdForm"
+        ],
+        "variant": "sunk",
+        "gap": "m"
+      },
+      {
+        "id": "thresholdHeader",
+        "component": "CardHeader",
+        "title": "Alert threshold",
+        "subtitle": "Configure when the on-call engineer should be notified"
+      },
+      {
+        "id": "thresholdForm",
+        "component": "Form",
+        "name": "alert-threshold",
+        "buttons": "thresholdButtons",
+        "fields": [
+          "metricField",
+          "thresholdValueField",
+          "durationField"
+        ]
+      },
+      {
+        "id": "thresholdButtons",
+        "component": "Buttons",
+        "buttons": [
+          "saveThresholdButton",
+          "resetThresholdButton"
+        ]
+      },
+      {
+        "id": "saveThresholdButton",
+        "component": "Button",
+        "label": "Save threshold",
+        "variant": "primary"
+      },
+      {
+        "id": "resetThresholdButton",
+        "component": "Button",
+        "label": "Reset",
+        "variant": "tertiary"
+      },
+      {
+        "id": "metricField",
+        "component": "FormControl",
+        "label": "Metric",
+        "input": "metricSelect"
+      },
+      {
+        "id": "metricSelect",
+        "component": "Select",
+        "name": "alert_metric",
+        "items": [
+          "metricErrorRate",
+          "metricCPU",
+          "metricMemory",
+          "metricLatency"
+        ],
+        "value": "error_rate"
+      },
+      {
+        "id": "metricErrorRate",
+        "component": "SelectItem",
+        "value": "error_rate",
+        "label": "Error rate (%)"
+      },
+      {
+        "id": "metricCPU",
+        "component": "SelectItem",
+        "value": "cpu",
+        "label": "CPU usage (%)"
+      },
+      {
+        "id": "metricMemory",
+        "component": "SelectItem",
+        "value": "memory",
+        "label": "Memory usage (%)"
+      },
+      {
+        "id": "metricLatency",
+        "component": "SelectItem",
+        "value": "latency",
+        "label": "p95 latency (ms)"
+      },
+      {
+        "id": "thresholdValueField",
+        "component": "FormControl",
+        "label": "Trigger above",
+        "input": "thresholdValueInput",
+        "hint": "Enter a value in the selected metric's unit"
+      },
+      {
+        "id": "thresholdValueInput",
+        "component": "Input",
+        "name": "threshold_value",
+        "type": "number",
+        "placeholder": "2.0",
+        "value": "2.0"
+      },
+      {
+        "id": "durationField",
+        "component": "FormControl",
+        "label": "Sustained for",
+        "input": "durationSelect"
+      },
+      {
+        "id": "durationSelect",
+        "component": "Select",
+        "name": "threshold_duration",
+        "items": [
+          "duration1",
+          "duration5",
+          "duration10",
+          "duration15"
+        ],
+        "value": "5m"
+      },
+      {
+        "id": "duration1",
+        "component": "SelectItem",
+        "value": "1m",
+        "label": "1 minute"
+      },
+      {
+        "id": "duration5",
+        "component": "SelectItem",
+        "value": "5m",
+        "label": "5 minutes"
+      },
+      {
+        "id": "duration10",
+        "component": "SelectItem",
+        "value": "10m",
+        "label": "10 minutes"
+      },
+      {
+        "id": "duration15",
+        "component": "SelectItem",
+        "value": "15m",
+        "label": "15 minutes"
+      }
+    ]
+  }
+}
+</a2ui-json>

@@ -1,0 +1,363 @@
+I have created a dedicated morning dashboard for the support lead covering all requested items.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "alertBanner",
+          "kpiTable",
+          "controlCard",
+          "recentTicketsHeading",
+          "ticketsTable",
+          "followUps"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Support Lead Morning Dashboard",
+        "subtitle": "Daily queue health, SLA status, and recent incoming tickets"
+      },
+      {
+        "id": "alertBanner",
+        "component": "Alert",
+        "title": "SLA Performance Warning",
+        "description": "2 High-Priority tickets are approaching first-response breach threshold (< 15 mins left).",
+        "variant": "warning"
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": [
+          "kpiMetricCol",
+          "kpiValueCol",
+          "kpiStatusCol"
+        ]
+      },
+      {
+        "id": "kpiMetricCol",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Open Tickets",
+          "Avg First-Response Time",
+          "SLA Compliance Rate"
+        ]
+      },
+      {
+        "id": "kpiValueCol",
+        "component": "Col",
+        "label": "Current Value",
+        "data": [
+          "42",
+          "14.5 mins",
+          "96.2%"
+        ]
+      },
+      {
+        "id": "kpiStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "4 Urgent / 12 High",
+          "-2.1 mins vs yesterday",
+          "Target: 95.0%"
+        ]
+      },
+      {
+        "id": "controlCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "filterControl",
+          "newTicketDrawer"
+        ],
+        "direction": "row",
+        "justify": "between",
+        "align": "center"
+      },
+      {
+        "id": "filterControl",
+        "component": "FormControl",
+        "label": "Queue Filter",
+        "input": "priorityFilterSelect",
+        "hint": "Filter view to focus on critical SLA items"
+      },
+      {
+        "id": "priorityFilterSelect",
+        "component": "Select",
+        "name": "priorityFilter",
+        "placeholder": "Select Priority View",
+        "value": "high_only",
+        "items": [
+          "optAll",
+          "optHighOnly",
+          "optUrgentOnly"
+        ]
+      },
+      {
+        "id": "optAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All Open Tickets (42)"
+      },
+      {
+        "id": "optHighOnly",
+        "component": "SelectItem",
+        "value": "high_only",
+        "label": "High & Urgent Priority Only (16)"
+      },
+      {
+        "id": "optUrgentOnly",
+        "component": "SelectItem",
+        "value": "urgent_only",
+        "label": "Urgent Only (4)"
+      },
+      {
+        "id": "newTicketDrawer",
+        "component": "DrawerBlock",
+        "triggerLabel": "+ Open New Ticket",
+        "title": "Create Support Ticket",
+        "description": "Log an incoming customer query or internal escalation",
+        "content": [
+          "newTicketForm"
+        ]
+      },
+      {
+        "id": "newTicketForm",
+        "component": "Form",
+        "name": "create-ticket",
+        "buttons": "formButtons",
+        "fields": [
+          "subjectField",
+          "customerField",
+          "priorityField",
+          "descField"
+        ]
+      },
+      {
+        "id": "subjectField",
+        "component": "FormControl",
+        "label": "Ticket Subject",
+        "input": "subjectInput"
+      },
+      {
+        "id": "subjectInput",
+        "component": "Input",
+        "name": "subject",
+        "placeholder": "e.g., Unable to process SSO authentication"
+      },
+      {
+        "id": "customerField",
+        "component": "FormControl",
+        "label": "Customer Email",
+        "input": "customerInput"
+      },
+      {
+        "id": "customerInput",
+        "component": "Input",
+        "name": "customerEmail",
+        "placeholder": "client@enterprise.com",
+        "type": "email"
+      },
+      {
+        "id": "priorityField",
+        "component": "FormControl",
+        "label": "Initial Priority",
+        "input": "priorityRadio"
+      },
+      {
+        "id": "priorityRadio",
+        "component": "RadioGroup",
+        "name": "ticketPriority",
+        "defaultValue": "high",
+        "items": [
+          "pLow",
+          "pMedium",
+          "pHigh",
+          "pUrgent"
+        ]
+      },
+      {
+        "id": "pLow",
+        "component": "RadioItem",
+        "value": "low",
+        "label": "Low",
+        "description": "General inquiry or non-urgent request"
+      },
+      {
+        "id": "pMedium",
+        "component": "RadioItem",
+        "value": "medium",
+        "label": "Medium",
+        "description": "Standard business impact issue"
+      },
+      {
+        "id": "pHigh",
+        "component": "RadioItem",
+        "value": "high",
+        "label": "High",
+        "description": "Significant feature impairment"
+      },
+      {
+        "id": "pUrgent",
+        "component": "RadioItem",
+        "value": "urgent",
+        "label": "Urgent",
+        "description": "System down or critical workflow blocker"
+      },
+      {
+        "id": "descField",
+        "component": "FormControl",
+        "label": "Problem Description",
+        "input": "descInput"
+      },
+      {
+        "id": "descInput",
+        "component": "TextArea",
+        "name": "description",
+        "placeholder": "Provide details, error codes, or steps to reproduce...",
+        "rows": 4
+      },
+      {
+        "id": "formButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitTicketBtn",
+          "cancelTicketBtn"
+        ]
+      },
+      {
+        "id": "submitTicketBtn",
+        "component": "Button",
+        "label": "Submit Ticket",
+        "variant": "primary"
+      },
+      {
+        "id": "cancelTicketBtn",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      },
+      {
+        "id": "recentTicketsHeading",
+        "component": "Heading",
+        "text": "Most Recent Incoming Tickets",
+        "level": "h3"
+      },
+      {
+        "id": "ticketsTable",
+        "component": "Table",
+        "columns": [
+          "ticketIdCol",
+          "ticketSubjectCol",
+          "ticketCustomerCol",
+          "ticketPriorityCol",
+          "ticketAgeCol"
+        ]
+      },
+      {
+        "id": "ticketIdCol",
+        "component": "Col",
+        "label": "Ticket ID",
+        "data": [
+          "#T-4091",
+          "#T-4090",
+          "#T-4089",
+          "#T-4088",
+          "#T-4087"
+        ]
+      },
+      {
+        "id": "ticketSubjectCol",
+        "component": "Col",
+        "label": "Subject",
+        "data": [
+          "API Gateway 502 Bad Gateway Spike",
+          "SSO Login failing for European users",
+          "Billing invoice mismatch on Pro Tier",
+          "Webhook delivery delay > 5 mins",
+          "Dashboard export CSV formatting issue"
+        ]
+      },
+      {
+        "id": "ticketCustomerCol",
+        "component": "Col",
+        "label": "Customer",
+        "data": [
+          "Acme Corp",
+          "FinTech Global",
+          "DataPulse Inc",
+          "OmniLogistics",
+          "StartUp Hub"
+        ]
+      },
+      {
+        "id": "ticketPriorityCol",
+        "component": "Col",
+        "label": "Priority",
+        "data": [
+          "Urgent",
+          "High",
+          "High",
+          "Medium",
+          "Low"
+        ]
+      },
+      {
+        "id": "ticketAgeCol",
+        "component": "Col",
+        "label": "Created",
+        "data": [
+          "4 mins ago",
+          "12 mins ago",
+          "25 mins ago",
+          "38 mins ago",
+          "51 mins ago"
+        ]
+      },
+      {
+        "id": "followUps",
+        "component": "FollowUpBlock",
+        "items": [
+          "fu1",
+          "fu2",
+          "fu3"
+        ]
+      },
+      {
+        "id": "fu1",
+        "component": "FollowUpItem",
+        "text": "Reassign urgent ticket #T-4091 to Tier 3 Engineering"
+      },
+      {
+        "id": "fu2",
+        "component": "FollowUpItem",
+        "text": "View daily response time trend chart"
+      },
+      {
+        "id": "fu3",
+        "component": "FollowUpItem",
+        "text": "Export morning queue report"
+      }
+    ]
+  }
+}
+</a2ui-json>

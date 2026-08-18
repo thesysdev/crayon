@@ -1,0 +1,60 @@
+root = Card([header, alerts, kpis, capacity, genSplit, plants, outages, forecast, maintenance, controls])
+header = CardHeader("Grid Operations Console", "National transmission network — live")
+
+alerts = Alert("Frequency deviation detected", "Zone 4 frequency dipped to 49.87 Hz — automatic response engaged", "warning")
+
+kpis = Card([loadTag, priceTag, emissionsTag], "sunk", "row", "m", "center", "between", true)
+loadTag = Tag("Load: 42,180 MW", null, "lg", "info")
+priceTag = Tag("Price: $68.40 / MWh", null, "lg", "success")
+emissionsTag = Tag("Emissions today: 18,240 tCO₂", null, "lg", "warning")
+
+capacity = Progress(84, "Network capacity utilization: 42,180 / 50,000 MW (84%)")
+
+genSplit = Card([genHeading, genChart], "clear", "column", "s")
+genHeading = Heading("Generation by Source", "h4")
+genChart = PieChart(genLabels, genValues, "donut")
+genLabels = ["Gas", "Nuclear", "Wind", "Solar", "Hydro", "Coal"]
+genValues = [14200, 9800, 8100, 4600, 3480, 2000]
+
+plants = Card([plantsHeading, plantsTable], "clear", "column", "s")
+plantsHeading = Heading("Plant Output & Status", "h4")
+plantsTable = Table([plantName, plantOutput, plantStatus])
+plantName = Col("Plant", ["Ashford CCGT", "Trenholm Nuclear", "Vale Wind Farm", "Redcliff Solar", "Glen Hydro", "Kesler Coal"])
+plantOutput = Col("Output (MW)", [14200, 9800, 8100, 4600, 3480, 2000], "number")
+plantStatus = Col("Status", ["Online", "Online", "Online", "Curtailed", "Online", "Standby"])
+
+outages = Card([outageHeading, outageList], "clear", "column", "s")
+outageHeading = Heading("Active Outages", "h4")
+outageList = ListBlock([outage1, outage2, outage3])
+outage1 = ListItem("Line 220kV Fenwick–Harlow", "Region: North Moor — fault trip, crews dispatched")
+outage2 = ListItem("Substation Delridge T2", "Region: Coastal East — transformer overheat")
+outage3 = ListItem("Feeder 33kV Oakhill", "Region: Central Valley — planned isolation")
+
+forecast = Card([forecastHeading, forecastChart], "clear", "column", "s")
+forecastHeading = Heading("24-Hour Demand Forecast", "h4")
+forecastChart = LineChart(forecastHours, [forecastSeries], "natural", "Hour", "MW")
+forecastHours = ["00", "02", "04", "06", "08", "10", "12", "14", "16", "18", "20", "22"]
+forecastSeries = Series("Forecast demand", [36000, 33500, 32000, 35000, 41000, 44500, 46000, 45200, 44800, 48500, 47000, 40000])
+
+maintenance = Card([maintHeading, maintTable], "clear", "column", "s")
+maintHeading = Heading("Maintenance Planned This Month", "h4")
+maintTable = Table([maintAsset, maintWindow, maintRegion])
+maintAsset = Col("Asset", ["Trenholm Unit 2", "Vale Turbine 14", "Delridge T1", "Glen Penstock A"])
+maintWindow = Col("Window", ["Feb 8–10", "Feb 14", "Feb 19–20", "Feb 25"])
+maintRegion = Col("Region", ["North Moor", "West Ridge", "Coastal East", "Highlands"])
+
+controls = Card([focusForm, curtailDialog], "clear", "column", "m")
+
+focusForm = Form("region-focus", focusButtons, [regionField])
+regionField = FormControl("Focus on region", regionSelect, "Filter the console to a single region")
+regionSelect = Select("region", [regNorth, regCoast, regCentral, regWest, regHigh], "Select a region")
+regNorth = SelectItem("north-moor", "North Moor")
+regCoast = SelectItem("coastal-east", "Coastal East")
+regCentral = SelectItem("central-valley", "Central Valley")
+regWest = SelectItem("west-ridge", "West Ridge")
+regHigh = SelectItem("highlands", "Highlands")
+focusButtons = Buttons([focusBtn, resetBtn])
+focusBtn = Button("Apply focus", null, "primary")
+resetBtn = Button("Show all regions", null, "tertiary")
+
+curtailDialog = AlertDialogBlock("Order curtailment", "Confirm curtailment order", "This will reduce generation dispatch across selected assets to relieve network stress. Operators will be notified immediately.", "Order curtailment", "Cancel", "destructive")

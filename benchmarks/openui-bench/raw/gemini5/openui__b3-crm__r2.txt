@@ -1,0 +1,53 @@
+root = Card([header, metricsGrid, renewalAlert, tabs, followUpsSection, quickActionsSection, followUpsList])
+
+header = CardHeader("Acme Corp", "Account Owner: Sarah Jenkins • Enterprise Tier")
+
+metricsGrid = Card([totalValueBadge, stageBadge], "sunk", "row", "m", "center")
+totalValueBadge = Badge("Total Value: $450,000", "default")
+stageBadge = Badge("Stage: Proposal / Negotiation", "secondary")
+
+renewalAlert = Alert("Upcoming Renewal Warning", "Contract renewal date is October 15, 2024 (14 days remaining). Action required to initiate renewal terms.", "warning")
+
+tabs = Tabs([tabActivity, tabContacts, tabNotes])
+
+tabActivity = TabItem("activity", "Recent Activity", [activityList])
+activityList = ListBlock([act1, act2, act3])
+act1 = ListItem("Executive Briefing Conducted", "Oct 1, 2024 - Reviewed annual ROI with VP of Tech")
+act2 = ListItem("Updated Security Review Submitted", "Sep 28, 2024 - Compliance questionnaire completed")
+act3 = ListItem("Pricing Proposal Sent", "Sep 22, 2024 - Sent custom quote for 500 licenses")
+
+tabContacts = TabItem("contacts", "Key Contacts", [contactsTable])
+contactsTable = Table([contactNameCol, contactRoleCol, contactEmailCol])
+contactNameCol = Col("Name", ["Elena Rostova", "Marcus Chen", "David Miller"])
+contactRoleCol = Col("Role", ["VP of Technology (Decision Maker)", "Lead Security Engineer (Evaluator)", "Procurement Manager (Buyer)"])
+contactEmailCol = Col("Email", ["elena@acme.com", "mchen@acme.com", "dmiller@acme.com"])
+
+tabNotes = TabItem("notes", "Account Notes", [noteForm])
+noteForm = Form("add-note-form", noteFormButtons, [noteField])
+noteField = FormControl("Quick Note", noteInput, "Jot down key takeaways or updates for the account team")
+noteInput = TextArea("account_note", "Type your meeting notes or updates here...", 4)
+noteFormButtons = Buttons([saveNoteBtn])
+saveNoteBtn = Button("Save Note", null, "primary")
+
+followUpsSection = Heading("Open Follow-ups", "h3")
+
+quickActionsSection = Buttons([logCallBtn])
+logCallBtn = DialogBlock("Log a Call", "Log Call Details", "Record details of your recent phone conversation.", [callForm], "outline")
+
+callForm = Form("log-call-form", callFormButtons, [callSubjectField, callOutcomeField, callNotesField])
+callSubjectField = FormControl("Call Subject", callSubjectInput)
+callSubjectInput = Input("call_subject", "Discovery Call / Follow-up")
+callOutcomeField = FormControl("Outcome", callOutcomeSelect)
+callOutcomeSelect = Select("call_outcome", [opt1, opt2, opt3], "Select outcome")
+opt1 = SelectItem("connected", "Connected - Positive")
+opt2 = SelectItem("left_voicemail", "Left Voicemail")
+opt3 = SelectItem("no_answer", "No Answer")
+callNotesField = FormControl("Call Summary", callNotesInput)
+callNotesInput = TextArea("call_notes", "Summary of conversation...", 3)
+callFormButtons = Buttons([submitCallBtn])
+submitCallBtn = Button("Submit Call Log", null, "primary")
+
+followUpsList = ListBlock([fu1, fu2, fu3])
+fu1 = ListItem("Send revised SOC2 report", "Due: Oct 3, 2024 • Assigned to: Sarah Jenkins")
+fu2 = ListItem("Schedule legal review for SLA addendum", "Due: Oct 5, 2024 • Assigned to: Sarah Jenkins")
+fu3 = ListItem("Confirm final user count for renewal quote", "Due: Oct 8, 2024 • Assigned to: Sarah Jenkins")

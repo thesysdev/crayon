@@ -1,0 +1,64 @@
+root = Card([header, kpiGrid, analyticsSection, ordersSection, followUp])
+
+header = CardHeader("E-Commerce Operations Desk", "Real-time order management and performance metrics")
+
+kpiGrid = Table([kpiMetric, kpiVal, kpiChange])
+kpiMetric = Col("Metric", ["Orders Placed Today", "Revenue Today", "Average Order Value (AOV)", "Refund Rate (This Month)"])
+kpiVal = Col("Current Value", ["248", "$18,450.00", "$74.39", "1.8%"])
+kpiChange = Col("vs Target / Prev Period", ["+12% vs avg", "+8.5% vs yesterday", "+3.2% this week", "-0.4% (Target < 2.0%)"])
+
+analyticsSection = Card([chartHeader, volumeChart], "sunk", "column", "s")
+chartHeader = CardHeader("Order Volume (Past 4 Weeks)", "Weekly breakdown of completed vs returned orders")
+volumeChart = BarChart(["Week 1", "Week 2", "Week 3", "Week 4"], [ordersSeries, returnsSeries], "grouped", "Week", "Orders")
+ordersSeries = Series("Completed Orders", [1240, 1380, 1420, 1560])
+returnsSeries = Series("Returned/Refunded", [28, 32, 25, 29])
+
+ordersSection = Card([filterAccordion, recentOrdersHeader, recentOrdersTable], "card", "column", "m")
+
+filterAccordion = Accordion([filterItem, actionItem])
+filterItem = AccordionItem("filter", "Filter & Search Orders", [filterForm])
+
+filterForm = Form("order-filters", filterFormButtons, [searchField, statusField])
+searchField = FormControl("Search Customer Name", searchInput, "Search by first or last name")
+searchInput = Input("customer_search", "e.g. Sarah Jenkins")
+
+statusField = FormControl("Filter by Status", statusSelect, "Narrow orders by fulfillment state")
+statusSelect = Select("status_filter", [optAll, optPending, optProcessing, optFulfilled, optCancelled], "All Statuses")
+optAll = SelectItem("all", "All Statuses")
+optPending = SelectItem("pending", "Pending")
+optProcessing = SelectItem("processing", "Processing")
+optFulfilled = SelectItem("fulfilled", "Fulfilled")
+optCancelled = SelectItem("cancelled", "Cancelled")
+
+filterFormButtons = Buttons([applyFilterBtn, resetFilterBtn])
+applyFilterBtn = Button("Apply Filters", null, "primary")
+resetFilterBtn = Button("Reset", null, "tertiary")
+
+actionItem = AccordionItem("fulfill", "Quick Action: Mark Order Fulfilled", [fulfillForm])
+fulfillForm = Form("fulfill-order", fulfillButtons, [orderIdField, carrierField, trackingField])
+orderIdField = FormControl("Order ID", orderIdInput, "Enter the order ID to mark as fulfilled")
+orderIdInput = Input("order_id", "e.g. #ORD-8902")
+carrierField = FormControl("Shipping Carrier", carrierSelect)
+carrierSelect = Select("carrier", [carrierFedex, carrierUps, carrierUsps, carrierDhl], "Select carrier")
+carrierFedex = SelectItem("fedex", "FedEx")
+carrierUps = SelectItem("ups", "UPS")
+carrierUsps = SelectItem("usps", "USPS")
+carrierDhl = SelectItem("dhl", "DHL Express")
+trackingField = FormControl("Tracking Number", trackingInput)
+trackingInput = Input("tracking_number", "e.g. 1Z9999999999999999")
+
+fulfillButtons = Buttons([submitFulfillBtn])
+submitFulfillBtn = Button("Mark as Fulfilled", null, "primary")
+
+recentOrdersHeader = CardHeader("Recent Orders", "Showing latest orders placed today")
+recentOrdersTable = Table([colId, colCustomer, colTotal, colStatus, colAction])
+colId = Col("Order ID", ["#ORD-8904", "#ORD-8903", "#ORD-8902", "#ORD-8901", "#ORD-8900", "#ORD-8899"])
+colCustomer = Col("Customer", ["Sarah Jenkins", "Michael Chang", "Emily Davis", "David Miller", "Jessica Taylor", "Robert Wilson"])
+colTotal = Col("Total", ["$124.50", "$45.00", "$210.00", "$89.99", "$312.40", "$67.20"])
+colStatus = Col("Status", ["Processing", "Fulfilled", "Pending", "Fulfilled", "Processing", "Cancelled"])
+colAction = Col("Quick Action", ["Mark Fulfilled", "View Details", "Mark Fulfilled", "View Details", "Mark Fulfilled", "View Details"], "action")
+
+followUp = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("View low stock inventory alerts")
+f2 = FollowUpItem("Export today's orders to CSV")
+f3 = FollowUpItem("Generate monthly revenue summary")

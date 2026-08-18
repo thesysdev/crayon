@@ -1,0 +1,103 @@
+root = Card([header, mainCallout, alertBanner, regionSelector, kpiGrid, chartsTabs, tablesTabs, actionsButtons, followUps])
+
+header = CardHeader("Grid Command Console", "National Electricity Dispatch Center — Live Operational Overview")
+
+mainCallout = Callout("warning", "Grid Operating Near Threshold", "Total demand is currently at 89.2% of total operational capacity. Operating reserve is tight. Monitor Southern Region closely.")
+
+alertBanner = Alert("ALERT: Line Tripped in Southern Region", "Transmission Line 340-B experienced an automatic trip at 14:12 UTC. Load shedding protocol ready if frequency drops below 49.8 Hz.", "destructive")
+
+regionSelector = Form("region_filter", regionFilterButtons, [regionControl])
+regionControl = FormControl("Focus Region Filter (Item 10)", regionSelect, "Select a specific region to filter telemetry and plant status")
+regionSelect = Select("region", [regAll, regNorth, regSouth, regEast, regWest], "All Regions (National)")
+regAll = SelectItem("all", "All Regions (National View)")
+regNorth = SelectItem("north", "Northern Zone")
+regSouth = SelectItem("south", "Southern Zone")
+regEast = SelectItem("east", "Eastern Zone")
+regWest = SelectItem("west", "Western Zone")
+regionFilterButtons = Buttons([applyRegionBtn])
+applyRegionBtn = Button("Apply Region Focus", null, "secondary", "normal", "small")
+
+kpiGrid = Table([kpiMetricCol, kpiValueCol, kpiStatusCol])
+kpiMetricCol = Col("Telemetry Metric", ["1. Current Load", "2. Capacity Usage", "7. Current Electricity Price", "12. Today's CO2 Emissions"])
+kpiValueCol = Col("Live Value", ["38,420 MW", "38,420 / 43,050 MW (89.2%)", "$142.80 / MWh", "184,200 metric tons"])
+kpiStatusCol = Col("Status / Trend", ["+3.2% vs yesterday", "Warning (>85%)", "+18.4% Peak Surge", "0.38 tCO2/MWh avg"])
+
+chartsTabs = Tabs([generationTab, forecastTab])
+
+generationTab = TabItem("gen_split", "3. Generation Mix & Sources", [genHeader, genPieChart])
+genHeader = CardHeader("Generation Split by Source", "Live breakdown of primary supply mix across all connected facilities")
+genPieChart = PieChart(genLabels, genValues, "donut", "circular")
+genLabels = ["Solar (PV)", "Wind Offshore", "Nuclear", "Natural Gas (CCGT)", "Hydroelectric", "Coal / Thermal"]
+genValues = [10500, 8400, 9200, 6100, 3200, 1020]
+
+forecastTab = TabItem("demand_forecast", "6. 24-Hour Demand Forecast", [forecastHeader, forecastChart])
+forecastHeader = CardHeader("Electricity Demand Forecast (Next 24 Hours)", "Predicted MW demand vs grid firm capacity threshold")
+forecastChart = LineChart(forecastHours, [forecastSeries, capacitySeries], "natural", "Hour (UTC)", "Megawatts (MW)")
+forecastHours = ["00:00", "03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00"]
+forecastSeries = Series("Forecasted Demand (MW)", [28500, 26200, 31000, 39500, 41200, 42100, 39800, 33400])
+capacitySeries = Series("Firm Capacity Limit (MW)", [43050, 43050, 43050, 43050, 43050, 43050, 43050, 43050])
+
+tablesTabs = Tabs([plantsTab, outagesTab, maintenanceTab, alertsTab])
+
+plantsTab = TabItem("plants", "4. Generation Plants", [plantsTable])
+plantsTable = Table([plantNameCol, plantRegionCol, plantOutputCol, plantCapacityCol, plantStatusCol])
+plantNameCol = Col("Plant Name", ["Apex Nuclear Station", "Highland Wind Farm", "Valley Gas Peaker", "Riverbend Hydro", "Desert Sun Solar Array", "Keystone Thermal Plant"])
+plantRegionCol = Col("Region", ["North", "West", "South", "East", "South", "North"])
+plantOutputCol = Col("Current Output (MW)", ["4,800 MW", "3,200 MW", "2,100 MW", "1,800 MW", "2,400 MW", "0 MW"])
+plantCapacityCol = Col("Capacity (MW)", ["4,800 MW", "3,500 MW", "2,500 MW", "2,000 MW", "2,500 MW", "1,200 MW"])
+plantStatusCol = Col("Operating Status", ["100% - Normal", "91% - Curtailed Wind", "84% - Rapid Ramp", "90% - Peak Shaving", "96% - Normal", "0% - Offline / Outage"])
+
+outagesTab = TabItem("outages", "5. Active Outages", [outagesTable])
+outagesTable = Table([outageIdCol, outageRegionCol, outageAssetCol, outageImpactCol, outageStatusCol])
+outageIdCol = Col("Incident ID", ["OUT-9901", "OUT-9904", "OUT-9908"])
+outageRegionCol = Col("Affected Region", ["Southern Zone", "Western Zone", "Northern Zone"])
+outageAssetCol = Col("Asset Affected", ["Substation 44-A & Line 340-B", "Feeder Transformer 12", "Distribution Bus 8"])
+outageImpactCol = Col("Customer Impact", ["42,000 customers (180 MW)", "8,500 customers (35 MW)", "1,200 customers (5 MW)"])
+outageStatusCol = Col("Resolution Status", ["Crews Dispatched (ETA 45m)", "Isolation Complete", "Under Investigation"])
+
+maintenanceTab = TabItem("maint", "8. Monthly Planned Maintenance", [maintTable])
+maintTable = Table([maintIdCol, maintAssetCol, maintRegionCol, maintWindowCol, maintImpactCol])
+maintIdCol = Col("Work Order", ["PM-2023-11", "PM-2023-14", "PM-2023-19", "PM-2023-22"])
+maintAssetCol = Col("Equipment / Asset", ["Unit 2 Steam Turbine Inspection", "HVDC Interconnector Maintenance", "Substation 12 Circuit Breaker", "Solar Inverter Bank B Overhaul"])
+maintRegionCol = Col("Region", ["Northern Zone", "Eastern Zone", "Western Zone", "Southern Zone"])
+maintWindowCol = Col("Scheduled Window", ["Oct 12 - Oct 15", "Oct 18 - Oct 20", "Oct 24 - Oct 25", "Oct 28 - Oct 30"])
+maintImpactCol = Col("Capacity Reduction", ["-600 MW", "-1,000 MW Intertie", "Zero Grid Impact", "-250 MW"])
+
+alertsTab = TabItem("alerts", "9. Live Telemetry Alerts", [alertsList])
+alertsList = ListBlock([alertItem1, alertItem2, alertItem3, alertItem4])
+alertItem1 = ListItem("14:18:02 - High Voltage Alarm", "Substation 102 - Voltage elevated to 104.2% nominal. Reactive power adjustment suggested.")
+alertItem2 = ListItem("14:15:45 - Wind Ramp Warning", "West Zone - Rapid wind drop predicted (-400 MW over 30 mins). Peaking units notified.")
+alertItem3 = ListItem("14:12:10 - Automatic Line Trip", "Line 340-B South - Relays triggered on earth fault. Load shift initiated automatically.")
+alertItem4 = ListItem("14:02:55 - Frequency Deviation", "Grid Frequency dipped to 49.88 Hz. Spinning reserve response active.")
+
+actionsButtons = Buttons([curtailmentDialogBtn, emergencyDispatchBtn, refreshTelemetryBtn])
+curtailmentDialogBtn = DialogBlock("11. Order Load Curtailment", "Issue Load Curtailment Command", "Select target region and magnitude of curtailment to stabilize grid frequency.", curtailmentForm)
+
+curtailmentForm = Form("curtailment_order", curtailmentFormButtons, [curtailRegionControl, curtailMwControl, curtailReasonControl])
+curtailRegionControl = FormControl("Target Region", curtailRegionSelect)
+curtailRegionSelect = Select("curtail_region", [cRegSouth, cRegWest, cRegNorth, cRegEast], "Select region")
+cRegSouth = SelectItem("south", "Southern Zone (Recommended)")
+cRegWest = SelectItem("west", "Western Zone")
+cRegNorth = SelectItem("north", "Northern Zone")
+cRegEast = SelectItem("east", "Eastern Zone")
+
+curtailMwControl = FormControl("Curtailment Amount (MW)", curtailMwInput, "Specify total reduction required")
+curtailMwInput = Input("curtail_mw", "250", "number")
+
+curtailReasonControl = FormControl("Dispatch Protocol Reason", curtailReasonSelect)
+curtailReasonSelect = Select("curtail_reason", [rReserve, rFreq, rLineOverload], "Select grid condition")
+rReserve = SelectItem("reserve", "Operating Reserve Threshold Violation")
+rFreq = SelectItem("freq", "Under-Frequency Response")
+rLineOverload = SelectItem("overload", "Transmission Line Thermal Limit")
+
+curtailmentFormButtons = Buttons([confirmCurtailBtn, cancelCurtailBtn])
+confirmCurtailBtn = Button("EXECUTE CURTAILMENT ORDER", null, "primary", "destructive")
+cancelCurtailBtn = Button("Cancel", null, "tertiary")
+
+emergencyDispatchBtn = Button("Dispatch Peaking Plant", null, "secondary")
+refreshTelemetryBtn = Button("Refresh Telemetry Data", null, "tertiary")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Show Southern Region detailed transmission map")
+f2 = FollowUpItem("Simulate 500 MW loss from Apex Nuclear Station")
+f3 = FollowUpItem("Export daily emissions and compliance report")

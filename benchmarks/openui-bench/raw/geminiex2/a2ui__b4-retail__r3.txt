@@ -1,0 +1,600 @@
+Here is the daily console interface for the store manager covering all requested metrics, operations, and store switching.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "storeSelector",
+          "kpis",
+          "weeklyComparison",
+          "trafficChart",
+          "tabs"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Store Manager Daily Console",
+        "subtitle": "Real-time operations, inventory alerts, and sales performance"
+      },
+      {
+        "id": "storeSelector",
+        "component": "FormControl",
+        "label": "Active Store Location",
+        "input": "storeSelect",
+        "hint": "Switch location to view real-time telemetry for another branch"
+      },
+      {
+        "id": "storeSelect",
+        "component": "Select",
+        "name": "current_store",
+        "value": "store_101",
+        "items": [
+          "store101",
+          "store102",
+          "store103"
+        ]
+      },
+      {
+        "id": "store101",
+        "component": "SelectItem",
+        "value": "store_101",
+        "label": "Store #101 - Downtown Flagship"
+      },
+      {
+        "id": "store102",
+        "component": "SelectItem",
+        "value": "store_102",
+        "label": "Store #102 - Westside Mall"
+      },
+      {
+        "id": "store103",
+        "component": "SelectItem",
+        "value": "store_103",
+        "label": "Store #103 - Metro Center"
+      },
+      {
+        "id": "kpis",
+        "component": "Table",
+        "columns": [
+          "metricCol",
+          "valCol",
+          "statusCol"
+        ]
+      },
+      {
+        "id": "metricCol",
+        "component": "Col",
+        "label": "Daily Performance Metric",
+        "data": [
+          "Today's Sales vs Target",
+          "Sales Target Progress",
+          "Average Basket Size",
+          "Returns This Week"
+        ]
+      },
+      {
+        "id": "valCol",
+        "component": "Col",
+        "label": "Current Value",
+        "data": [
+          "$14,280 / $16,000 Target",
+          "89.25% Completed",
+          "$48.50 per transaction",
+          "42 items ($1,240 value)"
+        ]
+      },
+      {
+        "id": "statusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "On Track",
+          "Pacing Well",
+          "+$3.20 vs Avg",
+          "1.2% of Total Sales"
+        ]
+      },
+      {
+        "id": "weeklyComparison",
+        "component": "BarChart",
+        "xLabel": "Day of Week",
+        "yLabel": "Sales ($)",
+        "variant": "grouped",
+        "labels": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat",
+          "Sun"
+        ],
+        "series": [
+          "thisWeekSeries",
+          "lastWeekSeries"
+        ]
+      },
+      {
+        "id": "thisWeekSeries",
+        "component": "Series",
+        "category": "This Week",
+        "values": [
+          11200,
+          12400,
+          13800,
+          14280,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "id": "lastWeekSeries",
+        "component": "Series",
+        "category": "Last Week",
+        "values": [
+          10500,
+          11800,
+          12900,
+          13500,
+          16800,
+          19200,
+          14100
+        ]
+      },
+      {
+        "id": "trafficChart",
+        "component": "LineChart",
+        "xLabel": "Hour of Day",
+        "yLabel": "Visitors",
+        "variant": "natural",
+        "labels": [
+          "8 AM",
+          "10 AM",
+          "12 PM",
+          "2 PM",
+          "4 PM",
+          "6 PM",
+          "8 PM"
+        ],
+        "series": [
+          "trafficSeries"
+        ]
+      },
+      {
+        "id": "trafficSeries",
+        "component": "Series",
+        "category": "Foot Traffic (Visitors)",
+        "values": [
+          45,
+          120,
+          280,
+          310,
+          240,
+          190,
+          85
+        ]
+      },
+      {
+        "id": "tabs",
+        "component": "Tabs",
+        "items": [
+          "tabInventory",
+          "tabRegisters",
+          "tabShift",
+          "tabPromotions",
+          "tabReorder"
+        ]
+      },
+      {
+        "id": "tabInventory",
+        "component": "TabItem",
+        "value": "inventory",
+        "trigger": "Inventory & Best Sellers",
+        "content": [
+          "bestSellersHeading",
+          "bestSellersTable",
+          "stockAlert",
+          "outOfStockTable"
+        ]
+      },
+      {
+        "id": "bestSellersHeading",
+        "component": "Heading",
+        "text": "Today's Best Sellers",
+        "level": "h3"
+      },
+      {
+        "id": "bestSellersTable",
+        "component": "Table",
+        "columns": [
+          "bestProductCol",
+          "bestUnitsCol",
+          "bestRevenueCol"
+        ]
+      },
+      {
+        "id": "bestProductCol",
+        "component": "Col",
+        "label": "Product Name",
+        "data": [
+          "Organic Whole Milk 1Gal",
+          "Artisan Sourdough Bread",
+          "Avocado Medium",
+          "Cold Brew Coffee 16oz"
+        ]
+      },
+      {
+        "id": "bestUnitsCol",
+        "component": "Col",
+        "label": "Units Sold Today",
+        "data": [
+          "142 units",
+          "98 units",
+          "85 units",
+          "76 units"
+        ]
+      },
+      {
+        "id": "bestRevenueCol",
+        "component": "Col",
+        "label": "Total Revenue",
+        "data": [
+          "$638.58",
+          "$587.02",
+          "$126.65",
+          "$379.24"
+        ]
+      },
+      {
+        "id": "stockAlert",
+        "component": "Alert",
+        "title": "Stock Alert: 3 Items Currently Out of Stock",
+        "description": "Immediate reordering required to prevent missed daily revenue targets.",
+        "variant": "warning"
+      },
+      {
+        "id": "outOfStockTable",
+        "component": "Table",
+        "columns": [
+          "oosItemCol",
+          "oosSkuCol",
+          "oosDaysCol"
+        ]
+      },
+      {
+        "id": "oosItemCol",
+        "component": "Col",
+        "label": "Out of Stock Item",
+        "data": [
+          "Greek Yogurt Vanilla 32oz",
+          "Sparkling Water Lime 12pk",
+          "Almond Milk Unsweetened"
+        ]
+      },
+      {
+        "id": "oosSkuCol",
+        "component": "Col",
+        "label": "SKU",
+        "data": [
+          "SKU-4821",
+          "SKU-9902",
+          "SKU-1104"
+        ]
+      },
+      {
+        "id": "oosDaysCol",
+        "component": "Col",
+        "label": "Stockout Duration",
+        "data": [
+          "Out since 11:30 AM",
+          "Out since Yesterday",
+          "Out since 2:15 PM"
+        ]
+      },
+      {
+        "id": "tabRegisters",
+        "component": "TabItem",
+        "value": "registers",
+        "trigger": "Registers Status",
+        "content": [
+          "registerTable"
+        ]
+      },
+      {
+        "id": "registerTable",
+        "component": "Table",
+        "columns": [
+          "regNumCol",
+          "regStatusCol",
+          "regCashierCol",
+          "regTxCol"
+        ]
+      },
+      {
+        "id": "regNumCol",
+        "component": "Col",
+        "label": "Register",
+        "data": [
+          "Register #1 (Express)",
+          "Register #2",
+          "Register #3",
+          "Register #4",
+          "Self-Checkout Station A"
+        ]
+      },
+      {
+        "id": "regStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Open",
+          "Open",
+          "Closed",
+          "Closed",
+          "Open"
+        ]
+      },
+      {
+        "id": "regCashierCol",
+        "component": "Col",
+        "label": "Assigned Cashier",
+        "data": [
+          "Sarah Jenkins",
+          "David Chen",
+          "Unassigned",
+          "Unassigned",
+          "Automated (Monitored)"
+        ]
+      },
+      {
+        "id": "regTxCol",
+        "component": "Col",
+        "label": "Transactions Today",
+        "data": [
+          "112 txns",
+          "94 txns",
+          "0 txns",
+          "0 txns",
+          "188 txns"
+        ]
+      },
+      {
+        "id": "tabShift",
+        "component": "TabItem",
+        "value": "shift",
+        "trigger": "On Shift Today",
+        "content": [
+          "staffTable"
+        ]
+      },
+      {
+        "id": "staffTable",
+        "component": "Table",
+        "columns": [
+          "staffNameCol",
+          "staffRoleCol",
+          "staffShiftCol"
+        ]
+      },
+      {
+        "id": "staffNameCol",
+        "component": "Col",
+        "label": "Employee Name",
+        "data": [
+          "Marcus Vance",
+          "Sarah Jenkins",
+          "David Chen",
+          "Elena Rostova",
+          "Tom Miller"
+        ]
+      },
+      {
+        "id": "staffRoleCol",
+        "component": "Col",
+        "label": "Role",
+        "data": [
+          "Shift Supervisor",
+          "Lead Cashier",
+          "Cashier",
+          "Inventory Specialist",
+          "Floor Associate"
+        ]
+      },
+      {
+        "id": "staffShiftCol",
+        "component": "Col",
+        "label": "Shift Schedule",
+        "data": [
+          "7:00 AM - 3:30 PM",
+          "8:00 AM - 4:30 PM",
+          "10:00 AM - 6:30 PM",
+          "6:00 AM - 2:30 PM",
+          "1:00 PM - 9:30 PM"
+        ]
+      },
+      {
+        "id": "tabPromotions",
+        "component": "TabItem",
+        "value": "promotions",
+        "trigger": "Active Promotions",
+        "content": [
+          "promoTable"
+        ]
+      },
+      {
+        "id": "promoTable",
+        "component": "Table",
+        "columns": [
+          "promoNameCol",
+          "promoDiscountCol",
+          "promoRedemptionsCol",
+          "promoLiftCol"
+        ]
+      },
+      {
+        "id": "promoNameCol",
+        "component": "Col",
+        "label": "Promotion Name",
+        "data": [
+          "Weekend Bakery Bundle",
+          "Buy 2 Get 1 Sparkling Water",
+          "Dairy Loyalty Bonus"
+        ]
+      },
+      {
+        "id": "promoDiscountCol",
+        "component": "Col",
+        "label": "Offer Type",
+        "data": [
+          "20% Off Bakery Combo",
+          "BOGO Free",
+          "2x Reward Points"
+        ]
+      },
+      {
+        "id": "promoRedemptionsCol",
+        "component": "Col",
+        "label": "Redemptions Today",
+        "data": [
+          "64 redemptions",
+          "41 redemptions",
+          "128 redemptions"
+        ]
+      },
+      {
+        "id": "promoLiftCol",
+        "component": "Col",
+        "label": "Sales Lift",
+        "data": [
+          "+18.4%",
+          "+12.1%",
+          "+24.0%"
+        ]
+      },
+      {
+        "id": "tabReorder",
+        "component": "TabItem",
+        "value": "reorder",
+        "trigger": "Reorder Item",
+        "content": [
+          "reorderForm"
+        ]
+      },
+      {
+        "id": "reorderForm",
+        "component": "Form",
+        "name": "quick_reorder_form",
+        "buttons": "reorderButtons",
+        "fields": [
+          "itemSelectControl",
+          "qtyControl",
+          "supplierControl"
+        ]
+      },
+      {
+        "id": "itemSelectControl",
+        "component": "FormControl",
+        "label": "Select Item to Reorder",
+        "input": "reorderItemSelect"
+      },
+      {
+        "id": "reorderItemSelect",
+        "component": "Select",
+        "name": "reorder_item",
+        "value": "SKU-4821",
+        "items": [
+          "item1",
+          "item2",
+          "item3"
+        ]
+      },
+      {
+        "id": "item1",
+        "component": "SelectItem",
+        "value": "SKU-4821",
+        "label": "Greek Yogurt Vanilla 32oz (SKU-4821)"
+      },
+      {
+        "id": "item2",
+        "component": "SelectItem",
+        "value": "SKU-9902",
+        "label": "Sparkling Water Lime 12pk (SKU-9902)"
+      },
+      {
+        "id": "item3",
+        "component": "SelectItem",
+        "value": "SKU-1104",
+        "label": "Almond Milk Unsweetened (SKU-1104)"
+      },
+      {
+        "id": "qtyControl",
+        "component": "FormControl",
+        "label": "Order Quantity (Units)",
+        "input": "qtyInput",
+        "hint": "Default bulk order quantity calculated based on 7-day sales velocity"
+      },
+      {
+        "id": "qtyInput",
+        "component": "Input",
+        "name": "order_quantity",
+        "type": "number",
+        "value": "50",
+        "placeholder": "Enter quantity"
+      },
+      {
+        "id": "supplierControl",
+        "component": "FormControl",
+        "label": "Fulfillment Supplier",
+        "input": "supplierInput"
+      },
+      {
+        "id": "supplierInput",
+        "component": "Input",
+        "name": "supplier_name",
+        "type": "text",
+        "value": "Metro Distribution Direct (Express Delivery)",
+        "placeholder": "Supplier name"
+      },
+      {
+        "id": "reorderButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitOrderBtn",
+          "cancelOrderBtn"
+        ]
+      },
+      {
+        "id": "submitOrderBtn",
+        "component": "Button",
+        "label": "Place Reorder",
+        "variant": "primary"
+      },
+      {
+        "id": "cancelOrderBtn",
+        "component": "Button",
+        "label": "Reset Form",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>

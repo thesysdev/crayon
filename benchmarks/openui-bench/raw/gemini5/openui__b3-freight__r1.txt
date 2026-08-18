@@ -1,0 +1,72 @@
+root = Card([header, searchSection, metricsGroup, delayAlert, tablesTitle, shipmentTable, chartsTitle, chartsGroup, flagDrawer, followUps])
+
+header = CardHeader("Logistics Control Board", "Last refreshed: Today at 14:32 EST")
+
+searchSection = Form("route-search-form", searchButtons, [routeSearchField])
+routeSearchField = FormControl("Filter by Route", routeSearchInput, "Enter origin or destination city")
+routeSearchInput = Input("route_query", "e.g. Chicago, Rotterdam, Dallas...")
+searchButtons = Buttons([searchBtn, resetBtn])
+searchBtn = Button("Search Route", null, "primary", "normal", "small")
+resetBtn = Button("Clear Filter", null, "secondary", "normal", "small")
+
+metricsGroup = Card([ontimeMetric, costMetric], "sunk", "row", "m", "center", "between")
+ontimeMetric = Card([ontimeHeader, ontimeProgress, ontimeBadge], "clear", "column", "xs")
+ontimeHeader = CardHeader("On-Time Delivery", "This Month")
+ontimeProgress = Progress(92, "94.2% Goal")
+ontimeBadge = Badge("94.2% On-Time", "default")
+
+costMetric = Card([costHeader, costValue, costTag], "clear", "column", "xs")
+costHeader = CardHeader("Avg Cost / Shipment", "MTD Average")
+costValue = TextContent("$1,485.50", "large-heavy")
+costTag = Tag("-$42 vs last month", null, "sm", "success")
+
+delayAlert = Callout("warning", "3 Shipments Delayed", "Severe weather along I-80 and port congestion at LA/Long Beach causing route disruptions.")
+
+tablesTitle = Heading("Active Shipments in Transit", "h3")
+shipmentTable = Table([shipmentIdCol, originCol, destCol, etaCol, statusCol])
+shipmentIdCol = Col("Shipment ID", ["SH-8921", "SH-8922", "SH-8925", "SH-8930", "SH-8931"])
+originCol = Col("Origin", ["Chicago, IL", "Shanghai, CN", "Dallas, TX", "Rotterdam, NL", "Seattle, WA"])
+destCol = Col("Destination", ["Atlanta, GA", "Los Angeles, CA", "Miami, FL", "New York, NY", "Denver, CO"])
+etaCol = Col("ETA", ["Oct 24, 18:00", "Oct 28, 08:00", "Oct 25, 12:00", "Nov 02, 14:00", "Oct 24, 21:00"])
+statusCol = Col("Status", ["In Transit - On Time", "DELAYED (Port)", "In Transit - On Time", "DELAYED (Weather)", "DELAYED (Mechanical)"])
+
+chartsTitle = Heading("Volume & Carrier Analytics", "h3")
+chartsGroup = Card([carrierPie, weeklyBar], "clear", "row", "l", "stretch", "between")
+
+carrierPie = Card([carrierHeader, carrierChart], "sunk", "column", "s")
+carrierHeader = CardHeader("Volume Split by Carrier", "Current active load percentage")
+carrierChart = PieChart(["Swift Transport", "Maersk Line", "FedEx Freight", "DHL Logistics"], [35, 28, 22, 15], "donut")
+
+weeklyBar = Card([weeklyHeader, weeklyChart], "sunk", "column", "s")
+weeklyHeader = CardHeader("Weekly Shipment Volume", "Past 8 Weeks (2 Months)")
+weeklyChart = BarChart(["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"], [volSeries], "grouped", "Week", "Shipments")
+volSeries = Series("Completed Shipments", [420, 445, 410, 480, 510, 495, 530, 560])
+
+flagDrawer = DrawerBlock("Flag / Report Shipment Issue", "Flag Shipment for Exception Handling", "Submit an issue alert to notify dispatch and ocean/ground ops teams.", flagForm)
+
+flagForm = Form("flag-shipment-form", flagButtons, [flagIdField, flagReasonField, flagNotesField])
+flagIdField = FormControl("Shipment ID", flagIdSelect)
+flagIdSelect = Select("shipment_id", [opt1, opt2, opt3, opt4, opt5], "Select shipment to flag")
+opt1 = SelectItem("SH-8921", "SH-8921 (Chicago -> Atlanta)")
+opt2 = SelectItem("SH-8922", "SH-8922 (Shanghai -> Los Angeles)")
+opt3 = SelectItem("SH-8925", "SH-8925 (Dallas -> Miami)")
+opt4 = SelectItem("SH-8930", "SH-8930 (Rotterdam -> New York)")
+opt5 = SelectItem("SH-8931", "SH-8931 (Seattle -> Denver)")
+
+flagReasonField = FormControl("Flag Reason", flagReasonRadio)
+flagReasonRadio = RadioGroup("flag_reason", [r1, r2, r3, r4])
+r1 = RadioItem("Weather Delay", "Storm or extreme weather impact", "weather")
+r2 = RadioItem("Customs Hold", "Documentation or clearance issue", "customs")
+r3 = RadioItem("Mechanical Failure", "Vehicle breakdown or maintenance", "mechanical")
+r4 = RadioItem("Damage / Discrepancy", "Cargo condition alert", "damage")
+
+flagNotesField = FormControl("Additional Details", flagNotesText, "Provide specific details for dispatch")
+flagNotesText = TextArea("flag_notes", "Enter priority instructions or notes...", 3)
+
+flagButtons = Buttons([submitFlagBtn])
+submitFlagBtn = Button("Submit Flag Alert", null, "primary")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Show delayed shipments details")
+f2 = FollowUpItem("Export carrier performance summary")
+f3 = FollowUpItem("View cost trend breakdown by lane")

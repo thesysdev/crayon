@@ -1,0 +1,469 @@
+Here's a complete factory floor supervisor console covering all 17 requirements on a single screen:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "andonAlert",
+          "andonAlert2",
+          "lineFocus",
+          "kpiTable",
+          "oeeProgress",
+          "targetProgress",
+          "safetyBadges",
+          "energyProgress",
+          "tabs",
+          "maintenanceForm",
+          "exportButtons"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Factory Floor Console",
+        "subtitle": "Plant 2 — Shift B — Live overview"
+      },
+      {
+        "id": "andonAlert",
+        "component": "Alert",
+        "title": "ANDON: Line 3 stopped",
+        "description": "Torque fault on Press-03 — maintenance dispatched 2 min ago",
+        "variant": "destructive"
+      },
+      {
+        "id": "andonAlert2",
+        "component": "Alert",
+        "title": "ANDON: Material low",
+        "description": "Packaging stock below reorder point",
+        "variant": "warning"
+      },
+      {
+        "id": "lineFocus",
+        "component": "Select",
+        "name": "focus_line",
+        "placeholder": "Focus on a production line…",
+        "items": ["focusAll", "focusL1", "focusL2", "focusL3", "focusL4"]
+      },
+      {
+        "id": "focusAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All lines"
+      },
+      {
+        "id": "focusL1",
+        "component": "SelectItem",
+        "value": "line1",
+        "label": "Line 1 — Stamping"
+      },
+      {
+        "id": "focusL2",
+        "component": "SelectItem",
+        "value": "line2",
+        "label": "Line 2 — Molding"
+      },
+      {
+        "id": "focusL3",
+        "component": "SelectItem",
+        "value": "line3",
+        "label": "Line 3 — Assembly"
+      },
+      {
+        "id": "focusL4",
+        "component": "SelectItem",
+        "value": "line4",
+        "label": "Line 4 — Packaging"
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": ["kpiName", "kpiValue"]
+      },
+      {
+        "id": "kpiName",
+        "component": "Col",
+        "label": "Key Metric",
+        "data": [
+          "Units produced today",
+          "Daily target",
+          "Safety incidents YTD",
+          "Days since last incident",
+          "Batches on quality hold",
+          "Open work orders"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": ["7,420", "9,000", "4", "37 days", "3", "8"]
+      },
+      {
+        "id": "oeeProgress",
+        "component": "Progress",
+        "value": 78,
+        "label": "Overall Equipment Effectiveness (OEE): 78%"
+      },
+      {
+        "id": "targetProgress",
+        "component": "Progress",
+        "value": 82,
+        "label": "Units vs target: 7,420 / 9,000 (82%)"
+      },
+      {
+        "id": "safetyBadges",
+        "component": "TagBlock",
+        "tags": [
+          "Safety: 4 incidents YTD",
+          "37 days incident-free",
+          "Quality hold: 3 batches (B-1042, B-1057, B-1061)"
+        ]
+      },
+      {
+        "id": "energyProgress",
+        "component": "Progress",
+        "value": 64,
+        "label": "Energy use today: 1,840 kWh (64% of daily budget)"
+      },
+      {
+        "id": "tabs",
+        "component": "Tabs",
+        "items": [
+          "tabLines",
+          "tabQuality",
+          "tabMaintenance",
+          "tabInventory",
+          "tabShifts",
+          "tabWorkOrders"
+        ]
+      },
+      {
+        "id": "tabLines",
+        "component": "TabItem",
+        "value": "lines",
+        "trigger": "Production Lines",
+        "content": ["linesTable"]
+      },
+      {
+        "id": "linesTable",
+        "component": "Table",
+        "columns": ["lineCol", "rateCol", "statusCol"]
+      },
+      {
+        "id": "lineCol",
+        "component": "Col",
+        "label": "Line",
+        "data": ["Line 1 — Stamping", "Line 2 — Molding", "Line 3 — Assembly", "Line 4 — Packaging"]
+      },
+      {
+        "id": "rateCol",
+        "component": "Col",
+        "label": "Rate (units/hr)",
+        "data": ["412", "385", "0", "398"]
+      },
+      {
+        "id": "statusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": ["Running", "Running", "Stopped (andon)", "Running"]
+      },
+      {
+        "id": "tabQuality",
+        "component": "TabItem",
+        "value": "quality",
+        "trigger": "Quality & Defects",
+        "content": ["defectChart", "defectSeries", "holdTable"]
+      },
+      {
+        "id": "defectChart",
+        "component": "LineChart",
+        "labels": ["W1", "W2", "W3", "W4"],
+        "series": ["defectSeries"],
+        "variant": "natural",
+        "xLabel": "Week (past month)",
+        "yLabel": "Defect rate (%)"
+      },
+      {
+        "id": "defectSeries",
+        "component": "Series",
+        "category": "Defect rate",
+        "values": [2.4, 2.1, 2.8, 1.9]
+      },
+      {
+        "id": "holdTable",
+        "component": "Table",
+        "columns": ["holdBatch", "holdReason"]
+      },
+      {
+        "id": "holdBatch",
+        "component": "Col",
+        "label": "Batch on hold",
+        "data": ["B-1042", "B-1057", "B-1061"]
+      },
+      {
+        "id": "holdReason",
+        "component": "Col",
+        "label": "Reason",
+        "data": ["Dimensional out-of-spec", "Contamination check", "Awaiting lab results"]
+      },
+      {
+        "id": "tabMaintenance",
+        "component": "TabItem",
+        "value": "maintenance",
+        "trigger": "Maintenance & Downtime",
+        "content": ["downtimeChart", "maintTable"]
+      },
+      {
+        "id": "downtimeChart",
+        "component": "PieChart",
+        "labels": ["Mechanical", "Electrical", "Changeover", "Material shortage", "Planned PM"],
+        "values": [34, 18, 22, 14, 12],
+        "variant": "donut"
+      },
+      {
+        "id": "maintTable",
+        "component": "Table",
+        "columns": ["machineCol", "dueCol"]
+      },
+      {
+        "id": "machineCol",
+        "component": "Col",
+        "label": "Machine due for maintenance",
+        "data": ["Press-03", "CNC-07", "Conveyor-12", "Robot-Weld-02"]
+      },
+      {
+        "id": "dueCol",
+        "component": "Col",
+        "label": "Due",
+        "data": ["Overdue (2 days)", "Tomorrow", "In 4 days", "In 6 days"]
+      },
+      {
+        "id": "tabInventory",
+        "component": "TabItem",
+        "value": "inventory",
+        "trigger": "Stock & Deliveries",
+        "content": ["stockChart", "deliveryTable"]
+      },
+      {
+        "id": "stockChart",
+        "component": "HorizontalBarChart",
+        "labels": ["Steel (t)", "Resin (kg)", "Packaging (units)"],
+        "series": ["stockSeries"],
+        "xLabel": "Stock level",
+        "yLabel": "Material"
+      },
+      {
+        "id": "stockSeries",
+        "component": "Series",
+        "category": "Current stock",
+        "values": [48, 1250, 8200]
+      },
+      {
+        "id": "deliveryTable",
+        "component": "Table",
+        "columns": ["supplierCol", "delItemCol", "delDateCol"]
+      },
+      {
+        "id": "supplierCol",
+        "component": "Col",
+        "label": "Supplier",
+        "data": ["Apex Steel", "PolyChem", "PackRight", "Apex Steel"]
+      },
+      {
+        "id": "delItemCol",
+        "component": "Col",
+        "label": "Delivery",
+        "data": ["20t cold-rolled steel", "800kg resin pellets", "10k cartons", "12t sheet steel"]
+      },
+      {
+        "id": "delDateCol",
+        "component": "Col",
+        "label": "Due",
+        "data": ["Tue", "Wed", "Thu", "Fri"]
+      },
+      {
+        "id": "tabShifts",
+        "component": "TabItem",
+        "value": "shifts",
+        "trigger": "Shift Output",
+        "content": ["shiftChart", "shiftSeries"]
+      },
+      {
+        "id": "shiftChart",
+        "component": "BarChart",
+        "labels": ["Shift A", "Shift B", "Shift C"],
+        "series": ["shiftSeries"],
+        "variant": "grouped",
+        "xLabel": "Shift",
+        "yLabel": "Units produced"
+      },
+      {
+        "id": "shiftSeries",
+        "component": "Series",
+        "category": "Output today",
+        "values": [8100, 7420, 6890]
+      },
+      {
+        "id": "tabWorkOrders",
+        "component": "TabItem",
+        "value": "workorders",
+        "trigger": "Work Orders",
+        "content": ["woTable"]
+      },
+      {
+        "id": "woTable",
+        "component": "Table",
+        "columns": ["woId", "woDesc", "woPriority"]
+      },
+      {
+        "id": "woId",
+        "component": "Col",
+        "label": "Work order",
+        "data": ["WO-2211", "WO-2214", "WO-2219", "WO-2223", "WO-2227", "WO-2230", "WO-2234", "WO-2239"]
+      },
+      {
+        "id": "woDesc",
+        "component": "Col",
+        "label": "Description",
+        "data": [
+          "Replace press die",
+          "Calibrate weld robot",
+          "Conveyor belt repair",
+          "Sensor replacement",
+          "Hydraulic leak fix",
+          "Lubrication round",
+          "Guard rail install",
+          "Firmware update"
+        ]
+      },
+      {
+        "id": "woPriority",
+        "component": "Col",
+        "label": "Priority",
+        "data": ["Critical", "High", "High", "Medium", "Critical", "Low", "Medium", "Low"]
+      },
+      {
+        "id": "maintenanceForm",
+        "component": "Form",
+        "name": "schedule-maintenance",
+        "buttons": "maintButtons",
+        "fields": ["machineField", "dateField"]
+      },
+      {
+        "id": "machineField",
+        "component": "FormControl",
+        "label": "Schedule maintenance — machine",
+        "input": "machineSelect"
+      },
+      {
+        "id": "machineSelect",
+        "component": "Select",
+        "name": "machine",
+        "placeholder": "Select machine",
+        "items": ["mPress", "mCnc", "mConv", "mRobot"]
+      },
+      {
+        "id": "mPress",
+        "component": "SelectItem",
+        "value": "press-03",
+        "label": "Press-03"
+      },
+      {
+        "id": "mCnc",
+        "component": "SelectItem",
+        "value": "cnc-07",
+        "label": "CNC-07"
+      },
+      {
+        "id": "mConv",
+        "component": "SelectItem",
+        "value": "conveyor-12",
+        "label": "Conveyor-12"
+      },
+      {
+        "id": "mRobot",
+        "component": "SelectItem",
+        "value": "robot-weld-02",
+        "label": "Robot-Weld-02"
+      },
+      {
+        "id": "dateField",
+        "component": "FormControl",
+        "label": "Maintenance date",
+        "input": "datePicker"
+      },
+      {
+        "id": "datePicker",
+        "component": "DatePicker",
+        "name": "maintenance_date",
+        "mode": "single"
+      },
+      {
+        "id": "maintButtons",
+        "component": "Buttons",
+        "buttons": ["schedBtn"]
+      },
+      {
+        "id": "schedBtn",
+        "component": "Button",
+        "label": "Schedule maintenance",
+        "variant": "primary"
+      },
+      {
+        "id": "exportButtons",
+        "component": "Buttons",
+        "buttons": ["exportBtn", "exportPdfBtn"]
+      },
+      {
+        "id": "exportBtn",
+        "component": "Button",
+        "label": "Export shift report (CSV)",
+        "variant": "secondary"
+      },
+      {
+        "id": "exportPdfBtn",
+        "component": "Button",
+        "label": "Export shift report (PDF)",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This console covers all 17 items:
+
+1. **OEE** — progress bar at 78%
+2. **Units vs target** — progress bar (7,420 / 9,000)
+3. **Production lines** — table with rate and status per line
+4. **Defect rate** — line chart over the past 4 weeks
+5. **Downtime split** — donut chart by cause
+6. **Machines due for maintenance** — table with due dates
+7. **Stock** — horizontal bar chart for steel, resin, packaging
+8. **Supplier deliveries** — table of this week's deliveries
+9. **Shift output** — grouped bar chart comparing shifts A/B/C
+10. **Safety incidents** — KPI table + tags (4 YTD, 37 days since last)
+11. **Quality hold batches** — table with reasons
+12. **Energy use** — progress bar vs daily budget
+13. **Open work orders** — table with priority per order
+14. **Schedule maintenance** — form with machine select + date picker
+15. **Focus on one line** — line selector dropdown at the top
+16. **Live andon alerts** — alert banners (Line 3 stoppage, low material)
+17. **Export shift report** — CSV and PDF export buttons

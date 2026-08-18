@@ -1,0 +1,79 @@
+root = Card([header, mainGrid, followUpsSection, notesSection, followUpSuggestions])
+
+header = CardHeader("Acme Corp - Enterprise Account", "Account Owner: Sarah Jenkins | Key Account Manager")
+
+mainGrid = Card([metricsRow, renewalAlert, tabsSection], "clear", "column", "m")
+
+metricsRow = Card([kpi1, kpi2, kpi3], "sunk", "row", "m", "center", "between")
+
+kpi1 = Card([kpi1Label, kpi1Val], "clear", "column", "xs")
+kpi1Label = TextContent("Total Deal Value", "small")
+kpi1Val = TextContent("$450,000", "large-heavy")
+
+kpi2 = Card([kpi2Label, kpi2Badge], "clear", "column", "xs")
+kpi2Label = TextContent("Current Deal Stage", "small")
+kpi2Badge = Badge("Negotiation / Proposal", "default")
+
+kpi3 = Card([kpi3Label, kpi3Val], "clear", "column", "xs")
+kpi3Label = TextContent("Health Score", "small")
+kpi3Val = TextContent("92 / 100", "large-heavy")
+
+renewalAlert = Alert("Renewal Date Approaching", "Contract renewal is due on November 15, 2024 (18 days remaining). Final procurement review pending.", "warning")
+
+tabsSection = Tabs([activityTab, contactsTab, logCallTab])
+
+activityTab = TabItem("activity", "Recent Activity", [activityList])
+activityList = ListBlock([act1, act2, act3, act4])
+act1 = ListItem("Security Compliance Review Completed", "Today at 2:15 PM • Signed off by InfoSec team")
+act2 = ListItem("Executive Alignment Call", "Yesterday at 10:00 AM • Discussed Q4 deployment timeline")
+act3 = ListItem("Revised Proposal Sent", "Oct 24, 2024 • Updated license count to 500 seats")
+act4 = ListItem("Inbound Demo Request", "Oct 18, 2024 • Initiated by VP of Engineering")
+
+contactsTab = TabItem("contacts", "Key Contacts", [contactsTable])
+contactsTable = Table([cName, cRole, cEmail, cPhone])
+cName = Col("Contact Name", ["Elena Rostova", "Marcus Vance", "David Chen"])
+cRole = Col("Role", ["VP of Engineering (Decision Maker)", "Procurement Lead (Evaluator)", "DevOps Manager (Technical Champ)"])
+cEmail = Col("Email", ["elena@acme.com", "marcus@acme.com", "d.chen@acme.com"])
+cPhone = Col("Phone", ["+1 (555) 019-2834", "+1 (555) 019-5821", "+1 (555) 019-9942"])
+
+logCallTab = TabItem("logcall", "Log Call", [callForm])
+callForm = Form("log-call-form", callFormButtons, [callTypeField, callOutcomeField, callNotesField])
+callTypeField = FormControl("Call Type", callTypeSelect)
+callTypeSelect = Select("call_type", [cType1, cType2, cType3], "Select call type")
+cType1 = SelectItem("discovery", "Discovery Call")
+cType2 = SelectItem("demo", "Product Demo")
+cType3 = SelectItem("pricing", "Pricing & Negotiation")
+
+callOutcomeField = FormControl("Outcome", callOutcomeSelect)
+callOutcomeSelect = Select("outcome", [out1, out2, out3], "Select outcome")
+out1 = SelectItem("connected", "Connected & Positive")
+out2 = SelectItem("left_vm", "Left Voicemail")
+out3 = SelectItem("followup_req", "Follow-up Requested")
+
+callNotesField = FormControl("Call Summary", callNotesArea)
+callNotesArea = TextArea("call_notes", "Summary of key takeaways and Next Steps...", 3)
+
+callFormButtons = Buttons([submitCallBtn, clearCallBtn])
+submitCallBtn = Button("Log Call Record", null, "primary")
+clearCallBtn = Button("Clear", null, "tertiary")
+
+followUpsSection = Card([followUpHeading, followUpList], "sunk")
+followUpHeading = Heading("Open Follow-Ups", "h3")
+followUpList = Table([fTask, fAssignee, fDueDate, fStatus])
+fTask = Col("Action Item", ["Send updated SLA agreement", "Schedule technical deep-dive on SSO", "Confirm MSA redlines with legal"])
+fAssignee = Col("Owner", ["Sarah Jenkins", "Alex Rivera (SE)", "Sarah Jenkins"])
+fDueDate = Col("Due Date", ["Oct 30, 2024", "Nov 02, 2024", "Nov 05, 2024"])
+fStatus = Col("Priority", ["High", "Medium", "High"])
+
+notesSection = Card([noteHeading, noteForm], "card")
+noteHeading = Heading("Jot Quick Note", "h3")
+noteForm = Form("quick-note-form", noteButtons, [noteTextField])
+noteTextField = FormControl("Note Content", noteInput, "Visible to all members of your deal team")
+noteInput = TextArea("quick_note", "Add internal notes, strategy remarks, or stakeholder preferences...", 3)
+noteButtons = Buttons([saveNoteBtn])
+saveNoteBtn = Button("Save Note", null, "secondary")
+
+followUpSuggestions = FollowUpBlock([sug1, sug2, sug3])
+sug1 = FollowUpItem("Draft renewal email to Elena")
+sug2 = FollowUpItem("View account analytics & usage")
+sug3 = FollowUpItem("Schedule quarterly business review")

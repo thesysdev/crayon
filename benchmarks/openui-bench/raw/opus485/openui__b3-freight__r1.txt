@@ -1,0 +1,42 @@
+root = Card([header, refreshed, alerts, kpis, transit, carrierSplit, weekly, tools])
+header = CardHeader("Logistics Board", "Live shipment operations")
+refreshed = Tag("Last refreshed 09:42 AM today", null, "sm", "info")
+
+alerts = Alert("2 shipments delayed", "SHP-4821 (Chicago→Denver) and SHP-4903 (Dallas→Atlanta) are behind ETA", "warning")
+
+kpis = Card([onTime, avgCost], "sunk", "row", "l")
+onTime = Progress(94, "On-time this month: 94%")
+avgCost = TextContent("**Avg cost per shipment:** $312.40", "large-heavy")
+
+transit = Table([tCol1, tCol2, tCol3, tCol4, tCol5])
+tCol1 = Col("Shipment", ["SHP-4790", "SHP-4821", "SHP-4855", "SHP-4903", "SHP-4912"])
+tCol2 = Col("Origin", ["Seattle", "Chicago", "Miami", "Dallas", "Boston"])
+tCol3 = Col("Destination", ["Portland", "Denver", "Orlando", "Atlanta", "Newark"])
+tCol4 = Col("ETA", ["Today 14:30", "Delayed", "Tomorrow 09:00", "Delayed", "Today 18:15"])
+tCol5 = Col("Status", ["In transit", "Delayed", "In transit", "Delayed", "In transit"])
+
+carrierSplit = PieChart(["FedEx", "UPS", "DHL", "USPS"], [38, 29, 21, 12], "donut")
+
+weekly = BarChart(weekLabels, [volSeries], "grouped", "Week", "Shipments")
+weekLabels = ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"]
+volSeries = Series("Volume", [420, 465, 390, 510, 480, 540, 505, 560])
+
+tools = Card([searchForm, flagForm], "clear", "column", "l")
+
+searchForm = Form("route-search", searchBtns, [routeField])
+routeField = FormControl("Search by route", routeInput, "e.g. Chicago → Denver")
+routeInput = Input("route", "Origin → Destination")
+searchBtns = Buttons([searchBtn])
+searchBtn = Button("Search route", null, "primary")
+
+flagForm = Form("flag-shipment", flagBtns, [flagIdField, flagReasonField])
+flagIdField = FormControl("Shipment ID", flagIdInput)
+flagIdInput = Input("shipment_id", "SHP-0000")
+flagReasonField = FormControl("Reason", flagReasonSelect)
+flagReasonSelect = Select("reason", [rDelay, rDamage, rLost, rOther], "Select reason")
+rDelay = SelectItem("delay", "Delay risk")
+rDamage = SelectItem("damage", "Possible damage")
+rLost = SelectItem("lost", "Lost / missing")
+rOther = SelectItem("other", "Other")
+flagBtns = Buttons([flagBtn])
+flagBtn = Button("Flag shipment", null, "secondary", "destructive")

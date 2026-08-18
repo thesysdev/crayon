@@ -1,0 +1,67 @@
+root = Card([header, renewalAlert, metricsTable, stageCallout, contentTabs, noteSection, followUps, followUpSuggestions])
+
+header = CardHeader("Acme Corporation", "Account Owner: Sarah Jenkins | Key Enterprise Account")
+
+renewalAlert = TextCallout("warning", "Upcoming Renewal Alert", "Contract renewal is in 18 days (October 31, 2024). Review usage metrics and open follow-ups before starting discussions.")
+
+metricsTable = Table([metricCol, valueCol])
+metricCol = Col("Account Summary", ["Total Deal Value", "Current Deal Stage", "Contract Renewal Date", "Primary Decision Maker"])
+valueCol = Col("Details", ["$245,000 ARR", "Proposal / Evaluation", "October 31, 2024", "Marcus Vance (VP of Tech)"])
+
+stageCallout = Callout("info", "Stage Status: Proposal / Evaluation", "Proposal sent on Oct 10. Security review in progress by IT team. Target close date: Nov 15.")
+
+contentTabs = Tabs([tabActivity, tabContacts])
+
+tabActivity = TabItem("activity", "Recent Activity", [activityList])
+activityList = ListBlock([act1, act2, act3, act4])
+act1 = ListItem("Security Questionnaire Submitted", "Completed by Sarah Jenkins • Oct 12, 2024")
+act2 = ListItem("Executive Pitch Presentation", "Met with Marcus Vance & IT Team • Oct 10, 2024")
+act3 = ListItem("Technical Requirements Call", "Call logged with Lead Architect • Oct 05, 2024")
+act4 = ListItem("Initial Discovery Demo", "Demo completed with Product Team • Sep 28, 2024")
+
+tabContacts = TabItem("contacts", "Key Contacts", [contactsTable])
+contactsTable = Table([contactNameCol, contactRoleCol, contactEmailCol])
+contactNameCol = Col("Name", ["Marcus Vance", "Elena Rostova", "David Chen"])
+contactRoleCol = Col("Role / Title", ["VP of Technology (Decision Maker)", "Head of Infrastructure (Evaluator)", "Procurement Manager (Buyer)"])
+contactEmailCol = Col("Contact Info", ["m.vance@acme.com", "e.rostova@acme.com", "d.chen@acme.com"])
+
+noteSection = Accordion([noteItem, callItem])
+
+noteItem = AccordionItem("note", "Jot Down Account Note", [noteForm])
+noteForm = Form("add_note_form", noteFormButtons, [noteInputControl, noteTypeControl])
+noteInputControl = FormControl("Account Note", noteText)
+noteText = TextArea("note_text", "Enter notes regarding strategy, budget, or stakeholder feedback...", 3)
+noteTypeControl = FormControl("Note Category", noteTypeSelect)
+noteTypeSelect = Select("note_category", [optGen, optSec, optPrice], "Select category")
+optGen = SelectItem("general", "General Update")
+optSec = SelectItem("security", "Security / Compliance")
+optPrice = SelectItem("pricing", "Pricing & Legal")
+noteFormButtons = Buttons([saveNoteBtn])
+saveNoteBtn = Button("Save Note", null, "primary")
+
+callItem = AccordionItem("call", "Log a Call", [callForm])
+callForm = Form("log_call_form", callFormButtons, [callContactControl, callOutcomeControl, callNotesControl])
+callContactControl = FormControl("Contact Spoken To", callContactSelect)
+callContactSelect = Select("call_contact", [c1, c2, c3], "Select contact")
+c1 = SelectItem("marcus", "Marcus Vance")
+c2 = SelectItem("elena", "Elena Rostova")
+c3 = SelectItem("david", "David Chen")
+callOutcomeControl = FormControl("Call Outcome", callOutcomeSelect)
+callOutcomeSelect = Select("call_outcome", [o1, o2, o3], "Select outcome")
+o1 = SelectItem("connected", "Connected - Positive Progress")
+o2 = SelectItem("left_vm", "Left Voicemail")
+o3 = SelectItem("rescheduled", "Requested Reschedule")
+callNotesControl = FormControl("Call Summary & Key Takeaways", callNotesText)
+callNotesText = TextArea("call_notes", "Summary of conversation and next steps discussed...", 2)
+callFormButtons = Buttons([logCallBtn])
+logCallBtn = Button("Log Call Entry", null, "primary")
+
+followUps = ListBlock([fu1, fu2, fu3])
+fu1 = ListItem("Send revised SOC2 report to Elena", "Due: Oct 15, 2024 • High Priority")
+fu2 = ListItem("Schedule pricing alignment with Procurement", "Due: Oct 18, 2024 • Medium Priority")
+fu3 = ListItem("Draft mutual implementation plan for Marcus", "Due: Oct 22, 2024 • Normal Priority")
+
+followUpSuggestions = FollowUpBlock([sug1, sug2, sug3])
+sug1 = FollowUpItem("Prepare discount approval request for $245k deal")
+sug2 = FollowUpItem("Send contract renewal reminder email")
+sug3 = FollowUpItem("Schedule executive sponsor check-in")

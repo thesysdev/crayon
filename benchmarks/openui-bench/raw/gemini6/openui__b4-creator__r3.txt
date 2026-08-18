@@ -1,0 +1,98 @@
+root = Card([header, filterSection, kpiRow1, kpiRow2, mainContentRow, bottomRow, followUps], "card", "column", "l")
+
+header = CardHeader("Creator Studio", "Cross-Platform Analytics & Management")
+
+filterSection = Card([filterLabel, filterSelect], "sunk", "row", "m", "center")
+filterLabel = TextContent("Filter Platform:", "small-heavy")
+filterSelect = Select("platform_filter", [optAll, optYouTube, optInsta, optTikTok, optX], "Select Platform")
+optAll = SelectItem("all", "All Platforms (Combined)")
+optYouTube = SelectItem("yt", "YouTube")
+optInsta = SelectItem("ig", "Instagram")
+optTikTok = SelectItem("tt", "TikTok")
+optX = SelectItem("x", "X (Twitter)")
+
+kpiRow1 = Card([followerCard, engagementCard, bestHourCard, earningsCard], "clear", "row", "m")
+
+followerCard = Card([followerTitle, followerVal, followerGrowth], "card", "column", "xs")
+followerTitle = TextContent("Total Followers", "small")
+followerVal = Heading("1.24M", "h2")
+followerGrowth = Tag("+42.5k this month", "trending-up", "sm", "success")
+
+engagementCard = Card([engTitle, engVal, engBadge], "card", "column", "xs")
+engTitle = TextContent("Engagement Rate", "small")
+engVal = Heading("5.8%", "h2")
+engBadge = Badge("Top 5% of Creators", "secondary")
+
+bestHourCard = Card([hourTitle, hourVal, hourSub], "card", "column", "xs")
+hourTitle = TextContent("Best Hour to Post", "small")
+hourVal = Heading("6:00 PM", "h2")
+hourSub = TextContent("Thursdays & Fridays", "small")
+
+earningsCard = Card([earnTitle, earnVal, earnTag], "card", "column", "xs")
+earnTitle = TextContent("Earnings (This Month)", "small")
+earnVal = Heading("$14,250", "h2")
+earnTag = Tag("+18% vs last month", null, "sm", "success")
+
+kpiRow2 = Card([growthChartCard, audienceChartCard], "clear", "row", "m")
+
+growthChartCard = Card([growthChartTitle, growthChart], "card", "column", "s")
+growthChartTitle = Heading("Follower Growth (Past Month)", "h4")
+growthChart = LineChart(["Week 1", "Week 2", "Week 3", "Week 4"], [growthSeries], "natural", "Timeline", "Followers")
+growthSeries = Series("Total Followers", [1200000, 1215000, 1228000, 1242500])
+
+audienceChartCard = Card([audienceChartTitle, audienceChart], "card", "column", "s")
+audienceChartTitle = Heading("Audience Split by Platform", "h4")
+audienceChart = PieChart(["YouTube", "Instagram", "TikTok", "X (Twitter)"], [520000, 380000, 240000, 102500], "donut")
+
+mainContentRow = Card([bestPostsCard, scheduledCard], "clear", "row", "m")
+
+bestPostsCard = Card([bestPostsTitle, bestPostsTable], "card", "column", "s")
+bestPostsTitle = Heading("Best Posts This Month", "h4")
+bestPostsTable = Table([postCol, platformCol, reachCol, engCol])
+postCol = Col("Post Title / Hook", ["10 Tech Tips You Need", "Day in the Life Vlog", "Ultimate Desk Setup", "AI Automation Guide"])
+platformCol = Col("Platform", ["YouTube", "Instagram", "TikTok", "X (Twitter)"])
+reachCol = Col("Reach / Views", ["450,000", "280,000", "195,000", "88,000"])
+engCol = Col("Engagement", ["8.2%", "6.4%", "7.1%", "4.9%"])
+
+scheduledCard = Card([scheduledTitle, scheduledList], "card", "column", "s")
+scheduledTitle = Heading("Posts Scheduled This Week", "h4")
+scheduledList = ListBlock([sched1, sched2, sched3])
+sched1 = ListItem("2024 Camera Gear Review", "YouTube • Tomorrow at 5:00 PM", null, "Edit")
+sched2 = ListItem("5 Productivity Hacks Short", "TikTok • Thu at 6:00 PM", null, "Edit")
+sched3 = ListItem("Behind the Scenes Photo Carousel", "Instagram • Fri at 4:30 PM", null, "Edit")
+
+bottomRow = Card([commentsCard, collabCard, scheduleFormCard], "clear", "row", "m")
+
+commentsCard = Card([commentsTitle, commentAlert, commentsList], "card", "column", "s")
+commentsTitle = Heading("Comments Waiting for Reply", "h4")
+commentAlert = Alert("12 Unanswered", "3 high-priority audience questions pending.", "info")
+commentsList = ListBlock([comm1, comm2])
+comm1 = ListItem("Sarah K: What microphone are you using here?", "Instagram • 15m ago", null, "Reply")
+comm2 = ListItem("TechEnthusiast: Can you share the Notion template link?", "YouTube • 1h ago", null, "Reply")
+
+collabCard = Card([collabTitle, collabList], "card", "column", "s")
+collabTitle = Heading("Pending Collab Requests", "h4")
+collabList = ListBlock([collab1, collab2])
+collab1 = ListItem("Sponsor: Keychron Keyboards", "$2,500 budget • Dedicated Review", null, "Review")
+collab2 = ListItem("Creator Collab: @AlexG_Tech", "Joint Podcast Episode • 500k subs", null, "Review")
+
+scheduleFormCard = Card([scheduleFormTitle, scheduleForm], "card", "column", "s")
+scheduleFormTitle = Heading("Schedule New Post", "h4")
+scheduleForm = Form("schedule_post_form", formButtons, [captionControl, platformControl, dateControl])
+captionControl = FormControl("Caption / Title", captionInput)
+captionInput = TextArea("post_caption", "Write your post caption or video title...", 3)
+platformControl = FormControl("Target Platform", platformSelect)
+platformSelect = Select("post_platform", [pOptYT, pOptIG, pOptTT, pOptX], "Choose Platform")
+pOptYT = SelectItem("yt", "YouTube")
+pOptIG = SelectItem("ig", "Instagram")
+pOptTT = SelectItem("tt", "TikTok")
+pOptX = SelectItem("x", "X")
+dateControl = FormControl("Scheduled Date & Time", datePicker)
+datePicker = DatePicker("scheduled_time", "single")
+formButtons = Buttons([submitPostBtn])
+submitPostBtn = Button("Schedule Post", null, "primary")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("View detailed revenue breakdown")
+f2 = FollowUpItem("Draft post captions using AI assistant")
+f3 = FollowUpItem("Filter studio metrics by YouTube only")

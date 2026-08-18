@@ -1,0 +1,267 @@
+Here's a month-end finance view covering all 7 items: KPIs for cash, burn, and runway; a category expense breakdown; large transactions table; a month selector; and a statement download button.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "monthControl",
+          "alert",
+          "kpis",
+          "expenseChart",
+          "largeTxTitle",
+          "largeTxTable",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Month-End Finance",
+        "subtitle": "September 2025 · Acme Startup Inc."
+      },
+      {
+        "id": "monthControl",
+        "component": "Form",
+        "name": "month-picker",
+        "buttons": "monthButtons",
+        "fields": [
+          "monthField"
+        ]
+      },
+      {
+        "id": "monthField",
+        "component": "FormControl",
+        "label": "View a different month",
+        "input": "monthSelect"
+      },
+      {
+        "id": "monthSelect",
+        "component": "Select",
+        "name": "month",
+        "items": [
+          "mSep",
+          "mAug",
+          "mJul",
+          "mJun"
+        ],
+        "value": "2025-09"
+      },
+      {
+        "id": "mSep",
+        "component": "SelectItem",
+        "value": "2025-09",
+        "label": "September 2025"
+      },
+      {
+        "id": "mAug",
+        "component": "SelectItem",
+        "value": "2025-08",
+        "label": "August 2025"
+      },
+      {
+        "id": "mJul",
+        "component": "SelectItem",
+        "value": "2025-07",
+        "label": "July 2025"
+      },
+      {
+        "id": "mJun",
+        "component": "SelectItem",
+        "value": "2025-06",
+        "label": "June 2025"
+      },
+      {
+        "id": "monthButtons",
+        "component": "Buttons",
+        "buttons": [
+          "applyMonthBtn"
+        ]
+      },
+      {
+        "id": "applyMonthBtn",
+        "component": "Button",
+        "label": "Apply month",
+        "variant": "secondary"
+      },
+      {
+        "id": "alert",
+        "component": "Alert",
+        "title": "Runway below 12 months",
+        "description": "At current burn, runway is 10.4 months. Consider reviewing cloud and payroll spend.",
+        "variant": "warning"
+      },
+      {
+        "id": "kpis",
+        "component": "Table",
+        "columns": [
+          "kpiName",
+          "kpiValue",
+          "kpiNote"
+        ]
+      },
+      {
+        "id": "kpiName",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Cash on hand",
+          "Monthly burn",
+          "Months of runway"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "$1,248,500",
+          "$120,000",
+          "10.4"
+        ]
+      },
+      {
+        "id": "kpiNote",
+        "component": "Col",
+        "label": "Note",
+        "data": [
+          "Across 2 operating accounts",
+          "Net of $34k monthly revenue",
+          "Cash ÷ burn, assumes flat spend"
+        ]
+      },
+      {
+        "id": "expenseChart",
+        "component": "PieChart",
+        "labels": [
+          "Payroll",
+          "Cloud & Infra",
+          "Marketing",
+          "Office & Ops",
+          "Legal & Accounting",
+          "Software"
+        ],
+        "values": [
+          72000,
+          18500,
+          12400,
+          6800,
+          5300,
+          5000
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "largeTxTitle",
+        "component": "CardHeader",
+        "title": "Transactions above $10,000",
+        "subtitle": "September 2025"
+      },
+      {
+        "id": "largeTxTable",
+        "component": "Table",
+        "columns": [
+          "txDate",
+          "txVendor",
+          "txCategory",
+          "txAmount"
+        ]
+      },
+      {
+        "id": "txDate",
+        "component": "Col",
+        "label": "Date",
+        "data": [
+          "Sep 02",
+          "Sep 05",
+          "Sep 12",
+          "Sep 19",
+          "Sep 26"
+        ]
+      },
+      {
+        "id": "txVendor",
+        "component": "Col",
+        "label": "Vendor",
+        "data": [
+          "Payroll — Gusto",
+          "AWS",
+          "Payroll — Gusto",
+          "WeWork",
+          "Google Ads"
+        ]
+      },
+      {
+        "id": "txCategory",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Payroll",
+          "Cloud & Infra",
+          "Payroll",
+          "Office & Ops",
+          "Marketing"
+        ]
+      },
+      {
+        "id": "txAmount",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "$36,000",
+          "$18,500",
+          "$36,000",
+          "$12,400",
+          "$10,800"
+        ],
+        "type": "number"
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": [
+          "downloadBtn",
+          "exportBtn"
+        ]
+      },
+      {
+        "id": "downloadBtn",
+        "component": "Button",
+        "label": "Download statement (PDF)",
+        "variant": "primary"
+      },
+      {
+        "id": "exportBtn",
+        "component": "Button",
+        "label": "Export transactions (CSV)",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+How each requirement is covered:
+1. **Cash on hand** — first KPI row ($1,248,500).
+2. **Monthly burn** — second KPI row ($120,000 net burn).
+3. **Runway** — third KPI row (10.4 months), reinforced by the warning alert.
+4. **Expenses by category** — donut chart splitting spend across Payroll, Cloud, Marketing, etc.
+5. **Transactions > $10,000** — dedicated table with dates, vendors, and amounts.
+6. **Change month** — the "View a different month" selector with Apply button.
+7. **Download statement** — primary "Download statement (PDF)" button, plus a CSV export option.

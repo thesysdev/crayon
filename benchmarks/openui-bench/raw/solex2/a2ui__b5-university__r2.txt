@@ -1,0 +1,922 @@
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#243B7A",
+      "agentDisplayName": "University Administration"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "variant": "clear",
+        "gap": "l",
+        "children": [
+          "header",
+          "departmentFilter",
+          "overview",
+          "enrollmentTrend",
+          "applicationsChart",
+          "operations",
+          "courseFillTable",
+          "facultyLoadTable",
+          "studentSupport",
+          "riskTable",
+          "waitlistChart",
+          "campusLife",
+          "eventsList",
+          "givingChart",
+          "actions",
+          "actionTabs"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "University Administrator Overview",
+        "subtitle": "Current semester • institutional performance, capacity, and student success"
+      },
+      {
+        "id": "departmentFilter",
+        "component": "Form",
+        "name": "department-focus",
+        "fields": [
+          "departmentControl"
+        ],
+        "buttons": "departmentButtons"
+      },
+      {
+        "id": "departmentControl",
+        "component": "FormControl",
+        "label": "Focus on one department",
+        "input": "departmentSelect",
+        "hint": "Updates the overview to the selected department"
+      },
+      {
+        "id": "departmentSelect",
+        "component": "Select",
+        "name": "department",
+        "placeholder": "All departments",
+        "value": "all",
+        "items": [
+          "departmentAll",
+          "departmentArts",
+          "departmentBusiness",
+          "departmentEngineering",
+          "departmentHealth",
+          "departmentScience"
+        ]
+      },
+      {
+        "id": "departmentAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All departments"
+      },
+      {
+        "id": "departmentArts",
+        "component": "SelectItem",
+        "value": "arts",
+        "label": "Arts & Humanities"
+      },
+      {
+        "id": "departmentBusiness",
+        "component": "SelectItem",
+        "value": "business",
+        "label": "Business"
+      },
+      {
+        "id": "departmentEngineering",
+        "component": "SelectItem",
+        "value": "engineering",
+        "label": "Engineering"
+      },
+      {
+        "id": "departmentHealth",
+        "component": "SelectItem",
+        "value": "health",
+        "label": "Health Sciences"
+      },
+      {
+        "id": "departmentScience",
+        "component": "SelectItem",
+        "value": "science",
+        "label": "Natural Sciences"
+      },
+      {
+        "id": "departmentButtons",
+        "component": "Buttons",
+        "buttons": [
+          "applyDepartment",
+          "resetDepartment"
+        ]
+      },
+      {
+        "id": "applyDepartment",
+        "component": "Button",
+        "label": "Apply focus",
+        "variant": "primary"
+      },
+      {
+        "id": "resetDepartment",
+        "component": "Button",
+        "label": "Reset",
+        "variant": "tertiary"
+      },
+      {
+        "id": "overview",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "enrollmentKpi",
+          "acceptanceKpi",
+          "revenueKpi",
+          "semesterComparison",
+          "scholarshipProgress",
+          "housingProgress"
+        ]
+      },
+      {
+        "id": "enrollmentKpi",
+        "component": "TextCallout",
+        "variant": "info",
+        "title": "Total enrollment: 24,860",
+        "description": "Up 3.4% from last year"
+      },
+      {
+        "id": "acceptanceKpi",
+        "component": "TextCallout",
+        "variant": "success",
+        "title": "Acceptance rate: 42.6%",
+        "description": "1.8 percentage points below last cycle"
+      },
+      {
+        "id": "revenueKpi",
+        "component": "TextCallout",
+        "variant": "neutral",
+        "title": "Tuition revenue: $286.4M",
+        "description": "This year • 96% of $298M target"
+      },
+      {
+        "id": "semesterComparison",
+        "component": "Table",
+        "columns": [
+          "comparisonMetric",
+          "currentSemester",
+          "lastSemester",
+          "comparisonChange"
+        ]
+      },
+      {
+        "id": "comparisonMetric",
+        "component": "Col",
+        "label": "Semester comparison",
+        "data": [
+          "Enrollment",
+          "Credits attempted",
+          "Average GPA",
+          "Retention"
+        ]
+      },
+      {
+        "id": "currentSemester",
+        "component": "Col",
+        "label": "This semester",
+        "data": [
+          "24,860",
+          "356,210",
+          "3.18",
+          "91.2%"
+        ]
+      },
+      {
+        "id": "lastSemester",
+        "component": "Col",
+        "label": "Last semester",
+        "data": [
+          "24,040",
+          "343,880",
+          "3.14",
+          "90.5%"
+        ]
+      },
+      {
+        "id": "comparisonChange",
+        "component": "Col",
+        "label": "Change",
+        "data": [
+          "+3.4%",
+          "+3.6%",
+          "+0.04",
+          "+0.7 pp"
+        ]
+      },
+      {
+        "id": "scholarshipProgress",
+        "component": "Progress",
+        "value": 78,
+        "label": "Scholarships: $18.7M of $24.0M used (78%)"
+      },
+      {
+        "id": "housingProgress",
+        "component": "Progress",
+        "value": 94,
+        "label": "Housing occupancy: 5,264 of 5,600 beds (94%)"
+      },
+      {
+        "id": "enrollmentTrend",
+        "component": "LineChart",
+        "labels": [
+          "2022",
+          "2023",
+          "2024",
+          "2025",
+          "2026"
+        ],
+        "series": [
+          "enrollmentSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Academic year",
+        "yLabel": "Students"
+      },
+      {
+        "id": "enrollmentSeries",
+        "component": "Series",
+        "category": "Total enrollment",
+        "values": [
+          21840,
+          22490,
+          23210,
+          24040,
+          24860
+        ]
+      },
+      {
+        "id": "applicationsChart",
+        "component": "HorizontalBarChart",
+        "labels": [
+          "Computer Science",
+          "Business",
+          "Nursing",
+          "Engineering",
+          "Psychology",
+          "Education"
+        ],
+        "series": [
+          "applicationsSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Applications",
+        "yLabel": "Program"
+      },
+      {
+        "id": "applicationsSeries",
+        "component": "Series",
+        "category": "Applications this cycle",
+        "values": [
+          4820,
+          3910,
+          3460,
+          3210,
+          2740,
+          1880
+        ]
+      },
+      {
+        "id": "operations",
+        "component": "Heading",
+        "text": "Academic operations",
+        "level": "h2"
+      },
+      {
+        "id": "courseFillTable",
+        "component": "Table",
+        "columns": [
+          "courseCode",
+          "courseOffering",
+          "courseEnrollment",
+          "courseCapacity",
+          "courseFill"
+        ]
+      },
+      {
+        "id": "courseCode",
+        "component": "Col",
+        "label": "Course",
+        "data": [
+          "CS 201-01",
+          "BUS 310-02",
+          "NUR 220-01",
+          "ENG 105-03",
+          "PSY 101-04",
+          "BIO 240-01"
+        ]
+      },
+      {
+        "id": "courseOffering",
+        "component": "Col",
+        "label": "Offering",
+        "data": [
+          "Data Structures",
+          "Corporate Finance",
+          "Clinical Practice II",
+          "Academic Writing",
+          "Introduction to Psychology",
+          "Genetics"
+        ]
+      },
+      {
+        "id": "courseEnrollment",
+        "component": "Col",
+        "label": "Enrolled",
+        "type": "number",
+        "data": [
+          118,
+          72,
+          39,
+          24,
+          196,
+          83
+        ]
+      },
+      {
+        "id": "courseCapacity",
+        "component": "Col",
+        "label": "Capacity",
+        "type": "number",
+        "data": [
+          120,
+          80,
+          40,
+          30,
+          200,
+          90
+        ]
+      },
+      {
+        "id": "courseFill",
+        "component": "Col",
+        "label": "Full",
+        "data": [
+          "98%",
+          "90%",
+          "98%",
+          "80%",
+          "98%",
+          "92%"
+        ]
+      },
+      {
+        "id": "facultyLoadTable",
+        "component": "Table",
+        "columns": [
+          "facultyName",
+          "facultyDepartment",
+          "facultySections",
+          "facultyCredits",
+          "facultyLoad"
+        ]
+      },
+      {
+        "id": "facultyName",
+        "component": "Col",
+        "label": "Faculty member",
+        "data": [
+          "Dr. Maya Chen",
+          "Prof. Liam Brooks",
+          "Dr. Sofia Patel",
+          "Prof. Noah Williams",
+          "Dr. Elena Garcia"
+        ]
+      },
+      {
+        "id": "facultyDepartment",
+        "component": "Col",
+        "label": "Department",
+        "data": [
+          "Computer Science",
+          "Business",
+          "Nursing",
+          "English",
+          "Biology"
+        ]
+      },
+      {
+        "id": "facultySections",
+        "component": "Col",
+        "label": "Sections",
+        "type": "number",
+        "data": [
+          4,
+          5,
+          3,
+          4,
+          3
+        ]
+      },
+      {
+        "id": "facultyCredits",
+        "component": "Col",
+        "label": "Credit hours",
+        "type": "number",
+        "data": [
+          12,
+          15,
+          10,
+          12,
+          11
+        ]
+      },
+      {
+        "id": "facultyLoad",
+        "component": "Col",
+        "label": "Load",
+        "data": [
+          "100%",
+          "125% • overload",
+          "83%",
+          "100%",
+          "92%"
+        ]
+      },
+      {
+        "id": "studentSupport",
+        "component": "Heading",
+        "text": "Student success and demand",
+        "level": "h2"
+      },
+      {
+        "id": "riskTable",
+        "component": "Table",
+        "columns": [
+          "riskStudent",
+          "riskProgram",
+          "riskIndicator",
+          "riskAdvisor"
+        ]
+      },
+      {
+        "id": "riskStudent",
+        "component": "Col",
+        "label": "Student",
+        "data": [
+          "Avery Johnson",
+          "Jordan Lee",
+          "Taylor Smith",
+          "Morgan Davis",
+          "Casey Brown"
+        ]
+      },
+      {
+        "id": "riskProgram",
+        "component": "Col",
+        "label": "Program",
+        "data": [
+          "Business",
+          "Computer Science",
+          "Nursing",
+          "Psychology",
+          "Engineering"
+        ]
+      },
+      {
+        "id": "riskIndicator",
+        "component": "Col",
+        "label": "Academic risk",
+        "data": [
+          "GPA 1.82 • high",
+          "Low attendance • high",
+          "2 failed assessments",
+          "GPA decline • medium",
+          "Missing coursework • medium"
+        ]
+      },
+      {
+        "id": "riskAdvisor",
+        "component": "Col",
+        "label": "Advisor status",
+        "data": [
+          "Meeting scheduled",
+          "Outreach needed",
+          "Contacted",
+          "Monitoring",
+          "Outreach needed"
+        ]
+      },
+      {
+        "id": "waitlistChart",
+        "component": "BarChart",
+        "labels": [
+          "Computer Science",
+          "Nursing",
+          "Business",
+          "Engineering",
+          "Psychology",
+          "Education"
+        ],
+        "series": [
+          "waitlistSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Program",
+        "yLabel": "Waitlisted students"
+      },
+      {
+        "id": "waitlistSeries",
+        "component": "Series",
+        "category": "Waitlisted",
+        "values": [
+          184,
+          142,
+          96,
+          88,
+          61,
+          34
+        ]
+      },
+      {
+        "id": "campusLife",
+        "component": "Heading",
+        "text": "Campus life and advancement",
+        "level": "h2"
+      },
+      {
+        "id": "eventsList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "eventOne",
+          "eventTwo",
+          "eventThree",
+          "eventFour"
+        ]
+      },
+      {
+        "id": "eventOne",
+        "component": "ListItem",
+        "title": "New Student Convocation",
+        "subtitle": "August 21 • 10:00 AM • University Auditorium",
+        "actionLabel": "View event"
+      },
+      {
+        "id": "eventTwo",
+        "component": "ListItem",
+        "title": "Fall Research Showcase",
+        "subtitle": "August 24 • 1:00 PM • Innovation Center",
+        "actionLabel": "View event"
+      },
+      {
+        "id": "eventThree",
+        "component": "ListItem",
+        "title": "Community Service Day",
+        "subtitle": "August 27 • 8:30 AM • Campus Quad",
+        "actionLabel": "View event"
+      },
+      {
+        "id": "eventFour",
+        "component": "ListItem",
+        "title": "Alumni Leadership Reception",
+        "subtitle": "August 30 • 6:00 PM • Alumni Hall",
+        "actionLabel": "View event"
+      },
+      {
+        "id": "givingChart",
+        "component": "AreaChart",
+        "labels": [
+          "2023",
+          "2024",
+          "2025",
+          "2026"
+        ],
+        "series": [
+          "givingSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Fiscal year",
+        "yLabel": "Millions USD"
+      },
+      {
+        "id": "givingSeries",
+        "component": "Series",
+        "category": "Alumni giving",
+        "values": [
+          18.4,
+          20.1,
+          23.7,
+          26.2
+        ]
+      },
+      {
+        "id": "actions",
+        "component": "Heading",
+        "text": "Administrative actions",
+        "level": "h2"
+      },
+      {
+        "id": "actionTabs",
+        "component": "Tabs",
+        "items": [
+          "courseApprovalTab",
+          "studentMessageTab"
+        ]
+      },
+      {
+        "id": "courseApprovalTab",
+        "component": "TabItem",
+        "value": "course-approval",
+        "trigger": "Approve new course",
+        "content": [
+          "courseApprovalForm"
+        ]
+      },
+      {
+        "id": "courseApprovalForm",
+        "component": "Form",
+        "name": "new-course-approval",
+        "fields": [
+          "courseTitleControl",
+          "courseDepartmentControl",
+          "courseCreditsControl",
+          "courseRationaleControl"
+        ],
+        "buttons": "courseApprovalButtons"
+      },
+      {
+        "id": "courseTitleControl",
+        "component": "FormControl",
+        "label": "Course title",
+        "input": "courseTitleInput"
+      },
+      {
+        "id": "courseTitleInput",
+        "component": "Input",
+        "name": "course_title",
+        "placeholder": "Applied Artificial Intelligence"
+      },
+      {
+        "id": "courseDepartmentControl",
+        "component": "FormControl",
+        "label": "Sponsoring department",
+        "input": "courseDepartmentSelect"
+      },
+      {
+        "id": "courseDepartmentSelect",
+        "component": "Select",
+        "name": "course_department",
+        "placeholder": "Select department",
+        "items": [
+          "courseDepartmentBusiness",
+          "courseDepartmentEngineering",
+          "courseDepartmentHealth",
+          "courseDepartmentScience"
+        ]
+      },
+      {
+        "id": "courseDepartmentBusiness",
+        "component": "SelectItem",
+        "value": "business",
+        "label": "Business"
+      },
+      {
+        "id": "courseDepartmentEngineering",
+        "component": "SelectItem",
+        "value": "engineering",
+        "label": "Engineering"
+      },
+      {
+        "id": "courseDepartmentHealth",
+        "component": "SelectItem",
+        "value": "health",
+        "label": "Health Sciences"
+      },
+      {
+        "id": "courseDepartmentScience",
+        "component": "SelectItem",
+        "value": "science",
+        "label": "Natural Sciences"
+      },
+      {
+        "id": "courseCreditsControl",
+        "component": "FormControl",
+        "label": "Credit hours",
+        "input": "courseCreditsInput"
+      },
+      {
+        "id": "courseCreditsInput",
+        "component": "Input",
+        "name": "credit_hours",
+        "type": "number",
+        "placeholder": "3"
+      },
+      {
+        "id": "courseRationaleControl",
+        "component": "FormControl",
+        "label": "Approval rationale",
+        "input": "courseRationaleInput"
+      },
+      {
+        "id": "courseRationaleInput",
+        "component": "TextArea",
+        "name": "approval_rationale",
+        "rows": 4,
+        "placeholder": "Summarize curriculum fit, staffing, and resource review"
+      },
+      {
+        "id": "courseApprovalButtons",
+        "component": "Buttons",
+        "buttons": [
+          "approveCourseButton",
+          "returnCourseButton"
+        ]
+      },
+      {
+        "id": "approveCourseButton",
+        "component": "Button",
+        "label": "Approve course",
+        "variant": "primary"
+      },
+      {
+        "id": "returnCourseButton",
+        "component": "Button",
+        "label": "Return for revision",
+        "variant": "secondary"
+      },
+      {
+        "id": "studentMessageTab",
+        "component": "TabItem",
+        "value": "student-message",
+        "trigger": "Message a student group",
+        "content": [
+          "studentMessageForm"
+        ]
+      },
+      {
+        "id": "studentMessageForm",
+        "component": "Form",
+        "name": "student-group-message",
+        "fields": [
+          "studentGroupControl",
+          "messageSubjectControl",
+          "messageBodyControl",
+          "messageChannelsControl"
+        ],
+        "buttons": "messageButtons"
+      },
+      {
+        "id": "studentGroupControl",
+        "component": "FormControl",
+        "label": "Student group",
+        "input": "studentGroupSelect"
+      },
+      {
+        "id": "studentGroupSelect",
+        "component": "Select",
+        "name": "student_group",
+        "placeholder": "Choose recipients",
+        "items": [
+          "groupAll",
+          "groupFirstYear",
+          "groupAtRisk",
+          "groupWaitlisted",
+          "groupResidents"
+        ]
+      },
+      {
+        "id": "groupAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All enrolled students"
+      },
+      {
+        "id": "groupFirstYear",
+        "component": "SelectItem",
+        "value": "first_year",
+        "label": "First-year students"
+      },
+      {
+        "id": "groupAtRisk",
+        "component": "SelectItem",
+        "value": "academic_risk",
+        "label": "Students flagged at academic risk"
+      },
+      {
+        "id": "groupWaitlisted",
+        "component": "SelectItem",
+        "value": "waitlisted",
+        "label": "Waitlisted students"
+      },
+      {
+        "id": "groupResidents",
+        "component": "SelectItem",
+        "value": "housing",
+        "label": "Campus housing residents"
+      },
+      {
+        "id": "messageSubjectControl",
+        "component": "FormControl",
+        "label": "Subject",
+        "input": "messageSubjectInput"
+      },
+      {
+        "id": "messageSubjectInput",
+        "component": "Input",
+        "name": "message_subject",
+        "placeholder": "Important semester update"
+      },
+      {
+        "id": "messageBodyControl",
+        "component": "FormControl",
+        "label": "Message",
+        "input": "messageBodyInput"
+      },
+      {
+        "id": "messageBodyInput",
+        "component": "TextArea",
+        "name": "message_body",
+        "rows": 5,
+        "placeholder": "Write your message to students"
+      },
+      {
+        "id": "messageChannelsControl",
+        "component": "FormControl",
+        "label": "Delivery channels",
+        "input": "messageChannels"
+      },
+      {
+        "id": "messageChannels",
+        "component": "CheckBoxGroup",
+        "name": "delivery_channels",
+        "items": [
+          "channelEmail",
+          "channelPortal",
+          "channelSms"
+        ],
+        "value": [
+          "email",
+          "portal"
+        ]
+      },
+      {
+        "id": "channelEmail",
+        "component": "CheckBoxItem",
+        "name": "email",
+        "label": "Email",
+        "description": "Send to university email addresses",
+        "defaultChecked": true
+      },
+      {
+        "id": "channelPortal",
+        "component": "CheckBoxItem",
+        "name": "portal",
+        "label": "Student portal",
+        "description": "Post as a portal notification",
+        "defaultChecked": true
+      },
+      {
+        "id": "channelSms",
+        "component": "CheckBoxItem",
+        "name": "sms",
+        "label": "SMS",
+        "description": "Send to opted-in mobile numbers",
+        "defaultChecked": false
+      },
+      {
+        "id": "messageButtons",
+        "component": "Buttons",
+        "buttons": [
+          "sendMessageButton",
+          "saveDraftButton"
+        ]
+      },
+      {
+        "id": "sendMessageButton",
+        "component": "Button",
+        "label": "Send message",
+        "variant": "primary"
+      },
+      {
+        "id": "saveDraftButton",
+        "component": "Button",
+        "label": "Save draft",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>

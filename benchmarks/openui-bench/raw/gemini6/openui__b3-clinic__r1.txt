@@ -1,0 +1,71 @@
+root = Card([headerSection, metricsRow, currentCallout, mainContent, checkInDrawer])
+
+headerSection = Card([titleHeader, dateNav], "clear", "row", "m", "center", "between")
+titleHeader = CardHeader("Reception Desk", "Clinic Day View & Patient Management")
+dateNav = Buttons([prevDayBtn, todayBadge, nextDayBtn])
+prevDayBtn = Button("‹ Previous Day", null, "secondary", "normal", "small")
+todayBadge = Button("Today: Oct 24, 2023", null, "tertiary", "normal", "small")
+nextDayBtn = Button("Next Day ›", null, "secondary", "normal", "small")
+
+metricsRow = Card([kpiExpected, kpiNoShow, kpiRooms], "sunk", "row", "m", "stretch", "between")
+
+kpiExpected = Card([expectedHeader, expectedTag], "card", "column", "xs")
+expectedHeader = CardHeader("24 Patients", "Total Expected Today")
+expectedTag = Tag("8 Checked In • 16 Pending", "info", "sm", "info")
+
+kpiNoShow = Card([noShowHeader, noShowProgress], "card", "column", "xs")
+noShowHeader = CardHeader("4.2% No-Show Rate", "Month-to-Date Average")
+noShowProgress = Progress(4, "Target: < 5.0%")
+
+kpiRooms = Card([roomsHeader, roomsTags], "card", "column", "xs")
+roomsHeader = CardHeader("3 Rooms Available", "Currently Free")
+roomsTags = TagBlock(["Room 102 (Dr. Smith)", "Room 105 (Pediatrics)", "Room 108 (Consult)"])
+
+currentCallout = Callout("info", "NEXT PATIENT TO CALL", "Arthur Dent — 10:15 AM with Dr. Aris Thorne (Room 101)")
+
+mainContent = Tabs([apptsTabItem, roomsTabItem])
+
+apptsTabItem = TabItem("appts", "Today's Schedule (24)", [apptsTable])
+apptsTable = Table([colTime, colPatient, colDoctor, colRoom, colStatus])
+colTime = Col("Time", ["08:30 AM", "09:00 AM", "09:30 AM", "10:00 AM", "10:15 AM", "10:45 AM", "11:15 AM", "11:45 AM"])
+colPatient = Col("Patient Name", ["Eleanor Vance", "Marcus Brody", "Sophia Al-Mansoor", "Julian Bashir", "Arthur Dent", "Tricia McMillan", "Laren Ro", "Garak Elim"])
+colDoctor = Col("Provider", ["Dr. Thorne", "Dr. Smith", "Dr. Thorne", "Dr. Evans", "Dr. Thorne", "Dr. Smith", "Dr. Evans", "Dr. Thorne"])
+colRoom = Col("Room", ["Room 101", "Room 102", "Room 101", "Room 104", "Room 101", "Room 103", "Room 104", "Room 101"])
+colStatus = Col("Status", ["Completed", "Completed", "In Progress", "Checked In", "Waiting", "Scheduled", "Scheduled", "Scheduled"])
+
+roomsTabItem = TabItem("rooms", "Room Status Overview", [roomsTable])
+roomsTable = Table([colRoomNum, colRoomDept, colRoomOccupant, colRoomState])
+colRoomNum = Col("Room #", ["Room 101", "Room 102", "Room 103", "Room 104", "Room 105", "Room 108"])
+colRoomDept = Col("Department", ["General Med", "General Med", "Specialty", "Pediatrics", "Pediatrics", "Consultation"])
+colRoomOccupant = Col("Current Occupant", ["Sophia Al-Mansoor", "Vacant", "In Cleaning", "Julian Bashir", "Vacant", "Vacant"])
+colRoomState = Col("Availability", ["Occupied", "AVAILABLE", "Maintenance", "Occupied", "AVAILABLE", "AVAILABLE"])
+
+checkInDrawer = DrawerBlock("Check In Patient", "Quick Patient Check-In", "Register arriving patients and assign them to a waiting area or room.", [checkInForm])
+
+checkInForm = Form("checkin-form", formActions, [patientSelectField, arrivalTimeField, roomAssignField, notesField])
+
+patientSelectField = FormControl("Select Patient", patientSelect)
+patientSelect = Select("patient_id", [p1, p2, p3, p4], "Choose patient arriving now...")
+p1 = SelectItem("p1", "Arthur Dent (10:15 AM - Dr. Thorne)")
+p2 = SelectItem("p2", "Tricia McMillan (10:45 AM - Dr. Smith)")
+p3 = SelectItem("p3", "Laren Ro (11:15 AM - Dr. Evans)")
+p4 = SelectItem("p4", "Garak Elim (11:45 AM - Dr. Thorne)")
+
+arrivalTimeField = FormControl("Arrival Time Status", arrivalRadio)
+arrivalRadio = RadioGroup("arrival_status", [arrOnTime, arrLate], "ontime")
+arrOnTime = RadioItem("On Time", "Patient arrived within schedule window", "ontime")
+arrLate = RadioItem("Late Arrival", "Flag for provider attention", "late")
+
+roomAssignField = FormControl("Assign Destination", roomSelect)
+roomSelect = Select("room_id", [rWait, r102, r105, r108], "Assign room or waiting area...")
+rWait = SelectItem("waiting", "Main Waiting Area")
+r102 = SelectItem("r102", "Room 102 (Free)")
+r105 = SelectItem("r105", "Room 105 (Free)")
+r108 = SelectItem("r108", "Room 108 (Free)")
+
+notesField = FormControl("Reception Notes", notesInput, "Optional alerts like insurance updates or mobility assistance")
+notesInput = Input("notes", "e.g., Copay paid, needs wheelchair assistance")
+
+formActions = Buttons([submitCheckIn, cancelCheckIn])
+submitCheckIn = Button("Confirm Check-In", null, "primary")
+cancelCheckIn = Button("Cancel", null, "tertiary")

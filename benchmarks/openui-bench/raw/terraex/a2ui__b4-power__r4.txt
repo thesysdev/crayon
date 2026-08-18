@@ -1,0 +1,669 @@
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#0F766E",
+      "agentDisplayName": "Grid Operations Console"
+    }
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "variant": "clear",
+        "gap": "l",
+        "children": [
+          "header",
+          "liveAlert",
+          "controls",
+          "overview",
+          "generationSection",
+          "operationsSection",
+          "forecastSection",
+          "emissionsSection"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Power Network Operations",
+        "subtitle": "Live system view • Updated just now"
+      },
+      {
+        "id": "liveAlert",
+        "component": "Alert",
+        "title": "Live alert: North corridor reserve margin is tightening",
+        "description": "Available reserve is 9.4%. Monitor demand response readiness and interconnector flows.",
+        "variant": "warning"
+      },
+      {
+        "id": "controls",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "regionControl",
+          "curtailmentAction"
+        ]
+      },
+      {
+        "id": "regionControl",
+        "component": "FormControl",
+        "label": "Focus region",
+        "input": "regionSelect",
+        "weight": 2
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region",
+        "placeholder": "All regions",
+        "items": [
+          "regionAll",
+          "regionNorth",
+          "regionCentral",
+          "regionSouth",
+          "regionCoastal"
+        ]
+      },
+      {
+        "id": "regionAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All regions"
+      },
+      {
+        "id": "regionNorth",
+        "component": "SelectItem",
+        "value": "north",
+        "label": "North"
+      },
+      {
+        "id": "regionCentral",
+        "component": "SelectItem",
+        "value": "central",
+        "label": "Central"
+      },
+      {
+        "id": "regionSouth",
+        "component": "SelectItem",
+        "value": "south",
+        "label": "South"
+      },
+      {
+        "id": "regionCoastal",
+        "component": "SelectItem",
+        "value": "coastal",
+        "label": "Coastal"
+      },
+      {
+        "id": "curtailmentAction",
+        "component": "AlertDialogBlock",
+        "triggerLabel": "Order curtailment",
+        "title": "Issue curtailment order?",
+        "description": "This action will initiate a controlled demand reduction order for the selected region.",
+        "confirmLabel": "Issue order",
+        "cancelLabel": "Cancel",
+        "triggerVariant": "destructive",
+        "weight": 1
+      },
+      {
+        "id": "overview",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "loadMetric",
+          "capacityMetric",
+          "priceMetric"
+        ]
+      },
+      {
+        "id": "loadMetric",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "loadTitle",
+          "loadValue"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "loadTitle",
+        "component": "TextContent",
+        "text": "Current network load",
+        "size": "small"
+      },
+      {
+        "id": "loadValue",
+        "component": "TextContent",
+        "text": "**28.4 GW**\n+1.8% vs. previous hour",
+        "size": "large"
+      },
+      {
+        "id": "capacityMetric",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "capacityTitle",
+          "capacityValue",
+          "capacityProgress"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "capacityTitle",
+        "component": "TextContent",
+        "text": "Network capacity",
+        "size": "small"
+      },
+      {
+        "id": "capacityValue",
+        "component": "TextContent",
+        "text": "**82% utilized** • 34.6 GW available",
+        "size": "large"
+      },
+      {
+        "id": "capacityProgress",
+        "component": "Progress",
+        "value": 82,
+        "label": "Capacity utilization"
+      },
+      {
+        "id": "priceMetric",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "priceTitle",
+          "priceValue"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "priceTitle",
+        "component": "TextContent",
+        "text": "Current wholesale price",
+        "size": "small"
+      },
+      {
+        "id": "priceValue",
+        "component": "TextContent",
+        "text": "**$86.40/MWh**\nDay-ahead reference price",
+        "size": "large"
+      },
+      {
+        "id": "generationSection",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "generationHeader",
+          "generationSplit",
+          "generationNote"
+        ]
+      },
+      {
+        "id": "generationHeader",
+        "component": "Heading",
+        "text": "Generation split by source",
+        "level": "h3"
+      },
+      {
+        "id": "generationSplit",
+        "component": "PieChart",
+        "labels": [
+          "Gas",
+          "Wind",
+          "Solar",
+          "Hydro",
+          "Nuclear",
+          "Battery"
+        ],
+        "values": [
+          31,
+          24,
+          14,
+          11,
+          16,
+          4
+        ],
+        "variant": "donut",
+        "appearance": "circular"
+      },
+      {
+        "id": "generationNote",
+        "component": "TextContent",
+        "text": "Gas 8.8 GW • Wind 6.8 GW • Solar 4.0 GW • Hydro 3.1 GW • Nuclear 4.5 GW • Battery 1.1 GW",
+        "size": "small"
+      },
+      {
+        "id": "operationsSection",
+        "component": "Tabs",
+        "items": [
+          "plantsTab",
+          "outagesTab",
+          "maintenanceTab",
+          "alertsTab"
+        ]
+      },
+      {
+        "id": "plantsTab",
+        "component": "TabItem",
+        "value": "plants",
+        "trigger": "Plant fleet",
+        "content": [
+          "plantsHeader",
+          "plantsTable"
+        ]
+      },
+      {
+        "id": "plantsHeader",
+        "component": "TextContent",
+        "text": "Plant output and operating status",
+        "size": "small-heavy"
+      },
+      {
+        "id": "plantsTable",
+        "component": "Table",
+        "columns": [
+          "plantNameCol",
+          "plantRegionCol",
+          "plantSourceCol",
+          "plantOutputCol",
+          "plantStatusCol"
+        ]
+      },
+      {
+        "id": "plantNameCol",
+        "component": "Col",
+        "label": "Plant",
+        "data": [
+          "Riverside CCGT",
+          "North Ridge Wind",
+          "Sunvale Solar",
+          "Lakeview Hydro",
+          "Harbor Nuclear",
+          "Central Battery Hub"
+        ]
+      },
+      {
+        "id": "plantRegionCol",
+        "component": "Col",
+        "label": "Region",
+        "data": [
+          "Central",
+          "North",
+          "South",
+          "North",
+          "Coastal",
+          "Central"
+        ]
+      },
+      {
+        "id": "plantSourceCol",
+        "component": "Col",
+        "label": "Source",
+        "data": [
+          "Gas",
+          "Wind",
+          "Solar",
+          "Hydro",
+          "Nuclear",
+          "Battery"
+        ]
+      },
+      {
+        "id": "plantOutputCol",
+        "component": "Col",
+        "label": "Output",
+        "data": [
+          "1,240 MW",
+          "860 MW",
+          "510 MW",
+          "740 MW",
+          "1,120 MW",
+          "180 MW"
+        ]
+      },
+      {
+        "id": "plantStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Online",
+          "Online",
+          "Online",
+          "Derated",
+          "Online",
+          "Discharging"
+        ]
+      },
+      {
+        "id": "outagesTab",
+        "component": "TabItem",
+        "value": "outages",
+        "trigger": "Outages",
+        "content": [
+          "outagesHeader",
+          "outagesTable"
+        ]
+      },
+      {
+        "id": "outagesHeader",
+        "component": "TextContent",
+        "text": "Active outages and affected regions",
+        "size": "small-heavy"
+      },
+      {
+        "id": "outagesTable",
+        "component": "Table",
+        "columns": [
+          "outageAssetCol",
+          "outageRegionCol",
+          "outageImpactCol",
+          "outageStatusCol"
+        ]
+      },
+      {
+        "id": "outageAssetCol",
+        "component": "Col",
+        "label": "Asset",
+        "data": [
+          "East Valley 230 kV line",
+          "North Ridge turbine cluster 4",
+          "Southport substation transformer"
+        ]
+      },
+      {
+        "id": "outageRegionCol",
+        "component": "Col",
+        "label": "Affected region",
+        "data": [
+          "Central",
+          "North",
+          "South"
+        ]
+      },
+      {
+        "id": "outageImpactCol",
+        "component": "Col",
+        "label": "Impact",
+        "data": [
+          "320 MW transfer constraint",
+          "95 MW unavailable",
+          "18,000 customers on alternate feed"
+        ]
+      },
+      {
+        "id": "outageStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Crew dispatched",
+          "Repair in progress",
+          "Investigation"
+        ]
+      },
+      {
+        "id": "maintenanceTab",
+        "component": "TabItem",
+        "value": "maintenance",
+        "trigger": "Maintenance",
+        "content": [
+          "maintenanceHeader",
+          "maintenanceList"
+        ]
+      },
+      {
+        "id": "maintenanceHeader",
+        "component": "TextContent",
+        "text": "Planned maintenance this month",
+        "size": "small-heavy"
+      },
+      {
+        "id": "maintenanceList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "maintenance1",
+          "maintenance2",
+          "maintenance3",
+          "maintenance4"
+        ]
+      },
+      {
+        "id": "maintenance1",
+        "component": "ListItem",
+        "title": "Aug 20–22 • West Interconnector inspection",
+        "subtitle": "Western region • 450 MW transfer capacity temporarily reduced"
+      },
+      {
+        "id": "maintenance2",
+        "component": "ListItem",
+        "title": "Aug 24 • Lakeview Hydro unit 2 service",
+        "subtitle": "North region • 180 MW scheduled outage"
+      },
+      {
+        "id": "maintenance3",
+        "component": "ListItem",
+        "title": "Aug 27–29 • Riverside CCGT turbine wash",
+        "subtitle": "Central region • 310 MW planned derate"
+      },
+      {
+        "id": "maintenance4",
+        "component": "ListItem",
+        "title": "Aug 31 • Southport substation relay testing",
+        "subtitle": "South region • No customer interruption expected"
+      },
+      {
+        "id": "alertsTab",
+        "component": "TabItem",
+        "value": "alerts",
+        "trigger": "Live alerts",
+        "content": [
+          "alertsHeader",
+          "alertsList"
+        ]
+      },
+      {
+        "id": "alertsHeader",
+        "component": "TextContent",
+        "text": "Incoming operational alerts",
+        "size": "small-heavy"
+      },
+      {
+        "id": "alertsList",
+        "component": "SectionBlock",
+        "isFoldable": true,
+        "sections": [
+          "alertItem1",
+          "alertItem2",
+          "alertItem3"
+        ]
+      },
+      {
+        "id": "alertItem1",
+        "component": "SectionItem",
+        "value": "reserve",
+        "trigger": "Warning • 14:32 • North reserve margin below target",
+        "content": [
+          "alertDetail1"
+        ]
+      },
+      {
+        "id": "alertDetail1",
+        "component": "TextContent",
+        "text": "Reserve margin is 9.4%, below the 10% operating target. Demand response resources are on standby."
+      },
+      {
+        "id": "alertItem2",
+        "component": "SectionItem",
+        "value": "line",
+        "trigger": "Info • 14:18 • East Valley line outage acknowledged",
+        "content": [
+          "alertDetail2"
+        ]
+      },
+      {
+        "id": "alertDetail2",
+        "component": "TextContent",
+        "text": "Field crew is en route. Current transfer constraint is 320 MW."
+      },
+      {
+        "id": "alertItem3",
+        "component": "SectionItem",
+        "value": "wind",
+        "trigger": "Info • 14:05 • North Ridge wind output recovering",
+        "content": [
+          "alertDetail3"
+        ]
+      },
+      {
+        "id": "alertDetail3",
+        "component": "TextContent",
+        "text": "Wind generation increased 140 MW over the past 20 minutes."
+      },
+      {
+        "id": "forecastSection",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "forecastHeader",
+          "demandForecast"
+        ]
+      },
+      {
+        "id": "forecastHeader",
+        "component": "Heading",
+        "text": "24-hour demand forecast",
+        "level": "h3"
+      },
+      {
+        "id": "demandForecast",
+        "component": "AreaChart",
+        "labels": [
+          "15:00",
+          "18:00",
+          "21:00",
+          "00:00",
+          "03:00",
+          "06:00",
+          "09:00",
+          "12:00"
+        ],
+        "series": [
+          "forecastSeries",
+          "availableCapacitySeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Time",
+        "yLabel": "GW"
+      },
+      {
+        "id": "forecastSeries",
+        "component": "Series",
+        "category": "Forecast demand",
+        "values": [
+          28.4,
+          31.2,
+          29.8,
+          25.1,
+          22.8,
+          23.6,
+          27.9,
+          30.4
+        ]
+      },
+      {
+        "id": "availableCapacitySeries",
+        "component": "Series",
+        "category": "Available capacity",
+        "values": [
+          34.6,
+          34.1,
+          34.0,
+          33.8,
+          33.6,
+          33.9,
+          34.2,
+          34.5
+        ]
+      },
+      {
+        "id": "emissionsSection",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "emissionsSummary",
+          "emissionsChart"
+        ]
+      },
+      {
+        "id": "emissionsSummary",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "emissionsTitle",
+          "emissionsValue",
+          "emissionsNote"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "emissionsTitle",
+        "component": "TextContent",
+        "text": "Emissions today",
+        "size": "small"
+      },
+      {
+        "id": "emissionsValue",
+        "component": "TextContent",
+        "text": "**8,420 tCO₂e**",
+        "size": "large"
+      },
+      {
+        "id": "emissionsNote",
+        "component": "TextContent",
+        "text": "Grid intensity: 296 gCO₂e/kWh • 7% lower than yesterday",
+        "size": "small"
+      },
+      {
+        "id": "emissionsChart",
+        "component": "BarChart",
+        "labels": [
+          "Gas",
+          "Coal",
+          "Other thermal"
+        ],
+        "series": [
+          "emissionsSeries"
+        ],
+        "variant": "stacked",
+        "xLabel": "Generation source",
+        "yLabel": "tCO₂e"
+      },
+      {
+        "id": "emissionsSeries",
+        "component": "Series",
+        "category": "Emissions",
+        "values": [
+          6120,
+          1740,
+          560
+        ]
+      }
+    ]
+  }
+}
+</a2ui-json>

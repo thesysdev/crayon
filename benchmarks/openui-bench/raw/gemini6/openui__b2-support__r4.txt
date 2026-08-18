@@ -1,0 +1,56 @@
+root = Card([header, kpiRow, mainSection, followUps], "card", "column", "m")
+
+header = CardHeader("Support Operations Dashboard", "Morning Overview & Ticket Management")
+
+kpiRow = Card([openTicketsCallout, responseTimeCallout], "clear", "row", "m")
+openTicketsCallout = TextCallout("warning", "Open Tickets", "24 Pending Resolution (4 SLA At-Risk)")
+responseTimeCallout = TextCallout("success", "Avg Response Time", "14 mins (Target: < 30 mins)")
+
+mainSection = Tabs([allTicketsTab, highPriorityTab])
+
+allTicketsTab = TabItem("all", "All Recent Tickets", [allTicketsCard])
+allTicketsCard = Card([recentTicketsTable, ticketActions], "sunk", "column", "m")
+
+recentTicketsTable = Table([ticketIdCol, subjectCol, customerCol, priorityCol, statusCol])
+ticketIdCol = Col("Ticket ID", ["#T-1089", "#T-1088", "#T-1087", "#T-1086", "#T-1085"])
+subjectCol = Col("Subject", ["SSO Login failing for enterprise domain", "Billing cycle mismatch on invoice", "API Rate limiting false positives", "Export to CSV timeout on large datasets", "Update user permission settings"])
+customerCol = Col("Customer", ["Acme Corp", "TechStart Inc", "DataPulse", "GlobalLogistics", "Apex Ltd"])
+priorityCol = Col("Priority", ["High", "Medium", "High", "Low", "Medium"])
+statusCol = Col("Status", ["Open", "In Progress", "Open", "Open", "Closed"])
+
+ticketActions = Buttons([newTicketDialog, exportBtn])
+exportBtn = Button("Export Summary", null, "secondary")
+
+newTicketDialog = DialogBlock("Create New Ticket", "Create Support Ticket", "Enter details to log a new customer support ticket.", [newTicketForm], "default")
+
+newTicketForm = Form("create_ticket_form", formButtons, [subjectField, customerField, priorityField, descriptionField])
+subjectField = FormControl("Subject", subjectInput)
+subjectInput = Input("subject", "Brief description of the issue")
+customerField = FormControl("Customer Name", customerInput)
+customerInput = Input("customer", "Company or user name")
+priorityField = FormControl("Priority Level", prioritySelect)
+prioritySelect = Select("priority", [priLow, priMed, priHigh], "Select priority")
+priLow = SelectItem("low", "Low")
+priMed = SelectItem("medium", "Medium")
+priHigh = SelectItem("high", "High")
+descriptionField = FormControl("Detailed Description", descriptionText)
+descriptionText = TextArea("description", "Provide full context and reproduction steps...", 3)
+formButtons = Buttons([submitTicketBtn, cancelTicketBtn])
+submitTicketBtn = Button("Submit Ticket", null, "primary")
+cancelTicketBtn = Button("Cancel", null, "tertiary")
+
+highPriorityTab = TabItem("high_priority", "High Priority Only", [highPriorityCard])
+highPriorityCard = Card([highPriorityTable, highPriorityNotice], "sunk", "column", "m")
+highPriorityNotice = Alert("High Priority Focus", "2 urgent tickets require immediate assignment or escalation.", "warning")
+
+highPriorityTable = Table([hpIdCol, hpSubjectCol, hpCustomerCol, hpPriorityCol, hpStatusCol])
+hpIdCol = Col("Ticket ID", ["#T-1089", "#T-1087"])
+hpSubjectCol = Col("Subject", ["SSO Login failing for enterprise domain", "API Rate limiting false positives"])
+hpCustomerCol = Col("Customer", ["Acme Corp", "DataPulse"])
+hpPriorityCol = Col("Priority", ["High", "High"])
+hpStatusCol = Col("Status", ["Open", "Open"])
+
+followUps = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Assign unassigned high priority tickets")
+fu2 = FollowUpItem("View SLA breach forecast for today")
+fu3 = FollowUpItem("Generate weekly response time report")

@@ -1,0 +1,285 @@
+Here is the UI interface for your remote team's daily async standup. It highlights team status updates, calls out blockers, shows team completion progress, and includes a quick form to post your own daily update.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "blockerAlert",
+          "standupTabs"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Daily Async Standup",
+        "subtitle": "Today's Date: Thursday, October 24, 2024"
+      },
+      {
+        "id": "blockerAlert",
+        "component": "Alert",
+        "title": "Blockers Reported (1)",
+        "description": "Alex Rivera is blocked on database permissions for the analytics API migration.",
+        "variant": "destructive"
+      },
+      {
+        "id": "standupTabs",
+        "component": "Tabs",
+        "items": [
+          "updatesTab",
+          "postTab"
+        ]
+      },
+      {
+        "id": "updatesTab",
+        "component": "TabItem",
+        "value": "team_updates",
+        "trigger": "Team Updates",
+        "content": [
+          "missingUpdatesNotice",
+          "updatesList"
+        ]
+      },
+      {
+        "id": "missingUpdatesNotice",
+        "component": "Callout",
+        "variant": "info",
+        "title": "4 of 6 Updates Submitted",
+        "description": "2 team updates are still missing for today (Marcus Vance, Sarah Chen)."
+      },
+      {
+        "id": "updatesList",
+        "component": "Accordion",
+        "items": [
+          "update1",
+          "update2",
+          "update3",
+          "update4"
+        ]
+      },
+      {
+        "id": "update1",
+        "component": "AccordionItem",
+        "value": "alex",
+        "trigger": "Alex Rivera (Frontend Lead) — 🔴 BLOCKED",
+        "content": [
+          "alexTags",
+          "alexContent"
+        ]
+      },
+      {
+        "id": "alexTags",
+        "component": "TagBlock",
+        "tags": [
+          "Status: Blocked",
+          "Time: 9:15 AM",
+          "Project: Analytics Dashboard"
+        ]
+      },
+      {
+        "id": "alexContent",
+        "component": "TextContent",
+        "text": "**Yesterday:** Finished chart widget components for UI library.\n\n**Today:** Integrating real-time web socket data feed.\n\n**Blockers:** Waiting on DevOps for prod read-replica database credentials."
+      },
+      {
+        "id": "update2",
+        "component": "AccordionItem",
+        "value": "taylor",
+        "trigger": "Taylor Swift (Backend Dev) — 🟢 On Track",
+        "content": [
+          "taylorTags",
+          "taylorContent"
+        ]
+      },
+      {
+        "id": "taylorTags",
+        "component": "TagBlock",
+        "tags": [
+          "Status: Complete",
+          "Time: 8:45 AM",
+          "Project: Auth Service"
+        ]
+      },
+      {
+        "id": "taylorContent",
+        "component": "TextContent",
+        "text": "**Yesterday:** Deployed OAuth2 refresh token fix to staging.\n\n**Today:** Code reviews and writing integration tests for user registration flow.\n\n**Blockers:** None."
+      },
+      {
+        "id": "update3",
+        "component": "AccordionItem",
+        "value": "jordan",
+        "trigger": "Jordan Lee (Product Designer) — 🟢 On Track",
+        "content": [
+          "jordanTags",
+          "jordanContent"
+        ]
+      },
+      {
+        "id": "jordanTags",
+        "component": "TagBlock",
+        "tags": [
+          "Status: Complete",
+          "Time: 9:30 AM",
+          "Project: Mobile Redesign"
+        ]
+      },
+      {
+        "id": "jordanContent",
+        "component": "TextContent",
+        "text": "**Yesterday:** Finalized Figma prototypes for mobile onboarding flow.\n\n**Today:** Design hand-off meeting with mobile devs & usability testing feedback review.\n\n**Blockers:** None."
+      },
+      {
+        "id": "update4",
+        "component": "AccordionItem",
+        "value": "devon",
+        "trigger": "Devon Kim (DevOps Lead) — 🟢 On Track",
+        "content": [
+          "devonTags",
+          "devonContent"
+        ]
+      },
+      {
+        "id": "devonTags",
+        "component": "TagBlock",
+        "tags": [
+          "Status: Complete",
+          "Time: 9:02 AM",
+          "Project: Infra Upgrade"
+        ]
+      },
+      {
+        "id": "devonContent",
+        "component": "TextContent",
+        "text": "**Yesterday:** Upgraded Kubernetes nodes to v1.28.\n\n**Today:** Addressing access ticket for Alex Rivera & monitoring cluster performance.\n\n**Blockers:** None."
+      },
+      {
+        "id": "postTab",
+        "component": "TabItem",
+        "value": "post_update",
+        "trigger": "Post Your Update",
+        "content": [
+          "standupForm"
+        ]
+      },
+      {
+        "id": "standupForm",
+        "component": "Form",
+        "name": "daily-standup-submit",
+        "buttons": "formActions",
+        "fields": [
+          "yesterdayField",
+          "todayField",
+          "blockerRadioField",
+          "blockerDetailsField"
+        ]
+      },
+      {
+        "id": "yesterdayField",
+        "component": "FormControl",
+        "label": "What did you accomplish yesterday?",
+        "input": "yesterdayInput"
+      },
+      {
+        "id": "yesterdayInput",
+        "component": "TextArea",
+        "name": "yesterday",
+        "placeholder": "List completed tasks or PRs merged...",
+        "rows": 3
+      },
+      {
+        "id": "todayField",
+        "component": "FormControl",
+        "label": "What are you working on today?",
+        "input": "todayInput"
+      },
+      {
+        "id": "todayInput",
+        "component": "TextArea",
+        "name": "today",
+        "placeholder": "Main priorities for today...",
+        "rows": 3
+      },
+      {
+        "id": "blockerRadioField",
+        "component": "FormControl",
+        "label": "Are you currently blocked?",
+        "input": "blockerRadioGroup"
+      },
+      {
+        "id": "blockerRadioGroup",
+        "component": "RadioGroup",
+        "name": "has_blocker",
+        "defaultValue": "no",
+        "items": [
+          "blockerNo",
+          "blockerYes"
+        ]
+      },
+      {
+        "id": "blockerNo",
+        "component": "RadioItem",
+        "label": "No blockers",
+        "description": "Everything is moving smoothly",
+        "value": "no"
+      },
+      {
+        "id": "blockerYes",
+        "component": "RadioItem",
+        "label": "Yes, I am blocked",
+        "description": "I need assistance from someone on or outside the team",
+        "value": "yes"
+      },
+      {
+        "id": "blockerDetailsField",
+        "component": "FormControl",
+        "label": "Blocker Details (Optional)",
+        "hint": "Specify who or what is needed to resolve it",
+        "input": "blockerDetailsInput"
+      },
+      {
+        "id": "blockerDetailsInput",
+        "component": "Input",
+        "name": "blocker_details",
+        "placeholder": "e.g., Waiting on API specs from Product..."
+      },
+      {
+        "id": "formActions",
+        "component": "Buttons",
+        "buttons": [
+          "submitUpdateBtn",
+          "cancelUpdateBtn"
+        ]
+      },
+      {
+        "id": "submitUpdateBtn",
+        "component": "Button",
+        "label": "Publish Standup Update",
+        "variant": "primary"
+      },
+      {
+        "id": "cancelUpdateBtn",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>

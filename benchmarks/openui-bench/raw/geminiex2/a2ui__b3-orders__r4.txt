@@ -1,0 +1,496 @@
+Here is an interactive operations dashboard designed for your e-commerce operations team. It includes all the required metrics, real-time filters, recent order management table, and order volume trends.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "kpiTabs",
+          "chartsSection",
+          "ordersSection"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "E-Commerce Operations Desk",
+        "subtitle": "Real-time daily metrics, order fulfillment, and operational analytics"
+      },
+      {
+        "id": "kpiTabs",
+        "component": "Tabs",
+        "items": [
+          "todayTab",
+          "monthlyTab"
+        ]
+      },
+      {
+        "id": "todayTab",
+        "component": "TabItem",
+        "value": "today",
+        "trigger": "Daily Snapshot",
+        "content": [
+          "todayKpiTable"
+        ]
+      },
+      {
+        "id": "todayKpiTable",
+        "component": "Table",
+        "columns": [
+          "kpiMetricCol",
+          "kpiValueCol",
+          "kpiChangeCol"
+        ]
+      },
+      {
+        "id": "kpiMetricCol",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Orders Placed Today",
+          "Revenue Today",
+          "Average Order Value (AOV)"
+        ]
+      },
+      {
+        "id": "kpiValueCol",
+        "component": "Col",
+        "label": "Today's Value",
+        "data": [
+          "342",
+          "$28,450.00",
+          "$83.18"
+        ]
+      },
+      {
+        "id": "kpiChangeCol",
+        "component": "Col",
+        "label": "vs. Yesterday",
+        "data": [
+          "+12.4%",
+          "+8.2%",
+          "-3.1%"
+        ]
+      },
+      {
+        "id": "monthlyTab",
+        "component": "TabItem",
+        "value": "monthly",
+        "trigger": "Monthly Health",
+        "content": [
+          "monthlyKpiTable",
+          "refundAlert"
+        ]
+      },
+      {
+        "id": "monthlyKpiTable",
+        "component": "Table",
+        "columns": [
+          "mMetricCol",
+          "mValueCol",
+          "mTargetCol"
+        ]
+      },
+      {
+        "id": "mMetricCol",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Refund Rate (This Month)",
+          "Total Month-to-Date Revenue",
+          "Fulfillment SLA Adherence"
+        ]
+      },
+      {
+        "id": "mValueCol",
+        "component": "Col",
+        "label": "Current Status",
+        "data": [
+          "2.14%",
+          "$642,100.00",
+          "98.6%"
+        ]
+      },
+      {
+        "id": "mTargetCol",
+        "component": "Col",
+        "label": "Benchmark / Target",
+        "data": [
+          "< 3.00%",
+          "$750,000.00",
+          "> 95.0%"
+        ]
+      },
+      {
+        "id": "refundAlert",
+        "component": "Alert",
+        "title": "Refund Rate on Target",
+        "description": "The current monthly refund rate of 2.14% is well within the acceptable threshold (< 3.00%).",
+        "variant": "success"
+      },
+      {
+        "id": "chartsSection",
+        "component": "Card",
+        "children": [
+          "chartHeader",
+          "volumeChart"
+        ],
+        "variant": "sunk"
+      },
+      {
+        "id": "chartHeader",
+        "component": "CardHeader",
+        "title": "Order Volume Trend",
+        "subtitle": "Weekly order volume comparison across the past four weeks"
+      },
+      {
+        "id": "volumeChart",
+        "component": "BarChart",
+        "labels": [
+          "Week 1",
+          "Week 2",
+          "Week 3",
+          "Week 4 (Current)"
+        ],
+        "series": [
+          "deliveredSeries",
+          "pendingSeries"
+        ],
+        "variant": "stacked",
+        "xLabel": "Week",
+        "yLabel": "Number of Orders"
+      },
+      {
+        "id": "deliveredSeries",
+        "component": "Series",
+        "category": "Fulfilled / Delivered",
+        "values": [
+          1840,
+          2100,
+          1950,
+          2240
+        ]
+      },
+      {
+        "id": "pendingSeries",
+        "component": "Series",
+        "category": "Pending / Processing",
+        "values": [
+          120,
+          95,
+          110,
+          154
+        ]
+      },
+      {
+        "id": "ordersSection",
+        "component": "Card",
+        "children": [
+          "ordersHeader",
+          "filterForm",
+          "ordersTable",
+          "fulfillmentDrawer"
+        ]
+      },
+      {
+        "id": "ordersHeader",
+        "component": "CardHeader",
+        "title": "Recent Orders",
+        "subtitle": "Search, filter, and mark orders as fulfilled"
+      },
+      {
+        "id": "filterForm",
+        "component": "Form",
+        "name": "orderFilters",
+        "buttons": "filterButtons",
+        "fields": [
+          "searchControl",
+          "statusControl"
+        ]
+      },
+      {
+        "id": "searchControl",
+        "component": "FormControl",
+        "label": "Search by Customer Name",
+        "input": "searchInput",
+        "hint": "Type full or partial customer name"
+      },
+      {
+        "id": "searchInput",
+        "component": "Input",
+        "name": "customerSearch",
+        "placeholder": "e.g., Sarah Jenkins",
+        "type": "text"
+      },
+      {
+        "id": "statusControl",
+        "component": "FormControl",
+        "label": "Filter by Status",
+        "input": "statusSelect"
+      },
+      {
+        "id": "statusSelect",
+        "component": "Select",
+        "name": "statusFilter",
+        "placeholder": "All Statuses",
+        "items": [
+          "optAll",
+          "optPending",
+          "optProcessing",
+          "optFulfilled",
+          "optCancelled"
+        ]
+      },
+      {
+        "id": "optAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All Statuses"
+      },
+      {
+        "id": "optPending",
+        "component": "SelectItem",
+        "value": "pending",
+        "label": "Pending"
+      },
+      {
+        "id": "optProcessing",
+        "component": "SelectItem",
+        "value": "processing",
+        "label": "Processing"
+      },
+      {
+        "id": "optFulfilled",
+        "component": "SelectItem",
+        "value": "fulfilled",
+        "label": "Fulfilled"
+      },
+      {
+        "id": "optCancelled",
+        "component": "SelectItem",
+        "value": "cancelled",
+        "label": "Cancelled"
+      },
+      {
+        "id": "filterButtons",
+        "component": "Buttons",
+        "buttons": [
+          "applyFilterBtn",
+          "resetFilterBtn"
+        ]
+      },
+      {
+        "id": "applyFilterBtn",
+        "component": "Button",
+        "label": "Apply Filters",
+        "variant": "primary"
+      },
+      {
+        "id": "resetFilterBtn",
+        "component": "Button",
+        "label": "Reset",
+        "variant": "tertiary"
+      },
+      {
+        "id": "ordersTable",
+        "component": "Table",
+        "columns": [
+          "colOrderId",
+          "colCustomer",
+          "colTotal",
+          "colStatus"
+        ]
+      },
+      {
+        "id": "colOrderId",
+        "component": "Col",
+        "label": "Order ID",
+        "data": [
+          "#ORD-9482",
+          "#ORD-9481",
+          "#ORD-9480",
+          "#ORD-9479",
+          "#ORD-9478"
+        ]
+      },
+      {
+        "id": "colCustomer",
+        "component": "Col",
+        "label": "Customer",
+        "data": [
+          "Sarah Jenkins",
+          "Michael Chen",
+          "Emma Thompson",
+          "David Rodriguez",
+          "Aaliyah Patel"
+        ]
+      },
+      {
+        "id": "colTotal",
+        "component": "Col",
+        "label": "Total",
+        "data": [
+          "$142.50",
+          "$89.00",
+          "$310.20",
+          "$45.00",
+          "$118.75"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Processing",
+          "Pending",
+          "Fulfilled",
+          "Processing",
+          "Fulfilled"
+        ]
+      },
+      {
+        "id": "fulfillmentDrawer",
+        "component": "DrawerBlock",
+        "triggerLabel": "Action: Fulfill Orders",
+        "title": "Mark Order as Fulfilled",
+        "description": "Select an unfulfilled order and enter tracking information to complete fulfillment.",
+        "content": [
+          "fulfillmentForm"
+        ]
+      },
+      {
+        "id": "fulfillmentForm",
+        "component": "Form",
+        "name": "fulfillOrderForm",
+        "buttons": "fulfillButtons",
+        "fields": [
+          "selectOrderControl",
+          "carrierControl",
+          "trackingControl"
+        ]
+      },
+      {
+        "id": "selectOrderControl",
+        "component": "FormControl",
+        "label": "Select Unfulfilled Order",
+        "input": "unfulfilledSelect"
+      },
+      {
+        "id": "unfulfilledSelect",
+        "component": "Select",
+        "name": "selectedOrderId",
+        "placeholder": "Choose an order to fulfill",
+        "items": [
+          "ord1",
+          "ord2",
+          "ord4"
+        ]
+      },
+      {
+        "id": "ord1",
+        "component": "SelectItem",
+        "value": "ORD-9482",
+        "label": "#ORD-9482 - Sarah Jenkins ($142.50)"
+      },
+      {
+        "id": "ord2",
+        "component": "SelectItem",
+        "value": "ORD-9481",
+        "label": "#ORD-9481 - Michael Chen ($89.00)"
+      },
+      {
+        "id": "ord4",
+        "component": "SelectItem",
+        "value": "ORD-9479",
+        "label": "#ORD-9479 - David Rodriguez ($45.00)"
+      },
+      {
+        "id": "carrierControl",
+        "component": "FormControl",
+        "label": "Shipping Carrier",
+        "input": "carrierSelect"
+      },
+      {
+        "id": "carrierSelect",
+        "component": "Select",
+        "name": "carrier",
+        "placeholder": "Select carrier",
+        "items": [
+          "cFedex",
+          "cUps",
+          "cUsps",
+          "cDhl"
+        ]
+      },
+      {
+        "id": "cFedex",
+        "component": "SelectItem",
+        "value": "fedex",
+        "label": "FedEx Express"
+      },
+      {
+        "id": "cUps",
+        "component": "SelectItem",
+        "value": "ups",
+        "label": "UPS Ground"
+      },
+      {
+        "id": "cUsps",
+        "component": "SelectItem",
+        "value": "usps",
+        "label": "USPS Priority"
+      },
+      {
+        "id": "cDhl",
+        "component": "SelectItem",
+        "value": "dhl",
+        "label": "DHL Express"
+      },
+      {
+        "id": "trackingControl",
+        "component": "FormControl",
+        "label": "Tracking Number",
+        "input": "trackingInput",
+        "hint": "Optional: scan or paste label ID"
+      },
+      {
+        "id": "trackingInput",
+        "component": "Input",
+        "name": "trackingNumber",
+        "placeholder": "e.g., 1Z9999999999999999",
+        "type": "text"
+      },
+      {
+        "id": "fulfillButtons",
+        "component": "Buttons",
+        "buttons": [
+          "confirmFulfillBtn"
+        ]
+      },
+      {
+        "id": "confirmFulfillBtn",
+        "component": "Button",
+        "label": "Confirm Fulfillment",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>

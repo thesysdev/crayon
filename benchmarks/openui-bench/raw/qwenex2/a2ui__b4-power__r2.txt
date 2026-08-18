@@ -1,0 +1,400 @@
+Here's a comprehensive power network operator's console covering all 12 requirements:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "header",
+          "regionControl",
+          "kpiRow",
+          "capacityCard",
+          "genChart",
+          "forecastChart",
+          "plantsTable",
+          "outagesTable",
+          "maintenanceTable",
+          "alertsCard",
+          "curtailmentBtn"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Grid Operations Console",
+        "subtitle": "National Transmission Network — Live View"
+      },
+      {
+        "id": "regionControl",
+        "component": "FormControl",
+        "label": "Focus Region",
+        "input": "regionSelect"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region",
+        "placeholder": "All regions",
+        "items": [
+          "regionAll",
+          "regionNorth",
+          "regionSouth",
+          "regionEast",
+          "regionWest",
+          "regionCentral"
+        ]
+      },
+      {
+        "id": "regionAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All Regions"
+      },
+      {
+        "id": "regionNorth",
+        "component": "SelectItem",
+        "value": "north",
+        "label": "North"
+      },
+      {
+        "id": "regionSouth",
+        "component": "SelectItem",
+        "value": "south",
+        "label": "South"
+      },
+      {
+        "id": "regionEast",
+        "component": "SelectItem",
+        "value": "east",
+        "label": "East"
+      },
+      {
+        "id": "regionWest",
+        "component": "SelectItem",
+        "value": "west",
+        "label": "West"
+      },
+      {
+        "id": "regionCentral",
+        "component": "SelectItem",
+        "value": "central",
+        "label": "Central"
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "direction": "row",
+        "gap": "l",
+        "variant": "sunk",
+        "children": [
+          "loadKpi",
+          "priceKpi",
+          "emissionsKpi"
+        ]
+      },
+      {
+        "id": "loadKpi",
+        "component": "TextContent",
+        "text": "**Current Load:** 42.7 GW",
+        "size": "large-heavy"
+      },
+      {
+        "id": "priceKpi",
+        "component": "TextContent",
+        "text": "**Spot Price:** $87.40 / MWh",
+        "size": "large-heavy"
+      },
+      {
+        "id": "emissionsKpi",
+        "component": "TextContent",
+        "text": "**Emissions Today:** 18,340 tCO₂",
+        "size": "large-heavy"
+      },
+      {
+        "id": "capacityCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "capacityLabel",
+          "capacityBar"
+        ]
+      },
+      {
+        "id": "capacityLabel",
+        "component": "TextContent",
+        "text": "**Network Capacity Utilisation** — 42.7 GW of 55.0 GW installed capacity",
+        "size": "small"
+      },
+      {
+        "id": "capacityBar",
+        "component": "Progress",
+        "value": 77.6,
+        "label": "77.6% of capacity"
+      },
+      {
+        "id": "genChart",
+        "component": "PieChart",
+        "labels": [
+          "Natural Gas",
+          "Wind",
+          "Solar",
+          "Nuclear",
+          "Hydro",
+          "Coal"
+        ],
+        "values": [
+          14.2,
+          11.8,
+          7.4,
+          5.6,
+          2.9,
+          0.8
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "forecastChart",
+        "component": "AreaChart",
+        "labels": [
+          "00:00",
+          "02:00",
+          "04:00",
+          "06:00",
+          "08:00",
+          "10:00",
+          "12:00",
+          "14:00",
+          "16:00",
+          "18:00",
+          "20:00",
+          "22:00"
+        ],
+        "series": [
+          "forecastSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Time",
+        "yLabel": "Demand (GW)"
+      },
+      {
+        "id": "forecastSeries",
+        "component": "Series",
+        "category": "Forecast Demand",
+        "values": [
+          31.2,
+          28.4,
+          27.1,
+          30.5,
+          38.9,
+          43.2,
+          45.1,
+          44.6,
+          46.3,
+          48.7,
+          44.1,
+          36.8
+        ]
+      },
+      {
+        "id": "plantsTable",
+        "component": "Table",
+        "columns": [
+          "plantName",
+          "plantOutput",
+          "plantStatus"
+        ]
+      },
+      {
+        "id": "plantName",
+        "component": "Col",
+        "label": "Plant",
+        "data": [
+          "Drax Gas CCGT",
+          "Hornsea Wind Farm",
+          "Sizewell B Nuclear",
+          "Cruachan Hydro",
+          "Ratcliffe Coal",
+          "Dogger Bank Wind",
+          "Pembroke CCGT"
+        ]
+      },
+      {
+        "id": "plantOutput",
+        "component": "Col",
+        "label": "Output (MW)",
+        "data": [
+          "1,840",
+          "1,210",
+          "1,190",
+          "440",
+          "0",
+          "1,380",
+          "1,560"
+        ]
+      },
+      {
+        "id": "plantStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Online",
+          "Online",
+          "Online",
+          "Online",
+          "Offline (Maint.)",
+          "Online",
+          "Derated 80%"
+        ]
+      },
+      {
+        "id": "outagesTable",
+        "component": "Table",
+        "columns": [
+          "outageId",
+          "outageRegion",
+          "outageCause",
+          "outageSince"
+        ]
+      },
+      {
+        "id": "outageId",
+        "component": "Col",
+        "label": "Outage ID",
+        "data": [
+          "OUT-4471",
+          "OUT-4468",
+          "OUT-4455"
+        ]
+      },
+      {
+        "id": "outageRegion",
+        "component": "Col",
+        "label": "Affected Region",
+        "data": [
+          "North — Tyneside",
+          "South — Kent Coast",
+          "West — South Wales"
+        ]
+      },
+      {
+        "id": "outageCause",
+        "component": "Col",
+        "label": "Cause",
+        "data": [
+          "Transformer fault",
+          "Storm damage (OHL)",
+          "Cable degradation"
+        ]
+      },
+      {
+        "id": "outageSince",
+        "component": "Col",
+        "label": "Since",
+        "data": [
+          "06:42 today",
+          "22:15 yesterday",
+          "14:03 yesterday"
+        ]
+      },
+      {
+        "id": "maintenanceTable",
+        "component": "Table",
+        "columns": [
+          "maintAsset",
+          "maintWindow",
+          "maintType"
+        ]
+      },
+      {
+        "id": "maintAsset",
+        "component": "Col",
+        "label": "Asset",
+        "data": [
+          "Ratcliffe Unit 2",
+          "400kV Line Hams Hall",
+          "Sizewell B Refuel",
+          "Pembroke Turbine 3"
+        ]
+      },
+      {
+        "id": "maintWindow",
+        "component": "Col",
+        "label": "Window",
+        "data": [
+          "Jun 3 – Jun 18",
+          "Jun 10 – Jun 12",
+          "Jun 1 – Jun 30",
+          "Jun 22 – Jun 25"
+        ]
+      },
+      {
+        "id": "maintType",
+        "component": "Col",
+        "label": "Type",
+        "data": [
+          "Planned overhaul",
+          "Conductor replacement",
+          "Scheduled refuel",
+          "Blade inspection"
+        ]
+      },
+      {
+        "id": "alertsCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "alert1",
+          "alert2",
+          "alert3"
+        ]
+      },
+      {
+        "id": "alert1",
+        "component": "Alert",
+        "title": "Frequency deviation",
+        "description": "System frequency dropped to 49.82 Hz at 14:07. Automatic response triggered.",
+        "variant": "warning"
+      },
+      {
+        "id": "alert2",
+        "component": "Alert",
+        "title": "Reserve margin low",
+        "description": "Spinning reserve below 4% threshold. Consider dispatching peaking units.",
+        "variant": "destructive"
+      },
+      {
+        "id": "alert3",
+        "component": "Alert",
+        "title": "Wind ramp forecast",
+        "description": "Hornsea output expected to drop 600 MW within 90 minutes due to front passage.",
+        "variant": "info"
+      },
+      {
+        "id": "curtailmentBtn",
+        "component": "Button",
+        "label": "Order Curtailment",
+        "variant": "primary",
+        "size": "large",
+        "type": "destructive"
+      }
+    ]
+  }
+}
+</a2ui-json>

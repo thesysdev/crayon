@@ -1,0 +1,412 @@
+Month-end finance view with runway, burn, and spend controls — all 7 items covered.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "controlsRow",
+          "kpisRow",
+          "runwayAlert",
+          "expensesCard",
+          "transactionsCard"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Month-End Finance View",
+        "subtitle": "Startup runway & spend — November 2025 close"
+      },
+      {
+        "id": "controlsRow",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "m",
+        "align": "center",
+        "justify": "between",
+        "children": [
+          "monthControl",
+          "actionButtons"
+        ]
+      },
+      {
+        "id": "monthControl",
+        "component": "FormControl",
+        "label": "View different month",
+        "input": "monthSelect",
+        "hint": "Switch month to update all metrics"
+      },
+      {
+        "id": "monthSelect",
+        "component": "Select",
+        "name": "month",
+        "placeholder": "November 2025",
+        "items": [
+          "monthNov",
+          "monthOct",
+          "monthSep",
+          "monthAug"
+        ],
+        "value": "2025-11"
+      },
+      {
+        "id": "monthNov",
+        "component": "SelectItem",
+        "value": "2025-11",
+        "label": "November 2025"
+      },
+      {
+        "id": "monthOct",
+        "component": "SelectItem",
+        "value": "2025-10",
+        "label": "October 2025"
+      },
+      {
+        "id": "monthSep",
+        "component": "SelectItem",
+        "value": "2025-09",
+        "label": "September 2025"
+      },
+      {
+        "id": "monthAug",
+        "component": "SelectItem",
+        "value": "2025-08",
+        "label": "August 2025"
+      },
+      {
+        "id": "actionButtons",
+        "component": "Buttons",
+        "buttons": [
+          "downloadBtn",
+          "exportBtn"
+        ]
+      },
+      {
+        "id": "downloadBtn",
+        "component": "Button",
+        "label": "Download statement (PDF)",
+        "variant": "primary"
+      },
+      {
+        "id": "exportBtn",
+        "component": "Button",
+        "label": "Export CSV",
+        "variant": "secondary"
+      },
+      {
+        "id": "kpisRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "cashCard",
+          "burnCard",
+          "runwayCard"
+        ]
+      },
+      {
+        "id": "cashCard",
+        "component": "Card",
+        "children": [
+          "cashHeader",
+          "cashAmount",
+          "cashSub",
+          "cashBadge"
+        ],
+        "gap": "xs"
+      },
+      {
+        "id": "cashHeader",
+        "component": "TextContent",
+        "text": "1 — Cash on Hand",
+        "size": "small"
+      },
+      {
+        "id": "cashAmount",
+        "component": "Heading",
+        "text": "$742,500",
+        "level": "h2"
+      },
+      {
+        "id": "cashSub",
+        "component": "TextContent",
+        "text": "As of Nov 30, 2025 · Silicon Valley Bank",
+        "size": "small"
+      },
+      {
+        "id": "cashBadge",
+        "component": "Badge",
+        "text": "Reconciled",
+        "variant": "secondary"
+      },
+      {
+        "id": "burnCard",
+        "component": "Card",
+        "children": [
+          "burnHeader",
+          "burnAmount",
+          "burnSub",
+          "burnBadge"
+        ],
+        "gap": "xs"
+      },
+      {
+        "id": "burnHeader",
+        "component": "TextContent",
+        "text": "2 — Monthly Burn",
+        "size": "small"
+      },
+      {
+        "id": "burnAmount",
+        "component": "Heading",
+        "text": "$68,400",
+        "level": "h2"
+      },
+      {
+        "id": "burnSub",
+        "component": "TextContent",
+        "text": "Nov total expenses · Avg 3-mo: $65,900",
+        "size": "small"
+      },
+      {
+        "id": "burnBadge",
+        "component": "Badge",
+        "text": "+4.2% vs Oct",
+        "variant": "outline"
+      },
+      {
+        "id": "runwayCard",
+        "component": "Card",
+        "children": [
+          "runwayHeader",
+          "runwayAmount",
+          "runwayProgress",
+          "runwayNote"
+        ],
+        "gap": "xs"
+      },
+      {
+        "id": "runwayHeader",
+        "component": "TextContent",
+        "text": "3 — Months of Runway",
+        "size": "small"
+      },
+      {
+        "id": "runwayAmount",
+        "component": "Heading",
+        "text": "10.9 months",
+        "level": "h2"
+      },
+      {
+        "id": "runwayProgress",
+        "component": "Progress",
+        "value": 68,
+        "label": "Runway health — 68%"
+      },
+      {
+        "id": "runwayNote",
+        "component": "TextContent",
+        "text": "$742,500 ÷ $68,400 · Zero-revenue scenario · Through Oct 2026",
+        "size": "small"
+      },
+      {
+        "id": "runwayAlert",
+        "component": "Alert",
+        "title": "Runway is healthy",
+        "description": "10.9 months at current burn. Fundraising runway threshold is 9 months — start planning in ~2 months if burn holds.",
+        "variant": "success"
+      },
+      {
+        "id": "expensesCard",
+        "component": "Card",
+        "children": [
+          "expensesHeader",
+          "expensePie",
+          "expenseTable",
+          "expenseCallout"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "expensesHeader",
+        "component": "CardHeader",
+        "title": "4 — Expenses Split by Category",
+        "subtitle": "November 2025 · Total $68,400"
+      },
+      {
+        "id": "expensePie",
+        "component": "PieChart",
+        "labels": [
+          "Payroll",
+          "Cloud & Infra",
+          "Marketing",
+          "Office & Ops",
+          "Legal & Admin"
+        ],
+        "values": [
+          38200,
+          12400,
+          8900,
+          5600,
+          3300
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "expenseTable",
+        "component": "Table",
+        "columns": [
+          "expCatCol",
+          "expAmtCol",
+          "expPctCol"
+        ]
+      },
+      {
+        "id": "expCatCol",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Payroll",
+          "Cloud & Infra",
+          "Marketing",
+          "Office & Ops",
+          "Legal & Admin"
+        ]
+      },
+      {
+        "id": "expAmtCol",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "$38,200",
+          "$12,400",
+          "$8,900",
+          "$5,600",
+          "$3,300"
+        ]
+      },
+      {
+        "id": "expPctCol",
+        "component": "Col",
+        "label": "% of Burn",
+        "data": [
+          "55.8%",
+          "18.1%",
+          "13.0%",
+          "8.2%",
+          "4.8%"
+        ]
+      },
+      {
+        "id": "expenseCallout",
+        "component": "TextCallout",
+        "variant": "neutral",
+        "title": "Largest driver",
+        "description": "Payroll is 55.8% of burn. Cloud infra up 12% MoM due to annual AWS commit."
+      },
+      {
+        "id": "transactionsCard",
+        "component": "Card",
+        "children": [
+          "txHeader",
+          "txCallout",
+          "txTable"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "txHeader",
+        "component": "CardHeader",
+        "title": "5 — Transactions Above $10,000 This Month",
+        "subtitle": "November 2025 · 5 transactions · Filtered > $10,000"
+      },
+      {
+        "id": "txCallout",
+        "component": "TextCallout",
+        "variant": "info",
+        "title": "Filtered view",
+        "description": "Showing only high-value transactions. Download statement for full ledger with all transactions."
+      },
+      {
+        "id": "txTable",
+        "component": "Table",
+        "columns": [
+          "txDateCol",
+          "txDescCol",
+          "txCatCol",
+          "txAmtCol"
+        ]
+      },
+      {
+        "id": "txDateCol",
+        "component": "Col",
+        "label": "Date",
+        "data": [
+          "Nov 05",
+          "Nov 08",
+          "Nov 14",
+          "Nov 22",
+          "Nov 28"
+        ]
+      },
+      {
+        "id": "txDescCol",
+        "component": "Col",
+        "label": "Description",
+        "data": [
+          "Payroll — Engineering",
+          "AWS — Annual Commit",
+          "Marketing Agency Retainer",
+          "Office Lease — SF Hub",
+          "Legal — Series A Prep"
+        ]
+      },
+      {
+        "id": "txCatCol",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Payroll",
+          "Cloud & Infra",
+          "Marketing",
+          "Office & Ops",
+          "Legal & Admin"
+        ]
+      },
+      {
+        "id": "txAmtCol",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "$34,200",
+          "$18,500",
+          "$12,000",
+          "$11,200",
+          "$10,800"
+        ]
+      }
+    ]
+  }
+}
+</a2ui-json>

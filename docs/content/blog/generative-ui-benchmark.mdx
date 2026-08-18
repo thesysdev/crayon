@@ -12,6 +12,8 @@ We ran the same 46 prompts through the 3 different Generative UI formats, OpenUI
 
 <CompletionByModel />
 
+*Update (Aug 19): with equal worked examples for all three formats and replicated runs, A2UI's completion pulls level and slightly ahead while the token, cost, and blank-screen gaps hold. See the update section below.*
+
 
 ## Methodology
 We chose 6 frontier models from various model families to test the 3 different Generative UI formats, OpenUI, Google A2UI and Vercel json-render.
@@ -130,6 +132,35 @@ Our takeaway is that raw completion rate isn't the whole story; how a format fai
 OpenUI's line-level structure kept failures small enough to contain and repair, which is why we ended up building the production system around repair instead of trying to eliminate generation errors entirely.
 Whatever format you pick, at enough volume you'll want that repair layer too.
 
+
+## Update: equal worked examples, and replicates (Aug 19)
+
+The original run gave OpenUI's prompt two worked examples through lang-core's official options while json-render and A2UI ran their generators without examples. We disclosed that asymmetry in the footnotes, promised to close it, and closed it the day after publishing. Everything below is committed to the repo the same way as the original data: the prompts, every raw output, and the scored results.
+
+What changed:
+- json-render and A2UI received the same two worked examples, translated to their wire formats, validator-verified, and passed through their official free-text options (`customRules` for json-render, `role_description` for A2UI).
+- Our own prompt was revised twice while chasing our losing cells, both iterations disclosed and committed: a routing note telling models where status colors legally live (Muse kept inventing Badge variants like "success"; Tag is the component that actually has them), a rule that enum lists are closed, and a worked example restructured around a nested section to target the define-but-never-attach mistake behind most remaining failures.
+- Single runs of a full leg move by up to 2.7 points, so we ran the final condition of each leading format twice and report both replicates and their mean. json-render was not replicated: it sits 15 points back, outside any variance band.
+
+| Model | OpenUI (r1/r2) | A2UI (r1/r2) | json-render |
+| --- | --- | --- | --- |
+| GPT-5.6 Sol | **99.7** (100.0/99.5) | 96.5 (96.2/96.7) | 82.6 |
+| Claude Opus 4.8 | 99.1 (98.9/99.2) | **99.7** (99.5/100.0) | 87.5 |
+| Kimi K3 | 95.9 (95.1/96.7) | **97.0** (95.7/98.4) | 71.2 |
+| Gemini 3.6 Flash | 94.0 (92.9/95.1) | **95.4** (95.1/95.7) | 77.2 |
+| Qwen3.8 2.4T | 90.2 (89.7/90.7) | **91.5** (91.3/91.8) | 81.0 |
+| Muse Spark 1.2 | 92.4 (91.3/93.5) | **97.3** (97.8/96.7) | 81.5 |
+| Average | 95.2 | **96.2** | 80.2 |
+
+With equal examples A2UI's completion mean pulls slightly ahead, 96.2 against 95.2. Only three model-level gaps sit outside the noise band: Sol to OpenUI (+3.3), Muse to A2UI (+4.9), and the extended Terra run to OpenUI (98.4 against 94.0, still outside the average per the one-seat rule). Everything else is a statistical tie. Worked examples helped A2UI on every model. On json-render they netted slightly negative (80.2 against its original 81.3), helping two models and hurting three, so its original numbers were not example-starved after all.
+
+Two findings were worth the reruns by themselves:
+
+- Muse's OpenUI gap was never about the DSL. Its invented enum values ("success", "warning") had a legal home in the catalog all along: Tag carries exactly those variants, Badge carries visual styles. One routing note plus one example line took Muse from 83.7 to the 91 to 97 range, and its enum errors from 28 runs to single digits.
+- The empty responses on the disaster-response brief are upstream. Direct calls to the Meta-served endpoint return finish_reason "stop" with zero output tokens and no refusal field, and the rate drifts between identical runs, from 0 of 4 to 4 of 4. We keep scoring them as blanks because a blank is what the user sees; seven of OpenUI's ten blanks across both replicates are this one brief on this one model.
+
+Under the final prompts the efficiency picture holds: system prompts are 5,031 tokens for OpenUI against 7,651 for json-render and 12,610 for A2UI, mean output per screen is 1,339 against 3,258 and 2,729, and fully blank screens are 0.5% for OpenUI, 0.4% for json-render, and 2.8% for A2UI. Our read of the whole exercise: with careful prompting on both sides, completion converges to a tie that run-to-run variance can reorder, and the differences that survive replication are the ones users pay for on every request.
+
 ---
 
 Footnotes:
@@ -137,7 +168,7 @@ Footnotes:
 - A near-perfect cell means near-zero failures at this sample size, not a model that never fails; Sol's 99.5% is one failure in 184 runs.
 - An extended Terra run, also OpenAI, put OpenUI first at 97.8 vs 79.9 and 79.9, but stays out of the average to keep one seat per company.
 - The averages are the mean of six per-model completion rates where each model gets equal weight. Every model ran 4 generations per prompt; Gemini's json-render and A2UI legs were generated with 10 before we settled on 4 for everyone, and the scored set is the first 4 (a fixed rule, not outcome-selected).
-- One condition for all models and formats. OpenUI's prompt includes component groups, two rules and two worked examples via lang-core's official generatePrompt options; json-render and A2UI ran their generators' prompts with their documented options and no worked examples. Giving the competitors equivalent worked examples through their official free-text options is planned as a follow-up, and we expect it to raise their scores.
+- One condition for all models and formats. OpenUI's prompt includes component groups, two rules and two worked examples via lang-core's official generatePrompt options; json-render and A2UI ran their generators' prompts with their documented options and no worked examples. Giving the competitors equivalent worked examples through their official free-text options was done the day after publishing; see the update section, where it raised A2UI's scores on every model.
 - Scoring is each SDK's own shipped code plus one shared completeness layer with a coverage floor; the layer credits json-render's native children slot wherever a component's single ref prop allows it, and consumes A2UI validation errors its itemized checks would miss.
 - The full judgment-call list, all code, prompts, and every raw output: [benchmark repo](https://github.com/thesysdev/openui/tree/main/benchmarks/openui-bench).
 - The method builds on Mobile Reality's [MDMA benchmark](https://github.com/MobileReality/mdma/tree/main/benchmarks/genui-formats).

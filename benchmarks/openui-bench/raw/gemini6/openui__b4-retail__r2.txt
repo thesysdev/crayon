@@ -1,0 +1,119 @@
+root = Card([headerControls, kpiGrid, salesTargetSection, trafficAndPromoGrid, inventoryGrid, opsGrid, reorderSection, followUp])
+
+storeSelect = Select("store_id", [store1, store2, store3, store4], "Select Store", null, "store-042", "small")
+store1 = SelectItem("store-042", "Store #042 - Downtown Flagship")
+store2 = SelectItem("store-108", "Store #108 - Westside Mall")
+store3 = SelectItem("store-215", "Store #215 - Metro Plaza")
+store4 = SelectItem("store-301", "Store #301 - Northside Annex")
+storeControl = FormControl("Current Location", storeSelect)
+
+headerControls = Card([headerText, storeControl], "clear", "row", "m", "center", "between")
+headerText = CardHeader("Daily Store Manager Console", "Live Operational Dashboard • Today's Overview")
+
+kpiGrid = Card([basketKpi, returnsKpi, registerKpi], "clear", "row", "m")
+basketKpi = Card([basketTitle, basketValue, basketSub], "sunk", "column", "xs")
+basketTitle = TextContent("Avg Basket Size", "small")
+basketValue = Heading("$68.45", "h2")
+basketSub = Tag("+4.2% vs target", null, "sm", "success")
+
+returnsKpi = Card([returnsTitle, returnsValue, returnsSub], "sunk", "column", "xs")
+returnsTitle = TextContent("Returns This Week", "small")
+returnsValue = Heading("42 items", "h2")
+returnsSub = Tag("$1,240 total value", null, "sm", "warning")
+
+registerKpi = Card([regTitle, regValue, regSub], "sunk", "column", "xs")
+regTitle = TextContent("Active Registers", "small")
+regValue = Heading("4 / 5 Open", "h2")
+regSub = Tag("Lane 3 Closed", null, "sm", "neutral")
+
+salesTargetSection = Card([salesHeader, salesComparisonGrid], "card", "column", "m")
+salesHeader = CardHeader("Sales Today vs Target & Week-over-Week", "Real-time revenue tracking")
+salesComparisonGrid = Card([salesProgressCard, weekCompareTable], "clear", "row", "l", "stretch")
+
+salesProgressCard = Card([salesProgressTitle, salesProgressVal, salesProgressBar, salesTargetDetails], "sunk", "column", "m")
+salesProgressTitle = TextContent("Today's Revenue Target", "default")
+salesProgressVal = Heading("$14,280 / $16,000", "h1")
+salesProgressBar = Progress(89, "89% of daily goal reached")
+salesTargetDetails = TextContent("Pacing +6% ahead of typical weekday profile.", "small")
+
+weekCompareTable = Table([compMetricCol, thisWeekCol, lastWeekCol, statusCol])
+compMetricCol = Col("Metric", ["Net Sales", "Transactions", "Avg Items/Basket", "Conversion Rate"])
+thisWeekCol = Col("This Week", ["$84,200", "1,230", "3.4", "24.5%"])
+lastWeekCol = Col("Last Week", ["$79,500", "1,180", "3.2", "22.8%"])
+statusCol = Col("WoW Growth", ["+5.9%", "+4.2%", "+6.25%", "+1.7%"])
+
+trafficAndPromoGrid = Card([trafficCard, promoCard], "clear", "row", "m")
+
+trafficCard = Card([trafficHeader, trafficChart], "card", "column", "m")
+trafficHeader = CardHeader("Foot Traffic Today", "Hourly customer count in-store")
+trafficChart = LineChart(["8am", "10am", "12pm", "2pm", "4pm", "6pm", "8pm"], [trafficSeries], "natural", "Time", "Visitors")
+trafficSeries = Series("Hourly Footfall", [45, 120, 280, 310, 240, 320, 150])
+
+promoCard = Card([promoHeader, promoTable], "card", "column", "m")
+promoHeader = CardHeader("Running Promotions", "Performance of active campaigns")
+promoTable = Table([promoNameCol, promoDiscountCol, promoUsesCol, promoRevenueCol])
+promoNameCol = Col("Promotion", ["Summer Kickoff", "Buy 1 Get 1 50%", "Loyalty Double Pts"])
+promoDiscountCol = Col("Offer", ["15% Off Site/Store", "Selected Apparel", "All Purchases"])
+promoUsesCol = Col("Redemptions", ["342", "189", "512"])
+promoRevenueCol = Col("Sales Driven", ["$12,450", "$6,800", "$18,900"])
+
+inventoryGrid = Card([bestSellersCard, outOfStockCard], "clear", "row", "m")
+
+bestSellersCard = Card([bestSellersHeader, bestSellersList], "card", "column", "m")
+bestSellersHeader = CardHeader("Today's Best Sellers", "Top performing products by volume")
+bestSellersList = ListBlock([bs1, bs2, bs3, bs4], "number")
+bs1 = ListItem("Organic Whole Milk 1Gal", "Units Sold: 142 • Revenue: $850.58")
+bs2 = ListItem("Artisan Sourdough Bread", "Units Sold: 98 • Revenue: $587.02")
+bs3 = ListItem("Cold Brew Coffee 16oz", "Units Sold: 86 • Revenue: $429.14")
+bs4 = ListItem("Avocado Bag 4ct", "Units Sold: 74 • Revenue: $369.26")
+
+outOfStockCard = Card([oosHeader, oosTable], "card", "column", "m")
+oosHeader = CardHeader("Items Out of Stock", "Requires inventory replenishment")
+oosTable = Table([oosItemCol, oosSkuCol, oosDeptCol, oosStatusCol])
+oosItemCol = Col("Item Name", ["Greek Yogurt Vanilla 32oz", "Sparkling Water Peach 12pk", "Gluten-Free Oats 16oz"])
+oosSkuCol = Col("SKU", ["SKU-8821", "SKU-4409", "SKU-1293"])
+oosDeptCol = Col("Department", ["Dairy", "Beverages", "Pantry"])
+oosStatusCol = Col("Stock Status", ["0 units (Critical)", "0 units (Expected 2PM)", "0 units (Critical)"])
+
+opsGrid = Card([shiftCard, registerCard], "clear", "row", "m")
+
+shiftCard = Card([shiftHeader, shiftList], "card", "column", "m")
+shiftHeader = CardHeader("Staff On Shift Today", "Floor & register assignments")
+shiftList = ListBlock([staff1, staff2, staff3, staff4], "image")
+staff1 = ListItem("Sarah Jenkins (Supervisor)", "Shift: 7:00 AM - 3:30 PM • Zone: Front End")
+staff2 = ListItem("Marcus Chen", "Shift: 8:00 AM - 4:30 PM • Zone: Register 1 & 2")
+staff3 = ListItem("Elena Rostova", "Shift: 10:00 AM - 6:30 PM • Zone: Inventory & Stock")
+staff4 = ListItem("David Miller", "Shift: 12:00 PM - 8:30 PM • Zone: Register 4 & Customer Service")
+
+registerCard = Card([regHeader, regTable], "card", "column", "m")
+regHeader = CardHeader("Register Status", "Live checkout lane monitoring")
+regTable = Table([regLaneCol, regCashierCol, regStatusCol])
+regLaneCol = Col("Lane", ["Register 1", "Register 2", "Register 3", "Register 4", "Express Self-Checkout"])
+regCashierCol = Col("Assigned Cashier", ["Marcus Chen", "David Miller", "Unassigned", "Sarah Jenkins", "Automated"])
+regStatusCol = Col("Status", ["OPEN", "OPEN", "CLOSED", "OPEN", "OPEN"])
+
+reorderSection = Card([reorderHeader, reorderForm], "card", "column", "m")
+reorderHeader = CardHeader("Quick Stock Reorder", "Submit emergency or fast-track inventory orders")
+
+reorderItemInput = Input("sku_item", "Enter SKU or Item Name e.g. SKU-8821")
+reorderItemControl = FormControl("Item to Reorder", reorderItemInput, "Search stock database")
+
+reorderQtyInput = Input("quantity", "100", "number")
+reorderQtyControl = FormControl("Quantity", reorderQtyInput)
+
+supplierSelect = Select("supplier", [sup1, sup2, sup3], "Select Supplier")
+sup1 = SelectItem("sup-dairy", "FreshDairy Distributing Corp")
+sup2 = SelectItem("sup-bev", "BevGroup Logistics")
+sup3 = SelectItem("sup-dry", "National Pantry Supply")
+supplierControl = FormControl("Preferred Supplier", supplierSelect)
+
+reorderButtons = Buttons([submitReorderBtn, clearReorderBtn])
+submitReorderBtn = Button("Submit Order", null, "primary")
+clearReorderBtn = Button("Clear Form", null, "tertiary")
+
+reorderForm = Form("reorder-form", reorderButtons, [reorderItemControl, reorderQtyControl, supplierControl])
+
+followUp = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Show detailed foot traffic breakdown for yesterday")
+f2 = FollowUpItem("Export weekly sales report to CSV")
+f3 = FollowUpItem("Manage shift schedule for tomorrow")

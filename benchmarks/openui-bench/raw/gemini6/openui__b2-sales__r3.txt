@@ -1,0 +1,37 @@
+root = Card([header, metricsGrid, trendCard, topProductsCard, actionRow, followUps])
+
+header = CardHeader("Monthly Sales Performance", "October 2023 Executive Summary")
+
+metricsGrid = Card([revKpi, convKpi], "clear", "row", "m")
+revKpi = Card([revTitle, revValue, revBadge], "sunk", "column", "xs")
+revTitle = Heading("Revenue (This Month)", "h4")
+revValue = TextContent("$128,450", "large-heavy")
+revBadge = Badge("+14.2% vs last month", "default")
+
+convKpi = Card([convTitle, convValue, convBadge], "sunk", "column", "xs")
+convTitle = Heading("Conversion Rate", "h4")
+convValue = TextContent("3.85%", "large-heavy")
+convBadge = Badge("+0.4% improvement", "secondary")
+
+trendCard = Card([trendHeader, trendChart], "card", "column", "s")
+trendHeader = CardHeader("Revenue Trajectory", "Past 6 months performance (USD)")
+trendChart = LineChart(["May", "Jun", "Jul", "Aug", "Sep", "Oct"], [revSeries], "natural", "Month", "Revenue ($)")
+revSeries = Series("Revenue", [84000, 92500, 98000, 105000, 112500, 128450])
+
+topProductsCard = Card([topProductsHeader, topProductsTable], "card", "column", "s")
+topProductsHeader = CardHeader("Top 3 Best-Selling Products", "Ranked by units sold this month")
+topProductsTable = Table([prodRankCol, prodNameCol, unitsSoldCol, prodRevCol])
+prodRankCol = Col("#", [1, 2, 3])
+prodNameCol = Col("Product", ["Pro Subscription (Annual)", "Enterprise Tier", "Starter Add-on"])
+unitsSoldCol = Col("Units Sold", [450, 120, 890], "number")
+prodRevCol = Col("Total Revenue", ["$67,500", "$48,000", "$12,950"])
+
+actionRow = Buttons([downloadCsvBtn, downloadPdfBtn, shareReportBtn], "row")
+downloadCsvBtn = Button("Download CSV", null, "primary")
+downloadPdfBtn = Button("Download PDF Report", null, "secondary")
+shareReportBtn = Button("Share with Board", null, "tertiary")
+
+followUps = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Show customer acquisition cost (CAC) breakdown")
+fu2 = FollowUpItem("Compare conversion rates by marketing channel")
+fu3 = FollowUpItem("Forecast revenue for Q4")

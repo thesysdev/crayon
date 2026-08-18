@@ -1,0 +1,380 @@
+Here's a complete live-ops command center covering all 16 items:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "liveBadge",
+          "kpis",
+          "tabs",
+          "patchSection",
+          "opsSection"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Live-Ops Command Center",
+        "subtitle": "Nebula Realms — all systems nominal"
+      },
+      {
+        "id": "liveBadge",
+        "component": "Badge",
+        "text": "● LIVE — 48,213 players online now",
+        "variant": "secondary"
+      },
+      {
+        "id": "kpis",
+        "component": "Table",
+        "columns": ["kpiName", "kpiValue", "kpiDelta"]
+      },
+      {
+        "id": "kpiName",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Players online now",
+          "Daily active players",
+          "Monthly active players",
+          "Revenue today",
+          "Revenue per user (ARPDAU)",
+          "Currency inflation (30d)"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": ["48,213", "312,450", "2,148,900", "$84,320", "$0.27", "+4.1%"]
+      },
+      {
+        "id": "kpiDelta",
+        "component": "Col",
+        "label": "Trend",
+        "data": ["▲ 6%", "▲ 3%", "▲ 8%", "▲ 12%", "▲ 2%", "⚠ above 3% target"]
+      },
+      {
+        "id": "tabs",
+        "component": "Tabs",
+        "items": ["tabPerf", "tabCommerce", "tabStability", "tabCommunity", "tabExperiments"]
+      },
+      {
+        "id": "tabPerf",
+        "component": "TabItem",
+        "value": "perf",
+        "trigger": "Performance",
+        "content": ["sessionChart", "sessionSeries", "regionTable"]
+      },
+      {
+        "id": "sessionChart",
+        "component": "LineChart",
+        "labels": ["D-13","D-12","D-11","D-10","D-9","D-8","D-7","D-6","D-5","D-4","D-3","D-2","D-1","Today"],
+        "series": ["sessionSeries"],
+        "variant": "natural",
+        "xLabel": "Day",
+        "yLabel": "Avg session (min)"
+      },
+      {
+        "id": "sessionSeries",
+        "component": "Series",
+        "category": "Avg session length",
+        "values": [22, 24, 23, 25, 27, 31, 29, 26, 25, 28, 30, 33, 31, 34]
+      },
+      {
+        "id": "regionTable",
+        "component": "Table",
+        "columns": ["regionName", "regionHealth", "regionPing"]
+      },
+      {
+        "id": "regionName",
+        "component": "Col",
+        "label": "Server region",
+        "data": ["US-East", "US-West", "EU-Central", "APAC-Singapore", "SA-Brazil"]
+      },
+      {
+        "id": "regionHealth",
+        "component": "Col",
+        "label": "Health",
+        "data": ["Healthy", "Healthy", "Degraded", "Healthy", "Healthy"]
+      },
+      {
+        "id": "regionPing",
+        "component": "Col",
+        "label": "Avg ping",
+        "data": ["32ms", "41ms", "118ms", "67ms", "89ms"]
+      },
+      {
+        "id": "tabCommerce",
+        "component": "TabItem",
+        "value": "commerce",
+        "trigger": "Commerce",
+        "content": ["itemsChart", "itemsSeries", "inflationAlert"]
+      },
+      {
+        "id": "itemsChart",
+        "component": "HorizontalBarChart",
+        "labels": ["Dragon Mount Skin", "XP Booster x10", "Gem Pack 500", "Season Pass", "Emote Bundle"],
+        "series": ["itemsSeries"],
+        "xLabel": "Units sold (24h)",
+        "yLabel": "Item"
+      },
+      {
+        "id": "itemsSeries",
+        "component": "Series",
+        "category": "Units",
+        "values": [4820, 3910, 3240, 2875, 1930]
+      },
+      {
+        "id": "inflationAlert",
+        "component": "Alert",
+        "title": "Currency inflation watch",
+        "description": "Gold supply grew 4.1% in 30 days (target ≤3%). Consider a new gold sink in next patch.",
+        "variant": "warning"
+      },
+      {
+        "id": "tabStability",
+        "component": "TabItem",
+        "value": "stability",
+        "trigger": "Stability",
+        "content": ["crashChart", "crashSeries"]
+      },
+      {
+        "id": "crashChart",
+        "component": "BarChart",
+        "labels": ["v3.2.0", "v3.2.1", "v3.3.0-beta", "v3.1.4 (legacy)"],
+        "series": ["crashSeries"],
+        "xLabel": "App version",
+        "yLabel": "Crash rate (%)"
+      },
+      {
+        "id": "crashSeries",
+        "component": "Series",
+        "category": "Crash rate",
+        "values": [0.42, 0.31, 1.87, 0.95]
+      },
+      {
+        "id": "tabCommunity",
+        "component": "TabItem",
+        "value": "community",
+        "trigger": "Community & Events",
+        "content": ["eventsList", "moderationTable"]
+      },
+      {
+        "id": "eventsList",
+        "component": "ListBlock",
+        "items": ["ev1", "ev2", "ev3", "ev4"],
+        "variant": "number"
+      },
+      {
+        "id": "ev1",
+        "component": "ListItem",
+        "title": "Double XP Weekend (LIVE)",
+        "subtitle": "Ends in 14h — participation 61%"
+      },
+      {
+        "id": "ev2",
+        "component": "ListItem",
+        "title": "Frost Raid Boss (LIVE)",
+        "subtitle": "Ends in 3 days — 220k kills so far"
+      },
+      {
+        "id": "ev3",
+        "component": "ListItem",
+        "title": "Lunar Festival (upcoming)",
+        "subtitle": "Starts in 5 days"
+      },
+      {
+        "id": "ev4",
+        "component": "ListItem",
+        "title": "PvP Season 12 (upcoming)",
+        "subtitle": "Starts in 12 days"
+      },
+      {
+        "id": "moderationTable",
+        "component": "Table",
+        "columns": ["modType", "modCount", "modSla"]
+      },
+      {
+        "id": "modType",
+        "component": "Col",
+        "label": "Queue",
+        "data": ["Player reports awaiting review", "Ban appeals awaiting review"]
+      },
+      {
+        "id": "modCount",
+        "component": "Col",
+        "label": "Pending",
+        "data": ["1,284", "97"]
+      },
+      {
+        "id": "modSla",
+        "component": "Col",
+        "label": "Oldest item",
+        "data": ["9 hours", "2 days"]
+      },
+      {
+        "id": "tabExperiments",
+        "component": "TabItem",
+        "value": "experiments",
+        "trigger": "Experiments",
+        "content": ["expTable"]
+      },
+      {
+        "id": "expTable",
+        "component": "Table",
+        "columns": ["expName", "expVariant", "expResult"]
+      },
+      {
+        "id": "expName",
+        "component": "Col",
+        "label": "Experiment",
+        "data": ["EXP-118: New onboarding flow", "EXP-118: New onboarding flow", "EXP-121: Shop layout", "EXP-121: Shop layout"]
+      },
+      {
+        "id": "expVariant",
+        "component": "Col",
+        "label": "Variant",
+        "data": ["Control", "Treatment", "Control", "Treatment"]
+      },
+      {
+        "id": "expResult",
+        "component": "Col",
+        "label": "Key metric",
+        "data": ["D1 retention 41%", "D1 retention 46% (+5pp, p<0.05)", "Shop conversion 8.2%", "Shop conversion 8.0% (not significant)"]
+      },
+      {
+        "id": "patchSection",
+        "component": "CardHeader",
+        "title": "Operations",
+        "subtitle": "Draft patch notes, focus a region, or ship a hotfix"
+      },
+      {
+        "id": "opsSection",
+        "component": "Form",
+        "name": "liveops-actions",
+        "buttons": "opsButtons",
+        "fields": ["regionField", "patchField", "hotfixField"]
+      },
+      {
+        "id": "regionField",
+        "component": "FormControl",
+        "label": "Focus dashboard on region",
+        "input": "regionSelect"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "focus_region",
+        "items": ["rAll", "rUse", "rUsw", "rEu", "rApac", "rSa"],
+        "placeholder": "All regions"
+      },
+      {
+        "id": "rAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All regions"
+      },
+      {
+        "id": "rUse",
+        "component": "SelectItem",
+        "value": "us-east",
+        "label": "US-East"
+      },
+      {
+        "id": "rUsw",
+        "component": "SelectItem",
+        "value": "us-west",
+        "label": "US-West"
+      },
+      {
+        "id": "rEu",
+        "component": "SelectItem",
+        "value": "eu-central",
+        "label": "EU-Central"
+      },
+      {
+        "id": "rApac",
+        "component": "SelectItem",
+        "value": "apac-sg",
+        "label": "APAC-Singapore"
+      },
+      {
+        "id": "rSa",
+        "component": "SelectItem",
+        "value": "sa-br",
+        "label": "SA-Brazil"
+      },
+      {
+        "id": "patchField",
+        "component": "FormControl",
+        "label": "Draft patch notes",
+        "input": "patchInput",
+        "hint": "Markdown supported — saved as draft until published"
+      },
+      {
+        "id": "patchInput",
+        "component": "TextArea",
+        "name": "patch_notes",
+        "placeholder": "## v3.3.0\n- Fixed...\n- Added...",
+        "rows": 5
+      },
+      {
+        "id": "hotfixField",
+        "component": "FormControl",
+        "label": "Hotfix description",
+        "input": "hotfixInput",
+        "hint": "Requires approval — will prompt confirmation before deploy"
+      },
+      {
+        "id": "hotfixInput",
+        "component": "Input",
+        "name": "hotfix_desc",
+        "placeholder": "e.g. Fix crash on raid boss spawn (v3.3.0-beta)"
+      },
+      {
+        "id": "opsButtons",
+        "component": "Buttons",
+        "buttons": ["applyRegionBtn", "savePatchBtn", "hotfixBtn"]
+      },
+      {
+        "id": "applyRegionBtn",
+        "component": "Button",
+        "label": "Apply region focus",
+        "variant": "secondary"
+      },
+      {
+        "id": "savePatchBtn",
+        "component": "Button",
+        "label": "Save patch notes draft",
+        "variant": "tertiary"
+      },
+      {
+        "id": "hotfixBtn",
+        "component": "Button",
+        "label": "Ship hotfix",
+        "variant": "primary",
+        "type": "destructive"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+All 16 items are covered: (1) live badge + KPI table for online players, (2) DAU/MAU, (3) revenue today, (4) ARPDAU, (5) 14-day session length line chart, (6) best-selling items bar chart with units, (7) region health table, (8) crash rate by version, (9) live/upcoming events list, (10) player reports queue, (11) ban appeals queue, (12) inflation KPI + warning alert, (13) both experiment results, (14) patch notes textarea, (15) region focus selector, and (16) hotfix ship button.

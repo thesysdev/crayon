@@ -1,0 +1,257 @@
+Live platform status screen — API uptime and latest incident highlighted:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "overallStatus",
+          "uptimeCard",
+          "incidentCard",
+          "historySection",
+          "separator1",
+          "footerActions"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Platform Status",
+        "subtitle": "For the platform team • Updated just now • api.platform.internal"
+      },
+      {
+        "id": "overallStatus",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "statusBadge",
+          "statusText"
+        ],
+        "direction": "row",
+        "align": "center",
+        "justify": "between"
+      },
+      {
+        "id": "statusBadge",
+        "component": "Badge",
+        "text": "● All Systems Operational",
+        "variant": "secondary"
+      },
+      {
+        "id": "statusText",
+        "component": "TextContent",
+        "text": "Last checked: Today 09:42 UTC • No active incidents",
+        "size": "small"
+      },
+      {
+        "id": "uptimeCard",
+        "component": "Card",
+        "children": [
+          "uptimeHeader",
+          "uptimeMetric",
+          "uptimeProgress",
+          "uptimeSubtext",
+          "uptimeChart"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "uptimeHeader",
+        "component": "CardHeader",
+        "title": "API Uptime — This Month",
+        "subtitle": "May 1–18, 2026 (MTD) • SLO target: 99.9%"
+      },
+      {
+        "id": "uptimeMetric",
+        "component": "TextContent",
+        "text": "99.97% uptime",
+        "size": "large-heavy"
+      },
+      {
+        "id": "uptimeProgress",
+        "component": "Progress",
+        "value": 99.97,
+        "label": "API Availability (MTD)"
+      },
+      {
+        "id": "uptimeSubtext",
+        "component": "TextContent",
+        "text": "13 minutes total downtime this month • 432,100 successful requests • 99.97% exceeds 99.9% SLO",
+        "size": "small"
+      },
+      {
+        "id": "uptimeChart",
+        "component": "LineChart",
+        "labels": [
+          "May 1",
+          "May 4",
+          "May 7",
+          "May 10",
+          "May 13",
+          "May 14",
+          "May 15",
+          "May 18"
+        ],
+        "series": [
+          "uptimeSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Date",
+        "yLabel": "Availability %"
+      },
+      {
+        "id": "uptimeSeries",
+        "component": "Series",
+        "category": "API",
+        "values": [
+          100,
+          100,
+          99.99,
+          100,
+          100,
+          99.82,
+          100,
+          100
+        ]
+      },
+      {
+        "id": "incidentCard",
+        "component": "Card",
+        "children": [
+          "incidentHeader",
+          "incidentAlert",
+          "incidentNote"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "incidentHeader",
+        "component": "CardHeader",
+        "title": "Most Recent Incident",
+        "subtitle": "Resolved • Incident #INC-4821"
+      },
+      {
+        "id": "incidentAlert",
+        "component": "Alert",
+        "title": "Resolved: Elevated API Latency & 500s on POST /v2/orders",
+        "description": "Resolved on May 14, 2026 at 14:42 UTC (duration 27 min). Root cause: database connection pool exhaustion during deploy. Fix: scaled pool from 50 → 150 and rolling restart. No data loss. Monitoring stable since resolution.",
+        "variant": "success"
+      },
+      {
+        "id": "incidentNote",
+        "component": "TextContent",
+        "text": "Impact: ~2.1% of order creates retried automatically. Post-mortem published in #platform-incidents. Next step: add pool saturation alert at 80%.",
+        "size": "small"
+      },
+      {
+        "id": "historySection",
+        "component": "Card",
+        "variant": "clear",
+        "children": [
+          "historyHeader",
+          "historyTable"
+        ]
+      },
+      {
+        "id": "historyHeader",
+        "component": "CardHeader",
+        "title": "Incident History",
+        "subtitle": "Last 30 days for context"
+      },
+      {
+        "id": "historyTable",
+        "component": "Table",
+        "columns": [
+          "colDate",
+          "colService",
+          "colDuration",
+          "colStatus"
+        ]
+      },
+      {
+        "id": "colDate",
+        "component": "Col",
+        "label": "Date",
+        "data": [
+          "May 14, 14:15 UTC",
+          "May 02, 03:10 UTC",
+          "Apr 21, 11:00 UTC"
+        ]
+      },
+      {
+        "id": "colService",
+        "component": "Col",
+        "label": "Service",
+        "data": [
+          "API — POST /v2/orders",
+          "API — Auth",
+          "API — Webhooks"
+        ]
+      },
+      {
+        "id": "colDuration",
+        "component": "Col",
+        "label": "Duration",
+        "data": [
+          "27 min",
+          "8 min",
+          "41 min"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Resolved 14:42 UTC",
+          "Resolved 03:18 UTC",
+          "Resolved 11:41 UTC"
+        ]
+      },
+      {
+        "id": "separator1",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "footerActions",
+        "component": "Buttons",
+        "buttons": [
+          "btnSubscribe",
+          "btnHistory"
+        ]
+      },
+      {
+        "id": "btnSubscribe",
+        "component": "Button",
+        "label": "Subscribe to updates",
+        "variant": "primary"
+      },
+      {
+        "id": "btnHistory",
+        "component": "Button",
+        "label": "View full status history",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>

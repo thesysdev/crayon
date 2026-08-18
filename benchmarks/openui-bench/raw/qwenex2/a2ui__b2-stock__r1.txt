@@ -1,0 +1,147 @@
+Here's a low-inventory warning view that covers all four requirements:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "thresholdAlert",
+          "searchField",
+          "inventoryTable",
+          "bulkActions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Low Inventory Alert",
+        "subtitle": "Items below reorder threshold"
+      },
+      {
+        "id": "thresholdAlert",
+        "component": "Alert",
+        "title": "Warning Threshold: 10 units",
+        "description": "Items with 10 or fewer remaining units are flagged below. Reorder before stock runs out.",
+        "variant": "warning"
+      },
+      {
+        "id": "searchField",
+        "component": "FormControl",
+        "label": "Search items",
+        "input": "searchInput",
+        "hint": "Filter by item name or SKU"
+      },
+      {
+        "id": "searchInput",
+        "component": "Input",
+        "name": "search",
+        "placeholder": "e.g. Wireless Mouse, SKU-4421…",
+        "type": "text"
+      },
+      {
+        "id": "inventoryTable",
+        "component": "Table",
+        "columns": [
+          "colItem",
+          "colRemaining",
+          "colStatus",
+          "colAction"
+        ]
+      },
+      {
+        "id": "colItem",
+        "component": "Col",
+        "label": "Item",
+        "data": [
+          "Wireless Mouse (SKU-4421)",
+          "USB-C Cable 2m (SKU-1187)",
+          "Laptop Stand (SKU-3305)",
+          "Mechanical Keyboard (SKU-2290)",
+          "Webcam 1080p (SKU-5512)"
+        ]
+      },
+      {
+        "id": "colRemaining",
+        "component": "Col",
+        "label": "Remaining Units",
+        "type": "number",
+        "data": [
+          3,
+          7,
+          5,
+          9,
+          2
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "🔴 Critical",
+          "🟡 Low",
+          "🟡 Low",
+          "🟡 Low",
+          "🔴 Critical"
+        ]
+      },
+      {
+        "id": "colAction",
+        "component": "Col",
+        "label": "Reorder",
+        "type": "action",
+        "data": [
+          "Reorder",
+          "Reorder",
+          "Reorder",
+          "Reorder",
+          "Reorder"
+        ]
+      },
+      {
+        "id": "bulkActions",
+        "component": "Buttons",
+        "buttons": [
+          "reorderAllBtn",
+          "exportBtn"
+        ]
+      },
+      {
+        "id": "reorderAllBtn",
+        "component": "Button",
+        "label": "Reorder All Flagged Items",
+        "variant": "primary"
+      },
+      {
+        "id": "exportBtn",
+        "component": "Button",
+        "label": "Export List",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This view includes:
+
+1. **Items running low** — A table listing each flagged item with its remaining unit count and a color-coded status indicator (Critical vs. Low).
+2. **Reorder capability** — Each row has a "Reorder" action, plus a bulk "Reorder All Flagged Items" button at the bottom.
+3. **Threshold display** — A warning alert at the top clearly states the 10-unit threshold that triggers the warning.
+4. **Search** — A text input field at the top allows filtering items by name or SKU.

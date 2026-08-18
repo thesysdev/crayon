@@ -1,0 +1,259 @@
+Here's a delivery tracking screen covering the current location, estimated delivery date, and a way to report a problem.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "statusBadge",
+          "etaCallout",
+          "locationSection",
+          "progressSection",
+          "problemSection"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Track your delivery",
+        "subtitle": "Order #A7F92-1183"
+      },
+      {
+        "id": "statusBadge",
+        "component": "Badge",
+        "text": "In transit",
+        "variant": "secondary"
+      },
+      {
+        "id": "etaCallout",
+        "component": "Callout",
+        "variant": "success",
+        "title": "Estimated delivery: Thursday, June 12",
+        "description": "Arriving between 1:00 PM and 5:00 PM"
+      },
+      {
+        "id": "locationSection",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "locationHeading",
+          "currentLocation",
+          "locationDetail"
+        ]
+      },
+      {
+        "id": "locationHeading",
+        "component": "Heading",
+        "text": "Current location",
+        "level": "h4"
+      },
+      {
+        "id": "currentLocation",
+        "component": "TextContent",
+        "text": "**Regional Sorting Facility — Columbus, OH**",
+        "size": "large-heavy"
+      },
+      {
+        "id": "locationDetail",
+        "component": "TextContent",
+        "text": "Last scanned today at 8:42 AM. Departed for local delivery hub.",
+        "size": "small"
+      },
+      {
+        "id": "progressSection",
+        "component": "Steps",
+        "items": [
+          "stepOrdered",
+          "stepShipped",
+          "stepTransit",
+          "stepOutForDelivery",
+          "stepDelivered"
+        ]
+      },
+      {
+        "id": "stepOrdered",
+        "component": "StepsItem",
+        "title": "Order placed",
+        "details": "June 8 — Confirmed and paid"
+      },
+      {
+        "id": "stepShipped",
+        "component": "StepsItem",
+        "title": "Shipped",
+        "details": "June 9 — Left origin warehouse"
+      },
+      {
+        "id": "stepTransit",
+        "component": "StepsItem",
+        "title": "In transit",
+        "details": "June 11 — Columbus, OH sorting facility (current)"
+      },
+      {
+        "id": "stepOutForDelivery",
+        "component": "StepsItem",
+        "title": "Out for delivery",
+        "details": "Expected June 12"
+      },
+      {
+        "id": "stepDelivered",
+        "component": "StepsItem",
+        "title": "Delivered",
+        "details": "Estimated June 12, 1:00–5:00 PM"
+      },
+      {
+        "id": "problemSection",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "problemHeading",
+          "problemText",
+          "problemActions"
+        ]
+      },
+      {
+        "id": "problemHeading",
+        "component": "Heading",
+        "text": "Something wrong?",
+        "level": "h4"
+      },
+      {
+        "id": "problemText",
+        "component": "TextContent",
+        "text": "If your package is delayed, damaged, or missing, let us know and we'll help right away.",
+        "size": "default"
+      },
+      {
+        "id": "problemActions",
+        "component": "Buttons",
+        "buttons": [
+          "reportProblemBtn"
+        ]
+      },
+      {
+        "id": "reportProblemBtn",
+        "component": "DrawerBlock",
+        "triggerLabel": "Report a problem",
+        "title": "Report a delivery problem",
+        "description": "Tell us what went wrong and we'll follow up.",
+        "content": [
+          "problemForm"
+        ]
+      },
+      {
+        "id": "problemForm",
+        "component": "Form",
+        "name": "report-delivery-problem",
+        "buttons": "problemFormButtons",
+        "fields": [
+          "issueTypeField",
+          "detailsField"
+        ]
+      },
+      {
+        "id": "issueTypeField",
+        "component": "FormControl",
+        "label": "What's the issue?",
+        "input": "issueTypeSelect"
+      },
+      {
+        "id": "issueTypeSelect",
+        "component": "Select",
+        "name": "issue_type",
+        "placeholder": "Choose a problem type",
+        "items": [
+          "issueDelayed",
+          "issueDamaged",
+          "issueMissing",
+          "issueWrongItem"
+        ]
+      },
+      {
+        "id": "issueDelayed",
+        "component": "SelectItem",
+        "value": "delayed",
+        "label": "Package is delayed"
+      },
+      {
+        "id": "issueDamaged",
+        "component": "SelectItem",
+        "value": "damaged",
+        "label": "Package arrived damaged"
+      },
+      {
+        "id": "issueMissing",
+        "component": "SelectItem",
+        "value": "missing",
+        "label": "Package is missing / lost"
+      },
+      {
+        "id": "issueWrongItem",
+        "component": "SelectItem",
+        "value": "wrong_item",
+        "label": "Wrong item received"
+      },
+      {
+        "id": "detailsField",
+        "component": "FormControl",
+        "label": "Describe the problem",
+        "input": "detailsInput",
+        "hint": "Include any details that help us resolve this faster"
+      },
+      {
+        "id": "detailsInput",
+        "component": "TextArea",
+        "name": "details",
+        "placeholder": "e.g. The tracking hasn't updated in 3 days...",
+        "rows": 4
+      },
+      {
+        "id": "problemFormButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitProblemBtn",
+          "cancelProblemBtn"
+        ]
+      },
+      {
+        "id": "submitProblemBtn",
+        "component": "Button",
+        "label": "Submit report",
+        "variant": "primary"
+      },
+      {
+        "id": "cancelProblemBtn",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This screen covers all three requirements:
+
+1. **Where the package is now** — the "Current location" section shows the Columbus, OH sorting facility with the last scan time, reinforced by the step tracker marking that stage as current.
+2. **Estimated delivery date** — the success callout at the top prominently displays "Thursday, June 12" with a delivery time window.
+3. **Report a problem** — the "Report a problem" button opens a drawer with a form to select the issue type and describe what went wrong.

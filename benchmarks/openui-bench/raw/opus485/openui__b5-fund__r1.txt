@@ -1,0 +1,89 @@
+root = Card([header, kpis, riskAlert, timeframe, positions, exposure, gainersLosers, watchlist, orders, headlines, econ, strategies, drawdown, riskLimits, actions])
+
+header = CardHeader("Morning Workspace", "Trading Desk · Pre-Open")
+
+kpis = Table([kpiName, kpiValue])
+kpiName = Col("Metric", ["Portfolio Value", "P&L Today", "Value at Risk (1d, 95%)", "Margin In Use"])
+kpiValue = Col("Value", ["$48.2M", "+$312,400 (+0.65%)", "$1.84M", "$12.6M / $20M"])
+
+riskAlert = Alert("Margin utilization at 63%", "Approaching internal 70% soft limit — review leverage before open", "warning")
+
+timeframe = Form("timeframe", tfButtons, [tfField])
+tfField = FormControl("Timeframe", tfSelect)
+tfSelect = Select("range", [tf1d, tf1w, tf1m, tfytd], "Select range", null, "1d")
+tf1d = SelectItem("1d", "Today")
+tf1w = SelectItem("1w", "This week")
+tf1m = SelectItem("1m", "This month")
+tfytd = SelectItem("ytd", "Year to date")
+tfButtons = Buttons([tfApply])
+tfApply = Button("Apply", null, "secondary")
+
+positions = Table([posTicker, posSize, posEntry, posCurrent, posPnl])
+posTicker = Col("Ticker", ["AAPL", "MSFT", "NVDA", "TSLA", "AMZN"])
+posSize = Col("Size", [12000, 8000, 5000, -3000, 6000], "number")
+posEntry = Col("Entry", [188.40, 402.10, 118.60, 244.90, 176.20], "number")
+posCurrent = Col("Current", [191.25, 409.80, 124.35, 238.10, 179.50], "number")
+posPnl = Col("Unreal. P&L", ["+$34,200", "+$61,600", "+$28,750", "+$20,400", "+$19,800"])
+
+exposure = HorizontalBarChart(["Technology", "Consumer", "Financials", "Energy", "Healthcare"], [expSeries], null, "Exposure ($M)", "Sector")
+expSeries = Series("Exposure", [18.4, 9.2, 7.1, 4.8, 3.9])
+
+gainersLosers = Table([glTicker, glChange])
+glTicker = Col("Mover", ["NVDA", "MSFT", "AAPL", "TSLA", "INTC"])
+glChange = Col("Change", ["+4.85%", "+1.91%", "+1.51%", "-2.77%", "-3.42%"])
+
+watchlist = ListBlock([wl1, wl2, wl3, wl4])
+wl1 = ListItem("GOOGL", "$174.30  ·  +0.42%")
+wl2 = ListItem("META", "$512.80  ·  -0.31%")
+wl3 = ListItem("AMD", "$162.15  ·  +2.10%")
+wl4 = ListItem("NFLX", "$648.90  ·  +0.88%")
+
+orders = Table([ordTicker, ordSide, ordQty, ordType, ordStatus])
+ordTicker = Col("Ticker", ["AAPL", "NVDA", "AMZN", "TSLA"])
+ordSide = Col("Side", ["Buy", "Sell", "Buy", "Buy"])
+ordQty = Col("Qty", [2000, 1500, 1000, 800], "number")
+ordType = Col("Type", ["Limit 190.00", "Limit 126.00", "Limit 178.50", "Stop 232.00"])
+ordStatus = Col("Status", ["Working", "Working", "Working", "Pending"])
+
+headlines = ListBlock([hl1, hl2, hl3, hl4])
+hl1 = ListItem("Fed minutes signal patience on rate cuts", "Sentiment: Neutral")
+hl2 = ListItem("Chip demand outlook lifted by AI capex", "Sentiment: Positive")
+hl3 = ListItem("Oil slips on softer China data", "Sentiment: Negative")
+hl4 = ListItem("Retail sales beat expectations", "Sentiment: Positive")
+
+econ = Table([ecDay, ecEvent, ecFcst])
+ecDay = Col("Day", ["Mon", "Tue", "Wed", "Thu", "Fri"])
+ecEvent = Col("Release", ["ISM Manufacturing", "JOLTS Openings", "FOMC Minutes", "Jobless Claims", "Nonfarm Payrolls"])
+ecFcst = Col("Forecast", ["48.9", "8.1M", "—", "215K", "185K"])
+
+strategies = BarChart(["Momentum", "Mean Rev.", "Stat Arb", "Macro", "Vol Carry"], [stratSeries], null, "Strategy", "YTD Return %")
+stratSeries = Series("YTD Return", [14.2, 6.8, 9.5, -2.1, 11.3])
+
+drawdown = AreaChart(["Q1", "Q2", "Q3", "Q4", "YTD"], [ddSeries], "natural", "Period", "Drawdown %")
+ddSeries = Series("Drawdown", [-3.2, -6.8, -4.1, -8.5, -2.4])
+
+riskLimits = Callout("warning", "Risk Limits Near Breach", "Tech sector exposure at 38.2% (limit 40%). Single-name NVDA at 9.1% (limit 10%). Gross leverage at 2.4x (limit 2.5x).")
+
+actions = Buttons([rebalanceBtn, placeOrderDialog, timeframeDrawer])
+rebalanceBtn = Button("Rebalance Portfolio", null, "primary")
+
+placeOrderDialog = DialogBlock("Place Order", "New Order", "Enter order details", [orderForm], "secondary")
+orderForm = Form("place-order", orderButtons, [ordTickerField, ordSideField, ordQtyField])
+ordTickerField = FormControl("Ticker", ordTickerInput)
+ordTickerInput = Input("ticker", "e.g. AAPL")
+ordSideField = FormControl("Side", ordSideRadio)
+ordSideRadio = RadioGroup("side", [sideBuy, sideSell], "buy")
+sideBuy = RadioItem("Buy", "Open or add long", "buy")
+sideSell = RadioItem("Sell", "Reduce or short", "sell")
+ordQtyField = FormControl("Quantity", ordQtyInput)
+ordQtyInput = Input("quantity", "Number of shares", "number")
+orderButtons = Buttons([submitOrder, cancelOrder])
+submitOrder = Button("Submit Order", null, "primary")
+cancelOrder = Button("Cancel", null, "tertiary")
+
+timeframeDrawer = DrawerBlock("Adjust View", "Timeframe & Filters", "Change the workspace timeframe", [tfDrawerForm])
+tfDrawerForm = Form("tf-drawer", tfDrawerButtons, [tfDrawerField])
+tfDrawerField = FormControl("Range", tfDrawerSelect)
+tfDrawerSelect = Select("range", [tf1d, tf1w, tf1m, tfytd], "Select range")
+tfDrawerButtons = Buttons([tfDrawerApply])
+tfDrawerApply = Button("Apply Timeframe", null, "primary")

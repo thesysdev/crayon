@@ -1,0 +1,268 @@
+Here's a personal budget check screen covering all five items — budget progress, category split, largest expense highlight, month selector, and an add-expense form.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "monthRow",
+          "budgetProgress",
+          "budgetSummary",
+          "largestAlert",
+          "sep1",
+          "categoryTitle",
+          "categoryPie",
+          "categoryTable",
+          "sep2",
+          "addExpense"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Personal Budget Check",
+        "subtitle": "June 2025 overview"
+      },
+      {
+        "id": "monthRow",
+        "component": "FormControl",
+        "label": "View month",
+        "input": "monthSelect"
+      },
+      {
+        "id": "monthSelect",
+        "component": "Select",
+        "name": "month",
+        "value": "2025-06",
+        "items": [
+          "mApr",
+          "mMay",
+          "mJun"
+        ]
+      },
+      {
+        "id": "mApr",
+        "component": "SelectItem",
+        "value": "2025-04",
+        "label": "April 2025"
+      },
+      {
+        "id": "mMay",
+        "component": "SelectItem",
+        "value": "2025-05",
+        "label": "May 2025"
+      },
+      {
+        "id": "mJun",
+        "component": "SelectItem",
+        "value": "2025-06",
+        "label": "June 2025"
+      },
+      {
+        "id": "budgetProgress",
+        "component": "Progress",
+        "value": 82,
+        "label": "$2,460 spent of $3,000 budget"
+      },
+      {
+        "id": "budgetSummary",
+        "component": "TextContent",
+        "text": "**$540 remaining** — 82% of your monthly budget used with 9 days left."
+      },
+      {
+        "id": "largestAlert",
+        "component": "Alert",
+        "title": "Largest expense: $850 — Rent",
+        "description": "Paid Jun 1 to Bayview Apartments. That's 35% of this month's total spending.",
+        "variant": "warning"
+      },
+      {
+        "id": "sep1",
+        "component": "Separator"
+      },
+      {
+        "id": "categoryTitle",
+        "component": "Heading",
+        "text": "Spending by Category",
+        "level": "h3"
+      },
+      {
+        "id": "categoryPie",
+        "component": "PieChart",
+        "labels": ["Housing", "Food", "Transport", "Entertainment", "Utilities"],
+        "values": [850, 620, 380, 310, 300],
+        "variant": "donut"
+      },
+      {
+        "id": "categoryTable",
+        "component": "Table",
+        "columns": ["catName", "catAmount", "catShare"]
+      },
+      {
+        "id": "catName",
+        "component": "Col",
+        "label": "Category",
+        "data": ["Housing", "Food", "Transport", "Entertainment", "Utilities"]
+      },
+      {
+        "id": "catAmount",
+        "component": "Col",
+        "label": "Spent",
+        "data": ["$850", "$620", "$380", "$310", "$300"]
+      },
+      {
+        "id": "catShare",
+        "component": "Col",
+        "label": "% of total",
+        "data": ["35%", "25%", "15%", "13%", "12%"]
+      },
+      {
+        "id": "sep2",
+        "component": "Separator"
+      },
+      {
+        "id": "addExpense",
+        "component": "DialogBlock",
+        "triggerLabel": "+ Add expense",
+        "title": "Add an expense",
+        "description": "Log a new expense for the selected month",
+        "content": ["expenseForm"]
+      },
+      {
+        "id": "expenseForm",
+        "component": "Form",
+        "name": "add-expense",
+        "buttons": "expenseButtons",
+        "fields": ["descField", "amountField", "catField", "dateField"]
+      },
+      {
+        "id": "descField",
+        "component": "FormControl",
+        "label": "Description",
+        "input": "descInput"
+      },
+      {
+        "id": "descInput",
+        "component": "Input",
+        "name": "description",
+        "placeholder": "e.g. Grocery run"
+      },
+      {
+        "id": "amountField",
+        "component": "FormControl",
+        "label": "Amount ($)",
+        "input": "amountInput"
+      },
+      {
+        "id": "amountInput",
+        "component": "Input",
+        "name": "amount",
+        "type": "number",
+        "placeholder": "0.00"
+      },
+      {
+        "id": "catField",
+        "component": "FormControl",
+        "label": "Category",
+        "input": "catSelect"
+      },
+      {
+        "id": "catSelect",
+        "component": "Select",
+        "name": "category",
+        "placeholder": "Choose a category",
+        "items": ["cHousing", "cFood", "cTransport", "cEntertainment", "cUtilities", "cOther"]
+      },
+      {
+        "id": "cHousing",
+        "component": "SelectItem",
+        "value": "housing",
+        "label": "Housing"
+      },
+      {
+        "id": "cFood",
+        "component": "SelectItem",
+        "value": "food",
+        "label": "Food"
+      },
+      {
+        "id": "cTransport",
+        "component": "SelectItem",
+        "value": "transport",
+        "label": "Transport"
+      },
+      {
+        "id": "cEntertainment",
+        "component": "SelectItem",
+        "value": "entertainment",
+        "label": "Entertainment"
+      },
+      {
+        "id": "cUtilities",
+        "component": "SelectItem",
+        "value": "utilities",
+        "label": "Utilities"
+      },
+      {
+        "id": "cOther",
+        "component": "SelectItem",
+        "value": "other",
+        "label": "Other"
+      },
+      {
+        "id": "dateField",
+        "component": "FormControl",
+        "label": "Date",
+        "input": "datePicker"
+      },
+      {
+        "id": "datePicker",
+        "component": "DatePicker",
+        "name": "date",
+        "mode": "single"
+      },
+      {
+        "id": "expenseButtons",
+        "component": "Buttons",
+        "buttons": ["saveBtn", "cancelBtn"]
+      },
+      {
+        "id": "saveBtn",
+        "component": "Button",
+        "label": "Save expense",
+        "variant": "primary"
+      },
+      {
+        "id": "cancelBtn",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+All five requirements are covered:
+
+1. **Total spent vs. budget** — a progress bar showing $2,460 of $3,000 (82%) with remaining balance.
+2. **Category split** — a donut chart plus a detailed table with amounts and percentages.
+3. **Largest expense** — a highlighted warning alert calling out the $850 rent payment.
+4. **Different month** — a "View month" dropdown to switch between April, May, and June.
+5. **Add an expense** — a dialog with a full form (description, amount, category, date).

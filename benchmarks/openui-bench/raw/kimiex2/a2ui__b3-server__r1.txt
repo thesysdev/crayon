@@ -1,0 +1,166 @@
+Here's a complete on-call service health dashboard covering all 8 requirements:
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "regionControl",
+          "uptimeSection",
+          "resourcesSection",
+          "errorSection",
+          "incidentsSection",
+          "slowEndpointsSection",
+          "thresholdSection"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Service Health — On-Call View",
+        "subtitle": "payments-api · production"
+      },
+      {
+        "id": "regionControl",
+        "component": "FormControl",
+        "label": "Region",
+        "input": "regionSelect",
+        "hint": "Narrow all metrics to a single region"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region",
+        "placeholder": "All regions",
+        "items": ["regAll", "regUsEast", "regUsWest", "regEu", "regApac"]
+      },
+      { "id": "regAll", "component": "SelectItem", "value": "all", "label": "All regions" },
+      { "id": "regUsEast", "component": "SelectItem", "value": "us-east-1", "label": "US East (us-east-1)" },
+      { "id": "regUsWest", "component": "SelectItem", "value": "us-west-2", "label": "US West (us-west-2)" },
+      { "id": "regEu", "component": "SelectItem", "value": "eu-west-1", "label": "EU (eu-west-1)" },
+      { "id": "regApac", "component": "SelectItem", "value": "ap-southeast-2", "label": "APAC (ap-southeast-2)" },
+      {
+        "id": "uptimeSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["uptimeHeader", "uptimeBadge", "uptimeProgress"]
+      },
+      { "id": "uptimeHeader", "component": "CardHeader", "title": "1. Uptime This Quarter" },
+      { "id": "uptimeBadge", "component": "Badge", "text": "99.97% — SLO met", "variant": "secondary" },
+      { "id": "uptimeProgress", "component": "Progress", "value": 99.97, "label": "SLO target: 99.9%" },
+      {
+        "id": "resourcesSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["resourcesHeader", "resourcesChart", "cpuSeries", "memSeries"]
+      },
+      { "id": "resourcesHeader", "component": "CardHeader", "title": "2. CPU & Memory — Past 24 Hours" },
+      {
+        "id": "resourcesChart",
+        "component": "LineChart",
+        "labels": ["00:00", "04:00", "08:00", "12:00", "16:00", "20:00", "Now"],
+        "series": ["cpuSeries", "memSeries"],
+        "variant": "natural",
+        "xLabel": "Time",
+        "yLabel": "Usage %"
+      },
+      { "id": "cpuSeries", "component": "Series", "category": "CPU %", "values": [32, 28, 45, 61, 58, 49, 52] },
+      { "id": "memSeries", "component": "Series", "category": "Memory %", "values": [55, 54, 58, 63, 66, 64, 67] },
+      {
+        "id": "errorSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["errorHeader", "errorAlert"]
+      },
+      { "id": "errorHeader", "component": "CardHeader", "title": "3. Error Rate — Right Now" },
+      { "id": "errorAlert", "component": "Alert", "title": "2.4% error rate", "description": "Above the 1% warning threshold — 5xx spike on /checkout in the last 5 minutes", "variant": "warning" },
+      {
+        "id": "incidentsSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["incidentsHeader", "incidentsTable", "incId", "incTitle", "incSeverity", "incAge", "incActions"]
+      },
+      { "id": "incidentsHeader", "component": "CardHeader", "title": "4 & 8. Open Incidents — Acknowledge" },
+      { "id": "incidentsTable", "component": "Table", "columns": ["incId", "incTitle", "incSeverity", "incAge", "incActions"] },
+      { "id": "incId", "component": "Col", "label": "ID", "data": ["INC-1042", "INC-1043", "INC-1044"] },
+      { "id": "incTitle", "component": "Col", "label": "Incident", "data": ["Checkout 5xx spike", "DB replica lag", "Elevated p99 latency"] },
+      { "id": "incSeverity", "component": "Col", "label": "Severity", "data": ["SEV-1", "SEV-2", "SEV-3"] },
+      { "id": "incAge", "component": "Col", "label": "Open for", "data": ["12 min", "47 min", "2 h"] },
+      { "id": "incActions", "component": "Col", "label": "Acknowledge", "type": "action", "data": ["Acknowledge", "Acknowledge", "Acknowledge"] },
+      {
+        "id": "slowEndpointsSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["slowHeader", "slowTable", "slowEndpoint", "slowLatency"]
+      },
+      { "id": "slowHeader", "component": "CardHeader", "title": "6. Five Slowest Endpoints" },
+      { "id": "slowTable", "component": "Table", "columns": ["slowEndpoint", "slowLatency"] },
+      { "id": "slowEndpoint", "component": "Col", "label": "Endpoint", "data": ["POST /checkout", "GET /orders/:id/history", "POST /refunds", "GET /users/search", "GET /reports/daily"] },
+      { "id": "slowLatency", "component": "Col", "label": "p95 Latency", "data": ["1,840 ms", "1,210 ms", "940 ms", "720 ms", "610 ms"] },
+      {
+        "id": "thresholdSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["thresholdHeader", "thresholdForm"]
+      },
+      { "id": "thresholdHeader", "component": "CardHeader", "title": "7. Set Alert Threshold", "subtitle": "Page me when error rate exceeds this value" },
+      {
+        "id": "thresholdForm",
+        "component": "Form",
+        "name": "alert-threshold",
+        "buttons": "thresholdButtons",
+        "fields": ["thresholdField"]
+      },
+      {
+        "id": "thresholdField",
+        "component": "FormControl",
+        "label": "Error rate threshold (%)",
+        "input": "thresholdSlider",
+        "hint": "Current: 1%"
+      },
+      {
+        "id": "thresholdSlider",
+        "component": "Slider",
+        "name": "error_threshold",
+        "variant": "discrete",
+        "min": 0.5,
+        "max": 10,
+        "step": 0.5,
+        "defaultValue": [1]
+      },
+      {
+        "id": "thresholdButtons",
+        "component": "Buttons",
+        "buttons": ["saveThresholdBtn"]
+      },
+      { "id": "saveThresholdBtn", "component": "Button", "label": "Save threshold", "variant": "primary" }
+    ]
+  }
+}
+</a2ui-json>
+
+All 8 items are covered:
+1. **Uptime** — 99.97% badge + progress bar vs SLO
+2. **CPU/Memory** — 24-hour line chart with two series
+3. **Error rate now** — warning alert showing 2.4%
+4. **Open incidents** — table with SEV-1/2/3 severity per incident
+5. **Region filter** — select dropdown at the top
+6. **Slowest endpoints** — ranked table with p95 latency
+7. **Alert threshold** — slider form to set error-rate paging threshold
+8. **Acknowledge** — action column on each incident row

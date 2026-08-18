@@ -1,0 +1,266 @@
+
+
+Here's a single-screen personal budget check. Coverage: **(1)** progress bar showing spent vs. budget, **(2)** a donut chart + table breaking spending down by category, **(3)** a highlighted alert for the largest expense, **(4)** a month selector to switch periods, and **(5)** a dialog-driven form to add a new expense.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "monthField",
+          "budgetProgress",
+          "catChart",
+          "catTable",
+          "largestAlert",
+          "addExpenseDialog"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Personal Budget Check",
+        "subtitle": "Your spending at a glance"
+      },
+      {
+        "id": "monthField",
+        "component": "FormControl",
+        "label": "Viewing month",
+        "input": "monthSelect",
+        "hint": "Pick a different month to review"
+      },
+      {
+        "id": "monthSelect",
+        "component": "Select",
+        "name": "budget_month",
+        "placeholder": "Choose a month",
+        "value": "2025-11",
+        "items": ["m202508", "m202509", "m202510", "m202511", "m202512"]
+      },
+      {
+        "id": "m202508",
+        "component": "SelectItem",
+        "value": "2025-08",
+        "label": "August 2025"
+      },
+      {
+        "id": "m202509",
+        "component": "SelectItem",
+        "value": "2025-09",
+        "label": "September 2025"
+      },
+      {
+        "id": "m202510",
+        "component": "SelectItem",
+        "value": "2025-10",
+        "label": "October 2025"
+      },
+      {
+        "id": "m202511",
+        "component": "SelectItem",
+        "value": "2025-11",
+        "label": "November 2025"
+      },
+      {
+        "id": "m202512",
+        "component": "SelectItem",
+        "value": "2025-12",
+        "label": "December 2025"
+      },
+      {
+        "id": "budgetProgress",
+        "component": "Progress",
+        "value": 81,
+        "label": "Spent $2,012 of your $2,500 budget — 81% used ($488 remaining)"
+      },
+      {
+        "id": "catChart",
+        "component": "PieChart",
+        "variant": "donut",
+        "labels": [
+          "Groceries",
+          "Dining out",
+          "Transport",
+          "Entertainment",
+          "Shopping",
+          "Other"
+        ],
+        "values": [548, 377, 416, 214, 312, 145]
+      },
+      {
+        "id": "catTable",
+        "component": "Table",
+        "columns": ["catCol", "amtCol", "shareCol"],
+        "type": "action"
+      },
+      {
+        "id": "catCol",
+        "component": "Col",
+        "label": "Category",
+        "data": ["Groceries", "Dining out", "Transport", "Entertainment", "Shopping", "Other"]
+      },
+      {
+        "id": "amtCol",
+        "component": "Col",
+        "label": "Amount",
+        "data": ["$548", "$377", "$416", "$214", "$312", "$145"]
+      },
+      {
+        "id": "shareCol",
+        "component": "Col",
+        "label": "% of spend",
+        "data": ["27%", "19%", "21%", "11%", "16%", "7%"]
+      },
+      {
+        "id": "largestAlert",
+        "component": "Alert",
+        "title": "Largest expense: Car insurance premium — $320",
+        "description": "One charge made up 16% of this month's spending (Transport). Consider spreading annual premiums into monthly saves.",
+        "variant": "warning"
+      },
+      {
+        "id": "addExpenseDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "+ Add expense",
+        "triggerVariant": "default",
+        "title": "Add a new expense",
+        "description": "Log it against the month you're viewing.",
+        "content": ["addForm"]
+      },
+      {
+        "id": "addForm",
+        "component": "Form",
+        "name": "add-expense",
+        "fields": ["expNameField", "expAmountField", "expCatField", "expDateField"],
+        "buttons": "addFormButtons"
+      },
+      {
+        "id": "expNameField",
+        "component": "FormControl",
+        "label": "Expense name",
+        "input": "expNameInput"
+      },
+      {
+        "id": "expNameInput",
+        "component": "Input",
+        "name": "expense_name",
+        "placeholder": "e.g. Weekly grocery run"
+      },
+      {
+        "id": "expAmountField",
+        "component": "FormControl",
+        "label": "Amount",
+        "input": "expAmountInput"
+      },
+      {
+        "id": "expAmountInput",
+        "component": "Input",
+        "name": "expense_amount",
+        "type": "number",
+        "placeholder": "0.00"
+      },
+      {
+        "id": "expCatField",
+        "component": "FormControl",
+        "label": "Category",
+        "input": "expCatSelect"
+      },
+      {
+        "id": "expCatSelect",
+        "component": "Select",
+        "name": "expense_category",
+        "placeholder": "Pick a category",
+        "items": ["cGroc", "cDining", "cTrans", "cEnt", "cShop", "cOther"]
+      },
+      {
+        "id": "cGroc",
+        "component": "SelectItem",
+        "value": "groceries",
+        "label": "Groceries"
+      },
+      {
+        "id": "cDining",
+        "component": "SelectItem",
+        "value": "dining",
+        "label": "Dining out"
+      },
+      {
+        "id": "cTrans",
+        "component": "SelectItem",
+        "value": "transport",
+        "label": "Transport"
+      },
+      {
+        "id": "cEnt",
+        "component": "SelectItem",
+        "value": "entertainment",
+        "label": "Entertainment"
+      },
+      {
+        "id": "cShop",
+        "component": "SelectItem",
+        "value": "shopping",
+        "label": "Shopping"
+      },
+      {
+        "id": "cOther",
+        "component": "SelectItem",
+        "value": "other",
+        "label": "Other"
+      },
+      {
+        "id": "expDateField",
+        "component": "FormControl",
+        "label": "Date",
+        "input": "expDatePicker"
+      },
+      {
+        "id": "expDatePicker",
+        "component": "DatePicker",
+        "name": "expense_date",
+        "mode": "single"
+      },
+      {
+        "id": "addFormButtons",
+        "component": "Buttons",
+        "buttons": ["saveBtn", "cancelBtn"]
+      },
+      {
+        "id": "saveBtn",
+        "component": "Button",
+        "label": "Save expense",
+        "variant": "primary"
+      },
+      {
+        "id": "cancelBtn",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+Notes on the layout:
+- The **progress bar** is right under the month selector so the budget health is the first thing you see after picking a month.
+- The **donut chart** gives the visual split, and the **table** underneath adds exact amounts and share percentages.
+- The **warning alert** singles out the largest expense with a short, actionable note.
+- Swapping the sample figures for real data just means updating the progress label/value, the chart values, and the table columns.

@@ -1,0 +1,68 @@
+root = Card([header, hubSelect, kpis, weather, delayed, flights, gateChanges, connections, crews, rebook, follow])
+
+header = CardHeader("SFO Hub Operations", "Live status — today")
+
+hubSelect = Form("hub-picker", hubButtons, [hubField])
+hubField = FormControl("View a different hub", hubSelectInput)
+hubSelectInput = Select("hub", [hubSFO, hubORD, hubDFW, hubATL], "Choose hub", null, "SFO")
+hubSFO = SelectItem("SFO", "San Francisco (SFO)")
+hubORD = SelectItem("ORD", "Chicago O'Hare (ORD)")
+hubDFW = SelectItem("DFW", "Dallas/Fort Worth (DFW)")
+hubATL = SelectItem("ATL", "Atlanta (ATL)")
+hubButtons = Buttons([hubLoadBtn])
+hubLoadBtn = Button("Load hub", null, "secondary")
+
+kpis = Table([kpiName, kpiValue])
+kpiName = Col("Metric", ["On-time performance", "Avg passenger load", "Avg turnaround time", "Cancellations today"])
+kpiValue = Col("Value", ["82%", "88%", "41 min", "6"])
+
+otpProgress = Progress(82, "On-time performance today")
+
+weather = Alert("Weather advisory", "Low ceilings and fog through 11:00; ground delay program in effect for arrivals", "warning")
+
+delayed = Callout("warning", "Delayed flights", "UA482, UA1190 and UA733 are currently delayed — see status column below")
+
+flights = Table([flNum, flRoute, flGate, flStatus])
+flNum = Col("Flight", ["UA245", "UA482", "UA1190", "UA733", "UA908", "UA1502"])
+flRoute = Col("Route", ["SFO-JFK", "SFO-ORD", "SFO-DEN", "SFO-SEA", "SFO-LAX", "SFO-BOS"])
+flGate = Col("Gate", ["F12", "G3", "E7", "F8", "G14", "E2"])
+flStatus = Col("Status", ["On time", "Delayed 35m", "Delayed 50m", "Delayed 20m", "Boarding", "Cancelled"])
+
+gateChanges = ListBlock([gc1, gc2, gc3])
+gc1 = ListItem("UA482 → Gate G3", "Moved from G5 at 09:42")
+gc2 = ListItem("UA908 → Gate G14", "Moved from G11 at 09:55")
+gc3 = ListItem("UA1502 → Gate E2", "Moved from E9 at 10:03")
+
+connections = Table([cnPax, cnInbound, cnOutbound, cnRisk])
+cnPax = Col("Passengers", [12, 8, 5, 3])
+cnInbound = Col("Inbound", ["UA482", "UA1190", "UA733", "UA482"])
+cnOutbound = Col("Outbound", ["UA612 (SEA)", "UA300 (JFK)", "UA455 (LAX)", "UA790 (DEN)"])
+cnRisk = Col("Connect window", ["18 min", "12 min", "9 min", "6 min"])
+
+crews = Table([crId, crRole, crBase, crAvail])
+crId = Col("Crew", ["CRW-21", "CRW-34", "CRW-07", "CRW-52"])
+crRole = Col("Role", ["Flight deck", "Cabin", "Cabin", "Flight deck"])
+crBase = Col("Duty remaining", ["6h 10m", "4h 30m", "5h 45m", "3h 20m"])
+crAvail = Col("Status", ["Available", "Available", "On standby", "Available"])
+
+rebook = Form("rebook-pax", rebookButtons, [rbFlightField, rbPaxField, rbOptionField])
+rbFlightField = FormControl("Affected flight", rbFlightInput)
+rbFlightInput = Select("flight", [rbF1, rbF2, rbF3], "Select flight")
+rbF1 = SelectItem("UA1502", "UA1502 SFO-BOS (Cancelled)")
+rbF2 = SelectItem("UA1190", "UA1190 SFO-DEN (Delayed)")
+rbF3 = SelectItem("UA482", "UA482 SFO-ORD (Delayed)")
+rbPaxField = FormControl("Passengers to rebook", rbPaxInput, "Number of affected passengers")
+rbPaxInput = Input("pax_count", "e.g. 24", "number")
+rbOptionField = FormControl("Rebooking option", rbOptionRadio)
+rbOptionRadio = RadioGroup("option", [rbOpt1, rbOpt2, rbOpt3])
+rbOpt1 = RadioItem("Next available", "Auto-assign earliest seats", "next")
+rbOpt2 = RadioItem("Partner airline", "Interline to partner carrier", "partner")
+rbOpt3 = RadioItem("Hold overnight", "Hotel and morning departure", "overnight")
+rebookButtons = Buttons([rbSubmit, rbNotify])
+rbSubmit = Button("Rebook passengers", null, "primary")
+rbNotify = Button("Notify only", null, "tertiary")
+
+follow = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Show tomorrow's outbound schedule")
+fu2 = FollowUpItem("Which delays are weather-driven?")
+fu3 = FollowUpItem("List all standby crews across hubs")

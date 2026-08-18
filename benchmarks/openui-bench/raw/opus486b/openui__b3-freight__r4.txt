@@ -1,0 +1,62 @@
+root = Card([header, kpis, delayAlert, transitSection, chartsRow, searchSection, flagSection, footer])
+header = CardHeader("Logistics Coordinator Board", "Live shipment operations overview")
+
+kpis = Card([onTimeCard, costCard, refreshTag], "sunk", "row", "l", "stretch", "between", false)
+onTimeCard = Card([onTimeHeading, onTimeProgress], "clear")
+onTimeHeading = Heading("On-time this month", "h4")
+onTimeProgress = Progress(92, "92% on-time")
+costCard = Card([costHeading, costValue], "clear")
+costHeading = Heading("Avg cost per shipment", "h4")
+costValue = TextContent("**$418.60**", "large-heavy")
+refreshTag = Tag("Updated 8:42 AM", null, "md", "info")
+
+delayAlert = Alert("3 delayed shipments", "SH-2041, SH-2088 and SH-2103 are behind schedule and need attention", "warning")
+
+transitSection = Card([transitHeading, transitTable], "sunk")
+transitHeading = Heading("Shipments in transit", "h3")
+transitTable = Table([colId, colOrigin, colDest, colEta, colStatus])
+colId = Col("Shipment", ["SH-2041", "SH-2065", "SH-2088", "SH-2102", "SH-2103", "SH-2117"])
+colOrigin = Col("Origin", ["Chicago, IL", "Dallas, TX", "Newark, NJ", "Seattle, WA", "Miami, FL", "Denver, CO"])
+colDest = Col("Destination", ["Atlanta, GA", "Phoenix, AZ", "Boston, MA", "Portland, OR", "Houston, TX", "Kansas City, MO"])
+colEta = Col("ETA", ["Jun 12", "Jun 11", "Jun 14", "Jun 11", "Jun 15", "Jun 12"])
+colStatus = Col("Status", ["Delayed", "On time", "Delayed", "On time", "Delayed", "On time"])
+
+chartsRow = Card([carrierSection, volumeSection], "clear", "row", "l", "stretch", "between", true)
+carrierSection = Card([carrierHeading, carrierChart], "sunk")
+carrierHeading = Heading("Volume split by carrier", "h4")
+carrierChart = PieChart(carrierLabels, carrierValues, "donut")
+carrierLabels = ["FedEx", "UPS", "DHL", "USPS", "Regional"]
+carrierValues = [340, 295, 180, 120, 65]
+
+volumeSection = Card([volumeHeading, volumeChart], "sunk")
+volumeHeading = Heading("Weekly volume (past 2 months)", "h4")
+volumeChart = BarChart(weekLabels, [volumeSeries], "grouped", "Week", "Shipments")
+weekLabels = ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"]
+volumeSeries = Series("Shipments", [210, 245, 232, 268, 254, 279, 291, 263])
+
+searchSection = Card([searchHeading, searchForm], "sunk")
+searchHeading = Heading("Search by route", "h4")
+searchForm = Form("route-search", searchButtons, [originField, destField])
+originField = FormControl("Origin", originInput)
+originInput = Input("origin", "e.g. Chicago, IL")
+destField = FormControl("Destination", destInput)
+destInput = Input("destination", "e.g. Atlanta, GA")
+searchButtons = Buttons([searchBtn, clearBtn])
+searchBtn = Button("Search routes", null, "primary")
+clearBtn = Button("Clear", null, "tertiary")
+
+flagSection = Card([flagHeading, flagForm], "sunk")
+flagHeading = Heading("Flag a shipment", "h4")
+flagForm = Form("flag-shipment", flagButtons, [flagIdField, flagReasonField])
+flagIdField = FormControl("Shipment ID", flagIdInput)
+flagIdInput = Input("shipment_id", "e.g. SH-2041")
+flagReasonField = FormControl("Reason", flagReasonSelect)
+flagReasonSelect = Select("reason", [reasonDelay, reasonDamage, reasonLost, reasonOther], "Choose a reason")
+reasonDelay = SelectItem("delay", "Delayed / late")
+reasonDamage = SelectItem("damage", "Damaged goods")
+reasonLost = SelectItem("lost", "Lost / missing")
+reasonOther = SelectItem("other", "Other issue")
+flagButtons = Buttons([flagBtn])
+flagBtn = Button("Flag shipment", null, "primary", "destructive")
+
+footer = TextContent("_Numbers last refreshed at 8:42 AM today._", "small")

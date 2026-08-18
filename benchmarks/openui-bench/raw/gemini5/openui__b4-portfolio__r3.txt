@@ -1,0 +1,160 @@
+root = Card([header, summaryCallout, topMetrics, tabs, quickActions, followUps])
+
+header = CardHeader("PMO Portfolio Review", "Q3 2024 Performance, Health & Capacity")
+
+summaryCallout = Callout("success", "Portfolio Status: Healthy", "Overall portfolio health is strong at 82% on-track velocity, though 2 critical path items require immediate resource re-allocation.")
+
+topMetrics = Carousel([metricCard1, metricCard2, metricCard3, metricCard4], "card")
+metricCard1 = Card([m1Val, m1Label, m1Sub], "sunk", "column", "xs")
+m1Val = Heading("$2.4M / $2.9M", "h2")
+m1Label = TextContent("Portfolio Budget Spent", "small-heavy")
+m1Sub = Progress(82, "82% total budget consumed")
+
+metricCard2 = Card([m2Val, m2Label, m2Sub], "sunk", "column", "xs")
+m2Val = Heading("88%", "h2")
+m2Label = TextContent("Avg Team Utilization", "small-heavy")
+m2Sub = Tag("High Capacity", null, "sm", "warning")
+
+metricCard3 = Card([m3Val, m3Label, m3Sub], "sunk", "column", "xs")
+m3Val = Heading("3 Overdue", "h2")
+m3Label = TextContent("Milestones Behind Schedule", "small-heavy")
+m3Sub = Tag("Action Needed", null, "sm", "danger")
+
+metricCard4 = Card([m4Val, m4Label, m4Sub], "sunk", "column", "xs")
+m4Val = Heading("5 Items", "h2")
+m4Label = TextContent("Current Blockers", "small-heavy")
+m4Sub = Tag("2 Critical", null, "sm", "danger")
+
+tabs = Tabs([overviewTab, scheduleTab, riskResourceTab, archiveTab])
+
+overviewTab = TabItem("overview", "Projects & Pace", [activeProjectsHeading, activeProjectsTable, budgetSection, paceHeading, deliveryPaceChart])
+
+activeProjectsHeading = Heading("Active Projects Health & Budget", "h3")
+activeProjectsTable = Table([colProj, colOwner, colDeadline, colHealth, colBudget, colSpent])
+colProj = Col("Project Name", ["Alpha Mobile App", "Cloud Migration", "ERP Modernization", "Data Platform v2", "Security Audit"])
+colOwner = Col("Owner", ["Sarah T.", "Marcus K.", "Elena R.", "Dave P.", "Aisha M."])
+colDeadline = Col("Deadline", ["Oct 15, 2024", "Nov 30, 2024", "Dec 20, 2024", "Oct 31, 2024", "Oct 05, 2024"])
+colHealth = Col("Health", ["On Track", "At Risk", "Delayed", "On Track", "On Track"])
+colBudget = Col("Allocated ($)", [450000, 800000, 1200000, 350000, 100000])
+colSpent = Col("Spent ($)", [380000, 720000, 950000, 290000, 60000])
+
+budgetSection = SectionBlock([budgetDetailSection], true)
+budgetDetailSection = SectionItem("b1", "View Visual Budget Breakdown", [budgetChart])
+budgetChart = BarChart(["Alpha App", "Cloud Mig.", "ERP Mod.", "Data Plat.", "Sec. Audit"], [budgetAllocatedSeries, budgetSpentSeries], "grouped", "Project", "USD ($)")
+budgetAllocatedSeries = Series("Allocated", [450000, 800000, 1200000, 350000, 100000])
+budgetSpentSeries = Series("Spent", [380000, 720000, 950000, 290000, 60000])
+
+paceHeading = Heading("Delivery Pace (Past 6 Sprints)", "h3")
+deliveryPaceChart = AreaChart(["Sprint 18", "Sprint 19", "Sprint 20", "Sprint 21", "Sprint 22", "Sprint 23"], [plannedPointsSeries, completedPointsSeries], "natural", "Sprint", "Story Points")
+plannedPointsSeries = Series("Planned Velocity", [120, 125, 130, 130, 135, 140])
+completedPointsSeries = Series("Completed Velocity", [115, 122, 110, 128, 132, 138])
+
+scheduleTab = TabItem("schedule", "Milestones & Deadlines", [upcomingHead, upcomingList, sep1, overdueHead, overdueAlert, overdueList, sep2, blockedHead, blockedList])
+
+upcomingHead = Heading("Deadlines in Next 2 Weeks", "h3")
+upcomingList = ListBlock([up1, up2, up3])
+up1 = ListItem("Security Audit Sign-off", "Oct 05, 2024 — Compliance Team (Security Audit)")
+up2 = ListItem("Alpha Mobile iOS Beta Release", "Oct 12, 2024 — Mobile Team (Alpha App)")
+up3 = ListItem("Database Schema Freeze", "Oct 14, 2024 — Core Data Team (Data Platform v2)")
+
+sep1 = Separator("horizontal")
+
+overdueHead = Heading("Overdue Milestones", "h3")
+overdueAlert = Alert("Schedule Slippage Warning", "3 key deliverables missed their target dates in Q3.", "destructive")
+overdueList = ListBlock([od1, od2, od3])
+od1 = ListItem("Legacy DB Infrastructure Cutover", "Target: Sept 15, 2024 — Owner: Marcus K. (Cloud Migration)")
+od2 = ListItem("ERP Vendor Module Integration", "Target: Sept 22, 2024 — Owner: Elena R. (ERP Modernization)")
+od3 = ListItem("Data Pipeline ETL Benchmark", "Target: Sept 28, 2024 — Owner: Dave P. (Data Platform v2)")
+
+sep2 = Separator("horizontal")
+
+blockedHead = Heading("Blocked Work Items", "h3")
+blockedList = ListBlock([blk1, blk2, blk3])
+blk1 = ListItem("AUTH-402: OAuth2 Single Sign-On Gateway", "Blocked by third-party API provider downtime. (Cloud Migration)")
+blk2 = ListItem("ERP-109: Payroll Data Migration Script", "Blocked pending legal approval for PII handling. (ERP Modernization)")
+blk3 = ListItem("MOB-881: Payment Gateway SDK Update", "Blocked awaiting security audit review. (Alpha Mobile App)")
+
+riskResourceTab = TabItem("risks", "Risks & Team Utilization", [utilHeading, utilChart, sep3, riskHeading, riskTable, sep4, resourceReqHeading, resourceForm])
+
+utilHeading = Heading("Team Utilization & Capacity", "h3")
+utilChart = HorizontalBarChart(["Frontend Team", "Backend Team", "DevOps/Infra", "Data Ops", "QA & Testing"], [utilSeries], "grouped", "Allocation %", "Team")
+utilSeries = Series("Current Utilization (%)", [92, 105, 110, 78, 85])
+
+sep3 = Separator("horizontal")
+
+riskHeading = Heading("Portfolio Risk Register", "h3")
+riskTable = Table([riskProjCol, riskDescCol, riskSevCol, riskImpactCol])
+riskProjCol = Col("Project", ["ERP Modernization", "Cloud Migration", "Data Platform v2", "Alpha Mobile App"])
+riskDescCol = Col("Risk Event", ["Key SAP consultant leaving team", "Egress cost exceeding forecast", "Unstructured data source latency", "App Store approval delay"])
+riskSevCol = Col("Severity", ["Critical", "High", "Medium", "Low"])
+riskImpactCol = Col("Impact Area", ["Schedule & Budget", "Budget", "Performance", "Schedule"])
+
+sep4 = Separator("horizontal")
+
+resourceReqHeading = Heading("Request Additional Headcount / Resources", "h3")
+resourceForm = Form("resource-request-form", resourceButtons, [projField, roleField, countField, justificationField])
+projField = FormControl("Target Project", projSelect)
+projSelect = Select("project_name", [pOpt1, pOpt2, pOpt3, pOpt4], "Select project")
+pOpt1 = SelectItem("erp", "ERP Modernization")
+pOpt2 = SelectItem("cloud", "Cloud Migration")
+pOpt3 = SelectItem("alpha", "Alpha Mobile App")
+pOpt4 = SelectItem("data", "Data Platform v2")
+
+roleField = FormControl("Required Role", roleInput)
+roleInput = Input("role_needed", "e.g., Senior Backend Engineer")
+
+countField = FormControl("FTE Count / Capacity", countSlider)
+countSlider = Slider("fte_count", "discrete", 1, 5, 1, [1], "FTEs")
+
+justificationField = FormControl("Business Justification", justArea, "Explain the impact if resource is not allocated")
+justArea = TextArea("justification", "Provide context regarding blockers or critical path risks...", 3)
+
+resourceButtons = Buttons([submitReqBtn], "row")
+submitReqBtn = Button("Submit Resource Request")
+
+archiveTab = TabItem("archive", "Project Archival & Quarter Scope", [scopeHead, quarterForm, sep5, archiveHead, archiveForm])
+
+scopeHead = Heading("Select Review Quarter", "h3")
+quarterForm = Form("quarter-selector", quarterButtons, [quarterField])
+quarterField = FormControl("Portfolio Timeframe", quarterSelect)
+quarterSelect = Select("quarter", [q1Opt, q2Opt, q3Opt, q4Opt], "Select quarter", null, "Q3 2024")
+q1Opt = SelectItem("Q1-2024", "Q1 2024")
+q2Opt = SelectItem("Q2-2024", "Q2 2024")
+q3Opt = SelectItem("Q3-2024", "Q3 2024 (Current)")
+q4Opt = SelectItem("Q4-2024", "Q4 2024 (Forecast)")
+
+quarterButtons = Buttons([changeQtrBtn], "row")
+changeQtrBtn = Button("Switch Quarter View", null, "secondary")
+
+sep5 = Separator("horizontal")
+
+archiveHead = Heading("Archive Completed Project", "h3")
+archiveForm = Form("archive-project-form", archiveButtons, [archiveProjField, archiveReasonField])
+archiveProjField = FormControl("Select Completed Project", archiveSelect)
+archiveSelect = Select("archive_project_id", [arcOpt1, arcOpt2], "Choose project to archive")
+arcOpt1 = SelectItem("sec_audit", "Security Audit 2024 (100% Complete)")
+arcOpt2 = SelectItem("v1_deprecate", "Legacy API Deprecation (100% Complete)")
+
+archiveReasonField = FormControl("Archival Notes & Retrospective Link", archiveInput)
+archiveInput = Input("archive_notes", "Enter final sign-off ref or retro link")
+
+archiveButtons = Buttons([archiveBtn], "row")
+archiveBtn = Button("Archive Project", null, "primary", "destructive")
+
+quickActions = Buttons([exportDialog, reqStaffDrawer], "row")
+
+exportDialog = DialogBlock("Export Portfolio Review", "Export Portfolio Review Data", "Choose preferred export format for executive distribution.", exportDialogContent, "default")
+exportDialogContent = Card([exportFormatText, exportButtons], "clear")
+exportFormatText = TextContent("Select the file format to download the complete Q3 Portfolio Review package including risks, milestones, and financial metrics.")
+exportButtons = Buttons([pdfBtn, csvBtn, pptBtn])
+pdfBtn = Button("Download PDF Summary")
+csvBtn = Button("Download Raw CSV")
+pptBtn = Button("Export Slide Deck (.pptx)")
+
+reqStaffDrawer = DrawerBlock("Quick Staffing Request", "Request Project Staffing", "Fast-track resource request directly to the PMO staffing board.", reqDrawerContent)
+reqDrawerContent = TextContent("Use the 'Risks & Team Utilization' tab for the full resource submission form with justification.")
+
+followUps = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Show me all high severity risks across active projects")
+f2 = FollowUpItem("Which projects are exceeding their allocated budget?")
+f3 = FollowUpItem("Generate a summary report for the Q3 Executive Board")

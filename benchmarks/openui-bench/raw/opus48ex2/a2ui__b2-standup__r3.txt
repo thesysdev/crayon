@@ -1,0 +1,212 @@
+Here's a single async standup screen covering all five items.
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "missingRow",
+          "blockedAlert",
+          "updatesHeader",
+          "updatesTable",
+          "postHeader",
+          "postForm"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Async Standup",
+        "subtitle": "Tuesday, June 10, 2025"
+      },
+      {
+        "id": "missingRow",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "m",
+        "align": "center",
+        "justify": "between",
+        "children": [
+          "missingText",
+          "missingBadge"
+        ]
+      },
+      {
+        "id": "missingText",
+        "component": "TextContent",
+        "text": "Updates still missing today",
+        "size": "default"
+      },
+      {
+        "id": "missingBadge",
+        "component": "Badge",
+        "text": "2 missing",
+        "variant": "destructive"
+      },
+      {
+        "id": "blockedAlert",
+        "component": "Alert",
+        "title": "1 teammate blocked",
+        "description": "Priya is blocked on the payments API — needs staging credentials from DevOps before she can continue.",
+        "variant": "warning"
+      },
+      {
+        "id": "updatesHeader",
+        "component": "Heading",
+        "text": "Today's updates",
+        "level": "h3"
+      },
+      {
+        "id": "updatesTable",
+        "component": "Table",
+        "columns": [
+          "colName",
+          "colUpdate",
+          "colStatus"
+        ]
+      },
+      {
+        "id": "colName",
+        "component": "Col",
+        "label": "Teammate",
+        "type": "string",
+        "data": [
+          "Alex Chen",
+          "Priya Nair",
+          "Diego Santos",
+          "Mia Foster",
+          "Tom Byrne"
+        ]
+      },
+      {
+        "id": "colUpdate",
+        "component": "Col",
+        "label": "Today's update",
+        "type": "string",
+        "data": [
+          "Shipped the login refactor; reviewing PRs this afternoon.",
+          "Working on payments API integration — currently blocked.",
+          "Finalizing onboarding email templates, on track.",
+          "No update yet.",
+          "No update yet."
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "type": "string",
+        "data": [
+          "Posted",
+          "Blocked",
+          "Posted",
+          "Missing",
+          "Missing"
+        ]
+      },
+      {
+        "id": "postHeader",
+        "component": "Heading",
+        "text": "Post your update",
+        "level": "h3"
+      },
+      {
+        "id": "postForm",
+        "component": "Form",
+        "name": "standup-update",
+        "buttons": "postButtons",
+        "fields": [
+          "yesterdayField",
+          "todayField",
+          "blockerField"
+        ]
+      },
+      {
+        "id": "yesterdayField",
+        "component": "FormControl",
+        "label": "What did you do yesterday?",
+        "input": "yesterdayInput"
+      },
+      {
+        "id": "yesterdayInput",
+        "component": "TextArea",
+        "name": "yesterday",
+        "placeholder": "e.g. Finished the checkout flow tests",
+        "rows": 2
+      },
+      {
+        "id": "todayField",
+        "component": "FormControl",
+        "label": "What will you do today?",
+        "input": "todayInput"
+      },
+      {
+        "id": "todayInput",
+        "component": "TextArea",
+        "name": "today",
+        "placeholder": "e.g. Start on the dashboard widgets",
+        "rows": 2
+      },
+      {
+        "id": "blockerField",
+        "component": "FormControl",
+        "label": "Any blockers?",
+        "input": "blockerInput",
+        "hint": "Leave blank if you're not blocked"
+      },
+      {
+        "id": "blockerInput",
+        "component": "Input",
+        "name": "blocker",
+        "placeholder": "e.g. Waiting on API access",
+        "type": "text"
+      },
+      {
+        "id": "postButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitBtn",
+          "clearBtn"
+        ]
+      },
+      {
+        "id": "submitBtn",
+        "component": "Button",
+        "label": "Post update",
+        "variant": "primary"
+      },
+      {
+        "id": "clearBtn",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This screen covers each requested item:
+
+1. **Each teammate with today's status** — the updates table lists every teammate with their update text and a status column.
+2. **Anyone blocked called out** — a warning `Alert` highlights Priya's blocker, and the table's status column tags her as "Blocked".
+3. **Today's date** — shown in the header subtitle ("Tuesday, June 10, 2025").
+4. **A way to post your own update** — the form at the bottom with yesterday/today/blocker fields and a "Post update" button.
+5. **How many updates are still missing** — the sunk banner near the top with a red "2 missing" badge, reinforced by the "Missing" status rows in the table.

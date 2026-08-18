@@ -1,0 +1,81 @@
+root = Card([header, statusBanner, overviewCard, lineItemsSection, paymentCard, followUp])
+
+header = CardHeader("Invoice #INV-2024-042", "Issued on October 12, 2024 by Alex Morgan Design")
+statusBanner = Callout("warning", "Payment Due", "Please review and settle the outstanding balance before the due date to avoid late fees.")
+
+overviewCard = Card([overviewRow1, overviewRow2], "sunk", "column", "m")
+overviewRow1 = Card([amountGroup, dueDateGroup], "clear", "row", "xl", "center", "between")
+overviewRow2 = Card([clientGroup, freelancerGroup], "clear", "row", "xl", "start", "between")
+
+amountGroup = Card([amountLabel, amountValue], "clear", "column", "xs")
+amountLabel = TextContent("Amount Due", "small-heavy")
+amountValue = Heading("$4,250.00 USD", "h1")
+
+dueDateGroup = Card([dueDateLabel, dueDateValue, dueBadge], "clear", "column", "xs", "end")
+dueDateLabel = TextContent("Due Date", "small-heavy")
+dueDateValue = Heading("Nov 01, 2024", "h2")
+dueBadge = Badge("Due in 5 Days", "outline")
+
+clientGroup = Card([clientLabel, clientName, clientDetail], "clear", "column", "xs")
+clientLabel = TextContent("Billed To", "small")
+clientName = TextContent("Acme Corporation", "large-heavy")
+clientDetail = TextContent("billing@acme.com • 123 Business Rd, Suite 100", "small")
+
+freelancerGroup = Card([freelancerLabel, freelancerName, freelancerDetail], "clear", "column", "xs", "end")
+freelancerLabel = TextContent("Payable To", "small")
+freelancerName = TextContent("Alex Morgan", "large-heavy")
+freelancerDetail = TextContent("alex@alexmorgandesign.com • Tax ID: XX-XXX9482", "small")
+
+lineItemsSection = Card([lineItemsHeading, itemsTable, summaryCard], "clear", "column", "m")
+lineItemsHeading = Heading("Services & Deliverables", "h3")
+
+itemsTable = Table([colDesc, colQty, colRate, colTotal])
+colDesc = Col("Description", ["Brand Identity Redesign - Phase 2", "Interactive Design System Component Library", "UX Research & Usability Testing Sessions"])
+colQty = Col("Hours", [45, 30, 10])
+colRate = Col("Rate", ["$50.00/hr", "$50.00/hr", "$50.00/hr"])
+colTotal = Col("Total", ["$2,250.00", "$1,500.00", "$500.00"])
+
+summaryCard = Card([subtotalRow, taxRow, grandTotalRow], "sunk", "column", "xs")
+subtotalRow = Card([subtotalLabel, subtotalVal], "clear", "row", "m", "center", "between")
+subtotalLabel = TextContent("Subtotal", "default")
+subtotalVal = TextContent("$4,250.00", "default")
+
+taxRow = Card([taxLabel, taxVal], "clear", "row", "m", "center", "between")
+taxLabel = TextContent("Tax (0%)", "small")
+taxVal = TextContent("$0.00", "small")
+
+grandTotalRow = Card([grandTotalLabel, grandTotalVal], "clear", "row", "m", "center", "between")
+grandTotalLabel = TextContent("Total Balance Due", "large-heavy")
+grandTotalVal = TextContent("$4,250.00 USD", "large-heavy")
+
+paymentCard = Card([paymentHeading, paymentTabs], "card", "column", "m")
+paymentHeading = CardHeader("Pay Now", "Select your preferred payment method to complete payment instantly")
+
+paymentTabs = Tabs([creditCardTab, bankTransferTab, paypalTab])
+
+creditCardTab = TabItem("card", "Credit / Debit Card", [cardForm])
+cardForm = Form("pay-card", cardButtons, [cardNumberField, cardExpField, cardCvcField])
+cardNumberField = FormControl("Card Number", cardNumberInput)
+cardNumberInput = Input("card_number", "4532 •••• •••• 8892", "text")
+cardExpField = FormControl("Expiration Date", cardExpInput)
+cardExpInput = Input("exp_date", "MM / YY", "text")
+cardCvcField = FormControl("CVC / Security Code", cardCvcInput)
+cardCvcInput = Input("cvc", "123", "password")
+cardButtons = Buttons([payCardBtn])
+payCardBtn = Button("Pay $4,250.00 USD Now", null, "primary", "normal", "large")
+
+bankTransferTab = TabItem("ach", "ACH / Bank Transfer", [achInstructions, achButtons])
+achInstructions = TextContent("Transfer directly to the following bank account details:\n\n**Bank Name:** First National Bank\n**Account Name:** Alex Morgan Design LLC\n**Routing Number:** 122000496\n**Account Number:** 9876543210\n**Reference:** INV-2024-042", "default")
+achButtons = Buttons([copyAchBtn, confirmAchBtn])
+copyAchBtn = Button("Copy Bank Details", null, "secondary")
+confirmAchBtn = Button("Mark as Paid via Transfer", null, "tertiary")
+
+paypalTab = TabItem("paypal", "PayPal / Express", [paypalNotice, paypalButtons])
+paypalNotice = TextContent("You will be redirected to PayPal to securely complete your payment of **$4,250.00 USD**.", "default")
+paypalButtons = Buttons([paypalBtn])
+paypalBtn = Button("Proceed to PayPal", null, "primary")
+
+followUp = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("Download invoice PDF")
+f2 = FollowUpItem("Send receipt to accounts payable")
+f3 = FollowUpItem("Contact Alex Morgan regarding this invoice")

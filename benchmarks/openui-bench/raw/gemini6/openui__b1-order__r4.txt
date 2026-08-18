@@ -1,0 +1,41 @@
+root = Card([header, statusBanner, pkgDetails, sectionTitle, trackingSteps, problemSection, followUps], "card", "column", "l")
+
+header = CardHeader("Package Tracking", "Order #ORD-8924-4109")
+
+statusBanner = Callout("info", "Estimated Delivery: Tomorrow, Oct 24", "Your package is currently in transit and on schedule to arrive by 7:00 PM.")
+
+pkgDetails = Card([detailTable], "sunk", "column", "m")
+detailTable = Table([colLabels, colValues])
+colLabels = Col("Detail", ["Carrier", "Tracking Number", "Destination", "Items"])
+colValues = Col("Information", ["FedEx Express", "TRK-982140592-US", "Seattle, WA 98101", "1x Wireless Headphones, 1x Case"])
+
+sectionTitle = Heading("Shipment Progress", "h3")
+
+trackingSteps = Steps([step1, step2, step3, step4])
+step1 = StepsItem("Order Processed", "Oct 21, 09:15 AM - Seller prepared package")
+step2 = StepsItem("Shipped", "Oct 21, 04:30 PM - Picked up by FedEx (Memphis, TN)")
+step3 = StepsItem("In Transit (Current Location)", "Oct 23, 06:12 AM - Arrived at Regional Sort Facility (Tacoma, WA)")
+step4 = StepsItem("Out for Delivery", "Pending - Scheduled for Oct 24")
+
+problemSection = Card([problemHeader, problemForm], "clear", "column", "m")
+problemHeader = CardHeader("Report a Delivery Problem", "Has your package been delayed, damaged, or lost?")
+
+problemForm = Form("report_issue", formActions, [issueTypeField, issueDescField])
+issueTypeField = FormControl("Issue Category", issueTypeSelect)
+issueTypeSelect = Select("issue_category", [opt1, opt2, opt3, opt4], "Select a problem type")
+opt1 = SelectItem("delay", "Package is delayed / No movement")
+opt2 = SelectItem("damaged", "Package arrived damaged")
+opt3 = SelectItem("missing_items", "Missing items inside package")
+opt4 = SelectItem("wrong_address", "Incorrect delivery address")
+
+issueDescField = FormControl("Additional Details", issueDescInput, "Provide details to help us resolve the issue quickly.")
+issueDescInput = TextArea("issue_description", "Describe what happened...", 3)
+
+formActions = Buttons([submitReportBtn, contactSupportBtn])
+submitReportBtn = Button("Submit Issue Report", null, "primary")
+contactSupportBtn = Button("Contact Live Support", null, "secondary")
+
+followUps = FollowUpBlock([fu1, fu2, fu3])
+fu1 = FollowUpItem("Change delivery instructions")
+fu2 = FollowUpItem("Request signature on delivery")
+fu3 = FollowUpItem("View order receipt")
