@@ -14,8 +14,10 @@ import {
 } from "./inspect";
 import {
   addOrReplaceEvent,
+  isLibraryEvent,
   useDevtoolsConfig,
   useDevtoolsSingleton,
+  useRegisteredLibraries,
   type DevtoolsConfig,
 } from "./lib";
 import { isLibraryEvent, useRegisteredLibraries } from "./libraryRegistry";
