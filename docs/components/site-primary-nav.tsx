@@ -120,6 +120,7 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
   },
   // Temporarily hidden — Agent Interface isn't ready to share yet. Restore when ready:
   // { title: "Agent Interface", href: "/agent-interface", newTab: false, badge: "New" },
+  { title: "Benchmarks", href: "/benchmarks", newTab: false },
   { title: "Blogs", href: "/blog", newTab: false },
 ];
 
