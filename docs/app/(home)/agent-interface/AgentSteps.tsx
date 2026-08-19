@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   StepsAccordion,
   type StepsAccordionItem,
@@ -8,6 +8,29 @@ import {
 function createVideoIllustration(src: string) {
   return function VideoIllustration() {
     const videoRef = useRef<HTMLVideoElement>(null);
+    const [shouldLoad, setShouldLoad] = useState(false);
+
+    useEffect(() => {
+      const video = videoRef.current;
+      if (!video || shouldLoad) return;
+
+      if (!("IntersectionObserver" in window)) {
+        setShouldLoad(true);
+        return;
+      }
+
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry?.isIntersecting) return;
+          setShouldLoad(true);
+          observer.disconnect();
+        },
+        { rootMargin: "200px" },
+      );
+
+      observer.observe(video);
+      return () => observer.disconnect();
+    }, [shouldLoad]);
 
     const handleLoadedMetadata = () => {
       const video = videoRef.current;
@@ -30,8 +53,8 @@ function createVideoIllustration(src: string) {
     return (
       <video
         ref={videoRef}
-        src={src}
-        autoPlay
+        src={shouldLoad ? src : undefined}
+        autoPlay={shouldLoad}
         muted
         loop
         playsInline
