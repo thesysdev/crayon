@@ -48,6 +48,7 @@ export interface UseOpenUIStateOptions {
   toolProvider?: ToolProvider | null;
   /** Callback for structured, LLM-friendly errors. See OpenUIError type. */
   onError?: (errors: OpenUIError[]) => void;
+  publishObservability?: boolean;
 }
 
 export interface OpenUIState {
@@ -77,6 +78,7 @@ export function useOpenUIState(
     initialState,
     toolProvider,
     onError,
+    publishObservability,
   }: UseOpenUIStateOptions,
   renderDeep: (value: unknown) => React.ReactNode,
 ): OpenUIState {
@@ -452,7 +454,14 @@ export function useOpenUIState(
     onError,
   });
 
-  useStreamingObservability({ response, isStreaming, result, errorsRef, errorRevision });
+  useStreamingObservability({
+    response,
+    isStreaming,
+    result,
+    errorsRef,
+    errorRevision,
+    publish: publishObservability,
+  });
 
   return { result: evaluatedResult, parseResult: result, contextValue, isQueryLoading };
 }

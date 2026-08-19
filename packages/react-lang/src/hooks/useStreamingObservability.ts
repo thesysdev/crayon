@@ -17,6 +17,7 @@ export interface UseStreamingObservabilityOptions {
   result: ParseResult | null;
   errorsRef: CurrentRef<OpenUIError[]>;
   errorRevision: number;
+  publish?: boolean;
 }
 
 export interface StreamingObservabilityState {
@@ -26,6 +27,10 @@ export interface StreamingObservabilityState {
   hasPublishedStreamingSnapshot: boolean;
   settled: boolean;
   lastSettledErrorKey: string | null;
+  /** Epoch ms when this stream first published. Frozen across later snapshots. */
+  startedAt: number | null;
+  /** Frozen once the stream first settles, so later error republishes don't grow it. */
+  durationMs: number | null;
 }
 
 export interface StreamingObservabilityUpdate {
@@ -52,6 +57,21 @@ export function createStreamingObservabilityState(): StreamingObservabilityState
     hasPublishedStreamingSnapshot: false,
     settled: false,
     lastSettledErrorKey: null,
+    startedAt: null,
+    durationMs: null,
+  };
+}
+
+function captureStreamTiming(state: StreamingObservabilityState, now = Date.now()) {
+  state.startedAt ??= now;
+  if (state.settled) {
+    state.durationMs ??= Math.max(0, now - state.startedAt);
+  }
+  const elapsedMs = state.durationMs ?? Math.max(0, now - state.startedAt);
+  return {
+    startedAt: state.startedAt,
+    elapsedMs,
+    ...(state.durationMs != null ? { durationMs: state.durationMs } : {}),
   };
 }
 
@@ -112,10 +132,12 @@ export function useStreamingObservability({
   result,
   errorsRef,
   errorRevision,
+  publish = true,
 }: UseStreamingObservabilityOptions): void {
   const streamRef = useRef<StreamingObservabilityState>(createStreamingObservabilityState());
 
   useEffect(() => {
+    if (!publish) return;
     const errors = errorsRef.current;
     const settledErrorKey = isStreaming ? null : JSON.stringify(errors);
     const update = advanceStreamingObservability(
@@ -135,6 +157,7 @@ export function useStreamingObservability({
           response,
           responseLength: response?.length ?? 0,
           parser: parserMetadata(result),
+          ...captureStreamTiming(streamRef.current),
           message: "OpenUI Lang is streaming",
         });
       }
@@ -152,11 +175,12 @@ export function useStreamingObservability({
         parser: parserMetadata(result),
         errors,
         errorCount: errors.length,
+        ...captureStreamTiming(streamRef.current),
         message:
           errors.length > 0
             ? `OpenUI Lang settled with ${errors.length} error${errors.length === 1 ? "" : "s"}`
             : "OpenUI Lang settled",
       } satisfies SettledStreamEventDetail);
     }
-  }, [isStreaming, response, result, errorsRef, errorRevision]);
+  }, [publish, isStreaming, response, result, errorsRef, errorRevision]);
 }

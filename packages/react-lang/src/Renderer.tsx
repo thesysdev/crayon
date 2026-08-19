@@ -50,6 +50,7 @@ export interface RendererProps {
    * Called with [] when all errors are resolved.
    */
   onError?: (errors: OpenUIError[]) => void;
+  publishObservability?: boolean;
 }
 
 // ─── Error boundary ───
@@ -207,6 +208,7 @@ export function Renderer({
   toolProvider,
   queryLoader,
   onError,
+  publishObservability,
 }: RendererProps) {
   useInsertionEffect(() => {
     ensureLoadingStyle();
@@ -253,6 +255,7 @@ export function Renderer({
       initialState,
       toolProvider: resolvedToolProvider,
       onError,
+      publishObservability,
     },
     renderDeep,
   );
