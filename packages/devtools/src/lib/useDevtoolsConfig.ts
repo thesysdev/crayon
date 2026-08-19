@@ -57,10 +57,7 @@ function merge(base: DevtoolsConfig, patch: Partial<DevtoolsConfig>): DevtoolsCo
  * Theme is arg-first: a passed `theme` wins over storage and is written
  * back so Settings stays in sync. With no arg, the stored theme is used.
  */
-export function useDevtoolsConfig(
-  defaults: DevtoolsConfig,
-  provided: { theme?: ColorMode } = {},
-) {
+export function useDevtoolsConfig(defaults: DevtoolsConfig, provided: { theme?: ColorMode } = {}) {
   const resolveTheme = (stored: Partial<DevtoolsConfig>, fallback: ColorMode): ColorMode =>
     provided.theme ?? stored.theme ?? fallback;
 

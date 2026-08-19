@@ -3,7 +3,6 @@
 import { observability, type ObservabilityEvent } from "@openuidev/observability";
 import { Inbox, RotateCcw, Settings, X } from "lucide-react";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { IconButton, ShiroLogo, ThemeSegmented } from "./ui";
 import {
   EventRow,
   getQuotaError,
@@ -27,6 +26,7 @@ import {
   type ColorMode,
   type ThemeTokens,
 } from "./theme";
+import { IconButton, ShiroLogo, ThemeSegmented } from "./ui";
 
 const RELIABILITY_DOCS_URL = "https://www.openui.com/docs/openui-lang/reliability";
 

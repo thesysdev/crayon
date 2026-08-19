@@ -1,7 +1,7 @@
 import { Moon, Sun } from "lucide-react";
 import type { CSSProperties } from "react";
-import { IconButton } from "./IconButton";
 import { useStyles, type ColorMode, type ThemeTokens } from "../theme";
+import { IconButton } from "./IconButton";
 
 const OPTIONS: { id: ColorMode; label: string; icon: typeof Sun }[] = [
   { id: "light", label: "Light", icon: Sun },

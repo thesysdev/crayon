@@ -1,8 +1,8 @@
 import { type ObservabilityErrorInfo, type ObservabilityEvent } from "@openuidev/observability";
 import { Check, ChevronDown, ChevronRight, Copy } from "lucide-react";
 import { useState, type CSSProperties } from "react";
-import { LevelIcon } from "./LevelIcon";
 import { FONT, MONO, useStyles, type ThemeTokens } from "../theme";
+import { LevelIcon } from "./LevelIcon";
 
 export function EventRow({ event }: { event: ObservabilityEvent }) {
   const styles = useStyles(eventRowStyles);
