@@ -1,13 +1,11 @@
 "use client";
 
-import {
-  observability,
-  type ObservabilityErrorInfo,
-  type ObservabilityEvent,
-} from "@openuidev/observability";
-import { ArrowLeft, Check, Copy, WrapText, X } from "lucide-react";
-import { useEffect, useState, type CSSProperties } from "react";
+import { observability, type ObservabilityEvent } from "@openuidev/observability";
+import { Inbox, RotateCcw, Settings, X } from "lucide-react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { addOrReplaceEvent } from "./eventBuffer";
+import { EventRow } from "./EventRow";
+import { IconButton } from "./IconButton";
 import { getQuotaError, QuotaErrorRow } from "./QuotaErrorRow";
 import { getReactLangStreamDetail, ReactLangStreamEventRow } from "./ReactLangStreamEventRow";
 import { ShiroLogo } from "./ShiroLogo";
@@ -16,12 +14,27 @@ import {
   DEFAULT_COLOR_SCHEME,
   DevtoolsSchemeProvider,
   FONT,
-  MONO,
   rootStyle,
+  theme,
   useStyles,
+  type ColorScheme,
   type ThemeTokens,
 } from "./theme";
-import { useDevtoolsConfig } from "./useDevtoolsConfig";
+import { ThemeSegmented } from "./ThemeToggle";
+import { useDevtoolsConfig, type DevtoolsConfig } from "./useDevtoolsConfig";
+
+const RELIABILITY_DOCS_URL = "https://www.openui.com/docs/openui-lang/reliability";
+
+/** Uniform row height for the settings menu, set by its tallest control. */
+const MENU_ROW_HEIGHT = 28;
+
+/**
+ * Inspect tray geometry. Anchored to the bottom right — 85% of the viewport
+ * tall, 480px wide, capped so it stops growing on very large displays.
+ */
+const TRAY_EDGE = 12;
+const INSPECT_WIDTH = 480;
+const BLOCK_H = `min(85vh, 2234px)`;
 
 export type DevtoolsPosition = "top-left" | "top-right" | "bottom-left" | "bottom-right";
 
@@ -38,6 +51,11 @@ export interface OpenUIDevtoolsProps {
   /** Initial state of the drawer's "auto-open on error" checkbox. Defaults to true. */
   autoOpenOnError?: boolean;
   /**
+   * Initial widget chrome theme. Never auto-detected — change it under
+   * Settings > Theme and the choice persists across reloads.
+   */
+  theme?: ColorScheme;
+  /**
    * @internal Set by react-lang's auto-mount. Auto-mounted instances yield to
    * any manually rendered <OpenUIDevtools /> so host-provided props win.
    */
@@ -46,10 +64,10 @@ export interface OpenUIDevtoolsProps {
 
 /**
  * dev-only widget that surfaces events captured by `@openuidev/observability` —
- * a Shiro-logo button (with an error-count badge) that opens a left side drawer
- * listing every captured event; selecting one drills into its stack trace. A
- * checkbox in the drawer controls whether it auto-opens on error. Renders
- * nothing in production unless `enabled` is set explicitly.
+ * a Shiro-logo button (which turns red with the error count) that opens a side
+ * drawer listing every captured event. Errors expand in place to show the
+ * stack trace. Display filters and the theme live in the header settings menu.
+ * Renders nothing in production unless `enabled` is set explicitly.
  */
 export function OpenUIDevtools({
   enabled,
@@ -57,6 +75,7 @@ export function OpenUIDevtools({
   maxEvents = 50,
   errorsOnly = false,
   autoOpenOnError = true,
+  theme: themeProp = DEFAULT_COLOR_SCHEME,
   __autoMounted = false,
 }: OpenUIDevtoolsProps) {
   const isEnabled =
@@ -66,15 +85,15 @@ export function OpenUIDevtools({
   const isSingleton = useDevtoolsSingleton(__autoMounted);
   const [events, setEvents] = useState<ObservabilityEvent[]>([]);
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState<ObservabilityEvent | null>(null);
-  const [wrapStack, setWrapStack] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [toggleHovered, setToggleHovered] = useState(false);
+  const [bannerHovered, setBannerHovered] = useState(false);
   const { config, setConfig, configRef } = useDevtoolsConfig({
     autoOpen: autoOpenOnError,
     onlyErrors: errorsOnly,
+    theme: themeProp,
   });
-  const { autoOpen, onlyErrors } = config;
-  const styles = useStyles(chromeStyles);
+  const { onlyErrors, theme: scheme } = config;
+  const styles = chromeStyles(theme(scheme));
 
   // Read configRef inside the (stable) subscription without re-subscribing.
   useEffect(() => {
@@ -85,63 +104,54 @@ export function OpenUIDevtools({
     });
   }, [isEnabled, maxEvents, configRef]);
 
-  // Escape steps back: stack view → list, list → closed.
+  // Escape closes Inspect. The settings menu handles its own Escape first
+  // (capture phase), so it never falls through to here.
   useEffect(() => {
     if (!open) return;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
-      if (selected) setSelected(null);
-      else setOpen(false);
+      setOpen(false);
     };
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [open, selected]);
+  }, [open]);
 
   if (!isEnabled || !isSingleton) return null;
 
   const errorCount = events.filter((event) => event.level === "error").length;
   const visibleEvents = onlyErrors ? events.filter((event) => event.level !== "info") : events;
 
-  const openDrawer = () => {
-    setSelected(null);
-    setOpen(true);
+  const inspectTray: CSSProperties = {
+    right: TRAY_EDGE,
+    bottom: TRAY_EDGE,
+    height: BLOCK_H,
+    width: `min(${INSPECT_WIDTH}px, calc(100vw - ${TRAY_EDGE * 2}px))`,
+    transform: open ? "translateX(0)" : `translateX(calc(100% + ${TRAY_EDGE}px))`,
   };
-
-  const showStack = (event: ObservabilityEvent) => {
-    setSelected(event);
-    setCopied(false);
-  };
-
-  const copyStack = () => {
-    if (!selected || typeof navigator === "undefined" || !navigator.clipboard) return;
-    navigator.clipboard
-      .writeText(getErrorInfo(selected)?.stack ?? "")
-      .then(() => {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 1500);
-      })
-      .catch(() => {});
-  };
-
-  const selectedStack = selected ? (getErrorInfo(selected)?.stack ?? "") : "";
 
   return (
-    <DevtoolsSchemeProvider scheme={DEFAULT_COLOR_SCHEME}>
-      <div
-        style={{
-          ...styles.toggleWrap,
-          ...rootStyle(DEFAULT_COLOR_SCHEME),
-          ...positionStyles[position],
-        }}
-      >
+    <DevtoolsSchemeProvider scheme={scheme}>
+      <div style={{ ...styles.toggleWrap, ...rootStyle(scheme), ...positionStyles[position] }}>
         <button
-          style={{ ...styles.toggle, ...(errorCount > 0 ? styles.toggleError : null) }}
-          onClick={openDrawer}
-          aria-label="Open OpenUI devtools"
+          style={{
+            ...styles.toggle,
+            ...(errorCount > 0 ? styles.toggleError : null),
+            ...(toggleHovered ? styles.toggleHover : null),
+          }}
+          onClick={() => setOpen(true)}
+          onMouseEnter={() => setToggleHovered(true)}
+          onMouseLeave={() => setToggleHovered(false)}
+          aria-label="Open OpenUI Inspect"
           aria-expanded={open}
+          title={
+            errorCount > 0 ? `${errorCount} error${errorCount === 1 ? "" : "s"}` : "OpenUI Inspect"
+          }
         >
-          <ShiroLogo size={22} />
-          {errorCount > 0 ? <span style={styles.toggleCount}>{errorCount}</span> : null}
+          {errorCount > 0 ? (
+            <span style={styles.toggleCount}>{errorCount > 99 ? "99+" : errorCount}</span>
+          ) : (
+            <ShiroLogo size={22} />
+          )}
         </button>
       </div>
 
@@ -149,208 +159,202 @@ export function OpenUIDevtools({
       <div
         style={{
           ...styles.backdrop,
-          ...rootStyle(DEFAULT_COLOR_SCHEME),
+          ...rootStyle(scheme),
           ...(open ? styles.backdropOpen : null),
         }}
         onClick={() => setOpen(false)}
       >
         <aside
-          style={{ ...styles.drawer, ...(open ? styles.drawerOpen : null) }}
+          style={{
+            ...styles.drawer,
+            ...inspectTray,
+            ...(open ? styles.drawerOpen : null),
+          }}
           role="dialog"
           aria-modal="true"
-          aria-label="OpenUI devtools"
+          aria-label="OpenUI Inspect"
+          inert={!open}
           onClick={(event) => event.stopPropagation()}
         >
           <div style={styles.header}>
             <div style={styles.headerLeft}>
-              {selected ? (
-                <button
-                  style={styles.iconButton}
-                  onClick={() => setSelected(null)}
-                  aria-label="Back to event list"
-                >
-                  <ArrowLeft size={14} />
-                </button>
-              ) : null}
-              <span style={styles.title}>
-                {selected ? `${selected.level} — stack trace` : "OpenUI Devtools"}
-              </span>
+              <span style={styles.title}>OpenUI Inspect</span>
             </div>
             <div style={styles.headerActions}>
-              {selected ? (
-                <>
-                  <button
-                    style={{
-                      ...styles.textButton,
-                      ...(wrapStack ? styles.textButtonActive : null),
-                    }}
-                    onClick={() => setWrapStack((prev) => !prev)}
-                    aria-pressed={wrapStack}
-                  >
-                    <WrapText size={12} />
-                    Wrap
-                  </button>
-                  <button style={styles.textButton} onClick={copyStack}>
-                    {copied ? <Check size={12} /> : <Copy size={12} />}
-                    {copied ? "Copied" : "Copy"}
-                  </button>
-                </>
-              ) : (
-                <button style={styles.textButton} onClick={() => setEvents([])}>
-                  Clear
-                </button>
-              )}
-              <button
-                style={styles.iconButton}
-                onClick={() => setOpen(false)}
-                aria-label="Close OpenUI devtools"
+              <IconButton
+                onClick={() => setEvents([])}
+                aria-label="Reset events"
+                title="Reset events"
               >
+                <RotateCcw size={14} />
+              </IconButton>
+              <SettingsMenu config={config} onChange={setConfig} />
+              <IconButton onClick={() => setOpen(false)} aria-label="Close OpenUI Inspect">
                 <X size={15} />
-              </button>
+              </IconButton>
             </div>
           </div>
 
-          {selected ? (
-            <div style={styles.stackBody}>
-              {selectedStack.split("\n").map((line, index) => (
-                <div key={index} style={styles.stackLine}>
-                  <span style={styles.lineNumber}>{index + 1}</span>
-                  <span style={{ ...styles.lineText, ...(wrapStack ? styles.lineTextWrap : null) }}>
-                    {line || " "}
-                  </span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <>
-              <div style={styles.controlsRow}>
-                <label style={styles.checkboxLabel}>
-                  <input
-                    type="checkbox"
-                    checked={autoOpen}
-                    onChange={(event) => setConfig({ autoOpen: event.target.checked })}
-                  />
-                  Auto-open on error
-                </label>
-                <label style={styles.checkboxLabel}>
-                  <input
-                    type="checkbox"
-                    checked={onlyErrors}
-                    onChange={(event) => setConfig({ onlyErrors: event.target.checked })}
-                  />
-                  Errors only
-                </label>
+          <div style={styles.bannerGroup}>
+            <span style={styles.bannerFade} aria-hidden />
+            <a
+              style={styles.docsBanner}
+              href={RELIABILITY_DOCS_URL}
+              target="_blank"
+              rel="noreferrer"
+              title="Learn how to track and fix errors in production"
+              onMouseEnter={() => setBannerHovered(true)}
+              onMouseLeave={() => setBannerHovered(false)}
+            >
+              <span style={styles.docsBannerText}>
+                <span style={styles.docsBannerTitle}>
+                  Want to track and fix errors in production?
+                </span>
+              </span>
+              <span
+                style={{
+                  ...styles.docsBannerAction,
+                  ...(bannerHovered ? styles.docsBannerActionHover : null),
+                }}
+              >
+                Learn more
+              </span>
+            </a>
+          </div>
+          <div style={styles.list}>
+            {visibleEvents.length === 0 ? (
+              <div style={styles.empty}>
+                <span style={styles.emptyIcon}>
+                  <Inbox size={20} />
+                </span>
+                No events captured yet.
               </div>
-              <div style={styles.list}>
-                {visibleEvents.length === 0 ? (
-                  <div style={styles.empty}>No events captured yet.</div>
-                ) : (
-                  visibleEvents.map((event, index) => {
-                    const key =
-                      typeof event.detail["id"] === "string"
-                        ? event.detail["id"]
-                        : `${event.timestamp}-${index}`;
-                    const quotaError = getQuotaError(event);
-                    if (quotaError) return <QuotaErrorRow key={key} info={quotaError} />;
-                    const stream = getReactLangStreamDetail(event);
-                    if (stream) {
-                      return <ReactLangStreamEventRow key={key} event={event} stream={stream} />;
-                    }
-
-                    const error = getErrorInfo(event);
-                    const detail = asRecord(event.detail);
-                    const kind = asString(detail["kind"]);
-                    const status =
-                      typeof detail["status"] === "number" ? String(detail["status"]) : undefined;
-                    const message = error?.message ?? asString(detail["message"]);
-                    return (
-                      <div key={key} style={styles.row}>
-                        <div style={styles.rowHeader}>
-                          <div style={styles.badgeGroup}>
-                            <span style={{ ...styles.badge, ...styles[event.level] }}>
-                              {event.level}
-                            </span>
-                            {kind ? (
-                              <span style={{ ...styles.badge, ...styles.badgeNeutral }}>
-                                {kind}
-                              </span>
-                            ) : null}
-                            {status ? (
-                              <span style={{ ...styles.badge, ...styles.badgeNeutral }}>
-                                {status}
-                              </span>
-                            ) : null}
-                          </div>
-                          <span style={styles.time}>
-                            {new Date(event.timestamp).toLocaleTimeString()}
-                          </span>
-                        </div>
-                        {message ? (
-                          <div style={styles.summary}>{message}</div>
-                        ) : kind ? null : (
-                          <div style={styles.summary}>{summarize(event)}</div>
-                        )}
-                        {error?.stack ? (
-                          <button style={styles.stackButton} onClick={() => showStack(event)}>
-                            Stack Trace
-                          </button>
-                        ) : null}
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </>
-          )}
+            ) : (
+              visibleEvents.map((event, index) => {
+                const key =
+                  typeof event.detail["id"] === "string"
+                    ? event.detail["id"]
+                    : `${event.timestamp}-${index}`;
+                const quotaError = getQuotaError(event);
+                if (quotaError) return <QuotaErrorRow key={key} info={quotaError} />;
+                const stream = getReactLangStreamDetail(event);
+                if (stream) {
+                  return <ReactLangStreamEventRow key={key} event={event} stream={stream} />;
+                }
+                return <EventRow key={key} event={event} />;
+              })
+            )}
+          </div>
+          <span style={styles.trayFade} aria-hidden />
         </aside>
       </div>
     </DevtoolsSchemeProvider>
   );
 }
 
-function asRecord(detail: unknown): Record<string, unknown> {
-  return typeof detail === "object" && detail !== null ? (detail as Record<string, unknown>) : {};
-}
-
-function asString(value: unknown): string | undefined {
-  return typeof value === "string" ? value : undefined;
-}
-
-function getErrorInfo(event: ObservabilityEvent): ObservabilityErrorInfo | undefined {
-  const error = asRecord(event.detail)["error"];
-  if (typeof error === "object" && error !== null && "message" in error) {
-    return error as ObservabilityErrorInfo;
-  }
-  return undefined;
+/**
+ * A real checkbox painted as a switch — the input stays in the tree (hidden but
+ * clickable and focusable) so keyboard, form semantics, and screen readers get
+ * the native control rather than a div pretending to be one.
+ */
+function SettingSwitch({
+  label,
+  checked,
+  onChange,
+}: {
+  label: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}) {
+  const styles = useStyles(chromeStyles);
+  return (
+    <label style={styles.menuCheckbox}>
+      <span style={styles.menuLabel}>{label}</span>
+      <span style={{ ...styles.switchTrack, ...(checked ? styles.switchTrackOn : null) }}>
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={(event) => onChange(event.target.checked)}
+          style={styles.switchInput}
+        />
+        <span style={{ ...styles.switchKnob, ...(checked ? styles.switchKnobOn : null) }} />
+      </span>
+    </label>
+  );
 }
 
 /**
- * Best-effort one-line summary from conventional detail fields
- * (kind/component/toolName/target/method+url/status/message/error.message).
- * Falls back to JSON for unconventional payloads.
+ * Header dropdown for the display filters and the widget theme, so the list is
+ * all list. Escape is handled in the capture phase so closing the menu doesn't
+ * also close the drawer.
  */
-function summarize(event: ObservabilityEvent): string {
-  const detail = asRecord(event.detail);
-  const error = getErrorInfo(event);
-  const method = asString(detail["method"]);
-  const url = asString(detail["url"]);
-  const subject =
-    asString(detail["kind"]) ??
-    asString(detail["component"]) ??
-    asString(detail["toolName"]) ??
-    asString(detail["target"]) ??
-    (url ? [method, url].filter(Boolean).join(" ") : undefined);
-  const status = typeof detail["status"] === "number" ? `→ ${detail["status"]}` : undefined;
-  const message = error ? `— ${error.message}` : asString(detail["message"]);
+function SettingsMenu({
+  config,
+  onChange,
+}: {
+  config: DevtoolsConfig;
+  onChange: (patch: Partial<DevtoolsConfig>) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const styles = useStyles(chromeStyles);
+  const wrap = useRef<HTMLDivElement>(null);
 
-  const parts = [subject, status, message].filter(Boolean);
-  if (parts.length > 0) return parts.join(" ");
-  try {
-    return JSON.stringify(event.detail) ?? "(no detail)";
-  } catch {
-    return "(no detail)";
-  }
+  useEffect(() => {
+    if (!open) return;
+    const onPointerDown = (event: MouseEvent) => {
+      if (!wrap.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      event.stopPropagation();
+      setOpen(false);
+    };
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown, true);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown, true);
+    };
+  }, [open]);
+
+  return (
+    <div ref={wrap} style={styles.menuWrap}>
+      <IconButton
+        active={open}
+        onClick={() => setOpen((current) => !current)}
+        aria-label="Devtools settings"
+        aria-haspopup="true"
+        aria-expanded={open}
+        title="Settings"
+      >
+        <Settings size={14} />
+      </IconButton>
+      {open ? (
+        <div style={styles.menu} role="group" aria-label="Devtools settings">
+          {/* Every row reads the same way: name on the left, control on the
+              right, hairline between. */}
+          <SettingSwitch
+            label="Auto-open on error"
+            checked={config.autoOpen}
+            onChange={(autoOpen) => onChange({ autoOpen })}
+          />
+          <div style={styles.menuDivider} />
+          <SettingSwitch
+            label="Show errors only"
+            checked={config.onlyErrors}
+            onChange={(onlyErrors) => onChange({ onlyErrors })}
+          />
+          <div style={styles.menuDivider} />
+          <div style={styles.menuRow}>
+            <span style={styles.menuLabel}>Theme</span>
+            <ThemeSegmented value={config.theme} onChange={(theme) => onChange({ theme })} />
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
 }
+
 const positionStyles: Record<DevtoolsPosition, CSSProperties> = {
   "top-left": { top: 16, left: 16 },
   "top-right": { top: 16, right: 16 },
@@ -360,16 +364,13 @@ const positionStyles: Record<DevtoolsPosition, CSSProperties> = {
 
 function chromeStyles(t: ThemeTokens) {
   return {
-    error: { background: t.dangerBg, color: t.danger, borderColor: t.dangerBorder },
-    warning: { background: t.warningBg, color: t.warning, borderColor: t.warningBorder },
-    info: { background: t.infoBg, color: t.info, borderColor: t.infoBorder },
     toggleWrap: {
       position: "fixed",
       // Max 32-bit signed int — sit above any app chrome.
       zIndex: 2147483647,
     },
     toggle: {
-      position: "relative",
+      boxSizing: "border-box",
       width: 40,
       height: 40,
       display: "flex",
@@ -383,29 +384,33 @@ function chromeStyles(t: ThemeTokens) {
       color: t.toggleFg,
       cursor: "pointer",
       boxShadow: t.toggleShadow,
-      transition: "transform 150ms ease, box-shadow 150ms ease",
+      fontFamily: FONT,
+      padding: 0,
+      transition: "background 150ms ease, box-shadow 150ms ease, transform 150ms ease",
     },
+    toggleHover: {
+      transform: "scale(1.08)",
+    },
+    // Errors swap the mark for a count on a red disc, held inside a light puck so
+    // the number reads as a badge rather than flooding the whole button red.
     toggleError: {
-      background: t.danger,
-      borderColor: t.dangerBorder,
+      background: t.toggleErrorSurface,
+      borderColor: t.toggleErrorRing,
     },
     toggleCount: {
-      position: "absolute",
-      top: -6,
-      right: -6,
-      boxSizing: "border-box",
-      minWidth: 16,
-      height: 16,
-      display: "flex",
+      display: "inline-flex",
       alignItems: "center",
       justifyContent: "center",
+      boxSizing: "border-box",
+      minWidth: 24,
+      height: 24,
+      padding: "0 6px",
       borderRadius: 999,
       background: t.toggleError,
-      border: `2px solid ${t.toggleErrorSurface}`,
-      color: t.toggleFg,
-      fontSize: 9,
+      color: "#fff",
+      fontSize: 13,
       fontWeight: 700,
-      padding: "0 3px",
+      lineHeight: 1,
     },
     backdrop: {
       position: "fixed",
@@ -426,26 +431,25 @@ function chromeStyles(t: ThemeTokens) {
     },
     drawer: {
       position: "fixed",
-      top: 12,
-      right: 12,
-      bottom: 12,
       boxSizing: "border-box",
-      width: "min(420px, calc(100vw - 24px))",
       display: "flex",
       flexDirection: "column",
-      border: `1px solid ${t.border}`,
+      borderWidth: 1,
+      borderStyle: "solid",
+      borderColor: t.trayRing,
       borderRadius: 16,
       background: t.bg,
       color: t.fg,
       fontFamily: FONT,
       fontSize: 13,
-      boxShadow: t.shadow,
-      transform: "translateX(calc(100% + 12px))",
-      transition: "transform 220ms cubic-bezier(0.32, 0.72, 0, 1)",
+      visibility: "hidden",
+      transition:
+        "transform 220ms cubic-bezier(0.32, 0.72, 0, 1), visibility 0s linear 220ms",
       overflow: "hidden",
     },
     drawerOpen: {
-      transform: "translateX(0)",
+      visibility: "visible",
+      transition: "transform 220ms cubic-bezier(0.32, 0.72, 0, 1), visibility 0s",
     },
     header: {
       display: "flex",
@@ -453,7 +457,6 @@ function chromeStyles(t: ThemeTokens) {
       alignItems: "center",
       gap: 8,
       padding: "12px 16px",
-      borderBottom: `1px solid ${t.borderSubtle}`,
       fontWeight: 600,
       fontSize: 14,
     },
@@ -474,55 +477,166 @@ function chromeStyles(t: ThemeTokens) {
       gap: 6,
       flexShrink: 0,
     },
-    textButton: {
+    menuWrap: {
+      position: "relative",
       display: "inline-flex",
-      alignItems: "center",
-      gap: 4,
+    },
+    menu: {
+      position: "absolute",
+      top: "calc(100% + 6px)",
+      right: 0,
+      // Above the banner group, which lifts itself over the list for its fade.
+      zIndex: 2,
+      boxSizing: "border-box",
+      width: 236,
+      display: "flex",
+      flexDirection: "column",
+      gap: 10,
       border: `1px solid ${t.border}`,
-      borderRadius: 8,
-      background: t.controlBg,
-      color: t.fgTertiary,
+      borderRadius: 12,
+      background: t.bg,
+      boxShadow: t.shadow,
+      padding: 12,
+      fontWeight: 400,
+    },
+    // Every row is the height of the tallest control (the theme toggle), so the
+    // dividers land on an even rhythm no matter what each row holds.
+    menuCheckbox: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: 12,
+      minHeight: MENU_ROW_HEIGHT,
       cursor: "pointer",
-      fontFamily: FONT,
+    },
+    switchTrack: {
+      position: "relative",
+      boxSizing: "border-box",
+      flexShrink: 0,
+      width: 30,
+      height: 18,
+      borderRadius: 999,
+      background: t.border,
+      transition: "background 150ms ease",
+    },
+    switchTrackOn: {
+      background: t.inverted,
+    },
+    // Covers the whole track so the hit area and focus ring stay on the input.
+    switchInput: {
+      position: "absolute",
+      inset: 0,
+      width: "100%",
+      height: "100%",
+      margin: 0,
+      borderRadius: 999,
+      opacity: 0,
+      cursor: "pointer",
+    },
+    switchKnob: {
+      position: "absolute",
+      top: 2,
+      left: 2,
+      width: 14,
+      height: 14,
+      borderRadius: "50%",
+      background: t.bg,
+      boxShadow: t.shadowSubtle,
+      transition: "transform 150ms ease",
+      pointerEvents: "none",
+    },
+    switchKnobOn: {
+      transform: "translateX(12px)",
+    },
+    menuDivider: {
+      height: 1,
+      background: t.borderSubtle,
+    },
+    menuRow: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: 12,
+      minHeight: MENU_ROW_HEIGHT,
+    },
+    menuLabel: {
       fontSize: 12,
       fontWeight: 500,
-      padding: "4px 10px",
+      color: t.fg,
     },
-    textButtonActive: {
-      background: t.inverted,
-      borderColor: t.inverted,
-      color: t.invertedFg,
+    bannerGroup: {
+      position: "relative",
+      zIndex: 1,
+      display: "flex",
+      flexDirection: "column",
+      gap: 8,
+      flexShrink: 0,
+      background: t.bg,
+      padding: "12px 12px 18px",
     },
-    iconButton: {
+    trayFade: {
+      position: "absolute",
+      left: 0,
+      right: 0,
+      bottom: 0,
+      height: 28,
+      background: `linear-gradient(to top, ${t.bg}, transparent)`,
+      pointerEvents: "none",
+    },
+    bannerFade: {
+      position: "absolute",
+      left: 0,
+      right: 0,
+      top: "100%",
+      height: 12,
+      background: `linear-gradient(to bottom, ${t.bg}, transparent)`,
+      pointerEvents: "none",
+    },
+    docsBanner: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: 12,
+      flexShrink: 0,
+      textDecoration: "none",
+      borderRadius: 12,
+      background: t.promoBg,
+      color: t.fg,
+      cursor: "pointer",
+      fontFamily: FONT,
+      textAlign: "left",
+      padding: "12px 14px",
+    },
+    docsBannerText: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 2,
+      minWidth: 0,
+    },
+    docsBannerTitle: {
+      fontSize: 12,
+      fontWeight: 500,
+    },
+    docsBannerAction: {
       display: "inline-flex",
       alignItems: "center",
       justifyContent: "center",
-      width: 26,
-      height: 26,
-      border: "none",
+      flexShrink: 0,
+      border: `1px solid ${t.controlBorder}`,
       borderRadius: 8,
-      background: "transparent",
-      color: t.fgMuted,
-      cursor: "pointer",
-      padding: 0,
+      background: t.controlBg,
+      color: t.fg,
+      boxShadow: t.shadowSubtle,
+      fontSize: 11,
+      padding: "5px 12px",
+      transition: "transform 150ms ease",
     },
-    controlsRow: {
-      display: "flex",
-      alignItems: "center",
-      gap: 16,
-      padding: "10px 16px",
-      borderBottom: `1px solid ${t.borderSubtle}`,
-    },
-    checkboxLabel: {
-      display: "flex",
-      alignItems: "center",
-      gap: 6,
-      color: t.fgSecondary,
-      fontSize: 12,
-      cursor: "pointer",
-      accentColor: t.inverted,
+    docsBannerActionHover: {
+      transform: "scale(0.96)",
     },
     list: {
+      flex: 1,
+      minHeight: 0,
       overflowY: "auto",
       padding: 12,
       display: "flex",
@@ -530,108 +644,20 @@ function chromeStyles(t: ThemeTokens) {
       gap: 10,
     },
     empty: {
-      color: t.fgFaint,
-      padding: "32px 0",
-      textAlign: "center",
-    },
-    row: {
-      border: `1px solid ${t.border}`,
-      borderRadius: 12,
-      padding: 12,
+      flex: 1,
+      minHeight: 0,
       display: "flex",
       flexDirection: "column",
-      gap: 6,
-      background: t.card,
-      boxShadow: t.shadowSubtle,
-    },
-    badgeCredits: {
-      background: t.creditsBg,
-      color: t.creditsFg,
-      borderColor: t.creditsBorder,
-    },
-    rowHeader: {
-      display: "flex",
-      justifyContent: "space-between",
       alignItems: "center",
-      gap: 8,
+      justifyContent: "center",
+      gap: 12,
+      color: t.fgFaint,
+      textAlign: "center",
     },
-    badgeGroup: {
-      display: "flex",
-      alignItems: "center",
-      flexWrap: "wrap",
-      gap: 6,
-      minWidth: 0,
-    },
-    badgeNeutral: {
-      background: t.bgSubtle,
-      color: t.fgSecondary,
-      borderColor: t.border,
-      fontFamily: MONO,
-    },
-    badge: {
+    emptyIcon: {
       display: "inline-flex",
       alignItems: "center",
-      borderRadius: 999,
-      borderWidth: 1,
-      borderStyle: "solid",
-      borderColor: "transparent",
-      padding: "1px 8px",
-      fontSize: 11,
-      fontWeight: 500,
-      fontFamily: FONT,
-    },
-    time: {
-      color: t.fgFaint,
-      fontSize: 11,
-    },
-    summary: {
-      wordBreak: "break-word",
-      color: t.fgTertiary,
-      fontSize: 12,
-      lineHeight: 1.5,
-    },
-    stackButton: {
-      alignSelf: "flex-start",
-      border: "none",
-      background: "transparent",
-      color: t.fgSecondary,
-      cursor: "pointer",
-      fontFamily: FONT,
-      fontSize: 12,
-      fontWeight: 500,
-      padding: 0,
-      textDecoration: "underline",
-      textUnderlineOffset: 2,
-    },
-    stackBody: {
-      flex: 1,
-      overflow: "auto",
-      padding: "8px 0",
-      background: t.bgMuted,
-      fontFamily: MONO,
-      fontSize: 11,
-      color: t.fgTertiary,
-    },
-    stackLine: {
-      display: "flex",
-      gap: 8,
-      paddingRight: 12,
-    },
-    lineNumber: {
-      flexShrink: 0,
-      width: 32,
-      textAlign: "right",
-      color: t.fgFaint,
-      userSelect: "none",
-      padding: "0 4px",
-      borderRight: `1px solid ${t.border}`,
-    },
-    lineText: {
-      whiteSpace: "pre",
-    },
-    lineTextWrap: {
-      whiteSpace: "pre-wrap",
-      wordBreak: "break-all",
+      justifyContent: "center",
     },
   } satisfies Record<string, CSSProperties>;
 }

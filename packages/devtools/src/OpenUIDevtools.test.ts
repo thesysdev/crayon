@@ -30,7 +30,7 @@ function render(props: OpenUIDevtoolsProps): void {
 /** The floating toggle button. */
 function toggle(): HTMLButtonElement {
   const button = container.querySelector<HTMLButtonElement>(
-    'button[aria-label="Open OpenUI devtools"]',
+    'button[aria-label="Open OpenUI Inspect"]',
   );
   if (!button) throw new Error("toggle button not found");
   return button;
@@ -43,6 +43,29 @@ function click(el: Element): void {
 function buttonByText(text: string): HTMLButtonElement | undefined {
   return [...container.querySelectorAll("button")].find((b) => b.textContent === text) as
     HTMLButtonElement | undefined;
+}
+
+/**
+ * The stream row's overview stats, each read back as "2 statements" — the count
+ * lives in its own badge, so textContent alone would say "2statements".
+ */
+function overviewStats(): string[] {
+  const row = container.querySelector<HTMLElement>(
+    'button[aria-label="Toggle OpenUI Lang stream details"] > div:last-child',
+  );
+  return [...(row?.children ?? [])].map((stat) => {
+    const count = stat.firstElementChild?.textContent ?? "";
+    return `${count} ${(stat.textContent ?? "").slice(count.length)}`;
+  });
+}
+
+/** The display filters live behind the header settings button. */
+function openSettings(): void {
+  const button = container.querySelector<HTMLButtonElement>(
+    'button[aria-label="Devtools settings"]',
+  );
+  if (!button) throw new Error("settings button not found");
+  click(button);
 }
 
 function checkboxLabeled(text: string): HTMLInputElement {
@@ -99,12 +122,14 @@ describe("OpenUIDevtools", () => {
 
   it("restores auto-open on error from a previous session", () => {
     render({ enabled: true, autoOpenOnError: true });
+    openSettings();
     expect(checkboxLabeled("Auto-open on error").checked).toBe(true);
 
     act(() => checkboxLabeled("Auto-open on error").click());
     expect(checkboxLabeled("Auto-open on error").checked).toBe(false);
 
     remount({ enabled: true, autoOpenOnError: true });
+    openSettings();
     expect(checkboxLabeled("Auto-open on error").checked).toBe(false);
 
     act(() => observability.error({ kind: "boom" }));
@@ -113,11 +138,13 @@ describe("OpenUIDevtools", () => {
 
   it("restores the errors-only filter from a previous session", () => {
     render({ enabled: true, errorsOnly: false });
-    act(() => checkboxLabeled("Errors only").click());
-    expect(checkboxLabeled("Errors only").checked).toBe(true);
+    openSettings();
+    act(() => checkboxLabeled("Show errors only").click());
+    expect(checkboxLabeled("Show errors only").checked).toBe(true);
 
     remount({ enabled: true, errorsOnly: false });
-    expect(checkboxLabeled("Errors only").checked).toBe(true);
+    openSettings();
+    expect(checkboxLabeled("Show errors only").checked).toBe(true);
 
     act(() => observability.info({ kind: "just-info" }));
     act(() => observability.error({ kind: "real-error" }));
@@ -159,15 +186,23 @@ describe("OpenUIDevtools", () => {
     expect(container.textContent).toContain("Needs attention");
   });
 
-  it("drills into the stack trace when a row's Stack Trace is clicked", () => {
+  it("expands the stack trace on the error card", () => {
     render({ enabled: true, errorsOnly: false });
-    act(() => observability.error({ kind: "boom", error: toErrorInfo(new Error("kaboom")) }));
+    const err = new Error("kaboom");
+    err.stack = "Error: kaboom\n    at boom (app.ts:1:1)";
+    act(() => observability.error({ kind: "boom", error: toErrorInfo(err) }));
 
-    const stackButton = buttonByText("Stack Trace");
-    expect(stackButton).toBeDefined();
-    click(stackButton!);
+    expect(container.textContent).toContain("kaboom");
+    expect(container.textContent).not.toContain("at boom (app.ts:1:1)");
 
-    expect(container.textContent).toContain("stack trace");
+    const expand = container.querySelector<HTMLButtonElement>(
+      'button[aria-label="Toggle stack trace"]',
+    );
+    expect(expand).not.toBeNull();
+    click(expand!);
+
+    expect(container.textContent).toContain("at boom (app.ts:1:1)");
+    expect(buttonByText("Copy")).toBeDefined();
   });
 
   it("coalesces react-lang stream updates by their stable event id", () => {
@@ -195,10 +230,10 @@ describe("OpenUIDevtools", () => {
     );
 
     expect(container.textContent?.match(/OpenUI Lang stream/g)).toHaveLength(1);
-    expect(container.textContent).toContain("info");
+    expect(container.querySelector('[aria-label="info"]')).not.toBeNull();
     expect(container.textContent).toContain("Streaming");
-    expect(container.textContent).toContain("2 statements");
-    expect(container.textContent).toContain("1 orphaned statement");
+    expect(overviewStats()).toContain("2 statements");
+    expect(overviewStats()).toContain("1 orphaned statement");
     expect(container.textContent).not.toContain("stream-1");
     expect(container.textContent).not.toContain('root = Card("done")');
 
@@ -248,8 +283,8 @@ describe("OpenUIDevtools", () => {
     expect(container.textContent?.match(/OpenUI Lang stream/g)).toHaveLength(1);
     expect(container.textContent).not.toContain("settled");
     expect(container.textContent).not.toContain("Streaming");
-    expect(container.textContent).toContain("1 statement");
-    expect(container.textContent).toContain("1 error");
+    expect(overviewStats()).toContain("1 statement");
+    expect(overviewStats()).toContain("1 error");
     expect(container.textContent).not.toContain("Unknown component Ghost");
 
     const expand = container.querySelector<HTMLButtonElement>(
@@ -332,7 +367,7 @@ describe("OpenUIDevtools", () => {
     render({ enabled: true });
     act(() => secondRoot.render(createElement(OpenUIDevtools, { enabled: true })));
 
-    expect(document.querySelectorAll('button[aria-label="Open OpenUI devtools"]')).toHaveLength(1);
+    expect(document.querySelectorAll('button[aria-label="Open OpenUI Inspect"]')).toHaveLength(1);
 
     act(() => secondRoot.unmount());
     second.remove();
@@ -341,7 +376,7 @@ describe("OpenUIDevtools", () => {
   it("lets a manual instance win over an auto-mounted one", () => {
     // Auto-mounted instance first (as react-lang's bootstrap would do) …
     render({ enabled: true, __autoMounted: true });
-    expect(container.querySelector('button[aria-label="Open OpenUI devtools"]')).not.toBeNull();
+    expect(container.querySelector('button[aria-label="Open OpenUI Inspect"]')).not.toBeNull();
 
     // … then a manual instance mounts and takes over.
     const manual = document.createElement("div");
@@ -349,13 +384,13 @@ describe("OpenUIDevtools", () => {
     const manualRoot = createRoot(manual);
     act(() => manualRoot.render(createElement(OpenUIDevtools, { enabled: true })));
 
-    expect(container.querySelector('button[aria-label="Open OpenUI devtools"]')).toBeNull();
-    expect(manual.querySelector('button[aria-label="Open OpenUI devtools"]')).not.toBeNull();
+    expect(container.querySelector('button[aria-label="Open OpenUI Inspect"]')).toBeNull();
+    expect(manual.querySelector('button[aria-label="Open OpenUI Inspect"]')).not.toBeNull();
 
     // When the manual instance unmounts, the auto instance takes back over.
     act(() => manualRoot.unmount());
     manual.remove();
-    expect(container.querySelector('button[aria-label="Open OpenUI devtools"]')).not.toBeNull();
+    expect(container.querySelector('button[aria-label="Open OpenUI Inspect"]')).not.toBeNull();
   });
 
   it("removes a resolved stream from the errors-only view", () => {
