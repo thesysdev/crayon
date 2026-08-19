@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
+import type { ParseResult } from "../lib";
 import { useDebugStyles } from "../styles";
-import type { ParseResult } from "../types";
 
 const COLLAPSE_BYTES = 200 * 1024;
 

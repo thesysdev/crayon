@@ -1,6 +1,6 @@
 import { useMemo, useRef, type CSSProperties, type UIEvent } from "react";
-import { tokenColor, tokenizeLang, toTokenLines } from "../lib";
-import { MONO, useTheme, type ThemeTokens } from "../theme";
+import { tokenColor, tokenizeLang, toTokenLines } from "../../lib";
+import { MONO, useTheme, type ThemeTokens } from "../../theme";
 
 // One line on purpose: the empty editor renders it as a single numbered row.
 const PLACEHOLDER = 'root = TextContent("Hello")';

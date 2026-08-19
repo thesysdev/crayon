@@ -1,6 +1,6 @@
 import { CheckCircle2, Circle, CircleDot, CircleMinus, CirclePlus, XCircle } from "lucide-react";
+import type { PlaybackState } from "../lib";
 import { useDebugStyles } from "../styles";
-import type { PlaybackState } from "../usePlayback";
 
 export function StreamTimeline({ state }: { state: PlaybackState }) {
   const s = useDebugStyles();

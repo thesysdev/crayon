@@ -1,7 +1,7 @@
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useState } from "react";
+import type { ElementNode, ParseResult } from "../lib";
 import { useDebugStyles } from "../styles";
-import type { ElementNode, ParseResult } from "../types";
 
 function isElementNode(value: unknown): value is ElementNode {
   return !!value && typeof value === "object" && (value as { type?: unknown }).type === "element";

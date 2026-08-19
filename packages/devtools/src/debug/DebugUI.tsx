@@ -10,19 +10,10 @@ import {
   type ThemeTokens,
 } from "../theme";
 import { IconButton, ThemeToggle } from "../ui";
-import { HelpDialog } from "./HelpDialog";
-import { LangEditor } from "./LangEditor";
-import { JsonPanel } from "./panels/JsonPanel";
-import { RenderPanel } from "./panels/RenderPanel";
-import { StreamTimeline } from "./panels/StreamTimeline";
-import { TreePanel } from "./panels/TreePanel";
-import { ValidationPanel } from "./panels/ValidationPanel";
-import { librarySchema } from "./parse";
-import { StreamToolbar } from "./StreamToolbar";
+import { librarySchema, useReactLang, useStream, useValidation } from "./lib";
+import { JsonPanel, RenderPanel, StreamTimeline, TreePanel, ValidationPanel } from "./panels";
 import { debugStyles } from "./styles";
-import { useReactLang } from "./useReactLang";
-import { useStream } from "./useStream";
-import { useValidation } from "./useValidation";
+import { HelpDialog, LangEditor, StreamToolbar } from "./ui";
 
 /** Editor's share of the split, as a percentage. The panels get the rest. */
 export const DEFAULT_EDITOR_PCT = 25;

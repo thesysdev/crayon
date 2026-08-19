@@ -1,9 +1,12 @@
 import { Pause, Play, RotateCcw, StepForward } from "lucide-react";
 import type { CSSProperties } from "react";
-import { CHUNK_STRATEGIES, type ChunkStrategy } from "./chunker";
-import { useDebugStyles } from "./styles";
-import type { PlaybackControls } from "./usePlayback";
-import type { StreamSettings } from "./useStream";
+import {
+  CHUNK_STRATEGIES,
+  type ChunkStrategy,
+  type PlaybackControls,
+  type StreamSettings,
+} from "../lib";
+import { useDebugStyles } from "../styles";
 
 const SPEEDS = ["0.25", "0.5", "1", "2", "4", "8"];
 // Every control in the toolbar draws its icon at one size and one stroke.

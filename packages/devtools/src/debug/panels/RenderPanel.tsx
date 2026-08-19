@@ -2,9 +2,13 @@ import type { Library } from "@openuidev/react-lang";
 import { FlaskConical } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { LibraryLike } from "../../lib";
-import { createMockToolProvider, type MockToolCall } from "../mockTools";
+import {
+  createMockToolProvider,
+  type LangModule,
+  type MockToolCall,
+  type OpenUIError,
+} from "../lib";
 import { useDebugStyles } from "../styles";
-import type { LangModule, OpenUIError } from "../types";
 
 const TOOL_CALL_LOG_CAP = 20;
 

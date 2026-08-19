@@ -1,8 +1,8 @@
 import { X } from "lucide-react";
 import { useEffect, useState, type CSSProperties } from "react";
-import { useStyles, type ThemeTokens } from "../theme";
-import { IconButton } from "../ui";
-import { useDebugStyles } from "./styles";
+import { useStyles, type ThemeTokens } from "../../theme";
+import { IconButton } from "../../ui";
+import { useDebugStyles } from "../styles";
 
 const SUMMARY =
   "OpenUI Debug is a scratchpad for OpenUI Lang: drop in a model response and see how it parses, validates, and renders against this app's own components.";
