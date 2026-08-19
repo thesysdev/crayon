@@ -1,0 +1,41 @@
+---
+title: Developer Tools
+description: Use Inspect and Debug in development to watch streams, catch errors, and try OpenUI Lang against your own components.
+---
+
+OpenUI Developer Tools sit on your running app in development. They do not change production behavior. Two trays share a floating button: **Inspect** shows what the runtime is doing, and **Debug** lets you try OpenUI Lang against the same library the user sees.
+
+In development, `@openuidev/react-lang` mounts the widget for you. Look for the Shiro button in the bottom-right corner. Click it to open Inspect. The widget is omitted from production builds unless you pass `enabled`.
+
+To change the corner, theme, or other props, mount it yourself — a manual instance replaces the auto-mounted one:
+
+```tsx
+import { OpenUIDevtools } from "@openuidev/devtools";
+
+export function App() {
+  return (
+    <>
+      {/* your app */}
+      <OpenUIDevtools position="bottom-right" theme="light" />
+    </>
+  );
+}
+```
+
+See [`OpenUIDevtools` props](/docs/api-reference/devtools) for the full list.
+
+## Inspect
+
+Use Inspect when a stream misbehaves and you want the live record, not a guess from the console.
+
+Each OpenUI Lang render publishes events as it streams and when it settles: the response text, parser issues, errors, and timing. Inspect lists those events in the app. Expand a stream to read the Lang, copy it, or open it in Debug.
+
+The header settings control auto-open on error, an errors-only filter, and light or dark theme. Close the tray with the X or Escape; the page behind stays usable.
+
+## Debug
+
+Use Debug when you already have a response and want to see how *this app* parses, validates, and renders it.
+
+Expand a settled stream in Inspect and click **Debug**. The editor loads that response. Render uses the `createLibrary()` instance that produced the stream, including your components and CSS. `Query()` and `Mutation()` run against mocked tools so you can iterate without hitting a backend.
+
+The other panels are for diagnosis: Validation groups parse errors, Tree and JSON show the parsed result, and Stream replays the editor chunk by chunk as if the model were still generating. Eject Debug into its own window when you need more space.
