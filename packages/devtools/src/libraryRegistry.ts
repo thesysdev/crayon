@@ -23,7 +23,7 @@ export interface RegisteredLibrary {
 }
 
 interface RegistryStore {
-  [DEVTOOLS_LIBRARIES_KEY]?: RegisteredLibrary[];
+  [DEVTOOLS_LIBRARIES_KEY]?: Record<string, LibraryLike>;
 }
 
 export function isLibraryEvent(event: ObservabilityEvent): boolean {
@@ -31,7 +31,8 @@ export function isLibraryEvent(event: ObservabilityEvent): boolean {
 }
 
 export function readRegisteredLibraries(): RegisteredLibrary[] {
-  return (globalThis as RegistryStore)[DEVTOOLS_LIBRARIES_KEY] ?? [];
+  const byKey = (globalThis as RegistryStore)[DEVTOOLS_LIBRARIES_KEY] ?? {};
+  return Object.entries(byKey).map(([key, library]) => ({ key, library }));
 }
 
 /** Live `createLibrary()` results, seeded from the stash and refreshed on ping. */
