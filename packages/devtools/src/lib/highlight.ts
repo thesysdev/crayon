@@ -1,4 +1,4 @@
-import type { ThemeTokens } from "./theme";
+import type { ThemeTokens } from "../theme";
 
 export type TokenKind =
   | "string"

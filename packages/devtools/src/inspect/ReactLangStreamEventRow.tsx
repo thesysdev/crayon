@@ -1,7 +1,7 @@
 import { type ObservabilityEvent } from "@openuidev/observability";
 import { Bug, Check, ChevronDown, ChevronRight, Copy } from "lucide-react";
 import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
-import { tokenColor, tokenizeLang } from "../highlight";
+import { tokenColor, tokenizeLang } from "../lib";
 import { LevelIcon } from "./LevelIcon";
 import { FONT, MONO, useStyles, type ThemeTokens } from "../theme";
 

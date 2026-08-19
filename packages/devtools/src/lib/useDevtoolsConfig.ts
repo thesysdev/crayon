@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { ColorMode } from "./theme";
+import type { ColorMode } from "../theme";
 
 const STORAGE_KEY = "openui.devtools.config";
 

@@ -4,7 +4,6 @@ import { observability, type ObservabilityEvent } from "@openuidev/observability
 import { Inbox, RotateCcw, Settings, X } from "lucide-react";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { IconButton, ShiroLogo, ThemeSegmented } from "./ui";
-import { addOrReplaceEvent } from "./eventBuffer";
 import {
   EventRow,
   getQuotaError,
@@ -12,7 +11,12 @@ import {
   QuotaErrorRow,
   ReactLangStreamEventRow,
 } from "./inspect";
-import { useDevtoolsSingleton } from "./singleton";
+import {
+  addOrReplaceEvent,
+  useDevtoolsConfig,
+  useDevtoolsSingleton,
+  type DevtoolsConfig,
+} from "./lib";
 import {
   DEFAULT_COLOR_MODE,
   DevtoolsModeProvider,
@@ -23,7 +27,6 @@ import {
   type ColorMode,
   type ThemeTokens,
 } from "./theme";
-import { useDevtoolsConfig, type DevtoolsConfig } from "./useDevtoolsConfig";
 
 const RELIABILITY_DOCS_URL = "https://www.openui.com/docs/openui-lang/reliability";
 
