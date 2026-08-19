@@ -1,15 +1,9 @@
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { useDebugStyles } from "../styles";
-import type { ParseResult } from "../types";
+import type { ElementNode, ParseResult } from "../types";
 
-function isElementNode(value: unknown): value is {
-  type: "element";
-  typeName: string;
-  props: Record<string, unknown>;
-  partial?: boolean;
-  statementId?: string;
-} {
+function isElementNode(value: unknown): value is ElementNode {
   return !!value && typeof value === "object" && (value as { type?: unknown }).type === "element";
 }
 
@@ -49,16 +43,7 @@ function PropValue({ value }: { value: unknown }) {
   return <code style={s.treeScalar}>{safeStringify(value)}</code>;
 }
 
-function NodeView({
-  node,
-}: {
-  node: {
-    typeName: string;
-    props: Record<string, unknown>;
-    partial?: boolean;
-    statementId?: string;
-  };
-}) {
+function NodeView({ node }: { node: ElementNode }) {
   const [open, setOpen] = useState(true);
   const s = useDebugStyles();
   const entries = Object.entries(node.props ?? {});

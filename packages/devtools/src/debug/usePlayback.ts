@@ -1,7 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import { type ChunkStrategy, type StreamChunk, mulberry32, splitChunks } from "./chunker";
-import { normalizeResult } from "./parse";
-import type { LangModule, ParseResult, StreamParserLike } from "./types";
+import type { LangModule, LibrarySchema, ParseResult } from "./types";
 
 export interface TraceRow {
   i: number;
@@ -75,7 +74,7 @@ export interface PlaybackControls {
 export function usePlayback(
   code: string,
   lang: LangModule | null | undefined,
-  schema: unknown,
+  schema: LibrarySchema | null,
   rootName: string | undefined,
 ): PlaybackControls {
   const [state, setState] = useState<PlaybackState>(IDLE);
@@ -95,8 +94,9 @@ export function usePlayback(
       let fatal: string | null = null;
       let result: ParseResult | null = null;
       try {
-        result = normalizeResult(s.getFinal());
-        const oneShot = normalizeResult(module.createParser(schema, rootName).parse(s.source));
+        result = s.getFinal();
+        if (!schema) throw new Error("No library schema");
+        const oneShot = module.createParser(schema, rootName).parse(s.source);
         convergence =
           JSON.stringify(result?.root) === JSON.stringify(oneShot?.root) ? "converged" : "diverged";
       } catch (err) {
@@ -121,7 +121,7 @@ export function usePlayback(
       let result: ParseResult | null = null;
       let fatal: string | null = null;
       try {
-        result = normalizeResult(s.push(chunk.text, s.prefix));
+        result = s.push(chunk.text, s.prefix);
       } catch (err) {
         fatal = err instanceof Error ? err.message : String(err);
       }
@@ -248,14 +248,14 @@ export function usePlayback(
       if (emulated) {
         let last: ParseResult | null = null;
         push = (_chunk, prefix) => {
-          last = normalizeResult(lang.createParser(schema, rootName).parse(prefix));
+          last = lang.createParser(schema, rootName).parse(prefix);
           return last;
         };
-        getFinal = () => last ?? normalizeResult(lang.createParser(schema, rootName).parse(code));
+        getFinal = () => last ?? lang.createParser(schema, rootName).parse(code);
       } else {
-        const sp: StreamParserLike = lang.createStreamingParser!(schema, rootName);
-        push = (chunk) => normalizeResult(sp.push(chunk));
-        getFinal = () => normalizeResult(sp.getResult());
+        const sp = lang.createStreamingParser!(schema, rootName);
+        push = (chunk) => sp.push(chunk);
+        getFinal = () => sp.getResult();
       }
 
       const s: Session = {

@@ -1,56 +1,27 @@
-import type { ComponentType } from "react";
+import type {
+  ParseResult,
+  Renderer,
+  createParser,
+  createStreamingParser,
+} from "@openuidev/react-lang";
 
-export interface ValidationError {
-  code: string;
-  component: string;
-  path: string;
-  message: string;
-  statementId?: string;
-}
+export type { ElementNode, OpenUIError, ParseResult } from "@openuidev/react-lang";
 
-export interface ParseResult {
-  root: {
-    type: "element";
-    typeName: string;
-    props: Record<string, unknown>;
-    partial?: boolean;
-    statementId?: string;
-  } | null;
-  meta: {
-    incomplete: boolean;
-    unresolved: string[];
-    orphaned: string[];
-    statementCount: number;
-    errors: ValidationError[];
-  };
-  stateDeclarations?: Record<string, unknown>;
-  queryStatements?: unknown[];
-  mutationStatements?: unknown[];
-}
+/** JSON Schema document `createParser` expects — `library.toJSONSchema()`. */
+export type LibrarySchema = Parameters<typeof createParser>[0];
+export type StreamParser = ReturnType<typeof createStreamingParser>;
+export type ValidationError = ParseResult["meta"]["errors"][number];
 
-export interface ParserLike {
-  parse(src: string): unknown;
-}
-
-export interface StreamParserLike {
-  push(chunk: string): unknown;
-  getResult(): unknown;
-}
-
-export interface LangModule {
-  Renderer: ComponentType<{
-    response: string | null;
-    library: unknown;
-    isStreaming?: boolean;
-    toolProvider?: unknown;
-    onError?: (errors: unknown[]) => void;
-    onStateUpdate?: (state: Record<string, unknown>) => void;
-    onAction?: (event: unknown) => void;
-    publishObservability?: boolean;
-  }>;
-  createParser: (schema: unknown, rootName?: string) => ParserLike;
-  createStreamingParser?: (schema: unknown, rootName?: string) => StreamParserLike;
-}
+/**
+ * The `@openuidev/react-lang` surface Debug actually calls. Loaded dynamically
+ * so the package can stay an optional peer; this type is the compile-time
+ * contract for that namespace.
+ */
+export type LangModule = {
+  Renderer: typeof Renderer;
+  createParser: typeof createParser;
+  createStreamingParser?: typeof createStreamingParser;
+};
 
 export interface ValidationOutcome {
   result: ParseResult | null;

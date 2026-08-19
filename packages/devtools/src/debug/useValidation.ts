@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { EMPTY_OUTCOME, runValidation, type ValidationOutcome } from "./parse";
-import type { LangModule } from "./types";
+import type { LangModule, LibrarySchema } from "./types";
 
 const DEBOUNCE_MS = 150;
 
@@ -16,7 +16,7 @@ function useDebounced<T>(value: T, ms: number): T {
 export function useValidation(
   code: string,
   lang: LangModule | null | undefined,
-  schema: unknown,
+  schema: LibrarySchema | null,
   rootName: string | undefined,
 ): ValidationOutcome {
   const debouncedCode = useDebounced(code, DEBOUNCE_MS);

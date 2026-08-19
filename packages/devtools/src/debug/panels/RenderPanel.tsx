@@ -1,9 +1,10 @@
+import type { Library } from "@openuidev/react-lang";
 import { FlaskConical } from "lucide-react";
-import { useMemo, useState, type ComponentType } from "react";
+import { useMemo, useState } from "react";
 import type { LibraryLike } from "../../lib";
 import { createMockToolProvider, type MockToolCall } from "../mockTools";
 import { useDebugStyles } from "../styles";
-import type { LangModule } from "../types";
+import type { LangModule, OpenUIError } from "../types";
 
 const TOOL_CALL_LOG_CAP = 20;
 
@@ -15,14 +16,7 @@ function safeDescribe(event: unknown): string {
   }
 }
 
-function isOpenUIError(error: unknown): error is {
-  code?: string;
-  message?: string;
-  hint?: string;
-  component?: string;
-  path?: string;
-  statementId?: string;
-} {
+function isOpenUIError(error: unknown): error is OpenUIError {
   return !!error && typeof error === "object";
 }
 
@@ -51,13 +45,13 @@ export function RenderPanel({
   code,
   isStreaming,
 }: {
-  Renderer: LangModule["Renderer"] | ComponentType<{ response: string | null; library: unknown }>;
+  Renderer: LangModule["Renderer"];
   library: LibraryLike;
   code: string;
   isStreaming: boolean;
 }) {
   const s = useDebugStyles();
-  const [runtimeErrors, setRuntimeErrors] = useState<unknown[]>([]);
+  const [runtimeErrors, setRuntimeErrors] = useState<OpenUIError[]>([]);
   const [formState, setFormState] = useState<Record<string, unknown>>({});
   const [actionLog, setActionLog] = useState<string[]>([]);
   const [toolCalls, setToolCalls] = useState<MockToolCall[]>([]);
@@ -96,7 +90,7 @@ export function RenderPanel({
       <div style={s.renderCanvas}>
         <Renderer
           response={source}
-          library={library}
+          library={library as Library}
           isStreaming={isStreaming}
           publishObservability={false}
           toolProvider={toolProvider}
