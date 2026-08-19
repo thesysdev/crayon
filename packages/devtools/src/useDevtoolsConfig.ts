@@ -53,18 +53,33 @@ function merge(base: DevtoolsConfig, patch: Partial<DevtoolsConfig>): DevtoolsCo
 /**
  * Drawer settings as one object, restored from localStorage.
  * `setConfig({ autoOpen: false })` patches and persists.
+ *
+ * Theme is arg-first: a passed `theme` wins over storage and is written
+ * back so Settings stays in sync. With no arg, the stored theme is used.
  */
-export function useDevtoolsConfig(defaults: DevtoolsConfig) {
-  const [config, setConfigState] = useState(() => merge(defaults, readStored()));
+export function useDevtoolsConfig(
+  defaults: DevtoolsConfig,
+  provided: { theme?: ColorMode } = {},
+) {
+  const resolveTheme = (stored: Partial<DevtoolsConfig>, fallback: ColorMode): ColorMode =>
+    provided.theme ?? stored.theme ?? fallback;
+
+  const [config, setConfigState] = useState(() => {
+    const stored = readStored();
+    const next = { ...merge(defaults, stored), theme: resolveTheme(stored, defaults.theme) };
+    if (provided.theme) writeStored({ theme: provided.theme });
+    return next;
+  });
   const configRef = useRef(config);
   configRef.current = config;
 
   // After SSR hydration the lazy initializer reused the server snapshot
-  // (prop defaults). Re-read storage so a previous session's settings win.
+  // (prop defaults). Re-read storage so a previous session's checkboxes win.
+  // Theme still prefers a provided arg over that stored value.
   useEffect(() => {
     const stored = readStored();
     setConfigState((prev) => {
-      const next = merge(prev, stored);
+      const next = { ...merge(prev, stored), theme: resolveTheme(stored, prev.theme) };
       configRef.current = next;
       return next;
     });

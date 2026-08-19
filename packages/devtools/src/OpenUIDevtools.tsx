@@ -51,8 +51,9 @@ export interface OpenUIDevtoolsProps {
   /** Initial state of the drawer's "auto-open on error" checkbox. Defaults to true. */
   autoOpenOnError?: boolean;
   /**
-   * Initial widget chrome theme. Never auto-detected — change it under
-   * Settings > Theme and the choice persists across reloads.
+   * Widget chrome theme. If passed, it wins over the stored Settings choice
+   * and is written to config. Otherwise the stored theme is used, then light.
+   * Never auto-detected from the host page or the OS.
    */
   theme?: ColorMode;
   /**
@@ -75,7 +76,7 @@ export function OpenUIDevtools({
   maxEvents = 50,
   errorsOnly = false,
   autoOpenOnError = true,
-  theme: themeProp = DEFAULT_COLOR_MODE,
+  theme: themeProp,
   __autoMounted = false,
 }: OpenUIDevtoolsProps) {
   const isEnabled =
@@ -87,11 +88,14 @@ export function OpenUIDevtools({
   const [open, setOpen] = useState(false);
   const [toggleHovered, setToggleHovered] = useState(false);
   const [bannerHovered, setBannerHovered] = useState(false);
-  const { config, setConfig, configRef } = useDevtoolsConfig({
-    autoOpen: autoOpenOnError,
-    onlyErrors: errorsOnly,
-    theme: themeProp,
-  });
+  const { config, setConfig, configRef } = useDevtoolsConfig(
+    {
+      autoOpen: autoOpenOnError,
+      onlyErrors: errorsOnly,
+      theme: DEFAULT_COLOR_MODE,
+    },
+    { theme: themeProp },
+  );
   const { onlyErrors, theme: mode } = config;
   const styles = chromeStyles(theme(mode));
 
