@@ -1,166 +1,135 @@
 
 
-Here's a complete founder's monthly sales dashboard covering all five items:
+Here's a founder's monthly sales check dashboard covering all five items:
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "founder-sales-check",
-      "catalogId": "thesys.dev:c1-openui",
-      "theme": {
-        "primaryColor": "#1A73E8",
-        "agentDisplayName": "Sales Dashboard"
-      }
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "founder-sales-check",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "children": ["header", "kpi-row", "chart-section", "products-section", "conversion-section", "download-section"],
-          "direction": "column",
-          "gap": "l"
-        },
-        {
-          "id": "header",
-          "component": "CardHeader",
-          "title": "Monthly Sales Check",
-          "subtitle": "June 2025 · Updated today"
-        },
-        {
-          "id": "kpi-row",
-          "component": "Card",
-          "variant": "sunk",
-          "children": ["revenue-label", "revenue-value"],
-          "direction": "column",
-          "gap": "xs"
-        },
-        {
-          "id": "revenue-label",
-          "component": "TextContent",
-          "text": "Revenue This Month",
-          "size": "small"
-        },
-        {
-          "id": "revenue-value",
-          "component": "TextContent",
-          "text": "**$128,400**",
-          "size": "large-heavy"
-        },
-        {
-          "id": "chart-section",
-          "component": "Card",
-          "children": ["chart-title", "revenue-chart"],
-          "direction": "column",
-          "gap": "s"
-        },
-        {
-          "id": "chart-title",
-          "component": "Heading",
-          "text": "Revenue Trend — Last 6 Months",
-          "level": "h3"
-        },
-        {
-          "id": "revenue-chart",
-          "component": "AreaChart",
-          "labels": ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-          "series": ["revenue-series"],
-          "variant": "natural",
-          "yLabel": "Revenue ($)"
-        },
-        {
-          "id": "revenue-series",
-          "component": "Series",
-          "category": "Revenue",
-          "values": [82000, 91500, 87200, 104800, 118300, 128400]
-        },
-        {
-          "id": "products-section",
-          "component": "Card",
-          "children": ["products-title", "products-chart"],
-          "direction": "column",
-          "gap": "s"
-        },
-        {
-          "id": "products-title",
-          "component": "Heading",
-          "text": "Top 3 Best-Selling Products",
-          "level": "h3"
-        },
-        {
-          "id": "products-chart",
-          "component": "HorizontalBarChart",
-          "labels": ["Pro Plan", "Starter Kit", "Enterprise Add-on"],
-          "series": ["products-series"],
-          "xLabel": "Units Sold"
-        },
-        {
-          "id": "products-series",
-          "component": "Series",
-          "category": "Units Sold",
-          "values": [342, 289, 156]
-        },
-        {
-          "id": "conversion-section",
-          "component": "Card",
-          "children": ["conversion-title", "conversion-progress", "conversion-note"],
-          "direction": "column",
-          "gap": "s"
-        },
-        {
-          "id": "conversion-title",
-          "component": "Heading",
-          "text": "Conversion Rate",
-          "level": "h3"
-        },
-        {
-          "id": "conversion-progress",
-          "component": "Progress",
-          "value": 4.7,
-          "label": "4.7% of visitors converted to paying customers"
-        },
-        {
-          "id": "conversion-note",
-          "component": "TextCallout",
-          "variant": "success",
-          "title": "Up 0.4pp from May",
-          "description": "Conversion has improved for the third consecutive month."
-        },
-        {
-          "id": "download-section",
-          "component": "Card",
-          "variant": "clear",
-          "children": ["download-btn"],
-          "direction": "row",
-          "justify": "end"
-        },
-        {
-          "id": "download-btn",
-          "component": "Button",
-          "label": "⬇ Download Report (CSV)",
-          "variant": "primary",
-          "size": "medium"
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-**What's covered:**
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "revenueNow",
+          "separator1",
+          "trendChart",
+          "separator2",
+          "topProducts",
+          "separator3",
+          "conversionSection",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Monthly Sales Check",
+        "subtitle": "June 2025"
+      },
+      {
+        "id": "revenueNow",
+        "component": "TextContent",
+        "text": "**Revenue this month:** $84,320",
+        "size": "large-heavy"
+      },
+      {
+        "id": "separator1",
+        "component": "Separator"
+      },
+      {
+        "id": "trendChart",
+        "component": "LineChart",
+        "labels": ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+        "series": ["revSeries"],
+        "variant": "natural",
+        "xLabel": "Month",
+        "yLabel": "Revenue (USD)"
+      },
+      {
+        "id": "revSeries",
+        "component": "Series",
+        "category": "Revenue",
+        "values": [52400, 58100, 61750, 67200, 74800, 84320]
+      },
+      {
+        "id": "separator2",
+        "component": "Separator"
+      },
+      {
+        "id": "topProducts",
+        "component": "Table",
+        "columns": ["productCol", "unitsCol"]
+      },
+      {
+        "id": "productCol",
+        "component": "Col",
+        "label": "Product",
+        "data": ["Pro Plan (Annual)", "Starter Plan", "Team Add-on"]
+      },
+      {
+        "id": "unitsCol",
+        "component": "Col",
+        "label": "Units Sold",
+        "data": ["312", "287", "194"],
+        "type": "number"
+      },
+      {
+        "id": "separator3",
+        "component": "Separator"
+      },
+      {
+        "id": "conversionSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": ["conversionLabel", "conversionBar"]
+      },
+      {
+        "id": "conversionLabel",
+        "component": "TextContent",
+        "text": "**Conversion rate:** 4.7% (visitors → paying customers)",
+        "size": "small"
+      },
+      {
+        "id": "conversionBar",
+        "component": "Progress",
+        "value": 4.7,
+        "label": "4.7%"
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": ["downloadBtn"]
+      },
+      {
+        "id": "downloadBtn",
+        "component": "Button",
+        "label": "Download report (CSV)",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>
 
-| # | Requirement | Component Used |
+This single screen covers all five requirements:
+
+| # | Requirement | Component used |
 |---|---|---|
-| 1 | Revenue this month | Large bold `$128,400` in a sunken KPI card |
-| 2 | 6-month revenue trend | Area chart (Jan → Jun) showing growth from $82K to $128K |
-| 3 | Top 3 products + units | Horizontal bar chart — Pro Plan (342), Starter Kit (289), Enterprise Add-on (156) |
-| 4 | Conversion percentage | Progress bar at 4.7% with a month-over-month callout |
-| 5 | Download the numbers | Primary "Download Report (CSV)" button at the bottom |
-
-You can wire the download button to an actual export endpoint and swap in live data via `updateDataModel` messages when connecting to a real backend.
+| 1 | Revenue this month | Large bold `TextContent` — **$84,320** |
+| 2 | 6-month revenue trend | `LineChart` with a natural curve from Jan → Jun |
+| 3 | Top 3 products + units | `Table` with Product and Units Sold columns |
+| 4 | Conversion percentage | `Progress` bar inside a sunken card showing **4.7%** |
+| 5 | Download the numbers | Primary `Button` labeled "Download report (CSV)" |

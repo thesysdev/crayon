@@ -1,6 +1,455 @@
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"logistics-coordinator-board","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#2563EB","agentDisplayName":"Logistics Operations"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#2563EB",
+      "agentDisplayName": "Logistics Control"
+    }
+  }
+}
 </a2ui-json>
+
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"logistics-coordinator-board","components":[{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["header","refresh","route-search-card","delayed-alert","metrics","analytics","shipments-card"]},{"id":"header","component":"CardHeader","title":"Logistics Coordinator Board","subtitle":"Monitor in-transit shipments, carrier volume, cost, and delivery performance"},{"id":"refresh","component":"Tag","text":"Last refreshed: Aug 18, 2026 at 10:42 AM UTC","icon":"refresh-cw","size":"sm","variant":"neutral"},{"id":"route-search-card","component":"Card","variant":"sunk","direction":"column","gap":"s","children":["route-search-title","route-search-form"]},{"id":"route-search-title","component":"Heading","text":"Search by route","level":"h3"},{"id":"route-search-form","component":"Form","name":"route_search","fields":["route-search-control"],"buttons":"route-search-buttons"},{"id":"route-search-control","component":"FormControl","label":"Origin or destination","input":"route-search-input","hint":"Enter a city, port, airport, or route such as Chicago → Dallas"},{"id":"route-search-input","component":"Input","name":"route","placeholder":"Search routes…","type":"text"},{"id":"route-search-buttons","component":"Buttons","direction":"row","buttons":["route-search-submit","route-search-clear"]},{"id":"route-search-submit","component":"Button","label":"Search","variant":"primary","size":"medium","action":[{"event":"search_route"}]},{"id":"route-search-clear","component":"Button","label":"Clear","variant":"tertiary","size":"medium","action":[{"event":"clear_route_search"}]},{"id":"delayed-alert","component":"Alert","title":"2 delayed shipments need attention","description":"SHP-10482 is delayed by weather near Denver; SHP-10491 is awaiting customs clearance in Rotterdam.","variant":"warning"},{"id":"metrics","component":"Card","variant":"clear","direction":"row","gap":"m","wrap":true,"children":["ontime-card","cost-card","transit-card","delayed-card"]},{"id":"ontime-card","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["ontime-label","ontime-value","ontime-progress"]},{"id":"ontime-label","component":"TextContent","text":"On-time this month","size":"small-heavy"},{"id":"ontime-value","component":"Heading","text":"94.6%","level":"h2"},{"id":"ontime-progress","component":"Progress","value":94.6,"label":"94.6% on time"},{"id":"cost-card","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["cost-label","cost-value","cost-note"]},{"id":"cost-label","component":"TextContent","text":"Average cost per shipment","size":"small-heavy"},{"id":"cost-value","component":"Heading","text":"$1,284","level":"h2"},{"id":"cost-note","component":"TextContent","text":"Month to date • down 3.2%","size":"small"},{"id":"transit-card","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["transit-label","transit-value","transit-note"]},{"id":"transit-label","component":"TextContent","text":"Shipments in transit","size":"small-heavy"},{"id":"transit-value","component":"Heading","text":"128","level":"h2"},{"id":"transit-note","component":"TextContent","text":"Across 37 active routes","size":"small"},{"id":"delayed-card","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["delayed-label","delayed-value","delayed-note"]},{"id":"delayed-label","component":"TextContent","text":"Currently delayed","size":"small-heavy"},{"id":"delayed-value","component":"Heading","text":"2","level":"h2"},{"id":"delayed-note","component":"TextContent","text":"1.6% of in-transit volume","size":"small"},{"id":"analytics","component":"Card","variant":"clear","direction":"row","gap":"m","wrap":true,"children":["carrier-card","weekly-card"]},{"id":"carrier-card","component":"Card","variant":"card","direction":"column","gap":"m","weight":1,"children":["carrier-header","carrier-chart"]},{"id":"carrier-header","component":"CardHeader","title":"Volume split by carrier","subtitle":"Current month • 412 shipments"},{"id":"carrier-chart","component":"PieChart","labels":["DHL","FedEx","UPS","Maersk","Other"],"values":[28,24,21,17,10],"variant":"donut","appearance":"circular"},{"id":"weekly-card","component":"Card","variant":"card","direction":"column","gap":"m","weight":1,"children":["weekly-header","weekly-chart"]},{"id":"weekly-header","component":"CardHeader","title":"Weekly shipment volume","subtitle":"Past two months"},{"id":"weekly-chart","component":"BarChart","labels":["Jun 29","Jul 6","Jul 13","Jul 20","Jul 27","Aug 3","Aug 10","Aug 17"],"series":["weekly-series"],"variant":"grouped","xLabel":"Week starting","yLabel":"Shipments"},{"id":"weekly-series","component":"Series","category":"Shipments","values":[82,91,88,105,97,112,119,108]},{"id":"shipments-card","component":"Card","variant":"card","direction":"column","gap":"m","children":["shipments-header","shipments-table","flag-form"]},{"id":"shipments-header","component":"CardHeader","title":"Shipments in transit","subtitle":"Showing priority and recently updated shipments"},{"id":"shipments-table","component":"Table","columns":["shipment-col","origin-col","destination-col","eta-col","status-col"]},{"id":"shipment-col","component":"Col","label":"Shipment","data":["SHP-10482","SHP-10491","SHP-10503","SHP-10507","SHP-10512","SHP-10519"],"type":"string"},{"id":"origin-col","component":"Col","label":"Origin","data":["Seattle, US","Hamburg, DE","Chicago, US","Shenzhen, CN","Toronto, CA","Los Angeles, US"],"type":"string"},{"id":"destination-col","component":"Col","label":"Destination","data":["Denver, US","Rotterdam, NL","Dallas, US","Long Beach, US","New York, US","Phoenix, US"],"type":"string"},{"id":"eta-col","component":"Col","label":"ETA","data":["Aug 19, 4:30 PM","Aug 21, 9:00 AM","Aug 18, 6:15 PM","Aug 24, 2:00 PM","Aug 20, 11:45 AM","Aug 19, 8:20 AM"],"type":"string"},{"id":"status-col","component":"Col","label":"Status","data":["Delayed • Weather","Delayed • Customs","On time","In transit","On time","Arriving soon"],"type":"string"},{"id":"flag-form","component":"Form","name":"flag_shipment","fields":["flag-shipment-control","flag-reason-control"],"buttons":"flag-buttons"},{"id":"flag-shipment-control","component":"FormControl","label":"Flag a shipment","input":"flag-shipment-select","hint":"Select a shipment that needs follow-up"},{"id":"flag-shipment-select","component":"Select","name":"shipment_id","placeholder":"Choose shipment","size":"medium","items":["flag-opt-10482","flag-opt-10491","flag-opt-10503","flag-opt-10507","flag-opt-10512","flag-opt-10519"]},{"id":"flag-opt-10482","component":"SelectItem","value":"SHP-10482","label":"SHP-10482 • Seattle → Denver"},{"id":"flag-opt-10491","component":"SelectItem","value":"SHP-10491","label":"SHP-10491 • Hamburg → Rotterdam"},{"id":"flag-opt-10503","component":"SelectItem","value":"SHP-10503","label":"SHP-10503 • Chicago → Dallas"},{"id":"flag-opt-10507","component":"SelectItem","value":"SHP-10507","label":"SHP-10507 • Shenzhen → Long Beach"},{"id":"flag-opt-10512","component":"SelectItem","value":"SHP-10512","label":"SHP-10512 • Toronto → New York"},{"id":"flag-opt-10519","component":"SelectItem","value":"SHP-10519","label":"SHP-10519 • Los Angeles → Phoenix"},{"id":"flag-reason-control","component":"FormControl","label":"Reason","input":"flag-reason-input","hint":"Add context for the operations team"},{"id":"flag-reason-input","component":"Input","name":"flag_reason","placeholder":"e.g., Customer escalation or missed checkpoint","type":"text"},{"id":"flag-buttons","component":"Buttons","direction":"row","buttons":["flag-submit"]},{"id":"flag-submit","component":"Button","label":"Flag shipment","variant":"primary","type":"normal","size":"medium","action":[{"event":"flag_shipment"}]}]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "refreshStatus",
+          "routeSearch",
+          "delayedAlert",
+          "kpiCard",
+          "carrierCard",
+          "weeklyCard",
+          "shipmentsCard",
+          "flagDialog"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Logistics Coordinator Board",
+        "subtitle": "In-transit shipments, service performance, volume, and cost"
+      },
+      {
+        "id": "refreshStatus",
+        "component": "Badge",
+        "text": "Last refreshed: Aug 18, 2026 at 10:42 UTC",
+        "variant": "outline"
+      },
+      {
+        "id": "routeSearch",
+        "component": "Form",
+        "name": "route-search",
+        "buttons": "searchButtons",
+        "fields": [
+          "routeField"
+        ]
+      },
+      {
+        "id": "searchButtons",
+        "component": "Buttons",
+        "buttons": [
+          "searchButton",
+          "clearButton"
+        ]
+      },
+      {
+        "id": "searchButton",
+        "component": "Button",
+        "label": "Search route",
+        "variant": "primary"
+      },
+      {
+        "id": "clearButton",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "tertiary"
+      },
+      {
+        "id": "routeField",
+        "component": "FormControl",
+        "label": "Search by route",
+        "input": "routeInput",
+        "hint": "Enter an origin, destination, or route such as Chicago → Dallas"
+      },
+      {
+        "id": "routeInput",
+        "component": "Input",
+        "name": "route",
+        "placeholder": "Origin, destination, or route",
+        "type": "text"
+      },
+      {
+        "id": "delayedAlert",
+        "component": "Alert",
+        "title": "2 delayed shipments require attention",
+        "description": "SHP-1048 is delayed by severe weather; SHP-1056 is awaiting customs clearance.",
+        "variant": "warning"
+      },
+      {
+        "id": "kpiCard",
+        "component": "Card",
+        "children": [
+          "kpiHeader",
+          "kpiTable"
+        ],
+        "variant": "sunk"
+      },
+      {
+        "id": "kpiHeader",
+        "component": "CardHeader",
+        "title": "Monthly performance",
+        "subtitle": "August 2026"
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": [
+          "metricCol",
+          "valueCol",
+          "contextCol"
+        ]
+      },
+      {
+        "id": "metricCol",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "On-time percentage",
+          "Average cost per shipment"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "valueCol",
+        "component": "Col",
+        "label": "Current",
+        "data": [
+          "94.6%",
+          "$1,284"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "contextCol",
+        "component": "Col",
+        "label": "Context",
+        "data": [
+          "Target: 95.0%",
+          "Down 3.2% vs. July"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "carrierCard",
+        "component": "Card",
+        "children": [
+          "carrierHeader",
+          "carrierChart"
+        ],
+        "variant": "sunk"
+      },
+      {
+        "id": "carrierHeader",
+        "component": "CardHeader",
+        "title": "Volume split by carrier",
+        "subtitle": "Current month · 1,248 shipments"
+      },
+      {
+        "id": "carrierChart",
+        "component": "PieChart",
+        "labels": [
+          "DHL",
+          "FedEx",
+          "UPS",
+          "Maersk",
+          "Other"
+        ],
+        "values": [
+          31,
+          27,
+          22,
+          14,
+          6
+        ],
+        "variant": "donut",
+        "appearance": "circular"
+      },
+      {
+        "id": "weeklyCard",
+        "component": "Card",
+        "children": [
+          "weeklyHeader",
+          "weeklyChart"
+        ],
+        "variant": "sunk"
+      },
+      {
+        "id": "weeklyHeader",
+        "component": "CardHeader",
+        "title": "Weekly shipment volume",
+        "subtitle": "Past two months"
+      },
+      {
+        "id": "weeklyChart",
+        "component": "BarChart",
+        "labels": [
+          "Jun 29",
+          "Jul 6",
+          "Jul 13",
+          "Jul 20",
+          "Jul 27",
+          "Aug 3",
+          "Aug 10",
+          "Aug 17"
+        ],
+        "series": [
+          "weeklyVolumeSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Week starting",
+        "yLabel": "Shipments"
+      },
+      {
+        "id": "weeklyVolumeSeries",
+        "component": "Series",
+        "category": "Shipment volume",
+        "values": [
+          276,
+          298,
+          312,
+          305,
+          331,
+          347,
+          359,
+          342
+        ]
+      },
+      {
+        "id": "shipmentsCard",
+        "component": "Card",
+        "children": [
+          "shipmentsHeader",
+          "shipmentsTable"
+        ],
+        "variant": "sunk"
+      },
+      {
+        "id": "shipmentsHeader",
+        "component": "CardHeader",
+        "title": "Shipments in transit",
+        "subtitle": "6 active shipments · 2 delayed"
+      },
+      {
+        "id": "shipmentsTable",
+        "component": "Table",
+        "columns": [
+          "shipmentIdCol",
+          "originCol",
+          "destinationCol",
+          "etaCol",
+          "statusCol",
+          "flagCol"
+        ]
+      },
+      {
+        "id": "shipmentIdCol",
+        "component": "Col",
+        "label": "Shipment",
+        "data": [
+          "SHP-1042",
+          "SHP-1048",
+          "SHP-1051",
+          "SHP-1056",
+          "SHP-1060",
+          "SHP-1063"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "originCol",
+        "component": "Col",
+        "label": "Origin",
+        "data": [
+          "Chicago, IL",
+          "Seattle, WA",
+          "Los Angeles, CA",
+          "Rotterdam, NL",
+          "Atlanta, GA",
+          "Toronto, ON"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "destinationCol",
+        "component": "Col",
+        "label": "Destination",
+        "data": [
+          "Dallas, TX",
+          "Denver, CO",
+          "Phoenix, AZ",
+          "Newark, NJ",
+          "Miami, FL",
+          "Boston, MA"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "etaCol",
+        "component": "Col",
+        "label": "ETA",
+        "data": [
+          "Aug 18 · 16:30",
+          "Aug 19 · 11:00",
+          "Aug 18 · 19:15",
+          "Aug 21 · 08:00",
+          "Aug 19 · 14:45",
+          "Aug 20 · 09:30"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "statusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "On time",
+          "Delayed · Weather",
+          "On time",
+          "Delayed · Customs",
+          "In transit",
+          "On time"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "flagCol",
+        "component": "Col",
+        "label": "Flag",
+        "data": [
+          "Flag SHP-1042",
+          "Flag SHP-1048",
+          "Flag SHP-1051",
+          "Flag SHP-1056",
+          "Flag SHP-1060",
+          "Flag SHP-1063"
+        ],
+        "type": "action"
+      },
+      {
+        "id": "flagDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Flag a shipment",
+        "title": "Flag shipment for follow-up",
+        "description": "Enter the shipment ID and reason. The operations team will be notified.",
+        "content": [
+          "flagForm"
+        ],
+        "triggerVariant": "outline"
+      },
+      {
+        "id": "flagForm",
+        "component": "Form",
+        "name": "flag-shipment",
+        "buttons": "flagButtons",
+        "fields": [
+          "flagIdField",
+          "flagReasonField",
+          "flagPriorityField"
+        ]
+      },
+      {
+        "id": "flagButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitFlagButton",
+          "cancelFlagButton"
+        ]
+      },
+      {
+        "id": "submitFlagButton",
+        "component": "Button",
+        "label": "Submit flag",
+        "variant": "primary"
+      },
+      {
+        "id": "cancelFlagButton",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      },
+      {
+        "id": "flagIdField",
+        "component": "FormControl",
+        "label": "Shipment ID",
+        "input": "flagIdInput"
+      },
+      {
+        "id": "flagIdInput",
+        "component": "Input",
+        "name": "shipment_id",
+        "placeholder": "SHP-1048",
+        "type": "text"
+      },
+      {
+        "id": "flagReasonField",
+        "component": "FormControl",
+        "label": "Reason",
+        "input": "flagReasonInput"
+      },
+      {
+        "id": "flagReasonInput",
+        "component": "TextArea",
+        "name": "reason",
+        "placeholder": "Describe the issue requiring follow-up",
+        "rows": 3
+      },
+      {
+        "id": "flagPriorityField",
+        "component": "FormControl",
+        "label": "Priority",
+        "input": "flagPrioritySelect"
+      },
+      {
+        "id": "flagPrioritySelect",
+        "component": "Select",
+        "name": "priority",
+        "items": [
+          "priorityNormal",
+          "priorityHigh",
+          "priorityCritical"
+        ],
+        "placeholder": "Select priority"
+      },
+      {
+        "id": "priorityNormal",
+        "component": "SelectItem",
+        "value": "normal",
+        "label": "Normal"
+      },
+      {
+        "id": "priorityHigh",
+        "component": "SelectItem",
+        "value": "high",
+        "label": "High"
+      },
+      {
+        "id": "priorityCritical",
+        "component": "SelectItem",
+        "value": "critical",
+        "label": "Critical"
+      }
+    ]
+  }
+}
 </a2ui-json>

@@ -1,21 +1,24 @@
-root = Card([header, uptimeKpi, incidentCallout, systemStatusTable, uptimeTrend, followUps], "card", "column", "l")
+root = Card([header, mainGrid, followUp], "card", "column", "l")
 
-header = CardHeader("Platform Operations & API Status", "Real-time metrics and service health overview")
+header = CardHeader("Platform Service Status", "Real-time system health, uptime, and incident reports")
 
-uptimeKpi = Callout("success", "API Uptime This Month: 99.94%", "Target SLA: 99.90% | Total downtime: 26 mins | High Availability Zone active")
+mainGrid = Card([metricsRow, recentIncident], "clear", "column", "m")
 
-incidentCallout = TextCallout("warning", "Recent Incident: High Latency on API Gateway (Resolved)", "Resolved on Oct 24, 14:22 UTC (Duration: 18 mins). Root cause was a memory leak in the rate-limiting proxy after deployment v2.14.3. Mitigation: Rollback & hotfix deployed.")
+metricsRow = Card([uptimeCard, statusCard], "clear", "row", "m", "stretch")
 
-systemStatusTable = Table([serviceCol, statusCol, uptimeCol, latencyCol])
-serviceCol = Col("Service Name", ["Core REST API", "GraphQL Gateway", "Auth & Identity", "Webhooks Service", "Database Cluster"])
-statusCol = Col("Status", ["Operational", "Operational", "Operational", "Operational", "Operational"])
-uptimeCol = Col("30-Day Uptime", ["99.94%", "99.98%", "100.00%", "99.89%", "99.99%"])
-latencyCol = Col("Avg Latency", ["42 ms", "68 ms", "18 ms", "110 ms", "4 ms"])
+uptimeCard = Card([uptimeHeader, uptimeProgress, uptimeDetail], "sunk", "column", "m")
+uptimeHeader = Heading("API Uptime (This Month)", "h4")
+uptimeProgress = Progress(99.94, "99.94% Uptime Target: 99.90%")
+uptimeDetail = TextContent("API availability has exceeded the 99.90% SLA requirement for the current billing cycle.", "small")
 
-uptimeTrend = AreaChart(["Oct 1", "Oct 5", "Oct 10", "Oct 15", "Oct 20", "Oct 25"], [uptimeSeries], "natural", "Date", "Uptime %")
-uptimeSeries = Series("API Availability %", [99.99, 99.98, 99.95, 100.00, 99.85, 99.94])
+statusCard = Card([statusHeader, statusBadge, statusDetail], "sunk", "column", "m")
+statusHeader = Heading("Current System Status", "h4")
+statusBadge = Badge("All Systems Operational", "default")
+statusDetail = TextContent("Core API, Auth, and Storage services are running normally with no active degradations.", "small")
 
-followUps = FollowUpBlock([fu1, fu2, fu3])
-fu1 = FollowUpItem("View full incident post-mortem report")
-fu2 = FollowUpItem("Check regional API latency stats")
-fu3 = FollowUpItem("Subscribe to status notifications")
+recentIncident = Callout("neutral", "Most Recent Incident: API Latency Spike (Resolved)", "Resolved on Oct 24, 2023 at 14:32 UTC (Duration: 18 mins). Root cause was an unindexed query on the authentication DB cluster following a minor deployment. Mitigated via automated query caching rollbacks.")
+
+followUp = FollowUpBlock([f1, f2, f3])
+f1 = FollowUpItem("View past 90 days uptime history")
+f2 = FollowUpItem("Subscribe to incident notification alerts")
+f3 = FollowUpItem("Check API response time latency metrics")

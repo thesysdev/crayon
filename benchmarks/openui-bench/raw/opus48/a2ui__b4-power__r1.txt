@@ -1,325 +1,721 @@
-Here's a comprehensive power network operator's console covering all twelve requirements.
+Here's a complete power network operator console covering all twelve items.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "grid-console",
-      "catalogId": "thesys.dev:c1-openui",
-      "theme": { "primaryColor": "#0EA5E9", "agentDisplayName": "GridOps Console" }
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "grid-console",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "column",
-          "gap": "l",
-          "children": ["header", "alertsCallout", "topRow", "focusRow", "genRow", "plantsCard", "outagesCard", "forecastCard", "maintCard", "actionRow", "followUps"]
-        },
-        {
-          "id": "header",
-          "component": "CardHeader",
-          "title": "Regional Grid Operations Console",
-          "subtitle": "Real-time network monitoring \u2014 Updated live"
-        },
-
-        {
-          "id": "alertsCallout",
-          "component": "Callout",
-          "variant": "warning",
-          "title": "Live Alert",
-          "description": "14:32 \u2014 Frequency dip detected in North sector (49.91 Hz). Auto-response armed. See Live Alerts panel below."
-        },
-
-        {
-          "id": "topRow",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "m",
-          "wrap": true,
-          "children": ["loadCard", "capacityCard", "priceCard", "emissionsCard"]
-        },
-
-        {
-          "id": "loadCard",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "weight": 1,
-          "children": ["loadTitle", "loadValue", "loadSub"]
-        },
-        { "id": "loadTitle", "component": "Label", "text": "Current Network Load" },
-        { "id": "loadValue", "component": "Heading", "text": "38,420 MW", "level": "h2" },
-        { "id": "loadSub", "component": "Tag", "text": "+1.8% vs 1h ago", "variant": "info", "size": "sm" },
-
-        {
-          "id": "capacityCard",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "weight": 1,
-          "children": ["capTitle", "capProgress", "capTag"]
-        },
-        { "id": "capTitle", "component": "Label", "text": "Capacity Utilization" },
-        { "id": "capProgress", "component": "Progress", "value": 82, "label": "38,420 / 46,900 MW" },
-        { "id": "capTag", "component": "Tag", "text": "82% \u2014 High demand", "variant": "warning", "size": "sm" },
-
-        {
-          "id": "priceCard",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "weight": 1,
-          "children": ["priceTitle", "priceValue", "priceSub"]
-        },
-        { "id": "priceTitle", "component": "Label", "text": "Spot Price / MWh" },
-        { "id": "priceValue", "component": "Heading", "text": "$74.20", "level": "h2" },
-        { "id": "priceSub", "component": "Tag", "text": "+$6.10 in last hour", "variant": "danger", "size": "sm" },
-
-        {
-          "id": "emissionsCard",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "weight": 1,
-          "children": ["emTitle", "emValue", "emSub"]
-        },
-        { "id": "emTitle", "component": "Label", "text": "Emissions Today" },
-        { "id": "emValue", "component": "Heading", "text": "18,240 tCO\u2082", "level": "h2" },
-        { "id": "emSub", "component": "Tag", "text": "0.47 tCO\u2082/MWh intensity", "variant": "success", "size": "sm" },
-
-        {
-          "id": "focusRow",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "row",
-          "gap": "m",
-          "align": "end",
-          "wrap": true,
-          "children": ["focusForm"]
-        },
-        {
-          "id": "focusForm",
-          "component": "Form",
-          "name": "regionFocus",
-          "buttons": "focusBtns",
-          "fields": ["focusControl"]
-        },
-        {
-          "id": "focusControl",
-          "component": "FormControl",
-          "label": "Focus on Region",
-          "hint": "Filter all panels to a single region",
-          "input": "focusSelect"
-        },
-        {
-          "id": "focusSelect",
-          "component": "Select",
-          "name": "region",
-          "placeholder": "All regions",
-          "items": ["regAll", "regNorth", "regSouth", "regEast", "regWest", "regCentral"]
-        },
-        { "id": "regAll", "component": "SelectItem", "value": "all", "label": "All Regions" },
-        { "id": "regNorth", "component": "SelectItem", "value": "north", "label": "North" },
-        { "id": "regSouth", "component": "SelectItem", "value": "south", "label": "South" },
-        { "id": "regEast", "component": "SelectItem", "value": "east", "label": "East" },
-        { "id": "regWest", "component": "SelectItem", "value": "west", "label": "West" },
-        { "id": "regCentral", "component": "SelectItem", "value": "central", "label": "Central" },
-        {
-          "id": "focusBtns",
-          "component": "Buttons",
-          "buttons": ["applyFocusBtn"]
-        },
-        {
-          "id": "applyFocusBtn",
-          "component": "Button",
-          "label": "Apply Focus",
-          "variant": "primary",
-          "action": ["applyRegionFocus"]
-        },
-
-        {
-          "id": "genRow",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "m",
-          "wrap": true,
-          "children": ["genCard", "alertsPanel"]
-        },
-        {
-          "id": "genCard",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "weight": 2,
-          "children": ["genHeader", "genPie"]
-        },
-        { "id": "genHeader", "component": "CardHeader", "title": "Generation Mix by Source", "subtitle": "Share of current output" },
-        {
-          "id": "genPie",
-          "component": "PieChart",
-          "variant": "donut",
-          "labels": ["Natural Gas", "Nuclear", "Wind", "Solar", "Hydro", "Coal"],
-          "values": [34, 22, 18, 12, 9, 5]
-        },
-
-        {
-          "id": "alertsPanel",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "weight": 1,
-          "children": ["alertsHeader", "alert1", "alert2", "alert3"]
-        },
-        { "id": "alertsHeader", "component": "CardHeader", "title": "Live Alerts", "subtitle": "Streaming in real time" },
-        { "id": "alert1", "component": "Alert", "variant": "warning", "title": "14:32 \u2014 Frequency Dip", "description": "North sector at 49.91 Hz. Auto-response armed." },
-        { "id": "alert2", "component": "Alert", "variant": "destructive", "title": "14:28 \u2014 Line Trip", "description": "500kV interconnect West\u2013Central offline." },
-        { "id": "alert3", "component": "Alert", "variant": "info", "title": "14:15 \u2014 Load Spike", "description": "East region demand +420 MW in 10 min." },
-
-        {
-          "id": "plantsCard",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "children": ["plantsHeader", "plantsTable"]
-        },
-        { "id": "plantsHeader", "component": "CardHeader", "title": "Power Plants \u2014 Output & Status" },
-        {
-          "id": "plantsTable",
-          "component": "Table",
-          "columns": ["colPlant", "colSource", "colOutput", "colStatus"]
-        },
-        { "id": "colPlant", "component": "Col", "label": "Plant", "type": "string", "data": ["Ridgeline CCGT", "Hartwell Nuclear", "Crestwind Farm", "Solaris Array", "Fallbrook Hydro", "Kingsford Coal"] },
-        { "id": "colSource", "component": "Col", "label": "Source", "type": "string", "data": ["Gas", "Nuclear", "Wind", "Solar", "Hydro", "Coal"] },
-        { "id": "colOutput", "component": "Col", "label": "Output (MW)", "type": "number", "data": [4200, 3100, 1850, 1240, 900, 720] },
-        { "id": "colStatus", "component": "Col", "label": "Status", "type": "string", "data": ["Online", "Online", "Online", "Curtailed", "Online", "Reduced"] },
-
-        {
-          "id": "outagesCard",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "children": ["outHeader", "outTable"]
-        },
-        { "id": "outHeader", "component": "CardHeader", "title": "Active Outages", "subtitle": "Affected regions" },
-        {
-          "id": "outTable",
-          "component": "Table",
-          "columns": ["outAsset", "outRegion", "outLost", "outEta"]
-        },
-        { "id": "outAsset", "component": "Col", "label": "Asset", "type": "string", "data": ["500kV Interconnect L4", "Substation E-12", "Feeder N-207"] },
-        { "id": "outRegion", "component": "Col", "label": "Affected Region", "type": "string", "data": ["West \u2192 Central", "East", "North"] },
-        { "id": "outLost", "component": "Col", "label": "Load Lost (MW)", "type": "number", "data": [640, 210, 55] },
-        { "id": "outEta", "component": "Col", "label": "ETA Restore", "type": "string", "data": ["16:40", "15:20", "Assessing"] },
-
-        {
-          "id": "forecastCard",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "children": ["fcHeader", "fcChart"]
-        },
-        { "id": "fcHeader", "component": "CardHeader", "title": "Demand Forecast \u2014 Next 24 Hours", "subtitle": "MW projected" },
-        {
-          "id": "fcChart",
-          "component": "AreaChart",
-          "variant": "natural",
-          "xLabel": "Hour",
-          "yLabel": "MW",
-          "labels": ["00", "02", "04", "06", "08", "10", "12", "14", "16", "18", "20", "22"],
-          "series": ["fcSeries"]
-        },
-        {
-          "id": "fcSeries",
-          "component": "Series",
-          "category": "Forecast Demand",
-          "values": [31200, 29800, 29100, 31500, 36400, 39800, 41200, 42500, 43100, 44800, 42000, 35600]
-        },
-
-        {
-          "id": "maintCard",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "children": ["maintHeader", "maintList"]
-        },
-        { "id": "maintHeader", "component": "CardHeader", "title": "Planned Maintenance \u2014 This Month" },
-        {
-          "id": "maintList",
-          "component": "ListBlock",
-          "variant": "number",
-          "items": ["m1", "m2", "m3"]
-        },
-        { "id": "m1", "component": "ListItem", "title": "Hartwell Nuclear \u2014 Turbine Inspection", "subtitle": "Apr 18\u201320 \u2022 North \u2022 -3,100 MW derate" },
-        { "id": "m2", "component": "ListItem", "title": "Crestwind Farm \u2014 Blade Servicing", "subtitle": "Apr 22 \u2022 West \u2022 -400 MW" },
-        { "id": "m3", "component": "ListItem", "title": "Substation C-08 \u2014 Transformer Swap", "subtitle": "Apr 27\u201328 \u2022 Central \u2022 Reroute planned" },
-
-        {
-          "id": "actionRow",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "row",
-          "gap": "m",
-          "align": "center",
-          "wrap": true,
-          "children": ["actionLabel", "curtailDialog"]
-        },
-        { "id": "actionLabel", "component": "Label", "text": "Operator Actions" },
-        {
-          "id": "curtailDialog",
-          "component": "AlertDialogBlock",
-          "triggerLabel": "Order Curtailment",
-          "triggerVariant": "destructive",
-          "title": "Confirm Curtailment Order",
-          "description": "This will instruct dispatch to reduce load/generation for the selected region. Confirm to proceed with a curtailment directive.",
-          "confirmLabel": "Order Curtailment",
-          "cancelLabel": "Cancel"
-        },
-
-        {
-          "id": "followUps",
-          "component": "FollowUpBlock",
-          "items": ["fu1", "fu2", "fu3"]
-        },
-        { "id": "fu1", "component": "FollowUpItem", "text": "Show reserve margin breakdown" },
-        { "id": "fu2", "component": "FollowUpItem", "text": "Compare emissions vs yesterday" },
-        { "id": "fu3", "component": "FollowUpItem", "text": "Draft curtailment plan for West region" }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-This console covers all twelve requirements:
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "topBadges",
+          "liveAlerts",
+          "kpiRow",
+          "capacitySection",
+          "genAndForecast",
+          "plantsTable",
+          "outagesTable",
+          "maintenanceTable",
+          "controls"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Grid Operations Console",
+        "subtitle": "National Power Network \u2014 real-time overview"
+      },
+      {
+        "id": "topBadges",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "s",
+        "children": [
+          "statusBadge",
+          "priceBadge",
+          "emissionsBadge"
+        ]
+      },
+      {
+        "id": "statusBadge",
+        "component": "Badge",
+        "text": "System Normal",
+        "variant": "default"
+      },
+      {
+        "id": "priceBadge",
+        "component": "Badge",
+        "text": "Price: $58.40 / MWh",
+        "variant": "secondary"
+      },
+      {
+        "id": "emissionsBadge",
+        "component": "Badge",
+        "text": "Emissions today: 21,340 tCO\u2082",
+        "variant": "outline"
+      },
+      {
+        "id": "liveAlerts",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "alertsHeader",
+          "alert1",
+          "alert2",
+          "alert3"
+        ]
+      },
+      {
+        "id": "alertsHeader",
+        "component": "Heading",
+        "text": "Live Alerts",
+        "level": "h3"
+      },
+      {
+        "id": "alert1",
+        "component": "Alert",
+        "title": "Frequency deviation",
+        "description": "49.92 Hz on Northern interconnect \u2014 auto-correcting.",
+        "variant": "warning"
+      },
+      {
+        "id": "alert2",
+        "component": "Alert",
+        "title": "Line trip cleared",
+        "description": "400kV line NW-3 reclosed successfully at 14:02.",
+        "variant": "success"
+      },
+      {
+        "id": "alert3",
+        "component": "Alert",
+        "title": "High demand ramp",
+        "description": "Eastern region load rising 3.1% over 15 min.",
+        "variant": "info"
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "loadCard",
+          "priceCard",
+          "emissionsCard"
+        ]
+      },
+      {
+        "id": "loadCard",
+        "component": "Card",
+        "weight": 1,
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "loadLabel",
+          "loadValue"
+        ]
+      },
+      {
+        "id": "loadLabel",
+        "component": "Label",
+        "text": "Current Network Load"
+      },
+      {
+        "id": "loadValue",
+        "component": "Heading",
+        "text": "42,180 MW",
+        "level": "h2"
+      },
+      {
+        "id": "priceCard",
+        "component": "Card",
+        "weight": 1,
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "priceLabel",
+          "priceValue"
+        ]
+      },
+      {
+        "id": "priceLabel",
+        "component": "Label",
+        "text": "Current Price per MWh"
+      },
+      {
+        "id": "priceValue",
+        "component": "Heading",
+        "text": "$58.40",
+        "level": "h2"
+      },
+      {
+        "id": "emissionsCard",
+        "component": "Card",
+        "weight": 1,
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "emissionsLabel",
+          "emissionsValue"
+        ]
+      },
+      {
+        "id": "emissionsLabel",
+        "component": "Label",
+        "text": "Emissions Today"
+      },
+      {
+        "id": "emissionsValue",
+        "component": "Heading",
+        "text": "21,340 tCO\u2082",
+        "level": "h2"
+      },
+      {
+        "id": "capacitySection",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "capHeader",
+          "capProgress",
+          "capNote"
+        ]
+      },
+      {
+        "id": "capHeader",
+        "component": "Heading",
+        "text": "Network Capacity Utilization",
+        "level": "h3"
+      },
+      {
+        "id": "capProgress",
+        "component": "Progress",
+        "value": 84,
+        "label": "42,180 MW of 50,000 MW available (84%)"
+      },
+      {
+        "id": "capNote",
+        "component": "TextContent",
+        "text": "Headroom: **7,820 MW**. Reserve margin healthy but tightening during evening peak.",
+        "size": "small"
+      },
+      {
+        "id": "genAndForecast",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "genCard",
+          "forecastCard"
+        ]
+      },
+      {
+        "id": "genCard",
+        "component": "Card",
+        "weight": 1,
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "genHeader",
+          "genPie"
+        ]
+      },
+      {
+        "id": "genHeader",
+        "component": "Heading",
+        "text": "Generation Split by Source",
+        "level": "h3"
+      },
+      {
+        "id": "genPie",
+        "component": "PieChart",
+        "variant": "donut",
+        "labels": [
+          "Gas",
+          "Nuclear",
+          "Wind",
+          "Solar",
+          "Hydro",
+          "Coal"
+        ],
+        "values": [
+          14200,
+          9800,
+          7600,
+          4300,
+          3800,
+          2480
+        ]
+      },
+      {
+        "id": "forecastCard",
+        "component": "Card",
+        "weight": 1,
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "forecastHeader",
+          "forecastChart"
+        ]
+      },
+      {
+        "id": "forecastHeader",
+        "component": "Heading",
+        "text": "Demand Forecast \u2014 Next 24 Hours",
+        "level": "h3"
+      },
+      {
+        "id": "forecastChart",
+        "component": "AreaChart",
+        "variant": "natural",
+        "xLabel": "Hour",
+        "yLabel": "MW",
+        "labels": [
+          "00",
+          "03",
+          "06",
+          "09",
+          "12",
+          "15",
+          "18",
+          "21",
+          "24"
+        ],
+        "series": [
+          "forecastSeries"
+        ]
+      },
+      {
+        "id": "forecastSeries",
+        "component": "Series",
+        "category": "Forecast Demand",
+        "values": [
+          36400,
+          34100,
+          38900,
+          44200,
+          45600,
+          43800,
+          49200,
+          46100,
+          39800
+        ]
+      },
+      {
+        "id": "plantsTable",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "plantsHeader",
+          "plants"
+        ]
+      },
+      {
+        "id": "plantsHeader",
+        "component": "Heading",
+        "text": "Plant Output & Status",
+        "level": "h3"
+      },
+      {
+        "id": "plants",
+        "component": "Table",
+        "columns": [
+          "plantName",
+          "plantSource",
+          "plantOutput",
+          "plantStatus"
+        ]
+      },
+      {
+        "id": "plantName",
+        "component": "Col",
+        "label": "Plant",
+        "data": [
+          "Thornbury CCGT",
+          "Ashcroft Nuclear",
+          "Fenland Wind",
+          "Dunmore Solar",
+          "Glenloch Hydro",
+          "Barrowfield Coal"
+        ]
+      },
+      {
+        "id": "plantSource",
+        "component": "Col",
+        "label": "Source",
+        "data": [
+          "Gas",
+          "Nuclear",
+          "Wind",
+          "Solar",
+          "Hydro",
+          "Coal"
+        ]
+      },
+      {
+        "id": "plantOutput",
+        "component": "Col",
+        "label": "Output (MW)",
+        "type": "number",
+        "data": [
+          8400,
+          9800,
+          7600,
+          4300,
+          3800,
+          2480
+        ]
+      },
+      {
+        "id": "plantStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Online",
+          "Online",
+          "Online",
+          "Derated",
+          "Online",
+          "Curtailed"
+        ]
+      },
+      {
+        "id": "outagesTable",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "outagesHeader",
+          "outages"
+        ]
+      },
+      {
+        "id": "outagesHeader",
+        "component": "Heading",
+        "text": "Active Outages",
+        "level": "h3"
+      },
+      {
+        "id": "outages",
+        "component": "Table",
+        "columns": [
+          "outageAsset",
+          "outageRegion",
+          "outageImpact",
+          "outageEta"
+        ]
+      },
+      {
+        "id": "outageAsset",
+        "component": "Col",
+        "label": "Asset",
+        "data": [
+          "Line NW-7 (275kV)",
+          "Substation E-12",
+          "Feeder S-4"
+        ]
+      },
+      {
+        "id": "outageRegion",
+        "component": "Col",
+        "label": "Affected Region",
+        "data": [
+          "Northern",
+          "Eastern",
+          "Southern"
+        ]
+      },
+      {
+        "id": "outageImpact",
+        "component": "Col",
+        "label": "Load Lost (MW)",
+        "type": "number",
+        "data": [
+          320,
+          140,
+          85
+        ]
+      },
+      {
+        "id": "outageEta",
+        "component": "Col",
+        "label": "Restore ETA",
+        "data": [
+          "16:30",
+          "15:10",
+          "Assessing"
+        ]
+      },
+      {
+        "id": "maintenanceTable",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "maintHeader",
+          "maintenance"
+        ]
+      },
+      {
+        "id": "maintHeader",
+        "component": "Heading",
+        "text": "Maintenance Planned This Month",
+        "level": "h3"
+      },
+      {
+        "id": "maintenance",
+        "component": "Table",
+        "columns": [
+          "maintAsset",
+          "maintWindow",
+          "maintRegion",
+          "maintType"
+        ]
+      },
+      {
+        "id": "maintAsset",
+        "component": "Col",
+        "label": "Asset",
+        "data": [
+          "Ashcroft Unit 2",
+          "Fenland Turbines 4-9",
+          "Line NW-3",
+          "Glenloch Penstock"
+        ]
+      },
+      {
+        "id": "maintWindow",
+        "component": "Col",
+        "label": "Window",
+        "data": [
+          "Jun 8\u201312",
+          "Jun 15",
+          "Jun 19\u201320",
+          "Jun 25\u201327"
+        ]
+      },
+      {
+        "id": "maintRegion",
+        "component": "Col",
+        "label": "Region",
+        "data": [
+          "Northern",
+          "Eastern",
+          "Northern",
+          "Western"
+        ]
+      },
+      {
+        "id": "maintType",
+        "component": "Col",
+        "label": "Type",
+        "data": [
+          "Refuelling",
+          "Blade inspection",
+          "Insulator swap",
+          "Overhaul"
+        ]
+      },
+      {
+        "id": "controls",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "controlsHeader",
+          "controlsForm"
+        ]
+      },
+      {
+        "id": "controlsHeader",
+        "component": "Heading",
+        "text": "Operator Controls",
+        "level": "h3"
+      },
+      {
+        "id": "controlsForm",
+        "component": "Form",
+        "name": "operator-controls",
+        "buttons": "controlsButtons",
+        "fields": [
+          "regionFocusField",
+          "curtailPlantField",
+          "curtailAmountField"
+        ]
+      },
+      {
+        "id": "regionFocusField",
+        "component": "FormControl",
+        "label": "Focus on Region",
+        "input": "regionSelect",
+        "hint": "Filters the console to a single control area"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region_focus",
+        "placeholder": "All regions",
+        "items": [
+          "regAll",
+          "regNorth",
+          "regEast",
+          "regSouth",
+          "regWest"
+        ]
+      },
+      {
+        "id": "regAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All regions"
+      },
+      {
+        "id": "regNorth",
+        "component": "SelectItem",
+        "value": "north",
+        "label": "Northern"
+      },
+      {
+        "id": "regEast",
+        "component": "SelectItem",
+        "value": "east",
+        "label": "Eastern"
+      },
+      {
+        "id": "regSouth",
+        "component": "SelectItem",
+        "value": "south",
+        "label": "Southern"
+      },
+      {
+        "id": "regWest",
+        "component": "SelectItem",
+        "value": "west",
+        "label": "Western"
+      },
+      {
+        "id": "curtailPlantField",
+        "component": "FormControl",
+        "label": "Curtail Plant",
+        "input": "curtailSelect"
+      },
+      {
+        "id": "curtailSelect",
+        "component": "Select",
+        "name": "curtail_plant",
+        "placeholder": "Select a plant",
+        "items": [
+          "curThorn",
+          "curFen",
+          "curDun",
+          "curBar"
+        ]
+      },
+      {
+        "id": "curThorn",
+        "component": "SelectItem",
+        "value": "thornbury",
+        "label": "Thornbury CCGT"
+      },
+      {
+        "id": "curFen",
+        "component": "SelectItem",
+        "value": "fenland",
+        "label": "Fenland Wind"
+      },
+      {
+        "id": "curDun",
+        "component": "SelectItem",
+        "value": "dunmore",
+        "label": "Dunmore Solar"
+      },
+      {
+        "id": "curBar",
+        "component": "SelectItem",
+        "value": "barrowfield",
+        "label": "Barrowfield Coal"
+      },
+      {
+        "id": "curtailAmountField",
+        "component": "FormControl",
+        "label": "Curtailment Amount (MW)",
+        "input": "curtailSlider"
+      },
+      {
+        "id": "curtailSlider",
+        "component": "Slider",
+        "name": "curtail_mw",
+        "variant": "discrete",
+        "min": 0,
+        "max": 3000,
+        "step": 100,
+        "defaultValue": [
+          500
+        ],
+        "label": "MW to curtail"
+      },
+      {
+        "id": "controlsButtons",
+        "component": "Buttons",
+        "buttons": [
+          "orderCurtailBtn",
+          "applyFocusBtn"
+        ]
+      },
+      {
+        "id": "orderCurtailBtn",
+        "component": "Button",
+        "label": "Order Curtailment",
+        "variant": "primary",
+        "type": "destructive"
+      },
+      {
+        "id": "applyFocusBtn",
+        "component": "Button",
+        "label": "Apply Region Focus",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>
 
-1. **Current load** — "Current Network Load" metric card (38,420 MW).
-2. **Closeness to capacity** — "Capacity Utilization" progress bar (82%).
-3. **Generation split by source** — donut chart of the generation mix.
-4. **Each plant with output & status** — the Power Plants table.
-5. **Outages with affected region** — the Active Outages table.
-6. **24-hour demand forecast** — the area chart.
-7. **Current price per MWh** — "Spot Price / MWh" card ($74.20).
-8. **Maintenance this month** — the Planned Maintenance list.
-9. **Live alerts** — the streaming Live Alerts panel plus a top-level callout.
-10. **Focus on a region** — the region focus selector form.
-11. **Order curtailment** — the destructive confirm dialog action.
-12. **Emissions today** — the Emissions card (18,240 tCO₂).
+Every numbered requirement is covered:
+
+1. **Current load** — KPI card "42,180 MW".
+2. **Closeness to capacity** — Progress bar at 84% utilization with headroom note.
+3. **Generation split by source** — donut PieChart.
+4. **Plants with output and status** — Plant Output & Status table.
+5. **Outages with affected region** — Active Outages table (region column).
+6. **24h demand forecast** — AreaChart.
+7. **Current price per MWh** — KPI card + top badge "$58.40".
+8. **Maintenance this month** — Maintenance Planned table.
+9. **Live alerts** — Live Alerts section with streaming-style Alert banners.
+10. **Focus on a region** — Region Focus select + Apply button.
+11. **Order curtailment** — plant select + MW slider + destructive "Order Curtailment" button.
+12. **Emissions today** — KPI card + top badge "21,340 tCO₂".

@@ -1,164 +1,128 @@
 
 
-Here's a complete course home screen that covers all six requirements:
+Here's a complete course home screen covering all six items — title/instructor header, progress bar, module status table, a callout for the next lesson, average rating, and a primary "Continue learning" action.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "course-home",
-      "catalogId": "thesys.dev:c1-openui"
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "course-home",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "column",
-          "gap": "l",
-          "children": ["headerCard", "nextCard", "modulesCard", "ratingCard"]
-        },
-        {
-          "id": "headerCard",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": ["header", "progress"]
-        },
-        {
-          "id": "nextCard",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "m",
-          "children": ["upNext", "continueButtons"]
-        },
-        {
-          "id": "modulesCard",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": ["modulesHeader", "modulesTable"]
-        },
-        {
-          "id": "ratingCard",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "row",
-          "gap": "m",
-          "align": "center",
-          "justify": "between",
-          "children": ["ratingValue", "ratingCaption"]
-        },
-        {
-          "id": "header",
-          "component": "CardHeader",
-          "title": "Mobile App Design Fundamentals",
-          "subtitle": "Instructor: Maya Chen · Senior Product Designer, Northwind Labs"
-        },
-        {
-          "id": "progress",
-          "component": "Progress",
-          "value": 70,
-          "label": "Overall progress — 70% (14 of 20 lessons complete)"
-        },
-        {
-          "id": "upNext",
-          "component": "Callout",
-          "variant": "info",
-          "title": "Up next · Lesson 3.4: Prototyping Interactive Flows",
-          "description": "Module 3 — Visual & Interaction Design · ~14 min · Includes a hands-on exercise"
-        },
-        {
-          "id": "continueButtons",
-          "component": "Buttons",
-          "direction": "row",
-          "buttons": ["continueBtn"]
-        },
-        {
-          "id": "continueBtn",
-          "component": "Button",
-          "label": "Continue learning →",
-          "variant": "primary",
-          "size": "large",
-          "action": [
-            {
-              "type": "navigation",
-              "navigateTo": "lesson",
-              "lessonId": "m3-l4",
-              "label": "Lesson 3.4: Prototyping Interactive Flows"
-            }
-          ]
-        },
-        {
-          "id": "modulesHeader",
-          "component": "CardHeader",
-          "title": "Course modules",
-          "subtitle": "4 modules · 20 lessons total"
-        },
-        {
-          "id": "modulesTable",
-          "component": "Table",
-          "columns": ["colModule", "colDone", "colStatus"]
-        },
-        {
-          "id": "colModule",
-          "component": "Col",
-          "label": "Module",
-          "type": "string",
-          "data": [
-            "1 · Foundations of Mobile UX",
-            "2 · Wireframing & Layout",
-            "3 · Visual & Interaction Design",
-            "4 · Usability Testing & Handoff"
-          ]
-        },
-        {
-          "id": "colDone",
-          "component": "Col",
-          "label": "Completed",
-          "type": "string",
-          "data": ["5 of 5 lessons", "6 of 6 lessons", "3 of 5 lessons", "0 of 4 lessons"]
-        },
-        {
-          "id": "colStatus",
-          "component": "Col",
-          "label": "Status",
-          "type": "string",
-          "data": ["✓ Complete", "✓ Complete", "In progress — Lesson 3.4 next", "Not started"]
-        },
-        {
-          "id": "ratingValue",
-          "component": "TextContent",
-          "size": "large-heavy",
-          "text": "★★★★★ 4.7"
-        },
-        {
-          "id": "ratingCaption",
-          "component": "TextContent",
-          "text": "Average learner rating · 1,284 reviews"
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-Everything requested is covered:
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "progress",
+          "nextLesson",
+          "modulesHeading",
+          "moduleTable",
+          "rating",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Design Systems Fundamentals",
+        "subtitle": "Instructor: Maya Chen • 5 modules • 18 lessons"
+      },
+      {
+        "id": "progress",
+        "component": "Progress",
+        "value": 46,
+        "label": "Overall progress: 46% complete"
+      },
+      {
+        "id": "nextLesson",
+        "component": "Callout",
+        "variant": "info",
+        "title": "Up next: Tokens & Theming (Lesson 2 of 4)",
+        "description": "Module 3 • About 12 minutes. You finished 'Color basics' yesterday — pick up right where you left off."
+      },
+      {
+        "id": "modulesHeading",
+        "component": "Heading",
+        "text": "Your modules",
+        "level": "h3"
+      },
+      {
+        "id": "moduleTable",
+        "component": "Table",
+        "columns": [
+          "modName",
+          "modStatus"
+        ]
+      },
+      {
+        "id": "modName",
+        "component": "Col",
+        "label": "Module",
+        "data": [
+          "1. Foundations",
+          "2. Core Components",
+          "3. Tokens & Theming",
+          "4. Documentation & Governance",
+          "5. Capstone Project"
+        ]
+      },
+      {
+        "id": "modStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Completed ✓",
+          "Completed ✓",
+          "In progress · 1 of 4 lessons",
+          "Not started",
+          "Not started"
+        ]
+      },
+      {
+        "id": "rating",
+        "component": "TextContent",
+        "text": "**Average learner rating:** ★★★★★ **4.7 / 5** · based on 1,238 learners",
+        "size": "small"
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": [
+          "continueBtn",
+          "syllabusBtn"
+        ]
+      },
+      {
+        "id": "continueBtn",
+        "component": "Button",
+        "label": "Continue learning",
+        "variant": "primary"
+      },
+      {
+        "id": "syllabusBtn",
+        "component": "Button",
+        "label": "View syllabus",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>
 
-1. **Title & instructor** — the header card up top ("Mobile App Design Fundamentals" · Maya Chen)
-2. **Overall progress** — progress bar showing 70% (14/20 lessons)
-3. **Module completion** — a table listing all 4 modules with lessons completed and per-module status
-4. **Next lesson called out** — the highlighted "Up next" callout for Lesson 3.4
-5. **Average rating** — 4.7 ★ across 1,284 reviews in the bottom card
-6. **Continue learning** — the large primary button that resumes at Lesson 3.4
-
-Want me to adjust the tone (e.g., more playful vs. professional), add quiz/assignment status, or swap the module table for an accordion layout?
+How each requirement is covered:
+1. **Title & instructor** — the card header shows the course name and instructor.
+2. **Overall progress** — the progress bar shows 46% complete.
+3. **Module statuses** — the table lists all five modules with completion state (completed, in progress, not started).
+4. **Next lesson callout** — the info callout highlights the exact next lesson with duration and context.
+5. **Average rating** — the star-rating line shows 4.7/5 from 1,238 learners.
+6. **Continue learning** — the primary button resumes the course directly.

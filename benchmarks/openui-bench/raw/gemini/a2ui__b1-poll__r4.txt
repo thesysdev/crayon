@@ -1,171 +1,96 @@
-Here is a team lunch poll interface where team members can vote on where to go for lunch on Friday:
+Here is a UI for the team lunch poll screen, allowing team members to cast their vote between three restaurant options.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "team-lunch-poll",
-      "catalogId": "thesys.dev:c1-openui",
-      "theme": {
-        "primaryColor": "#2563EB",
-        "agentDisplayName": "Lunch Poll Bot"
-      }
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "team-lunch-poll",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "l",
-          "children": [
-            "header",
-            "callout-info",
-            "poll-form",
-            "divider",
-            "current-results-heading",
-            "results-chart",
-            "follow-ups"
-          ]
-        },
-        {
-          "id": "header",
-          "component": "CardHeader",
-          "title": "Where should we go for lunch on Friday?",
-          "subtitle": "Vote for your preferred spot or suggest a dietary requirement."
-        },
-        {
-          "id": "callout-info",
-          "component": "Callout",
-          "variant": "info",
-          "title": "Voting closes Thursday at 4:00 PM",
-          "description": "The winning restaurant will be booked for 12:30 PM on Friday."
-        },
-        {
-          "id": "poll-form",
-          "component": "Form",
-          "name": "lunch_poll_form",
-          "fields": [
-            "restaurant-options"
-          ],
-          "buttons": "form-buttons"
-        },
-        {
-          "id": "restaurant-options",
-          "component": "FormControl",
-          "label": "Select a restaurant",
-          "hint": "Choose 1 of the 3 options below",
-          "input": "restaurant-radio-group"
-        },
-        {
-          "id": "restaurant-radio-group",
-          "component": "RadioGroup",
-          "name": "restaurant_choice",
-          "defaultValue": "taco_taqueria",
-          "items": [
-            "opt-tacos",
-            "opt-pasta",
-            "opt-sushi"
-          ]
-        },
-        {
-          "id": "opt-tacos",
-          "component": "RadioItem",
-          "value": "taco_taqueria",
-          "label": "1. El Camino Taqueria",
-          "description": "Authentic street tacos, burritos, and great vegetarian/vegan options."
-        },
-        {
-          "id": "opt-pasta",
-          "component": "RadioItem",
-          "value": "trattoria_bella",
-          "label": "2. Trattoria Bella",
-          "description": "Fresh handmade pasta, wood-fired pizzas, and classic Italian desserts."
-        },
-        {
-          "id": "opt-sushi",
-          "component": "RadioItem",
-          "value": "sakura_sushi",
-          "label": "3. Sakura Sushi & Bento",
-          "description": "Fresh sushi rolls, bento boxes, ramen, and quick service."
-        },
-        {
-          "id": "form-buttons",
-          "component": "Buttons",
-          "direction": "row",
-          "buttons": [
-            "submit-btn"
-          ]
-        },
-        {
-          "id": "submit-btn",
-          "component": "Button",
-          "label": "Submit Vote",
-          "variant": "primary",
-          "size": "medium"
-        },
-        {
-          "id": "divider",
-          "component": "Separator",
-          "orientation": "horizontal",
-          "decorative": true
-        },
-        {
-          "id": "current-results-heading",
-          "component": "Heading",
-          "level": "h4",
-          "text": "Current Standings (12 votes submitted)"
-        },
-        {
-          "id": "results-chart",
-          "component": "HorizontalBarChart",
-          "xLabel": "Votes",
-          "yLabel": "Restaurant",
-          "labels": [
-            "El Camino Taqueria",
-            "Trattoria Bella",
-            "Sakura Sushi"
-          ],
-          "series": [
-            "series-votes"
-          ]
-        },
-        {
-          "id": "series-votes",
-          "component": "Series",
-          "category": "Votes",
-          "values": [
-            5,
-            4,
-            3
-          ]
-        },
-        {
-          "id": "follow-ups",
-          "component": "FollowUpBlock",
-          "items": [
-            "fu-1",
-            "fu-2"
-          ]
-        },
-        {
-          "id": "fu-1",
-          "component": "FollowUpItem",
-          "text": "Add a new restaurant suggestion"
-        },
-        {
-          "id": "fu-2",
-          "component": "FollowUpItem",
-          "text": "View dietary restriction menu info"
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "team-lunch-poll",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "team-lunch-poll",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "pollForm"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Where should we go for lunch on Friday?",
+        "subtitle": "Cast your vote below to help pick this week's spot!"
+      },
+      {
+        "id": "pollForm",
+        "component": "Form",
+        "name": "lunch-poll-form",
+        "buttons": "formButtons",
+        "fields": [
+          "restaurantField"
+        ]
+      },
+      {
+        "id": "restaurantField",
+        "component": "FormControl",
+        "label": "Select a restaurant",
+        "input": "restaurantRadioGroup",
+        "hint": "Poll closes on Thursday at 5:00 PM"
+      },
+      {
+        "id": "restaurantRadioGroup",
+        "component": "RadioGroup",
+        "name": "restaurant_choice",
+        "items": [
+          "option1",
+          "option2",
+          "option3"
+        ]
+      },
+      {
+        "id": "option1",
+        "component": "RadioItem",
+        "label": "Luigi's Trattoria",
+        "description": "Authentic Italian pasta & wood-fired pizza (0.3 miles away)",
+        "value": "luigis_trattoria"
+      },
+      {
+        "id": "option2",
+        "component": "RadioItem",
+        "label": "Taqueria El Sol",
+        "description": "Fresh street tacos, burritos & house-made chips (0.5 miles away)",
+        "value": "taqueria_el_sol"
+      },
+      {
+        "id": "option3",
+        "component": "RadioItem",
+        "label": "Green Garden Cafe",
+        "description": "Healthy grain bowls, gourmet salads & wraps (0.2 miles away)",
+        "value": "green_garden_cafe"
+      },
+      {
+        "id": "formButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitVoteBtn"
+        ]
+      },
+      {
+        "id": "submitVoteBtn",
+        "component": "Button",
+        "label": "Submit Vote",
+        "variant": "primary"
+      }
+    ]
+  }
+}
 </a2ui-json>

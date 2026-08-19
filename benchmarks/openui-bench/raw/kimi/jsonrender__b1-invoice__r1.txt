@@ -1,26 +1,16 @@
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["header","amount-card","details-card","pay-card"]}}
-{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Invoice #INV-2024-041","subtitle":"From: Alex Rivera — Freelance Design"},"children":[]}}
-{"op":"add","path":"/elements/amount-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s","align":"center"},"children":["amount-label","amount-value","status-badge"]}}
-{"op":"add","path":"/elements/amount-label","value":{"type":"TextContent","props":{"text":"Amount Due","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/amount-value","value":{"type":"TextContent","props":{"text":{"$template":"${/invoice/currency} ${/invoice/amount}"},"size":"large-heavy"},"children":[]}}
-{"op":"add","path":"/state/invoice","value":{"amount":"2,450.00","currency":"USD","dueDate":"March 15, 2025","project":"Brand Identity & Website Redesign","client":"Northwind Studio"}}
-{"op":"add","path":"/elements/status-badge","value":{"type":"Badge","props":{"text":"Unpaid","variant":"destructive"},"children":[]}}
-{"op":"add","path":"/elements/details-card","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["details-header","due-date","project-line","sep","line-items"]}}
-{"op":"add","path":"/elements/details-header","value":{"type":"TextContent","props":{"text":"Invoice Details","size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/due-date","value":{"type":"TextContent","props":{"text":{"$template":"**Due date:** ${/invoice/dueDate}"}},"children":[]}}
-{"op":"add","path":"/elements/project-line","value":{"type":"TextContent","props":{"text":{"$template":"**Project:** ${/invoice/project} — for ${/invoice/client}"}},"children":[]}}
-{"op":"add","path":"/elements/sep","value":{"type":"Separator","props":{},"children":[]}}
-{"op":"add","path":"/elements/line-items","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"repeat":{"statePath":"/lineItems","key":"id"},"children":["line-item"]}}
-{"op":"add","path":"/elements/line-item","value":{"type":"TextContent","props":{"text":{"$template":"${description} — $${price}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/state/lineItems","value":[]}
-{"op":"add","path":"/state/lineItems/0","value":{"id":"1","description":"Logo & brand identity package","price":"1,500.00"}}
-{"op":"add","path":"/state/lineItems/1","value":{"id":"2","description":"Website homepage redesign","price":"750.00"}}
-{"op":"add","path":"/state/lineItems/2","value":{"id":"3","description":"Revisions (2 rounds)","price":"200.00"}}
-{"op":"add","path":"/elements/pay-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["pay-callout","pay-buttons","paid-note"]}}
-{"op":"add","path":"/elements/pay-callout","value":{"type":"TextCallout","props":{"variant":"info","title":"Payment due March 15, 2025","description":"Pay securely online. Late payments incur a 5% monthly fee."},"children":[]}}
-{"op":"add","path":"/elements/pay-buttons","value":{"type":"Buttons","props":{"buttons":["pay-now","pay-later"],"direction":"row"},"children":[]}}
-{"op":"add","path":"/elements/pay-now","value":{"type":"Button","props":{"label":"Pay Now — USD 2,450.00","variant":"primary","size":"large"},"on":{"press":{"action":"setState","params":{"statePath":"/paid","value":true}}},"children":[]}}
-{"op":"add","path":"/elements/pay-later","value":{"type":"Button","props":{"label":"Remind Me Later","variant":"secondary","size":"large"},"children":[]}}
-{"op":"add","path":"/state/paid","value":false}
-{"op":"add","path":"/elements/paid-note","value":{"type":"Callout","props":{"variant":"success","title":"Payment received","description":"Thank you! A receipt has been sent to your email."},"visible":{"$state":"/paid"},"children":[]}}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"gap":"l"},"children":["header","amountCard","dueDate","sep","paymentMethods","payBtn","note"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Invoice #INV-2024-087","subtitle":"From: Alex Rivera — Freelance Design"}}}
+{"op":"add","path":"/elements/amountCard","value":{"type":"Card","props":{"variant":"sunk","gap":"xs"},"children":["amountLabel","amountValue","statusBadge"]}}
+{"op":"add","path":"/elements/amountLabel","value":{"type":"TextContent","props":{"text":"Amount due","size":"small"}}}
+{"op":"add","path":"/elements/amountValue","value":{"type":"TextContent","props":{"text":{"$template":"${/invoice/currency} ${/invoice/amount}"},"size":"large-heavy"}}}
+{"op":"add","path":"/state/invoice","value":{"amount":"2,450.00","currency":"USD","dueDate":"November 15, 2024"}}
+{"op":"add","path":"/elements/statusBadge","value":{"type":"Badge","props":{"text":"Unpaid","variant":"destructive"}}}
+{"op":"add","path":"/elements/dueDate","value":{"type":"Callout","props":{"variant":"warning","title":"Due date","description":{"$template":"Payment is due by ${/invoice/dueDate}"}}}}
+{"op":"add","path":"/elements/sep","value":{"type":"Separator","props":{}}}
+{"op":"add","path":"/elements/paymentMethods","value":{"type":"RadioGroup","props":{"name":"payment_method","items":["pmCard","pmBank","pmPaypal"],"defaultValue":"card"}}}
+{"op":"add","path":"/elements/pmCard","value":{"type":"RadioItem","props":{"label":"Credit / Debit card","description":"Visa, Mastercard, Amex — instant","value":"card"}}}
+{"op":"add","path":"/elements/pmBank","value":{"type":"RadioItem","props":{"label":"Bank transfer","description":"ACH — 2-3 business days","value":"bank"}}}
+{"op":"add","path":"/elements/pmPaypal","value":{"type":"RadioItem","props":{"label":"PayPal","description":"Pay with your PayPal balance","value":"paypal"}}}
+{"op":"add","path":"/elements/payBtn","value":{"type":"Button","props":{"label":{"$template":"Pay now — ${/invoice/currency} ${/invoice/amount}"},"variant":"primary","size":"large"},"on":{"press":{"action":"setState","params":{"statePath":"/paid","value":true}}}}
+{"op":"add","path":"/elements/note","value":{"type":"Callout","props":{"variant":"success","title":"Payment received","description":"Thank you! A receipt has been emailed to you."},"visible":{"$state":"/paid"},"children":[]}}

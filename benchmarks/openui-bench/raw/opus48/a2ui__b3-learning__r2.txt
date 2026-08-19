@@ -1,364 +1,412 @@
-Here's a comprehensive analytics dashboard for your training platform covering all eight requirements.
+Here's a complete analytics screen covering all eight requirements.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "training-analytics",
-      "catalogId": "thesys.dev:c1-openui"
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "training-analytics",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "column",
-          "gap": "l",
-          "children": [
-            "header",
-            "cohort-filter-card",
-            "kpi-row",
-            "engagement-card",
-            "enrollment-card",
-            "at-risk-card",
-            "message-card"
-          ]
-        },
-        {
-          "id": "header",
-          "component": "CardHeader",
-          "title": "Training Analytics",
-          "subtitle": "Performance and engagement overview"
-        },
-        {
-          "id": "cohort-filter-card",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "row",
-          "gap": "m",
-          "align": "end",
-          "children": ["cohort-filter-control", "cohort-apply-btn"]
-        },
-        {
-          "id": "cohort-filter-control",
-          "component": "FormControl",
-          "label": "Narrow to Cohort",
-          "hint": "Filter all metrics to a single cohort",
-          "input": "cohort-select"
-        },
-        {
-          "id": "cohort-select",
-          "component": "Select",
-          "name": "cohort",
-          "placeholder": "All cohorts",
-          "items": [
-            "cohort-all",
-            "cohort-2024q1",
-            "cohort-2024q2",
-            "cohort-eng",
-            "cohort-sales"
-          ]
-        },
-        { "id": "cohort-all", "component": "SelectItem", "value": "all", "label": "All Cohorts" },
-        { "id": "cohort-2024q1", "component": "SelectItem", "value": "2024q1", "label": "2024 Q1 Onboarding" },
-        { "id": "cohort-2024q2", "component": "SelectItem", "value": "2024q2", "label": "2024 Q2 Onboarding" },
-        { "id": "cohort-eng", "component": "SelectItem", "value": "engineering", "label": "Engineering Track" },
-        { "id": "cohort-sales", "component": "SelectItem", "value": "sales", "label": "Sales Track" },
-        {
-          "id": "cohort-apply-btn",
-          "component": "Button",
-          "label": "Apply Filter",
-          "variant": "primary",
-          "action": ["applyCohortFilter"]
-        },
-
-        {
-          "id": "kpi-row",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "m",
-          "wrap": true,
-          "children": ["kpi-active", "kpi-completion", "kpi-quiz"]
-        },
-        {
-          "id": "kpi-active",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "xs",
-          "weight": 1,
-          "children": ["kpi-active-label", "kpi-active-value", "kpi-active-tag"]
-        },
-        { "id": "kpi-active-label", "component": "TextContent", "text": "Active Learners This Week", "size": "small" },
-        { "id": "kpi-active-value", "component": "Heading", "text": "1,284", "level": "h2" },
-        { "id": "kpi-active-tag", "component": "Tag", "text": "+8.2% vs last week", "variant": "success", "size": "sm" },
-
-        {
-          "id": "kpi-completion",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "xs",
-          "weight": 1,
-          "children": ["kpi-completion-label", "kpi-completion-value", "kpi-completion-progress"]
-        },
-        { "id": "kpi-completion-label", "component": "TextContent", "text": "Course Completion Rate", "size": "small" },
-        { "id": "kpi-completion-value", "component": "Heading", "text": "72%", "level": "h2" },
-        { "id": "kpi-completion-progress", "component": "Progress", "value": 72, "label": "Completed vs enrolled" },
-
-        {
-          "id": "kpi-quiz",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "xs",
-          "weight": 1,
-          "children": ["kpi-quiz-label", "kpi-quiz-value", "kpi-quiz-tag"]
-        },
-        { "id": "kpi-quiz-label", "component": "TextContent", "text": "Average Quiz Score", "size": "small" },
-        { "id": "kpi-quiz-value", "component": "Heading", "text": "84.6", "level": "h2" },
-        { "id": "kpi-quiz-tag", "component": "Tag", "text": "Passing threshold: 70", "variant": "info", "size": "sm" },
-
-        {
-          "id": "engagement-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "children": ["engagement-header", "engagement-chart"]
-        },
-        {
-          "id": "engagement-header",
-          "component": "CardHeader",
-          "title": "Engagement — Past 8 Weeks",
-          "subtitle": "Active sessions and lesson completions per week"
-        },
-        {
-          "id": "engagement-chart",
-          "component": "LineChart",
-          "variant": "natural",
-          "xLabel": "Week",
-          "yLabel": "Count",
-          "labels": ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"],
-          "series": ["engagement-sessions", "engagement-completions"]
-        },
-        {
-          "id": "engagement-sessions",
-          "component": "Series",
-          "category": "Active Sessions",
-          "values": [980, 1040, 1010, 1120, 1180, 1150, 1240, 1284]
-        },
-        {
-          "id": "engagement-completions",
-          "component": "Series",
-          "category": "Lesson Completions",
-          "values": [620, 680, 700, 760, 820, 810, 890, 940]
-        },
-
-        {
-          "id": "enrollment-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "children": ["enrollment-header", "enrollment-chart"]
-        },
-        {
-          "id": "enrollment-header",
-          "component": "CardHeader",
-          "title": "Courses Ranked by Enrollment",
-          "subtitle": "Top courses by number of enrolled learners"
-        },
-        {
-          "id": "enrollment-chart",
-          "component": "HorizontalBarChart",
-          "xLabel": "Enrollments",
-          "yLabel": "Course",
-          "labels": [
-            "Intro to Data",
-            "Security Basics",
-            "Leadership 101",
-            "Cloud Fundamentals",
-            "Advanced SQL"
-          ],
-          "series": ["enrollment-series"]
-        },
-        {
-          "id": "enrollment-series",
-          "component": "Series",
-          "category": "Enrollments",
-          "values": [842, 730, 615, 540, 410]
-        },
-
-        {
-          "id": "at-risk-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "children": ["at-risk-header", "at-risk-alert", "at-risk-table"]
-        },
-        {
-          "id": "at-risk-header",
-          "component": "CardHeader",
-          "title": "Learners at Risk of Dropping Out",
-          "subtitle": "Flagged by low activity and stalled progress"
-        },
-        {
-          "id": "at-risk-alert",
-          "component": "Alert",
-          "variant": "warning",
-          "title": "5 learners need attention",
-          "description": "These learners have been inactive for 10+ days or fallen below completion pace."
-        },
-        {
-          "id": "at-risk-table",
-          "component": "Table",
-          "columns": ["col-name", "col-course", "col-progress", "col-inactive", "col-risk"]
-        },
-        {
-          "id": "col-name",
-          "component": "Col",
-          "label": "Learner",
-          "type": "string",
-          "data": ["Jordan P.", "Maya R.", "Chen W.", "Ava T.", "Liam N."]
-        },
-        {
-          "id": "col-course",
-          "component": "Col",
-          "label": "Course",
-          "type": "string",
-          "data": ["Cloud Fundamentals", "Advanced SQL", "Security Basics", "Leadership 101", "Intro to Data"]
-        },
-        {
-          "id": "col-progress",
-          "component": "Col",
-          "label": "Progress %",
-          "type": "number",
-          "data": [22, 15, 34, 18, 9]
-        },
-        {
-          "id": "col-inactive",
-          "component": "Col",
-          "label": "Days Inactive",
-          "type": "number",
-          "data": [14, 21, 11, 17, 25]
-        },
-        {
-          "id": "col-risk",
-          "component": "Col",
-          "label": "Risk",
-          "type": "string",
-          "data": ["High", "Critical", "Medium", "High", "Critical"]
-        },
-
-        {
-          "id": "message-card",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "s",
-          "children": ["message-header", "message-form"]
-        },
-        {
-          "id": "message-header",
-          "component": "CardHeader",
-          "title": "Message a Cohort",
-          "subtitle": "Send an announcement or nudge to a selected cohort"
-        },
-        {
-          "id": "message-form",
-          "component": "Form",
-          "name": "cohortMessage",
-          "buttons": "message-buttons",
-          "fields": ["message-target-control", "message-subject-control", "message-body-control"]
-        },
-        {
-          "id": "message-target-control",
-          "component": "FormControl",
-          "label": "Recipient Cohort",
-          "input": "message-target-select"
-        },
-        {
-          "id": "message-target-select",
-          "component": "Select",
-          "name": "targetCohort",
-          "placeholder": "Choose a cohort",
-          "items": ["msg-c1", "msg-c2", "msg-c3", "msg-c4", "msg-c5"]
-        },
-        { "id": "msg-c1", "component": "SelectItem", "value": "all", "label": "All Cohorts" },
-        { "id": "msg-c2", "component": "SelectItem", "value": "2024q1", "label": "2024 Q1 Onboarding" },
-        { "id": "msg-c3", "component": "SelectItem", "value": "2024q2", "label": "2024 Q2 Onboarding" },
-        { "id": "msg-c4", "component": "SelectItem", "value": "engineering", "label": "Engineering Track" },
-        { "id": "msg-c5", "component": "SelectItem", "value": "at-risk", "label": "At-Risk Learners" },
-        {
-          "id": "message-subject-control",
-          "component": "FormControl",
-          "label": "Subject",
-          "input": "message-subject-input"
-        },
-        {
-          "id": "message-subject-input",
-          "component": "Input",
-          "name": "subject",
-          "type": "text",
-          "placeholder": "e.g. A quick check-in on your progress"
-        },
-        {
-          "id": "message-body-control",
-          "component": "FormControl",
-          "label": "Message",
-          "input": "message-body-input"
-        },
-        {
-          "id": "message-body-input",
-          "component": "TextArea",
-          "name": "body",
-          "rows": 4,
-          "placeholder": "Write your message to the cohort..."
-        },
-        {
-          "id": "message-buttons",
-          "component": "Buttons",
-          "direction": "row",
-          "buttons": ["message-send-btn", "message-clear-btn"]
-        },
-        {
-          "id": "message-send-btn",
-          "component": "Button",
-          "label": "Send Message",
-          "variant": "primary",
-          "action": ["sendCohortMessage"]
-        },
-        {
-          "id": "message-clear-btn",
-          "component": "Button",
-          "label": "Clear",
-          "variant": "tertiary",
-          "action": ["clearMessageForm"]
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-This single screen covers all eight requirements:
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "cohortFilter",
+          "kpiRow",
+          "engagementTrend",
+          "enrollmentRanking",
+          "atRiskLearners",
+          "messageAction"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Learning Analytics",
+        "subtitle": "Platform performance overview"
+      },
+      {
+        "id": "cohortFilter",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "cohortLabel",
+          "cohortSelect"
+        ]
+      },
+      {
+        "id": "cohortLabel",
+        "component": "Label",
+        "text": "Narrow to a cohort"
+      },
+      {
+        "id": "cohortSelect",
+        "component": "Select",
+        "name": "cohort",
+        "placeholder": "All cohorts",
+        "items": [
+          "cohortAll",
+          "cohortAlpha",
+          "cohortBeta",
+          "cohortGamma"
+        ]
+      },
+      {
+        "id": "cohortAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All cohorts"
+      },
+      {
+        "id": "cohortAlpha",
+        "component": "SelectItem",
+        "value": "alpha",
+        "label": "Spring Cohort - Alpha"
+      },
+      {
+        "id": "cohortBeta",
+        "component": "SelectItem",
+        "value": "beta",
+        "label": "Summer Cohort - Beta"
+      },
+      {
+        "id": "cohortGamma",
+        "component": "SelectItem",
+        "value": "gamma",
+        "label": "Fall Cohort - Gamma"
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "justify": "between",
+        "children": [
+          "kpiActive",
+          "kpiCompletion",
+          "kpiQuiz"
+        ]
+      },
+      {
+        "id": "kpiActive",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "kpiActiveLabel",
+          "kpiActiveValue"
+        ]
+      },
+      {
+        "id": "kpiActiveLabel",
+        "component": "TextContent",
+        "text": "Active Learners This Week",
+        "size": "small"
+      },
+      {
+        "id": "kpiActiveValue",
+        "component": "Heading",
+        "text": "1,284",
+        "level": "h2"
+      },
+      {
+        "id": "kpiCompletion",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "kpiCompletionLabel",
+          "kpiCompletionValue",
+          "kpiCompletionBar"
+        ]
+      },
+      {
+        "id": "kpiCompletionLabel",
+        "component": "TextContent",
+        "text": "Course Completion Rate",
+        "size": "small"
+      },
+      {
+        "id": "kpiCompletionValue",
+        "component": "Heading",
+        "text": "68%",
+        "level": "h2"
+      },
+      {
+        "id": "kpiCompletionBar",
+        "component": "Progress",
+        "value": 68,
+        "label": "68% completed"
+      },
+      {
+        "id": "kpiQuiz",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "kpiQuizLabel",
+          "kpiQuizValue"
+        ]
+      },
+      {
+        "id": "kpiQuizLabel",
+        "component": "TextContent",
+        "text": "Average Quiz Score",
+        "size": "small"
+      },
+      {
+        "id": "kpiQuizValue",
+        "component": "Heading",
+        "text": "82.4",
+        "level": "h2"
+      },
+      {
+        "id": "engagementTrend",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "engagementTitle",
+          "engagementChart"
+        ]
+      },
+      {
+        "id": "engagementTitle",
+        "component": "Heading",
+        "text": "Engagement - Past 8 Weeks",
+        "level": "h3"
+      },
+      {
+        "id": "engagementChart",
+        "component": "AreaChart",
+        "labels": [
+          "W1",
+          "W2",
+          "W3",
+          "W4",
+          "W5",
+          "W6",
+          "W7",
+          "W8"
+        ],
+        "series": [
+          "engagementSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Week",
+        "yLabel": "Active learners"
+      },
+      {
+        "id": "engagementSeries",
+        "component": "Series",
+        "category": "Engagement",
+        "values": [
+          940,
+          1010,
+          985,
+          1120,
+          1080,
+          1195,
+          1240,
+          1284
+        ]
+      },
+      {
+        "id": "enrollmentRanking",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "enrollmentTitle",
+          "enrollmentChart"
+        ]
+      },
+      {
+        "id": "enrollmentTitle",
+        "component": "Heading",
+        "text": "Courses Ranked by Enrollment",
+        "level": "h3"
+      },
+      {
+        "id": "enrollmentChart",
+        "component": "HorizontalBarChart",
+        "labels": [
+          "Intro to Data Science",
+          "Project Management 101",
+          "UX Design Fundamentals",
+          "Cloud Architecture",
+          "Financial Modeling"
+        ],
+        "series": [
+          "enrollmentSeries"
+        ],
+        "xLabel": "Enrollments",
+        "yLabel": "Course"
+      },
+      {
+        "id": "enrollmentSeries",
+        "component": "Series",
+        "category": "Enrollments",
+        "values": [
+          842,
+          710,
+          655,
+          498,
+          412
+        ]
+      },
+      {
+        "id": "atRiskLearners",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "atRiskTitle",
+          "atRiskTable"
+        ]
+      },
+      {
+        "id": "atRiskTitle",
+        "component": "Heading",
+        "text": "Learners at Risk of Dropping Out",
+        "level": "h3"
+      },
+      {
+        "id": "atRiskTable",
+        "component": "Table",
+        "columns": [
+          "riskName",
+          "riskCourse",
+          "riskInactive",
+          "riskLevel"
+        ]
+      },
+      {
+        "id": "riskName",
+        "component": "Col",
+        "label": "Learner",
+        "data": [
+          "Maria Chen",
+          "David Okafor",
+          "Priya Nair",
+          "Tom Bergstrom",
+          "Aisha Rahman"
+        ]
+      },
+      {
+        "id": "riskCourse",
+        "component": "Col",
+        "label": "Course",
+        "data": [
+          "Cloud Architecture",
+          "Financial Modeling",
+          "UX Design Fundamentals",
+          "Intro to Data Science",
+          "Project Management 101"
+        ]
+      },
+      {
+        "id": "riskInactive",
+        "component": "Col",
+        "label": "Days Inactive",
+        "type": "number",
+        "data": [
+          14,
+          11,
+          9,
+          21,
+          8
+        ]
+      },
+      {
+        "id": "riskLevel",
+        "component": "Col",
+        "label": "Risk",
+        "data": [
+          "High",
+          "High",
+          "Medium",
+          "Critical",
+          "Medium"
+        ]
+      },
+      {
+        "id": "messageAction",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "messageTitle",
+          "messageText",
+          "messageButtons"
+        ]
+      },
+      {
+        "id": "messageTitle",
+        "component": "Heading",
+        "text": "Reach Out to a Cohort",
+        "level": "h3"
+      },
+      {
+        "id": "messageText",
+        "component": "TextContent",
+        "text": "Send a targeted message to the selected cohort to boost engagement and re-engage at-risk learners.",
+        "size": "small"
+      },
+      {
+        "id": "messageButtons",
+        "component": "Buttons",
+        "buttons": [
+          "messageBtn",
+          "scheduleBtn"
+        ]
+      },
+      {
+        "id": "messageBtn",
+        "component": "Button",
+        "label": "Message Cohort",
+        "variant": "primary"
+      },
+      {
+        "id": "scheduleBtn",
+        "component": "Button",
+        "label": "Schedule Reminder",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>
 
-1. **Active learners this week** — KPI card showing 1,284 with a week-over-week trend tag.
-2. **Course completion rate** — KPI card with a 72% progress bar.
-3. **Average quiz score** — KPI card showing 84.6 against the passing threshold.
-4. **Courses ranked by enrollment** — horizontal bar chart sorted by enrollment count.
-5. **Learners at risk of dropping out** — a warning alert plus a detailed table with progress, inactivity, and risk level.
-6. **Narrow to one cohort** — a cohort selector with an Apply Filter button at the top that scopes all metrics.
-7. **Engagement across past eight weeks** — a line chart with active sessions and lesson completions per week.
-8. **Message a cohort** — a form to pick a cohort, write a subject/body, and send.
+This single screen covers all eight items:
 
-Want me to wire the cohort filter to dynamically update the KPI values, or add pagination to the at-risk table?
+1. **Active learners this week** — KPI card showing 1,284
+2. **Course completion rate** — KPI card with 68% and a progress bar
+3. **Average quiz score** — KPI card showing 82.4
+4. **Courses ranked by enrollment** — horizontal bar chart, sorted high to low
+5. **Learners at risk of dropping out** — table with inactivity and risk level
+6. **A way to narrow to one cohort** — cohort select filter at the top
+7. **Engagement across the past eight weeks** — area chart over W1–W8
+8. **A way to message a cohort** — "Message Cohort" action with a scheduling option

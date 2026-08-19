@@ -1,131 +1,148 @@
-{"op":"add","path":"/root","value":"main-container"}
-{"op":"add","path":"/elements/main-container","value":{"type":"Card","props":{"variant":"clear","gap":"l"},"children":["header-card","accounts-grid","middle-grid","bottom-grid","management-tabs"]}}
-{"op":"add","path":"/elements/header-card","value":{"type":"Card","props":{"variant":"card","direction":"row","justify":"between","align":"center"},"children":["header-text","statement-period-select"]}}
-{"op":"add","path":"/elements/header-text","value":{"type":"CardHeader","props":{"title":"Personal Banking Dashboard","subtitle":"Welcome back, Alex. Here is your financial overview."}}}
-{"op":"add","path":"/elements/statement-period-select","value":{"type":"Select","props":{"name":"statementPeriod","value":{"$bindState":"/selectedPeriod"},"items":["period-1","period-2","period-3"],"placeholder":"Select Period"}}}
-{"op":"add","path":"/elements/period-1","value":{"type":"SelectItem","props":{"value":"oct-2023","label":"October 2023"}}}
-{"op":"add","path":"/elements/period-2","value":{"type":"SelectItem","props":{"value":"sep-2023","label":"September 2023"}}}
-{"op":"add","path":"/elements/period-3","value":{"type":"SelectItem","props":{"value":"aug-2023","label":"August 2023"}}}
-{"op":"add","path":"/state/selectedPeriod","value":"oct-2023"}
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"gap":"l"},"children":["header","tabs"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Apex Financial","subtitle":"Personal Banking Portal • Welcome back, Alex"}}}
+{"op":"add","path":"/elements/tabs","value":{"type":"Tabs","props":{"items":["tabOverview","tabTransfer","tabManage","tabSupport"]}}}
 
-{"op":"add","path":"/elements/accounts-grid","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m"},"children":["account-checking","account-savings","account-credit"]}}
-{"op":"add","path":"/elements/account-checking","value":{"type":"Card","props":{"variant":"card","gap":"xs"},"children":["chk-title","chk-balance","chk-type"]}}
-{"op":"add","path":"/elements/chk-title","value":{"type":"TextContent","props":{"text":"Checking Account","size":"small"}}}
-{"op":"add","path":"/elements/chk-balance","value":{"type":"Heading","props":{"text":{"$state":"/accounts/checking/balance"},"level":"h2"}}}
-{"op":"add","path":"/elements/chk-type","value":{"type":"Badge","props":{"text":"*4821 • Active","variant":"secondary"}}}
+{"op":"add","path":"/elements/tabOverview","value":{"type":"TabItem","props":{"value":"overview","trigger":"Dashboard Overview","content":["quickMetrics","balancesList","spendingAndGoalRow","transactionsAndBillsRow"]}}}
 
-{"op":"add","path":"/elements/account-savings","value":{"type":"Card","props":{"variant":"card","gap":"xs"},"children":["svg-title","svg-balance","svg-type"]}}
-{"op":"add","path":"/elements/svg-title","value":{"type":"TextContent","props":{"text":"High Yield Savings","size":"small"}}}
-{"op":"add","path":"/elements/svg-balance","value":{"type":"Heading","props":{"text":{"$state":"/accounts/savings/balance"},"level":"h2"}}}
-{"op":"add","path":"/elements/svg-type","value":{"type":"Badge","props":{"text":"*9904 • 4.5% APY","variant":"secondary"}}}
+{"op":"add","path":"/elements/quickMetrics","value":{"type":"Card","props":{"direction":"row","gap":"m","variant":"sunk"},"children":["creditScoreCard","vacationGoalCard"]}}
 
-{"op":"add","path":"/elements/account-credit","value":{"type":"Card","props":{"variant":"card","gap":"xs"},"children":["crd-header","crd-balance","crd-actions"]}}
-{"op":"add","path":"/elements/crd-header","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center"},"children":["crd-title","crd-freeze-switch"]}}
-{"op":"add","path":"/elements/crd-title","value":{"type":"TextContent","props":{"text":"Rewards Credit Card","size":"small"}}}
-{"op":"add","path":"/elements/crd-freeze-switch","value":{"type":"SwitchItem","props":{"name":"creditFrozen","label":"Freeze Line","defaultChecked":{"$state":"/creditCard/frozen"}},"on":{"change":{"action":"setState","params":{"statePath":"/creditCard/frozen","value":{"$state":"/creditCard/frozen","not":true}}}}}}
-{"op":"add","path":"/elements/crd-balance","value":{"type":"Heading","props":{"text":{"$state":"/accounts/credit/balance"},"level":"h2"}}}
-{"op":"add","path":"/elements/crd-actions","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center"},"children":["crd-status","crd-limit"]}}
-{"op":"add","path":"/elements/crd-status","value":{"type":"Badge","props":{"text":{"$cond":{"$state":"/creditCard/frozen"},"$then":"FROZEN","$else":"*3310 • Active"},"variant":{"$cond":{"$state":"/creditCard/frozen"},"$then":"destructive","$else":"secondary"}}}}
-{"op":"add","path":"/elements/crd-limit","value":{"type":"TextContent","props":{"text":"Limit: $10,000","size":"small"}}}
+{"op":"add","path":"/elements/creditScoreCard","value":{"type":"Card","props":{"variant":"card","gap":"xs"},"children":["creditScoreHeader","creditScoreProgress","creditScoreStatus"]}}
+{"op":"add","path":"/elements/creditScoreHeader","value":{"type":"TextContent","props":{"text":"### 6. Credit Score\n**742** / 850 *(Very Good)*"}}}
+{"op":"add","path":"/elements/creditScoreProgress","value":{"type":"Progress","props":{"value":87,"label":"FICO® Score 8"}}}
+{"op":"add","path":"/elements/creditScoreStatus","value":{"type":"Tag","props":{"text":"+12 pts vs last month","variant":"success","size":"sm"}}}
 
-{"op":"add","path":"/state/accounts","value":{"checking":{"balance":"$5,420.50"},"savings":{"balance":"$18,250.00"},"credit":{"balance":"$1,120.80"}}}
-{"op":"add","path":"/state/creditCard","value":{"frozen":false}}
+{"op":"add","path":"/elements/vacationGoalCard","value":{"type":"Card","props":{"variant":"card","gap":"xs"},"children":["vacationGoalHeader","vacationGoalProgress","vacationGoalSub"]}}
+{"op":"add","path":"/elements/vacationGoalHeader","value":{"type":"TextContent","props":{"text":"### 5. Vacation Savings Goal\n**$3,200** of $5,000 target"}}}
+{"op":"add","path":"/elements/vacationGoalProgress","value":{"type":"Progress","props":{"value":64,"label":"64% Completed"}}}
+{"op":"add","path":"/elements/vacationGoalSub","value":{"type":"TextContent","props":{"text":"*Target Date: July 15 • $1,800 remaining*","size":"small"}}}
 
-{"op":"add","path":"/elements/middle-grid","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m"},"children":["spending-card","credit-score-card","savings-goal-card"]}}
+{"op":"add","path":"/elements/balancesList","value":{"type":"Card","props":{"gap":"s"},"children":["balancesTitle","accountsContainer"]}}
+{"op":"add","path":"/elements/balancesTitle","value":{"type":"Heading","props":{"text":"1. Account Balances","level":"h3"}}}
+{"op":"add","path":"/elements/accountsContainer","value":{"type":"Card","props":{"direction":"row","gap":"m"},"repeat":{"statePath":"/accounts","key":"id"},"children":["accountCard"]}}
+{"op":"add","path":"/elements/accountCard","value":{"type":"Card","props":{"variant":"sunk","gap":"xs"},"children":["accountName","accountBalance","accountNumber"]}}
+{"op":"add","path":"/elements/accountName","value":{"type":"TextContent","props":{"text":{"$template":"**${name}**"},"size":"default"}}}
+{"op":"add","path":"/elements/accountBalance","value":{"type":"TextContent","props":{"text":{"$template":"## ${balance}"}}}}
+{"op":"add","path":"/elements/accountNumber","value":{"type":"Badge","props":{"text":{"$template":"${accNumber}"},"variant":"outline"}}}
 
-{"op":"add","path":"/elements/spending-card","value":{"type":"Card","props":{"variant":"card","gap":"m"},"children":["spending-header","spending-chart"]}}
-{"op":"add","path":"/elements/spending-header","value":{"type":"CardHeader","props":{"title":"Category Spending","subtitle":"This Month"}}}
-{"op":"add","path":"/elements/spending-chart","value":{"type":"PieChart","props":{"labels":{"$state":"/spending/categories"},"values":{"$state":"/spending/amounts"},"variant":"donut"}}}
+{"op":"add","path":"/state/accounts","value":[]}
+{"op":"add","path":"/state/accounts/0","value":{"id":"chk","name":"Checking Account","balance":"$4,250.80","accNumber":"••• 4821"}}
+{"op":"add","path":"/state/accounts/1","value":{"id":"sav","name":"Savings Account","balance":"$12,840.50","accNumber":"••• 9032"}}
+{"op":"add","path":"/state/accounts/2","value":{"id":"crd","name":"Credit Card","balance":"$1,120.35","accNumber":"••• 1104"}}
 
-{"op":"state/spending","value":{"categories":["Housing","Groceries","Dining","Utilities","Entertainment"],"amounts":[1450,420,280,195,150]}}
+{"op":"add","path":"/elements/spendingAndGoalRow","value":{"type":"Card","props":{"direction":"row","gap":"l"},"children":["spendingCard","statementCard"]}}
 
-{"op":"add","path":"/elements/credit-score-card","value":{"type":"Card","props":{"variant":"card","gap":"m","align":"center","justify":"between"},"children":["score-header","score-progress","score-details"]}}
-{"op":"add","path":"/elements/score-header","value":{"type":"CardHeader","props":{"title":"Credit Score","subtitle":"FICO® Score 8"}}}
-{"op":"add","path":"/elements/score-progress","value":{"type":"Progress","props":{"value":76,"label":"760 / 850"}}}
-{"op":"add","path":"/elements/score-details","value":{"type":"Tag","props":{"text":"Excellent Rating","variant":"success","size":"md"}}}
+{"op":"add","path":"/elements/spendingCard","value":{"type":"Card","props":{"variant":"card","gap":"s"},"children":["spendingTitle","spendingChart"]}}
+{"op":"add","path":"/elements/spendingTitle","value":{"type":"Heading","props":{"text":"3. Spending Split This Month","level":"h3"}}}
+{"op":"add","path":"/elements/spendingChart","value":{"type":"PieChart","props":{"labels":{"$state":"/spendingCategories"},"values":{"$state":"/spendingAmounts"},"variant":"donut"}}}
 
-{"op":"add","path":"/elements/savings-goal-card","value":{"type":"Card","props":{"variant":"card","gap":"m","justify":"between"},"children":["goal-header","goal-progress-container","goal-action"]}}
-{"op":"add","path":"/elements/goal-header","value":{"type":"CardHeader","props":{"title":"Vacation Savings Goal","subtitle":"Target: $5,000 by July"}}}
-{"op":"add","path":"/elements/goal-progress-container","value":{"type":"Card","props":{"variant":"clear","gap":"xs"},"children":["goal-progress","goal-amounts"]}}
-{"op":"add","path":"/elements/goal-progress","value":{"type":"Progress","props":{"value":65,"label":"65% Completed"}}}
-{"op":"add","path":"/elements/goal-amounts","value":{"type":"TextContent","props":{"text":"**$3,250.00** saved of $5,000.00","size":"small"}}}
-{"op":"add","path":"/elements/goal-action","value":{"type":"Button","props":{"label":"Deposit to Goal","variant":"secondary","size":"small"}}}
+{"op":"add","path":"/state/spendingCategories","value":["Housing","Groceries","Dining","Utilities","Entertainment"]}
+{"op":"add","path":"/state/spendingAmounts","value":[1400,620,340,210,180]}
 
-{"op":"add","path":"/elements/bottom-grid","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m"},"children":["transactions-card","transfer-card"]}}
+{"op":"add","path":"/elements/statementCard","value":{"type":"Card","props":{"variant":"card","gap":"s"},"children":["statementTitle","statementControl","statementSummary"]}}
+{"op":"add","path":"/elements/statementTitle","value":{"type":"Heading","props":{"text":"9. Pick Statement Period","level":"h3"}}}
+{"op":"add","path":"/elements/statementControl","value":{"type":"FormControl","props":{"label":"Select Period","input":"statementSelect"}}}
+{"op":"add","path":"/elements/statementSelect","value":{"type":"Select","props":{"name":"statementPeriod","items":["period1","period2","period3"],"value":{"$bindState":"/selectedPeriod"}}}}
+{"op":"add","path":"/elements/period1","value":{"type":"SelectItem","props":{"value":"may2024","label":"May 2024 (Current)"}}}
+{"op":"add","path":"/elements/period2","value":{"type":"SelectItem","props":{"value":"apr2024","label":"April 2024"}}}
+{"op":"add","path":"/elements/period3","value":{"type":"SelectItem","props":{"value":"mar2024","label":"March 2024"}}}
+{"op":"add","path":"/elements/statementSummary","value":{"type":"Callout","props":{"variant":"info","title":"Statement Details","description":{"$template":"Showing account records for period: ${/selectedPeriod}"}}}}
 
-{"op":"add","path":"/elements/transactions-card","value":{"type":"Card","props":{"variant":"card","gap":"m"},"children":["tx-header","tx-list","dispute-dialog"]}}
-{"op":"add","path":"/elements/tx-header","value":{"type":"CardHeader","props":{"title":"Recent Transactions","subtitle":"Latest account activity"}}}
-{"op":"add","path":"/elements/tx-list","value":{"type":"Card","props":{"variant":"clear","gap":"s"},"repeat":{"statePath":"/transactions","key":"id"},"children":["tx-item"]}}
-{"op":"add","path":"/elements/tx-item","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["tx-info","tx-amount"]}}
-{"op":"add","path":"/elements/tx-info","value":{"type":"Card","props":{"variant":"clear","gap":"none"},"children":["tx-merchant","tx-date"]}}
-{"op":"add","path":"/elements/tx-merchant","value":{"type":"TextContent","props":{"text":{"$item":"merchant"},"size":"default"}}}
-{"op":"add","path":"/elements/tx-date","value":{"type":"TextContent","props":{"text":{"$item":"date"},"size":"small"}}}
-{"op":"add","path":"/elements/tx-amount","value":{"type":"Heading","props":{"text":{"$item":"amount"},"level":"h4"}}}
+{"op":"add","path":"/state/selectedPeriod","value":"may2024"}
 
-{"op":"add","path":"/state/transactions","value":[]}
-{"op":"add","path":"/state/transactions/0","value":{"id":"t1","merchant":"Whole Foods Market","date":"Oct 24, 2023","amount":"-$84.32"}}
-{"op":"add","path":"/state/transactions/1","value":{"id":"t2","merchant":"Starbucks Coffee","date":"Oct 23, 2023","amount":"-$5.75"}}
-{"op":"add","path":"/state/transactions/2","value":{"id":"t3","merchant":"TechCorp Salary Deposit","date":"Oct 20, 2023","amount":"+$2,450.00"}}
-{"op":"add","path":"/state/transactions/3","value":{"id":"t4","merchant":"Netflix Subscription","date":"Oct 18, 2023","amount":"-$15.99"}}
+{"op":"add","path":"/elements/transactionsAndBillsRow","value":{"type":"Card","props":{"direction":"row","gap":"l"},"children":["txCard","billsCard"]}}
 
-{"op":"add","path":"/elements/dispute-dialog","value":{"type":"DialogBlock","props":{"triggerLabel":"Dispute a Transaction","triggerVariant":"outline","title":"Dispute Transaction","description":"Select a transaction and provide details for review.","content":["dispute-form"]}}}
-{"op":"add","path":"/elements/dispute-form","value":{"type":"Card","props":{"variant":"clear","gap":"m"},"children":["dispute-select-control","dispute-reason-control","dispute-submit-btn"]}}
-{"op":"add","path":"/elements/dispute-select-control","value":{"type":"FormControl","props":{"label":"Select Transaction","input":"dispute-tx-select"}}}
-{"op":"add","path":"/elements/dispute-tx-select","value":{"type":"Select","props":{"name":"disputeTx","value":{"$bindState":"/dispute/txId"},"items":["d-opt-1","d-opt-2","d-opt-3"],"placeholder":"Choose transaction"}}}
-{"op":"add","path":"/elements/d-opt-1","value":{"type":"SelectItem","props":{"value":"t1","label":"Whole Foods Market ($84.32)"}}}
-{"op":"add","path":"/elements/d-opt-2","value":{"type":"SelectItem","props":{"value":"t2","label":"Starbucks Coffee ($5.75)"}}}
-{"op":"add","path":"/elements/d-opt-3","value":{"type":"SelectItem","props":{"value":"t4","label":"Netflix Subscription ($15.99)"}}}
-{"op":"add","path":"/elements/dispute-reason-control","value":{"type":"FormControl","props":{"label":"Reason for Dispute","input":"dispute-reason-text"}}}
-{"op":"add","path":"/elements/dispute-reason-text","value":{"type":"TextArea","props":{"name":"disputeReason","placeholder":"Describe why you are disputing this charge...","value":{"$bindState":"/dispute/reason"}}}}
-{"op":"add","path":"/elements/dispute-submit-btn","value":{"type":"Button","props":{"label":"Submit Dispute","variant":"primary"},"on":{"press":{"action":"setState","params":{"statePath":"/dispute/submitted","value":true}}}}}
-{"op":"add","path":"/state/dispute","value":{"txId":"","reason":"","submitted":false}}
+{"op":"add","path":"/elements/txCard","value":{"type":"Card","props":{"variant":"card","gap":"s"},"children":["txTitle","txTable"]}}
+{"op":"add","path":"/elements/txTitle","value":{"type":"Heading","props":{"text":"2. Recent Transactions","level":"h3"}}}
+{"op":"add","path":"/elements/txTable","value":{"type":"Table","props":{"columns":["txMerchant","txCategory","txAmount"]}}}
+{"op":"add","path":"/elements/txMerchant","value":{"type":"Col","props":{"label":"Merchant","data":{"$state":"/txMerchants"}}}}
+{"op":"add","path":"/elements/txCategory","value":{"type":"Col","props":{"label":"Category","data":{"$state":"/txCategories"}}}}
+{"op":"add","path":"/elements/txAmount","value":{"type":"Col","props":{"label":"Amount","data":{"$state":"/txAmounts"}}}}
 
-{"op":"add","path":"/elements/transfer-card","value":{"type":"Card","props":{"variant":"card","gap":"m"},"children":["transfer-header","transfer-form"]}}
-{"op":"add","path":"/elements/transfer-header","value":{"type":"CardHeader","props":{"title":"Move Money","subtitle":"Instant internal transfer"}}}
-{"op":"add","path":"/elements/transfer-form","value":{"type":"Card","props":{"variant":"clear","gap":"m"},"children":["from-control","to-control","amount-control","transfer-submit"]}}
+{"op":"add","path":"/state/txMerchants","value":["Whole Foods Market","Netflix Subscription","Electric Utility","Trader Joe's","Cafe Supremo"]}
+{"op":"add","path":"/state/txCategories","value":["Groceries","Entertainment","Utilities","Groceries","Dining"]}
+{"op":"add","path":"/state/txAmounts","value":["-$142.50","-$15.99","-$88.40","-$64.20","-$12.75"]}
 
-{"op":"add","path":"/elements/from-control","value":{"type":"FormControl","props":{"label":"From Account","input":"from-account-select"}}}
-{"op":"add","path":"/elements/from-account-select","value":{"type":"Select","props":{"name":"fromAccount","value":{"$bindState":"/transfer/from"},"items":["acc-chk","acc-svg"],"placeholder":"Select source"}}}
-{"op":"add","path":"/elements/acc-chk","value":{"type":"SelectItem","props":{"value":"checking","label":"Checking (*4821)"}}}
-{"op":"add","path":"/elements/acc-svg","value":{"type":"SelectItem","props":{"value":"savings","label":"Savings (*9904)"}}}
+{"op":"add","path":"/elements/billsCard","value":{"type":"Card","props":{"variant":"card","gap":"s"},"children":["billsTitle","billsList"]}}
+{"op":"add","path":"/elements/billsTitle","value":{"type":"Heading","props":{"text":"4. Bills Due Soon","level":"h3"}}}
+{"op":"add","path":"/elements/billsList","value":{"type":"ListBlock","props":{"items":["bill1","bill2","bill3"]}}}
+{"op":"add","path":"/elements/bill1","value":{"type":"ListItem","props":{"title":"Electric Bill - City Power","subtitle":"Due in 3 days • May 28","actionLabel":"$88.40"}}}
+{"op":"add","path":"/elements/bill2","value":{"type":"ListItem","props":{"title":"Internet Service - FiberNet","subtitle":"Due in 7 days • June 1","actionLabel":"$65.00"}}}
+{"op":"add","path":"/elements/bill3","value":{"type":"ListItem","props":{"title":"Credit Card Minimum Payment","subtitle":"Due in 12 days • June 6","actionLabel":"$35.00"}}}
 
-{"op":"add","path":"/elements/to-control","value":{"type":"FormControl","props":{"label":"To Account","input":"to-account-select"}}}
-{"op":"add","path":"/elements/to-account-select","value":{"type":"Select","props":{"name":"toAccount","value":{"$bindState":"/transfer/to"},"items":["acc-chk-to","acc-svg-to","acc-crd-to"],"placeholder":"Select destination"}}}
-{"op":"add","path":"/elements/acc-chk-to","value":{"type":"SelectItem","props":{"value":"checking","label":"Checking (*4821)"}}}
-{"op":"add","path":"/elements/acc-svg-to","value":{"type":"SelectItem","props":{"value":"savings","label":"Savings (*9904)"}}}
-{"op":"add","path":"/elements/acc-crd-to","value":{"type":"SelectItem","props":{"value":"credit","label":"Credit Card (*3310)"}}}
+{"op":"add","path":"/elements/tabTransfer","value":{"type":"TabItem","props":{"value":"transfer","trigger":"7. Move Money","content":["transferCard"]}}}
+{"op":"add","path":"/elements/transferCard","value":{"type":"Card","props":{"variant":"card","gap":"m"},"children":["transferHeader","transferForm","transferAlert"]}}
+{"op":"add","path":"/elements/transferHeader","value":{"type":"CardHeader","props":{"title":"Move Money Between Accounts","subtitle":"Instant transfers with no fees"}}}
+{"op":"add","path":"/elements/transferForm","value":{"type":"Form","props":{"name":"transferForm","buttons":"transferButtons","fields":["fromAccountControl","toAccountControl","transferAmountControl"]}}}
 
-{"op":"add","path":"/elements/amount-control","value":{"type":"FormControl","props":{"label":"Amount ($)","input":"transfer-amount-input"}}}
-{"op":"add","path":"/elements/transfer-amount-input","value":{"type":"Input","props":{"name":"transferAmount","type":"number","placeholder":"0.00","value":{"$bindState":"/transfer/amount"}}}}
+{"op":"add","path":"/elements/fromAccountControl","value":{"type":"FormControl","props":{"label":"From Account","input":"fromAccountSelect"}}}
+{"op":"add","path":"/elements/fromAccountSelect","value":{"type":"Select","props":{"name":"fromAccount","items":["fromChecking","fromSavings"],"value":{"$bindState":"/transferFrom"}}}}
+{"op":"add","path":"/elements/fromChecking","value":{"type":"SelectItem","props":{"value":"checking","label":"Checking (••• 4821) - $4,250.80"}}}
+{"op":"add","path":"/elements/fromSavings","value":{"type":"SelectItem","props":{"value":"savings","label":"Savings (••• 9032) - $12,840.50"}}}
 
-{"op":"add","path":"/elements/transfer-submit","value":{"type":"Button","props":{"label":"Transfer Funds","variant":"primary"},"on":{"press":{"action":"setState","params":{"statePath":"/transfer/status","value":"Transfer complete!"}}}}}
+{"op":"add","path":"/elements/toAccountControl","value":{"type":"FormControl","props":{"label":"To Account","input":"toAccountSelect"}}}
+{"op":"add","path":"/elements/toAccountSelect","value":{"type":"Select","props":{"name":"toAccount","items":["toSavings","toChecking","toCredit"],"value":{"$bindState":"/transferTo"}}}}
+{"op":"add","path":"/elements/toSavings","value":{"type":"SelectItem","props":{"value":"savings","label":"Savings (••• 9032)"}}}
+{"op":"add","path":"/elements/toChecking","value":{"type":"SelectItem","props":{"value":"checking","label":"Checking (••• 4821)"}}}
+{"op":"add","path":"/elements/toCredit","value":{"type":"SelectItem","props":{"value":"credit","label":"Credit Card Payment (••• 1104)"}}}
 
-{"op":"add","path":"/state/transfer","value":{"from":"checking","to":"savings","amount":"","status":""}}
+{"op":"add","path":"/elements/transferAmountControl","value":{"type":"FormControl","props":{"label":"Amount ($)","input":"transferAmountInput"}}}
+{"op":"add","path":"/elements/transferAmountInput","value":{"type":"Input","props":{"name":"transferAmount","placeholder":"0.00","type":"number","value":{"$bindState":"/transferAmount"}}}}
 
-{"op":"add","path":"/elements/management-tabs","value":{"type":"Tabs","props":{"items":["tab-bills","tab-alerts"]}}}
+{"op":"add","path":"/elements/transferButtons","value":{"type":"Buttons","props":{"buttons":["submitTransferBtn"]}}}
+{"op":"add","path":"/elements/submitTransferBtn","value":{"type":"Button","props":{"label":"Confirm & Transfer","variant":"primary"},"on":{"press":{"action":"setState","params":{"statePath":"/transferSuccess","value":true}}}}}
 
-{"op":"add","path":"/elements/tab-bills","value":{"type":"TabItem","props":{"value":"bills","trigger":"Upcoming Bills","content":["bills-container"]}}}
-{"op":"add","path":"/elements/bills-container","value":{"type":"Card","props":{"variant":"card","gap":"m"},"children":["bills-header","bills-list"]}}
-{"op":"add","path":"/elements/bills-header","value":{"type":"CardHeader","props":{"title":"Bills Due Soon","subtitle":"Never miss a payment deadline"}}}
-{"op":"add","path":"/elements/bills-list","value":{"type":"Card","props":{"variant":"clear","gap":"s"},"repeat":{"statePath":"/bills","key":"id"},"children":["bill-item"]}}
-{"op":"add","path":"/elements/bill-item","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["bill-info","bill-action-container"]}}
-{"op":"add","path":"/elements/bill-info","value":{"type":"Card","props":{"variant":"clear","gap":"none"},"children":["bill-name","bill-due"]}}
-{"op":"add","path":"/elements/bill-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"default"}}}
-{"op":"add","path":"/elements/bill-due","value":{"type":"TextContent","props":{"text":{"$item":"dueDate"},"size":"small"}}}
-{"op":"add","path":"/elements/bill-action-container","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"center"},"children":["bill-amount","bill-pay-btn"]}}
-{"op":"add","path":"/elements/bill-amount","value":{"type":"Heading","props":{"text":{"$item":"amount"},"level":"h4"}}}
-{"op":"add","path":"/elements/bill-pay-btn","value":{"type":"Button","props":{"label":"Pay Now","variant":"secondary","size":"small"}}}
+{"op":"add","path":"/elements/transferAlert","value":{"type":"Alert","props":{"title":"Transfer Complete","description":"Funds have been successfully moved between your selected accounts.","variant":"success"},"visible":{"$state":"/transferSuccess"}}}
 
-{"op":"add","path":"/state/bills","value":[]}
-{"op":"add","path":"/state/bills/0","value":{"id":"b1","name":"Electric Utility","dueDate":"Due in 3 days (Oct 29)","amount":"$142.50"}}
-{"op":"add","path":"/state/bills/1","value":{"id":"b2","name":"Fiber Internet","dueDate":"Due in 6 days (Nov 1)","amount":"$79.99"}}
-{"op":"add","path":"/state/bills/2","value":{"id":"b3","name":"Auto Insurance","dueDate":"Due in 12 days (Nov 7)","amount":"$185.00"}}
+{"op":"add","path":"/state/transferFrom","value":"checking"}
+{"op":"add","path":"/state/transferTo","value":"savings"}
+{"op":"add","path":"/state/transferAmount","value":"250.00"}
+{"op":"add","path":"/state/transferSuccess","value":false}
 
-{"op":"add","path":"/elements/tab-alerts","value":{"type":"TabItem","props":{"value":"alerts","trigger":"Alert Settings","content":["alerts-container"]}}}
-{"op":"add","path":"/elements/alerts-container","value":{"type":"Card","props":{"variant":"card","gap":"m"},"children":["alerts-header","alerts-switches"]}}
-{"op":"add","path":"/elements/alerts-header","value":{"type":"CardHeader","props":{"title":"Manage Notification Alerts","subtitle":"Choose what events trigger instant notifications"}}}
-{"op":"add","path":"/elements/alerts-switches","value":{"type":"SwitchGroup","props":{"name":"alertTriggers","variant":"sunk","items":["alert-sw-1","alert-sw-2","alert-sw-3","alert-sw-4"]}}}
-{"op":"add","path":"/elements/alert-sw-1","value":{"type":"SwitchItem","props":{"name":"largePurchase","label":"Large Purchase Alerts","description":"Notify me of any transaction exceeding $200","defaultChecked":true}}}
-{"op":"add","path":"/elements/alert-sw-2","value":{"type":"SwitchItem","props":{"name":"lowBalance","label":"Low Balance Warnings","description":"Notify me when checking account falls below $500","defaultChecked":true}}}
-{"op":"add","path":"/elements/alert-sw-3","value":{"type":"SwitchItem","props":{"name":"billReminder","label":"Bill Due Reminders","description":"Send a reminder 3 days before a scheduled bill is due","defaultChecked":true}}}
-{"op":"add","path":"/elements/alert-sw-4","value":{"type":"SwitchItem","props":{"name":"intlCharges","label":"International Charges","description":"Notify me immediately if card is used abroad","defaultChecked":false}}}
+{"op":"add","path":"/elements/tabManage","value":{"type":"TabItem","props":{"value":"manage","trigger":"8 & 10. Credit & Alerts","content":["freezeCard","alertsCard"]}}}
+
+{"op":"add","path":"/elements/freezeCard","value":{"type":"Card","props":{"variant":"card","gap":"m"},"children":["freezeHeader","freezeSwitchGroup","freezeStatusNotice"]}}
+{"op":"add","path":"/elements/freezeHeader","value":{"type":"CardHeader","props":{"title":"8. Freeze Credit Line","subtitle":"Prevent new purchases and transactions immediately"}}}
+{"op":"add","path":"/elements/freezeSwitchGroup","value":{"type":"SwitchGroup","props":{"name":"creditFreezeGroup","items":["freezeItem"]}}}
+{"op":"add","path":"/elements/freezeItem","value":{"type":"SwitchItem","props":{"name":"creditFrozen","label":"Freeze Apex Credit Line (••• 1104)","description":"Toggle to temporarily lock card usage","defaultChecked":{"$bindState":"/creditLineFrozen"}}}}
+
+{"op":"add","path":"/elements/freezeStatusNotice","value":{"type":"Callout","props":{"variant":{"$cond":{"$state":"/creditLineFrozen"},"$then":"danger","$else":"success"},"title":{"$cond":{"$state":"/creditLineFrozen"},"$then":"Credit Line is FROZEN","$else":"Credit Line is Active"},"description":{"$cond":{"$state":"/creditLineFrozen"},"$then":"No new transactions will be approved until you unfreeze.","$else":"Card is enabled for all routine transactions and digital payments."}}}}
+
+{"op":"add","path":"/state/creditLineFrozen","value":false}
+
+{"op":"add","path":"/elements/alertsCard","value":{"type":"Card","props":{"variant":"card","gap":"m"},"children":["alertsHeader","alertsSwitches"]}}
+{"op":"add","path":"/elements/alertsHeader","value":{"type":"CardHeader","props":{"title":"10. Manage What Triggers Alerts","subtitle":"Choose notification triggers for security and budget tracking"}}}
+{"op":"add","path":"/elements/alertsSwitches","value":{"type":"SwitchGroup","props":{"name":"alertsConfig","items":["alertLargeTx","alertLowBal","alertInternational","alertGoalProgress"]}}}
+{"op":"add","path":"/elements/alertLargeTx","value":{"type":"SwitchItem","props":{"name":"largeTxAlert","label":"Transactions Over $100","description":"Notify me immediately for any charge exceeding $100","defaultChecked":true}}}
+{"op":"add","path":"/elements/alertLowBal","value":{"type":"SwitchItem","props":{"name":"lowBalAlert","label":"Low Balance Warning","description":"Alert when checking balance drops below $500","defaultChecked":true}}}
+{"op":"add","path":"/elements/alertInternational","value":{"type":"SwitchItem","props":{"name":"intlAlert","label":"International Charges","description":"Notify on foreign merchant card usage","defaultChecked":true}}}
+{"op":"add","path":"/elements/alertGoalProgress","value":{"type":"SwitchItem","props":{"name":"goalAlert","label":"Savings Milestone Updates","description":"Monthly progress digest for vacation savings target","defaultChecked":false}}}
+
+{"op":"add","path":"/elements/tabSupport","value":{"type":"TabItem","props":{"value":"support","trigger":"11. Dispute Transaction","content":["disputeCard"]}}}
+
+{"op":"add","path":"/elements/disputeCard","value":{"type":"Card","props":{"variant":"card","gap":"m"},"children":["disputeHeader","disputeForm","disputeAlert"]}}
+{"op":"add","path":"/elements/disputeHeader","value":{"type":"CardHeader","props":{"title":"Dispute a Transaction","subtitle":"Report unauthorized charges or billing errors for investigation"}}}
+{"op":"add","path":"/elements/disputeForm","value":{"type":"Form","props":{"name":"disputeForm","buttons":"disputeButtons","fields":["disputeSelectControl","disputeReasonControl","disputeNotesControl"]}}}
+
+{"op":"add","path":"/elements/disputeSelectControl","value":{"type":"FormControl","props":{"label":"Select Transaction to Dispute","input":"disputeTxSelect"}}}
+{"op":"add","path":"/elements/disputeTxSelect","value":{"type":"Select","props":{"name":"disputeTx","items":["dTx1","dTx2","dTx3"],"value":{"$bindState":"/disputedTx"}}}}
+{"op":"add","path":"/elements/dTx1","value":{"type":"SelectItem","props":{"value":"tx1","label":"Trader Joe's - $64.20 (May 22)"}}}
+{"op":"add","path":"/elements/dTx2","value":{"type":"SelectItem","props":{"value":"tx2","label":"Unknown Digital Merchant - $49.99 (May 19)"}}}
+{"op":"add","path":"/elements/dTx3","value":{"type":"SelectItem","props":{"value":"tx3","label":"Cafe Supremo - $12.75 (May 18)"}}}
+
+{"op":"add","path":"/elements/disputeReasonControl","value":{"type":"FormControl","props":{"label":"Reason for Dispute","input":"disputeReasonRadio"}}}
+{"op":"add","path":"/elements/disputeReasonRadio","value":{"type":"RadioGroup","props":{"name":"disputeReason","items":["reasonUnauth","reasonIncorrect","reasonNotReceived"],"defaultValue":"unauth"}}}
+{"op":"add","path":"/elements/reasonUnauth","value":{"type":"RadioItem","props":{"label":"Unauthorized Charge","description":"I did not make or authorize this transaction","value":"unauth"}}}
+{"op":"add","path":"/elements/reasonIncorrect","value":{"type":"RadioItem","props":{"label":"Incorrect Amount","description":"The charged amount differs from receipt","value":"incorrect"}}}
+{"op":"add","path":"/elements/reasonNotReceived","value":{"type":"RadioItem","props":{"label":"Goods/Services Not Received","description":"Paid for item but never delivered","value":"not_received"}}}
+
+{"op":"add","path":"/elements/disputeNotesControl","value":{"type":"FormControl","props":{"label":"Additional Details","input":"disputeNotesInput","hint":"Provide any helpful context or merchant communication records."}}}
+{"op":"add","path":"/elements/disputeNotesInput","value":{"type":"TextArea","props":{"name":"disputeNotes","placeholder":"Explain the situation...","rows":3}}}
+
+{"op":"add","path":"/elements/disputeButtons","value":{"type":"Buttons","props":{"buttons":["submitDisputeBtn"]}}}
+{"op":"add","path":"/elements/submitDisputeBtn","value":{"type":"Button","props":{"label":"Submit Dispute Claim","variant":"primary"},"on":{"press":{"action":"setState","params":{"statePath":"/disputeSubmitted","value":true}}}}}
+
+{"op":"add","path":"/elements/disputeAlert","value":{"type":"Alert","props":{"title":"Dispute Claim Filed","description":"Case #DP-94821 has been opened. Provisional credit will be issued within 48 hours while we investigate.","variant":"info"},"visible":{"$state":"/disputeSubmitted"}}}
+
+{"op":"add","path":"/state/disputedTx","value":"tx2"}
+{"op":"add","path":"/state/disputeSubmitted","value":false}

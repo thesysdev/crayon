@@ -11,9 +11,6 @@ import {
   completionMean,
   costPerPass,
   formatLabel,
-  repairFunnel,
-  repairShare,
-  repairedShare,
   tokens,
 } from "@/lib/benchmark-data";
 import { Chart, Mark, Row, slotClass, styles as s } from "./primitives";
@@ -28,14 +25,7 @@ export function CompletionByModel() {
   return (
     <Chart
       title="Completion rate by model"
-      sub="How often a screen came back with everything the brief asked for. Two models clearly favor OpenUI Lang, one clearly favors A2UI, and the other three sit inside the noise band."
       tight
-      note={
-        <>
-          {BRIEFS} briefs · {RUNS_PER_FORMAT.toLocaleString()} runs per format, 184 per
-          cell, one uniform condition for every model; gaps under ~3 points are noise.
-        </>
-      }
     >
       <div className={s.tableWrap}>
         <table className={`${s.table} ${s.tableWide}`}>
@@ -54,7 +44,8 @@ export function CompletionByModel() {
           </thead>
           <tbody>
             {MODELS.map((m) => {
-              const top = Math.max(...FORMAT_ORDER.map((id) => completionByModel[m.id][id]));
+              const vals = FORMAT_ORDER.map((id) => completionByModel[m.id][id]);
+              const best = Math.max(...vals);
               return (
                 <tr key={m.id}>
                   <th scope="row">
@@ -63,27 +54,29 @@ export function CompletionByModel() {
                       <span className={s.vendor}>{m.vendor}</span>
                     </span>
                   </th>
-                  {FORMAT_ORDER.map((id) => (
-                    <td key={id} className={slotClass(slotOf(id))}>
-                      {completionByModel[m.id][id] === top ? (
-                        <span className={s.best}>{completionByModel[m.id][id].toFixed(1)}</span>
-                      ) : (
-                        completionByModel[m.id][id].toFixed(1)
-                      )}
-                    </td>
-                  ))}
+                  {FORMAT_ORDER.map((id) => {
+                    const isBest = completionByModel[m.id][id] === best;
+                    return (
+                      <td key={id} className={slotClass(slotOf(id))}>
+                        {isBest ? (
+                          <span className={s.best}>{completionByModel[m.id][id].toFixed(1)}</span>
+                        ) : (
+                          completionByModel[m.id][id].toFixed(1)
+                        )}
+                      </td>
+                    );
+                  })}
                 </tr>
               );
             })}
             <tr className={s.avgRow}>
               <th scope="row">Average</th>
               {FORMAT_ORDER.map((id) => {
-                const bestMean = FORMAT_ORDER.reduce((a, b) =>
-                  completionMean(b) > completionMean(a) ? b : a,
-                );
+                const means = FORMAT_ORDER.map((f) => completionMean(f));
+                const best = Math.max(...means);
                 return (
                   <td key={id} className={slotClass(slotOf(id))}>
-                    {id === bestMean ? (
+                    {completionMean(id) === best ? (
                       <span className={s.best}>{completionMean(id).toFixed(1)}</span>
                     ) : (
                       completionMean(id).toFixed(1)
@@ -108,7 +101,7 @@ export function BlankScreens() {
     <Chart
       title="Fully blank screens"
       sub="Runs where the user saw nothing at all. A broken OpenUI line costs you that line; a broken JSON document costs you the screen."
-      note={<>Out of {RUNS_PER_FORMAT.toLocaleString()} runs per format. OpenUI&rsquo;s two are empty API responses; A2UI is counted conservatively (still blank even with its all-or-nothing rule removed); its shipped renderer blanks 56.</>}
+      note={<>Out of {RUNS_PER_FORMAT.toLocaleString()} runs per format. OpenUI&rsquo;s single blank is a zero-byte model response; A2UI&rsquo;s count is its shipped renderer dropping whole messages on any invalid component.</>}
     >
       <div className={s.rows}>
         {FORMAT_ORDER.map((id) => (
@@ -207,7 +200,7 @@ export function CostPerPass() {
         <>
           One pass = {BRIEFS}{" "} screens at list prices; the five models with public
           per-token pricing. Gap = dearest / cheapest. Per 1,000 screens on Opus:
-          $44 in OpenUI Lang against $127 in A2UI and $102 in json-render.
+          $49 in OpenUI Lang against $127 in A2UI and $106 in json-render.
         </>
       }
     >
@@ -261,63 +254,3 @@ export function CostPerPass() {
   );
 }
 
-/* 5 ─ repair funnel: rows plus the per-stage detail from the original --- */
-
-const STAGE_DETAIL: Record<string, string> = {
-  rules: "Drop orphans, snap near-miss enums, trim extra arguments. No added wait.",
-  llm: "The parser's exact error goes back to a small model that patches the output.",
-  fellThrough: "Mostly orphans and truncation.",
-};
-
-export function RepairFunnel() {
-  const fills = [
-    "var(--c1)",
-    "color-mix(in srgb, var(--c1) 45%, var(--surface))",
-    "color-mix(in srgb, var(--ink) 20%, var(--surface))",
-  ];
-  return (
-    <Chart
-      title="Repair outcomes for failed generations"
-      sub={`What it took to fix the ${repairFunnel.failed} generations that failed validation in a recent production window.`}
-      note="Most repairs are rule-based and add no LLM latency; the single-pass retry receives the parser's exact error."
-    >
-      <div className={s.segBar}>
-        {repairFunnel.stages.map((st, i) => (
-          <div
-            key={st.id}
-            className={s.segPart}
-            style={{ width: `${repairShare(st.count)}%`, background: fills[i] }}
-            title={`${st.label} · ${st.count} of ${repairFunnel.failed}`}
-          >
-            {repairShare(st.count) < 15 ? (
-              <span className={s.segPctOut}>{repairShare(st.count).toFixed(0)}%</span>
-            ) : null}
-            {repairShare(st.count) >= 15 ? (
-              <span className={`${s.segPct} ${s.onDark}`}>
-                {repairShare(st.count).toFixed(0)}%
-              </span>
-            ) : null}
-          </div>
-        ))}
-      </div>
-
-      <ul className={s.stageList}>
-        {repairFunnel.stages.map((st, i) => (
-          <li key={st.id}>
-            <span className={s.keySwatch} style={{ background: fills[i] }} aria-hidden />
-            <span>
-              <strong>
-                {st.count} screens {st.id === "rules" ? "repaired by rules" : st.id === "llm" ? "repaired by one LLM pass" : "fell through"}.
-              </strong>{" "}
-              {STAGE_DETAIL[st.id]}
-            </span>
-          </li>
-        ))}
-      </ul>
-
-      <p className={s.shipped}>
-        {repairedShare().toFixed(0)}% of would-be-broken screens shipped.
-      </p>
-    </Chart>
-  );
-}

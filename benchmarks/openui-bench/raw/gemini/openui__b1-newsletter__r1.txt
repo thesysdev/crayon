@@ -1,12 +1,30 @@
-root = Card([header, valueProp, signupForm])
-header = CardHeader("The Product Pulse", "Your weekly digest of product management & design insights")
-valueProp = TextContent("Every Tuesday, get 5 actionable insights on product strategy, user research, and UX design delivered straight to your inbox.", "large")
-signupForm = Form("newsletter-signup", formButtons, [emailControl, frequencyControl])
-emailControl = FormControl("Email Address", emailInput, "We respect your privacy. Unsubscribe at any time.")
-emailInput = Input("email", "you@example.com", "email")
-frequencyControl = FormControl("Digest Format", formatRadio)
-formatRadio = RadioGroup("format", [formatQuick, formatDeep], "quick")
-formatQuick = RadioItem("5-Minute Skim", "Key takeaways and top links", "quick")
-formatDeep = RadioItem("Deep Dive", "Full articles and teardowns", "deep")
-formButtons = Buttons([submitBtn])
-submitBtn = Button("Subscribe for Free", null, "primary")
+root = Card([header, valueProp, signupForm, securityCallout, followUp], "card", "column", "m", "center")
+
+header = CardHeader("The Product Pulse", "Your weekly dose of product strategy, teardowns, and growth tactics.")
+
+valueProp = TextContent("Join 25,000+ product managers and designers receiving actionable insights, curate framework templates, and industry teardowns every Tuesday morning.", "default")
+
+signupForm = Form("newsletter_signup", formActions, [emailControl, frequencyControl, topicControl])
+
+emailControl = FormControl("Work Email", emailInput, "We respect your privacy. Unsubscribe at any time.")
+emailInput = Input("email", "alex@company.com", "email")
+
+frequencyControl = FormControl("Delivery Format", formatSelect)
+formatSelect = Select("format", [optExecutive, optDeepDive], "Select issue style")
+optExecutive = SelectItem("executive", "Executive Summary (5-min read)")
+optDeepDive = SelectItem("deep_dive", "Deep Dive & Case Studies (12-min read)")
+
+topicControl = FormControl("Primary Interest", topicRadio)
+topicRadio = RadioGroup("interest", [topicGrowth, topicStrategy, topicDesign], "growth")
+topicGrowth = RadioItem("Product Growth & PLG", "Metrics, onboarding, and retention strategies", "growth")
+topicStrategy = RadioItem("Product Strategy", "Roadmapping, prioritization, and vision", "strategy")
+topicDesign = RadioItem("UX & Product Design", "Design systems, research, and usability", "design")
+
+formActions = Buttons([submitButton])
+submitButton = Button("Subscribe for Free", null, "primary", "normal", "large")
+
+securityCallout = TextCallout("info", "No Spam Guarantee", "Zero promotional spam. Only high-value content written by experienced product leaders.")
+
+followUp = FollowUpBlock([f1, f2])
+f1 = FollowUpItem("Read previous edition")
+f2 = FollowUpItem("View sample topics")

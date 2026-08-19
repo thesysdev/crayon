@@ -1,38 +1,41 @@
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","status-card","eta-card","timeline-card","problem-card"]}}
-{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Track Your Delivery","subtitle":"Order #TRK-8842910"}}}
-{"op":"add","path":"/elements/status-card","value":{"type":"Card","props":{"direction":"column","gap":"m","variant":"sunk"},"children":["status-heading","status-location","status-progress","status-detail"]}}
-{"op":"add","path":"/elements/status-heading","value":{"type":"Heading","props":{"text":"Current Location","level":"h3"}}}
-{"op":"add","path":"/elements/status-location","value":{"type":"Callout","props":{"variant":"info","title":{"$state":"/tracking/currentLocation"},"description":{"$state":"/tracking/currentStatus"}}}}
-{"op":"add","path":"/state/tracking","value":{"currentLocation":"Regional Distribution Center — Newark, NJ","currentStatus":"Out for delivery, on the truck now","progress":75,"eta":"Tuesday, June 18","etaWindow":"between 1:00 PM and 5:00 PM"}}
-{"op":"add","path":"/elements/status-progress","value":{"type":"Progress","props":{"value":{"$state":"/tracking/progress"},"label":"Package is 75% of the way to you"}}}
-{"op":"add","path":"/elements/status-detail","value":{"type":"TextContent","props":{"text":"Your driver is completing nearby stops and will reach your address soon.","size":"small"}}}
-{"op":"add","path":"/elements/eta-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["eta-heading","eta-date","eta-window"]}}
-{"op":"add","path":"/elements/eta-heading","value":{"type":"Heading","props":{"text":"Estimated Delivery","level":"h3"}}}
-{"op":"add","path":"/elements/eta-date","value":{"type":"TextContent","props":{"text":{"$template":"**${/tracking/eta}**"},"size":"large-heavy"}}}
-{"op":"add","path":"/elements/eta-window","value":{"type":"TextContent","props":{"text":{"$template":"Arriving ${/tracking/etaWindow}"},"size":"default"}}}
-{"op":"add","path":"/elements/timeline-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["timeline-heading","timeline-steps"]}}
-{"op":"add","path":"/elements/timeline-heading","value":{"type":"Heading","props":{"text":"Delivery Journey","level":"h3"}}}
-{"op":"add","path":"/elements/timeline-steps","value":{"type":"ListBlock","props":{"variant":"number"},"repeat":{"statePath":"/timeline","key":"id"},"children":["timeline-item"]}}
-{"op":"add","path":"/elements/timeline-item","value":{"type":"ListItem","props":{"title":{"$item":"title"},"subtitle":{"$item":"detail"}}}}
-{"op":"add","path":"/state/timeline","value":[]}
-{"op":"add","path":"/state/timeline/0","value":{"id":"1","title":"Order Placed","detail":"Sat, June 15 · 9:12 AM"}}
-{"op":"add","path":"/state/timeline/1","value":{"id":"2","title":"Shipped from Warehouse","detail":"Sun, June 16 · 6:40 PM — Columbus, OH"}}
-{"op":"add","path":"/state/timeline/2","value":{"id":"3","title":"Arrived at Distribution Center","detail":"Mon, June 17 · 11:05 PM — Newark, NJ"}}
-{"op":"add","path":"/state/timeline/3","value":{"id":"4","title":"Out for Delivery","detail":"Tue, June 18 · 7:30 AM — On the truck"}}
-{"op":"add","path":"/elements/problem-card","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["problem-heading","problem-desc","problem-dialog","problem-confirm"]}}
-{"op":"add","path":"/elements/problem-heading","value":{"type":"Heading","props":{"text":"Something wrong?","level":"h3"}}}
-{"op":"add","path":"/elements/problem-desc","value":{"type":"TextContent","props":{"text":"If your package is late, damaged, or lost, let us know and we'll help resolve it.","size":"small"}}}
-{"op":"add","path":"/elements/problem-dialog","value":{"type":"DialogBlock","props":{"triggerLabel":"Report a Problem","triggerVariant":"destructive","title":"Report a Delivery Problem","description":"Tell us what went wrong and we'll get back to you.","content":["problem-type","problem-details","problem-submit"]}}}
-{"op":"add","path":"/elements/problem-type","value":{"type":"FormControl","props":{"label":"Issue type","input":"problem-type-select"}}}
-{"op":"add","path":"/elements/problem-type-select","value":{"type":"Select","props":{"name":"issueType","placeholder":"Select an issue","items":["opt-late","opt-damaged","opt-lost","opt-wrong","opt-other"],"value":{"$bindState":"/report/type"}}}}
-{"op":"add","path":"/elements/opt-late","value":{"type":"SelectItem","props":{"value":"late","label":"Package is late"}}}
-{"op":"add","path":"/elements/opt-damaged","value":{"type":"SelectItem","props":{"value":"damaged","label":"Package arrived damaged"}}}
-{"op":"add","path":"/elements/opt-lost","value":{"type":"SelectItem","props":{"value":"lost","label":"Package is lost / missing"}}}
-{"op":"add","path":"/elements/opt-wrong","value":{"type":"SelectItem","props":{"value":"wrong","label":"Wrong item delivered"}}}
-{"op":"add","path":"/elements/opt-other","value":{"type":"SelectItem","props":{"value":"other","label":"Other"}}}
-{"op":"add","path":"/state/report","value":{"type":"","details":"","submitted":false}}
-{"op":"add","path":"/elements/problem-details","value":{"type":"FormControl","props":{"label":"Describe the problem","input":"problem-details-input","hint":"Include any helpful details for our support team."}}}
-{"op":"add","path":"/elements/problem-details-input","value":{"type":"TextArea","props":{"name":"details","placeholder":"What happened with your delivery?","rows":4,"value":{"$bindState":"/report/details"}}}}
-{"op":"add","path":"/elements/problem-submit","value":{"type":"Button","props":{"label":"Submit Report","variant":"primary","type":"destructive"},"on":{"press":{"action":"setState","params":{"statePath":"/report/submitted","value":true}}}}}
-{"op":"add","path":"/elements/problem-confirm","value":{"type":"Callout","props":{"variant":"success","title":"Report submitted","description":"Thanks — our support team will contact you within 24 hours."},"visible":{"$state":"/report/submitted"}}}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","statusCard","progressSection","etaCard","timeline","problemSection"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Track Your Delivery","subtitle":"Order #TRK-948213 · Wireless Headphones"}}}
+{"op":"add","path":"/elements/statusCard","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["statusBadge","currentLocation","locationDetail"]}}
+{"op":"add","path":"/elements/statusBadge","value":{"type":"Badge","props":{"text":{"$state":"/shipment/status"},"variant":"secondary"}}}
+{"op":"add","path":"/elements/currentLocation","value":{"type":"Heading","props":{"text":{"$template":"📍 Currently in ${/shipment/currentLocation}"},"level":"h3"}}}
+{"op":"add","path":"/elements/locationDetail","value":{"type":"TextContent","props":{"text":{"$template":"Last scanned at ${/shipment/lastScan}. Out for delivery from your local depot.","size":"default"}}}}
+{"op":"add","path":"/state/shipment","value":{"status":"In Transit","currentLocation":"Oakland Distribution Center, CA","lastScan":"Today, 8:42 AM","eta":"Wednesday, June 12","etaWindow":"12:00 PM – 4:00 PM","progress":75}}
+{"op":"add","path":"/elements/progressSection","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["progressLabel","progressBar"]}}
+{"op":"add","path":"/elements/progressLabel","value":{"type":"TextContent","props":{"text":"Delivery Progress","size":"small-heavy"}}}
+{"op":"add","path":"/elements/progressBar","value":{"type":"Progress","props":{"value":{"$state":"/shipment/progress"},"label":"75% complete — Out for delivery"}}}
+{"op":"add","path":"/elements/etaCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["etaHeading","etaDate","etaWindow"]}}
+{"op":"add","path":"/elements/etaHeading","value":{"type":"TextContent","props":{"text":"Estimated Delivery","size":"small-heavy"}}}
+{"op":"add","path":"/elements/etaDate","value":{"type":"Heading","props":{"text":{"$state":"/shipment/eta"},"level":"h2"}}}
+{"op":"add","path":"/elements/etaWindow","value":{"type":"TextContent","props":{"text":{"$template":"Arriving between ${/shipment/etaWindow}"},"size":"default"}}}
+{"op":"add","path":"/elements/timeline","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["timelineHeading","steps"]}}
+{"op":"add","path":"/elements/timelineHeading","value":{"type":"TextContent","props":{"text":"Shipment History","size":"large-heavy"}}}
+{"op":"add","path":"/elements/steps","value":{"type":"Steps","props":{"items":["step1","step2","step3","step4"]}}}
+{"op":"add","path":"/elements/step1","value":{"type":"StepsItem","props":{"title":"Order Placed","details":"Mon, June 10 · 9:15 AM"}}}
+{"op":"add","path":"/elements/step2","value":{"type":"StepsItem","props":{"title":"Shipped from Warehouse","details":"Mon, June 10 · 6:30 PM · Sacramento, CA"}}}
+{"op":"add","path":"/elements/step3","value":{"type":"StepsItem","props":{"title":"Arrived at Distribution Center","details":"Today · 8:42 AM · Oakland, CA"}}}
+{"op":"add","path":"/elements/step4","value":{"type":"StepsItem","props":{"title":"Out for Delivery","details":"Expected Wed, June 12 · 12:00–4:00 PM"}}}
+{"op":"add","path":"/elements/problemSection","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"m"},"children":["problemHeading","problemText","reportDialog"]}}
+{"op":"add","path":"/elements/problemHeading","value":{"type":"Heading","props":{"text":"Something wrong?","level":"h3"}}}
+{"op":"add","path":"/elements/problemText","value":{"type":"TextContent","props":{"text":"If your package is delayed, damaged, or missing, let us know and our support team will help.","size":"default"}}}
+{"op":"add","path":"/elements/reportDialog","value":{"type":"DialogBlock","props":{"triggerLabel":"Report a Problem","triggerVariant":"destructive","title":"Report a Delivery Problem","description":"Tell us what happened and we'll get back to you within 24 hours.","content":["problemForm"]}}}
+{"op":"add","path":"/elements/problemForm","value":{"type":"Form","props":{"name":"report-problem","buttons":"problemButtons","fields":["issueTypeField","descField","contactField"]}}}
+{"op":"add","path":"/elements/issueTypeField","value":{"type":"FormControl","props":{"label":"What's the issue?","input":"issueSelect"}}}
+{"op":"add","path":"/elements/issueSelect","value":{"type":"Select","props":{"name":"issue_type","placeholder":"Select an issue","items":["issueDelayed","issueDamaged","issueLost","issueWrong"],"value":{"$bindState":"/report/issueType"}}}}
+{"op":"add","path":"/elements/issueDelayed","value":{"type":"SelectItem","props":{"value":"delayed","label":"Package is delayed"}}}
+{"op":"add","path":"/elements/issueDamaged","value":{"type":"SelectItem","props":{"value":"damaged","label":"Package arrived damaged"}}}
+{"op":"add","path":"/elements/issueLost","value":{"type":"SelectItem","props":{"value":"lost","label":"Package is missing / lost"}}}
+{"op":"add","path":"/elements/issueWrong","value":{"type":"SelectItem","props":{"value":"wrong","label":"Wrong item received"}}}
+{"op":"add","path":"/state/report","value":{"issueType":"","description":"","contact":""}}
+{"op":"add","path":"/elements/descField","value":{"type":"FormControl","props":{"label":"Describe the problem","input":"descInput","hint":"Include any relevant details"}}}
+{"op":"add","path":"/elements/descInput","value":{"type":"TextArea","props":{"name":"description","placeholder":"e.g. The box was crushed and the item inside is broken.","rows":4,"value":{"$bindState":"/report/description"}}}}
+{"op":"add","path":"/elements/contactField","value":{"type":"FormControl","props":{"label":"Contact email","input":"contactInput"}}}
+{"op":"add","path":"/elements/contactInput","value":{"type":"Input","props":{"name":"contact","type":"email","placeholder":"you@example.com","value":{"$bindState":"/report/contact"}}}}
+{"op":"add","path":"/elements/problemButtons","value":{"type":"Buttons","props":{"buttons":["submitReport"]}}}
+{"op":"add","path":"/elements/submitReport","value":{"type":"Button","props":{"label":"Submit Report","variant":"primary","type":"destructive"},"on":{"press":{"action":"setState","params":{"statePath":"/report/submitted","value":true}}}}}
+{"op":"add","path":"/state/report/submitted","value":false}

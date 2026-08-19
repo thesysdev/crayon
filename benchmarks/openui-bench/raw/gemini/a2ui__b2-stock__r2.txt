@@ -1,288 +1,164 @@
-Here is a low-inventory monitoring and reordering screen for your store.
+Here is a complete UI for managing and responding to low-inventory warnings in your store.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "low-inventory-view",
-      "catalogId": "thesys.dev:c1-openui",
-      "theme": {
-        "primaryColor": "#D97706",
-        "agentDisplayName": "Inventory Manager"
-      }
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "low-inventory-view",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "column",
-          "gap": "l",
-          "children": [
-            "header-card",
-            "search-filter-card",
-            "items-table-card",
-            "threshold-card",
-            "followup-suggestions"
-          ]
-        },
-        {
-          "id": "header-card",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "s",
-          "children": [
-            "header-title",
-            "header-alert"
-          ]
-        },
-        {
-          "id": "header-title",
-          "component": "CardHeader",
-          "title": "Low Inventory Alerts",
-          "subtitle": "Monitor stock levels, search items below safety thresholds, and place instant supplier reorders."
-        },
-        {
-          "id": "header-alert",
-          "component": "Alert",
-          "variant": "warning",
-          "title": "4 Items Require Immediate Attention",
-          "description": "Stock levels for these items have dropped below the global safety threshold of 15 units."
-        },
-        {
-          "id": "search-filter-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "search-heading",
-            "search-input-control"
-          ]
-        },
-        {
-          "id": "search-heading",
-          "component": "Heading",
-          "level": "h4",
-          "text": "Search Inventory"
-        },
-        {
-          "id": "search-input-control",
-          "component": "FormControl",
-          "label": "Filter by Item Name or SKU",
-          "hint": "Type SKU or product title to quickly filter low stock list",
-          "input": "search-input"
-        },
-        {
-          "id": "search-input",
-          "component": "Input",
-          "name": "inventory_search",
-          "placeholder": "e.g., Organic Coffee Beans or SKU-8842...",
-          "type": "text"
-        },
-        {
-          "id": "items-table-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "table-heading",
-            "inventory-table"
-          ]
-        },
-        {
-          "id": "table-heading",
-          "component": "Heading",
-          "level": "h3",
-          "text": "Low Stock Items"
-        },
-        {
-          "id": "inventory-table",
-          "component": "Table",
-          "columns": [
-            "col-sku",
-            "col-item-name",
-            "col-category",
-            "col-units-remaining",
-            "col-status",
-            "col-reorder-action"
-          ]
-        },
-        {
-          "id": "col-sku",
-          "component": "Col",
-          "label": "SKU",
-          "type": "string",
-          "data": [
-            "SKU-1042",
-            "SKU-2098",
-            "SKU-3150",
-            "SKU-4811"
-          ]
-        },
-        {
-          "id": "col-item-name",
-          "component": "Col",
-          "label": "Item Description",
-          "type": "string",
-          "data": [
-            "Organic Dark Roast Whole Beans (1kg)",
-            "Oat Milk Barista Edition (1L)",
-            "Eco-Friendly Takeaway Cups 12oz",
-            "Matcha Green Tea Powder (250g)"
-          ]
-        },
-        {
-          "id": "col-category",
-          "component": "Col",
-          "label": "Category",
-          "type": "string",
-          "data": [
-            "Beverages",
-            "Dairy & Alternatives",
-            "Packaging Supplies",
-            "Beverages"
-          ]
-        },
-        {
-          "id": "col-units-remaining",
-          "component": "Col",
-          "label": "Remaining Units",
-          "type": "number",
-          "data": [
-            3,
-            5,
-            8,
-            12
-          ]
-        },
-        {
-          "id": "col-status",
-          "component": "Col",
-          "label": "Stock Status",
-          "type": "string",
-          "data": [
-            "Critical (3 units)",
-            "Critical (5 units)",
-            "Low (8 units)",
-            "Low (12 units)"
-          ]
-        },
-        {
-          "id": "col-reorder-action",
-          "component": "Col",
-          "label": "Reorder Action",
-          "type": "action",
-          "data": [
-            "Reorder +50 Units",
-            "Reorder +100 Units",
-            "Reorder +500 Units",
-            "Reorder +30 Units"
-          ]
-        },
-        {
-          "id": "threshold-card",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "threshold-header",
-            "threshold-info-text",
-            "threshold-slider-control",
-            "threshold-save-buttons"
-          ]
-        },
-        {
-          "id": "threshold-header",
-          "component": "Heading",
-          "level": "h3",
-          "text": "Warning Threshold Settings"
-        },
-        {
-          "id": "threshold-info-text",
-          "component": "TextCallout",
-          "variant": "info",
-          "title": "Current Warning Trigger: 15 Units",
-          "description": "Items are automatically flagged on this page when their total available stock falls below this quantity limit."
-        },
-        {
-          "id": "threshold-slider-control",
-          "component": "FormControl",
-          "label": "Global Low-Stock Alert Threshold",
-          "hint": "Adjust slider to set a new threshold value (between 5 and 50 units).",
-          "input": "threshold-slider"
-        },
-        {
-          "id": "threshold-slider",
-          "component": "Slider",
-          "name": "low_stock_threshold",
-          "variant": "discrete",
-          "min": 5,
-          "max": 50,
-          "step": 5,
-          "label": "Alert Level (Units)",
-          "defaultValue": [
-            15
-          ]
-        },
-        {
-          "id": "threshold-save-buttons",
-          "component": "Buttons",
-          "direction": "row",
-          "buttons": [
-            "btn-save-threshold",
-            "btn-reset-threshold"
-          ]
-        },
-        {
-          "id": "btn-save-threshold",
-          "component": "Button",
-          "label": "Update Warning Threshold",
-          "variant": "primary",
-          "size": "small"
-        },
-        {
-          "id": "btn-reset-threshold",
-          "component": "Button",
-          "label": "Reset to Default (15)",
-          "variant": "tertiary",
-          "size": "small"
-        },
-        {
-          "id": "followup-suggestions",
-          "component": "FollowUpBlock",
-          "items": [
-            "followup-1",
-            "followup-2",
-            "followup-3"
-          ]
-        },
-        {
-          "id": "followup-1",
-          "component": "FollowUpItem",
-          "text": "Reorder all critical items automatically"
-        },
-        {
-          "id": "followup-2",
-          "component": "FollowUpItem",
-          "text": "Export low inventory report to CSV"
-        },
-        {
-          "id": "followup-3",
-          "component": "FollowUpItem",
-          "text": "View auto-reorder history for this month"
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "thresholdAlert",
+          "searchControl",
+          "inventoryTable",
+          "bulkActions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Low Inventory Alerts",
+        "subtitle": "Monitor critical stock levels and trigger immediate supplier reorders"
+      },
+      {
+        "id": "thresholdAlert",
+        "component": "Alert",
+        "title": "Warning Threshold Active",
+        "description": "Items are flagged here automatically when stock falls at or below 15 units.",
+        "variant": "warning"
+      },
+      {
+        "id": "searchControl",
+        "component": "FormControl",
+        "label": "Search Inventory",
+        "input": "searchInput",
+        "hint": "Search low stock items by SKU, product name, or category"
+      },
+      {
+        "id": "searchInput",
+        "component": "Input",
+        "name": "search_query",
+        "placeholder": "e.g. Organic Coffee Beans or SKU-884"
+      },
+      {
+        "id": "inventoryTable",
+        "component": "Table",
+        "columns": [
+          "colSku",
+          "colItem",
+          "colStock",
+          "colStatus",
+          "colThreshold",
+          "colReorder"
+        ]
+      },
+      {
+        "id": "colSku",
+        "component": "Col",
+        "label": "SKU",
+        "data": [
+          "SKU-1092",
+          "SKU-4401",
+          "SKU-8823",
+          "SKU-3119",
+          "SKU-5021"
+        ]
+      },
+      {
+        "id": "colItem",
+        "component": "Col",
+        "label": "Item Name",
+        "data": [
+          "Organic Whole Bean Coffee (1kg)",
+          "Oat Milk Original (1L)",
+          "Paper Cups 12oz (Pack of 100)",
+          "Artisan Green Tea Boxes",
+          "Raw Sugar Packets (Box of 500)"
+        ]
+      },
+      {
+        "id": "colStock",
+        "component": "Col",
+        "label": "Remaining Units",
+        "data": [
+          "3 units",
+          "5 units",
+          "8 units",
+          "12 units",
+          "14 units"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Critical",
+          "Critical",
+          "Warning",
+          "Warning",
+          "Warning"
+        ]
+      },
+      {
+        "id": "colThreshold",
+        "component": "Col",
+        "label": "Alert Threshold",
+        "data": [
+          "15 units",
+          "15 units",
+          "15 units",
+          "15 units",
+          "15 units"
+        ]
+      },
+      {
+        "id": "colReorder",
+        "component": "Col",
+        "label": "Reorder Action",
+        "type": "action",
+        "data": [
+          "Reorder Now",
+          "Reorder Now",
+          "Reorder Now",
+          "Reorder Now",
+          "Reorder Now"
+        ]
+      },
+      {
+        "id": "bulkActions",
+        "component": "Buttons",
+        "buttons": [
+          "reorderAllBtn",
+          "exportBtn"
+        ]
+      },
+      {
+        "id": "reorderAllBtn",
+        "component": "Button",
+        "label": "Reorder All Low Items",
+        "variant": "primary"
+      },
+      {
+        "id": "exportBtn",
+        "component": "Button",
+        "label": "Export Report",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
 </a2ui-json>

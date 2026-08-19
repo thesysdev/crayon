@@ -1,327 +1,212 @@
-I have created a comprehensive Monthly Sales Dashboard designed specifically for founders. It highlights your key revenue metrics, visualizes 6-month sales trends, details your top 3 performing products, tracks conversion health, and provides a quick option to export your numbers.
+I have created a monthly sales dashboard tailored for a founder, including your key metrics, historical trends, top product performance, conversion rates, and an option to export the data.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "founder-sales-dashboard",
-      "catalogId": "thesys.dev:c1-openui"
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "founder-sales-dashboard",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "column",
-          "gap": "l",
-          "children": [
-            "header-card",
-            "kpi-tabs",
-            "trend-card",
-            "products-card",
-            "followups"
-          ]
-        },
-        {
-          "id": "header-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "row",
-          "justify": "between",
-          "align": "center",
-          "children": [
-            "header-info",
-            "header-actions"
-          ]
-        },
-        {
-          "id": "header-info",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "column",
-          "gap": "xs",
-          "children": [
-            "main-title",
-            "sub-title"
-          ]
-        },
-        {
-          "id": "main-title",
-          "component": "Heading",
-          "level": "h2",
-          "text": "Monthly Sales Overview"
-        },
-        {
-          "id": "sub-title",
-          "component": "TextContent",
-          "text": "October 2023 Performance & Analytics",
-          "size": "small"
-        },
-        {
-          "id": "header-actions",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "s",
-          "children": [
-            "download-btn"
-          ]
-        },
-        {
-          "id": "download-btn",
-          "component": "Button",
-          "label": "Download CSV Report",
-          "variant": "secondary",
-          "size": "small"
-        },
-        {
-          "id": "kpi-tabs",
-          "component": "Tabs",
-          "items": [
-            "tab-revenue",
-            "tab-conversion"
-          ]
-        },
-        {
-          "id": "tab-revenue",
-          "component": "TabItem",
-          "value": "revenue",
-          "trigger": "Revenue Overview",
-          "content": [
-            "revenue-card"
-          ]
-        },
-        {
-          "id": "revenue-card",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "s",
-          "children": [
-            "rev-header",
-            "rev-amount",
-            "rev-progress"
-          ]
-        },
-        {
-          "id": "rev-header",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "justify": "between",
-          "align": "center",
-          "children": [
-            "rev-label",
-            "rev-badge"
-          ]
-        },
-        {
-          "id": "rev-label",
-          "component": "Label",
-          "text": "Revenue This Month (MTD)"
-        },
-        {
-          "id": "rev-badge",
-          "component": "Badge",
-          "text": "+14.2% vs last month",
-          "variant": "default"
-        },
-        {
-          "id": "rev-amount",
-          "component": "Heading",
-          "level": "h1",
-          "text": "$128,450.00"
-        },
-        {
-          "id": "rev-progress",
-          "component": "Progress",
-          "value": 85,
-          "label": "85% of monthly target ($150,000)"
-        },
-        {
-          "id": "tab-conversion",
-          "component": "TabItem",
-          "value": "conversion",
-          "trigger": "Conversion Health",
-          "content": [
-            "conversion-card"
-          ]
-        },
-        {
-          "id": "conversion-card",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "s",
-          "children": [
-            "conv-header",
-            "conv-amount",
-            "conv-progress"
-          ]
-        },
-        {
-          "id": "conv-header",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "justify": "between",
-          "align": "center",
-          "children": [
-            "conv-label",
-            "conv-badge"
-          ]
-        },
-        {
-          "id": "conv-label",
-          "component": "Label",
-          "text": "Overall Store Conversion Rate"
-        },
-        {
-          "id": "conv-badge",
-          "component": "Badge",
-          "text": "+0.6% vs benchmark",
-          "variant": "default"
-        },
-        {
-          "id": "conv-amount",
-          "component": "Heading",
-          "level": "h1",
-          "text": "3.84%"
-        },
-        {
-          "id": "conv-progress",
-          "component": "Progress",
-          "value": 76,
-          "label": "Target: 5.0% (3.84% achieved)"
-        },
-        {
-          "id": "trend-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "trend-header",
-            "trend-chart"
-          ]
-        },
-        {
-          "id": "trend-header",
-          "component": "CardHeader",
-          "title": "Revenue Movement (Last 6 Months)",
-          "subtitle": "Monthly historical revenue in USD"
-        },
-        {
-          "id": "trend-chart",
-          "component": "AreaChart",
-          "labels": [
-            "May",
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sep",
-            "Oct"
-          ],
-          "series": [
-            "revenue-series"
-          ],
-          "variant": "natural",
-          "xLabel": "Month",
-          "yLabel": "Revenue ($)"
-        },
-        {
-          "id": "revenue-series",
-          "component": "Series",
-          "category": "Revenue",
-          "values": [
-            92000,
-            98500,
-            105000,
-            112000,
-            112500,
-            128450
-          ]
-        },
-        {
-          "id": "products-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "products-header",
-            "products-list"
-          ]
-        },
-        {
-          "id": "products-header",
-          "component": "CardHeader",
-          "title": "Top 3 Best-Selling Products",
-          "subtitle": "Ranked by total units sold this month"
-        },
-        {
-          "id": "products-list",
-          "component": "ListBlock",
-          "variant": "number",
-          "items": [
-            "prod-item-1",
-            "prod-item-2",
-            "prod-item-3"
-          ]
-        },
-        {
-          "id": "prod-item-1",
-          "component": "ListItem",
-          "title": "Pro Tier Subscription (Annual)",
-          "subtitle": "Revenue generated: $64,500.00",
-          "actionLabel": "1,290 Units"
-        },
-        {
-          "id": "prod-item-2",
-          "component": "ListItem",
-          "title": "Starter Growth Bundle",
-          "subtitle": "Revenue generated: $33,600.00",
-          "actionLabel": "840 Units"
-        },
-        {
-          "id": "prod-item-3",
-          "component": "ListItem",
-          "title": "Enterprise Add-on Module",
-          "subtitle": "Revenue generated: $20,350.00",
-          "actionLabel": "370 Units"
-        },
-        {
-          "id": "followups",
-          "component": "FollowUpBlock",
-          "items": [
-            "fu-1",
-            "fu-2",
-            "fu-3"
-          ]
-        },
-        {
-          "id": "fu-1",
-          "component": "FollowUpItem",
-          "text": "Send full sales summary via email"
-        },
-        {
-          "id": "fu-2",
-          "component": "FollowUpItem",
-          "text": "View product breakdown details"
-        },
-        {
-          "id": "fu-3",
-          "component": "FollowUpItem",
-          "text": "Compare conversion rate against Q2"
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "gap": "l",
+        "children": [
+          "header",
+          "kpiRow",
+          "chartHeader",
+          "trendChart",
+          "topProductsHeader",
+          "productsTable",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Monthly Sales Check",
+        "subtitle": "October Performance & Growth Insights"
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "revenueCard",
+          "conversionCard"
+        ]
+      },
+      {
+        "id": "revenueCard",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "xs",
+        "children": [
+          "revLabel",
+          "revValue",
+          "revBadge"
+        ]
+      },
+      {
+        "id": "revLabel",
+        "component": "TextContent",
+        "text": "Revenue This Month",
+        "size": "small"
+      },
+      {
+        "id": "revValue",
+        "component": "Heading",
+        "level": "h2",
+        "text": "$84,250"
+      },
+      {
+        "id": "revBadge",
+        "component": "Badge",
+        "text": "+12.4% vs last month",
+        "variant": "default"
+      },
+      {
+        "id": "conversionCard",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "xs",
+        "children": [
+          "convLabel",
+          "convValue",
+          "convProgress"
+        ]
+      },
+      {
+        "id": "convLabel",
+        "component": "TextContent",
+        "text": "Conversion Percentage",
+        "size": "small"
+      },
+      {
+        "id": "convValue",
+        "component": "Heading",
+        "level": "h2",
+        "text": "3.85%"
+      },
+      {
+        "id": "convProgress",
+        "component": "Progress",
+        "value": 77,
+        "label": "Target: 5.0%"
+      },
+      {
+        "id": "chartHeader",
+        "component": "Heading",
+        "level": "h4",
+        "text": "6-Month Revenue Trend"
+      },
+      {
+        "id": "trendChart",
+        "component": "LineChart",
+        "labels": [
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct"
+        ],
+        "series": [
+          "revenueSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Month",
+        "yLabel": "Revenue ($)"
+      },
+      {
+        "id": "revenueSeries",
+        "component": "Series",
+        "category": "Revenue",
+        "values": [
+          52000,
+          58500,
+          63000,
+          71200,
+          74900,
+          84250
+        ]
+      },
+      {
+        "id": "topProductsHeader",
+        "component": "Heading",
+        "level": "h4",
+        "text": "Top 3 Best-Selling Products"
+      },
+      {
+        "id": "productsTable",
+        "component": "Table",
+        "columns": [
+          "productCol",
+          "unitsCol",
+          "productRevCol"
+        ]
+      },
+      {
+        "id": "productCol",
+        "component": "Col",
+        "label": "Product Name",
+        "data": [
+          "Pro Subscription (Annual)",
+          "Enterprise Add-on Module",
+          "Starter Kit Bundle"
+        ]
+      },
+      {
+        "id": "unitsCol",
+        "component": "Col",
+        "label": "Units Sold",
+        "data": [
+          "412",
+          "185",
+          "128"
+        ]
+      },
+      {
+        "id": "productRevCol",
+        "component": "Col",
+        "label": "Total Value",
+        "data": [
+          "$41,200",
+          "$27,750",
+          "$15,300"
+        ]
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": [
+          "downloadBtn",
+          "shareBtn"
+        ]
+      },
+      {
+        "id": "downloadBtn",
+        "component": "Button",
+        "label": "Download Data (CSV)",
+        "variant": "primary"
+      },
+      {
+        "id": "shareBtn",
+        "component": "Button",
+        "label": "Share Report",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
 </a2ui-json>

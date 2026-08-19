@@ -1,49 +1,321 @@
-Here's your conference landing screen covering all six items:
+Here's your conference landing screen — hero details, countdown, two-day agenda, speakers, ticket tiers, and a registration form all in one view:
 
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"conf-landing","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#6C47FF","agentDisplayName":"TechSummit 2026"}}}
-</a2ui-json>
-<a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"conf-landing","components":[
-{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["hero","countdown","agendaCard","speakersCard","ticketsCard","registerCard"]},
-{"id":"hero","component":"Card","variant":"card","direction":"column","gap":"s","children":["heroTitle","heroMeta"]},
-{"id":"heroTitle","component":"Heading","text":"TechSummit 2026: The Future of AI","level":"h1"},
-{"id":"heroMeta","component":"TextContent","text":"📅 **March 15–16, 2026** · 📍 **Moscone Center, San Francisco, CA**","size":"large"},
-{"id":"countdown","component":"Callout","variant":"info","title":"64 days remaining!","description":"TechSummit 2026 kicks off on March 15, 2026. Early bird tickets end Feb 1 — register now to save."},
-{"id":"agendaCard","component":"Card","variant":"card","direction":"column","gap":"m","children":["agendaHeader","agendaTable"]},
-{"id":"agendaHeader","component":"CardHeader","title":"Agenda — Day 1 (Mar 15)","subtitle":"All times in Pacific Time"},
-{"id":"agendaTable","component":"Table","columns":["agTime","agSession","agSpeaker"]},
-{"id":"agTime","component":"Col","label":"Time","data":["9:00 AM","10:00 AM","11:30 AM","1:00 PM","2:00 PM","4:00 PM"]},
-{"id":"agSession","component":"Col","label":"Session","data":["Opening Keynote: AI in 2030","LLMs at Scale","Coffee & Networking","Lunch","Workshop: Building Agents","Panel: Ethics & Regulation"]},
-{"id":"agSpeaker","component":"Col","label":"Speaker","data":["Dr. Amara Chen","Raj Patel","—","—","Sofia Müller","All speakers"]},
-{"id":"speakersCard","component":"Card","variant":"card","direction":"column","gap":"m","children":["speakersHeader","speakersList"]},
-{"id":"speakersHeader","component":"CardHeader","title":"Speakers"},
-{"id":"speakersList","component":"ListBlock","variant":"number","items":["sp1","sp2","sp3","sp4"]},
-{"id":"sp1","component":"ListItem","title":"Dr. Amara Chen","subtitle":"Chief AI Officer at NovaLabs — pioneer in multimodal foundation models."},
-{"id":"sp2","component":"ListItem","title":"Raj Patel","subtitle":"VP of Engineering at ScaleWorks — led infrastructure powering 1B+ daily inference requests."},
-{"id":"sp3","component":"ListItem","title":"Sofia Müller","subtitle":"Head of Applied AI at Orbital — builder of production agent systems across 40 enterprises."},
-{"id":"sp4","component":"ListItem","title":"Prof. David Okafor","subtitle":"Stanford AI Lab — leading voice on AI policy, safety, and global governance."},
-{"id":"ticketsCard","component":"Card","variant":"card","direction":"column","gap":"m","children":["ticketsHeader","ticketsTable"]},
-{"id":"ticketsHeader","component":"CardHeader","title":"Tickets","subtitle":"Prices include both days, meals, and session recordings"},
-{"id":"ticketsTable","component":"Table","columns":["tTier","tPrice","tPerks"]},
-{"id":"tTier","component":"Col","label":"Tier","data":["Early Bird","General","VIP"]},
-{"id":"tPrice","component":"Col","label":"Price","data":["$499","$799","$1,499"]},
-{"id":"tPerks","component":"Col","label":"Includes","data":["All talks + workshops","All talks + workshops + recordings","Front-row seating, speaker dinner, 1:1 mentoring"]},
-{"id":"registerCard","component":"Card","variant":"card","direction":"column","gap":"m","children":["registerHeader","registerForm"]},
-{"id":"registerHeader","component":"CardHeader","title":"Register Now","subtitle":"Secure your spot — Early Bird ends February 1"},
-{"id":"registerForm","component":"Form","name":"register","buttons":"regButtons","fields":["fcName","fcEmail","fcTier"]},
-{"id":"fcName","component":"FormControl","label":"Full Name","input":"inName"},
-{"id":"inName","component":"Input","name":"name","placeholder":"Jane Doe","rules":[{"required":true}]},
-{"id":"fcEmail","component":"FormControl","label":"Email","input":"inEmail","hint":"Confirmation and tickets will be sent here."},
-{"id":"inEmail","component":"Input","name":"email","type":"email","placeholder":"jane@example.com","rules":[{"required":true}]},
-{"id":"fcTier","component":"FormControl","label":"Ticket Tier","input":"inTier"},
-{"id":"inTier","component":"Select","name":"tier","items":["ti1","ti2","ti3"],"value":"early"},
-{"id":"ti1","component":"SelectItem","value":"early","label":"Early Bird — $499"},
-{"id":"ti2","component":"SelectItem","value":"general","label":"General — $799"},
-{"id":"ti3","component":"SelectItem","value":"vip","label":"VIP — $1,499"},
-{"id":"regButtons","component":"Buttons","buttons":["btnRegister"]},
-{"id":"btnRegister","component":"Button","label":"Register","variant":"primary","size":"large","action":[{"event":"submit","form":"register"}]}
-]}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#6D28D9",
+      "agentDisplayName": "FutureStack Summit"
+    }
+  }
+}
 </a2ui-json>
 
-This single screen includes all six items: **(1)** event name, date & venue in the hero card, **(2)** a timed agenda table, **(3)** four speakers with one-line bios, **(4)** three ticket tiers with prices and perks, **(5)** a registration form with name, email, and tier selection, and **(6)** a countdown callout showing 64 days remaining until March 15, 2026.
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "countdown",
+          "sep1",
+          "agendaH1",
+          "agendaTable1",
+          "agendaH2",
+          "agendaTable2",
+          "sep2",
+          "speakersHeading",
+          "speakersList",
+          "sep3",
+          "ticketsHeading",
+          "ticketsTable",
+          "sep4",
+          "registerHeading",
+          "regForm"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "FutureStack Summit 2026",
+        "subtitle": "June 16–17, 2026 · Moscone Center, San Francisco, CA"
+      },
+      {
+        "id": "countdown",
+        "component": "Alert",
+        "variant": "info",
+        "title": "172 days to go",
+        "description": "Doors open Tuesday, June 16, 2026 at 9:00 AM PT. Early bird pricing ends March 1."
+      },
+      {
+        "id": "sep1",
+        "component": "Separator"
+      },
+      {
+        "id": "agendaH1",
+        "component": "Heading",
+        "text": "Agenda — Day 1 (Tue, June 16)",
+        "level": "h2"
+      },
+      {
+        "id": "agendaTable1",
+        "component": "Table",
+        "columns": ["timeCol1", "sessionCol1"]
+      },
+      {
+        "id": "timeCol1",
+        "component": "Col",
+        "label": "Time",
+        "data": [
+          "9:00 AM",
+          "10:00 AM",
+          "11:30 AM",
+          "1:00 PM",
+          "2:30 PM",
+          "4:00 PM",
+          "5:30 PM"
+        ]
+      },
+      {
+        "id": "sessionCol1",
+        "component": "Col",
+        "label": "Session",
+        "data": [
+          "Registration & Coffee",
+          "Opening Keynote: The Next Decade of AI Infrastructure",
+          "Scaling React Server Components",
+          "Lunch & Expo Hall",
+          "Workshop: Hands-on with Edge Databases",
+          "Panel: Shipping Design Systems at Scale",
+          "Closing Remarks & Networking"
+        ]
+      },
+      {
+        "id": "agendaH2",
+        "component": "Heading",
+        "text": "Agenda — Day 2 (Wed, June 17)",
+        "level": "h2"
+      },
+      {
+        "id": "agendaTable2",
+        "component": "Table",
+        "columns": ["timeCol2", "sessionCol2"]
+      },
+      {
+        "id": "timeCol2",
+        "component": "Col",
+        "label": "Time",
+        "data": [
+          "9:30 AM",
+          "11:00 AM",
+          "1:00 PM",
+          "2:00 PM",
+          "3:30 PM"
+        ]
+      },
+      {
+        "id": "sessionCol2",
+        "component": "Col",
+        "label": "Session",
+        "data": [
+          "Keynote: Designing for Agents",
+          "Deep Dive: Real-time Collaboration Protocols",
+          "Lunch",
+          "Lightning Talks",
+          "Closing Keynote & Community Awards"
+        ]
+      },
+      {
+        "id": "sep2",
+        "component": "Separator"
+      },
+      {
+        "id": "speakersHeading",
+        "component": "Heading",
+        "text": "Speakers",
+        "level": "h2"
+      },
+      {
+        "id": "speakersList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": ["sp1", "sp2", "sp3", "sp4"]
+      },
+      {
+        "id": "sp1",
+        "component": "ListItem",
+        "title": "Dr. Amara Chen",
+        "subtitle": "Chief Scientist at Nimbus AI — pioneers large-scale inference systems."
+      },
+      {
+        "id": "sp2",
+        "component": "ListItem",
+        "title": "Jake Ortiz",
+        "subtitle": "Staff Engineer at Vercel — leads the React Server Components effort."
+      },
+      {
+        "id": "sp3",
+        "component": "ListItem",
+        "title": "Priya Nair",
+        "subtitle": "Founder of Loopwork — builds real-time collaboration tools used by 2M developers."
+      },
+      {
+        "id": "sp4",
+        "component": "ListItem",
+        "title": "Sam Whitfield",
+        "subtitle": "Design Systems Lead at Hexagon — scaled a design system across 40+ product teams."
+      },
+      {
+        "id": "sep3",
+        "component": "Separator"
+      },
+      {
+        "id": "ticketsHeading",
+        "component": "Heading",
+        "text": "Tickets",
+        "level": "h2"
+      },
+      {
+        "id": "ticketsTable",
+        "component": "Table",
+        "columns": ["tierCol", "priceCol", "includesCol"]
+      },
+      {
+        "id": "tierCol",
+        "component": "Col",
+        "label": "Tier",
+        "data": ["Early Bird", "General", "VIP", "Student"]
+      },
+      {
+        "id": "priceCol",
+        "component": "Col",
+        "label": "Price",
+        "data": ["$299", "$449", "$899", "$99"]
+      },
+      {
+        "id": "includesCol",
+        "component": "Col",
+        "label": "Includes",
+        "data": [
+          "Both days, until March 1",
+          "Both days + expo hall",
+          "Front-row seating, speaker dinner, swag kit",
+          "Both days, valid student ID required"
+        ]
+      },
+      {
+        "id": "sep4",
+        "component": "Separator"
+      },
+      {
+        "id": "registerHeading",
+        "component": "Heading",
+        "text": "Register",
+        "level": "h2"
+      },
+      {
+        "id": "regForm",
+        "component": "Form",
+        "name": "conference-registration",
+        "buttons": "regButtons",
+        "fields": ["nameField", "emailField", "tierField"]
+      },
+      {
+        "id": "nameField",
+        "component": "FormControl",
+        "label": "Full name",
+        "input": "nameInput"
+      },
+      {
+        "id": "nameInput",
+        "component": "Input",
+        "name": "name",
+        "placeholder": "Ada Lovelace"
+      },
+      {
+        "id": "emailField",
+        "component": "FormControl",
+        "label": "Email",
+        "input": "emailInput",
+        "hint": "Your ticket and receipt will be sent here"
+      },
+      {
+        "id": "emailInput",
+        "component": "Input",
+        "name": "email",
+        "type": "email",
+        "placeholder": "ada@example.com"
+      },
+      {
+        "id": "tierField",
+        "component": "FormControl",
+        "label": "Ticket tier",
+        "input": "tierSelect"
+      },
+      {
+        "id": "tierSelect",
+        "component": "Select",
+        "name": "tier",
+        "placeholder": "Choose a tier",
+        "items": ["tierEarly", "tierGeneral", "tierVip", "tierStudent"]
+      },
+      {
+        "id": "tierEarly",
+        "component": "SelectItem",
+        "value": "early-bird",
+        "label": "Early Bird — $299"
+      },
+      {
+        "id": "tierGeneral",
+        "component": "SelectItem",
+        "value": "general",
+        "label": "General — $449"
+      },
+      {
+        "id": "tierVip",
+        "component": "SelectItem",
+        "value": "vip",
+        "label": "VIP — $899"
+      },
+      {
+        "id": "tierStudent",
+        "component": "SelectItem",
+        "value": "student",
+        "label": "Student — $99"
+      },
+      {
+        "id": "regButtons",
+        "component": "Buttons",
+        "buttons": ["regBtn"]
+      },
+      {
+        "id": "regBtn",
+        "component": "Button",
+        "label": "Register",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+All six items are covered:
+
+1. **Event details** — "FutureStack Summit 2026," June 16–17, 2026 at Moscone Center in the header.
+2. **Agenda** — two timed tables covering both days.
+3. **Speakers** — a numbered list, each with a one-line bio.
+4. **Tickets** — four tiers with prices and what's included.
+5. **Registration** — a form with name, email, and a ticket tier selector.
+6. **Countdown** — an info banner showing 172 days remaining until doors open.
+
+Want me to swap in real event details, add a venue map/image, or split the agenda into tabs instead of stacked tables?

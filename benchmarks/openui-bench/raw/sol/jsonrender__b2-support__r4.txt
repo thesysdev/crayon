@@ -1,53 +1,55 @@
 {"op":"add","path":"/root","value":"morning-view"}
-{"op":"add","path":"/elements/morning-view","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["header","metrics","toolbar","ticket-list"]}}
-{"op":"add","path":"/elements/header","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"center","justify":"between"},"children":["header-copy","new-ticket-dialog"]}}
-{"op":"add","path":"/elements/header-copy","value":{"type":"CardHeader","props":{"title":"Good morning, Support","subtitle":"Here’s the latest snapshot of your queue."},"children":[]}}
-{"op":"add","path":"/elements/new-ticket-dialog","value":{"type":"DialogBlock","props":{"triggerLabel":"Open new ticket","title":"Open a new support ticket","description":"Capture the request and add it to the support queue.","content":["new-ticket-form"],"triggerVariant":"default"},"children":["new-ticket-form"]}}
-{"op":"add","path":"/elements/new-ticket-form","value":{"type":"Form","props":{"name":"new-ticket","fields":["requester-control","subject-control","priority-control","details-control"],"buttons":"new-ticket-buttons"},"children":["requester-control","subject-control","priority-control","details-control","new-ticket-buttons"]}}
-{"op":"add","path":"/elements/requester-control","value":{"type":"FormControl","props":{"label":"Requester email","input":"requester-input"},"children":["requester-input"]}}
-{"op":"add","path":"/elements/requester-input","value":{"type":"Input","props":{"name":"requesterEmail","type":"email","placeholder":"customer@company.com","value":{"$bindState":"/newTicket/requesterEmail"},"rules":[{"required":true}]},"children":[]}}
-{"op":"add","path":"/state/newTicket/requesterEmail","value":""}
-{"op":"add","path":"/elements/subject-control","value":{"type":"FormControl","props":{"label":"Subject","input":"subject-input"},"children":["subject-input"]}}
-{"op":"add","path":"/elements/subject-input","value":{"type":"Input","props":{"name":"subject","type":"text","placeholder":"Briefly describe the issue","value":{"$bindState":"/newTicket/subject"},"rules":[{"required":true}]},"children":[]}}
-{"op":"add","path":"/state/newTicket/subject","value":""}
-{"op":"add","path":"/elements/priority-control","value":{"type":"FormControl","props":{"label":"Priority","input":"priority-select"},"children":["priority-select"]}}
-{"op":"add","path":"/elements/priority-select","value":{"type":"Select","props":{"name":"priority","items":["priority-low","priority-medium","priority-high"],"value":{"$bindState":"/newTicket/priority"},"size":"medium"},"children":["priority-low","priority-medium","priority-high"]}}
-{"op":"add","path":"/state/newTicket/priority","value":"Medium"}
-{"op":"add","path":"/elements/priority-low","value":{"type":"SelectItem","props":{"value":"Low","label":"Low"},"children":[]}}
-{"op":"add","path":"/elements/priority-medium","value":{"type":"SelectItem","props":{"value":"Medium","label":"Medium"},"children":[]}}
-{"op":"add","path":"/elements/priority-high","value":{"type":"SelectItem","props":{"value":"High","label":"High"},"children":[]}}
-{"op":"add","path":"/elements/details-control","value":{"type":"FormControl","props":{"label":"Details","input":"details-input","hint":"Include impact, troubleshooting completed, and any relevant context."},"children":["details-input"]}}
-{"op":"add","path":"/elements/details-input","value":{"type":"TextArea","props":{"name":"details","placeholder":"Describe the customer’s issue…","rows":5,"value":{"$bindState":"/newTicket/details"},"rules":[{"required":true}]},"children":[]}}
-{"op":"add","path":"/state/newTicket/details","value":""}
-{"op":"add","path":"/elements/new-ticket-buttons","value":{"type":"Buttons","props":{"buttons":["create-ticket-button"],"direction":"row"},"children":["create-ticket-button"]}}
-{"op":"add","path":"/elements/create-ticket-button","value":{"type":"Button","props":{"label":"Create ticket","variant":"primary","size":"medium"},"on":{"press":{"action":"pushState","params":{"statePath":"/tickets","value":{"id":"$id","number":"NEW","subject":{"$state":"/newTicket/subject"},"requester":{"$state":"/newTicket/requesterEmail"},"priority":{"$state":"/newTicket/priority"},"status":"Open","received":"Just now","details":{"$state":"/newTicket/details"}},"clearStatePath":"/newTicket/subject"}}},"children":[]}}
-{"op":"add","path":"/elements/metrics","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"stretch"},"children":["open-metric","response-metric"]}}
-{"op":"add","path":"/elements/open-metric","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["open-label","open-value","open-context"]}}
+{"op":"add","path":"/elements/morning-view","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["header","metrics","ticket-toolbar","all-tickets","high-tickets","new-ticket-dialog"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Support morning view","subtitle":"Queue health and the latest customer requests"}}}
+{"op":"add","path":"/elements/metrics","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","wrap":true},"children":["open-metric","response-metric"]}}
+{"op":"add","path":"/elements/open-metric","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["open-label","open-value"]}}
 {"op":"add","path":"/elements/open-label","value":{"type":"TextContent","props":{"text":"Open tickets","size":"small-heavy"},"children":[]}}
 {"op":"add","path":"/elements/open-value","value":{"type":"Heading","props":{"text":{"$state":"/metrics/openTickets"},"level":"h2"},"children":[]}}
-{"op":"add","path":"/state/metrics/openTickets","value":"42"}
-{"op":"add","path":"/elements/open-context","value":{"type":"TextContent","props":{"text":"8 awaiting first response","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/response-metric","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["response-label","response-value","response-context"]}}
+{"op":"add","path":"/state/metrics","value":{"openTickets":"42","averageFirstResponse":"18 min"}}
+{"op":"add","path":"/elements/response-metric","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["response-label","response-value"]}}
 {"op":"add","path":"/elements/response-label","value":{"type":"TextContent","props":{"text":"Average first-response time","size":"small-heavy"},"children":[]}}
 {"op":"add","path":"/elements/response-value","value":{"type":"Heading","props":{"text":{"$state":"/metrics/averageFirstResponse"},"level":"h2"},"children":[]}}
-{"op":"add","path":"/state/metrics/averageFirstResponse","value":"18 min"}
-{"op":"add","path":"/elements/response-context","value":{"type":"TextContent","props":{"text":"Within the 30-minute team target","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/toolbar","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"center","justify":"between"},"children":["recent-heading","priority-filter"]}}
-{"op":"add","path":"/elements/recent-heading","value":{"type":"Heading","props":{"text":"Five most recent tickets","level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/priority-filter","value":{"type":"SwitchGroup","props":{"name":"ticket-priority-filter","items":["high-priority-switch"],"variant":"sunk","value":{"$bindState":"/filters/priority"}},"children":["high-priority-switch"]}}
-{"op":"add","path":"/state/filters/priority","value":[]}
-{"op":"add","path":"/elements/high-priority-switch","value":{"type":"SwitchItem","props":{"label":"High priority only","description":"Narrow the queue to urgent requests","name":"high","defaultChecked":false},"children":[]}}
-{"op":"add","path":"/elements/ticket-list","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"repeat":{"statePath":"/tickets","key":"id"},"children":["ticket-row"]}}
-{"op":"add","path":"/state/tickets","value":[]}
-{"op":"add","path":"/state/tickets/0","value":{"id":"t-1048","number":"#1048","subject":"Checkout payments failing for EU customers","requester":"Maya Chen · Northstar Retail","priority":"High","status":"Open","received":"8:42 AM","details":"Customers receive a payment authorization error at checkout."}}
-{"op":"add","path":"/state/tickets/1","value":{"id":"t-1047","number":"#1047","subject":"Unable to export quarterly usage report","requester":"Jon Bell · Acme Analytics","priority":"Medium","status":"Open","received":"8:31 AM","details":"CSV export remains queued and never completes."}}
-{"op":"add","path":"/state/tickets/2","value":{"id":"t-1046","number":"#1046","subject":"SSO login loop after identity provider update","requester":"Priya Shah · Lumon Health","priority":"High","status":"Open","received":"8:17 AM","details":"Employees return to the sign-in screen after authentication."}}
-{"op":"add","path":"/state/tickets/3","value":{"id":"t-1045","number":"#1045","subject":"Add two administrators to workspace","requester":"Owen Brooks · Fieldstone","priority":"Low","status":"Open","received":"7:58 AM","details":"Requester needs help assigning administrator permissions."}}
-{"op":"add","path":"/state/tickets/4","value":{"id":"t-1044","number":"#1044","subject":"API requests returning intermittent 503 errors","requester":"Elena García · Orbit Systems","priority":"High","status":"Open","received":"7:44 AM","details":"Production integration reports elevated service errors."}}
-{"op":"add","path":"/elements/ticket-row","value":{"type":"Card","props":{"variant":"card","direction":"row","gap":"m","align":"center","justify":"between"},"children":["ticket-main","ticket-meta"]}}
-{"op":"add","path":"/elements/ticket-main","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["ticket-title","ticket-requester"]}}
-{"op":"add","path":"/elements/ticket-title","value":{"type":"TextContent","props":{"text":{"$template":"${number} · ${subject}"},"size":"large-heavy"},"children":[]}}
-{"op":"add","path":"/elements/ticket-requester","value":{"type":"TextContent","props":{"text":{"$item":"requester"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/ticket-meta","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center","justify":"end"},"children":["ticket-time","ticket-priority"]}}
-{"op":"add","path":"/elements/ticket-time","value":{"type":"TextContent","props":{"text":{"$item":"received"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/ticket-priority","value":{"type":"Tag","props":{"text":{"$item":"priority"},"size":"md","variant":{"$cond":{"$item":"priority","eq":"High"},"$then":"danger","$else":"neutral"}},"children":[]}}
+{"op":"add","path":"/elements/ticket-toolbar","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["recent-title","priority-controls"]}}
+{"op":"add","path":"/elements/recent-title","value":{"type":"Heading","props":{"text":"Five most recent tickets","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/priority-controls","value":{"type":"Buttons","props":{"buttons":["show-all","show-high"],"direction":"row"},"children":[]}}
+{"op":"add","path":"/elements/show-all","value":{"type":"Button","props":{"label":"All priorities","variant":{"$cond":{"$state":"/highPriorityOnly","eq":false},"$then":"primary","$else":"secondary"},"size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/highPriorityOnly","value":false}}},"children":[]}}
+{"op":"add","path":"/state/highPriorityOnly","value":false}
+{"op":"add","path":"/elements/show-high","value":{"type":"Button","props":{"label":"High priority only","variant":{"$cond":{"$state":"/highPriorityOnly","eq":true},"$then":"primary","$else":"secondary"},"size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/highPriorityOnly","value":true}}},"children":[]}}
+{"op":"add","path":"/elements/all-tickets","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"visible":{"$state":"/highPriorityOnly","eq":false},"repeat":{"statePath":"/recentTickets","key":"id"},"children":["ticket-row"]}}
+{"op":"add","path":"/elements/ticket-row","value":{"type":"Card","props":{"variant":"card","direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["ticket-copy","ticket-priority"]}}
+{"op":"add","path":"/elements/ticket-copy","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["ticket-subject","ticket-meta"]}}
+{"op":"add","path":"/elements/ticket-subject","value":{"type":"TextContent","props":{"text":{"$item":"subject"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/ticket-meta","value":{"type":"TextContent","props":{"text":{"$template":"${customer} · ${received} · ${status}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/ticket-priority","value":{"type":"Tag","props":{"text":{"$item":"priority"},"variant":{"$item":"priorityVariant"},"size":"md"},"children":[]}}
+{"op":"add","path":"/state/recentTickets","value":[]}
+{"op":"add","path":"/state/recentTickets/0","value":{"id":"T-1842","subject":"Checkout fails after applying annual-plan coupon","customer":"Northstar Labs","received":"8:42 AM","status":"Open","priority":"High","priorityVariant":"danger"}}
+{"op":"add","path":"/state/recentTickets/1","value":{"id":"T-1841","subject":"Need help adding a second billing administrator","customer":"Cedar & Finch","received":"8:29 AM","status":"Open","priority":"Medium","priorityVariant":"warning"}}
+{"op":"add","path":"/state/recentTickets/2","value":{"id":"T-1840","subject":"Production API requests returning intermittent 503s","customer":"Orbit Commerce","received":"8:17 AM","status":"Investigating","priority":"High","priorityVariant":"danger"}}
+{"op":"add","path":"/state/recentTickets/3","value":{"id":"T-1839","subject":"Request to update company name on invoices","customer":"Aster Health","received":"7:54 AM","status":"Open","priority":"Low","priorityVariant":"neutral"}}
+{"op":"add","path":"/state/recentTickets/4","value":{"id":"T-1838","subject":"SSO users are redirected to an expired login page","customer":"Brightline Systems","received":"7:31 AM","status":"Open","priority":"High","priorityVariant":"danger"}}
+{"op":"add","path":"/elements/high-tickets","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"visible":{"$state":"/highPriorityOnly","eq":true},"repeat":{"statePath":"/highPriorityTickets","key":"id"},"children":["high-ticket-row"]}}
+{"op":"add","path":"/elements/high-ticket-row","value":{"type":"Card","props":{"variant":"card","direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["high-ticket-copy","high-ticket-priority"]}}
+{"op":"add","path":"/elements/high-ticket-copy","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["high-ticket-subject","high-ticket-meta"]}}
+{"op":"add","path":"/elements/high-ticket-subject","value":{"type":"TextContent","props":{"text":{"$item":"subject"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/high-ticket-meta","value":{"type":"TextContent","props":{"text":{"$template":"${customer} · ${received} · ${status}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/high-ticket-priority","value":{"type":"Tag","props":{"text":{"$item":"priority"},"variant":"danger","size":"md"},"children":[]}}
+{"op":"add","path":"/state/highPriorityTickets","value":[]}
+{"op":"add","path":"/state/highPriorityTickets/0","value":{"id":"T-1842","subject":"Checkout fails after applying annual-plan coupon","customer":"Northstar Labs","received":"8:42 AM","status":"Open","priority":"High"}}
+{"op":"add","path":"/state/highPriorityTickets/1","value":{"id":"T-1840","subject":"Production API requests returning intermittent 503s","customer":"Orbit Commerce","received":"8:17 AM","status":"Investigating","priority":"High"}}
+{"op":"add","path":"/state/highPriorityTickets/2","value":{"id":"T-1838","subject":"SSO users are redirected to an expired login page","customer":"Brightline Systems","received":"7:31 AM","status":"Open","priority":"High"}}
+{"op":"add","path":"/elements/new-ticket-dialog","value":{"type":"DialogBlock","props":{"triggerLabel":"Open new ticket","title":"Open a new support ticket","description":"Capture the customer request and assign an initial priority.","content":["new-ticket-form"],"triggerVariant":"default"},"children":[]}}
+{"op":"add","path":"/elements/new-ticket-form","value":{"type":"Form","props":{"name":"new-ticket","buttons":"new-ticket-buttons","fields":["customer-field","subject-field","description-field","priority-field"]},"children":[]}}
+{"op":"add","path":"/elements/customer-field","value":{"type":"FormControl","props":{"label":"Customer","input":"customer-input"},"children":[]}}
+{"op":"add","path":"/elements/customer-input","value":{"type":"Input","props":{"name":"customer","placeholder":"Company or customer name","type":"text","value":{"$bindState":"/newTicket/customer"}},"children":[]}}
+{"op":"add","path":"/state/newTicket","value":{"customer":"","subject":"","description":"","priority":"medium"}}
+{"op":"add","path":"/elements/subject-field","value":{"type":"FormControl","props":{"label":"Subject","input":"subject-input"},"children":[]}}
+{"op":"add","path":"/elements/subject-input","value":{"type":"Input","props":{"name":"subject","placeholder":"Brief summary of the issue","type":"text","value":{"$bindState":"/newTicket/subject"}},"children":[]}}
+{"op":"add","path":"/elements/description-field","value":{"type":"FormControl","props":{"label":"Description","input":"description-input"},"children":[]}}
+{"op":"add","path":"/elements/description-input","value":{"type":"TextArea","props":{"name":"description","placeholder":"Add relevant details, impact, and troubleshooting notes","rows":5,"value":{"$bindState":"/newTicket/description"}},"children":[]}}
+{"op":"add","path":"/elements/priority-field","value":{"type":"FormControl","props":{"label":"Priority","input":"priority-select"},"children":[]}}
+{"op":"add","path":"/elements/priority-select","value":{"type":"Select","props":{"name":"priority","items":["priority-low","priority-medium","priority-high"],"value":{"$bindState":"/newTicket/priority"},"size":"medium"},"children":[]}}
+{"op":"add","path":"/elements/priority-low","value":{"type":"SelectItem","props":{"value":"low","label":"Low"},"children":[]}}
+{"op":"add","path":"/elements/priority-medium","value":{"type":"SelectItem","props":{"value":"medium","label":"Medium"},"children":[]}}
+{"op":"add","path":"/elements/priority-high","value":{"type":"SelectItem","props":{"value":"high","label":"High"},"children":[]}}
+{"op":"add","path":"/elements/new-ticket-buttons","value":{"type":"Buttons","props":{"buttons":["create-ticket-button"],"direction":"row"},"children":[]}}
+{"op":"add","path":"/elements/create-ticket-button","value":{"type":"Button","props":{"label":"Create ticket","variant":"primary","size":"medium"},"on":{"press":{"action":"validateForm","params":{"statePath":"/newTicketValidation"}}},"children":[]}}

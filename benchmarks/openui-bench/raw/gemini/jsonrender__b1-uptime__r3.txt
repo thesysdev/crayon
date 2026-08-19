@@ -1,40 +1,33 @@
-{"op":"add","path":"/root","value":"main-container"}
-{"op":"add","path":"/elements/main-container","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["header","system-status-alert","metrics-grid","incident-section","services-section","followup-suggestions"]}}
-{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Platform Operations & Status","subtitle":"Real-time status updates and uptime performance for platform APIs and services"}}}
-{"op":"add","path":"/elements/system-status-alert","value":{"type":"Alert","props":{"title":"All Systems Operational","description":"All core API gateways and microservices are operating normally with standard latency profile.","variant":"success"}}}
-{"op":"add","path":"/elements/metrics-grid","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between"},"children":["uptime-card","incident-stat-card","latency-card"]}}
-{"op":"add","path":"/elements/uptime-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["uptime-label","uptime-value","uptime-progress"]}}
-{"op":"add","path":"/elements/uptime-label","value":{"type":"TextContent","props":{"text":"**API Uptime (Current Month)**","size":"small"}}}
-{"op":"add","path":"/elements/uptime-value","value":{"type":"Heading","props":{"text":{"$state":"/metrics/uptime"},"level":"h2"}}}
-{"op":"add","path":"/elements/uptime-progress","value":{"type":"Progress","props":{"value":99.94,"label":"Target: 99.90%"}}}
-{"op":"add","path":"/state/metrics","value":{"uptime":"99.94%","target":"99.90%","recentIncidentsCount":1,"avgLatency":"42ms"}}
-{"op":"add","path":"/elements/incident-stat-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["incident-stat-label","incident-stat-value","incident-stat-tag"]}}
-{"op":"add","path":"/elements/incident-stat-label","value":{"type":"TextContent","props":{"text":"**Incidents (This Month)**","size":"small"}}}
-{"op":"add","path":"/elements/incident-stat-value","value":{"type":"Heading","props":{"text":"1 Resolved","level":"h2"}}}
-{"op":"add","path":"/elements/incident-stat-tag","value":{"type":"Tag","props":{"text":"MTTR: 24 mins","variant":"info","size":"sm"}}}
-{"op":"add","path":"/elements/latency-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["latency-label","latency-value","latency-subtext"]}}
-{"op":"add","path":"/elements/latency-label","value":{"type":"TextContent","props":{"text":"**Avg API Latency**","size":"small"}}}
-{"op":"add","path":"/elements/latency-value","value":{"type":"Heading","props":{"text":"42 ms","level":"h2"}}}
-{"op":"add","path":"/elements/latency-subtext","value":{"type":"TextContent","props":{"text":"-4ms vs last week","size":"small"}}}
-{"op":"add","path":"/elements/incident-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["incident-header","incident-badge","incident-details-card"]}}
-{"op":"add","path":"/elements/incident-header","value":{"type":"Heading","props":{"text":"Most Recent Incident","level":"h3"}}}
-{"op":"add","path":"/elements/incident-badge","value":{"type":"Badge","props":{"text":"Resolved","variant":"secondary"}}}
-{"op":"add","path":"/elements/incident-details-card","value":{"type":"TextCallout","props":{"variant":"warning","title":{"$state":"/recentIncident/title"},"description":{"$template":"**Resolved at:** ${/recentIncident/resolvedAt} (${/recentIncident/duration})\n\n**Summary:** ${/recentIncident/summary}\n\n**Root Cause:** ${/recentIncident/rootCause}"}}}}
-{"op":"add","path":"/state/recentIncident","value":{"id":"inc-4092","title":"INC-4092: High Error Rate on REST API Gateway","resolvedAt":"Oct 24, 2023 - 14:32 UTC","duration":"24 minutes downtime","summary":"An elevated error rate (5xx responses) was detected on primary API endpoints serving North America traffic. Traffic was automatically rerouted to backup clusters while the bad configuration deployment was rolled back.","rootCause":"Misconfigured rate-limiting rules pushed during automated pipeline deployment."}}
-{"op":"add","path":"/elements/services-section","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"children":["services-heading","services-list"]}}
-{"op":"add","path":"/elements/services-heading","value":{"type":"Heading","props":{"text":"Core API Services Breakdown","level":"h4"}}}
-{"op":"add","path":"/elements/services-list","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"repeat":{"statePath":"/services","key":"id"},"children":["service-row"]}}
-{"op":"add","path":"/elements/service-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between"},"children":["service-info","service-tag"]}}
-{"op":"add","path":"/elements/service-info","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["service-name","service-uptime"]}}
-{"op":"add","path":"/elements/service-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"large-heavy"}}}
-{"op":"add","path":"/elements/service-uptime","value":{"type":"TextContent","props":{"text":{"$template":"30-day Uptime: ${uptime} | Latency: ${latency}"},"size":"small"}}}
-{"op":"add","path":"/elements/service-tag","value":{"type":"Tag","props":{"text":{"$item":"status"},"variant":"success","size":"md"}}}
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","banner-summary","uptime-card","incident-card","services-section","history-section"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Platform System Status","subtitle":"Real-time status updates and uptime reporting for platform services."}}}
+{"op":"add","path":"/elements/banner-summary","value":{"type":"Alert","props":{"title":"All Core Systems Operational","description":"Core infrastructure and APIs are currently performing within normal parameters.","variant":"success"}}}
+{"op":"add","path":"/elements/uptime-card","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"m"},"children":["uptime-header","uptime-progress","uptime-details"]}}
+{"op":"add","path":"/elements/uptime-header","value":{"type":"CardHeader","props":{"title":"API Monthly Uptime","subtitle":"Core REST & GraphQL API performance for current month"}}}
+{"op":"add","path":"/elements/uptime-progress","value":{"type":"Progress","props":{"value":99.94,"label":"99.94% Uptime (Target: 99.90%)"}}}
+{"op":"add","path":"/elements/uptime-details","value":{"type":"Table","props":{"columns":["colMetric","colValue"]}}}
+{"op":"add","path":"/elements/colMetric","value":{"type":"Col","props":{"label":"Metric","data":["Target SLA","Current Month Uptime","Total Outage Time","Avg Response Time"]}}}
+{"op":"add","path":"/elements/colValue","value":{"type":"Col","props":{"label":"Details","data":["99.90%","99.94%","26 minutes","142 ms"]}}}
+{"op":"add","path":"/elements/incident-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["incident-header","incident-tag","incident-desc","incident-details"]}}
+{"op":"add","path":"/elements/incident-header","value":{"type":"CardHeader","props":{"title":"Most Recent Incident","subtitle":"INC-8492 — Core API Gateway Elevated Latency"}}}
+{"op":"add","path":"/elements/incident-tag","value":{"type":"Tag","props":{"text":"Resolved","variant":"success","size":"md"}}}
+{"op":"add","path":"/elements/incident-desc","value":{"type":"TextCallout","props":{"variant":"warning","title":"Incident Summary","description":"On October 24, 2023, the primary API gateway experienced elevated 5xx error rates and increased latency due to a misconfigured connection pool during a routine scaling event. Traffic was re-routed to backup nodes while the configuration was rolled back."}}}
+{"op":"add","path":"/elements/incident-details","value":{"type":"Table","props":{"columns":["colDetailKey","colDetailVal"]}}}
+{"op":"add","path":"/elements/colDetailKey","value":{"type":"Col","props":{"label":"Field","data":["Started","Resolved","Impact","Duration"]}}}
+{"op":"add","path":"/elements/colDetailVal","value":{"type":"Col","props":{"label":"Timestamp / Impact","data":["Oct 24, 2023 at 14:12 UTC","Oct 24, 2023 at 14:38 UTC","API Gateway latency + 3.2% 500 Errors","26 minutes"]}}}
+{"op":"add","path":"/elements/services-section","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["services-title","services-list"]}}
+{"op":"add","path":"/elements/services-title","value":{"type":"Heading","props":{"text":"Service Health Checklist","level":"h3"}}}
+{"op":"add","path":"/elements/services-list","value":{"type":"Card","props":{"direction":"column","gap":"s"},"repeat":{"statePath":"/services","key":"id"},"children":["service-row"]}}
+{"op":"add","path":"/elements/service-row","value":{"type":"ListItem","props":{"title":{"$item":"name"},"subtitle":{"$template":"Status: ${status} | Latency: ${latency}"},"actionLabel":"Operational"}}}
 {"op":"add","path":"/state/services","value":[]}
-{"op":"add","path":"/state/services/0","value":{"id":"srv-1","name":"Authentication & OAuth API","status":"Operational","uptime":"99.98%","latency":"28ms"}}
-{"op":"add","path":"/state/services/1","value":{"id":"srv-2","name":"Core REST Gateway API","status":"Operational","uptime":"99.91%","latency":"45ms"}}
-{"op":"add","path":"/state/services/2","value":{"id":"srv-3","name":"GraphQL Data Layer API","status":"Operational","uptime":"99.96%","latency":"52ms"}}
-{"op":"add","path":"/state/services/3","value":{"id":"srv-4","name":"Webhooks & Events Engine","status":"Operational","uptime":"99.95%","latency":"38ms"}}
-{"op":"add","path":"/elements/followup-suggestions","value":{"type":"FollowUpBlock","props":{"items":["item-1","item-2","item-3"]}}}
-{"op":"add","path":"/elements/item-1","value":{"type":"FollowUpItem","props":{"text":"View past 90 days incident history"}}}
-{"op":"add","path":"/elements/item-2","value":{"type":"FollowUpItem","props":{"text":"Subscribe to real-time status updates"}}}
-{"op":"add","path":"/elements/item-3","value":{"type":"FollowUpItem","props":{"text":"View post-mortem report for INC-4092"}}}
+{"op":"add","path":"/state/services/0","value":{"id":"1","name":"Core REST API","status":"Operational","latency":"120ms"}}
+{"op":"add","path":"/state/services/1","value":{"id":"2","name":"GraphQL Gateway","status":"Operational","latency":"145ms"}}
+{"op":"add","path":"/state/services/2","value":{"id":"3","name":"Authentication Service","status":"Operational","latency":"85ms"}}
+{"op":"add","path":"/state/services/3","value":{"id":"4","name":"Webhooks Infrastructure","status":"Operational","latency":"210ms"}}
+{"op":"add","path":"/elements/history-section","value":{"type":"Accordion","props":{"items":["past-incidents-item"]}}}
+{"op":"add","path":"/elements/past-incidents-item","value":{"type":"AccordionItem","props":{"value":"past-incidents","trigger":"Past Incident History (Last 30 Days)","content":["history-text","history-table"]}}}
+{"op":"add","path":"/elements/history-text","value":{"type":"TextContent","props":{"text":"Below is a record of previous platform maintenance and past incidents."}}}
+{"op":"add landscape","path":"/elements/history-table","value":{"type":"Table","props":{"columns":["colHistDate","colHistTitle","colHistStatus"]}}}
+{"op":"add","path":"/elements/colHistDate","value":{"type":"Col","props":{"label":"Date","data":["Oct 24, 2023","Oct 12, 2023","Sep 28, 2023"]}}}
+{"op":"add","path":"/elements/colHistTitle","value":{"type":"Col","props":{"label":"Event","data":["API Gateway Elevated Latency","Scheduled Database Maintenance","Redis Cluster Failover Test"]}}}
+{"op":"add","path":"/elements/colHistStatus","value":{"type":"Col","props":{"label":"Status","data":["Resolved","Completed","Completed"]}}}

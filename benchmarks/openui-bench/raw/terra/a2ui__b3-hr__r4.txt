@@ -1,7 +1,444 @@
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"hr-hiring-overview","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#2563EB","agentDisplayName":"HR Hiring Overview"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#2563EB",
+      "agentDisplayName": "Hiring Overview"
+    }
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"hr-hiring-overview","components":[{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["header","metrics-row","main-content","charts-row"]},{"id":"header","component":"Card","variant":"clear","direction":"row","align":"center","justify":"between","children":["header-copy","new-role-button"]},{"id":"header-copy","component":"Card","variant":"clear","direction":"column","gap":"xs","children":["page-title","page-subtitle"]},{"id":"page-title","component":"Heading","text":"Hiring overview","level":"h1"},{"id":"page-subtitle","component":"TextContent","text":"A snapshot of workforce growth, recruiting activity, and retention.","size":"default"},{"id":"new-role-button","component":"Button","label":"Open new role","variant":"primary","size":"medium","action":["open_new_role"]},{"id":"metrics-row","component":"Card","variant":"clear","direction":"row","gap":"m","wrap":true,"children":["headcount-card","time-to-hire-card","interviews-card"]},{"id":"headcount-card","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["headcount-label","headcount-value","headcount-note"]},{"id":"headcount-label","component":"TextContent","text":"Current headcount","size":"small"},{"id":"headcount-value","component":"Heading","text":"248","level":"h2"},{"id":"headcount-note","component":"TextContent","text":"↑ 12 since last month","size":"small"},{"id":"time-to-hire-card","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["time-to-hire-label","time-to-hire-value","time-to-hire-note"]},{"id":"time-to-hire-label","component":"TextContent","text":"Average time to hire","size":"small"},{"id":"time-to-hire-value","component":"Heading","text":"34 days","level":"h2"},{"id":"time-to-hire-note","component":"TextContent","text":"↓ 4 days vs. prior quarter","size":"small"},{"id":"interviews-card","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["interviews-label","interviews-value","interviews-note"]},{"id":"interviews-label","component":"TextContent","text":"Interviews this week","size":"small"},{"id":"interviews-value","component":"Heading","text":"27","level":"h2"},{"id":"interviews-note","component":"TextContent","text":"Across 11 open roles","size":"small"},{"id":"main-content","component":"Card","variant":"clear","direction":"row","gap":"l","align":"start","wrap":true,"children":["open-roles-card","pipeline-card"]},{"id":"open-roles-card","component":"Card","variant":"card","direction":"column","gap":"m","weight":2,"children":["open-roles-header","open-roles-table"]},{"id":"open-roles-header","component":"CardHeader","title":"Open roles","subtitle":"11 active requisitions across the organization"},{"id":"open-roles-table","component":"Table","columns":["role-column","department-column","status-column"]},{"id":"role-column","component":"Col","label":"Role","type":"string","data":["Senior Product Designer","Backend Engineer","Sales Development Rep","People Operations Manager","Data Analyst"]},{"id":"department-column","component":"Col","label":"Department","type":"string","data":["Product","Engineering","Sales","People","Finance"]},{"id":"status-column","component":"Col","label":"Status","type":"string","data":["Hiring team review","Interviewing","Sourcing","Interviewing","Hiring manager review"]},{"id":"pipeline-card","component":"Card","variant":"card","direction":"column","gap":"m","weight":1,"children":["pipeline-header","pipeline-chart","pipeline-note"]},{"id":"pipeline-header","component":"CardHeader","title":"Candidate pipeline","subtitle":"Candidates by current stage"},{"id":"pipeline-chart","component":"HorizontalBarChart","labels":["Applied","Screening","Hiring manager","On-site","Offer"],"series":["pipeline-series"],"variant":"grouped","xLabel":"Candidates"},{"id":"pipeline-series","component":"Series","category":"Candidates","values":[186,74,38,17,6]},{"id":"pipeline-note","component":"TextContent","text":"321 active candidates across all open roles.","size":"small"},{"id":"charts-row","component":"Card","variant":"clear","direction":"row","gap":"l","align":"start","wrap":true,"children":["department-card","attrition-card"]},{"id":"department-card","component":"Card","variant":"card","direction":"column","gap":"m","weight":1,"children":["department-header","department-chart"]},{"id":"department-header","component":"CardHeader","title":"Headcount by department","subtitle":"Current workforce distribution"},{"id":"department-chart","component":"PieChart","labels":["Engineering","Sales","Product","Customer Success","Operations","People & Finance"],"values":[82,54,37,31,26,18],"variant":"donut","appearance":"circular"},{"id":"attrition-card","component":"Card","variant":"card","direction":"column","gap":"m","weight":1,"children":["attrition-header","attrition-chart","attrition-note"]},{"id":"attrition-header","component":"CardHeader","title":"Attrition trend","subtitle":"Voluntary and involuntary exits over six months"},{"id":"attrition-chart","component":"LineChart","labels":["Mar","Apr","May","Jun","Jul","Aug"],"series":["voluntary-series","involuntary-series"],"variant":"linear","xLabel":"Month","yLabel":"Employees"},{"id":"voluntary-series","component":"Series","category":"Voluntary","values":[3,4,2,5,3,2]},{"id":"involuntary-series","component":"Series","category":"Involuntary","values":[1,1,2,1,1,0]},{"id":"attrition-note","component":"TextContent","text":"6-month attrition rate: 7.3%","size":"small"}]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "variant": "clear",
+        "gap": "l",
+        "children": [
+          "header",
+          "summaryRow",
+          "openRolesSection",
+          "pipelineSection",
+          "analyticsRow",
+          "interviewsSection",
+          "attritionSection"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "Card",
+        "direction": "row",
+        "justify": "between",
+        "align": "center",
+        "variant": "clear",
+        "children": [
+          "titleBlock",
+          "newRoleButton"
+        ]
+      },
+      {
+        "id": "titleBlock",
+        "component": "CardHeader",
+        "title": "Hiring Overview",
+        "subtitle": "Talent pipeline and workforce health at a glance"
+      },
+      {
+        "id": "newRoleButton",
+        "component": "Button",
+        "label": "Open new role",
+        "variant": "primary",
+        "size": "medium"
+      },
+      {
+        "id": "summaryRow",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "variant": "clear",
+        "children": [
+          "headcountKpi",
+          "timeToHireKpi",
+          "interviewsKpi"
+        ]
+      },
+      {
+        "id": "headcountKpi",
+        "component": "Card",
+        "gap": "s",
+        "children": [
+          "headcountLabel",
+          "headcountValue",
+          "headcountNote"
+        ]
+      },
+      {
+        "id": "headcountLabel",
+        "component": "TextContent",
+        "text": "Current headcount",
+        "size": "small"
+      },
+      {
+        "id": "headcountValue",
+        "component": "Heading",
+        "text": "248",
+        "level": "h2"
+      },
+      {
+        "id": "headcountNote",
+        "component": "Badge",
+        "text": "+12 this quarter",
+        "variant": "secondary"
+      },
+      {
+        "id": "timeToHireKpi",
+        "component": "Card",
+        "gap": "s",
+        "children": [
+          "timeToHireLabel",
+          "timeToHireValue",
+          "timeToHireNote"
+        ]
+      },
+      {
+        "id": "timeToHireLabel",
+        "component": "TextContent",
+        "text": "Average time to hire",
+        "size": "small"
+      },
+      {
+        "id": "timeToHireValue",
+        "component": "Heading",
+        "text": "34 days",
+        "level": "h2"
+      },
+      {
+        "id": "timeToHireNote",
+        "component": "Badge",
+        "text": "3 days faster than last quarter",
+        "variant": "secondary"
+      },
+      {
+        "id": "interviewsKpi",
+        "component": "Card",
+        "gap": "s",
+        "children": [
+          "interviewsLabel",
+          "interviewsValue",
+          "interviewsNote"
+        ]
+      },
+      {
+        "id": "interviewsLabel",
+        "component": "TextContent",
+        "text": "Interviews this week",
+        "size": "small"
+      },
+      {
+        "id": "interviewsValue",
+        "component": "Heading",
+        "text": "18",
+        "level": "h2"
+      },
+      {
+        "id": "interviewsNote",
+        "component": "TextContent",
+        "text": "6 today · 7 this week remaining",
+        "size": "small"
+      },
+      {
+        "id": "openRolesSection",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "openRolesHeader",
+          "openRolesTable"
+        ]
+      },
+      {
+        "id": "openRolesHeader",
+        "component": "CardHeader",
+        "title": "Open roles",
+        "subtitle": "9 active requisitions across 5 departments"
+      },
+      {
+        "id": "openRolesTable",
+        "component": "Table",
+        "columns": [
+          "roleColumn",
+          "departmentColumn",
+          "locationColumn",
+          "statusColumn"
+        ]
+      },
+      {
+        "id": "roleColumn",
+        "component": "Col",
+        "label": "Role",
+        "data": [
+          "Senior Product Designer",
+          "Backend Engineer",
+          "Account Executive",
+          "People Operations Specialist",
+          "Financial Analyst"
+        ]
+      },
+      {
+        "id": "departmentColumn",
+        "component": "Col",
+        "label": "Department",
+        "data": [
+          "Product",
+          "Engineering",
+          "Sales",
+          "People",
+          "Finance"
+        ]
+      },
+      {
+        "id": "locationColumn",
+        "component": "Col",
+        "label": "Location",
+        "data": [
+          "New York / Hybrid",
+          "Remote",
+          "London / Hybrid",
+          "Remote",
+          "New York"
+        ]
+      },
+      {
+        "id": "statusColumn",
+        "component": "Col",
+        "label": "Candidates",
+        "data": [
+          "14 active",
+          "22 active",
+          "11 active",
+          "8 active",
+          "6 active"
+        ]
+      },
+      {
+        "id": "pipelineSection",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "pipelineHeader",
+          "pipelineChart"
+        ]
+      },
+      {
+        "id": "pipelineHeader",
+        "component": "CardHeader",
+        "title": "Candidate pipeline",
+        "subtitle": "Candidates currently active at each stage"
+      },
+      {
+        "id": "pipelineChart",
+        "component": "BarChart",
+        "labels": [
+          "Applied",
+          "Recruiter screen",
+          "Hiring manager",
+          "Panel interview",
+          "Offer",
+          "Hired"
+        ],
+        "series": [
+          "pipelineSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Pipeline stage",
+        "yLabel": "Candidates"
+      },
+      {
+        "id": "pipelineSeries",
+        "component": "Series",
+        "category": "Candidates",
+        "values": [
+          86,
+          42,
+          25,
+          16,
+          6,
+          4
+        ]
+      },
+      {
+        "id": "analyticsRow",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "variant": "clear",
+        "children": [
+          "departmentSplitSection",
+          "interviewScheduleSection"
+        ]
+      },
+      {
+        "id": "departmentSplitSection",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "departmentSplitHeader",
+          "departmentSplitChart"
+        ]
+      },
+      {
+        "id": "departmentSplitHeader",
+        "component": "CardHeader",
+        "title": "Headcount by department",
+        "subtitle": "Current workforce distribution"
+      },
+      {
+        "id": "departmentSplitChart",
+        "component": "PieChart",
+        "labels": [
+          "Engineering",
+          "Sales",
+          "Product",
+          "Customer Success",
+          "Operations",
+          "People & Finance"
+        ],
+        "values": [
+          82,
+          54,
+          38,
+          31,
+          25,
+          18
+        ],
+        "variant": "donut",
+        "appearance": "circular"
+      },
+      {
+        "id": "interviewScheduleSection",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "interviewScheduleHeader",
+          "interviewScheduleTable"
+        ]
+      },
+      {
+        "id": "interviewScheduleHeader",
+        "component": "CardHeader",
+        "title": "Scheduled this week",
+        "subtitle": "Next interviews on the calendar"
+      },
+      {
+        "id": "interviewScheduleTable",
+        "component": "Table",
+        "columns": [
+          "candidateColumn",
+          "interviewRoleColumn",
+          "interviewTimeColumn"
+        ]
+      },
+      {
+        "id": "candidateColumn",
+        "component": "Col",
+        "label": "Candidate",
+        "data": [
+          "Maya Chen",
+          "Jordan Williams",
+          "Priya Shah",
+          "Diego Torres"
+        ]
+      },
+      {
+        "id": "interviewRoleColumn",
+        "component": "Col",
+        "label": "Role",
+        "data": [
+          "Senior Product Designer",
+          "Backend Engineer",
+          "Account Executive",
+          "People Operations Specialist"
+        ]
+      },
+      {
+        "id": "interviewTimeColumn",
+        "component": "Col",
+        "label": "Schedule",
+        "data": [
+          "Today · 10:00 AM",
+          "Today · 2:30 PM",
+          "Wed · 11:00 AM",
+          "Thu · 3:00 PM"
+        ]
+      },
+      {
+        "id": "attritionSection",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "attritionHeader",
+          "attritionChart"
+        ]
+      },
+      {
+        "id": "attritionHeader",
+        "component": "CardHeader",
+        "title": "Attrition trend",
+        "subtitle": "Monthly voluntary and involuntary exits over the past six months"
+      },
+      {
+        "id": "attritionChart",
+        "component": "LineChart",
+        "labels": [
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug"
+        ],
+        "series": [
+          "voluntaryAttrition",
+          "involuntaryAttrition"
+        ],
+        "variant": "natural",
+        "xLabel": "Month",
+        "yLabel": "Employees exited"
+      },
+      {
+        "id": "voluntaryAttrition",
+        "component": "Series",
+        "category": "Voluntary",
+        "values": [
+          4,
+          5,
+          3,
+          6,
+          4,
+          3
+        ]
+      },
+      {
+        "id": "involuntaryAttrition",
+        "component": "Series",
+        "category": "Involuntary",
+        "values": [
+          1,
+          1,
+          2,
+          1,
+          1,
+          0
+        ]
+      }
+    ]
+  }
+}
 </a2ui-json>

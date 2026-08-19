@@ -1,29 +1,19 @@
-root = Card([header, mainFocusCard, quickActions], "card", "column", "m")
+root = Card([header, mainFocusCard, quickActionsCard])
+header = CardHeader("Focus View", "Your priority for this session")
 
-header = CardHeader("Personal Focus View", "Stay locked in on your single top priority")
-
-mainFocusCard = Card([taskHeader, sep1, taskDetails, sep2, progressSection], "sunk", "column", "m")
-
-taskHeader = Card([taskBadge, mainTitle], "clear", "row", "s", "center")
-taskBadge = Badge("Priority #1", "destructive")
-mainTitle = Heading("Finalize Q3 Financial Audit", "h3")
+mainFocusCard = Card([taskTag, taskHeading, taskDesc, sep1, taskMeta], "card", "column", "m")
+taskTag = Tag("Urgent & Important", null, "md", "danger")
+taskHeading = Heading("Finalize Q3 Financial Audit", "h2")
+taskDesc = TextContent("Review and reconcile Q3 ledger entries with the external auditing team. Sign off on final compliance documentation.", "default")
 
 sep1 = Separator("horizontal")
 
-taskDetails = Table([fieldCol, valueCol])
-fieldCol = Col("Property", ["Deadline", "Status", "Project", "Estimated Time"])
-valueCol = Col("Details", ["Today at 5:00 PM", "In Progress", "Q3 Finance Review", "45 mins remaining"])
+taskMeta = Card([deadlineItem, statusItem], "clear", "row", "xl", "center", "between")
+deadlineItem = TextContent("**Deadline:** Today, 5:00 PM (In 2 hours)", "small-heavy")
+statusItem = Badge("In Progress", "destructive")
 
-sep2 = Separator("horizontal")
-
-progressSection = Card([progressLabel, taskProgress], "clear", "column", "xs")
-progressLabel = TextContent("Subtasks completed: 3 of 4", "small-heavy")
-taskProgress = Progress(75, "75% completed")
-
-quickActions = Form("complete-task-form", actionButtons, [notesField])
-notesField = FormControl("Completion Notes", notesInput, "Optional notes before closing this task")
-notesInput = TextArea("notes", "Add any relevant link or summary before marking as done...", 2)
-
-actionButtons = Buttons([markDoneBtn, deferBtn], "row")
-markDoneBtn = Button("Mark as Done", null, "primary")
-deferBtn = Button("Snooze / Defer", null, "tertiary")
+quickActionsCard = Card([actionButtons], "sunk", "column", "s")
+actionButtons = Buttons([markDoneBtn, snoozeBtn, delegateBtn])
+markDoneBtn = Button("Mark Done", null, "primary")
+snoozeBtn = Button("Snooze 1 Hour", null, "secondary")
+delegateBtn = Button("Delegate", null, "tertiary")

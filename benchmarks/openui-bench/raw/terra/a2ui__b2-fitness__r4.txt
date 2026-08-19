@@ -2,11 +2,11 @@
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "fitness-daily-summary",
+    "surfaceId": "main",
     "catalogId": "thesys.dev:c1-openui",
     "theme": {
-      "primaryColor": "#2E8B57",
-      "agentDisplayName": "Fitness Daily Summary"
+      "primaryColor": "#16A34A",
+      "agentDisplayName": "Fitness Summary"
     }
   }
 }
@@ -16,216 +16,175 @@
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "fitness-daily-summary",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
         "variant": "clear",
-        "direction": "column",
         "gap": "l",
         "children": [
           "header",
-          "todayCard",
+          "stepsCard",
+          "caloriesCard",
           "weeklyCard",
           "logWorkoutCard"
         ]
       },
       {
         "id": "header",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "title",
-          "subtitle"
-        ]
-      },
-      {
-        "id": "title",
-        "component": "Heading",
-        "text": "Today’s fitness summary",
-        "level": "h1"
-      },
-      {
-        "id": "subtitle",
-        "component": "TextContent",
-        "text": "Tuesday, August 18",
-        "size": "default"
-      },
-      {
-        "id": "todayCard",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "todayHeader",
-          "stepsProgress",
-          "stepsDetail",
-          "dividerToday",
-          "caloriesRow"
-        ]
-      },
-      {
-        "id": "todayHeader",
         "component": "CardHeader",
-        "title": "Today’s activity",
-        "subtitle": "Keep your momentum going"
+        "title": "Today’s Fitness Summary",
+        "subtitle": "Keep building your healthy streak."
+      },
+      {
+        "id": "stepsCard",
+        "component": "Card",
+        "gap": "s",
+        "children": [
+          "stepsTitle",
+          "stepsProgress",
+          "stepsDetail"
+        ]
+      },
+      {
+        "id": "stepsTitle",
+        "component": "Heading",
+        "text": "Steps",
+        "level": "h2"
       },
       {
         "id": "stepsProgress",
         "component": "Progress",
         "value": 78,
-        "label": "7,842 of 10,000 steps"
+        "label": "7,842 of 10,000 daily steps"
       },
       {
         "id": "stepsDetail",
         "component": "TextContent",
-        "text": "You’re **2,158 steps** away from your daily goal.",
-        "size": "default"
+        "text": "2,158 steps remaining to reach today’s goal.",
+        "size": "small"
       },
       {
-        "id": "dividerToday",
-        "component": "Separator",
-        "orientation": "horizontal",
-        "decorative": true
-      },
-      {
-        "id": "caloriesRow",
+        "id": "caloriesCard",
         "component": "Card",
-        "variant": "sunk",
-        "direction": "column",
-        "gap": "xs",
+        "direction": "row",
+        "align": "center",
+        "justify": "between",
         "children": [
-          "caloriesLabel",
-          "caloriesValue",
-          "caloriesHint"
+          "caloriesText",
+          "caloriesBadge"
         ]
       },
       {
-        "id": "caloriesLabel",
-        "component": "TextContent",
-        "text": "Calories burned",
-        "size": "small-heavy"
+        "id": "caloriesText",
+        "component": "CardHeader",
+        "title": "Calories burned",
+        "subtitle": "624 kcal today"
       },
       {
-        "id": "caloriesValue",
-        "component": "Heading",
-        "text": "624 kcal",
-        "level": "h2"
-      },
-      {
-        "id": "caloriesHint",
-        "component": "TextContent",
-        "text": "Active calories so far today",
-        "size": "small"
+        "id": "caloriesBadge",
+        "component": "Badge",
+        "text": "+12% vs. average",
+        "variant": "secondary"
       },
       {
         "id": "weeklyCard",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
         "gap": "m",
         "children": [
           "weeklyHeader",
           "weeklyChart",
-          "weeklySummary"
+          "workoutSeries",
+          "weeklyNote"
         ]
       },
       {
         "id": "weeklyHeader",
         "component": "CardHeader",
-        "title": "Workouts this week",
-        "subtitle": "4 workouts completed • 185 minutes total"
+        "title": "Weekly workouts",
+        "subtitle": "Your activity over the past 7 days"
       },
       {
         "id": "weeklyChart",
         "component": "BarChart",
         "labels": [
+          "Mon",
+          "Tue",
           "Wed",
           "Thu",
           "Fri",
           "Sat",
-          "Sun",
-          "Mon",
-          "Today"
+          "Sun"
         ],
         "series": [
-          "workoutMinutes"
+          "workoutSeries"
         ],
         "variant": "grouped",
         "xLabel": "Day",
         "yLabel": "Minutes"
       },
       {
-        "id": "workoutMinutes",
+        "id": "workoutSeries",
         "component": "Series",
         "category": "Workout minutes",
         "values": [
+          35,
+          0,
+          42,
           30,
           0,
-          45,
-          20,
-          0,
-          50,
-          40
+          55,
+          25
         ]
       },
       {
-        "id": "weeklySummary",
-        "component": "Callout",
-        "variant": "success",
-        "title": "Great consistency",
-        "description": "You completed 4 of your 5 planned workouts this week."
+        "id": "weeklyNote",
+        "component": "TextContent",
+        "text": "You completed 5 workouts for a total of 187 minutes this week.",
+        "size": "small"
       },
       {
         "id": "logWorkoutCard",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
         "gap": "m",
         "children": [
-          "logHeader",
+          "logWorkoutHeader",
           "workoutForm"
         ]
       },
       {
-        "id": "logHeader",
+        "id": "logWorkoutHeader",
         "component": "CardHeader",
-        "title": "Log a new workout",
-        "subtitle": "Add today’s activity to your progress"
+        "title": "Log a workout",
+        "subtitle": "Add today’s activity to your progress."
       },
       {
         "id": "workoutForm",
         "component": "Form",
-        "name": "newWorkout",
+        "name": "log-workout",
         "fields": [
-          "workoutTypeControl",
-          "durationControl",
-          "notesControl"
+          "workoutTypeField",
+          "durationField"
         ],
-        "buttons": "formButtons"
+        "buttons": "workoutButtons"
       },
       {
-        "id": "workoutTypeControl",
+        "id": "workoutTypeField",
         "component": "FormControl",
         "label": "Workout type",
-        "hint": "Choose the activity you completed",
-        "input": "workoutType"
+        "input": "workoutTypeSelect"
       },
       {
-        "id": "workoutType",
+        "id": "workoutTypeSelect",
         "component": "Select",
-        "name": "workoutType",
-        "placeholder": "Select an activity",
+        "name": "workout_type",
+        "placeholder": "Choose an activity",
         "items": [
           "runOption",
           "strengthOption",
-          "cyclingOption",
-          "yogaOption",
-          "walkingOption"
+          "cycleOption",
+          "yogaOption"
         ]
       },
       {
@@ -241,7 +200,7 @@
         "label": "Strength training"
       },
       {
-        "id": "cyclingOption",
+        "id": "cycleOption",
         "component": "SelectItem",
         "value": "cycling",
         "label": "Cycling"
@@ -253,43 +212,22 @@
         "label": "Yoga"
       },
       {
-        "id": "walkingOption",
-        "component": "SelectItem",
-        "value": "walking",
-        "label": "Walking"
-      },
-      {
-        "id": "durationControl",
+        "id": "durationField",
         "component": "FormControl",
         "label": "Duration",
-        "hint": "Enter total minutes",
-        "input": "durationInput"
+        "input": "durationInput",
+        "hint": "Enter the length of your workout in minutes."
       },
       {
         "id": "durationInput",
         "component": "Input",
-        "name": "duration",
+        "name": "duration_minutes",
         "type": "number",
-        "placeholder": "e.g. 30"
+        "placeholder": "30"
       },
       {
-        "id": "notesControl",
-        "component": "FormControl",
-        "label": "Notes",
-        "hint": "Optional details about your workout",
-        "input": "notesInput"
-      },
-      {
-        "id": "notesInput",
-        "component": "TextArea",
-        "name": "notes",
-        "placeholder": "How did it go?",
-        "rows": 3
-      },
-      {
-        "id": "formButtons",
+        "id": "workoutButtons",
         "component": "Buttons",
-        "direction": "row",
         "buttons": [
           "saveWorkoutButton"
         ]

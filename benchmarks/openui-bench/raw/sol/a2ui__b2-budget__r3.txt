@@ -1,6 +1,283 @@
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"personal-budget-check","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#2563EB","agentDisplayName":"Budget Check"},"sendDataModel":false}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
+
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"personal-budget-check","components":[{"id":"root","component":"Card","children":["header","month-form","summary","category-card","largest-card","add-expense-dialog"],"variant":"clear","direction":"column","gap":"l"},{"id":"header","component":"CardHeader","title":"Personal budget check","subtitle":"Review your monthly spending and keep your budget on track."},{"id":"month-form","component":"Form","name":"month_selector","fields":["month-control"],"buttons":"month-buttons"},{"id":"month-control","component":"FormControl","label":"Month","input":"month-select","hint":"Choose another month to review."},{"id":"month-select","component":"Select","name":"month","items":["month-aug","month-jul","month-jun"],"value":"2026-08","size":"medium"},{"id":"month-aug","component":"SelectItem","value":"2026-08","label":"August 2026"},{"id":"month-jul","component":"SelectItem","value":"2026-07","label":"July 2026"},{"id":"month-jun","component":"SelectItem","value":"2026-06","label":"June 2026"},{"id":"month-buttons","component":"Buttons","buttons":["view-month"],"direction":"row"},{"id":"view-month","component":"Button","label":"View month","variant":"secondary","size":"medium"},{"id":"summary","component":"Card","children":["summary-header","summary-amount","summary-progress","summary-note"],"variant":"card","direction":"column","gap":"s"},{"id":"summary-header","component":"CardHeader","title":"Monthly spending","subtitle":"August 2026"},{"id":"summary-amount","component":"Heading","text":"$3,240 of $4,000","level":"h2"},{"id":"summary-progress","component":"Progress","value":81,"label":"81% of monthly budget used"},{"id":"summary-note","component":"TextContent","text":"$760 remaining","size":"small-heavy"},{"id":"category-card","component":"Card","children":["category-header","category-chart"],"variant":"card","direction":"column","gap":"m"},{"id":"category-header","component":"CardHeader","title":"Spending by category","subtitle":"Total: $3,240"},{"id":"category-chart","component":"PieChart","labels":["Housing","Food","Transport","Entertainment","Utilities","Other"],"values":[1500,620,410,280,250,180],"variant":"donut","appearance":"circular"},{"id":"largest-card","component":"Card","children":["largest-badge","largest-heading","largest-details"],"variant":"sunk","direction":"column","gap":"s"},{"id":"largest-badge","component":"Badge","text":"Largest expense","variant":"secondary"},{"id":"largest-heading","component":"Heading","text":"Rent — $1,500","level":"h2"},{"id":"largest-details","component":"TextContent","text":"Housing • August 1, 2026","size":"small"},{"id":"add-expense-dialog","component":"DialogBlock","triggerLabel":"Add expense","title":"Add a new expense","description":"Enter the expense details for August 2026.","content":["expense-form"],"triggerVariant":"default"},{"id":"expense-form","component":"Form","name":"add_expense","fields":["amount-control","category-control","date-control","description-control"],"buttons":"expense-buttons"},{"id":"amount-control","component":"FormControl","label":"Amount","input":"amount-input","hint":"Enter the expense amount."},{"id":"amount-input","component":"Input","name":"amount","placeholder":"0.00","type":"number"},{"id":"category-control","component":"FormControl","label":"Category","input":"category-select"},{"id":"category-select","component":"Select","name":"category","items":["cat-housing","cat-food","cat-transport","cat-entertainment","cat-utilities","cat-other"],"placeholder":"Select a category","size":"medium"},{"id":"cat-housing","component":"SelectItem","value":"housing","label":"Housing"},{"id":"cat-food","component":"SelectItem","value":"food","label":"Food"},{"id":"cat-transport","component":"SelectItem","value":"transport","label":"Transport"},{"id":"cat-entertainment","component":"SelectItem","value":"entertainment","label":"Entertainment"},{"id":"cat-utilities","component":"SelectItem","value":"utilities","label":"Utilities"},{"id":"cat-other","component":"SelectItem","value":"other","label":"Other"},{"id":"date-control","component":"FormControl","label":"Date","input":"expense-date"},{"id":"expense-date","component":"DatePicker","name":"date","mode":"single"},{"id":"description-control","component":"FormControl","label":"Description","input":"description-input","hint":"Optional note about this purchase."},{"id":"description-input","component":"Input","name":"description","placeholder":"e.g. Groceries","type":"text"},{"id":"expense-buttons","component":"Buttons","buttons":["save-expense"],"direction":"row"},{"id":"save-expense","component":"Button","label":"Save expense","variant":"primary","size":"medium"}]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "monthForm",
+          "budgetSummary",
+          "budgetProgress",
+          "categoryHeading",
+          "categorySplit",
+          "largestExpense",
+          "addExpenseDialog"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Personal budget check",
+        "subtitle": "August 2026"
+      },
+      {
+        "id": "monthForm",
+        "component": "Form",
+        "name": "month-selector",
+        "buttons": "monthButtons",
+        "fields": [
+          "monthControl"
+        ]
+      },
+      {
+        "id": "monthButtons",
+        "component": "Buttons",
+        "buttons": [
+          "viewMonthButton"
+        ]
+      },
+      {
+        "id": "viewMonthButton",
+        "component": "Button",
+        "label": "View month",
+        "variant": "secondary"
+      },
+      {
+        "id": "monthControl",
+        "component": "FormControl",
+        "label": "Choose a month",
+        "input": "monthSelect"
+      },
+      {
+        "id": "monthSelect",
+        "component": "Select",
+        "name": "month",
+        "items": [
+          "monthJune",
+          "monthJuly",
+          "monthAugust"
+        ],
+        "value": "2026-08"
+      },
+      {
+        "id": "monthJune",
+        "component": "SelectItem",
+        "value": "2026-06",
+        "label": "June 2026"
+      },
+      {
+        "id": "monthJuly",
+        "component": "SelectItem",
+        "value": "2026-07",
+        "label": "July 2026"
+      },
+      {
+        "id": "monthAugust",
+        "component": "SelectItem",
+        "value": "2026-08",
+        "label": "August 2026"
+      },
+      {
+        "id": "budgetSummary",
+        "component": "Callout",
+        "variant": "info",
+        "title": "$2,340 spent of $3,000",
+        "description": "$660 remaining · 78% of this month's budget used"
+      },
+      {
+        "id": "budgetProgress",
+        "component": "Progress",
+        "value": 78,
+        "label": "Monthly budget used"
+      },
+      {
+        "id": "categoryHeading",
+        "component": "Heading",
+        "text": "Spending by category",
+        "level": "h2"
+      },
+      {
+        "id": "categorySplit",
+        "component": "PieChart",
+        "labels": [
+          "Housing",
+          "Food",
+          "Transport",
+          "Utilities",
+          "Entertainment",
+          "Other"
+        ],
+        "values": [
+          1200,
+          430,
+          260,
+          190,
+          150,
+          110
+        ],
+        "variant": "donut",
+        "appearance": "circular"
+      },
+      {
+        "id": "largestExpense",
+        "component": "Alert",
+        "title": "Largest expense: $1,200 rent",
+        "description": "Paid August 1 · Housing · 51% of total spending",
+        "variant": "warning"
+      },
+      {
+        "id": "addExpenseDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Add expense",
+        "title": "Add an expense",
+        "description": "Record a purchase for August 2026.",
+        "content": [
+          "expenseForm"
+        ],
+        "triggerVariant": "default"
+      },
+      {
+        "id": "expenseForm",
+        "component": "Form",
+        "name": "add-expense",
+        "buttons": "expenseButtons",
+        "fields": [
+          "amountControl",
+          "descriptionControl",
+          "categoryControl",
+          "dateControl"
+        ]
+      },
+      {
+        "id": "expenseButtons",
+        "component": "Buttons",
+        "buttons": [
+          "saveExpenseButton",
+          "cancelExpenseButton"
+        ]
+      },
+      {
+        "id": "saveExpenseButton",
+        "component": "Button",
+        "label": "Save expense",
+        "variant": "primary"
+      },
+      {
+        "id": "cancelExpenseButton",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      },
+      {
+        "id": "amountControl",
+        "component": "FormControl",
+        "label": "Amount",
+        "input": "amountInput",
+        "hint": "Enter the expense in USD"
+      },
+      {
+        "id": "amountInput",
+        "component": "Input",
+        "name": "amount",
+        "placeholder": "0.00",
+        "type": "number"
+      },
+      {
+        "id": "descriptionControl",
+        "component": "FormControl",
+        "label": "Description",
+        "input": "descriptionInput"
+      },
+      {
+        "id": "descriptionInput",
+        "component": "Input",
+        "name": "description",
+        "placeholder": "What did you buy?"
+      },
+      {
+        "id": "categoryControl",
+        "component": "FormControl",
+        "label": "Category",
+        "input": "categorySelect"
+      },
+      {
+        "id": "categorySelect",
+        "component": "Select",
+        "name": "category",
+        "items": [
+          "categoryHousing",
+          "categoryFood",
+          "categoryTransport",
+          "categoryUtilities",
+          "categoryEntertainment",
+          "categoryOther"
+        ],
+        "placeholder": "Choose a category"
+      },
+      {
+        "id": "categoryHousing",
+        "component": "SelectItem",
+        "value": "housing",
+        "label": "Housing"
+      },
+      {
+        "id": "categoryFood",
+        "component": "SelectItem",
+        "value": "food",
+        "label": "Food"
+      },
+      {
+        "id": "categoryTransport",
+        "component": "SelectItem",
+        "value": "transport",
+        "label": "Transport"
+      },
+      {
+        "id": "categoryUtilities",
+        "component": "SelectItem",
+        "value": "utilities",
+        "label": "Utilities"
+      },
+      {
+        "id": "categoryEntertainment",
+        "component": "SelectItem",
+        "value": "entertainment",
+        "label": "Entertainment"
+      },
+      {
+        "id": "categoryOther",
+        "component": "SelectItem",
+        "value": "other",
+        "label": "Other"
+      },
+      {
+        "id": "dateControl",
+        "component": "FormControl",
+        "label": "Expense date",
+        "input": "expenseDate"
+      },
+      {
+        "id": "expenseDate",
+        "component": "DatePicker",
+        "name": "expense_date",
+        "mode": "single"
+      }
+    ]
+  }
+}
 </a2ui-json>

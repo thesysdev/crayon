@@ -1,7 +1,181 @@
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"low-inventory-warning","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#D97706","agentDisplayName":"Inventory Manager"},"sendDataModel":false}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"low-inventory-warning","components":[{"id":"root","component":"Card","children":["header","warning","search-form","inventory-table","reorder-actions"],"variant":"clear","direction":"column","gap":"m"},{"id":"header","component":"CardHeader","title":"Low inventory","subtitle":"Review stock levels and reorder items before they run out."},{"id":"warning","component":"Callout","variant":"warning","title":"4 items need attention","description":"Warning threshold: 10 remaining units or fewer."},{"id":"search-form","component":"Form","name":"inventory-search","buttons":"search-buttons","fields":["search-control"]},{"id":"search-control","component":"FormControl","label":"Search items","input":"search-input","hint":"Search by item name or SKU."},{"id":"search-input","component":"Input","name":"query","placeholder":"Search inventory…","type":"text"},{"id":"search-buttons","component":"Buttons","buttons":["search-button"],"direction":"row"},{"id":"search-button","component":"Button","label":"Search","action":[{"type":"searchInventory","queryField":"query"}],"variant":"secondary","size":"medium"},{"id":"inventory-table","component":"Table","columns":["item-column","sku-column","remaining-column","threshold-column"]},{"id":"item-column","component":"Col","label":"Item","data":["Organic Oat Milk","House Blend Coffee Beans","Recycled Paper Towels","Lavender Hand Soap"],"type":"string"},{"id":"sku-column","component":"Col","label":"SKU","data":["OM-1042","CB-2208","PT-3315","HS-4407"],"type":"string"},{"id":"remaining-column","component":"Col","label":"Remaining units","data":[3,5,7,9],"type":"number"},{"id":"threshold-column","component":"Col","label":"Warning threshold","data":[10,10,10,10],"type":"number"},{"id":"reorder-actions","component":"Card","children":["reorder-heading","reorder-oat-milk","reorder-coffee","reorder-towels","reorder-soap"],"variant":"sunk","direction":"column","gap":"s"},{"id":"reorder-heading","component":"Heading","text":"Reorder items","level":"h3"},{"id":"reorder-oat-milk","component":"Button","label":"Reorder Organic Oat Milk — 3 left","action":[{"type":"reorder","sku":"OM-1042","item":"Organic Oat Milk"}],"variant":"primary","size":"medium"},{"id":"reorder-coffee","component":"Button","label":"Reorder House Blend Coffee Beans — 5 left","action":[{"type":"reorder","sku":"CB-2208","item":"House Blend Coffee Beans"}],"variant":"primary","size":"medium"},{"id":"reorder-towels","component":"Button","label":"Reorder Recycled Paper Towels — 7 left","action":[{"type":"reorder","sku":"PT-3315","item":"Recycled Paper Towels"}],"variant":"primary","size":"medium"},{"id":"reorder-soap","component":"Button","label":"Reorder Lavender Hand Soap — 9 left","action":[{"type":"reorder","sku":"HS-4407","item":"Lavender Hand Soap"}],"variant":"primary","size":"medium"}]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "warning",
+          "searchForm",
+          "inventoryTable",
+          "reorderActions"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Low inventory",
+        "subtitle": "Items at or below the warning threshold"
+      },
+      {
+        "id": "warning",
+        "component": "Alert",
+        "title": "4 items need attention",
+        "description": "Low-inventory warnings trigger when stock reaches 10 remaining units.",
+        "variant": "warning"
+      },
+      {
+        "id": "searchForm",
+        "component": "Form",
+        "name": "inventory-search",
+        "buttons": "searchButtons",
+        "fields": [
+          "searchField"
+        ]
+      },
+      {
+        "id": "searchField",
+        "component": "FormControl",
+        "label": "Search items",
+        "input": "searchInput",
+        "hint": "Search by item name or SKU"
+      },
+      {
+        "id": "searchInput",
+        "component": "Input",
+        "name": "query",
+        "placeholder": "Search inventory…",
+        "type": "text"
+      },
+      {
+        "id": "searchButtons",
+        "component": "Buttons",
+        "buttons": [
+          "searchButton",
+          "clearButton"
+        ]
+      },
+      {
+        "id": "searchButton",
+        "component": "Button",
+        "label": "Search",
+        "variant": "primary"
+      },
+      {
+        "id": "clearButton",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "tertiary"
+      },
+      {
+        "id": "inventoryTable",
+        "component": "Table",
+        "columns": [
+          "itemColumn",
+          "skuColumn",
+          "remainingColumn",
+          "thresholdColumn"
+        ]
+      },
+      {
+        "id": "itemColumn",
+        "component": "Col",
+        "label": "Item",
+        "data": [
+          "Organic Whole Milk",
+          "Large Brown Eggs",
+          "House Blend Coffee",
+          "Paper Shopping Bags"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "skuColumn",
+        "component": "Col",
+        "label": "SKU",
+        "data": [
+          "MILK-ORG-1G",
+          "EGGS-BRN-12",
+          "COF-HSE-12OZ",
+          "BAG-PPR-M"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "remainingColumn",
+        "component": "Col",
+        "label": "Remaining units",
+        "data": [
+          3,
+          5,
+          7,
+          9
+        ],
+        "type": "number"
+      },
+      {
+        "id": "thresholdColumn",
+        "component": "Col",
+        "label": "Warning threshold",
+        "data": [
+          "10 units",
+          "10 units",
+          "10 units",
+          "10 units"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "reorderActions",
+        "component": "Buttons",
+        "buttons": [
+          "reorderMilk",
+          "reorderEggs",
+          "reorderCoffee",
+          "reorderBags"
+        ],
+        "direction": "column"
+      },
+      {
+        "id": "reorderMilk",
+        "component": "Button",
+        "label": "Reorder Organic Whole Milk",
+        "variant": "primary"
+      },
+      {
+        "id": "reorderEggs",
+        "component": "Button",
+        "label": "Reorder Large Brown Eggs",
+        "variant": "secondary"
+      },
+      {
+        "id": "reorderCoffee",
+        "component": "Button",
+        "label": "Reorder House Blend Coffee",
+        "variant": "secondary"
+      },
+      {
+        "id": "reorderBags",
+        "component": "Button",
+        "label": "Reorder Paper Shopping Bags",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
 </a2ui-json>

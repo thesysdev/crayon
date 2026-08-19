@@ -1,17 +1,12 @@
 {"op":"add","path":"/root","value":"lunch-poll"}
-{"op":"add","path":"/elements/lunch-poll","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l","align":"stretch"},"children":["poll-header","poll-options","vote-status"]}}
-{"op":"add","path":"/elements/poll-header","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s","align":"start"},"children":["poll-badge","poll-question","poll-instructions"]}}
-{"op":"add","path":"/elements/poll-badge","value":{"type":"Badge","props":{"text":"Team lunch poll","variant":"secondary"},"children":[]}}
-{"op":"add","path":"/elements/poll-question","value":{"type":"Heading","props":{"text":"Where should we go for lunch on Friday?","level":"h1"},"children":[]}}
-{"op":"add","path":"/elements/poll-instructions","value":{"type":"TextContent","props":{"text":"Choose one restaurant below to cast your vote.","size":"default"},"children":[]}}
-{"op":"add","path":"/elements/poll-options","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m","align":"stretch"},"repeat":{"statePath":"/restaurants","key":"id"},"children":["restaurant-option"]}}
-{"op":"add","path":"/elements/restaurant-option","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s","align":"stretch"},"children":["restaurant-name","restaurant-details","restaurant-vote-button"]}}
-{"op":"add","path":"/elements/restaurant-name","value":{"type":"Heading","props":{"text":{"$item":"name"},"level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/restaurant-details","value":{"type":"TextContent","props":{"text":{"$template":"${cuisine} · ${price} · ${walkTime} walk"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/restaurant-vote-button","value":{"type":"Button","props":{"label":{"$template":"Vote for ${name}"},"variant":"primary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/selectedRestaurant","value":{"$item":"name"}}}},"children":[]}}
-{"op":"add","path":"/state/restaurants","value":[]}
-{"op":"add","path":"/state/restaurants/0","value":{"id":"r1","name":"Green Fork Kitchen","cuisine":"Mediterranean","price":"$$","walkTime":"6 min"}}
-{"op":"add","path":"/state/restaurants/1","value":{"id":"r2","name":"Sakura Bento","cuisine":"Japanese","price":"$$","walkTime":"9 min"}}
-{"op":"add","path":"/state/restaurants/2","value":{"id":"r3","name":"Taco Mercado","cuisine":"Mexican","price":"$","walkTime":"5 min"}}
-{"op":"add","path":"/elements/vote-status","value":{"type":"Callout","props":{"variant":"success","title":"Vote recorded","description":{"$template":"You voted for ${/selectedRestaurant}. You can change your choice anytime."}},"visible":{"$state":"/selectedRestaurant"},"children":[]}}
+{"op":"add","path":"/elements/lunch-poll","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"l"},"children":["poll-header","poll-instructions","restaurant-options","vote-summary"]}}
+{"op":"add","path":"/elements/poll-header","value":{"type":"CardHeader","props":{"title":"Where should we go for lunch on Friday?","subtitle":"Team lunch poll"}}}
+{"op":"add","path":"/elements/poll-instructions","value":{"type":"TextContent","props":{"text":"Choose one restaurant below. Your selection is saved automatically.","size":"default"}}}
+{"op":"add","path":"/elements/restaurant-options","value":{"type":"RadioGroup","props":{"name":"lunch-restaurant","items":["restaurant-option"],"value":{"$bindState":"/selectedRestaurant"}},"children":[]}}
+{"op":"add","path":"/elements/restaurant-option","value":{"type":"RadioItem","props":{"label":{"$item":"name"},"description":{"$template":"${cuisine} · ${distance} · ${price}"},"value":{"$item":"id"}},"repeat":{"statePath":"/restaurants","key":"id"},"children":[]}}
 {"op":"add","path":"/state/selectedRestaurant","value":""}
+{"op":"add","path":"/state/restaurants","value":[]}
+{"op":"add","path":"/state/restaurants/0","value":{"id":"olive-grove","name":"Olive Grove Kitchen","cuisine":"Mediterranean","distance":"8-minute walk","price":"$$"}}
+{"op":"add","path":"/state/restaurants/1","value":{"id":"seoul-table","name":"Seoul Table","cuisine":"Korean","distance":"10-minute walk","price":"$$"}}
+{"op":"add","path":"/state/restaurants/2","value":{"id":"verde-taco","name":"Verde Taco House","cuisine":"Mexican","distance":"6-minute walk","price":"$"}}
+{"op":"add","path":"/elements/vote-summary","value":{"type":"Callout","props":{"variant":"success","title":"Vote recorded","description":{"$template":"You voted for: ${/selectedRestaurant}"}},"visible":{"$state":"/selectedRestaurant"},"children":[]}}

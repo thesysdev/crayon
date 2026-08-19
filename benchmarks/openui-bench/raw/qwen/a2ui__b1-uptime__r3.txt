@@ -1,108 +1,106 @@
-Here's a platform status page showing the current API uptime and the most recent incident:
+Here's a platform status page showing the current month's API uptime and the most recent incident summary.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "platform-status",
-      "catalogId": "thesys.dev:c1-openui",
-      "theme": {
-        "primaryColor": "#10B981",
-        "agentDisplayName": "Platform Team"
-      }
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "platform-status",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "children": ["header", "status-tag", "uptime-section", "separator", "incident-section"],
-          "direction": "column",
-          "gap": "m"
-        },
-        {
-          "id": "header",
-          "component": "CardHeader",
-          "title": "Platform Status",
-          "subtitle": "API Service Health — June 2025"
-        },
-        {
-          "id": "status-tag",
-          "component": "Tag",
-          "text": "Operational",
-          "variant": "success",
-          "size": "md"
-        },
-        {
-          "id": "uptime-section",
-          "component": "Card",
-          "variant": "sunk",
-          "children": ["uptime-label", "uptime-progress", "uptime-note"],
-          "direction": "column",
-          "gap": "s"
-        },
-        {
-          "id": "uptime-label",
-          "component": "Heading",
-          "text": "API Uptime — This Month",
-          "level": "h3"
-        },
-        {
-          "id": "uptime-progress",
-          "component": "Progress",
-          "value": 99.97,
-          "label": "99.97%"
-        },
-        {
-          "id": "uptime-note",
-          "component": "TextContent",
-          "text": "Target SLA: 99.95% · Currently **exceeding** target by 0.02pp.",
-          "size": "small"
-        },
-        {
-          "id": "separator",
-          "component": "Separator"
-        },
-        {
-          "id": "incident-section",
-          "component": "Card",
-          "variant": "sunk",
-          "children": ["incident-heading", "incident-callout", "incident-details"],
-          "direction": "column",
-          "gap": "s"
-        },
-        {
-          "id": "incident-heading",
-          "component": "Heading",
-          "text": "Most Recent Incident",
-          "level": "h3"
-        },
-        {
-          "id": "incident-callout",
-          "component": "Callout",
-          "variant": "warning",
-          "title": "Elevated API Latency",
-          "description": "P95 response times exceeded 2s for approximately 18 minutes due to a misconfigured connection pool limit on the us-east-1 cluster."
-        },
-        {
-          "id": "incident-details",
-          "component": "TextContent",
-          "text": "**Resolved:** June 12, 2025 at 14:32 UTC\n**Duration:** 18 minutes\n**Impact:** ~0.03% of requests returned 504 errors\n**Root Cause:** Connection pool limit set to 50 instead of 500 after a config deploy.",
-          "size": "small"
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-This status page covers both requirements:
-
-1. **API Uptime** — Displayed prominently with a progress bar showing **99.97%** for the current month, along with context against the 99.95% SLA target.
-
-2. **Most Recent Incident** — A warning callout summarizing the elevated latency event on June 12, including resolution time, duration, impact scope, and root cause.
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "statusBadge",
+          "uptimeSection",
+          "separator",
+          "incidentSection"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Platform Status",
+        "subtitle": "API Service Health — June 2025"
+      },
+      {
+        "id": "statusBadge",
+        "component": "Badge",
+        "text": "Operational",
+        "variant": "secondary"
+      },
+      {
+        "id": "uptimeSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "uptimeLabel",
+          "uptimeProgress",
+          "uptimeNote"
+        ]
+      },
+      {
+        "id": "uptimeLabel",
+        "component": "Heading",
+        "text": "API Uptime — This Month",
+        "level": "h3"
+      },
+      {
+        "id": "uptimeProgress",
+        "component": "Progress",
+        "value": 99.97,
+        "label": "99.97%"
+      },
+      {
+        "id": "uptimeNote",
+        "component": "TextContent",
+        "text": "Uptime target: 99.95% · Currently **above** SLA threshold.",
+        "size": "small"
+      },
+      {
+        "id": "separator",
+        "component": "Separator"
+      },
+      {
+        "id": "incidentSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "incidentHeading",
+          "incidentAlert",
+          "incidentMeta"
+        ]
+      },
+      {
+        "id": "incidentHeading",
+        "component": "Heading",
+        "text": "Most Recent Incident",
+        "level": "h3"
+      },
+      {
+        "id": "incidentAlert",
+        "component": "Alert",
+        "title": "Degraded API response times",
+        "description": "Elevated p99 latency (up to 4.2s) caused by a misconfigured connection pool on the us-east-1 cluster. Traffic was rerouted and the fix was deployed within 38 minutes.",
+        "variant": "warning"
+      },
+      {
+        "id": "incidentMeta",
+        "component": "TextContent",
+        "text": "**Resolved:** June 18, 2025 at 14:32 UTC · Duration: 38 min · Severity: SEV-3",
+        "size": "small"
+      }
+    ]
+  }
+}
+</a2ui-json>

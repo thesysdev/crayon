@@ -1,54 +1,268 @@
-Here's a complete e-commerce operations dashboard covering all nine requirements:
+Here's a complete e-commerce operations dashboard covering all nine items.
 
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"ops-desk","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#2563EB","agentDisplayName":"Ops Desk"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"ops-desk","components":[
-{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["header","statsRow","chartsRow","filterCard","ordersCard"]},
-{"id":"header","component":"CardHeader","title":"E-Commerce Operations Desk","subtitle":"Live overview — Thursday, June 12"},
-{"id":"statsRow","component":"Card","variant":"clear","direction":"row","gap":"m","children":["statOrders","statRevenue","statAov","statRefund"]},
-{"id":"statOrders","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["statOrdersLabel","statOrdersValue"]},
-{"id":"statOrdersLabel","component":"TextContent","text":"Orders Today","size":"small"},
-{"id":"statOrdersValue","component":"TextContent","text":"**142**","size":"large-heavy"},
-{"id":"statRevenue","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["statRevenueLabel","statRevenueValue"]},
-{"id":"statRevenueLabel","component":"TextContent","text":"Revenue Today","size":"small"},
-{"id":"statRevenueValue","component":"TextContent","text":"**$18,940**","size":"large-heavy"},
-{"id":"statAov","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["statAovLabel","statAovValue"]},
-{"id":"statAovLabel","component":"TextContent","text":"Avg Order Value","size":"small"},
-{"id":"statAovValue","component":"TextContent","text":"**$133.38**","size":"large-heavy"},
-{"id":"statRefund","component":"Card","variant":"card","direction":"column","gap":"xs","weight":1,"children":["statRefundLabel","statRefundValue","statRefundBar"]},
-{"id":"statRefundLabel","component":"TextContent","text":"Refund Rate (June)","size":"small"},
-{"id":"statRefundValue","component":"TextContent","text":"**3.2%**","size":"large-heavy"},
-{"id":"statRefundBar","component":"Progress","value":3.2,"label":"of 10% threshold"},
-{"id":"chartsRow","component":"Card","variant":"card","direction":"column","gap":"s","children":["chartHeader","volumeChart","week1","week2","week3","week4"]},
-{"id":"chartHeader","component":"CardHeader","title":"Order Volume — Past 4 Weeks"},
-{"id":"volumeChart","component":"BarChart","labels":["Week 1","Week 2","Week 3","Week 4"],"series":["week1","week2","week3","week4"],"xLabel":"Week","yLabel":"Orders"},
-{"id":"week1","component":"Series","category":"Orders","values":[812]},
-{"id":"week2","component":"Series","category":"Orders","values":[934]},
-{"id":"week3","component":"Series","category":"Orders","values":[876]},
-{"id":"week4","component":"Series","category":"Orders","values":[1021]},
-{"id":"filterCard","component":"Card","variant":"sunk","direction":"row","gap":"m","align":"end","children":["statusFilterControl","searchControl"]},
-{"id":"statusFilterControl","component":"FormControl","label":"Filter by Status","input":"statusFilter"},
-{"id":"statusFilter","component":"Select","name":"statusFilter","placeholder":"All statuses","items":["siAll","siPending","siProcessing","siShipped","siFulfilled","siRefunded"]},
-{"id":"siAll","component":"SelectItem","value":"all","label":"All"},
-{"id":"siPending","component":"SelectItem","value":"pending","label":"Pending"},
-{"id":"siProcessing","component":"SelectItem","value":"processing","label":"Processing"},
-{"id":"siShipped","component":"SelectItem","value":"shipped","label":"Shipped"},
-{"id":"siFulfilled","component":"SelectItem","value":"fulfilled","label":"Fulfilled"},
-{"id":"siRefunded","component":"SelectItem","value":"refunded","label":"Refunded"},
-{"id":"searchControl","component":"FormControl","label":"Search by Customer","input":"customerSearch"},
-{"id":"customerSearch","component":"Input","name":"customerSearch","placeholder":"e.g. Maya Chen","type":"text"},
-{"id":"ordersCard","component":"Card","variant":"card","direction":"column","gap":"s","children":["ordersHeader","ordersTable","colId","colCustomer","colTotal","colStatus","colAction"]},
-{"id":"ordersHeader","component":"CardHeader","title":"Recent Orders","subtitle":"Mark an order fulfilled from the Action column"},
-{"id":"ordersTable","component":"Table","columns":["colId","colCustomer","colTotal","colStatus","colAction"]},
-{"id":"colId","component":"Col","label":"Order ID","data":["#ORD-1042","#ORD-1041","#ORD-1040","#ORD-1039","#ORD-1038"],"type":"string"},
-{"id":"colCustomer","component":"Col","label":"Customer","data":["Maya Chen","Liam Ortiz","Sofia Rossi","Noah Kim","Ava Patel"],"type":"string"},
-{"id":"colTotal","component":"Col","label":"Total","data":[189.99,74.5,320.0,59.99,142.75],"type":"number"},
-{"id":"colStatus","component":"Col","label":"Status","data":["Processing","Shipped","Pending","Fulfilled","Processing"],"type":"string"},
-{"id":"colAction","component":"Col","label":"Action","data":["Mark Fulfilled","Mark Fulfilled","Mark Fulfilled","—","Mark Fulfilled"],"type":"action"}
-]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "kpis",
+          "trend",
+          "filters",
+          "ordersTable",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "E-commerce Operations Desk",
+        "subtitle": "Live snapshot — today"
+      },
+      {
+        "id": "kpis",
+        "component": "Table",
+        "columns": [
+          "kpiName",
+          "kpiValue"
+        ]
+      },
+      {
+        "id": "kpiName",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Orders placed today",
+          "Revenue today",
+          "Average order value",
+          "Refund rate this month"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "142",
+          "$18,940",
+          "$133.38",
+          "2.1%"
+        ]
+      },
+      {
+        "id": "trend",
+        "component": "LineChart",
+        "labels": [
+          "Week 1",
+          "Week 2",
+          "Week 3",
+          "Week 4"
+        ],
+        "series": [
+          "volumeSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Past 4 weeks",
+        "yLabel": "Orders"
+      },
+      {
+        "id": "volumeSeries",
+        "component": "Series",
+        "category": "Order volume",
+        "values": [
+          812,
+          906,
+          874,
+          951
+        ]
+      },
+      {
+        "id": "filters",
+        "component": "Form",
+        "name": "order-filters",
+        "buttons": "filterButtons",
+        "fields": [
+          "searchField",
+          "statusField"
+        ]
+      },
+      {
+        "id": "searchField",
+        "component": "FormControl",
+        "label": "Search by customer name",
+        "input": "searchInput"
+      },
+      {
+        "id": "searchInput",
+        "component": "Input",
+        "name": "customer_search",
+        "placeholder": "e.g. Jane Smith"
+      },
+      {
+        "id": "statusField",
+        "component": "FormControl",
+        "label": "Narrow by status",
+        "input": "statusSelect"
+      },
+      {
+        "id": "statusSelect",
+        "component": "Select",
+        "name": "status",
+        "items": [
+          "stAll",
+          "stPending",
+          "stProcessing",
+          "stShipped",
+          "stFulfilled",
+          "stRefunded"
+        ],
+        "placeholder": "All statuses"
+      },
+      {
+        "id": "stAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All"
+      },
+      {
+        "id": "stPending",
+        "component": "SelectItem",
+        "value": "pending",
+        "label": "Pending"
+      },
+      {
+        "id": "stProcessing",
+        "component": "SelectItem",
+        "value": "processing",
+        "label": "Processing"
+      },
+      {
+        "id": "stShipped",
+        "component": "SelectItem",
+        "value": "shipped",
+        "label": "Shipped"
+      },
+      {
+        "id": "stFulfilled",
+        "component": "SelectItem",
+        "value": "fulfilled",
+        "label": "Fulfilled"
+      },
+      {
+        "id": "stRefunded",
+        "component": "SelectItem",
+        "value": "refunded",
+        "label": "Refunded"
+      },
+      {
+        "id": "filterButtons",
+        "component": "Buttons",
+        "buttons": [
+          "applyBtn"
+        ]
+      },
+      {
+        "id": "applyBtn",
+        "component": "Button",
+        "label": "Apply filters",
+        "variant": "secondary"
+      },
+      {
+        "id": "ordersTable",
+        "component": "Table",
+        "columns": [
+          "colId",
+          "colCustomer",
+          "colTotal",
+          "colStatus"
+        ]
+      },
+      {
+        "id": "colId",
+        "component": "Col",
+        "label": "Order ID",
+        "data": [
+          "#10482",
+          "#10481",
+          "#10480",
+          "#10479",
+          "#10478"
+        ]
+      },
+      {
+        "id": "colCustomer",
+        "component": "Col",
+        "label": "Customer",
+        "data": [
+          "Jane Smith",
+          "Omar Farouk",
+          "Lena Fischer",
+          "Diego Ramírez",
+          "Aisha Khan"
+        ]
+      },
+      {
+        "id": "colTotal",
+        "component": "Col",
+        "label": "Total",
+        "data": [
+          "$212.50",
+          "$89.99",
+          "$154.20",
+          "$67.40",
+          "$301.75"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Pending",
+          "Processing",
+          "Shipped",
+          "Pending",
+          "Processing"
+        ]
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": [
+          "fulfillBtn",
+          "refreshBtn"
+        ]
+      },
+      {
+        "id": "fulfillBtn",
+        "component": "Button",
+        "label": "Mark selected order fulfilled",
+        "variant": "primary"
+      },
+      {
+        "id": "refreshBtn",
+        "component": "Button",
+        "label": "Refresh data",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
 </a2ui-json>
 
-All nine items are covered: **1–3** orders today (142), revenue ($18,940), and AOV ($133.38) as stat cards; **4** the recent orders table with ID, customer, total, and status; **5** the status filter dropdown; **6** the customer name search field; **7** the 3.2% refund rate with a progress bar against threshold; **8** the 4-week order volume bar chart; **9** the "Mark Fulfilled" action column in the table.
+All nine requirements are covered: KPIs for today's orders, revenue, AOV, and monthly refund rate (1, 2, 3, 7); a recent orders table with ID, customer, total, and status (4); a status dropdown (5) and customer name search (6); a 4-week order volume line chart (8); and a "Mark selected order fulfilled" button (9). Want me to add pagination for the orders table or a confirmation dialog for fulfillment?

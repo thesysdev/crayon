@@ -1,80 +1,80 @@
-Your Content Studio is ready — all 8 studio controls on one screen:
+Your editor's content studio is ready — drafts, publishing queue, readership and community in one view.
 
 <a2ui-json>
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "editor-content-studio",
+    "surfaceId": "main",
     "catalogId": "thesys.dev:c1-openui"
   }
 }
-</a2ui-json> <a2ui-json>
+</a2ui-json>
+
+<a2ui-json>
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "editor-content-studio",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "direction": "column",
-        "gap": "l",
         "children": [
           "header",
-          "filterCard",
-          "kpiRow",
-          "draftsCard",
-          "publishedCard",
-          "scheduleCard",
-          "commentsCard",
-          "newDraftCard"
-        ],
-        "variant": "clear"
+          "toolbar",
+          "draftsHeader",
+          "draftsTable",
+          "publishedHeader",
+          "publishedTable",
+          "mostReadHeader",
+          "mostReadCard",
+          "readershipHeader",
+          "readershipChart",
+          "scheduleHeader",
+          "scheduleForm",
+          "commentsHeader",
+          "commentsList",
+          "footerActions"
+        ]
       },
       {
         "id": "header",
         "component": "CardHeader",
-        "title": "Content Studio",
-        "subtitle": "Manage drafts, publishing, and audience — all in one place"
+        "title": "Editor's Content Studio",
+        "subtitle": "Manage drafts, publishing, readership and reader conversations — all in one place"
       },
       {
-        "id": "filterCard",
+        "id": "toolbar",
         "component": "Card",
-        "variant": "sunk",
+        "variant": "clear",
         "direction": "row",
         "gap": "m",
-        "align": "center",
+        "align": "end",
         "justify": "between",
         "children": [
-          "filterText",
-          "categoryControl"
+          "filterControl",
+          "toolbarActions"
         ]
       },
       {
-        "id": "filterText",
-        "component": "TextContent",
-        "text": "**Narrow by category** to filter drafts, published pieces, and comments",
-        "size": "small-heavy"
-      },
-      {
-        "id": "categoryControl",
+        "id": "filterControl",
         "component": "FormControl",
-        "label": "Category",
+        "label": "Narrow by category",
         "input": "categorySelect",
-        "hint": "Filters all lists below"
+        "hint": "Filters drafts, published & most-read below"
       },
       {
         "id": "categorySelect",
         "component": "Select",
-        "name": "categoryFilter",
+        "name": "category",
         "placeholder": "All categories",
         "items": [
           "catAll",
           "catNews",
-          "catCulture",
-          "catTech",
           "catOpinion",
-          "catSports"
+          "catCulture",
+          "catBusiness",
+          "catTech"
         ]
       },
       {
@@ -90,225 +90,114 @@ Your Content Studio is ready — all 8 studio controls on one screen:
         "label": "News"
       },
       {
-        "id": "catCulture",
-        "component": "SelectItem",
-        "value": "culture",
-        "label": "Culture"
-      },
-      {
-        "id": "catTech",
-        "component": "SelectItem",
-        "value": "tech",
-        "label": "Tech"
-      },
-      {
         "id": "catOpinion",
         "component": "SelectItem",
         "value": "opinion",
         "label": "Opinion"
       },
       {
-        "id": "catSports",
+        "id": "catCulture",
         "component": "SelectItem",
-        "value": "sports",
-        "label": "Sports"
+        "value": "culture",
+        "label": "Culture"
       },
       {
-        "id": "kpiRow",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "gap": "m",
-        "children": [
-          "mostReadCard",
-          "readershipCard"
+        "id": "catBusiness",
+        "component": "SelectItem",
+        "value": "business",
+        "label": "Business"
+      },
+      {
+        "id": "catTech",
+        "component": "SelectItem",
+        "value": "technology",
+        "label": "Technology"
+      },
+      {
+        "id": "toolbarActions",
+        "component": "Buttons",
+        "buttons": [
+          "newDraftBtn",
+          "scheduleJumpBtn"
         ]
       },
       {
-        "id": "mostReadCard",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "children": [
-          "mostReadHeader",
-          "mostReadTitle",
-          "mostReadMeta",
-          "mostReadTagBlock"
-        ]
+        "id": "newDraftBtn",
+        "component": "Button",
+        "label": "+ Start New Draft",
+        "variant": "primary"
       },
       {
-        "id": "mostReadHeader",
-        "component": "CardHeader",
-        "title": "Most-Read This Month",
-        "subtitle": "Top performer • June 2026"
-      },
-      {
-        "id": "mostReadTitle",
-        "component": "Heading",
-        "text": "The Quiet Power of Local Libraries",
-        "level": "h3"
-      },
-      {
-        "id": "mostReadMeta",
-        "component": "TextContent",
-        "text": "By Maya Chen • Culture • 42.8K reads • 4.2 min avg. read • Published Jun 3",
-        "size": "small"
-      },
-      {
-        "id": "mostReadTagBlock",
-        "component": "TagBlock",
-        "tags": [
-          "Culture",
-          "#1 in 30 days",
-          "Trending ↑ 18%"
-        ]
-      },
-      {
-        "id": "readershipCard",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "children": [
-          "readershipHeader",
-          "readershipChart"
-        ]
-      },
-      {
-        "id": "readershipHeader",
-        "component": "CardHeader",
-        "title": "Readership — Past 30 Days",
-        "subtitle": "Daily unique readers • May 19 – Jun 18"
-      },
-      {
-        "id": "readershipChart",
-        "component": "LineChart",
-        "labels": [
-          "May 19",
-          "May 24",
-          "May 29",
-          "Jun 03",
-          "Jun 08",
-          "Jun 13",
-          "Jun 18"
-        ],
-        "series": [
-          "readershipSeries"
-        ],
-        "variant": "natural",
-        "xLabel": "Date",
-        "yLabel": "Readers"
-      },
-      {
-        "id": "readershipSeries",
-        "component": "Series",
-        "category": "Readers",
-        "values": [
-          1240,
-          1820,
-          2150,
-          3420,
-          2780,
-          4120,
-          3860
-        ]
-      },
-      {
-        "id": "draftsCard",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "children": [
-          "draftsHeader",
-          "draftsTable"
-        ]
+        "id": "scheduleJumpBtn",
+        "component": "Button",
+        "label": "Schedule a piece",
+        "variant": "secondary"
       },
       {
         "id": "draftsHeader",
         "component": "CardHeader",
-        "title": "Drafts",
-        "subtitle": "5 drafts • status for each"
+        "title": "1. Drafts — status for each",
+        "subtitle": "4 active drafts • Filtered by category above"
       },
       {
         "id": "draftsTable",
         "component": "Table",
         "columns": [
-          "draftTitleCol",
-          "draftStatusCol",
-          "draftCategoryCol",
-          "draftUpdatedCol"
+          "draftsTitleCol",
+          "draftsCategoryCol",
+          "draftsStatusCol",
+          "draftsUpdatedCol"
         ]
       },
       {
-        "id": "draftTitleCol",
+        "id": "draftsTitleCol",
         "component": "Col",
-        "label": "Title",
+        "label": "Draft Title",
         "data": [
           "The Future of Remote Work",
-          "City Hall's Budget Battle",
-          "A Guide to Fermentation",
-          "Interview: The Climate Architect",
-          "Weekend Escapes: Hudson Valley"
-        ],
-        "type": "string"
+          "City Budget Explained",
+          "Interview: Maya Chen on AI Ethics",
+          "Weekend Food Guide: Eastside"
+        ]
       },
       {
-        "id": "draftStatusCol",
+        "id": "draftsCategoryCol",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Business",
+          "News",
+          "Technology",
+          "Culture"
+        ]
+      },
+      {
+        "id": "draftsStatusCol",
         "component": "Col",
         "label": "Status",
         "data": [
           "In Review",
-          "Draft",
+          "Drafting",
           "Needs Edits",
-          "Ready to Publish",
-          "Pitch"
-        ],
-        "type": "string"
+          "Ready to Publish"
+        ]
       },
       {
-        "id": "draftCategoryCol",
+        "id": "draftsUpdatedCol",
         "component": "Col",
-        "label": "Category",
+        "label": "Last Updated",
         "data": [
-          "Tech",
-          "News",
-          "Culture",
-          "Opinion",
-          "Culture"
-        ],
-        "type": "string"
-      },
-      {
-        "id": "draftUpdatedCol",
-        "component": "Col",
-        "label": "Updated",
-        "data": [
-          "Jun 17",
-          "Jun 16",
-          "Jun 15",
-          "Jun 14",
-          "Jun 12"
-        ],
-        "type": "string"
-      },
-      {
-        "id": "publishedCard",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "children": [
-          "publishedHeader",
-          "publishedTable"
+          "2h ago",
+          "Yesterday",
+          "Aug 16",
+          "Aug 15"
         ]
       },
       {
         "id": "publishedHeader",
         "component": "CardHeader",
-        "title": "Published This Week",
-        "subtitle": "4 pieces • Jun 12 – Jun 18"
+        "title": "2. Pieces published this week",
+        "subtitle": "5 articles • Aug 12 – Aug 18"
       },
       {
         "id": "publishedTable",
@@ -325,119 +214,177 @@ Your Content Studio is ready — all 8 studio controls on one screen:
         "component": "Col",
         "label": "Title",
         "data": [
-          "Why Downtown Is Coming Back",
-          "The Quiet Power of Local Libraries",
-          "AI Tools Every Reporter Needs",
-          "A Letter From the Editor"
-        ],
-        "type": "string"
+          "Housing Prices Stall in Q3",
+          "Opinion: Why Transit Matters",
+          "Local Bookstore Turns 50",
+          "Tech Funding Dips Again",
+          "Photo Essay: Summer Markets"
+        ]
       },
       {
         "id": "pubCategoryCol",
         "component": "Col",
         "label": "Category",
         "data": [
-          "News",
+          "Business",
+          "Opinion",
           "Culture",
-          "Tech",
-          "Opinion"
-        ],
-        "type": "string"
+          "Technology",
+          "Culture"
+        ]
       },
       {
         "id": "pubDateCol",
         "component": "Col",
-        "label": "Date",
+        "label": "Published",
         "data": [
-          "Jun 17",
-          "Jun 15",
-          "Jun 13",
-          "Jun 12"
-        ],
-        "type": "string"
+          "Aug 12",
+          "Aug 13",
+          "Aug 14",
+          "Aug 15",
+          "Aug 16"
+        ]
       },
       {
         "id": "pubViewsCol",
         "component": "Col",
         "label": "Views",
         "data": [
-          8200,
-          12400,
-          5600,
-          3100
-        ],
-        "type": "number"
+          "12.4k",
+          "8.1k",
+          "6.7k",
+          "9.3k",
+          "11.2k"
+        ]
       },
       {
-        "id": "scheduleCard",
+        "id": "mostReadHeader",
+        "component": "CardHeader",
+        "title": "3. Most-read article this month",
+        "subtitle": "Highest readership in August"
+      },
+      {
+        "id": "mostReadCard",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
+        "variant": "sunk",
         "children": [
-          "scheduleHeader",
-          "scheduleForm"
+          "mostReadBadge",
+          "mostReadTitle",
+          "mostReadMeta",
+          "mostReadStats"
+        ]
+      },
+      {
+        "id": "mostReadBadge",
+        "component": "Badge",
+        "text": "#1 Most Read • 84.5k reads",
+        "variant": "default"
+      },
+      {
+        "id": "mostReadTitle",
+        "component": "TextContent",
+        "text": "## Investigation: Water Rights in the Valley\nBy Sarah Lin • News • Published Aug 2, 2026",
+        "size": "large"
+      },
+      {
+        "id": "mostReadMeta",
+        "component": "TextContent",
+        "text": "A 3-part series on allocation, drought, and the fight over the aquifer. Avg. read time 8 min • 342 comments • 1.2k shares",
+        "size": "small"
+      },
+      {
+        "id": "mostReadStats",
+        "component": "TagBlock",
+        "tags": [
+          "🏆 Top in News",
+          "📈 +22% vs last month's top",
+          "⏱ Trending for 14 days"
+        ]
+      },
+      {
+        "id": "readershipHeader",
+        "component": "CardHeader",
+        "title": "4. Readership over the past 30 days",
+        "subtitle": "Daily unique readers • Jul 19 – Aug 18"
+      },
+      {
+        "id": "readershipChart",
+        "component": "AreaChart",
+        "labels": [
+          "Jul 19",
+          "Jul 24",
+          "Jul 29",
+          "Aug 3",
+          "Aug 8",
+          "Aug 13",
+          "Aug 18"
+        ],
+        "series": [
+          "readershipSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Date",
+        "yLabel": "Readers"
+      },
+      {
+        "id": "readershipSeries",
+        "component": "Series",
+        "category": "Unique Readers",
+        "values": [
+          18200,
+          22100,
+          24500,
+          28900,
+          34200,
+          38100,
+          41500
         ]
       },
       {
         "id": "scheduleHeader",
         "component": "CardHeader",
-        "title": "Schedule a Piece",
-        "subtitle": "Set title and publish date to queue for publishing"
+        "title": "6. Schedule a piece",
+        "subtitle": "Set title and publish date — adds to your publishing calendar"
       },
       {
         "id": "scheduleForm",
         "component": "Form",
-        "name": "scheduleForm",
+        "name": "schedule-piece",
         "buttons": "scheduleButtons",
         "fields": [
-          "fcTitle",
-          "fcDate",
-          "fcCategorySchedule"
+          "scheduleTitleControl",
+          "scheduleDateControl",
+          "scheduleCategoryControl"
         ]
       },
       {
-        "id": "scheduleButtons",
-        "component": "Buttons",
-        "buttons": [
-          "scheduleSubmitBtn"
-        ]
-      },
-      {
-        "id": "scheduleSubmitBtn",
-        "component": "Button",
-        "label": "Schedule Publish",
-        "variant": "primary"
-      },
-      {
-        "id": "fcTitle",
+        "id": "scheduleTitleControl",
         "component": "FormControl",
-        "label": "Piece Title",
-        "input": "titleInput",
-        "hint": "e.g., The Summer Reading List"
+        "label": "Article title",
+        "input": "scheduleTitleInput",
+        "hint": "e.g., The Future of Remote Work"
       },
       {
-        "id": "titleInput",
+        "id": "scheduleTitleInput",
         "component": "Input",
-        "name": "pieceTitle",
-        "placeholder": "Enter article title",
-        "type": "text"
+        "name": "title",
+        "placeholder": "Enter headline"
       },
       {
-        "id": "fcDate",
+        "id": "scheduleDateControl",
         "component": "FormControl",
-        "label": "Publish Date",
-        "input": "publishDatePicker",
-        "hint": "Pick a future date"
+        "label": "Publish date",
+        "input": "scheduleDatePicker",
+        "hint": "Choose date and time for publication"
       },
       {
-        "id": "publishDatePicker",
+        "id": "scheduleDatePicker",
         "component": "DatePicker",
-        "name": "publishDate",
+        "name": "publish_date",
         "mode": "single"
       },
       {
-        "id": "fcCategorySchedule",
+        "id": "scheduleCategoryControl",
         "component": "FormControl",
         "label": "Category",
         "input": "scheduleCategorySelect"
@@ -445,135 +392,116 @@ Your Content Studio is ready — all 8 studio controls on one screen:
       {
         "id": "scheduleCategorySelect",
         "component": "Select",
-        "name": "scheduleCategory",
+        "name": "schedule_category",
         "placeholder": "Select category",
         "items": [
-          "schedCatNews",
-          "schedCatCulture",
-          "schedCatTech",
-          "schedCatOpinion"
+          "schedNews",
+          "schedOpinion",
+          "schedCulture",
+          "schedBusiness",
+          "schedTech"
         ]
       },
       {
-        "id": "schedCatNews",
+        "id": "schedNews",
         "component": "SelectItem",
         "value": "news",
         "label": "News"
       },
       {
-        "id": "schedCatCulture",
-        "component": "SelectItem",
-        "value": "culture",
-        "label": "Culture"
-      },
-      {
-        "id": "schedCatTech",
-        "component": "SelectItem",
-        "value": "tech",
-        "label": "Tech"
-      },
-      {
-        "id": "schedCatOpinion",
+        "id": "schedOpinion",
         "component": "SelectItem",
         "value": "opinion",
         "label": "Opinion"
       },
       {
-        "id": "commentsCard",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "children": [
-          "commentsHeader",
-          "commentsTable"
+        "id": "schedCulture",
+        "component": "SelectItem",
+        "value": "culture",
+        "label": "Culture"
+      },
+      {
+        "id": "schedBusiness",
+        "component": "SelectItem",
+        "value": "business",
+        "label": "Business"
+      },
+      {
+        "id": "schedTech",
+        "component": "SelectItem",
+        "value": "technology",
+        "label": "Technology"
+      },
+      {
+        "id": "scheduleButtons",
+        "component": "Buttons",
+        "buttons": [
+          "scheduleSubmitBtn",
+          "scheduleCancelBtn"
         ]
+      },
+      {
+        "id": "scheduleSubmitBtn",
+        "component": "Button",
+        "label": "Schedule Publication",
+        "variant": "primary"
+      },
+      {
+        "id": "scheduleCancelBtn",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "tertiary"
       },
       {
         "id": "commentsHeader",
         "component": "CardHeader",
-        "title": "Comments Awaiting Reply",
-        "subtitle": "3 comments need your response"
+        "title": "7. Comments awaiting reply",
+        "subtitle": "3 threads need your response"
       },
       {
-        "id": "commentsTable",
-        "component": "Table",
-        "columns": [
-          "commentArticleCol",
-          "commentAuthorCol",
-          "commentExcerptCol",
-          "commentAgeCol"
+        "id": "commentsList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "comment1",
+          "comment2",
+          "comment3"
         ]
       },
       {
-        "id": "commentArticleCol",
-        "component": "Col",
-        "label": "Article",
-        "data": [
-          "Why Downtown Is Coming Back",
-          "AI Tools Every Reporter Needs",
-          "A Guide to Fermentation"
-        ],
-        "type": "string"
+        "id": "comment1",
+        "component": "ListItem",
+        "title": "Alex P. on “Housing Prices Stall in Q3”",
+        "subtitle": "“Great data, but what's the source for the chart on page 2? Readers are asking.” — 4h ago • Business",
+        "actionLabel": "Reply"
       },
       {
-        "id": "commentAuthorCol",
-        "component": "Col",
-        "label": "Author",
-        "data": [
-          "sarah.k",
-          "miguel_r",
-          "ana_lee"
-        ],
-        "type": "string"
+        "id": "comment2",
+        "component": "ListItem",
+        "title": "Jordan Lee on “Tech Funding Dips Again”",
+        "subtitle": "“Could you clarify the Series A numbers vs. last quarter? Seems inconsistent.” — 9h ago • Technology",
+        "actionLabel": "Reply"
       },
       {
-        "id": "commentExcerptCol",
-        "component": "Col",
-        "label": "Comment",
-        "data": [
-          "Great reporting — what about transit data?",
-          "Could you share the prompt you used?",
-          "Tried the recipe, amazing! Question on timing…"
-        ],
-        "type": "string"
+        "id": "comment3",
+        "component": "ListItem",
+        "title": "Samira K. on “Photo Essay: Summer Markets”",
+        "subtitle": "“Love these! Will you do a winter version? Happy to help with locations.” — Yesterday • Culture",
+        "actionLabel": "Reply"
       },
       {
-        "id": "commentAgeCol",
-        "component": "Col",
-        "label": "Waiting",
-        "data": [
-          "2h ago",
-          "5h ago",
-          "1d ago"
-        ],
-        "type": "string"
-      },
-      {
-        "id": "newDraftCard",
+        "id": "footerActions",
         "component": "Card",
-        "variant": "sunk",
-        "direction": "row",
-        "gap": "m",
-        "align": "center",
-        "justify": "between",
+        "variant": "clear",
         "children": [
-          "newDraftText",
-          "newDraftBtn"
+          "footerText"
         ]
       },
       {
-        "id": "newDraftText",
+        "id": "footerText",
         "component": "TextContent",
-        "text": "Ready to write? Start a fresh draft — it appears in Drafts as “Draft”.",
+        "text": "All 8 studio functions are on this screen: drafts with status (1), published this week (2), most-read this month (3), 30-day readership (4), category filter (5), schedule form with title + date (6), comments awaiting reply (7), and Start New Draft (8) at top.",
         "size": "small"
-      },
-      {
-        "id": "newDraftBtn",
-        "component": "Button",
-        "label": "+ Start New Draft",
-        "variant": "primary",
-        "size": "medium"
       }
     ]
   }

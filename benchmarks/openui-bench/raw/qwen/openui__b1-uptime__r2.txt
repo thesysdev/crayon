@@ -1,6 +1,8 @@
-root = Card([header, statusBadge, uptimeProgress, separator, incidentCallout])
-header = CardHeader("Platform Status", "API uptime & incident overview — June 2025")
-statusBadge = Badge("All Systems Operational", "secondary")
-uptimeProgress = Progress(99.97, "API Uptime — June 2025")
-separator = Separator()
-incidentCallout = Callout("warning", "Incident #4821 — Elevated API Latency", "On June 18 at 14:32 UTC, response times spiked above 2s due to a misconfigured connection pool. Root cause identified and fix deployed by 15:07 UTC. Total duration: 35 minutes. No data loss reported.")
+
+
+root = Card([header, uptimeSection, incidentSection])
+header = CardHeader("Platform Status", "API service health — June 2025")
+uptimeSection = Card([uptimeLabel, uptimeBar], "sunk", "column", "m")
+uptimeLabel = TextContent("API Uptime This Month", "small-heavy")
+uptimeBar = Progress(99.97, "99.97% — 42m 18s total downtime")
+incidentSection = Callout("info", "Most Recent Incident", "Elevated error rates on /v2/payments endpoint due to a database connection pool exhaustion. Resolved on June 18, 2025 at 14:32 UTC after scaling the pool and restarting affected pods. Duration: 23 minutes.")

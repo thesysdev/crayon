@@ -1,6 +1,485 @@
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"sales-account-page","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#2563EB","agentDisplayName":"Sales Account"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
+
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"sales-account-page","components":[{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["account_header","summary_row","renewal_warning","details_tabs","quick_actions"]},{"id":"account_header","component":"Card","variant":"card","direction":"column","gap":"s","children":["account_title","account_owner","account_tags"]},{"id":"account_title","component":"Heading","text":"Northstar Analytics","level":"h1"},{"id":"account_owner","component":"TextContent","text":"**Account owner:** Maya Chen · Enterprise Sales","size":"default"},{"id":"account_tags","component":"TagBlock","tags":["Enterprise","Strategic account","Active"]},{"id":"summary_row","component":"Card","variant":"sunk","direction":"row","gap":"l","wrap":true,"children":["deal_value_card","deal_stage_card","renewal_card"]},{"id":"deal_value_card","component":"Card","variant":"clear","direction":"column","gap":"xs","weight":1,"children":["deal_value_label","deal_value"]},{"id":"deal_value_label","component":"TextContent","text":"TOTAL DEAL VALUE","size":"small-heavy"},{"id":"deal_value","component":"Heading","text":"$485,000","level":"h2"},{"id":"deal_stage_card","component":"Card","variant":"clear","direction":"column","gap":"xs","weight":1,"children":["deal_stage_label","deal_stage"]},{"id":"deal_stage_label","component":"TextContent","text":"CURRENT DEAL STAGE","size":"small-heavy"},{"id":"deal_stage","component":"Tag","text":"Negotiation","variant":"warning","size":"lg"},{"id":"renewal_card","component":"Card","variant":"clear","direction":"column","gap":"xs","weight":1,"children":["renewal_label","renewal_date"]},{"id":"renewal_label","component":"TextContent","text":"RENEWAL DATE","size":"small-heavy"},{"id":"renewal_date","component":"Heading","text":"September 12, 2026","level":"h3"},{"id":"renewal_warning","component":"Alert","title":"Renewal approaching","description":"Renewal is due in 25 days. Confirm pricing, decision-makers, and procurement timeline this week.","variant":"warning"},{"id":"details_tabs","component":"Tabs","items":["activity_tab","contacts_tab","followups_tab"]},{"id":"activity_tab","component":"TabItem","value":"activity","trigger":"Recent activity","content":["activity_list"]},{"id":"activity_list","component":"ListBlock","variant":"number","items":["activity_1","activity_2","activity_3","activity_4"]},{"id":"activity_1","component":"ListItem","title":"Proposal reviewed","subtitle":"Today, 10:32 AM · Maya Chen shared the revised enterprise proposal"},{"id":"activity_2","component":"ListItem","title":"Call completed","subtitle":"August 17, 2026 · 32 minutes with Jordan Lee and Priya Shah"},{"id":"activity_3","component":"ListItem","title":"Security questionnaire received","subtitle":"August 15, 2026 · Added by Jordan Lee"},{"id":"activity_4","component":"ListItem","title":"Deal moved to Negotiation","subtitle":"August 12, 2026 · Updated by Maya Chen"},{"id":"contacts_tab","component":"TabItem","value":"contacts","trigger":"Contacts","content":["contacts_table"]},{"id":"contacts_table","component":"Table","columns":["contact_name_col","contact_role_col","contact_email_col"]},{"id":"contact_name_col","component":"Col","label":"Contact","type":"string","data":["Jordan Lee","Priya Shah","Marcus Reed"]},{"id":"contact_role_col","component":"Col","label":"Role","type":"string","data":["Economic buyer · VP Finance","Champion · Director of Analytics","Technical evaluator · Security Lead"]},{"id":"contact_email_col","component":"Col","label":"Email","type":"string","data":["jordan.lee@northstar.example","priya.shah@northstar.example","marcus.reed@northstar.example"]},{"id":"followups_tab","component":"TabItem","value":"followups","trigger":"Open follow-ups (3)","content":["followups_list"]},{"id":"followups_list","component":"ListBlock","variant":"number","items":["followup_1","followup_2","followup_3"]},{"id":"followup_1","component":"ListItem","title":"Send final pricing options","subtitle":"Due August 19, 2026 · Owner: Maya Chen","actionLabel":"Open"},{"id":"followup_2","component":"ListItem","title":"Schedule security review","subtitle":"Due August 21, 2026 · Owner: Maya Chen","actionLabel":"Open"},{"id":"followup_3","component":"ListItem","title":"Confirm procurement timeline","subtitle":"Due August 25, 2026 · Owner: Alex Kim","actionLabel":"Open"},{"id":"quick_actions","component":"Card","variant":"card","direction":"column","gap":"m","children":["quick_actions_header","actions_form"]},{"id":"quick_actions_header","component":"CardHeader","title":"Quick actions","subtitle":"Add an account note or record a completed call."},{"id":"actions_form","component":"Form","name":"account_activity","fields":["action_type_control","note_control","call_date_control","call_duration_control"],"buttons":"action_buttons"},{"id":"action_type_control","component":"FormControl","label":"Activity type","input":"action_type"},{"id":"action_type","component":"RadioGroup","name":"activityType","defaultValue":"note","items":["action_note","action_call"]},{"id":"action_note","component":"RadioItem","label":"Jot a note","description":"Save a note to the account timeline.","value":"note"},{"id":"action_call","component":"RadioItem","label":"Log a call","description":"Record call details and outcome.","value":"call"},{"id":"note_control","component":"FormControl","label":"Note or call summary","input":"note_input","hint":"Capture decisions, objections, next steps, or other context."},{"id":"note_input","component":"TextArea","name":"summary","placeholder":"Type your note or call summary…","rows":5,"rules":[{"required":true,"message":"A summary is required."}]},{"id":"call_date_control","component":"FormControl","label":"Call date","input":"call_date","hint":"Required when logging a call."},{"id":"call_date","component":"DatePicker","name":"callDate","mode":"single"},{"id":"call_duration_control","component":"FormControl","label":"Call duration (minutes)","input":"call_duration","hint":"Optional for notes."},{"id":"call_duration","component":"Input","name":"callDuration","type":"number","placeholder":"30"},{"id":"action_buttons","component":"Buttons","direction":"row","buttons":["save_note_button","log_call_button"]},{"id":"save_note_button","component":"Button","label":"Save note","variant":"secondary","size":"medium","action":[{"type":"submit","form":"account_activity","intent":"save_note"}]},{"id":"log_call_button","component":"Button","label":"Log call","variant":"primary","size":"medium","action":[{"type":"submit","form":"account_activity","intent":"log_call"}]}]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "accountSummary",
+          "renewalWarning",
+          "activitySection",
+          "contactsSection",
+          "followUpsSection",
+          "workspace"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Acme Corporation",
+        "subtitle": "Account owner: Maya Chen"
+      },
+      {
+        "id": "accountSummary",
+        "component": "Card",
+        "children": [
+          "dealValue",
+          "dealStage",
+          "renewalDate"
+        ],
+        "direction": "row",
+        "gap": "l",
+        "variant": "sunk"
+      },
+      {
+        "id": "dealValue",
+        "component": "Card",
+        "children": [
+          "dealValueLabel",
+          "dealValueAmount"
+        ],
+        "variant": "clear",
+        "gap": "xs",
+        "weight": 1
+      },
+      {
+        "id": "dealValueLabel",
+        "component": "TextContent",
+        "text": "Total deal value",
+        "size": "small"
+      },
+      {
+        "id": "dealValueAmount",
+        "component": "Heading",
+        "text": "$248,000",
+        "level": "h2"
+      },
+      {
+        "id": "dealStage",
+        "component": "Card",
+        "children": [
+          "dealStageLabel",
+          "dealStageBadge"
+        ],
+        "variant": "clear",
+        "gap": "xs",
+        "weight": 1
+      },
+      {
+        "id": "dealStageLabel",
+        "component": "TextContent",
+        "text": "Current deal stage",
+        "size": "small"
+      },
+      {
+        "id": "dealStageBadge",
+        "component": "Tag",
+        "text": "Proposal / Price Quote",
+        "variant": "info",
+        "size": "md"
+      },
+      {
+        "id": "renewalDate",
+        "component": "Card",
+        "children": [
+          "renewalDateLabel",
+          "renewalDateValue"
+        ],
+        "variant": "clear",
+        "gap": "xs",
+        "weight": 1
+      },
+      {
+        "id": "renewalDateLabel",
+        "component": "TextContent",
+        "text": "Renewal date",
+        "size": "small"
+      },
+      {
+        "id": "renewalDateValue",
+        "component": "Heading",
+        "text": "September 12, 2026",
+        "level": "h3"
+      },
+      {
+        "id": "renewalWarning",
+        "component": "Alert",
+        "title": "Renewal approaching",
+        "description": "This account renews in 25 days. Confirm pricing and begin renewal outreach this week.",
+        "variant": "warning"
+      },
+      {
+        "id": "activitySection",
+        "component": "Card",
+        "children": [
+          "activityHeader",
+          "activityList"
+        ],
+        "variant": "clear",
+        "gap": "m"
+      },
+      {
+        "id": "activityHeader",
+        "component": "Heading",
+        "text": "Recent activity",
+        "level": "h2"
+      },
+      {
+        "id": "activityList",
+        "component": "ListBlock",
+        "items": [
+          "activity1",
+          "activity2",
+          "activity3",
+          "activity4"
+        ],
+        "variant": "number"
+      },
+      {
+        "id": "activity1",
+        "component": "ListItem",
+        "title": "Proposal shared with buying committee",
+        "subtitle": "August 18, 2026 at 10:30 AM · Maya Chen"
+      },
+      {
+        "id": "activity2",
+        "component": "ListItem",
+        "title": "Discovery call completed",
+        "subtitle": "August 15, 2026 at 2:00 PM · 42 minutes"
+      },
+      {
+        "id": "activity3",
+        "component": "ListItem",
+        "title": "Security questionnaire received",
+        "subtitle": "August 13, 2026 at 4:18 PM · From Priya Shah"
+      },
+      {
+        "id": "activity4",
+        "component": "ListItem",
+        "title": "Opportunity advanced to Proposal / Price Quote",
+        "subtitle": "August 11, 2026 at 9:05 AM · Maya Chen"
+      },
+      {
+        "id": "contactsSection",
+        "component": "Card",
+        "children": [
+          "contactsHeader",
+          "contactsTable"
+        ],
+        "variant": "clear",
+        "gap": "m"
+      },
+      {
+        "id": "contactsHeader",
+        "component": "Heading",
+        "text": "Contacts",
+        "level": "h2"
+      },
+      {
+        "id": "contactsTable",
+        "component": "Table",
+        "columns": [
+          "contactName",
+          "contactRole",
+          "contactEmail"
+        ]
+      },
+      {
+        "id": "contactName",
+        "component": "Col",
+        "label": "Contact",
+        "data": [
+          "Priya Shah",
+          "Daniel Brooks",
+          "Elena García"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "contactRole",
+        "component": "Col",
+        "label": "Role",
+        "data": [
+          "Economic buyer · VP Operations",
+          "Champion · Director of Revenue Operations",
+          "Technical evaluator · Head of IT"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "contactEmail",
+        "component": "Col",
+        "label": "Email",
+        "data": [
+          "priya.shah@acme.example",
+          "daniel.brooks@acme.example",
+          "elena.garcia@acme.example"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "followUpsSection",
+        "component": "Card",
+        "children": [
+          "followUpsHeader",
+          "followUpsTable"
+        ],
+        "variant": "clear",
+        "gap": "m"
+      },
+      {
+        "id": "followUpsHeader",
+        "component": "Heading",
+        "text": "Open follow-ups",
+        "level": "h2"
+      },
+      {
+        "id": "followUpsTable",
+        "component": "Table",
+        "columns": [
+          "followUpTask",
+          "followUpDue",
+          "followUpOwner"
+        ]
+      },
+      {
+        "id": "followUpTask",
+        "component": "Col",
+        "label": "Follow-up",
+        "data": [
+          "Send revised pricing options",
+          "Schedule technical validation",
+          "Confirm renewal stakeholders"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "followUpDue",
+        "component": "Col",
+        "label": "Due date",
+        "data": [
+          "August 20, 2026",
+          "August 22, 2026",
+          "August 25, 2026"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "followUpOwner",
+        "component": "Col",
+        "label": "Owner",
+        "data": [
+          "Maya Chen",
+          "Maya Chen",
+          "Maya Chen"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "workspace",
+        "component": "Tabs",
+        "items": [
+          "noteTab",
+          "callTab"
+        ]
+      },
+      {
+        "id": "noteTab",
+        "component": "TabItem",
+        "value": "note",
+        "trigger": "Jot a note",
+        "content": [
+          "noteForm"
+        ]
+      },
+      {
+        "id": "noteForm",
+        "component": "Form",
+        "name": "account-note",
+        "buttons": "noteButtons",
+        "fields": [
+          "noteField"
+        ]
+      },
+      {
+        "id": "noteField",
+        "component": "FormControl",
+        "label": "Account note",
+        "input": "noteInput",
+        "hint": "Capture context, objections, or next steps."
+      },
+      {
+        "id": "noteInput",
+        "component": "TextArea",
+        "name": "note",
+        "placeholder": "Add a note about Acme Corporation...",
+        "rows": 5
+      },
+      {
+        "id": "noteButtons",
+        "component": "Buttons",
+        "buttons": [
+          "saveNoteButton"
+        ]
+      },
+      {
+        "id": "saveNoteButton",
+        "component": "Button",
+        "label": "Save note",
+        "variant": "primary"
+      },
+      {
+        "id": "callTab",
+        "component": "TabItem",
+        "value": "call",
+        "trigger": "Log a call",
+        "content": [
+          "callForm"
+        ]
+      },
+      {
+        "id": "callForm",
+        "component": "Form",
+        "name": "call-log",
+        "buttons": "callButtons",
+        "fields": [
+          "callContactField",
+          "callDateField",
+          "callOutcomeField",
+          "callSummaryField"
+        ]
+      },
+      {
+        "id": "callContactField",
+        "component": "FormControl",
+        "label": "Contact",
+        "input": "callContactSelect"
+      },
+      {
+        "id": "callContactSelect",
+        "component": "Select",
+        "name": "contact",
+        "items": [
+          "callContactPriya",
+          "callContactDaniel",
+          "callContactElena"
+        ],
+        "placeholder": "Choose a contact"
+      },
+      {
+        "id": "callContactPriya",
+        "component": "SelectItem",
+        "value": "priya-shah",
+        "label": "Priya Shah"
+      },
+      {
+        "id": "callContactDaniel",
+        "component": "SelectItem",
+        "value": "daniel-brooks",
+        "label": "Daniel Brooks"
+      },
+      {
+        "id": "callContactElena",
+        "component": "SelectItem",
+        "value": "elena-garcia",
+        "label": "Elena García"
+      },
+      {
+        "id": "callDateField",
+        "component": "FormControl",
+        "label": "Call date",
+        "input": "callDateInput"
+      },
+      {
+        "id": "callDateInput",
+        "component": "DatePicker",
+        "name": "call_date",
+        "mode": "single"
+      },
+      {
+        "id": "callOutcomeField",
+        "component": "FormControl",
+        "label": "Outcome",
+        "input": "callOutcomeSelect"
+      },
+      {
+        "id": "callOutcomeSelect",
+        "component": "Select",
+        "name": "outcome",
+        "items": [
+          "outcomeConnected",
+          "outcomeVoicemail",
+          "outcomeNoAnswer",
+          "outcomeFollowUp"
+        ],
+        "placeholder": "Select an outcome"
+      },
+      {
+        "id": "outcomeConnected",
+        "component": "SelectItem",
+        "value": "connected",
+        "label": "Connected"
+      },
+      {
+        "id": "outcomeVoicemail",
+        "component": "SelectItem",
+        "value": "voicemail",
+        "label": "Left voicemail"
+      },
+      {
+        "id": "outcomeNoAnswer",
+        "component": "SelectItem",
+        "value": "no-answer",
+        "label": "No answer"
+      },
+      {
+        "id": "outcomeFollowUp",
+        "component": "SelectItem",
+        "value": "follow-up-needed",
+        "label": "Follow-up needed"
+      },
+      {
+        "id": "callSummaryField",
+        "component": "FormControl",
+        "label": "Call summary",
+        "input": "callSummaryInput"
+      },
+      {
+        "id": "callSummaryInput",
+        "component": "TextArea",
+        "name": "call_summary",
+        "placeholder": "What was discussed, and what happens next?",
+        "rows": 5
+      },
+      {
+        "id": "callButtons",
+        "component": "Buttons",
+        "buttons": [
+          "logCallButton"
+        ]
+      },
+      {
+        "id": "logCallButton",
+        "component": "Button",
+        "label": "Log call",
+        "variant": "primary"
+      }
+    ]
+  }
+}
 </a2ui-json>

@@ -1,680 +1,731 @@
-Here is the store manager's daily console dashboard covering all requested metrics, status indicators, and actions.
+Here is the complete store manager's daily console covering all 12 items on a single interactive screen.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "store_manager_console",
-      "catalogId": "thesys.dev:c1-openui",
-      "theme": {
-        "primaryColor": "#0F172A",
-        "agentDisplayName": "Retail Operations Console"
-      }
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "store_manager_console",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "column",
-          "gap": "l",
-          "children": [
-            "top_bar",
-            "tabs_container",
-            "followups"
-          ]
-        },
-        {
-          "id": "top_bar",
-          "component": "Card",
-          "variant": "card",
-          "direction": "row",
-          "align": "center",
-          "justify": "between",
-          "gap": "m",
-          "children": [
-            "header_info",
-            "store_selector_control"
-          ]
-        },
-        {
-          "id": "header_info",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "column",
-          "gap": "xs",
-          "children": [
-            "main_heading",
-            "header_sub"
-          ]
-        },
-        {
-          "id": "main_heading",
-          "component": "Heading",
-          "level": "h2",
-          "text": "Daily Store Manager Console"
-        },
-        {
-          "id": "header_sub",
-          "component": "TextContent",
-          "text": "Real-time performance, inventory alerts, and shift operations",
-          "size": "small"
-        },
-        {
-          "id": "store_selector_control",
-          "component": "FormControl",
-          "label": "Viewing Location (Item 11)",
-          "input": "store_select",
-          "hint": "Switch active store view"
-        },
-        {
-          "id": "store_select",
-          "component": "Select",
-          "name": "storeLocation",
-          "value": "store_104",
-          "items": [
-            "store_opt_104",
-            "store_opt_102",
-            "store_opt_108",
-            "store_opt_201"
-          ]
-        },
-        {
-          "id": "store_opt_104",
-          "component": "SelectItem",
-          "value": "store_104",
-          "label": "Store #104 - Downtown Flagship"
-        },
-        {
-          "id": "store_opt_102",
-          "component": "SelectItem",
-          "value": "store_102",
-          "label": "Store #102 - Westside Mall"
-        },
-        {
-          "id": "store_opt_108",
-          "component": "SelectItem",
-          "value": "store_108",
-          "label": "Store #108 - North Metro"
-        },
-        {
-          "id": "store_opt_201",
-          "component": "SelectItem",
-          "value": "store_201",
-          "label": "Store #201 - Airport Plaza"
-        },
-        {
-          "id": "tabs_container",
-          "component": "Tabs",
-          "items": [
-            "tab_overview",
-            "tab_inventory",
-            "tab_ops"
-          ]
-        },
-        {
-          "id": "tab_overview",
-          "component": "TabItem",
-          "value": "overview",
-          "trigger": "Executive Overview",
-          "content": [
-            "overview_kpi_card",
-            "charts_row",
-            "weekly_comp_card"
-          ]
-        },
-        {
-          "id": "overview_kpi_card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "sales_header",
-            "sales_progress",
-            "kpi_metrics_row"
-          ]
-        },
-        {
-          "id": "sales_header",
-          "component": "CardHeader",
-          "title": "Sales Today vs Target (Item 1)",
-          "subtitle": "$14,250 achieved of $18,000 daily goal (79.2%)"
-        },
-        {
-          "id": "sales_progress",
-          "component": "Progress",
-          "value": 79.2,
-          "label": "79.2% of Daily Target"
-        },
-        {
-          "id": "kpi_metrics_row",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "row",
-          "align": "center",
-          "justify": "around",
-          "children": [
-            "kpi_basket",
-            "kpi_returns"
-          ]
-        },
-        {
-          "id": "kpi_basket",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "column",
-          "gap": "xs",
-          "children": [
-            "basket_title",
-            "basket_value"
-          ]
-        },
-        {
-          "id": "basket_title",
-          "component": "TextContent",
-          "text": "Average Basket Size (Item 6)",
-          "size": "small"
-        },
-        {
-          "id": "basket_value",
-          "component": "Heading",
-          "level": "h3",
-          "text": "$68.40 / 3.2 items"
-        },
-        {
-          "id": "kpi_returns",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "column",
-          "gap": "xs",
-          "children": [
-            "returns_title",
-            "returns_value"
-          ]
-        },
-        {
-          "id": "returns_title",
-          "component": "TextContent",
-          "text": "Returns This Week (Item 7)",
-          "size": "small"
-        },
-        {
-          "id": "returns_value",
-          "component": "Heading",
-          "level": "h3",
-          "text": "$1,420 (38 transactions)"
-        },
-        {
-          "id": "charts_row",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "m",
-          "children": [
-            "traffic_card",
-            "promo_card"
-          ]
-        },
-        {
-          "id": "traffic_card",
-          "component": "Card",
-          "variant": "card",
-          "weight": 1,
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "traffic_header",
-            "traffic_chart"
-          ]
-        },
-        {
-          "id": "traffic_header",
-          "component": "CardHeader",
-          "title": "Foot Traffic Through the Day (Item 2)",
-          "subtitle": "Hourly visitor count from door sensors"
-        },
-        {
-          "id": "traffic_chart",
-          "component": "AreaChart",
-          "labels": ["8 AM", "10 AM", "12 PM", "2 PM", "4 PM", "6 PM", "8 PM"],
-          "series": ["traffic_series"],
-          "variant": "natural",
-          "xLabel": "Hour",
-          "yLabel": "Visitors"
-        },
-        {
-          "id": "traffic_series",
-          "component": "Series",
-          "category": "Hourly Foot Traffic",
-          "values": [45, 120, 310, 240, 380, 410, 190]
-        },
-        {
-          "id": "promo_card",
-          "component": "Card",
-          "variant": "card",
-          "weight": 1,
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "promo_header",
-            "promo_chart"
-          ]
-        },
-        {
-          "id": "promo_header",
-          "component": "CardHeader",
-          "title": "Running Promotions Performance (Item 8)",
-          "subtitle": "Revenue generated by active campaigns ($)"
-        },
-        {
-          "id": "promo_chart",
-          "component": "HorizontalBarChart",
-          "labels": ["BOGO Coffee Beans", "Summer Apparel 20%", "Tech Accessories BNDL", "Loyalty Double Pts"],
-          "series": ["promo_series"],
-          "xLabel": "Revenue ($)",
-          "yLabel": "Campaign"
-        },
-        {
-          "id": "promo_series",
-          "component": "Series",
-          "category": "Promo Revenue",
-          "values": [4200, 3100, 2850, 1900]
-        },
-        {
-          "id": "weekly_comp_card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "comp_header",
-            "comp_chart"
-          ]
-        },
-        {
-          "id": "comp_header",
-          "component": "CardHeader",
-          "title": "This Week Compared With Last Week (Item 12)",
-          "subtitle": "Daily revenue comparison ($)"
-        },
-        {
-          "id": "comp_chart",
-          "component": "BarChart",
-          "labels": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-          "series": ["series_this_week", "series_last_week"],
-          "variant": "grouped",
-          "xLabel": "Day",
-          "yLabel": "Revenue ($)"
-        },
-        {
-          "id": "series_this_week",
-          "component": "Series",
-          "category": "This Week",
-          "values": [12400, 13800, 14250, 0, 0, 0, 0]
-        },
-        {
-          "id": "series_last_week",
-          "component": "Series",
-          "category": "Last Week",
-          "values": [11800, 12900, 13500, 15100, 18200, 21000, 16400]
-        },
-        {
-          "id": "tab_inventory",
-          "component": "TabItem",
-          "value": "inventory",
-          "trigger": "Inventory & Products",
-          "content": [
-            "inventory_layout"
-          ]
-        },
-        {
-          "id": "inventory_layout",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "m",
-          "children": [
-            "bestsellers_card",
-            "reorder_card"
-          ]
-        },
-        {
-          "id": "bestsellers_card",
-          "component": "Card",
-          "variant": "card",
-          "weight": 1,
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "bestsellers_header",
-            "bestsellers_table"
-          ]
-        },
-        {
-          "id": "bestsellers_header",
-          "component": "CardHeader",
-          "title": "Best Sellers Today (Item 3)",
-          "subtitle": "Top Performing Products by Units Sold"
-        },
-        {
-          "id": "bestsellers_table",
-          "component": "Table",
-          "columns": ["col_rank", "col_product", "col_units", "col_revenue"]
-        },
-        {
-          "id": "col_rank",
-          "component": "Col",
-          "label": "#",
-          "type": "number",
-          "data": [1, 2, 3, 4, 5]
-        },
-        {
-          "id": "col_product",
-          "component": "Col",
-          "label": "Product",
-          "type": "string",
-          "data": [
-            "Organic Dark Roast Espresso 12oz",
-            "Stainless Steel Water Bottle 24oz",
-            "Wireless Noise-Canceling Earbuds",
-            "Cotton Crewneck T-Shirt - Black",
-            "Oat Milk 1L Pack"
-          ]
-        },
-        {
-          "id": "col_units",
-          "component": "Col",
-          "label": "Units Sold",
-          "type": "number",
-          "data": [142, 98, 76, 64, 59]
-        },
-        {
-          "id": "col_revenue",
-          "component": "Col",
-          "label": "Revenue",
-          "type": "string",
-          "data": ["$2,130", "$1,960", "$6,840", "$1,280", "$295"]
-        },
-        {
-          "id": "reorder_card",
-          "component": "Card",
-          "variant": "card",
-          "weight": 1,
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "stock_alert",
-            "reorder_form_header",
-            "reorder_form"
-          ]
-        },
-        {
-          "id": "stock_alert",
-          "component": "Alert",
-          "variant": "destructive",
-          "title": "Items Out of Stock (Item 4)",
-          "description": "3 key items currently have zero inventory on floor: Gourmet Almond Butter, French Vanilla Syrup 750ml, Ergonomic Mouse Pads."
-        },
-        {
-          "id": "reorder_form_header",
-          "component": "CardHeader",
-          "title": "Quick Stock Reorder (Item 10)",
-          "subtitle": "Place urgent replenishment order directly to distribution center"
-        },
-        {
-          "id": "reorder_form",
-          "component": "Form",
-          "name": "quick_reorder_form",
-          "fields": [
-            "field_reorder_item",
-            "field_reorder_qty"
-          ],
-          "buttons": "reorder_buttons"
-        },
-        {
-          "id": "field_reorder_item",
-          "component": "FormControl",
-          "label": "Select Out of Stock Item",
-          "input": "reorder_item_select",
-          "hint": "Items flagged for stock replenishment"
-        },
-        {
-          "id": "reorder_item_select",
-          "component": "Select",
-          "name": "reorderItemSKU",
-          "placeholder": "Select item to reorder...",
-          "items": [
-            "reorder_opt_1",
-            "reorder_opt_2",
-            "reorder_opt_3"
-          ]
-        },
-        {
-          "id": "reorder_opt_1",
-          "component": "SelectItem",
-          "value": "SKU-8821",
-          "label": "Gourmet Almond Butter (SKU-8821) - OOS"
-        },
-        {
-          "id": "reorder_opt_2",
-          "component": "SelectItem",
-          "value": "SKU-4402",
-          "label": "French Vanilla Syrup 750ml (SKU-4402) - OOS"
-        },
-        {
-          "id": "reorder_opt_3",
-          "component": "SelectItem",
-          "value": "SKU-1093",
-          "label": "Ergonomic Mouse Pads (SKU-1093) - OOS"
-        },
-        {
-          "id": "field_reorder_qty",
-          "component": "FormControl",
-          "label": "Reorder Quantity (Cases)",
-          "input": "reorder_qty_input"
-        },
-        {
-          "id": "reorder_qty_input",
-          "component": "Input",
-          "name": "reorderQuantity",
-          "type": "number",
-          "placeholder": "e.g. 5"
-        },
-        {
-          "id": "reorder_buttons",
-          "component": "Buttons",
-          "direction": "row",
-          "buttons": ["btn_reorder_submit"]
-        },
-        {
-          "id": "btn_reorder_submit",
-          "component": "Button",
-          "label": "Submit Reorder Request",
-          "variant": "primary"
-        },
-        {
-          "id": "tab_ops",
-          "component": "TabItem",
-          "value": "operations",
-          "trigger": "Floor Operations & Shift",
-          "content": [
-            "ops_layout"
-          ]
-        },
-        {
-          "id": "ops_layout",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "m",
-          "children": [
-            "registers_card",
-            "shift_card"
-          ]
-        },
-        {
-          "id": "registers_card",
-          "component": "Card",
-          "variant": "card",
-          "weight": 1,
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "registers_header",
-            "registers_list"
-          ]
-        },
-        {
-          "id": "registers_header",
-          "component": "CardHeader",
-          "title": "Register Status (Item 9)",
-          "subtitle": "Live lane status & assigned cashiers"
-        },
-        {
-          "id": "registers_list",
-          "component": "ListBlock",
-          "variant": "number",
-          "items": [
-            "reg_1",
-            "reg_2",
-            "reg_3",
-            "reg_4",
-            "reg_5"
-          ]
-        },
-        {
-          "id": "reg_1",
-          "component": "ListItem",
-          "title": "Register 01 - Main Express (OPEN)",
-          "subtitle": "Cashier: Sarah M. | Active | Queue: 2",
-          "actionLabel": "Open"
-        },
-        {
-          "id": "reg_2",
-          "component": "ListItem",
-          "title": "Register 02 - Main Regular (OPEN)",
-          "subtitle": "Cashier: David K. | Active | Queue: 1",
-          "actionLabel": "Open"
-        },
-        {
-          "id": "reg_3",
-          "component": "ListItem",
-          "title": "Register 03 - Customer Service (OPEN)",
-          "subtitle": "Cashier: Elena R. | Active | Returns/Exchanges",
-          "actionLabel": "Open"
-        },
-        {
-          "id": "reg_4",
-          "component": "ListItem",
-          "title": "Register 04 - Secondary Lane (CLOSED)",
-          "subtitle": "Inactive | Ready for backup surge",
-          "actionLabel": "Closed"
-        },
-        {
-          "id": "reg_5",
-          "component": "ListItem",
-          "title": "Register 05 - Self-Checkout Kiosks (OPEN)",
-          "subtitle": "Attendant: Marcus T. | 4/4 Terminals Online",
-          "actionLabel": "Open"
-        },
-        {
-          "id": "shift_card",
-          "component": "Card",
-          "variant": "card",
-          "weight": 1,
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "shift_header",
-            "shift_list"
-          ]
-        },
-        {
-          "id": "shift_header",
-          "component": "CardHeader",
-          "title": "Who is on Shift Today (Item 5)",
-          "subtitle": "Staffing schedule & active team members"
-        },
-        {
-          "id": "shift_list",
-          "component": "ListBlock",
-          "variant": "number",
-          "items": [
-            "staff_1",
-            "staff_2",
-            "staff_3",
-            "staff_4",
-            "staff_5"
-          ]
-        },
-        {
-          "id": "staff_1",
-          "component": "ListItem",
-          "title": "Sarah Jenkins (Store Lead)",
-          "subtitle": "Shift: 07:30 AM - 04:00 PM | Active (Floor Lead)",
-          "actionLabel": "On Duty"
-        },
-        {
-          "id": "staff_2",
-          "component": "ListItem",
-          "title": "David Miller (Cashier)",
-          "subtitle": "Shift: 08:00 AM - 04:30 PM | Active (Register 02)",
-          "actionLabel": "On Duty"
-        },
-        {
-          "id": "staff_3",
-          "component": "ListItem",
-          "title": "Elena Rostova (Customer Service)",
-          "subtitle": "Shift: 08:30 AM - 05:00 PM | Active (Register 03)",
-          "actionLabel": "On Duty"
-        },
-        {
-          "id": "staff_4",
-          "component": "ListItem",
-          "title": "Marcus Vance (Inventory Specialist)",
-          "subtitle": "Shift: 06:00 AM - 02:30 PM | Active (Stockroom)",
-          "actionLabel": "On Duty"
-        },
-        {
-          "id": "staff_5",
-          "component": "ListItem",
-          "title": "Chloe Bennett (Sales Associate)",
-          "subtitle": "Shift: 12:00 PM - 08:30 PM | Scheduled (Upcoming)",
-          "actionLabel": "Scheduled"
-        },
-        {
-          "id": "followups",
-          "component": "FollowUpBlock",
-          "items": [
-            "fup_1",
-            "fup_2",
-            "fup_3"
-          ]
-        },
-        {
-          "id": "fup_1",
-          "component": "FollowUpItem",
-          "text": "Call staff backup for evening surge"
-        },
-        {
-          "id": "fup_2",
-          "component": "FollowUpItem",
-          "text": "Export weekly comparison report"
-        },
-        {
-          "id": "fup_3",
-          "component": "FollowUpItem",
-          "text": "Check pending reorder delivery status"
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "alertOos",
+          "tabs"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Store Manager Console — Store #104 (Downtown Flagship)",
+        "subtitle": "Daily Operations & Performance Monitor"
+      },
+      {
+        "id": "alertOos",
+        "component": "Alert",
+        "title": "Out of Stock Warning (Item #4)",
+        "description": "3 high-demand items are currently out of stock. Quick reorder options available below.",
+        "variant": "warning"
+      },
+      {
+        "id": "tabs",
+        "component": "Tabs",
+        "items": [
+          "tabOverview",
+          "tabSalesTraffic",
+          "tabInventoryReorder",
+          "tabStaffRegisters"
+        ]
+      },
+      {
+        "id": "tabOverview",
+        "component": "TabItem",
+        "trigger": "Dashboard Overview",
+        "value": "overview",
+        "content": [
+          "storeSelectorForm",
+          "salesProgressCard",
+          "weeklyCompareChart",
+          "promosTableCard"
+        ]
+      },
+      {
+        "id": "storeSelectorForm",
+        "component": "Form",
+        "name": "store-select-form",
+        "buttons": "storeButtons",
+        "fields": [
+          "storeSelectControl"
+        ]
+      },
+      {
+        "id": "storeSelectControl",
+        "component": "FormControl",
+        "label": "Switch Store Location (Item #11)",
+        "input": "storeSelect"
+      },
+      {
+        "id": "storeSelect",
+        "component": "Select",
+        "name": "store_id",
+        "placeholder": "Select a store location",
+        "items": [
+          "store104",
+          "store102",
+          "store108"
+        ]
+      },
+      {
+        "id": "store104",
+        "component": "SelectItem",
+        "value": "104",
+        "label": "Store #104 - Downtown Flagship (Current)"
+      },
+      {
+        "id": "store102",
+        "component": "SelectItem",
+        "value": "102",
+        "label": "Store #102 - Westside Mall"
+      },
+      {
+        "id": "store108",
+        "component": "SelectItem",
+        "value": "108",
+        "label": "Store #108 - North Metro"
+      },
+      {
+        "id": "storeButtons",
+        "component": "Buttons",
+        "buttons": [
+          "changeStoreBtn"
+        ]
+      },
+      {
+        "id": "changeStoreBtn",
+        "component": "Button",
+        "label": "Switch Store View",
+        "variant": "secondary"
+      },
+      {
+        "id": "salesProgressCard",
+        "component": "Card",
+        "children": [
+          "salesHeader",
+          "salesProgress",
+          "kpisTable"
+        ]
+      },
+      {
+        "id": "salesHeader",
+        "component": "CardHeader",
+        "title": "Today's Sales & Performance Metrics (Items #1, #6, #7)",
+        "subtitle": "Progress towards $15,000 daily sales target"
+      },
+      {
+        "id": "salesProgress",
+        "component": "Progress",
+        "label": "Sales Today: $12,450 / $15,000 Target (83%)",
+        "value": 83
+      },
+      {
+        "id": "kpisTable",
+        "component": "Table",
+        "columns": [
+          "kpiMetricCol",
+          "kpiValueCol",
+          "kpiNoteCol"
+        ]
+      },
+      {
+        "id": "kpiMetricCol",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Sales Today",
+          "Daily Target",
+          "Average Basket Size (#6)",
+          "Returns This Week (#7)"
+        ]
+      },
+      {
+        "id": "kpiValueCol",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "$12,450",
+          "$15,000",
+          "$48.50",
+          "42 units ($1,280)"
+        ]
+      },
+      {
+        "id": "kpiNoteCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "83% achieved",
+          "Target window closes 9 PM",
+          "+$3.20 vs weekly avg",
+          "2.1% return rate (Normal)"
+        ]
+      },
+      {
+        "id": "weeklyCompareChart",
+        "component": "BarChart",
+        "xLabel": "Day of Week",
+        "yLabel": "Sales ($)",
+        "variant": "grouped",
+        "labels": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat",
+          "Sun"
+        ],
+        "series": [
+          "thisWeekSeries",
+          "lastWeekSeries"
+        ]
+      },
+      {
+        "id": "thisWeekSeries",
+        "component": "Series",
+        "category": "This Week (#12)",
+        "values": [
+          11200,
+          12450,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "id": "lastWeekSeries",
+        "component": "Series",
+        "category": "Last Week (#12)",
+        "values": [
+          10800,
+          11900,
+          12100,
+          13400,
+          16800,
+          19500,
+          14200
+        ]
+      },
+      {
+        "id": "promosTableCard",
+        "component": "Card",
+        "children": [
+          "promosHeader",
+          "promosTable"
+        ]
+      },
+      {
+        "id": "promosHeader",
+        "component": "CardHeader",
+        "title": "Active Promotions Performance (Item #8)",
+        "subtitle": "Real-time redemptions and revenue uplift"
+      },
+      {
+        "id": "promosTable",
+        "component": "Table",
+        "columns": [
+          "promoNameCol",
+          "promoDiscountCol",
+          "promoRedeemedCol",
+          "promoRevCol"
+        ]
+      },
+      {
+        "id": "promoNameCol",
+        "component": "Col",
+        "label": "Promotion",
+        "data": [
+          "Summer BOGO T-Shirts",
+          "Electronics 15% Off",
+          "Loyalty Double Points"
+        ]
+      },
+      {
+        "id": "promoDiscountCol",
+        "component": "Col",
+        "label": "Discount",
+        "data": [
+          "Buy 1 Get 1 50% Off",
+          "15% Off Select Audio",
+          "2x Points on $50+"
+        ]
+      },
+      {
+        "id": "promoRedeemedCol",
+        "component": "Col",
+        "label": "Redemptions Today",
+        "data": [
+          "142",
+          "38",
+          "89"
+        ]
+      },
+      {
+        "id": "promoRevCol",
+        "component": "Col",
+        "label": "Attributed Revenue",
+        "data": [
+          "$3,550",
+          "$2,850",
+          "$5,340"
+        ]
+      },
+      {
+        "id": "tabSalesTraffic",
+        "component": "TabItem",
+        "trigger": "Traffic & Best Sellers",
+        "value": "traffic_sellers",
+        "content": [
+          "trafficChart",
+          "bestSellersCard"
+        ]
+      },
+      {
+        "id": "trafficChart",
+        "component": "AreaChart",
+        "xLabel": "Hour of Day",
+        "yLabel": "Foot Traffic (Visitors)",
+        "variant": "natural",
+        "labels": [
+          "8 AM",
+          "10 AM",
+          "12 PM",
+          "2 PM",
+          "4 PM",
+          "6 PM",
+          "8 PM"
+        ],
+        "series": [
+          "trafficSeries"
+        ]
+      },
+      {
+        "id": "trafficSeries",
+        "component": "Series",
+        "category": "Foot Traffic Through the Day (#2)",
+        "values": [
+          45,
+          120,
+          310,
+          280,
+          210,
+          0,
+          0
+        ]
+      },
+      {
+        "id": "bestSellersCard",
+        "component": "Card",
+        "children": [
+          "bestSellersHeader",
+          "bestSellersTable"
+        ]
+      },
+      {
+        "id": "bestSellersHeader",
+        "component": "CardHeader",
+        "title": "Best Sellers Today (Item #3)",
+        "subtitle": "Top performing products by volume sold"
+      },
+      {
+        "id": "bestSellersTable",
+        "component": "Table",
+        "columns": [
+          "bsItemCol",
+          "bsCategoryCol",
+          "bsUnitsCol",
+          "bsRevCol"
+        ]
+      },
+      {
+        "id": "bsItemCol",
+        "component": "Col",
+        "label": "Product Name",
+        "data": [
+          "Organic Iced Coffee 12oz",
+          "Crewneck Cotton Tee - Black (L)",
+          "Wireless Earbuds Pro",
+          "Stainless Water Bottle 24oz",
+          "Artisan Dark Chocolate Bar"
+        ]
+      },
+      {
+        "id": "bsCategoryCol",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Beverages",
+          "Apparel",
+          "Electronics",
+          "Housewares",
+          "Snacks"
+        ]
+      },
+      {
+        "id": "bsUnitsCol",
+        "component": "Col",
+        "label": "Units Sold (#3)",
+        "data": [
+          "184 units",
+          "92 units",
+          "45 units",
+          "38 units",
+          "34 units"
+        ]
+      },
+      {
+        "id": "bsRevCol",
+        "component": "Col",
+        "label": "Total Revenue",
+        "data": [
+          "$828",
+          "$2,300",
+          "$3,375",
+          "$950",
+          "$170"
+        ]
+      },
+      {
+        "id": "tabInventoryReorder",
+        "component": "TabItem",
+        "trigger": "Inventory & Stock Actions",
+        "value": "inventory",
+        "content": [
+          "oosCard",
+          "reorderFormCard"
+        ]
+      },
+      {
+        "id": "oosCard",
+        "component": "Card",
+        "children": [
+          "oosHeader",
+          "oosTable"
+        ]
+      },
+      {
+        "id": "oosHeader",
+        "component": "CardHeader",
+        "title": "Items Out of Stock (Item #4)",
+        "subtitle": "Products requiring immediate replenishment"
+      },
+      {
+        "id": "oosTable",
+        "component": "Table",
+        "columns": [
+          "oosSkuCol",
+          "oosNameCol",
+          "oosCatCol",
+          "oosStatusCol"
+        ]
+      },
+      {
+        "id": "oosSkuCol",
+        "component": "Col",
+        "label": "SKU",
+        "data": [
+          "SKU-8821",
+          "SKU-4402",
+          "SKU-1093"
+        ]
+      },
+      {
+        "id": "oosNameCol",
+        "component": "Col",
+        "label": "Product",
+        "data": [
+          "Almond Milk 1L",
+          "Denim Jacket - Medium",
+          "USB-C Fast Charger 30W"
+        ]
+      },
+      {
+        "id": "oosCatCol",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Grocery",
+          "Apparel",
+          "Electronics"
+        ]
+      },
+      {
+        "id": "oosStatusCol",
+        "component": "Col",
+        "label": "Stock Status",
+        "data": [
+          "0 units (Out of stock)",
+          "0 units (Out of stock)",
+          "0 units (Out of stock)"
+        ]
+      },
+      {
+        "id": "reorderFormCard",
+        "component": "Card",
+        "children": [
+          "reorderHeader",
+          "reorderForm"
+        ]
+      },
+      {
+        "id": "reorderHeader",
+        "component": "CardHeader",
+        "title": "Stock Reorder Portal (Item #10)",
+        "subtitle": "Place express reorders directly to warehouse"
+      },
+      {
+        "id": "reorderForm",
+        "component": "Form",
+        "name": "reorder-form",
+        "buttons": "reorderButtons",
+        "fields": [
+          "reorderItemControl",
+          "reorderQtyControl"
+        ]
+      },
+      {
+        "id": "reorderItemControl",
+        "component": "FormControl",
+        "label": "Select Out of Stock Item",
+        "input": "reorderItemSelect"
+      },
+      {
+        "id": "reorderItemSelect",
+        "component": "Select",
+        "name": "reorder_item",
+        "placeholder": "Choose an item to reorder",
+        "items": [
+          "item1",
+          "item2",
+          "item3"
+        ]
+      },
+      {
+        "id": "item1",
+        "component": "SelectItem",
+        "value": "SKU-8821",
+        "label": "SKU-8821: Almond Milk 1L"
+      },
+      {
+        "id": "item2",
+        "component": "SelectItem",
+        "value": "SKU-4402",
+        "label": "SKU-4402: Denim Jacket - Medium"
+      },
+      {
+        "id": "item3",
+        "component": "SelectItem",
+        "value": "SKU-1093",
+        "label": "SKU-1093: USB-C Fast Charger 30W"
+      },
+      {
+        "id": "reorderQtyControl",
+        "component": "FormControl",
+        "label": "Reorder Quantity (Units)",
+        "input": "reorderQtyInput",
+        "hint": "Default bulk order batch size is 50 units"
+      },
+      {
+        "id": "reorderQtyInput",
+        "component": "Input",
+        "name": "quantity",
+        "placeholder": "50",
+        "type": "number"
+      },
+      {
+        "id": "reorderButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitReorderBtn"
+        ]
+      },
+      {
+        "id": "submitReorderBtn",
+        "component": "Button",
+        "label": "Submit Purchase Order",
+        "variant": "primary"
+      },
+      {
+        "id": "tabStaffRegisters",
+        "component": "TabItem",
+        "trigger": "Shift & Register Status",
+        "value": "staff_registers",
+        "content": [
+          "shiftCard",
+          "registersCard"
+        ]
+      },
+      {
+        "id": "shiftCard",
+        "component": "Card",
+        "children": [
+          "shiftHeader",
+          "shiftTable"
+        ]
+      },
+      {
+        "id": "shiftHeader",
+        "component": "CardHeader",
+        "title": "Staff On Shift Today (Item #5)",
+        "subtitle": "Roster and current active status"
+      },
+      {
+        "id": "shiftTable",
+        "component": "Table",
+        "columns": [
+          "staffNameCol",
+          "staffRoleCol",
+          "staffShiftCol",
+          "staffStatusCol"
+        ]
+      },
+      {
+        "id": "staffNameCol",
+        "component": "Col",
+        "label": "Employee Name",
+        "data": [
+          "Alex Morgan",
+          "David Chen",
+          "Sarah Jenkins",
+          "Marcus Vance",
+          "Elena Rostova"
+        ]
+      },
+      {
+        "id": "staffRoleCol",
+        "component": "Col",
+        "label": "Role",
+        "data": [
+          "Store Supervisor",
+          "Lead Cashier",
+          "Cashier",
+          "Inventory Associate",
+          "Floor Associate"
+        ]
+      },
+      {
+        "id": "staffShiftCol",
+        "component": "Col",
+        "label": "Scheduled Hours",
+        "data": [
+          "08:00 AM - 04:30 PM",
+          "08:30 AM - 05:00 PM",
+          "10:00 AM - 06:30 PM",
+          "07:00 AM - 03:30 PM",
+          "01:00 PM - 09:30 PM"
+        ]
+      },
+      {
+        "id": "staffStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "On Floor",
+          "On Register #1",
+          "On Lunch Break",
+          "Stockroom",
+          "Upcoming (1 PM)"
+        ]
+      },
+      {
+        "id": "registersCard",
+        "component": "Card",
+        "children": [
+          "registersHeader",
+          "registersTable"
+        ]
+      },
+      {
+        "id": "registersHeader",
+        "component": "CardHeader",
+        "title": "Register & POS Status (Item #9)",
+        "subtitle": "Live status of checkout lanes"
+      },
+      {
+        "id": "registersTable",
+        "component": "Table",
+        "columns": [
+          "regNameCol",
+          "regTypeCol",
+          "regStatusCol",
+          "regCashierCol"
+        ]
+      },
+      {
+        "id": "regNameCol",
+        "component": "Col",
+        "label": "Register ID",
+        "data": [
+          "Register #1",
+          "Register #2",
+          "Register #3",
+          "Register #4 (Express)",
+          "Self-Checkout A",
+          "Self-Checkout B"
+        ]
+      },
+      {
+        "id": "regTypeCol",
+        "component": "Col",
+        "label": "Type",
+        "data": [
+          "Standard POS",
+          "Standard POS",
+          "Standard POS",
+          "Express (<10 items)",
+          "Kiosk",
+          "Kiosk"
+        ]
+      },
+      {
+        "id": "regStatusCol",
+        "component": "Col",
+        "label": "State (Item #9)",
+        "data": [
+          "OPEN",
+          "OPEN",
+          "CLOSED",
+          "OPEN",
+          "OPEN",
+          "OPEN"
+        ]
+      },
+      {
+        "id": "regCashierCol",
+        "component": "Col",
+        "label": "Assigned Staff",
+        "data": [
+          "David Chen",
+          "Sarah Jenkins (Cover)",
+          "Unassigned",
+          "Alex Morgan",
+          "Automated",
+          "Automated"
+        ]
+      }
+    ]
+  }
+}
 </a2ui-json>

@@ -1,36 +1,22 @@
-root = Card([header, alertStatus, invoiceSummary, sep1, itemsHeading, lineItemsTable, sep2, paymentSection])
+root = Card([header, summaryRow, detailsSection, itemsTable, actions], "card", "column", "m")
 
-header = CardHeader("Invoice #INV-2023-042", "Issued by Alex Morgan (Freelance UI/UX Designer)")
-alertStatus = TextCallout("warning", "Payment Pending", "This invoice is due in 5 days. Please review and pay below.")
+header = CardHeader("Invoice #INV-2024-008", "Issued on Oct 12, 2024 by Alex Morgan Design")
 
-invoiceSummary = Table([metaLabel, metaValue])
-metaLabel = Col("Invoice Details", ["Amount Due", "Due Date", "Issue Date", "Billed To"])
-metaValue = Col("Value", ["$3,450.00 USD", "October 15, 2023", "October 1, 2023", "Acme Corporation"])
+summaryRow = Card([amountCallout, statusBadge], "sunk", "row", "m", "center", "between")
+amountCallout = TextCallout("info", "Amount Due", "$3,450.00 USD")
+statusBadge = Badge("Due Nov 15, 2024", "destructive")
 
-sep1 = Separator("horizontal")
-itemsHeading = Heading("Services Rendered", "h3")
+detailsSection = Card([clientInfo, providerInfo], "clear", "row", "l", "start", "between")
+clientInfo = TextContent("**Billed To:**\nAcme Corporation\n123 Market Street, Suite 400\nSan Francisco, CA 94105\natt: billing@acme.com")
+providerInfo = TextContent("**Pay To:**\nAlex Morgan\nUX/UI Design & Frontend Studio\nalex@alexmorgandesign.com\nTax ID: XX-XXX6789")
 
-lineItemsTable = Table([itemDesc, itemHours, itemRate, itemTotal])
-itemDesc = Col("Description", ["Brand Identity & Logo Design", "Design System Components (Figma)", "Interactive Prototype"])
-itemHours = Col("Hours", [20, 35, 15], "number")
-itemRate = Col("Rate", ["$75/hr", "$75/hr", "$75/hr"])
-itemTotal = Col("Total", ["$1,500.00", "$2,625.00", "$1,125.00"])
+itemsTable = Table([colDesc, colHours, colRate, colTotal])
+colDesc = Col("Description", ["Brand Identity & Guidelines", "Web Application UI Design", "Design System Implementation", "Responsive Mobile Polish"])
+colHours = Col("Hours", [15, 40, 20, 8])
+colRate = Col("Rate", ["$90/hr", "$90/hr", "$90/hr", "$90/hr"])
+colTotal = Col("Line Total", ["$1,350.00", "$3,600.00", "$1,800.00", "$720.00"])
 
-sep2 = Separator("horizontal")
-
-paymentSection = Form("pay-invoice", payButtons, [paymentMethodField, cardNumField, nameOnCardField])
-paymentMethodField = FormControl("Select Payment Method", paymentMethodSelect)
-paymentMethodSelect = Select("pay_method", [payCredit, payBank, payPaypal], "Choose payment method")
-payCredit = SelectItem("card", "Credit / Debit Card")
-payBank = SelectItem("ach", "ACH Bank Transfer")
-payPaypal = SelectItem("paypal", "PayPal")
-
-cardNumField = FormControl("Card Number", cardInput)
-cardInput = Input("card_number", "•••• •••• •••• 4242", "text")
-
-nameOnCardField = FormControl("Name on Card", nameInput)
-nameInput = Input("card_name", "Jane Doe", "text")
-
-payButtons = Buttons([payNowBtn, downloadPdfBtn])
-payNowBtn = Button("Pay $3,450.00 USD Now", null, "primary")
-downloadPdfBtn = Button("Download PDF Invoice", null, "secondary")
+actions = Buttons([payNowBtn, downloadPdfBtn, contactBtn], "row")
+payNowBtn = Button("Pay $3,450.00 Now", null, "primary", "normal", "large")
+downloadPdfBtn = Button("Download PDF", null, "secondary", "normal", "large")
+contactBtn = Button("Contact Freelancer", null, "tertiary", "normal", "large")

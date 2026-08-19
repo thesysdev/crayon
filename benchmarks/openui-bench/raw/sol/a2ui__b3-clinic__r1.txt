@@ -1,6 +1,345 @@
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"clinic-reception-day-view","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#2563EB","agentDisplayName":"Clinic Reception"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#2563EB",
+      "agentDisplayName": "Clinic Reception"
+    }
+  }
+}
 </a2ui-json>
+
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"clinic-reception-day-view","components":[{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["header","date-nav","metrics","next-patient","rooms","appointments","checkin-form"]},{"id":"header","component":"CardHeader","title":"Reception — Today","subtitle":"Tuesday, August 18, 2026"},{"id":"date-nav","component":"Buttons","direction":"row","buttons":["previous-day","today-button","next-day"]},{"id":"previous-day","component":"Button","label":"← Previous day","variant":"secondary","size":"small"},{"id":"today-button","component":"Button","label":"Today","variant":"primary","size":"small"},{"id":"next-day","component":"Button","label":"Next day →","variant":"secondary","size":"small"},{"id":"metrics","component":"Card","variant":"sunk","direction":"row","gap":"xl","wrap":true,"children":["expected-metric","noshow-metric"]},{"id":"expected-metric","component":"TextContent","size":"large-heavy","text":"**12** patients expected today"},{"id":"noshow-metric","component":"TextContent","size":"large-heavy","text":"**6.8%** no-show rate this month"},{"id":"next-patient","component":"Callout","variant":"info","title":"Next patient: Jordan Lee","description":"10:00 AM · Annual physical · Dr. Patel"},{"id":"rooms","component":"Card","variant":"card","direction":"column","gap":"m","children":["rooms-heading","room-tags"]},{"id":"rooms-heading","component":"Heading","text":"Rooms free right now","level":"h2"},{"id":"room-tags","component":"TagBlock","tags":["Room 2","Room 4","Room 6"]},{"id":"appointments","component":"Card","variant":"card","direction":"column","gap":"m","children":["appointments-heading","appointments-table"]},{"id":"appointments-heading","component":"Heading","text":"Today's appointments","level":"h2"},{"id":"appointments-table","component":"Table","columns":["time-column","patient-column","status-column","room-column"]},{"id":"time-column","component":"Col","label":"Time","type":"string","data":["8:00 AM","8:30 AM","9:00 AM","9:30 AM","10:00 AM","10:30 AM","11:15 AM","1:00 PM","1:30 PM","2:15 PM","3:00 PM","4:00 PM"]},{"id":"patient-column","component":"Col","label":"Patient","type":"string","data":["Maya Thompson","Ethan Brooks","Sofia Ramirez","Noah Williams","Jordan Lee","Ava Chen","Liam Davis","Olivia Martin","Lucas Brown","Emma Wilson","Mateo Garcia","Chloe Anderson"]},{"id":"status-column","component":"Col","label":"Status","type":"string","data":["Checked in","With clinician","Arrived","Scheduled","Next","Scheduled","Scheduled","Scheduled","Scheduled","Scheduled","Scheduled","Scheduled"]},{"id":"room-column","component":"Col","label":"Room","type":"string","data":["Room 1","Room 3","Waiting","—","—","—","—","—","—","—","—","—"]},{"id":"checkin-form","component":"Form","name":"patient-check-in","fields":["patient-control","arrival-control"],"buttons":"checkin-buttons"},{"id":"patient-control","component":"FormControl","label":"Check in a patient","input":"patient-select","hint":"Select the arriving patient from today's schedule."},{"id":"patient-select","component":"Select","name":"patient","placeholder":"Choose patient","size":"large","items":["patient-jordan","patient-ava","patient-liam","patient-olivia","patient-lucas","patient-emma","patient-mateo","patient-chloe"]},{"id":"patient-jordan","component":"SelectItem","value":"jordan-lee","label":"10:00 AM — Jordan Lee"},{"id":"patient-ava","component":"SelectItem","value":"ava-chen","label":"10:30 AM — Ava Chen"},{"id":"patient-liam","component":"SelectItem","value":"liam-davis","label":"11:15 AM — Liam Davis"},{"id":"patient-olivia","component":"SelectItem","value":"olivia-martin","label":"1:00 PM — Olivia Martin"},{"id":"patient-lucas","component":"SelectItem","value":"lucas-brown","label":"1:30 PM — Lucas Brown"},{"id":"patient-emma","component":"SelectItem","value":"emma-wilson","label":"2:15 PM — Emma Wilson"},{"id":"patient-mateo","component":"SelectItem","value":"mateo-garcia","label":"3:00 PM — Mateo Garcia"},{"id":"patient-chloe","component":"SelectItem","value":"chloe-anderson","label":"4:00 PM — Chloe Anderson"},{"id":"arrival-control","component":"FormControl","label":"Arrival note","input":"arrival-note","hint":"Optional note for the care team."},{"id":"arrival-note","component":"Input","name":"arrival-note","type":"text","placeholder":"e.g. paperwork completed"},{"id":"checkin-buttons","component":"Buttons","direction":"row","buttons":["checkin-button"]},{"id":"checkin-button","component":"Button","label":"Check patient in","variant":"primary","size":"large"}]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "dayNavigation",
+          "summary",
+          "nextPatient",
+          "freeRooms",
+          "appointments",
+          "checkIn"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Clinic day view",
+        "subtitle": "Tuesday, August 18, 2026"
+      },
+      {
+        "id": "dayNavigation",
+        "component": "Buttons",
+        "buttons": [
+          "previousDay",
+          "todayButton",
+          "nextDay"
+        ]
+      },
+      {
+        "id": "previousDay",
+        "component": "Button",
+        "label": "Previous day",
+        "variant": "secondary"
+      },
+      {
+        "id": "todayButton",
+        "component": "Button",
+        "label": "Today",
+        "variant": "primary"
+      },
+      {
+        "id": "nextDay",
+        "component": "Button",
+        "label": "Next day",
+        "variant": "secondary"
+      },
+      {
+        "id": "summary",
+        "component": "Card",
+        "children": [
+          "expectedPatients",
+          "noShowRate"
+        ],
+        "direction": "row",
+        "gap": "l"
+      },
+      {
+        "id": "expectedPatients",
+        "component": "TextCallout",
+        "variant": "info",
+        "title": "12 patients expected",
+        "description": "3 checked in · 9 remaining"
+      },
+      {
+        "id": "noShowRate",
+        "component": "TextCallout",
+        "variant": "neutral",
+        "title": "6.8% no-show rate",
+        "description": "This month · 5 of 74 appointments"
+      },
+      {
+        "id": "nextPatient",
+        "component": "Alert",
+        "title": "Next patient: Maria Chen",
+        "description": "10:00 AM with Dr. Patel · Room 3",
+        "variant": "info"
+      },
+      {
+        "id": "freeRooms",
+        "component": "Card",
+        "children": [
+          "freeRoomsHeading",
+          "freeRoomsTags"
+        ],
+        "variant": "sunk",
+        "gap": "s"
+      },
+      {
+        "id": "freeRoomsHeading",
+        "component": "Heading",
+        "text": "Rooms free right now",
+        "level": "h3"
+      },
+      {
+        "id": "freeRoomsTags",
+        "component": "TagBlock",
+        "tags": [
+          "Room 2",
+          "Room 5",
+          "Consultation A"
+        ]
+      },
+      {
+        "id": "appointments",
+        "component": "Card",
+        "children": [
+          "appointmentsHeading",
+          "appointmentsTable"
+        ],
+        "variant": "clear",
+        "gap": "s"
+      },
+      {
+        "id": "appointmentsHeading",
+        "component": "Heading",
+        "text": "Today's appointments",
+        "level": "h2"
+      },
+      {
+        "id": "appointmentsTable",
+        "component": "Table",
+        "columns": [
+          "appointmentTime",
+          "patientName",
+          "clinician",
+          "appointmentStatus"
+        ]
+      },
+      {
+        "id": "appointmentTime",
+        "component": "Col",
+        "label": "Time",
+        "data": [
+          "8:30 AM",
+          "9:00 AM",
+          "9:30 AM",
+          "10:00 AM",
+          "10:30 AM",
+          "11:15 AM",
+          "1:00 PM",
+          "1:45 PM",
+          "2:30 PM",
+          "3:15 PM",
+          "4:00 PM",
+          "4:30 PM"
+        ]
+      },
+      {
+        "id": "patientName",
+        "component": "Col",
+        "label": "Patient",
+        "data": [
+          "James Wilson",
+          "Aisha Rahman",
+          "Robert King",
+          "Maria Chen",
+          "Elena Garcia",
+          "Noah Williams",
+          "Priya Shah",
+          "Daniel Brooks",
+          "Sofia Martinez",
+          "Liam Thompson",
+          "Grace Lee",
+          "Ethan Davis"
+        ]
+      },
+      {
+        "id": "clinician",
+        "component": "Col",
+        "label": "Clinician",
+        "data": [
+          "Dr. Patel",
+          "Dr. Nguyen",
+          "Dr. Patel",
+          "Dr. Patel",
+          "Dr. Nguyen",
+          "Dr. Patel",
+          "Dr. Nguyen",
+          "Dr. Patel",
+          "Dr. Nguyen",
+          "Dr. Patel",
+          "Dr. Nguyen",
+          "Dr. Patel"
+        ]
+      },
+      {
+        "id": "appointmentStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Completed",
+          "Completed",
+          "Checked in",
+          "Next",
+          "Scheduled",
+          "Scheduled",
+          "Scheduled",
+          "Scheduled",
+          "Scheduled",
+          "Scheduled",
+          "Scheduled",
+          "Scheduled"
+        ]
+      },
+      {
+        "id": "checkIn",
+        "component": "Card",
+        "children": [
+          "checkInHeader",
+          "checkInForm"
+        ],
+        "variant": "sunk",
+        "gap": "m"
+      },
+      {
+        "id": "checkInHeader",
+        "component": "CardHeader",
+        "title": "Check in a patient",
+        "subtitle": "Select the arriving patient and confirm their check-in"
+      },
+      {
+        "id": "checkInForm",
+        "component": "Form",
+        "name": "patient-check-in",
+        "buttons": "checkInButtons",
+        "fields": [
+          "patientField"
+        ]
+      },
+      {
+        "id": "patientField",
+        "component": "FormControl",
+        "label": "Patient",
+        "input": "patientSelect",
+        "hint": "Shows patients who have not checked in"
+      },
+      {
+        "id": "patientSelect",
+        "component": "Select",
+        "name": "patient",
+        "items": [
+          "patientMaria",
+          "patientElena",
+          "patientNoah",
+          "patientPriya",
+          "patientDaniel",
+          "patientSofia",
+          "patientLiam",
+          "patientGrace",
+          "patientEthan"
+        ],
+        "placeholder": "Choose a patient"
+      },
+      {
+        "id": "patientMaria",
+        "component": "SelectItem",
+        "value": "maria-chen",
+        "label": "10:00 AM — Maria Chen"
+      },
+      {
+        "id": "patientElena",
+        "component": "SelectItem",
+        "value": "elena-garcia",
+        "label": "10:30 AM — Elena Garcia"
+      },
+      {
+        "id": "patientNoah",
+        "component": "SelectItem",
+        "value": "noah-williams",
+        "label": "11:15 AM — Noah Williams"
+      },
+      {
+        "id": "patientPriya",
+        "component": "SelectItem",
+        "value": "priya-shah",
+        "label": "1:00 PM — Priya Shah"
+      },
+      {
+        "id": "patientDaniel",
+        "component": "SelectItem",
+        "value": "daniel-brooks",
+        "label": "1:45 PM — Daniel Brooks"
+      },
+      {
+        "id": "patientSofia",
+        "component": "SelectItem",
+        "value": "sofia-martinez",
+        "label": "2:30 PM — Sofia Martinez"
+      },
+      {
+        "id": "patientLiam",
+        "component": "SelectItem",
+        "value": "liam-thompson",
+        "label": "3:15 PM — Liam Thompson"
+      },
+      {
+        "id": "patientGrace",
+        "component": "SelectItem",
+        "value": "grace-lee",
+        "label": "4:00 PM — Grace Lee"
+      },
+      {
+        "id": "patientEthan",
+        "component": "SelectItem",
+        "value": "ethan-davis",
+        "label": "4:30 PM — Ethan Davis"
+      },
+      {
+        "id": "checkInButtons",
+        "component": "Buttons",
+        "buttons": [
+          "checkInButton"
+        ]
+      },
+      {
+        "id": "checkInButton",
+        "component": "Button",
+        "label": "Check patient in",
+        "variant": "primary"
+      }
+    ]
+  }
+}
 </a2ui-json>

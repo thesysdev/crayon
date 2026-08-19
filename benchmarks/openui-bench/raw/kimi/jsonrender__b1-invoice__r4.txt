@@ -1,17 +1,17 @@
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","amount-card","due-card","summary","pay-section","footer-note"]}}
-{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Invoice #INV-2024-087","subtitle":"From: Jordan Reyes — Freelance Design Studio"},"children":[]}}
-{"op":"add","path":"/elements/amount-card","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs","align":"center"},"children":["amount-label","amount-value","status-tag"]}}
-{"op":"add","path":"/elements/amount-label","value":{"type":"TextContent","props":{"text":"Amount Due","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/amount-value","value":{"type":"TextContent","props":{"text":{"$template":"${/invoice/currency} ${/invoice/amount}"},"size":"large-heavy"},"children":[]}}
-{"op":"add","path":"/elements/status-tag","value":{"type":"Tag","props":{"text":{"$state":"/invoice/status"},"variant":"warning","icon":"clock"},"children":[]}}
-{"op":"add","path":"/state/invoice","value":{"amount":"2,450.00","currency":"USD","dueDate":"April 15, 2025","status":"Awaiting Payment","client":"Acme Corp","description":"Brand identity & website design — March 2025"}}
-{"op":"add","path":"/elements/due-card","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center"},"children":["due-label","due-value"]}}
-{"op":"add","path":"/elements/due-label","value":{"type":"TextContent","props":{"text":"**Due Date**","size":"default"},"children":[]}}
-{"op":"add","path":"/elements/due-value","value":{"type":"TextContent","props":{"text":{"$state":"/invoice/dueDate"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/summary","value":{"type":"Callout","props":{"variant":"info","title":"Services Rendered","description":{"$template":"${/invoice/description} — billed to ${/invoice/client}"}},"children":[]}}
-{"op":"add","path":"/elements/pay-section","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["pay-button","paid-callout"]}}
-{"op":"add","path":"/elements/pay-button","value":{"type":"Button","props":{"label":{"$template":"Pay Now — ${/invoice/currency} ${/invoice/amount}"},"variant":"primary","size":"large"},"on":{"press":{"action":"setState","params":{"statePath":"/paid","value":true}}},"children":[]}}
-{"op":"add","path":"/elements/paid-callout","value":{"type":"Callout","props":{"variant":"success","title":"Payment Successful","description":"Thank you! Your payment has been processed and a receipt has been emailed to you."}},"visible":{"$state":"/paid"},"children":[]}}
-{"op":"add","path":"/state/paid","value":false}
-{"op":"add","path":"/elements/footer-note","value":{"type":"TextContent","props":{"text":"Late payments incur a 1.5% monthly fee. Questions? Reply to this invoice or email billing@jordanreyes.design","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"gap":"l"},"children":["header","amountCard","dueCard","paymentMethod","payButton","note"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Invoice #INV-2024-047","subtitle":"From Alex Rivera — Design & Development"}}}
+{"op":"add","path":"/elements/amountCard","value":{"type":"Card","props":{"variant":"sunk","gap":"xs"},"children":["amountLabel","amountValue"]}}
+{"op":"add","path":"/elements/amountLabel","value":{"type":"TextContent","props":{"text":"Amount Due","size":"small"}}}
+{"op":"add","path":"/elements/amountValue","value":{"type":"TextContent","props":{"text":{"$template":"${/invoice/currency} ${/invoice/amountDue}"},"size":"large-heavy"}}}
+{"op":"add","path":"/state/invoice","value":{"currency":"USD","amountDue":"2,450.00","dueDate":"June 15, 2024","paid":false}}
+{"op":"add","path":"/elements/dueCard","value":{"type":"Card","props":{"variant":"sunk","gap":"xs"},"children":["dueLabel","dueValue","dueBadge"]}}
+{"op":"add","path":"/elements/dueLabel","value":{"type":"TextContent","props":{"text":"Due Date","size":"small"}}}
+{"op":"add","path":"/elements/dueValue","value":{"type":"TextContent","props":{"text":{"$state":"/invoice/dueDate"},"size":"large"}}}
+{"op":"add","path":"/elements/dueBadge","value":{"type":"Badge","props":{"text":{"$cond":{"$state":"/invoice/paid"},"$then":"Paid","$else":"Unpaid"},"variant":{"$cond":{"$state":"/invoice/paid"},"$then":"secondary","$else":"destructive"}}}}
+{"op":"add","path":"/elements/paymentMethod","value":{"type":"Select","props":{"name":"payment_method","items":["pmCard","pmBank","pmPaypal"],"placeholder":"Select payment method"}}}
+{"op":"add","path":"/elements/pmCard","value":{"type":"SelectItem","props":{"value":"card","label":"Credit / Debit Card"}}}
+{"op":"add","path":"/elements/pmBank","value":{"type":"SelectItem","props":{"value":"bank","label":"Bank Transfer"}}}
+{"op":"add","path":"/elements/pmPaypal","value":{"type":"SelectItem","props":{"value":"paypal","label":"PayPal"}}}
+{"op":"add","path":"/elements/payButton","value":{"type":"Button","props":{"label":{"$template":"Pay Now — USD ${/invoice/amountDue}"},"variant":"primary","size":"large"},"on":{"press":{"action":"setState","params":{"statePath":"/invoice/paid","value":true}}},"children":[]}}
+{"op":"add","path":"/elements/note","value":{"type":"Callout","props":{"variant":"success","title":"Payment received","description":"Thank you! Your payment has been processed."},"visible":{"$state":"/invoice/paid"}}}

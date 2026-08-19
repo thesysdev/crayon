@@ -2,7 +2,7 @@
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "clinic-reception-day-view",
+    "surfaceId": "main",
     "catalogId": "thesys.dev:c1-openui",
     "theme": {
       "primaryColor": "#2563EB",
@@ -12,453 +12,377 @@
 }
 </a2ui-json>
 
-< a2ui-json>
+<a2ui-json>
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "clinic-reception-day-view",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "variant": "clear",
         "direction": "column",
         "gap": "l",
         "children": [
           "header",
-          "summary-row",
-          "next-patient-card",
-          "appointments-card",
-          "rooms-card",
-          "checkin-card"
+          "dayControls",
+          "summary",
+          "nextPatient",
+          "appointmentsSection",
+          "roomsSection",
+          "checkInSection"
         ]
       },
       {
         "id": "header",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "align": "center",
-        "justify": "between",
-        "children": [
-          "page-title",
-          "date-controls"
-        ]
+        "component": "CardHeader",
+        "title": "Reception Desk",
+        "subtitle": "Tuesday, August 18"
       },
       {
-        "id": "page-title",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "title",
-          "date-subtitle"
-        ]
-      },
-      {
-        "id": "title",
-        "component": "Heading",
-        "text": "Reception desk",
-        "level": "h1"
-      },
-      {
-        "id": "date-subtitle",
-        "component": "TextContent",
-        "text": "Tuesday, August 18, 2026",
-        "size": "default"
-      },
-      {
-        "id": "date-controls",
-        "component": "Buttons",
-        "direction": "row",
-        "buttons": [
-          "previous-day",
-          "today-button",
-          "next-day"
-        ]
-      },
-      {
-        "id": "previous-day",
-        "component": "Button",
-        "label": "‹ Previous",
-        "variant": "secondary",
-        "size": "small"
-      },
-      {
-        "id": "today-button",
-        "component": "Button",
-        "label": "Today",
-        "variant": "primary",
-        "size": "small"
-      },
-      {
-        "id": "next-day",
-        "component": "Button",
-        "label": "Next ›",
-        "variant": "secondary",
-        "size": "small"
-      },
-      {
-        "id": "summary-row",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "gap": "m",
-        "children": [
-          "expected-card",
-          "noshow-card",
-          "status-card"
-        ]
-      },
-      {
-        "id": "expected-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
-        "weight": 1,
-        "children": [
-          "expected-label",
-          "expected-value",
-          "expected-detail"
-        ]
-      },
-      {
-        "id": "expected-label",
-        "component": "TextContent",
-        "text": "Expected today",
-        "size": "small"
-      },
-      {
-        "id": "expected-value",
-        "component": "Heading",
-        "text": "24 patients",
-        "level": "h2"
-      },
-      {
-        "id": "expected-detail",
-        "component": "TextContent",
-        "text": "8 checked in · 16 remaining",
-        "size": "small"
-      },
-      {
-        "id": "noshow-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
-        "weight": 1,
-        "children": [
-          "noshow-label",
-          "noshow-value",
-          "noshow-detail"
-        ]
-      },
-      {
-        "id": "noshow-label",
-        "component": "TextContent",
-        "text": "No-show rate · August",
-        "size": "small"
-      },
-      {
-        "id": "noshow-value",
-        "component": "Heading",
-        "text": "4.8%",
-        "level": "h2"
-      },
-      {
-        "id": "noshow-detail",
-        "component": "TextContent",
-        "text": "6 missed visits out of 126",
-        "size": "small"
-      },
-      {
-        "id": "status-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
-        "weight": 1,
-        "children": [
-          "status-label",
-          "status-value",
-          "status-detail"
-        ]
-      },
-      {
-        "id": "status-label",
-        "component": "TextContent",
-        "text": "Clinic status",
-        "size": "small"
-      },
-      {
-        "id": "status-value",
-        "component": "Heading",
-        "text": "On schedule",
-        "level": "h2"
-      },
-      {
-        "id": "status-detail",
-        "component": "TextContent",
-        "text": "Average wait: 9 minutes",
-        "size": "small"
-      },
-      {
-        "id": "next-patient-card",
+        "id": "dayControls",
         "component": "Card",
         "variant": "sunk",
         "direction": "row",
         "align": "center",
         "justify": "between",
         "children": [
-          "next-patient-info",
-          "call-next-button"
+          "previousDay",
+          "selectedDay",
+          "nextDay"
         ]
       },
       {
-        "id": "next-patient-info",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "next-patient-label",
-          "next-patient-name",
-          "next-patient-detail"
-        ]
-      },
-      {
-        "id": "next-patient-label",
-        "component": "Badge",
-        "text": "NEXT TO CALL",
+        "id": "previousDay",
+        "component": "Button",
+        "label": "← Previous day",
         "variant": "secondary"
       },
       {
-        "id": "next-patient-name",
-        "component": "Heading",
-        "text": "Maya Patel · 10:30 AM",
-        "level": "h2"
-      },
-      {
-        "id": "next-patient-detail",
+        "id": "selectedDay",
         "component": "TextContent",
-        "text": "Dr. Chen · Room 3 · Checked in at 10:18 AM",
-        "size": "default"
+        "text": "Today • Tuesday, August 18",
+        "size": "small-heavy"
       },
       {
-        "id": "call-next-button",
+        "id": "nextDay",
         "component": "Button",
-        "label": "Call Maya Patel",
-        "variant": "primary",
-        "size": "large"
+        "label": "Next day →",
+        "variant": "secondary"
       },
       {
-        "id": "appointments-card",
+        "id": "summary",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "expectedMetric",
+          "noShowMetric",
+          "availabilityMetric"
+        ]
+      },
+      {
+        "id": "expectedMetric",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "expectedLabel",
+          "expectedValue"
+        ]
+      },
+      {
+        "id": "expectedLabel",
+        "component": "TextContent",
+        "text": "Expected today",
+        "size": "small"
+      },
+      {
+        "id": "expectedValue",
+        "component": "TextContent",
+        "text": "18 patients",
+        "size": "large-heavy"
+      },
+      {
+        "id": "noShowMetric",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "noShowLabel",
+          "noShowValue"
+        ]
+      },
+      {
+        "id": "noShowLabel",
+        "component": "TextContent",
+        "text": "No-show rate this month",
+        "size": "small"
+      },
+      {
+        "id": "noShowValue",
+        "component": "TextContent",
+        "text": "6.4%",
+        "size": "large-heavy"
+      },
+      {
+        "id": "availabilityMetric",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "availabilityLabel",
+          "availabilityValue"
+        ]
+      },
+      {
+        "id": "availabilityLabel",
+        "component": "TextContent",
+        "text": "Rooms free now",
+        "size": "small"
+      },
+      {
+        "id": "availabilityValue",
+        "component": "TextContent",
+        "text": "3 of 8",
+        "size": "large-heavy"
+      },
+      {
+        "id": "nextPatient",
+        "component": "Callout",
+        "variant": "info",
+        "title": "Next patient to call: Maya Patel",
+        "description": "9:30 AM • Follow-up with Dr. Chen • Please direct to Room 3"
+      },
+      {
+        "id": "appointmentsSection",
         "component": "Card",
         "variant": "card",
         "direction": "column",
         "gap": "m",
         "children": [
-          "appointments-header",
-          "appointments-table"
+          "appointmentsHeading",
+          "appointmentsTable"
         ]
       },
       {
-        "id": "appointments-header",
-        "component": "CardHeader",
-        "title": "Today's appointments",
-        "subtitle": "24 scheduled · Current time 10:22 AM"
+        "id": "appointmentsHeading",
+        "component": "Heading",
+        "text": "Today's appointments",
+        "level": "h2"
       },
       {
-        "id": "appointments-table",
+        "id": "appointmentsTable",
         "component": "Table",
         "columns": [
-          "time-col",
-          "patient-col",
-          "provider-col",
-          "room-col",
-          "appointment-status-col"
+          "timeColumn",
+          "patientColumn",
+          "providerColumn",
+          "visitColumn",
+          "statusColumn"
         ]
       },
       {
-        "id": "time-col",
+        "id": "timeColumn",
         "component": "Col",
         "label": "Time",
-        "type": "string",
         "data": [
+          "8:30 AM",
           "9:00 AM",
           "9:30 AM",
           "10:00 AM",
           "10:30 AM",
-          "11:00 AM",
-          "11:30 AM",
-          "12:00 PM"
+          "11:00 AM"
         ]
       },
       {
-        "id": "patient-col",
+        "id": "patientColumn",
         "component": "Col",
         "label": "Patient",
-        "type": "string",
         "data": [
-          "Robert Williams",
-          "Elena Garcia",
-          "Jordan Lee",
+          "James Wilson",
+          "Elena Rodriguez",
           "Maya Patel",
-          "Thomas Nguyen",
-          "Olivia Brown",
-          "Samuel Carter"
+          "Robert Kim",
+          "Aisha Thompson",
+          "Daniel Brooks"
         ]
       },
       {
-        "id": "provider-col",
+        "id": "providerColumn",
         "component": "Col",
         "label": "Provider",
-        "type": "string",
         "data": [
           "Dr. Chen",
-          "Dr. Morales",
+          "Dr. Morgan",
           "Dr. Chen",
-          "Dr. Chen",
-          "Dr. Morales",
-          "Dr. Chen",
-          "Dr. Morales"
+          "Dr. Patel",
+          "Dr. Morgan",
+          "Dr. Chen"
         ]
       },
       {
-        "id": "room-col",
+        "id": "visitColumn",
         "component": "Col",
-        "label": "Room",
-        "type": "string",
+        "label": "Visit",
         "data": [
-          "Room 2",
-          "Room 1",
-          "Room 4",
-          "Room 3",
-          "Room 1",
-          "Room 2",
-          "Room 4"
+          "Annual physical",
+          "Consultation",
+          "Follow-up",
+          "Lab review",
+          "New patient",
+          "Medication check"
         ]
       },
       {
-        "id": "appointment-status-col",
+        "id": "statusColumn",
         "component": "Col",
         "label": "Status",
-        "type": "string",
         "data": [
-          "In visit",
-          "Complete",
-          "In visit",
           "Checked in",
-          "Confirmed",
-          "Confirmed",
-          "Confirmed"
+          "With provider",
+          "Next",
+          "Scheduled",
+          "Scheduled",
+          "Scheduled"
         ]
       },
       {
-        "id": "rooms-card",
+        "id": "roomsSection",
         "component": "Card",
         "variant": "card",
         "direction": "column",
         "gap": "m",
         "children": [
-          "rooms-header",
-          "rooms-tags"
+          "roomsHeading",
+          "roomsList"
         ]
       },
       {
-        "id": "rooms-header",
-        "component": "CardHeader",
-        "title": "Rooms free right now",
-        "subtitle": "Updated at 10:22 AM"
+        "id": "roomsHeading",
+        "component": "Heading",
+        "text": "Rooms free right now",
+        "level": "h2"
       },
       {
-        "id": "rooms-tags",
-        "component": "TagBlock",
-        "tags": [
-          "Room 5 · Free",
-          "Room 6 · Free",
-          "Consult Room A · Free"
+        "id": "roomsList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "room3",
+          "room5",
+          "room8"
         ]
       },
       {
-        "id": "checkin-card",
+        "id": "room3",
+        "component": "ListItem",
+        "title": "Room 3",
+        "subtitle": "Available now • Reserved for Maya Patel at 9:30 AM"
+      },
+      {
+        "id": "room5",
+        "component": "ListItem",
+        "title": "Room 5",
+        "subtitle": "Available now • No upcoming assignment"
+      },
+      {
+        "id": "room8",
+        "component": "ListItem",
+        "title": "Room 8",
+        "subtitle": "Available now • Cleaning completed"
+      },
+      {
+        "id": "checkInSection",
         "component": "Card",
         "variant": "card",
         "direction": "column",
         "gap": "m",
         "children": [
-          "checkin-header",
-          "checkin-form"
+          "checkInHeading",
+          "checkInForm"
         ]
       },
       {
-        "id": "checkin-header",
-        "component": "CardHeader",
-        "title": "Check in a patient",
-        "subtitle": "Search the schedule or enter a patient name."
+        "id": "checkInHeading",
+        "component": "Heading",
+        "text": "Check in a patient",
+        "level": "h2"
       },
       {
-        "id": "checkin-form",
+        "id": "checkInForm",
         "component": "Form",
-        "name": "patient-checkin",
+        "name": "patient-check-in",
         "fields": [
-          "patient-search-control",
-          "arrival-note-control"
+          "patientNameField",
+          "appointmentField"
         ],
-        "buttons": "checkin-buttons"
+        "buttons": "checkInButtons"
       },
       {
-        "id": "patient-search-control",
+        "id": "patientNameField",
         "component": "FormControl",
-        "label": "Patient",
-        "hint": "Start typing a name to find today's appointment.",
-        "input": "patient-search-input"
+        "label": "Patient name or date of birth",
+        "input": "patientSearch"
       },
       {
-        "id": "patient-search-input",
+        "id": "patientSearch",
         "component": "Input",
-        "name": "patient",
-        "placeholder": "Search patient name",
-        "type": "text"
+        "name": "patient_search",
+        "placeholder": "Search patient"
       },
       {
-        "id": "arrival-note-control",
+        "id": "appointmentField",
         "component": "FormControl",
-        "label": "Arrival note",
-        "hint": "Optional",
-        "input": "arrival-note-input"
+        "label": "Appointment",
+        "input": "appointmentSelect"
       },
       {
-        "id": "arrival-note-input",
-        "component": "Input",
-        "name": "arrival-note",
-        "placeholder": "e.g., Insurance card verified",
-        "type": "text"
-      },
-      {
-        "id": "checkin-buttons",
-        "component": "Buttons",
-        "direction": "row",
-        "buttons": [
-          "checkin-button",
-          "walkin-button"
+        "id": "appointmentSelect",
+        "component": "Select",
+        "name": "appointment",
+        "placeholder": "Select today's appointment",
+        "items": [
+          "apptMaya",
+          "apptRobert",
+          "apptAisha"
         ]
       },
       {
-        "id": "checkin-button",
+        "id": "apptMaya",
+        "component": "SelectItem",
+        "value": "maya-patel-930",
+        "label": "9:30 AM — Maya Patel"
+      },
+      {
+        "id": "apptRobert",
+        "component": "SelectItem",
+        "value": "robert-kim-1000",
+        "label": "10:00 AM — Robert Kim"
+      },
+      {
+        "id": "apptAisha",
+        "component": "SelectItem",
+        "value": "aisha-thompson-1030",
+        "label": "10:30 AM — Aisha Thompson"
+      },
+      {
+        "id": "checkInButtons",
+        "component": "Buttons",
+        "buttons": [
+          "checkInButton",
+          "clearButton"
+        ]
+      },
+      {
+        "id": "checkInButton",
         "component": "Button",
         "label": "Check in patient",
-        "variant": "primary",
-        "size": "medium"
+        "variant": "primary"
       },
       {
-        "id": "walkin-button",
+        "id": "clearButton",
         "component": "Button",
-        "label": "Add walk-in",
-        "variant": "secondary",
-        "size": "medium"
+        "label": "Clear",
+        "variant": "tertiary"
       }
     ]
   }

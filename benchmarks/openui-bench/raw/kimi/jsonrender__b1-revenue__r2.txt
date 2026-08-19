@@ -1,21 +1,18 @@
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["header","summary-row","comparison","chart-card"]}}
-{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Good morning, Maya ☀️","subtitle":"Mid-morning check-in · Today so far (as of 10:42 AM)"},"children":[]}}
-{"op":"add","path":"/elements/summary-row","value":{"type":"Card","props":{"variant":"card","direction":"row","gap":"l","justify":"around","align":"center"},"children":["rev-today","rev-yesterday","rev-diff"]}}
-{"op":"add","path":"/elements/rev-today","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs","align":"center"},"children":["rev-today-label","rev-today-value"]}}
-{"op":"add","path":"/elements/rev-today-label","value":{"type":"TextContent","props":{"text":"Revenue today (so far)","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/rev-today-value","value":{"type":"TextContent","props":{"text":{"$template":"$${/today/revenue}"},"size":"large-heavy"},"children":[]}}
-{"op":"add","path":"/state/today","value":{"revenue":1284.5,"orders":47}}
-{"op":"add","path":"/elements/rev-yesterday","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs","align":"center"},"children":["rev-yesterday-label","rev-yesterday-value"]}}
-{"op":"add","path":"/elements/rev-yesterday-label","value":{"type":"TextContent","props":{"text":"Same time yesterday","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/rev-yesterday-value","value":{"type":"TextContent","props":{"text":{"$template":"$${/yesterday/revenue}"},"size":"large-heavy"},"children":[]}}
-{"op":"add","path":"/state/yesterday","value":{"revenue":1102.3,"orders":41}}
-{"op":"add","path":"/elements/rev-diff","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs","align":"center"},"children":["rev-diff-label","rev-diff-tag"]}}
-{"op":"add","path":"/elements/rev-diff-label","value":{"type":"TextContent","props":{"text":"vs. yesterday","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/rev-diff-tag","value":{"type":"Tag","props":{"text":"+16.5% ▲","variant":"success","size":"lg","icon":"trending-up"},"children":[]}}
-{"op":"add","path":"/elements/comparison","value":{"type":"Callout","props":{"variant":"success","title":"You're ahead of yesterday","description":"At this time yesterday you had $1,102.30 — today you're at $1,284.50, up $182.20 (+16.5%) with 6 more orders (47 vs 41)."},"children":[]}}
-{"op":"add","path":"/elements/chart-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["chart-header","chart"]}}
-{"op":"add","path":"/elements/chart-header","value":{"type":"CardHeader","props":{"title":"Hourly revenue — today vs yesterday","subtitle":"Cumulative sales through the morning"},"children":[]}}
-{"op":"add","path":"/elements/chart","value":{"type":"LineChart","props":{"labels":["8 AM","9 AM","10 AM"],"series":["series-today","series-yesterday"],"xLabel":"Time of day","yLabel":"Cumulative revenue ($)"},"children":[]}}
-{"op":"add","path":"/elements/series-today","value":{"type":"Series","props":{"category":"Today","values":[320,760,1284.5]},"children":[]}}
-{"op":"add","path":"/elements/series-yesterday","value":{"type":"Series","props":{"category":"Yesterday","values":[295,640,1102.3]},"children":[]}}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"gap":"l"},"children":["header","revCard","compareCard","hourlyChart","trend"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Good morning, Maya","subtitle":"Corner Grocer — live snapshot, 10:42 AM"}}}
+{"op":"add","path":"/elements/revCard","value":{"type":"Card","props":{"variant":"sunk","gap":"s"},"children":["revLabel","revValue","revSub"]}}
+{"op":"add","path":"/elements/revLabel","value":{"type":"TextContent","props":{"text":"Revenue so far today","size":"small"}}}
+{"op":"add","path":"/elements/revValue","value":{"type":"TextContent","props":{"text":{"$template":"$${/today/revenue} across ${/today/transactions} transactions"},"size":"large-heavy"}}}
+{"op":"add","path":"/state/today","value":{"revenue":"1,284.50","transactions":96}}
+{"op":"add","path":"/elements/revSub","value":{"type":"Badge","props":{"text":"Updated 2 min ago","variant":"secondary"}}}
+{"op":"add","path":"/elements/compareCard","value":{"type":"Card","props":{"gap":"s"},"children":["compareTitle","compareRow","compareCallout"]}}
+{"op":"add","path":"/elements/compareTitle","value":{"type":"TextContent","props":{"text":"vs. same time yesterday","size":"small-heavy"}}}
+{"op":"add","path":"/elements/compareRow","value":{"type":"TextContent","props":{"text":{"$template":"Yesterday at 10:42 AM: $${/yesterday/revenueSameTime} (${/yesterday/transactionsSameTime} transactions). Today is ${/compare/deltaPct} vs. yesterday."},"size":"default"}}}
+{"op":"add","path":"/state/yesterday","value":{"revenueSameTime":"1,102.75","transactionsSameTime":88}}
+{"op":"add","path":"/state/compare","value":{"deltaPct":"+16.5%"}}
+{"op":"add","path":"/elements/compareCallout","value":{"type":"Alert","props":{"title":"Trending up","description":"Revenue is $181.75 ahead of yesterday at this time, with 9% more transactions.","variant":"success"}}}
+{"op":"add","path":"/elements/hourlyChart","value":{"type":"BarChart","props":{"labels":["8 AM","9 AM","10 AM"],"series":["todaySeries","yesterdaySeries"],"variant":"grouped","xLabel":"Hour","yLabel":"Revenue ($)"}}}
+{"op":"add","path":"/elements/todaySeries","value":{"type":"Series","props":{"category":"Today","values":[312.25,468.50,503.75]}}}
+{"op":"add","path":"/elements/yesterdaySeries","value":{"type":"Series","props":{"category":"Yesterday","values":[298.00,401.25,403.50]}}}
+{"op":"add","path":"/elements/trend","value":{"type":"TextCallout","props":{"variant":"info","title":"Keep an eye on 11 AM","description":"Yesterday's biggest pre-lunch hour was 11 AM–12 PM ($612). You're pacing to beat it."}}}

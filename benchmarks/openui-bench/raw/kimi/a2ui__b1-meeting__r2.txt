@@ -1,29 +1,120 @@
-Here's a quick view of your next calendar event:
+Here's a single-screen view of what's next on your calendar:
 
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"next-meeting","catalogId":"thesys.dev:c1-openui","theme":{"agentDisplayName":"Calendar Assistant"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"next-meeting","components":[
-{"id":"root","component":"Card","variant":"card","direction":"column","gap":"m","children":["header","timeRow","sep1","attendeesLabel","attendees","sep2","joinButtons"]},
-{"id":"header","component":"CardHeader","title":"Product Roadmap Sync","subtitle":"Next meeting · Today"},
-{"id":"timeRow","component":"TextContent","text":"**Starts at 2:30 PM** (in 25 minutes) · 45 min · Google Meet","size":"large"},
-{"id":"sep1","component":"Separator","orientation":"horizontal"},
-{"id":"attendeesLabel","component":"TextContent","text":"**Attending (4)**","size":"small-heavy"},
-{"id":"attendees","component":"ListBlock","variant":"image","items":["att1","att2","att3","att4"]},
-{"id":"att1","component":"ListItem","title":"Sarah Chen","subtitle":"Product Manager · Organizer"},
-{"id":"att2","component":"ListItem","title":"Marcus Lee","subtitle":"Engineering Lead"},
-{"id":"att3","component":"ListItem","title":"Priya Nair","subtitle":"Design"},
-{"id":"att4","component":"ListItem","title":"You","subtitle":"Accepted"},
-{"id":"sep2","component":"Separator","orientation":"horizontal"},
-{"id":"joinButtons","component":"Buttons","direction":"row","buttons":["joinBtn","detailsBtn"]},
-{"id":"joinBtn","component":"Button","label":"Join the call","variant":"primary","size":"large","action":["join_meeting"]},
-{"id":"detailsBtn","component":"Button","label":"View details","variant":"secondary","size":"large","action":["view_details"]}
-]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "timeBadge",
+          "meetingInfo",
+          "attendeesLabel",
+          "attendeesTable",
+          "joinActions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Up Next: Product Roadmap Sync",
+        "subtitle": "Your next meeting"
+      },
+      {
+        "id": "timeBadge",
+        "component": "Badge",
+        "text": "Today, 2:00 PM – 2:30 PM",
+        "variant": "secondary"
+      },
+      {
+        "id": "meetingInfo",
+        "component": "TextContent",
+        "text": "**Starts at 2:00 PM** (in 25 minutes) · Conference Room B / Video call"
+      },
+      {
+        "id": "attendeesLabel",
+        "component": "Label",
+        "text": "Attendees (4)"
+      },
+      {
+        "id": "attendeesTable",
+        "component": "Table",
+        "columns": [
+          "attendeeName",
+          "attendeeRole",
+          "attendeeStatus"
+        ]
+      },
+      {
+        "id": "attendeeName",
+        "component": "Col",
+        "label": "Name",
+        "data": [
+          "Sarah Chen",
+          "Marcus Lee",
+          "Priya Patel",
+          "You"
+        ]
+      },
+      {
+        "id": "attendeeRole",
+        "component": "Col",
+        "label": "Role",
+        "data": [
+          "Product Manager",
+          "Engineering Lead",
+          "Designer",
+          "Organizer"
+        ]
+      },
+      {
+        "id": "attendeeStatus",
+        "component": "Col",
+        "label": "RSVP",
+        "data": [
+          "Accepted",
+          "Accepted",
+          "Tentative",
+          "Accepted"
+        ]
+      },
+      {
+        "id": "joinActions",
+        "component": "Buttons",
+        "buttons": [
+          "joinBtn",
+          "detailsBtn"
+        ]
+      },
+      {
+        "id": "joinBtn",
+        "component": "Button",
+        "label": "Join video call",
+        "variant": "primary"
+      },
+      {
+        "id": "detailsBtn",
+        "component": "Button",
+        "label": "View event details",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
 </a2ui-json>
 
-This screen covers all three items:
-1. **Meeting title & start time** — "Product Roadmap Sync" starting at 2:30 PM (in 25 minutes)
-2. **Attendees** — a list of the 4 participants with their roles
-3. **Join the call** — a prominent "Join the call" button (plus a secondary option to view full details)
+This covers all three items: the meeting title and start time (header, badge, and info line), the attendee list with roles and RSVP status, and a prominent "Join video call" button.

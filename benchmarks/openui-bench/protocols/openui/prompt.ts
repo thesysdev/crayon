@@ -10,15 +10,18 @@ const core = require(join(HERE, "../../../../packages/lang-core/dist/index.cjs")
 // Prompt inputs: changing any of these changes the prompt the models see and
 // invalidates every raw generated against it.
 const RULES = [
-  "The root children list is a COMPLETE commitment: every component you define MUST be reachable from root's children, directly or through a listed parent. A defined-but-unreferenced statement renders NOTHING and its content is silently missing from the final screen. Before writing root, enumerate every section you plan to emit; after writing everything, verify every defined variable is reachable from root.",
+  "The root children list is a COMPLETE commitment: every component you define MUST be reachable from root's children, directly or through a listed parent. A defined-but-unreferenced statement renders NOTHING and its content is silently missing from the final screen. Before writing root, enumerate every section you plan to emit; after writing everything, verify every defined variable is reachable from root. The most common mistake is defining a section heading, series or button and never listing it in any children or reference list; every name you define must appear in at least one.",
   'All component arguments are positional, in the exact order shown in each signature. Never write named arguments: no \`name: value\` and no \`name=value\` inside any component call. To reach a later optional argument, pass the earlier optionals too, using null to skip. WRONG: \`Card([a, b], direction: "row", gap: "l")\`. RIGHT: \`Card([a, b], "card", "row", "l")\`. Enum-typed arguments accept ONLY the listed values, exactly as written; never invent variants that are not in the signature.',
+  "Enum lists are closed: a value that is not printed in the signature does not exist, even if other UI libraries use it. Before writing an enum value, check it appears in the signature; if the value you want is missing, use the closest listed value or omit the optional argument.",
 ];
 
 const EXAMPLES = [
-  `root = Card([header, status, alert, kpis, trend, actions])
+  `root = Card([header, status, alert, revenueSection, actions])
 header = CardHeader("Revenue Overview", "Last 30 days")
-status = Badge("On track", "secondary")
+status = Tag("On track", null, null, "success")
 alert = Alert("Refund spike", "Refunds rose 14% week over week", "warning")
+revenueSection = Card([revenueHeading, kpis, trend], "sunk")
+revenueHeading = Heading("Weekly revenue", "h3")
 kpis = Table([kpiName, kpiValue])
 kpiName = Col("Metric", ["Revenue", "Orders", "Refunds"])
 kpiValue = Col("Value", ["$128,400", "1,982", "$3,120"])

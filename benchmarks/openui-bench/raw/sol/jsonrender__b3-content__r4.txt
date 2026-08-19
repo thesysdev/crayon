@@ -1,84 +1,83 @@
 {"op":"add","path":"/root","value":"studio"}
-{"op":"add","path":"/elements/studio","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["studio-header","category-filter","overview-grid","readership-card","workspace-grid"]}}
-{"op":"add","path":"/elements/studio-header","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["studio-title","new-draft-button"]}}
-{"op":"add","path":"/elements/studio-title","value":{"type":"CardHeader","props":{"title":"Content Studio","subtitle":"Plan, publish, and respond from one editorial workspace."},"children":[]}}
-{"op":"add","path":"/elements/new-draft-button","value":{"type":"Button","props":{"label":"Start new draft","variant":"primary","size":"large"},"on":{"press":{"action":"pushState","params":{"statePath":"/drafts","value":{"id":"$id","title":"Untitled draft","category":{"$state":"/selectedCategory"},"status":"Draft · just started","updated":"Now"}}}},"children":[]}}
-{"op":"add","path":"/elements/category-filter","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","wrap":true},"children":["category-label","category-select"]}}
-{"op":"add","path":"/elements/category-label","value":{"type":"TextContent","props":{"text":"Narrow the studio by category","size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/category-select","value":{"type":"Select","props":{"name":"category","items":["category-all","category-culture","category-business","category-technology","category-design"],"value":{"$bindState":"/selectedCategory"},"size":"medium"},"children":[]}}
-{"op":"add","path":"/elements/category-all","value":{"type":"SelectItem","props":{"value":"All categories","label":"All categories"},"children":[]}}
+{"op":"add","path":"/elements/studio","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["studio-header","category-filter","overview-row","drafts-section","published-section","readership-section","comments-section","schedule-section"]}}
+{"op":"add","path":"/elements/studio-header","value":{"type":"Card","props":{"variant":"clear","direction":"row","align":"center","justify":"between","gap":"m"},"children":["studio-title","new-draft-button"]}}
+{"op":"add","path":"/elements/studio-title","value":{"type":"CardHeader","props":{"title":"Content Studio","subtitle":"Plan, publish, and monitor your editorial work"}}}
+{"op":"add","path":"/elements/new-draft-button","value":{"type":"Button","props":{"label":"Start new draft","variant":"primary","size":"large"},"on":{"press":{"action":"pushState","params":{"statePath":"/drafts","value":{"id":"$id","title":"Untitled draft","category":{"$state":"/selectedCategory"},"status":"Just started","updated":"Now"}}}},"children":[]}}
+{"op":"add","path":"/elements/category-filter","value":{"type":"Card","props":{"variant":"sunk","direction":"row","align":"center","gap":"m"},"children":["category-label","category-select"]}}
+{"op":"add","path":"/elements/category-label","value":{"type":"Label","props":{"text":"Narrow by category"},"children":[]}}
+{"op":"add","path":"/elements/category-select","value":{"type":"Select","props":{"name":"category","items":["category-all","category-news","category-culture","category-guides","category-opinion"],"value":{"$bindState":"/selectedCategory"},"size":"medium"},"children":[]}}
+{"op":"add","path":"/elements/category-all","value":{"type":"SelectItem","props":{"value":"All","label":"All categories"},"children":[]}}
+{"op":"add","path":"/elements/category-news","value":{"type":"SelectItem","props":{"value":"News","label":"News"},"children":[]}}
 {"op":"add","path":"/elements/category-culture","value":{"type":"SelectItem","props":{"value":"Culture","label":"Culture"},"children":[]}}
-{"op":"add","path":"/elements/category-business","value":{"type":"SelectItem","props":{"value":"Business","label":"Business"},"children":[]}}
-{"op":"add","path":"/elements/category-technology","value":{"type":"SelectItem","props":{"value":"Technology","label":"Technology"},"children":[]}}
-{"op":"add","path":"/elements/category-design","value":{"type":"SelectItem","props":{"value":"Design","label":"Design"},"children":[]}}
-{"op":"add","path":"/state/selectedCategory","value":"All categories"}
-{"op":"add","path":"/elements/overview-grid","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"l","align":"stretch","wrap":true},"children":["published-card","top-article-card"]}}
-{"op":"add","path":"/elements/published-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["published-header","published-list"]}}
-{"op":"add","path":"/elements/published-header","value":{"type":"CardHeader","props":{"title":"Published this week","subtitle":"4 pieces · 86,240 total reads"},"children":[]}}
-{"op":"add","path":"/elements/published-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/published","key":"id"},"children":["published-row"]}}
-{"op":"add","path":"/elements/published-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["published-copy","published-reads"]}}
+{"op":"add","path":"/elements/category-guides","value":{"type":"SelectItem","props":{"value":"Guides","label":"Guides"},"children":[]}}
+{"op":"add","path":"/elements/category-opinion","value":{"type":"SelectItem","props":{"value":"Opinion","label":"Opinion"},"children":[]}}
+{"op":"add","path":"/state/selectedCategory","value":"All"}
+{"op":"add","path":"/elements/overview-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"l","align":"stretch","wrap":true},"children":["top-article-card","week-summary-card"]}}
+{"op":"add","path":"/elements/top-article-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["top-article-heading","top-article-title","top-article-meta","top-article-progress"]}}
+{"op":"add","path":"/elements/top-article-heading","value":{"type":"Badge","props":{"text":"Most read this month","variant":"secondary"},"children":[]}}
+{"op":"add","path":"/elements/top-article-title","value":{"type":"Heading","props":{"text":{"$state":"/mostRead/title"},"level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/top-article-meta","value":{"type":"TextContent","props":{"text":{"$template":"${/mostRead/views} reads · ${/mostRead.category} · Published ${/mostRead.publishedDate}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/top-article-progress","value":{"type":"Progress","props":{"value":{"$state":"/mostRead.monthlyGoalPercent"},"label":"Monthly readership goal"},"children":[]}}
+{"op":"add","path":"/state/mostRead","value":{"title":"The Quiet Reinvention of the Neighborhood Bookshop","views":"84,620","category":"Culture","publishedDate":"August 3, 2026","monthlyGoalPercent":85}}
+{"op":"add","path":"/elements/week-summary-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["week-summary-heading","week-summary-value","week-summary-copy"]}}
+{"op":"add","path":"/elements/week-summary-heading","value":{"type":"Heading","props":{"text":"Published this week","level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/week-summary-value","value":{"type":"TextContent","props":{"text":{"$state":"/publishedWeekCount"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/week-summary-copy","value":{"type":"TextContent","props":{"text":"Pieces shipped by the editorial team since Monday.","size":"small"},"children":[]}}
+{"op":"add","path":"/state/publishedWeekCount","value":"4 pieces"}
+{"op":"add","path":"/elements/drafts-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["drafts-header","drafts-list"]}}
+{"op":"add","path":"/elements/drafts-header","value":{"type":"CardHeader","props":{"title":"Drafts","subtitle":"Work in progress and current editorial status"},"children":[]}}
+{"op":"add","path":"/elements/drafts-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/drafts","key":"id"},"children":["draft-row"]}}
+{"op":"add","path":"/elements/draft-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","align":"center","justify":"between","gap":"m","wrap":true},"children":["draft-copy","draft-status"]}}
+{"op":"add","path":"/elements/draft-copy","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["draft-title","draft-meta"]}}
+{"op":"add","path":"/elements/draft-title","value":{"type":"TextContent","props":{"text":{"$item":"title"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/draft-meta","value":{"type":"TextContent","props":{"text":{"$template":"${category} · Updated ${updated}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/draft-status","value":{"type":"Tag","props":{"text":{"$item":"status"},"variant":"info","size":"sm"},"children":[]}}
+{"op":"add","path":"/state/drafts","value":[]}
+{"op":"add","path":"/state/drafts/0","value":{"id":"draft-101","title":"Why Small Museums Are Betting on Night Hours","category":"Culture","status":"Ready for edit","updated":"2 hours ago"}}
+{"op":"add","path":"/state/drafts/1","value":{"id":"draft-102","title":"A Practical Guide to Heat-Resilient Gardens","category":"Guides","status":"Needs sources","updated":"Yesterday"}}
+{"op":"add","path":"/state/drafts/2","value":{"id":"draft-103","title":"What the New Transit Plan Means for Commuters","category":"News","status":"In review","updated":"Yesterday"}}
+{"op":"add","path":"/state/drafts/3","value":{"id":"draft-104","title":"The Case for a Four-Day School Week","category":"Opinion","status":"First draft","updated":"August 14"}}
+{"op":"add","path":"/elements/published-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["published-header","published-list"]}}
+{"op":"add","path":"/elements/published-header","value":{"type":"CardHeader","props":{"title":"Published this week","subtitle":"Recent pieces and early readership"},"children":[]}}
+{"op":"add","path":"/elements/published-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/publishedThisWeek","key":"id"},"children":["published-row"]}}
+{"op":"add","path":"/elements/published-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","align":"center","justify":"between","gap":"m","wrap":true},"children":["published-copy","published-reads"]}}
 {"op":"add","path":"/elements/published-copy","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["published-title","published-meta"]}}
 {"op":"add","path":"/elements/published-title","value":{"type":"TextContent","props":{"text":{"$item":"title"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/published-meta","value":{"type":"TextContent","props":{"text":{"$template":"${category} · ${publishedAt}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/published-reads","value":{"type":"Badge","props":{"text":{"$template":"${reads} reads"},"variant":"secondary"},"children":[]}}
-{"op":"add","path":"/state/published","value":[]}
-{"op":"add","path":"/state/published/0","value":{"id":"pub-1","title":"The Quiet Return of Neighborhood Bookshops","category":"Culture","publishedAt":"Mon, Aug 17","reads":"24.8K"}}
-{"op":"add","path":"/state/published/1","value":{"id":"pub-2","title":"Why Small Teams Are Rethinking Growth","category":"Business","publishedAt":"Tue, Aug 18","reads":"18.6K"}}
-{"op":"add","path":"/state/published/2","value":{"id":"pub-3","title":"Inside the New Era of Private AI","category":"Technology","publishedAt":"Thu, Aug 20","reads":"31.2K"}}
-{"op":"add","path":"/state/published/3","value":{"id":"pub-4","title":"Designing Cities for the Hottest Decade","category":"Design","publishedAt":"Fri, Aug 21","reads":"11.6K"}}
-{"op":"add","path":"/elements/top-article-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["top-article-header","top-article-badge","top-article-title","top-article-meta","top-article-progress"]}}
-{"op":"add","path":"/elements/top-article-header","value":{"type":"CardHeader","props":{"title":"Most-read this month","subtitle":"August 2026 standout"},"children":[]}}
-{"op":"add","path":"/elements/top-article-badge","value":{"type":"Badge","props":{"text":"#1 article","variant":"default"},"children":[]}}
-{"op":"add","path":"/elements/top-article-title","value":{"type":"Heading","props":{"text":{"$state":"/topArticle/title"},"level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/top-article-meta","value":{"type":"TextContent","props":{"text":{"$template":"${/topArticle/author} · ${/topArticle/category} · ${/topArticle/reads} reads"},"size":"default"},"children":[]}}
-{"op":"add","path":"/elements/top-article-progress","value":{"type":"Progress","props":{"value":{"$state":"/topArticle/goalProgress"},"label":"142% of monthly readership benchmark"},"children":[]}}
-{"op":"add","path":"/state/topArticle","value":{"title":"The Cities Learning to Live With Extreme Heat","author":"Maya Chen","category":"Design","reads":"184,320","goalProgress":100}}
-{"op":"add","path":"/elements/readership-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["readership-header","readership-chart"]}}
-{"op":"add","path":"/elements/readership-header","value":{"type":"CardHeader","props":{"title":"Readership · past 30 days","subtitle":"612K reads · up 18% from the previous period"},"children":[]}}
+{"op":"add","path":"/elements/published-meta","value":{"type":"TextContent","props":{"text":{"$template":"${category} · ${author} · ${date}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/published-reads","value":{"type":"Badge","props":{"text":{"$template":"${reads} reads"},"variant":"outline"},"children":[]}}
+{"op":"add","path":"/state/publishedThisWeek","value":[]}
+{"op":"add","path":"/state/publishedThisWeek/0","value":{"id":"pub-201","title":"Inside the City’s New Community Kitchen","category":"News","author":"Maya Chen","date":"August 18","reads":"12,480"}}
+{"op":"add","path":"/state/publishedThisWeek/1","value":{"id":"pub-202","title":"Five Walkable Escapes for a Late-Summer Weekend","category":"Guides","author":"Theo Martin","date":"August 17","reads":"9,310"}}
+{"op":"add","path":"/state/publishedThisWeek/2","value":{"id":"pub-203","title":"The Return of the Handwritten Menu","category":"Culture","author":"Nora Okafor","date":"August 15","reads":"18,905"}}
+{"op":"add","path":"/state/publishedThisWeek/3","value":{"id":"pub-204","title":"Public Parks Need Shade, Not Just More Benches","category":"Opinion","author":"Elena Ruiz","date":"August 13","reads":"7,640"}}
+{"op":"add","path":"/elements/readership-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["readership-header","readership-chart"]}}
+{"op":"add","path":"/elements/readership-header","value":{"type":"CardHeader","props":{"title":"Readership over the past 30 days","subtitle":"Daily article reads across all categories"},"children":[]}}
 {"op":"add","path":"/elements/readership-chart","value":{"type":"AreaChart","props":{"labels":{"$state":"/readership/labels"},"series":["readership-series"],"variant":"natural","xLabel":"Date","yLabel":"Reads"},"children":[]}}
 {"op":"add","path":"/elements/readership-series","value":{"type":"Series","props":{"category":"Daily reads","values":{"$state":"/readership/values"}},"children":[]}}
-{"op":"add","path":"/state/readership","value":{"labels":["Jul 20","Jul 23","Jul 26","Jul 29","Aug 1","Aug 4","Aug 7","Aug 10","Aug 13","Aug 16","Aug 18"],"values":[14200,16800,15100,19400,21800,20500,24700,23100,28600,26400,31200]}}
-{"op":"add","path":"/elements/workspace-grid","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"l","align":"start","wrap":true},"children":["drafts-card","schedule-card","comments-card"]}}
-{"op":"add","path":"/elements/drafts-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["drafts-header","drafts-list"]}}
-{"op":"add","path":"/elements/drafts-header","value":{"type":"CardHeader","props":{"title":"Drafts","subtitle":"Work in progress and editorial status"},"children":[]}}
-{"op":"add","path":"/elements/drafts-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/drafts","key":"id"},"children":["draft-row"]}}
-{"op":"add","path":"/elements/draft-row","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["draft-title","draft-info","draft-status"]}}
-{"op":"add","path":"/elements/draft-title","value":{"type":"TextContent","props":{"text":{"$item":"title"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/draft-info","value":{"type":"TextContent","props":{"text":{"$template":"${category} · Updated ${updated}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/draft-status","value":{"type":"Badge","props":{"text":{"$item":"status"},"variant":"outline"},"children":[]}}
-{"op":"add","path":"/state/drafts","value":[]}
-{"op":"add","path":"/state/drafts/0","value":{"id":"draft-1","title":"Can Independent Cinema Find Its Next Audience?","category":"Culture","status":"Needs edits","updated":"2 hours ago"}}
-{"op":"add","path":"/state/drafts/1","value":{"id":"draft-2","title":"The Case for a Four-Day Creative Week","category":"Business","status":"Ready for review","updated":"Yesterday"}}
-{"op":"add","path":"/state/drafts/2","value":{"id":"draft-3","title":"A Field Guide to Calm Technology","category":"Technology","status":"Reporting","updated":"Aug 15"}}
-{"op":"add","path":"/state/drafts/3","value":{"id":"draft-4","title":"What Public Spaces Teach Us About Belonging","category":"Design","status":"Copy edit","updated":"Aug 14"}}
-{"op":"add","path":"/elements/schedule-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["schedule-header","schedule-form","schedule-success","scheduled-list"]}}
-{"op":"add","path":"/elements/schedule-header","value":{"type":"CardHeader","props":{"title":"Schedule a piece","subtitle":"Add a title and choose its publication date."},"children":[]}}
-{"op":"add","path":"/elements/schedule-form","value":{"type":"Form","props":{"name":"schedule-piece","fields":["schedule-title-control","schedule-date-control"],"buttons":"schedule-buttons"},"children":[]}}
-{"op":"add","path":"/elements/schedule-title-control","value":{"type":"FormControl","props":{"label":"Piece title","input":"schedule-title-input","hint":"Use the final headline or a working title."},"children":[]}}
-{"op":"add","path":"/elements/schedule-title-input","value":{"type":"Input","props":{"name":"scheduleTitle","placeholder":"Enter a title","type":"text","value":{"$bindState":"/schedule/title"},"rules":[{"required":true,"message":"A title is required."}]},"children":[]}}
-{"op":"add","path":"/state/schedule/title","value":""}
-{"op":"add","path":"/elements/schedule-date-control","value":{"type":"FormControl","props":{"label":"Publish date","input":"schedule-date-picker","hint":"Select the planned publication day."},"children":[]}}
-{"op":"add","path":"/elements/schedule-date-picker","value":{"type":"DatePicker","props":{"name":"publishDate","mode":"single","value":{"$bindState":"/schedule/date"},"rules":[{"required":true,"message":"A publish date is required."}]},"children":[]}}
-{"op":"add","path":"/state/schedule/date","value":[]}
-{"op":"add","path":"/elements/schedule-buttons","value":{"type":"Buttons","props":{"buttons":["schedule-submit"],"direction":"row"},"children":[]}}
-{"op":"add","path":"/elements/schedule-submit","value":{"type":"Button","props":{"label":"Add to schedule","variant":"primary","size":"medium"},"on":{"press":{"action":"pushState","params":{"statePath":"/scheduledPieces","value":{"id":"$id","title":{"$state":"/schedule/title"},"date":{"$state":"/schedule/date"},"status":"Scheduled"},"clearStatePath":"/schedule/title"}}},"children":[]}}
-{"op":"add","path":"/elements/schedule-success","value":{"type":"Callout","props":{"variant":"success","title":"Schedule ready","description":"Planned pieces appear below with their selected publication date."},"visible":{"$state":"/scheduledPieces"},"children":[]}}
-{"op":"add","path":"/elements/scheduled-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/scheduledPieces","key":"id"},"children":["scheduled-row"]}}
-{"op":"add","path":"/elements/scheduled-row","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["scheduled-title","scheduled-date"]}}
-{"op":"add","path":"/elements/scheduled-title","value":{"type":"TextContent","props":{"text":{"$item":"title"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/scheduled-date","value":{"type":"TextContent","props":{"text":{"$template":"Publish: ${date} · ${status}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/state/scheduledPieces","value":[]}
-{"op":"add","path":"/state/scheduledPieces/0","value":{"id":"scheduled-1","title":"The New Craft of Digital Preservation","date":["2026-08-24"],"status":"Scheduled"}}
-{"op":"add","path":"/elements/comments-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["comments-header","comments-list"]}}
-{"op":"add","path":"/elements/comments-header","value":{"type":"CardHeader","props":{"title":"Comments awaiting reply","subtitle":"3 reader conversations need attention"},"children":[]}}
+{"op":"add","path":"/state/readership","value":{"labels":["Jul 20","Jul 22","Jul 24","Jul 26","Jul 28","Jul 30","Aug 1","Aug 3","Aug 5","Aug 7","Aug 9","Aug 11","Aug 13","Aug 15","Aug 17","Aug 18"],"values":[14200,15150,13980,16840,17210,16490,18920,22140,20380,19760,23450,21890,24710,26280,25140,27960]}}
+{"op":"add","path":"/elements/comments-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["comments-header","comments-list"]}}
+{"op":"add","path":"/elements/comments-header","value":{"type":"CardHeader","props":{"title":"Comments awaiting reply","subtitle":"Reader conversations that need editorial attention"},"children":[]}}
 {"op":"add","path":"/elements/comments-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/comments","key":"id"},"children":["comment-row"]}}
-{"op":"add","path":"/elements/comment-row","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["comment-author","comment-text","comment-context","comment-reply"]}}
-{"op":"add","path":"/elements/comment-author","value":{"type":"TextContent","props":{"text":{"$template":"${author} · ${waiting}"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/comment-text","value":{"type":"Blockquote","props":{"text":{"$item":"comment"}},"children":[]}}
-{"op":"add","path":"/elements/comment-context","value":{"type":"TextContent","props":{"text":{"$template":"On “${article}”"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/comment-reply","value":{"type":"Button","props":{"label":"Reply","variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/activeComment","value":{"$item":"id"}}}},"children":[]}}
+{"op":"add","path":"/elements/comment-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","align":"start","justify":"between","gap":"m","wrap":true},"children":["comment-avatar","comment-copy","comment-action"]}}
+{"op":"add","path":"/elements/comment-avatar","value":{"type":"Avatar","props":{"fallback":{"$item":"initials"},"alt":{"$item":"reader"}},"children":[]}}
+{"op":"add","path":"/elements/comment-copy","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["comment-reader","comment-text","comment-article"]}}
+{"op":"add","path":"/elements/comment-reader","value":{"type":"TextContent","props":{"text":{"$item":"reader"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/comment-text","value":{"type":"TextContent","props":{"text":{"$item":"comment"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/comment-article","value":{"type":"TextContent","props":{"text":{"$template":"On “${article}” · ${age}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/comment-action","value":{"type":"Button","props":{"label":"Mark replied","variant":"secondary","size":"small"},"on":{"press":{"action":"removeState","params":{"statePath":"/comments","index":{"$index":true}}}},"children":[]}}
 {"op":"add","path":"/state/comments","value":[]}
-{"op":"add","path":"/state/comments/0","value":{"id":"comment-1","author":"Elena Ruiz","waiting":"3h","comment":"Could you share the source for the neighborhood footfall figure?","article":"The Quiet Return of Neighborhood Bookshops"}}
-{"op":"add","path":"/state/comments/1","value":{"id":"comment-2","author":"Jon Bell","waiting":"7h","comment":"The privacy angle here deserves a follow-up. Are smaller firms adopting this too?","article":"Inside the New Era of Private AI"}}
-{"op":"add","path":"/state/comments/2","value":{"id":"comment-3","author":"Priya Nair","waiting":"1d","comment":"I appreciated the practical examples. How might these ideas work in humid climates?","article":"The Cities Learning to Live With Extreme Heat"}}
-{"op":"add","path":"/state/activeComment","value":""}
+{"op":"add","path":"/state/comments/0","value":{"id":"comment-301","reader":"Priya Shah","initials":"PS","comment":"Could you share the source for the ridership estimate in the third section?","article":"What the New Transit Plan Means for Commuters","age":"38 minutes ago"}}
+{"op":"add","path":"/state/comments/1","value":{"id":"comment-302","reader":"Marcus Bell","initials":"MB","comment":"I loved the interview with the shop owner. Is there a longer version coming?","article":"The Quiet Reinvention of the Neighborhood Bookshop","age":"2 hours ago"}}
+{"op":"add","path":"/state/comments/2","value":{"id":"comment-303","reader":"Amina Yusuf","initials":"AY","comment":"This guide was useful—would the same planting schedule work one climate zone north?","article":"A Practical Guide to Heat-Resilient Gardens","age":"5 hours ago"}}
+{"op":"add","path":"/elements/schedule-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["schedule-header","schedule-form","schedule-success"]}}
+{"op":"add","path":"/elements/schedule-header","value":{"type":"CardHeader","props":{"title":"Schedule a piece","subtitle":"Set a title and future publication date"},"children":[]}}
+{"op":"add","path":"/elements/schedule-form","value":{"type":"Form","props":{"name":"schedule-piece","buttons":"schedule-buttons","fields":["schedule-title-field","schedule-date-field"]},"children":[]}}
+{"op":"add","path":"/elements/schedule-title-field","value":{"type":"FormControl","props":{"label":"Piece title","input":"schedule-title-input","hint":"Use the final headline or a working title"},"children":[]}}
+{"op":"add","path":"/elements/schedule-title-input","value":{"type":"Input","props":{"name":"piece_title","placeholder":"Enter a title","type":"text","value":{"$bindState":"/schedule/title"}},"children":[]}}
+{"op":"add","path":"/state/schedule","value":{"title":"","publishDate":[],"confirmed":false}}
+{"op":"add","path":"/elements/schedule-date-field","value":{"type":"FormControl","props":{"label":"Publish date","input":"schedule-date-picker","hint":"Choose the day this piece should go live"},"children":[]}}
+{"op":"add","path":"/elements/schedule-date-picker","value":{"type":"DatePicker","props":{"name":"publish_date","mode":"single","value":{"$bindState":"/schedule/publishDate"}},"children":[]}}
+{"op":"add","path":"/elements/schedule-buttons","value":{"type":"Buttons","props":{"buttons":["schedule-submit","schedule-clear"],"direction":"row"},"children":[]}}
+{"op":"add","path":"/elements/schedule-submit","value":{"type":"Button","props":{"label":"Schedule piece","variant":"primary"},"on":{"press":{"action":"setState","params":{"statePath":"/schedule/confirmed","value":true}}},"children":[]}}
+{"op":"add","path":"/elements/schedule-clear","value":{"type":"Button","props":{"label":"Clear title","variant":"tertiary"},"on":{"press":{"action":"setState","params":{"statePath":"/schedule/title","value":""}}},"children":[]}}
+{"op":"add","path":"/elements/schedule-success","value":{"type":"Callout","props":{"variant":"success","title":"Piece scheduled","description":{"$template":"“${/schedule/title}” has been added to the publishing calendar."}},"visible":{"$state":"/schedule/confirmed"},"children":[]} }

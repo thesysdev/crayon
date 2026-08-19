@@ -1,113 +1,89 @@
-{"op":"add","path":"/root","value":"portfolio-review"}
-{"op":"add","path":"/elements/portfolio-review","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xl"},"children":["review-header","portfolio-summary","controls-row","portfolio-tabs"]}}
-{"op":"add","path":"/elements/review-header","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["review-title","review-subtitle"]}}
-{"op":"add","path":"/elements/review-title","value":{"type":"Heading","props":{"text":"Project Portfolio Review","level":"h1"},"children":[]}}
-{"op":"add","path":"/elements/review-subtitle","value":{"type":"TextContent","props":{"text":{"$template":"Executive delivery view • ${/selectedQuarter} • Updated 18 Aug 2026"}},"children":[]}}
-{"op":"add","path":"/state/selectedQuarter","value":"Q3 2026"}
-{"op":"add","path":"/elements/portfolio-summary","value":{"type":"Callout","props":{"variant":"warning","title":"Portfolio health: Watch","description":{"$state":"/portfolioHealthSummary"}},"children":[]}}
-{"op":"add","path":"/state/portfolioHealthSummary","value":"12 active projects are progressing, but 3 overdue milestones, elevated utilization, and 6 blocked work items require leadership attention this week."}
-{"op":"add","path":"/elements/controls-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"end","wrap":true},"children":["quarter-control","export-button"]}}
-{"op":"add","path":"/elements/quarter-control","value":{"type":"FormControl","props":{"label":"Review quarter","hint":"Switch the reporting period","input":"quarter-select"},"children":[]}}
-{"op":"add","path":"/elements/quarter-select","value":{"type":"Select","props":{"name":"quarter","placeholder":"Select quarter","items":["quarter-q2","quarter-q3","quarter-q4"],"value":{"$bindState":"/selectedQuarter"},"size":"medium"},"children":[]}}
-{"op":"add","path":"/state/selectedQuarter","value":"Q3 2026"}
-{"op":"add","path":"/elements/quarter-q2","value":{"type":"SelectItem","props":{"value":"Q2 2026","label":"Q2 2026"},"children":[]}}
-{"op":"add","path":"/elements/quarter-q3","value":{"type":"SelectItem","props":{"value":"Q3 2026","label":"Q3 2026"},"children":[]}}
-{"op":"add","path":"/elements/quarter-q4","value":{"type":"SelectItem","props":{"value":"Q4 2026","label":"Q4 2026"},"children":[]}}
-{"op":"add","path":"/elements/export-button","value":{"type":"Button","props":{"label":"Export review","variant":"secondary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/exportRequested","value":true}}},"children":[]}}
-{"op":"add","path":"/state/exportRequested","value":false}
-{"op":"add","path":"/elements/portfolio-tabs","value":{"type":"Tabs","props":{"items":["overview-tab","delivery-tab","governance-tab"]},"children":[]}}
-{"op":"add","path":"/elements/overview-tab","value":{"type":"TabItem","props":{"value":"overview","trigger":"Portfolio overview","content":["overview-content"]},"children":[]}}
-{"op":"add","path":"/elements/overview-content","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xl"},"children":["active-projects-section","budget-section","team-section"]}}
-{"op":"add","path":"/elements/active-projects-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["active-projects-header","active-projects-repeat"]}}
-{"op":"add","path":"/elements/active-projects-header","value":{"type":"CardHeader","props":{"title":"Active projects","subtitle":"Owner, committed deadline, and current delivery health"},"children":[]}}
-{"op":"add","path":"/elements/active-projects-repeat","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/projects","key":"id"},"children":["project-row"]}}
+{"op":"add","path":"/root","value":"portfolioReview"}
+{"op":"add","path":"/elements/portfolioReview","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["reviewHeader","portfolioSummary","controls","activeProjectsSection","milestonesSection","budgetSection","utilizationSection","risksSection","deadlinesSection","paceSection","blockedSection","reviewActions"]}}
+{"op":"add","path":"/elements/reviewHeader","value":{"type":"CardHeader","props":{"title":"Project Portfolio Review","subtitle":{"$template":"${/portfolio/quarter} • Executive delivery review"}},"children":[]}}
+{"op":"add","path":"/state/portfolio","value":{"quarter":"Q3 2026","healthSummary":"Portfolio health is stable: 5 active projects are progressing, with 2 delivery risks requiring leadership attention."}}
+{"op":"add","path":"/elements/portfolioSummary","value":{"type":"Callout","props":{"variant":"info","title":"Portfolio health summary","description":{"$state":"/portfolio/healthSummary"}},"children":[]}}
+{"op":"add","path":"/elements/controls","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"end","wrap":true},"children":["quarterControl","exportReviewButton"]}}
+{"op":"add","path":"/elements/quarterControl","value":{"type":"FormControl","props":{"label":"Review quarter","input":"quarterSelect","hint":"Switch the reporting period"}},"children":[]}}
+{"op":"add","path":"/elements/quarterSelect","value":{"type":"Select","props":{"name":"quarter","items":["quarterQ2","quarterQ3","quarterQ4"],"value":{"$bindState":"/portfolio/quarter"}},"children":[]}}
+{"op":"add","path":"/elements/quarterQ2","value":{"type":"SelectItem","props":{"value":"Q2 2026","label":"Q2 2026"},"children":[]}}
+{"op":"add","path":"/elements/quarterQ3","value":{"type":"SelectItem","props":{"value":"Q3 2026","label":"Q3 2026"},"children":[]}}
+{"op":"add","path":"/elements/quarterQ4","value":{"type":"SelectItem","props":{"value":"Q4 2026","label":"Q4 2026"},"children":[]}}
+{"op":"add","path":"/elements/exportReviewButton","value":{"type":"Button","props":{"label":"Export review","variant":"secondary"},"on":{"press":{"action":"setState","params":{"statePath":"/portfolio/exportRequested","value":true}}},"children":[]}}
+{"op":"add","path":"/state/portfolio/exportRequested","value":false}
+{"op":"add","path":"/elements/activeProjectsSection","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["activeProjectsHeader","projectList"]}}
+{"op":"add","path":"/elements/activeProjectsHeader","value":{"type":"Heading","props":{"text":"Active projects","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/projectList","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/projects","key":"id"},"children":["projectCard"]}}
 {"op":"add","path":"/state/projects","value":[]}
-{"op":"add","path":"/state/projects/0","value":{"id":"p1","name":"Customer Identity Modernization","owner":"Maya Chen","deadline":"29 Aug 2026","health":"At risk","healthVariant":"warning","budgetSpent":680000,"budgetAllocated":850000,"utilization":92}}
-{"op":"add","path":"/state/projects/1","value":{"id":"p2","name":"ERP Finance Rollout","owner":"Daniel Okafor","deadline":"12 Sep 2026","health":"On track","healthVariant":"success","budgetSpent":1240000,"budgetAllocated":1500000,"utilization":84}}
-{"op":"add","path":"/state/projects/2","value":{"id":"p3","name":"Mobile Claims Experience","owner":"Sofia Martinez","deadline":"05 Sep 2026","health":"Watch","healthVariant":"warning","budgetSpent":410000,"budgetAllocated":500000,"utilization":96}}
-{"op":"add","path":"/state/projects/3","value":{"id":"p4","name":"Data Platform Foundation","owner":"James Wilson","deadline":"30 Sep 2026","health":"On track","healthVariant":"success","budgetSpent":760000,"budgetAllocated":1100000,"utilization":78}}
-{"op":"add","path":"/elements/project-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["project-details","project-health","project-actions"]}}
-{"op":"add","path":"/elements/project-details","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["project-name","project-owner","project-deadline"]}}
-{"op":"add","path":"/elements/project-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"large-heavy"},"children":[]}}
-{"op":"add","path":"/elements/project-owner","value":{"type":"TextContent","props":{"text":{"$template":"Owner: ${owner}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/project-deadline","value":{"type":"TextContent","props":{"text":{"$template":"Deadline: ${deadline}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/project-health","value":{"type":"Tag","props":{"text":{"$item":"health"},"variant":{"$cond":{"$item":"health","eq":"On track"},"$then":"success","$else":"warning"},"size":"md"},"children":[]}}
-{"op":"add","path":"/elements/project-actions","value":{"type":"Buttons","props":{"buttons":["request-people-button","archive-project-button"],"direction":"row"},"children":[]}}
-{"op":"add","path":"/elements/request-people-button","value":{"type":"Button","props":{"label":"Request people","variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/peopleRequestProject","value":{"$item":"name"}}}},"children":[]}}
-{"op":"add","path":"/elements/archive-project-button","value":{"type":"Button","props":{"label":"Archive","variant":"tertiary","type":"destructive","size":"small"},"on":{"press":{"action":"removeState","params":{"statePath":"/projects","index":{"$index":true}}}},"children":[]}}
-{"op":"add","path":"/state/peopleRequestProject","value":""}
-{"op":"add","path":"/elements/budget-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["budget-header","budget-repeat"]}}
-{"op":"add","path":"/elements/budget-header","value":{"type":"CardHeader","props":{"title":"Budget spend vs allocation","subtitle":"Current committed spend by active project"},"children":[]}}
-{"op":"add","path":"/elements/budget-repeat","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/projects","key":"id"},"children":["budget-row"]}}
-{"op":"add","path":"/elements/budget-row","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["budget-label","budget-progress"]}}
-{"op":"add","path":"/elements/budget-label","value":{"type":"TextContent","props":{"text":{"$template":"${name} — $${budgetSpent} spent of $${budgetAllocated} allocated"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/budget-progress","value":{"type":"Progress","props":{"value":{"$item":"utilization"},"label":{"$template":"${utilization}% of allocation used"}},"children":[]}}
-{"op":"add","path":"/elements/team-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["team-header","team-utilization-chart","team-utilization-note"]}}
-{"op":"add","path":"/elements/team-header","value":{"type":"CardHeader","props":{"title":"Team utilization","subtitle":"Capacity allocation across delivery teams"},"children":[]}}
-{"op":"add","path":"/elements/team-utilization-chart","value":{"type":"BarChart","props":{"labels":["Platform Engineering","Product Delivery","Data & Analytics","Quality Engineering","Change Management"],"series":["team-utilization-series"],"variant":"grouped","xLabel":"Team","yLabel":"Utilization %"},"children":[]}}
-{"op":"add","path":"/elements/team-utilization-series","value":{"type":"Series","props":{"category":"Utilization","values":[92,88,76,95,69]},"children":[]}}
-{"op":"add","path":"/elements/team-utilization-note","value":{"type":"TextCallout","props":{"variant":"warning","title":"Capacity constraint","description":"Platform Engineering and Quality Engineering are above the 90% planning threshold."},"children":[]}}
-{"op":"add","path":"/elements/delivery-tab","value":{"type":"TabItem","props":{"value":"delivery","trigger":"Delivery & milestones","content":["delivery-content"]},"children":[]}}
-{"op":"add","path":"/elements/delivery-content","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xl"},"children":["overdue-section","deadlines-section","pace-section","blocked-section"]}}
-{"op":"add","path":"/elements/overdue-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["overdue-header","overdue-repeat"]}}
-{"op":"add","path":"/elements/overdue-header","value":{"type":"CardHeader","props":{"title":"Overdue milestones","subtitle":"Milestones requiring recovery plans"},"children":[]}}
-{"op":"add","path":"/elements/overdue-repeat","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/overdueMilestones","key":"id"},"children":["overdue-row"]}}
-{"op":"add","path":"/state/overdueMilestones","value":[]}
-{"op":"add","path":"/state/overdueMilestones/0","value":{"id":"m1","milestone":"Identity provider cutover readiness","project":"Customer Identity Modernization","owner":"Maya Chen","due":"14 Aug 2026","daysOverdue":4}}
-{"op":"add","path":"/state/overdueMilestones/1","value":{"id":"m2","milestone":"GL reconciliation sign-off","project":"ERP Finance Rollout","owner":"Daniel Okafor","due":"11 Aug 2026","daysOverdue":7}}
-{"op":"add","path":"/state/overdueMilestones/2","value":{"id":"m3","milestone":"Accessibility validation","project":"Mobile Claims Experience","owner":"Sofia Martinez","due":"16 Aug 2026","daysOverdue":2}}
-{"op":"add","path":"/elements/overdue-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","justify":"between","align":"center","wrap":true},"children":["overdue-details","overdue-tag"]}}
-{"op":"add","path":"/elements/overdue-details","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["overdue-name","overdue-meta"]}}
-{"op":"add","path":"/elements/overdue-name","value":{"type":"TextContent","props":{"text":{"$item":"milestone"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/overdue-meta","value":{"type":"TextContent","props":{"text":{"$template":"${project} • Owner: ${owner} • Due ${due}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/overdue-tag","value":{"type":"Tag","props":{"text":{"$template":"${daysOverdue} days overdue"},"variant":"danger","size":"sm"},"children":[]}}
-{"op":"add","path":"/elements/deadlines-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["deadlines-header","deadlines-repeat"]}}
-{"op":"add","path":"/elements/deadlines-header","value":{"type":"CardHeader","props":{"title":"Deadlines in the next two weeks","subtitle":"Upcoming commitments through 01 Sep 2026"},"children":[]}}
-{"op":"add","path":"/elements/deadlines-repeat","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/upcomingDeadlines","key":"id"},"children":["deadline-row"]}}
-{"op":"add","path":"/state/upcomingDeadlines","value":[]}
-{"op":"add","path":"/state/upcomingDeadlines/0","value":{"id":"d1","date":"20 Aug","item":"Architecture decision record approved","project":"Data Platform Foundation","owner":"James Wilson"}}
-{"op":"add","path":"/state/upcomingDeadlines/1","value":{"id":"d2","date":"22 Aug","item":"UAT cycle 2 complete","project":"ERP Finance Rollout","owner":"Daniel Okafor"}}
-{"op":"add","path":"/state/upcomingDeadlines/2","value":{"id":"d3","date":"29 Aug","item":"Identity provider production cutover","project":"Customer Identity Modernization","owner":"Maya Chen"}}
-{"op":"add","path":"/state/upcomingDeadlines/3","value":{"id":"d4","date":"31 Aug","item":"Claims app beta release","project":"Mobile Claims Experience","owner":"Sofia Martinez"}}
-{"op":"add","path":"/elements/deadline-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","wrap":true},"children":["deadline-date","deadline-details"]}}
-{"op":"add","path":"/elements/deadline-date","value":{"type":"Badge","props":{"text":{"$item":"date"},"variant":"outline"},"children":[]}}
-{"op":"add","path":"/elements/deadline-details","value":{"type":"TextContent","props":{"text":{"$template":"${item} — ${project} (${owner})"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/pace-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["pace-header","pace-chart"]}}
-{"op":"add","path":"/elements/pace-header","value":{"type":"CardHeader","props":{"title":"Delivery pace","subtitle":"Completed story points over the past six sprints"},"children":[]}}
-{"op":"add","path":"/elements/pace-chart","value":{"type":"LineChart","props":{"labels":["Sprint 18","Sprint 19","Sprint 20","Sprint 21","Sprint 22","Sprint 23"],"series":["pace-series"],"variant":"natural","xLabel":"Sprint","yLabel":"Story points completed"},"children":[]}}
-{"op":"add","path":"/elements/pace-series","value":{"type":"Series","props":{"category":"Completed story points","values":[74,81,77,89,85,93]},"children":[]}}
-{"op":"add","path":"/elements/blocked-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["blocked-header","blocked-repeat"]}}
-{"op":"add","path":"/elements/blocked-header","value":{"type":"CardHeader","props":{"title":"Blocked work items","subtitle":"Items waiting on a decision, dependency, or external party"},"children":[]}}
-{"op":"add","path":"/elements/blocked-repeat","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/blockedItems","key":"id"},"children":["blocked-row"]}}
-{"op":"add","path":"/state/blockedItems","value":[]}
-{"op":"add","path":"/state/blockedItems/0","value":{"id":"b1","item":"SSO provisioning automation","project":"Customer Identity Modernization","blocker":"Security certificate approval","age":"5 days","severity":"High","variant":"danger"}}
-{"op":"add","path":"/state/blockedItems/1","value":{"id":"b2","item":"Vendor tax configuration","project":"ERP Finance Rollout","blocker":"Supplier master data extract","age":"4 days","severity":"Medium","variant":"warning"}}
-{"op":"add","path":"/state/blockedItems/2","value":{"id":"b3","item":"Push notification consent flow","project":"Mobile Claims Experience","blocker":"Legal review of updated copy","age":"3 days","severity":"Medium","variant":"warning"}}
-{"op":"add","path":"/state/blockedItems/3","value":{"id":"b4","item":"Retention policy pipeline","project":"Data Platform Foundation","blocker":"Data classification decision","age":"6 days","severity":"High","variant":"danger"}}
-{"op":"add","path":"/elements/blocked-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","justify":"between","align":"center","wrap":true},"children":["blocked-details","blocked-severity"]}}
-{"op":"add","path":"/elements/blocked-details","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["blocked-name","blocked-meta"]}}
-{"op":"add","path":"/elements/blocked-name","value":{"type":"TextContent","props":{"text":{"$item":"item"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/blocked-meta","value":{"type":"TextContent","props":{"text":{"$template":"${project} • Blocked by: ${blocker} • Age: ${age}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/blocked-severity","value":{"type":"Tag","props":{"text":{"$item":"severity"},"variant":{"$cond":{"$item":"severity","eq":"High"},"$then":"danger","$else":"warning"},"size":"sm"},"children":[]}}
-{"op":"add","path":"/elements/governance-tab","value":{"type":"TabItem","props":{"value":"governance","trigger":"Risks & actions","content":["governance-content"]},"children":[]}}
-{"op":"add","path":"/elements/governance-content","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xl"},"children":["risks-section","people-request-section","export-status"]}}
-{"op":"add","path":"/elements/risks-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["risks-header","risks-repeat"]}}
-{"op":"add","path":"/elements/risks-header","value":{"type":"CardHeader","props":{"title":"Portfolio risks","subtitle":"Open risks by project and severity"},"children":[]}}
-{"op":"add","path":"/elements/risks-repeat","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/risks","key":"id"},"children":["risk-row"]}}
+{"op":"add","path":"/state/projects/0","value":{"id":"p-101","name":"Customer Identity Modernization","owner":"Maya Chen","deadline":"Sep 4, 2026","health":"At risk","healthVariant":"warning","budgetSpent":"$412k","budgetAllocation":"$520k","budgetPercent":79,"requestText":"","finished":false}}
+{"op":"add","path":"/state/projects/1","value":{"id":"p-102","name":"Supply Chain Control Tower","owner":"Daniel Ortiz","deadline":"Sep 12, 2026","health":"On track","healthVariant":"success","budgetSpent":"$286k","budgetAllocation":"$400k","budgetPercent":72,"requestText":"","finished":false}}
+{"op":"add","path":"/state/projects/2","value":{"id":"p-103","name":"Mobile Checkout Redesign","owner":"Priya Nair","deadline":"Aug 28, 2026","health":"At risk","healthVariant":"warning","budgetSpent":"$338k","budgetAllocation":"$360k","budgetPercent":94,"requestText":"","finished":false}}
+{"op":"add","path":"/state/projects/3","value":{"id":"p-104","name":"Finance Data Platform","owner":"Ethan Brooks","deadline":"Sep 18, 2026","health":"On track","healthVariant":"success","budgetSpent":"$190k","budgetAllocation":"$300k","budgetPercent":63,"requestText":"","finished":false}}
+{"op":"add","path":"/state/projects/4","value":{"id":"p-105","name":"Service Desk Automation","owner":"Lena Fischer","deadline":"Aug 22, 2026","health":"Blocked","healthVariant":"danger","budgetSpent":"$144k","budgetAllocation":"$180k","budgetPercent":80,"requestText":"","finished":false}}
+{"op":"add","path":"/elements/projectCard","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["projectName","projectMeta","projectHealth","projectBudget","projectProgress","projectActions"]}}
+{"op":"add","path":"/elements/projectName","value":{"type":"Heading","props":{"text":{"$item":"name"},"level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/projectMeta","value":{"type":"TextContent","props":{"text":{"$template":"Owner: ${owner}  •  Target deadline: ${deadline}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/projectHealth","value":{"type":"Tag","props":{"text":{"$item":"health"},"variant":{"$cond":{"$state":"/projects/healthVariant","eq":"success"},"$then":"success","$else":"warning"}},"children":[]}}
+{"op":"add","path":"/elements/projectBudget","value":{"type":"TextContent","props":{"text":{"$template":"Budget: ${budgetSpent} spent of ${budgetAllocation} allocated"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/projectProgress","value":{"type":"Progress","props":{"value":{"$item":"budgetPercent"},"label":"Budget consumed"},"children":[]}}
+{"op":"add","path":"/elements/projectActions","value":{"type":"Buttons","props":{"buttons":["requestPeopleButton","archiveProjectButton"],"direction":"row"},"children":[]}}
+{"op":"add","path":"/elements/requestPeopleButton","value":{"type":"Button","props":{"label":"Request people","variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/portfolio/requestProject","value":{"$item":"name"}}}},"children":[]}}
+{"op":"add","path":"/elements/archiveProjectButton","value":{"type":"Button","props":{"label":"Archive finished project","variant":"tertiary","type":"destructive","size":"small"},"on":{"press":{"action":"removeState","params":{"statePath":"/projects","index":{"$index":true}}}},"children":[]}}
+{"op":"add","path":"/state/portfolio/requestProject","value":""}
+{"op":"add","path":"/elements/milestonesSection","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["milestonesHeader","milestoneTable"]}}
+{"op":"add","path":"/elements/milestonesHeader","value":{"type":"Heading","props":{"text":"Overdue milestones","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/milestoneTable","value":{"type":"Table","props":{"columns":["milestoneProjectCol","milestoneNameCol","milestoneOwnerCol","milestoneDueCol","milestoneDaysCol"]},"children":[]}}
+{"op":"add","path":"/elements/milestoneProjectCol","value":{"type":"Col","props":{"label":"Project","data":{"$state":"/overdueMilestones/projects"}},"children":[]}}
+{"op":"add","path":"/elements/milestoneNameCol","value":{"type":"Col","props":{"label":"Milestone","data":{"$state":"/overdueMilestones/names"}},"children":[]}}
+{"op":"add","path":"/elements/milestoneOwnerCol","value":{"type":"Col","props":{"label":"Owner","data":{"$state":"/overdueMilestones/owners"}},"children":[]}}
+{"op":"add","path":"/elements/milestoneDueCol","value":{"type":"Col","props":{"label":"Due date","data":{"$state":"/overdueMilestones/dates"}},"children":[]}}
+{"op":"add","path":"/elements/milestoneDaysCol","value":{"type":"Col","props":{"label":"Overdue","data":{"$state":"/overdueMilestones/days"}},"children":[]}}
+{"op":"add","path":"/state/overdueMilestones","value":{"projects":["Mobile Checkout Redesign","Service Desk Automation","Customer Identity Modernization"],"names":["Payment gateway certification","Knowledge base migration","SSO pilot sign-off"],"owners":["Priya Nair","Lena Fischer","Maya Chen"],"dates":["Aug 11, 2026","Aug 13, 2026","Aug 15, 2026"],"days":["7 days","5 days","3 days"]}}
+{"op":"add","path":"/elements/budgetSection","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["budgetHeader","budgetChart"]}}
+{"op":"add","path":"/elements/budgetHeader","value":{"type":"Heading","props":{"text":"Budget spent against allocation","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/budgetChart","value":{"type":"BarChart","props":{"labels":["Identity Modernization","Control Tower","Checkout Redesign","Finance Platform","Service Desk"],"series":["budgetSpentSeries","budgetAllocationSeries"],"variant":"grouped","xLabel":"Project","yLabel":"USD (thousands)"},"children":[]}}
+{"op":"add","path":"/elements/budgetSpentSeries","value":{"type":"Series","props":{"category":"Spent","values":[412,286,338,190,144]},"children":[]}}
+{"op":"add","path":"/elements/budgetAllocationSeries","value":{"type":"Series","props":{"category":"Allocated","values":[520,400,360,300,180]},"children":[]}}
+{"op":"add","path":"/elements/utilizationSection","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["utilizationHeader","utilizationChart","utilizationNote"]}}
+{"op":"add","path":"/elements/utilizationHeader","value":{"type":"Heading","props":{"text":"Team utilization","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/utilizationChart","value":{"type":"HorizontalBarChart","props":{"labels":["Platform Engineering","Product Design","Data & Analytics","QA Automation","Delivery Management"],"series":["utilizationSeries"],"variant":"grouped","xLabel":"Utilization %","yLabel":"Team"},"children":[]}}
+{"op":"add","path":"/elements/utilizationSeries","value":{"type":"Series","props":{"category":"Allocated capacity","values":[96,88,91,84,76]},"children":[]}}
+{"op":"add","path":"/elements/utilizationNote","value":{"type":"TextCallout","props":{"variant":"warning","title":"Capacity watch","description":"Platform Engineering is operating above the 90% planning threshold; prioritize staffing requests for at-risk work."},"children":[]}}
+{"op":"add","path":"/elements/risksSection","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["risksHeader","riskList"]}}
+{"op":"add","path":"/elements/risksHeader","value":{"type":"Heading","props":{"text":"Portfolio risks","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/riskList","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/risks","key":"id"},"children":["riskCard"]}}
 {"op":"add","path":"/state/risks","value":[]}
-{"op":"add","path":"/state/risks/0","value":{"id":"r1","project":"Customer Identity Modernization","risk":"Production cutover may slip if certificate rotation is not approved this week.","severity":"High","variant":"danger","owner":"Maya Chen"}}
-{"op":"add","path":"/state/risks/1","value":{"id":"r2","project":"ERP Finance Rollout","risk":"Regional finance SMEs have limited availability for reconciliation testing.","severity":"Medium","variant":"warning","owner":"Daniel Okafor"}}
-{"op":"add","path":"/state/risks/2","value":{"id":"r3","project":"Mobile Claims Experience","risk":"Beta feedback may increase scope beyond the approved release plan.","severity":"Medium","variant":"warning","owner":"Sofia Martinez"}}
-{"op":"add","path":"/state/risks/3","value":{"id":"r4","project":"Data Platform Foundation","risk":"Data retention decision is pending governance council approval.","severity":"High","variant":"danger","owner":"James Wilson"}}
-{"op":"add","path":"/elements/risk-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","justify":"between","align":"start","wrap":true},"children":["risk-details","risk-severity"]}}
-{"op":"add","path":"/elements/risk-details","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["risk-project","risk-description","risk-owner"]}}
-{"op":"add","path":"/elements/risk-project","value":{"type":"TextContent","props":{"text":{"$item":"project"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/risk-description","value":{"type":"TextContent","props":{"text":{"$item":"risk"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/risk-owner","value":{"type":"TextContent","props":{"text":{"$template":"Risk owner: ${owner}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/risk-severity","value":{"type":"Tag","props":{"text":{"$item":"severity"},"variant":{"$cond":{"$item":"severity","eq":"High"},"$then":"danger","$else":"warning"},"size":"md"},"children":[]}}
-{"op":"add","path":"/elements/people-request-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["people-request-header","people-request-copy","people-request-button"]}}
-{"op":"add","path":"/elements/people-request-header","value":{"type":"CardHeader","props":{"title":"Resource request","subtitle":"Escalate capacity needs to the portfolio leadership team"},"children":[]}}
-{"op":"add","path":"/elements/people-request-copy","value":{"type":"TextContent","props":{"text":{"$cond":{"$state":"/peopleRequestProject"},"$then":{"$template":"Resource request prepared for: ${/peopleRequestProject}"},"$else":"Choose “Request people” next to an active project to prepare a staffing request."}},"children":[]}}
-{"op":"add","path":"/elements/people-request-button","value":{"type":"Button","props":{"label":"Submit staffing request","variant":"primary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/staffingRequestSubmitted","value":true}}},"children":[]}}
-{"op":"add","path":"/state/staffingRequestSubmitted","value":false}
-{"op":"add","path":"/elements/export-status","value":{"type":"Alert","props":{"title":"Export ready","description":"Use Export review to generate a shareable portfolio review package for steering committee members.","variant":"info"},"children":[]}}
+{"op":"add","path":"/state/risks/0","value":{"id":"r-1","title":"Payment gateway certification is delayed","project":"Mobile Checkout Redesign","severity":"High","variant":"danger","owner":"Priya Nair"}}
+{"op":"add","path":"/state/risks/1","value":{"id":"r-2","title":"Identity vendor API rate limits may affect pilot","project":"Customer Identity Modernization","severity":"High","variant":"danger","owner":"Maya Chen"}}
+{"op":"add","path":"/state/risks/2","value":{"id":"r-3","title":"ERP data quality remediation may expand scope","project":"Finance Data Platform","severity":"Medium","variant":"warning","owner":"Ethan Brooks"}}
+{"op":"add","path":"/state/risks/3","value":{"id":"r-4","title":"Automation adoption is lower than forecast","project":"Service Desk Automation","severity":"Medium","variant":"warning","owner":"Lena Fischer"}}
+{"op":"add","path":"/elements/riskCard","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","gap":"m","wrap":true},"children":["riskText","riskSeverity"]}}
+{"op":"add","path":"/elements/riskText","value":{"type":"TextContent","props":{"text":{"$template":"${title} — ${project} (Owner: ${owner})"}},"children":[]}}
+{"op":"add","path":"/elements/riskSeverity","value":{"type":"Tag","props":{"text":{"$item":"severity"},"variant":"danger"},"children":[]}}
+{"op":"add","path":"/elements/deadlinesSection","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["deadlinesHeader","deadlineList"]}}
+{"op":"add","path":"/elements/deadlinesHeader","value":{"type":"Heading","props":{"text":"Deadlines in the next two weeks","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/deadlineList","value":{"type":"ListBlock","props":{"items":["deadline1","deadline2","deadline3","deadline4"]},"children":[]}}
+{"op":"add","path":"/elements/deadline1","value":{"type":"ListItem","props":{"title":"Aug 22 — Service Desk Automation: production readiness review","subtitle":"Owner: Lena Fischer"},"children":[]}}
+{"op":"add","path":"/elements/deadline2","value":{"type":"ListItem","props":{"title":"Aug 28 — Mobile Checkout Redesign: release candidate","subtitle":"Owner: Priya Nair"},"children":[]}}
+{"op":"add","path":"/elements/deadline3","value":{"type":"ListItem","props":{"title":"Sep 4 — Customer Identity Modernization: SSO rollout","subtitle":"Owner: Maya Chen"},"children":[]}}
+{"op":"add","path":"/elements/deadline4","value":{"type":"ListItem","props":{"title":"Sep 12 — Supply Chain Control Tower: regional launch","subtitle":"Owner: Daniel Ortiz"},"children":[]}}
+{"op":"add","path":"/elements/paceSection","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["paceHeader","paceChart"]}}
+{"op":"add","path":"/elements/paceHeader","value":{"type":"Heading","props":{"text":"Delivery pace — past six sprints","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/paceChart","value":{"type":"LineChart","props":{"labels":["Sprint 18","Sprint 19","Sprint 20","Sprint 21","Sprint 22","Sprint 23"],"series":["completedSeries","plannedSeries"],"variant":"natural","xLabel":"Sprint","yLabel":"Story points"},"children":[]}}
+{"op":"add","path":"/elements/completedSeries","value":{"type":"Series","props":{"category":"Completed","values":[76,82,79,91,88,96]},"children":[]}}
+{"op":"add","path":"/elements/plannedSeries","value":{"type":"Series","props":{"category":"Planned","values":[80,80,84,88,90,92]},"children":[]}}
+{"op":"add","path":"/elements/blockedSection","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["blockedHeader","blockedList"]}}
+{"op":"add","path":"/elements/blockedHeader","value":{"type":"Heading","props":{"text":"Blocked work items","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/blockedList","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/blockedWork","key":"id"},"children":["blockedCard"]}}
+{"op":"add","path":"/state/blockedWork","value":[]}
+{"op":"add","path":"/state/blockedWork/0","value":{"id":"b-1","title":"PCI evidence package","project":"Mobile Checkout Redesign","blocker":"Awaiting external assessor availability","age":"9 days"}}
+{"op":"add","path":"/state/blockedWork/1","value":{"id":"b-2","title":"Knowledge article import","project":"Service Desk Automation","blocker":"Source content owner approval pending","age":"6 days"}}
+{"op":"add","path":"/state/blockedWork/2","value":{"id":"b-3","title":"Partner tenant provisioning","project":"Customer Identity Modernization","blocker":"Vendor API quota increase pending","age":"4 days"}}
+{"op":"add","path":"/elements/blockedCard","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"children":["blockedTitle","blockedDetail","blockedAge"]}}
+{"op":"add","path":"/elements/blockedTitle","value":{"type":"TextContent","props":{"text":{"$template":"${title} — ${project}"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/blockedDetail","value":{"type":"TextContent","props":{"text":{"$template":"Blocker: ${blocker}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/blockedAge","value":{"type":"Badge","props":{"text":{"$template":"Blocked ${age}"},"variant":"destructive"},"children":[]}}
+{"op":"add","path":"/elements/reviewActions","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"children":["staffingRequestDialog","exportStatus"]}}
+{"op":"add","path":"/elements/staffingRequestDialog","value":{"type":"DialogBlock","props":{"triggerLabel":"Request additional people","title":"Request project staffing","description":"Submit a resource request for the selected project.","content":["staffingRequestInfo"]},"children":[]}}
+{"op":"add","path":"/elements/staffingRequestInfo","value":{"type":"TextContent","props":{"text":{"$template":"Selected project: ${/portfolio/requestProject}"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/exportStatus","value":{"type":"TextCallout","props":{"variant":"success","title":"Export ready","description":"The review can be exported as a portfolio snapshot for leadership."},"visible":{"$state":"/portfolio/exportRequested"},"children":[]}}

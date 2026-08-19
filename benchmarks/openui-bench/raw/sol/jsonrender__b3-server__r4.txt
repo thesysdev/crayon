@@ -1,65 +1,62 @@
-{"op":"add","path":"/root","value":"service-health"}
-{"op":"add","path":"/elements/service-health","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["page-header","region-filter-card","metrics-row","resource-card","operations-row","endpoints-card"]}}
-{"op":"add","path":"/elements/page-header","value":{"type":"CardHeader","props":{"title":"Service health","subtitle":"On-call overview · Checkout API · Updated moments ago"},"children":[]}}
-{"op":"add","path":"/elements/region-filter-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["region-control"]}}
-{"op":"add","path":"/elements/region-control","value":{"type":"FormControl","props":{"label":"Region","input":"region-select","hint":"Narrow all service health signals to one deployment region."},"children":[]}}
-{"op":"add","path":"/elements/region-select","value":{"type":"Select","props":{"name":"region","items":["region-all","region-use1","region-usw2","region-euw1","region-apse1"],"size":"medium","value":{"$bindState":"/selectedRegion"}},"children":[]}}
-{"op":"add","path":"/elements/region-all","value":{"type":"SelectItem","props":{"value":"all","label":"All regions"},"children":[]}}
-{"op":"add","path":"/elements/region-use1","value":{"type":"SelectItem","props":{"value":"us-east-1","label":"US East (N. Virginia)"},"children":[]}}
-{"op":"add","path":"/elements/region-usw2","value":{"type":"SelectItem","props":{"value":"us-west-2","label":"US West (Oregon)"},"children":[]}}
-{"op":"add","path":"/elements/region-euw1","value":{"type":"SelectItem","props":{"value":"eu-west-1","label":"EU West (Ireland)"},"children":[]}}
-{"op":"add","path":"/elements/region-apse1","value":{"type":"SelectItem","props":{"value":"ap-southeast-1","label":"Asia Pacific (Singapore)"},"children":[]}}
+{"op":"add","path":"/root","value":"health-view"}
+{"op":"add","path":"/elements/health-view","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["header","region-filter","metrics-row","usage-section","incidents-section","endpoints-section","alert-section"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Service Health","subtitle":"Production · On-call overview"}}}
+{"op":"add","path":"/elements/region-filter","value":{"type":"FormControl","props":{"label":"Region","input":"region-select","hint":"Narrow all service health signals to one region"}}}
+{"op":"add","path":"/elements/region-select","value":{"type":"Select","props":{"name":"region","items":["region-all","region-us-east","region-us-west","region-eu-west","region-ap-southeast"],"value":{"$bindState":"/selectedRegion"},"size":"medium"}}}
 {"op":"add","path":"/state/selectedRegion","value":"all"}
-{"op":"add","path":"/elements/metrics-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"stretch","wrap":true},"children":["uptime-card","error-card"]}}
-{"op":"add","path":"/elements/uptime-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["uptime-heading","uptime-value","uptime-progress","uptime-target"]}}
-{"op":"add","path":"/elements/uptime-heading","value":{"type":"Heading","props":{"text":"Uptime this quarter","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/uptime-value","value":{"type":"TextContent","props":{"text":{"$template":"${/metrics/uptime}%"},"size":"large-heavy"},"children":[]}}
-{"op":"add","path":"/elements/uptime-progress","value":{"type":"Progress","props":{"value":{"$state":"/metrics/uptime"},"label":"Quarter-to-date availability"},"children":[]}}
-{"op":"add","path":"/elements/uptime-target","value":{"type":"TextCallout","props":{"variant":"success","title":"SLO on track","description":"Target: 99.90% · Error budget remaining: 74%"},"children":[]}}
-{"op":"add","path":"/state/metrics","value":{"uptime":99.97,"errorRate":1.82}}
-{"op":"add","path":"/elements/error-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["error-heading","error-value","error-status"]}}
-{"op":"add","path":"/elements/error-heading","value":{"type":"Heading","props":{"text":"Error rate right now","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/error-value","value":{"type":"TextContent","props":{"text":{"$template":"${/metrics/errorRate}%"},"size":"large-heavy"},"children":[]}}
-{"op":"add","path":"/elements/error-status","value":{"type":"Alert","props":{"variant":"warning","title":"Above normal","description":"5-minute rolling rate · Baseline: 0.35%"},"children":[]}}
-{"op":"add","path":"/elements/resource-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["resource-header","resource-chart","resource-legend"]}}
-{"op":"add","path":"/elements/resource-header","value":{"type":"CardHeader","props":{"title":"CPU & memory usage","subtitle":"Past 24 hours · hourly average utilization"},"children":[]}}
-{"op":"add","path":"/elements/resource-chart","value":{"type":"LineChart","props":{"labels":{"$state":"/resourceUsage/labels"},"series":["cpu-series","memory-series"],"variant":"natural","xLabel":"Time","yLabel":"Utilization (%)"},"children":[]}}
-{"op":"add","path":"/elements/cpu-series","value":{"type":"Series","props":{"category":"CPU","values":{"$state":"/resourceUsage/cpu"}},"children":[]}}
-{"op":"add","path":"/elements/memory-series","value":{"type":"Series","props":{"category":"Memory","values":{"$state":"/resourceUsage/memory"}},"children":[]}}
-{"op":"add","path":"/elements/resource-legend","value":{"type":"TagBlock","props":{"tags":["CPU: 71% now","Memory: 78% now","Peak CPU: 86%","Peak memory: 82%"]},"children":[]}}
-{"op":"add","path":"/state/resourceUsage","value":{"labels":["00:00","02:00","04:00","06:00","08:00","10:00","12:00","14:00","16:00","18:00","20:00","22:00","Now"],"cpu":[42,38,35,41,56,63,68,74,79,86,77,69,71],"memory":[58,57,57,59,62,66,70,73,76,79,82,80,78]}}
-{"op":"add","path":"/elements/operations-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"stretch","wrap":true},"children":["incidents-card","threshold-card"]}}
-{"op":"add","path":"/elements/incidents-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["incidents-header","incidents-list"]}}
-{"op":"add","path":"/elements/incidents-header","value":{"type":"CardHeader","props":{"title":"Open incidents","subtitle":"Acknowledge incidents to signal active ownership."},"children":[]}}
-{"op":"add","path":"/elements/incidents-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/incidents","key":"id"},"children":["incident-row"]}}
-{"op":"add","path":"/elements/incident-row","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["incident-summary","incident-meta","incident-ack"]}}
-{"op":"add","path":"/elements/incident-summary","value":{"type":"TextContent","props":{"text":{"$template":"**${title}** · ${severity}"},"size":"default"},"children":[]}}
-{"op":"add","path":"/elements/incident-meta","value":{"type":"TextContent","props":{"text":{"$template":"${service} · Opened ${openedAt} · ${region}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/incident-ack","value":{"type":"Button","props":{"label":{"$cond":{"$item":"acknowledged"},"$then":"Acknowledged","$else":"Acknowledge incident"},"variant":{"$cond":{"$item":"acknowledged"},"$then":"tertiary","$else":"primary"},"size":"small"},"on":{"press":{"action":"setState","params":{"statePath":{"$item":"acknowledged"},"value":true}}},"children":[]}}
+{"op":"add","path":"/elements/region-all","value":{"type":"SelectItem","props":{"value":"all","label":"All regions"}}}
+{"op":"add","path":"/elements/region-us-east","value":{"type":"SelectItem","props":{"value":"us-east-1","label":"US East (N. Virginia)"}}}
+{"op":"add","path":"/elements/region-us-west","value":{"type":"SelectItem","props":{"value":"us-west-2","label":"US West (Oregon)"}}}
+{"op":"add","path":"/elements/region-eu-west","value":{"type":"SelectItem","props":{"value":"eu-west-1","label":"EU West (Ireland)"}}}
+{"op":"add","path":"/elements/region-ap-southeast","value":{"type":"SelectItem","props":{"value":"ap-southeast-1","label":"Asia Pacific (Singapore)"}}}
+{"op":"add","path":"/elements/metrics-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"stretch","wrap":true},"children":["uptime-card","error-card","status-card"]}}
+{"op":"add","path":"/elements/uptime-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["uptime-label","uptime-value","uptime-progress"]}}
+{"op":"add","path":"/elements/uptime-label","value":{"type":"TextContent","props":{"text":"Uptime this quarter","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/uptime-value","value":{"type":"Heading","props":{"text":{"$template":"${/uptimeQuarter}%"},"level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/uptime-progress","value":{"type":"Progress","props":{"value":{"$state":"/uptimeQuarter"},"label":"Quarter-to-date availability"},"children":[]}}
+{"op":"add","path":"/state/uptimeQuarter","value":99.97}
+{"op":"add","path":"/elements/error-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["error-label","error-value","error-status"]}}
+{"op":"add","path":"/elements/error-label","value":{"type":"TextContent","props":{"text":"Error rate right now","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/error-value","value":{"type":"Heading","props":{"text":{"$template":"${/errorRateNow}%"},"level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/error-status","value":{"type":"Badge","props":{"text":"Elevated","variant":"destructive"},"children":[]}}
+{"op":"add","path":"/state/errorRateNow","value":1.84}
+{"op":"add","path":"/elements/status-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"xs"},"children":["status-label","status-value","status-detail"]}}
+{"op":"add","path":"/elements/status-label","value":{"type":"TextContent","props":{"text":"Current service state","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/status-value","value":{"type":"Heading","props":{"text":"Degraded","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/status-detail","value":{"type":"TextContent","props":{"text":"2 open incidents · updated moments ago","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/usage-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["usage-header","usage-chart"]}}
+{"op":"add","path":"/elements/usage-header","value":{"type":"CardHeader","props":{"title":"Resource usage · past 24 hours","subtitle":"CPU and memory utilization across production instances"}}}
+{"op":"add","path":"/elements/usage-chart","value":{"type":"LineChart","props":{"labels":["00:00","02:00","04:00","06:00","08:00","10:00","12:00","14:00","16:00","18:00","20:00","22:00","Now"],"series":["cpu-series","memory-series"],"variant":"natural","xLabel":"Time (UTC)","yLabel":"Utilization (%)"},"children":[]}}
+{"op":"add","path":"/elements/cpu-series","value":{"type":"Series","props":{"category":"CPU","values":[38,35,33,36,48,57,64,71,68,74,62,58,66]},"children":[]}}
+{"op":"add","path":"/elements/memory-series","value":{"type":"Series","props":{"category":"Memory","values":[61,60,59,60,62,65,67,70,72,73,74,75,76]},"children":[]}}
+{"op":"add","path":"/elements/incidents-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["incidents-header","incident-list"]}}
+{"op":"add","path":"/elements/incidents-header","value":{"type":"CardHeader","props":{"title":"Open incidents","subtitle":"Acknowledge an incident to signal that investigation is underway"}}}
+{"op":"add","path":"/elements/incident-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"repeat":{"statePath":"/incidents","key":"id"},"children":["incident-row"]}}
 {"op":"add","path":"/state/incidents","value":[]}
-{"op":"add","path":"/state/incidents/0","value":{"id":"INC-2481","title":"Elevated checkout failures","severity":"SEV-1","service":"Checkout API","openedAt":"18 min ago","region":"us-east-1","acknowledged":false}}
-{"op":"add","path":"/state/incidents/1","value":{"id":"INC-2479","title":"Payment provider latency","severity":"SEV-2","service":"Payments Gateway","openedAt":"43 min ago","region":"eu-west-1","acknowledged":true}}
-{"op":"add","path":"/state/incidents/2","value":{"id":"INC-2476","title":"Replica lag above threshold","severity":"SEV-3","service":"Orders Database","openedAt":"1 hr 26 min ago","region":"us-west-2","acknowledged":false}}
-{"op":"add","path":"/elements/threshold-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["threshold-header","threshold-control","threshold-preview","threshold-save"]}}
-{"op":"add","path":"/elements/threshold-header","value":{"type":"CardHeader","props":{"title":"Alert threshold","subtitle":"Trigger an alert when the 5-minute error rate reaches this value."},"children":[]}}
-{"op":"add","path":"/elements/threshold-control","value":{"type":"FormControl","props":{"label":"Error-rate threshold (%)","input":"threshold-slider","hint":"Choose a value from 0.5% to 10%."},"children":[]}}
-{"op":"add","path":"/elements/threshold-slider","value":{"type":"Slider","props":{"name":"alertThreshold","variant":"discrete","min":0.5,"max":10,"step":0.5,"label":"Error rate threshold","value":{"$bindState":"/alertThreshold"}},"children":[]}}
-{"op":"add","path":"/elements/threshold-preview","value":{"type":"TextContent","props":{"text":{"$template":"Current threshold: **${/alertThreshold}%**"},"size":"default"},"children":[]}}
-{"op":"add","path":"/elements/threshold-save","value":{"type":"Button","props":{"label":"Save alert threshold","variant":"primary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/thresholdSaved","value":true}}},"children":[]}}
-{"op":"add","path":"/state/alertThreshold","value":[2.5]}
-{"op":"add","path":"/state/thresholdSaved","value":false}
-{"op":"add","path":"/elements/endpoints-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["endpoints-header","endpoints-chart","endpoints-list"]}}
-{"op":"add","path":"/elements/endpoints-header","value":{"type":"CardHeader","props":{"title":"Five slowest endpoints","subtitle":"p95 latency over the last 15 minutes, ranked slowest first."},"children":[]}}
-{"op":"add","path":"/elements/endpoints-chart","value":{"type":"HorizontalBarChart","props":{"labels":{"$state":"/endpointMetrics/labels"},"series":["latency-series"],"variant":"grouped","xLabel":"p95 latency (ms)","yLabel":"Endpoint"},"children":[]}}
-{"op":"add","path":"/elements/latency-series","value":{"type":"Series","props":{"category":"p95 latency","values":{"$state":"/endpointMetrics/values"}},"children":[]}}
-{"op":"add","path":"/state/endpointMetrics","value":{"labels":["POST /v1/checkout","GET /v1/orders/:id","POST /v1/payments","GET /v1/catalog/search","PATCH /v1/carts/:id"],"values":[1840,1320,1085,940,815]}}
-{"op":"add","path":"/elements/endpoints-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"repeat":{"statePath":"/slowEndpoints","key":"id"},"children":["endpoint-row"]}}
-{"op":"add","path":"/elements/endpoint-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between"},"children":["endpoint-name","endpoint-latency"]}}
-{"op":"add","path":"/elements/endpoint-name","value":{"type":"TextContent","props":{"text":{"$item":"endpoint"},"size":"default"},"children":[]}}
-{"op":"add","path":"/elements/endpoint-latency","value":{"type":"Badge","props":{"text":{"$template":"${latencyMs} ms p95"},"variant":"outline"},"children":[]}}
-{"op":"add","path":"/state/slowEndpoints","value":[]}
-{"op":"add","path":"/state/slowEndpoints/0","value":{"id":"ep-1","endpoint":"POST /v1/checkout","latencyMs":1840}}
-{"op":"add","path":"/state/slowEndpoints/1","value":{"id":"ep-2","endpoint":"GET /v1/orders/:id","latencyMs":1320}}
-{"op":"add","path":"/state/slowEndpoints/2","value":{"id":"ep-3","endpoint":"POST /v1/payments","latencyMs":1085}}
-{"op":"add","path":"/state/slowEndpoints/3","value":{"id":"ep-4","endpoint":"GET /v1/catalog/search","latencyMs":940}}
-{"op":"add","path":"/state/slowEndpoints/4","value":{"id":"ep-5","endpoint":"PATCH /v1/carts/:id","latencyMs":815}}
+{"op":"add","path":"/state/incidents/0","value":{"id":"inc-4821","title":"Elevated checkout API errors","severity":"SEV-1","region":"us-east-1","started":"18 minutes ago","acknowledged":false}}
+{"op":"add","path":"/state/incidents/1","value":{"id":"inc-4817","title":"Delayed event processing","severity":"SEV-2","region":"eu-west-1","started":"47 minutes ago","acknowledged":false}}
+{"op":"add","path":"/elements/incident-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["incident-details","incident-actions"]}}
+{"op":"add","path":"/elements/incident-details","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["incident-severity","incident-title","incident-meta"]}}
+{"op":"add","path":"/elements/incident-severity","value":{"type":"Badge","props":{"text":{"$item":"severity"},"variant":{"$cond":{"$state":"/errorRateNow","gt":1.5},"$then":"destructive","$else":"secondary"}},"children":[]}}
+{"op":"add","path":"/elements/incident-title","value":{"type":"TextContent","props":{"text":{"$item":"title"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/incident-meta","value":{"type":"TextContent","props":{"text":{"$template":"${region} · started ${started}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/incident-actions","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center"},"children":["acknowledged-badge","acknowledge-button"]}}
+{"op":"add","path":"/elements/acknowledged-badge","value":{"type":"Badge","props":{"text":"Acknowledged","variant":"secondary"},"visible":{"$item":"acknowledged"},"children":[]}}
+{"op":"add","path":"/elements/acknowledge-button","value":{"type":"Button","props":{"label":"Acknowledge","variant":"primary","size":"small"},"visible":{"$item":"acknowledged","not":true},"on":{"press":{"action":"setState","params":{"statePath":{"$item":"acknowledged"},"value":true}}},"children":[]}}
+{"op":"add","path":"/elements/endpoints-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["endpoints-header","endpoint-list"]}}
+{"op":"add","path":"/elements/endpoints-header","value":{"type":"CardHeader","props":{"title":"Five slowest endpoints","subtitle":"Current p95 latency, ranked slowest first"}}}
+{"op":"add","path":"/elements/endpoint-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/slowestEndpoints","key":"id"},"children":["endpoint-row"]}}
+{"op":"add","path":"/state/slowestEndpoints","value":[]}
+{"op":"add","path":"/state/slowestEndpoints/0","value":{"id":"ep-1","method":"POST","path":"/v1/checkout/confirm","latencyMs":1840}}
+{"op":"add","path":"/state/slowestEndpoints/1","value":{"id":"ep-2","method":"GET","path":"/v1/reports/summary","latencyMs":1325}}
+{"op":"add","path":"/state/slowestEndpoints/2","value":{"id":"ep-3","method":"POST","path":"/v1/search/query","latencyMs":984}}
+{"op":"add","path":"/state/slowestEndpoints/3","value":{"id":"ep-4","method":"GET","path":"/v1/customers/:id/orders","latencyMs":812}}
+{"op":"add","path":"/state/slowestEndpoints/4","value":{"id":"ep-5","method":"PATCH","path":"/v1/subscriptions/:id","latencyMs":746}}
+{"op":"add","path":"/elements/endpoint-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["endpoint-name","endpoint-latency"]}}
+{"op":"add","path":"/elements/endpoint-name","value":{"type":"TextContent","props":{"text":{"$template":"**${method}** `${path}`"}},"children":[]}}
+{"op":"add","path":"/elements/endpoint-latency","value":{"type":"Tag","props":{"text":{"$template":"${latencyMs} ms p95"},"variant":"warning","size":"md"},"children":[]}}
+{"op":"add","path":"/elements/alert-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["alert-header","threshold-control","threshold-summary"]}}
+{"op":"add","path":"/elements/alert-header","value":{"type":"CardHeader","props":{"title":"Alert threshold","subtitle":"Set the error-rate level that should page the on-call engineer"}}}
+{"op":"add","path":"/elements/threshold-control","value":{"type":"Slider","props":{"name":"error-rate-threshold","variant":"discrete","min":0.5,"max":5,"step":0.1,"label":"Error rate threshold (%)","value":{"$bindState":"/alertThreshold"}},"children":[]}}
+{"op":"add","path":"/state/alertThreshold","value":[2]}
+{"op":"add","path":"/elements/threshold-summary","value":{"type":"Callout","props":{"variant":"info","title":"Paging policy","description":{"$template":"Page on-call when the error rate exceeds ${/alertThreshold}%."}},"children":[]}}

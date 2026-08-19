@@ -934,6 +934,7 @@ export const componentGroups: ComponentGroup[] = [
     components: ["Callout", "TextCallout", "Alert", "Badge", "Tag", "TagBlock", "Progress", "Avatar"],
     notes: [
       "- Callout, TextCallout and Alert carry a message that needs attention. Badge and Tag label a value in place and carry no message.",
+      "- Status colors live on Tag (success, warning, info, danger), TextCallout (success, warning, info, danger), Callout (success, warning, info, error) and Alert (success, warning, info, destructive) variants. Badge and Button variants are visual styles from their signatures only: Badge has no success or warning, Button has no ghost.",
       "- Progress shows one value against its whole. Several values compared against each other belong in a chart.",
     ],
   },

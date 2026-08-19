@@ -1,5 +1,476 @@
-Reception day view — all 7 items covered in one screen for fast check-in and room management.
+Reception day view — all 7 items covered in one screen: today's schedule, expected count, no-show rate, live room availability, next patient banner, check-in, and day navigation.
 
-<a2ui-json>{"version":"v0.9","createSurface":{"surfaceId":"clinic-reception-day","catalogId":"thesys.dev:c1-openui"}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
 
-<a2ui-json>{"version":"v0.9","updateComponents":{"surfaceId":"clinic-reception-day","components":[{"component":"Card","id":"root","children":["header","statsRow","nextPatientCallout","mainRow"],"direction":"column","gap":"m","variant":"clear"},{"component":"CardHeader","id":"header","title":"Clinic Reception — Day View","subtitle":"Tuesday, Aug 18, 2026 • Front Desk • Main Clinic • 10:15 AM"},{"component":"Card","id":"statsRow","children":["expectedCard","noshowCard","roomsFreeCard"],"direction":"row","gap":"m","variant":"clear"},{"component":"Card","id":"expectedCard","children":["expectedHeading","expectedCount","expectedSub"],"variant":"card","gap":"xs"},{"component":"Card","id":"noshowCard","children":["noshowHeading","noshowRate","noshowProgress","noshowSub"],"variant":"card","gap":"xs"},{"component":"Card","id":"roomsFreeCard","children":["roomsFreeHeading","roomsFreeTags","roomsFreeSub"],"variant":"card","gap":"xs"},{"component":"Callout","id":"nextPatientCallout","variant":"info","title":"Next Patient Called — 10:30 AM","description":"Maria Santos → Room 2 • Dr. Chen • Status: CALLED • Please proceed to Room 2. On deck: Robert Kim at 11:00 AM."},{"component":"Card","id":"mainRow","children":["appointmentsCard","sideColumn"],"direction":"row","gap":"m","variant":"clear"},{"component":"Card","id":"appointmentsCard","children":["appointmentsHeader","appointmentsTable","checkInForm"],"variant":"card","gap":"m"},{"component":"Card","id":"sideColumn","children":["dayNavCard","roomsDetailCard"],"direction":"column","gap":"m","variant":"clear"},{"component":"Heading","id":"expectedHeading","text":"Expected Today","level":"h4"},{"component":"TextContent","id":"expectedCount","text":"18 patients","size":"large-heavy"},{"component":"TextContent","id":"expectedSub","text":"6 checked in • 1 in room • 11 remaining • 2 no-shows excluded","size":"small"},{"component":"Heading","id":"noshowHeading","text":"No-Show Rate — August","level":"h4"},{"component":"TextContent","id":"noshowRate","text":"8.2%","size":"large-heavy"},{"component":"Progress","id":"noshowProgress","value":8.2,"label":"8.2% of 214 appointments this month"},{"component":"TextContent","id":"noshowSub","text":"214 appts • 18 no-shows • Down from 9.5% in July","size":"small"},{"component":"Heading","id":"roomsFreeHeading","text":"Rooms Free Right Now","level":"h4"},{"component":"TagBlock","id":"roomsFreeTags","tags":["Room 1 — Free","Room 3 — Free","Room 5 — Free"]},{"component":"TextContent","id":"roomsFreeSub","text":"3 of 6 rooms available at 10:15 AM","size":"small"},{"component":"CardHeader","id":"appointmentsHeader","title":"Today's Appointments","subtitle":"Times & patient names • 18 scheduled today"},{"component":"Table","id":"appointmentsTable","columns":["colTime","colPatient","colStatus","colRoom"]},{"component":"Col","id":"colTime","label":"Time","data":["08:30 AM","09:00 AM","09:30 AM","10:00 AM","10:30 AM","11:00 AM","11:30 AM","01:00 PM"],"type":"string"},{"component":"Col","id":"colPatient","label":"Patient","data":["James Wilson","Aisha Khan","David Park","Linda Garcia","Maria Santos","Robert Kim","Sarah Chen","Emily Torres"],"type":"string"},{"component":"Col","id":"colStatus","label":"Status","data":["✓ Checked In","In Room","Waiting","Waiting","CALLED → Rm 2","Scheduled","Scheduled","Scheduled"],"type":"string"},{"component":"Col","id":"colRoom","label":"Room","data":["Room 1","Room 4","—","—","Room 2","—","—","—"],"type":"string"},{"component":"Form","id":"checkInForm","name":"checkInForm","buttons":"checkInButtons","fields":["fieldPatientSelect","fieldRoomSelect"]},{"component":"Buttons","id":"checkInButtons","buttons":["btnCheckIn"],"direction":"row"},{"component":"Button","id":"btnCheckIn","label":"Check In Patient","variant":"primary"},{"component":"FormControl","id":"fieldPatientSelect","label":"Check a patient in","input":"selectPatient","hint":"Select waiting patient, then assign room if needed"},{"component":"Select","id":"selectPatient","name":"patient","placeholder":"Choose patient to check in","items":["selectItem_Maria","selectItem_James","selectItem_Aisha","selectItem_David","selectItem_Linda"]},{"component":"SelectItem","id":"selectItem_Maria","value":"maria_santos_1030","label":"10:30 AM — Maria Santos (Called)"},{"component":"SelectItem","id":"selectItem_James","value":"james_wilson_0830","label":"08:30 AM — James Wilson"},{"component":"SelectItem","id":"selectItem_Aisha","value":"aisha_khan_0900","label":"09:00 AM — Aisha Khan"},{"component":"SelectItem","id":"selectItem_David","value":"david_park_0930","label":"09:30 AM — David Park"},{"component":"SelectItem","id":"selectItem_Linda","value":"linda_garcia_1000","label":"10:00 AM — Linda Garcia"},{"component":"FormControl","id":"fieldRoomSelect","label":"Assign Room (optional)","input":"selectRoom"},{"component":"Select","id":"selectRoom","name":"room","placeholder":"Auto-assign if empty","items":["selectRoomItem2","selectRoomItem4","selectRoomItem6"]},{"component":"SelectItem","id":"selectRoomItem2","value":"room2","label":"Room 2 — for Maria Santos"},{"component":"SelectItem","id":"selectRoomItem4","value":"room4","label":"Room 4 — Occupied (Aisha Khan)"},{"component":"SelectItem","id":"selectRoomItem6","value":"room6","label":"Room 6 — Cleaning"},{"component":"Card","id":"dayNavCard","children":["dayNavHeader","calendarBlock","navButtons"],"variant":"sunk","gap":"s"},{"component":"CardHeader","id":"dayNavHeader","title":"Move to Another Day","subtitle":"Pick a date or step day-by-day"},{"component":"CalendarBlock","id":"calendarBlock","mode":"single","defaultMonth":"2026-08-18","numberOfMonths":1,"captionLayout":"dropdown"},{"component":"Buttons","id":"navButtons","buttons":["btnPrev","btnToday","btnNext"],"direction":"row"},{"component":"Button","id":"btnPrev","label":"← Previous Day","variant":"secondary"},{"component":"Button","id":"btnToday","label":"Today","variant":"secondary"},{"component":"Button","id":"btnNext","label":"Next Day →","variant":"secondary"},{"component":"Card","id":"roomsDetailCard","children":["roomsDetailHeader","roomsList"],"variant":"card","gap":"s"},{"component":"CardHeader","id":"roomsDetailHeader","title":"Room Status — Now (10:15 AM)","subtitle":"Free vs occupied at a glance"},{"component":"ListBlock","id":"roomsList","items":["roomItem1","roomItem2","roomItem3","roomItem4","roomItem5","roomItem6"],"variant":"number"},{"component":"ListItem","id":"roomItem1","title":"Room 1 — FREE","subtitle":"Available • Last: James Wilson 08:30"},{"component":"ListItem","id":"roomItem2","title":"Room 2 — CALLED","subtitle":"Maria Santos • 10:30 AM • Dr. Chen"},{"component":"ListItem","id":"roomItem3","title":"Room 3 — FREE","subtitle":"Available • Cleaned 09:45 AM"},{"component":"ListItem","id":"roomItem4","title":"Room 4 — OCCUPIED","subtitle":"Aisha Khan • In visit since 09:10"},{"component":"ListItem","id":"roomItem5","title":"Room 5 — FREE","subtitle":"Available"},{"component":"ListItem","id":"roomItem6","title":"Room 6 — CLEANING","subtitle":"Unavailable until 10:30 AM"}]}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "dayNav",
+          "kpiRow",
+          "nextPatient",
+          "appointmentsSection",
+          "roomsSection",
+          "checkInSection",
+          "footerNote"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Reception — Day View",
+        "subtitle": "Tuesday, Aug 18, 2026 • 8:00 AM – 5:00 PM • Dr. Patel & Dr. Nguyen"
+      },
+      {
+        "id": "dayNav",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "dayNavTitle",
+          "datePicker",
+          "navButtons"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "dayNavTitle",
+        "component": "TextContent",
+        "text": "**Move to another day** — pick a date or use quick navigation",
+        "size": "small-heavy"
+      },
+      {
+        "id": "datePicker",
+        "component": "DatePicker",
+        "name": "selected_date",
+        "mode": "single",
+        "value": [
+          "2026-08-18"
+        ]
+      },
+      {
+        "id": "navButtons",
+        "component": "Buttons",
+        "buttons": [
+          "prevBtn",
+          "todayBtn",
+          "nextBtn"
+        ]
+      },
+      {
+        "id": "prevBtn",
+        "component": "Button",
+        "label": "← Previous Day",
+        "variant": "secondary"
+      },
+      {
+        "id": "todayBtn",
+        "component": "Button",
+        "label": "Today",
+        "variant": "secondary"
+      },
+      {
+        "id": "nextBtn",
+        "component": "Button",
+        "label": "Next Day →",
+        "variant": "primary"
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "expectedCard",
+          "noShowCard"
+        ]
+      },
+      {
+        "id": "expectedCard",
+        "component": "Card",
+        "children": [
+          "expectedHeader",
+          "expectedCount",
+          "expectedDetail",
+          "expectedProgress"
+        ],
+        "gap": "s"
+      },
+      {
+        "id": "expectedHeader",
+        "component": "TextContent",
+        "text": "Patients Expected Today",
+        "size": "small"
+      },
+      {
+        "id": "expectedCount",
+        "component": "Heading",
+        "text": "24 patients",
+        "level": "h2"
+      },
+      {
+        "id": "expectedDetail",
+        "component": "Badge",
+        "text": "18 checked in • 6 remaining",
+        "variant": "secondary"
+      },
+      {
+        "id": "expectedProgress",
+        "component": "Progress",
+        "value": 75,
+        "label": "75% arrived"
+      },
+      {
+        "id": "noShowCard",
+        "component": "Card",
+        "children": [
+          "noShowHeader",
+          "noShowCount",
+          "noShowDetail",
+          "noShowProgress"
+        ],
+        "gap": "s"
+      },
+      {
+        "id": "noShowHeader",
+        "component": "TextContent",
+        "text": "No-Show Rate — This Month (Aug)",
+        "size": "small"
+      },
+      {
+        "id": "noShowCount",
+        "component": "Heading",
+        "text": "7.2%",
+        "level": "h2"
+      },
+      {
+        "id": "noShowDetail",
+        "component": "Badge",
+        "text": "14 no-shows / 194 appointments",
+        "variant": "outline"
+      },
+      {
+        "id": "noShowProgress",
+        "component": "Progress",
+        "value": 7.2,
+        "label": "Target <8% — on track"
+      },
+      {
+        "id": "nextPatient",
+        "component": "Alert",
+        "title": "Next patient called — Maya Chen • 10:30 AM",
+        "description": "Please proceed to Room 2 — Dr. Nguyen (Follow-up). Status: CALLED at 10:24 AM. Previous: Robert Lee is now in Room 1.",
+        "variant": "success"
+      },
+      {
+        "id": "appointmentsSection",
+        "component": "Card",
+        "children": [
+          "appointmentsHeader",
+          "appointmentsTable",
+          "appointmentsHint"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "appointmentsHeader",
+        "component": "CardHeader",
+        "title": "Today's Appointments",
+        "subtitle": "Times & patient names • 24 scheduled • 8 shown"
+      },
+      {
+        "id": "appointmentsTable",
+        "component": "Table",
+        "columns": [
+          "timeCol",
+          "patientCol",
+          "visitCol",
+          "roomCol",
+          "statusCol"
+        ]
+      },
+      {
+        "id": "timeCol",
+        "component": "Col",
+        "label": "Time",
+        "data": [
+          "09:00 AM",
+          "09:30 AM",
+          "10:00 AM",
+          "10:30 AM",
+          "11:00 AM",
+          "11:30 AM",
+          "01:00 PM",
+          "01:30 PM"
+        ]
+      },
+      {
+        "id": "patientCol",
+        "component": "Col",
+        "label": "Patient",
+        "data": [
+          "James Wilson",
+          "Aisha Khan",
+          "Robert Lee",
+          "Maya Chen",
+          "Sofia Garcia",
+          "David Park",
+          "Emma Thompson",
+          "Liam O'Connell"
+        ]
+      },
+      {
+        "id": "visitCol",
+        "component": "Col",
+        "label": "Visit Type",
+        "data": [
+          "Annual Physical",
+          "Follow-up",
+          "New Patient",
+          "Follow-up",
+          "Vaccination",
+          "Consult",
+          "Annual Physical",
+          "Lab Review"
+        ]
+      },
+      {
+        "id": "roomCol",
+        "component": "Col",
+        "label": "Room",
+        "data": [
+          "Room 1",
+          "Room 3",
+          "Room 1",
+          "Room 2",
+          "Room 4",
+          "Room 2",
+          "Room 5",
+          "Room 3"
+        ]
+      },
+      {
+        "id": "statusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "In Room",
+          "Checked In",
+          "In Room",
+          "CALLED → Room 2",
+          "Waiting",
+          "Scheduled",
+          "Scheduled",
+          "Scheduled"
+        ]
+      },
+      {
+        "id": "appointmentsHint",
+        "component": "TextContent",
+        "text": "Showing 8 of 24. Use check-in below to update status instantly.",
+        "size": "small"
+      },
+      {
+        "id": "roomsSection",
+        "component": "Card",
+        "children": [
+          "roomsHeader",
+          "roomsTable",
+          "freeRoomsLabel",
+          "freeRoomsTags"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "roomsHeader",
+        "component": "CardHeader",
+        "title": "Rooms — Free Right Now",
+        "subtitle": "Live status • 3 of 5 rooms free at 10:24 AM"
+      },
+      {
+        "id": "roomsTable",
+        "component": "Table",
+        "columns": [
+          "roomNameCol",
+          "roomStatusCol",
+          "nextSlotCol"
+        ]
+      },
+      {
+        "id": "roomNameCol",
+        "component": "Col",
+        "label": "Room",
+        "data": [
+          "Room 1",
+          "Room 2",
+          "Room 3",
+          "Room 4",
+          "Room 5"
+        ]
+      },
+      {
+        "id": "roomStatusCol",
+        "component": "Col",
+        "label": "Status Now",
+        "data": [
+          "🔴 Occupied — R. Lee",
+          "🟢 FREE — Clean",
+          "🟡 Cleaning (5 min)",
+          "🟢 FREE — Ready",
+          "🟢 FREE — Ready"
+        ]
+      },
+      {
+        "id": "nextSlotCol",
+        "component": "Col",
+        "label": "Next Available",
+        "data": [
+          "11:00 AM",
+          "Now",
+          "10:30 AM",
+          "Now",
+          "Now"
+        ]
+      },
+      {
+        "id": "freeRoomsLabel",
+        "component": "TextContent",
+        "text": "Free rooms highlighted:",
+        "size": "small-heavy"
+      },
+      {
+        "id": "freeRoomsTags",
+        "component": "TagBlock",
+        "tags": [
+          "Room 2 — FREE",
+          "Room 4 — FREE",
+          "Room 5 — FREE"
+        ]
+      },
+      {
+        "id": "checkInSection",
+        "component": "Card",
+        "children": [
+          "checkInHeader",
+          "checkInForm"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "checkInHeader",
+        "component": "CardHeader",
+        "title": "Check a Patient In",
+        "subtitle": "Select the appointment and confirm arrival — updates expected count & room queue"
+      },
+      {
+        "id": "checkInForm",
+        "component": "Form",
+        "name": "checkin-form",
+        "buttons": "checkInButtons",
+        "fields": [
+          "patientSelectField",
+          "timeField"
+        ]
+      },
+      {
+        "id": "patientSelectField",
+        "component": "FormControl",
+        "label": "Patient / Appointment Time",
+        "input": "patientSelect"
+      },
+      {
+        "id": "patientSelect",
+        "component": "Select",
+        "name": "patient_id",
+        "placeholder": "Choose patient to check in",
+        "items": [
+          "optSofia",
+          "optDavid",
+          "optEmma",
+          "optLiam"
+        ]
+      },
+      {
+        "id": "optSofia",
+        "component": "SelectItem",
+        "value": "sofia_1100",
+        "label": "11:00 AM — Sofia Garcia (Vaccination)"
+      },
+      {
+        "id": "optDavid",
+        "component": "SelectItem",
+        "value": "david_1130",
+        "label": "11:30 AM — David Park (Consult)"
+      },
+      {
+        "id": "optEmma",
+        "component": "SelectItem",
+        "value": "emma_1300",
+        "label": "01:00 PM — Emma Thompson"
+      },
+      {
+        "id": "optLiam",
+        "component": "SelectItem",
+        "value": "liam_1330",
+        "label": "01:30 PM — Liam O'Connell"
+      },
+      {
+        "id": "timeField",
+        "component": "FormControl",
+        "label": "Arrival Time",
+        "hint": "Defaults to now — 10:24 AM",
+        "input": "arrivalInput"
+      },
+      {
+        "id": "arrivalInput",
+        "component": "Input",
+        "name": "arrival_time",
+        "placeholder": "10:24 AM",
+        "value": "10:24 AM"
+      },
+      {
+        "id": "checkInButtons",
+        "component": "Buttons",
+        "buttons": [
+          "checkInBtn",
+          "walkInBtn"
+        ]
+      },
+      {
+        "id": "checkInBtn",
+        "component": "Button",
+        "label": "Check In Patient",
+        "variant": "primary"
+      },
+      {
+        "id": "walkInBtn",
+        "component": "Button",
+        "label": "Add Walk-in",
+        "variant": "secondary"
+      },
+      {
+        "id": "footerNote",
+        "component": "TextContent",
+        "text": "Last updated: 10:24 AM • Reception: Maria • Use Previous/Next Day or the date picker to view another day's schedule.",
+        "size": "small"
+      }
+    ]
+  }
+}
+</a2ui-json>

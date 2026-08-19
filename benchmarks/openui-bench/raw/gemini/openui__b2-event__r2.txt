@@ -1,63 +1,64 @@
-root = Card([header, countdownAlert, mainTabs, registerSection, followUps])
+root = Card([header, daysCountdown, agendaSection, speakersSection, ticketsSection, registerSection, followUps])
 
-header = CardHeader("TechForward Conf 2025", "October 24-25, 2025 | Metropolitan Pavilion, New York, NY")
+header = CardHeader("TechFuture Conference 2025", "October 24-26, 2025 • Moscone Center, San Francisco, CA")
 
-countdownAlert = Callout("info", "Countdown to TechForward 2025", "Only 45 days remaining until the premier tech event of the year! Secure your pass today.")
+daysCountdown = TextCallout("info", "Countdown to Event", "218 Days Remaining until kickoff! Register early to secure Early Bird pricing.")
 
-mainTabs = Tabs([agendaTab, speakersTab, ticketsTab])
+agendaSection = SectionBlock([day1Item, day2Item, day3Item], false)
 
-agendaTab = TabItem("agenda", "Agenda & Schedule", [agendaIntro, day1Accordion, day2Accordion])
-agendaIntro = TextContent("Explore two days packed with insightful keynotes, hands-on workshops, and networking opportunities.", "default")
+day1Item = SectionItem("day1", "Day 1 - Keynotes & Architecture (Oct 24)", [day1Content])
+day1Content = TextContent("09:00 AM - Opening Keynote: The Next Decade in AI\n10:30 AM - Cloud-Native Infrastructure at Scale\n01:30 PM - Panel: Future of Software Engineering\n03:30 PM - Interactive Workshops & Networking")
 
-day1Accordion = SectionBlock([day1Section], true)
-day1Section = SectionItem("day1", "Day 1: October 24 (Keynotes & Main Stage)", [day1Schedule])
-day1Schedule = Table([d1TimeCol, d1TrackCol, d1TitleCol])
-d1TimeCol = Col("Time", ["08:30 AM", "09:30 AM", "11:00 AM", "01:30 PM", "03:30 PM", "05:00 PM"])
-d1TrackCol = Col("Track", ["Registration", "Main Stage", "AI & Data", "Cloud Arch", "Design", "Social"])
-d1TitleCol = Col("Session Title", ["Doors Open & Breakfast", "Opening Keynote: The Future of Intelligence", "Scaling LLMs in Production", "Serverless Patterns at Scale", "Designing for Accessibility", "Networking Mixer"])
+day2Item = SectionItem("day2", "Day 2 - AI, ML & Data Systems (Oct 25)", [day2Content])
+day2Content = TextContent("09:00 AM - Deep Learning Breakthroughs in Production\n11:00 AM - Building High-Throughput Data Pipelines\n02:00 PM - Security & Privacy in LLM Applications\n04:00 PM - Lightning Talks & Poster Session")
 
-day2Accordion = SectionBlock([day2Section], true)
-day2Section = SectionItem("day2", "Day 2: October 25 (Workshops & Deep Dives)", [day2Schedule])
-day2Schedule = Table([d2TimeCol, d2TrackCol, d2TitleCol])
-d2TimeCol = Col("Time", ["09:00 AM", "10:30 AM", "01:00 PM", "02:30 PM", "04:30 PM"])
-d2TrackCol = Col("Track", ["Workshop A", "Workshop B", "Keynote", "Panel", "Closing"])
-d2TitleCol = Col("Session Title", ["Building Reactive UI Frameworks", "Edge Computing in Practice", "The Next Decade in Software", "Ethics in Artificial Intelligence", "Closing Ceremony & Awards"])
+day3Item = SectionItem("day3", "Day 3 - Product & Design (Oct 26)", [day3Content])
+day3Content = TextContent("09:30 AM - Designing Intuitive Multi-Modal Interfaces\n11:15 AM - Product Strategy for AI-Native Startups\n02:00 PM - Closing Keynote & Community Awards")
 
-speakersTab = TabItem("speakers", "Featured Speakers", [speakersList])
-speakersList = ListBlock([speaker1, speaker2, speaker3, speaker4, speaker5])
-speaker1 = ListItem("Dr. Elena Rostova", "VP of AI Research at NeuralCore — Leading breakthrough developments in generative model efficiency.")
-speaker2 = ListItem("Marcus Chen", "Chief Architect at CloudScale — Pioneer in distributed systems and zero-trust cloud infrastructure.")
-speaker3 = ListItem("Sarah Jenkins", "Head of Product Design at Designify — Author of 'Design Systems for the Enterprise'.")
-speaker4 = ListItem("Devon Vance", "Founder of OpenStack Labs — Open-source advocate and creator of several high-performance UI libraries.")
-speaker5 = ListItem("Aisha Patel", "Director of Security at CipherGuard — Expert in post-quantum cryptography and application safety.")
+speakersSection = Card([speakersHeading, speakersList], "sunk")
+speakersHeading = Heading("Featured Speakers", "h3")
+speakersList = ListBlock([speaker1, speaker2, speaker3, speaker4], "image")
 
-ticketsTab = TabItem("tickets", "Ticket Tiers", [ticketsTable, ticketsNote])
+speaker1 = ListItem("Dr. Elena Rostova", "Chief AI Scientist at NeuralCorp, pioneering generative models research.", [spk1Img])
+spk1Img = "https://picsum.photos/seed/elena/100/100"
+
+speaker2 = ListItem("Marcus Chen", "VP of Engineering at CloudScale, building global infrastructure for 10M+ users.", [spk2Img])
+spk2Img = "https://picsum.photos/seed/marcus/100/100"
+
+speaker3 = ListItem("Sarah Jenkins", "Principal Product Designer at DesignX, expert in accessible AI interfaces.", [spk3Img])
+spk3Img = "https://picsum.photos/seed/sarah/100/100"
+
+speaker4 = ListItem("David K. Vance", "Author and Security Architect, specializing in enterprise LLM safety.", [spk4Img])
+spk4Img = "https://picsum.photos/seed/david/100/100"
+
+ticketsSection = Card([ticketsHeading, ticketsTable], "clear")
+ticketsHeading = Heading("Ticket Tiers", "h3")
 ticketsTable = Table([tierCol, priceCol, accessCol, statusCol])
-tierCol = Col("Pass Type", ["Virtual Pass", "Standard Pass", "VIP All-Access"])
-priceCol = Col("Price", ["$199", "$599", "$1,199"])
-accessCol = Col("Includes", ["Live Stream + On-Demand Recordings", "Full 2-Day Access + Swag Bag + Lunch", "All-Access + Speaker Lounge + VIP Dinner"])
-statusCol = Col("Availability", ["Available", "Early Bird (Ends Soon)", "Limited Seats"])
-ticketsNote = TextCallout("success", "Group Discount Available", "Registering 5 or more attendees? Contact support@techforward.com for a 20% team discount.")
+tierCol = Col("Tier", ["Virtual Pass", "Main Conference Pass", "VIP All-Access Pass"])
+priceCol = Col("Price", ["$199", "$599", "$999"])
+accessCol = Col("Access", ["Livestream & Recording Access", "Full 3-Day Access, Expo & Lunch", "Full Access + VIP Lounge & Speaker Dinner"])
+statusCol = Col("Availability", ["Available", "Early Bird (Ending Soon)", "Limited Seats Left"])
 
-registerSection = SectionBlock([registerSectionItem])
-registerSectionItem = SectionItem("register", "Register for TechForward 2025", [registerForm])
+registerSection = Card([regHeading, regForm], "card")
+regHeading = Heading("Register for TechFuture 2025", "h3")
+regForm = Form("registration-form", regButtons, [nameField, emailField, tierField])
 
-registerForm = Form("registration", formButtons, [nameField, emailField, tierField])
 nameField = FormControl("Full Name", nameInput)
 nameInput = Input("full_name", "e.g. Alex Morgan")
-emailField = FormControl("Work Email", emailInput, "We'll send your ticket confirmation and digital badge here.")
-emailInput = Input("work_email", "alex@company.com", "email")
-tierField = FormControl("Select Pass Tier", tierSelect)
-tierSelect = Select("pass_tier", [virtualOpt, standardOpt, vipOpt], "Select a ticket tier")
-virtualOpt = SelectItem("virtual", "Virtual Pass ($199)")
-standardOpt = SelectItem("standard", "Standard Pass ($599)")
-vipOpt = SelectItem("vip", "VIP All-Access Pass ($1,199)")
 
-formButtons = Buttons([submitBtn, clearBtn])
+emailField = FormControl("Email Address", emailInput, "We will send your ticket confirmation to this email.")
+emailInput = Input("email", "alex@example.com", "email")
+
+tierField = FormControl("Select Ticket Tier", tierSelect)
+tierSelect = Select("ticket_tier", [opt1, opt2, opt3], "Choose a tier")
+opt1 = SelectItem("virtual", "Virtual Pass - $199")
+opt2 = SelectItem("main", "Main Conference Pass - $599")
+opt3 = SelectItem("vip", "VIP All-Access Pass - $999")
+
+regButtons = Buttons([submitBtn])
 submitBtn = Button("Complete Registration", null, "primary")
-clearBtn = Button("Reset Form", null, "tertiary")
 
 followUps = FollowUpBlock([f1, f2, f3])
-f1 = FollowUpItem("Where is Metropolitan Pavilion located?")
-f2 = FollowUpItem("What is the refund policy for tickets?")
-f3 = FollowUpItem("Are there hotel discounts for attendees?")
+f1 = FollowUpItem("View hotel and travel recommendations")
+f2 = FollowUpItem("Download full PDF agenda")
+f3 = FollowUpItem("Inquire about group discounts")

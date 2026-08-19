@@ -1,95 +1,102 @@
-{"op":"add","path":"/root","value":"console-root"}
-{"op":"add","path":"/elements/console-root","value":{"type":"Card","props":{"direction":"column","gap":"l","variant":"clear"},"children":["header-bar","region-filter-card","kpi-grid","main-tabs"]}}
-{"op":"add","path":"/elements/header-bar","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","variant":"card"},"children":["header-title","header-actions"]}}
-{"op":"add","path":"/elements/header-title","value":{"type":"CardHeader","props":{"title":"⚡ National Power Grid Operations Console","subtitle":"Real-Time System Monitor & Dispatch Control"}}}
-{"op":"add","path":"/elements/header-actions","value":{"type":"Card","props":{"direction":"row","gap":"s","align":"center"},"children":["curtailment-dialog","alert-dialog"]}}
-{"op":"add","path":"/elements/curtailment-dialog","value":{"type":"DialogBlock","props":{"triggerLabel":"Order Curtailment","triggerVariant":"destructive","title":"Emergency Load Curtailment Order","description":"Dispatch automated curtailment directive to regional industrial partners and peaking assets.","content":["curtailment-form"]}}}
-{"op":"add","path":"/elements/curtailment-form","value":{"type":"Form","props":{"name":"curtailmentForm","buttons":"curtailment-buttons","fields":["curtail-region","curtail-amount","curtail-reason"]}}}
-{"op":"add","path":"/elements/curtail-region","value":{"type":"FormControl","props":{"label":"Target Region","input":"curtail-region-select"}}}
-{"op":"add","path":"/elements/curtail-region-select","value":{"type":"Select","props":{"name":"region","placeholder":"Select Region","items":["c-reg-all","c-reg-north","c-reg-south","c-reg-east","c-reg-west"],"value":{"$bindState":"/curtailment/region"}}}}
-{"op":"add","path":"/elements/c-reg-all","value":{"type":"SelectItem","props":{"value":"all","label":"All Operating Zones"}}}
-{"op":"add","path":"/elements/c-reg-north","value":{"type":"SelectItem","props":{"value":"north","label":"Northern Grid Zone"}}}
-{"op":"add","path":"/elements/c-reg-south","value":{"type":"SelectItem","props":{"value":"south","label":"Southern Grid Zone"}}}
-{"op":"add","path":"/elements/c-reg-east","value":{"type":"SelectItem","props":{"value":"east","label":"Eastern Grid Zone"}}}
-{"op":"add","path":"/elements/c-reg-west","value":{"type":"SelectItem","props":{"value":"west","label":"Western Grid Zone"}}}
-{"op":"add","path":"/elements/curtail-amount","value":{"type":"FormControl","props":{"label":"Curtailment Load (MW)","input":"curtail-amount-slider"}}}
-{"op":"add","path":"/elements/curtail-amount-slider","value":{"type":"Slider","props":{"name":"amount","variant":"discrete","min":50,"max":1000,"step":50,"value":{"$bindState":"/curtailment/amount"}}}}
-{"op":"add","path":"/elements/curtail-reason","value":{"type":"FormControl","props":{"label":"Grid Operational Reason","input":"curtail-reason-input"}}}
-{"op":"add","path":"/elements/curtail-reason-input","value":{"type":"TextArea","props":{"name":"reason","placeholder":"e.g., Frequency reserve stabilization due to unpredicted offshore wind drop.","value":{"$bindState":"/curtailment/reason"}}}}
-{"op":"add","path":"/elements/curtailment-buttons","value":{"type":"Buttons","props":{"buttons":["curtail-submit"]}}}
-{"op":"add","path":"/elements/curtail-submit","value":{"type":"Button","props":{"label":"Transmit Curtailment Command","type":"destructive","variant":"primary"},"on":{"press":{"action":"setState","params":{"statePath":"/curtailment/status","value":"Submitted"}}}}}}
-{"op":"add","path":"/elements/alert-dialog","value":{"type":"DrawerBlock","props":{"triggerLabel":"Live System Alerts (3)","title":"Active System Alerts & Network Feed","description":"Real-time telemetric notifications from substations and transformers.","content":["live-alerts-list"]}}}
-{"op":"add","path":"/elements/live-alerts-list","value":{"type":"Card","props":{"direction":"column","gap":"m","variant":"clear"},"repeat":{"statePath":"/alerts","key":"id"},"children":["alert-item-card"]}}
-{"op":"add","path":"/elements/alert-item-card","value":{"type":"Alert","props":{"title":{"$item":"title"},"description":{"$item":"details"},"variant":{"$item":"variant"}}}}
-{"op":"add","path":"/state/alerts","value":[]}
-{"op":"add","path":"/state/alerts/0","value":{"id":"a1","title":"HIGH LOAD: Substation 4B (Northern)","details":"Transformer thermal limit reached 88%. Cooling fans activated.","variant":"warning"}}
-{"op":"add","path":"/state/alerts/1","value":{"id":"a2","title":"UNPLANNED OUTAGE: Feeder Line L-109","details":"Tripped on ground fault in Eastern Region. 18,400 customers impacted.","variant":"destructive"}}
-{"op":"add","path":"/state/alerts/2","value":{"id":"a3","title":"FREQUENCY REGULATION: West Peak Plant","details":"Ramping up +45 MW/min to offset solar ramp down.","variant":"info"}}
-{"op":"add","path":"/elements/region-filter-card","value":{"type":"Card","props":{"direction":"row","align":"center","gap":"m","variant":"sunk"},"children":["region-filter-label","region-radio-group"]}}
-{"op":"add","path":"/elements/region-filter-label","value":{"type":"TextContent","props":{"text":"**Focus Region:**","size":"small-heavy"}}}
-{"op":"add","path":"/elements/region-radio-group","value":{"type":"RadioGroup","props":{"name":"selectedRegion","items":["r-all","r-north","r-south","r-east","r-west"],"value":{"$bindState":"/selectedRegion"}}}}
-{"op":"add","path":"/elements/r-all","value":{"type":"RadioItem","props":{"value":"All","label":"National (All)","description":"System-wide metrics"}}}
-{"op":"add","path":"/elements/r-north","value":{"type":"RadioItem","props":{"value":"North","label":"North Zone","description":"Heavy Industrial"}}}
-{"op":"add","path":"/elements/r-south","value":{"type":"RadioItem","props":{"value":"South","label":"South Zone","description":"Solar & Hydro"}}}
-{"op":"add","path":"/elements/r-east","value":{"type":"RadioItem","props":{"value":"East","label":"East Zone","description":"Metropolitan"}}}
-{"op":"add","path":"/elements/r-west","value":{"type":"RadioItem","props":{"value":"West","label":"West Zone","description":"Wind Assets"}}}
-{"op":"add","path":"/state/selectedRegion","value":"All"}
-{"op":"add","path":"/elements/kpi-grid","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"children":["card-load","card-capacity","card-price","card-emissions"]}}
-{"op":"add","path":"/elements/card-load","value":{"type":"Card","props":{"direction":"column","gap":"xs","variant":"card"},"children":["kpi-load-title","kpi-load-val"]}}
-{"op":"add","path":"/elements/kpi-load-title","value":{"type":"TextContent","props":{"text":"Current Electricity Load","size":"small"}}}
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"gap":"l"},"children":["header","region-selector","alert-banner","kpis","charts-row","tables-row","curtailment-card","actions-row"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"National Grid Operations Console","subtitle":"Live Monitor & Dispatch Control | Synchronized UTC"}}}
+{"op":"add","path":"/elements/region-selector","value":{"type":"Card","props":{"direction":"row","align":"center","gap":"m","variant":"sunk"},"children":["region-label","region-select"]}}
+{"op":"add","path":"/elements/region-label","value":{"type":"Label","props":{"text":"Focus Region:"}}}
+{"op":"add","path":"/elements/region-select","value":{"type":"Select","props":{"name":"regionFilter","value":{"$bindState":"/selectedRegion"},"items":["opt-all","opt-north","opt-south","opt-east","opt-west"],"placeholder":"Select region..."}}}
+{"op":"add","path":"/elements/opt-all","value":{"type":"SelectItem","props":{"value":"all","label":"All Regions (National System)"}}}
+{"op":"add","path":"/elements/opt-north","value":{"type":"SelectItem","props":{"value":"north","label":"Region North (Industrial Zone)"}}}
+{"op":"add","path":"/elements/opt-south","value":{"type":"SelectItem","props":{"value":"south","label":"Region South (Metro Area)"}}}
+{"op":"add","path":"/elements/opt-east","value":{"type":"SelectItem","props":{"value":"east","label":"Region East (Coastal & Offshore)"}}}
+{"op":"add","path":"/elements/opt-west","value":{"type":"SelectItem","props":{"value":"west","label":"Region West (Hydro & Rural)"}}}
+{"op":"add","path":"/state/selectedRegion","value":"all"}
+{"op":"add","path":"/elements/alert-banner","value":{"type":"Callout","props":{"variant":"warning","title":"Live System Alert","description":{"$state":"/latestAlert/message"}}}}
+{"op":"add","path":"/state/latestAlert","value":{"id":"alt-1","message":"[14:22 UTC] Transformer overload warning at Substation N-42 (Region North). Auto-rebalancing standby spinning reserve."}}
+{"op":"add","path":"/elements/kpis","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"children":["kpi-load","kpi-capacity","kpi-price","kpi-emissions"]}}
+{"op":"add","path":"/elements/kpi-load","value":{"type":"Card","props":{"variant":"sunk"},"children":["kpi-load-hdr","kpi-load-val"]}}
+{"op":"add","path":"/elements/kpi-load-hdr","value":{"type":"Label","props":{"text":"Current Load"}}}
 {"op":"add","path":"/elements/kpi-load-val","value":{"type":"Heading","props":{"text":{"$template":"${/metrics/currentLoadMW} MW"},"level":"h2"}}}
-{"op":"add","path":"/elements/card-capacity","value":{"type":"Card","props":{"direction":"column","gap":"xs","variant":"card"},"children":["kpi-cap-title","kpi-cap-progress","kpi-cap-val"]}}
-{"op":"add","path":"/elements/kpi-cap-title","value":{"type":"TextContent","props":{"text":"Capacity Threshold","size":"small"}}}
-{"op":"add","path":"/elements/kpi-cap-progress","value":{"type":"Progress","props":{"value":{"$state":"/metrics/capacityPct"},"label":"Grid Utilization"}}}
-{"op":"add","path":"/elements/kpi-cap-val","value":{"type":"TextContent","props":{"text":{"$template":"${/metrics/capacityPct}% of ${/metrics/maxCapacityMW} MW Peak Capacity"},"size":"small-heavy"}}}
-{"op":"add","path":"/elements/card-price","value":{"type":"Card","props":{"direction":"column","gap":"xs","variant":"card"},"children":["kpi-price-title","kpi-price-val","kpi-price-sub"]}}
-{"op":"add","path":"/elements/kpi-price-title","value":{"type":"TextContent","props":{"text":"Wholesale Spot Price","size":"small"}}}
+{"op":"add","path":"/elements/kpi-capacity","value":{"type":"Card","props":{"variant":"sunk"},"children":["kpi-cap-hdr","kpi-cap-val","kpi-cap-bar"]}}
+{"op":"add","path":"/elements/kpi-cap-hdr","value":{"type":"Label","props":{"text":"Capacity Margin"}}}
+{"op":"add","path":"/elements/kpi-cap-val","value":{"type":"Heading","props":{"text":{"$template":"${/metrics/capacityUtilPct}% (${/metrics/headroomMW} MW Headroom)"},"level":"h2"}}}
+{"op":"add","path":"/elements/kpi-cap-bar","value":{"type":"Progress","props":{"value":{"$state":"/metrics/capacityUtilPct"},"label":"System Stress Indicator"}}}
+{"op":"add","path":"/elements/kpi-price","value":{"type":"Card","props":{"variant":"sunk"},"children":["kpi-price-hdr","kpi-price-val"]}}
+{"op":"add","path":"/elements/kpi-price-hdr","value":{"type":"Label","props":{"text":"Wholesale Spot Price"}}}
 {"op":"add","path":"/elements/kpi-price-val","value":{"type":"Heading","props":{"text":{"$template":"$${/metrics/spotPriceMWh} / MWh"},"level":"h2"}}}
-{"op":"add","path":"/elements/kpi-price-sub","value":{"type":"Badge","props":{"text":"+4.2% vs prev hour","variant":"secondary"}}}
-{"op":"add","path":"/elements/card-emissions","value":{"type":"Card","props":{"direction":"column","gap":"xs","variant":"card"},"children":["kpi-em-title","kpi-em-val","kpi-em-sub"]}}
-{"op":"add","path":"/elements/kpi-em-title","value":{"type":"TextContent","props":{"text":"CO2 Emissions Today","size":"small"}}}
-{"op":"add","path":"/elements/kpi-em-val","value":{"type":"Heading","props":{"text":{"$template":"${/metrics/emissionsTons} Tons"},"level":"h2"}}}
-{"op":"add","path":"/elements/kpi-em-sub","value":{"type":"TextContent","props":{"text":{"$template":"Intensity: ${/metrics/emissionsIntensity} gCO2/kWh"},"size":"small"}}}
-{"op":"add","path":"/state/metrics","value":{"currentLoadMW":"34,120","maxCapacityMW":"42,000","capacityPct":81.2,"spotPriceMWh":"68.45","emissionsTons":"14,820","emissionsIntensity":"185"}}
-{"op":"add","path":"/elements/main-tabs","value":{"type":"Tabs","props":{"items":["tab-generation","tab-plants","tab-forecast","tab-outages","tab-maintenance"]}}}
-{"op":"add","path":"/elements/tab-generation","value":{"type":"TabItem","props":{"value":"gen","trigger":"Generation Split","content":["gen-card"]}}}
-{"op":"add","path":"/elements/gen-card","value":{"type":"Card","props":{"direction":"column","gap":"m","variant":"card"},"children":["gen-title","gen-pie","gen-summary"]}}
-{"op":"add","path":"/elements/gen-title","value":{"type":"Heading","props":{"text":"Generation Fuel Mix by Source","level":"h3"}}}
-{"op":"add","path":"/elements/gen-pie","value":{"type":"PieChart","props":{"labels":["Nuclear","Natural Gas","Wind","Solar","Hydro","Coal"],"values":[10200,12400,6100,3200,1800,420],"variant":"donut","appearance":"circular"}}}
-{"op":"add","path":"/elements/gen-summary","value":{"type":"TagBlock","props":{"tags":["Renewable Share: 32.5%","Baseload Stability: 98.8%","Fossil Fuel Reserve: 36.4%"]}}}
-{"op":"add","path":"/elements/tab-plants","value":{"type":"TabItem","props":{"value":"plants","trigger":"Power Plants","content":["plants-card"]}}}
-{"op":"add","path":"/elements/plants-card","value":{"type":"Card","props":{"direction":"column","gap":"m","variant":"card"},"children":["plants-header","plants-table"]}}
-{"op":"add","path":"/elements/plants-header","value":{"type":"Heading","props":{"text":"Generation Assets Status & Output","level":"h3"}}}
-{"op":"add","path":"/elements/plants-table","value":{"type":"Table","props":{"columns":["col-pname","col-pzone","col-ptype","col-poutput","col-pcap","col-pstatus"]}}}
-{"op":"add","path":"/elements/col-pname","value":{"type":"Col","props":{"label":"Power Plant","data":{"$state":"/plantsData/names"},"type":"string"}}}
-{"op":"add","path":"/elements/col-pzone","value":{"type":"Col","props":{"label":"Region","data":{"$state":"/plantsData/zones"},"type":"string"}}}
-{"op":"add","path":"/elements/col-ptype","value":{"type":"Col","props":{"label":"Type","data":{"$state":"/plantsData/types"},"type":"string"}}}
-{"op":"add","path":"/elements/col-poutput","value":{"type":"Col","props":{"label":"Current Output (MW)","data":{"$state":"/plantsData/outputs"},"type":"number"}}}
-{"op":"add","path":"/elements/col-pcap","value":{"type":"Col","props":{"label":"Max Cap (MW)","data":{"$state":"/plantsData/caps"},"type":"number"}}}
-{"op":"add","path":"/elements/col-pstatus","value":{"type":"Col","props":{"label":"Operating Status","data":{"$state":"/plantsData/statuses"},"type":"string"}}}
-{"op":"add","path":"/state/plantsData","value":{"names":["Vance Nuclear Station","Blue Ridge Hydro Plant","Prairie Wind Farm 1","Desert Sun Solar Array","River Valley Gas Peaker","Apex Thermal Coal"],"zones":["North","South","West","South","East","East"],"types":["Nuclear","Hydro","Wind","Solar","Gas CCGT","Coal"],"outputs":[2400,850,1120,410,650,0],"caps":[2400,1000,1400,600,800,600],"statuses":["ONLINE - 100%","ONLINE - 85%","ONLINE - Variable","ONLINE - Peak","STANDBY","OFFLINE - Maintenance"]}}
-{"op":"add","path":"/elements/tab-forecast","value":{"type":"TabItem","props":{"value":"forecast","trigger":"24-Hour Forecast","content":["forecast-card"]}}}
-{"op":"add","path":"/elements/forecast-card","value":{"type":"Card","props":{"direction":"column","gap":"m","variant":"card"},"children":["forecast-header","forecast-chart","forecast-note"]}}
-{"op":"add","path":"/elements/forecast-header","value":{"type":"Heading","props":{"text":"24-Hour Load & Supply Capability Forecast","level":"h3"}}}
-{"op":"add","path":"/elements/forecast-chart","value":{"type":"AreaChart","props":{"labels":["00:00","03:00","06:00","09:00","12:00","15:00","18:00","21:00","24:00"],"series":["series-demand","series-capacity"],"variant":"natural","xLabel":"Time of Day","yLabel":"Megawatts (MW)"}}}
-{"op":"add","path":"/elements/series-demand","value":{"type":"Series","props":{"category":"Projected Demand (MW)","values":[28000,26500,29000,36000,38500,39200,41000,37000,31000]}}}
-{"op":"add","path":"/elements/series-capacity","value":{"type":"Series","props":{"category":"Available Capacity (MW)","values":[42000,42000,42000,42000,42000,42000,42000,42000,42000]}}}
-{"op":"add","path":"/elements/forecast-note","value":{"type":"Callout","props":{"variant":"warning","title":"Evening Peak Expected at 18:30","description":"Peak demand anticipated at 41,000 MW (97.6% capacity). Demand-response reserves have been notified."}}}
-{"op":"add","path":"/elements/tab-outages","value":{"type":"TabItem","props":{"value":"outages","trigger":"Outages & Faults","content":["outages-card"]}}}
-{"op":"add","path":"/elements/outages-card","value":{"type":"Card","props":{"direction":"column","gap":"m","variant":"card"},"children":["outages-header","outages-list"]}}
-{"op":"add","path":"/elements/outages-header","value":{"type":"Heading","props":{"text":"Active Network Outages & Impact Areas","level":"h3"}}}
-{"op":"add","path":"/elements/outages-list","value":{"type":"ListBlock","props":{"items":["outage-1","outage-2","outage-3"],"variant":"number"}}}
-{"op":"add","path":"/elements/outage-1","value":{"type":"ListItem","props":{"title":"Substation 12 Storm Damage","subtitle":"Northern Region | Affected: 18,400 Customers | Estimated Restoration: 2 hrs","actionLabel":"Dispatch Crew"}}}
-{"op":"add","path":"/elements/outage-2","value":{"type":"ListItem","props":{"title":"Feeder Line B7 Trip","subtitle":"Eastern Region | Affected: 3,100 Customers | Estimated Restoration: 45 mins","actionLabel":"Isolate Circuit"}}}
-{"op":"add","path":"/elements/outage-3","value":{"type":"ListItem","props":{"title":"Transformer Overheat Tripping","subtitle":"Southern Region | Affected: 7,800 Customers | Restoration in Progress","actionLabel":"Reroute Supply"}}}
-{"op":"add","path":"/elements/tab-maintenance","value":{"type":"TabItem","props":{"value":"maint","trigger":"Planned Maintenance","content":["maint-card"]}}}
-{"op":"add","path":"/elements/maint-card","value":{"type":"Card","props":{"direction":"column","gap":"m","variant":"card"},"children":["maint-header","maint-table"]}}
-{"op":"add","path":"/elements/maint-header","value":{"type":"Heading","props":{"text":"Planned Maintenance Schedule - Current Month","level":"h3"}}}
-{"op":"add","path":"/elements/maint-table","value":{"type":"Table","props":{"columns":["col-m-asset","col-m-region","col-m-date","col-m-impact","col-m-status"]}}}
-{"op":"add","path":"/elements/col-m-asset","value":{"type":"Col","props":{"label":"Asset / Line","data":{"$state":"/maintData/assets"},"type":"string"}}}
-{"op":"add","path":"/elements/col-m-region","value":{"type":"Col","props":{"label":"Region","data":{"$state":"/maintData/regions"},"type":"string"}}}
-{"op":"add","path":"/elements/col-m-date","value":{"type":"Col","props":{"label":"Scheduled Date","data":{"$state":"/maintData/dates"},"type":"string"}}}
-{"op":"add","path":"/elements/col-m-impact","value":{"type":"Col","props":{"label":"Capacity Impact","data":{"$state":"/maintData/impacts"},"type":"string"}}}
-{"op":"add","path":"/elements/col-m-status","value":{"type":"Col","props":{"label":"Approval Status","data":{"$state":"/maintData/statuses"},"type":"string"}}}
-{"op":"add","path":"/state/maintData","value":{"assets":["Apex Thermal Unit 2","Intertie HVDC Link 4","Substation 8 Switchgear","Oakridge Wind Turbine Array"],"regions":["East","West","North","West"],"dates":["12 Oct - 18 Oct","22 Oct - 24 Oct","27 Oct","30 Oct - 02 Nov"],"impacts":["-600 MW","-1,200 MW","-150 MW","-300 MW"],"statuses":["Approved","Pending Final Clearance","Approved","Scheduled"]}}
-{"op":"add","path":"/state/curtailment","value":{"region":"all","amount":[250],"reason":"","status":"Idle"}}
+{"op":"add","path":"/elements/kpi-emissions","value":{"type":"Card","props":{"variant":"sunk"},"children":["kpi-em-hdr","kpi-em-val"]}}
+{"op":"add","path":"/elements/kpi-em-hdr","value":{"type":"Label","props":{"text":"Today's Carbon Output"}}}
+{"op":"add","path":"/elements/kpi-em-val","value":{"type":"Heading","props":{"text":{"$template":"${/metrics/emissionsTons} tCO2 (${/metrics/carbonIntensity} g/kWh)"},"level":"h2"}}}
+{"op":"add","path":"/state/metrics","value":{"currentLoadMW":32450,"capacityUtilPct":88,"headroomMW":4420,"spotPriceMWh":64.80,"emissionsTons":18240,"carbonIntensity":142}}
+{"op":"add","path":"/elements/charts-row","value":{"type":"Card","props":{"direction":"row","gap":"l"},"children":["gen-split-card","forecast-card"]}}
+{"op":"add","path":"/elements/gen-split-card","value":{"type":"Card","props":{},"children":["gen-split-hdr","gen-split-chart"]}}
+{"op":"add","path":"/elements/gen-split-hdr","value":{"type":"CardHeader","props":{"title":"Generation Split by Source","subtitle":"Real-time fuel mix (MW)"}}}
+{"op":"add","path":"/elements/gen-split-chart","value":{"type":"PieChart","props":{"labels":["Nuclear","Natural Gas","Wind","Solar","Hydro","Imports"],"values":[9500,11200,6400,2800,1850,700],"variant":"donut"}}}
+{"op":"add","path":"/elements/forecast-card","value":{"type":"Card","props":{},"children":["forecast-hdr","forecast-chart"]}}
+{"op":"add","path":"/elements/forecast-hdr","value":{"type":"CardHeader","props":{"title":"24-Hour Demand Forecast","subtitle":"Predicted vs Available Generation Capacity (MW)"}}}
+{"op":"add","path":"/elements/forecast-chart","value":{"type":"AreaChart","props":{"labels":["00:00","04:00","08:00","12:00","16:00","20:00","24:00"],"series":["demandSeries","capacitySeries"],"variant":"natural","xLabel":"Time (UTC)","yLabel":"Power (MW)"}}}
+{"op":"add","path":"/elements/demandSeries","value":{"type":"Series","props":{"category":"Forecasted Demand","values":[24000,21500,31000,35200,36800,33500,27000]}}}
+{"op":"add","path":"/elements/capacitySeries","value":{"type":"Series","props":{"category":"Max Available Capacity","values":[36800,36800,36800,36800,36800,36800,36800]}}}
+{"op":"add","path":"/elements/tables-row","value":{"type":"Tabs","props":{"items":["tab-plants","tab-outages","tab-maint"]}}}
+{"op":"add","path":"/elements/tab-plants","value":{"type":"TabItem","props":{"value":"plants","trigger":"Power Plants Status","content":["plants-container"]}}}
+{"op":"add","path":"/elements/plants-container","value":{"type":"Card","props":{},"repeat":{"statePath":"/plants","key":"id"},"children":["plant-row"]}}
+{"op":"add","path":"/elements/plant-row","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","variant":"sunk"},"children":["plant-info","plant-output","plant-status"]}}
+{"op":"add","path":"/elements/plant-info","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"children":["plant-name","plant-meta"]}}
+{"op":"add","path":"/elements/plant-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"large-heavy"}}}
+{"op":"add","path":"/elements/plant-meta","value":{"type":"TextContent","props":{"text":{"$template":"Region: ${region} | Type: ${type}"},"size":"small"}}}
+{"op":"add","path":"/elements/plant-output","value":{"type":"TextContent","props":{"text":{"$template":"Output: ${outputMW} MW / ${maxMW} MW"},"size":"default"}}}
+{"op":"add","path":"/elements/plant-status","value":{"type":"Badge","props":{"text":{"$item":"status"},"variant":{"$cond":{"$item":"status","eq":"Nominal"},"$then":"default","$else":"destructive"}}}}
+{"op":"add","path":"/state/plants","value":[]}
+{"op":"add","path":"/state/plants/0","value":{"id":"p1","name":"Clearwater Nuclear Station","region":"north","type":"Nuclear","outputMW":2400,"maxMW":2400,"status":"Nominal"}}
+{"op":"add","path":"/state/plants/1","value":{"id":"p2","name":"Valley Combined Cycle Gas","region":"south","type":"Gas","outputMW":1150,"maxMW":1400,"status":"Throttled"}}
+{"op":"add","path":"/state/plants/2","value":{"id":"p3","name":"Highland Wind Farm","region":"east","type":"Wind","outputMW":820,"maxMW":1200,"status":"Nominal"}}
+{"op":"add","path":"/state/plants/3","value":{"id":"p4","name":"Apache Solar Field","region":"west","type":"Solar","outputMW":610,"maxMW":650,"status":"Nominal"}}
+{"op":"add","path":"/state/plants/4","value":{"id":"p5","name":"Iron Mountain Hydro","region":"west","type":"Hydro","outputMW":450,"maxMW":500,"status":"Standby"}}
+{"op":"add","path":"/elements/tab-outages","value":{"type":"TabItem","props":{"value":"outages","trigger":"Active Regional Outages","content":["outages-container"]}}}
+{"op":"add","path":"/elements/tab-outages","value":{"type":"TabItem","props":{"value":"outages","trigger":"Active Regional Outages","content":["outages-container"]}}}
+{"op":"add","path":"/elements/outages-container","value":{"type":"Card","props":{},"repeat":{"statePath":"/outages","key":"id"},"children":["outage-row"]}}
+{"op":"add","path":"/elements/outage-row","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","variant":"sunk"},"children":["outage-info","outage-customers","outage-badge"]}}
+{"op":"add","path":"/elements/outage-info","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"children":["outage-title","outage-sub"]}}
+{"op":"add","path":"/elements/outage-title","value":{"type":"TextContent","props":{"text":{"$item":"title"},"size":"large-heavy"}}}
+{"op":"add","path":"/elements/outage-sub","value":{"type":"TextContent","props":{"text":{"$template":"Affected Region: ${region} | Substation: ${substation}"},"size":"small"}}}
+{"op":"add","path":"/elements/outage-customers","value":{"type":"TextContent","props":{"text":{"$template":"${customersAffected} Customers Offline"},"size":"default"}}}
+{"op":"add","path":"/elements/outage-badge","value":{"type":"Badge","props":{"text":{"$item":"severity"},"variant":"destructive"}}}
+{"op":"add","path":"/state/outages","value":[]}
+{"op":"add","path":"/state/outages/0","value":{"id":"o1","title":"Feeder Tripped - Storm Damage","region":"North Zone 3","substation":"Sub-88","customersAffected":14200,"severity":"High Priority"}}
+{"op":"add","path":"/state/outages/1","value":{"id":"o2","title":"Busbar Maintenance Fault","region":"South Zone 1","substation":"Metro Central","customersAffected":3400,"severity":"Medium"}}
+{"op":"add","path":"/state/outages/2","value":{"id":"o3","title":"Distribution Line Down","region":"West Rural","substation":"Sub-14","customersAffected":820,"severity":"Low"}}
+{"op":"add","path":"/elements/tab-maint","value":{"type":"TabItem","props":{"value":"maint","trigger":"Monthly Planned Maintenance","content":["maint-container"]}}}
+{"op":"add","path":"/elements/maint-container","value":{"type":"Card","props":{},"repeat":{"statePath":"/maintenance","key":"id"},"children":["maint-row"]}}
+{"op":"add","path":"/elements/maint-row","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","variant":"sunk"},"children":["maint-info","maint-date","maint-impact"]}}
+{"op":"add","path":"/elements/maint-info","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"children":["maint-title","maint-facility"]}}
+{"op":"add","path":"/elements/maint-title","value":{"type":"TextContent","props":{"text":{"$item":"task"},"size":"large-heavy"}}}
+{"op":"add","path":"/elements/maint-facility","value":{"type":"TextContent","props":{"text":{"$template":"Facility: ${facility} (${region})"},"size":"small"}}}
+{"op":"add","path":"/elements/maint-date","value":{"type":"TextContent","props":{"text":{"$template":"Scheduled: ${scheduledDate}"},"size":"default"}}}
+{"op":"add","path":"/elements/maint-impact","value":{"type":"Badge","props":{"text":{"$template":"Impact: -${capacityReductionMW} MW"},"variant":"outline"}}}
+{"op":"add","path":"/state/maintenance","value":[]}
+{"op":"add","path":"/state/maintenance/0","value":{"id":"m1","task":"Reactor Refueling & Safety Inspection","facility":"Clearwater Unit 1","region":"North","scheduledDate":"Oct 12 - Oct 20","capacityReductionMW":1200}}
+{"op":"add","path":"/state/maintenance/1","value":{"id":"m2","task":"Turbine Overhaul","facility":"Valley Gas Unit 3","region":"South","scheduledDate":"Oct 18 - Oct 22","capacityReductionMW":450}}
+{"op":"add","path":"/state/maintenance/2","value":{"id":"m3","task":"Substation Transformer Replacement","facility":"East Coast Hub","region":"East","scheduledDate":"Oct 28 - Oct 29","capacityReductionMW":200}}
+{"op":"add","path":"/elements/curtailment-card","value":{"type":"Card","props":{},"children":["curtail-hdr","curtail-form"]}}
+{"op":"add","path":"/elements/curtail-hdr","value":{"type":"CardHeader","props":{"title":"Order Load Curtailment / Emergency Shedding","subtitle":"Issue binding dispatch commands to regional industrial feeders"}}}
+{"op":"add","path":"/elements/curtail-form","value":{"type":"Form","props":{"name":"curtailmentForm","buttons":"curtail-buttons","fields":["field-target-region","field-curtail-amount","field-reason"]}}}
+{"op":"add","path":"/elements/field-target-region","value":{"type":"FormControl","props":{"label":"Target Sub-Region","input":"curtail-region-input"}}}
+{"op":"add","path":"/elements/curtail-region-input","value":{"type":"Select","props":{"name":"targetRegion","value":{"$bindState":"/curtailment/region"},"items":["cr-1","cr-2","cr-3","cr-4"]}}}
+{"op":"add","path":"/elements/cr-1","value":{"type":"SelectItem","props":{"value":"North-Ind","label":"North Industrial Cluster"}}
+{"op":"add","path":"/elements/cr-2","value":{"type":"SelectItem","props":{"value":"South-Metro","label":"South Commercial District"}}
+{"op":"add","path":"/elements/cr-3","value":{"type":"SelectItem","props":{"value":"East-Heavy","label":"East Heavy Smelters"}}
+{"op":"add","path":"/elements/cr-4","value":{"type":"SelectItem","props":{"value":"West-Grid","label":"West Pumping Stations"}}
+{"op":"add","path":"/elements/field-curtail-amount","value":{"type":"FormControl","props":{"label":"Curtailment Volume (MW)","input":"curtail-slider","hint":"Slide to set required reduction"}}}
+{"op":"add","path":"/elements/curtail-slider","value":{"type":"Slider","props":{"name":"mwAmount","min":50,"max":1000,"step":50,"variant":"discrete","value":{"$bindState":"/curtailment/amountMW"}}}}
+{"op":"add","path":"/elements/field-reason","value":{"type":"FormControl","props":{"label":"Dispatch Justification","input":"curtail-reason-input"}}}
+{"op":"add","path":"/elements/curtail-reason-input","value":{"type":"Input","props":{"name":"reason","placeholder":"e.g. Frequency stabilizing shed order #409","value":{"$bindState":"/curtailment/reason"}}}}
+{"op":"add","path":"/elements/curtail-buttons","value":{"type":"Buttons","props":{"buttons":["btn-issue-curtail"]}}}
+{"op":"add","path":"/elements/btn-issue-curtail","value":{"type":"Button","props":{"label":"Issue Curtailment Order","variant":"primary","type":"destructive"},"on":{"press":{"action":"pushState","params":{"statePath":"/issuedOrders","value":{"id":"$id","region":{"$state":"/curtailment/region"},"amountMW":{"$state":"/curtailment/amountMW"},"reason":{"$state":"/curtailment/reason"},"timestamp":"Just now"}}}}}}
+{"op":"add","path":"/state/curtailment","value":{"region":"North-Ind","amountMW":250,"reason":"Frequency response drop below 49.8 Hz"}}
+{"op":"add","path":"/elements/actions-row","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"m"},"children":["orders-hdr","issued-orders-list"]}}
+{"op":"add","path":"/elements/orders-hdr","value":{"type":"TextContent","props":{"text":"**Recent Dispatch & Curtailment Directives Issued**","size":"default"}}}
+{"op":"add","path":"/elements/issued-orders-list","value":{"type":"Card","props":{},"repeat":{"statePath":"/issuedOrders","key":"id"},"children":["order-item"]}}
+{"op":"add","path":"/elements/order-item","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center"},"children":["order-desc","order-status"]}}
+{"op":"add","path":"/elements/order-desc","value":{"type":"TextContent","props":{"text":{"$template":"Direct Curtailment of ${amountMW} MW in ${region} - Reason: ${reason} (${timestamp})"},"size":"small"}}}
+{"op":"add","path":"/elements/order-status","value":{"type":"Badge","props":{"text":"Active Dispatch","variant":"destructive"}}}
+{"op":"add","path":"/state/issuedOrders","value":[]}
+{"op":"add","path":"/state/issuedOrders/0","value":{"id":"ord-101","region":"East-Heavy","amountMW":150,"reason":"Spinning reserve restoration","timestamp":"10 mins ago"}}

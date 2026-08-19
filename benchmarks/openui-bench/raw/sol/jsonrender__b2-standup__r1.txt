@@ -1,44 +1,48 @@
 {"op":"add","path":"/root","value":"standup-screen"}
-{"op":"add","path":"/elements/standup-screen","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["standup-header","summary-row","blocked-section","updates-section","post-update-card"]}}
-{"op":"add","path":"/elements/standup-header","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["standup-title","today-date"]}}
-{"op":"add","path":"/elements/standup-title","value":{"type":"Heading","props":{"text":"Async standup","level":"h1"},"children":[]}}
-{"op":"add","path":"/elements/today-date","value":{"type":"TextContent","props":{"text":{"$template":"Today · ${/todayDate}"},"size":"large"},"children":[]}}
-{"op":"add","path":"/state/todayDate","value":"Tuesday, August 18, 2026"}
-{"op":"add","path":"/elements/summary-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["team-summary","missing-summary"]}}
-{"op":"add","path":"/elements/team-summary","value":{"type":"TextContent","props":{"text":{"$template":"**${/submittedCount} of ${/teamSize}** teammates have posted"},"size":"large"},"children":[]}}
+{"op":"add","path":"/elements/standup-screen","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["standup-header","summary-row","blocked-section","updates-heading","updates-list","post-update-card"]}}
+{"op":"add","path":"/elements/standup-header","value":{"type":"CardHeader","props":{"title":"Async Standup","subtitle":{"$template":"Today · ${/today}"}},"children":[]}}
+{"op":"add","path":"/state/today","value":"Tuesday, August 18, 2026"}
+{"op":"add","path":"/elements/summary-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["participation-summary","missing-badge"]}}
+{"op":"add","path":"/elements/participation-summary","value":{"type":"TextContent","props":{"text":{"$template":"**${/submittedCount} of ${/teamSize}** teammates have posted today."},"size":"large"},"children":[]}}
 {"op":"add","path":"/state/submittedCount","value":4}
 {"op":"add","path":"/state/teamSize","value":6}
-{"op":"add","path":"/elements/missing-summary","value":{"type":"Tag","props":{"text":{"$template":"${/missingCount} updates still missing"},"icon":"clock","size":"lg","variant":"warning"},"children":[]}}
+{"op":"add","path":"/elements/missing-badge","value":{"type":"Badge","props":{"text":{"$template":"${/missingCount} updates missing"},"variant":"outline"},"children":[]}}
 {"op":"add","path":"/state/missingCount","value":2}
-{"op":"add","path":"/elements/blocked-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["blocked-heading","blocked-alerts"]}}
-{"op":"add","path":"/elements/blocked-heading","value":{"type":"Heading","props":{"text":"Blocked teammates","level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/blocked-alerts","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/blockedTeammates","key":"id"},"children":["blocked-alert"]}}
-{"op":"add","path":"/elements/blocked-alert","value":{"type":"Alert","props":{"title":{"$template":"${name} is blocked"},"description":{"$item":"blocker"},"variant":"warning"},"children":[]}}
+{"op":"add","path":"/elements/blocked-section","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["blocked-heading","blocked-alert","blocked-list"]}}
+{"op":"add","path":"/elements/blocked-heading","value":{"type":"Heading","props":{"text":"Blocked today","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/blocked-alert","value":{"type":"Alert","props":{"title":{"$template":"${/blockedCount} teammate blocked"},"description":"These items may need attention from the team.","variant":"warning"},"children":[]}}
+{"op":"add","path":"/state/blockedCount","value":1}
+{"op":"add","path":"/elements/blocked-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/blockedTeammates","key":"id"},"children":["blocked-person"]}}
+{"op":"add","path":"/elements/blocked-person","value":{"type":"TextCallout","props":{"variant":"warning","title":{"$template":"${name} · ${role}"},"description":{"$item":"blocker"}},"children":[]}}
 {"op":"add","path":"/state/blockedTeammates","value":[]}
-{"op":"add","path":"/state/blockedTeammates/0","value":{"id":"tm-2","name":"Mateo Silva","blocker":"Waiting for production API credentials from Platform. Needs help from Priya before the release validation can continue."}}
-{"op":"add","path":"/elements/updates-section","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"children":["updates-heading","updates-list"]}}
-{"op":"add","path":"/elements/updates-heading","value":{"type":"Heading","props":{"text":"Today's updates","level":"h2"},"children":[]}}
+{"op":"add","path":"/state/blockedTeammates/0","value":{"id":"tm-3","name":"Priya Shah","role":"Backend Engineer","blocker":"Waiting for production database access from Platform before the migration can be verified."}}
+{"op":"add","path":"/elements/updates-heading","value":{"type":"Heading","props":{"text":"Today’s updates","level":"h2"},"children":[]}}
 {"op":"add","path":"/elements/updates-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"repeat":{"statePath":"/updates","key":"id"},"children":["update-card"]}}
-{"op":"add","path":"/elements/update-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["update-person-row","update-text","update-blocker-callout"]}}
-{"op":"add","path":"/elements/update-person-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center","justify":"between","wrap":true},"children":["update-person","update-status"]}}
-{"op":"add","path":"/elements/update-person","value":{"type":"CardHeader","props":{"title":{"$item":"name"},"subtitle":{"$template":"${role} · ${time}"}}, "children":[]}}
-{"op":"add","path":"/elements/update-status","value":{"type":"Tag","props":{"text":{"$cond":{"$item":"blocked"},"$then":"Blocked","$else":"Posted"},"size":"md","variant":{"$cond":{"$item":"blocked"},"$then":"warning","$else":"success"}},"children":[]}}
-{"op":"add","path":"/elements/update-text","value":{"type":"TextContent","props":{"text":{"$item":"update"},"size":"default"},"children":[]}}
-{"op":"add","path":"/elements/update-blocker-callout","value":{"type":"TextCallout","props":{"variant":"warning","title":"Blocker","description":{"$item":"blocker"}},"visible":{"$item":"blocked"},"children":[]}}
+{"op":"add","path":"/elements/update-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["update-person-row","update-status","update-progress","update-blocker"]}}
+{"op":"add","path":"/elements/update-person-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center","justify":"between","wrap":true},"children":["update-person","update-time"]}}
+{"op":"add","path":"/elements/update-person","value":{"type":"Heading","props":{"text":{"$template":"${name} · ${role}"},"level":"h3"},"children":[]}}
+{"op":"add","path":"/elements/update-time","value":{"type":"Badge","props":{"text":{"$item":"postedAt"},"variant":"secondary"},"children":[]}}
+{"op":"add","path":"/elements/update-status","value":{"type":"TextContent","props":{"text":{"$template":"**Today:** ${today}\n\n**Yesterday:** ${yesterday}"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/update-progress","value":{"type":"Badge","props":{"text":{"$item":"status"},"variant":{"$cond":{"$state":"/missingCount","gt":0},"$then":"outline","$else":"secondary"}},"children":[]}}
+{"op":"add","path":"/elements/update-blocker","value":{"type":"TextCallout","props":{"variant":"warning","title":"Blocker","description":{"$item":"blocker"}},"visible":{"$item":"blocked"},"children":[]}}
 {"op":"add","path":"/state/updates","value":[]}
-{"op":"add","path":"/state/updates/0","value":{"id":"up-1","name":"Aisha Khan","role":"Product Designer","time":"08:12 UTC","update":"**Yesterday:** Finalized responsive handoff for onboarding.  \n**Today:** Reviewing the account recovery prototype with Support.  \n**Next:** Document interaction states for engineering.","blocked":false,"blocker":""}}
-{"op":"add","path":"/state/updates/1","value":{"id":"up-2","name":"Mateo Silva","role":"Backend Engineer","time":"09:03 UTC","update":"**Yesterday:** Completed the audit-log pagination endpoint.  \n**Today:** Running release validation and adding integration coverage.  \n**Next:** Prepare the service for staging deployment.","blocked":true,"blocker":"Waiting for production API credentials from Platform."}}
-{"op":"add","path":"/state/updates/2","value":{"id":"up-3","name":"Priya Raman","role":"Engineering Manager","time":"09:26 UTC","update":"**Yesterday:** Reviewed the Q3 reliability plan.  \n**Today:** Coordinating the incident drill and unblocking release access.  \n**Next:** Share updated ownership and escalation notes.","blocked":false,"blocker":""}}
-{"op":"add","path":"/state/updates/3","value":{"id":"up-4","name":"Noah Williams","role":"Frontend Engineer","time":"10:01 UTC","update":"**Yesterday:** Merged keyboard navigation improvements.  \n**Today:** Fixing mobile layout regressions in settings.  \n**Next:** Pair with Aisha on account recovery states.","blocked":false,"blocker":""}}
-{"op":"add","path":"/elements/post-update-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["post-heading","post-hint","post-form","post-success"]}}
-{"op":"add","path":"/elements/post-heading","value":{"type":"Heading","props":{"text":"Post your update","level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/post-hint","value":{"type":"TextContent","props":{"text":"Share what you completed, what you are doing today, and any blocker the team can help resolve.","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/post-form","value":{"type":"Form","props":{"name":"async-standup-update","fields":["own-update-control","own-blocker-control"],"buttons":"post-buttons"},"children":["own-update-control","own-blocker-control","post-buttons"]}}
-{"op":"add","path":"/elements/own-update-control","value":{"type":"FormControl","props":{"label":"Today's status update","input":"own-update-input","hint":"Suggested format: Yesterday / Today / Next"},"children":["own-update-input"]}}
-{"op":"add","path":"/elements/own-update-input","value":{"type":"TextArea","props":{"name":"statusUpdate","placeholder":"Yesterday: …\nToday: …\nNext: …","rows":6,"rules":[{"required":true,"message":"Add a status update before posting."}],"value":{"$bindState":"/draft/update"}},"children":[]}}
-{"op":"add","path":"/state/draft","value":{"update":"","blocker":""}}
-{"op":"add","path":"/elements/own-blocker-control","value":{"type":"FormControl","props":{"label":"Blocker (optional)","input":"own-blocker-input","hint":"Name the dependency or person who can help."},"children":["own-blocker-input"]}}
-{"op":"add","path":"/elements/own-blocker-input","value":{"type":"Input","props":{"name":"blocker","placeholder":"No blocker","type":"text","value":{"$bindState":"/draft/blocker"}},"children":[]}}
-{"op":"add","path":"/elements/post-buttons","value":{"type":"Buttons","props":{"buttons":["post-update-button"],"direction":"row"},"children":["post-update-button"]}}
-{"op":"add","path":"/elements/post-update-button","value":{"type":"Button","props":{"label":"Post update","variant":"primary","size":"medium"},"on":{"press":{"action":"pushState","params":{"statePath":"/updates","value":{"id":"$id","name":"You","role":"Remote teammate","time":"Just now","update":{"$state":"/draft/update"},"blocked":false,"blocker":{"$state":"/draft/blocker"}},"clearStatePath":"/draft/update"}}},"children":[]}}
-{"op":"add","path":"/elements/post-success","value":{"type":"Callout","props":{"variant":"info","title":"Async-friendly tip","description":"Post before your local workday ends so teammates in other time zones can respond without waiting."},"children":[]}}
+{"op":"add","path":"/state/updates/0","value":{"id":"tm-1","name":"Maya Chen","role":"Product Designer","postedAt":"08:12 UTC","status":"On track","yesterday":"Finished the mobile navigation prototype and shared it for review.","today":"Apply feedback and prepare the checkout usability test.","blocked":false,"blocker":""}}
+{"op":"add","path":"/state/updates/1","value":{"id":"tm-2","name":"Liam O’Connor","role":"Frontend Engineer","postedAt":"09:05 UTC","status":"On track","yesterday":"Connected the dashboard filters to the reporting API.","today":"Add loading states and complete accessibility checks.","blocked":false,"blocker":""}}
+{"op":"add","path":"/state/updates/2","value":{"id":"tm-3","name":"Priya Shah","role":"Backend Engineer","postedAt":"10:21 UTC","status":"Blocked","yesterday":"Completed the migration script and validated it in staging.","today":"Verify the migration in production once access is granted.","blocked":true,"blocker":"Waiting for production database access from Platform before the migration can be verified."}}
+{"op":"add","path":"/state/updates/3","value":{"id":"tm-4","name":"Noah Williams","role":"Product Manager","postedAt":"11:03 UTC","status":"On track","yesterday":"Finalized acceptance criteria for the billing improvements.","today":"Review sprint scope and align launch messaging with Marketing.","blocked":false,"blocker":""}}
+{"op":"add","path":"/elements/post-update-card","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"m"},"children":["post-heading","post-form","post-success"]}}
+{"op":"add","path":"/elements/post-heading","value":{"type":"CardHeader","props":{"title":"Post your update","subtitle":"Share progress, today’s plan, and anything blocking you."},"children":[]}}
+{"op":"add","path":"/elements/post-form","value":{"type":"Form","props":{"name":"standup-update","buttons":"post-buttons","fields":["yesterday-field","today-field","blocker-field"]},"children":[]}}
+{"op":"add","path":"/elements/yesterday-field","value":{"type":"FormControl","props":{"label":"What did you complete yesterday?","input":"yesterday-input"},"children":[]}}
+{"op":"add","path":"/elements/yesterday-input","value":{"type":"TextArea","props":{"name":"yesterday","placeholder":"Summarize completed work…","rows":3,"value":{"$bindState":"/draft/yesterday"}},"children":[]}}
+{"op":"add","path":"/state/draft/yesterday","value":""}
+{"op":"add","path":"/elements/today-field","value":{"type":"FormControl","props":{"label":"What will you work on today?","input":"today-input"},"children":[]}}
+{"op":"add","path":"/elements/today-input","value":{"type":"TextArea","props":{"name":"today","placeholder":"Describe today’s priorities…","rows":3,"value":{"$bindState":"/draft/today"}},"children":[]}}
+{"op":"add","path":"/state/draft/today","value":""}
+{"op":"add","path":"/elements/blocker-field","value":{"type":"FormControl","props":{"label":"Any blockers?","input":"blocker-input","hint":"Leave blank if you are not blocked."},"children":[]}}
+{"op":"add","path":"/elements/blocker-input","value":{"type":"TextArea","props":{"name":"blocker","placeholder":"Describe what you need and who may be able to help…","rows":2,"value":{"$bindState":"/draft/blocker"}},"children":[]}}
+{"op":"add","path":"/state/draft/blocker","value":""}
+{"op":"add","path":"/elements/post-buttons","value":{"type":"Buttons","props":{"buttons":["post-button"],"direction":"row"},"children":[]}}
+{"op":"add","path":"/elements/post-button","value":{"type":"Button","props":{"label":"Post update","variant":"primary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/updatePosted","value":true}}},"children":[]}}
+{"op":"add","path":"/elements/post-success","value":{"type":"Alert","props":{"title":"Update posted","description":"Your async standup update is now visible to the team.","variant":"success"},"visible":{"$state":"/updatePosted"},"children":[]}}
+{"op":"add","path":"/state/updatePosted","value":false}

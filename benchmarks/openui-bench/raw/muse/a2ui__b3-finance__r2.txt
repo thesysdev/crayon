@@ -1,5 +1,352 @@
-Single-screen month-end close — all 7 items covered. Use the month selector to switch periods and download for the full statement.
+Month-end finance view with runway, burn and large transactions — ready to review and export.
 
-<a2ui-json>{"version":"v0.9","createSurface":{"surfaceId":"startup-finance-view","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#0F172A","agentDisplayName":"Finance Close"},"sendDataModel":false}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
 
-<a2ui-json>{"version":"v0.9","updateComponents":{"surfaceId":"startup-finance-view","components":[{"component":"Card","id":"root","children":["header","controlsCard","metricsRow","alertRunway","expensesCard","transactionsCard"],"direction":"column","gap":"m"},{"component":"CardHeader","id":"header","title":"Month-End Finance — May 2026","subtitle":"Closed books • All figures in USD • Last updated May 31, 2026"},{"component":"Card","id":"controlsCard","children":["monthControl","downloadButtons"],"direction":"row","gap":"m","align":"end","justify":"between","variant":"sunk"},{"component":"FormControl","id":"monthControl","label":"View Month","input":"selectMonth","hint":"Select a different close to review"},{"component":"Select","id":"selectMonth","name":"selectedMonth","items":["itemMay","itemApr","itemMar","itemFeb"],"placeholder":"May 2026","value":"2026-05"},{"component":"SelectItem","id":"itemMay","value":"2026-05","label":"May 2026 — Current"},{"component":"SelectItem","id":"itemApr","value":"2026-04","label":"April 2026"},{"component":"SelectItem","id":"itemMar","value":"2026-03","label":"March 2026"},{"component":"SelectItem","id":"itemFeb","value":"2026-02","label":"February 2026"},{"component":"Buttons","id":"downloadButtons","buttons":["downloadBtn"],"direction":"row"},{"component":"Button","id":"downloadBtn","label":"Download Statement (PDF)","variant":"primary","size":"medium"},{"component":"Card","id":"metricsRow","children":["cashCard","burnCard","runwayCard"],"direction":"row","gap":"m","variant":"clear"},{"component":"Card","id":"cashCard","children":["cashLabel","cashValue","cashHint"],"direction":"column","gap":"xs","variant":"card"},{"component":"TextContent","id":"cashLabel","text":"CASH ON HAND","size":"small"},{"component":"Heading","id":"cashValue","text":"$842,500","level":"h2"},{"component":"TextContent","id":"cashHint","text":"Operating + reserve • +$12.4k vs Apr","size":"small"},{"component":"Card","id":"burnCard","children":["burnLabel","burnValue","burnHint"],"direction":"column","gap":"xs","variant":"card"},{"component":"TextContent","id":"burnLabel","text":"MONTHLY BURN","size":"small"},{"component":"Heading","id":"burnValue","text":"$127,300","level":"h2"},{"component":"TextContent","id":"burnHint","text":"May total expenses • 3-mo avg $121,100","size":"small"},{"component":"Card","id":"runwayCard","children":["runwayLabel","runwayValue","runwayProgress","runwayHint"],"direction":"column","gap":"xs","variant":"card"},{"component":"TextContent","id":"runwayLabel","text":"MONTHS OF RUNWAY","size":"small"},{"component":"Heading","id":"runwayValue","text":"6.6 months","level":"h2"},{"component":"Progress","id":"runwayProgress","value":55,"label":"at current burn"},{"component":"TextContent","id":"runwayHint","text":"Cash ÷ Burn = 842.5k / 127.3k","size":"small"},{"component":"Alert","id":"alertRunway","title":"Runway below 12 months","description":"At current burn, cash covers ~6.6 months. Consider extending runway or reducing burn.","variant":"warning"},{"component":"Card","id":"expensesCard","children":["expensesHeader","expensesPie"],"direction":"column","gap":"m","variant":"card"},{"component":"CardHeader","id":"expensesHeader","title":"Expenses Split by Category","subtitle":"May 2026 • Total $127,300 broken down below"},{"component":"PieChart","id":"expensesPie","labels":["Payroll","Cloud & Infra","Marketing","Office & Ops","Legal & Finance"],"values":[68000,24500,18200,9600,7000],"variant":"donut","appearance":"circular"},{"component":"Card","id":"transactionsCard","children":["txHeader","txTable"],"direction":"column","gap":"m","variant":"card"},{"component":"CardHeader","id":"txHeader","title":"Transactions > $10,000","subtitle":"5 transactions this month • May 1–31, 2026"},{"component":"Table","id":"txTable","columns":["colDate","colDesc","colCategory","colAmount"]},{"component":"Col","id":"colDate","label":"Date","data":["2026-05-03","2026-05-09","2026-05-14","2026-05-18","2026-05-27"],"type":"string"},{"component":"Col","id":"colDesc","label":"Description","data":["Payroll — Gusto","AWS & GCP — Cloud Infrastructure","Series A Legal — Cooley LLP","Office Lease — 548 Market St","Performance Marketing — Google / Meta"],"type":"string"},{"component":"Col","id":"colCategory","label":"Category","data":["Payroll","Cloud & Infra","Legal & Finance","Office & Ops","Marketing"],"type":"string"},{"component":"Col","id":"colAmount","label":"Amount","data":["$68,420","$24,510","$18,200","$12,800","$15,750"],"type":"string"}]}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "controlsCard",
+          "kpis",
+          "runwayProgress",
+          "runwayAlert",
+          "expenseCard",
+          "transactionsCard",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Month-End Finance — May 2026",
+        "subtitle": "Startup runway overview • Closing balance as of May 31, 2026"
+      },
+      {
+        "id": "controlsCard",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "m",
+        "align": "center",
+        "justify": "between",
+        "children": [
+          "monthFormControl",
+          "currentBadge"
+        ]
+      },
+      {
+        "id": "monthFormControl",
+        "component": "FormControl",
+        "label": "View different month",
+        "hint": "Switch statement period",
+        "input": "monthSelect"
+      },
+      {
+        "id": "monthSelect",
+        "component": "Select",
+        "name": "month",
+        "placeholder": "Select month",
+        "value": "2026-05",
+        "items": [
+          "monthMay",
+          "monthApr",
+          "monthMar",
+          "monthFeb"
+        ]
+      },
+      {
+        "id": "monthMay",
+        "component": "SelectItem",
+        "value": "2026-05",
+        "label": "May 2026 (Current)"
+      },
+      {
+        "id": "monthApr",
+        "component": "SelectItem",
+        "value": "2026-04",
+        "label": "April 2026"
+      },
+      {
+        "id": "monthMar",
+        "component": "SelectItem",
+        "value": "2026-03",
+        "label": "March 2026"
+      },
+      {
+        "id": "monthFeb",
+        "component": "SelectItem",
+        "value": "2026-02",
+        "label": "February 2026"
+      },
+      {
+        "id": "currentBadge",
+        "component": "Badge",
+        "text": "Period: May 1-31, 2026",
+        "variant": "secondary"
+      },
+      {
+        "id": "kpis",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "cashCard",
+          "burnCard",
+          "runwayCard"
+        ]
+      },
+      {
+        "id": "cashCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "cashLabel",
+          "cashValue",
+          "cashHint"
+        ]
+      },
+      {
+        "id": "cashLabel",
+        "component": "TextContent",
+        "text": "💰 Cash on Hand",
+        "size": "small"
+      },
+      {
+        "id": "cashValue",
+        "component": "Heading",
+        "text": "$842,500",
+        "level": "h2"
+      },
+      {
+        "id": "cashHint",
+        "component": "TextContent",
+        "text": "Closing balance • Mercury + Brex",
+        "size": "small"
+      },
+      {
+        "id": "burnCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "burnLabel",
+          "burnValue",
+          "burnHint"
+        ]
+      },
+      {
+        "id": "burnLabel",
+        "component": "TextContent",
+        "text": "🔥 Monthly Burn",
+        "size": "small"
+      },
+      {
+        "id": "burnValue",
+        "component": "Heading",
+        "text": "$68,200",
+        "level": "h2"
+      },
+      {
+        "id": "burnHint",
+        "component": "TextContent",
+        "text": "May total expenses • +4.2% vs April",
+        "size": "small"
+      },
+      {
+        "id": "runwayCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "runwayLabel",
+          "runwayValue",
+          "runwayHint"
+        ]
+      },
+      {
+        "id": "runwayLabel",
+        "component": "TextContent",
+        "text": "✈️ Months of Runway",
+        "size": "small"
+      },
+      {
+        "id": "runwayValue",
+        "component": "Heading",
+        "text": "12.3 months",
+        "level": "h2"
+      },
+      {
+        "id": "runwayHint",
+        "component": "TextContent",
+        "text": "At current burn • Until ~May 2027",
+        "size": "small"
+      },
+      {
+        "id": "runwayProgress",
+        "component": "Progress",
+        "value": 68,
+        "label": "Runway health — 12.3 / 18 months target"
+      },
+      {
+        "id": "runwayAlert",
+        "component": "Alert",
+        "title": "Healthy runway",
+        "description": "12+ months remaining. Burn is stable. No immediate fundraising pressure.",
+        "variant": "success"
+      },
+      {
+        "id": "expenseCard",
+        "component": "Card",
+        "children": [
+          "expenseHeader",
+          "expensePie",
+          "expenseHint"
+        ]
+      },
+      {
+        "id": "expenseHeader",
+        "component": "CardHeader",
+        "title": "Expenses Split by Category",
+        "subtitle": "May 2026 • Total $68,200 • 6 categories"
+      },
+      {
+        "id": "expensePie",
+        "component": "PieChart",
+        "labels": [
+          "Payroll",
+          "Marketing",
+          "Rent",
+          "Software & Tools",
+          "Cloud Infra",
+          "Legal & Admin"
+        ],
+        "values": [
+          38500,
+          11200,
+          8500,
+          5800,
+          2700,
+          1500
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "expenseHint",
+        "component": "TextContent",
+        "text": "Payroll is 56.5% of burn. Marketing + Payroll = 73% of total spend.",
+        "size": "small"
+      },
+      {
+        "id": "transactionsCard",
+        "component": "Card",
+        "children": [
+          "transactionsHeader",
+          "transactionsTable",
+          "transactionsNote"
+        ]
+      },
+      {
+        "id": "transactionsHeader",
+        "component": "CardHeader",
+        "title": "Transactions > $10,000",
+        "subtitle": "May 2026 • 4 large transactions • Filtered from 47 total"
+      },
+      {
+        "id": "transactionsTable",
+        "component": "Table",
+        "columns": [
+          "colDate",
+          "colVendor",
+          "colCategory",
+          "colAmount"
+        ]
+      },
+      {
+        "id": "colDate",
+        "component": "Col",
+        "label": "Date",
+        "data": [
+          "2026-05-03",
+          "2026-05-07",
+          "2026-05-12",
+          "2026-05-19"
+        ]
+      },
+      {
+        "id": "colVendor",
+        "component": "Col",
+        "label": "Vendor / Description",
+        "data": [
+          "Rippling — Payroll",
+          "Google Ads",
+          "Amazon Web Services",
+          "Gunderson Dettmer — Legal Retainer"
+        ]
+      },
+      {
+        "id": "colCategory",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Payroll",
+          "Marketing",
+          "Cloud Infra",
+          "Legal & Admin"
+        ]
+      },
+      {
+        "id": "colAmount",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "$38,500.00",
+          "$11,200.00",
+          "$10,850.00",
+          "$10,400.00"
+        ]
+      },
+      {
+        "id": "transactionsNote",
+        "component": "TextContent",
+        "text": "Showing only transactions above $10,000 threshold. All amounts in USD.",
+        "size": "small"
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": [
+          "downloadBtn",
+          "exportBtn"
+        ]
+      },
+      {
+        "id": "downloadBtn",
+        "component": "Button",
+        "label": "Download Statement (PDF)",
+        "variant": "primary"
+      },
+      {
+        "id": "exportBtn",
+        "component": "Button",
+        "label": "Export CSV",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>

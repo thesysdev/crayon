@@ -1,11 +1,161 @@
-Your single-task focus view is ready — centered on one urgent task only.
+Your single-task focus view — distraction-free and action-ready:
 
-<a2ui-json>{"version":"v0.9","createSurface":{"surfaceId":"focus-single-task-001","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#0F766E","agentDisplayName":"Focus"},"sendDataModel":false}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
 
-<a2ui-json>{"version":"v0.9","updateComponents":{"surfaceId":"focus-single-task-001","components":[{"component":"Card","id":"root","direction":"column","gap":"l","children":["header","urgencyAlert","taskCard","actionButtons","footerHint"]},{"component":"CardHeader","id":"header","title":"Today's Focus","subtitle":"One urgent task. Nothing else."},{"component":"Alert","id":"urgencyAlert","variant":"warning","title":"Most Urgent • Due Tomorrow","description":"This is your #1 priority. All other tasks are hidden until this is done."},{"component":"Card","id":"taskCard","variant":"card","direction":"column","gap":"m","children":["taskHeading","metaRow","deadlineCard","separator1","statusRow","progressBar","descriptionText"]},{"component":"Heading","id":"taskHeading","text":"Submit Q3 Budget Proposal","level":"h2"},{"component":"Card","id":"metaRow","variant":"clear","direction":"row","gap":"s","align":"center","children":["badgeUrgent","badgeProject"]},{"component":"Badge","id":"badgeUrgent","text":"🔥 URGENT","variant":"destructive"},{"component":"Badge","id":"badgeProject","text":"Finance • Q3 Planning","variant":"secondary"},{"component":"Card","id":"deadlineCard","variant":"sunk","direction":"column","gap":"xs","children":["deadlineLabel","deadlineValue","deadlineCountdown"]},{"component":"TextContent","id":"deadlineLabel","text":"DEADLINE","size":"small"},{"component":"Heading","id":"deadlineValue","text":"Tuesday, Aug 19 • 5:00 PM","level":"h3"},{"component":"TextContent","id":"deadlineCountdown","text":"⏰ Due in 22 hours • Tomorrow afternoon","size":"small"},{"component":"Separator","id":"separator1","orientation":"horizontal","decorative":true},{"component":"Card","id":"statusRow","variant":"clear","direction":"row","gap":"m","align":"center","justify":"between","children":["statusLeft","statusRight"]},{"component":"Card","id":"statusLeft","variant":"clear","direction":"row","gap":"s","align":"center","children":["statusLabel","statusBadge"]},{"component":"TextContent","id":"statusLabel","text":"Status:","size":"small-heavy"},{"component":"Badge","id":"statusBadge","text":"In Progress","variant":"default"},{"component":"TextContent","id":"statusRight","text":"65% complete","size":"small"},{"component":"Progress","id":"progressBar","value":65,"label":"Progress: 65%"},{"component":"TextContent","id":"descriptionText","text":"Final review with finance team is complete. Just needs your executive summary and submission to leadership portal. Block 45 minutes to finish.","size":"default"},{"component":"Buttons","id":"actionButtons","direction":"column","buttons":["btnDone","btnSnooze"]},{"component":"Button","id":"btnDone","label":"✓ Mark as Done","variant":"primary","size":"large"},{"component":"Button","id":"btnSnooze","label":"Remind me in 1 hour","variant":"secondary","size":"medium"},{"component":"TextContent","id":"footerHint","text":"Marking as done will clear this focus and reveal your next priority.","size":"small"}]}}</a2ui-json>
-
-**This screen covers all 3 requirements:**
-
-1.  **Most urgent task + deadline** — `Submit Q3 Budget Proposal` shown as the only task, with deadline `Tuesday, Aug 19 • 5:00 PM` highlighted in a sunk card + countdown alert
-2.  **Current status** — `In Progress` badge + `65%` progress bar
-3.  **Way to mark it done** — Large primary button `✓ Mark as Done`
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "urgentAlert",
+          "taskCard",
+          "actionButtons",
+          "footerNote"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Focus Mode",
+        "subtitle": "One task. Full attention. Nothing else."
+      },
+      {
+        "id": "urgentAlert",
+        "component": "Alert",
+        "title": "Most Urgent — Action Required",
+        "description": "You have 1 priority task due today. Clear this to stay on track.",
+        "variant": "warning"
+      },
+      {
+        "id": "taskCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "taskHeading",
+          "taskDescription",
+          "separator1",
+          "deadlineCallout",
+          "statusRow",
+          "progressSection",
+          "separator2",
+          "priorityTags"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "taskHeading",
+        "component": "Heading",
+        "text": "Submit Q3 Budget Proposal",
+        "level": "h2"
+      },
+      {
+        "id": "taskDescription",
+        "component": "TextContent",
+        "text": "Final review and submit the Q3 budget deck to Finance. Includes revised headcount and vendor costs. Block focus time — no meetings until done.",
+        "size": "default"
+      },
+      {
+        "id": "separator1",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "deadlineCallout",
+        "component": "Callout",
+        "variant": "warning",
+        "title": "Deadline: Today at 5:00 PM",
+        "description": "Tuesday, August 19, 2026 • Due in ~7 hours • Overdue after 5pm will block team approval"
+      },
+      {
+        "id": "statusRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "align": "center",
+        "justify": "between",
+        "children": [
+          "statusLabel",
+          "statusBadge"
+        ]
+      },
+      {
+        "id": "statusLabel",
+        "component": "TextContent",
+        "text": "**Current Status**",
+        "size": "small-heavy"
+      },
+      {
+        "id": "statusBadge",
+        "component": "Badge",
+        "text": "In Progress",
+        "variant": "secondary"
+      },
+      {
+        "id": "progressSection",
+        "component": "Progress",
+        "value": 65,
+        "label": "65% complete — drafting final section"
+      },
+      {
+        "id": "separator2",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "priorityTags",
+        "component": "TagBlock",
+        "tags": [
+          "🔥 P0 • URGENT",
+          "Due Today",
+          "Finance"
+        ]
+      },
+      {
+        "id": "actionButtons",
+        "component": "Buttons",
+        "buttons": [
+          "markDoneBtn",
+          "snoozeBtn"
+        ],
+        "direction": "row"
+      },
+      {
+        "id": "markDoneBtn",
+        "component": "Button",
+        "label": "✓ Mark as Done",
+        "variant": "primary",
+        "size": "large"
+      },
+      {
+        "id": "snoozeBtn",
+        "component": "Button",
+        "label": "Remind me in 1 hour",
+        "variant": "secondary",
+        "size": "large"
+      },
+      {
+        "id": "footerNote",
+        "component": "TextContent",
+        "text": "Tip: Marking as done will clear your focus queue and celebrate your win. Stay on this task until it's complete.",
+        "size": "small"
+      }
+    ]
+  }
+}
+</a2ui-json>

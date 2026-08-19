@@ -2,12 +2,8 @@
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "startup-month-end-finance",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": {
-      "primaryColor": "#2563EB",
-      "agentDisplayName": "Finance Dashboard"
-    }
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
@@ -16,371 +12,279 @@
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "startup-month-end-finance",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "l",
         "children": [
           "header",
-          "month-control",
-          "metrics",
-          "expense-section",
-          "transactions-section",
-          "statement-actions"
-        ]
+          "periodControls",
+          "summary",
+          "expenseSection",
+          "transactionSection",
+          "downloadButtons"
+        ],
+        "gap": "l"
       },
       {
         "id": "header",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "title",
-          "subtitle"
-        ]
+        "component": "CardHeader",
+        "title": "Month-end finance",
+        "subtitle": "Financial overview for August 2026"
       },
       {
-        "id": "title",
-        "component": "Heading",
-        "text": "Month-end finance",
-        "level": "h1"
+        "id": "periodControls",
+        "component": "Form",
+        "name": "month-selector",
+        "fields": [
+          "monthControl"
+        ],
+        "buttons": "periodButtons"
       },
       {
-        "id": "subtitle",
-        "component": "TextContent",
-        "text": "A concise view of liquidity, operating spend, and material transactions for the selected month.",
-        "size": "default"
+        "id": "monthControl",
+        "component": "FormControl",
+        "label": "Reporting month",
+        "input": "monthPicker",
+        "hint": "Choose a month to update the finance view"
       },
       {
-        "id": "month-control",
-        "component": "Card",
-        "variant": "sunk",
-        "direction": "row",
-        "align": "center",
-        "justify": "between",
-        "gap": "m",
-        "children": [
-          "month-label",
-          "month-picker"
-        ]
-      },
-      {
-        "id": "month-label",
-        "component": "TextContent",
-        "text": "Reporting month",
-        "size": "small-heavy"
-      },
-      {
-        "id": "month-picker",
+        "id": "monthPicker",
         "component": "DatePicker",
         "name": "reporting_month",
         "mode": "single",
         "value": [
-          "2026-07-01"
+          "2026-08-01"
         ]
       },
       {
-        "id": "metrics",
+        "id": "periodButtons",
+        "component": "Buttons",
+        "buttons": [
+          "viewMonthButton"
+        ]
+      },
+      {
+        "id": "viewMonthButton",
+        "component": "Button",
+        "label": "View selected month",
+        "variant": "secondary"
+      },
+      {
+        "id": "summary",
         "component": "Card",
-        "variant": "clear",
+        "variant": "sunk",
         "direction": "row",
         "gap": "m",
-        "align": "stretch",
         "children": [
-          "cash-card",
-          "burn-card",
-          "runway-card"
+          "cashMetric",
+          "burnMetric",
+          "runwayMetric"
         ]
       },
       {
-        "id": "cash-card",
+        "id": "cashMetric",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
+        "variant": "clear",
         "children": [
-          "cash-label",
-          "cash-value",
-          "cash-note"
-        ]
+          "cashLabel",
+          "cashValue"
+        ],
+        "weight": 1
       },
       {
-        "id": "cash-label",
+        "id": "cashLabel",
         "component": "TextContent",
         "text": "Cash on hand",
-        "size": "small-heavy"
+        "size": "small"
       },
       {
-        "id": "cash-value",
+        "id": "cashValue",
         "component": "Heading",
         "text": "$1,248,600",
         "level": "h2"
       },
       {
-        "id": "cash-note",
+        "id": "burnMetric",
+        "component": "Card",
+        "variant": "clear",
+        "children": [
+          "burnLabel",
+          "burnValue"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "burnLabel",
         "component": "TextContent",
-        "text": "Available balances as of July 31, 2026",
+        "text": "Monthly burn",
         "size": "small"
       },
       {
-        "id": "burn-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "children": [
-          "burn-label",
-          "burn-value",
-          "burn-note"
-        ]
-      },
-      {
-        "id": "burn-label",
-        "component": "TextContent",
-        "text": "Monthly burn",
-        "size": "small-heavy"
-      },
-      {
-        "id": "burn-value",
+        "id": "burnValue",
         "component": "Heading",
         "text": "$142,300",
         "level": "h2"
       },
       {
-        "id": "burn-note",
+        "id": "runwayMetric",
+        "component": "Card",
+        "variant": "clear",
+        "children": [
+          "runwayLabel",
+          "runwayValue",
+          "runwayProgress"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "runwayLabel",
         "component": "TextContent",
-        "text": "Net cash outflow for July",
+        "text": "Months of runway",
         "size": "small"
       },
       {
-        "id": "runway-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "children": [
-          "runway-label",
-          "runway-value",
-          "runway-progress"
-        ]
-      },
-      {
-        "id": "runway-label",
-        "component": "TextContent",
-        "text": "Months of runway",
-        "size": "small-heavy"
-      },
-      {
-        "id": "runway-value",
+        "id": "runwayValue",
         "component": "Heading",
         "text": "8.8 months",
         "level": "h2"
       },
       {
-        "id": "runway-progress",
+        "id": "runwayProgress",
         "component": "Progress",
         "value": 73,
-        "label": "73% of 12-month operating target"
+        "label": "Runway target: 12 months"
       },
       {
-        "id": "expense-section",
+        "id": "expenseSection",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
+        "variant": "clear",
         "children": [
-          "expense-header",
-          "expense-chart",
-          "expense-summary"
-        ]
+          "expenseHeader",
+          "expenseChart"
+        ],
+        "gap": "s"
       },
       {
-        "id": "expense-header",
-        "component": "CardHeader",
-        "title": "Expenses by category",
-        "subtitle": "July 2026 operating expenses"
+        "id": "expenseHeader",
+        "component": "Heading",
+        "text": "Expenses by category",
+        "level": "h3"
       },
       {
-        "id": "expense-chart",
+        "id": "expenseChart",
         "component": "PieChart",
         "labels": [
           "Payroll",
           "Cloud infrastructure",
-          "Marketing",
+          "Sales & marketing",
           "Professional services",
           "Office & operations"
         ],
         "values": [
-          84200,
-          21900,
-          16800,
-          12100,
-          7300
+          78200,
+          21400,
+          18700,
+          14200,
+          9800
         ],
-        "variant": "donut",
-        "appearance": "circular"
+        "variant": "donut"
       },
       {
-        "id": "expense-summary",
-        "component": "Table",
-        "columns": [
-          "expense-category-col",
-          "expense-amount-col",
-          "expense-share-col"
-        ]
-      },
-      {
-        "id": "expense-category-col",
-        "component": "Col",
-        "label": "Category",
-        "data": [
-          "Payroll",
-          "Cloud infrastructure",
-          "Marketing",
-          "Professional services",
-          "Office & operations"
-        ],
-        "type": "string"
-      },
-      {
-        "id": "expense-amount-col",
-        "component": "Col",
-        "label": "Amount",
-        "data": [
-          "$84,200",
-          "$21,900",
-          "$16,800",
-          "$12,100",
-          "$7,300"
-        ],
-        "type": "string"
-      },
-      {
-        "id": "expense-share-col",
-        "component": "Col",
-        "label": "Share",
-        "data": [
-          "59.3%",
-          "15.4%",
-          "11.8%",
-          "8.5%",
-          "5.1%"
-        ],
-        "type": "string"
-      },
-      {
-        "id": "transactions-section",
+        "id": "transactionSection",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
+        "variant": "clear",
         "children": [
-          "transactions-header",
-          "transactions-callout",
-          "transactions-table"
-        ]
+          "transactionHeader",
+          "transactionNote",
+          "transactionTable"
+        ],
+        "gap": "s"
       },
       {
-        "id": "transactions-header",
-        "component": "CardHeader",
-        "title": "Transactions above $10,000",
-        "subtitle": "Posted during July 2026"
+        "id": "transactionHeader",
+        "component": "Heading",
+        "text": "Transactions above $10,000",
+        "level": "h3"
       },
       {
-        "id": "transactions-callout",
-        "component": "Callout",
-        "variant": "info",
-        "title": "4 material transactions",
-        "description": "These transactions represent $93,400 of the month’s cash activity."
+        "id": "transactionNote",
+        "component": "TextContent",
+        "text": "August 2026 • 5 transactions",
+        "size": "small"
       },
       {
-        "id": "transactions-table",
+        "id": "transactionTable",
         "component": "Table",
         "columns": [
-          "transaction-date-col",
-          "transaction-merchant-col",
-          "transaction-category-col",
-          "transaction-amount-col"
+          "transactionDate",
+          "transactionVendor",
+          "transactionCategory",
+          "transactionAmount"
         ]
       },
       {
-        "id": "transaction-date-col",
+        "id": "transactionDate",
         "component": "Col",
         "label": "Date",
         "data": [
-          "Jul 01, 2026",
-          "Jul 05, 2026",
-          "Jul 15, 2026",
-          "Jul 28, 2026"
-        ],
-        "type": "string"
+          "Aug 01, 2026",
+          "Aug 05, 2026",
+          "Aug 12, 2026",
+          "Aug 18, 2026",
+          "Aug 27, 2026"
+        ]
       },
       {
-        "id": "transaction-merchant-col",
+        "id": "transactionVendor",
         "component": "Col",
-        "label": "Vendor / description",
+        "label": "Vendor / payee",
         "data": [
-          "Payroll — July cycle",
-          "AWS",
-          "Brightline Growth",
-          "Morrison & Finch LLP"
-        ],
-        "type": "string"
+          "Gusto",
+          "Amazon Web Services",
+          "Google Ads",
+          "Northstar Legal",
+          "Gusto"
+        ]
       },
       {
-        "id": "transaction-category-col",
+        "id": "transactionCategory",
         "component": "Col",
         "label": "Category",
         "data": [
           "Payroll",
           "Cloud infrastructure",
-          "Marketing",
-          "Professional services"
-        ],
-        "type": "string"
+          "Sales & marketing",
+          "Professional services",
+          "Payroll"
+        ]
       },
       {
-        "id": "transaction-amount-col",
+        "id": "transactionAmount",
         "component": "Col",
         "label": "Amount",
+        "type": "number",
         "data": [
-          "-$48,600",
-          "-$21,900",
-          "-$12,500",
-          "-$10,400"
-        ],
-        "type": "string"
-      },
-      {
-        "id": "statement-actions",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "justify": "end",
-        "gap": "s",
-        "children": [
-          "download-statement"
+          "$42,600",
+          "$16,840",
+          "$12,500",
+          "$14,200",
+          "$35,600"
         ]
       },
       {
-        "id": "download-statement",
+        "id": "downloadButtons",
+        "component": "Buttons",
+        "buttons": [
+          "downloadStatementButton"
+        ]
+      },
+      {
+        "id": "downloadStatementButton",
         "component": "Button",
-        "label": "Download July statement",
-        "variant": "primary",
-        "size": "medium",
-        "action": [
-          {
-            "type": "download",
-            "format": "pdf",
-            "document": "month_end_statement",
-            "month": "2026-07"
-          }
-        ]
+        "label": "Download August statement",
+        "variant": "primary"
       }
     ]
   }

@@ -3,321 +3,268 @@
 Here's a complete month-end finance dashboard for a startup:
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "startup-finance-dashboard",
-      "catalogId": "thesys.dev:c1-openui",
-      "theme": {
-        "primaryColor": "#1A73E8",
-        "agentDisplayName": "Finance Dashboard"
-      }
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "startup-finance-dashboard",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "column",
-          "gap": "l",
-          "children": ["header-row", "kpi-row", "expenses-section", "transactions-section"]
-        },
-        {
-          "id": "header-row",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "align": "center",
-          "justify": "between",
-          "children": ["header-title", "header-controls"]
-        },
-        {
-          "id": "header-title",
-          "component": "Heading",
-          "text": "Month-End Finance Overview",
-          "level": "h1"
-        },
-        {
-          "id": "header-controls",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "m",
-          "align": "center",
-          "children": ["month-select-control", "download-btn"]
-        },
-        {
-          "id": "month-select-control",
-          "component": "FormControl",
-          "label": "Viewing Month",
-          "input": "month-select"
-        },
-        {
-          "id": "month-select",
-          "component": "Select",
-          "name": "month",
-          "placeholder": "Select month",
-          "value": "2025-06",
-          "items": ["month-opt-1", "month-opt-2", "month-opt-3", "month-opt-4", "month-opt-5", "month-opt-6"]
-        },
-        {
-          "id": "month-opt-1",
-          "component": "SelectItem",
-          "value": "2025-01",
-          "label": "January 2025"
-        },
-        {
-          "id": "month-opt-2",
-          "component": "SelectItem",
-          "value": "2025-02",
-          "label": "February 2025"
-        },
-        {
-          "id": "month-opt-3",
-          "component": "SelectItem",
-          "value": "2025-03",
-          "label": "March 2025"
-        },
-        {
-          "id": "month-opt-4",
-          "component": "SelectItem",
-          "value": "2025-04",
-          "label": "April 2025"
-        },
-        {
-          "id": "month-opt-5",
-          "component": "SelectItem",
-          "value": "2025-05",
-          "label": "May 2025"
-        },
-        {
-          "id": "month-opt-6",
-          "component": "SelectItem",
-          "value": "2025-06",
-          "label": "June 2025"
-        },
-        {
-          "id": "download-btn",
-          "component": "Button",
-          "label": "⬇ Download Statement",
-          "variant": "secondary",
-          "size": "medium"
-        },
-        {
-          "id": "kpi-row",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "m",
-          "children": ["kpi-cash", "kpi-burn", "kpi-runway"]
-        },
-        {
-          "id": "kpi-cash",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "xs",
-          "weight": 1,
-          "children": ["kpi-cash-header", "kpi-cash-value", "kpi-cash-note"]
-        },
-        {
-          "id": "kpi-cash-header",
-          "component": "TextContent",
-          "text": "💰 Cash on Hand",
-          "size": "small"
-        },
-        {
-          "id": "kpi-cash-value",
-          "component": "TextContent",
-          "text": "$2,847,500",
-          "size": "large-heavy"
-        },
-        {
-          "id": "kpi-cash-note",
-          "component": "TextContent",
-          "text": "Across 2 accounts (Operating + Reserve)",
-          "size": "small"
-        },
-        {
-          "id": "kpi-burn",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "xs",
-          "weight": 1,
-          "children": ["kpi-burn-header", "kpi-burn-value", "kpi-burn-note"]
-        },
-        {
-          "id": "kpi-burn-header",
-          "component": "TextContent",
-          "text": "🔥 Monthly Burn",
-          "size": "small"
-        },
-        {
-          "id": "kpi-burn-value",
-          "component": "TextContent",
-          "text": "$312,400",
-          "size": "large-heavy"
-        },
-        {
-          "id": "kpi-burn-note",
-          "component": "TextContent",
-          "text": "↑ 4.2% vs. May ($299,800)",
-          "size": "small"
-        },
-        {
-          "id": "kpi-runway",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "xs",
-          "weight": 1,
-          "children": ["kpi-runway-header", "kpi-runway-value", "kpi-runway-note"]
-        },
-        {
-          "id": "kpi-runway-header",
-          "component": "TextContent",
-          "text": "🛫 Months of Runway",
-          "size": "small"
-        },
-        {
-          "id": "kpi-runway-value",
-          "component": "TextContent",
-          "text": "9.1 months",
-          "size": "large-heavy"
-        },
-        {
-          "id": "kpi-runway-note",
-          "component": "TextContent",
-          "text": "Projected depletion: March 2026",
-          "size": "small"
-        },
-        {
-          "id": "expenses-section",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": ["expenses-header", "expenses-chart", "expenses-breakdown-table"]
-        },
-        {
-          "id": "expenses-header",
-          "component": "CardHeader",
-          "title": "Expenses by Category",
-          "subtitle": "June 2025 — Total: $312,400"
-        },
-        {
-          "id": "expenses-chart",
-          "component": "PieChart",
-          "labels": ["Engineering", "Sales & Marketing", "Operations", "G&A", "Infrastructure"],
-          "values": [142000, 68500, 41200, 35700, 25000],
-          "variant": "donut"
-        },
-        {
-          "id": "expenses-breakdown-table",
-          "component": "Table",
-          "columns": ["exp-col-category", "exp-col-amount", "exp-col-pct", "exp-col-trend"]
-        },
-        {
-          "id": "exp-col-category",
-          "component": "Col",
-          "label": "Category",
-          "data": ["Engineering", "Sales & Marketing", "Operations", "G&A", "Infrastructure"]
-        },
-        {
-          "id": "exp-col-amount",
-          "component": "Col",
-          "label": "Amount",
-          "data": ["$142,000", "$68,500", "$41,200", "$35,700", "$25,000"]
-        },
-        {
-          "id": "exp-col-pct",
-          "component": "Col",
-          "label": "% of Total",
-          "data": ["45.5%", "21.9%", "13.2%", "11.4%", "8.0%"]
-        },
-        {
-          "id": "exp-col-trend",
-          "component": "Col",
-          "label": "MoM Change",
-          "data": ["+2.1%", "+8.4%", "-1.3%", "+0.5%", "+3.7%"]
-        },
-        {
-          "id": "transactions-section",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": ["transactions-header", "transactions-alert", "transactions-table"]
-        },
-        {
-          "id": "transactions-header",
-          "component": "CardHeader",
-          "title": "Large Transactions (≥ $10,000)",
-          "subtitle": "June 2025 — 7 transactions found"
-        },
-        {
-          "id": "transactions-alert",
-          "component": "Callout",
-          "variant": "warning",
-          "title": "Attention",
-          "description": "AWS invoice increased 22% MoM. Consider reviewing reserved instance commitments."
-        },
-        {
-          "id": "transactions-table",
-          "component": "Table",
-          "columns": ["txn-col-date", "txn-col-desc", "txn-col-category", "txn-col-amount", "txn-col-status"]
-        },
-        {
-          "id": "txn-col-date",
-          "component": "Col",
-          "label": "Date",
-          "data": ["Jun 28", "Jun 25", "Jun 20", "Jun 15", "Jun 12", "Jun 08", "Jun 03"]
-        },
-        {
-          "id": "txn-col-desc",
-          "component": "Col",
-          "label": "Description",
-          "data": ["AWS Cloud Services", "Payroll — Engineering", "Google Ads Campaign", "Office Lease (Q3)", "Payroll — Sales", "Datadog Monitoring", "Legal — Series B Prep"]
-        },
-        {
-          "id": "txn-col-category",
-          "component": "Col",
-          "label": "Category",
-          "data": ["Infrastructure", "Engineering", "Sales & Marketing", "Operations", "Sales & Marketing", "Infrastructure", "G&A"]
-        },
-        {
-          "id": "txn-col-amount",
-          "component": "Col",
-          "label": "Amount",
-          "data": ["$25,000", "$89,400", "$18,200", "$14,500", "$42,100", "$11,300", "$15,000"]
-        },
-        {
-          "id": "txn-col-status",
-          "component": "Col",
-          "label": "Status",
-          "data": ["Cleared", "Cleared", "Cleared", "Cleared", "Cleared", "Pending", "Cleared"]
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "monthPicker",
+          "kpis",
+          "separator1",
+          "expenseHeading",
+          "expenseChart",
+          "separator2",
+          "txnHeading",
+          "txnTable",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Month-End Finance Overview",
+        "subtitle": "Acme Labs, Inc."
+      },
+      {
+        "id": "monthPicker",
+        "component": "FormControl",
+        "label": "Reporting month",
+        "input": "monthSelect"
+      },
+      {
+        "id": "monthSelect",
+        "component": "Select",
+        "name": "reporting_month",
+        "placeholder": "Select a month",
+        "value": "2025-06",
+        "items": [
+          "monthJan",
+          "monthFeb",
+          "monthMar",
+          "monthApr",
+          "monthMay",
+          "monthJun"
+        ]
+      },
+      {
+        "id": "monthJan",
+        "component": "SelectItem",
+        "value": "2025-01",
+        "label": "January 2025"
+      },
+      {
+        "id": "monthFeb",
+        "component": "SelectItem",
+        "value": "2025-02",
+        "label": "February 2025"
+      },
+      {
+        "id": "monthMar",
+        "component": "SelectItem",
+        "value": "2025-03",
+        "label": "March 2025"
+      },
+      {
+        "id": "monthApr",
+        "component": "SelectItem",
+        "value": "2025-04",
+        "label": "April 2025"
+      },
+      {
+        "id": "monthMay",
+        "component": "SelectItem",
+        "value": "2025-05",
+        "label": "May 2025"
+      },
+      {
+        "id": "monthJun",
+        "component": "SelectItem",
+        "value": "2025-06",
+        "label": "June 2025"
+      },
+      {
+        "id": "kpis",
+        "component": "Table",
+        "columns": [
+          "kpiLabel",
+          "kpiValue",
+          "kpiNote"
+        ]
+      },
+      {
+        "id": "kpiLabel",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Cash on Hand",
+          "Monthly Burn",
+          "Months of Runway"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "$1,247,800",
+          "$186,400",
+          "6.7 months"
+        ]
+      },
+      {
+        "id": "kpiNote",
+        "component": "Col",
+        "label": "Note",
+        "data": [
+          "Across all accounts",
+          "↑ 4.2% vs. May",
+          "Based on current burn"
+        ]
+      },
+      {
+        "id": "separator1",
+        "component": "Separator"
+      },
+      {
+        "id": "expenseHeading",
+        "component": "Heading",
+        "text": "Expenses by Category",
+        "level": "h3"
+      },
+      {
+        "id": "expenseChart",
+        "component": "PieChart",
+        "labels": [
+          "Payroll",
+          "Cloud & Infra",
+          "Marketing",
+          "Office & Ops",
+          "Legal & Compliance",
+          "Other"
+        ],
+        "values": [
+          98200,
+          34500,
+          22800,
+          14600,
+          9300,
+          7000
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "separator2",
+        "component": "Separator"
+      },
+      {
+        "id": "txnHeading",
+        "component": "Heading",
+        "text": "Transactions Above $10,000",
+        "level": "h3"
+      },
+      {
+        "id": "txnTable",
+        "component": "Table",
+        "columns": [
+          "txnDate",
+          "txnDesc",
+          "txnCategory",
+          "txnAmount"
+        ]
+      },
+      {
+        "id": "txnDate",
+        "component": "Col",
+        "label": "Date",
+        "data": [
+          "Jun 02",
+          "Jun 05",
+          "Jun 12",
+          "Jun 15",
+          "Jun 20",
+          "Jun 28"
+        ]
+      },
+      {
+        "id": "txnDesc",
+        "component": "Col",
+        "label": "Description",
+        "data": [
+          "Payroll – Engineering",
+          "AWS Invoice",
+          "Google Ads Campaign",
+          "Payroll – GTM",
+          "WeWork Lease Q3",
+          "Series A Legal Fees"
+        ]
+      },
+      {
+        "id": "txnCategory",
+        "component": "Col",
+        "label": "Category",
+        "data": [
+          "Payroll",
+          "Cloud & Infra",
+          "Marketing",
+          "Payroll",
+          "Office & Ops",
+          "Legal & Compliance"
+        ]
+      },
+      {
+        "id": "txnAmount",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "$62,400",
+          "$34,500",
+          "$18,200",
+          "$35,800",
+          "$12,600",
+          "$9,300"
+        ]
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": [
+          "downloadBtn"
+        ]
+      },
+      {
+        "id": "downloadBtn",
+        "component": "Button",
+        "label": "Download Statement (PDF)",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
 </a2ui-json>
 
 This dashboard covers all seven requirements:
 
-| # | Requirement | Implementation |
+| # | Requirement | Component Used |
 |---|---|---|
-| 1 | Cash on hand | KPI card showing **$2,847,500** across accounts |
-| 2 | Monthly burn | KPI card showing **$312,400** with MoM comparison |
-| 3 | Months of runway | KPI card showing **9.1 months** with projected depletion date |
-| 4 | Expenses by category | Donut chart + detailed breakdown table with percentages and trends |
-| 5 | Transactions ≥ $10K | Full table with 7 large transactions, including a warning callout |
-| 6 | Switch months | Dropdown selector in the header (Jan–Jun 2025) |
-| 7 | Download statement | "⬇ Download Statement" button in the header |
+| 1 | Cash on hand | KPI table row |
+| 2 | Monthly burn | KPI table row |
+| 3 | Months of runway | KPI table row |
+| 4 | Expenses by category | Donut chart with 6 categories |
+| 5 | Transactions > $10K | Detailed table with date, description, category, and amount |
+| 6 | Switch months | Select dropdown (Jan–Jun 2025) |
+| 7 | Download statement | "Download Statement (PDF)" button |

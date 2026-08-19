@@ -1,12 +1,11 @@
-Here's a comprehensive store manager's daily console covering all 12 requirements.
+Here's a complete store manager's daily console covering all twelve items.
 
 <a2ui-json>
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "store-console",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": { "primaryColor": "#2563EB", "agentDisplayName": "Store Console" }
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
@@ -15,129 +14,682 @@ Here's a comprehensive store manager's daily console covering all 12 requirement
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "store-console",
+    "surfaceId": "main",
     "components": [
-      { "id": "root", "component": "Card", "direction": "column", "gap": "l", "children": ["header", "storeSelectRow", "kpiRow", "trafficCard", "bestReturnRow", "stockShiftRow", "promoCard", "registerCard", "compareCard"] },
-
-      { "id": "header", "component": "CardHeader", "title": "Daily Store Console — Downtown Flagship", "subtitle": "Tuesday, live overview" },
-
-      { "id": "storeSelectRow", "component": "Card", "variant": "sunk", "direction": "row", "gap": "m", "align": "center", "children": ["storeSelectControl", "reorderDrawer"] },
-      { "id": "storeSelectControl", "component": "FormControl", "label": "View a different store", "input": "storeSelect", "weight": 2 },
-      { "id": "storeSelect", "component": "Select", "name": "store", "value": "downtown", "placeholder": "Select store", "items": ["optDowntown", "optWestside", "optAirport", "optMall"] },
-      { "id": "optDowntown", "component": "SelectItem", "value": "downtown", "label": "Downtown Flagship" },
-      { "id": "optWestside", "component": "SelectItem", "value": "westside", "label": "Westside Plaza" },
-      { "id": "optAirport", "component": "SelectItem", "value": "airport", "label": "Airport Terminal" },
-      { "id": "optMall", "component": "SelectItem", "value": "mall", "label": "Grand Mall" },
-
-      { "id": "reorderDrawer", "component": "DrawerBlock", "triggerLabel": "Reorder an item", "title": "Reorder Stock", "description": "Place a replenishment order for an item", "content": ["reorderForm"] },
-      { "id": "reorderForm", "component": "Form", "name": "reorder", "buttons": "reorderButtons", "fields": ["reorderItemCtrl", "reorderQtyCtrl", "reorderNoteCtrl"] },
-      { "id": "reorderItemCtrl", "component": "FormControl", "label": "Item", "input": "reorderItemSelect" },
-      { "id": "reorderItemSelect", "component": "Select", "name": "reorderItem", "placeholder": "Choose item", "items": ["riA", "riB", "riC", "riD"] },
-      { "id": "riA", "component": "SelectItem", "value": "sku-1001", "label": "Classic Tee — Black (out of stock)" },
-      { "id": "riB", "component": "SelectItem", "value": "sku-2044", "label": "Running Socks 3pk (out of stock)" },
-      { "id": "riC", "component": "SelectItem", "value": "sku-3090", "label": "Water Bottle 750ml (low)" },
-      { "id": "riD", "component": "SelectItem", "value": "sku-4120", "label": "Canvas Tote (low)" },
-      { "id": "reorderQtyCtrl", "component": "FormControl", "label": "Quantity", "input": "reorderQty", "hint": "Units to order" },
-      { "id": "reorderQty", "component": "Input", "name": "qty", "type": "number", "placeholder": "e.g. 50" },
-      { "id": "reorderNoteCtrl", "component": "FormControl", "label": "Note to supplier", "input": "reorderNote" },
-      { "id": "reorderNote", "component": "TextArea", "name": "note", "rows": 2, "placeholder": "Optional note" },
-      { "id": "reorderButtons", "component": "Buttons", "buttons": ["reorderSubmit"] },
-      { "id": "reorderSubmit", "component": "Button", "label": "Place Reorder", "variant": "primary", "action": [] },
-
-      { "id": "kpiRow", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "wrap": true, "children": ["salesCard", "basketCard"] },
-
-      { "id": "salesCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "weight": 2, "children": ["salesHead", "salesProgress", "salesText"] },
-      { "id": "salesHead", "component": "Heading", "text": "Sales Today vs Target", "level": "h4" },
-      { "id": "salesProgress", "component": "Progress", "value": 78, "label": "$18,720 of $24,000 target" },
-      { "id": "salesText", "component": "TextContent", "text": "**78%** of daily target reached — $5,280 to go.", "size": "small" },
-
-      { "id": "basketCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "weight": 1, "children": ["basketHead", "basketVal", "basketTag"] },
-      { "id": "basketHead", "component": "Heading", "text": "Avg Basket Size", "level": "h4" },
-      { "id": "basketVal", "component": "TextContent", "text": "**$42.15**", "size": "large-heavy" },
-      { "id": "basketTag", "component": "Tag", "text": "+3.2% vs yesterday", "variant": "success", "size": "sm" },
-
-      { "id": "trafficCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["trafficHead", "trafficChart"] },
-      { "id": "trafficHead", "component": "Heading", "text": "Foot Traffic Through the Day", "level": "h4" },
-      { "id": "trafficChart", "component": "AreaChart", "variant": "natural", "xLabel": "Hour", "yLabel": "Visitors", "labels": ["9a", "10a", "11a", "12p", "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p"], "series": ["trafficSeries"] },
-      { "id": "trafficSeries", "component": "Series", "category": "Visitors", "values": [40, 85, 120, 210, 260, 190, 175, 220, 300, 340, 280, 160] },
-
-      { "id": "bestReturnRow", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "wrap": true, "children": ["bestCard", "returnCard"] },
-
-      { "id": "bestCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "weight": 1, "children": ["bestHead", "bestChart"] },
-      { "id": "bestHead", "component": "Heading", "text": "Best Sellers (units today)", "level": "h4" },
-      { "id": "bestChart", "component": "HorizontalBarChart", "xLabel": "Units", "labels": ["Classic Tee", "Water Bottle", "Canvas Tote", "Running Socks", "Cap"], "series": ["bestSeries"] },
-      { "id": "bestSeries", "component": "Series", "category": "Units Sold", "values": [142, 118, 96, 74, 61] },
-
-      { "id": "returnCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "weight": 1, "children": ["returnHead", "returnVal", "returnChart"] },
-      { "id": "returnHead", "component": "Heading", "text": "Returns This Week", "level": "h4" },
-      { "id": "returnVal", "component": "TextContent", "text": "**63 items** returned · $2,410 refunded", "size": "small-heavy" },
-      { "id": "returnChart", "component": "BarChart", "xLabel": "Day", "yLabel": "Returns", "labels": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], "series": ["returnSeries"] },
-      { "id": "returnSeries", "component": "Series", "category": "Returns", "values": [8, 11, 7, 9, 14, 10, 4] },
-
-      { "id": "stockShiftRow", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "wrap": true, "children": ["stockCard", "shiftCard"] },
-
-      { "id": "stockCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "weight": 1, "children": ["stockHead", "stockAlert", "stockList"] },
-      { "id": "stockHead", "component": "Heading", "text": "Out of Stock", "level": "h4" },
-      { "id": "stockAlert", "component": "Alert", "variant": "warning", "title": "4 items need reordering", "description": "Use the Reorder button at the top to replenish." },
-      { "id": "stockList", "component": "ListBlock", "variant": "number", "items": ["stk1", "stk2", "stk3", "stk4"] },
-      { "id": "stk1", "component": "ListItem", "title": "Classic Tee — Black", "subtitle": "SKU-1001 · sold out 11:20a", "actionLabel": "Reorder" },
-      { "id": "stk2", "component": "ListItem", "title": "Running Socks 3pk", "subtitle": "SKU-2044 · sold out 1:05p", "actionLabel": "Reorder" },
-      { "id": "stk3", "component": "ListItem", "title": "Leather Belt — Brown", "subtitle": "SKU-5210 · sold out yesterday", "actionLabel": "Reorder" },
-      { "id": "stk4", "component": "ListItem", "title": "Sport Cap — Navy", "subtitle": "SKU-6033 · sold out 3:40p", "actionLabel": "Reorder" },
-
-      { "id": "shiftCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "weight": 1, "children": ["shiftHead", "shiftTable"] },
-      { "id": "shiftHead", "component": "Heading", "text": "On Shift Today", "level": "h4" },
-      { "id": "shiftTable", "component": "Table", "columns": ["shiftName", "shiftRole", "shiftHours"] },
-      { "id": "shiftName", "component": "Col", "label": "Name", "type": "string", "data": ["Maria Lopez", "James Chen", "Priya Patel", "Tom Wright", "Aisha Khan"] },
-      { "id": "shiftRole", "component": "Col", "label": "Role", "type": "string", "data": ["Manager", "Cashier", "Cashier", "Floor", "Floor"] },
-      { "id": "shiftHours", "component": "Col", "label": "Hours", "type": "string", "data": ["9a–5p", "9a–3p", "12p–8p", "10a–6p", "2p–8p"] },
-
-      { "id": "promoCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["promoHead", "promoTable"] },
-      { "id": "promoHead", "component": "Heading", "text": "Running Promotions Performance", "level": "h4" },
-      { "id": "promoTable", "component": "Table", "columns": ["promoName", "promoRedeem", "promoRevenue", "promoStatus"] },
-      { "id": "promoName", "component": "Col", "label": "Promotion", "type": "string", "data": ["Buy 2 Get 1 Tees", "20% Off Footwear", "Summer Bundle", "Loyalty Double Points"] },
-      { "id": "promoRedeem", "component": "Col", "label": "Redemptions", "type": "number", "data": [214, 156, 88, 340] },
-      { "id": "promoRevenue", "component": "Col", "label": "Revenue", "type": "string", "data": ["$4,120", "$3,480", "$2,900", "$6,050"] },
-      { "id": "promoStatus", "component": "Col", "label": "Trend", "type": "string", "data": ["On track", "Strong", "Slow", "Strong"] },
-
-      { "id": "registerCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["registerHead", "regRow"] },
-      { "id": "registerHead", "component": "Heading", "text": "Registers", "level": "h4" },
-      { "id": "regRow", "component": "Card", "variant": "clear", "direction": "row", "gap": "s", "wrap": true, "children": ["reg1", "reg2", "reg3", "reg4"] },
-      { "id": "reg1", "component": "Card", "variant": "sunk", "direction": "column", "gap": "xs", "align": "center", "weight": 1, "children": ["reg1t", "reg1b"] },
-      { "id": "reg1t", "component": "TextContent", "text": "**Register 1**", "size": "small-heavy" },
-      { "id": "reg1b", "component": "Badge", "text": "Open", "variant": "default" },
-      { "id": "reg2", "component": "Card", "variant": "sunk", "direction": "column", "gap": "xs", "align": "center", "weight": 1, "children": ["reg2t", "reg2b"] },
-      { "id": "reg2t", "component": "TextContent", "text": "**Register 2**", "size": "small-heavy" },
-      { "id": "reg2b", "component": "Badge", "text": "Open", "variant": "default" },
-      { "id": "reg3", "component": "Card", "variant": "sunk", "direction": "column", "gap": "xs", "align": "center", "weight": 1, "children": ["reg3t", "reg3b"] },
-      { "id": "reg3t", "component": "TextContent", "text": "**Register 3**", "size": "small-heavy" },
-      { "id": "reg3b", "component": "Badge", "text": "Closed", "variant": "destructive" },
-      { "id": "reg4", "component": "Card", "variant": "sunk", "direction": "column", "gap": "xs", "align": "center", "weight": 1, "children": ["reg4t", "reg4b"] },
-      { "id": "reg4t", "component": "TextContent", "text": "**Register 4**", "size": "small-heavy" },
-      { "id": "reg4b", "component": "Badge", "text": "Open", "variant": "default" },
-
-      { "id": "compareCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["compareHead", "compareChart", "compareText"] },
-      { "id": "compareHead", "component": "Heading", "text": "This Week vs Last Week", "level": "h4" },
-      { "id": "compareChart", "component": "LineChart", "variant": "natural", "xLabel": "Day", "yLabel": "Sales ($)", "labels": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], "series": ["thisWeek", "lastWeek"] },
-      { "id": "thisWeek", "component": "Series", "category": "This Week", "values": [16200, 18720, 0, 0, 0, 0, 0] },
-      { "id": "lastWeek", "component": "Series", "category": "Last Week", "values": [15400, 17100, 16800, 18200, 21500, 26400, 19800] },
-      { "id": "compareText", "component": "TextContent", "text": "Week-to-date sales are **+7.4%** ahead of the same period last week.", "size": "small" }
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "storeSwitchRow",
+          "kpiRow",
+          "trafficCard",
+          "compareCard",
+          "bestPromoTabs",
+          "stockShiftRow",
+          "registersCard",
+          "reorderCard"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Store Console — Downtown #14",
+        "subtitle": "Tuesday overview"
+      },
+      {
+        "id": "storeSwitchRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "align": "center",
+        "children": [
+          "storeSelect",
+          "viewStoreBtn"
+        ]
+      },
+      {
+        "id": "storeSelect",
+        "component": "Select",
+        "name": "store",
+        "placeholder": "Select a store",
+        "value": "downtown-14",
+        "items": [
+          "storeOpt1",
+          "storeOpt2",
+          "storeOpt3"
+        ]
+      },
+      {
+        "id": "storeOpt1",
+        "component": "SelectItem",
+        "value": "downtown-14",
+        "label": "Downtown #14"
+      },
+      {
+        "id": "storeOpt2",
+        "component": "SelectItem",
+        "value": "westside-08",
+        "label": "Westside #08"
+      },
+      {
+        "id": "storeOpt3",
+        "component": "SelectItem",
+        "value": "airport-21",
+        "label": "Airport #21"
+      },
+      {
+        "id": "viewStoreBtn",
+        "component": "Button",
+        "label": "View store",
+        "variant": "secondary"
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "salesCard",
+          "basketCard",
+          "returnsCard"
+        ]
+      },
+      {
+        "id": "salesCard",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "s",
+        "weight": 1,
+        "children": [
+          "salesTitle",
+          "salesValue",
+          "salesProgress"
+        ]
+      },
+      {
+        "id": "salesTitle",
+        "component": "TextContent",
+        "text": "Sales Today vs Target",
+        "size": "small-heavy"
+      },
+      {
+        "id": "salesValue",
+        "component": "Heading",
+        "text": "$18,420 / $22,000",
+        "level": "h3"
+      },
+      {
+        "id": "salesProgress",
+        "component": "Progress",
+        "value": 84,
+        "label": "84% of daily target"
+      },
+      {
+        "id": "basketCard",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "s",
+        "weight": 1,
+        "children": [
+          "basketTitle",
+          "basketValue",
+          "basketNote"
+        ]
+      },
+      {
+        "id": "basketTitle",
+        "component": "TextContent",
+        "text": "Average Basket Size",
+        "size": "small-heavy"
+      },
+      {
+        "id": "basketValue",
+        "component": "Heading",
+        "text": "$34.90",
+        "level": "h3"
+      },
+      {
+        "id": "basketNote",
+        "component": "TextContent",
+        "text": "3.2 items per basket",
+        "size": "small"
+      },
+      {
+        "id": "returnsCard",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "s",
+        "weight": 1,
+        "children": [
+          "returnsTitle",
+          "returnsValue",
+          "returnsBadge"
+        ]
+      },
+      {
+        "id": "returnsTitle",
+        "component": "TextContent",
+        "text": "Returns This Week",
+        "size": "small-heavy"
+      },
+      {
+        "id": "returnsValue",
+        "component": "Heading",
+        "text": "47 items · $1,280",
+        "level": "h3"
+      },
+      {
+        "id": "returnsBadge",
+        "component": "Badge",
+        "text": "2.1% of sales",
+        "variant": "secondary"
+      },
+      {
+        "id": "trafficCard",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "trafficTitle",
+          "trafficChart"
+        ]
+      },
+      {
+        "id": "trafficTitle",
+        "component": "TextContent",
+        "text": "Foot Traffic Through the Day",
+        "size": "large-heavy"
+      },
+      {
+        "id": "trafficChart",
+        "component": "AreaChart",
+        "labels": [
+          "8a",
+          "10a",
+          "12p",
+          "2p",
+          "4p",
+          "6p",
+          "8p"
+        ],
+        "series": [
+          "trafficSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Hour",
+        "yLabel": "Visitors"
+      },
+      {
+        "id": "trafficSeries",
+        "component": "Series",
+        "category": "Visitors",
+        "values": [
+          45,
+          120,
+          260,
+          210,
+          180,
+          290,
+          140
+        ]
+      },
+      {
+        "id": "compareCard",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "compareTitle",
+          "compareChart"
+        ]
+      },
+      {
+        "id": "compareTitle",
+        "component": "TextContent",
+        "text": "This Week vs Last Week",
+        "size": "large-heavy"
+      },
+      {
+        "id": "compareChart",
+        "component": "BarChart",
+        "labels": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat",
+          "Sun"
+        ],
+        "series": [
+          "thisWeekSeries",
+          "lastWeekSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Day",
+        "yLabel": "Sales ($)"
+      },
+      {
+        "id": "thisWeekSeries",
+        "component": "Series",
+        "category": "This Week",
+        "values": [
+          16200,
+          18420,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "id": "lastWeekSeries",
+        "component": "Series",
+        "category": "Last Week",
+        "values": [
+          15100,
+          17800,
+          16900,
+          18200,
+          21400,
+          24800,
+          19600
+        ]
+      },
+      {
+        "id": "bestPromoTabs",
+        "component": "Tabs",
+        "items": [
+          "bestSellersTab",
+          "promoTab"
+        ]
+      },
+      {
+        "id": "bestSellersTab",
+        "component": "TabItem",
+        "value": "best",
+        "trigger": "Best Sellers",
+        "content": [
+          "bestTable"
+        ]
+      },
+      {
+        "id": "bestTable",
+        "component": "Table",
+        "columns": [
+          "bestName",
+          "bestUnits"
+        ]
+      },
+      {
+        "id": "bestName",
+        "component": "Col",
+        "label": "Item",
+        "data": [
+          "Cold Brew 16oz",
+          "Blueberry Muffin",
+          "Avocado Toast",
+          "Iced Latte",
+          "Protein Box"
+        ]
+      },
+      {
+        "id": "bestUnits",
+        "component": "Col",
+        "label": "Units Sold",
+        "type": "number",
+        "data": [
+          142,
+          118,
+          96,
+          88,
+          61
+        ]
+      },
+      {
+        "id": "promoTab",
+        "component": "TabItem",
+        "value": "promo",
+        "trigger": "Promotions",
+        "content": [
+          "promoTable"
+        ]
+      },
+      {
+        "id": "promoTable",
+        "component": "Table",
+        "columns": [
+          "promoName",
+          "promoRedeemed",
+          "promoLift"
+        ]
+      },
+      {
+        "id": "promoName",
+        "component": "Col",
+        "label": "Promotion",
+        "data": [
+          "Buy 1 Get 1 Coffee",
+          "Lunch Combo -20%",
+          "Loyalty Double Points"
+        ]
+      },
+      {
+        "id": "promoRedeemed",
+        "component": "Col",
+        "label": "Redeemed",
+        "type": "number",
+        "data": [
+          210,
+          134,
+          98
+        ]
+      },
+      {
+        "id": "promoLift",
+        "component": "Col",
+        "label": "Sales Lift",
+        "data": [
+          "+12%",
+          "+8%",
+          "+5%"
+        ]
+      },
+      {
+        "id": "stockShiftRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "stockCard",
+          "shiftCard"
+        ]
+      },
+      {
+        "id": "stockCard",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "s",
+        "weight": 1,
+        "children": [
+          "stockAlert",
+          "stockTable"
+        ]
+      },
+      {
+        "id": "stockAlert",
+        "component": "Alert",
+        "title": "Out of Stock",
+        "description": "3 items need attention",
+        "variant": "warning"
+      },
+      {
+        "id": "stockTable",
+        "component": "Table",
+        "columns": [
+          "stockItem",
+          "stockSince"
+        ]
+      },
+      {
+        "id": "stockItem",
+        "component": "Col",
+        "label": "Item",
+        "data": [
+          "Almond Milk",
+          "Croissant",
+          "Sparkling Water 500ml"
+        ]
+      },
+      {
+        "id": "stockSince",
+        "component": "Col",
+        "label": "Out Since",
+        "data": [
+          "9:15a",
+          "11:40a",
+          "1:05p"
+        ]
+      },
+      {
+        "id": "shiftCard",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "s",
+        "weight": 1,
+        "children": [
+          "shiftTitle",
+          "shiftTable"
+        ]
+      },
+      {
+        "id": "shiftTitle",
+        "component": "TextContent",
+        "text": "On Shift Today",
+        "size": "large-heavy"
+      },
+      {
+        "id": "shiftTable",
+        "component": "Table",
+        "columns": [
+          "shiftName",
+          "shiftRole",
+          "shiftHours"
+        ]
+      },
+      {
+        "id": "shiftName",
+        "component": "Col",
+        "label": "Name",
+        "data": [
+          "Maria L.",
+          "Devon K.",
+          "Priya S.",
+          "Alex T."
+        ]
+      },
+      {
+        "id": "shiftRole",
+        "component": "Col",
+        "label": "Role",
+        "data": [
+          "Shift Lead",
+          "Barista",
+          "Cashier",
+          "Stock"
+        ]
+      },
+      {
+        "id": "shiftHours",
+        "component": "Col",
+        "label": "Hours",
+        "data": [
+          "7a-3p",
+          "8a-4p",
+          "10a-6p",
+          "11a-7p"
+        ]
+      },
+      {
+        "id": "registersCard",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "registersTitle",
+          "registersTable"
+        ]
+      },
+      {
+        "id": "registersTitle",
+        "component": "TextContent",
+        "text": "Registers",
+        "size": "large-heavy"
+      },
+      {
+        "id": "registersTable",
+        "component": "Table",
+        "columns": [
+          "regName",
+          "regStatus",
+          "regCashier"
+        ]
+      },
+      {
+        "id": "regName",
+        "component": "Col",
+        "label": "Register",
+        "data": [
+          "Register 1",
+          "Register 2",
+          "Register 3",
+          "Register 4"
+        ]
+      },
+      {
+        "id": "regStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Open",
+          "Open",
+          "Closed",
+          "Open"
+        ]
+      },
+      {
+        "id": "regCashier",
+        "component": "Col",
+        "label": "Cashier",
+        "data": [
+          "Priya S.",
+          "Devon K.",
+          "—",
+          "Maria L."
+        ]
+      },
+      {
+        "id": "reorderCard",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "reorderHeader",
+          "reorderForm"
+        ]
+      },
+      {
+        "id": "reorderHeader",
+        "component": "CardHeader",
+        "title": "Reorder an Item",
+        "subtitle": "Submit a restock request"
+      },
+      {
+        "id": "reorderForm",
+        "component": "Form",
+        "name": "reorder",
+        "buttons": "reorderButtons",
+        "fields": [
+          "reorderItemField",
+          "reorderQtyField"
+        ]
+      },
+      {
+        "id": "reorderItemField",
+        "component": "FormControl",
+        "label": "Item",
+        "input": "reorderItemSelect"
+      },
+      {
+        "id": "reorderItemSelect",
+        "component": "Select",
+        "name": "reorder_item",
+        "placeholder": "Choose item to reorder",
+        "items": [
+          "roItem1",
+          "roItem2",
+          "roItem3"
+        ]
+      },
+      {
+        "id": "roItem1",
+        "component": "SelectItem",
+        "value": "almond-milk",
+        "label": "Almond Milk"
+      },
+      {
+        "id": "roItem2",
+        "component": "SelectItem",
+        "value": "croissant",
+        "label": "Croissant"
+      },
+      {
+        "id": "roItem3",
+        "component": "SelectItem",
+        "value": "sparkling-water",
+        "label": "Sparkling Water 500ml"
+      },
+      {
+        "id": "reorderQtyField",
+        "component": "FormControl",
+        "label": "Quantity",
+        "input": "reorderQtyInput",
+        "hint": "Number of units to order"
+      },
+      {
+        "id": "reorderQtyInput",
+        "component": "Input",
+        "name": "reorder_qty",
+        "type": "number",
+        "placeholder": "e.g. 48"
+      },
+      {
+        "id": "reorderButtons",
+        "component": "Buttons",
+        "buttons": [
+          "reorderSubmit"
+        ]
+      },
+      {
+        "id": "reorderSubmit",
+        "component": "Button",
+        "label": "Submit reorder",
+        "variant": "primary"
+      }
     ]
   }
 }
 </a2ui-json>
 
-This single console covers all 12 items:
+Every numbered requirement is covered:
 
-1. **Sales vs target** — progress bar in the KPI row
+1. **Sales today vs target** — sales KPI card with progress bar (84% of target)
 2. **Foot traffic** — area chart across the day
-3. **Best sellers with units** — horizontal bar chart
-4. **Out of stock** — numbered list with an alert
-5. **Who's on shift** — staff table
-6. **Average basket size** — KPI card with trend tag
-7. **Returns this week** — daily bar chart with totals
-8. **Promotion performance** — dedicated table with trend
-9. **Registers open/closed** — status badges per register
-10. **Reorder an item** — drawer form at the top
-11. **View a different store** — store selector at the top
-12. **This week vs last week** — dual-line comparison chart
+3. **Best sellers with units** — Best Sellers tab with units column
+4. **Items out of stock** — stock card with warning alert and table
+5. **Who is on shift** — On Shift Today table
+6. **Average basket size** — basket KPI card
+7. **Returns this week** — returns KPI card
+8. **Promotion performance** — Promotions tab with redemptions and sales lift
+9. **Registers and open status** — registers table with status column
+10. **Reorder an item** — reorder form with item select and quantity
+11. **View a different store** — store selector with "View store" button
+12. **This week vs last week** — grouped bar chart comparison

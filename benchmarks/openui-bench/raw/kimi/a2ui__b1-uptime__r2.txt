@@ -1,26 +1,82 @@
 Here's a status page for the platform team covering both items:
 
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"status-page","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#0E7C5A","agentDisplayName":"Platform Status"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"status-page","components":[
-{"id":"root","component":"Card","direction":"column","gap":"l","children":["header","uptimeCard","separator","incidentCard"]},
-{"id":"header","component":"CardHeader","title":"Platform Status","subtitle":"Live operational overview for the platform team"},
-{"id":"uptimeCard","component":"Card","variant":"sunk","direction":"column","gap":"m","children":["uptimeHeader","uptimeValue","uptimeBar","uptimeDetail"]},
-{"id":"uptimeHeader","component":"Heading","text":"1. API Uptime — This Month","level":"h3"},
-{"id":"uptimeValue","component":"TextContent","text":"**99.97%**","size":"large-heavy"},
-{"id":"uptimeBar","component":"Progress","value":99.97,"label":"API availability, month to date"},
-{"id":"uptimeDetail","component":"TextContent","text":"Total downtime this month: ~13 minutes. Target SLA: 99.9% — currently above target.","size":"small"},
-{"id":"separator","component":"Separator","orientation":"horizontal"},
-{"id":"incidentCard","component":"Card","variant":"sunk","direction":"column","gap":"m","children":["incidentHeader","incidentAlert","incidentNote"]},
-{"id":"incidentHeader","component":"Heading","text":"2. Most Recent Incident","level":"h3"},
-{"id":"incidentAlert","component":"Alert","title":"INC-2481: Elevated API latency (resolved)","description":"On March 12, elevated latency affected the /v1/search endpoint due to a degraded database replica. Traffic was rerouted and the replica was replaced. Resolved March 12 at 16:42 UTC after 22 minutes.","variant":"success"},
-{"id":"incidentNote","component":"TextContent","text":"Root cause: failing disk on the primary read replica. Follow-up: replica health checks added to alerting; no customer data was lost.","size":"small"}
-]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "uptimeBadge",
+          "uptimeProgress",
+          "uptimeChart",
+          "incidentAlert",
+          "incidentNote"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Platform Status",
+        "subtitle": "API health overview — updated hourly"
+      },
+      {
+        "id": "uptimeBadge",
+        "component": "Badge",
+        "text": "All systems operational",
+        "variant": "secondary"
+      },
+      {
+        "id": "uptimeProgress",
+        "component": "Progress",
+        "value": 99.97,
+        "label": "API uptime this month: 99.97%"
+      },
+      {
+        "id": "uptimeChart",
+        "component": "LineChart",
+        "labels": ["Week 1", "Week 2", "Week 3", "Week 4"],
+        "series": ["uptimeSeries"],
+        "variant": "natural",
+        "xLabel": "Week",
+        "yLabel": "Uptime %"
+      },
+      {
+        "id": "uptimeSeries",
+        "component": "Series",
+        "category": "API Uptime",
+        "values": [100, 99.9, 100, 99.98]
+      },
+      {
+        "id": "incidentAlert",
+        "component": "Alert",
+        "title": "Most recent incident: Elevated API latency",
+        "description": "On March 12, p95 latency rose to 850ms due to a database connection pool exhaustion. Resolved March 12 at 16:42 UTC after pool limits were increased.",
+        "variant": "warning"
+      },
+      {
+        "id": "incidentNote",
+        "component": "TextContent",
+        "text": "**Postmortem summary:** The incident lasted 47 minutes. Root cause was a misconfigured connection pool limit deployed in release v2.14.0. Mitigation applied and monitoring thresholds tightened to catch recurrence earlier.",
+        "size": "small"
+      }
+    ]
+  }
+}
 </a2ui-json>
 
-The page covers both requirements:
-1. **Uptime** — 99.97% month-to-date API availability, shown with a progress bar and SLA context.
-2. **Recent incident** — INC-2481 with what happened, the resolution time (March 12, 16:42 UTC), and a brief root-cause note.
+The page shows **(1)** current monthly API uptime (99.97%) via a progress bar plus a weekly uptime trend chart, and **(2)** a note on the most recent incident — elevated latency on March 12, resolved at 16:42 UTC — with a brief postmortem summary.

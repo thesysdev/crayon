@@ -1,73 +1,80 @@
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","metrics-row","filter-card","drafts-card","schedule-card","chart-card","comments-card"]}}
-{"op":"add","path":"/elements/header","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center"},"children":["header-text","new-draft-btn"]}}
-{"op":"add","path":"/elements/header-text","value":{"type":"CardHeader","props":{"title":"Content Studio","subtitle":"Your editorial workspace"},"children":[]}}
-{"op":"add","path":"/elements/new-draft-btn","value":{"type":"Button","props":{"label":"+ New Draft","variant":"primary","size":"medium"},"on":{"press":{"action":"pushState","params":{"statePath":"/drafts","value":{"id":"$id","title":"Untitled Draft","status":"draft","author":"You"}}}},"children":[]}}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","topRow","filterCard","draftsCard","chartCard","scheduleCard","commentsCard"]}}
+{"op":"add","path":"/elements/header","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center"},"children":["headerText","newDraftBtn"]}}
+{"op":"add","path":"/elements/headerText","value":{"type":"CardHeader","props":{"title":"Content Studio","subtitle":"Editorial dashboard & workflow"}}}
+{"op":"add","path":"/elements/newDraftBtn","value":{"type":"Button","props":{"label":"+ New Draft","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/drafts","value":{"id":"$id","title":"Untitled Draft","status":"Draft","author":"You"}}}}}}
 
-{"op":"add","path":"/elements/metrics-row","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"children":["metric-published","metric-mostread"]}}
-{"op":"add","path":"/elements/metric-published","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["metric-published-label","metric-published-value","metric-published-sub"]}}
-{"op":"add","path":"/elements/metric-published-label","value":{"type":"TextContent","props":{"text":"Published This Week","size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/metric-published-value","value":{"type":"Heading","props":{"text":{"$state":"/publishedThisWeek"},"level":"h1"},"children":[]}}
-{"op":"add","path":"/state/publishedThisWeek","value":"7"}
-{"op":"add","path":"/elements/metric-published-sub","value":{"type":"TextContent","props":{"text":"pieces went live in the last 7 days","size":"small"},"children":[]}}
+{"op":"add","path":"/elements/topRow","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"children":["publishedStat","topArticleStat","commentsStat"]}}
+{"op":"add","path":"/elements/publishedStat","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["publishedLabel","publishedValue","publishedSub"]}}
+{"op":"add","path":"/elements/publishedLabel","value":{"type":"TextContent","props":{"text":"Published This Week","size":"small-heavy"}}}
+{"op":"add","path":"/elements/publishedValue","value":{"type":"Heading","props":{"text":{"$template":"${/stats/publishedThisWeek}"},"level":"h1"}}}
+{"op":"add","path":"/elements/publishedSub","value":{"type":"TextContent","props":{"text":"pieces live since Monday","size":"small"}}}
+{"op":"add","path":"/state/stats","value":{"publishedThisWeek":7}}
 
-{"op":"add","path":"/elements/metric-mostread","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["metric-mostread-label","metric-mostread-title","metric-mostread-stats"]}}
-{"op":"add","path":"/elements/metric-mostread-label","value":{"type":"TextContent","props":{"text":"Most-Read This Month","size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/metric-mostread-title","value":{"type":"TextContent","props":{"text":{"$template":"**${/mostRead/title}**"},"size":"large"},"children":[]}}
-{"op":"add","path":"/elements/metric-mostread-stats","value":{"type":"TextContent","props":{"text":{"$template":"${/mostRead/views} views · by ${/mostRead/author}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/state/mostRead","value":{"title":"The Quiet Revolution in Remote Editing","views":"48,204","author":"Maya Chen"}}
+{"op":"add","path":"/elements/topArticleStat","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["topArticleLabel","topArticleTitle","topArticleReads"]}}
+{"op":"add","path":"/elements/topArticleLabel","value":{"type":"TextContent","props":{"text":"Most-Read This Month","size":"small-heavy"}}}
+{"op":"add","path":"/elements/topArticleTitle","value":{"type":"TextContent","props":{"text":{"$template":"**${/stats/topArticle/title}**"},"size":"large"}}}
+{"op":"add","path":"/elements/topArticleReads","value":{"type":"Badge","props":{"text":{"$template":"${/stats/topArticle/reads} reads"},"variant":"secondary"}}}
+{"op":"replace","path":"/state/stats","value":{"publishedThisWeek":7,"topArticle":{"title":"The Quiet Rise of Local Newsrooms","reads":"48,210"}}}
 
-{"op":"add","path":"/elements/filter-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["filter-header","filter-tags"]}}
-{"op":"add","path":"/elements/filter-header","value":{"type":"Heading","props":{"text":"Narrow by Category","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/filter-tags","value":{"type":"RadioGroup","props":{"name":"category","value":{"$bindState":"/activeCategory"},"items":["cat-all","cat-tech","cat-culture","cat-business","cat-opinion"]},"children":["cat-all","cat-tech","cat-culture","cat-business","cat-opinion"]}}
-{"op":"add","path":"/elements/cat-all","value":{"type":"RadioItem","props":{"label":"All","description":"Every category","value":"all"},"children":[]}}
-{"op":"add","path":"/elements/cat-tech","value":{"type":"RadioItem","props":{"label":"Technology","description":"Tools & trends","value":"technology"},"children":[]}}
-{"op":"add","path":"/elements/cat-culture","value":{"type":"RadioItem","props":{"label":"Culture","description":"Arts & society","value":"culture"},"children":[]}}
-{"op":"add","path":"/elements/cat-business","value":{"type":"RadioItem","props":{"label":"Business","description":"Markets & work","value":"business"},"children":[]}}
-{"op":"add","path":"/elements/cat-opinion","value":{"type":"RadioItem","props":{"label":"Opinion","description":"Essays & takes","value":"opinion"},"children":[]}}
-{"op":"add","path":"/state/activeCategory","value":"all"}
+{"op":"add","path":"/elements/commentsStat","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["commentsStatLabel","commentsStatValue","commentsStatSub"]}}
+{"op":"add","path":"/elements/commentsStatLabel","value":{"type":"TextContent","props":{"text":"Comments Awaiting Reply","size":"small-heavy"}}}
+{"op":"add","path":"/elements/commentsStatValue","value":{"type":"Heading","props":{"text":{"$template":"${/stats/pendingComments}"},"level":"h1"}}}
+{"op":"add","path":"/elements/commentsStatSub","value":{"type":"TextContent","props":{"text":"reader messages need a response","size":"small"}}}
+{"op":"replace","path":"/state/stats","value":{"publishedThisWeek":7,"topArticle":{"title":"The Quiet Rise of Local Newsrooms","reads":"48,210"},"pendingComments":5}}
 
-{"op":"add","path":"/elements/drafts-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["drafts-header","drafts-list"]}}
-{"op":"add","path":"/elements/drafts-header","value":{"type":"Heading","props":{"text":"Drafts","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/drafts-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/drafts","key":"id"},"children":["draft-row"]}}
-{"op":"add","path":"/elements/draft-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center","gap":"m"},"children":["draft-info","draft-status","draft-remove"]}}
-{"op":"add","path":"/elements/draft-info","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"none"},"children":["draft-title","draft-author"]}}
-{"op":"add","path":"/elements/draft-title","value":{"type":"TextContent","props":{"text":{"$item":"title"},"size":"default"},"children":[]}}
-{"op":"add","path":"/elements/draft-author","value":{"type":"TextContent","props":{"text":{"$template":"by ${author} · ${category}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/draft-status","value":{"type":"Badge","props":{"text":{"$item":"status"},"variant":"secondary"},"children":[]}}
-{"op":"add","path":"/elements/draft-remove","value":{"type":"Button","props":{"label":"Delete","variant":"tertiary","type":"destructive","size":"small"},"on":{"press":{"action":"removeState","params":{"statePath":"/drafts","index":{"$index":true}}}},"children":[]}}
+{"op":"add","path":"/elements/filterCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["filterHeader","filterRadio"]}}
+{"op":"add","path":"/elements/filterHeader","value":{"type":"Heading","props":{"text":"Narrow by Category","level":"h3"}}}
+{"op":"add","path":"/elements/filterRadio","value":{"type":"RadioGroup","props":{"name":"category","value":{"$bindState":"/categoryFilter"},"items":["catAll","catNews","catFeatures","catOpinion","catTech"]}}}
+{"op":"add","path":"/elements/catAll","value":{"type":"RadioItem","props":{"label":"All Categories","description":"Show every draft","value":"all"}}}
+{"op":"add","path":"/elements/catNews","value":{"type":"RadioItem","props":{"label":"News","description":"Breaking & daily","value":"news"}}}
+{"op":"add","path":"/elements/catFeatures","value":{"type":"RadioItem","props":{"label":"Features","description":"Long-form stories","value":"features"}}}
+{"op":"add","path":"/elements/catOpinion","value":{"type":"RadioItem","props":{"label":"Opinion","description":"Columns & essays","value":"opinion"}}}
+{"op":"add","path":"/elements/catTech","value":{"type":"RadioItem","props":{"label":"Technology","description":"Product & science","value":"tech"}}}
+{"op":"add","path":"/state/categoryFilter","value":"all"}
+
+{"op":"add","path":"/elements/draftsCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["draftsHeader","draftsList"]}}
+{"op":"add","path":"/elements/draftsHeader","value":{"type":"Heading","props":{"text":"Drafts","level":"h3"}}}
+{"op":"add","path":"/elements/draftsList","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"repeat":{"statePath":"/drafts","key":"id"},"children":["draftRow"]}}
+{"op":"add","path":"/elements/draftRow","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center","gap":"m"},"children":["draftInfo","draftStatusTag"]}}
+{"op":"add","path":"/elements/draftInfo","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"none"},"children":["draftTitle","draftMeta"]}}
+{"op":"add","path":"/elements/draftTitle","value":{"type":"TextContent","props":{"text":{"$item":"title"},"size":"default"}}}
+{"op":"add","path":"/elements/draftMeta","value":{"type":"TextContent","props":{"text":{"$template":"by ${author} · ${category}"},"size":"small"}}}
+{"op":"add","path":"/elements/draftStatusTag","value":{"type":"Tag","props":{"text":{"$item":"status"},"size":"md","variant":"info"}}}
 {"op":"add","path":"/state/drafts","value":[]}
-{"op":"add","path":"/state/drafts/0","value":{"id":"d1","title":"AI Newsrooms: Hype vs. Reality","status":"in review","author":"Maya Chen","category":"technology"}}
-{"op":"add","path":"/state/drafts/1","value":{"id":"d2","title":"The Return of Long-Form Journalism","status":"draft","author":"Leo Park","category":"culture"}}
-{"op":"add","path":"/state/drafts/2","value":{"id":"d3","title":"Q3 Media Market Outlook","status":"needs edit","author":"Sara Bloom","category":"business"}}
-{"op":"add","path":"/state/drafts/3","value":{"id":"d4","title":"Why We Stopped Trusting Feeds","status":"ready","author":"Dana Cruz","category":"opinion"}}
+{"op":"add","path":"/state/drafts/0","value":{"id":"d1","title":"City Council Approves New Transit Budget","status":"In Review","author":"M. Alvarez","category":"news"}}
+{"op":"add","path":"/state/drafts/1","value":{"id":"d2","title":"Inside the Quiet Rise of Local Newsrooms","status":"Draft","author":"J. Okafor","category":"features"}}
+{"op":"add","path":"/state/drafts/2","value":{"id":"d3","title":"Why AI Won't Replace Your Editor","status":"Ready to Publish","author":"S. Lin","category":"tech"}}
+{"op":"add","path":"/state/drafts/3","value":{"id":"d4","title":"The Case for Slower News","status":"Draft","author":"R. Bello","category":"opinion"}}
+{"op":"add","path":"/state/drafts/4","value":{"id":"d5","title":"Election Coverage Roundup","status":"Scheduled","author":"M. Alvarez","category":"news"}}
 
-{"op":"add","path":"/elements/schedule-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["schedule-header","schedule-form"]}}
-{"op":"add","path":"/elements/schedule-header","value":{"type":"Heading","props":{"text":"Schedule a Piece","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/schedule-form","value":{"type":"Form","props":{"name":"schedule","fields":["fc-title","fc-date"],"buttons":"schedule-btn"},"children":["fc-title","fc-date","schedule-btn"]}}
-{"op":"add","path":"/elements/fc-title","value":{"type":"FormControl","props":{"label":"Title","input":"schedule-title-input"},"children":["schedule-title-input"]}}
-{"op":"add","path":"/elements/schedule-title-input","value":{"type":"Input","props":{"name":"scheduleTitle","placeholder":"Enter the piece title","value":{"$bindState":"/scheduleTitle"}},"children":[]}}
-{"op":"add","path":"/state/scheduleTitle","value":""}
-{"op":"add","path":"/elements/fc-date","value":{"type":"FormControl","props":{"label":"Publish Date","input":"schedule-date-input"},"children":["schedule-date-input"]}}
-{"op":"add","path":"/elements/schedule-date-input","value":{"type":"DatePicker","props":{"name":"scheduleDate","mode":"single","value":{"$bindState":"/scheduleDate"}},"children":[]}}
-{"op":"add","path":"/state/scheduleDate","value":[]}
-{"op":"add","path":"/elements/schedule-btn","value":{"type":"Button","props":{"label":"Schedule","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/drafts","value":{"id":"$id","title":{"$state":"/scheduleTitle"},"status":"scheduled","author":"You","category":"all"},"clearStatePath":"/scheduleTitle"}}},"children":[]}}
+{"op":"add","path":"/elements/chartCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["chartHeader","readershipChart"]}}
+{"op":"add","path":"/elements/chartHeader","value":{"type":"Heading","props":{"text":"Readership — Past 30 Days","level":"h3"}}}
+{"op":"add","path":"/elements/readershipChart","value":{"type":"AreaChart","props":{"labels":["Day 1","Day 5","Day 10","Day 15","Day 20","Day 25","Day 30"],"series":["readsSeries"],"variant":"natural","xLabel":"Day","yLabel":"Reads"}}}
+{"op":"add","path":"/elements/readsSeries","value":{"type":"Series","props":{"category":"Daily Reads","values":[3200,4100,3800,5200,6100,5800,7400]}}}
 
-{"op":"add","path":"/elements/chart-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["chart-header","readership-chart"]}}
-{"op":"add","path":"/elements/chart-header","value":{"type":"Heading","props":{"text":"Readership — Past 30 Days","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/readership-chart","value":{"type":"AreaChart","props":{"labels":["Wk 1","Wk 2","Wk 3","Wk 4"],"series":["readers-series"],"variant":"natural","xLabel":"Week","yLabel":"Readers"},"children":["readers-series"]}}
-{"op":"add","path":"/elements/readers-series","value":{"type":"Series","props":{"category":"Readers","values":[18200,24500,21800,31400]},"children":[]}}
+{"op":"add","path":"/elements/scheduleCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["scheduleHeader","scheduleForm"]}}
+{"op":"add","path":"/elements/scheduleHeader","value":{"type":"Heading","props":{"text":"Schedule a Piece","level":"h3"}}}
+{"op":"add","path":"/elements/scheduleForm","value":{"type":"Form","props":{"name":"schedule","buttons":"scheduleButtons","fields":["schedTitleField","schedDateField"]}}}
+{"op":"add","path":"/elements/schedTitleField","value":{"type":"FormControl","props":{"label":"Title","input":"schedTitleInput"}}}
+{"op":"add","path":"/elements/schedTitleInput","value":{"type":"Input","props":{"name":"schedTitle","placeholder":"Article title","value":{"$bindState":"/schedule/title"}}}}
+{"op":"add","path":"/elements/schedDateField","value":{"type":"FormControl","props":{"label":"Publish Date","input":"schedDatePicker"}}}
+{"op":"add","path":"/elements/schedDatePicker","value":{"type":"DatePicker","props":{"name":"schedDate","mode":"single","value":{"$bindState":"/schedule/date"}}}}
+{"op":"add","path":"/elements/scheduleButtons","value":{"type":"Buttons","props":{"buttons":["scheduleBtn"]}}}
+{"op":"add","path":"/elements/scheduleBtn","value":{"type":"Button","props":{"label":"Schedule Publish","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/drafts","value":{"id":"$id","title":{"$state":"/schedule/title"},"status":"Scheduled","author":"You","category":"news"},"clearStatePath":"/schedule/title"}}}}}
+{"op":"add","path":"/state/schedule","value":{"title":"","date":[]}}
 
-{"op":"add","path":"/elements/comments-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["comments-header","comments-list"]}}
-{"op":"add","path":"/elements/comments-header","value":{"type":"Heading","props":{"text":"Comments Awaiting Reply","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/comments-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/comments","key":"id"},"children":["comment-row"]}}
-{"op":"add","path":"/elements/comment-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center","gap":"m"},"children":["comment-body","comment-reply"]}}
-{"op":"add","path":"/elements/comment-body","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"none"},"children":["comment-author","comment-text","comment-on"]}}
-{"op":"add","path":"/elements/comment-author","value":{"type":"TextContent","props":{"text":{"$item":"author"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/comment-text","value":{"type":"TextContent","props":{"text":{"$item":"text"},"size":"default"},"children":[]}}
-{"op":"add","path":"/elements/comment-on","value":{"type":"TextContent","props":{"text":{"$template":"on “${article}”"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/comment-reply","value":{"type":"Button","props":{"label":"Reply","variant":"secondary","size":"small"},"on":{"press":{"action":"removeState","params":{"statePath":"/comments","index":{"$index":true}}}},"children":[]}}
+{"op":"add","path":"/elements/commentsCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["commentsHeader","commentsList"]}}
+{"op":"add","path":"/elements/commentsHeader","value":{"type":"Heading","props":{"text":"Comments Awaiting Reply","level":"h3"}}}
+{"op":"add","path":"/elements/commentsList","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"repeat":{"statePath":"/comments","key":"id"},"children":["commentRow"]}}
+{"op":"add","path":"/elements/commentRow","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center","gap":"m"},"children":["commentInfo","commentReplyBtn"]}}
+{"op":"add","path":"/elements/commentInfo","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"none"},"children":["commentText","commentMeta"]}}
+{"op":"add","path":"/elements/commentText","value":{"type":"TextContent","props":{"text":{"$item":"text"},"size":"default"}}}
+{"op":"add","path":"/elements/commentMeta","value":{"type":"TextContent","props":{"text":{"$template":"${author} on “${article}”"},"size":"small"}}}
+{"op":"add","path":"/elements/commentReplyBtn","value":{"type":"Button","props":{"label":"Reply","variant":"secondary","size":"small"}}}
 {"op":"add","path":"/state/comments","value":[]}
-{"op":"add","path":"/state/comments/0","value":{"id":"c1","author":"reader_92","text":"Great point about editorial workflows — source for the stat?","article":"AI Newsrooms: Hype vs. Reality"}}
-{"op":"add","path":"/state/comments/1","value":{"id":"c2","author":"jbennett","text":"Disagree with the conclusion here, but well argued.","article":"The Return of Long-Form Journalism"}}
-{"op":"add","path":"/state/comments/2","value":{"id":"c3","author":"m.torres","text":"Could you cover the freelance angle next time?","article":"Q3 Media Market Outlook"}}
+{"op":"add","path":"/state/comments/0","value":{"id":"c1","text":"Great piece, but where's the source for the budget figure?","author":"reader_92","article":"City Council Approves New Transit Budget"}}
+{"op":"add","path":"/state/comments/1","value":{"id":"c2","text":"This deserves a follow-up on rural coverage.","author":"news_hound","article":"The Quiet Rise of Local Newsrooms"}}
+{"op":"add","path":"/state/comments/2","value":{"id":"c3","text":"Respectfully disagree — AI is already writing sports recaps.","author":"tech_skeptic","article":"Why AI Won't Replace Your Editor"}}
+{"op":"add","path":"/state/comments/3","value":{"id":"c4","text":"Loved the framing here. More like this please!","author":"m_daily","article":"The Case for Slower News"}}
+{"op":"add","path":"/state/comments/4","value":{"id":"c5","text":"Typo in paragraph 3 — 'thier' should be 'their'.","author":"copy_cat","article":"Election Coverage Roundup"}}

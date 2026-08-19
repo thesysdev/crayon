@@ -1,304 +1,80 @@
 
 
-Here's a complete single-screen day view for the clinic front desk:
+Below is a **single-screen “Clinic Receptionist Day View”** that covers all 7 required items.
 
-<a2ui-json>
-{
-  "version": "v0.9",
-  "createSurface": {
-    "surfaceId": "clinic-frontdesk-day-view",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": {
-      "primaryColor": "#0F766E",
-      "agentDisplayName": "Maple Grove Family Clinic"
-    }
-  }
-}
-</a2ui-json>
+---
 
-<a2ui-json>
-{
-  "version": "v0.9",
-  "updateComponents": {
-    "surfaceId": "clinic-frontdesk-day-view",
-    "components": [
-      {
-        "id": "root",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "l",
-        "children": ["header", "dateNav", "statsRow", "roomsCard", "nextCard", "apptHeading", "apptTable", "apptSummary", "checkinCard"]
-      },
-      {
-        "id": "header",
-        "component": "CardHeader",
-        "title": "Front Desk · Day View",
-        "subtitle": "Wednesday, May 14, 2025 · 9:32 AM · Maple Grove Family Clinic"
-      },
-      {
-        "id": "dateNav",
-        "component": "Card",
-        "direction": "row",
-        "gap": "m",
-        "align": "center",
-        "children": ["btnPrevDay", "dayPicker", "btnNextDay", "btnToday"]
-      },
-      {
-        "id": "btnPrevDay",
-        "component": "Button",
-        "label": "← Prev day",
-        "variant": "secondary",
-        "action": [{ "event": "changeDay", "offset": -1 }],
-        "accessibility": { "label": "Previous day", "description": "Show the schedule for the previous day" }
-      },
-      {
-        "id": "dayPicker",
-        "component": "DatePicker",
-        "name": "visitDate",
-        "mode": "single",
-        "value": ["2025-05-14"],
-        "accessibility": { "label": "Select day", "description": "Jump directly to a specific day's schedule" }
-      },
-      {
-        "id": "btnNextDay",
-        "component": "Button",
-        "label": "Next day →",
-        "variant": "secondary",
-        "action": [{ "event": "changeDay", "offset": 1 }],
-        "accessibility": { "label": "Next day", "description": "Show the schedule for the next day" }
-      },
-      {
-        "id": "btnToday",
-        "component": "Button",
-        "label": "Jump to today",
-        "variant": "tertiary",
-        "action": [{ "event": "changeDay", "offset": "today" }],
-        "accessibility": { "label": "Jump to today" }
-      },
-      {
-        "id": "statsRow",
-        "component": "Card",
-        "direction": "row",
-        "gap": "m",
-        "align": "stretch",
-        "children": ["statExpected", "statNoShow", "statRooms"]
-      },
-      {
-        "id": "statExpected",
-        "component": "Card",
-        "variant": "sunk",
-        "direction": "column",
-        "gap": "xs",
-        "weight": 1,
-        "children": ["statExpectedValue", "statExpectedLabel"]
-      },
-      { "id": "statExpectedValue", "component": "TextContent", "text": "16", "size": "large-heavy" },
-      { "id": "statExpectedLabel", "component": "TextContent", "text": "Patients expected today · 6 arrived", "size": "small" },
-      {
-        "id": "statNoShow",
-        "component": "Card",
-        "variant": "sunk",
-        "direction": "column",
-        "gap": "xs",
-        "weight": 1,
-        "children": ["statNoShowValue", "statNoShowLabel"]
-      },
-      { "id": "statNoShowValue", "component": "TextContent", "text": "8.3%", "size": "large-heavy" },
-      { "id": "statNoShowLabel", "component": "TextContent", "text": "No-show rate this month · 12 of 145 visits", "size": "small" },
-      {
-        "id": "statRooms",
-        "component": "Card",
-        "variant": "sunk",
-        "direction": "column",
-        "gap": "xs",
-        "weight": 1,
-        "children": ["statRoomsValue", "statRoomsLabel"]
-      },
-      { "id": "statRoomsValue", "component": "TextContent", "text": "3 of 5", "size": "large-heavy" },
-      { "id": "statRoomsLabel", "component": "TextContent", "text": "Rooms free right now", "size": "small" },
-      {
-        "id": "roomsCard",
-        "component": "Card",
-        "direction": "column",
-        "gap": "m",
-        "children": ["roomsHeader", "roomsRow"]
-      },
-      {
-        "id": "roomsHeader",
-        "component": "CardHeader",
-        "title": "Rooms right now",
-        "subtitle": "Live at 9:32 AM · Room 2 is prepped for the next patient"
-      },
-      {
-        "id": "roomsRow",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "gap": "s",
-        "wrap": true,
-        "children": ["tagRoom1", "tagRoom2", "tagRoom3", "tagRoom4", "tagRoom5"]
-      },
-      { "id": "tagRoom1", "component": "Tag", "text": "Room 1 · Available", "variant": "success" },
-      { "id": "tagRoom2", "component": "Tag", "text": "Room 2 · Available", "variant": "success" },
-      { "id": "tagRoom3", "component": "Tag", "text": "Room 3 · In use (M. Lee)", "variant": "neutral" },
-      { "id": "tagRoom4", "component": "Tag", "text": "Room 4 · In use (P. Shah)", "variant": "neutral" },
-      { "id": "tagRoom5", "component": "Tag", "text": "Room 5 · Available", "variant": "success" },
-      {
-        "id": "nextCard",
-        "component": "Card",
-        "direction": "row",
-        "gap": "m",
-        "align": "center",
-        "justify": "between",
-        "children": ["nextInfo", "nextActions"]
-      },
-      {
-        "id": "nextInfo",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "xs",
-        "children": ["nextTag", "nextName", "nextMeta"]
-      },
-      { "id": "nextTag", "component": "Tag", "text": "Next patient to be called", "variant": "info" },
-      { "id": "nextName", "component": "TextContent", "text": "Amara Osei", "size": "large-heavy" },
-      { "id": "nextMeta", "component": "TextContent", "text": "9:40 AM · Dr. Patel · Room 2 · Annual physical · Arrived 9:21 AM", "size": "small" },
-      { "id": "nextActions", "component": "Buttons", "direction": "row", "buttons": ["callBtn"] },
-      {
-        "id": "callBtn",
-        "component": "Button",
-        "label": "Call patient",
-        "variant": "primary",
-        "action": [{ "event": "callPatient", "appointmentId": "apt-006" }],
-        "accessibility": { "label": "Call Amara Osei", "description": "Announce the next patient in the waiting room" }
-      },
-      { "id": "apptHeading", "component": "Heading", "text": "Today's appointments", "level": "h2" },
-      {
-        "id": "apptTable",
-        "component": "Table",
-        "columns": ["colTime", "colPatient", "colProvider", "colRoom", "colStatus"]
-      },
-      {
-        "id": "colTime",
-        "component": "Col",
-        "label": "Time",
-        "data": ["8:00 AM", "8:20 AM", "8:40 AM", "9:00 AM", "9:20 AM", "9:40 AM", "10:00 AM", "10:20 AM", "10:40 AM", "11:00 AM", "11:20 AM", "11:40 AM", "1:00 PM", "1:20 PM", "1:40 PM", "2:00 PM"]
-      },
-      {
-        "id": "colPatient",
-        "component": "Col",
-        "label": "Patient",
-        "data": ["James Whitfield", "Lucia Ramirez", "Theo Brandt", "Priya Shah", "Marcus Lee", "Amara Osei", "Daniel Kim", "Sofia Marino", "Henry Adams", "Grace Njoroge", "Owen Gallagher", "Mei Tanaka", "Felix Duarte", "Hannah Weiss", "Kwame Mensah", "Iris Kovacs"]
-      },
-      {
-        "id": "colProvider",
-        "component": "Col",
-        "label": "Provider",
-        "data": ["Dr. Patel", "Dr. Nguyen", "Dr. Patel", "Dr. Okafor", "Dr. Nguyen", "Dr. Patel", "Dr. Okafor", "Dr. Nguyen", "Dr. Patel", "Dr. Okafor", "Dr. Nguyen", "Dr. Patel", "Dr. Okafor", "Dr. Nguyen", "Dr. Patel", "Dr. Okafor"]
-      },
-      {
-        "id": "colRoom",
-        "component": "Col",
-        "label": "Room",
-        "data": ["Room 1", "Room 3", "Room 1", "Room 4", "Room 3", "Room 2", "Room 4", "Room 3", "Room 2", "Room 5", "Room 3", "Room 2", "Room 4", "Room 3", "Room 2", "Room 5"]
-      },
-      {
-        "id": "colStatus",
-        "component": "Col",
-        "label": "Status",
-        "data": ["Completed", "Completed", "Completed", "Checked in", "In room", "Next up", "Scheduled", "Scheduled", "Scheduled", "Scheduled", "Scheduled", "Scheduled", "Scheduled", "Scheduled", "Scheduled", "Scheduled"]
-      },
-      {
-        "id": "apptSummary",
-        "component": "TextContent",
-        "text": "3 completed · 3 in the clinic · 10 still to come",
-        "size": "small"
-      },
-      {
-        "id": "checkinCard",
-        "component": "Card",
-        "direction": "column",
-        "gap": "m",
-        "children": ["checkinHeader", "checkinForm"]
-      },
-      {
-        "id": "checkinHeader",
-        "component": "CardHeader",
-        "title": "Check in a patient",
-        "subtitle": "Pick the patient from today's schedule, assign a room, and confirm arrival"
-      },
-      {
-        "id": "checkinForm",
-        "component": "Form",
-        "name": "patient-checkin",
-        "fields": ["fcPatient", "fcRoom"],
-        "buttons": "checkinButtons"
-      },
-      {
-        "id": "fcPatient",
-        "component": "FormControl",
-        "label": "Patient",
-        "input": "patientSelect",
-        "hint": "Lists upcoming appointments for the selected day"
-      },
-      {
-        "id": "patientSelect",
-        "component": "Select",
-        "name": "patient",
-        "placeholder": "Select a patient…",
-        "items": ["sel-amara", "sel-daniel", "sel-sofia", "sel-henry", "sel-grace", "sel-owen", "sel-mei", "sel-felix", "sel-hannah", "sel-kwame", "sel-iris"],
-        "accessibility": { "label": "Patient to check in" }
-      },
-      { "id": "sel-amara", "component": "SelectItem", "value": "apt-006", "label": "Amara Osei — 9:40 AM · Dr. Patel" },
-      { "id": "sel-daniel", "component": "SelectItem", "value": "apt-007", "label": "Daniel Kim — 10:00 AM · Dr. Okafor" },
-      { "id": "sel-sofia", "component": "SelectItem", "value": "apt-008", "label": "Sofia Marino — 10:20 AM · Dr. Nguyen" },
-      { "id": "sel-henry", "component": "SelectItem", "value": "apt-009", "label": "Henry Adams — 10:40 AM · Dr. Patel" },
-      { "id": "sel-grace", "component": "SelectItem", "value": "apt-010", "label": "Grace Njoroge — 11:00 AM · Dr. Okafor" },
-      { "id": "sel-owen", "component": "SelectItem", "value": "apt-011", "label": "Owen Gallagher — 11:20 AM · Dr. Nguyen" },
-      { "id": "sel-mei", "component": "SelectItem", "value": "apt-012", "label": "Mei Tanaka — 11:40 AM · Dr. Patel" },
-      { "id": "sel-felix", "component": "SelectItem", "value": "apt-013", "label": "Felix Duarte — 1:00 PM · Dr. Okafor" },
-      { "id": "sel-hannah", "component": "SelectItem", "value": "apt-014", "label": "Hannah Weiss — 1:20 PM · Dr. Nguyen" },
-      { "id": "sel-kwame", "component": "SelectItem", "value": "apt-015", "label": "Kwame Mensah — 1:40 PM · Dr. Patel" },
-      { "id": "sel-iris", "component": "SelectItem", "value": "apt-016", "label": "Iris Kovacs — 2:00 PM · Dr. Okafor" },
-      {
-        "id": "fcRoom",
-        "component": "FormControl",
-        "label": "Room",
-        "input": "roomSelect",
-        "hint": "Free rooms right now: 1, 2, and 5"
-      },
-      {
-        "id": "roomSelect",
-        "component": "Select",
-        "name": "room",
-        "placeholder": "Auto-assign",
-        "items": ["roomOpt1", "roomOpt2", "roomOpt5"],
-        "accessibility": { "label": "Assign room" }
-      },
-      { "id": "roomOpt1", "component": "SelectItem", "value": "room-1", "label": "Room 1" },
-      { "id": "roomOpt2", "component": "SelectItem", "value": "room-2", "label": "Room 2" },
-      { "id": "roomOpt5", "component": "SelectItem", "value": "room-5", "label": "Room 5" },
-      { "id": "checkinButtons", "component": "Buttons", "direction": "row", "buttons": ["checkinBtn"] },
-      {
-        "id": "checkinBtn",
-        "component": "Button",
-        "label": "Check in patient",
-        "variant": "primary",
-        "action": [{ "event": "checkIn", "form": "patient-checkin" }],
-        "accessibility": { "label": "Check in patient", "description": "Confirms the selected patient's arrival and updates the schedule" }
-      }
-    ]
-  }
-}
-</a2ui-json>
+## Screen: Clinic Reception — Day View
 
-Every requirement is covered:
+```text
++==============================================================================================+
+| CLINIC RECEPTION — DAY VIEW                                                                  |
+|                                                                                              |
+| [7] Move to another day:                                                                     |
+|     [< Previous]  [Today]  [Date Picker: Wed, Apr 23, 2026]  [Next >]       Search patient  |
+|                                                                                              |
++---------------------------------------------------------------------------------------------+
+| DAY SUMMARY                                                                                  |
+|                                                                                              |
+| [2] Patients expected today: 32        [3] No-show rate this month: 7.4%                     |
+| Checked in so far: 9                   Rooms free right now: 3 of 8                          |
+|                                                                                              |
++---------------------------------------------+------------------------------------------------+
+| [1] TODAY’S APPOINTMENTS                    | [5] NEXT PATIENT CALLED OUT                    |
+|                                             |                                                |
+| Time   Patient        Provider   Room       | Liam Carter                                    |
+| -----------------------------------------------------       | 09:15 AM — Dr. Patel — Room 4              |
+| 08:30  Ava Brown      Dr. Lee    Room 2     | Status: Called out / Waiting for arrival       |
+|        Status: Checked in                   |                                                |
+|                                             | [Call Again] [Mark Arrived] [Check In]         |
+| 08:45  Noah Wilson    Dr. Lee    Room 1     |                                                |
+|        Status: In room                      |------------------------------------------------|
+|                                             | [4] ROOMS FREE RIGHT NOW                       |
+| 09:00  Maya Chen      Dr. Patel  --         |                                                |
+|        Status: Scheduled                    | Room 3   FREE                                  |
+|        [Check In] [No-show]                 | Room 5   FREE                                  |
+|                                             | Room 6   FREE                                  |
+| 09:15  Liam Carter    Dr. Patel  Room 4     |                                                |
+|        Status: Called out                   | Room 1   Busy — Noah Wilson                    |
+|        [Check In] [No-show]                 | Room 2   Busy — Ava Brown                      |
+|                                             | Room 4   Reserved — Liam Carter                |
+| 09:30  Sofia Ramirez  Dr. Rao    --         | Room 7   Busy — Procedure                      |
+|        Status: Scheduled                    | Room 8   Busy — Cleaning                       |
+|        [Check In] [No-show]                 |                                                |
+|                                             |                                                |
++---------------------------------------------+------------------------------------------------+
+| [6] QUICK CHECK-IN                                                                         |
+|                                                                                              |
+| Selected patient: Maya Chen                                                                  |
+| Appointment: 09:00 AM — Dr. Patel                                                            |
+|                                                                                              |
+| Date of birth: [__/__/____]     Phone: [___-___-____]     Assign room: [Room 3]              |
+|                                                                                              |
+| [Confirm & Check In]   [Mark Arrived]   [Mark No-show]                                       |
+|                                                                                              |
++----------------------------------------------------------------------------------------------+
+```
 
-1. **Today's appointments** — full schedule table with time, patient, provider, room, and status
-2. **Patients expected** — "16 patients expected today" stat card (with arrivals count)
-3. **No-show rate** — "8.3% this month" stat card with the underlying 12-of-145 figure
-4. **Rooms free right now** — "3 of 5" stat card plus live per-room tags showing which are available vs. in use
-5. **Next patient called out** — highlighted "Up next" card for Amara Osei with a Call patient action
-6. **Check-in flow** — form at the bottom with a patient dropdown (upcoming appointments only), room assignment limited to free rooms, and a submit button
-7. **Day navigation** — prev/next buttons, a date picker to jump to any day, and a "Jump to today" shortcut
+---
+
+## Requirement Coverage
+
+| Requirement | Where it appears on the screen |
+|---|---|
+| **1. Today’s appointments with times and patient names** | Main appointment list shows time, patient name, provider, room, and status. |
+| **2. How many patients are expected** | Day Summary shows **“Patients expected today: 32.”** |
+| **3. No-show rate this month** | Day Summary shows **“No-show rate this month: 7.4%.”** |
+| **4. Which rooms are free right now** | Right panel shows **“Rooms Free Right Now”** with live room status. |
+| **5. The next patient called out** | Right panel shows **“Next Patient Called Out”** with patient name, appointment time, provider, room, and actions. |
+| **6. A way to check a patient in** | Each appointment row has a **Check In** action, and the bottom **Quick Check-In** panel lets the receptionist confirm details, assign a room, and check the patient in. |
+| **7. A way to move to another day** | Top navigation includes **Previous**, **Today**, **Date Picker**, and **Next**. |
+
+---
+
+## Recommended Interaction Rules
+
+- **Check In** should only be enabled for appointments with status **Scheduled**, **Called out**, or **Arrived**.
+- After check-in, the appointment status changes to **Checked in** and the assigned room updates in the room panel.
+- If a room is selected during check-in, the room panel immediately changes that room from **FREE** to **Busy**.
+- The **Next Patient Called Out** card should always show the earliest patient who has been called but is not yet checked in.
+- Changing the date using the date picker refreshes the appointment list, expected patient count, and room availability for that day.

@@ -1,121 +1,83 @@
-
-
-Here's a focused single-task screen covering all three items — the urgent task with its deadline, its status, and a primary action to mark it done:
+Here's a focused single-task view that highlights the most urgent task, its status, and a way to complete it:
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "personal-focus-view",
-      "catalogId": "thesys.dev:c1-openui",
-      "theme": {
-        "primaryColor": "#4F46E5"
-      }
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "personal-focus-view",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "direction": "column",
-          "gap": "m",
-          "align": "stretch",
-          "children": [
-            "header",
-            "taskTitle",
-            "deadlineCallout",
-            "statusCard",
-            "progress",
-            "separator",
-            "doneButton"
-          ]
-        },
-        {
-          "id": "header",
-          "component": "CardHeader",
-          "title": "Focus",
-          "subtitle": "Your single most urgent task"
-        },
-        {
-          "id": "taskTitle",
-          "component": "Heading",
-          "text": "Ship Q3 launch plan to stakeholders",
-          "level": "h2"
-        },
-        {
-          "id": "deadlineCallout",
-          "component": "Callout",
-          "variant": "warning",
-          "title": "Due today · 5:00 PM",
-          "description": "About 3 hours remaining. Everything else can wait until this is out."
-        },
-        {
-          "id": "statusCard",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "row",
-          "justify": "between",
-          "align": "center",
-          "children": [
-            "statusLabel",
-            "statusTag"
-          ]
-        },
-        {
-          "id": "statusLabel",
-          "component": "TextContent",
-          "text": "**Current status**"
-        },
-        {
-          "id": "statusTag",
-          "component": "Tag",
-          "text": "In Progress",
-          "variant": "info",
-          "size": "md"
-        },
-        {
-          "id": "progress",
-          "component": "Progress",
-          "value": 0.6,
-          "label": "60% complete — final review remaining"
-        },
-        {
-          "id": "separator",
-          "component": "Separator",
-          "decorative": true
-        },
-        {
-          "id": "doneButton",
-          "component": "Button",
-          "label": "✓ Mark as Done",
-          "variant": "primary",
-          "size": "large",
-          "action": [
-            {
-              "type": "task.complete",
-              "taskId": "TSK-2481"
-            }
-          ],
-          "accessibility": {
-            "label": "Mark task as done",
-            "description": "Completes 'Ship Q3 launch plan to stakeholders'"
-          }
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-Everything you asked for is covered:
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "statusRow",
+          "description",
+          "progress",
+          "separator",
+          "actions"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Finalize Q3 Budget Report",
+        "subtitle": "Due: Today, 5:00 PM"
+      },
+      {
+        "id": "statusRow",
+        "component": "Badge",
+        "text": "In Progress",
+        "variant": "secondary"
+      },
+      {
+        "id": "description",
+        "component": "TextContent",
+        "text": "Compile final numbers from Finance and Marketing, reconcile discrepancies, and submit to the CFO for sign-off.",
+        "size": "default"
+      },
+      {
+        "id": "progress",
+        "component": "Progress",
+        "value": 72,
+        "label": "72% complete"
+      },
+      {
+        "id": "separator",
+        "component": "Separator"
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": [
+          "doneBtn"
+        ]
+      },
+      {
+        "id": "doneBtn",
+        "component": "Button",
+        "label": "✓ Mark as Done",
+        "variant": "primary",
+        "size": "large"
+      }
+    ]
+  }
+}
+</a2ui-json>
 
-1. **Most urgent task + deadline** — "Ship Q3 launch plan to stakeholders" with a prominent warning callout showing it's due today at 5:00 PM.
-2. **Current status** — an "In Progress" tag in a recessed status row, plus a progress bar showing 60% completion.
-3. **Mark it done** — a large primary "✓ Mark as Done" button at the bottom that fires a `task.complete` action.
+This gives you a clean, distraction-free focus screen:
 
-Want me to wire up a secondary "Snooze" option or a notes field for handoff context?
+1. **Task + Deadline** — The card header prominently displays the task name ("Finalize Q3 Budget Report") with the deadline right beneath it.
+2. **Current Status** — A badge shows "In Progress," and a progress bar reinforces how far along the task is (72%).
+3. **Mark Done** — A large primary button at the bottom lets you complete the task in one tap.

@@ -1,97 +1,82 @@
-Here's a platform status page covering both items:
+
+
+Here's a single-screen status page for the platform team, covering the monthly API uptime and the latest incident.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "platform-status",
-      "catalogId": "thesys.dev:c1-openui",
-      "theme": {
-        "primaryColor": "#10B981",
-        "agentDisplayName": "Platform Team"
-      }
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "platform-status",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "children": ["header", "uptime-section", "separator", "incident-section"],
-          "direction": "column",
-          "gap": "l"
-        },
-        {
-          "id": "header",
-          "component": "CardHeader",
-          "title": "Platform Status",
-          "subtitle": "API Service Health — June 2025"
-        },
-        {
-          "id": "uptime-section",
-          "component": "Card",
-          "variant": "sunk",
-          "children": ["uptime-label", "uptime-progress", "uptime-note"],
-          "direction": "column",
-          "gap": "s"
-        },
-        {
-          "id": "uptime-label",
-          "component": "Heading",
-          "text": "API Uptime — This Month",
-          "level": "h3"
-        },
-        {
-          "id": "uptime-progress",
-          "component": "Progress",
-          "value": 99.97,
-          "label": "99.97% uptime"
-        },
-        {
-          "id": "uptime-note",
-          "component": "TextContent",
-          "text": "Target SLA: 99.95% · Status: **On Track** ✅",
-          "size": "small"
-        },
-        {
-          "id": "separator",
-          "component": "Separator",
-          "orientation": "horizontal",
-          "decorative": true
-        },
-        {
-          "id": "incident-section",
-          "component": "Card",
-          "variant": "sunk",
-          "children": ["incident-heading", "incident-alert", "incident-details"],
-          "direction": "column",
-          "gap": "s"
-        },
-        {
-          "id": "incident-heading",
-          "component": "Heading",
-          "text": "Most Recent Incident",
-          "level": "h3"
-        },
-        {
-          "id": "incident-alert",
-          "component": "Alert",
-          "variant": "warning",
-          "title": "INC-2025-0614: Elevated API Latency",
-          "description": "Resolved on June 14, 2025 at 18:42 UTC"
-        },
-        {
-          "id": "incident-details",
-          "component": "TextContent",
-          "text": "A misconfigured connection pool limit caused p99 latency to spike above 2s for approximately 23 minutes. The issue was identified via automated alerting and resolved by rolling back the configuration change. A post-mortem is available in the internal wiki.",
-          "size": "small"
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "header",
+          "statusTag",
+          "uptimeValue",
+          "uptimeLabel",
+          "sep",
+          "incidentHeading",
+          "incidentNote"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Platform Status",
+        "subtitle": "API availability & incident summary"
+      },
+      {
+        "id": "statusTag",
+        "component": "Tag",
+        "text": "All systems operational",
+        "variant": "success"
+      },
+      {
+        "id": "uptimeValue",
+        "component": "TextContent",
+        "text": "99.98%",
+        "size": "large-heavy"
+      },
+      {
+        "id": "uptimeLabel",
+        "component": "Label",
+        "text": "Current API uptime — this month"
+      },
+      {
+        "id": "sep",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "incidentHeading",
+        "component": "Heading",
+        "text": "Most recent incident",
+        "level": "h3"
+      },
+      {
+        "id": "incidentNote",
+        "component": "Alert",
+        "title": "Elevated API latency — resolved",
+        "description": "Elevated p95 latency on the public API between 09:12–09:47 UTC. Root cause was a misconfigured cache pool. Fully resolved on June 12 at 09:47 UTC (35 minutes of degraded performance).",
+        "variant": "info"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This covers both items: (1) the API's current monthly uptime percentage is shown as the headline stat, and (2) the most recent incident is summarized in an info alert with its resolution time. Swap in your live figures as needed.

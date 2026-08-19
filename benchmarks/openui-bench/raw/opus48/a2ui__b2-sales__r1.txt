@@ -1,200 +1,209 @@
-Here's a monthly sales check dashboard covering all five items.
+Here's a monthly sales check screen covering all five items.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "sales-check",
-      "catalogId": "thesys.dev:c1-openui"
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "sales-check",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "direction": "column",
-          "gap": "l",
-          "children": [
-            "header",
-            "kpi-row",
-            "trend-card",
-            "top-products-card",
-            "download-buttons"
-          ]
-        },
-        {
-          "id": "header",
-          "component": "CardHeader",
-          "title": "Monthly Sales Check",
-          "subtitle": "June 2024 — performance at a glance"
-        },
-        {
-          "id": "kpi-row",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "l",
-          "justify": "between",
-          "children": ["revenue-card", "conversion-card"]
-        },
-        {
-          "id": "revenue-card",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "xs",
-          "weight": 1,
-          "children": ["revenue-label", "revenue-value", "revenue-sub"]
-        },
-        {
-          "id": "revenue-label",
-          "component": "TextContent",
-          "text": "Revenue this month",
-          "size": "small-heavy"
-        },
-        {
-          "id": "revenue-value",
-          "component": "Heading",
-          "text": "$128,450",
-          "level": "h2"
-        },
-        {
-          "id": "revenue-sub",
-          "component": "Badge",
-          "text": "▲ 12.3% vs. May",
-          "variant": "default"
-        },
-        {
-          "id": "conversion-card",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "xs",
-          "weight": 1,
-          "children": ["conversion-label", "conversion-value", "conversion-progress"]
-        },
-        {
-          "id": "conversion-label",
-          "component": "TextContent",
-          "text": "Conversion rate",
-          "size": "small-heavy"
-        },
-        {
-          "id": "conversion-value",
-          "component": "Heading",
-          "text": "3.8%",
-          "level": "h2"
-        },
-        {
-          "id": "conversion-progress",
-          "component": "Progress",
-          "value": 3.8,
-          "label": "Visitors who purchased"
-        },
-        {
-          "id": "trend-card",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "s",
-          "children": ["trend-title", "trend-chart"]
-        },
-        {
-          "id": "trend-title",
-          "component": "TextContent",
-          "text": "Revenue — last 6 months",
-          "size": "large-heavy"
-        },
-        {
-          "id": "trend-chart",
-          "component": "LineChart",
-          "labels": ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-          "variant": "natural",
-          "xLabel": "Month",
-          "yLabel": "Revenue ($)",
-          "series": ["trend-series"]
-        },
-        {
-          "id": "trend-series",
-          "component": "Series",
-          "category": "Revenue",
-          "values": [86200, 94800, 91500, 108300, 114400, 128450]
-        },
-        {
-          "id": "top-products-card",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "s",
-          "children": ["top-title", "top-table"]
-        },
-        {
-          "id": "top-title",
-          "component": "TextContent",
-          "text": "Top 3 best-selling products",
-          "size": "large-heavy"
-        },
-        {
-          "id": "top-table",
-          "component": "Table",
-          "columns": ["col-rank", "col-product", "col-units"]
-        },
-        {
-          "id": "col-rank",
-          "component": "Col",
-          "label": "#",
-          "type": "string",
-          "data": ["1", "2", "3"]
-        },
-        {
-          "id": "col-product",
-          "component": "Col",
-          "label": "Product",
-          "type": "string",
-          "data": ["Aurora Wireless Earbuds", "Nomad Travel Backpack", "Pulse Smart Water Bottle"]
-        },
-        {
-          "id": "col-units",
-          "component": "Col",
-          "label": "Units sold",
-          "type": "number",
-          "data": [1842, 1360, 977]
-        },
-        {
-          "id": "download-buttons",
-          "component": "Buttons",
-          "direction": "row",
-          "buttons": ["download-csv", "download-pdf"]
-        },
-        {
-          "id": "download-csv",
-          "component": "Button",
-          "label": "Download CSV",
-          "variant": "primary",
-          "action": ["download_sales_csv"]
-        },
-        {
-          "id": "download-pdf",
-          "component": "Button",
-          "label": "Download PDF report",
-          "variant": "secondary",
-          "action": ["download_sales_pdf"]
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-This single screen covers every item:
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "kpiRow",
+          "trendHeader",
+          "trend",
+          "topHeader",
+          "topProducts",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Monthly Sales Check",
+        "subtitle": "October 2024"
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "l",
+        "children": [
+          "revenueCard",
+          "conversionCard"
+        ]
+      },
+      {
+        "id": "revenueCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": [
+          "revenueLabel",
+          "revenueValue"
+        ]
+      },
+      {
+        "id": "revenueLabel",
+        "component": "TextContent",
+        "text": "Revenue this month",
+        "size": "small-heavy"
+      },
+      {
+        "id": "revenueValue",
+        "component": "Heading",
+        "text": "$142,800",
+        "level": "h2"
+      },
+      {
+        "id": "conversionCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": [
+          "conversionLabel",
+          "conversionValue",
+          "conversionBar"
+        ]
+      },
+      {
+        "id": "conversionLabel",
+        "component": "TextContent",
+        "text": "Conversion rate",
+        "size": "small-heavy"
+      },
+      {
+        "id": "conversionValue",
+        "component": "Heading",
+        "text": "3.6%",
+        "level": "h2"
+      },
+      {
+        "id": "conversionBar",
+        "component": "Progress",
+        "value": 3.6,
+        "label": "3.6% of visitors purchased"
+      },
+      {
+        "id": "trendHeader",
+        "component": "Heading",
+        "text": "Revenue — last 6 months",
+        "level": "h4"
+      },
+      {
+        "id": "trend",
+        "component": "LineChart",
+        "labels": [
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct"
+        ],
+        "series": [
+          "revSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Month",
+        "yLabel": "USD"
+      },
+      {
+        "id": "revSeries",
+        "component": "Series",
+        "category": "Revenue",
+        "values": [
+          98400,
+          105200,
+          112600,
+          121300,
+          134900,
+          142800
+        ]
+      },
+      {
+        "id": "topHeader",
+        "component": "Heading",
+        "text": "Top 3 products",
+        "level": "h4"
+      },
+      {
+        "id": "topProducts",
+        "component": "Table",
+        "columns": [
+          "rankCol",
+          "productCol",
+          "unitsCol"
+        ]
+      },
+      {
+        "id": "rankCol",
+        "component": "Col",
+        "label": "#",
+        "type": "number",
+        "data": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "productCol",
+        "component": "Col",
+        "label": "Product",
+        "type": "string",
+        "data": [
+          "Aurora Wireless Earbuds",
+          "Nimbus Travel Backpack",
+          "Solstice Smart Lamp"
+        ]
+      },
+      {
+        "id": "unitsCol",
+        "component": "Col",
+        "label": "Units sold",
+        "type": "number",
+        "data": [
+          1840,
+          1275,
+          960
+        ]
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": [
+          "downloadBtn"
+        ]
+      },
+      {
+        "id": "downloadBtn",
+        "component": "Button",
+        "label": "Download numbers (CSV)",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>
 
-1. **Revenue this month** — the large `$128,450` KPI with a month-over-month change badge.
-2. **Six-month movement** — a line chart tracing revenue from January through June.
-3. **Top 3 products with units** — a table listing each product and its units sold.
-4. **Conversion percentage** — the `3.8%` KPI with a progress indicator.
-5. **Download the numbers** — CSV and PDF export buttons at the bottom.
+This screen covers each requested item:
+
+1. **Revenue this month** — the "$142,800" KPI card.
+2. **Six-month movement** — the line chart trending May→October.
+3. **Three best-selling products with units** — the top-products table.
+4. **Conversion percentage** — the "3.6%" KPI card with a progress bar.
+5. **Download the numbers** — the "Download numbers (CSV)" button.

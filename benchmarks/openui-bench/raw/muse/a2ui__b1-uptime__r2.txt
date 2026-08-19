@@ -1,5 +1,163 @@
-Platform status screen is ready — showing live API uptime and the latest incident resolution.
+Live platform status overview with API uptime and latest incident details:
 
-<a2ui-json>{"version":"v0.9","createSurface":{"surfaceId":"platform-status-page","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#0EA5E9","agentDisplayName":"Platform Team"},"sendDataModel":false}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
 
-<a2ui-json>{"version":"v0.9","updateComponents":{"surfaceId":"platform-status-page","components":[{"component":"Card","id":"root","children":["header","alertOperational","uptimeCard","incidentCard","separator2","footerText"],"variant":"clear","direction":"column","gap":"l"},{"component":"CardHeader","id":"header","title":"Platform Status","subtitle":"Real-time operational status • August 2026 • api.platform.internal"},{"component":"Alert","id":"alertOperational","title":"All Systems Operational","description":"No ongoing incidents. All services responding normally as of 09:42 UTC today.","variant":"success"},{"component":"Card","id":"uptimeCard","children":["uptimeHeader","uptimeProgress","uptimeStatsRow","uptimeNote"],"variant":"card","direction":"column","gap":"m"},{"component":"CardHeader","id":"uptimeHeader","title":"API Uptime — This Month","subtitle":"Current month (Aug 1–18, 2026) • 30s synthetic checks across 3 regions"},{"component":"Progress","id":"uptimeProgress","value":99.95,"label":"99.95% uptime"},{"component":"Card","id":"uptimeStatsRow","children":["statDowntime","statRequests","statTarget"],"variant":"clear","direction":"row","gap":"m","justify":"between"},{"component":"TextContent","id":"statDowntime","text":"**21 min**\nDowntime this month","size":"small"},{"component":"TextContent","id":"statRequests","text":"**42.8M**\nRequests served","size":"small"},{"component":"TextContent","id":"statTarget","text":"**99.9%** SLA target\n✅ Exceeding target","size":"small"},{"component":"TextContent","id":"uptimeNote","text":"Uptime is calculated from successful 200 responses. Last 30 days: 99.97% • Last 90 days: 99.96%. Target SLA is 99.9%.","size":"small"},{"component":"Card","id":"incidentCard","children":["incidentHeader","incidentCallout","incidentDetails"],"variant":"card","direction":"column","gap":"m"},{"component":"CardHeader","id":"incidentHeader","title":"Most Recent Incident","subtitle":"Resolved • Postmortem published as #2847"},{"component":"Callout","id":"incidentCallout","variant":"info","title":"Resolved on Aug 14, 2026 at 22:47 UTC","description":"Elevated API latency (P95 > 800ms) due to database connection pool saturation after deploy v2.14.3."},{"component":"TextContent","id":"incidentDetails","text":"**Impact:** 18% of API requests saw increased latency for 43 minutes (22:04 – 22:47 UTC). No errors or data loss — requests were slow but successful.\n\n**Mitigation:** Rolled back connection pool config, scaled read replicas from 3 → 6, and added pool saturation alert.\n\n**Status:** Monitoring complete. Full postmortem: status.company.com/incidents/2847","size":"default"},{"component":"Separator","id":"separator2","orientation":"horizontal","decorative":true},{"component":"TextContent","id":"footerText","text":"Last checked: Aug 18, 2026 09:42 UTC • Subscribe to updates • View history • Contact platform-team@company.com","size":"small"}]}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "overallCallout",
+          "uptimeSection",
+          "incidentSection",
+          "footerText"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Platform Status",
+        "subtitle": "For platform team • Last checked: Aug 18, 2026 14:00 UTC • Auto-refreshes every 60s"
+      },
+      {
+        "id": "overallCallout",
+        "component": "Callout",
+        "variant": "success",
+        "title": "All systems operational",
+        "description": "API, Dashboard, and Background Workers are running normally. No active incidents."
+      },
+      {
+        "id": "uptimeSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "uptimeHeader",
+          "uptimeProgress",
+          "uptimeDetails",
+          "uptimeChart"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "incidentSection",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "incidentHeader",
+          "incidentAlert",
+          "incidentMeta"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "footerText",
+        "component": "TextContent",
+        "text": "Need historical data? View full incident history or subscribe to status updates in #platform-ops.",
+        "size": "small"
+      },
+      {
+        "id": "uptimeHeader",
+        "component": "CardHeader",
+        "title": "1. API Uptime — This Month",
+        "subtitle": "August 2026 • SLA target 99.9% • 18 days elapsed"
+      },
+      {
+        "id": "uptimeProgress",
+        "component": "Progress",
+        "value": 99.95,
+        "label": "99.95% uptime"
+      },
+      {
+        "id": "uptimeDetails",
+        "component": "TextContent",
+        "text": "**99.95%** uptime for the **API** this month (13m 12s total downtime). Exceeds 99.9% SLA. Longest outage: 8m 4s on Aug 15 due to gateway scaling event. All other days at 99.9%+.",
+        "size": "default"
+      },
+      {
+        "id": "uptimeChart",
+        "component": "BarChart",
+        "labels": [
+          "Aug 12",
+          "Aug 13",
+          "Aug 14",
+          "Aug 15",
+          "Aug 16",
+          "Aug 17",
+          "Aug 18"
+        ],
+        "series": [
+          "uptimeSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Date",
+        "yLabel": "% uptime"
+      },
+      {
+        "id": "uptimeSeries",
+        "component": "Series",
+        "category": "API Daily Uptime",
+        "values": [
+          100,
+          99.99,
+          100,
+          99.85,
+          99.92,
+          100,
+          100
+        ]
+      },
+      {
+        "id": "incidentHeader",
+        "component": "CardHeader",
+        "title": "2. Most Recent Incident",
+        "subtitle": "INC-2847 • API Gateway • Resolved"
+      },
+      {
+        "id": "incidentAlert",
+        "component": "Alert",
+        "title": "Elevated API 5xx errors — US-East",
+        "description": "Short note: Database connection pool saturation caused increased latency (p95 >1.2s) and ~2.1% 5xx errors on api.platform.internal. Mitigated by scaling pool from 50→100 and restarting 3 gateway nodes. No data loss, retries succeeded.",
+        "variant": "warning"
+      },
+      {
+        "id": "incidentMeta",
+        "component": "Card",
+        "variant": "clear",
+        "children": [
+          "resolvedBadge",
+          "incidentTimeline"
+        ],
+        "direction": "column",
+        "gap": "s"
+      },
+      {
+        "id": "resolvedBadge",
+        "component": "Badge",
+        "text": "Resolved: Aug 17, 2026 at 03:42 UTC (duration 47 min)",
+        "variant": "secondary"
+      },
+      {
+        "id": "incidentTimeline",
+        "component": "TextContent",
+        "text": "Detected 02:55 UTC • Identified 03:10 UTC • Resolved 03:42 UTC • Post-mortem published in Confluence. Monitor: connection pool metrics + alert threshold lowered to 75%.",
+        "size": "small"
+      }
+    ]
+  }
+}
+</a2ui-json>

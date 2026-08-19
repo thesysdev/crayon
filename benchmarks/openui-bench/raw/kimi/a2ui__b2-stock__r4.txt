@@ -1,15 +1,11 @@
-Here's a low-inventory warning dashboard covering all four requirements:
+Here's a low-inventory warning screen covering all four requirements:
 
 <a2ui-json>
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "low-inventory-view",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": {
-      "primaryColor": "#d97706",
-      "agentDisplayName": "Inventory Manager"
-    }
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
@@ -18,88 +14,170 @@ Here's a low-inventory warning dashboard covering all four requirements:
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "low-inventory-view",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "m",
-        "children": ["header", "thresholdAlert", "searchControl", "searchInput", "inventoryTable", "footerNote"]
+        "children": [
+          "header",
+          "warningAlert",
+          "thresholdInfo",
+          "searchForm",
+          "lowStockTable",
+          "bulkActions"
+        ]
       },
       {
         "id": "header",
         "component": "CardHeader",
-        "title": "⚠️ Low Inventory Warning",
-        "subtitle": "4 items are below their reorder threshold"
+        "title": "Low Inventory Warnings",
+        "subtitle": "Items at or below the reorder threshold"
       },
       {
-        "id": "thresholdAlert",
+        "id": "warningAlert",
         "component": "Alert",
-        "variant": "warning",
-        "title": "Reorder Threshold: 20 units",
-        "description": "Items appear on this list when remaining stock falls to 20 units or fewer. Adjust thresholds per item in Settings."
+        "title": "4 items need restocking",
+        "description": "These products have fallen below their minimum stock threshold",
+        "variant": "warning"
       },
       {
-        "id": "searchControl",
+        "id": "thresholdInfo",
+        "component": "Callout",
+        "variant": "info",
+        "title": "Warning threshold",
+        "description": "An item triggers this warning when remaining units drop to 10 or fewer"
+      },
+      {
+        "id": "searchForm",
+        "component": "Form",
+        "name": "inventory-search",
+        "buttons": "searchButtons",
+        "fields": [
+          "searchField"
+        ]
+      },
+      {
+        "id": "searchField",
         "component": "FormControl",
-        "label": "Search Items",
+        "label": "Search items",
         "input": "searchInput",
         "hint": "Filter by item name or SKU"
       },
       {
         "id": "searchInput",
         "component": "Input",
-        "name": "search",
-        "type": "text",
-        "placeholder": "e.g. Coffee Beans or SKU-1042"
+        "name": "query",
+        "placeholder": "e.g. USB-C Cable or SKU-1042"
       },
       {
-        "id": "inventoryTable",
+        "id": "searchButtons",
+        "component": "Buttons",
+        "buttons": [
+          "searchBtn",
+          "clearBtn"
+        ]
+      },
+      {
+        "id": "searchBtn",
+        "component": "Button",
+        "label": "Search",
+        "variant": "primary"
+      },
+      {
+        "id": "clearBtn",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "tertiary"
+      },
+      {
+        "id": "lowStockTable",
         "component": "Table",
-        "columns": ["colItem", "colSku", "colUnits", "colThreshold", "colAction"]
+        "columns": [
+          "itemCol",
+          "skuCol",
+          "remainingCol",
+          "thresholdCol",
+          "reorderCol"
+        ]
       },
       {
-        "id": "colItem",
+        "id": "itemCol",
         "component": "Col",
         "label": "Item",
-        "type": "string",
-        "data": ["Arabica Coffee Beans 1kg", "Oat Milk 1L", "Paper Cups 12oz (pack of 50)", "Matcha Powder 500g"]
+        "data": [
+          "USB-C Cable 1m",
+          "Wireless Mouse",
+          "Laptop Stand",
+          "HDMI Adapter"
+        ]
       },
       {
-        "id": "colSku",
+        "id": "skuCol",
         "component": "Col",
         "label": "SKU",
-        "type": "string",
-        "data": ["SKU-1042", "SKU-2210", "SKU-3305", "SKU-4471"]
+        "data": [
+          "SKU-1042",
+          "SKU-2210",
+          "SKU-3385",
+          "SKU-4107"
+        ]
       },
       {
-        "id": "colUnits",
+        "id": "remainingCol",
         "component": "Col",
-        "label": "Units Remaining",
-        "type": "number",
-        "data": [12, 8, 18, 5]
+        "label": "Remaining Units",
+        "data": [
+          4,
+          7,
+          2,
+          9
+        ],
+        "type": "number"
       },
       {
-        "id": "colThreshold",
+        "id": "thresholdCol",
         "component": "Col",
         "label": "Threshold",
-        "type": "number",
-        "data": [20, 20, 20, 20]
+        "data": [
+          10,
+          10,
+          10,
+          10
+        ],
+        "type": "number"
       },
       {
-        "id": "colAction",
+        "id": "reorderCol",
         "component": "Col",
         "label": "Reorder",
-        "type": "action",
-        "data": ["Reorder", "Reorder", "Reorder", "Reorder"]
+        "data": [
+          "Reorder",
+          "Reorder",
+          "Reorder",
+          "Reorder"
+        ],
+        "type": "action"
       },
       {
-        "id": "footerNote",
-        "component": "TextContent",
-        "text": "Stock levels last synced 10 minutes ago.",
-        "size": "small"
+        "id": "bulkActions",
+        "component": "Buttons",
+        "buttons": [
+          "reorderAllBtn",
+          "exportBtn"
+        ]
+      },
+      {
+        "id": "reorderAllBtn",
+        "component": "Button",
+        "label": "Reorder all low items",
+        "variant": "primary"
+      },
+      {
+        "id": "exportBtn",
+        "component": "Button",
+        "label": "Export list",
+        "variant": "secondary"
       }
     ]
   }
@@ -108,9 +186,7 @@ Here's a low-inventory warning dashboard covering all four requirements:
 
 This screen covers each requirement:
 
-1. **Low items + remaining units** — The table lists each item with its SKU and exact units remaining (e.g., Matcha Powder at 5 units).
-2. **Reorder per item** — Each row has a "Reorder" action button in the last column.
-3. **Warning threshold** — The alert banner states the 20-unit reorder threshold that triggers items appearing here, and each row shows its threshold for comparison.
-4. **Search** — A search field filters items by name or SKU.
-
-Want me to add per-item custom thresholds, a bulk reorder option, or sort by urgency?
+1. **Low items with remaining units** — the table lists each item, its SKU, and exact remaining units (4, 7, 2, 9).
+2. **Reorder per item** — the "Reorder" action column gives each row its own reorder button, plus a "Reorder all" bulk option.
+3. **Warning threshold** — shown both in the info callout ("10 or fewer units") and as a per-row Threshold column.
+4. **Search** — a search form with a text input to filter by item name or SKU.

@@ -1,313 +1,392 @@
-Here's a comprehensive weekly marketing dashboard covering all eight requirements.
+Here's a weekly marketing dashboard covering all eight requirements.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "marketing-dashboard",
-      "catalogId": "thesys.dev:c1-openui"
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "marketing-dashboard",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "column",
-          "gap": "l",
-          "children": [
-            "header",
-            "controls-row",
-            "best-campaign-callout",
-            "kpi-row",
-            "visitors-card",
-            "middle-row",
-            "campaigns-card",
-            "subscriber-card"
-          ]
-        },
-        {
-          "id": "header",
-          "component": "CardHeader",
-          "title": "Marketing Weekly Dashboard",
-          "subtitle": "Performance overview for the last 30 days"
-        },
-        {
-          "id": "controls-row",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "row",
-          "gap": "m",
-          "align": "end",
-          "justify": "between",
-          "children": ["date-range-control", "export-buttons"]
-        },
-        {
-          "id": "date-range-control",
-          "component": "FormControl",
-          "label": "Date Range",
-          "hint": "Select the reporting period",
-          "input": "date-range-select"
-        },
-        {
-          "id": "date-range-select",
-          "component": "Select",
-          "name": "dateRange",
-          "placeholder": "Last 30 days",
-          "value": "30d",
-          "size": "medium",
-          "items": ["dr-7", "dr-30", "dr-90", "dr-custom"]
-        },
-        { "id": "dr-7", "component": "SelectItem", "value": "7d", "label": "Last 7 days" },
-        { "id": "dr-30", "component": "SelectItem", "value": "30d", "label": "Last 30 days" },
-        { "id": "dr-90", "component": "SelectItem", "value": "90d", "label": "Last 90 days" },
-        { "id": "dr-custom", "component": "SelectItem", "value": "custom", "label": "Custom range" },
-        {
-          "id": "export-buttons",
-          "component": "Buttons",
-          "direction": "row",
-          "buttons": ["export-pdf", "export-csv"]
-        },
-        {
-          "id": "export-pdf",
-          "component": "Button",
-          "label": "Export PDF",
-          "variant": "primary",
-          "size": "medium",
-          "action": ["exportReport", "pdf"]
-        },
-        {
-          "id": "export-csv",
-          "component": "Button",
-          "label": "Export CSV",
-          "variant": "secondary",
-          "size": "medium",
-          "action": ["exportReport", "csv"]
-        },
-        {
-          "id": "best-campaign-callout",
-          "component": "Callout",
-          "variant": "success",
-          "title": "Best Performing Campaign: Spring Sale 2024",
-          "description": "Delivering a 6.8% conversion rate and $42,300 in attributed revenue — the highest ROI across all active campaigns this period."
-        },
-        {
-          "id": "kpi-row",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "m",
-          "children": ["kpi-visitors", "kpi-conversion", "kpi-subscribers"]
-        },
-        {
-          "id": "kpi-visitors",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "xs",
-          "weight": 1,
-          "children": ["kpi-visitors-label", "kpi-visitors-value", "kpi-visitors-sub"]
-        },
-        { "id": "kpi-visitors-label", "component": "TextContent", "text": "Total Visitors (30d)", "size": "small" },
-        { "id": "kpi-visitors-value", "component": "Heading", "text": "248,910", "level": "h2" },
-        { "id": "kpi-visitors-sub", "component": "Badge", "text": "▲ 12.4% vs prev", "variant": "secondary" },
-        {
-          "id": "kpi-conversion",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "xs",
-          "weight": 1,
-          "children": ["kpi-conversion-label", "kpi-conversion-value", "kpi-conversion-progress"]
-        },
-        { "id": "kpi-conversion-label", "component": "TextContent", "text": "Conversion Rate", "size": "small" },
-        { "id": "kpi-conversion-value", "component": "Heading", "text": "4.3%", "level": "h2" },
-        { "id": "kpi-conversion-progress", "component": "Progress", "value": 43, "label": "Goal: 5.0%" },
-        {
-          "id": "kpi-subscribers",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "xs",
-          "weight": 1,
-          "children": ["kpi-subscribers-label", "kpi-subscribers-value", "kpi-subscribers-sub"]
-        },
-        { "id": "kpi-subscribers-label", "component": "TextContent", "text": "New Subscribers (MTD)", "size": "small" },
-        { "id": "kpi-subscribers-value", "component": "Heading", "text": "3,182", "level": "h2" },
-        { "id": "kpi-subscribers-sub", "component": "Badge", "text": "▲ 18.9% growth", "variant": "secondary" },
-        {
-          "id": "visitors-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "children": ["visitors-title", "visitors-chart"]
-        },
-        { "id": "visitors-title", "component": "Heading", "text": "Site Visitors — Last 30 Days", "level": "h3" },
-        {
-          "id": "visitors-chart",
-          "component": "AreaChart",
-          "variant": "natural",
-          "xLabel": "Day",
-          "yLabel": "Visitors",
-          "labels": ["D1","D3","D5","D7","D9","D11","D13","D15","D17","D19","D21","D23","D25","D27","D29","D30"],
-          "series": ["visitors-series"]
-        },
-        {
-          "id": "visitors-series",
-          "component": "Series",
-          "category": "Visitors",
-          "values": [6200,6800,7100,6900,7500,8100,7800,8400,8900,8600,9200,9800,9500,10100,10600,10900]
-        },
-        {
-          "id": "middle-row",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "m",
-          "align": "stretch",
-          "children": ["traffic-card", "subscriber-mini-card"]
-        },
-        {
-          "id": "traffic-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "weight": 1,
-          "children": ["traffic-title", "traffic-chart"]
-        },
-        { "id": "traffic-title", "component": "Heading", "text": "Top 5 Traffic Sources", "level": "h3" },
-        {
-          "id": "traffic-chart",
-          "component": "PieChart",
-          "variant": "donut",
-          "appearance": "circular",
-          "labels": ["Organic Search","Direct","Paid Ads","Social","Referral"],
-          "values": [38, 24, 18, 13, 7]
-        },
-        {
-          "id": "subscriber-mini-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "weight": 1,
-          "children": ["traffic-table-title", "traffic-table"]
-        },
-        { "id": "traffic-table-title", "component": "Heading", "text": "Traffic Source Share", "level": "h3" },
-        {
-          "id": "traffic-table",
-          "component": "Table",
-          "columns": ["tt-source", "tt-share", "tt-visitors"]
-        },
-        {
-          "id": "tt-source",
-          "component": "Col",
-          "label": "Source",
-          "type": "string",
-          "data": ["Organic Search","Direct","Paid Ads","Social","Referral"]
-        },
-        {
-          "id": "tt-share",
-          "component": "Col",
-          "label": "Share",
-          "type": "string",
-          "data": ["38%","24%","18%","13%","7%"]
-        },
-        {
-          "id": "tt-visitors",
-          "component": "Col",
-          "label": "Visitors",
-          "type": "number",
-          "data": [94586, 59738, 44804, 32358, 17424]
-        },
-        {
-          "id": "campaigns-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "children": ["campaigns-title", "campaigns-table"]
-        },
-        { "id": "campaigns-title", "component": "Heading", "text": "Running Campaigns & Spend", "level": "h3" },
-        {
-          "id": "campaigns-table",
-          "component": "Table",
-          "columns": ["camp-name", "camp-status", "camp-spend", "camp-conv"]
-        },
-        {
-          "id": "camp-name",
-          "component": "Col",
-          "label": "Campaign",
-          "type": "string",
-          "data": ["Spring Sale 2024","Brand Awareness Q2","Retargeting - Cart","Newsletter Signup Push","Video Ads - YouTube"]
-        },
-        {
-          "id": "camp-status",
-          "component": "Col",
-          "label": "Status",
-          "type": "string",
-          "data": ["Active","Active","Active","Active","Active"]
-        },
-        {
-          "id": "camp-spend",
-          "component": "Col",
-          "label": "Spend",
-          "type": "string",
-          "data": ["$18,400","$12,100","$6,750","$4,200","$9,900"]
-        },
-        {
-          "id": "camp-conv",
-          "component": "Col",
-          "label": "Conv. Rate",
-          "type": "string",
-          "data": ["6.8%","2.1%","5.4%","3.9%","2.7%"]
-        },
-        {
-          "id": "subscriber-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "s",
-          "children": ["subscriber-title", "subscriber-chart"]
-        },
-        { "id": "subscriber-title", "component": "Heading", "text": "Email Subscriber Growth — This Month", "level": "h3" },
-        {
-          "id": "subscriber-chart",
-          "component": "LineChart",
-          "variant": "natural",
-          "xLabel": "Week",
-          "yLabel": "Total Subscribers",
-          "labels": ["Week 1","Week 2","Week 3","Week 4"],
-          "series": ["subscriber-series"]
-        },
-        {
-          "id": "subscriber-series",
-          "component": "Series",
-          "category": "Subscribers",
-          "values": [41200, 42150, 43380, 44382]
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-This dashboard covers every requirement:
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "controls",
+          "highlight",
+          "kpiRow",
+          "visitorsTrend",
+          "trafficAndEmail",
+          "campaigns",
+          "footer"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Marketing Weekly Dashboard",
+        "subtitle": "Performance snapshot for the last 30 days"
+      },
+      {
+        "id": "controls",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "m",
+        "align": "end",
+        "justify": "between",
+        "children": [
+          "dateRangeControl",
+          "exportButtons"
+        ]
+      },
+      {
+        "id": "dateRangeControl",
+        "component": "FormControl",
+        "label": "Date range",
+        "input": "dateRangePicker",
+        "hint": "Adjust the reporting window"
+      },
+      {
+        "id": "dateRangePicker",
+        "component": "DatePicker",
+        "name": "date_range",
+        "mode": "range"
+      },
+      {
+        "id": "exportButtons",
+        "component": "Buttons",
+        "buttons": [
+          "exportPdfBtn",
+          "exportCsvBtn"
+        ]
+      },
+      {
+        "id": "exportPdfBtn",
+        "component": "Button",
+        "label": "Export report (PDF)",
+        "variant": "primary"
+      },
+      {
+        "id": "exportCsvBtn",
+        "component": "Button",
+        "label": "Export CSV",
+        "variant": "secondary"
+      },
+      {
+        "id": "highlight",
+        "component": "Alert",
+        "title": "Top campaign: Spring Launch",
+        "description": "Spring Launch is your best performer this week with a 6.2% conversion rate and the lowest cost per acquisition.",
+        "variant": "success"
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "visitorsKpi",
+          "conversionKpi",
+          "subscriberKpi"
+        ]
+      },
+      {
+        "id": "visitorsKpi",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "visitorsKpiLabel",
+          "visitorsKpiValue"
+        ]
+      },
+      {
+        "id": "visitorsKpiLabel",
+        "component": "TextContent",
+        "text": "Site visitors (30d)",
+        "size": "small-heavy"
+      },
+      {
+        "id": "visitorsKpiValue",
+        "component": "Heading",
+        "text": "84,210",
+        "level": "h2"
+      },
+      {
+        "id": "conversionKpi",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "conversionKpiLabel",
+          "conversionKpiValue"
+        ]
+      },
+      {
+        "id": "conversionKpiLabel",
+        "component": "TextContent",
+        "text": "Conversion rate",
+        "size": "small-heavy"
+      },
+      {
+        "id": "conversionKpiValue",
+        "component": "Heading",
+        "text": "4.8%",
+        "level": "h2"
+      },
+      {
+        "id": "subscriberKpi",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "subscriberKpiLabel",
+          "subscriberKpiValue"
+        ]
+      },
+      {
+        "id": "subscriberKpiLabel",
+        "component": "TextContent",
+        "text": "New subscribers (this month)",
+        "size": "small-heavy"
+      },
+      {
+        "id": "subscriberKpiValue",
+        "component": "Heading",
+        "text": "+3,540",
+        "level": "h2"
+      },
+      {
+        "id": "visitorsTrend",
+        "component": "AreaChart",
+        "labels": [
+          "Week 1",
+          "Week 2",
+          "Week 3",
+          "Week 4"
+        ],
+        "series": [
+          "visitorsSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Week",
+        "yLabel": "Visitors"
+      },
+      {
+        "id": "visitorsSeries",
+        "component": "Series",
+        "category": "Visitors",
+        "values": [
+          18200,
+          20450,
+          21980,
+          23580
+        ]
+      },
+      {
+        "id": "trafficAndEmail",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "l",
+        "children": [
+          "trafficCard",
+          "emailCard"
+        ]
+      },
+      {
+        "id": "trafficCard",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "trafficHeader",
+          "trafficChart"
+        ]
+      },
+      {
+        "id": "trafficHeader",
+        "component": "Heading",
+        "text": "Top 5 traffic sources",
+        "level": "h4"
+      },
+      {
+        "id": "trafficChart",
+        "component": "PieChart",
+        "labels": [
+          "Organic Search",
+          "Paid Social",
+          "Direct",
+          "Email",
+          "Referral"
+        ],
+        "values": [
+          38,
+          24,
+          18,
+          12,
+          8
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "emailCard",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "emailHeader",
+          "emailChart"
+        ]
+      },
+      {
+        "id": "emailHeader",
+        "component": "Heading",
+        "text": "Email subscriber growth (this month)",
+        "level": "h4"
+      },
+      {
+        "id": "emailChart",
+        "component": "LineChart",
+        "labels": [
+          "Week 1",
+          "Week 2",
+          "Week 3",
+          "Week 4"
+        ],
+        "series": [
+          "emailSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Week",
+        "yLabel": "Subscribers"
+      },
+      {
+        "id": "emailSeries",
+        "component": "Series",
+        "category": "Total subscribers",
+        "values": [
+          41200,
+          42150,
+          43380,
+          44740
+        ]
+      },
+      {
+        "id": "campaigns",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "s",
+        "children": [
+          "campaignsHeader",
+          "campaignsTable"
+        ]
+      },
+      {
+        "id": "campaignsHeader",
+        "component": "Heading",
+        "text": "Running campaigns",
+        "level": "h4"
+      },
+      {
+        "id": "campaignsTable",
+        "component": "Table",
+        "columns": [
+          "campaignName",
+          "campaignSpend",
+          "campaignConv",
+          "campaignStatus"
+        ]
+      },
+      {
+        "id": "campaignName",
+        "component": "Col",
+        "label": "Campaign",
+        "type": "string",
+        "data": [
+          "Spring Launch",
+          "Retargeting Q2",
+          "Newsletter Boost",
+          "Brand Awareness",
+          "Referral Drive"
+        ]
+      },
+      {
+        "id": "campaignSpend",
+        "component": "Col",
+        "label": "Spend",
+        "type": "string",
+        "data": [
+          "$12,400",
+          "$8,750",
+          "$3,200",
+          "$9,600",
+          "$2,100"
+        ]
+      },
+      {
+        "id": "campaignConv",
+        "component": "Col",
+        "label": "Conv. rate",
+        "type": "string",
+        "data": [
+          "6.2%",
+          "5.1%",
+          "4.4%",
+          "2.8%",
+          "3.9%"
+        ]
+      },
+      {
+        "id": "campaignStatus",
+        "component": "Col",
+        "label": "Status",
+        "type": "string",
+        "data": [
+          "Best performer",
+          "Active",
+          "Active",
+          "Active",
+          "Active"
+        ]
+      },
+      {
+        "id": "footer",
+        "component": "TextContent",
+        "text": "Data refreshes every 24 hours. Adjust the date range above to change the reporting window.",
+        "size": "small"
+      }
+    ]
+  }
+}
+</a2ui-json>
 
-1. **Site visitors (30 days)** — area chart trending upward, plus a KPI card showing 248,910 total.
-2. **Conversion rate** — KPI card at 4.3% with a progress bar toward the 5% goal.
-3. **Top 5 traffic sources with share** — donut chart plus a companion table listing exact percentage share and visitor counts.
-4. **Running campaigns with spend** — table with campaign name, status, spend, and conversion rate for each.
-5. **Best performing campaign** — a green success callout highlighting "Spring Sale 2024."
-6. **Change date range** — a Select dropdown with 7/30/90-day and custom options.
-7. **Email subscriber growth this month** — weekly line chart plus a KPI card (3,182 new, +18.9%).
-8. **Export the report** — Export PDF and Export CSV buttons.
+This single screen covers all eight items:
 
-Want me to add per-source trend sparklines or a campaign ROI comparison chart?
+1. **Site visitors (30 days)** — KPI card plus the area chart trend.
+2. **Conversion rate** — KPI card (4.8%).
+3. **Top five traffic sources with share** — donut pie chart with percentage shares.
+4. **Running campaigns with spend** — table with a spend column per campaign.
+5. **Best performing campaign** — called out in the success alert and flagged in the table.
+6. **Change the date range** — range DatePicker in the controls bar.
+7. **Email subscriber growth this month** — KPI card plus a line chart.
+8. **Export the report** — PDF and CSV export buttons in the controls bar.

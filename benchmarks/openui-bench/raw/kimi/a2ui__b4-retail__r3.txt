@@ -1,93 +1,800 @@
-Here's your store manager's daily console — all 12 items covered on one screen:
+Here's a single-screen daily console for the store manager, covering all 12 items:
 
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"store-console","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#2563eb","agentDisplayName":"Store Console"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"store-console","components":[
-{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["header","storePicker","kpis","mainCharts","lists","promos","registers","weekCompare","reorderForm"]},
-
-{"id":"header","component":"CardHeader","title":"Daily Store Console — Downtown #104","subtitle":"Today, Friday • Live snapshot of sales, staff, stock and promotions"},
-
-{"id":"storePicker","component":"Card","variant":"card","direction":"row","gap":"m","align":"center","children":["storeSelect","storeNote"]},
-{"id":"storeSelect","component":"Select","name":"store","items":["s1","s2","s3"],"value":"downtown-104","size":"medium"},
-{"id":"s1","component":"SelectItem","value":"downtown-104","label":"Downtown #104"},
-{"id":"s2","component":"SelectItem","value":"mall-207","label":"Riverside Mall #207"},
-{"id":"s3","component":"SelectItem","value":"airport-312","label":"Airport #312"},
-{"id":"storeNote","component":"TextContent","text":"Switch store to view that location's console.","size":"small"},
-
-{"id":"kpis","component":"Card","variant":"card","direction":"row","gap":"m","wrap":true,"children":["kpiSales","kpiBasket","kpiReturns"]},
-{"id":"kpiSales","component":"Card","variant":"sunk","direction":"column","gap":"xs","weight":1,"children":["kpiSalesT","kpiSalesV","kpiSalesP"]},
-{"id":"kpiSalesT","component":"TextContent","text":"**1. Sales vs Target**","size":"small-heavy"},
-{"id":"kpiSalesV","component":"TextContent","text":"$8,420 of $10,000 target (84%)","size":"large-heavy"},
-{"id":"kpiSalesP","component":"Progress","value":84,"label":"Progress to daily target"},
-{"id":"kpiBasket","component":"Card","variant":"sunk","direction":"column","gap":"xs","weight":1,"children":["kpiBasketT","kpiBasketV"]},
-{"id":"kpiBasketT","component":"TextContent","text":"**6. Average Basket Size**","size":"small-heavy"},
-{"id":"kpiBasketV","component":"TextContent","text":"$42.60 avg • 3.2 items/transaction","size":"large-heavy"},
-{"id":"kpiReturns","component":"Card","variant":"sunk","direction":"column","gap":"xs","weight":1,"children":["kpiRetT","kpiRetV","kpiRetD"]},
-{"id":"kpiRetT","component":"TextContent","text":"**7. Returns This Week**","size":"small-heavy"},
-{"id":"kpiRetV","component":"TextContent","text":"23 returns • $1,180 refunded","size":"large-heavy"},
-{"id":"kpiRetD","component":"TextContent","text":"Down 12% vs last week","size":"small"},
-
-{"id":"mainCharts","component":"Card","variant":"card","direction":"row","gap":"m","wrap":true,"children":["trafficCard","bestCard"]},
-{"id":"trafficCard","component":"Card","variant":"sunk","direction":"column","gap":"s","weight":1,"children":["trafficTitle","trafficChart","trafficSeries"]},
-{"id":"trafficTitle","component":"TextContent","text":"**2. Foot Traffic Through the Day**","size":"small-heavy"},
-{"id":"trafficChart","component":"LineChart","labels":["9am","10am","11am","12pm","1pm","2pm","3pm","4pm","5pm"],"series":["trafficSeries"],"variant":"natural","xLabel":"Hour","yLabel":"Visitors"},
-{"id":"trafficSeries","component":"Series","category":"Visitors","values":[45,62,88,120,140,98,76,110,95]},
-{"id":"bestCard","component":"Card","variant":"sunk","direction":"column","gap":"s","weight":1,"children":["bestTitle","bestChart","bestSeries"]},
-{"id":"bestTitle","component":"TextContent","text":"**3. Best Sellers (units sold)**","size":"small-heavy"},
-{"id":"bestChart","component":"HorizontalBarChart","labels":["Wireless Earbuds","Yoga Mat","Insulated Bottle","Phone Case","Desk Lamp"],"series":["bestSeries"],"xLabel":"Units"},
-{"id":"bestSeries","component":"Series","category":"Units","values":[64,52,47,39,31]},
-
-{"id":"lists","component":"Card","variant":"card","direction":"row","gap":"m","wrap":true,"children":["stockCard","shiftCard"]},
-{"id":"stockCard","component":"Card","variant":"sunk","direction":"column","gap":"s","weight":1,"children":["stockTitle","stockTable","stockC1","stockC2"]},
-{"id":"stockTitle","component":"TextContent","text":"**4. Out of Stock Items**","size":"small-heavy"},
-{"id":"stockTable","component":"Table","columns":["stockC1","stockC2"]},
-{"id":"stockC1","component":"Col","label":"Item","data":["Ceramic Mug Set","USB-C Cable 2m","Scented Candle","Notebook A5"]},
-{"id":"stockC2","component":"Col","label":"Last Stocked","data":["2 days ago","5 days ago","1 day ago","3 days ago"]},
-{"id":"shiftCard","component":"Card","variant":"sunk","direction":"column","gap":"s","weight":1,"children":["shiftTitle","shiftTable","shiftC1","shiftC2","shiftC3"]},
-{"id":"shiftTitle","component":"TextContent","text":"**5. On Shift Today**","size":"small-heavy"},
-{"id":"shiftTable","component":"Table","columns":["shiftC1","shiftC2","shiftC3"]},
-{"id":"shiftC1","component":"Col","label":"Name","data":["Maria L.","James K.","Priya S.","Tom W."]},
-{"id":"shiftC2","component":"Col","label":"Role","data":["Manager","Cashier","Floor","Cashier"]},
-{"id":"shiftC3","component":"Col","label":"Hours","data":["8am–4pm","9am–5pm","10am–6pm","12pm–8pm"]},
-
-{"id":"promos","component":"Card","variant":"card","direction":"column","gap":"s","children":["promoTitle","promoTable","promoC1","promoC2","promoC3"]},
-{"id":"promoTitle","component":"TextContent","text":"**8. Promotion Performance**","size":"small-heavy"},
-{"id":"promoTable","component":"Table","columns":["promoC1","promoC2","promoC3"]},
-{"id":"promoC1","component":"Col","label":"Promotion","data":["BOGO Coffee Mugs","20% off Audio","Bundle: Yoga Set"]},
-{"id":"promoC2","component":"Col","label":"Redemptions","data":[38,57,21],"type":"number"},
-{"id":"promoC3","component":"Col","label":"Status","data":["On track","Exceeding (+22%)","Below target"]},
-
-{"id":"registers","component":"Card","variant":"card","direction":"column","gap":"s","children":["regTitle","regRow"]},
-{"id":"regTitle","component":"TextContent","text":"**9. Register Status**","size":"small-heavy"},
-{"id":"regRow","component":"Card","variant":"clear","direction":"row","gap":"m","wrap":true,"children":["reg1","reg2","reg3","reg4"]},
-{"id":"reg1","component":"Tag","text":"Register 1 — Open","variant":"success"},
-{"id":"reg2","component":"Tag","text":"Register 2 — Open","variant":"success"},
-{"id":"reg3","component":"Tag","text":"Register 3 — Closed","variant":"neutral"},
-{"id":"reg4","component":"Tag","text":"Register 4 — Open","variant":"success"},
-
-{"id":"weekCompare","component":"Card","variant":"card","direction":"column","gap":"s","children":["wcTitle","wcChart","wcThis","wcLast"]},
-{"id":"wcTitle","component":"TextContent","text":"**12. This Week vs Last Week (sales $)**","size":"small-heavy"},
-{"id":"wcChart","component":"BarChart","labels":["Mon","Tue","Wed","Thu","Fri"],"series":["wcThis","wcLast"],"variant":"grouped","yLabel":"Sales ($)"},
-{"id":"wcThis","component":"Series","category":"This Week","values":[7200,6800,8100,7900,8420]},
-{"id":"wcLast","component":"Series","category":"Last Week","values":[6900,7100,7400,7600,8000]},
-
-{"id":"reorderForm","component":"Card","variant":"card","direction":"column","gap":"s","children":["reorderTitle","reorderFormEl","reorderItemCtrl","reorderItem","reorderQtyCtrl","reorderQty","reorderButtons","reorderSubmit"]},
-{"id":"reorderTitle","component":"TextContent","text":"**10. Reorder an Item**","size":"small-heavy"},
-{"id":"reorderFormEl","component":"Form","name":"reorder","fields":["reorderItemCtrl","reorderQtyCtrl"],"buttons":"reorderButtons"},
-{"id":"reorderItemCtrl","component":"FormControl","label":"Item","input":"reorderItem","hint":"Out-of-stock items are pre-listed"},
-{"id":"reorderItem","component":"Select","name":"item","items":["ri1","ri2","ri3","ri4"],"placeholder":"Select item to reorder"},
-{"id":"ri1","component":"SelectItem","value":"mug-set","label":"Ceramic Mug Set"},
-{"id":"ri2","component":"SelectItem","value":"usbc-2m","label":"USB-C Cable 2m"},
-{"id":"ri3","component":"SelectItem","value":"candle","label":"Scented Candle"},
-{"id":"ri4","component":"SelectItem","value":"notebook-a5","label":"Notebook A5"},
-{"id":"reorderQtyCtrl","component":"FormControl","label":"Quantity","input":"reorderQty"},
-{"id":"reorderQty","component":"Input","name":"quantity","type":"number","placeholder":"e.g. 24"},
-{"id":"reorderButtons","component":"Buttons","buttons":["reorderSubmit"]},
-{"id":"reorderSubmit","component":"Button","label":"Submit Reorder","variant":"primary"}
-]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "topRow",
+          "alertOOS",
+          "kpiRow",
+          "chartsRow",
+          "midRow",
+          "staffRegRow",
+          "promoCard",
+          "reorderCard"
+        ]
+      },
+      {
+        "id": "topRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "justify": "between",
+        "align": "center",
+        "wrap": true,
+        "children": [
+          "header",
+          "storeForm"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Daily Console",
+        "subtitle": "Downtown Store · Today"
+      },
+      {
+        "id": "storeForm",
+        "component": "Form",
+        "name": "store-switch",
+        "fields": [
+          "storeField"
+        ],
+        "buttons": "storeButtons"
+      },
+      {
+        "id": "storeField",
+        "component": "FormControl",
+        "label": "Viewing store",
+        "input": "storeSelect"
+      },
+      {
+        "id": "storeSelect",
+        "component": "Select",
+        "name": "store",
+        "value": "downtown",
+        "items": [
+          "storeDowntown",
+          "storeRiverside",
+          "storeUptown",
+          "storeHarbor"
+        ]
+      },
+      {
+        "id": "storeDowntown",
+        "component": "SelectItem",
+        "value": "downtown",
+        "label": "Downtown Store"
+      },
+      {
+        "id": "storeRiverside",
+        "component": "SelectItem",
+        "value": "riverside",
+        "label": "Riverside"
+      },
+      {
+        "id": "storeUptown",
+        "component": "SelectItem",
+        "value": "uptown",
+        "label": "Uptown Mall"
+      },
+      {
+        "id": "storeHarbor",
+        "component": "SelectItem",
+        "value": "harbor",
+        "label": "Harbor Point"
+      },
+      {
+        "id": "storeButtons",
+        "component": "Buttons",
+        "buttons": [
+          "storeGoBtn"
+        ]
+      },
+      {
+        "id": "storeGoBtn",
+        "component": "Button",
+        "label": "View store",
+        "variant": "secondary"
+      },
+      {
+        "id": "alertOOS",
+        "component": "Alert",
+        "variant": "warning",
+        "title": "5 items out of stock",
+        "description": "Oat Milk 64 oz and 4 other items are unavailable. Place a reorder below."
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "salesCard",
+          "basketCard",
+          "returnsCard"
+        ]
+      },
+      {
+        "id": "salesCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": [
+          "salesHeader",
+          "salesProgress",
+          "salesNote"
+        ]
+      },
+      {
+        "id": "salesHeader",
+        "component": "CardHeader",
+        "title": "Sales today",
+        "subtitle": "vs $12,000 daily target"
+      },
+      {
+        "id": "salesProgress",
+        "component": "Progress",
+        "value": 78,
+        "label": "$9,360 of $12,000 (78%)"
+      },
+      {
+        "id": "salesNote",
+        "component": "TextContent",
+        "text": "Pacing 4% ahead of yesterday at this time.",
+        "size": "small"
+      },
+      {
+        "id": "basketCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": [
+          "basketHeader",
+          "basketValue",
+          "basketNote"
+        ]
+      },
+      {
+        "id": "basketHeader",
+        "component": "CardHeader",
+        "title": "Average basket size",
+        "subtitle": "Today"
+      },
+      {
+        "id": "basketValue",
+        "component": "TextContent",
+        "text": "$42.18",
+        "size": "large-heavy"
+      },
+      {
+        "id": "basketNote",
+        "component": "TextContent",
+        "text": "222 transactions · +$1.85 vs same day last week",
+        "size": "small"
+      },
+      {
+        "id": "returnsCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": [
+          "returnsHeader",
+          "returnsValue",
+          "returnsNote"
+        ]
+      },
+      {
+        "id": "returnsHeader",
+        "component": "CardHeader",
+        "title": "Returns this week",
+        "subtitle": "Mon – today"
+      },
+      {
+        "id": "returnsValue",
+        "component": "TextContent",
+        "text": "18 · $612",
+        "size": "large-heavy"
+      },
+      {
+        "id": "returnsNote",
+        "component": "TextContent",
+        "text": "2.1% of weekly sales — within normal range",
+        "size": "small"
+      },
+      {
+        "id": "chartsRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "trafficCard",
+          "weekCard"
+        ]
+      },
+      {
+        "id": "trafficCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": [
+          "trafficHeader",
+          "trafficChart"
+        ]
+      },
+      {
+        "id": "trafficHeader",
+        "component": "CardHeader",
+        "title": "Foot traffic today",
+        "subtitle": "Entrances per hour, 8 AM – 8 PM"
+      },
+      {
+        "id": "trafficChart",
+        "component": "LineChart",
+        "labels": [
+          "8 AM",
+          "9 AM",
+          "10 AM",
+          "11 AM",
+          "12 PM",
+          "1 PM",
+          "2 PM",
+          "3 PM",
+          "4 PM",
+          "5 PM",
+          "6 PM",
+          "7 PM"
+        ],
+        "series": [
+          "trafficSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Hour",
+        "yLabel": "Visitors"
+      },
+      {
+        "id": "trafficSeries",
+        "component": "Series",
+        "category": "Visitors",
+        "values": [
+          42,
+          68,
+          95,
+          120,
+          158,
+          172,
+          140,
+          118,
+          132,
+          165,
+          148,
+          96
+        ]
+      },
+      {
+        "id": "weekCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": [
+          "weekHeader",
+          "weekChart"
+        ]
+      },
+      {
+        "id": "weekHeader",
+        "component": "CardHeader",
+        "title": "This week vs last week",
+        "subtitle": "Daily sales in USD"
+      },
+      {
+        "id": "weekChart",
+        "component": "BarChart",
+        "labels": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat",
+          "Sun"
+        ],
+        "series": [
+          "thisWeekSeries",
+          "lastWeekSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Day",
+        "yLabel": "Sales ($)"
+      },
+      {
+        "id": "thisWeekSeries",
+        "component": "Series",
+        "category": "This week",
+        "values": [
+          1420,
+          1560,
+          1490,
+          1680,
+          1820,
+          2140,
+          936
+        ]
+      },
+      {
+        "id": "lastWeekSeries",
+        "component": "Series",
+        "category": "Last week",
+        "values": [
+          1380,
+          1490,
+          1520,
+          1600,
+          1750,
+          2080,
+          1980
+        ]
+      },
+      {
+        "id": "midRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "bestCard",
+          "oosCard"
+        ]
+      },
+      {
+        "id": "bestCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": [
+          "bestHeader",
+          "bestTable"
+        ]
+      },
+      {
+        "id": "bestHeader",
+        "component": "CardHeader",
+        "title": "Best sellers today",
+        "subtitle": "By units sold"
+      },
+      {
+        "id": "bestTable",
+        "component": "Table",
+        "columns": [
+          "bestItemCol",
+          "bestUnitsCol"
+        ]
+      },
+      {
+        "id": "bestItemCol",
+        "component": "Col",
+        "label": "Item",
+        "data": [
+          "Organic Whole Milk 1 gal",
+          "Sourdough Loaf",
+          "Cold Brew 12 oz",
+          "Free-Range Eggs 12 ct",
+          "Bananas (lb)"
+        ]
+      },
+      {
+        "id": "bestUnitsCol",
+        "component": "Col",
+        "label": "Units",
+        "type": "number",
+        "data": [
+          86,
+          74,
+          69,
+          58,
+          52
+        ]
+      },
+      {
+        "id": "oosCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": [
+          "oosHeader",
+          "oosTable"
+        ]
+      },
+      {
+        "id": "oosHeader",
+        "component": "CardHeader",
+        "title": "Out of stock",
+        "subtitle": "5 items need replenishment"
+      },
+      {
+        "id": "oosTable",
+        "component": "Table",
+        "columns": [
+          "oosItemCol",
+          "oosSinceCol"
+        ]
+      },
+      {
+        "id": "oosItemCol",
+        "component": "Col",
+        "label": "Item",
+        "data": [
+          "Oat Milk 64 oz",
+          "Paper Towels 6 pk",
+          "Sparkling Water Lime 8 pk",
+          "Chicken Breast 2 lb",
+          "AA Batteries 8 pk"
+        ]
+      },
+      {
+        "id": "oosSinceCol",
+        "component": "Col",
+        "label": "Out since",
+        "data": [
+          "9:20 AM",
+          "11:05 AM",
+          "12:40 PM",
+          "1:15 PM",
+          "2:30 PM"
+        ]
+      },
+      {
+        "id": "staffRegRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "staffCard",
+          "registerCard"
+        ]
+      },
+      {
+        "id": "staffCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": [
+          "staffHeader",
+          "staffTable"
+        ]
+      },
+      {
+        "id": "staffHeader",
+        "component": "CardHeader",
+        "title": "On shift today",
+        "subtitle": "5 team members"
+      },
+      {
+        "id": "staffTable",
+        "component": "Table",
+        "columns": [
+          "staffNameCol",
+          "staffRoleCol",
+          "staffHoursCol"
+        ]
+      },
+      {
+        "id": "staffNameCol",
+        "component": "Col",
+        "label": "Name",
+        "data": [
+          "Maria Chen",
+          "Devon Park",
+          "Sam Ortiz",
+          "Aisha Bello",
+          "Priya Nair"
+        ]
+      },
+      {
+        "id": "staffRoleCol",
+        "component": "Col",
+        "label": "Role",
+        "data": [
+          "Store Lead",
+          "Cashier",
+          "Stock Associate",
+          "Cashier",
+          "Cashier"
+        ]
+      },
+      {
+        "id": "staffHoursCol",
+        "component": "Col",
+        "label": "Hours",
+        "data": [
+          "7:00–3:30",
+          "8:00–4:00",
+          "6:00–2:00",
+          "10:00–6:00",
+          "12:00–8:00"
+        ]
+      },
+      {
+        "id": "registerCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": [
+          "registerHeader",
+          "registerTable"
+        ]
+      },
+      {
+        "id": "registerHeader",
+        "component": "CardHeader",
+        "title": "Registers",
+        "subtitle": "3 of 5 open"
+      },
+      {
+        "id": "registerTable",
+        "component": "Table",
+        "columns": [
+          "regCol",
+          "regCashierCol",
+          "regStatusCol"
+        ]
+      },
+      {
+        "id": "regCol",
+        "component": "Col",
+        "label": "Register",
+        "data": [
+          "Register 1",
+          "Register 2",
+          "Register 3",
+          "Self-Checkout A",
+          "Self-Checkout B"
+        ]
+      },
+      {
+        "id": "regCashierCol",
+        "component": "Col",
+        "label": "Cashier",
+        "data": [
+          "Devon Park",
+          "Aisha Bello",
+          "—",
+          "Self-serve",
+          "—"
+        ]
+      },
+      {
+        "id": "regStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Open",
+          "Open",
+          "Closed",
+          "Open",
+          "Closed"
+        ]
+      },
+      {
+        "id": "promoCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "promoHeader",
+          "promoP1",
+          "promoP2",
+          "promoP3",
+          "promoNote"
+        ]
+      },
+      {
+        "id": "promoHeader",
+        "component": "CardHeader",
+        "title": "Active promotions",
+        "subtitle": "Redemptions vs goal"
+      },
+      {
+        "id": "promoP1",
+        "component": "Progress",
+        "value": 71,
+        "label": "BOGO Cold Brew — 212 of 300 redemptions (71%)"
+      },
+      {
+        "id": "promoP2",
+        "component": "Progress",
+        "value": 64,
+        "label": "20% off Bakery after 4 PM — 96 of 150 (64%)"
+      },
+      {
+        "id": "promoP3",
+        "component": "Progress",
+        "value": 80,
+        "label": "Double Loyalty Points weekend — 318 of 400 (80%)"
+      },
+      {
+        "id": "promoNote",
+        "component": "TextContent",
+        "text": "BOGO Cold Brew is pacing 9% ahead of plan. The bakery promo ends Sunday — consider a register push in the evening window.",
+        "size": "small"
+      },
+      {
+        "id": "reorderCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "reorderHeader",
+          "reorderForm"
+        ]
+      },
+      {
+        "id": "reorderHeader",
+        "component": "CardHeader",
+        "title": "Reorder inventory",
+        "subtitle": "Create a purchase order for out-of-stock items"
+      },
+      {
+        "id": "reorderForm",
+        "component": "Form",
+        "name": "reorder-form",
+        "fields": [
+          "reorderItemField",
+          "reorderQtyField",
+          "reorderPriorityField"
+        ],
+        "buttons": "reorderButtons"
+      },
+      {
+        "id": "reorderItemField",
+        "component": "FormControl",
+        "label": "Item",
+        "input": "reorderItemSelect"
+      },
+      {
+        "id": "reorderItemSelect",
+        "component": "Select",
+        "name": "item",
+        "placeholder": "Choose an item",
+        "items": [
+          "riOatMilk",
+          "riTowels",
+          "riSparkling",
+          "riChicken",
+          "riBatteries"
+        ]
+      },
+      {
+        "id": "riOatMilk",
+        "component": "SelectItem",
+        "value": "oat-milk-64",
+        "label": "Oat Milk 64 oz"
+      },
+      {
+        "id": "riTowels",
+        "component": "SelectItem",
+        "value": "paper-towels-6",
+        "label": "Paper Towels 6 pk"
+      },
+      {
+        "id": "riSparkling",
+        "component": "SelectItem",
+        "value": "sparkling-lime-8",
+        "label": "Sparkling Water Lime 8 pk"
+      },
+      {
+        "id": "riChicken",
+        "component": "SelectItem",
+        "value": "chicken-breast-2lb",
+        "label": "Chicken Breast 2 lb"
+      },
+      {
+        "id": "riBatteries",
+        "component": "SelectItem",
+        "value": "aa-batteries-8",
+        "label": "AA Batteries 8 pk"
+      },
+      {
+        "id": "reorderQtyField",
+        "component": "FormControl",
+        "label": "Quantity",
+        "input": "reorderQtyInput",
+        "hint": "Ships in case packs of 12"
+      },
+      {
+        "id": "reorderQtyInput",
+        "component": "Input",
+        "name": "quantity",
+        "type": "number",
+        "placeholder": "e.g. 48"
+      },
+      {
+        "id": "reorderPriorityField",
+        "component": "FormControl",
+        "label": "Priority",
+        "input": "reorderPrioritySelect"
+      },
+      {
+        "id": "reorderPrioritySelect",
+        "component": "Select",
+        "name": "priority",
+        "value": "standard",
+        "items": [
+          "prStd",
+          "prExp"
+        ]
+      },
+      {
+        "id": "prStd",
+        "component": "SelectItem",
+        "value": "standard",
+        "label": "Standard (3–5 days)"
+      },
+      {
+        "id": "prExp",
+        "component": "SelectItem",
+        "value": "expedited",
+        "label": "Expedited (next day)"
+      },
+      {
+        "id": "reorderButtons",
+        "component": "Buttons",
+        "buttons": [
+          "reorderSubmit",
+          "reorderCancel"
+        ]
+      },
+      {
+        "id": "reorderSubmit",
+        "component": "Button",
+        "label": "Place reorder",
+        "variant": "primary"
+      },
+      {
+        "id": "reorderCancel",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
 </a2ui-json>
 
-All 12 requirements are covered: (1) sales vs target with progress bar, (2) hourly foot traffic line chart, (3) best sellers bar chart with units, (4) out-of-stock table, (5) shift roster, (6) average basket size, (7) weekly returns, (8) promotion performance table, (9) register open/closed tags, (10) reorder form, (11) store switcher dropdown, and (12) this week vs last week comparison chart.
+The console maps to your checklist:
+
+1. **Sales vs target** — progress bar at $9,360 of $12,000 (78%)
+2. **Foot traffic** — hourly line chart, 8 AM–8 PM
+3. **Best sellers** — table with units per item
+4. **Out of stock** — warning alert plus a table with "out since" times
+5. **On shift** — table with names, roles, and hours
+6. **Average basket** — $42.18 KPI with transaction count
+7. **Returns this week** — 18 returns / $612 KPI with % of sales
+8. **Promotions** — a progress bar per promo showing redemptions vs goal
+9. **Registers** — table showing open/closed status per register
+10. **Reorder** — form with item, quantity, and priority, plus submit
+11. **Store switcher** — store selector with a "View store" action at top
+12. **Week comparison** — grouped bar chart of this week vs last week by day

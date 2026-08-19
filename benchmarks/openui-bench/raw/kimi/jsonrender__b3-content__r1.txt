@@ -1,72 +1,61 @@
-{"op":"add","path":"/root","value":"studio"}
-{"op":"add","path":"/elements/studio","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["header-row","top-grid","chart-card","bottom-grid","schedule-card"]}}
-{"op":"add","path":"/elements/header-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center"},"children":["page-title","new-draft-card"]}}
-{"op":"add","path":"/elements/page-title","value":{"type":"Heading","props":{"text":"Content Studio","level":"h1"},"children":[]}}
-{"op":"add","path":"/elements/new-draft-card","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center"},"children":["new-draft-input","new-draft-btn"]}}
-{"op":"add","path":"/elements/new-draft-input","value":{"type":"Input","props":{"name":"newDraftTitle","placeholder":"New draft title...","value":{"$bindState":"/newDraftTitle"}},"children":[]}}
-{"op":"add","path":"/state/newDraftTitle","value":""}
-{"op":"add","path":"/elements/new-draft-btn","value":{"type":"Button","props":{"label":"+ Start Draft","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/drafts","value":{"id":"$id","title":{"$state":"/newDraftTitle"},"status":"Draft","category":"Uncategorized"},"clearStatePath":"/newDraftTitle"}}},"children":[]}}
-{"op":"add","path":"/elements/top-grid","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"l","align":"start","wrap":true},"children":["drafts-card","side-col"]}}
-{"op":"add","path":"/elements/drafts-card","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["drafts-header","filter-row","drafts-list"]}}
-{"op":"add","path":"/elements/drafts-header","value":{"type":"CardHeader","props":{"title":"Drafts","subtitle":"All in-progress pieces and their status"},"children":[]}}
-{"op":"add","path":"/elements/filter-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"s","align":"center"},"children":["filter-label","filter-select"]}}
-{"op":"add","path":"/elements/filter-label","value":{"type":"Label","props":{"text":"Narrow by category:"},"children":[]}}
-{"op":"add","path":"/elements/filter-select","value":{"type":"Select","props":{"name":"categoryFilter","placeholder":"All categories","value":{"$bindState":"/categoryFilter"},"items":["cat-all","cat-tech","cat-culture","cat-business","cat-science"]},"children":[]}}
-{"op":"add","path":"/state/categoryFilter","value":"all"}
-{"op":"add","path":"/elements/cat-all","value":{"type":"SelectItem","props":{"value":"all","label":"All"},"children":[]}}
-{"op":"add","path":"/elements/cat-tech","value":{"type":"SelectItem","props":{"value":"Technology","label":"Technology"},"children":[]}}
-{"op":"add","path":"/elements/cat-culture","value":{"type":"SelectItem","props":{"value":"Culture","label":"Culture"},"children":[]}}
-{"op":"add","path":"/elements/cat-business","value":{"type":"SelectItem","props":{"value":"Business","label":"Business"},"children":[]}}
-{"op":"add","path":"/elements/cat-science","value":{"type":"SelectItem","props":{"value":"Science","label":"Science"},"children":[]}}
-{"op":"add","path":"/elements/drafts-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/drafts","key":"id"},"children":["draft-row"]}}
-{"op":"add","path":"/elements/draft-row","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"visible":{"$or":[{"$state":"/categoryFilter","eq":"all"},{"$state":"/categoryFilter","not":true}]},"children":["draft-title","draft-cat","draft-status"]}}
-{"op":"add","path":"/elements/draft-row-filtered","value":{"type":"Card","props":{"variant":"clear"},"children":[]}}
-{"op":"add","path":"/elements/draft-title","value":{"type":"TextContent","props":{"text":{"$item":"title"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/draft-cat","value":{"type":"Tag","props":{"text":{"$item":"category"},"variant":"neutral","size":"sm"},"children":[]}}
-{"op":"add","path":"/elements/draft-status","value":{"type":"Badge","props":{"text":{"$item":"status"},"variant":{"$cond":{"$item":"status","eq":"In Review"},"$then":"secondary","$else":"outline"}},"children":[]}}
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","topRow","filterSection","draftsSection","chartSection","bottomRow","newDraftBtn"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Content Studio","subtitle":"Your editorial command center"}}}
+{"op":"add","path":"/elements/topRow","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"children":["statPublished","statTopArticle"]}}
+{"op":"add","path":"/elements/statPublished","value":{"type":"Card","props":{"variant":"sunk","gap":"xs"},"children":["statPublishedLabel","statPublishedValue"]}}
+{"op":"add","path":"/elements/statPublishedLabel","value":{"type":"TextContent","props":{"text":"Published this week","size":"small"}}}
+{"op":"add","path":"/elements/statPublishedValue","value":{"type":"TextContent","props":{"text":{"$template":"${/publishedThisWeek} pieces"},"size":"large-heavy"}}}
+{"op":"add","path":"/state/publishedThisWeek","value":6}
+{"op":"add","path":"/elements/statTopArticle","value":{"type":"Card","props":{"variant":"sunk","gap":"xs"},"children":["statTopLabel","statTopTitle","statTopReads"]}}
+{"op":"add","path":"/elements/statTopLabel","value":{"type":"TextContent","props":{"text":"Most-read this month","size":"small"}}}
+{"op":"add","path":"/elements/statTopTitle","value":{"type":"TextContent","props":{"text":{"$state":"/topArticle/title"},"size":"small-heavy"}}}
+{"op":"add","path":"/elements/statTopReads","value":{"type":"TextContent","props":{"text":{"$template":"${/topArticle/reads} reads"},"size":"small"}}}
+{"op":"add","path":"/state/topArticle","value":{"title":"The Quiet Rise of Local Newsletters","reads":"48,210"}}
+{"op":"add","path":"/elements/filterSection","value":{"type":"Card","props":{"variant":"clear","gap":"s"},"children":["filterLabel","filterButtons"]}}
+{"op":"add","path":"/elements/filterLabel","value":{"type":"TextContent","props":{"text":"Narrow by category","size":"small-heavy"}}}
+{"op":"add","path":"/elements/filterButtons","value":{"type":"Buttons","props":{"buttons":["catAll","catTech","catCulture","catPolitics","catScience"]}}}
+{"op":"add","path":"/elements/catAll","value":{"type":"Button","props":{"label":"All","variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/category","value":"all"}}}}}
+{"op":"add","path":"/elements/catTech","value":{"type":"Button","props":{"label":"Tech","variant":"tertiary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/category","value":"tech"}}}}}
+{"op":"add","path":"/elements/catCulture","value":{"type":"Button","props":{"label":"Culture","variant":"tertiary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/category","value":"culture"}}}}}
+{"op":"add","path":"/elements/catPolitics","value":{"type":"Button","props":{"label":"Politics","variant":"tertiary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/category","value":"politics"}}}}}
+{"op":"add","path":"/elements/catScience","value":{"type":"Button","props":{"label":"Science","variant":"tertiary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/category","value":"science"}}}}}
+{"op":"add","path":"/state/category","value":"all"}
+{"op":"add","path":"/elements/draftsSection","value":{"type":"Card","props":{"gap":"s"},"children":["draftsHeader","draftList"]}}
+{"op":"add","path":"/elements/draftsHeader","value":{"type":"CardHeader","props":{"title":"Drafts","subtitle":"In-progress pieces and their status"}}}
+{"op":"add","path":"/elements/draftList","value":{"type":"Card","props":{"variant":"clear","gap":"s"},"repeat":{"statePath":"/drafts","key":"id"},"children":["draftRow"]}}
+{"op":"add","path":"/elements/draftRow","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["draftInfo","draftStatus"]}}
+{"op":"add","path":"/elements/draftInfo","value":{"type":"Card","props":{"variant":"clear","gap":"xs"},"children":["draftTitle","draftMeta"]}}
+{"op":"add","path":"/elements/draftTitle","value":{"type":"TextContent","props":{"text":{"$item":"title"},"size":"small-heavy"}}}
+{"op":"add","path":"/elements/draftMeta","value":{"type":"TextContent","props":{"text":{"$template":"${category} · updated ${updated}"},"size":"small"}}}
+{"op":"add","path":"/elements/draftStatus","value":{"type":"Badge","props":{"text":{"$item":"status"},"variant":{"$cond":{"$item":"status","eq":"Ready"},"$then":"default","$else":"secondary"}}}}
 {"op":"add","path":"/state/drafts","value":[]}
-{"op":"add","path":"/state/drafts/0","value":{"id":"d1","title":"The Quiet Rise of Local LLMs","status":"In Review","category":"Technology"}}
-{"op":"add","path":"/state/drafts/1","value":{"id":"d2","title":"Street Food Capitals of 2025","status":"Draft","category":"Culture"}}
-{"op":"add","path":"/state/drafts/2","value":{"id":"d3","title":"Q3 Media Earnings Breakdown","status":"Editing","category":"Business"}}
-{"op":"add","path":"/state/drafts/3","value":{"id":"d4","title":"What New Fusion Results Mean","status":"Draft","category":"Science"}}
-{"op":"add","path":"/elements/side-col","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["published-card","top-article-card","comments-card"]}}
-{"op":"add","path":"/elements/published-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["published-header","published-list"]}}
-{"op":"add","path":"/elements/published-header","value":{"type":"CardHeader","props":{"title":"Published This Week","subtitle":"4 pieces went live"},"children":[]}}
-{"op":"add","path":"/elements/published-list","value":{"type":"ListBlock","props":{"items":{"$state":"/publishedTitles"},"variant":"number"},"children":[]}}
-{"op":"add","path":"/state/publishedTitles","value":["Inside the Chip Supply Crunch","A Field Guide to Urban Birding","The Economics of Streaming Sports","Review: The Year's Best Notebooks"]}
-{"op":"add","path":"/elements/top-article-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["top-header","top-title","top-stats"]}}
-{"op":"add","path":"/elements/top-header","value":{"type":"CardHeader","props":{"title":"Most Read This Month"},"children":[]}}
-{"op":"add","path":"/elements/top-title","value":{"type":"TextContent","props":{"text":"\"How AI Is Rewriting the Newsroom\"","size":"large-heavy"},"children":[]}}
-{"op":"add","path":"/elements/top-stats","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m"},"children":["top-reads","top-tag"]}}
-{"op":"add","path":"/elements/top-reads","value":{"type":"TextContent","props":{"text":"128,400 reads · 4.2 min avg. read time","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/top-tag","value":{"type":"Tag","props":{"text":"Technology","variant":"info","size":"sm"},"children":[]}}
-{"op":"add","path":"/elements/comments-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["comments-header","comments-list"]}}
-{"op":"add","path":"/elements/comments-header","value":{"type":"CardHeader","props":{"title":"Comments Awaiting Reply","subtitle":"3 readers are waiting"},"children":[]}}
-{"op":"add","path":"/elements/comments-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/comments","key":"id"},"children":["comment-row"]}}
-{"op":"add","path":"/elements/comment-row","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["comment-author","comment-text","comment-reply-btn"]}}
-{"op":"add","path":"/elements/comment-author","value":{"type":"TextContent","props":{"text":{"$template":"${author} on \"${article}\""},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/comment-text","value":{"type":"TextContent","props":{"text":{"$item":"text"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/comment-reply-btn","value":{"type":"Button","props":{"label":"Mark Replied","variant":"tertiary","size":"extra-small"},"on":{"press":{"action":"removeState","params":{"statePath":"/comments","index":{"$index":true}}}},"children":[]}}
+{"op":"add","path":"/state/drafts/0","value":{"id":"d1","title":"AI Tools in the Newsroom","category":"Tech","status":"Ready","updated":"2h ago"}}
+{"op":"add","path":"/state/drafts/1","value":{"id":"d2","title":"Street Food Renaissance","category":"Culture","status":"In review","updated":"5h ago"}}
+{"op":"add","path":"/state/drafts/2","value":{"id":"d3","title":"Housing Policy, Explained","category":"Politics","status":"Drafting","updated":"1d ago"}}
+{"op":"add","path":"/state/drafts/3","value":{"id":"d4","title":"The New Space Telescopes","category":"Science","status":"Drafting","updated":"2d ago"}}
+{"op":"add","path":"/elements/chartSection","value":{"type":"Card","props":{"gap":"s"},"children":["chartHeader","readChart","readSeries"]}}
+{"op":"add","path":"/elements/chartHeader","value":{"type":"CardHeader","props":{"title":"Readership","subtitle":"Daily readers, past 30 days"}}}
+{"op":"add","path":"/elements/readChart","value":{"type":"AreaChart","props":{"labels":["Day 1","Day 6","Day 11","Day 16","Day 21","Day 26","Day 30"],"series":["readSeries"],"variant":"natural","xLabel":"Day","yLabel":"Readers"}}}
+{"op":"add","path":"/elements/readSeries","value":{"type":"Series","props":{"category":"Readers","values":[12400,15800,14200,18900,21300,19800,24600]}}}
+{"op":"add","path":"/elements/bottomRow","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true,"align":"start"},"children":["scheduleCard","commentsCard"]}}
+{"op":"add","path":"/elements/scheduleCard","value":{"type":"Card","props":{"gap":"s"},"children":["scheduleHeader","scheduleForm"]}}
+{"op":"add","path":"/elements/scheduleHeader","value":{"type":"CardHeader","props":{"title":"Schedule a piece","subtitle":"Set title and publish date"}}}
+{"op":"add","path":"/elements/scheduleForm","value":{"type":"Form","props":{"name":"schedule","buttons":"scheduleButtons","fields":["schedTitleField","schedDateField"]}}}
+{"op":"add","path":"/elements/schedTitleField","value":{"type":"FormControl","props":{"label":"Title","input":"schedTitleInput"}}}
+{"op":"add","path":"/elements/schedTitleInput","value":{"type":"Input","props":{"name":"title","placeholder":"Working title…"}}}
+{"op":"add","path":"/elements/schedDateField","value":{"type":"FormControl","props":{"label":"Publish date","input":"schedDatePicker"}}}
+{"op":"add","path":"/elements/schedDatePicker","value":{"type":"DatePicker","props":{"name":"publish_date","mode":"single"}}}
+{"op":"add","path":"/elements/scheduleButtons","value":{"type":"Buttons","props":{"buttons":["schedSubmit"]}}}
+{"op":"add","path":"/elements/schedSubmit","value":{"type":"Button","props":{"label":"Schedule","variant":"primary"}}}
+{"op":"add","path":"/elements/commentsCard","value":{"type":"Card","props":{"gap":"s"},"children":["commentsHeader","commentList"]}}
+{"op":"add","path":"/elements/commentsHeader","value":{"type":"CardHeader","props":{"title":"Comments awaiting reply","subtitle":"Reader feedback to address"}}}
+{"op":"add","path":"/elements/commentList","value":{"type":"Card","props":{"variant":"clear","gap":"s"},"repeat":{"statePath":"/comments","key":"id"},"children":["commentRow"]}}
+{"op":"add","path":"/elements/commentRow","value":{"type":"Card","props":{"variant":"sunk","gap":"xs"},"children":["commentAuthor","commentText","commentReply"]}}
+{"op":"add","path":"/elements/commentAuthor","value":{"type":"TextContent","props":{"text":{"$template":"${author} on “${article}”"},"size":"small-heavy"}}}
+{"op":"add","path":"/elements/commentText","value":{"type":"TextContent","props":{"text":{"$item":"text"},"size":"small"}}}
+{"op":"add","path":"/elements/commentReply","value":{"type":"Button","props":{"label":"Reply","variant":"tertiary","size":"extra-small"},"on":{"press":{"action":"removeState","params":{"statePath":"/comments","index":{"$index":true}}}}}}
 {"op":"add","path":"/state/comments","value":[]}
-{"op":"add","path":"/state/comments/0","value":{"id":"c1","author":"Maya R.","article":"How AI Is Rewriting the Newsroom","text":"Does this apply to local papers too, or just national outlets?"}}
-{"op":"add","path":"/state/comments/1","value":{"id":"c2","author":"Tom W.","article":"Inside the Chip Supply Crunch","text":"Great piece — any follow-up planned on the automotive side?"}}
-{"op":"add","path":"/state/comments/2","value":{"id":"c3","author":"Priya S.","article":"The Economics of Streaming Sports","text":"Would love a chart comparing rights fees year over year."}}
-{"op":"add","path":"/elements/chart-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["chart-header","readers-chart","series-readers"]}}
-{"op":"add","path":"/elements/chart-header","value":{"type":"CardHeader","props":{"title":"Readership — Past 30 Days","subtitle":"Daily unique readers"},"children":[]}}
-{"op":"add","path":"/elements/readers-chart","value":{"type":"LineChart","props":{"labels":["Day 1","Day 5","Day 10","Day 15","Day 20","Day 25","Day 30"],"series":["series-readers"],"variant":"natural","xLabel":"Day","yLabel":"Readers"},"children":[]}}
-{"op":"add","path":"/elements/series-readers","value":{"type":"Series","props":{"category":"Unique readers","values":[8200,9100,8700,10400,12100,11300,14200]},"children":[]}}
-{"op":"add","path":"/elements/bottom-grid","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["stats-row"]}}
-{"op":"add","path":"/elements/stats-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"l","wrap":true},"children":["progress-drafts","progress-goals"]}}
-{"op":"add","path":"/elements/progress-drafts","value":{"type":"Progress","props":{"value":65,"label":"Weekly publishing goal: 4 of 6 pieces live"},"children":[]}}
-{"op":"add","path":"/elements/progress-goals","value":{"type":"Progress","props":{"value":82,"label":"Monthly readership goal: 82% reached"},"children":[]}}
-{"op":"add","path":"/elements/schedule-card","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["schedule-header","schedule-form"]}}
-{"op":"add","path":"/elements/schedule-header","value":{"type":"CardHeader","props":{"title":"Schedule a Piece","subtitle":"Set a title and publish date"},"children":[]}}
-{"op":"add","path":"/elements/schedule-form","value":{"type":"Form","props":{"name":"scheduleForm","buttons":"schedule-buttons","fields":["fc-title","fc-date"]},"children":[]}}
-{"op":"add","path":"/elements/fc-title","value":{"type":"FormControl","props":{"label":"Piece title","input":"sched-title","hint":"The headline as it will appear on publish"},"children":[]}}
-{"op":"add","path":"/elements/sched-title","value":{"type":"Input","props":{"name":"schedTitle","placeholder":"e.g. The Future of Local News","value":{"$bindState":"/schedTitle"}},"children":[]}}
-{"op":"add","path":"/state/schedTitle","value":""}
-{"op":"add","path":"/elements/fc-date","value":{"type":"FormControl","props":{"label":"Publish date","input":"sched-date"},"children":[]}}
-{"op":"add","path":"/elements/sched-date","value":{"type":"DatePicker","props":{"name":"schedDate","mode":"single"},"children":[]}}
-{"op":"add","path":"/elements/schedule-buttons","value":{"type":"Buttons","props":{"buttons":["sched-submit"],"direction":"row"},"children":[]}}
-{"op":"add","path":"/elements/sched-submit","value":{"type":"Button","props":{"label":"Schedule Piece","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/scheduled","value":{"id":"$id","title":{"$state":"/schedTitle"}},"clearStatePath":"/schedTitle"}}},"children":[]}}
-{"op":"add","path":"/state/scheduled","value":[]}
+{"op":"add","path":"/state/comments/0","value":{"id":"c1","author":"Maya R.","article":"The Quiet Rise of Local Newsletters","text":"Would love a follow-up on monetization models."}}
+{"op":"add","path":"/state/comments/1","value":{"id":"c2","author":"Tom H.","article":"AI Tools in the Newsroom","text":"Any concerns about fact-checking automation?"}}
+{"op":"add","path":"/state/comments/2","value":{"id":"c3","author":"Priya S.","article":"Housing Policy, Explained","text":"This clarified zoning laws for me. Thank you!"}}
+{"op":"add","path":"/elements/newDraftBtn","value":{"type":"Button","props":{"label":"+ Start a new draft","variant":"primary","size":"large"},"on":{"press":{"action":"pushState","params":{"statePath":"/drafts","value":{"id":"$id","title":"Untitled draft","category":"Uncategorized","status":"Drafting","updated":"just now"}}}}}}

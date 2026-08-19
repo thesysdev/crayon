@@ -2,12 +2,8 @@
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "editor-content-studio",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": {
-      "primaryColor": "#4F46E5",
-      "agentDisplayName": "Content Studio"
-    }
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
@@ -16,207 +12,177 @@
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "editor-content-studio",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
         "variant": "clear",
-        "direction": "column",
-        "gap": "xl",
+        "gap": "l",
         "children": [
           "header",
-          "overviewRow",
-          "readershipCard",
-          "draftsCard",
-          "scheduleCard",
-          "commentsCard"
+          "topActions",
+          "categoryFilter",
+          "overview",
+          "readershipSection",
+          "draftsSection",
+          "scheduleSection",
+          "commentsSection"
         ]
       },
       {
         "id": "header",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "align": "center",
-        "justify": "between",
-        "children": [
-          "headerCopy",
-          "newDraftButton"
+        "component": "CardHeader",
+        "title": "Content Studio",
+        "subtitle": "Plan, publish, and manage your editorial work"
+      },
+      {
+        "id": "topActions",
+        "component": "Buttons",
+        "buttons": [
+          "newDraftBtn"
         ]
       },
       {
-        "id": "headerCopy",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "pageTitle",
-          "pageSubtitle"
-        ]
-      },
-      {
-        "id": "pageTitle",
-        "component": "Heading",
-        "text": "Content Studio",
-        "level": "h1"
-      },
-      {
-        "id": "pageSubtitle",
-        "component": "TextContent",
-        "text": "Plan, publish, and track your editorial work in one place.",
-        "size": "default"
-      },
-      {
-        "id": "newDraftButton",
+        "id": "newDraftBtn",
         "component": "Button",
         "label": "Start new draft",
         "variant": "primary",
-        "size": "medium",
-        "action": [
-          {
-            "type": "new_draft"
-          }
+        "size": "large"
+      },
+      {
+        "id": "categoryFilter",
+        "component": "FormControl",
+        "label": "Category",
+        "hint": "Narrow the dashboard to a content category",
+        "input": "categorySelect"
+      },
+      {
+        "id": "categorySelect",
+        "component": "Select",
+        "name": "category",
+        "placeholder": "All categories",
+        "items": [
+          "categoryAll",
+          "categoryNews",
+          "categoryGuides",
+          "categoryOpinion",
+          "categoryCulture"
         ]
       },
       {
-        "id": "overviewRow",
+        "id": "categoryAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All categories"
+      },
+      {
+        "id": "categoryNews",
+        "component": "SelectItem",
+        "value": "news",
+        "label": "News"
+      },
+      {
+        "id": "categoryGuides",
+        "component": "SelectItem",
+        "value": "guides",
+        "label": "Guides"
+      },
+      {
+        "id": "categoryOpinion",
+        "component": "SelectItem",
+        "value": "opinion",
+        "label": "Opinion"
+      },
+      {
+        "id": "categoryCulture",
+        "component": "SelectItem",
+        "value": "culture",
+        "label": "Culture"
+      },
+      {
+        "id": "overview",
         "component": "Card",
-        "variant": "clear",
         "direction": "row",
-        "gap": "l",
-        "align": "stretch",
+        "gap": "m",
         "children": [
-          "publishedWeekCard",
-          "topArticleCard",
-          "commentsSummaryCard"
+          "publishedWeek",
+          "mostRead"
         ]
       },
       {
-        "id": "publishedWeekCard",
+        "id": "publishedWeek",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
+        "variant": "sunk",
         "gap": "s",
         "children": [
-          "publishedWeekLabel",
+          "publishedWeekTitle",
           "publishedWeekValue",
-          "publishedWeekDetail"
+          "publishedWeekNote"
         ]
       },
       {
-        "id": "publishedWeekLabel",
+        "id": "publishedWeekTitle",
         "component": "TextContent",
         "text": "Published this week",
-        "size": "small"
+        "size": "small-heavy"
       },
       {
         "id": "publishedWeekValue",
         "component": "Heading",
-        "text": "8 pieces",
+        "text": "12 pieces",
         "level": "h2"
       },
       {
-        "id": "publishedWeekDetail",
+        "id": "publishedWeekNote",
         "component": "TextContent",
-        "text": "Up 3 from last week",
+        "text": "3 more than last week",
         "size": "small"
       },
       {
-        "id": "topArticleCard",
+        "id": "mostRead",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
+        "variant": "sunk",
         "gap": "s",
         "children": [
-          "topArticleLabel",
-          "topArticleTitle",
-          "topArticleDetail"
+          "mostReadTitle",
+          "mostReadArticle",
+          "mostReadMeta"
         ]
       },
       {
-        "id": "topArticleLabel",
+        "id": "mostReadTitle",
         "component": "TextContent",
         "text": "Most-read this month",
-        "size": "small"
+        "size": "small-heavy"
       },
       {
-        "id": "topArticleTitle",
-        "component": "TextContent",
-        "text": "The Practical Guide to Sustainable Growth",
-        "size": "large-heavy"
-      },
-      {
-        "id": "topArticleDetail",
-        "component": "TextContent",
-        "text": "24,860 reads · 6m 18s average time",
-        "size": "small"
-      },
-      {
-        "id": "commentsSummaryCard",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "children": [
-          "commentsSummaryLabel",
-          "commentsSummaryValue",
-          "commentsSummaryDetail"
-        ]
-      },
-      {
-        "id": "commentsSummaryLabel",
-        "component": "TextContent",
-        "text": "Comments awaiting reply",
-        "size": "small"
-      },
-      {
-        "id": "commentsSummaryValue",
+        "id": "mostReadArticle",
         "component": "Heading",
-        "text": "12",
-        "level": "h2"
+        "text": "How Cities Are Designing for Extreme Heat",
+        "level": "h3"
       },
       {
-        "id": "commentsSummaryDetail",
+        "id": "mostReadMeta",
         "component": "TextContent",
-        "text": "4 need attention today",
+        "text": "48,290 reads · Published Aug 3",
         "size": "small"
       },
       {
-        "id": "readershipCard",
+        "id": "readershipSection",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
         "gap": "m",
         "children": [
           "readershipHeader",
-          "readershipChart"
+          "readershipChart",
+          "readershipSeries"
         ]
       },
       {
         "id": "readershipHeader",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "align": "center",
-        "justify": "between",
-        "children": [
-          "readershipTitle",
-          "readershipPeriod"
-        ]
-      },
-      {
-        "id": "readershipTitle",
-        "component": "Heading",
-        "text": "Readership",
-        "level": "h2"
-      },
-      {
-        "id": "readershipPeriod",
-        "component": "Badge",
-        "text": "Past 30 days",
-        "variant": "secondary"
+        "component": "CardHeader",
+        "title": "Readership",
+        "subtitle": "Daily reads over the past 30 days"
       },
       {
         "id": "readershipChart",
@@ -239,279 +205,192 @@
         ],
         "variant": "natural",
         "xLabel": "Date",
-        "yLabel": "Article reads"
+        "yLabel": "Reads"
       },
       {
         "id": "readershipSeries",
         "component": "Series",
-        "category": "Reads",
+        "category": "Article reads",
         "values": [
-          1280,
-          1640,
-          1510,
-          2230,
-          1980,
-          2760,
-          2450,
-          3180,
-          2940,
-          3670,
-          4210
+          8420,
+          9150,
+          10380,
+          9780,
+          12140,
+          14520,
+          13200,
+          15890,
+          17430,
+          16280,
+          18960
         ]
       },
       {
-        "id": "draftsCard",
+        "id": "draftsSection",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
         "gap": "m",
         "children": [
           "draftsHeader",
-          "draftsTable"
+          "draftsTable",
+          "draftTitleCol",
+          "draftCategoryCol",
+          "draftUpdatedCol",
+          "draftStatusCol"
         ]
       },
       {
         "id": "draftsHeader",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "align": "center",
-        "justify": "between",
-        "children": [
-          "draftsTitle",
-          "categorySelect"
-        ]
-      },
-      {
-        "id": "draftsTitle",
-        "component": "Heading",
-        "text": "Drafts",
-        "level": "h2"
-      },
-      {
-        "id": "categorySelect",
-        "component": "Select",
-        "name": "categoryFilter",
-        "placeholder": "All categories",
-        "value": "all",
-        "items": [
-          "categoryAll",
-          "categoryStrategy",
-          "categoryProduct",
-          "categoryCulture",
-          "categoryNews"
-        ],
-        "size": "medium"
-      },
-      {
-        "id": "categoryAll",
-        "component": "SelectItem",
-        "value": "all",
-        "label": "All categories"
-      },
-      {
-        "id": "categoryStrategy",
-        "component": "SelectItem",
-        "value": "strategy",
-        "label": "Strategy"
-      },
-      {
-        "id": "categoryProduct",
-        "component": "SelectItem",
-        "value": "product",
-        "label": "Product"
-      },
-      {
-        "id": "categoryCulture",
-        "component": "SelectItem",
-        "value": "culture",
-        "label": "Culture"
-      },
-      {
-        "id": "categoryNews",
-        "component": "SelectItem",
-        "value": "news",
-        "label": "Company news"
+        "component": "CardHeader",
+        "title": "Drafts",
+        "subtitle": "Content currently in progress"
       },
       {
         "id": "draftsTable",
         "component": "Table",
         "columns": [
-          "draftTitleColumn",
-          "draftCategoryColumn",
-          "draftStatusColumn",
-          "draftUpdatedColumn"
+          "draftTitleCol",
+          "draftCategoryCol",
+          "draftUpdatedCol",
+          "draftStatusCol"
         ]
       },
       {
-        "id": "draftTitleColumn",
+        "id": "draftTitleCol",
         "component": "Col",
         "label": "Title",
         "data": [
-          "A Field Guide to Better Editorial Planning",
-          "What We Learned From 100 Customer Interviews",
-          "Designing an Onboarding Experience That Sticks",
-          "August Product Roundup"
-        ],
-        "type": "string"
+          "The New Rules of Urban Mobility",
+          "A Field Guide to Local Food Systems",
+          "Interview: Building Better Public Spaces",
+          "Why Community Newsletters Still Matter"
+        ]
       },
       {
-        "id": "draftCategoryColumn",
+        "id": "draftCategoryCol",
         "component": "Col",
         "label": "Category",
         "data": [
-          "Strategy",
-          "Research",
-          "Product",
-          "Company news"
-        ],
-        "type": "string"
+          "Guides",
+          "Culture",
+          "Opinion",
+          "News"
+        ]
       },
       {
-        "id": "draftStatusColumn",
+        "id": "draftUpdatedCol",
+        "component": "Col",
+        "label": "Last updated",
+        "data": [
+          "Today, 10:42 AM",
+          "Yesterday",
+          "Aug 15",
+          "Aug 12"
+        ]
+      },
+      {
+        "id": "draftStatusCol",
         "component": "Col",
         "label": "Status",
         "data": [
           "In review",
           "Writing",
           "Needs edits",
-          "Ready to schedule"
-        ],
-        "type": "string"
-      },
-      {
-        "id": "draftUpdatedColumn",
-        "component": "Col",
-        "label": "Last updated",
-        "data": [
-          "Today, 9:42 AM",
-          "Yesterday",
-          "Aug 15",
-          "Aug 13"
-        ],
-        "type": "string"
-      },
-      {
-        "id": "scheduleCard",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "scheduleTitle",
-          "scheduleForm"
+          "Ready to publish"
         ]
       },
       {
-        "id": "scheduleTitle",
-        "component": "Heading",
-        "text": "Schedule a piece",
-        "level": "h2"
+        "id": "scheduleSection",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "scheduleHeader",
+          "scheduleForm",
+          "scheduleTitleField",
+          "scheduleTitleInput",
+          "scheduleDateField",
+          "scheduleDateInput",
+          "scheduleButtons",
+          "scheduleBtn"
+        ]
+      },
+      {
+        "id": "scheduleHeader",
+        "component": "CardHeader",
+        "title": "Schedule a piece",
+        "subtitle": "Add a title and choose when it should publish"
       },
       {
         "id": "scheduleForm",
         "component": "Form",
-        "name": "schedulePiece",
+        "name": "schedule-piece",
         "fields": [
-          "scheduleTitleControl",
-          "scheduleDateControl"
+          "scheduleTitleField",
+          "scheduleDateField"
         ],
         "buttons": "scheduleButtons"
       },
       {
-        "id": "scheduleTitleControl",
+        "id": "scheduleTitleField",
         "component": "FormControl",
         "label": "Piece title",
-        "hint": "Choose a draft or enter a working title.",
         "input": "scheduleTitleInput"
       },
       {
         "id": "scheduleTitleInput",
         "component": "Input",
-        "name": "pieceTitle",
-        "placeholder": "e.g., The future of customer research",
-        "type": "text"
+        "name": "scheduled_title",
+        "placeholder": "Enter the article title"
       },
       {
-        "id": "scheduleDateControl",
+        "id": "scheduleDateField",
         "component": "FormControl",
         "label": "Publish date",
-        "hint": "Select when this piece should go live.",
         "input": "scheduleDateInput"
       },
       {
         "id": "scheduleDateInput",
         "component": "DatePicker",
-        "name": "publishDate",
+        "name": "publish_date",
         "mode": "single"
       },
       {
         "id": "scheduleButtons",
         "component": "Buttons",
-        "direction": "row",
         "buttons": [
-          "scheduleButton",
-          "saveScheduleDraftButton"
+          "scheduleBtn"
         ]
       },
       {
-        "id": "scheduleButton",
+        "id": "scheduleBtn",
         "component": "Button",
         "label": "Schedule piece",
-        "variant": "primary",
-        "size": "medium",
-        "action": [
-          {
-            "type": "schedule_piece"
-          }
-        ]
+        "variant": "primary"
       },
       {
-        "id": "saveScheduleDraftButton",
-        "component": "Button",
-        "label": "Save for later",
-        "variant": "secondary",
-        "size": "medium",
-        "action": [
-          {
-            "type": "save_schedule_draft"
-          }
-        ]
-      },
-      {
-        "id": "commentsCard",
+        "id": "commentsSection",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
         "gap": "m",
         "children": [
           "commentsHeader",
-          "commentsList"
+          "commentsAlert",
+          "commentsList",
+          "commentOne",
+          "commentTwo",
+          "commentThree"
         ]
       },
       {
         "id": "commentsHeader",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "align": "center",
-        "justify": "between",
-        "children": [
-          "commentsTitle",
-          "commentsBadge"
-        ]
+        "component": "CardHeader",
+        "title": "Comments awaiting reply",
+        "subtitle": "3 reader conversations need your attention"
       },
       {
-        "id": "commentsTitle",
-        "component": "Heading",
-        "text": "Comments awaiting reply",
-        "level": "h2"
-      },
-      {
-        "id": "commentsBadge",
-        "component": "Badge",
-        "text": "12 open",
-        "variant": "destructive"
+        "id": "commentsAlert",
+        "component": "Alert",
+        "title": "Reply queue",
+        "description": "Two comments have been waiting for more than 24 hours.",
+        "variant": "warning"
       },
       {
         "id": "commentsList",
@@ -526,22 +405,22 @@
       {
         "id": "commentOne",
         "component": "ListItem",
-        "title": "Maya Chen · “Could you share the template mentioned in section three?”",
-        "subtitle": "On: The Practical Guide to Sustainable Growth · 18 minutes ago",
+        "title": "Maya Chen on “How Cities Are Designing for Extreme Heat”",
+        "subtitle": "“Could you share more examples of cooling corridors that worked?”",
         "actionLabel": "Reply"
       },
       {
         "id": "commentTwo",
         "component": "ListItem",
-        "title": "Jordan Lee · “This is a thoughtful breakdown. How did you measure retention?”",
-        "subtitle": "On: Designing an Onboarding Experience That Sticks · 2 hours ago",
+        "title": "Jordan Lee on “The Future of Public Libraries”",
+        "subtitle": "“This was useful—are there plans to cover smaller towns too?”",
         "actionLabel": "Reply"
       },
       {
         "id": "commentThree",
         "component": "ListItem",
-        "title": "Priya N. · “Would love a follow-up on the research process.”",
-        "subtitle": "On: What We Learned From 100 Customer Interviews · Yesterday",
+        "title": "Avery Patel on “A Field Guide to Local Food Systems”",
+        "subtitle": "“Great reporting. I have a question about the co-op data.”",
         "actionLabel": "Reply"
       }
     ]

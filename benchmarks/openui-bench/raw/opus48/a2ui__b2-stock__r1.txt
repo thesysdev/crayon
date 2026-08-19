@@ -1,168 +1,166 @@
 Here's a low-inventory warning view covering all four requirements.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "low-inventory",
-      "catalogId": "thesys.dev:c1-openui"
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "low-inventory",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "direction": "column",
-          "gap": "l",
-          "children": [
-            "header",
-            "threshold-callout",
-            "search-form",
-            "items-section",
-            "table-card"
-          ]
-        },
-        {
-          "id": "header",
-          "component": "CardHeader",
-          "title": "Low Inventory Warnings",
-          "subtitle": "Items at or below the reorder threshold"
-        },
-        {
-          "id": "threshold-callout",
-          "component": "Callout",
-          "variant": "warning",
-          "title": "Warning Threshold: 20 units",
-          "description": "Any item with 20 or fewer remaining units is flagged for reorder."
-        },
-        {
-          "id": "search-form",
-          "component": "Form",
-          "name": "search-inventory",
-          "fields": ["search-control"],
-          "buttons": "search-buttons"
-        },
-        {
-          "id": "search-control",
-          "component": "FormControl",
-          "label": "Search Items",
-          "hint": "Filter by product name or SKU",
-          "input": "search-input"
-        },
-        {
-          "id": "search-input",
-          "component": "Input",
-          "name": "query",
-          "type": "text",
-          "placeholder": "e.g. Bolt, SKU-0042..."
-        },
-        {
-          "id": "search-buttons",
-          "component": "Buttons",
-          "buttons": ["search-btn"]
-        },
-        {
-          "id": "search-btn",
-          "component": "Button",
-          "label": "Search",
-          "variant": "secondary",
-          "action": ["search_inventory"]
-        },
-        {
-          "id": "items-section",
-          "component": "ListBlock",
-          "variant": "number",
-          "items": ["item-1", "item-2", "item-3", "item-4"]
-        },
-        {
-          "id": "item-1",
-          "component": "ListItem",
-          "title": "M6 Hex Bolts (SKU-0042)",
-          "subtitle": "Remaining: 8 units — below threshold of 20",
-          "actionLabel": "Reorder"
-        },
-        {
-          "id": "item-2",
-          "component": "ListItem",
-          "title": "Copper Washers (SKU-0117)",
-          "subtitle": "Remaining: 14 units — below threshold of 20",
-          "actionLabel": "Reorder"
-        },
-        {
-          "id": "item-3",
-          "component": "ListItem",
-          "title": "Nylon Cable Ties (SKU-0233)",
-          "subtitle": "Remaining: 3 units — below threshold of 20",
-          "actionLabel": "Reorder"
-        },
-        {
-          "id": "item-4",
-          "component": "ListItem",
-          "title": "Steel Brackets (SKU-0308)",
-          "subtitle": "Remaining: 19 units — below threshold of 20",
-          "actionLabel": "Reorder"
-        },
-        {
-          "id": "table-card",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "m",
-          "children": ["table-header", "inventory-table"]
-        },
-        {
-          "id": "table-header",
-          "component": "Heading",
-          "text": "Reorder Overview",
-          "level": "h4"
-        },
-        {
-          "id": "inventory-table",
-          "component": "Table",
-          "columns": ["col-item", "col-remaining", "col-threshold", "col-action"]
-        },
-        {
-          "id": "col-item",
-          "component": "Col",
-          "label": "Item",
-          "type": "string",
-          "data": ["M6 Hex Bolts", "Copper Washers", "Nylon Cable Ties", "Steel Brackets"]
-        },
-        {
-          "id": "col-remaining",
-          "component": "Col",
-          "label": "Remaining Units",
-          "type": "number",
-          "data": [8, 14, 3, 19]
-        },
-        {
-          "id": "col-threshold",
-          "component": "Col",
-          "label": "Threshold",
-          "type": "number",
-          "data": [20, 20, 20, 20]
-        },
-        {
-          "id": "col-action",
-          "component": "Col",
-          "label": "Action",
-          "type": "action",
-          "data": ["Reorder", "Reorder", "Reorder", "Reorder"]
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-This single screen covers all four requirements:
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "thresholdBanner",
+          "searchControl",
+          "lowStockTable",
+          "reorderActions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Low Inventory Warnings",
+        "subtitle": "Items at or below their reorder point"
+      },
+      {
+        "id": "thresholdBanner",
+        "component": "Alert",
+        "title": "Warning threshold: 20 units",
+        "description": "Any item with 20 or fewer units remaining is flagged for reorder.",
+        "variant": "warning"
+      },
+      {
+        "id": "searchControl",
+        "component": "FormControl",
+        "label": "Search items",
+        "input": "searchInput",
+        "hint": "Filter by product name or SKU"
+      },
+      {
+        "id": "searchInput",
+        "component": "Input",
+        "name": "item_search",
+        "placeholder": "Search by name or SKU...",
+        "type": "text"
+      },
+      {
+        "id": "lowStockTable",
+        "component": "Table",
+        "columns": [
+          "colItem",
+          "colSku",
+          "colRemaining",
+          "colThreshold",
+          "colReorder"
+        ]
+      },
+      {
+        "id": "colItem",
+        "component": "Col",
+        "label": "Item",
+        "type": "string",
+        "data": [
+          "Organic Green Tea",
+          "AA Batteries (12pk)",
+          "Ceramic Coffee Mug",
+          "USB-C Cable 1m",
+          "Hand Sanitizer 500ml"
+        ]
+      },
+      {
+        "id": "colSku",
+        "component": "Col",
+        "label": "SKU",
+        "type": "string",
+        "data": [
+          "TEA-014",
+          "BAT-221",
+          "MUG-078",
+          "CAB-330",
+          "SAN-119"
+        ]
+      },
+      {
+        "id": "colRemaining",
+        "component": "Col",
+        "label": "Units Remaining",
+        "type": "number",
+        "data": [
+          4,
+          9,
+          15,
+          2,
+          18
+        ]
+      },
+      {
+        "id": "colThreshold",
+        "component": "Col",
+        "label": "Reorder Threshold",
+        "type": "number",
+        "data": [
+          20,
+          20,
+          20,
+          20,
+          20
+        ]
+      },
+      {
+        "id": "colReorder",
+        "component": "Col",
+        "label": "Action",
+        "type": "action",
+        "data": [
+          "Reorder",
+          "Reorder",
+          "Reorder",
+          "Reorder",
+          "Reorder"
+        ]
+      },
+      {
+        "id": "reorderActions",
+        "component": "Buttons",
+        "direction": "row",
+        "buttons": [
+          "reorderSelectedBtn",
+          "reorderAllBtn"
+        ]
+      },
+      {
+        "id": "reorderSelectedBtn",
+        "component": "Button",
+        "label": "Reorder Selected",
+        "variant": "primary"
+      },
+      {
+        "id": "reorderAllBtn",
+        "component": "Button",
+        "label": "Reorder All Low Items",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>
 
-1. **Items running low with remaining units** — shown both in the numbered `ListBlock` (each item's subtitle) and the "Remaining Units" table column.
-2. **A way to reorder each item** — every list item has a "Reorder" action label, and the table includes an action column with reorder buttons per row.
-3. **The trigger threshold** — highlighted at the top in the warning `Callout` (20 units) and repeated per-row in the "Threshold" table column.
-4. **A way to search items** — the search form with an input and Search button at the top.
+This screen covers every numbered requirement:
+
+1. **Items running low with remaining units** — the table lists each low-stock item with its "Units Remaining" column.
+2. **A way to reorder each item** — each row has a "Reorder" action in the Action column, plus bulk "Reorder Selected" / "Reorder All Low Items" buttons below.
+3. **The threshold that triggers this warning** — shown in the top warning banner ("20 units") and reinforced per-row in the "Reorder Threshold" column.
+4. **A way to search items** — the search input at the top filters by product name or SKU.

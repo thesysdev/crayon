@@ -1,29 +1,25 @@
 {"op":"add","path":"/root","value":"weather-brief"}
-{"op":"add","path":"/elements/weather-brief","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l","align":"stretch"},"children":["header","current-weather","sun-card","outlook-section"]}}
-{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Good morning, Bengaluru","subtitle":"Tuesday, 18 August 2026 · Morning weather brief"},"children":[]}}
-{"op":"add","path":"/elements/current-weather","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s","align":"start"},"children":["current-label","current-temperature","current-condition","current-detail"]}}
-{"op":"add","path":"/elements/current-label","value":{"type":"Badge","props":{"text":"CURRENT CONDITIONS","variant":"secondary"},"children":[]}}
-{"op":"add","path":"/elements/current-temperature","value":{"type":"Heading","props":{"text":{"$template":"${/current/temperature}°C"},"level":"h1"},"children":[]}}
-{"op":"add","path":"/state/current/temperature","value":22}
-{"op":"add","path":"/elements/current-condition","value":{"type":"Heading","props":{"text":{"$state":"/current/condition"},"level":"h2"},"children":[]}}
-{"op":"add","path":"/state/current/condition","value":"Partly cloudy"}
-{"op":"add","path":"/elements/current-detail","value":{"type":"TextContent","props":{"text":{"$template":"Feels like ${/current/feelsLike}°C · High ${/current/high}° / Low ${/current/low}° · Rain ${/current/rainChance}%"},"size":"default"},"children":[]}}
-{"op":"add","path":"/state/current/feelsLike","value":23}
-{"op":"add","path":"/state/current/high","value":28}
-{"op":"add","path":"/state/current/low","value":20}
-{"op":"add","path":"/state/current/rainChance","value":20}
-{"op":"add","path":"/elements/sun-card","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"l","align":"center","justify":"between","wrap":true},"children":["sunrise","sunset"]}}
-{"op":"add","path":"/elements/sunrise","value":{"type":"TextContent","props":{"text":{"$template":"**Sunrise**\n${/sun/sunrise}"},"size":"large"},"children":[]}}
-{"op":"add","path":"/state/sun/sunrise","value":"6:07 AM"}
-{"op":"add","path":"/elements/sunset","value":{"type":"TextContent","props":{"text":{"$template":"**Sunset**\n${/sun/sunset}"},"size":"large"},"children":[]}}
-{"op":"add","path":"/state/sun/sunset","value":"6:38 PM"}
-{"op":"add","path":"/elements/outlook-section","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"children":["outlook-heading","forecast-list"]}}
+{"op":"add","path":"/elements/weather-brief","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["brief-header","current-weather","sun-card","outlook-heading","outlook-list"]}}
+{"op":"add","path":"/elements/brief-header","value":{"type":"CardHeader","props":{"title":"Good morning, Bengaluru","subtitle":{"$template":"${/weather/date} · Morning weather brief"}},"children":[]}}
+{"op":"add","path":"/state/weather","value":{"date":"Tuesday, 18 August"}}
+{"op":"add","path":"/elements/current-weather","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["current-label","current-temperature","current-condition","current-summary"]}}
+{"op":"add","path":"/elements/current-label","value":{"type":"Badge","props":{"text":"Current conditions","variant":"secondary"},"children":[]}}
+{"op":"add","path":"/elements/current-temperature","value":{"type":"Heading","props":{"text":{"$template":"${/weather/current/temperature}°C"},"level":"h1"},"children":[]}}
+{"op":"add","path":"/elements/current-condition","value":{"type":"TextContent","props":{"text":{"$template":"${/weather/current/icon} ${/weather/current.condition}"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/current-summary","value":{"type":"TextContent","props":{"text":{"$template":"Feels like ${/weather/current/feelsLike}°C · Humidity ${/weather/current/humidity}% · Light winds from the west"},"size":"small"},"children":[]}}
+{"op":"add","path":"/state/weather/current","value":{"temperature":21,"condition":"Partly cloudy","icon":"⛅","feelsLike":21,"humidity":72}}
+{"op":"add","path":"/elements/sun-card","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"xl","justify":"between","align":"center"},"children":["sunrise","sunset"]}}
+{"op":"add","path":"/elements/sunrise","value":{"type":"TextContent","props":{"text":{"$template":"**Sunrise**\n🌅 ${/weather/sunrise}"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/sunset","value":{"type":"TextContent","props":{"text":{"$template":"**Sunset**\n🌇 ${/weather/sunset}"},"size":"default"},"children":[]}}
+{"op":"add","path":"/state/weather/sunrise","value":"6:08 AM"}
+{"op":"add","path":"/state/weather/sunset","value":"6:39 PM"}
 {"op":"add","path":"/elements/outlook-heading","value":{"type":"Heading","props":{"text":"Next three days","level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/forecast-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/forecast","key":"id"},"children":["forecast-day"]}}
-{"op":"add","path":"/elements/forecast-day","value":{"type":"Card","props":{"variant":"card","direction":"row","gap":"m","align":"center","justify":"between","wrap":true},"children":["forecast-summary","forecast-temps"]}}
-{"op":"add","path":"/elements/forecast-summary","value":{"type":"TextContent","props":{"text":{"$template":"**${day} · ${date}**\n${condition} · Rain ${rainChance}%"},"size":"default"},"children":[]}}
-{"op":"add","path":"/elements/forecast-temps","value":{"type":"TextContent","props":{"text":{"$template":"**${high}°** / ${low}°"},"size":"large"},"children":[]}}
+{"op":"add","path":"/elements/outlook-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/forecast","key":"id"},"children":["forecast-day"]}}
+{"op":"add","path":"/elements/forecast-day","value":{"type":"Card","props":{"variant":"card","direction":"row","gap":"m","align":"center","justify":"between"},"children":["forecast-date","forecast-condition","forecast-temperature"]}}
+{"op":"add","path":"/elements/forecast-date","value":{"type":"TextContent","props":{"text":{"$item":"day"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/forecast-condition","value":{"type":"TextContent","props":{"text":{"$template":"${icon} ${condition}"},"size":"default"},"children":[]}}
+{"op":"add","path":"/elements/forecast-temperature","value":{"type":"TextContent","props":{"text":{"$template":"**${high}°** / ${low}°"},"size":"default"},"children":[]}}
 {"op":"add","path":"/state/forecast","value":[]}
-{"op":"add","path":"/state/forecast/0","value":{"id":"wed","day":"Wednesday","date":"19 Aug","condition":"Cloudy with a brief shower","high":27,"low":20,"rainChance":45}}
-{"op":"add","path":"/state/forecast/1","value":{"id":"thu","day":"Thursday","date":"20 Aug","condition":"Partly cloudy","high":28,"low":20,"rainChance":25}}
-{"op":"add","path":"/state/forecast/2","value":{"id":"fri","day":"Friday","date":"21 Aug","condition":"Sunny intervals","high":29,"low":19,"rainChance":15}}
+{"op":"add","path":"/state/forecast/0","value":{"id":"wed","day":"Wednesday","icon":"🌦️","condition":"Scattered showers","high":27,"low":20}}
+{"op":"add","path":"/state/forecast/1","value":{"id":"thu","day":"Thursday","icon":"⛅","condition":"Partly cloudy","high":28,"low":20}}
+{"op":"add","path":"/state/forecast/2","value":{"id":"fri","day":"Friday","icon":"🌧️","condition":"Afternoon rain","high":26,"low":19}}

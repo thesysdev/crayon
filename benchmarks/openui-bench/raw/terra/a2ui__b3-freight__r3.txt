@@ -1,7 +1,325 @@
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"logistics-coordinator-board","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#2563EB","agentDisplayName":"Logistics Coordinator"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"logistics-coordinator-board","components":[{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["header","refresh","metrics","routeSearch","mainContent","weeklyCard"]},{"id":"header","component":"Card","variant":"clear","direction":"column","gap":"xs","children":["title","subtitle"]},{"id":"title","component":"Heading","text":"Logistics Coordinator Board","level":"h1"},{"id":"subtitle","component":"TextContent","text":"Live shipment operations overview","size":"default"},{"id":"refresh","component":"TextCallout","variant":"info","title":"Data refreshed","description":"Last refreshed today at 10:42 AM"},{"id":"metrics","component":"Card","variant":"clear","direction":"row","gap":"m","align":"stretch","children":["onTimeMetric","costMetric","inTransitMetric"]},{"id":"onTimeMetric","component":"Card","variant":"card","direction":"column","gap":"xs","children":["onTimeLabel","onTimeValue","onTimeDetail"],"weight":1},{"id":"onTimeLabel","component":"TextContent","text":"On-time this month","size":"small"},{"id":"onTimeValue","component":"Heading","text":"94.6%","level":"h2"},{"id":"onTimeDetail","component":"TextContent","text":"↑ 1.8 pts vs. last month","size":"small"},{"id":"costMetric","component":"Card","variant":"card","direction":"column","gap":"xs","children":["costLabel","costValue","costDetail"],"weight":1},{"id":"costLabel","component":"TextContent","text":"Average cost per shipment","size":"small"},{"id":"costValue","component":"Heading","text":"$1,284","level":"h2"},{"id":"costDetail","component":"TextContent","text":"Across 486 completed shipments","size":"small"},{"id":"inTransitMetric","component":"Card","variant":"card","direction":"column","gap":"xs","children":["inTransitLabel","inTransitValue","inTransitDetail"],"weight":1},{"id":"inTransitLabel","component":"TextContent","text":"Currently in transit","size":"small"},{"id":"inTransitValue","component":"Heading","text":"28","level":"h2"},{"id":"inTransitDetail","component":"TextContent","text":"5 arriving within 24 hours","size":"small"},{"id":"routeSearch","component":"Form","name":"route-search","fields":["routeSearchControl"],"buttons":"routeSearchButtons"},{"id":"routeSearchControl","component":"FormControl","label":"Search shipments by route","input":"routeSearchInput","hint":"Enter an origin, destination, or route code"},{"id":"routeSearchInput","component":"Input","name":"route","placeholder":"e.g., Chicago to Dallas or ORD–DFW","type":"text"},{"id":"routeSearchButtons","component":"Buttons","direction":"row","buttons":["searchButton"]},{"id":"searchButton","component":"Button","label":"Search routes","variant":"primary","size":"medium"},{"id":"mainContent","component":"Card","variant":"clear","direction":"row","gap":"m","align":"start","children":["shipmentsCard","rightRail"]},{"id":"shipmentsCard","component":"Card","variant":"card","direction":"column","gap":"m","children":["shipmentsHeader","shipmentsTable"],"weight":2},{"id":"shipmentsHeader","component":"CardHeader","title":"Shipments in transit","subtitle":"28 active shipments across 9 carriers"},{"id":"shipmentsTable","component":"Table","columns":["colShipment","colRoute","colETA","colStatus","colFlag"]},{"id":"colShipment","component":"Col","label":"Shipment","type":"string","data":["SHP-10482","SHP-10477","SHP-10471","SHP-10465","SHP-10459"]},{"id":"colRoute","component":"Col","label":"Origin → Destination","type":"string","data":["Los Angeles, CA → Phoenix, AZ","Chicago, IL → Dallas, TX","Newark, NJ → Atlanta, GA","Seattle, WA → Denver, CO","Houston, TX → Memphis, TN"]},{"id":"colETA","component":"Col","label":"ETA","type":"string","data":["Today, 2:30 PM","Today, 6:15 PM","Tomorrow, 9:00 AM","Tomorrow, 1:45 PM","Aug 20, 11:20 AM"]},{"id":"colStatus","component":"Col","label":"Status","type":"string","data":["On time","Delayed · 3h","On time","At risk","On time"]},{"id":"colFlag","component":"Col","label":"Flag shipment","type":"action","data":["Flag SHP-10482","Flag SHP-10477","Flag SHP-10471","Flag SHP-10465","Flag SHP-10459"]},{"id":"rightRail","component":"Card","variant":"clear","direction":"column","gap":"m","children":["delayedCard","carrierCard"],"weight":1},{"id":"delayedCard","component":"Card","variant":"card","direction":"column","gap":"m","children":["delayedHeader","delayAlert","delayedList"]},{"id":"delayedHeader","component":"CardHeader","title":"Delayed shipments","subtitle":"2 require attention"},{"id":"delayAlert","component":"Alert","variant":"warning","title":"Exceptions detected","description":"Review delayed loads and flag any shipment that needs escalation."},{"id":"delayedList","component":"ListBlock","variant":"number","items":["delayedOne","delayedTwo"]},{"id":"delayedOne","component":"ListItem","title":"SHP-10477 · Chicago → Dallas","subtitle":"Delayed 3 hours · Carrier: RoadLink Freight","actionLabel":"Flag shipment"},{"id":"delayedTwo","component":"ListItem","title":"SHP-10443 · Miami → Nashville","subtitle":"Delayed 5 hours · Carrier: Atlantic Haulage","actionLabel":"Flag shipment"},{"id":"carrierCard","component":"Card","variant":"card","direction":"column","gap":"m","children":["carrierHeader","carrierChart"]},{"id":"carrierHeader","component":"CardHeader","title":"Volume split by carrier","subtitle":"This month · 486 shipments"},{"id":"carrierChart","component":"PieChart","variant":"donut","appearance":"circular","labels":["RoadLink Freight","NorthStar Logistics","SwiftHaul","Atlantic Haulage","Other carriers"],"values":[142,118,94,71,61]},{"id":"weeklyCard","component":"Card","variant":"card","direction":"column","gap":"m","children":["weeklyHeader","weeklyChart"]},{"id":"weeklyHeader","component":"CardHeader","title":"Weekly shipment volume","subtitle":"Past two months"},{"id":"weeklyChart","component":"LineChart","labels":["Jun 30","Jul 7","Jul 14","Jul 21","Jul 28","Aug 4","Aug 11","Aug 18"],"series":["weeklySeries"],"variant":"natural","xLabel":"Week","yLabel":"Shipments"},{"id":"weeklySeries","component":"Series","category":"Shipment volume","values":[96,108,101,119,113,127,122,134]}]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "refreshStatus",
+          "routeSearch",
+          "kpiRow",
+          "delayedAlert",
+          "shipmentsSection",
+          "shipmentsTable",
+          "carrierSection",
+          "carrierSplit",
+          "weeklyVolumeSection",
+          "weeklyVolume"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Logistics Coordinator Board",
+        "subtitle": "Live shipment visibility and delivery performance"
+      },
+      {
+        "id": "refreshStatus",
+        "component": "Badge",
+        "text": "Last refreshed: Aug 18, 2026, 10:42 AM",
+        "variant": "secondary"
+      },
+      {
+        "id": "routeSearch",
+        "component": "Form",
+        "name": "route-search",
+        "fields": [
+          "routeSearchField"
+        ],
+        "buttons": "routeSearchButtons"
+      },
+      {
+        "id": "routeSearchField",
+        "component": "FormControl",
+        "label": "Search shipments by route",
+        "input": "routeSearchInput",
+        "hint": "Search by origin, destination, route, or shipment ID"
+      },
+      {
+        "id": "routeSearchInput",
+        "component": "Input",
+        "name": "route_query",
+        "placeholder": "e.g., Chicago to Dallas"
+      },
+      {
+        "id": "routeSearchButtons",
+        "component": "Buttons",
+        "buttons": [
+          "searchButton"
+        ]
+      },
+      {
+        "id": "searchButton",
+        "component": "Button",
+        "label": "Search routes",
+        "variant": "primary"
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "children": [
+          "onTimeKpi",
+          "avgCostKpi"
+        ],
+        "direction": "row",
+        "gap": "m"
+      },
+      {
+        "id": "onTimeKpi",
+        "component": "Card",
+        "children": [
+          "onTimeHeading",
+          "onTimeValue",
+          "onTimeProgress"
+        ],
+        "variant": "sunk",
+        "gap": "s",
+        "weight": 1
+      },
+      {
+        "id": "onTimeHeading",
+        "component": "TextContent",
+        "text": "On-time delivery — this month",
+        "size": "small-heavy"
+      },
+      {
+        "id": "onTimeValue",
+        "component": "TextContent",
+        "text": "94.6%",
+        "size": "large-heavy"
+      },
+      {
+        "id": "onTimeProgress",
+        "component": "Progress",
+        "value": 94.6,
+        "label": "1,184 of 1,252 shipments delivered on time"
+      },
+      {
+        "id": "avgCostKpi",
+        "component": "Card",
+        "children": [
+          "avgCostHeading",
+          "avgCostValue",
+          "avgCostDetail"
+        ],
+        "variant": "sunk",
+        "gap": "s",
+        "weight": 1
+      },
+      {
+        "id": "avgCostHeading",
+        "component": "TextContent",
+        "text": "Average cost per shipment",
+        "size": "small-heavy"
+      },
+      {
+        "id": "avgCostValue",
+        "component": "TextContent",
+        "text": "$428.70",
+        "size": "large-heavy"
+      },
+      {
+        "id": "avgCostDetail",
+        "component": "TextContent",
+        "text": "Down 3.2% compared with last month",
+        "size": "small"
+      },
+      {
+        "id": "delayedAlert",
+        "component": "Alert",
+        "title": "6 delayed shipments require attention",
+        "description": "Two shipments are delayed more than 24 hours. Review the delayed status rows below and flag for follow-up.",
+        "variant": "warning"
+      },
+      {
+        "id": "shipmentsSection",
+        "component": "Heading",
+        "text": "Shipments in transit",
+        "level": "h2"
+      },
+      {
+        "id": "shipmentsTable",
+        "component": "Table",
+        "columns": [
+          "shipmentIdCol",
+          "originCol",
+          "destinationCol",
+          "etaCol",
+          "statusCol",
+          "flagCol"
+        ]
+      },
+      {
+        "id": "shipmentIdCol",
+        "component": "Col",
+        "label": "Shipment",
+        "data": [
+          "SHP-10482",
+          "SHP-10479",
+          "SHP-10471",
+          "SHP-10463",
+          "SHP-10458",
+          "SHP-10444"
+        ]
+      },
+      {
+        "id": "originCol",
+        "component": "Col",
+        "label": "Origin",
+        "data": [
+          "Chicago, IL",
+          "Los Angeles, CA",
+          "Atlanta, GA",
+          "Newark, NJ",
+          "Dallas, TX",
+          "Seattle, WA"
+        ]
+      },
+      {
+        "id": "destinationCol",
+        "component": "Col",
+        "label": "Destination",
+        "data": [
+          "Dallas, TX",
+          "Phoenix, AZ",
+          "Nashville, TN",
+          "Boston, MA",
+          "Denver, CO",
+          "Portland, OR"
+        ]
+      },
+      {
+        "id": "etaCol",
+        "component": "Col",
+        "label": "ETA",
+        "data": [
+          "Today, 2:30 PM",
+          "Today, 6:00 PM",
+          "Tomorrow, 9:00 AM",
+          "Tomorrow, 11:45 AM",
+          "Aug 20, 4:15 PM",
+          "Aug 20, 8:30 AM"
+        ]
+      },
+      {
+        "id": "statusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "On time",
+          "Delayed — 3h",
+          "On time",
+          "Delayed — 26h",
+          "In transit",
+          "On time"
+        ]
+      },
+      {
+        "id": "flagCol",
+        "component": "Col",
+        "label": "Flag shipment",
+        "type": "action",
+        "data": [
+          "Flag",
+          "Flag",
+          "Flag",
+          "Flag",
+          "Flag",
+          "Flag"
+        ]
+      },
+      {
+        "id": "carrierSection",
+        "component": "Heading",
+        "text": "Volume split by carrier",
+        "level": "h2"
+      },
+      {
+        "id": "carrierSplit",
+        "component": "PieChart",
+        "labels": [
+          "NorthStar Freight",
+          "RapidLine Logistics",
+          "BluePeak Transport",
+          "Atlas Express",
+          "Other"
+        ],
+        "values": [
+          386,
+          312,
+          241,
+          189,
+          124
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "weeklyVolumeSection",
+        "component": "Heading",
+        "text": "Weekly shipment volume — past two months",
+        "level": "h2"
+      },
+      {
+        "id": "weeklyVolume",
+        "component": "LineChart",
+        "labels": [
+          "Jun 29",
+          "Jul 6",
+          "Jul 13",
+          "Jul 20",
+          "Jul 27",
+          "Aug 3",
+          "Aug 10",
+          "Aug 17"
+        ],
+        "series": [
+          "weeklyVolumeSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Week",
+        "yLabel": "Shipments"
+      },
+      {
+        "id": "weeklyVolumeSeries",
+        "component": "Series",
+        "category": "Shipments",
+        "values": [
+          276,
+          294,
+          318,
+          301,
+          337,
+          356,
+          329,
+          342
+        ]
+      }
+    ]
+  }
+}
 </a2ui-json>

@@ -1,21 +1,16 @@
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["header","focus-card","success-alert"]}}
-{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Today's Focus","subtitle":"Your single most important task right now"},"children":[]}}
-{"op":"add","path":"/elements/focus-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["top-row","task-title","task-desc","sep","deadline-block","progress-block","actions-row"]}}
-{"op":"add","path":"/elements/top-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center"},"children":["urgent-tag","status-tag"]}}
-{"op":"add","path":"/elements/urgent-tag","value":{"type":"Tag","props":{"text":"MOST URGENT","variant":"danger"},"children":[]}}
-{"op":"add","path":"/elements/status-tag","value":{"type":"Tag","props":{"text":{"$state":"/task/status"},"variant":{"$cond":{"$state":"/task/status","eq":"Completed"},"$then":"success","$else":"warning"}},"children":[]}}
-{"op":"add","path":"/state/task","value":{"title":"Ship v2.4 release notes to the client","description":"Final draft of the release notes for the Acme Corp delivery. Include the full changelog, known issues, and the migration guide link before sending.","deadline":"Today, 5:00 PM","deadlineNote":"Due in 4 hours","status":"In Progress","progress":65}}
-{"op":"add","path":"/elements/task-title","value":{"type":"Heading","props":{"text":{"$state":"/task/title"},"level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/task-desc","value":{"type":"TextContent","props":{"text":{"$state":"/task/description"},"size":"default"},"children":[]}}
-{"op":"add","path":"/elements/sep","value":{"type":"Separator","props":{"orientation":"horizontal"},"children":[]}}
-{"op":"add","path":"/elements/deadline-block","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["deadline-left","deadline-right"]}}
-{"op":"add","path":"/elements/deadline-left","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["deadline-label","deadline-value"]}}
-{"op":"add","path":"/elements/deadline-label","value":{"type":"TextContent","props":{"text":"Deadline","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/deadline-value","value":{"type":"TextContent","props":{"text":{"$state":"/task/deadline"},"size":"large-heavy"},"children":[]}}
-{"op":"add","path":"/elements/deadline-right","value":{"type":"Tag","props":{"text":{"$state":"/task/deadlineNote"},"variant":"warning"},"children":[]}}
-{"op":"add","path":"/elements/progress-block","value":{"type":"Progress","props":{"label":"Progress","value":{"$cond":{"$state":"/task/status","eq":"Completed"},"$then":100,"$else":{"$state":"/task/progress"}}},"children":[]}}
-{"op":"add","path":"/elements/actions-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s"},"children":["done-button","undo-button"]}}
-{"op":"add","path":"/elements/done-button","value":{"type":"Button","props":{"label":"Mark as Done","variant":"primary","size":"large"},"visible":{"$state":"/task/status","neq":"Completed"},"on":{"press":{"action":"setState","params":{"statePath":"/task/status","value":"Completed"}}},"children":[]}}
-{"op":"add","path":"/elements/undo-button","value":{"type":"Button","props":{"label":"Undo — reopen task","variant":"tertiary"},"visible":{"$state":"/task/status","eq":"Completed"},"on":{"press":{"action":"setState","params":{"statePath":"/task/status","value":"In Progress"}}},"children":[]}}
-{"op":"add","path":"/elements/success-alert","value":{"type":"Alert","props":{"title":"Task complete","description":{"$template":"You finished \"${/task/title}\" ahead of the ${/task/deadline} deadline."},"variant":"success"},"visible":{"$state":"/task/status","eq":"Completed"},"children":[]}}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"gap":"l","align":"stretch"},"children":["header","divider","taskCard","progress","actions"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Focus Mode","subtitle":"Your single most urgent task right now"}}}
+{"op":"add","path":"/elements/divider","value":{"type":"Separator","props":{"orientation":"horizontal"}}}
+{"op":"add","path":"/elements/taskCard","value":{"type":"Card","props":{"variant":"sunk","gap":"m"},"children":["taskTitle","taskDesc","metaRow","statusBadge"]}}
+{"op":"add","path":"/elements/taskTitle","value":{"type":"Heading","props":{"text":{"$state":"/task/title"},"level":"h2"}}}
+{"op":"add","path":"/state/task","value":{"id":"t-1","title":"Submit Q3 financial report","description":"Finalize the revenue breakdown, reconcile expense line items, and send the signed PDF to the finance team.","deadline":"Today, 5:00 PM","status":"In Progress","statusVariant":"warning"}}
+{"op":"add","path":"/elements/taskDesc","value":{"type":"TextContent","props":{"text":{"$state":"/task/description"}}}}
+{"op":"add","path":"/elements/metaRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center"},"children":["deadlineLabel","deadlineValue"]}}
+{"op":"add","path":"/elements/deadlineLabel","value":{"type":"Tag","props":{"text":"Deadline","icon":"calendar","variant":"danger"}}}
+{"op":"add","path":"/elements/deadlineValue","value":{"type":"TextContent","props":{"text":{"$state":"/task/deadline"},"size":"small-heavy"}}}
+{"op":"add","path":"/elements/statusBadge","value":{"type":"Badge","props":{"text":{"$state":"/task/status"},"variant":{"$cond":{"$state":"/task/status","eq":"Done"},"$then":"secondary","$else":"default"}}}}
+{"op":"add","path":"/elements/progress","value":{"type":"Progress","props":{"value":70,"label":"Estimated completion"}}}
+{"op":"add","path":"/elements/actions","value":{"type":"Buttons","props":{"buttons":["doneBtn","snoozeBtn"]}}}
+{"op":"add","path":"/elements/doneBtn","value":{"type":"Button","props":{"label":{"$cond":{"$state":"/task/status","eq":"Done"},"$then":"Completed","$else":"Mark as Done"},"variant":"primary","size":"large"},"on":{"press":{"action":"setState","params":{"statePath":"/task/status","value":"Done"}}}}}
+{"op":"add","path":"/elements/snoozeBtn","value":{"type":"Button","props":{"label":"Snooze 30 min","variant":"secondary"}}}

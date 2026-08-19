@@ -1,13 +1,376 @@
-Your delivery tracking screen is ready — showing live location, ETA, and support:
+Your delivery tracking screen is ready — current location, ETA, and help options all in one place:
 
-<a2ui-json>{"version":"v0.9","createSurface":{"surfaceId":"delivery-tracking-screen","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#0F766E","agentDisplayName":"Delivery Tracker"},"sendDataModel":false}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
 
-<a2ui-json>{"version":"v0.9","updateComponents":{"surfaceId":"delivery-tracking-screen","components":[{"component":"Card","id":"root","children":["header","locationCard","separator1","etaCard","separator2","reportCard"],"direction":"column","gap":"l","variant":"clear"},{"component":"CardHeader","id":"header","title":"Package Tracking # 1Z-884-2910-4829","subtitle":"Ordered Aug 14 • 2 items • Standard Shipping"},{"component":"Card","id":"locationCard","children":["locationHeading","locationBadge","locationImage","locationText","locationProgress","locationSteps"],"direction":"column","gap":"m","variant":"card"},{"component":"Heading","id":"locationHeading","text":"📍 Where is your package right now?","level":"h3"},{"component":"Badge","id":"locationBadge","text":"OUT FOR DELIVERY","variant":"secondary"},{"component":"ImageBlock","id":"locationImage","src":"https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&q=80","alt":"Delivery van on route map"},{"component":"TextContent","id":"locationText","text":"**Current location:** Phoenix Distribution Center, AZ — **Out for delivery**\n\nLast scan: **Today, Aug 18 at 7:42 AM MST** — Loaded onto delivery vehicle #PHX-42\nNext stop: Your address at 1247 W. Elm Street, Phoenix, AZ 85004\n\nDriver: Alex • Vehicle is 3.2 miles away (approx. 18 min)","size":"default"},{"component":"Progress","id":"locationProgress","value":80,"label":"80% to delivered"},{"component":"Steps","id":"locationSteps","items":["step1","step2","step3","step4","step5"]},{"component":"StepsItem","id":"step1","title":"Order Confirmed","details":"Aug 14, 9:12 AM - Order received"},{"component":"StepsItem","id":"step2","title":"Shipped","details":"Aug 15, 4:30 PM - Left fulfillment center, Tucson, AZ"},{"component":"StepsItem","id":"step3","title":"In Transit","details":"Aug 17, 11:05 PM - Arrived Phoenix Distribution Center"},{"component":"StepsItem","id":"step4","title":"Out for Delivery","details":"Today, 7:42 AM - On vehicle for delivery"},{"component":"StepsItem","id":"step5","title":"Delivered","details":"Pending - Awaiting delivery"},{"component":"Separator","id":"separator1","orientation":"horizontal","decorative":true},{"component":"Card","id":"etaCard","children":["etaHeading","etaDateText","etaSubText","etaAlert"],"direction":"column","gap":"m","variant":"card"},{"component":"Heading","id":"etaHeading","text":"Estimated Delivery Date","level":"h3"},{"component":"TextContent","id":"etaDateText","text":"## Thursday, August 21, 2026\n### by 8:00 PM MST","size":"large"},{"component":"TextContent","id":"etaSubText","text":"Delivery window: 2:00 PM - 8:00 PM • No signature required • Leave at front door if not home","size":"small"},{"component":"Alert","id":"etaAlert","title":"On track","description":"Your package is on time and expected to arrive within the delivery window. You'll get a notification when it's 2 stops away.","variant":"success"},{"component":"Separator","id":"separator2","orientation":"horizontal","decorative":true},{"component":"Card","id":"reportCard","children":["reportHeader","reportForm"],"direction":"column","gap":"m","variant":"card"},{"component":"CardHeader","id":"reportHeader","title":"Report a problem with this delivery","subtitle":"Need help? Tell us what went wrong and we'll resolve it within 24 hours"},{"component":"Form","id":"reportForm","name":"reportDeliveryIssue","buttons":"formButtons","fields":["issueTypeControl","detailsControl","contactControl"]},{"component":"Buttons","id":"formButtons","buttons":["submitBtn","cancelBtn"],"direction":"row"},{"component":"Button","id":"submitBtn","label":"Submit Report","variant":"primary"},{"component":"Button","id":"cancelBtn","label":"Clear","variant":"secondary"},{"component":"FormControl","id":"issueTypeControl","label":"What is the issue?","input":"issueSelect","hint":"Select the option that best describes your problem"},{"component":"Select","id":"issueSelect","name":"issueType","placeholder":"Choose an issue type","items":["selectDamaged","selectMissing","selectDelayed","selectWrongItem","selectAddress","selectOther"]},{"component":"SelectItem","id":"selectDamaged","value":"damaged","label":"Package damaged / items broken"},{"component":"SelectItem","id":"selectMissing","value":"missing","label":"Package marked delivered but missing"},{"component":"SelectItem","id":"selectDelayed","value":"delayed","label":"Package delayed / not moving"},{"component":"SelectItem","id":"selectWrongItem","value":"wrong_item","label":"Wrong item received"},{"component":"SelectItem","id":"selectAddress","value":"address","label":"Wrong address / delivery instructions"},{"component":"SelectItem","id":"selectOther","value":"other","label":"Other issue"},{"component":"FormControl","id":"detailsControl","label":"Describe the problem","input":"detailsInput","hint":"Include any details like damage, missing items, or delivery location"},{"component":"TextArea","id":"detailsInput","name":"issueDetails","placeholder":"Example: Box was crushed on one corner, or Package shows delivered at 3pm but not at my door...","rows":4},{"component":"FormControl","id":"contactControl","label":"Contact email for updates","input":"contactInput","hint":"We'll send confirmation and resolution updates here"},{"component":"Input","id":"contactInput","name":"contactEmail","placeholder":"you@example.com","type":"email"}]}}</a2ui-json>
-
-All 3 requested items are covered on one screen:
-
-**1. Where the package is right now** — Live status badge (Out for Delivery), map image, last scan time (Today 7:42 AM at Phoenix Distribution Center), and step-by-step progress tracker at 80%.
-
-**2. Estimated delivery date** — Prominently displayed as **Thursday, August 21, 2026 by 8:00 PM** with delivery window and on-track confirmation.
-
-**3. Way to report a problem** — Form at the bottom to select issue type, describe the problem, and provide email for follow-up.
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "statusRow",
+          "currentLocationCard",
+          "etaCard",
+          "timelineCard",
+          "reportCard",
+          "helpSeparator",
+          "helpFooter"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Track Your Delivery",
+        "subtitle": "Order #84729-EXP • Express Shipping • Last updated: Today 09:14 AM"
+      },
+      {
+        "id": "statusRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "align": "center",
+        "gap": "s",
+        "children": [
+          "badgeInTransit",
+          "statusText"
+        ]
+      },
+      {
+        "id": "badgeInTransit",
+        "component": "Badge",
+        "text": "● In Transit",
+        "variant": "default"
+      },
+      {
+        "id": "statusText",
+        "component": "TextContent",
+        "text": "On track • 2 stops away from your address",
+        "size": "small"
+      },
+      {
+        "id": "currentLocationCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "currentLocationHeader",
+          "locationRow",
+          "locationAlert"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "currentLocationHeader",
+        "component": "CardHeader",
+        "title": "1. Where your package is right now",
+        "subtitle": "Live scan • Regional facility"
+      },
+      {
+        "id": "locationRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "align": "center",
+        "children": [
+          "mapImage",
+          "locationDetails"
+        ]
+      },
+      {
+        "id": "mapImage",
+        "component": "ImageBlock",
+        "src": "https://images.unsplash.com/photo-1524661135-423995f22d0b?w=600&h=400&fit=crop",
+        "alt": "Map showing package in Chicago area"
+      },
+      {
+        "id": "locationDetails",
+        "component": "MarkDownRenderer",
+        "variant": "clear",
+        "textMarkdown": "**Regional Sorting Facility — Chicago, IL 60607**\n\n📦 **Scanned:** Today, Aug 18 at 08:42 AM CDT\n🚚 **Status:** Departed facility — en route to Milwaukee Distribution Center\n🔢 **Tracking:** 1Z 999 AA1 2345 6789 01\n\n*Next scan expected in ~4 hours*"
+      },
+      {
+        "id": "locationAlert",
+        "component": "Alert",
+        "title": "Package is moving",
+        "description": "It left Chicago at 8:42 AM and is on the truck to Wisconsin. No action needed.",
+        "variant": "info"
+      },
+      {
+        "id": "etaCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "etaHeader",
+          "etaMainRow",
+          "etaSubtext",
+          "etaProgress"
+        ],
+        "gap": "s"
+      },
+      {
+        "id": "etaHeader",
+        "component": "CardHeader",
+        "title": "2. Estimated Delivery Date",
+        "subtitle": "Delivery window guaranteed"
+      },
+      {
+        "id": "etaMainRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "align": "center",
+        "justify": "between",
+        "children": [
+          "etaDateHeading",
+          "etaBadge"
+        ]
+      },
+      {
+        "id": "etaDateHeading",
+        "component": "Heading",
+        "text": "Thursday, August 21 by 9:00 PM",
+        "level": "h2"
+      },
+      {
+        "id": "etaBadge",
+        "component": "Badge",
+        "text": "In 2 days",
+        "variant": "secondary"
+      },
+      {
+        "id": "etaSubtext",
+        "component": "TextContent",
+        "text": "Delivery window: 10:00 AM – 9:00 PM • Signature not required • Carrier: ShopFast Logistics",
+        "size": "small"
+      },
+      {
+        "id": "etaProgress",
+        "component": "Progress",
+        "value": 65,
+        "label": "65% of journey completed — 3 of 5 stages done"
+      },
+      {
+        "id": "timelineCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "timelineHeader",
+          "steps"
+        ]
+      },
+      {
+        "id": "timelineHeader",
+        "component": "CardHeader",
+        "title": "Shipment journey",
+        "subtitle": "Current stage highlighted"
+      },
+      {
+        "id": "steps",
+        "component": "Steps",
+        "items": [
+          "stepOrdered",
+          "stepShipped",
+          "stepTransit",
+          "stepOutForDelivery",
+          "stepDelivered"
+        ]
+      },
+      {
+        "id": "stepOrdered",
+        "component": "StepsItem",
+        "title": "Order placed",
+        "details": "Aug 15, 3:22 PM • Order confirmed"
+      },
+      {
+        "id": "stepShipped",
+        "component": "StepsItem",
+        "title": "Shipped from warehouse",
+        "details": "Aug 16, 11:05 AM • Indianapolis, IN • Carrier picked up"
+      },
+      {
+        "id": "stepTransit",
+        "component": "StepsItem",
+        "title": "In transit — Chicago, IL (Current)",
+        "details": "Aug 18, 08:42 AM • Departed Regional Sorting Facility • Next: Milwaukee, WI"
+      },
+      {
+        "id": "stepOutForDelivery",
+        "component": "StepsItem",
+        "title": "Out for delivery",
+        "details": "Expected Aug 21 morning"
+      },
+      {
+        "id": "stepDelivered",
+        "component": "StepsItem",
+        "title": "Delivered",
+        "details": "Estimated Aug 21 by 9:00 PM"
+      },
+      {
+        "id": "reportCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "reportHeader",
+          "reportIntro",
+          "reportForm"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "reportHeader",
+        "component": "CardHeader",
+        "title": "3. Report a problem with this delivery",
+        "subtitle": "Get help fast — we typically reply within 2 hours"
+      },
+      {
+        "id": "reportIntro",
+        "component": "TextContent",
+        "text": "Is your package late, damaged, or delivered to the wrong address? Tell us what happened and we'll fix it. You can also request a callback.",
+        "size": "small"
+      },
+      {
+        "id": "reportForm",
+        "component": "Form",
+        "name": "report-delivery-issue",
+        "buttons": "reportButtons",
+        "fields": [
+          "issueField",
+          "detailsField",
+          "emailField"
+        ]
+      },
+      {
+        "id": "issueField",
+        "component": "FormControl",
+        "label": "What's the issue?",
+        "input": "issueSelect",
+        "hint": "Choose the closest match"
+      },
+      {
+        "id": "issueSelect",
+        "component": "Select",
+        "name": "issue_type",
+        "placeholder": "Select an issue",
+        "items": [
+          "issueItem1",
+          "issueItem2",
+          "issueItem3",
+          "issueItem4",
+          "issueItem5"
+        ]
+      },
+      {
+        "id": "issueItem1",
+        "component": "SelectItem",
+        "value": "not_arrived",
+        "label": "Package hasn't arrived / seems delayed"
+      },
+      {
+        "id": "issueItem2",
+        "component": "SelectItem",
+        "value": "damaged",
+        "label": "Package arrived damaged"
+      },
+      {
+        "id": "issueItem3",
+        "component": "SelectItem",
+        "value": "wrong_address",
+        "label": "Delivered to wrong address"
+      },
+      {
+        "id": "issueItem4",
+        "component": "SelectItem",
+        "value": "missing_items",
+        "label": "Items missing from package"
+      },
+      {
+        "id": "issueItem5",
+        "component": "SelectItem",
+        "value": "other",
+        "label": "Something else"
+      },
+      {
+        "id": "detailsField",
+        "component": "FormControl",
+        "label": "Describe the problem",
+        "input": "detailsInput",
+        "hint": "Add photos/description after submitting if needed"
+      },
+      {
+        "id": "detailsInput",
+        "component": "TextArea",
+        "name": "details",
+        "placeholder": "e.g., Tracking hasn't updated in 2 days, or box was crushed on arrival...",
+        "rows": 3
+      },
+      {
+        "id": "emailField",
+        "component": "FormControl",
+        "label": "Contact email for updates",
+        "input": "emailInput"
+      },
+      {
+        "id": "emailInput",
+        "component": "Input",
+        "name": "contact_email",
+        "placeholder": "you@example.com",
+        "type": "email"
+      },
+      {
+        "id": "reportButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitBtn",
+          "cancelBtn"
+        ]
+      },
+      {
+        "id": "submitBtn",
+        "component": "Button",
+        "label": "Report problem",
+        "variant": "primary"
+      },
+      {
+        "id": "cancelBtn",
+        "component": "Button",
+        "label": "Contact support via chat",
+        "variant": "secondary"
+      },
+      {
+        "id": "helpSeparator",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "helpFooter",
+        "component": "Card",
+        "variant": "clear",
+        "children": [
+          "helpText"
+        ]
+      },
+      {
+        "id": "helpText",
+        "component": "TextContent",
+        "text": "Need immediate help? Call 1-800-555-0199 (24/7) or use the chat button above. Reference order #84729-EXP.",
+        "size": "small"
+      }
+    ]
+  }
+}
+</a2ui-json>

@@ -1,34 +1,107 @@
-Here's a clean client-facing invoice view covering all three requirements:
+Here's a client-facing invoice view covering all three requirements:
 
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"invoice-view","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#4F46E5","agentDisplayName":"Freelance Invoicing"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"invoice-view","components":[
-{"id":"root","component":"Card","variant":"card","direction":"column","gap":"l","children":["header","sep1","amountCard","detailsCard","payButtons","note"]},
-{"id":"header","component":"CardHeader","title":"Invoice #INV-2024-087","subtitle":"From: Jordan Lee Design Studio — To: Acme Corp"},
-{"id":"sep1","component":"Separator","orientation":"horizontal"},
-{"id":"amountCard","component":"Card","variant":"sunk","direction":"column","gap":"xs","align":"center","children":["amountLabel","amountValue","statusBadge"]},
-{"id":"amountLabel","component":"TextContent","text":"Amount Due","size":"small"},
-{"id":"amountValue","component":"TextContent","text":"$2,450.00 USD","size":"large-heavy"},
-{"id":"statusBadge","component":"Badge","text":"Unpaid","variant":"destructive"},
-{"id":"detailsCard","component":"Card","variant":"clear","direction":"column","gap":"s","children":["dueDateRow","issuedRow","descText"]},
-{"id":"dueDateRow","component":"TextContent","text":"**Due Date:** March 15, 2025 (in 12 days)","size":"default"},
-{"id":"issuedRow","component":"TextContent","text":"**Issued:** March 1, 2025  •  **Terms:** Net 14","size":"small"},
-{"id":"descText","component":"TextContent","text":"**Services:** Website redesign — milestone 2 of 3 (UI mockups & responsive front-end delivery)","size":"small"},
-{"id":"payButtons","component":"Buttons","direction":"column","buttons":["payNowBtn","cardBtn","bankBtn"]},
-{"id":"payNowBtn","component":"Button","label":"Pay Now — $2,450.00 USD","variant":"primary","size":"large","action":[{"type":"openUrl","url":"https://pay.example.com/inv-2024-087"}]},
-{"id":"cardBtn","component":"Button","label":"Pay with Card","variant":"secondary","action":[{"type":"openUrl","url":"https://pay.example.com/inv-2024-087/card"}]},
-{"id":"bankBtn","component":"Button","label":"Pay via Bank Transfer","variant":"tertiary","action":[{"type":"openUrl","url":"https://pay.example.com/inv-2024-087/bank"}]},
-{"id":"note","component":"TextCallout","variant":"info","title":"Late payments","description":"A 1.5% monthly late fee applies after the due date. Questions? Reply to this invoice or email billing@jordanlee.design."}
-]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "amountBadge",
+          "details",
+          "alert",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Invoice #INV-2024-047",
+        "subtitle": "From: Alex Rivera — Freelance Design Services"
+      },
+      {
+        "id": "amountBadge",
+        "component": "Badge",
+        "text": "Amount due: $2,400.00 USD",
+        "variant": "default"
+      },
+      {
+        "id": "details",
+        "component": "Table",
+        "columns": [
+          "fieldCol",
+          "valueCol"
+        ]
+      },
+      {
+        "id": "fieldCol",
+        "component": "Col",
+        "label": "Item",
+        "data": [
+          "Amount due",
+          "Currency",
+          "Due date",
+          "Issued"
+        ]
+      },
+      {
+        "id": "valueCol",
+        "component": "Col",
+        "label": "Details",
+        "data": [
+          "$2,400.00",
+          "USD",
+          "July 15, 2024",
+          "June 28, 2024"
+        ]
+      },
+      {
+        "id": "alert",
+        "component": "Alert",
+        "title": "Payment due soon",
+        "description": "Please pay by July 15, 2024 to avoid a 5% late fee.",
+        "variant": "warning"
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": [
+          "payBtn",
+          "downloadBtn"
+        ]
+      },
+      {
+        "id": "payBtn",
+        "component": "Button",
+        "label": "Pay now — $2,400.00 USD",
+        "variant": "primary"
+      },
+      {
+        "id": "downloadBtn",
+        "component": "Button",
+        "label": "Download PDF",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
 </a2ui-json>
 
-This screen covers each requirement:
-
-1. **Amount due and currency** — prominently displayed as "$2,450.00 USD" in large-heavy text with an "Unpaid" status badge.
-2. **Due date** — shown clearly ("March 15, 2025") along with issue date and payment terms.
-3. **Pay now** — a primary "Pay Now" button plus secondary card and bank transfer options.
-
-Want me to add an itemized line-item table, a PDF download button, or a payment history section?
+This covers all three requirements:
+1. **Amount due & currency** — shown in the badge and the details table ($2,400.00 USD)
+2. **Due date** — July 15, 2024, listed in the table and reinforced by the warning alert
+3. **Pay now** — a prominent primary "Pay now" button, with a secondary PDF download option

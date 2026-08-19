@@ -1,51 +1,58 @@
+
+
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["header","kpi-row","delayed-alert","search-section","shipments-section","charts-row"]}}
-{"op":"add","path":"/elements/header","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","variant":"clear"},"children":["title","refreshed"]}}
-{"op":"add","path":"/elements/title","value":{"type":"Heading","props":{"text":"Logistics Coordinator Board","level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/refreshed","value":{"type":"TextContent","props":{"text":{"$template":"Last refreshed: ${/lastRefreshed}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/state/lastRefreshed","value":"2024-01-15 09:32 AM UTC"}
-{"op":"add","path":"/elements/kpi-row","value":{"type":"Card","props":{"direction":"row","gap":"m","variant":"clear"},"children":["kpi-ontime","kpi-cost"]}}
-{"op":"add","path":"/elements/kpi-ontime","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"children":["ontime-label","ontime-progress"]}}
-{"op":"add","path":"/elements/ontime-label","value":{"type":"TextContent","props":{"text":"On-Time Delivery Rate (This Month)","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/ontime-progress","value":{"type":"Progress","props":{"value":{"$state":"/onTimePct"},"label":{"$template":"${/onTimePct}% on-time"}},"children":[]}}
-{"op":"add","path":"/state/onTimePct","value":87}
-{"op":"add","path":"/elements/kpi-cost","value":{"type":"Card","props":{"direction":"column","gap":"xs"},"children":["cost-label","cost-value"]}}
-{"op":"add","path":"/elements/cost-label","value":{"type":"TextContent","props":{"text":"Average Cost per Shipment","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/cost-value","value":{"type":"TextContent","props":{"text":{"$state":"/avgCost"},"size":"large-heavy"},"children":[]}}
-{"op":"add","path":"/state/avgCost","value":"$1,247"}
-{"op":"add","path":"/elements/delayed-alert","value":{"type":"Alert","props":{"variant":"warning","title":{"$template":"⚠️ ${/delayedCount} Shipments Delayed"},"description":"SH-4021 (Chicago → Miami) delayed 6h due to weather. SH-7738 (Dallas → Seattle) delayed 3h — carrier capacity issue. SH-1194 (Atlanta → Boston) delayed 12h — customs hold."},"children":[]}}
-{"op":"add","path":"/state/delayedCount","value":3}
-{"op":"add","path":"/elements/search-section","value":{"type":"Card","props":{"variant":"clear"},"children":["search-field"]}}
-{"op":"add","path":"/elements/search-field","value":{"type":"FormControl","props":{"label":"Search by Route","hint":"Enter origin or destination city to filter shipments"},"input":"search-input"},"children":[]}}
-{"op":"add","path":"/elements/search-input","value":{"type":"Input","props":{"name":"routeSearch","placeholder":"e.g. Chicago, Miami, Seattle…","value":{"$bindState":"/searchQuery"}},"children":[]}}
-{"op":"add","path":"/state/searchQuery","value":""}
-{"op":"add","path":"/elements/shipments-section","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["shipments-heading","shipments-list"]}}
-{"op":"add","path":"/elements/shipments-heading","value":{"type":"Heading","props":{"text":"Shipments In Transit","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/shipments-list","value":{"type":"Card","props":{"direction":"column","gap":"s","variant":"clear"},"repeat":{"statePath":"/shipments","key":"id"},"children":["shipment-row"]}}
-{"op":"add","path":"/elements/shipment-row","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","gap":"m","variant":"sunk"},"children":["shipment-info","shipment-status","flag-btn"]}}
-{"op":"add","path":"/elements/shipment-info","value":{"type":"Card","props":{"direction":"column","gap":"none","variant":"clear"},"children":["shipment-route","shipment-eta"]}}
-{"op":"add","path":"/elements/shipment-route","value":{"type":"TextContent","props":{"text":{"$template":"${origin} → ${destination}"},"size":"default"},"children":[]}}
-{"op":"add","path":"/elements/shipment-eta","value":{"type":"TextContent","props":{"text":{"$template":"ETA: ${eta} · ${carrier}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/shipment-status","value":{"type":"Tag","props":{"text":{"$item":"status"},"variant":{"$cond":{"$item":"status","eq":"Delayed"},"$then":"danger","$else":"success"}},"children":[]}}
-{"op":"add","path":"/elements/flag-btn","value":{"type":"Button","props":{"label":"⚑ Flag","variant":"secondary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/lastFlagged","value":{"$item":"id"}}}},"children":[]}}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","delayedAlert","metricsRow","searchCard","chartsRow","shipmentsCard","flaggedCard"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Logistics Coordination Board","subtitle":{"$template":"Last refreshed: ${/lastRefreshed}"}},"children":[]}}
+{"op":"add","path":"/state/lastRefreshed","value":"Today 08:35 UTC"}
+{"op":"add","path":"/elements/delayedAlert","value":{"type":"Alert","props":{"variant":"warning","title":{"$template":"${/delayedCount} delayed shipments require attention"},"description":{"$state":"/delayedSummary"}},"children":[]}}
+{"op":"add","path":"/state/delayedCount","value":2}
+{"op":"add","path":"/state/delayedSummary","value":"SHP-1042 Chicago → Detroit (customs hold) · SHP-1051 Atlanta → Miami (severe weather)"}
+{"op":"add","path":"/elements/metricsRow","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"children":["metricOnTime","metricAvgCost","metricDelayedCount"]}}
+{"op":"add","path":"/elements/metricOnTime","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["metricOnTimeLabel","metricOnTimeValue"]}}
+{"op":"add","path":"/elements/metricOnTimeLabel","value":{"type":"TextContent","props":{"text":"On-time this month","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/metricOnTimeValue","value":{"type":"TextContent","props":{"text":{"$template":"${/onTimePct}%"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/metricAvgCost","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["metricAvgCostLabel","metricAvgCostValue"]}}
+{"op":"add","path":"/elements/metricAvgCostLabel","value":{"type":"TextContent","props":{"text":"Average cost per shipment","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/metricAvgCostValue","value":{"type":"TextContent","props":{"text":{"$state":"/avgCost"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/elements/metricDelayedCount","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"xs"},"children":["metricDelayedLabel","metricDelayedValue"]}}
+{"op":"add","path":"/elements/metricDelayedLabel","value":{"type":"TextContent","props":{"text":"Delayed shipments","size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/metricDelayedValue","value":{"type":"TextContent","props":{"text":{"$template":"${/delayedCount}"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/state/onTimePct","value":91.4}
+{"op":"add","path":"/state/avgCost","value":"$1,036"}
+{"op":"add","path":"/elements/searchCard","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["searchHeader","searchRow","searchHint"]}}
+{"op":"add","path":"/elements/searchHeader","value":{"type":"CardHeader","props":{"title":"Route search","subtitle":"Filter by origin / destination"},"children":[]}}
+{"op":"add","path":"/elements/searchRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"end","wrap":true},"children":["routeFieldControl","searchButtons"]}}
+{"op":"add","path":"/elements/routeFieldControl","value":{"type":"FormControl","props":{"label":"Route","input":"routeInput"},"children":[]}}
+{"op":"add","path":"/elements/routeInput","value":{"type":"Input","props":{"name":"routeQuery","placeholder":"Enter route, e.g. Chicago → Detroit","value":{"$bindState":"/routeQuery"}},"children":[]}}
+{"op":"add","path":"/elements/searchButtons","value":{"type":"Buttons","props":{"buttons":["clearRouteBtn","presetRouteBtn"],"direction":"row"},"children":[]}}
+{"op":"add","path":"/elements/clearRouteBtn","value":{"type":"Button","props":{"label":"Clear","variant":"tertiary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/routeQuery","value":""}}},"children":[]}}
+{"op":"add","path":"/elements/presetRouteBtn","value":{"type":"Button","props":{"label":"Chicago → Detroit","variant":"secondary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/routeQuery","value":"Chicago → Detroit"}}},"children":[]}}
+{"op":"add","path":"/elements/searchHint","value":{"type":"TextContent","props":{"text":{"$template":"Current route filter: ${/routeQuery}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/state/routeQuery","value":"Chicago → Detroit"}
+{"op":"add","path":"/elements/chartsRow","value":{"type":"Card","props":{"direction":"row","gap":"m","wrap":true},"children":["carrierCard","weeklyCard"]}}
+{"op":"add","path":"/elements/carrierCard","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["carrierHeader","carrierChart"]}}
+{"op":"add","path":"/elements/carrierHeader","value":{"type":"CardHeader","props":{"title":"Volume split by carrier","subtitle":"This month"},"children":[]}}
+{"op":"add","path":"/elements/carrierChart","value":{"type":"PieChart","props":{"labels":["Midwest Freight","BlueRidge Logistics","Northport Express","Other"],"values":[42,27,19,12],"variant":"donut"},"children":[]}}
+{"op":"add","path":"/elements/weeklyCard","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["weeklyHeader","weeklyChart"]}}
+{"op":"add","path":"/elements/weeklyHeader","value":{"type":"CardHeader","props":{"title":"Weekly volume","subtitle":"Past two months"},"children":[]}}
+{"op":"add","path":"/elements/weeklyChart","value":{"type":"AreaChart","props":{"labels":["May W1","May W2","May W3","May W4","Jun W1","Jun W2","Jun W3","Jun W4"],"series":["weeklyVolumeSeries"],"variant":"natural","xLabel":"Week","yLabel":"Shipments"},"children":[]}}
+{"op":"add","path":"/elements/weeklyVolumeSeries","value":{"type":"Series","props":{"category":"Shipments","values":[118,132,129,144,151,139,162,158]},"children":[]}}
+{"op":"add","path":"/elements/shipmentsCard","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["shipmentsHeader","shipmentsList"]}}
+{"op":"add","path":"/elements/shipmentsHeader","value":{"type":"CardHeader","props":{"title":"Shipments in transit","subtitle":"Origin, destination, ETA, and status"},"children":[]}}
+{"op":"add","path":"/elements/shipmentsList","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/shipments","key":"id"},"children":["shipmentRow"]}}
+{"op":"add","path":"/elements/shipmentRow","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"s","align":"center","justify":"between","wrap":true},"children":["shipmentInfo","shipmentEta","shipmentStatus","flagBtn"]}}
+{"op":"add","path":"/elements/shipmentInfo","value":{"type":"TextContent","props":{"text":{"$template":"${id} • ${origin} → ${destination}"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/shipmentEta","value":{"type":"TextContent","props":{"text":{"$template":"ETA ${eta}"},"size":"small"},"children":[]}}
+{"op":"add","path":"/elements/shipmentStatus","value":{"type":"Badge","props":{"text":{"$item":"status"},"variant":"outline"},"children":[]}}
+{"op":"add","path":"/elements/flagBtn","value":{"type":"Button","props":{"label":"Flag","variant":"tertiary","size":"small"},"on":{"press":{"action":"pushState","params":{"statePath":"/flagged","value":{"$item":"id"}}}},"children":[]}}
 {"op":"add","path":"/state/shipments","value":[]}
-{"op":"add","path":"/state/shipments/0","value":{"id":"SH-4021","origin":"Chicago","destination":"Miami","eta":"Jan 16, 2:00 PM","carrier":"FedEx Freight","status":"Delayed"}}
-{"op":"add","path":"/state/shipments/1","value":{"id":"SH-5512","origin":"Los Angeles","destination":"Denver","eta":"Jan 15, 6:30 PM","carrier":"UPS Ground","status":"In Transit"}}
-{"op":"add","path":"/state/shipments/2","value":{"id":"SH-7738","origin":"Dallas","destination":"Seattle","eta":"Jan 17, 9:00 AM","carrier":"XPO Logistics","status":"Delayed"}}
-{"op":"add","path":"/state/shipments/3","value":{"id":"SH-3306","origin":"New York","destination":"Atlanta","eta":"Jan 15, 11:45 PM","carrier":"Estes Express","status":"In Transit"}}
-{"op":"add","path":"/state/shipments/4","value":{"id":"SH-1194","origin":"Atlanta","destination":"Boston","eta":"Jan 18, 4:00 PM","carrier":"FedEx Freight","status":"Delayed"}}
-{"op":"add","path":"/state/shipments/5","value":{"id":"SH-8845","origin":"Houston","destination":"Phoenix","eta":"Jan 16, 8:15 AM","carrier":"UPS Ground","status":"In Transit"}}
-{"op":"add","path":"/state/lastFlagged","value":""}
-{"op":"add","path":"/elements/charts-row","value":{"type":"Card","props":{"direction":"row","gap":"m","variant":"clear"},"children":["carrier-card","volume-card"]}}
-{"op":"add","path":"/elements/carrier-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["carrier-heading","carrier-pie"]}}
-{"op":"add","path":"/elements/carrier-heading","value":{"type":"Heading","props":{"text":"Volume Split by Carrier","level":"h4"},"children":[]}}
-{"op":"add","path":"/elements/carrier-pie","value":{"type":"PieChart","props":{"labels":["FedEx Freight","UPS Ground","XPO Logistics","Estes Express","Others"],"values":["slice-fedex","slice-ups","slice-xpo","slice-estes","slice-others"],"variant":"donut"},"children":[]}}
-{"op":"add","path":"/elements/slice-fedex","value":{"type":"Slice","props":{"category":"FedEx Freight","value":34},"children":[]}}
-{"op":"add","path":"/elements/slice-ups","value":{"type":"Slice","props":{"category":"UPS Ground","value":28},"children":[]}}
-{"op":"add","path":"/elements/slice-xpo","value":{"type":"Slice","props":{"category":"XPO Logistics","value":18},"children":[]}}
-{"op":"add","path":"/elements/slice-estes","value":{"type":"Slice","props":{"category":"Estes Express","value":12},"children":[]}}
-{"op":"add","path":"/elements/slice-others","value":{"type":"Slice","props":{"category":"Others","value":8},"children":[]}}
-{"op":"add","path":"/elements/volume-card","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["volume-heading","volume-chart"]}}
-{"op":"add","path":"/elements/volume-heading","value":{"type":"Heading","props":{"text":"Weekly Shipment Volume (Past 8 Weeks)","level":"h4"},"children":[]}}
-{"op":"add","path":"/elements/volume-chart","value":{"type":"AreaChart","props":{"labels":["Wk 46","Wk 47","Wk 48","Wk 49","Wk 50","Wk 51","Wk 52","Wk 1"],"series":["series-volume"],"variant":"natural","yLabel":"Shipments"},"children":[]}}
-{"op":"add","path":"/elements/series-volume","value":{"type":"Series","props":{"category":"Shipments","values":[142,158,165,171,149,133,118,161]},"children":[]}}
+{"op":"add","path":"/state/shipments/0","value":{"id":"SHP-1038","origin":"Seattle","destination":"Denver","eta":"Today 16:30","status":"Arriving","cost":1240,"delayed":false}}
+{"op":"add","path":"/state/shipments/1","value":{"id":"SHP-1042","origin":"Chicago","destination":"Detroit","eta":"Tomorrow 09:15","status":"Delayed","cost":780,"delayed":true}}
+{"op":"add","path":"/state/shipments/2","value":{"id":"SHP-1045","origin":"Portland","destination":"Salt Lake City","eta":"Today 18:05","status":"In Transit","cost":1120,"delayed":false}}
+{"op":"add","path":"/state/shipments/3","value":{"id":"SHP-1047","origin":"Austin","destination":"Dallas","eta":"Jun 26 08:40","status":"In Transit","cost":650,"delayed":false}}
+{"op":"add","path":"/state/shipments/4","value":{"id":"SHP-1051","origin":"Atlanta","destination":"Miami","eta":"Jun 27 14:25","status":"Delayed","cost":1390,"delayed":true}}
+{"op":"add","path":"/elements/flaggedCard","value":{"type":"Card","props":{"direction":"column","gap":"s"},"children":["flaggedHeader","flaggedTags"]}}
+{"op":"add","path":"/elements/flaggedHeader","value":{"type":"CardHeader","props":{"title":"Flagged shipments","subtitle":"Added by coordinators"},"children":[]}}
+{"op":"add","path":"/elements/flaggedTags","value":{"type":"TagBlock","props":{"tags":{"$state":"/flagged"}},"children":[]}}
+{"op":"add","path":"/state/flagged","value":[]}
+{"op":"add","path":"/state/flagged/0","value":"SHP-1042"}

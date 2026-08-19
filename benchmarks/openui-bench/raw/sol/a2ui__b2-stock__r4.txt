@@ -1,6 +1,215 @@
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"low-inventory-warning","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#D97706","agentDisplayName":"Inventory Monitor"},"sendDataModel":false}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
+
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"low-inventory-warning","components":[{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["header","warning","search-form","inventory-table"]},{"id":"header","component":"Card","variant":"clear","direction":"column","gap":"xs","children":["title","subtitle"]},{"id":"title","component":"Heading","text":"Low inventory","level":"h1"},{"id":"subtitle","component":"TextContent","text":"Review items at or below their warning threshold and reorder stock.","size":"default"},{"id":"warning","component":"Alert","variant":"warning","title":"5 items need attention","description":"Warnings appear when remaining units are at or below the threshold shown for each item."},{"id":"search-form","component":"Form","name":"inventory_search","fields":["search-control"],"buttons":"search-buttons"},{"id":"search-control","component":"FormControl","label":"Search items","input":"search-input","hint":"Search by item name or SKU."},{"id":"search-input","component":"Input","name":"query","type":"text","placeholder":"e.g. Coffee beans or SKU-1042","accessibility":{"label":"Search inventory items"}},{"id":"search-buttons","component":"Buttons","direction":"row","buttons":["search-button","clear-button"]},{"id":"search-button","component":"Button","label":"Search","variant":"primary","size":"medium","action":[{"type":"search_inventory"}]},{"id":"clear-button","component":"Button","label":"Clear","variant":"tertiary","size":"medium","action":[{"type":"clear_inventory_search"}]},{"id":"inventory-table","component":"Table","columns":["item-column","sku-column","remaining-column","threshold-column","status-column","reorder-column"]},{"id":"item-column","component":"Col","label":"Item","type":"string","data":["House Blend Coffee Beans","Oat Milk, 1 L","Paper Cups, 12 oz","Vanilla Syrup","Chocolate Croissants"]},{"id":"sku-column","component":"Col","label":"SKU","type":"string","data":["SKU-1042","SKU-2088","SKU-3315","SKU-4107","SKU-5021"]},{"id":"remaining-column","component":"Col","label":"Remaining units","type":"number","data":[4,7,18,2,6]},{"id":"threshold-column","component":"Col","label":"Warning threshold","type":"number","data":[10,12,25,5,8]},{"id":"status-column","component":"Col","label":"Status","type":"string","data":["6 below threshold","5 below threshold","7 below threshold","3 below threshold","2 below threshold"]},{"id":"reorder-column","component":"Col","label":"Reorder","type":"action","data":[{"label":"Reorder","action":"reorder","sku":"SKU-1042"},{"label":"Reorder","action":"reorder","sku":"SKU-2088"},{"label":"Reorder","action":"reorder","sku":"SKU-3315"},{"label":"Reorder","action":"reorder","sku":"SKU-4107"},{"label":"Reorder","action":"reorder","sku":"SKU-5021"}]}]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "warning",
+          "searchForm",
+          "inventoryList"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Low inventory",
+        "subtitle": "4 items need attention"
+      },
+      {
+        "id": "warning",
+        "component": "Alert",
+        "title": "Low-stock threshold: 10 units",
+        "description": "Items with 10 or fewer remaining units appear in this view.",
+        "variant": "warning"
+      },
+      {
+        "id": "searchForm",
+        "component": "Form",
+        "name": "inventory-search",
+        "buttons": "searchButtons",
+        "fields": [
+          "searchField"
+        ]
+      },
+      {
+        "id": "searchButtons",
+        "component": "Buttons",
+        "buttons": [
+          "searchButton",
+          "clearButton"
+        ]
+      },
+      {
+        "id": "searchButton",
+        "component": "Button",
+        "label": "Search",
+        "variant": "primary"
+      },
+      {
+        "id": "clearButton",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "tertiary"
+      },
+      {
+        "id": "searchField",
+        "component": "FormControl",
+        "label": "Search items",
+        "input": "searchInput",
+        "hint": "Search by item name or SKU"
+      },
+      {
+        "id": "searchInput",
+        "component": "Input",
+        "name": "query",
+        "placeholder": "e.g. coffee beans",
+        "type": "text"
+      },
+      {
+        "id": "inventoryList",
+        "component": "Card",
+        "children": [
+          "inventoryHeading",
+          "itemCoffee",
+          "itemCoffeeActions",
+          "separator1",
+          "itemCups",
+          "itemCupsActions",
+          "separator2",
+          "itemMilk",
+          "itemMilkActions",
+          "separator3",
+          "itemSyrup",
+          "itemSyrupActions"
+        ],
+        "variant": "sunk",
+        "gap": "m"
+      },
+      {
+        "id": "inventoryHeading",
+        "component": "Heading",
+        "text": "Items running low",
+        "level": "h2"
+      },
+      {
+        "id": "itemCoffee",
+        "component": "ListItem",
+        "title": "House Blend Coffee Beans",
+        "subtitle": "SKU: COF-100 · 3 units remaining",
+        "actionLabel": "Low stock"
+      },
+      {
+        "id": "itemCoffeeActions",
+        "component": "Buttons",
+        "buttons": [
+          "reorderCoffee"
+        ]
+      },
+      {
+        "id": "reorderCoffee",
+        "component": "Button",
+        "label": "Reorder House Blend",
+        "variant": "primary",
+        "size": "small"
+      },
+      {
+        "id": "separator1",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "itemCups",
+        "component": "ListItem",
+        "title": "12 oz Paper Cups",
+        "subtitle": "SKU: CUP-012 · 6 units remaining",
+        "actionLabel": "Low stock"
+      },
+      {
+        "id": "itemCupsActions",
+        "component": "Buttons",
+        "buttons": [
+          "reorderCups"
+        ]
+      },
+      {
+        "id": "reorderCups",
+        "component": "Button",
+        "label": "Reorder Paper Cups",
+        "variant": "primary",
+        "size": "small"
+      },
+      {
+        "id": "separator2",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "itemMilk",
+        "component": "ListItem",
+        "title": "Oat Milk",
+        "subtitle": "SKU: MLK-204 · 8 units remaining",
+        "actionLabel": "Low stock"
+      },
+      {
+        "id": "itemMilkActions",
+        "component": "Buttons",
+        "buttons": [
+          "reorderMilk"
+        ]
+      },
+      {
+        "id": "reorderMilk",
+        "component": "Button",
+        "label": "Reorder Oat Milk",
+        "variant": "primary",
+        "size": "small"
+      },
+      {
+        "id": "separator3",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "itemSyrup",
+        "component": "ListItem",
+        "title": "Vanilla Syrup",
+        "subtitle": "SKU: SYR-031 · 10 units remaining",
+        "actionLabel": "At threshold"
+      },
+      {
+        "id": "itemSyrupActions",
+        "component": "Buttons",
+        "buttons": [
+          "reorderSyrup"
+        ]
+      },
+      {
+        "id": "reorderSyrup",
+        "component": "Button",
+        "label": "Reorder Vanilla Syrup",
+        "variant": "primary",
+        "size": "small"
+      }
+    ]
+  }
+}
 </a2ui-json>

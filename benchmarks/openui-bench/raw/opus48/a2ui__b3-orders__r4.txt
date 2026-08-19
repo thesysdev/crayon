@@ -1,311 +1,249 @@
-Here's an e-commerce operations desk covering all nine requirements.
+Here's a single-screen operations desk covering all nine items.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "ops-desk",
-      "catalogId": "thesys.dev:c1-openui"
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "ops-desk",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "column",
-          "gap": "l",
-          "children": ["header", "kpi-row", "controls-card", "orders-card", "volume-card"]
-        },
-        {
-          "id": "header",
-          "component": "CardHeader",
-          "title": "Operations Desk",
-          "subtitle": "Live order and revenue overview"
-        },
-
-        {
-          "id": "kpi-row",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "m",
-          "wrap": true,
-          "children": ["kpi-orders", "kpi-revenue", "kpi-aov", "kpi-refund"]
-        },
-        {
-          "id": "kpi-orders",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "xs",
-          "weight": 1,
-          "children": ["kpi-orders-label", "kpi-orders-value"]
-        },
-        {
-          "id": "kpi-orders-label",
-          "component": "TextContent",
-          "size": "small",
-          "text": "Orders Placed Today"
-        },
-        {
-          "id": "kpi-orders-value",
-          "component": "Heading",
-          "level": "h2",
-          "text": "342"
-        },
-        {
-          "id": "kpi-revenue",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "xs",
-          "weight": 1,
-          "children": ["kpi-revenue-label", "kpi-revenue-value"]
-        },
-        {
-          "id": "kpi-revenue-label",
-          "component": "TextContent",
-          "size": "small",
-          "text": "Revenue Today"
-        },
-        {
-          "id": "kpi-revenue-value",
-          "component": "Heading",
-          "level": "h2",
-          "text": "$28,914"
-        },
-        {
-          "id": "kpi-aov",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "xs",
-          "weight": 1,
-          "children": ["kpi-aov-label", "kpi-aov-value"]
-        },
-        {
-          "id": "kpi-aov-label",
-          "component": "TextContent",
-          "size": "small",
-          "text": "Average Order Value"
-        },
-        {
-          "id": "kpi-aov-value",
-          "component": "Heading",
-          "level": "h2",
-          "text": "$84.55"
-        },
-        {
-          "id": "kpi-refund",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "xs",
-          "weight": 1,
-          "children": ["kpi-refund-label", "kpi-refund-value", "kpi-refund-bar"]
-        },
-        {
-          "id": "kpi-refund-label",
-          "component": "TextContent",
-          "size": "small",
-          "text": "Refund Rate (This Month)"
-        },
-        {
-          "id": "kpi-refund-value",
-          "component": "Heading",
-          "level": "h2",
-          "text": "2.7%"
-        },
-        {
-          "id": "kpi-refund-bar",
-          "component": "Progress",
-          "value": 2.7,
-          "label": "Target ceiling 5%"
-        },
-
-        {
-          "id": "controls-card",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "row",
-          "gap": "m",
-          "align": "end",
-          "wrap": true,
-          "children": ["fc-search", "fc-status"]
-        },
-        {
-          "id": "fc-search",
-          "component": "FormControl",
-          "label": "Search by Customer",
-          "hint": "Filter orders by customer name",
-          "input": "search-input"
-        },
-        {
-          "id": "search-input",
-          "component": "Input",
-          "name": "customerSearch",
-          "type": "text",
-          "placeholder": "e.g. Jordan Lee"
-        },
-        {
-          "id": "fc-status",
-          "component": "FormControl",
-          "label": "Filter by Status",
-          "input": "status-select"
-        },
-        {
-          "id": "status-select",
-          "component": "Select",
-          "name": "statusFilter",
-          "placeholder": "All statuses",
-          "items": ["st-all", "st-pending", "st-paid", "st-fulfilled", "st-refunded"]
-        },
-        { "id": "st-all", "component": "SelectItem", "value": "all", "label": "All statuses" },
-        { "id": "st-pending", "component": "SelectItem", "value": "pending", "label": "Pending" },
-        { "id": "st-paid", "component": "SelectItem", "value": "paid", "label": "Paid" },
-        { "id": "st-fulfilled", "component": "SelectItem", "value": "fulfilled", "label": "Fulfilled" },
-        { "id": "st-refunded", "component": "SelectItem", "value": "refunded", "label": "Refunded" },
-
-        {
-          "id": "orders-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": ["orders-title", "orders-table", "fulfill-row"]
-        },
-        {
-          "id": "orders-title",
-          "component": "Heading",
-          "level": "h3",
-          "text": "Recent Orders"
-        },
-        {
-          "id": "orders-table",
-          "component": "Table",
-          "columns": ["col-id", "col-customer", "col-total", "col-status", "col-action"]
-        },
-        {
-          "id": "col-id",
-          "component": "Col",
-          "label": "Order ID",
-          "type": "string",
-          "data": ["#10428", "#10427", "#10426", "#10425", "#10424"]
-        },
-        {
-          "id": "col-customer",
-          "component": "Col",
-          "label": "Customer",
-          "type": "string",
-          "data": ["Jordan Lee", "Priya Nair", "Marcus Cole", "Ana Ruiz", "Tom Becker"]
-        },
-        {
-          "id": "col-total",
-          "component": "Col",
-          "label": "Total",
-          "type": "string",
-          "data": ["$129.00", "$54.20", "$312.75", "$18.99", "$96.40"]
-        },
-        {
-          "id": "col-status",
-          "component": "Col",
-          "label": "Status",
-          "type": "string",
-          "data": ["Paid", "Pending", "Fulfilled", "Refunded", "Paid"]
-        },
-        {
-          "id": "col-action",
-          "component": "Col",
-          "label": "Action",
-          "type": "action",
-          "data": ["Mark fulfilled", "Mark fulfilled", "Fulfilled", "—", "Mark fulfilled"]
-        },
-        {
-          "id": "fulfill-row",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "row",
-          "gap": "m",
-          "align": "end",
-          "wrap": true,
-          "children": ["fc-fulfill", "fulfill-buttons"]
-        },
-        {
-          "id": "fc-fulfill",
-          "component": "FormControl",
-          "label": "Mark Order Fulfilled",
-          "hint": "Enter an order ID to mark it as fulfilled",
-          "input": "fulfill-input"
-        },
-        {
-          "id": "fulfill-input",
-          "component": "Input",
-          "name": "fulfillOrderId",
-          "type": "text",
-          "placeholder": "e.g. #10428"
-        },
-        {
-          "id": "fulfill-buttons",
-          "component": "Buttons",
-          "buttons": ["btn-fulfill"]
-        },
-        {
-          "id": "btn-fulfill",
-          "component": "Button",
-          "label": "Mark Fulfilled",
-          "variant": "primary",
-          "size": "medium",
-          "action": ["fulfillOrder"]
-        },
-
-        {
-          "id": "volume-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": ["volume-title", "volume-chart"]
-        },
-        {
-          "id": "volume-title",
-          "component": "Heading",
-          "level": "h3",
-          "text": "Order Volume — Past Four Weeks"
-        },
-        {
-          "id": "volume-chart",
-          "component": "BarChart",
-          "labels": ["Week 1", "Week 2", "Week 3", "Week 4"],
-          "xLabel": "Week",
-          "yLabel": "Orders",
-          "series": ["volume-series"]
-        },
-        {
-          "id": "volume-series",
-          "component": "Series",
-          "category": "Orders",
-          "values": [1820, 1975, 2103, 2288]
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-Every numbered item is covered:
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "kpis",
+          "controls",
+          "recentHeader",
+          "recentOrders",
+          "trendHeader",
+          "volumeChart",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Operations Desk",
+        "subtitle": "Live order and revenue overview"
+      },
+      {
+        "id": "kpis",
+        "component": "Table",
+        "columns": [
+          "kpiName",
+          "kpiValue"
+        ]
+      },
+      {
+        "id": "kpiName",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Orders placed today",
+          "Revenue today",
+          "Average order value",
+          "Refund rate (this month)"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "342",
+          "$48,910",
+          "$143.01",
+          "2.7%"
+        ]
+      },
+      {
+        "id": "controls",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "statusFilter",
+          "customerSearch"
+        ]
+      },
+      {
+        "id": "statusFilter",
+        "component": "FormControl",
+        "label": "Filter by status",
+        "input": "statusSelect"
+      },
+      {
+        "id": "statusSelect",
+        "component": "Select",
+        "name": "status_filter",
+        "placeholder": "All statuses",
+        "items": [
+          "statusAll",
+          "statusPending",
+          "statusFulfilled",
+          "statusRefunded"
+        ]
+      },
+      {
+        "id": "statusAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All statuses"
+      },
+      {
+        "id": "statusPending",
+        "component": "SelectItem",
+        "value": "pending",
+        "label": "Pending"
+      },
+      {
+        "id": "statusFulfilled",
+        "component": "SelectItem",
+        "value": "fulfilled",
+        "label": "Fulfilled"
+      },
+      {
+        "id": "statusRefunded",
+        "component": "SelectItem",
+        "value": "refunded",
+        "label": "Refunded"
+      },
+      {
+        "id": "customerSearch",
+        "component": "FormControl",
+        "label": "Search by customer",
+        "input": "customerInput"
+      },
+      {
+        "id": "customerInput",
+        "component": "Input",
+        "name": "customer_search",
+        "placeholder": "Customer name"
+      },
+      {
+        "id": "recentHeader",
+        "component": "Heading",
+        "text": "Recent orders",
+        "level": "h3"
+      },
+      {
+        "id": "recentOrders",
+        "component": "Table",
+        "columns": [
+          "orderId",
+          "orderCustomer",
+          "orderTotal",
+          "orderStatus"
+        ]
+      },
+      {
+        "id": "orderId",
+        "component": "Col",
+        "label": "Order ID",
+        "data": [
+          "#10432",
+          "#10431",
+          "#10430",
+          "#10429",
+          "#10428"
+        ]
+      },
+      {
+        "id": "orderCustomer",
+        "component": "Col",
+        "label": "Customer",
+        "data": [
+          "Maria Chen",
+          "David Okafor",
+          "Lena Novak",
+          "Sam Reyes",
+          "Priya Nair"
+        ]
+      },
+      {
+        "id": "orderTotal",
+        "component": "Col",
+        "label": "Total",
+        "type": "number",
+        "data": [
+          "$212.00",
+          "$89.50",
+          "$156.75",
+          "$44.00",
+          "$310.20"
+        ]
+      },
+      {
+        "id": "orderStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Pending",
+          "Fulfilled",
+          "Pending",
+          "Refunded",
+          "Fulfilled"
+        ]
+      },
+      {
+        "id": "trendHeader",
+        "component": "Heading",
+        "text": "Order volume - past 4 weeks",
+        "level": "h3"
+      },
+      {
+        "id": "volumeChart",
+        "component": "BarChart",
+        "labels": [
+          "Week 1",
+          "Week 2",
+          "Week 3",
+          "Week 4"
+        ],
+        "series": [
+          "volumeSeries"
+        ],
+        "xLabel": "Week",
+        "yLabel": "Orders"
+      },
+      {
+        "id": "volumeSeries",
+        "component": "Series",
+        "category": "Orders",
+        "values": [
+          1980,
+          2140,
+          2050,
+          2390
+        ]
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": [
+          "fulfillBtn"
+        ]
+      },
+      {
+        "id": "fulfillBtn",
+        "component": "Button",
+        "label": "Mark selected order fulfilled",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>
 
-1. **Orders placed today** — KPI card (342)
-2. **Revenue today** — KPI card ($28,914)
-3. **Average order value** — KPI card ($84.55)
-4. **Recent orders** — table with ID, customer, total, and status columns
-5. **Narrow by status** — status filter Select
-6. **Search by customer name** — customer search Input
-7. **Refund rate this month** — KPI card with progress bar (2.7%)
-8. **Order volume over four weeks** — bar chart
-9. **Mark an order fulfilled** — per-row action column plus a dedicated fulfill input + button
+This screen covers all nine items: today's order count, revenue, and average order value plus the monthly refund rate appear in the KPI table (items 1, 2, 3, 7); the recent orders table lists id, customer, total, and status (item 4); the status select and customer search input handle filtering and lookup (items 5, 6); the bar chart shows four-week order volume (item 8); and the "Mark selected order fulfilled" button provides the fulfillment action (item 9).

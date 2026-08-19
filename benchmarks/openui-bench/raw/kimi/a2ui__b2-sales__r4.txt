@@ -1,45 +1,158 @@
-Here's a founder's monthly sales check dashboard covering all five items:
+Here's a single-screen monthly sales check covering all five items:
 
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"sales-check","catalogId":"thesys.dev:c1-openui","theme":{"agentDisplayName":"Sales Check","primaryColor":"#2F6BFF"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"sales-check","components":[
-{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["header","kpiRow","revChart","productsCard","convCard","downloadBtn"]},
-{"id":"header","component":"CardHeader","title":"Monthly Sales Check","subtitle":"Founder overview — November 2025"},
-{"id":"kpiRow","component":"Card","variant":"clear","direction":"row","gap":"m","children":["revKpi","convKpi"]},
-{"id":"revKpi","component":"Card","variant":"card","direction":"column","gap":"s","weight":1,"children":["revLabel","revValue","revDelta"]},
-{"id":"revLabel","component":"TextContent","text":"Revenue this month","size":"small"},
-{"id":"revValue","component":"Heading","text":"$128,400","level":"h2"},
-{"id":"revDelta","component":"Tag","text":"+12.4% vs October","variant":"success"},
-{"id":"convKpi","component":"Card","variant":"card","direction":"column","gap":"s","weight":1,"children":["convLabel","convValue","convDelta"]},
-{"id":"convLabel","component":"TextContent","text":"Conversion rate","size":"small"},
-{"id":"convValue","component":"Heading","text":"3.8%","level":"h2"},
-{"id":"convDelta","component":"Tag","text":"+0.3 pts vs October","variant":"info"},
-{"id":"revChart","component":"Card","variant":"card","direction":"column","gap":"m","children":["revChartHeader","revLine","revSeries1"]},
-{"id":"revChartHeader","component":"CardHeader","title":"Revenue — last 6 months","subtitle":"Jun – Nov 2025"},
-{"id":"revLine","component":"LineChart","labels":["Jun","Jul","Aug","Sep","Oct","Nov"],"series":["revSeries1"],"xLabel":"Month","yLabel":"Revenue ($k)","variant":"linear"},
-{"id":"revSeries1","component":"Series","category":"Revenue","values":[82,91,88,104,114,128]},
-{"id":"productsCard","component":"Card","variant":"card","direction":"column","gap":"m","children":["prodHeader","prodTable","prodCol1","prodCol2","prodCol3"]},
-{"id":"prodHeader","component":"CardHeader","title":"Top 3 best-selling products"},
-{"id":"prodTable","component":"Table","columns":["prodCol1","prodCol2","prodCol3"]},
-{"id":"prodCol1","component":"Col","label":"Rank","data":["1","2","3"],"type":"number"},
-{"id":"prodCol2","component":"Col","label":"Product","data":["Pro Plan (Annual)","Starter Kit","Team Add-on"],"type":"string"},
-{"id":"prodCol3","component":"Col","label":"Units sold","data":[842,611,398],"type":"number"},
-{"id":"convCard","component":"Card","variant":"card","direction":"column","gap":"s","children":["convCardHeader","convProgress"]},
-{"id":"convCardHeader","component":"CardHeader","title":"Conversion","subtitle":"Visitors → paying customers this month"},
-{"id":"convProgress","component":"Progress","value":38,"label":"3.8% of 100% target baseline"},
-{"id":"downloadBtn","component":"Button","label":"Download numbers (CSV)","variant":"primary","size":"medium","action":[{"action":"downloadReport","params":{"format":"csv","month":"2025-11"}}]}
-]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "kpis",
+          "trend",
+          "topProducts",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Monthly Sales Check",
+        "subtitle": "Founder snapshot · June 2025"
+      },
+      {
+        "id": "kpis",
+        "component": "Table",
+        "columns": [
+          "kpiName",
+          "kpiValue"
+        ]
+      },
+      {
+        "id": "kpiName",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Revenue this month",
+          "Conversion rate"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "$84,200",
+          "3.8%"
+        ]
+      },
+      {
+        "id": "trend",
+        "component": "LineChart",
+        "labels": [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun"
+        ],
+        "series": [
+          "revSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Month",
+        "yLabel": "Revenue (USD)"
+      },
+      {
+        "id": "revSeries",
+        "component": "Series",
+        "category": "Revenue",
+        "values": [
+          52000,
+          58400,
+          61900,
+          67300,
+          74800,
+          84200
+        ]
+      },
+      {
+        "id": "topProducts",
+        "component": "Table",
+        "columns": [
+          "prodRank",
+          "prodName",
+          "prodUnits"
+        ]
+      },
+      {
+        "id": "prodRank",
+        "component": "Col",
+        "label": "#",
+        "data": [
+          "1",
+          "2",
+          "3"
+        ]
+      },
+      {
+        "id": "prodName",
+        "component": "Col",
+        "label": "Best-selling product",
+        "data": [
+          "Pro Plan Subscription",
+          "Starter Kit",
+          "Team Add-on Seats"
+        ]
+      },
+      {
+        "id": "prodUnits",
+        "component": "Col",
+        "label": "Units sold",
+        "data": [
+          412,
+          287,
+          198
+        ],
+        "type": "number"
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": [
+          "downloadBtn"
+        ]
+      },
+      {
+        "id": "downloadBtn",
+        "component": "Button",
+        "label": "Download numbers (CSV)",
+        "variant": "primary"
+      }
+    ]
+  }
+}
 </a2ui-json>
 
-The screen covers all five requirements:
-
-1. **Revenue this month** — $128,400 with a month-over-month delta tag
-2. **Six-month trend** — line chart from June to November
+This covers everything:
+1. **Revenue this month** — $84,200 in the KPI table
+2. **Six-month trend** — line chart from Jan–Jun
 3. **Top 3 products** — table with units sold for each
-4. **Conversion** — 3.8% headline plus a progress bar
-5. **Download** — a "Download numbers (CSV)" button that triggers a report export
+4. **Conversion** — 3.8% in the KPI table
+5. **Download** — CSV export button
 
-Want me to add a per-product revenue breakdown or a year-over-year comparison?
+Want me to adjust the numbers, add a comparison vs. last month, or include a refund/churn line?

@@ -1,196 +1,157 @@
-Here is a mid-morning performance dashboard designed for a shop owner to quickly review today's revenue and compare it against yesterday's stats.
+Here is your mid-morning sales overview, comparing today's performance directly against the same time yesterday.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "shop-midmorning-checkin",
-      "catalogId": "thesys.dev:c1-openui",
-      "theme": {
-        "primaryColor": "#0F172A",
-        "agentDisplayName": "Retail Analytics"
-      }
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "shop-midmorning-checkin",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "l",
-          "children": [
-            "header",
-            "kpi-card",
-            "trend-chart-card",
-            "hourly-breakdown-card"
-          ]
-        },
-        {
-          "id": "header",
-          "component": "CardHeader",
-          "title": "Mid-Morning Store Performance",
-          "subtitle": "As of Today, 10:30 AM"
-        },
-        {
-          "id": "kpi-card",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "s",
-          "children": [
-            "kpi-callout",
-            "kpi-comparison-tag"
-          ]
-        },
-        {
-          "id": "kpi-callout",
-          "component": "TextCallout",
-          "variant": "success",
-          "title": "$1,485.50 Today",
-          "description": "Total Revenue So Far (8:00 AM – 10:30 AM)"
-        },
-        {
-          "id": "kpi-comparison-tag",
-          "component": "Tag",
-          "text": "+$240.50 (+19.3%) vs Yesterday at 10:30 AM ($1,245.00)",
-          "variant": "success",
-          "size": "md"
-        },
-        {
-          "id": "trend-chart-card",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "chart-heading",
-            "revenue-chart"
-          ]
-        },
-        {
-          "id": "chart-heading",
-          "component": "Heading",
-          "level": "h3",
-          "text": "Cumulative Revenue Pace"
-        },
-        {
-          "id": "revenue-chart",
-          "component": "LineChart",
-          "variant": "natural",
-          "xLabel": "Time",
-          "yLabel": "Revenue ($)",
-          "labels": [
-            "8:00 AM",
-            "9:00 AM",
-            "10:00 AM",
-            "10:30 AM"
-          ],
-          "series": [
-            "series-today",
-            "series-yesterday"
-          ]
-        },
-        {
-          "id": "series-today",
-          "component": "Series",
-          "category": "Today",
-          "values": [
-            210,
-            680,
-            1250,
-            1485.5
-          ]
-        },
-        {
-          "id": "series-yesterday",
-          "component": "Series",
-          "category": "Yesterday",
-          "values": [
-            180,
-            540,
-            1020,
-            1245
-          ]
-        },
-        {
-          "id": "hourly-breakdown-card",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "column",
-          "gap": "s",
-          "children": [
-            "table-heading",
-            "breakdown-table"
-          ]
-        },
-        {
-          "id": "table-heading",
-          "component": "Heading",
-          "level": "h3",
-          "text": "Hourly Comparison"
-        },
-        {
-          "id": "breakdown-table",
-          "component": "Table",
-          "columns": [
-            "col-time",
-            "col-today",
-            "col-yesterday",
-            "col-diff"
-          ]
-        },
-        {
-          "id": "col-time",
-          "component": "Col",
-          "label": "Time Window",
-          "type": "string",
-          "data": [
-            "8:00 - 9:00 AM",
-            "9:00 - 10:00 AM",
-            "10:00 - 10:30 AM"
-          ]
-        },
-        {
-          "id": "col-today",
-          "component": "Col",
-          "label": "Today",
-          "type": "string",
-          "data": [
-            "$470.00",
-            "$570.00",
-            "$235.50"
-          ]
-        },
-        {
-          "id": "col-yesterday",
-          "component": "Col",
-          "label": "Yesterday",
-          "type": "string",
-          "data": [
-            "$360.00",
-            "$480.00",
-            "$225.00"
-          ]
-        },
-        {
-          "id": "col-diff",
-          "component": "Col",
-          "label": "Difference",
-          "type": "string",
-          "data": [
-            "+$110.00",
-            "+$90.00",
-            "+$10.50"
-          ]
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "comparisonBadge",
+          "divider1",
+          "revenueCallout",
+          "hourlyChart",
+          "divider2",
+          "breakdownTable"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Mid-Morning Store Performance",
+        "subtitle": "Today's live summary as of 10:30 AM"
+      },
+      {
+        "id": "comparisonBadge",
+        "component": "Tag",
+        "text": "+12.5% vs Yesterday at 10:30 AM",
+        "variant": "success",
+        "size": "lg"
+      },
+      {
+        "id": "divider1",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "revenueCallout",
+        "component": "Callout",
+        "title": "$1,845.00",
+        "description": "Total Revenue So Far Today (Yesterday at 10:30 AM: $1,640.00)",
+        "variant": "success"
+      },
+      {
+        "id": "hourlyChart",
+        "component": "BarChart",
+        "xLabel": "Hour",
+        "yLabel": "Revenue ($)",
+        "variant": "grouped",
+        "labels": [
+          "6 AM",
+          "7 AM",
+          "8 AM",
+          "9 AM",
+          "10 AM"
+        ],
+        "series": [
+          "todaySeries",
+          "yesterdaySeries"
+        ]
+      },
+      {
+        "id": "todaySeries",
+        "component": "Series",
+        "category": "Today",
+        "values": [
+          120,
+          280,
+          450,
+          520,
+          475
+        ]
+      },
+      {
+        "id": "yesterdaySeries",
+        "component": "Series",
+        "category": "Yesterday (Same Time)",
+        "values": [
+          95,
+          210,
+          410,
+          480,
+          445
+        ]
+      },
+      {
+        "id": "divider2",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "breakdownTable",
+        "component": "Table",
+        "columns": [
+          "metricCol",
+          "todayCol",
+          "yesterdayCol",
+          "diffCol"
+        ]
+      },
+      {
+        "id": "metricCol",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Total Revenue",
+          "Orders Count",
+          "Average Order Value"
+        ]
+      },
+      {
+        "id": "todayCol",
+        "component": "Col",
+        "label": "Today (by 10:30 AM)",
+        "data": [
+          "$1,845.00",
+          "62",
+          "$29.76"
+        ]
+      },
+      {
+        "id": "yesterdayCol",
+        "component": "Col",
+        "label": "Yesterday (by 10:30 AM)",
+        "data": [
+          "$1,640.00",
+          "58",
+          "$28.27"
+        ]
+      },
+      {
+        "id": "diffCol",
+        "component": "Col",
+        "label": "Comparison",
+        "data": [
+          "+$205.00 (+12.5%)",
+          "+4 orders (+6.9%)",
+          "+$1.49 (+5.3%)"
+        ]
+      }
+    ]
+  }
+}
 </a2ui-json>

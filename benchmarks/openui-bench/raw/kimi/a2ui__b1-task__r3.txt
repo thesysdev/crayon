@@ -1,10 +1,108 @@
-Here's a focused single-task view covering all three requirements:
-
 <a2ui-json>
-[{"version":"v0.9","createSurface":{"surfaceId":"focus-view","catalogId":"thesys.dev:c1-openui","theme":{"agentDisplayName":"Focus"}}},{"version":"v0.9","updateComponents":{"surfaceId":"focus-view","components":[{"id":"root","component":"Card","variant":"card","direction":"column","gap":"m","children":["header","callout","sep","status-row","actions"]},{"id":"header","component":"CardHeader","title":"Prepare Q3 board presentation","subtitle":"Deadline: Friday, Oct 18, 2024 — 5:00 PM (in 2 days)"},{"id":"callout","component":"Callout","variant":"warning","title":"Most urgent task","description":"This is your highest-priority item right now. No other tasks are shown to keep you focused."},{"id":"sep","component":"Separator"},{"id":"status-row","component":"Tag","text":"Status: In Progress","variant":"info","size":"lg"},{"id":"actions","component":"Buttons","buttons":["done-btn"],"direction":"row"},{"id":"done-btn","component":"Button","label":"✓ Mark as Done","variant":"primary","size":"large","action":[{"event":"mark_done","taskId":"task-q3-board-presentation"}]}]}}]
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
-The screen covers all three items:
-1. **Urgent task + deadline** — the header shows "Prepare Q3 board presentation" with its Friday 5:00 PM deadline, reinforced by a warning callout.
-2. **Current status** — an "In Progress" tag displays the task's state.
-3. **Mark done** — a prominent primary button triggers a `mark_done` action for this task.
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "urgentAlert",
+          "taskTitle",
+          "metaRow",
+          "statusBadge",
+          "progress",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Focus: Your Most Urgent Task",
+        "subtitle": "One thing at a time"
+      },
+      {
+        "id": "urgentAlert",
+        "component": "Alert",
+        "title": "Due today",
+        "description": "This is your highest-priority deadline right now.",
+        "variant": "warning"
+      },
+      {
+        "id": "taskTitle",
+        "component": "Heading",
+        "text": "Submit Q3 budget proposal to Finance",
+        "level": "h2"
+      },
+      {
+        "id": "metaRow",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "deadlineLabel",
+          "deadlineValue"
+        ]
+      },
+      {
+        "id": "deadlineLabel",
+        "component": "Label",
+        "text": "Deadline:"
+      },
+      {
+        "id": "deadlineValue",
+        "component": "TextContent",
+        "text": "**Today, 5:00 PM** (in 3 hours)",
+        "size": "default"
+      },
+      {
+        "id": "statusBadge",
+        "component": "Badge",
+        "text": "In Progress",
+        "variant": "secondary"
+      },
+      {
+        "id": "progress",
+        "component": "Progress",
+        "value": 70,
+        "label": "70% complete"
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": [
+          "doneBtn",
+          "snoozeBtn"
+        ]
+      },
+      {
+        "id": "doneBtn",
+        "component": "Button",
+        "label": "Mark as Done",
+        "variant": "primary"
+      },
+      {
+        "id": "snoozeBtn",
+        "component": "Button",
+        "label": "Remind me later",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This focus view covers all three requirements: the urgent task ("Submit Q3 budget proposal") with its deadline (today, 5:00 PM), its current status ("In Progress" badge plus 70% progress bar), and a prominent "Mark as Done" button to complete it.

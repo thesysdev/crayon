@@ -1,30 +1,19 @@
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"l"},"children":["header","list-label","options","sep","vote-card","confirmation"]}}
-{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Where should we go for lunch on Friday?","subtitle":"Team poll · one vote per person · closes Thursday at 5 PM"},"children":[]}}
-{"op":"add","path":"/elements/list-label","value":{"type":"TextContent","props":{"text":"Current standings","size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/options","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"repeat":{"statePath":"/restaurants","key":"id"},"children":["option-card"]}}
-{"op":"add","path":"/elements/option-card","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center","gap":"m"},"children":["option-info","option-votes"]}}
-{"op":"add","path":"/elements/option-info","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["option-name","option-tag","option-desc"]}}
-{"op":"add","path":"/elements/option-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"large-heavy"},"children":[]}}
-{"op":"add","path":"/elements/option-tag","value":{"type":"Tag","props":{"text":{"$item":"cuisine"},"variant":"info","size":"sm"},"children":[]}}
-{"op":"add","path":"/elements/option-desc","value":{"type":"TextContent","props":{"text":{"$item":"description"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/option-votes","value":{"type":"Card","props":{"variant":"clear","direction":"column","align":"center","gap":"none"},"children":["vote-count"]}}
-{"op":"add","path":"/elements/vote-count","value":{"type":"TextContent","props":{"text":{"$template":"${votes} votes"},"size":"small-heavy"},"children":[]}}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"gap":"l"},"children":["header","intro","options","confirm","footer"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Team Lunch Poll","subtitle":"Cast your vote before Thursday 5 PM"}}}
+{"op":"add","path":"/elements/intro","value":{"type":"TextContent","props":{"text":"Where should we go for lunch on Friday?","size":"large-heavy"}}}
+{"op":"add","path":"/elements/options","value":{"type":"Card","props":{"variant":"clear","gap":"m"},"repeat":{"statePath":"/restaurants","key":"id"},"children":["option-card"]}}
 {"op":"add","path":"/state/restaurants","value":[]}
-{"op":"add","path":"/state/restaurants/0","value":{"id":"sakura","name":"Sakura Sushi","cuisine":"Japanese","description":"Fresh sushi rolls, ramen, and bento boxes just two blocks from the office.","votes":4}}
-{"op":"add","path":"/state/restaurants/1","value":{"id":"nonna","name":"Nonna's Trattoria","cuisine":"Italian","description":"Family-style pasta, wood-fired pizza, and great seating for big groups.","votes":6}}
-{"op":"add","path":"/state/restaurants/2","value":{"id":"camino","name":"El Camino Taqueria","cuisine":"Mexican","description":"Street tacos, burritos, and a famous salsa bar. Quick counter service.","votes":3}}
-{"op":"add","path":"/elements/sep","value":{"type":"Separator","props":{"orientation":"horizontal"},"children":[]}}
-{"op":"add","path":"/elements/vote-card","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"m"},"children":["vote-label","vote-radio","selection-text","vote-actions"]}}
-{"op":"add","path":"/elements/vote-label","value":{"type":"TextContent","props":{"text":"Cast your vote","size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/vote-radio","value":{"type":"RadioGroup","props":{"name":"lunchVote","items":["ri-sakura","ri-nonna","ri-camino"],"value":{"$bindState":"/userVote"}},"children":[]}}
-{"op":"add","path":"/elements/ri-sakura","value":{"type":"RadioGroup","props":{},"children":[]}}
-{"op":"add","path":"/elements/ri-sakura","value":{"type":"RadioItem","props":{"label":"Sakura Sushi","description":"Japanese · sushi & ramen","value":"Sakura Sushi"},"children":[]}}
-{"op":"add","path":"/elements/ri-nonna","value":{"type":"RadioItem","props":{"label":"Nonna's Trattoria","description":"Italian · pasta & pizza","value":"Nonna's Trattoria"},"children":[]}}
-{"op":"add","path":"/elements/ri-camino","value":{"type":"RadioItem","props":{"label":"El Camino Taqueria","description":"Mexican · tacos & burritos","value":"El Camino Taqueria"},"children":[]}}
+{"op":"add","path":"/state/restaurants/0","value":{"id":"bella","name":"Bella Italia","cuisine":"Italian","description":"Wood-fired pizzas and fresh pasta, 5 min walk","votes":6}}
+{"op":"add","path":"/state/restaurants/1","value":{"id":"sakura","name":"Sakura Sushi","cuisine":"Japanese","description":"Sushi bowls and ramen, lunch sets available","votes":4}}
+{"op":"add","path":"/state/restaurants/2","value":{"id":"elcamino","name":"El Camino","cuisine":"Mexican","description":"Tacos, burritos and bottomless salsa","votes":3}}
 {"op":"add","path":"/state/userVote","value":""}
-{"op":"add","path":"/elements/selection-text","value":{"type":"TextContent","props":{"text":{"$template":"You selected: ${/userVote}"},"size":"small"},"visible":{"$state":"/userVote"},"children":[]}}
-{"op":"add","path":"/elements/vote-actions","value":{"type":"Buttons","props":{"buttons":["submit-btn"],"direction":"row"},"children":[]}}
-{"op":"add","path":"/elements/submit-btn","value":{"type":"Button","props":{"label":"Submit vote","variant":"primary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/submitted","value":true}}},"children":[]}}
-{"op":"add","path":"/state/submitted","value":false}
-{"op":"add","path":"/elements/confirmation","value":{"type":"Callout","props":{"variant":"success","title":"Vote recorded!","description":{"$template":"Thanks! Your vote for ${/userVote} has been counted. Final results will be announced Thursday at 5 PM."}},"visible":[{"$state":"/submitted"},{"$state":"/userVote"}],"children":[]}}
+{"op":"add","path":"/elements/option-card","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center","gap":"m"},"on":{"press":{"action":"setState","params":{"statePath":"/userVote","value":{"$item":"id"}}}},"children":["option-info","option-side"]}}
+{"op":"add","path":"/elements/option-info","value":{"type":"Card","props":{"variant":"clear","gap":"xs"},"children":["option-name","option-desc"]}}
+{"op":"add","path":"/elements/option-name","value":{"type":"TextContent","props":{"text":{"$template":"${name} · ${cuisine}"},"size":"small-heavy"}}}
+{"op":"add","path":"/elements/option-desc","value":{"type":"TextContent","props":{"text":{"$item":"description"},"size":"small"}}}
+{"op":"add","path":"/elements/option-side","value":{"type":"Card","props":{"variant":"clear","gap":"xs","align":"end"},"children":["option-votes","option-selected"]}}
+{"op":"add","path":"/elements/option-votes","value":{"type":"Badge","props":{"text":{"$template":"${votes} votes"},"variant":"secondary"}}}
+{"op":"add","path":"/elements/option-selected","value":{"type":"Tag","props":{"text":"Your pick","variant":"success","size":"sm"},"visible":{"$state":"/userVote","eq":{"$item":"id"}},"children":[]}}
+{"op":"add","path":"/elements/confirm","value":{"type":"Alert","props":{"title":"Vote recorded","description":"Thanks! We'll announce the winning spot on Thursday evening.","variant":"success"},"visible":{"$state":"/userVote"}}}
+{"op":"add","path":"/elements/footer","value":{"type":"TextContent","props":{"text":"13 teammates have voted so far. Tap a restaurant to cast or change your vote.","size":"small"}}}

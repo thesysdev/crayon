@@ -1,168 +1,194 @@
-Here's your morning weather brief for Bengaluru:
+
+
+Here is a single-screen morning weather brief covering Bengaluru’s current conditions, the next three days, and sunrise/sunset times.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "weather-brief-bengaluru",
-      "catalogId": "thesys.dev:c1-openui",
-      "theme": {
-        "primaryColor": "#F59E0B"
-      }
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "weather-brief-bengaluru",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "children": ["header", "current-section", "sep1", "forecast-section", "sep2", "sun-section"],
-          "direction": "column",
-          "gap": "m"
-        },
-        {
-          "id": "header",
-          "component": "CardHeader",
-          "title": "☀️ Morning Weather Brief",
-          "subtitle": "Bengaluru, Karnataka"
-        },
-        {
-          "id": "current-section",
-          "component": "Card",
-          "variant": "sunk",
-          "children": ["current-heading", "current-temp", "current-desc"],
-          "direction": "column",
-          "gap": "s"
-        },
-        {
-          "id": "current-heading",
-          "component": "Heading",
-          "text": "Right Now",
-          "level": "h3"
-        },
-        {
-          "id": "current-temp",
-          "component": "TextContent",
-          "text": "**28°C** — Partly Cloudy",
-          "size": "large-heavy"
-        },
-        {
-          "id": "current-desc",
-          "component": "TextContent",
-          "text": "Feels like 30°C · Humidity 62% · Wind 12 km/h SW · UV Index 6 (High)",
-          "size": "small"
-        },
-        {
-          "id": "sep1",
-          "component": "Separator"
-        },
-        {
-          "id": "forecast-section",
-          "component": "Card",
-          "variant": "clear",
-          "children": ["forecast-heading", "forecast-table"],
-          "direction": "column",
-          "gap": "s"
-        },
-        {
-          "id": "forecast-heading",
-          "component": "Heading",
-          "text": "3-Day Outlook",
-          "level": "h3"
-        },
-        {
-          "id": "forecast-table",
-          "component": "Table",
-          "columns": ["col-day", "col-condition", "col-high", "col-low", "col-rain"]
-        },
-        {
-          "id": "col-day",
-          "component": "Col",
-          "label": "Day",
-          "data": ["Tomorrow", "Day After", "Day 3"],
-          "type": "string"
-        },
-        {
-          "id": "col-condition",
-          "component": "Col",
-          "label": "Condition",
-          "data": ["Sunny", "Partly Cloudy", "Light Showers"],
-          "type": "string"
-        },
-        {
-          "id": "col-high",
-          "component": "Col",
-          "label": "High",
-          "data": ["31°C", "30°C", "28°C"],
-          "type": "string"
-        },
-        {
-          "id": "col-low",
-          "component": "Col",
-          "label": "Low",
-          "data": ["21°C", "20°C", "20°C"],
-          "type": "string"
-        },
-        {
-          "id": "col-rain",
-          "component": "Col",
-          "label": "Rain %",
-          "data": ["10%", "25%", "60%"],
-          "type": "string"
-        },
-        {
-          "id": "sep2",
-          "component": "Separator"
-        },
-        {
-          "id": "sun-section",
-          "component": "Card",
-          "variant": "sunk",
-          "children": ["sun-heading", "sun-row"],
-          "direction": "column",
-          "gap": "s"
-        },
-        {
-          "id": "sun-heading",
-          "component": "Heading",
-          "text": "Sun Times",
-          "level": "h3"
-        },
-        {
-          "id": "sun-row",
-          "component": "Card",
-          "variant": "clear",
-          "children": ["sunrise-text", "sunset-text"],
-          "direction": "row",
-          "gap": "l",
-          "justify": "around"
-        },
-        {
-          "id": "sunrise-text",
-          "component": "TextContent",
-          "text": "🌅 **Sunrise**\n6:12 AM",
-          "size": "default"
-        },
-        {
-          "id": "sunset-text",
-          "component": "TextContent",
-          "text": "🌇 **Sunset**\6:48 PM",
-          "size": "default"
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-This brief covers all three items:
-
-1. **Current conditions** — 28°C, partly cloudy, with feels-like temp, humidity, wind, and UV index.
-2. **3-day outlook** — a table showing condition, high/low temps, and rain probability for the next three days.
-3. **Sunrise & sunset** — displayed side by side at the bottom.
-
-Have a great morning in Bengaluru! 🌤️
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "currentCard",
+          "sunCard",
+          "outlookCard",
+          "footnote"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Morning Weather Brief",
+        "subtitle": "Bengaluru"
+      },
+      {
+        "id": "currentCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "currentTitle",
+          "currentTemp",
+          "currentConditions"
+        ],
+        "gap": "s"
+      },
+      {
+        "id": "currentTitle",
+        "component": "Heading",
+        "text": "Current conditions",
+        "level": "h3"
+      },
+      {
+        "id": "currentTemp",
+        "component": "TextContent",
+        "text": "22°C",
+        "size": "large-heavy"
+      },
+      {
+        "id": "currentConditions",
+        "component": "TextContent",
+        "text": "Partly cloudy with a light breeze. Feels like 24°C, humidity 78%."
+      },
+      {
+        "id": "sunCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "sunTitle",
+          "sunTable"
+        ],
+        "gap": "s"
+      },
+      {
+        "id": "sunTitle",
+        "component": "Heading",
+        "text": "Sunrise and sunset",
+        "level": "h3"
+      },
+      {
+        "id": "sunTable",
+        "component": "Table",
+        "columns": [
+          "sunEvent",
+          "sunTime"
+        ]
+      },
+      {
+        "id": "sunEvent",
+        "component": "Col",
+        "label": "Event",
+        "data": [
+          "Sunrise",
+          "Sunset"
+        ]
+      },
+      {
+        "id": "sunTime",
+        "component": "Col",
+        "label": "Time",
+        "data": [
+          "6:14 AM",
+          "6:38 PM"
+        ]
+      },
+      {
+        "id": "outlookCard",
+        "component": "Card",
+        "children": [
+          "outlookTitle",
+          "outlookTable"
+        ],
+        "gap": "s"
+      },
+      {
+        "id": "outlookTitle",
+        "component": "Heading",
+        "text": "Next three days",
+        "level": "h3"
+      },
+      {
+        "id": "outlookTable",
+        "component": "Table",
+        "columns": [
+          "dayCol",
+          "conditionsCol",
+          "highCol",
+          "lowCol",
+          "rainCol"
+        ]
+      },
+      {
+        "id": "dayCol",
+        "component": "Col",
+        "label": "Day",
+        "data": [
+          "Today",
+          "Tomorrow",
+          "Day after tomorrow"
+        ]
+      },
+      {
+        "id": "conditionsCol",
+        "component": "Col",
+        "label": "Conditions",
+        "data": [
+          "Partly cloudy",
+          "Showers likely",
+          "Scattered showers"
+        ]
+      },
+      {
+        "id": "highCol",
+        "component": "Col",
+        "label": "High",
+        "data": [
+          "29°C",
+          "27°C",
+          "28°C"
+        ]
+      },
+      {
+        "id": "lowCol",
+        "component": "Col",
+        "label": "Low",
+        "data": [
+          "21°C",
+          "20°C",
+          "21°C"
+        ]
+      },
+      {
+        "id": "rainCol",
+        "component": "Col",
+        "label": "Rain chance",
+        "data": [
+          "30%",
+          "70%",
+          "55%"
+        ]
+      },
+      {
+        "id": "footnote",
+        "component": "TextContent",
+        "text": "Illustrative values shown for the morning brief layout.",
+        "size": "small"
+      }
+    ]
+  }
+}
+</a2ui-json>

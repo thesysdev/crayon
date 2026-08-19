@@ -1,47 +1,60 @@
-{"op":"add","path":"/root","value":"main-container"}
-{"op":"add","path":"/elements/main-container","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["header-card","special-callout","filter-card","menu-tabs","hours-card"]}}
-{"op":"add","path":"/elements/header-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s","align":"center"},"children":["title-heading","subtitle-text"]}}
-{"op":"add","path":"/elements/title-heading","value":{"type":"Heading","props":{"text":"☕ Artisan Corner Café","level":"h1"}}}
-{"op":"add","path":"/elements/subtitle-text","value":{"type":"TextContent","props":{"text":"Freshly brewed coffee, artisanal pastries & delicious lunch","size":"default"}}}
-{"op":"add","path":"/elements/special-callout","value":{"type":"Callout","props":{"variant":"success","title":"🌟 Today's Special: Honey Lavender Cold Brew & Avocado Tartine","description":"Hand-crafted lavender syrup with slow-steeped cold brew, paired with sourdough avocado toast topped with microgreens. Special price: $12.50 (Save $2.50)"}}}
-{"op":"add","path":"/elements/filter-card","value":{"type":"Card","props":{"variant":"sunk","direction":"row","align":"center","justify":"between"},"children":["filter-switch-group"]}}
-{"op":"add","path":"/elements/filter-switch-group","value":{"type":"SwitchGroup","props":{"name":"vegFilter","items":["veg-switch"]}}}
-{"op":"add","path":"/elements/veg-switch","value":{"type":"SwitchItem","props":{"label":"🌱 Show Vegetarian Items Only","description":"Filter menu to display vegetarian-friendly selections","name":"vegOnly","defaultChecked":false},"on":{"change":{"action":"setState","params":{"statePath":"/vegOnly","value":{"$state":"/vegOnly","not":true}}}}}}
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"gap":"l","variant":"clear"},"children":["header","specialCard","filterCard","menuTabs","hoursCard"]}}
+{"op":"add","path":"/elements/header","value":{"type":"Card","props":{"variant":"card","align":"center","gap":"xs"},"children":["title","subtitle","badgeRow"]}}
+{"op":"add","path":"/elements/title","value":{"type":"Heading","props":{"text":"☕ The Daily Roast & Bites","level":"h1"}}}
+{"op":"add","path":"/elements/subtitle","value":{"type":"TextContent","props":{"text":"Freshly brewed coffee, artisanal pastries, and savory delights.","size":"default"}}}
+{"op":"add","path":"/elements/badgeRow","value":{"type":"Card","props":{"direction":"row","gap":"s","justify":"center"},"children":["openBadge","locBadge"]}}
+{"op":"add","path":"/elements/openBadge","value":{"type":"Badge","props":{"text":"Open Today • 7:00 AM - 7:00 PM","variant":"default"}}}
+{"op":"add","path":"/elements/locBadge","value":{"type":"Badge","props":{"text":"Downtown Plaza","variant":"outline"}}}
+
+{"op":"add","path":"/elements/specialCard","value":{"type":"Card","props":{"variant":"sunk","gap":"m"},"children":["specialHeader","specialBanner"]}}
+{"op":"add","path":"/elements/specialHeader","value":{"type":"CardHeader","props":{"title":"✨ Today's Special","subtitle":"Chef's seasonal highlight available until sold out!"}}}
+{"op":"add","path":"/elements/specialBanner","value":{"type":"Callout","props":{"variant":"success","title":"Honey Lavender Cold Brew & Maple Pecan Danish","description":"House-made lavender syrup paired with smooth 16-hour cold brew, served alongside a warm, flaky maple pecan pastry for $10.50 (Save $2.00)."}}}
+
+{"op":"add","path":"/elements/filterCard","value":{"type":"Card","props":{"variant":"card","direction":"row","align":"center","justify":"between"},"children":["filterLabel","filterSwitch"]}}
+{"op":"add","path":"/elements/filterLabel","value":{"type":"TextContent","props":{"text":"🌱 Show Vegetarian Items Only","size":"large-heavy"}}}
+{"op":"add","path":"/elements/filterSwitch","value":{"type":"SwitchItem","props":{"name":"vegOnly","label":"Vegetarian Filter","defaultChecked":false},"on":{"change":{"action":"setState","params":{"statePath":"/vegOnly","value":{"$bindState":"/vegOnly"}}}}}}
+
 {"op":"add","path":"/state/vegOnly","value":false}
-{"op":"add","path":"/elements/menu-tabs","value":{"type":"Tabs","props":{"items":["tab-drinks","tab-food"]}}}
-{"op":"add","path":"/elements/tab-drinks","value":{"type":"TabItem","props":{"value":"drinks","trigger":"☕ Drinks & Beverages","content":["drinks-list"]}}}
-{"op":"add","path":"/elements/tab-food","value":{"type":"TabItem","props":{"value":"food","trigger":"🥪 Food & Bakery","content":["food-list"]}}}
-{"op":"add","path":"/elements/drinks-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"repeat":{"statePath":"/drinks","key":"id"},"children":["drink-item"]}}
-{"op":"add","path":"/elements/drink-item","value":{"type":"Card","props":{"variant":"card","direction":"row","align":"center","justify":"between"},"visible":{"$or":[{"$state":"/vegOnly","not":true},{"$item":"isVeg"}]},"children":["drink-info","drink-price-tag"]}}
-{"op":"add","path":"/elements/drink-info","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["drink-title-row","drink-desc"]}}
-{"op":"add","path":"/elements/drink-title-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center"},"children":["drink-name","drink-veg-badge"]}}
-{"op":"add","path":"/elements/drink-name","value":{"type":"Heading","props":{"text":{"$item":"name"},"level":"h4"}}}
-{"op":"add","path":"/elements/drink-veg-badge","value":{"type":"Badge","props":{"text":"🌱 Veg","variant":"secondary"},"visible":{"$item":"isVeg"}}}
-{"op":"add","path":"/elements/drink-desc","value":{"type":"TextContent","props":{"text":{"$item":"description"},"size":"small"}}}
-{"op":"add","path":"/elements/drink-price-tag","value":{"type":"Tag","props":{"text":{"$template":"$${price}"},"variant":"info","size":"lg"}}}
+
+{"op":"add","path":"/elements/menuTabs","value":{"type":"Tabs","props":{"items":["drinksTab","foodTab"]}}}
+{"op":"add","path":"/elements/drinksTab","value":{"type":"TabItem","props":{"value":"drinks","trigger":"☕ Drinks & Beverages","content":["drinksList"]}}}
+{"op":"add","path":"/elements/drinksList","value":{"type":"Card","props":{"gap":"m"},"repeat":{"statePath":"/drinks","key":"id"},"children":["drinkCard"]}}
+{"op":"add","path":"/elements/drinkCard","value":{"type":"Card","props":{"variant":"card","direction":"row","align":"center","justify":"between"},"visible":{"$or":[{"$state":"/vegOnly","eq":false},{"$item":"isVeg"}]},"children":["drinkDetails","drinkPriceTag"]}}
+{"op":"add","path":"/elements/drinkDetails","value":{"type":"Card","props":{"gap":"xs","variant":"clear"},"children":["drinkHeader","drinkDesc","drinkTags"]}}
+{"op":"add","path":"/elements/drinkHeader","value":{"type":"Heading","props":{"text":{"$item":"name"},"level":"h4"}}}
+{"op":"add","path":"/elements/drinkDesc","value":{"type":"TextContent","props":{"text":{"$item":"description"},"size":"small"}}}
+{"op":"add","path":"/elements/drinkTags","value":{"type":"Card","props":{"direction":"row","gap":"xs"},"children":["drinkVegTag"]}}
+{"op":"add","path":"/elements/drinkVegTag","value":{"type":"Tag","props":{"text":"Vegetarian","variant":"success","size":"sm"},"visible":{"$item":"isVeg"}}}
+{"op":"add","path":"/elements/drinkPriceTag","value":{"type":"Badge","props":{"text":{"$item":"price"},"variant":"secondary"}}}
+
 {"op":"add","path":"/state/drinks","value":[]}
-{"op":"add","path":"/state/drinks/0","value":{"id":"d1","name":"Espresso Single/Double","description":"Rich and concentrated dark roast espresso shot","price":"3.50","isVeg":true}}
-{"op":"add","path":"/state/drinks/1","value":{"id":"d2","name":"Oat Milk Oat Latte","description":"Creamy oat milk paired with our signature espresso blend","price":"5.25","isVeg":true}}
-{"op":"add","path":"/state/drinks/2","value":{"id":"d3","name":"Matcha Green Tea Latte","description":"Ceremonial grade Japanese matcha whisked with steamed almond milk","price":"5.75","isVeg":true}}
-{"op":"add","path":"/state/drinks/3","value":{"id":"d4","name":"Honey Lavender Cold Brew","description":"Slow-steeped cold brew with house-made honey lavender syrup","price":"5.50","isVeg":true}}
-{"op":"add","path":"/state/drinks/4","value":{"id":"d5","name":"Chai Tea Latte","description":"Spiced black tea infused with cinnamon, cardamom, and steamed milk","price":"4.95","isVeg":true}}
-{"op":"add","path":"/elements/food-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"repeat":{"statePath":"/food","key":"id"},"children":["food-item"]}}
-{"op":"add","path":"/elements/food-item","value":{"type":"Card","props":{"variant":"card","direction":"row","align":"center","justify":"between"},"visible":{"$or":[{"$state":"/vegOnly","not":true},{"$item":"isVeg"}]},"children":["food-info","food-price-tag"]}}
-{"op":"add","path":"/elements/food-info","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["food-title-row","food-desc"]}}
-{"op":"add","path":"/elements/food-title-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center"},"children":["food-name","food-veg-badge"]}}
-{"op":"add","path":"/elements/food-name","value":{"type":"Heading","props":{"text":{"$item":"name"},"level":"h4"}}}
-{"op":"add","path":"/elements/food-veg-badge","value":{"type":"Badge","props":{"text":"🌱 Veg","variant":"secondary"},"visible":{"$item":"isVeg"}}}
-{"op":"add","path":"/elements/food-desc","value":{"type":"TextContent","props":{"text":{"$item":"description"},"size":"small"}}}
-{"op":"add","path":"/elements/food-price-tag","value":{"type":"Tag","props":{"text":{"$template":"$${price}"},"variant":"info","size":"lg"}}}
+{"op":"add","path":"/state/drinks/0","value":{"id":"d1","name":"Honey Lavender Cold Brew","description":"16-hour slow steep cold brew with organic lavender syrup & oat milk","price":"$6.00","isVeg":true}}
+{"op":"add","path":"/state/drinks/1","value":{"id":"d2","name":"Artisanal Espresso","description":"Double shot of single-origin Ethiopian beans with floral & citrus notes","price":"$3.75","isVeg":true}}
+{"op":"add","path":"/state/drinks/2","value":{"id":"d3","name":"Matcha Oat Latte","description":"Ceremonial grade Uji matcha whisked with steamed oat milk & agave","price":"$5.50","isVeg":true}}
+{"op":"add","path":"/state/drinks/3","value":{"id":"d4","name":"Spiced Chai Latte","description":"House-brewed black tea infused with cardamom, cinnamon, & ginger","price":"$5.25","isVeg":true}}
+{"op":"add","path":"/state/drinks/4","value":{"id":"d5","name":"Fresh Citrus Tonic","description":"Sparkling espresso over cold tonic water with a fresh orange twist","price":"$4.75","isVeg":true}}
+
+{"op":"add","path":"/elements/foodTab","value":{"type":"TabItem","props":{"value":"food","trigger":"🥪 Food & Bakery","content":["foodList"]}}}
+{"op":"add","path":"/elements/foodList","value":{"type":"Card","props":{"gap":"m"},"repeat":{"statePath":"/food","key":"id"},"children":["foodCard"]}}
+{"op":"add","path":"/elements/foodCard","value":{"type":"Card","props":{"variant":"card","direction":"row","align":"center","justify":"between"},"visible":{"$or":[{"$state":"/vegOnly","eq":false},{"$item":"isVeg"}]},"children":["foodDetails","foodPriceTag"]}}
+{"op":"add","path":"/elements/foodDetails","value":{"type":"Card","props":{"gap":"xs","variant":"clear"},"children":["foodHeader","foodDesc","foodTags"]}}
+{"op":"add","path":"/elements/foodHeader","value":{"type":"Heading","props":{"text":{"$item":"name"},"level":"h4"}}}
+{"op":"add","path":"/elements/foodDesc","value":{"type":"TextContent","props":{"text":{"$item":"description"},"size":"small"}}}
+{"op":"add","path":"/elements/foodTags","value":{"type":"Card","props":{"direction":"row","gap":"xs"},"children":["foodVegTag","foodNonVegTag"]}}
+{"op":"add","path":"/elements/foodVegTag","value":{"type":"Tag","props":{"text":"Vegetarian","variant":"success","size":"sm"},"visible":{"$item":"isVeg"}}}
+{"op":"add","path":"/elements/foodNonVegTag","value":{"type":"Tag","props":{"text":"Contains Meat","variant":"neutral","size":"sm"},"visible":{"$item":"isVeg","not":true}}}
+{"op":"add","path":"/elements/foodPriceTag","value":{"type":"Badge","props":{"text":{"$item":"price"},"variant":"secondary"}}}
+
 {"op":"add","path":"/state/food","value":[]}
-{"op":"add","path":"/state/food/0","value":{"id":"f1","name":"Avocado Toast Tartine","description":"Sourdough bread, smashed avocado, cherry tomatoes, microgreens & chili flakes","price":"9.50","isVeg":true}}
-{"op":"add","path":"/state/food/1","value":{"id":"f2","name":"Turkey Bacon & Cheddar Panini","description":"Smoked turkey breast, crispy bacon, aged cheddar, and pesto mayonnaise","price":"11.00","isVeg":false}}
-{"op":"add","path":"/state/food/2","value":{"id":"f3","name":"Mediterranean Quinoa Bowl","description":"Fluffy quinoa, cucumber, kalamata olives, feta, hummus, and lemon tahini dressing","price":"12.25","isVeg":true}}
-{"op":"add","path":"/state/food/3","value":{"id":"f4","name":"Prosciutto & Mozzarella Croissant","description":"Flaky butter croissant stuffed with prosciutto, fresh mozzarella, and arugula","price":"8.75","isVeg":false}}
-{"op":"add","path":"/state/food/4","value":{"id":"f5","name":"Spinach & Feta Pastry Pinwheel","description":"Warm puff pastry filled with sautéed spinach, Greek feta, and herbs","price":"6.50","isVeg":true}}
-{"op":"add","path":"/elements/hours-card","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["hours-header","hours-table"]}}
-{"op":"add","path":"/elements/hours-header","value":{"type":"CardHeader","props":{"title":"🕒 Opening Hours","subtitle":"Visit us or place an order during working hours"}}}
-{"op":"add","path":"/elements/hours-table","value":{"type":"Table","props":{"columns":["col-days","col-hours","col-status"]}}}
-{"op":"add","path":"/elements/col-days","value":{"type":"Col","props":{"label":"Day","data":["Monday - Thursday","Friday","Saturday","Sunday"],"type":"string"}}}
-{"op":"add","path":"/elements/col-hours","value":{"type":"Col","props":{"label":"Hours","data":["7:00 AM – 6:00 PM","7:00 AM – 8:00 PM","8:00 AM – 8:00 PM","8:00 AM – 5:00 PM"],"type":"string"}}}
-{"op":"add","path":"/elements/col-status","value":{"type":"Col","props":{"label":"Kitchen","data":["Full Menu","Full Menu","Brunch Specials","Brunch Specials"],"type":"string"}}}
+{"op":"add","path":"/state/food/0","value":{"id":"f1","name":"Avocado & Poached Egg Toast","description":"Sourdough, smashed Hass avocado, heirloom tomatoes, microgreens & za'atar","price":"$9.50","isVeg":true}}
+{"op":"add","path":"/state/food/1","value":{"id":"f2","name":"Smoked Turkey & Brie Panini","description":"Roasted turkey breast, creamy brie, cranberry chutney & arugula on focaccia","price":"$11.75","isVeg":false}}
+{"op":"add","path":"/state/food/2","value":{"id":"f3","name":"Mediterranean Veggie Wrap","description":"Grilled zucchini, roasted red peppers, hummus, feta & spinach in spinach tortilla","price":"$8.75","isVeg":true}}
+{"op":"add","path":"/state/food/3","value":{"id":"f4","name":"Prosciutto & Fig Croissant","description":"Flaky butter croissant filled with prosciutto di Parma, fig jam & goat cheese","price":"$10.25","isVeg":false}}
+{"op":"add","path":"/state/food/4","value":{"id":"f5","name":"Maple Pecan Danish","description":"Warm butter pastry with caramelized pecan filling and maple glaze","price":"$4.50","isVeg":true}}
+
+{"op":"add","path":"/elements/hoursCard","value":{"type":"Card","props":{"variant":"card","gap":"s"},"children":["hoursHeader","hoursTable"]}}
+{"op":"add","path":"/elements/hoursHeader","value":{"type":"CardHeader","props":{"title":"🕒 Opening Hours & Info","subtitle":"Visit us or order for pickup"}}}
+{"op":"add","path":"/elements/hoursTable","value":{"type":"Table","props":{"columns":["dayCol","timeCol"]}}}
+{"op":"add","path":"/elements/dayCol","value":{"type":"Col","props":{"label":"Day","data":["Monday - Thursday","Friday","Saturday","Sunday"]}}}
+{"op":"add","path":"/elements/timeCol","value":{"type":"Col","props":{"label":"Hours","data":["7:00 AM – 6:00 PM","7:00 AM – 8:00 PM","8:00 AM – 8:00 PM","8:00 AM – 5:00 PM"]}}}

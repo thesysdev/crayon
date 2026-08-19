@@ -1,48 +1,25 @@
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header-row","threshold-alert","controls-card","items-heading-row","items-list","sep-1","reorders-heading","reorders-note","reorders-list","submit-alert","submit-btn"]}}
-{"op":"add","path":"/elements/header-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center","wrap":true,"gap":"m"},"children":["title-block","tag-count"]}}
-{"op":"add","path":"/elements/title-block","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["page-title","page-subtitle"]}}
-{"op":"add","path":"/elements/page-title","value":{"type":"Heading","props":{"text":"Low Inventory","level":"h1"},"children":[]}}
-{"op":"add","path":"/elements/page-subtitle","value":{"type":"TextContent","props":{"text":"These items are at or below your warning threshold and need restocking.","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/tag-count","value":{"type":"Tag","props":{"text":"6 items low","variant":"warning","size":"lg"},"children":[]}}
-{"op":"add","path":"/elements/threshold-alert","value":{"type":"Alert","props":{"variant":"warning","title":{"$template":"Low stock threshold: ${/threshold} units"},"description":"Any item whose remaining stock falls to this level or lower appears in this list. Adjust the threshold below."},"children":[]}}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"gap":"m"},"children":["header","alert","thresholdRow","searchField","listHeader","itemList"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Low Inventory Warnings","subtitle":"Items that have fallen below their reorder threshold"}}}
+{"op":"add","path":"/elements/alert","value":{"type":"Alert","props":{"title":"4 items running low","description":"These items are at or below the warning threshold and should be reordered soon.","variant":"warning"}}}
+{"op":"add","path":"/elements/thresholdRow","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["thresholdText","thresholdBadge"]}}
+{"op":"add","path":"/elements/thresholdText","value":{"type":"TextContent","props":{"text":"Warning triggers when stock falls to or below the threshold:","size":"small"}}}
+{"op":"add","path":"/elements/thresholdBadge","value":{"type":"Badge","props":{"text":{"$template":"Threshold: ${/threshold} units"},"variant":"destructive"}}}
 {"op":"add","path":"/state/threshold","value":10}
-{"op":"add","path":"/elements/controls-card","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["controls-row","controls-note"]}}
-{"op":"add","path":"/elements/controls-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","wrap":true,"align":"start"},"children":["search-control","threshold-control"]}}
-{"op":"add","path":"/elements/search-control","value":{"type":"FormControl","props":{"label":"Search items","hint":"Filter by item name or SKU","input":"search-input"},"children":[]}}
-{"op":"add","path":"/elements/search-input","value":{"type":"Input","props":{"name":"searchQuery","placeholder":"e.g. milk or DAI-001","type":"text","value":{"$bindState":"/searchQuery"}},"children":[]}}
+{"op":"add","path":"/elements/searchField","value":{"type":"Input","props":{"name":"search","placeholder":"Search items by name or SKU...","value":{"$bindState":"/searchQuery"}}}}
 {"op":"add","path":"/state/searchQuery","value":""}
-{"op":"add","path":"/elements/threshold-control","value":{"type":"FormControl","props":{"label":"Low-stock threshold (units)","hint":"Warn when stock falls to this level","input":"threshold-slider"},"children":[]}}
-{"op":"add","path":"/elements/threshold-slider","value":{"type":"Slider","props":{"name":"threshold","variant":"discrete","min":0,"max":50,"step":1,"value":{"$bindState":"/threshold"}},"children":[]}}
-{"op":"add","path":"/elements/controls-note","value":{"type":"TextContent","props":{"text":{"$template":"Currently showing items with ${/threshold} or fewer units remaining."},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/items-heading-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","justify":"between","align":"center"},"children":["items-heading","items-tag"]}}
-{"op":"add","path":"/elements/items-heading","value":{"type":"Heading","props":{"text":"Items Running Low","level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/items-tag","value":{"type":"Tag","props":{"text":"6 SKUs below threshold","variant":"neutral"},"children":[]}}
-{"op":"add","path":"/elements/items-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/items","key":"id"},"children":["item-card"]}}
-{"op":"add","path":"/elements/item-card","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","gap":"m","wrap":true},"children":["item-info","item-meta"]}}
-{"op":"add","path":"/elements/item-info","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["item-name","item-details"]}}
-{"op":"add","path":"/elements/item-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/item-details","value":{"type":"TextContent","props":{"text":{"$template":"SKU ${sku} · ${category} · Supplier: ${supplier} · Reorder pack: ${reorderQty}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/item-meta","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"center"},"children":["item-units","reorder-btn"]}}
-{"op":"add","path":"/elements/item-units","value":{"type":"Tag","props":{"text":{"$template":"${units} left"},"variant":"warning","size":"md"},"children":[]}}
-{"op":"add","path":"/elements/reorder-btn","value":{"type":"Button","props":{"label":"Reorder","variant":"secondary","size":"small"},"on":{"press":{"action":"pushState","params":{"statePath":"/reorders","value":{"id":"$id","name":{"$item":"name"},"sku":{"$item":"sku"},"qty":{"$item":"reorderQty"},"supplier":{"$item":"supplier"}}}}},"children":[]}}
-{"op":"add","path":"/state/items","value":[]}
-{"op":"add","path":"/state/items/0","value":{"id":"itm-1","name":"Whole Milk 1L","sku":"DAI-001","category":"Dairy","units":4,"reorderQty":24,"supplier":"FarmFresh Dairy"}}
-{"op":"add","path":"/state/items/1","value":{"id":"itm-2","name":"Sourdough Bread Loaf","sku":"BAK-012","category":"Bakery","units":2,"reorderQty":30,"supplier":"Golden Crust Bakery"}}
-{"op":"add","path":"/state/items/2","value":{"id":"itm-3","name":"Free-Range Eggs (Dozen)","sku":"DAI-014","category":"Dairy","units":6,"reorderQty":48,"supplier":"FarmFresh Dairy"}}
-{"op":"add","path":"/state/items/3","value":{"id":"itm-4","name":"Arabica Coffee Beans 500g","sku":"BEV-032","category":"Beverages","units":8,"reorderQty":20,"supplier":"RoastWorks Co."}}
-{"op":"add","path":"/state/items/4","value":{"id":"itm-5","name":"Organic Bananas (kg)","sku":"PRO-007","category":"Produce","units":3,"reorderQty":40,"supplier":"GreenValley Produce"}}
-{"op":"add","path":"/state/items/5","value":{"id":"itm-6","name":"Sparkling Water 6-Pack","sku":"BEV-045","category":"Beverages","units":9,"reorderQty":25,"supplier":"PureSpring Beverages"}}
-{"op":"add","path":"/elements/sep-1","value":{"type":"Separator","props":{"orientation":"horizontal","decorative":true},"children":[]}}
-{"op":"add","path":"/elements/reorders-heading","value":{"type":"Heading","props":{"text":"Reorder Requests","level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/reorders-note","value":{"type":"TextContent","props":{"text":"Tap Reorder on any item above to add it to this list, then submit all requests to your suppliers.","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/reorders-list","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"repeat":{"statePath":"/reorders","key":"id"},"children":["reorder-row"]}}
-{"op":"add","path":"/elements/reorder-row","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center","gap":"m"},"children":["reorder-info","reorder-cancel"]}}
-{"op":"add","path":"/elements/reorder-info","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xs"},"children":["reorder-name","reorder-sub"]}}
-{"op":"add","path":"/elements/reorder-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/elements/reorder-sub","value":{"type":"TextContent","props":{"text":{"$template":"${qty} units · SKU ${sku} · ${supplier}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/elements/reorder-cancel","value":{"type":"Button","props":{"label":"Cancel","variant":"tertiary","size":"small"},"on":{"press":{"action":"removeState","params":{"statePath":"/reorders","index":{"$index":true}}}},"children":[]}}
+{"op":"add","path":"/elements/listHeader","value":{"type":"Heading","props":{"text":"Low Stock Items","level":"h3"}}}
+{"op":"add","path":"/elements/itemList","value":{"type":"Card","props":{"variant":"clear","gap":"s"},"repeat":{"statePath":"/lowItems","key":"id"},"children":["itemRow"]}}
+{"op":"add","path":"/elements/itemRow","value":{"type":"Card","props":{"variant":"card","direction":"row","justify":"between","align":"center","gap":"m"},"children":["itemInfo","itemActions"]}}
+{"op":"add","path":"/elements/itemInfo","value":{"type":"Card","props":{"variant":"clear","gap":"xs"},"children":["itemName","itemSku","itemUnits"]}}
+{"op":"add","path":"/elements/itemName","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"small-heavy"}}}
+{"op":"add","path":"/elements/itemSku","value":{"type":"TextContent","props":{"text":{"$template":"SKU: ${sku}"},"size":"small"}}}
+{"op":"add","path":"/elements/itemUnits","value":{"type":"Tag","props":{"text":{"$template":"${units} units left"},"variant":"warning","size":"sm"}}}
+{"op":"add","path":"/elements/itemActions","value":{"type":"Buttons","props":{"buttons":["reorderBtn"],"direction":"column"}}}
+{"op":"add","path":"/elements/reorderBtn","value":{"type":"Button","props":{"label":"Reorder","variant":"primary","size":"small"},"on":{"press":{"action":"pushState","params":{"statePath":"/reorders","value":{"id":"$id","item":{"$item":"name"},"sku":{"$item":"sku"},"quantity":50}}}}}}
+{"op":"add","path":"/state/lowItems","value":[]}
+{"op":"add","path":"/state/lowItems/0","value":{"id":"1","name":"Wireless Mouse","sku":"WM-2041","units":4}}
+{"op":"add","path":"/state/lowItems/1","value":{"id":"2","name":"USB-C Cable 1m","sku":"UC-1187","units":7}}
+{"op":"add","path":"/state/lowItems/2","value":{"id":"3","name":"Mechanical Keyboard","sku":"MK-3302","units":2}}
+{"op":"add","path":"/state/lowItems/3","value":{"id":"4","name":"Laptop Stand","sku":"LS-0914","units":9}}
 {"op":"add","path":"/state/reorders","value":[]}
-{"op":"add","path":"/elements/submit-alert","value":{"type":"Alert","props":{"variant":"success","title":"Reorder requests submitted","description":"Your suppliers have been notified and will confirm delivery windows shortly."},"visible":{"$state":"/submitted"},"children":[]}}
-{"op":"add","path":"/elements/submit-btn","value":{"type":"Button","props":{"label":"Submit All Reorder Requests","variant":"primary","size":"medium"},"on":{"press":{"action":"setState","params":{"statePath":"/submitted","value":true}}},"children":[]}}
-{"op":"add","path":"/state/submitted","value":false}

@@ -1,16 +1,14 @@
-{"op":"add","path":"/root","value":"status-page"}
-{"op":"add","path":"/elements/status-page","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"xl","align":"stretch"},"children":["status-header","uptime-card","incident-card"]}}
-{"op":"add","path":"/elements/status-header","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"children":["page-title","page-subtitle"]}}
-{"op":"add","path":"/elements/page-title","value":{"type":"Heading","props":{"text":"Platform Status","level":"h1"},"children":[]}}
-{"op":"add","path":"/elements/page-subtitle","value":{"type":"TextContent","props":{"text":"Live reliability and incident updates for the platform team.","size":"default"},"children":[]}}
-{"op":"add","path":"/elements/uptime-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["uptime-header","uptime-value","uptime-progress","uptime-note"]}}
-{"op":"add","path":"/elements/uptime-header","value":{"type":"CardHeader","props":{"title":"API uptime this month","subtitle":"August 2026"},"children":[]}}
-{"op":"add","path":"/elements/uptime-value","value":{"type":"Heading","props":{"text":{"$template":"${/apiUptime}%"},"level":"h2"},"children":[]}}
-{"op":"add","path":"/state/apiUptime","value":99.98}
-{"op":"add","path":"/elements/uptime-progress","value":{"type":"Progress","props":{"value":{"$state":"/apiUptime"},"label":"Monthly API availability"},"children":[]}}
-{"op":"add","path":"/elements/uptime-note","value":{"type":"TextContent","props":{"text":"Availability is measured across the public API gateway and core request processing.","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/incident-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["incident-header","incident-alert","incident-details"]}}
-{"op":"add","path":"/elements/incident-header","value":{"type":"CardHeader","props":{"title":"Most recent incident","subtitle":"Resolved"},"children":[]}}
-{"op":"add","path":"/elements/incident-alert","value":{"type":"Alert","props":{"variant":"success","title":{"$state":"/recentIncident/title"},"description":{"$template":"Resolved ${/recentIncident/resolvedAt}"},"children":[]}}
-{"op":"add","path":"/state/recentIncident","value":{"title":"Elevated API latency in the US-East region","resolvedAt":"August 17, 2026 at 14:42 UTC","note":"A database connection pool saturation caused intermittent latency for a subset of API requests. Capacity was increased and traffic was rebalanced; service has remained stable since resolution."}}
-{"op":"add","path":"/elements/incident-details","value":{"type":"TextCallout","props":{"variant":"info","title":"Incident summary","description":{"$state":"/recentIncident/note"}},"children":[]}}
+{"op":"add","path":"/root","value":"statusPage"}
+{"op":"add","path":"/elements/statusPage","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"l"},"children":["pageHeader","apiStatusCard","incidentCard"]}}
+{"op":"add","path":"/elements/pageHeader","value":{"type":"CardHeader","props":{"title":"Platform Status","subtitle":"Live service health for the platform team"}}}
+{"op":"add","path":"/elements/apiStatusCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["apiStatusHeader","uptimeMetric","uptimeProgress","operationalCallout"]}}
+{"op":"add","path":"/elements/apiStatusHeader","value":{"type":"Heading","props":{"text":"API availability","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/uptimeMetric","value":{"type":"TextContent","props":{"text":{"$template":"**${/api/month} uptime:** ${/api/uptime}%"},"size":"large-heavy"},"children":[]}}
+{"op":"add","path":"/state/api","value":{"month":"August 2026","uptime":99.98}}
+{"op":"add","path":"/elements/uptimeProgress","value":{"type":"Progress","props":{"value":{"$state":"/api/uptime"},"label":"Current API uptime this month"},"children":[]}}
+{"op":"add","path":"/elements/operationalCallout","value":{"type":"Callout","props":{"variant":"success","title":"All systems operational","description":"The public API is currently responding normally."},"children":[]}}
+{"op":"add","path":"/elements/incidentCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["incidentHeader","incidentStatus","incidentNote"]}}
+{"op":"add","path":"/elements/incidentHeader","value":{"type":"Heading","props":{"text":"Most recent incident","level":"h2"},"children":[]}}
+{"op":"add","path":"/elements/incidentStatus","value":{"type":"Badge","props":{"text":"Resolved","variant":"secondary"},"children":[]}}
+{"op":"add","path":"/elements/incidentNote","value":{"type":"TextCallout","props":{"variant":"info","title":{"$state":"/recentIncident/title"},"description":{"$template":"${/recentIncident/summary} Resolved ${/recentIncident/resolvedAt}."}},"children":[]}}
+{"op":"add","path":"/state/recentIncident","value":{"title":"Elevated API latency","summary":"Between 09:12 and 09:34 UTC, a subset of API requests experienced elevated latency while traffic was rebalanced.","resolvedAt":"on August 16, 2026 at 09:34 UTC"}}

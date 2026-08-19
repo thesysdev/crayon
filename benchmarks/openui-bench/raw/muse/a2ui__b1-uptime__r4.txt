@@ -1,5 +1,160 @@
-Status page for the platform team — live uptime and latest incident below.
+Status page ready for the platform team — showing live uptime and the latest incident.
 
-<a2ui-json>{"version":"v0.9","createSurface":{"surfaceId":"platform-status-v1","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#0EA5E9","agentDisplayName":"Platform Status"},"sendDataModel":false}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
 
-<a2ui-json>{"version":"v0.9","updateComponents":{"surfaceId":"platform-status-v1","components":[{"component":"Card","id":"root","direction":"column","gap":"m","children":["header","separator1","uptimeCard","incidentCard","separator2","footerCard"]},{"component":"CardHeader","id":"header","title":"Platform Status","subtitle":"All systems operational • Last checked 2 minutes ago • August 2026"},{"component":"Separator","id":"separator1","orientation":"horizontal","decorative":true},{"component":"Card","id":"uptimeCard","variant":"card","direction":"column","gap":"m","children":["uptimeHeader","uptimeMetricRow","uptimeProgress","uptimeDetails","uptimeTable"]},{"component":"CardHeader","id":"uptimeHeader","title":"API Uptime — This Month","subtitle":"August 1–18, 2026 (MTD) • Target 99.9%"},{"component":"Card","id":"uptimeMetricRow","variant":"clear","direction":"row","gap":"m","align":"center","justify":"between","children":["uptimePercent","uptimeBadge"]},{"component":"Heading","id":"uptimePercent","text":"99.95%","level":"h1"},{"component":"Badge","id":"uptimeBadge","text":"Operational","variant":"secondary"},{"component":"Progress","id":"uptimeProgress","value":99.95,"label":"99.95% uptime — 0.05% above SLO"},{"component":"TextContent","id":"uptimeDetails","text":"21 minutes total downtime • 43,200 minutes monitored • 2 incidents this month • Availability calculated from API gateway probes (1-min intervals)","size":"small"},{"component":"Table","id":"uptimeTable","columns":["colService","colUptime","colDowntime"]},{"component":"Col","id":"colService","label":"Service","data":["API Gateway","Auth Service","Ingest Pipeline"],"type":"string"},{"component":"Col","id":"colUptime","label":"Uptime (MTD)","data":["99.95%","99.99%","100%"],"type":"string"},{"component":"Col","id":"colDowntime","label":"Downtime","data":["21m","4m","0m"],"type":"string"},{"component":"Card","id":"incidentCard","variant":"card","direction":"column","gap":"m","children":["incidentHeader","incidentAlert","incidentNote","incidentMeta"]},{"component":"CardHeader","id":"incidentHeader","title":"Most Recent Incident","subtitle":"Incident #2026-08-16-01 • Resolved"},{"component":"Alert","id":"incidentAlert","title":"Elevated API Latency — Resolved Aug 16, 2026 at 14:42 UTC","description":"P95 latency spiked to 1.8s (normal ~180ms) for 84 minutes. Error rate remained <0.4%. No data loss.","variant":"info"},{"component":"TextCallout","id":"incidentNote","variant":"neutral","title":"What happened","description":"At 13:18 UTC a config rollout to the API edge cache caused a surge in cache misses and downstream DB pressure. On-call rolled back the config at 14:05 UTC, warmed caches, and confirmed full recovery at 14:42 UTC. Retrospective published Aug 17 with guardrails for staged rollouts."},{"component":"TextContent","id":"incidentMeta","text":"Duration: 1h 24m (13:18 – 14:42 UTC) • Impact: Degraded performance for ~18% of API requests (US-EAST) • Resolved: Aug 16, 2026 14:42 UTC • Postmortem: platform.io/incidents/2026-08-16-01","size":"small"},{"component":"Separator","id":"separator2","orientation":"horizontal","decorative":true},{"component":"Card","id":"footerCard","variant":"clear","children":["footerText"]},{"component":"TextContent","id":"footerText","text":"Updated every 60 seconds • Subscribe: Slack #platform-status or status.platform.io/email • Contact: platform-oncall","size":"small"}]}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "statusBadgeRow",
+          "uptimeSection",
+          "incidentAlert",
+          "separator1",
+          "historyTable",
+          "footerNote"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Platform Status",
+        "subtitle": "Real-time health for platform services • Updated just now"
+      },
+      {
+        "id": "statusBadgeRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "s",
+        "align": "center",
+        "children": [
+          "operationalBadge",
+          "updatedLabel"
+        ]
+      },
+      {
+        "id": "operationalBadge",
+        "component": "Badge",
+        "text": "● All systems operational",
+        "variant": "default"
+      },
+      {
+        "id": "updatedLabel",
+        "component": "TextContent",
+        "text": "Last checked: Nov 18, 2026 at 09:12 UTC",
+        "size": "small"
+      },
+      {
+        "id": "uptimeSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "uptimeTitle",
+          "uptimeProgress",
+          "uptimeCaption",
+          "uptimeStats"
+        ]
+      },
+      {
+        "id": "uptimeTitle",
+        "component": "Heading",
+        "text": "1. API Uptime — This Month (November)",
+        "level": "h3"
+      },
+      {
+        "id": "uptimeProgress",
+        "component": "Progress",
+        "value": 99.97,
+        "label": "99.97% uptime"
+      },
+      {
+        "id": "uptimeCaption",
+        "component": "TextContent",
+        "text": "**99.97%** available in November — 43 minutes total downtime. Exceeds 99.9% SLA target. Rolling 30-day: 99.95%.",
+        "size": "default"
+      },
+      {
+        "id": "uptimeStats",
+        "component": "TextContent",
+        "text": "API • 2 incidents this month • Longest outage: 28 min on Nov 16",
+        "size": "small"
+      },
+      {
+        "id": "incidentAlert",
+        "component": "Alert",
+        "title": "2. Most Recent Incident — Resolved",
+        "description": "Nov 16, 2026 — Elevated API latency (P95 > 800ms) due to database connection pool saturation. Impact: slow responses for ~22% of requests for 28 minutes. Mitigation: scaled read replicas and recycled connection pool. Resolved at 14:42 UTC. Post-mortem published and monitoring improved.",
+        "variant": "success"
+      },
+      {
+        "id": "separator1",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "historyTable",
+        "component": "Table",
+        "columns": [
+          "serviceCol",
+          "uptimeCol",
+          "statusCol"
+        ]
+      },
+      {
+        "id": "serviceCol",
+        "component": "Col",
+        "label": "Service",
+        "data": [
+          "API",
+          "Web App",
+          "Webhooks",
+          "Auth"
+        ]
+      },
+      {
+        "id": "uptimeCol",
+        "component": "Col",
+        "label": "November Uptime",
+        "data": [
+          "99.97%",
+          "99.99%",
+          "99.92%",
+          "100.00%"
+        ]
+      },
+      {
+        "id": "statusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Operational",
+          "Operational",
+          "Operational",
+          "Operational"
+        ]
+      },
+      {
+        "id": "footerNote",
+        "component": "TextContent",
+        "text": "Subscribe to updates at status.platform.internal • Incident history retained for 90 days",
+        "size": "small"
+      }
+    ]
+  }
+}
+</a2ui-json>

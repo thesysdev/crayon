@@ -1,158 +1,172 @@
-Here's a mid-morning revenue check-in screen for your shop.
+Here's a mid-morning revenue snapshot for your shop.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "revenue-checkin",
-      "catalogId": "thesys.dev:c1-openui"
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "revenue-checkin",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "direction": "column",
-          "gap": "l",
-          "children": ["header", "revenue-today-card", "compare-header", "compare-cards", "hourly-chart", "insight-callout"]
-        },
-        {
-          "id": "header",
-          "component": "CardHeader",
-          "title": "Good morning — Today's Revenue",
-          "subtitle": "As of 10:30 AM · Wednesday"
-        },
-        {
-          "id": "revenue-today-card",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "xs",
-          "children": ["revenue-label", "revenue-value", "revenue-sub"]
-        },
-        {
-          "id": "revenue-label",
-          "component": "TextContent",
-          "text": "Revenue so far today",
-          "size": "small-heavy"
-        },
-        {
-          "id": "revenue-value",
-          "component": "Heading",
-          "text": "$2,480",
-          "level": "h1"
-        },
-        {
-          "id": "revenue-sub",
-          "component": "TextContent",
-          "text": "From 47 transactions since opening",
-          "size": "small"
-        },
-        {
-          "id": "compare-header",
-          "component": "Heading",
-          "text": "Compared to the same time yesterday",
-          "level": "h3"
-        },
-        {
-          "id": "compare-cards",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "m",
-          "children": ["yesterday-card", "diff-card"]
-        },
-        {
-          "id": "yesterday-card",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "xs",
-          "weight": 1,
-          "children": ["yest-label", "yest-value", "yest-tag"]
-        },
-        {
-          "id": "yest-label",
-          "component": "TextContent",
-          "text": "Yesterday by 10:30 AM",
-          "size": "small-heavy"
-        },
-        {
-          "id": "yest-value",
-          "component": "Heading",
-          "text": "$2,120",
-          "level": "h2"
-        },
-        {
-          "id": "yest-tag",
-          "component": "TextContent",
-          "text": "41 transactions",
-          "size": "small"
-        },
-        {
-          "id": "diff-card",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "xs",
-          "weight": 1,
-          "children": ["diff-label", "diff-value", "diff-badge"]
-        },
-        {
-          "id": "diff-label",
-          "component": "TextContent",
-          "text": "Difference",
-          "size": "small-heavy"
-        },
-        {
-          "id": "diff-value",
-          "component": "Heading",
-          "text": "+$360",
-          "level": "h2"
-        },
-        {
-          "id": "diff-badge",
-          "component": "Badge",
-          "text": "▲ 17% ahead",
-          "variant": "default"
-        },
-        {
-          "id": "hourly-chart",
-          "component": "LineChart",
-          "labels": ["8 AM", "9 AM", "10 AM", "10:30"],
-          "series": ["series-today", "series-yesterday"],
-          "variant": "natural",
-          "xLabel": "Time",
-          "yLabel": "Cumulative revenue ($)"
-        },
-        {
-          "id": "series-today",
-          "component": "Series",
-          "category": "Today",
-          "values": [420, 1180, 2050, 2480]
-        },
-        {
-          "id": "series-yesterday",
-          "component": "Series",
-          "category": "Yesterday",
-          "values": [380, 1020, 1760, 2120]
-        },
-        {
-          "id": "insight-callout",
-          "component": "Callout",
-          "variant": "success",
-          "title": "You're pacing ahead",
-          "description": "Revenue is running 17% higher than the same point yesterday, driven by a stronger 9–10 AM window. Keep it up!"
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-This screen covers both items: the large headline shows **today's revenue ($2,480)**, while the comparison row and line chart show **how it stacks up against the same time yesterday** — currently 17% ahead.
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "revenueToday",
+          "comparison",
+          "trend",
+          "summary"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Today So Far",
+        "subtitle": "As of 10:30 AM"
+      },
+      {
+        "id": "revenueToday",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "revenueLabel",
+          "revenueValue",
+          "revenueBadge"
+        ]
+      },
+      {
+        "id": "revenueLabel",
+        "component": "TextContent",
+        "text": "Revenue today",
+        "size": "small-heavy"
+      },
+      {
+        "id": "revenueValue",
+        "component": "Heading",
+        "text": "$2,140",
+        "level": "h1"
+      },
+      {
+        "id": "revenueBadge",
+        "component": "Badge",
+        "text": "38 orders",
+        "variant": "secondary"
+      },
+      {
+        "id": "comparison",
+        "component": "Card",
+        "variant": "clear",
+        "children": [
+          "compareCallout",
+          "compareTable"
+        ]
+      },
+      {
+        "id": "compareCallout",
+        "component": "Callout",
+        "variant": "success",
+        "title": "Ahead of yesterday",
+        "description": "You're up $310 (+16.9%) vs. the same time yesterday morning."
+      },
+      {
+        "id": "compareTable",
+        "component": "Table",
+        "columns": [
+          "cmpMetric",
+          "cmpToday",
+          "cmpYesterday"
+        ]
+      },
+      {
+        "id": "cmpMetric",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Revenue",
+          "Orders",
+          "Avg. order"
+        ]
+      },
+      {
+        "id": "cmpToday",
+        "component": "Col",
+        "label": "Today (10:30 AM)",
+        "data": [
+          "$2,140",
+          "38",
+          "$56.32"
+        ]
+      },
+      {
+        "id": "cmpYesterday",
+        "component": "Col",
+        "label": "Yesterday (same time)",
+        "data": [
+          "$1,830",
+          "34",
+          "$53.82"
+        ]
+      },
+      {
+        "id": "trend",
+        "component": "LineChart",
+        "labels": [
+          "7 AM",
+          "8 AM",
+          "9 AM",
+          "10 AM",
+          "10:30"
+        ],
+        "series": [
+          "todaySeries",
+          "yesterdaySeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Time",
+        "yLabel": "Cumulative revenue (USD)"
+      },
+      {
+        "id": "todaySeries",
+        "component": "Series",
+        "category": "Today",
+        "values": [
+          210,
+          720,
+          1340,
+          1980,
+          2140
+        ]
+      },
+      {
+        "id": "yesterdaySeries",
+        "component": "Series",
+        "category": "Yesterday",
+        "values": [
+          180,
+          640,
+          1150,
+          1690,
+          1830
+        ]
+      },
+      {
+        "id": "summary",
+        "component": "TextContent",
+        "text": "You're tracking **16.9% ahead** of yesterday morning, driven by 4 extra orders and a slightly higher average order value.",
+        "size": "default"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This screen covers both items: **(1)** revenue so far today ($2,140 across 38 orders), and **(2)** how it compares to the same time yesterday — shown in the callout, the side-by-side table, and the dual-line trend chart.

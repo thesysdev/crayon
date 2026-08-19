@@ -1,105 +1,529 @@
-Here's a complete airline hub operations dashboard covering all 12 items.
+Here's a single-screen hub operations desk for DFW covering all 12 items — live KPIs (OTP, cancellations, load, turnaround), flight board, disruption callouts, gate changes, available crews, at-risk connections, a rebooking workflow, and a hub switcher.
 
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"hub-ops","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#1E56A0","agentDisplayName":"HubOps Desk"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"hub-ops","components":[
-{"id":"root","component":"Card","direction":"column","gap":"m","children":["hdr","hubForm","kpis","delayedAlert","mainRow1","mainRow2","bottomRow","rebookCard"]},
-{"id":"hdr","component":"CardHeader","title":"Hub Operations Desk — ATL (Atlanta)","subtitle":"Live status · Today · Updated 14:32 ET"},
-{"id":"hubForm","component":"Form","name":"hubSelector","buttons":"hubBtns","fields":["hubField"]},
-{"id":"hubField","component":"FormControl","label":"Switch Hub","input":"hubSelect"},
-{"id":"hubSelect","component":"Select","name":"hub","items":["hAtl","hDfw","hOrd","hDen","hJfk"],"placeholder":"Select a hub","value":"ATL"},
-{"id":"hAtl","component":"SelectItem","value":"ATL","label":"Atlanta (ATL)"},
-{"id":"hDfw","component":"SelectItem","value":"DFW","label":"Dallas/Fort Worth (DFW)"},
-{"id":"hOrd","component":"SelectItem","value":"ORD","label":"Chicago O'Hare (ORD)"},
-{"id":"hDen","component":"SelectItem","value":"DEN","label":"Denver (DEN)"},
-{"id":"hJfk","component":"SelectItem","value":"JFK","label":"New York JFK (JFK)"},
-{"id":"hubBtns","component":"Buttons","buttons":["hubBtn"]},
-{"id":"hubBtn","component":"Button","label":"Load Hub","variant":"primary","size":"small"},
-{"id":"kpis","component":"Card","direction":"row","gap":"m","wrap":true,"children":["kpiOtp","kpiLoad","kpiTurn","kpiCx"]},
-{"id":"kpiOtp","component":"Card","variant":"sunk","children":["kpiOtpH","kpiOtpV","kpiOtpP"],"weight":1},
-{"id":"kpiOtpH","component":"TextContent","text":"**1. On-Time Performance**","size":"small"},
-{"id":"kpiOtpV","component":"TextContent","text":"83.6% (412/493 flights)","size":"large-heavy"},
-{"id":"kpiOtpP","component":"Progress","value":83,"label":"OTP today"},
-{"id":"kpiLoad","component":"Card","variant":"sunk","children":["kpiLoadH","kpiLoadV"],"weight":1},
-{"id":"kpiLoadH","component":"TextContent","text":"**7. Avg Passenger Load**","size":"small"},
-{"id":"kpiLoadV","component":"TextContent","text":"86.4% load factor","size":"large-heavy"},
-{"id":"kpiTurn","component":"Card","variant":"sunk","children":["kpiTurnH","kpiTurnV"],"weight":1},
-{"id":"kpiTurnH","component":"TextContent","text":"**12. Avg Turnaround Time**","size":"small"},
-{"id":"kpiTurnV","component":"TextContent","text":"47 min (target 45)","size":"large-heavy"},
-{"id":"kpiCx","component":"Card","variant":"sunk","children":["kpiCxH","kpiCxV"],"weight":1},
-{"id":"kpiCxH","component":"TextContent","text":"**11. Cancellations Today**","size":"small"},
-{"id":"kpiCxV","component":"TextContent","text":"9 flights (1.8%)","size":"large-heavy"},
-{"id":"delayedAlert","component":"Alert","variant":"warning","title":"3. Delayed Flights Callout — 7 flights currently delayed","description":"DL1820 (ATL→MIA) +62min, DL445 (ATL→LAX) +48min, DL2210 (ATL→BOS) +41min, DL901 (ATL→SEA) +35min, DL777 (ATL→PHX) +30min, DL310 (ATL→DCA) +25min, DL88 (ATL→MCO) +22min. Weather and late inbound aircraft are the primary causes."},
-{"id":"mainRow1","component":"Card","direction":"row","gap":"m","children":["flightsCard","rightCol"]},
-{"id":"flightsCard","component":"Card","children":["flightsH","flightsT"],"weight":2},
-{"id":"flightsH","component":"TextContent","text":"**2. Flight Board** — number, route, gate, status","size":"default"},
-{"id":"flightsT","component":"Table","columns":["cNum","cRoute","cGate","cStatus"]},
-{"id":"cNum","component":"Col","label":"Flight","data":["DL1024","DL1820","DL445","DL2210","DL901","DL310","DL555"],"type":"string"},
-{"id":"cRoute","component":"Col","label":"Route","data":["ATL→JFK","ATL→MIA","ATL→LAX","ATL→BOS","ATL→SEA","ATL→DCA","ATL→DFW"],"type":"string"},
-{"id":"cGate","component":"Col","label":"Gate","data":["A12","B7","T4","C22","A3","D10","B15"],"type":"string"},
-{"id":"cStatus","component":"Col","label":"Status","data":["On Time","Delayed +62m","Delayed +48m","Delayed +41m","Delayed +35m","Delayed +25m","Boarding"],"type":"string"},
-{"id":"rightCol","component":"Card","direction":"column","gap":"m","children":["gateCard","connCard"],"weight":1},
-{"id":"gateCard","component":"Card","variant":"sunk","children":["gateH","gateList"]},
-{"id":"gateH","component":"TextContent","text":"**4. Recent Gate Changes**","size":"default"},
-{"id":"gateList","component":"ListBlock","items":["g1","g2","g3"],"variant":"number"},
-{"id":"g1","component":"ListItem","title":"DL555: B22 → B15","subtitle":"14:20 · equipment swap"},
-{"id":"g2","component":"ListItem","title":"DL901: A8 → A3","subtitle":"14:05 · gate conflict"},
-{"id":"g3","component":"ListItem","title":"DL310: D4 → D10","subtitle":"13:50 · late inbound"},
-{"id":"connCard","component":"Card","variant":"sunk","children":["connH","connList"]},
-{"id":"connH","component":"TextContent","text":"**8. Connections at Risk**","size":"default"},
-{"id":"connList","component":"ListBlock","items":["cx1","cx2","cx3"],"variant":"number"},
-{"id":"cx1","component":"ListItem","title":"18 pax: DL1820 → MIA intl bank","subtitle":"Connection window 22 min — critical"},
-{"id":"cx2","component":"ListItem","title":"11 pax: DL445 → LAX transcon","subtitle":"Connection window 30 min"},
-{"id":"cx3","component":"ListItem","title":"7 pax: DL2210 → BOS shuttle","subtitle":"Connection window 35 min"},
-{"id":"bottomRow","component":"Card","direction":"row","gap":"m","children":["crewCard","wxCard","otpChart"]},
-{"id":"crewCard","component":"Card","variant":"sunk","children":["crewH","crewList"],"weight":1},
-{"id":"crewH","component":"TextContent","text":"**5. Crews Available for Reassignment**","size":"default"},
-{"id":"crewList","component":"ListBlock","items":["cr1","cr2","cr3"],"variant":"number"},
-{"id":"cr1","component":"ListItem","title":"Crew 7A — Capt. Reyes (A320)","subtitle":"Legal until 22:00 · at Crew Base A"},
-{"id":"cr2","component":"ListItem","title":"Crew 12B — Capt. Novak (B737)","subtitle":"Legal until 20:30 · at Gate C5"},
-{"id":"cr3","component":"ListItem","title":"Crew 3C — FA team (4)","subtitle":"Cabin crew only · available now"},
-{"id":"wxCard","component":"Card","variant":"sunk","children":["wxH","wx1","wx2"],"weight":1},
-{"id":"wxH","component":"TextContent","text":"**6. Weather Advisories at ATL**","size":"default"},
-{"id":"wx1","component":"Callout","variant":"warning","title":"Thunderstorm cell","description":"Convective SIGMET 15:00–17:00. Expect ground delay program; arrival rate reduced to 48/hr."},
-{"id":"wx2","component":"Callout","variant":"info","title":"Crosswind runway 27R","description":"Gusts to 32 kt until 16:00. Minor departure spacing in effect."},
-{"id":"otpChart","component":"Card","variant":"sunk","children":["otpChartH","otpChartC"],"weight":1},
-{"id":"otpChartH","component":"TextContent","text":"OTP & cancellations by hour","size":"small"},
-{"id":"otpChartC","component":"BarChart","labels":["6a","8a","10a","12p","2p"],"series":["sOtp","sCx"],"xLabel":"Hour","yLabel":"Count","variant":"grouped"},
-{"id":"sOtp","component":"Series","category":"Delayed flights","values":[4,6,9,12,14]},
-{"id":"sCx","component":"Series","category":"Cancellations","values":[1,1,2,2,3]},
-{"id":"rebookCard","component":"Card","children":["rebookH","rebookForm"]},
-{"id":"rebookH","component":"TextContent","text":"**9. Rebook Affected Passengers**","size":"default"},
-{"id":"rebookForm","component":"Form","name":"rebooking","buttons":"rebookBtns","fields":["rfFlight","rfPax","rfDest","rfClass"]},
-{"id":"rfFlight","component":"FormControl","label":"Affected Flight","input":"rfFlightIn"},
-{"id":"rfFlightIn","component":"Input","name":"flight","placeholder":"e.g. DL1820","type":"text"},
-{"id":"rfPax","component":"FormControl","label":"Passenger / PNR","input":"rfPaxIn"},
-{"id":"rfPaxIn","component":"Input","name":"pnr","placeholder":"e.g. K7XPL2 or passenger name","type":"text"},
-{"id":"rfDest","component":"FormControl","label":"New Routing","input":"rfDestIn"},
-{"id":"rfDestIn","component":"Input","name":"routing","placeholder":"e.g. ATL→FLL→MIA","type":"text"},
-{"id":"rfClass","component":"FormControl","label":"Priority","input":"rfClassSel","hint":"Status passengers and tight connections first"},
-{"id":"rfClassSel","component":"Select","name":"priority","items":["p1","p2","p3"],"placeholder":"Select priority"},
-{"id":"p1","component":"SelectItem","value":"critical","label":"Critical — misconnect imminent"},
-{"id":"p2","component":"SelectItem","value":"high","label":"High — status passenger"},
-{"id":"p3","component":"SelectItem","value":"standard","label":"Standard"},
-{"id":"rebookBtns","component":"Buttons","buttons":["rbFind","rbAuto"]},
-{"id":"rbFind","component":"Button","label":"Find Rebooking Options","variant":"primary"},
-{"id":"rbAuto","component":"Button","label":"Auto-Rebook All At-Risk Connections","variant":"secondary"}
-]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "hubForm",
+          "kpiTable",
+          "delayAlert",
+          "weatherAlert",
+          "sepA",
+          "flightsHeading",
+          "flightsTable",
+          "sepB",
+          "gateHeading",
+          "gateTable",
+          "sepC",
+          "crewsHeading",
+          "crewsTable",
+          "sepD",
+          "connHeading",
+          "connTable",
+          "sepE",
+          "rebookForm"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "DFW Hub Operations Desk",
+        "subtitle": "Live operations snapshot — updated 14:32 CT"
+      },
+      {
+        "id": "hubForm",
+        "component": "Form",
+        "name": "hub-switch",
+        "buttons": "hubButtons",
+        "fields": [
+          "hubCtl"
+        ]
+      },
+      {
+        "id": "hubCtl",
+        "component": "FormControl",
+        "label": "Viewing hub",
+        "input": "hubSelect",
+        "hint": "Switch to a different hub to load its live operations"
+      },
+      {
+        "id": "hubSelect",
+        "component": "Select",
+        "name": "hub",
+        "items": [
+          "hubDFW",
+          "hubATL",
+          "hubORD",
+          "hubJFK",
+          "hubLAX"
+        ],
+        "value": "DFW"
+      },
+      {
+        "id": "hubDFW",
+        "component": "SelectItem",
+        "value": "DFW",
+        "label": "Dallas/Fort Worth (DFW)"
+      },
+      {
+        "id": "hubATL",
+        "component": "SelectItem",
+        "value": "ATL",
+        "label": "Atlanta (ATL)"
+      },
+      {
+        "id": "hubORD",
+        "component": "SelectItem",
+        "value": "ORD",
+        "label": "Chicago O'Hare (ORD)"
+      },
+      {
+        "id": "hubJFK",
+        "component": "SelectItem",
+        "value": "JFK",
+        "label": "New York (JFK)"
+      },
+      {
+        "id": "hubLAX",
+        "component": "SelectItem",
+        "value": "LAX",
+        "label": "Los Angeles (LAX)"
+      },
+      {
+        "id": "hubButtons",
+        "component": "Buttons",
+        "buttons": [
+          "hubLoadBtn"
+        ]
+      },
+      {
+        "id": "hubLoadBtn",
+        "component": "Button",
+        "label": "Load hub",
+        "variant": "secondary",
+        "size": "small"
+      },
+      {
+        "id": "kpiTable",
+        "component": "Table",
+        "columns": [
+          "kpiName",
+          "kpiValue",
+          "kpiNote"
+        ]
+      },
+      {
+        "id": "kpiName",
+        "component": "Col",
+        "label": "KPI (today)",
+        "data": [
+          "On-time performance",
+          "Cancellations",
+          "Average passenger load",
+          "Average turnaround time"
+        ]
+      },
+      {
+        "id": "kpiValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "82%",
+          "6",
+          "78%",
+          "47 min"
+        ]
+      },
+      {
+        "id": "kpiNote",
+        "component": "Col",
+        "label": "vs. target",
+        "data": [
+          "-6 pts (target 88%)",
+          "+4 vs. daily avg",
+          "-3 pts (target 81%)",
+          "+5 min (target 42)"
+        ]
+      },
+      {
+        "id": "delayAlert",
+        "component": "Alert",
+        "title": "9 flights currently delayed",
+        "description": "Worst offenders: AA1567 (SEA) +95 min — weather; AA2381 (ORD) +65 min — late inbound; AA3110 (MIA) +40 min — crew. Dispatch has been notified.",
+        "variant": "warning"
+      },
+      {
+        "id": "weatherAlert",
+        "component": "Alert",
+        "title": "Weather advisory — Convective SIGMET 32C",
+        "description": "Embedded thunderstorms within 50 NM of DFW between 16:00–19:00 CT. Ground delay program likely; plan 20–30 min taxi delays and protect tight connections early.",
+        "variant": "info"
+      },
+      {
+        "id": "sepA",
+        "component": "Separator"
+      },
+      {
+        "id": "flightsHeading",
+        "component": "Heading",
+        "text": "Departures — live status",
+        "level": "h3"
+      },
+      {
+        "id": "flightsTable",
+        "component": "Table",
+        "columns": [
+          "fNum",
+          "fRoute",
+          "fGate",
+          "fStatus"
+        ]
+      },
+      {
+        "id": "fNum",
+        "component": "Col",
+        "label": "Flight",
+        "data": [
+          "AA1042",
+          "AA2381",
+          "AA0927",
+          "AA3110",
+          "AA1567",
+          "AA2210"
+        ]
+      },
+      {
+        "id": "fRoute",
+        "component": "Col",
+        "label": "Route",
+        "data": [
+          "DFW → LGA",
+          "DFW → ORD",
+          "DFW → LHR",
+          "DFW → MIA",
+          "DFW → SEA",
+          "DFW → CUN"
+        ]
+      },
+      {
+        "id": "fGate",
+        "component": "Col",
+        "label": "Gate",
+        "data": [
+          "C7",
+          "C15",
+          "A19",
+          "D27",
+          "B4",
+          "C3"
+        ]
+      },
+      {
+        "id": "fStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Boarding",
+          "Delayed +65m",
+          "On time",
+          "Delayed +40m",
+          "Delayed +95m",
+          "Cancelled"
+        ]
+      },
+      {
+        "id": "sepB",
+        "component": "Separator"
+      },
+      {
+        "id": "gateHeading",
+        "component": "Heading",
+        "text": "Recent gate changes",
+        "level": "h3"
+      },
+      {
+        "id": "gateTable",
+        "component": "Table",
+        "columns": [
+          "gcFlight",
+          "gcChange",
+          "gcTime"
+        ]
+      },
+      {
+        "id": "gcFlight",
+        "component": "Col",
+        "label": "Flight",
+        "data": [
+          "AA1042",
+          "AA2381",
+          "AA0927"
+        ]
+      },
+      {
+        "id": "gcChange",
+        "component": "Col",
+        "label": "Gate change",
+        "data": [
+          "A12 → C7",
+          "C22 → C15",
+          "B4 → A19"
+        ]
+      },
+      {
+        "id": "gcTime",
+        "component": "Col",
+        "label": "Time",
+        "data": [
+          "14:05",
+          "13:48",
+          "13:20"
+        ]
+      },
+      {
+        "id": "sepC",
+        "component": "Separator"
+      },
+      {
+        "id": "crewsHeading",
+        "component": "Heading",
+        "text": "Crews available for reassignment",
+        "level": "h3"
+      },
+      {
+        "id": "crewsTable",
+        "component": "Table",
+        "columns": [
+          "crCrew",
+          "crQual",
+          "crAvail"
+        ]
+      },
+      {
+        "id": "crCrew",
+        "component": "Col",
+        "label": "Crew",
+        "data": [
+          "CRW-118",
+          "CRW-042",
+          "CRW-207"
+        ]
+      },
+      {
+        "id": "crQual",
+        "component": "Col",
+        "label": "Qualification",
+        "data": [
+          "A320 / B738",
+          "B777 / B787",
+          "A321"
+        ]
+      },
+      {
+        "id": "crAvail",
+        "component": "Col",
+        "label": "Available from",
+        "data": [
+          "14:45",
+          "15:10",
+          "16:00"
+        ]
+      },
+      {
+        "id": "sepD",
+        "component": "Separator"
+      },
+      {
+        "id": "connHeading",
+        "component": "Heading",
+        "text": "Connections at risk of misconnect",
+        "level": "h3"
+      },
+      {
+        "id": "connTable",
+        "component": "Table",
+        "columns": [
+          "cnInbound",
+          "cnOutbound",
+          "cnWindow",
+          "cnPax"
+        ]
+      },
+      {
+        "id": "cnInbound",
+        "component": "Col",
+        "label": "Inbound",
+        "data": [
+          "AA2381 (ORD)",
+          "AA1567 (SEA)",
+          "AA1488 (PHX)"
+        ]
+      },
+      {
+        "id": "cnOutbound",
+        "component": "Col",
+        "label": "Outbound",
+        "data": [
+          "AA0927 (LHR)",
+          "AA2210 (CUN)",
+          "AA3110 (MIA)"
+        ]
+      },
+      {
+        "id": "cnWindow",
+        "component": "Col",
+        "label": "Connection window",
+        "data": [
+          "22 min (45 req.)",
+          "18 min (40 req.)",
+          "25 min (45 req.)"
+        ]
+      },
+      {
+        "id": "cnPax",
+        "component": "Col",
+        "label": "Passengers",
+        "data": [
+          "14",
+          "9",
+          "21"
+        ]
+      },
+      {
+        "id": "sepE",
+        "component": "Separator"
+      },
+      {
+        "id": "rebookForm",
+        "component": "Form",
+        "name": "rebook-affected",
+        "buttons": "rbButtons",
+        "fields": [
+          "rbFlightCtl",
+          "rbOptionCtl"
+        ]
+      },
+      {
+        "id": "rbFlightCtl",
+        "component": "FormControl",
+        "label": "Rebook affected passengers",
+        "input": "rbFlightSelect",
+        "hint": "Select a delayed or cancelled flight to re-protect its passengers"
+      },
+      {
+        "id": "rbFlightSelect",
+        "component": "Select",
+        "name": "flight",
+        "items": [
+          "rbF1",
+          "rbF2",
+          "rbF3",
+          "rbF4"
+        ],
+        "placeholder": "Choose an affected flight"
+      },
+      {
+        "id": "rbF1",
+        "component": "SelectItem",
+        "value": "AA2381",
+        "label": "AA2381 (ORD) — delayed +65m"
+      },
+      {
+        "id": "rbF2",
+        "component": "SelectItem",
+        "value": "AA3110",
+        "label": "AA3110 (MIA) — delayed +40m"
+      },
+      {
+        "id": "rbF3",
+        "component": "SelectItem",
+        "value": "AA1567",
+        "label": "AA1567 (SEA) — delayed +95m"
+      },
+      {
+        "id": "rbF4",
+        "component": "SelectItem",
+        "value": "AA2210",
+        "label": "AA2210 (CUN) — cancelled"
+      },
+      {
+        "id": "rbOptionCtl",
+        "component": "FormControl",
+        "label": "Rebooking option",
+        "input": "rbOptions"
+      },
+      {
+        "id": "rbOptions",
+        "component": "RadioGroup",
+        "name": "rebook_option",
+        "items": [
+          "rbO1",
+          "rbO2",
+          "rbO3"
+        ],
+        "defaultValue": "next_available"
+      },
+      {
+        "id": "rbO1",
+        "component": "RadioItem",
+        "label": "Next available flight",
+        "description": "Auto re-protect on the next open departure",
+        "value": "next_available"
+      },
+      {
+        "id": "rbO2",
+        "component": "RadioItem",
+        "label": "Partner airline reissue",
+        "description": "Endorse tickets to an interline partner",
+        "value": "partner"
+      },
+      {
+        "id": "rbO3",
+        "component": "RadioItem",
+        "label": "Voucher + refund",
+        "description": "Issue travel credit or refund to original form of payment",
+        "value": "voucher"
+      },
+      {
+        "id": "rbButtons",
+        "component": "Buttons",
+        "buttons": [
+          "rbSubmit",
+          "rbCancel"
+        ]
+      },
+      {
+        "id": "rbSubmit",
+        "component": "Button",
+        "label": "Rebook passengers",
+        "variant": "primary"
+      },
+      {
+        "id": "rbCancel",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
 </a2ui-json>
 
-All 12 items are covered:
-1. **OTP today** — KPI card with progress bar (83.6%)
-2. **Flight board** — table with number, route, gate, status
-3. **Delayed flights** — warning alert callout with all 7 delays
-4. **Gate changes** — recent changes list
-5. **Available crews** — reassignment-ready crew list
-6. **Weather advisories** — storm + crosswind callouts
-7. **Avg passenger load** — 86.4% KPI
-8. **At-risk connections** — misconnect list with windows
-9. **Rebooking** — full form with priority selection
-10. **Hub switcher** — select hub dropdown (ATL/DFW/ORD/DEN/JFK)
-11. **Cancellations** — 9 flights KPI
-12. **Turnaround time** — 47 min KPI
+Coverage of all 12 items: **1, 7, 11, 12** in the KPI table (OTP 82%, load 78%, 6 cancellations, 47-min turnaround); **2** the departures table (flight, route, gate, status); **3** the warning alert calling out delayed flights; **4** the gate-changes table; **5** the crews-available table; **6** the convective SIGMET weather advisory; **8** the at-risk connections table; **9** the rebooking form with re-protection options; **10** the hub selector with a Load hub action. Want me to add a departures-per-hour bar chart or a misconnect-risk progress indicator next?

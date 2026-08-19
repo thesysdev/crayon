@@ -1,167 +1,134 @@
-Here's a mid-morning revenue check-in screen for you.
+Here's a mid-morning revenue check-in screen for your shop.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "revenue-checkin",
-      "catalogId": "thesys.dev:c1-openui"
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "revenue-checkin",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "direction": "column",
-          "gap": "l",
-          "children": [
-            "header",
-            "revenue-today-card",
-            "comparison-card",
-            "trend-chart-card"
-          ]
-        },
-        {
-          "id": "header",
-          "component": "CardHeader",
-          "title": "Good Morning ☀️",
-          "subtitle": "Revenue check-in · Today, 10:30 AM"
-        },
-        {
-          "id": "revenue-today-card",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "xs",
-          "children": [
-            "revenue-label",
-            "revenue-amount",
-            "revenue-sub"
-          ]
-        },
-        {
-          "id": "revenue-label",
-          "component": "TextContent",
-          "size": "small-heavy",
-          "text": "REVENUE SO FAR TODAY"
-        },
-        {
-          "id": "revenue-amount",
-          "component": "Heading",
-          "level": "h1",
-          "text": "$1,840"
-        },
-        {
-          "id": "revenue-sub",
-          "component": "TextContent",
-          "size": "small",
-          "text": "Across 47 transactions since opening"
-        },
-        {
-          "id": "comparison-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "comparison-header",
-            "comparison-callout",
-            "comparison-detail"
-          ]
-        },
-        {
-          "id": "comparison-header",
-          "component": "TextContent",
-          "size": "small-heavy",
-          "text": "VS. SAME TIME YESTERDAY"
-        },
-        {
-          "id": "comparison-callout",
-          "component": "Callout",
-          "variant": "success",
-          "title": "+12.9% ahead of yesterday",
-          "description": "By 10:30 AM yesterday you had made $1,630. You're up $210 at the same point today."
-        },
-        {
-          "id": "comparison-detail",
-          "component": "Table",
-          "columns": [
-            "col-metric",
-            "col-today",
-            "col-yesterday"
-          ]
-        },
-        {
-          "id": "col-metric",
-          "component": "Col",
-          "label": "Metric",
-          "type": "string",
-          "data": ["Revenue", "Transactions", "Avg. sale"]
-        },
-        {
-          "id": "col-today",
-          "component": "Col",
-          "label": "Today (10:30 AM)",
-          "type": "string",
-          "data": ["$1,840", "47", "$39.15"]
-        },
-        {
-          "id": "col-yesterday",
-          "component": "Col",
-          "label": "Yesterday (10:30 AM)",
-          "type": "string",
-          "data": ["$1,630", "43", "$37.91"]
-        },
-        {
-          "id": "trend-chart-card",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "s",
-          "children": [
-            "chart-title",
-            "trend-chart"
-          ]
-        },
-        {
-          "id": "chart-title",
-          "component": "TextContent",
-          "size": "small-heavy",
-          "text": "CUMULATIVE REVENUE BY HOUR"
-        },
-        {
-          "id": "trend-chart",
-          "component": "LineChart",
-          "variant": "natural",
-          "xLabel": "Hour",
-          "yLabel": "Cumulative $",
-          "labels": ["8 AM", "9 AM", "10 AM", "10:30 AM"],
-          "series": ["series-today", "series-yesterday"]
-        },
-        {
-          "id": "series-today",
-          "component": "Series",
-          "category": "Today",
-          "values": [340, 980, 1580, 1840]
-        },
-        {
-          "id": "series-yesterday",
-          "component": "Series",
-          "category": "Yesterday",
-          "values": [300, 870, 1410, 1630]
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-This screen covers both requested items:
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "revenueToday",
+          "comparison",
+          "compareBadge",
+          "trendHeader",
+          "trend"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Today So Far",
+        "subtitle": "As of 10:30 AM"
+      },
+      {
+        "id": "revenueToday",
+        "component": "TextContent",
+        "text": "## $1,840\nRevenue so far today",
+        "size": "large-heavy"
+      },
+      {
+        "id": "comparison",
+        "component": "Table",
+        "columns": [
+          "periodCol",
+          "revCol"
+        ]
+      },
+      {
+        "id": "periodCol",
+        "component": "Col",
+        "label": "Period (up to 10:30 AM)",
+        "data": [
+          "Today",
+          "Yesterday",
+          "Difference"
+        ]
+      },
+      {
+        "id": "revCol",
+        "component": "Col",
+        "label": "Revenue",
+        "data": [
+          "$1,840",
+          "$1,610",
+          "+$230"
+        ]
+      },
+      {
+        "id": "compareBadge",
+        "component": "Alert",
+        "title": "Ahead of yesterday",
+        "description": "You're up 14.3% versus the same time yesterday morning.",
+        "variant": "success"
+      },
+      {
+        "id": "trendHeader",
+        "component": "Heading",
+        "text": "Hour-by-hour vs. yesterday",
+        "level": "h4"
+      },
+      {
+        "id": "trend",
+        "component": "LineChart",
+        "labels": [
+          "7 AM",
+          "8 AM",
+          "9 AM",
+          "10 AM",
+          "10:30"
+        ],
+        "series": [
+          "todaySeries",
+          "yesterdaySeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Time",
+        "yLabel": "Cumulative $"
+      },
+      {
+        "id": "todaySeries",
+        "component": "Series",
+        "category": "Today",
+        "values": [
+          210,
+          620,
+          1120,
+          1690,
+          1840
+        ]
+      },
+      {
+        "id": "yesterdaySeries",
+        "component": "Series",
+        "category": "Yesterday",
+        "values": [
+          180,
+          540,
+          980,
+          1480,
+          1610
+        ]
+      }
+    ]
+  }
+}
+</a2ui-json>
 
-1. **Revenue so far today** — shown prominently as **$1,840** with transaction context in the top card.
-2. **Comparison with the same time yesterday** — a success callout highlighting you're **+12.9% ($210) ahead**, a side-by-side table breaking down revenue, transactions, and average sale, plus a line chart tracking cumulative revenue hour-by-hour against yesterday's pace.
+This screen covers both items:
+
+1. **Revenue so far today** — shown as the headline figure ($1,840) and in the comparison table.
+2. **Comparison with the same time yesterday** — the table lays out today vs. yesterday vs. the difference, the success banner summarizes you're up 14.3%, and the line chart plots both days' cumulative revenue hour-by-hour so you can see exactly where the gap opened up.

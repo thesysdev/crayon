@@ -1,5 +1,351 @@
-Single invoice view with amount, currency, due date and instant payment — ready for your client:
+A clean, client-facing invoice with amount, due date, and one-click payment — ready to pay.
 
-<a2ui-json>{"version":"v0.9","createSurface":{"surfaceId":"freelancer-invoice-001","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#0F766E","agentDisplayName":"Freelance Invoicing"},"sendDataModel":false}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
 
-<a2ui-json>{"version":"v0.9","updateComponents":{"surfaceId":"freelancer-invoice-001","components":[{"component":"Card","id":"root","direction":"column","gap":"m","children":["header","amountCard","dueDateCard","tableCard","payButtons","footerNote"]},{"component":"CardHeader","id":"header","title":"Invoice #INV-2026-084","subtitle":"From: Alex Rivera Studio — Brand & Product Design • For: Meridian Co."},{"component":"Card","id":"amountCard","variant":"sunk","direction":"column","gap":"s","children":["amountLabel","amountValue","currencyRow","statusRow"]},{"component":"Card","id":"dueDateCard","variant":"card","direction":"column","gap":"xs","children":["dueDateHeader","dueDateContent","dueDateSub","dueDateAlert"]},{"component":"Card","id":"tableCard","variant":"card","direction":"column","gap":"s","children":["tableHeader","invoiceTable"]},{"component":"Buttons","id":"payButtons","direction":"column","buttons":["payNowBtn","downloadBtn"]},{"component":"TextContent","id":"footerNote","text":"Secure payment via Stripe • Questions? hello@alexrivera.studio • Due upon receipt after due date a 1.5% monthly fee applies","size":"small"},{"component":"TextContent","id":"amountLabel","text":"AMOUNT DUE","size":"small"},{"component":"Heading","id":"amountValue","text":"$2,450.00","level":"h1"},{"component":"Card","id":"currencyRow","variant":"clear","direction":"row","gap":"s","children":["currencyTag","currencyDetail"]},{"component":"Card","id":"statusRow","variant":"clear","direction":"row","gap":"s","children":["dueBadge","statusBadge"]},{"component":"TextContent","id":"dueDateHeader","text":"Due Date","size":"small-heavy"},{"component":"Heading","id":"dueDateContent","text":"Friday, May 30, 2026","level":"h3"},{"component":"TextContent","id":"dueDateSub","text":"Due by 11:59 PM ET • Net 15 • Late fee applies after due date","size":"small"},{"component":"Alert","id":"dueDateAlert","title":"Due in 5 days","description":"Pay now to avoid late fees and keep your project on schedule.","variant":"warning"},{"component":"CardHeader","id":"tableHeader","title":"Invoice Details","subtitle":"Project: Brand Identity Refresh — May 2026"},{"component":"Table","id":"invoiceTable","columns":["colDesc","colQty","colRate","colAmt"]},{"component":"Tag","id":"currencyTag","text":"USD","variant":"info","size":"md"},{"component":"TextContent","id":"currencyDetail","text":"United States Dollar • All amounts in USD","size":"small"},{"component":"Badge","id":"dueBadge","text":"Due in 5 days","variant":"secondary"},{"component":"Badge","id":"statusBadge","text":"Unpaid","variant":"destructive"},{"component":"Col","id":"colDesc","label":"Description","data":["Brand Strategy Workshop","Visual Identity & Logo System","Website Design — 6 pages","Revisions & Handoff"],"type":"string"},{"component":"Col","id":"colQty","label":"Qty","data":[1,1,1,1],"type":"number"},{"component":"Col","id":"colRate","label":"Rate","data":["$600","$1,000","$750","$100"],"type":"string"},{"component":"Col","id":"colAmt","label":"Amount","data":["$600.00","$1,000.00","$750.00","$100.00"],"type":"string"},{"component":"Button","id":"payNowBtn","label":"Pay $2,450.00 USD Now","variant":"primary","size":"large"},{"component":"Button","id":"downloadBtn","label":"Download PDF","variant":"secondary","size":"medium"}]}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "metaRow",
+          "dueAlert",
+          "amountCard",
+          "detailsGrid",
+          "itemsTableSection",
+          "totalsCard",
+          "paySection",
+          "trustFooter"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Invoice #INV-2024-0847",
+        "subtitle": "Alex Morgan Studio → Stellar Labs Inc. • Issued Aug 12, 2026 • Net 14"
+      },
+      {
+        "id": "metaRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "s",
+        "align": "center",
+        "wrap": true,
+        "children": [
+          "statusBadge",
+          "currencyBadge",
+          "dueDateBadge"
+        ]
+      },
+      {
+        "id": "statusBadge",
+        "component": "Badge",
+        "text": "Unpaid",
+        "variant": "destructive"
+      },
+      {
+        "id": "currencyBadge",
+        "component": "Badge",
+        "text": "Currency: USD",
+        "variant": "secondary"
+      },
+      {
+        "id": "dueDateBadge",
+        "component": "Badge",
+        "text": "Due: Aug 28, 2026",
+        "variant": "outline"
+      },
+      {
+        "id": "dueAlert",
+        "component": "Alert",
+        "title": "Payment due in 10 days",
+        "description": "Due Date: Thursday, August 28, 2026 by 11:59 PM ET. Late fee of 1.5% applies after due date.",
+        "variant": "warning"
+      },
+      {
+        "id": "amountCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "amountLabel",
+          "amountValueRow",
+          "amountHint"
+        ],
+        "gap": "xs"
+      },
+      {
+        "id": "amountLabel",
+        "component": "TextContent",
+        "text": "AMOUNT DUE",
+        "size": "small-heavy"
+      },
+      {
+        "id": "amountValueRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "s",
+        "align": "center",
+        "wrap": true,
+        "children": [
+          "amountValue",
+          "currencyTag"
+        ]
+      },
+      {
+        "id": "amountValue",
+        "component": "Heading",
+        "text": "$4,850.00",
+        "level": "h1"
+      },
+      {
+        "id": "currencyTag",
+        "component": "Tag",
+        "text": "USD",
+        "variant": "info",
+        "size": "lg"
+      },
+      {
+        "id": "amountHint",
+        "component": "TextContent",
+        "text": "United States Dollar • All taxes included • Net 14 terms",
+        "size": "small"
+      },
+      {
+        "id": "detailsGrid",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "fromCard",
+          "toCard"
+        ]
+      },
+      {
+        "id": "fromCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "fromHeader",
+          "fromDetails"
+        ],
+        "gap": "xs"
+      },
+      {
+        "id": "fromHeader",
+        "component": "TextContent",
+        "text": "From",
+        "size": "small-heavy"
+      },
+      {
+        "id": "fromDetails",
+        "component": "TextContent",
+        "text": "Alex Morgan Studio\nAlex Morgan — Brand & Web Design\nhello@alexmorgan.studio • (415) 555-0142\nSan Francisco, CA 94107",
+        "size": "small"
+      },
+      {
+        "id": "toCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "toHeader",
+          "toDetails"
+        ],
+        "gap": "xs"
+      },
+      {
+        "id": "toHeader",
+        "component": "TextContent",
+        "text": "Bill To",
+        "size": "small-heavy"
+      },
+      {
+        "id": "toDetails",
+        "component": "TextContent",
+        "text": "Stellar Labs Inc.\nAttn: Priya Sharma, Operations\npriya@stellarlabs.io\n123 Market St, Suite 400, San Francisco, CA 94105",
+        "size": "small"
+      },
+      {
+        "id": "itemsTableSection",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "itemsHeader",
+          "itemsTable"
+        ],
+        "gap": "s"
+      },
+      {
+        "id": "itemsHeader",
+        "component": "CardHeader",
+        "title": "Services",
+        "subtitle": "Project: Website Redesign Sprint • 3 line items"
+      },
+      {
+        "id": "itemsTable",
+        "component": "Table",
+        "columns": [
+          "colDesc",
+          "colQty",
+          "colRate",
+          "colAmount"
+        ]
+      },
+      {
+        "id": "colDesc",
+        "component": "Col",
+        "label": "Description",
+        "data": [
+          "Brand strategy workshop (4h)",
+          "Website design — Homepage + 5 templates",
+          "Responsive development & CMS setup"
+        ]
+      },
+      {
+        "id": "colQty",
+        "component": "Col",
+        "label": "Qty",
+        "data": [
+          "1",
+          "1",
+          "1"
+        ]
+      },
+      {
+        "id": "colRate",
+        "component": "Col",
+        "label": "Rate",
+        "data": [
+          "$1,200.00",
+          "$2,150.00",
+          "$1,500.00"
+        ]
+      },
+      {
+        "id": "colAmount",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "$1,200.00",
+          "$2,150.00",
+          "$1,500.00"
+        ]
+      },
+      {
+        "id": "totalsCard",
+        "component": "Card",
+        "variant": "clear",
+        "children": [
+          "subtotalRow",
+          "taxRow",
+          "separator1",
+          "totalRow"
+        ],
+        "gap": "xs"
+      },
+      {
+        "id": "subtotalRow",
+        "component": "TextContent",
+        "text": "Subtotal: $4,850.00",
+        "size": "small"
+      },
+      {
+        "id": "taxRow",
+        "component": "TextContent",
+        "text": "Tax (0%): $0.00",
+        "size": "small"
+      },
+      {
+        "id": "separator1",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "totalRow",
+        "component": "TextContent",
+        "text": "Total Due (USD): $4,850.00 — Due Aug 28, 2026",
+        "size": "large-heavy"
+      },
+      {
+        "id": "paySection",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "payHeader",
+          "payButtons",
+          "payMethods",
+          "secureNote"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "payHeader",
+        "component": "CardHeader",
+        "title": "Pay now",
+        "subtitle": "Secure checkout • Choose card or bank transfer"
+      },
+      {
+        "id": "payButtons",
+        "component": "Buttons",
+        "buttons": [
+          "payNowBtn",
+          "downloadBtn"
+        ],
+        "direction": "column"
+      },
+      {
+        "id": "payNowBtn",
+        "component": "Button",
+        "label": "Pay $4,850.00 USD Now",
+        "variant": "primary",
+        "size": "large"
+      },
+      {
+        "id": "downloadBtn",
+        "component": "Button",
+        "label": "Download PDF",
+        "variant": "secondary"
+      },
+      {
+        "id": "payMethods",
+        "component": "TagBlock",
+        "tags": [
+          "Visa",
+          "Mastercard",
+          "Amex",
+          "ACH Transfer",
+          "Apple Pay"
+        ]
+      },
+      {
+        "id": "secureNote",
+        "component": "TextContent",
+        "text": "🔒 Secured by Stripe • 256-bit encryption • Receipt sent instantly to priya@stellarlabs.io",
+        "size": "small"
+      },
+      {
+        "id": "trustFooter",
+        "component": "TextContent",
+        "text": "Questions? Reply to this invoice or email hello@alexmorgan.studio • Due date is Aug 28, 2026. Thank you for your business!",
+        "size": "small"
+      }
+    ]
+  }
+}
+</a2ui-json>

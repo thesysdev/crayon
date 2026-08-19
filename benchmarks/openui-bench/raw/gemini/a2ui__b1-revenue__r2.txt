@@ -1,15 +1,11 @@
-Here is a clean mid-morning dashboard screen for the shop owner showing today's revenue alongside a comparison to yesterday's performance at the exact same time.
+Here is a real-time overview of your shop's mid-morning performance compared to yesterday.
 
 <a2ui-json>
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "shop-owner-morning-checkin",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": {
-      "primaryColor": "#10B981",
-      "agentDisplayName": "Shop Analytics"
-    }
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
@@ -18,137 +14,156 @@ Here is a clean mid-morning dashboard screen for the shop owner showing today's 
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "shop-owner-morning-checkin",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "l",
         "children": [
           "header",
-          "kpi-card",
-          "chart-card",
-          "follow-ups"
+          "kpiRow",
+          "alert",
+          "sep",
+          "chartHeader",
+          "hourlyChart",
+          "seriesToday",
+          "seriesYesterday",
+          "followUps"
         ]
       },
       {
         "id": "header",
         "component": "CardHeader",
         "title": "Mid-Morning Store Performance",
-        "subtitle": "Today vs. Yesterday (as of 10:30 AM)"
+        "subtitle": "Live snapshot as of 10:30 AM today"
       },
       {
-        "id": "kpi-card",
-        "component": "Card",
-        "variant": "sunk",
-        "direction": "column",
-        "gap": "s",
-        "children": [
-          "kpi-title",
-          "kpi-value-row",
-          "kpi-comparison-callout"
+        "id": "kpiRow",
+        "component": "Table",
+        "columns": [
+          "colMetric",
+          "colToday",
+          "colYesterday",
+          "colDiff"
         ]
       },
       {
-        "id": "kpi-title",
+        "id": "colMetric",
+        "component": "Col",
+        "label": "Metric",
+        "data": [
+          "Revenue (Pacing)",
+          "Orders Completed",
+          "Average Order Value"
+        ]
+      },
+      {
+        "id": "colToday",
+        "component": "Col",
+        "label": "Today (by 10:30 AM)",
+        "data": [
+          "$1,420.50",
+          "48",
+          "$29.59"
+        ]
+      },
+      {
+        "id": "colYesterday",
+        "component": "Col",
+        "label": "Yesterday (by 10:30 AM)",
+        "data": [
+          "$1,240.00",
+          "42",
+          "$29.52"
+        ]
+      },
+      {
+        "id": "colDiff",
+        "component": "Col",
+        "label": "Comparison",
+        "data": [
+          "+$180.50 (+14.5%)",
+          "+6 orders (+14.3%)",
+          "+$0.07 (+0.2%)"
+        ]
+      },
+      {
+        "id": "alert",
+        "component": "Callout",
+        "variant": "success",
+        "title": "Pacing Ahead of Yesterday",
+        "description": "Revenue is currently up 14.5% compared to yesterday at 10:30 AM, driven primarily by morning coffee and pastry sales."
+      },
+      {
+        "id": "sep",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "chartHeader",
         "component": "Heading",
         "level": "h4",
-        "text": "Revenue So Far Today"
+        "text": "Hourly Cumulative Revenue Comparison"
       },
       {
-        "id": "kpi-value-row",
-        "component": "Heading",
-        "level": "h1",
-        "text": "$1,485.50"
-      },
-      {
-        "id": "kpi-comparison-callout",
-        "component": "TextCallout",
-        "variant": "success",
-        "title": "+18.8% vs yesterday at 10:30 AM",
-        "description": "At this time yesterday, revenue was $1,250.00 (+$235.50 ahead today)."
-      },
-      {
-        "id": "chart-card",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "chart-title",
-          "hourly-chart"
-        ]
-      },
-      {
-        "id": "chart-title",
-        "component": "Heading",
-        "level": "h3",
-        "text": "Cumulative Morning Revenue Pace"
-      },
-      {
-        "id": "hourly-chart",
-        "component": "BarChart",
-        "variant": "grouped",
-        "xLabel": "Hour",
-        "yLabel": "Revenue ($)",
+        "id": "hourlyChart",
+        "component": "LineChart",
         "labels": [
           "7:00 AM",
           "8:00 AM",
           "9:00 AM",
-          "10:00 AM (Current)"
+          "10:00 AM",
+          "10:30 AM"
         ],
         "series": [
-          "series-today",
-          "series-yesterday"
-        ]
+          "seriesToday",
+          "seriesYesterday"
+        ],
+        "variant": "natural",
+        "xLabel": "Time",
+        "yLabel": "Revenue ($)"
       },
       {
-        "id": "series-today",
+        "id": "seriesToday",
         "component": "Series",
         "category": "Today",
         "values": [
-          140,
-          420,
-          910,
-          1485
+          150,
+          480,
+          890,
+          1250,
+          1420
         ]
       },
       {
-        "id": "series-yesterday",
+        "id": "seriesYesterday",
         "component": "Series",
         "category": "Yesterday",
         "values": [
-          110,
-          350,
+          120,
+          410,
           780,
-          1250
+          1100,
+          1240
         ]
       },
       {
-        "id": "follow-ups",
+        "id": "followUps",
         "component": "FollowUpBlock",
         "items": [
-          "follow-up-1",
-          "follow-up-2",
-          "follow-up-3"
+          "followUp1",
+          "followUp2"
         ]
       },
       {
-        "id": "follow-up-1",
+        "id": "followUp1",
         "component": "FollowUpItem",
-        "text": "Show today's top-selling items"
+        "text": "View top selling items today"
       },
       {
-        "id": "follow-up-2",
+        "id": "followUp2",
         "component": "FollowUpItem",
-        "text": "View transaction count vs yesterday"
-      },
-      {
-        "id": "follow-up-3",
-        "component": "FollowUpItem",
-        "text": "Check staff shift schedule"
+        "text": "Check staff scheduling for afternoon"
       }
     ]
   }

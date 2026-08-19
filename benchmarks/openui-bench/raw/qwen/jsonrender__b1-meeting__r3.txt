@@ -1,29 +1,23 @@
-
-
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","separator-1","attendees-section","separator-2","join-section"]}}
-{"op":"add","path":"/elements/header","value":{"type":"Card","props":{"direction":"column","gap":"s","variant":"clear"},"children":["meeting-label","meeting-title","meeting-time"]}}
-{"op":"add","path":"/elements/meeting-label","value":{"type":"Badge","props":{"text":"Next Meeting","variant":"secondary"},"children":[]}}
-{"op":"add","path":"/elements/meeting-title","value":{"type":"Heading","props":{"text":{"$state":"/meeting/title"},"level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/meeting-time","value":{"type":"TextContent","props":{"text":{"$template":"📅 ${/meeting/date} · ${/meeting/startTime} – ${/meeting/endTime}"},"size":"default"},"children":[]}}
-{"op":"add","path":"/state/meeting","value":{"title":"Q3 Product Roadmap Review","date":"Today","startTime":"2:00 PM","endTime":"3:00 PM"}}
-{"op":"add","path":"/elements/separator-1","value":{"type":"Separator","props":{"decorative":true},"children":[]}}
-{"op":"add","path":"/elements/attendees-section","value":{"type":"Card","props":{"direction":"column","gap":"m","variant":"clear"},"children":["attendees-heading","attendees-list"]}}
-{"op":"add","path":"/elements/attendees-heading","value":{"type":"TextContent","props":{"text":{"$template":"Attendees (${/meeting/attendeeCount})"},"size":"small-heavy"},"children":[]}}
-{"op":"add","path":"/state/meeting/attendeeCount","value":4}
-{"op":"add","path":"/elements/attendees-list","value":{"type":"Card","props":{"direction":"column","gap":"xs","variant":"clear"},"repeat":{"statePath":"/meeting/attendees","key":"id"},"children":["attendee-row"]}}
-{"op":"add","path":"/elements/attendee-row","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center","variant":"clear"},"children":["attendee-avatar","attendee-info"]}}
-{"op":"add","path":"/elements/attendee-avatar","value":{"type":"Avatar","props":{"fallback":{"$item":"initials"},"alt":{"$item":"name"}},"children":[]}}
-{"op":"add","path":"/elements/attendee-info","value":{"type":"Card","props":{"direction":"column","gap":"none","variant":"clear"},"children":["attendee-name","attendee-role"]}}
-{"op":"add","path":"/elements/attendee-name","value":{"type":"TextContent","props":{"text":{"$item":"name"},"size":"default"},"children":[]}}
-{"op":"add","path":"/elements/attendee-role","value":{"type":"TextContent","props":{"text":{"$item":"role"},"size":"small"},"children":[]}}
-{"op":"add","path":"/state/meeting/attendees","value":[]}
-{"op":"add","path":"/state/meeting/attendees/0","value":{"id":"1","name":"Sarah Chen","initials":"SC","role":"Product Lead"}}
-{"op":"add","path":"/state/meeting/attendees/1","value":{"id":"2","name":"Marcus Johnson","initials":"MJ","role":"Engineering Manager"}}
-{"op":"add","path":"/state/meeting/attendees/2","value":{"id":"3","name":"Priya Patel","initials":"PP","role":"UX Designer"}}
-{"op":"add","path":"/state/meeting/attendees/3","value":{"id":"4","name":"David Kim","initials":"DK","role":"Data Analyst"}}
-{"op":"add","path":"/elements/separator-2","value":{"type":"Separator","props":{"decorative":true},"children":[]}}
-{"op":"add","path":"/elements/join-section","value":{"type":"Card","props":{"direction":"column","gap":"m","variant":"clear","align":"stretch"},"children":["join-button","join-hint"]}}
-{"op":"add","path":"/elements/join-button","value":{"type":"Button","props":{"label":"🎥  Join Meeting","variant":"primary","size":"large"},"children":[]}}
-{"op":"add","path":"/elements/join-hint","value":{"type":"TextContent","props":{"text":{"$template":"Meeting link: ${/meeting/link}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/state/meeting/link","value":"https://meet.example.com/q3-roadmap"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"gap":"m"},"children":["header","time-row","separator","attendees-label","attendee-list","join-section"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":{"$state":"/meeting/title"},"subtitle":{"$state":"/meeting/subtitle"}}}}
+{"op":"add","path":"/elements/time-row","value":{"type":"Card","props":{"direction":"row","align":"center","gap":"s","variant":"sunk"},"children":["time-badge","time-text"]}}
+{"op":"add","path":"/elements/time-badge","value":{"type":"Tag","props":{"text":"Up Next","variant":"info","size":"sm"}}}
+{"op":"add","path":"/elements/time-text","value":{"type":"TextContent","props":{"text":{"$state":"/meeting/startTime"},"size":"large-heavy"}}}
+{"op":"add","path":"/elements/separator","value":{"type":"Separator","props":{}}}
+{"op":"add","path":"/elements/attendees-label","value":{"type":"TextContent","props":{"text":{"$template":"Attendees (${/meeting/attendeeCount})"},"size":"small-heavy"}}}
+{"op":"add","path":"/elements/attendee-list","value":{"type":"Card","props":{"gap":"s","variant":"clear"},"repeat":{"statePath":"/meeting/attendees","key":"id"},"children":["attendee-row"]}}
+{"op":"add","path":"/elements/attendee-row","value":{"type":"Card","props":{"direction":"row","align":"center","gap":"s","variant":"clear"},"children":["attendee-avatar","attendee-info"]}}
+{"op":"add","path":"/elements/attendee-avatar","value":{"type":"Avatar","props":{"fallback":{"$item":"initials"}}}}
+{"op":"add","path":"/elements/attendee-info","value":{"type":"Card","props":{"direction":"row","align":"center","gap":"xs","variant":"clear"},"children":["attendee-name","organizer-badge"]}}
+{"op":"add","path":"/elements/attendee-name","value":{"type":"TextContent","props":{"text":{"$item":"name"}}}}
+{"op":"add","path":"/elements/organizer-badge","value":{"type":"Badge","props":{"text":"Organizer","variant":"secondary"},"visible":{"$item":"isOrganizer"}}}
+{"op":"add","path":"/state/meeting","value":{"title":"Q3 Product Roadmap Review","subtitle":"Weekly sync · Zoom","startTime":"Today at 2:30 PM – 3:15 PM","attendeeCount":4,"attendees":[]}}
+{"op":"add","path":"/state/meeting/attendees/0","value":{"id":"1","name":"Sarah Chen","initials":"SC","isOrganizer":true}}
+{"op":"add","path":"/state/meeting/attendees/1","value":{"id":"2","name":"Marcus Johnson","initials":"MJ","isOrganizer":false}}
+{"op":"add","path":"/state/meeting/attendees/2","value":{"id":"3","name":"Priya Patel","initials":"PP","isOrganizer":false}}
+{"op":"add","path":"/state/meeting/attendees/3","value":{"id":"4","name":"Alex Rivera","initials":"AR","isOrganizer":false}}
+{"op":"add","path":"/elements/join-section","value":{"type":"Card","props":{"gap":"s","align":"stretch"},"children":["join-btn","dial-in-text"]}}
+{"op":"add","path":"/elements/join-btn","value":{"type":"Button","props":{"label":"Join Meeting","variant":"primary","size":"large"}}}
+{"op":"add","path":"/elements/dial-in-text","value":{"type":"TextContent","props":{"text":{"$state":"/meeting/dialIn"},"size":"small"}}}
+{"op":"add","path":"/state/meeting/dialIn","value":"Or dial in: +1 (555) 234-5678 · Meeting ID: 892 4451 0032"}

@@ -59,22 +59,25 @@ export const RUNS_TOTAL = RUNS_PER_FORMAT * FORMATS.length;
 /* 1. Completion by model                                              */
 /* ------------------------------------------------------------------ */
 
-/** % of 184 runs where everything asked for renders and every reference resolves. */
+/**
+ * % of 184 runs where everything asked for renders and every reference resolves.
+ * Stored as the exact complete/184 fraction so the table cells round to one
+ * decimal for display while completionMean() averages the true rates (averaging
+ * pre-rounded cells would drift, e.g. a2ui 95.75 vs the true 95.74).
+ */
 export const completionByModel: Record<ModelId, Record<FormatId, number>> = {
-  sol: { openui: 99.5, a2ui: 92.9, jsonRender: 90.2 },
-  opus: { openui: 96.7, a2ui: 97.3, jsonRender: 87.0 },
-  kimi: { openui: 93.5, a2ui: 92.4, jsonRender: 85.3 },
-  gemini: { openui: 94.6, a2ui: 90.2, jsonRender: 71.7 },
-  qwen: { openui: 89.7, a2ui: 89.7, jsonRender: 73.9 },
-  muse: { openui: 83.7, a2ui: 91.8, jsonRender: 79.9 },
+  sol: { openui: 99.457, a2ui: 96.196, jsonRender: 82.609 },
+  opus: { openui: 98.913, a2ui: 99.457, jsonRender: 87.5 },
+  kimi: { openui: 96.739, a2ui: 95.652, jsonRender: 71.196 },
+  gemini: { openui: 95.109, a2ui: 95.109, jsonRender: 77.174 },
+  qwen: { openui: 91.848, a2ui: 91.304, jsonRender: 80.978 },
+  muse: { openui: 96.739, a2ui: 96.739, jsonRender: 81.522 },
 };
 
 /**
  * Unweighted mean of the six per-model rates — each model gets equal weight.
- * With the uniform 4-rep condition this equals the pooled rate. Computed,
- * never typed. Note: the openui mean sits on a rounding boundary (92.9499...);
- * any change to a per-model rate can flip the displayed 92.9, so re-sync the
- * prose if these values ever move.
+ * With the uniform 4-rep condition this equals the pooled rate. Computed from
+ * the exact per-model fractions, never typed. Re-sync the prose if these move.
  */
 export const completionMean = (id: FormatId) =>
   MODELS.reduce((sum, m) => sum + completionByModel[m.id][id], 0) / MODELS.length;
@@ -84,8 +87,7 @@ export const winnerFor = (modelId: ModelId): FormatId =>
     completionByModel[modelId][id] > completionByModel[modelId][best] ? id : best,
   );
 
-/** Models where each format takes the top score. Qwen is an exact tie
- *  (89.7 OpenUI and A2UI); winnerFor resolves it to the first in FORMAT_ORDER. */
+/** Models where each format takes the top score. Ties resolve to the first in FORMAT_ORDER. */
 export const modelWins = (id: FormatId) =>
   MODELS.filter((m) => winnerFor(m.id) === id).map((m) => m.label);
 
@@ -95,24 +97,21 @@ export const modelWins = (id: FormatId) =>
 
 /**
  * Runs where the user saw nothing at all, out of RUNS_PER_FORMAT.
- * A2UI counted conservatively: still blank even when each component is
- * rendered individually through the official validator with the renderer's
- * all-or-nothing rule removed (protocols/a2ui/counterfactual.mjs).
+ * A2UI's count is its shipped renderer dropping whole updateComponents
+ * messages on any invalid component.
  */
 export const blankScreens: Record<FormatId, number> = {
-  openui: 2,
-  a2ui: 53,
-  jsonRender: 9,
+  openui: 1,
+  a2ui: 35,
+  jsonRender: 4,
 };
 
 /** A2UI's own shipped renderer drops a whole updateComponents message on any
- *  invalid component, which blanks 56 rather than 53. */
-export const a2uiShippedRendererBlanks = 56;
+ *  invalid component. */
+export const a2uiShippedRendererBlanks = 35;
 
-/** Both OpenUI blanks are empty API responses to the same disaster-response
- *  brief (one Muse, one Qwen); both models answer it at full length in the
- *  JSON formats. */
-export const openuiBlankCause = { models: ["muse", "qwen"] as ModelId[], reason: "empty response" };
+/** OpenUI's single blank is an empty API response from Qwen. */
+export const openuiBlankCause = { models: ["qwen"] as ModelId[], reason: "empty response" };
 
 /* ------------------------------------------------------------------ */
 /* 3. Completion by screen density                                     */
@@ -133,11 +132,11 @@ export const densityBands = [
 export const completionByDensity: Array<
   { band: string; briefs: number } & Record<FormatId, number>
 > = [
-  { band: "2–3", briefs: 10, openui: 98.3, a2ui: 97.5, jsonRender: 93.8 },
-  { band: "4–6", briefs: 10, openui: 95.4, a2ui: 95.8, jsonRender: 85.0 },
-  { band: "7–9", briefs: 10, openui: 92.9, a2ui: 92.1, jsonRender: 79.2 },
-  { band: "11–13", briefs: 8, openui: 90.6, a2ui: 88.0, jsonRender: 75.5 },
-  { band: "16–18", briefs: 8, openui: 85.4, a2ui: 86.5, jsonRender: 69.8 },
+  { band: "2–3", briefs: 10, openui: 100.0, a2ui: 99.583, jsonRender: 89.583 },
+  { band: "4–6", briefs: 10, openui: 99.583, a2ui: 98.75, jsonRender: 81.667 },
+  { band: "7–9", briefs: 10, openui: 98.75, a2ui: 94.167, jsonRender: 85.417 },
+  { band: "11–13", briefs: 8, openui: 91.146, a2ui: 91.667, jsonRender: 68.229 },
+  { band: "16–18", briefs: 8, openui: 90.625, a2ui: 93.229, jsonRender: 71.875 },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -148,10 +147,10 @@ export const completionByDensity: Array<
 export const tokens = {
   /** Generated by each SDK's own generator over the same 70-component catalog.
    *  The OpenUI prompt includes its component groups, two worked examples and
-   *  two rules, all passed through generatePrompt's official options. */
-  systemPrompt: { openui: 4_828, a2ui: 11_080, jsonRender: 6_497 } as Record<FormatId, number>,
+   *  three rules, all passed through generatePrompt's official options. */
+  systemPrompt: { openui: 5_031, a2ui: 12_610, jsonRender: 7_651 } as Record<FormatId, number>,
   /** Mean output per screen over all 1,104 scored runs (six models). */
-  outputPerScreen: { openui: 1_284, a2ui: 2_740, jsonRender: 3_558 } as Record<FormatId, number>,
+  outputPerScreen: { openui: 1_362, a2ui: 2_823, jsonRender: 3_258 } as Record<FormatId, number>,
   outputBasis: { runs: 1_104 },
 };
 
@@ -166,11 +165,11 @@ export const timesBaseline = (value: number, baseline: number) => value / baseli
 export const COST_MODELS: ModelId[] = ["gemini", "muse", "qwen", "kimi", "opus"];
 
 export const costPerPass: Partial<Record<ModelId, Record<FormatId, number>>> = {
-  gemini: { openui: 0.4, a2ui: 1.02, jsonRender: 0.87 },
-  muse: { openui: 0.7, a2ui: 1.16, jsonRender: 1.32 },
-  qwen: { openui: 0.77, a2ui: 1.87, jsonRender: 1.49 },
-  kimi: { openui: 1.4, a2ui: 3.03, jsonRender: 3.08 },
-  opus: { openui: 2.04, a2ui: 5.83, jsonRender: 4.71 },
+  gemini: { openui: 0.42, a2ui: 0.95, jsonRender: 0.85 },
+  muse: { openui: 0.71, a2ui: 1.38, jsonRender: 1.34 },
+  qwen: { openui: 0.81, a2ui: 1.9, jsonRender: 1.46 },
+  kimi: { openui: 1.53, a2ui: 3.16, jsonRender: 2.91 },
+  opus: { openui: 2.27, a2ui: 5.85, jsonRender: 4.88 },
 };
 
 /** The procurement unit: dollars per 1,000 screens. */
@@ -179,42 +178,29 @@ export const costPer1kScreens = (modelId: ModelId, id: FormatId) =>
 
 /* ------------------------------------------------------------------ */
 /* 6. Production: failure taxonomy + repair                            */
+/*    Percentages only, from a recent week of OpenUI Cloud streaming    */
+/*    traffic (managed-openui embed). No absolute counts published.     */
 /* ------------------------------------------------------------------ */
 
-/** Share of production failures by family, from a 15-day OpenUI Cloud parser
- *  log of 1,285 failed generations. */
+/** Share of first-pass validation failures by family (streaming, one week).
+ *  Rendered as a markdown table in the post, kept here as the source of truth. */
 export const failureTaxonomy = [
-  { family: "No valid root", share: 29.6 },
-  { family: "Reference graph", share: 27.5 },
-  { family: "Enum and type mismatches", share: 22.9 },
-  { family: "Truncation", share: 13.6 },
-  { family: "Wrong argument counts", share: 4.9 },
-  { family: "Everything else", share: 1.5 },
+  { family: "No valid root (often truncation-related)", share: 44 },
+  { family: "Reference graph (dangling or orphaned refs)", share: 36 },
+  { family: "Enum, type and argument errors", share: 16 },
+  { family: "Truncation", share: 4 },
 ];
 
-/** Repair funnel over a recent production window. Counts, not percentages —
- *  the percentages on the chart are derived from these. */
-export const repairFunnel = {
-  failed: 277,
-  stages: [
-    { id: "rules", label: "Fixed by rules, no LLM call", count: 214, shipped: true },
-    { id: "llm", label: "Fixed by one LLM pass", count: 52, shipped: true },
-    { id: "fellThrough", label: "Fell through", count: 11, shipped: false },
-  ],
-};
-
-export const repairShare = (count: number) => (count / repairFunnel.failed) * 100;
-export const repairedShare = () =>
-  repairShare(repairFunnel.stages.filter((s) => s.shipped).reduce((n, s) => n + s.count, 0));
-
-/** Production generation failure rate after migrating to OpenUI (was 15% on the
- *  older JSON format). */
-export const productionFailureRate = { low: 4, high: 5, previousJsonFormat: 15 };
-
-/** Compound: a screen fails validation AND survives repair. */
-export const userVisibleFailureRate = () => {
-  const mid = (productionFailureRate.low + productionFailureRate.high) / 2;
-  return (mid * (100 - repairedShare())) / 100;
+/** Production repair, streaming OpenUI-Lang, one week. All percentages. The
+ *  repair is a single LLM sanitizer pass (the parser already absorbs markdown,
+ *  comments and unclosed brackets, so those never reach the repair layer). */
+export const production = {
+  /** ~% of streaming generations that trip validation on the first pass. */
+  triggerRate: 7,
+  /** ~% of those first-pass failures the sanitizer recovers. */
+  repairedShare: 88,
+  /** ~% of all streaming requests that reach a user broken. */
+  userVisibleShare: 0.9,
 };
 
 /* ------------------------------------------------------------------ */
@@ -223,7 +209,7 @@ export const userVisibleFailureRate = () => {
 
 export const CONFOUNDS = {
   promptConditions:
-    "One condition for all models and formats. OpenUI's prompt carries its component groups, two rules and two worked examples through lang-core's official generatePrompt options; json-render runs catalog.prompt() with three custom rules; A2UI runs its generator's prompt as-is. The competitors' official options got no worked examples, an asymmetry we plan to close in a follow-up.",
+    "One condition for all models and formats: the same two worked examples through each SDK's official prompt generator. OpenUI's also carries its component groups and three rules, json-render its three custom rules; A2UI adds no rules of its own beyond the examples.",
   attachRule:
     "Prompt content moves these numbers about as much as format choice does: one rule telling the model to attach every component it defines was worth 13 points to OpenUI on Kimi in earlier runs.",
   scoring:

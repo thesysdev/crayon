@@ -1,115 +1,89 @@
-Here's a status page for the platform team covering both the current API uptime and the most recent incident details.
+Here's a status page for the platform team covering current API uptime and the most recent incident.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "status-page",
-      "catalogId": "thesys.dev:c1-openui"
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "status-page",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "direction": "column",
-          "gap": "l",
-          "children": [
-            "page-header",
-            "uptime-card",
-            "incident-card"
-          ]
-        },
-        {
-          "id": "page-header",
-          "component": "CardHeader",
-          "title": "Platform Status",
-          "subtitle": "API service health · Updated live"
-        },
-        {
-          "id": "uptime-card",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "uptime-header",
-            "uptime-progress",
-            "uptime-note"
-          ]
-        },
-        {
-          "id": "uptime-header",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "justify": "between",
-          "align": "center",
-          "children": [
-            "uptime-title",
-            "uptime-badge"
-          ]
-        },
-        {
-          "id": "uptime-title",
-          "component": "Heading",
-          "text": "API Uptime — This Month",
-          "level": "h3"
-        },
-        {
-          "id": "uptime-badge",
-          "component": "Badge",
-          "text": "Operational",
-          "variant": "default"
-        },
-        {
-          "id": "uptime-progress",
-          "component": "Progress",
-          "value": 99.98,
-          "label": "99.98% uptime (target: 99.90%)"
-        },
-        {
-          "id": "uptime-note",
-          "component": "TextContent",
-          "size": "small",
-          "text": "Measured across all API endpoints from the 1st of the month to now. Only **8 minutes** of downtime recorded so far."
-        },
-        {
-          "id": "incident-card",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "s",
-          "children": [
-            "incident-heading",
-            "incident-alert"
-          ]
-        },
-        {
-          "id": "incident-heading",
-          "component": "Heading",
-          "text": "Most Recent Incident",
-          "level": "h3"
-        },
-        {
-          "id": "incident-alert",
-          "component": "Alert",
-          "variant": "success",
-          "title": "Elevated API latency — Resolved",
-          "description": "On May 14 at 09:12 UTC, a subset of API requests experienced elevated latency due to a database connection pool saturation. Mitigation was applied by scaling the connection pool and the incident was fully resolved at 09:20 UTC (8 min duration). No data loss occurred."
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "statusBadge",
+          "uptimeSection",
+          "sep",
+          "incidentSection"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "API Status",
+        "subtitle": "Platform Team — This month"
+      },
+      {
+        "id": "statusBadge",
+        "component": "Badge",
+        "text": "All systems operational",
+        "variant": "secondary"
+      },
+      {
+        "id": "uptimeSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "uptimeLabel",
+          "uptimeValue",
+          "uptimeBar"
+        ]
+      },
+      {
+        "id": "uptimeLabel",
+        "component": "TextContent",
+        "text": "Current API uptime (month to date)",
+        "size": "small-heavy"
+      },
+      {
+        "id": "uptimeValue",
+        "component": "Heading",
+        "text": "99.98%",
+        "level": "h1"
+      },
+      {
+        "id": "uptimeBar",
+        "component": "Progress",
+        "value": 99.98,
+        "label": "Target: 99.9%"
+      },
+      {
+        "id": "sep",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "incidentSection",
+        "component": "Alert",
+        "title": "Most recent incident — Resolved",
+        "description": "Elevated API latency in the us-east-1 region caused by a database connection pool saturation. Mitigated by scaling read replicas. Resolved on May 14, 2024 at 3:42 PM UTC (duration ~22 minutes).",
+        "variant": "success"
+      }
+    ]
+  }
+}
 </a2ui-json>
 
 This screen delivers both required items:
-
-1. **Current uptime** — a progress bar showing **99.98%** for the API this month, with an "Operational" badge and a supporting note on total downtime.
-2. **Most recent incident** — a resolved-status alert summarizing the elevated latency incident, its cause, and the resolution time (09:20 UTC, an 8-minute duration).
+1. **Current uptime** — shown prominently as `99.98%` with a progress bar against the 99.9% target.
+2. **Most recent incident** — a resolved-incident note describing the cause and the resolution time (May 14, 2024, 3:42 PM UTC).

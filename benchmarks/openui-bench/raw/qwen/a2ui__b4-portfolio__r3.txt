@@ -1,111 +1,811 @@
-
-
-Here's a single-screen PMO portfolio review. Item coverage:
-
-1. **Active projects** → table with owner, deadline, health · 2. **Overdue milestones** → table · 3. **Budget vs allocation** → grouped horizontal bars · 4. **Team utilization** → radial chart · 5. **Risks + severity** → table · 6. **Deadlines ≤ 2 weeks** → table · 7. **Delivery pace, 6 sprints** → line chart · 8. **Blocked items** → list · 9. **One-line health summary** → callout banner · 10. **Quarter switcher** → select · 11. **Request people** → dialog + form · 12. **Export review** → button · 13. **Archive project** → dialog with confirmation.
+Here's a comprehensive PMO Portfolio Review screen covering all 13 requirements:
 
 <a2ui-json>
-[
-  {"version":"v0.9","createSurface":{"surfaceId":"pmo-portfolio-review","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#4F46E5"}}},
-  {"version":"v0.9","updateComponents":{"surfaceId":"pmo-portfolio-review","components":[
-    {"id":"root","component":"Card","direction":"column","gap":"l","children":["header","summaryCallout","controlsRow","projectsCard","moneyRow","timeRow","riskRow","velocityCard"]},
-
-    {"id":"header","component":"CardHeader","title":"PMO Portfolio Review — Q3 FY25","subtitle":"Core Platform program · 8 active projects · Updated Sep 22, 2025"},
-    {"id":"summaryCallout","component":"Callout","variant":"warning","title":"Portfolio health: AMBER","description":"6 of 8 projects healthy; 3 overdue milestones and 2 high-severity risks (Payments API, Mobile v4), and delivery pace dipped last sprint — unblocking is the top priority."},
-
-    {"id":"controlsRow","component":"Card","variant":"clear","direction":"row","gap":"m","align":"center","justify":"between","wrap":true,"children":["quarterControl","actionCluster"]},
-    {"id":"quarterControl","component":"FormControl","label":"Review quarter","input":"quarterSelect"},
-    {"id":"quarterSelect","component":"Select","name":"quarter","value":"q3-2025","placeholder":"Select quarter","items":["qi1","qi2","qi3","qi4"]},
-    {"id":"qi1","component":"SelectItem","value":"q4-2024","label":"Q4 2024"},
-    {"id":"qi2","component":"SelectItem","value":"q1-2025","label":"Q1 2025"},
-    {"id":"qi3","component":"SelectItem","value":"q2-2025","label":"Q2 2025"},
-    {"id":"qi4","component":"SelectItem","value":"q3-2025","label":"Q3 2025 (current)"},
-
-    {"id":"actionCluster","component":"Card","variant":"clear","direction":"row","gap":"s","align":"center","wrap":true,"children":["exportButtons","staffingDialog","archiveDialog"]},
-    {"id":"exportButtons","component":"Buttons","buttons":["exportBtn"]},
-    {"id":"exportBtn","component":"Button","label":"Export review (CSV)","variant":"secondary","size":"small"},
-
-    {"id":"staffingDialog","component":"DialogBlock","triggerLabel":"+ Request people","triggerVariant":"secondary","title":"Request additional staffing","description":"Submit a staffing request to the PMO for approval.","content":["staffProjectControl","staffHeadControl","staffJustControl","staffButtons"]},
-    {"id":"staffProjectControl","component":"FormControl","label":"Project","input":"staffProjectSelect"},
-    {"id":"staffProjectSelect","component":"Select","name":"project","placeholder":"Select project","items":["p1","p2","p3","p4","p5","p6","p7","p8"]},
-    {"id":"p1","component":"SelectItem","value":"atlas","label":"Atlas CRM Revamp"},
-    {"id":"p2","component":"SelectItem","value":"billing","label":"Billing Modernization"},
-    {"id":"p3","component":"SelectItem","value":"mobile","label":"Mobile App v4"},
-    {"id":"p4","component":"SelectItem","value":"dataplatform","label":"Data Platform Migration"},
-    {"id":"p5","component":"SelectItem","value":"sso","label":"Customer Portal SSO"},
-    {"id":"p6","component":"SelectItem","value":"payments","label":"Payments API Gateway"},
-    {"id":"p7","component":"SelectItem","value":"analytics","label":"Analytics Dashboards"},
-    {"id":"p8","component":"SelectItem","value":"legacyemail","label":"Legacy Email Retire"},
-    {"id":"staffHeadControl","component":"FormControl","label":"People requested","input":"staffHeadInput","hint":"Number of FTEs and role mix if known"},
-    {"id":"staffHeadInput","component":"Input","name":"headcount","type":"number","placeholder":"e.g. 2"},
-    {"id":"staffJustControl","component":"FormControl","label":"Business justification","input":"staffJustArea"},
-    {"id":"staffJustArea","component":"TextArea","name":"justification","rows":3,"placeholder":"Why the headcount is needed, from when, and impact if not approved"},
-    {"id":"staffButtons","component":"Buttons","buttons":["staffSubmit"]},
-    {"id":"staffSubmit","component":"Button","label":"Submit request","variant":"primary"},
-
-    {"id":"archiveDialog","component":"DialogBlock","triggerLabel":"Archive finished project","triggerVariant":"outline","title":"Archive a finished project","description":"Archived projects are removed from active views and reporting. This can be undone by the PMO admin.","content":["archProjectControl","archConfirmButtons"]},
-    {"id":"archProjectControl","component":"FormControl","label":"Project to archive","input":"archSelect"},
-    {"id":"archSelect","component":"Select","name":"archiveProject","placeholder":"Select finished project","items":["p1","p2","p3","p4","p5","p6","p7","p8"]},
-    {"id":"archConfirmButtons","component":"Buttons","buttons":["archCancel","archConfirm"]},
-    {"id":"archCancel","component":"Button","label":"Cancel","variant":"tertiary"},
-    {"id":"archConfirm","component":"Button","label":"Archive project","variant":"primary","type":"destructive"},
-
-    {"id":"projectsCard","component":"Card","direction":"column","gap":"s","children":["projectsHeader","projectsTable"]},
-    {"id":"projectsHeader","component":"CardHeader","title":"Active projects (8)","subtitle":"Owner, deadline and current health"},
-    {"id":"projectsTable","component":"Table","columns":["pCol1","pCol2","pCol3","pCol4"]},
-    {"id":"pCol1","component":"Col","label":"Project","data":["Atlas CRM Revamp","Billing Modernization","Mobile App v4","Data Platform Migration","Customer Portal SSO","Payments API Gateway","Analytics Dashboards","Legacy Email Retire"]},
-    {"id":"pCol2","component":"Col","label":"Owner","data":["Dana Lee","Priya Nair","Miguel Ortiz","Sofia Rossi","Dana Lee","Chen Wei","Amara Okafor","Tom Becker"]},
-    {"id":"pCol3","component":"Col","label":"Deadline","data":["Oct 17","Nov 7","Sep 30","Dec 12","Oct 3","Nov 21","Oct 24","Oct 10"]},
-    {"id":"pCol4","component":"Col","label":"Health","data":["🟢 On track","🟡 At risk","🔴 Off track","🟢 On track","🟡 At risk","🟢 On track","🟡 At risk","🟢 On track"]},
-
-    {"id":"moneyRow","component":"Card","variant":"clear","direction":"row","gap":"m","align":"stretch","wrap":true,"children":["budgetCard","utilCard"]},
-    {"id":"budgetCard","component":"Card","direction":"column","gap":"s","children":["budgetHeader","budgetChart"]},
-    {"id":"budgetHeader","component":"CardHeader","title":"Budget — spent vs allocation","subtitle":"USD thousands, Q3 FY25"},
-    {"id":"budgetChart","component":"HorizontalBarChart","variant":"grouped","xLabel":"USD k","labels":["Atlas CRM","Billing","Mobile v4","Data Platform","Portal SSO","Payments API","Analytics","Legacy Email"],"series":["serAlloc","serSpent"]},
-    {"id":"serAlloc","component":"Series","category":"Allocated","values":[850,1200,600,950,300,700,450,200]},
-    {"id":"serSpent","component":"Series","category":"Spent","values":[610,1080,540,470,210,380,290,120]},
-    {"id":"utilCard","component":"Card","direction":"column","gap":"s","children":["utilHeader","utilChart","utilNote"]},
-    {"id":"utilHeader","component":"CardHeader","title":"Team utilization","subtitle":"% of available capacity"},
-    {"id":"utilChart","component":"RadialChart","labels":["Platform","Mobile","Data","QA","Design"],"values":[112,96,84,78,71]},
-    {"id":"utilNote","component":"TextCallout","variant":"warning","title":"Platform team at 112%","description":"Over target — consider the staffing request for Payments API Gateway."},
-
-    {"id":"timeRow","component":"Card","variant":"clear","direction":"row","gap":"m","align":"stretch","wrap":true,"children":["overdueCard","deadlineCard"]},
-    {"id":"overdueCard","component":"Card","direction":"column","gap":"s","children":["overdueHeader","overdueTable"]},
-    {"id":"overdueHeader","component":"CardHeader","title":"Overdue milestones (3)","subtitle":"Require owner action this week"},
-    {"id":"overdueTable","component":"Table","columns":["oCol1","oCol2","oCol3","oCol4"]},
-    {"id":"oCol1","component":"Col","label":"Milestone","data":["API contract freeze","Beta build to store","UAT sign-off"]},
-    {"id":"oCol2","component":"Col","label":"Project","data":["Payments API Gateway","Mobile App v4","Customer Portal SSO"]},
-    {"id":"oCol3","component":"Col","label":"Was due","data":["Sep 12","Sep 15","Sep 19"]},
-    {"id":"oCol4","component":"Col","label":"Late by","data":["10 days","7 days","3 days"]},
-    {"id":"deadlineCard","component":"Card","direction":"column","gap":"s","children":["deadlineHeader","deadlineTable"]},
-    {"id":"deadlineHeader","component":"CardHeader","title":"Deadlines in next 2 weeks","subtitle":"Sep 22 – Oct 6, 2025"},
-    {"id":"deadlineTable","component":"Table","columns":["dCol1","dCol2","dCol3"]},
-    {"id":"dCol1","component":"Col","label":"Item","data":["Go/no-go gate","Load test complete","SSO launch v1.0","Email cutover window"]},
-    {"id":"dCol2","component":"Col","label":"Project","data":["Mobile App v4","Payments API Gateway","Customer Portal SSO","Legacy Email Retire"]},
-    {"id":"dCol3","component":"Col","label":"Due","data":["Sep 26","Sep 29","Oct 3","Oct 6"]},
-
-    {"id":"riskRow","component":"Card","variant":"clear","direction":"row","gap":"m","align":"stretch","wrap":true,"children":["riskCard","blockedCard"]},
-    {"id":"riskCard","component":"Card","direction":"column","gap":"s","children":["riskHeader","riskTable"]},
-    {"id":"riskHeader","component":"CardHeader","title":"Risks by severity","subtitle":"Top 5 open risks"},
-    {"id":"riskTable","component":"Table","columns":["rCol1","rCol2","rCol3","rCol4"]},
-    {"id":"rCol1","component":"Col","label":"Risk","data":["Vendor credentials delay","Card-flow scope growth","App Store review turnaround","Data model rework","Legal review capacity"]},
-    {"id":"rCol2","component":"Col","label":"Project","data":["Payments API Gateway","Billing Modernization","Mobile App v4","Data Platform Migration","Analytics Dashboards"]},
-    {"id":"rCol3","component":"Col","label":"Severity","data":["High","High","Medium","Medium","Low"]},
-    {"id":"rCol4","component":"Col","label":"Owner","data":["Chen Wei","Priya Nair","Miguel Ortiz","Sofia Rossi","Amara Okafor"]},
-    {"id":"blockedCard","component":"Card","direction":"column","gap":"s","children":["blockedHeader","blockedList"]},
-    {"id":"blockedHeader","component":"CardHeader","title":"Blocked work items (3)","subtitle":"Total 19 blocked days across portfolio"},
-    {"id":"blockedList","component":"ListBlock","variant":"number","items":["bItem1","bItem2","bItem3"]},
-    {"id":"bItem1","component":"ListItem","title":"Webhook retry logic","subtitle":"Payments API Gateway · blocked 6d · missing vendor sandbox credentials"},
-    {"id":"bItem2","component":"ListItem","title":"Push notification entitlement","subtitle":"Mobile App v4 · blocked 9d · App Store review pending"},
-    {"id":"bItem3","component":"ListItem","title":"PII masking rules","subtitle":"Analytics Dashboards · blocked 4d · Legal review capacity"},
-
-    {"id":"velocityCard","component":"Card","direction":"column","gap":"s","children":["velocityHeader","velocityChart"]},
-    {"id":"velocityHeader","component":"CardHeader","title":"Delivery pace — last 6 sprints","subtitle":"Committed vs delivered story points"},
-    {"id":"velocityChart","component":"LineChart","variant":"linear","xLabel":"Sprint","yLabel":"Story points","labels":["S83","S84","S85","S86","S87","S88"],"series":["vCommitted","vDelivered"]},
-    {"id":"vCommitted","component":"Series","category":"Committed","values":[42,40,45,38,44,46]},
-    {"id":"vDelivered","component":"Series","category":"Delivered","values":[39,38,44,31,37,33]}
-  ]}}
-]
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
-Notable design choices: the health callout doubles as the one-line portfolio summary; the quarter switcher sits opposite the Export / Request people / Archive actions; blocked items and overdue milestones are surfaced together so the PMO can pair them with the staffing dialog (the utilization note explicitly ties Platform overcapacity to a staffing request). Swap in your live data feeds and the charts and tables will re-render automatically.
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "healthSummary",
+          "controlsRow",
+          "projectsCard",
+          "overdueCard",
+          "budgetCard",
+          "utilizationCard",
+          "risksCard",
+          "deadlinesCard",
+          "deliveryCard",
+          "blockedCard"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Project Portfolio Review",
+        "subtitle": "Q1 2025 · PMO Dashboard"
+      },
+      {
+        "id": "healthSummary",
+        "component": "Alert",
+        "title": "Portfolio Health: At Risk",
+        "description": "3 of 4 projects are on track; Project Delta is critical due to budget overrun and security audit delays. Immediate attention required on 2 overdue milestones.",
+        "variant": "warning"
+      },
+      {
+        "id": "controlsRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "align": "center",
+        "justify": "between",
+        "children": [
+          "quarterField",
+          "exportBtn",
+          "requestPeopleDialog",
+          "archiveDialog"
+        ]
+      },
+      {
+        "id": "quarterField",
+        "component": "FormControl",
+        "label": "View Quarter",
+        "input": "quarterSelect"
+      },
+      {
+        "id": "quarterSelect",
+        "component": "Select",
+        "name": "quarter",
+        "placeholder": "Select quarter",
+        "value": "q1-2025",
+        "items": [
+          "q4_2024",
+          "q1_2025",
+          "q2_2025",
+          "q3_2025"
+        ]
+      },
+      {
+        "id": "q4_2024",
+        "component": "SelectItem",
+        "value": "q4-2024",
+        "label": "Q4 2024"
+      },
+      {
+        "id": "q1_2025",
+        "component": "SelectItem",
+        "value": "q1-2025",
+        "label": "Q1 2025 (Current)"
+      },
+      {
+        "id": "q2_2025",
+        "component": "SelectItem",
+        "value": "q2-2025",
+        "label": "Q2 2025"
+      },
+      {
+        "id": "q3_2025",
+        "component": "SelectItem",
+        "value": "q3-2025",
+        "label": "Q3 2025"
+      },
+      {
+        "id": "exportBtn",
+        "component": "Button",
+        "label": "Export Review",
+        "variant": "secondary",
+        "size": "small"
+      },
+      {
+        "id": "requestPeopleDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "Request Resources",
+        "triggerVariant": "secondary",
+        "title": "Request Additional Resources",
+        "description": "Submit a staffing request for a project in your portfolio.",
+        "content": [
+          "resourceForm"
+        ]
+      },
+      {
+        "id": "resourceForm",
+        "component": "Form",
+        "name": "resource-request",
+        "buttons": "resourceFormBtns",
+        "fields": [
+          "resProjectField",
+          "resRoleField",
+          "resCountField",
+          "resJustField"
+        ]
+      },
+      {
+        "id": "resProjectField",
+        "component": "FormControl",
+        "label": "Project",
+        "input": "resProjectSelect"
+      },
+      {
+        "id": "resProjectSelect",
+        "component": "Select",
+        "name": "project",
+        "placeholder": "Select project",
+        "items": [
+          "resProjAlpha",
+          "resProjBeta",
+          "resProjGamma",
+          "resProjDelta"
+        ]
+      },
+      {
+        "id": "resProjAlpha",
+        "component": "SelectItem",
+        "value": "alpha",
+        "label": "Project Alpha"
+      },
+      {
+        "id": "resProjBeta",
+        "component": "SelectItem",
+        "value": "beta",
+        "label": "Project Beta"
+      },
+      {
+        "id": "resProjGamma",
+        "component": "SelectItem",
+        "value": "gamma",
+        "label": "Project Gamma"
+      },
+      {
+        "id": "resProjDelta",
+        "component": "SelectItem",
+        "value": "delta",
+        "label": "Project Delta"
+      },
+      {
+        "id": "resRoleField",
+        "component": "FormControl",
+        "label": "Role Needed",
+        "input": "resRoleSelect"
+      },
+      {
+        "id": "resRoleSelect",
+        "component": "Select",
+        "name": "role",
+        "placeholder": "Select role",
+        "items": [
+          "resRoleFE",
+          "resRoleBE",
+          "resRoleQA",
+          "resRoleDevOps",
+          "resRolePM"
+        ]
+      },
+      {
+        "id": "resRoleFE",
+        "component": "SelectItem",
+        "value": "frontend",
+        "label": "Frontend Engineer"
+      },
+      {
+        "id": "resRoleBE",
+        "component": "SelectItem",
+        "value": "backend",
+        "label": "Backend Engineer"
+      },
+      {
+        "id": "resRoleQA",
+        "component": "SelectItem",
+        "value": "qa",
+        "label": "QA Engineer"
+      },
+      {
+        "id": "resRoleDevOps",
+        "component": "SelectItem",
+        "value": "devops",
+        "label": "DevOps Engineer"
+      },
+      {
+        "id": "resRolePM",
+        "component": "SelectItem",
+        "value": "pm",
+        "label": "Project Manager"
+      },
+      {
+        "id": "resCountField",
+        "component": "FormControl",
+        "label": "Headcount",
+        "input": "resCountInput"
+      },
+      {
+        "id": "resCountInput",
+        "component": "Input",
+        "name": "headcount",
+        "type": "number",
+        "placeholder": "e.g. 2"
+      },
+      {
+        "id": "resJustField",
+        "component": "FormControl",
+        "label": "Justification",
+        "input": "resJustInput",
+        "hint": "Explain why additional resources are needed"
+      },
+      {
+        "id": "resJustInput",
+        "component": "TextArea",
+        "name": "justification",
+        "placeholder": "Describe the business need...",
+        "rows": 3
+      },
+      {
+        "id": "resourceFormBtns",
+        "component": "Buttons",
+        "buttons": [
+          "resSubmitBtn",
+          "resCancelBtn"
+        ]
+      },
+      {
+        "id": "resSubmitBtn",
+        "component": "Button",
+        "label": "Submit Request",
+        "variant": "primary"
+      },
+      {
+        "id": "resCancelBtn",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      },
+      {
+        "id": "archiveDialog",
+        "component": "AlertDialogBlock",
+        "triggerLabel": "Archive Project",
+        "triggerVariant": "outline",
+        "title": "Archive a Finished Project",
+        "description": "Select a completed project to move it to the archive. This will remove it from the active portfolio view but retain all historical data.",
+        "confirmLabel": "Archive",
+        "cancelLabel": "Cancel"
+      },
+      {
+        "id": "projectsCard",
+        "component": "Card",
+        "children": [
+          "projectsHeader",
+          "projectsTable"
+        ]
+      },
+      {
+        "id": "projectsHeader",
+        "component": "CardHeader",
+        "title": "Active Projects",
+        "subtitle": "4 projects in portfolio"
+      },
+      {
+        "id": "projectsTable",
+        "component": "Table",
+        "columns": [
+          "projNameCol",
+          "projOwnerCol",
+          "projDeadlineCol",
+          "projHealthCol"
+        ]
+      },
+      {
+        "id": "projNameCol",
+        "component": "Col",
+        "label": "Project",
+        "data": [
+          "Project Alpha",
+          "Project Beta",
+          "Project Gamma",
+          "Project Delta"
+        ]
+      },
+      {
+        "id": "projOwnerCol",
+        "component": "Col",
+        "label": "Owner",
+        "data": [
+          "Sarah Chen",
+          "Marcus Webb",
+          "Priya Patel",
+          "James Okafor"
+        ]
+      },
+      {
+        "id": "projDeadlineCol",
+        "component": "Col",
+        "label": "Deadline",
+        "data": [
+          "2025-03-15",
+          "2025-02-28",
+          "2025-04-10",
+          "2025-03-01"
+        ]
+      },
+      {
+        "id": "projHealthCol",
+        "component": "Col",
+        "label": "Health",
+        "data": [
+          "🟢 On Track",
+          "🟡 At Risk",
+          "🟢 On Track",
+          "🔴 Critical"
+        ]
+      },
+      {
+        "id": "overdueCard",
+        "component": "Card",
+        "children": [
+          "overdueHeader",
+          "overdueAlert",
+          "overdueTable"
+        ]
+      },
+      {
+        "id": "overdueHeader",
+        "component": "CardHeader",
+        "title": "Overdue Milestones",
+        "subtitle": "3 milestones past due"
+      },
+      {
+        "id": "overdueAlert",
+        "component": "Alert",
+        "title": "Action Required",
+        "description": "3 milestones are overdue. Escalation recommended for Project Delta security audit.",
+        "variant": "destructive"
+      },
+      {
+        "id": "overdueTable",
+        "component": "Table",
+        "columns": [
+          "overdueMilestoneCol",
+          "overdueProjectCol",
+          "overdueDueCol",
+          "overdueDaysCol"
+        ]
+      },
+      {
+        "id": "overdueMilestoneCol",
+        "component": "Col",
+        "label": "Milestone",
+        "data": [
+          "API Integration Complete",
+          "Security Audit Sign-off",
+          "UAT Sign-off"
+        ]
+      },
+      {
+        "id": "overdueProjectCol",
+        "component": "Col",
+        "label": "Project",
+        "data": [
+          "Project Beta",
+          "Project Delta",
+          "Project Beta"
+        ]
+      },
+      {
+        "id": "overdueDueCol",
+        "component": "Col",
+        "label": "Was Due",
+        "data": [
+          "2025-01-20",
+          "2025-01-25",
+          "2025-02-01"
+        ]
+      },
+      {
+        "id": "overdueDaysCol",
+        "component": "Col",
+        "label": "Days Overdue",
+        "data": [
+          "18",
+          "13",
+          "7"
+        ]
+      },
+      {
+        "id": "budgetCard",
+        "component": "Card",
+        "children": [
+          "budgetHeader",
+          "budgetChart"
+        ]
+      },
+      {
+        "id": "budgetHeader",
+        "component": "CardHeader",
+        "title": "Budget: Spent vs Allocated",
+        "subtitle": "In thousands (USD)"
+      },
+      {
+        "id": "budgetChart",
+        "component": "HorizontalBarChart",
+        "labels": [
+          "Project Alpha",
+          "Project Beta",
+          "Project Gamma",
+          "Project Delta"
+        ],
+        "series": [
+          "budgetSpentSeries",
+          "budgetAllocSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Amount ($K)",
+        "yLabel": "Project"
+      },
+      {
+        "id": "budgetSpentSeries",
+        "component": "Series",
+        "category": "Spent",
+        "values": [
+          180,
+          310,
+          95,
+          220
+        ]
+      },
+      {
+        "id": "budgetAllocSeries",
+        "component": "Series",
+        "category": "Allocated",
+        "values": [
+          250,
+          280,
+          200,
+          240
+        ]
+      },
+      {
+        "id": "utilizationCard",
+        "component": "Card",
+        "children": [
+          "utilHeader",
+          "utilChart"
+        ]
+      },
+      {
+        "id": "utilHeader",
+        "component": "CardHeader",
+        "title": "Team Utilization",
+        "subtitle": "Current sprint capacity usage"
+      },
+      {
+        "id": "utilChart",
+        "component": "HorizontalBarChart",
+        "labels": [
+          "Frontend Team",
+          "Backend Team",
+          "QA Team",
+          "DevOps",
+          "Design"
+        ],
+        "series": [
+          "utilSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Utilization (%)",
+        "yLabel": "Team"
+      },
+      {
+        "id": "utilSeries",
+        "component": "Series",
+        "category": "Utilization %",
+        "values": [
+          92,
+          87,
+          78,
+          95,
+          64
+        ]
+      },
+      {
+        "id": "risksCard",
+        "component": "Card",
+        "children": [
+          "risksHeader",
+          "risksTable"
+        ]
+      },
+      {
+        "id": "risksHeader",
+        "component": "CardHeader",
+        "title": "Risk Register",
+        "subtitle": "Active risks across portfolio"
+      },
+      {
+        "id": "risksTable",
+        "component": "Table",
+        "columns": [
+          "riskDescCol",
+          "riskProjectCol",
+          "riskSeverityCol",
+          "riskMitigationCol"
+        ]
+      },
+      {
+        "id": "riskDescCol",
+        "component": "Col",
+        "label": "Risk",
+        "data": [
+          "Vendor API delivery delay",
+          "Budget overrun (>10%)",
+          "Scope creep from stakeholders",
+          "Resource conflict with Ops team"
+        ]
+      },
+      {
+        "id": "riskProjectCol",
+        "component": "Col",
+        "label": "Project",
+        "data": [
+          "Project Beta",
+          "Project Delta",
+          "Project Alpha",
+          "Project Gamma"
+        ]
+      },
+      {
+        "id": "riskSeverityCol",
+        "component": "Col",
+        "label": "Severity",
+        "data": [
+          "🔴 High",
+          "🔴 Critical",
+          "🟡 Medium",
+          "🟢 Low"
+        ]
+      },
+      {
+        "id": "riskMitigationCol",
+        "component": "Col",
+        "label": "Mitigation",
+        "data": [
+          "Escalated to vendor VP",
+          "Change request submitted",
+          "Scope freeze enacted",
+          "Reallocating 1 FTE"
+        ]
+      },
+      {
+        "id": "deadlinesCard",
+        "component": "Card",
+        "children": [
+          "deadlinesHeader",
+          "deadlinesTable"
+        ]
+      },
+      {
+        "id": "deadlinesHeader",
+        "component": "CardHeader",
+        "title": "Deadlines: Next 2 Weeks",
+        "subtitle": "Feb 7 – Feb 21, 2025"
+      },
+      {
+        "id": "deadlinesTable",
+        "component": "Table",
+        "columns": [
+          "dlDateCol",
+          "dlItemCol",
+          "dlProjectCol",
+          "dlOwnerCol"
+        ]
+      },
+      {
+        "id": "dlDateCol",
+        "component": "Col",
+        "label": "Date",
+        "data": [
+          "Feb 10",
+          "Feb 12",
+          "Feb 14",
+          "Feb 18",
+          "Feb 20"
+        ]
+      },
+      {
+        "id": "dlItemCol",
+        "component": "Col",
+        "label": "Deliverable",
+        "data": [
+          "UAT Completion",
+          "Security Remediation",
+          "Design Review",
+          "Sprint 25 Demo",
+          "Stakeholder Readout"
+        ]
+      },
+      {
+        "id": "dlProjectCol",
+        "component": "Col",
+        "label": "Project",
+        "data": [
+          "Project Beta",
+          "Project Delta",
+          "Project Alpha",
+          "Project Gamma",
+          "Project Delta"
+        ]
+      },
+      {
+        "id": "dlOwnerCol",
+        "component": "Col",
+        "label": "Owner",
+        "data": [
+          "Marcus Webb",
+          "James Okafor",
+          "Sarah Chen",
+          "Priya Patel",
+          "James Okafor"
+        ]
+      },
+      {
+        "id": "deliveryCard",
+        "component": "Card",
+        "children": [
+          "deliveryHeader",
+          "deliveryChart"
+        ]
+      },
+      {
+        "id": "deliveryHeader",
+        "component": "CardHeader",
+        "title": "Delivery Pace",
+        "subtitle": "Story points completed per sprint (last 6 sprints)"
+      },
+      {
+        "id": "deliveryChart",
+        "component": "BarChart",
+        "labels": [
+          "Sprint 19",
+          "Sprint 20",
+          "Sprint 21",
+          "Sprint 22",
+          "Sprint 23",
+          "Sprint 24"
+        ],
+        "series": [
+          "deliverySeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Sprint",
+        "yLabel": "Story Points"
+      },
+      {
+        "id": "deliverySeries",
+        "component": "Series",
+        "category": "Completed Points",
+        "values": [
+          42,
+          38,
+          45,
+          41,
+          48,
+          44
+        ]
+      },
+      {
+        "id": "blockedCard",
+        "component": "Card",
+        "children": [
+          "blockedHeader",
+          "blockedAlert",
+          "blockedTable"
+        ]
+      },
+      {
+        "id": "blockedHeader",
+        "component": "CardHeader",
+        "title": "Blocked Work Items",
+        "subtitle": "3 items currently blocked"
+      },
+      {
+        "id": "blockedAlert",
+        "component": "Alert",
+        "title": "Blockers Impacting Delivery",
+        "description": "3 work items are blocked, affecting 2 projects. Average block duration: 4.3 days.",
+        "variant": "warning"
+      },
+      {
+        "id": "blockedTable",
+        "component": "Table",
+        "columns": [
+          "blockedIdCol",
+          "blockedItemCol",
+          "blockedProjectCol",
+          "blockedReasonCol",
+          "blockedDaysCol"
+        ]
+      },
+      {
+        "id": "blockedIdCol",
+        "component": "Col",
+        "label": "ID",
+        "data": [
+          "BETA-142",
+          "DELTA-089",
+          "ALPHA-201"
+        ]
+      },
+      {
+        "id": "blockedItemCol",
+        "component": "Col",
+        "label": "Work Item",
+        "data": [
+          "Payment gateway integration",
+          "Data migration script",
+          "Mobile responsive layout"
+        ]
+      },
+      {
+        "id": "blockedProjectCol",
+        "component": "Col",
+        "label": "Project",
+        "data": [
+          "Project Beta",
+          "Project Delta",
+          "Project Alpha"
+        ]
+      },
+      {
+        "id": "blockedReasonCol",
+        "component": "Col",
+        "label": "Blocker",
+        "data": [
+          "Waiting on vendor API keys",
+          "Blocked by security review",
+          "Waiting on design assets"
+        ]
+      },
+      {
+        "id": "blockedDaysCol",
+        "component": "Col",
+        "label": "Days Blocked",
+        "data": [
+          "6",
+          "4",
+          "3"
+        ]
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+This single screen covers all 13 requirements:
+
+| # | Requirement | Implementation |
+|---|---|---|
+| 1 | Active projects | Table with owner, deadline, health |
+| 2 | Overdue milestones | Dedicated card with alert + table |
+| 3 | Budget vs allocation | Grouped horizontal bar chart |
+| 4 | Team utilization | Horizontal bar chart (%) |
+| 5 | Risks with severity | Risk register table |
+| 6 | Deadlines next 2 weeks | Upcoming deadlines table |
+| 7 | Delivery pace (6 sprints) | Vertical bar chart |
+| 8 | Blocked work items | Table with blocker reasons |
+| 9 | One-line health summary | Warning alert at top |
+| 10 | Quarter selector | Dropdown select (Q4'24–Q3'25) |
+| 11 | Request more people | Dialog with full form (project, role, headcount, justification) |
+| 12 | Export review | "Export Review" button |
+| 13 | Archive a project | "Archive Project" confirmation dialog |

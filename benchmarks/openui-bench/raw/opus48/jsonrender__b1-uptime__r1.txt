@@ -1,15 +1,16 @@
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","uptime-section","incident-section"]}}
-{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Platform Status","subtitle":"API Service Health — This Month"}}}
-{"op":"add","path":"/elements/uptime-section","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"m"},"children":["uptime-heading","uptime-metric","uptime-progress","uptime-note"]}}
-{"op":"add","path":"/elements/uptime-heading","value":{"type":"Heading","props":{"text":"API Uptime","level":"h3"}}}
-{"op":"add","path":"/elements/uptime-metric","value":{"type":"TextContent","props":{"text":{"$template":"**${/uptime/percentage}%** uptime this month"},"size":"large-heavy"}}}
-{"op":"add","path":"/elements/uptime-progress","value":{"type":"Progress","props":{"value":{"$state":"/uptime/percentage"},"label":"Monthly uptime"}}}
-{"op":"add","path":"/elements/uptime-note","value":{"type":"TextContent","props":{"text":{"$template":"Target SLA: ${/uptime/target}% · Total downtime: ${/uptime/downtime}"},"size":"small"}}}
-{"op":"add","path":"/state/uptime","value":{"percentage":99.97,"target":99.9,"downtime":"13m 24s"}}
-{"op":"add","path":"/elements/incident-section","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"m"},"children":["incident-heading","incident-alert","incident-detail","incident-status"]}}
-{"op":"add","path":"/elements/incident-heading","value":{"type":"Heading","props":{"text":"Most Recent Incident","level":"h3"}}}
-{"op":"add","path":"/elements/incident-alert","value":{"type":"Alert","props":{"variant":"success","title":{"$template":"Resolved — ${/incident/title}"},"description":{"$template":"${/incident/summary}"}}}}
-{"op":"add","path":"/elements/incident-detail","value":{"type":"TextContent","props":{"text":{"$template":"**Started:** ${/incident/started}  ·  **Resolved:** ${/incident/resolved}  ·  **Duration:** ${/incident/duration}"},"size":"small"}}}
-{"op":"add","path":"/elements/incident-status","value":{"type":"Tag","props":{"text":"All systems operational","variant":"success","size":"md"}}}
-{"op":"add","path":"/state/incident","value":{"title":"Elevated API latency in US-East region","summary":"A database connection pool saturation caused elevated response times on the REST API. Traffic was rerouted and the pool limits were increased to fully resolve the issue.","started":"Apr 14, 2024 · 09:12 UTC","resolved":"Apr 14, 2024 · 09:38 UTC","duration":"26 minutes"}}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","statusBanner","uptimeCard","incidentSection"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Platform Status","subtitle":"API service health — this month"}}}
+{"op":"add","path":"/elements/statusBanner","value":{"type":"Alert","props":{"title":"All Systems Operational","description":"The API is fully operational.","variant":"success"}}}
+{"op":"add","path":"/elements/uptimeCard","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"m"},"children":["uptimeHeading","uptimeValue","uptimeProgress","uptimeNote"]}}
+{"op":"add","path":"/elements/uptimeHeading","value":{"type":"Heading","props":{"text":"API Uptime (This Month)","level":"h3"}}}
+{"op":"add","path":"/elements/uptimeValue","value":{"type":"TextContent","props":{"text":{"$template":"**${/uptime/percent}%** uptime across ${/uptime/days} days"},"size":"large-heavy"}}}
+{"op":"add","path":"/elements/uptimeProgress","value":{"type":"Progress","props":{"value":{"$state":"/uptime/percent"},"label":"Monthly uptime"}}}
+{"op":"add","path":"/elements/uptimeNote","value":{"type":"TextContent","props":{"text":{"$template":"Downtime this month: ${/uptime/downtimeMinutes} minutes. SLA target: 99.9%."},"size":"small"}}}
+{"op":"add","path":"/state/uptime","value":{"percent":99.97,"days":30,"downtimeMinutes":13}}
+{"op":"add","path":"/elements/incidentSection","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["incidentHeading","incidentBadge","incidentDesc","incidentResolved"]}}
+{"op":"add","path":"/elements/incidentHeading","value":{"type":"Heading","props":{"text":"Most Recent Incident","level":"h3"}}}
+{"op":"add","path":"/elements/incidentBadge","value":{"type":"Badge","props":{"text":{"$state":"/incident/severity"},"variant":"secondary"}}}
+{"op":"add","path":"/elements/incidentDesc","value":{"type":"TextContent","props":{"text":{"$template":"**${/incident/title}** — ${/incident/summary}"},"size":"default"}}}
+{"op":"add","path":"/elements/incidentResolved","value":{"type":"Callout","props":{"variant":"success","title":"Resolved","description":{"$template":"Resolved on ${/incident/resolvedAt} (duration: ${/incident/duration})."}}}
+{"op":"add","path":"/state/incident","value":{"title":"Elevated API latency in us-east-1","summary":"A degraded database read replica caused increased response times for ~13 minutes. Traffic was rerouted to healthy replicas and the affected node was replaced.","severity":"Minor","resolvedAt":"Feb 18, 2025 · 3:42 PM UTC","duration":"13 min"}}

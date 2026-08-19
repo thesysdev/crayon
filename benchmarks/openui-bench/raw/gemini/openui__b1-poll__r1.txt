@@ -1,10 +1,24 @@
-root = Card([header, pollForm])
-header = CardHeader("Friday Team Lunch", "Cast your vote for this week's spot!")
-pollForm = Form("lunch_poll", formActions, [questionField])
-questionField = FormControl("Where should we go for lunch on Friday?", optionsGroup, "Select one option to cast your vote")
-optionsGroup = RadioGroup("restaurant_choice", [opt1, opt2, opt3])
-opt1 = RadioItem("Tacos & Co.", "Mexican • 5 min walk • Fresh street tacos and guac", "tacos")
-opt2 = RadioItem("Burger Joint", "American • 10 min walk • Gourmet burgers and shakes", "burgers")
-opt3 = RadioItem("Sushi Hanami", "Japanese • 8 min walk • Bento boxes and fresh rolls", "sushi")
-formActions = Buttons([submitBtn])
-submitBtn = Button("Submit Vote", null, "primary")
+root = Card([header, introCallout, pollForm])
+header = CardHeader("Friday Team Lunch Poll", "Cast your vote for this week's lunch spot")
+introCallout = TextCallout("info", "Voting Closes Thursday at 5 PM", "Please select your top choice so we can make reservations in advance.")
+
+pollForm = Form("lunch_poll", formActions, [restaurantOptions, dietaryControl, notesControl])
+
+restaurantOptions = FormControl("Select a Restaurant", optionGroup)
+optionGroup = RadioGroup("restaurant_choice", [option1, option2, option3], "tacos")
+
+option1 = RadioItem("Taqueria Del Sol", "Authentic street tacos, fast service, strong vegetarian & vegan options ($)", "tacos")
+option2 = RadioItem("Urban Burger Co.", "Gourmet burgers, craft shakes, and extensive gluten-free options ($$)", "burgers")
+option3 = RadioItem("Green Leaf Cafe", "Fresh farm-to-table salads, grain bowls, and paninis ($$)", "salads")
+
+dietaryControl = FormControl("Dietary Restrictions", dietaryCheckboxes, "Check all that apply to help us accommodate everyone")
+dietaryCheckboxes = CheckBoxGroup("dietary", [dietary1, dietary2, dietary3])
+dietary1 = CheckBoxItem("Vegetarian / Vegan", "Need plant-based main options", "veg")
+dietary2 = CheckBoxItem("Gluten-Free", "Need gluten-safe options", "gf")
+dietary3 = CheckBoxItem("Nut Allergy", "Severe allergy accommodation", "nut_free")
+
+notesControl = FormControl("Additional Notes or Requests", notesInput)
+notesInput = TextArea("notes", "Any timing constraints or secondary suggestions...", 2)
+
+formActions = Buttons([submitVoteBtn])
+submitVoteBtn = Button("Submit Vote", null, "primary")

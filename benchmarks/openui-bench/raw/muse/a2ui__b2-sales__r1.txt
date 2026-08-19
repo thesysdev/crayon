@@ -1,13 +1,256 @@
-Your founder sales check is ready — all 5 items on one screen:
+Your founder's monthly sales check — all key numbers on one screen:
 
-<a2ui-json>{"version": "v0.9", "createSurface": {"surfaceId": "founder-sales-check", "catalogId": "thesys.dev:c1-openui"}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
 
-<a2ui-json>{"version": "v0.9", "updateComponents": {"surfaceId": "founder-sales-check", "components": [{"id": "root", "component": "Card", "children": ["header", "revenueCard", "chartCard", "productsCard", "conversionCard", "downloadCard"], "direction": "column", "gap": "l", "variant": "clear"}, {"id": "header", "component": "CardHeader", "title": "Monthly Sales Check", "subtitle": "August 2026 · Founder Overview · All numbers updated daily at 6am"}, {"id": "revenueCard", "component": "Card", "children": ["revenueLabel", "revenueValue", "revenueSub", "revenueTags"], "variant": "card", "direction": "column", "gap": "xs"}, {"id": "revenueLabel", "component": "TextContent", "text": "1 · REVENUE THIS MONTH", "size": "small"}, {"id": "revenueValue", "component": "Heading", "text": "$84,250", "level": "h1"}, {"id": "revenueSub", "component": "TextContent", "text": "↑ +$3,050 vs July (+3.7%) · 6-month high · Best month yet", "size": "small"}, {"id": "revenueTags", "component": "TagBlock", "tags": ["August 2026", "MTD", "+22.1% vs 6 months ago"]}, {"id": "chartCard", "component": "Card", "children": ["chartHeader", "revenueLineChart"], "variant": "card", "direction": "column", "gap": "m"}, {"id": "chartHeader", "component": "CardHeader", "title": "2 · Revenue Movement — Last 6 Months", "subtitle": "Steady growth from $61.2k to $84.3k"}, {"id": "revenueLineChart", "component": "LineChart", "labels": ["Mar", "Apr", "May", "Jun", "Jul", "Aug"], "series": ["seriesRevenue"], "variant": "natural", "xLabel": "Month", "yLabel": "Revenue ($)"}, {"id": "seriesRevenue", "component": "Series", "category": "Revenue", "values": [61200, 68500, 72300, 79800, 81200, 84250]}, {"id": "productsCard", "component": "Card", "children": ["productsHeader", "productsTable", "productsBarChart"], "variant": "card", "direction": "column", "gap": "m"}, {"id": "productsHeader", "component": "CardHeader", "title": "3 · Three Best-Selling Products", "subtitle": "Ranked by units sold this month"}, {"id": "productsTable", "component": "Table", "columns": ["colProduct", "colUnits"]}, {"id": "colProduct", "component": "Col", "label": "Product", "data": ["1. Pro Plan", "2. Starter Kit", "3. Team Add-on"], "type": "string"}, {"id": "colUnits", "component": "Col", "label": "Units Sold", "data": [1240, 980, 765], "type": "number"}, {"id": "productsBarChart", "component": "HorizontalBarChart", "labels": ["Pro Plan", "Starter Kit", "Team Add-on"], "series": ["seriesUnits"], "variant": "grouped", "xLabel": "Units Sold", "yLabel": "Product"}, {"id": "seriesUnits", "component": "Series", "category": "Units Sold", "values": [1240, 980, 765]}, {"id": "conversionCard", "component": "Card", "children": ["conversionHeader", "conversionProgress", "conversionDetail"], "variant": "card", "direction": "column", "gap": "m"}, {"id": "conversionHeader", "component": "CardHeader", "title": "4 · Conversion Percentage", "subtitle": "Visitors → Paying customers"}, {"id": "conversionProgress", "component": "Progress", "value": 3.8, "label": "3.8% conversion rate"}, {"id": "conversionDetail", "component": "TextContent", "text": "38 orders per 1,000 visitors · Target: 5.0% · +0.4pp vs July (3.4%). 2,215 total orders from 58,289 visitors this month.", "size": "small"}, {"id": "downloadCard", "component": "Card", "children": ["downloadHeader", "downloadButtons"], "variant": "sunk", "direction": "column", "gap": "m"}, {"id": "downloadHeader", "component": "TextContent", "text": "5 · Download the numbers — Export full August report with revenue, product breakdown, and conversion data", "size": "default"}, {"id": "downloadButtons", "component": "Buttons", "buttons": ["downloadButtonPrimary", "downloadButtonSecondary"], "direction": "row"}, {"id": "downloadButtonPrimary", "component": "Button", "label": "Download CSV", "variant": "primary"}, {"id": "downloadButtonSecondary", "component": "Button", "label": "Download PDF Report", "variant": "secondary"}]}}</a2ui-json>
-
-**What's on screen:**
-
-1.  **Revenue this month:** $84,250 hero card at top with vs-July (+3.7%) and 6-month context
-2.  **6-month trend:** Natural LineChart (Mar $61.2k → Aug $84.3k) showing continuous growth
-3.  **Top 3 products:** Table + Horizontal Bar Chart — Pro Plan (1,240 units), Starter Kit (980), Team Add-on (765)
-4.  **Conversion:** 3.8% Progress bar with detail (38/1,000 visitors, vs 5% target)
-5.  **Download:** CSV + PDF buttons in the bottom sunk card
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "kpiGrid",
+          "trendSection",
+          "productsSection",
+          "downloadSection"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Monthly Sales Check",
+        "subtitle": "April 2026  •  Founder overview"
+      },
+      {
+        "id": "kpiGrid",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "revenueCard",
+          "conversionCard"
+        ]
+      },
+      {
+        "id": "revenueCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "revenueLabel",
+          "revenueValue",
+          "revenueSub",
+          "revenueBadge"
+        ],
+        "gap": "xs"
+      },
+      {
+        "id": "conversionCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "conversionLabel",
+          "conversionValue",
+          "conversionProgress",
+          "conversionHint"
+        ],
+        "gap": "xs"
+      },
+      {
+        "id": "revenueLabel",
+        "component": "TextContent",
+        "text": "Revenue this month",
+        "size": "small"
+      },
+      {
+        "id": "revenueValue",
+        "component": "TextContent",
+        "text": "$84,250",
+        "size": "large-heavy"
+      },
+      {
+        "id": "revenueSub",
+        "component": "TextContent",
+        "text": "+4.0% vs March ($81,020) • +35.9% vs Nov",
+        "size": "small"
+      },
+      {
+        "id": "revenueBadge",
+        "component": "Badge",
+        "text": "▲ On target",
+        "variant": "secondary"
+      },
+      {
+        "id": "conversionLabel",
+        "component": "TextContent",
+        "text": "Conversion Rate",
+        "size": "small"
+      },
+      {
+        "id": "conversionValue",
+        "component": "TextContent",
+        "text": "3.8%",
+        "size": "large-heavy"
+      },
+      {
+        "id": "conversionProgress",
+        "component": "Progress",
+        "value": 38,
+        "label": "3.8% of visitors converted"
+      },
+      {
+        "id": "conversionHint",
+        "component": "TextContent",
+        "text": "Up 0.4 pts from 3.4% last month • Goal: 4.5%",
+        "size": "small"
+      },
+      {
+        "id": "trendSection",
+        "component": "Card",
+        "children": [
+          "trendHeader",
+          "revenueTrendChart"
+        ]
+      },
+      {
+        "id": "trendHeader",
+        "component": "CardHeader",
+        "title": "Revenue Trend",
+        "subtitle": "How revenue moved over the last 6 months"
+      },
+      {
+        "id": "revenueTrendChart",
+        "component": "LineChart",
+        "labels": [
+          "Nov",
+          "Dec",
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr"
+        ],
+        "series": [
+          "trendSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Month",
+        "yLabel": "Revenue (USD)"
+      },
+      {
+        "id": "trendSeries",
+        "component": "Series",
+        "category": "Revenue",
+        "values": [
+          62000,
+          68400,
+          71200,
+          78300,
+          81020,
+          84250
+        ]
+      },
+      {
+        "id": "productsSection",
+        "component": "Card",
+        "children": [
+          "productsHeader",
+          "productsTable"
+        ]
+      },
+      {
+        "id": "productsHeader",
+        "component": "CardHeader",
+        "title": "Best-Selling Products",
+        "subtitle": "Top 3 by units sold this month"
+      },
+      {
+        "id": "productsTable",
+        "component": "Table",
+        "columns": [
+          "colProduct",
+          "colUnits",
+          "colRank"
+        ]
+      },
+      {
+        "id": "colProduct",
+        "component": "Col",
+        "label": "Product",
+        "data": [
+          "Pro Plan Subscription",
+          "Starter Kit",
+          "Analytics Add-on"
+        ]
+      },
+      {
+        "id": "colUnits",
+        "component": "Col",
+        "label": "Units Sold",
+        "data": [
+          "1,240",
+          "980",
+          "742"
+        ]
+      },
+      {
+        "id": "colRank",
+        "component": "Col",
+        "label": "Rank",
+        "data": [
+          "#1",
+          "#2",
+          "#3"
+        ]
+      },
+      {
+        "id": "downloadSection",
+        "component": "Card",
+        "children": [
+          "downloadHeader",
+          "downloadButtons"
+        ]
+      },
+      {
+        "id": "downloadHeader",
+        "component": "CardHeader",
+        "title": "Export Your Numbers",
+        "subtitle": "Download the full breakdown for accounting, investors, or your records"
+      },
+      {
+        "id": "downloadButtons",
+        "component": "Buttons",
+        "buttons": [
+          "downloadBtn",
+          "pdfBtn"
+        ],
+        "direction": "row"
+      },
+      {
+        "id": "downloadBtn",
+        "component": "Button",
+        "label": "Download CSV",
+        "variant": "primary"
+      },
+      {
+        "id": "pdfBtn",
+        "component": "Button",
+        "label": "Download PDF Report",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>

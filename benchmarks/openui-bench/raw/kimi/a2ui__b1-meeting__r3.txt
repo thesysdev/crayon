@@ -1,106 +1,120 @@
-Here's a quick view of your next meeting:
+Here's a single screen showing what's next on the calendar — the meeting title and start time, the attendee list, and a join button.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "next-meeting",
-      "catalogId": "thesys.dev:c1-openui",
-      "theme": {
-        "primaryColor": "#2563EB",
-        "agentDisplayName": "Calendar Assistant"
-      }
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "next-meeting",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": ["header", "timeText", "sep1", "attendeesTitle", "attendees", "sep2", "joinBtn"]
-        },
-        {
-          "id": "header",
-          "component": "CardHeader",
-          "title": "Next Meeting: Product Design Sync",
-          "subtitle": "Up next on your calendar"
-        },
-        {
-          "id": "timeText",
-          "component": "TextContent",
-          "text": "**Starts today at 2:00 PM** (in 25 minutes) · 45 min duration",
-          "size": "large"
-        },
-        {
-          "id": "sep1",
-          "component": "Separator"
-        },
-        {
-          "id": "attendeesTitle",
-          "component": "TextContent",
-          "text": "**Attendees (4)**",
-          "size": "small-heavy"
-        },
-        {
-          "id": "attendees",
-          "component": "ListBlock",
-          "items": ["att1", "att2", "att3", "att4"]
-        },
-        {
-          "id": "att1",
-          "component": "ListItem",
-          "title": "Sarah Chen",
-          "subtitle": "Product Manager · Organizer"
-        },
-        {
-          "id": "att2",
-          "component": "ListItem",
-          "title": "Marcus Lee",
-          "subtitle": "Senior Designer"
-        },
-        {
-          "id": "att3",
-          "component": "ListItem",
-          "title": "Priya Patel",
-          "subtitle": "Engineering Lead"
-        },
-        {
-          "id": "att4",
-          "component": "ListItem",
-          "title": "You",
-          "subtitle": "Accepted"
-        },
-        {
-          "id": "sep2",
-          "component": "Separator"
-        },
-        {
-          "id": "joinBtn",
-          "component": "Button",
-          "label": "Join Video Call",
-          "variant": "primary",
-          "size": "large",
-          "action": [
-            {
-              "call": "openUrl",
-              "args": {
-                "url": "https://meet.example.com/product-design-sync"
-              },
-              "returnType": "void"
-            }
-          ]
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-This screen covers all three items: the meeting title and start time (2:00 PM today), the attendee list, and a prominent "Join Video Call" button. Want me to add anything else, like the meeting agenda or a reminder option?
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "soonAlert",
+          "timeBadge",
+          "attendeesLabel",
+          "attendeeList",
+          "divider",
+          "actions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Product Sync — Q4 Planning",
+        "subtitle": "Today · 2:30–3:00 PM · Conference Room B / Video call"
+      },
+      {
+        "id": "soonAlert",
+        "component": "Alert",
+        "title": "Starting soon",
+        "description": "This meeting begins in 15 minutes at 2:30 PM.",
+        "variant": "info"
+      },
+      {
+        "id": "timeBadge",
+        "component": "Badge",
+        "text": "Starts 2:30 PM",
+        "variant": "secondary"
+      },
+      {
+        "id": "attendeesLabel",
+        "component": "Label",
+        "text": "Attendees (4)"
+      },
+      {
+        "id": "attendeeList",
+        "component": "ListBlock",
+        "items": [
+          "attendee1",
+          "attendee2",
+          "attendee3",
+          "attendee4"
+        ]
+      },
+      {
+        "id": "attendee1",
+        "component": "ListItem",
+        "title": "Maya Chen",
+        "subtitle": "Product Lead · Organizer"
+      },
+      {
+        "id": "attendee2",
+        "component": "ListItem",
+        "title": "Jordan Lee",
+        "subtitle": "Engineering"
+      },
+      {
+        "id": "attendee3",
+        "component": "ListItem",
+        "title": "Priya Patel",
+        "subtitle": "Design"
+      },
+      {
+        "id": "attendee4",
+        "component": "ListItem",
+        "title": "Sam Ortiz",
+        "subtitle": "Marketing · Optional"
+      },
+      {
+        "id": "divider",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "actions",
+        "component": "Buttons",
+        "buttons": [
+          "joinBtn",
+          "calendarBtn"
+        ]
+      },
+      {
+        "id": "joinBtn",
+        "component": "Button",
+        "label": "Join video call",
+        "variant": "primary"
+      },
+      {
+        "id": "calendarBtn",
+        "component": "Button",
+        "label": "Open in calendar",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+The screen covers all three items: the meeting title and start time are in the header (reinforced by the "starting soon" alert and badge), the attendee list shows all four invitees, and the primary "Join video call" button provides the way into the call.

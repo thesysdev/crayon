@@ -1,88 +1,102 @@
 Here's a clean invoice view for the client:
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "invoice-view",
-      "catalogId": "thesys.dev:c1-openui",
-      "theme": {
-        "primaryColor": "#4F46E5",
-        "agentDisplayName": "Freelance Invoicing"
-      }
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "invoice-view",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": ["header", "sep1", "amountLabel", "amountDue", "dueDateRow", "sep2", "payButton", "note"]
-        },
-        {
-          "id": "header",
-          "component": "CardHeader",
-          "title": "Invoice #INV-2025-041",
-          "subtitle": "From: Jordan Lee — Freelance Design Services"
-        },
-        {
-          "id": "sep1",
-          "component": "Separator",
-          "orientation": "horizontal"
-        },
-        {
-          "id": "amountLabel",
-          "component": "TextContent",
-          "text": "Amount Due",
-          "size": "small"
-        },
-        {
-          "id": "amountDue",
-          "component": "TextContent",
-          "text": "**$1,850.00 USD**",
-          "size": "large-heavy"
-        },
-        {
-          "id": "dueDateRow",
-          "component": "Callout",
-          "variant": "warning",
-          "title": "Due Date",
-          "description": "Payment is due by March 15, 2025."
-        },
-        {
-          "id": "sep2",
-          "component": "Separator",
-          "orientation": "horizontal"
-        },
-        {
-          "id": "payButton",
-          "component": "Button",
-          "label": "Pay Now — $1,850.00 USD",
-          "variant": "primary",
-          "size": "large",
-          "action": [{"event": "pay_invoice", "invoiceId": "INV-2025-041", "amount": 1850.00, "currency": "USD"}]
-        },
-        {
-          "id": "note",
-          "component": "TextContent",
-          "text": "Secure payment via card or bank transfer. A receipt will be emailed after payment.",
-          "size": "small"
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-This invoice screen covers all three requirements:
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "amountBadge",
+          "amountText",
+          "details",
+          "dueCol",
+          "statusCol",
+          "payActions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Invoice #INV-2024-042",
+        "subtitle": "From: Jane Doe — Design Services"
+      },
+      {
+        "id": "amountBadge",
+        "component": "Badge",
+        "text": "Amount due",
+        "variant": "secondary"
+      },
+      {
+        "id": "amountText",
+        "component": "TextContent",
+        "text": "**$2,400.00 USD**",
+        "size": "large-heavy"
+      },
+      {
+        "id": "details",
+        "component": "Table",
+        "columns": [
+          "dueCol",
+          "statusCol"
+        ]
+      },
+      {
+        "id": "dueCol",
+        "component": "Col",
+        "label": "Due date",
+        "data": [
+          "June 15, 2025"
+        ]
+      },
+      {
+        "id": "statusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Unpaid"
+        ]
+      },
+      {
+        "id": "payActions",
+        "component": "Buttons",
+        "buttons": [
+          "payNowBtn",
+          "downloadBtn"
+        ]
+      },
+      {
+        "id": "payNowBtn",
+        "component": "Button",
+        "label": "Pay now — $2,400.00 USD",
+        "variant": "primary"
+      },
+      {
+        "id": "downloadBtn",
+        "component": "Button",
+        "label": "Download PDF",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
+</a2ui-json>
 
-1. **Amount due & currency** — prominently displayed as **$1,850.00 USD** in large, heavy text.
-2. **Due date** — highlighted in a warning callout: March 15, 2025.
-3. **Pay now** — a large primary "Pay Now" button that triggers a payment action with the invoice details.
+This single screen covers all three requirements:
+1. **Amount due & currency** — prominently displayed as **$2,400.00 USD** with an "Amount due" badge.
+2. **Due date** — shown in the details table (June 15, 2025) alongside the unpaid status.
+3. **Pay now** — a primary "Pay now" button, plus a secondary option to download the invoice PDF.

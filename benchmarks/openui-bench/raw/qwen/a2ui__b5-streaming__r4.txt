@@ -1,118 +1,504 @@
-Here's a comprehensive streaming operations dashboard covering all 16 requirements:
+
+
+Here's the streaming ops room — everything visible on one screen, top-down: live vitals → controls → trends → delivery/content → engagement/licensing.
+
+Item map: 1 ① viewers KPI · 2 Most-watched table · 3 Watch-time area chart · 4 Subs vs cancellations bar chart · 5 Genre horizontal bars · 6 Buffering KPI + 24h trend · 7 Regional delivery health table · 8 Upcoming releases list · 9 Expiring licenses alert + table · 10 Rec CTR KPI + funnel · 11 Dead-end searches KPI + table · 12 Revenue donut · 13 Device radial chart · 14 Region-focus filter form · 15 Feature-flag switches · 16 Home promotion form.
 
 <a2ui-json>
-[
-  {"version":"v0.9","createSurface":{"surfaceId":"streaming-ops","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#6C5CE7"}}},
-  {"version":"v0.9","updateComponents":{"surfaceId":"streaming-ops","components":[
-    {"id":"root","component":"Card","variant":"clear","direction":"column","gap":"m","children":["header-card","main-tabs"]},
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
 
-    {"id":"header-card","component":"Card","direction":"row","gap":"m","align":"center","justify":"between","children":["header-title","region-control"]},
-    {"id":"header-title","component":"Heading","text":"🎬 Streaming Ops Center","level":"h1"},
-    {"id":"region-control","component":"FormControl","label":"Region Focus","input":"region-select"},
-    {"id":"region-select","component":"Select","name":"region","placeholder":"All Regions","items":["region-item-all","region-item-na","region-item-eu","region-item-apac","region-item-latam"]},
-    {"id":"region-item-all","component":"SelectItem","value":"all","label":"🌍 All Regions"},
-    {"id":"region-item-na","component":"SelectItem","value":"na","label":"🇺🇸 North America"},
-    {"id":"region-item-eu","component":"SelectItem","value":"eu","label":"🇪🇺 Europe"},
-    {"id":"region-item-apac","component":"SelectItem","value":"apac","label":"🌏 Asia-Pacific"},
-    {"id":"region-item-latam","component":"SelectItem","value":"latam","label":"🌎 Latin America"},
-
-    {"id":"main-tabs","component":"Tabs","items":["tab-live","tab-content","tab-growth","tab-infra"]},
-
-    {"id":"tab-live","component":"TabItem","value":"live","trigger":"📡 Live Metrics","content":["live-metrics-row","watch-time-area"]},
-    {"id":"live-metrics-row","component":"Card","variant":"clear","direction":"row","gap":"m","children":["metric-viewers","metric-buffering","metric-rec-ctr","metric-zero-play"]},
-    {"id":"metric-viewers","component":"Card","direction":"column","align":"center","gap":"xs","children":["viewers-value","viewers-label"]},
-    {"id":"viewers-value","component":"TextContent","text":"2.4M","size":"large-heavy"},
-    {"id":"viewers-label","component":"Label","text":"Viewers Now"},
-    {"id":"metric-buffering","component":"Card","direction":"column","align":"center","gap":"xs","children":["buffering-value","buffering-label"]},
-    {"id":"buffering-value","component":"TextContent","text":"1.2%","size":"large-heavy"},
-    {"id":"buffering-label","component":"Label","text":"Buffering Rate"},
-    {"id":"metric-rec-ctr","component":"Card","direction":"column","align":"center","gap":"xs","children":["rec-ctr-value","rec-ctr-label"]},
-    {"id":"rec-ctr-value","component":"TextContent","text":"34.7%","size":"large-heavy"},
-    {"id":"rec-ctr-label","component":"Label","text":"Recommendation CTR"},
-    {"id":"metric-zero-play","component":"Card","direction":"column","align":"center","gap":"xs","children":["zero-play-value","zero-play-label"]},
-    {"id":"zero-play-value","component":"TextContent","text":"8.3%","size":"large-heavy"},
-    {"id":"zero-play-label","component":"Label","text":"Zero-Playback Searches"},
-    {"id":"watch-time-area","component":"AreaChart","labels":["Jun 1","Jun 3","Jun 5","Jun 7","Jun 9","Jun 11","Jun 13","Jun 15","Jun 17","Jun 19","Jun 21","Jun 23","Jun 25","Jun 27","Jun 29"],"series":["watch-series"],"xLabel":"Date","yLabel":"Hours (M)"},
-    {"id":"watch-series","component":"Series","category":"Watch Time","values":[42,44,41,47,52,55,49,53,58,61,57,63,66,62,68]},
-
-    {"id":"tab-content","component":"TabItem","value":"content","trigger":"🎞️ Content & Licensing","content":["content-grid","releases-section","licenses-section","promote-dialog"]},
-    {"id":"content-grid","component":"Card","variant":"clear","direction":"row","gap":"m","children":["most-watched-card","genre-card"]},
-    {"id":"most-watched-card","component":"Card","direction":"column","gap":"s","children":["most-watched-title","most-watched"]},
-    {"id":"most-watched-title","component":"Heading","text":"Most-Watched Titles","level":"h3"},
-    {"id":"most-watched","component":"HorizontalBarChart","labels":["The Last Frontier","Dark Tides","Neon Nights","Crown of Ash","Silent Echo"],"series":["watched-series"],"xLabel":"Hours (M)"},
-    {"id":"watched-series","component":"Series","category":"Hours Watched","values":[18.2,15.7,14.1,12.8,11.3]},
-    {"id":"genre-card","component":"Card","direction":"column","gap":"s","children":["genre-title","genre-radar"]},
-    {"id":"genre-title","component":"Heading","text":"Performance by Genre","level":"h3"},
-    {"id":"genre-radar","component":"RadarChart","labels":["Drama","Thriller","Comedy","Sci-Fi","Documentary","Romance"],"series":["genre-series"]},
-    {"id":"genre-series","component":"Series","category":"Engagement Score","values":[88,92,74,81,67,72]},
-    {"id":"releases-section","component":"Card","direction":"column","gap":"s","children":["releases-title","releases-list"]},
-    {"id":"releases-title","component":"Heading","text":"🗓️ Releases This Month","level":"h3"},
-    {"id":"releases-list","component":"ListBlock","variant":"number","items":["release-1","release-2","release-3","release-4","release-5"]},
-    {"id":"release-1","component":"ListItem","title":"The Last Frontier S2","subtitle":"Jul 3 · Drama · 8 episodes"},
-    {"id":"release-2","component":"ListItem","title":"Neon Nights: Origins","subtitle":"Jul 8 · Sci-Fi · Film"},
-    {"id":"release-3","component":"ListItem","title":"Comedy Central Live","subtitle":"Jul 12 · Comedy · Special"},
-    {"id":"release-4","component":"ListItem","title":"Dark Tides S3","subtitle":"Jul 18 · Thriller · 10 episodes"},
-    {"id":"release-5","component":"ListItem","title":"Planet Deep","subtitle":"Jul 25 · Documentary · 6 episodes"},
-    {"id":"licenses-section","component":"Card","direction":"column","gap":"s","children":["licenses-title","licenses-table"]},
-    {"id":"licenses-title","component":"Heading","text":"⚠️ Licenses Expiring Soon","level":"h3"},
-    {"id":"licenses-table","component":"Table","columns":["lic-title-col","lic-holder-col","lic-expiry-col","lic-days-col"]},
-    {"id":"lic-title-col","component":"Col","label":"Title","data":["Friends","The Office","Breaking Bad","Stranger Things","The Crown"],"type":"string"},
-    {"id":"lic-holder-col","component":"Col","label":"Licensor","data":["Warner Bros","NBC Universal","Sony Pictures","Netflix Original","Left Bank"],"type":"string"},
-    {"id":"lic-expiry-col","component":"Col","label":"Expiry Date","data":["Jul 5, 2025","Jul 12, 2025","Jul 19, 2025","Aug 1, 2025","Aug 8, 2025"],"type":"string"},
-    {"id":"lic-days-col","component":"Col","label":"Days Left","data":[4,11,18,26,33],"type":"number"},
-    {"id":"promote-dialog","component":"DialogBlock","triggerLabel":"🚀 Promote Title on Home Screen","title":"Promote a Title","description":"Select a title to feature on the home screen carousel.","content":["promote-form"]},
-    {"id":"promote-form","component":"Form","name":"promote-title","buttons":"promote-buttons","fields":["promote-title-field","promote-position-field","promote-date-field"]},
-    {"id":"promote-title-field","component":"FormControl","label":"Title to Promote","input":"promote-title-input"},
-    {"id":"promote-title-input","component":"Select","name":"title","placeholder":"Choose a title...","items":["pt-1","pt-2","pt-3","pt-4","pt-5"]},
-    {"id":"pt-1","component":"SelectItem","value":"last-frontier","label":"The Last Frontier S2"},
-    {"id":"pt-2","component":"SelectItem","value":"neon-nights","label":"Neon Nights: Origins"},
-    {"id":"pt-3","component":"SelectItem","value":"dark-tides","label":"Dark Tides S3"},
-    {"id":"pt-4","component":"SelectItem","value":"planet-deep","label":"Planet Deep"},
-    {"id":"pt-5","component":"SelectItem","value":"comedy-live","label":"Comedy Central Live"},
-    {"id":"promote-position-field","component":"FormControl","label":"Carousel Position","input":"promote-position-input"},
-    {"id":"promote-position-input","component":"Select","name":"position","items":["pos-1","pos-2","pos-3"]},
-    {"id":"pos-1","component":"SelectItem","value":"1","label":"Slot 1 (Hero)"},
-    {"id":"pos-2","component":"SelectItem","value":"2","label":"Slot 2"},
-    {"id":"pos-3","component":"SelectItem","value":"3","label":"Slot 3"},
-    {"id":"promote-date-field","component":"FormControl","label":"Go-Live Date","input":"promote-date-input"},
-    {"id":"promote-date-input","component":"DatePicker","name":"goLive"},
-    {"id":"promote-buttons","component":"Buttons","buttons":["promote-submit","promote-cancel"]},
-    {"id":"promote-submit","component":"Button","label":"Promote","variant":"primary"},
-    {"id":"promote-cancel","component":"Button","label":"Cancel","variant":"secondary"},
-
-    {"id":"tab-growth","component":"TabItem","value":"growth","trigger":"📈 Growth & Revenue","content":["growth-charts-row","revenue-device-row"]},
-    {"id":"growth-charts-row","component":"Card","variant":"clear","direction":"row","gap":"m","children":["subs-chart-card"]},
-    {"id":"subs-chart-card","component":"Card","direction":"column","gap":"s","children":["subs-title","subs-chart"]},
-    {"id":"subs-title","component":"Heading","text":"New Subscribers vs Cancellations","level":"h3"},
-    {"id":"subs-chart","component":"BarChart","labels":["Jan","Feb","Mar","Apr","May","Jun"],"series":["new-subs-series","cancel-series"],"variant":"grouped","xLabel":"Month","yLabel":"Thousands"},
-    {"id":"new-subs-series","component":"Series","category":"New Subscribers","values":[320,290,345,310,380,410]},
-    {"id":"cancel-series","component":"Series","category":"Cancellations","values":[180,195,170,210,185,160]},
-    {"id":"revenue-device-row","component":"Card","variant":"clear","direction":"row","gap":"m","children":["revenue-card","device-card"]},
-    {"id":"revenue-card","component":"Card","direction":"column","gap":"s","children":["revenue-title","revenue-pie"]},
-    {"id":"revenue-title","component":"Heading","text":"Revenue by Plan","level":"h3"},
-    {"id":"revenue-pie","component":"PieChart","labels":["Premium ($19.99)","Standard ($13.99)","Basic ($8.99)","Ad-Supported ($5.99)"],"values":[42,31,17,10],"variant":"donut"},
-    {"id":"device-card","component":"Card","direction":"column","gap":"s","children":["device-title","device-pie"]},
-    {"id":"device-title","component":"Heading","text":"Viewing by Device","level":"h3"},
-    {"id":"device-pie","component":"PieChart","labels":["Smart TV","Mobile","Tablet","Desktop","Console","Other"],"values":[38,27,12,11,9,3],"variant":"pie"},
-
-    {"id":"tab-infra","component":"TabItem","value":"infra","trigger":"🛠️ Infrastructure & Ops","content":["region-health-card","feature-flags-card"]},
-    {"id":"region-health-card","component":"Card","direction":"column","gap":"s","children":["region-health-title","region-table"]},
-    {"id":"region-health-title","component":"Heading","text":"Delivery Health by Region","level":"h3"},
-    {"id":"region-table","component":"Table","columns":["region-col","uptime-col","latency-col","cdn-col","status-col"]},
-    {"id":"region-col","component":"Col","label":"Region","data":["North America","Europe","Asia-Pacific","Latin America","Middle East"],"type":"string"},
-    {"id":"uptime-col","component":"Col","label":"Uptime","data":["99.97%","99.94%","99.91%","99.88%","99.85%"],"type":"string"},
-    {"id":"latency-col","component":"Col","label":"Avg Latency","data":["42ms","58ms","73ms","89ms","95ms"],"type":"string"},
-    {"id":"cdn-col","component":"Col","label":"CDN Hit Rate","data":["97.2%","96.8%","95.1%","94.3%","93.7%"],"type":"string"},
-    {"id":"status-col","component":"Col","label":"Status","data":["✅ Healthy","✅ Healthy","⚠️ Degraded","✅ Healthy","⚠️ Degraded"],"type":"string"},
-    {"id":"feature-flags-card","component":"Card","direction":"column","gap":"s","children":["flags-title","feature-flags"]},
-    {"id":"flags-title","component":"Heading","text":"Feature Flags","level":"h3"},
-    {"id":"feature-flags","component":"SwitchGroup","name":"featureFlags","variant":"card","items":["flag-1","flag-2","flag-3","flag-4","flag-5","flag-6"]},
-    {"id":"flag-1","component":"SwitchItem","name":"new-player-ui","label":"New Player UI","description":"Redesigned video player with picture-in-picture","defaultChecked":true},
-    {"id":"flag-2","component":"SwitchItem","name":"ai-recs-v2","label":"AI Recommendations v2","description":"Next-gen recommendation engine using transformer model","defaultChecked":true},
-    {"id":"flag-3","component":"SwitchItem","name":"live-sports","label":"Live Sports Module","description":"Real-time sports streaming with multi-cam","defaultChecked":false},
-    {"id":"flag-4","component":"SwitchItem","name":"downloads-offline","label":"Offline Downloads","description":"Allow downloads for offline viewing on mobile","defaultChecked":true},
-    {"id":"flag-5","component":"SwitchItem","name":"spatial-audio","label":"Spatial Audio","description":"Dolby Atmos and spatial audio support","defaultChecked":false},
-    {"id":"flag-6","component":"SwitchItem","name":"watch-parties","label":"Watch Parties","description":"Synchronized group viewing with chat","defaultChecked":false}
-  ]}}
-]
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "opsAlert",
+          "kpiRow",
+          "focusRow",
+          "chartRow1",
+          "chartRow2",
+          "tablesRow",
+          "contentRow",
+          "engageRow",
+          "footerNote"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "StreamOps Control Room",
+        "subtitle": "Live operations • Global view • Updated 12 seconds ago"
+      },
+      {
+        "id": "opsAlert",
+        "component": "Alert",
+        "variant": "warning",
+        "title": "Delivery degraded — LATAM & MEA",
+        "description": "Regional buffering above 0.7%. Failover CDN armed and on-call paged."
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "viewersCard",
+          "bufCard",
+          "ctrCard",
+          "zeroCard"
+        ]
+      },
+      {
+        "id": "viewersCard",
+        "component": "Card",
+        "children": ["viewersLabel", "viewersValue", "viewersDelta"]
+      },
+      { "id": "viewersLabel", "component": "TextContent", "size": "small", "text": "Viewers right now" },
+      { "id": "viewersValue", "component": "TextContent", "size": "large-heavy", "text": "1,284,302" },
+      { "id": "viewersDelta", "component": "Tag", "text": "▲ 6.4% vs yesterday", "variant": "success" },
+      {
+        "id": "bufCard",
+        "component": "Card",
+        "children": ["bufLabel", "bufValue", "bufDelta"]
+      },
+      { "id": "bufLabel", "component": "TextContent", "size": "small", "text": "Buffering rate" },
+      { "id": "bufValue", "component": "TextContent", "size": "large-heavy", "text": "0.42%" },
+      { "id": "bufDelta", "component": "Tag", "text": "▼ 0.08 pts — target < 0.50%", "variant": "success" },
+      {
+        "id": "ctrCard",
+        "component": "Card",
+        "children": ["ctrLabel", "ctrValue", "ctrNote"]
+      },
+      { "id": "ctrLabel", "component": "TextContent", "size": "small", "text": "Recommendations clicked" },
+      { "id": "ctrValue", "component": "TextContent", "size": "large-heavy", "text": "14.8%" },
+      { "id": "ctrNote", "component": "TextContent", "size": "small", "text": "of home-screen impressions" },
+      {
+        "id": "zeroCard",
+        "component": "Card",
+        "children": ["zeroLabel", "zeroValue", "zeroDelta"]
+      },
+      { "id": "zeroLabel", "component": "TextContent", "size": "small", "text": "Searches ending without playback" },
+      { "id": "zeroValue", "component": "TextContent", "size": "large-heavy", "text": "8.9%" },
+      { "id": "zeroDelta", "component": "Tag", "text": "▲ 1.2 pts week over week", "variant": "warning" },
+      {
+        "id": "focusRow",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "align": "stretch",
+        "children": ["regionCard", "promoteCard", "flagsCard"]
+      },
+      {
+        "id": "regionCard",
+        "component": "Card",
+        "children": ["regionHeader", "regionForm"]
+      },
+      {
+        "id": "regionHeader",
+        "component": "CardHeader",
+        "title": "Focus on a region",
+        "subtitle": "Scopes the charts and tables below"
+      },
+      {
+        "id": "regionForm",
+        "component": "Form",
+        "name": "region-focus",
+        "fields": ["regionField"],
+        "buttons": "regionBtns"
+      },
+      {
+        "id": "regionField",
+        "component": "FormControl",
+        "label": "Region",
+        "input": "regionSelect",
+        "hint": "Applies to viewership, delivery health and watch time"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region",
+        "placeholder": "Global (default)",
+        "items": ["regGlobal", "regNA", "regEU", "regLATAM", "regAPAC", "regMEA"]
+      },
+      { "id": "regGlobal", "component": "SelectItem", "value": "global", "label": "Global" },
+      { "id": "regNA", "component": "SelectItem", "value": "na", "label": "North America" },
+      { "id": "regEU", "component": "SelectItem", "value": "eu", "label": "Europe" },
+      { "id": "regLATAM", "component": "SelectItem", "value": "latam", "label": "Latin America" },
+      { "id": "regAPAC", "component": "SelectItem", "value": "apac", "label": "Asia-Pacific" },
+      { "id": "regMEA", "component": "SelectItem", "value": "mea", "label": "Middle East & Africa" },
+      { "id": "regionBtns", "component": "Buttons", "buttons": ["regionApply"] },
+      { "id": "regionApply", "component": "Button", "label": "Apply region filter", "variant": "primary" },
+      {
+        "id": "promoteCard",
+        "component": "Card",
+        "children": ["promoteHeader", "promoteForm"]
+      },
+      {
+        "id": "promoteHeader",
+        "component": "CardHeader",
+        "title": "Promote a title on Home",
+        "subtitle": "Takes effect on home screens within 5 minutes"
+      },
+      {
+        "id": "promoteForm",
+        "component": "Form",
+        "name": "home-promotion",
+        "fields": ["promoTitleField", "promoPosField"],
+        "buttons": "promoteBtns"
+      },
+      {
+        "id": "promoTitleField",
+        "component": "FormControl",
+        "label": "Title",
+        "input": "promoTitleSelect"
+      },
+      {
+        "id": "promoTitleSelect",
+        "component": "Select",
+        "name": "promo_title",
+        "placeholder": "Choose a title",
+        "items": ["pt1", "pt2", "pt3", "pt4", "pt5"]
+      },
+      { "id": "pt1", "component": "SelectItem", "value": "silent-tide-s3", "label": "The Silent Tide S3 (upcoming)" },
+      { "id": "pt2", "component": "SelectItem", "value": "gravity-well", "label": "Gravity Well (upcoming)" },
+      { "id": "pt3", "component": "SelectItem", "value": "aster-finale", "label": "Aster Champions: Finale" },
+      { "id": "pt4", "component": "SelectItem", "value": "neon-harbor-s2", "label": "Neon Harbor S2" },
+      { "id": "pt5", "component": "SelectItem", "value": "midnight-protocol", "label": "Midnight Protocol" },
+      {
+        "id": "promoPosField",
+        "component": "FormControl",
+        "label": "Placement",
+        "input": "promoPosSelect"
+      },
+      {
+        "id": "promoPosSelect",
+        "component": "Select",
+        "name": "placement",
+        "placeholder": "Choose placement",
+        "items": ["posHero", "posTop10", "posRail"]
+      },
+      { "id": "posHero", "component": "SelectItem", "value": "hero", "label": "Hero billboard" },
+      { "id": "posTop10", "component": "SelectItem", "value": "top10", "label": "Top 10 row" },
+      { "id": "posRail", "component": "SelectItem", "value": "rail", "label": "New & Noteworthy rail" },
+      { "id": "promoteBtns", "component": "Buttons", "buttons": ["promoteSubmit"] },
+      { "id": "promoteSubmit", "component": "Button", "label": "Promote title", "variant": "primary" },
+      {
+        "id": "flagsCard",
+        "component": "Card",
+        "children": ["flagsHeader", "flagsGroup"]
+      },
+      {
+        "id": "flagsHeader",
+        "component": "CardHeader",
+        "title": "Feature flags",
+        "subtitle": "Live rollout state"
+      },
+      {
+        "id": "flagsGroup",
+        "component": "SwitchGroup",
+        "name": "feature-flags",
+        "items": ["ff1", "ff2", "ff3", "ff4", "ff5"]
+      },
+      { "id": "ff1", "component": "SwitchItem", "name": "recs-v4", "label": "Recsys v4 ranking", "description": "Live — 60% of traffic", "defaultChecked": true },
+      { "id": "ff2", "component": "SwitchItem", "name": "av1-encoding", "label": "AV1 encoding", "description": "Live — all new uploads", "defaultChecked": true },
+      { "id": "ff3", "component": "SwitchItem", "name": "live-rewind", "label": "Live rewind", "description": "Off — sports only, pending QA", "defaultChecked": false },
+      { "id": "ff4", "component": "SwitchItem", "name": "regional-pricing-ab", "label": "Regional pricing A/B", "description": "Live — LATAM cohort", "defaultChecked": true },
+      { "id": "ff5", "component": "SwitchItem", "name": "kids-pin", "label": "Kids profile PIN", "description": "Live — global rollout", "defaultChecked": true },
+      {
+        "id": "chartRow1",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": ["watchTimeCard", "subsCard"]
+      },
+      {
+        "id": "watchTimeCard",
+        "component": "Card",
+        "children": ["watchHeader", "watchArea"]
+      },
+      {
+        "id": "watchHeader",
+        "component": "CardHeader",
+        "title": "Watch time — past 30 days",
+        "subtitle": "Millions of hours per day, global"
+      },
+      {
+        "id": "watchArea",
+        "component": "AreaChart",
+        "labels": ["Mar 1", "Mar 4", "Mar 7", "Mar 10", "Mar 13", "Mar 16", "Mar 19", "Mar 22", "Mar 25", "Mar 28"],
+        "series": ["watchSeries"],
+        "variant": "natural",
+        "xLabel": "Date",
+        "yLabel": "Hours (M)"
+      },
+      {
+        "id": "watchSeries",
+        "component": "Series",
+        "category": "Watch hours (M)",
+        "values": [41.2, 43.5, 48.9, 44.1, 46.8, 52.3, 49.6, 55.1, 58.4, 61.7]
+      },
+      {
+        "id": "subsCard",
+        "component": "Card",
+        "children": ["subsHeader", "subsBar", "subsNote"]
+      },
+      {
+        "id": "subsHeader",
+        "component": "CardHeader",
+        "title": "New subscribers vs cancellations",
+        "subtitle": "Weekly, last 4 weeks"
+      },
+      {
+        "id": "subsBar",
+        "component": "BarChart",
+        "labels": ["Week 1", "Week 2", "Week 3", "Week 4"],
+        "series": ["subsNew", "subsChurn"],
+        "variant": "grouped",
+        "yLabel": "Accounts"
+      },
+      { "id": "subsNew", "component": "Series", "category": "New subscribers", "values": [48200, 51400, 46900, 53800] },
+      { "id": "subsChurn", "component": "Series", "category": "Cancellations", "values": [21300, 19800, 24600, 22100] },
+      { "id": "subsNote", "component": "TextContent", "size": "small", "text": "Net adds this month: +131,900 · churn rate 2.9%" },
+      {
+        "id": "chartRow2",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": ["genreCard", "revenueCard", "deviceCard"]
+      },
+      {
+        "id": "genreCard",
+        "component": "Card",
+        "children": ["genreHeader", "genreBars"]
+      },
+      {
+        "id": "genreHeader",
+        "component": "CardHeader",
+        "title": "Performance by genre",
+        "subtitle": "Hours watched — trailing 7 days"
+      },
+      {
+        "id": "genreBars",
+        "component": "HorizontalBarChart",
+        "labels": ["Drama", "Comedy", "Thriller", "Kids & Family", "Reality", "Sports", "Sci-Fi", "Documentary"],
+        "series": ["genreSeries"],
+        "xLabel": "Hours (M)"
+      },
+      { "id": "genreSeries", "component": "Series", "category": "Hours (M)", "values": [96.4, 88.1, 79.5, 74.2, 61.8, 55.3, 48.9, 32.6] },
+      {
+        "id": "revenueCard",
+        "component": "Card",
+        "children": ["revHeader", "revPie"]
+      },
+      {
+        "id": "revHeader",
+        "component": "CardHeader",
+        "title": "Revenue by plan",
+        "subtitle": "Month to date ($M)"
+      },
+      {
+        "id": "revPie",
+        "component": "PieChart",
+        "labels": ["Ads Basic", "Standard", "Premium", "Mobile"],
+        "values": [8.4, 12.1, 9.6, 2.2],
+        "variant": "donut"
+      },
+      {
+        "id": "deviceCard",
+        "component": "Card",
+        "children": ["devHeader", "devRadial"]
+      },
+      {
+        "id": "devHeader",
+        "component": "CardHeader",
+        "title": "Viewing by device",
+        "subtitle": "Share of watch time (%)"
+      },
+      {
+        "id": "devRadial",
+        "component": "RadialChart",
+        "labels": ["Smart TV", "Mobile", "Web", "Console", "Stick", "Tablet"],
+        "values": [42, 27, 14, 9, 6, 2]
+      },
+      {
+        "id": "tablesRow",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": ["titlesCard", "healthCard", "bufTrendCard"]
+      },
+      {
+        "id": "titlesCard",
+        "component": "Card",
+        "children": ["titlesHeader", "titlesTable"]
+      },
+      {
+        "id": "titlesHeader",
+        "component": "CardHeader",
+        "title": "Most-watched titles",
+        "subtitle": "Trailing 7 days"
+      },
+      { "id": "titlesTable", "component": "Table", "columns": ["titleName", "titleHours", "titleShare"] },
+      {
+        "id": "titleName",
+        "component": "Col",
+        "label": "Title",
+        "data": ["The Silent Tide S2", "Cul-de-Sac S3", "Midnight Protocol", "The Long Winter", "Aster Champions", "Glass Houses", "Neon Harbor", "Iron Circuit"]
+      },
+      { "id": "titleHours", "component": "Col", "label": "Hours (M)", "type": "number", "data": [142.6, 121.9, 98.4, 87.2, 76.8, 64.1, 58.9, 51.3] },
+      { "id": "titleShare", "component": "Col", "label": "Change WoW", "data": ["+12%", "+8%", "+31%", "-4%", "+3%", "-2%", "+19%", "new"] },
+      {
+        "id": "healthCard",
+        "component": "Card",
+        "children": ["healthHeader", "healthTable"]
+      },
+      {
+        "id": "healthHeader",
+        "component": "CardHeader",
+        "title": "Delivery health by region",
+        "subtitle": "Live CDN telemetry"
+      },
+      { "id": "healthTable", "component": "Table", "columns": ["hRegion", "hLatency", "hError", "hBuf", "hStatus"] },
+      { "id": "hRegion", "component": "Col", "label": "Region", "data": ["North America", "Europe", "Latin America", "Asia-Pacific", "Middle East & Africa"] },
+      { "id": "hLatency", "component": "Col", "label": "Latency p50 (ms)", "type": "number", "data": [128, 142, 176, 164, 189] },
+      { "id": "hError", "component": "Col", "label": "Error rate", "data": ["0.31%", "0.35%", "0.68%", "0.52%", "0.71%"] },
+      { "id": "hBuf", "component": "Col", "label": "Buffering", "data": ["0.38%", "0.41%", "0.74%", "0.58%", "0.83%"] },
+      { "id": "hStatus", "component": "Col", "label": "Status", "data": ["Healthy", "Healthy", "Degraded", "Watch", "Degraded"] },
+      {
+        "id": "bufTrendCard",
+        "component": "Card",
+        "children": ["bufTrendHeader", "bufLine"]
+      },
+      {
+        "id": "bufTrendHeader",
+        "component": "CardHeader",
+        "title": "Buffering rate — last 24h",
+        "subtitle": "Global, hourly"
+      },
+      {
+        "id": "bufLine",
+        "component": "LineChart",
+        "labels": ["00:00", "03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00", "Now"],
+        "series": ["bufSeries"],
+        "variant": "linear",
+        "yLabel": "%"
+      },
+      { "id": "bufSeries", "component": "Series", "category": "Buffering %", "values": [0.51, 0.48, 0.44, 0.42, 0.39, 0.41, 0.46, 0.52, 0.42] },
+      {
+        "id": "contentRow",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": ["releasesCard", "licenseCard"]
+      },
+      {
+        "id": "releasesCard",
+        "component": "Card",
+        "children": ["releasesHeader", "releasesList"]
+      },
+      {
+        "id": "releasesHeader",
+        "component": "CardHeader",
+        "title": "Releases coming this month",
+        "subtitle": "April slate"
+      },
+      { "id": "releasesList", "component": "ListBlock", "variant": "number", "items": ["rel1", "rel2", "rel3", "rel4", "rel5"] },
+      { "id": "rel1", "component": "ListItem", "title": "The Silent Tide S3", "subtitle": "Apr 4 • Series • Original" },
+      { "id": "rel2", "component": "ListItem", "title": "Gravity Well", "subtitle": "Apr 11 • Film • Licensed" },
+      { "id": "rel3", "component": "ListItem", "title": "Rae Moreno: Loud Enough", "subtitle": "Apr 15 • Comedy special" },
+      { "id": "rel4", "component": "ListItem", "title": "Aster Champions: Finale", "subtitle": "Apr 22 • Series" },
+      { "id": "rel5", "component": "ListItem", "title": "Neon Harbor S2", "subtitle": "Apr 29 • Series • Original" },
+      {
+        "id": "licenseCard",
+        "component": "Card",
+        "children": ["licHeader", "licAlert", "licTable"]
+      },
+      {
+        "id": "licHeader",
+        "component": "CardHeader",
+        "title": "Licenses expiring soon",
+        "subtitle": "Next 31 days"
+      },
+      {
+        "id": "licAlert",
+        "component": "Alert",
+        "variant": "warning",
+        "title": "5 titles leave within 31 days",
+        "description": "Schedule “last chance” promos and exit messaging before removal."
+      },
+      { "id": "licTable", "component": "Table", "columns": ["licTitle", "licScope", "licDate", "licDays"] },
+      { "id": "licTitle", "component": "Col", "label": "Title", "data": ["Blue Planet Live", "City of Ash", "Court of Crowns S1–S2", "Rally Road", "The Quiet Ward"] },
+      { "id": "licScope", "component": "Col", "label": "Rights region", "data": ["Europe", "Global", "North America", "Latin America", "Asia-Pacific"] },
+      { "id": "licDate", "component": "Col", "label": "Expires", "data": ["Apr 6", "Apr 11", "Apr 18", "Apr 24", "Apr 28"] },
+      { "id": "licDays", "component": "Col", "label": "Days left", "type": "number", "data": [9, 14, 21, 27, 31] },
+      {
+        "id": "engageRow",
+        "component": "Card",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": ["recCard", "zeroSearchCard"]
+      },
+      {
+        "id": "recCard",
+        "component": "Card",
+        "children": ["recHeader", "recProgress", "recTable"]
+      },
+      {
+        "id": "recHeader",
+        "component": "CardHeader",
+        "title": "Recommendation funnel",
+        "subtitle": "How often recs get clicked — trailing 24 hours"
+      },
+      { "id": "recProgress", "component": "Progress", "value": 14.8, "label": "Click-through rate: 14.8%" },
+      { "id": "recTable", "component": "Table", "columns": ["recStage", "recVolume", "recRate"] },
+      { "id": "recStage", "component": "Col", "label": "Stage", "data": ["Impressions", "Clicked", "Played 2+ min", "Added to My List"] },
+      { "id": "recVolume", "component": "Col", "label": "Volume", "data": ["86.2M", "12.8M", "9.1M", "2.4M"] },
+      { "id": "recRate", "component": "Col", "label": "Rate", "data": ["—", "14.8%", "10.6%", "2.8%"] },
+      {
+        "id": "zeroSearchCard",
+        "component": "Card",
+        "children": ["zeroHeader", "zeroTable", "zeroInsight"]
+      },
+      {
+        "id": "zeroHeader",
+        "component": "CardHeader",
+        "title": "Searches without playback",
+        "subtitle": "Top dead-end queries — last 7 days"
+      },
+      { "id": "zeroTable", "component": "Table", "columns": ["zsQuery", "zsShare", "zsReason"] },
+      { "id": "zsQuery", "component": "Col", "label": "Query", "data": ["live cricket", "korean thriller dubbed", "4k hdr", "friends", "offline downloads"] },
+      { "id": "zsShare", "component": "Col", "label": "Share of dead-ends", "data": ["18%", "12%", "9%", "7%", "6%"] },
+      { "id": "zsReason", "component": "Col", "label": "Likely cause", "data": ["Not licensed", "Catalog gap", "Filter confusion", "Geo-blocked", "Feature gap"] },
+      { "id": "zeroInsight", "component": "TextContent", "size": "small", "text": "Suggested action: greenlight a Cricket collection or surface a sports entitlement check for “live cricket”." },
+      {
+        "id": "footerNote",
+        "component": "TextContent",
+        "size": "small",
+        "text": "Figures are trailing 7-day unless noted • Telemetry refreshes every 60s • Region filter applies after you hit Apply"
+      }
+    ]
+  }
+}
 </a2ui-json>

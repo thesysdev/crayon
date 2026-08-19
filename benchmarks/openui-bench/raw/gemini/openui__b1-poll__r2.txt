@@ -1,27 +1,13 @@
 root = Card([header, pollForm, followUp])
-header = CardHeader("Friday Team Lunch Poll", "Cast your vote for this week's group lunch location")
-pollForm = Form("lunch_poll", formButtons, [restaurantField, dietaryField, notesField])
-
-restaurantField = FormControl("Where should we go for lunch on Friday?", restaurantOptions)
-restaurantOptions = RadioGroup("restaurant", [opt1, opt2, opt3], "tacos")
-
-opt1 = RadioItem("Taqueria El Sol", "Authentic street tacos, burritos, and fresh salsa bar. 5 min walk.", "tacos")
-opt2 = RadioItem("Green Leaf Cafe", "Gourmet salads, grain bowls, and artisan sandwiches. 8 min walk.", "salads")
-opt3 = RadioItem("Tokyo Ramen House", "Rich tonkotsu broth, handmade noodles, and bento boxes. 10 min walk.", "ramen")
-
-dietaryField = FormControl("Dietary restrictions (optional)", dietaryCheckboxes)
-dietaryCheckboxes = CheckBoxGroup("dietary", [diet1, diet2, diet3])
-diet1 = CheckBoxItem("Vegetarian / Vegan", "Need plant-based main options", "veg")
-diet2 = CheckBoxItem("Gluten-Free", "Need GF menu alternatives", "gf")
-diet3 = CheckBoxItem("Nut Allergy", "Severe tree nut / peanut allergy", "nuts")
-
-notesField = FormControl("Additional notes or carpool requests", notesInput)
-notesInput = TextArea("notes", "e.g., I need to be back by 1:30 PM for a meeting...", 2)
-
-formButtons = Buttons([submitBtn, resultsBtn])
+header = CardHeader("Friday Team Lunch Poll", "Cast your vote before Thursday at 5:00 PM")
+pollForm = Form("lunch_poll_form", formButtons, [questionControl])
+questionControl = FormControl("Where should we go for lunch on Friday?", optionsRadio, "Select one restaurant option")
+optionsRadio = RadioGroup("lunch_choice", [opt1, opt2, opt3], "option_1")
+opt1 = RadioItem("Taco Barrio", "Authentic street tacos, burritos, and great vegetarian options. (0.2 miles away)", "option_1")
+opt2 = RadioItem("Luigi's Trattoria", "Handcrafted pasta, wood-fired pizza, and fresh salads. (0.4 miles away)", "option_2")
+opt3 = RadioItem("Bento & Bowl", "Japanese rice bowls, fresh ramen, and sushi rolls. (0.3 miles away)", "option_3")
+formButtons = Buttons([submitBtn])
 submitBtn = Button("Submit Vote", null, "primary")
-resultsBtn = Button("View Live Results", null, "secondary")
-
-followUp = FollowUpBlock([suggest1, suggest2])
-suggest1 = FollowUpItem("When does voting close?")
-suggest2 = FollowUpItem("Suggest a different restaurant")
+followUp = FollowUpBlock([suggestOption, viewResults])
+suggestOption = FollowUpItem("Suggest another restaurant")
+viewResults = FollowUpItem("View current poll results")

@@ -1,13 +1,298 @@
-Your async standup board is ready — all 5 requirements covered in one screen:
+Async standup board ready — covers date, team updates, blockers, missing count + your post form.
 
-<a2ui-json>{"version":"v0.9","createSurface":{"surfaceId":"async-standup-board","catalogId":"thesys.dev:c1-openui"}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
 
-<a2ui-json>{"version":"v0.9","updateComponents":{"surfaceId":"async-standup-board","components":[{"component":"Card","id":"root","children":["headerCard","blockedSection","updatesCard","postFormCard","followUp"],"direction":"column","gap":"l"},{"component":"Card","id":"headerCard","children":["headerTop","separator1","headerStats","headerSubtext"],"variant":"card","direction":"column","gap":"m"},{"component":"Card","id":"headerTop","children":["headingStandup","dateBadge"],"variant":"clear","direction":"row","justify":"between","align":"center"},{"component":"Heading","id":"headingStandup","text":"Async Standup — Remote Team","level":"h2"},{"component":"Badge","id":"dateBadge","text":"Tuesday, August 18, 2026","variant":"secondary"},{"component":"Separator","id":"separator1","orientation":"horizontal","decorative":true},{"component":"Card","id":"headerStats","children":["progressUpdates","missingCallout"],"variant":"clear","direction":"row","gap":"m","align":"center"},{"component":"Progress","id":"progressUpdates","value":83,"label":"5 of 6 updates submitted"},{"component":"TextCallout","id":"missingCallout","variant":"warning","title":"1 update still missing","description":"Missing: Marcus Lee • Due by 10:00 AM UTC • 83% complete"},{"component":"TextContent","id":"headerSubtext","text":"Daily async check-in • All times UTC • Auto-reminder sent at 9:00 AM • Updates close at 11:00 AM","size":"small"},{"component":"Alert","id":"blockedSection","title":"🚧 2 Teammates Blocked — Needs Attention","description":"Ben Carter: Waiting on API credentials for payments service (blocked since yesterday) • Sofia Kim: Blocked on design review for onboarding flow — needs feedback from Priya","variant":"warning"},{"component":"Card","id":"updatesCard","children":["updatesHeader","updatesTable","blockedTags"],"variant":"card","direction":"column","gap":"m"},{"component":"CardHeader","id":"updatesHeader","title":"Today's Updates","subtitle":"6 teammates • Last updated 09:42 AM UTC • ✅ On track • ⛔ Blocked • ⏳ Missing"},{"component":"Table","id":"updatesTable","columns":["colTeammate","colStatus","colToday","colBlocker"]},{"component":"Col","id":"colTeammate","label":"Teammate","data":["Alice Chen","Ben Carter","Priya Sharma","Marcus Lee","Sofia Kim","David Okafor"],"type":"string"},{"component":"Col","id":"colStatus","label":"Status","data":["✅ Updated","⛔ Blocked","✅ Updated","⏳ Missing","⛔ Blocked","✅ Updated"],"type":"string"},{"component":"Col","id":"colToday","label":"Today's Plan","data":["Ship checkout A/B test & review PR #342","Integrate payments API (blocked)","User interviews + synthesize insights","— no update yet —","Finalize onboarding mocks (blocked)","Deploy analytics pipeline v2"],"type":"string"},{"component":"Col","id":"colBlocker","label":"Blockers","data":["None","API credentials","None","—","Design review","None"],"type":"string"},{"component":"TagBlock","id":"blockedTags","tags":["⛔ Ben Carter — API credentials","⛔ Sofia Kim — Design review","⏳ Marcus Lee — Missing update"]},{"component":"Card","id":"postFormCard","children":["postHeader","postForm"],"variant":"card","direction":"column","gap":"m"},{"component":"CardHeader","id":"postHeader","title":"Post Your Update","subtitle":"Share yesterday, today, and any blockers — posts instantly to the team thread"},{"component":"Form","id":"postForm","name":"standupUpdate","fields":["fieldYesterday","fieldToday","fieldBlockers","fieldMood"],"buttons":"postButtons"},{"component":"FormControl","id":"fieldYesterday","label":"Yesterday — What did you do?","input":"inputYesterday","hint":"e.g., Completed user research synthesis, merged PR #340"},{"component":"TextArea","id":"inputYesterday","name":"yesterday","placeholder":"What did you complete yesterday?","rows":2},{"component":"FormControl","id":"fieldToday","label":"Today — What will you do?","input":"inputToday","hint":"Be specific about deliverables"},{"component":"TextArea","id":"inputToday","name":"today","placeholder":"What are you focusing on today?","rows":2},{"component":"FormControl","id":"fieldBlockers","label":"Blockers?","input":"inputBlockers","hint":"Leave as 'None' if you're unblocked"},{"component":"Input","id":"inputBlockers","name":"blockers","placeholder":"None, or describe what's blocking you","type":"text"},{"component":"FormControl","id":"fieldMood","label":"Status","input":"selectMood"},{"component":"Select","id":"selectMood","name":"mood","items":["moodOnTrack","moodBlocked","moodOOO"],"placeholder":"Select status"},{"component":"SelectItem","id":"moodOnTrack","value":"on_track","label":"✅ On track"},{"component":"SelectItem","id":"moodBlocked","value":"blocked","label":"⛔ Blocked"},{"component":"SelectItem","id":"moodOOO","value":"ooo","label":"🌴 OOO / Away"},{"component":"Buttons","id":"postButtons","buttons":["btnPost"],"direction":"row"},{"component":"Button","id":"btnPost","label":"Post Update","variant":"primary"},{"component":"FollowUpBlock","id":"followUp","items":["fuNudge","fuView"]},{"component":"FollowUpItem","id":"fuNudge","text":"Nudge missing teammate (Marcus Lee)"},{"component":"FollowUpItem","id":"fuView","text":"View yesterday's standup"}]}}</a2ui-json>
-
-**What you're seeing:**
-
-1. **Each teammate + today's update** — Table in the middle shows all 6 teammates with their status and Today's Plan
-2. **Blocked called out** — Orange `Alert` at top + `TagBlock` highlights Ben Carter & Sofia Kim so blockers pop immediately
-3. **Today's date** — Header badge `Tuesday, August 18, 2026`
-4. **Post your own update** — Bottom form with Yesterday / Today / Blockers / Status fields + Post Update button
-5. **Missing count** — Progress bar (5/6) + warning callout `1 update still missing: Marcus Lee`
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "summaryCard",
+          "blockedAlert",
+          "teamHeading",
+          "teamTable",
+          "separator1",
+          "postUpdateCard"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Async Standup — Remote Team",
+        "subtitle": "Tuesday, August 18, 2026 • Updates close at 10:00 AM UTC"
+      },
+      {
+        "id": "summaryCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "missingBadge",
+          "progressBar",
+          "missingText"
+        ],
+        "direction": "column",
+        "gap": "s"
+      },
+      {
+        "id": "missingBadge",
+        "component": "Badge",
+        "text": "2 of 6 updates missing",
+        "variant": "destructive"
+      },
+      {
+        "id": "progressBar",
+        "component": "Progress",
+        "value": 66,
+        "label": "4 / 6 teammates posted"
+      },
+      {
+        "id": "missingText",
+        "component": "TextContent",
+        "text": "Still waiting on: **David Kim** and **Priya Patel** — nudge them in Slack?",
+        "size": "small"
+      },
+      {
+        "id": "blockedAlert",
+        "component": "Alert",
+        "title": "🚧 2 teammates blocked — needs attention",
+        "description": "Bob Martinez: Waiting on design approval for onboarding flow • Emma Wilson: CI pipeline failing on main (needs DevOps help)",
+        "variant": "warning"
+      },
+      {
+        "id": "teamHeading",
+        "component": "Heading",
+        "text": "Today's status updates",
+        "level": "h3"
+      },
+      {
+        "id": "teamTable",
+        "component": "Table",
+        "columns": [
+          "teammateCol",
+          "statusCol",
+          "updateCol"
+        ]
+      },
+      {
+        "id": "teammateCol",
+        "component": "Col",
+        "label": "Teammate",
+        "data": [
+          "Alice Chen",
+          "Bob Martinez",
+          "Carol Nguyen",
+          "David Kim",
+          "Emma Wilson",
+          "Priya Patel"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "statusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "✅ Posted",
+          "🚧 Blocked",
+          "✅ Posted",
+          "⏳ Missing",
+          "🚧 Blocked",
+          "⏳ Missing"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "updateCol",
+        "component": "Col",
+        "label": "Today's Update",
+        "data": [
+          "Yesterday: Shipped auth API v2. Today: Integrate frontend + write tests. No blockers.",
+          "Yesterday: Built onboarding wireframes. Today: Blocked — waiting on design approval.",
+          "Yesterday: Fixed payment webhook retries. Today: QA + update docs.",
+          "— No update yet —",
+          "Yesterday: Refactored data pipeline. Today: Blocked — CI failing on main, needs DevOps.",
+          "— No update yet —"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "separator1",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "postUpdateCard",
+        "component": "Card",
+        "children": [
+          "postHeader",
+          "postForm"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "postHeader",
+        "component": "CardHeader",
+        "title": "Post your update",
+        "subtitle": "Share what you did, what you're doing, and any blockers"
+      },
+      {
+        "id": "postForm",
+        "component": "Form",
+        "name": "standup-update",
+        "buttons": "formButtons",
+        "fields": [
+          "nameField",
+          "yesterdayField",
+          "todayField",
+          "blockerField"
+        ]
+      },
+      {
+        "id": "nameField",
+        "component": "FormControl",
+        "label": "Posting as",
+        "input": "nameSelect"
+      },
+      {
+        "id": "nameSelect",
+        "component": "Select",
+        "name": "teammate",
+        "placeholder": "Select your name",
+        "items": [
+          "nameAlice",
+          "nameBob",
+          "nameCarol",
+          "nameDavid",
+          "nameEmma",
+          "namePriya"
+        ]
+      },
+      {
+        "id": "nameAlice",
+        "component": "SelectItem",
+        "value": "alice",
+        "label": "Alice Chen"
+      },
+      {
+        "id": "nameBob",
+        "component": "SelectItem",
+        "value": "bob",
+        "label": "Bob Martinez"
+      },
+      {
+        "id": "nameCarol",
+        "component": "SelectItem",
+        "value": "carol",
+        "label": "Carol Nguyen"
+      },
+      {
+        "id": "nameDavid",
+        "component": "SelectItem",
+        "value": "david",
+        "label": "David Kim"
+      },
+      {
+        "id": "nameEmma",
+        "component": "SelectItem",
+        "value": "emma",
+        "label": "Emma Wilson"
+      },
+      {
+        "id": "namePriya",
+        "component": "SelectItem",
+        "value": "priya",
+        "label": "Priya Patel"
+      },
+      {
+        "id": "yesterdayField",
+        "component": "FormControl",
+        "label": "Yesterday",
+        "hint": "What you completed",
+        "input": "yesterdayInput"
+      },
+      {
+        "id": "yesterdayInput",
+        "component": "TextArea",
+        "name": "yesterday",
+        "placeholder": "e.g., Shipped checkout fix, reviewed PR #482"
+      },
+      {
+        "id": "todayField",
+        "component": "FormControl",
+        "label": "Today",
+        "hint": "What you plan to do",
+        "input": "todayInput"
+      },
+      {
+        "id": "todayInput",
+        "component": "TextArea",
+        "name": "today",
+        "placeholder": "e.g., Build settings page, pair with Alice on API"
+      },
+      {
+        "id": "blockerField",
+        "component": "FormControl",
+        "label": "Blockers?",
+        "input": "blockerSelect"
+      },
+      {
+        "id": "blockerSelect",
+        "component": "Select",
+        "name": "blocker_status",
+        "placeholder": "Are you blocked?",
+        "items": [
+          "blockerNo",
+          "blockerYes"
+        ]
+      },
+      {
+        "id": "blockerNo",
+        "component": "SelectItem",
+        "value": "no",
+        "label": "No blockers — I'm good"
+      },
+      {
+        "id": "blockerYes",
+        "component": "SelectItem",
+        "value": "yes",
+        "label": "Yes — I need help"
+      },
+      {
+        "id": "formButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitBtn",
+          "laterBtn"
+        ]
+      },
+      {
+        "id": "submitBtn",
+        "component": "Button",
+        "label": "Post update",
+        "variant": "primary"
+      },
+      {
+        "id": "laterBtn",
+        "component": "Button",
+        "label": "Remind me later",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>

@@ -1,7 +1,803 @@
-Admin overview with all 13 metrics — reporting controls, KPI tiles, growth & plan breakdown, utilization, and operational tables with actions.
+SaaS Admin overview — single-screen command center covering revenue, growth, risk and adoption.
 
-<a2ui-json>{"version":"v0.9","createSurface":{"surfaceId":"saas-admin-overview","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#4F46E5","agentDisplayName":"SaaS Admin Console"},"sendDataModel":false}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
 
-<a2ui-json>{"version":"v0.9","updateComponents":{"surfaceId":"saas-admin-overview","components":[{"component":"Card","id":"root","children":["headerCard","controlsCard","kpiGrid","signupsCard","middleRow","utilizationCard","largestCustomersCard","riskPaymentsRow","inviteHelperCard"],"direction":"column","gap":"l","variant":"clear"},{"component":"Card","id":"headerCard","children":["headingMain","textSubtitle"],"variant":"clear","direction":"column","gap":"xs"},{"component":"Heading","id":"headingMain","text":"SaaS Admin Overview","level":"h1"},{"component":"TextContent","id":"textSubtitle","text":"Revenue, growth, health and operations — single view for the last 90 days. Use the reporting period control to adjust all metrics.","size":"small"},{"component":"Card","id":"controlsCard","children":["cardPeriodInner","inviteDialogBlock"],"direction":"row","gap":"m","align":"center","justify":"between","variant":"card"},{"component":"Card","id":"cardPeriodInner","children":["periodFormControl","periodHint"],"variant":"sunk","direction":"column","gap":"xs"},{"component":"FormControl","id":"periodFormControl","label":"Reporting Period","input":"periodSelect","hint":"Changes MRR, ARR, churn, signups and NPS windows"},{"component":"Select","id":"periodSelect","name":"period","items":["periodOptThisMonth","periodOpt30","periodOpt90","periodOpt12"],"value":"Last 90 Days","placeholder":"Select period"},{"component":"SelectItem","id":"periodOptThisMonth","value":"this_month","label":"This Month"},{"component":"SelectItem","id":"periodOpt30","value":"30d","label":"Last 30 Days"},{"component":"SelectItem","id":"periodOpt90","value":"90d","label":"Last 90 Days"},{"component":"SelectItem","id":"periodOpt12","value":"12m","label":"Last 12 Months"},{"component":"TextContent","id":"periodHint","text":"11. Reporting period selector — updates dashboard context","size":"small"},{"component":"DialogBlock","id":"inviteDialogBlock","triggerLabel":"Invite Another Admin","title":"Invite Admin","description":"Send an invite to grant admin access to your workspace. They'll receive an email to set up their account.","content":["inviteForm"],"triggerVariant":"default"},{"component":"Form","id":"inviteForm","name":"inviteAdmin","fields":["inviteNameControl","inviteEmailControl","inviteRoleControl"],"buttons":"inviteFormButtons"},{"component":"Buttons","id":"inviteFormButtons","buttons":["inviteBtnSend","inviteBtnCancel"],"direction":"row"},{"component":"Button","id":"inviteBtnSend","label":"Send Invite","variant":"primary"},{"component":"Button","id":"inviteBtnCancel","label":"Cancel","variant":"secondary"},{"component":"FormControl","id":"inviteNameControl","label":"Full Name","input":"inviteNameInput"},{"component":"Input","id":"inviteNameInput","name":"adminName","placeholder":"Alex Morgan"},{"component":"FormControl","id":"inviteEmailControl","label":"Work Email","input":"inviteEmailInput"},{"component":"Input","id":"inviteEmailInput","name":"adminEmail","placeholder":"alex@company.com","type":"email"},{"component":"FormControl","id":"inviteRoleControl","label":"Role","input":"inviteRoleSelect"},{"component":"Select","id":"inviteRoleSelect","name":"adminRole","items":["roleAdmin","roleBilling","roleSupport"],"value":"Admin","placeholder":"Select role"},{"component":"SelectItem","id":"roleAdmin","value":"admin","label":"Admin — Full access"},{"component":"SelectItem","id":"roleBilling","value":"billing","label":"Billing Admin"},{"component":"SelectItem","id":"roleSupport","value":"support","label":"Support Admin"},{"component":"Card","id":"kpiGrid","children":["kpiMRR","kpiARR","kpiChurn","kpiNPS"],"direction":"row","gap":"m","wrap":true,"variant":"clear"},{"component":"Card","id":"kpiMRR","children":["kpiMRRHeader","kpiMRRValue","kpiMRRSub","kpiMRRTag"],"variant":"card","direction":"column","gap":"xs"},{"component":"CardHeader","id":"kpiMRRHeader","title":"Monthly Recurring Revenue","subtitle":"1. MRR • +4.2% MoM"},{"component":"TextContent","id":"kpiMRRValue","text":"$342,800","size":"large-heavy"},{"component":"TextContent","id":"kpiMRRSub","text":"vs $328,900 last month • Updated today","size":"small"},{"component":"Tag","id":"kpiMRRTag","text":"Healthy growth","variant":"success","size":"sm"},{"component":"Card","id":"kpiARR","children":["kpiARRHeader","kpiARRValue","kpiARRSub","kpiARRTag"],"variant":"card","direction":"column","gap":"xs"},{"component":"CardHeader","id":"kpiARRHeader","title":"Annual Recurring Revenue","subtitle":"2. ARR • +18% YoY"},{"component":"TextContent","id":"kpiARRValue","text":"$4.11M","size":"large-heavy"},{"component":"TextContent","id":"kpiARRSub","text":"$342,800 × 12 • Run-rate basis","size":"small"},{"component":"Tag","id":"kpiARRTag","text":"On target","variant":"info","size":"sm"},{"component":"Card","id":"kpiChurn","children":["kpiChurnHeader","kpiChurnValue","kpiChurnProgress","kpiChurnSub"],"variant":"card","direction":"column","gap":"xs"},{"component":"CardHeader","id":"kpiChurnHeader","title":"Churn This Month","subtitle":"3. Revenue & logo churn"},{"component":"TextContent","id":"kpiChurnValue","text":"2.4%","size":"large-heavy"},{"component":"Progress","id":"kpiChurnProgress","value":2.4,"label":"Revenue churn — target <3%"},{"component":"TextContent","id":"kpiChurnSub","text":"18 customers churned • $8,240 MRR lost","size":"small"},{"component":"Card","id":"kpiNPS","children":["kpiNPSHeader","kpiNPSValueRow","kpiNPSProgress","kpiNPSSub"],"variant":"card","direction":"column","gap":"xs"},{"component":"CardHeader","id":"kpiNPSHeader","title":"Current NPS","subtitle":"10. Net Promoter Score • 342 responses"},{"component":"Card","id":"kpiNPSValueRow","children":["kpiNPSValue","kpiNPSBadge"],"direction":"row","gap":"s","align":"center","variant":"clear"},{"component":"TextContent","id":"kpiNPSValue","text":"62","size":"large-heavy"},{"component":"Badge","id":"kpiNPSBadge","text":"Excellent","variant":"default"},{"component":"Progress","id":"kpiNPSProgress","value":62,"label":"NPS scale -100 to +100"},{"component":"TextContent","id":"kpiNPSSub","text":"Promoters 71% • Passives 20% • Detractors 9%","size":"small"},{"component":"Card","id":"signupsCard","children":["signupsHeader","signupsLineChart","signupsFooter"],"variant":"card","direction":"column","gap":"s"},{"component":"CardHeader","id":"signupsHeader","title":"New Signups — Past 90 Days","subtitle":"4. Daily signups aggregated weekly • Total 1,284 (+12% vs prior 90d)"},{"component":"LineChart","id":"signupsLineChart","labels":["Week 1","Week 2","Week 3","Week 4","Week 5","Week 6","Week 7","Week 8","Week 9","Week 10","Week 11","Week 12","Week 13"],"series":["signupsSeries"],"variant":"natural","xLabel":"Weeks (90 days)","yLabel":"Signups"},{"component":"Series","id":"signupsSeries","category":"Signups","values":[98,112,105,134,128,142,118,165,152,178,162,190,102]},{"component":"TextContent","id":"signupsFooter","text":"Peak: Week 12 (190 signups) • Avg 98/week • Source: Stripe + Auth events","size":"small"},{"component":"Card","id":"middleRow","children":["planSplitCard","adoptionCard"],"direction":"row","gap":"m","wrap":true,"variant":"clear"},{"component":"Card","id":"planSplitCard","children":["planSplitHeader","planPie","planLegend"],"variant":"card","direction":"column","gap":"s","weight":1},{"component":"CardHeader","id":"planSplitHeader","title":"Customers by Plan","subtitle":"5. Split across 4 tiers • Total 4,621 customers"},{"component":"PieChart","id":"planPie","labels":["Enterprise","Pro","Starter","Free"],"values":[342,1284,892,2103],"variant":"donut","appearance":"circular"},{"component":"TextContent","id":"planLegend","text":"Enterprise 7.4% • Pro 27.8% • Starter 19.3% • Free 45.5%","size":"small"},{"component":"Card","id":"adoptionCard","children":["adoptionHeader","adoptionBar","adoptionText"],"variant":"card","direction":"column","gap":"s","weight":1},{"component":"CardHeader","id":"adoptionHeader","title":"Feature Adoption — 3 Newest Features","subtitle":"9. % of active paid accounts using feature (last 30 days)"},{"component":"HorizontalBarChart","id":"adoptionBar","labels":["AI Workflows","SSO + SCIM","Usage Analytics"],"series":["adoptionSeries"],"variant":"grouped","xLabel":"Adoption %","yLabel":"Feature"},{"component":"Series","id":"adoptionSeries","category":"Adoption","values":[42,68,55]},{"component":"TextContent","id":"adoptionText","text":"Launched: AI Workflows (Mar 2026) • SSO+SCIM (Feb 2026) • Usage Analytics (Jan 2026)","size":"small"},{"component":"Card","id":"utilizationCard","children":["utilizationHeader","utilizationProgress","utilizationStacked","utilizationText"],"variant":"card","direction":"column","gap":"s"},{"component":"CardHeader","id":"utilizationHeader","title":"Seat Utilization — Company-wide","subtitle":"12. Licensed vs. active seats across all customers"},{"component":"Progress","id":"utilizationProgress","value":75.3,"label":"75.3% utilized — 84,320 / 112,000 seats"},{"component":"SingleStackedBarChart","id":"utilizationStacked","labels":["Used Seats","Available Seats"],"values":[84320,27680]},{"component":"TextContent","id":"utilizationText","text":"+3.1% vs last month • 27,680 seats available to allocate • 412 accounts at >90% utilization","size":"small"},{"component":"Card","id":"largestCustomersCard","children":["largestHeader","largestTable"],"variant":"card","direction":"column","gap":"s"},{"component":"CardHeader","id":"largestHeader","title":"10 Largest Customers","subtitle":"6. Ranked by monthly spend • Seats & MRR contribution"},{"component":"Table","id":"largestTable","columns":["colCustomer","colPlan2","colSeats","colSpend","colShare"]},{"component":"Col","id":"colCustomer","label":"Customer","data":["Acme Corp","Globex Inc","Initech LLC","Umbrella Co","Stark Industries","Wayne Enterprises","Wonka Industries","Cyberdyne Systems","Massive Dynamic","Oscorp Ltd"],"type":"string"},{"component":"Col","id":"colPlan2","label":"Plan","data":["Enterprise","Enterprise","Pro","Enterprise","Enterprise","Pro","Pro","Enterprise","Enterprise","Pro"],"type":"string"},{"component":"Col","id":"colSeats","label":"Seats","data":[2400,1850,3200,1650,2100,1400,1750,1200,980,1350],"type":"number"},{"component":"Col","id":"colSpend","label":"Monthly Spend","data":[24800,19200,16800,15200,14100,12800,11900,11200,9800,9400],"type":"number"},{"component":"Col","id":"colShare","label":"% of MRR","data":[7.2,5.6,4.9,4.4,4.1,3.7,3.5,3.3,2.9,2.7],"type":"number"},{"component":"Card","id":"riskPaymentsRow","children":["riskCard","paymentsCard"],"direction":"row","gap":"m","wrap":true,"variant":"clear"},{"component":"Card","id":"riskCard","children":["riskHeader","riskTable","riskCallout"],"variant":"card","direction":"column","gap":"s","weight":1},{"component":"CardHeader","id":"riskHeader","title":"Accounts at Risk","subtitle":"7. Health score <60 or critical signals • 7 accounts"},{"component":"Table","id":"riskTable","columns":["riskColAccount","riskColReason","riskColHealth"]},{"component":"Col","id":"riskColAccount","label":"Account","data":["Northwind Traders","Contoso Ltd","AdventureWorks","Fabrikam Inc","Tailspin Toys","Litware Inc","Woodgrove Bank"],"type":"string"},{"component":"Col","id":"riskColReason","label":"Reason","data":["Seats -22% in 14d","Support tickets +340%","Payment failed 2x","Champion left company","Usage down 41%","Contract renewal in 12d — no engagement","NPS detractor + health 38"],"type":"string"},{"component":"Col","id":"riskColHealth","label":"Health","data":[42,48,51,35,44,39,38],"type":"number"},{"component":"Callout","id":"riskCallout","variant":"warning","title":"Action needed","description":"CSM assigned to all 7 accounts. Schedule QBRs for Fabrikam and Woodgrove this week."},{"component":"Card","id":"paymentsCard","children":["paymentsHeader","paymentsTable","paymentsCallout"],"variant":"card","direction":"column","gap":"s","weight":1},{"component":"CardHeader","id":"paymentsHeader","title":"Failed Payments","subtitle":"8. Last 7 days • Retry available per invoice"},{"component":"Table","id":"paymentsTable","columns":["payColCustomer","payColAmount","payColDate","payColInvoice","payColAction"]},{"component":"Col","id":"payColCustomer","label":"Customer","data":["Aperture Labs","Black Mesa","Soylent Corp","Gekko & Co"],"type":"string"},{"component":"Col","id":"payColAmount","label":"Amount","data":[499,1299,899,2499],"type":"number"},{"component":"Col","id":"payColDate","label":"Failed On","data":["2026-08-14","2026-08-13","2026-08-12","2026-08-11"],"type":"string"},{"component":"Col","id":"payColInvoice","label":"Invoice","data":["INV-8841","INV-8837","INV-8829","INV-8815"],"type":"string"},{"component":"Col","id":"payColAction","label":"Action","data":["Retry","Retry","Retry","Retry"],"type":"action"},{"component":"Callout","id":"paymentsCallout","variant":"info","title":"4 payments need attention","description":"Click Retry to re-charge the card on file. Customers have been notified via email."},{"component":"Card","id":"inviteHelperCard","children":["inviteHelperHeader","inviteHelperText","inviteHelperButtons"],"variant":"sunk","direction":"column","gap":"s"},{"component":"CardHeader","id":"inviteHelperHeader","title":"Team Access","subtitle":"13. Invite another admin — also available via top bar"},{"component":"TextContent","id":"inviteHelperText","text":"Admins can manage billing, members, and security settings. Invites expire in 7 days and can be revoked anytime.","size":"small"},{"component":"Buttons","id":"inviteHelperButtons","buttons":["inviteHelperBtn"],"direction":"row"},{"component":"Button","id":"inviteHelperBtn","label":"Open Invite Dialog","variant":"secondary"}]}}</a2ui-json>
-
-All 13 requested items are present on this single screen — use **Reporting Period** (top left) to change the time window and **Invite Another Admin** (top right or bottom card) to add teammates. Failed payments include a **Retry** action per row, and seat utilization shows both percentage and licensed-seat breakdown.
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "controls",
+          "kpiRow",
+          "chartsRow1",
+          "adoptionCard",
+          "customersSection",
+          "riskPaymentsRow",
+          "footerSep",
+          "footerText",
+          "followUp"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "SaaS Admin Overview",
+        "subtitle": "Revenue, growth, risk & adoption — live operational view"
+      },
+      {
+        "id": "controls",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "l",
+        "align": "start",
+        "children": [
+          "periodCard",
+          "inviteCard"
+        ]
+      },
+      {
+        "id": "periodCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "periodHeader",
+          "periodControl"
+        ]
+      },
+      {
+        "id": "inviteCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "inviteHeader",
+          "inviteForm"
+        ]
+      },
+      {
+        "id": "periodHeader",
+        "component": "TextContent",
+        "text": "Reporting period",
+        "size": "small-heavy"
+      },
+      {
+        "id": "periodControl",
+        "component": "FormControl",
+        "label": "Change reporting period",
+        "hint": "Applies to MRR, ARR, churn and signups",
+        "input": "periodSelect"
+      },
+      {
+        "id": "periodSelect",
+        "component": "Select",
+        "name": "reporting_period",
+        "placeholder": "This Month",
+        "value": "this_month",
+        "items": [
+          "periodOpt1",
+          "periodOpt2",
+          "periodOpt3",
+          "periodOpt4",
+          "periodOpt5"
+        ]
+      },
+      {
+        "id": "periodOpt1",
+        "component": "SelectItem",
+        "value": "this_month",
+        "label": "This Month"
+      },
+      {
+        "id": "periodOpt2",
+        "component": "SelectItem",
+        "value": "last_30",
+        "label": "Last 30 Days"
+      },
+      {
+        "id": "periodOpt3",
+        "component": "SelectItem",
+        "value": "last_90",
+        "label": "Last 90 Days"
+      },
+      {
+        "id": "periodOpt4",
+        "component": "SelectItem",
+        "value": "qtd",
+        "label": "Quarter to Date"
+      },
+      {
+        "id": "periodOpt5",
+        "component": "SelectItem",
+        "value": "ytd",
+        "label": "Year to Date"
+      },
+      {
+        "id": "inviteHeader",
+        "component": "TextContent",
+        "text": "Team access",
+        "size": "small-heavy"
+      },
+      {
+        "id": "inviteForm",
+        "component": "Form",
+        "name": "invite-admin",
+        "buttons": "inviteButtons",
+        "fields": [
+          "inviteEmailField"
+        ]
+      },
+      {
+        "id": "inviteEmailField",
+        "component": "FormControl",
+        "label": "Invite another admin",
+        "hint": "Sends email invitation with admin privileges",
+        "input": "inviteEmailInput"
+      },
+      {
+        "id": "inviteEmailInput",
+        "component": "Input",
+        "name": "admin_email",
+        "placeholder": "name@company.com",
+        "type": "email"
+      },
+      {
+        "id": "inviteButtons",
+        "component": "Buttons",
+        "buttons": [
+          "inviteSubmitBtn",
+          "inviteCancelBtn"
+        ]
+      },
+      {
+        "id": "inviteSubmitBtn",
+        "component": "Button",
+        "label": "Send invite",
+        "variant": "primary"
+      },
+      {
+        "id": "inviteCancelBtn",
+        "component": "Button",
+        "label": "Copy link",
+        "variant": "secondary"
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "mrrCard",
+          "arrCard",
+          "churnCard",
+          "npsCard",
+          "utilCard"
+        ]
+      },
+      {
+        "id": "mrrCard",
+        "component": "Card",
+        "children": [
+          "mrrHeader",
+          "mrrValue",
+          "mrrChange",
+          "mrrHint"
+        ]
+      },
+      {
+        "id": "mrrHeader",
+        "component": "CardHeader",
+        "title": "Monthly Recurring Revenue",
+        "subtitle": "MRR • This month"
+      },
+      {
+        "id": "mrrValue",
+        "component": "TextContent",
+        "text": "$342,800",
+        "size": "large-heavy"
+      },
+      {
+        "id": "mrrChange",
+        "component": "Badge",
+        "text": "+4.2% vs last month",
+        "variant": "secondary"
+      },
+      {
+        "id": "mrrHint",
+        "component": "TextContent",
+        "text": "$13,820 net new MRR",
+        "size": "small"
+      },
+      {
+        "id": "arrCard",
+        "component": "Card",
+        "children": [
+          "arrHeader",
+          "arrValue",
+          "arrChange",
+          "arrHint"
+        ]
+      },
+      {
+        "id": "arrHeader",
+        "component": "CardHeader",
+        "title": "Annual Recurring Revenue",
+        "subtitle": "ARR • Annualized"
+      },
+      {
+        "id": "arrValue",
+        "component": "TextContent",
+        "text": "$4,113,600",
+        "size": "large-heavy"
+      },
+      {
+        "id": "arrChange",
+        "component": "Badge",
+        "text": "+18.6% YoY",
+        "variant": "secondary"
+      },
+      {
+        "id": "arrHint",
+        "component": "TextContent",
+        "text": "Based on $342,800 MRR × 12",
+        "size": "small"
+      },
+      {
+        "id": "churnCard",
+        "component": "Card",
+        "children": [
+          "churnHeader",
+          "churnValue",
+          "churnBadge",
+          "churnHint"
+        ]
+      },
+      {
+        "id": "churnHeader",
+        "component": "CardHeader",
+        "title": "Churn This Month",
+        "subtitle": "Revenue & logo churn"
+      },
+      {
+        "id": "churnValue",
+        "component": "TextContent",
+        "text": "3.1% • $10,620",
+        "size": "large-heavy"
+      },
+      {
+        "id": "churnBadge",
+        "component": "Badge",
+        "text": "42 customers churned",
+        "variant": "destructive"
+      },
+      {
+        "id": "churnHint",
+        "component": "TextContent",
+        "text": "Up 0.4pp from 2.7% last month",
+        "size": "small"
+      },
+      {
+        "id": "npsCard",
+        "component": "Card",
+        "children": [
+          "npsHeader",
+          "npsValue",
+          "npsProgress",
+          "npsBadge"
+        ]
+      },
+      {
+        "id": "npsHeader",
+        "component": "CardHeader",
+        "title": "Current NPS",
+        "subtitle": "Net Promoter Score • Last 30 days"
+      },
+      {
+        "id": "npsValue",
+        "component": "TextContent",
+        "text": "62",
+        "size": "large-heavy"
+      },
+      {
+        "id": "npsProgress",
+        "component": "Progress",
+        "value": 62,
+        "label": "62 / 100 — Good"
+      },
+      {
+        "id": "npsBadge",
+        "component": "Badge",
+        "text": "1,842 responses • +5 vs last quarter",
+        "variant": "secondary"
+      },
+      {
+        "id": "utilCard",
+        "component": "Card",
+        "children": [
+          "utilHeader",
+          "utilProgress",
+          "utilText",
+          "utilTag"
+        ]
+      },
+      {
+        "id": "utilHeader",
+        "component": "CardHeader",
+        "title": "Seat Utilization",
+        "subtitle": "Across all customers"
+      },
+      {
+        "id": "utilProgress",
+        "component": "Progress",
+        "value": 78,
+        "label": "78% utilized"
+      },
+      {
+        "id": "utilText",
+        "component": "TextContent",
+        "text": "9,672 / 12,400 seats used • 2,728 available",
+        "size": "small"
+      },
+      {
+        "id": "utilTag",
+        "component": "Tag",
+        "text": "Capacity healthy",
+        "variant": "success",
+        "size": "sm"
+      },
+      {
+        "id": "chartsRow1",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "signupsCard",
+          "planCard"
+        ]
+      },
+      {
+        "id": "signupsCard",
+        "component": "Card",
+        "children": [
+          "signupsHeader",
+          "signupsChart"
+        ]
+      },
+      {
+        "id": "planCard",
+        "component": "Card",
+        "children": [
+          "planHeader",
+          "planChart",
+          "planLegend"
+        ]
+      },
+      {
+        "id": "signupsHeader",
+        "component": "CardHeader",
+        "title": "New Signups — Past 90 Days",
+        "subtitle": "1,247 new customers • Avg 13.8 / day"
+      },
+      {
+        "id": "signupsChart",
+        "component": "LineChart",
+        "labels": [
+          "W1",
+          "W2",
+          "W3",
+          "W4",
+          "W5",
+          "W6",
+          "W7",
+          "W8",
+          "W9",
+          "W10",
+          "W11",
+          "W12",
+          "W13"
+        ],
+        "series": [
+          "signupsSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Week",
+        "yLabel": "Signups"
+      },
+      {
+        "id": "signupsSeries",
+        "component": "Series",
+        "category": "New signups",
+        "values": [
+          68,
+          72,
+          81,
+          95,
+          88,
+          102,
+          110,
+          98,
+          115,
+          108,
+          124,
+          118,
+          68
+        ]
+      },
+      {
+        "id": "planHeader",
+        "component": "CardHeader",
+        "title": "Customers by Plan",
+        "subtitle": "2,969 total customers"
+      },
+      {
+        "id": "planChart",
+        "component": "PieChart",
+        "labels": [
+          "Enterprise",
+          "Pro",
+          "Team",
+          "Starter"
+        ],
+        "values": [
+          342,
+          1284,
+          892,
+          451
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "planLegend",
+        "component": "TagBlock",
+        "tags": [
+          "Enterprise 11.5% • $1,240 avg",
+          "Pro 43.2% • $420 avg",
+          "Team 30.0% • $190 avg",
+          "Starter 15.2% • $49 avg"
+        ]
+      },
+      {
+        "id": "adoptionCard",
+        "component": "Card",
+        "children": [
+          "adoptionHeader",
+          "adoptionChart"
+        ]
+      },
+      {
+        "id": "adoptionHeader",
+        "component": "CardHeader",
+        "title": "Adoption — 3 Newest Features",
+        "subtitle": "% of active customers using feature (last 30 days)"
+      },
+      {
+        "id": "adoptionChart",
+        "component": "BarChart",
+        "labels": [
+          "AI Summaries",
+          "Workflow Automations",
+          "SSO Enforce"
+        ],
+        "series": [
+          "adoptionSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Feature",
+        "yLabel": "% Adoption"
+      },
+      {
+        "id": "adoptionSeries",
+        "component": "Series",
+        "category": "Adoption",
+        "values": [
+          68,
+          42,
+          81
+        ]
+      },
+      {
+        "id": "customersSection",
+        "component": "Card",
+        "children": [
+          "customersHeader",
+          "customersTable"
+        ]
+      },
+      {
+        "id": "customersHeader",
+        "component": "CardHeader",
+        "title": "10 Largest Customers",
+        "subtitle": "By monthly spend • Seats and MRR contribution"
+      },
+      {
+        "id": "customersTable",
+        "component": "Table",
+        "columns": [
+          "custNameCol",
+          "custSeatsCol",
+          "custSpendCol",
+          "custPlanCol"
+        ]
+      },
+      {
+        "id": "custNameCol",
+        "component": "Col",
+        "label": "Customer",
+        "data": [
+          "Acme Corp",
+          "Globex Systems",
+          "Initech LLC",
+          "Umbrella Co",
+          "Stark Industries",
+          "Wayne Enterprises",
+          "Hooli",
+          "Massive Dynamic",
+          "Cyberdyne",
+          "Soylent Corp"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "custSeatsCol",
+        "component": "Col",
+        "label": "Seats",
+        "data": [
+          482,
+          420,
+          380,
+          340,
+          315,
+          298,
+          275,
+          260,
+          245,
+          230
+        ],
+        "type": "number"
+      },
+      {
+        "id": "custSpendCol",
+        "component": "Col",
+        "label": "Monthly Spend",
+        "data": [
+          "$18,420",
+          "$16,800",
+          "$14,250",
+          "$12,900",
+          "$11,340",
+          "$10,920",
+          "$9,850",
+          "$9,360",
+          "$8,820",
+          "$8,050"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "custPlanCol",
+        "component": "Col",
+        "label": "Plan",
+        "data": [
+          "Enterprise",
+          "Enterprise",
+          "Enterprise",
+          "Enterprise",
+          "Pro",
+          "Enterprise",
+          "Pro",
+          "Pro",
+          "Team",
+          "Pro"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "riskPaymentsRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "riskCard",
+          "failedCard"
+        ]
+      },
+      {
+        "id": "riskCard",
+        "component": "Card",
+        "children": [
+          "riskHeader",
+          "riskAlert",
+          "riskTable"
+        ]
+      },
+      {
+        "id": "riskHeader",
+        "component": "CardHeader",
+        "title": "Accounts at Risk",
+        "subtitle": "Health score <60 • 6 accounts need attention"
+      },
+      {
+        "id": "riskAlert",
+        "component": "Alert",
+        "title": "2 critical accounts",
+        "description": "No login in 21+ days and usage dropped >50%",
+        "variant": "warning"
+      },
+      {
+        "id": "riskTable",
+        "component": "Table",
+        "columns": [
+          "riskAccountCol",
+          "riskReasonCol",
+          "riskHealthCol"
+        ]
+      },
+      {
+        "id": "riskAccountCol",
+        "component": "Col",
+        "label": "Account",
+        "data": [
+          "Northwind Traders",
+          "Contoso Ltd",
+          "Fabrikam Inc",
+          "Adventure Works",
+          "Tailspin Toys",
+          "Litware Inc"
+        ]
+      },
+      {
+        "id": "riskReasonCol",
+        "component": "Col",
+        "label": "Reason",
+        "data": [
+          "No login 28 days",
+          "Seats down 60% (42→17)",
+          "Support tickets +300%",
+          "Payment overdue 14d",
+          "NPS detractor (score 2)",
+          "Champion left company"
+        ]
+      },
+      {
+        "id": "riskHealthCol",
+        "component": "Col",
+        "label": "Health",
+        "data": [
+          "32 — Critical",
+          "41 — High",
+          "48 — High",
+          "52 — Medium",
+          "55 — Medium",
+          "58 — Watch"
+        ]
+      },
+      {
+        "id": "failedCard",
+        "component": "Card",
+        "children": [
+          "failedHeader",
+          "failedTable"
+        ]
+      },
+      {
+        "id": "failedHeader",
+        "component": "CardHeader",
+        "title": "Failed Payments",
+        "subtitle": "$6,840 at risk • Retry to recover"
+      },
+      {
+        "id": "failedTable",
+        "component": "Table",
+        "columns": [
+          "failedAccountCol",
+          "failedAmountCol",
+          "failedDateCol",
+          "failedActionCol"
+        ]
+      },
+      {
+        "id": "failedAccountCol",
+        "component": "Col",
+        "label": "Account",
+        "data": [
+          "Bluth Company",
+          "Gekko & Co",
+          "Wonka Industries",
+          "Dunder Mifflin",
+          "Pied Piper"
+        ]
+      },
+      {
+        "id": "failedAmountCol",
+        "component": "Col",
+        "label": "Amount",
+        "data": [
+          "$1,200",
+          "$2,400",
+          "$840",
+          "$1,500",
+          "$900"
+        ]
+      },
+      {
+        "id": "failedDateCol",
+        "component": "Col",
+        "label": "Failed on",
+        "data": [
+          "Aug 12 • Card expired",
+          "Aug 14 • Insufficient funds",
+          "Aug 15 • Declined",
+          "Aug 16 • Card expired",
+          "Aug 17 • Declined"
+        ]
+      },
+      {
+        "id": "failedActionCol",
+        "component": "Col",
+        "label": "Action",
+        "data": [
+          "Retry",
+          "Retry",
+          "Retry",
+          "Retry",
+          "Retry"
+        ],
+        "type": "action"
+      },
+      {
+        "id": "footerSep",
+        "component": "Separator"
+      },
+      {
+        "id": "footerText",
+        "component": "TextContent",
+        "text": "Data refreshes hourly • Reporting period controls all revenue metrics • Seat utilization = assigned / purchased seats",
+        "size": "small"
+      },
+      {
+        "id": "followUp",
+        "component": "FollowUpBlock",
+        "items": [
+          "fu1",
+          "fu2",
+          "fu3"
+        ]
+      },
+      {
+        "id": "fu1",
+        "component": "FollowUpItem",
+        "text": "Export at-risk accounts as CSV"
+      },
+      {
+        "id": "fu2",
+        "component": "FollowUpItem",
+        "text": "Show churn cohort breakdown"
+      },
+      {
+        "id": "fu3",
+        "component": "FollowUpItem",
+        "text": "Compare plan performance"
+      }
+    ]
+  }
+}
+</a2ui-json>

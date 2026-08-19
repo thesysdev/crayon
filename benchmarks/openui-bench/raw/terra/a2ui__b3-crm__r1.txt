@@ -2,12 +2,8 @@
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "sales-account-overview",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": {
-      "primaryColor": "#2563EB",
-      "agentDisplayName": "Sales Workspace"
-    }
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
@@ -16,172 +12,84 @@
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "sales-account-overview",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "l",
         "children": [
           "accountHeader",
+          "accountSummary",
           "renewalWarning",
-          "summaryRow",
-          "mainContent",
-          "quickActions"
-        ]
+          "activitySection",
+          "contactsSection",
+          "followUpsSection",
+          "noteSection",
+          "callSection"
+        ],
+        "gap": "l"
       },
       {
         "id": "accountHeader",
+        "component": "CardHeader",
+        "title": "Acme Corporation",
+        "subtitle": "Account owner: Maya Chen"
+      },
+      {
+        "id": "accountSummary",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
         "children": [
-          "accountTitle",
-          "accountOwner",
-          "accountTags"
-        ]
+          "dealValue",
+          "dealStage",
+          "renewalDate"
+        ],
+        "direction": "row",
+        "gap": "l",
+        "variant": "sunk"
       },
       {
-        "id": "accountTitle",
-        "component": "Heading",
-        "text": "Acme Corporation",
-        "level": "h1"
-      },
-      {
-        "id": "accountOwner",
+        "id": "dealValue",
         "component": "TextContent",
-        "text": "Account owner: Maya Chen · Enterprise Sales",
-        "size": "default"
+        "text": "**Total deal value**\n\n$248,000",
+        "size": "large-heavy",
+        "weight": 1
       },
       {
-        "id": "accountTags",
-        "component": "TagBlock",
-        "tags": [
-          "Enterprise",
-          "Strategic account",
-          "Active customer"
-        ]
+        "id": "dealStage",
+        "component": "TextContent",
+        "text": "**Current deal stage**\n\nProposal",
+        "size": "large-heavy",
+        "weight": 1
+      },
+      {
+        "id": "renewalDate",
+        "component": "TextContent",
+        "text": "**Renewal date**\n\nSeptember 12, 2026",
+        "size": "large-heavy",
+        "weight": 1
       },
       {
         "id": "renewalWarning",
         "component": "Alert",
-        "variant": "warning",
         "title": "Renewal approaching",
-        "description": "Renewal date is September 15, 2026 — 28 days remaining. Confirm renewal plan and stakeholder alignment."
+        "description": "This account renews in 25 days. Confirm the renewal plan and next steps.",
+        "variant": "warning"
       },
       {
-        "id": "summaryRow",
+        "id": "activitySection",
         "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "gap": "m",
-        "align": "stretch",
         "children": [
-          "dealValueCard",
-          "dealStageCard",
-          "renewalCard"
-        ]
-      },
-      {
-        "id": "dealValueCard",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
-        "weight": 1,
-        "children": [
-          "dealValueLabel",
-          "dealValue"
-        ]
-      },
-      {
-        "id": "dealValueLabel",
-        "component": "TextContent",
-        "text": "Total deal value",
-        "size": "small"
-      },
-      {
-        "id": "dealValue",
-        "component": "Heading",
-        "text": "$248,000",
-        "level": "h2"
-      },
-      {
-        "id": "dealStageCard",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
-        "weight": 1,
-        "children": [
-          "dealStageLabel",
-          "dealStage"
-        ]
-      },
-      {
-        "id": "dealStageLabel",
-        "component": "TextContent",
-        "text": "Current deal stage",
-        "size": "small"
-      },
-      {
-        "id": "dealStage",
-        "component": "Tag",
-        "text": "Negotiation",
-        "variant": "info",
-        "size": "lg"
-      },
-      {
-        "id": "renewalCard",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
-        "weight": 1,
-        "children": [
-          "renewalLabel",
-          "renewalDate"
-        ]
-      },
-      {
-        "id": "renewalLabel",
-        "component": "TextContent",
-        "text": "Renewal date",
-        "size": "small"
-      },
-      {
-        "id": "renewalDate",
-        "component": "Heading",
-        "text": "Sep 15, 2026",
-        "level": "h2"
-      },
-      {
-        "id": "mainContent",
-        "component": "Tabs",
-        "items": [
-          "activityTab",
-          "contactsTab",
-          "followUpsTab"
-        ]
-      },
-      {
-        "id": "activityTab",
-        "component": "TabItem",
-        "value": "activity",
-        "trigger": "Recent activity",
-        "content": [
-          "activityIntro",
+          "activityHeader",
           "activityList"
-        ]
+        ],
+        "variant": "clear",
+        "gap": "m"
       },
       {
-        "id": "activityIntro",
-        "component": "TextContent",
-        "text": "Most recent first",
-        "size": "small"
+        "id": "activityHeader",
+        "component": "Heading",
+        "text": "Recent activity",
+        "level": "h3"
       },
       {
         "id": "activityList",
@@ -197,38 +105,45 @@
       {
         "id": "activity1",
         "component": "ListItem",
-        "title": "Proposal reviewed with procurement",
+        "title": "Proposal sent to Acme procurement",
         "subtitle": "Today, 10:42 AM · Maya Chen"
       },
       {
         "id": "activity2",
         "component": "ListItem",
-        "title": "Security questionnaire submitted",
-        "subtitle": "Yesterday, 3:18 PM · Solutions Engineering"
+        "title": "Discovery call completed with operations team",
+        "subtitle": "Yesterday, 3:15 PM · Maya Chen"
       },
       {
         "id": "activity3",
         "component": "ListItem",
-        "title": "Renewal options shared with executive sponsor",
-        "subtitle": "Aug 14, 2026 · Maya Chen"
+        "title": "Security questionnaire received",
+        "subtitle": "August 15, 2026 · Jordan Patel"
       },
       {
         "id": "activity4",
         "component": "ListItem",
-        "title": "Discovery call completed",
-        "subtitle": "Aug 12, 2026 · Maya Chen"
+        "title": "Pricing review meeting scheduled",
+        "subtitle": "August 13, 2026 · Maya Chen"
       },
       {
-        "id": "contactsTab",
-        "component": "TabItem",
-        "value": "contacts",
-        "trigger": "Contacts",
-        "content": [
-          "contactsList"
-        ]
+        "id": "contactsSection",
+        "component": "Card",
+        "children": [
+          "contactsHeader",
+          "contactsTable"
+        ],
+        "variant": "clear",
+        "gap": "m"
       },
       {
-        "id": "contactsList",
+        "id": "contactsHeader",
+        "component": "Heading",
+        "text": "Contacts",
+        "level": "h3"
+      },
+      {
+        "id": "contactsTable",
         "component": "Table",
         "columns": [
           "contactNameCol",
@@ -240,49 +155,50 @@
         "id": "contactNameCol",
         "component": "Col",
         "label": "Contact",
-        "type": "string",
         "data": [
-          "Jordan Lee",
-          "Priya Nair",
-          "Marcus Reed",
-          "Elena Torres"
+          "Elena Rodriguez",
+          "Marcus Lee",
+          "Priya Nair"
         ]
       },
       {
         "id": "contactRoleCol",
         "component": "Col",
         "label": "Role",
-        "type": "string",
         "data": [
-          "Executive Sponsor · COO",
-          "Economic Buyer · VP Finance",
-          "Technical Champion · Director of IT",
-          "Procurement Lead"
+          "Executive sponsor",
+          "Economic buyer",
+          "Technical champion"
         ]
       },
       {
         "id": "contactEmailCol",
         "component": "Col",
         "label": "Email",
-        "type": "string",
         "data": [
-          "jordan.lee@acme.com",
-          "priya.nair@acme.com",
-          "marcus.reed@acme.com",
-          "elena.torres@acme.com"
+          "elena@acme.com",
+          "marcus@acme.com",
+          "priya@acme.com"
         ]
       },
       {
-        "id": "followUpsTab",
-        "component": "TabItem",
-        "value": "followups",
-        "trigger": "Open follow-ups",
-        "content": [
-          "followUpsList"
-        ]
+        "id": "followUpsSection",
+        "component": "Card",
+        "children": [
+          "followUpsHeader",
+          "followUpsTable"
+        ],
+        "variant": "clear",
+        "gap": "m"
       },
       {
-        "id": "followUpsList",
+        "id": "followUpsHeader",
+        "component": "Heading",
+        "text": "Open follow-ups",
+        "level": "h3"
+      },
+      {
+        "id": "followUpsTable",
         "component": "Table",
         "columns": [
           "followUpTaskCol",
@@ -294,83 +210,77 @@
         "id": "followUpTaskCol",
         "component": "Col",
         "label": "Follow-up",
-        "type": "string",
         "data": [
-          "Send revised pricing package",
-          "Schedule executive renewal review",
-          "Confirm security review completion",
-          "Share implementation timeline"
+          "Send revised pricing options",
+          "Review security questionnaire",
+          "Confirm renewal decision meeting"
         ]
       },
       {
         "id": "followUpOwnerCol",
         "component": "Col",
         "label": "Owner",
-        "type": "string",
         "data": [
           "Maya Chen",
-          "Maya Chen",
-          "Solutions Engineering",
-          "Customer Success"
+          "Jordan Patel",
+          "Maya Chen"
         ]
       },
       {
         "id": "followUpDueCol",
         "component": "Col",
         "label": "Due date",
-        "type": "string",
         "data": [
-          "Aug 19, 2026",
-          "Aug 21, 2026",
+          "Aug 20, 2026",
           "Aug 22, 2026",
-          "Aug 26, 2026"
+          "Aug 28, 2026"
         ]
       },
       {
-        "id": "quickActions",
+        "id": "noteSection",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
         "children": [
-          "quickActionsTitle",
+          "noteHeader",
           "noteForm",
-          "callForm"
-        ]
+          "noteInput",
+          "noteButtons",
+          "saveNoteButton"
+        ],
+        "variant": "sunk",
+        "gap": "m"
       },
       {
-        "id": "quickActionsTitle",
+        "id": "noteHeader",
         "component": "Heading",
-        "text": "Quick actions",
-        "level": "h2"
+        "text": "Jot a note",
+        "level": "h3"
       },
       {
         "id": "noteForm",
         "component": "Form",
-        "name": "add-account-note",
+        "name": "account-note",
         "fields": [
-          "noteControl"
+          "noteInput"
         ],
         "buttons": "noteButtons"
       },
       {
-        "id": "noteControl",
+        "id": "noteInput",
         "component": "FormControl",
-        "label": "Jot a note",
-        "hint": "Capture context, decisions, or next steps.",
-        "input": "noteInput"
+        "label": "New note",
+        "input": "noteTextArea",
+        "hint": "Notes are saved to the account activity timeline."
       },
       {
-        "id": "noteInput",
+        "id": "noteTextArea",
         "component": "TextArea",
-        "name": "accountNote",
-        "placeholder": "Write a note about Acme Corporation…",
+        "name": "account_note",
+        "placeholder": "Add an update, decision, or next step...",
         "rows": 4
       },
       {
         "id": "noteButtons",
         "component": "Buttons",
-        "direction": "row",
         "buttons": [
           "saveNoteButton"
         ]
@@ -379,79 +289,94 @@
         "id": "saveNoteButton",
         "component": "Button",
         "label": "Save note",
-        "variant": "primary",
-        "size": "medium"
+        "variant": "primary"
+      },
+      {
+        "id": "callSection",
+        "component": "Card",
+        "children": [
+          "callHeader",
+          "callForm",
+          "callContactField",
+          "callContactSelect",
+          "callContactElena",
+          "callContactMarcus",
+          "callContactPriya",
+          "callSummaryField",
+          "callSummaryInput",
+          "callButtons",
+          "logCallButton"
+        ],
+        "variant": "sunk",
+        "gap": "m"
+      },
+      {
+        "id": "callHeader",
+        "component": "Heading",
+        "text": "Log a call",
+        "level": "h3"
       },
       {
         "id": "callForm",
         "component": "Form",
-        "name": "log-account-call",
+        "name": "log-call",
         "fields": [
-          "callSummaryControl",
-          "callOutcomeControl"
+          "callContactField",
+          "callSummaryField"
         ],
         "buttons": "callButtons"
       },
       {
-        "id": "callSummaryControl",
+        "id": "callContactField",
         "component": "FormControl",
-        "label": "Log a call",
-        "hint": "Record the conversation summary and commitments.",
+        "label": "Contact",
+        "input": "callContactSelect"
+      },
+      {
+        "id": "callContactSelect",
+        "component": "Select",
+        "name": "call_contact",
+        "placeholder": "Choose a contact",
+        "items": [
+          "callContactElena",
+          "callContactMarcus",
+          "callContactPriya"
+        ]
+      },
+      {
+        "id": "callContactElena",
+        "component": "SelectItem",
+        "value": "elena-rodriguez",
+        "label": "Elena Rodriguez — Executive sponsor"
+      },
+      {
+        "id": "callContactMarcus",
+        "component": "SelectItem",
+        "value": "marcus-lee",
+        "label": "Marcus Lee — Economic buyer"
+      },
+      {
+        "id": "callContactPriya",
+        "component": "SelectItem",
+        "value": "priya-nair",
+        "label": "Priya Nair — Technical champion"
+      },
+      {
+        "id": "callSummaryField",
+        "component": "FormControl",
+        "label": "Call summary",
         "input": "callSummaryInput"
       },
       {
         "id": "callSummaryInput",
         "component": "TextArea",
-        "name": "callSummary",
-        "placeholder": "What was discussed on the call?",
-        "rows": 3
-      },
-      {
-        "id": "callOutcomeControl",
-        "component": "FormControl",
-        "label": "Call outcome",
-        "input": "callOutcomeSelect"
-      },
-      {
-        "id": "callOutcomeSelect",
-        "component": "Select",
-        "name": "callOutcome",
-        "placeholder": "Select an outcome",
-        "items": [
-          "outcomeConnected",
-          "outcomeLeftVoicemail",
-          "outcomeFollowUp",
-          "outcomeNoAnswer"
-        ]
-      },
-      {
-        "id": "outcomeConnected",
-        "component": "SelectItem",
-        "value": "connected",
-        "label": "Connected"
-      },
-      {
-        "id": "outcomeLeftVoicemail",
-        "component": "SelectItem",
-        "value": "voicemail",
-        "label": "Left voicemail"
-      },
-      {
-        "id": "outcomeFollowUp",
-        "component": "SelectItem",
-        "value": "follow-up",
-        "label": "Follow-up required"
-      },
-      {
-        "id": "outcomeNoAnswer",
-        "component": "SelectItem",
-        "value": "no-answer",
-        "label": "No answer"
+        "name": "call_summary",
+        "placeholder": "Capture key discussion points and agreed next steps...",
+        "rows": 4
       },
       {
         "id": "callButtons",
         "component": "Buttons",
-        "direction": "row",
         "buttons": [
           "logCallButton"
         ]
@@ -460,8 +385,7 @@
         "id": "logCallButton",
         "component": "Button",
         "label": "Log call",
-        "variant": "secondary",
-        "size": "medium"
+        "variant": "primary"
       }
     ]
   }

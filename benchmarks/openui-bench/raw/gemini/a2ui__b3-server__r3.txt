@@ -1,9 +1,515 @@
-Here is a comprehensive, interactive Service Health Dashboard designed for an on-call engineer. It covers all 8 required metrics and actions in a clean, high-density operational view.
+I have created a comprehensive service health dashboard tailored for an on-call engineer, covering all your requirements.
 
 <a2ui-json>
-{"createSurface":{"catalogId":"thesys.dev:c1-openui","surfaceId":"service-health-dashboard","theme":{"agentDisplayName":"SRE Monitor","primaryColor":"#0284C7"}},"version":"v0.9"}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"updateComponents":{"components":[{"children":["header-card","filter-card","metrics-card","incidents-card","tab-details","alert-card"],"component":"Card","direction":"column","gap":"m","id":"root","variant":"clear"},{"children":["header-title","header-tags"],"component":"Card","direction":"row","gap":"m","id":"header-card","justify":"between","variant":"card"},{"children":["header-heading","header-sub"],"component":"Card","direction":"column","gap":"xs","id":"header-title","variant":"clear"},{"component":"Heading","id":"header-heading","level":"h2","text":"Core Payment Service (production)"},{"component":"TextContent","id":"header-sub","size":"small","text":"Primary Service Dashboard • On-Call Rotation: Primary (Active)"},{"children":["tag-status","tag-region"],"component":"Card","direction":"row","gap":"s","id":"header-tags","variant":"clear"},{"component":"Tag","id":"tag-status","text":"Status: Degradation","variant":"warning"},{"component":"Tag","id":"tag-region","text":"Global View","variant":"info"},{"children":["filter-form"],"component":"Card","direction":"column","gap":"xs","id":"filter-card","variant":"sunk"},{"buttons":"filter-btn-group","component":"Form","fields":["region-control"],"id":"filter-form","name":"region-filter-form"},{"children":["region-select"],"component":"FormControl","hint":"Filter metrics, incidents, and performance data by deployment region","id":"region-control","label":"Region Selector (Req #5)"},{"items":["opt-all","opt-us-east","opt-us-west","opt-eu-west","opt-ap-southeast"],"name":"region_select","placeholder":"Select Region...","value":"all","component":"Select","id":"region-select"},{"component":"SelectItem","id":"opt-all","label":"All Regions (Global)","value":"all"},{"component":"SelectItem","id":"opt-us-east","label":"US-East (N. Virginia)","value":"us-east"},{"component":"SelectItem","id":"opt-us-west","label":"US-West (Oregon)","value":"us-west"},{"component":"SelectItem","id":"opt-eu-west","label":"EU-West (Ireland)","value":"eu-west"},{"component":"SelectItem","id":"opt-ap-southeast","label":"AP-Southeast (Tokyo)","value":"ap-southeast"},{"buttons":["btn-filter-apply"],"component":"Buttons","direction":"row","id":"filter-btn-group"},{"component":"Button","id":"btn-filter-apply","label":"Apply Filter","variant":"secondary"},{"children":["uptime-card","error-card"],"component":"Card","direction":"row","gap":"m","id":"metrics-card","variant":"clear"},{"children":["uptime-header","uptime-val","uptime-progress","uptime-sub"],"component":"Card","direction":"column","gap":"s","id":"uptime-card","variant":"card","weight":1},{"component":"CardHeader","id":"uptime-header","subtitle":"Service Level Objective vs Actual","title":"Uptime This Quarter (Req #1)"},{"component":"Heading","id":"uptime-val","level":"h1","text":"99.92%"},{"component":"Progress","id":"uptime-progress","label":"Target SLO: 99.95%","value":99.92},{"component":"TextContent","id":"uptime-sub","size":"small","text":"Error budget remaining: 34 mins • Total downtime Q3: 52 mins"},{"children":["error-header","error-val","error-callout"],"component":"Card","direction":"column","gap":"s","id":"error-card","variant":"card","weight":1},{"component":"CardHeader","id":"error-header","subtitle":"HTTP 5xx error percentage across all active pods","title":"Error Rate Right Now (Req #3)"},{"component":"Heading","id":"error-val","level":"h1","text":"1.42%"},{"component":"TextCallout","description":"Threshold breached (>1.00%). Spikes detected in /v2/checkout endpoint.","id":"error-callout","title":"Warning Level Elevated","variant":"warning"},{"children":["incidents-header","incidents-table"],"component":"Card","direction":"column","gap":"m","id":"incidents-card","variant":"card"},{"component":"CardHeader","id":"incidents-header","subtitle":"Active alerts and incidents requiring attention • Ack required (Req #8)","title":"Open Incidents & Severity (Req #4 & #8)"},{"columns":["col-inc-id","col-inc-sev","col-inc-title","col-inc-impact","col-inc-time","col-inc-ack"],"component":"Table","id":"incidents-table"},{"component":"Col","data":["INC-8492","INC-8488"],"label":"Incident ID","id":"col-inc-id","type":"string"},{"component":"Col","data":["SEV-1 Critical","SEV-2 High"],"label":"Severity","id":"col-inc-sev","type":"string"},{"component":"Col","data":["Elevated 500 error rate on checkout service","Database connection pool saturation in EU-West"],"label":"Title / Summary","id":"col-inc-title","type":"string"},{"component":"Col","data":["US-East, EU-West","EU-West"],"label":"Affected Region","id":"col-inc-impact","type":"string"},{"component":"Col","data":["14 mins ago","42 mins ago"],"label":"Duration","id":"col-inc-time","type":"string"},{"component":"Col","data":["Acknowledge INC-8492","Acknowledge INC-8488"],"label":"Action (Req #8)","id":"col-inc-ack","type":"action"},{"items":["tab-resource","tab-endpoints"],"component":"Tabs","id":"tab-details"},{"content":["resource-card"],"id":"tab-resource","trigger":"24h CPU & Memory Usage (Req #2)","value":"resources"},{"content":["endpoints-card"],"id":"tab-endpoints","trigger":"Slowest Endpoints & Latency (Req #6)","value":"endpoints"},{"children":["resource-header","chart-cpu","chart-mem"],"component":"Card","direction":"column","gap":"m","id":"resource-card","variant":"card"},{"component":"CardHeader","id":"resource-header","subtitle":"Average and peak metrics aggregated across cluster pods","title":"CPU and Memory Usage (Past 24 Hours)"},{"labels":["00:00","04:00","08:00","12:00","16:00","20:00","Now"],"series":["series-cpu-avg","series-cpu-peak"],"variant":"natural","xLabel":"Time","yLabel":"CPU Utilization (%)","component":"LineChart","id":"chart-cpu"},{"category":"Average CPU %","component":"Series","id":"series-cpu-avg","values":[32,28,45,62,78,65,71]},{"category":"Peak CPU %","component":"Series","id":"series-cpu-peak","values":[48,42,65,84,95,88,92]},{"labels":["00:00","04:00","08:00","12:00","16:00","20:00","Now"],"series":["series-mem-used"],"variant":"linear","xLabel":"Time","yLabel":"Memory Usage (GB)","component":"AreaChart","id":"chart-mem"},{"category":"Memory Used (GB)","component":"Series","id":"series-mem-used","values":[18,18,22,29,31,34,35]},{"children":["endpoints-header","endpoints-table"],"component":"Card","direction":"column","gap":"m","id":"endpoints-card","variant":"card"},{"component":"CardHeader","id":"endpoints-header","subtitle":"p99 response latency ranked over the last 15-minute rolling window","title":"Top 5 Slowest Endpoints (Req #6)"},{"columns":["col-ep-rank","col-ep-name","col-ep-method","col-ep-p95","col-ep-p99"],"component":"Table","id":"endpoints-table"},{"component":"Col","data":["1","2","3","4","5"],"label":"#","id":"col-ep-rank","type":"number"},{"component":"Col","data":["/v1/payments/process","/v2/reports/export","/v1/users/search","/v2/checkout/validate","/v1/subscriptions/sync"],"label":"Endpoint","id":"col-ep-name","type":"string"},{"component":"Col","data":["POST","GET","GET","POST","PUT"],"label":"Method","id":"col-ep-method","type":"string"},{"component":"Col","data":["850 ms","620 ms","410 ms","380 ms","290 ms"],"label":"p95 Latency","id":"col-ep-p95","type":"string"},{"component":"Col","data":["1,840 ms","1,210 ms","890 ms","760 ms","540 ms"],"label":"p99 Latency","id":"col-ep-p99","type":"string"},{"children":["alert-header","alert-form"],"component":"Card","direction":"column","gap":"m","id":"alert-card","variant":"sunk"},{"component":"CardHeader","id":"alert-header","subtitle":"Configure dynamic alert rules and pager trigger thresholds","title":"Set Alert Threshold (Req #7)"},{"buttons":"alert-btn-group","component":"Form","fields":["alert-metric-control","alert-slider-control"],"id":"alert-form","name":"alert-config-form"},{"children":["alert-metric-select"],"component":"FormControl","hint":"Select metric to adjust trigger sensitivity","id":"alert-metric-control","label":"Metric Target"},{"items":["opt-m-error","opt-m-cpu","opt-m-latency"],"name":"alert_metric","placeholder":"Choose Metric","value":"error_rate","component":"Select","id":"alert-metric-select"},{"component":"SelectItem","id":"opt-m-error","label":"HTTP Error Rate (%)","value":"error_rate"},{"component":"SelectItem","id":"opt-m-cpu","label":"CPU Utilization (%)","value":"cpu_utilization"},{"component":"SelectItem","id":"opt-m-latency","label":"p99 Latency (ms)","value":"p99_latency"},{"children":["alert-threshold-slider"],"component":"FormControl","hint":"Slide to update paging alert trigger point","id":"alert-slider-control","label":"Threshold Limit"},{"defaultValue":[1],"label":"Warning Threshold (%)","max":10,"min":0.1,"name":"alert_threshold_value","step":0.1,"variant":"continuous","component":"Slider","id":"alert-threshold-slider"},{"buttons":["btn-alert-save"],"component":"Buttons","direction":"row","id":"alert-btn-group"},{"component":"Button","id":"btn-alert-save","label":"Save Threshold Rule","variant":"primary"}],"surfaceId":"service-health-dashboard"},"version":"v0.9"}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "regionSection",
+          "statusAlert",
+          "kpiSummary",
+          "tabsSection",
+          "incidentsSection",
+          "settingsSection"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "On-Call Service Health Dashboard",
+        "subtitle": "Core Infrastructure & API Gateway Monitoring"
+      },
+      {
+        "id": "regionSection",
+        "component": "Form",
+        "name": "regionFilterForm",
+        "buttons": "regionButtons",
+        "fields": [
+          "regionField"
+        ]
+      },
+      {
+        "id": "regionField",
+        "component": "FormControl",
+        "label": "Filter Region",
+        "input": "regionSelect",
+        "hint": "Filter all metrics and incidents by deployment region"
+      },
+      {
+        "id": "regionSelect",
+        "component": "Select",
+        "name": "region",
+        "placeholder": "All Regions (Global)",
+        "items": [
+          "regGlobal",
+          "regUsEast",
+          "regUsWest",
+          "regEuCentral",
+          "regApSouth"
+        ]
+      },
+      {
+        "id": "regGlobal",
+        "component": "SelectItem",
+        "value": "global",
+        "label": "All Regions (Global)"
+      },
+      {
+        "id": "regUsEast",
+        "component": "SelectItem",
+        "value": "us-east-1",
+        "label": "US East (N. Virginia)"
+      },
+      {
+        "id": "regUsWest",
+        "component": "SelectItem",
+        "value": "us-west-2",
+        "label": "US West (Oregon)"
+      },
+      {
+        "id": "regEuCentral",
+        "component": "SelectItem",
+        "value": "eu-central-1",
+        "label": "EU Central (Frankfurt)"
+      },
+      {
+        "id": "regApSouth",
+        "component": "SelectItem",
+        "value": "ap-south-1",
+        "label": "AP South (Mumbai)"
+      },
+      {
+        "id": "regionButtons",
+        "component": "Buttons",
+        "buttons": [
+          "applyRegionBtn"
+        ]
+      },
+      {
+        "id": "applyRegionBtn",
+        "component": "Button",
+        "label": "Apply Region Filter",
+        "variant": "secondary",
+        "size": "small"
+      },
+      {
+        "id": "statusAlert",
+        "component": "Alert",
+        "title": "Degraded Performance in US-East-1",
+        "description": "High memory usage detected on payment-service instances. 2 open incidents pending acknowledgement.",
+        "variant": "warning"
+      },
+      {
+        "id": "kpiSummary",
+        "component": "Table",
+        "columns": [
+          "kpiMetricCol",
+          "kpiValueCol",
+          "kpiStatusCol"
+        ]
+      },
+      {
+        "id": "kpiMetricCol",
+        "component": "Col",
+        "label": "Key Metric",
+        "data": [
+          "Uptime (Q3)",
+          "Current Error Rate",
+          "Active Incidents",
+          "Avg P99 Latency"
+        ]
+      },
+      {
+        "id": "kpiValueCol",
+        "component": "Col",
+        "label": "Current Status",
+        "data": [
+          "99.94%",
+          "0.14%",
+          "2 Open",
+          "142 ms"
+        ]
+      },
+      {
+        "id": "kpiStatusCol",
+        "component": "Col",
+        "label": "SLA Target",
+        "data": [
+          "≥ 99.90% (Passing)",
+          "< 0.05% (Elevated)",
+          "0 (Action Required)",
+          "< 200 ms (Passing)"
+        ]
+      },
+      {
+        "id": "tabsSection",
+        "component": "Tabs",
+        "items": [
+          "tabMetrics",
+          "tabEndpoints"
+        ]
+      },
+      {
+        "id": "tabMetrics",
+        "component": "TabItem",
+        "value": "metrics",
+        "trigger": "System Metrics (Past 24h)",
+        "content": [
+          "metricsHeading",
+          "metricsChart"
+        ]
+      },
+      {
+        "id": "metricsHeading",
+        "component": "Heading",
+        "text": "CPU & Memory Utilization (%)",
+        "level": "h4"
+      },
+      {
+        "id": "metricsChart",
+        "component": "LineChart",
+        "labels": [
+          "00:00",
+          "04:00",
+          "08:00",
+          "12:00",
+          "16:00",
+          "20:00",
+          "Now"
+        ],
+        "series": [
+          "cpuSeries",
+          "memSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Time",
+        "yLabel": "Percentage (%)"
+      },
+      {
+        "id": "cpuSeries",
+        "component": "Series",
+        "category": "CPU Usage (%)",
+        "values": [
+          42,
+          38,
+          55,
+          78,
+          65,
+          82,
+          74
+        ]
+      },
+      {
+        "id": "memSeries",
+        "component": "Series",
+        "category": "Memory Usage (%)",
+        "values": [
+          60,
+          62,
+          68,
+          75,
+          84,
+          89,
+          88
+        ]
+      },
+      {
+        "id": "tabEndpoints",
+        "component": "TabItem",
+        "value": "endpoints",
+        "trigger": "Slowest Endpoints",
+        "content": [
+          "endpointsHeading",
+          "endpointsChart"
+        ]
+      },
+      {
+        "id": "endpointsHeading",
+        "component": "Heading",
+        "text": "Top 5 Slowest Endpoints by P99 Latency (ms)",
+        "level": "h4"
+      },
+      {
+        "id": "endpointsChart",
+        "component": "HorizontalBarChart",
+        "labels": [
+          "POST /v1/payments/charge",
+          "GET /v2/analytics/reports",
+          "POST /v1/users/export",
+          "PUT /v1/inventory/sync",
+          "GET /v1/search/query"
+        ],
+        "series": [
+          "latencySeries"
+        ],
+        "xLabel": "Latency (ms)",
+        "yLabel": "Endpoint"
+      },
+      {
+        "id": "latencySeries",
+        "component": "Series",
+        "category": "P99 Latency (ms)",
+        "values": [
+          1240,
+          890,
+          650,
+          510,
+          430
+        ]
+      },
+      {
+        "id": "incidentsSection",
+        "component": "Card",
+        "children": [
+          "incidentsHeading",
+          "incidentsTable",
+          "ackForm"
+        ],
+        "variant": "sunk"
+      },
+      {
+        "id": "incidentsHeading",
+        "component": "Heading",
+        "text": "Open Incidents",
+        "level": "h3"
+      },
+      {
+        "id": "incidentsTable",
+        "component": "Table",
+        "columns": [
+          "incIdCol",
+          "incSevCol",
+          "incTitleCol",
+          "incTimeCol",
+          "incStatusCol"
+        ]
+      },
+      {
+        "id": "incIdCol",
+        "component": "Col",
+        "label": "Incident ID",
+        "data": [
+          "INC-8492",
+          "INC-8489"
+        ]
+      },
+      {
+        "id": "incSevCol",
+        "component": "Col",
+        "label": "Severity",
+        "data": [
+          "SEV-1 (Critical)",
+          "SEV-2 (Major)"
+        ]
+      },
+      {
+        "id": "incTitleCol",
+        "component": "Col",
+        "label": "Description",
+        "data": [
+          "High error rate on POST /v1/payments/charge",
+          "Memory leak threshold exceeded on node-us-east-1a"
+        ]
+      },
+      {
+        "id": "incTimeCol",
+        "component": "Col",
+        "label": "Triggered",
+        "data": [
+          "14 mins ago",
+          "1 hour ago"
+        ]
+      },
+      {
+        "id": "incStatusCol",
+        "component": "Col",
+        "label": "State",
+        "data": [
+          "Unacknowledged",
+          "Unacknowledged"
+        ]
+      },
+      {
+        "id": "ackForm",
+        "component": "Form",
+        "name": "acknowledgeIncidentForm",
+        "buttons": "ackButtons",
+        "fields": [
+          "ackSelectField",
+          "ackNoteField"
+        ]
+      },
+      {
+        "id": "ackSelectField",
+        "component": "FormControl",
+        "label": "Select Incident to Acknowledge",
+        "input": "ackSelect"
+      },
+      {
+        "id": "ackSelect",
+        "component": "Select",
+        "name": "incidentId",
+        "placeholder": "Choose incident...",
+        "items": [
+          "ackInc1",
+          "ackInc2"
+        ]
+      },
+      {
+        "id": "ackInc1",
+        "component": "SelectItem",
+        "value": "INC-8492",
+        "label": "INC-8492 - High error rate on POST /v1/payments/charge (SEV-1)"
+      },
+      {
+        "id": "ackInc2",
+        "component": "SelectItem",
+        "value": "INC-8489",
+        "label": "INC-8489 - Memory leak threshold exceeded (SEV-2)"
+      },
+      {
+        "id": "ackNoteField",
+        "component": "FormControl",
+        "label": "On-Call Note",
+        "input": "ackNoteInput",
+        "hint": "Optional message appended to audit log and Slack channel"
+      },
+      {
+        "id": "ackNoteInput",
+        "component": "Input",
+        "name": "ackNote",
+        "placeholder": "e.g., Investigating connection pool exhaustion"
+      },
+      {
+        "id": "ackButtons",
+        "component": "Buttons",
+        "buttons": [
+          "ackSubmitBtn"
+        ]
+      },
+      {
+        "id": "ackSubmitBtn",
+        "component": "Button",
+        "label": "Acknowledge Incident",
+        "variant": "primary"
+      },
+      {
+        "id": "settingsSection",
+        "component": "Card",
+        "children": [
+          "thresholdHeading",
+          "thresholdForm"
+        ],
+        "variant": "clear"
+      },
+      {
+        "id": "thresholdHeading",
+        "component": "Heading",
+        "text": "Configure Alert Thresholds",
+        "level": "h3"
+      },
+      {
+        "id": "thresholdForm",
+        "component": "Form",
+        "name": "alertThresholdForm",
+        "buttons": "thresholdButtons",
+        "fields": [
+          "metricSelectField",
+          "thresholdSliderField"
+        ]
+      },
+      {
+        "id": "metricSelectField",
+        "component": "FormControl",
+        "label": "Target Metric",
+        "input": "thresholdMetricSelect"
+      },
+      {
+        "id": "thresholdMetricSelect",
+        "component": "Select",
+        "name": "targetMetric",
+        "placeholder": "Select metric...",
+        "items": [
+          "itemErrRate",
+          "itemCpu",
+          "itemMem",
+          "itemLatency"
+        ]
+      },
+      {
+        "id": "itemErrRate",
+        "component": "SelectItem",
+        "value": "error_rate",
+        "label": "Error Rate (%)"
+      },
+      {
+        "id": "itemCpu",
+        "component": "SelectItem",
+        "value": "cpu_utilization",
+        "label": "CPU Utilization (%)"
+      },
+      {
+        "id": "itemMem",
+        "component": "SelectItem",
+        "value": "memory_utilization",
+        "label": "Memory Utilization (%)"
+      },
+      {
+        "id": "itemLatency",
+        "component": "SelectItem",
+        "value": "p99_latency",
+        "label": "P99 Latency (ms)"
+      },
+      {
+        "id": "thresholdSliderField",
+        "component": "FormControl",
+        "label": "Alert Trigger Threshold Level",
+        "input": "thresholdSlider",
+        "hint": "Set threshold limit before triggering PagerDuty alarm"
+      },
+      {
+        "id": "thresholdSlider",
+        "component": "Slider",
+        "name": "thresholdValue",
+        "variant": "discrete",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "defaultValue": [
+          85
+        ]
+      },
+      {
+        "id": "thresholdButtons",
+        "component": "Buttons",
+        "buttons": [
+          "saveThresholdBtn"
+        ]
+      },
+      {
+        "id": "saveThresholdBtn",
+        "component": "Button",
+        "label": "Save Alert Threshold",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
 </a2ui-json>

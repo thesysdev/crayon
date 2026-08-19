@@ -1,5 +1,412 @@
-Your morning brief for Bengaluru is ready — cool, cloudy start with rain later today.
+Good morning — here's your single-screen brief for Bengaluru:
 
-<a2ui-json>{"version":"v0.9","createSurface":{"surfaceId":"morning-weather-bengaluru","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#0EA5E9","agentDisplayName":"Weather Brief"},"sendDataModel":false}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
 
-<a2ui-json>{"version":"v0.9","updateComponents":{"surfaceId":"morning-weather-bengaluru","components":[{"component":"Card","id":"root","children":["header","briefCallout","currentCard","outlookCard","sunCard","footerText"],"variant":"clear","direction":"column","gap":"m"},{"component":"CardHeader","id":"header","title":"Morning Weather Brief — Bengaluru","subtitle":"Tuesday, 19 Aug 2026 • 7:00 AM IST • Koramangala, Karnataka"},{"component":"TextCallout","id":"briefCallout","variant":"info","title":"Good morning! Carry an umbrella ☔","description":"Mostly cloudy now, afternoon showers likely. High 27° • Light breeze from the southwest. Air quality: Moderate."},{"component":"Card","id":"currentCard","children":["currentHeader","currentRow"],"variant":"card","direction":"column","gap":"m"},{"component":"CardHeader","id":"currentHeader","title":"Now in Bengaluru","subtitle":"Current temperature & conditions • Updated 7:00 AM"},{"component":"Card","id":"currentRow","children":["tempDisplay","detailsStack"],"variant":"clear","direction":"row","gap":"m","align":"stretch"},{"component":"Card","id":"tempDisplay","children":["tempHeading","tempCondition","tempFeels"],"variant":"sunk","direction":"column","gap":"xs","align":"center"},{"component":"Heading","id":"tempHeading","text":"24° C","level":"h1"},{"component":"TextContent","id":"tempCondition","text":"☁️ **Mostly Cloudy**","size":"large"},{"component":"TextContent","id":"tempFeels","text":"Feels like 26° • H 27° / L 20°","size":"small"},{"component":"Card","id":"detailsStack","children":["detailHumidity","detailWind","detailUV","detailAir"],"variant":"clear","direction":"column","gap":"s"},{"component":"TextContent","id":"detailHumidity","text":"💧 **Humidity** — 82%  • Dew point 20°","size":"default"},{"component":"TextContent","id":"detailWind","text":"🌬️ **Wind** — 12 km/h SW • Gusts 22 km/h","size":"default"},{"component":"TextContent","id":"detailUV","text":"🔆 **UV Index** — 3 (Moderate) • Visibility 6 km","size":"default"},{"component":"TextContent","id":"detailAir","text":"🍃 **Air Quality** — 78 AQI (Moderate) • Main pollutant PM2.5","size":"default"},{"component":"Card","id":"outlookCard","children":["outlookHeader","outlookTable"],"variant":"card","direction":"column","gap":"m"},{"component":"CardHeader","id":"outlookHeader","title":"3-Day Outlook","subtitle":"Next three days • Monsoon pattern continues"},{"component":"Table","id":"outlookTable","columns":["colDay","colCondition","colTemp","colRain"]},{"component":"Col","id":"colDay","label":"Day","data":["Wed, 20 Aug","Thu, 21 Aug","Fri, 22 Aug"],"type":"string"},{"component":"Col","id":"colCondition","label":"Conditions","data":["☁️ Cloudy + Afternoon Showers","⛈️ Thunderstorms Likely","🌦️ Partly Sunny, Light Rain"],"type":"string"},{"component":"Col","id":"colTemp","label":"High / Low","data":["27° / 20°","26° / 20°","28° / 20°"],"type":"string"},{"component":"Col","id":"colRain","label":"Rain Chance","data":["70%","80%","40%"],"type":"string"},{"component":"Card","id":"sunCard","children":["sunHeader","sunRow","dayLength"],"variant":"card","direction":"column","gap":"m"},{"component":"CardHeader","id":"sunHeader","title":"Sunrise & Sunset","subtitle":"Bengaluru • 12°58′N 77°35′E"},{"component":"Card","id":"sunRow","children":["sunriseBox","sunsetBox"],"variant":"clear","direction":"row","gap":"m","align":"stretch","justify":"between"},{"component":"Card","id":"sunriseBox","children":["sunriseLabel","sunriseTime","sunriseSub"],"variant":"sunk","direction":"column","gap":"xs","align":"center"},{"component":"TextContent","id":"sunriseLabel","text":"🌅 SUNRISE","size":"small"},{"component":"Heading","id":"sunriseTime","text":"06:06 AM","level":"h2"},{"component":"TextContent","id":"sunriseSub","text":"First light 05:43 AM","size":"small"},{"component":"Card","id":"sunsetBox","children":["sunsetLabel","sunsetTime","sunsetSub"],"variant":"sunk","direction":"column","gap":"xs","align":"center"},{"component":"TextContent","id":"sunsetLabel","text":"🌇 SUNSET","size":"small"},{"component":"Heading","id":"sunsetTime","text":"06:34 PM","level":"h2"},{"component":"TextContent","id":"sunsetSub","text":"Last light 06:57 PM","size":"small"},{"component":"TextContent","id":"dayLength","text":"☀️ **Day length:** 12h 28m • Moon: Waxing Gibbous (82% illuminated)","size":"small"},{"component":"TextContent","id":"footerText","text":"Source: IMD Bengaluru • Tip: Best window for outdoor plans today is before 2 PM.","size":"small"}]}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "currentWeatherCard",
+          "forecastCard",
+          "sunCard",
+          "followUpBlock"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Morning Weather Brief",
+        "subtitle": "Bengaluru • Tuesday, Aug 18 • 7:00 AM IST"
+      },
+      {
+        "id": "currentWeatherCard",
+        "component": "Card",
+        "variant": "card",
+        "gap": "m",
+        "children": [
+          "currentHeader",
+          "currentMainRow",
+          "currentStats",
+          "currentAlert"
+        ]
+      },
+      {
+        "id": "currentHeader",
+        "component": "CardHeader",
+        "title": "Right Now in Bengaluru",
+        "subtitle": "Live conditions • Updated just now"
+      },
+      {
+        "id": "currentMainRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "l",
+        "align": "center",
+        "justify": "between",
+        "children": [
+          "tempBlock",
+          "conditionBlock"
+        ]
+      },
+      {
+        "id": "tempBlock",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "xs",
+        "align": "center",
+        "children": [
+          "tempHeading",
+          "tempSub",
+          "conditionBadge"
+        ]
+      },
+      {
+        "id": "tempHeading",
+        "component": "Heading",
+        "text": "24°C",
+        "level": "h1"
+      },
+      {
+        "id": "tempSub",
+        "component": "TextContent",
+        "text": "Feels like 26°C • Partly Cloudy",
+        "size": "large"
+      },
+      {
+        "id": "conditionBadge",
+        "component": "Badge",
+        "text": "Partly Cloudy",
+        "variant": "secondary"
+      },
+      {
+        "id": "conditionBlock",
+        "component": "Card",
+        "variant": "clear",
+        "gap": "s",
+        "children": [
+          "conditionDetails",
+          "windTag"
+        ]
+      },
+      {
+        "id": "conditionDetails",
+        "component": "TextContent",
+        "text": "Light southeast breeze. Visibility 8 km. UV Index: Moderate (4). Air Quality: Moderate (AQI 68). Perfect for a morning commute.",
+        "size": "default"
+      },
+      {
+        "id": "windTag",
+        "component": "TagBlock",
+        "tags": [
+          "Wind 8 km/h SE",
+          "Humidity 78%",
+          "Visibility 8 km",
+          "UV Moderate"
+        ]
+      },
+      {
+        "id": "currentStats",
+        "component": "Table",
+        "columns": [
+          "colMetric",
+          "colValue"
+        ]
+      },
+      {
+        "id": "colMetric",
+        "component": "Col",
+        "label": "Detail",
+        "data": [
+          "Feels Like",
+          "Humidity",
+          "Wind",
+          "Pressure",
+          "Visibility"
+        ]
+      },
+      {
+        "id": "colValue",
+        "component": "Col",
+        "label": "Value",
+        "data": [
+          "26°C",
+          "78%",
+          "8 km/h SE",
+          "1012 hPa",
+          "8 km"
+        ]
+      },
+      {
+        "id": "currentAlert",
+        "component": "Callout",
+        "variant": "info",
+        "title": "Good morning to be out",
+        "description": "No rain expected until afternoon. Light clouds early — carry sunglasses, not an umbrella."
+      },
+      {
+        "id": "forecastCard",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "forecastHeader",
+          "forecastTable",
+          "forecastChart",
+          "forecastNote"
+        ]
+      },
+      {
+        "id": "forecastHeader",
+        "component": "CardHeader",
+        "title": "3-Day Outlook",
+        "subtitle": "Wednesday — Friday • Next 3 days"
+      },
+      {
+        "id": "forecastTable",
+        "component": "Table",
+        "columns": [
+          "fColDay",
+          "fColCondition",
+          "fColHigh",
+          "fColLow",
+          "fColRain"
+        ]
+      },
+      {
+        "id": "fColDay",
+        "component": "Col",
+        "label": "Day",
+        "data": [
+          "Wed, Aug 19",
+          "Thu, Aug 20",
+          "Fri, Aug 21"
+        ]
+      },
+      {
+        "id": "fColCondition",
+        "component": "Col",
+        "label": "Conditions",
+        "data": [
+          "Partly Cloudy",
+          "Scattered Thunderstorms",
+          "Light Rain"
+        ]
+      },
+      {
+        "id": "fColHigh",
+        "component": "Col",
+        "label": "High",
+        "data": [
+          "28°C",
+          "27°C",
+          "26°C"
+        ]
+      },
+      {
+        "id": "fColLow",
+        "component": "Col",
+        "label": "Low",
+        "data": [
+          "20°C",
+          "20°C",
+          "19°C"
+        ]
+      },
+      {
+        "id": "fColRain",
+        "component": "Col",
+        "label": "Rain Chance",
+        "data": [
+          "20%",
+          "60%",
+          "70%"
+        ]
+      },
+      {
+        "id": "forecastChart",
+        "component": "BarChart",
+        "labels": [
+          "Wed",
+          "Thu",
+          "Fri"
+        ],
+        "series": [
+          "seriesHigh",
+          "seriesLow"
+        ],
+        "variant": "grouped",
+        "xLabel": "Day",
+        "yLabel": "°C"
+      },
+      {
+        "id": "seriesHigh",
+        "component": "Series",
+        "category": "High",
+        "values": [
+          28,
+          27,
+          26
+        ]
+      },
+      {
+        "id": "seriesLow",
+        "component": "Series",
+        "category": "Low",
+        "values": [
+          20,
+          20,
+          19
+        ]
+      },
+      {
+        "id": "forecastNote",
+        "component": "TextContent",
+        "text": "Trend: Slight cooling with increasing rain chances toward the weekend. Thunderstorms most likely Thursday afternoon.",
+        "size": "small"
+      },
+      {
+        "id": "sunCard",
+        "component": "Card",
+        "gap": "m",
+        "children": [
+          "sunHeader",
+          "sunRow",
+          "daylightInfo",
+          "sunProgress"
+        ]
+      },
+      {
+        "id": "sunHeader",
+        "component": "CardHeader",
+        "title": "Sunrise & Sunset",
+        "subtitle": "Daylight today: 12h 37m"
+      },
+      {
+        "id": "sunRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "justify": "between",
+        "children": [
+          "sunriseBox",
+          "sunsetBox"
+        ]
+      },
+      {
+        "id": "sunriseBox",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "xs",
+        "align": "center",
+        "children": [
+          "sunriseTitle",
+          "sunriseTime",
+          "sunriseHint"
+        ]
+      },
+      {
+        "id": "sunriseTitle",
+        "component": "TextContent",
+        "text": "🌅 Sunrise",
+        "size": "small-heavy"
+      },
+      {
+        "id": "sunriseTime",
+        "component": "Heading",
+        "text": "06:05 AM",
+        "level": "h2"
+      },
+      {
+        "id": "sunriseHint",
+        "component": "TextContent",
+        "text": "First light 05:42 AM",
+        "size": "small"
+      },
+      {
+        "id": "sunsetBox",
+        "component": "Card",
+        "variant": "sunk",
+        "gap": "xs",
+        "align": "center",
+        "children": [
+          "sunsetTitle",
+          "sunsetTime",
+          "sunsetHint"
+        ]
+      },
+      {
+        "id": "sunsetTitle",
+        "component": "TextContent",
+        "text": "🌇 Sunset",
+        "size": "small-heavy"
+      },
+      {
+        "id": "sunsetTime",
+        "component": "Heading",
+        "text": "06:42 PM",
+        "level": "h2"
+      },
+      {
+        "id": "sunsetHint",
+        "component": "TextContent",
+        "text": "Last light 07:05 PM • Twilight 23m",
+        "size": "small"
+      },
+      {
+        "id": "daylightInfo",
+        "component": "Callout",
+        "variant": "neutral",
+        "title": "Daylight",
+        "description": "12h 37m of daylight — about 2% longer than yesterday. Golden hour starts around 06:00 PM."
+      },
+      {
+        "id": "sunProgress",
+        "component": "Progress",
+        "value": 7,
+        "label": "Daylight elapsed — sunrise was 55 minutes ago"
+      },
+      {
+        "id": "followUpBlock",
+        "component": "FollowUpBlock",
+        "items": [
+          "follow1",
+          "follow2",
+          "follow3"
+        ]
+      },
+      {
+        "id": "follow1",
+        "component": "FollowUpItem",
+        "text": "Show hourly forecast for today"
+      },
+      {
+        "id": "follow2",
+        "component": "FollowUpItem",
+        "text": "Will it rain tomorrow in Bengaluru?"
+      },
+      {
+        "id": "follow3",
+        "component": "FollowUpItem",
+        "text": "Set a sunrise alarm for 5:45 AM"
+      }
+    ]
+  }
+}
+</a2ui-json>

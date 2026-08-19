@@ -1,510 +1,342 @@
-Here is a comprehensive weekly dashboard designed for a marketing manager, covering performance metrics, campaign analysis, traffic acquisition, subscriber growth, and actionable controls.
+Here is a comprehensive weekly dashboard for the marketing manager, incorporating all key performance metrics, traffic share breakdown, running campaign performance with top performer highlights, subscriber growth, and controls for date range and report export.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "marketing-dashboard",
-      "catalogId": "thesys.dev:c1-openui",
-      "theme": {
-        "primaryColor": "#2563EB",
-        "agentDisplayName": "Marketing Analytics"
-      }
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "marketing-dashboard",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "column",
-          "gap": "l",
-          "children": [
-            "header-card",
-            "top-callout",
-            "kpi-tabs",
-            "campaigns-card",
-            "followups"
-          ]
-        },
-        {
-          "id": "header-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "header-title",
-            "header-controls-card"
-          ]
-        },
-        {
-          "id": "header-title",
-          "component": "CardHeader",
-          "title": "Weekly Marketing Performance Dashboard",
-          "subtitle": "Overview of site traffic, campaign ROI, traffic channels, and audience growth."
-        },
-        {
-          "id": "header-controls-card",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "row",
-          "align": "center",
-          "justify": "between",
-          "gap": "m",
-          "wrap": true,
-          "children": [
-            "date-range-select",
-            "action-buttons"
-          ]
-        },
-        {
-          "id": "date-range-select",
-          "component": "Select",
-          "name": "date_range",
-          "placeholder": "Select Date Range",
-          "value": "last_30_days",
-          "items": [
-            "range-7d",
-            "range-30d",
-            "range-mtd",
-            "range-90d"
-          ]
-        },
-        {
-          "id": "range-7d",
-          "component": "SelectItem",
-          "value": "last_7_days",
-          "label": "Last 7 Days"
-        },
-        {
-          "id": "range-30d",
-          "component": "SelectItem",
-          "value": "last_30_days",
-          "label": "Last 30 Days (Oct 24 - Nov 23)"
-        },
-        {
-          "id": "range-mtd",
-          "component": "SelectItem",
-          "value": "month_to_date",
-          "label": "Month to Date (Nov 1 - Nov 23)"
-        },
-        {
-          "id": "range-90d",
-          "component": "SelectItem",
-          "value": "last_90_days",
-          "label": "Last 90 Days"
-        },
-        {
-          "id": "action-buttons",
-          "component": "Buttons",
-          "direction": "row",
-          "buttons": [
-            "btn-export",
-            "btn-share"
-          ]
-        },
-        {
-          "id": "btn-export",
-          "component": "Button",
-          "label": "Export Report (PDF/CSV)",
-          "variant": "primary",
-          "size": "medium",
-          "action": ["export_report"]
-        },
-        {
-          "id": "btn-share",
-          "component": "Button",
-          "label": "Share Dashboard",
-          "variant": "secondary",
-          "size": "medium",
-          "action": ["share_dashboard"]
-        },
-        {
-          "id": "top-callout",
-          "component": "Callout",
-          "variant": "success",
-          "title": "Top Performing Campaign: Q4 Black Friday Prep",
-          "description": "Generated 420 conversions ($68,500 revenue) with a 4.8% conversion rate and $14,200 total spend, delivering a 4.82x ROAS."
-        },
-        {
-          "id": "kpi-tabs",
-          "component": "Tabs",
-          "items": [
-            "tab-overview",
-            "tab-traffic-sources",
-            "tab-subscribers"
-          ]
-        },
-        {
-          "id": "tab-overview",
-          "component": "TabItem",
-          "value": "overview",
-          "trigger": "Traffic & Conversion Overview",
-          "content": [
-            "kpi-cards-group",
-            "traffic-chart-card"
-          ]
-        },
-        {
-          "id": "kpi-cards-group",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "m",
-          "wrap": true,
-          "children": [
-            "kpi-card-visitors",
-            "kpi-card-conversion",
-            "kpi-card-subscribers"
-          ]
-        },
-        {
-          "id": "kpi-card-visitors",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "xs",
-          "children": [
-            "kpi-visitors-tag",
-            "kpi-visitors-heading",
-            "kpi-visitors-sub"
-          ]
-        },
-        {
-          "id": "kpi-visitors-tag",
-          "component": "Tag",
-          "text": "Total Site Visitors",
-          "variant": "info",
-          "size": "sm"
-        },
-        {
-          "id": "kpi-visitors-heading",
-          "component": "Heading",
-          "text": "128,450",
-          "level": "h2"
-        },
-        {
-          "id": "kpi-visitors-sub",
-          "component": "TextContent",
-          "text": "↑ +14.2% vs previous 30 days",
-          "size": "small"
-        },
-        {
-          "id": "kpi-card-conversion",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "xs",
-          "children": [
-            "kpi-conversion-tag",
-            "kpi-conversion-heading",
-            "kpi-conversion-sub"
-          ]
-        },
-        {
-          "id": "kpi-conversion-tag",
-          "component": "Tag",
-          "text": "Avg Conversion Rate",
-          "variant": "success",
-          "size": "sm"
-        },
-        {
-          "id": "kpi-conversion-heading",
-          "component": "Heading",
-          "text": "3.42%",
-          "level": "h2"
-        },
-        {
-          "id": "kpi-conversion-sub",
-          "component": "TextContent",
-          "text": "↑ +0.38% vs previous 30 days",
-          "size": "small"
-        },
-        {
-          "id": "kpi-card-subscribers",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "xs",
-          "children": [
-            "kpi-subscribers-tag",
-            "kpi-subscribers-heading",
-            "kpi-subscribers-sub"
-          ]
-        },
-        {
-          "id": "kpi-subscribers-tag",
-          "component": "Tag",
-          "text": "Subscriber Growth (MTD)",
-          "variant": "neutral",
-          "size": "sm"
-        },
-        {
-          "id": "kpi-subscribers-heading",
-          "component": "Heading",
-          "text": "+4,820",
-          "level": "h2"
-        },
-        {
-          "id": "kpi-subscribers-sub",
-          "component": "TextContent",
-          "text": "Target: 5,000 net new (96.4% reached)",
-          "size": "small"
-        },
-        {
-          "id": "traffic-chart-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "chart-header",
-            "traffic-line-chart"
-          ]
-        },
-        {
-          "id": "chart-header",
-          "component": "CardHeader",
-          "title": "Site Visitors & Conversion Rate Trend (Last 30 Days)",
-          "subtitle": "Daily breakdown of visitors and corresponding conversion spikes"
-        },
-        {
-          "id": "traffic-line-chart",
-          "component": "LineChart",
-          "xLabel": "Date",
-          "yLabel": "Visitors",
-          "variant": "natural",
-          "labels": ["Oct 25", "Oct 28", "Oct 31", "Nov 03", "Nov 06", "Nov 09", "Nov 12", "Nov 15", "Nov 18", "Nov 21", "Nov 23"],
-          "series": ["series-visitors"]
-        },
-        {
-          "id": "series-visitors",
-          "component": "Series",
-          "category": "Daily Visitors",
-          "values": [3200, 3450, 4100, 3900, 4600, 5200, 4800, 4300, 5100, 5800, 6100]
-        },
-        {
-          "id": "tab-traffic-sources",
-          "component": "TabItem",
-          "value": "traffic-sources",
-          "trigger": "Top Traffic Sources",
-          "content": [
-            "traffic-sources-card"
-          ]
-        },
-        {
-          "id": "traffic-sources-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "sources-header",
-            "sources-pie-chart",
-            "sources-table"
-          ]
-        },
-        {
-          "id": "sources-header",
-          "component": "CardHeader",
-          "title": "Top 5 Traffic Sources Share",
-          "subtitle": "Distribution of incoming web traffic across main channels"
-        },
-        {
-          "id": "sources-pie-chart",
-          "component": "PieChart",
-          "variant": "donut",
-          "appearance": "circular",
-          "labels": ["Organic Search", "Paid Search (PPC)", "Paid Social", "Email Marketing", "Direct / Referral"],
-          "values": [42.5, 24.8, 16.2, 11.5, 5.0]
-        },
-        {
-          "id": "sources-table",
-          "component": "Table",
-          "columns": [
-            "col-source-channel",
-            "col-source-share",
-            "col-source-visitors",
-            "col-source-conv"
-          ]
-        },
-        {
-          "id": "col-source-channel",
-          "component": "Col",
-          "label": "Traffic Source",
-          "type": "string",
-          "data": ["Organic Search (Google)", "Paid Search (Google Ads)", "Paid Social (Meta & LinkedIn)", "Email Marketing (Newsletters)", "Direct / Referral"]
-        },
-        {
-          "id": "col-source-share",
-          "component": "Col",
-          "label": "Share (%)",
-          "type": "number",
-          "data": [42.5, 24.8, 16.2, 11.5, 5.0]
-        },
-        {
-          "id": "col-source-visitors",
-          "component": "Col",
-          "label": "Visitors",
-          "type": "number",
-          "data": [54591, 31855, 20808, 14771, 6425]
-        },
-        {
-          "id": "col-source-conv",
-          "component": "Col",
-          "label": "Avg. Conv. Rate",
-          "type": "string",
-          "data": ["2.9%", "4.1%", "3.6%", "5.2%", "2.1%"]
-        },
-        {
-          "id": "tab-subscribers",
-          "component": "TabItem",
-          "value": "subscribers",
-          "trigger": "Subscriber Growth",
-          "content": [
-            "subscribers-card"
-          ]
-        },
-        {
-          "id": "subscribers-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "subscribers-header",
-            "subscribers-progress",
-            "subscribers-chart"
-          ]
-        },
-        {
-          "id": "subscribers-header",
-          "component": "CardHeader",
-          "title": "Email Subscriber Growth (This Month)",
-          "subtitle": "Tracking net new opt-ins against monthly target of 5,000 subscribers"
-        },
-        {
-          "id": "subscribers-progress",
-          "component": "Progress",
-          "value": 96,
-          "label": "4,820 / 5,000 New Subscribers (96.4% of November Goal)"
-        },
-        {
-          "id": "subscribers-chart",
-          "component": "AreaChart",
-          "xLabel": "Week",
-          "yLabel": "Cumulative Subscribers",
-          "variant": "natural",
-          "labels": ["Nov 01", "Nov 07", "Nov 14", "Nov 21", "Nov 23 (Current)"],
-          "series": ["series-subs-growth"]
-        },
-        {
-          "id": "series-subs-growth",
-          "component": "Series",
-          "category": "Net New Subscribers",
-          "values": [950, 2100, 3450, 4400, 4820]
-        },
-        {
-          "id": "campaigns-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": [
-            "campaigns-header",
-            "campaigns-table"
-          ]
-        },
-        {
-          "id": "campaigns-header",
-          "component": "CardHeader",
-          "title": "Active Running Campaigns",
-          "subtitle": "Spend, conversion output, and ROAS breakdown for current campaigns"
-        },
-        {
-          "id": "campaigns-table",
-          "component": "Table",
-          "columns": [
-            "col-camp-name",
-            "col-camp-status",
-            "col-camp-spend",
-            "col-camp-conv",
-            "col-camp-roas"
-          ]
-        },
-        {
-          "id": "col-camp-name",
-          "component": "Col",
-          "label": "Campaign Name",
-          "type": "string",
-          "data": [
-            "⭐ Q4 Black Friday Prep (Best Performer)",
-            "Retargeting - Cart Abandoners",
-            "Brand Search Keywords",
-            "Influencer Co-Op Promo",
-            "Top-of-Funnel Video Ads"
-          ]
-        },
-        {
-          "id": "col-camp-status",
-          "component": "Col",
-          "label": "Status",
-          "type": "string",
-          "data": ["Active", "Active", "Active", "Active", "Active"]
-        },
-        {
-          "id": "col-camp-spend",
-          "component": "Col",
-          "label": "Current Spend ($)",
-          "type": "number",
-          "data": [14200, 6800, 4500, 8000, 5200]
-        },
-        {
-          "id": "col-camp-conv",
-          "component": "Col",
-          "label": "Conversions",
-          "type": "number",
-          "data": [420, 215, 180, 140, 65]
-        },
-        {
-          "id": "col-camp-roas",
-          "component": "Col",
-          "label": "ROAS / Return",
-          "type": "string",
-          "data": ["4.82x", "3.90x", "3.10x", "2.15x", "1.40x"]
-        },
-        {
-          "id": "followups",
-          "component": "FollowUpBlock",
-          "items": [
-            "fu-1",
-            "fu-2",
-            "fu-3"
-          ]
-        },
-        {
-          "id": "fu-1",
-          "component": "FollowUpItem",
-          "text": "Deep dive into Q4 Black Friday Prep campaign ROI"
-        },
-        {
-          "id": "fu-2",
-          "component": "FollowUpItem",
-          "text": "Compare traffic source conversion rates month-over-month"
-        },
-        {
-          "id": "fu-3",
-          "component": "FollowUpItem",
-          "text": "Schedule automated weekly PDF report export"
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
+</a2ui-json>
+
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "topControls",
+          "alertBestCampaign",
+          "tabsOverview"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Marketing Manager Weekly Dashboard",
+        "subtitle": "Overview of web traffic, campaign performance, and audience growth"
+      },
+      {
+        "id": "topControls",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "align": "center",
+        "justify": "between",
+        "children": [
+          "datePickerControl",
+          "actionButtons"
+        ]
+      },
+      {
+        "id": "datePickerControl",
+        "component": "FormControl",
+        "label": "Date Range",
+        "input": "dateRangePicker",
+        "hint": "Filter dashboard metrics"
+      },
+      {
+        "id": "dateRangePicker",
+        "component": "DatePicker",
+        "name": "date_range",
+        "mode": "range",
+        "value": [
+          "2023-10-01",
+          "2023-10-30"
+        ]
+      },
+      {
+        "id": "actionButtons",
+        "component": "Buttons",
+        "buttons": [
+          "exportBtn"
+        ]
+      },
+      {
+        "id": "exportBtn",
+        "component": "Button",
+        "label": "Export Report",
+        "variant": "primary"
+      },
+      {
+        "id": "alertBestCampaign",
+        "component": "Alert",
+        "title": "Best Performing Campaign: Q4 Product Launch",
+        "description": "Generated 1,240 conversions at $19.35 CPA ($24,000 spend) — highest ROAS across all running campaigns this period.",
+        "variant": "success"
+      },
+      {
+        "id": "tabsOverview",
+        "component": "Tabs",
+        "items": [
+          "tabPerformance",
+          "tabCampaignsSources"
+        ]
+      },
+      {
+        "id": "tabPerformance",
+        "component": "TabItem",
+        "value": "perf",
+        "trigger": "Traffic & Conversion Metrics",
+        "content": [
+          "perfCard"
+        ]
+      },
+      {
+        "id": "perfCard",
+        "component": "Card",
+        "variant": "clear",
+        "children": [
+          "visitorsHeader",
+          "visitorsChart",
+          "separator1",
+          "kpisContainer"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "visitorsHeader",
+        "component": "Heading",
+        "level": "h3",
+        "text": "Site Visitors (Last 30 Days)"
+      },
+      {
+        "id": "visitorsChart",
+        "component": "AreaChart",
+        "labels": [
+          "Oct 1",
+          "Oct 5",
+          "Oct 10",
+          "Oct 15",
+          "Oct 20",
+          "Oct 25",
+          "Oct 30"
+        ],
+        "series": [
+          "visitorsSeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Date",
+        "yLabel": "Visitors"
+      },
+      {
+        "id": "visitorsSeries",
+        "component": "Series",
+        "category": "Daily Visitors",
+        "values": [
+          3200,
+          3800,
+          4100,
+          3900,
+          4800,
+          5200,
+          5600
+        ]
+      },
+      {
+        "id": "separator1",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "kpisContainer",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "l",
+        "children": [
+          "conversionCard",
+          "subscribersCard"
+        ]
+      },
+      {
+        "id": "conversionCard",
+        "component": "Card",
+        "variant": "clear",
+        "children": [
+          "conversionTitle",
+          "conversionBadge",
+          "conversionProgress"
+        ],
+        "gap": "xs"
+      },
+      {
+        "id": "conversionTitle",
+        "component": "Heading",
+        "level": "h4",
+        "text": "Conversion Rate"
+      },
+      {
+        "id": "conversionBadge",
+        "component": "Badge",
+        "text": "3.42% (+0.5% vs prev period)",
+        "variant": "default"
+      },
+      {
+        "id": "conversionProgress",
+        "component": "Progress",
+        "value": 68,
+        "label": "Monthly Target: 5.0%"
+      },
+      {
+        "id": "subscribersCard",
+        "component": "Card",
+        "variant": "clear",
+        "children": [
+          "subscribersTitle",
+          "subscribersBadge",
+          "subscribersProgress"
+        ],
+        "gap": "xs"
+      },
+      {
+        "id": "subscribersTitle",
+        "component": "Heading",
+        "level": "h4",
+        "text": "Email Subscriber Growth (This Month)"
+      },
+      {
+        "id": "subscribersBadge",
+        "component": "Badge",
+        "text": "+2,850 New Subscribers",
+        "variant": "secondary"
+      },
+      {
+        "id": "subscribersProgress",
+        "component": "Progress",
+        "value": 85,
+        "label": "Monthly Goal: 3,000 (85% reached)"
+      },
+      {
+        "id": "tabCampaignsSources",
+        "component": "TabItem",
+        "value": "sources_campaigns",
+        "trigger": "Traffic Sources & Campaigns",
+        "content": [
+          "sourcesCampaignsCard"
+        ]
+      },
+      {
+        "id": "sourcesCampaignsCard",
+        "component": "Card",
+        "variant": "clear",
+        "children": [
+          "trafficSourcesHeader",
+          "trafficSourcesChart",
+          "separator2",
+          "campaignsHeader",
+          "campaignsTable"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "trafficSourcesHeader",
+        "component": "Heading",
+        "level": "h3",
+        "text": "Top 5 Traffic Sources (% Share)"
+      },
+      {
+        "id": "trafficSourcesChart",
+        "component": "PieChart",
+        "labels": [
+          "Organic Search",
+          "Paid Search (Google)",
+          "Social Media (LinkedIn/IG)",
+          "Direct Traffic",
+          "Email Campaigns"
+        ],
+        "values": [
+          40,
+          25,
+          15,
+          12,
+          8
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "separator2",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "campaignsHeader",
+        "component": "Heading",
+        "level": "h3",
+        "text": "Running Campaigns & Spend"
+      },
+      {
+        "id": "campaignsTable",
+        "component": "Table",
+        "columns": [
+          "colCampaignName",
+          "colStatus",
+          "colSpend",
+          "colConversions"
+        ]
+      },
+      {
+        "id": "colCampaignName",
+        "component": "Col",
+        "label": "Campaign Name",
+        "data": [
+          "Q4 Product Launch (Best Performer)",
+          "Black Friday Warm-up",
+          "Brand Awareness - Retargeting",
+          "Search Intent - Generic Terms"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Active",
+          "Active",
+          "Active",
+          "Active"
+        ]
+      },
+      {
+        "id": "colSpend",
+        "component": "Col",
+        "label": "Spend ($)",
+        "data": [
+          "$24,000",
+          "$15,500",
+          "$8,200",
+          "$12,100"
+        ]
+      },
+      {
+        "id": "colConversions",
+        "component": "Col",
+        "label": "Conversions",
+        "data": [
+          "1,240",
+          "620",
+          "310",
+          "440"
+        ]
+      }
+    ]
+  }
+}
 </a2ui-json>

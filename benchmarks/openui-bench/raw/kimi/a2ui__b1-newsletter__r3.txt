@@ -1,15 +1,9 @@
-Here's a single-screen signup page for the weekly product newsletter, covering both requirements:
-
 <a2ui-json>
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "newsletter-signup",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": {
-      "primaryColor": "#4F46E5",
-      "agentDisplayName": "Product Weekly"
-    }
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
@@ -18,40 +12,36 @@ Here's a single-screen signup page for the weekly product newsletter, covering b
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "newsletter-signup",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "l",
-        "children": ["header", "description", "separator", "signupForm"]
+        "children": [
+          "header",
+          "pitch",
+          "form"
+        ]
       },
       {
         "id": "header",
         "component": "CardHeader",
-        "title": "📬 Product Weekly",
-        "subtitle": "A weekly newsletter for product builders"
+        "title": "The Weekly Product Digest",
+        "subtitle": "A newsletter for product people"
       },
       {
-        "id": "description",
+        "id": "pitch",
         "component": "TextContent",
-        "text": "Subscribers get a concise weekly digest of the best product management insights, new tool launches, and real-world case studies — delivered to your inbox every Monday morning.",
-        "size": "default"
+        "text": "Every week, subscribers get a concise roundup of the best product strategies, teardown analyses, and industry trends — delivered straight to their inbox."
       },
       {
-        "id": "separator",
-        "component": "Separator",
-        "orientation": "horizontal",
-        "decorative": true
-      },
-      {
-        "id": "signupForm",
+        "id": "form",
         "component": "Form",
-        "name": "newsletterSignup",
-        "fields": ["emailField"],
-        "buttons": "formButtons"
+        "name": "newsletter-signup",
+        "buttons": "formButtons",
+        "fields": [
+          "emailField"
+        ]
       },
       {
         "id": "emailField",
@@ -67,28 +57,24 @@ Here's a single-screen signup page for the weekly product newsletter, covering b
         "type": "email",
         "placeholder": "you@example.com",
         "rules": [
-          { "required": true, "message": "Please enter your email address" },
-          { "type": "email", "message": "Please enter a valid email address" }
+          "required",
+          "email"
         ]
       },
       {
         "id": "formButtons",
         "component": "Buttons",
-        "direction": "row",
-        "buttons": ["subscribeButton"]
+        "buttons": [
+          "subscribeBtn"
+        ]
       },
       {
-        "id": "subscribeButton",
+        "id": "subscribeBtn",
         "component": "Button",
         "label": "Subscribe",
-        "variant": "primary",
-        "size": "medium"
+        "variant": "primary"
       }
     ]
   }
 }
 </a2ui-json>
-
-This screen covers both numbered items:
-1. **What subscribers get** — the `description` text block explains the weekly digest in one sentence.
-2. **Email entry + subscribe** — the form includes a validated email input and a primary "Subscribe" button.

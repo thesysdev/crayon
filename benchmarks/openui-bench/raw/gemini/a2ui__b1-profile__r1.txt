@@ -1,15 +1,11 @@
-Here is the company directory page for the requested user profile, including their details, short bio, and a direct message form.
+Here is a complete, interactive profile page for the company directory that includes the person's name and role, bio, and a message form.
 
 <a2ui-json>
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "employee-profile-surface",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": {
-      "primaryColor": "#2563EB",
-      "agentDisplayName": "Directory Bot"
-    }
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
@@ -18,138 +14,151 @@ Here is the company directory page for the requested user profile, including the
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "employee-profile-surface",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "l",
         "children": [
-          "header-card",
-          "bio-card",
-          "message-card"
-        ]
+          "header",
+          "bioSection",
+          "separator",
+          "messageSection"
+        ],
+        "gap": "l"
       },
       {
-        "id": "header-card",
+        "id": "header",
         "component": "Card",
+        "direction": "row",
+        "align": "center",
+        "gap": "m",
         "variant": "clear",
-        "direction": "column",
-        "gap": "s",
         "children": [
-          "profile-avatar",
-          "person-heading",
-          "role-badge"
+          "avatar",
+          "headerInfo"
         ]
       },
       {
-        "id": "profile-avatar",
+        "id": "avatar",
         "component": "Avatar",
         "fallback": "SL",
         "src": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150"
       },
       {
-        "id": "person-heading",
-        "component": "Heading",
-        "text": "Sarah Jenkins",
-        "level": "h1"
+        "id": "headerInfo",
+        "component": "Card",
+        "variant": "clear",
+        "gap": "xs",
+        "children": [
+          "personName",
+          "roleBadge"
+        ]
       },
       {
-        "id": "role-badge",
+        "id": "personName",
+        "component": "Heading",
+        "level": "h2",
+        "text": "Sarah Lin"
+      },
+      {
+        "id": "roleBadge",
         "component": "Badge",
-        "text": "Principal Product Designer • Design Systems",
+        "text": "Principal Product Designer • UX Lead",
         "variant": "secondary"
       },
       {
-        "id": "bio-card",
+        "id": "bioSection",
         "component": "Card",
         "variant": "sunk",
-        "direction": "column",
         "gap": "xs",
         "children": [
-          "bio-header",
-          "bio-text"
+          "bioHeading",
+          "bioText"
         ]
       },
       {
-        "id": "bio-header",
-        "component": "CardHeader",
-        "title": "About Sarah"
+        "id": "bioHeading",
+        "component": "Heading",
+        "level": "h4",
+        "text": "About Sarah"
       },
       {
-        "id": "bio-text",
+        "id": "bioText",
         "component": "TextContent",
-        "text": "Sarah has been with the company for over 5 years, leading accessibility initiatives and scalable UI frameworks across core products. Passionate about design ops, mentoring junior designers, and building inclusive digital experiences. Based in San Francisco, CA.",
+        "text": "Sarah leads the core design system team at ACME Corp. With over 8 years of experience in product design and user research, she focuses on building accessible, scalable, and delightful user interface patterns for web and mobile products.",
         "size": "default"
       },
       {
-        "id": "message-card",
+        "id": "separator",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "messageSection",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
+        "variant": "clear",
+        "gap": "s",
         "children": [
-          "message-header",
-          "message-form"
+          "messageHeading",
+          "messageForm"
         ]
       },
       {
-        "id": "message-header",
-        "component": "CardHeader",
-        "title": "Send a Message",
-        "subtitle": "Reach out directly via the internal messaging platform."
+        "id": "messageHeading",
+        "component": "Heading",
+        "level": "h3",
+        "text": "Send a Message"
       },
       {
-        "id": "message-form",
+        "id": "messageForm",
         "component": "Form",
         "name": "send-message-form",
+        "buttons": "formButtons",
         "fields": [
-          "subject-control",
-          "body-control"
-        ],
-        "buttons": "form-buttons"
+          "subjectControl",
+          "messageControl"
+        ]
       },
       {
-        "id": "subject-control",
+        "id": "subjectControl",
         "component": "FormControl",
         "label": "Subject",
-        "input": "subject-input"
+        "input": "subjectInput"
       },
       {
-        "id": "subject-input",
+        "id": "subjectInput",
         "component": "Input",
         "name": "subject",
-        "placeholder": "Quick question about UI design system..."
+        "placeholder": "Quick question about the design system..."
       },
       {
-        "id": "body-control",
+        "id": "messageControl",
         "component": "FormControl",
         "label": "Message",
-        "input": "body-textarea"
+        "input": "messageTextArea"
       },
       {
-        "id": "body-textarea",
+        "id": "messageTextArea",
         "component": "TextArea",
-        "name": "message_body",
-        "placeholder": "Write your message here...",
+        "name": "message",
+        "placeholder": "Hi Sarah, I wanted to reach out regarding...",
         "rows": 4
       },
       {
-        "id": "form-buttons",
+        "id": "formButtons",
         "component": "Buttons",
         "direction": "row",
         "buttons": [
-          "send-button"
+          "sendBtn"
         ]
       },
       {
-        "id": "send-button",
+        "id": "sendBtn",
         "component": "Button",
         "label": "Send Message",
-        "variant": "primary",
-        "type": "normal"
+        "variant": "primary"
       }
     ]
   }

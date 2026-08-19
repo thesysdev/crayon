@@ -1,56 +1,173 @@
-Here's a remote team async standup board covering all five requirements:
+Here's a single-screen async standup board covering all five requirements:
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "standup-board",
-      "catalogId": "thesys.dev:c1-openui",
-      "theme": { "primaryColor": "#4F46E5", "agentDisplayName": "Standup Bot" }
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "standup-board",
-      "components": [
-        { "id": "root", "component": "Card", "children": ["header", "dateRow", "blockedCallout", "missingAlert", "updatesList", "sep1", "postHeading", "updateForm"], "gap": "m" },
-        { "id": "header", "component": "CardHeader", "title": "Async Standup — Team Apollo", "subtitle": "Daily updates from your distributed team" },
-        { "id": "dateRow", "component": "Tag", "text": "📅 Today: Tuesday, June 10, 2025", "variant": "info", "size": "md" },
-        { "id": "blockedCallout", "component": "Alert", "title": "🚧 1 Blocked", "description": "Maya Chen is blocked on the payments API — waiting on sandbox credentials from the vendor.", "variant": "warning" },
-        { "id": "missingAlert", "component": "Callout", "variant": "info", "title": "2 updates still missing", "description": "Waiting on: Diego Torres, Priya Nair" },
-        { "id": "updatesList", "component": "ListBlock", "items": ["li1", "li2", "li3", "li4"], "variant": "number" },
-        { "id": "li1", "component": "ListItem", "title": "Maya Chen — 🚧 Blocked", "subtitle": "Finished invoice UI, but blocked on payments API sandbox credentials." },
-        { "id": "li2", "component": "ListItem", "title": "Sam Okafor — ✅ On track", "subtitle": "Merged the auth refactor; starting session-expiry tests today." },
-        { "id": "li3", "component": "ListItem", "title": "Lena Fischer — ✅ On track", "subtitle": "Shipped onboarding emails; reviewing Q3 metrics dashboard." },
-        { "id": "li4", "component": "ListItem", "title": "Arun Patel — ✅ On track", "subtitle": "Fixed mobile nav bug; pairing with Maya on payments today." },
-        { "id": "sep1", "component": "Separator" },
-        { "id": "postHeading", "component": "Heading", "text": "Post Your Update", "level": "h3" },
-        { "id": "updateForm", "component": "Form", "name": "standupUpdate", "buttons": "formButtons", "fields": ["fcName", "fcStatus", "fcUpdate", "fcBlocker"] },
-        { "id": "fcName", "component": "FormControl", "label": "Your name", "input": "nameInput" },
-        { "id": "nameInput", "component": "Input", "name": "name", "placeholder": "e.g. Alex Rivera", "rules": [{ "required": true }] },
-        { "id": "fcStatus", "component": "FormControl", "label": "Status", "input": "statusSelect" },
-        { "id": "statusSelect", "component": "Select", "name": "status", "items": ["si1", "si2", "si3"], "placeholder": "Select status", "rules": [{ "required": true }] },
-        { "id": "si1", "component": "SelectItem", "value": "on-track", "label": "✅ On track" },
-        { "id": "si2", "component": "SelectItem", "value": "at-risk", "label": "⚠️ At risk" },
-        { "id": "si3", "component": "SelectItem", "value": "blocked", "label": "🚧 Blocked" },
-        { "id": "fcUpdate", "component": "FormControl", "label": "Today's update", "input": "updateArea" },
-        { "id": "updateArea", "component": "TextArea", "name": "update", "placeholder": "What did you do? What's next?", "rows": 3, "rules": [{ "required": true }] },
-        { "id": "fcBlocker", "component": "FormControl", "label": "Blockers (optional)", "input": "blockerInput", "hint": "Describe anything blocking you" },
-        { "id": "blockerInput", "component": "Input", "name": "blocker", "placeholder": "None / describe blocker" },
-        { "id": "formButtons", "component": "Buttons", "buttons": ["submitBtn"] },
-        { "id": "submitBtn", "component": "Button", "label": "Post Update", "variant": "primary" }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-All five requirements are covered:
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "dateBadge",
+          "missingAlert",
+          "blockedAlert",
+          "updatesTable",
+          "postForm"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Async Standup — Team Phoenix",
+        "subtitle": "Daily check-ins from your distributed team"
+      },
+      {
+        "id": "dateBadge",
+        "component": "Badge",
+        "text": "Today: Tuesday, June 10, 2025",
+        "variant": "secondary"
+      },
+      {
+        "id": "missingAlert",
+        "component": "Alert",
+        "title": "2 updates still missing",
+        "description": "Waiting on Priya and Tom to post their standup before EOD.",
+        "variant": "warning"
+      },
+      {
+        "id": "blockedAlert",
+        "component": "Alert",
+        "title": "Blocked: Alex Rivera",
+        "description": "API credentials for the payments sandbox expired — needs DevOps access to proceed.",
+        "variant": "destructive"
+      },
+      {
+        "id": "updatesTable",
+        "component": "Table",
+        "columns": [
+          "colName",
+          "colStatus",
+          "colState"
+        ]
+      },
+      {
+        "id": "colName",
+        "component": "Col",
+        "label": "Teammate",
+        "data": [
+          "Alex Rivera",
+          "Sam Chen",
+          "Jordan Lee",
+          "Priya Patel",
+          "Tom Becker"
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Today's update",
+        "data": [
+          "Integrating payment webhooks — BLOCKED on sandbox credentials",
+          "Finished checkout UI, starting unit tests today",
+          "Reviewing PRs, then drafting release notes for v2.4",
+          "—",
+          "—"
+        ]
+      },
+      {
+        "id": "colState",
+        "component": "Col",
+        "label": "State",
+        "data": [
+          "🚫 Blocked",
+          "✅ Posted",
+          "✅ Posted",
+          "⏳ Missing",
+          "⏳ Missing"
+        ]
+      },
+      {
+        "id": "postForm",
+        "component": "Form",
+        "name": "standup-update",
+        "buttons": "formButtons",
+        "fields": [
+          "updateField",
+          "blockedField"
+        ]
+      },
+      {
+        "id": "updateField",
+        "component": "FormControl",
+        "label": "Post your update",
+        "input": "updateInput",
+        "hint": "What did you do, what's next?"
+      },
+      {
+        "id": "updateInput",
+        "component": "TextArea",
+        "name": "update",
+        "placeholder": "Yesterday I… Today I will…",
+        "rows": 3
+      },
+      {
+        "id": "blockedField",
+        "component": "FormControl",
+        "label": "Are you blocked?",
+        "input": "blockedRadio"
+      },
+      {
+        "id": "blockedRadio",
+        "component": "RadioGroup",
+        "name": "blocked",
+        "items": [
+          "blockedNo",
+          "blockedYes"
+        ]
+      },
+      {
+        "id": "blockedNo",
+        "component": "RadioItem",
+        "label": "No",
+        "description": "On track, nothing in the way",
+        "value": "no"
+      },
+      {
+        "id": "blockedYes",
+        "component": "RadioItem",
+        "label": "Yes",
+        "description": "Describe the blocker in your update",
+        "value": "yes"
+      },
+      {
+        "id": "formButtons",
+        "component": "Buttons",
+        "buttons": [
+          "submitBtn"
+        ]
+      },
+      {
+        "id": "submitBtn",
+        "component": "Button",
+        "label": "Post update",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>
 
-1. **Teammates' updates** — numbered list showing Maya, Sam, Lena, and Arun with their statuses
-2. **Blocked callout** — warning alert highlighting Maya's blocker on the payments API
-3. **Today's date** — tag showing Tuesday, June 10, 2025
-4. **Post your own update** — form with name, status (on track / at risk / blocked), update text, and optional blocker field
-5. **Missing updates count** — callout noting 2 updates still pending (Diego and Priya)
+This screen covers all five items: **(1)** the table lists each teammate with today's status, **(2)** Alex's blocker is called out in a destructive alert and marked 🚫 in the table, **(3)** today's date appears in the badge under the header, **(4)** the form lets you post your own update with a blocked flag, and **(5)** the warning alert shows 2 updates still missing (with ⏳ markers in the table).

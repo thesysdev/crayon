@@ -2,143 +2,107 @@
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "monthly-sales-check",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": {
-      "primaryColor": "#2563EB",
-      "agentDisplayName": "Sales dashboard"
-    }
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
 
-< a2ui-json>
+<a2ui-json>
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "monthly-sales-check",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "variant": "clear",
-        "direction": "column",
         "gap": "l",
         "children": [
-          "page-title",
-          "page-subtitle",
-          "summary-card",
-          "trend-card",
-          "products-card",
-          "download-button"
+          "header",
+          "summary",
+          "revenueTrend",
+          "topProducts",
+          "downloadActions"
         ]
       },
       {
-        "id": "page-title",
-        "component": "Heading",
-        "text": "Monthly sales check",
-        "level": "h1"
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Monthly Sales Check",
+        "subtitle": "Founder view · August 2026"
       },
       {
-        "id": "page-subtitle",
-        "component": "TextContent",
-        "text": "Founder view · August 2026",
-        "size": "default"
-      },
-      {
-        "id": "summary-card",
+        "id": "summary",
         "component": "Card",
-        "variant": "card",
+        "variant": "sunk",
         "direction": "row",
         "gap": "l",
-        "align": "stretch",
         "children": [
-          "revenue-block",
-          "conversion-block"
+          "revenueKpi",
+          "conversionKpi"
         ]
       },
       {
-        "id": "revenue-block",
+        "id": "revenueKpi",
         "component": "Card",
         "variant": "clear",
-        "direction": "column",
         "gap": "xs",
         "children": [
-          "revenue-label",
-          "revenue-value",
-          "revenue-note"
-        ],
-        "weight": 2
+          "revenueLabel",
+          "revenueValue",
+          "revenueStatus"
+        ]
       },
       {
-        "id": "revenue-label",
+        "id": "revenueLabel",
         "component": "TextContent",
         "text": "Revenue this month",
         "size": "small"
       },
       {
-        "id": "revenue-value",
+        "id": "revenueValue",
         "component": "Heading",
-        "text": "$84,260",
+        "text": "$128,400",
         "level": "h2"
       },
       {
-        "id": "revenue-note",
-        "component": "TextContent",
-        "text": "Up 12.4% from July",
-        "size": "small"
+        "id": "revenueStatus",
+        "component": "Badge",
+        "text": "Up 12.4% vs. July",
+        "variant": "secondary"
       },
       {
-        "id": "conversion-block",
+        "id": "conversionKpi",
         "component": "Card",
-        "variant": "sunk",
-        "direction": "column",
+        "variant": "clear",
         "gap": "xs",
         "children": [
-          "conversion-label",
-          "conversion-value",
-          "conversion-note"
-        ],
-        "weight": 1
+          "conversionLabel",
+          "conversionValue",
+          "conversionNote"
+        ]
       },
       {
-        "id": "conversion-label",
+        "id": "conversionLabel",
         "component": "TextContent",
         "text": "Conversion rate",
         "size": "small"
       },
       {
-        "id": "conversion-value",
+        "id": "conversionValue",
         "component": "Heading",
         "text": "4.8%",
         "level": "h2"
       },
       {
-        "id": "conversion-note",
+        "id": "conversionNote",
         "component": "TextContent",
         "text": "Visitors who completed a purchase",
         "size": "small"
       },
       {
-        "id": "trend-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "trend-header",
-          "revenue-trend-chart",
-          "trend-context"
-        ]
-      },
-      {
-        "id": "trend-header",
-        "component": "CardHeader",
-        "title": "Revenue over the last six months",
-        "subtitle": "Monthly revenue in USD"
-      },
-      {
-        "id": "revenue-trend-chart",
+        "id": "revenueTrend",
         "component": "LineChart",
         "labels": [
           "Mar",
@@ -149,103 +113,66 @@
           "Aug"
         ],
         "series": [
-          "revenue-series"
+          "revenueSeries"
         ],
         "variant": "natural",
         "xLabel": "Month",
-        "yLabel": "Revenue ($)"
+        "yLabel": "Revenue (USD)"
       },
       {
-        "id": "revenue-series",
+        "id": "revenueSeries",
         "component": "Series",
-        "category": "Revenue",
+        "category": "Monthly revenue",
         "values": [
-          48200,
-          53600,
-          59100,
-          62400,
-          74950,
-          84260
+          74200,
+          81600,
+          89400,
+          97800,
+          114200,
+          128400
         ]
       },
       {
-        "id": "trend-context",
-        "component": "TextContent",
-        "text": "Revenue increased 74.8% since March.",
-        "size": "small"
-      },
-      {
-        "id": "products-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "m",
-        "children": [
-          "products-header",
-          "top-products-table"
-        ]
-      },
-      {
-        "id": "products-header",
-        "component": "CardHeader",
-        "title": "Top-selling products",
-        "subtitle": "Units sold this month"
-      },
-      {
-        "id": "top-products-table",
+        "id": "topProducts",
         "component": "Table",
         "columns": [
-          "product-rank-column",
-          "product-name-column",
-          "product-units-column"
+          "productName",
+          "unitsSold"
         ]
       },
       {
-        "id": "product-rank-column",
+        "id": "productName",
         "component": "Col",
-        "label": "Rank",
-        "type": "number",
-        "data": [
-          1,
-          2,
-          3
-        ]
-      },
-      {
-        "id": "product-name-column",
-        "component": "Col",
-        "label": "Product",
-        "type": "string",
+        "label": "Best-selling products",
         "data": [
           "Growth Plan",
-          "Starter Kit",
-          "Team Add-on"
+          "Analytics Add-on",
+          "Starter Plan"
         ]
       },
       {
-        "id": "product-units-column",
+        "id": "unitsSold",
         "component": "Col",
         "label": "Units sold",
         "type": "number",
         "data": [
-          428,
-          311,
-          186
+          482,
+          317,
+          264
         ]
       },
       {
-        "id": "download-button",
-        "component": "Button",
-        "label": "Download sales report (CSV)",
-        "variant": "primary",
-        "size": "medium",
-        "action": [
-          {
-            "type": "download",
-            "format": "csv",
-            "filename": "monthly-sales-august-2026.csv"
-          }
+        "id": "downloadActions",
+        "component": "Buttons",
+        "buttons": [
+          "downloadButton"
         ]
+      },
+      {
+        "id": "downloadButton",
+        "component": "Button",
+        "label": "Download sales numbers",
+        "variant": "primary"
       }
     ]
   }

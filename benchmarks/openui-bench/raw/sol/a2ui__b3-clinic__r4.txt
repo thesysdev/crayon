@@ -1,6 +1,411 @@
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"clinic-reception-day-view","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#2563EB","agentDisplayName":"Clinic Reception"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "primaryColor": "#2563EB",
+      "agentDisplayName": "Clinic Front Desk"
+    }
+  }
+}
 </a2ui-json>
+
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"clinic-reception-day-view","components":[{"id":"root","component":"Card","variant":"clear","direction":"column","gap":"l","children":["header","date-nav","metrics","room-card","next-patient","appointments-card","checkin-card"]},{"id":"header","component":"Card","variant":"clear","direction":"column","gap":"xs","children":["title","today-label"]},{"id":"title","component":"Heading","text":"Reception day view","level":"h1"},{"id":"today-label","component":"TextContent","text":"Tuesday, August 18, 2026 · All times local","size":"default"},{"id":"date-nav","component":"Buttons","direction":"row","buttons":["previous-day","today-button","next-day"]},{"id":"previous-day","component":"Button","label":"← Previous day","variant":"secondary","size":"small","action":[{"type":"navigateDay","direction":"previous"}]},{"id":"today-button","component":"Button","label":"Today","variant":"primary","size":"small","action":[{"type":"navigateDay","direction":"today"}]},{"id":"next-day","component":"Button","label":"Next day →","variant":"secondary","size":"small","action":[{"type":"navigateDay","direction":"next"}]},{"id":"metrics","component":"Card","variant":"sunk","direction":"row","gap":"xl","wrap":true,"children":["expected-metric","no-show-metric"]},{"id":"expected-metric","component":"Card","variant":"clear","direction":"column","gap":"xs","children":["expected-label","expected-value"]},{"id":"expected-label","component":"TextContent","text":"Patients expected today","size":"small-heavy"},{"id":"expected-value","component":"Heading","text":"8","level":"h2"},{"id":"no-show-metric","component":"Card","variant":"clear","direction":"column","gap":"xs","children":["no-show-label","no-show-value"]},{"id":"no-show-label","component":"TextContent","text":"No-show rate this month","size":"small-heavy"},{"id":"no-show-value","component":"Heading","text":"6.4%","level":"h2"},{"id":"room-card","component":"Card","variant":"card","direction":"column","gap":"s","children":["room-header","room-tags"]},{"id":"room-header","component":"CardHeader","title":"Rooms free right now","subtitle":"Updated at 9:18 AM"},{"id":"room-tags","component":"TagBlock","tags":["Room 2","Room 4","Consult A"]},{"id":"next-patient","component":"Callout","variant":"info","title":"Next patient to call: Maya Patel","description":"9:30 AM · Dr. Chen · General consultation · Waiting"},{"id":"appointments-card","component":"Card","variant":"card","direction":"column","gap":"m","children":["appointments-header","appointments-table"]},{"id":"appointments-header","component":"CardHeader","title":"Today's appointments","subtitle":"8 patients expected · 2 checked in"},{"id":"appointments-table","component":"Table","columns":["time-col","patient-col","clinician-col","room-col","status-col"]},{"id":"time-col","component":"Col","label":"Time","type":"string","data":["8:30 AM","9:00 AM","9:30 AM","10:15 AM","11:00 AM","1:00 PM","2:30 PM","4:00 PM"]},{"id":"patient-col","component":"Col","label":"Patient","type":"string","data":["Elena Ruiz","James Wilson","Maya Patel","Noah Kim","Ava Thompson","Liam Carter","Sofia Martinez","Ethan Brown"]},{"id":"clinician-col","component":"Col","label":"Clinician","type":"string","data":["Dr. Chen","Dr. Okafor","Dr. Chen","Dr. Singh","Dr. Okafor","Dr. Chen","Dr. Singh","Dr. Okafor"]},{"id":"room-col","component":"Col","label":"Room","type":"string","data":["Room 1","Room 3","—","Room 1","Room 3","Room 2","Room 4","Consult A"]},{"id":"status-col","component":"Col","label":"Status","type":"string","data":["In visit","Checked in","Waiting","Scheduled","Scheduled","Scheduled","Scheduled","Scheduled"]},{"id":"checkin-card","component":"Card","variant":"card","direction":"column","gap":"m","children":["checkin-header","checkin-form"]},{"id":"checkin-header","component":"CardHeader","title":"Check in a patient","subtitle":"Find the patient by name, date of birth, or appointment reference."},{"id":"checkin-form","component":"Form","name":"patient-check-in","fields":["patient-search-control"],"buttons":"checkin-buttons"},{"id":"patient-search-control","component":"FormControl","label":"Patient","input":"patient-search","hint":"Confirm the patient's identity before checking them in."},{"id":"patient-search","component":"Input","name":"patient","type":"text","placeholder":"Name, date of birth, or reference","rules":[{"required":true,"message":"Enter a patient to check in."}]},{"id":"checkin-buttons","component":"Buttons","direction":"row","buttons":["checkin-button"]},{"id":"checkin-button","component":"Button","label":"Check patient in","variant":"primary","size":"medium","action":[{"type":"submit","form":"patient-check-in"}]}]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "dayControls",
+          "summary",
+          "nextPatient",
+          "rooms",
+          "appointments",
+          "checkIn"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Reception desk",
+        "subtitle": "Tuesday, August 18, 2026"
+      },
+      {
+        "id": "dayControls",
+        "component": "Buttons",
+        "buttons": [
+          "previousDay",
+          "todayButton",
+          "nextDay"
+        ]
+      },
+      {
+        "id": "previousDay",
+        "component": "Button",
+        "label": "← Previous day",
+        "variant": "secondary",
+        "action": [
+          {
+            "type": "navigate_day",
+            "offset": -1
+          }
+        ]
+      },
+      {
+        "id": "todayButton",
+        "component": "Button",
+        "label": "Today",
+        "variant": "primary",
+        "action": [
+          {
+            "type": "navigate_today"
+          }
+        ]
+      },
+      {
+        "id": "nextDay",
+        "component": "Button",
+        "label": "Next day →",
+        "variant": "secondary",
+        "action": [
+          {
+            "type": "navigate_day",
+            "offset": 1
+          }
+        ]
+      },
+      {
+        "id": "summary",
+        "component": "Card",
+        "children": [
+          "expectedHeading",
+          "expectedValue",
+          "noShowHeading",
+          "noShowValue"
+        ],
+        "direction": "row",
+        "gap": "l",
+        "variant": "sunk",
+        "wrap": true
+      },
+      {
+        "id": "expectedHeading",
+        "component": "Label",
+        "text": "Patients expected today"
+      },
+      {
+        "id": "expectedValue",
+        "component": "Heading",
+        "text": "12",
+        "level": "h2"
+      },
+      {
+        "id": "noShowHeading",
+        "component": "Label",
+        "text": "No-show rate this month"
+      },
+      {
+        "id": "noShowValue",
+        "component": "Heading",
+        "text": "6.8%",
+        "level": "h2"
+      },
+      {
+        "id": "nextPatient",
+        "component": "Alert",
+        "title": "Next patient: Jordan Lee",
+        "description": "10:00 AM with Dr. Patel · General consultation",
+        "variant": "info"
+      },
+      {
+        "id": "rooms",
+        "component": "Card",
+        "children": [
+          "roomsHeader",
+          "roomTags"
+        ],
+        "variant": "sunk",
+        "gap": "s"
+      },
+      {
+        "id": "roomsHeader",
+        "component": "CardHeader",
+        "title": "Rooms free right now",
+        "subtitle": "3 rooms available"
+      },
+      {
+        "id": "roomTags",
+        "component": "TagBlock",
+        "tags": [
+          "Room 2",
+          "Room 4",
+          "Procedure Room B"
+        ]
+      },
+      {
+        "id": "appointments",
+        "component": "Card",
+        "children": [
+          "appointmentsHeader",
+          "appointmentsTable"
+        ],
+        "variant": "clear",
+        "gap": "m"
+      },
+      {
+        "id": "appointmentsHeader",
+        "component": "CardHeader",
+        "title": "Today's appointments",
+        "subtitle": "12 scheduled · 3 checked in"
+      },
+      {
+        "id": "appointmentsTable",
+        "component": "Table",
+        "columns": [
+          "timeColumn",
+          "patientColumn",
+          "clinicianColumn",
+          "statusColumn"
+        ]
+      },
+      {
+        "id": "timeColumn",
+        "component": "Col",
+        "label": "Time",
+        "data": [
+          "8:30 AM",
+          "9:00 AM",
+          "9:30 AM",
+          "10:00 AM",
+          "10:30 AM",
+          "11:15 AM",
+          "12:00 PM",
+          "1:30 PM",
+          "2:00 PM",
+          "2:45 PM",
+          "3:30 PM",
+          "4:15 PM"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "patientColumn",
+        "component": "Col",
+        "label": "Patient",
+        "data": [
+          "Maya Thompson",
+          "Ethan Brooks",
+          "Sofia Ramirez",
+          "Jordan Lee",
+          "Noah Williams",
+          "Priya Shah",
+          "Lucas Martin",
+          "Ava Chen",
+          "Daniel Kim",
+          "Grace Walker",
+          "Henry Davis",
+          "Amelia Scott"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "clinicianColumn",
+        "component": "Col",
+        "label": "Clinician",
+        "data": [
+          "Dr. Patel",
+          "Dr. Nguyen",
+          "Dr. Patel",
+          "Dr. Patel",
+          "Dr. Nguyen",
+          "Dr. Lewis",
+          "Dr. Lewis",
+          "Dr. Patel",
+          "Dr. Nguyen",
+          "Dr. Lewis",
+          "Dr. Patel",
+          "Dr. Nguyen"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "statusColumn",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Checked in",
+          "Checked in",
+          "Checked in",
+          "Next",
+          "Scheduled",
+          "Scheduled",
+          "Scheduled",
+          "Scheduled",
+          "Scheduled",
+          "Scheduled",
+          "Scheduled",
+          "Scheduled"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "checkIn",
+        "component": "Card",
+        "children": [
+          "checkInHeader",
+          "checkInForm"
+        ],
+        "variant": "sunk",
+        "gap": "m"
+      },
+      {
+        "id": "checkInHeader",
+        "component": "CardHeader",
+        "title": "Check in a patient",
+        "subtitle": "Find the patient by name or appointment time"
+      },
+      {
+        "id": "checkInForm",
+        "component": "Form",
+        "name": "patient-check-in",
+        "buttons": "checkInButtons",
+        "fields": [
+          "patientField",
+          "timeField"
+        ]
+      },
+      {
+        "id": "patientField",
+        "component": "FormControl",
+        "label": "Patient name",
+        "input": "patientInput"
+      },
+      {
+        "id": "patientInput",
+        "component": "Input",
+        "name": "patient_name",
+        "placeholder": "Enter patient name",
+        "type": "text"
+      },
+      {
+        "id": "timeField",
+        "component": "FormControl",
+        "label": "Appointment time",
+        "input": "timeSelect",
+        "hint": "Optional—use this to narrow the search"
+      },
+      {
+        "id": "timeSelect",
+        "component": "Select",
+        "name": "appointment_time",
+        "items": [
+          "time1000",
+          "time1030",
+          "time1115",
+          "time1200",
+          "time1330",
+          "time1400",
+          "time1445",
+          "time1530",
+          "time1615"
+        ],
+        "placeholder": "Select a time"
+      },
+      {
+        "id": "time1000",
+        "component": "SelectItem",
+        "value": "10:00",
+        "label": "10:00 AM"
+      },
+      {
+        "id": "time1030",
+        "component": "SelectItem",
+        "value": "10:30",
+        "label": "10:30 AM"
+      },
+      {
+        "id": "time1115",
+        "component": "SelectItem",
+        "value": "11:15",
+        "label": "11:15 AM"
+      },
+      {
+        "id": "time1200",
+        "component": "SelectItem",
+        "value": "12:00",
+        "label": "12:00 PM"
+      },
+      {
+        "id": "time1330",
+        "component": "SelectItem",
+        "value": "13:30",
+        "label": "1:30 PM"
+      },
+      {
+        "id": "time1400",
+        "component": "SelectItem",
+        "value": "14:00",
+        "label": "2:00 PM"
+      },
+      {
+        "id": "time1445",
+        "component": "SelectItem",
+        "value": "14:45",
+        "label": "2:45 PM"
+      },
+      {
+        "id": "time1530",
+        "component": "SelectItem",
+        "value": "15:30",
+        "label": "3:30 PM"
+      },
+      {
+        "id": "time1615",
+        "component": "SelectItem",
+        "value": "16:15",
+        "label": "4:15 PM"
+      },
+      {
+        "id": "checkInButtons",
+        "component": "Buttons",
+        "buttons": [
+          "checkInButton",
+          "clearButton"
+        ]
+      },
+      {
+        "id": "checkInButton",
+        "component": "Button",
+        "label": "Check patient in",
+        "variant": "primary",
+        "action": [
+          {
+            "type": "submit",
+            "form": "patient-check-in"
+          }
+        ]
+      },
+      {
+        "id": "clearButton",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "tertiary",
+        "action": [
+          {
+            "type": "reset",
+            "form": "patient-check-in"
+          }
+        ]
+      }
+    ]
+  }
+}
 </a2ui-json>

@@ -1,89 +1,745 @@
-Here's a power network operator console covering all 12 requirements:
+Here's a single-screen Grid Operations Console covering all 12 items — live alerts up top, KPIs (load, capacity headroom, price, emissions), generation mix + 24h forecast, plant and outage tables, maintenance schedule, and operator controls for region focus and curtailment.
 
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"grid-console","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#F59E0B","agentDisplayName":"GridOps Console"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui",
+    "theme": {
+      "agentDisplayName": "Grid Operations"
+    }
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"grid-console","components":[
-{"id":"root","component":"Card","direction":"column","gap":"m","children":["header","alert-live","row-top","row-mid","row-bottom","row-ops"]},
-{"id":"header","component":"CardHeader","title":"⚡ National Grid Operations Console","subtitle":"Live network status — updated 14:32 UTC"},
-
-{"id":"alert-live","component":"Callout","variant":"warning","title":"LIVE ALERT: Frequency deviation detected","description":"Grid frequency at 49.82 Hz in North region — spinning reserve activated. 2 min ago."},
-
-{"id":"row-top","component":"Card","direction":"row","gap":"m","variant":"clear","children":["card-load","card-capacity","card-price","card-emissions"]},
-{"id":"card-load","component":"Card","children":["load-head","load-val","load-spark"],"weight":1},
-{"id":"load-head","component":"TextContent","text":"**1. Current Network Load**","size":"small-heavy"},
-{"id":"load-val","component":"TextContent","text":"# 38.4 GW","size":"large-heavy"},
-{"id":"load-spark","component":"TextContent","text":"▲ +2.1% vs. 1h ago","size":"small"},
-{"id":"card-capacity","component":"Card","children":["cap-head","cap-val","cap-bar"],"weight":1},
-{"id":"cap-head","component":"TextContent","text":"**2. Capacity Utilisation**","size":"small-heavy"},
-{"id":"cap-val","component":"TextContent","text":"# 82% of 46.8 GW","size":"large-heavy"},
-{"id":"cap-bar","component":"Progress","value":82,"label":"Headroom: 8.4 GW"},
-{"id":"card-price","component":"Card","children":["price-head","price-val","price-sub"],"weight":1},
-{"id":"price-head","component":"TextContent","text":"**7. Spot Price / MWh**","size":"small-heavy"},
-{"id":"price-val","component":"TextContent","text":"# £74.20","size":"large-heavy"},
-{"id":"price-sub","component":"TextContent","text":"▼ -£3.10 vs. day-ahead","size":"small"},
-{"id":"card-emissions","component":"Card","children":["em-head","em-val","em-sub"],"weight":1},
-{"id":"em-head","component":"TextContent","text":"**12. Emissions Today**","size":"small-heavy"},
-{"id":"em-val","component":"TextContent","text":"# 182 gCO₂/kWh","size":"large-heavy"},
-{"id":"em-sub","component":"TextContent","text":"Total: 96,400 tCO₂ so far","size":"small"},
-
-{"id":"row-mid","component":"Card","direction":"row","gap":"m","variant":"clear","children":["card-gen","card-forecast"]},
-{"id":"card-gen","component":"Card","children":["gen-head","gen-chart"],"weight":1},
-{"id":"gen-head","component":"TextContent","text":"**3. Generation Split by Source**","size":"small-heavy"},
-{"id":"gen-chart","component":"PieChart","labels":["Gas","Wind","Nuclear","Solar","Imports","Hydro","Biomass"],"values":[34,28,18,9,6,3,2],"variant":"donut"},
-{"id":"card-forecast","component":"Card","children":["fc-head","fc-chart","fc-s1","fc-s2"],"weight":2},
-{"id":"fc-head","component":"TextContent","text":"**6. Demand Forecast — Next 24h**","size":"small-heavy"},
-{"id":"fc-chart","component":"LineChart","labels":["15:00","18:00","21:00","00:00","03:00","06:00","09:00","12:00","15:00"],"series":["fc-s1","fc-s2"],"yLabel":"GW"},
-{"id":"fc-s1","component":"Series","category":"Forecast demand","values":[39.2,42.8,40.1,34.5,31.2,33.8,40.6,41.9,40.2]},
-{"id":"fc-s2","component":"Series","category":"Available capacity","values":[46.8,46.8,45.2,45.2,45.2,46.8,46.8,46.8,46.8]},
-
-{"id":"row-bottom","component":"Card","direction":"row","gap":"m","variant":"clear","children":["card-plants","card-outages"]},
-{"id":"card-plants","component":"Card","children":["pl-head","pl-table","pl-c1","pl-c2","pl-c3"],"weight":3},
-{"id":"pl-head","component":"TextContent","text":"**4. Plant Output & Status**","size":"small-heavy"},
-{"id":"pl-table","component":"Table","columns":["pl-c1","pl-c2","pl-c3"]},
-{"id":"pl-c1","component":"Col","label":"Plant","data":["Hinkley Point B (Nuclear)","Drax Unit 4 (Biomass)","Hornsea 2 (Wind)","Cottam CCGT (Gas)","Dinorwig (Hydro)"]},
-{"id":"pl-c2","component":"Col","label":"Output (MW)","data":[980,645,1320,1180,288],"type":"number"},
-{"id":"pl-c3","component":"Col","label":"Status","data":["Online","Online","Online","Standby","Pumping"]},
-{"id":"card-outages","component":"Card","children":["out-head","out-table","out-c1","out-c2","out-c3"],"weight":2},
-{"id":"out-head","component":"TextContent","text":"**5. Active Outages**","size":"small-heavy"},
-{"id":"out-table","component":"Table","columns":["out-c1","out-c2","out-c3"]},
-{"id":"out-c1","component":"Col","label":"Asset","data":["Feeder F-221","Substation S-09","Line L-447"]},
-{"id":"out-c2","component":"Col","label":"Affected Region","data":["North — Leeds","South — Brighton","West — Cardiff"]},
-{"id":"out-c3","component":"Col","label":"Customers","data":[4200,11500,800],"type":"number"},
-
-{"id":"row-ops","component":"Card","direction":"row","gap":"m","variant":"clear","children":["card-maint","card-region","card-curtail"]},
-{"id":"card-maint","component":"Card","children":["mt-head","mt-list","mt-i1","mt-i2","mt-i3"],"weight":1},
-{"id":"mt-head","component":"TextContent","text":"**8. Planned Maintenance — This Month**","size":"small-heavy"},
-{"id":"mt-list","component":"ListBlock","items":["mt-i1","mt-i2","mt-i3"],"variant":"number"},
-{"id":"mt-i1","component":"ListItem","title":"Sizewell B turbine inspection","subtitle":"Jun 12–14 · 600 MW offline"},
-{"id":"mt-i2","component":"ListItem","title":"East interconnector cable test","subtitle":"Jun 18 · 4h window"},
-{"id":"mt-i3","component":"ListItem","title":"Dinorwig valve overhaul","subtitle":"Jun 24–26 · Reserve cover arranged"},
-{"id":"card-region","component":"Card","children":["rg-head","rg-form","rg-fc","rg-select","rg-si1","rg-si2","rg-si3","rg-si4","rg-btns","rg-btn"],"weight":1},
-{"id":"rg-head","component":"TextContent","text":"**10. Focus on Region**","size":"small-heavy"},
-{"id":"rg-form","component":"Form","name":"regionFocus","buttons":"rg-btns","fields":["rg-fc"]},
-{"id":"rg-fc","component":"FormControl","label":"Region","input":"rg-select","hint":"Filters all panels to one region"},
-{"id":"rg-select","component":"Select","name":"region","items":["rg-si1","rg-si2","rg-si3","rg-si4"],"placeholder":"All regions"},
-{"id":"rg-si1","component":"SelectItem","value":"north","label":"North"},
-{"id":"rg-si2","component":"SelectItem","value":"south","label":"South"},
-{"id":"rg-si3","component":"SelectItem","value":"east","label":"East"},
-{"id":"rg-si4","component":"SelectItem","value":"west","label":"West"},
-{"id":"rg-btns","component":"Buttons","buttons":["rg-btn"]},
-{"id":"rg-btn","component":"Button","label":"Apply Focus","variant":"primary"},
-{"id":"card-curtail","component":"Card","children":["cu-head","cu-form","cu-fc1","cu-sel","cu-ci1","cu-ci2","cu-ci3","cu-fc2","cu-slider","cu-btns","cu-btn"],"weight":1},
-{"id":"cu-head","component":"TextContent","text":"**11. Order Curtailment**","size":"small-heavy"},
-{"id":"cu-form","component":"Form","name":"curtailment","buttons":"cu-btns","fields":["cu-fc1","cu-fc2"]},
-{"id":"cu-fc1","component":"FormControl","label":"Target plant / feeder","input":"cu-sel"},
-{"id":"cu-sel","component":"Select","name":"target","items":["cu-ci1","cu-ci2","cu-ci3"],"placeholder":"Select asset"},
-{"id":"cu-ci1","component":"SelectItem","value":"cottam","label":"Cottam CCGT"},
-{"id":"cu-ci2","component":"SelectItem","value":"f221","label":"Feeder F-221"},
-{"id":"cu-ci3","component":"SelectItem","value":"hornsea","label":"Hornsea 2"},
-{"id":"cu-fc2","component":"FormControl","label":"Curtailment level (MW)","input":"cu-slider"},
-{"id":"cu-slider","component":"Slider","name":"mw","variant":"discrete","min":0,"max":500,"step":25,"defaultValue":[100],"label":"MW"},
-{"id":"cu-btns","component":"Buttons","buttons":["cu-btn"]},
-{"id":"cu-btn","component":"Button","label":"Issue Curtailment Order","variant":"primary","type":"destructive"}
-]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "statusBadge",
+          "alert1",
+          "alert2",
+          "alert3",
+          "kpiRow",
+          "chartsRow",
+          "plantsCard",
+          "outagesCard",
+          "maintCard",
+          "controlsRow"
+        ],
+        "gap": "l"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Grid Operations Console",
+        "subtitle": "National transmission network · Tuesday 14 Aug · 16:45 UTC"
+      },
+      {
+        "id": "statusBadge",
+        "component": "Badge",
+        "text": "Grid state: Stable · Frequency 49.98 Hz",
+        "variant": "secondary"
+      },
+      {
+        "id": "alert1",
+        "component": "Alert",
+        "title": "16:42 — Feeder F-114 fault, Northgate",
+        "description": "12,400 customers affected. Crew dispatched, estimated restore 18:30.",
+        "variant": "destructive"
+      },
+      {
+        "id": "alert2",
+        "component": "Alert",
+        "title": "16:31 — Wind output falling faster than forecast",
+        "description": "North Ridge down 180 MW in the last 30 minutes. Reserve margin reduced.",
+        "variant": "warning"
+      },
+      {
+        "id": "alert3",
+        "component": "Alert",
+        "title": "16:12 — Storm cell tracking toward Eastfield",
+        "description": "Crews pre-staged. Further outages possible 19:00–22:00.",
+        "variant": "info"
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "loadCard",
+          "capacityCard",
+          "priceCard",
+          "emissionsCard"
+        ]
+      },
+      {
+        "id": "loadCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": [
+          "loadHeader",
+          "loadValue",
+          "loadNote"
+        ]
+      },
+      {
+        "id": "loadHeader",
+        "component": "CardHeader",
+        "title": "Current network load"
+      },
+      {
+        "id": "loadValue",
+        "component": "TextContent",
+        "text": "18,420 MW",
+        "size": "large-heavy"
+      },
+      {
+        "id": "loadNote",
+        "component": "TextContent",
+        "text": "▲ 2.3% vs same time yesterday",
+        "size": "small"
+      },
+      {
+        "id": "capacityCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": [
+          "capHeader",
+          "capProgress",
+          "capNote"
+        ]
+      },
+      {
+        "id": "capHeader",
+        "component": "CardHeader",
+        "title": "Capacity utilisation"
+      },
+      {
+        "id": "capProgress",
+        "component": "Progress",
+        "value": 78,
+        "label": "18,420 / 23,500 MW"
+      },
+      {
+        "id": "capNote",
+        "component": "TextContent",
+        "text": "Headroom: 5,080 MW · Reserve margin healthy",
+        "size": "small"
+      },
+      {
+        "id": "priceCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": [
+          "priceHeader",
+          "priceValue",
+          "priceNote"
+        ]
+      },
+      {
+        "id": "priceHeader",
+        "component": "CardHeader",
+        "title": "Spot price"
+      },
+      {
+        "id": "priceValue",
+        "component": "TextContent",
+        "text": "$64.20 /MWh",
+        "size": "large-heavy"
+      },
+      {
+        "id": "priceNote",
+        "component": "TextContent",
+        "text": "▲ 8.1% vs day-ahead · Peak window approaching",
+        "size": "small"
+      },
+      {
+        "id": "emissionsCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": [
+          "emHeader",
+          "emValue",
+          "emProgress",
+          "emNote"
+        ]
+      },
+      {
+        "id": "emHeader",
+        "component": "CardHeader",
+        "title": "Emissions today"
+      },
+      {
+        "id": "emValue",
+        "component": "TextContent",
+        "text": "18,940 tCO₂",
+        "size": "large-heavy"
+      },
+      {
+        "id": "emProgress",
+        "component": "Progress",
+        "value": 61,
+        "label": "of 31,000 t daily carbon budget"
+      },
+      {
+        "id": "emNote",
+        "component": "TextContent",
+        "text": "Intensity 0.44 tCO₂/MWh · 12% below target",
+        "size": "small"
+      },
+      {
+        "id": "chartsRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "genCard",
+          "forecastCard"
+        ]
+      },
+      {
+        "id": "genCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": [
+          "genHeader",
+          "genPie"
+        ]
+      },
+      {
+        "id": "genHeader",
+        "component": "CardHeader",
+        "title": "Generation mix by source",
+        "subtitle": "Current output, MW"
+      },
+      {
+        "id": "genPie",
+        "component": "PieChart",
+        "labels": [
+          "Gas 6,800",
+          "Nuclear 4,900",
+          "Wind 3,200",
+          "Solar 1,900",
+          "Hydro 1,100",
+          "Coal 520"
+        ],
+        "values": [
+          6800,
+          4900,
+          3200,
+          1900,
+          1100,
+          520
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "forecastCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 2,
+        "children": [
+          "forecastHeader",
+          "forecastChart"
+        ]
+      },
+      {
+        "id": "forecastHeader",
+        "component": "CardHeader",
+        "title": "Demand forecast — next 24 hours",
+        "subtitle": "Forecast demand vs available capacity"
+      },
+      {
+        "id": "forecastChart",
+        "component": "LineChart",
+        "labels": [
+          "00:00",
+          "02:00",
+          "04:00",
+          "06:00",
+          "08:00",
+          "10:00",
+          "12:00",
+          "14:00",
+          "16:00",
+          "18:00",
+          "20:00",
+          "22:00"
+        ],
+        "series": [
+          "forecastSeries",
+          "capacitySeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Hour",
+        "yLabel": "MW"
+      },
+      {
+        "id": "forecastSeries",
+        "component": "Series",
+        "category": "Forecast demand",
+        "values": [
+          16100,
+          15600,
+          15350,
+          15800,
+          17200,
+          18450,
+          19300,
+          19850,
+          20100,
+          19650,
+          18800,
+          17400
+        ]
+      },
+      {
+        "id": "capacitySeries",
+        "component": "Series",
+        "category": "Available capacity",
+        "values": [
+          23500,
+          23500,
+          23500,
+          23500,
+          23500,
+          23500,
+          23500,
+          23500,
+          23500,
+          23500,
+          23500,
+          23500
+        ]
+      },
+      {
+        "id": "plantsCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "plantsHeader",
+          "plantsTable"
+        ]
+      },
+      {
+        "id": "plantsHeader",
+        "component": "CardHeader",
+        "title": "Plant status",
+        "subtitle": "All dispatched units"
+      },
+      {
+        "id": "plantsTable",
+        "component": "Table",
+        "columns": [
+          "colPlant",
+          "colSource",
+          "colOutput",
+          "colStatus"
+        ]
+      },
+      {
+        "id": "colPlant",
+        "component": "Col",
+        "label": "Plant",
+        "data": [
+          "Riverside CCGT",
+          "Harbor Point Nuclear",
+          "North Ridge Wind",
+          "Desert Sun Solar",
+          "Pine Lake Hydro",
+          "Blackstone Coal"
+        ]
+      },
+      {
+        "id": "colSource",
+        "component": "Col",
+        "label": "Source",
+        "data": [
+          "Gas",
+          "Nuclear",
+          "Wind",
+          "Solar",
+          "Hydro",
+          "Coal"
+        ]
+      },
+      {
+        "id": "colOutput",
+        "component": "Col",
+        "label": "Output (MW)",
+        "type": "number",
+        "data": [
+          1840,
+          1220,
+          940,
+          610,
+          480,
+          260
+        ]
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Online",
+          "Online",
+          "Reduced",
+          "Online",
+          "Online",
+          "Offline — repair"
+        ]
+      },
+      {
+        "id": "outagesCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "outagesHeader",
+          "outagesTable"
+        ]
+      },
+      {
+        "id": "outagesHeader",
+        "component": "CardHeader",
+        "title": "Active outages",
+        "subtitle": "3 incidents · 48,200 customers affected"
+      },
+      {
+        "id": "outagesTable",
+        "component": "Table",
+        "columns": [
+          "colOutage",
+          "colRegion",
+          "colCustomers",
+          "colEta"
+        ]
+      },
+      {
+        "id": "colOutage",
+        "component": "Col",
+        "label": "Incident",
+        "data": [
+          "Feeder F-114 fault",
+          "220 kV line — storm damage",
+          "Substation TX-7 trip"
+        ]
+      },
+      {
+        "id": "colRegion",
+        "component": "Col",
+        "label": "Region",
+        "data": [
+          "Northgate",
+          "Eastfield",
+          "Riverbend"
+        ]
+      },
+      {
+        "id": "colCustomers",
+        "component": "Col",
+        "label": "Customers affected",
+        "type": "number",
+        "data": [
+          12400,
+          31000,
+          4800
+        ]
+      },
+      {
+        "id": "colEta",
+        "component": "Col",
+        "label": "Est. restore",
+        "data": [
+          "18:30",
+          "21:00",
+          "Crew on site"
+        ]
+      },
+      {
+        "id": "maintCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "maintHeader",
+          "maintList"
+        ]
+      },
+      {
+        "id": "maintHeader",
+        "component": "CardHeader",
+        "title": "Planned maintenance — August"
+      },
+      {
+        "id": "maintList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "maint1",
+          "maint2",
+          "maint3",
+          "maint4"
+        ]
+      },
+      {
+        "id": "maint1",
+        "component": "ListItem",
+        "title": "Aug 12 — Blackstone Unit 2 boiler inspection",
+        "subtitle": "08:00–18:00 · 300 MW unavailable"
+      },
+      {
+        "id": "maint2",
+        "component": "ListItem",
+        "title": "Aug 15 — North Ridge gearbox service, turbines 4–9",
+        "subtitle": "Wind capacity reduced by 400 MW for the day"
+      },
+      {
+        "id": "maint3",
+        "component": "ListItem",
+        "title": "Aug 19 — Substation TX-7 relay upgrade",
+        "subtitle": "Riverbend · planned outage 02:00–05:00"
+      },
+      {
+        "id": "maint4",
+        "component": "ListItem",
+        "title": "Aug 24 — Harbor Point rod cluster calibration",
+        "subtitle": "No output impact expected"
+      },
+      {
+        "id": "controlsRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "focusCard",
+          "curtailCard"
+        ]
+      },
+      {
+        "id": "focusCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": [
+          "focusHeader",
+          "focusForm"
+        ]
+      },
+      {
+        "id": "focusHeader",
+        "component": "CardHeader",
+        "title": "Region focus",
+        "subtitle": "Filter this console to one region"
+      },
+      {
+        "id": "focusForm",
+        "component": "Form",
+        "name": "region-focus",
+        "fields": [
+          "focusField"
+        ],
+        "buttons": "focusButtons"
+      },
+      {
+        "id": "focusField",
+        "component": "FormControl",
+        "label": "Region",
+        "input": "focusSelect",
+        "hint": "Applies to plants, outages and alerts"
+      },
+      {
+        "id": "focusSelect",
+        "component": "Select",
+        "name": "region",
+        "placeholder": "All regions",
+        "items": [
+          "rgAll",
+          "rgNorth",
+          "rgEast",
+          "rgRiver",
+          "rgWest",
+          "rgSouth"
+        ]
+      },
+      {
+        "id": "rgAll",
+        "component": "SelectItem",
+        "value": "all",
+        "label": "All regions"
+      },
+      {
+        "id": "rgNorth",
+        "component": "SelectItem",
+        "value": "northgate",
+        "label": "Northgate"
+      },
+      {
+        "id": "rgEast",
+        "component": "SelectItem",
+        "value": "eastfield",
+        "label": "Eastfield"
+      },
+      {
+        "id": "rgRiver",
+        "component": "SelectItem",
+        "value": "riverbend",
+        "label": "Riverbend"
+      },
+      {
+        "id": "rgWest",
+        "component": "SelectItem",
+        "value": "westport",
+        "label": "Westport"
+      },
+      {
+        "id": "rgSouth",
+        "component": "SelectItem",
+        "value": "southvale",
+        "label": "Southvale"
+      },
+      {
+        "id": "focusButtons",
+        "component": "Buttons",
+        "buttons": [
+          "focusApply"
+        ]
+      },
+      {
+        "id": "focusApply",
+        "component": "Button",
+        "label": "Apply focus",
+        "variant": "primary"
+      },
+      {
+        "id": "curtailCard",
+        "component": "Card",
+        "variant": "sunk",
+        "weight": 1,
+        "children": [
+          "curtailHeader",
+          "curtailForm"
+        ]
+      },
+      {
+        "id": "curtailHeader",
+        "component": "CardHeader",
+        "title": "Order curtailment",
+        "subtitle": "Reduce load on a feeder — requires confirmation"
+      },
+      {
+        "id": "curtailForm",
+        "component": "Form",
+        "name": "curtailment-order",
+        "fields": [
+          "curtailFeederField",
+          "curtailAmountField"
+        ],
+        "buttons": "curtailButtons"
+      },
+      {
+        "id": "curtailFeederField",
+        "component": "FormControl",
+        "label": "Target feeder",
+        "input": "curtailSelect"
+      },
+      {
+        "id": "curtailSelect",
+        "component": "Select",
+        "name": "feeder",
+        "placeholder": "Select feeder",
+        "items": [
+          "fdNorth",
+          "fdEast",
+          "fdRiver",
+          "fdWest"
+        ]
+      },
+      {
+        "id": "fdNorth",
+        "component": "SelectItem",
+        "value": "f-114",
+        "label": "Northgate — Feeder F-114"
+      },
+      {
+        "id": "fdEast",
+        "component": "SelectItem",
+        "value": "e-207",
+        "label": "Eastfield — Feeder E-207"
+      },
+      {
+        "id": "fdRiver",
+        "component": "SelectItem",
+        "value": "r-033",
+        "label": "Riverbend — Feeder R-033"
+      },
+      {
+        "id": "fdWest",
+        "component": "SelectItem",
+        "value": "w-118",
+        "label": "Westport — Feeder W-118"
+      },
+      {
+        "id": "curtailAmountField",
+        "component": "FormControl",
+        "label": "Curtailment amount",
+        "input": "curtailSlider",
+        "hint": "Dispatch sends a confirm/cancel prompt before execution"
+      },
+      {
+        "id": "curtailSlider",
+        "component": "Slider",
+        "name": "curtail_mw",
+        "variant": "discrete",
+        "min": 0,
+        "max": 500,
+        "step": 10,
+        "defaultValue": [
+          100
+        ],
+        "label": "MW to curtail"
+      },
+      {
+        "id": "curtailButtons",
+        "component": "Buttons",
+        "buttons": [
+          "curtailOrder",
+          "curtailCancel"
+        ]
+      },
+      {
+        "id": "curtailOrder",
+        "component": "Button",
+        "label": "Order curtailment",
+        "variant": "primary",
+        "type": "destructive"
+      },
+      {
+        "id": "curtailCancel",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
 </a2ui-json>
 
-The console covers all 12 items: **1–2** load and capacity headroom cards, **3** generation donut chart, **4** plant table with output/status, **5** outage table by region, **6** 24-hour demand forecast vs. capacity line chart, **7** live spot price, **8** maintenance schedule, **9** live alert banner, **10** region focus selector, **11** curtailment order form with MW slider, and **12** today's emissions.
+All 12 requirements are on screen: (1) load KPI, (2) capacity utilisation progress bar with headroom, (3) donut of generation by source, (4) plant table with output and status, (5) outage table with regions and customer counts, (6) 24-hour demand forecast vs capacity, (7) spot price per MWh, (8) August maintenance list, (9) live alert banners, (10) region focus selector, (11) curtailment order form with feeder select, MW slider and destructive confirm action, and (12) today's emissions with budget progress.

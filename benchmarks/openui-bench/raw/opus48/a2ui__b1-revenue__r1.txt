@@ -1,123 +1,96 @@
-Here's your mid-morning check-in dashboard covering today's revenue and how it stacks up against the same time yesterday.
+Here's a mid-morning revenue snapshot for your shop.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "morning-checkin",
-      "catalogId": "thesys.dev:c1-openui"
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "morning-checkin",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "direction": "column",
-          "gap": "l",
-          "children": ["header", "revenue-card", "compare-header", "compare-callout", "compare-chart", "summary-badges"]
-        },
-        {
-          "id": "header",
-          "component": "CardHeader",
-          "title": "Good morning — Today's Snapshot",
-          "subtitle": "As of 10:30 AM"
-        },
-        {
-          "id": "revenue-card",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "column",
-          "gap": "xs",
-          "children": ["revenue-label", "revenue-value", "revenue-sub"]
-        },
-        {
-          "id": "revenue-label",
-          "component": "TextContent",
-          "text": "Revenue so far today",
-          "size": "small-heavy"
-        },
-        {
-          "id": "revenue-value",
-          "component": "Heading",
-          "text": "$1,240",
-          "level": "h1"
-        },
-        {
-          "id": "revenue-sub",
-          "component": "TextContent",
-          "text": "From 38 transactions since opening",
-          "size": "small"
-        },
-        {
-          "id": "compare-header",
-          "component": "Heading",
-          "text": "Compared to this time yesterday",
-          "level": "h3"
-        },
-        {
-          "id": "compare-callout",
-          "component": "Callout",
-          "variant": "success",
-          "title": "Up 14% vs. yesterday",
-          "description": "By 10:30 AM yesterday you had made $1,085. You're ahead by $155."
-        },
-        {
-          "id": "compare-chart",
-          "component": "BarChart",
-          "labels": ["Yesterday (by 10:30)", "Today (by 10:30)"],
-          "series": ["revenue-series"],
-          "variant": "grouped",
-          "xLabel": "Day",
-          "yLabel": "Revenue ($)"
-        },
-        {
-          "id": "revenue-series",
-          "component": "Series",
-          "category": "Revenue",
-          "values": [1085, 1240]
-        },
-        {
-          "id": "summary-badges",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "s",
-          "wrap": true,
-          "children": ["badge-today", "badge-yesterday", "badge-delta"]
-        },
-        {
-          "id": "badge-today",
-          "component": "Tag",
-          "text": "Today: $1,240",
-          "variant": "info",
-          "size": "lg"
-        },
-        {
-          "id": "badge-yesterday",
-          "component": "Tag",
-          "text": "Yesterday: $1,085",
-          "variant": "neutral",
-          "size": "lg"
-        },
-        {
-          "id": "badge-delta",
-          "component": "Tag",
-          "text": "+$155 (+14%)",
-          "variant": "success",
-          "size": "lg"
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-This screen delivers both required items at a glance:
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "revenueToday",
+          "comparison",
+          "compareChart"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Today So Far",
+        "subtitle": "As of 10:30 AM"
+      },
+      {
+        "id": "revenueToday",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "revLabel",
+          "revValue"
+        ]
+      },
+      {
+        "id": "revLabel",
+        "component": "TextContent",
+        "text": "Revenue so far today",
+        "size": "small-heavy"
+      },
+      {
+        "id": "revValue",
+        "component": "Heading",
+        "text": "$1,840",
+        "level": "h1"
+      },
+      {
+        "id": "comparison",
+        "component": "Alert",
+        "title": "Ahead of yesterday",
+        "description": "You're up $270 (+17%) versus the same time yesterday, when you'd made $1,570.",
+        "variant": "success"
+      },
+      {
+        "id": "compareChart",
+        "component": "BarChart",
+        "labels": [
+          "Same time yesterday",
+          "Today so far"
+        ],
+        "series": [
+          "revSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Period",
+        "yLabel": "Revenue (USD)"
+      },
+      {
+        "id": "revSeries",
+        "component": "Series",
+        "category": "Revenue",
+        "values": [
+          1570,
+          1840
+        ]
+      }
+    ]
+  }
+}
+</a2ui-json>
 
-1. **Revenue so far today** — the large `$1,240` headline with transaction context.
-2. **Comparison to the same time yesterday** — a success callout (+14%), a side-by-side bar chart, and quick-reference tags showing today, yesterday, and the delta.
+This screen covers both items:
+
+1. **Revenue so far today** — shown as a large headline figure ($1,840).
+2. **Comparison with yesterday** — a success banner spells out the +$270 / +17% difference, and the bar chart puts today's total side by side with the same time yesterday.

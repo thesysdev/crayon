@@ -1,23 +1,685 @@
-Here is a comprehensive power network operator's console designed to provide complete operational visibility and real-time grid management capability.
+Here is a power network operator console interface incorporating all 12 requested monitoring, control, and analytical data points.
 
 <a2ui-json>
-{"createSurface":{"catalogId":"thesys.dev:c1-openui","surfaceId":"power-network-console","theme":{"agentDisplayName":"National Grid Dispatch & Operations","primaryColor":"#0284C7"}},"version":"v0.9"}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"updateComponents":{"components":[{"children":["alert-banner","header-card","overview-tabs","action-tabs","followups"],"component":"Card","direction":"column","gap":"m","id":"root","variant":"clear"},{"component":"Alert","description":"CRITICAL: Region East sub-station Transformer 4 trip. Automated frequency response active. Review curtailment options if demand surges.","id":"alert-banner","title":"Active High Priority Grid Alert","variant":"destructive"},{"children":["header-title-sec","header-controls"],"component":"Card","direction":"row","gap":"m","id":"header-card","justify":"between","variant":"card"},{"children":["head-title","head-subtitle"],"component":"Card","direction":"column","gap":"xs","id":"header-title-sec","variant":"clear"},{"component":"Heading","id":"head-title","level":"h2","text":"⚡ National Grid Dispatch Console"},{"component":"TextContent","id":"head-subtitle","size":"small","text":"Real-time Grid Telemetry, Generation Split, Load Forecasting & Regional Management"},{"children":["region-select-ctrl"],"component":"Card","direction":"row","gap":"s","id":"header-controls","variant":"clear"},{"children":["region-select"],"component":"FormControl","hint":"Filter telemetry by grid zone","id":"region-select-ctrl","label":"Target Region Focus"},{"component":"Select","id":"region-select","items":["reg-all","reg-north","reg-south","reg-east","reg-west"],"name":"regionFocus","placeholder":"All Regions (National)","value":"all"},{"component":"SelectItem","id":"reg-all","label":"All Regions (National Grid)","value":"all"},{"component":"SelectItem","id":"reg-north","label":"Region North (Industrial Zone)","value":"north"},{"component":"SelectItem","id":"reg-south","label":"Region South (Metropolitan)","value":"south"},{"component":"SelectItem","id":"reg-east","label":"Region East (Coastal / Offshore Wind)","value":"east"},{"component":"SelectItem","id":"reg-west","label":"Region West (Hydro & Rural)","value":"west"},{"component":"Tabs","id":"overview-tabs","items":["tab-overview","tab-plants","tab-forecast-outages","tab-maintenance"]},{"component":"TabItem","content":["grid-stats-row","grid-charts-row"],"id":"tab-overview","trigger":"Real-time Metrics & Mix","value":"overview"},{"children":["stat-card-load","stat-card-capacity","stat-card-price","stat-card-emissions"],"component":"Card","direction":"row","gap":"m","id":"grid-stats-row","variant":"clear"},{"children":["load-head","load-val","load-tag"],"component":"Card","direction":"column","gap":"xs","id":"stat-card-load","weight":1,"variant":"card"},{"component":"CardHeader","id":"load-head","title":"Current Network Load"},"component":"Heading","id":"load-val","level":"h1","text":"38,450 MW"},{"component":"Tag","id":"load-tag","size":"sm","text":"▲ +2.4% vs last hour","variant":"warning"},{"children":["cap-head","cap-val","cap-prog"],"component":"Card","direction":"column","gap":"xs","id":"stat-card-capacity","weight":1,"variant":"card"},{"component":"CardHeader","id":"cap-head","title":"Capacity Headroom"},"component":"Heading","id":"cap-val","level":"h1","text":"85.4% Full"},{"component":"Progress","id":"cap-prog","label":"38.45 GW / 45.00 GW Max Capacity","value":85.4},{"children":["price-head","price-val","price-tag"],"component":"Card","direction":"column","gap":"xs","id":"stat-card-price","weight":1,"variant":"card"},{"component":"CardHeader","id":"price-head","title":"Current Spot Price"},"component":"Heading","id":"price-val","level":"h1","text":"$64.20 / MWh"},{"component":"Tag","id":"price-tag","size":"sm","text":"Off-Peak Normal","variant":"success"},{"children":["emis-head","emis-val","emis-tag"],"component":"Card","direction":"column","gap":"xs","id":"stat-card-emissions","weight":1,"variant":"card"},{"component":"CardHeader","id":"emis-head","title":"Emissions Today"},"component":"Heading","id":"emis-val","level":"h1","text":"142,800 tCO₂e"},{"component":"Tag","id":"emis-tag","size":"sm","text":"Intensity: 182 g/kWh","variant":"info"},{"children":["chart-card-gen","chart-card-radar"],"component":"Card","direction":"row","gap":"m","id":"grid-charts-row","variant":"clear"},{"children":["gen-head","gen-pie"],"component":"Card","direction":"column","gap":"m","id":"chart-card-gen","weight":1,"variant":"card"},{"component":"CardHeader","id":"gen-head","subtitle":"Current Megawatt generation split across all active fuel sources","title":"Generation Split by Source"},{"appearance":"circular","component":"PieChart","id":"gen-pie","labels":["Wind Solar","Nuclear","Natural Gas","Hydro","Battery Storage","Coal / Biomass"],"values":[14800,9200,8500,3400,1800,750]},"variant":"donut"},{"children":["radar-head","radar-chart"],"component":"Card","direction":"column","gap":"m","id":"chart-card-radar","weight":1,"variant":"card"},{"component":"CardHeader","id":"radar-head","subtitle":"Health, Reserve, Stress, and Efficiency matrix across regions","title":"Regional Grid Balance Index"},{"component":"RadarChart","id":"radar-chart","labels":["Frequency Stability","Reserve Margin","Voltage Level","Demand Stress","Asset Health"],"series":["rad-north","rad-south","rad-east","rad-west"]},{"category":"Region North","component":"Series","id":"rad-north","values":[95,80,92,60,88]},{"category":"Region South","component":"Series","id":"rad-south","values":[88,65,85,85,75]},{"category":"Region East","component":"Series","id":"rad-east","values":[78,50,80,92,68]},{"category":"Region West","component":"Series","id":"rad-west","values":[98,90,95,40,94]},{"component":"TabItem","content":["plants-card"],"id":"tab-plants","trigger":"Power Plants Status","value":"plants"},{"children":["plants-head","plants-table"],"component":"Card","direction":"column","gap":"m","id":"plants-card","variant":"card"},{"component":"CardHeader","id":"plants-head","subtitle":"Live operating status and current output across registered facilities","title":"Generation Assets Overview"},{"component":"Table","columns":["col-plant-id","col-plant-name","col-plant-region","col-plant-type","col-plant-out","col-plant-cap","col-plant-status"],"id":"plants-table"},{"component":"Col","data":["PLT-101","PLT-108","PLT-204","PLT-302","PLT-401","PLT-509"],"id":"col-plant-id","label":"Asset ID","type":"string"},{"component":"Col","data":["Hinkley Point C","Hornsea Wind Farm","Severn Hydro Station","Drax Biomass","Epping Gas Turbine","Battersea Storage"],"id":"col-plant-name","label":"Plant Name","type":"string"},{"component":"Col","data":["Region South","Region East","Region West","Region North","Region South","Region South"],"id":"col-plant-region","label":"Region","type":"string"},{"component":"Col","data":["Nuclear","Offshore Wind","Hydroelectric","Biomass","Gas Peaker","Battery BESS"],"id":"col-plant-type","label":"Source Type","type":"string"},{"component":"Col","data":[3200,2150,840,1200,0,180],"id":"col-plant-out","label":"Current Output (MW)","type":"number"},{"component":"Col","data":[3200,2400,1000,1800,600,200],"id":"col-plant-cap","label":"Max Capacity (MW)","type":"number"},{"component":"Col","data":["OPERATIONAL - 100%","OPERATIONAL - High Wind","OPERATIONAL - Nominal","PARTIAL - Maint Unit 2","STANDBY - Grid Reserve","DISCHARGING - Frequency Control"],"id":"col-plant-status","label":"Operational Status","type":"string"},{"component":"TabItem","content":["forecast-outage-row"],"id":"tab-forecast-outages","trigger":"Demand Forecast & Active Outages","value":"forecast-outages"},{"children":["forecast-card","outages-card"],"component":"Card","direction":"row","gap":"m","id":"forecast-outage-row","variant":"clear"},{"children":["fc-head","fc-line"],"component":"Card","direction":"column","gap":"m","id":"forecast-card","weight":1,"variant":"card"},{"component":"CardHeader","id":"fc-head","subtitle":"Rolling hourly system demand projection vs baseline capacity","title":"Next 24 Hours Demand Forecast (MW)"},{"component":"LineChart","id":"fc-line","labels":["00:00","03:00","06:00","09:00","12:00","15:00","18:00","21:00","24:00"],"series":["fc-series-predicted","fc-series-capacity"],"variant":"natural","xLabel":"Time of Day","yLabel":"Megawatts (MW)"},{"category":"Predicted Load (MW)","component":"Series","id":"fc-series-predicted","values":[28000,25400,29000,38500,41200,39800,43500,37000,31000]},{"category":"Max Available Capacity (MW)","component":"Series","id":"fc-series-capacity","values":[45000,45000,45000,45000,45000,45000,45000,45000,45000]},{"children":["out-head","out-table"],"component":"Card","direction":"column","gap":"m","id":"outages-card","weight":1,"variant":"card"},{"component":"CardHeader","id":"out-head","subtitle":"Current grid incidents, tripped lines, and customer impact","title":"Active Grid Outages"},{"component":"Table","columns":["col-out-id","col-out-reg","col-out-cause","col-out-customers","col-out-eta"],"id":"outages-card-table","id":"out-table"},{"component":"Col","data":["OUT-8821","OUT-8824","OUT-8830"],"id":"col-out-id","label":"Incident ID","type":"string"},{"component":"Col","data":["Region East (Sector 4)","Region North (Sub-B)","Region South (Met Metro)"],"id":"col-out-reg","label":"Affected Region","type":"string"},{"component":"Col","data":["Substation Transformer Trip","Storm Tree Branch Contact","Underground Feeder Fault"],"id":"col-out-cause","label":"Root Cause","type":"string"},{"component":"Col","data":[14200,3100,850],"id":"col-out-customers","label":"Affected Customers","type":"number"},{"component":"Col","data":["14:30 UTC (In Progress)","12:15 UTC (Crews Onsite)","11:45 UTC (Isolating)"],"id":"col-out-eta","label":"Est. Restoration","type":"string"},{"component":"TabItem","content":["maint-card"],"id":"tab-maintenance","trigger":"Monthly Maintenance Schedule","value":"maintenance"},{"children":["maint-head","maint-table"],"component":"Card","direction":"column","gap":"m","id":"maint-card","variant":"card"},{"component":"CardHeader","id":"maint-head","subtitle":"Scheduled grid equipment servicing, line overhauls, and plant downtime","title":"Planned Maintenance This Month"},{"component":"Table","columns":["col-maint-id","col-maint-asset","col-maint-reg","col-maint-dates","col-maint-impact"],"id":"maint-table"},{"component":"Col","data":["MNT-402","MNT-408","MNT-415","MNT-422"],"id":"col-maint-id","label":"Work Order","type":"string"},{"component":"Col","data":["400kV Interconnector Line 2","Epping Peaker Unit 1 Overhaul","Coastal Substation Switchgear","Valley Hydro Intake Maintenance"],"id":"col-maint-asset","label":"Target Asset","type":"string"},{"component":"Col","data":["Region East","Region South","Region East","Region West"],"id":"col-maint-reg","label":"Region","type":"string"},{"component":"Col","data":["Oct 12 - Oct 15","Oct 18 - Oct 25","Oct 22 - Oct 23","Oct 28 - Nov 02"],"id":"col-maint-dates","label":"Scheduled Window","type":"string"},{"component":"Col","data":["-500 MW Interconnector","No Grid Impact (Standby Asset)","-200 MW Grid Transfer Limit","-150 MW Local Generation"],"id":"col-maint-impact","label":"Capacity Impact","type":"string"},{"children":["curtail-item","alerts-item"],"component":"Tabs","id":"action-tabs","items":["tab-curtailment","tab-live-alerts"]},{"component":"TabItem","content":["curtail-card"],"id":"curtail-item","trigger":"Order Load Curtailment","value":"curtailment"},{"children":["curtail-form"],"component":"Card","direction":"column","gap":"m","id":"curtail-card","variant":"card"},{"children":["curtail-buttons"],"component":"Form","fields":["curtail-reg-fc","curtail-amount-fc","curtail-type-fc","curtail-reason-fc"],"id":"curtail-form","name":"curtailmentForm"},{"children":["curtail-reg-select"],"component":"FormControl","hint":"Select target distribution zone","id":"curtail-reg-fc","label":"Target Zone / Region"},{"children":["curtail-reg-all","curtail-reg-e","curtail-reg-s","curtail-reg-n","curtail-reg-w"],"component":"Select","id":"curtail-reg-select","items":["curtail-reg-e","curtail-reg-s","curtail-reg-n","curtail-reg-w","curtail-reg-all"],"name":"curtailRegion","placeholder":"Select grid zone...","value":"east"},{"component":"SelectItem","id":"curtail-reg-e","label":"Region East (High Stress)","value":"east"},{"component":"SelectItem","id":"curtail-reg-s","label":"Region South","value":"south"},{"component":"SelectItem","id":"curtail-reg-n","label":"Region North","value":"north"},{"component":"SelectItem","id":"curtail-reg-w","label":"Region West","value":"west"},{"component":"SelectItem","id":"curtail-reg-all","label":"System Wide (Emergency)","value":"all"},{"children":["curtail-slider"],"component":"FormControl","hint":"Specify required reduction in Megawatts","id":"curtail-amount-fc","label":"Target Curtailment Amount (MW)"},{"component":"Slider","defaultValue":[250],"id":"curtail-slider","label":"Megawatts","max":1000,"min":50,"name":"curtailMW","step":25,"variant":"discrete"},{"children":["curtail-radio"],"component":"FormControl","hint":"Protocol protocol level to apply","id":"curtail-type-fc","label":"Curtailment Protocol Type"},{"children":["opt-ind","opt-res","opt-batt"],"component":"RadioGroup","defaultValue":"industrial","id":"curtail-radio","items":["opt-ind","opt-res","opt-batt"],"name":"curtailType"},{"component":"RadioItem","description":"Shed heavy industrial loads per interruptible contracts","id":"opt-ind","label":"Interruptible Industrial Load Shedding","value":"industrial"},{"component":"RadioItem","description":"Signal demand response aggregator networks & smart meters","id":"opt-res","label":"Demand Response / Commercial HVAC Reduction","value":"response"},{"component":"RadioItem","description":"Force grid storage injection mode to absorb excess","id":"opt-batt","label":"Renewable Generation Export Limit","value":"renewable"},{"children":["curtail-reason-input"],"component":"FormControl","hint":"Logged in central dispatch dispatch log","id":"curtail-reason-fc","label":"Operator Dispatch Rationale"},{"component":"Input","id":"curtail-reason-input","name":"curtailReason","placeholder":"e.g., Regional line overload prevent thermal trip","type":"text"},{"children":["btn-issue-curtail","btn-cancel"],"component":"Buttons","direction":"row","id":"curtail-buttons"},{"action":["submitCurtailment"],"component":"Button","id":"btn-issue-curtail","label":"Execute Curtailment Order","type":"destructive","variant":"primary"},{"component":"Button","id":"btn-cancel","label":"Reset Form","variant":"tertiary"},{"component":"TabItem","content":["alerts-card"],"id":"alerts-item","trigger":"Live Alerts Feed","value":"alerts"},{"children":["alerts-head","alerts-list"],"component":"Card","direction":"column","gap":"m","id":"alerts-card","variant":"card"},{"component":"CardHeader","id":"alerts-head","subtitle":"Real-time SCADA and telemetry events streaming from sub-stations","title":"System Event & Alarm Log"},{"children":["alt-1","alt-2","alt-3","alt-4"],"component":"ListBlock","id":"alerts-list","variant":"number"},{"actionLabel":"Acknowledge","id":"alt-1","subtitle":"10:42:15 UTC - Region East Sub-station 4 Transfomer 4 temp > 85°C","title":"CRITICAL: High Transformer Temperature (Region East)"},{"actionLabel":"Investigate","id":"alt-2","subtitle":"10:39:02 UTC - Frequency dropped to 49.82 Hz (Threshold: 49.80 Hz)","title":"WARNING: System Frequency Transient"},{"actionLabel":"Dismiss","id":"alt-3","subtitle":"10:31:40 UTC - Hornsea Offshore Wind output ramped +450 MW in 15 mins","title":"INFO: Rapid Generation Ramp Up (Region East)"},{"actionLabel":"Dismiss","id":"alt-4","subtitle":"10:15:00 UTC - Scheduled sync of Battersea BESS Unit 2 complete","title":"INFO: Grid Sync Success (Battersea Storage)"},{"children":["f1","f2","f3"],"component":"FollowUpBlock","id":"followups"},{"component":"FollowUpItem","id":"f1","text":"Dispatch quick-start Gas Peaker in Region East"},{"component":"FollowUpItem","id":"f2","text":"Export detailed system telemetry report"},{"component":"FollowUpItem","id":"f3","text":"Initiate Demand Response Stage 1 protocol"}],"surfaceId":"power-network-console"}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "alertBanner",
+          "kpiRow",
+          "separator1",
+          "regionSelector",
+          "tabsControl",
+          "separator2",
+          "curtailmentDialog"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Grid Control Console — National Power Network",
+        "subtitle": "Real-time dispatch, monitoring, and emergency response operations"
+      },
+      {
+        "id": "alertBanner",
+        "component": "Alert",
+        "title": "[LIVE ALERT] Grid Frequency Deviation - Northern Sector",
+        "description": "Frequency dropped to 49.82 Hz at Substation N-04. Automated reserve spinning response active.",
+        "variant": "warning"
+      },
+      {
+        "id": "kpiRow",
+        "component": "Table",
+        "columns": [
+          "colKpiMetric",
+          "colKpiVal",
+          "colKpiStatus"
+        ]
+      },
+      {
+        "id": "colKpiMetric",
+        "component": "Col",
+        "label": "Key Metric",
+        "data": [
+          "1. Current Network Load",
+          "2. Grid Capacity Usage",
+          "7. Wholesale Spot Price",
+          "12. Today's CO2 Emissions"
+        ]
+      },
+      {
+        "id": "colKpiVal",
+        "component": "Col",
+        "label": "Current Value",
+        "data": [
+          "34,850 MW",
+          "82.9% (Cap: 42,000 MW)",
+          "$64.20 / MWh",
+          "142.5 metric tons CO2"
+        ]
+      },
+      {
+        "id": "colKpiStatus",
+        "component": "Col",
+        "label": "Operational Status",
+        "data": [
+          "High Peak Demand",
+          "17.1% Reserve Margin",
+          "Stable (+2.4% vs 1h ago)",
+          "Low Carbon (-18% YoY)"
+        ]
+      },
+      {
+        "id": "separator1",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "regionSelector",
+        "component": "FormControl",
+        "label": "10. Focus Region",
+        "hint": "Filter view to isolate grid conditions, plants, and outages by grid sector",
+        "input": "regionSelectInput"
+      },
+      {
+        "id": "regionSelectInput",
+        "component": "Select",
+        "name": "region_filter",
+        "placeholder": "Select grid sector...",
+        "items": [
+          "regAll",
+          "regNorth",
+          "regSouth",
+          "regEast",
+          "regWest"
+        ]
+      },
+      {
+        "id": "regAll",
+        "component": "SelectItem",
+        "label": "National Network (All Regions)",
+        "value": "all"
+      },
+      {
+        "id": "regNorth",
+        "component": "SelectItem",
+        "label": "Northern Grid Transmission Zone",
+        "value": "north"
+      },
+      {
+        "id": "regSouth",
+        "component": "SelectItem",
+        "label": "Southern Coastal Sector",
+        "value": "south"
+      },
+      {
+        "id": "regEast",
+        "component": "SelectItem",
+        "label": "Eastern Metro Grid",
+        "value": "east"
+      },
+      {
+        "id": "regWest",
+        "component": "SelectItem",
+        "label": "Western Renewable & Industrial Corridor",
+        "value": "west"
+      },
+      {
+        "id": "tabsControl",
+        "component": "Tabs",
+        "items": [
+          "tabGenForecast",
+          "tabPlantsOutages",
+          "tabMaintenanceAlerts"
+        ]
+      },
+      {
+        "id": "tabGenForecast",
+        "component": "TabItem",
+        "value": "gen_forecast",
+        "trigger": "Generation Split & Demand Forecast",
+        "content": [
+          "genHeader",
+          "genSplitChart",
+          "genSeparator",
+          "forecastHeader",
+          "demandForecastChart"
+        ]
+      },
+      {
+        "id": "genHeader",
+        "component": "Heading",
+        "level": "h3",
+        "text": "3. Generation Split by Source (MW)"
+      },
+      {
+        "id": "genSplitChart",
+        "component": "PieChart",
+        "variant": "donut",
+        "appearance": "circular",
+        "labels": [
+          "Nuclear",
+          "Natural Gas",
+          "Wind Offshore/Onshore",
+          "Solar PV",
+          "Hydroelectric",
+          "Battery Storage"
+        ],
+        "values": [
+          10500,
+          9200,
+          8100,
+          4200,
+          2300,
+          550
+        ]
+      },
+      {
+        "id": "genSeparator",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "forecastHeader",
+        "component": "Heading",
+        "level": "h3",
+        "text": "6. 24-Hour Network Demand Forecast vs Capacity (MW)"
+      },
+      {
+        "id": "demandForecastChart",
+        "component": "LineChart",
+        "variant": "natural",
+        "xLabel": "Hour Ahead",
+        "yLabel": "Power (MW)",
+        "labels": [
+          "00:00",
+          "03:00",
+          "06:00",
+          "09:00",
+          "12:00",
+          "15:00",
+          "18:00",
+          "21:00"
+        ],
+        "series": [
+          "seriesDemand",
+          "seriesCapacity"
+        ]
+      },
+      {
+        "id": "seriesDemand",
+        "component": "Series",
+        "category": "Forecasted Demand (MW)",
+        "values": [
+          26500,
+          24100,
+          28900,
+          36200,
+          38500,
+          37100,
+          39800,
+          32400
+        ]
+      },
+      {
+        "id": "seriesCapacity",
+        "component": "Series",
+        "category": "Available Capacity Limit (MW)",
+        "values": [
+          42000,
+          42000,
+          42000,
+          42000,
+          42000,
+          42000,
+          41500,
+          42000
+        ]
+      },
+      {
+        "id": "tabPlantsOutages",
+        "component": "TabItem",
+        "value": "plants_outages",
+        "trigger": "Power Plants & Active Outages",
+        "content": [
+          "plantHeader",
+          "plantTable",
+          "outageSeparator",
+          "outageHeader",
+          "outageTable"
+        ]
+      },
+      {
+        "id": "plantHeader",
+        "component": "Heading",
+        "level": "h3",
+        "text": "4. Power Plant Status & Real-Time Output"
+      },
+      {
+        "id": "plantTable",
+        "component": "Table",
+        "columns": [
+          "colPlantName",
+          "colPlantRegion",
+          "colPlantFuel",
+          "colPlantOutput",
+          "colPlantStatus"
+        ]
+      },
+      {
+        "id": "colPlantName",
+        "component": "Col",
+        "label": "Plant Name",
+        "data": [
+          "Point Vista Nuclear",
+          "Highland CCGT Gas",
+          "Bayfront Wind Farm",
+          "Desert Sun Solar Array",
+          "Cascade Hydro Unit 1"
+        ]
+      },
+      {
+        "id": "colPlantRegion",
+        "component": "Col",
+        "label": "Region",
+        "data": [
+          "Northern Zone",
+          "Eastern Metro",
+          "Southern Coastal",
+          "Western Corridor",
+          "Northern Zone"
+        ]
+      },
+      {
+        "id": "colPlantFuel",
+        "component": "Col",
+        "label": "Type",
+        "data": [
+          "Nuclear",
+          "Gas Turbines",
+          "Wind",
+          "Solar",
+          "Hydro"
+        ]
+      },
+      {
+        "id": "colPlantOutput",
+        "component": "Col",
+        "label": "Output / Max",
+        "data": [
+          "2,400 / 2,400 MW",
+          "1,850 / 2,100 MW",
+          "1,120 / 1,400 MW",
+          "890 / 950 MW",
+          "620 / 800 MW"
+        ]
+      },
+      {
+        "id": "colPlantStatus",
+        "component": "Col",
+        "label": "Operational Status",
+        "data": [
+          "Online (Base)",
+          "Online (Ramping)",
+          "Online (Full Generation)",
+          "Online (Peak Sun)",
+          "Standby (Spinning Reserve)"
+        ]
+      },
+      {
+        "id": "outageSeparator",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "outageHeader",
+        "component": "Heading",
+        "level": "h3",
+        "text": "5. Active Outages & Affected Regions"
+      },
+      {
+        "id": "outageTable",
+        "component": "Table",
+        "columns": [
+          "colOutageId",
+          "colOutageRegion",
+          "colOutageAsset",
+          "colOutageCustomers",
+          "colOutageEtr"
+        ]
+      },
+      {
+        "id": "colOutageId",
+        "component": "Col",
+        "label": "Event ID",
+        "data": [
+          "OUT-2024-881",
+          "OUT-2024-884",
+          "OUT-2024-889"
+        ]
+      },
+      {
+        "id": "colOutageRegion",
+        "component": "Col",
+        "label": "Affected Region",
+        "data": [
+          "Northern Grid Transmission Zone",
+          "Eastern Metro Grid (District 4)",
+          "Western Renewable Corridor"
+        ]
+      },
+      {
+        "id": "colOutageAsset",
+        "component": "Col",
+        "label": "Asset / Cause",
+        "data": [
+          "Substation N-04 Feeder 3 (Transformer Overheat)",
+          "Underground Cable Vault 12 (Lightning Strike)",
+          "Line 500kV-W West Tie-Line (Tripped Breaker)"
+        ]
+      },
+      {
+        "id": "colOutageCustomers",
+        "component": "Col",
+        "label": "Impacted Meter Count",
+        "data": [
+          "14,200 Customers",
+          "3,150 Customers",
+          "0 (Industrial Bypass Active)"
+        ]
+      },
+      {
+        "id": "colOutageEtr",
+        "component": "Col",
+        "label": "Est. Restoration",
+        "data": [
+          "45 mins (Crews On Site)",
+          "2 hours (Dispatching Crew)",
+          "15 mins (Auto-reset pending)"
+        ]
+      },
+      {
+        "id": "tabMaintenanceAlerts",
+        "component": "TabItem",
+        "value": "maint_alerts",
+        "trigger": "Planned Maintenance & Alert Logs",
+        "content": [
+          "maintHeader",
+          "maintTable",
+          "alertLogSeparator",
+          "alertsHeader",
+          "alertsList"
+        ]
+      },
+      {
+        "id": "maintHeader",
+        "component": "Heading",
+        "level": "h3",
+        "text": "8. Maintenance Schedule (This Month)"
+      },
+      {
+        "id": "maintTable",
+        "component": "Table",
+        "columns": [
+          "colMaintAsset",
+          "colMaintRegion",
+          "colMaintWindow",
+          "colMaintCapacityImpact",
+          "colMaintState"
+        ]
+      },
+      {
+        "id": "colMaintAsset",
+        "component": "Col",
+        "label": "Scheduled Asset",
+        "data": [
+          "Valley CCGT Unit 2 Overhaul",
+          "Substation S-12 Transformer Replacement",
+          "East High-Voltage DC Interconnector"
+        ]
+      },
+      {
+        "id": "colMaintRegion",
+        "component": "Col",
+        "label": "Region",
+        "data": [
+          "Southern Coastal",
+          "Southern Coastal",
+          "Eastern Metro"
+        ]
+      },
+      {
+        "id": "colMaintWindow",
+        "component": "Col",
+        "label": "Execution Window",
+        "data": [
+          "Oct 12 - Oct 18",
+          "Oct 21 - Oct 22",
+          "Oct 28 - Oct 30"
+        ]
+      },
+      {
+        "id": "colMaintCapacityImpact",
+        "component": "Col",
+        "label": "Max Capacity Derate",
+        "data": [
+          "-650 MW",
+          "-120 MW",
+          "-1,000 MW (Intertie)"
+        ]
+      },
+      {
+        "id": "colMaintState",
+        "component": "Col",
+        "label": "Approval Status",
+        "data": [
+          "Approved & Scheduled",
+          "Approved & Scheduled",
+          "Pending Secondary Review"
+        ]
+      },
+      {
+        "id": "alertLogSeparator",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "alertsHeader",
+        "component": "Heading",
+        "level": "h3",
+        "text": "9. Live System Alerts Log"
+      },
+      {
+        "id": "alertsList",
+        "component": "ListBlock",
+        "variant": "number",
+        "items": [
+          "alert1",
+          "alert2",
+          "alert3"
+        ]
+      },
+      {
+        "id": "alert1",
+        "component": "ListItem",
+        "title": "14:32:05 - Frequency Under-Threshold (49.82 Hz)",
+        "subtitle": "Substation N-04 detected momentary frequency sag. Automatic fast frequency response (FFR) battery injection triggered."
+      },
+      {
+        "id": "alert2",
+        "component": "ListItem",
+        "title": "14:28:10 - Thermal Overload Warning (94% Rating)",
+        "subtitle": "Transmission Line 230kV-E Bayfront Intertie operating near thermal threshold due to high air conditioning demand."
+      },
+      {
+        "id": "alert3",
+        "component": "ListItem",
+        "title": "14:15:00 - Spot Price Spike Alert ($180/MWh Peak Step)",
+        "subtitle": "Automated regional pricing node surge triggered due to rapid cloud cover drop in Western Solar farms."
+      },
+      {
+        "id": "separator2",
+        "component": "Separator",
+        "orientation": "horizontal",
+        "decorative": true
+      },
+      {
+        "id": "curtailmentDialog",
+        "component": "DialogBlock",
+        "triggerLabel": "11. Emergency Action: Issue Curtailment Order",
+        "triggerVariant": "destructive",
+        "title": "Issue Load / Generation Curtailment Order",
+        "description": "Select the target region, customer class, and magnitude of curtailment required to maintain grid stability.",
+        "content": [
+          "curtailmentForm"
+        ]
+      },
+      {
+        "id": "curtailmentForm",
+        "component": "Form",
+        "name": "curtailment_order_form",
+        "buttons": "formButtons",
+        "fields": [
+          "curtailRegionControl",
+          "curtailAmountControl",
+          "curtailTypeControl"
+        ]
+      },
+      {
+        "id": "curtailRegionControl",
+        "component": "FormControl",
+        "label": "Target Grid Region",
+        "input": "curtailRegionSelect"
+      },
+      {
+        "id": "curtailRegionSelect",
+        "component": "Select",
+        "name": "curtail_region",
+        "placeholder": "Select region to curtail...",
+        "items": [
+          "cRegNorth",
+          "cRegSouth",
+          "cRegEast",
+          "cRegWest"
+        ]
+      },
+      {
+        "id": "cRegNorth",
+        "component": "SelectItem",
+        "label": "Northern Grid Zone",
+        "value": "north"
+      },
+      {
+        "id": "cRegSouth",
+        "component": "SelectItem",
+        "label": "Southern Coastal Sector",
+        "value": "south"
+      },
+      {
+        "id": "cRegEast",
+        "component": "SelectItem",
+        "label": "Eastern Metro Grid",
+        "value": "east"
+      },
+      {
+        "id": "cRegWest",
+        "component": "SelectItem",
+        "label": "Western Renewable Corridor",
+        "value": "west"
+      },
+      {
+        "id": "curtailAmountControl",
+        "component": "FormControl",
+        "label": "Curtailment Volume (MW)",
+        "input": "curtailAmountInput",
+        "hint": "Specify total megawatt load drop or generation reduction required"
+      },
+      {
+        "id": "curtailAmountInput",
+        "component": "Input",
+        "name": "curtail_mw",
+        "type": "number",
+        "placeholder": "e.g. 250"
+      },
+      {
+        "id": "curtailTypeControl",
+        "component": "FormControl",
+        "label": "Curtailment Type & Priority",
+        "input": "curtailTypeRadio"
+      },
+      {
+        "id": "curtailTypeRadio",
+        "component": "RadioGroup",
+        "name": "curtail_type",
+        "items": [
+          "cTypeInd",
+          "cTypeGen",
+          "cTypeRot"
+        ]
+      },
+      {
+        "id": "cTypeInd",
+        "component": "RadioItem",
+        "label": "Industrial Interruptible Demand",
+        "description": "Shed contracted heavy industrial non-critical load first",
+        "value": "industrial"
+      },
+      {
+        "id": "cTypeGen",
+        "component": "RadioItem",
+        "label": "Renewable Generation Spill",
+        "description": "Curtail excess wind/solar output during transmission congestion",
+        "value": "renewable_spill"
+      },
+      {
+        "id": "cTypeRot",
+        "component": "RadioItem",
+        "label": "Emergency Rotating Load Shed",
+        "description": "Stage 1 emergency firm load shedding (Last Resort)",
+        "value": "emergency_shed"
+      },
+      {
+        "id": "formButtons",
+        "component": "Buttons",
+        "buttons": [
+          "btnExecuteCurtailment",
+          "btnCancelCurtailment"
+        ]
+      },
+      {
+        "id": "btnExecuteCurtailment",
+        "component": "Button",
+        "label": "Dispatch Curtailment Order",
+        "type": "destructive",
+        "variant": "primary"
+      },
+      {
+        "id": "btnCancelCurtailment",
+        "component": "Button",
+        "label": "Cancel / Abort",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
 </a2ui-json>
-
-### Features Covered:
-1. **Current Electricity Load**: Highlighted in the top summary card (`38,450 MW`).
-2. **Capacity Headroom**: Progress indicator displaying `85.4%` utilization against the 45.0 GW maximum threshold.
-3. **Generation Split by Source**: Donut chart detailing Wind/Solar, Nuclear, Gas, Hydro, Storage, and Coal/Biomass.
-4. **Plant Output & Status**: Detailed interactive table displaying every plant's real-time megawatt output, total capacity, and status.
-5. **Outages with Affected Region**: Active grid outages table with incident cause, affected customer count, and ETA.
-6. **24-Hour Demand Forecast**: Natural line chart comparing predicted load against grid capacity over time.
-7. **Current Price**: Real-time electricity spot price display ($64.20 / MWh).
-8. **Planned Maintenance**: Dedicated tab displaying upcoming monthly equipment servicing, windows, and MW capacity impacts.
-9. **Live Alerts**: Alarm feed displaying critical, warning, and informational SCADA events with quick actions.
-10. **Regional Focus Control**: Header selector enabling operators to filter grid telemetry by specific regional zones.
-11. **Order Curtailment Action**: Form to select target region, curtailment volume (MW), protocol type, and submit dispatch commands.
-12. **Emissions Today**: Live tally card tracking carbon emissions (142,800 tCO₂e) and current carbon intensity.

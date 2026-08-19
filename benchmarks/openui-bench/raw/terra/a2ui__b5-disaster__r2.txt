@@ -2,7 +2,7 @@
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "emergency-response-center",
+    "surfaceId": "main",
     "catalogId": "thesys.dev:c1-openui",
     "theme": {
       "primaryColor": "#B42318",
@@ -16,1472 +16,1578 @@
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "emergency-response-center",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
         "variant": "clear",
-        "direction": "column",
         "gap": "l",
         "children": [
           "header",
-          "incident-alert",
-          "summary-row",
-          "operations-row",
-          "shelter-route-row",
-          "weather-impact-row",
-          "people-volunteer-row",
-          "support-row",
-          "health-road-row",
-          "tasks-actions-row",
-          "reporting-row"
+          "criticalAlert",
+          "summaryRow",
+          "zoneFocus",
+          "incidentsSection",
+          "resourcesSection",
+          "sheltersSection",
+          "routesSection",
+          "weatherSection",
+          "impactSection",
+          "volunteersSection",
+          "donationsSection",
+          "aidRequestsSection",
+          "communicationsSection",
+          "roadsSection",
+          "hospitalsSection",
+          "tasksSection",
+          "actionsSection"
         ]
       },
       {
         "id": "header",
+        "component": "CardHeader",
+        "title": "Emergency Response Coordination Center",
+        "subtitle": "Operational picture • Updated 14:30 local time"
+      },
+      {
+        "id": "criticalAlert",
+        "component": "Alert",
+        "title": "Critical: Zone C flooding is escalating",
+        "description": "River level is rising rapidly. Prioritize evacuation support and high-water rescue assets.",
+        "variant": "destructive"
+      },
+      {
+        "id": "summaryRow",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "m",
+        "wrap": true,
+        "children": [
+          "severitySummary",
+          "rescuedSummary",
+          "casualtiesSummary",
+          "donationsSummary"
+        ]
+      },
+      {
+        "id": "severitySummary",
         "component": "Card",
         "variant": "card",
-        "direction": "row",
-        "align": "center",
-        "justify": "between",
-        "gap": "m",
+        "gap": "s",
         "children": [
-          "title-block",
-          "zone-focus-control"
+          "severityHeading",
+          "severityBadge",
+          "severityText"
         ]
       },
       {
-        "id": "title-block",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "xs",
-        "children": [
-          "page-title",
-          "page-subtitle"
-        ]
-      },
-      {
-        "id": "page-title",
+        "id": "severityHeading",
         "component": "Heading",
-        "text": "Emergency Response Coordination Center",
-        "level": "h1"
+        "text": "Overall Severity",
+        "level": "h3"
       },
       {
-        "id": "page-subtitle",
+        "id": "severityBadge",
+        "component": "Badge",
+        "text": "SEVERE",
+        "variant": "destructive"
+      },
+      {
+        "id": "severityText",
         "component": "TextContent",
-        "text": "Operational dashboard • Last synchronized 14:32 local",
+        "text": "3 critical incidents • 8 active incidents total",
         "size": "small"
       },
       {
-        "id": "zone-focus-control",
-        "component": "FormControl",
-        "label": "Focus operational view",
-        "input": "zone-focus-select",
-        "hint": "Filter coordination activity by zone"
-      },
-      {
-        "id": "zone-focus-select",
-        "component": "Select",
-        "name": "zoneFocus",
-        "placeholder": "All zones",
-        "value": "all",
-        "size": "medium",
-        "items": [
-          "zone-all",
-          "zone-north",
-          "zone-central",
-          "zone-east",
-          "zone-south"
+        "id": "rescuedSummary",
+        "component": "Card",
+        "variant": "card",
+        "gap": "s",
+        "children": [
+          "rescuedHeading",
+          "rescuedValue",
+          "rescuedText"
         ]
       },
       {
-        "id": "zone-all",
+        "id": "rescuedHeading",
+        "component": "Heading",
+        "text": "People Rescued",
+        "level": "h3"
+      },
+      {
+        "id": "rescuedValue",
+        "component": "TextContent",
+        "text": "1,284",
+        "size": "large-heavy"
+      },
+      {
+        "id": "rescuedText",
+        "component": "TextContent",
+        "text": "214 in the last 6 hours",
+        "size": "small"
+      },
+      {
+        "id": "casualtiesSummary",
+        "component": "Card",
+        "variant": "card",
+        "gap": "s",
+        "children": [
+          "casualtiesHeading",
+          "casualtiesValue",
+          "casualtiesText"
+        ]
+      },
+      {
+        "id": "casualtiesHeading",
+        "component": "Heading",
+        "text": "Casualties Reported",
+        "level": "h3"
+      },
+      {
+        "id": "casualtiesValue",
+        "component": "TextContent",
+        "text": "37",
+        "size": "large-heavy"
+      },
+      {
+        "id": "casualtiesText",
+        "component": "TextContent",
+        "text": "12 critical • 25 treated",
+        "size": "small"
+      },
+      {
+        "id": "donationsSummary",
+        "component": "Card",
+        "variant": "card",
+        "gap": "s",
+        "children": [
+          "donationsHeading",
+          "donationsValue",
+          "donationsText"
+        ]
+      },
+      {
+        "id": "donationsHeading",
+        "component": "Heading",
+        "text": "Donations Received",
+        "level": "h3"
+      },
+      {
+        "id": "donationsValue",
+        "component": "TextContent",
+        "text": "$486,250",
+        "size": "large-heavy"
+      },
+      {
+        "id": "donationsText",
+        "component": "TextContent",
+        "text": "Plus 18 truckloads of in-kind aid",
+        "size": "small"
+      },
+      {
+        "id": "zoneFocus",
+        "component": "Card",
+        "variant": "card",
+        "gap": "m",
+        "children": [
+          "zoneFocusHeading",
+          "zoneFocusForm"
+        ]
+      },
+      {
+        "id": "zoneFocusHeading",
+        "component": "Heading",
+        "text": "Focus Operational View",
+        "level": "h2"
+      },
+      {
+        "id": "zoneFocusForm",
+        "component": "Form",
+        "name": "zone-focus",
+        "fields": [
+          "zoneField"
+        ],
+        "buttons": "zoneFocusButtons"
+      },
+      {
+        "id": "zoneField",
+        "component": "FormControl",
+        "label": "Response zone",
+        "input": "zoneSelect"
+      },
+      {
+        "id": "zoneSelect",
+        "component": "Select",
+        "name": "focus_zone",
+        "placeholder": "All zones",
+        "items": [
+          "allZones",
+          "zoneAOption",
+          "zoneBOption",
+          "zoneCOption",
+          "zoneDOption"
+        ]
+      },
+      {
+        "id": "allZones",
         "component": "SelectItem",
         "value": "all",
         "label": "All zones"
       },
       {
-        "id": "zone-north",
+        "id": "zoneAOption",
         "component": "SelectItem",
-        "value": "north",
-        "label": "North Zone"
+        "value": "zone-a",
+        "label": "Zone A — Downtown"
       },
       {
-        "id": "zone-central",
+        "id": "zoneBOption",
         "component": "SelectItem",
-        "value": "central",
-        "label": "Central Zone"
+        "value": "zone-b",
+        "label": "Zone B — Riverside"
       },
       {
-        "id": "zone-east",
+        "id": "zoneCOption",
         "component": "SelectItem",
-        "value": "east",
-        "label": "East Zone"
+        "value": "zone-c",
+        "label": "Zone C — East Floodplain"
       },
       {
-        "id": "zone-south",
+        "id": "zoneDOption",
         "component": "SelectItem",
-        "value": "south",
-        "label": "South Zone"
+        "value": "zone-d",
+        "label": "Zone D — North Hills"
       },
       {
-        "id": "incident-alert",
-        "component": "Alert",
-        "variant": "destructive",
-        "title": "Critical operational priority",
-        "description": "North Zone flooding is worsening. Route N-4 is closed and Riverside Shelter is at 94% occupancy."
+        "id": "zoneFocusButtons",
+        "component": "Buttons",
+        "buttons": [
+          "applyZoneFocusBtn"
+        ]
       },
       {
-        "id": "summary-row",
+        "id": "applyZoneFocusBtn",
+        "component": "Button",
+        "label": "Focus Zone",
+        "variant": "primary"
+      },
+      {
+        "id": "incidentsSection",
         "component": "Card",
-        "variant": "clear",
-        "direction": "row",
+        "variant": "card",
         "gap": "m",
-        "align": "stretch",
         "children": [
-          "severity-summary",
-          "people-summary",
-          "communications-summary"
+          "incidentsHeading",
+          "incidentsTable"
         ]
       },
       {
-        "id": "severity-summary",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "weight": 1,
-        "children": [
-          "severity-header",
-          "severity-critical",
-          "severity-high",
-          "severity-moderate"
-        ]
+        "id": "incidentsHeading",
+        "component": "Heading",
+        "text": "Active Incidents by Zone",
+        "level": "h2"
       },
       {
-        "id": "severity-header",
-        "component": "CardHeader",
-        "title": "Overall Severity",
-        "subtitle": "Regional operating picture"
-      },
-      {
-        "id": "severity-critical",
-        "component": "Tag",
-        "text": "CRITICAL — 2 active incidents",
-        "variant": "danger",
-        "size": "lg"
-      },
-      {
-        "id": "severity-high",
-        "component": "Tag",
-        "text": "HIGH — 3 active incidents",
-        "variant": "warning",
-        "size": "md"
-      },
-      {
-        "id": "severity-moderate",
-        "component": "Tag",
-        "text": "MODERATE — 4 active incidents",
-        "variant": "info",
-        "size": "md"
-      },
-      {
-        "id": "people-summary",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "weight": 1,
-        "children": [
-          "people-header",
-          "rescued-tag",
-          "casualties-tag",
-          "missing-tag"
-        ]
-      },
-      {
-        "id": "people-header",
-        "component": "CardHeader",
-        "title": "People Impacted",
-        "subtitle": "Verified totals so far"
-      },
-      {
-        "id": "rescued-tag",
-        "component": "Tag",
-        "text": "1,284 people rescued",
-        "variant": "success",
-        "size": "lg"
-      },
-      {
-        "id": "casualties-tag",
-        "component": "Tag",
-        "text": "18 casualties",
-        "variant": "danger",
-        "size": "md"
-      },
-      {
-        "id": "missing-tag",
-        "component": "Tag",
-        "text": "27 unaccounted for",
-        "variant": "warning",
-        "size": "md"
-      },
-      {
-        "id": "communications-summary",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "weight": 1,
-        "children": [
-          "comms-header",
-          "comms-table"
-        ]
-      },
-      {
-        "id": "comms-header",
-        "component": "CardHeader",
-        "title": "Communication Channels",
-        "subtitle": "Network availability"
-      },
-      {
-        "id": "comms-table",
+        "id": "incidentsTable",
         "component": "Table",
         "columns": [
-          "comms-channel-col",
-          "comms-status-col",
-          "comms-note-col"
+          "incidentZoneCol",
+          "incidentTypeCol",
+          "incidentSeverityCol",
+          "incidentStatusCol"
         ]
       },
       {
-        "id": "comms-channel-col",
-        "component": "Col",
-        "label": "Channel",
-        "data": [
-          "Emergency radio",
-          "Cellular network",
-          "Satellite phones",
-          "Public alert system"
-        ]
-      },
-      {
-        "id": "comms-status-col",
-        "component": "Col",
-        "label": "Status",
-        "data": [
-          "UP",
-          "DEGRADED",
-          "UP",
-          "UP"
-        ]
-      },
-      {
-        "id": "comms-note-col",
-        "component": "Col",
-        "label": "Notes",
-        "data": [
-          "All repeaters operational",
-          "North Zone intermittent",
-          "12 units available",
-          "Last broadcast 14:20"
-        ]
-      },
-      {
-        "id": "operations-row",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "gap": "m",
-        "align": "stretch",
-        "children": [
-          "incidents-card",
-          "resources-card"
-        ]
-      },
-      {
-        "id": "incidents-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "weight": 2,
-        "children": [
-          "incidents-header",
-          "incidents-table"
-        ]
-      },
-      {
-        "id": "incidents-header",
-        "component": "CardHeader",
-        "title": "Active Incidents by Zone",
-        "subtitle": "9 incidents currently open"
-      },
-      {
-        "id": "incidents-table",
-        "component": "Table",
-        "columns": [
-          "incident-zone-col",
-          "incident-name-col",
-          "incident-severity-col",
-          "incident-status-col"
-        ]
-      },
-      {
-        "id": "incident-zone-col",
+        "id": "incidentZoneCol",
         "component": "Col",
         "label": "Zone",
         "data": [
-          "North",
-          "North",
-          "Central",
-          "East",
-          "South"
+          "Zone A — Downtown",
+          "Zone B — Riverside",
+          "Zone C — East Floodplain",
+          "Zone C — East Floodplain",
+          "Zone D — North Hills"
         ]
       },
       {
-        "id": "incident-name-col",
+        "id": "incidentTypeCol",
         "component": "Col",
         "label": "Incident",
         "data": [
-          "River flooding",
-          "Apartment evacuation",
-          "Power substation fire",
-          "Landslide blockage",
+          "Building collapse",
+          "Power outage",
+          "Flash flooding",
+          "Evacuation assistance",
           "Wildfire perimeter"
         ]
       },
       {
-        "id": "incident-severity-col",
+        "id": "incidentSeverityCol",
         "component": "Col",
         "label": "Severity",
         "data": [
-          "CRITICAL",
-          "HIGH",
-          "HIGH",
-          "MODERATE",
-          "CRITICAL"
+          "Critical",
+          "High",
+          "Critical",
+          "High",
+          "Moderate"
         ]
       },
       {
-        "id": "incident-status-col",
+        "id": "incidentStatusCol",
         "component": "Col",
         "label": "Status",
         "data": [
+          "Rescue underway",
+          "Utility crews dispatched",
           "Escalating",
-          "Evacuation active",
-          "Contained",
-          "Assessment underway",
-          "Active suppression"
+          "Teams en route",
+          "Contained at 60%"
         ]
       },
       {
-        "id": "resources-card",
+        "id": "resourcesSection",
         "component": "Card",
         "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "weight": 1,
-        "children": [
-          "resources-header",
-          "vehicles-tag",
-          "personnel-tag",
-          "supplies-tag",
-          "resource-progress"
-        ]
-      },
-      {
-        "id": "resources-header",
-        "component": "CardHeader",
-        "title": "Available Resources",
-        "subtitle": "Ready for deployment"
-      },
-      {
-        "id": "vehicles-tag",
-        "component": "Tag",
-        "text": "42 vehicles available",
-        "variant": "info",
-        "size": "md"
-      },
-      {
-        "id": "personnel-tag",
-        "component": "Tag",
-        "text": "186 personnel available",
-        "variant": "success",
-        "size": "md"
-      },
-      {
-        "id": "supplies-tag",
-        "component": "Tag",
-        "text": "3,750 supply kits available",
-        "variant": "neutral",
-        "size": "md"
-      },
-      {
-        "id": "resource-progress",
-        "component": "Progress",
-        "value": 68,
-        "label": "68% of deployable capacity committed"
-      },
-      {
-        "id": "shelter-route-row",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "row",
         "gap": "m",
-        "align": "stretch",
         "children": [
-          "shelters-card",
-          "routes-card"
+          "resourcesHeading",
+          "resourcesTable"
         ]
       },
       {
-        "id": "shelters-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "weight": 1,
-        "children": [
-          "shelters-header",
-          "shelters-table"
-        ]
+        "id": "resourcesHeading",
+        "component": "Heading",
+        "text": "Available Resources",
+        "level": "h2"
       },
       {
-        "id": "shelters-header",
-        "component": "CardHeader",
-        "title": "Shelters",
-        "subtitle": "Capacity and current occupancy"
-      },
-      {
-        "id": "shelters-table",
+        "id": "resourcesTable",
         "component": "Table",
         "columns": [
-          "shelter-name-col",
-          "shelter-capacity-col",
-          "shelter-occupancy-col",
-          "shelter-status-col"
+          "resourceTypeCol",
+          "resourceAvailableCol",
+          "resourceDeployedCol",
+          "resourceNotesCol"
         ]
       },
       {
-        "id": "shelter-name-col",
+        "id": "resourceTypeCol",
         "component": "Col",
-        "label": "Shelter",
+        "label": "Resource",
         "data": [
-          "Riverside High",
-          "Civic Center",
-          "East Community Hall",
-          "South Arena"
+          "Vehicles",
+          "Personnel",
+          "Medical supplies",
+          "Food & water",
+          "Temporary shelter kits"
         ]
       },
       {
-        "id": "shelter-capacity-col",
+        "id": "resourceAvailableCol",
         "component": "Col",
-        "label": "Capacity",
+        "label": "Available",
         "data": [
-          "600",
-          "850",
-          "400",
-          "1,000"
+          "42",
+          "186",
+          "1,240 kits",
+          "8,600 meals",
+          "310"
         ]
       },
       {
-        "id": "shelter-occupancy-col",
+        "id": "resourceDeployedCol",
         "component": "Col",
-        "label": "Occupied",
+        "label": "Deployed",
         "data": [
-          "564",
-          "503",
-          "188",
-          "720"
+          "67",
+          "412",
+          "3,780 kits",
+          "12,400 meals",
+          "690"
         ]
       },
       {
-        "id": "shelter-status-col",
-        "component": "Col",
-        "label": "Status",
-        "data": [
-          "94%",
-          "59%",
-          "47%",
-          "72%"
-        ]
-      },
-      {
-        "id": "routes-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "weight": 1,
-        "children": [
-          "routes-header",
-          "routes-table"
-        ]
-      },
-      {
-        "id": "routes-header",
-        "component": "CardHeader",
-        "title": "Evacuation Routes",
-        "subtitle": "Current route conditions"
-      },
-      {
-        "id": "routes-table",
-        "component": "Table",
-        "columns": [
-          "route-name-col",
-          "route-zone-col",
-          "route-status-col",
-          "route-note-col"
-        ]
-      },
-      {
-        "id": "route-name-col",
-        "component": "Col",
-        "label": "Route",
-        "data": [
-          "N-4 River Road",
-          "Central Parkway",
-          "E-2 Ridge Pass",
-          "S-7 Coastal Link"
-        ]
-      },
-      {
-        "id": "route-zone-col",
-        "component": "Col",
-        "label": "Zone",
-        "data": [
-          "North",
-          "Central",
-          "East",
-          "South"
-        ]
-      },
-      {
-        "id": "route-status-col",
-        "component": "Col",
-        "label": "Status",
-        "data": [
-          "CLOSED",
-          "OPEN",
-          "RESTRICTED",
-          "OPEN"
-        ]
-      },
-      {
-        "id": "route-note-col",
+        "id": "resourceNotesCol",
         "component": "Col",
         "label": "Notes",
         "data": [
-          "Flooded at bridge",
-          "Clear",
-          "One lane, escorted",
-          "Heavy traffic"
+          "8 high-water vehicles",
+          "Includes 34 medical staff",
+          "Low stock in Zone C",
+          "72-hour reserve",
+          "Replenishment due tonight"
         ]
       },
       {
-        "id": "weather-impact-row",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "gap": "m",
-        "align": "stretch",
-        "children": [
-          "weather-card",
-          "roads-card"
-        ]
-      },
-      {
-        "id": "weather-card",
+        "id": "sheltersSection",
         "component": "Card",
         "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "weight": 1,
+        "gap": "m",
         "children": [
-          "weather-header",
-          "weather-table"
+          "sheltersHeading",
+          "sheltersTable"
         ]
       },
       {
-        "id": "weather-header",
-        "component": "CardHeader",
-        "title": "48-Hour Weather Forecast",
-        "subtitle": "Conditions affecting response operations"
+        "id": "sheltersHeading",
+        "component": "Heading",
+        "text": "Shelters: Capacity and Occupancy",
+        "level": "h2"
       },
       {
-        "id": "weather-table",
+        "id": "sheltersTable",
         "component": "Table",
         "columns": [
-          "weather-period-col",
-          "weather-condition-col",
-          "weather-temp-col",
-          "weather-impact-col"
+          "shelterNameCol",
+          "shelterZoneCol",
+          "shelterCapacityCol",
+          "shelterOccupancyCol",
+          "shelterStatusCol"
         ]
       },
       {
-        "id": "weather-period-col",
+        "id": "shelterNameCol",
+        "component": "Col",
+        "label": "Shelter",
+        "data": [
+          "Central High School",
+          "Riverside Community Center",
+          "East Arena",
+          "North Hills Church"
+        ]
+      },
+      {
+        "id": "shelterZoneCol",
+        "component": "Col",
+        "label": "Zone",
+        "data": [
+          "Zone A",
+          "Zone B",
+          "Zone C",
+          "Zone D"
+        ]
+      },
+      {
+        "id": "shelterCapacityCol",
+        "component": "Col",
+        "label": "Capacity",
+        "data": [
+          "800",
+          "450",
+          "1,200",
+          "300"
+        ]
+      },
+      {
+        "id": "shelterOccupancyCol",
+        "component": "Col",
+        "label": "Occupancy",
+        "data": [
+          "612",
+          "421",
+          "1,084",
+          "143"
+        ]
+      },
+      {
+        "id": "shelterStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Open",
+          "Near capacity",
+          "Near capacity",
+          "Open"
+        ]
+      },
+      {
+        "id": "routesSection",
+        "component": "Card",
+        "variant": "card",
+        "gap": "m",
+        "children": [
+          "routesHeading",
+          "routesTable"
+        ]
+      },
+      {
+        "id": "routesHeading",
+        "component": "Heading",
+        "text": "Evacuation Route Status",
+        "level": "h2"
+      },
+      {
+        "id": "routesTable",
+        "component": "Table",
+        "columns": [
+          "routeNameCol",
+          "routeFromCol",
+          "routeToCol",
+          "routeStatusCol",
+          "routeNotesCol"
+        ]
+      },
+      {
+        "id": "routeNameCol",
+        "component": "Col",
+        "label": "Route",
+        "data": [
+          "E-1 Central Corridor",
+          "E-2 Riverside Route",
+          "E-3 Eastbound Highway",
+          "E-4 North Ridge Road"
+        ]
+      },
+      {
+        "id": "routeFromCol",
+        "component": "Col",
+        "label": "From",
+        "data": [
+          "Zone A",
+          "Zone B",
+          "Zone C",
+          "Zone D"
+        ]
+      },
+      {
+        "id": "routeToCol",
+        "component": "Col",
+        "label": "To",
+        "data": [
+          "Central High Shelter",
+          "West Transit Hub",
+          "East Arena Shelter",
+          "North Hills Church"
+        ]
+      },
+      {
+        "id": "routeStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Open",
+          "Restricted",
+          "Closed",
+          "Open"
+        ]
+      },
+      {
+        "id": "routeNotesCol",
+        "component": "Col",
+        "label": "Notes",
+        "data": [
+          "Clear for buses",
+          "One lane, escorted only",
+          "Flooded at Mile 7",
+          "Smoke advisory"
+        ]
+      },
+      {
+        "id": "weatherSection",
+        "component": "Card",
+        "variant": "card",
+        "gap": "m",
+        "children": [
+          "weatherHeading",
+          "weatherTable",
+          "rainForecastChart"
+        ]
+      },
+      {
+        "id": "weatherHeading",
+        "component": "Heading",
+        "text": "48-Hour Weather Forecast",
+        "level": "h2"
+      },
+      {
+        "id": "weatherTable",
+        "component": "Table",
+        "columns": [
+          "weatherPeriodCol",
+          "weatherConditionsCol",
+          "weatherTempCol",
+          "weatherWindCol",
+          "weatherRiskCol"
+        ]
+      },
+      {
+        "id": "weatherPeriodCol",
         "component": "Col",
         "label": "Period",
         "data": [
           "Today 18:00–00:00",
-          "Overnight",
+          "Overnight 00:00–06:00",
           "Tomorrow 06:00–18:00",
-          "Tomorrow night"
+          "Tomorrow night 18:00–06:00"
         ]
       },
       {
-        "id": "weather-condition-col",
+        "id": "weatherConditionsCol",
         "component": "Col",
-        "label": "Forecast",
+        "label": "Conditions",
         "data": [
           "Heavy rain",
           "Thunderstorms",
           "Rain easing",
-          "Cloudy, windy"
+          "Cloudy with showers"
         ]
       },
       {
-        "id": "weather-temp-col",
+        "id": "weatherTempCol",
         "component": "Col",
-        "label": "Temp",
+        "label": "Temperature",
         "data": [
-          "14°C",
-          "11°C",
           "16°C",
-          "10°C"
+          "13°C",
+          "18°C",
+          "12°C"
         ]
       },
       {
-        "id": "weather-impact-col",
+        "id": "weatherWindCol",
         "component": "Col",
-        "label": "Operational impact",
+        "label": "Wind",
+        "data": [
+          "30 km/h gusts",
+          "45 km/h gusts",
+          "20 km/h",
+          "15 km/h"
+        ]
+      },
+      {
+        "id": "weatherRiskCol",
+        "component": "Col",
+        "label": "Operational Risk",
         "data": [
           "High flood risk",
-          "Aviation restricted",
-          "Improving visibility",
-          "Monitor wind gusts"
+          "Severe storm risk",
+          "Moderate",
+          "Low to moderate"
         ]
       },
       {
-        "id": "roads-card",
+        "id": "rainForecastChart",
+        "component": "BarChart",
+        "labels": [
+          "Now",
+          "+6h",
+          "+12h",
+          "+18h",
+          "+24h",
+          "+30h",
+          "+36h",
+          "+42h",
+          "+48h"
+        ],
+        "series": [
+          "rainfallSeries"
+        ],
+        "variant": "grouped",
+        "xLabel": "Forecast horizon",
+        "yLabel": "Rainfall (mm)"
+      },
+      {
+        "id": "rainfallSeries",
+        "component": "Series",
+        "category": "Expected rainfall",
+        "values": [
+          18,
+          32,
+          24,
+          12,
+          8,
+          5,
+          7,
+          4,
+          3
+        ]
+      },
+      {
+        "id": "impactSection",
         "component": "Card",
         "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "weight": 1,
-        "children": [
-          "roads-header",
-          "roads-table"
-        ]
-      },
-      {
-        "id": "roads-header",
-        "component": "CardHeader",
-        "title": "Road Closures",
-        "subtitle": "Confirmed closures and restrictions"
-      },
-      {
-        "id": "roads-table",
-        "component": "Table",
-        "columns": [
-          "road-name-col",
-          "road-location-col",
-          "road-reason-col",
-          "road-reopen-col"
-        ]
-      },
-      {
-        "id": "road-name-col",
-        "component": "Col",
-        "label": "Road",
-        "data": [
-          "River Road N-4",
-          "Oak Street Bridge",
-          "Ridge Pass E-2",
-          "Harbor Tunnel"
-        ]
-      },
-      {
-        "id": "road-location-col",
-        "component": "Col",
-        "label": "Location",
-        "data": [
-          "North Zone",
-          "Central Zone",
-          "East Zone",
-          "South Zone"
-        ]
-      },
-      {
-        "id": "road-reason-col",
-        "component": "Col",
-        "label": "Reason",
-        "data": [
-          "Flooding",
-          "Structural inspection",
-          "Landslide debris",
-          "Smoke hazard"
-        ]
-      },
-      {
-        "id": "road-reopen-col",
-        "component": "Col",
-        "label": "Review",
-        "data": [
-          "06:00 tomorrow",
-          "18:00 today",
-          "After clearance",
-          "22:00 today"
-        ]
-      },
-      {
-        "id": "people-volunteer-row",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "row",
         "gap": "m",
-        "align": "stretch",
         "children": [
-          "volunteers-card",
-          "hospitals-card"
+          "impactHeading",
+          "impactTable"
         ]
       },
       {
-        "id": "volunteers-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "weight": 1,
-        "children": [
-          "volunteers-header",
-          "volunteers-table"
-        ]
+        "id": "impactHeading",
+        "component": "Heading",
+        "text": "Rescue and Casualty Status",
+        "level": "h2"
       },
       {
-        "id": "volunteers-header",
-        "component": "CardHeader",
-        "title": "Volunteers on Duty",
-        "subtitle": "36 active volunteers across operations"
-      },
-      {
-        "id": "volunteers-table",
+        "id": "impactTable",
         "component": "Table",
         "columns": [
-          "volunteer-name-col",
-          "volunteer-assignment-col",
-          "volunteer-zone-col",
-          "volunteer-shift-col"
+          "impactZoneCol",
+          "impactRescuedCol",
+          "impactCasualtiesCol",
+          "impactPriorityCol"
         ]
       },
       {
-        "id": "volunteer-name-col",
+        "id": "impactZoneCol",
+        "component": "Col",
+        "label": "Zone",
+        "data": [
+          "Zone A",
+          "Zone B",
+          "Zone C",
+          "Zone D"
+        ]
+      },
+      {
+        "id": "impactRescuedCol",
+        "component": "Col",
+        "label": "Rescued",
+        "data": [
+          "318",
+          "226",
+          "604",
+          "136"
+        ]
+      },
+      {
+        "id": "impactCasualtiesCol",
+        "component": "Col",
+        "label": "Casualties",
+        "data": [
+          "8",
+          "6",
+          "19",
+          "4"
+        ]
+      },
+      {
+        "id": "impactPriorityCol",
+        "component": "Col",
+        "label": "Priority",
+        "data": [
+          "Search operations",
+          "Medical transport",
+          "Water rescue",
+          "Fire containment"
+        ]
+      },
+      {
+        "id": "volunteersSection",
+        "component": "Card",
+        "variant": "card",
+        "gap": "m",
+        "children": [
+          "volunteersHeading",
+          "volunteersTable"
+        ]
+      },
+      {
+        "id": "volunteersHeading",
+        "component": "Heading",
+        "text": "Volunteers on Duty",
+        "level": "h2"
+      },
+      {
+        "id": "volunteersTable",
+        "component": "Table",
+        "columns": [
+          "volunteerNameCol",
+          "volunteerAssignmentCol",
+          "volunteerZoneCol",
+          "volunteerShiftCol"
+        ]
+      },
+      {
+        "id": "volunteerNameCol",
         "component": "Col",
         "label": "Volunteer",
         "data": [
           "Maya Chen",
-          "Omar Davis",
-          "Priya Shah",
-          "Luis Romero"
+          "David Okafor",
+          "Elena Ruiz",
+          "Samir Patel",
+          "Grace Kim"
         ]
       },
       {
-        "id": "volunteer-assignment-col",
+        "id": "volunteerAssignmentCol",
         "component": "Col",
         "label": "Assignment",
         "data": [
           "Shelter intake",
           "Supply distribution",
           "Family reunification",
-          "Route support"
+          "Evacuation support",
+          "Medical triage support"
         ]
       },
       {
-        "id": "volunteer-zone-col",
+        "id": "volunteerZoneCol",
         "component": "Col",
         "label": "Zone",
         "data": [
-          "North",
-          "Central",
-          "East",
-          "South"
+          "Zone A",
+          "Zone C",
+          "Zone B",
+          "Zone C",
+          "Zone A"
         ]
       },
       {
-        "id": "volunteer-shift-col",
+        "id": "volunteerShiftCol",
         "component": "Col",
-        "label": "Shift ends",
+        "label": "Shift",
         "data": [
-          "18:00",
-          "20:00",
-          "19:00",
-          "22:00"
+          "14:00–22:00",
+          "12:00–20:00",
+          "14:00–22:00",
+          "14:00–22:00",
+          "10:00–18:00"
         ]
       },
       {
-        "id": "hospitals-card",
+        "id": "donationsSection",
         "component": "Card",
         "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "weight": 1,
-        "children": [
-          "hospitals-header",
-          "hospitals-table"
-        ]
-      },
-      {
-        "id": "hospitals-header",
-        "component": "CardHeader",
-        "title": "Nearby Hospitals",
-        "subtitle": "Emergency capacity"
-      },
-      {
-        "id": "hospitals-table",
-        "component": "Table",
-        "columns": [
-          "hospital-name-col",
-          "hospital-zone-col",
-          "hospital-freebeds-col",
-          "hospital-status-col"
-        ]
-      },
-      {
-        "id": "hospital-name-col",
-        "component": "Col",
-        "label": "Hospital",
-        "data": [
-          "St. Anne Medical Center",
-          "Memorial General",
-          "Eastside Trauma Center",
-          "South County Hospital"
-        ]
-      },
-      {
-        "id": "hospital-zone-col",
-        "component": "Col",
-        "label": "Zone",
-        "data": [
-          "Central",
-          "North",
-          "East",
-          "South"
-        ]
-      },
-      {
-        "id": "hospital-freebeds-col",
-        "component": "Col",
-        "label": "Free beds",
-        "data": [
-          "24",
-          "8",
-          "17",
-          "31"
-        ]
-      },
-      {
-        "id": "hospital-status-col",
-        "component": "Col",
-        "label": "Status",
-        "data": [
-          "Receiving",
-          "Near capacity",
-          "Receiving",
-          "Receiving"
-        ]
-      },
-      {
-        "id": "support-row",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "row",
         "gap": "m",
-        "align": "stretch",
         "children": [
-          "donations-card",
-          "aid-requests-card"
+          "donationsHeading",
+          "donationsTable"
         ]
       },
       {
-        "id": "donations-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "weight": 1,
-        "children": [
-          "donations-header",
-          "donations-table"
-        ]
+        "id": "donationsHeading",
+        "component": "Heading",
+        "text": "Donations Received",
+        "level": "h2"
       },
       {
-        "id": "donations-header",
-        "component": "CardHeader",
-        "title": "Donations Received",
-        "subtitle": "Recorded in the past 24 hours"
-      },
-      {
-        "id": "donations-table",
+        "id": "donationsTable",
         "component": "Table",
         "columns": [
-          "donation-source-col",
-          "donation-type-col",
-          "donation-amount-col",
-          "donation-time-col"
+          "donationSourceCol",
+          "donationTypeCol",
+          "donationAmountCol",
+          "donationReceivedCol"
         ]
       },
       {
-        "id": "donation-source-col",
+        "id": "donationSourceCol",
         "component": "Col",
         "label": "Source",
         "data": [
-          "Community Relief Fund",
-          "Northside Grocers",
-          "Hope Logistics",
-          "Anonymous"
+          "City Relief Fund",
+          "NorthStar Logistics",
+          "Community Drive",
+          "Regional Health Network"
         ]
       },
       {
-        "id": "donation-type-col",
+        "id": "donationTypeCol",
         "component": "Col",
-        "label": "Donation",
+        "label": "Type",
         "data": [
           "Cash",
-          "Water and food",
-          "Blankets",
-          "Cash"
+          "Bottled water",
+          "Food supplies",
+          "Medical supplies"
         ]
       },
       {
-        "id": "donation-amount-col",
+        "id": "donationAmountCol",
         "component": "Col",
         "label": "Amount",
         "data": [
-          "$48,500",
-          "1,200 kits",
-          "800 units",
-          "$12,000"
+          "$250,000",
+          "6 pallets",
+          "8 truckloads",
+          "1,500 trauma kits"
         ]
       },
       {
-        "id": "donation-time-col",
+        "id": "donationReceivedCol",
         "component": "Col",
         "label": "Received",
         "data": [
-          "14:05",
-          "13:42",
+          "14:10",
+          "13:45",
           "12:30",
-          "11:18"
+          "11:15"
         ]
       },
       {
-        "id": "aid-requests-card",
+        "id": "aidRequestsSection",
         "component": "Card",
         "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "weight": 1,
+        "gap": "m",
         "children": [
-          "aid-requests-header",
-          "aid-requests-table"
+          "aidRequestsHeading",
+          "aidRequestsTable"
         ]
       },
       {
-        "id": "aid-requests-header",
-        "component": "CardHeader",
-        "title": "Aid Requests Awaiting Action",
-        "subtitle": "7 requests require coordination"
+        "id": "aidRequestsHeading",
+        "component": "Heading",
+        "text": "Aid Requests Awaiting Action",
+        "level": "h2"
       },
       {
-        "id": "aid-requests-table",
+        "id": "aidRequestsTable",
         "component": "Table",
         "columns": [
-          "aid-request-col",
-          "aid-zone-col",
-          "aid-priority-col",
-          "aid-waiting-col"
+          "aidRequestIdCol",
+          "aidRequestLocationCol",
+          "aidRequestNeedCol",
+          "aidRequestPriorityCol",
+          "aidRequestAgeCol"
         ]
       },
       {
-        "id": "aid-request-col",
+        "id": "aidRequestIdCol",
         "component": "Col",
         "label": "Request",
         "data": [
-          "Water purification units",
-          "Wheelchair transport",
-          "Infant formula",
-          "Generator fuel"
+          "AR-1042",
+          "AR-1047",
+          "AR-1051",
+          "AR-1054"
         ]
       },
       {
-        "id": "aid-zone-col",
+        "id": "aidRequestLocationCol",
         "component": "Col",
-        "label": "Zone",
+        "label": "Location",
         "data": [
-          "North",
-          "Central",
-          "East",
-          "South"
+          "Zone C, River Street",
+          "Zone B, Dockside",
+          "Zone A, 4th Avenue",
+          "Zone C, East Park"
         ]
       },
       {
-        "id": "aid-priority-col",
+        "id": "aidRequestNeedCol",
+        "component": "Col",
+        "label": "Need",
+        "data": [
+          "Boat evacuation for 12 residents",
+          "Insulin and oxygen",
+          "Wheelchair-accessible transport",
+          "Drinking water and infant formula"
+        ]
+      },
+      {
+        "id": "aidRequestPriorityCol",
         "component": "Col",
         "label": "Priority",
         "data": [
-          "CRITICAL",
-          "HIGH",
-          "HIGH",
-          "MODERATE"
+          "Critical",
+          "Critical",
+          "High",
+          "High"
         ]
       },
       {
-        "id": "aid-waiting-col",
+        "id": "aidRequestAgeCol",
         "component": "Col",
         "label": "Waiting",
         "data": [
           "18 min",
-          "32 min",
+          "26 min",
           "41 min",
-          "55 min"
+          "52 min"
         ]
       },
       {
-        "id": "tasks-actions-row",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "gap": "m",
-        "align": "stretch",
-        "children": [
-          "tasks-card",
-          "resource-request-card"
-        ]
-      },
-      {
-        "id": "tasks-card",
+        "id": "communicationsSection",
         "component": "Card",
         "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "weight": 1,
+        "gap": "m",
         "children": [
-          "tasks-header",
-          "tasks-table"
+          "communicationsHeading",
+          "communicationsTable"
         ]
       },
       {
-        "id": "tasks-header",
-        "component": "CardHeader",
-        "title": "Open Tasks",
-        "subtitle": "Assigned response actions"
+        "id": "communicationsHeading",
+        "component": "Heading",
+        "text": "Communication Channels",
+        "level": "h2"
       },
       {
-        "id": "tasks-table",
+        "id": "communicationsTable",
         "component": "Table",
         "columns": [
-          "task-name-col",
-          "task-assignee-col",
-          "task-priority-col",
-          "task-due-col"
+          "channelNameCol",
+          "channelStatusCol",
+          "channelLastCheckCol",
+          "channelNotesCol"
         ]
       },
       {
-        "id": "task-name-col",
+        "id": "channelNameCol",
+        "component": "Col",
+        "label": "Channel",
+        "data": [
+          "Emergency radio network",
+          "Cellular alert system",
+          "Satellite phones",
+          "Public safety dispatch",
+          "Field team messaging"
+        ]
+      },
+      {
+        "id": "channelStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Up",
+          "Degraded",
+          "Up",
+          "Up",
+          "Intermittent"
+        ]
+      },
+      {
+        "id": "channelLastCheckCol",
+        "component": "Col",
+        "label": "Last Check",
+        "data": [
+          "14:28",
+          "14:25",
+          "14:29",
+          "14:30",
+          "14:24"
+        ]
+      },
+      {
+        "id": "channelNotesCol",
+        "component": "Col",
+        "label": "Notes",
+        "data": [
+          "All repeaters operational",
+          "Congestion in Zone C",
+          "12 units available",
+          "Normal operations",
+          "Retry messages in Zone B"
+        ]
+      },
+      {
+        "id": "roadsSection",
+        "component": "Card",
+        "variant": "card",
+        "gap": "m",
+        "children": [
+          "roadsHeading",
+          "roadsTable"
+        ]
+      },
+      {
+        "id": "roadsHeading",
+        "component": "Heading",
+        "text": "Road Closures",
+        "level": "h2"
+      },
+      {
+        "id": "roadsTable",
+        "component": "Table",
+        "columns": [
+          "roadNameCol",
+          "roadAreaCol",
+          "roadReasonCol",
+          "roadDetourCol"
+        ]
+      },
+      {
+        "id": "roadNameCol",
+        "component": "Col",
+        "label": "Road",
+        "data": [
+          "Eastbound Highway 7",
+          "River Street",
+          "Oak Bridge",
+          "Harbor Avenue"
+        ]
+      },
+      {
+        "id": "roadAreaCol",
+        "component": "Col",
+        "label": "Area",
+        "data": [
+          "Zone C",
+          "Zone C",
+          "Zone B",
+          "Zone A"
+        ]
+      },
+      {
+        "id": "roadReasonCol",
+        "component": "Col",
+        "label": "Closure Reason",
+        "data": [
+          "Floodwater",
+          "Swift-water rescue operations",
+          "Structural inspection",
+          "Downed power lines"
+        ]
+      },
+      {
+        "id": "roadDetourCol",
+        "component": "Col",
+        "label": "Detour",
+        "data": [
+          "Use Route E-4",
+          "Use Hillside Drive",
+          "Use South Crossing",
+          "Use 6th Street"
+        ]
+      },
+      {
+        "id": "hospitalsSection",
+        "component": "Card",
+        "variant": "card",
+        "gap": "m",
+        "children": [
+          "hospitalsHeading",
+          "hospitalsTable"
+        ]
+      },
+      {
+        "id": "hospitalsHeading",
+        "component": "Heading",
+        "text": "Nearby Hospitals and Free Beds",
+        "level": "h2"
+      },
+      {
+        "id": "hospitalsTable",
+        "component": "Table",
+        "columns": [
+          "hospitalNameCol",
+          "hospitalDistanceCol",
+          "hospitalFreeBedsCol",
+          "hospitalTraumaCol",
+          "hospitalStatusCol"
+        ]
+      },
+      {
+        "id": "hospitalNameCol",
+        "component": "Col",
+        "label": "Hospital",
+        "data": [
+          "St. Anne Medical Center",
+          "Riverside General",
+          "Mercy Regional Hospital",
+          "North Hills Clinic"
+        ]
+      },
+      {
+        "id": "hospitalDistanceCol",
+        "component": "Col",
+        "label": "Distance",
+        "data": [
+          "2.4 km",
+          "5.8 km",
+          "9.1 km",
+          "11.3 km"
+        ]
+      },
+      {
+        "id": "hospitalFreeBedsCol",
+        "component": "Col",
+        "label": "Free Beds",
+        "data": [
+          "18",
+          "7",
+          "26",
+          "11"
+        ]
+      },
+      {
+        "id": "hospitalTraumaCol",
+        "component": "Col",
+        "label": "Trauma Capacity",
+        "data": [
+          "4 bays",
+          "2 bays",
+          "6 bays",
+          "1 bay"
+        ]
+      },
+      {
+        "id": "hospitalStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Accepting patients",
+          "Limited intake",
+          "Accepting patients",
+          "Accepting patients"
+        ]
+      },
+      {
+        "id": "tasksSection",
+        "component": "Card",
+        "variant": "card",
+        "gap": "m",
+        "children": [
+          "tasksHeading",
+          "tasksTable"
+        ]
+      },
+      {
+        "id": "tasksHeading",
+        "component": "Heading",
+        "text": "Open Tasks",
+        "level": "h2"
+      },
+      {
+        "id": "tasksTable",
+        "component": "Table",
+        "columns": [
+          "taskNameCol",
+          "taskAssigneeCol",
+          "taskPriorityCol",
+          "taskDueCol",
+          "taskStatusCol"
+        ]
+      },
+      {
+        "id": "taskNameCol",
         "component": "Col",
         "label": "Task",
         "data": [
-          "Inspect Riverside levee",
-          "Open overflow shelter",
-          "Coordinate fuel convoy",
-          "Verify hospital surge beds"
+          "Deploy two rescue boats to River Street",
+          "Confirm East Arena generator fuel delivery",
+          "Coordinate hospital transfers from Zone C",
+          "Issue multilingual evacuation update",
+          "Inspect Oak Bridge"
         ]
       },
       {
-        "id": "task-assignee-col",
+        "id": "taskAssigneeCol",
         "component": "Col",
         "label": "Assignee",
         "data": [
-          "J. Morgan",
-          "A. Patel",
-          "R. Kim",
-          "S. Alvarez"
+          "Lt. Jordan Lee",
+          "Priya Nair",
+          "Dr. Marcus Bell",
+          "Comms Team",
+          "Public Works Unit 3"
         ]
       },
       {
-        "id": "task-priority-col",
+        "id": "taskPriorityCol",
         "component": "Col",
         "label": "Priority",
         "data": [
-          "CRITICAL",
-          "HIGH",
-          "HIGH",
-          "MODERATE"
+          "Critical",
+          "High",
+          "Critical",
+          "High",
+          "Moderate"
         ]
       },
       {
-        "id": "task-due-col",
+        "id": "taskDueCol",
         "component": "Col",
         "label": "Due",
         "data": [
+          "14:45",
           "15:00",
-          "16:00",
-          "16:30",
-          "17:00"
+          "15:15",
+          "15:30",
+          "16:00"
         ]
       },
       {
-        "id": "resource-request-card",
+        "id": "taskStatusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "In progress",
+          "Pending confirmation",
+          "In progress",
+          "Not started",
+          "Dispatched"
+        ]
+      },
+      {
+        "id": "actionsSection",
         "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "weight": 1,
+        "variant": "sunk",
+        "gap": "l",
         "children": [
-          "resource-request-header",
-          "resource-request-form"
+          "actionsHeading",
+          "resourceRequestForm",
+          "broadcastForm",
+          "situationReportForm"
         ]
       },
       {
-        "id": "resource-request-header",
-        "component": "CardHeader",
-        "title": "Request More Resources",
-        "subtitle": "Submit a mutual-aid or logistics request"
+        "id": "actionsHeading",
+        "component": "Heading",
+        "text": "Command Actions",
+        "level": "h2"
       },
       {
-        "id": "resource-request-form",
+        "id": "resourceRequestForm",
         "component": "Form",
-        "name": "resourceRequest",
+        "name": "resource-request",
         "fields": [
-          "resource-type-control",
-          "resource-quantity-control",
-          "resource-zone-control"
+          "resourceTypeField",
+          "resourceQuantityField",
+          "resourceDestinationField"
         ],
-        "buttons": "resource-request-buttons"
+        "buttons": "resourceRequestButtons"
       },
       {
-        "id": "resource-type-control",
+        "id": "resourceTypeField",
         "component": "FormControl",
-        "label": "Resource type",
-        "input": "resource-type-select"
+        "label": "Request resource type",
+        "input": "resourceTypeSelect"
       },
       {
-        "id": "resource-type-select",
+        "id": "resourceTypeSelect",
         "component": "Select",
-        "name": "resourceType",
-        "placeholder": "Choose resource type",
+        "name": "resource_type",
+        "placeholder": "Choose a resource",
         "items": [
-          "resource-type-vehicles",
-          "resource-type-personnel",
-          "resource-type-medical",
-          "resource-type-supplies"
+          "resourceVehicles",
+          "resourcePersonnel",
+          "resourceMedical",
+          "resourceWater",
+          "resourceShelter"
         ]
       },
       {
-        "id": "resource-type-vehicles",
+        "id": "resourceVehicles",
         "component": "SelectItem",
         "value": "vehicles",
         "label": "Vehicles"
       },
       {
-        "id": "resource-type-personnel",
+        "id": "resourcePersonnel",
         "component": "SelectItem",
         "value": "personnel",
         "label": "Personnel"
       },
       {
-        "id": "resource-type-medical",
+        "id": "resourceMedical",
         "component": "SelectItem",
-        "value": "medical",
-        "label": "Medical equipment"
+        "value": "medical-supplies",
+        "label": "Medical supplies"
       },
       {
-        "id": "resource-type-supplies",
+        "id": "resourceWater",
         "component": "SelectItem",
-        "value": "supplies",
-        "label": "Relief supplies"
+        "value": "food-water",
+        "label": "Food and water"
       },
       {
-        "id": "resource-quantity-control",
+        "id": "resourceShelter",
+        "component": "SelectItem",
+        "value": "shelter-kits",
+        "label": "Shelter kits"
+      },
+      {
+        "id": "resourceQuantityField",
         "component": "FormControl",
         "label": "Quantity",
-        "input": "resource-quantity-input"
+        "input": "resourceQuantityInput"
       },
       {
-        "id": "resource-quantity-input",
+        "id": "resourceQuantityInput",
         "component": "Input",
-        "name": "resourceQuantity",
+        "name": "quantity",
         "type": "number",
         "placeholder": "Enter quantity"
       },
       {
-        "id": "resource-zone-control",
+        "id": "resourceDestinationField",
         "component": "FormControl",
-        "label": "Destination zone",
-        "input": "resource-zone-select"
+        "label": "Destination / requesting zone",
+        "input": "resourceDestinationInput"
       },
       {
-        "id": "resource-zone-select",
-        "component": "Select",
-        "name": "resourceZone",
-        "placeholder": "Select zone",
-        "items": [
-          "request-zone-north",
-          "request-zone-central",
-          "request-zone-east",
-          "request-zone-south"
-        ]
+        "id": "resourceDestinationInput",
+        "component": "Input",
+        "name": "destination",
+        "placeholder": "e.g., Zone C staging area"
       },
       {
-        "id": "request-zone-north",
-        "component": "SelectItem",
-        "value": "north",
-        "label": "North Zone"
-      },
-      {
-        "id": "request-zone-central",
-        "component": "SelectItem",
-        "value": "central",
-        "label": "Central Zone"
-      },
-      {
-        "id": "request-zone-east",
-        "component": "SelectItem",
-        "value": "east",
-        "label": "East Zone"
-      },
-      {
-        "id": "request-zone-south",
-        "component": "SelectItem",
-        "value": "south",
-        "label": "South Zone"
-      },
-      {
-        "id": "resource-request-buttons",
+        "id": "resourceRequestButtons",
         "component": "Buttons",
-        "direction": "row",
         "buttons": [
-          "submit-resource-request"
+          "submitResourceRequestBtn"
         ]
       },
       {
-        "id": "submit-resource-request",
+        "id": "submitResourceRequestBtn",
         "component": "Button",
-        "label": "Submit Resource Request",
-        "variant": "primary",
-        "size": "medium"
+        "label": "Request Resources",
+        "variant": "primary"
       },
       {
-        "id": "reporting-row",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "gap": "m",
-        "align": "stretch",
-        "children": [
-          "broadcast-card",
-          "situation-report-card"
-        ]
-      },
-      {
-        "id": "broadcast-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "weight": 1,
-        "children": [
-          "broadcast-header",
-          "broadcast-form"
-        ]
-      },
-      {
-        "id": "broadcast-header",
-        "component": "CardHeader",
-        "title": "Broadcast Update",
-        "subtitle": "Send an operational or public information update"
-      },
-      {
-        "id": "broadcast-form",
+        "id": "broadcastForm",
         "component": "Form",
-        "name": "broadcastUpdate",
+        "name": "broadcast-update",
         "fields": [
-          "broadcast-channel-control",
-          "broadcast-message-control"
+          "broadcastChannelField",
+          "broadcastMessageField"
         ],
-        "buttons": "broadcast-buttons"
+        "buttons": "broadcastButtons"
       },
       {
-        "id": "broadcast-channel-control",
+        "id": "broadcastChannelField",
         "component": "FormControl",
-        "label": "Channel",
-        "input": "broadcast-channel-select"
+        "label": "Broadcast channel",
+        "input": "broadcastChannelSelect"
       },
       {
-        "id": "broadcast-channel-select",
+        "id": "broadcastChannelSelect",
         "component": "Select",
-        "name": "broadcastChannel",
-        "placeholder": "Select channel",
+        "name": "broadcast_channel",
+        "placeholder": "Choose channel",
         "items": [
-          "broadcast-public",
-          "broadcast-responders",
-          "broadcast-shelters",
-          "broadcast-volunteers"
+          "channelAll",
+          "channelRadio",
+          "channelCellular",
+          "channelFieldTeams"
         ]
       },
       {
-        "id": "broadcast-public",
+        "id": "channelAll",
         "component": "SelectItem",
-        "value": "public",
-        "label": "Public alert system"
+        "value": "all",
+        "label": "All available channels"
       },
       {
-        "id": "broadcast-responders",
+        "id": "channelRadio",
         "component": "SelectItem",
-        "value": "responders",
-        "label": "Responder radio network"
+        "value": "radio",
+        "label": "Emergency radio network"
       },
       {
-        "id": "broadcast-shelters",
+        "id": "channelCellular",
         "component": "SelectItem",
-        "value": "shelters",
-        "label": "Shelter coordinators"
+        "value": "cellular",
+        "label": "Cellular alert system"
       },
       {
-        "id": "broadcast-volunteers",
+        "id": "channelFieldTeams",
         "component": "SelectItem",
-        "value": "volunteers",
-        "label": "Volunteer network"
+        "value": "field-teams",
+        "label": "Field team messaging"
       },
       {
-        "id": "broadcast-message-control",
+        "id": "broadcastMessageField",
         "component": "FormControl",
-        "label": "Message",
-        "input": "broadcast-message-input",
-        "hint": "Use clear, time-sensitive instructions."
+        "label": "Update message",
+        "input": "broadcastMessageInput",
+        "hint": "Include location, action required, and safety instructions."
       },
       {
-        "id": "broadcast-message-input",
+        "id": "broadcastMessageInput",
         "component": "TextArea",
-        "name": "broadcastMessage",
-        "placeholder": "Enter broadcast update...",
+        "name": "broadcast_message",
+        "placeholder": "Enter emergency update for responders and the public",
         "rows": 4
       },
       {
-        "id": "broadcast-buttons",
+        "id": "broadcastButtons",
         "component": "Buttons",
-        "direction": "row",
         "buttons": [
-          "send-broadcast"
+          "sendBroadcastBtn"
         ]
       },
       {
-        "id": "send-broadcast",
+        "id": "sendBroadcastBtn",
         "component": "Button",
-        "label": "Send Broadcast",
-        "variant": "primary",
-        "size": "medium"
+        "label": "Broadcast Update",
+        "variant": "primary"
       },
       {
-        "id": "situation-report-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "s",
-        "weight": 1,
-        "children": [
-          "situation-report-header",
-          "situation-report-form"
-        ]
-      },
-      {
-        "id": "situation-report-header",
-        "component": "CardHeader",
-        "title": "File Situation Report",
-        "subtitle": "Record a verified field or coordination update"
-      },
-      {
-        "id": "situation-report-form",
+        "id": "situationReportForm",
         "component": "Form",
-        "name": "situationReport",
+        "name": "situation-report",
         "fields": [
-          "report-zone-control",
-          "report-summary-control"
+          "sitrepZoneField",
+          "sitrepSummaryField"
         ],
-        "buttons": "situation-report-buttons"
+        "buttons": "sitrepButtons"
       },
       {
-        "id": "report-zone-control",
+        "id": "sitrepZoneField",
         "component": "FormControl",
-        "label": "Reporting zone",
-        "input": "report-zone-select"
+        "label": "Situation report zone",
+        "input": "sitrepZoneSelect"
       },
       {
-        "id": "report-zone-select",
+        "id": "sitrepZoneSelect",
         "component": "Select",
-        "name": "reportZone",
-        "placeholder": "Select zone",
+        "name": "sitrep_zone",
+        "placeholder": "Choose zone",
         "items": [
-          "report-zone-north",
-          "report-zone-central",
-          "report-zone-east",
-          "report-zone-south"
+          "sitrepZoneA",
+          "sitrepZoneB",
+          "sitrepZoneC",
+          "sitrepZoneD"
         ]
       },
       {
-        "id": "report-zone-north",
+        "id": "sitrepZoneA",
         "component": "SelectItem",
-        "value": "north",
-        "label": "North Zone"
+        "value": "zone-a",
+        "label": "Zone A — Downtown"
       },
       {
-        "id": "report-zone-central",
+        "id": "sitrepZoneB",
         "component": "SelectItem",
-        "value": "central",
-        "label": "Central Zone"
+        "value": "zone-b",
+        "label": "Zone B — Riverside"
       },
       {
-        "id": "report-zone-east",
+        "id": "sitrepZoneC",
         "component": "SelectItem",
-        "value": "east",
-        "label": "East Zone"
+        "value": "zone-c",
+        "label": "Zone C — East Floodplain"
       },
       {
-        "id": "report-zone-south",
+        "id": "sitrepZoneD",
         "component": "SelectItem",
-        "value": "south",
-        "label": "South Zone"
+        "value": "zone-d",
+        "label": "Zone D — North Hills"
       },
       {
-        "id": "report-summary-control",
+        "id": "sitrepSummaryField",
         "component": "FormControl",
-        "label": "Situation summary",
-        "input": "report-summary-input",
-        "hint": "Include verified conditions, needs, and actions taken."
+        "label": "Situation report",
+        "input": "sitrepSummaryInput",
+        "hint": "Summarize conditions, actions taken, unmet needs, and next operational priorities."
       },
       {
-        "id": "report-summary-input",
+        "id": "sitrepSummaryInput",
         "component": "TextArea",
-        "name": "situationSummary",
-        "placeholder": "Enter situation report...",
-        "rows": 4
+        "name": "situation_report",
+        "placeholder": "Enter situation report details",
+        "rows": 5
       },
       {
-        "id": "situation-report-buttons",
+        "id": "sitrepButtons",
         "component": "Buttons",
-        "direction": "row",
         "buttons": [
-          "file-situation-report"
+          "fileSitrepBtn"
         ]
       },
       {
-        "id": "file-situation-report",
+        "id": "fileSitrepBtn",
         "component": "Button",
         "label": "File Situation Report",
-        "variant": "secondary",
-        "size": "medium"
+        "variant": "secondary"
       }
     ]
   }

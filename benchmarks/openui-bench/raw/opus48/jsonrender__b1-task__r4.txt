@@ -1,15 +1,17 @@
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","task-card"]}}
-{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Focus","subtitle":"Your single most urgent task"},"children":[]}}
-{"op":"add","path":"/elements/task-card","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"children":["status-row","task-title","task-desc","deadline-callout","progress","done-section"]}}
-{"op":"add","path":"/state/task","value":{"title":"Submit Q3 financial report","description":"Finalize the consolidated Q3 numbers, review with finance, and submit to the board portal before the deadline.","status":"In Progress","deadline":"Today, 5:00 PM","progress":70,"done":false}}
-{"op":"add","path":"/elements/status-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center","justify":"between"},"children":["status-badge","urgent-tag"]}}
-{"op":"add","path":"/elements/status-badge","value":{"type":"Badge","props":{"text":{"$cond":{"$state":"/task/done","eq":true},"$then":"Done","$else":{"$state":"/task/status"}},"variant":{"$cond":{"$state":"/task/done","eq":true},"$then":"default","$else":"secondary"}},"children":[]}}
-{"op":"add","path":"/elements/urgent-tag","value":{"type":"Tag","props":{"text":"Most Urgent","icon":"alert-triangle","size":"md","variant":"danger"},"children":[]}}
-{"op":"add","path":"/elements/task-title","value":{"type":"Heading","props":{"text":{"$state":"/task/title"},"level":"h2"},"children":[]}}
-{"op":"add","path":"/elements/task-desc","value":{"type":"TextContent","props":{"text":{"$state":"/task/description"},"size":"default"},"children":[]}}
-{"op":"add","path":"/elements/deadline-callout","value":{"type":"Callout","props":{"variant":"warning","title":"Deadline","description":{"$template":"Due ${/task/deadline}"}},"children":[]}}
-{"op":"add","path":"/elements/progress","value":{"type":"Progress","props":{"value":{"$state":"/task/progress"},"label":"Progress"},"children":[]}}
-{"op":"add","path":"/elements/done-section","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"children":["done-callout","mark-done-btn"]}}
-{"op":"add","path":"/elements/done-callout","value":{"type":"TextCallout","props":{"variant":"success","title":"Completed","description":"This task is marked done. Great work!"},"visible":{"$state":"/task/done","eq":true},"children":[]}}
-{"op":"add","path":"/elements/mark-done-btn","value":{"type":"Button","props":{"label":{"$cond":{"$state":"/task/done","eq":true},"$then":"Reopen Task","$else":"Mark as Done"},"variant":"primary","size":"large"},"on":{"press":{"action":"setState","params":{"statePath":"/task/done","value":{"$cond":{"$state":"/task/done","eq":true},"$then":false,"$else":true}}}},"children":[]}}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","statusRow","taskCard","doneCard"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Your Focus","subtitle":"The one thing that matters most right now"}}}
+{"op":"add","path":"/state/task","value":{"title":"Submit Q3 budget proposal","description":"Finalize the revenue projections and send to the finance committee for approval.","deadline":"Today, 5:00 PM","status":"In Progress","done":false}}
+{"op":"add","path":"/elements/statusRow","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center"},"visible":{"$state":"/task/done","not":true},"children":["statusBadge","deadlineTag"]}}
+{"op":"add","path":"/elements/statusBadge","value":{"type":"Badge","props":{"text":{"$template":"Status: ${/task/status}"},"variant":"secondary"}}}
+{"op":"add","path":"/elements/deadlineTag","value":{"type":"Tag","props":{"text":{"$template":"Due ${/task/deadline}"},"icon":"clock","variant":"danger","size":"md"}}}
+{"op":"add","path":"/elements/taskCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m"},"visible":{"$state":"/task/done","not":true},"children":["urgentTag","taskTitle","taskDesc","deadlineCallout","markDoneBtn"]}}
+{"op":"add","path":"/elements/urgentTag","value":{"type":"Tag","props":{"text":"Most Urgent","icon":"alert-triangle","variant":"warning","size":"sm"}}}
+{"op":"add","path":"/elements/taskTitle","value":{"type":"Heading","props":{"text":{"$state":"/task/title"},"level":"h2"}}}
+{"op":"add","path":"/elements/taskDesc","value":{"type":"TextContent","props":{"text":{"$state":"/task/description"},"size":"default"}}}
+{"op":"add","path":"/elements/deadlineCallout","value":{"type":"TextCallout","props":{"variant":"danger","title":"Deadline","description":{"$template":"This task is due ${/task/deadline}. Status: ${/task/status}."}}}
+{"op":"add","path":"/elements/markDoneBtn","value":{"type":"Button","props":{"label":"Mark as Done","variant":"primary","size":"large"},"on":{"press":{"action":"setState","params":{"statePath":"/task/done","value":true}}}}}
+{"op":"add","path":"/elements/doneCard","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"m","align":"center"},"visible":{"$state":"/task/done"},"children":["doneAlert","doneTitle","reopenBtn"]}}
+{"op":"add","path":"/elements/doneAlert","value":{"type":"Alert","props":{"title":"Task complete!","description":"Nice work — you tackled your most urgent task.","variant":"success"}}}
+{"op":"add","path":"/elements/doneTitle","value":{"type":"TextContent","props":{"text":{"$template":"✓ ${/task/title}"},"size":"large-heavy"}}}
+{"op":"add","path":"/elements/reopenBtn","value":{"type":"Button","props":{"label":"Reopen task","variant":"tertiary","size":"small"},"on":{"press":{"action":"setState","params":{"statePath":"/task/done","value":false}}}}}

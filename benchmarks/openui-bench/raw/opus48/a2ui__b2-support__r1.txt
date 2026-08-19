@@ -1,10 +1,10 @@
-Here's a support lead's morning view covering all five requirements:
+Here's a support lead's morning dashboard covering all five items.
 
 <a2ui-json>
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "support-morning-view",
+    "surfaceId": "main",
     "catalogId": "thesys.dev:c1-openui"
   }
 }
@@ -14,191 +14,170 @@ Here's a support lead's morning view covering all five requirements:
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "support-morning-view",
+    "surfaceId": "main",
     "components": [
       {
         "id": "root",
         "component": "Card",
-        "variant": "clear",
-        "direction": "column",
-        "gap": "l",
-        "children": ["header", "metrics-row", "filter-card", "recent-card"]
+        "children": [
+          "header",
+          "metrics",
+          "controls",
+          "recentHeader",
+          "recentTable"
+        ]
       },
       {
         "id": "header",
         "component": "CardHeader",
-        "title": "Good morning \u2014 Support Overview",
+        "title": "Good morning, Support",
         "subtitle": "Your queue at a glance"
       },
       {
-        "id": "metrics-row",
-        "component": "Card",
-        "variant": "clear",
-        "direction": "row",
-        "gap": "l",
-        "children": ["open-tickets-card", "avg-response-card"]
-      },
-      {
-        "id": "open-tickets-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
-        "weight": 1,
-        "children": ["open-label", "open-value", "open-badge"]
-      },
-      {
-        "id": "open-label",
-        "component": "TextContent",
-        "size": "small-heavy",
-        "text": "Open Tickets"
-      },
-      {
-        "id": "open-value",
-        "component": "Heading",
-        "level": "h1",
-        "text": "42"
-      },
-      {
-        "id": "open-badge",
-        "component": "Badge",
-        "variant": "secondary",
-        "text": "\u2191 6 since yesterday"
-      },
-      {
-        "id": "avg-response-card",
-        "component": "Card",
-        "variant": "card",
-        "direction": "column",
-        "gap": "xs",
-        "weight": 1,
-        "children": ["resp-label", "resp-value", "resp-badge"]
-      },
-      {
-        "id": "resp-label",
-        "component": "TextContent",
-        "size": "small-heavy",
-        "text": "Avg. First-Response Time"
-      },
-      {
-        "id": "resp-value",
-        "component": "Heading",
-        "level": "h1",
-        "text": "1h 24m"
-      },
-      {
-        "id": "resp-badge",
-        "component": "Badge",
-        "variant": "default",
-        "text": "\u2193 12m vs. last week"
-      },
-      {
-        "id": "filter-card",
+        "id": "metrics",
         "component": "Card",
         "variant": "sunk",
         "direction": "row",
-        "gap": "m",
-        "align": "center",
+        "gap": "l",
         "justify": "between",
-        "children": ["filter-text", "filter-buttons"]
-      },
-      {
-        "id": "filter-text",
-        "component": "TextContent",
-        "size": "default",
-        "text": "**Narrow your queue** \u2014 focus on what needs attention first."
-      },
-      {
-        "id": "filter-buttons",
-        "component": "Buttons",
-        "direction": "row",
-        "buttons": ["btn-high-priority", "btn-new-ticket"]
-      },
-      {
-        "id": "btn-high-priority",
-        "component": "Button",
-        "label": "High Priority Only",
-        "variant": "secondary",
-        "action": [
-          {
-            "call": "filterTickets",
-            "args": { "priority": "high" }
-          }
+        "children": [
+          "openTickets",
+          "avgResponse"
         ]
       },
       {
-        "id": "btn-new-ticket",
-        "component": "Button",
-        "label": "+ New Ticket",
-        "variant": "primary",
-        "action": [
-          {
-            "call": "openNewTicket"
-          }
-        ]
-      },
-      {
-        "id": "recent-card",
+        "id": "openTickets",
         "component": "Card",
-        "variant": "card",
+        "variant": "clear",
         "direction": "column",
-        "gap": "s",
-        "children": ["recent-header", "recent-table"]
+        "gap": "xs",
+        "children": [
+          "openLabel",
+          "openValue"
+        ]
       },
       {
-        "id": "recent-header",
+        "id": "openLabel",
+        "component": "TextContent",
+        "text": "Open tickets",
+        "size": "small-heavy"
+      },
+      {
+        "id": "openValue",
+        "component": "Heading",
+        "text": "37",
+        "level": "h1"
+      },
+      {
+        "id": "avgResponse",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "avgLabel",
+          "avgValue"
+        ]
+      },
+      {
+        "id": "avgLabel",
+        "component": "TextContent",
+        "text": "Avg. first response",
+        "size": "small-heavy"
+      },
+      {
+        "id": "avgValue",
+        "component": "Heading",
+        "text": "1h 24m",
+        "level": "h1"
+      },
+      {
+        "id": "controls",
+        "component": "Buttons",
+        "buttons": [
+          "highPriorityBtn",
+          "newTicketBtn"
+        ]
+      },
+      {
+        "id": "highPriorityBtn",
+        "component": "Button",
+        "label": "Show high priority only",
+        "variant": "secondary"
+      },
+      {
+        "id": "newTicketBtn",
+        "component": "Button",
+        "label": "New ticket",
+        "variant": "primary"
+      },
+      {
+        "id": "recentHeader",
         "component": "CardHeader",
-        "title": "5 Most Recent Tickets",
-        "subtitle": "Newest first"
+        "title": "Recent tickets",
+        "subtitle": "Five most recent"
       },
       {
-        "id": "recent-table",
+        "id": "recentTable",
         "component": "Table",
-        "columns": ["col-id", "col-subject", "col-priority", "col-age"]
+        "columns": [
+          "ticketId",
+          "ticketSubject",
+          "ticketPriority",
+          "ticketTime"
+        ]
       },
       {
-        "id": "col-id",
+        "id": "ticketId",
         "component": "Col",
-        "label": "Ticket",
-        "type": "string",
-        "data": ["#4821", "#4820", "#4819", "#4818", "#4817"]
+        "label": "ID",
+        "data": [
+          "#4821",
+          "#4820",
+          "#4819",
+          "#4818",
+          "#4817"
+        ]
       },
       {
-        "id": "col-subject",
+        "id": "ticketSubject",
         "component": "Col",
         "label": "Subject",
-        "type": "string",
         "data": [
           "Login fails after password reset",
-          "Invoice PDF not generating",
+          "Invoice PDF not downloading",
+          "Feature request: dark mode",
           "API rate limit questions",
-          "Dark mode toggle broken",
-          "Feature request: bulk export"
+          "Mobile app crash on upload"
         ]
       },
       {
-        "id": "col-priority",
+        "id": "ticketPriority",
         "component": "Col",
         "label": "Priority",
-        "type": "string",
-        "data": ["High", "High", "Medium", "Low", "Low"]
+        "data": [
+          "High",
+          "Medium",
+          "Low",
+          "Medium",
+          "High"
+        ]
       },
       {
-        "id": "col-age",
+        "id": "ticketTime",
         "component": "Col",
         "label": "Received",
-        "type": "string",
-        "data": ["8 min ago", "22 min ago", "41 min ago", "1h ago", "1h 15m ago"]
+        "data": [
+          "8:42 AM",
+          "8:15 AM",
+          "7:58 AM",
+          "7:31 AM",
+          "7:04 AM"
+        ]
       }
     ]
   }
 }
 </a2ui-json>
 
-This screen delivers everything on your list:
-
-1. **Open tickets** — a prominent "42" metric card with day-over-day change.
-2. **Average first-response time** — "1h 24m" card with a week-over-week trend.
-3. **Five most recent tickets with priority** — a table showing ticket ID, subject, priority (High/Medium/Low), and how recently each arrived.
-4. **Narrow to high-priority** — the "High Priority Only" button filters the queue.
-5. **Open a new ticket** — the primary "+ New Ticket" button.
+This screen covers all five items: **(1)** the open-ticket count (37) and **(2)** average first-response time (1h 24m) sit at the top as prominent metrics; **(3)** the five most recent tickets appear in a table with **their priority** shown per row; **(4)** the "Show high priority only" button narrows the list; and **(5)** the "New ticket" button opens a fresh ticket.

@@ -1,74 +1,300 @@
-Here's a single-screen front-desk day view. Mapping to your list: (1) appointments table with times + patients, (2) "expected today" stat, (3) no-show rate stat with progress bar, (4) live room status card, (5) "next up" alert banner, (6) check-in form, (7) prev/today/next buttons plus a date jump picker.
+Here's a complete day-view screen for the clinic receptionist covering all 7 items:
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "clinic-day-view",
-      "catalogId": "thesys.dev:c1-openui",
-      "theme": {
-        "primaryColor": "#0E7490",
-        "agentDisplayName": "Front Desk"
-      }
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "clinic-day-view",
-      "components": [
-        { "id": "root", "component": "Card", "variant": "clear", "direction": "column", "gap": "l", "children": ["hdr", "nowCalling", "stats", "roomsCard", "apptsCard", "checkinCard", "navRow"] },
-
-        { "id": "hdr", "component": "CardHeader", "title": "Front Desk — Day View", "subtitle": "Tuesday, June 10 · Dr. Patel & Dr. Nguyen · Clinic hours 9:00 AM – 4:00 PM" },
-
-        { "id": "nowCalling", "component": "Alert", "variant": "info", "title": "Next up: Aisha Khan", "description": "10:20 AM appointment with Dr. Patel · Assign Room 4 (free now) · Called once at 10:12 AM" },
-
-        { "id": "stats", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "children": ["statExpected", "statNoShow", "statRooms"] },
-        { "id": "statExpected", "component": "Card", "variant": "sunk", "direction": "column", "gap": "xs", "children": ["statExpectedLabel", "statExpectedValue"] },
-        { "id": "statExpectedLabel", "component": "TextContent", "text": "Patients expected today", "size": "small" },
-        { "id": "statExpectedValue", "component": "TextContent", "text": "12", "size": "large-heavy" },
-        { "id": "statNoShow", "component": "Card", "variant": "sunk", "direction": "column", "gap": "xs", "children": ["statNoShowLabel", "statNoShowValue", "statNoShowProgress"] },
-        { "id": "statNoShowLabel", "component": "TextContent", "text": "No-show rate — June", "size": "small" },
-        { "id": "statNoShowValue", "component": "TextContent", "text": "8% (9 of 112 bookings)", "size": "large-heavy" },
-        { "id": "statNoShowProgress", "component": "Progress", "value": 8, "label": "Target: under 10%" },
-        { "id": "statRooms", "component": "Card", "variant": "sunk", "direction": "column", "gap": "xs", "children": ["statRoomsLabel", "statRoomsValue"] },
-        { "id": "statRoomsLabel", "component": "TextContent", "text": "Rooms free right now", "size": "small" },
-        { "id": "statRoomsValue", "component": "TextContent", "text": "3 of 6", "size": "large-heavy" },
-
-        { "id": "roomsCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["roomsHeader", "roomsFreeLabel", "roomsTags", "roomsOccupied"] },
-        { "id": "roomsHeader", "component": "CardHeader", "title": "Room Status — Live", "subtitle": "Updated 10:14 AM" },
-        { "id": "roomsFreeLabel", "component": "TextContent", "text": "Free now:", "size": "small-heavy" },
-        { "id": "roomsTags", "component": "TagBlock", "tags": ["Room 2 — free", "Room 4 — free", "Room 6 — free"] },
-        { "id": "roomsOccupied", "component": "TextContent", "text": "Occupied: Room 1 (until ~10:45) · Room 3 (until ~11:00) · Room 5 (until ~10:50)", "size": "small" },
-
-        { "id": "apptsCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["apptsHeader", "apptsTable"] },
-        { "id": "apptsHeader", "component": "CardHeader", "title": "Today's Appointments", "subtitle": "12 scheduled · 4 checked in · 1 in progress" },
-        { "id": "apptsTable", "component": "Table", "columns": ["colTime", "colPatient", "colProvider", "colStatus"] },
-        { "id": "colTime", "component": "Col", "label": "Time", "data": ["9:00 AM", "9:20 AM", "9:40 AM", "10:00 AM", "10:20 AM", "10:40 AM", "11:00 AM", "11:30 AM", "1:00 PM", "1:20 PM", "1:40 PM", "2:00 PM"] },
-        { "id": "colPatient", "component": "Col", "label": "Patient", "data": ["Maria Gonzalez", "James Okafor", "Linda Chen", "Robert Smith", "Aisha Khan", "Tom Becker", "Sara Kim", "David Lee", "Emma Wilson", "Noah Brown", "Olivia Davis", "Ethan Clark"] },
-        { "id": "colProvider", "component": "Col", "label": "Provider", "data": ["Dr. Patel", "Dr. Nguyen", "Dr. Patel", "Dr. Nguyen", "Dr. Patel", "Dr. Nguyen", "Dr. Patel", "Dr. Nguyen", "Dr. Patel", "Dr. Nguyen", "Dr. Patel", "Dr. Nguyen"] },
-        { "id": "colStatus", "component": "Col", "label": "Status", "data": ["In room (Rm 3)", "Checked in", "Checked in", "Checked in", "Called — next up", "Confirmed", "Confirmed", "Confirmed", "Confirmed", "Not arrived", "Not arrived", "Not arrived"] },
-
-        { "id": "checkinCard", "component": "Card", "variant": "card", "direction": "column", "gap": "s", "children": ["checkinHeader", "checkinForm"] },
-        { "id": "checkinHeader", "component": "CardHeader", "title": "Check a Patient In", "subtitle": "Search by name or medical record number" },
-        { "id": "checkinForm", "component": "Form", "name": "checkIn", "fields": ["fcPatient"], "buttons": "checkinButtons" },
-        { "id": "fcPatient", "component": "FormControl", "label": "Patient name or MRN", "input": "inputPatient", "hint": "e.g., Maria Gonzalez or MRN-10234" },
-        { "id": "inputPatient", "component": "Input", "name": "patientId", "placeholder": "Start typing to search…", "type": "text" },
-        { "id": "checkinButtons", "component": "Buttons", "buttons": ["btnCheckin"], "direction": "row" },
-        { "id": "btnCheckin", "component": "Button", "label": "Check In", "variant": "primary", "size": "medium" },
-
-        { "id": "navRow", "component": "Card", "variant": "clear", "direction": "row", "gap": "m", "align": "center", "justify": "between", "children": ["navButtons", "dayJumpLabel", "dayPicker"] },
-        { "id": "navButtons", "component": "Buttons", "buttons": ["btnPrev", "btnToday", "btnNext"], "direction": "row" },
-        { "id": "btnPrev", "component": "Button", "label": "← Previous Day", "variant": "secondary", "size": "small" },
-        { "id": "btnToday", "component": "Button", "label": "Today", "variant": "tertiary", "size": "small" },
-        { "id": "btnNext", "component": "Button", "label": "Next Day →", "variant": "secondary", "size": "small" },
-        { "id": "dayJumpLabel", "component": "Label", "text": "Jump to date:" },
-        { "id": "dayPicker", "component": "DatePicker", "name": "dayJump", "mode": "single" }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-Everything is on one screen, in glance priority order: the "next up" banner sits at the top since it's most time-sensitive, followed by the three key stats, live room availability, the full appointment list, then the two actions (check-in and day navigation) at the bottom. Want me to add a "mark no-show" action per row, or an end-of-day summary section?
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "kpis",
+          "nextPatient",
+          "rooms",
+          "appointmentsTable",
+          "checkinForm",
+          "dayNav"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Front Desk — Day View",
+        "subtitle": "Tuesday, June 10, 2025"
+      },
+      {
+        "id": "kpis",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "expectedBadge",
+          "noshowBadge"
+        ]
+      },
+      {
+        "id": "expectedBadge",
+        "component": "Badge",
+        "text": "Expected today: 14 patients",
+        "variant": "secondary"
+      },
+      {
+        "id": "noshowBadge",
+        "component": "Badge",
+        "text": "No-show rate this month: 8.2%",
+        "variant": "outline"
+      },
+      {
+        "id": "nextPatient",
+        "component": "Alert",
+        "title": "Now calling: Maria Lopez",
+        "description": "10:30 appointment with Dr. Chen — please proceed to Room 2",
+        "variant": "info"
+      },
+      {
+        "id": "rooms",
+        "component": "Card",
+        "variant": "clear",
+        "children": [
+          "roomsTitle",
+          "roomTags"
+        ]
+      },
+      {
+        "id": "roomsTitle",
+        "component": "Heading",
+        "text": "Rooms free right now",
+        "level": "h3"
+      },
+      {
+        "id": "roomTags",
+        "component": "TagBlock",
+        "tags": [
+          "Room 1 — Free",
+          "Room 3 — Free",
+          "Room 4 — Free"
+        ]
+      },
+      {
+        "id": "appointmentsTable",
+        "component": "Table",
+        "columns": [
+          "timeCol",
+          "patientCol",
+          "doctorCol",
+          "statusCol"
+        ]
+      },
+      {
+        "id": "timeCol",
+        "component": "Col",
+        "label": "Time",
+        "data": [
+          "09:00",
+          "09:30",
+          "10:00",
+          "10:30",
+          "11:00",
+          "11:30"
+        ]
+      },
+      {
+        "id": "patientCol",
+        "component": "Col",
+        "label": "Patient",
+        "data": [
+          "James Carter",
+          "Aisha Khan",
+          "Robert Mills",
+          "Maria Lopez",
+          "Tom Nguyen",
+          "Sara Ali"
+        ]
+      },
+      {
+        "id": "doctorCol",
+        "component": "Col",
+        "label": "Doctor",
+        "data": [
+          "Dr. Chen",
+          "Dr. Patel",
+          "Dr. Chen",
+          "Dr. Chen",
+          "Dr. Patel",
+          "Dr. Gomez"
+        ]
+      },
+      {
+        "id": "statusCol",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "Checked in",
+          "Checked in",
+          "No-show",
+          "Called",
+          "Waiting",
+          "Scheduled"
+        ]
+      },
+      {
+        "id": "checkinForm",
+        "component": "Form",
+        "name": "patient-checkin",
+        "buttons": "checkinButtons",
+        "fields": [
+          "checkinNameField",
+          "checkinTimeField"
+        ]
+      },
+      {
+        "id": "checkinNameField",
+        "component": "FormControl",
+        "label": "Patient name",
+        "input": "checkinNameInput",
+        "hint": "Check a patient in on arrival"
+      },
+      {
+        "id": "checkinNameInput",
+        "component": "Input",
+        "name": "patient_name",
+        "placeholder": "e.g. Sara Ali"
+      },
+      {
+        "id": "checkinTimeField",
+        "component": "FormControl",
+        "label": "Appointment time",
+        "input": "checkinTimeSelect"
+      },
+      {
+        "id": "checkinTimeSelect",
+        "component": "Select",
+        "name": "appointment_time",
+        "placeholder": "Select time",
+        "items": [
+          "t0900",
+          "t0930",
+          "t1000",
+          "t1030",
+          "t1100",
+          "t1130"
+        ]
+      },
+      {
+        "id": "t0900",
+        "component": "SelectItem",
+        "value": "09:00",
+        "label": "09:00"
+      },
+      {
+        "id": "t0930",
+        "component": "SelectItem",
+        "value": "09:30",
+        "label": "09:30"
+      },
+      {
+        "id": "t1000",
+        "component": "SelectItem",
+        "value": "10:00",
+        "label": "10:00"
+      },
+      {
+        "id": "t1030",
+        "component": "SelectItem",
+        "value": "10:30",
+        "label": "10:30"
+      },
+      {
+        "id": "t1100",
+        "component": "SelectItem",
+        "value": "11:00",
+        "label": "11:00"
+      },
+      {
+        "id": "t1130",
+        "component": "SelectItem",
+        "value": "11:30",
+        "label": "11:30"
+      },
+      {
+        "id": "checkinButtons",
+        "component": "Buttons",
+        "buttons": [
+          "checkinBtn"
+        ]
+      },
+      {
+        "id": "checkinBtn",
+        "component": "Button",
+        "label": "Check in patient",
+        "variant": "primary"
+      },
+      {
+        "id": "dayNav",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "dayNavTitle",
+          "dayPicker",
+          "dayNavButtons"
+        ]
+      },
+      {
+        "id": "dayNavTitle",
+        "component": "Heading",
+        "text": "View another day",
+        "level": "h3"
+      },
+      {
+        "id": "dayPicker",
+        "component": "DatePicker",
+        "name": "view_date",
+        "mode": "single"
+      },
+      {
+        "id": "dayNavButtons",
+        "component": "Buttons",
+        "buttons": [
+          "prevDayBtn",
+          "todayBtn",
+          "nextDayBtn"
+        ]
+      },
+      {
+        "id": "prevDayBtn",
+        "component": "Button",
+        "label": "← Previous day",
+        "variant": "secondary"
+      },
+      {
+        "id": "todayBtn",
+        "component": "Button",
+        "label": "Today",
+        "variant": "tertiary"
+      },
+      {
+        "id": "nextDayBtn",
+        "component": "Button",
+        "label": "Next day →",
+        "variant": "secondary"
+      }
+    ]
+  }
+}
+</a2ui-json>
+
+All 7 items are covered: (1) appointments table with times and patient names, (2) expected patient count badge, (3) monthly no-show rate badge, (4) free rooms tag list, (5) "now calling" alert for the next patient, (6) a check-in form, and (7) a date picker plus previous/today/next day navigation buttons.

@@ -1,249 +1,326 @@
-Here's a comprehensive month-end finance view covering all seven requirements.
+Here's a month-end finance view covering all seven requirements.
 
 <a2ui-json>
-[
-  {
-    "version": "v0.9",
-    "createSurface": {
-      "surfaceId": "finance-month-end",
-      "catalogId": "thesys.dev:c1-openui"
-    }
-  },
-  {
-    "version": "v0.9",
-    "updateComponents": {
-      "surfaceId": "finance-month-end",
-      "components": [
-        {
-          "id": "root",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "column",
-          "gap": "l",
-          "children": [
-            "header",
-            "controls-card",
-            "kpi-row",
-            "expense-card",
-            "large-txn-card",
-            "footer-note"
-          ]
-        },
-        {
-          "id": "header",
-          "component": "CardHeader",
-          "title": "Finance Overview — March 2024",
-          "subtitle": "Month-end summary and statement"
-        },
-        {
-          "id": "controls-card",
-          "component": "Card",
-          "variant": "sunk",
-          "direction": "row",
-          "gap": "m",
-          "align": "end",
-          "justify": "between",
-          "children": ["month-select", "download-buttons"]
-        },
-        {
-          "id": "month-select",
-          "component": "Select",
-          "name": "reportingMonth",
-          "placeholder": "Select month",
-          "value": "2024-03",
-          "size": "medium",
-          "items": [
-            "opt-jan",
-            "opt-feb",
-            "opt-mar",
-            "opt-dec"
-          ]
-        },
-        { "id": "opt-jan", "component": "SelectItem", "value": "2024-01", "label": "January 2024" },
-        { "id": "opt-feb", "component": "SelectItem", "value": "2024-02", "label": "February 2024" },
-        { "id": "opt-mar", "component": "SelectItem", "value": "2024-03", "label": "March 2024" },
-        { "id": "opt-dec", "component": "SelectItem", "value": "2023-12", "label": "December 2023" },
-        {
-          "id": "download-buttons",
-          "component": "Buttons",
-          "direction": "row",
-          "buttons": ["btn-download-pdf", "btn-download-csv"]
-        },
-        {
-          "id": "btn-download-pdf",
-          "component": "Button",
-          "label": "Download Statement (PDF)",
-          "variant": "primary",
-          "size": "medium",
-          "action": ["downloadStatement", "2024-03", "pdf"]
-        },
-        {
-          "id": "btn-download-csv",
-          "component": "Button",
-          "label": "Export CSV",
-          "variant": "secondary",
-          "size": "medium",
-          "action": ["downloadStatement", "2024-03", "csv"]
-        },
-        {
-          "id": "kpi-row",
-          "component": "Card",
-          "variant": "clear",
-          "direction": "row",
-          "gap": "m",
-          "align": "stretch",
-          "children": ["kpi-cash", "kpi-burn", "kpi-runway"]
-        },
-        {
-          "id": "kpi-cash",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "xs",
-          "weight": 1,
-          "children": ["kpi-cash-label", "kpi-cash-value", "kpi-cash-sub"]
-        },
-        { "id": "kpi-cash-label", "component": "TextContent", "text": "Cash on Hand", "size": "small-heavy" },
-        { "id": "kpi-cash-value", "component": "Heading", "text": "$1,420,000", "level": "h2" },
-        { "id": "kpi-cash-sub", "component": "TextContent", "text": "As of Mar 31, 2024", "size": "small" },
-        {
-          "id": "kpi-burn",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "xs",
-          "weight": 1,
-          "children": ["kpi-burn-label", "kpi-burn-value", "kpi-burn-sub"]
-        },
-        { "id": "kpi-burn-label", "component": "TextContent", "text": "Monthly Burn", "size": "small-heavy" },
-        { "id": "kpi-burn-value", "component": "Heading", "text": "$118,500", "level": "h2" },
-        { "id": "kpi-burn-sub", "component": "TextContent", "text": "Net cash outflow, March", "size": "small" },
-        {
-          "id": "kpi-runway",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "xs",
-          "weight": 1,
-          "children": ["kpi-runway-label", "kpi-runway-value", "kpi-runway-sub"]
-        },
-        { "id": "kpi-runway-label", "component": "TextContent", "text": "Months of Runway", "size": "small-heavy" },
-        { "id": "kpi-runway-value", "component": "Heading", "text": "12.0", "level": "h2" },
-        { "id": "kpi-runway-sub", "component": "TextContent", "text": "At current burn rate", "size": "small" },
-        {
-          "id": "expense-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": ["expense-header", "expense-chart", "expense-table"]
-        },
-        {
-          "id": "expense-header",
-          "component": "CardHeader",
-          "title": "Expenses by Category",
-          "subtitle": "March 2024 spend breakdown"
-        },
-        {
-          "id": "expense-chart",
-          "component": "PieChart",
-          "variant": "donut",
-          "labels": ["Payroll", "Cloud & Infra", "Marketing", "Office & Ops", "Software/SaaS", "Other"],
-          "values": [72000, 18500, 12000, 8000, 5500, 2500]
-        },
-        {
-          "id": "expense-table",
-          "component": "Table",
-          "columns": ["exp-col-cat", "exp-col-amt", "exp-col-pct"]
-        },
-        {
-          "id": "exp-col-cat",
-          "component": "Col",
-          "label": "Category",
-          "type": "string",
-          "data": ["Payroll", "Cloud & Infra", "Marketing", "Office & Ops", "Software/SaaS", "Other"]
-        },
-        {
-          "id": "exp-col-amt",
-          "component": "Col",
-          "label": "Amount",
-          "type": "string",
-          "data": ["$72,000", "$18,500", "$12,000", "$8,000", "$5,500", "$2,500"]
-        },
-        {
-          "id": "exp-col-pct",
-          "component": "Col",
-          "label": "% of Spend",
-          "type": "string",
-          "data": ["60.8%", "15.6%", "10.1%", "6.8%", "4.6%", "2.1%"]
-        },
-        {
-          "id": "large-txn-card",
-          "component": "Card",
-          "variant": "card",
-          "direction": "column",
-          "gap": "m",
-          "children": ["large-txn-header", "large-txn-table"]
-        },
-        {
-          "id": "large-txn-header",
-          "component": "CardHeader",
-          "title": "Transactions Over $10,000",
-          "subtitle": "March 2024 — 4 transactions"
-        },
-        {
-          "id": "large-txn-table",
-          "component": "Table",
-          "columns": ["txn-col-date", "txn-col-vendor", "txn-col-cat", "txn-col-amt"]
-        },
-        {
-          "id": "txn-col-date",
-          "component": "Col",
-          "label": "Date",
-          "type": "string",
-          "data": ["Mar 01", "Mar 05", "Mar 15", "Mar 28"]
-        },
-        {
-          "id": "txn-col-vendor",
-          "component": "Col",
-          "label": "Vendor",
-          "type": "string",
-          "data": ["Gusto Payroll", "AWS", "Meta Ads", "WeWork"]
-        },
-        {
-          "id": "txn-col-cat",
-          "component": "Col",
-          "label": "Category",
-          "type": "string",
-          "data": ["Payroll", "Cloud & Infra", "Marketing", "Office & Ops"]
-        },
-        {
-          "id": "txn-col-amt",
-          "component": "Col",
-          "label": "Amount",
-          "type": "string",
-          "data": ["$72,000", "$18,500", "$12,000", "$11,200"]
-        },
-        {
-          "id": "footer-note",
-          "component": "TextContent",
-          "text": "Runway = Cash on Hand ÷ Monthly Burn. Figures reflect posted transactions through the month-end close date.",
-          "size": "small"
-        }
-      ]
-    }
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
-]
+}
 </a2ui-json>
 
-This screen covers every requirement:
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "direction": "column",
+        "gap": "l",
+        "children": [
+          "header",
+          "monthControls",
+          "kpis",
+          "expenseSection",
+          "txnSection",
+          "footerActions"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Finance Overview",
+        "subtitle": "Month-end summary \u2014 March 2024"
+      },
+      {
+        "id": "monthControls",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "row",
+        "gap": "m",
+        "align": "end",
+        "children": [
+          "monthField",
+          "loadBtn"
+        ]
+      },
+      {
+        "id": "monthField",
+        "component": "FormControl",
+        "label": "View a different month",
+        "input": "monthSelect",
+        "hint": "Select a period to load its statement"
+      },
+      {
+        "id": "monthSelect",
+        "component": "Select",
+        "name": "month",
+        "value": "2024-03",
+        "placeholder": "Choose a month",
+        "items": [
+          "m03",
+          "m02",
+          "m01",
+          "m12"
+        ]
+      },
+      {
+        "id": "m03",
+        "component": "SelectItem",
+        "value": "2024-03",
+        "label": "March 2024"
+      },
+      {
+        "id": "m02",
+        "component": "SelectItem",
+        "value": "2024-02",
+        "label": "February 2024"
+      },
+      {
+        "id": "m01",
+        "component": "SelectItem",
+        "value": "2024-01",
+        "label": "January 2024"
+      },
+      {
+        "id": "m12",
+        "component": "SelectItem",
+        "value": "2023-12",
+        "label": "December 2023"
+      },
+      {
+        "id": "loadBtn",
+        "component": "Button",
+        "label": "Load month",
+        "variant": "secondary"
+      },
+      {
+        "id": "kpis",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "justify": "between",
+        "children": [
+          "cashCard",
+          "burnCard",
+          "runwayCard"
+        ]
+      },
+      {
+        "id": "cashCard",
+        "component": "Card",
+        "weight": 1,
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "cashLabel",
+          "cashValue"
+        ]
+      },
+      {
+        "id": "cashLabel",
+        "component": "TextContent",
+        "text": "Cash on hand",
+        "size": "small-heavy"
+      },
+      {
+        "id": "cashValue",
+        "component": "Heading",
+        "text": "$842,000",
+        "level": "h2"
+      },
+      {
+        "id": "burnCard",
+        "component": "Card",
+        "weight": 1,
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "burnLabel",
+          "burnValue"
+        ]
+      },
+      {
+        "id": "burnLabel",
+        "component": "TextContent",
+        "text": "Monthly burn",
+        "size": "small-heavy"
+      },
+      {
+        "id": "burnValue",
+        "component": "Heading",
+        "text": "$120,300",
+        "level": "h2"
+      },
+      {
+        "id": "runwayCard",
+        "component": "Card",
+        "weight": 1,
+        "direction": "column",
+        "gap": "xs",
+        "children": [
+          "runwayLabel",
+          "runwayValue",
+          "runwayTag"
+        ]
+      },
+      {
+        "id": "runwayLabel",
+        "component": "TextContent",
+        "text": "Months of runway",
+        "size": "small-heavy"
+      },
+      {
+        "id": "runwayValue",
+        "component": "Heading",
+        "text": "7.0 months",
+        "level": "h2"
+      },
+      {
+        "id": "runwayTag",
+        "component": "Tag",
+        "text": "Watch closely",
+        "variant": "warning",
+        "size": "sm"
+      },
+      {
+        "id": "expenseSection",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "expenseHeader",
+          "expenseChart"
+        ]
+      },
+      {
+        "id": "expenseHeader",
+        "component": "CardHeader",
+        "title": "Expenses by category",
+        "subtitle": "March 2024"
+      },
+      {
+        "id": "expenseChart",
+        "component": "PieChart",
+        "variant": "donut",
+        "labels": [
+          "Payroll",
+          "Cloud & Infra",
+          "Marketing",
+          "Office & Ops",
+          "Software",
+          "Other"
+        ],
+        "values": [
+          68000,
+          19500,
+          14200,
+          8100,
+          6300,
+          4200
+        ]
+      },
+      {
+        "id": "txnSection",
+        "component": "Card",
+        "variant": "sunk",
+        "direction": "column",
+        "gap": "m",
+        "children": [
+          "txnHeader",
+          "txnTable"
+        ]
+      },
+      {
+        "id": "txnHeader",
+        "component": "CardHeader",
+        "title": "Transactions above $10,000",
+        "subtitle": "This month"
+      },
+      {
+        "id": "txnTable",
+        "component": "Table",
+        "columns": [
+          "txnDate",
+          "txnDesc",
+          "txnCategory",
+          "txnAmount"
+        ]
+      },
+      {
+        "id": "txnDate",
+        "component": "Col",
+        "label": "Date",
+        "type": "string",
+        "data": [
+          "2024-03-01",
+          "2024-03-05",
+          "2024-03-12",
+          "2024-03-20",
+          "2024-03-28"
+        ]
+      },
+      {
+        "id": "txnDesc",
+        "component": "Col",
+        "label": "Description",
+        "type": "string",
+        "data": [
+          "Payroll run",
+          "AWS invoice",
+          "Q1 ad campaign",
+          "Office lease",
+          "Contractor payout"
+        ]
+      },
+      {
+        "id": "txnCategory",
+        "component": "Col",
+        "label": "Category",
+        "type": "string",
+        "data": [
+          "Payroll",
+          "Cloud & Infra",
+          "Marketing",
+          "Office & Ops",
+          "Payroll"
+        ]
+      },
+      {
+        "id": "txnAmount",
+        "component": "Col",
+        "label": "Amount",
+        "type": "number",
+        "data": [
+          58000,
+          16400,
+          14200,
+          12000,
+          10800
+        ]
+      },
+      {
+        "id": "footerActions",
+        "component": "Buttons",
+        "buttons": [
+          "downloadBtn"
+        ]
+      },
+      {
+        "id": "downloadBtn",
+        "component": "Button",
+        "label": "Download statement",
+        "variant": "primary"
+      }
+    ]
+  }
+}
+</a2ui-json>
 
-1. **Cash on hand** — top-left KPI card ($1,420,000)
-2. **Monthly burn** — middle KPI card ($118,500)
-3. **Months of runway** — right KPI card (12.0 months)
-4. **Expenses split by category** — donut chart + supporting breakdown table
-5. **Transactions above $10,000** — dedicated table with date, vendor, category, and amount
-6. **Look at a different month** — the month Select dropdown in the controls bar
-7. **Download the statement** — primary "Download Statement (PDF)" button plus a CSV export option
-
-Let me know if you'd like to wire the month selector to live data or add trend charts comparing burn across months.
+This screen covers every item: **(1)** cash on hand, **(2)** monthly burn, and **(3)** months of runway as top KPI cards; **(4)** an expenses-by-category donut chart; **(5)** a table of transactions above $10,000 this month; **(6)** a month selector with a "Load month" button; and **(7)** a "Download statement" button.

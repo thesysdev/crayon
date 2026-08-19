@@ -1,49 +1,274 @@
-Here's your personal budget dashboard covering all five items:
+Here's your budget check screen — a June snapshot with spending vs. budget right up top, a donut for the category split, the biggest expense called out, and forms for switching months and adding expenses.
 
 <a2ui-json>
-{"version":"v0.9","createSurface":{"surfaceId":"budget-surface","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#2E7D32","agentDisplayName":"Budget Tracker"}}}
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
 </a2ui-json>
 
 <a2ui-json>
-{"version":"v0.9","updateComponents":{"surfaceId":"budget-surface","components":[
-{"id":"root","component":"Card","direction":"column","gap":"l","children":["header","progressLabel","budgetProgress","sep1","catHeader","categoryChart","sep2","largestCallout","sep3","monthControl","monthSelect","sep4","addForm"]},
-{"id":"header","component":"CardHeader","title":"Personal Budget — March 2025","subtitle":"Monthly budget: $3,000"},
-{"id":"progressLabel","component":"TextContent","text":"**1. Total spent this month vs. budget** — $2,150 of $3,000 (72%)","size":"default"},
-{"id":"budgetProgress","component":"Progress","value":72,"label":"$2,150 spent / $3,000 budget"},
-{"id":"sep1","component":"Separator"},
-{"id":"catHeader","component":"TextContent","text":"**2. Spending split by category**","size":"default"},
-{"id":"categoryChart","component":"PieChart","labels":["Rent","Groceries","Dining","Transport","Entertainment","Utilities"],"values":[1200,380,220,150,120,80],"variant":"donut"},
-{"id":"sep2","component":"Separator"},
-{"id":"largestCallout","component":"Callout","variant":"warning","title":"3. Largest expense: Rent — $1,200","description":"Paid March 1. This is 56% of your total spending this month."},
-{"id":"sep3","component":"Separator"},
-{"id":"monthControl","component":"FormControl","label":"4. View a different month","input":"monthSelect","hint":"Switch the month to see historical spending"},
-{"id":"monthSelect","component":"Select","name":"month","placeholder":"March 2025","value":"mar2025","items":["mJan","mFeb","mMar","mApr"]},
-{"id":"mJan","component":"SelectItem","value":"jan2025","label":"January 2025"},
-{"id":"mFeb","component":"SelectItem","value":"feb2025","label":"February 2025"},
-{"id":"mMar","component":"SelectItem","value":"mar2025","label":"March 2025"},
-{"id":"mApr","component":"SelectItem","value":"apr2025","label":"April 2025"},
-{"id":"sep4","component":"Separator"},
-{"id":"addForm","component":"Form","name":"addExpense","fields":["fcDesc","fcAmount","fcCat"],"buttons":"formButtons"},
-{"id":"fcDesc","component":"FormControl","label":"5. Add an expense — Description","input":"inDesc"},
-{"id":"inDesc","component":"Input","name":"description","placeholder":"e.g. Coffee with friends","type":"text"},
-{"id":"fcAmount","component":"FormControl","label":"Amount ($)","input":"inAmount"},
-{"id":"inAmount","component":"Input","name":"amount","placeholder":"0.00","type":"number"},
-{"id":"fcCat","component":"FormControl","label":"Category","input":"inCat"},
-{"id":"inCat","component":"Select","name":"category","placeholder":"Select category","items":["cGroc","cDine","cTrans","cEnt","cUtil","cOther"]},
-{"id":"cGroc","component":"SelectItem","value":"groceries","label":"Groceries"},
-{"id":"cDine","component":"SelectItem","value":"dining","label":"Dining"},
-{"id":"cTrans","component":"SelectItem","value":"transport","label":"Transport"},
-{"id":"cEnt","component":"SelectItem","value":"entertainment","label":"Entertainment"},
-{"id":"cUtil","component":"SelectItem","value":"utilities","label":"Utilities"},
-{"id":"cOther","component":"SelectItem","value":"other","label":"Other"},
-{"id":"formButtons","component":"Buttons","buttons":["btnAdd"]},
-{"id":"btnAdd","component":"Button","label":"Add Expense","variant":"primary"}
-]}}
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "monthForm",
+          "statusBadge",
+          "budgetProgress",
+          "splitHeading",
+          "categoryPie",
+          "largestAlert",
+          "addHeading",
+          "addForm"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Personal Budget",
+        "subtitle": "June 2025 — monthly check-in"
+      },
+      {
+        "id": "monthForm",
+        "component": "Form",
+        "name": "month-picker",
+        "buttons": "monthButtons",
+        "fields": [
+          "monthField"
+        ]
+      },
+      {
+        "id": "monthField",
+        "component": "FormControl",
+        "label": "View a different month",
+        "input": "monthSelect"
+      },
+      {
+        "id": "monthSelect",
+        "component": "Select",
+        "name": "month",
+        "items": [
+          "mJun",
+          "mMay",
+          "mApr",
+          "mMar"
+        ],
+        "placeholder": "Pick a month"
+      },
+      {
+        "id": "mJun",
+        "component": "SelectItem",
+        "value": "2025-06",
+        "label": "June 2025"
+      },
+      {
+        "id": "mMay",
+        "component": "SelectItem",
+        "value": "2025-05",
+        "label": "May 2025"
+      },
+      {
+        "id": "mApr",
+        "component": "SelectItem",
+        "value": "2025-04",
+        "label": "April 2025"
+      },
+      {
+        "id": "mMar",
+        "component": "SelectItem",
+        "value": "2025-03",
+        "label": "March 2025"
+      },
+      {
+        "id": "monthButtons",
+        "component": "Buttons",
+        "buttons": [
+          "viewMonthBtn"
+        ]
+      },
+      {
+        "id": "viewMonthBtn",
+        "component": "Button",
+        "label": "View month",
+        "variant": "secondary"
+      },
+      {
+        "id": "statusBadge",
+        "component": "Badge",
+        "text": "On track — 29% of budget left",
+        "variant": "secondary"
+      },
+      {
+        "id": "budgetProgress",
+        "component": "Progress",
+        "value": 71,
+        "label": "Spent $2,140 of $3,000 budget"
+      },
+      {
+        "id": "splitHeading",
+        "component": "Heading",
+        "text": "Spending by category",
+        "level": "h3"
+      },
+      {
+        "id": "categoryPie",
+        "component": "PieChart",
+        "labels": [
+          "Housing",
+          "Groceries",
+          "Dining",
+          "Transport",
+          "Entertainment"
+        ],
+        "values": [
+          1200,
+          380,
+          220,
+          180,
+          160
+        ],
+        "variant": "donut",
+        "appearance": "circular"
+      },
+      {
+        "id": "largestAlert",
+        "component": "Alert",
+        "title": "Largest expense: Housing",
+        "description": "Rent payment of $1,200 on Jun 1 — 56% of this month's total spending.",
+        "variant": "warning"
+      },
+      {
+        "id": "addHeading",
+        "component": "Heading",
+        "text": "Add an expense",
+        "level": "h3"
+      },
+      {
+        "id": "addForm",
+        "component": "Form",
+        "name": "add-expense",
+        "buttons": "addButtons",
+        "fields": [
+          "descField",
+          "amountField",
+          "categoryField"
+        ]
+      },
+      {
+        "id": "descField",
+        "component": "FormControl",
+        "label": "Description",
+        "input": "descInput"
+      },
+      {
+        "id": "descInput",
+        "component": "Input",
+        "name": "description",
+        "placeholder": "e.g., Groceries at Trader Joe's"
+      },
+      {
+        "id": "amountField",
+        "component": "FormControl",
+        "label": "Amount",
+        "input": "amountInput",
+        "hint": "In USD"
+      },
+      {
+        "id": "amountInput",
+        "component": "Input",
+        "name": "amount",
+        "placeholder": "0.00",
+        "type": "number"
+      },
+      {
+        "id": "categoryField",
+        "component": "FormControl",
+        "label": "Category",
+        "input": "categorySelect"
+      },
+      {
+        "id": "categorySelect",
+        "component": "Select",
+        "name": "category",
+        "items": [
+          "cHousing",
+          "cGroceries",
+          "cDining",
+          "cTransport",
+          "cEntertainment"
+        ],
+        "placeholder": "Choose a category"
+      },
+      {
+        "id": "cHousing",
+        "component": "SelectItem",
+        "value": "housing",
+        "label": "Housing"
+      },
+      {
+        "id": "cGroceries",
+        "component": "SelectItem",
+        "value": "groceries",
+        "label": "Groceries"
+      },
+      {
+        "id": "cDining",
+        "component": "SelectItem",
+        "value": "dining",
+        "label": "Dining"
+      },
+      {
+        "id": "cTransport",
+        "component": "SelectItem",
+        "value": "transport",
+        "label": "Transport"
+      },
+      {
+        "id": "cEntertainment",
+        "component": "SelectItem",
+        "value": "entertainment",
+        "label": "Entertainment"
+      },
+      {
+        "id": "addButtons",
+        "component": "Buttons",
+        "buttons": [
+          "addBtn",
+          "addCancelBtn"
+        ]
+      },
+      {
+        "id": "addBtn",
+        "component": "Button",
+        "label": "Add expense",
+        "variant": "primary"
+      },
+      {
+        "id": "addCancelBtn",
+        "component": "Button",
+        "label": "Cancel",
+        "variant": "tertiary"
+      }
+    ]
+  }
+}
 </a2ui-json>
 
-The screen covers all five requirements:
-1. **Budget progress** — a progress bar showing $2,150 of $3,000 spent (72%)
-2. **Category split** — a donut chart breaking spending into six categories
-3. **Largest expense** — a highlighted warning callout for Rent ($1,200)
-4. **Month switcher** — a dropdown to view January–April 2025
-5. **Add expense** — a form with description, amount, category, and a submit button
+All five items are covered:
+
+1. **Spent vs. budget** — a progress bar showing $2,140 of $3,000 (71%), plus an "On track" badge.
+2. **Category split** — a donut chart across Housing, Groceries, Dining, Transport, and Entertainment (values sum to the $2,140 total).
+3. **Largest expense highlighted** — a warning-style alert calling out the $1,200 rent payment.
+4. **Switch months** — a month-picker form with a dropdown and "View month" button.
+5. **Add an expense** — a form with description, amount, category dropdown, and Add/Cancel buttons.
+
+Want me to add anything, like a table of recent individual transactions or a warning when a category goes over its own sub-budget?

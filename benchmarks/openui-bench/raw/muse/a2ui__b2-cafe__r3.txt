@@ -1,5 +1,304 @@
-Single-screen cafe menu covering all 5 requirements — with specials, vegetarian toggle, and hours.
+A cozy cafe menu with specials, filters, and hours — all on one screen:
 
-<a2ui-json>{"version":"v0.9","createSurface":{"surfaceId":"cafe-menu-screen","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#6F4E37","agentDisplayName":"Sunrise Café"},"sendDataModel":false}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
 
-<a2ui-json>{"version":"v0.9","updateComponents":{"surfaceId":"cafe-menu-screen","components":[{"component":"Card","id":"root","children":["headerSection","specialCallout","filterCard","menuTabs","hoursCard","footerNote"],"direction":"column","gap":"l","variant":"clear"},{"component":"Card","id":"headerSection","children":["headingTitle","headingSubtitle","heroImage"],"variant":"card","direction":"column","gap":"s"},{"component":"Heading","id":"headingTitle","text":"Sunrise Café","level":"h1"},{"component":"TextContent","id":"headingSubtitle","text":"Artisan Coffee • Fresh Bakes • Cozy Corner on 5th — Est. 2018","size":"small"},{"component":"ImageBlock","id":"heroImage","src":"https://images.unsplash.com/photo-1445116572660-236099ec97a0?w=1200","alt":"Cozy cafe interior with coffee and pastries"},{"component":"Callout","id":"specialCallout","variant":"success","title":"⭐ Today's Special — Until 3 PM","description":"Pumpkin Spice Cold Brew + Avocado Toast Combo — $9.50 (Save $2.00!) • Marked with ★ across the menu"},{"component":"Card","id":"filterCard","children":["filterHeader","vegSwitchGroup","filterHint"],"variant":"card","direction":"column","gap":"s"},{"component":"TextContent","id":"filterHeader","text":"**Dietary Filter**","size":"default"},{"component":"SwitchGroup","id":"vegSwitchGroup","name":"vegetarianFilter","items":["vegOnlySwitch"],"variant":"sunk"},{"component":"SwitchItem","id":"vegOnlySwitch","name":"vegOnly","label":"Show Vegetarian Only","description":"Hide non-vegetarian items (like Chicken Caesar Wrap)"},{"component":"TextContent","id":"filterHint","text":"Toggle on to view only 🌱 vegetarian items. Vegetarian dishes are tagged with 🌱 Veg throughout the menu.","size":"small"},{"component":"Tabs","id":"menuTabs","items":["drinksTab","foodTab"]},{"component":"TabItem","id":"drinksTab","value":"drinks","trigger":"☕ Drinks","content":["drinksTable","drinksLegend"]},{"component":"TabItem","id":"foodTab","value":"food","trigger":"🥐 Food","content":["foodTable","foodLegend"]},{"component":"Table","id":"drinksTable","columns":["drinksColName","drinksColPrice","drinksColType"]},{"component":"Col","id":"drinksColName","label":"Drink","data":["Espresso","Americano","Cappuccino","Latte","Pumpkin Spice Cold Brew ★","Matcha Latte","Chai Latte","Fresh Orange Juice"],"type":"string"},{"component":"Col","id":"drinksColPrice","label":"Price","data":["$3.00","$3.25","$4.50","$4.75","$5.25","$5.00","$4.75","$4.00"],"type":"string"},{"component":"Col","id":"drinksColType","label":"Type","data":["🌱 Veg","🌱 Veg","🌱 Veg","🌱 Veg","🌱 Veg • Special","🌱 Veg","🌱 Veg","🌱 Veg"],"type":"string"},{"component":"TagBlock","id":"drinksLegend","tags":["🌱 Veg = Vegetarian","★ = Today's Special"]},{"component":"Table","id":"foodTable","columns":["foodColName","foodColPrice","foodColType"]},{"component":"Col","id":"foodColName","label":"Dish","data":["Avocado Toast ★","Classic Butter Croissant","Veggie Panini","Chicken Caesar Wrap","Margherita Flatbread","Acai Bowl","Tomato Basil Soup"],"type":"string"},{"component":"Col","id":"foodColPrice","label":"Price","data":["$6.50","$3.75","$8.25","$9.50","$8.95","$7.50","$5.50"],"type":"string"},{"component":"Col","id":"foodColType","label":"Type","data":["🌱 Veg • Special","🌱 Veg","🌱 Veg","Non-Veg","🌱 Veg","🌱 Veg","🌱 Veg"],"type":"string"},{"component":"TagBlock","id":"foodLegend","tags":["🌱 Veg = Vegetarian","Toggle switch above to hide Non-Veg","★ = Part of Today's Combo"]},{"component":"Card","id":"hoursCard","children":["hoursHeader","hoursTable","hoursNote"],"variant":"sunk","direction":"column","gap":"s"},{"component":"CardHeader","id":"hoursHeader","title":"Opening Hours","subtitle":"123 Brew Street • (555) 123-4567"},{"component":"Table","id":"hoursTable","columns":["hoursColDay","hoursColTime"]},{"component":"Col","id":"hoursColDay","label":"Day","data":["Monday – Friday","Saturday","Sunday"],"type":"string"},{"component":"Col","id":"hoursColTime","label":"Hours","data":["7:00 AM – 7:00 PM","8:00 AM – 8:00 PM","8:00 AM – 4:00 PM"],"type":"string"},{"component":"TextContent","id":"hoursNote","text":"Kitchen closes 30 minutes before closing • Happy Hour 3–5 PM daily — $1 off all drinks","size":"small"},{"component":"TextContent","id":"footerNote","text":"All prices include tax. Oat, almond & soy milk available +$0.50. Ask your barista about seasonal specials!","size":"small"}]}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "specialCallout",
+          "filterCard",
+          "menuTabs",
+          "hoursCard",
+          "footerText"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "The Daily Grind Cafe",
+        "subtitle": "Freshly brewed & baked daily • 123 Main St"
+      },
+      {
+        "id": "specialCallout",
+        "component": "Callout",
+        "variant": "success",
+        "title": "⭐ Today's Special",
+        "description": "Pumpkin Spice Latte + Pumpkin Scone Combo — $7.99 (save $2.00) • Available until 3pm • Vegetarian"
+      },
+      {
+        "id": "filterCard",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "filterText",
+          "vegSwitchGroup",
+          "vegHint"
+        ],
+        "direction": "column",
+        "gap": "s"
+      },
+      {
+        "id": "filterText",
+        "component": "TextContent",
+        "text": "**Menu Options** — Toggle to highlight vegetarian items (marked 🌱)",
+        "size": "small-heavy"
+      },
+      {
+        "id": "vegSwitchGroup",
+        "component": "SwitchGroup",
+        "name": "diet_filter",
+        "items": [
+          "vegSwitchItem"
+        ],
+        "variant": "card"
+      },
+      {
+        "id": "vegSwitchItem",
+        "component": "SwitchItem",
+        "label": "Show vegetarian only",
+        "description": "Filter drinks & food to vegetarian items only",
+        "name": "vegetarian_only",
+        "defaultChecked": false
+      },
+      {
+        "id": "vegHint",
+        "component": "TextContent",
+        "text": "Vegetarian items are marked with 🌱 in the tables below. Turn the switch on to view only vegetarian choices.",
+        "size": "small"
+      },
+      {
+        "id": "menuTabs",
+        "component": "Tabs",
+        "items": [
+          "drinksTab",
+          "foodTab"
+        ]
+      },
+      {
+        "id": "drinksTab",
+        "component": "TabItem",
+        "value": "drinks",
+        "trigger": "Drinks",
+        "content": [
+          "drinksTable",
+          "drinksLegend"
+        ]
+      },
+      {
+        "id": "drinksTable",
+        "component": "Table",
+        "columns": [
+          "drinkNameCol",
+          "drinkPriceCol",
+          "drinkDietCol"
+        ]
+      },
+      {
+        "id": "drinkNameCol",
+        "component": "Col",
+        "label": "Drink",
+        "data": [
+          "Espresso",
+          "Cappuccino",
+          "Latte",
+          "Matcha Latte 🌱",
+          "Cold Brew",
+          "Hot Chocolate 🌱",
+          "Chai Latte 🌱",
+          "Pumpkin Spice Latte 🌱 — Special!"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "drinkPriceCol",
+        "component": "Col",
+        "label": "Price",
+        "data": [
+          "$3.50",
+          "$4.50",
+          "$5.00",
+          "$5.25",
+          "$4.00",
+          "$4.75",
+          "$4.75",
+          "$5.50"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "drinkDietCol",
+        "component": "Col",
+        "label": "Notes",
+        "data": [
+          "",
+          "",
+          "",
+          "Vegetarian",
+          "",
+          "Vegetarian",
+          "Vegetarian",
+          "Vegetarian • Special"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "drinksLegend",
+        "component": "TextContent",
+        "text": "Oat, soy & almond milk +$0.50 • Extra shot +$0.75",
+        "size": "small"
+      },
+      {
+        "id": "foodTab",
+        "component": "TabItem",
+        "value": "food",
+        "trigger": "Food",
+        "content": [
+          "foodTable",
+          "foodLegend"
+        ]
+      },
+      {
+        "id": "foodTable",
+        "component": "Table",
+        "columns": [
+          "foodNameCol",
+          "foodPriceCol",
+          "foodDietCol"
+        ]
+      },
+      {
+        "id": "foodNameCol",
+        "component": "Col",
+        "label": "Food",
+        "data": [
+          "Avocado Toast 🌱",
+          "Butter Croissant",
+          "Veggie Panini 🌱",
+          "Chicken Caesar Wrap",
+          "Tomato Basil Soup 🌱",
+          "Blueberry Muffin 🌱",
+          "Bacon & Egg Roll",
+          "Pumpkin Scone 🌱 — Special!"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "foodPriceCol",
+        "component": "Col",
+        "label": "Price",
+        "data": [
+          "$9.50",
+          "$3.75",
+          "$8.50",
+          "$9.00",
+          "$6.50",
+          "$3.95",
+          "$7.50",
+          "$3.95"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "foodDietCol",
+        "component": "Col",
+        "label": "Notes",
+        "data": [
+          "Vegetarian",
+          "",
+          "Vegetarian",
+          "",
+          "Vegetarian",
+          "Vegetarian",
+          "",
+          "Vegetarian • Special"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "foodLegend",
+        "component": "TextContent",
+        "text": "🌱 = Vegetarian • Ask about vegan & gluten-free options",
+        "size": "small"
+      },
+      {
+        "id": "hoursCard",
+        "component": "Card",
+        "variant": "card",
+        "children": [
+          "hoursHeader",
+          "hoursTable",
+          "hoursNote"
+        ],
+        "gap": "s"
+      },
+      {
+        "id": "hoursHeader",
+        "component": "CardHeader",
+        "title": "Opening Hours",
+        "subtitle": "Come find us — dine-in & takeaway"
+      },
+      {
+        "id": "hoursTable",
+        "component": "Table",
+        "columns": [
+          "hoursDayCol",
+          "hoursTimeCol"
+        ]
+      },
+      {
+        "id": "hoursDayCol",
+        "component": "Col",
+        "label": "Day",
+        "data": [
+          "Monday – Friday",
+          "Saturday",
+          "Sunday",
+          "Public Holidays"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "hoursTimeCol",
+        "component": "Col",
+        "label": "Hours",
+        "data": [
+          "7:00 AM – 6:00 PM",
+          "8:00 AM – 5:00 PM",
+          "8:00 AM – 3:00 PM",
+          "8:00 AM – 2:00 PM"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "hoursNote",
+        "component": "TextContent",
+        "text": "Kitchen closes 30 mins before closing • Last coffee order 15 mins before close",
+        "size": "small"
+      },
+      {
+        "id": "footerText",
+        "component": "TextContent",
+        "text": "Wi-Fi: DailyGrind_Guest • All prices include tax",
+        "size": "small"
+      }
+    ]
+  }
+}
+</a2ui-json>

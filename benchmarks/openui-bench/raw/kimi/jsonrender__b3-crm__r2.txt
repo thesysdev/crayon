@@ -1,69 +1,62 @@
-{"op":"add","path":"/root","value":"page"}
-{"op":"add","path":"/elements/page","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"m"},"children":["header-card","metrics-row","stage-card","activity-card","contacts-card","followups-card","renewal-card","note-card","call-card"]}}
-{"op":"add","path":"/elements/header-card","value":{"type":"Card","props":{"direction":"row","justify":"between","align":"center"},"children":["header-text","header-badge"]}}
-{"op":"add","path":"/elements/header-text","value":{"type":"CardHeader","props":{"title":{"$state":"/account/name"},"subtitle":{"$template":"Owner: ${/account/owner} · ${/account/industry}"}},"children":[]}}
-{"op":"add","path":"/state/account","value":{"name":"Acme Corporation","owner":"Sarah Chen","industry":"Manufacturing","dealValue":245000,"stage":"Negotiation","renewalDate":"2025-07-10","daysToRenewal":18}}
-{"op":"add","path":"/elements/header-badge","value":{"type":"Badge","props":{"text":"Active Account","variant":"default"},"children":[]}}
-{"op":"add","path":"/elements/metrics-row","value":{"type":"Card","props":{"direction":"row","gap":"m"},"children":["metric-value","metric-stage-label"]}}
-{"op":"add","path":"/elements/metric-value","value":{"type":"Card","props":{"variant":"sunk","gap":"xs"},"children":["metric-value-label","metric-value-num"]}}
-{"op":"add","path":"/elements/metric-value-label","value":{"type":"TextContent","props":{"text":"Total Deal Value","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/metric-value-num","value":{"type":"TextContent","props":{"text":{"$template":"$${/account/dealValue}"},"size":"large-heavy"},"children":[]}}
-{"op":"add","path":"/elements/metric-stage-label","value":{"type":"Card","props":{"variant":"sunk","gap":"xs"},"children":["metric-stage-caption","metric-stage-tag"]}}
-{"op":"add","path":"/elements/metric-stage-caption","value":{"type":"TextContent","props":{"text":"Current Stage","size":"small"},"children":[]}}
-{"op":"add","path":"/elements/metric-stage-tag","value":{"type":"Tag","props":{"text":{"$state":"/account/stage"},"variant":"info","size":"lg"},"children":[]}}
-{"op":"add","path":"/elements/stage-card","value":{"type":"Card","props":{"gap":"s"},"children":["stage-heading","stage-progress"]}}
-{"op":"add","path":"/elements/stage-heading","value":{"type":"Heading","props":{"text":"Deal Progress","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/stage-progress","value":{"type":"Progress","props":{"value":75,"label":"Prospecting → Discovery → Proposal → Negotiation → Closed Won"},"children":[]}}
-{"op":"add","path":"/elements/activity-card","value":{"type":"Card","props":{"gap":"s"},"children":["activity-heading","activity-list"]}}
-{"op":"add","path":"/elements/activity-heading","value":{"type":"Heading","props":{"text":"Recent Activity","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/activity-list","value":{"type":"Card","props":{"variant":"clear","gap":"s"},"repeat":{"statePath":"/activities","key":"id"},"children":["activity-item"]}}
-{"op":"add","path":"/elements/activity-item","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["activity-item-text","activity-item-date"]}}
-{"op":"add","path":"/elements/activity-item-text","value":{"type":"TextContent","props":{"text":{"$template":"**${type}** — ${summary}"},"size":"default"},"children":[]}}
-{"op":"add","path":"/elements/activity-item-date","value":{"type":"TextContent","props":{"text":{"$item":"date"},"size":"small"},"children":[]}}
+{"op":"add","path":"/root","value":"main"}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","renewalAlert","kpis","stageSection","activitySection","contactsSection","followupsSection","noteSection","callSection"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":{"$template":"${/account/name}"},"subtitle":{"$template":"Owner: ${/account/owner} · ${/account/industry}"}}}}
+{"op":"add","path":"/state/account","value":{"name":"Acme Corporation","owner":"Sarah Chen","industry":"Manufacturing","dealValue":184500,"stage":"Negotiation","renewalDate":"2025-07-12","renewalNear":true}}
+{"op":"add","path":"/elements/renewalAlert","value":{"type":"Alert","props":{"title":{"$template":"Renewal coming up: ${/account/renewalDate}"},"description":"Contract renews in 18 days. Confirm terms and reach out to the decision maker this week.","variant":"warning"},"visible":{"$state":"/account/renewalNear"}}}
+{"op":"add","path":"/elements/kpis","value":{"type":"Card","props":{"variant":"sunk","direction":"row","gap":"m","justify":"between"},"children":["dealValueBlock","stageBadge"]}}
+{"op":"add","path":"/elements/dealValueBlock","value":{"type":"TextContent","props":{"text":{"$template":"**Total Deal Value:** $${/account/dealValue}"},"size":"large-heavy"}}}
+{"op":"add","path":"/elements/stageBadge","value":{"type":"Badge","props":{"text":{"$state":"/account/stage"},"variant":"secondary"}}}
+{"op":"add","path":"/elements/stageSection","value":{"type":"Card","props":{"variant":"clear","direction":"column","gap":"s"},"children":["stageHeading","stageSteps"]}}
+{"op":"add","path":"/elements/stageHeading","value":{"type":"Heading","props":{"text":"Deal Stage","level":"h3"}}}
+{"op":"add","path":"/elements/stageSteps","value":{"type":"Steps","props":{"items":["step1","step2","step3","step4"]}}}
+{"op":"add","path":"/elements/step1","value":{"type":"StepsItem","props":{"title":"Discovery","details":"Completed Mar 3 — needs analysis done"}}}
+{"op":"add","path":"/elements/step2","value":{"type":"StepsItem","props":{"title":"Proposal","details":"Completed Apr 10 — pricing sent"}}}
+{"op":"add","path":"/elements/step3","value":{"type":"StepsItem","props":{"title":"Negotiation","details":"Current stage — legal reviewing terms"}}}
+{"op":"add","path":"/elements/step4","value":{"type":"StepsItem","props":{"title":"Closed Won","details":"Pending signature"}}}
+{"op":"add","path":"/elements/activitySection","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["activityHeading","activityList"]}}
+{"op":"add","path":"/elements/activityHeading","value":{"type":"Heading","props":{"text":"Recent Activity","level":"h3"}}}
+{"op":"add","path":"/elements/activityList","value":{"type":"ListBlock","props":{"items":["activityItem"],"variant":"number"},"repeat":{"statePath":"/activities","key":"id"},"children":[]}}
+{"op":"add","path":"/elements/activityItem","value":{"type":"ListItem","props":{"title":{"$item":"title"},"subtitle":{"$item":"date"}}}}
 {"op":"add","path":"/state/activities","value":[]}
-{"op":"add","path":"/state/activities/0","value":{"id":"a1","type":"Email","summary":"Sent revised pricing proposal to procurement","date":"Jun 20, 2025"}}
-{"op":"add","path":"/state/activities/1","value":{"id":"a2","type":"Call","summary":"30-min discovery call with VP of Operations","date":"Jun 17, 2025"}}
-{"op":"add","path":"/state/activities/2","value":{"id":"a3","type":"Meeting","summary":"On-site demo of analytics dashboard","date":"Jun 12, 2025"}}
-{"op":"add","path":"/state/activities/3","value":{"id":"a4","type":"Email","summary":"Follow-up on security questionnaire","date":"Jun 8, 2025"}}
-{"op":"add","path":"/elements/contacts-card","value":{"type":"Card","props":{"gap":"s"},"children":["contacts-heading","contacts-list"]}}
-{"op":"add","path":"/elements/contacts-heading","value":{"type":"Heading","props":{"text":"Contacts","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/contacts-list","value":{"type":"Card","props":{"variant":"clear","gap":"s"},"repeat":{"statePath":"/contacts","key":"id"},"children":["contact-item"]}}
-{"op":"add","path":"/elements/contact-item","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["contact-left","contact-role"]}}
-{"op":"add","path":"/elements/contact-left","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center"},"children":["contact-avatar","contact-name"]}}
-{"op":"add","path":"/elements/contact-avatar","value":{"type":"Avatar","props":{"fallback":{"$item":"initials"},"alt":{"$item":"name"}},"children":[]}}
-{"op":"add","path":"/elements/contact-name","value":{"type":"TextContent","props":{"text":{"$template":"**${name}**\n${email}"},"size":"default"},"children":[]}}
-{"op":"add","path":"/elements/contact-role","value":{"type":"Tag","props":{"text":{"$item":"role"},"variant":"neutral"},"children":[]}}
+{"op":"add","path":"/state/activities/0","value":{"id":"a1","title":"Pricing call with procurement team","date":"Jun 20, 2025 · 2:30 PM"}}
+{"op":"add","path":"/state/activities/1","value":{"id":"a2","title":"Sent revised contract v3 to legal","date":"Jun 18, 2025 · 10:15 AM"}}
+{"op":"add","path":"/state/activities/2","value":{"id":"a3","title":"On-site demo for operations leads","date":"Jun 12, 2025 · 9:00 AM"}}
+{"op":"add","path":"/state/activities/3","value":{"id":"a4","title":"Discovery follow-up email to Dana Ruiz","date":"Jun 5, 2025 · 4:45 PM"}}
+{"op":"add","path":"/elements/contactsSection","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["contactsHeading","contactsList"]}}
+{"op":"add","path":"/elements/contactsHeading","value":{"type":"Heading","props":{"text":"Contacts","level":"h3"}}}
+{"op":"add","path":"/elements/contactsList","value":{"type":"ListBlock","props":{"items":["contactItem"]},"repeat":{"statePath":"/contacts","key":"id"},"children":[]}}
+{"op":"add","path":"/elements/contactItem","value":{"type":"ListItem","props":{"title":{"$item":"name"},"subtitle":{"$template":"${role} · ${email}"}}}}
 {"op":"add","path":"/state/contacts","value":[]}
-{"op":"add","path":"/state/contacts/0","value":{"id":"c1","name":"Dana Whitfield","initials":"DW","email":"dana.w@acme.com","role":"Decision Maker"}}
-{"op":"add","path":"/state/contacts/1","value":{"id":"c2","name":"Marcus Lee","initials":"ML","email":"m.lee@acme.com","role":"Champion"}}
-{"op":"add","path":"/state/contacts/2","value":{"id":"c3","name":"Priya Nair","initials":"PN","email":"priya.n@acme.com","role":"Procurement"}}
-{"op":"add","path":"/elements/followups-card","value":{"type":"Card","props":{"gap":"s"},"children":["followups-heading","followups-list"]}}
-{"op":"add","path":"/elements/followups-heading","value":{"type":"Heading","props":{"text":"Open Follow-Ups","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/followups-list","value":{"type":"Card","props":{"variant":"clear","gap":"s"},"repeat":{"statePath":"/followUps","key":"id"},"children":["followup-item"]}}
-{"op":"add","path":"/elements/followup-item","value":{"type":"Card","props":{"variant":"sunk","direction":"row","justify":"between","align":"center"},"children":["followup-text","followup-right"]}}
-{"op":"add","path":"/elements/followup-text","value":{"type":"TextContent","props":{"text":{"$item":"task"},"size":"default"},"children":[]}}
-{"op":"add","path":"/elements/followup-right","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center"},"children":["followup-due","followup-done-btn"]}}
-{"op":"add","path":"/elements/followup-due","value":{"type":"Tag","props":{"text":{"$template":"Due ${dueDate}"},"variant":"warning"},"children":[]}}
-{"op":"add","path":"/elements/followup-done-btn","value":{"type":"Button","props":{"label":"Done","variant":"tertiary","size":"small"},"on":{"press":{"action":"removeState","params":{"statePath":"/followUps","index":{"$index":true}}}},"children":[]}}
-{"op":"add","path":"/state/followUps","value":[]}
-{"op":"add","path":"/state/followUps/0","value":{"id":"f1","task":"Send signed MSA for legal review","dueDate":"Jun 24, 2025"}}
-{"op":"add","path":"/state/followUps/1","value":{"id":"f2","task":"Schedule Q3 onboarding kickoff call","dueDate":"Jun 27, 2025"}}
-{"op":"add","path":"/state/followUps/2","value":{"id":"f3","task":"Confirm renewal pricing with finance","dueDate":"Jul 1, 2025"}}
-{"op":"add","path":"/elements/renewal-card","value":{"type":"Card","props":{"gap":"s"},"children":["renewal-heading","renewal-warning","renewal-text"]}}
-{"op":"add","path":"/elements/renewal-heading","value":{"type":"Heading","props":{"text":"Renewal","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/renewal-warning","value":{"type":"Alert","props":{"title":"Renewal approaching","description":{"$template":"This account renews in ${/account/daysToRenewal} days. Reach out to confirm renewal terms."},"variant":"warning"},"visible":{"$state":"/account/daysToRenewal","lt":30},"children":[]}}
-{"op":"add","path":"/elements/renewal-text","value":{"type":"TextContent","props":{"text":{"$template":"Renewal date: **${/account/renewalDate}**"},"size":"default"},"children":[]}}
-{"op":"add","path":"/elements/note-card","value":{"type":"Card","props":{"gap":"s"},"children":["note-heading","note-input","note-btn"]}}
-{"op":"add","path":"/elements/note-heading","value":{"type":"Heading","props":{"text":"Jot a Note","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/note-input","value":{"type":"TextArea","props":{"name":"note","placeholder":"Write a quick note about this account...","rows":3,"value":{"$bindState":"/draftNote"}},"children":[]}}
+{"op":"add","path":"/state/contacts/0","value":{"id":"c1","name":"Dana Ruiz","role":"VP of Operations (Decision Maker)","email":"dana.ruiz@acme.com"}}
+{"op":"add","path":"/state/contacts/1","value":{"id":"c2","name":"Marcus Lee","role":"Procurement Manager","email":"m.lee@acme.com"}}
+{"op":"add","path":"/state/contacts/2","value":{"id":"c3","name":"Priya Nair","role":"IT Lead (Technical Evaluator)","email":"priya.n@acme.com"}}
+{"op":"add","path":"/elements/followupsSection","value":{"type":"Card","props":{"variant":"card","direction":"column","gap":"s"},"children":["followupsHeading","followupsList"]}}
+{"op":"add","path":"/elements/followupsHeading","value":{"type":"Heading","props":{"text":"Open Follow-ups","level":"h3"}}}
+{"op":"add","path":"/elements/followupsList","value":{"type":"ListBlock","props":{"items":["followupItem"]},"repeat":{"statePath":"/followups","key":"id"},"children":[]}}
+{"op":"add","path":"/elements/followupItem","value":{"type":"ListItem","props":{"title":{"$item":"task"},"subtitle":{"$template":"Due: ${due}"}}}}
+{"op":"add","path":"/state/followups","value":[]}
+{"op":"add","path":"/state/followups/0","value":{"id":"f1","task":"Send security questionnaire answers to Priya","due":"Jun 26, 2025"}}
+{"op":"add","path":"/state/followups/1","value":{"id":"f2","task":"Confirm final discount approval with sales director","due":"Jun 28, 2025"}}
+{"op":"add","path":"/state/followups/2","value":{"id":"f3","task":"Schedule renewal terms review with Dana","due":"Jul 2, 2025"}}
+{"op":"add","path":"/elements/noteSection","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["noteHeading","noteInput","noteAddBtn"]}}
+{"op":"add","path":"/elements/noteHeading","value":{"type":"Heading","props":{"text":"Jot a Note","level":"h3"}}}
+{"op":"add","path":"/elements/noteInput","value":{"type":"TextArea","props":{"name":"note","placeholder":"Type a quick note about this account...","rows":3,"value":{"$bindState":"/draftNote"}}}}
 {"op":"add","path":"/state/draftNote","value":""}
-{"op":"add","path":"/elements/note-btn","value":{"type":"Button","props":{"label":"Save Note","variant":"primary","size":"medium"},"on":{"press":{"action":"pushState","params":{"statePath":"/activities","value":{"id":"$id","type":"Note","summary":{"$state":"/draftNote"},"date":"Today"},"clearStatePath":"/draftNote"}}},"children":[]}}
-{"op":"add","path":"/elements/call-card","value":{"type":"Card","props":{"gap":"s"},"children":["call-heading","call-row"]}}
-{"op":"add","path":"/elements/call-heading","value":{"type":"Heading","props":{"text":"Log a Call","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/call-row","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"s","align":"center"},"children":["call-outcome","call-btn"]}}
-{"op":"add","path":"/elements/call-outcome","value":{"type":"Select","props":{"name":"callOutcome","placeholder":"Call outcome...","items":["call-outcome-1","call-outcome-2","call-outcome-3"],"value":{"$bindState":"/callOutcome"}},"children":[]}}
-{"op":"add","path":"/elements/call-outcome-1","value":{"type":"SelectItem","props":{"value":"connected","label":"Connected — good conversation"},"children":[]}}
-{"op":"add","path":"/elements/call-outcome-2","value":{"type":"SelectItem","props":{"value":"voicemail","label":"Left voicemail"},"children":[]}}
-{"op":"add","path":"/elements/call-outcome-3","value":{"type":"SelectItem","props":{"value":"no-answer","label":"No answer"},"children":[]}}
-{"op":"add","path":"/state/callOutcome","value":""}
-{"op":"add","path":"/elements/call-btn","value":{"type":"Button","props":{"label":"Log Call","variant":"secondary","size":"medium"},"on":{"press":{"action":"pushState","params":{"statePath":"/activities","value":{"id":"$id","type":"Call","summary":{"$template":"Logged call — outcome: ${/callOutcome}"},"date":"Today"}}}},"children":[]}}
+{"op":"add","path":"/elements/noteAddBtn","value":{"type":"Button","props":{"label":"Save Note","variant":"primary","size":"small"},"on":{"press":{"action":"pushState","params":{"statePath":"/activities","value":{"id":"$id","title":{"$template":"Note: ${/draftNote}"},"date":"Just now"},"clearStatePath":"/draftNote"}}}}}
+{"op":"add","path":"/elements/callSection","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"s"},"children":["callHeading","callForm"]}}
+{"op":"add","path":"/elements/callHeading","value":{"type":"Heading","props":{"text":"Log a Call","level":"h3"}}}
+{"op":"add","path":"/elements/callForm","value":{"type":"Form","props":{"name":"log-call","buttons":"callButtons","fields":["callContactField","callOutcomeField","callNotesField"]}}}
+{"op":"add","path":"/elements/callContactField","value":{"type":"FormControl","props":{"label":"Contact","input":"callContactSelect"}}}
+{"op":"add","path":"/elements/callContactSelect","value":{"type":"Select","props":{"name":"call_contact","items":["callC1","callC2","callC3"],"placeholder":"Who did you speak with?"}}}
+{"op":"add","path":"/elements/callC1","value":{"type":"SelectItem","props":{"value":"dana","label":"Dana Ruiz"}}}
+{"op":"add","path":"/elements/callC2","value":{"type":"SelectItem","props":{"value":"marcus","label":"Marcus Lee"}}}
+{"op":"add","path":"/elements/callC3","value":{"type":"SelectItem","props":{"value":"priya","label":"Priya Nair"}}}
+{"op":"add","path":"/elements/callOutcomeField","value":{"type":"FormControl","props":{"label":"Outcome","input":"callOutcomeRadio"}}}
+{"op":"add","path":"/elements/callOutcomeRadio","value":{"type":"RadioGroup","props":{"name":"call_outcome","items":["outcome1","outcome2","outcome3"]}}}
+{"op":"add","path":"/elements/outcome1","value":{"type":"RadioItem","props":{"label":"Connected","description":"Spoke with the contact","value":"connected"}}}
+{"op":"add","path":"/elements/outcome2","value":{"type":"RadioItem","props":{"label":"Voicemail","description":"Left a message","value":"voicemail"}}}
+{"op":"add","path":"/elements/outcome3","value":{"type":"RadioItem","props":{"label":"No answer","description":"Will try again","value":"no-answer"}}}
+{"op":"add","path":"/elements/callNotesField","value":{"type":"FormControl","props":{"label":"Call summary","input":"callNotesInput","hint":"Key points from the conversation"}}}
+{"op":"add","path":"/elements/callNotesInput","value":{"type":"TextArea","props":{"name":"call_notes","placeholder":"Discussed renewal terms, asked for 5% discount...","rows":2}}}
+{"op":"add","path":"/elements/callButtons","value":{"type":"Buttons","props":{"buttons":["logCallBtn"]}}}
+{"op":"add","path":"/elements/logCallBtn","value":{"type":"Button","props":{"label":"Log Call","variant":"primary"},"on":{"press":{"action":"pushState","params":{"statePath":"/activities","value":{"id":"$id","title":"Call logged with contact","date":"Just now"}}}}}}

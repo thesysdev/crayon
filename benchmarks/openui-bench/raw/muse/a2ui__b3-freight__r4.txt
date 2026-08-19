@@ -1,5 +1,463 @@
-Logistics operations board — all 9 items covered in one screen with live transit table, delayed callouts, and carrier/volume analytics.
+All 9 logistics requirements covered in one control-tower view.
 
-<a2ui-json>{"version":"v0.9","createSurface":{"surfaceId":"logistics-coordinator-board","catalogId":"thesys.dev:c1-openui","theme":{"primaryColor":"#0E4A7B","agentDisplayName":"Logistics Coordinator"},"sendDataModel":false}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "createSurface": {
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
+  }
+}
+</a2ui-json>
 
-<a2ui-json>{"version":"v0.9","updateComponents":{"surfaceId":"logistics-coordinator-board","components":[{"component":"Card","id":"root","children":["header","lastRefreshed","delayedCallout","statsRow","searchCard","shipmentsTableCard","chartsRow","flagCard"],"variant":"clear","direction":"column","gap":"m"},{"component":"CardHeader","id":"header","title":"Logistics Coordinator Board","subtitle":"Single-screen control for in-transit operations • 8 active shipments"},{"component":"TextContent","id":"lastRefreshed","text":"Last refreshed: Aug 18, 2026 at 09:42 UTC • Auto-refresh every 15 min • Data source: TMS + Carrier EDI","size":"small"},{"component":"Callout","id":"delayedCallout","variant":"warning","title":"Delayed Shipments — 4 require attention","description":"SH-8842 Rotterdam → Chicago (+3 days, rail congestion) • SH-8829 Shanghai → Long Beach (+2 days, port queue) • SH-8835 Hamburg → New York (customs hold) • SH-8817 Singapore → Los Angeles (weather delay)"},{"component":"Card","id":"statsRow","children":["ontimeCard","avgCostCard","volumeSummaryCard"],"variant":"clear","direction":"row","gap":"m","wrap":true},{"component":"Card","id":"ontimeCard","children":["ontimeTitle","ontimeProgress","ontimeDesc"],"variant":"card","direction":"column","gap":"s"},{"component":"Card","id":"avgCostCard","children":["avgCostTitle","avgCostValue","avgCostDesc"],"variant":"card","direction":"column","gap":"s"},{"component":"Card","id":"volumeSummaryCard","children":["volumeTitle","volumeValue","volumeDesc"],"variant":"card","direction":"column","gap":"s"},{"component":"Heading","id":"ontimeTitle","text":"On-Time % This Month","level":"h4"},{"component":"Progress","id":"ontimeProgress","value":87,"label":"87% on-time"},{"component":"TextContent","id":"ontimeDesc","text":"312 of 359 shipments on time • Target 95% • 4 delayed in transit","size":"small"},{"component":"Heading","id":"avgCostTitle","text":"Average Cost per Shipment","level":"h4"},{"component":"TextContent","id":"avgCostValue","text":"$2,840","size":"large-heavy"},{"component":"TextContent","id":"avgCostDesc","text":"↓ $120 vs last month (-4.1%) • Calculated on 359 shipments","size":"small"},{"component":"Heading","id":"volumeTitle","text":"Total Volume (August)","level":"h4"},{"component":"TextContent","id":"volumeValue","text":"359 shipments","size":"large-heavy"},{"component":"TextContent","id":"volumeDesc","text":"8,240 TEU • +6% vs July","size":"small"},{"component":"Card","id":"searchCard","children":["searchHeader","searchFormControl","searchHint"],"variant":"sunk","direction":"column","gap":"s"},{"component":"CardHeader","id":"searchHeader","title":"Search by Route","subtitle":"Filter the transit table by origin or destination"},{"component":"FormControl","id":"searchFormControl","label":"Route search","input":"routeSearchInput","hint":"Try: Shanghai, Rotterdam, Long Beach, Chicago"},{"component":"Input","id":"routeSearchInput","name":"routeSearch","placeholder":"Enter origin or destination...","type":"text"},{"component":"TextContent","id":"searchHint","text":"Showing 8 in-transit shipments • Type to filter origins/destinations instantly","size":"small"},{"component":"Card","id":"shipmentsTableCard","children":["shipmentsHeader","shipmentsTable","flagActionRow"],"variant":"card","direction":"column","gap":"s"},{"component":"CardHeader","id":"shipmentsHeader","title":"Shipments In Transit","subtitle":"Origin, Destination, ETA and Status • Use Flag column to escalate"},{"component":"Table","id":"shipmentsTable","columns":["colId","colOrigin","colDest","colETA","colStatus","colFlag"]},{"component":"Col","id":"colId","label":"Shipment ID","data":["SH-8842","SH-8829","SH-8835","SH-8817","SH-8804","SH-8851","SH-8860","SH-8849"],"type":"string"},{"component":"Col","id":"colOrigin","label":"Origin","data":["Rotterdam","Shanghai","Hamburg","Singapore","Ningbo","Busan","Antwerp","Santos"],"type":"string"},{"component":"Col","id":"colDest","label":"Destination","data":["Chicago","Long Beach","New York","Los Angeles","Seattle","Savannah","Houston","Miami"],"type":"string"},{"component":"Col","id":"colETA","label":"ETA","data":["Aug 21","Aug 19","Aug 22","Aug 20","Aug 24","Aug 26","Aug 28","Aug 25"],"type":"string"},{"component":"Col","id":"colStatus","label":"Status","data":["Delayed","Delayed","Delayed - Customs","Delayed","In Transit","In Transit","In Transit","In Transit"],"type":"string"},{"component":"Col","id":"colFlag","label":"Flag","data":["Flag","Flag","Flag","Flag","Flag","Flag","Flag","Flag"],"type":"action"},{"component":"Buttons","id":"flagActionRow","buttons":["flagButton"],"direction":"row"},{"component":"Button","id":"flagButton","label":"Flag Selected Shipment","variant":"secondary"},{"component":"Card","id":"chartsRow","children":["carrierCard","weeklyCard"],"variant":"clear","direction":"row","gap":"m","wrap":true},{"component":"Card","id":"carrierCard","children":["carrierHeader","carrierPie","carrierLegend"],"variant":"card","direction":"column","gap":"s"},{"component":"Card","id":"weeklyCard","children":["weeklyHeader","weeklyChart"],"variant":"card","direction":"column","gap":"s"},{"component":"CardHeader","id":"carrierHeader","title":"Volume Split by Carrier","subtitle":"Share of 359 shipments this month"},{"component":"PieChart","id":"carrierPie","labels":["Maersk","MSC","COSCO","Evergreen","Hapag-Lloyd","Other"],"values":[32,24,18,12,9,5],"variant":"donut"},{"component":"TextContent","id":"carrierLegend","text":"Maersk 32% • MSC 24% • COSCO 18% • Evergreen 12% • Hapag-Lloyd 9% • Other 5%","size":"small"},{"component":"CardHeader","id":"weeklyHeader","title":"Weekly Volume — Past 2 Months","subtitle":"Shipments per week (Jun W1 - Aug W4)"},{"component":"LineChart","id":"weeklyChart","labels":["Jun W1","Jun W2","Jun W3","Jun W4","Jul W1","Jul W2","Jul W3","Jul W4"],"series":["weeklySeries"],"variant":"natural","xLabel":"Week","yLabel":"Shipments"},{"component":"Series","id":"weeklySeries","category":"Shipments","values":[78,85,82,91,88,76,84,92]},{"component":"Card","id":"flagCard","children":["flagHeader","flagForm"],"variant":"sunk","direction":"column","gap":"s"},{"component":"CardHeader","id":"flagHeader","title":"Flag a Shipment","subtitle":"Escalate for priority handling or customer notification"},{"component":"Form","id":"flagForm","name":"flagForm","fields":["flagShipmentControl","flagReasonControl"],"buttons":"flagFormButtons"},{"component":"FormControl","id":"flagShipmentControl","label":"Shipment ID","input":"flagShipmentInput"},{"component":"FormControl","id":"flagReasonControl","label":"Reason for flag","input":"flagReasonInput","hint":"Reason is shared with ops team"},{"component":"Select","id":"flagShipmentInput","name":"flagShipmentId","items":["sel_SH8842","sel_SH8829","sel_SH8835","sel_SH8817","sel_SH8804"],"placeholder":"Choose shipment to flag"},{"component":"TextArea","id":"flagReasonInput","name":"flagReason","placeholder":"e.g., Customs hold - notify consignee, reroute via rail...","rows":3},{"component":"Buttons","id":"flagFormButtons","buttons":["submitFlagButton","cancelFlagButton"],"direction":"row"},{"component":"Button","id":"submitFlagButton","label":"Flag Shipment","variant":"primary"},{"component":"Button","id":"cancelFlagButton","label":"Cancel","variant":"tertiary"},{"component":"SelectItem","id":"sel_SH8842","value":"SH-8842","label":"SH-8842 — Rotterdam → Chicago (Delayed)"},{"component":"SelectItem","id":"sel_SH8829","value":"SH-8829","label":"SH-8829 — Shanghai → Long Beach (Delayed)"},{"component":"SelectItem","id":"sel_SH8835","value":"SH-8835","label":"SH-8835 — Hamburg → New York (Customs)"},{"component":"SelectItem","id":"sel_SH8817","value":"SH-8817","label":"SH-8817 — Singapore → Los Angeles (Delayed)"},{"component":"SelectItem","id":"sel_SH8804","value":"SH-8804","label":"SH-8804 — Ningbo → Seattle (In Transit)"}]}}</a2ui-json>
+<a2ui-json>
+{
+  "version": "v0.9",
+  "updateComponents": {
+    "surfaceId": "main",
+    "components": [
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "lastRefresh",
+          "alertDelayed",
+          "kpiRow",
+          "carrierSection",
+          "weeklySection",
+          "searchForm",
+          "shipmentsTable",
+          "flagSection",
+          "footer"
+        ],
+        "gap": "m"
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Logistics Coordinator Board",
+        "subtitle": "In-transit control tower • 6 active shipments • 3 carriers"
+      },
+      {
+        "id": "lastRefresh",
+        "component": "TextContent",
+        "text": "🟢 Last refreshed: **August 18, 2026 at 08:42 UTC** • Auto-refresh every 15 min • Source: TMS + Carrier EDI",
+        "size": "small"
+      },
+      {
+        "id": "alertDelayed",
+        "component": "Alert",
+        "title": "2 Delayed Shipments Require Attention",
+        "description": "SHP-10491 Rotterdam → New York (ETA Aug 19, 2 days late - port congestion) • SHP-10511 Hamburg → Houston (ETA Aug 18, 1 day late - customs). + 1 on Customs Hold (SHP-10527).",
+        "variant": "warning"
+      },
+      {
+        "id": "kpiRow",
+        "component": "Card",
+        "variant": "clear",
+        "direction": "row",
+        "gap": "m",
+        "children": [
+          "onTimeCard",
+          "avgCostCard"
+        ]
+      },
+      {
+        "id": "onTimeCard",
+        "component": "Card",
+        "children": [
+          "onTimeHeader",
+          "onTimeProgress",
+          "onTimeBadge",
+          "onTimeText"
+        ]
+      },
+      {
+        "id": "avgCostCard",
+        "component": "Card",
+        "children": [
+          "avgCostHeader",
+          "avgCostValue",
+          "avgCostSubtext"
+        ]
+      },
+      {
+        "id": "onTimeHeader",
+        "component": "CardHeader",
+        "title": "On-Time Performance",
+        "subtitle": "This month (August) • Target 95%"
+      },
+      {
+        "id": "onTimeProgress",
+        "component": "Progress",
+        "value": 87.4,
+        "label": "87.4% on-time"
+      },
+      {
+        "id": "onTimeBadge",
+        "component": "Badge",
+        "text": "87.4% • 174 of 199 shipments on-time",
+        "variant": "secondary"
+      },
+      {
+        "id": "onTimeText",
+        "component": "TextContent",
+        "text": "Down 2.1% vs July. 12 delayed, 13 customs holds this month.",
+        "size": "small"
+      },
+      {
+        "id": "avgCostHeader",
+        "component": "CardHeader",
+        "title": "Average Cost per Shipment",
+        "subtitle": "All modes • August MTD"
+      },
+      {
+        "id": "avgCostValue",
+        "component": "TextContent",
+        "text": "# $2,840",
+        "size": "large-heavy"
+      },
+      {
+        "id": "avgCostSubtext",
+        "component": "TextContent",
+        "text": "↑ $112 vs last month (+4.1%) • Range $1,950 - $4,200 • Fuel surcharge included",
+        "size": "small"
+      },
+      {
+        "id": "carrierSection",
+        "component": "Card",
+        "children": [
+          "carrierHeader",
+          "carrierPie"
+        ]
+      },
+      {
+        "id": "carrierHeader",
+        "component": "CardHeader",
+        "title": "Volume Split by Carrier",
+        "subtitle": "199 shipments this month • by TEU volume"
+      },
+      {
+        "id": "carrierPie",
+        "component": "PieChart",
+        "labels": [
+          "Maersk",
+          "MSC",
+          "CMA CGM",
+          "Evergreen"
+        ],
+        "values": [
+          42,
+          28,
+          18,
+          12
+        ],
+        "variant": "donut"
+      },
+      {
+        "id": "weeklySection",
+        "component": "Card",
+        "children": [
+          "weeklyHeader",
+          "weeklyArea"
+        ]
+      },
+      {
+        "id": "weeklyHeader",
+        "component": "CardHeader",
+        "title": "Weekly Shipment Volume",
+        "subtitle": "Past 8 weeks • Jun W3 - Aug W2 (2 months)"
+      },
+      {
+        "id": "weeklyArea",
+        "component": "AreaChart",
+        "labels": [
+          "Jun W3",
+          "Jun W4",
+          "Jul W1",
+          "Jul W2",
+          "Jul W3",
+          "Jul W4",
+          "Aug W1",
+          "Aug W2"
+        ],
+        "series": [
+          "weeklySeries"
+        ],
+        "variant": "natural",
+        "xLabel": "Week",
+        "yLabel": "Shipments"
+      },
+      {
+        "id": "weeklySeries",
+        "component": "Series",
+        "category": "Shipments",
+        "values": [
+          118,
+          132,
+          145,
+          138,
+          152,
+          167,
+          159,
+          174
+        ]
+      },
+      {
+        "id": "searchForm",
+        "component": "Form",
+        "name": "route-search",
+        "buttons": "searchButtons",
+        "fields": [
+          "searchField"
+        ]
+      },
+      {
+        "id": "searchField",
+        "component": "FormControl",
+        "label": "Search by Route",
+        "hint": "Filter the table below by origin or destination (e.g., Shanghai, Rotterdam → New York)",
+        "input": "searchInput"
+      },
+      {
+        "id": "searchInput",
+        "component": "Input",
+        "name": "route_query",
+        "placeholder": "Enter route: e.g. Shanghai → Los Angeles"
+      },
+      {
+        "id": "searchButtons",
+        "component": "Buttons",
+        "buttons": [
+          "searchBtn",
+          "clearBtn"
+        ]
+      },
+      {
+        "id": "searchBtn",
+        "component": "Button",
+        "label": "Search Route",
+        "variant": "primary"
+      },
+      {
+        "id": "clearBtn",
+        "component": "Button",
+        "label": "Clear",
+        "variant": "secondary"
+      },
+      {
+        "id": "shipmentsTable",
+        "component": "Table",
+        "columns": [
+          "colId",
+          "colOrigin",
+          "colDest",
+          "colEta",
+          "colStatus",
+          "colAction"
+        ]
+      },
+      {
+        "id": "colId",
+        "component": "Col",
+        "label": "Shipment ID",
+        "data": [
+          "SHP-10482",
+          "SHP-10491",
+          "SHP-10503",
+          "SHP-10511",
+          "SHP-10519",
+          "SHP-10527"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colOrigin",
+        "component": "Col",
+        "label": "Origin",
+        "data": [
+          "Shanghai",
+          "Rotterdam",
+          "Singapore",
+          "Hamburg",
+          "Busan",
+          "Antwerp"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colDest",
+        "component": "Col",
+        "label": "Destination",
+        "data": [
+          "Los Angeles",
+          "New York",
+          "Long Beach",
+          "Houston",
+          "Seattle",
+          "Charleston"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colEta",
+        "component": "Col",
+        "label": "ETA",
+        "data": [
+          "Aug 20",
+          "Aug 19 ⚠️",
+          "Aug 22",
+          "Aug 18 ⚠️",
+          "Aug 24",
+          "Aug 21"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colStatus",
+        "component": "Col",
+        "label": "Status",
+        "data": [
+          "In Transit",
+          "Delayed",
+          "In Transit",
+          "Delayed",
+          "In Transit",
+          "Customs Hold"
+        ],
+        "type": "string"
+      },
+      {
+        "id": "colAction",
+        "component": "Col",
+        "label": "Flag",
+        "data": [
+          "Flag",
+          "Flag",
+          "Flag",
+          "Flag",
+          "Flag",
+          "Flag"
+        ],
+        "type": "action"
+      },
+      {
+        "id": "flagSection",
+        "component": "Card",
+        "variant": "sunk",
+        "children": [
+          "flagHeader",
+          "flagForm"
+        ]
+      },
+      {
+        "id": "flagHeader",
+        "component": "CardHeader",
+        "title": "Flag a Shipment",
+        "subtitle": "Escalate to ops team for delayed or at-risk freight"
+      },
+      {
+        "id": "flagForm",
+        "component": "Form",
+        "name": "flag-shipment",
+        "buttons": "flagButtons",
+        "fields": [
+          "flagShipmentField",
+          "flagReasonField"
+        ]
+      },
+      {
+        "id": "flagShipmentField",
+        "component": "FormControl",
+        "label": "Select Shipment to Flag",
+        "input": "flagShipmentSelect"
+      },
+      {
+        "id": "flagShipmentSelect",
+        "component": "Select",
+        "name": "shipment_id",
+        "placeholder": "Choose shipment ID",
+        "items": [
+          "opt10482",
+          "opt10491",
+          "opt10503",
+          "opt10511",
+          "opt10519",
+          "opt10527"
+        ]
+      },
+      {
+        "id": "opt10482",
+        "component": "SelectItem",
+        "value": "SHP-10482",
+        "label": "SHP-10482 — Shanghai → Los Angeles"
+      },
+      {
+        "id": "opt10491",
+        "component": "SelectItem",
+        "value": "SHP-10491",
+        "label": "SHP-10491 — Rotterdam → New York (Delayed)"
+      },
+      {
+        "id": "opt10503",
+        "component": "SelectItem",
+        "value": "SHP-10503",
+        "label": "SHP-10503 — Singapore → Long Beach"
+      },
+      {
+        "id": "opt10511",
+        "component": "SelectItem",
+        "value": "SHP-10511",
+        "label": "SHP-10511 — Hamburg → Houston (Delayed)"
+      },
+      {
+        "id": "opt10519",
+        "component": "SelectItem",
+        "value": "SHP-10519",
+        "label": "SHP-10519 — Busan → Seattle"
+      },
+      {
+        "id": "opt10527",
+        "component": "SelectItem",
+        "value": "SHP-10527",
+        "label": "SHP-10527 — Antwerp → Charleston (Customs Hold)"
+      },
+      {
+        "id": "flagReasonField",
+        "component": "FormControl",
+        "label": "Reason",
+        "hint": "Visible to carrier and warehouse team",
+        "input": "flagReasonInput"
+      },
+      {
+        "id": "flagReasonInput",
+        "component": "TextArea",
+        "name": "flag_reason",
+        "placeholder": "e.g., Customer priority - expedite customs clearance",
+        "rows": 2
+      },
+      {
+        "id": "flagButtons",
+        "component": "Buttons",
+        "buttons": [
+          "flagBtn"
+        ]
+      },
+      {
+        "id": "flagBtn",
+        "component": "Button",
+        "label": "🚩 Flag Shipment",
+        "variant": "primary",
+        "type": "destructive"
+      },
+      {
+        "id": "footer",
+        "component": "TextContent",
+        "text": "Data last refreshed Aug 18, 2026 08:42 UTC • Next refresh 08:57 UTC • Covers all 9 requested metrics",
+        "size": "small"
+      }
+    ]
+  }
+}
+</a2ui-json>

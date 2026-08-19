@@ -4,9 +4,8 @@ Here's your morning weather brief for Bengaluru:
 {
   "version": "v0.9",
   "createSurface": {
-    "surfaceId": "weather-brief",
-    "catalogId": "thesys.dev:c1-openui",
-    "theme": { "primaryColor": "#0E7CFF", "agentDisplayName": "Weather Brief" }
+    "surfaceId": "main",
+    "catalogId": "thesys.dev:c1-openui"
   }
 }
 </a2ui-json>
@@ -15,30 +14,162 @@ Here's your morning weather brief for Bengaluru:
 {
   "version": "v0.9",
   "updateComponents": {
-    "surfaceId": "weather-brief",
+    "surfaceId": "main",
     "components": [
-      { "id": "root", "component": "Card", "variant": "card", "direction": "column", "gap": "l", "children": ["header", "currentCard", "outlookHeader", "outlookTable", "sunHeader", "sunRow"] },
-      { "id": "header", "component": "CardHeader", "title": "🌤️ Morning Weather Brief — Bengaluru", "subtitle": "Today, Tuesday · Updated 6:30 AM IST" },
-
-      { "id": "currentCard", "component": "Card", "variant": "sunk", "direction": "row", "gap": "l", "align": "center", "justify": "between", "children": ["tempBlock", "condBlock"] },
-      { "id": "tempBlock", "component": "TextContent", "text": "# 24°C\n**Feels like 26°C** · Humidity 72% · Wind 11 km/h NE", "size": "large" },
-      { "id": "condBlock", "component": "TextContent", "text": "**Partly Cloudy ⛅**\nLight haze clearing by mid-morning. UV index moderate; a light jacket is comfortable until 9 AM.", "size": "default" },
-
-      { "id": "outlookHeader", "component": "Heading", "text": "Next 3 Days Outlook", "level": "h3" },
-      { "id": "outlookTable", "component": "Table", "columns": ["colDay", "colCond", "colHigh", "colLow", "colRain"] },
-      { "id": "colDay", "component": "Col", "label": "Day", "data": ["Wednesday", "Thursday", "Friday"], "type": "string" },
-      { "id": "colCond", "component": "Col", "label": "Conditions", "data": ["⛅ Partly cloudy", "🌦️ Scattered showers", "☀️ Mostly sunny"], "type": "string" },
-      { "id": "colHigh", "component": "Col", "label": "High (°C)", "data": [29, 27, 30], "type": "number" },
-      { "id": "colLow", "component": "Col", "label": "Low (°C)", "data": [20, 21, 19], "type": "number" },
-      { "id": "colRain", "component": "Col", "label": "Rain Chance", "data": ["10%", "60%", "5%"], "type": "string" },
-
-      { "id": "sunHeader", "component": "Heading", "text": "Sunrise & Sunset", "level": "h3" },
-      { "id": "sunRow", "component": "Card", "variant": "sunk", "direction": "row", "gap": "xl", "justify": "around", "children": ["sunrise", "sunset"] },
-      { "id": "sunrise", "component": "TextContent", "text": "🌅 **Sunrise**\n6:38 AM", "size": "default" },
-      { "id": "sunset", "component": "TextContent", "text": "🌇 **Sunset**\n6:02 PM", "size": "default" }
+      {
+        "id": "root",
+        "component": "Card",
+        "children": [
+          "header",
+          "currentBadge",
+          "currentTemp",
+          "currentDetails",
+          "sep1",
+          "outlookTitle",
+          "outlookTable",
+          "sep2",
+          "sunTitle",
+          "sunTable"
+        ]
+      },
+      {
+        "id": "header",
+        "component": "CardHeader",
+        "title": "Morning Weather Brief — Bengaluru",
+        "subtitle": "Thursday, 6:30 AM IST"
+      },
+      {
+        "id": "currentBadge",
+        "component": "Badge",
+        "text": "Partly Cloudy",
+        "variant": "secondary"
+      },
+      {
+        "id": "currentTemp",
+        "component": "TextContent",
+        "text": "**22°C** right now",
+        "size": "large-heavy"
+      },
+      {
+        "id": "currentDetails",
+        "component": "TextContent",
+        "text": "Feels like 24°C · Humidity 78% · Wind 11 km/h NE · Light haze clearing by mid-morning. High of 29°C expected this afternoon.",
+        "size": "default"
+      },
+      {
+        "id": "sep1",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "outlookTitle",
+        "component": "Heading",
+        "text": "Next 3 Days",
+        "level": "h3"
+      },
+      {
+        "id": "outlookTable",
+        "component": "Table",
+        "columns": [
+          "dayCol",
+          "condCol",
+          "highCol",
+          "lowCol",
+          "rainCol"
+        ]
+      },
+      {
+        "id": "dayCol",
+        "component": "Col",
+        "label": "Day",
+        "data": [
+          "Friday",
+          "Saturday",
+          "Sunday"
+        ]
+      },
+      {
+        "id": "condCol",
+        "component": "Col",
+        "label": "Conditions",
+        "data": [
+          "Mostly sunny",
+          "Scattered clouds",
+          "Afternoon showers"
+        ]
+      },
+      {
+        "id": "highCol",
+        "component": "Col",
+        "label": "High",
+        "data": [
+          "30°C",
+          "29°C",
+          "27°C"
+        ]
+      },
+      {
+        "id": "lowCol",
+        "component": "Col",
+        "label": "Low",
+        "data": [
+          "20°C",
+          "21°C",
+          "21°C"
+        ]
+      },
+      {
+        "id": "rainCol",
+        "component": "Col",
+        "label": "Rain Chance",
+        "data": [
+          "5%",
+          "15%",
+          "60%"
+        ]
+      },
+      {
+        "id": "sep2",
+        "component": "Separator",
+        "orientation": "horizontal"
+      },
+      {
+        "id": "sunTitle",
+        "component": "Heading",
+        "text": "Sunrise & Sunset",
+        "level": "h3"
+      },
+      {
+        "id": "sunTable",
+        "component": "Table",
+        "columns": [
+          "sunEventCol",
+          "sunTimeCol"
+        ]
+      },
+      {
+        "id": "sunEventCol",
+        "component": "Col",
+        "label": "Event",
+        "data": [
+          "🌅 Sunrise",
+          "🌇 Sunset",
+          "☀️ Daylight"
+        ]
+      },
+      {
+        "id": "sunTimeCol",
+        "component": "Col",
+        "label": "Time",
+        "data": [
+          "6:38 AM",
+          "6:02 PM",
+          "11h 24m"
+        ]
+      }
     ]
   }
 }
 </a2ui-json>
 
-This brief covers all three items: current conditions (24°C, partly cloudy), a 3-day outlook table with highs, lows, and rain chances, plus today's sunrise (6:38 AM) and sunset (6:02 PM). Have a great morning! ☀️
+The brief covers all three items: current conditions (22°C, partly cloudy) for Bengaluru, a three-day outlook table with highs, lows, and rain chances, plus today's sunrise (6:38 AM) and sunset (6:02 PM) times.

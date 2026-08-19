@@ -1,18 +1,22 @@
 
 
 {"op":"add","path":"/root","value":"main"}
-{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"direction":"column","gap":"l"},"children":["header","uptime-section","separator","incident-section"]}}
-{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Platform Status","subtitle":"API Health & Incident Report"},"children":[]}}
-{"op":"add","path":"/elements/uptime-section","value":{"type":"Card","props":{"variant":"sunk","direction":"column","gap":"m"},"children":["uptime-label","uptime-progress","uptime-note"]}}
-{"op":"add","path":"/elements/uptime-label","value":{"type":"Heading","props":{"text":"API Uptime — This Month","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/uptime-progress","value":{"type":"Progress","props":{"value":{"$state":"/uptime/percentage"},"label":{"$template":"${/uptime/percentage}% uptime"}},"children":[]}}
-{"op":"add","path":"/elements/uptime-note","value":{"type":"TextContent","props":{"text":{"$state":"/uptime/note"},"size":"small"},"children":[]}}
-{"op":"add","path":"/state/uptime","value":{"percentage":99.97,"note":"All systems operational. 30-day rolling window."}}
-{"op":"add","path":"/elements/separator","value":{"type":"Separator","props":{"orientation":"horizontal","decorative":true},"children":[]}}
-{"op":"add","path":"/elements/incident-section","value":{"type":"Card","props":{"direction":"column","gap":"m"},"children":["incident-heading","incident-callout","incident-meta"]}}
-{"op":"add","path":"/elements/incident-heading","value":{"type":"Heading","props":{"text":"Most Recent Incident","level":"h3"},"children":[]}}
-{"op":"add","path":"/elements/incident-callout","value":{"type":"Callout","props":{"variant":"success","title":{"$state":"/incident/title"},"description":{"$state":"/incident/description"}},"children":[]}}
-{"op":"add","path":"/elements/incident-meta","value":{"type":"Card","props":{"variant":"clear","direction":"row","gap":"m","align":"center"},"children":["incident-resolved-badge","incident-duration"]}}
-{"op":"add","path":"/elements/incident-resolved-badge","value":{"type":"Badge","props":{"text":"Resolved","variant":"secondary"},"children":[]}}
-{"op":"add","path":"/elements/incident-duration","value":{"type":"TextContent","props":{"text":{"$template":"Resolved ${/incident/resolvedAt} · Duration: ${/incident/duration}"},"size":"small"},"children":[]}}
-{"op":"add","path":"/state/incident","value":{"title":"Elevated API Latency (P2)","description":"Response times on the /v2/orders endpoint degraded to ~2.4s p95 due to a misconfigured connection pool after a routine deployment. Auto-scaling triggered and the config was rolled back.","resolvedAt":"Jan 18, 2025 at 14:32 UTC","duration":"23 minutes"}}
+{"op":"add","path":"/elements/main","value":{"type":"Card","props":{"gap":"l"},"children":["header","uptime-section","separator","incident-section"]}}
+{"op":"add","path":"/elements/header","value":{"type":"CardHeader","props":{"title":"Platform Status","subtitle":"API Service Health — June 2025"}}}
+{"op":"add","path":"/elements/uptime-section","value":{"type":"Card","props":{"variant":"sunk","gap":"m","align":"center"},"children":["uptime-label","uptime-value","uptime-progress","uptime-note"]}}
+{"op":"add","path":"/elements/uptime-label","value":{"type":"TextContent","props":{"text":"Current Month Uptime","size":"small-heavy"}}}
+{"op":"add","path":"/elements/uptime-value","value":{"type":"TextContent","props":{"text":{"$template":"${/uptime}%"},"size":"large-heavy"}}}
+{"op":"add","path":"/elements/uptime-progress","value":{"type":"Progress","props":{"value":{"$state":"/uptime"},"label":"API Availability"}}}
+{"op":"add","path":"/elements/uptime-note","value":{"type":"TextContent","props":{"text":{"$template":"Target: ${/target}% · ${/downtimeMinutes} min downtime this month"},"size":"small"}}}
+{"op":"add","path":"/state/uptime","value":99.97}
+{"op":"add","path":"/state/target","value":99.95}
+{"op":"add","path":"/state/downtimeMinutes","value":13}
+{"op":"add","path":"/elements/separator","value":{"type":"Separator","props":{}}}
+{"op":"add","path":"/elements/incident-section","value":{"type":"Card","props":{"gap":"m"},"children":["incident-header","incident-alert","incident-details","incident-meta"]}}
+{"op":"add","path":"/elements/incident-header","value":{"type":"TextContent","props":{"text":"Most Recent Incident","size":"small-heavy"}}}
+{"op":"add","path":"/elements/incident-alert","value":{"type":"Alert","props":{"title":{"$state":"/incident/title"},"description":{"$state":"/incident/summary"},"variant":"warning"}}}
+{"op":"add","path":"/elements/incident-details","value":{"type":"TextContent","props":{"text":{"$state":"/incident/resolution"},"size":"default"}}}
+{"op":"add","path":"/elements/incident-meta","value":{"type":"Card","props":{"direction":"row","gap":"m","align":"center"},"children":["incident-badge","incident-time"]}}
+{"op":"add","path":"/elements/incident-badge","value":{"type":"Badge","props":{"text":{"$state":"/incident/severity"},"variant":"secondary"}}}
+{"op":"add","path":"/elements/incident-time","value":{"type":"TextContent","props":{"text":{"$template":"Resolved: ${/incident/resolvedAt}"},"size":"small"}}}
+{"op":"add","path":"/state/incident","value":{"title":"Elevated API Latency","summary":"Response times exceeded p99 thresholds for approximately 13 minutes due to a database connection pool exhaustion during a traffic spike.","resolution":"The connection pool was scaled from 50 to 200 connections and a circuit breaker was added to prevent cascading failures. A post-mortem is scheduled for June 20.","severity":"SEV-2","resolvedAt":"June 14, 2025 at 14:32 UTC"}}}
