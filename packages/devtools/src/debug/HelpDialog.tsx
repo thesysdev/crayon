@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 import { useEffect, useState, type CSSProperties } from "react";
-import { IconButton } from "../ui";
 import { useStyles, type ThemeTokens } from "../theme";
+import { IconButton } from "../ui";
 import { useDebugStyles } from "./styles";
 
 const SUMMARY =
