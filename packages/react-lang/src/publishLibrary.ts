@@ -10,13 +10,10 @@ export const DEVTOOLS_LIBRARIES_KEY = Symbol.for("openui.devtools.libraries");
 
 export const LIBRARY_EVENT_KIND = "react-lang:library";
 
-export interface RegisteredLibrary {
-  key: string;
-  library: Library;
-}
+export type LibraryRegistry = Record<string, Library>;
 
 interface RegistryStore {
-  [DEVTOOLS_LIBRARIES_KEY]?: RegisteredLibrary[];
+  [DEVTOOLS_LIBRARIES_KEY]?: LibraryRegistry;
 }
 
 export function libraryKey(library: {
@@ -27,17 +24,13 @@ export function libraryKey(library: {
   return library.id ?? library.root ?? Object.keys(library.components).sort().join(",");
 }
 
-function getRegistry(): RegisteredLibrary[] {
+function getRegistry(): LibraryRegistry {
   const store = globalThis as RegistryStore;
-  return (store[DEVTOOLS_LIBRARIES_KEY] ??= []);
+  return (store[DEVTOOLS_LIBRARIES_KEY] ??= {});
 }
 
 function upsertRegistry(library: Library): void {
-  const key = libraryKey(library);
-  const registry = getRegistry();
-  const next = registry.filter((entry) => entry.key !== key);
-  next.push({ key, library });
-  (globalThis as RegistryStore)[DEVTOOLS_LIBRARIES_KEY] = next;
+  getRegistry()[libraryKey(library)] = library;
 }
 
 /** Dev-only: stash the live library and emit a serializable registration ping. */

@@ -5,7 +5,7 @@ import { createLibrary, defineComponent } from "./library";
 import {
   DEVTOOLS_LIBRARIES_KEY,
   LIBRARY_EVENT_KIND,
-  type RegisteredLibrary,
+  type LibraryRegistry,
 } from "./publishLibrary";
 
 const Dummy = (() => null) as any;
@@ -19,14 +19,14 @@ function makeComponent(name: string) {
   });
 }
 
-function registry(): RegisteredLibrary[] {
+function registry(): LibraryRegistry {
   return (
-    (globalThis as { [DEVTOOLS_LIBRARIES_KEY]?: RegisteredLibrary[] })[DEVTOOLS_LIBRARIES_KEY] ?? []
+    (globalThis as { [DEVTOOLS_LIBRARIES_KEY]?: LibraryRegistry })[DEVTOOLS_LIBRARIES_KEY] ?? {}
   );
 }
 
 function clearRegistry(): void {
-  delete (globalThis as { [DEVTOOLS_LIBRARIES_KEY]?: RegisteredLibrary[] })[DEVTOOLS_LIBRARIES_KEY];
+  delete (globalThis as { [DEVTOOLS_LIBRARIES_KEY]?: LibraryRegistry })[DEVTOOLS_LIBRARIES_KEY];
 }
 
 afterEach(() => {
@@ -42,7 +42,7 @@ describe("createLibrary publish", () => {
     const Card = makeComponent("Card");
     const library = createLibrary({ root: "Card", id: "demo", components: [Card] });
 
-    expect(registry()).toEqual([{ key: "demo", library }]);
+    expect(registry()).toEqual({ demo: library });
     expect(events).toHaveLength(1);
     const event = events[0] as {
       detail: Record<string, unknown>;
@@ -62,8 +62,8 @@ describe("createLibrary publish", () => {
     createLibrary({ root: "Card", id: "demo", components: [Card] });
     const second = createLibrary({ root: "Card", id: "demo", components: [Card] });
 
-    expect(registry()).toHaveLength(1);
-    expect(registry()[0]?.library).toBe(second);
+    expect(Object.keys(registry())).toEqual(["demo"]);
+    expect(registry()["demo"]).toBe(second);
   });
 
   it("keeps distinct libraries side by side", () => {
@@ -72,7 +72,7 @@ describe("createLibrary publish", () => {
     createLibrary({ root: "Card", components: [Card] });
     createLibrary({ root: "Stack", components: [Stack] });
 
-    expect(registry().map((entry) => entry.key)).toEqual(["Card", "Stack"]);
+    expect(Object.keys(registry())).toEqual(["Card", "Stack"]);
   });
 
   it("does not publish in production", () => {
@@ -82,7 +82,7 @@ describe("createLibrary publish", () => {
 
     createLibrary({ root: "Card", components: [makeComponent("Card")] });
 
-    expect(registry()).toEqual([]);
+    expect(registry()).toEqual({});
     expect(events).toEqual([]);
     remove();
   });
