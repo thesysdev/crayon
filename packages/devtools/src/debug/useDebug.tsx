@@ -24,7 +24,7 @@ export function useDebug({
 }): {
   trayOpen: boolean;
   canOpen: boolean;
-  openWith: (response: string) => void;
+  openWith: (response: string, libraryId?: string) => void;
   close: () => void;
   retract: () => void;
   view: ReactNode;
@@ -35,6 +35,7 @@ export function useDebug({
   const [popup, setPopup] = useState<Window | null>(null);
   const [popupBlocked, setPopupBlocked] = useState(false);
   const [code, setCode] = useState("");
+  const [libraryId, setLibraryId] = useState<string | undefined>();
   const markHelpSeen = useCallback(() => setConfig({ helpSeen: true }), [setConfig]);
 
   useEffect(() => {
@@ -86,8 +87,9 @@ export function useDebug({
   }, [popup]);
 
   const openWith = useCallback(
-    (response: string) => {
+    (response: string, nextLibraryId?: string) => {
       setCode(response);
+      setLibraryId(nextLibraryId);
       open();
     },
     [open],
@@ -98,6 +100,7 @@ export function useDebug({
       libraries={libraries}
       code={code}
       onCodeChange={setCode}
+      libraryId={libraryId}
       editorPct={editorPct}
       onEditorPctChange={(pct) => setConfig({ editorPct: pct })}
       ejected={Boolean(popup)}
