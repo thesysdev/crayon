@@ -2,11 +2,7 @@ import { observability } from "@openuidev/observability";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod/v4";
 import { createLibrary, defineComponent } from "./library";
-import {
-  DEVTOOLS_LIBRARIES_KEY,
-  LIBRARY_EVENT_KIND,
-  type LibraryRegistry,
-} from "./publishLibrary";
+import { DEVTOOLS_LIBRARIES_KEY, LIBRARY_EVENT_KIND, type LibraryRegistry } from "./publishLibrary";
 
 const Dummy = (() => null) as any;
 
