@@ -443,8 +443,7 @@ function chromeStyles(t: ThemeTokens) {
       fontFamily: FONT,
       fontSize: 13,
       visibility: "hidden",
-      transition:
-        "transform 220ms cubic-bezier(0.32, 0.72, 0, 1), visibility 0s linear 220ms",
+      transition: "transform 220ms cubic-bezier(0.32, 0.72, 0, 1), visibility 0s linear 220ms",
       overflow: "hidden",
     },
     drawerOpen: {

@@ -175,13 +175,7 @@ export function rootStyle(mode: ColorMode): { colorScheme: ColorMode } {
 
 const ModeContext = createContext<ColorMode>(DEFAULT_COLOR_MODE);
 
-export function DevtoolsModeProvider({
-  mode,
-  children,
-}: {
-  mode: ColorMode;
-  children: ReactNode;
-}) {
+export function DevtoolsModeProvider({ mode, children }: { mode: ColorMode; children: ReactNode }) {
   return createElement(ModeContext.Provider, { value: mode }, children);
 }
 
