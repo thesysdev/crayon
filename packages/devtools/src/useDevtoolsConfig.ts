@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { ColorScheme } from "./theme";
+import type { ColorMode } from "./theme";
 
 const STORAGE_KEY = "openui.devtools.config";
 
 export type DevtoolsConfig = {
   autoOpen: boolean;
   onlyErrors: boolean;
-  theme: ColorScheme;
+  theme: ColorMode;
 };
 
-function isColorScheme(value: unknown): value is ColorScheme {
+function isColorMode(value: unknown): value is ColorMode {
   return value === "light" || value === "dark";
 }
 
@@ -17,7 +17,7 @@ function sanitize(patch: Partial<DevtoolsConfig>): Partial<DevtoolsConfig> {
   const next: Partial<DevtoolsConfig> = {};
   if (typeof patch.autoOpen === "boolean") next.autoOpen = patch.autoOpen;
   if (typeof patch.onlyErrors === "boolean") next.onlyErrors = patch.onlyErrors;
-  if (isColorScheme(patch.theme)) next.theme = patch.theme;
+  if (isColorMode(patch.theme)) next.theme = patch.theme;
   return next;
 }
 

@@ -1,9 +1,9 @@
 import { Moon, Sun } from "lucide-react";
 import type { CSSProperties } from "react";
 import { IconButton } from "./IconButton";
-import { useStyles, type ColorScheme, type ThemeTokens } from "./theme";
+import { useStyles, type ColorMode, type ThemeTokens } from "./theme";
 
-const OPTIONS: { id: ColorScheme; label: string; icon: typeof Sun }[] = [
+const OPTIONS: { id: ColorMode; label: string; icon: typeof Sun }[] = [
   { id: "light", label: "Light", icon: Sun },
   { id: "dark", label: "Dark", icon: Moon },
 ];
@@ -17,8 +17,8 @@ export function ThemeSegmented({
   value,
   onChange,
 }: {
-  value: ColorScheme;
-  onChange: (value: ColorScheme) => void;
+  value: ColorMode;
+  onChange: (value: ColorMode) => void;
 }) {
   const styles = useStyles(segmentedStyles);
   return (
@@ -54,10 +54,10 @@ export function ThemeToggle({
   value,
   onChange,
 }: {
-  value: ColorScheme;
-  onChange: (value: ColorScheme) => void;
+  value: ColorMode;
+  onChange: (value: ColorMode) => void;
 }) {
-  const next: ColorScheme = value === "dark" ? "light" : "dark";
+  const next: ColorMode = value === "dark" ? "light" : "dark";
   const label = next === "dark" ? "Switch to dark theme" : "Switch to light theme";
   const Icon = next === "dark" ? Moon : Sun;
 

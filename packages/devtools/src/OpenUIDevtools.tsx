@@ -11,13 +11,13 @@ import { getReactLangStreamDetail, ReactLangStreamEventRow } from "./ReactLangSt
 import { ShiroLogo } from "./ShiroLogo";
 import { useDevtoolsSingleton } from "./singleton";
 import {
-  DEFAULT_COLOR_SCHEME,
-  DevtoolsSchemeProvider,
+  DEFAULT_COLOR_MODE,
+  DevtoolsModeProvider,
   FONT,
   rootStyle,
   theme,
   useStyles,
-  type ColorScheme,
+  type ColorMode,
   type ThemeTokens,
 } from "./theme";
 import { ThemeSegmented } from "./ThemeToggle";
@@ -54,7 +54,7 @@ export interface OpenUIDevtoolsProps {
    * Initial widget chrome theme. Never auto-detected — change it under
    * Settings > Theme and the choice persists across reloads.
    */
-  theme?: ColorScheme;
+  theme?: ColorMode;
   /**
    * @internal Set by react-lang's auto-mount. Auto-mounted instances yield to
    * any manually rendered <OpenUIDevtools /> so host-provided props win.
@@ -75,7 +75,7 @@ export function OpenUIDevtools({
   maxEvents = 50,
   errorsOnly = false,
   autoOpenOnError = true,
-  theme: themeProp = DEFAULT_COLOR_SCHEME,
+  theme: themeProp = DEFAULT_COLOR_MODE,
   __autoMounted = false,
 }: OpenUIDevtoolsProps) {
   const isEnabled =
@@ -92,8 +92,8 @@ export function OpenUIDevtools({
     onlyErrors: errorsOnly,
     theme: themeProp,
   });
-  const { onlyErrors, theme: scheme } = config;
-  const styles = chromeStyles(theme(scheme));
+  const { onlyErrors, theme: mode } = config;
+  const styles = chromeStyles(theme(mode));
 
   // Read configRef inside the (stable) subscription without re-subscribing.
   useEffect(() => {
@@ -130,8 +130,8 @@ export function OpenUIDevtools({
   };
 
   return (
-    <DevtoolsSchemeProvider scheme={scheme}>
-      <div style={{ ...styles.toggleWrap, ...rootStyle(scheme), ...positionStyles[position] }}>
+    <DevtoolsModeProvider mode={mode}>
+      <div style={{ ...styles.toggleWrap, ...rootStyle(mode), ...positionStyles[position] }}>
         <button
           style={{
             ...styles.toggle,
@@ -159,7 +159,7 @@ export function OpenUIDevtools({
       <div
         style={{
           ...styles.backdrop,
-          ...rootStyle(scheme),
+          ...rootStyle(mode),
           ...(open ? styles.backdropOpen : null),
         }}
         onClick={() => setOpen(false)}
@@ -248,7 +248,7 @@ export function OpenUIDevtools({
           <span style={styles.trayFade} aria-hidden />
         </aside>
       </div>
-    </DevtoolsSchemeProvider>
+    </DevtoolsModeProvider>
   );
 }
 

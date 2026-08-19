@@ -5,9 +5,9 @@ import { createContext, createElement, useContext, type ReactNode } from "react"
  * widget never sniffs the host page or the OS, so it looks the same in
  * every app until you change it.
  */
-export type ColorScheme = "light" | "dark";
+export type ColorMode = "light" | "dark";
 
-export const DEFAULT_COLOR_SCHEME: ColorScheme = "light";
+export const DEFAULT_COLOR_MODE: ColorMode = "light";
 
 /**
  * Zinc-based chrome for the injected widget. Independent of the host design
@@ -164,35 +164,35 @@ export type ThemeTokens = { [K in keyof typeof LIGHT]: string };
 export const FONT = '"Inter", system-ui, sans-serif';
 export const MONO = "ui-monospace, SFMono-Regular, Menlo, monospace";
 
-/** Palette for the chosen scheme. Native `colorScheme` still goes on the root. */
-export function theme(scheme: ColorScheme): ThemeTokens {
-  return scheme === "dark" ? DARK : LIGHT;
+/** Palette for the chosen mode. Native `colorScheme` still goes on the root. */
+export function theme(mode: ColorMode): ThemeTokens {
+  return mode === "dark" ? DARK : LIGHT;
 }
 
-export function rootStyle(scheme: ColorScheme): { colorScheme: ColorScheme } {
-  return { colorScheme: scheme };
+export function rootStyle(mode: ColorMode): { colorScheme: ColorMode } {
+  return { colorScheme: mode };
 }
 
-const SchemeContext = createContext<ColorScheme>(DEFAULT_COLOR_SCHEME);
+const ModeContext = createContext<ColorMode>(DEFAULT_COLOR_MODE);
 
-export function DevtoolsSchemeProvider({
-  scheme,
+export function DevtoolsModeProvider({
+  mode,
   children,
 }: {
-  scheme: ColorScheme;
+  mode: ColorMode;
   children: ReactNode;
 }) {
-  return createElement(SchemeContext.Provider, { value: scheme }, children);
+  return createElement(ModeContext.Provider, { value: mode }, children);
 }
 
-/** The scheme chosen in Settings, shared with the Debug tray and popup. */
-export function useDevtoolsScheme(): ColorScheme {
-  return useContext(SchemeContext);
+/** The mode chosen in Settings, shared with the Debug tray and popup. */
+export function useDevtoolsMode(): ColorMode {
+  return useContext(ModeContext);
 }
 
-/** Tokens for the scheme in context. */
+/** Tokens for the mode in context. */
 export function useTheme(): ThemeTokens {
-  return theme(useDevtoolsScheme());
+  return theme(useDevtoolsMode());
 }
 
 export function useStyles<T>(factory: (tokens: ThemeTokens) => T): T {
