@@ -2,7 +2,7 @@ import { Maximize2, Minimize2, X } from "lucide-react";
 import { Component, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { IconButton } from "../IconButton";
 import { type RegisteredLibrary } from "../libraryRegistry";
-import { themeVars, useDevtoolsScheme, type ColorScheme } from "../theme";
+import { FONT, rootStyle, useDevtoolsScheme, useTheme, type ColorScheme, type ThemeTokens } from "../theme";
 import { ThemeToggle } from "../ThemeToggle";
 import type { ChunkStrategy } from "./chunker";
 import { HelpDialog } from "./HelpDialog";
@@ -14,7 +14,7 @@ import { TreePanel } from "./panels/TreePanel";
 import { ValidationPanel } from "./panels/ValidationPanel";
 import { librarySchema } from "./parse";
 import { StreamToolbar, type StreamSettings } from "./StreamToolbar";
-import { FONT, debugStyles as debug } from "./styles";
+import { debugStyles } from "./styles";
 import { usePlayback } from "./usePlayback";
 import { useReactLang } from "./useReactLang";
 import { useValidation } from "./useValidation";
@@ -55,7 +55,7 @@ class DebugErrorBoundary extends Component<{ children: ReactNode }, { error: Err
 
   override render() {
     if (this.state.error) {
-      return <div style={styles.missing}>{this.state.error.message}</div>;
+      return <div style={{ padding: 16, fontSize: 12 }}>{this.state.error.message}</div>;
     }
     return this.props.children;
   }
@@ -126,6 +126,9 @@ export function DebugUI({
   const [strategy, setStrategy] = useState<ChunkStrategy>("llm");
   const [seed, setSeed] = useState(42);
   const scheme = useDevtoolsScheme();
+  const t = useTheme();
+  const debug = debugStyles(t);
+  const styles = shellStyles(t);
   const settings: StreamSettings = {
     strategy,
     onStrategyChange: setStrategy,
@@ -178,7 +181,7 @@ export function DebugUI({
   };
 
   return (
-    <div style={{ ...styles.shell, ...themeVars(scheme) }}>
+    <div style={{ ...styles.shell, ...rootStyle(scheme) }}>
       <div style={styles.header}>
         <div style={styles.headerLeft}>
           <span style={styles.title}>OpenUI Debug</span>
@@ -230,8 +233,8 @@ export function DebugUI({
           onMouseEnter={() => setSplitHover(true)}
           onMouseLeave={() => setSplitHover(false)}
           onKeyDown={(event) => {
-            if (event.key === "ArrowLeft") setEditorPct((pct) => clampPct(pct - 2));
-            if (event.key === "ArrowRight") setEditorPct((pct) => clampPct(pct + 2));
+            if (event.key === "ArrowLeft") setEditorPct(clampPct(editorPct - 2));
+            if (event.key === "ArrowRight") setEditorPct(clampPct(editorPct + 2));
           }}
           role="separator"
           aria-orientation="vertical"
@@ -317,14 +320,15 @@ export function DebugUI({
   );
 }
 
-const styles = {
+function shellStyles(t: ThemeTokens) {
+  return {
   shell: {
     display: "flex",
     flexDirection: "column",
     height: "100%",
     minHeight: 0,
-    background: "var(--oui-dt-bg)",
-    color: "var(--oui-dt-fg)",
+    background: t.bg,
+    color: t.fg,
     fontFamily: FONT,
     fontSize: 13,
     position: "relative",
@@ -357,10 +361,10 @@ const styles = {
   },
   banner: {
     padding: "8px 16px",
-    background: "var(--oui-dt-warning-bg)",
-    color: "var(--oui-dt-warning-strong)",
+    background: t.warningBg,
+    color: t.warningStrong,
     fontSize: 12,
-    borderBottom: "1px solid var(--oui-dt-warning-border)",
+    borderBottom: `1px solid ${t.warningBorder}`,
   },
   // Columns are set inline so the drag can move them.
   body: {
@@ -382,13 +386,13 @@ const styles = {
     bottom: 0,
     left: 0,
     width: 1,
-    background: "var(--oui-dt-border-subtle)",
+    background: t.borderSubtle,
     transition: "width 150ms ease, background 150ms ease",
     pointerEvents: "none",
   },
   splitterLineOn: {
     width: 3,
-    background: "var(--oui-dt-border-strong)",
+    background: t.borderStrong,
   },
   // Thin rounded chip with three stacked dots, centred on the divider.
   splitterGrip: {
@@ -405,8 +409,8 @@ const styles = {
     width: 11,
     height: 30,
     borderRadius: 999,
-    border: "1px solid var(--oui-dt-control-border)",
-    background: "var(--oui-dt-control-bg)",
+    border: `1px solid ${t.controlBorder}`,
+    background: t.controlBg,
     opacity: 0,
     transition: "opacity 150ms ease",
     pointerEvents: "none",
@@ -418,7 +422,7 @@ const styles = {
     width: 2,
     height: 2,
     borderRadius: "50%",
-    background: "var(--oui-dt-fg)",
+    background: t.fg,
   },
   editorWrap: {
     position: "relative",
@@ -431,7 +435,7 @@ const styles = {
     flexDirection: "column",
     minWidth: 0,
     minHeight: 0,
-    background: "var(--oui-dt-bg)",
+    background: t.bg,
   },
   tabBody: {
     flex: 1,
@@ -447,8 +451,9 @@ const styles = {
     flexDirection: "column",
   },
   missing: {
-    color: "var(--oui-dt-fg-faint)",
+    color: t.fgFaint,
     padding: 16,
     fontSize: 12,
   },
 } satisfies Record<string, CSSProperties>;
+}

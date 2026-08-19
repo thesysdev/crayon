@@ -2,7 +2,7 @@ import { FlaskConical } from "lucide-react";
 import { useMemo, useState, type ComponentType } from "react";
 import type { LibraryLike } from "../../libraryRegistry";
 import { createMockToolProvider, type MockToolCall } from "../mockTools";
-import { debugStyles as s } from "../styles";
+import { useDebugStyles } from "../styles";
 import type { LangModule } from "../types";
 
 const TOOL_CALL_LOG_CAP = 20;
@@ -27,6 +27,7 @@ function isOpenUIError(error: unknown): error is {
 }
 
 function ErrorRow({ error }: { error: unknown }) {
+  const s = useDebugStyles();
   if (isOpenUIError(error) && (error.message || error.code)) {
     return (
       <li style={s.errorRow}>
@@ -55,6 +56,7 @@ export function RenderPanel({
   code: string;
   isStreaming: boolean;
 }) {
+  const s = useDebugStyles();
   const [runtimeErrors, setRuntimeErrors] = useState<unknown[]>([]);
   const [formState, setFormState] = useState<Record<string, unknown>>({});
   const [actionLog, setActionLog] = useState<string[]>([]);

@@ -1,6 +1,6 @@
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useState } from "react";
-import { debugStyles as s } from "../styles";
+import { useDebugStyles } from "../styles";
 import type { ParseResult } from "../types";
 
 function isElementNode(value: unknown): value is {
@@ -29,6 +29,7 @@ function safeStringify(value: unknown): string {
 }
 
 function PropValue({ value }: { value: unknown }) {
+  const s = useDebugStyles();
   if (isElementNode(value)) return <NodeView node={value} />;
   if (Array.isArray(value)) {
     if (value.some((item) => isElementNode(item))) {
@@ -59,6 +60,7 @@ function NodeView({
   };
 }) {
   const [open, setOpen] = useState(true);
+  const s = useDebugStyles();
   const entries = Object.entries(node.props ?? {});
   return (
     <div style={{ minWidth: 0 }}>
@@ -85,6 +87,7 @@ function NodeView({
 }
 
 export function TreePanel({ result }: { result: ParseResult | null }) {
+  const s = useDebugStyles();
   if (!result) return <div style={s.panelEmpty}>No parse result yet.</div>;
   const state = result.stateDeclarations ?? {};
   const queries = result.queryStatements ?? [];

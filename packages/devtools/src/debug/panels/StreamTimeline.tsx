@@ -1,8 +1,9 @@
 import { CheckCircle2, Circle, CircleDot, CircleMinus, CirclePlus, XCircle } from "lucide-react";
-import { debugStyles as s } from "../styles";
+import { useDebugStyles } from "../styles";
 import type { PlaybackState } from "../usePlayback";
 
 export function StreamTimeline({ state }: { state: PlaybackState }) {
+  const s = useDebugStyles();
   if (state.status === "idle") {
     return (
       <div style={s.panelEmpty}>
@@ -38,7 +39,7 @@ export function StreamTimeline({ state }: { state: PlaybackState }) {
         </div>
       ) : null}
       {state.traceTruncated ? (
-        <p style={{ color: "var(--oui-dt-fg-muted)", fontSize: 12 }}>
+        <p style={{ color: s.label.color, fontSize: 12 }}>
           Trace capped at 5,000 rows — remaining chunks not logged.
         </p>
       ) : null}

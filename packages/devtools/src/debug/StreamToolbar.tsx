@@ -1,7 +1,7 @@
 import { Pause, Play, RotateCcw, StepForward } from "lucide-react";
 import type { CSSProperties } from "react";
 import { CHUNK_STRATEGIES, type ChunkStrategy } from "./chunker";
-import { debugStyles as s } from "./styles";
+import { useDebugStyles } from "./styles";
 import type { PlaybackControls } from "./usePlayback";
 
 const SPEEDS = ["0.25", "0.5", "1", "2", "4", "8"];
@@ -15,7 +15,12 @@ export interface StreamSettings {
   onSeedChange: (n: number) => void;
 }
 
-function groupStyle(disabled: boolean, first: boolean, last: boolean): CSSProperties {
+function groupStyle(
+  s: ReturnType<typeof useDebugStyles>,
+  disabled: boolean,
+  first: boolean,
+  last: boolean,
+): CSSProperties {
   return {
     ...s.groupButton,
     ...(disabled ? s.groupButtonDisabled : null),
@@ -42,13 +47,14 @@ export function StreamToolbar({
   const playbackActive = state.status === "playing" || state.status === "paused";
   const settingsLocked = disabled || playbackActive;
   const { strategy, onStrategyChange, seed, onSeedChange } = settings;
+  const s = useDebugStyles();
 
   return (
     <div style={s.toolbar}>
       <div style={s.btnGroup} role="group" aria-label="Playback controls">
         {state.status === "playing" ? (
           <button
-            style={groupStyle(!!disabled, true, false)}
+            style={groupStyle(s,!!disabled, true, false)}
             onClick={pause}
             disabled={disabled}
             aria-label="Pause"
@@ -58,7 +64,7 @@ export function StreamToolbar({
           </button>
         ) : state.status === "paused" ? (
           <button
-            style={groupStyle(!!disabled, true, false)}
+            style={groupStyle(s,!!disabled, true, false)}
             onClick={resume}
             disabled={disabled}
             aria-label="Resume"
@@ -68,7 +74,7 @@ export function StreamToolbar({
           </button>
         ) : (
           <button
-            style={groupStyle(!!disabled, true, false)}
+            style={groupStyle(s,!!disabled, true, false)}
             onClick={() => start({ strategy, seed })}
             disabled={disabled}
             aria-label="Stream"
@@ -78,7 +84,7 @@ export function StreamToolbar({
           </button>
         )}
         <button
-          style={groupStyle(!!disabled || state.status !== "paused", false, false)}
+          style={groupStyle(s,!!disabled || state.status !== "paused", false, false)}
           onClick={step}
           disabled={disabled || state.status !== "paused"}
           aria-label="Step one chunk"
@@ -89,7 +95,7 @@ export function StreamToolbar({
         {/* Stays live even with an empty editor: otherwise clearing the input during
             a run leaves the panels showing a playback nothing can clear. */}
         <button
-          style={groupStyle(state.status === "idle", false, true)}
+          style={groupStyle(s,state.status === "idle", false, true)}
           onClick={reset}
           disabled={state.status === "idle"}
           aria-label="Reset playback"

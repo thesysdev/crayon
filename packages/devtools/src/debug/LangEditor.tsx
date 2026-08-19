@@ -1,17 +1,18 @@
 import { useMemo, useRef, type CSSProperties, type UIEvent } from "react";
-import { TOKEN_COLOR, toTokenLines, tokenizeLang } from "./highlight";
-import { MONO } from "./styles";
+import { MONO, useTheme, type ThemeTokens } from "../theme";
+import { tokenColor, toTokenLines, tokenizeLang } from "./highlight";
 
 // One line on purpose: the empty editor renders it as a single numbered row.
 const PLACEHOLDER = 'root = TextContent("Hello")';
 
-const SELECTION_CSS = `
+function selectionCss(t: ThemeTokens) {
+  return `
 .openui-debug-lang-editor textarea::selection {
-  background: var(--oui-dt-selection);
+  background: ${t.selection};
   color: transparent;
 }
 .openui-debug-lang-editor textarea::-moz-selection {
-  background: var(--oui-dt-selection);
+  background: ${t.selection};
   color: transparent;
 }
 .openui-debug-lang-editor pre {
@@ -21,6 +22,7 @@ const SELECTION_CSS = `
   display: none;
 }
 `;
+}
 
 const PAD = 16;
 const NUMBER_WIDTH = 36;
@@ -55,6 +57,9 @@ export function LangEditor({
   onChange: (value: string) => void;
   readOnly?: boolean;
 }) {
+  const t = useTheme();
+  const colors = tokenColor(t);
+  const styles = editorStyles(t);
   const highlightRef = useRef<HTMLPreElement>(null);
   const lines = useMemo(() => toTokenLines(tokenizeLang(value)), [value]);
 
@@ -67,7 +72,7 @@ export function LangEditor({
 
   return (
     <div className="openui-debug-lang-editor" style={styles.wrap}>
-      <style>{SELECTION_CSS}</style>
+      <style>{selectionCss(t)}</style>
       <pre ref={highlightRef} style={styles.highlight} aria-hidden>
         {value ? (
           lines.map((line, index) => (
@@ -77,7 +82,7 @@ export function LangEditor({
                 ? // Keeps a blank line one row tall.
                   "\u200b"
                 : line.map((token, tokenIndex) => (
-                    <span key={tokenIndex} style={{ color: TOKEN_COLOR[token.kind] }}>
+                    <span key={tokenIndex} style={{ color: colors[token.kind] }}>
                       {token.value}
                     </span>
                   ))}
@@ -86,7 +91,7 @@ export function LangEditor({
         ) : (
           <div style={styles.line}>
             <span style={styles.lineNumber}>1</span>
-            <span style={{ color: "var(--oui-dt-fg-faint)" }}>{PLACEHOLDER}</span>
+            <span style={{ color: t.fgFaint }}>{PLACEHOLDER}</span>
           </div>
         )}
       </pre>
@@ -103,49 +108,51 @@ export function LangEditor({
   );
 }
 
-const styles = {
-  wrap: {
-    position: "relative",
-    minWidth: 0,
-    minHeight: 0,
-    height: "100%",
-    background: "var(--oui-dt-bg-muted)",
-  },
-  highlight: {
-    ...shared,
-    position: "absolute",
-    inset: 0,
-    overflow: "auto",
-    pointerEvents: "none",
-    color: "var(--oui-dt-fg)",
-    background: "transparent",
-  },
-  line: {
-    position: "relative",
-  },
-  lineNumber: {
-    position: "absolute",
-    // The gutter lives in the text column's left padding.
-    left: -(NUMBER_WIDTH + NUMBER_GAP),
-    top: 0,
-    bottom: 0,
-    boxSizing: "border-box",
-    width: NUMBER_WIDTH,
-    paddingRight: NUMBER_GAP,
-    borderRight: "1px solid var(--oui-dt-border)",
-    color: "var(--oui-dt-fg-faint)",
-    textAlign: "right",
-    whiteSpace: "pre",
-  },
-  textarea: {
-    ...shared,
-    position: "absolute",
-    inset: 0,
-    resize: "none",
-    color: "transparent",
-    caretColor: "var(--oui-dt-fg)",
-    background: "transparent",
-    outline: "none",
-    overflow: "auto",
-  },
-} satisfies Record<string, CSSProperties>;
+function editorStyles(t: ThemeTokens) {
+  return {
+    wrap: {
+      position: "relative",
+      minWidth: 0,
+      minHeight: 0,
+      height: "100%",
+      background: t.bgMuted,
+    },
+    highlight: {
+      ...shared,
+      position: "absolute",
+      inset: 0,
+      overflow: "auto",
+      pointerEvents: "none",
+      color: t.fg,
+      background: "transparent",
+    },
+    line: {
+      position: "relative",
+    },
+    lineNumber: {
+      position: "absolute",
+      // The gutter lives in the text column's left padding.
+      left: -(NUMBER_WIDTH + NUMBER_GAP),
+      top: 0,
+      bottom: 0,
+      boxSizing: "border-box",
+      width: NUMBER_WIDTH,
+      paddingRight: NUMBER_GAP,
+      borderRight: `1px solid ${t.border}`,
+      color: t.fgFaint,
+      textAlign: "right",
+      whiteSpace: "pre",
+    },
+    textarea: {
+      ...shared,
+      position: "absolute",
+      inset: 0,
+      resize: "none",
+      color: "transparent",
+      caretColor: t.fg,
+      background: "transparent",
+      outline: "none",
+      overflow: "auto",
+    },
+  } satisfies Record<string, CSSProperties>;
+}

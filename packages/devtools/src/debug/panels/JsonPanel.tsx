@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
-import { debugStyles as s } from "../styles";
+import { useDebugStyles } from "../styles";
 import type { ParseResult } from "../types";
 
 const COLLAPSE_BYTES = 200 * 1024;
 
 export function JsonPanel({ result }: { result: ParseResult | null }) {
+  const s = useDebugStyles();
   const [forceExpand, setForceExpand] = useState(false);
   const json = useMemo(() => {
     if (!result) return null;

@@ -1,7 +1,8 @@
 import { X } from "lucide-react";
 import { useEffect, useState, type CSSProperties } from "react";
 import { IconButton } from "../IconButton";
-import { debugStyles as s } from "./styles";
+import { useStyles, type ThemeTokens } from "../theme";
+import { useDebugStyles } from "./styles";
 
 const SUMMARY =
   "OpenUI Debug is a scratchpad for OpenUI Lang: drop in a model response and see how it parses, validates, and renders against this app's own components.";
@@ -34,6 +35,8 @@ export function HelpDialog({
   onSeen?: () => void;
 }) {
   const [open, setOpen] = useState(defaultOpen);
+  const s = useDebugStyles();
+  const styles = useStyles(helpStyles);
 
   const close = () => {
     setOpen(false);
@@ -109,16 +112,17 @@ export function HelpDialog({
 
 const BADGE = 18;
 
-const styles = {
+function helpStyles(t: ThemeTokens) {
+  return {
   // Matches the Inspect header's text buttons (Wrap / Copy).
   trigger: {
     display: "inline-flex",
     alignItems: "center",
     gap: 4,
-    border: "1px solid var(--oui-dt-control-border)",
+    border: `1px solid ${t.controlBorder}`,
     borderRadius: 8,
-    background: "var(--oui-dt-control-bg)",
-    color: "var(--oui-dt-fg)",
+    background: t.controlBg,
+    color: t.fg,
     cursor: "pointer",
     fontFamily: "inherit",
     fontSize: 12,
@@ -132,7 +136,7 @@ const styles = {
     fontSize: 12,
     fontWeight: 400,
     lineHeight: 1.55,
-    color: "var(--oui-dt-fg-secondary)",
+    color: t.fgSecondary,
   },
   steps: {
     listStyle: "none",
@@ -157,8 +161,8 @@ const styles = {
     width: BADGE,
     height: BADGE,
     borderRadius: 6,
-    background: "var(--oui-dt-bg-subtle)",
-    color: "var(--oui-dt-fg-secondary)",
+    background: t.bgSubtle,
+    color: t.fgSecondary,
     fontSize: 11,
     fontWeight: 500,
     lineHeight: 1,
@@ -168,7 +172,7 @@ const styles = {
   },
   // Medium title over regular body.
   stepTitle: {
-    color: "var(--oui-dt-fg)",
+    color: t.fg,
     fontSize: 12,
     fontWeight: 500,
   },
@@ -178,7 +182,7 @@ const styles = {
     fontSize: 12,
     fontWeight: 400,
     lineHeight: 1.55,
-    color: "var(--oui-dt-fg-muted)",
+    color: t.fgMuted,
   },
   // Second way out, for anyone who reads to the end rather than reaching for
   // the cross.
@@ -188,11 +192,11 @@ const styles = {
     padding: "0 20px 16px",
   },
   dismiss: {
-    border: "1px solid var(--oui-dt-border)",
+    border: `1px solid ${t.border}`,
     borderRadius: 8,
-    background: "var(--oui-dt-bg)",
-    color: "var(--oui-dt-fg-secondary)",
-    boxShadow: "var(--oui-dt-shadow-subtle)",
+    background: t.bg,
+    color: t.fgSecondary,
+    boxShadow: t.shadowSubtle,
     cursor: "pointer",
     fontFamily: "inherit",
     fontSize: 12,
@@ -200,3 +204,4 @@ const styles = {
     padding: "6px 14px",
   },
 } satisfies Record<string, CSSProperties>;
+}

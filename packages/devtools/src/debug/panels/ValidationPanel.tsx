@@ -1,9 +1,10 @@
 import { CheckCircle2 } from "lucide-react";
 import { groupByCode } from "../parse";
-import { debugStyles as s } from "../styles";
+import { useDebugStyles } from "../styles";
 import type { ValidationOutcome } from "../types";
 
 export function ValidationPanel({ outcome }: { outcome: ValidationOutcome }) {
+  const s = useDebugStyles();
   const { result, fatal } = outcome;
 
   if (fatal) {

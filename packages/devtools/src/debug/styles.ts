@@ -1,17 +1,18 @@
 import type { CSSProperties } from "react";
+import { FONT, MONO, useTheme, type ThemeTokens } from "../theme";
 
-export const FONT = '"Inter", system-ui, sans-serif';
-export const MONO = "ui-monospace, SFMono-Regular, Menlo, monospace";
+export { FONT, MONO };
 
-export const debugStyles = {
+export function debugStyles(t: ThemeTokens) {
+  return {
   toolbar: {
     display: "flex",
     alignItems: "center",
     gap: 10,
     flexWrap: "wrap",
     padding: "8px 16px",
-    borderBottom: "1px solid var(--oui-dt-border-subtle)",
-    background: "var(--oui-dt-bg)",
+    borderBottom: `1px solid ${t.borderSubtle}`,
+    background: t.bg,
   },
   field: {
     display: "flex",
@@ -19,15 +20,15 @@ export const debugStyles = {
     gap: 6,
   },
   label: {
-    color: "var(--oui-dt-fg-muted)",
+    color: t.fgMuted,
     fontSize: 11,
     fontWeight: 500,
   },
   select: {
-    border: "1px solid var(--oui-dt-control-border)",
+    border: `1px solid ${t.controlBorder}`,
     borderRadius: 8,
-    background: "var(--oui-dt-control-bg)",
-    color: "var(--oui-dt-fg)",
+    background: t.controlBg,
+    color: t.fg,
     fontFamily: FONT,
     fontSize: 12,
     // The native chevron sits flush against the label otherwise, so the inline
@@ -36,10 +37,10 @@ export const debugStyles = {
   },
   seedInput: {
     width: 64,
-    border: "1px solid var(--oui-dt-control-border)",
+    border: `1px solid ${t.controlBorder}`,
     borderRadius: 8,
-    background: "var(--oui-dt-control-bg)",
-    color: "var(--oui-dt-fg)",
+    background: t.controlBg,
+    color: t.fg,
     fontFamily: FONT,
     fontSize: 12,
     padding: "4px 8px",
@@ -54,9 +55,9 @@ export const debugStyles = {
     justifyContent: "center",
     width: 28,
     height: 26,
-    border: "1px solid var(--oui-dt-control-border)",
-    background: "var(--oui-dt-control-bg)",
-    color: "var(--oui-dt-fg-tertiary)",
+    border: `1px solid ${t.controlBorder}`,
+    background: t.controlBg,
+    color: t.fgTertiary,
     cursor: "pointer",
     padding: 0,
   },
@@ -65,7 +66,7 @@ export const debugStyles = {
     cursor: "not-allowed",
   },
   progress: {
-    color: "var(--oui-dt-fg-muted)",
+    color: t.fgMuted,
     fontSize: 11,
     fontFamily: MONO,
   },
@@ -73,13 +74,13 @@ export const debugStyles = {
     display: "flex",
     gap: 2,
     padding: "6px 12px",
-    borderBottom: "1px solid var(--oui-dt-border-subtle)",
+    borderBottom: `1px solid ${t.borderSubtle}`,
     flexShrink: 0,
   },
   tab: {
     border: "none",
     background: "transparent",
-    color: "var(--oui-dt-fg-muted)",
+    color: t.fgMuted,
     fontFamily: FONT,
     fontSize: 12,
     fontWeight: 500,
@@ -88,8 +89,8 @@ export const debugStyles = {
     cursor: "pointer",
   },
   tabActive: {
-    color: "var(--oui-dt-fg)",
-    background: "var(--oui-dt-bg-subtle)",
+    color: t.fg,
+    background: t.bgSubtle,
   },
   panelScroll: {
     overflow: "auto",
@@ -99,7 +100,7 @@ export const debugStyles = {
   },
   panelEmpty: {
     padding: 32,
-    color: "var(--oui-dt-fg-faint)",
+    color: t.fgFaint,
     textAlign: "center",
     fontSize: 12,
   },
@@ -116,19 +117,19 @@ export const debugStyles = {
     padding: "2px 8px",
     fontSize: 11,
     fontWeight: 500,
-    background: "var(--oui-dt-bg-subtle)",
-    color: "var(--oui-dt-fg-tertiary)",
+    background: t.bgSubtle,
+    color: t.fgTertiary,
   },
   tagSuccess: {
-    background: "var(--oui-dt-success-bg)",
-    color: "var(--oui-dt-success)",
+    background: t.successBg,
+    color: t.success,
   },
   tagWarning: {
-    background: "var(--oui-dt-warning-bg)",
-    color: "var(--oui-dt-warning)",
+    background: t.warningBg,
+    color: t.warning,
   },
   allClear: {
-    color: "var(--oui-dt-success)",
+    color: t.success,
     fontWeight: 500,
     display: "flex",
     alignItems: "center",
@@ -144,7 +145,7 @@ export const debugStyles = {
     fontWeight: 600,
   },
   count: {
-    color: "var(--oui-dt-fg-faint)",
+    color: t.fgFaint,
     fontWeight: 400,
   },
   errorList: {
@@ -154,7 +155,7 @@ export const debugStyles = {
   },
   errorRow: {
     padding: 8,
-    border: "1px solid var(--oui-dt-border)",
+    border: `1px solid ${t.border}`,
     borderRadius: 6,
     marginBottom: 8,
     minWidth: 0,
@@ -176,7 +177,7 @@ export const debugStyles = {
     overflowWrap: "anywhere",
   },
   errPath: {
-    color: "var(--oui-dt-fg-muted)",
+    color: t.fgMuted,
     fontFamily: MONO,
     fontSize: 12,
     overflowWrap: "anywhere",
@@ -191,16 +192,16 @@ export const debugStyles = {
   errHint: {
     margin: "4px 0 0",
     fontSize: 12,
-    color: "var(--oui-dt-info)",
+    color: t.info,
     overflowWrap: "anywhere",
     wordBreak: "break-word",
     whiteSpace: "pre-wrap",
   },
   fatalCard: {
-    border: "1px solid var(--oui-dt-danger-border)",
+    border: `1px solid ${t.dangerBorder}`,
     borderRadius: 8,
     padding: 16,
-    color: "var(--oui-dt-danger)",
+    color: t.danger,
     fontSize: 12,
   },
   fatalPre: {
@@ -220,8 +221,8 @@ export const debugStyles = {
     alignItems: "flex-start",
     gap: 6,
     padding: "8px 16px",
-    color: "var(--oui-dt-info)",
-    background: "var(--oui-dt-info-bg)",
+    color: t.info,
+    background: t.infoBg,
     fontSize: 12,
   },
   renderCanvas: {
@@ -229,10 +230,10 @@ export const debugStyles = {
     flex: 1,
   },
   renderDetails: {
-    borderTop: "1px solid var(--oui-dt-border-subtle)",
+    borderTop: `1px solid ${t.borderSubtle}`,
     padding: "8px 16px",
     fontSize: 12,
-    color: "var(--oui-dt-fg-secondary)",
+    color: t.fgSecondary,
     minWidth: 0,
     overflowWrap: "anywhere",
   },
@@ -254,7 +255,7 @@ export const debugStyles = {
   },
   treeProps: {
     margin: "0 0 0 24px",
-    borderLeft: "1px solid var(--oui-dt-border)",
+    borderLeft: `1px solid ${t.border}`,
     paddingLeft: 10,
     minWidth: 0,
   },
@@ -267,7 +268,7 @@ export const debugStyles = {
     minWidth: 0,
   },
   treeDt: {
-    color: "var(--oui-dt-fg-muted)",
+    color: t.fgMuted,
     fontFamily: MONO,
     fontSize: 11,
     flex: "0 0 auto",
@@ -292,7 +293,7 @@ export const debugStyles = {
   treeExpr: {
     fontFamily: MONO,
     fontSize: 11,
-    color: "var(--oui-dt-info)",
+    color: t.info,
   },
   treeExtra: {
     marginTop: 24,
@@ -319,12 +320,12 @@ export const debugStyles = {
     fontSize: 12,
   },
   convergenceOk: {
-    background: "var(--oui-dt-success-bg)",
-    color: "var(--oui-dt-success)",
+    background: t.successBg,
+    color: t.success,
   },
   convergenceBad: {
-    background: "var(--oui-dt-danger-bg)",
-    color: "var(--oui-dt-danger)",
+    background: t.dangerBg,
+    color: t.danger,
   },
   traceTable: {
     width: "100%",
@@ -334,23 +335,23 @@ export const debugStyles = {
   },
   traceTh: {
     textAlign: "left",
-    color: "var(--oui-dt-fg-muted)",
+    color: t.fgMuted,
     fontWeight: 500,
     padding: "2px 8px",
-    borderBottom: "1px solid var(--oui-dt-border-subtle)",
+    borderBottom: `1px solid ${t.borderSubtle}`,
   },
   traceTd: {
     padding: "2px 8px",
-    borderBottom: "1px solid var(--oui-dt-border-subtle)",
+    borderBottom: `1px solid ${t.borderSubtle}`,
     fontFamily: MONO,
     overflow: "hidden",
     textOverflow: "ellipsis",
   },
   rowAppeared: {
-    background: "var(--oui-dt-success-bg)",
+    background: t.successBg,
   },
   rowDropped: {
-    background: "var(--oui-dt-danger-bg)",
+    background: t.dangerBg,
   },
   rootCell: {
     display: "flex",
@@ -360,7 +361,7 @@ export const debugStyles = {
   helpOverlay: {
     position: "absolute",
     inset: 0,
-    background: "var(--oui-dt-overlay)",
+    background: t.overlay,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -368,10 +369,10 @@ export const debugStyles = {
     padding: 24,
   },
   helpDialog: {
-    background: "var(--oui-dt-bg)",
-    border: "1px solid var(--oui-dt-border)",
+    background: t.bg,
+    border: `1px solid ${t.border}`,
     borderRadius: 12,
-    boxShadow: "var(--oui-dt-shadow)",
+    boxShadow: t.shadow,
     maxWidth: 440,
     width: "100%",
     maxHeight: "80%",
@@ -395,17 +396,22 @@ export const debugStyles = {
     fontSize: 13,
     lineHeight: 1.55,
     fontWeight: 400,
-    color: "var(--oui-dt-fg-tertiary)",
+    color: t.fgTertiary,
   },
   editorLock: {
     position: "absolute",
     bottom: 10,
     right: 10,
-    background: "var(--oui-dt-bg-subtle)",
-    border: "1px solid var(--oui-dt-border)",
+    background: t.bgSubtle,
+    border: `1px solid ${t.border}`,
     borderRadius: 999,
     padding: "2px 10px",
     fontSize: 10,
-    color: "var(--oui-dt-fg-muted)",
+    color: t.fgMuted,
   },
 } satisfies Record<string, CSSProperties>;
+}
+
+export function useDebugStyles() {
+  return debugStyles(useTheme());
+}

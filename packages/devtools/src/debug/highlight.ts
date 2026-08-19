@@ -1,3 +1,5 @@
+import type { ThemeTokens } from "../theme";
+
 export type TokenKind =
   | "string"
   | "state"
@@ -15,19 +17,21 @@ export interface Token {
   value: string;
 }
 
-/** Shared by the Debug editor and the devtools stream log. */
-export const TOKEN_COLOR: Record<TokenKind, string> = {
-  string: "var(--oui-dt-syntax-string)",
-  state: "var(--oui-dt-syntax-state)",
-  number: "var(--oui-dt-syntax-number)",
-  atom: "var(--oui-dt-syntax-atom)",
-  type: "var(--oui-dt-syntax-type)",
-  ident: "var(--oui-dt-syntax-ident)",
-  keyword: "var(--oui-dt-syntax-keyword)",
-  operator: "var(--oui-dt-syntax-operator)",
-  punct: "var(--oui-dt-syntax-punct)",
-  text: "var(--oui-dt-syntax-text)",
-};
+/** Shared by the Debug editor and the Inspect stream log. */
+export function tokenColor(t: ThemeTokens): Record<TokenKind, string> {
+  return {
+    string: t.syntaxString,
+    state: t.syntaxState,
+    number: t.syntaxNumber,
+    atom: t.syntaxAtom,
+    type: t.syntaxType,
+    ident: t.syntaxIdent,
+    keyword: t.syntaxKeyword,
+    operator: t.syntaxOperator,
+    punct: t.syntaxPunct,
+    text: t.syntaxText,
+  };
+}
 
 const RULES: { kind: Exclude<TokenKind, "text">; re: RegExp }[] = [
   { kind: "string", re: /^"(?:[^"\\]|\\.)*"?/ },
