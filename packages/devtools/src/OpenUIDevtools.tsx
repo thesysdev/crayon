@@ -202,128 +202,112 @@ export function OpenUIDevtools({
       </div>
 
       {/* Kept mounted so open/close can transition; hidden + inert when closed. */}
-      <div
+      <aside
         style={{
-          ...styles.backdrop,
+          ...styles.drawer,
           ...rootStyle(mode),
-          ...(open || debug.trayOpen ? styles.backdropOpen : null),
+          ...inspectTray,
+          ...(open ? styles.drawerOpen : null),
         }}
-        onClick={() => {
-          // The scrim is shared, so dismissing it retracts both trays. An
-          // ejected Debug window is its own surface and is left alone.
-          setOpen(false);
-          debug.retract();
-        }}
+        role="dialog"
+        aria-modal={false}
+        aria-label="OpenUI Inspect"
+        inert={!open}
       >
-        <aside
-          style={{
-            ...styles.drawer,
-            ...inspectTray,
-            ...(open ? styles.drawerOpen : null),
-          }}
-          role="dialog"
-          aria-modal={!debug.trayOpen}
-          aria-label="OpenUI Inspect"
-          inert={!open}
-          onClick={(event) => event.stopPropagation()}
-        >
-          <>
-            <div style={styles.header}>
-              <div style={styles.headerLeft}>
-                <span style={styles.title}>OpenUI Inspect</span>
-              </div>
-              <div style={styles.headerActions}>
-                <IconButton
-                  onClick={() => setEvents([])}
-                  aria-label="Reset events"
-                  title="Reset events"
-                >
-                  <RotateCcw size={14} />
-                </IconButton>
-                <SettingsMenu config={config} onChange={setConfig} />
-                <IconButton onClick={() => setOpen(false)} aria-label="Close OpenUI Inspect">
-                  <X size={15} />
-                </IconButton>
-              </div>
-            </div>
+        <div style={styles.header}>
+          <div style={styles.headerLeft}>
+            <span style={styles.title}>OpenUI Inspect</span>
+          </div>
+          <div style={styles.headerActions}>
+            <IconButton
+              onClick={() => setEvents([])}
+              aria-label="Reset events"
+              title="Reset events"
+            >
+              <RotateCcw size={14} />
+            </IconButton>
+            <SettingsMenu config={config} onChange={setConfig} />
+            <IconButton onClick={() => setOpen(false)} aria-label="Close OpenUI Inspect">
+              <X size={15} />
+            </IconButton>
+          </div>
+        </div>
 
-            <div style={styles.bannerGroup}>
-              <span style={styles.bannerFade} aria-hidden />
-              <a
-                style={styles.docsBanner}
-                href={RELIABILITY_DOCS_URL}
-                target="_blank"
-                rel="noreferrer"
-                title="Learn how to track and fix errors in production"
-                onMouseEnter={() => setBannerHovered(true)}
-                onMouseLeave={() => setBannerHovered(false)}
-              >
-                <span style={styles.docsBannerText}>
-                  <span style={styles.docsBannerTitle}>
-                    Want to track and fix errors in production?
-                  </span>
-                </span>
-                <span
-                  style={{
-                    ...styles.docsBannerAction,
-                    ...(bannerHovered ? styles.docsBannerActionHover : null),
-                  }}
-                >
-                  Learn more
-                </span>
-              </a>
+        <div style={styles.bannerGroup}>
+          <span style={styles.bannerFade} aria-hidden />
+          <a
+            style={styles.docsBanner}
+            href={RELIABILITY_DOCS_URL}
+            target="_blank"
+            rel="noreferrer"
+            title="Learn how to track and fix errors in production"
+            onMouseEnter={() => setBannerHovered(true)}
+            onMouseLeave={() => setBannerHovered(false)}
+          >
+            <span style={styles.docsBannerText}>
+              <span style={styles.docsBannerTitle}>
+                Want to track and fix errors in production?
+              </span>
+            </span>
+            <span
+              style={{
+                ...styles.docsBannerAction,
+                ...(bannerHovered ? styles.docsBannerActionHover : null),
+              }}
+            >
+              Learn more
+            </span>
+          </a>
+        </div>
+        <div style={styles.list}>
+          {visibleEvents.length === 0 ? (
+            <div style={styles.empty}>
+              <span style={styles.emptyIcon}>
+                <Inbox size={20} />
+              </span>
+              No events captured yet.
             </div>
-            <div style={styles.list}>
-              {visibleEvents.length === 0 ? (
-                <div style={styles.empty}>
-                  <span style={styles.emptyIcon}>
-                    <Inbox size={20} />
-                  </span>
-                  No events captured yet.
-                </div>
-              ) : (
-                visibleEvents.map((event, index) => {
-                  const key =
-                    typeof event.detail["id"] === "string"
-                      ? event.detail["id"]
-                      : `${event.timestamp}-${index}`;
-                  const quotaError = getQuotaError(event);
-                  if (quotaError) return <QuotaErrorRow key={key} info={quotaError} />;
-                  const stream = getReactLangStreamDetail(event);
-                  if (stream) {
-                    return (
-                      <ReactLangStreamEventRow
-                        key={key}
-                        event={event}
-                        stream={stream}
-                        canOpenInDebug={debug.canOpen}
-                        onOpenInDebug={debug.openWith}
-                      />
-                    );
-                  }
-                  return <EventRow key={key} event={event} />;
-                })
-              )}
-            </div>
-            <span style={styles.trayFade} aria-hidden />
-          </>
-        </aside>
+          ) : (
+            visibleEvents.map((event, index) => {
+              const key =
+                typeof event.detail["id"] === "string"
+                  ? event.detail["id"]
+                  : `${event.timestamp}-${index}`;
+              const quotaError = getQuotaError(event);
+              if (quotaError) return <QuotaErrorRow key={key} info={quotaError} />;
+              const stream = getReactLangStreamDetail(event);
+              if (stream) {
+                return (
+                  <ReactLangStreamEventRow
+                    key={key}
+                    event={event}
+                    stream={stream}
+                    canOpenInDebug={debug.canOpen}
+                    onOpenInDebug={debug.openWith}
+                  />
+                );
+              }
+              return <EventRow key={key} event={event} />;
+            })
+          )}
+        </div>
+        <span style={styles.trayFade} aria-hidden />
+      </aside>
 
-        <aside
-          style={{
-            ...styles.drawer,
-            ...(debug.trayOpen ? styles.drawerOpen : null),
-            ...debugTray,
-          }}
-          role="dialog"
-          aria-modal={debug.trayOpen}
-          aria-label="OpenUI Debug"
-          inert={!debug.trayOpen}
-          onClick={(event) => event.stopPropagation()}
-        >
-          <div style={styles.debugHost}>{debug.view}</div>
-        </aside>
-      </div>
+      <aside
+        style={{
+          ...styles.drawer,
+          ...rootStyle(mode),
+          ...(debug.trayOpen ? styles.drawerOpen : null),
+          ...debugTray,
+        }}
+        role="dialog"
+        aria-modal={false}
+        aria-label="OpenUI Debug"
+        inert={!debug.trayOpen}
+      >
+        <div style={styles.debugHost}>{debug.view}</div>
+      </aside>
       {debug.portal}
     </DevtoolsModeProvider>
   );
@@ -489,28 +473,13 @@ function uiStyles(t: ThemeTokens) {
       fontWeight: 700,
       lineHeight: 1,
     },
-    backdrop: {
-      position: "fixed",
-      inset: 0,
-      background: t.overlay,
-      // Max 32-bit signed int — the open drawer sits above everything, including the toggle.
-      zIndex: 2147483647,
-      opacity: 0,
-      visibility: "hidden",
-      pointerEvents: "none",
-      transition: "opacity 200ms ease, visibility 0s linear 200ms",
-    },
-    backdropOpen: {
-      opacity: 1,
-      visibility: "visible",
-      pointerEvents: "auto",
-      transition: "opacity 200ms ease, visibility 0s",
-    },
     // Geometry (right/width/transform) is per-tray and set inline; this is the
-    // shared UI. Each tray hides itself when closed so the other can be open
-    // over the same scrim without a retracted tray staying focusable.
+    // shared UI. Each tray hides itself when closed so the other can stay open
+    // without a retracted tray remaining focusable.
     drawer: {
       position: "fixed",
+      // Max 32-bit signed int — sit above any app UI, including the toggle.
+      zIndex: 2147483647,
       boxSizing: "border-box",
       display: "flex",
       flexDirection: "column",

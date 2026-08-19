@@ -8,8 +8,8 @@ import { debugMountNode, openDebugWindow } from "./eject";
 /**
  * Session for OpenUI Debug: editor contents, registered libraries, tray vs
  * ejected window. Inspect stays independent — this hook never opens or closes
- * that tray. Escape / the shared scrim should call `retract` (tray only);
- * Debug's own close button calls `close` (tray and popup).
+ * that tray. Escape should call `retract` (tray only); Debug's own close
+ * button calls `close` (tray and popup).
  */
 export function useDebug({
   theme,
