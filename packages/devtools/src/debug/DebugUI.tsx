@@ -80,17 +80,11 @@ export interface DebugUIProps {
 
 function pickLibrary(
   libraries: RegisteredLibrary[],
-  code: string,
   libraryId?: string,
 ): RegisteredLibrary | undefined {
   if (libraryId) {
     const byId = libraries.find((entry) => entry.library.__libraryId === libraryId);
     if (byId) return byId;
-  }
-  const match = /^\s*root\s*=\s*([A-Za-z_][\w]*)/m.exec(code);
-  if (match?.[1]) {
-    const byRoot = libraries.find((entry) => entry.library.root === match[1]);
-    if (byRoot) return byRoot;
   }
   return libraries[0];
 }
@@ -112,7 +106,7 @@ export function DebugUI({
   onEditorPctChange,
   libraryId,
 }: DebugUIProps) {
-  const selected = pickLibrary(libraries, code, libraryId);
+  const selected = pickLibrary(libraries, libraryId);
   const lang = useReactLang();
   const schema = useMemo(() => librarySchema(selected?.library), [selected]);
   const rootName = selected?.library.root;
