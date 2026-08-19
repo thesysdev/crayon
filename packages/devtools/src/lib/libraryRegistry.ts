@@ -13,6 +13,8 @@ export const LIBRARY_EVENT_KIND = "react-lang:library";
 export interface LibraryLike {
   id?: string;
   root?: string;
+  /** Instance id minted by `createLibrary()`. */
+  __libraryId?: string;
   components: Record<string, unknown>;
   toJSONSchema?: () => unknown;
 }

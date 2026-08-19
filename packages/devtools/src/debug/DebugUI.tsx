@@ -74,9 +74,19 @@ export interface DebugUIProps {
   /** Editor column width. Lifted so ejecting to a window keeps the same split. */
   editorPct?: number;
   onEditorPctChange?: (pct: number) => void;
+  /** `createLibrary()` instance id from the stream that opened Debug. */
+  libraryId?: string;
 }
 
-function pickLibrary(libraries: RegisteredLibrary[], code: string): RegisteredLibrary | undefined {
+function pickLibrary(
+  libraries: RegisteredLibrary[],
+  code: string,
+  libraryId?: string,
+): RegisteredLibrary | undefined {
+  if (libraryId) {
+    const byId = libraries.find((entry) => entry.library.__libraryId === libraryId);
+    if (byId) return byId;
+  }
   const match = /^\s*root\s*=\s*([A-Za-z_][\w]*)/m.exec(code);
   if (match?.[1]) {
     const byRoot = libraries.find((entry) => entry.library.root === match[1]);
@@ -100,8 +110,9 @@ export function DebugUI({
   popupBlocked = false,
   editorPct: editorPctProp,
   onEditorPctChange,
+  libraryId,
 }: DebugUIProps) {
-  const selected = pickLibrary(libraries, code);
+  const selected = pickLibrary(libraries, code, libraryId);
   const lang = useReactLang();
   const schema = useMemo(() => librarySchema(selected?.library), [selected]);
   const rootName = selected?.library.root;

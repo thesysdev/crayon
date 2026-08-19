@@ -18,6 +18,7 @@ export interface ReactLangStreamDetail {
   startedAt?: number;
   elapsedMs?: number;
   durationMs?: number;
+  __libraryId?: string;
 }
 
 export function getReactLangStreamDetail(event: ObservabilityEvent): ReactLangStreamDetail | null {
@@ -52,6 +53,7 @@ export function getReactLangStreamDetail(event: ObservabilityEvent): ReactLangSt
     startedAt: asNumber(detail["startedAt"]),
     elapsedMs: asNumber(detail["elapsedMs"]),
     durationMs: asNumber(detail["durationMs"]),
+    __libraryId: asString(detail["__libraryId"]),
   };
 }
 
@@ -63,7 +65,7 @@ export function ReactLangStreamEventRow({
 }: {
   event: ObservabilityEvent;
   stream: ReactLangStreamDetail;
-  onOpenInDebug?: (response: string) => void;
+  onOpenInDebug?: (response: string, libraryId?: string) => void;
   canOpenInDebug?: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
@@ -173,7 +175,7 @@ export function ReactLangStreamEventRow({
                   onMouseLeave={() => setHoveredAction(null)}
                   onClick={() => {
                     if (isStreaming || !stream.response) return;
-                    onOpenInDebug(stream.response);
+                    onOpenInDebug(stream.response, stream.__libraryId);
                   }}
                   disabled={openInDebugDisabled}
                   title={
