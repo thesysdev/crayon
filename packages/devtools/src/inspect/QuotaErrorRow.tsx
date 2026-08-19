@@ -2,7 +2,7 @@ import { type ObservabilityEvent } from "@openuidev/observability";
 import { CreditCard, KeyRound } from "lucide-react";
 import { useState, type CSSProperties } from "react";
 import { LevelIcon } from "./LevelIcon";
-import { FONT, useStyles, type ThemeTokens } from "./theme";
+import { FONT, useStyles, type ThemeTokens } from "../theme";
 
 export interface QuotaErrorInfo {
   title: string;

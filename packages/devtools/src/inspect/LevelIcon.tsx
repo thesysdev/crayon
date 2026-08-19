@@ -1,7 +1,7 @@
 import { type ObservabilityEvent } from "@openuidev/observability";
 import { X } from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
-import { useStyles, type ThemeTokens } from "./theme";
+import { useStyles, type ThemeTokens } from "../theme";
 
 const GLYPH: Record<ObservabilityEvent["level"], ReactNode> = {
   info: "i",

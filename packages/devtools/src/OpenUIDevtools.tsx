@@ -3,12 +3,15 @@
 import { observability, type ObservabilityEvent } from "@openuidev/observability";
 import { Inbox, RotateCcw, Settings, X } from "lucide-react";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { IconButton, ShiroLogo, ThemeSegmented } from "./ui";
 import { addOrReplaceEvent } from "./eventBuffer";
-import { EventRow } from "./EventRow";
-import { IconButton } from "./IconButton";
-import { getQuotaError, QuotaErrorRow } from "./QuotaErrorRow";
-import { getReactLangStreamDetail, ReactLangStreamEventRow } from "./ReactLangStreamEventRow";
-import { ShiroLogo } from "./ShiroLogo";
+import {
+  EventRow,
+  getQuotaError,
+  getReactLangStreamDetail,
+  QuotaErrorRow,
+  ReactLangStreamEventRow,
+} from "./inspect";
 import { useDevtoolsSingleton } from "./singleton";
 import {
   DEFAULT_COLOR_MODE,
@@ -20,7 +23,6 @@ import {
   type ColorMode,
   type ThemeTokens,
 } from "./theme";
-import { ThemeSegmented } from "./ThemeToggle";
 import { useDevtoolsConfig, type DevtoolsConfig } from "./useDevtoolsConfig";
 
 const RELIABILITY_DOCS_URL = "https://www.openui.com/docs/openui-lang/reliability";

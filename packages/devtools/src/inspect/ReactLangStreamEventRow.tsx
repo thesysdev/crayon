@@ -1,9 +1,9 @@
 import { type ObservabilityEvent } from "@openuidev/observability";
 import { Bug, Check, ChevronDown, ChevronRight, Copy } from "lucide-react";
 import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
-import { tokenColor, tokenizeLang } from "./highlight";
+import { tokenColor, tokenizeLang } from "../highlight";
 import { LevelIcon } from "./LevelIcon";
-import { FONT, MONO, useStyles, type ThemeTokens } from "./theme";
+import { FONT, MONO, useStyles, type ThemeTokens } from "../theme";
 
 export interface ReactLangStreamDetail {
   phase: "streaming" | "settled";

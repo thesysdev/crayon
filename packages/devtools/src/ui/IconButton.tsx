@@ -1,5 +1,5 @@
 import { useState, type ButtonHTMLAttributes, type CSSProperties } from "react";
-import { useStyles, type ThemeTokens } from "./theme";
+import { useStyles, type ThemeTokens } from "../theme";
 
 /**
  * The widget's square icon buttons — header actions, close crosses, the
