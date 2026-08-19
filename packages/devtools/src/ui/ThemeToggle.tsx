@@ -11,7 +11,7 @@ const OPTIONS: { id: ColorMode; label: string; icon: typeof Sun }[] = [
 /**
  * Two icon buttons for the Inspect settings menu, where the row has a label
  * and room to show both choices. The selected one is filled; the other is
- * chrome-less until pointed at.
+ * unfilled until pointed at.
  */
 export function ThemeSegmented({
   value,

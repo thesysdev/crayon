@@ -10,7 +10,7 @@ export type ColorMode = "light" | "dark";
 export const DEFAULT_COLOR_MODE: ColorMode = "light";
 
 /**
- * Zinc-based chrome for the injected widget. Independent of the host design
+ * Zinc-based UI for the injected widget. Independent of the host design
  * system so the same drawer works in any app.
  */
 const LIGHT = {

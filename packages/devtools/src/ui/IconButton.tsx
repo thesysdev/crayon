@@ -3,7 +3,7 @@ import { useStyles, type ThemeTokens } from "../theme";
 
 /**
  * The widget's square icon buttons — header actions, close crosses, the
- * settings trigger. They sit on their tray with no chrome until pointed at,
+ * settings trigger. They sit on their tray unfilled until pointed at,
  * then take a fill; keeping that in one component means every one of them
  * behaves the same without threading hover state through each call site.
  */

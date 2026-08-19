@@ -56,7 +56,7 @@ export interface OpenUIDevtoolsProps {
   /** Initial state of the drawer's "auto-open on error" checkbox. Defaults to true. */
   autoOpenOnError?: boolean;
   /**
-   * Widget chrome theme. If passed, it wins over the stored Settings choice
+   * Widget UI theme. If passed, it wins over the stored Settings choice
    * and is written to config. Otherwise the stored theme is used, then light.
    * Never auto-detected from the host page or the OS.
    */
@@ -102,7 +102,7 @@ export function OpenUIDevtools({
     { theme: themeProp },
   );
   const { onlyErrors, theme: mode } = config;
-  const styles = chromeStyles(theme(mode));
+  const styles = uiStyles(theme(mode));
 
   // Read configRef inside the (stable) subscription without re-subscribing.
   useEffect(() => {
@@ -275,7 +275,7 @@ function SettingSwitch({
   checked: boolean;
   onChange: (checked: boolean) => void;
 }) {
-  const styles = useStyles(chromeStyles);
+  const styles = useStyles(uiStyles);
   return (
     <label style={styles.menuCheckbox}>
       <span style={styles.menuLabel}>{label}</span>
@@ -305,7 +305,7 @@ function SettingsMenu({
   onChange: (patch: Partial<DevtoolsConfig>) => void;
 }) {
   const [open, setOpen] = useState(false);
-  const styles = useStyles(chromeStyles);
+  const styles = useStyles(uiStyles);
   const wrap = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -371,11 +371,11 @@ const positionStyles: Record<DevtoolsPosition, CSSProperties> = {
   "bottom-right": { bottom: 16, right: 16 },
 };
 
-function chromeStyles(t: ThemeTokens) {
+function uiStyles(t: ThemeTokens) {
   return {
     toggleWrap: {
       position: "fixed",
-      // Max 32-bit signed int — sit above any app chrome.
+      // Max 32-bit signed int — sit above any app UI.
       zIndex: 2147483647,
     },
     toggle: {
