@@ -2,7 +2,9 @@
 
 import { observability, type ObservabilityEvent } from "@openuidev/observability";
 import { Inbox, RotateCcw, Settings, X } from "lucide-react";
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import { createPortal } from "react-dom";
+import { debugMountNode, DebugUI, DEFAULT_EDITOR_PCT, openDebugWindow } from "./debug";
 import {
   EventRow,
   getQuotaError,
@@ -16,6 +18,7 @@ import {
   useDevtoolsSingleton,
   type DevtoolsConfig,
 } from "./lib";
+import { isLibraryEvent, useRegisteredLibraries } from "./libraryRegistry";
 import {
   DEFAULT_COLOR_MODE,
   DevtoolsModeProvider,
@@ -34,11 +37,16 @@ const RELIABILITY_DOCS_URL = "https://www.openui.com/docs/openui-lang/reliabilit
 const MENU_ROW_HEIGHT = 28;
 
 /**
- * Inspect tray geometry. Anchored to the bottom right — 85% of the viewport
- * tall, 480px wide, capped so it stops growing on very large displays.
+ * Tray geometry. The two trays together fill a block anchored to the bottom
+ * right — 85% of the viewport, capped so it stops growing on very large
+ * displays. Inspect keeps a fixed width and Debug takes whatever is left,
+ * overlapping Inspect rather than collapsing once it hits its floor.
  */
 const TRAY_EDGE = 12;
+const TRAY_GAP = 12;
 const INSPECT_WIDTH = 480;
+const DEBUG_MIN_WIDTH = 360;
+const BLOCK_W = `min(85vw, 3456px)`;
 const BLOCK_H = `min(85vh, 2234px)`;
 
 export type DevtoolsPosition = "top-left" | "top-right" | "bottom-left" | "bottom-right";
@@ -72,8 +80,11 @@ export interface OpenUIDevtoolsProps {
  * dev-only widget that surfaces events captured by `@openuidev/observability` —
  * a Shiro-logo button (which turns red with the error count) that opens a side
  * drawer listing every captured event. Errors expand in place to show the
- * stack trace. Display filters and the theme live in the header settings menu.
- * Renders nothing in production unless `enabled` is set explicitly.
+ * stack trace. OpenUI Inspect and OpenUI Debug are independent tools on
+ * independent trays: a stream's Debug button opens Debug beside Inspect, and
+ * either closes without disturbing the other. Display filters and the theme
+ * live in the header settings menu. Renders nothing in production unless
+ * `enabled` is set explicitly.
  */
 export function OpenUIDevtools({
   enabled,
@@ -91,51 +102,162 @@ export function OpenUIDevtools({
   const isSingleton = useDevtoolsSingleton(__autoMounted);
   const [events, setEvents] = useState<ObservabilityEvent[]>([]);
   const [open, setOpen] = useState(false);
+  const [debugOpen, setDebugOpen] = useState(false);
+  const [popup, setPopup] = useState<Window | null>(null);
+  const [popupBlocked, setPopupBlocked] = useState(false);
   const [toggleHovered, setToggleHovered] = useState(false);
   const [bannerHovered, setBannerHovered] = useState(false);
+  const [code, setCode] = useState("");
+  const libraries = useRegisteredLibraries();
   const { config, setConfig, configRef } = useDevtoolsConfig(
     {
       autoOpen: autoOpenOnError,
       onlyErrors: errorsOnly,
       theme: DEFAULT_COLOR_MODE,
+      helpSeen: false,
+      editorPct: DEFAULT_EDITOR_PCT,
     },
     { theme: themeProp },
   );
   const { onlyErrors, theme: mode } = config;
   const styles = uiStyles(theme(mode));
+  // Stable so the help dialog's Escape listener isn't rebound every render.
+  const markHelpSeen = useCallback(() => setConfig({ helpSeen: true }), [setConfig]);
 
   // Read configRef inside the (stable) subscription without re-subscribing.
   useEffect(() => {
     if (!isEnabled) return;
     return observability.listenAll((event) => {
+      if (isLibraryEvent(event)) return;
       setEvents((prev) => addOrReplaceEvent(prev, event, maxEvents));
       if (event.level === "error" && configRef.current.autoOpen) setOpen(true);
     });
   }, [isEnabled, maxEvents, configRef]);
 
-  // Escape closes Inspect. The settings menu handles its own Escape first
-  // (capture phase), so it never falls through to here.
+  // Escape dismisses the top tray first: Debug → Inspect → closed. The
+  // settings menu handles its own Escape first (capture phase), so it never
+  // falls through to here.
   useEffect(() => {
-    if (!open) return;
+    if (!open && !debugOpen) return;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
-      setOpen(false);
+      if (debugOpen) setDebugOpen(false);
+      else setOpen(false);
     };
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [open]);
+  }, [open, debugOpen]);
+
+  useEffect(() => {
+    if (!popup) return;
+    const onGone = () => setPopup(null);
+    popup.addEventListener("pagehide", onGone);
+    return () => popup.removeEventListener("pagehide", onGone);
+  }, [popup]);
 
   if (!isEnabled || !isSingleton) return null;
 
   const errorCount = events.filter((event) => event.level === "error").length;
   const visibleEvents = onlyErrors ? events.filter((event) => event.level !== "info") : events;
 
+  const openDrawer = () => {
+    setOpen(true);
+  };
+
+  const closeDebug = () => {
+    if (popup) {
+      popup.close();
+      setPopup(null);
+    }
+    setDebugOpen(false);
+    setPopupBlocked(false);
+  };
+
+  // Inspect and Debug are independent trays — closing one leaves the other be.
+  const closeDrawer = () => setOpen(false);
+
+  // The scrim is shared, so dismissing it retracts both trays. An ejected Debug
+  // window is its own surface and is left alone.
+  const dismissTrays = () => {
+    setOpen(false);
+    setDebugOpen(false);
+  };
+
+  const ejectDebug = () => {
+    const next = openDebugWindow();
+    if (!next) {
+      setPopupBlocked(true);
+      return;
+    }
+    setPopupBlocked(false);
+    setPopup(next);
+    setDebugOpen(false);
+  };
+
+  // Ejected -> back into the tray, without losing the editor's contents.
+  const minimizeDebug = () => {
+    if (popup) {
+      popup.close();
+      setPopup(null);
+    }
+    setPopupBlocked(false);
+    setDebugOpen(true);
+  };
+
+  const openDebug = () => {
+    setPopupBlocked(false);
+    if (popup && !popup.closed) {
+      popup.focus();
+      return;
+    }
+    if (popup) setPopup(null);
+    setDebugOpen(true);
+  };
+
+  const debugView = (
+    <DebugUI
+      libraries={libraries}
+      code={code}
+      onCodeChange={setCode}
+      editorPct={config.editorPct}
+      onEditorPctChange={(pct) => setConfig({ editorPct: pct })}
+      ejected={Boolean(popup)}
+      onEject={ejectDebug}
+      onMinimize={minimizeDebug}
+      // Debug owns its own tray, so its cross closes only Debug — in the drawer
+      // and in an ejected window alike. There is no list to step back to.
+      onClose={closeDebug}
+      theme={mode}
+      onThemeChange={(theme) => setConfig({ theme })}
+      helpSeen={config.helpSeen}
+      onHelpSeen={markHelpSeen}
+      popupBlocked={popupBlocked}
+    />
+  );
+  const popupRoot = popup ? debugMountNode(popup) : null;
+
+  // Inspect is pinned to the right edge; Debug fills the rest of the block and
+  // slides over to reclaim Inspect's slot whenever Inspect is out.
+  const inspectSlot = open ? INSPECT_WIDTH + TRAY_GAP : 0;
   const inspectTray: CSSProperties = {
     right: TRAY_EDGE,
     bottom: TRAY_EDGE,
     height: BLOCK_H,
     width: `min(${INSPECT_WIDTH}px, calc(100vw - ${TRAY_EDGE * 2}px))`,
     transform: open ? "translateX(0)" : `translateX(calc(100% + ${TRAY_EDGE}px))`,
+  };
+  // Debug is a workspace rather than a peek at the app behind it: it fills
+  // everything Inspect leaves (left/right edges rather than a width, so the
+  // inset matches top and bottom) and cuts straight in instead of sliding.
+  // Overrides the shared chrome, so it is spread last.
+  const debugTray: CSSProperties = {
+    right: TRAY_EDGE + inspectSlot,
+    bottom: TRAY_EDGE,
+    height: BLOCK_H,
+    width: `max(${DEBUG_MIN_WIDTH}px, calc(${BLOCK_W} - ${inspectSlot}px))`,
+    transform: "none",
+    transition: "none",
+    visibility: debugOpen ? "visible" : "hidden",
   };
 
   return (
@@ -147,7 +269,7 @@ export function OpenUIDevtools({
             ...(errorCount > 0 ? styles.toggleError : null),
             ...(toggleHovered ? styles.toggleHover : null),
           }}
-          onClick={() => setOpen(true)}
+          onClick={openDrawer}
           onMouseEnter={() => setToggleHovered(true)}
           onMouseLeave={() => setToggleHovered(false)}
           aria-label="Open OpenUI Inspect"
@@ -169,9 +291,9 @@ export function OpenUIDevtools({
         style={{
           ...styles.backdrop,
           ...rootStyle(mode),
-          ...(open ? styles.backdropOpen : null),
+          ...(open || debugOpen ? styles.backdropOpen : null),
         }}
-        onClick={() => setOpen(false)}
+        onClick={dismissTrays}
       >
         <aside
           style={{
@@ -180,83 +302,112 @@ export function OpenUIDevtools({
             ...(open ? styles.drawerOpen : null),
           }}
           role="dialog"
-          aria-modal="true"
+          aria-modal={!debugOpen}
           aria-label="OpenUI Inspect"
           inert={!open}
           onClick={(event) => event.stopPropagation()}
         >
-          <div style={styles.header}>
-            <div style={styles.headerLeft}>
-              <span style={styles.title}>OpenUI Inspect</span>
-            </div>
-            <div style={styles.headerActions}>
-              <IconButton
-                onClick={() => setEvents([])}
-                aria-label="Reset events"
-                title="Reset events"
-              >
-                <RotateCcw size={14} />
-              </IconButton>
-              <SettingsMenu config={config} onChange={setConfig} />
-              <IconButton onClick={() => setOpen(false)} aria-label="Close OpenUI Inspect">
-                <X size={15} />
-              </IconButton>
-            </div>
-          </div>
-
-          <div style={styles.bannerGroup}>
-            <span style={styles.bannerFade} aria-hidden />
-            <a
-              style={styles.docsBanner}
-              href={RELIABILITY_DOCS_URL}
-              target="_blank"
-              rel="noreferrer"
-              title="Learn how to track and fix errors in production"
-              onMouseEnter={() => setBannerHovered(true)}
-              onMouseLeave={() => setBannerHovered(false)}
-            >
-              <span style={styles.docsBannerText}>
-                <span style={styles.docsBannerTitle}>
-                  Want to track and fix errors in production?
-                </span>
-              </span>
-              <span
-                style={{
-                  ...styles.docsBannerAction,
-                  ...(bannerHovered ? styles.docsBannerActionHover : null),
-                }}
-              >
-                Learn more
-              </span>
-            </a>
-          </div>
-          <div style={styles.list}>
-            {visibleEvents.length === 0 ? (
-              <div style={styles.empty}>
-                <span style={styles.emptyIcon}>
-                  <Inbox size={20} />
-                </span>
-                No events captured yet.
+          <>
+            <div style={styles.header}>
+              <div style={styles.headerLeft}>
+                <span style={styles.title}>OpenUI Inspect</span>
               </div>
-            ) : (
-              visibleEvents.map((event, index) => {
-                const key =
-                  typeof event.detail["id"] === "string"
-                    ? event.detail["id"]
-                    : `${event.timestamp}-${index}`;
-                const quotaError = getQuotaError(event);
-                if (quotaError) return <QuotaErrorRow key={key} info={quotaError} />;
-                const stream = getReactLangStreamDetail(event);
-                if (stream) {
-                  return <ReactLangStreamEventRow key={key} event={event} stream={stream} />;
-                }
-                return <EventRow key={key} event={event} />;
-              })
-            )}
-          </div>
-          <span style={styles.trayFade} aria-hidden />
+              <div style={styles.headerActions}>
+                <IconButton
+                  onClick={() => setEvents([])}
+                  aria-label="Reset events"
+                  title="Reset events"
+                >
+                  <RotateCcw size={14} />
+                </IconButton>
+                <SettingsMenu config={config} onChange={setConfig} />
+                <IconButton onClick={closeDrawer} aria-label="Close OpenUI Inspect">
+                  <X size={15} />
+                </IconButton>
+              </div>
+            </div>
+
+            <div style={styles.bannerGroup}>
+              <span style={styles.bannerFade} aria-hidden />
+              <a
+                style={styles.docsBanner}
+                href={RELIABILITY_DOCS_URL}
+                target="_blank"
+                rel="noreferrer"
+                title="Learn how to track and fix errors in production"
+                onMouseEnter={() => setBannerHovered(true)}
+                onMouseLeave={() => setBannerHovered(false)}
+              >
+                <span style={styles.docsBannerText}>
+                  <span style={styles.docsBannerTitle}>
+                    Want to track and fix errors in production?
+                  </span>
+                </span>
+                <span
+                  style={{
+                    ...styles.docsBannerAction,
+                    ...(bannerHovered ? styles.docsBannerActionHover : null),
+                  }}
+                >
+                  Learn more
+                </span>
+              </a>
+            </div>
+            <div style={styles.list}>
+              {visibleEvents.length === 0 ? (
+                <div style={styles.empty}>
+                  <span style={styles.emptyIcon}>
+                    <Inbox size={20} />
+                  </span>
+                  No events captured yet.
+                </div>
+              ) : (
+                visibleEvents.map((event, index) => {
+                  const key =
+                    typeof event.detail["id"] === "string"
+                      ? event.detail["id"]
+                      : `${event.timestamp}-${index}`;
+                  const quotaError = getQuotaError(event);
+                  if (quotaError) return <QuotaErrorRow key={key} info={quotaError} />;
+                  const stream = getReactLangStreamDetail(event);
+                  if (stream) {
+                    return (
+                      <ReactLangStreamEventRow
+                        key={key}
+                        event={event}
+                        stream={stream}
+                        canOpenInDebug={libraries.length > 0}
+                        onOpenInDebug={(response) => {
+                          setCode(response);
+                          openDebug();
+                        }}
+                      />
+                    );
+                  }
+                  return <EventRow key={key} event={event} />;
+                })
+              )}
+            </div>
+            <span style={styles.trayFade} aria-hidden />
+          </>
+        </aside>
+
+        <aside
+          style={{
+            ...styles.drawer,
+            ...(debugOpen ? styles.drawerOpen : null),
+            ...debugTray,
+          }}
+          role="dialog"
+          aria-modal={debugOpen}
+          aria-label="OpenUI Debug"
+          inert={!debugOpen}
+          onClick={(event) => event.stopPropagation()}
+        >
+          <div style={styles.debugHost}>{debugView}</div>
         </aside>
       </div>
+      {popupRoot ? createPortal(debugView, popupRoot) : null}
     </DevtoolsModeProvider>
   );
 }
@@ -295,7 +446,7 @@ function SettingSwitch({
 /**
  * Header dropdown for the display filters and the widget theme, so the list is
  * all list. Escape is handled in the capture phase so closing the menu doesn't
- * also close the drawer.
+ * also step the drawer back.
  */
 function SettingsMenu({
   config,
@@ -438,6 +589,9 @@ function uiStyles(t: ThemeTokens) {
       pointerEvents: "auto",
       transition: "opacity 200ms ease, visibility 0s",
     },
+    // Geometry (right/width/transform) is per-tray and set inline; this is the
+    // shared chrome. Each tray hides itself when closed so the other can be open
+    // over the same scrim without a retracted tray staying focusable.
     drawer: {
       position: "fixed",
       boxSizing: "border-box",
@@ -453,12 +607,18 @@ function uiStyles(t: ThemeTokens) {
       fontFamily: FONT,
       fontSize: 13,
       visibility: "hidden",
-      transition: "transform 220ms cubic-bezier(0.32, 0.72, 0, 1), visibility 0s linear 220ms",
+      transition:
+        "transform 220ms cubic-bezier(0.32, 0.72, 0, 1), right 260ms cubic-bezier(0.32, 0.72, 0, 1), width 260ms cubic-bezier(0.32, 0.72, 0, 1), visibility 0s linear 220ms",
       overflow: "hidden",
     },
     drawerOpen: {
       visibility: "visible",
-      transition: "transform 220ms cubic-bezier(0.32, 0.72, 0, 1), visibility 0s",
+      transition:
+        "transform 220ms cubic-bezier(0.32, 0.72, 0, 1), right 260ms cubic-bezier(0.32, 0.72, 0, 1), width 260ms cubic-bezier(0.32, 0.72, 0, 1), visibility 0s",
+    },
+    debugHost: {
+      flex: 1,
+      minHeight: 0,
     },
     header: {
       display: "flex",
@@ -573,6 +733,14 @@ function uiStyles(t: ThemeTokens) {
       fontWeight: 500,
       color: t.fg,
     },
+    // One border on the track, none on the segments — collapsing per-segment
+    // borders with a negative margin made whichever one was active paint a pixel
+    // wider than its neighbour.
+    // Whole card is the button; the chevron only signals where it leads.
+    // Inset from the drawer edges, matching the list's own 12px gutter. The top
+    // margin keeps a clear gap even when the list scrolls right up to the banners.
+    // Padding, not margin, so the tray background travels with the banner and
+    // rows scrolling underneath are hidden rather than peeking through the gap.
     bannerGroup: {
       position: "relative",
       zIndex: 1,
@@ -583,6 +751,9 @@ function uiStyles(t: ThemeTokens) {
       background: t.bg,
       padding: "12px 12px 18px",
     },
+    // Mirrors bannerFade at the tray's bottom edge, so rows dissolve into the
+    // drawer instead of meeting the border mid-row. Pinned to the tray rather
+    // than the list, so it covers the stack-trace view too.
     trayFade: {
       position: "absolute",
       left: 0,
@@ -592,6 +763,10 @@ function uiStyles(t: ThemeTokens) {
       background: `linear-gradient(to top, ${t.bg}, transparent)`,
       pointerEvents: "none",
     },
+    // Hangs below the banner, spanning the tray's full width, so list rows
+    // dissolve as they scroll up under it rather than being clipped mid-row.
+    // Sized to the list's own top padding so it dissolves the gap without
+    // washing over the first card.
     bannerFade: {
       position: "absolute",
       left: 0,
@@ -626,6 +801,8 @@ function uiStyles(t: ThemeTokens) {
       fontSize: 12,
       fontWeight: 500,
     },
+    // The whole banner is the hit target; this just reads as the button on it, so
+    // it stays a span rather than nesting a control inside a control.
     docsBannerAction: {
       display: "inline-flex",
       alignItems: "center",
@@ -652,6 +829,8 @@ function uiStyles(t: ThemeTokens) {
       flexDirection: "column",
       gap: 10,
     },
+    // Fills the list so the message sits in the middle of the tray, not pinned
+    // under the header.
     empty: {
       flex: 1,
       minHeight: 0,
