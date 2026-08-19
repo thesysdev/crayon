@@ -10,7 +10,6 @@ import {
   type ThemeTokens,
 } from "../theme";
 import { IconButton, ThemeToggle } from "../ui";
-import type { ChunkStrategy } from "./chunker";
 import { HelpDialog } from "./HelpDialog";
 import { LangEditor } from "./LangEditor";
 import { JsonPanel } from "./panels/JsonPanel";
@@ -19,13 +18,11 @@ import { StreamTimeline } from "./panels/StreamTimeline";
 import { TreePanel } from "./panels/TreePanel";
 import { ValidationPanel } from "./panels/ValidationPanel";
 import { librarySchema } from "./parse";
-import { StreamToolbar, type StreamSettings } from "./StreamToolbar";
+import { StreamToolbar } from "./StreamToolbar";
 import { debugStyles } from "./styles";
-import { usePlayback } from "./usePlayback";
 import { useReactLang } from "./useReactLang";
+import { useStream } from "./useStream";
 import { useValidation } from "./useValidation";
-
-const CHAR_STRATEGY_LIMIT = 50 * 1024;
 
 /** Editor's share of the split, as a percentage. The panels get the rest. */
 export const DEFAULT_EDITOR_PCT = 25;
@@ -118,7 +115,7 @@ export function DebugUI({
   const schema = useMemo(() => librarySchema(selected?.library), [selected]);
   const rootName = selected?.library.root;
   const outcome = useValidation(code, lang, schema, rootName);
-  const playback = usePlayback(code, lang, schema, rootName);
+  const stream = useStream({ code, lang, schema, rootName, outcome });
   const [tab, setTab] = useState<Tab>("render");
   const [editorPctState, setEditorPctState] = useState(editorPctProp ?? DEFAULT_EDITOR_PCT);
   const editorPct = editorPctProp ?? editorPctState;
@@ -129,27 +126,10 @@ export function DebugUI({
   const [resizing, setResizing] = useState(false);
   const [splitHover, setSplitHover] = useState(false);
   const bodyRef = useRef<HTMLDivElement>(null);
-  const [strategy, setStrategy] = useState<ChunkStrategy>("llm");
-  const [seed, setSeed] = useState(42);
   const mode = useDevtoolsMode();
   const t = useTheme();
   const debug = debugStyles(t);
   const styles = shellStyles(t);
-  const settings: StreamSettings = {
-    strategy,
-    onStrategyChange: setStrategy,
-    seed,
-    onSeedChange: setSeed,
-  };
-
-  const playbackActive = playback.state.status === "playing" || playback.state.status === "paused";
-  const isStreaming = playback.state.status === "playing";
-  const displayed =
-    playbackActive || playback.state.status === "done"
-      ? { result: playback.state.result, fatal: playback.state.fatal }
-      : outcome;
-  const renderedCode = playbackActive ? playback.state.prefix : code;
-  const streamDisabled = !lang || !code.trim() || schema == null;
 
   const clampPct = (pct: number) => Math.min(MAX_EDITOR_PCT, Math.max(MIN_EDITOR_PCT, pct));
 
@@ -182,7 +162,7 @@ export function DebugUI({
   };
 
   const changeCode = (next: string) => {
-    if (playback.state.status !== "idle") playback.reset();
+    stream.prepareEdit();
     onCodeChange(next);
   };
 
@@ -217,10 +197,10 @@ export function DebugUI({
         <div style={styles.banner}>Allow popups for this origin to eject OpenUI Debug.</div>
       ) : null}
       <StreamToolbar
-        playback={playback}
-        settings={settings}
-        bigInput={code.length > CHAR_STRATEGY_LIMIT}
-        disabled={streamDisabled}
+        playback={stream.playback}
+        settings={stream.settings}
+        bigInput={stream.bigInput}
+        disabled={stream.disabled}
       />
       <div
         ref={bodyRef}
@@ -230,8 +210,8 @@ export function DebugUI({
         }}
       >
         <div style={styles.editorWrap}>
-          <LangEditor value={code} onChange={changeCode} readOnly={playbackActive} />
-          {playbackActive ? <span style={debug.editorLock}>Streaming…</span> : null}
+          <LangEditor value={code} onChange={changeCode} readOnly={stream.active} />
+          {stream.active ? <span style={debug.editorLock}>Streaming…</span> : null}
         </div>
         <div
           style={styles.splitter}
@@ -273,8 +253,8 @@ export function DebugUI({
           <div style={debug.tabStrip} role="tablist" aria-label="Debug panels">
             {TABS.map((item) => {
               const label =
-                item.id === "validation" && displayed.result
-                  ? `${item.label} (${displayed.result.meta.errors.length})`
+                item.id === "validation" && stream.displayed.result
+                  ? `${item.label} (${stream.displayed.result.meta.errors.length})`
                   : item.label;
               const active = tab === item.id;
               return (
@@ -305,16 +285,16 @@ export function DebugUI({
                       <RenderPanel
                         Renderer={lang.Renderer}
                         library={selected.library}
-                        code={renderedCode}
-                        isStreaming={isStreaming}
+                        code={stream.renderedCode}
+                        isStreaming={stream.isStreaming}
                       />
                     </DebugErrorBoundary>
                   </div>
                 ) : null}
-                {tab === "validation" ? <ValidationPanel outcome={displayed} /> : null}
-                {tab === "tree" ? <TreePanel result={displayed.result} /> : null}
-                {tab === "json" ? <JsonPanel result={displayed.result} /> : null}
-                {tab === "stream" ? <StreamTimeline state={playback.state} /> : null}
+                {tab === "validation" ? <ValidationPanel outcome={stream.displayed} /> : null}
+                {tab === "tree" ? <TreePanel result={stream.displayed.result} /> : null}
+                {tab === "json" ? <JsonPanel result={stream.displayed.result} /> : null}
+                {tab === "stream" ? <StreamTimeline state={stream.state} /> : null}
               </>
             ) : (
               <div style={styles.missing}>No library registered.</div>

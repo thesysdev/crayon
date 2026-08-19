@@ -3,17 +3,11 @@ import type { CSSProperties } from "react";
 import { CHUNK_STRATEGIES, type ChunkStrategy } from "./chunker";
 import { useDebugStyles } from "./styles";
 import type { PlaybackControls } from "./usePlayback";
+import type { StreamSettings } from "./useStream";
 
 const SPEEDS = ["0.25", "0.5", "1", "2", "4", "8"];
 // Every control in the toolbar draws its icon at one size and one stroke.
 const ICON = { size: 14 };
-
-export interface StreamSettings {
-  strategy: ChunkStrategy;
-  onStrategyChange: (s: ChunkStrategy) => void;
-  seed: number;
-  onSeedChange: (n: number) => void;
-}
 
 function groupStyle(
   s: ReturnType<typeof useDebugStyles>,
