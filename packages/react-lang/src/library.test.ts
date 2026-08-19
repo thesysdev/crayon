@@ -44,6 +44,7 @@ describe("createLibrary publish", () => {
       detail: Record<string, unknown>;
     };
     expect(event.detail["kind"]).toBe(LIBRARY_EVENT_KIND);
+    expect(event.detail["__libraryId"]).toBe(library.__libraryId);
     expect(event.detail["id"]).toBe("demo");
     expect(event.detail["root"]).toBe("Card");
     expect(event.detail["components"]).toEqual(["Card"]);

@@ -31,4 +31,6 @@ export interface SettledStreamEventDetail {
   errors: unknown[];
   errorCount: number;
   message: string;
+  /** `createLibrary()` instance id for the Renderer that produced this stream. */
+  __libraryId?: string;
 }
