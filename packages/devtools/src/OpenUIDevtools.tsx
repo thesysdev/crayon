@@ -7,11 +7,20 @@ import {
 } from "@openuidev/observability";
 import { ArrowLeft, Check, Copy, WrapText, X } from "lucide-react";
 import { useEffect, useState, type CSSProperties } from "react";
+import { addOrReplaceEvent } from "./eventBuffer";
 import { getQuotaError, QuotaErrorRow } from "./QuotaErrorRow";
 import { getReactLangStreamDetail, ReactLangStreamEventRow } from "./ReactLangStreamEventRow";
 import { ShiroLogo } from "./ShiroLogo";
-import { addOrReplaceEvent } from "./eventBuffer";
 import { useDevtoolsSingleton } from "./singleton";
+import {
+  DEFAULT_COLOR_SCHEME,
+  DevtoolsSchemeProvider,
+  FONT,
+  MONO,
+  rootStyle,
+  useStyles,
+  type ThemeTokens,
+} from "./theme";
 import { useDevtoolsConfig } from "./useDevtoolsConfig";
 
 export type DevtoolsPosition = "top-left" | "top-right" | "bottom-left" | "bottom-right";
@@ -65,6 +74,7 @@ export function OpenUIDevtools({
     onlyErrors: errorsOnly,
   });
   const { autoOpen, onlyErrors } = config;
+  const styles = useStyles(chromeStyles);
 
   // Read configRef inside the (stable) subscription without re-subscribing.
   useEffect(() => {
@@ -116,8 +126,14 @@ export function OpenUIDevtools({
   const selectedStack = selected ? (getErrorInfo(selected)?.stack ?? "") : "";
 
   return (
-    <>
-      <div style={{ ...styles.toggleWrap, ...positionStyles[position] }}>
+    <DevtoolsSchemeProvider scheme={DEFAULT_COLOR_SCHEME}>
+      <div
+        style={{
+          ...styles.toggleWrap,
+          ...rootStyle(DEFAULT_COLOR_SCHEME),
+          ...positionStyles[position],
+        }}
+      >
         <button
           style={{ ...styles.toggle, ...(errorCount > 0 ? styles.toggleError : null) }}
           onClick={openDrawer}
@@ -131,7 +147,11 @@ export function OpenUIDevtools({
 
       {/* Kept mounted so open/close can transition; hidden + inert when closed. */}
       <div
-        style={{ ...styles.backdrop, ...(open ? styles.backdropOpen : null) }}
+        style={{
+          ...styles.backdrop,
+          ...rootStyle(DEFAULT_COLOR_SCHEME),
+          ...(open ? styles.backdropOpen : null),
+        }}
         onClick={() => setOpen(false)}
       >
         <aside
@@ -247,7 +267,7 @@ export function OpenUIDevtools({
                       <div key={key} style={styles.row}>
                         <div style={styles.rowHeader}>
                           <div style={styles.badgeGroup}>
-                            <span style={{ ...styles.badge, ...badgeByLevel[event.level] }}>
+                            <span style={{ ...styles.badge, ...styles[event.level] }}>
                               {event.level}
                             </span>
                             {kind ? (
@@ -284,7 +304,7 @@ export function OpenUIDevtools({
           )}
         </aside>
       </div>
-    </>
+    </DevtoolsSchemeProvider>
   );
 }
 
@@ -331,12 +351,6 @@ function summarize(event: ObservabilityEvent): string {
     return "(no detail)";
   }
 }
-const badgeByLevel: Record<ObservabilityEvent["level"], CSSProperties> = {
-  error: { background: "#fef2f2", color: "#b91c1c", borderColor: "#fecaca" },
-  warning: { background: "#fffbeb", color: "#b45309", borderColor: "#fde68a" },
-  info: { background: "#eff6ff", color: "#1d4ed8", borderColor: "#bfdbfe" },
-};
-
 const positionStyles: Record<DevtoolsPosition, CSSProperties> = {
   "top-left": { top: 16, left: 16 },
   "top-right": { top: 16, right: 16 },
@@ -344,280 +358,280 @@ const positionStyles: Record<DevtoolsPosition, CSSProperties> = {
   "bottom-right": { bottom: 16, right: 16 },
 };
 
-// Mirrors react-ui's look (Inter, hairline borders, soft shadows) without
-// depending on it — values, not tokens.
-const FONT = '"Inter", system-ui, sans-serif';
-const MONO = "ui-monospace, SFMono-Regular, Menlo, monospace";
-
-const styles = {
-  toggleWrap: {
-    position: "fixed",
-    // Max 32-bit signed int — sit above any app chrome.
-    zIndex: 2147483647,
-  },
-  toggle: {
-    position: "relative",
-    width: 40,
-    height: 40,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: "50%",
-    borderWidth: 1,
-    borderStyle: "solid",
-    borderColor: "rgba(0, 0, 0, 0.08)",
-    background: "#18181b",
-    color: "#fff",
-    cursor: "pointer",
-    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.16)",
-    transition: "transform 150ms ease, box-shadow 150ms ease",
-  },
-  toggleError: {
-    background: "#b91c1c",
-    borderColor: "#fecaca",
-  },
-  toggleCount: {
-    position: "absolute",
-    top: -6,
-    right: -6,
-    boxSizing: "border-box",
-    minWidth: 16,
-    height: 16,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 999,
-    background: "#dc2626",
-    border: "2px solid #fff",
-    color: "#fff",
-    fontSize: 9,
-    fontWeight: 700,
-    padding: "0 3px",
-  },
-  backdrop: {
-    position: "fixed",
-    inset: 0,
-    background: "rgba(24, 24, 27, 0.4)",
-    // Max 32-bit signed int — the open drawer sits above everything, including the toggle.
-    zIndex: 2147483647,
-    opacity: 0,
-    visibility: "hidden",
-    pointerEvents: "none",
-    transition: "opacity 200ms ease, visibility 0s linear 200ms",
-  },
-  backdropOpen: {
-    opacity: 1,
-    visibility: "visible",
-    pointerEvents: "auto",
-    transition: "opacity 200ms ease, visibility 0s",
-  },
-  drawer: {
-    position: "fixed",
-    top: 12,
-    right: 12,
-    bottom: 12,
-    boxSizing: "border-box",
-    width: "min(420px, calc(100vw - 24px))",
-    display: "flex",
-    flexDirection: "column",
-    border: "1px solid #e4e4e7",
-    borderRadius: 16,
-    background: "#ffffff",
-    color: "#18181b",
-    fontFamily: FONT,
-    fontSize: 13,
-    boxShadow: "0 16px 48px rgba(24, 24, 27, 0.18)",
-    transform: "translateX(calc(100% + 12px))",
-    transition: "transform 220ms cubic-bezier(0.32, 0.72, 0, 1)",
-    overflow: "hidden",
-  },
-  drawerOpen: {
-    transform: "translateX(0)",
-  },
-  header: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: 8,
-    padding: "12px 16px",
-    borderBottom: "1px solid #f4f4f5",
-    fontWeight: 600,
-    fontSize: 14,
-  },
-  headerLeft: {
-    display: "flex",
-    alignItems: "center",
-    gap: 6,
-    minWidth: 0,
-  },
-  title: {
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
-  },
-  headerActions: {
-    display: "flex",
-    alignItems: "center",
-    gap: 6,
-    flexShrink: 0,
-  },
-  textButton: {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: 4,
-    border: "1px solid #e4e4e7",
-    borderRadius: 8,
-    background: "#ffffff",
-    color: "#3f3f46",
-    cursor: "pointer",
-    fontFamily: FONT,
-    fontSize: 12,
-    fontWeight: 500,
-    padding: "4px 10px",
-  },
-  textButtonActive: {
-    background: "#18181b",
-    borderColor: "#18181b",
-    color: "#ffffff",
-  },
-  iconButton: {
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    width: 26,
-    height: 26,
-    border: "none",
-    borderRadius: 8,
-    background: "transparent",
-    color: "#71717a",
-    cursor: "pointer",
-    padding: 0,
-  },
-  controlsRow: {
-    display: "flex",
-    alignItems: "center",
-    gap: 16,
-    padding: "10px 16px",
-    borderBottom: "1px solid #f4f4f5",
-  },
-  checkboxLabel: {
-    display: "flex",
-    alignItems: "center",
-    gap: 6,
-    color: "#52525b",
-    fontSize: 12,
-    cursor: "pointer",
-    accentColor: "#18181b",
-  },
-  list: {
-    overflowY: "auto",
-    padding: 12,
-    display: "flex",
-    flexDirection: "column",
-    gap: 10,
-  },
-  empty: {
-    color: "#a1a1aa",
-    padding: "32px 0",
-    textAlign: "center",
-  },
-  row: {
-    border: "1px solid #e4e4e7",
-    borderRadius: 12,
-    padding: 12,
-    display: "flex",
-    flexDirection: "column",
-    gap: 6,
-    background: "#ffffff",
-    boxShadow: "0 1px 2px rgba(24, 24, 27, 0.04)",
-  },
-  badgeCredits: {
-    background: "#fef3c7",
-    color: "#92400e",
-    borderColor: "#fde68a",
-  },
-  rowHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: 8,
-  },
-  badgeGroup: {
-    display: "flex",
-    alignItems: "center",
-    flexWrap: "wrap",
-    gap: 6,
-    minWidth: 0,
-  },
-  badgeNeutral: {
-    background: "#f4f4f5",
-    color: "#52525b",
-    borderColor: "#e4e4e7",
-    fontFamily: MONO,
-  },
-  badge: {
-    display: "inline-flex",
-    alignItems: "center",
-    borderRadius: 999,
-    borderWidth: 1,
-    borderStyle: "solid",
-    borderColor: "transparent",
-    padding: "1px 8px",
-    fontSize: 11,
-    fontWeight: 500,
-    fontFamily: FONT,
-  },
-  time: {
-    color: "#a1a1aa",
-    fontSize: 11,
-  },
-  summary: {
-    wordBreak: "break-word",
-    color: "#3f3f46",
-    fontSize: 12,
-    lineHeight: 1.5,
-  },
-  stackButton: {
-    alignSelf: "flex-start",
-    border: "none",
-    background: "transparent",
-    color: "#52525b",
-    cursor: "pointer",
-    fontFamily: FONT,
-    fontSize: 12,
-    fontWeight: 500,
-    padding: 0,
-    textDecoration: "underline",
-    textUnderlineOffset: 2,
-  },
-  stackBody: {
-    flex: 1,
-    overflow: "auto",
-    padding: "8px 0",
-    background: "#fafafa",
-    fontFamily: MONO,
-    fontSize: 11,
-    color: "#3f3f46",
-  },
-  stackLine: {
-    display: "flex",
-    gap: 8,
-    paddingRight: 12,
-  },
-  lineNumber: {
-    flexShrink: 0,
-    width: 32,
-    textAlign: "right",
-    color: "#a1a1aa",
-    userSelect: "none",
-    padding: "0 4px",
-    borderRight: "1px solid #e4e4e7",
-  },
-  lineText: {
-    whiteSpace: "pre",
-  },
-  lineTextWrap: {
-    whiteSpace: "pre-wrap",
-    wordBreak: "break-all",
-  },
-} satisfies Record<string, CSSProperties>;
+function chromeStyles(t: ThemeTokens) {
+  return {
+    error: { background: t.dangerBg, color: t.danger, borderColor: t.dangerBorder },
+    warning: { background: t.warningBg, color: t.warning, borderColor: t.warningBorder },
+    info: { background: t.infoBg, color: t.info, borderColor: t.infoBorder },
+    toggleWrap: {
+      position: "fixed",
+      // Max 32-bit signed int — sit above any app chrome.
+      zIndex: 2147483647,
+    },
+    toggle: {
+      position: "relative",
+      width: 40,
+      height: 40,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: "50%",
+      borderWidth: 1,
+      borderStyle: "solid",
+      borderColor: t.toggleBorder,
+      background: t.toggleBg,
+      color: t.toggleFg,
+      cursor: "pointer",
+      boxShadow: t.toggleShadow,
+      transition: "transform 150ms ease, box-shadow 150ms ease",
+    },
+    toggleError: {
+      background: t.danger,
+      borderColor: t.dangerBorder,
+    },
+    toggleCount: {
+      position: "absolute",
+      top: -6,
+      right: -6,
+      boxSizing: "border-box",
+      minWidth: 16,
+      height: 16,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: 999,
+      background: t.toggleError,
+      border: `2px solid ${t.toggleErrorSurface}`,
+      color: t.toggleFg,
+      fontSize: 9,
+      fontWeight: 700,
+      padding: "0 3px",
+    },
+    backdrop: {
+      position: "fixed",
+      inset: 0,
+      background: t.overlay,
+      // Max 32-bit signed int — the open drawer sits above everything, including the toggle.
+      zIndex: 2147483647,
+      opacity: 0,
+      visibility: "hidden",
+      pointerEvents: "none",
+      transition: "opacity 200ms ease, visibility 0s linear 200ms",
+    },
+    backdropOpen: {
+      opacity: 1,
+      visibility: "visible",
+      pointerEvents: "auto",
+      transition: "opacity 200ms ease, visibility 0s",
+    },
+    drawer: {
+      position: "fixed",
+      top: 12,
+      right: 12,
+      bottom: 12,
+      boxSizing: "border-box",
+      width: "min(420px, calc(100vw - 24px))",
+      display: "flex",
+      flexDirection: "column",
+      border: `1px solid ${t.border}`,
+      borderRadius: 16,
+      background: t.bg,
+      color: t.fg,
+      fontFamily: FONT,
+      fontSize: 13,
+      boxShadow: t.shadow,
+      transform: "translateX(calc(100% + 12px))",
+      transition: "transform 220ms cubic-bezier(0.32, 0.72, 0, 1)",
+      overflow: "hidden",
+    },
+    drawerOpen: {
+      transform: "translateX(0)",
+    },
+    header: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      gap: 8,
+      padding: "12px 16px",
+      borderBottom: `1px solid ${t.borderSubtle}`,
+      fontWeight: 600,
+      fontSize: 14,
+    },
+    headerLeft: {
+      display: "flex",
+      alignItems: "center",
+      gap: 6,
+      minWidth: 0,
+    },
+    title: {
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap",
+    },
+    headerActions: {
+      display: "flex",
+      alignItems: "center",
+      gap: 6,
+      flexShrink: 0,
+    },
+    textButton: {
+      display: "inline-flex",
+      alignItems: "center",
+      gap: 4,
+      border: `1px solid ${t.border}`,
+      borderRadius: 8,
+      background: t.controlBg,
+      color: t.fgTertiary,
+      cursor: "pointer",
+      fontFamily: FONT,
+      fontSize: 12,
+      fontWeight: 500,
+      padding: "4px 10px",
+    },
+    textButtonActive: {
+      background: t.inverted,
+      borderColor: t.inverted,
+      color: t.invertedFg,
+    },
+    iconButton: {
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      width: 26,
+      height: 26,
+      border: "none",
+      borderRadius: 8,
+      background: "transparent",
+      color: t.fgMuted,
+      cursor: "pointer",
+      padding: 0,
+    },
+    controlsRow: {
+      display: "flex",
+      alignItems: "center",
+      gap: 16,
+      padding: "10px 16px",
+      borderBottom: `1px solid ${t.borderSubtle}`,
+    },
+    checkboxLabel: {
+      display: "flex",
+      alignItems: "center",
+      gap: 6,
+      color: t.fgSecondary,
+      fontSize: 12,
+      cursor: "pointer",
+      accentColor: t.inverted,
+    },
+    list: {
+      overflowY: "auto",
+      padding: 12,
+      display: "flex",
+      flexDirection: "column",
+      gap: 10,
+    },
+    empty: {
+      color: t.fgFaint,
+      padding: "32px 0",
+      textAlign: "center",
+    },
+    row: {
+      border: `1px solid ${t.border}`,
+      borderRadius: 12,
+      padding: 12,
+      display: "flex",
+      flexDirection: "column",
+      gap: 6,
+      background: t.card,
+      boxShadow: t.shadowSubtle,
+    },
+    badgeCredits: {
+      background: t.creditsBg,
+      color: t.creditsFg,
+      borderColor: t.creditsBorder,
+    },
+    rowHeader: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      gap: 8,
+    },
+    badgeGroup: {
+      display: "flex",
+      alignItems: "center",
+      flexWrap: "wrap",
+      gap: 6,
+      minWidth: 0,
+    },
+    badgeNeutral: {
+      background: t.bgSubtle,
+      color: t.fgSecondary,
+      borderColor: t.border,
+      fontFamily: MONO,
+    },
+    badge: {
+      display: "inline-flex",
+      alignItems: "center",
+      borderRadius: 999,
+      borderWidth: 1,
+      borderStyle: "solid",
+      borderColor: "transparent",
+      padding: "1px 8px",
+      fontSize: 11,
+      fontWeight: 500,
+      fontFamily: FONT,
+    },
+    time: {
+      color: t.fgFaint,
+      fontSize: 11,
+    },
+    summary: {
+      wordBreak: "break-word",
+      color: t.fgTertiary,
+      fontSize: 12,
+      lineHeight: 1.5,
+    },
+    stackButton: {
+      alignSelf: "flex-start",
+      border: "none",
+      background: "transparent",
+      color: t.fgSecondary,
+      cursor: "pointer",
+      fontFamily: FONT,
+      fontSize: 12,
+      fontWeight: 500,
+      padding: 0,
+      textDecoration: "underline",
+      textUnderlineOffset: 2,
+    },
+    stackBody: {
+      flex: 1,
+      overflow: "auto",
+      padding: "8px 0",
+      background: t.bgMuted,
+      fontFamily: MONO,
+      fontSize: 11,
+      color: t.fgTertiary,
+    },
+    stackLine: {
+      display: "flex",
+      gap: 8,
+      paddingRight: 12,
+    },
+    lineNumber: {
+      flexShrink: 0,
+      width: 32,
+      textAlign: "right",
+      color: t.fgFaint,
+      userSelect: "none",
+      padding: "0 4px",
+      borderRight: `1px solid ${t.border}`,
+    },
+    lineText: {
+      whiteSpace: "pre",
+    },
+    lineTextWrap: {
+      whiteSpace: "pre-wrap",
+      wordBreak: "break-all",
+    },
+  } satisfies Record<string, CSSProperties>;
+}

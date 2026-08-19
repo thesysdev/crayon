@@ -1,6 +1,7 @@
 import { type ObservabilityEvent } from "@openuidev/observability";
 import { CreditCard, KeyRound } from "lucide-react";
 import type { CSSProperties } from "react";
+import { FONT, useStyles, type ThemeTokens } from "./theme";
 
 export interface QuotaErrorInfo {
   title: string;
@@ -35,6 +36,7 @@ export function getQuotaError(event: ObservabilityEvent): QuotaErrorInfo | undef
 
 /** Billing/rate-limit list entry — the highlighted card a known 429 code renders as. */
 export function QuotaErrorRow({ info }: { info: QuotaErrorInfo }) {
+  const styles = useStyles(quotaRowStyles);
   return (
     <div style={{ ...styles.row, ...styles.rowCredits }}>
       <div style={styles.creditsNote}>
@@ -81,61 +83,61 @@ function asString(value: unknown): string | undefined {
   return typeof value === "string" ? value : undefined;
 }
 
-const FONT = '"Inter", system-ui, sans-serif';
-
-const styles = {
-  row: {
-    border: "1px solid #e4e4e7",
-    borderRadius: 12,
-    padding: 12,
-    display: "flex",
-    flexDirection: "column",
-    gap: 6,
-    background: "#ffffff",
-    boxShadow: "0 1px 2px rgba(24, 24, 27, 0.04)",
-  },
-  rowCredits: {
-    border: "1px solid #fde68a",
-    background: "linear-gradient(135deg, #fffbeb 0%, #fff7ed 100%)",
-  },
-  creditsNote: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 6,
-  },
-  creditsTitle: {
-    fontSize: 13,
-    fontWeight: 600,
-    color: "#18181b",
-  },
-  creditsMessage: {
-    margin: 0,
-    fontSize: 12,
-    lineHeight: 1.55,
-    color: "#52525b",
-  },
-  actions: {
-    display: "flex",
-    gap: 8,
-    marginTop: 2,
-  },
-  action: {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: 6,
-    border: "none",
-    borderRadius: 8,
-    background: "#18181b",
-    color: "#ffffff",
-    padding: "6px 12px",
-    fontFamily: FONT,
-    fontSize: 12,
-    fontWeight: 500,
-    cursor: "pointer",
-  },
-  actionSecondary: {
-    background: "#ffffff",
-    color: "#18181b",
-    border: "1px solid #e4e4e7",
-  },
-} satisfies Record<string, CSSProperties>;
+function quotaRowStyles(t: ThemeTokens) {
+  return {
+    row: {
+      border: `1px solid ${t.border}`,
+      borderRadius: 12,
+      padding: 12,
+      display: "flex",
+      flexDirection: "column",
+      gap: 6,
+      background: t.card,
+      boxShadow: t.shadowSubtle,
+    },
+    rowCredits: {
+      border: `1px solid ${t.creditsBorder}`,
+      background: t.creditsGradient,
+    },
+    creditsNote: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 6,
+    },
+    creditsTitle: {
+      fontSize: 13,
+      fontWeight: 600,
+      color: t.fg,
+    },
+    creditsMessage: {
+      margin: 0,
+      fontSize: 12,
+      lineHeight: 1.55,
+      color: t.fgSecondary,
+    },
+    actions: {
+      display: "flex",
+      gap: 8,
+      marginTop: 2,
+    },
+    action: {
+      display: "inline-flex",
+      alignItems: "center",
+      gap: 6,
+      border: "none",
+      borderRadius: 8,
+      background: t.inverted,
+      color: t.invertedFg,
+      padding: "6px 12px",
+      fontFamily: FONT,
+      fontSize: 12,
+      fontWeight: 500,
+      cursor: "pointer",
+    },
+    actionSecondary: {
+      background: t.controlBg,
+      color: t.fg,
+      border: `1px solid ${t.controlBorder}`,
+    },
+  } satisfies Record<string, CSSProperties>;
+}
