@@ -1,7 +1,6 @@
 import { Maximize2, Minimize2, X } from "lucide-react";
 import { Component, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import { IconButton } from "../IconButton";
-import { type RegisteredLibrary } from "../libraryRegistry";
+import { type RegisteredLibrary } from "../lib";
 import {
   FONT,
   rootStyle,
@@ -10,7 +9,7 @@ import {
   type ColorMode,
   type ThemeTokens,
 } from "../theme";
-import { ThemeToggle } from "../ThemeToggle";
+import { IconButton, ThemeToggle } from "../ui";
 import type { ChunkStrategy } from "./chunker";
 import { HelpDialog } from "./HelpDialog";
 import { LangEditor } from "./LangEditor";

@@ -1,6 +1,6 @@
 import { FlaskConical } from "lucide-react";
 import { useMemo, useState, type ComponentType } from "react";
-import type { LibraryLike } from "../../libraryRegistry";
+import type { LibraryLike } from "../../lib";
 import { createMockToolProvider, type MockToolCall } from "../mockTools";
 import { useDebugStyles } from "../styles";
 import type { LangModule } from "../types";
