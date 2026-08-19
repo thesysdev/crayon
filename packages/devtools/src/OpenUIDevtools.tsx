@@ -2,9 +2,8 @@
 
 import { observability, type ObservabilityEvent } from "@openuidev/observability";
 import { Inbox, RotateCcw, Settings, X } from "lucide-react";
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
-import { createPortal } from "react-dom";
-import { debugMountNode, DebugUI, DEFAULT_EDITOR_PCT, openDebugWindow } from "./debug";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { DEFAULT_EDITOR_PCT, useDebug } from "./debug";
 import {
   EventRow,
   getQuotaError,
@@ -17,10 +16,8 @@ import {
   isLibraryEvent,
   useDevtoolsConfig,
   useDevtoolsSingleton,
-  useRegisteredLibraries,
   type DevtoolsConfig,
 } from "./lib";
-import { isLibraryEvent, useRegisteredLibraries } from "./libraryRegistry";
 import {
   DEFAULT_COLOR_MODE,
   DevtoolsModeProvider,
@@ -104,13 +101,8 @@ export function OpenUIDevtools({
   const isSingleton = useDevtoolsSingleton(__autoMounted);
   const [events, setEvents] = useState<ObservabilityEvent[]>([]);
   const [open, setOpen] = useState(false);
-  const [debugOpen, setDebugOpen] = useState(false);
-  const [popup, setPopup] = useState<Window | null>(null);
-  const [popupBlocked, setPopupBlocked] = useState(false);
   const [toggleHovered, setToggleHovered] = useState(false);
   const [bannerHovered, setBannerHovered] = useState(false);
-  const [code, setCode] = useState("");
-  const libraries = useRegisteredLibraries();
   const { config, setConfig, configRef } = useDevtoolsConfig(
     {
       autoOpen: autoOpenOnError,
@@ -122,9 +114,13 @@ export function OpenUIDevtools({
     { theme: themeProp },
   );
   const { onlyErrors, theme: mode } = config;
+  const debug = useDebug({
+    theme: mode,
+    helpSeen: config.helpSeen,
+    editorPct: config.editorPct,
+    setConfig,
+  });
   const styles = uiStyles(theme(mode));
-  // Stable so the help dialog's Escape listener isn't rebound every render.
-  const markHelpSeen = useCallback(() => setConfig({ helpSeen: true }), [setConfig]);
 
   // Read configRef inside the (stable) subscription without re-subscribing.
   useEffect(() => {
@@ -140,103 +136,20 @@ export function OpenUIDevtools({
   // settings menu handles its own Escape first (capture phase), so it never
   // falls through to here.
   useEffect(() => {
-    if (!open && !debugOpen) return;
+    if (!open && !debug.trayOpen) return;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
-      if (debugOpen) setDebugOpen(false);
+      if (debug.trayOpen) debug.retract();
       else setOpen(false);
     };
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [open, debugOpen]);
-
-  useEffect(() => {
-    if (!popup) return;
-    const onGone = () => setPopup(null);
-    popup.addEventListener("pagehide", onGone);
-    return () => popup.removeEventListener("pagehide", onGone);
-  }, [popup]);
+  }, [open, debug.trayOpen, debug.retract]);
 
   if (!isEnabled || !isSingleton) return null;
 
   const errorCount = events.filter((event) => event.level === "error").length;
   const visibleEvents = onlyErrors ? events.filter((event) => event.level !== "info") : events;
-
-  const openDrawer = () => {
-    setOpen(true);
-  };
-
-  const closeDebug = () => {
-    if (popup) {
-      popup.close();
-      setPopup(null);
-    }
-    setDebugOpen(false);
-    setPopupBlocked(false);
-  };
-
-  // Inspect and Debug are independent trays — closing one leaves the other be.
-  const closeDrawer = () => setOpen(false);
-
-  // The scrim is shared, so dismissing it retracts both trays. An ejected Debug
-  // window is its own surface and is left alone.
-  const dismissTrays = () => {
-    setOpen(false);
-    setDebugOpen(false);
-  };
-
-  const ejectDebug = () => {
-    const next = openDebugWindow();
-    if (!next) {
-      setPopupBlocked(true);
-      return;
-    }
-    setPopupBlocked(false);
-    setPopup(next);
-    setDebugOpen(false);
-  };
-
-  // Ejected -> back into the tray, without losing the editor's contents.
-  const minimizeDebug = () => {
-    if (popup) {
-      popup.close();
-      setPopup(null);
-    }
-    setPopupBlocked(false);
-    setDebugOpen(true);
-  };
-
-  const openDebug = () => {
-    setPopupBlocked(false);
-    if (popup && !popup.closed) {
-      popup.focus();
-      return;
-    }
-    if (popup) setPopup(null);
-    setDebugOpen(true);
-  };
-
-  const debugView = (
-    <DebugUI
-      libraries={libraries}
-      code={code}
-      onCodeChange={setCode}
-      editorPct={config.editorPct}
-      onEditorPctChange={(pct) => setConfig({ editorPct: pct })}
-      ejected={Boolean(popup)}
-      onEject={ejectDebug}
-      onMinimize={minimizeDebug}
-      // Debug owns its own tray, so its cross closes only Debug — in the drawer
-      // and in an ejected window alike. There is no list to step back to.
-      onClose={closeDebug}
-      theme={mode}
-      onThemeChange={(theme) => setConfig({ theme })}
-      helpSeen={config.helpSeen}
-      onHelpSeen={markHelpSeen}
-      popupBlocked={popupBlocked}
-    />
-  );
-  const popupRoot = popup ? debugMountNode(popup) : null;
 
   // Inspect is pinned to the right edge; Debug fills the rest of the block and
   // slides over to reclaim Inspect's slot whenever Inspect is out.
@@ -251,7 +164,7 @@ export function OpenUIDevtools({
   // Debug is a workspace rather than a peek at the app behind it: it fills
   // everything Inspect leaves (left/right edges rather than a width, so the
   // inset matches top and bottom) and cuts straight in instead of sliding.
-  // Overrides the shared chrome, so it is spread last.
+  // Overrides the shared UI, so it is spread last.
   const debugTray: CSSProperties = {
     right: TRAY_EDGE + inspectSlot,
     bottom: TRAY_EDGE,
@@ -259,7 +172,7 @@ export function OpenUIDevtools({
     width: `max(${DEBUG_MIN_WIDTH}px, calc(${BLOCK_W} - ${inspectSlot}px))`,
     transform: "none",
     transition: "none",
-    visibility: debugOpen ? "visible" : "hidden",
+    visibility: debug.trayOpen ? "visible" : "hidden",
   };
 
   return (
@@ -271,7 +184,7 @@ export function OpenUIDevtools({
             ...(errorCount > 0 ? styles.toggleError : null),
             ...(toggleHovered ? styles.toggleHover : null),
           }}
-          onClick={openDrawer}
+          onClick={() => setOpen(true)}
           onMouseEnter={() => setToggleHovered(true)}
           onMouseLeave={() => setToggleHovered(false)}
           aria-label="Open OpenUI Inspect"
@@ -293,9 +206,14 @@ export function OpenUIDevtools({
         style={{
           ...styles.backdrop,
           ...rootStyle(mode),
-          ...(open || debugOpen ? styles.backdropOpen : null),
+          ...(open || debug.trayOpen ? styles.backdropOpen : null),
         }}
-        onClick={dismissTrays}
+        onClick={() => {
+          // The scrim is shared, so dismissing it retracts both trays. An
+          // ejected Debug window is its own surface and is left alone.
+          setOpen(false);
+          debug.retract();
+        }}
       >
         <aside
           style={{
@@ -304,7 +222,7 @@ export function OpenUIDevtools({
             ...(open ? styles.drawerOpen : null),
           }}
           role="dialog"
-          aria-modal={!debugOpen}
+          aria-modal={!debug.trayOpen}
           aria-label="OpenUI Inspect"
           inert={!open}
           onClick={(event) => event.stopPropagation()}
@@ -323,7 +241,7 @@ export function OpenUIDevtools({
                   <RotateCcw size={14} />
                 </IconButton>
                 <SettingsMenu config={config} onChange={setConfig} />
-                <IconButton onClick={closeDrawer} aria-label="Close OpenUI Inspect">
+                <IconButton onClick={() => setOpen(false)} aria-label="Close OpenUI Inspect">
                   <X size={15} />
                 </IconButton>
               </div>
@@ -378,11 +296,8 @@ export function OpenUIDevtools({
                         key={key}
                         event={event}
                         stream={stream}
-                        canOpenInDebug={libraries.length > 0}
-                        onOpenInDebug={(response) => {
-                          setCode(response);
-                          openDebug();
-                        }}
+                        canOpenInDebug={debug.canOpen}
+                        onOpenInDebug={debug.openWith}
                       />
                     );
                   }
@@ -397,19 +312,19 @@ export function OpenUIDevtools({
         <aside
           style={{
             ...styles.drawer,
-            ...(debugOpen ? styles.drawerOpen : null),
+            ...(debug.trayOpen ? styles.drawerOpen : null),
             ...debugTray,
           }}
           role="dialog"
-          aria-modal={debugOpen}
+          aria-modal={debug.trayOpen}
           aria-label="OpenUI Debug"
-          inert={!debugOpen}
+          inert={!debug.trayOpen}
           onClick={(event) => event.stopPropagation()}
         >
-          <div style={styles.debugHost}>{debugView}</div>
+          <div style={styles.debugHost}>{debug.view}</div>
         </aside>
       </div>
-      {popupRoot ? createPortal(debugView, popupRoot) : null}
+      {debug.portal}
     </DevtoolsModeProvider>
   );
 }
@@ -592,7 +507,7 @@ function uiStyles(t: ThemeTokens) {
       transition: "opacity 200ms ease, visibility 0s",
     },
     // Geometry (right/width/transform) is per-tray and set inline; this is the
-    // shared chrome. Each tray hides itself when closed so the other can be open
+    // shared UI. Each tray hides itself when closed so the other can be open
     // over the same scrim without a retracted tray staying focusable.
     drawer: {
       position: "fixed",
