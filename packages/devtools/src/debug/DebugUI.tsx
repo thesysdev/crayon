@@ -5,9 +5,9 @@ import { type RegisteredLibrary } from "../libraryRegistry";
 import {
   FONT,
   rootStyle,
-  useDevtoolsScheme,
+  useDevtoolsMode,
   useTheme,
-  type ColorScheme,
+  type ColorMode,
   type ThemeTokens,
 } from "../theme";
 import { ThemeToggle } from "../ThemeToggle";
@@ -78,8 +78,8 @@ export interface DebugUIProps {
   onMinimize?: () => void;
   /** Dismisses the whole widget (or the ejected window). */
   onClose: () => void;
-  theme: ColorScheme;
-  onThemeChange: (theme: ColorScheme) => void;
+  theme: ColorMode;
+  onThemeChange: (theme: ColorMode) => void;
   /** False on the first ever visit, which opens the help guide unprompted. */
   helpSeen?: boolean;
   onHelpSeen?: () => void;
@@ -132,7 +132,7 @@ export function DebugUI({
   const bodyRef = useRef<HTMLDivElement>(null);
   const [strategy, setStrategy] = useState<ChunkStrategy>("llm");
   const [seed, setSeed] = useState(42);
-  const scheme = useDevtoolsScheme();
+  const mode = useDevtoolsMode();
   const t = useTheme();
   const debug = debugStyles(t);
   const styles = shellStyles(t);
@@ -188,7 +188,7 @@ export function DebugUI({
   };
 
   return (
-    <div style={{ ...styles.shell, ...rootStyle(scheme) }}>
+    <div style={{ ...styles.shell, ...rootStyle(mode) }}>
       <div style={styles.header}>
         <div style={styles.headerLeft}>
           <span style={styles.title}>OpenUI Debug</span>

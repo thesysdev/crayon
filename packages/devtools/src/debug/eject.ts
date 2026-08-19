@@ -26,7 +26,7 @@ function prepareDebugDocument(from: Document, to: Document): void {
   to.title = "OpenUI Debug";
   // Mirror the host's root classes/attrs/color-scheme so the rendered preview
   // resolves the same CSS it would in the app. Devtools chrome is unaffected —
-  // it uses the scheme chosen in Settings.
+  // it uses the mode chosen in Settings.
   to.documentElement.className = from.documentElement.className;
   to.body.className = from.body.className;
   copyAttributes(from.documentElement, to.documentElement);
