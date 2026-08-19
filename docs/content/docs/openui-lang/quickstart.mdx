@@ -1,99 +1,353 @@
 ---
 title: Quick Start
-description: Bootstrap a GenUI chat app in under a minute.
+description: Build a Recipe Remix agent with OpenUI Cloud in about 10 minutes.
 ---
 
-<video
-  src="/videos/openui-lang/chat-quickstart.mp4"
-  autoPlay
-  loop
-  muted
-  playsInline
-  className="w-full rounded-lg"
-/>
+Build a Recipe Remix agent that reads your pantry, searches for real recipes,
+finds an image, and renders the results as interactive Generative UI.
 
-## Create the app
+The Cloud starter already includes streaming chat, conversation history, web
+search, image search, reports, presentations, and an example function tool.
+You will keep those features and add one tool and one component.
 
-```bash tab="pnpm" tab-group="pkg"
-pnpx @openuidev/cli@latest create --name genui-chat-app
-```
+You need Node.js 20 or later and a Thesys account.
 
-```bash tab="bun" tab-group="pkg"
-bunx @openuidev/cli@latest create --name genui-chat-app
-```
-
-```bash tab="yarn" tab-group="pkg"
-yarn dlx @openuidev/cli@latest create --name genui-chat-app
-```
-
-```bash tab="npm" tab-group="pkg"
-npx @openuidev/cli@latest create --name genui-chat-app
-```
-
-Then move into the project:
+## 1. Create the app
 
 ```bash
-cd genui-chat-app
+npx @openuidev/cli@latest create \
+  --name recipe-remix \
+  --template openui-cloud
 ```
 
-## Add your API key
+Follow the prompts. The CLI signs you in, creates the project, installs its
+dependencies, starts the agent, and opens it in your browser. Open the generated
+`recipe-remix` folder in your editor for the next steps.
 
-The generated app uses OpenAI by default, but works with any OpenAI-compatible provider (e.g., OpenRouter, Azure OpenAI, Anthropic via proxy).
+## 2. Replace the starter prompts
 
-```bash
-echo "OPENAI_API_KEY=sk-your-key-here" > .env
+Open `src/lib/starters.tsx` and replace the existing `STARTERS` array with:
+
+```tsx
+export const STARTERS = [
+  {
+    displayText: "Cook from my pantry",
+    prompt:
+      "Call get_recipe_profile, then search for three recipes that fit my pantry and preferences. Include source links and a relevant image.",
+    icon: <></>,
+  },
+  {
+    displayText: "Find a high-protein dinner",
+    prompt:
+      "Search for three high-protein vegetarian dinners that take 30 minutes or less. Include useful substitutions and source links.",
+    icon: <></>,
+  },
+  {
+    displayText: "Remix a comfort food",
+    prompt:
+      "Find three reliable takes on macaroni and cheese, then suggest a lighter or faster remix for each.",
+    icon: <></>,
+  },
+];
 ```
 
-## Start the dev server
+Update these lines in `src/components/cloud-chat.tsx`:
 
-```bash tab="pnpm" tab-group="pkg"
-pnpm dev
+```diff
+- import { OPENUI_LOGOS, PROMPT_TEMPLATES, STARTERS } from "@/lib/starters";
++ import { OPENUI_LOGOS, STARTERS } from "@/lib/starters";
+
+  <AgentInterface.Welcome
+-   title="Good to see you"
+-   description="What's on your mind today?"
+-   promptTemplates={PROMPT_TEMPLATES}
++   title="Recipe Remix"
++   description="Turn what you have into something delicious."
+    glowAnimation
+  />
 ```
 
-```bash tab="bun" tab-group="pkg"
-bun dev
-```
+This removes the general-purpose prompt templates while keeping the three
+recipe starters.
 
-```bash tab="yarn" tab-group="pkg"
-yarn dev
-```
+## 3. Add a pantry tool
 
-```bash tab="npm" tab-group="pkg"
-npm run dev
-```
-
-## What's included
-
-The CLI generates a Next.js app with everything wired up:
-
-```
-src/
-  app/
-    page.tsx          # AgentInterface chat (thread history) with the built-in component library
-    api/chat/
-      route.ts        # Backend route with OpenAI streaming + example tools
-  library.ts          # Re-exports openuiChatLibrary and openuiChatPromptOptions
-  generated/
-    system-prompt.txt        # Generated for static or legacy prompt integrations
-    system-prompt.spec.json  # Generated library spec
-```
-
-- **`page.tsx`**: Renders the `AgentInterface` chat (an artifact chat surface with thread history) with `openuiChatLibrary` for Generative UI rendering. It provides an `llm` whose `send` posts messages to the route and whose `streamProtocol` is `openAIAdapter()`. Storage is optional — omit it and threads are kept in memory (wiped on reload).
-- **`route.ts`**: A backend API route that uses `generateSystemPrompt` with the generated spec, then streams the response from the LLM.
-- **`library.ts`**: Your component library entrypoint. The `openui generate` CLI reads this file to produce both the prompt and the library spec.
-
-The `dev` and `build` scripts automatically regenerate both artifacts before starting. Use the emitted spec in your route:
-
-```json
-"generate:prompt": "openui generate src/library.ts --out src/generated/system-prompt.txt",
-"dev": "pnpm generate:prompt && next dev"
-```
+Create `src/lib/tools/get-recipe-profile.ts`:
 
 ```ts
-import { generateSystemPrompt, type LibrarySpec } from "@openuidev/lang-core";
-import librarySpec from "../../../generated/system-prompt.spec.json";
+export const getRecipeProfileTool = {
+  type: "function" as const,
+  name: "get_recipe_profile",
+  description:
+    "Read the cook's pantry and recipe preferences. Call this before recommending pantry recipes.",
+  parameters: {
+    type: "object",
+    properties: {},
+    required: [],
+    additionalProperties: false,
+  },
+  strict: true,
+};
 
-const systemPrompt = generateSystemPrompt({
-  library: librarySpec as LibrarySpec,
+export async function executeGetRecipeProfile(): Promise<string> {
+  return JSON.stringify({
+    pantry: ["chickpeas", "tomatoes", "spinach"],
+    diet: "vegetarian",
+    maxMinutes: 30,
+  });
+}
+```
+
+Change the values in `executeGetRecipeProfile()` to match your kitchen.
+
+Open `src/app/api/chat/route.ts` and update the imports:
+
+```diff
+  import { runFunctionToolLoop } from "@/lib/tool-loop";
++ import {
++   executeGetRecipeProfile,
++   getRecipeProfileTool,
++ } from "@/lib/tools/get-recipe-profile";
+  import { executeGetWeather, getWeatherTool } from "@/lib/tools/get-weather";
+```
+
+Register the executor beside the existing weather tool:
+
+```diff
+  const functionTools = {
+    [getWeatherTool.name]: executeGetWeather,
++   [getRecipeProfileTool.name]: executeGetRecipeProfile,
+  };
+```
+
+Then add its declaration to the existing `tools` array. Keep the artifact,
+web search, image search, and weather tools already there:
+
+```diff
+  tools: [
+    artifactTool({ artifacts: ["slides", "report"] }) as unknown as Tool,
+    { type: "web_search" },
+    { type: "image_search" } as unknown as Tool,
+    getWeatherTool,
++   getRecipeProfileTool,
+  ],
+```
+
+The generated route already runs the tool loop. Adding the declaration and
+executor is enough.
+
+## 4. Add a recipe component
+
+Create `src/lib/recipe-library.tsx`:
+
+```tsx
+import {
+  createLibrary,
+  defineComponent,
+  useIsStreaming,
+  useTriggerAction,
+} from "@openuidev/react-lang";
+import { chatLibrary } from "@openuidev/thesys";
+import type { CSSProperties } from "react";
+import { z } from "zod/v4";
+
+const styles = {
+  panel: { borderRadius: 24, background: "#fff7ed", padding: 24, color: "#0f172a" },
+  heading: { fontSize: 24, fontWeight: 600 },
+  grid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+    gap: 16,
+    marginTop: 16,
+  },
+  card: {
+    borderRadius: 16,
+    background: "white",
+    padding: 16,
+    boxShadow: "0 1px 3px rgb(15 23 42 / 0.12)",
+  },
+  image: {
+    width: "100%",
+    aspectRatio: "16 / 9",
+    objectFit: "cover",
+    borderRadius: 12,
+    marginBottom: 12,
+  },
+  time: { color: "#c2410c", fontSize: 14 },
+  title: { fontWeight: 600 },
+  list: { listStyle: "none", margin: "12px 0", fontSize: 14 },
+  swap: { color: "#047857", fontSize: 14 },
+  actions: { display: "flex", gap: 12, marginTop: 16, fontSize: 14 },
+  source: { textDecoration: "underline" },
+  button: { color: "#c2410c", fontWeight: 500 },
+} satisfies Record<string, CSSProperties>;
+
+const recipeRemixProps = z.object({
+  heading: z.string(),
+  recipes: z.array(
+    z.object({
+      title: z.string(),
+      time: z.string(),
+      ingredients: z.array(z.string()),
+      swap: z.string(),
+      sourceUrl: z.string(),
+      imageUrl: z.string().optional(),
+    }),
+  ),
+});
+
+type RecipeRemixProps = z.infer<typeof recipeRemixProps>;
+
+function RecipeRemixRenderer({ props }: { props: RecipeRemixProps }) {
+  const triggerAction = useTriggerAction();
+  const isStreaming = useIsStreaming();
+
+  return (
+    <section style={styles.panel}>
+      <h2 style={styles.heading}>{props.heading}</h2>
+      <div style={styles.grid}>
+        {props.recipes.map((recipe) => (
+          <article key={recipe.title} style={styles.card}>
+            {recipe.imageUrl?.startsWith("https://") && (
+              // Image search returns dynamic hosts, so use a native image here.
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={recipe.imageUrl} alt={recipe.title} style={styles.image} />
+            )}
+            <p style={styles.time}>{recipe.time}</p>
+            <h3 style={styles.title}>{recipe.title}</h3>
+            <ul style={styles.list}>
+              {recipe.ingredients.map((ingredient) => (
+                <li key={ingredient}>• {ingredient}</li>
+              ))}
+            </ul>
+            <p style={styles.swap}>Swap: {recipe.swap}</p>
+            <div style={styles.actions}>
+              {recipe.sourceUrl.startsWith("https://") && (
+                <a href={recipe.sourceUrl} target="_blank" rel="noreferrer" style={styles.source}>
+                  Source
+                </a>
+              )}
+              <button
+                disabled={isStreaming}
+                style={{ ...styles.button, opacity: isStreaming ? 0.5 : 1 }}
+                onClick={() => triggerAction(`Make ${recipe.title} faster and simpler`)}
+              >
+                Remix this
+              </button>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+const RecipeRemix = defineComponent({
+  name: "RecipeRemix",
+  description: "Three sourced recipe suggestions with practical substitutions.",
+  props: recipeRemixProps,
+  component: RecipeRemixRenderer,
+});
+
+export const recipeLibrary = createLibrary({
+  root: chatLibrary.root ?? "Card",
+  componentGroups: chatLibrary.componentGroups,
+  components: [...Object.values(chatLibrary.components), RecipeRemix],
 });
 ```
+
+Generate the serializable component specification used by the API route:
+
+```bash
+npx @openuidev/cli@latest generate \
+  --spec src/lib/recipe-library.tsx \
+  --out src/lib/recipe-library-spec.json
+```
+
+Now update `src/app/api/chat/route.ts`. Import the generated specification
+beside the other local modules:
+
+```diff
+  import { requiredEnv } from "@/lib/env";
+  import { resolveRequestedModel } from "@/lib/models";
++ import recipeLibrarySpec from "@/lib/recipe-library-spec.json";
+  import { runFunctionToolLoop } from "@/lib/tool-loop";
+```
+
+Below the imports, add:
+
+```ts
+const recipeInstructions = `
+You are a practical recipe remix assistant.
+Use web search before recommending recipes and include real source URLs.
+Use image search to include a relevant recipe image when available.
+For each recipe, set imageUrl to an HTTPS URL returned by image search when available.
+Call get_recipe_profile when the user asks what they can cook from their pantry.
+Return exactly three concise recipes and clearly label substitutions.
+Render the final recipe recommendations using exactly one RecipeRemix component.
+Do not return recipe recommendations as a prose-only response.
+Never claim that a recipe is allergen-safe.
+`;
+```
+
+Then update the `instructions` field inside the existing `createParams` object:
+
+```diff
+  const createParams: ResponseCreateParamsNonStreaming = {
+    model,
+    conversation: threadId,
+    input,
+    store: true,
+    tools: [
+      // Keep the existing tools here.
+    ],
+-   instructions: generateSystemPrompt(),
++   instructions: generateSystemPrompt({
++     library: recipeLibrarySpec,
++     instructions: recipeInstructions,
++   }),
+  };
+```
+
+Finally, update the imports and `AgentInterface` in
+`src/components/cloud-chat.tsx`:
+
+```diff
++ import { recipeLibrary } from "@/lib/recipe-library";
+  import {
+-   chatLibrary,
+    presentationArtifactRenderer,
+    reportArtifactRenderer,
+    useOpenuiCloudStorage,
+  } from "@openuidev/thesys";
+
+  <AgentInterface
+    storage={storage}
+    llm={llm}
+-   componentLibrary={chatLibrary}
++   componentLibrary={recipeLibrary}
+    artifactRenderers={artifactRenderers}
+    artifactCategories={artifactCategories}
+    logoUrl={logoPath}
+```
+
+<Callout type="info">
+  `recipeLibrary` extends the built-in `chatLibrary`, so the existing inline components remain
+  available alongside `RecipeRemix`. Cloud's search tools and artifact renderers also remain
+  available. See [Extend a built-in library](/docs/openui-lang/overview#extend-a-built-in-library).
+</Callout>
+
+## 5. Try it
+
+The agent is already running. Return to the browser and click **Cook from my
+pantry**. It should call your pantry tool, search for recipes, and render three
+recipe cards. Click **Remix this** to start a follow-up turn.
+
+You now have a Cloud agent with managed search, your own server-side tool, and
+an interactive component.
+
+## Next steps
+
+- [Add more tools](/docs/agent/core-concepts/tools)
+- [Define more components](/docs/openui-lang/defining-components)
+- [Add component interactions](/docs/openui-lang/interactivity)
