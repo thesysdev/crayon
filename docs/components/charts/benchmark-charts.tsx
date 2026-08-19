@@ -33,7 +33,7 @@ export function CompletionByModel() {
             <tr>
               <th scope="col">Model</th>
               {FORMATS.map((f) => (
-                <th key={f.id} scope="col" className={`${slotClass(f.series)} ${f.id === "openui" ? s.houseCol : ""}`}>
+                <th key={f.id} scope="col" className={slotClass(f.series)}>
                   <span className={s.colHead}>
                     <Mark id={f.mark} />
                     {f.label}
@@ -57,7 +57,7 @@ export function CompletionByModel() {
                   {FORMAT_ORDER.map((id) => {
                     const isBest = completionByModel[m.id][id] === best;
                     return (
-                      <td key={id} className={`${slotClass(slotOf(id))} ${id === "openui" ? s.houseCol : ""}`}>
+                      <td key={id} className={slotClass(slotOf(id))}>
                         {isBest ? (
                           <span className={s.best}>{completionByModel[m.id][id].toFixed(1)}</span>
                         ) : (
@@ -75,7 +75,7 @@ export function CompletionByModel() {
                 const means = FORMAT_ORDER.map((f) => completionMean(f));
                 const best = Math.max(...means);
                 return (
-                  <td key={id} className={`${slotClass(slotOf(id))} ${id === "openui" ? s.houseCol : ""}`}>
+                  <td key={id} className={slotClass(slotOf(id))}>
                     {completionMean(id) === best ? (
                       <span className={s.best}>{completionMean(id).toFixed(1)}</span>
                     ) : (
