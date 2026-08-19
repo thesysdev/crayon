@@ -43,6 +43,7 @@ const LIGHT = {
   overlay: "rgba(24, 24, 27, 0.4)",
   shadow: "0 16px 48px rgba(24, 24, 27, 0.18)",
   shadowSubtle: "0 1px 2px rgba(24, 24, 27, 0.07)",
+  trayShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px",
   toggleBg: "#18181b",
   toggleFg: "#ffffff",
   // Rim on the trays: a hairline of the opposite tone, so the panel edge
@@ -116,6 +117,7 @@ const DARK = {
   overlay: "rgba(0, 0, 0, 0.6)",
   shadow: "0 16px 48px rgba(0, 0, 0, 0.5)",
   shadowSubtle: "0 1px 2px rgba(0, 0, 0, 0.4)",
+  trayShadow: "rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px",
   toggleBg: "#17171a",
   toggleFg: "#ffffff",
   trayRing: "rgba(255, 255, 255, 0.09)",

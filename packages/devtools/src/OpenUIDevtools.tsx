@@ -448,6 +448,7 @@ function uiStyles(t: ThemeTokens) {
       borderColor: t.trayRing,
       borderRadius: 16,
       background: t.bg,
+      boxShadow: t.trayShadow,
       color: t.fg,
       fontFamily: FONT,
       fontSize: 13,
