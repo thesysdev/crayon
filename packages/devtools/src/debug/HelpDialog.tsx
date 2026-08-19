@@ -114,94 +114,94 @@ const BADGE = 18;
 
 function helpStyles(t: ThemeTokens) {
   return {
-  // Matches the Inspect header's text buttons (Wrap / Copy).
-  trigger: {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: 4,
-    border: `1px solid ${t.controlBorder}`,
-    borderRadius: 8,
-    background: t.controlBg,
-    color: t.fg,
-    cursor: "pointer",
-    fontFamily: "inherit",
-    fontSize: 12,
-    fontWeight: 500,
-    padding: "4px 10px",
-  },
-  // What the tool is, before the how.
-  summary: {
-    margin: "0 0 16px",
-    maxWidth: "62ch",
-    fontSize: 12,
-    fontWeight: 400,
-    lineHeight: 1.55,
-    color: t.fgSecondary,
-  },
-  steps: {
-    listStyle: "none",
-    display: "flex",
-    flexDirection: "column",
-    gap: 20,
-    margin: 0,
-    padding: 0,
-  },
-  step: {
-    display: "flex",
-    alignItems: "flex-start",
-    gap: 10,
-  },
-  // Same chip proportions as LevelIcon, so the dialog matches the event rows.
-  badge: {
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    flexShrink: 0,
-    boxSizing: "border-box",
-    width: BADGE,
-    height: BADGE,
-    borderRadius: 6,
-    background: t.bgSubtle,
-    color: t.fgSecondary,
-    fontSize: 11,
-    fontWeight: 500,
-    lineHeight: 1,
-  },
-  stepBody: {
-    minWidth: 0,
-  },
-  // Medium title over regular body.
-  stepTitle: {
-    color: t.fg,
-    fontSize: 12,
-    fontWeight: 500,
-  },
-  stepText: {
-    margin: "3px 0 0",
-    maxWidth: "52ch",
-    fontSize: 12,
-    fontWeight: 400,
-    lineHeight: 1.55,
-    color: t.fgMuted,
-  },
-  // Second way out, for anyone who reads to the end rather than reaching for
-  // the cross.
-  footer: {
-    display: "flex",
-    justifyContent: "flex-end",
-    padding: "0 20px 16px",
-  },
-  dismiss: {
-    border: `1px solid ${t.border}`,
-    borderRadius: 8,
-    background: t.bg,
-    color: t.fgSecondary,
-    boxShadow: t.shadowSubtle,
-    cursor: "pointer",
-    fontFamily: "inherit",
-    fontSize: 12,
-    fontWeight: 500,
-    padding: "6px 14px",
-  },
-} satisfies Record<string, CSSProperties>;
+    // Matches the Inspect header's text buttons (Wrap / Copy).
+    trigger: {
+      display: "inline-flex",
+      alignItems: "center",
+      gap: 4,
+      border: `1px solid ${t.controlBorder}`,
+      borderRadius: 8,
+      background: t.controlBg,
+      color: t.fg,
+      cursor: "pointer",
+      fontFamily: "inherit",
+      fontSize: 12,
+      fontWeight: 500,
+      padding: "4px 10px",
+    },
+    // What the tool is, before the how.
+    summary: {
+      margin: "0 0 16px",
+      maxWidth: "62ch",
+      fontSize: 12,
+      fontWeight: 400,
+      lineHeight: 1.55,
+      color: t.fgSecondary,
+    },
+    steps: {
+      listStyle: "none",
+      display: "flex",
+      flexDirection: "column",
+      gap: 20,
+      margin: 0,
+      padding: 0,
+    },
+    step: {
+      display: "flex",
+      alignItems: "flex-start",
+      gap: 10,
+    },
+    // Same chip proportions as LevelIcon, so the dialog matches the event rows.
+    badge: {
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      flexShrink: 0,
+      boxSizing: "border-box",
+      width: BADGE,
+      height: BADGE,
+      borderRadius: 6,
+      background: t.bgSubtle,
+      color: t.fgSecondary,
+      fontSize: 11,
+      fontWeight: 500,
+      lineHeight: 1,
+    },
+    stepBody: {
+      minWidth: 0,
+    },
+    // Medium title over regular body.
+    stepTitle: {
+      color: t.fg,
+      fontSize: 12,
+      fontWeight: 500,
+    },
+    stepText: {
+      margin: "3px 0 0",
+      maxWidth: "52ch",
+      fontSize: 12,
+      fontWeight: 400,
+      lineHeight: 1.55,
+      color: t.fgMuted,
+    },
+    // Second way out, for anyone who reads to the end rather than reaching for
+    // the cross.
+    footer: {
+      display: "flex",
+      justifyContent: "flex-end",
+      padding: "0 20px 16px",
+    },
+    dismiss: {
+      border: `1px solid ${t.border}`,
+      borderRadius: 8,
+      background: t.bg,
+      color: t.fgSecondary,
+      boxShadow: t.shadowSubtle,
+      cursor: "pointer",
+      fontFamily: "inherit",
+      fontSize: 12,
+      fontWeight: 500,
+      padding: "6px 14px",
+    },
+  } satisfies Record<string, CSSProperties>;
 }

@@ -54,7 +54,7 @@ export function StreamToolbar({
       <div style={s.btnGroup} role="group" aria-label="Playback controls">
         {state.status === "playing" ? (
           <button
-            style={groupStyle(s,!!disabled, true, false)}
+            style={groupStyle(s, !!disabled, true, false)}
             onClick={pause}
             disabled={disabled}
             aria-label="Pause"
@@ -64,7 +64,7 @@ export function StreamToolbar({
           </button>
         ) : state.status === "paused" ? (
           <button
-            style={groupStyle(s,!!disabled, true, false)}
+            style={groupStyle(s, !!disabled, true, false)}
             onClick={resume}
             disabled={disabled}
             aria-label="Resume"
@@ -74,7 +74,7 @@ export function StreamToolbar({
           </button>
         ) : (
           <button
-            style={groupStyle(s,!!disabled, true, false)}
+            style={groupStyle(s, !!disabled, true, false)}
             onClick={() => start({ strategy, seed })}
             disabled={disabled}
             aria-label="Stream"
@@ -84,7 +84,7 @@ export function StreamToolbar({
           </button>
         )}
         <button
-          style={groupStyle(s,!!disabled || state.status !== "paused", false, false)}
+          style={groupStyle(s, !!disabled || state.status !== "paused", false, false)}
           onClick={step}
           disabled={disabled || state.status !== "paused"}
           aria-label="Step one chunk"
@@ -95,7 +95,7 @@ export function StreamToolbar({
         {/* Stays live even with an empty editor: otherwise clearing the input during
             a run leaves the panels showing a playback nothing can clear. */}
         <button
-          style={groupStyle(s,state.status === "idle", false, true)}
+          style={groupStyle(s, state.status === "idle", false, true)}
           onClick={reset}
           disabled={state.status === "idle"}
           aria-label="Reset playback"

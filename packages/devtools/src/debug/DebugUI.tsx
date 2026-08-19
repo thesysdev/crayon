@@ -2,7 +2,14 @@ import { Maximize2, Minimize2, X } from "lucide-react";
 import { Component, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { IconButton } from "../IconButton";
 import { type RegisteredLibrary } from "../libraryRegistry";
-import { FONT, rootStyle, useDevtoolsScheme, useTheme, type ColorScheme, type ThemeTokens } from "../theme";
+import {
+  FONT,
+  rootStyle,
+  useDevtoolsScheme,
+  useTheme,
+  type ColorScheme,
+  type ThemeTokens,
+} from "../theme";
 import { ThemeToggle } from "../ThemeToggle";
 import type { ChunkStrategy } from "./chunker";
 import { HelpDialog } from "./HelpDialog";
@@ -322,138 +329,138 @@ export function DebugUI({
 
 function shellStyles(t: ThemeTokens) {
   return {
-  shell: {
-    display: "flex",
-    flexDirection: "column",
-    height: "100%",
-    minHeight: 0,
-    background: t.bg,
-    color: t.fg,
-    fontFamily: FONT,
-    fontSize: 13,
-    position: "relative",
-  },
-  header: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: 8,
-    padding: "12px 16px",
-    fontWeight: 600,
-    fontSize: 14,
-  },
-  headerLeft: {
-    display: "flex",
-    alignItems: "center",
-    gap: 10,
-    minWidth: 0,
-  },
-  title: {
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
-  },
-  headerActions: {
-    display: "flex",
-    alignItems: "center",
-    gap: 6,
-    flexShrink: 0,
-  },
-  banner: {
-    padding: "8px 16px",
-    background: t.warningBg,
-    color: t.warningStrong,
-    fontSize: 12,
-    borderBottom: `1px solid ${t.warningBorder}`,
-  },
-  // Columns are set inline so the drag can move them.
-  body: {
-    flex: 1,
-    minHeight: 0,
-    display: "grid",
-  },
-  // A hairline that reads as a divider, inside a wider transparent strip so
-  // it is still easy to grab. The handle only shows once you are on it.
-  splitter: {
-    position: "relative",
-    cursor: "col-resize",
-    background: "transparent",
-    touchAction: "none",
-  },
-  splitterLine: {
-    position: "absolute",
-    top: 0,
-    bottom: 0,
-    left: 0,
-    width: 1,
-    background: t.borderSubtle,
-    transition: "width 150ms ease, background 150ms ease",
-    pointerEvents: "none",
-  },
-  splitterLineOn: {
-    width: 3,
-    background: t.borderStrong,
-  },
-  // Thin rounded chip with three stacked dots, centred on the divider.
-  splitterGrip: {
-    position: "absolute",
-    top: "50%",
-    left: 0,
-    transform: "translate(-50%, -50%)",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 3,
-    boxSizing: "border-box",
-    width: 11,
-    height: 30,
-    borderRadius: 999,
-    border: `1px solid ${t.controlBorder}`,
-    background: t.controlBg,
-    opacity: 0,
-    transition: "opacity 150ms ease",
-    pointerEvents: "none",
-  },
-  splitterGripOn: {
-    opacity: 1,
-  },
-  splitterDot: {
-    width: 2,
-    height: 2,
-    borderRadius: "50%",
-    background: t.fg,
-  },
-  editorWrap: {
-    position: "relative",
-    minWidth: 0,
-    minHeight: 0,
-    overflow: "hidden",
-  },
-  output: {
-    display: "flex",
-    flexDirection: "column",
-    minWidth: 0,
-    minHeight: 0,
-    background: t.bg,
-  },
-  tabBody: {
-    flex: 1,
-    minHeight: 0,
-    display: "flex",
-    flexDirection: "column",
-    overflow: "hidden",
-  },
-  tabPanel: {
-    flex: 1,
-    minHeight: 0,
-    overflow: "hidden",
-    flexDirection: "column",
-  },
-  missing: {
-    color: t.fgFaint,
-    padding: 16,
-    fontSize: 12,
-  },
-} satisfies Record<string, CSSProperties>;
+    shell: {
+      display: "flex",
+      flexDirection: "column",
+      height: "100%",
+      minHeight: 0,
+      background: t.bg,
+      color: t.fg,
+      fontFamily: FONT,
+      fontSize: 13,
+      position: "relative",
+    },
+    header: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      gap: 8,
+      padding: "12px 16px",
+      fontWeight: 600,
+      fontSize: 14,
+    },
+    headerLeft: {
+      display: "flex",
+      alignItems: "center",
+      gap: 10,
+      minWidth: 0,
+    },
+    title: {
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap",
+    },
+    headerActions: {
+      display: "flex",
+      alignItems: "center",
+      gap: 6,
+      flexShrink: 0,
+    },
+    banner: {
+      padding: "8px 16px",
+      background: t.warningBg,
+      color: t.warningStrong,
+      fontSize: 12,
+      borderBottom: `1px solid ${t.warningBorder}`,
+    },
+    // Columns are set inline so the drag can move them.
+    body: {
+      flex: 1,
+      minHeight: 0,
+      display: "grid",
+    },
+    // A hairline that reads as a divider, inside a wider transparent strip so
+    // it is still easy to grab. The handle only shows once you are on it.
+    splitter: {
+      position: "relative",
+      cursor: "col-resize",
+      background: "transparent",
+      touchAction: "none",
+    },
+    splitterLine: {
+      position: "absolute",
+      top: 0,
+      bottom: 0,
+      left: 0,
+      width: 1,
+      background: t.borderSubtle,
+      transition: "width 150ms ease, background 150ms ease",
+      pointerEvents: "none",
+    },
+    splitterLineOn: {
+      width: 3,
+      background: t.borderStrong,
+    },
+    // Thin rounded chip with three stacked dots, centred on the divider.
+    splitterGrip: {
+      position: "absolute",
+      top: "50%",
+      left: 0,
+      transform: "translate(-50%, -50%)",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 3,
+      boxSizing: "border-box",
+      width: 11,
+      height: 30,
+      borderRadius: 999,
+      border: `1px solid ${t.controlBorder}`,
+      background: t.controlBg,
+      opacity: 0,
+      transition: "opacity 150ms ease",
+      pointerEvents: "none",
+    },
+    splitterGripOn: {
+      opacity: 1,
+    },
+    splitterDot: {
+      width: 2,
+      height: 2,
+      borderRadius: "50%",
+      background: t.fg,
+    },
+    editorWrap: {
+      position: "relative",
+      minWidth: 0,
+      minHeight: 0,
+      overflow: "hidden",
+    },
+    output: {
+      display: "flex",
+      flexDirection: "column",
+      minWidth: 0,
+      minHeight: 0,
+      background: t.bg,
+    },
+    tabBody: {
+      flex: 1,
+      minHeight: 0,
+      display: "flex",
+      flexDirection: "column",
+      overflow: "hidden",
+    },
+    tabPanel: {
+      flex: 1,
+      minHeight: 0,
+      overflow: "hidden",
+      flexDirection: "column",
+    },
+    missing: {
+      color: t.fgFaint,
+      padding: 16,
+      fontSize: 12,
+    },
+  } satisfies Record<string, CSSProperties>;
 }
