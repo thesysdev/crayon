@@ -1,0 +1,217 @@
+import { Footer } from "@/app/(home)/sections/Footer/Footer";
+import { ArrowLeft, ArrowRight, ArrowUpRight, Check, Copy } from "lucide-react";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import {
+  getIntegrationCategory,
+  getRelatedIntegrations,
+  integrationBySlug,
+  integrations,
+} from "../data";
+import { IntegrationLogo } from "../integration-logo";
+import styles from "../page.module.css";
+
+export const dynamicParams = false;
+
+export function generateStaticParams(): { slug: string }[] {
+  return integrations.map((integration) => ({ slug: integration.slug }));
+}
+
+export async function generateMetadata(props: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await props.params;
+  const integration = integrationBySlug.get(slug);
+  if (!integration) notFound();
+
+  return {
+    title: `${integration.name} integration`,
+    description: integration.summary,
+    alternates: { canonical: `/integrations/${integration.slug}` },
+    openGraph: {
+      title: `${integration.name} × OpenUI`,
+      description: integration.summary,
+      url: `/integrations/${integration.slug}`,
+      type: "article",
+    },
+  };
+}
+
+export default async function IntegrationDetailPage(props: { params: Promise<{ slug: string }> }) {
+  const { slug } = await props.params;
+  const integration = integrationBySlug.get(slug);
+  if (!integration) notFound();
+
+  const category = getIntegrationCategory(integration.category);
+  const related = getRelatedIntegrations(integration);
+
+  return (
+    <main className={styles.detailPage} data-accent={category.accent}>
+      <div className={styles.detailHero}>
+        <div className={styles.detailHeroInner}>
+          <nav className={styles.breadcrumbs} aria-label="Breadcrumb">
+            <Link href="/integrations">Integrations</Link>
+            <span aria-hidden="true">/</span>
+            <Link href={`/integrations#${category.id}`}>{category.shortTitle}</Link>
+          </nav>
+
+          <div className={styles.detailLockup}>
+            <IntegrationLogo className={styles.detailMark} integration={integration} />
+            <div className={styles.detailTitleBlock}>
+              <div className={styles.detailTags}>
+                <span data-support={integration.support}>{integration.support}</span>
+                <span>{integration.type}</span>
+              </div>
+              <h1>{integration.name}</h1>
+              <p>{integration.summary}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.detailBand}>
+        <div className={styles.detailLayout}>
+          <article className={styles.detailArticle}>
+            <section>
+              <p className={styles.detailEyebrow}>Integration overview</p>
+              <h2>How it connects to OpenUI</h2>
+              <p className={styles.detailLead}>{integration.howItWorks}</p>
+            </section>
+
+            <section className={styles.flowSection}>
+              <h2>The integration path</h2>
+              <ol className={styles.flowList}>
+                <li>
+                  <span className={styles.flowNumber}>1</span>
+                  <div>
+                    <h3>Describe the interface</h3>
+                    <p>
+                      Generate a component prompt from the same OpenUI library that will render the
+                      response.
+                    </p>
+                  </div>
+                </li>
+                <li>
+                  <span className={styles.flowNumber}>2</span>
+                  <div>
+                    <h3>Stream structured output</h3>
+                    <p>
+                      Let {integration.name} own its part of the stack while OpenUI Lang travels as
+                      incremental text or mapped agent events.
+                    </p>
+                  </div>
+                </li>
+                <li>
+                  <span className={styles.flowNumber}>3</span>
+                  <div>
+                    <h3>Render and interact</h3>
+                    <p>
+                      Parse the stream with the matching OpenUI runtime, render real components, and
+                      return validated actions to the application.
+                    </p>
+                  </div>
+                </li>
+              </ol>
+            </section>
+
+            {integration.install ? (
+              <section className={styles.installSection}>
+                <div>
+                  <p className={styles.detailEyebrow}>Start here</p>
+                  <h2>Install or scaffold</h2>
+                </div>
+                <div className={styles.codeBlock}>
+                  <code>{integration.install}</code>
+                  <Copy size={16} aria-hidden="true" />
+                </div>
+              </section>
+            ) : null}
+
+            <section className={styles.checklistSection}>
+              <h2>What stays consistent</h2>
+              <div className={styles.checkGrid}>
+                {[
+                  "One schema for prompting and rendering",
+                  "Progressive rendering while output streams",
+                  "Typed components instead of arbitrary markup",
+                  "Validated actions back into the application",
+                ].map((item) => (
+                  <div className={styles.checkItem} key={item}>
+                    <Check size={15} aria-hidden="true" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </article>
+
+          <aside className={styles.resourceSidebar}>
+            <div className={styles.resourceCard}>
+              <p className={styles.resourceTitle}>Resources</p>
+              <div className={styles.resourceLinks}>
+                {integration.links.map((link) => {
+                  const external = link.href.startsWith("http");
+                  const content = (
+                    <>
+                      <span>
+                        <small>{link.kind}</small>
+                        {link.label}
+                      </span>
+                      {external ? (
+                        <ArrowUpRight size={15} aria-hidden="true" />
+                      ) : (
+                        <ArrowRight size={15} aria-hidden="true" />
+                      )}
+                    </>
+                  );
+
+                  return external ? (
+                    <a
+                      href={link.href}
+                      key={`${link.kind}-${link.href}`}
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      {content}
+                    </a>
+                  ) : (
+                    <Link href={link.href} key={`${link.kind}-${link.href}`}>
+                      {content}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className={styles.resourceCard}>
+              <p className={styles.resourceTitle}>Related {category.shortTitle.toLowerCase()}</p>
+              <div className={styles.relatedLinks}>
+                {related.map((item) => (
+                  <Link href={`/integrations/${item.slug}`} key={item.slug}>
+                    <IntegrationLogo className={styles.relatedMark} integration={item} />
+                    <span>{item.name}</span>
+                    <ArrowRight size={14} aria-hidden="true" />
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </aside>
+        </div>
+
+        <div className={styles.detailBackRow}>
+          <Link href="/integrations">
+            <ArrowLeft size={16} aria-hidden="true" />
+            All integrations
+          </Link>
+          <Link href={`/integrations#${category.id}`}>
+            Browse {category.shortTitle.toLowerCase()}
+            <ArrowRight size={16} aria-hidden="true" />
+          </Link>
+        </div>
+      </div>
+
+      <Footer />
+    </main>
+  );
+}

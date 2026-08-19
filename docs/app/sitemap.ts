@@ -1,6 +1,16 @@
 import { BASE_URL, blog, source } from "@/lib/source";
+import { integrations } from "./(home)/integrations/data";
 
-const STATIC_PATHS = ["/", "/cloud", "/demos", "/compare", "/lab", "/chat", "/blog"];
+const STATIC_PATHS = [
+  "/",
+  "/cloud",
+  "/demos",
+  "/compare",
+  "/lab",
+  "/integrations",
+  "/chat",
+  "/blog",
+];
 
 export default async function sitemap() {
   const staticRoutes = STATIC_PATHS.map((path) => ({
@@ -21,5 +31,11 @@ export default async function sitemap() {
     changeFrequency: "weekly" as const,
   }));
 
-  return [...staticRoutes, ...docsRoutes, ...blogRoutes];
+  const integrationRoutes = integrations.map((integration) => ({
+    url: `${BASE_URL}/integrations/${integration.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+  }));
+
+  return [...staticRoutes, ...integrationRoutes, ...docsRoutes, ...blogRoutes];
 }

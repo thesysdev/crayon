@@ -21,6 +21,7 @@ const tabs: { title: string; url: string; match?: string }[] = [
     match: "/docs/agent",
   },
   { title: "OpenUI Cloud", url: "/docs/openui-cloud" },
+  { title: "Integrations", url: "/integrations" },
   { title: "API Reference", url: "/docs/api-reference" },
 ];
 

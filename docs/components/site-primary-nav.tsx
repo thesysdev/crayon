@@ -34,6 +34,7 @@ export type NavItem = NavLeaf | NavDropdown;
 export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
   { title: "OpenUI Cloud", href: "/cloud", newTab: false },
   { title: "Docs", href: "/docs", newTab: false },
+  { title: "Integrations", href: "/integrations", newTab: false },
   {
     // Order and titles follow the menu design (Figma node 756:545).
     title: "Demos",
