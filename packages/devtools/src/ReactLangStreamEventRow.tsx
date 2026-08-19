@@ -125,12 +125,15 @@ export function ReactLangStreamEventRow({
             ) : null}
           </div>
           <div style={styles.rowHeaderRight}>
-            {elapsedMs != null ? (
-              <span style={styles.time} title="Stream duration">
-                {formatElapsed(elapsedMs)}
-              </span>
-            ) : null}
-            <span style={styles.time}>{new Date(event.timestamp).toLocaleTimeString()}</span>
+            <span style={styles.time}>
+              {elapsedMs != null ? (
+                <>
+                  <span title="Stream duration">{formatElapsed(elapsedMs)}</span>
+                  {" • "}
+                </>
+              ) : null}
+              {new Date(event.timestamp).toLocaleTimeString()}
+            </span>
             <span style={{ ...styles.chevron, ...(hovered ? styles.chevronHover : null) }}>
               {expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
             </span>
