@@ -24,8 +24,8 @@ export function HelpDialog() {
         size="small"
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
-        aria-label="How to use paste"
-        title="How to use paste"
+        aria-label="How to use Debug"
+        title="How to use Debug"
       >
         <HelpCircle size={16} />
       </Button>
@@ -35,11 +35,11 @@ export function HelpDialog() {
             className={styles.helpDialog}
             role="dialog"
             aria-modal="true"
-            aria-label="How to use paste"
+            aria-label="How to use Debug"
             onClick={(e) => e.stopPropagation()}
           >
             <div className={styles.helpHeader}>
-              <h2>How to use Paste</h2>
+              <h2>How to use Debug</h2>
               <Button
                 variant="tertiary"
                 size="small"
@@ -51,7 +51,7 @@ export function HelpDialog() {
 
             <div className={styles.helpBody}>
               <p>
-                Paste is a playground for <strong>OpenUI Lang</strong>. Paste code on the left; the
+                Debug is a playground for <strong>OpenUI Lang</strong>. Put code on the left; the
                 panels on the right show what the parser and renderer make of it.
               </p>
 

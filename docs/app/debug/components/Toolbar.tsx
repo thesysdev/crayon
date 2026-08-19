@@ -23,7 +23,7 @@ import type { LoadedLangCore } from "@paste/lib/versions/types";
 import { HelpDialog } from "./HelpDialog";
 import { PlaybackButtons, StreamSettingsFields } from "./StreamControls";
 // The docs site's own toggle (animated sun/moon, phosphor icons) — same one
-// as the homepage header, so /paste matches the rest of the site.
+// as the homepage header, so /debug matches the rest of the site.
 import { ThemeToggle } from "@/components/theme-toggle";
 import { VersionPicker } from "./VersionPicker";
 import styles from "@paste/paste.module.css";
@@ -139,7 +139,7 @@ export function Toolbar({
           <span>Back to docs</span>
         </Link>
         <div className={styles.topbarRight}>
-          <span className={styles.toolbarLogo}>OpenUI Paste</span>
+          <span className={styles.toolbarLogo}>OpenUI Debug</span>
           <ThemeToggle />
         </div>
       </header>

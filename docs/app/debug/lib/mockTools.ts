@@ -5,7 +5,7 @@
  */
 const CANNED_RESULT = {
   status: "ok",
-  note: "Mock response from the paste playground — tools are not connected.",
+  note: "Mock response from the Debug playground — tools are not connected.",
   items: [
     { id: 1, label: "Alpha", value: 42 },
     { id: 2, label: "Beta", value: 17 },
