@@ -2,26 +2,40 @@ import { ArrowUpRight } from "lucide-react";
 import { BevelButton } from "../components/Button/BevelButton";
 import styles from "./CloudCtaSection.module.css";
 
-export function CloudCtaSection() {
+interface CtaAction {
+  label: string;
+  href: string;
+  external?: boolean;
+}
+
+export function CloudCtaSection({
+  title = "Turn your OpenUI application into a production-grade experience.",
+  primary = { label: "Get API Key", href: "https://console.thesys.dev/keys", external: true },
+  secondary = { label: "Talk to our team", href: "https://zcal.co/t/thesys/demo", external: true },
+}: {
+  title?: string;
+  primary?: CtaAction;
+  secondary?: CtaAction;
+} = {}) {
   return (
     <section className={styles.section} aria-labelledby="cloud-cta-title">
       <div className={styles.inner}>
         <h2 id="cloud-cta-title" className={styles.title}>
-          Turn your OpenUI application into a production-grade experience.
+          {title}
         </h2>
         <div className={styles.actions}>
           <BevelButton
-            href="https://console.thesys.dev/keys"
-            external
+            href={primary.href}
+            external={primary.external}
             variant="primary"
-            label="Get API Key"
+            label={primary.label}
             badge={<ArrowUpRight size={16} strokeWidth={2.25} />}
           />
           <BevelButton
-            href="https://zcal.co/t/thesys/demo"
-            external
+            href={secondary.href}
+            external={secondary.external}
             variant="secondary"
-            label="Talk to our team"
+            label={secondary.label}
             badge={<ArrowUpRight size={16} strokeWidth={2.25} />}
           />
         </div>
