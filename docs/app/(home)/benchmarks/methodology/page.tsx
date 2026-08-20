@@ -50,7 +50,7 @@ const JUDGMENT_CALLS = [
     body: "A run is complete when it parses, renders a root, every reference resolves, every component is reachable from root, required props are present, and enum-typed props carry listed values. A coverage floor guards against trivially small outputs: a complete screen must define at least as many components as its brief has numbered requirements.",
   },
   {
-    title: "OpenUI Lang",
+    title: "OpenUI",
     body: "lang-core's parser surfaces an inline object literal in a typed slot as an unresolved ref literally named “undefined”; when that token appears nowhere in the model's text, it is scored as the parser artifact it is, not a model failure. generatePrompt hardcodes a Stack(...) positional-args example the catalog does not contain; the prompt swaps it to Card(...).",
   },
   {
@@ -91,7 +91,7 @@ export default function MethodologyPage() {
               format.
             </p>
             <p>
-              Each format is prompted and judged by its own SDK. OpenUI Lang through{" "}
+              Each format is prompted and judged by its own SDK. OpenUI through{" "}
               <code>generatePrompt</code> with its official options (component groups, two rules,
               two worked examples); json-render through <code>catalog.prompt()</code> with three
               custom rules; A2UI through its agent SDK&rsquo;s generator as-is. The
@@ -195,9 +195,8 @@ export default function MethodologyPage() {
             <h2>Refresh policy</h2>
             <p>{REFRESH_POLICY}</p>
             <p>
-              We built OpenUI Lang. Read all of this as a first-party benchmark with everything
-              disclosed — including that the shared catalog is derived from our own public component
-              library.
+              We built OpenUI. Read all of this as a first-party benchmark with everything disclosed
+              — including that the shared catalog is derived from our own public component library.
             </p>
           </section>
         </div>

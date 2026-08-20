@@ -27,8 +27,9 @@ const PH = H - PAD.top - PAD.bottom;
    chart where all three formats get a real colour */
 const hue: Record<FormatId, string> = {
   openui: "var(--pO)",
-  a2ui: "var(--pA)",
-  jsonRender: "var(--pJ)",
+  /* the competitors keep the same two greys they wear in the bar charts */
+  a2ui: "var(--c2)",
+  jsonRender: "var(--c3)",
 };
 
 const MODEL_NAME: Record<ModelId, string> = {
@@ -104,7 +105,7 @@ export function ReliabilityByModel({
           height={H}
           viewBox={`0 0 ${W} ${H}`}
           role="img"
-          aria-label="Cost versus reliability, one line per format; OpenUI Lang sits highest and furthest toward zero cost"
+          aria-label="Cost versus reliability, one line per format; OpenUI sits highest and furthest toward zero cost"
         >
           {Y_TICKS.map((t) => (
             <g key={t}>

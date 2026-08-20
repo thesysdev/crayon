@@ -23,8 +23,9 @@ const hue = { 1: "var(--c1)", 2: "var(--c2)", 3: "var(--c3)" } as const;
 /* the vivid skin colours all three lines, same palette as the frontier chart */
 const frontierHue: Record<FormatId, string> = {
   openui: "var(--pO)",
-  a2ui: "var(--pA)",
-  jsonRender: "var(--pJ)",
+  /* same greys as the bar charts, so the series read alike page-wide */
+  a2ui: "var(--c2)",
+  jsonRender: "var(--c3)",
 };
 
 export function CompletionByDensity({

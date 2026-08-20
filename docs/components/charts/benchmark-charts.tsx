@@ -53,7 +53,7 @@ export function CompletionByModel({
       title="Completion rate by model"
       sub={
         sub ??
-        "How often a screen came back with everything the brief asked for. Two models clearly favor OpenUI Lang, one clearly favors A2UI, and the other three sit inside the noise band."
+        "How often a screen came back with everything the brief asked for. Two models clearly favor OpenUI, one clearly favors A2UI, and the other three sit inside the noise band."
       }
       tight
       note={
@@ -297,6 +297,101 @@ export function TokenOverhead({
   );
 }
 
+/* 3b ─ tokens as a bar table: input | output | total, each column on its
+   own scale so the differences stay legible. Page-only. */
+
+const TOKEN_COLS = [
+  { key: "prompt", label: "System prompt", val: (id: FormatId) => tokens.systemPrompt[id] },
+  { key: "output", label: "Output", val: (id: FormatId) => tokens.outputPerScreen[id] },
+] as const;
+
+export function TokenMatrix({
+  formats = FORMAT_ORDER,
+  sub,
+  note,
+}: {
+  formats?: readonly FormatId[];
+  sub?: string;
+  note?: ReactNode | null;
+} = {}) {
+  const shown = FORMAT_ORDER.filter((f) => formats.includes(f));
+  const colMax = (col: (typeof TOKEN_COLS)[number]) => Math.max(...shown.map((id) => col.val(id)));
+  return (
+    <Chart
+      title="Token consumption"
+      sub={sub ?? "System prompt and output for one screen. Arrows compare with json-render."}
+      note={
+        note !== undefined ? (
+          note
+        ) : (
+          <>
+            System prompts from each SDK&rsquo;s own generator over the same 70-component catalog;
+            output is the mean over all {tokens.outputBasis.runs.toLocaleString()} scored runs.
+          </>
+        )
+      }
+    >
+      <div className={`${s.matrix} ${s.matrixPair}`}>
+        <div className={s.matrixHead} aria-hidden>
+          <span />
+          {TOKEN_COLS.map((c) => (
+            <span key={c.key}>{c.label}</span>
+          ))}
+        </div>
+        {shown.map((id, ri) => {
+          const f = FORMATS.find((x) => x.id === id)!;
+          return (
+            <div
+              key={id}
+              className={`${s.matrixRow} ${slotClass(f.series)} ${s.tip}`}
+              data-tip={`${formatLabel(id)}: ${tokens.systemPrompt[id].toLocaleString()} input + ${tokens.outputPerScreen[id].toLocaleString()} output = ${(tokens.systemPrompt[id] + tokens.outputPerScreen[id]).toLocaleString()} tokens per screen`}
+            >
+              <span className={s.tokenName}>
+                <Chip mark={f.mark} />
+                <span>{f.label}</span>
+              </span>
+              {TOKEN_COLS.map((c) => {
+                const base = c.val("jsonRender");
+                const pct = ((c.val(id) - base) / base) * 100;
+                return (
+                  <span key={c.key} className={`${s.matrixCell} ${s.matrixCellDiff}`}>
+                    <span className={s.matrixBarWrap}>
+                      <span
+                        className={`${s.matrixBar} ${
+                          id === "openui"
+                            ? s.colBarOurs
+                            : id === "a2ui"
+                              ? s.colBarStriped
+                              : s.colBarStripedLight
+                        }`}
+                        style={
+                          {
+                            width: `${(c.val(id) / colMax(c)) * 100}%`,
+                            "--d": `${ri * 90}ms`,
+                          } as React.CSSProperties
+                        }
+                      />
+                    </span>
+                    <span className={s.matrixVal}>{c.val(id).toLocaleString()}</span>
+                    <span className={s.matrixDiff}>
+                      {id !== "jsonRender" ? (
+                        <span className={pct <= 0 ? s.diffGood : s.diffBad}>
+                          {pct <= 0 ? "↓" : "↑"}
+                          {Math.abs(pct).toFixed(0)}%
+                        </span>
+                      ) : null}
+                    </span>
+                  </span>
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
+    </Chart>
+  );
+}
+
 /* 4 ─ cost: the table ------------------------------------------------- */
 
 export function CostPerPass({
@@ -332,8 +427,8 @@ export function CostPerPass({
             One pass = {BRIEFS} screens at list prices; the five models with public per-token
             pricing
             {unpricedSelected > 0 ? " (Sol has none published, so it can't appear here)" : ""}. Gap
-            = dearest / cheapest. Per 1,000 screens on Opus: $44 in OpenUI Lang against $127 in A2UI
-            and $102 in json-render.
+            = dearest / cheapest. Per 1,000 screens on Opus: $44 in OpenUI against $127 in A2UI and
+            $102 in json-render.
           </>
         )
       }
@@ -356,7 +451,7 @@ export function CostPerPass({
                   </span>
                 </th>
               ))}
-              {shownFormats.length > 1 ? (
+              {shownFormats.length > 1 && !vivid ? (
                 <th scope="col" className={s.deltaHead}>
                   Delta
                 </th>
@@ -378,23 +473,36 @@ export function CostPerPass({
                       <span className={s.vendor}>{model.vendor}</span>
                     </span>
                   </th>
-                  {shownFormats.map((id) => (
-                    <td
-                      key={id}
-                      className={`${slotClass(slotOf(id))} ${s.tip}`}
-                      data-tip={`${model.label} × ${formatLabel(id)}. ≈ $${costPer1kScreens(m, id).toFixed(0)} per 1,000 screens`}
-                    >
-                      {costPerPass[m]![id] === min ? (
-                        <span className={s.best}>
-                          {vivid ? <span className={s.bestMark} aria-hidden /> : null}
-                          {usd(costPerPass[m]![id])}
-                        </span>
-                      ) : (
-                        usd(costPerPass[m]![id])
-                      )}
-                    </td>
-                  ))}
-                  {shownFormats.length > 1 ? <td>{(max / min).toFixed(1)}x</td> : null}
+                  {shownFormats.map((id) => {
+                    const v = costPerPass[m]![id];
+                    const base = costPerPass[m]!.jsonRender;
+                    const pct = ((v - base) / base) * 100;
+                    const showDiff =
+                      vivid && id !== "jsonRender" && shownFormats.includes("jsonRender");
+                    return (
+                      <td
+                        key={id}
+                        className={`${slotClass(slotOf(id))} ${s.tip}`}
+                        data-tip={`${model.label} × ${formatLabel(id)}. ≈ $${costPer1kScreens(m, id).toFixed(0)} per 1,000 screens`}
+                      >
+                        {v === min ? (
+                          <span className={s.best}>
+                            {vivid ? <span className={s.bestMark} aria-hidden /> : null}
+                            {usd(v)}
+                          </span>
+                        ) : (
+                          usd(v)
+                        )}
+                        {showDiff ? (
+                          <span className={pct <= 0 ? s.diffGood : s.diffBad}>
+                            {pct <= 0 ? "\u2193" : "\u2191"}
+                            {Math.abs(pct).toFixed(0)}%
+                          </span>
+                        ) : null}
+                      </td>
+                    );
+                  })}
+                  {shownFormats.length > 1 && !vivid ? <td>{(max / min).toFixed(1)}x</td> : null}
                 </tr>
               );
             })}

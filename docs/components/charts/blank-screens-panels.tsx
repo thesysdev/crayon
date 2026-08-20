@@ -13,7 +13,7 @@ import {
 import { Chart, Chip, Mark, styles as s, slotClass } from "./primitives";
 
 /* Render rate per model, one panel per format. Framed as the share of runs
-   that put a screen in front of the user, so OpenUI Lang's near-perfect
+   that put a screen in front of the user, so OpenUI's near-perfect
    record reads as tall bars instead of near-empty ones. The scale starts at
    RATE_MIN, not zero, and the section copy says so. */
 const RATE_MIN = 88;
@@ -35,7 +35,7 @@ export function BlankScreensPanels({
   return (
     <Chart
       title="Render rate"
-      sub="Share of runs where the user saw a screen at all. The scale starts at 88%, not zero."
+      sub="Runs that rendered against runs that came back blank, out of 184 per model."
     >
       <div className={s.panelGrid}>
         {shownFormats.map((f) => {
@@ -61,17 +61,19 @@ export function BlankScreensPanels({
                       className={`${s.colCell} ${s.tip} ${ghost ? s.colCellGhost : ""}`}
                       data-tip={`${formatLabel(f)} · ${fullName(m)}: ${v.toFixed(1)}% rendered, ${blanks} blank of ${runsFor(m.id)}`}
                     >
+                      {/* the space above the bar is the blank share: filled and
+                          counted, rather than left as an empty gap */}
                       {ghost ? null : (
                         <span
-                          className={s.colVal}
+                          className={s.colTop}
                           style={
                             {
-                              bottom: `calc(${h}% + 6px)`,
+                              height: `${100 - h}%`,
                               "--d": `${i * 55}ms`,
                             } as React.CSSProperties
                           }
                         >
-                          {v === 100 ? "100" : v.toFixed(1)}
+                          <span className={s.colTopVal}>{blanks}</span>
                         </span>
                       )}
                       <span
@@ -88,7 +90,11 @@ export function BlankScreensPanels({
                             "--d": `${i * 55}ms`,
                           } as React.CSSProperties
                         }
-                      />
+                      >
+                        {ghost ? null : (
+                          <span className={s.colBarVal}>{runsFor(m.id) - blanks}</span>
+                        )}
+                      </span>
                     </div>
                   );
                 })}
@@ -108,6 +114,16 @@ export function BlankScreensPanels({
             </div>
           );
         })}
+      </div>
+      <div className={`${s.legend} ${s.legendCenter}`} aria-label="Segment key">
+        <span className={s.key}>
+          <span className={`${s.dot} ${s.dotComplete}`} aria-hidden />
+          Rendered
+        </span>
+        <span className={s.key}>
+          <span className={`${s.dot} ${s.dotTop}`} aria-hidden />
+          Came back blank
+        </span>
       </div>
       <div className={`${s.legend} ${s.legendCenter}`} aria-label="Model key">
         {MODELS.map((m) => (

@@ -1,63 +1,65 @@
 "use client";
 
-import {
-  DECODE_TOKENS_PER_SECOND,
-  SPEED_FORMATS,
-  speedScenarios,
-  speedTotal,
-} from "@/lib/benchmark-data";
+import { FORMATS, FORMAT_ORDER, type FormatId, tokens } from "@/lib/benchmark-data";
 import { Chart, Row, styles as s, slotClass } from "./primitives";
 
-/**
- * The OLDER token-efficiency benchmark (benchmarks/README.md) — a different
- * format set (YAML and Thesys C1 JSON instead of A2UI), one model, and derived
- * rather than measured latency. Kept visually separate from the 46-brief run.
- */
+/* Streaming speed, derived from the current benchmark: the mean output per
+   screen over all 1,104 scored runs, decoded at a typical 50–60 tokens per
+   second. The bars use the midpoint; the tooltip carries the range. */
+const LOW = 50;
+const HIGH = 60;
+const MID = (LOW + HIGH) / 2;
+
 export function SpeedTokens({ note }: { note?: React.ReactNode | null } = {}) {
-  const max = Math.max(...SPEED_FORMATS.map((f) => speedTotal(f.id)));
-  const openui = speedTotal("openuiLang");
+  const secs = (id: FormatId) => tokens.outputPerScreen[id] / MID;
+  const max = Math.max(...FORMAT_ORDER.map(secs));
   return (
     <Chart
-      title="Output tokens for the same screen"
-      sub="Four encodings of the identical screens. Fewer tokens means the screen arrives sooner."
+      title="Time to stream a screen"
+      sub="Mean output per screen, decoded at 50–60 tokens per second."
       note={
         note !== undefined ? (
           note
         ) : (
           <>
-            {speedScenarios.length}&#32;scenarios, one model (GPT-5.2) · seconds derived at a fixed{" "}
-            {DECODE_TOKENS_PER_SECOND} tokens/second, not wall-clock · an earlier benchmark with a
-            different format set (C1 JSON and YAML instead of A2UI).
+            Derived, not wall-clock: mean output over {tokens.outputBasis.runs.toLocaleString()}
+            &#32;scored runs, at a fixed {LOW}–{HIGH}
+            &#32;tokens/second decode rate.
           </>
         )
       }
     >
       <div className={s.rows}>
-        {SPEED_FORMATS.map((f, i) => {
-          const total = speedTotal(f.id);
+        {FORMAT_ORDER.map((id, i) => {
+          const f = FORMATS.find((x) => x.id === id)!;
+          const out = tokens.outputPerScreen[id];
           return (
             <Row
-              key={f.id}
+              key={id}
               label={f.label}
-              tip={`${f.label}: ${total.toLocaleString()} tokens${
-                f.id === "openuiLang" ? "" : ` · ${(total / openui).toFixed(1)}× OpenUI Lang`
-              }`}
+              tip={`${f.label}: ${out.toLocaleString()} output tokens ≈ ${Math.round(out / HIGH)}–${Math.round(out / LOW)}s per screen`}
             >
               <span className={s.barSlot}>
                 <span
-                  className={`${s.bar} ${slotClass(f.slot)} ${
-                    f.id === "openuiLang" ? s.colBarOurs : s.colBarStriped
+                  className={`${s.bar} ${slotClass(f.series)} ${
+                    id === "openui"
+                      ? s.colBarOurs
+                      : id === "a2ui"
+                        ? s.colBarStriped
+                        : s.colBarStripedLight
                   }`}
                   style={
-                    { width: `${(total / max) * 88}%`, "--d": `${i * 90}ms` } as React.CSSProperties
+                    {
+                      width: `${(secs(id) / max) * 88}%`,
+                      "--d": `${i * 90}ms`,
+                    } as React.CSSProperties
                   }
                 />
               </span>
               <span
-                className={`${s.value} ${f.id === "openuiLang" ? `${s.valueHi} ${slotClass(1)}` : ""}`}
+                className={`${s.value} ${id === "openui" ? `${s.valueHi} ${slotClass(1)}` : ""}`}
               >
-                {total.toLocaleString()}
-                {` · ~${(total / DECODE_TOKENS_PER_SECOND).toFixed(0)}s`}
+                ~{Math.round(secs(id))}s
               </span>
             </Row>
           );

@@ -1,14 +1,11 @@
 "use client";
 
-import {
-  CompletionByModel,
-  CostPerPass,
-  TokenOverhead,
-} from "@/components/charts/benchmark-charts";
+import { CompletionByModel, CostPerPass, TokenMatrix } from "@/components/charts/benchmark-charts";
 import { BlankScreensPanels } from "@/components/charts/blank-screens-panels";
 import { CompletionByDensity } from "@/components/charts/completion-by-density";
 import { VizSkin } from "@/components/charts/primitives";
 import { ReliabilityByModel } from "@/components/charts/reliability-by-model";
+import { RenderSplit } from "@/components/charts/render-split";
 import { RepairFunnelFlow } from "@/components/charts/repair-funnel-flow";
 import { SpeedTokens } from "@/components/charts/speed-tokens";
 import {
@@ -22,6 +19,7 @@ import {
   completionByDensity,
   completionOver,
   costPerPass,
+  production,
   repairedShare,
 } from "@/lib/benchmark-data";
 import { ChartLineUp, CurrencyDollarSimple, ShieldCheck, Wrench } from "@phosphor-icons/react";
@@ -56,12 +54,12 @@ const HEADLINE_FEATURES: GridFeature[] = [
   {
     Icon: ShieldCheck,
     title: `${BLANK_RATE.toFixed(1)}% render rate`,
-    description: `Only ${blankScreens.openui} of ${RUNS_PER_FORMAT.toLocaleString()} screens came back blank.`,
+    description: `Only ${blankScreens.openui} of ${RUNS_PER_FORMAT.toLocaleString()} screens rendered blank.`,
   },
   {
     Icon: ChartLineUp,
     title: `${completionOver("openui").toFixed(1)}% correct`,
-    description: "Everything the brief asked for, tied for first across six models.",
+    description: "Matched the brief across layout, components, and content.",
   },
   {
     Icon: CurrencyDollarSimple,
@@ -185,19 +183,19 @@ export function BenchmarksContent() {
         <div className={s.column}>
           <Section
             id="blank-screens"
-            title="Render rate"
-            question="How often a screen rendered"
+            title="Blank screens vs. renders"
+            question="Did the generation actually render?"
             description={
               <>
                 1,104 runs per format across 6 models. <br />
-                The scale starts at 88%.
+                Counted as each SDK&rsquo;s own renderer produced them.
               </>
             }
             insight={
               <>
-                OpenUI Lang: {blankScreens.openui} blank screens in{" "}
-                {RUNS_PER_FORMAT.toLocaleString()} runs. A2UI: at least {blankScreens.a2ui}.
-                json-render: {blankScreens.jsonRender}.
+                OpenUI had {blankScreens.openui} blank screen in {RUNS_PER_FORMAT.toLocaleString()}{" "}
+                runs, compared with {blankScreens.a2ui} for A2UI and {blankScreens.jsonRender} for
+                json-render.
               </>
             }
             hideChartHead
@@ -206,18 +204,41 @@ export function BenchmarksContent() {
           </Section>
 
           <Section
-            id="completion"
-            title="Completion rate by model"
-            question="Everything asked for, rendered"
+            id="render-split"
+            title="Accuracy vs. render success"
+            question="Did the screen match the brief, and did it render at all?"
             description={
               <>
-                Judged by each format&rsquo;s own SDK, <br />4 runs per brief.
+                1,104 runs per format. Accuracy requires the <br />
+                full brief; render success requires a non-blank render.
               </>
             }
             insight={
               <>
-                A statistical tie: {completionOver("openui").toFixed(1)}% vs{" "}
-                {completionOver("a2ui").toFixed(1)}%. The winner changes by model.
+                OpenUI leads on both, while A2UI and json-render trade off between accuracy and
+                render success.
+              </>
+            }
+            hideChartHead
+          >
+            <RenderSplit models={ALL_MODELS} formats={FORMAT_ORDER} />
+          </Section>
+
+          <Section
+            id="completion"
+            title="Screens rendered correctly"
+            question="Generated UI matched the brief"
+            description={
+              <>
+                Judged by each format&rsquo;s own SDK, <br />
+                with 4 runs per brief.
+              </>
+            }
+            insight={
+              <>
+                OpenUI leads overall: {completionOver("openui").toFixed(1)}% vs{" "}
+                {completionOver("a2ui").toFixed(1)}% for A2UI. The lead changes by model, with two
+                ties.
               </>
             }
             hideChartHead
@@ -237,36 +258,36 @@ export function BenchmarksContent() {
             }
             insight={
               <>
-                OpenUI Lang is {CHEAPER_LOW.toFixed(1)}–{CHEAPER_HIGH.toFixed(1)}× cheaper on every
-                priced model.
+                OpenUI uses fewer tokens and costs {CHEAPER_LOW.toFixed(1)}–
+                {CHEAPER_HIGH.toFixed(1)}× less across every priced model.
               </>
             }
             spacious
           >
-            <TokenOverhead
+            <TokenMatrix
               formats={FORMAT_ORDER}
-              sub="System prompt plus output for one screen."
+              sub="System prompt + output for one screen"
               note={null}
             />
             <CostPerPass
               models={ALL_MODELS}
               formats={FORMAT_ORDER}
-              sub={`The same ${BRIEFS} screens at list prices.`}
+              sub={`The same ${BRIEFS} screens at list prices`}
               note={null}
             />
           </Section>
 
           <Section
             id="speed"
-            title="Output tokens"
-            question="The same screens written four ways"
+            title="Streaming speed"
+            question="How long a screen takes to render"
             description={
               <>
-                From an earlier run <br />
-                with a different format set.
+                Mean output per screen, <br />
+                decoded at 50&ndash;60 tokens per second.
               </>
             }
-            insight="About half the tokens, so screens stream about twice as fast."
+            insight="A screen streams in about half the time, because there is about half as much to write."
             hideChartHead
           >
             <SpeedTokens note={null} />
@@ -274,18 +295,17 @@ export function BenchmarksContent() {
 
           <Section
             id="density"
-            title="Completion by screen complexity"
-            question="From simple to complex screens"
+            title="Accuracy by screen complexity"
+            question="Generation accuracy as requirements increase"
             description={
               <>
-                46 briefs in 5 bands, <br />
+                46 briefs across 5 complexity bands, <br />
                 about 9 per band.
               </>
             }
             insight={
               <>
-                On the hardest briefs, OpenUI Lang completes {HARDEST_SCREENS.openui.toFixed(0)}%
-                and A2UI {HARDEST_SCREENS.a2ui.toFixed(0)}%; json-render falls to{" "}
+                As screens get harder, OpenUI and A2UI stay above 90%; json-render falls to{" "}
                 {HARDEST_SCREENS.jsonRender.toFixed(0)}%.
               </>
             }
@@ -309,8 +329,9 @@ export function BenchmarksContent() {
               }
               insight={
                 <>
-                  OpenUI Cloud repaired {repairedShare().toFixed(0)}% of invalid generations before
-                  a user saw them.
+                  Only {production.userVisibleShare}% of generations reach a user broken. Of the
+                  ones that fail validation, {repairedShare().toFixed(0)}% are repaired
+                  automatically.
                 </>
               }
               hideChartHead
@@ -327,7 +348,7 @@ export function BenchmarksContent() {
             href: "https://console.thesys.dev/keys",
             external: true,
           }}
-          secondary={{ label: "Learn more", href: "/cloud" }}
+          secondary={{ label: "Learn more", href: "/docs/openui-cloud" }}
         />
       </VizSkin>
     </main>

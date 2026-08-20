@@ -12,7 +12,7 @@
 export type FormatId = "openui" | "a2ui" | "jsonRender";
 
 export const FORMATS = [
-  { id: "openui", label: "OpenUI Lang", vendor: "Thesys", series: 1, mark: "openui" },
+  { id: "openui", label: "OpenUI", vendor: "Thesys", series: 1, mark: "openui" },
   { id: "a2ui", label: "A2UI", vendor: "Google", series: 2, mark: "google" },
   { id: "jsonRender", label: "json-render", vendor: "Vercel", series: 3, mark: "vercel" },
 ] as const satisfies ReadonlyArray<{
@@ -476,20 +476,37 @@ export const production = {
   userVisibleShare: 0.9,
 };
 
-/** The repair funnel, in shares of first-pass validation failures. */
+/**
+ * The repair funnel exactly as the blog post describes it, read as shares of
+ * ALL streaming generations rather than of the failures alone — the earlier
+ * failure-based framing read as though 12% of screens showed an error.
+ *
+ * Three layers, in the order traffic meets them: the parser absorbs cosmetic
+ * breakage before validation (no model call), validation catches the genuine
+ * structural errors, and a small sanitizer model repairs most of those.
+ */
 export const repairFunnel = {
   stages: [
     {
-      id: "failed",
-      label: "Failed validation",
+      id: "all",
+      label: "All generations",
       share: 100,
-      note: `~${production.triggerRate}% of streaming generations`,
+      fix: "Parser fixes syntax issues first",
+      llm: false,
+    },
+    {
+      id: "failed",
+      label: "Fail validation",
+      share: production.triggerRate,
+      fix: "Structural issues like dangling refs and bad enums",
+      llm: false,
     },
     {
       id: "broken",
-      label: "Still broken after repair",
-      share: 100 - production.repairedShare,
-      note: `${production.repairedShare}% repaired automatically`,
+      label: "Reach a user broken",
+      share: production.userVisibleShare,
+      fix: `${production.repairedShare}% are repaired by a model call`,
+      llm: true,
     },
   ],
 };
@@ -510,8 +527,7 @@ export const CONFOUNDS = {
     "Prompt content moves these numbers about as much as format choice does: one rule telling the model to attach every component it defines was worth 13 points to OpenUI on Kimi in earlier runs.",
   scoring:
     "Scoring is each SDK's own shipped code plus one shared completeness layer with a coverage floor; the layer credits json-render's native children slot wherever a component's single ref prop allows it, and consumes A2UI validation errors its itemized checks would miss.",
-  firstParty:
-    "We built OpenUI Lang. Read this as a first-party benchmark with everything disclosed.",
+  firstParty: "We built OpenUI. Read this as a first-party benchmark with everything disclosed.",
 };
 
 /* ------------------------------------------------------------------ */
@@ -523,7 +539,7 @@ export const CONFOUNDS = {
  * numbers into the 46-brief run above: different scenarios, one model, and a
  * different set of competitors — YAML and Thesys C1 JSON instead of A2UI.
  *
- * Method, stated plainly because it is not a timing benchmark: one OpenUI Lang
+ * Method, stated plainly because it is not a timing benchmark: one OpenUI
  * generation per scenario from GPT-5.2 at temperature 0, parsed to an AST, then
  * projected losslessly into the other three encodings of the SAME screen.
  * Tokens counted with tiktoken (gpt-5 encoder). "Decode time" is arithmetic on
@@ -533,7 +549,7 @@ export const CONFOUNDS = {
 export const DECODE_TOKENS_PER_SECOND = 60;
 
 export const SPEED_FORMATS = [
-  { id: "openuiLang", label: "OpenUI Lang", slot: 1 },
+  { id: "openuiLang", label: "OpenUI", slot: 1 },
   { id: "c1Json", label: "Thesys C1 JSON", slot: 3 },
   { id: "jsonRenderPatch", label: "json-render", slot: 3 },
   { id: "yamlSpec", label: "YAML", slot: 3 },
@@ -586,7 +602,7 @@ export const speedTotal = (id: SpeedFormatId) => speedScenarios.reduce((n, r) =>
 /** Seconds to decode all seven screens at the fixed rate. */
 export const speedSeconds = (id: SpeedFormatId) => speedTotal(id) / DECODE_TOKENS_PER_SECOND;
 
-/** How much smaller OpenUI Lang is than `id`, as a percentage. */
+/** How much smaller OpenUI is than `id`, as a percentage. */
 export const speedSavingVs = (id: SpeedFormatId) =>
   (1 - speedTotal("openuiLang") / speedTotal(id)) * 100;
 

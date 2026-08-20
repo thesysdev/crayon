@@ -5,7 +5,7 @@
    Marks  square corners everywhere except the 4px logo chip */
 
 .viz {
-  --c1: #7c3aed; /* OpenUI Lang */
+  --c1: #7c3aed; /* OpenUI */
   --c2: #252525; /* A2UI */
   --c3: #a3a3a3; /* json-render */
 
@@ -1342,6 +1342,7 @@
 
 .funnelPill {
   position: absolute;
+  z-index: 1;
   transform: translate(-50%, -50%);
   padding: 5px 14px;
   border: 1px solid color-mix(in srgb, var(--c1) 40%, transparent);
@@ -1393,6 +1394,7 @@
   display: flex;
   align-items: baseline;
   gap: 8px;
+  width: 100%;
   min-width: 0;
 }
 
@@ -1478,4 +1480,380 @@
   width: 22px;
   height: 22px;
   opacity: 1;
+}
+
+/* render split: complete | partial | blank -------------------------------- */
+
+.splitComplete,
+.splitPartial,
+.splitBlank {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* white on the purple and black fills; ink on json-render's lighter grey */
+.splitComplete .segNum {
+  color: #fff;
+  text-shadow: none;
+}
+
+.s3 .splitComplete .segNum {
+  color: var(--ink);
+}
+
+.splitPartial {
+  background: color-mix(in srgb, var(--ink) 26%, var(--surface));
+}
+
+.splitPartial .segNum {
+  color: var(--surface);
+}
+
+.splitBlank {
+  background: repeating-linear-gradient(
+    135deg,
+    #9a9a9a 0,
+    #9a9a9a 4px,
+    color-mix(in srgb, var(--ink) 12%, var(--surface)) 4px,
+    color-mix(in srgb, var(--ink) 12%, var(--surface)) 8px
+  );
+  box-shadow: inset 1px 0 0 var(--surface);
+}
+
+.dotPartial {
+  background: color-mix(in srgb, var(--ink) 26%, var(--surface));
+}
+
+.dotBlank {
+  background: #9a9a9a;
+}
+
+/* token matrix: input | output | total, each column on its own scale ------ */
+
+.matrix {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.matrixHead,
+.matrixRow {
+  display: grid;
+  grid-template-columns: 150px repeat(var(--matrix-cols, 3), minmax(0, 1fr));
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.matrixHead > span {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.matrixRow {
+  min-height: 44px;
+}
+
+/* bar in a flexible track, number in its own right-aligned column, so every
+   value in a column lines up instead of trailing its bar */
+.matrixCell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.matrixBarWrap {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.matrixBar {
+  height: 32px;
+  min-width: 3px;
+  flex: none;
+}
+
+.matrixVal {
+  justify-self: end;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 4.5em;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  text-align: right;
+}
+
+/* per-cell difference against the json-render baseline -------------------- */
+
+.diffGood,
+.diffBad {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.diffGood {
+  color: #15803d;
+}
+
+.diffBad {
+  color: #b91c1c;
+}
+
+[data-theme="dark"] .diffGood {
+  color: #4ade80;
+}
+
+[data-theme="dark"] .diffBad {
+  color: #f87171;
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(html:not([data-theme="light"]):not(.light)) .diffGood {
+    color: #4ade80;
+  }
+
+  :global(html:not([data-theme="light"]):not(.light)) .diffBad {
+    color: #f87171;
+  }
+}
+
+@media (max-width: 640px) {
+  .matrixHead,
+  .matrixRow {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .matrixHead {
+    display: none;
+  }
+}
+
+/* funnel stage badges: does this layer cost a model call? ---------------- */
+
+/* rides the number row, pushed to the right edge of the stage column */
+.funnelBadge,
+.funnelBadgeLlm {
+  align-self: center;
+  margin-left: auto;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.funnelBadge {
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  color: var(--ink-muted);
+}
+
+.funnelBadgeLlm {
+  background: color-mix(in srgb, var(--c1) 16%, transparent);
+  color: var(--c1);
+}
+
+/* the column's upper segment: what did NOT render, filled and counted so the
+   cell reads as a whole rather than a bar floating in an empty box */
+.colTop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+  box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--ink) 10%, transparent);
+}
+
+.colTopVal {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.colBar {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.colBarVal {
+  margin-top: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.panel.s2 .colBarVal,
+.panel.s3 .colBarVal {
+  color: var(--surface);
+}
+
+/* split by model: a small stack of three format bars under each model ----- */
+
+.splitGroups {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px 40px;
+}
+
+.splitGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.splitGroupHead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 2px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.splitRow {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.splitRowName {
+  font-size: 0.8125rem;
+  color: var(--ink-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.splitRow .tokenBarTrack {
+  height: 26px;
+}
+
+@media (max-width: 900px) {
+  .splitGroups {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* the Complete swatch stands for all three fills, so it shows the texture
+   rather than any one format's colour */
+.dotComplete {
+  background: repeating-linear-gradient(
+    135deg,
+    var(--ink) 0,
+    var(--ink) 3px,
+    color-mix(in srgb, var(--ink) 55%, var(--surface)) 3px,
+    color-mix(in srgb, var(--ink) 55%, var(--surface)) 6px
+  );
+}
+
+/* the upper-segment swatch, matching .colTop */
+.dotTop {
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 18%, transparent);
+}
+
+/* the split triptych: complete / partial / blank stacked in each column ---- */
+
+.splitColComplete,
+.colCell > .splitColPartial,
+.colCell > .splitColBlank {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 0;
+}
+
+.splitColComplete {
+  position: relative;
+}
+
+.splitColPartial {
+  background: color-mix(in srgb, var(--ink) 22%, var(--surface));
+}
+
+.splitColBlank {
+  background: repeating-linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--ink) 45%, var(--surface)) 0,
+    color-mix(in srgb, var(--ink) 45%, var(--surface)) 4px,
+    color-mix(in srgb, var(--ink) 22%, var(--surface)) 4px,
+    color-mix(in srgb, var(--ink) 22%, var(--surface)) 8px
+  );
+}
+
+.splitColNum {
+  margin-top: 2px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--surface);
+  font-variant-numeric: tabular-nums;
+}
+
+/* cells that carry a comparison arrow give the number and the arrow their own
+   fixed tracks, so a row without an arrow still lines its % up with the rest */
+/* Each cell is its own grid, so `max-content` would size per row and let a row
+   without an arrow drift out of line. Both trailing tracks are fixed instead:
+   the values align across rows and still sit close to their bars. */
+.matrixCellDiff {
+  grid-template-columns: minmax(0, 1fr) 3.6em 3.4em;
+  gap: 8px;
+}
+
+.matrixCellDiff .matrixVal {
+  min-width: 0;
+}
+
+.matrixDiff {
+  justify-self: start;
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.matrixDiff > span {
+  margin-left: 0;
+}
+
+/* two-column failure comparison: wider metric columns, since each carries a
+   full sentence as its heading */
+.matrixPair {
+  --matrix-cols: 2;
+}
+
+.matrixSub {
+  margin-left: 8px;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--ink-muted);
 }

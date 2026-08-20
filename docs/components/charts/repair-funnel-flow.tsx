@@ -24,26 +24,25 @@ export function RepairFunnelFlow() {
     return () => ro.disconnect();
   }, []);
 
-  /* The upstream record is a set of rates, so the funnel is drawn in shares of
-     first-pass validation failures rather than invented per-screen counts. */
+  /* Shares of every streaming generation, not of the failures alone: the
+     honest read is that under 1% of screens reach a user broken. */
   const stages = repairFunnel.stages.map((st) => ({
     value: st.share,
     label: st.label,
-    sub: st.note,
+    sub: st.fix,
+    llm: st.llm,
     display: `${st.share}%`,
-    tip:
-      st.id === "failed"
-        ? `About ${production.triggerRate}% of streaming generations trip validation on the first pass`
-        : `The sanitizer recovers ${production.repairedShare}% of them; under 1% of all streaming screens reach a user broken`,
+    tip: `${st.label}: ${st.share}% of streaming generations. ${st.fix}`,
   }));
 
   const colW = W / stages.length;
   const baseY = H - 8;
-  const h = (v: number) => Math.max((v / 100) * (H - 40), 6);
+  const h = (v: number) => Math.max((v / 100) * (H - 40), 2);
   const y = (v: number) => baseY - h(v);
   const fills = [
     "color-mix(in srgb, var(--c1) 88%, var(--surface))",
-    "color-mix(in srgb, var(--c1) 30%, var(--surface))",
+    "color-mix(in srgb, var(--c1) 52%, var(--surface))",
+    "color-mix(in srgb, var(--c1) 26%, var(--surface))",
   ];
 
   return (
@@ -89,9 +88,12 @@ export function RepairFunnelFlow() {
           <line x1={0} x2={W} y1={baseY} y2={baseY} stroke="var(--rule)" strokeWidth="1" />
         </svg>
 
-        {/* percent pills, floated over each stage */}
+        {/* percent pills. The last two bands are only a few pixels tall, so a
+            pill centred on the band would sit half outside it and unreadable —
+            they ride just above the band instead, on the clear card. */}
         {stages.map((st, i) => {
-          const cy = Math.min(baseY - h(st.value) / 2, baseY - 24);
+          const band = h(st.value);
+          const cy = band > 48 ? baseY - band / 2 : Math.max(14, baseY - band - 18);
           return (
             <span
               key={st.label}
@@ -116,6 +118,9 @@ export function RepairFunnelFlow() {
             <span className={s.funnelFootHead}>
               <strong>{st.display}</strong>
               <span className={s.funnelFootLabel}>{st.label}</span>
+              <span className={st.llm ? s.funnelBadgeLlm : s.funnelBadge}>
+                {st.llm ? "One model call" : "No model call"}
+              </span>
             </span>
             <span className={s.funnelFootSub}>{st.sub}</span>
           </div>
