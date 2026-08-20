@@ -1,6 +1,6 @@
 # @openuidev/devtools
 
-Development-only UI widget for OpenUI apps. Renders a floating button that opens **OpenUI Inspect**, listing the events captured by [`@openuidev/observability`](../observability) — a severity icon, a one-line summary, and an expandable stack trace with copy on the same card. When errors come in, the button itself turns red and shows the count.
+Development-only UI widget for OpenUI apps. Renders a floating button that opens **OpenUI Inspect**, listing the events captured by [`@openuidev/observability`](../observability).
 
 ## Usage
 
@@ -21,13 +21,9 @@ The widget renders nothing in production builds (`NODE_ENV === "production"`) un
 
 `@openuidev/react-lang` ships with this package and auto-mounts the widget in development — no manual `<OpenUIDevtools />` needed. Mounting it manually still works (e.g. to customize props): only one instance ever renders, and a manually mounted instance takes precedence over the auto-mounted one.
 
-**OpenUI Inspect** (the event drawer) and **OpenUI Debug** are independent tools on independent trays. Debug docks beside Inspect rather than growing out of it, and each closes on its own: dismissing Debug leaves the event list where it was, and vice versa.
-
-In development, `createLibrary()` registers the live library with the widget. A stream event's **Debug** button opens **OpenUI Debug** in its own tray — an editor against that library (host CSS included), with Render / Validation / Tree / JSON / Stream panels and simulated stream playback. Eject moves the view into a separate window. The first visit opens a short step-by-step guide (also on **Help**); dismissing it is remembered.
+In development, `createLibrary()` registers the live library with the widget. A stream event's **Debug** button opens **OpenUI Debug** in its own tray — an editor against that library (host CSS included), with Render / Validation / Tree / JSON / Stream panels and simulated stream playback.
 
 Debug renders through the host's own `Renderer`. Its previews stay off the event bus so a Stream replay does not append cards to Inspect.
-
-Display filters ("auto-open on error", "errors only") and the theme live behind the gear in the drawer header. The theme is Light or Dark, chosen manually and remembered across reloads: nothing is auto-detected from the host page or the OS, and it styles the devtools chrome only — never your app. The floating Shiro toggle stays dark so the branded mark stays readable.
 
 ## Props
 
