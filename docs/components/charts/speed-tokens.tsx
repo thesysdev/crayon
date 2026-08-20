@@ -55,12 +55,16 @@ export function SpeedTokens({ note }: { note?: React.ReactNode | null } = {}) {
                 />
               </span>
               <span
-                className={`${s.value} ${id === "openui" ? `${s.valueHi} ${slotClass(1)}` : ""}`}
+                className={`${s.value} ${s.speedValue} ${
+                  id === "openui" ? `${s.valueHi} ${slotClass(1)}` : ""
+                }`}
               >
-                ~{Math.round(secs(id))}s
-                {id !== "openui" ? (
-                  <span className={s.diffBad}>↑{(secs(id) / baseline).toFixed(1)}×</span>
-                ) : null}
+                <span className={s.speedDiff}>
+                  {id !== "openui" ? (
+                    <span className={s.diffBad}>↑{(secs(id) / baseline).toFixed(1)}×</span>
+                  ) : null}
+                </span>
+                <span>~{Math.round(secs(id))}s</span>
               </span>
             </Row>
           );
