@@ -46,7 +46,7 @@ if (process.env.NODE_ENV === "development" && typeof document !== "undefined") {
             __autoMounted: true,
           });
         };
-
+        // Module evaluation can happen before <body> exists (script in <head>).
         if (document.body) mount();
         else document.addEventListener("DOMContentLoaded", mount, { once: true });
       })
