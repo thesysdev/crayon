@@ -30,8 +30,6 @@ import {
 } from "./theme";
 import { ErrorBoundary, IconButton, ShiroLogo, ThemeSegmented } from "./ui";
 
-const RELIABILITY_DOCS_URL = "https://www.openui.com/docs/openui-lang/reliability";
-
 /** Uniform row height for the settings menu, set by its tallest control. */
 const MENU_ROW_HEIGHT = 28;
 
