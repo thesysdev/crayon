@@ -25,8 +25,7 @@ export const FORMATS = [
 
 export const FORMAT_ORDER: FormatId[] = ["openui", "a2ui", "jsonRender"];
 
-export const formatLabel = (id: FormatId) =>
-  FORMATS.find((f) => f.id === id)!.label;
+export const formatLabel = (id: FormatId) => FORMATS.find((f) => f.id === id)!.label;
 
 /* ------------------------------------------------------------------ */
 /* Run accounting — every other n on the page derives from this        */
@@ -40,8 +39,8 @@ export const MODELS = [
   { id: "sol", mark: "openai", label: "Sol", family: "GPT-5.6", vendor: "OpenAI", gensPerBrief: 4 },
   { id: "opus", mark: "anthropic", label: "Claude Opus 4.8", vendor: "Anthropic", gensPerBrief: 4 },
   { id: "kimi", mark: "moonshot", label: "Kimi K3", vendor: "Moonshot", gensPerBrief: 4 },
-  { id: "gemini", mark: "google", label: "Gemini 3.6 Flash", vendor: "Google", gensPerBrief: 4 },
-  { id: "qwen", mark: "alibaba", label: "Qwen3.8 2.4T", vendor: "Alibaba", gensPerBrief: 4 },
+  { id: "gemini", mark: "gemini", label: "Gemini 3.6 Flash", vendor: "Google", gensPerBrief: 4 },
+  { id: "qwen", mark: "qwen", label: "Qwen3.8 2.4T", vendor: "Alibaba", gensPerBrief: 4 },
   { id: "muse", mark: "meta", label: "Muse Spark 1.2", vendor: "Meta", gensPerBrief: 4 },
 ] as const;
 
@@ -60,24 +59,87 @@ export const RUNS_TOTAL = RUNS_PER_FORMAT * FORMATS.length;
 /* ------------------------------------------------------------------ */
 
 /**
- * % of 184 runs where everything asked for renders and every reference resolves.
- * Stored as the exact complete/184 fraction so the table cells round to one
- * decimal for display while completionMean() averages the true rates (averaging
- * pre-rounded cells would drift, e.g. a2ui 95.75 vs the true 95.74).
+ * Scored-run counts, transcribed from results/results-<model>.json — the only
+ * hand-copied numbers in this file, and the ones `score.mjs` regenerates.
+ * Every completion and blank-screen figure on the site divides two of these.
+ *
+ * `renderable` is each SDK's own shipped renderer: A2UI drops a whole
+ * updateComponents message on any invalid component, so its renderable counts
+ * are its all-or-nothing rule in action. See `blankScreens` for the
+ * conservative counterfactual reading.
  */
-export const completionByModel: Record<ModelId, Record<FormatId, number>> = {
-  sol: { openui: 99.457, a2ui: 96.196, jsonRender: 82.609 },
-  opus: { openui: 98.913, a2ui: 99.457, jsonRender: 87.5 },
-  kimi: { openui: 96.739, a2ui: 95.652, jsonRender: 71.196 },
-  gemini: { openui: 95.109, a2ui: 95.109, jsonRender: 77.174 },
-  qwen: { openui: 91.848, a2ui: 91.304, jsonRender: 80.978 },
-  muse: { openui: 96.739, a2ui: 96.739, jsonRender: 81.522 },
+export type RunCount = { runs: number; complete: number; renderable: number };
+
+export const runCounts: Record<ModelId, Record<FormatId, RunCount>> = {
+  sol: {
+    openui: { runs: 184, complete: 183, renderable: 184 },
+    a2ui: { runs: 184, complete: 177, renderable: 179 },
+    jsonRender: { runs: 184, complete: 152, renderable: 184 },
+  },
+  opus: {
+    openui: { runs: 184, complete: 182, renderable: 184 },
+    a2ui: { runs: 184, complete: 183, renderable: 184 },
+    jsonRender: { runs: 184, complete: 161, renderable: 184 },
+  },
+  kimi: {
+    openui: { runs: 184, complete: 178, renderable: 184 },
+    a2ui: { runs: 184, complete: 176, renderable: 179 },
+    jsonRender: { runs: 184, complete: 131, renderable: 184 },
+  },
+  gemini: {
+    openui: { runs: 184, complete: 175, renderable: 184 },
+    a2ui: { runs: 184, complete: 175, renderable: 180 },
+    jsonRender: { runs: 184, complete: 142, renderable: 184 },
+  },
+  qwen: {
+    openui: { runs: 184, complete: 169, renderable: 183 },
+    a2ui: { runs: 184, complete: 168, renderable: 168 },
+    jsonRender: { runs: 184, complete: 149, renderable: 180 },
+  },
+  muse: {
+    openui: { runs: 184, complete: 178, renderable: 184 },
+    a2ui: { runs: 184, complete: 178, renderable: 179 },
+    jsonRender: { runs: 184, complete: 150, renderable: 184 },
+  },
 };
+
+/** % of 184 runs where everything asked for renders and every reference resolves. */
+export const completionByModel: Record<ModelId, Record<FormatId, number>> = Object.fromEntries(
+  MODELS.map((m) => [
+    m.id,
+    Object.fromEntries(
+      FORMAT_ORDER.map((f) => [f, (runCounts[m.id][f].complete / runCounts[m.id][f].runs) * 100]),
+    ),
+  ]),
+) as Record<ModelId, Record<FormatId, number>>;
+
+/**
+ * Pooled completion over any subset of models — the number the page's model
+ * filter reads. Pooling counts (rather than averaging rates) keeps a filtered
+ * view exact instead of an average of rounded averages; with the uniform
+ * 4-generation condition the two agree on the full set anyway.
+ */
+export const completionOver = (
+  id: FormatId,
+  models: readonly ModelId[] = MODELS.map((m) => m.id),
+) => {
+  const t = models.reduce(
+    (acc, m) => ({ c: acc.c + runCounts[m][id].complete, n: acc.n + runCounts[m][id].runs }),
+    { c: 0, n: 0 },
+  );
+  return t.n ? (t.c / t.n) * 100 : Number.NaN;
+};
+
+/** Runs behind a filtered completion figure — the n printed under the chart. */
+export const runsOver = (models: readonly ModelId[] = MODELS.map((m) => m.id)) =>
+  models.reduce((n, m) => n + runsFor(m), 0);
 
 /**
  * Unweighted mean of the six per-model rates — each model gets equal weight.
- * With the uniform 4-rep condition this equals the pooled rate. Computed from
- * the exact per-model fractions, never typed. Re-sync the prose if these move.
+ * With the uniform 4-rep condition this equals the pooled rate. Computed,
+ * never typed. Note: the openui mean sits on a rounding boundary (92.9499...);
+ * any change to a per-model rate can flip the displayed 92.9, so re-sync the
+ * prose if these values ever move.
  */
 export const completionMean = (id: FormatId) =>
   MODELS.reduce((sum, m) => sum + completionByModel[m.id][id], 0) / MODELS.length;
@@ -87,7 +149,8 @@ export const winnerFor = (modelId: ModelId): FormatId =>
     completionByModel[modelId][id] > completionByModel[modelId][best] ? id : best,
   );
 
-/** Models where each format takes the top score. Ties resolve to the first in FORMAT_ORDER. */
+/** Models where each format takes the top score. Qwen is an exact tie
+ *  (89.7 OpenUI and A2UI); winnerFor resolves it to the first in FORMAT_ORDER. */
 export const modelWins = (id: FormatId) =>
   MODELS.filter((m) => winnerFor(m.id) === id).map((m) => m.label);
 
@@ -96,48 +159,260 @@ export const modelWins = (id: FormatId) =>
 /* ------------------------------------------------------------------ */
 
 /**
- * Runs where the user saw nothing at all, out of RUNS_PER_FORMAT.
- * A2UI's count is its shipped renderer dropping whole updateComponents
- * messages on any invalid component.
+ * Runs where the user saw nothing at all, out of RUNS_PER_FORMAT — each SDK's
+ * own shipped renderer, derived from the `renderable` counts above. A2UI drops
+ * a whole updateComponents message on any invalid component, so its total is
+ * that all-or-nothing rule in action rather than a harsher scoring choice.
  */
-export const blankScreens: Record<FormatId, number> = {
-  openui: 1,
-  a2ui: 35,
-  jsonRender: 4,
-};
+export const blankScreens: Record<FormatId, number> = Object.fromEntries(
+  FORMAT_ORDER.map((f) => [
+    f,
+    MODELS.reduce((n, m) => n + (runCounts[m.id][f].runs - runCounts[m.id][f].renderable), 0),
+  ]),
+) as Record<FormatId, number>;
 
-/** A2UI's own shipped renderer drops a whole updateComponents message on any
- *  invalid component. */
-export const a2uiShippedRendererBlanks = 35;
-
-/** OpenUI's single blank is an empty API response from Qwen. */
+/** The single OpenUI blank is an empty API response from Qwen; the same brief
+ *  comes back at full length on the other five models. */
 export const openuiBlankCause = { models: ["qwen"] as ModelId[], reason: "empty response" };
+
+/** The same reading, over any subset of models. */
+export const blanksOver = (id: FormatId, models: readonly ModelId[] = MODELS.map((m) => m.id)) =>
+  models.reduce((n, m) => n + (runCounts[m][id].runs - runCounts[m][id].renderable), 0);
 
 /* ------------------------------------------------------------------ */
 /* 3. Completion by screen density                                     */
 /* ------------------------------------------------------------------ */
 
+/**
+ * The five size bands, as designed in briefs/DESIGN.md. `requirements` is the
+ * inclusive span of numbered requirements a brief in that band carries; the
+ * bands are uneven (10/10/10/8/8 briefs) because the design fixed the sizes
+ * first and the brief count second.
+ */
 export const densityBands = [
-  { band: "2–3", requirements: [2, 3] as const },
-  { band: "4–6", requirements: [4, 6] as const },
-  { band: "7–9", requirements: [7, 9] as const },
-  { band: "11–13", requirements: [11, 13] as const },
-  { band: "16–18", requirements: [16, 18] as const },
-];
+  { id: "b1", band: "2–3", requirements: [2, 3], briefs: 10 },
+  { id: "b2", band: "4–6", requirements: [4, 6], briefs: 10 },
+  { id: "b3", band: "7–9", requirements: [7, 9], briefs: 10 },
+  { id: "b4", band: "11–13", requirements: [11, 13], briefs: 8 },
+  { id: "b5", band: "16–18", requirements: [16, 18], briefs: 8 },
+] as const satisfies ReadonlyArray<{
+  id: string;
+  band: string;
+  requirements: readonly [number, number];
+  briefs: number;
+}>;
+
+export type BandId = (typeof densityBands)[number]["id"];
 
 /**
- * Mean completion per band, averaged across the six models.
- * Computed from the per-run verdicts in the results files.
+ * Per-band scored-run counts, recomputed from the results files by joining
+ * every run to its brief's `reqs` in briefs/briefs.mjs. Earlier versions of
+ * this table were recovered from an old chart's geometry; these are counts.
  */
-export const completionByDensity: Array<
-  { band: string; briefs: number } & Record<FormatId, number>
-> = [
-  { band: "2–3", briefs: 10, openui: 100.0, a2ui: 99.583, jsonRender: 89.583 },
-  { band: "4–6", briefs: 10, openui: 99.583, a2ui: 98.75, jsonRender: 81.667 },
-  { band: "7–9", briefs: 10, openui: 98.75, a2ui: 94.167, jsonRender: 85.417 },
-  { band: "11–13", briefs: 8, openui: 91.146, a2ui: 91.667, jsonRender: 68.229 },
-  { band: "16–18", briefs: 8, openui: 90.625, a2ui: 93.229, jsonRender: 71.875 },
-];
+export const densityCounts: Record<ModelId, Record<BandId, Record<FormatId, RunCount>>> = {
+  sol: {
+    b1: {
+      openui: { runs: 40, complete: 40, renderable: 40 },
+      a2ui: { runs: 40, complete: 40, renderable: 40 },
+      jsonRender: { runs: 40, complete: 35, renderable: 40 },
+    },
+    b2: {
+      openui: { runs: 40, complete: 40, renderable: 40 },
+      a2ui: { runs: 40, complete: 39, renderable: 40 },
+      jsonRender: { runs: 40, complete: 35, renderable: 40 },
+    },
+    b3: {
+      openui: { runs: 40, complete: 40, renderable: 40 },
+      a2ui: { runs: 40, complete: 37, renderable: 37 },
+      jsonRender: { runs: 40, complete: 34, renderable: 40 },
+    },
+    b4: {
+      openui: { runs: 32, complete: 31, renderable: 32 },
+      a2ui: { runs: 32, complete: 30, renderable: 31 },
+      jsonRender: { runs: 32, complete: 25, renderable: 32 },
+    },
+    b5: {
+      openui: { runs: 32, complete: 32, renderable: 32 },
+      a2ui: { runs: 32, complete: 31, renderable: 31 },
+      jsonRender: { runs: 32, complete: 23, renderable: 32 },
+    },
+  },
+  opus: {
+    b1: {
+      openui: { runs: 40, complete: 40, renderable: 40 },
+      a2ui: { runs: 40, complete: 40, renderable: 40 },
+      jsonRender: { runs: 40, complete: 36, renderable: 40 },
+    },
+    b2: {
+      openui: { runs: 40, complete: 40, renderable: 40 },
+      a2ui: { runs: 40, complete: 40, renderable: 40 },
+      jsonRender: { runs: 40, complete: 36, renderable: 40 },
+    },
+    b3: {
+      openui: { runs: 40, complete: 40, renderable: 40 },
+      a2ui: { runs: 40, complete: 40, renderable: 40 },
+      jsonRender: { runs: 40, complete: 37, renderable: 40 },
+    },
+    b4: {
+      openui: { runs: 32, complete: 32, renderable: 32 },
+      a2ui: { runs: 32, complete: 31, renderable: 32 },
+      jsonRender: { runs: 32, complete: 25, renderable: 32 },
+    },
+    b5: {
+      openui: { runs: 32, complete: 30, renderable: 32 },
+      a2ui: { runs: 32, complete: 32, renderable: 32 },
+      jsonRender: { runs: 32, complete: 27, renderable: 32 },
+    },
+  },
+  kimi: {
+    b1: {
+      openui: { runs: 40, complete: 40, renderable: 40 },
+      a2ui: { runs: 40, complete: 40, renderable: 40 },
+      jsonRender: { runs: 40, complete: 34, renderable: 40 },
+    },
+    b2: {
+      openui: { runs: 40, complete: 40, renderable: 40 },
+      a2ui: { runs: 40, complete: 40, renderable: 40 },
+      jsonRender: { runs: 40, complete: 27, renderable: 40 },
+    },
+    b3: {
+      openui: { runs: 40, complete: 40, renderable: 40 },
+      a2ui: { runs: 40, complete: 38, renderable: 39 },
+      jsonRender: { runs: 40, complete: 33, renderable: 40 },
+    },
+    b4: {
+      openui: { runs: 32, complete: 28, renderable: 32 },
+      a2ui: { runs: 32, complete: 29, renderable: 30 },
+      jsonRender: { runs: 32, complete: 15, renderable: 32 },
+    },
+    b5: {
+      openui: { runs: 32, complete: 30, renderable: 32 },
+      a2ui: { runs: 32, complete: 29, renderable: 30 },
+      jsonRender: { runs: 32, complete: 22, renderable: 32 },
+    },
+  },
+  gemini: {
+    b1: {
+      openui: { runs: 40, complete: 40, renderable: 40 },
+      a2ui: { runs: 40, complete: 40, renderable: 40 },
+      jsonRender: { runs: 40, complete: 36, renderable: 40 },
+    },
+    b2: {
+      openui: { runs: 40, complete: 40, renderable: 40 },
+      a2ui: { runs: 40, complete: 40, renderable: 40 },
+      jsonRender: { runs: 40, complete: 30, renderable: 40 },
+    },
+    b3: {
+      openui: { runs: 40, complete: 39, renderable: 40 },
+      a2ui: { runs: 40, complete: 39, renderable: 40 },
+      jsonRender: { runs: 40, complete: 34, renderable: 40 },
+    },
+    b4: {
+      openui: { runs: 32, complete: 27, renderable: 32 },
+      a2ui: { runs: 32, complete: 28, renderable: 30 },
+      jsonRender: { runs: 32, complete: 20, renderable: 32 },
+    },
+    b5: {
+      openui: { runs: 32, complete: 29, renderable: 32 },
+      a2ui: { runs: 32, complete: 28, renderable: 30 },
+      jsonRender: { runs: 32, complete: 22, renderable: 32 },
+    },
+  },
+  qwen: {
+    b1: {
+      openui: { runs: 40, complete: 40, renderable: 40 },
+      a2ui: { runs: 40, complete: 40, renderable: 40 },
+      jsonRender: { runs: 40, complete: 36, renderable: 40 },
+    },
+    b2: {
+      openui: { runs: 40, complete: 40, renderable: 40 },
+      a2ui: { runs: 40, complete: 39, renderable: 39 },
+      jsonRender: { runs: 40, complete: 33, renderable: 40 },
+    },
+    b3: {
+      openui: { runs: 40, complete: 38, renderable: 40 },
+      a2ui: { runs: 40, complete: 34, renderable: 34 },
+      jsonRender: { runs: 40, complete: 31, renderable: 40 },
+    },
+    b4: {
+      openui: { runs: 32, complete: 28, renderable: 32 },
+      a2ui: { runs: 32, complete: 28, renderable: 28 },
+      jsonRender: { runs: 32, complete: 24, renderable: 30 },
+    },
+    b5: {
+      openui: { runs: 32, complete: 23, renderable: 31 },
+      a2ui: { runs: 32, complete: 27, renderable: 27 },
+      jsonRender: { runs: 32, complete: 25, renderable: 30 },
+    },
+  },
+  muse: {
+    b1: {
+      openui: { runs: 40, complete: 40, renderable: 40 },
+      a2ui: { runs: 40, complete: 39, renderable: 39 },
+      jsonRender: { runs: 40, complete: 38, renderable: 40 },
+    },
+    b2: {
+      openui: { runs: 40, complete: 39, renderable: 40 },
+      a2ui: { runs: 40, complete: 39, renderable: 39 },
+      jsonRender: { runs: 40, complete: 35, renderable: 40 },
+    },
+    b3: {
+      openui: { runs: 40, complete: 40, renderable: 40 },
+      a2ui: { runs: 40, complete: 38, renderable: 38 },
+      jsonRender: { runs: 40, complete: 36, renderable: 40 },
+    },
+    b4: {
+      openui: { runs: 32, complete: 29, renderable: 32 },
+      a2ui: { runs: 32, complete: 30, renderable: 31 },
+      jsonRender: { runs: 32, complete: 22, renderable: 32 },
+    },
+    b5: {
+      openui: { runs: 32, complete: 30, renderable: 32 },
+      a2ui: { runs: 32, complete: 32, renderable: 32 },
+      jsonRender: { runs: 32, complete: 19, renderable: 32 },
+    },
+  },
+};
+
+/** Pooled completion inside one band over any subset of models. */
+export const densityRate = (
+  band: BandId,
+  id: FormatId,
+  models: readonly ModelId[] = MODELS.map((m) => m.id),
+) => {
+  const t = models.reduce(
+    (acc, m) => ({
+      c: acc.c + densityCounts[m][band][id].complete,
+      n: acc.n + densityCounts[m][band][id].runs,
+    }),
+    { c: 0, n: 0 },
+  );
+  return t.n ? (t.c / t.n) * 100 : Number.NaN;
+};
+
+/** Runs per format inside one band, for the subset — the n under the chart. */
+export const densityRuns = (band: BandId, models: readonly ModelId[] = MODELS.map((m) => m.id)) =>
+  models.reduce((n, m) => n + densityCounts[m][band].openui.runs, 0);
+
+/**
+ * Completion per band for a subset of models, in band order. Defaults to all
+ * six, which reproduces the table published with the blog post.
+ */
+export const completionByDensityFor = (
+  models: readonly ModelId[] = MODELS.map((m) => m.id),
+): Array<{ band: string; id: BandId; briefs: number; runs: number } & Record<FormatId, number>> =>
+  densityBands.map((b) => ({
+    id: b.id,
+    band: b.band,
+    briefs: b.briefs,
+    runs: densityRuns(b.id, models),
+    ...(Object.fromEntries(FORMAT_ORDER.map((f) => [f, densityRate(b.id, f, models)])) as Record<
+      FormatId,
+      number
+    >),
+  }));
+
+export const completionByDensity = completionByDensityFor();
 
 /* ------------------------------------------------------------------ */
 /* 4. Tokens                                                           */
@@ -178,12 +453,10 @@ export const costPer1kScreens = (modelId: ModelId, id: FormatId) =>
 
 /* ------------------------------------------------------------------ */
 /* 6. Production: failure taxonomy + repair                            */
-/*    Percentages only, from a recent week of OpenUI Cloud streaming    */
-/*    traffic (managed-openui embed). No absolute counts published.     */
 /* ------------------------------------------------------------------ */
 
-/** Share of first-pass validation failures by family (streaming, one week).
- *  Rendered as a markdown table in the post, kept here as the source of truth. */
+/** Share of production failures by family, from a 15-day OpenUI Cloud parser
+ *  log of 1,285 failed generations. */
 export const failureTaxonomy = [
   { family: "No valid root (often truncation-related)", share: 44 },
   { family: "Reference graph (dangling or orphaned refs)", share: 36 },
@@ -191,17 +464,40 @@ export const failureTaxonomy = [
   { family: "Truncation", share: 4 },
 ];
 
-/** Production repair, streaming OpenUI-Lang, one week. All percentages. The
- *  repair is a single LLM sanitizer pass (the parser already absorbs markdown,
- *  comments and unclosed brackets, so those never reach the repair layer). */
+/** A recent week of OpenUI Cloud streaming traffic. The upstream record is a
+ *  set of rates, not a count of individual generations, so everything derived
+ *  from it stays a rate. Same source as the numbers in the blog post. */
 export const production = {
-  /** ~% of streaming generations that trip validation on the first pass. */
+  /** % of streaming generations that trip validation on the first pass. */
   triggerRate: 7,
-  /** ~% of those first-pass failures the sanitizer recovers. */
+  /** % of those first-pass failures the sanitizer recovers. */
   repairedShare: 88,
-  /** ~% of all streaming requests that reach a user broken. */
+  /** % of all streaming requests that reach a user broken. */
   userVisibleShare: 0.9,
 };
+
+/** The repair funnel, in shares of first-pass validation failures. */
+export const repairFunnel = {
+  stages: [
+    {
+      id: "failed",
+      label: "Failed validation",
+      share: 100,
+      note: `~${production.triggerRate}% of streaming generations`,
+    },
+    {
+      id: "broken",
+      label: "Still broken after repair",
+      share: 100 - production.repairedShare,
+      note: `${production.repairedShare}% repaired automatically`,
+    },
+  ],
+};
+
+export const repairedShare = () => production.repairedShare;
+
+/** Compound: a screen fails validation AND survives repair. */
+export const userVisibleFailureRate = () => production.userVisibleShare;
 
 /* ------------------------------------------------------------------ */
 /* Confounds — these belong in chart footnotes, not an appendix        */
@@ -209,10 +505,190 @@ export const production = {
 
 export const CONFOUNDS = {
   promptConditions:
-    "One condition for all models and formats: the same two worked examples through each SDK's official prompt generator. OpenUI's also carries its component groups and three rules, json-render its three custom rules; A2UI adds no rules of its own beyond the examples.",
+    "One condition for all models and formats. OpenUI's prompt carries its component groups, two rules and two worked examples through lang-core's official generatePrompt options; json-render runs catalog.prompt() with three custom rules; A2UI runs its generator's prompt as-is. The competitors' official options got no worked examples, an asymmetry we plan to close in a follow-up.",
   attachRule:
     "Prompt content moves these numbers about as much as format choice does: one rule telling the model to attach every component it defines was worth 13 points to OpenUI on Kimi in earlier runs.",
   scoring:
     "Scoring is each SDK's own shipped code plus one shared completeness layer with a coverage floor; the layer credits json-render's native children slot wherever a component's single ref prop allows it, and consumes A2UI validation errors its itemized checks would miss.",
-  firstParty: "We built OpenUI Lang. Read this as a first-party benchmark with everything disclosed.",
+  firstParty:
+    "We built OpenUI Lang. Read this as a first-party benchmark with everything disclosed.",
 };
+
+/* ------------------------------------------------------------------ */
+/* 7. Generation speed — the older token benchmark                     */
+/* ------------------------------------------------------------------ */
+
+/**
+ * A SEPARATE, EARLIER benchmark (benchmarks/README.md). Do not splice its
+ * numbers into the 46-brief run above: different scenarios, one model, and a
+ * different set of competitors — YAML and Thesys C1 JSON instead of A2UI.
+ *
+ * Method, stated plainly because it is not a timing benchmark: one OpenUI Lang
+ * generation per scenario from GPT-5.2 at temperature 0, parsed to an AST, then
+ * projected losslessly into the other three encodings of the SAME screen.
+ * Tokens counted with tiktoken (gpt-5 encoder). "Decode time" is arithmetic on
+ * those token counts at a fixed 60 tokens/second — a model-independent way to
+ * read the size difference as time, NOT a wall-clock measurement.
+ */
+export const DECODE_TOKENS_PER_SECOND = 60;
+
+export const SPEED_FORMATS = [
+  { id: "openuiLang", label: "OpenUI Lang", slot: 1 },
+  { id: "c1Json", label: "Thesys C1 JSON", slot: 3 },
+  { id: "jsonRenderPatch", label: "json-render", slot: 3 },
+  { id: "yamlSpec", label: "YAML", slot: 3 },
+] as const;
+
+export type SpeedFormatId = (typeof SPEED_FORMATS)[number]["id"];
+
+export const speedScenarios: Array<{ scenario: string } & Record<SpeedFormatId, number>> = [
+  { scenario: "simple-table", openuiLang: 148, c1Json: 357, jsonRenderPatch: 340, yamlSpec: 316 },
+  {
+    scenario: "chart-with-data",
+    openuiLang: 231,
+    c1Json: 516,
+    jsonRenderPatch: 520,
+    yamlSpec: 464,
+  },
+  { scenario: "contact-form", openuiLang: 294, c1Json: 849, jsonRenderPatch: 893, yamlSpec: 762 },
+  {
+    scenario: "dashboard",
+    openuiLang: 1_226,
+    c1Json: 2_261,
+    jsonRenderPatch: 2_247,
+    yamlSpec: 2_128,
+  },
+  {
+    scenario: "pricing-page",
+    openuiLang: 1_195,
+    c1Json: 2_379,
+    jsonRenderPatch: 2_487,
+    yamlSpec: 2_230,
+  },
+  {
+    scenario: "settings-panel",
+    openuiLang: 540,
+    c1Json: 1_205,
+    jsonRenderPatch: 1_244,
+    yamlSpec: 1_077,
+  },
+  {
+    scenario: "e-commerce-product",
+    openuiLang: 1_166,
+    c1Json: 2_381,
+    jsonRenderPatch: 2_449,
+    yamlSpec: 2_145,
+  },
+];
+
+export const speedTotal = (id: SpeedFormatId) => speedScenarios.reduce((n, r) => n + r[id], 0);
+
+/** Seconds to decode all seven screens at the fixed rate. */
+export const speedSeconds = (id: SpeedFormatId) => speedTotal(id) / DECODE_TOKENS_PER_SECOND;
+
+/** How much smaller OpenUI Lang is than `id`, as a percentage. */
+export const speedSavingVs = (id: SpeedFormatId) =>
+  (1 - speedTotal("openuiLang") / speedTotal(id)) * 100;
+
+/* ------------------------------------------------------------------ */
+/* 8. The frontier — cost against reliability, one point per pairing    */
+/* ------------------------------------------------------------------ */
+
+/**
+ * The composite axis, stated so it can be argued with: a screen is only useful
+ * if it renders AND carries what was asked for, but the two failures are not
+ * equally bad — a blank screen is worse than a screen missing one of twelve
+ * requirements. 70/30 completion/renderable is a judgement, not a measurement,
+ * which is why the page ships the completion-only axis as the default.
+ */
+export const COMPOSITE_WEIGHTS = { complete: 0.7, renderable: 0.3 };
+
+export const compositeScore = (modelId: ModelId, id: FormatId) => {
+  const c = runCounts[modelId][id];
+  return (
+    COMPOSITE_WEIGHTS.complete * (c.complete / c.runs) * 100 +
+    COMPOSITE_WEIGHTS.renderable * (c.renderable / c.runs) * 100
+  );
+};
+
+export type FrontierAxis = "completion" | "composite";
+
+export type FrontierPoint = {
+  model: ModelId;
+  format: FormatId;
+  /** USD per 1,000 screens at list prices. */
+  cost: number;
+  /** Reliability on the selected axis, 0–100. */
+  score: number;
+  /** True when some other pairing is at least as reliable and no dearer. */
+  dominated: boolean;
+};
+
+/**
+ * One point per priced model × format. Sol is absent throughout: OpenAI
+ * publishes no per-token price for it, and a frontier drawn against a guessed
+ * price is not a frontier.
+ */
+export const frontierPoints = (
+  axis: FrontierAxis = "completion",
+  models: readonly ModelId[] = COST_MODELS,
+  formats: readonly FormatId[] = FORMAT_ORDER,
+): FrontierPoint[] => {
+  const pts = models
+    .filter((m) => costPerPass[m])
+    .flatMap((m) =>
+      formats.map((f) => ({
+        model: m,
+        format: f,
+        cost: costPer1kScreens(m, f),
+        score: axis === "completion" ? completionByModel[m][f] : compositeScore(m, f),
+      })),
+    );
+  return pts.map((p) => ({
+    ...p,
+    dominated: pts.some(
+      (q) =>
+        q !== p && q.cost <= p.cost && q.score >= p.score && (q.cost < p.cost || q.score > p.score),
+    ),
+  }));
+};
+
+/** Non-dominated points, cheapest first — the staircase the line is drawn through. */
+export const frontierLine = (...args: Parameters<typeof frontierPoints>) =>
+  frontierPoints(...args)
+    .filter((p) => !p.dominated)
+    .sort((a, b) => a.cost - b.cost);
+
+/* ------------------------------------------------------------------ */
+/* 9. Page metadata and changelog                                      */
+/* ------------------------------------------------------------------ */
+
+export const BENCHMARK_VERSION = "v1";
+export const BENCHMARK_UPDATED = "18 Aug 2026";
+
+export const REPO_ROOT = "https://github.com/thesysdev/openui/tree/main/benchmarks";
+export const LINKS = {
+  rawData: `${REPO_ROOT}/openui-bench/results`,
+  rawOutputs: `${REPO_ROOT}/openui-bench/raw`,
+  harness: `${REPO_ROOT}/openui-bench`,
+  briefs: `${REPO_ROOT}/openui-bench/briefs/briefs.mjs`,
+  catalog: `${REPO_ROOT}/openui-bench/catalog/public-catalog.json`,
+  speedHarness: REPO_ROOT,
+  dispute: "https://github.com/thesysdev/openui/issues/new",
+};
+
+export const CHANGELOG = [
+  {
+    date: "18 Aug 2026",
+    version: "v1",
+    entries: [
+      "First published run: 46 briefs, 6 models, 3 formats, 4 generations per brief — 1,104 scored runs per format.",
+      "Uniform condition across every model and format. Gemini's A2UI and json-render legs were generated at 10 repeats before the 4-generation rule was settled; the scored set is the first 4 by a fixed rule, not by outcome.",
+      "Density bands recomputed from the per-run verdicts rather than carried over from an earlier chart.",
+      "An extra Terra run is committed but excluded from every average — one seat per company.",
+    ],
+  },
+];
+
+export const REFRESH_POLICY =
+  "Re-run on a frontier model release, and whenever a format ships a new major version of its SDK. Every re-run gets a changelog entry and a version bump; superseded numbers stay in git history rather than being edited away.";
