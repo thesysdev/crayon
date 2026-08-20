@@ -51,6 +51,8 @@ export interface SettledStreamEventDetail {
   errors: unknown[];
   errorCount: number;
   message: string;
+  /** `createLibrary()` instance id for the Renderer that produced this stream. */
+  __libraryId?: string;
 }
 
 /** Wire shape for settled stream events sent to cloud ingest. */
