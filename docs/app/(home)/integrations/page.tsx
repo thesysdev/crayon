@@ -3,7 +3,7 @@ import { Footer } from "@/app/(home)/sections/Footer/Footer";
 import { ArrowRight, Boxes, Layers3 } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getIntegrationsByCategory, integrationCategories, integrations } from "./data";
+import { getIntegrationsByCategory, integrationCategories } from "./data";
 import { IntegrationLogo } from "./integration-logo";
 import styles from "./page.module.css";
 
@@ -19,8 +19,6 @@ export const metadata: Metadata = {
     type: "website",
   },
 };
-
-const officialCount = integrations.filter((item) => item.support === "Official").length;
 
 export default function IntegrationsPage() {
   return (
@@ -56,21 +54,6 @@ export default function IntegrationsPage() {
               Three simple ways into OpenUI. Popular starting points appear first, and each page
               links to the relevant docs or runnable source.
             </p>
-          </div>
-
-          <div className={styles.stats} aria-label="Integration directory summary">
-            <div className={styles.stat}>
-              <strong>{integrations.length}</strong>
-              <span>integrations</span>
-            </div>
-            <div className={styles.stat}>
-              <strong>{integrationCategories.length}</strong>
-              <span>categories</span>
-            </div>
-            <div className={styles.stat}>
-              <strong>{officialCount}</strong>
-              <span>official paths</span>
-            </div>
           </div>
 
           <nav className={styles.categoryNav} aria-label="Integration categories">
