@@ -53,7 +53,7 @@ export function CloudBanner() {
       <span className={styles.content}>
         <span className={styles.text}>
           <span className={styles.lead}>
-            <span className={styles.tag}>OpenUI Benchmark</span>
+            OpenUI <span className={styles.tag}>Benchmark</span>
             <span className={styles.colon}> :</span>
           </span>{" "}
           <span className={styles.rest}>Generative UI Benchmark</span>
