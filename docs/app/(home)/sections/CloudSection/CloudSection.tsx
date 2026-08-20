@@ -4,7 +4,6 @@ import {
   ArrowRight,
   ArrowUpRight,
   Browsers,
-  Eye,
   Palette,
   PaperPlaneRight,
   Presentation,
@@ -21,11 +20,10 @@ import styles from "./CloudSection.module.css";
 
 export const CLOUD_SECTION_ID = "openui-cloud";
 
-/* The first three lead the grid, so they carry artwork instead of a glyph: they
-   are the capabilities worth showing rather than naming. The tiles are the same
-   ones the Cloud page's FeaturesSection uses, so the two pages tell the story
-   with one set of illustrations. The icon stays on every row for phones, where
-   the card collapses to an icon + title line.
+/* Reliability leads the grid two columns wide, with Reports beside it carrying
+   the one piece of artwork — the capability worth showing rather than naming.
+   Everything below is an icon + title line. The icon stays on every row for
+   phones, where each card collapses to that line.
 
    `light` and `dark` name the page theme each tile was drawn for, matching how
    FeaturesSection labels them. Which one this band shows is inverted; see the
@@ -33,10 +31,31 @@ export const CLOUD_SECTION_ID = "openui-cloud";
 const FEATURES: {
   Icon: Icon;
   image?: { light: string; dark: string };
+  wide?: boolean;
   title: string;
   description: string;
   tags: string[];
 }[] = [
+  {
+    Icon: SealCheck,
+    /* Spans two columns on desktop, so its artwork is drawn wider and flatter
+       than the other tiles — see the wide-card override in the stylesheet. */
+    wide: true,
+    image: {
+      light: "/openui-cloud/reliability.svg",
+      dark: "/openui-cloud/reliability-dark.svg",
+    },
+    title: "Reliability",
+    description:
+      "Every response is checked against your component library and corrected mid-stream, before it can render as broken UI. Track render success, errors, and what shipped across your deployment.",
+    tags: [
+      "Error correction",
+      "Model normalization",
+      "Render success rates",
+      "Error frequency",
+      "Audit trail",
+    ],
+  },
   {
     Icon: Presentation,
     image: {
@@ -58,21 +77,7 @@ const FEATURES: {
     ],
   },
   {
-    Icon: SealCheck,
-    image: {
-      light: "/openui-cloud/validation.svg",
-      dark: "/openui-cloud/validation-dark.svg",
-    },
-    title: "Built-in Output Validation",
-    description: "Detect and correct invalid model output before it turns into broken UI.",
-    tags: ["Error correction", "Model normalization"],
-  },
-  {
     Icon: ShieldCheck,
-    image: {
-      light: "/openui-cloud/llm-gateway.svg",
-      dark: "/openui-cloud/llm-gateway-dark.svg",
-    },
     title: "Model & provider resilience",
     description:
       "Keep generated UI working across model quirks, upgrades, slowdowns, and provider failures.",
@@ -96,12 +101,6 @@ const FEATURES: {
     description:
       "Apply your fonts, colors, spacing, and component styles across every generated interface.",
     tags: ["Design tokens", "Typography", "Component variants", "Brand configurations"],
-  },
-  {
-    Icon: Eye,
-    title: "Observability & audit trail",
-    description: "Track performance, failures, cost, and what was rendered across your deployment.",
-    tags: ["Render success rates", "Latency percentiles", "Error frequency", "Audit trail"],
   },
 ];
 
@@ -144,9 +143,13 @@ export function CloudSection() {
         </div>
 
         <div className={styles.grid}>
-          {FEATURES.map(({ Icon, image, title, description }, index) => {
+          {FEATURES.map(({ Icon, image, wide, title, description }, index) => {
             return (
-              <div className={styles.feature} key={index} {...accordion.getToggleProps(index)}>
+              <div
+                className={`${styles.feature} ${wide ? styles.featureWide : ""}`.trim()}
+                key={index}
+                {...accordion.getToggleProps(index)}
+              >
                 {image && (
                   /* Both tiles ship; CSS picks one. Decorative either way: the
                      title and description already carry the meaning. */
@@ -169,9 +172,11 @@ export function CloudSection() {
                     />
                   </span>
                 )}
-                <span className={styles.icon} aria-hidden="true">
-                  <Icon size={28} weight="light" />
-                </span>
+                {!wide && (
+                  <span className={styles.icon} aria-hidden="true">
+                    <Icon size={28} weight="light" />
+                  </span>
+                )}
                 <h3 className={styles.featureTitle}>{title}</h3>
                 <ExpandChevron className={styles.chevron} />
                 <p className={styles.featureDescription}>
