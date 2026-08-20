@@ -234,32 +234,6 @@ export function OpenUIDevtools({
         </div>
 
         <ErrorBoundary title="Inspect ran into a problem">
-          <div style={styles.bannerGroup}>
-            <span style={styles.bannerFade} aria-hidden />
-            <a
-              style={styles.docsBanner}
-              href={RELIABILITY_DOCS_URL}
-              target="_blank"
-              rel="noreferrer"
-              title="Learn how to track and fix errors in production"
-              onMouseEnter={() => setBannerHovered(true)}
-              onMouseLeave={() => setBannerHovered(false)}
-            >
-              <span style={styles.docsBannerText}>
-                <span style={styles.docsBannerTitle}>
-                  Want to track and fix errors in production?
-                </span>
-              </span>
-              <span
-                style={{
-                  ...styles.docsBannerAction,
-                  ...(bannerHovered ? styles.docsBannerActionHover : null),
-                }}
-              >
-                Learn more
-              </span>
-            </a>
-          </div>
           <div style={styles.list}>
             {visibleEvents.length === 0 ? (
               <div style={styles.empty}>
@@ -621,24 +595,6 @@ function uiStyles(t: ThemeTokens) {
       fontWeight: 500,
       color: t.fg,
     },
-    // One border on the track, none on the segments — collapsing per-segment
-    // borders with a negative margin made whichever one was active paint a pixel
-    // wider than its neighbour.
-    // Whole card is the button; the chevron only signals where it leads.
-    // Inset from the drawer edges, matching the list's own 12px gutter. The top
-    // margin keeps a clear gap even when the list scrolls right up to the banners.
-    // Padding, not margin, so the tray background travels with the banner and
-    // rows scrolling underneath are hidden rather than peeking through the gap.
-    bannerGroup: {
-      position: "relative",
-      zIndex: 1,
-      display: "flex",
-      flexDirection: "column",
-      gap: 8,
-      flexShrink: 0,
-      background: t.bg,
-      padding: "12px 12px 18px",
-    },
     // Mirrors bannerFade at the tray's bottom edge, so rows dissolve into the
     // drawer instead of meeting the border mid-row. Pinned to the tray rather
     // than the list, so it covers the stack-trace view too.
@@ -650,63 +606,6 @@ function uiStyles(t: ThemeTokens) {
       height: 28,
       background: `linear-gradient(to top, ${t.bg}, transparent)`,
       pointerEvents: "none",
-    },
-    // Hangs below the banner, spanning the tray's full width, so list rows
-    // dissolve as they scroll up under it rather than being clipped mid-row.
-    // Sized to the list's own top padding so it dissolves the gap without
-    // washing over the first card.
-    bannerFade: {
-      position: "absolute",
-      left: 0,
-      right: 0,
-      top: "100%",
-      height: 12,
-      background: `linear-gradient(to bottom, ${t.bg}, transparent)`,
-      pointerEvents: "none",
-    },
-    docsBanner: {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      gap: 12,
-      flexShrink: 0,
-      textDecoration: "none",
-      borderRadius: 12,
-      background: t.promoBg,
-      color: t.fg,
-      cursor: "pointer",
-      fontFamily: FONT,
-      textAlign: "left",
-      padding: "12px 14px",
-    },
-    docsBannerText: {
-      display: "flex",
-      flexDirection: "column",
-      gap: 2,
-      minWidth: 0,
-    },
-    docsBannerTitle: {
-      fontSize: 12,
-      fontWeight: 500,
-    },
-    // The whole banner is the hit target; this just reads as the button on it, so
-    // it stays a span rather than nesting a control inside a control.
-    docsBannerAction: {
-      display: "inline-flex",
-      alignItems: "center",
-      justifyContent: "center",
-      flexShrink: 0,
-      border: `1px solid ${t.controlBorder}`,
-      borderRadius: 8,
-      background: t.controlBg,
-      color: t.fg,
-      boxShadow: t.shadowSubtle,
-      fontSize: 11,
-      padding: "5px 12px",
-      transition: "transform 150ms ease",
-    },
-    docsBannerActionHover: {
-      transform: "scale(0.96)",
     },
     list: {
       flex: 1,
