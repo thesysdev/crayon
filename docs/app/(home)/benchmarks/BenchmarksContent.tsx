@@ -344,7 +344,7 @@ export function BenchmarksContent() {
         </div>
 
         <CloudCtaSection
-          title="Improve your generative UI reliability with OpenUI Cloud."
+          title="Improve your Generative UI reliability with OpenUI Cloud."
           primary={{
             label: "Get OpenUI Cloud",
             href: "https://console.thesys.dev/keys",
