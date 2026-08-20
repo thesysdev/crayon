@@ -272,6 +272,62 @@ const integrationCatalog: Integration[] = [
       { label: "AG-UI source", href: "https://github.com/ag-ui-protocol/ag-ui", kind: "GitHub" },
     ],
   },
+  {
+    slug: "grok-build",
+    name: "Grok Build",
+    logo: "https://media.x.ai/v1/website/spacexai-symbol-black-transparent-6435cf42.png",
+    category: "ai-frameworks",
+    type: "Coding agent",
+    summary:
+      "Use OpenUI as a generative UI frontend for persistent Grok Build coding-agent sessions.",
+    howItWorks:
+      "The maintained local harness talks to Grok Build through its official Agent Client Protocol stdio mode, injects the generated OpenUI rules, and maps reasoning, text, tools, and interactions into AG-UI events for AgentInterface. As shipped, it is an unauthenticated single-user harness and needs authentication, sandboxing, and a stricter permission policy before networked deployment.",
+    links: [
+      exampleLink("harnesses/grok-build", "OpenUI harness"),
+      { label: "Grok Build", href: "https://github.com/xai-org/grok-build", kind: "GitHub" },
+    ],
+  },
+  {
+    slug: "vercel-eve",
+    name: "Vercel Eve",
+    logo: "https://raw.githubusercontent.com/vercel/eve/main/.github/assets/eve.svg",
+    category: "ai-frameworks",
+    type: "Coding agent",
+    summary:
+      "Connect Vercel Eve's resumable agent sessions to OpenUI while preserving Eve's native runtime.",
+    howItWorks:
+      "The maintained harness delivers turns over Eve's native session protocol, resumes its event stream from a stored cursor, and translates Eve text, tool, and failure events into AG-UI for AgentInterface. The example uses an unauthenticated local Eve channel; a deployed version must configure channel authentication and appropriate tool permissions.",
+    links: [
+      {
+        label: "Integration guide",
+        href: "/docs/openui-lang/examples/harnesses/vercel-eve",
+        kind: "Guide",
+      },
+      exampleLink("harnesses/vercel-eve", "OpenUI harness"),
+      { label: "Vercel Eve", href: "https://github.com/vercel/eve", kind: "GitHub" },
+    ],
+  },
+  {
+    slug: "pi-coding-agent",
+    name: "Pi Coding Agent",
+    logo: "/integration-logos/pi.svg",
+    category: "ai-frameworks",
+    type: "Coding agent",
+    summary:
+      "Embed the Pi coding-agent SDK behind OpenUI and render its answers, reasoning, and tool activity.",
+    howItWorks:
+      "The maintained local harness embeds @earendil-works/pi-coding-agent in a Next.js route, injects the prompt generated from OpenUI's component library, and converts Pi text, reasoning, and tool events into an OpenAI-compatible stream consumed by openAIReadableStreamAdapter(). It exposes real filesystem and shell tools, so the shipped unauthenticated harness must not be exposed to a network as-is.",
+    links: [
+      {
+        label: "Integration guide",
+        href: "/docs/openui-lang/examples/harnesses/pi-agent-harness",
+        kind: "Guide",
+      },
+      exampleLink("harnesses/pi-agent-harness", "OpenUI harness"),
+      { label: "Pi", href: "https://pi.dev", kind: "Website" },
+      { label: "Pi source", href: "https://github.com/earendil-works/pi", kind: "GitHub" },
+    ],
+  },
 
   {
     slug: "open-webui",
@@ -358,7 +414,16 @@ const integrationCatalog: Integration[] = [
 export const integrations: Integration[] = integrationCatalog;
 
 const popularityOrder: Record<IntegrationCategoryId, string[]> = {
-  "ai-frameworks": ["langchain-langgraph", "vercel-ai-sdk", "mastra", "ag-ui", "google-adk"],
+  "ai-frameworks": [
+    "langchain-langgraph",
+    "vercel-ai-sdk",
+    "pi-coding-agent",
+    "mastra",
+    "grok-build",
+    "ag-ui",
+    "vercel-eve",
+    "google-adk",
+  ],
   "design-systems": ["shadcn-ui", "material-ui", "handsontable", "react-email"],
   "frontend-platforms": ["vue", "svelte", "react-native", "assistant-ui", "open-webui"],
 };
