@@ -177,31 +177,41 @@ const integrationCatalog: Integration[] = [
     name: "LangChain & LangGraph",
     logo: "https://raw.githubusercontent.com/langchain-ai/docs/main/src/images/brand/langchain-icon.png",
     category: "ai-frameworks",
-    type: "Agent framework",
+    type: "Agent framework adapter",
     summary:
-      "Stream LangGraph protocol events into OpenUI through the official @openuidev/langchain package and AG-UI adapter.",
+      "Connect LangChain and LangGraph to OpenUI through first-party server and stream adapters.",
     howItWorks:
-      "The package transforms LangGraph protocol-v2 message and tool events into AG-UI events, relays OpenUI output over SSE, and lets AgentInterface consume the result without LangChain-specific frontend code.",
+      "The @openuidev/langchain package transforms LangGraph protocol-v2 events into AG-UI on the server, then agUIAdapter() consumes the stream in AgentInterface. If your backend already returns native LangGraph named-event SSE, use the bundled langGraphAdapter() and langGraphMessageFormat instead.",
     install: "npm install @openuidev/langchain @langchain/langgraph",
-    links: [...packageLinks("@openuidev/langchain", "langchain"), exampleLink("langchain-chat")],
+    links: [
+      ...packageLinks("@openuidev/langchain", "langchain", "/docs/api-reference/langchain"),
+      {
+        label: "Stream adapters",
+        href: "/docs/agent/reference/adapters-and-formats#langgraphadapter",
+        kind: "Docs",
+      },
+      exampleLink("langchain-chat"),
+    ],
   },
   {
     slug: "vercel-ai-sdk",
     name: "Vercel AI SDK",
     logo: "/integration-logos/vercel.svg",
     category: "ai-frameworks",
-    type: "AI SDK",
+    type: "AI SDK adapter",
     summary:
-      "Use streamText and useChat to deliver progressively rendered OpenUI interfaces in React, Vue, and Svelte apps.",
+      "Connect Vercel AI SDK UIMessage streams to OpenUI with OpenUI's bundled first-party adapter and message format.",
     howItWorks:
-      "The server adds the OpenUI component prompt to the model call and streams the resulting text. The client accumulates that stream and passes it to the matching OpenUI Renderer, including multi-step tools and interactive actions.",
+      "Return the UIMessage SSE produced by streamText().toUIMessageStreamResponse(), then use vercelAIAdapter() with vercelAIMessageFormat in AgentInterface. OpenUI validates AI SDK v6 or v7 chunks and maps streamed text, tool inputs, tool results, multi-step lifecycles, and errors into AG-UI events.",
+    install: "npm install @openuidev/react-ui ai",
     links: [
-      exampleLink("vercel-ai-chat"),
       {
-        label: "OpenUI guide",
-        href: "/docs/openui-lang/examples/vercel-ai-chat",
-        kind: "Guide",
+        label: "Vercel AI adapter",
+        href: "/docs/agent/reference/adapters-and-formats#vercelaiadapter",
+        kind: "Docs",
       },
+      ...packageLinks("@openuidev/react-headless", "react-headless"),
+      exampleLink("vercel-ai-chat"),
       { label: "AI SDK", href: "https://ai-sdk.dev", kind: "Website" },
     ],
   },
