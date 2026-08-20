@@ -135,7 +135,7 @@ export default async function IntegrationDetailPage(props: { params: Promise<{ s
                   "One schema for prompting and rendering",
                   "Progressive rendering while output streams",
                   "Typed components instead of arbitrary markup",
-                  "Validated actions back into the application",
+                  "Host application retains its runtime behavior",
                 ].map((item) => (
                   <div className={styles.checkItem} key={item}>
                     <Check size={15} aria-hidden="true" />

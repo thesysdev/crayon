@@ -116,58 +116,35 @@ const integrationCatalog: Integration[] = [
     ],
   },
   {
-    slug: "daisyui",
-    name: "daisyUI",
-    logo: "/integration-logos/daisyui.svg",
+    slug: "handsontable",
+    name: "Handsontable",
+    logo: "https://raw.githubusercontent.com/handsontable/handsontable/develop/docs/public/favicon.png",
     category: "design-systems",
-    type: "Custom library path",
+    type: "Data grid",
     summary:
-      "Turn selected daisyUI patterns into a model-safe component vocabulary while keeping Tailwind styling in your app.",
+      "Connect a live Handsontable spreadsheet to OpenUI so agent tools can analyze and update its data.",
     howItWorks:
-      "Create thin React, Vue, or Svelte wrappers for the daisyUI patterns you want the model to use, define their props with Zod, and include those definitions in an OpenUI library.",
+      "The maintained example shares table state between Handsontable and a custom OpenUI SpreadsheetTable component. Tool calls update the server-side data, and the rendered component synchronizes those results back into the live grid.",
     links: [
-      {
-        label: "Defining components",
-        href: "/docs/openui-lang/defining-components",
-        kind: "Guide",
-      },
-      { label: "daisyUI", href: "https://daisyui.com", kind: "Website" },
+      exampleLink("hands-on-table-chat"),
+      { label: "Handsontable", href: "https://handsontable.com", kind: "Website" },
     ],
   },
   {
-    slug: "base-ui",
-    name: "Base UI",
-    logo: "/integration-logos/base-ui.svg",
+    slug: "react-email",
+    name: "React Email",
+    logo: "/integration-logos/react-email.svg",
     category: "design-systems",
-    type: "Custom library path",
+    type: "Email component library",
     summary:
-      "Pair Base UI's unstyled accessible primitives with a domain-specific OpenUI component library.",
+      "Generate, preview, and export email-safe interfaces with OpenUI's React Email component package.",
     howItWorks:
-      "Wrap the Base UI primitives that belong in generated output, keep styling and composition in your application, and expose only stable model-facing props through OpenUI schemas.",
+      "@openuidev/react-email provides 44 OpenUI component definitions, an emailLibrary, and prompt rules. OpenUI Lang streams into a React Email preview, which @react-email/render can convert to email-compatible HTML.",
+    install: "npm install @openuidev/react-email @openuidev/react-lang",
     links: [
-      {
-        label: "Defining components",
-        href: "/docs/openui-lang/defining-components",
-        kind: "Guide",
-      },
-      { label: "Base UI", href: "https://base-ui.com", kind: "Website" },
-    ],
-  },
-  {
-    slug: "openui-component-library",
-    name: "OpenUI component library",
-    logo: "/favicon.svg",
-    category: "design-systems",
-    type: "Component library",
-    summary:
-      "Start with production-ready charts, tables, forms, cards, layouts, and chat response components.",
-    howItWorks:
-      "@openuidev/react-ui exports a general-purpose openuiLibrary and a chat-optimized openuiChatLibrary. Each includes the render components, schemas, and prompt options needed to keep the model and renderer aligned.",
-    install: "npm install @openuidev/react-ui @openuidev/react-lang",
-    links: [
-      { label: "Component catalog", href: "/components", kind: "Docs" },
-      { label: "React UI API", href: "/docs/api-reference/react-ui", kind: "Docs" },
-      exampleLink("openui-dashboard"),
+      ...packageLinks("@openuidev/react-email", "react-email", "/docs/api-reference/react-email"),
+      exampleLink("react-email"),
+      { label: "React Email", href: "https://react.email", kind: "Website" },
     ],
   },
 
@@ -284,7 +261,7 @@ const integrationCatalog: Integration[] = [
     summary:
       "Consume standard AG-UI event streams in OpenUI chat surfaces with the built-in agUIAdapter.",
     howItWorks:
-      "Point fetchLLM or a direct ChatLLM implementation at an AG-UI SSE endpoint and use agUIAdapter() as the stream adapter. OpenUI maps lifecycle, text, tools, and state events into its chat runtime.",
+      "Point fetchLLM or a direct ChatLLM implementation at an AG-UI SSE endpoint and use agUIAdapter() as the stream adapter. OpenUI maps supported lifecycle, text, tool, and error events into its chat runtime.",
     links: [
       {
         label: "Adapters and formats",
@@ -381,8 +358,8 @@ const integrationCatalog: Integration[] = [
 export const integrations: Integration[] = integrationCatalog;
 
 const popularityOrder: Record<IntegrationCategoryId, string[]> = {
-  "ai-frameworks": ["langchain-langgraph", "vercel-ai-sdk", "google-adk", "mastra", "ag-ui"],
-  "design-systems": ["shadcn-ui", "material-ui", "daisyui", "base-ui", "openui-component-library"],
+  "ai-frameworks": ["langchain-langgraph", "vercel-ai-sdk", "mastra", "ag-ui", "google-adk"],
+  "design-systems": ["shadcn-ui", "material-ui", "handsontable", "react-email"],
   "frontend-platforms": ["vue", "svelte", "react-native", "assistant-ui", "open-webui"],
 };
 
