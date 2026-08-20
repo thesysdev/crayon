@@ -108,7 +108,7 @@ export function CompletionByDensity({
           height={H}
           viewBox={`0 0 ${W} ${H}`}
           role="img"
-          aria-label="Completion falls for all three formats as briefs ask for more"
+          aria-label="Structural validity falls for all three formats as briefs ask for more"
         >
           {vivid
             ? completionByDensity.map((r, i) => {
@@ -236,7 +236,7 @@ export function CompletionByDensity({
               {FORMATS.find((f) => f.id === hover.id)!.label} · {completionByDensity[hover.i].band}{" "}
               requirements
             </strong>
-            {completionByDensity[hover.i][hover.id].toFixed(1)}% complete ·{" "}
+            {completionByDensity[hover.i][hover.id].toFixed(1)}% structurally valid ·{" "}
             {completionByDensity[hover.i].runs} runs
           </div>
         ) : null}

@@ -78,14 +78,15 @@ export default function BenchmarkMethodologyPage() {
               <p>For evaluation we used the following rubrics:</p>
               <ul>
                 <li>
-                  <strong>Completeness:</strong> a run counts as complete when everything the brief
-                  asked for renders and every reference resolves, with nothing silently dropped,
-                  scored per run, all-or-nothing. Higher is better.
+                  <strong>Structural validity:</strong> a run passes when it parses, has a root,
+                  every reference resolves, nothing is orphaned or invented, required props and
+                  enums are valid, and the output is not truncated. It also needs at least as many
+                  components as the brief has requirements; that is a count floor, not a check that
+                  each requirement was addressed. Higher is better.
                 </li>
                 <li>
-                  <strong>Empty responses:</strong> whether the user saw anything at all. If the
-                  response completely failed to render then we count that separately from
-                  completeness. Naturally the lower the score in this rubric, the better.
+                  <strong>Render success:</strong> whether anything reached the screen at all,
+                  measured separately from structural validity. Higher is better.
                 </li>
               </ul>
             </article>

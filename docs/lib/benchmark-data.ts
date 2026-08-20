@@ -505,7 +505,7 @@ export const repairFunnel = {
       id: "broken",
       label: "Reach a user broken",
       share: production.userVisibleShare,
-      fix: `${production.repairedShare}% are repaired by a model call`,
+      fix: `${production.repairedShare}% are repaired via incremental editing`,
       llm: true,
     },
   ],
@@ -526,7 +526,7 @@ export const CONFOUNDS = {
   attachRule:
     "Prompt content moves these numbers about as much as format choice does: one rule telling the model to attach every component it defines was worth 13 points to OpenUI on Kimi in earlier runs.",
   scoring:
-    "Scoring is each SDK's own shipped code plus one shared completeness layer with a coverage floor; the layer credits json-render's native children slot wherever a component's single ref prop allows it, and consumes A2UI validation errors its itemized checks would miss.",
+    "Scoring is each SDK's own shipped code plus one shared structural-validation layer with a component-count floor; the layer credits json-render's native children slot wherever a component's single ref prop allows it, and consumes A2UI validation errors its itemized checks would miss.",
   firstParty: "We built OpenUI. Read this as a first-party benchmark with everything disclosed.",
 };
 

@@ -50,10 +50,10 @@ export function CompletionByModel({
   const shownFormats = FORMAT_ORDER.filter((f) => formats.includes(f));
   return (
     <Chart
-      title="Completion rate by model"
+      title="Structural validity by model"
       sub={
         sub ??
-        "How often a screen came back with everything the brief asked for. Two models clearly favor OpenUI, one clearly favors A2UI, and the other three sit inside the noise band."
+        "How often the component graph parses, roots, resolves and validates. Two models clearly favor OpenUI, one clearly favors A2UI, and the other three sit inside the noise band."
       }
       tight
       note={

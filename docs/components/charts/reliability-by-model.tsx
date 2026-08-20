@@ -96,7 +96,7 @@ export function ReliabilityByModel({
   return (
     <Chart
       title="Reliability vs cost"
-      sub="One line per format across all six models at list prices. Up and to the right is better: more screens correct, less money."
+      sub="One line per format across all six models at list prices. Up and to the right is better: higher structural validity, less money."
     >
       <div ref={holder} className={`${s.svgHolder} ${s.frontier}`} style={{ position: "relative" }}>
         <svg
@@ -309,7 +309,7 @@ export function ReliabilityByModel({
             <strong>
               {formatLabel(hover.f)} · {MODEL_NAME[hover.m]}
             </strong>
-            {hovered.score.toFixed(1)}% of screens correct · ${hovered.cost.toFixed(2)} per pass
+            {hovered.score.toFixed(1)}% structurally valid · ${hovered.cost.toFixed(2)} per pass
           </div>
         ) : null}
       </div>

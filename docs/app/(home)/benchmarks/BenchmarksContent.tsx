@@ -58,8 +58,8 @@ const HEADLINE_FEATURES: GridFeature[] = [
   },
   {
     Icon: ChartLineUp,
-    title: `${completionOver("openui").toFixed(1)}% correct`,
-    description: "Matched the brief across layout, components, and content.",
+    title: `${completionOver("openui").toFixed(1)}% valid`,
+    description: "Parsed, rooted, and passed every structural check.",
   },
   {
     Icon: CurrencyDollarSimple,
@@ -332,8 +332,8 @@ export function BenchmarksContent() {
               insight={
                 <>
                   Only {production.userVisibleShare}% of generations reach a user broken. Of the
-                  ones that fail validation, {repairedShare().toFixed(0)}% are repaired
-                  automatically.
+                  ones that fail validation, {repairedShare().toFixed(0)}% are repaired via
+                  incremental editing.
                 </>
               }
               hideChartHead
