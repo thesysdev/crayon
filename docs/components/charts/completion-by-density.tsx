@@ -194,7 +194,13 @@ export function CompletionByDensity({
                   y={tagY[id] + 4.5}
                   textAnchor="middle"
                   className={`${s.endTag} ${s.fadeLate}`}
-                  fill={vivid || id !== "jsonRender" ? "#fff" : "var(--ink)"}
+                  fill={
+                    vivid && id === "a2ui"
+                      ? "var(--surface)"
+                      : vivid || id !== "jsonRender"
+                        ? "#fff"
+                        : "var(--ink)"
+                  }
                 >
                   {label}
                 </text>
