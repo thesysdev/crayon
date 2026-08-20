@@ -27,7 +27,7 @@ export function ValidationPanel({ outcome }: { outcome: ValidationOutcome }) {
     );
   }
   if (!result)
-    return <div className={styles.panelEmpty}>Paste some OpenUI Lang code to validate it.</div>;
+    return <div className={styles.panelEmpty}>Add some OpenUI Lang to validate it.</div>;
 
   const { meta } = result;
   const groups = groupByCode(meta.errors);

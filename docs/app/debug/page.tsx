@@ -10,6 +10,6 @@ const Playground = dynamic(() => import("./components/Playground").then((m) => m
   loading: () => <div className={styles.loading}>Loading playground…</div>,
 });
 
-export default function PastePage() {
+export default function DebugPage() {
   return <Playground />;
 }

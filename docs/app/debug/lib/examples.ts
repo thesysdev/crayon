@@ -48,7 +48,7 @@ pic = Image()
     label: "Kitchen sink (form + table + chart)",
     code: `root = Stack([title, note, form, tbl, chart])
 
-title = TextContent("paste playground", "large-heavy")
+title = TextContent("debug playground", "large-heavy")
 note = Callout("info", "Demo", "A form with validation, a table and a chart — rendered fully client-side.")
 form = Form("contact", btns, [nameField, emailField])
 nameField = FormControl("Name", Input("name", "Your name", "text", { required: true, minLength: 2 }))
