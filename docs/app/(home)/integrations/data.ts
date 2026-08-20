@@ -1,4 +1,4 @@
-export type IntegrationCategoryId = "design-systems" | "agent-frameworks" | "examples" | "frontend";
+export type IntegrationCategoryId = "design-systems" | "frontend-frameworks" | "backend-frameworks";
 
 export type IntegrationSupport = "Official" | "Community" | "Compatible";
 
@@ -32,34 +32,26 @@ export interface IntegrationCategory {
 export const integrationCategories: IntegrationCategory[] = [
   {
     id: "design-systems",
-    title: "Design systems & component libraries",
+    title: "Design systems",
     shortTitle: "Design systems",
     description:
       "Use OpenUI's built-in components or connect the UI library your product already uses.",
     accent: "orange",
   },
   {
-    id: "agent-frameworks",
-    title: "Packages & SDKs",
-    shortTitle: "Packages",
-    description: "Connect OpenUI to familiar AI application packages, SDKs, and agent runtimes.",
-    accent: "purple",
-  },
-  {
-    id: "examples",
-    title: "Examples",
-    shortTitle: "Examples",
-    description:
-      "Start from a complete app pattern, then adapt the pieces that match what you are building.",
-    accent: "green",
-  },
-  {
-    id: "frontend",
-    title: "Frameworks & runtimes",
-    shortTitle: "Frameworks",
-    description:
-      "Render OpenUI in the frontend framework or native runtime your team already knows.",
+    id: "frontend-frameworks",
+    title: "Frontend frameworks",
+    shortTitle: "Frontend",
+    description: "Render OpenUI with the web, mobile, or chat framework your product already uses.",
     accent: "blue",
+  },
+  {
+    id: "backend-frameworks",
+    title: "Backend frameworks",
+    shortTitle: "Backend",
+    description:
+      "Connect OpenUI to the agent framework, AI SDK, protocol, or backend your team already runs.",
+    accent: "purple",
   },
 ];
 
@@ -186,12 +178,12 @@ const integrationCatalog: Integration[] = [
     ],
   },
 
-  // Packages, SDKs, and agent runtimes.
+  // Backend frameworks, SDKs, and agent runtimes.
   {
     slug: "langchain-langgraph",
     name: "LangChain & LangGraph",
     logo: "https://raw.githubusercontent.com/langchain-ai/docs/main/src/images/brand/langchain-icon.png",
-    category: "agent-frameworks",
+    category: "backend-frameworks",
     support: "Official",
     type: "Agent framework",
     summary:
@@ -205,7 +197,7 @@ const integrationCatalog: Integration[] = [
     slug: "vercel-ai-sdk",
     name: "Vercel AI SDK",
     logo: "/integration-logos/vercel.svg",
-    category: "agent-frameworks",
+    category: "backend-frameworks",
     support: "Official",
     type: "AI SDK",
     summary:
@@ -226,7 +218,7 @@ const integrationCatalog: Integration[] = [
     slug: "google-adk",
     name: "Google ADK",
     logo: "/integration-logos/google.svg",
-    category: "agent-frameworks",
+    category: "backend-frameworks",
     support: "Official",
     type: "Agent SDK",
     summary:
@@ -242,7 +234,7 @@ const integrationCatalog: Integration[] = [
     slug: "mastra",
     name: "Mastra",
     logo: "/integration-logos/mastra.svg",
-    category: "agent-frameworks",
+    category: "backend-frameworks",
     support: "Official",
     type: "Agent framework",
     summary:
@@ -263,7 +255,7 @@ const integrationCatalog: Integration[] = [
     slug: "assistant-ui",
     name: "assistant-ui",
     logo: "/integration-logos/assistant-ui.svg",
-    category: "agent-frameworks",
+    category: "frontend-frameworks",
     support: "Official",
     type: "Chat framework",
     summary:
@@ -289,7 +281,7 @@ const integrationCatalog: Integration[] = [
     slug: "ag-ui",
     name: "AG-UI",
     logo: "/integration-logos/ag-ui.svg",
-    category: "agent-frameworks",
+    category: "backend-frameworks",
     support: "Official",
     type: "Agent protocol",
     summary:
@@ -307,48 +299,11 @@ const integrationCatalog: Integration[] = [
     ],
   },
 
-  // Complete examples that new users can run and adapt.
-  {
-    slug: "openui-chat-example",
-    name: "OpenUI Chat",
-    logo: "/favicon.svg",
-    category: "examples",
-    support: "Official",
-    type: "Starter app",
-    summary:
-      "A complete generative UI chat app with streaming responses, tools, threads, and interactive components.",
-    howItWorks:
-      "The app combines a server-owned model route with OpenUI's chat component library and streaming renderer, providing a compact starting point for a production chat experience.",
-    links: [
-      exampleLink("openui-chat", "OpenUI Chat source"),
-      { label: "Agent quickstart", href: "/docs/agent/getting-started/quickstart", kind: "Guide" },
-    ],
-  },
-  {
-    slug: "openui-dashboard-example",
-    name: "OpenUI Dashboard",
-    logo: "/favicon.svg",
-    category: "examples",
-    support: "Official",
-    type: "Dashboard example",
-    summary:
-      "A focused example of generating charts, tables, metrics, and layouts from a natural-language request.",
-    howItWorks:
-      "The model receives a dashboard-oriented OpenUI component vocabulary and streams a structured program that the React renderer turns into a live, responsive dashboard.",
-    links: [
-      exampleLink("openui-dashboard", "Dashboard source"),
-      {
-        label: "Dashboard guide",
-        href: "/docs/openui-lang/examples/dashboard",
-        kind: "Guide",
-      },
-    ],
-  },
   {
     slug: "fastapi",
     name: "FastAPI",
     logo: "/integration-logos/fastapi.svg",
-    category: "examples",
+    category: "backend-frameworks",
     support: "Official",
     type: "Backend framework",
     summary:
@@ -365,7 +320,7 @@ const integrationCatalog: Integration[] = [
     slug: "supabase",
     name: "Supabase",
     logo: "/integration-logos/supabase.svg",
-    category: "examples",
+    category: "backend-frameworks",
     support: "Official",
     type: "Backend platform",
     summary:
@@ -386,7 +341,7 @@ const integrationCatalog: Integration[] = [
     slug: "open-webui",
     name: "Open WebUI",
     logo: "https://raw.githubusercontent.com/open-webui/open-webui/main/backend/open_webui/static/favicon-96x96.png",
-    category: "examples",
+    category: "frontend-frameworks",
     support: "Community",
     type: "AI platform",
     summary:
@@ -413,7 +368,7 @@ const integrationCatalog: Integration[] = [
     slug: "react",
     name: "React",
     logo: "/integration-logos/react.svg",
-    category: "frontend",
+    category: "frontend-frameworks",
     support: "Official",
     type: "Native runtime",
     summary:
@@ -431,7 +386,7 @@ const integrationCatalog: Integration[] = [
     slug: "nextjs",
     name: "Next.js",
     logo: "/integration-logos/nextjs.svg",
-    category: "frontend",
+    category: "frontend-frameworks",
     support: "Official",
     type: "Web framework",
     summary:
@@ -453,7 +408,7 @@ const integrationCatalog: Integration[] = [
     slug: "vue",
     name: "Vue 3",
     logo: "/integration-logos/vue.svg",
-    category: "frontend",
+    category: "frontend-frameworks",
     support: "Official",
     type: "Native runtime",
     summary:
@@ -471,7 +426,7 @@ const integrationCatalog: Integration[] = [
     slug: "react-native",
     name: "React Native",
     logo: "/integration-logos/react.svg",
-    category: "frontend",
+    category: "frontend-frameworks",
     support: "Official",
     type: "Mobile framework",
     summary:
@@ -492,7 +447,7 @@ const integrationCatalog: Integration[] = [
     slug: "svelte",
     name: "Svelte 5",
     logo: "/integration-logos/svelte.svg",
-    category: "frontend",
+    category: "frontend-frameworks",
     support: "Official",
     type: "Native runtime",
     summary:
@@ -510,6 +465,28 @@ const integrationCatalog: Integration[] = [
 
 export const integrations: Integration[] = integrationCatalog;
 
+const popularityOrder: Record<IntegrationCategoryId, string[]> = {
+  "design-systems": ["shadcn-ui", "material-ui", "daisyui", "base-ui", "openui-component-library"],
+  "frontend-frameworks": [
+    "react",
+    "nextjs",
+    "vue",
+    "svelte",
+    "react-native",
+    "assistant-ui",
+    "open-webui",
+  ],
+  "backend-frameworks": [
+    "langchain-langgraph",
+    "vercel-ai-sdk",
+    "google-adk",
+    "mastra",
+    "fastapi",
+    "supabase",
+    "ag-ui",
+  ],
+};
+
 export const integrationBySlug = new Map(integrations.map((item) => [item.slug, item]));
 
 export function getIntegrationCategory(id: IntegrationCategoryId): IntegrationCategory {
@@ -519,11 +496,14 @@ export function getIntegrationCategory(id: IntegrationCategoryId): IntegrationCa
 }
 
 export function getIntegrationsByCategory(id: IntegrationCategoryId): Integration[] {
-  return integrations.filter((item) => item.category === id);
+  const order = popularityOrder[id];
+  return integrations
+    .filter((item) => item.category === id)
+    .sort((a, b) => order.indexOf(a.slug) - order.indexOf(b.slug));
 }
 
 export function getRelatedIntegrations(integration: Integration, limit = 3): Integration[] {
-  return integrations
-    .filter((item) => item.category === integration.category && item.slug !== integration.slug)
+  return getIntegrationsByCategory(integration.category)
+    .filter((item) => item.slug !== integration.slug)
     .slice(0, limit);
 }

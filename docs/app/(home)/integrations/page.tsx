@@ -10,11 +10,11 @@ import styles from "./page.module.css";
 export const metadata: Metadata = {
   title: "Integrations",
   description:
-    "Explore OpenUI integrations across design systems, packages, examples, and frontend frameworks.",
+    "Explore OpenUI integrations across design systems, frontend frameworks, and backend frameworks.",
   alternates: { canonical: "/integrations" },
   openGraph: {
     title: "OpenUI integrations",
-    description: "Build generative UI with the design systems, packages, and frameworks you know.",
+    description: "Build generative UI with the design systems and frameworks you know.",
     url: "/integrations",
     type: "website",
   },
@@ -35,7 +35,7 @@ export default function IntegrationsPage() {
           </>
         }
         subtitle={
-          <>Start with a design system, package, example, or framework your team already knows.</>
+          <>Start with a design system, frontend framework, or backend framework your team knows.</>
         }
         smallSubtitle
       />
@@ -53,7 +53,7 @@ export default function IntegrationsPage() {
               </h2>
             </div>
             <p className={styles.directoryDescription}>
-              Four simple ways into OpenUI. Popular starting points appear first, and each page
+              Three simple ways into OpenUI. Popular starting points appear first, and each page
               links to the relevant docs or runnable source.
             </p>
           </div>
