@@ -1,5 +1,5 @@
 import { Maximize2, Minimize2, X } from "lucide-react";
-import { Component, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useMemo, useRef, useState, type CSSProperties } from "react";
 import { type RegisteredLibrary } from "../lib";
 import {
   FONT,
@@ -9,7 +9,7 @@ import {
   type ColorMode,
   type ThemeTokens,
 } from "../theme";
-import { IconButton, ThemeToggle } from "../ui";
+import { ErrorBoundary, IconButton, ThemeToggle } from "../ui";
 import { librarySchema, useReactLang, useStream, useValidation } from "./lib";
 import { JsonPanel, RenderPanel, StreamTimeline, TreePanel, ValidationPanel } from "./panels";
 import { debugStyles } from "./styles";
@@ -30,30 +30,6 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "json", label: "JSON" },
   { id: "stream", label: "Stream" },
 ];
-
-class DebugErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
-  constructor(props: { children: ReactNode }) {
-    super(props);
-    this.state = { error: null };
-  }
-
-  static getDerivedStateFromError(error: Error) {
-    return { error };
-  }
-
-  override componentDidUpdate(prevProps: { children: ReactNode }) {
-    if (this.state.error && prevProps.children !== this.props.children) {
-      this.setState({ error: null });
-    }
-  }
-
-  override render() {
-    if (this.state.error) {
-      return <div style={{ padding: 16, fontSize: 12 }}>{this.state.error.message}</div>;
-    }
-    return this.props.children;
-  }
-}
 
 export interface DebugUIProps {
   libraries: RegisteredLibrary[];
@@ -189,115 +165,117 @@ export function DebugUI({
           </IconButton>
         </div>
       </div>
-      {popupBlocked ? (
-        <div style={styles.banner}>Allow popups for this origin to eject OpenUI Debug.</div>
-      ) : null}
-      <StreamToolbar
-        playback={stream.playback}
-        settings={stream.settings}
-        bigInput={stream.bigInput}
-        disabled={stream.disabled}
-      />
-      <div
-        ref={bodyRef}
-        style={{
-          ...styles.body,
-          gridTemplateColumns: `${editorPct}% ${SPLITTER}px minmax(0, 1fr)`,
-        }}
-      >
-        <div style={styles.editorWrap}>
-          <LangEditor value={code} onChange={changeCode} readOnly={stream.active} />
-          {stream.active ? <span style={debug.editorLock}>Streaming…</span> : null}
-        </div>
+      <ErrorBoundary title="Debug ran into a problem">
+        {popupBlocked ? (
+          <div style={styles.banner}>Allow popups for this origin to eject OpenUI Debug.</div>
+        ) : null}
+        <StreamToolbar
+          playback={stream.playback}
+          settings={stream.settings}
+          bigInput={stream.bigInput}
+          disabled={stream.disabled}
+        />
         <div
-          style={styles.splitter}
-          onPointerDown={startResize}
-          onMouseEnter={() => setSplitHover(true)}
-          onMouseLeave={() => setSplitHover(false)}
-          onKeyDown={(event) => {
-            if (event.key === "ArrowLeft") setEditorPct(clampPct(editorPct - 2));
-            if (event.key === "ArrowRight") setEditorPct(clampPct(editorPct + 2));
+          ref={bodyRef}
+          style={{
+            ...styles.body,
+            gridTemplateColumns: `${editorPct}% ${SPLITTER}px minmax(0, 1fr)`,
           }}
-          role="separator"
-          aria-orientation="vertical"
-          aria-label="Resize editor"
-          aria-valuenow={Math.round(editorPct)}
-          aria-valuemin={MIN_EDITOR_PCT}
-          aria-valuemax={MAX_EDITOR_PCT}
-          tabIndex={0}
         >
-          <span
-            style={{
-              ...styles.splitterLine,
-              ...(splitHover || resizing ? styles.splitterLineOn : null),
+          <div style={styles.editorWrap}>
+            <LangEditor value={code} onChange={changeCode} readOnly={stream.active} />
+            {stream.active ? <span style={debug.editorLock}>Streaming…</span> : null}
+          </div>
+          <div
+            style={styles.splitter}
+            onPointerDown={startResize}
+            onMouseEnter={() => setSplitHover(true)}
+            onMouseLeave={() => setSplitHover(false)}
+            onKeyDown={(event) => {
+              if (event.key === "ArrowLeft") setEditorPct(clampPct(editorPct - 2));
+              if (event.key === "ArrowRight") setEditorPct(clampPct(editorPct + 2));
             }}
-            aria-hidden
-          />
-          <span
-            style={{
-              ...styles.splitterGrip,
-              ...(splitHover || resizing ? styles.splitterGripOn : null),
-            }}
-            aria-hidden
+            role="separator"
+            aria-orientation="vertical"
+            aria-label="Resize editor"
+            aria-valuenow={Math.round(editorPct)}
+            aria-valuemin={MIN_EDITOR_PCT}
+            aria-valuemax={MAX_EDITOR_PCT}
+            tabIndex={0}
           >
-            <span style={styles.splitterDot} />
-            <span style={styles.splitterDot} />
-            <span style={styles.splitterDot} />
-          </span>
-        </div>
-        <div style={styles.output}>
-          <div style={debug.tabStrip} role="tablist" aria-label="Debug panels">
-            {TABS.map((item) => {
-              const label =
-                item.id === "validation" && stream.displayed.result
-                  ? `${item.label} (${stream.displayed.result.meta.errors.length})`
-                  : item.label;
-              const active = tab === item.id;
-              return (
-                <button
-                  key={item.id}
-                  role="tab"
-                  aria-selected={active}
-                  style={{ ...debug.tab, ...(active ? debug.tabActive : null) }}
-                  onClick={() => setTab(item.id)}
-                >
-                  {label}
-                </button>
-              );
-            })}
+            <span
+              style={{
+                ...styles.splitterLine,
+                ...(splitHover || resizing ? styles.splitterLineOn : null),
+              }}
+              aria-hidden
+            />
+            <span
+              style={{
+                ...styles.splitterGrip,
+                ...(splitHover || resizing ? styles.splitterGripOn : null),
+              }}
+              aria-hidden
+            >
+              <span style={styles.splitterDot} />
+              <span style={styles.splitterDot} />
+              <span style={styles.splitterDot} />
+            </span>
           </div>
-          <div style={styles.tabBody}>
-            {lang === undefined ? (
-              <div style={styles.missing}>Loading renderer…</div>
-            ) : lang === null ? (
-              <div style={styles.missing}>
-                Install <code>@openuidev/react-lang</code> to use OpenUI Debug.
-              </div>
-            ) : selected ? (
-              <>
-                {tab === "render" ? (
-                  <div style={{ ...styles.tabPanel, display: "flex" }}>
-                    <DebugErrorBoundary>
-                      <RenderPanel
-                        Renderer={lang.Renderer}
-                        library={selected.library}
-                        code={stream.renderedCode}
-                        isStreaming={stream.isStreaming}
-                      />
-                    </DebugErrorBoundary>
-                  </div>
-                ) : null}
-                {tab === "validation" ? <ValidationPanel outcome={stream.displayed} /> : null}
-                {tab === "tree" ? <TreePanel result={stream.displayed.result} /> : null}
-                {tab === "json" ? <JsonPanel result={stream.displayed.result} /> : null}
-                {tab === "stream" ? <StreamTimeline state={stream.state} /> : null}
-              </>
-            ) : (
-              <div style={styles.missing}>No library registered.</div>
-            )}
+          <div style={styles.output}>
+            <div style={debug.tabStrip} role="tablist" aria-label="Debug panels">
+              {TABS.map((item) => {
+                const label =
+                  item.id === "validation" && stream.displayed.result
+                    ? `${item.label} (${stream.displayed.result.meta.errors.length})`
+                    : item.label;
+                const active = tab === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    role="tab"
+                    aria-selected={active}
+                    style={{ ...debug.tab, ...(active ? debug.tabActive : null) }}
+                    onClick={() => setTab(item.id)}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+            <div style={styles.tabBody}>
+              {lang === undefined ? (
+                <div style={styles.missing}>Loading renderer…</div>
+              ) : lang === null ? (
+                <div style={styles.missing}>
+                  Install <code>@openuidev/react-lang</code> to use OpenUI Debug.
+                </div>
+              ) : selected ? (
+                <>
+                  {tab === "render" ? (
+                    <div style={{ ...styles.tabPanel, display: "flex" }}>
+                      <ErrorBoundary title="This preview crashed" resetKey={stream.renderedCode}>
+                        <RenderPanel
+                          Renderer={lang.Renderer}
+                          library={selected.library}
+                          code={stream.renderedCode}
+                          isStreaming={stream.isStreaming}
+                        />
+                      </ErrorBoundary>
+                    </div>
+                  ) : null}
+                  {tab === "validation" ? <ValidationPanel outcome={stream.displayed} /> : null}
+                  {tab === "tree" ? <TreePanel result={stream.displayed.result} /> : null}
+                  {tab === "json" ? <JsonPanel result={stream.displayed.result} /> : null}
+                  {tab === "stream" ? <StreamTimeline state={stream.state} /> : null}
+                </>
+              ) : (
+                <div style={styles.missing}>No library registered.</div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      </ErrorBoundary>
     </div>
   );
 }

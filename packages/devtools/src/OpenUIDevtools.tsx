@@ -28,7 +28,7 @@ import {
   type ColorMode,
   type ThemeTokens,
 } from "./theme";
-import { IconButton, ShiroLogo, ThemeSegmented } from "./ui";
+import { ErrorBoundary, IconButton, ShiroLogo, ThemeSegmented } from "./ui";
 
 const RELIABILITY_DOCS_URL = "https://www.openui.com/docs/openui-lang/reliability";
 
@@ -233,64 +233,66 @@ export function OpenUIDevtools({
           </div>
         </div>
 
-        <div style={styles.bannerGroup}>
-          <span style={styles.bannerFade} aria-hidden />
-          <a
-            style={styles.docsBanner}
-            href={RELIABILITY_DOCS_URL}
-            target="_blank"
-            rel="noreferrer"
-            title="Learn how to track and fix errors in production"
-            onMouseEnter={() => setBannerHovered(true)}
-            onMouseLeave={() => setBannerHovered(false)}
-          >
-            <span style={styles.docsBannerText}>
-              <span style={styles.docsBannerTitle}>
-                Want to track and fix errors in production?
-              </span>
-            </span>
-            <span
-              style={{
-                ...styles.docsBannerAction,
-                ...(bannerHovered ? styles.docsBannerActionHover : null),
-              }}
+        <ErrorBoundary title="Inspect ran into a problem">
+          <div style={styles.bannerGroup}>
+            <span style={styles.bannerFade} aria-hidden />
+            <a
+              style={styles.docsBanner}
+              href={RELIABILITY_DOCS_URL}
+              target="_blank"
+              rel="noreferrer"
+              title="Learn how to track and fix errors in production"
+              onMouseEnter={() => setBannerHovered(true)}
+              onMouseLeave={() => setBannerHovered(false)}
             >
-              Learn more
-            </span>
-          </a>
-        </div>
-        <div style={styles.list}>
-          {visibleEvents.length === 0 ? (
-            <div style={styles.empty}>
-              <span style={styles.emptyIcon}>
-                <Inbox size={20} />
+              <span style={styles.docsBannerText}>
+                <span style={styles.docsBannerTitle}>
+                  Want to track and fix errors in production?
+                </span>
               </span>
-              No events captured yet.
-            </div>
-          ) : (
-            visibleEvents.map((event, index) => {
-              const key =
-                typeof event.detail["id"] === "string"
-                  ? event.detail["id"]
-                  : `${event.timestamp}-${index}`;
-              const quotaError = getQuotaError(event);
-              if (quotaError) return <QuotaErrorRow key={key} info={quotaError} />;
-              const stream = getReactLangStreamDetail(event);
-              if (stream) {
-                return (
-                  <ReactLangStreamEventRow
-                    key={key}
-                    event={event}
-                    stream={stream}
-                    canOpenInDebug={debug.canOpen}
-                    onOpenInDebug={debug.openWith}
-                  />
-                );
-              }
-              return <EventRow key={key} event={event} />;
-            })
-          )}
-        </div>
+              <span
+                style={{
+                  ...styles.docsBannerAction,
+                  ...(bannerHovered ? styles.docsBannerActionHover : null),
+                }}
+              >
+                Learn more
+              </span>
+            </a>
+          </div>
+          <div style={styles.list}>
+            {visibleEvents.length === 0 ? (
+              <div style={styles.empty}>
+                <span style={styles.emptyIcon}>
+                  <Inbox size={20} />
+                </span>
+                No events captured yet.
+              </div>
+            ) : (
+              visibleEvents.map((event, index) => {
+                const key =
+                  typeof event.detail["id"] === "string"
+                    ? event.detail["id"]
+                    : `${event.timestamp}-${index}`;
+                const quotaError = getQuotaError(event);
+                if (quotaError) return <QuotaErrorRow key={key} info={quotaError} />;
+                const stream = getReactLangStreamDetail(event);
+                if (stream) {
+                  return (
+                    <ReactLangStreamEventRow
+                      key={key}
+                      event={event}
+                      stream={stream}
+                      canOpenInDebug={debug.canOpen}
+                      onOpenInDebug={debug.openWith}
+                    />
+                  );
+                }
+                return <EventRow key={key} event={event} />;
+              })
+            )}
+          </div>
+        </ErrorBoundary>
         <span style={styles.trayFade} aria-hidden />
       </aside>
 
