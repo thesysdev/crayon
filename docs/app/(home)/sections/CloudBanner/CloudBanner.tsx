@@ -26,14 +26,20 @@ export function CloudBanner() {
 
   // Mount, then open just after paint. On hide, play the exit before unmounting.
   useEffect(() => {
+    const timers: number[] = [];
+    const schedule = (callback: () => void, delay: number) => {
+      timers.push(window.setTimeout(callback, delay));
+    };
+
     if (shouldShow) {
-      setMounted(true);
-      const id = setTimeout(() => setOpen(true), 20);
-      return () => clearTimeout(id);
+      schedule(() => setMounted(true), 0);
+      schedule(() => setOpen(true), 20);
+    } else {
+      schedule(() => setOpen(false), 0);
+      schedule(() => setMounted(false), 550);
     }
-    setOpen(false);
-    const id = setTimeout(() => setMounted(false), 550);
-    return () => clearTimeout(id);
+
+    return () => timers.forEach(window.clearTimeout);
   }, [shouldShow]);
 
   if (!mounted) return null;
