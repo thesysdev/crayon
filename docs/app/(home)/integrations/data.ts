@@ -1,4 +1,4 @@
-export type IntegrationCategoryId = "design-systems" | "frontend-frameworks" | "backend-frameworks";
+export type IntegrationCategoryId = "ai-frameworks" | "design-systems" | "frontend-platforms";
 
 export type IntegrationSupport = "Official" | "Community" | "Compatible";
 
@@ -31,27 +31,28 @@ export interface IntegrationCategory {
 
 export const integrationCategories: IntegrationCategory[] = [
   {
+    id: "ai-frameworks",
+    title: "AI frameworks, SDKs & protocols",
+    shortTitle: "AI stack",
+    description:
+      "Connect OpenUI to the agent framework, AI SDK, or protocol your application already uses.",
+    accent: "purple",
+  },
+  {
     id: "design-systems",
-    title: "Design systems",
+    title: "Design systems & component libraries",
     shortTitle: "Design systems",
     description:
       "Use OpenUI's built-in components or connect the UI library your product already uses.",
     accent: "orange",
   },
   {
-    id: "frontend-frameworks",
-    title: "Frontend frameworks",
+    id: "frontend-platforms",
+    title: "Frontend frameworks & platforms",
     shortTitle: "Frontend",
-    description: "Render OpenUI with the web, mobile, or chat framework your product already uses.",
-    accent: "blue",
-  },
-  {
-    id: "backend-frameworks",
-    title: "Backend frameworks",
-    shortTitle: "Backend",
     description:
-      "Connect OpenUI to the agent framework, AI SDK, protocol, or backend your team already runs.",
-    accent: "purple",
+      "Run OpenUI in an alternative web, mobile, chat framework, or AI application platform.",
+    accent: "blue",
   },
 ];
 
@@ -178,12 +179,12 @@ const integrationCatalog: Integration[] = [
     ],
   },
 
-  // Backend frameworks, SDKs, and agent runtimes.
+  // AI frameworks, SDKs, and protocols.
   {
     slug: "langchain-langgraph",
     name: "LangChain & LangGraph",
     logo: "https://raw.githubusercontent.com/langchain-ai/docs/main/src/images/brand/langchain-icon.png",
-    category: "backend-frameworks",
+    category: "ai-frameworks",
     support: "Official",
     type: "Agent framework",
     summary:
@@ -197,7 +198,7 @@ const integrationCatalog: Integration[] = [
     slug: "vercel-ai-sdk",
     name: "Vercel AI SDK",
     logo: "/integration-logos/vercel.svg",
-    category: "backend-frameworks",
+    category: "ai-frameworks",
     support: "Official",
     type: "AI SDK",
     summary:
@@ -218,7 +219,7 @@ const integrationCatalog: Integration[] = [
     slug: "google-adk",
     name: "Google ADK",
     logo: "/integration-logos/google.svg",
-    category: "backend-frameworks",
+    category: "ai-frameworks",
     support: "Official",
     type: "Agent SDK",
     summary:
@@ -234,7 +235,7 @@ const integrationCatalog: Integration[] = [
     slug: "mastra",
     name: "Mastra",
     logo: "/integration-logos/mastra.svg",
-    category: "backend-frameworks",
+    category: "ai-frameworks",
     support: "Official",
     type: "Agent framework",
     summary:
@@ -255,7 +256,7 @@ const integrationCatalog: Integration[] = [
     slug: "assistant-ui",
     name: "assistant-ui",
     logo: "/integration-logos/assistant-ui.svg",
-    category: "frontend-frameworks",
+    category: "frontend-platforms",
     support: "Official",
     type: "Chat framework",
     summary:
@@ -281,7 +282,7 @@ const integrationCatalog: Integration[] = [
     slug: "ag-ui",
     name: "AG-UI",
     logo: "/integration-logos/ag-ui.svg",
-    category: "backend-frameworks",
+    category: "ai-frameworks",
     support: "Official",
     type: "Agent protocol",
     summary:
@@ -303,7 +304,7 @@ const integrationCatalog: Integration[] = [
     slug: "open-webui",
     name: "Open WebUI",
     logo: "https://raw.githubusercontent.com/open-webui/open-webui/main/backend/open_webui/static/favicon-96x96.png",
-    category: "frontend-frameworks",
+    category: "frontend-platforms",
     type: "AI platform",
     summary:
       "Render charts, forms, tables, cards, and follow-ups directly inside Open WebUI conversations.",
@@ -324,12 +325,12 @@ const integrationCatalog: Integration[] = [
     ],
   },
 
-  // Frontend frameworks and runtimes.
+  // Frontend frameworks and platforms.
   {
     slug: "vue",
     name: "Vue 3",
     logo: "/integration-logos/vue.svg",
-    category: "frontend-frameworks",
+    category: "frontend-platforms",
     support: "Official",
     type: "Native runtime",
     summary:
@@ -347,7 +348,7 @@ const integrationCatalog: Integration[] = [
     slug: "react-native",
     name: "React Native",
     logo: "/integration-logos/react.svg",
-    category: "frontend-frameworks",
+    category: "frontend-platforms",
     support: "Official",
     type: "Mobile framework",
     summary:
@@ -368,7 +369,7 @@ const integrationCatalog: Integration[] = [
     slug: "svelte",
     name: "Svelte 5",
     logo: "/integration-logos/svelte.svg",
-    category: "frontend-frameworks",
+    category: "frontend-platforms",
     support: "Official",
     type: "Native runtime",
     summary:
@@ -387,9 +388,9 @@ const integrationCatalog: Integration[] = [
 export const integrations: Integration[] = integrationCatalog;
 
 const popularityOrder: Record<IntegrationCategoryId, string[]> = {
+  "ai-frameworks": ["langchain-langgraph", "vercel-ai-sdk", "google-adk", "mastra", "ag-ui"],
   "design-systems": ["shadcn-ui", "material-ui", "daisyui", "base-ui", "openui-component-library"],
-  "frontend-frameworks": ["vue", "svelte", "react-native", "assistant-ui", "open-webui"],
-  "backend-frameworks": ["langchain-langgraph", "vercel-ai-sdk", "google-adk", "mastra", "ag-ui"],
+  "frontend-platforms": ["vue", "svelte", "react-native", "assistant-ui", "open-webui"],
 };
 
 export const integrationBySlug = new Map(integrations.map((item) => [item.slug, item]));

@@ -10,11 +10,12 @@ import styles from "./page.module.css";
 export const metadata: Metadata = {
   title: "Integrations",
   description:
-    "Explore OpenUI integrations across design systems, frontend frameworks, and backend frameworks.",
+    "Explore OpenUI integrations across AI frameworks and protocols, design systems, and frontend platforms.",
   alternates: { canonical: "/integrations" },
   openGraph: {
     title: "OpenUI integrations",
-    description: "Build generative UI with the design systems and frameworks you know.",
+    description:
+      "Build generative UI with the AI frameworks, design systems, and frontend platforms you know.",
     url: "/integrations",
     type: "website",
   },
@@ -33,7 +34,9 @@ export default function IntegrationsPage() {
           </>
         }
         subtitle={
-          <>Start with a design system, frontend framework, or backend framework your team knows.</>
+          <>
+            Start with an AI framework, design system, or frontend platform your team already knows.
+          </>
         }
         smallSubtitle
       />
