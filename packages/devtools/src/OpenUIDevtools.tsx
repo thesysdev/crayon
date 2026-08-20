@@ -100,7 +100,6 @@ export function OpenUIDevtools({
   const [events, setEvents] = useState<ObservabilityEvent[]>([]);
   const [open, setOpen] = useState(false);
   const [toggleHovered, setToggleHovered] = useState(false);
-  const [bannerHovered, setBannerHovered] = useState(false);
   const { config, setConfig, configRef } = useDevtoolsConfig(
     {
       autoOpen: autoOpenOnError,
