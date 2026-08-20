@@ -38,8 +38,8 @@ if (process.env.NODE_ENV === "development" && typeof document !== "undefined") {
         const mount = () => {
           devtools.mountOpenUIDevtools({
             React: react,
-            createPortal: reactDom.createPortal,
-            createRoot: reactDomClient.createRoot,
+            ReactDOM: reactDom,
+            ReactDOMClient: reactDomClient,
             // Closed over this module's graph so the bundler resolves it —
             // the CDN file never imports "@openuidev/react-lang" itself.
             loadReactLang: () => import("@openuidev/react-lang"),
