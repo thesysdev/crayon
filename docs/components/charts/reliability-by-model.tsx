@@ -168,13 +168,6 @@ export function ReliabilityByModel({
             better ↗
           </text>
 
-          <defs>
-            <linearGradient id="frontierFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stopColor="var(--pO)" stopOpacity="0.16" />
-              <stop offset="1" stopColor="var(--pO)" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-
           {/* draw ours last so the purple line sits on top */}
           {[...series].reverse().map(({ f, pts }) => {
             const stroke = hue[f];
@@ -182,18 +175,6 @@ export function ReliabilityByModel({
             const first = pts[0];
             return (
               <g key={f}>
-                {ours ? (
-                  <polygon
-                    className={s.fadeLate}
-                    points={`${pts
-                      .map((p) => `${x(p.cost)},${y(p.score)}`)
-                      .join(
-                        " ",
-                      )} ${x(pts[pts.length - 1].cost)},${PAD.top + PH} ${x(pts[0].cost)},${PAD.top + PH}`}
-                    fill="url(#frontierFill)"
-                    style={{ "--d": "400ms" } as React.CSSProperties}
-                  />
-                ) : null}
                 <polyline
                   className={s.line}
                   pathLength={1}

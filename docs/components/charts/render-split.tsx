@@ -33,7 +33,7 @@ const totals = (id: FormatId, models: readonly ModelId[]) =>
    Both cluster near 100%, so each column gets a truncated floor — disclosed in
    the subtitle — or all three bars would look the same length. */
 const COLS = [
-  { key: "inFull", label: "Accuracy", floor: 75 },
+  { key: "inFull", label: "Valid graph", floor: 75 },
   { key: "atAll", label: "Render success", floor: 95 },
 ] as const;
 
@@ -61,8 +61,16 @@ export function RenderSplit({
 
   return (
     <Chart
-      title="Accuracy and render success"
+      title="Structural validity and render success"
       sub={`Share of ${RUNS_PER_FORMAT.toLocaleString()} runs per format; longer is better. Scales start at ${COLS[0].floor}% and ${COLS[1].floor}%, not zero. Arrows compare with json-render.`}
+      note={
+        <>
+          <strong>What counts as valid.</strong>&#32;Parses, has a root, every reference resolves,
+          nothing orphaned or invented, no missing or out-of-range props, not truncated, and at
+          least as many components as the brief has requirements. That last one is a count floor,
+          not a check that each requirement was addressed: this measures structure, not coverage.
+        </>
+      }
     >
       <div className={`${s.matrix} ${s.matrixPair}`}>
         <div className={s.matrixHead} aria-hidden>

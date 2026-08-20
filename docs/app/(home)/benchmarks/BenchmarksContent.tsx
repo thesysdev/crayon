@@ -205,19 +205,16 @@ export function BenchmarksContent() {
 
           <Section
             id="render-split"
-            title="Accuracy vs. render success"
-            question="Did the screen match the brief, and did it render at all?"
+            title="Structural validity vs. render success"
+            question="Does the graph hold together, and did it render?"
             description={
               <>
-                1,104 runs per format. Accuracy requires the <br />
-                full brief; render success requires a non-blank render.
+                Valid: every part it refers to exists, and every setting is a real one. Render
+                success: something appeared at all. 1,104 runs per format.
               </>
             }
             insight={
-              <>
-                OpenUI leads on both, while A2UI and json-render trade off between accuracy and
-                render success.
-              </>
+              <>OpenUI leads on both; A2UI and json-render each trade one off against the other.</>
             }
             hideChartHead
           >
@@ -226,12 +223,12 @@ export function BenchmarksContent() {
 
           <Section
             id="completion"
-            title="Screens rendered correctly"
-            question="Generated UI matched the brief"
+            title="Structural validity by model"
+            question="How often the component graph holds together"
             description={
               <>
-                Judged by each format&rsquo;s own SDK, <br />
-                with 4 runs per brief.
+                Passes only if nothing is left dangling, nothing is invented, and every setting is
+                valid. 184 runs per model, per format.
               </>
             }
             insight={
@@ -243,7 +240,12 @@ export function BenchmarksContent() {
             }
             hideChartHead
           >
-            <CompletionByModel models={ALL_MODELS} formats={FORMAT_ORDER} note={null} />
+            <CompletionByModel
+              models={ALL_MODELS}
+              formats={FORMAT_ORDER}
+              sub="Runs whose component graph parses, resolves and validates, judged by each format's own SDK."
+              note={null}
+            />
           </Section>
 
           <Section
