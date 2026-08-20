@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { MAX_EDITOR_PCT, MIN_EDITOR_PCT } from "../debug/DebugUI";
 import type { ColorMode } from "../theme";
 
 const STORAGE_KEY = "openui.devtools.config";
@@ -7,6 +8,10 @@ export type DevtoolsConfig = {
   autoOpen: boolean;
   onlyErrors: boolean;
   theme: ColorMode;
+  /** Set once the Debug help dialog has been dismissed, so it only greets once. */
+  helpSeen: boolean;
+  /** Editor column width in OpenUI Debug, as a percentage of the split. */
+  editorPct: number;
 };
 
 function isColorMode(value: unknown): value is ColorMode {
@@ -18,6 +23,10 @@ function sanitize(patch: Partial<DevtoolsConfig>): Partial<DevtoolsConfig> {
   if (typeof patch.autoOpen === "boolean") next.autoOpen = patch.autoOpen;
   if (typeof patch.onlyErrors === "boolean") next.onlyErrors = patch.onlyErrors;
   if (isColorMode(patch.theme)) next.theme = patch.theme;
+  if (typeof patch.helpSeen === "boolean") next.helpSeen = patch.helpSeen;
+  if (typeof patch.editorPct === "number" && Number.isFinite(patch.editorPct)) {
+    next.editorPct = Math.min(MAX_EDITOR_PCT, Math.max(MIN_EDITOR_PCT, patch.editorPct));
+  }
   return next;
 }
 

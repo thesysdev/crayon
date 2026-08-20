@@ -10,6 +10,7 @@ export function debugStyles(t: ThemeTokens) {
       alignItems: "center",
       gap: 10,
       flexWrap: "wrap",
+      flexShrink: 0,
       padding: "8px 16px",
       borderBottom: `1px solid ${t.borderSubtle}`,
       background: t.bg,
