@@ -279,12 +279,18 @@ export function ReliabilityByModel({
             ? null
             : (() => {
                 const glyphs = series.flatMap(({ f, pts }) =>
-                  pts.map((p) => ({
-                    key: `${f}-${p.m}`,
-                    mark: MODELS.find((m) => m.id === p.m)!.mark,
-                    lx: x(p.cost),
-                    ly: y(p.score) + (f === "jsonRender" ? 12 : -30),
-                  })),
+                  pts.map((p) => {
+                    const above = y(p.score) - 30;
+                    /* the chart header sits on the top gridline, so a mark that
+                       would rise into it drops under its point instead */
+                    const collidesWithHeader = above < PAD.top;
+                    return {
+                      key: `${f}-${p.m}`,
+                      mark: MODELS.find((m) => m.id === p.m)!.mark,
+                      lx: x(p.cost),
+                      ly: f === "jsonRender" || collidesWithHeader ? y(p.score) + 12 : above,
+                    };
+                  }),
                 );
                 glyphs.sort((a, b) => a.ly - b.ly);
                 for (let i = 0; i < glyphs.length; i++) {
