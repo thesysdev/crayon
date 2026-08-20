@@ -60,7 +60,9 @@ export default async function IntegrationDetailPage(props: { params: Promise<{ s
             <IntegrationLogo className={styles.detailMark} integration={integration} />
             <div className={styles.detailTitleBlock}>
               <div className={styles.detailTags}>
-                <span data-support={integration.support}>{integration.support}</span>
+                {integration.support ? (
+                  <span data-support={integration.support}>{integration.support}</span>
+                ) : null}
                 <span>{integration.type}</span>
               </div>
               <h1>{integration.name}</h1>

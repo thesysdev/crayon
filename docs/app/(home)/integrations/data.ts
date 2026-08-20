@@ -13,7 +13,7 @@ export interface Integration {
   name: string;
   logo: string;
   category: IntegrationCategoryId;
-  support: IntegrationSupport;
+  support?: IntegrationSupport;
   type: string;
   summary: string;
   howItWorks: string;
@@ -300,49 +300,10 @@ const integrationCatalog: Integration[] = [
   },
 
   {
-    slug: "fastapi",
-    name: "FastAPI",
-    logo: "/integration-logos/fastapi.svg",
-    category: "backend-frameworks",
-    support: "Official",
-    type: "Backend framework",
-    summary:
-      "Stream OpenUI Lang from a Python FastAPI endpoint into a Vite and React AgentInterface frontend.",
-    howItWorks:
-      "FastAPI owns the model client and yields newline-delimited streaming chunks. The Vite frontend points OpenUI's readable-stream adapter at that endpoint and renders the response progressively.",
-    links: [
-      exampleLink("fastapi-backend"),
-      { label: "FastAPI", href: "https://fastapi.tiangolo.com", kind: "Website" },
-      { label: "Self-hosting guide", href: "/docs/agent/reference/self-hosting", kind: "Guide" },
-    ],
-  },
-  {
-    slug: "supabase",
-    name: "Supabase",
-    logo: "/integration-logos/supabase.svg",
-    category: "backend-frameworks",
-    support: "Official",
-    type: "Backend platform",
-    summary:
-      "Persist OpenUI chat threads with Postgres, anonymous auth, Row Level Security, and realtime updates.",
-    howItWorks:
-      "The reference app stores threads and messages in Supabase, scopes rows per user with RLS, updates the sidebar through Realtime, and keeps the model route server-side.",
-    links: [
-      exampleLink("supabase-chat"),
-      { label: "Supabase", href: "https://supabase.com", kind: "Website" },
-      {
-        label: "Conversation concepts",
-        href: "/docs/agent/core-concepts/conversations",
-        kind: "Docs",
-      },
-    ],
-  },
-  {
     slug: "open-webui",
     name: "Open WebUI",
     logo: "https://raw.githubusercontent.com/open-webui/open-webui/main/backend/open_webui/static/favicon-96x96.png",
     category: "frontend-frameworks",
-    support: "Community",
     type: "AI platform",
     summary:
       "Render charts, forms, tables, cards, and follow-ups directly inside Open WebUI conversations.",
@@ -476,15 +437,7 @@ const popularityOrder: Record<IntegrationCategoryId, string[]> = {
     "assistant-ui",
     "open-webui",
   ],
-  "backend-frameworks": [
-    "langchain-langgraph",
-    "vercel-ai-sdk",
-    "google-adk",
-    "mastra",
-    "fastapi",
-    "supabase",
-    "ag-ui",
-  ],
+  "backend-frameworks": ["langchain-langgraph", "vercel-ai-sdk", "google-adk", "mastra", "ag-ui"],
 };
 
 export const integrationBySlug = new Map(integrations.map((item) => [item.slug, item]));
