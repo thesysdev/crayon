@@ -9,6 +9,7 @@ const DECODE_TPS = 50;
 
 export function SpeedTokens({ note }: { note?: React.ReactNode | null } = {}) {
   const secs = (id: FormatId) => tokens.outputPerScreen[id] / DECODE_TPS;
+  const baseline = secs("openui");
   const max = Math.max(...FORMAT_ORDER.map(secs));
   return (
     <Chart
@@ -57,6 +58,9 @@ export function SpeedTokens({ note }: { note?: React.ReactNode | null } = {}) {
                 className={`${s.value} ${id === "openui" ? `${s.valueHi} ${slotClass(1)}` : ""}`}
               >
                 ~{Math.round(secs(id))}s
+                {id !== "openui" ? (
+                  <span className={s.diffBad}>↑{(secs(id) / baseline).toFixed(1)}×</span>
+                ) : null}
               </span>
             </Row>
           );
