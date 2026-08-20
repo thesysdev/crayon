@@ -4,26 +4,23 @@ import { FORMATS, FORMAT_ORDER, type FormatId, tokens } from "@/lib/benchmark-da
 import { Chart, Row, styles as s, slotClass } from "./primitives";
 
 /* Streaming speed, derived from the current benchmark: the mean output per
-   screen over all 1,104 scored runs, decoded at a typical 50–60 tokens per
-   second. The bars use the midpoint; the tooltip carries the range. */
-const LOW = 50;
-const HIGH = 60;
-const MID = (LOW + HIGH) / 2;
+   screen over all 1,104 scored runs, decoded at a fixed 50 tokens per second. */
+const DECODE_TPS = 50;
 
 export function SpeedTokens({ note }: { note?: React.ReactNode | null } = {}) {
-  const secs = (id: FormatId) => tokens.outputPerScreen[id] / MID;
+  const secs = (id: FormatId) => tokens.outputPerScreen[id] / DECODE_TPS;
   const max = Math.max(...FORMAT_ORDER.map(secs));
   return (
     <Chart
       title="Time to stream a screen"
-      sub="Mean output per screen, decoded at 50–60 tokens per second."
+      sub="Mean output per screen, decoded at 50 tokens per second."
       note={
         note !== undefined ? (
           note
         ) : (
           <>
             Derived, not wall-clock: mean output over {tokens.outputBasis.runs.toLocaleString()}
-            &#32;scored runs, at a fixed {LOW}–{HIGH}
+            &#32;scored runs, at a fixed {DECODE_TPS}
             &#32;tokens/second decode rate.
           </>
         )
@@ -37,7 +34,7 @@ export function SpeedTokens({ note }: { note?: React.ReactNode | null } = {}) {
             <Row
               key={id}
               label={f.label}
-              tip={`${f.label}: ${out.toLocaleString()} output tokens ≈ ${Math.round(out / HIGH)}–${Math.round(out / LOW)}s per screen`}
+              tip={`${f.label}: ${out.toLocaleString()} output tokens ≈ ${Math.round(out / DECODE_TPS)}s per screen at ${DECODE_TPS} tok/s`}
             >
               <span className={s.barSlot}>
                 <span

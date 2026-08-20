@@ -33,7 +33,7 @@ const totals = (id: FormatId, models: readonly ModelId[]) =>
    Both cluster near 100%, so each column gets a truncated floor — disclosed in
    the subtitle — or all three bars would look the same length. */
 const COLS = [
-  { key: "inFull", label: "Valid graph", floor: 75 },
+  { key: "inFull", label: "Structural validity", floor: 75 },
   { key: "atAll", label: "Render success", floor: 95 },
 ] as const;
 
@@ -57,12 +57,12 @@ export function RenderSplit({
       counts: t,
     };
   };
-  const baseline = rates("jsonRender");
+  const baseline = rates("openui");
 
   return (
     <Chart
       title="Structural validity and render success"
-      sub={`Share of ${RUNS_PER_FORMAT.toLocaleString()} runs per format; longer is better. Scales start at ${COLS[0].floor}% and ${COLS[1].floor}%, not zero. Arrows compare with json-render.`}
+      sub={`Share of ${RUNS_PER_FORMAT.toLocaleString()} runs per format; longer is better. Scales start at ${COLS[0].floor}% and ${COLS[1].floor}%, not zero. Arrows compare with OpenUI.`}
       note={
         <>
           <strong>What counts as valid.</strong>&#32;Parses, has a root, every reference resolves,
@@ -116,7 +116,7 @@ export function RenderSplit({
                     </span>
                     <span className={s.matrixVal}>{r[c.key].toFixed(1)}%</span>
                     <span className={s.matrixDiff}>
-                      {id !== "jsonRender" && shown.includes("jsonRender") ? (
+                      {id !== "openui" && shown.includes("openui") ? (
                         <span className={better ? s.diffGood : s.diffBad}>
                           {delta > 0 ? "↑" : "↓"}
                           {Math.abs(delta).toFixed(1)}

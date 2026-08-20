@@ -68,8 +68,8 @@ const HEADLINE_FEATURES: GridFeature[] = [
   },
   {
     Icon: Wrench,
-    title: `${repairedShare().toFixed(0)}% auto-repaired`,
-    description: "OpenUI Cloud fixes broken generations before users see them.",
+    title: `${repairedShare().toFixed(0)}% repaired in flight`,
+    description: "A sanitizer model patches only the broken lines, via incremental editing.",
   },
 ];
 
@@ -206,7 +206,7 @@ export function BenchmarksContent() {
           <Section
             id="render-split"
             title="Structural validity vs. render success"
-            question="Does the graph hold together, and did it render?"
+            question="Was the output valid, and did anything render?"
             description={
               <>
                 Valid: every part it refers to exists, and every setting is a real one. Render
@@ -286,7 +286,7 @@ export function BenchmarksContent() {
             description={
               <>
                 Mean output per screen, <br />
-                decoded at 50&ndash;60 tokens per second.
+                decoded at 50 tokens per second.
               </>
             }
             insight="A screen streams in about half the time, because there is about half as much to write."
@@ -297,8 +297,8 @@ export function BenchmarksContent() {
 
           <Section
             id="density"
-            title="Accuracy by screen complexity"
-            question="Generation accuracy as requirements increase"
+            title="Structural validity by screen complexity"
+            question="Validity as requirements increase"
             description={
               <>
                 46 briefs across 5 complexity bands, <br />

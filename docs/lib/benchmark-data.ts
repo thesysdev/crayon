@@ -435,9 +435,8 @@ export const timesBaseline = (value: number, baseline: number) => value / baseli
 /* 5. Cost                                                             */
 /* ------------------------------------------------------------------ */
 
-/** USD for one benchmark pass = 46 screens, at provider list prices.
- *  The five models with public per-token pricing (Sol has none published). */
-export const COST_MODELS: ModelId[] = ["gemini", "muse", "qwen", "kimi", "opus"];
+/** USD for one benchmark pass = 46 screens, at provider list prices. All six models. */
+export const COST_MODELS: ModelId[] = ["gemini", "muse", "qwen", "kimi", "opus", "sol"];
 
 export const costPerPass: Partial<Record<ModelId, Record<FormatId, number>>> = {
   gemini: { openui: 0.42, a2ui: 0.95, jsonRender: 0.85 },
@@ -445,6 +444,7 @@ export const costPerPass: Partial<Record<ModelId, Record<FormatId, number>>> = {
   qwen: { openui: 0.81, a2ui: 1.9, jsonRender: 1.46 },
   kimi: { openui: 1.53, a2ui: 3.16, jsonRender: 2.91 },
   opus: { openui: 2.27, a2ui: 5.85, jsonRender: 4.88 },
+  sol: { openui: 3.08, a2ui: 6.84, jsonRender: 6.3 },
 };
 
 /** The procurement unit: dollars per 1,000 screens. */

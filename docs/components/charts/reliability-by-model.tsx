@@ -17,8 +17,8 @@ import { Chart, Mark, styles as s } from "./primitives";
 
 /* The hero chart: a cost-versus-reliability frontier, one line per format.
    Cost runs right-to-left toward $0 (the CursorBench convention), so the best
-   place on the chart is the top right: reliable and cheap. Each point is one
-   of the five models with public pricing. */
+   place on the chart is the top right: reliable and cheap. One point per
+   model, all six priced at list prices. */
 const H = 440;
 const PAD = { top: 56, bottom: 64 };
 const PH = H - PAD.top - PAD.bottom;
@@ -41,7 +41,7 @@ const MODEL_NAME: Record<ModelId, string> = {
   muse: "Muse Spark 1.2",
 };
 
-const C_MAX = 6.2;
+const C_MAX = 7.4;
 const Y_MIN = 66;
 const X_TICKS = [6, 4, 2, 0];
 const Y_TICKS = [70, 80, 90, 100];
@@ -81,7 +81,7 @@ export function ReliabilityByModel({
 
   if (pricedModels.length === 0) return null;
 
-  /* one line per format: its five priced points, dearest first */
+  /* one line per format: its six priced points, dearest first */
   const series = activeFormats.map((f) => ({
     f,
     pts: pricedModels
@@ -96,7 +96,7 @@ export function ReliabilityByModel({
   return (
     <Chart
       title="Reliability vs cost"
-      sub="One line per format across the five models with public pricing. Up and to the right is better: more screens correct, less money."
+      sub="One line per format across all six models at list prices. Up and to the right is better: more screens correct, less money."
     >
       <div ref={holder} className={`${s.svgHolder} ${s.frontier}`} style={{ position: "relative" }}>
         <svg

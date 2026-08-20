@@ -319,7 +319,7 @@ export function TokenMatrix({
   return (
     <Chart
       title="Token consumption"
-      sub={sub ?? "System prompt and output for one screen. Arrows compare with json-render."}
+      sub={sub ?? "System prompt and output for one screen. Multiples compare with OpenUI."}
       note={
         note !== undefined ? (
           note
@@ -351,8 +351,8 @@ export function TokenMatrix({
                 <span>{f.label}</span>
               </span>
               {TOKEN_COLS.map((c) => {
-                const base = c.val("jsonRender");
-                const pct = ((c.val(id) - base) / base) * 100;
+                const base = c.val("openui");
+                const times = c.val(id) / base;
                 return (
                   <span key={c.key} className={`${s.matrixCell} ${s.matrixCellDiff}`}>
                     <span className={s.matrixBarWrap}>
@@ -374,10 +374,10 @@ export function TokenMatrix({
                     </span>
                     <span className={s.matrixVal}>{c.val(id).toLocaleString()}</span>
                     <span className={s.matrixDiff}>
-                      {id !== "jsonRender" ? (
-                        <span className={pct <= 0 ? s.diffGood : s.diffBad}>
-                          {pct <= 0 ? "↓" : "↑"}
-                          {Math.abs(pct).toFixed(0)}%
+                      {id !== "openui" ? (
+                        <span className={times <= 1 ? s.diffGood : s.diffBad}>
+                          {times <= 1 ? "↓" : "↑"}
+                          {times.toFixed(1)}×
                         </span>
                       ) : null}
                     </span>
@@ -410,7 +410,6 @@ export function CostPerPass({
   const { vivid } = useVizSkin();
   const shownModels = COST_MODELS.filter((m) => models.includes(m));
   const shownFormats = FORMAT_ORDER.filter((f) => formats.includes(f));
-  const unpricedSelected = models.length - shownModels.length;
   return (
     <Chart
       title="Cost of one benchmark pass"
@@ -424,11 +423,8 @@ export function CostPerPass({
           note
         ) : (
           <>
-            One pass = {BRIEFS} screens at list prices; the five models with public per-token
-            pricing
-            {unpricedSelected > 0 ? " (Sol has none published, so it can't appear here)" : ""}. Gap
-            = dearest / cheapest. Per 1,000 screens on Opus: $44 in OpenUI against $127 in A2UI and
-            $102 in json-render.
+            One pass = {BRIEFS} screens at provider list prices, all six models.
+            {` Per 1,000 screens on Opus: $${costPer1kScreens("opus", "openui").toFixed(0)} in OpenUI against $${costPer1kScreens("opus", "a2ui").toFixed(0)} in A2UI and $${costPer1kScreens("opus", "jsonRender").toFixed(0)} in json-render.`}
           </>
         )
       }
@@ -475,10 +471,9 @@ export function CostPerPass({
                   </th>
                   {shownFormats.map((id) => {
                     const v = costPerPass[m]![id];
-                    const base = costPerPass[m]!.jsonRender;
-                    const pct = ((v - base) / base) * 100;
-                    const showDiff =
-                      vivid && id !== "jsonRender" && shownFormats.includes("jsonRender");
+                    const base = costPerPass[m]!.openui;
+                    const times = v / base;
+                    const showDiff = vivid && id !== "openui" && shownFormats.includes("openui");
                     return (
                       <td
                         key={id}
@@ -494,9 +489,9 @@ export function CostPerPass({
                           usd(v)
                         )}
                         {showDiff ? (
-                          <span className={pct <= 0 ? s.diffGood : s.diffBad}>
-                            {pct <= 0 ? "\u2193" : "\u2191"}
-                            {Math.abs(pct).toFixed(0)}%
+                          <span className={times <= 1 ? s.diffGood : s.diffBad}>
+                            {times <= 1 ? "\u2193" : "\u2191"}
+                            {times.toFixed(1)}×
                           </span>
                         ) : null}
                       </td>

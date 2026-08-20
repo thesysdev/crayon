@@ -76,7 +76,7 @@ export function CompletionByDensity({
 
   return (
     <Chart
-      title="Completion rate by screen complexity"
+      title="Structural validity by screen complexity"
       sub={
         sub ??
         "The more a brief asks for, the less every format delivers. OpenUI and A2UI track each other closely at every size; json-render falls fastest and furthest."
