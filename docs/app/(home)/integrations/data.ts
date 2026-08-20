@@ -326,46 +326,6 @@ const integrationCatalog: Integration[] = [
 
   // Frontend frameworks and runtimes.
   {
-    slug: "react",
-    name: "React",
-    logo: "/integration-logos/react.svg",
-    category: "frontend-frameworks",
-    support: "Official",
-    type: "Native runtime",
-    summary:
-      "Define component libraries and render streaming OpenUI Lang with the primary React runtime.",
-    howItWorks:
-      "@openuidev/react-lang supplies defineComponent, createLibrary, prompt generation, streaming parsing, and Renderer. Add @openuidev/react-ui when you want the built-in libraries or AgentInterface.",
-    install: "npm install @openuidev/react-lang @openuidev/react-ui",
-    links: [
-      { label: "React runtime API", href: "/docs/api-reference/react-lang", kind: "Docs" },
-      { label: "Quickstart", href: "/docs/openui-lang/quickstart", kind: "Guide" },
-      exampleLink("openui-chat"),
-    ],
-  },
-  {
-    slug: "nextjs",
-    name: "Next.js",
-    logo: "/integration-logos/nextjs.svg",
-    category: "frontend-frameworks",
-    support: "Official",
-    type: "Web framework",
-    summary:
-      "Build full-stack OpenUI apps with server routes, streaming adapters, AgentInterface, and optional Cloud persistence.",
-    howItWorks:
-      "A client component renders AgentInterface or Renderer while an App Router endpoint owns model credentials, tools, and the response stream. The CLI's Cloud and self-hosted templates both use this pattern.",
-    install: "npx @openuidev/cli@latest create",
-    links: [
-      { label: "Agent quickstart", href: "/docs/agent/getting-started/quickstart", kind: "Guide" },
-      {
-        label: "OpenUI Cloud starter",
-        href: "/docs/agent/getting-started/openui-cloud",
-        kind: "Guide",
-      },
-      exampleLink("openui-chat"),
-    ],
-  },
-  {
     slug: "vue",
     name: "Vue 3",
     logo: "/integration-logos/vue.svg",
@@ -428,15 +388,7 @@ export const integrations: Integration[] = integrationCatalog;
 
 const popularityOrder: Record<IntegrationCategoryId, string[]> = {
   "design-systems": ["shadcn-ui", "material-ui", "daisyui", "base-ui", "openui-component-library"],
-  "frontend-frameworks": [
-    "react",
-    "nextjs",
-    "vue",
-    "svelte",
-    "react-native",
-    "assistant-ui",
-    "open-webui",
-  ],
+  "frontend-frameworks": ["vue", "svelte", "react-native", "assistant-ui", "open-webui"],
   "backend-frameworks": ["langchain-langgraph", "vercel-ai-sdk", "google-adk", "mastra", "ag-ui"],
 };
 
