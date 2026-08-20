@@ -1,7 +1,5 @@
 export type IntegrationCategoryId = "ai-frameworks" | "design-systems" | "frontend-platforms";
 
-export type IntegrationSupport = "Official" | "Community" | "Compatible";
-
 export interface IntegrationLink {
   label: string;
   href: string;
@@ -13,7 +11,6 @@ export interface Integration {
   name: string;
   logo: string;
   category: IntegrationCategoryId;
-  support?: IntegrationSupport;
   type: string;
   summary: string;
   howItWorks: string;
@@ -87,7 +84,6 @@ const integrationCatalog: Integration[] = [
     name: "shadcn/ui",
     logo: "/integration-logos/shadcn-ui.svg",
     category: "design-systems",
-    support: "Official",
     type: "Design system",
     summary:
       "Wrap shadcn/ui components in an OpenUI library and let the model compose them as streaming interfaces.",
@@ -104,7 +100,6 @@ const integrationCatalog: Integration[] = [
     name: "Material UI",
     logo: "/integration-logos/mui.svg",
     category: "design-systems",
-    support: "Official",
     type: "Design system",
     summary:
       "Expose Material UI components to a model without replacing your existing React design system.",
@@ -125,7 +120,6 @@ const integrationCatalog: Integration[] = [
     name: "daisyUI",
     logo: "/integration-logos/daisyui.svg",
     category: "design-systems",
-    support: "Compatible",
     type: "Custom library path",
     summary:
       "Turn selected daisyUI patterns into a model-safe component vocabulary while keeping Tailwind styling in your app.",
@@ -145,7 +139,6 @@ const integrationCatalog: Integration[] = [
     name: "Base UI",
     logo: "/integration-logos/base-ui.svg",
     category: "design-systems",
-    support: "Compatible",
     type: "Custom library path",
     summary:
       "Pair Base UI's unstyled accessible primitives with a domain-specific OpenUI component library.",
@@ -165,7 +158,6 @@ const integrationCatalog: Integration[] = [
     name: "OpenUI component library",
     logo: "/favicon.svg",
     category: "design-systems",
-    support: "Official",
     type: "Component library",
     summary:
       "Start with production-ready charts, tables, forms, cards, layouts, and chat response components.",
@@ -185,7 +177,6 @@ const integrationCatalog: Integration[] = [
     name: "LangChain & LangGraph",
     logo: "https://raw.githubusercontent.com/langchain-ai/docs/main/src/images/brand/langchain-icon.png",
     category: "ai-frameworks",
-    support: "Official",
     type: "Agent framework",
     summary:
       "Stream LangGraph protocol events into OpenUI through the official @openuidev/langchain package and AG-UI adapter.",
@@ -199,7 +190,6 @@ const integrationCatalog: Integration[] = [
     name: "Vercel AI SDK",
     logo: "/integration-logos/vercel.svg",
     category: "ai-frameworks",
-    support: "Official",
     type: "AI SDK",
     summary:
       "Use streamText and useChat to deliver progressively rendered OpenUI interfaces in React, Vue, and Svelte apps.",
@@ -220,7 +210,6 @@ const integrationCatalog: Integration[] = [
     name: "Google ADK",
     logo: "/integration-logos/google.svg",
     category: "ai-frameworks",
-    support: "Official",
     type: "Agent SDK",
     summary:
       "Bridge Google ADK for TypeScript run events into AgentInterface with tools and multi-turn sessions.",
@@ -236,7 +225,6 @@ const integrationCatalog: Integration[] = [
     name: "Mastra",
     logo: "/integration-logos/mastra.svg",
     category: "ai-frameworks",
-    support: "Official",
     type: "Agent framework",
     summary:
       "Connect a Mastra agent to AgentInterface over AG-UI and render its streamed output as typed interfaces.",
@@ -257,7 +245,6 @@ const integrationCatalog: Integration[] = [
     name: "assistant-ui",
     logo: "/integration-logos/assistant-ui.svg",
     category: "frontend-platforms",
-    support: "Official",
     type: "Chat framework",
     summary:
       "Render streaming OpenUI programs as assistant-ui Tool UI while assistant-ui retains its conversation lifecycle.",
@@ -283,7 +270,6 @@ const integrationCatalog: Integration[] = [
     name: "AG-UI",
     logo: "/integration-logos/ag-ui.svg",
     category: "ai-frameworks",
-    support: "Official",
     type: "Agent protocol",
     summary:
       "Consume standard AG-UI event streams in OpenUI chat surfaces with the built-in agUIAdapter.",
@@ -331,7 +317,6 @@ const integrationCatalog: Integration[] = [
     name: "Vue 3",
     logo: "/integration-logos/vue.svg",
     category: "frontend-platforms",
-    support: "Official",
     type: "Native runtime",
     summary:
       "Define model-renderable Vue components and render streamed OpenUI Lang with @openuidev/vue-lang.",
@@ -349,7 +334,6 @@ const integrationCatalog: Integration[] = [
     name: "React Native",
     logo: "/integration-logos/react.svg",
     category: "frontend-platforms",
-    support: "Official",
     type: "Mobile framework",
     summary:
       "Render model-generated interfaces in a native mobile chat application with a dedicated component library.",
@@ -370,7 +354,6 @@ const integrationCatalog: Integration[] = [
     name: "Svelte 5",
     logo: "/integration-logos/svelte.svg",
     category: "frontend-platforms",
-    support: "Official",
     type: "Native runtime",
     summary:
       "Define Svelte components, generate prompts, and render streamed OpenUI Lang with @openuidev/svelte-lang.",

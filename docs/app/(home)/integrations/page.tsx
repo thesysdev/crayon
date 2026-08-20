@@ -111,9 +111,6 @@ export default function IntegrationsPage() {
                           <p>{item.summary}</p>
                         </div>
                         <div className={styles.cardMeta}>
-                          {item.support ? (
-                            <span data-support={item.support}>{item.support}</span>
-                          ) : null}
                           <span>{item.type}</span>
                         </div>
                       </Link>

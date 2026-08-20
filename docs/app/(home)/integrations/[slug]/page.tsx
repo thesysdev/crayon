@@ -1,8 +1,9 @@
 import { Footer } from "@/app/(home)/sections/Footer/Footer";
-import { ArrowLeft, ArrowRight, ArrowUpRight, Check, Copy } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, Check } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { CopyCommand } from "../copy-command";
 import {
   getIntegrationCategory,
   getRelatedIntegrations,
@@ -60,9 +61,6 @@ export default async function IntegrationDetailPage(props: { params: Promise<{ s
             <IntegrationLogo className={styles.detailMark} integration={integration} />
             <div className={styles.detailTitleBlock}>
               <div className={styles.detailTags}>
-                {integration.support ? (
-                  <span data-support={integration.support}>{integration.support}</span>
-                ) : null}
                 <span>{integration.type}</span>
               </div>
               <h1>{integration.name}</h1>
@@ -125,7 +123,7 @@ export default async function IntegrationDetailPage(props: { params: Promise<{ s
                 </div>
                 <div className={styles.codeBlock}>
                   <code>{integration.install}</code>
-                  <Copy size={16} aria-hidden="true" />
+                  <CopyCommand command={integration.install} />
                 </div>
               </section>
             ) : null}
