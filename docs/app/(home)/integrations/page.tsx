@@ -126,15 +126,18 @@ export default function IntegrationsPage() {
               <Boxes size={22} />
             </span>
             <div>
-              <h2>Building another integration?</h2>
-              <p>
-                Share an adapter, component library, example, or tool with the OpenUI community.
-              </p>
+              <h2>Contribute an integration</h2>
+              <p>If you want to contribute an integration, please raise an issue.</p>
             </div>
-            <Link className={styles.ctaLink} href="/lab">
-              Visit the Lab
+            <a
+              className={styles.ctaLink}
+              href="https://github.com/thesysdev/openui/issues/new/choose"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              Raise an issue
               <ArrowRight size={16} aria-hidden="true" />
-            </Link>
+            </a>
           </section>
         </section>
       </div>
