@@ -3,13 +3,18 @@ import { getResponseErrorMessage } from "../adapters/httpError";
 
 export async function buildObservabilityErrorDetail(response: Response) {
   if (response.ok) return {};
-  const res = await response.clone().json();
-  return {
-    error: res?.error,
-    ...(!res.message
-      ? await getResponseErrorMessage(response).then((message: string) => ({ message }))
-      : { message: res.message }),
-  };
+
+  try {
+    const res = await response.clone().json();
+    return {
+      error: res?.error,
+      ...(!res?.message
+        ? { message: await getResponseErrorMessage(response) }
+        : { message: res.message }),
+    };
+  } catch {
+    return { message: await getResponseErrorMessage(response) };
+  }
 }
 
 export function levelForStatus(status: number): ObservabilityLevel {
