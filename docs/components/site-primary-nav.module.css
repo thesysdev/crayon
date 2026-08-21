@@ -31,12 +31,16 @@
   background: var(--openui-highlight-strong);
 }
 
+/* Solid and inverted rather than tinted: black chip on light, white on dark.
+   Same pair the list tile fills to on hover, so the one filled marker in the
+   header and the one in the menus are the same two colours. Neutral, not the
+   accent: "New" is a note about age, not a state. */
 .badge {
   margin-left: 0.375rem;
   padding: 0.125rem 0.375rem;
   border-radius: 4px;
-  background: rgba(124, 58, 237, 0.12);
-  color: #7c3aed;
+  background: #0a0a0a;
+  color: #ffffff;
   font-size: 10px;
   font-weight: 600;
   line-height: 1;
@@ -110,7 +114,9 @@
     opacity 0.18s ease,
     visibility 0s,
     width 0.32s cubic-bezier(0.22, 1, 0.36, 1),
-    height 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    /* Slower than the rest: this is what the hover banner rides on, and the
+       panel growing is meant to read as unhurried rather than as a snap. */
+    height 0.5s cubic-bezier(0.32, 0.72, 0, 1),
     translate 0.32s cubic-bezier(0.22, 1, 0.36, 1);
   visibility: visible;
 }
@@ -141,13 +147,237 @@
   position: absolute;
   top: 0;
   left: 0;
+  /* A column of groups. */
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.16s ease;
+}
+
+/* A row of groups, each sized by how many cards it holds. An ungrouped menu is
+   one group spanning the row, which lands on the same tracks the plain grid used
+   to produce. */
+.columns {
+  display: flex;
+  gap: 24px;
+}
+
+/* A column of the panel. Usually one group, but two short ones can share it.
+   flex-grow and flex-basis are set inline: see the note at the JSX. */
+.column {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.group {
+  min-width: 0;
+  /* Fills its column, so a group holding one card is as tall as a group holding
+     two and every card in the menu comes out the same size. */
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Names the division, and nothing more: sentence case rather than a letterspaced
+   caps label. A fill does the separating instead of a rule under it, so there is
+   no stroke anywhere on this.
+
+   The inline padding is the same 0.5rem .dropdownText insets the card copy by,
+   so the label's text lands on the card titles' left edge while the fill itself
+   spans the card track exactly. */
+.groupLabel {
+  margin: 0;
+  padding: 6px 0.5rem;
+  border-radius: 10px;
+  background: rgba(10, 10, 10, 0.03);
+  font-family: "Inter", sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--openui-text-neutral-secondary);
+}
+
+/* Tuned for the dark panel rather than mirrored from the light value: white at
+   3% barely registers on it. */
+[data-theme="dark"] .groupLabel {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .badge {
+  background: #f3f3f4;
+  color: #0d0d0f;
+}
+
+/* A list row's title starts past its tile, so the label wants a touch more
+   inset than the card menus need. Not the tile's full 38px: the label is naming
+   the column, not lining up with a row. */
+.groupInList .groupLabel {
+  padding-left: 12px;
+}
+
+.groupCards {
+  /* Takes the height the group just gained; the cards then stretch to the grid
+     row, which is what actually equalises them across groups. */
+  flex: 1 1 auto;
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: minmax(0, 1fr);
   gap: 20px;
-  padding: 20px;
+}
+
+/* The stacked variant: one column of rows rather than a row of cards. */
+.groupList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* A row is a tile and a title on one line. No copy under it: at five columns
+   the name is doing the work, and a second line each would triple the height. */
+/* Sits in the space the panel grows into. The panel's own height animation does
+   the expanding; this fades and settles in behind it, a touch slower again so it
+   arrives after the room has been made rather than racing it. */
+.banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  margin: 16px -20px -20px;
+  padding: 12px 20px;
+  font-family: "Inter", sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--openui-text-neutral-secondary);
+  animation: bannerIn 0.45s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+/* A hairline rather than a fill: the panel is already a surface, and a second
+   one inside it read as a separate object. Drawn as a pseudo-element so it can
+   be inset to the panel's 20px padding, where a border would have run the full
+   bleed width along with the rest of the banner. */
+.banner::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 20px;
+  left: 20px;
+  height: 1px;
+  background: rgba(10, 10, 10, 0.05);
+}
+
+[data-theme="dark"] .banner::before {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.bannerIcon {
+  flex: none;
+  color: var(--openui-text-neutral-secondary);
+  opacity: 0.7;
+}
+
+@keyframes bannerIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* The banner is an aside; anyone who has asked for less motion still gets it,
+   just without the slide. */
+@media (prefers-reduced-motion: reduce) {
+  .banner {
+    animation: none;
+  }
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 6px;
+  border-radius: 10px;
+  color: var(--openui-text-neutral-primary);
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+}
+
+.listItem:hover {
+  background: rgba(10, 10, 10, 0.03);
+}
+
+[data-theme="dark"] .listItem:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Round, on the 24px tile step. Muted and holding its glyph at rest; under the
+   pointer it fills and turns into an arrow, which is the row saying where the
+   click goes rather than merely that it is clickable. */
+.listIcon {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(10, 10, 10, 0.04);
+  color: var(--openui-text-neutral-secondary);
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+/* Stacked in one cell so neither one moves as they trade places. */
+.listGlyph,
+.listArrow {
+  grid-area: 1 / 1;
+  display: grid;
+  place-items: center;
+  transition: opacity 0.15s ease;
+}
+
+.listArrow {
   opacity: 0;
-  transition: opacity 0.16s ease;
+}
+
+.listItem:hover .listGlyph {
+  opacity: 0;
+}
+
+.listItem:hover .listArrow {
+  opacity: 1;
+}
+
+.listItem:hover .listIcon {
+  background: #0a0a0a;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .listIcon {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* Tuned for the dark panel rather than inverted from the light rule: black on
+   dark would vanish, so the fill flips to near-white with a dark arrow. */
+[data-theme="dark"] .listItem:hover .listIcon {
+  background: #f3f3f4;
+  color: #0d0d0f;
+}
+
+/* The row's title reuses the card's own type step, so it reads the same weight
+   and size whichever menu it is in. */
+.listItem .dropdownText {
+  padding: 0;
+  gap: 0;
 }
 
 .viewportContent[data-active="true"] {
@@ -161,6 +391,47 @@
   background: var(--openui-highlight-strong);
 }
 
+/* Same chip as the header's New badge: solid and inverted, so the two statuses
+   in the nav read as one kind of thing. */
+.comingSoon {
+  /* Hugs its text instead of stretching, now that it sits on its own line in the
+     card's text column. */
+  flex: none;
+  align-self: flex-start;
+  margin-top: 8px;
+  padding: 0.125rem 0.375rem;
+  border-radius: 4px;
+  background: #0a0a0a;
+  color: #ffffff;
+  font-family: "Inter", sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+[data-theme="dark"] .comingSoon {
+  background: #f3f3f4;
+  color: #0d0d0f;
+}
+
+/* The row itself: still legible, plainly not clickable. No hover fill, because
+   the fill is the thing that says "this goes somewhere". */
+.itemMuted {
+  cursor: default;
+}
+
+.itemMuted .dropdownTitle,
+.itemMuted .listIcon {
+  opacity: 0.55;
+}
+
+.itemMuted:hover {
+  background: none;
+}
+
 .dropdownItem {
   position: relative;
   display: flex;
@@ -169,6 +440,21 @@
   gap: 0.5rem;
   color: var(--openui-text-neutral-primary);
   text-decoration: none;
+}
+
+/* The same fill, radius and timing the list rows use, so a hovered card and a
+   hovered row are the same gesture in two shapes. */
+.dropdownItemPlain {
+  border-radius: 10px;
+  transition: background-color 0.15s ease;
+}
+
+.dropdownItemPlain:hover {
+  background: rgba(10, 10, 10, 0.03);
+}
+
+[data-theme="dark"] .dropdownItemPlain:hover {
+  background: rgba(255, 255, 255, 0.05);
 }
 
 /* 284x160 preview slot. The art is decorative, so it sits behind the label and
@@ -253,10 +539,13 @@
   gap: 0.5rem;
 }
 
+/* One step down in both size and weight, on the 14px step the rest of the menu
+   sits on. The title still leads because it is the darker of the two, not
+   because it is the heavier: hierarchy comes off colour here, not weight. */
 .dropdownTitle {
   font-family: "Inter Display", sans-serif;
-  font-size: 1rem;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 400;
   line-height: 1.5;
   color: var(--openui-text-neutral-primary);
 }
@@ -288,7 +577,7 @@
 
 .dropdownDescription {
   font-family: "Inter", sans-serif;
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.5;
   color: var(--openui-text-neutral-secondary);
   opacity: 0.8;
