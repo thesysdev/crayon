@@ -1,4 +1,3 @@
-import { observability } from "@openuidev/observability";
 import { identityMessageFormat, type MessageFormat } from "../types/messageFormat";
 import type { StreamProtocolAdapter } from "../types/stream";
 import type { ChatLLM } from "./types";
@@ -22,8 +21,6 @@ export interface FetchLLMOptions {
  * Generic HTTP-based LLM adapter. POSTs an AG-UI `RunAgentInput`-shaped body
  * (`{ threadId, runId, messages, tools, context }`, messages in the chosen wire
  * format) to `url` and returns the streaming `Response` for downstream processing.
- *
- * Every send is reported to `@openuidev/observability` — The `runId` correlates them.
  */
 export function fetchLLM({
   url,
@@ -37,8 +34,6 @@ export function fetchLLM({
   return {
     send: ({ threadId, messages, signal }) => {
       const runId = crypto.randomUUID();
-      observability.info({ kind: "fetchLLM:request", requestId: runId, url, threadId });
-
       return fetchImpl(url, {
         method: "POST",
         headers: {
@@ -54,12 +49,7 @@ export function fetchLLM({
           messages: messageFormat.toApi(messages),
         }),
         signal,
-      }).then(
-        async (response) => response,
-        (error: unknown) => {
-          throw error;
-        },
-      );
+      });
     },
     streamProtocol: streamAdapter,
   };
