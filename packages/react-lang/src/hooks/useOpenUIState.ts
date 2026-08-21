@@ -461,6 +461,7 @@ export function useOpenUIState(
     errorsRef,
     errorRevision,
     publish: publishObservability,
+    __libraryId: library.__libraryId,
   });
 
   return { result: evaluatedResult, parseResult: result, contextValue, isQueryLoading };

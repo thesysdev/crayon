@@ -1,0 +1,611 @@
+.page {
+  min-height: 100vh;
+  overflow-x: clip;
+  background: var(--openui-foreground);
+  color: var(--openui-text-neutral-primary);
+  font-family: var(--home-font-text);
+}
+
+.hero,
+.heroGrid,
+.column {
+  width: calc(100% - 64px);
+  max-width: var(--home-container-max);
+  margin-inline: auto;
+}
+
+/* Hero ---------------------------------------------------------------- */
+
+.hero {
+  position: relative;
+  padding-block: 176px 32px;
+}
+
+.dotField::before {
+  background-image: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--openui-text-neutral-primary) 72%, transparent) 0 1.4px,
+    transparent 1.7px
+  );
+  -webkit-mask-image: radial-gradient(circle 116px at var(--dot-x) var(--dot-y), #000, transparent);
+  mask-image: radial-gradient(circle 116px at var(--dot-x) var(--dot-y), #000, transparent);
+}
+
+.dotField::after {
+  background-image: radial-gradient(circle, #7c3aed 0 1.5px, transparent 1.8px);
+  -webkit-mask-image: radial-gradient(circle 56px at var(--dot-x) var(--dot-y), #000, transparent);
+  mask-image: radial-gradient(circle 56px at var(--dot-x) var(--dot-y), #000, transparent);
+}
+
+.heroLockup {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 40px;
+}
+
+/* the Cloud hero's right-hand subtitle, same values as cloud/page.module.css
+   .subtitle: 400px, 22px, heading weight, lead leading */
+.heroAside {
+  position: absolute;
+  top: 52px;
+  right: 0;
+  width: 400px;
+  max-width: 36%;
+  margin: 0;
+  font-family: var(--home-font-display);
+  font-size: 22px;
+  font-weight: var(--home-heading-weight);
+  line-height: var(--home-lead-leading);
+  letter-spacing: var(--home-heading-tracking);
+  color: color-mix(in srgb, var(--openui-text-neutral-primary) 50%, transparent);
+}
+
+@media (max-width: 1100px) {
+  .heroAside {
+    position: static;
+    order: 3;
+    width: 100%;
+    max-width: 560px;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.35;
+    letter-spacing: normal;
+  }
+}
+
+.heroAside a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* eyebrow/tag/title metrics mirror the Cloud hero exactly: Inter Display
+   eyebrow with 2px lead-in, 2/6/3 tag padding, 20px gap, 1.0 title leading */
+.heroCopy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.heroEyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 0 2px;
+  font-family: var(--home-font-display);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--openui-text-neutral-primary);
+}
+
+.heroTag {
+  display: inline-flex;
+  align-items: center;
+  margin-top: -3px;
+  padding: 2px 6px 3px;
+  border: 1px solid currentColor;
+  border-radius: 5px;
+  font-size: 17px;
+  line-height: 1;
+}
+
+.heroTitle {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  font-family: var(--home-font-display);
+  font-size: 60px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -1px;
+  color: var(--openui-text-neutral-primary);
+}
+
+.heroTitle span {
+  display: block;
+}
+
+.heroActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.heroButton {
+  height: 44px;
+  padding-left: 22px;
+  padding-right: 8px;
+  font-size: 15px;
+}
+
+.heroButton > span:last-child {
+  width: 28px;
+  height: 28px;
+}
+
+.actionIcon {
+  width: 15px;
+  height: 15px;
+}
+
+/* Overview ------------------------------------------------------------ */
+
+.heroGrid {
+  padding-top: 64px;
+}
+
+.heroGrid > figure,
+.sectionBody > figure {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.heroGrid > figure {
+  gap: 24px;
+}
+
+.heroGrid > figure > figcaption,
+.sectionBody > figure > figcaption {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.sectionBody > figure > figcaption > p:first-child {
+  padding: 8px 12px;
+  font-family: var(--home-font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  letter-spacing: 1.12px;
+}
+
+/* The hero H1 already introduces the chart; keep its caption for screen
+   readers only. */
+.heroGrid > figure > figcaption {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.heroGrid > figure > figcaption > p:nth-child(2),
+.sectionBody > figure > figcaption > p:nth-child(2) {
+  width: min(570px, 52%);
+  margin: 0;
+  font-family: var(--home-font-display);
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: right;
+}
+
+.sectionBody > figure > figcaption > p:nth-child(2) {
+  width: min(340px, 40%);
+}
+
+.heroStats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin-top: 88px;
+  border-top: 1px solid var(--home-hairline);
+}
+
+.stat {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 8px;
+  padding: 32px 40px 8px;
+  border-left: 1px solid var(--home-hairline);
+}
+
+.stat:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.statValue {
+  font-family: var(--home-font-display);
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  color: var(--openui-text-neutral-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.statLabel {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--openui-text-neutral-primary);
+}
+
+.statNote {
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--openui-text-neutral-secondary);
+  text-overflow: ellipsis;
+}
+
+/* Headline results: the Cloud page's feature grid, holding our numbers. */
+.featureBand {
+  margin-top: 104px;
+}
+
+/* Shared Figma section shell ----------------------------------------- */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 48px;
+  padding-block: 112px;
+  scroll-margin-top: 64px;
+}
+
+.column > .section:first-child {
+  padding-top: 160px;
+}
+
+.sectionSpacious {
+  gap: 64px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 48px;
+  min-height: 84px;
+}
+
+.sectionHeading {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+
+.bandLabel {
+  margin: 0 0 8px;
+  font-family: var(--home-font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--openui-text-neutral-tertiary);
+}
+
+.sectionTitle,
+.sectionQuestion {
+  margin: 0;
+  font-family: var(--home-font-text);
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+}
+
+.sectionTitle {
+  color: var(--openui-text-neutral-primary);
+}
+
+.sectionQuestion {
+  color: color-mix(in srgb, var(--openui-text-neutral-primary) 50%, transparent);
+}
+
+.sectionAside {
+  display: flex;
+  width: 340px;
+  min-width: 280px;
+  align-self: stretch;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  text-align: right;
+}
+
+/* data facts on the right, set like the Cloud feature cards' body text */
+.sectionAside p {
+  margin: 0;
+  font-family: var(--home-font-display);
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--openui-text-neutral-primary) 50%, transparent);
+}
+
+/* the shared tertiary Button ("Read more") supplies its own type styles */
+.sectionAside a {
+  font-size: 15px;
+}
+
+.insightBar {
+  display: flex;
+  min-height: 47px;
+  align-items: center;
+  padding: 12px 16px;
+  border-left: 2px solid var(--openui-text-neutral-primary);
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--openui-text-neutral-primary) 6%, transparent),
+    transparent
+  );
+}
+
+.insightBar p {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--openui-text-neutral-primary);
+  text-wrap: pretty;
+}
+
+.sectionBody {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.sectionSpacious .sectionBody {
+  gap: 72px;
+}
+
+.sectionBody > figure {
+  gap: 20px;
+}
+
+/* Section headings already name these single-view charts. Keep the internal
+   figcaptions available to screen readers without repeating them visually. */
+.sectionBare .sectionBody > figure {
+  position: relative;
+  gap: 18px;
+}
+
+.sectionBare .sectionBody > figure > figcaption {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Tail links ---------------------------------------------------------- */
+
+/* Production: its own full-width band, like the Cloud page's enterprise
+   section — the grey page background against the white content above. */
+.productionBand {
+  width: 100%;
+  margin-top: 0;
+  padding-block: 140px;
+  background: var(--openui-background);
+}
+
+.productionBand .section,
+.productionBand .column > .section:first-child {
+  padding-block: 0;
+}
+
+.endLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  padding-block: 64px 32px;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.endLinks a {
+  color: var(--openui-text-neutral-primary);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+  text-underline-offset: 3px;
+}
+
+.endLinks a:hover {
+  text-decoration-color: currentColor;
+}
+
+@media (max-width: 900px) {
+  .heroStats {
+    grid-template-columns: 1fr;
+    border-top: 0;
+  }
+
+  .stat {
+    padding: 20px 0 12px;
+    border-left: 0;
+    border-top: 1px solid var(--home-hairline);
+  }
+
+  .stat:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .hero,
+  .heroGrid,
+  .column {
+    width: calc(100% - 32px);
+  }
+
+  .hero {
+    padding-block: 112px 24px;
+  }
+
+  .heroLockup {
+    gap: 28px;
+  }
+
+  .heroCopy {
+    gap: 18px;
+  }
+
+  .heroEyebrow {
+    font-size: 18px;
+  }
+
+  .heroTag {
+    font-size: 15px;
+  }
+
+  .heroTitle {
+    font-size: clamp(38px, 11.5vw, 48px);
+    line-height: 1.12;
+  }
+
+  .heroTitle span {
+    display: inline;
+  }
+
+  .heroActions {
+    width: min(100%, 320px);
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .heroGrid {
+    padding-top: 48px;
+  }
+
+  .heroGrid > figure > figcaption,
+  .sectionBody > figure > figcaption {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .heroGrid > figure > figcaption > p:nth-child(2),
+  .sectionBody > figure > figcaption > p:nth-child(2) {
+    width: 100%;
+    text-align: left;
+  }
+
+  .heroStats {
+    margin-top: 40px;
+  }
+
+  .section,
+  .sectionSpacious {
+    gap: 32px;
+    padding-block: 56px;
+  }
+
+  .column > .section:first-child {
+    padding-top: 96px;
+  }
+
+  .productionBand {
+    margin-top: 48px;
+    padding-block: 72px;
+  }
+
+  .sectionHeader {
+    min-height: 0;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .sectionTitle,
+  .sectionQuestion {
+    font-size: 24px;
+    letter-spacing: 0;
+  }
+
+  .sectionAside {
+    width: 100%;
+    min-width: 0;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .sectionAside p {
+    font-size: 15px;
+  }
+
+  /* the deliberate two-line breaks are tuned for the desktop column width */
+  .sectionAside p br {
+    display: none;
+  }
+
+  .sectionAside a {
+    padding-inline: 0;
+  }
+
+  .insightBar {
+    align-items: flex-start;
+  }
+
+  .insightBar p {
+    font-size: 15px;
+  }
+
+  .sectionBody,
+  .sectionSpacious .sectionBody {
+    gap: 40px;
+  }
+
+  .endLinks {
+    gap: 20px;
+    padding-bottom: 64px;
+  }
+}
+
+[data-theme="dark"] .page {
+  background: #000;
+}
+
+[data-theme="dark"] .productionBand {
+  background: color-mix(in srgb, #fff 4%, #000);
+}

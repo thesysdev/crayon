@@ -76,6 +76,12 @@ const config = {
       },
       // Nav rename: Playground -> Demos, Projects -> Lab. Keep the old
       // paths working for external links and search results.
+      // Product rename: Paste → Debug. Keep the old path working.
+      {
+        source: "/paste",
+        destination: "/debug",
+        permanent: true,
+      },
       {
         source: "/playground",
         destination: "/demos",

@@ -18,6 +18,8 @@ export interface UseStreamingObservabilityOptions {
   errorsRef: CurrentRef<OpenUIError[]>;
   errorRevision: number;
   publish?: boolean;
+  /** `createLibrary()` instance id, echoed on stream events for Debug matching. */
+  __libraryId?: string;
 }
 
 export interface StreamingObservabilityState {
@@ -133,6 +135,7 @@ export function useStreamingObservability({
   errorsRef,
   errorRevision,
   publish = true,
+  __libraryId,
 }: UseStreamingObservabilityOptions): void {
   const streamRef = useRef<StreamingObservabilityState>(createStreamingObservabilityState());
 
@@ -146,6 +149,7 @@ export function useStreamingObservability({
       response,
       settledErrorKey,
     );
+    const libraryIdFields = __libraryId !== undefined ? { __libraryId } : {};
 
     if (isStreaming) {
       if (update) {
@@ -158,6 +162,7 @@ export function useStreamingObservability({
           responseLength: response?.length ?? 0,
           parser: parserMetadata(result),
           ...captureStreamTiming(streamRef.current),
+          ...libraryIdFields,
           message: "OpenUI Lang is streaming",
         });
       }
@@ -176,11 +181,12 @@ export function useStreamingObservability({
         errors,
         errorCount: errors.length,
         ...captureStreamTiming(streamRef.current),
+        ...libraryIdFields,
         message:
           errors.length > 0
             ? `OpenUI Lang settled with ${errors.length} error${errors.length === 1 ? "" : "s"}`
             : "OpenUI Lang settled",
       } satisfies SettledStreamEventDetail);
     }
-  }, [publish, isStreaming, response, result, errorsRef, errorRevision]);
+  }, [publish, isStreaming, response, result, errorsRef, errorRevision, __libraryId]);
 }

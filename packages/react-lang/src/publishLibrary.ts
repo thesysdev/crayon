@@ -38,6 +38,7 @@ export function publishLibrary(library: Library): void {
   upsertRegistry(library);
   observability.info({
     kind: LIBRARY_EVENT_KIND,
+    __libraryId: library.__libraryId,
     ...(library.id !== undefined ? { id: library.id } : {}),
     ...(library.root !== undefined ? { root: library.root } : {}),
     components: Object.keys(library.components),
