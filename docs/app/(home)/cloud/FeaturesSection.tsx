@@ -27,10 +27,10 @@ const SUPPORTING_FEATURES: GridFeature[] = [
       "Understand how models and rendered interfaces behave in production from a single operational view.",
   },
   {
-    icon: "key",
-    title: "Bring your own LLM key",
+    icon: "shield",
+    title: "Secure by default",
     description:
-      "Use your own provider API keys and keep full control over model access and spend.",
+      "Protect production workloads with enterprise-grade security, compliance, and data controls.",
   },
 ];
 
@@ -66,42 +66,6 @@ export function FeaturesSection() {
         <article className={styles.card}>
           <Image
             className={`${styles.featureImage} ${styles.featureImageLight}`}
-            src="/openui-cloud/llm-gateway.svg"
-            alt="OpenUI Cloud routing requests across model providers"
-            width={720}
-            height={400}
-          />
-          <Image
-            className={`${styles.featureImage} ${styles.featureImageDark}`}
-            src="/openui-cloud/llm-gateway-dark.svg"
-            alt=""
-            aria-hidden="true"
-            width={720}
-            height={400}
-          />
-          <FeatureCopy
-            title="Reliable model access"
-            headline={
-              <>
-                Every model.
-                <br />
-                One reliable API.
-              </>
-            }
-            description="Access leading models across providers through a single API, or bring your own provider keys. OpenUI Cloud handles fallbacks when a model or provider becomes unavailable."
-            docsHref="https://www.openui.com/docs/openui-cloud/production-readiness"
-          />
-        </article>
-
-        <article className={styles.card}>
-          <FeatureCopy
-            title="Built-in validation"
-            headline="Broken model output shouldn’t become broken UI"
-            description="Make sure broken responses never reach your user. OpenUI Cloud detects invalid responses, corrects issues, and safely renders the result, in real-time."
-            docsHref="https://www.openui.com/docs/openui-cloud/production-readiness"
-          />
-          <Image
-            className={`${styles.featureImage} ${styles.featureImageLight}`}
             src="/openui-cloud/validation.svg"
             alt="OpenUI Cloud validating and correcting model output"
             width={720}
@@ -110,6 +74,42 @@ export function FeaturesSection() {
           <Image
             className={`${styles.featureImage} ${styles.featureImageDark}`}
             src="/openui-cloud/validation-dark.svg"
+            alt=""
+            aria-hidden="true"
+            width={720}
+            height={400}
+          />
+          <FeatureCopy
+            title="Reliability"
+            headline="Broken model output shouldn’t become broken UI"
+            description="Every response is validated against your component library and corrected in the streaming path, not as a retry your user waits through."
+            docsHref="https://www.openui.com/docs/openui-cloud/production-readiness"
+          />
+        </article>
+
+        <article className={styles.card}>
+          <FeatureCopy
+            title="Managed model access"
+            headline={
+              <>
+                Every model.
+                <br />
+                One API.
+              </>
+            }
+            description="Access leading models across providers through a single API. OpenUI Cloud handles fallbacks when a model or provider becomes unavailable."
+            docsHref="https://www.openui.com/docs/openui-cloud/production-readiness"
+          />
+          <Image
+            className={`${styles.featureImage} ${styles.featureImageLight}`}
+            src="/openui-cloud/llm-gateway.svg"
+            alt="OpenUI Cloud routing requests across model providers"
+            width={720}
+            height={400}
+          />
+          <Image
+            className={`${styles.featureImage} ${styles.featureImageDark}`}
+            src="/openui-cloud/llm-gateway-dark.svg"
             alt=""
             aria-hidden="true"
             width={720}

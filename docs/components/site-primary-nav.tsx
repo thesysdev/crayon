@@ -108,9 +108,9 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
         },
       },
       {
-        title: "Paste",
+        title: "Debug",
         description: "Validate and stream OpenUI Lang.",
-        href: "/paste",
+        href: "/debug",
         preview: {
           light: "/nav/paste-light.webp",
           dark: "/nav/paste-dark.webp",
@@ -120,6 +120,7 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
   },
   // Temporarily hidden — Agent Interface isn't ready to share yet. Restore when ready:
   // { title: "Agent Interface", href: "/agent-interface", newTab: false, badge: "New" },
+  { title: "Benchmarks", href: "/benchmarks", newTab: false },
   { title: "Blogs", href: "/blog", newTab: false },
 ];
 

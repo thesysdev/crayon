@@ -1,0 +1,1896 @@
+/* Chart design language — reviewed cards in Figma (13:600), revised.
+   Card   white fill, 18px radius, no border, 24px padding
+   Type   title 18/500 · subtitle 16/400 muted · body/values/table 14/500 · notes 14/400 tertiary
+   Ink    muted = ink 50% · dividers = ink 12% · chips = ink 6%
+   Marks  square corners everywhere except the 4px logo chip */
+
+.viz {
+  --c1: #7c3aed; /* OpenUI */
+  --c2: #252525; /* A2UI */
+  --c3: #a3a3a3; /* json-render */
+
+  --ink: var(--openui-text-neutral-primary, #000);
+  --ink-muted: color-mix(in srgb, var(--ink) 50%, transparent);
+  --ink-note: var(--openui-text-neutral-tertiary, #8f8da3);
+  --rule: color-mix(in srgb, var(--ink) 6%, transparent);
+  --chip: color-mix(in srgb, var(--ink) 6%, transparent);
+  /* the card surface token — distinct from the page background in both modes */
+  --surface: var(--openui-foreground, #fff);
+
+  margin: 2.5rem 0;
+  padding: 20px 28px;
+  border-radius: 18px;
+  background: var(--surface);
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.viz.tight {
+  gap: 16px;
+}
+
+/* OpenUI remains the only chromatic series. Competitors use two neutral tones
+   so the comparison stays legible without competing for attention. */
+/* system-dark fallback only: an explicit light theme must keep the light
+   palette, or chips and bars invert against a white page */
+@media (prefers-color-scheme: dark) {
+  :global(html:not([data-theme="light"]):not(.light)) .viz {
+    --c1: #a78bfa;
+    --c2: #e5e5e5;
+    --c3: #777;
+    --rule: color-mix(in srgb, var(--ink) 14%, transparent);
+  }
+}
+:global(.dark) .viz,
+:global([data-theme="dark"]) .viz {
+  --c1: #a78bfa;
+  --c2: #e5e5e5;
+  --c3: #777;
+  --rule: color-mix(in srgb, var(--ink) 14%, transparent);
+}
+
+/* dark chips read like the nav mark: white logo on a dark tile */
+@media (prefers-color-scheme: dark) {
+  :global(html:not([data-theme="light"]):not(.light)) .viz .chip {
+    background: #101010;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: #fff;
+  }
+}
+:global(.dark) .viz .chip,
+:global([data-theme="dark"]) .viz .chip {
+  background: #101010;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+
+.s1 {
+  --c: var(--c1);
+}
+.s2 {
+  --c: var(--c2);
+}
+.s3 {
+  --c: var(--c3);
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+.sub {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+.note {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--ink-muted);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 2rem;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--ink-muted);
+}
+.legendVal {
+  font-weight: 500;
+  color: var(--ink);
+}
+.key {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.key svg {
+  width: 16px;
+  height: 16px;
+  opacity: 0.6;
+}
+.dot {
+  width: 10px;
+  height: 10px;
+  background: var(--c);
+  flex: none;
+}
+
+/* rows -------------------------------------------------------------- */
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 32px;
+}
+
+.rowName {
+  width: 172px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.rowNameWide {
+  width: 236px;
+}
+.chip {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  border-radius: 4px;
+  background: var(--chip);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+}
+.chip svg {
+  width: 15px;
+  height: 15px;
+}
+.rowLabel {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rowBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.bar {
+  height: 32px;
+  background: var(--c);
+  flex: none;
+  min-width: 2px;
+}
+.value {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--ink-muted);
+  white-space: nowrap;
+  flex: none;
+}
+.valueHi {
+  font-weight: 600;
+  color: var(--c);
+}
+
+.groupHead {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+.groupHead span {
+  color: var(--ink-muted);
+  font-weight: 400;
+}
+
+/* stacked token chart ------------------------------------------------ */
+
+.tokenLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  font-size: 0.8125rem;
+  color: var(--ink-muted);
+}
+
+.tokenLegend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tokenKey {
+  width: 28px;
+  height: 10px;
+  background: color-mix(in srgb, var(--ink) 28%, transparent);
+}
+
+.tokenKeyInput {
+  background: color-mix(in srgb, var(--ink) 16%, transparent);
+}
+
+.tokenRows {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tokenRow {
+  display: grid;
+  grid-template-columns: 150px minmax(120px, 1fr) 92px;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.tokenRow.s2 {
+  --c: var(--c2);
+}
+
+.tokenRow.s3 {
+  --c: var(--c3);
+}
+
+.tokenName {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.tokenName > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tokenBarTrack {
+  display: flex;
+  height: 48px;
+  min-width: 0;
+  background: color-mix(in srgb, var(--ink) 5%, transparent);
+}
+
+.tokenStack {
+  display: flex;
+  height: 100%;
+  min-width: 2px;
+}
+
+.tokenInput,
+.tokenOutput {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* input segments carry the same diagonal textures as the render-rate bars:
+   purple for ours, black for A2UI, a greyer cut for json-render */
+.tokenRow.s1 .tokenInput {
+  background: repeating-linear-gradient(
+    135deg,
+    var(--c1) 0,
+    var(--c1) 5px,
+    color-mix(in srgb, var(--c1) 70%, var(--surface)) 5px,
+    color-mix(in srgb, var(--c1) 70%, var(--surface)) 9px
+  );
+}
+
+.tokenRow.s2 .tokenInput {
+  background: repeating-linear-gradient(135deg, #252525 0, #252525 5px, #4a4a4a 5px, #4a4a4a 9px);
+}
+
+[data-theme="dark"] .tokenRow.s2 .tokenInput {
+  background: repeating-linear-gradient(135deg, #cfcfcf 0, #cfcfcf 5px, #a8a8a8 5px, #a8a8a8 9px);
+}
+
+.tokenRow.s3 .tokenInput {
+  background: repeating-linear-gradient(135deg, #9a9a9a 0, #9a9a9a 5px, #c0c0c0 5px, #c0c0c0 9px);
+}
+
+[data-theme="dark"] .tokenRow.s3 .tokenInput {
+  background: repeating-linear-gradient(135deg, #8f8f8f 0, #8f8f8f 5px, #656565 5px, #656565 9px);
+}
+
+.tokenRow.s1 .tokenInput .segNum,
+.tokenRow.s2 .tokenInput .segNum {
+  color: var(--surface);
+}
+
+.tokenOutput {
+  background: var(--c);
+  box-shadow: inset 2px 0 0 var(--surface);
+}
+
+/* the per-segment number, printed inside the bar */
+.segNum {
+  padding-inline: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.tokenOutput .segNum {
+  color: var(--surface);
+}
+
+/* the two grey rows are light enough that ink stays more legible */
+.tokenRow.s3 .tokenOutput .segNum {
+  color: var(--ink);
+}
+
+.tokenValue {
+  display: flex;
+  justify-content: flex-end;
+  white-space: nowrap;
+  font-size: 1rem;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.tokenValue strong {
+  justify-self: end;
+  color: var(--ink);
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+/* table -------------------------------------------------------------- */
+
+.benchmarkTable th,
+.benchmarkTable td {
+  text-align: center;
+  white-space: nowrap;
+}
+.benchmarkTable th:first-child,
+.benchmarkTable td:first-child {
+  width: 34%;
+  min-width: 0;
+  text-align: left;
+}
+.benchmarkTable:not(.tableWide) th:first-child,
+.benchmarkTable:not(.tableWide) td:first-child {
+  width: auto;
+}
+.tableWide th:not(:first-child),
+.tableWide td:not(:first-child) {
+  min-width: 112px;
+}
+/* the Delta column is arithmetic, not a fourth contender */
+.benchmarkTable th.deltaHead {
+  color: var(--ink-muted);
+  font-weight: 400;
+  font-style: italic;
+}
+
+.benchmarkTable thead th:first-child {
+  color: var(--ink-muted);
+}
+.benchmarkTable tbody td {
+  color: var(--ink-muted);
+}
+.colHead {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.colHead svg {
+  width: 16px;
+  height: 16px;
+  opacity: 0.6;
+}
+.model {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  color: var(--ink);
+  font-weight: 500;
+}
+.vendor {
+  color: var(--ink-muted);
+  font-weight: 400;
+}
+.best {
+  color: var(--c);
+  font-weight: 600;
+}
+
+/* the mono palette makes the grey-series hues read muted in table cells;
+   winners in those columns get full ink so they beat the losing values */
+.s2 .best,
+.s3 .best {
+  color: var(--ink);
+}
+.benchmarkTable .avgRow th,
+.benchmarkTable .avgRow td {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--ink) 3%, transparent);
+}
+
+/* Flat benchmark-page variant. The shared MarketingTable stays rounded for
+   Cloud and other marketing pages; only charts that opt into tableFlat use
+   the edge-to-edge Figma treatment. */
+.benchmarkTable.tableFlat {
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.benchmarkTable.tableFlat th,
+.benchmarkTable.tableFlat td {
+  padding: 12px 8px;
+  border-right: 0;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: middle;
+}
+
+.benchmarkTable.tableFlat tbody tr:nth-child(even) {
+  background: transparent;
+}
+
+.benchmarkTable.tableFlat.tableWide th:first-child,
+.benchmarkTable.tableFlat.tableWide td:first-child {
+  width: auto;
+}
+
+.benchmarkTable.tableFlat.tableWide th:not(:first-child),
+.benchmarkTable.tableFlat.tableWide td:not(:first-child) {
+  width: 150px;
+  min-width: 150px;
+}
+
+.benchmarkTable.tableFlat:not(.tableWide) th:not(:first-child),
+.benchmarkTable.tableFlat:not(.tableWide) td:not(:first-child) {
+  width: 120px;
+}
+
+.benchmarkTable.tableFlat thead .s1,
+.benchmarkTable.tableFlat tbody td.s1 {
+  color: var(--c1);
+}
+
+.benchmarkTable.tableFlat tbody td.s1 {
+  font-weight: 600;
+}
+
+/* line chart ---------------------------------------------------------- */
+
+.svg {
+  display: block;
+  overflow: visible;
+}
+.endTag {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.segBar {
+  display: flex;
+  gap: 2px;
+  height: 36px;
+}
+.segPart {
+  height: 100%;
+  flex: none;
+  display: flex;
+  align-items: center;
+}
+.segBar {
+  padding-right: 44px;
+}
+.segPct {
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0 12px;
+  white-space: nowrap;
+}
+/* a slice too narrow to hold its own label puts it just outside the bar */
+.segPart {
+  position: relative;
+}
+.segPctOut {
+  position: absolute;
+  left: 100%;
+  margin-left: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+.onDark {
+  color: #fff;
+}
+.onLight {
+  color: color-mix(in srgb, #000 70%, transparent);
+}
+
+.stageList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.stageList li {
+  display: flex;
+  gap: 10px;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+.stageList .keySwatch {
+  width: 10px;
+  height: 10px;
+  flex: none;
+  margin-top: 7px;
+}
+.stageList strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+.shipped {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+@media (max-width: 640px) {
+  .viz {
+    padding: 16px 18px;
+    gap: 20px;
+  }
+  .rowName {
+    width: 120px;
+  }
+  .rowNameWide {
+    width: 148px;
+  }
+  /* A bar's width is the data encoding, so it never shrinks; when the value
+     text doesn't fit beside it, the value wraps beneath instead of widening
+     the page. */
+  .rowBody {
+    flex-wrap: wrap;
+  }
+  .row {
+    align-items: flex-start;
+  }
+  .rowName {
+    min-height: 32px;
+  }
+  .value {
+    font-size: 0.875rem;
+  }
+
+  .tokenRow {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .tokenBarTrack {
+    height: 28px;
+  }
+
+  /* a narrow output segment lets its number spill right into the empty
+     track instead of truncating mid-digit; ink with a surface halo stays
+     legible on the segment and on the bare track alike */
+  .tokenOutput {
+    overflow: visible;
+  }
+
+  .tokenOutput .segNum,
+  .tokenRow.s1 .tokenInput .segNum,
+  .tokenRow.s2 .tokenInput .segNum {
+    color: var(--ink);
+    text-shadow:
+      0 1px 3px var(--surface),
+      0 -1px 3px var(--surface),
+      1px 0 3px var(--surface),
+      -1px 0 3px var(--surface);
+  }
+
+  .tokenValue {
+    grid-template-columns: max-content max-content max-content max-content 1fr;
+  }
+
+  /* fixed table layout paints nowrap cells over their neighbours on narrow
+     screens; auto layout sizes to content and lets the scroller do the rest */
+  .benchmarkTable {
+    table-layout: auto;
+  }
+
+  .benchmarkTable .vendor {
+    display: none;
+  }
+
+  .tableWide th:not(:first-child),
+  .tableWide td:not(:first-child) {
+    min-width: 88px;
+  }
+}
+
+/* frontier ------------------------------------------------------------ */
+
+.axisToggle {
+  display: inline-flex;
+  align-self: flex-start;
+  border-radius: 8px;
+  background: var(--chip);
+  padding: 2px;
+  gap: 2px;
+}
+.axisBtn {
+  border: 0;
+  background: transparent;
+  color: var(--ink-muted);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.axisBtnOn {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+/* Holder for live-pixel SVG charts: until the ResizeObserver delivers the real
+   width (SSR, first paint, hidden tabs), the default-width SVG must clip
+   inside the card rather than widen the page. Vertical overflow stays open so
+   hover cards over the top gridline never get cut off. */
+.svgHolder {
+  overflow-x: clip;
+  overflow-y: visible;
+}
+
+/* vivid repair funnel */
+.vivid .segBar {
+  height: 44px;
+}
+
+/* ==================================================================== */
+/* The VIVID skin — the /benchmarks marketing treatment.                 */
+/*                                                                       */
+/* Same geometry, same colourblind-validated hues, same honesty rules    */
+/* as the plain skin the blog uses; only the rendering gets louder.      */
+/* Applied by putting .vivid on the card (via <VizSkin vivid>); nothing  */
+/* here fires without it, so the blog post is untouched.                 */
+/*                                                                       */
+/*  1. Stamp titles    — chart/panel titles become inverted mono stamps. */
+/*  2. Tracks          — every bar sits in a full-length ink-5% track.   */
+/*  3. Ours is textured — OpenUI-series fills are 45° stripes in the     */
+/*     series hue with a solid hue outline; competitors stay flat.       */
+/*     Stripes are reserved for the OpenUI series — never decorative.    */
+/*  4. Bigger identity — logo chips 20 → 28px, marks 15 → 20px, model    */
+/*     logos wherever a model is named.                                  */
+/*  5. Extremes chips  — best/worst value chips on panel heads.          */
+/*  6. Motion          — bars scale in once; off under reduced-motion.   */
+/* ==================================================================== */
+
+/* 1 · stamp titles ---------------------------------------------------- */
+
+.vivid .title {
+  align-self: flex-start;
+  font-family: var(--font-geist-mono, "Geist Mono", monospace);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--ink);
+  color: var(--surface);
+  padding: 6px 12px;
+  border-radius: 4px;
+}
+
+.stampInline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-geist-mono, "Geist Mono", monospace);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--ink);
+  color: var(--surface);
+  padding: 5px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.stampCount {
+  color: color-mix(in srgb, var(--surface) 70%, transparent);
+  font-weight: 500;
+}
+
+/* 2 · tracks ----------------------------------------------------------- */
+
+/* Bars live inside .barSlot (flex:1); invisible in the plain skin, the
+   grey track in vivid. */
+/* Every row's value gets the same column so every row's track — and with it
+   the bar's denominator — is identical. Without this, long value strings
+   would shorten their own track and bars would stop being comparable. */
+.rows .value {
+  min-width: 9em;
+  text-align: right;
+}
+
+.speedValue {
+  display: grid;
+  grid-template-columns: 3.6em 3.5em;
+  gap: 8px;
+  align-items: baseline;
+  justify-content: end;
+}
+
+.speedDiff {
+  text-align: right;
+}
+
+.speedDiff .diffBad {
+  margin-left: 0;
+}
+
+.barSlot {
+  flex: 1 1 160px;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.vivid .barSlot {
+  background: color-mix(in srgb, var(--ink) 5%, transparent);
+  height: 48px;
+}
+
+.vivid .rows .bar {
+  height: 48px;
+}
+
+.vivid .row {
+  min-height: 44px;
+}
+
+/* 3 · ours is textured -------------------------------------------------- */
+
+.vivid .barOurs {
+  background: var(--c);
+}
+
+.barMuted {
+  background: color-mix(in srgb, var(--ink) 30%, transparent);
+}
+
+.vivid .dotOurs {
+  background: var(--c);
+}
+
+/* 4 · bigger identity --------------------------------------------------- */
+
+.vivid .chip {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+}
+
+.vivid .chip svg {
+  width: 20px;
+  height: 20px;
+}
+
+.vivid .legend {
+  font-size: 1rem;
+}
+
+.vivid .legend svg {
+  width: 18px;
+  height: 18px;
+}
+
+.vivid .dot {
+  width: 12px;
+  height: 12px;
+}
+
+.vivid .benchmarkTable .chip {
+  width: 26px;
+  height: 26px;
+}
+
+.vivid .benchmarkTable .chip svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* header marks are shown deliberately, at the same weight as the row chips —
+   dimming them only ever read as a washed-out logo on the dark surface */
+.vivid .colHead svg {
+  width: 20px;
+  height: 20px;
+  opacity: 1;
+}
+
+/* the OpenUI mascot in table headers: white fill, ink border, like the nav */
+.markBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex: none;
+  border: 1px solid var(--ink);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.markBadge svg {
+  width: 17px;
+  height: 17px;
+  opacity: 1;
+}
+
+/* a filled series square before the best value in tables */
+.bestMark {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--c);
+  margin-right: 6px;
+}
+
+/* 5 · extremes chips ----------------------------------------------------- */
+
+.extremes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.extreme {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  padding: 3px 8px;
+}
+
+.extreme strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.extremeDash {
+  width: 14px;
+  height: 3px;
+  background: var(--c, var(--ink-muted));
+  flex: none;
+}
+
+/* 6 · motion — reveal-on-view -------------------------------------------
+   Chart (primitives.tsx) arms .pre on the card before first client paint and
+   swaps it for .in when the card scrolls into view, once. Everything here is
+   transform/opacity only — nothing moves layout. Without JS, and under
+   prefers-reduced-motion, neither class exists and charts are simply drawn.
+   Per-element stagger rides on --d (set inline by the chart components). */
+
+.vivid .rows .bar {
+  transform-origin: left center;
+  transition:
+    transform 650ms cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0ms),
+    filter 150ms ease;
+}
+
+.vivid .colBar {
+  transform-origin: center bottom;
+  transition: transform 650ms cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0ms);
+}
+
+.vivid .segPart {
+  transform-origin: left center;
+  transition: transform 550ms cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0ms);
+}
+
+.vivid .tokenStack,
+.vivid .matrixBar {
+  transform-origin: left center;
+  transition: transform 650ms cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0ms);
+}
+
+.vivid .rows .value,
+.vivid .tokenValue,
+.vivid .colVal,
+.vivid .segPct,
+.vivid .segPctOut,
+.vivid .matrixVal,
+.vivid .matrixDiff {
+  transition: opacity 400ms ease calc(var(--d, 0ms) + 260ms);
+}
+
+.vivid .benchmarkTable tbody tr {
+  transition: opacity 400ms ease var(--d, 0ms);
+}
+
+/* SVG charts: lines draw in (pathLength=1 trick), points and tags fade up */
+.vivid .line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 900ms cubic-bezier(0.33, 0, 0.2, 1) var(--d, 0ms);
+}
+
+.vivid .pt {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    transform 450ms cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0ms),
+    opacity 350ms ease var(--d, 0ms);
+}
+
+.vivid .fadeLate {
+  transition: opacity 400ms ease calc(var(--d, 0ms) + 500ms);
+}
+
+/* the armed state: everything at zero, applied without transitioning */
+.vivid.revealPre .rows .bar,
+.vivid.revealPre .colBar,
+.vivid.revealPre .segPart,
+.vivid.revealPre .tokenStack,
+.vivid.revealPre .matrixBar,
+.vivid.revealPre .matrixVal,
+.vivid.revealPre .matrixDiff,
+.vivid.revealPre .rows .value,
+.vivid.revealPre .tokenValue,
+.vivid.revealPre .colVal,
+.vivid.revealPre .segPct,
+.vivid.revealPre .segPctOut,
+.vivid.revealPre .benchmarkTable tbody tr,
+.vivid.revealPre .line,
+.vivid.revealPre .pt,
+.vivid.revealPre .fadeLate {
+  transition: none;
+}
+
+.vivid.revealPre .rows .bar,
+.vivid.revealPre .segPart,
+.vivid.revealPre .tokenStack,
+.vivid.revealPre .matrixBar {
+  transform: scaleX(0);
+}
+
+.vivid.revealPre .colBar {
+  transform: scaleY(0);
+}
+
+.vivid.revealPre .rows .value,
+.vivid.revealPre .tokenValue,
+.vivid.revealPre .colVal,
+.vivid.revealPre .segPct,
+.vivid.revealPre .segPctOut,
+.vivid.revealPre .matrixVal,
+.vivid.revealPre .matrixDiff,
+.vivid.revealPre .benchmarkTable tbody tr,
+.vivid.revealPre .fadeLate {
+  opacity: 0;
+}
+
+.vivid.revealPre .line {
+  stroke-dashoffset: 1;
+}
+
+.vivid.revealPre .pt {
+  opacity: 0;
+  transform: scale(0.3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vivid .rows .bar,
+  .vivid .colBar,
+  .vivid .segPart,
+  .vivid .tokenStack,
+  .vivid .rows .value,
+  .vivid .tokenValue,
+  .vivid .colVal,
+  .vivid .segPct,
+  .vivid .segPctOut,
+  .vivid .benchmarkTable tbody tr,
+  .vivid .line,
+  .vivid .pt,
+  .vivid .fadeLate {
+    transition: none;
+    transform: none;
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* column-panel triptych (blank screens) --------------------------------- */
+
+.panelGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 32px;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.panelHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.panelName {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* the format average, set in a filled series-colour chip */
+.panelRate {
+  padding: 3px 10px;
+  background: var(--c);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.panel.s2 .panelRate {
+  color: var(--surface);
+}
+
+.panelPlot {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  height: 260px;
+}
+
+.colCell {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  position: relative;
+  background: color-mix(in srgb, var(--ink) 5%, transparent);
+}
+
+.colCellGhost {
+  opacity: 0.35;
+}
+
+.colBar {
+  width: 100%;
+  background: var(--c);
+  min-height: 0;
+}
+
+/* ours: the same diagonal texture as the competitors, cut in purple */
+.colBarOurs {
+  background: repeating-linear-gradient(
+    135deg,
+    var(--c1) 0,
+    var(--c1) 5px,
+    color-mix(in srgb, var(--c1) 70%, var(--surface)) 5px,
+    color-mix(in srgb, var(--c1) 70%, var(--surface)) 9px
+  );
+}
+
+/* the other two formats: black base with grey diagonals, one shared texture */
+.colBarStriped {
+  background: repeating-linear-gradient(135deg, #252525 0, #252525 5px, #4a4a4a 5px, #4a4a4a 9px);
+}
+
+[data-theme="dark"] .colBarStriped {
+  background: repeating-linear-gradient(135deg, #cfcfcf 0, #cfcfcf 5px, #a8a8a8 5px, #a8a8a8 9px);
+}
+
+/* json-render: the same texture, a step greyer than A2UI's black */
+.colBarStripedLight {
+  background: repeating-linear-gradient(135deg, #9a9a9a 0, #9a9a9a 5px, #c0c0c0 5px, #c0c0c0 9px);
+}
+
+[data-theme="dark"] .colBarStripedLight {
+  background: repeating-linear-gradient(135deg, #8f8f8f 0, #8f8f8f 5px, #656565 5px, #656565 9px);
+}
+
+.colVal {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.colValZero {
+  color: var(--ink-muted);
+  font-weight: 500;
+}
+
+.panelFeet {
+  display: flex;
+  gap: 6px;
+}
+
+.panelFoot {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.panelFootGhost {
+  opacity: 0.35;
+}
+
+/* centered chart legends with breathing room above */
+.vivid .legendCenter {
+  justify-content: center;
+  padding-inline: 20px;
+  margin-top: 12px;
+}
+
+.panel.s1 .stampInline {
+  background: var(--c1);
+}
+
+.panelFoot .chip {
+  width: 24px;
+  height: 24px;
+  border-radius: 0;
+  background: transparent;
+  opacity: 0.75;
+}
+
+.panelFoot .chip svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* density band stripes --------------------------------------------------- */
+
+.bandStripe {
+  fill: color-mix(in srgb, var(--ink) 4%, transparent);
+}
+
+.vivid .svg polyline {
+  stroke-width: 3;
+}
+
+/* hover ------------------------------------------------------------------ */
+
+/* floating detail card for SVG charts (frontier) */
+.hoverCard {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  background: var(--ink);
+  color: var(--surface);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.hoverCard strong {
+  font-weight: 600;
+}
+
+.hoverCard em {
+  font-style: normal;
+  color: color-mix(in srgb, var(--surface) 65%, transparent);
+}
+
+/* CSS tooltip for HTML cells (triptych columns, bar rows, table cells) */
+.tip {
+  position: relative;
+}
+
+@keyframes vizTipIn {
+  from {
+    opacity: 0;
+  }
+}
+
+.vivid .tip:hover::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: var(--surface);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 6;
+  animation: vizTipIn 140ms ease both;
+}
+
+/* table-cell tooltips anchor to the cell's content box */
+.vivid .benchmarkTable td.tip:hover::after {
+  bottom: calc(100% + 2px);
+}
+
+/* Edge clamping: a centred tooltip on the first/last item in a row would hang
+   off the card, so those anchor to their own edge instead. */
+.vivid .panelPlot > .tip:first-child:hover::after,
+.vivid .rows > .tip:first-child:hover::after {
+  left: 0;
+  transform: none;
+}
+
+.vivid .panelPlot > .tip:last-child:hover::after,
+.vivid .benchmarkTable td.tip:last-child:hover::after,
+.vivid .segBar > .tip:last-child:hover::after {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
+/* rows, columns and table rows answer the pointer */
+.row:hover .bar {
+  filter: saturate(1.15) brightness(1.02);
+}
+
+.vivid .barSlot {
+  transition: background 150ms ease;
+}
+
+.vivid .row:hover .barSlot {
+  background: color-mix(in srgb, var(--ink) 9%, transparent);
+}
+
+.vivid .row:hover .value {
+  color: var(--ink);
+}
+
+.colCell {
+  transition: background 150ms ease;
+}
+
+.colCell:hover {
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
+}
+
+.colBar {
+  transition: filter 150ms ease;
+}
+
+.colCell:hover .colBar {
+  filter: saturate(1.15) brightness(1.02);
+}
+
+/* frontier / density points grow slightly under the pointer.
+   Own transition, no delay — otherwise hover would inherit the reveal's
+   per-point stagger and feel laggy. */
+.vivid .pt:hover {
+  transform: scale(1.35);
+  transition: transform 140ms ease 0ms;
+}
+
+.hoverCard {
+  animation: vizTipIn 140ms ease both;
+}
+
+.vivid .benchmarkTable tbody td,
+.vivid .benchmarkTable tbody th {
+  transition: background 150ms ease;
+}
+
+.tokenBarTrack {
+  transition: background 150ms ease;
+}
+
+.vivid .tokenRow:hover .tokenBarTrack {
+  background: color-mix(in srgb, var(--ink) 9%, transparent);
+}
+
+.vivid .benchmarkTable tbody tr:hover:not(.avgRow) th,
+.vivid .benchmarkTable tbody tr:hover:not(.avgRow) td {
+  background: color-mix(in srgb, var(--ink) 3.5%, transparent);
+}
+
+/* production repair funnel ------------------------------------------------ */
+
+.funnelWrap {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.funnelPill {
+  position: absolute;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+  padding: 5px 14px;
+  border: 1px solid color-mix(in srgb, var(--c1) 40%, transparent);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--c1);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+/* on the dark surface the purple reads muddy; plain white wins. Both the
+   explicit theme and the system-dark default need it. */
+[data-theme="dark"] .funnelPill {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(html:not([data-theme="light"]):not(.light)) .funnelPill {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.35);
+  }
+}
+
+/* the stage readouts sit on a hairline grid, like the feature band */
+.funnelFeet {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+}
+
+.funnelFoot {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: 18px 28px 4px;
+  border-left: 1px solid var(--rule);
+}
+
+.funnelFoot:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.funnelFootHead {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+}
+
+/* number in ink, everything after it in grey, one size smaller */
+.funnelFoot strong {
+  font-family: var(--home-font-display, inherit);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.funnelFootLabel {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--ink-muted);
+}
+
+.funnelFootSub {
+  margin-top: 2px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+@media (max-width: 640px) {
+  .funnelFeet {
+    grid-template-columns: 1fr;
+  }
+
+  /* stacked: the hairlines run horizontally between stages instead */
+  .funnelFoot {
+    padding: 14px 0;
+    border-left: 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  .funnelFoot:first-child {
+    padding-top: 4px;
+    border-top: 0;
+  }
+}
+
+/* pareto frontier: this chart alone gets full-colour series so the three
+   lines read instantly; the rest of the page stays mono + purple */
+.frontier {
+  --pO: #6d28d9;
+  --pA: #2563eb;
+  --pJ: #d97706;
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(html:not([data-theme="light"]):not(.light)) .frontier {
+    --pO: #a78bfa;
+    --pA: #60a5fa;
+    --pJ: #fbbf24;
+  }
+}
+
+[data-theme="dark"] .frontier {
+  --pO: #a78bfa;
+  --pA: #60a5fa;
+  --pJ: #fbbf24;
+}
+
+/* mascot ---------------------------------------------------------------
+   The mascot is the nav's own multi-path artwork with baked fills, not a flat
+   single-path brand mark. It carries much finer detail, so it is drawn edge to
+   edge inside its tile — at the brand marks' inset size it rasterises to grey
+   mush. Selectors are written to outrank every `.chip svg` sizing rule above. */
+.viz .chip svg.mascot,
+.viz.vivid .chip svg.mascot,
+.viz.vivid .benchmarkTable .chip svg.mascot,
+.viz .panelFoot .chip svg.mascot {
+  width: 100%;
+  height: 100%;
+}
+
+/* outside a tile (chart legends) the mascot still needs its own larger size */
+.viz .legend svg.mascot,
+.viz.vivid .legend svg.mascot {
+  width: 22px;
+  height: 22px;
+  opacity: 1;
+}
+
+/* render split: complete | partial | blank -------------------------------- */
+
+.splitComplete,
+.splitPartial,
+.splitBlank {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* white on the purple and black fills; ink on json-render's lighter grey */
+.splitComplete .segNum {
+  color: #fff;
+  text-shadow: none;
+}
+
+.s3 .splitComplete .segNum {
+  color: var(--ink);
+}
+
+.splitPartial {
+  background: color-mix(in srgb, var(--ink) 26%, var(--surface));
+}
+
+.splitPartial .segNum {
+  color: var(--surface);
+}
+
+.splitBlank {
+  background: repeating-linear-gradient(
+    135deg,
+    #9a9a9a 0,
+    #9a9a9a 4px,
+    color-mix(in srgb, var(--ink) 12%, var(--surface)) 4px,
+    color-mix(in srgb, var(--ink) 12%, var(--surface)) 8px
+  );
+  box-shadow: inset 1px 0 0 var(--surface);
+}
+
+.dotPartial {
+  background: color-mix(in srgb, var(--ink) 26%, var(--surface));
+}
+
+.dotBlank {
+  background: #9a9a9a;
+}
+
+/* token matrix: input | output | total, each column on its own scale ------ */
+
+.matrix {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.matrixHead,
+.matrixRow {
+  display: grid;
+  grid-template-columns: 150px repeat(var(--matrix-cols, 3), minmax(0, 1fr));
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.matrixHead > span {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.matrixRow {
+  min-height: 44px;
+}
+
+/* bar in a flexible track, number in its own right-aligned column, so every
+   value in a column lines up instead of trailing its bar */
+.matrixCell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.matrixBarWrap {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.matrixBar {
+  height: 32px;
+  min-width: 3px;
+  flex: none;
+}
+
+.matrixVal {
+  justify-self: end;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 4.5em;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  text-align: right;
+}
+
+/* per-cell difference against the OpenUI baseline ------------------------ */
+
+.diffGood,
+.diffBad {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.diffGood {
+  color: #15803d;
+}
+
+.diffBad {
+  color: #b91c1c;
+}
+
+[data-theme="dark"] .diffGood {
+  color: #4ade80;
+}
+
+[data-theme="dark"] .diffBad {
+  color: #f87171;
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(html:not([data-theme="light"]):not(.light)) .diffGood {
+    color: #4ade80;
+  }
+
+  :global(html:not([data-theme="light"]):not(.light)) .diffBad {
+    color: #f87171;
+  }
+}
+
+@media (max-width: 640px) {
+  .matrixHead,
+  .matrixRow {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .matrixHead {
+    display: none;
+  }
+}
+
+/* funnel stage badges: does this layer cost a model call? ---------------- */
+
+/* rides the number row, pushed to the right edge of the stage column */
+.funnelBadge,
+.funnelBadgeLlm {
+  align-self: center;
+  margin-left: auto;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.funnelBadge {
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  color: var(--ink-muted);
+}
+
+.funnelBadgeLlm {
+  background: color-mix(in srgb, var(--c1) 16%, transparent);
+  color: var(--c1);
+}
+
+/* the column's upper segment: what did NOT render, filled and counted so the
+   cell reads as a whole rather than a bar floating in an empty box */
+.colTop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+  box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--ink) 10%, transparent);
+}
+
+.colTopVal {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.colBar {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.colBarVal {
+  margin-top: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.panel.s2 .colBarVal,
+.panel.s3 .colBarVal {
+  color: var(--surface);
+}
+
+/* split by model: a small stack of three format bars under each model ----- */
+
+.splitGroups {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px 40px;
+}
+
+.splitGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.splitGroupHead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 2px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.splitRow {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.splitRowName {
+  font-size: 0.8125rem;
+  color: var(--ink-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.splitRow .tokenBarTrack {
+  height: 26px;
+}
+
+@media (max-width: 900px) {
+  .splitGroups {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* the Complete swatch stands for all three fills, so it shows the texture
+   rather than any one format's colour */
+.dotComplete {
+  background: repeating-linear-gradient(
+    135deg,
+    var(--ink) 0,
+    var(--ink) 3px,
+    color-mix(in srgb, var(--ink) 55%, var(--surface)) 3px,
+    color-mix(in srgb, var(--ink) 55%, var(--surface)) 6px
+  );
+}
+
+/* the upper-segment swatch, matching .colTop */
+.dotTop {
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 18%, transparent);
+}
+
+/* the split triptych: complete / partial / blank stacked in each column ---- */
+
+.splitColComplete,
+.colCell > .splitColPartial,
+.colCell > .splitColBlank {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 0;
+}
+
+.splitColComplete {
+  position: relative;
+}
+
+.splitColPartial {
+  background: color-mix(in srgb, var(--ink) 22%, var(--surface));
+}
+
+.splitColBlank {
+  background: repeating-linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--ink) 45%, var(--surface)) 0,
+    color-mix(in srgb, var(--ink) 45%, var(--surface)) 4px,
+    color-mix(in srgb, var(--ink) 22%, var(--surface)) 4px,
+    color-mix(in srgb, var(--ink) 22%, var(--surface)) 8px
+  );
+}
+
+.splitColNum {
+  margin-top: 2px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--surface);
+  font-variant-numeric: tabular-nums;
+}
+
+/* cells that carry a comparison arrow give the number and the arrow their own
+   fixed tracks, so a row without an arrow still lines its % up with the rest */
+/* Each cell is its own grid, so `max-content` would size per row and let a row
+   without an arrow drift out of line. Both trailing tracks are fixed instead:
+   the values align across rows and still sit close to their bars. */
+.matrixCellDiff {
+  grid-template-columns: minmax(0, 1fr) 3.6em 3.4em;
+  gap: 8px;
+}
+
+.matrixCellDiff .matrixVal {
+  min-width: 0;
+}
+
+.matrixDiff {
+  justify-self: start;
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.matrixDiff > span {
+  margin-left: 0;
+}
+
+/* two-column failure comparison: wider metric columns, since each carries a
+   full sentence as its heading */
+.matrixPair {
+  --matrix-cols: 2;
+}
+
+.matrixSub {
+  margin-left: 8px;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--ink-muted);
+}
+
+/* the definition note sits well apart from the chart it explains */
+.vivid .note {
+  margin-top: 36px;
+}
+
+/* the note's lead-in is a signpost, not a heading: semibold against muted
+   body text, rather than full bold jumping out of the paragraph */
+.note strong {
+  font-weight: 550;
+  color: var(--ink-muted);
+}

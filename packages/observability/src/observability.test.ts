@@ -108,6 +108,12 @@ describe("observability bus", () => {
     expect(received?.detail.id).toBe("event-1");
   });
 
+  it("shares one bus across duplicate copies via Symbol.for", () => {
+    const key = Symbol.for("openui.observability");
+    const store = globalThis as { [key]?: typeof observability };
+    expect(store[key]).toBe(observability);
+  });
+
   it("a throwing listener does not break the others", () => {
     const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
     const good = vi.fn();

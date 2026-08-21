@@ -1,5 +1,5 @@
 /**
- * Auto-mounts the OpenUI devtools widget in development.
+ * Auto-mounts the OpenUI Inspect widget in development.
  *
  * This module runs as a top-level side effect when the web entry is loaded in
  * a browser. In production builds the whole block is dead-code-eliminated by

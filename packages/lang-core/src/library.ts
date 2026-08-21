@@ -337,6 +337,8 @@ export interface Library<C = unknown> {
   readonly componentGroups: ComponentGroup[] | undefined;
   readonly root: string | undefined;
   readonly id: string | undefined;
+  /** Instance id minted by `createLibrary()`. Distinct from the optional public `id`. */
+  readonly __libraryId: string;
 
   prompt(options?: PromptOptions): string;
   toSpec(): PromptSpec;
@@ -350,12 +352,23 @@ export interface LibraryDefinition<C = unknown> {
   id?: string;
 }
 
+let fallbackLibraryId = 0;
+
+function createLibraryId(): string {
+  if (typeof globalThis.crypto?.randomUUID === "function") {
+    return globalThis.crypto.randomUUID();
+  }
+  fallbackLibraryId += 1;
+  return `openui-lib-${Date.now().toString(36)}-${fallbackLibraryId.toString(36)}`;
+}
+
 /**
  * Create a component library from an array of defined components.
  */
 export function createLibrary<C = unknown>(input: LibraryDefinition<C>): Library<C> {
   const componentsRecord: Record<string, DefinedComponent<any, C>> = {};
   const reg = z.registry<{ id: string }>();
+  const __libraryId = createLibraryId();
 
   for (const comp of input.components) {
     reg.add(comp.props as z.$ZodType, { id: comp.name });
@@ -374,6 +387,7 @@ export function createLibrary<C = unknown>(input: LibraryDefinition<C>): Library
     componentGroups: input.componentGroups,
     root: input.root,
     id: input.id,
+    __libraryId,
 
     prompt(options?: PromptOptions): string {
       const spec: PromptSpec = {

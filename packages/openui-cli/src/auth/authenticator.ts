@@ -127,7 +127,6 @@ export class Authenticator {
           scope: this.config.scopes.join(" "),
           code_challenge: codeChallenge,
           code_challenge_method: "S256",
-          prompt: "consent",
         }).toString();
 
         console.info("\n🌐 Opening your browser to sign in to Thesys…");
