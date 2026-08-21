@@ -3,7 +3,8 @@
 import { fontOverrides, legacyVarCss, swatchVarCss } from "@/shared/theme/openuiThemeBridge";
 import type { ThemeMode } from "@components/types";
 import { ThemeProvider } from "@openuidev/react-ui/ThemeProvider";
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useTheme } from "next-themes";
+import { createContext, useContext, useEffect, useMemo, type ReactNode } from "react";
 
 interface AppThemeProviderProps {
   children: ReactNode;
@@ -17,21 +18,6 @@ type AppThemeContextValue = {
 
 const AppThemeContext = createContext<AppThemeContextValue | null>(null);
 
-const THEME_STORAGE_KEY = "openui-theme";
-
-const getInitialMode = (): ThemeMode => {
-  if (typeof window === "undefined") {
-    return "light";
-  }
-
-  const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
-  if (stored === "light" || stored === "dark") {
-    return stored;
-  }
-
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-};
-
 export const useAppTheme = (): AppThemeContextValue => {
   const context = useContext(AppThemeContext);
   if (!context) {
@@ -41,26 +27,26 @@ export const useAppTheme = (): AppThemeContextValue => {
 };
 
 export default function AppThemeProvider({ children }: AppThemeProviderProps) {
-  const [mode, setMode] = useState<ThemeMode>(getInitialMode);
+  const { resolvedTheme, setTheme } = useTheme();
+  const mode: ThemeMode = resolvedTheme === "dark" ? "dark" : "light";
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", mode);
     document.body.setAttribute("data-theme", mode);
-    window.localStorage.setItem(THEME_STORAGE_KEY, mode);
   }, [mode]);
 
   const contextValue = useMemo(
     () => ({
       mode,
-      setMode,
-      toggleMode: () => setMode((prev) => (prev === "light" ? "dark" : "light")),
+      setMode: (nextMode: ThemeMode) => setTheme(nextMode),
+      toggleMode: () => setTheme(mode === "light" ? "dark" : "light"),
     }),
-    [mode],
+    [mode, setTheme],
   );
 
   return (
     <AppThemeContext.Provider value={contextValue}>
-      <ThemeProvider key={mode} mode={mode} theme={fontOverrides}>
+      <ThemeProvider key={mode} mode={mode} lightTheme={fontOverrides}>
         <style>{`
           body {
             ${legacyVarCss}
