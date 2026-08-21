@@ -1,7 +1,6 @@
-import { observability, ObservabilityLevel, toErrorInfo } from "@openuidev/observability";
+import { observability, toErrorInfo } from "@openuidev/observability";
 import { identityMessageFormat, type MessageFormat } from "../types/messageFormat";
 import type { StreamProtocolAdapter } from "../types/stream";
-import { getResponseErrorMessage } from "./httpError";
 import type { ChatLLM } from "./types";
 
 export interface FetchLLMOptions {
@@ -17,10 +16,6 @@ export interface FetchLLMOptions {
   fetch?: typeof fetch;
   /** Extra fields merged into the request body (e.g. `model`) */
   body?: Record<string, unknown>;
-}
-
-function levelForStatus(status: number): ObservabilityLevel {
-  return status >= 400 ? "error" : "info";
 }
 
 /**
@@ -60,18 +55,7 @@ export function fetchLLM({
         }),
         signal,
       }).then(
-        async (response) => {
-          observability(levelForStatus(response.status), {
-            kind: response.ok ? "fetchLLM:response" : "fetchLLM:error",
-            requestId: runId,
-            url,
-            status: response.status,
-            ok: response.ok,
-            threadId,
-            ...(await buildObservabilityErrorDetail(response)),
-          });
-          return response;
-        },
+        async (response) => response,
         (error: unknown) => {
           observability.error({
             kind: "fetchLLM:error",
@@ -85,16 +69,5 @@ export function fetchLLM({
       );
     },
     streamProtocol: streamAdapter,
-  };
-}
-
-async function buildObservabilityErrorDetail(response: Response) {
-  if (response.ok) return {};
-  const res = await response.clone().json();
-  return {
-    error: res?.error,
-    ...(!res.message
-      ? await getResponseErrorMessage(response).then((message) => ({ message }))
-      : { message: res.message }),
   };
 }

@@ -1,8 +1,10 @@
+import { observability } from "@openuidev/observability";
 import { createStore } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 import { getResponseErrorMessage } from "../adapters/httpError";
 import type { ChatLLM, ChatStorage } from "../adapters/types";
 import { processStreamedMessage } from "../stream/processStreamedMessage";
+import { buildObservabilityErrorDetail, levelForStatus } from "./observability";
 import type { ChatStore, Message, Thread, UserMessage } from "./types";
 
 export interface CreateChatStoreConfig {
@@ -178,8 +180,18 @@ export const createChatStore = (configRef: React.RefObject<CreateChatStoreConfig
             signal: abortController.signal,
           });
 
-          if (response instanceof Response && !response.ok) {
-            throw new Error(await getResponseErrorMessage(response));
+          if (response instanceof Response) {
+            observability(levelForStatus(response.status), {
+              kind: response.ok ? "LLM:response" : "LLM:error",
+              threadId,
+              status: response.status,
+              ok: response.ok,
+              ...(await buildObservabilityErrorDetail(response)),
+            });
+
+            if (!response.ok) {
+              throw new Error(await getResponseErrorMessage(response));
+            }
           }
 
           await processStreamedMessage({
