@@ -57,14 +57,11 @@ export default async function IntegrationDetailPage(props: { params: Promise<{ s
           </Link>
 
           <div className={styles.detailLockup}>
-            <IntegrationLogo className={styles.detailMark} integration={integration} />
-            <div className={styles.detailTitleBlock}>
-              <div className={styles.detailTags}>
-                <span>{integration.type}</span>
-              </div>
+            <div className={styles.detailHeadingRow}>
+              <IntegrationLogo className={styles.detailMark} integration={integration} />
               <h1>{integration.name}</h1>
-              <p>{integration.summary}</p>
             </div>
+            <p>{integration.summary}</p>
           </div>
         </div>
       </div>
@@ -73,7 +70,6 @@ export default async function IntegrationDetailPage(props: { params: Promise<{ s
         <div className={styles.detailLayout}>
           <article className={styles.detailArticle}>
             <section>
-              <p className={styles.detailEyebrow}>Integration overview</p>
               <h2>How it connects to OpenUI</h2>
               <p className={styles.detailLead}>{integration.howItWorks}</p>
             </section>
