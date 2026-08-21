@@ -4,8 +4,8 @@ import { Authenticator } from "./authenticator";
 
 // Thesys console OAuth + key mint (same flow as create-c1-app). The OpenUI Cloud
 // master key is the same C1-flavored org API key (usageType "C1").
-const THESYS_API_URL = process.env["THESYS_API_URL"] ?? "https://api.app.thesys.dev";
-const THESYS_ISSUER_URL = process.env["THESYS_ISSUER_URL"] ?? `${THESYS_API_URL}/oidc`;
+const THESYS_API_URL = "https://api.app.thesys.dev";
+const THESYS_ISSUER_URL = "https://api.app.thesys.dev/oidc";
 const THESYS_CLIENT_ID = "create-c1-app"; // public PKCE client (no secret)
 export const THESYS_KEYS_URL = "https://console.thesys.dev/keys";
 

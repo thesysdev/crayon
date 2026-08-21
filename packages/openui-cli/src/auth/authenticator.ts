@@ -44,15 +44,8 @@ export class Authenticator {
   }
 
   async initialize(): Promise<void> {
-    const { discovery, allowInsecureRequests } = await import("openid-client");
-    const issuer = new URL(this.config.issuerUrl);
-    this.clientConfig = await discovery(
-      issuer,
-      this.config.clientId,
-      undefined,
-      undefined,
-      issuer.protocol === "http:" ? { execute: [allowInsecureRequests] } : undefined,
-    );
+    const { discovery } = await import("openid-client");
+    this.clientConfig = await discovery(new URL(this.config.issuerUrl), this.config.clientId);
   }
 
   async authenticate(): Promise<AuthResult> {
