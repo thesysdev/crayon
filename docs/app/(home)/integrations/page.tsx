@@ -3,6 +3,7 @@ import { Footer } from "@/app/(home)/sections/Footer/Footer";
 import { ArrowRight, Boxes, Layers3 } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CategoryNav } from "./category-nav";
 import { getIntegrationsByCategory, integrationCategories } from "./data";
 import { IntegrationLogo } from "./integration-logo";
 import styles from "./page.module.css";
@@ -59,17 +60,16 @@ export default function IntegrationsPage() {
             </p>
           </div>
 
-          <nav className={styles.categoryNav} aria-label="Integration categories">
-            {integrationCategories.map((category) => (
-              <a className={styles.categoryNavLink} href={`#${category.id}`} key={category.id}>
-                {category.shortTitle}
-                <span>{getIntegrationsByCategory(category.id).length}</span>
-              </a>
-            ))}
-          </nav>
+          <CategoryNav
+            categories={integrationCategories.map((category) => ({
+              count: getIntegrationsByCategory(category.id).length,
+              id: category.id,
+              label: category.shortTitle,
+            }))}
+          />
 
           <div className={styles.categoryList}>
-            {integrationCategories.map((category, categoryIndex) => {
+            {integrationCategories.map((category) => {
               const items = getIntegrationsByCategory(category.id);
 
               return (
@@ -80,38 +80,38 @@ export default function IntegrationsPage() {
                   key={category.id}
                 >
                   <header className={styles.categoryHeader}>
-                    <div className={styles.categoryIndex} aria-hidden="true">
-                      {String(categoryIndex + 1).padStart(2, "0")}
-                    </div>
                     <div className={styles.categoryHeading}>
                       <h2>{category.title}</h2>
                       <p>{category.description}</p>
                     </div>
-                    <span className={styles.categoryCount}>{items.length}</span>
                   </header>
 
                   <div className={styles.grid}>
-                    {items.map((item, itemIndex) => (
+                    {items.map((item) => (
                       <Link
                         className={styles.card}
                         href={`/integrations/${item.slug}`}
                         key={item.slug}
                       >
-                        <div className={styles.cardTopline}>
+                        <div className={styles.cardHeader}>
                           <IntegrationLogo className={styles.mark} integration={item} />
-                          <span className={styles.popularityRank}>
-                            {String(itemIndex + 1).padStart(2, "0")}
-                          </span>
-                        </div>
-                        <div className={styles.cardBody}>
-                          <div className={styles.cardTitleRow}>
-                            <h3>{item.name}</h3>
-                            <ArrowRight className={styles.cardArrow} size={18} aria-hidden="true" />
+                          <div className={styles.cardHeaderContent}>
+                            <h3 className={styles.cardTitle}>{item.name}</h3>
+                            <div className={styles.tags}>
+                              <span className={styles.typeTag}>{item.type}</span>
+                            </div>
                           </div>
-                          <p>{item.summary}</p>
                         </div>
-                        <div className={styles.cardMeta}>
-                          <span>{item.type}</span>
+                        <p className={styles.cardDescription}>{item.summary}</p>
+                        <div className={styles.cardLinks} aria-hidden="true">
+                          <span className={styles.cardLink}>
+                            View integration
+                            <ArrowRight
+                              className={styles.cardLinkArrow}
+                              size={14}
+                              aria-hidden="true"
+                            />
+                          </span>
                         </div>
                       </Link>
                     ))}

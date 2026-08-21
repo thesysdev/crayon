@@ -51,11 +51,10 @@ export default async function IntegrationDetailPage(props: { params: Promise<{ s
     <main className={styles.detailPage} data-accent={category.accent}>
       <div className={styles.detailHero}>
         <div className={styles.detailHeroInner}>
-          <nav className={styles.breadcrumbs} aria-label="Breadcrumb">
-            <Link href="/integrations">Integrations</Link>
-            <span aria-hidden="true">/</span>
-            <Link href={`/integrations#${category.id}`}>{category.shortTitle}</Link>
-          </nav>
+          <Link className={styles.detailBackLink} href="/integrations">
+            <ArrowLeft size={15} aria-hidden="true" />
+            All integrations
+          </Link>
 
           <div className={styles.detailLockup}>
             <IntegrationLogo className={styles.detailMark} integration={integration} />
@@ -200,10 +199,6 @@ export default async function IntegrationDetailPage(props: { params: Promise<{ s
         </div>
 
         <div className={styles.detailBackRow}>
-          <Link href="/integrations">
-            <ArrowLeft size={16} aria-hidden="true" />
-            All integrations
-          </Link>
           <Link href={`/integrations#${category.id}`}>
             Browse {category.shortTitle.toLowerCase()}
             <ArrowRight size={16} aria-hidden="true" />

@@ -26,11 +26,30 @@
 
 /* The mark and the theme control face each other across the footer's width. */
 .brandRow {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
   gap: 1.5rem;
   padding-bottom: var(--footer-air-below);
+}
+
+.footerNav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footerNav a {
+  color: var(--openui-text-neutral-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.footerNav a:hover,
+.footerNav a:focus-visible {
+  color: var(--openui-text-neutral-primary);
 }
 
 .logoWrap {
@@ -182,6 +201,18 @@
    surface) by default; make it pure black so the footer matches the black page. */
 [data-theme="dark"] .contentSection {
   background: #000;
+}
+
+@media (max-width: 600px) {
+  .brandRow {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .footerNav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-content: flex-start;
+  }
 }
 
 @media (min-width: 1024px) {

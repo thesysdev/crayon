@@ -10,8 +10,7 @@
   background: #000;
 }
 
-.contentBand,
-.detailBand {
+.contentBand {
   background: linear-gradient(
     to bottom,
     var(--openui-foreground),
@@ -21,8 +20,11 @@
   );
 }
 
-[data-theme="dark"] .contentBand,
-[data-theme="dark"] .detailBand {
+.detailBand {
+  background: var(--openui-background);
+}
+
+[data-theme="dark"] .contentBand {
   background: linear-gradient(
     to bottom,
     #000,
@@ -30,6 +32,10 @@
     var(--swatch-neutral-950) calc(100% - 24rem),
     #000
   );
+}
+
+[data-theme="dark"] .detailBand {
+  background: var(--swatch-neutral-950);
 }
 
 .directory {
@@ -207,26 +213,12 @@
 
 .categoryHeader {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1rem;
   align-items: start;
   margin-bottom: 1.5rem;
   padding-bottom: 1.5rem;
   border-bottom: 1px solid var(--home-hairline);
-}
-
-.categoryIndex,
-.categoryCount {
-  display: grid;
-  width: 2rem;
-  height: 2rem;
-  place-items: center;
-  border-radius: 0.65rem;
-  background: var(--category-soft);
-  color: var(--category-accent);
-  font-family: var(--home-font-mono);
-  font-size: 0.6875rem;
-  font-weight: 600;
 }
 
 .categoryHeading h2 {
@@ -254,10 +246,10 @@
 
 .card {
   display: flex;
-  min-height: 17.5rem;
+  min-height: 18rem;
   flex-direction: column;
   border: 1px solid var(--home-hairline);
-  border-radius: 1.5rem;
+  border-radius: var(--openui-radius-4xl);
   padding: 1.25rem;
   background: var(--openui-foreground);
   box-shadow: var(--home-card-lift);
@@ -270,20 +262,48 @@
 }
 
 .card:hover {
-  transform: translateY(-3px);
-  border-color: color-mix(in srgb, var(--category-accent) 45%, var(--home-hairline));
+  transform: translateY(-2px);
+  border-color: var(--openui-border-interactive, var(--openui-text-neutral-tertiary));
   box-shadow: var(--openui-shadow-m);
 }
 
-.cardTopline,
-.cardTitleRow,
-.cardMeta {
-  display: flex;
-  align-items: center;
+.card:focus-visible {
+  outline: 2px solid var(--openui-text-neutral-primary);
+  outline-offset: 3px;
 }
 
-.cardTopline {
-  justify-content: space-between;
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.cardHeaderContent {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+}
+
+.typeTag {
+  display: inline-flex;
+  height: 1.375rem;
+  align-items: center;
+  border-radius: 7px;
+  padding-inline: 0.5rem;
+  background: var(--openui-highlight-subtle);
+  color: var(--openui-text-neutral-secondary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1;
 }
 
 .mark,
@@ -314,65 +334,86 @@
 .mark {
   width: 2.75rem;
   height: 2.75rem;
-  border: 1px solid color-mix(in srgb, var(--category-accent) 18%, transparent);
+  flex-shrink: 0;
+  border: 1px solid var(--home-hairline);
   border-radius: 0.9rem;
   font-size: 0.8125rem;
   letter-spacing: -0.03em;
 }
 
-.popularityRank {
-  color: var(--openui-text-neutral-tertiary);
-  font-family: var(--home-font-mono);
-  font-size: 0.6875rem;
-}
-
-.cardBody {
-  margin-top: 2.25rem;
-}
-
-.cardTitleRow {
-  gap: 0.75rem;
-  justify-content: space-between;
-}
-
-.card h3 {
+.cardTitle {
   margin: 0;
   font-family: var(--home-font-display);
-  font-size: 1.125rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  line-height: 1.3;
+  font-size: var(--home-heading-size);
+  font-weight: 500;
+  letter-spacing: var(--home-heading-tracking);
+  line-height: var(--home-heading-leading);
 }
 
-.cardArrow {
-  flex-shrink: 0;
-  color: var(--openui-text-neutral-tertiary);
-  transform: translateX(-3px);
-  transition:
-    color 0.18s ease,
-    transform 0.18s ease;
-}
-
-.card:hover .cardArrow {
-  color: var(--category-accent);
-  transform: translateX(0);
-}
-
-.cardBody p {
-  margin: 0.75rem 0 0;
+.cardDescription {
+  margin: 1.75rem 0 0;
   color: var(--openui-text-neutral-secondary);
-  font-size: 0.875rem;
-  line-height: 1.58;
+  font-family: var(--home-font-text);
+  font-size: var(--home-body-size);
+  font-weight: var(--home-body-weight);
+  line-height: 1.65;
 }
 
-.cardMeta {
+.cardLinks {
+  display: flex;
   flex-wrap: wrap;
-  gap: 0.45rem;
+  gap: 0.5rem;
   margin-top: auto;
   padding-top: 1.5rem;
 }
 
-.cardMeta span,
+.cardLink {
+  display: inline-flex;
+  min-height: 1.75rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid var(--openui-border-default);
+  border-radius: var(--openui-radius-full, 999px);
+  padding: 0.25rem 0.25rem 0.25rem 0.875rem;
+  background: var(--openui-foreground);
+  box-shadow: var(--openui-shadow-s);
+  color: var(--openui-text-neutral-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.cardLinkArrow {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  width: 0;
+  height: 1.25rem;
+  padding: 0;
+  border-radius: 999px;
+  background: var(--openui-text-neutral-primary);
+  color: var(--openui-background);
+  opacity: 0;
+  overflow: hidden;
+  transition:
+    width 0.18s ease,
+    padding 0.18s ease,
+    opacity 0.18s ease;
+}
+
+.card:hover .cardLink {
+  border-color: var(--openui-border-interactive, var(--openui-text-neutral-primary));
+  box-shadow: var(--openui-shadow-m);
+}
+
+.card:hover .cardLinkArrow {
+  width: 1.25rem;
+  padding: 0.25rem;
+  opacity: 1;
+}
+
 .detailTags span {
   display: inline-flex;
   min-height: 1.625rem;
@@ -437,23 +478,11 @@
 /* Detail page */
 .detailHero {
   border-bottom: 1px solid var(--home-hairline);
-  background:
-    radial-gradient(
-      circle at 78% 20%,
-      color-mix(in srgb, var(--category-accent) 11%, transparent),
-      transparent 31rem
-    ),
-    var(--openui-foreground);
+  background: var(--openui-foreground);
 }
 
 [data-theme="dark"] .detailHero {
-  background:
-    radial-gradient(
-      circle at 78% 20%,
-      color-mix(in srgb, var(--category-accent) 13%, transparent),
-      transparent 31rem
-    ),
-    #000;
+  background: #000;
 }
 
 .detailHeroInner,
@@ -468,22 +497,28 @@
   padding-block: clamp(4rem, 8vw, 7rem) clamp(4rem, 8vw, 6rem);
 }
 
-.breadcrumbs {
-  display: flex;
+.detailBackLink {
+  display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.45rem;
   margin-bottom: 2.5rem;
-  color: var(--openui-text-neutral-tertiary);
-  font-size: 0.8125rem;
-}
-
-.breadcrumbs a {
   color: var(--openui-text-neutral-secondary);
+  font-size: 0.8125rem;
+  font-weight: 550;
   text-decoration: none;
+  transition: color 160ms ease;
 }
 
-.breadcrumbs a:hover {
-  color: var(--category-accent);
+.detailBackLink svg {
+  transition: transform 160ms ease;
+}
+
+.detailBackLink:hover {
+  color: var(--openui-text-neutral-primary);
+}
+
+.detailBackLink:hover svg {
+  transform: translateX(-2px);
 }
 
 .detailLockup {
@@ -809,7 +844,7 @@
 
 .detailBackRow {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 1rem;
   padding-bottom: 8rem;
 }
@@ -862,14 +897,6 @@
   .categoryList {
     gap: 4.5rem;
     margin-top: 4.5rem;
-  }
-
-  .categoryHeader {
-    grid-template-columns: auto minmax(0, 1fr);
-  }
-
-  .categoryCount {
-    display: none;
   }
 
   .grid {
@@ -933,7 +960,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .card,
-  .cardArrow,
+  .cardLink,
+  .cardLinkArrow,
   .categoryNavLink {
     transition: none;
   }
