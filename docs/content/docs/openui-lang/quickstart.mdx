@@ -141,112 +141,56 @@ executor is enough.
 Create `src/lib/recipe-library.tsx`:
 
 ```tsx
-import {
-  createLibrary,
-  defineComponent,
-  useIsStreaming,
-  useTriggerAction,
-} from "@openuidev/react-lang";
+import { createLibrary, defineComponent, useTriggerAction } from "@openuidev/react-lang";
 import { chatLibrary } from "@openuidev/thesys";
-import type { CSSProperties } from "react";
 import { z } from "zod/v4";
 
-const styles = {
-  panel: { borderRadius: 24, background: "#fff7ed", padding: 24, color: "#0f172a" },
-  heading: { fontSize: 24, fontWeight: 600 },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-    gap: 16,
-    marginTop: 16,
-  },
-  card: {
-    borderRadius: 16,
-    background: "white",
-    padding: 16,
-    boxShadow: "0 1px 3px rgb(15 23 42 / 0.12)",
-  },
-  image: {
-    width: "100%",
-    aspectRatio: "16 / 9",
-    objectFit: "cover",
-    borderRadius: 12,
-    marginBottom: 12,
-  },
-  time: { color: "#c2410c", fontSize: 14 },
-  title: { fontWeight: 600 },
-  list: { listStyle: "none", margin: "12px 0", fontSize: 14 },
-  swap: { color: "#047857", fontSize: 14 },
-  actions: { display: "flex", gap: 12, marginTop: 16, fontSize: 14 },
-  source: { textDecoration: "underline" },
-  button: { color: "#c2410c", fontWeight: 500 },
-} satisfies Record<string, CSSProperties>;
-
-const recipeRemixProps = z.object({
-  heading: z.string(),
-  recipes: z.array(
-    z.object({
-      title: z.string(),
-      time: z.string(),
-      ingredients: z.array(z.string()),
-      swap: z.string(),
-      sourceUrl: z.string(),
-      imageUrl: z.string().optional(),
-    }),
-  ),
-});
-
-type RecipeRemixProps = z.infer<typeof recipeRemixProps>;
-
-function RecipeRemixRenderer({ props }: { props: RecipeRemixProps }) {
-  const triggerAction = useTriggerAction();
-  const isStreaming = useIsStreaming();
-
-  return (
-    <section style={styles.panel}>
-      <h2 style={styles.heading}>{props.heading}</h2>
-      <div style={styles.grid}>
-        {props.recipes.map((recipe) => (
-          <article key={recipe.title} style={styles.card}>
-            {recipe.imageUrl?.startsWith("https://") && (
-              // Image search returns dynamic hosts, so use a native image here.
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={recipe.imageUrl} alt={recipe.title} style={styles.image} />
-            )}
-            <p style={styles.time}>{recipe.time}</p>
-            <h3 style={styles.title}>{recipe.title}</h3>
-            <ul style={styles.list}>
-              {recipe.ingredients.map((ingredient) => (
-                <li key={ingredient}>• {ingredient}</li>
-              ))}
-            </ul>
-            <p style={styles.swap}>Swap: {recipe.swap}</p>
-            <div style={styles.actions}>
-              {recipe.sourceUrl.startsWith("https://") && (
-                <a href={recipe.sourceUrl} target="_blank" rel="noreferrer" style={styles.source}>
-                  Source
-                </a>
-              )}
-              <button
-                disabled={isStreaming}
-                style={{ ...styles.button, opacity: isStreaming ? 0.5 : 1 }}
-                onClick={() => triggerAction(`Make ${recipe.title} faster and simpler`)}
-              >
-                Remix this
-              </button>
-            </div>
-          </article>
-        ))}
-      </div>
-    </section>
-  );
-}
+const cardStyle = { padding: 12, margin: 12, borderRadius: 12, background: "#fff7ed" };
 
 const RecipeRemix = defineComponent({
   name: "RecipeRemix",
   description: "Three sourced recipe suggestions with practical substitutions.",
-  props: recipeRemixProps,
-  component: RecipeRemixRenderer,
+  props: z.object({
+    recipes: z.array(
+      z.object({
+        title: z.string(),
+        time: z.string(),
+        ingredients: z.array(z.string()),
+        swap: z.string(),
+        sourceUrl: z.string(),
+        imageUrl: z.string().optional(),
+      }),
+    ),
+  }),
+  component: function RecipeRemix({ props }) {
+    const triggerAction = useTriggerAction();
+
+    return (
+      <section>
+        <h2 style={{ fontSize: 24, fontWeight: 600 }}>Recipe Remix</h2>
+        {props.recipes.map((recipe) => (
+          <article key={recipe.title} style={cardStyle}>
+            {recipe.imageUrl?.startsWith("https://") && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={recipe.imageUrl} alt={recipe.title} style={{ width: "100%" }} />
+            )}
+            <h3>
+              <strong>{recipe.title}</strong> · {recipe.time}
+            </h3>
+            <p>{recipe.ingredients.join(", ")}</p>
+            <p>Swap: {recipe.swap}</p>
+            <a href={recipe.sourceUrl} target="_blank" rel="noreferrer">
+              Source
+            </a>{" "}
+            ·{" "}
+            <button onClick={() => triggerAction(`Make ${recipe.title} faster and simpler`)}>
+              Remix this
+            </button>
+          </article>
+        ))}
+      </section>
+    );
+  },
 });
 
 export const recipeLibrary = createLibrary({
