@@ -1,4 +1,4 @@
-import { observability, toErrorInfo } from "@openuidev/observability";
+import { observability } from "@openuidev/observability";
 import { identityMessageFormat, type MessageFormat } from "../types/messageFormat";
 import type { StreamProtocolAdapter } from "../types/stream";
 import type { ChatLLM } from "./types";
@@ -57,13 +57,6 @@ export function fetchLLM({
       }).then(
         async (response) => response,
         (error: unknown) => {
-          observability.error({
-            kind: "fetchLLM:error",
-            requestId: runId,
-            url,
-            error: toErrorInfo(error),
-            threadId,
-          });
           throw error;
         },
       );
