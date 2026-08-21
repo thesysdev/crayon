@@ -1,5 +1,5 @@
 import { Footer } from "@/app/(home)/sections/Footer/Footer";
-import { ArrowLeft, ArrowRight, ArrowUpRight, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -48,7 +48,7 @@ export default async function IntegrationDetailPage(props: { params: Promise<{ s
   const related = getRelatedIntegrations(integration);
 
   return (
-    <main className={styles.detailPage} data-accent={category.accent}>
+    <main className={styles.detailPage}>
       <div className={styles.detailHero}>
         <div className={styles.detailHeroInner}>
           <Link className={styles.detailBackLink} href="/integrations">
@@ -122,23 +122,6 @@ export default async function IntegrationDetailPage(props: { params: Promise<{ s
                 </div>
               </section>
             ) : null}
-
-            <section className={styles.checklistSection}>
-              <h2>What stays consistent</h2>
-              <div className={styles.checkGrid}>
-                {[
-                  "One schema for prompting and rendering",
-                  "Progressive rendering while output streams",
-                  "Typed components instead of arbitrary markup",
-                  "Host application retains its runtime behavior",
-                ].map((item) => (
-                  <div className={styles.checkItem} key={item}>
-                    <Check size={15} aria-hidden="true" />
-                    <span>{item}</span>
-                  </div>
-                ))}
-              </div>
-            </section>
           </article>
 
           <aside className={styles.resourceSidebar}>

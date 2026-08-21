@@ -26,7 +26,7 @@ export default function IntegrationsPage() {
     <main className={styles.page}>
       <PageHero
         title="OpenUI integrations"
-        subtitle="Explore OpenUI-maintained integrations for the frameworks, design systems, and platforms in your stack."
+        subtitle="Explore integrations for the frameworks, design systems, and platforms in your stack."
         smallSubtitle
       />
 
@@ -37,12 +37,7 @@ export default function IntegrationsPage() {
               const items = getIntegrationsByCategory(category.id);
 
               return (
-                <section
-                  className={styles.categorySection}
-                  data-accent={category.accent}
-                  id={category.id}
-                  key={category.id}
-                >
+                <section className={styles.categorySection} id={category.id} key={category.id}>
                   <header className={styles.categoryHeader}>
                     <div className={styles.categoryHeading}>
                       <h2>{category.title}</h2>
