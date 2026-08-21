@@ -192,19 +192,17 @@ export const createChatStore = (configRef: React.RefObject<CreateChatStoreConfig
               signal: abortController.signal,
             });
 
-            if (response instanceof Response) {
-              observability(levelForStatus(response.status), {
-                kind: response.ok ? "LLM:response" : "LLM:error",
-                threadId,
-                status: response.status,
-                ok: response.ok,
-                runId,
-                ...(await buildObservabilityErrorDetail(response)),
-              });
+            observability(levelForStatus(response.status), {
+              kind: response.ok ? "LLM:response" : "LLM:error",
+              threadId,
+              status: response.status,
+              ok: response.ok,
+              runId,
+              ...(await buildObservabilityErrorDetail(response)),
+            });
 
-              if (!response.ok) {
-                throw new Error(await getResponseErrorMessage(response));
-              }
+            if (!response.ok) {
+              throw new Error(await getResponseErrorMessage(response));
             }
           } catch (e) {
             observability.error({
