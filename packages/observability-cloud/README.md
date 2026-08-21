@@ -10,7 +10,7 @@ npm i @openuidev/observability-cloud
 
 ## Setup
 
-Generate a publishable API key at [console.thesys.dev/client-api-keys](https://console.thesys.dev/client-api-keys), then initialise the SDK once at your app's entry point:
+Generate a client API key at [console.thesys.dev/client-api-keys](https://console.thesys.dev/client-api-keys), then initialise the SDK once at your app's entry point:
 
 ```ts
 import * as Observability from "@openuidev/observability-cloud";
@@ -26,7 +26,7 @@ Observability.init({ apiKey: "pk-th-…" });
 
 | option       | type                    | default                               | description                                                                                                                                                  |
 | ------------ | ----------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `apiKey`     | `string`                | —                                     | Your publishable API key (`pk-th-…`). Required.                                                                                                              |
+| `apiKey`     | `string`                | —                                     | Your client API key (`pk-th-…`). Required.                                                                                                                   |
 | `capture`    | `"full"` \| `"minimal"` | `"full"`                              | `"full"` logs complete event data for the richest debugging in the console. `"minimal"` is a privacy-first mode that strips event data that may include PII. |
 | `sampleRate` | `number`                | `1`                                   | Fraction of renders to send, `0`–`1`. Sampling is deterministic per render, so all events for one render are kept or dropped together.                       |
 | `endpoint`   | `string`                | `https://ingest.thesys.dev/v1/events` | Override the ingest URL (testing).                                                                                                                           |
