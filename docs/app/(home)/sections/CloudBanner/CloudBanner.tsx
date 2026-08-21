@@ -48,15 +48,15 @@ export function CloudBanner() {
     <Link
       href="/benchmarks"
       className={`${styles.banner} ${open ? styles.open : ""}`.trim()}
-      aria-label="OpenUI Benchmark: Generative UI Benchmark. View the results."
+      aria-label="OpenUI Benchmarks: Compare Generative UI frameworks across models. View the results."
     >
       <span className={styles.content}>
         <span className={styles.text}>
           <span className={styles.lead}>
-            OpenUI <span className={styles.tag}>Benchmark</span>
+            OpenUI Benchmarks
             <span className={styles.colon}> :</span>
           </span>{" "}
-          <span className={styles.rest}>Generative UI Benchmark</span>
+          <span className={styles.rest}>Compare Generative UI frameworks across models</span>
         </span>
         <ArrowRight className={styles.chevron} size={18} strokeWidth={2.25} aria-hidden="true" />
       </span>
