@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { MAX_EDITOR_PCT, MIN_EDITOR_PCT } from "../debug/DebugUI";
 import type { ColorMode } from "../theme";
+import { isDevtoolsPosition, type DevtoolsPosition } from "./position";
 
 const STORAGE_KEY = "openui.devtools.config";
 
@@ -12,6 +13,8 @@ export type DevtoolsConfig = {
   helpSeen: boolean;
   /** Editor column width in OpenUI Debug, as a percentage of the split. */
   editorPct: number;
+  /** Corner the floating toggle is snapped to. */
+  position: DevtoolsPosition;
 };
 
 function isColorMode(value: unknown): value is ColorMode {
@@ -27,6 +30,7 @@ function sanitize(patch: Partial<DevtoolsConfig>): Partial<DevtoolsConfig> {
   if (typeof patch.editorPct === "number" && Number.isFinite(patch.editorPct)) {
     next.editorPct = Math.min(MAX_EDITOR_PCT, Math.max(MIN_EDITOR_PCT, patch.editorPct));
   }
+  if (isDevtoolsPosition(patch.position)) next.position = patch.position;
   return next;
 }
 
@@ -65,14 +69,15 @@ function merge(base: DevtoolsConfig, patch: Partial<DevtoolsConfig>): DevtoolsCo
  *
  * Theme is arg-first: a passed `theme` wins over storage and is written
  * back so Settings stays in sync. With no arg, the stored theme is used.
+ * Position has no prop — stored snap corner, else the default.
  */
 export function useDevtoolsConfig(defaults: DevtoolsConfig, provided: { theme?: ColorMode } = {}) {
-  const resolveTheme = (stored: Partial<DevtoolsConfig>, fallback: ColorMode): ColorMode =>
-    provided.theme ?? stored.theme ?? fallback;
-
   const [config, setConfigState] = useState(() => {
     const stored = readStored();
-    const next = { ...merge(defaults, stored), theme: resolveTheme(stored, defaults.theme) };
+    const next = {
+      ...merge(defaults, stored),
+      theme: provided.theme ?? stored.theme ?? defaults.theme,
+    };
     if (provided.theme) writeStored({ theme: provided.theme });
     return next;
   });
@@ -85,7 +90,10 @@ export function useDevtoolsConfig(defaults: DevtoolsConfig, provided: { theme?: 
   useEffect(() => {
     const stored = readStored();
     setConfigState((prev) => {
-      const next = { ...merge(prev, stored), theme: resolveTheme(stored, prev.theme) };
+      const next = {
+        ...merge(prev, stored),
+        theme: provided.theme ?? stored.theme ?? prev.theme,
+      };
       configRef.current = next;
       return next;
     });

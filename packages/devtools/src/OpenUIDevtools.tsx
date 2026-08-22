@@ -13,10 +13,13 @@ import {
 } from "./inspect";
 import {
   addOrReplaceEvent,
+  DEFAULT_POSITION,
   isLibraryEvent,
   useDevtoolsConfig,
   useDevtoolsSingleton,
+  useSnapCorner,
   type DevtoolsConfig,
+  type DevtoolsPosition,
 } from "./lib";
 import {
   DEFAULT_COLOR_MODE,
@@ -29,6 +32,8 @@ import {
   type ThemeTokens,
 } from "./theme";
 import { ErrorBoundary, IconButton, ShiroLogo, ThemeSegmented } from "./ui";
+
+export type { DevtoolsPosition };
 
 /** Uniform row height for the settings menu, set by its tallest control. */
 const MENU_ROW_HEIGHT = 28;
@@ -46,12 +51,13 @@ const DEBUG_MIN_WIDTH = 360;
 const BLOCK_W = `min(85vw, 3456px)`;
 const BLOCK_H = `min(85vh, 2234px)`;
 
-export type DevtoolsPosition = "top-left" | "top-right" | "bottom-left" | "bottom-right";
-
 export interface OpenUIDevtoolsProps {
   /** Force the widget on/off. Defaults to on outside production builds. */
   enabled?: boolean;
-  /** Corner for the floating toggle button. Defaults to "bottom-right". */
+  /**
+   * @deprecated Drag the floating button to snap it to a corner. 
+   * This prop is ignored. The position is persisted
+   */
   position?: DevtoolsPosition;
   /** How many events to keep; oldest are dropped first. */
   maxEvents?: number;
@@ -80,12 +86,13 @@ export interface OpenUIDevtoolsProps {
  * stack trace. OpenUI Inspect and OpenUI Debug are independent tools on
  * independent trays: a stream's Debug button opens Debug beside Inspect, and
  * either closes without disturbing the other. Display filters and the theme
- * live in the header settings menu. Renders nothing in production unless
+ * live in the header settings menu. Drag the floating button to snap it to a
+ * corner; the choice is remembered. Renders nothing in production unless
  * `enabled` is set explicitly.
  */
 export function OpenUIDevtools({
   enabled,
-  position = "bottom-right",
+  position: _position,
   maxEvents = 50,
   errorsOnly = false,
   autoOpenOnError = true,
@@ -107,10 +114,16 @@ export function OpenUIDevtools({
       theme: DEFAULT_COLOR_MODE,
       helpSeen: false,
       editorPct: DEFAULT_EDITOR_PCT,
+      position: DEFAULT_POSITION,
     },
     { theme: themeProp },
   );
-  const { onlyErrors, theme: mode } = config;
+  const { onlyErrors, theme: mode, position } = config;
+  const snap = useSnapCorner({
+    position,
+    onSnap: (next) => setConfig({ position: next }),
+    onActivate: () => setOpen(true),
+  });
   const debug = useDebug({
     theme: mode,
     helpSeen: config.helpSeen,
@@ -118,6 +131,13 @@ export function OpenUIDevtools({
     setConfig,
   });
   const styles = uiStyles(theme(mode));
+
+  useEffect(() => {
+    if (_position == null) return;
+    console.warn(
+      "[@openuidev/devtools] The `position` prop is deprecated. Drag the toggle to snap it to a corner.",
+    );
+  }, [_position]);
 
   // Read configRef inside the (stable) subscription without re-subscribing.
   useEffect(() => {
@@ -174,16 +194,21 @@ export function OpenUIDevtools({
 
   return (
     <DevtoolsModeProvider mode={mode}>
-      <div style={{ ...styles.toggleWrap, ...rootStyle(mode), ...positionStyles[position] }}>
+      <div style={{ ...styles.toggleWrap, ...rootStyle(mode), ...snap.wrapStyle }}>
         <button
           style={{
             ...styles.toggle,
             ...(errorCount > 0 ? styles.toggleError : null),
-            ...(toggleHovered ? styles.toggleHover : null),
+            ...(toggleHovered && !snap.dragging ? styles.toggleHover : null),
           }}
-          onClick={() => setOpen(true)}
+          onPointerDown={snap.onPointerDown}
+          onPointerMove={snap.onPointerMove}
+          onPointerUp={snap.onPointerUp}
+          onPointerCancel={snap.onPointerCancel}
+          onClick={snap.onClick}
           onMouseEnter={() => setToggleHovered(true)}
           onMouseLeave={() => setToggleHovered(false)}
+          draggable={false}
           aria-label="Open OpenUI Inspect"
           aria-expanded={open}
           title={
@@ -389,13 +414,6 @@ function SettingsMenu({
   );
 }
 
-const positionStyles: Record<DevtoolsPosition, CSSProperties> = {
-  "top-left": { top: 16, left: 16 },
-  "top-right": { top: 16, right: 16 },
-  "bottom-left": { bottom: 16, left: 16 },
-  "bottom-right": { bottom: 16, right: 16 },
-};
-
 function uiStyles(t: ThemeTokens) {
   return {
     toggleWrap: {
@@ -416,7 +434,9 @@ function uiStyles(t: ThemeTokens) {
       borderColor: t.toggleBorder,
       background: t.toggleBg,
       color: t.toggleFg,
-      cursor: "pointer",
+      cursor: "inherit",
+      touchAction: "none",
+      userSelect: "none",
       boxShadow: t.toggleShadow,
       fontFamily: FONT,
       padding: 0,

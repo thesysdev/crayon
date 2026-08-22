@@ -4,6 +4,18 @@ import { act, createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { OpenUIDevtools, type OpenUIDevtoolsProps } from "./index";
+import { nearestCorner } from "./lib/position";
+
+if (typeof globalThis.PointerEvent === "undefined") {
+  class PointerEventPolyfill extends MouseEvent {
+    pointerId: number;
+    constructor(type: string, init: MouseEventInit & { pointerId?: number } = {}) {
+      super(type, init);
+      this.pointerId = init.pointerId ?? 0;
+    }
+  }
+  Object.assign(globalThis, { PointerEvent: PointerEventPolyfill });
+}
 
 vi.mock("@openuidev/react-lang", async () => {
   const { createElement: el } = await import("react");
@@ -728,5 +740,102 @@ describe("OpenUIDevtools", () => {
     expect(trayShown("OpenUI Debug")).toBe(true);
     expect(container.textContent).toContain("Allow popups for this origin");
     open.mockRestore();
+  });
+
+  it("defaults the toggle to the bottom-right corner", () => {
+    render({ enabled: true });
+    const wrap = toggle().parentElement!;
+    expect(wrap.style.bottom).toBe("16px");
+    expect(wrap.style.right).toBe("16px");
+  });
+
+  it("restores a snapped corner from a previous session", () => {
+    window.localStorage.setItem("openui.devtools.config", JSON.stringify({ position: "top-left" }));
+    render({ enabled: true });
+    const wrap = toggle().parentElement!;
+    expect(wrap.style.top).toBe("16px");
+    expect(wrap.style.left).toBe("16px");
+  });
+
+  it("ignores a deprecated position prop in favor of the stored corner", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    window.localStorage.setItem("openui.devtools.config", JSON.stringify({ position: "top-left" }));
+    render({ enabled: true, position: "top-right" });
+    const wrap = toggle().parentElement!;
+    expect(wrap.style.top).toBe("16px");
+    expect(wrap.style.left).toBe("16px");
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining("`position` prop is deprecated"));
+    warn.mockRestore();
+  });
+
+  it("snaps the toggle to the nearest corner on drag and remembers it", () => {
+    Object.defineProperty(window, "innerWidth", { configurable: true, value: 1024 });
+    Object.defineProperty(window, "innerHeight", { configurable: true, value: 768 });
+    render({ enabled: true });
+
+    const button = toggle();
+    vi.spyOn(button, "getBoundingClientRect").mockReturnValue({
+      x: 968,
+      y: 712,
+      left: 968,
+      top: 712,
+      right: 1008,
+      bottom: 752,
+      width: 40,
+      height: 40,
+      toJSON: () => ({}),
+    });
+
+    act(() => {
+      button.dispatchEvent(
+        new PointerEvent("pointerdown", {
+          bubbles: true,
+          pointerId: 1,
+          button: 0,
+          clientX: 988,
+          clientY: 732,
+        }),
+      );
+      button.dispatchEvent(
+        new PointerEvent("pointermove", {
+          bubbles: true,
+          pointerId: 1,
+          clientX: 40,
+          clientY: 40,
+        }),
+      );
+      button.dispatchEvent(
+        new PointerEvent("pointerup", {
+          bubbles: true,
+          pointerId: 1,
+          clientX: 40,
+          clientY: 40,
+        }),
+      );
+      button.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+
+    expect(button.getAttribute("aria-expanded")).toBe("false");
+    const wrap = button.parentElement!;
+    expect(wrap.style.top).toBe("16px");
+    expect(wrap.style.left).toBe("16px");
+    expect(JSON.parse(window.localStorage.getItem("openui.devtools.config") ?? "{}").position).toBe(
+      "top-left",
+    );
+
+    remount({ enabled: true });
+    expect(toggle().parentElement!.style.top).toBe("16px");
+    expect(toggle().parentElement!.style.left).toBe("16px");
+  });
+});
+
+describe("nearestCorner", () => {
+  const viewport = { width: 1000, height: 800 };
+
+  it("snaps to the quadrant that contains the button center", () => {
+    expect(nearestCorner(0, 0, viewport)).toBe("top-left");
+    expect(nearestCorner(960, 0, viewport)).toBe("top-right");
+    expect(nearestCorner(0, 760, viewport)).toBe("bottom-left");
+    expect(nearestCorner(960, 760, viewport)).toBe("bottom-right");
   });
 });
