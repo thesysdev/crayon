@@ -391,11 +391,14 @@ const InterleavedTurn = ({
   );
   const turnActivities = useToolActivities(turnMessage, allMessages);
 
-  // Settled: last segment is the answer. Live: keep the latest Lang program on
-  // the renderer even if a newer thinking/tool segment has already started —
-  // otherwise a mid-turn status Card vanishes into the tray as raw source.
+  // Live: keep the latest Lang program on the renderer even if a newer
+  // thinking/tool segment has already started — otherwise a mid-turn status
+  // Card vanishes into the tray as raw source. Settled: last segment wins once
+  // it has content (markdown answers are not Lang); if the run ended on an
+  // empty trailing segment, keep the last Lang so a status Card isn't lost.
   const lastLang = latestLangSegment(segments);
-  const answer = !turnLive ? last : lastLang;
+  const lastBody = segmentBody(last);
+  const answer = turnLive ? lastLang : lastBody ? last : (lastLang ?? last);
   const answerMessage = useMemo(() => (answer ? { ...answer, toolCalls: [] } : null), [answer]);
   const answerContent = answer ? segmentBody(answer) : "";
 
@@ -487,8 +490,8 @@ const RenderGroup = ({
 }) => {
   // A group is either a run of assistant/tool messages or one standalone
   // non-assistant message (user/system/…). The former is always one interleaved
-  // turn, which owns the tool-call timeline (it reads `last` for the answer, so
-  // a length-one assistant group works too); the latter renders on its own.
+  // turn, which owns the tool-call timeline (a length-one assistant group
+  // works too); the latter renders on its own.
   const assistants = group.filter((m): m is AssistantMessage => m.role === "assistant");
   const message = group[0]!;
 
