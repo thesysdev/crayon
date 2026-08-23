@@ -49,6 +49,8 @@ export interface UseOpenUIStateOptions {
   /** Callback for structured, LLM-friendly errors. See OpenUIError type. */
   onError?: (errors: OpenUIError[]) => void;
   publishObservability?: boolean;
+  /** LLM run that produced `response`. Echoed on stream observability events. */
+  runId?: string;
 }
 
 export interface OpenUIState {
@@ -79,6 +81,7 @@ export function useOpenUIState(
     toolProvider,
     onError,
     publishObservability,
+    runId,
   }: UseOpenUIStateOptions,
   renderDeep: (value: unknown) => React.ReactNode,
 ): OpenUIState {
@@ -462,6 +465,7 @@ export function useOpenUIState(
     errorRevision,
     publish: publishObservability,
     __libraryId: library.__libraryId,
+    runId,
   });
 
   return { result: evaluatedResult, parseResult: result, contextValue, isQueryLoading };

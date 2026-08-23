@@ -33,4 +33,6 @@ export interface SettledStreamEventDetail {
   message: string;
   /** `createLibrary()` instance id for the Renderer that produced this stream. */
   __libraryId?: string;
+  /** LLM run that produced this stream. Matches `LLM:*` events from the chat store. */
+  runId?: string;
 }

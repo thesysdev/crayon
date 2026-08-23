@@ -1,6 +1,7 @@
+import type { AssistantMessage as AGUIAssistantMessage } from "@ag-ui/core";
+
 export type {
   ActivityMessage,
-  AssistantMessage,
   BinaryInputContent,
   DeveloperMessage,
   FunctionCall,
@@ -13,3 +14,8 @@ export type {
   ToolMessage,
   UserMessage,
 } from "@ag-ui/core";
+
+export type AssistantMessage = AGUIAssistantMessage & {
+  /** LLM run that produced this message. Set by `processStreamedMessage`. */
+  runId?: string;
+};

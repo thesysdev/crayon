@@ -62,11 +62,15 @@ export function ReactLangStreamEventRow({
   stream,
   onOpenInDebug,
   canOpenInDebug = false,
+  embedded = false,
+  last = false,
 }: {
   event: ObservabilityEvent;
   stream: ReactLangStreamDetail;
   onOpenInDebug?: (response: string, libraryId?: string) => void;
   canOpenInDebug?: boolean;
+  embedded?: boolean;
+  last?: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
   const [hovered, setHovered] = useState(false);
@@ -107,7 +111,12 @@ export function ReactLangStreamEventRow({
 
   return (
     <div
-      style={{ ...styles.row, ...(hovered ? styles.rowHover : null) }}
+      style={{
+        ...styles.row,
+        ...(embedded ? styles.rowEmbedded : null),
+        ...(embedded && last ? styles.rowEmbeddedLast : null),
+        ...(hovered && !embedded ? styles.rowHover : null),
+      }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -358,6 +367,18 @@ function streamRowStyles(t: ThemeTokens) {
     rowHover: {
       borderColor: t.borderStrong,
       boxShadow: t.shadowSubtle,
+    },
+    rowEmbedded: {
+      borderWidth: 0,
+      borderBottomWidth: 1,
+      borderRadius: 0,
+      boxShadow: "none",
+      background: "transparent",
+      padding: "10px 12px 12px",
+    },
+    rowEmbeddedLast: {
+      borderBottomWidth: 0,
+      paddingBottom: 14,
     },
     rowHeader: {
       display: "flex",

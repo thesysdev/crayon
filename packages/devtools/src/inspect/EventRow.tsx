@@ -2,9 +2,18 @@ import { type ObservabilityErrorInfo, type ObservabilityEvent } from "@openuidev
 import { Check, ChevronDown, ChevronRight, Copy } from "lucide-react";
 import { useState, type CSSProperties } from "react";
 import { FONT, MONO, useStyles, type ThemeTokens } from "../theme";
+import { displayEventKind } from "./groupEvents";
 import { LevelIcon } from "./LevelIcon";
 
-export function EventRow({ event }: { event: ObservabilityEvent }) {
+export function EventRow({
+  event,
+  embedded = false,
+  last = false,
+}: {
+  event: ObservabilityEvent;
+  embedded?: boolean;
+  last?: boolean;
+}) {
   const styles = useStyles(eventRowStyles);
   const [expanded, setExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -34,7 +43,7 @@ export function EventRow({ event }: { event: ObservabilityEvent }) {
       <div style={styles.rowHeader}>
         <div style={styles.badgeGroup}>
           <LevelIcon level={event.level} />
-          {kind ? <span style={styles.kind}>{kind}</span> : null}
+          {kind ? <span style={styles.kind}>{displayEventKind(kind)}</span> : null}
           {status ? (
             <span style={{ ...styles.badge, ...styles.badgeNeutral }}>{status}</span>
           ) : null}
@@ -53,7 +62,12 @@ export function EventRow({ event }: { event: ObservabilityEvent }) {
 
   return (
     <div
-      style={{ ...styles.row, ...(expandable && hovered ? styles.rowHover : null) }}
+      style={{
+        ...styles.row,
+        ...(embedded ? styles.rowEmbedded : null),
+        ...(embedded && last ? styles.rowEmbeddedLast : null),
+        ...(expandable && hovered && !embedded ? styles.rowHover : null),
+      }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -119,7 +133,8 @@ function summarize(event: ObservabilityEvent): string {
   const parts = [subject, status, message].filter(Boolean);
   if (parts.length > 0) return parts.join(" ");
   try {
-    return JSON.stringify(event.detail) ?? "(no detail)";
+    const { runId: _runId, ...rest } = detail;
+    return JSON.stringify(rest) ?? "(no detail)";
   } catch {
     return "(no detail)";
   }
@@ -142,6 +157,18 @@ function eventRowStyles(t: ThemeTokens) {
     rowHover: {
       borderColor: t.borderStrong,
       boxShadow: t.shadowSubtle,
+    },
+    rowEmbedded: {
+      borderWidth: 0,
+      borderBottomWidth: 1,
+      borderRadius: 0,
+      boxShadow: "none",
+      background: "transparent",
+      padding: "10px 12px 12px",
+    },
+    rowEmbeddedLast: {
+      borderBottomWidth: 0,
+      paddingBottom: 14,
     },
     toggle: {
       width: "100%",

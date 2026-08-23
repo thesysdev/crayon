@@ -51,6 +51,8 @@ export interface RendererProps {
    */
   onError?: (errors: OpenUIError[]) => void;
   publishObservability?: boolean;
+  /** LLM run that produced `response`. Echoed on stream observability events. */
+  runId?: string;
 }
 
 // ─── Error boundary ───
@@ -209,6 +211,7 @@ export function Renderer({
   queryLoader,
   onError,
   publishObservability,
+  runId,
 }: RendererProps) {
   useInsertionEffect(() => {
     ensureLoadingStyle();
@@ -256,6 +259,7 @@ export function Renderer({
       toolProvider: resolvedToolProvider,
       onError,
       publishObservability,
+      runId,
     },
     renderDeep,
   );

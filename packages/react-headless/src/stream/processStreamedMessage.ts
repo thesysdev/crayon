@@ -20,6 +20,8 @@ interface Parameters {
   clearToolExecuting?: (toolCallId: string) => void;
   /** The adapter to use for parsing the stream */
   adapter?: StreamProtocolAdapter;
+  /** LLM run that produced this stream. Copied onto each assistant message. */
+  runId?: string;
 }
 
 /**
@@ -32,13 +34,9 @@ export const processStreamedMessage = async ({
   markToolExecuting = () => {},
   clearToolExecuting = () => {},
   adapter = agUIAdapter(),
+  runId,
 }: Parameters): Promise<AssistantMessage | void> => {
-  let currentMessage: AssistantMessage = {
-    id: crypto.randomUUID(),
-    role: "assistant",
-    content: "",
-    toolCalls: [],
-  };
+  let currentMessage: AssistantMessage = newAssistantMessage(runId);
 
   let isFirst = true;
 
@@ -173,12 +171,7 @@ export const processStreamedMessage = async ({
             rafId = null;
             if (!isFirst) updateMessage(currentMessage);
           }
-          currentMessage = {
-            id: crypto.randomUUID(),
-            role: "assistant",
-            content: "",
-            toolCalls: [],
-          };
+          currentMessage = newAssistantMessage(runId);
           isFirst = true;
         }
         currentTextItemId = startId;
@@ -265,3 +258,13 @@ export const processStreamedMessage = async ({
 
   return currentMessage;
 };
+
+function newAssistantMessage(runId?: string): AssistantMessage {
+  return {
+    id: crypto.randomUUID(),
+    role: "assistant",
+    content: "",
+    toolCalls: [],
+    ...(runId ? { runId } : {}),
+  };
+}

@@ -216,6 +216,7 @@ export const createChatStore = (configRef: React.RefObject<CreateChatStoreConfig
 
           await processStreamedMessage({
             response,
+            runId,
             createMessage: (msg) => set((s) => ({ messages: [...s.messages, msg] })),
             updateMessage: (msg) =>
               set((s) => ({
