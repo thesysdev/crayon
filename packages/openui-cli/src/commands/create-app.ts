@@ -488,8 +488,20 @@ async function writeEnv(targetDir: string, result: EnvResult, appId?: string): P
   await fs.promises.writeFile(path.join(targetDir, ".env"), content);
 }
 
+// Written when no key was supplied, so the scaffold always has a .env to edit
+// rather than one the user must know to create. Commented out on purpose: an
+// empty `OPENAI_API_KEY=` would shadow a key already exported in the shell.
+// `envWritten` stays false either way — no key was written, so the immediate
+// dev-server gate and the "add your API key" message still apply.
+const SELF_HOSTED_ENV_PLACEHOLDER =
+  "# Your OpenAI-compatible provider key. Uncomment and fill it in.\n" +
+  "# OPENAI_API_KEY=sk-your-key-here\n" +
+  "# Optional:\n" +
+  "# OPENAI_MODEL=gpt-5.2\n" +
+  "# OPENAI_BASE_URL=https://api.openai.com/v1\n";
+
 async function resolveChatEnv(interactive: boolean): Promise<EnvResult> {
-  if (!interactive) return { envWritten: false };
+  if (!interactive) return { envWritten: false, envContent: SELF_HOSTED_ENV_PLACEHOLDER };
   try {
     const { input } = await import("@inquirer/prompts");
     const apiKey = (
@@ -497,7 +509,7 @@ async function resolveChatEnv(interactive: boolean): Promise<EnvResult> {
         message: "Enter your OpenAI-compatible provider API key (leave blank to skip):",
       })
     ).trim();
-    if (!apiKey) return { envWritten: false };
+    if (!apiKey) return { envWritten: false, envContent: SELF_HOSTED_ENV_PLACEHOLDER };
     return { envWritten: true, envContent: `OPENAI_API_KEY=${apiKey}\n` };
   } catch (error) {
     const { ExitPromptError } = await import("@inquirer/core");
@@ -588,7 +600,7 @@ function getStartedMessage(o: {
         : `⚠ .env created without a key. Add THESYS_API_KEY=… (get one at ${THESYS_KEYS_URL}).`
       : o.envWritten
         ? "✅ .env created with your API key."
-        : "Add your API key to .env:\nOPENAI_API_KEY=sk-your-key-here";
+        : "⚠ .env created without a key. Uncomment OPENAI_API_KEY=… in .env.";
 
   const nextStep = o.startDev
     ? `Starting the development server in "${o.name}"...\n\n> ${o.devCmd} run dev`
