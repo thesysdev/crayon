@@ -7,16 +7,33 @@ import type {
   Remove,
 } from "./types";
 
-/**
- * All listeners live in one map keyed by level plus a
- * literal "all" key for `listenAll`. An event at level
- * L is delivered to the L level and "all".
- */
-const ALL_KEY = "all";
+/** Private — not part of the public API. */
+const EVENT_TYPE = "openui:observability";
+
+function getEventTarget(): EventTarget {
+  if (typeof window !== "undefined") return window;
+  const key = Symbol.for("openui.observability.target");
+  const store = globalThis as { [key]?: EventTarget };
+  return (store[key] ??= new EventTarget());
+}
+
+function unwrap(raw: Event): ObservabilityEvent | undefined {
+  if (!("detail" in raw)) return undefined;
+  const event = (raw as CustomEvent<ObservabilityEvent>).detail;
+  if (event == null || typeof event !== "object") return undefined;
+  return event;
+}
+
+type Registration = {
+  listener: (raw: Event) => void;
+  levels: Set<ObservabilityLevel>;
+  all: boolean;
+};
 
 /** Internal — the package exports a single shared instance, not this factory. */
 function createObservability(): Observability {
-  const listeners = new Map<string, Set<Handler>>();
+  const target = getEventTarget();
+  const registrations = new Map<Handler, Registration>();
 
   // A throwing listener must not break the emitter or other listeners.
   const deliver = (listener: Handler, event: ObservabilityEvent) => {
@@ -27,24 +44,45 @@ function createObservability(): Observability {
     }
   };
 
-  const subscribe = (key: string, handler: Handler): Remove => {
-    let set = listeners.get(key);
-    if (!set) {
-      set = new Set();
-      listeners.set(key, set);
+  const subscribe = (handler: Handler, keys: "all" | ObservabilityLevel[]): Remove => {
+    let registration = registrations.get(handler);
+    if (!registration) {
+      const listener = (raw: Event) => {
+        const current = registrations.get(handler);
+        if (!current) return;
+        const event = unwrap(raw);
+        if (!event) return;
+        if (!current.all && !current.levels.has(event.level)) return;
+        deliver(handler, event);
+      };
+      target.addEventListener(EVENT_TYPE, listener);
+      registration = { listener, levels: new Set(), all: false };
+      registrations.set(handler, registration);
     }
-    set.add(handler);
+    if (keys === "all") {
+      registration.all = true;
+    } else {
+      for (const level of keys) registration.levels.add(level);
+    }
+
     return () => {
-      set.delete(handler);
+      const current = registrations.get(handler);
+      if (!current) return;
+      if (keys === "all") {
+        current.all = false;
+      } else {
+        for (const level of keys) current.levels.delete(level);
+      }
+      if (!current.all && current.levels.size === 0) {
+        target.removeEventListener(EVENT_TYPE, current.listener);
+        registrations.delete(handler);
+      }
     };
   };
 
   const emit = (level: ObservabilityLevel, detail: ObservabilityDetail): void => {
     const event: ObservabilityEvent = { level, timestamp: Date.now(), detail };
-    const targets = new Set<Handler>();
-    listeners.get(level)?.forEach((listener) => targets.add(listener));
-    listeners.get(ALL_KEY)?.forEach((listener) => targets.add(listener));
-    targets.forEach((listener) => deliver(listener, event));
+    target.dispatchEvent(new CustomEvent(EVENT_TYPE, { detail: event }));
   };
 
   // The bus IS the emit function, with the rest of the API attached to it.
@@ -52,10 +90,9 @@ function createObservability(): Observability {
 
   bus.listen = (level, handler) => {
     const levels = Array.isArray(level) ? level : [level];
-    const removers = levels.map((l) => subscribe(l, handler as Handler));
-    return () => removers.forEach((remove) => remove());
+    return subscribe(handler as Handler, levels);
   };
-  bus.listenAll = (handler) => subscribe(ALL_KEY, handler);
+  bus.listenAll = (handler) => subscribe(handler, "all");
   bus.info = (detail) => emit("info", detail);
   bus.warn = (detail) => emit("warning", detail);
   bus.error = (detail) => emit("error", detail);
