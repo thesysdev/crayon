@@ -19,6 +19,8 @@ function App() {
 
 The widget renders nothing in production builds (`NODE_ENV === "production"`) unless `enabled` is passed explicitly.
 
+Drag the floating button to snap it to a different corner, like the Next.js indicator. The corner is stored in `localStorage` and restored on the next visit (default `bottom-right`). The `position` prop is deprecated and ignored.
+
 `@openuidev/react-lang` ships with this package and auto-mounts the widget in development — no manual `<OpenUIDevtools />` needed. Mounting it manually still works (e.g. to customize props): only one instance ever renders, and a manually mounted instance takes precedence over the auto-mounted one.
 
 In development, `createLibrary()` registers the live library with the widget. A stream event's **Debug** button opens **OpenUI Debug** in its own tray — an editor against that library (host CSS included), with Render / Validation / Tree / JSON / Stream panels and simulated stream playback.
@@ -30,7 +32,6 @@ Debug renders through the host's own `Renderer`. Its previews stay off the event
 | Prop              | Default          | Description                                                      |
 | ----------------- | ---------------- | ---------------------------------------------------------------- |
 | `enabled`         | dev-only         | Force the widget on/off.                                         |
-| `position`        | `"bottom-right"` | Corner for the toggle button: `top-left`/`top-right`/`bottom-*`. |
 | `maxEvents`       | `50`             | How many events to keep; oldest are dropped first.               |
 | `errorsOnly`      | `true`           | Capture only error/warning events, or all.                       |
 | `autoOpenOnError` | `true`           | Initial state of the "auto-open on error" setting.               |

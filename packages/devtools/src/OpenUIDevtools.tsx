@@ -13,10 +13,14 @@ import {
 } from "./inspect";
 import {
   addOrReplaceEvent,
+  DEFAULT_POSITION,
+  isLeftPosition,
   isLibraryEvent,
   useDevtoolsConfig,
   useDevtoolsSingleton,
+  useSnapCorner,
   type DevtoolsConfig,
+  type DevtoolsPosition,
 } from "./lib";
 import {
   DEFAULT_COLOR_MODE,
@@ -30,14 +34,16 @@ import {
 } from "./theme";
 import { ErrorBoundary, IconButton, ShiroLogo, ThemeSegmented } from "./ui";
 
+export type { DevtoolsPosition };
+
 /** Uniform row height for the settings menu, set by its tallest control. */
 const MENU_ROW_HEIGHT = 28;
 
 /**
- * Tray geometry. The two trays together fill a block anchored to the bottom
- * right — 85% of the viewport, capped so it stops growing on very large
- * displays. Inspect keeps a fixed width and Debug takes whatever is left,
- * overlapping Inspect rather than collapsing once it hits its floor.
+ * Tray geometry. The two trays together fill a block along the toggle's
+ * side — 85% of the viewport, capped so it stops growing on very large
+ * displays. Inspect keeps a fixed width on that edge; Debug takes whatever
+ * is left, overlapping Inspect rather than collapsing once it hits its floor.
  */
 const TRAY_EDGE = 12;
 const TRAY_GAP = 12;
@@ -46,12 +52,13 @@ const DEBUG_MIN_WIDTH = 360;
 const BLOCK_W = `min(85vw, 3456px)`;
 const BLOCK_H = `min(85vh, 2234px)`;
 
-export type DevtoolsPosition = "top-left" | "top-right" | "bottom-left" | "bottom-right";
-
 export interface OpenUIDevtoolsProps {
   /** Force the widget on/off. Defaults to on outside production builds. */
   enabled?: boolean;
-  /** Corner for the floating toggle button. Defaults to "bottom-right". */
+  /**
+   * @deprecated Drag the floating button to snap it to a corner.
+   * This prop is ignored. The position is persisted
+   */
   position?: DevtoolsPosition;
   /** How many events to keep; oldest are dropped first. */
   maxEvents?: number;
@@ -80,12 +87,13 @@ export interface OpenUIDevtoolsProps {
  * stack trace. OpenUI Inspect and OpenUI Debug are independent tools on
  * independent trays: a stream's Debug button opens Debug beside Inspect, and
  * either closes without disturbing the other. Display filters and the theme
- * live in the header settings menu. Renders nothing in production unless
+ * live in the header settings menu. Drag the floating button to snap it to a
+ * corner; the choice is remembered. Renders nothing in production unless
  * `enabled` is set explicitly.
  */
 export function OpenUIDevtools({
   enabled,
-  position = "bottom-right",
+  position: _position,
   maxEvents = 50,
   errorsOnly = false,
   autoOpenOnError = true,
@@ -107,10 +115,16 @@ export function OpenUIDevtools({
       theme: DEFAULT_COLOR_MODE,
       helpSeen: false,
       editorPct: DEFAULT_EDITOR_PCT,
+      position: DEFAULT_POSITION,
     },
     { theme: themeProp },
   );
-  const { onlyErrors, theme: mode } = config;
+  const { onlyErrors, theme: mode, position } = config;
+  const snap = useSnapCorner({
+    position,
+    onSnap: (next) => setConfig({ position: next }),
+    onActivate: () => setOpen(true),
+  });
   const debug = useDebug({
     theme: mode,
     helpSeen: config.helpSeen,
@@ -118,6 +132,13 @@ export function OpenUIDevtools({
     setConfig,
   });
   const styles = uiStyles(theme(mode));
+
+  useEffect(() => {
+    if (_position == null) return;
+    console.warn(
+      "[@openuidev/devtools] The `position` prop is deprecated. Drag the toggle to snap it to a corner.",
+    );
+  }, [_position]);
 
   // Read configRef inside the (stable) subscription without re-subscribing.
   useEffect(() => {
@@ -148,22 +169,25 @@ export function OpenUIDevtools({
   const errorCount = events.filter((event) => event.level === "error").length;
   const visibleEvents = onlyErrors ? events.filter((event) => event.level !== "info") : events;
 
-  // Inspect is pinned to the right edge; Debug fills the rest of the block and
-  // slides over to reclaim Inspect's slot whenever Inspect is out.
+  // Inspect pins to the toggle's side of the screen; Debug fills the rest of
+  // the block inward. Closing Inspect lets Debug reclaim that slot.
+  const fromLeft = isLeftPosition(position);
   const inspectSlot = open ? INSPECT_WIDTH + TRAY_GAP : 0;
   const inspectTray: CSSProperties = {
-    right: TRAY_EDGE,
+    ...(fromLeft ? { left: TRAY_EDGE } : { right: TRAY_EDGE }),
     bottom: TRAY_EDGE,
     height: BLOCK_H,
     width: `min(${INSPECT_WIDTH}px, calc(100vw - ${TRAY_EDGE * 2}px))`,
-    transform: open ? "translateX(0)" : `translateX(calc(100% + ${TRAY_EDGE}px))`,
+    transform: open
+      ? "translateX(0)"
+      : `translateX(calc(${fromLeft ? "-100%" : "100%"} ${fromLeft ? "-" : "+"} ${TRAY_EDGE}px))`,
   };
   // Debug is a workspace rather than a peek at the app behind it: it fills
   // everything Inspect leaves (left/right edges rather than a width, so the
   // inset matches top and bottom) and cuts straight in instead of sliding.
   // Overrides the shared UI, so it is spread last.
   const debugTray: CSSProperties = {
-    right: TRAY_EDGE + inspectSlot,
+    ...(fromLeft ? { left: TRAY_EDGE + inspectSlot } : { right: TRAY_EDGE + inspectSlot }),
     bottom: TRAY_EDGE,
     height: BLOCK_H,
     width: `max(${DEBUG_MIN_WIDTH}px, calc(${BLOCK_W} - ${inspectSlot}px))`,
@@ -174,16 +198,21 @@ export function OpenUIDevtools({
 
   return (
     <DevtoolsModeProvider mode={mode}>
-      <div style={{ ...styles.toggleWrap, ...rootStyle(mode), ...positionStyles[position] }}>
+      <div style={{ ...styles.toggleWrap, ...rootStyle(mode), ...snap.wrapStyle }}>
         <button
           style={{
             ...styles.toggle,
             ...(errorCount > 0 ? styles.toggleError : null),
-            ...(toggleHovered ? styles.toggleHover : null),
+            ...(toggleHovered && !snap.dragging ? styles.toggleHover : null),
           }}
-          onClick={() => setOpen(true)}
+          onPointerDown={snap.onPointerDown}
+          onPointerMove={snap.onPointerMove}
+          onPointerUp={snap.onPointerUp}
+          onPointerCancel={snap.onPointerCancel}
+          onClick={snap.onClick}
           onMouseEnter={() => setToggleHovered(true)}
           onMouseLeave={() => setToggleHovered(false)}
+          draggable={false}
           aria-label="Open OpenUI Inspect"
           aria-expanded={open}
           title={
@@ -389,13 +418,6 @@ function SettingsMenu({
   );
 }
 
-const positionStyles: Record<DevtoolsPosition, CSSProperties> = {
-  "top-left": { top: 16, left: 16 },
-  "top-right": { top: 16, right: 16 },
-  "bottom-left": { bottom: 16, left: 16 },
-  "bottom-right": { bottom: 16, right: 16 },
-};
-
 function uiStyles(t: ThemeTokens) {
   return {
     toggleWrap: {
@@ -416,7 +438,9 @@ function uiStyles(t: ThemeTokens) {
       borderColor: t.toggleBorder,
       background: t.toggleBg,
       color: t.toggleFg,
-      cursor: "pointer",
+      cursor: "inherit",
+      touchAction: "none",
+      userSelect: "none",
       boxShadow: t.toggleShadow,
       fontFamily: FONT,
       padding: 0,
@@ -446,9 +470,9 @@ function uiStyles(t: ThemeTokens) {
       fontWeight: 700,
       lineHeight: 1,
     },
-    // Geometry (right/width/transform) is per-tray and set inline; this is the
-    // shared UI. Each tray hides itself when closed so the other can stay open
-    // without a retracted tray remaining focusable.
+    // Geometry (left/right/width/transform) is per-tray and set inline; this is
+    // the shared UI. Each tray hides itself when closed so the other can stay
+    // open without a retracted tray remaining focusable.
     drawer: {
       position: "fixed",
       // Max 32-bit signed int — sit above any app UI, including the toggle.
@@ -467,13 +491,13 @@ function uiStyles(t: ThemeTokens) {
       fontSize: 13,
       visibility: "hidden",
       transition:
-        "transform 220ms cubic-bezier(0.32, 0.72, 0, 1), right 260ms cubic-bezier(0.32, 0.72, 0, 1), width 260ms cubic-bezier(0.32, 0.72, 0, 1), visibility 0s linear 220ms",
+        "transform 220ms cubic-bezier(0.32, 0.72, 0, 1), left 260ms cubic-bezier(0.32, 0.72, 0, 1), right 260ms cubic-bezier(0.32, 0.72, 0, 1), width 260ms cubic-bezier(0.32, 0.72, 0, 1), visibility 0s linear 220ms",
       overflow: "hidden",
     },
     drawerOpen: {
       visibility: "visible",
       transition:
-        "transform 220ms cubic-bezier(0.32, 0.72, 0, 1), right 260ms cubic-bezier(0.32, 0.72, 0, 1), width 260ms cubic-bezier(0.32, 0.72, 0, 1), visibility 0s",
+        "transform 220ms cubic-bezier(0.32, 0.72, 0, 1), left 260ms cubic-bezier(0.32, 0.72, 0, 1), right 260ms cubic-bezier(0.32, 0.72, 0, 1), width 260ms cubic-bezier(0.32, 0.72, 0, 1), visibility 0s",
     },
     debugHost: {
       flex: 1,
