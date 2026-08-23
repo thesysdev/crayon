@@ -597,8 +597,7 @@ async function writeEnv(targetDir: string, result: EnvResult, appId?: string): P
   await fs.promises.writeFile(path.join(targetDir, ".env"), content);
 }
 
-async function resolveChatEnv(interactive: boolean): Promise<EnvResult> {
-  if (!interactive) return { envWritten: false };
+async function promptForProviderKey(): Promise<string | null> {
   try {
     const { input } = await import("@inquirer/prompts");
     const apiKey = (
@@ -606,8 +605,7 @@ async function resolveChatEnv(interactive: boolean): Promise<EnvResult> {
         message: "Enter your OpenAI-compatible provider API key (leave blank to skip):",
       })
     ).trim();
-    if (!apiKey) return { envWritten: false };
-    return { envWritten: true, envContent: `OPENAI_API_KEY=${apiKey}\n` };
+    return apiKey || null;
   } catch (error) {
     const { ExitPromptError } = await import("@inquirer/core");
     if (error instanceof ExitPromptError) {
@@ -615,6 +613,30 @@ async function resolveChatEnv(interactive: boolean): Promise<EnvResult> {
     }
     throw error;
   }
+}
+
+async function resolveChatEnv(interactive: boolean): Promise<EnvResult> {
+  const apiKey = interactive ? await promptForProviderKey() : null;
+
+  // Always write a file, so the scaffold has a .env to edit rather than one the
+  // user must know to create. Without a key the entries stay commented out: an
+  // empty `OPENAI_API_KEY=` would shadow a key already exported in the shell.
+  const lines = apiKey
+    ? [`OPENAI_API_KEY=${apiKey}`]
+    : [
+        "# Your OpenAI-compatible provider key. Uncomment and fill it in.",
+        "# OPENAI_API_KEY=sk-your-key-here",
+        "# Optional:",
+        "# OPENAI_MODEL=gpt-5.2",
+        "# OPENAI_BASE_URL=https://api.openai.com/v1",
+      ];
+
+  return {
+    // False without a key, so the immediate dev-server gate and the
+    // "add your API key" message still apply even though .env now exists.
+    envWritten: apiKey != null,
+    envContent: lines.join("\n") + "\n",
+  };
 }
 
 async function resolveCloudEnv(
