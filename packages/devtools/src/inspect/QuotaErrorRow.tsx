@@ -1,8 +1,9 @@
 import { type ObservabilityEvent } from "@openuidev/observability";
 import { CreditCard, KeyRound } from "lucide-react";
 import { useState, type CSSProperties } from "react";
-import { FONT, useStyles, type ThemeTokens } from "../theme";
+import { FONT, useStyles, useTheme, type ThemeTokens } from "../theme";
 import { LevelIcon } from "./LevelIcon";
+import { nestedRowBox } from "./rowBox";
 
 export interface QuotaErrorInfo {
   title: string;
@@ -46,14 +47,14 @@ export function QuotaErrorRow({
   last?: boolean;
 }) {
   const styles = useStyles(quotaRowStyles);
+  const theme = useTheme();
   const [hoveredCta, setHoveredCta] = useState<string | null>(null);
 
   return (
     <div
       style={{
         ...styles.row,
-        ...(embedded ? styles.rowEmbedded : null),
-        ...(embedded && last ? styles.rowEmbeddedLast : null),
+        ...(embedded ? nestedRowBox(theme, last) : null),
       }}
     >
       <div style={styles.creditsNote}>
@@ -116,11 +117,7 @@ function asString(value: unknown): string | undefined {
 
 function quotaRowStyles(t: ThemeTokens) {
   return {
-    // Longhands, not the `border` shorthand: rowEmbedded overrides width/radius,
-    // and React blanks a shorthand's longhands when a later style touches one.
     row: {
-      // Four longhands: `borderWidth` is a shorthand, and mixing it with
-      // `borderBottomWidth` in the embedded override leaves a leftover box stroke.
       borderTopWidth: 1,
       borderRightWidth: 1,
       borderBottomWidth: 1,
@@ -133,19 +130,6 @@ function quotaRowStyles(t: ThemeTokens) {
       flexDirection: "column",
       gap: 6,
       background: t.card,
-    },
-    rowEmbedded: {
-      borderTopWidth: 0,
-      borderRightWidth: 0,
-      borderBottomWidth: 1,
-      borderLeftWidth: 0,
-      borderRadius: 0,
-      background: "transparent",
-      padding: "10px 12px 12px",
-    },
-    rowEmbeddedLast: {
-      borderBottomWidth: 0,
-      paddingBottom: 14,
     },
     // The card matches every other row; the chip and title colour carry the
     // billing/rate-limit signal.

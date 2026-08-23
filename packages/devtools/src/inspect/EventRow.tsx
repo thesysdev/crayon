@@ -1,9 +1,10 @@
 import { type ObservabilityErrorInfo, type ObservabilityEvent } from "@openuidev/observability";
 import { Check, ChevronDown, ChevronRight, Copy } from "lucide-react";
 import { useState, type CSSProperties } from "react";
-import { FONT, MONO, useStyles, type ThemeTokens } from "../theme";
+import { FONT, MONO, useStyles, useTheme, type ThemeTokens } from "../theme";
 import { displayEventKind } from "./groupEvents";
 import { LevelIcon } from "./LevelIcon";
+import { nestedRowBox } from "./rowBox";
 
 export function EventRow({
   event,
@@ -15,9 +16,7 @@ export function EventRow({
   last?: boolean;
 }) {
   const styles = useStyles(eventRowStyles);
-  const [expanded, setExpanded] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [hovered, setHovered] = useState(false);
+  const theme = useTheme();
   const error = getErrorInfo(event);
   const detail = asRecord(event.detail);
   const kind = asString(detail["kind"]);
@@ -26,11 +25,15 @@ export function EventRow({
   const summary = message ? null : kind ? null : summarize(event);
   const stack = error?.stack;
   const expandable = Boolean(stack);
+  const [expanded, setExpanded] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [hovered, setHovered] = useState(false);
 
-  const copyStack = () => {
-    if (!stack || typeof navigator === "undefined" || !navigator.clipboard) return;
+  const copyText = stack ?? "";
+  const copyDetail = () => {
+    if (!copyText || typeof navigator === "undefined" || !navigator.clipboard) return;
     navigator.clipboard
-      .writeText(stack)
+      .writeText(copyText)
       .then(() => {
         setCopied(true);
         setTimeout(() => setCopied(false), 1500);
@@ -64,8 +67,7 @@ export function EventRow({
     <div
       style={{
         ...styles.row,
-        ...(embedded ? styles.rowEmbedded : null),
-        ...(embedded && last ? styles.rowEmbeddedLast : null),
+        ...(embedded ? nestedRowBox(theme, last) : null),
         ...(expandable && hovered && !embedded ? styles.rowHover : null),
       }}
       onMouseEnter={() => setHovered(true)}
@@ -89,7 +91,7 @@ export function EventRow({
         <div style={styles.expanded}>
           <pre style={styles.stack}>{stack}</pre>
           <div style={styles.actions}>
-            <button type="button" style={styles.action} onClick={copyStack}>
+            <button type="button" style={styles.action} onClick={copyDetail}>
               {copied ? <Check size={12} /> : <Copy size={12} />}
               {copied ? "Copied" : "Copy"}
             </button>
@@ -163,20 +165,6 @@ function eventRowStyles(t: ThemeTokens) {
       borderColor: t.borderStrong,
       boxShadow: t.shadowSubtle,
     },
-    rowEmbedded: {
-      borderTopWidth: 0,
-      borderRightWidth: 0,
-      borderBottomWidth: 1,
-      borderLeftWidth: 0,
-      borderRadius: 0,
-      boxShadow: "none",
-      background: "transparent",
-      padding: "10px 12px 12px",
-    },
-    rowEmbeddedLast: {
-      borderBottomWidth: 0,
-      paddingBottom: 14,
-    },
     toggle: {
       width: "100%",
       border: "none",
@@ -192,6 +180,7 @@ function eventRowStyles(t: ThemeTokens) {
       justifyContent: "space-between",
       alignItems: "center",
       gap: 8,
+      minHeight: 22,
     },
     rowHeaderRight: {
       display: "flex",
@@ -201,7 +190,11 @@ function eventRowStyles(t: ThemeTokens) {
     },
     chevron: {
       display: "inline-flex",
-      width: 14,
+      alignItems: "center",
+      justifyContent: "center",
+      boxSizing: "border-box",
+      width: 22,
+      height: 22,
       flexShrink: 0,
       color: t.fgMuted,
     },

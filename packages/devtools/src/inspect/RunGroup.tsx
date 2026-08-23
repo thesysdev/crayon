@@ -75,7 +75,7 @@ function runGroupStyles(t: ThemeTokens) {
       color: "inherit",
       cursor: "pointer",
       fontFamily: FONT,
-      padding: "10px 12px",
+      padding: 12,
       textAlign: "left" as const,
     },
     title: {
@@ -101,6 +101,11 @@ function runGroupStyles(t: ThemeTokens) {
     },
     chevron: {
       display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      width: 22,
+      height: 22,
+      flexShrink: 0,
       color: t.fgMuted,
     },
     body: {

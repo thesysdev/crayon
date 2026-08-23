@@ -2,8 +2,9 @@ import { type ObservabilityEvent } from "@openuidev/observability";
 import { Bug, Check, ChevronDown, ChevronRight, Copy } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { tokenColor, tokenizeLang } from "../lib";
-import { FONT, MONO, useStyles, type ThemeTokens } from "../theme";
+import { FONT, MONO, useStyles, useTheme, type ThemeTokens } from "../theme";
 import { LevelIcon } from "./LevelIcon";
+import { nestedRowBox } from "./rowBox";
 
 export interface ReactLangStreamDetail {
   phase: "streaming" | "settled";
@@ -77,6 +78,7 @@ export function ReactLangStreamEventRow({
   const [hoveredAction, setHoveredAction] = useState<string | null>(null);
   const [responseCopied, setResponseCopied] = useState(false);
   const styles = useStyles(streamRowStyles);
+  const theme = useTheme();
   const colors = useStyles(tokenColor);
   const isStreaming = stream.phase === "streaming";
   const visibleErrors = isStreaming ? [] : stream.errors;
@@ -122,8 +124,7 @@ export function ReactLangStreamEventRow({
     <div
       style={{
         ...styles.row,
-        ...(embedded ? styles.rowEmbedded : null),
-        ...(embedded && last ? styles.rowEmbeddedLast : null),
+        ...(embedded ? nestedRowBox(theme, last) : null),
         ...(hovered && !embedded ? styles.rowHover : null),
       }}
       onMouseEnter={() => setHovered(true)}
@@ -381,20 +382,6 @@ function streamRowStyles(t: ThemeTokens) {
     rowHover: {
       borderColor: t.borderStrong,
       boxShadow: t.shadowSubtle,
-    },
-    rowEmbedded: {
-      borderTopWidth: 0,
-      borderRightWidth: 0,
-      borderBottomWidth: 1,
-      borderLeftWidth: 0,
-      borderRadius: 0,
-      boxShadow: "none",
-      background: "transparent",
-      padding: "10px 12px 12px",
-    },
-    rowEmbeddedLast: {
-      borderBottomWidth: 0,
-      paddingBottom: 14,
     },
     rowHeader: {
       display: "flex",
