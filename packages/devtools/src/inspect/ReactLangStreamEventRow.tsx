@@ -73,7 +73,9 @@ export function ReactLangStreamEventRow({
   embedded?: boolean;
   last?: boolean;
 }) {
-  const [expanded, setExpanded] = useState(() => stream.phase === "settled" && stream.errors.length > 0);
+  const [expanded, setExpanded] = useState(
+    () => stream.phase === "settled" && stream.errors.length > 0,
+  );
   const [hovered, setHovered] = useState(false);
   const [hoveredAction, setHoveredAction] = useState<string | null>(null);
   const [responseCopied, setResponseCopied] = useState(false);

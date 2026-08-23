@@ -128,7 +128,11 @@ function userMessageText(value: unknown): string | undefined {
   const text = content
     .map((part) => {
       if (typeof part === "string") return part;
-      if (part && typeof part === "object" && typeof (part as { text?: unknown }).text === "string") {
+      if (
+        part &&
+        typeof part === "object" &&
+        typeof (part as { text?: unknown }).text === "string"
+      ) {
         return (part as { text: string }).text;
       }
       return "";

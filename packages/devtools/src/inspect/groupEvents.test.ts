@@ -1,11 +1,6 @@
 import type { ObservabilityEvent } from "@openuidev/observability";
 import { describe, expect, it } from "vitest";
-import {
-  displayEventKind,
-  groupEventsByRunId,
-  runGroupLevel,
-  runGroupTitle,
-} from "./groupEvents";
+import { displayEventKind, groupEventsByRunId, runGroupLevel, runGroupTitle } from "./groupEvents";
 
 function event(
   detail: Record<string, unknown>,
@@ -22,7 +17,11 @@ describe("groupEventsByRunId", () => {
   it("titles a run from the user message on LLM:request", () => {
     const items = groupEventsByRunId([
       event(
-        { kind: "LLM:request", runId: "run-1", userMessage: { role: "user", content: "Who waited?" } },
+        {
+          kind: "LLM:request",
+          runId: "run-1",
+          userMessage: { role: "user", content: "Who waited?" },
+        },
         { timestamp: 1 },
       ),
       event({ kind: "LLM:response", runId: "run-1", status: 200 }, { timestamp: 2 }),

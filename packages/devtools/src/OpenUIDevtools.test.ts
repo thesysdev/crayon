@@ -240,7 +240,9 @@ describe("OpenUIDevtools", () => {
         id: "stream-1",
         phase: "settled",
         runId: "run-1",
-        errors: [{ source: "parser", code: "unknown-component", message: "Unknown component Ghost" }],
+        errors: [
+          { source: "parser", code: "unknown-component", message: "Unknown component Ghost" },
+        ],
       }),
     );
     expect(toggle().getAttribute("aria-expanded")).toBe("true");
