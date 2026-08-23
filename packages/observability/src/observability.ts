@@ -10,13 +10,6 @@ import type {
 /** Private — not part of the public API. */
 const EVENT_TYPE = "openui:observability";
 
-function getEventTarget(): EventTarget {
-  if (typeof window !== "undefined") return window;
-  const key = Symbol.for("openui.observability.target");
-  const store = globalThis as { [key]?: EventTarget };
-  return (store[key] ??= new EventTarget());
-}
-
 function unwrap(raw: Event): ObservabilityEvent | undefined {
   if (!("detail" in raw)) return undefined;
   const event = (raw as CustomEvent<ObservabilityEvent>).detail;
@@ -32,7 +25,6 @@ type Registration = {
 
 /** Internal — the package exports a single shared instance, not this factory. */
 function createObservability(): Observability {
-  const target = getEventTarget();
   const registrations = new Map<Handler, Registration>();
 
   // A throwing listener must not break the emitter or other listeners.
@@ -45,6 +37,9 @@ function createObservability(): Observability {
   };
 
   const subscribe = (handler: Handler, keys: "all" | ObservabilityLevel[]): Remove => {
+    // Delivery is browser-only; no-op on the server.
+    if (typeof window === "undefined") return () => {};
+
     let registration = registrations.get(handler);
     if (!registration) {
       const listener = (raw: Event) => {
@@ -55,7 +50,7 @@ function createObservability(): Observability {
         if (!current.all && !current.levels.has(event.level)) return;
         deliver(handler, event);
       };
-      target.addEventListener(EVENT_TYPE, listener);
+      window.addEventListener(EVENT_TYPE, listener);
       registration = { listener, levels: new Set(), all: false };
       registrations.set(handler, registration);
     }
@@ -74,15 +69,16 @@ function createObservability(): Observability {
         for (const level of keys) current.levels.delete(level);
       }
       if (!current.all && current.levels.size === 0) {
-        target.removeEventListener(EVENT_TYPE, current.listener);
+        window.removeEventListener(EVENT_TYPE, current.listener);
         registrations.delete(handler);
       }
     };
   };
 
   const emit = (level: ObservabilityLevel, detail: ObservabilityDetail): void => {
+    if (typeof window === "undefined") return;
     const event: ObservabilityEvent = { level, timestamp: Date.now(), detail };
-    target.dispatchEvent(new CustomEvent(EVENT_TYPE, { detail: event }));
+    window.dispatchEvent(new CustomEvent(EVENT_TYPE, { detail: event }));
   };
 
   // The bus IS the emit function, with the rest of the API attached to it.
