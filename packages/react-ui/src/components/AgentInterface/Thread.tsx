@@ -387,6 +387,7 @@ const InterleavedTurn = ({
   const steps = useMemo<TimelineStep[]>(() => {
     const byCallId = new Map(turnActivities.map((a) => [a.toolCall.id, a]));
     const rows: TimelineStep[] = [];
+    const claimed = new Set<string>();
     for (const seg of segments) {
       if (seg.id !== answer?.id) {
         const prose = separateContentAndContext(seg.content ?? "").content;
@@ -394,8 +395,19 @@ const InterleavedTurn = ({
       }
       for (const tc of seg.toolCalls ?? []) {
         const activity = byCallId.get(tc.id);
-        if (activity) rows.push({ type: "activity", activity });
+        if (activity) {
+          rows.push({ type: "activity", activity });
+          claimed.add(tc.id);
+        }
       }
+    }
+    // Provider-executed tools (OpenUI Cloud reports, search, MCP) arrive as tool
+    // results whose call sits on no assistant message, so `pairToolActivity`
+    // synthesizes them as orphans. No segment claims those, and dropping them
+    // both hid the activity and could leave `rows` empty while `turnActivities`
+    // was not — which crashed the timeline. Append them in arrival order.
+    for (const activity of turnActivities) {
+      if (!claimed.has(activity.toolCall.id)) rows.push({ type: "activity", activity });
     }
     return rows;
   }, [segments, turnActivities, answer?.id]);
