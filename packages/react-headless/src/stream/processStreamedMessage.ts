@@ -10,6 +10,8 @@ interface Parameters {
   createMessage: (message: Message) => void;
   /** A function that updates an existing message in the thread (matched by id). */
   updateMessage: (message: Message) => void;
+  /** Relabels an existing message in place (same position, new id) */
+  replaceMessageId?: (previousId: string, serverId: string) => void;
   /**
    * Marks a tool call as executing (args closed, awaiting result). Wired to the
    * store's `executingToolCallIds` set so `pairToolActivity` can report the
@@ -29,6 +31,7 @@ export const processStreamedMessage = async ({
   response,
   createMessage,
   updateMessage,
+  replaceMessageId,
   markToolExecuting = () => {},
   clearToolExecuting = () => {},
   adapter = agUIAdapter(),
@@ -159,9 +162,7 @@ export const processStreamedMessage = async ({
       case EventType.TEXT_MESSAGE_START: {
         // A DIFFERENT item id after content/tool calls have accumulated means
         // the model opened a new output message item — interleaving prose with
-        // tool calls (several sections in one run). Split into a fresh assistant
-        // message so the live structure matches what reload reconstructs from
-        // storage
+        // tool calls (several sections in one run).
         const startId = (event as { messageId?: string }).messageId ?? null;
         const hasBody =
           (currentMessage.content?.length ?? 0) > 0 || (currentMessage.toolCalls?.length ?? 0) > 0;
@@ -173,13 +174,27 @@ export const processStreamedMessage = async ({
             rafId = null;
             if (!isFirst) updateMessage(currentMessage);
           }
+          // Key the new segment by the server id when present (else a uuid) so
+          // it is created already carrying the persistable id.
           currentMessage = {
-            id: crypto.randomUUID(),
+            id: startId ?? crypto.randomUUID(),
             role: "assistant",
             content: "",
             toolCalls: [],
           };
           isFirst = true;
+        } else if (startId && startId !== currentMessage.id) {
+          // First (or same) item: adopt the server id in place of the optimistic
+          // uuid. Swap IN PLACE via replaceMessageId — deleting + re-creating
+          // would break ordering when tool messages were appended between
+          // the create and this event. Without replaceMessageId we keep the
+          // optimistic id rather  than desync currentMessage from the store.
+          if (isFirst) {
+            currentMessage = { ...currentMessage, id: startId };
+          } else if (replaceMessageId) {
+            replaceMessageId(currentMessage.id, startId);
+            currentMessage = { ...currentMessage, id: startId };
+          }
         }
         currentTextItemId = startId;
         break;

@@ -4,7 +4,7 @@ import type { AssistantMessage } from "@openuidev/react-headless";
 import { useThread } from "@openuidev/react-headless";
 import type { ActionEvent, Library } from "@openuidev/react-lang";
 import { BuiltinActionType, Renderer } from "@openuidev/react-lang";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { getLastAssistantMessageId } from "../../utils/messages";
 import {
   separateContentAndContext,
@@ -54,6 +54,8 @@ export const GenUIAssistantMessage = ({
   // Persist form state into the inline-wrapped message content. The original
   // header line (which may include `libraryVersion` and telemetry tags emitted
   // by the backend) is reused so attrs survive the persist round-trip.
+
+  const lastPersistedContentRef = useRef<string | null>(null);
   const handleStateUpdate = useCallback(
     (state: Record<string, any>) => {
       const hasState = Object.keys(state).length > 0;
@@ -61,6 +63,10 @@ export const GenUIAssistantMessage = ({
       const fullMessage = hasState
         ? contentPart + wrapContext(JSON.stringify([state]))
         : contentPart;
+      if (fullMessage === lastPersistedContentRef.current || fullMessage === message.content) {
+        return;
+      }
+      lastPersistedContentRef.current = fullMessage;
       updateMessage({ ...message, content: fullMessage });
     },
     [updateMessage, message, content, contentHeader],
