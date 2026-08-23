@@ -24,6 +24,8 @@ interface ToolCallState {
   started: boolean;
   ended: boolean;
   argsEmitted: boolean;
+  /** Args already emitted as AG-UI deltas — used to diff snapshot-style updates. */
+  argsEmittedSoFar: string;
 }
 
 /**
@@ -105,6 +107,7 @@ export function openUIStreamTransformer(): StreamTransformer<{
         started: false,
         ended: false,
         argsEmitted: false,
+        argsEmittedSoFar: "",
       };
       toolCallsByIndex.set(key, state);
     } else if (!state.started) {
@@ -125,12 +128,24 @@ export function openUIStreamTransformer(): StreamTransformer<{
 
     const args = getArgsString(block);
     if (emitArgs && args && state.started) {
-      emit({
-        type: EventType.TOOL_CALL_ARGS,
-        toolCallId: state.id,
-        delta: args,
-      });
-      state.argsEmitted = true;
+      // ChatOpenAI Responses stream sends the FULL accumulated args string on
+      // every block-delta. AG-UI TOOL_CALL_ARGS deltas are append-only, so
+      // re-emitting the snapshot would corrupt JSON (and blank Cloud artifact
+      // previews that parse artifact_content from args). Emit only the suffix.
+      const delta = args.startsWith(state.argsEmittedSoFar)
+        ? args.slice(state.argsEmittedSoFar.length)
+        : args;
+      if (delta) {
+        emit({
+          type: EventType.TOOL_CALL_ARGS,
+          toolCallId: state.id,
+          delta,
+        });
+        state.argsEmittedSoFar = args.startsWith(state.argsEmittedSoFar)
+          ? args
+          : state.argsEmittedSoFar + args;
+        state.argsEmitted = true;
+      }
     }
 
     return state;
