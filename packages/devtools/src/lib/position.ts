@@ -19,6 +19,9 @@ export const TOGGLE_SIZE = 40;
 export const TOGGLE_EDGE = 16;
 /** Pointer movement (px) before a press becomes a drag instead of a click. */
 export const DRAG_THRESHOLD = 5;
+/** How long the toggle glides into a corner after release. */
+export const SNAP_DURATION_MS = 240;
+export const SNAP_EASING = "cubic-bezier(0.22, 1, 0.36, 1)";
 
 export function cornerStyle(position: DevtoolsPosition): CSSProperties {
   switch (position) {
@@ -31,6 +34,22 @@ export function cornerStyle(position: DevtoolsPosition): CSSProperties {
     case "bottom-right":
       return { bottom: TOGGLE_EDGE, right: TOGGLE_EDGE };
   }
+}
+
+/** Pixel origin for `position: fixed` so a drag can ease into a corner. */
+export function cornerPoint(
+  position: DevtoolsPosition,
+  viewport: { width: number; height: number },
+): { left: number; top: number } {
+  const left =
+    position.endsWith("right")
+      ? Math.max(TOGGLE_EDGE, viewport.width - TOGGLE_SIZE - TOGGLE_EDGE)
+      : TOGGLE_EDGE;
+  const top =
+    position.startsWith("bottom")
+      ? Math.max(TOGGLE_EDGE, viewport.height - TOGGLE_SIZE - TOGGLE_EDGE)
+      : TOGGLE_EDGE;
+  return { left, top };
 }
 
 /** Snap the button's center to the nearest viewport quadrant. */

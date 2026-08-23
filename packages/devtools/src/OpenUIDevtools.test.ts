@@ -4,7 +4,7 @@ import { act, createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { OpenUIDevtools, type OpenUIDevtoolsProps } from "./index";
-import { nearestCorner } from "./lib/position";
+import { SNAP_DURATION_MS, cornerPoint, nearestCorner } from "./lib/position";
 
 if (typeof globalThis.PointerEvent === "undefined") {
   class PointerEventPolyfill extends MouseEvent {
@@ -89,6 +89,7 @@ beforeEach(() => {
 afterEach(() => {
   act(() => root.unmount());
   container.remove();
+  vi.useRealTimers();
 });
 
 function render(props: OpenUIDevtoolsProps): void {
@@ -768,7 +769,8 @@ describe("OpenUIDevtools", () => {
     warn.mockRestore();
   });
 
-  it("snaps the toggle to the nearest corner on drag and remembers it", () => {
+  it("eases the toggle into the nearest corner on drag and remembers it", () => {
+    vi.useFakeTimers();
     Object.defineProperty(window, "innerWidth", { configurable: true, value: 1024 });
     Object.defineProperty(window, "innerHeight", { configurable: true, value: 768 });
     render({ enabled: true });
@@ -816,16 +818,94 @@ describe("OpenUIDevtools", () => {
     });
 
     expect(button.getAttribute("aria-expanded")).toBe("false");
-    const wrap = button.parentElement!;
-    expect(wrap.style.top).toBe("16px");
-    expect(wrap.style.left).toBe("16px");
     expect(JSON.parse(window.localStorage.getItem("openui.devtools.config") ?? "{}").position).toBe(
       "top-left",
     );
 
+    const wrap = button.parentElement!;
+    expect(wrap.style.transition).toContain("left");
+    expect(wrap.style.transition).toContain(`${SNAP_DURATION_MS}ms`);
+    expect(wrap.style.top).toBe("16px");
+    expect(wrap.style.left).toBe("16px");
+
+    act(() => {
+      vi.advanceTimersByTime(SNAP_DURATION_MS);
+    });
+
+    expect(wrap.style.top).toBe("16px");
+    expect(wrap.style.left).toBe("16px");
+    expect(wrap.style.right).toBe("");
+    expect(wrap.style.bottom).toBe("");
+
     remount({ enabled: true });
     expect(toggle().parentElement!.style.top).toBe("16px");
     expect(toggle().parentElement!.style.left).toBe("16px");
+  });
+
+  it("settles a snap onto inset edges after the glide, not leftover left/top", () => {
+    vi.useFakeTimers();
+    Object.defineProperty(window, "innerWidth", { configurable: true, value: 1024 });
+    Object.defineProperty(window, "innerHeight", { configurable: true, value: 768 });
+    window.localStorage.setItem("openui.devtools.config", JSON.stringify({ position: "top-left" }));
+    render({ enabled: true });
+
+    const button = toggle();
+    vi.spyOn(button, "getBoundingClientRect").mockReturnValue({
+      x: 16,
+      y: 16,
+      left: 16,
+      top: 16,
+      right: 56,
+      bottom: 56,
+      width: 40,
+      height: 40,
+      toJSON: () => ({}),
+    });
+
+    act(() => {
+      button.dispatchEvent(
+        new PointerEvent("pointerdown", {
+          bubbles: true,
+          pointerId: 1,
+          button: 0,
+          clientX: 36,
+          clientY: 36,
+        }),
+      );
+      button.dispatchEvent(
+        new PointerEvent("pointermove", {
+          bubbles: true,
+          pointerId: 1,
+          clientX: 1000,
+          clientY: 740,
+        }),
+      );
+      button.dispatchEvent(
+        new PointerEvent("pointerup", {
+          bubbles: true,
+          pointerId: 1,
+          clientX: 1000,
+          clientY: 740,
+        }),
+      );
+    });
+
+    const wrap = button.parentElement!;
+    expect(wrap.style.left).toBe("968px");
+    expect(wrap.style.top).toBe("712px");
+    expect(wrap.style.transition).toContain("top");
+    expect(JSON.parse(window.localStorage.getItem("openui.devtools.config") ?? "{}").position).toBe(
+      "bottom-right",
+    );
+
+    act(() => {
+      vi.advanceTimersByTime(SNAP_DURATION_MS);
+    });
+
+    expect(wrap.style.bottom).toBe("16px");
+    expect(wrap.style.right).toBe("16px");
+    expect(wrap.style.left).toBe("");
+    expect(wrap.style.top).toBe("");
   });
 });
 
@@ -837,5 +917,16 @@ describe("nearestCorner", () => {
     expect(nearestCorner(960, 0, viewport)).toBe("top-right");
     expect(nearestCorner(0, 760, viewport)).toBe("bottom-left");
     expect(nearestCorner(960, 760, viewport)).toBe("bottom-right");
+  });
+});
+
+describe("cornerPoint", () => {
+  const viewport = { width: 1024, height: 768 };
+
+  it("matches the inset corners used when the toggle is at rest", () => {
+    expect(cornerPoint("top-left", viewport)).toEqual({ left: 16, top: 16 });
+    expect(cornerPoint("top-right", viewport)).toEqual({ left: 968, top: 16 });
+    expect(cornerPoint("bottom-left", viewport)).toEqual({ left: 16, top: 712 });
+    expect(cornerPoint("bottom-right", viewport)).toEqual({ left: 968, top: 712 });
   });
 });
