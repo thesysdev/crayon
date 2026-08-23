@@ -4,7 +4,7 @@ import { act, createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { OpenUIDevtools, type OpenUIDevtoolsProps } from "./index";
-import { SNAP_DURATION_MS, cornerPoint, nearestCorner } from "./lib/position";
+import { SNAP_DURATION_MS, cornerPoint, isLeftPosition, nearestCorner } from "./lib/position";
 
 if (typeof globalThis.PointerEvent === "undefined") {
   class PointerEventPolyfill extends MouseEvent {
@@ -167,9 +167,15 @@ function overviewStats(): string[] {
  * Both trays stay mounted so they can transition; a retracted one carries
  * `inert`. "Showing" therefore means present and not inert.
  */
+function tray(label: "OpenUI Inspect" | "OpenUI Debug"): HTMLElement {
+  const node = container.querySelector<HTMLElement>(`aside[aria-label="${label}"]`);
+  if (!node) throw new Error(`${label} tray not found`);
+  return node;
+}
+
 function trayShown(label: "OpenUI Inspect" | "OpenUI Debug"): boolean {
-  const tray = container.querySelector<HTMLElement>(`aside[aria-label="${label}"]`);
-  return !!tray && !tray.hasAttribute("inert");
+  const node = container.querySelector<HTMLElement>(`aside[aria-label="${label}"]`);
+  return !!node && !node.hasAttribute("inert");
 }
 
 /** The display filters live behind the header settings button. */
@@ -906,6 +912,48 @@ describe("OpenUIDevtools", () => {
     expect(wrap.style.right).toBe("16px");
     expect(wrap.style.left).toBe("");
     expect(wrap.style.top).toBe("");
+  });
+
+  it("opens Inspect from the left when the toggle is on the left, and places Debug beside it", () => {
+    window.localStorage.setItem(
+      "openui.devtools.config",
+      JSON.stringify({ position: "bottom-left" }),
+    );
+    seedLibrary();
+    render({ enabled: true });
+    click(toggle());
+    openDebugTray();
+
+    const inspect = tray("OpenUI Inspect");
+    const debug = tray("OpenUI Debug");
+    expect(inspect.style.left).toBe("12px");
+    expect(inspect.style.right).toBe("");
+    expect(inspect.style.transform).toBe("translateX(0)");
+    expect(debug.style.left).toBe("504px");
+    expect(debug.style.right).toBe("");
+
+    click(container.querySelector('button[aria-label="Close OpenUI Inspect"]')!);
+    expect(inspect.style.transform).toBe("translateX(calc(-100% - 12px))");
+    expect(debug.style.left).toBe("12px");
+  });
+
+  it("opens Inspect from the right when the toggle is on the right", () => {
+    render({ enabled: true });
+    click(toggle());
+
+    const inspect = tray("OpenUI Inspect");
+    expect(inspect.style.right).toBe("12px");
+    expect(inspect.style.left).toBe("");
+    expect(inspect.style.transform).toBe("translateX(0)");
+  });
+});
+
+describe("isLeftPosition", () => {
+  it("is true only for the left corners", () => {
+    expect(isLeftPosition("top-left")).toBe(true);
+    expect(isLeftPosition("bottom-left")).toBe(true);
+    expect(isLeftPosition("top-right")).toBe(false);
+    expect(isLeftPosition("bottom-right")).toBe(false);
   });
 });
 

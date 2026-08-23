@@ -15,6 +15,11 @@ export function isDevtoolsPosition(value: unknown): value is DevtoolsPosition {
   return typeof value === "string" && POSITIONS.has(value);
 }
 
+/** Trays open from the same side as the toggle so they don't cover the page. */
+export function isLeftPosition(position: DevtoolsPosition): boolean {
+  return position === "top-left" || position === "bottom-left";
+}
+
 export const TOGGLE_SIZE = 40;
 export const TOGGLE_EDGE = 16;
 /** Pointer movement (px) before a press becomes a drag instead of a click. */

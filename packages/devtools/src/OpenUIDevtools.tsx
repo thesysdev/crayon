@@ -15,6 +15,7 @@ import {
   addOrReplaceEvent,
   DEFAULT_POSITION,
   isLibraryEvent,
+  isLeftPosition,
   useDevtoolsConfig,
   useDevtoolsSingleton,
   useSnapCorner,
@@ -39,10 +40,10 @@ export type { DevtoolsPosition };
 const MENU_ROW_HEIGHT = 28;
 
 /**
- * Tray geometry. The two trays together fill a block anchored to the bottom
- * right — 85% of the viewport, capped so it stops growing on very large
- * displays. Inspect keeps a fixed width and Debug takes whatever is left,
- * overlapping Inspect rather than collapsing once it hits its floor.
+ * Tray geometry. The two trays together fill a block along the toggle's
+ * side — 85% of the viewport, capped so it stops growing on very large
+ * displays. Inspect keeps a fixed width on that edge; Debug takes whatever
+ * is left, overlapping Inspect rather than collapsing once it hits its floor.
  */
 const TRAY_EDGE = 12;
 const TRAY_GAP = 12;
@@ -168,22 +169,27 @@ export function OpenUIDevtools({
   const errorCount = events.filter((event) => event.level === "error").length;
   const visibleEvents = onlyErrors ? events.filter((event) => event.level !== "info") : events;
 
-  // Inspect is pinned to the right edge; Debug fills the rest of the block and
-  // slides over to reclaim Inspect's slot whenever Inspect is out.
+  // Inspect pins to the toggle's side of the screen; Debug fills the rest of
+  // the block inward. Closing Inspect lets Debug reclaim that slot.
+  const fromLeft = isLeftPosition(position);
   const inspectSlot = open ? INSPECT_WIDTH + TRAY_GAP : 0;
   const inspectTray: CSSProperties = {
-    right: TRAY_EDGE,
+    ...(fromLeft ? { left: TRAY_EDGE } : { right: TRAY_EDGE }),
     bottom: TRAY_EDGE,
     height: BLOCK_H,
     width: `min(${INSPECT_WIDTH}px, calc(100vw - ${TRAY_EDGE * 2}px))`,
-    transform: open ? "translateX(0)" : `translateX(calc(100% + ${TRAY_EDGE}px))`,
+    transform: open
+      ? "translateX(0)"
+      : `translateX(calc(${fromLeft ? "-100%" : "100%"} ${fromLeft ? "-" : "+"} ${TRAY_EDGE}px))`,
   };
   // Debug is a workspace rather than a peek at the app behind it: it fills
   // everything Inspect leaves (left/right edges rather than a width, so the
   // inset matches top and bottom) and cuts straight in instead of sliding.
   // Overrides the shared UI, so it is spread last.
   const debugTray: CSSProperties = {
-    right: TRAY_EDGE + inspectSlot,
+    ...(fromLeft
+      ? { left: TRAY_EDGE + inspectSlot }
+      : { right: TRAY_EDGE + inspectSlot }),
     bottom: TRAY_EDGE,
     height: BLOCK_H,
     width: `max(${DEBUG_MIN_WIDTH}px, calc(${BLOCK_W} - ${inspectSlot}px))`,
@@ -466,9 +472,9 @@ function uiStyles(t: ThemeTokens) {
       fontWeight: 700,
       lineHeight: 1,
     },
-    // Geometry (right/width/transform) is per-tray and set inline; this is the
-    // shared UI. Each tray hides itself when closed so the other can stay open
-    // without a retracted tray remaining focusable.
+    // Geometry (left/right/width/transform) is per-tray and set inline; this is
+    // the shared UI. Each tray hides itself when closed so the other can stay
+    // open without a retracted tray remaining focusable.
     drawer: {
       position: "fixed",
       // Max 32-bit signed int — sit above any app UI, including the toggle.
@@ -487,13 +493,13 @@ function uiStyles(t: ThemeTokens) {
       fontSize: 13,
       visibility: "hidden",
       transition:
-        "transform 220ms cubic-bezier(0.32, 0.72, 0, 1), right 260ms cubic-bezier(0.32, 0.72, 0, 1), width 260ms cubic-bezier(0.32, 0.72, 0, 1), visibility 0s linear 220ms",
+        "transform 220ms cubic-bezier(0.32, 0.72, 0, 1), left 260ms cubic-bezier(0.32, 0.72, 0, 1), right 260ms cubic-bezier(0.32, 0.72, 0, 1), width 260ms cubic-bezier(0.32, 0.72, 0, 1), visibility 0s linear 220ms",
       overflow: "hidden",
     },
     drawerOpen: {
       visibility: "visible",
       transition:
-        "transform 220ms cubic-bezier(0.32, 0.72, 0, 1), right 260ms cubic-bezier(0.32, 0.72, 0, 1), width 260ms cubic-bezier(0.32, 0.72, 0, 1), visibility 0s",
+        "transform 220ms cubic-bezier(0.32, 0.72, 0, 1), left 260ms cubic-bezier(0.32, 0.72, 0, 1), right 260ms cubic-bezier(0.32, 0.72, 0, 1), width 260ms cubic-bezier(0.32, 0.72, 0, 1), visibility 0s",
     },
     debugHost: {
       flex: 1,

@@ -8,7 +8,7 @@ export {
   type LibraryLike,
   type RegisteredLibrary,
 } from "./libraryRegistry";
-export { DEFAULT_POSITION, type DevtoolsPosition } from "./position";
+export { DEFAULT_POSITION, isLeftPosition, type DevtoolsPosition } from "./position";
 export { useDevtoolsSingleton } from "./singleton";
 export { useDevtoolsConfig, type DevtoolsConfig } from "./useDevtoolsConfig";
 export { useSnapCorner } from "./useSnapCorner";
