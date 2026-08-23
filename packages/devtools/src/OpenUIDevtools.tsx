@@ -55,7 +55,7 @@ export interface OpenUIDevtoolsProps {
   /** Force the widget on/off. Defaults to on outside production builds. */
   enabled?: boolean;
   /**
-   * @deprecated Drag the floating button to snap it to a corner. 
+   * @deprecated Drag the floating button to snap it to a corner.
    * This prop is ignored. The position is persisted
    */
   position?: DevtoolsPosition;
