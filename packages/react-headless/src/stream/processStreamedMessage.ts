@@ -62,6 +62,23 @@ export const processStreamedMessage = async ({
     });
   };
 
+  /** Flush the open assistant and start a fresh one (interleaved segments). */
+  const startNewAssistantSegment = () => {
+    if (rafId !== null) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+      if (!isFirst) updateMessage(currentMessage);
+    }
+    currentMessage = {
+      id: crypto.randomUUID(),
+      role: "assistant",
+      content: "",
+      toolCalls: [],
+    };
+    isFirst = true;
+    currentTextItemId = null;
+  };
+
   for await (const event of adapter.parse(response)) {
     switch (event.type) {
       // TEXT_MESSAGE_CHUNK and TEXT_MESSAGE_CONTENT are very similar events but TEXT_MESSAGE_CHUNK
@@ -69,6 +86,13 @@ export const processStreamedMessage = async ({
       // right now, we treat both the same.
       case EventType.TEXT_MESSAGE_CHUNK:
       case EventType.TEXT_MESSAGE_CONTENT:
+        // Some adapters (LangGraph / ChatOpenAI Responses) keep one wire
+        // messageId for a whole model step even when Responses interleaved
+        // several message items. Text after tools means a new segment — same
+        // split Responses adapters express via a new TEXT_MESSAGE_START id.
+        if ((currentMessage.toolCalls?.length ?? 0) > 0) {
+          startNewAssistantSegment();
+        }
         currentMessage = {
           ...currentMessage,
           content: (currentMessage.content || "") + event.delta,
@@ -166,20 +190,7 @@ export const processStreamedMessage = async ({
         const hasBody =
           (currentMessage.content?.length ?? 0) > 0 || (currentMessage.toolCalls?.length ?? 0) > 0;
         if (hasBody && startId !== currentTextItemId) {
-          if (rafId !== null) {
-            // Flush the pending update so the finished segment's final state
-            // lands before the next segment is created.
-            cancelAnimationFrame(rafId);
-            rafId = null;
-            if (!isFirst) updateMessage(currentMessage);
-          }
-          currentMessage = {
-            id: crypto.randomUUID(),
-            role: "assistant",
-            content: "",
-            toolCalls: [],
-          };
-          isFirst = true;
+          startNewAssistantSegment();
         }
         currentTextItemId = startId;
         break;
