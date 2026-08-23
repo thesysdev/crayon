@@ -14,8 +14,8 @@ import {
 import {
   addOrReplaceEvent,
   DEFAULT_POSITION,
-  isLibraryEvent,
   isLeftPosition,
+  isLibraryEvent,
   useDevtoolsConfig,
   useDevtoolsSingleton,
   useSnapCorner,
@@ -187,9 +187,7 @@ export function OpenUIDevtools({
   // inset matches top and bottom) and cuts straight in instead of sliding.
   // Overrides the shared UI, so it is spread last.
   const debugTray: CSSProperties = {
-    ...(fromLeft
-      ? { left: TRAY_EDGE + inspectSlot }
-      : { right: TRAY_EDGE + inspectSlot }),
+    ...(fromLeft ? { left: TRAY_EDGE + inspectSlot } : { right: TRAY_EDGE + inspectSlot }),
     bottom: TRAY_EDGE,
     height: BLOCK_H,
     width: `max(${DEBUG_MIN_WIDTH}px, calc(${BLOCK_W} - ${inspectSlot}px))`,
