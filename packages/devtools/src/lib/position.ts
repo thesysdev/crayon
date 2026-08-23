@@ -41,14 +41,12 @@ export function cornerPoint(
   position: DevtoolsPosition,
   viewport: { width: number; height: number },
 ): { left: number; top: number } {
-  const left =
-    position.endsWith("right")
-      ? Math.max(TOGGLE_EDGE, viewport.width - TOGGLE_SIZE - TOGGLE_EDGE)
-      : TOGGLE_EDGE;
-  const top =
-    position.startsWith("bottom")
-      ? Math.max(TOGGLE_EDGE, viewport.height - TOGGLE_SIZE - TOGGLE_EDGE)
-      : TOGGLE_EDGE;
+  const left = position.endsWith("right")
+    ? Math.max(TOGGLE_EDGE, viewport.width - TOGGLE_SIZE - TOGGLE_EDGE)
+    : TOGGLE_EDGE;
+  const top = position.startsWith("bottom")
+    ? Math.max(TOGGLE_EDGE, viewport.height - TOGGLE_SIZE - TOGGLE_EDGE)
+    : TOGGLE_EDGE;
   return { left, top };
 }
 

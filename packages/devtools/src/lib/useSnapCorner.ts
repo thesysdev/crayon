@@ -172,9 +172,7 @@ export function useSnapCorner({
         return;
       }
       const point = dragRef.current ?? { left: g.originLeft, top: g.originTop };
-      const corner = commit
-        ? nearestCorner(point.left, point.top, viewport())
-        : position;
+      const corner = commit ? nearestCorner(point.left, point.top, viewport()) : position;
       if (commit) onSnapRef.current(corner);
       glideTo(corner);
     },
