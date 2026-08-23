@@ -348,6 +348,20 @@ function groupIntoTurns(messages: Message[]): { messages: Message[]; startIndex:
   return groups;
 }
 
+/** Visible body of an assistant segment, with inline sentinels stripped. */
+function segmentBody(segment: AssistantMessage): string {
+  return separateContentAndContext(segment.content ?? "").content;
+}
+
+/** Latest segment that is OpenUI-lang rather than thinking prose. */
+function latestLangSegment(segments: AssistantMessage[]): AssistantMessage | null {
+  for (let i = segments.length - 1; i >= 0; i--) {
+    const segment = segments[i]!;
+    if (hasLangSyntax(segmentBody(segment))) return segment;
+  }
+  return null;
+}
+
 /**
  * A whole turn as one unit. Owned here rather than per-message
  * so the tray is a single element keyed by the turn's first segment ({@link Messages})
@@ -377,20 +391,23 @@ const InterleavedTurn = ({
   );
   const turnActivities = useToolActivities(turnMessage, allMessages);
 
-  const lastContent = separateContentAndContext(last.content ?? "").content;
-  // Show the last segment as the answer once it looks like Lang, or once the run
-  // settles.
-  const answer = !turnLive || hasLangSyntax(lastContent) ? last : null;
+  // Settled: last segment is the answer. Live: keep the latest Lang program on
+  // the renderer even if a newer thinking/tool segment has already started —
+  // otherwise a mid-turn status Card vanishes into the tray as raw source.
+  const lastLang = latestLangSegment(segments);
+  const answer = !turnLive ? last : lastLang;
   const answerMessage = useMemo(() => (answer ? { ...answer, toolCalls: [] } : null), [answer]);
+  const answerContent = answer ? segmentBody(answer) : "";
 
   // Rows in run order: each non-answer segment's thinking prose, then its tools.
+  // Lang programs stay off the tray — they are answers, not muted markdown.
   const steps = useMemo<TimelineStep[]>(() => {
     const byCallId = new Map(turnActivities.map((a) => [a.toolCall.id, a]));
     const rows: TimelineStep[] = [];
     for (const seg of segments) {
       if (seg.id !== answer?.id) {
-        const prose = separateContentAndContext(seg.content ?? "").content;
-        if (prose) rows.push({ type: "text", id: seg.id, text: prose });
+        const prose = segmentBody(seg);
+        if (prose && !hasLangSyntax(prose)) rows.push({ type: "text", id: seg.id, text: prose });
       }
       for (const tc of seg.toolCalls ?? []) {
         const activity = byCallId.get(tc.id);
@@ -405,9 +422,9 @@ const InterleavedTurn = ({
   const registry = useArtifactRendererRegistry();
   const matched = getMatchedRendererActivities(registry, turnActivities);
 
-  // Hold the tray open until the answer's first tokens arrive. `answer` is
-  // `last` or null, so reuse the already-parsed `lastContent`.
-  const answerStarted = !!answer && lastContent.length > 0;
+  // Hold the tray open until some Lang (this segment or an earlier status UI)
+  // has tokens. Using `answerContent` so a previous status Card still counts.
+  const answerStarted = answerContent.length > 0;
 
   return (
     <>
