@@ -1,7 +1,6 @@
 import type { ObservabilityEvent } from "@openuidev/observability";
 
 const STREAM_KIND = "react-lang:stream";
-const LLM_KINDS = new Set(["LLM:request", "LLM:response", "LLM:error"]);
 
 export type InspectListItem =
   | { type: "event"; event: ObservabilityEvent }
@@ -65,15 +64,10 @@ export function runGroupTitle(events: ObservabilityEvent[]): string {
   return "LLM run";
 }
 
-/**
- * Header severity follows the request/response pair. Stream parse errors stay
- * on the stream row instead of turning the whole run red.
- */
+/** Worst level in the group, including stream parse errors and 429s. */
 export function runGroupLevel(events: ObservabilityEvent[]): ObservabilityEvent["level"] {
-  const llm = events.filter((event) => LLM_KINDS.has(eventKind(event) ?? ""));
-  const source = llm.length > 0 ? llm : events;
-  if (source.some((event) => event.level === "error")) return "error";
-  if (source.some((event) => event.level === "warning")) return "warning";
+  if (events.some((event) => event.level === "error")) return "error";
+  if (events.some((event) => event.level === "warning")) return "warning";
   return "info";
 }
 

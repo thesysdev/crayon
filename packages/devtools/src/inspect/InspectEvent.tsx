@@ -17,7 +17,7 @@ export function InspectEvent({
   last?: boolean;
 }) {
   const quotaError = getQuotaError(event);
-  if (quotaError) return <QuotaErrorRow info={quotaError} />;
+  if (quotaError) return <QuotaErrorRow info={quotaError} embedded={embedded} last={last} />;
   const stream = getReactLangStreamDetail(event);
   if (stream) {
     return (

@@ -70,14 +70,14 @@ describe("groupEventsByRunId", () => {
 });
 
 describe("runGroupLevel", () => {
-  it("surfaces request/response severity, not stream parse errors", () => {
+  it("surfaces the worst level in the group, including stream parse errors", () => {
     expect(
       runGroupLevel([
         event({ kind: "LLM:request", runId: "run-1" }),
         event({ kind: "LLM:response", runId: "run-1", status: 200 }),
         event({ kind: "react-lang:stream", runId: "run-1" }, { level: "error" }),
       ]),
-    ).toBe("info");
+    ).toBe("error");
     expect(
       runGroupLevel([
         event({ kind: "LLM:request", runId: "run-1" }),

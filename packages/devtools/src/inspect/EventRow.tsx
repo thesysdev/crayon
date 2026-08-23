@@ -143,7 +143,12 @@ function summarize(event: ObservabilityEvent): string {
 function eventRowStyles(t: ThemeTokens) {
   return {
     row: {
-      borderWidth: 1,
+      // Four longhands: `borderWidth` is a shorthand, and mixing it with
+      // `borderBottomWidth` in the embedded override leaves a leftover box stroke.
+      borderTopWidth: 1,
+      borderRightWidth: 1,
+      borderBottomWidth: 1,
+      borderLeftWidth: 1,
       borderStyle: "solid",
       borderColor: t.border,
       borderRadius: 12,
@@ -159,8 +164,10 @@ function eventRowStyles(t: ThemeTokens) {
       boxShadow: t.shadowSubtle,
     },
     rowEmbedded: {
-      borderWidth: 0,
+      borderTopWidth: 0,
+      borderRightWidth: 0,
       borderBottomWidth: 1,
+      borderLeftWidth: 0,
       borderRadius: 0,
       boxShadow: "none",
       background: "transparent",

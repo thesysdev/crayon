@@ -1,6 +1,6 @@
 import type { ObservabilityEvent } from "@openuidev/observability";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { FONT, useStyles, type ThemeTokens } from "../theme";
 import { LevelIcon } from "./LevelIcon";
 import { runGroupLevel, runGroupTitle } from "./groupEvents";
@@ -15,10 +15,18 @@ export function RunGroup({
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(defaultOpen);
+  const openedForError = useRef(defaultOpen && events.some((event) => event.level === "error"));
   const styles = useStyles(runGroupStyles);
   const level = runGroupLevel(events);
   const title = runGroupTitle(events);
   const newest = events[0];
+  const hasError = events.some((event) => event.level === "error");
+
+  useEffect(() => {
+    if (!hasError || openedForError.current) return;
+    openedForError.current = true;
+    setOpen(true);
+  }, [hasError]);
 
   return (
     <div style={styles.group} role="group" aria-label={title}>

@@ -36,12 +36,26 @@ export function getQuotaError(event: ObservabilityEvent): QuotaErrorInfo | undef
 }
 
 /** Billing/rate-limit list entry — the highlighted card a known 429 code renders as. */
-export function QuotaErrorRow({ info }: { info: QuotaErrorInfo }) {
+export function QuotaErrorRow({
+  info,
+  embedded = false,
+  last = false,
+}: {
+  info: QuotaErrorInfo;
+  embedded?: boolean;
+  last?: boolean;
+}) {
   const styles = useStyles(quotaRowStyles);
   const [hoveredCta, setHoveredCta] = useState<string | null>(null);
 
   return (
-    <div style={styles.row}>
+    <div
+      style={{
+        ...styles.row,
+        ...(embedded ? styles.rowEmbedded : null),
+        ...(embedded && last ? styles.rowEmbeddedLast : null),
+      }}
+    >
       <div style={styles.creditsNote}>
         <div style={styles.creditsHeader}>
           <LevelIcon level="warning" />
@@ -102,14 +116,36 @@ function asString(value: unknown): string | undefined {
 
 function quotaRowStyles(t: ThemeTokens) {
   return {
+    // Longhands, not the `border` shorthand: rowEmbedded overrides width/radius,
+    // and React blanks a shorthand's longhands when a later style touches one.
     row: {
-      border: `1px solid ${t.border}`,
+      // Four longhands: `borderWidth` is a shorthand, and mixing it with
+      // `borderBottomWidth` in the embedded override leaves a leftover box stroke.
+      borderTopWidth: 1,
+      borderRightWidth: 1,
+      borderBottomWidth: 1,
+      borderLeftWidth: 1,
+      borderStyle: "solid",
+      borderColor: t.border,
       borderRadius: 12,
       padding: 12,
       display: "flex",
       flexDirection: "column",
       gap: 6,
       background: t.card,
+    },
+    rowEmbedded: {
+      borderTopWidth: 0,
+      borderRightWidth: 0,
+      borderBottomWidth: 1,
+      borderLeftWidth: 0,
+      borderRadius: 0,
+      background: "transparent",
+      padding: "10px 12px 12px",
+    },
+    rowEmbeddedLast: {
+      borderBottomWidth: 0,
+      paddingBottom: 14,
     },
     // The card matches every other row; the chip and title colour carry the
     // billing/rate-limit signal.
