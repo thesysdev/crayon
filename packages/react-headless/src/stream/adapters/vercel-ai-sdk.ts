@@ -175,8 +175,9 @@ export const vercelAIAdapter = (): StreamProtocolAdapter => ({
 
         case "tool-input-start":
           if (!startedTools.has(chunk.toolCallId)) {
-            const event = startStepMessage();
-            if (event) yield event;
+            // Don't open the message here: we have no real id yet (only text
+            // chunks carry one), and once opened it's locked in — a synthetic
+            // placeholder would stick even after real text arrives later.
             startedTools.add(chunk.toolCallId);
             yield {
               type: EventType.TOOL_CALL_START,
@@ -201,8 +202,6 @@ export const vercelAIAdapter = (): StreamProtocolAdapter => ({
         case "tool-input-available":
         case "tool-input-error": {
           if (!startedTools.has(chunk.toolCallId)) {
-            const event = startStepMessage();
-            if (event) yield event;
             startedTools.add(chunk.toolCallId);
             yield {
               type: EventType.TOOL_CALL_START,
