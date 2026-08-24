@@ -1,8 +1,8 @@
+import { createAgent } from "@/agent";
 import { InMemorySessionService, Runner, StreamingMode } from "@google/adk";
 import { readFileSync } from "fs";
 import { NextRequest } from "next/server";
 import { join } from "path";
-import { createAgent } from "@/agent";
 
 // @google/adk relies on Node APIs, so pin this route to the Node.js runtime.
 export const runtime = "nodejs";
@@ -10,10 +10,7 @@ export const runtime = "nodejs";
 const APP_NAME = "openui-adk-chat";
 const USER_ID = "demo-user";
 
-const systemPrompt = readFileSync(
-  join(process.cwd(), "src/generated/system-prompt.txt"),
-  "utf-8",
-);
+const systemPrompt = readFileSync(join(process.cwd(), "src/generated/system-prompt.txt"), "utf-8");
 
 // A single Runner + in-memory session store, shared across requests. Sessions
 // are keyed by the chat threadId so multi-turn history is preserved for the
@@ -32,12 +29,91 @@ interface AGUIMessage {
   content?: string | Array<{ type?: string; text?: string }>;
 }
 
+const CONTENT_MARKER = "]]>openui:content";
+const CONTEXT_MARKER = "]]>openui:context";
+const END_MARKER = "]]>openui:end";
+
+interface SubmittedField {
+  path: string;
+  value: unknown;
+}
+
+function collectSubmittedFields(
+  value: unknown,
+  path: string[] = [],
+  fields: SubmittedField[] = [],
+): SubmittedField[] {
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      if (item !== null && typeof item === "object") {
+        collectSubmittedFields(item, path, fields);
+      }
+    }
+    return fields;
+  }
+
+  if (value === null || typeof value !== "object") return fields;
+
+  const record = value as Record<string, unknown>;
+  if (path.length > 0 && Object.prototype.hasOwnProperty.call(record, "value")) {
+    fields.push({ path: path.join("."), value: record.value });
+    return fields;
+  }
+
+  for (const [key, child] of Object.entries(record)) {
+    collectSubmittedFields(child, [...path, key], fields);
+  }
+  return fields;
+}
+
+function markerBody(value: string, markerIndex: number): string {
+  const lineEnd = value.indexOf("\n", markerIndex);
+  return lineEnd === -1 ? "" : value.slice(lineEnd + 1);
+}
+
+function normalizeOpenUIMessage(raw: string): string {
+  const contextIndex = raw.lastIndexOf(CONTEXT_MARKER);
+  const contentIndex = raw.lastIndexOf(CONTENT_MARKER);
+  const contentEnd = contextIndex === -1 ? raw.length : contextIndex;
+
+  let humanText = raw.slice(0, contentEnd);
+  if (contentIndex !== -1 && contentIndex < contentEnd) {
+    humanText = markerBody(raw.slice(0, contentEnd), contentIndex);
+  }
+  humanText = humanText
+    .split(/\r?\n/)
+    .filter((line) => !line.startsWith(END_MARKER))
+    .join("\n")
+    .trim();
+
+  if (contextIndex === -1) return humanText;
+
+  try {
+    const context = JSON.parse(markerBody(raw, contextIndex)) as unknown;
+    const fields = collectSubmittedFields(context);
+    if (fields.length === 0) return humanText;
+
+    const formValues = fields
+      .map(({ path, value }) => {
+        const formatted = typeof value === "string" ? value : JSON.stringify(value);
+        return `- ${path}: ${formatted}`;
+      })
+      .join("\n");
+
+    return `${humanText}\n\nSubmitted form values:\n${formValues}`.trim();
+  } catch {
+    // Malformed context should not hide the user-visible action label.
+    return humanText;
+  }
+}
+
 function messageText(message: AGUIMessage | undefined): string {
   if (!message?.content) return "";
-  if (typeof message.content === "string") return message.content;
-  return message.content
-    .map((part) => (typeof part.text === "string" ? part.text : ""))
-    .join("");
+  const raw =
+    typeof message.content === "string"
+      ? message.content
+      : message.content.map((part) => (typeof part.text === "string" ? part.text : "")).join("");
+  return normalizeOpenUIMessage(raw);
 }
 
 async function ensureSession(threadId: string): Promise<string> {
@@ -67,10 +143,24 @@ function stopChunk(id: string): string {
   return `data: ${JSON.stringify(payload)}\n\n`;
 }
 
+function modelErrorProgram(code?: string): string {
+  let description = "Gemini could not complete this request. Check the server logs and try again.";
+  if (code === "429") {
+    description =
+      "The Gemini API quota has been reached. Wait for the quota window to reset, or use a billed API key or another model.";
+  } else if (code === "401" || code === "403") {
+    description = "Gemini rejected the API key. Check GEMINI_API_KEY and its project permissions.";
+  }
+
+  return [
+    "root = Card([error])",
+    `error = TextCallout("danger", "Gemini request failed", ${JSON.stringify(description)})`,
+  ].join("\n");
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const { messages, threadId }: { messages: AGUIMessage[]; threadId: string } =
-      await req.json();
+    const { messages, threadId }: { messages: AGUIMessage[]; threadId: string } = await req.json();
 
     const lastUser = [...(messages ?? [])].reverse().find((m) => m.role === "user");
     const prompt = messageText(lastUser);
@@ -88,6 +178,7 @@ export async function POST(req: NextRequest) {
     const readable = new ReadableStream({
       async start(controller) {
         let closed = false;
+        let sentText = false;
         const close = () => {
           if (closed) return;
           closed = true;
@@ -107,10 +198,21 @@ export async function POST(req: NextRequest) {
           for await (const event of runner.runAsync({
             userId: USER_ID,
             sessionId,
-            newMessage: { parts: [{ text: prompt }] },
+            newMessage: { role: "user", parts: [{ text: prompt }] },
             runConfig: { streamingMode: StreamingMode.SSE },
             abortSignal: req.signal,
           })) {
+            if (event.errorCode) {
+              if (!sentText) {
+                controller.enqueue(
+                  encoder.encode(contentChunk(responseId, modelErrorProgram(event.errorCode))),
+                );
+                sentText = true;
+              }
+              console.error(`ADK model error ${event.errorCode}:`, event.errorMessage);
+              break;
+            }
+
             const parts = event.content?.parts ?? [];
             const text = parts
               .map((part) => (typeof part.text === "string" ? part.text : ""))
@@ -121,13 +223,19 @@ export async function POST(req: NextRequest) {
             if (event.partial) {
               sawPartial = true;
               controller.enqueue(encoder.encode(contentChunk(responseId, text)));
+              sentText = true;
             } else if (!sawPartial) {
               controller.enqueue(encoder.encode(contentChunk(responseId, text)));
+              sentText = true;
             }
           }
         } catch (error) {
           if (!req.signal.aborted) {
             console.error("ADK stream error:", error);
+            if (!sentText) {
+              controller.enqueue(encoder.encode(contentChunk(responseId, modelErrorProgram())));
+              sentText = true;
+            }
           }
         } finally {
           close();
