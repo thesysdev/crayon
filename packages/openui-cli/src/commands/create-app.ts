@@ -4,24 +4,14 @@ import * as path from "node:path";
 
 import { resolveCloudApiKey, THESYS_KEYS_URL } from "../auth/mint";
 import { aiSetupFromTemplate, createFunnelProps } from "../lib/create-telemetry";
-import type {
-  CreateAppOptions,
-  EnvResult,
-  OverlayName,
-  TemplateName,
-} from "../lib/create-types";
+import type { CreateAppOptions, EnvResult, OverlayName, TemplateName } from "../lib/create-types";
 import {
   resolveInstallPackageManager,
   type PackageManagerName,
 } from "../lib/detect-package-manager";
 import { runDevCommand } from "../lib/dev-server";
 import { runSkillInstall, shouldInstallSkill } from "../lib/install-skill";
-import {
-  applyOverlay,
-  OVERLAYS_DIR,
-  resolveOverlay,
-  type OverlayManifest,
-} from "../lib/overlays";
+import { applyOverlay, OVERLAYS_DIR, resolveOverlay, type OverlayManifest } from "../lib/overlays";
 import { runCommand } from "../lib/process-runner";
 import { resolveArgs } from "../lib/resolve-args";
 import { resolveAvailableTarget } from "../lib/target-dir";
