@@ -56,6 +56,10 @@ function buildAppId(name: string): string {
   return `${slug}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
+function requiredApiKeyEnv(template: TemplateName): "THESYS_API_KEY" | "OPENAI_API_KEY" {
+  return template === "openui-cloud" ? "THESYS_API_KEY" : "OPENAI_API_KEY";
+}
+
 /** Match npm/pnpm install: keep dependency keys alphabetically sorted. */
 function sortPackageRecord<T>(record: Record<string, T>): Record<string, T> {
   return Object.fromEntries(Object.entries(record).sort(([a], [b]) => a.localeCompare(b)));
@@ -261,6 +265,9 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   });
 
   const immediateResolution = resolveImmediate(options.immediate, options.noInstall, interactive);
+  const apiKeyEnv = requiredApiKeyEnv(template);
+  const apiKeyAvailable = envResult.envWritten || Boolean(process.env[apiKeyEnv]?.trim());
+  const devStartBlockedByMissingApiKey = immediateResolution.immediate && !apiKeyAvailable;
   telemetry.capture("cli_immediate_selected", {
     immediate: immediateResolution.immediate,
     dependency_install_requested: immediateResolution.installDependencies,
@@ -473,7 +480,8 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   }
 
   const devCmd = packageManager.runCmd;
-  const startDev = immediateResolution.immediate && dependencyInstalled;
+  const startDev =
+    immediateResolution.immediate && dependencyInstalled && !devStartBlockedByMissingApiKey;
 
   telemetry.capture("cli_create_succeeded", {
     ...createFunnelProps("create_succeeded"),
@@ -493,10 +501,25 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       skillInstalled,
       envWritten: envResult.envWritten,
       startDev,
+      devStartBlockedByMissingApiKey,
       installCmd,
       dependencyInstalled,
     }),
   );
+
+  if (devStartBlockedByMissingApiKey) {
+    telemetry.capture("cli_dev_command_skipped", {
+      skip_reason: "missing_api_key",
+      required_env: apiKeyEnv,
+    });
+    console.error(
+      `Error: Development server not started because ${apiKeyEnv} is missing.\n` +
+        `Set ${apiKeyEnv}=… in ${name}/.env, then run:\n\n` +
+        `> cd ${name}\n> ${devCmd} run dev\n`,
+    );
+    process.exitCode = 1;
+    return;
+  }
 
   if (!startDev) {
     telemetry.capture("cli_dev_command_skipped", {
@@ -691,6 +714,7 @@ function getStartedMessage(o: {
   skillInstalled: boolean;
   envWritten: boolean;
   startDev: boolean;
+  devStartBlockedByMissingApiKey: boolean;
   installCmd: string;
   dependencyInstalled: boolean;
 }): string {
@@ -709,11 +733,13 @@ function getStartedMessage(o: {
 
   const nextStep = o.startDev
     ? `Starting the development server in "${o.name}"...\n\n> ${o.devCmd} run dev`
-    : [
-        `> cd ${o.name}`,
-        ...(o.dependencyInstalled ? [] : [`> ${o.installCmd}`]),
-        `> ${o.devCmd} run dev`,
-      ].join("\n");
+    : o.devStartBlockedByMissingApiKey
+      ? ""
+      : [
+          `> cd ${o.name}`,
+          ...(o.dependencyInstalled ? [] : [`> ${o.installCmd}`]),
+          `> ${o.devCmd} run dev`,
+        ].join("\n");
 
   const frameworkNote = o.backendGettingStarted?.replaceAll("{{packageManager}}", o.devCmd) ?? "";
 
