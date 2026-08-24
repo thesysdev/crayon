@@ -60,6 +60,11 @@ function requiredApiKeyEnv(template: TemplateName): "THESYS_API_KEY" | "OPENAI_A
   return template === "openui-cloud" ? "THESYS_API_KEY" : "OPENAI_API_KEY";
 }
 
+/** Match npm/pnpm install: keep dependency keys alphabetically sorted. */
+function sortPackageRecord<T>(record: Record<string, T>): Record<string, T> {
+  return Object.fromEntries(Object.entries(record).sort(([a], [b]) => a.localeCompare(b)));
+}
+
 function rewritePackageJson(
   projectDir: string,
   name: string,
@@ -111,6 +116,9 @@ function rewritePackageJson(
       // can't resolve standalone — pin them to the published "latest".
       if (/^(workspace:|file:|catalog:)/.test(v)) deps[key] = "latest";
     }
+    // Object.assign appends overlay packages at the end; re-sort so the
+    // scaffolded package.json matches what `npm install` / `pnpm add` write.
+    pkg[section] = sortPackageRecord(deps);
   }
   fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
 
