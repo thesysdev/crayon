@@ -29,6 +29,7 @@ import {
   type ThemeTokens,
 } from "./theme";
 import { ErrorBoundary, IconButton, ShiroLogo, ThemeSegmented } from "./ui";
+import ReliabilityBanner from "./ui/ReliabilityBanner";
 
 /** Uniform row height for the settings menu, set by its tallest control. */
 const MENU_ROW_HEIGHT = 28;
@@ -229,6 +230,8 @@ export function OpenUIDevtools({
             </IconButton>
           </div>
         </div>
+
+        <ReliabilityBanner themeMode={mode} />
 
         <ErrorBoundary title="Inspect ran into a problem">
           <div style={styles.list}>
