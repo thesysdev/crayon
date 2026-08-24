@@ -250,14 +250,22 @@ export function normalizeAuth(a?: string): CloudAuthMethod | undefined {
 
 export function normalizeBackendFramework(framework?: string): BackendFramework | undefined {
   if (!framework) return undefined;
-  const value = framework.toLowerCase();
-  if (value === "default" || value === "none" || value === "no-framework") return "default";
-  if (value === "langgraph" || value === "lang-graph") return "langgraph";
-  if (value === "vercel" || value === "vercel-ai-sdk" || value === "ai-sdk") {
-    return "vercel-ai-sdk";
+  switch (framework.toLowerCase()) {
+    case "default":
+    case "none":
+    case "no-framework":
+      return "default";
+    case "langgraph":
+    case "lang-graph":
+      return "langgraph";
+    case "vercel":
+    case "vercel-ai-sdk":
+    case "ai-sdk":
+      return "vercel-ai-sdk";
+    default:
+      throw new CreateError(
+        "bad_args",
+        `unknown backend framework "${framework}". Use: default | langgraph | vercel-ai-sdk.`,
+      );
   }
-  throw new CreateError(
-    "bad_args",
-    `unknown backend framework "${framework}". Use: default | langgraph | vercel-ai-sdk.`,
-  );
 }
