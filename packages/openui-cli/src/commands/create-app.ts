@@ -288,10 +288,9 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     restoreDotfiles(targetDir);
     applyBackendOverlay(targetDir, backendOverlay);
     rewritePackageJson(targetDir, name, packageManager.name, backendOverlay?.manifest.packageJson);
-    // npm ci requires the copied package-lock; other managers resolve from package.json.
-    // Framework routes add dependencies at scaffold time, so their npm lock
-    // cannot remain frozen; npm install creates a fresh lock for that variant.
-    if (packageManager.name !== "npm" || backendFramework !== "default") {
+    // npm ci needs package-lock.json. Keep it for npm scaffolds (base template or
+    // a backend overlay that ships its own). Other managers resolve from package.json.
+    if (packageManager.name !== "npm") {
       fs.rmSync(path.join(targetDir, "package-lock.json"), { force: true });
     }
     // The Cloud template ships pnpm's lock/workspace files for reproducible pnpm
@@ -401,20 +400,21 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     }
   }
 
-  // A framework scaffold has no lockfile, so npm must resolve version ranges
-  // against the registry. --prefer-offline is only safe for `npm ci`, where the
-  // lockfile pins exact versions and cache hits are content-addressed; here it
-  // lets a stale packument fail the install with ETARGET whenever a transitive
-  // dependency was published more recently than the local cache.
+  // Framework scaffolds without an npm lock must resolve ranges against the
+  // registry (`npm install`). When a backend overlay ships package-lock.json,
+  // keep the normal `npm ci` path. --prefer-offline is only safe for `npm ci`,
+  // where the lockfile pins exact versions and cache hits are content-addressed;
+  // bare `npm install` can fail with ETARGET on a stale packument cache.
   const frameworkInstall = backendFramework !== "default";
+  const hasNpmLock = fs.existsSync(path.join(targetDir, "package-lock.json"));
   const installCmd =
-    frameworkInstall && packageManager.name === "npm"
+    frameworkInstall && packageManager.name === "npm" && !hasNpmLock
       ? "npm install --no-audit --no-fund --progress=false"
       : frameworkInstall && packageManager.name === "pnpm"
         ? "pnpm install --no-frozen-lockfile"
         : packageManager.installCmd;
   const installArgs =
-    frameworkInstall && packageManager.name === "npm"
+    frameworkInstall && packageManager.name === "npm" && !hasNpmLock
       ? ["install", "--no-audit", "--no-fund", "--progress=false"]
       : frameworkInstall && packageManager.name === "pnpm"
         ? ["install", "--no-frozen-lockfile"]
