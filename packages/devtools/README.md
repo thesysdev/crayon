@@ -4,9 +4,9 @@ Development-only UI widget for OpenUI apps. Renders a floating button that opens
 
 ## Usage
 
-If your app uses `@openuidev/react-lang`, the widget shows up automatically. `react-lang` loads this package's thin helper and fetches the browser build from a CDN (pinned to major `0`).
+If your app uses `@openuidev/react-lang`, the widget shows up automatically.
 
-You can also mount it yourself — the npm package is a thin wrapper that still fetches the CDN widget and injects your app's React / ReactDOM / react-lang. All props are forwarded into that widget:
+You can also mount it yourself. All props are forwarded into that widget:
 
 ```tsx
 import { OpenUIDevtools } from "@openuidev/devtools";
@@ -23,7 +23,7 @@ function App() {
 
 | Prop | Default | Notes |
 | --- | --- | --- |
-| `cdnMajor` | `@latest` | Pass `0` (etc.) to pin `https://cdn.jsdelivr.net/npm/@openuidev/devtools@0/...` |
+| `version` | `@latest` | Pin CDN tag: `"0"` (major), `"0.1"` (minor), or `"0.1.0"` (exact). |
 | `theme`, `position`, `maxEvents`, `errorsOnly`, `autoOpenOnError`, `enabled` | see below | Forwarded into the CDN widget as-is |
 
 A manually mounted instance always wins over the auto-mount — only one instance ever renders.
@@ -50,4 +50,4 @@ Debug renders through the host's own `Renderer`. Its previews stay off the event
 | `errorsOnly`      | `true`           | Capture only error/warning events, or all.                       |
 | `autoOpenOnError` | `true`           | Initial state of the "auto-open on error" setting.               |
 | `theme`           | `"light"`        | Initial widget chrome theme: `"light"` or `"dark"` (Settings overrides). |
-| `cdnMajor`        | `@latest`        | Pin the CDN package major (`0` → `@0`). Omit for `@latest`.      |
+| `version`         | `@latest`        | CDN pin: `"0"` / `"0.1"` / `"0.1.0"`. Omit for `@latest`.         |

@@ -12,8 +12,8 @@ export type { ColorMode, DevtoolsPosition, OpenUIDevtoolsProps } from "./types";
  * The npm package is a thin host wrapper: in development it fetches the CDN
  * browser build and mounts it with this app's React, ReactDOM, and react-lang.
  * All props (`theme`, `position`, `maxEvents`, …) are forwarded into that
- * widget. Pass `cdnMajor` to pin a protocol major (`0` → `@0`); omit it for
- * `@latest`.
+ * widget. Pass `version` to pin the CDN tag (`"0"`, `"0.1"`, `"0.1.0"`);
+ * omit it for `@latest`.
  *
  * Renders nothing itself — the widget attaches to `document.body`.
  */
@@ -25,7 +25,7 @@ export function OpenUIDevtools(props: OpenUIDevtoolsProps) {
     errorsOnly,
     autoOpenOnError,
     theme,
-    cdnMajor,
+    version,
     __autoMounted,
   } = props;
 
@@ -37,10 +37,10 @@ export function OpenUIDevtools(props: OpenUIDevtoolsProps) {
       errorsOnly,
       autoOpenOnError,
       theme,
-      cdnMajor,
+      version,
       __autoMounted,
     });
-  }, [enabled, position, maxEvents, errorsOnly, autoOpenOnError, theme, cdnMajor, __autoMounted]);
+  }, [enabled, position, maxEvents, errorsOnly, autoOpenOnError, theme, version, __autoMounted]);
 
   return null;
 }

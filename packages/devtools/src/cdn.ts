@@ -1,8 +1,26 @@
 import type { OpenUIDevtoolsProps, OpenUIDevtoolsWidgetProps } from "./types";
 
-/** jsDelivr URL for the browser bundle. Omit `cdnMajor` → `@latest`. */
-export function browserBundleUrl(cdnMajor?: number): string {
-  const tag = cdnMajor === undefined ? "latest" : String(cdnMajor);
+/** Major (`0`), minor (`0.1`), or exact (`0.1.0`). */
+const VERSION_RE = /^\d+(\.\d+){0,2}$/;
+
+/**
+ * Normalize a CDN version pin. Returns `"latest"` when omitted/empty.
+ * Returns `null` when the string is present but not a major/minor/exact pin.
+ */
+export function normalizeCdnVersion(version?: string): string | null {
+  const trimmed = version?.trim();
+  if (!trimmed) return "latest";
+  return VERSION_RE.test(trimmed) ? trimmed : null;
+}
+
+/**
+ * jsDelivr URL for the browser bundle.
+ * Omit `version` → `@latest`. Otherwise major (`"0"`), minor (`"0.1"`),
+ * or exact (`"0.1.0"`) npm tags.
+ */
+export function browserBundleUrl(version?: string): string | null {
+  const tag = normalizeCdnVersion(version);
+  if (tag === null) return null;
   return `https://cdn.jsdelivr.net/npm/@openuidev/devtools@${tag}/dist/devtools.browser.js`;
 }
 
@@ -21,10 +39,10 @@ type BrowserModule = {
 /**
  * Fetches the CDN browser bundle and mounts it with the host's React /
  * ReactDOM / react-lang. Used by `<OpenUIDevtools />` and by react-lang's
- * auto-mount (with `cdnMajor: 0`).
+ * auto-mount (with `version: "0"`).
  */
 export function mountOpenUIDevtoolsFromCdn(opts: MountFromCdnOptions = {}): () => void {
-  const { cdnMajor, enabled, ...widgetProps } = opts;
+  const { version, enabled, ...widgetProps } = opts;
   const isEnabled =
     enabled ?? (typeof process === "undefined" || process.env["NODE_ENV"] !== "production");
 
@@ -32,12 +50,19 @@ export function mountOpenUIDevtoolsFromCdn(opts: MountFromCdnOptions = {}): () =
     return () => {};
   }
 
+  const url = browserBundleUrl(version);
+  if (url === null) {
+    console.warn(
+      `[@openuidev/devtools] invalid version "${version?.trim()}" — use a major ("0"), ` +
+        `minor ("0.1"), or exact ("0.1.0") pin. Widget not mounted.`,
+    );
+    return () => {};
+  }
+
   let cancelled = false;
   let unmount = () => {
     cancelled = true;
   };
-
-  const url = browserBundleUrl(cdnMajor);
 
   Promise.all([
     import(/* webpackIgnore: true */ /* @vite-ignore */ url) as Promise<BrowserModule>,

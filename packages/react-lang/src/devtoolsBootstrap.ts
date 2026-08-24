@@ -37,7 +37,7 @@ if (process.env.NODE_ENV === "development") {
             document.body.appendChild(host);
             ReactDOMClient.createRoot(host).render(
               React.createElement(OpenUIDevtools, {
-                cdnMajor: 0,
+                version: "0",
                 __autoMounted: true,
               }),
             );

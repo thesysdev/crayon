@@ -6,7 +6,7 @@ export type DevtoolsPosition = "top-left" | "top-right" | "bottom-left" | "botto
 
 /**
  * Public props for `<OpenUIDevtools />`. The thin package entry fetches the
- * CDN widget and forwards these into it (except `cdnMajor`, which only
+ * CDN widget and forwards these into it (except `version`, which only
  * selects which package tag to load).
  */
 export interface OpenUIDevtoolsProps {
@@ -28,10 +28,12 @@ export interface OpenUIDevtoolsProps {
    */
   theme?: ColorMode;
   /**
-   * CDN major to fetch (`@0`, `@1`, …). Omit to use `@latest`.
-   * react-lang's auto-mount passes `0` so the protocol major stays pinned.
+   * CDN package version to fetch. Omit for `@latest`.
+   * Must be a major (`"0"`), minor (`"0.1"`), or exact (`"0.1.0"`) pin —
+   * other strings are rejected and the widget does not mount.
+   * react-lang's auto-mount passes `"0"` so the protocol major stays pinned.
    */
-  cdnMajor?: number;
+  version?: string;
   /**
    * @internal Set by react-lang's auto-mount. Auto-mounted instances yield to
    * any manually rendered <OpenUIDevtools /> so host-provided props win.
@@ -40,4 +42,4 @@ export interface OpenUIDevtoolsProps {
 }
 
 /** Props the CDN widget itself understands (everything except the CDN tag). */
-export type OpenUIDevtoolsWidgetProps = Omit<OpenUIDevtoolsProps, "cdnMajor">;
+export type OpenUIDevtoolsWidgetProps = Omit<OpenUIDevtoolsProps, "version">;
