@@ -1,23 +1,4 @@
 #!/usr/bin/env node
-/**
- * Fails the build when `SDK_VERSION` in src/core/wire.ts has drifted from the
- * version in package.json.
- *
- * Why this exists: `SDK_VERSION` is what every envelope reports as
- * `sdk.version`, and it is maintained by hand. It was missed on the 0.0.2
- * release, so every 0.0.2 client identified itself as 0.0.1 on the wire and
- * ingest could not tell the two releases apart.
- *
- * There is already a unit test asserting this (src/core/wire.test.ts), but a
- * release can be cut without the tests passing — that is exactly how 0.0.2
- * shipped. This runs as part of `build`, which `prepare` invokes, so it also
- * guards `npm publish`.
- *
- * Deliberately wired into the `build` script rather than named `prebuild`:
- * pnpm ships with `enable-pre-post-scripts=false` by default, so a `prebuild`
- * script would silently never run.
- */
-
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
