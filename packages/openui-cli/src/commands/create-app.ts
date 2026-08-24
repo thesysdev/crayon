@@ -512,10 +512,14 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       skip_reason: "missing_api_key",
       required_env: apiKeyEnv,
     });
+    const keyHint =
+      apiKeyEnv === "THESYS_API_KEY"
+        ? `Get a key at ${THESYS_KEYS_URL}, then add:\n\n  ${apiKeyEnv}=…\n\nto ${name}/.env`
+        : `Add your key to ${name}/.env:\n\n  ${apiKeyEnv}=…`;
     console.error(
-      `Error: Development server not started because ${apiKeyEnv} is missing.\n` +
-        `Set ${apiKeyEnv}=… in ${name}/.env, then run:\n\n` +
-        `> cd ${name}\n> ${devCmd} run dev\n`,
+      `\nSkipped starting the development server — ${apiKeyEnv} is missing.\n\n` +
+        `${keyHint}\n\n` +
+        `Then run:\n\n> cd ${name}\n> ${devCmd} run dev\n`,
     );
     process.exitCode = 1;
     return;
