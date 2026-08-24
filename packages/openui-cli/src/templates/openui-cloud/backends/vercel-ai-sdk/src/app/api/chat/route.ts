@@ -210,7 +210,16 @@ export async function POST(req: Request) {
       web_search: openai.tools.webSearch({}),
     },
     stopWhen: stepCountIs(5),
-    prepareStep: ({ messages: stepMessages }) => ({ messages: stepMessages.slice(-1) }),
+    // Cloud holds history via `conversation`. Send only the new step items —
+    // the latest user/assistant turn, or every trailing tool result when the
+    // model called multiple tools in parallel.
+    prepareStep: ({ messages: stepMessages }) => {
+      const last = stepMessages.at(-1);
+      if (last?.role !== "tool") return { messages: stepMessages.slice(-1) };
+      let start = stepMessages.length - 1;
+      while (start > 0 && stepMessages[start - 1]?.role === "tool") start -= 1;
+      return { messages: stepMessages.slice(start) };
+    },
     providerOptions: {
       openai: {
         conversation: threadId,

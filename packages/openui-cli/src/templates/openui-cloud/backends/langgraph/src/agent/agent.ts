@@ -1,4 +1,4 @@
-import { AIMessage } from "@langchain/core/messages";
+import { AIMessage, type BaseMessage, isToolMessage } from "@langchain/core/messages";
 import { type ServerTool, tool } from "@langchain/core/tools";
 import { StateSchema } from "@langchain/langgraph";
 import { ChatOpenAI } from "@langchain/openai";
@@ -32,6 +32,20 @@ function keepAppToolCallBlocks(block: unknown) {
   const { type, name } = block as { type?: unknown; name?: unknown };
   if (typeof type !== "string" || !TOOL_CALL_BLOCK_TYPES.has(type)) return true;
   return typeof name === "string" && appToolNames.has(name);
+}
+
+/**
+ * Cloud already holds prior turns via `conversation`. For each model step we
+ * only send the new items: the latest user message, or every ToolMessage from
+ * the current local tool round (parallel tools → multiple trailing ToolMessages).
+ */
+function cloudStepMessages(messages: BaseMessage[]): BaseMessage[] {
+  if (messages.length === 0) return messages;
+  const last = messages[messages.length - 1]!;
+  if (!isToolMessage(last)) return messages.slice(-1);
+  let start = messages.length - 1;
+  while (start > 0 && isToolMessage(messages[start - 1]!)) start -= 1;
+  return messages.slice(start);
 }
 
 // These are provider-executed tools. LangGraph sends their declarations to
@@ -75,9 +89,7 @@ const cloudConversation = createMiddleware({
     const response = await handler({
       ...request,
       model: cloudModel(model, conversationId),
-      // Cloud has the earlier turns. Within a LangGraph run this becomes the
-      // latest user message first, then each locally produced ToolMessage.
-      messages: request.messages.slice(-1),
+      messages: cloudStepMessages(request.messages),
     });
 
     // Cloud has already executed its provider tools. Keep only app-owned
