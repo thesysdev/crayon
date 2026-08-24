@@ -1,6 +1,7 @@
 import { requireLoadReactLang } from "./slots";
 
-const mod = (await requireLoadReactLang()) as
+// `requireLoadReactLang()` returns the host-injected loader — call it, then await.
+const mod = (await requireLoadReactLang()()) as
   | {
       Renderer?: unknown;
       createParser?: unknown;
