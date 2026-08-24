@@ -29,11 +29,7 @@ if (process.env.NODE_ENV === "development") {
       // thin component fetches the CDN browser build and injects this app's
       // React / ReactDOM / react-lang. Pin major 0 so a protocol-breaking
       // release ships as @1 instead of taking every app down.
-      void Promise.all([
-        import("@openuidev/devtools"),
-        import("react"),
-        import("react-dom/client"),
-      ])
+      void Promise.all([import("@openuidev/devtools"), import("react"), import("react-dom/client")])
         .then(([{ OpenUIDevtools }, React, ReactDOMClient]) => {
           const attach = () => {
             const host = document.createElement("div");
