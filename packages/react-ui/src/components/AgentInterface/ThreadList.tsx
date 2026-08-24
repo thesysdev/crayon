@@ -1,8 +1,8 @@
-import { useThreadList } from "@openuidev/react-headless";
+import { useThread, useThreadList } from "@openuidev/react-headless";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
 import { EllipsisIcon, Trash2Icon } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { Button } from "../Button";
 import { IconButton } from "../IconButton";
@@ -11,6 +11,46 @@ import { useOptionalNav } from "./_shared/navContext";
 import { useAgentInterfaceStore } from "./_shared/store";
 
 const THREAD_SKELETON_WIDTHS = ["78%", "62%", "86%", "70%"];
+
+export interface ThreadMenuContext {
+  id: string;
+  title: string;
+  isSelected: boolean;
+  /** True only when this thread is the selected thread and its response is still running. */
+  isRunning: boolean;
+}
+
+interface ThreadMenuActionBase {
+  id: string;
+  label: ReactNode;
+  icon?: ReactNode;
+}
+
+export type ThreadMenuAction = ThreadMenuActionBase &
+  (
+    | {
+        href: string;
+        target?: string;
+        rel?: string;
+        onSelect?: never;
+      }
+    | {
+        href?: never;
+        target?: never;
+        rel?: never;
+        onSelect: () => void;
+      }
+  );
+
+export type GetThreadMenuActions = (
+  thread: ThreadMenuContext,
+) => readonly ThreadMenuAction[] | undefined;
+
+export interface ThreadListProps {
+  className?: string;
+  /** Additional actions rendered before Delete in every thread's overflow menu. */
+  getThreadMenuActions?: GetThreadMenuActions;
+}
 
 const ThreadListSkeleton = () => (
   <div
@@ -38,14 +78,17 @@ export const ThreadButton = ({
   id,
   title,
   className,
+  getThreadMenuActions,
 }: {
   id: string;
   title: string;
   className?: string;
+  getThreadMenuActions?: GetThreadMenuActions;
 }) => {
   const selectThread = useThreadList((s) => s.selectThread);
   const deleteThread = useThreadList((s) => s.deleteThread);
   const selectedThreadId = useThreadList((s) => s.selectedThreadId);
+  const selectedThreadIsRunning = useThread((s) => s.isRunning);
   const { isSidebarOpen, setIsSidebarOpen } = useAgentInterfaceStore((state) => ({
     isSidebarOpen: state.isSidebarOpen,
     setIsSidebarOpen: state.setIsSidebarOpen,
@@ -53,13 +96,21 @@ export const ThreadButton = ({
   const { layout } = useLayoutContext();
   const nav = useOptionalNav();
   const [isActionsOpen, setIsActionsOpen] = useState(false);
+  const isSelected = selectedThreadId === id;
+  const customActions =
+    getThreadMenuActions?.({
+      id,
+      title,
+      isSelected,
+      isRunning: isSelected && selectedThreadIsRunning,
+    }) ?? [];
 
   return (
     <div
       className={clsx(
         "openui-agent-thread-button",
         {
-          "openui-agent-thread-button--selected": selectedThreadId === id,
+          "openui-agent-thread-button--selected": isSelected,
           "openui-agent-thread-button--actions-open": isActionsOpen,
         },
         className,
@@ -97,6 +148,35 @@ export const ThreadButton = ({
             align="start"
             sideOffset={4}
           >
+            {customActions.map((action) =>
+              action.href ? (
+                <DropdownMenu.Item key={action.id} asChild>
+                  <a
+                    className="openui-button-base openui-button-base-tertiary openui-button-base-extra-small openui-agent-thread-button-dropdown-menu-item"
+                    href={action.href}
+                    target={action.target}
+                    rel={action.rel}
+                  >
+                    {action.icon}
+                    {action.label}
+                  </a>
+                </DropdownMenu.Item>
+              ) : (
+                <DropdownMenu.Item key={action.id} asChild onSelect={action.onSelect}>
+                  <Button
+                    className="openui-agent-thread-button-dropdown-menu-item"
+                    iconLeft={action.icon}
+                    size="extra-small"
+                    variant="tertiary"
+                  >
+                    {action.label}
+                  </Button>
+                </DropdownMenu.Item>
+              ),
+            )}
+            {customActions.length > 0 && (
+              <DropdownMenu.Separator className="openui-agent-thread-button-dropdown-menu-separator" />
+            )}
             <DropdownMenu.Item
               asChild
               onSelect={() => {
@@ -120,7 +200,7 @@ export const ThreadButton = ({
   );
 };
 
-export const ThreadList = ({ className }: { className?: string }) => {
+export const ThreadList = ({ className, getThreadMenuActions }: ThreadListProps) => {
   const threads = useThreadList((s) => s.threads);
   const isLoadingThreads = useThreadList((s) => s.isLoadingThreads);
   const loadThreads = useThreadList((s) => s.loadThreads);
@@ -187,7 +267,12 @@ export const ThreadList = ({ className }: { className?: string }) => {
         <div className="openui-agent-thread-list-content">
           {threads.length > 0 && <div className="openui-agent-thread-list-group">Threads</div>}
           {threads.map((thread) => (
-            <ThreadButton key={thread.id} id={thread.id} title={thread.title} />
+            <ThreadButton
+              key={thread.id}
+              id={thread.id}
+              title={thread.title}
+              getThreadMenuActions={getThreadMenuActions}
+            />
           ))}
         </div>
       )}

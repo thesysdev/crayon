@@ -53,7 +53,7 @@ import { SidebarContainer, SidebarContent, SidebarHeader, SidebarSeparator } fro
 import { SidebarItem } from "./SidebarItem";
 import { SidebarSlot } from "./SidebarSlot";
 import { MessageLoading, Messages, ScrollArea, ThreadContainer, ThreadHeader } from "./Thread";
-import { ThreadList } from "./ThreadList";
+import { ThreadList, type GetThreadMenuActions } from "./ThreadList";
 import { WelcomeGlow } from "./WelcomeGlow";
 import { WelcomeScreen } from "./WelcomeScreen";
 import { Workspace } from "./Workspace";
@@ -96,6 +96,8 @@ export interface AgentInterfaceProps extends Omit<ChatProviderProps, "children">
   scrollVariant?: ScrollVariant;
   /** When false, the thread does not auto-scroll on load / conversation switch (auto-scroll only while generating). Default true. */
   scrollOnLoad?: boolean;
+  /** Additional actions rendered in each thread's overflow menu. */
+  getThreadMenuActions?: GetThreadMenuActions;
   children?: ReactNode;
 }
 
@@ -198,6 +200,7 @@ export const AgentInterface: AgentInterfaceComponent = ((props: AgentInterfacePr
     onNavigate,
     scrollVariant,
     scrollOnLoad,
+    getThreadMenuActions,
     children,
   } = props;
 
@@ -254,6 +257,7 @@ export const AgentInterface: AgentInterfaceComponent = ((props: AgentInterfacePr
                 resolvedUserMessage={resolvedUserMessage}
                 scrollVariant={scrollVariant}
                 scrollOnLoad={scrollOnLoad}
+                getThreadMenuActions={getThreadMenuActions}
               />
             </LabelsProvider>
           </StartersProvider>
@@ -271,6 +275,7 @@ interface AgentInterfaceBodyProps {
   resolvedUserMessage: UserMessageComponent | undefined;
   scrollVariant?: ScrollVariant;
   scrollOnLoad?: boolean;
+  getThreadMenuActions?: GetThreadMenuActions;
 }
 
 const ArtifactViewMobileHeader = ({
@@ -376,6 +381,7 @@ const AgentInterfaceBody = ({
   resolvedUserMessage,
   scrollVariant,
   scrollOnLoad,
+  getThreadMenuActions,
 }: AgentInterfaceBodyProps) => {
   const { path } = useNav();
 
@@ -402,7 +408,7 @@ const AgentInterfaceBody = ({
               </div>
             </div>
             <SidebarContent>
-              <ThreadList />
+              <ThreadList getThreadMenuActions={getThreadMenuActions} />
             </SidebarContent>
           </>
         )}

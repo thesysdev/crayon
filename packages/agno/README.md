@@ -140,7 +140,7 @@ instruction function. The example marks AG-UI requests with the transient
 prompt, fenced output rule, and HITL tool rule; native AgentOS runs receive
 ordinary Markdown rules and do not call the UI tool.
 
-The local `examples/agno-chat` workspace contains a runnable client, a real
+The local `examples/agent-frameworks/agno` workspace contains a runnable client, a real
 AgentOS server, and a deterministic no-key development harness.
 
 ## Current scope

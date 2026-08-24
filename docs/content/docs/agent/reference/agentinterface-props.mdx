@@ -23,6 +23,7 @@ The only required prop is `llm`. Everything else is optional and falls back to a
 | `agentName`           | `string`                                           | No       | none                          |
 | `starters`            | `ConversationStarterProps[]`                       | No       | none                          |
 | `starterVariant`      | `"short" \| "long"`                               | No       | —                             |
+| `getThreadMenuActions` | `GetThreadMenuActions`                             | No       | none                          |
 | `path`                | `string`                                           | No       | — (uncontrolled)              |
 | `defaultPath`         | `string`                                           | No       | thread view (`undefined`)     |
 | `onNavigate`          | `(next: string \| undefined) => void`             | No       | — (uncontrolled)              |
@@ -121,6 +122,31 @@ Set `disableThemeProvider` to `true` when `AgentInterface` is mounted inside an 
 | `agentName` | `string` | No       | none    | Agent name shown next to the logo.                       |
 
 These feed the default `SidebarHeader` and `MobileHeader`. To go further, replace those slots. See [Sidebar](/docs/agent/customize/sidebar).
+
+## Thread menu actions
+
+Use `getThreadMenuActions` to add context-aware links or callbacks to each thread's overflow menu. The callback receives `{ id, title, isSelected, isRunning }`, where `isRunning` is true only for the selected thread while its response is streaming.
+
+```tsx
+<AgentInterface
+  llm={llm}
+  getThreadMenuActions={({ id, isRunning }) =>
+    isRunning
+      ? []
+      : [
+          {
+            id: "inspect-session",
+            label: "Inspect session",
+            href: `/sessions/${encodeURIComponent(id)}`,
+            target: "_blank",
+            rel: "noopener noreferrer",
+          },
+        ]
+  }
+/>;
+```
+
+Each action must have a stable `id` and `label`, plus either `href` for a real anchor or `onSelect` for an in-app callback. An optional `icon` renders before the label.
 
 ## Starters
 
