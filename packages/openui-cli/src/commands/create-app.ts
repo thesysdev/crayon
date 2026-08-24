@@ -3,17 +3,11 @@ import * as os from "node:os";
 import * as path from "node:path";
 
 import { resolveCloudApiKey, THESYS_KEYS_URL } from "../auth/mint";
-import {
-  applyBackendOverlay,
-  BACKENDS_DIR,
-  resolveBackendOverlay,
-  type BackendManifest,
-} from "../lib/backends";
 import { aiSetupFromTemplate, createFunnelProps } from "../lib/create-telemetry";
 import type {
-  BackendFramework,
   CreateAppOptions,
   EnvResult,
+  OverlayName,
   TemplateName,
 } from "../lib/create-types";
 import {
@@ -22,6 +16,12 @@ import {
 } from "../lib/detect-package-manager";
 import { runDevCommand } from "../lib/dev-server";
 import { runSkillInstall, shouldInstallSkill } from "../lib/install-skill";
+import {
+  applyOverlay,
+  OVERLAYS_DIR,
+  resolveOverlay,
+  type OverlayManifest,
+} from "../lib/overlays";
 import { runCommand } from "../lib/process-runner";
 import { resolveArgs } from "../lib/resolve-args";
 import { resolveAvailableTarget } from "../lib/target-dir";
@@ -34,7 +34,7 @@ function shouldCopyTemplatePath(templateDir: string, src: string): boolean {
   const top = rel.split(path.sep)[0] ?? "";
   // Copy the base template only; selected backend overlays are applied later.
   // Also exclude install/build artifacts that may sit in a template directory.
-  return ![BACKENDS_DIR, "node_modules", ".next", ".turbo", "dist"].includes(top);
+  return ![OVERLAYS_DIR, "node_modules", ".next", ".turbo", "dist"].includes(top);
 }
 
 function restoreDotfiles(projectDir: string) {
@@ -69,7 +69,7 @@ function rewritePackageJson(
   projectDir: string,
   name: string,
   packageManager: PackageManagerName,
-  backendPackageJson?: BackendManifest["packageJson"],
+  overlayPackageJson?: OverlayManifest["packageJson"],
 ) {
   // package.json: set the project name and de-vendor monorepo-local deps
   // (workspace:* / file: / catalog:) to the published "latest". link: deps are
@@ -88,14 +88,14 @@ function rewritePackageJson(
   pkg.name = name;
   if (packageManager !== "pnpm") delete pkg.pnpm;
 
-  if (backendPackageJson) {
+  if (overlayPackageJson) {
     pkg.dependencies ??= {};
-    for (const dependency of backendPackageJson.removeDependencies ?? []) {
+    for (const dependency of overlayPackageJson.removeDependencies ?? []) {
       delete pkg.dependencies[dependency];
     }
-    Object.assign(pkg.dependencies, backendPackageJson.dependencies ?? {});
-    Object.assign((pkg.devDependencies ??= {}), backendPackageJson.devDependencies ?? {});
-    Object.assign((pkg.scripts ??= {}), backendPackageJson.scripts ?? {});
+    Object.assign(pkg.dependencies, overlayPackageJson.dependencies ?? {});
+    Object.assign((pkg.devDependencies ??= {}), overlayPackageJson.devDependencies ?? {});
+    Object.assign((pkg.scripts ??= {}), overlayPackageJson.scripts ?? {});
   }
 
   for (const section of ["dependencies", "devDependencies"] as const) {
@@ -217,8 +217,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     },
     interactive,
   );
-  const backendFramework = (frameworkArgs as { backendFramework: BackendFramework })
-    .backendFramework;
+  const backendFramework = (frameworkArgs as { backendFramework: OverlayName }).backendFramework;
 
   const aiSetup = aiSetupFromTemplate(template);
   telemetry.register({ template, ai_setup: aiSetup, backend_framework: backendFramework });
@@ -246,7 +245,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       "TEMPLATE_MISSING",
     );
   }
-  const backendOverlay = resolveBackendOverlay(templateDir, backendFramework);
+  const overlay = resolveOverlay(templateDir, backendFramework);
 
   telemetry.capture("cli_env_resolution_started", {
     ...createFunnelProps("env_resolution_started"),
@@ -286,8 +285,8 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       filter: (src) => shouldCopyTemplatePath(templateDir, src),
     });
     restoreDotfiles(targetDir);
-    applyBackendOverlay(targetDir, backendOverlay);
-    rewritePackageJson(targetDir, name, packageManager.name, backendOverlay?.manifest.packageJson);
+    applyOverlay(targetDir, overlay);
+    rewritePackageJson(targetDir, name, packageManager.name, overlay?.manifest.packageJson);
     // npm ci needs package-lock.json. Keep it for npm scaffolds (base template or
     // a backend overlay that ships its own). Other managers resolve from package.json.
     if (packageManager.name !== "npm") {
@@ -497,7 +496,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       name,
       devCmd,
       template,
-      backendGettingStarted: backendOverlay?.manifest.gettingStarted,
+      backendGettingStarted: overlay?.manifest.gettingStarted,
       skillInstalled,
       envWritten: envResult.envWritten,
       startDev,

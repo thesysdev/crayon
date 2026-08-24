@@ -1,7 +1,7 @@
 import type { CloudAuthMethod } from "../auth/mint";
 import { createFunnelProps } from "./create-telemetry";
 import type { TemplateName } from "./create-types";
-import { BackendFramework } from "./create-types";
+import { OverlayName } from "./create-types";
 import type { CommandResult } from "./process-runner";
 import {
   CliCancelledError,
@@ -248,7 +248,7 @@ export function normalizeAuth(a?: string): CloudAuthMethod | undefined {
   );
 }
 
-export function normalizeBackendFramework(framework?: string): BackendFramework | undefined {
+export function normalizeBackendFramework(framework?: string): OverlayName | undefined {
   if (!framework) return undefined;
   switch (framework.toLowerCase()) {
     case "default":
