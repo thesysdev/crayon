@@ -40,8 +40,7 @@ list](https://models.dev/providers/openrouter/).
 - `@openuidev/react-ui` — the chat UI runtime (`AgentInterface`, `fetchLLM`,
   `ModelSwitcher`, storage/stream contracts).
 
-A devtools widget is fetched automatically in development — nothing
-to install.
+A devtools widget is available automatically in development.
 
 ## Learn More
 
