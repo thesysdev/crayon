@@ -21,12 +21,29 @@ if (process.env.NODE_ENV === "development" && typeof document !== "undefined") {
   // (ESM/CJS dual build, multiple package versions).
   if (!flags[AUTO_MOUNT_FLAG]) {
     flags[AUTO_MOUNT_FLAG] = true;
-    // Thin helper in @openuidev/devtools fetches the CDN browser build and
-    // injects this app's React / ReactDOM / react-lang. Pin major 0 so a
-    // protocol-breaking release ships as @1 instead of taking every app down.
-    void import("@openuidev/devtools")
-      .then(({ mountOpenUIDevtoolsFromCdn }) => {
-        mountOpenUIDevtoolsFromCdn({ cdnMajor: 0, __autoMounted: true });
+    // Render <OpenUIDevtools /> — same public entry apps use manually. The
+    // thin component fetches the CDN browser build and injects this app's
+    // React / ReactDOM / react-lang. Pin major 0 so a protocol-breaking
+    // release ships as @1 instead of taking every app down.
+    void Promise.all([
+      import("@openuidev/devtools"),
+      import("react"),
+      import("react-dom/client"),
+    ])
+      .then(([{ OpenUIDevtools }, React, ReactDOMClient]) => {
+        const attach = () => {
+          const host = document.createElement("div");
+          host.setAttribute("data-openui-devtools-auto-mount", "");
+          document.body.appendChild(host);
+          ReactDOMClient.createRoot(host).render(
+            React.createElement(OpenUIDevtools, {
+              cdnMajor: 0,
+              __autoMounted: true,
+            }),
+          );
+        };
+        if (document.body) attach();
+        else document.addEventListener("DOMContentLoaded", attach, { once: true });
       })
       .catch(() => {
         // Never let a devtools loading failure break the host app.
