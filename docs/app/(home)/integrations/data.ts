@@ -23,7 +23,6 @@ export interface IntegrationCategory {
   title: string;
   shortTitle: string;
   description: string;
-  accent: "blue" | "green" | "orange" | "purple" | "rose" | "teal" | "slate";
 }
 
 export const integrationCategories: IntegrationCategory[] = [
@@ -33,7 +32,6 @@ export const integrationCategories: IntegrationCategory[] = [
     shortTitle: "AI stack",
     description:
       "Connect OpenUI to the agent framework, AI SDK, or protocol your application already uses.",
-    accent: "purple",
   },
   {
     id: "design-systems",
@@ -41,7 +39,6 @@ export const integrationCategories: IntegrationCategory[] = [
     shortTitle: "Design systems",
     description:
       "Use OpenUI's built-in components or connect the UI library your product already uses.",
-    accent: "orange",
   },
   {
     id: "frontend-platforms",
@@ -49,7 +46,6 @@ export const integrationCategories: IntegrationCategory[] = [
     shortTitle: "Frontend",
     description:
       "Run OpenUI in an alternative web, mobile, chat framework, or AI application platform.",
-    accent: "blue",
   },
 ];
 
