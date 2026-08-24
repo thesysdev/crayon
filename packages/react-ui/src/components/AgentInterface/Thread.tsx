@@ -367,13 +367,23 @@ const InterleavedTurn = ({
   isRunning: boolean;
   lastAssistantId: string | null;
 }) => {
-  const last = segments[segments.length - 1]!;
+  // Ignore trailing empty assistants (e.g. TEXT_MESSAGE_START after parallel
+  // tools with no content yet / never). Those would become `last` and blank the
+  // answer slot until a chat remount rebuilds from storage.
+  const activeSegments = useMemo(() => {
+    const withBody = segments.filter(
+      (s) => (s.content?.length ?? 0) > 0 || (s.toolCalls?.length ?? 0) > 0,
+    );
+    return withBody.length > 0 ? withBody : segments;
+  }, [segments]);
+
+  const last = activeSegments[activeSegments.length - 1]!;
   const turnLive = isRunning && lastAssistantId === last.id;
 
   // One id-keyed pairing across every segment's tool calls (synthetic message).
   const turnMessage = useMemo(
-    () => ({ ...segments[0]!, toolCalls: segments.flatMap((s) => s.toolCalls ?? []) }),
-    [segments],
+    () => ({ ...activeSegments[0]!, toolCalls: activeSegments.flatMap((s) => s.toolCalls ?? []) }),
+    [activeSegments],
   );
   const turnActivities = useToolActivities(turnMessage, allMessages);
 
@@ -388,7 +398,7 @@ const InterleavedTurn = ({
     const byCallId = new Map(turnActivities.map((a) => [a.toolCall.id, a]));
     const rows: TimelineStep[] = [];
     const claimed = new Set<string>();
-    for (const seg of segments) {
+    for (const seg of activeSegments) {
       if (seg.id !== answer?.id) {
         const prose = separateContentAndContext(seg.content ?? "").content;
         if (prose) rows.push({ type: "text", id: seg.id, text: prose });
@@ -410,7 +420,7 @@ const InterleavedTurn = ({
       if (!claimed.has(activity.toolCall.id)) rows.push({ type: "activity", activity });
     }
     return rows;
-  }, [segments, turnActivities, answer?.id]);
+  }, [activeSegments, turnActivities, answer?.id]);
 
   // Matched renderers (artifact/search previews) render OUTSIDE the tray so
   // they stay visible after it collapses.
