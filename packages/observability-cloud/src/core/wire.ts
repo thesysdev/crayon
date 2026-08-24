@@ -2,7 +2,7 @@ import type { ObservabilityLevel } from "@openuidev/observability";
 import type { StreamWireEvent } from "../events/stream";
 
 /** Must be kept in sync with packages/observability-cloud/package.json on release. */
-export const SDK_VERSION = "0.0.1";
+export const SDK_VERSION = "0.0.3";
 
 export interface WireEventBase {
   id: string;
