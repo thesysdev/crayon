@@ -41,3 +41,9 @@ To learn more about OpenUI, take a look at the following resources:
 
 - [OpenUI Documentation](https://openui.com/docs) - learn about OpenUI features and API.
 - [OpenUI GitHub repository](https://github.com/thesysdev/openui) - your feedback and contributions are welcome!
+
+## Verify
+
+```bash
+pnpm verify
+```

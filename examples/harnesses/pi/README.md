@@ -137,3 +137,9 @@ ability to reach this port as remote code execution.
   - run the agent in an OS-level sandbox/container with dropped privileges and no network.
 
 `PI_AGENT_CWD` is a discovery root, **not** a security boundary — `bash` can escape it.
+
+## Verify
+
+```bash
+pnpm verify
+```

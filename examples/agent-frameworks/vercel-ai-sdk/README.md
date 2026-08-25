@@ -259,3 +259,9 @@ Returns mock search results for any query.
 - [OpenUI Lang overview](https://www.openui.com/docs/openui-lang/overview) — Library, Prompt Generator, Parser, Renderer
 - [Vercel AI SDK docs](https://ai-sdk.dev/) — `streamText`, `useChat`, `tool()`
 - [`@openuidev/react-lang` package](../../../packages/react-lang)
+
+## Verify
+
+```bash
+pnpm verify
+```

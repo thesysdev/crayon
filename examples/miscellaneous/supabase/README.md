@@ -188,3 +188,9 @@ examples/miscellaneous/supabase/
 
 - [Connect Thread History](https://openui.com/docs/chat/persistence) — the persistence API reference this example implements
 - [OpenUI Chat Quick Start](https://openui.com/docs/chat/quick-start)
+
+## Verify
+
+```bash
+pnpm verify
+```

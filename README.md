@@ -169,7 +169,12 @@ openui/
 │   └── openui-cli/       # CLI for scaffolding & prompt generation
 ├── skills/
 │   └── openui/           # Claude Code skill for AI-assisted development
-├── examples/             # Framework and ecosystem reference implementations
+├── examples/             # Capability and integration reference implementations
+│   ├── agent-frameworks/
+│   ├── app-frameworks/
+│   ├── design-systems/
+│   ├── harnesses/
+│   └── miscellaneous/
 ├── docs/                 # Documentation site (openui.com)
 └── benchmarks/           # Token efficiency benchmarks
 ```
@@ -178,6 +183,7 @@ Good places to start:
 
 - [openui.com](https://openui.com) for the full docs
 - [Quickstart](https://www.openui.com/docs/agent/getting-started/quickstart) to scaffold a working app
+- [`examples/README.md`](./examples/README.md) to find a focused reference implementation
 - [`CONTRIBUTING.md`](./CONTRIBUTING.md) if you want to contribute
 
 ## Community

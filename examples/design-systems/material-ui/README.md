@@ -141,3 +141,9 @@ pnpm build
 2. If it can appear inside other containers, add its `.ref` to `ContentChildUnion` in `unions.ts`.
 3. Register it in the `components` array (and a `componentGroups` entry) in `index.tsx`.
 4. Run `pnpm generate:prompt` so the LLM learns about it.
+
+## Verify
+
+```bash
+pnpm verify
+```

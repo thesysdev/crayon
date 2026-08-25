@@ -91,3 +91,9 @@ assets/
 3. Restart the dev server, or run `pnpm --filter @openuidev/example-vue generate:prompt`, to update `generated/system-prompt.txt`
 
 See the [`@openuidev/vue-lang` README](../../../packages/vue-lang/README.md) for the full API.
+
+## Verify
+
+```bash
+pnpm verify
+```

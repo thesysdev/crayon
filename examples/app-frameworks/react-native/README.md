@@ -131,3 +131,9 @@ Uses the [`<Renderer />`](https://www.openui.com/docs/openui-lang/overview) comp
 
 - [OpenUI Lang overview](https://www.openui.com/docs/openui-lang/overview) — core building blocks: Library, Prompt Generator, Parser, Renderer
 - [`@openuidev/react-lang` package](../../../packages/react-lang)
+
+## Verify
+
+```bash
+pnpm verify
+```

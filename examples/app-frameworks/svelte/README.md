@@ -71,3 +71,9 @@ src/
 3. Export it from `src/lib/library.ts`; the API builds the system prompt from the library at runtime
 
 See the [`@openuidev/svelte-lang` README](../../../packages/svelte-lang/README.md) for the full API.
+
+## Verify
+
+```bash
+pnpm verify
+```

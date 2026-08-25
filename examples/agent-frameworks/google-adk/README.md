@@ -62,3 +62,9 @@ them to the `Agent`.
 
 - [OpenUI documentation](https://openui.com/docs)
 - [Google ADK for TypeScript](https://github.com/google/adk-js)
+
+## Verify
+
+```bash
+pnpm verify
+```

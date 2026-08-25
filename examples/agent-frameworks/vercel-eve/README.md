@@ -111,3 +111,9 @@ examples/agent-frameworks/vercel-eve/
 The example uses Eve's `none()` channel authentication for local development. Do not expose it
 publicly in that form. Configure an authenticated Eve channel, restrict network access, and apply
 the provider and tool permissions appropriate for your deployment.
+
+## Verify
+
+```bash
+pnpm verify
+```

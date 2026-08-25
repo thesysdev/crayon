@@ -105,3 +105,9 @@ Identical to the one scaffolded by `npx @openuidev/cli create`. Uses `openAIRead
 - [OpenUI Lang overview](https://www.openui.com/docs/openui-lang/overview) — core building blocks: Library, Prompt Generator, Parser, Renderer
 - [`@openuidev/react-lang` package](../../../packages/react-lang)
 - [`@openuidev/react-headless` package](../../../packages/react-headless) — streaming adapters and message format converters
+
+## Verify
+
+```bash
+pnpm verify
+```

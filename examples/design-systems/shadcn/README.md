@@ -286,3 +286,9 @@ Returns mock search results for any query.
 - [Defining Components](https://www.openui.com/docs/openui-lang/defining-components) — `defineComponent` and `createLibrary` API
 - [shadcn/ui](https://ui.shadcn.com/) — the underlying component system
 - [`@openuidev/react-lang` package](../../../packages/react-lang)
+
+## Verify
+
+```bash
+pnpm verify
+```

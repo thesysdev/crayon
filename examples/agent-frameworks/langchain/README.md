@@ -103,3 +103,9 @@ Restart `pnpm dev` after changing `.env`.
 
 - [OpenUI docs](https://openui.com/docs) and the [Agent Interface adapters guide](https://www.openui.com/docs/agent/reference/adapters-and-formats)
 - [DeepAgents](https://www.npmjs.com/package/deepagents) and [LangGraph.js docs](https://langchain-ai.github.io/langgraphjs/)
+
+## Verify
+
+```bash
+pnpm verify
+```

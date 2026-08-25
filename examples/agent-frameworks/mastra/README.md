@@ -43,3 +43,9 @@ To add more tools, define them with `createTool` in `src/app/api/chat/route.ts` 
 - [OpenUI documentation](https://openui.com/docs)
 - [Mastra documentation](https://mastra.ai/docs)
 - [AG-UI protocol](https://docs.ag-ui.com)
+
+## Verify
+
+```bash
+pnpm verify
+```

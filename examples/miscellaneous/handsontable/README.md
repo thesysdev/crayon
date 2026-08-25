@@ -147,3 +147,9 @@ hands-on-table-chat/
 - [OpenUI Documentation](https://openui.com/docs)
 - [Handsontable Documentation](https://handsontable.com/docs)
 - [OpenUI GitHub](https://github.com/thesysdev/openui)
+
+## Verify
+
+```bash
+pnpm verify
+```

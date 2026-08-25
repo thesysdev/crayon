@@ -170,3 +170,9 @@ inside an OS-level sandbox or container, restrict network access and credentials
 Grok's permission policy for the deployment. Setting `GROK_BUILD_ALWAYS_APPROVE=false` makes this
 demo cancel permission requests because `AgentInterface` does not currently provide a Grok-specific
 tool-permission approval UI; question and plan dialogs continue to work independently.
+
+## Verify
+
+```bash
+pnpm verify
+```

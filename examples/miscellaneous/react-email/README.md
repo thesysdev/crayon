@@ -122,3 +122,9 @@ The `@openuidev/react-email` package exports:
 - **`emailAdditionalRules`** — 40 email design rules
 
 Individual components are internal to the library — consumers only need `emailLibrary`.
+
+## Verify
+
+```bash
+pnpm verify
+```
