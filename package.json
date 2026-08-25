@@ -7,7 +7,9 @@
   "main": "index.js",
   "scripts": {
     "test": "pnpm -r run test",
-    "release:publish": "pnpm --filter \"./packages/**\" --workspace-concurrency=1 run build && pnpm changeset publish"
+    "build:packages": "pnpm --filter \"./packages/**\" --workspace-concurrency=1 run build",
+    "version:ci": "changeset version && pnpm install --lockfile-only",
+    "release:publish": "node scripts/verify-peer-windows.mjs && pnpm run build:packages && pnpm changeset publish"
   },
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
