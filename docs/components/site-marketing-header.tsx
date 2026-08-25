@@ -102,6 +102,10 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
     href: string;
     newTab?: boolean;
     badge?: string;
+    /* The dropdown's status chip, carried through from the nav data. A tray row
+       has no description to sit under, so unlike the desktop card it shares the
+       badge slot beside the title. */
+    tag?: string;
     comingSoon?: true;
   }) =>
     /* Matches the desktop menu: announced, tagged, and not a link. */
@@ -123,7 +127,12 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
         {...(entry.newTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
       >
         <span>{entry.title}</span>
-        {entry.badge && <span className={styles.mobileTrayBadge}>{entry.badge}</span>}
+        {/* A top-level badge wins if an item somehow carries both; in practice
+            they never do, since badges come from leaf links and tags from
+            dropdown children. */}
+        {(entry.badge ?? entry.tag) && (
+          <span className={styles.mobileTrayBadge}>{entry.badge ?? entry.tag}</span>
+        )}
       </Link>
     );
 
