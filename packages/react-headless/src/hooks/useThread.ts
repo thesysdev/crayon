@@ -19,6 +19,7 @@ const threadSelector = (s: ChatStore): ThreadSlice => ({
   threadError: s.threadError,
   executingToolCallIds: s.executingToolCallIds,
   processMessage: s.processMessage,
+  processToolResult: s.processToolResult,
   appendMessages: s.appendMessages,
   updateMessage: s.updateMessage,
   setMessages: s.setMessages,

@@ -5,6 +5,7 @@ import type {
   ToolCall,
   UserMessage,
 } from "@openuidev/react-headless";
+import { stripOpenUIFence } from "./openui-fence";
 
 export type AgnoEntityType = "agent" | "team";
 
@@ -87,6 +88,10 @@ function contentToString(value: unknown): string {
   }
 }
 
+function stripAgnoAdditionalContext(content: string): string {
+  return content.replace(/\s*<additional context>\s*[\s\S]*?\s*<\/additional context>\s*$/i, "");
+}
+
 function messageTitle(message: UserMessage): string {
   const content = message.content;
   const text =
@@ -138,7 +143,7 @@ export function agnoHistoryToMessages(history: unknown, sessionId = "session"): 
     switch (entry["role"]) {
       case "human":
       case "user":
-        return [{ id, role: "user", content }];
+        return [{ id, role: "user", content: stripAgnoAdditionalContext(content) }];
       case "ai":
       case "assistant": {
         const toolCalls = normalizeToolCalls(entry["tool_calls"]);
@@ -146,7 +151,7 @@ export function agnoHistoryToMessages(history: unknown, sessionId = "session"): 
           {
             id,
             role: "assistant",
-            content,
+            content: stripOpenUIFence(content),
             ...(toolCalls ? { toolCalls } : {}),
           },
         ];

@@ -4,6 +4,7 @@ import {
   type AGUIEvent,
   type StreamProtocolAdapter,
 } from "@openuidev/react-headless";
+import { OpenUIFenceStream } from "./openui-fence";
 
 const OPENUI_CHAT_EVENT_TYPES = new Set<AGUIEvent["type"]>([
   EventType.TEXT_MESSAGE_START,
@@ -25,35 +26,49 @@ const OPENUI_CHAT_EVENT_TYPES = new Set<AGUIEvent["type"]>([
  * not chat messages. It also emits an empty assistant message as the required
  * parent of a backend tool call. Forwarding those events to OpenUI currently
  * materializes empty messages and can race a fast tool result. This adapter
- * keeps the supported text/tool/error events and removes only empty text
- * envelopes; AgentOS remains the owner of the run and tool lifecycle.
+ * keeps the supported text/tool/error events, removes empty text envelopes,
+ * and incrementally unwraps fenced OpenUI Lang. AgentOS can therefore retain
+ * readable Markdown source while OpenUI receives the raw language deltas.
  */
 export function agnoAGUIAdapter(): StreamProtocolAdapter {
   const adapter = agUIAdapter();
 
   return {
     async *parse(response) {
-      let pendingTextStart: AGUIEvent | undefined;
-      let pendingEvents: AGUIEvent[] = [];
+      let textState:
+        | {
+            start: AGUIEvent;
+            started: boolean;
+            pendingEvents: AGUIEvent[];
+            fence: OpenUIFenceStream;
+          }
+        | undefined;
 
-      const flushBufferedEvents = function* () {
-        yield* pendingEvents;
-        pendingEvents = [];
+      const startText = function* () {
+        if (!textState || textState.started) return;
+        yield textState.start;
+        yield* textState.pendingEvents;
+        textState.pendingEvents = [];
+        textState.started = true;
       };
 
       for await (const event of adapter.parse(response)) {
         if (!OPENUI_CHAT_EVENT_TYPES.has(event.type)) continue;
 
         if (event.type === EventType.TEXT_MESSAGE_START) {
-          if (pendingTextStart) {
-            yield* flushBufferedEvents();
+          if (textState) {
+            yield* textState.pendingEvents;
           }
-          pendingTextStart = event;
-          pendingEvents = [];
+          textState = {
+            start: event,
+            started: false,
+            pendingEvents: [],
+            fence: new OpenUIFenceStream(),
+          };
           continue;
         }
 
-        if (!pendingTextStart) {
+        if (!textState) {
           yield event;
           continue;
         }
@@ -62,25 +77,41 @@ export function agnoAGUIAdapter(): StreamProtocolAdapter {
           event.type === EventType.TEXT_MESSAGE_CHUNK ||
           event.type === EventType.TEXT_MESSAGE_CONTENT
         ) {
-          yield pendingTextStart;
-          pendingTextStart = undefined;
-          yield* flushBufferedEvents();
-          yield event;
+          const delta = textState.fence.push(event.delta ?? "");
+          if (delta) {
+            yield* startText();
+            yield { ...event, delta };
+          }
           continue;
         }
 
         if (event.type === EventType.TEXT_MESSAGE_END) {
-          pendingTextStart = undefined;
-          yield* flushBufferedEvents();
+          const delta = textState.fence.finish();
+          if (delta) {
+            yield* startText();
+            yield {
+              type: EventType.TEXT_MESSAGE_CONTENT,
+              messageId: event.messageId,
+              delta,
+            };
+          }
+          if (textState.started) {
+            yield* textState.pendingEvents;
+            yield event;
+          } else {
+            yield* textState.pendingEvents;
+          }
+          textState = undefined;
           continue;
         }
 
-        pendingEvents.push(event);
+        if (textState.started) yield event;
+        else textState.pendingEvents.push(event);
       }
 
       // Never discard tool/error events merely because AgentOS ended the
       // transport before closing an empty parent text envelope.
-      yield* flushBufferedEvents();
+      if (textState) yield* textState.pendingEvents;
     },
   };
 }

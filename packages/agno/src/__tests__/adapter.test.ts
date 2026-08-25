@@ -82,4 +82,45 @@ describe("agnoAGUIAdapter", () => {
       EventType.TEXT_MESSAGE_END,
     ]);
   });
+
+  it("incrementally unwraps fenced OpenUI Lang across arbitrary delta boundaries", async () => {
+    const content = 'root = Card([title])\ntitle = TextContent("Streaming")';
+    const fenced = `\`\`\`openui\n${content}\n\`\`\``;
+    const chunks = [fenced.slice(0, 2), fenced.slice(2, 9), ...fenced.slice(9).match(/.{1,7}/gs)!];
+    const parsed = await parse([
+      { type: EventType.TEXT_MESSAGE_START, messageId: "answer", role: "assistant" },
+      ...chunks.map((delta) => ({
+        type: EventType.TEXT_MESSAGE_CONTENT,
+        messageId: "answer",
+        delta,
+      })),
+      { type: EventType.TEXT_MESSAGE_END, messageId: "answer" },
+    ]);
+
+    expect(
+      parsed
+        .filter((event) => event.type === EventType.TEXT_MESSAGE_CONTENT)
+        .map((event) => event.delta)
+        .join(""),
+    ).toBe(content);
+    expect(
+      parsed.filter((event) => event.type === EventType.TEXT_MESSAGE_CONTENT).length,
+    ).toBeGreaterThan(1);
+  });
+
+  it("leaves ordinary streamed assistant text unchanged", async () => {
+    const parsed = await parse([
+      { type: EventType.TEXT_MESSAGE_START, messageId: "answer", role: "assistant" },
+      { type: EventType.TEXT_MESSAGE_CONTENT, messageId: "answer", delta: "Regular " },
+      { type: EventType.TEXT_MESSAGE_CONTENT, messageId: "answer", delta: "Markdown" },
+      { type: EventType.TEXT_MESSAGE_END, messageId: "answer" },
+    ]);
+
+    expect(
+      parsed
+        .filter((event) => event.type === EventType.TEXT_MESSAGE_CONTENT)
+        .map((event) => event.delta)
+        .join(""),
+    ).toBe("Regular Markdown");
+  });
 });

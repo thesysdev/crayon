@@ -355,6 +355,72 @@ describe("createChatStore", () => {
     });
   });
 
+  describe("processToolResult", () => {
+    it("appends a trailing tool message and continues the active thread", async () => {
+      const send = vi.fn().mockResolvedValue(new Response("", { status: 200 }));
+      const store = makeStore({
+        send,
+        streamProtocol: { parse: async function* () {} },
+      });
+      store.setState({
+        selectedThreadId: "t1",
+        messages: [
+          {
+            id: "assistant-1",
+            role: "assistant",
+            content: "",
+            toolCalls: [
+              {
+                id: "call-1",
+                type: "function",
+                function: { name: "prompt_openui", arguments: '{"ui":"root = Card([])"}' },
+              },
+            ],
+          },
+        ],
+      });
+
+      await store.getState().processToolResult({
+        toolCallId: "call-1",
+        content: '{"message":"Submitted"}',
+      });
+
+      expect(send).toHaveBeenCalledOnce();
+      expect(send.mock.calls[0]?.[0]).toMatchObject({
+        threadId: "t1",
+        messages: [
+          expect.objectContaining({ role: "assistant" }),
+          expect.objectContaining({
+            role: "tool",
+            toolCallId: "call-1",
+            content: '{"message":"Submitted"}',
+          }),
+        ],
+      });
+      expect(store.getState().messages.at(-1)).toMatchObject({
+        role: "tool",
+        toolCallId: "call-1",
+      });
+      expect(store.getState().isRunning).toBe(false);
+    });
+
+    it("rejects a tool result when there is no active thread", async () => {
+      const send = vi.fn();
+      const store = makeStore({ send });
+
+      await store.getState().processToolResult({
+        toolCallId: "call-1",
+        content: "submitted",
+      });
+
+      expect(send).not.toHaveBeenCalled();
+      expect(store.getState().messages).toEqual([]);
+      expect(store.getState().threadError?.message).toBe(
+        "Cannot submit a tool result without an active thread.",
+      );
+    });
+  });
+
   // ────────────────────────────────────────────
   // cancelMessage
   // ────────────────────────────────────────────

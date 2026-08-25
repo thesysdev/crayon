@@ -1,5 +1,6 @@
 import type { UserMessage } from "@openuidev/react-headless";
 import { describe, expect, it, vi } from "vitest";
+import { stripOpenUIFence } from "../openui-fence";
 import { agnoHistoryToMessages, agnoStorage } from "../storage";
 
 function jsonResponse(value: unknown, status = 200) {
@@ -50,6 +51,48 @@ describe("agnoHistoryToMessages", () => {
         content: "root = Card([])",
       },
     ]);
+  });
+
+  it("unwraps AgentOS Markdown source for OpenUI history reloads", () => {
+    expect(
+      agnoHistoryToMessages(
+        [
+          {
+            role: "assistant",
+            content: '```openui\nroot = Card([])\ntitle = TextContent("Saved")\n```',
+          },
+        ],
+        "thread-1",
+      ),
+    ).toEqual([
+      {
+        id: "thread-1-message-0",
+        role: "assistant",
+        content: 'root = Card([])\ntitle = TextContent("Saved")',
+      },
+    ]);
+  });
+
+  it("hides AgentOS dependency context appended to stored user messages", () => {
+    expect(
+      agnoHistoryToMessages(
+        [
+          {
+            role: "user",
+            content:
+              'Build a chart. <additional context>\n{ "openui_client": true }\n</additional context>',
+          },
+        ],
+        "thread-1",
+      ),
+    ).toEqual([{ id: "thread-1-message-0", role: "user", content: "Build a chart." }]);
+  });
+});
+
+describe("stripOpenUIFence", () => {
+  it("is lossless for ordinary content and tolerant of an interrupted fenced stream", () => {
+    expect(stripOpenUIFence("root = Card([])")).toBe("root = Card([])");
+    expect(stripOpenUIFence("```openui\nroot = Card([])")).toBe("root = Card([])");
   });
 });
 

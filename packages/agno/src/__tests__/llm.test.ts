@@ -8,6 +8,7 @@ describe("createAgnoLLM", () => {
       url: "/agui",
       token: "test-token",
       forwardedProps: { user_id: "user-1" },
+      context: [{ description: "openui_client", value: "true" }],
       fetch: fetchMock,
     });
 
@@ -28,7 +29,7 @@ describe("createAgnoLLM", () => {
       state: {},
       forwardedProps: { user_id: "user-1" },
       tools: [],
-      context: [],
+      context: [{ description: "openui_client", value: "true" }],
     });
   });
 
