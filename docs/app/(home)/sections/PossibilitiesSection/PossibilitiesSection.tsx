@@ -37,7 +37,7 @@ const CARDS: readonly CardImageSet[] = [
     title: "Mobile Apps",
     lightImage: "/homepage/mobile-light.png",
     darkImage: "/homepage/mobile-dark.png",
-    href: "https://github.com/thesysdev/openui/tree/main/examples/openui-react-native",
+    href: "https://github.com/thesysdev/openui/tree/main/examples/app-frameworks/react-native",
   },
   {
     title: "Bottom trays",
