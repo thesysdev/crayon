@@ -7,7 +7,7 @@ Create `.env.local` with your OpenAI credentials:
 ```bash
 OPENAI_API_KEY=...
 # Optional:
-OPENAI_MODEL=gpt-5.2
+OPENAI_MODEL=gpt-5.5
 ```
 
 ## Getting Started

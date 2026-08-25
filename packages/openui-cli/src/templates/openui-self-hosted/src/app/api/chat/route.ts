@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     return await client.chat.completions
       .create(
         {
-          model: process.env.OPENAI_MODEL ?? "gpt-5.2",
+          model: process.env.OPENAI_MODEL ?? "gpt-5.5",
           messages: [
             {
               role: "system",
