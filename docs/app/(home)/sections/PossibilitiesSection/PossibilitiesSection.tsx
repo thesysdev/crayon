@@ -26,7 +26,7 @@ const CARDS: readonly CardImageSet[] = [
     title: "Conversational Apps",
     lightImage: "/homepage/conversational-apps-light.png",
     darkImage: "/homepage/conversational-apps-dark.png",
-    href: "https://github.com/thesysdev/openui/tree/main/examples/openui-chat",
+    href: "/docs/agent/getting-started/quickstart",
   },
   {
     title: "Dashboards & Web-apps",

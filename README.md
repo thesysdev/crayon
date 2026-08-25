@@ -169,8 +169,7 @@ openui/
 │   └── openui-cli/       # CLI for scaffolding & prompt generation
 ├── skills/
 │   └── openui/           # Claude Code skill for AI-assisted development
-├── examples/
-│   └── openui-chat/      # Full working example app (Next.js)
+├── examples/             # Framework and ecosystem reference implementations
 ├── docs/                 # Documentation site (openui.com)
 └── benchmarks/           # Token efficiency benchmarks
 ```
@@ -178,7 +177,7 @@ openui/
 Good places to start:
 
 - [openui.com](https://openui.com) for the full docs
-- [`examples/openui-chat`](./examples/openui-chat) for a working app
+- [Quickstart](https://www.openui.com/docs/agent/getting-started/quickstart) to scaffold a working app
 - [`CONTRIBUTING.md`](./CONTRIBUTING.md) if you want to contribute
 
 ## Community
