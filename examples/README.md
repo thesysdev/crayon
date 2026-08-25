@@ -1,0 +1,96 @@
+# OpenUI examples
+
+These projects showcase what OpenUI can do with different runtimes, application frameworks, design systems, coding harnesses, and specialized libraries. They are standalone reference implementations, not starter templates; use the [OpenUI CLI](https://www.openui.com/docs/agent/getting-started/quickstart) to scaffold a new application.
+
+Each example has one primary home based on the integration seam it is intended to teach. Cross-cutting technologies belong in that example's README rather than in duplicate directory trees.
+
+## Categories
+
+| Category                                 | Use it for                                                                                                        |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| [`agent-frameworks`](./agent-frameworks) | Agent runtimes and orchestration frameworks that produce or stream OpenUI output                                  |
+| [`app-frameworks`](./app-frameworks)     | Application frameworks or platforms that host an OpenUI client or server                                          |
+| [`design-systems`](./design-systems)     | Component systems adapted into an OpenUI component library                                                        |
+| [`harnesses`](./harnesses)               | Coding-agent harnesses presented through an OpenUI interface                                                      |
+| [`miscellaneous`](./miscellaneous)       | Distinct capabilities, specialized libraries, and backend services that do not justify another top-level category |
+
+`miscellaneous` is intentionally flat. If several examples develop the same stable integration seam, promote that seam to a top-level category instead of adding nested miscellaneous taxonomies.
+
+## Catalog
+
+### Agent frameworks
+
+| Example                                           | Demonstrates                                                            |
+| ------------------------------------------------- | ----------------------------------------------------------------------- |
+| [Google ADK](./agent-frameworks/google-adk)       | A Google ADK TypeScript agent streaming OpenUI Lang to a Next.js client |
+| [LangChain](./agent-frameworks/langchain)         | LangGraph/DeepAgents integration through the OpenUI LangChain adapter   |
+| [Mastra](./agent-frameworks/mastra)               | A Mastra agent connected to OpenUI through AG-UI                        |
+| [Vercel AI SDK](./agent-frameworks/vercel-ai-sdk) | `streamText`, tools, and OpenUI rendering with the Vercel AI SDK        |
+| [Vercel Eve](./agent-frameworks/vercel-eve)       | An Eve agent rendered through Agent Interface                           |
+
+### App frameworks
+
+| Example                                       | Demonstrates                                                                    |
+| --------------------------------------------- | ------------------------------------------------------------------------------- |
+| [FastAPI](./app-frameworks/fastapi)           | A Python FastAPI streaming backend with a React OpenUI client                   |
+| [React Native](./app-frameworks/react-native) | An Expo client rendering native OpenUI components from a Next.js backend stream |
+| [Svelte](./app-frameworks/svelte)             | OpenUI Lang parsing and rendering in SvelteKit                                  |
+| [Vue](./app-frameworks/vue)                   | OpenUI Lang parsing and rendering in Nuxt and Vue                               |
+
+### Design systems
+
+| Example                                     | Demonstrates                                                   |
+| ------------------------------------------- | -------------------------------------------------------------- |
+| [Material UI](./design-systems/material-ui) | A broad Material UI component library for generated interfaces |
+| [shadcn/ui](./design-systems/shadcn)        | A broad shadcn/ui component library for generated interfaces   |
+
+### Harnesses
+
+| Example                              | Demonstrates                                                    |
+| ------------------------------------ | --------------------------------------------------------------- |
+| [Grok Build](./harnesses/grok-build) | Grok Build coding sessions and tool activity in Agent Interface |
+| [Pi](./harnesses/pi)                 | A Pi coding-agent session streamed into Agent Interface         |
+
+### Miscellaneous
+
+| Example                                        | Demonstrates                                                         |
+| ---------------------------------------------- | -------------------------------------------------------------------- |
+| [Handsontable](./miscellaneous/handsontable)   | Generated spreadsheet interfaces backed by Handsontable              |
+| [HTML artifact](./miscellaneous/html-artifact) | Sandboxed HTML artifacts as an OpenUI capability                     |
+| [React Email](./miscellaneous/react-email)     | Generating and previewing emails with the OpenUI React Email library |
+| [Supabase](./miscellaneous/supabase)           | Persisted OpenUI conversations and threads with Supabase             |
+
+## Run and verify
+
+Install dependencies once from the repository root:
+
+```bash
+pnpm install
+```
+
+Follow an example's README for its environment variables and development command. From any example directory, run its credential-free verification contract with:
+
+```bash
+pnpm verify
+```
+
+To build the workspace packages and verify all examples sequentially from the repository root, run:
+
+```bash
+pnpm examples:verify
+```
+
+Examples that use static system prompts generate them locally before `dev`, `build`, and `verify`. Generated prompt and spec files are ignored by Git and should not be committed.
+
+## Maintenance contract
+
+Every retained example should:
+
+- showcase a distinct OpenUI capability or maintained integration;
+- remain runnable without depending on another example;
+- document its purpose, stack, prerequisites, run command, architecture, key files, verification command, and extension points;
+- expose a credential-free `pnpm verify` command that checks the example's relevant build, types, and local tests;
+- generate derived prompts and specs locally rather than store them in the repository;
+- use a normalized `@openuidev/example-*` package name and keep repository links current.
+
+Delete examples that duplicate an authoritative CLI template, are maintained elsewhere, substantially overlap a stronger example, or no longer justify their maintenance cost.

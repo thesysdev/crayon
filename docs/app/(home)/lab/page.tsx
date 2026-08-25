@@ -263,10 +263,14 @@ const projects: ProjectItem[] = [
     links: [
       {
         label: "GitHub",
-        href: "https://github.com/thesysdev/openui/tree/main/examples/openui-react-native",
+        href: "https://github.com/thesysdev/openui/tree/main/examples/app-frameworks/react-native",
         external: true,
       },
-      { label: "Docs", href: "/docs/openui-lang/examples/react-native", external: true },
+      {
+        label: "Docs",
+        href: "/docs/openui-lang/examples/app-frameworks/react-native",
+        external: true,
+      },
     ],
   },
   {
@@ -280,7 +284,7 @@ const projects: ProjectItem[] = [
     links: [
       {
         label: "GitHub",
-        href: "https://github.com/thesysdev/openui/tree/main/examples/fastapi-backend",
+        href: "https://github.com/thesysdev/openui/tree/main/examples/app-frameworks/fastapi",
         external: true,
       },
     ],
