@@ -2,7 +2,7 @@ import type { AiSetup, TemplateName } from "./create-types";
 
 const createFunnel = {
   funnel: "cli_create",
-  funnel_version: "frontloaded_cloud_setup_v2",
+  funnel_version: "frontloaded_cloud_setup_v1",
 } as const;
 
 const createFunnelSteps = {
