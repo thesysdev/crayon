@@ -2,7 +2,6 @@ import clsx from "clsx";
 import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { Bar, BarChart as RechartsBarChart, XAxis, YAxis } from "recharts";
 import { usePrintContext } from "../../../context/PrintContext";
-import { useTheme } from "../../ThemeProvider";
 import { ChartConfig, ChartContainer, ChartTooltip } from "../Charts";
 import { SideBarChartData, SideBarTooltipProvider } from "../context/SideBarTooltipContext";
 import { useExportChartData, useTransformedKeys } from "../hooks";
@@ -324,15 +323,6 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
     setHoveredCategory(null);
   }, []);
 
-  const { mode } = useTheme();
-
-  const barInternalLineColor = useMemo(() => {
-    if (mode === "light") {
-      return "rgba(255, 255, 255, 0.3)";
-    }
-    return "rgba(0, 0, 0, 0.3)";
-  }, [mode]);
-
   const onBarsClick = useCallback(
     (data: HorizontalBarClickData) => {
       if (data?.activePayload?.length && data.activePayload.length > 10) {
@@ -462,7 +452,6 @@ const HorizontalBarChartComponent = <T extends HorizontalBarChartData>({
                                 categoryKey={categoryKey as string}
                                 effectiveWidth={effectiveWidth}
                                 labelHeight={labelHeight}
-                                barInternalLineColor={barInternalLineColor}
                                 internalLineWidth={BAR_INTERNAL_LINE_WIDTH}
                                 hoveredCategory={hoveredCategory}
                                 variant={variant}

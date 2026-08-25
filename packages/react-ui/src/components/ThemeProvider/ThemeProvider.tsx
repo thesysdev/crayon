@@ -1,4 +1,6 @@
-import React, { createContext, useContext, useId, useInsertionEffect, useMemo } from "react";
+import React, { createContext, useContext, useId, useMemo } from "react";
+import { COLOR_SCHEME_ATTRIBUTE, COLOR_SCHEME_MEDIA_QUERY } from "./colorScheme";
+import { useOptionalColorScheme } from "./ColorSchemeProvider";
 import { defaultDarkTheme, defaultLightTheme } from "./defaultTheme";
 import { Theme, ThemeMode } from "./types";
 import { KNOWN_THEME_KEYS, themeToCssVars } from "./utils";
@@ -7,7 +9,10 @@ import { KNOWN_THEME_KEYS, themeToCssVars } from "./utils";
  * Props for the {@link ThemeProvider} component.
  */
 export type ThemeProps = {
-  /** Active color scheme. Defaults to the parent ThemeProvider mode when nested, otherwise `"light"`. */
+  /**
+   * Controlled resolved scheme. When omitted, inherits a parent theme, then a
+   * root ColorSchemeProvider, and otherwise keeps the legacy `"light"` fallback.
+   */
   mode?: ThemeMode;
   /** Application content rendered inside the theme context. */
   children?: React.ReactNode;
@@ -35,12 +40,16 @@ export type ThemeProps = {
    * @default "body"
    */
   cssSelector?: string;
+  /** CSP nonce applied to the server-rendered theme style element. */
+  nonce?: string;
 };
 
 type ThemeContextType = {
   theme: Theme;
   mode: ThemeMode;
   portalThemeClassName: string;
+  /** Whether the current mode is deterministic during server rendering. */
+  isModeServerResolved: boolean;
 };
 
 /**
@@ -51,6 +60,7 @@ export const ThemeContext = createContext<ThemeContextType>({
   theme: defaultLightTheme,
   mode: "light",
   portalThemeClassName: "",
+  isModeServerResolved: true,
 });
 
 /**
@@ -62,6 +72,7 @@ export const ThemeContext = createContext<ThemeContextType>({
  *  - `mode` – `"light"` or `"dark"`
  *  - `portalThemeClassName` – a unique CSS class name to apply on portal
  *     containers so they inherit the same `--openui-*` custom properties
+ *  - `isModeServerResolved` – false when the root mode comes from browser-only state
  *
  * Falls back to the default light theme when no provider is present.
  *
@@ -76,6 +87,7 @@ const themes = {
   light: defaultLightTheme,
   dark: defaultDarkTheme,
 } as const;
+const EMPTY_THEME: Theme = Object.freeze({});
 
 // ---------------------------------------------------------------------------
 // Internal context for nesting detection
@@ -87,6 +99,8 @@ type InternalContextType = {
   theme: Theme;
   mode: ThemeMode;
   portalThemeClassName: string;
+  inheritsRootColorScheme: boolean;
+  isModeServerResolved: boolean;
 };
 
 const InternalContext = createContext<InternalContextType | null>(null);
@@ -109,6 +123,171 @@ function cssSafeId(id: string): string {
   return id.replace(/[^a-zA-Z0-9-_]/g, "");
 }
 
+function splitTopLevelSelectors(selectorList: string): string[] {
+  const selectors: string[] = [];
+  let start = 0;
+  let parentheses = 0;
+  let brackets = 0;
+  let quote: '"' | "'" | undefined;
+  let escaped = false;
+
+  for (let index = 0; index < selectorList.length; index += 1) {
+    const character = selectorList[index]!;
+
+    if (escaped) {
+      escaped = false;
+      continue;
+    }
+    if (character === "\\") {
+      escaped = true;
+      continue;
+    }
+    if (quote) {
+      if (character === quote) quote = undefined;
+      continue;
+    }
+    if (character === '"' || character === "'") {
+      quote = character;
+      continue;
+    }
+    if (character === "(") parentheses += 1;
+    else if (character === ")") parentheses = Math.max(0, parentheses - 1);
+    else if (character === "[") brackets += 1;
+    else if (character === "]") brackets = Math.max(0, brackets - 1);
+    else if (character === "," && parentheses === 0 && brackets === 0) {
+      const selector = selectorList.slice(start, index).trim();
+      if (selector) selectors.push(selector);
+      start = index + 1;
+    }
+  }
+
+  const finalSelector = selectorList.slice(start).trim();
+  if (finalSelector) selectors.push(finalSelector);
+  return selectors;
+}
+
+// React 18 HTML-escapes quote characters in <style> text. Because style is a
+// raw-text HTML element, the browser does not decode those entities back into
+// CSS. Represent quoted selector strings as unquoted hexadecimal escapes so
+// the same server output works in React 18 and 19.
+function escapeSelectorStringLiterals(selector: string): string {
+  let output = "";
+
+  for (let index = 0; index < selector.length; index += 1) {
+    const quote = selector[index];
+    if (quote !== '"' && quote !== "'") {
+      output += quote;
+      continue;
+    }
+
+    let value = "";
+    let closed = false;
+    for (index += 1; index < selector.length; index += 1) {
+      const character = selector[index]!;
+      if (character === "\\" && selector[index + 1] !== undefined) {
+        const nextCharacter = selector[index + 1]!;
+        if (nextCharacter === "\n" || nextCharacter === "\f") {
+          index += 1;
+        } else if (nextCharacter === "\r") {
+          index += selector[index + 2] === "\n" ? 2 : 1;
+        } else if (/[0-9a-f]/i.test(nextCharacter)) {
+          let hex = "";
+          let cursor = index + 1;
+          while (
+            cursor < selector.length &&
+            hex.length < 6 &&
+            /[0-9a-f]/i.test(selector[cursor]!)
+          ) {
+            hex += selector[cursor];
+            cursor += 1;
+          }
+          const codePoint = Number.parseInt(hex, 16);
+          value += String.fromCodePoint(
+            codePoint === 0 || codePoint > 0x10ffff || (codePoint >= 0xd800 && codePoint <= 0xdfff)
+              ? 0xfffd
+              : codePoint,
+          );
+          if (selector[cursor] === "\r" && selector[cursor + 1] === "\n") cursor += 2;
+          else if (/\s/.test(selector[cursor] ?? "")) cursor += 1;
+          index = cursor - 1;
+        } else {
+          value += nextCharacter;
+          index += 1;
+        }
+      } else if (character === quote) {
+        closed = true;
+        break;
+      } else {
+        value += character;
+      }
+    }
+
+    if (!closed || !value) {
+      output += `${quote}${value}${closed ? quote : ""}`;
+      continue;
+    }
+
+    output += Array.from(value, (character) => `\\${character.codePointAt(0)!.toString(16)} `).join(
+      "",
+    );
+  }
+
+  return output;
+}
+
+function prefixSelector(prefix: string, selector: string): string {
+  for (const rootSelector of [":root", "html"] as const) {
+    if (!selector.startsWith(rootSelector)) continue;
+    const boundary = selector[rootSelector.length];
+    if (boundary === undefined || /[\s>+~.#:\[\]]/.test(boundary)) {
+      return `${prefix}${selector.slice(rootSelector.length)}`;
+    }
+  }
+
+  return `${prefix} ${selector}`;
+}
+
+function formatSelectorList(selectors: string[]): string {
+  return selectors.join(",\n");
+}
+
+function formatThemeRule(selectors: string[], cssVars: string): string {
+  return `${formatSelectorList(selectors)} {\n${cssVars}\n}`;
+}
+
+function buildThemeCss({
+  selectors,
+  lightCssVars,
+  darkCssVars,
+  inheritsRootColorScheme,
+  activeCssVars,
+}: {
+  selectors: string[];
+  lightCssVars: string;
+  darkCssVars: string;
+  inheritsRootColorScheme: boolean;
+  activeCssVars: string;
+}): string {
+  if (!inheritsRootColorScheme) return formatThemeRule(selectors, activeCssVars);
+
+  const lightRoot = `:root[${COLOR_SCHEME_ATTRIBUTE}=light]`;
+  const darkRoot = `:root[${COLOR_SCHEME_ATTRIBUTE}=dark]`;
+  const systemDarkRoot = `:root:not([${COLOR_SCHEME_ATTRIBUTE}])`;
+  const lightSelectors = selectors.map((selector) => prefixSelector(lightRoot, selector));
+  const darkSelectors = selectors.map((selector) => prefixSelector(darkRoot, selector));
+  const systemDarkSelectors = selectors.map((selector) => prefixSelector(systemDarkRoot, selector));
+
+  return [
+    lightCssVars ? formatThemeRule([...selectors, ...lightSelectors], lightCssVars) : "",
+    darkCssVars ? formatThemeRule(darkSelectors, darkCssVars) : "",
+    darkCssVars
+      ? `@media ${COLOR_SCHEME_MEDIA_QUERY} {\n${formatThemeRule(systemDarkSelectors, darkCssVars)}\n}`
+      : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
 function validateThemeObject(themeObj: Theme, propName: string) {
   for (const [key, value] of Object.entries(themeObj)) {
     if (value !== undefined && typeof value !== "string" && !Array.isArray(value)) {
@@ -124,6 +303,25 @@ function validateThemeObject(themeObj: Theme, propName: string) {
       );
     }
   }
+}
+
+function buildRootDarkCssTheme(userLightTheme: Theme, userDarkTheme: Theme | undefined): Theme {
+  if (!userDarkTheme) return userLightTheme;
+
+  const darkThemeRecord = userDarkTheme as Record<string, unknown>;
+  const defaultDarkThemeRecord = defaultDarkTheme as Record<string, unknown>;
+  const lightOnlyResets = Object.fromEntries(
+    Object.entries(userLightTheme).flatMap(([key, lightValue]) => {
+      if (typeof lightValue !== "string" || typeof darkThemeRecord[key] === "string") return [];
+      const defaultDarkValue = defaultDarkThemeRecord[key];
+      return typeof defaultDarkValue === "string" ? [[key, defaultDarkValue]] : [];
+    }),
+  );
+
+  // The light rule is intentionally unqualified so it also works with
+  // JavaScript disabled. Reset light-only overrides in the qualified dark rule
+  // before applying the independent dark overrides.
+  return { ...lightOnlyResets, ...userDarkTheme };
 }
 
 /**
@@ -152,16 +350,28 @@ export const ThemeProvider = ({
   darkTheme,
   theme: deprecatedTheme,
   cssSelector = "body",
+  nonce,
 }: ThemeProps) => {
   const id = cssSafeId(useId());
   const parent = useContext(InternalContext);
+  const rootColorScheme = useOptionalColorScheme();
   const isNested = parent != null;
-  const mode = modeProp ?? parent?.mode ?? "light";
+  const inheritsRootColorScheme =
+    modeProp === undefined && (parent ? parent.inheritsRootColorScheme : rootColorScheme !== null);
+  const mode = modeProp ?? parent?.mode ?? rootColorScheme?.resolvedMode ?? "light";
+  const isModeServerResolved =
+    modeProp !== undefined
+      ? true
+      : parent
+        ? parent.isModeServerResolved
+        : rootColorScheme
+          ? rootColorScheme.resolvedMode !== undefined
+          : true;
   const effectiveCssSelector = cssSelector || "body";
   const hasExplicitSelector = effectiveCssSelector !== "body";
 
   // Resolve the deprecated `theme` prop → `lightTheme` takes precedence
-  const userLightTheme = lightTheme ?? deprecatedTheme ?? {};
+  const userLightTheme = lightTheme ?? deprecatedTheme ?? EMPTY_THEME;
   const userDarkTheme = darkTheme;
 
   // ---------------------------------------------------------------------------
@@ -209,14 +419,30 @@ export const ThemeProvider = ({
   }, [userDarkTheme, userLightTheme]);
 
   const activeTheme = mode === "light" ? resolvedLightTheme : resolvedDarkTheme;
-  const cssVarsString = useMemo(() => themeToCssVars(activeTheme), [activeTheme]);
+  // Root providers that inherit the global selector only need to emit actual
+  // overrides; complete defaults already exist on :root for both schemes.
+  // Nested and explicit providers retain complete themes so local scopes keep
+  // their historical reset semantics.
+  const lightCssTheme = inheritsRootColorScheme && !isNested ? userLightTheme : resolvedLightTheme;
+  const darkCssTheme =
+    inheritsRootColorScheme && !isNested
+      ? buildRootDarkCssTheme(userLightTheme, userDarkTheme)
+      : resolvedDarkTheme;
+  const lightCssVars = useMemo(() => themeToCssVars(lightCssTheme), [lightCssTheme]);
+  const darkCssVars = useMemo(() => themeToCssVars(darkCssTheme), [darkCssTheme]);
+  const activeCssVars = mode === "light" ? lightCssVars : darkCssVars;
 
   const portalClassName = `openui-theme-portal-${id}`;
   const scopedClassName = `openui-theme-${id}`;
 
   const contextValue = useMemo<ThemeContextType>(
-    () => ({ theme: activeTheme, mode, portalThemeClassName: portalClassName }),
-    [activeTheme, mode, portalClassName],
+    () => ({
+      theme: activeTheme,
+      mode,
+      portalThemeClassName: portalClassName,
+      isModeServerResolved,
+    }),
+    [activeTheme, mode, portalClassName, isModeServerResolved],
   );
 
   const internalValue = useMemo<InternalContextType>(
@@ -225,26 +451,38 @@ export const ThemeProvider = ({
       theme: activeTheme,
       mode,
       portalThemeClassName: portalClassName,
+      inheritsRootColorScheme,
+      isModeServerResolved,
     }),
-    [activeTheme, mode, portalClassName],
+    [activeTheme, mode, portalClassName, inheritsRootColorScheme, isModeServerResolved],
   );
 
   // ---------------------------------------------------------------------------
-  // Style injection via useInsertionEffect (Step 4)
+  // Server-rendered style injection
   // ---------------------------------------------------------------------------
   const useAutoScope = isNested && !hasExplicitSelector;
   const styleSelector = useAutoScope ? `.${scopedClassName}` : effectiveCssSelector;
+  const targetSelectors = useMemo(
+    () => [
+      ...splitTopLevelSelectors(styleSelector).map(escapeSelectorStringLiterals),
+      `.${portalClassName}`,
+    ],
+    [styleSelector, portalClassName],
+  );
+  const cssText = useMemo(() => {
+    if (!lightCssVars && !darkCssVars) return "";
+    return buildThemeCss({
+      selectors: targetSelectors,
+      lightCssVars,
+      darkCssVars,
+      inheritsRootColorScheme,
+      activeCssVars,
+    });
+  }, [targetSelectors, lightCssVars, darkCssVars, inheritsRootColorScheme, activeCssVars]);
 
   // Intentionally unlayered — must override component styles in both modes,
   // including when consumers opt into layered-components.css (@layer openui),
   // so runtime theming always wins. See README "Styling integration" before changing.
-  useInsertionEffect(() => {
-    const style = document.createElement("style");
-    style.setAttribute("data-openui-theme", id);
-    style.textContent = `${styleSelector}, .${portalClassName} { ${cssVarsString} }`;
-    document.head.appendChild(style);
-    return () => style.remove();
-  }, [cssVarsString, styleSelector, portalClassName, id]);
 
   // ---------------------------------------------------------------------------
   // Render
@@ -252,6 +490,11 @@ export const ThemeProvider = ({
   return (
     <InternalContext.Provider value={internalValue}>
       <ThemeContext.Provider value={contextValue}>
+        {cssText ? (
+          <style data-openui-theme={id} nonce={nonce}>
+            {cssText}
+          </style>
+        ) : null}
         {useAutoScope ? (
           <div className={scopedClassName} style={{ display: "contents" }}>
             {children}

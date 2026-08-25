@@ -35,6 +35,22 @@ assert(
   "layered/styles/openui-defaults.css must stay unlayered",
 );
 
+for (const rel of ["styles/openui-defaults.css", "layered/styles/openui-defaults.css"]) {
+  const defaults = read(rel);
+  assert(
+    defaults.includes(":root[data-openui-color-scheme=light]"),
+    `${rel} must include the explicit light selector`,
+  );
+  assert(
+    defaults.includes(":root[data-openui-color-scheme=dark]"),
+    `${rel} must include the explicit dark selector`,
+  );
+  assert(
+    defaults.includes(":root:not([data-openui-color-scheme])"),
+    `${rel} must retain the no-attribute system fallback`,
+  );
+}
+
 const unlayered = fs.readdirSync(path.join(dist, "styles")).filter((f) => f.endsWith(".css"));
 const layered = fs
   .readdirSync(path.join(dist, "layered", "styles"))

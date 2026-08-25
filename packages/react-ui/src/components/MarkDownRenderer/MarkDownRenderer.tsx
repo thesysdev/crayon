@@ -44,7 +44,7 @@ export interface MarkDownRendererProps {
 }
 
 export const MarkDownRenderer = memo((props: MarkDownRendererProps) => {
-  const { mode } = useTheme();
+  const { isModeServerResolved, mode } = useTheme();
   const theme = mode === "dark" ? vscDarkPlus : oneLight;
   const components: Components = {
     code({ className, children, ...props }) {
@@ -53,6 +53,18 @@ export const MarkDownRenderer = memo((props: MarkDownRendererProps) => {
       if (match || (!className && String(children).includes("\n"))) {
         const language = match?.[1] ?? "text";
         const codeString = String(children).trim();
+        if (!isModeServerResolved) {
+          return (
+            <>
+              <div className="openui-color-scheme-light-only">
+                <CodeBlock language={language} codeString={codeString} theme={oneLight} />
+              </div>
+              <div className="openui-color-scheme-dark-only">
+                <CodeBlock language={language} codeString={codeString} theme={vscDarkPlus} />
+              </div>
+            </>
+          );
+        }
         return <CodeBlock language={language} codeString={codeString} theme={theme} />;
       }
 

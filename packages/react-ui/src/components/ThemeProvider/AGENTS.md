@@ -2,36 +2,41 @@
 
 ## File Map
 
-| File                | Purpose                                                                                                                                                                        |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `ThemeProvider.tsx` | React component, `ThemeContext`, `InternalContext` (nesting detection), `useTheme` hook. Injects `--openui-*` vars into `<head>` via `useInsertionEffect`.                     |
-| `types.ts`          | TypeScript interfaces: `Theme`, `ColorTheme`, `LayoutTheme`, `TypographyTheme`, `EffectTheme`, `ChartColorPalette`.                                                            |
-| `defaultTheme.ts`   | Builds `defaultLightTheme` / `defaultDarkTheme` (frozen) from the swatch system. Contains `createColorTheme()` and all layout/typography/shadow defaults.                      |
-| `swatches.ts`       | 18 oklch color families x 14 shades. Exports `swatch()`, `withAlpha()`, `swatchToken()`, `swatchTokens`.                                                                       |
-| `utils.ts`          | Exports `camelToKebab`, `themeToCssVars`, `createTheme` (dev-mode typo detection with Levenshtein distance suggestions), and `KNOWN_THEME_KEYS` (shared validator allow-list). |
-| `index.ts`          | Barrel re-exports from all the above files.                                                                                                                                    |
+| File                      | Purpose                                                                                                                                                                        |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `colorScheme.ts`          | Serializable root-mode configuration, validation, resolution, HTML root props, and shared constants.                                                                           |
+| `ColorSchemeScript.tsx`   | Small parser-time initializer that selects the root attribute before paint and supports CSP nonces.                                                                            |
+| `ColorSchemeProvider.tsx` | Client store/provider, persistence manager, system/storage listeners, runtime controls, forced mode, and transition suppression.                                               |
+| `ThemeProvider.tsx`       | Theme objects, SSR-safe custom-property rules, nesting/scoping, portal selectors, `ThemeContext`, and `useTheme`.                                                              |
+| `types.ts`                | TypeScript interfaces: `Theme`, `ColorTheme`, `LayoutTheme`, `TypographyTheme`, `EffectTheme`, `ChartColorPalette`.                                                            |
+| `defaultTheme.ts`         | Builds `defaultLightTheme` / `defaultDarkTheme` (frozen) from the swatch system. Contains `createColorTheme()` and all layout/typography/shadow defaults.                      |
+| `swatches.ts`             | 18 oklch color families x 14 shades. Exports `swatch()`, `withAlpha()`, `swatchToken()`, `swatchTokens`.                                                                       |
+| `utils.ts`                | Exports `camelToKebab`, `themeToCssVars`, `createTheme` (dev-mode typo detection with Levenshtein distance suggestions), and `KNOWN_THEME_KEYS` (shared validator allow-list). |
+| `index.ts`                | Public exports. Keep test-only store/context helpers out of this barrel.                                                                                                       |
+
+> Before changing theme hydration, persistence, system-mode, or root-scheme behavior, read `NO_FLASH_THEME_DESIGN.md`. It contains the SSR/SSG first-paint architecture, compatibility rules, and validation checklist implemented here.
 
 ## Architecture
 
 ```
-ThemeProvider mounts
+Generated defaults preload light + dark token sets
   │
-  ├── Resolves active theme: { ...defaults[mode], ...userLightTheme } or { ...defaults[mode], ...userDarkTheme }
-  │
-  ├── themeToCssVars(theme) → "--openui-background: oklch(...);\n--openui-foreground: ..."
-  │
-  ├── useInsertionEffect → creates <style data-openui-theme={id}> in <head>
-  │   └── Targets body (root) or .openui-theme-{id} (nested, auto-scoped)
-  │   └── Also targets .openui-theme-portal-{id} for portaled components
-  │
-  └── Provides ThemeContext + InternalContext to children
+  ├── ColorSchemeScript selects data-openui-color-scheme before paint
+  ├── ColorSchemeProvider owns the root selector after hydration
+  └── ThemeProvider renders SSR style text for overrides/scopes/portals
+      ├── explicit mode: one complete server-resolved rule
+      └── inherited root mode: light + dark + no-attribute media fallback rules
 ```
 
 **Key internals:**
 
 - `cssSafeId(useId())` — strips CSS-unsafe characters (colons from React 18's `:r0:` format) for use in class names and selectors.
 - `InternalContext` with a `Symbol` sentinel detects whether this provider is nested inside another. Nested providers auto-scope via a `<div style="display: contents">` wrapper instead of targeting `body`.
-- `cssUtils.scss` is auto-generated at build time by `src/scripts/generate-css-utils.ts` from `defaultLightTheme`, including fallback values.
+- `ColorSchemeProvider` is root-only. Nested instances are ignored so subtrees cannot compete over `<html>`.
+- The default store server snapshot leaves browser-only values undefined. `ThemeProvider` provides a deterministic light JavaScript fallback while its CSS exposes both schemes.
+- `ThemeProvider` style text must stay a normal React `<style>` child. Never move theme tokens into `dangerouslySetInnerHTML`.
+- Root inheriting providers emit only user overrides because complete defaults already exist on `:root`. Explicit and nested scopes emit complete themes to preserve reset semantics.
+- `cssUtils.scss` and `openui-defaults.scss` are auto-generated by `src/scripts/generate-css-utils.ts`.
 
 ## Key Patterns
 

@@ -2,7 +2,6 @@ import clsx from "clsx";
 import { uniqueId } from "lodash-es";
 import { ComponentProps, createContext, forwardRef, useContext, useId, useMemo } from "react";
 import * as RechartsPrimitive from "recharts";
-import { useTheme } from "../ThemeProvider";
 
 /**
  * @module Charts
@@ -156,7 +155,6 @@ const ChartContainer = forwardRef<
 >(({ id, className, children, config, rechartsProps, style, ...props }, ref) => {
   const uniqueId = useId();
   const chartId = `openui-chart-${id || uniqueId.replace(/:/g, "")}`;
-  const { theme } = useTheme();
 
   return (
     <ChartContext.Provider value={{ config, id: chartId }}>
@@ -164,16 +162,7 @@ const ChartContainer = forwardRef<
         data-chart={chartId}
         ref={ref}
         className={clsx("openui-chart-container", className)}
-        style={
-          {
-            //TODO: remove this once we have a proper theme for charts
-            "--openui-foreground": theme.foreground,
-            "--openui-text-neutral-primary": theme.textNeutralPrimary,
-            width: "100%",
-            height: "100%",
-            ...style,
-          } as React.CSSProperties
-        }
+        style={{ width: "100%", height: "100%", ...style }}
         {...props}
       >
         <ChartStyle id={chartId} config={config} />

@@ -1,6 +1,7 @@
 "use client";
 
-import { createContext, useContext, useLayoutEffect, useState } from "react";
+import { ColorSchemeProvider, useColorScheme } from "@openuidev/react-ui";
+import { createContext, useContext, useLayoutEffect } from "react";
 
 type ThemeMode = "light" | "dark";
 
@@ -10,20 +11,17 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-function getSystemMode(): ThemeMode {
-  if (typeof window === "undefined") return "light";
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <ColorSchemeProvider>
+      <ThemeState>{children}</ThemeState>
+    </ColorSchemeProvider>
+  );
 }
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [mode, setMode] = useState<ThemeMode>(getSystemMode);
-
-  useLayoutEffect(() => {
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const handler = (e: MediaQueryListEvent) => setMode(e.matches ? "dark" : "light");
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
+function ThemeState({ children }: { children: React.ReactNode }) {
+  const { resolvedMode } = useColorScheme();
+  const mode: ThemeMode = resolvedMode ?? "light";
 
   useLayoutEffect(() => {
     document.body.setAttribute("data-theme", mode);
