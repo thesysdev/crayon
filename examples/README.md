@@ -62,10 +62,10 @@ Each example has one primary home based on the integration seam it is intended t
 
 ## Run and verify
 
-Install dependencies once from the repository root:
+Examples use their own workspace and lockfile, so installing the repository root does not install example dependencies. To install every example from the repository root, run:
 
 ```bash
-pnpm install
+pnpm examples:install
 ```
 
 Follow an example's README for its environment variables and development command. From any example directory, run its credential-free verification contract with:
@@ -74,13 +74,15 @@ Follow an example's README for its environment variables and development command
 pnpm verify
 ```
 
-To build the workspace packages and verify all examples sequentially from the repository root, run:
+To verify all examples sequentially against the pinned published OpenUI packages, run:
 
 ```bash
 pnpm examples:verify
 ```
 
 Examples that use static system prompts generate them locally before `dev`, `build`, and `verify`. Generated prompt and spec files are ignored by Git and should not be committed.
+
+All `@openuidev/*` dependencies are exact published versions rather than links to packages in this repository. The weekly `Update example OpenUI packages` workflow updates them together, refreshes `examples/pnpm-lock.yaml`, verifies every example, and opens or updates one pull request when versions change.
 
 ## Maintenance contract
 
@@ -91,6 +93,7 @@ Every retained example should:
 - document its purpose, stack, prerequisites, run command, architecture, key files, verification command, and extension points;
 - expose a credential-free `pnpm verify` command that checks the example's relevant build, types, and local tests;
 - generate derived prompts and specs locally rather than store them in the repository;
+- depend on exact published `@openuidev/*` versions rather than root workspace packages;
 - use a normalized `@openuidev/example-*` package name and keep repository links current.
 
 Delete examples that duplicate an authoritative CLI template, are maintained elsewhere, substantially overlap a stronger example, or no longer justify their maintenance cost.
