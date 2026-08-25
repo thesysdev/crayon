@@ -13,14 +13,18 @@ OpenUI: component contract · streaming parser · renderer · interactions · ch
 The browser uses `@openuidev/agno` for both channels expected by
 `AgentInterface`:
 
-- `createAgnoLLM()` streams an AgentOS AG-UI run.
+- `createAgnoLLM()` streams an AgentOS AG-UI run and marks it as an OpenUI client.
 - `agnoStorage()` stores the sidebar and message history in AgentOS sessions.
+- `agnoAGUIAdapter()` incrementally unwraps fenced assistant OpenUI Lang while
+  AgentOS retains the same payload as readable Markdown source.
+- `agnoOpenUIPromptRenderer` renders the true paused `prompt_openui` HITL call.
 
 ## Run without a model key
 
 The Vite development server includes a deterministic AgentOS-compatible
 harness. It exercises session CRUD, Agno's empty tool-parent envelope, a backend
-tool result, streamed OpenUI Lang, follow-ups, and a validated form.
+tool result, multi-delta assistant-text streaming, follow-ups, history reload,
+and a true paused/resumed `prompt_openui` form.
 
 ```bash
 pnpm dev
@@ -48,6 +52,29 @@ AGNO_API_URL=http://127.0.0.1:7777 pnpm dev
 
 The React application does not change.
 
+The proxy is development plumbing only: the browser calls same-origin `/agui`
+and `/sessions`, while Vite forwards those paths to port 7777 and avoids local
+CORS configuration. A production app can use its normal reverse proxy or pass
+an already same-origin AgentOS endpoint.
+
 The Python server is deliberately ordinary Agno code: it owns the model, tool,
 database, history, and AG-UI interface. The component library and all rendering
 remain in the OpenUI frontend.
+
+The same agent remains usable from native AgentOS chat. OpenUI requests carry a
+transient `openui_client` context dependency and receive the generated component
+prompt. Requests without that marker are instructed to answer in normal
+text/Markdown and not call the UI tool.
+
+Complete visual answers are one fenced assistant-text payload. AgentOS stores
+and shows the exact OpenUI Lang inside a Markdown code block. AG-UI streams that
+text as `TEXT_MESSAGE_CONTENT` events; `@openuidev/agno` removes only the fence
+and OpenUI renders the inner language as it arrives. The same normalization is
+applied when the session is reloaded.
+
+`prompt_openui` is used only when a form or choice must pause execution. The
+first request persists the pending run, the OpenUI form submission is sent back
+as a tool result, and AgentOS resumes the same run and `session_id`. Current
+AgentOS sends the completed prompt tool arguments as one event, so the form
+itself appears after the tool call closes; the resumed assistant answer streams
+normally.

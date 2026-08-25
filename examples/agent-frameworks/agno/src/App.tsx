@@ -1,4 +1,4 @@
-import { agnoStorage, createAgnoLLM } from "@openuidev/agno";
+import { agnoOpenUIPromptRenderer, agnoStorage, createAgnoLLM } from "@openuidev/agno";
 import { AgentInterface } from "@openuidev/react-ui";
 import { ExternalLinkIcon } from "lucide-react";
 import { library } from "./library";
@@ -13,6 +13,7 @@ const AGENT_OS_URL = "https://os.agno.com";
 const llm = createAgnoLLM({
   url: "/agui",
   forwardedProps: { user_id: DEMO_USER_ID },
+  context: [{ description: "openui_client", value: "true" }],
 });
 
 const storage = agnoStorage({
@@ -48,6 +49,7 @@ export default function App() {
       llm={llm}
       storage={storage}
       componentLibrary={library}
+      artifactRenderers={[agnoOpenUIPromptRenderer]}
       agentName="Agno × OpenUI"
       getThreadMenuActions={({ id, isRunning }) =>
         !isRealAgentOS || isRunning

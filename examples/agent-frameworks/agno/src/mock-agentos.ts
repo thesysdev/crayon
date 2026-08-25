@@ -16,18 +16,18 @@ notesField = FormControl("Notes", TextArea("notes", "Add notes", 4, { required: 
 buttons = Buttons([submit])
 submit = Button("Submit to AgentOS", Action([@ToAssistant("Submit project estimate form")]), "primary")`;
 
-function submissionResponse(prompt: string): string {
-  const marker = "]]>openui:context\n";
-  const context = prompt.slice(prompt.lastIndexOf(marker) + marker.length);
+const formFallback = `## Project estimate
+
+Open this session in the OpenUI client to submit the project name, team size, and notes form.`;
+
+function submissionResponse(toolResult: string): string {
   let projectName = "Project";
   let teamSize = "—";
   let notes = "—";
 
   try {
-    const payload = JSON.parse(context) as unknown;
-    const state = Array.isArray(payload)
-      ? payload.find((item) => item !== null && typeof item === "object" && !Array.isArray(item))
-      : undefined;
+    const payload = JSON.parse(toolResult) as { formState?: Record<string, unknown> };
+    const state = payload.formState;
     const form = (state as Record<string, unknown> | undefined)?.["project_estimate"] as
       Record<string, { value?: unknown }> | undefined;
     projectName = String(form?.["project_name"]?.value ?? projectName);
@@ -45,6 +45,19 @@ note = TextContent(${JSON.stringify(`Notes: ${notes}`)})
 status = Callout("success", "Handled by AgentOS", "OpenUI collected and rendered the data; AgentOS now owns the next action.")`;
 }
 
+function fenceOpenUI(openui: string): string {
+  return `\`\`\`openui\n${openui}\n\`\`\``;
+}
+
+function textEvents(messageId: string, content: string): Array<Record<string, unknown>> {
+  const chunks = content.match(/[\s\S]{1,24}/g) ?? [];
+  return [
+    { type: "TEXT_MESSAGE_START", messageId, role: "assistant" },
+    ...chunks.map((delta) => ({ type: "TEXT_MESSAGE_CONTENT", messageId, delta })),
+    { type: "TEXT_MESSAGE_END", messageId },
+  ];
+}
+
 interface MockSession {
   session_id: string;
   session_name: string;
@@ -54,6 +67,7 @@ interface MockSession {
 }
 
 const sessions = new Map<string, MockSession>();
+const pendingPrompts = new Map<string, { toolCallId: string }>();
 
 function readBody(request: import("node:http").IncomingMessage): Promise<Record<string, unknown>> {
   return new Promise((resolve, reject) => {
@@ -110,6 +124,7 @@ async function handleAgui(
   const threadId = typeof body["threadId"] === "string" ? body["threadId"] : crypto.randomUUID();
   const runId = typeof body["runId"] === "string" ? body["runId"] : crypto.randomUUID();
   const messages = Array.isArray(body["messages"]) ? body["messages"] : [];
+  const lastMessage = messages.at(-1) as Record<string, unknown> | undefined;
   const lastUserMessage = [...messages]
     .reverse()
     .find(
@@ -117,10 +132,20 @@ async function handleAgui(
         typeof message === "object" && message !== null && message["role"] === "user",
     );
   const prompt = typeof lastUserMessage?.["content"] === "string" ? lastUserMessage["content"] : "";
-  const isSubmission = prompt.includes("Submit project estimate form");
+  const pendingPrompt = pendingPrompts.get(threadId);
+  const isSubmission =
+    lastMessage?.["role"] === "tool" &&
+    typeof lastMessage["toolCallId"] === "string" &&
+    lastMessage["toolCallId"] === pendingPrompt?.toolCallId;
+  const submission =
+    isSubmission && typeof lastMessage?.["content"] === "string" ? lastMessage["content"] : "";
   const isForm = !isSubmission && /form|estimate|structured input/i.test(prompt);
   const isChart = !isSubmission && !isForm;
-  const openui = isSubmission ? submissionResponse(prompt) : isForm ? formResponse : chartResponse;
+  const openui = isSubmission
+    ? submissionResponse(submission)
+    : isForm
+      ? formResponse
+      : chartResponse;
   const now = new Date().toISOString();
   const session =
     sessions.get(threadId) ??
@@ -132,7 +157,16 @@ async function handleAgui(
       chat_history: [],
     } satisfies MockSession);
 
-  if (prompt) session.chat_history.push({ role: "user", content: prompt });
+  if (isSubmission && pendingPrompt) {
+    session.chat_history.push({
+      role: "tool",
+      tool_call_id: pendingPrompt.toolCallId,
+      content: submission,
+    });
+    pendingPrompts.delete(threadId);
+  } else if (prompt) {
+    session.chat_history.push({ role: "user", content: prompt });
+  }
   session.updated_at = now;
   sessions.set(threadId, session);
 
@@ -145,43 +179,81 @@ async function handleAgui(
     { type: "STATE_SNAPSHOT", snapshot: { source: "AgentOS" } },
   ];
 
-  if (isChart) {
-    const parentMessageId = crypto.randomUUID();
+  const parentMessageId = crypto.randomUUID();
+  events.push(
+    { type: "TEXT_MESSAGE_START", messageId: parentMessageId, role: "assistant" },
+    { type: "TEXT_MESSAGE_END", messageId: parentMessageId },
+  );
+
+  if (isForm) {
     const toolCallId = crypto.randomUUID();
+    pendingPrompts.set(threadId, { toolCallId });
     events.push(
-      { type: "TEXT_MESSAGE_START", messageId: parentMessageId, role: "assistant" },
-      { type: "TEXT_MESSAGE_END", messageId: parentMessageId },
       {
         type: "TOOL_CALL_START",
         toolCallId,
-        toolCallName: "get_quarterly_revenue",
+        toolCallName: "prompt_openui",
         parentMessageId,
       },
-      { type: "TOOL_CALL_ARGS", toolCallId, delta: "{}" },
-      { type: "TOOL_CALL_END", toolCallId },
       {
-        type: "TOOL_CALL_RESULT",
+        type: "TOOL_CALL_ARGS",
         toolCallId,
-        messageId: toolCallId,
-        role: "tool",
-        content: JSON.stringify({ quarters: [120, 180, 150, 240], unit: "USD thousands" }),
+        delta: JSON.stringify({ ui: openui, fallback_markdown: formFallback }),
       },
+      { type: "TOOL_CALL_END", toolCallId },
     );
+    session.chat_history.push({
+      role: "assistant",
+      content: "",
+      tool_calls: [
+        {
+          id: toolCallId,
+          name: "prompt_openui",
+          args: { ui: openui, fallback_markdown: formFallback },
+        },
+      ],
+    });
+  } else {
+    if (isChart) {
+      const toolCallId = crypto.randomUUID();
+      const revenue = { quarters: [120, 180, 150, 240], unit: "USD thousands" };
+      events.push(
+        {
+          type: "TOOL_CALL_START",
+          toolCallId,
+          toolCallName: "get_quarterly_revenue",
+          parentMessageId,
+        },
+        { type: "TOOL_CALL_ARGS", toolCallId, delta: "{}" },
+        { type: "TOOL_CALL_END", toolCallId },
+        {
+          type: "TOOL_CALL_RESULT",
+          toolCallId,
+          messageId: toolCallId,
+          role: "tool",
+          content: JSON.stringify(revenue),
+        },
+      );
+      session.chat_history.push({
+        role: "assistant",
+        content: "",
+        tool_calls: [{ id: toolCallId, name: "get_quarterly_revenue", args: {} }],
+      });
+      session.chat_history.push({ role: "tool", tool_call_id: toolCallId, content: revenue });
+    }
+
+    const answerMessageId = crypto.randomUUID();
+    const fencedOpenUI = fenceOpenUI(openui);
+    events.push(...textEvents(answerMessageId, fencedOpenUI));
+    session.chat_history.push({ role: "assistant", content: fencedOpenUI });
   }
 
-  const messageId = crypto.randomUUID();
-  events.push({ type: "TEXT_MESSAGE_START", messageId, role: "assistant" });
-  for (const line of openui.split("\n")) {
-    events.push({ type: "TEXT_MESSAGE_CONTENT", messageId, delta: `${line}\n` });
-  }
   events.push(
-    { type: "TEXT_MESSAGE_END", messageId },
     { type: "STATE_SNAPSHOT", snapshot: { source: "AgentOS", completed: true } },
     { type: "RUN_FINISHED", threadId, runId },
   );
 
   await writeEvents(response, events);
-  session.chat_history.push({ role: "assistant", content: openui });
 }
 
 export function mockAgentOSPlugin() {

@@ -7,6 +7,7 @@ const agnoTarget = process.env["AGNO_API_URL"];
 export default {
   define: {
     __AGNO_BACKEND_MODE__: JSON.stringify(agnoTarget ? "real" : "mock"),
+    "process.env.NODE_ENV": JSON.stringify(process.env["NODE_ENV"] ?? "development"),
   },
   resolve: {
     alias: [
