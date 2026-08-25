@@ -4,13 +4,14 @@ import * as path from "node:path";
 
 import { resolveCloudApiKey, THESYS_KEYS_URL } from "../auth/mint";
 import { aiSetupFromTemplate, createFunnelProps } from "../lib/create-telemetry";
-import type { CreateAppOptions, EnvResult, TemplateName } from "../lib/create-types";
+import type { CreateAppOptions, EnvResult, OverlayName, TemplateName } from "../lib/create-types";
 import {
   resolveInstallPackageManager,
   type PackageManagerName,
 } from "../lib/detect-package-manager";
 import { runDevCommand } from "../lib/dev-server";
 import { runSkillInstall, shouldInstallSkill } from "../lib/install-skill";
+import { applyOverlay, OVERLAYS_DIR, resolveOverlay, type OverlayManifest } from "../lib/overlays";
 import { runCommand } from "../lib/process-runner";
 import { resolveArgs } from "../lib/resolve-args";
 import { resolveAvailableTarget } from "../lib/target-dir";
@@ -21,8 +22,9 @@ function shouldCopyTemplatePath(templateDir: string, src: string): boolean {
   const rel = path.relative(templateDir, src);
   if (!rel) return true;
   const top = rel.split(path.sep)[0] ?? "";
-  // never copy install/build artifacts that may sit in a template dir
-  return !["node_modules", ".next", ".turbo", "dist"].includes(top);
+  // Copy the base template only; selected backend overlays are applied later.
+  // Also exclude install/build artifacts that may sit in a template directory.
+  return ![OVERLAYS_DIR, "node_modules", ".next", ".turbo", "dist"].includes(top);
 }
 
 function restoreDotfiles(projectDir: string) {
@@ -44,7 +46,21 @@ function buildAppId(name: string): string {
   return `${slug}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
-function rewritePackageJson(projectDir: string, name: string, packageManager: PackageManagerName) {
+function requiredApiKeyEnv(template: TemplateName): "THESYS_API_KEY" | "OPENAI_API_KEY" {
+  return template === "openui-cloud" ? "THESYS_API_KEY" : "OPENAI_API_KEY";
+}
+
+/** Match npm/pnpm install: keep dependency keys alphabetically sorted. */
+function sortPackageRecord<T>(record: Record<string, T>): Record<string, T> {
+  return Object.fromEntries(Object.entries(record).sort(([a], [b]) => a.localeCompare(b)));
+}
+
+function rewritePackageJson(
+  projectDir: string,
+  name: string,
+  packageManager: PackageManagerName,
+  overlayPackageJson?: OverlayManifest["packageJson"],
+) {
   // package.json: set the project name and de-vendor monorepo-local deps
   // (workspace:* / file: / catalog:) to the published "latest". link: deps are
   // rewritten to an absolute file: path so locally-linked packages (e.g.
@@ -54,12 +70,24 @@ function rewritePackageJson(projectDir: string, name: string, packageManager: Pa
   const pkgPath = path.join(projectDir, "package.json");
   const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8")) as {
     name: string;
+    scripts?: Record<string, string>;
     dependencies?: Record<string, string>;
     devDependencies?: Record<string, string>;
     pnpm?: unknown;
   };
   pkg.name = name;
   if (packageManager !== "pnpm") delete pkg.pnpm;
+
+  if (overlayPackageJson) {
+    pkg.dependencies ??= {};
+    for (const dependency of overlayPackageJson.removeDependencies ?? []) {
+      delete pkg.dependencies[dependency];
+    }
+    Object.assign(pkg.dependencies, overlayPackageJson.dependencies ?? {});
+    Object.assign((pkg.devDependencies ??= {}), overlayPackageJson.devDependencies ?? {});
+    Object.assign((pkg.scripts ??= {}), overlayPackageJson.scripts ?? {});
+  }
+
   for (const section of ["dependencies", "devDependencies"] as const) {
     const deps = pkg[section];
     if (!deps) continue;
@@ -78,6 +106,9 @@ function rewritePackageJson(projectDir: string, name: string, packageManager: Pa
       // can't resolve standalone — pin them to the published "latest".
       if (/^(workspace:|file:|catalog:)/.test(v)) deps[key] = "latest";
     }
+    // Object.assign appends overlay packages at the end; re-sort so the
+    // scaffolded package.json matches what `npm install` / `pnpm add` write.
+    pkg[section] = sortPackageRecord(deps);
   }
   fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
 
@@ -117,6 +148,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     interactive,
     has_name_arg: Boolean(options.name),
     has_template_arg: Boolean(options.template),
+    has_backend_framework_arg: Boolean(options.backendFramework),
     has_api_key_arg: Boolean(options.apiKey),
     has_auth_arg: Boolean(options.auth),
     no_install: Boolean(options.noInstall),
@@ -151,12 +183,47 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     );
   }
   const template: TemplateName = options.template ?? "openui-cloud";
+
+  const frameworkArgs = await resolveArgs(
+    {
+      backendFramework:
+        options.backendFramework || !interactive
+          ? { value: options.backendFramework ?? "default" }
+          : {
+              prompt: {
+                type: "select",
+                message: "Choose your backend framework",
+                choices: [
+                  {
+                    value: "default",
+                    name: "Default — minimal SDK route",
+                  },
+                  { value: "vercel-ai-sdk", name: "Vercel AI SDK" },
+                  { value: "langgraph", name: "LangGraph" },
+                ],
+              },
+              required: true,
+            },
+    },
+    interactive,
+  );
+  const backendFramework = (frameworkArgs as { backendFramework: OverlayName }).backendFramework;
+
   const aiSetup = aiSetupFromTemplate(template);
-  telemetry.register({ template, ai_setup: aiSetup });
+  telemetry.register({ template, ai_setup: aiSetup, backend_framework: backendFramework });
   telemetry.capture("cli_ai_setup_selected", {
     ...createFunnelProps("ai_setup_selected"),
     template,
     ai_setup: aiSetup,
+  });
+  telemetry.capture("cli_backend_framework_selected", {
+    ...createFunnelProps("backend_framework_selected"),
+    backend_framework: backendFramework,
+    backend_framework_source: options.backendFramework
+      ? "flag"
+      : interactive
+        ? "prompt"
+        : "default",
   });
 
   const templateDir = path.join(__dirname, "..", "templates", template);
@@ -168,6 +235,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       "TEMPLATE_MISSING",
     );
   }
+  const overlay = resolveOverlay(templateDir, backendFramework);
 
   telemetry.capture("cli_env_resolution_started", {
     ...createFunnelProps("env_resolution_started"),
@@ -186,6 +254,9 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   });
 
   const immediateResolution = resolveImmediate(options.immediate, options.noInstall, interactive);
+  const apiKeyEnv = requiredApiKeyEnv(template);
+  const apiKeyAvailable = envResult.envWritten || Boolean(process.env[apiKeyEnv]?.trim());
+  const devStartBlockedByMissingApiKey = immediateResolution.immediate && !apiKeyAvailable;
   telemetry.capture("cli_immediate_selected", {
     immediate: immediateResolution.immediate,
     dependency_install_requested: immediateResolution.installDependencies,
@@ -204,16 +275,20 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       filter: (src) => shouldCopyTemplatePath(templateDir, src),
     });
     restoreDotfiles(targetDir);
-    rewritePackageJson(targetDir, name, packageManager.name);
-    // npm ci requires the copied package-lock; other managers resolve from package.json.
+    applyOverlay(targetDir, overlay);
+    rewritePackageJson(targetDir, name, packageManager.name, overlay?.manifest.packageJson);
+    // npm ci needs package-lock.json. Keep it for npm scaffolds (base template or
+    // a backend overlay that ships its own). Other managers resolve from package.json.
     if (packageManager.name !== "npm") {
       fs.rmSync(path.join(targetDir, "package-lock.json"), { force: true });
     }
     // The Cloud template ships pnpm's lock/workspace files for reproducible pnpm
-    // installs and native-build policy. They are irrelevant to npm/yarn/bun and
-    // can confuse workspace-root detection, so keep them only for pnpm scaffolds.
-    if (packageManager.name !== "pnpm") {
+    // installs and native-build policy. A framework changes dependencies, so
+    // regenerate its lock; non-pnpm scaffolds do not need either pnpm file.
+    if (packageManager.name !== "pnpm" || backendFramework !== "default") {
       fs.rmSync(path.join(targetDir, "pnpm-lock.yaml"), { force: true });
+    }
+    if (packageManager.name !== "pnpm") {
       fs.rmSync(path.join(targetDir, "pnpm-workspace.yaml"), { force: true });
     }
   } catch (err) {
@@ -314,7 +389,25 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     }
   }
 
-  const installCmd = packageManager.installCmd;
+  // Framework scaffolds without an npm lock must resolve ranges against the
+  // registry (`npm install`). When a backend overlay ships package-lock.json,
+  // keep the normal `npm ci` path. --prefer-offline is only safe for `npm ci`,
+  // where the lockfile pins exact versions and cache hits are content-addressed;
+  // bare `npm install` can fail with ETARGET on a stale packument cache.
+  const frameworkInstall = backendFramework !== "default";
+  const hasNpmLock = fs.existsSync(path.join(targetDir, "package-lock.json"));
+  const installCmd =
+    frameworkInstall && packageManager.name === "npm" && !hasNpmLock
+      ? "npm install --no-audit --no-fund --progress=false"
+      : frameworkInstall && packageManager.name === "pnpm"
+        ? "pnpm install --no-frozen-lockfile"
+        : packageManager.installCmd;
+  const installArgs =
+    frameworkInstall && packageManager.name === "npm" && !hasNpmLock
+      ? ["install", "--no-audit", "--no-fund", "--progress=false"]
+      : frameworkInstall && packageManager.name === "pnpm"
+        ? ["install", "--no-frozen-lockfile"]
+        : packageManager.installArgs;
   let dependencyInstalled = false;
 
   if (!immediateResolution.installDependencies) {
@@ -329,11 +422,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       template,
       ai_setup: aiSetup,
     });
-    const installResult = await runCommand(
-      packageManager.runCmd,
-      packageManager.installArgs,
-      targetDir,
-    );
+    const installResult = await runCommand(packageManager.runCmd, installArgs, targetDir);
     if (!installResult.error && installResult.status === 0) {
       dependencyInstalled = true;
       telemetry.capture("cli_dependency_install_succeeded", {
@@ -380,7 +469,8 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   }
 
   const devCmd = packageManager.runCmd;
-  const startDev = immediateResolution.immediate && dependencyInstalled;
+  const startDev =
+    immediateResolution.immediate && dependencyInstalled && !devStartBlockedByMissingApiKey;
 
   telemetry.capture("cli_create_succeeded", {
     ...createFunnelProps("create_succeeded"),
@@ -396,13 +486,33 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       name,
       devCmd,
       template,
+      backendGettingStarted: overlay?.manifest.gettingStarted,
       skillInstalled,
       envWritten: envResult.envWritten,
       startDev,
+      devStartBlockedByMissingApiKey,
       installCmd,
       dependencyInstalled,
     }),
   );
+
+  if (devStartBlockedByMissingApiKey) {
+    telemetry.capture("cli_dev_command_skipped", {
+      skip_reason: "missing_api_key",
+      required_env: apiKeyEnv,
+    });
+    const keyHint =
+      apiKeyEnv === "THESYS_API_KEY"
+        ? `Get a key at ${THESYS_KEYS_URL}, then add:\n\n  ${apiKeyEnv}=…\n\nto ${name}/.env`
+        : `Add your key to ${name}/.env:\n\n  ${apiKeyEnv}=…`;
+    console.error(
+      `\nSkipped starting the development server — ${apiKeyEnv} is missing.\n\n` +
+        `${keyHint}\n\n` +
+        `Then run:\n\n> cd ${name}\n> ${devCmd} run dev\n`,
+    );
+    process.exitCode = 1;
+    return;
+  }
 
   if (!startDev) {
     telemetry.capture("cli_dev_command_skipped", {
@@ -488,8 +598,7 @@ async function writeEnv(targetDir: string, result: EnvResult, appId?: string): P
   await fs.promises.writeFile(path.join(targetDir, ".env"), content);
 }
 
-async function resolveChatEnv(interactive: boolean): Promise<EnvResult> {
-  if (!interactive) return { envWritten: false };
+async function promptForProviderKey(): Promise<string | null> {
   try {
     const { input } = await import("@inquirer/prompts");
     const apiKey = (
@@ -497,8 +606,7 @@ async function resolveChatEnv(interactive: boolean): Promise<EnvResult> {
         message: "Enter your OpenAI-compatible provider API key (leave blank to skip):",
       })
     ).trim();
-    if (!apiKey) return { envWritten: false };
-    return { envWritten: true, envContent: `OPENAI_API_KEY=${apiKey}\n` };
+    return apiKey || null;
   } catch (error) {
     const { ExitPromptError } = await import("@inquirer/core");
     if (error instanceof ExitPromptError) {
@@ -506,6 +614,30 @@ async function resolveChatEnv(interactive: boolean): Promise<EnvResult> {
     }
     throw error;
   }
+}
+
+async function resolveChatEnv(interactive: boolean): Promise<EnvResult> {
+  const apiKey = interactive ? await promptForProviderKey() : null;
+
+  // Always write a file, so the scaffold has a .env to edit rather than one the
+  // user must know to create. Without a key the entries stay commented out: an
+  // empty `OPENAI_API_KEY=` would shadow a key already exported in the shell.
+  const lines = apiKey
+    ? [`OPENAI_API_KEY=${apiKey}`]
+    : [
+        "# Your OpenAI-compatible provider key. Uncomment and fill it in.",
+        "# OPENAI_API_KEY=sk-your-key-here",
+        "# Optional:",
+        "# OPENAI_MODEL=gpt-5.2",
+        "# OPENAI_BASE_URL=https://api.openai.com/v1",
+      ];
+
+  return {
+    // False without a key, so the immediate dev-server gate and the
+    // "add your API key" message still apply even though .env now exists.
+    envWritten: apiKey != null,
+    envContent: lines.join("\n") + "\n",
+  };
 }
 
 async function resolveCloudEnv(
@@ -571,9 +703,11 @@ function getStartedMessage(o: {
   name: string;
   devCmd: string;
   template: TemplateName;
+  backendGettingStarted?: string;
   skillInstalled: boolean;
   envWritten: boolean;
   startDev: boolean;
+  devStartBlockedByMissingApiKey: boolean;
   installCmd: string;
   dependencyInstalled: boolean;
 }): string {
@@ -592,17 +726,17 @@ function getStartedMessage(o: {
 
   const nextStep = o.startDev
     ? `Starting the development server in "${o.name}"...\n\n> ${o.devCmd} run dev`
-    : [
-        `> cd ${o.name}`,
-        ...(o.dependencyInstalled ? [] : [`> ${o.installCmd}`]),
-        `> ${o.devCmd} run dev`,
-      ].join("\n");
+    : o.devStartBlockedByMissingApiKey
+      ? ""
+      : [
+          `> cd ${o.name}`,
+          ...(o.dependencyInstalled ? [] : [`> ${o.installCmd}`]),
+          `> ${o.devCmd} run dev`,
+        ].join("\n");
 
-  return `${skillMessage}
-Done!
+  const frameworkNote = o.backendGettingStarted?.replaceAll("{{packageManager}}", o.devCmd) ?? "";
 
-${envNote}
-
-${nextStep}
-`;
+  return `${[skillMessage.trim(), "Done!", envNote, frameworkNote, nextStep]
+    .filter(Boolean)
+    .join("\n\n")}\n`;
 }
