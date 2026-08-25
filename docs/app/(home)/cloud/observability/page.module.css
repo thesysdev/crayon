@@ -1,0 +1,499 @@
+.titleBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 2px;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: normal;
+}
+
+.title {
+  display: block;
+  font-size: 60px;
+  font-weight: 600;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+/* Both hero lockups render this same title node, so the break is switched off
+   by default and only enabled at the width where the desktop hero takes over
+   (HeroSection swaps at min-width: 1024px). Below that the title wraps on its
+   own and a hard break would land in the wrong place. */
+.titleBreak {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .titleBreak {
+    display: inline;
+  }
+}
+
+.cloudTag {
+  display: inline-flex;
+  align-items: center;
+  margin-top: -3px;
+  padding: 2px 6px 3px;
+  border: 1px solid currentColor;
+  border-radius: 5px;
+  font-size: 17px;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+/* Narrows the shared tagline's measure without touching the home page, which
+   uses the same component at its full 75rem width. */
+.taglineText {
+  display: block;
+  max-width: 46rem;
+  margin-inline: auto;
+  text-wrap: balance;
+}
+
+/* Reads as a caption under the tagline, so it drops out of the display scale
+   and back to body type. */
+.taglineNote {
+  display: block;
+  margin-top: 1rem;
+  font-size: 1.125rem;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0;
+  color: var(--openui-text-neutral-secondary);
+}
+
+[data-theme="dark"] .taglineNote {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.subtitle {
+  display: block;
+  flex: 0 0 400px;
+  width: 400px;
+  max-width: 400px;
+  margin-top: 40px;
+  margin-left: auto;
+  padding-top: 12px;
+  font-size: 22px;
+  font-weight: var(--home-heading-weight);
+  line-height: var(--home-lead-leading);
+  letter-spacing: var(--home-heading-tracking);
+  text-wrap: balance;
+}
+
+.ctaGroup {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.heroImage {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.heroImageDark {
+  display: none;
+}
+
+[data-theme="dark"] .heroImageLight {
+  display: none;
+}
+
+[data-theme="dark"] .heroImageDark {
+  display: block;
+}
+
+@media (max-width: 1023px) {
+  .title {
+    font-size: inherit;
+  }
+
+  .subtitle {
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  .ctaGroup {
+    flex-direction: column;
+    width: 320px;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 767px) {
+  .titleBlock {
+    align-items: center;
+    gap: 12px;
+  }
+
+  .subtitle {
+    /* The base rule pins this to 400px, which is wider than a small phone and
+       bled off both edges. Let it track the hero width instead. */
+    flex: 0 1 auto;
+    width: 100%;
+    max-width: none;
+    margin-left: 0;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: normal;
+  }
+}
+
+/* Holds the hero's space until the artwork lands. Same 1280x600 the Cloud hero
+   image uses, so swapping in the <Image> pair changes nothing about the layout.
+   Delete this rule once it is replaced. */
+.heroPlaceholder {
+  width: 100%;
+  aspect-ratio: 1280 / 600;
+  border-radius: 24px;
+  background: rgba(10, 10, 10, 0.04);
+}
+
+[data-theme="dark"] .heroPlaceholder {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ---- Hero email capture ----
+   Input and submit share one pill, so the pair reads as a single control beside
+   the secondary button rather than as two competing ones. */
+.emailForm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 4px 4px 4px 18px;
+  /* Stronger than the shared hairline token, which is ~6% and disappears on
+     this surface. An input has to read as something you can type into. Stays
+     below the focus-within step below, so focus is still a visible change. */
+  border: 1px solid rgba(10, 10, 10, 0.16);
+  border-radius: 999px;
+  /* A hint of fill rather than the plain surface, so the field reads as an input
+     on a page that is otherwise the same colour. */
+  background: rgba(10, 10, 10, 0.03);
+}
+
+[data-theme="dark"] .emailForm {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.emailForm:focus-within {
+  border-color: rgba(10, 10, 10, 0.28);
+}
+
+[data-theme="dark"] .emailForm:focus-within {
+  border-color: rgba(255, 255, 255, 0.32);
+}
+
+/* The placeholder names the field for everyone else; this is for screen readers,
+   which should not have to rely on it. */
+.emailLabel {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.emailInput {
+  /* Fixed, so swapping the icon button for a labelled one grows the pill rather
+     than squeezing the field. */
+  flex: 0 0 auto;
+  min-width: 0;
+  width: 17.5rem;
+  border: 0;
+  background: none;
+  outline: none;
+  font-family: var(--home-font-text);
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--openui-text-neutral-primary);
+}
+
+.emailInput::placeholder {
+  color: var(--openui-text-neutral-secondary);
+}
+
+.emailInput:disabled {
+  opacity: 0.6;
+}
+
+/* The hero art dissolves into the page at its lower edge instead of stopping on
+   a straight line. Masked rather than overlaid with a gradient, so it works on
+   either theme without matching a background colour. */
+.heroImage {
+  -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
+}
+
+/* Icon-only submit, sized and coloured like BevelButton's badge so it reads as
+   the same family of control. Inverted against the field: dark disc on light,
+   light disc on dark. */
+.emailSubmit {
+  --email-ease: cubic-bezier(0.45, 0.05, 0.15, 1);
+  flex: none;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* A circle at minimum. Width is left to the content so the label can push it
+     wider, and min-width holds the disc shape while there is no label. */
+  min-width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 0;
+  border-radius: 9999px;
+  background: #0a0a0a;
+  color: #ffffff;
+  cursor: pointer;
+  transition:
+    padding var(--email-swap, 0.36s) var(--email-ease),
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+
+[data-theme="dark"] .emailSubmit {
+  background: #f3f3f4;
+  color: #0d0d0f;
+}
+
+.emailSubmit:hover:not(:disabled) {
+  opacity: 0.88;
+}
+
+.emailSubmit:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.emailSubmit:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+/* A tooltip under the field, not a line in the layout: absolutely positioned, so
+   it appears and disappears without moving the control above it. Kept mounted
+   and faded rather than swapped in, so screen readers announce it once.
+
+   Centred on the field via the 50% + translate pair, which works whatever the
+   notice's own width turns out to be. */
+.emailNotice {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  z-index: 5;
+  margin: 0;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  background: var(--openui-foreground);
+  box-shadow:
+    0 6px 20px -10px rgb(0 0 0 / 0.2),
+    0 2px 6px -3px rgb(0 0 0 / 0.1);
+  font-family: var(--home-font-text);
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: nowrap;
+  color: var(--openui-text-neutral-primary);
+  pointer-events: none;
+  opacity: 0;
+  /* The -50% centres it; the 4px is the slide, so both live in one transform. */
+  transform: translate(-50%, -4px);
+  visibility: hidden;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0s linear 0.2s;
+}
+
+[data-theme="dark"] .emailNotice {
+  background: #24242a;
+}
+
+/* A failure has to look different from a confirmation, or the two read as the
+   same event. Same pill, different text colour. */
+.emailNoticeError {
+  color: #b42318;
+}
+
+[data-theme="dark"] .emailNoticeError {
+  color: #f97066;
+}
+
+.emailNoticeVisible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  visibility: visible;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0s;
+}
+
+/* The fade is decoration; anyone who has asked for less motion still gets the
+   message, just without the slide. */
+@media (prefers-reduced-motion: reduce) {
+  .emailNotice {
+    transform: translate(-50%, 0);
+  }
+
+  /* The button still changes shape, it just does so at once. Set on the button
+     rather than :root, both because a CSS Module selector must carry a local
+     class and because the label and icon inherit these from here anyway. */
+  .emailSubmit {
+    --email-swap: 0.01s;
+    --email-swap-in: 0s;
+  }
+
+  .emailSubmitIcon,
+  .emailSubmitText {
+    transition-duration: 0.01s;
+  }
+}
+
+/* ---- Arrow <-> label ----
+   `display: none` cannot be transitioned and `width: auto` cannot be animated
+   to, so neither is used. Instead the label sits in a one-column grid whose
+   track goes 0fr -> 1fr: that IS animatable and resolves to the text's natural
+   width, so the button, and the pill around it, grow smoothly. The arrow is
+   taken out of flow so it contributes no width and can simply cross-fade. */
+.emailSubmitLabel {
+  /* Both halves of the swap share one duration and one curve, so the arrow, the
+     label and the pill all settle together. */
+  --email-ease: cubic-bezier(0.45, 0.05, 0.15, 1);
+  display: grid;
+  grid-template-columns: 0fr;
+  transition: grid-template-columns var(--email-swap, 0.36s) var(--email-ease);
+}
+
+.emailSubmitText {
+  overflow: hidden;
+  min-width: 0;
+  font-family: var(--home-font-text);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  opacity: 0;
+  /* Leaving: fade out at once, ahead of the collapse. */
+  transition: opacity 0.12s ease;
+}
+
+.emailSubmitIcon {
+  position: absolute;
+  opacity: 1;
+  /* Arriving: hold until the label has collapsed out of the way. */
+  transition:
+    opacity 0.16s ease var(--email-swap-in, 0.18s),
+    transform 0.24s var(--email-ease) var(--email-swap-in, 0.18s);
+}
+
+.emailSubmitLabelled {
+  padding: 0 1rem;
+}
+
+.emailSubmitLabelled .emailSubmitLabel {
+  grid-template-columns: 1fr;
+}
+
+.emailSubmitLabelled .emailSubmitText {
+  opacity: 1;
+  /* Arriving: wait for the track to open, then fade into space already made. */
+  transition: opacity 0.18s ease var(--email-swap-in, 0.18s);
+}
+
+/* Leaving: goes at once, and along its own axis rather than just vanishing. */
+.emailSubmitLabelled .emailSubmitIcon {
+  opacity: 0;
+  transform: translateX(6px);
+  transition:
+    opacity 0.14s ease,
+    transform 0.2s var(--email-ease);
+}
+
+/* ---- Phone ----
+   The pill splits: the field is its own input, and the button sits under it at
+   full width, always labelled. Swapping an icon in a shared pill is a desktop
+   affordance; on a phone the button wants its own tap target. */
+@media (max-width: 767px) {
+  .emailForm {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+
+  /* The dark rules above are [data-theme] + class, and a media query adds no
+     specificity, so plain `.emailForm` here loses to them and the pill's fill
+     survives as a ghost panel behind the stack. Match the specificity to clear
+     it. */
+  [data-theme="dark"] .emailForm,
+  .emailForm:focus-within,
+  [data-theme="dark"] .emailForm:focus-within {
+    border-color: transparent;
+    background: none;
+  }
+
+  .emailInput {
+    flex: 1 1 auto;
+    width: 100%;
+    padding: 13px 18px;
+    border: 1px solid rgba(10, 10, 10, 0.16);
+    border-radius: 9999px;
+    background: rgba(10, 10, 10, 0.03);
+  }
+
+  .emailSubmit {
+    width: 100%;
+    height: 2.875rem;
+    padding: 0 1rem;
+    border-radius: 9999px;
+    font-family: var(--home-font-text);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1;
+  }
+
+  /* No swap here, the button is only ever the labelled one. */
+  .emailSubmitIcon {
+    display: none;
+  }
+
+  .emailSubmitLabel {
+    grid-template-columns: 1fr;
+    transition: none;
+  }
+
+  .emailSubmitText {
+    font-size: 15px;
+    opacity: 1;
+    transition: none;
+  }
+
+  /* The field carries the border the shared pill used to. */
+  [data-theme="dark"] .emailInput {
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  /* Centred under the stack rather than under the field alone. */
+  .emailNotice {
+    white-space: normal;
+    text-align: center;
+  }
+}

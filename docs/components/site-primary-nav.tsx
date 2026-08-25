@@ -47,6 +47,11 @@ type NavDropdownChild = {
      a link, so there is nothing to click and nothing to tab to. The href stays
      put: clearing this flag is all it takes to turn it back on. */
   comingSoon?: true;
+  /* A short status chip under the card's copy, on an item that is otherwise a
+     normal link. Unlike `comingSoon` this changes no behaviour: the arrow, the
+     hover and the destination all stay. Rendered uppercase by the stylesheet,
+     so write it in sentence case. */
+  tag?: string;
 };
 
 /* A labelled run of cards inside one menu, for a menu whose cards divide along a
@@ -130,7 +135,7 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
             title: "Observability",
             description: "Product analytics and user insights for AI agents.",
             href: "/cloud/observability",
-            comingSoon: true,
+            tag: "Early access",
           },
         ],
       },
@@ -352,15 +357,20 @@ function renderBody(child: NavDropdownChild, layout: "cards" | "list") {
         )}
         {/* Under the copy rather than beside the title: it is the last thing to
             read, once you know what the thing is. */}
-        {child.comingSoon && <ComingSoonTag />}
+        {child.comingSoon ? (
+          <ItemTag label="Coming soon" />
+        ) : child.tag ? (
+          <ItemTag label={child.tag} />
+        ) : null}
       </span>
     </>
   );
 }
 
-/* The tag beside a title that is not yet a destination. */
-function ComingSoonTag() {
-  return <span className={styles.comingSoon}>Coming soon</span>;
+/* The status chip under a card's copy. Carries no behaviour of its own: whether
+   the item is clickable is decided by `comingSoon`, not by this. */
+function ItemTag({ label }: { label: string }) {
+  return <span className={styles.itemTag}>{label}</span>;
 }
 
 function DropdownCard({
