@@ -1,0 +1,52 @@
+name: Update example OpenUI packages
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: update-example-openui-packages
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: examples/pnpm-lock.yaml
+
+      - name: Update OpenUI packages
+        run: pnpm --dir examples update:openui
+
+      - name: Install updated dependencies
+        run: pnpm examples:install
+
+      - name: Verify examples
+        run: pnpm examples:verify
+
+      - name: Create dependency update pull request
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          add-paths: |
+            examples/**/package.json
+            examples/pnpm-lock.yaml
+          branch: codex/update-example-openui-packages
+          commit-message: "chore(examples): update OpenUI packages"
+          delete-branch: true
+          title: "chore(examples): update OpenUI packages"
+          body: |
+            Updates every example to the latest published versions of its `@openuidev/*` dependencies.
+
+            The examples were installed from the refreshed lockfile and all credential-free verification contracts passed before this pull request was created.
