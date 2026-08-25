@@ -8,7 +8,9 @@ declare const __AGNO_BACKEND_MODE__: "real" | "mock";
 const isRealAgentOS = __AGNO_BACKEND_MODE__ === "real";
 const DEMO_USER_ID = isRealAgentOS ? "openui-live-demo" : "openui-demo-user";
 const AGENT_ID = "openui-assistant";
-const AGENT_OS_URL = "https://os.agno.com";
+const DEFAULT_AGENT_OS_SESSION_URL_TEMPLATE = "https://os.agno.com/sessions/{session_id}";
+const AGENT_OS_SESSION_URL_TEMPLATE =
+  import.meta.env.VITE_AGENT_OS_SESSION_URL_TEMPLATE ?? DEFAULT_AGENT_OS_SESSION_URL_TEMPLATE;
 
 const llm = createAgnoLLM({
   url: "/agui",
@@ -35,7 +37,9 @@ const starters = [
 ];
 
 const agentOSSessionUrl = (sessionId: string) => {
-  const url = new URL(`/sessions/${encodeURIComponent(sessionId)}`, AGENT_OS_URL);
+  const url = new URL(
+    AGENT_OS_SESSION_URL_TEMPLATE.replace("{session_id}", encodeURIComponent(sessionId)),
+  );
   url.searchParams.set("sort_by", "updated_at_desc");
   url.searchParams.set("type", "all");
   url.searchParams.set("page", "1");

@@ -52,6 +52,18 @@ AGNO_API_URL=http://127.0.0.1:7777 pnpm dev
 
 The React application does not change.
 
+The **Open in AgentOS** action defaults to the hosted AgentOS session page. To
+point it at another AgentOS web interface, provide an absolute URL template with
+the `{session_id}` placeholder:
+
+```bash
+VITE_AGENT_OS_SESSION_URL_TEMPLATE='https://os.agno.com/sessions/{session_id}' pnpm dev
+```
+
+This configures the operational web-interface link, not the AgentOS backend API.
+The example adds the current session-list query parameters after replacing the
+placeholder.
+
 The proxy is development plumbing only: the browser calls same-origin `/agui`
 and `/sessions`, while Vite forwards those paths to port 7777 and avoids local
 CORS configuration. A production app can use its normal reverse proxy or pass
@@ -78,3 +90,27 @@ as a tool result, and AgentOS resumes the same run and `session_id`. Current
 AgentOS sends the completed prompt tool arguments as one event, so the form
 itself appears after the tool call closes; the resumed assistant answer streams
 normally.
+
+## Key files
+
+- `server.py` configures the Agno agent, tools, session database, and AG-UI
+  interface.
+- `src/App.tsx` connects Agent Interface to AgentOS streaming and storage.
+- `src/library.ts` defines the OpenUI component library used by the model.
+- `src/mock-agentos.ts` provides the credential-free local verification
+  harness.
+
+## Extend the example
+
+Add backend capabilities as ordinary Agno tools in `server.py`. Add or replace
+frontend components in `src/library.ts`, then regenerate the prompt before
+running the real AgentOS server. Production applications can also replace the
+development proxy and hosted session URL template with their own endpoints.
+
+## Verify
+
+From this directory, run the credential-free verification contract:
+
+```bash
+pnpm verify
+```
