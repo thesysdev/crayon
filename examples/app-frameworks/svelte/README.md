@@ -62,14 +62,12 @@ src/
 │       ├── Card.svelte
 │       ├── TextContent.svelte
 │       └── Button.svelte
-└── generated/
-    └── system-prompt.txt       # LLM system prompt describing the openui-lang syntax
 ```
 
 ## Adding components
 
 1. Create a Svelte component in `src/lib/components/`
 2. Define it with `defineComponent()` in `src/lib/library.ts`
-3. Add its signature to `src/generated/system-prompt.txt`
+3. Export it from `src/lib/library.ts`; the API builds the system prompt from the library at runtime
 
 See the [`@openuidev/svelte-lang` README](../../../packages/svelte-lang/README.md) for the full API.

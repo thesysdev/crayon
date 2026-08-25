@@ -43,7 +43,7 @@ OPENAI_API_KEY=sk-...
 pnpm --filter @openuidev/example-vue generate:prompt
 ```
 
-The generated prompt lives at `generated/system-prompt.txt` and is checked in, so this step is only needed after modifying component definitions in `lib/library.ts`.
+The generated prompt lives at the ignored path `generated/system-prompt.txt`. The dev and build commands regenerate it automatically, so this step is only needed when you want to inspect the generated artifacts without starting the app.
 
 ### Run
 
@@ -79,7 +79,7 @@ lib/
 server/
 └── api/chat.post.ts           # AI SDK streaming endpoint
 generated/
-└── system-prompt.txt          # LLM system prompt describing the openui-lang syntax
+└── system-prompt.txt          # Generated locally; ignored by Git
 assets/
 └── app.css                    # Tailwind CSS entry point
 ```
@@ -88,6 +88,6 @@ assets/
 
 1. Create a Vue component in `components/openui/`
 2. Define it with `defineComponent()` in `lib/library.ts`
-3. Run `pnpm --filter @openuidev/example-vue generate:prompt` to update `generated/system-prompt.txt`
+3. Restart the dev server, or run `pnpm --filter @openuidev/example-vue generate:prompt`, to update `generated/system-prompt.txt`
 
 See the [`@openuidev/vue-lang` README](../../../packages/vue-lang/README.md) for the full API.

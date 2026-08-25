@@ -50,7 +50,7 @@ Expo app -- POST /api/chat --> Next.js backend --> OpenAI
          <-- text/plain stream --                  (OpenUI Lang)
 ```
 
-The backend loads a pre-generated `system-prompt.txt`, forwards the conversation to OpenAI with streaming enabled, and returns raw `text/plain` chunks. The Expo app accumulates those chunks and passes the growing string into `<Renderer />`, which progressively parses and renders native UI as the response arrives.
+The backend loads `src/generated/system-prompt.txt`, which is generated locally before the backend starts, forwards the conversation to OpenAI with streaming enabled, and returns raw `text/plain` chunks. The Expo app accumulates those chunks and passes the growing string into `<Renderer />`, which progressively parses and renders native UI as the response arrives.
 
 ## Project layout
 
@@ -116,7 +116,7 @@ yarn generate:prompt
 npm generate:prompt
 ```
 
-This generates `backend/src/system-prompt.txt` from `backend/src/library.ts`. Re-run it any time you change component names, schemas, descriptions, or prompt rules.
+This generates the ignored file `backend/src/generated/system-prompt.txt` from `backend/src/library.ts`. The backend dev and build commands run this automatically; invoke it directly when you only want to refresh or inspect the generated artifacts.
 
 4. Start the Next.js backend:
 

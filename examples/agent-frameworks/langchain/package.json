@@ -3,12 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "generate:prompt": "pnpm --filter @openuidev/cli build && pnpm exec openui generate src/library.ts --out src/generated/system-prompt.txt",
+    "generate": "pnpm --filter @openuidev/cli build && node ../../../packages/openui-cli/dist/index.js generate src/library.ts --out src/generated/system-prompt.txt",
+    "generate:prompt": "pnpm generate",
     "dev:langgraph": "langgraphjs dev",
     "dev:next": "next dev",
     "dev:serve": "run-p dev:langgraph dev:next",
-    "langgraph:dev": "run-s generate:prompt dev:langgraph",
-    "dev": "run-s generate:prompt dev:serve",
+    "langgraph:dev": "run-s generate dev:langgraph",
+    "predev": "pnpm generate",
+    "dev": "run-s dev:serve",
+    "prebuild": "pnpm generate",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"

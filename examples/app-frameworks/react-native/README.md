@@ -33,7 +33,8 @@ react-native/
 ├── backend/                  # Next.js API server
     ├── src/
     │   ├── library.ts        # Component library definition (Node-compatible)
-    │   ├── system-prompt.txt # Auto-generated from library.ts
+    │   ├── generated/
+    │   │   └── system-prompt.txt # Generated locally from library.ts
     │   └── app/api/chat/
     │       └── route.ts      # Streaming chat endpoint
     └── env.example
@@ -70,7 +71,7 @@ OPENAI_API_KEY=sk-...
 
 ### 3. Generate the system prompt
 
-The [Prompt Generator](https://www.openui.com/docs/openui-lang/overview) compiles `library.ts` into `system-prompt.txt` — containing component signatures, syntax rules, and streaming guidelines for the LLM:
+The [Prompt Generator](https://www.openui.com/docs/openui-lang/overview) compiles `library.ts` into an ignored `generated/system-prompt.txt` containing component signatures, syntax rules, and streaming guidelines for the LLM. The backend dev and build commands run this step automatically; run it directly when you only want to refresh the generated artifacts:
 
 ```bash
 pnpm generate:prompt

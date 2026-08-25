@@ -5,7 +5,10 @@ import { join } from "path";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY ?? "" });
 
-const SYSTEM_PROMPT = readFileSync(join(process.cwd(), "src", "system-prompt.txt"), "utf-8");
+const SYSTEM_PROMPT = readFileSync(
+  join(process.cwd(), "src", "generated", "system-prompt.txt"),
+  "utf-8"
+);
 console.info("[OpenUI Lang] System prompt loaded:\n", SYSTEM_PROMPT);
 
 const conversationLog: Array<{ role: string; content: string }> = [];
