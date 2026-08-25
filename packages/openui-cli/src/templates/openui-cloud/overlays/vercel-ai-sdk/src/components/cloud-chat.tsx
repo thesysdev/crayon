@@ -40,7 +40,6 @@ export default function CloudChat() {
         componentLibrary={chatLibrary}
         logoUrl={logoPath}
         theme={{ mode }}
-        starters={STARTERS}
       >
         <AgentInterface.MobileHeader
           agentName=""
@@ -62,7 +61,6 @@ export default function CloudChat() {
         <AgentInterface.Welcome
           title="Good to see you"
           description="What's on your mind today?"
-          promptTemplates={PROMPT_TEMPLATES}
           glowAnimation
         />
       </AgentInterface>
