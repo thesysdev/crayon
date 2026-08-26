@@ -51,20 +51,20 @@ export const STARTERS = [
 ];
 ```
 
-Update these lines in `src/components/cloud-chat.tsx`:
+In `src/components/cloud-chat.tsx`, replace the existing starters import with:
 
-```diff
-- import { OPENUI_LOGOS, PROMPT_TEMPLATES, STARTERS } from "@/lib/starters";
-+ import { OPENUI_LOGOS, STARTERS } from "@/lib/starters";
+```tsx
+import { OPENUI_LOGOS, STARTERS } from "@/lib/starters";
+```
 
-  <AgentInterface.Welcome
--   title="Good to see you"
--   description="What's on your mind today?"
--   promptTemplates={PROMPT_TEMPLATES}
-+   title="Recipe Remix"
-+   description="Turn what you have into something delicious."
-    glowAnimation
-  />
+Then replace the existing `AgentInterface.Welcome` block with:
+
+```tsx
+<AgentInterface.Welcome
+  title="Recipe Remix"
+  description="Turn what you have into something delicious."
+  glowAnimation
+/>
 ```
 
 This removes the general-purpose prompt templates while keeping the three
@@ -100,37 +100,31 @@ export async function executeGetRecipeProfile(): Promise<string> {
 
 Change the values in `executeGetRecipeProfile()` to match your kitchen.
 
-Open `src/app/api/chat/route.ts` and update the imports:
+Open `src/app/api/chat/route.ts` and add this import:
 
-```diff
-  import { runFunctionToolLoop } from "@/lib/tool-loop";
-+ import {
-+   executeGetRecipeProfile,
-+   getRecipeProfileTool,
-+ } from "@/lib/tools/get-recipe-profile";
-  import { executeGetWeather, getWeatherTool } from "@/lib/tools/get-weather";
+```ts
+import { executeGetRecipeProfile, getRecipeProfileTool } from "@/lib/tools/get-recipe-profile";
 ```
 
-Register the executor beside the existing weather tool:
+Replace the existing `functionTools` object with:
 
-```diff
-  const functionTools = {
-    [getWeatherTool.name]: executeGetWeather,
-+   [getRecipeProfileTool.name]: executeGetRecipeProfile,
-  };
+```ts
+const functionTools = {
+  [getWeatherTool.name]: executeGetWeather,
+  [getRecipeProfileTool.name]: executeGetRecipeProfile,
+};
 ```
 
-Then add its declaration to the existing `tools` array. Keep the artifact,
-web search, image search, and weather tools already there:
+Then replace the existing `tools` array with:
 
-```diff
-  tools: [
-    artifactTool({ artifacts: ["slides", "report"] }) as unknown as Tool,
-    { type: "web_search" },
-    { type: "image_search" } as unknown as Tool,
-    getWeatherTool,
-+   getRecipeProfileTool,
-  ],
+```ts
+tools: [
+  artifactTool({ artifacts: ["slides", "report"] }) as unknown as Tool,
+  { type: "web_search" },
+  { type: "image_search" } as unknown as Tool,
+  getWeatherTool,
+  getRecipeProfileTool,
+],
 ```
 
 The generated route already runs the tool loop. Adding the declaration and
@@ -208,14 +202,10 @@ npx @openuidev/cli@latest generate \
   --out src/lib/recipe-library-spec.json
 ```
 
-Now update `src/app/api/chat/route.ts`. Import the generated specification
-beside the other local modules:
+Now add the generated specification import to `src/app/api/chat/route.ts`:
 
-```diff
-  import { requiredEnv } from "@/lib/env";
-  import { resolveRequestedModel } from "@/lib/models";
-+ import recipeLibrarySpec from "@/lib/recipe-library-spec.json";
-  import { runFunctionToolLoop } from "@/lib/tool-loop";
+```ts
+import recipeLibrarySpec from "@/lib/recipe-library-spec.json";
 ```
 
 Below the imports, add:
@@ -234,45 +224,26 @@ Never claim that a recipe is allergen-safe.
 `;
 ```
 
-Then update the `instructions` field inside the existing `createParams` object:
+Replace the existing `instructions` field inside `createParams` with:
 
-```diff
-  const createParams: ResponseCreateParamsNonStreaming = {
-    model,
-    conversation: threadId,
-    input,
-    store: true,
-    tools: [
-      // Keep the existing tools here.
-    ],
--   instructions: generateSystemPrompt(),
-+   instructions: generateSystemPrompt({
-+     library: recipeLibrarySpec,
-+     instructions: recipeInstructions,
-+   }),
-  };
+```ts
+instructions: generateSystemPrompt({
+  library: recipeLibrarySpec,
+  instructions: recipeInstructions,
+}),
 ```
 
-Finally, update the imports and `AgentInterface` in
-`src/components/cloud-chat.tsx`:
+Finally, add this import to `src/components/cloud-chat.tsx`:
 
-```diff
-+ import { recipeLibrary } from "@/lib/recipe-library";
-  import {
--   chatLibrary,
-    presentationArtifactRenderer,
-    reportArtifactRenderer,
-    useOpenuiCloudStorage,
-  } from "@openuidev/thesys";
+```tsx
+import { recipeLibrary } from "@/lib/recipe-library";
+```
 
-  <AgentInterface
-    storage={storage}
-    llm={llm}
--   componentLibrary={chatLibrary}
-+   componentLibrary={recipeLibrary}
-    artifactRenderers={artifactRenderers}
-    artifactCategories={artifactCategories}
-    logoUrl={logoPath}
+Remove `chatLibrary` from the existing `@openuidev/thesys` import, then replace
+the `componentLibrary` prop with:
+
+```text
+componentLibrary={recipeLibrary}
 ```
 
 <Callout type="info">
