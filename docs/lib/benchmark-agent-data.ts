@@ -216,7 +216,7 @@ export const benchmarkAgentDataset = {
     },
     model_board: {
       evidence_status: "summary-only",
-      note: "The model-board measurements are published here as summary rows. Raw generations and per-run verdicts for every row are committed in the benchmark repository for independent rescoring.11 regime and still lack per-row evidence and pricing links. Do not treat current-main results as row-identical evidence for this board.",
+      note: "The model-board measurements are published here as summary rows. Raw generations and per-run verdicts for every row are committed in the benchmark repository for independent rescoring.",
       raw_results: null,
     },
   },
