@@ -1,7 +1,7 @@
 /**
  * Entry point for the OpenUI CLI prompt generator.
  *
- * `npm run generate:prompt` runs `openui generate src/library.ts`, which bundles
+ * `pnpm generate:prompt` runs `openui generate src/library.ts`, which bundles
  * this file (stubbing asset imports) and reads the `library` + `promptOptions`
  * exports to serialize the system prompt into `src/generated/system-prompt.txt`.
  */

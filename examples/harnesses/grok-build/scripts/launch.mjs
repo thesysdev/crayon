@@ -2,9 +2,9 @@
 // filesystem and shell tools use GROK_BUILD_CWD, so the harness must not
 // silently confine every session to this example directory.
 //
-//   npm run dev -- /path/to/project        # explicit workspace
-//   npm run dev                            # interactive prompt
-//   GROK_BUILD_CWD=/path npm run dev       # environment override
+//   pnpm dev -- /path/to/project        # explicit workspace
+//   pnpm dev                            # interactive prompt
+//   GROK_BUILD_CWD=/path pnpm dev       # environment override
 import { spawn } from "node:child_process";
 import { existsSync, statSync } from "node:fs";
 import { resolve } from "node:path";
@@ -29,7 +29,7 @@ async function chooseWorkspace() {
     if (fromArg.startsWith("-")) {
       console.error(`launch.mjs: "${fromArg}" looks like a flag, not a path.`);
       console.error(
-        'Pass the workspace after a space-separated "--", e.g.: npm run dev -- /absolute/path',
+        'Pass the workspace after a space-separated "--", e.g.: pnpm dev -- /absolute/path',
       );
       process.exit(1);
     }
@@ -50,7 +50,7 @@ async function chooseWorkspace() {
 const workspace = resolve(await chooseWorkspace());
 if (!existsSync(workspace) || !statSync(workspace).isDirectory()) {
   console.error(`launch.mjs: not a directory: ${workspace}`);
-  console.error("Pass an existing directory, e.g.: npm run dev -- /absolute/path");
+  console.error("Pass an existing directory, e.g.: pnpm dev -- /absolute/path");
   process.exit(1);
 }
 

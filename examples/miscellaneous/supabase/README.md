@@ -12,7 +12,7 @@ Demonstrates:
 
 ## Prerequisites
 
-- Node.js 18+ and npm, pnpm, or Bun
+- Node.js 18+ and pnpm, npm, or Bun
 - A [Supabase](https://supabase.com) project (free tier is fine)
 - An [OpenRouter](https://openrouter.ai) API key, or any OpenAI-compatible LLM provider
 
@@ -75,8 +75,8 @@ Enter this standalone example:
 
 ```bash
 cd examples/miscellaneous/supabase
-npm install
-npm run dev
+pnpm install --ignore-workspace
+pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
@@ -186,5 +186,5 @@ examples/miscellaneous/supabase/
 ## Verify
 
 ```bash
-npm run verify
+pnpm verify
 ```

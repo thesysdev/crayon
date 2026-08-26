@@ -19,13 +19,13 @@ echo "OPENAI_API_KEY=sk-..." > .env.local
 2. Install dependencies from this example directory:
 
 ```bash
-npm install
+pnpm install --ignore-workspace
 ```
 
 3. Run the dev server from this directory:
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) to see the chat interface.
@@ -47,5 +47,5 @@ To add more tools, define them with `createTool` in `src/app/api/chat/route.ts` 
 ## Verify
 
 ```bash
-npm run verify
+pnpm verify
 ```

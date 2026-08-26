@@ -17,7 +17,7 @@ Describe an email in natural language, and the AI generates a live preview with 
 ## Prerequisites
 
 - Node.js 20+
-- npm, pnpm, or Bun
+- pnpm, npm, or Bun
 - An [OpenAI API key](https://platform.openai.com/api-keys)
 
 ## Getting Started
@@ -27,7 +27,7 @@ Describe an email in natural language, and the AI generates a live preview with 
 ```bash
 git clone https://github.com/thesysdev/openui.git
 cd openui/examples/miscellaneous/react-email
-npm install
+pnpm install --ignore-workspace
 ```
 
 2. Copy `.env.example` to `.env.local` and add your OpenAI API key:
@@ -45,19 +45,19 @@ OPENAI_API_KEY=sk-your-api-key-here
 3. Start the development server:
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 The app will be available at [http://localhost:3000](http://localhost:3000).
 
 ## Scripts
 
-| Command         | Description                                     |
-| --------------- | ----------------------------------------------- |
-| `npm run dev`   | Start dev server (auto-generates system prompt) |
-| `npm run build` | Production build                                |
-| `npm run start` | Start production server                         |
-| `npm run lint`  | Run ESLint                                      |
+| Command      | Description                                     |
+| ------------ | ----------------------------------------------- |
+| `pnpm dev`   | Start dev server (auto-generates system prompt) |
+| `pnpm build` | Production build                                |
+| `pnpm start` | Start production server                         |
+| `pnpm lint`  | Run ESLint                                      |
 
 ## Key Dependencies
 
@@ -125,5 +125,5 @@ Individual components are internal to the library — consumers only need `email
 ## Verify
 
 ```bash
-npm run verify
+pnpm verify
 ```

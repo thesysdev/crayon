@@ -5,9 +5,9 @@
 // explicitly (from a CLI arg, the PI_AGENT_CWD env var, or an interactive
 // prompt), then start Next with it set.
 //
-//   npm run dev -- /path/to/project   # explicit
-//   npm run dev                       # prompts (falls back to cwd if non-interactive)
-//   PI_AGENT_CWD=/path npm run dev    # env (no prompt)
+//   pnpm dev -- /path/to/project   # explicit
+//   pnpm dev                       # prompts (falls back to cwd if non-interactive)
+//   PI_AGENT_CWD=/path pnpm dev    # env (no prompt)
 import { spawn } from "node:child_process";
 import { existsSync, statSync } from "node:fs";
 import { resolve } from "node:path";
@@ -31,7 +31,7 @@ async function chooseWorkspace() {
     if (fromArg.startsWith("-")) {
       console.error(`launch.mjs: "${fromArg}" looks like a flag, not a path.`);
       console.error(
-        'Pass the workspace after a space-separated "--", e.g.:  npm run dev -- /absolute/path',
+        'Pass the workspace after a space-separated "--", e.g.:  pnpm dev -- /absolute/path',
       );
       process.exit(1);
     }
@@ -52,7 +52,7 @@ async function chooseWorkspace() {
 const workspace = resolve(await chooseWorkspace());
 if (!existsSync(workspace) || !statSync(workspace).isDirectory()) {
   console.error(`launch.mjs: not a directory: ${workspace}`);
-  console.error("Pass an existing directory, e.g.:  npm run dev -- /absolute/path");
+  console.error("Pass an existing directory, e.g.:  pnpm dev -- /absolute/path");
   process.exit(1);
 }
 

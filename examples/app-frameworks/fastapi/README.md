@@ -80,8 +80,8 @@ The API will be available at `http://localhost:8000`.
 
 ```bash
 cd frontend
-npm install
-npm run dev
+pnpm install --ignore-workspace
+pnpm dev
 ```
 
 Open [http://localhost:5173](http://localhost:5173).
@@ -111,5 +111,5 @@ Identical to the one scaffolded by `npx @openuidev/cli create`. Uses `openAIRead
 From `frontend/`, the verification script builds the client and syntax-checks the Python backend:
 
 ```bash
-npm run verify
+pnpm verify
 ```

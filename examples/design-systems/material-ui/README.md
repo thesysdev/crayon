@@ -80,7 +80,7 @@ The library exposes a representative subset of Material UI components mapped to 
 | Layout     | `Tabs` / `TabItem`, `Accordion` / `AccordionItem`                                             |
 | Follow-ups | `FollowUpBlock` / `FollowUpItem`                                                              |
 
-Each component is defined with `defineComponent({ name, props, description, component })` where `props` is a Zod schema. The schema and description are serialized into the system prompt by `npm run generate:prompt` (the OpenUI CLI reads `src/library.ts`), and `component` renders the node with Material UI primitives.
+Each component is defined with `defineComponent({ name, props, description, component })` where `props` is a Zod schema. The schema and description are serialized into the system prompt by `pnpm generate:prompt` (the OpenUI CLI reads `src/library.ts`), and `component` renders the node with Material UI primitives.
 
 ## Theming
 
@@ -91,7 +91,7 @@ The app wraps everything in MUI's `ThemeProvider` + `CssBaseline` via `ColorMode
 ### Prerequisites
 
 - Node.js 20.x
-- npm, pnpm, or Bun
+- pnpm, npm, or Bun
 - An OpenAI API key
 
 ### Setup
@@ -100,7 +100,7 @@ Enter this standalone example and install its dependencies:
 
 ```bash
 cd examples/design-systems/material-ui
-npm install
+pnpm install --ignore-workspace
 ```
 
 Provide your API key:
@@ -113,23 +113,23 @@ cp .env.example .env.local
 ### Develop
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
-`npm run dev` first runs `generate:prompt` to (re)generate `src/generated/system-prompt.txt` from the library, then starts Next.js on http://localhost:3000.
+`pnpm dev` first runs `generate:prompt` to (re)generate `src/generated/system-prompt.txt` from the library, then starts Next.js on http://localhost:3000.
 
 ### Regenerate the system prompt
 
 Whenever you add or change a component, regenerate the prompt:
 
 ```bash
-npm run generate:prompt
+pnpm generate:prompt
 ```
 
 ### Build
 
 ```bash
-npm run build
+pnpm build
 ```
 
 ## Adding a Component
@@ -137,10 +137,10 @@ npm run build
 1. Create `src/lib/mui-genui/components/<name>.tsx` and export a `defineComponent({ ... })`.
 2. If it can appear inside other containers, add its `.ref` to `ContentChildUnion` in `unions.ts`.
 3. Register it in the `components` array (and a `componentGroups` entry) in `index.tsx`.
-4. Run `npm run generate:prompt` so the LLM learns about it.
+4. Run `pnpm generate:prompt` so the LLM learns about it.
 
 ## Verify
 
 ```bash
-npm run verify
+pnpm verify
 ```

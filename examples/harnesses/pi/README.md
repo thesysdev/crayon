@@ -62,7 +62,7 @@ Enter this standalone example and install its dependencies:
 
 ```bash
 cd examples/harnesses/pi
-npm install
+pnpm install --ignore-workspace
 ```
 
 Then, from this example, set a provider key and point the agent at a project to work on:
@@ -71,10 +71,10 @@ Then, from this example, set a provider key and point the agent at a project to 
 cp .env.example .env   # set a provider API key (skip if using an existing Pi login)
 
 # Point the agent at the project you want it to work on:
-npm run dev -- /path/to/your/project
+pnpm dev -- /path/to/your/project
 ```
 
-`npm run dev` (no path) prompts you for the workspace; `PI_AGENT_CWD=/path npm run dev` sets it without a
+`pnpm dev` (no path) prompts you for the workspace; `PI_AGENT_CWD=/path pnpm dev` sets it without a
 prompt. The launcher prints the resolved workspace before the server starts. (`build` doesn't need
 a workspace — the agent only runs at request time, i.e. under `dev`/`start`.)
 
@@ -86,7 +86,7 @@ Then open the printed URL (default http://localhost:3000). Try:
 Production:
 
 ```bash
-npm run build && npm run start
+pnpm build && pnpm start
 ```
 
 ## Configuration
@@ -141,5 +141,5 @@ ability to reach this port as remote code execution.
 ## Verify
 
 ```bash
-npm run verify
+pnpm verify
 ```

@@ -102,14 +102,14 @@ vercel-ai-sdk/
 ### Prerequisites
 
 - Node.js 18+
-- npm, pnpm, or Bun
+- pnpm, npm, or Bun
 - An OpenAI API key
 
 ### 1. Install dependencies
 
 ```bash
 cd examples/agent-frameworks/vercel-ai-sdk
-npm install
+pnpm install --ignore-workspace
 ```
 
 ### 2. Configure environment
@@ -127,7 +127,7 @@ OPENAI_API_KEY=sk-...
 ### 3. Start the dev server
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 This runs `generate:prompt` first (compiles `src/library.ts` → `src/generated/system-prompt.txt`) then starts the Next.js dev server at `http://localhost:3000`.
@@ -143,7 +143,7 @@ This runs `generate:prompt` first (compiles `src/library.ts` → `src/generated/
 Re-run generation any time you change component definitions:
 
 ```bash
-npm run generate:prompt
+pnpm generate:prompt
 ```
 
 ### `src/app/api/chat/route.ts` — Backend
@@ -246,12 +246,12 @@ Returns mock search results for any query.
 
 ## Scripts
 
-| Script                    | Description                                                    |
-| ------------------------- | -------------------------------------------------------------- |
-| `npm run dev`             | Generate system prompt, then start the Next.js dev server      |
-| `npm run generate:prompt` | Recompile `src/library.ts` → `src/generated/system-prompt.txt` |
-| `npm run build`           | Build for production                                           |
-| `npm run start`           | Start the production server                                    |
+| Script                 | Description                                                    |
+| ---------------------- | -------------------------------------------------------------- |
+| `pnpm dev`             | Generate system prompt, then start the Next.js dev server      |
+| `pnpm generate:prompt` | Recompile `src/library.ts` → `src/generated/system-prompt.txt` |
+| `pnpm build`           | Build for production                                           |
+| `pnpm start`           | Start the production server                                    |
 
 ---
 
@@ -264,5 +264,5 @@ Returns mock search results for any query.
 ## Verify
 
 ```bash
-npm run verify
+pnpm verify
 ```

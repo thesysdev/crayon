@@ -29,13 +29,13 @@ frontend renders as live generative UI (cards, tables, forms, charts…).
 2. Install dependencies from this example directory:
 
    ```bash
-   npm install
+   pnpm install --ignore-workspace
    ```
 
 3. Run the dev server from this directory:
 
    ```bash
-   npm run dev
+   pnpm dev
    ```
 
 Open [http://localhost:3000](http://localhost:3000) and try a starter such as
@@ -52,7 +52,7 @@ Open [http://localhost:3000](http://localhost:3000) and try a starter such as
   to `/api/chat` and parsing the stream with `openAIAdapter()`.
 
 The `dev` script regenerates `src/generated/system-prompt.txt` from
-`src/library.ts` before starting Next.js (`npm run generate:prompt`). Re-run it
+`src/library.ts` before starting Next.js (`pnpm generate:prompt`). Re-run it
 after changing the component library.
 
 To add more tools, define them with `FunctionTool` in `src/agent.ts` and pass
@@ -66,5 +66,5 @@ them to the `Agent`.
 ## Verify
 
 ```bash
-npm run verify
+pnpm verify
 ```

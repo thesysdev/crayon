@@ -49,7 +49,7 @@ The backend and mobile client are separate install units, so either can be insta
 ### Prerequisites
 
 - Node.js 18+
-- npm, pnpm, or Bun
+- pnpm, npm, or Bun
 - An OpenAI API key
 
 ### 1. Install dependencies
@@ -57,8 +57,8 @@ The backend and mobile client are separate install units, so either can be insta
 From the `react-native/` example directory, install each standalone application:
 
 ```bash
-(cd backend && npm install)
-(cd chat-app && npm install)
+(cd backend && pnpm install --ignore-workspace)
+(cd chat-app && pnpm install --ignore-workspace)
 ```
 
 ### 2. Configure the backend
@@ -78,13 +78,13 @@ OPENAI_API_KEY=sk-...
 The [Prompt Generator](https://www.openui.com/docs/openui-lang/overview) compiles `library.ts` into an ignored `generated/system-prompt.txt` containing component signatures, syntax rules, and streaming guidelines for the LLM. The backend dev and build commands run this step automatically; run it directly when you only want to refresh the generated artifacts:
 
 ```bash
-(cd backend && npm run generate:prompt)
+(cd backend && pnpm generate:prompt)
 ```
 
 ### 4. Start the backend
 
 ```bash
-(cd backend && npm run dev)
+(cd backend && pnpm dev)
 ```
 
 The API will be available at `http://localhost:3000`.
@@ -92,7 +92,7 @@ The API will be available at `http://localhost:3000`.
 ### 5. Start the mobile app
 
 ```bash
-(cd chat-app && npm run start)
+(cd chat-app && pnpm start)
 ```
 
 ## What's in This Example
@@ -125,11 +125,11 @@ Uses the [`<Renderer />`](https://www.openui.com/docs/openui-lang/overview) comp
 
 ## Scripts
 
-| Directory   | Script                    | Description                                      |
-| ----------- | ------------------------- | ------------------------------------------------ |
-| `backend/`  | `npm run dev`             | Start the Next.js API server                     |
-| `backend/`  | `npm run generate:prompt` | Regenerate `system-prompt.txt` from `library.ts` |
-| `chat-app/` | `npm run start`           | Start the Expo dev server                        |
+| Directory   | Script                 | Description                                      |
+| ----------- | ---------------------- | ------------------------------------------------ |
+| `backend/`  | `pnpm dev`             | Start the Next.js API server                     |
+| `backend/`  | `pnpm generate:prompt` | Regenerate `system-prompt.txt` from `library.ts` |
+| `chat-app/` | `pnpm start`           | Start the Expo dev server                        |
 
 ## Learn More
 
@@ -139,6 +139,6 @@ Uses the [`<Renderer />`](https://www.openui.com/docs/openui-lang/overview) comp
 ## Verify
 
 ```bash
-(cd backend && npm run verify)
-(cd chat-app && npm run verify)
+(cd backend && pnpm verify)
+(cd chat-app && pnpm verify)
 ```

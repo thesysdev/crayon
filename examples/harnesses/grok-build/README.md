@@ -24,7 +24,7 @@ stdio mode for persistent coding sessions, live reasoning, tool activity, and ca
 
 ## Prerequisites
 
-- Node.js 22 and npm, pnpm, or Bun
+- Node.js 22 and pnpm, npm, or Bun
 - The latest stable `grok` CLI on `PATH`
 - A Grok login or `XAI_API_KEY`
 
@@ -45,17 +45,17 @@ Enter this standalone example and install its dependencies:
 
 ```bash
 cd examples/harnesses/grok-build
-npm install
+pnpm install --ignore-workspace
 ```
 
 Then start the example and choose the project Grok Build should work in:
 
 ```bash
 cp .env.example .env.local
-npm run dev -- /absolute/path/to/your/project
+pnpm dev -- /absolute/path/to/your/project
 ```
 
-Running `npm run dev` without a path prompts for the workspace in an interactive terminal. You can
+Running `pnpm dev` without a path prompts for the workspace in an interactive terminal. You can
 also set `GROK_BUILD_CWD=/absolute/path` in `.env.local` or the shell to skip the prompt. The
 launcher validates the directory and prints the resolved workspace before starting Next.js.
 
@@ -174,5 +174,5 @@ tool-permission approval UI; question and plan dialogs continue to work independ
 ## Verify
 
 ```bash
-npm run verify
+pnpm verify
 ```

@@ -74,10 +74,10 @@ cp env.example .env
 # Edit .env and set OPENAI_API_KEY=sk-...
 
 # Install dependencies
-npm install
+pnpm install --ignore-workspace
 
 # Start the dev server
-npm run dev
+pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) to see the spreadsheet with the AI chat panel.
@@ -151,5 +151,5 @@ hands-on-table-chat/
 ## Verify
 
 ```bash
-npm run verify
+pnpm verify
 ```
