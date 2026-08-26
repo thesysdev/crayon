@@ -9,6 +9,7 @@ import { Command } from "commander";
 import { runCreateApp } from "./commands/create-app";
 import { GenerateOptions, runGenerate } from "./commands/generate";
 import { detectAgent, UNKNOWN_AGENT_NAME } from "./lib/detect-agent";
+import { exampleNames, rejectConflictingScaffoldSelectors } from "./lib/projects";
 import { rejectConflictingImmediateFlags, resolveArgs } from "./lib/resolve-args";
 import { telemetry } from "./lib/telemetry";
 import {
@@ -64,6 +65,7 @@ program
     "--backend-framework <framework>",
     "Backend framework: default | langgraph | vercel-ai-sdk | vercel-eve",
   )
+  .option("-e, --example <example>", `create from a featured example (${exampleNames.join(", ")})`)
   .option("--api-key <key>", "OpenUI Cloud API key (cloud template; skips sign-in)")
   .option("--auth <method>", "Cloud auth method: oauth | skip (manual is deprecated)")
   .option("--skill", "Install the OpenUI agent skill for AI coding assistants")
@@ -92,6 +94,11 @@ Backend frameworks:
   langgraph      Bootstraps a LangGraph agent with the selected model backend.
   vercel-ai-sdk  Scaffolds a Vercel AI SDK agent with the selected model backend.
   vercel-eve     Scaffolds a Vercel Eve agent with the selected model backend.
+
+Feature examples:
+  ${exampleNames.join("\n  ")}
+  Copied from the OpenUI repo examples/. Use --example <name>, or pick one
+  interactively from the Feature Examples section.
 `,
   )
   .action(
@@ -99,6 +106,7 @@ Backend frameworks:
       name?: string;
       template?: string;
       backendFramework?: string;
+      example?: string;
       apiKey?: string;
       auth?: string;
       skill?: boolean;
@@ -109,10 +117,16 @@ Backend frameworks:
     }) => {
       try {
         rejectConflictingImmediateFlags(process.argv.slice(2));
+        rejectConflictingScaffoldSelectors({
+          example: options.example,
+          backendFramework: normalizeBackendFramework(options.backendFramework),
+          template: options.template,
+        });
         await runCreateApp({
           name: options.name,
           template: normalizeTemplate(options.template),
           backendFramework: normalizeBackendFramework(options.backendFramework),
+          example: options.example,
           apiKey: options.apiKey,
           auth: normalizeAuth(options.auth),
           skill: options.skill,
