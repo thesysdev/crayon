@@ -47,6 +47,27 @@ export async function downloadGithubSubdir(options: {
   );
 }
 
+export async function fetchGithubFile(options: {
+  repo: string;
+  filePath: string;
+  ref?: string;
+  timeoutMs: number;
+}): Promise<string> {
+  const ref = options.ref?.trim() || DEFAULT_REF;
+  const url = `https://raw.githubusercontent.com/${options.repo}/${ref}/${options.filePath}`;
+  const response = await fetch(url, {
+    headers: { "User-Agent": "openui-cli" },
+    signal: AbortSignal.timeout(options.timeoutMs),
+  }).catch((error: unknown) => {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`Failed to download ${url}: ${message}`, { cause: error });
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to download ${url}: ${response.status} ${response.statusText}`);
+  }
+  return response.text();
+}
+
 type DataState = {
   kind: "data";
   remaining: number;

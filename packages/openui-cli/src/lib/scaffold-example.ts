@@ -3,11 +3,11 @@ import * as os from "node:os";
 import * as path from "node:path";
 
 import type { PackageManagerName } from "./detect-package-manager";
+import { OPENUI_GITHUB_REPO, openUiSourceRoots } from "./featured-examples";
 import { downloadGithubSubdir } from "./github-tarball";
 import type { ExampleProject } from "./projects";
 import { CreateError } from "./telemetry";
 
-const GITHUB_REPO = "thesysdev/openui";
 const DOWNLOAD_TIMEOUT_MS = 60_000;
 const ARTIFACT_DIRS = new Set(["node_modules", ".next", ".turbo", "dist", ".nuxt", ".svelte-kit"]);
 
@@ -18,7 +18,7 @@ const GENERATE_SCRIPT_FALLBACK_RE =
 
 export async function resolveExampleRef(): Promise<string | undefined> {
   try {
-    const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases/latest`, {
+    const res = await fetch(`https://api.github.com/repos/${OPENUI_GITHUB_REPO}/releases/latest`, {
       headers: { "User-Agent": "openui-cli", Accept: "application/vnd.github+json" },
       signal: AbortSignal.timeout(DOWNLOAD_TIMEOUT_MS),
     });
@@ -37,13 +37,7 @@ function shouldCopyExamplePath(exampleDir: string, src: string): boolean {
 }
 
 function findLocalExampleDir(examplePath: string, sourceRoot?: string): string | undefined {
-  const roots = [
-    sourceRoot,
-    process.env["OPENUI_CLI_SOURCE_ROOT"],
-    path.resolve(__dirname, "..", "..", "..", ".."),
-  ].filter((root): root is string => Boolean(root));
-
-  for (const root of roots) {
+  for (const root of openUiSourceRoots(sourceRoot)) {
     const candidate = path.join(root, examplePath);
     if (fs.existsSync(path.join(candidate, "package.json"))) return candidate;
   }
@@ -168,7 +162,7 @@ export async function scaffoldExample(params: {
     } else {
       const download = (exampleRef?: string) =>
         downloadGithubSubdir({
-          repo: GITHUB_REPO,
+          repo: OPENUI_GITHUB_REPO,
           subdir: example.path,
           destDir: targetDir,
           ref: exampleRef,

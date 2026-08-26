@@ -4,6 +4,10 @@ These projects showcase what OpenUI can do with different runtimes, application 
 
 Each example has one primary home based on the integration seam it is intended to teach. Cross-cutting technologies belong in that example's README rather than in duplicate directory trees.
 
+## CLI featured catalog
+
+[`featured.json`](./featured.json) is the list `openui create` prefetches at runtime for the Feature Examples prompt and `--example`. Keep it to a few orthogonal integrations that are not already covered by CLI starter templates (React + default route, Vercel AI SDK, LangGraph). All other examples stay in this tree as references; they are not scaffolded by the CLI.
+
 ## Categories
 
 | Category                                 | Use it for                                                                                                        |

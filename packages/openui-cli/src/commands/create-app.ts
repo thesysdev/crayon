@@ -11,6 +11,7 @@ import {
   type PackageManagerName,
 } from "../lib/detect-package-manager";
 import { runDevCommand } from "../lib/dev-server";
+import { loadFeaturedExamples, requireFeaturedExamples } from "../lib/featured-examples";
 import { runSkillInstall, shouldInstallSkill } from "../lib/install-skill";
 import {
   applyOverlay,
@@ -202,6 +203,9 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   });
 
   const exampleRefPromise = resolveExampleRef();
+  const featuredExamplesPromise = loadFeaturedExamples({
+    refPromise: exampleRefPromise,
+  });
 
   const nameArgs = await resolveArgs(
     {
@@ -219,9 +223,13 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     interactive,
   );
 
+  const featuredExamples = await featuredExamplesPromise;
+  requireFeaturedExamples(featuredExamples, options.example);
+
   const project = await resolveProject({
     backendFramework: options.backendFramework,
     example: options.example,
+    examples: featuredExamples,
     interactive,
   });
 

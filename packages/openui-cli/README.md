@@ -13,7 +13,7 @@ It currently supports two workflows:
   - **OpenUI Cloud (recommended)** — hosted models with managed conversations, streaming, built-in tools, and ready-to-use report and presentation artifacts
   - **Self-hosted** — bring an OpenAI-compatible model key and own the AI route and persistence
 - keeping the default minimal SDK route or adding a LangGraph, Vercel AI SDK, or Vercel Eve backend to either template
-- scaffolding a featured example from the OpenUI repo (`vue`, `mastra`, `google-adk`, and others)
+- scaffolding a featured example listed in [`examples/featured.json`](https://github.com/thesysdev/openui/blob/main/examples/featured.json)
 - generating a system prompt or JSON Schema from a `createLibrary()` export
 
 ## Install
@@ -50,7 +50,7 @@ npx @openuidev/cli@latest create --template openui-cloud --backend-framework ver
 npx @openuidev/cli@latest create --template openui-self-hosted --backend-framework langgraph
 npx @openuidev/cli@latest create --template openui-self-hosted --backend-framework vercel-ai-sdk
 npx @openuidev/cli@latest create --template openui-self-hosted --backend-framework vercel-eve
-npx @openuidev/cli@latest create --example vue
+npx @openuidev/cli@latest create --example shadcn
 npx @openuidev/cli@latest create --example mastra
 ```
 
@@ -79,9 +79,9 @@ openui create [options]
 Options:
 
 - `-n, --name <string>`: Project name (interactive default: `openui-agent`)
-- `-t, --template <template>`: AI backend — `openui-cloud` (managed) or `openui-self-hosted` (bring your provider)
-- `--backend-framework <framework>`: API route implementation — `default`, `langgraph`, `vercel-ai-sdk`, or `vercel-eve`
-- `-e, --example <example>`: Scaffold a featured example from the OpenUI repo instead of a starter template
+- `-t, --template <template>`: AI backend `key` from `templates/templates.json` — interactive default `openui-cloud`
+- `--backend-framework <framework>`: Overlay `key` from that template's `overlays` list (plus `default` for the base template)
+- `-e, --example <example>`: Scaffold a featured example from `examples/featured.json` instead of a starter template
 - `--skill`: Install the OpenUI agent skill for AI coding assistants
 - `--no-skill`: Skip installing the OpenUI agent skill
 - `--no-install`: Scaffold without running the package install
@@ -133,12 +133,12 @@ Every framework overlay includes `get_weather` as its example app-owned function
 
 #### Feature examples
 
-Interactive `openui create` also lists **Feature Examples** under the starter templates — Vue, Svelte, Mastra, Google ADK, shadcn/ui, and others from the OpenUI repo. Pick one in the prompt, or pass `--example <name>`. `--example` cannot be combined with `--template` or `--backend-framework`.
+Interactive `openui create` lists **Feature Examples** under the starter templates. The names come from [`examples/featured.json`](https://github.com/thesysdev/openui/blob/main/examples/featured.json) in the OpenUI repo — the CLI prefetches that catalog at runtime, so adding or removing an example does not require a CLI release. Pick one in the prompt, or pass `--example <name>`. `--example` cannot be combined with `--template` or `--backend-framework`.
 
-Examples are copied from the local OpenUI checkout when the CLI can see `examples/`, otherwise downloaded from GitHub. Workspace and catalog dependencies are rewritten to `latest`, and monorepo `generate` scripts are rewritten to `npx @openuidev/cli generate`.
+The catalog currently features FastAPI, shadcn/ui, React Native, and Mastra. Examples are copied from the local OpenUI checkout when the CLI can see `examples/`, otherwise downloaded from GitHub. Workspace and catalog dependencies are rewritten to `latest`, and monorepo `generate` scripts are rewritten to `npx @openuidev/cli generate`.
 
 ```bash
-openui create --example vue
+openui create --example shadcn
 openui create --name my-mastra-app --example mastra --no-immediate
 ```
 
@@ -171,7 +171,7 @@ openui create --name my-app --template openui-cloud --auth oauth
 openui create --name my-app --template openui-cloud --backend-framework langgraph --auth oauth
 openui create --name my-app --template openui-cloud --backend-framework vercel-ai-sdk --auth oauth
 openui create --name my-app --template openui-cloud --backend-framework vercel-eve --auth oauth
-openui create --name my-vue-app --example vue
+openui create --name my-shadcn-app --example shadcn
 openui create --name my-app --template openui-cloud --api-key tk_your_key
 openui create --name my-app --template openui-self-hosted
 openui create --name my-app --template openui-cloud --immediate

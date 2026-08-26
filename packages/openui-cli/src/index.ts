@@ -9,7 +9,7 @@ import { Command } from "commander";
 import { runCreateApp } from "./commands/create-app";
 import { GenerateOptions, runGenerate } from "./commands/generate";
 import { detectAgent, UNKNOWN_AGENT_NAME } from "./lib/detect-agent";
-import { exampleNames, rejectConflictingScaffoldSelectors } from "./lib/projects";
+import { rejectConflictingScaffoldSelectors } from "./lib/projects";
 import { rejectConflictingImmediateFlags, resolveArgs } from "./lib/resolve-args";
 import { telemetry } from "./lib/telemetry";
 import {
@@ -65,7 +65,7 @@ program
     "--backend-framework <framework>",
     "Backend framework: default | langgraph | vercel-ai-sdk | vercel-eve",
   )
-  .option("-e, --example <example>", `create from a featured example (${exampleNames.join(", ")})`)
+  .option("-e, --example <example>", "create from a featured example (see examples/featured.json)")
   .option("--api-key <key>", "OpenUI Cloud API key (cloud template; skips sign-in)")
   .option("--auth <method>", "Cloud auth method: oauth | skip (manual is deprecated)")
   .option("--skill", "Install the OpenUI agent skill for AI coding assistants")
@@ -96,9 +96,8 @@ Backend frameworks:
   vercel-eve     Scaffolds a Vercel Eve agent with the selected model backend.
 
 Feature examples:
-  ${exampleNames.join("\n  ")}
-  Copied from the OpenUI repo examples/. Use --example <name>, or pick one
-  interactively from the Feature Examples section.
+  Loaded at runtime from examples/featured.json in the OpenUI repo.
+  Use --example <name>, or pick one interactively from Feature Examples.
 `,
   )
   .action(

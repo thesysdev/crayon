@@ -23,11 +23,12 @@ export interface ExampleProject {
   envFile: EnvFileHint;
   /** Primary env var to prompt for. Omit when the example needs several keys. */
   envKey?: string;
+  aliases?: string[];
 }
 
 export type ProjectMetadata = TemplateProject | ExampleProject;
 
-export const PROJECT_METADATA: ProjectMetadata[] = [
+export const STARTER_TEMPLATES: TemplateProject[] = [
   {
     name: "default",
     label: "Default",
@@ -52,136 +53,12 @@ export const PROJECT_METADATA: ProjectMetadata[] = [
     description: "Eve agent rendered through Agent Interface",
     category: "template",
   },
-  {
-    name: "google-adk",
-    label: "Google ADK",
-    description: "Google ADK TypeScript agent streaming OpenUI Lang",
-    category: "example",
-    path: "examples/agent-frameworks/google-adk",
-    envFile: ".env.local",
-    envKey: "GEMINI_API_KEY",
-  },
-  {
-    name: "mastra",
-    label: "Mastra",
-    description: "Mastra agent connected through AG-UI",
-    category: "example",
-    path: "examples/agent-frameworks/mastra",
-    envFile: ".env.local",
-    envKey: "OPENAI_API_KEY",
-  },
-  {
-    name: "vue",
-    label: "Vue",
-    description: "OpenUI Lang parsing and rendering in Nuxt and Vue",
-    category: "example",
-    path: "examples/app-frameworks/vue",
-    envFile: ".env",
-    envKey: "OPENAI_API_KEY",
-  },
-  {
-    name: "svelte",
-    label: "Svelte",
-    description: "OpenUI Lang parsing and rendering in SvelteKit",
-    category: "example",
-    path: "examples/app-frameworks/svelte",
-    envFile: ".env",
-    envKey: "OPENAI_API_KEY",
-  },
-  {
-    name: "react-native",
-    label: "React Native",
-    description: "Expo client rendering native OpenUI components",
-    category: "example",
-    path: "examples/app-frameworks/react-native",
-    envFile: ".env.local",
-  },
-  {
-    name: "fastapi",
-    label: "FastAPI",
-    description: "Python FastAPI streaming backend with a React client",
-    category: "example",
-    path: "examples/app-frameworks/fastapi",
-    envFile: ".env",
-  },
-  {
-    name: "material-ui",
-    label: "Material UI",
-    description: "Material UI component library for generated interfaces",
-    category: "example",
-    path: "examples/design-systems/material-ui",
-    envFile: ".env.local",
-    envKey: "OPENAI_API_KEY",
-  },
-  {
-    name: "shadcn",
-    label: "shadcn/ui",
-    description: "shadcn/ui component library for generated interfaces",
-    category: "example",
-    path: "examples/design-systems/shadcn",
-    envFile: ".env.local",
-    envKey: "OPENAI_API_KEY",
-  },
-  {
-    name: "supabase",
-    label: "Supabase",
-    description: "Persisted conversations and threads with Supabase",
-    category: "example",
-    path: "examples/miscellaneous/supabase",
-    envFile: ".env.local",
-  },
-  {
-    name: "react-email",
-    label: "React Email",
-    description: "Generate and preview emails with the React Email library",
-    category: "example",
-    path: "examples/miscellaneous/react-email",
-    envFile: ".env",
-    envKey: "OPENAI_API_KEY",
-  },
-  {
-    name: "handsontable",
-    label: "Handsontable",
-    description: "Generated spreadsheet interfaces backed by Handsontable",
-    category: "example",
-    path: "examples/miscellaneous/handsontable",
-    envFile: ".env.local",
-    envKey: "OPENAI_API_KEY",
-  },
-  {
-    name: "html-artifact",
-    label: "HTML artifact",
-    description: "Sandboxed HTML artifacts as an OpenUI capability",
-    category: "example",
-    path: "examples/miscellaneous/html-artifact",
-    envFile: ".env.local",
-    envKey: "OPENAI_API_KEY",
-  },
 ];
 
-export const templateNames = PROJECT_METADATA.filter(
-  (project): project is TemplateProject => project.category === "template",
-).map((project) => project.name);
-
-export const exampleNames = PROJECT_METADATA.filter(
-  (project): project is ExampleProject => project.category === "example",
-).map((project) => project.name);
-
-const EXAMPLE_ALIASES: Record<string, string> = {
-  "shadcn-ui": "shadcn",
-  shadcnui: "shadcn",
-  mui: "material-ui",
-  material: "material-ui",
-  rn: "react-native",
-  expo: "react-native",
-  eve: "vercel-eve",
-  adk: "google-adk",
-};
+export const templateNames = STARTER_TEMPLATES.map((project) => project.name);
 
 export function findTemplate(name: OverlayName): TemplateProject {
-  const project = PROJECT_METADATA.find(
-    (entry): entry is TemplateProject => entry.category === "template" && entry.name === name,
-  );
+  const project = STARTER_TEMPLATES.find((entry) => entry.name === name);
   if (!project) {
     throw new CreateError(
       "args_resolution",
@@ -193,16 +70,18 @@ export function findTemplate(name: OverlayName): TemplateProject {
   return project;
 }
 
-export function findExample(name: string): ExampleProject {
+export function findExample(name: string, examples: ExampleProject[]): ExampleProject {
   const normalized = name.toLowerCase();
-  const key = EXAMPLE_ALIASES[normalized] ?? normalized;
-  const project = PROJECT_METADATA.find(
-    (entry): entry is ExampleProject => entry.category === "example" && entry.name === key,
+  const project = examples.find(
+    (entry) =>
+      entry.name.toLowerCase() === normalized ||
+      entry.aliases?.some((alias) => alias.toLowerCase() === normalized),
   );
   if (!project) {
+    const available = examples.map((entry) => entry.name).join(" | ") || "(none loaded)";
     throw new CreateError(
       "args_resolution",
-      `unknown example "${name}". Use: ${exampleNames.join(" | ")}.`,
+      `unknown example "${name}". Use: ${available}.`,
       "invalid_input",
       "INVALID_EXAMPLE",
     );
@@ -236,35 +115,45 @@ export function rejectConflictingScaffoldSelectors(opts: {
 export async function resolveProject(params: {
   backendFramework?: OverlayName;
   example?: string;
+  examples: ExampleProject[];
   interactive: boolean;
 }): Promise<ProjectMetadata> {
-  const { backendFramework, example, interactive } = params;
+  const { backendFramework, example, examples, interactive } = params;
 
-  if (example) return findExample(example);
+  if (example) return findExample(example, examples);
   if (backendFramework) return findTemplate(backendFramework);
   if (!interactive) return findTemplate("default");
 
   const { select, Separator } = await import("@inquirer/prompts");
   try {
+    const choices = [
+      new Separator("────── Starter Templates ──────"),
+      ...STARTER_TEMPLATES.map((project) => ({
+        value: `template:${project.name}`,
+        name: project.label,
+        description: project.description,
+      })),
+    ];
+    if (examples.length > 0) {
+      choices.push(
+        new Separator("────── Feature Examples ──────"),
+        ...examples.map((project) => ({
+          value: `example:${project.name}`,
+          name: project.label,
+          description: project.description,
+        })),
+      );
+    }
+
     const selected = await select({
       message: "Select a project to scaffold:",
-      choices: [
-        new Separator("────── Starter Templates ──────"),
-        ...PROJECT_METADATA.filter((project) => project.category === "template").map((project) => ({
-          value: project.name,
-          name: project.label,
-          description: project.description,
-        })),
-        new Separator("────── Feature Examples ──────"),
-        ...PROJECT_METADATA.filter((project) => project.category === "example").map((project) => ({
-          value: project.name,
-          name: project.label,
-          description: project.description,
-        })),
-      ],
+      choices,
     });
 
-    return PROJECT_METADATA.find((project) => project.name === selected) ?? findTemplate("default");
+    if (selected.startsWith("example:")) {
+      return findExample(selected.slice("example:".length), examples);
+    }
+    return findTemplate(selected.slice("template:".length) as OverlayName);
   } catch (err) {
     const { ExitPromptError } = await import("@inquirer/core");
     if (err instanceof ExitPromptError) {
