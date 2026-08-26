@@ -82,7 +82,7 @@ pnpm examples:verify
 
 Examples that use static system prompts generate them locally before `dev`, `build`, and `verify`. Generated prompt and spec files are ignored by Git and should not be committed.
 
-All `@openuidev/*` dependencies are exact published versions rather than links to packages in this repository. The weekly `Update example OpenUI packages` workflow updates them together, refreshes `examples/pnpm-lock.yaml`, verifies every example, and opens or updates one pull request when versions change.
+All `@openuidev/*` dependencies are exact published versions rather than links to packages in this repository. The manually triggered `Update example OpenUI packages` workflow updates them together, refreshes `examples/pnpm-lock.yaml`, verifies every example, and opens or updates one pull request when versions change.
 
 ## Maintenance contract
 
