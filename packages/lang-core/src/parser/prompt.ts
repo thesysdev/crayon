@@ -124,7 +124,7 @@ function syntaxRules(
     '3. Expressions are: strings ("..."), numbers, booleans (true/false), null, arrays ([...]), objects ({...}), or component calls TypeName(arg1, arg2, ...)',
     "4. Use references for readability: define `name = ...` on one line, then use `name` later",
     "5. EVERY variable (except root) MUST be referenced by at least one other variable. Unreferenced variables are silently dropped and will NOT render. Always include defined variables in their parent's children/items array.",
-    "6. Arguments are POSITIONAL (order matters, not names). Follow each component signature's argument order — named/colon syntax is NOT supported and silently breaks",
+    '6. Arguments are POSITIONAL (order matters, not names). Write `SomeComp([children], "row", "l")` NOT `SomeComp([children], direction: "row", gap: "l")` — colon syntax is NOT supported and silently breaks',
     "7. Optional arguments can be omitted from the end",
   ];
 
@@ -406,6 +406,7 @@ WRONG — you called a tool and got data back, but you inlined the results:
 openCount = 2
 item1 = SomeComp("first item title")
 item2 = SomeComp("second item title")
+list = SomeComp([item1, item2])
 chart = SomeChart(["A", "B"], [12, 8])
 \`\`\`
 This is static — it shows stale data and won't update. Creating item1, item2, item3... manually is ALWAYS wrong when a tool exists.
