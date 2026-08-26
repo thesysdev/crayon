@@ -536,13 +536,6 @@ export const OPENUI_MODEL_BOARD = [
     costPerPass: 2.07,
   },
   {
-    id: "ox-alpha",
-    label: "ox-alpha",
-    provider: "Stealth",
-    score: 91.8,
-    costPerPass: 0.0,
-  },
-  {
     id: "qwen-3-8-2-4t",
     label: "Qwen3.8 2.4T",
     provider: "Alibaba",
@@ -1047,7 +1040,6 @@ export const CHANGELOG = [
     version: "v2",
     entries: [
       "Rescored 24–25 Aug 2026 against one build of the shipped OpenUI parser, lang-core 0.2.16, whose parser validates enum and scalar prop values. Every row on the site and in the repository is now on that single regime.",
-      "ox-alpha added — a stealth free preview — bringing the board to 31 models.",
       "Google's seat in the cross-format slice moves from Gemini 3.6 Flash to Gemini 3.7 Flash. Gemini 3.6 Flash stays on the model board.",
       "Rows 14 and 21–29 ran with an 8,192-token output ceiling for condition uniformity, because Phi-4's native context cannot fit the prompt plus a 16,384-token output request. Legs that truncated were rerun at the headline ceiling under a pre-registered replace-with-whatever-it-gives rule; no truncations remain except two on DiffusionGemma, which is served at a 16,384-token total window.",
       "GPT-5.6 Terra reflects a rescore of its committed raws after the original results file was found to be from a different roll.",
