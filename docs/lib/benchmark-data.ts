@@ -39,7 +39,7 @@ export const MODELS = [
   { id: "sol", mark: "openai", label: "Sol", family: "GPT-5.6", vendor: "OpenAI", gensPerBrief: 4 },
   { id: "opus", mark: "anthropic", label: "Claude Opus 4.8", vendor: "Anthropic", gensPerBrief: 4 },
   { id: "kimi", mark: "moonshot", label: "Kimi K3", vendor: "Moonshot", gensPerBrief: 4 },
-  { id: "gemini", mark: "gemini", label: "Gemini 3.6 Flash", vendor: "Google", gensPerBrief: 4 },
+  { id: "gemini", mark: "gemini", label: "Gemini 3.7 Flash", vendor: "Google", gensPerBrief: 4 },
   { id: "qwen", mark: "qwen", label: "Qwen3.8 2.4T", vendor: "Alibaba", gensPerBrief: 4 },
   { id: "muse", mark: "meta", label: "Muse Spark 1.2", vendor: "Meta", gensPerBrief: 4 },
 ] as const;
@@ -82,14 +82,14 @@ export const runCounts: Record<ModelId, Record<FormatId, RunCount>> = {
     jsonRender: { runs: 184, complete: 161, renderable: 184 },
   },
   kimi: {
-    openui: { runs: 184, complete: 178, renderable: 184 },
+    openui: { runs: 184, complete: 177, renderable: 184 },
     a2ui: { runs: 184, complete: 176, renderable: 179 },
     jsonRender: { runs: 184, complete: 131, renderable: 184 },
   },
   gemini: {
-    openui: { runs: 184, complete: 175, renderable: 184 },
-    a2ui: { runs: 184, complete: 175, renderable: 180 },
-    jsonRender: { runs: 184, complete: 142, renderable: 184 },
+    openui: { runs: 184, complete: 182, renderable: 184 },
+    a2ui: { runs: 184, complete: 173, renderable: 178 },
+    jsonRender: { runs: 184, complete: 171, renderable: 184 },
   },
   qwen: {
     openui: { runs: 184, complete: 169, renderable: 183 },
@@ -97,7 +97,7 @@ export const runCounts: Record<ModelId, Record<FormatId, RunCount>> = {
     jsonRender: { runs: 184, complete: 149, renderable: 180 },
   },
   muse: {
-    openui: { runs: 184, complete: 178, renderable: 184 },
+    openui: { runs: 184, complete: 177, renderable: 184 },
     a2ui: { runs: 184, complete: 178, renderable: 179 },
     jsonRender: { runs: 184, complete: 150, renderable: 184 },
   },
@@ -465,8 +465,20 @@ export const costPer1kScreens = (modelId: ModelId, id: FormatId) =>
  * the source run reports serving hardware rather than a comparable API cost.
  */
 export const OPENUI_MODEL_BOARD = [
-  { id: "grok-4-6", label: "Grok 4.6", provider: "xAI", score: 99.5, costPerPass: 0.85 },
-  { id: "gpt-5-6-sol", label: "GPT-5.6 Sol", provider: "OpenAI", score: 99.5, costPerPass: 2.19 },
+  {
+    id: "grok-4-6",
+    label: "Grok 4.6",
+    provider: "xAI",
+    score: 99.5,
+    costPerPass: 0.85,
+  },
+  {
+    id: "gpt-5-6-sol",
+    label: "GPT-5.6 Sol",
+    provider: "OpenAI",
+    score: 99.5,
+    costPerPass: 2.19,
+  },
   {
     id: "claude-opus-4-8",
     label: "Claude Opus 4.8",
@@ -478,7 +490,7 @@ export const OPENUI_MODEL_BOARD = [
     id: "gemini-3-7-flash",
     label: "Gemini 3.7 Flash",
     provider: "Google",
-    score: 98.4,
+    score: 98.9,
     costPerPass: 0.46,
   },
   {
@@ -492,30 +504,29 @@ export const OPENUI_MODEL_BOARD = [
     id: "gpt-5-6-terra",
     label: "GPT-5.6 Terra",
     provider: "OpenAI",
-    score: 97.8,
+    score: 98.4,
     costPerPass: 1.11,
   },
-  { id: "kimi-k3", label: "Kimi K3", provider: "Moonshot", score: 96.7, costPerPass: 1.53 },
+  {
+    id: "kimi-k3",
+    label: "Kimi K3",
+    provider: "Moonshot",
+    score: 96.2,
+    costPerPass: 1.53,
+  },
   {
     id: "claude-opus-5",
     label: "Claude Opus 5",
     provider: "Anthropic",
-    score: 96.7,
+    score: 96.2,
     costPerPass: 3.56,
   },
   {
     id: "muse-spark-1-2",
     label: "Muse Spark 1.2",
     provider: "Meta",
-    score: 96.7,
+    score: 96.2,
     costPerPass: 0.72,
-  },
-  {
-    id: "gemini-3-6-flash",
-    label: "Gemini 3.6 Flash",
-    provider: "Google",
-    score: 95.1,
-    costPerPass: 0.42,
   },
   {
     id: "claude-sonnet-4-6",
@@ -525,19 +536,25 @@ export const OPENUI_MODEL_BOARD = [
     costPerPass: 2.07,
   },
   {
+    id: "ox-alpha",
+    label: "ox-alpha",
+    provider: "Stealth",
+    score: 91.8,
+    costPerPass: 0.0,
+  },
+  {
     id: "qwen-3-8-2-4t",
     label: "Qwen3.8 2.4T",
     provider: "Alibaba",
     score: 91.8,
     costPerPass: 0.78,
   },
-  { id: "glm-5-3", label: "GLM-5.3", provider: "Zhipu", score: 91.3, costPerPass: 0.55 },
   {
-    id: "deepseek-v4-pro",
-    label: "DeepSeek V4 Pro",
-    provider: "DeepSeek",
-    score: 89.7,
-    costPerPass: 0.41,
+    id: "glm-5-3",
+    label: "GLM-5.3",
+    provider: "Zhipu",
+    score: 90.8,
+    costPerPass: 0.55,
   },
   {
     id: "inkling-small",
@@ -550,26 +567,58 @@ export const OPENUI_MODEL_BOARD = [
     id: "deepseek-v4-flash",
     label: "DeepSeek V4 Flash",
     provider: "DeepSeek",
-    score: 86.3,
+    score: 85.8,
     costPerPass: 0.02,
   },
-  { id: "gpt-5-6-luna", label: "GPT-5.6 Luna", provider: "OpenAI", score: 84.8, costPerPass: 0.1 },
-  { id: "qwen-3-8-27b", label: "Qwen3.8 27B", provider: "Alibaba", score: 79.9, costPerPass: 0.25 },
+  {
+    id: "deepseek-v4-pro",
+    label: "DeepSeek V4 Pro",
+    provider: "DeepSeek",
+    score: 84.2,
+    costPerPass: 0.41,
+  },
+  {
+    id: "gpt-5-6-luna",
+    label: "GPT-5.6 Luna",
+    provider: "OpenAI",
+    score: 83.7,
+    costPerPass: 0.1,
+  },
+  {
+    id: "qwen-3-8-27b",
+    label: "Qwen3.8 27B",
+    provider: "Alibaba",
+    score: 78.8,
+    costPerPass: 0.25,
+  },
+  {
+    id: "gemini-3-6-flash",
+    label: "Gemini 3.6 Flash",
+    provider: "Google",
+    score: 78.8,
+    costPerPass: 0.42,
+  },
   {
     id: "gemini-3-5-flash-lite",
     label: "Gemini 3.5 Flash-Lite",
     provider: "Google",
-    score: 79.3,
+    score: 78.3,
     costPerPass: 0.19,
   },
   {
     id: "inkling",
     label: "Inkling",
     provider: "Thinking Machines",
-    score: 73.9,
+    score: 73.4,
     costPerPass: 0.37,
   },
-  { id: "qwen-3-6-27b", label: "Qwen3.6 27B", provider: "Alibaba", score: 65.8, costPerPass: 0.3 },
+  {
+    id: "qwen-3-6-27b",
+    label: "Qwen3.6 27B",
+    provider: "Alibaba",
+    score: 68.5,
+    costPerPass: 0.29,
+  },
   {
     id: "qwen-3-6-35b-a3b",
     label: "Qwen3.6 35B-A3B",
@@ -577,27 +626,53 @@ export const OPENUI_MODEL_BOARD = [
     score: 61.4,
     costPerPass: 0.08,
   },
-  { id: "gemma-4-31b", label: "Gemma 4 31B", provider: "Google", score: 53.8, costPerPass: 0.04 },
-  { id: "phi-4", label: "Phi-4", provider: "Microsoft", score: 47.8, costPerPass: 0.02 },
+  {
+    id: "gemma-4-31b",
+    label: "Gemma 4 31B",
+    provider: "Google",
+    score: 46.7,
+    costPerPass: 0.04,
+  },
+  {
+    id: "phi-4",
+    label: "Phi-4",
+    provider: "Microsoft",
+    score: 44.0,
+    costPerPass: 0.02,
+  },
   {
     id: "gemma-4-26b-a4b",
     label: "Gemma 4 26B-A4B",
     provider: "Google",
-    score: 33.7,
+    score: 29.9,
     costPerPass: 0.03,
   },
   {
     id: "ministral-8b",
     label: "Ministral 8B",
     provider: "Mistral",
-    score: 28.3,
+    score: 27.2,
     costPerPass: 0.04,
+  },
+  {
+    id: "granite-4-1-8b",
+    label: "Granite 4.1 8B",
+    provider: "IBM",
+    score: 14.7,
+    costPerPass: 0.01,
+  },
+  {
+    id: "lfm-2-5-2-6b",
+    label: "LFM 2.5 2.6B",
+    provider: "Liquid",
+    score: 3.3,
+    costPerPass: 0.0,
   },
   {
     id: "diffusion-gemma-26b-a4b",
     label: "DiffusionGemma 26B-A4B",
     provider: "Google",
-    score: 12.5,
+    score: 13.0,
     costPerPass: 0,
     unpriced: true,
     serving: "Self-hosted · A100 FP8",
@@ -606,19 +681,11 @@ export const OPENUI_MODEL_BOARD = [
     id: "ling-3-tiny",
     label: "Ling 3.0 Tiny",
     provider: "InclusionAI",
-    score: 11.4,
+    score: 9.8,
     costPerPass: 0,
     unpriced: true,
     serving: "Self-hosted · llama.cpp Q8",
   },
-  {
-    id: "granite-4-1-8b",
-    label: "Granite 4.1 8B",
-    provider: "IBM",
-    score: 18.5,
-    costPerPass: 0.01,
-  },
-  { id: "lfm-2-5-2-6b", label: "LFM 2.5 2.6B", provider: "Liquid", score: 4.3, costPerPass: 0 },
 ] as const;
 
 /**
@@ -639,6 +706,9 @@ export const modelBoardDefaultSelected = (modelId: string) => {
   const point = OPENUI_MODEL_BOARD.find((entry) => entry.id === modelId);
   return point ? point.score >= MODEL_BOARD_DEFAULT_MIN_SCORE : true;
 };
+
+/** How many models the board carries. Derived so copy cannot drift from data. */
+export const MODEL_BOARD_SIZE = OPENUI_MODEL_BOARD.length;
 
 export type ModelBoardPoint = (typeof OPENUI_MODEL_BOARD)[number];
 export type ModelBoardProvider = ModelBoardPoint["provider"];
@@ -952,7 +1022,7 @@ export const frontierLine = (...args: Parameters<typeof frontierPoints>) =>
 /* ------------------------------------------------------------------ */
 
 export const BENCHMARK_VERSION = "v1";
-export const BENCHMARK_UPDATED = "18 Aug 2026";
+export const BENCHMARK_UPDATED = "25 Aug 2026";
 
 export const BENCHMARK_REPOSITORY = "https://github.com/thesysdev/generative-ui-bench";
 /* Provenance points at main rather than a pinned scorer tag: the published
@@ -972,6 +1042,18 @@ export const LINKS = {
 };
 
 export const CHANGELOG = [
+  {
+    date: "25 Aug 2026",
+    version: "v2",
+    entries: [
+      "Rescored 24–25 Aug 2026 against one build of the shipped OpenUI parser, lang-core 0.2.16, whose parser validates enum and scalar prop values. Every row on the site and in the repository is now on that single regime.",
+      "ox-alpha added — a stealth free preview — bringing the board to 31 models.",
+      "Google's seat in the cross-format slice moves from Gemini 3.6 Flash to Gemini 3.7 Flash. Gemini 3.6 Flash stays on the model board.",
+      "Rows 14 and 21–29 ran with an 8,192-token output ceiling for condition uniformity, because Phi-4's native context cannot fit the prompt plus a 16,384-token output request. Legs that truncated were rerun at the headline ceiling under a pre-registered replace-with-whatever-it-gives rule; no truncations remain except two on DiffusionGemma, which is served at a 16,384-token total window.",
+      "GPT-5.6 Terra reflects a rescore of its committed raws after the original results file was found to be from a different roll.",
+      "Ling 3.0 Flash was run and excluded: its serving returned empty outputs on 42 of 184 legs, which is not scoreable fairly.",
+    ],
+  },
   {
     date: "18 Aug 2026",
     version: "v1",

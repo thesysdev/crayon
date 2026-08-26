@@ -86,7 +86,11 @@ const integrationCatalog: Integration[] = [
     howItWorks:
       "Each shadcn component is registered with defineComponent and a Zod prop schema. createLibrary produces both the prompt vocabulary and the renderer mapping used by the example chat app.",
     links: [
-      { label: "Integration guide", href: "/docs/openui-lang/examples/design-systems/shadcn", kind: "Guide" },
+      {
+        label: "Integration guide",
+        href: "/docs/openui-lang/examples/design-systems/shadcn",
+        kind: "Guide",
+      },
       exampleLink("shadcn-chat"),
       { label: "shadcn/ui", href: "https://ui.shadcn.com", kind: "Website" },
     ],

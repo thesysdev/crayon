@@ -1,6 +1,6 @@
-import "../(home)/globals.css";
 import { WebsiteThemeProvider } from "@/components/website-theme-provider";
 import type { Metadata } from "next";
+import "../(home)/globals.css";
 import { BlogNavbar } from "./components/BlogNavbar";
 
 export const metadata: Metadata = {

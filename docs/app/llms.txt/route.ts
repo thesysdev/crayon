@@ -33,7 +33,7 @@ export async function GET() {
     "",
     `- [Generative UI Benchmark](${new URL("/benchmarks", BASE_URL)}): Visual benchmark page with server-rendered summaries and semantic data tables.`,
     `- [OpenUI language and model benchmark](${new URL("/benchmarks/language", BASE_URL)}): Focused, canonical comparison of structural validity and cost across 30 models generating OpenUI.`,
-    `- [Language/model benchmark agent document](${new URL("/benchmarks/language/agent.md", BASE_URL)}): Plain Markdown with all 30 model results and interpretation notes.`,
+    `- [Language/model benchmark agent document](${new URL("/benchmarks/language/agent.md", BASE_URL)}): Plain Markdown with all model-board results and interpretation notes.`,
     `- [Language/model benchmark JSON](${new URL("/benchmarks/language/data.json", BASE_URL)}): Focused machine-readable model-board dataset.`,
     `- [Generative UI framework benchmark](${new URL("/benchmarks/framework", BASE_URL)}): Focused, canonical comparison of OpenUI, Google A2UI, and Vercel json-render.`,
     `- [Framework benchmark agent document](${new URL("/benchmarks/framework/agent.md", BASE_URL)}): Plain Markdown with format summaries and all model-format rows.`,

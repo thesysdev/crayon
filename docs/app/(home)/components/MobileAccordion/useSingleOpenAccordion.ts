@@ -40,10 +40,7 @@ export interface UseSingleOpenAccordion {
 export function useSingleOpenAccordion(): UseSingleOpenAccordion {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-  const isOpen = useCallback(
-    (index: number) => openIndex === index,
-    [openIndex],
-  );
+  const isOpen = useCallback((index: number) => openIndex === index, [openIndex]);
 
   const getToggleProps = useCallback(
     (index: number): AccordionToggleProps => {

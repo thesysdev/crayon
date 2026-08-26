@@ -9,18 +9,19 @@ import { RenderSplit } from "@/components/charts/render-split";
 import { RepairFunnelFlow } from "@/components/charts/repair-funnel-flow";
 import { SpeedTokens } from "@/components/charts/speed-tokens";
 import {
-  BRIEFS,
-  COST_MODELS,
-  FORMAT_ORDER,
-  LINKS,
-  MODELS,
-  RUNS_PER_FORMAT,
   blankScreens,
+  BRIEFS,
   completionByDensity,
   completionOver,
+  COST_MODELS,
   costPerPass,
+  FORMAT_ORDER,
+  LINKS,
+  MODEL_BOARD_SIZE,
+  MODELS,
   production,
   repairedShare,
+  RUNS_PER_FORMAT,
 } from "@/lib/benchmark-data";
 import { ChartLineUp, CurrencyDollarSimple, ShieldCheck, Wrench } from "@phosphor-icons/react";
 import { ArrowUpRight } from "lucide-react";
@@ -129,7 +130,8 @@ export function BenchmarksContent() {
         <header className={s.hero}>
           <div className={s.heroLockup}>
             <p className={s.heroAside}>
-              30 models on OpenUI, plus a 6-model comparison across 3 generative UI formats
+              {MODEL_BOARD_SIZE} models on OpenUI, plus a 6-model comparison across 3 generative UI
+              formats
             </p>
             <div className={s.heroCopy}>
               <p className={s.heroEyebrow}>

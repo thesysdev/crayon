@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { InstallSplitButton } from "./InstallSplitButton";
-import { OpenClawFeatures } from "./OpenClawFeatures";
 import styles from "../page.module.css";
 import { Footer } from "../sections/Footer/Footer";
 import { HeroSection } from "../sections/HeroSection/HeroSection";
 import heroStyles from "../sections/HeroSection/HeroSection.module.css";
 import { PossibilitiesSection } from "../sections/PossibilitiesSection/PossibilitiesSection";
 import { StuckInChatSection } from "../sections/StuckInChatSection/StuckInChatSection";
+import { InstallSplitButton } from "./InstallSplitButton";
+import { OpenClawFeatures } from "./OpenClawFeatures";
 
 const INSTALL_COMMAND = "curl -fsSL https://openui.com/openclaw-os/install.sh | bash";
 const WINDOWS_INSTALL_COMMAND =
@@ -53,10 +53,7 @@ export default function OpenClawOSPage() {
           }
           command={INSTALL_COMMAND}
           commandSlot={
-            <InstallSplitButton
-              macCommand={INSTALL_COMMAND}
-              winCommand={WINDOWS_INSTALL_COMMAND}
-            />
+            <InstallSplitButton macCommand={INSTALL_COMMAND} winCommand={WINDOWS_INSTALL_COMMAND} />
           }
           align="left"
           desktopPreviewImage="/openclaw-os/hero-light.webp"

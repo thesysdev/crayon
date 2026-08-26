@@ -765,16 +765,16 @@ export function HeroSection({
         mobileImageCropTopPercent={mobilePreviewImageCropTopPercent}
         mobilePreviewSlot={mobilePreviewSlot}
       />
-        <PreviewImage
-          theme={theme}
-          desktopImageOverride={desktopPreviewImage}
-          desktopImageOverrideDark={desktopPreviewImageDark}
-          desktopImageAlt={desktopPreviewImageAlt}
-          desktopImageWidth={desktopPreviewImageWidth}
-          desktopImageHeight={desktopPreviewImageHeight}
-          widePreview={widePreview}
-          desktopPreviewSlot={desktopPreviewSlot}
-        />
+      <PreviewImage
+        theme={theme}
+        desktopImageOverride={desktopPreviewImage}
+        desktopImageOverrideDark={desktopPreviewImageDark}
+        desktopImageAlt={desktopPreviewImageAlt}
+        desktopImageWidth={desktopPreviewImageWidth}
+        desktopImageHeight={desktopPreviewImageHeight}
+        widePreview={widePreview}
+        desktopPreviewSlot={desktopPreviewSlot}
+      />
       {showTagline && <Tagline compact={taglineCompact}>{tagline}</Tagline>}
     </section>
   );

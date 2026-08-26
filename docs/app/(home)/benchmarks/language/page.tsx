@@ -4,14 +4,13 @@ import {
   MODEL_BOARD_UPDATED_ISO,
   modelBoardRows,
 } from "@/lib/benchmark-agent-data";
-import { BRIEFS } from "@/lib/benchmark-data";
+import { BRIEFS, MODEL_BOARD_SIZE } from "@/lib/benchmark-data";
 import type { Metadata } from "next";
 import { BenchmarkDetailPage } from "../BenchmarkDetailPage";
 
 export const metadata: Metadata = {
   title: "OpenUI language and model benchmark | OpenUI",
-  description:
-    "Compare structural validity and measured cost across 30 models generating OpenUI, with exact server-rendered data and machine-readable downloads.",
+  description: `Compare structural validity and measured cost across ${MODEL_BOARD_SIZE} models generating OpenUI, with exact server-rendered data and machine-readable downloads.`,
   alternates: {
     canonical: "/benchmarks/language",
     types: {
@@ -24,7 +23,7 @@ export const metadata: Metadata = {
     type: "article",
     url: "/benchmarks/language",
     title: "OpenUI language and model benchmark",
-    description: "Structural validity and cost across 30 models generating OpenUI.",
+    description: `Structural validity and cost across ${MODEL_BOARD_SIZE} models generating OpenUI.`,
     modifiedTime: MODEL_BOARD_UPDATED_ISO,
   },
 };
@@ -34,7 +33,7 @@ const structuredData = {
   "@type": "Dataset",
   "@id": `${LANGUAGE_BENCHMARK_URL}#dataset`,
   name: "OpenUI language and model benchmark",
-  description: "Structural validity and measured cost across 30 models generating OpenUI.",
+  description: `Structural validity and measured cost across ${MODEL_BOARD_SIZE} models generating OpenUI.`,
   url: LANGUAGE_BENCHMARK_URL,
   dateModified: MODEL_BOARD_UPDATED_ISO,
   isPartOf: { "@id": `${BENCHMARK_CANONICAL_URL}#dataset` },
@@ -178,9 +177,8 @@ export default function LanguageBenchmarkPage() {
               Null does not mean free.
             </li>
             <li>
-              The website values use the preserved lang-core 0.2.11 scorer regime. The source
-              repository now defaults to 0.2.15, and the two result sets are not comparable row by
-              row.
+              Every row is scored by one build of the shipped OpenUI parser, lang-core 0.2.16, whose
+              parser validates enum and scalar prop values.
             </li>
           </ul>
           <p>

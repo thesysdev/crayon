@@ -153,7 +153,7 @@ export const benchmarkAgentAnswers = [
     id: "chart-views",
     question: "What do the two tabs at the top of the benchmark show?",
     answer:
-      "Model comparison shows OpenUI structural validity and cost across 30 models as provider-coloured dots with one Pareto frontier. Models scoring below 70% structural validity are deselected by default but remain in the data; both axes rescale to whatever is selected, so selecting a lower-scoring model extends the vertical scale down to reach it. Format comparison shows structural validity and cost across OpenUI, A2UI, and json-render for six models. Exact values for both views are present in the page's server-rendered chart data tables and machine-readable distributions.",
+      "Model comparison shows OpenUI structural validity and cost across ${MODEL_BOARD_SIZE} models as provider-coloured dots with one Pareto frontier. Models scoring below 70% structural validity are deselected by default but remain in the data; both axes rescale to whatever is selected, so selecting a lower-scoring model extends the vertical scale down to reach it. Format comparison shows structural validity and cost across OpenUI, A2UI, and json-render for six models. Exact values for both views are present in the page's server-rendered chart data tables and machine-readable distributions.",
     evidence_paths: ["model_board", "model_families", "format_comparison", "distributions"],
   },
 ] as const;
@@ -195,7 +195,7 @@ export const benchmarkAgentDataset = {
     generation_condition:
       "Four generations per brief, a 16,384-token output ceiling, temperature 0.7 where the provider accepts it, and minimal or no reasoning. Anthropic runs use the model default temperature because that API rejects the benchmark temperature setting for the tested model.",
     scorer_regime:
-      "The values published on this website use the preserved lang-core 0.2.11 scorer regime. The benchmark repository now defaults to lang-core 0.2.15; the two regimes are not comparable row by row.",
+      "Every row is scored by one build of the shipped OpenUI parser, lang-core 0.2.16, whose parser validates enum and scalar prop values. The website and the benchmark repository are on the same regime; raw outputs and per-run verdicts are committed for independent rescoring.",
   },
   scope: {
     briefs: BRIEFS,
@@ -208,7 +208,7 @@ export const benchmarkAgentDataset = {
   provenance: {
     format_comparison: {
       evidence_status: "published",
-      scorer_regime: "lang-core 0.2.11 (preserved repository tag)",
+      scorer_regime: "lang-core 0.2.16",
       raw_results: LINKS.rawData,
       raw_outputs: LINKS.rawOutputs,
       harness: LINKS.harness,
@@ -216,7 +216,7 @@ export const benchmarkAgentDataset = {
     },
     model_board: {
       evidence_status: "summary-only",
-      note: "The 30-model measurements are published here as summary rows. The latest repository contains raw generations and lang-core 0.2.15 rescoring, but the website values use the earlier 0.2.11 regime and still lack per-row evidence and pricing links. Do not treat current-main results as row-identical evidence for this board.",
+      note: "The model-board measurements are published here as summary rows. Raw generations and per-run verdicts for every row are committed in the benchmark repository for independent rescoring.11 regime and still lack per-row evidence and pricing links. Do not treat current-main results as row-identical evidence for this board.",
       raw_results: null,
     },
   },
@@ -290,7 +290,7 @@ Canonical page: ${BENCHMARK_CANONICAL_URL}
 - Render success means: ${benchmarkAgentDataset.definitions.render_success}
 - Self-hosted cost is unknown and represented as null, not zero.
 - This is a first-party benchmark maintained by OpenUI.
-- Published website values use the preserved lang-core 0.2.11 scorer regime. The repository's current 0.2.15 scores are not comparable row by row.
+- Every row is scored by one build of the shipped OpenUI parser, lang-core 0.2.16. Raw outputs and per-run verdicts are committed for independent rescoring.
 
 ## Evidence status
 
@@ -432,7 +432,7 @@ How reliably and economically do different models generate structurally valid Op
 - Structural validity is the vertical metric; measured list-price cost per task is the horizontal metric where comparable.
 - Self-hosted cost is null, not zero.
 - Models below 70% structural validity are deselected by default in the visual chart but remain in this table.
-- Published website values use the preserved lang-core 0.2.11 scorer regime; current 0.2.15 repository results are not comparable row by row.
+- Every row is scored by one build of the shipped OpenUI parser, lang-core 0.2.16.
 
 | Model | Provider | Structural validity | Cost per task | Cost type | Pareto frontier | Shown by default |
 | --- | --- | ---: | ---: | --- | --- | --- |
@@ -475,7 +475,7 @@ How do OpenUI, Google A2UI, and Vercel json-render compare under the same briefs
 - ${RUNS_PER_FORMAT.toLocaleString("en-US")} runs per format; ${RUNS_TOTAL.toLocaleString("en-US")} scored runs in total.
 - 16,384-token output ceiling, temperature 0.7 where supported, and minimal or no reasoning.
 - Each format uses its own SDK-generated prompt and shipped validation, plus the same shared completeness layer and component-count floor.
-- Published website values use the preserved lang-core 0.2.11 scorer regime; current 0.2.15 repository results are not comparable row by row.
+- Every row is scored by one build of the shipped OpenUI parser, lang-core 0.2.16.
 
 ## Format summary
 

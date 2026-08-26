@@ -185,9 +185,9 @@ export default function BenchmarkMethodologyPage() {
               <section id="notes" aria-labelledby="notes-heading">
                 <h2 id="notes-heading">Important notes</h2>
                 <div className="not-prose my-6 border-l-2 border-[color:var(--openui-text-neutral-primary)] pl-5 text-sm leading-6 text-[color:var(--openui-text-neutral-secondary)]">
-                  Website results use the preserved <strong>lang-core 0.2.11</strong> scorer. The
-                  repository now defaults to <strong>0.2.15</strong>. Those two scorer versions are
-                  not comparable row by row.
+                  Every row is scored by one build of the shipped OpenUI parser,{` `}
+                  <strong>lang-core 0.2.16</strong>, whose parser validates enum and scalar prop
+                  values. Raw outputs and per-run verdicts are committed for independent rescoring.
                 </div>
                 <ul>
                   <li>

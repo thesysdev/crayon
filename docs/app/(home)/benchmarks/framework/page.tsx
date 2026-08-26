@@ -230,8 +230,8 @@ export default function FrameworkBenchmarkPage() {
             </li>
           </ul>
           <p>
-            Published website values use the preserved lang-core 0.2.11 scorer tag. The benchmark
-            repository now defaults to 0.2.15; do not compare those regimes row by row. See the{` `}
+            Every row is scored by one build of the shipped OpenUI parser, lang-core 0.2.16. See the
+            {` `}
             <a href="/benchmarks/methodology">complete methodology and reproduction steps</a>.
           </p>
         </section>

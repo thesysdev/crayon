@@ -71,10 +71,9 @@ assert(
 const data = await jsonResponse.json();
 assert(data.schema_version === "1.0.0", "Unexpected benchmark schema version");
 assert(data.$schema.endsWith("/benchmarks/data.schema.json"), "Dataset is missing $schema");
-assert(
-  data.model_board.length === 30,
-  `Expected 30 model-board rows, got ${data.model_board.length}`,
-);
+/* The board grows. Assert the surfaces agree with each other rather than
+   with a number written here, so adding a model does not fail this check. */
+assert(data.model_board.length > 0, "Model board is empty");
 assert(
   new Set(data.model_board.map((row) => row.model_id)).size === data.model_board.length,
   "Model-board IDs are not unique",
@@ -132,7 +131,10 @@ assert(
   csvResponse.headers.get("content-type")?.includes("text/csv"),
   "CSV has the wrong content type",
 );
-assert(csv.trim().split("\n").length === 31, "CSV should contain one header and 30 model rows");
+assert(
+  csv.trim().split("\n").length === data.model_board.length + 1,
+  `CSV should carry one header plus ${data.model_board.length} model rows`,
+);
 
 const { response: markdownResponse, text: markdown } = await fetchText("/benchmarks/agent.md");
 assert(
@@ -149,7 +151,10 @@ assert(markdown.includes("## Direct answers"), "Agent document is missing direct
 const languageDataResponse = await fetch(`${baseUrl}/benchmarks/language/data.json`);
 assert(languageDataResponse.ok, `language data.json returned ${languageDataResponse.status}`);
 const languageData = await languageDataResponse.json();
-assert(languageData.data.length === 30, "Focused language dataset should contain 30 rows");
+assert(
+  languageData.data.length === data.model_board.length,
+  "Focused language dataset should carry one row per model-board model",
+);
 assert(
   languageData.dataset.canonical_url.endsWith("/benchmarks/language"),
   "Focused language dataset has the wrong canonical URL",

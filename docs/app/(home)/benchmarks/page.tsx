@@ -6,7 +6,7 @@ import {
   LANGUAGE_BENCHMARK_URL,
   MODEL_BOARD_UPDATED_ISO,
 } from "@/lib/benchmark-agent-data";
-import { BENCHMARK_VERSION, LINKS } from "@/lib/benchmark-data";
+import { BENCHMARK_VERSION, LINKS, MODEL_BOARD_SIZE } from "@/lib/benchmark-data";
 import type { Metadata } from "next";
 import { Footer } from "../sections/Footer/Footer";
 import { BenchmarksContent } from "./BenchmarksContent";
@@ -27,15 +27,13 @@ export const metadata: Metadata = {
     type: "article",
     url: "/benchmarks",
     title: "Generative UI Benchmark | OpenUI",
-    description:
-      "OpenUI results across 30 models, plus a six-model comparison across OpenUI, A2UI and json-render.",
+    description: `OpenUI results across ${MODEL_BOARD_SIZE} models, plus a six-model comparison across OpenUI, A2UI and json-render.`,
     modifiedTime: MODEL_BOARD_UPDATED_ISO,
   },
   twitter: {
     card: "summary_large_image",
     title: "Generative UI Benchmark | OpenUI",
-    description:
-      "OpenUI results across 30 models, plus a six-model comparison across OpenUI, A2UI and json-render.",
+    description: `OpenUI results across ${MODEL_BOARD_SIZE} models, plus a six-model comparison across OpenUI, A2UI and json-render.`,
   },
 };
 
@@ -46,8 +44,7 @@ const structuredData = {
       "@type": "Dataset",
       "@id": `${BENCHMARK_CANONICAL_URL}#dataset`,
       name: BENCHMARK_DATASET_NAME,
-      description:
-        "OpenUI benchmark measurements across 30 models, plus a controlled six-model comparison of OpenUI, A2UI and json-render over 46 interface briefs.",
+      description: `OpenUI benchmark measurements across ${MODEL_BOARD_SIZE} models, plus a controlled six-model comparison of OpenUI, A2UI and json-render over 46 interface briefs.`,
       url: BENCHMARK_CANONICAL_URL,
       version: BENCHMARK_VERSION,
       dateModified: MODEL_BOARD_UPDATED_ISO,
@@ -88,8 +85,7 @@ const structuredData = {
       "@type": "TechArticle",
       "@id": `${BENCHMARK_CANONICAL_URL}#article`,
       headline: "Generative UI Benchmark",
-      description:
-        "A controlled comparison of generative UI formats and an OpenUI model board covering 30 models.",
+      description: `A controlled comparison of generative UI formats and an OpenUI model board covering ${MODEL_BOARD_SIZE} models.`,
       mainEntityOfPage: BENCHMARK_CANONICAL_URL,
       datePublished: BENCHMARK_UPDATED_ISO,
       dateModified: MODEL_BOARD_UPDATED_ISO,

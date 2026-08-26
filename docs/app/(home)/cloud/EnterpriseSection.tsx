@@ -48,7 +48,12 @@ export function EnterpriseSection() {
         <h2 id="enterprise-section-title" className={styles.title}>
           Built for production-scale enterprise use
         </h2>
-        <Link className={styles.link} href="https://trust.thesys.dev/" target="_blank" rel="noopener noreferrer">
+        <Link
+          className={styles.link}
+          href="https://trust.thesys.dev/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           View trust center
           <ArrowRight aria-hidden="true" size={16} strokeWidth={2} />
         </Link>

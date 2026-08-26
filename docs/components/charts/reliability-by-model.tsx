@@ -48,12 +48,13 @@ const PROVIDER_HUE: Record<ModelBoardProvider, string> = {
   IBM: "#4d6fb8",
   Liquid: "#c04f79",
   InclusionAI: "#7c6f64",
+  Stealth: "#6b7280",
 };
 const MODEL_NAME: Record<ModelId, string> = {
   sol: "GPT-5.6 Sol",
   opus: "Claude Opus 4.8",
   kimi: "Kimi K3",
-  gemini: "Gemini 3.6 Flash",
+  gemini: "Gemini 3.7 Flash",
   qwen: "Qwen3.8 2.4T",
   muse: "Muse Spark 1.2",
 };
@@ -526,8 +527,8 @@ export function ReliabilityByModel({
             Format comparison
           </button>
           <span id="benchmark-model-view-description" className={s.tableCaption}>
-            Compares OpenUI structural validity and cost across 30 models using provider-coloured
-            dots and one Pareto frontier.
+            Compares OpenUI structural validity and cost across {OPENUI_MODEL_BOARD.length} models
+            using provider-coloured dots and one Pareto frontier.
           </span>
           <span id="benchmark-format-view-description" className={s.tableCaption}>
             Compares validity and cost across OpenUI, A2UI, and json-render for six models.
@@ -1026,7 +1027,7 @@ export function ReliabilityByModel({
                   Cost per task
                 </th>
                 <th scope="col">Pricing</th>
-                <th scope="col">Frontier (all 30)</th>
+                <th scope="col">Frontier (all {OPENUI_MODEL_BOARD.length})</th>
                 <th scope="col">Shown in chart</th>
               </tr>
             </thead>
@@ -1059,11 +1060,11 @@ export function ReliabilityByModel({
             </tbody>
           </DataTable>
           <p className={s.dataNote}>
-            All 30 models remain in this table and the downloads, including models hidden by the
-            chart&rsquo;s default filter. Frontier membership here is computed over all 30, so it
-            does not shift with the chart&rsquo;s selection; the drawn line is the frontier of the
-            models currently shown. Self-hosted cost is unknown, not zero. Filter state is preserved
-            in this page&rsquo;s URL. Focused benchmark:{" "}
+            All {OPENUI_MODEL_BOARD.length} models remain in this table and the downloads, including
+            models hidden by the chart&rsquo;s default filter. Frontier membership here is computed
+            over the full board, so it does not shift with the chart&rsquo;s selection; the drawn
+            line is the frontier of the models currently shown. Self-hosted cost is unknown, not
+            zero. Filter state is preserved in this page&rsquo;s URL. Focused benchmark:{" "}
             <a href="/benchmarks/language">language and model results</a>. Full dataset:{" "}
             <a href="/benchmarks/data.json">JSON</a>, <a href="/benchmarks/data.csv">CSV</a>, or{" "}
             <a href="/benchmarks/agent.md">agent Markdown</a>.
