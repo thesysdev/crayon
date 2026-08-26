@@ -5,12 +5,13 @@ import {
   FORMATS,
   FORMAT_ORDER,
   MODELS,
-  MODEL_BOARD_FAMILIES,
+  MODEL_BOARD_DEFAULT_HIDDEN_IDS,
   OPENUI_MODEL_BOARD,
   completionByModel,
   costPerPass,
   formatLabel,
   modelBoardCostPerTask,
+  modelBoardDefaultSelected,
   modelBoardFamilyFor,
   modelBoardFrontier,
   type FormatId,
@@ -64,7 +65,8 @@ const PROVIDERS = Array.from(new Set(OPENUI_MODEL_BOARD.map((p) => p.provider)))
 const BOARD_MAX_COST = 0.08;
 const BOARD_MIN_COST = 0.0001;
 const BOARD_X_TICKS = [0.08, 0.02, 0.005, 0.001, 0.0001];
-const BOARD_Y_TICKS = [0, 20, 40, 60, 80, 100];
+const BOARD_FULL_Y_TICKS = [0, 20, 40, 60, 80, 100];
+const BOARD_FOCUSED_Y_TICKS = [20, 40, 60, 80, 100];
 const BOARD_REFERENCE_LABELS = [
   "gpt-5-6-sol",
   "claude-opus-4-8",
@@ -76,6 +78,14 @@ const BOARD_REFERENCE_LABELS = [
   "lfm-2-5-2-6b",
 ] as const;
 const BOARD_PARETO = modelBoardFrontier();
+const DEFAULT_BOARD_IDS = OPENUI_MODEL_BOARD.filter((point) =>
+  modelBoardDefaultSelected(point.id),
+).map((point) => point.id);
+const DEFAULT_BOARD_ID_SET = new Set<string>(DEFAULT_BOARD_IDS);
+const DEFAULT_HIDDEN_ID_SET = new Set<string>(MODEL_BOARD_DEFAULT_HIDDEN_IDS);
+
+const sameIds = (left: ReadonlySet<string>, right: ReadonlySet<string>) =>
+  left.size === right.size && [...left].every((id) => right.has(id));
 
 export function ReliabilityByModel({
   models,
@@ -88,7 +98,7 @@ export function ReliabilityByModel({
   const [width, setWidth] = useState(1080);
   const [view, setView] = useState<View>("board");
   const [selectedBoardIds, setSelectedBoardIds] = useState<Set<string>>(
-    () => new Set(OPENUI_MODEL_BOARD.map((point) => point.id)),
+    () => new Set(DEFAULT_BOARD_IDS),
   );
   const [boardHover, setBoardHover] = useState<string | null>(null);
   const [formatHover, setFormatHover] = useState<{ m: ModelId; f: FormatId } | null>(null);
@@ -115,7 +125,7 @@ export function ReliabilityByModel({
           new Set(requestedModels.split(",").filter((id) => validIds.has(id as never))),
         );
       } else {
-        setSelectedBoardIds(new Set(OPENUI_MODEL_BOARD.map((point) => point.id)));
+        setSelectedBoardIds(new Set(DEFAULT_BOARD_IDS));
       }
       setUrlReady(true);
     };
@@ -129,7 +139,7 @@ export function ReliabilityByModel({
     const url = new URL(window.location.href);
     if (view === "formats") url.searchParams.set("view", "formats");
     else url.searchParams.delete("view");
-    if (selectedBoardIds.size === OPENUI_MODEL_BOARD.length) url.searchParams.delete("models");
+    if (sameIds(selectedBoardIds, DEFAULT_BOARD_ID_SET)) url.searchParams.delete("models");
     else url.searchParams.set("models", [...selectedBoardIds].join(","));
     window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
   }, [selectedBoardIds, urlReady, view]);
@@ -144,6 +154,9 @@ export function ReliabilityByModel({
   const boardTop = PAD.top;
   const boardBottom = boardTop + boardPlotHeight;
   const boardHeight = boardBottom + PAD.bottom;
+  const usesFullYRange = [...selectedBoardIds].some((id) => DEFAULT_HIDDEN_ID_SET.has(id));
+  const boardYMin = usesFullYRange ? 0 : 20;
+  const boardYTicks = usesFullYRange ? BOARD_FULL_Y_TICKS : BOARD_FOCUSED_Y_TICKS;
   const boardX = (cost: number) => {
     const displayedCost = Math.max(cost, BOARD_MIN_COST);
     const proportion =
@@ -151,7 +164,8 @@ export function ReliabilityByModel({
       (Math.log(BOARD_MAX_COST) - Math.log(BOARD_MIN_COST));
     return PL + (1 - proportion) * PW;
   };
-  const boardY = (score: number) => boardTop + (1 - score / 100) * boardPlotHeight;
+  const boardY = (score: number) =>
+    boardTop + (1 - (score - boardYMin) / (100 - boardYMin)) * boardPlotHeight;
   const formatX = (cost: number) => PL + ((7.4 - cost) / 7.4) * PW;
   const formatY = (score: number) => PAD.top + (1 - (score - 66) / 34) * PH;
   const visibleBoardPoints = OPENUI_MODEL_BOARD.filter((point) => selectedBoardIds.has(point.id));
@@ -182,9 +196,22 @@ export function ReliabilityByModel({
   /* Keep the default view editorial: label the competitive frontier, a few
      major reference models, and the local/free extremes. Every other model is
      still fully named in its hover/focus card and accessible label. */
-  const competitivePareto = BOARD_PARETO.filter(
-    (point) => point.score >= 80 && selectedBoardIds.has(point.id),
-  );
+  const visiblePareto = visibleBoardPoints
+    .filter(
+      (point) =>
+        !("unpriced" in point) &&
+        !visibleBoardPoints.some(
+          (other) =>
+            other !== point &&
+            !("unpriced" in other) &&
+            modelBoardCostPerTask(other) <= modelBoardCostPerTask(point) &&
+            other.score >= point.score &&
+            (modelBoardCostPerTask(other) < modelBoardCostPerTask(point) ||
+              other.score > point.score),
+        ),
+    )
+    .sort((a, b) => modelBoardCostPerTask(b) - modelBoardCostPerTask(a));
+  const competitivePareto = visiblePareto.filter((point) => point.score >= 80);
   const competitiveParetoIds = new Set(competitivePareto.map((point) => point.id));
   const labelledBoardIds = new Set<string>([...competitiveParetoIds, ...BOARD_REFERENCE_LABELS]);
   const labelFontSize = narrow ? 10 : 11.5;
@@ -244,14 +271,6 @@ export function ReliabilityByModel({
       });
   })();
 
-  const familySeries = MODEL_BOARD_FAMILIES.map((family) => ({
-    ...family,
-    points: family.models
-      .map((id) => visibleBoardPoints.find((point) => point.id === id))
-      .filter((point): point is (typeof OPENUI_MODEL_BOARD)[number] => Boolean(point))
-      .sort((a, b) => modelBoardCostPerTask(b) - modelBoardCostPerTask(a)),
-  })).filter((family) => family.points.length > 1);
-
   const toggleBoardModel = (id: string) => {
     setSelectedBoardIds((current) => {
       const next = new Set(current);
@@ -267,7 +286,7 @@ export function ReliabilityByModel({
       title={view === "board" ? "Model comparison" : "Format comparison"}
       sub={
         view === "board"
-          ? "Models from the same family are connected. Key references are labeled; hover any point for its name and values."
+          ? "Provider-coloured dots with one Pareto frontier. Key references are labeled; hover any point for its name and values."
           : "The original six-model comparison, one line per format. Higher and further right is better."
       }
     >
@@ -325,8 +344,8 @@ export function ReliabilityByModel({
             Format comparison
           </button>
           <span id="benchmark-model-view-description" className={s.tableCaption}>
-            Compares OpenUI validity and cost across 30 models. Models from the same family are
-            connected.
+            Compares OpenUI structural validity and cost across 30 models using provider-coloured
+            dots and one Pareto frontier.
           </span>
           <span id="benchmark-format-view-description" className={s.tableCaption}>
             Compares validity and cost across OpenUI, A2UI, and json-render for six models.
@@ -424,9 +443,9 @@ export function ReliabilityByModel({
             height={boardHeight}
             viewBox={`0 0 ${width} ${boardHeight}`}
             role="img"
-            aria-label={`OpenUI benchmark quality versus cost per task for ${visibleBoardPoints.length} selected models`}
+            aria-label={`OpenUI structural validity versus cost per task for ${visibleBoardPoints.length} selected models; vertical axis ranges from ${boardYMin} to 100 percent`}
           >
-            {BOARD_Y_TICKS.map((tick) => (
+            {boardYTicks.map((tick) => (
               <g key={tick}>
                 <line
                   x1={PL}
@@ -469,7 +488,7 @@ export function ReliabilityByModel({
               </g>
             ))}
             <text x={PL + 4} y={boardTop - 15} fontSize="13.5" fill="var(--ink)">
-              Valid OpenUI generations
+              Structural validity of OpenUI generations
             </text>
             <text x={PL + PW} y={boardTop - 15} textAnchor="end" fontSize="12.5" fill="var(--ink)">
               better ↗
@@ -483,30 +502,24 @@ export function ReliabilityByModel({
             >
               Cost per task · USD, log scale
             </text>
-            {familySeries.map((family) => {
-              const active = boardHover
-                ? family.models.some((modelId) => modelId === boardHover)
-                : false;
-              return (
-                <path
-                  key={family.id}
-                  className={s.fadeLate}
-                  d={family.points
-                    .map(
-                      (point, index) =>
-                        `${index === 0 ? "M" : "L"} ${boardX(modelBoardCostPerTask(point))} ${boardY(point.score)}`,
-                    )
-                    .join(" ")}
-                  fill="none"
-                  stroke={PROVIDER_HUE[family.provider]}
-                  strokeWidth={active ? 2.25 : 1.5}
-                  strokeOpacity={boardHover ? (active ? 0.78 : 0.14) : 0.4}
-                  strokeLinejoin="round"
-                  strokeLinecap="round"
-                  style={{ transition: "stroke-opacity 140ms ease, stroke-width 140ms ease" }}
-                />
-              );
-            })}
+            {visiblePareto.length > 1 ? (
+              <path
+                className={s.fadeLate}
+                d={visiblePareto
+                  .map(
+                    (point, index) =>
+                      `${index === 0 ? "M" : "L"} ${boardX(modelBoardCostPerTask(point))} ${boardY(point.score)}`,
+                  )
+                  .join(" ")}
+                fill="none"
+                stroke="var(--ink)"
+                strokeWidth={1.5}
+                strokeOpacity={0.62}
+                strokeLinejoin="round"
+                strokeLinecap="round"
+                aria-hidden="true"
+              />
+            ) : null}
 
             {visibleBoardPoints.map((point, index) => {
               const radius = 4.5;
@@ -555,7 +568,7 @@ export function ReliabilityByModel({
             height={H}
             viewBox={`0 0 ${width} ${H}`}
             role="img"
-            aria-label="Cost versus reliability, one line per generative UI format across six models"
+            aria-label="Structural validity versus cost, one line per generative UI format across six models"
           >
             {[70, 80, 90, 100].map((tick) => (
               <g key={tick}>
@@ -598,7 +611,7 @@ export function ReliabilityByModel({
               </g>
             ))}
             <text x={PL + 4} y={formatY(100) - 14} fontSize="14" fill="var(--ink)">
-              Reliability vs cost
+              Structural validity vs cost
             </text>
             <text
               x={PL + PW}
@@ -751,6 +764,10 @@ export function ReliabilityByModel({
 
       {view === "board" ? (
         <div className={`${s.legend} ${s.legendCenter}`} aria-label="Model provider key">
+          <span className={s.key}>
+            <span className={s.paretoKeyLine} aria-hidden />
+            Pareto frontier
+          </span>
           {visibleProviders.map((provider) => (
             <span key={provider} className={s.key}>
               <span className={s.dot} style={{ background: PROVIDER_HUE[provider] }} aria-hidden />
@@ -785,7 +802,7 @@ export function ReliabilityByModel({
           </h3>
           <table className={s.dataTable}>
             <caption>
-              OpenUI model-board validity and measured cost for the currently selected models
+              OpenUI model-board structural validity and measured cost for all models
             </caption>
             <thead>
               <tr>
@@ -800,10 +817,11 @@ export function ReliabilityByModel({
                 </th>
                 <th scope="col">Pricing</th>
                 <th scope="col">Pareto frontier</th>
+                <th scope="col">Shown in chart</th>
               </tr>
             </thead>
             <tbody>
-              {visibleBoardPoints.map((point) => {
+              {OPENUI_MODEL_BOARD.map((point) => {
                 const family = modelBoardFamilyFor(point.id);
                 const unpriced = "unpriced" in point;
                 const cost = modelBoardCostPerTask(point);
@@ -824,14 +842,16 @@ export function ReliabilityByModel({
                     <td>
                       {!unpriced && BOARD_PARETO.some((row) => row.id === point.id) ? "Yes" : "No"}
                     </td>
+                    <td>{selectedBoardIds.has(point.id) ? "Yes" : "No"}</td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
           <p className={s.dataNote}>
-            Family order is encoded in the JSON and CSV downloads. Self-hosted cost is unknown, not
-            zero. Filter state is preserved in this page&rsquo;s URL. Full dataset:{" "}
+            All 30 models remain in this table and the downloads, including models hidden by the
+            chart&rsquo;s default filter. Self-hosted cost is unknown, not zero. Filter state is
+            preserved in this page&rsquo;s URL. Full dataset:{" "}
             <a href="/benchmarks/data.json">JSON</a>, <a href="/benchmarks/data.csv">CSV</a>, or{" "}
             <a href="/benchmarks/agent.md">agent Markdown</a>.
           </p>

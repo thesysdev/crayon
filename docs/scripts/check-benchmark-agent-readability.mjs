@@ -66,6 +66,14 @@ assert(
   data.model_board.every((row) => row.family_id && row.family_name),
   "Every model needs explicit family metadata",
 );
+assert(
+  data.model_board.filter((row) => !row.default_selected).length === 5,
+  "Expected five models to be hidden by the chart's default filter",
+);
+assert(
+  data.model_board.every((row) => row.connected_family === false),
+  "Model-family lines should not be encoded as connected",
+);
 assert(data.format_comparison.length === 18, "Expected six models × three formats");
 assert(data.agent_answers.length >= 8, "Expected direct agent answers");
 assert(

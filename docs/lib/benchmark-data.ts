@@ -621,6 +621,20 @@ export const OPENUI_MODEL_BOARD = [
   { id: "lfm-2-5-2-6b", label: "LFM 2.5 2.6B", provider: "Liquid", score: 4.3, costPerPass: 0 },
 ] as const;
 
+/** Low-validity compact/local models hidden in the chart's editorial default.
+ * They remain present in tables and downloads, and selecting any of them
+ * expands the chart to the full 0–100% validity range. */
+export const MODEL_BOARD_DEFAULT_HIDDEN_IDS = [
+  "gemma-4-26b-a4b",
+  "diffusion-gemma-26b-a4b",
+  "ling-3-tiny",
+  "granite-4-1-8b",
+  "lfm-2-5-2-6b",
+] as const;
+
+export const modelBoardDefaultSelected = (modelId: string) =>
+  !MODEL_BOARD_DEFAULT_HIDDEN_IDS.includes(modelId as never);
+
 export type ModelBoardPoint = (typeof OPENUI_MODEL_BOARD)[number];
 export type ModelBoardProvider = ModelBoardPoint["provider"];
 export const modelBoardCostPerTask = (point: ModelBoardPoint) => point.costPerPass / BRIEFS;

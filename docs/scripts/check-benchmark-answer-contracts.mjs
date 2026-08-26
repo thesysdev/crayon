@@ -209,6 +209,14 @@ const contracts = [
     "tab answer names every compared format",
     () => ["OpenUI", "A2UI", "json-render"].every((name) => answer("chart-views").includes(name)),
   ],
+  [
+    "tab answer explains the dynamic validity scale",
+    () => answer("chart-views").includes("20–100%") && answer("chart-views").includes("0–100%"),
+  ],
+  [
+    "exactly five models are hidden by default",
+    () => data.model_board.filter((row) => !row.default_selected).length === 5,
+  ],
 ];
 
 for (const [name, check] of contracts) assert(check(), `Answer contract failed: ${name}`);

@@ -13,6 +13,7 @@ import {
   LINKS,
   MODEL_BOARD_FAMILIES,
   modelBoardCostPerTask,
+  modelBoardDefaultSelected,
   modelBoardFamilyFor,
   modelBoardFrontier,
   MODELS,
@@ -47,7 +48,8 @@ export const modelBoardRows = OPENUI_MODEL_BOARD.map((point) => {
     family_id: family?.id ?? point.id,
     family_name: family?.label ?? point.label,
     family_order: familyOrder,
-    connected_family: Boolean(family),
+    connected_family: false,
+    default_selected: modelBoardDefaultSelected(point.id),
     format: "openui",
     validity_score_percent: point.score,
     cost_per_task_usd: selfHosted ? null : modelBoardCostPerTask(point),
@@ -149,7 +151,7 @@ export const benchmarkAgentAnswers = [
     id: "chart-views",
     question: "What do the two tabs at the top of the benchmark show?",
     answer:
-      "Model comparison shows OpenUI validity and cost across 30 models, with related models connected by family. Format comparison shows validity and cost across OpenUI, A2UI, and json-render for six models. Exact values for both views are present in the page's server-rendered chart data tables and machine-readable distributions.",
+      "Model comparison shows OpenUI structural validity and cost across 30 models as provider-coloured dots with one Pareto frontier. Five compact or local models are hidden by default but remain in the data; selecting any of them expands the vertical scale from 20–100% to 0–100%. Format comparison shows structural validity and cost across OpenUI, A2UI, and json-render for six models. Exact values for both views are present in the page's server-rendered chart data tables and machine-readable distributions.",
     evidence_paths: ["model_board", "model_families", "format_comparison", "distributions"],
   },
 ] as const;
@@ -183,7 +185,11 @@ export const benchmarkAgentDataset = {
     pareto_frontier:
       "True when no other comparably priced model is at least as valid and strictly better on cost or validity.",
     family_order:
-      "One-based order used by the connected family path in the model chart; null for singleton models.",
+      "One-based catalog order within a named model family; null for singleton models. Families are not connected in the chart.",
+    connected_family:
+      "Whether members of a model family are connected by a chart line. False for every row in this chart version.",
+    default_selected:
+      "Whether the model is shown in the chart's default 20–100% structural-validity view.",
   },
   scope: {
     briefs: BRIEFS,
@@ -254,7 +260,7 @@ export const benchmarkAgentMarkdown = () => {
   const boardRows = modelBoardRows
     .map(
       (row) =>
-        `| ${row.model_name} | ${row.provider} | ${row.family_name} | ${row.validity_score_percent.toFixed(1)}% | ${row.cost_per_task_usd === null ? "not comparable" : row.cost_per_task_usd === 0 ? "$0 / free" : `$${row.cost_per_task_usd.toFixed(4)}`} | ${row.cost_type} | ${row.pareto_frontier ? "yes" : "no"} |`,
+        `| ${row.model_name} | ${row.provider} | ${row.family_name} | ${row.validity_score_percent.toFixed(1)}% | ${row.cost_per_task_usd === null ? "not comparable" : row.cost_per_task_usd === 0 ? "$0 / free" : `$${row.cost_per_task_usd.toFixed(4)}`} | ${row.cost_type} | ${row.pareto_frontier ? "yes" : "no"} | ${row.default_selected ? "yes" : "no"} |`,
     )
     .join("\n");
   const answerRows = benchmarkAgentAnswers
@@ -289,10 +295,10 @@ ${summaryRows}
 
 ## OpenUI model board
 
-Models in the same named family are connected in family_order. Singleton models are not connected.
+Models retain explicit family metadata, but family members are not connected in the chart. The chart draws one Pareto frontier. Five low-end compact or local models are unselected by default so the vertical scale can focus on 20–100%; selecting any of them restores 0–100%.
 
-| Model | Provider | Family | Valid | Cost per task | Cost type | Pareto frontier |
-| --- | --- | --- | ---: | ---: | --- | --- |
+| Model | Provider | Family | Valid | Cost per task | Cost type | Pareto frontier | Shown by default |
+| --- | --- | --- | ---: | ---: | --- | --- | --- |
 ${boardRows}
 
 ## Direct answers
