@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  outputFileTracingRoot: process.cwd(),
   // The Pi coding-agent SDK is a heavy Node-only chain: it spawns bash, reads
   // the filesystem, loads native terminal helpers via dynamic require, uses
   // `import.meta`, and reads its own prompt/skill/theme files from disk. It must

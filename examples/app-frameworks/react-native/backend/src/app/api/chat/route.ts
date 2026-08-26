@@ -3,8 +3,6 @@ import { NextRequest } from "next/server";
 import OpenAI from "openai";
 import { join } from "path";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY ?? "" });
-
 const SYSTEM_PROMPT = readFileSync(
   join(process.cwd(), "src", "generated", "system-prompt.txt"),
   "utf-8",
@@ -45,6 +43,12 @@ function extractText(msg: any): string {
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 export async function POST(req: NextRequest) {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    return Response.json({ error: "OPENAI_API_KEY is not configured" }, { status: 500 });
+  }
+
+  const openai = new OpenAI({ apiKey });
   const { messages } = await req.json();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

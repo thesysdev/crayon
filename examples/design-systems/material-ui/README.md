@@ -17,10 +17,7 @@ tbl = Table([Col("Product"), Col("Revenue", "number")], [["Widget", 1200]])
 On the client, `<AgentInterface />` from `@openuidev/react-ui` provides the artifact chat interface — thread history, streaming, input, and rendering. It requires an `llm` object whose `send()` calls the backend and whose `streamProtocol` parses the incoming SSE stream with `openAIAdapter()`, and a `componentLibrary` (`muiChatLibrary` — the custom component library defined in `src/lib/mui-genui/`) used to render each OpenUI Lang node. `storage` is optional — threads live in memory by default and reset on reload.
 
 ```tsx
-<AgentInterface
-  llm={{ send, streamProtocol: openAIAdapter() }}
-  componentLibrary={muiChatLibrary}
-/>
+<AgentInterface llm={{ send, streamProtocol: openAIAdapter() }} componentLibrary={muiChatLibrary} />
 ```
 
 ## Architecture
@@ -73,15 +70,15 @@ material-ui/
 
 The library exposes a representative subset of Material UI components mapped to OpenUI Lang:
 
-| Category   | Components |
-| ---------- | ---------- |
+| Category   | Components                                                                                    |
+| ---------- | --------------------------------------------------------------------------------------------- |
 | Content    | `CardHeader`, `TextContent`, `Heading`, `Alert`, `List` / `ListItem`, `Separator`, `Progress` |
-| Tables     | `Table` / `Col` |
-| Charts     | `BarChart`, `LineChart`, `PieChart` (via `@mui/x-charts`) with `Series` / `Slice` |
-| Forms      | `Form`, `FormControl`, `Input`, `Select` / `SelectItem`, `SwitchGroup` / `SwitchItem` |
-| Buttons    | `Button`, `Buttons` |
-| Layout     | `Tabs` / `TabItem`, `Accordion` / `AccordionItem` |
-| Follow-ups | `FollowUpBlock` / `FollowUpItem` |
+| Tables     | `Table` / `Col`                                                                               |
+| Charts     | `BarChart`, `LineChart`, `PieChart` (via `@mui/x-charts`) with `Series` / `Slice`             |
+| Forms      | `Form`, `FormControl`, `Input`, `Select` / `SelectItem`, `SwitchGroup` / `SwitchItem`         |
+| Buttons    | `Button`, `Buttons`                                                                           |
+| Layout     | `Tabs` / `TabItem`, `Accordion` / `AccordionItem`                                             |
+| Follow-ups | `FollowUpBlock` / `FollowUpItem`                                                              |
 
 Each component is defined with `defineComponent({ name, props, description, component })` where `props` is a Zod schema. The schema and description are serialized into the system prompt by `pnpm generate:prompt` (the OpenUI CLI reads `src/library.ts`), and `component` renders the node with Material UI primitives.
 
@@ -94,21 +91,21 @@ The app wraps everything in MUI's `ThemeProvider` + `CssBaseline` via `ColorMode
 ### Prerequisites
 
 - Node.js 20.x
-- pnpm 9+
+- pnpm, npm, or Bun
 - An OpenAI API key
 
 ### Setup
 
-From the monorepo root, install dependencies (this example is part of the pnpm workspace):
+Enter this standalone example and install its dependencies:
 
 ```bash
-pnpm install
+cd examples/design-systems/material-ui
+pnpm install --ignore-workspace
 ```
 
 Provide your API key:
 
 ```bash
-cd examples/design-systems/material-ui
 cp .env.example .env.local
 # edit .env.local and set OPENAI_API_KEY
 ```

@@ -58,16 +58,16 @@ If neither resolves, the chat still streams but opens with the SDK's "no models 
 
 ## Run
 
-From the repo root, install workspace deps once:
+Enter this standalone example and install its dependencies:
 
 ```bash
-pnpm install
+cd examples/harnesses/pi
+pnpm install --ignore-workspace
 ```
 
 Then, from this example, set a provider key and point the agent at a project to work on:
 
 ```bash
-cd examples/harnesses/pi
 cp .env.example .env   # set a provider API key (skip if using an existing Pi login)
 
 # Point the agent at the project you want it to work on:
