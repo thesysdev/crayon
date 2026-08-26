@@ -1,20 +1,12 @@
 "use client";
 
 import { Tag } from "@openuidev/react-ui";
-import type { ParseResult } from "@paste/lib/versions/types";
-import styles from "@paste/paste.module.css";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useState } from "react";
+import type { ParseResult } from "@paste/lib/versions/types";
+import styles from "@paste/paste.module.css";
 
-function isElementNode(
-  v: unknown,
-): v is {
-  type: "element";
-  typeName: string;
-  props: Record<string, unknown>;
-  partial?: boolean;
-  statementId?: string;
-} {
+function isElementNode(v: unknown): v is { type: "element"; typeName: string; props: Record<string, unknown>; partial?: boolean; statementId?: string } {
   return !!v && typeof v === "object" && (v as { type?: unknown }).type === "element";
 }
 
@@ -54,16 +46,7 @@ function safeStringify(v: unknown): string {
   }
 }
 
-function NodeView({
-  node,
-}: {
-  node: {
-    typeName: string;
-    props: Record<string, unknown>;
-    partial?: boolean;
-    statementId?: string;
-  };
-}) {
+function NodeView({ node }: { node: { typeName: string; props: Record<string, unknown>; partial?: boolean; statementId?: string } }) {
   const [open, setOpen] = useState(true);
   const entries = Object.entries(node.props ?? {});
   return (

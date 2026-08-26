@@ -153,7 +153,8 @@ export function FeatureGridSection({
           features.length <= desktopColumns ? styles.gridSingleRow : ""
         } ${flushOuterCards ? styles.gridFlushOuterCards : ""} ${
           balanceLastRow ? styles.gridBalancedLastRow : ""
-        } ${desktopColumns === 4 ? styles.gridFourColumns : ""}`.trim()}
+        } ${desktopColumns === 4 ? styles.gridFourColumns : ""
+        }`.trim()}
       >
         {lead && <div className={styles.lead}>{lead}</div>}
         {features.map(({ Icon, icon, title, description }, index) => {

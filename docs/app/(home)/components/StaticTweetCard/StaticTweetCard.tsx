@@ -40,14 +40,7 @@ function XLogo() {
 
 function VerifiedBadge() {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      width="16"
-      height="16"
-      fill="#1d9bf0"
-      aria-label="Verified account"
-      className={styles.verified}
-    >
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="#1d9bf0" aria-label="Verified account" className={styles.verified}>
       <path d="M22.25 12c0-1.43-.88-2.67-2.19-3.34.46-1.39.2-2.9-.81-3.91s-2.52-1.27-3.91-.81c-.66-1.31-1.91-2.19-3.34-2.19s-2.68.88-3.34 2.19c-1.39-.46-2.9-.2-3.91.81s-1.26 2.52-.81 3.91c-1.31.66-2.19 1.91-2.19 3.34s.88 2.67 2.19 3.34c-.46 1.39-.2 2.9.81 3.91s2.52 1.26 3.91.81c.66 1.31 1.91 2.19 3.34 2.19s2.68-.88 3.34-2.19c1.39.46 2.9.2 3.91-.81s1.27-2.52.81-3.91c1.31-.67 2.19-1.91 2.19-3.34zm-11.71 4.2L6.8 12.46l1.41-1.42 2.26 2.26 4.8-5.23 1.47 1.36-6.2 6.77z" />
     </svg>
   );
@@ -71,17 +64,7 @@ function ReplyIcon() {
 
 function LinkIcon() {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      width="15"
-      height="15"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
+    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
       <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
     </svg>
@@ -117,14 +100,7 @@ export function StaticTweetCard({ tweet }: { tweet: StaticTweet }) {
 
       <div className={styles.header}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          className={styles.avatar}
-          src={tweet.avatar}
-          alt=""
-          width={40}
-          height={40}
-          loading="lazy"
-        />
+        <img className={styles.avatar} src={tweet.avatar} alt="" width={40} height={40} loading="lazy" />
         <div className={styles.identity}>
           <span className={styles.name}>
             <span className={styles.nameText}>{tweet.name}</span>

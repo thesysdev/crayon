@@ -105,7 +105,9 @@ export function usePlayback(
         result = normalizeResult(s.getFinal());
         const oneShot = normalizeResult(l.mod.createParser!(schema, rootName).parse(s.source));
         convergence =
-          JSON.stringify(result?.root) === JSON.stringify(oneShot?.root) ? "converged" : "diverged";
+          JSON.stringify(result?.root) === JSON.stringify(oneShot?.root)
+            ? "converged"
+            : "diverged";
       } catch (err) {
         fatal = err instanceof Error ? err.message : String(err);
       }
@@ -121,51 +123,54 @@ export function usePlayback(
   );
 
   /** Parse one chunk, record a trace row, publish state. Returns false on fatal error. */
-  const advance = useCallback((s: Session, status: PlaybackStatus): boolean => {
-    const chunk = s.chunks[s.index];
-    s.prefix += chunk.text;
-    let result: ParseResult | null = null;
-    let fatal: string | null = null;
-    try {
-      result = normalizeResult(s.push(chunk.text, s.prefix));
-    } catch (err) {
-      fatal = err instanceof Error ? err.message : String(err);
-    }
-    const rootPresent = !!result?.root;
-    if (result) {
-      if (s.rows.length >= TRACE_CAP) {
-        s.truncated = true;
-      } else {
-        s.rows.push({
-          i: s.index,
-          chunkPreview: chunk.text.length > 40 ? `${chunk.text.slice(0, 40)}…` : chunk.text,
-          delayMs: chunk.delayMs,
-          rootPresent,
-          rootAppeared: rootPresent && !s.lastRootPresent,
-          rootDropped: !rootPresent && s.lastRootPresent,
-          statementCount: result.meta.statementCount,
-          incomplete: result.meta.incomplete,
-          unresolvedCount: result.meta.unresolved.length,
-          errorCount: result.meta.errors.length,
-        });
+  const advance = useCallback(
+    (s: Session, status: PlaybackStatus): boolean => {
+      const chunk = s.chunks[s.index];
+      s.prefix += chunk.text;
+      let result: ParseResult | null = null;
+      let fatal: string | null = null;
+      try {
+        result = normalizeResult(s.push(chunk.text, s.prefix));
+      } catch (err) {
+        fatal = err instanceof Error ? err.message : String(err);
       }
-    }
-    s.lastRootPresent = rootPresent;
-    s.index += 1;
-    setState({
-      status: fatal ? "done" : status,
-      prefix: s.prefix,
-      chunkIndex: s.index,
-      totalChunks: s.chunks.length,
-      trace: [...s.rows],
-      traceTruncated: s.truncated,
-      result,
-      convergence: null,
-      emulated: s.emulated,
-      fatal,
-    });
-    return !fatal;
-  }, []);
+      const rootPresent = !!result?.root;
+      if (result) {
+        if (s.rows.length >= TRACE_CAP) {
+          s.truncated = true;
+        } else {
+          s.rows.push({
+            i: s.index,
+            chunkPreview: chunk.text.length > 40 ? `${chunk.text.slice(0, 40)}…` : chunk.text,
+            delayMs: chunk.delayMs,
+            rootPresent,
+            rootAppeared: rootPresent && !s.lastRootPresent,
+            rootDropped: !rootPresent && s.lastRootPresent,
+            statementCount: result.meta.statementCount,
+            incomplete: result.meta.incomplete,
+            unresolvedCount: result.meta.unresolved.length,
+            errorCount: result.meta.errors.length,
+          });
+        }
+      }
+      s.lastRootPresent = rootPresent;
+      s.index += 1;
+      setState({
+        status: fatal ? "done" : status,
+        prefix: s.prefix,
+        chunkIndex: s.index,
+        totalChunks: s.chunks.length,
+        trace: [...s.rows],
+        traceTruncated: s.truncated,
+        result,
+        convergence: null,
+        emulated: s.emulated,
+        fatal,
+      });
+      return !fatal;
+    },
+    [],
+  );
 
   const play = useCallback(
     (s: Session, l: LoadedLangCore) => {

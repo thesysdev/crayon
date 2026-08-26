@@ -37,7 +37,11 @@ interface MoreStackChip extends StackChipBase {
 }
 
 export type StackChipItem =
-  ImageStackChip | VectorStackChip | MascotStackChip | TextStackChip | MoreStackChip;
+  | ImageStackChip
+  | VectorStackChip
+  | MascotStackChip
+  | TextStackChip
+  | MoreStackChip;
 
 function ChipIcon({ item }: { item: StackChipItem }) {
   const iconId = useId();

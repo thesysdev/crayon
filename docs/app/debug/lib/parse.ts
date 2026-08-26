@@ -1,4 +1,9 @@
-import type { LoadedLangCore, OpenUIError, ParseResult, ValidationError } from "./versions/types";
+import type {
+  LoadedLangCore,
+  OpenUIError,
+  ParseResult,
+  ValidationError,
+} from "./versions/types";
 
 export interface ValidationOutcome {
   result: ParseResult | null;
@@ -60,11 +65,7 @@ export function runValidation(
   if (!result) {
     return { result: null, enriched: null, fatal: "Parser returned an unrecognizable result." };
   }
-  return {
-    result,
-    enriched: tryEnrich(result.meta.errors, loaded, schema, componentNames),
-    fatal: null,
-  };
+  return { result, enriched: tryEnrich(result.meta.errors, loaded, schema, componentNames), fatal: null };
 }
 
 export function tryEnrich(

@@ -170,7 +170,9 @@ export function CompatibilitySection({
   const trackRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
-    const tracks = trackRefs.current.filter((track): track is HTMLDivElement => track !== null);
+    const tracks = trackRefs.current.filter(
+      (track): track is HTMLDivElement => track !== null,
+    );
     if (tracks.length === 0) return;
 
     let frameId = 0;
