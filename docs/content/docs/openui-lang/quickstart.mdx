@@ -3,8 +3,12 @@ title: Quick Start
 description: Build a Recipe Remix agent with OpenUI Cloud in about 10 minutes.
 ---
 
+import { CopyableDiff } from "@/components/copyable-diff";
+
 Build a Recipe Remix agent that reads your pantry, searches for real recipes,
 finds an image, and renders the results as interactive Generative UI.
+
+![Recipe Remix calling the pantry tool and rendering three interactive recipe cards](/images/openui-lang/recipe-remix-quickstart.gif)
 
 The Cloud starter already includes streaming chat, conversation history, web
 search, image search, reports, presentations, and an example function tool.
@@ -32,40 +36,34 @@ Open `src/lib/starters.tsx` and replace the existing `STARTERS` array with:
 export const STARTERS = [
   {
     displayText: "Cook from my pantry",
-    prompt:
-      "Call get_recipe_profile, then search for three recipes that fit my pantry and preferences. Include source links and a relevant image.",
+    prompt: "What can I make for dinner with what I already have?",
     icon: <></>,
   },
   {
     displayText: "Find a high-protein dinner",
-    prompt:
-      "Search for three high-protein vegetarian dinners that take 30 minutes or less. Include useful substitutions and source links.",
+    prompt: "What are three quick, high-protein vegetarian dinners I could make?",
     icon: <></>,
   },
   {
     displayText: "Remix a comfort food",
-    prompt:
-      "Find three reliable takes on macaroni and cheese, then suggest a lighter or faster remix for each.",
+    prompt: "Can you give me three lighter or quicker spins on mac and cheese?",
     icon: <></>,
   },
 ];
 ```
 
-In `src/components/cloud-chat.tsx`, replace the existing starters import with:
+Update these lines in `src/components/cloud-chat.tsx`:
 
-```tsx
-import { OPENUI_LOGOS, STARTERS } from "@/lib/starters";
-```
-
-Then replace the existing `AgentInterface.Welcome` block with:
-
-```tsx
-<AgentInterface.Welcome
-  title="Recipe Remix"
-  description="Turn what you have into something delicious."
-  glowAnimation
+<CopyableDiff
+  code={`=<AgentInterface.Welcome
+-  title="Good to see you"
+-  description="What's on your mind today?"
+-  promptTemplates={PROMPT_TEMPLATES}
++  title="Recipe Remix"
++  description="Turn what you have into something delicious."
+=  glowAnimation
+=/>`}
 />
-```
 
 This removes the general-purpose prompt templates while keeping the three
 recipe starters.
@@ -91,41 +89,45 @@ export const getRecipeProfileTool = {
 
 export async function executeGetRecipeProfile(): Promise<string> {
   return JSON.stringify({
-    pantry: ["chickpeas", "tomatoes", "spinach"],
+    pantry: ["black beans", "corn", "canned tomatoes", "rice", "cheddar"],
     diet: "vegetarian",
+    cuisine: "American",
     maxMinutes: 30,
+    servings: 2,
   });
 }
 ```
 
 Change the values in `executeGetRecipeProfile()` to match your kitchen.
 
-Open `src/app/api/chat/route.ts` and add this import:
+Open `src/app/api/chat/route.ts` and update the imports:
 
-```ts
-import { executeGetRecipeProfile, getRecipeProfileTool } from "@/lib/tools/get-recipe-profile";
-```
+<CopyableDiff
+  code={`=import { runFunctionToolLoop } from "@/lib/tool-loop";
++import { executeGetRecipeProfile, getRecipeProfileTool } from "@/lib/tools/get-recipe-profile";
+=import { executeGetWeather, getWeatherTool } from "@/lib/tools/get-weather";`}
+/>
 
-Replace the existing `functionTools` object with:
+Register the executor beside the existing weather tool:
 
-```ts
-const functionTools = {
-  [getWeatherTool.name]: executeGetWeather,
-  [getRecipeProfileTool.name]: executeGetRecipeProfile,
-};
-```
+<CopyableDiff
+  code={`=const functionTools = {
+=  [getWeatherTool.name]: executeGetWeather,
++  [getRecipeProfileTool.name]: executeGetRecipeProfile,
+=};`}
+/>
 
-Then replace the existing `tools` array with:
+Then add its declaration to the existing `tools` array:
 
-```ts
-tools: [
-  artifactTool({ artifacts: ["slides", "report"] }) as unknown as Tool,
-  { type: "web_search" },
-  { type: "image_search" } as unknown as Tool,
-  getWeatherTool,
-  getRecipeProfileTool,
-],
-```
+<CopyableDiff
+  code={`=tools: [
+=  artifactTool({ artifacts: ["slides", "report"] }) as unknown as Tool,
+=  { type: "web_search" },
+=  { type: "image_search" } as unknown as Tool,
+=  getWeatherTool,
++  getRecipeProfileTool,
+=],`}
+/>
 
 The generated route already runs the tool loop. Adding the declaration and
 executor is enough.
@@ -139,18 +141,34 @@ import { createLibrary, defineComponent, useTriggerAction } from "@openuidev/rea
 import { chatLibrary } from "@openuidev/thesys";
 import { z } from "zod/v4";
 
-const cardStyle = { padding: 12, margin: 12, borderRadius: 12, background: "#fff7ed" };
+const cardStyle = {
+  display: "grid",
+  gridTemplateRows: "120px auto 66px 1fr auto",
+  gap: 8,
+  height: "100%",
+  padding: 12,
+  border: "1px solid #e5e7eb",
+  borderRadius: 12,
+} as const;
+const actionStyle = {
+  padding: "5px 8px",
+  borderRadius: 8,
+  fontSize: 13,
+  fontWeight: 600,
+  textDecoration: "none",
+  cursor: "pointer",
+} as const;
 
 const RecipeRemix = defineComponent({
   name: "RecipeRemix",
-  description: "Three sourced recipe suggestions with practical substitutions.",
+  description: "Three sourced recipe suggestions.",
   props: z.object({
     recipes: z.array(
       z.object({
         title: z.string(),
         time: z.string(),
+        servings: z.number().int().positive(),
         ingredients: z.array(z.string()),
-        swap: z.string(),
         sourceUrl: z.string(),
         imageUrl: z.string().optional(),
       }),
@@ -160,26 +178,70 @@ const RecipeRemix = defineComponent({
     const triggerAction = useTriggerAction();
 
     return (
-      <section>
-        <h2 style={{ fontSize: 24, fontWeight: 600 }}>Recipe Remix</h2>
+      <section
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+          gap: 12,
+          width: "100%",
+        }}
+      >
+        <h2 style={{ gridColumn: "1 / -1", margin: 0, fontSize: 24, fontWeight: 600 }}>
+          Recipe Remix
+        </h2>
         {props.recipes.map((recipe) => (
           <article key={recipe.title} style={cardStyle}>
-            {recipe.imageUrl?.startsWith("https://") && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={recipe.imageUrl} alt={recipe.title} style={{ width: "100%" }} />
-            )}
-            <h3>
-              <strong>{recipe.title}</strong> · {recipe.time}
-            </h3>
-            <p>{recipe.ingredients.join(", ")}</p>
-            <p>Swap: {recipe.swap}</p>
-            <a href={recipe.sourceUrl} target="_blank" rel="noreferrer">
-              Source
-            </a>{" "}
-            ·{" "}
-            <button onClick={() => triggerAction(`Make ${recipe.title} faster and simpler`)}>
-              Remix this
-            </button>
+            <div style={{ overflow: "hidden", borderRadius: 8, background: "#f3f4f6" }}>
+              {recipe.imageUrl?.startsWith("https://") && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={recipe.imageUrl}
+                  alt=""
+                  onError={(event) => (event.currentTarget.hidden = true)}
+                  style={{ display: "block", width: "100%", height: "100%", objectFit: "cover" }}
+                />
+              )}
+            </div>
+            <div style={{ display: "flex", gap: 6 }}>
+              <span
+                style={{
+                  padding: "2px 8px",
+                  borderRadius: 999,
+                  background: "#eff6ff",
+                  color: "#1d4ed8",
+                }}
+              >
+                {recipe.time}
+              </span>
+              <span style={{ padding: "2px 8px", borderRadius: 999, background: "#f3f4f6" }}>
+                Serves {recipe.servings}
+              </span>
+            </div>
+            <h3 style={{ margin: 0 }}>{recipe.title}</h3>
+            <div>
+              <strong>Ingredients</strong>
+              <ul style={{ margin: 0, paddingLeft: 20, fontSize: 14 }}>
+                {recipe.ingredients.map((ingredient) => (
+                  <li key={ingredient}>{ingredient}</li>
+                ))}
+              </ul>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: "auto" }}>
+              <a
+                href={recipe.sourceUrl}
+                target="_blank"
+                rel="noreferrer"
+                style={{ ...actionStyle, border: "1px solid #d1d5db", color: "#111827" }}
+              >
+                Source ↗
+              </a>
+              <button
+                style={{ ...actionStyle, border: 0, background: "#111827", color: "white" }}
+                onClick={() => triggerAction(`Make ${recipe.title} faster and simpler`)}
+              >
+                Remix this
+              </button>
+            </div>
           </article>
         ))}
       </section>
@@ -202,11 +264,14 @@ npx @openuidev/cli@latest generate \
   --out src/lib/recipe-library-spec.json
 ```
 
-Now add the generated specification import to `src/app/api/chat/route.ts`:
+Now update the imports in `src/app/api/chat/route.ts`:
 
-```ts
-import recipeLibrarySpec from "@/lib/recipe-library-spec.json";
-```
+<CopyableDiff
+  code={`=import { requiredEnv } from "@/lib/env";
+=import { resolveRequestedModel } from "@/lib/models";
++import recipeLibrarySpec from "@/lib/recipe-library-spec.json";
+=import { runFunctionToolLoop } from "@/lib/tool-loop";`}
+/>
 
 Below the imports, add:
 
@@ -217,6 +282,7 @@ Use web search before recommending recipes and include real source URLs.
 Use image search to include a relevant recipe image when available.
 For each recipe, set imageUrl to an HTTPS URL returned by image search when available.
 Call get_recipe_profile when the user asks what they can cook from their pantry.
+Use the profile's servings value for every recipe.
 Return exactly three concise recipes and clearly label substitutions.
 Render the final recipe recommendations using exactly one RecipeRemix component.
 Do not return recipe recommendations as a prose-only response.
@@ -224,27 +290,26 @@ Never claim that a recipe is allergen-safe.
 `;
 ```
 
-Replace the existing `instructions` field inside `createParams` with:
+Update the `instructions` field inside `createParams`:
 
-```ts
-instructions: generateSystemPrompt({
-  library: recipeLibrarySpec,
-  instructions: recipeInstructions,
-}),
-```
+<CopyableDiff
+  code={`-instructions: generateSystemPrompt(),
++instructions: generateSystemPrompt({
++  library: recipeLibrarySpec,
++  instructions: recipeInstructions,
++}),`}
+/>
 
-Finally, add this import to `src/components/cloud-chat.tsx`:
+Finally, update `src/components/cloud-chat.tsx`:
 
-```tsx
-import { recipeLibrary } from "@/lib/recipe-library";
-```
+<CopyableDiff code={`+import { recipeLibrary } from "@/lib/recipe-library";`} />
 
-Remove `chatLibrary` from the existing `@openuidev/thesys` import, then replace
-the `componentLibrary` prop with:
+Then update the `componentLibrary` prop:
 
-```text
-componentLibrary={recipeLibrary}
-```
+<CopyableDiff
+  code={`-componentLibrary={chatLibrary}
++componentLibrary={recipeLibrary}`}
+/>
 
 <Callout type="info">
   `recipeLibrary` extends the built-in `chatLibrary`, so the existing inline components remain
