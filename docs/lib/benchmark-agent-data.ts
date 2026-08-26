@@ -153,7 +153,7 @@ export const benchmarkAgentAnswers = [
     id: "chart-views",
     question: "What do the two tabs at the top of the benchmark show?",
     answer:
-      "Model comparison shows OpenUI structural validity and cost across 30 models as provider-coloured dots with one Pareto frontier. Five compact or local models are hidden by default but remain in the data; selecting any of them expands the vertical scale from 20–100% to 0–100%. Format comparison shows structural validity and cost across OpenUI, A2UI, and json-render for six models. Exact values for both views are present in the page's server-rendered chart data tables and machine-readable distributions.",
+      "Model comparison shows OpenUI structural validity and cost across 30 models as provider-coloured dots with one Pareto frontier. Models scoring below 70% structural validity are deselected by default but remain in the data; both axes rescale to whatever is selected, so selecting a lower-scoring model extends the vertical scale down to reach it. Format comparison shows structural validity and cost across OpenUI, A2UI, and json-render for six models. Exact values for both views are present in the page's server-rendered chart data tables and machine-readable distributions.",
     evidence_paths: ["model_board", "model_families", "format_comparison", "distributions"],
   },
 ] as const;
@@ -191,7 +191,7 @@ export const benchmarkAgentDataset = {
     connected_family:
       "Whether members of a model family are connected by a chart line. False for every row in this chart version.",
     default_selected:
-      "Whether the model is shown in the chart's default 20–100% structural-validity view.",
+      "Whether the model is selected in the chart's opening view, which is every model at or above 70% structural validity.",
     generation_condition:
       "Four generations per brief, a 16,384-token output ceiling, temperature 0.7 where the provider accepts it, and minimal or no reasoning. Anthropic runs use the model default temperature because that API rejects the benchmark temperature setting for the tested model.",
     scorer_regime:
@@ -305,7 +305,7 @@ ${summaryRows}
 
 ## OpenUI model board
 
-Models retain explicit family metadata, but family members are not connected in the chart. The chart draws one Pareto frontier. Five low-end compact or local models are unselected by default so the vertical scale can focus on 20–100%; selecting any of them restores 0–100%.
+Models retain explicit family metadata, but family members are not connected in the chart. The chart draws one Pareto frontier. Models below 70% structural validity are unselected by default so the vertical scale can focus on the range worth comparing; both axes rescale to fit whatever is selected.
 
 | Model | Provider | Family | Valid | Cost per task | Cost type | Pareto frontier | Shown by default |
 | --- | --- | --- | ---: | ---: | --- | --- | --- |
@@ -431,7 +431,7 @@ How reliably and economically do different models generate structurally valid Op
 - ${BRIEFS} interface briefs and four generations per brief.
 - Structural validity is the vertical metric; measured list-price cost per task is the horizontal metric where comparable.
 - Self-hosted cost is null, not zero.
-- Five compact or local models are hidden by default in the visual chart but remain in this table.
+- Models below 70% structural validity are deselected by default in the visual chart but remain in this table.
 - Published website values use the preserved lang-core 0.2.11 scorer regime; current 0.2.15 repository results are not comparable row by row.
 
 | Model | Provider | Structural validity | Cost per task | Cost type | Pareto frontier | Shown by default |

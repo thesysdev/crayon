@@ -89,9 +89,17 @@ assert(
   data.model_board.every((row) => row.family_id && row.family_name),
   "Every model needs explicit family metadata",
 );
+/* The default filter is a rule, not a list: anything below the published
+   structural-validity threshold starts deselected. Assert the rule, so
+   rescoring a model moves it between the two sets without failing here. */
 assert(
-  data.model_board.filter((row) => !row.default_selected).length === 5,
-  "Expected five models to be hidden by the chart's default filter",
+  data.model_board.every((row) => row.default_selected === row.validity_score_percent >= 70),
+  "The chart's default filter no longer matches the published 70% threshold",
+);
+assert(
+  data.model_board.some((row) => !row.default_selected) &&
+    data.model_board.some((row) => row.default_selected),
+  "The default filter should hide some models and show others",
 );
 assert(
   data.model_board.every((row) => row.connected_family === false),

@@ -18,7 +18,7 @@ import {
   type ModelId,
 } from "@/lib/benchmark-data";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { BRAND_COLORS, BRAND_MARKS, GEMINI_GRADIENT, markViewBox } from "./brand-marks";
+import { BRAND_MARKS, markViewBox } from "./brand-marks";
 import { Chart, ChartDataDisclosure, DataTable, Mark, styles as s } from "./primitives";
 
 /* Both tabs share one plot box so switching views does not resize the hero.
@@ -389,6 +389,70 @@ export function ReliabilityByModel({
       .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
   })();
 
+  /* Model marks on the format plot, placed the way the point labels are: the
+     preferred spot first, then stepping away until nothing overlaps. Fixed
+     offsets were fine while the marks were spread out, but at the cheap end
+     of the axis several models land within a few pixels of each other and
+     their logos stacked into an unreadable pile — most visibly on a phone,
+     where the whole plot is a third of the width. A mark that cannot be
+     placed near its own point is dropped rather than dragged somewhere it
+     would read as belonging to a different one. */
+  const formatMarks = (() => {
+    const size = narrow ? 12 : 16;
+    const boxes: Array<{ left: number; right: number; top: number; bottom: number }> = [];
+    /* the plotted squares come first: a logo must never cover a data point */
+    for (const { points } of formatSeries) {
+      for (const point of points) {
+        const cx = formatX(point.cost);
+        const cy = formatY(point.score);
+        boxes.push({ left: cx - 7, right: cx + 7, top: cy - 7, bottom: cy + 7 });
+      }
+    }
+    const overlaps = (box: { left: number; right: number; top: number; bottom: number }) =>
+      boxes.some(
+        (other) =>
+          box.left < other.right &&
+          box.right > other.left &&
+          box.top < other.bottom &&
+          box.bottom > other.top,
+      );
+    const stride = size + 3;
+    const steps = [0];
+    for (let i = 1; i <= 3; i++) steps.push(-i * stride, i * stride);
+
+    return formatSeries
+      .flatMap(({ format, points }) =>
+        points.map((point) => {
+          const model = MODELS.find((item) => item.id === point.model)!;
+          const cx = formatX(point.cost);
+          const py = formatY(point.score);
+          const above = py - (narrow ? 21 : 27);
+          const base = format === "jsonRender" || above < PAD.top ? py + 12 : above;
+          for (const step of steps) {
+            const gy = base + step;
+            if (gy < PAD.top || gy + size > PAD.top + PH) continue;
+            const box = {
+              left: cx - size / 2 - 1,
+              right: cx + size / 2 + 1,
+              top: gy - 1,
+              bottom: gy + size + 1,
+            };
+            if (overlaps(box)) continue;
+            boxes.push(box);
+            return {
+              key: `${format}-${point.model}-mark`,
+              d: BRAND_MARKS[model.mark],
+              scale: size / Number(markViewBox(model.mark).split(" ")[2]),
+              x: cx - size / 2,
+              y: gy,
+            };
+          }
+          return null;
+        }),
+      )
+      .filter((mark): mark is NonNullable<typeof mark> => mark !== null);
+  })();
+
   const toggleBoardModel = (id: string) => {
     setSelectedBoardIds((current) => {
       const next = new Set(current);
@@ -520,7 +584,7 @@ export function ReliabilityByModel({
                         className={s.modelSelectGroupTitle}
                       >
                         <span
-                          className={s.modelSelectDot}
+                          className={`${s.modelSelectDot} ${s.providerHue}`}
                           style={{ background: PROVIDER_HUE[provider] }}
                           aria-hidden
                         />
@@ -648,7 +712,7 @@ export function ReliabilityByModel({
               return (
                 <g key={point.id}>
                   <circle
-                    className={s.pt}
+                    className={`${s.pt} ${s.providerHue}`}
                     cx={px}
                     cy={py}
                     r={radius}
@@ -746,19 +810,6 @@ export function ReliabilityByModel({
                 frame is drawn explicitly and the two tabs match. */}
             <line x1={PL} x2={PL + PW} y1={PAD.top + PH} y2={PAD.top + PH} stroke="var(--rule)" />
             <line x1={PL + PW} x2={PL + PW} y1={PAD.top} y2={PAD.top + PH} stroke="var(--rule)" />
-            <defs>
-              <linearGradient
-                id="chart-gemini-gradient"
-                x1={GEMINI_GRADIENT.from.x}
-                y1={GEMINI_GRADIENT.from.y}
-                x2={GEMINI_GRADIENT.to.x}
-                y2={GEMINI_GRADIENT.to.y}
-              >
-                {GEMINI_GRADIENT.stops.map((stop) => (
-                  <stop key={stop.offset} offset={stop.offset} stopColor={stop.color} />
-                ))}
-              </linearGradient>
-            </defs>
             <text x={PL + 4} y={formatY(100) - 14} fontSize="13.5" fill="var(--ink)">
               {narrow ? "Structural validity vs cost" : "Structural validity vs cost, by format"}
             </text>
@@ -842,29 +893,15 @@ export function ReliabilityByModel({
                 </g>
               );
             })}
-            {formatSeries.flatMap(({ format, points }) =>
-              points.map((point) => {
-                const model = MODELS.find((item) => item.id === point.model)!;
-                const vb = Number(markViewBox(model.mark).split(" ")[2]);
-                const above = formatY(point.score) - (narrow ? 21 : 27);
-                const gy =
-                  format === "jsonRender" || above < PAD.top ? formatY(point.score) + 12 : above;
-                const size = narrow ? 12 : 16;
-                return (
-                  <path
-                    key={`${format}-${point.model}-mark`}
-                    className={s.fadeLate}
-                    d={BRAND_MARKS[model.mark]}
-                    transform={`translate(${formatX(point.cost) - size / 2}, ${gy}) scale(${size / vb})`}
-                    fill={
-                      model.mark === "gemini"
-                        ? "url(#chart-gemini-gradient)"
-                        : (BRAND_COLORS[model.mark] ?? "var(--ink-muted)")
-                    }
-                  />
-                );
-              }),
-            )}
+            {formatMarks.map((mark) => (
+              <path
+                key={mark.key}
+                className={s.fadeLate}
+                d={mark.d}
+                transform={`translate(${mark.x}, ${mark.y}) scale(${mark.scale})`}
+                fill="var(--ink-muted)"
+              />
+            ))}
           </svg>
         )}
 
@@ -926,7 +963,11 @@ export function ReliabilityByModel({
           </span>
           {visibleProviders.map((provider) => (
             <span key={provider} className={s.key}>
-              <span className={s.dot} style={{ background: PROVIDER_HUE[provider] }} aria-hidden />
+              <span
+                className={`${s.dot} ${s.providerHue}`}
+                style={{ background: PROVIDER_HUE[provider] }}
+                aria-hidden
+              />
               {provider}
             </span>
           ))}
@@ -947,7 +988,7 @@ export function ReliabilityByModel({
           <div className={`${s.legend} ${s.legendCenter} ${s.legendTight}`} aria-label="Model key">
             {MODELS.filter((m) => pricedModels.includes(m.id)).map((m) => (
               <span key={m.id} className={s.key}>
-                <Mark id={m.mark} brand />
+                <Mark id={m.mark} />
                 {MODEL_NAME[m.id]}
               </span>
             ))}
@@ -957,7 +998,7 @@ export function ReliabilityByModel({
         <div className={`${s.legend} ${s.legendCenter}`} aria-label="Model key">
           {MODELS.filter((m) => pricedModels.includes(m.id)).map((m) => (
             <span key={m.id} className={s.key}>
-              <Mark id={m.mark} brand />
+              <Mark id={m.mark} />
               {MODEL_NAME[m.id]}
             </span>
           ))}

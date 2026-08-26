@@ -227,11 +227,13 @@ const contracts = [
   ],
   [
     "tab answer explains the dynamic validity scale",
-    () => answer("chart-views").includes("20–100%") && answer("chart-views").includes("0–100%"),
+    () => answer("chart-views").includes("70%") && answer("chart-views").includes("rescale"),
   ],
   [
-    "exactly five models are hidden by default",
-    () => data.model_board.filter((row) => !row.default_selected).length === 5,
+    "the default filter matches the published 70% threshold",
+    () =>
+      data.model_board.every((row) => row.default_selected === row.validity_score_percent >= 70) &&
+      data.model_board.some((row) => !row.default_selected),
   ],
 ];
 

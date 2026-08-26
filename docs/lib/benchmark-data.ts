@@ -966,8 +966,8 @@ export const LINKS = {
   catalog: `${PUBLISHED_REPO_ROOT}/catalog/public-catalog.json`,
   latestHarness: LATEST_REPO_ROOT,
   latestReadme: `${LATEST_REPO_ROOT}/README.md`,
-  speedHarness: "https://github.com/thesysdev/openui/tree/main/benchmarks",
-  dispute: "https://github.com/thesysdev/openui/issues/new",
+  speedHarness: LATEST_REPO_ROOT,
+  dispute: `${BENCHMARK_REPOSITORY}/issues/new`,
 };
 
 export const CHANGELOG = [

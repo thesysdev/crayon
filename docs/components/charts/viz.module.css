@@ -21,6 +21,11 @@
   /* the card surface token — distinct from the page background in both modes */
   --surface: var(--openui-foreground, #fff);
 
+  /* Published so a full-bleed child can escape exactly this much and no
+     more. Any rule that changes the card's inline padding must change this
+     with it — the /benchmarks page sets both to 0. */
+  --card-pad: 28px;
+
   margin: 2.5rem 0;
   padding: 20px 28px;
   border-radius: 18px;
@@ -588,6 +593,8 @@
 
 @media (max-width: 640px) {
   .viz {
+    --card-pad: 18px;
+
     padding: 16px 18px;
     gap: 20px;
   }
@@ -596,10 +603,10 @@
      reach the screen edge, instead of sliding inside an inset window that
      looks like it is cutting the table off on both sides. */
   .dataScroller {
-    width: calc(100% + 36px);
-    margin-inline: -18px;
-    padding-inline: 18px;
-    scroll-padding-inline: 18px;
+    width: calc(100% + 2 * var(--card-pad, 0px));
+    margin-inline: calc(-1 * var(--card-pad, 0px));
+    padding-inline: var(--card-pad, 0px);
+    scroll-padding-inline: var(--card-pad, 0px);
   }
   .rowName {
     width: 120px;
@@ -925,7 +932,7 @@
   display: none;
 }
 
-.dataDisclosure > summary::before {
+.dataDisclosure > summary::after {
   content: "";
   flex: none;
   width: 7px;
@@ -937,7 +944,7 @@
   transition: transform 180ms ease;
 }
 
-.dataDisclosure[open] > summary::before {
+.dataDisclosure[open] > summary::after {
   margin-top: 3px;
   transform: rotate(-135deg);
 }
@@ -2290,9 +2297,16 @@
   letter-spacing: 0.01em;
 }
 
-/* brand-coloured marks carry their own colour, so the legend's muting would
-   only grey them out */
-.legend .key svg:has(path[fill^="#"]),
-.legend .key svg:has(path[fill^="url("]) {
-  opacity: 1;
+/* Provider hues are chosen against a white page, where they need to be dark
+   enough to read. On a dark surface that same darkness sinks into the
+   background, so every dot carrying one is lifted together. One rule, rather
+   than a second hand-tuned palette that would drift from the first. */
+@media (prefers-color-scheme: dark) {
+  :global(html:not([data-theme="light"]):not(.light)) .viz .providerHue {
+    filter: brightness(1.45) saturate(1.08);
+  }
+}
+:global(.dark) .viz .providerHue,
+:global([data-theme="dark"]) .viz .providerHue {
+  filter: brightness(1.45) saturate(1.08);
 }

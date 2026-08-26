@@ -33,26 +33,3 @@ export const markViewBox = (id?: string) => (id && BRAND_VIEWBOX[id]) || "0 0 24
    except Anthropic, which uses its clay brand colour rather than the black
    wordmark. Marks that are monochrome by design (OpenAI, Moonshot) take the
    theme's ink so they stay visible in both light and dark. */
-export const BRAND_COLORS: Record<string, string> = {
-  openai: "var(--ink)",
-  moonshot: "var(--ink)",
-  anthropic: "#D97757",
-  qwen: "#6950EF",
-  meta: "#0467DF",
-  google: "#4285F4",
-  vercel: "var(--ink)",
-};
-
-/* Gemini's mark is a gradient, not a flat fill. Stops and direction are taken
-   from Google's own 2025 icon (bottom-left to top-right): blue into periwinkle
-   into light purple. The Bard-era gradient ended in pink and is not current. */
-export const GEMINI_GRADIENT = {
-  from: { x: 0, y: 1 },
-  to: { x: 1, y: 0 },
-  stops: [
-    { offset: 0, color: "#4893FC" },
-    { offset: 0.27, color: "#4893FC" },
-    { offset: 0.777, color: "#969DFF" },
-    { offset: 1, color: "#BD99FE" },
-  ],
-} as const;

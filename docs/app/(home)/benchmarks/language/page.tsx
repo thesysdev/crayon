@@ -112,7 +112,7 @@ export default function LanguageBenchmarkPage() {
           <h2 id="results-heading">All model results</h2>
           <p>
             All {modelBoardRows.length} rows are present below, including the five compact or local
-            models hidden in the visual chart&rsquo;s default 20–100% view.
+            models deselected by default in the visual chart, which opens on models at or above 70%.
           </p>
           <div className="not-prose overflow-x-auto">
             <table className="w-full min-w-[760px] border-collapse text-left text-sm">
