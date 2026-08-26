@@ -13,7 +13,6 @@ import {
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import type { Metadata } from "next";
 import { BevelButton } from "../../components/Button/BevelButton";
-import { PillLink } from "../../components/Button/Button";
 import benchmarkStyles from "../benchmarks.module.css";
 
 export const metadata: Metadata = {
@@ -98,14 +97,20 @@ export default function BenchmarkMethodologyPage() {
                   />
                 }
               />
-              <PillLink
+              <BevelButton
                 href={BENCHMARK_REPOSITORY}
-                variant="ghost"
+                label="Source"
+                variant="secondary"
+                className={benchmarkStyles.heroButton}
                 external
-                arrow={<ArrowUpRight size={16} strokeWidth={2.25} aria-hidden="true" />}
-              >
-                Source
-              </PillLink>
+                badge={
+                  <ArrowUpRight
+                    className={benchmarkStyles.actionIcon}
+                    strokeWidth={2.25}
+                    aria-hidden="true"
+                  />
+                }
+              />
             </nav>
 
             <article className="prose mt-8 min-w-0">
