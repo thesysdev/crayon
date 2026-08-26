@@ -352,6 +352,36 @@ const integrationCatalog: Integration[] = [
 
   // Frontend frameworks and platforms.
   {
+    slug: "lynx",
+    name: "Lynx",
+    logo: "/integration-logos/lynx.svg",
+    category: "frontend-platforms",
+    type: "Cross-platform runtime",
+    summary:
+      "Render streaming OpenUI Lang as cross-platform interfaces through Lynx's native rendering pipeline.",
+    howItWorks:
+      "@lynx-js/genui/openui incrementally parses OpenUI Lang, maps registered expressions to ReactLynx components, and renders them through Lynx's native pipeline while the host application owns its component definitions, tools, and actions.",
+    install: "npm install @lynx-js/genui @lynx-js/react @lynx-js/lynx-ui",
+    links: [
+      {
+        label: "OpenUI integration guide",
+        href: "https://lynxjs.org/next/react/genui/openui.html",
+        kind: "Guide",
+      },
+      {
+        label: "npm package",
+        href: "https://www.npmjs.com/package/@lynx-js/genui",
+        kind: "npm",
+      },
+      {
+        label: "Source code",
+        href: "https://github.com/lynx-family/lynx-stack/tree/main/packages/genui/openui",
+        kind: "GitHub",
+      },
+      { label: "Lynx", href: "https://lynxjs.org", kind: "Website" },
+    ],
+  },
+  {
     slug: "vue",
     name: "Vue 3",
     logo: "/integration-logos/vue.svg",
@@ -421,7 +451,7 @@ const popularityOrder: Record<IntegrationCategoryId, string[]> = {
     "google-adk",
   ],
   "design-systems": ["shadcn-ui", "material-ui", "handsontable", "react-email"],
-  "frontend-platforms": ["vue", "svelte", "react-native", "assistant-ui", "open-webui"],
+  "frontend-platforms": ["vue", "svelte", "react-native", "lynx", "assistant-ui", "open-webui"],
 };
 
 export const integrationBySlug = new Map(integrations.map((item) => [item.slug, item]));

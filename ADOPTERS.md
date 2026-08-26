@@ -36,6 +36,11 @@ Example row, copy and edit:
 
 Frameworks that integrate with, support, or generate OpenUI interfaces.
 
+- **assistant-ui** — Renders streaming OpenUI programs as assistant-ui Tool UI while assistant-ui retains control of the conversation and tool lifecycle.
+
+  - Status: `Official integration`
+  - [Documentation](https://www.assistant-ui.com/docs/tools/openui) · [Example](https://github.com/assistant-ui/assistant-ui/tree/main/examples/with-openui)
+
 - **Lynx** — Renders OpenUI Lang as cross-platform interfaces through the OpenUI renderer and component library in `@lynx-js/genui`.
 
   - Status: `Official integration`
