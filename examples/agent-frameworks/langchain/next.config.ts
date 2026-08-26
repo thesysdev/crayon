@@ -2,7 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone",
-  turbopack: {},
+  outputFileTracingRoot: process.cwd(),
+  turbopack: { root: process.cwd() },
 };
 
 export default nextConfig;
