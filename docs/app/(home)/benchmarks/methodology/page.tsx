@@ -10,9 +10,11 @@ import {
   PUBLISHED_SCORER_TAG,
   RUNS_PER_FORMAT,
 } from "@/lib/benchmark-data";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import type { Metadata } from "next";
+import { BevelButton } from "../../components/Button/BevelButton";
 import { PillLink } from "../../components/Button/Button";
+import benchmarkStyles from "../benchmarks.module.css";
 
 export const metadata: Metadata = {
   title: "Benchmark methodology | OpenUI",
@@ -83,9 +85,19 @@ export default function BenchmarkMethodologyPage() {
               aria-label="Methodology actions"
               className="flex flex-wrap items-center gap-2 border-b border-[color:var(--home-hairline)] pb-6"
             >
-              <PillLink href="/benchmarks" variant="secondary">
-                Benchmark
-              </PillLink>
+              <BevelButton
+                href="/benchmarks"
+                label="Benchmark"
+                variant="secondary"
+                className={benchmarkStyles.heroButton}
+                badge={
+                  <ArrowRight
+                    className={benchmarkStyles.actionIcon}
+                    strokeWidth={2.25}
+                    aria-hidden="true"
+                  />
+                }
+              />
               <PillLink
                 href={BENCHMARK_REPOSITORY}
                 variant="ghost"
