@@ -9,6 +9,11 @@ const withMDX = createMDX();
 /** @type {import('next').NextConfig} */
 const config = {
   serverExternalPackages: ["@takumi-rs/image-response"],
+  experimental: {
+    mcpServer: false,
+    turbopackFileSystemCacheForDev: false,
+    turbopackServerFastRefresh: false,
+  },
   turbopack: {
     root: dirname(dirname(__dirname)),
   },
