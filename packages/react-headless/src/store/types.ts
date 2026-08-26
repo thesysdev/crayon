@@ -1,9 +1,10 @@
 import type { ArtifactCategory, ChatLLM, ChatStorage } from "../adapters/types";
-import type { Message, UserMessage } from "../types/message";
+import type { Message, ToolMessage, UserMessage } from "../types/message";
 import type { ArtifactRendererConfig } from "./artifactRendererTypes";
 
 export type { Message, UserMessage } from "../types/message";
 export type CreateMessage = Omit<UserMessage, "id">;
+export type CreateToolResult = Omit<ToolMessage, "id" | "role">;
 
 export type Thread = {
   id: string;
@@ -52,6 +53,8 @@ export type ThreadState = {
 
 export type ThreadActions = {
   processMessage: (message: CreateMessage) => Promise<void>;
+  /** Append a frontend tool result and continue the same model run. */
+  processToolResult: (result: CreateToolResult) => Promise<void>;
   appendMessages: (...messages: Message[]) => void;
   updateMessage: (message: Message) => void;
   setMessages: (messages: Message[]) => void;

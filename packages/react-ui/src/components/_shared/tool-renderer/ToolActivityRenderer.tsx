@@ -153,6 +153,8 @@ export function ToolActivityRenderer<Props>({
   const controls: ArtifactRendererControls = {
     isActive,
     isStreaming,
+    toolCallId: activity.toolCall.id,
+    toolName: activity.toolName,
     open,
     close,
     toggle,

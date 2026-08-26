@@ -76,6 +76,7 @@ export type {
   ChatProviderProps,
   ChatStore,
   CreateMessage,
+  CreateToolResult,
   Thread,
   ThreadActions,
   ThreadListActions,

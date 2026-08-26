@@ -8,6 +8,10 @@ import type { ReactNode } from "react";
 export interface ArtifactRendererControls {
   /** Whether this renderer's detailed view is the currently active one. */
   isActive: boolean;
+  /** Tool call being rendered. Undefined when rendering a stored artifact. */
+  toolCallId?: string;
+  /** Tool name being rendered. Undefined when rendering a stored artifact. */
+  toolName?: string;
   /**
    * `true` while the tool call is still streaming — i.e. its arguments are
    * arriving incrementally and no tool result has been paired in yet. Becomes

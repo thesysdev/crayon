@@ -95,6 +95,7 @@ Try it yourself in the [Playground](https://www.openui.com/playground): generate
 | :--------------------------------------------------------------------------------------------------------- | :----------------------------------------------- | :----------------------------------------------------------------------------------------------------------- |
 | [`@openuidev/lang-core`](./packages/lang-core)                                                             | Framework-agnostic parsing and prompt generation | Core parser, prompt-generation, runtime-evaluation, and type layer with no React, Vue, or Svelte dependency  |
 | [`@openuidev/langchain`](./packages/langchain)                                                             | LangChain and LangGraph agents                   | Agent transformer and server helpers that stream OpenUI through AG-UI                                        |
+| [`@openuidev/agno`](./packages/agno)                                                                       | Agno AgentOS agents and teams                    | AG-UI streaming and AgentOS session adapters for OpenUI chat interfaces                                      |
 | [`@openuidev/react-lang`](./packages/react-lang)                                                           | React rendering runtimes                         | Define component libraries, generate prompts, and render streamed OpenUI Lang in React                       |
 | [`@openuidev/react-headless`](./packages/react-headless)                                                   | Bring-your-own React chat UI                     | Headless chat state, streaming adapters, and message format converters                                       |
 | [`@openuidev/react-ui`](./packages/react-ui)                                                               | Fastest path to a full React chat experience     | Prebuilt chat layouts, standalone UI primitives, and two built-in component libraries                        |
@@ -116,6 +117,9 @@ npm install @openuidev/lang-core
 
 # LangChain/LangGraph agent and server integration
 npm install @openuidev/langchain @langchain/langgraph
+
+# Agno AgentOS integration
+npm install @openuidev/agno @openuidev/react-ui
 
 # Vue or Svelte runtime
 npm install @openuidev/vue-lang
@@ -163,6 +167,7 @@ openui/
 │   ├── react-email/      # React Email component library for generated emails
 │   ├── lang-core/        # Framework-agnostic parser, prompt, and runtime layer
 │   ├── langchain/        # LangChain/LangGraph streaming integration
+│   ├── agno/             # Agno AgentOS streaming and session integration
 │   ├── vue-lang/         # Vue runtime bindings for OpenUI Lang
 │   ├── svelte-lang/      # Svelte runtime bindings for OpenUI Lang
 │   ├── browser-bundle/   # Script-tag bundle for CDN / iframe / no-build embeds

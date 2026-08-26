@@ -4,6 +4,7 @@ import { subscribeWithSelector } from "zustand/middleware";
 import { getResponseErrorMessage } from "../adapters/httpError";
 import type { ChatLLM, ChatStorage } from "../adapters/types";
 import { processStreamedMessage } from "../stream/processStreamedMessage";
+import type { ToolMessage } from "../types/message";
 import { buildObservabilityErrorDetail, levelForStatus } from "./observability";
 import type { ChatStore, Message, Thread, UserMessage } from "./types";
 
@@ -24,134 +25,17 @@ export const createChatStore = (configRef: React.RefObject<CreateChatStoreConfig
   const { thread: threadStorage } = storage;
 
   const store = createStore<ChatStore>()(
-    subscribeWithSelector((set, get) => ({
-      // Thread List State
-      threads: [],
-      isLoadingThreads: false,
-      threadListError: null,
-      selectedThreadId: null,
-      hasMoreThreads: false,
-      _nextCursor: undefined,
-
-      // Thread State
-      messages: [],
-      isRunning: false,
-      isLoadingMessages: false,
-      threadError: null,
-      executingToolCallIds: new Set<string>(),
-      _abortController: null,
-
-      // ── Thread List Actions ──
-
-      loadThreads: () => {
-        set({ isLoadingThreads: true, threadListError: null });
-        threadStorage
-          .listThreads(undefined)
-          .then(({ threads = [], nextCursor }) => {
-            set({
-              threads,
-              isLoadingThreads: false,
-              _nextCursor: nextCursor,
-              hasMoreThreads: nextCursor !== undefined,
-            });
-          })
-          .catch((e) => {
-            set({ isLoadingThreads: false, threadListError: e });
-          });
-      },
-
-      loadMoreThreads: () => {
-        const cursor = get()._nextCursor;
-        if (cursor === undefined) return;
-        threadStorage
-          .listThreads(cursor)
-          .then(({ threads = [], nextCursor }) => {
-            set((s) => ({
-              threads: mergeThreadList(s.threads, threads),
-              _nextCursor: nextCursor,
-              hasMoreThreads: nextCursor !== undefined,
-            }));
-          })
-          .catch((e) => {
-            set({ threadListError: e });
-          });
-      },
-
-      switchToNewThread: () => {
-        get().cancelMessage();
-        set({
-          selectedThreadId: null,
-          messages: [],
-          threadError: null,
-          executingToolCallIds: new Set<string>(),
-        });
-      },
-
-      createThread: async (firstMessage: UserMessage) => {
-        const thread = await threadStorage.createThread(firstMessage);
-        set((s) => ({ threads: mergeThreadList(s.threads, [thread]) }));
-        return thread;
-      },
-
-      selectThread: (threadId: string) => {
-        // Re-selecting the active thread is a no-op — don't wipe and refetch.
-        if (get().selectedThreadId === threadId) return;
-        get().cancelMessage();
-        set({
-          selectedThreadId: threadId,
-          messages: [],
-          isLoadingMessages: true,
-          threadError: null,
-          executingToolCallIds: new Set<string>(),
-        });
-        threadStorage
-          .getMessages(threadId)
-          .then((messages) => set({ messages, isLoadingMessages: false }))
-          .catch((e) => set({ threadError: e, isLoadingMessages: false }));
-      },
-
-      updateThread: (thread: Thread) => {
-        const setPending = (id: string, isPending: boolean) =>
-          set((s) => ({ threads: s.threads.map((t) => (t.id === id ? { ...t, isPending } : t)) }));
-        setPending(thread.id, true);
-        threadStorage
-          .updateThread(thread)
-          .then((updated) => {
-            set((s) => ({
-              threads: s.threads.map((t) => (t.id === updated.id ? updated : t)),
-            }));
-          })
-          .catch(() => setPending(thread.id, false));
-      },
-
-      deleteThread: (threadId: string) => {
-        const setPending = (id: string, isPending: boolean) =>
-          set((s) => ({ threads: s.threads.map((t) => (t.id === id ? { ...t, isPending } : t)) }));
-        setPending(threadId, true);
-        threadStorage
-          .deleteThread(threadId)
-          .then(() => {
-            const state = get();
-            set({ threads: state.threads.filter((t) => t.id !== threadId) });
-            if (state.selectedThreadId === threadId) {
-              state.switchToNewThread();
-            }
-          })
-          .catch(() => setPending(threadId, false));
-      },
-
-      // ── Thread Actions ──
-
-      processMessage: async (message) => {
+    subscribeWithSelector((set, get) => {
+      const processInput = async (optimisticMessage: UserMessage | ToolMessage) => {
         const state = get();
         if (state.isRunning) return;
 
+        if (optimisticMessage.role === "tool" && !state.selectedThreadId) {
+          set({ threadError: new Error("Cannot submit a tool result without an active thread.") });
+          return;
+        }
+
         const abortController = new AbortController();
-        const optimisticMessage: UserMessage = {
-          ...message,
-          id: crypto.randomUUID(),
-          role: "user",
-        };
 
         set({
           _abortController: abortController,
@@ -169,7 +53,9 @@ export const createChatStore = (configRef: React.RefObject<CreateChatStoreConfig
           let threadId = get().selectedThreadId;
 
           if (!threadId) {
-            const created = await get().createThread(optimisticMessage);
+            // The guard above guarantees that only a user message can create a
+            // thread. Tool results always resume an existing conversation.
+            const created = await get().createThread(optimisticMessage as UserMessage);
             threadId = created.id;
             set({ selectedThreadId: threadId });
           }
@@ -180,8 +66,10 @@ export const createChatStore = (configRef: React.RefObject<CreateChatStoreConfig
             kind: "LLM:request",
             threadId,
             runId,
-            // message is a reserved keyword for the observability library expecting string
-            userMessage: optimisticMessage,
+            // `message` is reserved by the observability library for strings.
+            ...(optimisticMessage.role === "user"
+              ? { userMessage: optimisticMessage }
+              : { toolMessage: optimisticMessage }),
           });
 
           let response: Response | null = null;
@@ -243,40 +131,176 @@ export const createChatStore = (configRef: React.RefObject<CreateChatStoreConfig
             set({ threadError: e instanceof Error ? e : new Error(String(e)) });
           }
         } finally {
-          // Clear any tool calls still flagged "executing" — adapters that emit
-          // TOOL_CALL_END without a matching TOOL_CALL_RESULT (e.g. client-side
-          // tool calls in the OpenAI adapters) would otherwise leave them stuck
-          // in the executing set after the run ends.
+          // Clear any tool calls still flagged "executing". A client-rendered
+          // tool keeps its pending state in the assistant tool call itself and
+          // resumes through processToolResult().
           set({
             _abortController: null,
             isRunning: false,
             executingToolCallIds: new Set<string>(),
           });
         }
-      },
+      };
 
-      appendMessages: (...newMessages: Message[]) => {
-        set((s) => ({ messages: [...s.messages, ...newMessages] }));
-      },
+      return {
+        // Thread List State
+        threads: [],
+        isLoadingThreads: false,
+        threadListError: null,
+        selectedThreadId: null,
+        hasMoreThreads: false,
+        _nextCursor: undefined,
 
-      updateMessage: (message: Message) => {
-        set((s) => ({
-          messages: s.messages.map((m) => (m.id === message.id ? message : m)),
-        }));
-      },
+        // Thread State
+        messages: [],
+        isRunning: false,
+        isLoadingMessages: false,
+        threadError: null,
+        executingToolCallIds: new Set<string>(),
+        _abortController: null,
 
-      setMessages: (messages: Message[]) => {
-        set({ messages });
-      },
+        // ── Thread List Actions ──
 
-      deleteMessage: (messageId: string) => {
-        set((s) => ({ messages: s.messages.filter((m) => m.id !== messageId) }));
-      },
+        loadThreads: () => {
+          set({ isLoadingThreads: true, threadListError: null });
+          threadStorage
+            .listThreads(undefined)
+            .then(({ threads = [], nextCursor }) => {
+              set({
+                threads,
+                isLoadingThreads: false,
+                _nextCursor: nextCursor,
+                hasMoreThreads: nextCursor !== undefined,
+              });
+            })
+            .catch((e) => {
+              set({ isLoadingThreads: false, threadListError: e });
+            });
+        },
 
-      cancelMessage: () => {
-        get()._abortController?.abort();
-      },
-    })),
+        loadMoreThreads: () => {
+          const cursor = get()._nextCursor;
+          if (cursor === undefined) return;
+          threadStorage
+            .listThreads(cursor)
+            .then(({ threads = [], nextCursor }) => {
+              set((s) => ({
+                threads: mergeThreadList(s.threads, threads),
+                _nextCursor: nextCursor,
+                hasMoreThreads: nextCursor !== undefined,
+              }));
+            })
+            .catch((e) => {
+              set({ threadListError: e });
+            });
+        },
+
+        switchToNewThread: () => {
+          get().cancelMessage();
+          set({
+            selectedThreadId: null,
+            messages: [],
+            threadError: null,
+            executingToolCallIds: new Set<string>(),
+          });
+        },
+
+        createThread: async (firstMessage: UserMessage) => {
+          const thread = await threadStorage.createThread(firstMessage);
+          set((s) => ({ threads: mergeThreadList(s.threads, [thread]) }));
+          return thread;
+        },
+
+        selectThread: (threadId: string) => {
+          // Re-selecting the active thread is a no-op — don't wipe and refetch.
+          if (get().selectedThreadId === threadId) return;
+          get().cancelMessage();
+          set({
+            selectedThreadId: threadId,
+            messages: [],
+            isLoadingMessages: true,
+            threadError: null,
+            executingToolCallIds: new Set<string>(),
+          });
+          threadStorage
+            .getMessages(threadId)
+            .then((messages) => set({ messages, isLoadingMessages: false }))
+            .catch((e) => set({ threadError: e, isLoadingMessages: false }));
+        },
+
+        updateThread: (thread: Thread) => {
+          const setPending = (id: string, isPending: boolean) =>
+            set((s) => ({
+              threads: s.threads.map((t) => (t.id === id ? { ...t, isPending } : t)),
+            }));
+          setPending(thread.id, true);
+          threadStorage
+            .updateThread(thread)
+            .then((updated) => {
+              set((s) => ({
+                threads: s.threads.map((t) => (t.id === updated.id ? updated : t)),
+              }));
+            })
+            .catch(() => setPending(thread.id, false));
+        },
+
+        deleteThread: (threadId: string) => {
+          const setPending = (id: string, isPending: boolean) =>
+            set((s) => ({
+              threads: s.threads.map((t) => (t.id === id ? { ...t, isPending } : t)),
+            }));
+          setPending(threadId, true);
+          threadStorage
+            .deleteThread(threadId)
+            .then(() => {
+              const state = get();
+              set({ threads: state.threads.filter((t) => t.id !== threadId) });
+              if (state.selectedThreadId === threadId) {
+                state.switchToNewThread();
+              }
+            })
+            .catch(() => setPending(threadId, false));
+        },
+
+        // ── Thread Actions ──
+
+        processMessage: (message) =>
+          processInput({
+            ...message,
+            id: crypto.randomUUID(),
+            role: "user",
+          }),
+
+        processToolResult: (result) =>
+          processInput({
+            ...result,
+            id: crypto.randomUUID(),
+            role: "tool",
+          }),
+
+        appendMessages: (...newMessages: Message[]) => {
+          set((s) => ({ messages: [...s.messages, ...newMessages] }));
+        },
+
+        updateMessage: (message: Message) => {
+          set((s) => ({
+            messages: s.messages.map((m) => (m.id === message.id ? message : m)),
+          }));
+        },
+
+        setMessages: (messages: Message[]) => {
+          set({ messages });
+        },
+
+        deleteMessage: (messageId: string) => {
+          set((s) => ({ messages: s.messages.filter((m) => m.id !== messageId) }));
+        },
+
+        cancelMessage: () => {
+          get()._abortController?.abort();
+        },
+      };
+    }),
   );
 
   return store;

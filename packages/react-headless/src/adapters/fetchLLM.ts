@@ -15,6 +15,8 @@ export interface FetchLLMOptions {
   fetch?: typeof fetch;
   /** Extra fields merged into the request body (e.g. `model`) */
   body?: Record<string, unknown>;
+  /** AG-UI context entries sent with every run. */
+  context?: Array<{ description: string; value: string }>;
 }
 
 /**
@@ -29,6 +31,7 @@ export function fetchLLM({
   headers,
   fetch: customFetch,
   body,
+  context = [],
 }: FetchLLMOptions): ChatLLM {
   const fetchImpl = customFetch ?? globalThis.fetch.bind(globalThis);
   return {
@@ -43,7 +46,7 @@ export function fetchLLM({
         body: JSON.stringify({
           ...body,
           tools: [],
-          context: [],
+          context,
           threadId,
           runId,
           messages: messageFormat.toApi(messages),
