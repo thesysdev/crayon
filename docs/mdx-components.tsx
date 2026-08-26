@@ -2,7 +2,6 @@ import {
   BlankScreens,
   CompletionByModel,
   CostPerPass,
-  RepairFunnel,
   TokenOverhead,
 } from "@/components/charts/benchmark-charts";
 import { CompletionByDensity } from "@/components/charts/completion-by-density";
@@ -24,7 +23,6 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     BlankScreens,
     TokenOverhead,
     CostPerPass,
-    RepairFunnel,
     Mermaid,
     ...components,
   };

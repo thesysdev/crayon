@@ -40,6 +40,7 @@ export function ThesysLogo({
   return (
     <a
       href="https://thesys.dev"
+      aria-label="Thesys website"
       target="_blank"
       rel="noopener noreferrer"
       className="relative shrink-0 size-6 cursor-pointer"

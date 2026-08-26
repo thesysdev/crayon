@@ -214,7 +214,7 @@ export function SiteMarketingHeader({
   const isBordered = borderMode === "always" || isScrolled;
 
   return (
-    <nav className={styles.nav}>
+    <nav className={styles.nav} aria-label="Primary navigation">
       <SiteHeaderFrame
         variant="home"
         bordered={isBordered}
