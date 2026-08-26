@@ -27,7 +27,7 @@ import {
   useStyles,
   type ThemeTokens,
 } from "./theme";
-import type { OpenUIDevtoolsWidgetProps } from "./types";
+import type { DevtoolsPosition, OpenUIDevtoolsWidgetProps } from "./types";
 import { ErrorBoundary, IconButton, ShiroLogo, ThemeSegmented } from "./ui";
 import ReliabilityBanner from "./ui/ReliabilityBanner";
 
