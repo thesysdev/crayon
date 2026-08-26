@@ -38,6 +38,29 @@ assert(
   "Complexity chart is missing its structured data disclosure",
 );
 assert(html.includes("View repair data"), "Repair chart is missing its structured data disclosure");
+assert(
+  html.includes("/benchmarks/language") && html.includes("/benchmarks/framework"),
+  "Benchmark overview does not link to both focused benchmark pages",
+);
+
+const { text: languageHtml } = await fetchText("/benchmarks/language");
+assert(languageHtml.includes('rel="canonical"'), "Language benchmark is missing a canonical link");
+assert(languageHtml.includes('"@type":"Dataset"'), "Language benchmark is missing Dataset JSON-LD");
+assert(languageHtml.includes("All model results"), "Language benchmark is missing its exact table");
+
+const { text: frameworkHtml } = await fetchText("/benchmarks/framework");
+assert(
+  frameworkHtml.includes('rel="canonical"'),
+  "Framework benchmark is missing a canonical link",
+);
+assert(
+  frameworkHtml.includes('"@type":"Dataset"'),
+  "Framework benchmark is missing Dataset JSON-LD",
+);
+assert(
+  frameworkHtml.includes("Results by model and format"),
+  "Framework benchmark is missing its exact table",
+);
 
 const jsonResponse = await fetch(`${baseUrl}/benchmarks/data.json`);
 assert(jsonResponse.ok, `data.json returned ${jsonResponse.status}`);
@@ -114,5 +137,44 @@ assert(
   "Agent document is missing the cost caveat",
 );
 assert(markdown.includes("## Direct answers"), "Agent document is missing direct answers");
+
+const languageDataResponse = await fetch(`${baseUrl}/benchmarks/language/data.json`);
+assert(languageDataResponse.ok, `language data.json returned ${languageDataResponse.status}`);
+const languageData = await languageDataResponse.json();
+assert(languageData.data.length === 30, "Focused language dataset should contain 30 rows");
+assert(
+  languageData.dataset.canonical_url.endsWith("/benchmarks/language"),
+  "Focused language dataset has the wrong canonical URL",
+);
+
+const frameworkDataResponse = await fetch(`${baseUrl}/benchmarks/framework/data.json`);
+assert(frameworkDataResponse.ok, `framework data.json returned ${frameworkDataResponse.status}`);
+const frameworkData = await frameworkDataResponse.json();
+assert(frameworkData.data.length === 18, "Focused framework dataset should contain 18 rows");
+assert(
+  frameworkData.dataset.canonical_url.endsWith("/benchmarks/framework"),
+  "Focused framework dataset has the wrong canonical URL",
+);
+
+const { response: languageMarkdownResponse, text: languageMarkdown } = await fetchText(
+  "/benchmarks/language/agent.md",
+);
+assert(
+  languageMarkdownResponse.headers.get("content-type")?.includes("text/markdown"),
+  "Focused language Markdown has the wrong content type",
+);
+assert(languageMarkdown.includes("## Scope"), "Focused language Markdown is missing scope");
+
+const { response: frameworkMarkdownResponse, text: frameworkMarkdown } = await fetchText(
+  "/benchmarks/framework/agent.md",
+);
+assert(
+  frameworkMarkdownResponse.headers.get("content-type")?.includes("text/markdown"),
+  "Focused framework Markdown has the wrong content type",
+);
+assert(
+  frameworkMarkdown.includes("## Format summary"),
+  "Focused framework Markdown is missing its summary",
+);
 
 console.log("Benchmark agent-readability checks passed.");

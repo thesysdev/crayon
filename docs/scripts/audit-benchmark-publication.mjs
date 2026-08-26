@@ -45,6 +45,23 @@ for (const [name, userAgent] of crawlerAgents) {
     html.includes("Model comparison data") && html.includes("Format comparison data"),
     `${name} cannot see both tab datasets`,
   );
+
+  const { text: languageHtml } = await fetchPath("/benchmarks/language", userAgent);
+  assert(
+    languageHtml.includes("OpenUI language and model benchmark"),
+    `${name} cannot see the language benchmark`,
+  );
+  assert(languageHtml.includes('"@type":"Dataset"'), `${name} cannot see language Dataset JSON-LD`);
+
+  const { text: frameworkHtml } = await fetchPath("/benchmarks/framework", userAgent);
+  assert(
+    frameworkHtml.includes("Generative UI framework benchmark"),
+    `${name} cannot see the framework benchmark`,
+  );
+  assert(
+    frameworkHtml.includes('"@type":"Dataset"'),
+    `${name} cannot see framework Dataset JSON-LD`,
+  );
 }
 
 const endpointChecks = [
@@ -53,6 +70,14 @@ const endpointChecks = [
   ["/benchmarks/data.csv", "text/csv"],
   ["/benchmarks/agent.md", "text/markdown"],
   ["/benchmarks/methodology", "text/html"],
+  ["/benchmarks/language", "text/html"],
+  ["/benchmarks/language/data.json", "application/json"],
+  ["/benchmarks/language/data.csv", "text/csv"],
+  ["/benchmarks/language/agent.md", "text/markdown"],
+  ["/benchmarks/framework", "text/html"],
+  ["/benchmarks/framework/data.json", "application/json"],
+  ["/benchmarks/framework/data.csv", "text/csv"],
+  ["/benchmarks/framework/agent.md", "text/markdown"],
   ["/llms.txt", "text/plain"],
   ["/sitemap.xml", "application/xml"],
 ];

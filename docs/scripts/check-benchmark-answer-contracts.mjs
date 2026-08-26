@@ -56,6 +56,10 @@ const schema = JSON.parse(schemaText);
 const { text: csvText } = await fetchText("/benchmarks/data.csv");
 const { text: markdown } = await fetchText("/benchmarks/agent.md");
 const { text: html } = await fetchText("/benchmarks");
+const { text: languageJsonText } = await fetchText("/benchmarks/language/data.json");
+const { text: frameworkJsonText } = await fetchText("/benchmarks/framework/data.json");
+const languageData = JSON.parse(languageJsonText);
+const frameworkData = JSON.parse(frameworkJsonText);
 
 assert(
   schemaResponse.headers.get("content-type")?.includes("application/schema+json"),
@@ -74,6 +78,18 @@ assert(html.includes("/benchmarks/data.schema.json"), "HTML does not advertise t
 assert(
   data.provenance.model_board.evidence_status === "summary-only",
   "Model-board evidence status must remain explicit until raw evidence is published",
+);
+assert(
+  JSON.stringify(languageData.data) === JSON.stringify(data.model_board),
+  "Focused language dataset differs from the combined model board",
+);
+assert(
+  JSON.stringify(frameworkData.data) === JSON.stringify(data.format_comparison),
+  "Focused framework dataset differs from the combined format comparison",
+);
+assert(
+  JSON.stringify(frameworkData.format_summary) === JSON.stringify(data.format_summary),
+  "Focused framework summary differs from the combined format summary",
 );
 
 const csvRows = parseCsv(csvText);

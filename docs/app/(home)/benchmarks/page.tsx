@@ -2,6 +2,8 @@ import {
   BENCHMARK_CANONICAL_URL,
   BENCHMARK_DATASET_NAME,
   BENCHMARK_UPDATED_ISO,
+  FRAMEWORK_BENCHMARK_URL,
+  LANGUAGE_BENCHMARK_URL,
   MODEL_BOARD_UPDATED_ISO,
 } from "@/lib/benchmark-agent-data";
 import { BENCHMARK_VERSION, LINKS } from "@/lib/benchmark-data";
@@ -77,6 +79,10 @@ const structuredData = {
         },
       ],
       subjectOf: `${BENCHMARK_CANONICAL_URL}/data.schema.json`,
+      hasPart: [
+        { "@id": `${LANGUAGE_BENCHMARK_URL}#dataset` },
+        { "@id": `${FRAMEWORK_BENCHMARK_URL}#dataset` },
+      ],
     },
     {
       "@type": "TechArticle",
@@ -89,6 +95,7 @@ const structuredData = {
       dateModified: MODEL_BOARD_UPDATED_ISO,
       author: { "@type": "Organization", name: "OpenUI by Thesys" },
       about: { "@id": `${BENCHMARK_CANONICAL_URL}#dataset` },
+      mentions: [LANGUAGE_BENCHMARK_URL, FRAMEWORK_BENCHMARK_URL],
     },
   ],
 };

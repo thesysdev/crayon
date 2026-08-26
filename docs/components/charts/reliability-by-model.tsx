@@ -22,9 +22,12 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { BRAND_MARKS, markViewBox } from "./brand-marks";
 import { Chart, ChartDataDisclosure, Mark, styles as s } from "./primitives";
 
-const H = 500;
+/* Both tabs share a plot box so switching views does not resize the hero.
+   PH is derived from the board's plot height for the same reason. */
 const PAD = { top: 44, bottom: 68 };
-const PH = H - PAD.top - PAD.bottom;
+const FORMAT_PLOT_HEIGHT = 720;
+const H = FORMAT_PLOT_HEIGHT + PAD.top + PAD.bottom;
+const PH = FORMAT_PLOT_HEIGHT;
 type View = "board" | "formats";
 
 const FORMAT_HUE: Record<FormatId, string> = {
@@ -213,7 +216,10 @@ export function ReliabilityByModel({
     .sort((a, b) => modelBoardCostPerTask(b) - modelBoardCostPerTask(a));
   const competitivePareto = visiblePareto.filter((point) => point.score >= 80);
   const competitiveParetoIds = new Set(competitivePareto.map((point) => point.id));
-  const labelledBoardIds = new Set<string>([...competitiveParetoIds, ...BOARD_REFERENCE_LABELS]);
+  /* Every visible point is named, as on the Artificial Analysis reference.
+     The collision pass below shifts and re-anchors labels rather than hiding
+     them, so no model is silently unlabelled. */
+  const labelledBoardIds = new Set<string>(visibleBoardPoints.map((point) => point.id));
   const labelFontSize = narrow ? 10 : 11.5;
   const boardLabels = (() => {
     const placed: Array<{ left: number; right: number; top: number; bottom: number }> = [];
@@ -488,19 +494,25 @@ export function ReliabilityByModel({
               </g>
             ))}
             <text x={PL + 4} y={boardTop - 15} fontSize="13.5" fill="var(--ink)">
+              Structural validity vs cost
+            </text>
+            <text
+              className={s.axisTitle}
+              transform={`translate(${PL - 44}, ${boardTop + boardPlotHeight / 2}) rotate(-90)`}
+              textAnchor="middle"
+            >
               Structural validity of OpenUI generations
             </text>
             <text x={PL + PW} y={boardTop - 15} textAnchor="end" fontSize="12.5" fill="var(--ink)">
               better ↗
             </text>
             <text
+              className={s.axisTitle}
               x={PL + PW / 2}
               y={boardHeight - 10}
               textAnchor="middle"
-              fontSize="12.5"
-              fill="var(--ink-muted)"
             >
-              Cost per task · USD, log scale
+              Cost per task · USD
             </text>
             {visiblePareto.length > 1 ? (
               <path
@@ -610,24 +622,24 @@ export function ReliabilityByModel({
                 </text>
               </g>
             ))}
-            <text x={PL + 4} y={formatY(100) - 14} fontSize="14" fill="var(--ink)">
+            <text x={PL + 4} y={formatY(100) - 14} fontSize="13.5" fill="var(--ink)">
               Structural validity vs cost
             </text>
             <text
-              x={PL + PW}
-              y={formatY(100) - 14}
-              textAnchor="end"
-              fontSize="13"
-              fill="var(--ink)"
+              className={s.axisTitle}
+              transform={`translate(${PL - 44}, ${PAD.top + PH / 2}) rotate(-90)`}
+              textAnchor="middle"
             >
+              Structural validity by format
+            </text>
+            <text x={PL + PW} y={formatY(100) - 14} textAnchor="end" fontSize="12.5" fill="var(--ink)">
               better ↗
             </text>
             <text
+              className={s.axisTitle}
               x={PL + PW / 2}
               y={H - 10}
               textAnchor="middle"
-              fontSize="13"
-              fill="var(--ink-muted)"
             >
               Cost of one benchmark pass · 46 screens
             </text>
@@ -851,7 +863,8 @@ export function ReliabilityByModel({
           <p className={s.dataNote}>
             All 30 models remain in this table and the downloads, including models hidden by the
             chart&rsquo;s default filter. Self-hosted cost is unknown, not zero. Filter state is
-            preserved in this page&rsquo;s URL. Full dataset:{" "}
+            preserved in this page&rsquo;s URL. Focused benchmark:{" "}
+            <a href="/benchmarks/language">language and model results</a>. Full dataset:{" "}
             <a href="/benchmarks/data.json">JSON</a>, <a href="/benchmarks/data.csv">CSV</a>, or{" "}
             <a href="/benchmarks/agent.md">agent Markdown</a>.
           </p>
@@ -889,6 +902,12 @@ export function ReliabilityByModel({
               )}
             </tbody>
           </table>
+          <p className={s.dataNote}>
+            Focused benchmark: <a href="/benchmarks/framework">framework comparison</a>. Download
+            this comparison as <a href="/benchmarks/framework/data.json">JSON</a>,{" "}
+            <a href="/benchmarks/framework/data.csv">CSV</a>, or{" "}
+            <a href="/benchmarks/framework/agent.md">agent Markdown</a>.
+          </p>
         </section>
       </ChartDataDisclosure>
     </Chart>
