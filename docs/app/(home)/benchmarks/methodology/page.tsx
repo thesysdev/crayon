@@ -1,5 +1,5 @@
 import { Footer } from "@/app/(home)/sections/Footer/Footer";
-import { BENCHMARK_CANONICAL_URL, BENCHMARK_UPDATED_ISO } from "@/lib/benchmark-agent-data";
+import { BENCHMARK_CANONICAL_URL } from "@/lib/benchmark-agent-data";
 import {
   BENCHMARK_REPOSITORY,
   BRIEFS,
@@ -9,35 +9,30 @@ import {
   MODELS,
   PUBLISHED_SCORER_TAG,
   RUNS_PER_FORMAT,
-  RUNS_TOTAL,
 } from "@/lib/benchmark-data";
+import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import type { Metadata } from "next";
-import { PillLink } from "../../components/Button/Button";
+import { BevelButton } from "../../components/Button/BevelButton";
 
 export const metadata: Metadata = {
   title: "Benchmark methodology | OpenUI",
   description:
-    "The reproducible methodology for the OpenUI generative UI benchmark: 46 briefs, 70 equivalent components, controlled generation settings, SDK-native validation, and scorer versioning.",
+    "How the OpenUI generative UI benchmark is run and scored: 46 briefs, 70 equivalent components, controlled generation settings, and SDK-native validation.",
   alternates: { canonical: "/benchmarks/methodology" },
   openGraph: {
     type: "article",
     url: "/benchmarks/methodology",
     title: "Generative UI benchmark methodology | OpenUI",
-    description:
-      "How the language/model and framework benchmarks are generated, scored, versioned, and reproduced.",
+    description: "A concise explanation of how the benchmark is generated and scored.",
     modifiedTime: "2026-08-26",
   },
 };
 
 const SECTIONS = [
-  { id: "overview", label: "Overview" },
-  { id: "briefs-and-catalog", label: "Briefs and catalog" },
-  { id: "generation-condition", label: "Generation condition" },
-  { id: "prompts-and-formats", label: "Prompts and formats" },
-  { id: "scoring", label: "Scoring" },
-  { id: "reproduce", label: "Reproduce the scores" },
-  { id: "versions", label: "Scorer versions" },
-  { id: "limitations", label: "Limitations" },
+  { id: "setup", label: "Benchmark setup" },
+  { id: "scoring", label: "What counts as valid" },
+  { id: "reproduce", label: "Reproduce the results" },
+  { id: "notes", label: "Important notes" },
 ] as const;
 
 const structuredData = {
@@ -45,8 +40,7 @@ const structuredData = {
   "@type": "TechArticle",
   "@id": `${BENCHMARK_CANONICAL_URL}/methodology#article`,
   headline: "Generative UI benchmark methodology",
-  description:
-    "Generation, scoring, reproduction, and versioning methodology for the OpenUI generative UI benchmark.",
+  description: "How the OpenUI generative UI benchmark is generated, scored, and reproduced.",
   url: `${BENCHMARK_CANONICAL_URL}/methodology`,
   dateModified: "2026-08-26",
   author: { "@type": "Organization", name: "OpenUI by Thesys" },
@@ -82,227 +76,134 @@ export default function BenchmarkMethodologyPage() {
             <h1 className="mb-2 text-[length:var(--home-title-size)] font-[family-name:var(--home-font-display)] font-medium leading-[var(--home-title-leading)] tracking-[var(--home-title-tracking)] text-[color:var(--openui-text-neutral-primary)]">
               Methodology
             </h1>
-            <p className="mb-4 max-w-3xl text-[length:var(--home-lead-size)] font-[family-name:var(--home-font-text)] leading-[var(--home-lead-leading)] text-[color:var(--openui-text-neutral-secondary)]">
-              How the language/model and framework benchmarks are generated, scored, versioned, and
-              reproduced.
+            <p className="mb-6 max-w-2xl text-[length:var(--home-lead-size)] font-[family-name:var(--home-font-text)] leading-[var(--home-lead-leading)] text-[color:var(--openui-text-neutral-secondary)]">
+              One catalog, the same 46 interface briefs, and a shared scoring standard.
             </p>
             <nav
-              aria-label="Benchmark pages"
-              className="-ml-3 flex flex-wrap items-center gap-1 border-b border-[color:var(--home-hairline)] pb-6"
+              aria-label="Methodology actions"
+              className="flex flex-wrap items-center gap-3 border-b border-[color:var(--home-hairline)] pb-8"
             >
-              <PillLink href="/benchmarks" variant="ghost">
-                Benchmark overview
-              </PillLink>
-              <PillLink href="/benchmarks/language" variant="ghost">
-                Language/model results
-              </PillLink>
-              <PillLink href="/benchmarks/framework" variant="ghost">
-                Framework results
-              </PillLink>
-              <PillLink href={BENCHMARK_REPOSITORY} variant="ghost" external>
-                Source repository
-              </PillLink>
+              <BevelButton
+                href="/benchmarks"
+                label="Back to benchmarks"
+                variant="primary"
+                badge={<ArrowLeft size={16} strokeWidth={2.25} />}
+              />
+              <BevelButton
+                href={BENCHMARK_REPOSITORY}
+                label="Source repository"
+                variant="secondary"
+                external
+                badge={<ArrowUpRight size={16} strokeWidth={2.25} />}
+              />
             </nav>
 
-            <article className="prose mt-8 min-w-0 max-w-none">
-              <section id="overview" aria-labelledby="overview-heading">
-                <h2 id="overview-heading">Overview</h2>
+            <article className="prose mt-10 min-w-0 max-w-3xl">
+              <section id="setup" aria-labelledby="setup-heading">
+                <h2 id="setup-heading">Benchmark setup</h2>
                 <p>
-                  The benchmark asks how reliably current models generate working user interfaces.
-                  It uses one shared {CATALOG_COMPONENTS}-component surface, {BRIEFS} frozen screen
-                  briefs, four generations per brief, and three generative UI formats: OpenUI Lang,
-                  Google A2UI v0.9, and Vercel json-render 0.19.
-                </p>
-                <p>
-                  The <a href="/benchmarks/language">language/model benchmark</a> compares OpenUI
-                  output across models. The <a href="/benchmarks/framework">framework benchmark</a>
-                  compares {FORMATS.length} formats across {MODELS.length} models, with{" "}
-                  {RUNS_PER_FORMAT.toLocaleString("en-US")} runs per format and{" "}
-                  {RUNS_TOTAL.toLocaleString("en-US")} scored runs in total.
-                </p>
-              </section>
-
-              <section id="briefs-and-catalog" aria-labelledby="briefs-and-catalog-heading">
-                <h2 id="briefs-and-catalog-heading">Briefs and component catalog</h2>
-                <p>
-                  The {BRIEFS} briefs cover five size bands, from small two-requirement screens to
-                  dense screens with up to eighteen numbered requirements. Requirements describe
-                  content and intent but do not name components or prescribe layout. This leaves
-                  component choice and composition to the model.
-                </p>
-                <p>
-                  Every format receives a protocol-specific catalog derived from one public
-                  reference surface of {CATALOG_COMPONENTS} components. A committed parity check
-                  verifies that the OpenUI, A2UI, and json-render catalogs remain equivalent to that
-                  reference rather than silently testing different UI capabilities.
+                  We test how reliably models generate working interfaces, without telling them
+                  which components or layouts to use.
                 </p>
                 <ul>
                   <li>
-                    <a href={LINKS.briefs}>Frozen briefs used for the published website results</a>
+                    <strong>{BRIEFS} briefs</strong> across five complexity bands, from simple
+                    screens to dense workspaces.
                   </li>
                   <li>
-                    <a href={LINKS.catalog}>Shared public component catalog</a>
+                    <strong>{CATALOG_COMPONENTS} equivalent components</strong> available to every
+                    format.
+                  </li>
+                  <li>
+                    <strong>Four generations per brief</strong>, with a 16,384-token output limit.
+                  </li>
+                  <li>
+                    <strong>Temperature 0.7</strong> where supported, with minimal or no reasoning.
                   </li>
                 </ul>
-              </section>
-
-              <section id="generation-condition" aria-labelledby="generation-condition-heading">
-                <h2 id="generation-condition-heading">Generation condition</h2>
-                <p>The published condition is uniform wherever the provider permits it:</p>
-                <ul>
-                  <li>Four generations per brief.</li>
-                  <li>A 16,384-token output ceiling.</li>
-                  <li>Temperature 0.7.</li>
-                  <li>Minimal or no model reasoning.</li>
-                </ul>
                 <p>
-                  Anthropic runs use the model&rsquo;s default temperature because the tested API
-                  rejects an explicit temperature for that model. OpenAI reasoning runs omit the
-                  non-default temperature when the API requires it. Those provider exceptions are
-                  recorded rather than silently normalized.
+                  For the framework comparison, the same briefs run across {MODELS.length} models
+                  and {FORMATS.length} formats: OpenUI, Google A2UI, and Vercel json-render. That is{" "}
+                  {RUNS_PER_FORMAT.toLocaleString("en-US")} generations per format.
                 </p>
                 <p>
-                  Network and provider failures are retried during generation and are not scored as
-                  model failures. An empty response returned successfully by the model is a blank
-                  generation and is scored. Raw writes are idempotent, so an interrupted run resumes
-                  without regenerating completed outputs.
-                </p>
-              </section>
-
-              <section id="prompts-and-formats" aria-labelledby="prompts-and-formats-heading">
-                <h2 id="prompts-and-formats-heading">Prompts and format parity</h2>
-                <p>
-                  Each format uses the system prompt produced by its own SDK rather than a
-                  benchmark-authored imitation. All three prompts carry the same two worked
-                  examples. The user message is the same brief in every format.
-                </p>
-                <p>
-                  OpenUI uses its official library prompt generator; json-render uses its catalog
-                  prompt and stream format; A2UI uses its generated v0.9 system prompt. This keeps
-                  each format close to the way its maintainers intend models to use it while the
-                  catalog and task stay controlled.
+                  Each format uses the prompt generated by its own SDK. All three receive the same
+                  two worked examples, and their component catalogs are checked against one shared
+                  reference catalog.
                 </p>
               </section>
 
               <section id="scoring" aria-labelledby="scoring-heading">
-                <h2 id="scoring-heading">Scoring</h2>
+                <h2 id="scoring-heading">What counts as valid</h2>
                 <p>
-                  Scoring is offline. Every committed raw output can be replayed through the pinned
-                  validators without model API keys. Each protocol first uses its own shipped
-                  parser, compiler, renderer gate, or catalog validator. One shared completeness
-                  layer then applies the same structural requirements to all three formats.
+                  Each format is parsed and validated by its own shipped SDK, followed by the same
+                  completeness checks for all three formats.
                 </p>
-                <h3>Structural validity</h3>
-                <p>A generation is structurally valid only when it:</p>
+                <p>A generation passes structural validity when it:</p>
                 <ul>
-                  <li>parses successfully and produces a root;</li>
-                  <li>resolves every component reference;</li>
-                  <li>keeps every declared component reachable from the root;</li>
-                  <li>uses known component types;</li>
-                  <li>passes required-prop and enum checks;</li>
-                  <li>does not hit the recorded output ceiling; and</li>
+                  <li>parses and produces a root;</li>
+                  <li>uses known components and valid required or enum props;</li>
+                  <li>resolves every reference, with nothing orphaned;</li>
+                  <li>does not end because it hit the output limit; and</li>
                   <li>
-                    contains at least as many reachable components as the brief has numbered
-                    requirements.
+                    contains at least as many reachable components as the brief has requirements.
                   </li>
                 </ul>
                 <p>
-                  That final coverage floor prevents a trivially small but syntactically valid
-                  screen from passing. It is a count floor, not a semantic judgment that every
-                  requirement was fulfilled.
-                </p>
-                <h3>Render success</h3>
-                <p>
-                  Render success records whether the format&rsquo;s shipped rendering path produced
-                  a non-blank rooted screen. It is measured separately from structural validity: a
-                  screen can render something while still containing dangling references, invalid
-                  props, or incomplete structure.
+                  <strong>Render success is separate.</strong> It records whether a non-blank screen
+                  appeared at all. A screen can render and still fail structural validity.
                 </p>
               </section>
 
               <section id="reproduce" aria-labelledby="reproduce-heading">
-                <h2 id="reproduce-heading">Reproduce the scores</h2>
+                <h2 id="reproduce-heading">Reproduce the results</h2>
                 <p>
-                  The current source repository requires Node 22.18 or newer and pins{" "}
-                  <code>@openuidev/lang-core</code> exactly. A2UI scoring also needs the official
-                  Python SDK at the repository&rsquo;s pinned revision.
-                </p>
-                <pre className="max-w-full overflow-x-auto">
-                  <code>{`npm install
-
-python3 -m venv .venv
-.venv/bin/pip install antlr4-tools
-.venv/bin/pip install "a2ui-agent-sdk @ git+https://github.com/a2ui-project/a2ui@29b715fa89fc5bb8351d2ea0116f03d4f2e212f2#subdirectory=agent_sdks/python/a2ui_agent"
-
-A2UI_PYTHON=.venv/bin/python node score.ts
-A2UI_PYTHON=.venv/bin/python node score.ts gemini`}</code>
-                </pre>
-                <p>
-                  The scorer rewrites the committed result files from raw outputs alone. A clean
-                  diff against the committed results is the integrity check. Token and cost tables
-                  can be regenerated with <code>node tools/count-tokens.ts</code> and{" "}
-                  <code>node tools/cost-estimate.ts</code>.
-                </p>
-                <ul>
-                  <li>
-                    <a href={LINKS.harness}>Published website scorer and data</a>
-                  </li>
-                  <li>
-                    <a href={LINKS.latestHarness}>Latest benchmark harness</a>
-                  </li>
-                </ul>
-              </section>
-
-              <section id="versions" aria-labelledby="versions-heading">
-                <h2 id="versions-heading">Scorer versions and comparability</h2>
-                <p>
-                  The values currently published on this website were scored under{" "}
-                  <code>lang-core 0.2.11</code>. That exact state is preserved in the repository tag{" "}
-                  <a href={LINKS.harness}>{PUBLISHED_SCORER_TAG}</a>.
+                  Raw model outputs and scored verdicts are committed to the benchmark repository.
+                  The scorer runs offline, so the published outputs can be rescored without model
+                  API keys. Recreating the committed result files with no diff is the integrity
+                  check.
                 </p>
                 <p>
-                  The latest repository defaults to <code>lang-core 0.2.15</code> and contains
-                  rescored verdicts. The 0.2.11 and 0.2.15 results are different scorer regimes and
-                  must not be compared row by row. A future website data refresh should update the
-                  displayed results, data endpoints, version label, and changelog together.
+                  The repository README contains the exact Node and A2UI Python setup, plus commands
+                  for rescoring one model or the full benchmark.
+                </p>
+                <p>
+                  <a href={LINKS.latestReadme}>Read the reproduction instructions</a> or inspect the{" "}
+                  <a href={LINKS.rawOutputs}>published raw outputs</a>.
                 </p>
               </section>
 
-              <section id="limitations" aria-labelledby="limitations-heading">
-                <h2 id="limitations-heading">Limitations and disclosures</h2>
+              <section id="notes" aria-labelledby="notes-heading">
+                <h2 id="notes-heading">Important notes</h2>
+                <div className="not-prose my-6 border-l-2 border-[color:var(--openui-text-neutral-primary)] pl-5 text-sm leading-6 text-[color:var(--openui-text-neutral-secondary)]">
+                  Website results use the preserved <strong>lang-core 0.2.11</strong> scorer. The
+                  repository now defaults to <strong>0.2.15</strong>. Those two scorer versions are
+                  not comparable row by row. The published version is preserved at{` `}
+                  <a className="underline underline-offset-4" href={LINKS.harness}>
+                    {PUBLISHED_SCORER_TAG}
+                  </a>
+                  .
+                </div>
                 <ul>
                   <li>
-                    OpenUI built and maintains this first-party benchmark. The raw outputs, scorer,
-                    catalogs, and rules are published so readers can inspect or dispute the method.
+                    The component-count floor prevents tiny valid outputs from passing, but it does
+                    not judge visual quality or prove every requirement was understood.
                   </li>
                   <li>
-                    The component-count floor measures minimum structural coverage, not visual
-                    quality or semantic satisfaction of every requirement.
+                    Cost uses measured tokens and list prices. Hidden reasoning tokens can make the
+                    actual bill higher.
                   </li>
                   <li>
-                    Cost uses measured tokens and provider list prices. Hidden reasoning tokens are
-                    not present in raw text, so billed cost can be higher for thinking models.
+                    Self-hosted model costs are marked as not comparable rather than treated as
+                    free.
                   </li>
                   <li>
-                    Self-hosted models have no directly comparable API list price; their cost is
-                    represented as null, not zero.
-                  </li>
-                  <li>
-                    Provider routing, serving hardware, and model revisions can affect results even
-                    when the harness is unchanged.
-                  </li>
-                  <li>
-                    The benchmark measures generation against one shared 70-component catalog. It
-                    does not represent every possible UI library or application domain.
+                    OpenUI built this benchmark. The method and outputs are published so the results
+                    can be inspected and challenged.
                   </li>
                 </ul>
               </section>
             </article>
-
-            <div className="mt-12 border-t border-[color:var(--home-hairline)] pt-8 text-sm text-[color:var(--openui-text-neutral-secondary)]">
-              Methodology source of record: <a href={LINKS.latestReadme}>generative-ui-bench</a>.
-              Website benchmark data last published {BENCHMARK_UPDATED_ISO}.
-            </div>
           </div>
         </main>
       </div>
