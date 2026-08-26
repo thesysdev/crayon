@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -26,7 +28,7 @@ jobs:
           corepack prepare pnpm@9.15.4 --activate
 
       - name: Update OpenUI packages
-        run: pnpm --dir examples update:openui
+        run: pnpm examples:update
 
       - name: Install updated dependencies
         run: pnpm examples:install
@@ -42,7 +44,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          if git diff --quiet -- examples/pnpm-lock.yaml ':(glob)examples/**/package.json'; then
+          if git diff --quiet -- ':(glob)examples/**/pnpm-lock.yaml' ':(glob)examples/**/package.json'; then
             echo "OpenUI example packages are already current."
             exit 0
           fi
@@ -52,7 +54,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git switch -C "$UPDATE_BRANCH"
-          git add examples/pnpm-lock.yaml ':(glob)examples/**/package.json'
+          git add ':(glob)examples/**/pnpm-lock.yaml' ':(glob)examples/**/package.json'
           git commit -m "chore(examples): update OpenUI packages"
 
           if [[ -n "$remote_sha" ]]; then
@@ -69,7 +71,7 @@ jobs:
 
           pr_body="Updates every example to the latest published versions of its \`@openuidev/*\` dependencies.
 
-          The examples were installed from the refreshed lockfile and all credential-free verification contracts passed before this pull request was created."
+          The examples were installed from their refreshed lockfiles and all credential-free verification contracts passed before this pull request was created."
 
           gh pr create \
             --repo "$GITHUB_REPOSITORY" \
