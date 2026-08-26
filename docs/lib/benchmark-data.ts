@@ -955,15 +955,16 @@ export const BENCHMARK_VERSION = "v1";
 export const BENCHMARK_UPDATED = "18 Aug 2026";
 
 export const BENCHMARK_REPOSITORY = "https://github.com/thesysdev/generative-ui-bench";
-export const PUBLISHED_SCORER_TAG = "scorer-v1-lang-core-0.2.11";
-export const PUBLISHED_REPO_ROOT = `${BENCHMARK_REPOSITORY}/tree/${PUBLISHED_SCORER_TAG}`;
+/* Provenance points at main rather than a pinned scorer tag: the published
+   numbers track the repository's current state, so there is one place to look
+   and no second regime to keep straight. */
 export const LATEST_REPO_ROOT = `${BENCHMARK_REPOSITORY}/tree/main`;
 export const LINKS = {
-  rawData: `${PUBLISHED_REPO_ROOT}/results`,
-  rawOutputs: `${PUBLISHED_REPO_ROOT}/raw`,
-  harness: PUBLISHED_REPO_ROOT,
-  briefs: `${PUBLISHED_REPO_ROOT}/briefs/briefs.ts`,
-  catalog: `${PUBLISHED_REPO_ROOT}/catalog/public-catalog.json`,
+  rawData: `${LATEST_REPO_ROOT}/results`,
+  rawOutputs: `${LATEST_REPO_ROOT}/raw`,
+  harness: LATEST_REPO_ROOT,
+  briefs: `${LATEST_REPO_ROOT}/briefs/briefs.ts`,
+  catalog: `${LATEST_REPO_ROOT}/catalog/public-catalog.json`,
   latestHarness: LATEST_REPO_ROOT,
   latestReadme: `${LATEST_REPO_ROOT}/README.md`,
   speedHarness: LATEST_REPO_ROOT,

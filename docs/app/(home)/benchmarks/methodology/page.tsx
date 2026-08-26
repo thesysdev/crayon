@@ -7,7 +7,6 @@ import {
   FORMATS,
   LINKS,
   MODELS,
-  PUBLISHED_SCORER_TAG,
   RUNS_PER_FORMAT,
 } from "@/lib/benchmark-data";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
@@ -188,11 +187,7 @@ export default function BenchmarkMethodologyPage() {
                 <div className="not-prose my-6 border-l-2 border-[color:var(--openui-text-neutral-primary)] pl-5 text-sm leading-6 text-[color:var(--openui-text-neutral-secondary)]">
                   Website results use the preserved <strong>lang-core 0.2.11</strong> scorer. The
                   repository now defaults to <strong>0.2.15</strong>. Those two scorer versions are
-                  not comparable row by row. The published version is preserved at{` `}
-                  <a className="underline underline-offset-4" href={LINKS.harness}>
-                    {PUBLISHED_SCORER_TAG}
-                  </a>
-                  .
+                  not comparable row by row.
                 </div>
                 <ul>
                   <li>
