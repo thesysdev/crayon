@@ -1,11 +1,11 @@
 /**
- * openui-bench — single source of truth for every number on the benchmark
- * blog post.
+ * generative-ui-bench — single source of truth for every number on the
+ * benchmark blog post.
  *
  * Rules for this file:
  *  - Charts read from here. Never hardcode a number in a chart component.
- *  - Every value is computed from the committed results files in
- *    benchmarks/openui-bench (results-<model>-{native,official}.json),
+ *  - Every value is computed from the committed results files in the
+ *    generative-ui-bench repo (results-<model>-{native,official}.json),
  *    never typed from prose.
  */
 
@@ -1017,21 +1017,21 @@ export const frontierLine = (...args: Parameters<typeof frontierPoints>) =>
 export const BENCHMARK_VERSION = "v1";
 export const BENCHMARK_UPDATED = "25 Aug 2026";
 
-export const BENCHMARK_REPOSITORY = "https://github.com/thesysdev/generative-ui-bench";
 /* Provenance points at main rather than a pinned scorer tag: the published
    numbers track the repository's current state, so there is one place to look
    and no second regime to keep straight. */
-export const LATEST_REPO_ROOT = `${BENCHMARK_REPOSITORY}/tree/main`;
+export const REPO_ROOT = "https://github.com/thesysdev/generative-ui-bench";
+const REPO_TREE = `${REPO_ROOT}/tree/main`;
 export const LINKS = {
-  rawData: `${LATEST_REPO_ROOT}/results`,
-  rawOutputs: `${LATEST_REPO_ROOT}/raw`,
-  harness: LATEST_REPO_ROOT,
-  briefs: `${LATEST_REPO_ROOT}/briefs/briefs.ts`,
-  catalog: `${LATEST_REPO_ROOT}/catalog/public-catalog.json`,
-  latestHarness: LATEST_REPO_ROOT,
-  latestReadme: `${LATEST_REPO_ROOT}/README.md`,
-  speedHarness: LATEST_REPO_ROOT,
-  dispute: `${BENCHMARK_REPOSITORY}/issues/new`,
+  rawData: `${REPO_TREE}/results`,
+  rawOutputs: `${REPO_TREE}/raw`,
+  harness: REPO_ROOT,
+  briefs: `${REPO_TREE}/briefs/briefs.ts`,
+  catalog: `${REPO_TREE}/catalog/public-catalog.json`,
+  latestHarness: REPO_TREE,
+  latestReadme: `${REPO_TREE}/README.md`,
+  speedHarness: REPO_ROOT,
+  dispute: `${REPO_ROOT}/issues/new`,
 };
 
 export const CHANGELOG = [

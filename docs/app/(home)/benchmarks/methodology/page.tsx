@@ -1,12 +1,12 @@
 import { Footer } from "@/app/(home)/sections/Footer/Footer";
 import { BENCHMARK_CANONICAL_URL } from "@/lib/benchmark-agent-data";
 import {
-  BENCHMARK_REPOSITORY,
   BRIEFS,
   CATALOG_COMPONENTS,
   FORMATS,
   LINKS,
   MODELS,
+  REPO_ROOT,
   RUNS_PER_FORMAT,
 } from "@/lib/benchmark-data";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
@@ -46,7 +46,7 @@ const structuredData = {
   dateModified: "2026-08-26",
   author: { "@type": "Organization", name: "OpenUI by Thesys" },
   isPartOf: { "@id": `${BENCHMARK_CANONICAL_URL}#dataset` },
-  codeRepository: BENCHMARK_REPOSITORY,
+  codeRepository: REPO_ROOT,
 };
 
 export default function BenchmarkMethodologyPage() {
@@ -98,7 +98,7 @@ export default function BenchmarkMethodologyPage() {
                 }
               />
               <PillLink
-                href={BENCHMARK_REPOSITORY}
+                href={REPO_ROOT}
                 variant="ghost"
                 external
                 arrow={<ArrowUpRight size={16} strokeWidth={2.25} aria-hidden="true" />}
