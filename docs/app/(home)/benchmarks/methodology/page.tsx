@@ -73,32 +73,30 @@ export default function BenchmarkMethodologyPage() {
           </aside>
 
           <div className="min-w-0 flex-1">
-            <header className="max-w-3xl">
-              <h1 className="mb-2 text-[length:var(--home-title-size)] font-[family-name:var(--home-font-display)] font-medium leading-[var(--home-title-leading)] tracking-[var(--home-title-tracking)] text-[color:var(--openui-text-neutral-primary)]">
-                Methodology
-              </h1>
-              <p className="mb-6 text-[length:var(--home-lead-size)] font-[family-name:var(--home-font-text)] leading-[var(--home-lead-leading)] text-[color:var(--openui-text-neutral-secondary)]">
-                One catalog, the same 46 interface briefs, and a shared scoring standard.
-              </p>
-              <nav
-                aria-label="Methodology actions"
-                className="flex flex-wrap items-center gap-2 border-b border-[color:var(--home-hairline)] pb-8"
+            <h1 className="mb-2 text-[length:var(--home-title-size)] font-[family-name:var(--home-font-display)] font-medium leading-[var(--home-title-leading)] tracking-[var(--home-title-tracking)] text-[color:var(--openui-text-neutral-primary)]">
+              Methodology
+            </h1>
+            <p className="mb-4 text-[length:var(--home-lead-size)] font-[family-name:var(--home-font-text)] leading-[var(--home-lead-leading)] text-[color:var(--openui-text-neutral-secondary)]">
+              One catalog, the same 46 interface briefs, and a shared scoring standard.
+            </p>
+            <nav
+              aria-label="Methodology actions"
+              className="flex flex-wrap items-center gap-2 border-b border-[color:var(--home-hairline)] pb-6"
+            >
+              <PillLink href="/benchmarks" variant="secondary">
+                Benchmark
+              </PillLink>
+              <PillLink
+                href={BENCHMARK_REPOSITORY}
+                variant="ghost"
+                external
+                arrow={<ArrowUpRight size={16} strokeWidth={2.25} aria-hidden="true" />}
               >
-                <PillLink href="/benchmarks" variant="secondary">
-                  Benchmark
-                </PillLink>
-                <PillLink
-                  href={BENCHMARK_REPOSITORY}
-                  variant="ghost"
-                  external
-                  arrow={<ArrowUpRight size={16} strokeWidth={2.25} aria-hidden="true" />}
-                >
-                  Source
-                </PillLink>
-              </nav>
-            </header>
+                Source
+              </PillLink>
+            </nav>
 
-            <article className="prose mt-10 min-w-0 max-w-2xl">
+            <article className="prose mt-8 min-w-0">
               <section id="setup" aria-labelledby="setup-heading">
                 <h2 id="setup-heading">Benchmark setup</h2>
                 <p>
