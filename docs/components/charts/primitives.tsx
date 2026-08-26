@@ -1,7 +1,7 @@
 "use client";
 
-import { createContext, useContext, useLayoutEffect, useRef, type ReactNode } from "react";
-import { BRAND_MARKS, markViewBox } from "./brand-marks";
+import { createContext, useContext, useId, useLayoutEffect, useRef, type ReactNode } from "react";
+import { BRAND_COLORS, BRAND_MARKS, GEMINI_GRADIENT, markViewBox } from "./brand-marks";
 import { MASCOT_SHAPES, MASCOT_VIEWBOX } from "./openui-mascot";
 import s from "./viz.module.css";
 
@@ -62,7 +62,7 @@ function useReveal(enabled: boolean) {
   return ref;
 }
 
-export function Mark({ id }: { id?: string }) {
+export function Mark({ id, brand = false }: { id?: string; brand?: boolean }) {
   /* the mascot is the nav's own artwork: baked colours, drawn edge to edge so
      it rasterises as crisply here as it does in the site header */
   if (id === "openui") {
@@ -82,9 +82,32 @@ export function Mark({ id }: { id?: string }) {
   }
   const d = id ? BRAND_MARKS[id] : undefined;
   if (!d) return null;
+  /* `brand` paints the mark in its own colours — Gemini needs a gradient, and
+     the monochrome marks fall back to ink so they survive both themes. */
+  const gradientId = `mark-gradient-${id}`;
+  const fill = !brand
+    ? "currentColor"
+    : id === "gemini"
+      ? `url(#${gradientId})`
+      : (BRAND_COLORS[id!] ?? "currentColor");
   return (
     <svg viewBox={markViewBox(id)} aria-hidden>
-      <path d={d} fill="currentColor" />
+      {brand && id === "gemini" ? (
+        <defs>
+          <linearGradient
+            id={gradientId}
+            x1={GEMINI_GRADIENT.from.x}
+            y1={GEMINI_GRADIENT.from.y}
+            x2={GEMINI_GRADIENT.to.x}
+            y2={GEMINI_GRADIENT.to.y}
+          >
+            {GEMINI_GRADIENT.stops.map((stop) => (
+              <stop key={stop.offset} offset={stop.offset} stopColor={stop.color} />
+            ))}
+          </linearGradient>
+        </defs>
+      ) : null}
+      <path d={d} fill={fill} />
     </svg>
   );
 }
@@ -116,11 +139,24 @@ export function Chart({
 }) {
   const { vivid } = useVizSkin();
   const revealRef = useReveal(vivid);
+  const headingId = useId();
+  const descriptionId = useId();
   return (
-    <figure ref={revealRef} className={`${s.viz} ${tight ? s.tight : ""} ${vivid ? s.vivid : ""}`}>
+    <figure
+      ref={revealRef}
+      className={`${s.viz} ${tight ? s.tight : ""} ${vivid ? s.vivid : ""}`}
+      aria-labelledby={headingId}
+      aria-describedby={sub ? descriptionId : undefined}
+    >
       <figcaption className={s.head}>
-        <p className={s.title}>{title}</p>
-        {sub ? <p className={s.sub}>{sub}</p> : null}
+        <p id={headingId} className={s.title}>
+          {title}
+        </p>
+        {sub ? (
+          <p id={descriptionId} className={s.sub}>
+            {sub}
+          </p>
+        ) : null}
       </figcaption>
       {children}
       {legend ? (
@@ -135,6 +171,26 @@ export function Chart({
       ) : null}
       {note ? <p className={s.note}>{note}</p> : null}
     </figure>
+  );
+}
+
+/**
+ * A visible-on-demand semantic equivalent for a chart. It stays in the
+ * server-rendered document, so crawlers and assistive technology can recover
+ * exact values without executing hover interactions or interpreting pixels.
+ */
+export function ChartDataDisclosure({
+  label = "View data",
+  children,
+}: {
+  label?: string;
+  children: ReactNode;
+}) {
+  return (
+    <details className={s.dataDisclosure}>
+      <summary>{label}</summary>
+      <div className={s.dataDisclosureBody}>{children}</div>
+    </details>
   );
 }
 

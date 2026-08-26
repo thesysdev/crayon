@@ -10,7 +10,7 @@ import {
   formatLabel,
   runsFor,
 } from "@/lib/benchmark-data";
-import { Chart, Chip, Mark, styles as s, slotClass } from "./primitives";
+import { Chart, ChartDataDisclosure, Chip, Mark, styles as s, slotClass } from "./primitives";
 
 /* Render rate per model, one panel per format. Framed as the share of runs
    that put a screen in front of the user, so OpenUI's near-perfect
@@ -133,6 +133,43 @@ export function BlankScreensPanels({
           </span>
         ))}
       </div>
+      <ChartDataDisclosure label="View render data">
+        <table className={s.dataTable}>
+          <caption>Rendered and blank runs for every model and generative UI format</caption>
+          <thead>
+            <tr>
+              <th scope="col">Model</th>
+              <th scope="col">Format</th>
+              <th scope="col" data-numeric="true">
+                Rendered
+              </th>
+              <th scope="col" data-numeric="true">
+                Blank
+              </th>
+              <th scope="col" data-numeric="true">
+                Render rate
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {shownFormats.flatMap((format) =>
+              MODELS.filter((model) => selected.includes(model.id)).map((model) => {
+                const blanks = blanksOver(format, [model.id]);
+                const runs = runsFor(model.id);
+                return (
+                  <tr key={`data-${format}-${model.id}`}>
+                    <th scope="row">{fullName(model)}</th>
+                    <td>{formatLabel(format)}</td>
+                    <td data-numeric="true">{runs - blanks}</td>
+                    <td data-numeric="true">{blanks}</td>
+                    <td data-numeric="true">{rate(format, model.id).toFixed(1)}%</td>
+                  </tr>
+                );
+              }),
+            )}
+          </tbody>
+        </table>
+      </ChartDataDisclosure>
     </Chart>
   );
 }
