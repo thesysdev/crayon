@@ -1,11 +1,11 @@
 /**
- * openui-bench — single source of truth for every number on the benchmark
- * blog post.
+ * generative-ui-bench — single source of truth for every number on the
+ * benchmark blog post.
  *
  * Rules for this file:
  *  - Charts read from here. Never hardcode a number in a chart component.
- *  - Every value is computed from the committed results files in
- *    benchmarks/openui-bench (results-<model>-{native,official}.json),
+ *  - Every value is computed from the committed results files in the
+ *    generative-ui-bench repo (results-<model>-{native,official}.json),
  *    never typed from prose.
  */
 
@@ -682,15 +682,16 @@ export const frontierLine = (...args: Parameters<typeof frontierPoints>) =>
 export const BENCHMARK_VERSION = "v1";
 export const BENCHMARK_UPDATED = "18 Aug 2026";
 
-export const REPO_ROOT = "https://github.com/thesysdev/openui/tree/main/benchmarks";
+export const REPO_ROOT = "https://github.com/thesysdev/generative-ui-bench";
+const REPO_TREE = `${REPO_ROOT}/tree/main`;
 export const LINKS = {
-  rawData: `${REPO_ROOT}/openui-bench/results`,
-  rawOutputs: `${REPO_ROOT}/openui-bench/raw`,
-  harness: `${REPO_ROOT}/openui-bench`,
-  briefs: `${REPO_ROOT}/openui-bench/briefs/briefs.mjs`,
-  catalog: `${REPO_ROOT}/openui-bench/catalog/public-catalog.json`,
+  rawData: `${REPO_TREE}/results`,
+  rawOutputs: `${REPO_TREE}/raw`,
+  harness: REPO_ROOT,
+  briefs: `${REPO_TREE}/briefs/briefs.ts`,
+  catalog: `${REPO_TREE}/catalog/public-catalog.json`,
   speedHarness: REPO_ROOT,
-  dispute: "https://github.com/thesysdev/openui/issues/new",
+  dispute: `${REPO_ROOT}/issues/new`,
 };
 
 export const CHANGELOG = [
