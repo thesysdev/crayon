@@ -1,0 +1,54 @@
+name: Purge Devtools jsDelivr cache
+
+# jsDelivr caches version aliases (@latest, @0, @0.1) for 7 days. Exact
+# versions are immutable and cannot be purged. The widget loads
+# dist/devtools.browser.js from those aliases (react-lang auto-mount pins @0).
+#
+# Purge access is granted by jsDelivr (email d@jsdelivr.com) if GET
+# https://purge.jsdelivr.net/... starts returning 401/403.
+
+on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      wait_for_npm:
+        description: "Sleep before purge so jsDelivr sees the just-published version"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  purge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Wait for npm metadata
+        if: inputs.wait_for_npm
+        run: sleep 20
+
+      - name: Purge jsDelivr version aliases
+        working-directory: packages/devtools
+        run: |
+          set -euo pipefail
+          VERSION="$(node -p "require('./package.json').version")"
+          MAJOR="${VERSION%%.*}"
+          MINOR="${VERSION%.*}"
+          PKG="@openuidev/devtools"
+          FILES=(
+            dist/devtools.browser.js
+            dist/devtools.browser.js.map
+          )
+
+          echo "Purging ${PKG} aliases for ${VERSION} (latest, @${MAJOR}, @${MINOR})"
+          for tag in latest "${MAJOR}" "${MINOR}"; do
+            for file in "${FILES[@]}"; do
+              path="npm/${PKG}@${tag}/${file}"
+              echo "GET https://purge.jsdelivr.net/${path}"
+              curl -fsS --retry 3 --retry-delay 5 --retry-all-errors \
+                "https://purge.jsdelivr.net/${path}"
+              echo
+            done
+          done

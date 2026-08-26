@@ -59,3 +59,10 @@ jobs:
         working-directory: ./packages/${{ inputs.package }}
         run: pnpm publish --access public
         # Note: provenance is automatically generated with trusted publishing
+
+  purge-devtools-cdn:
+    needs: publish
+    if: inputs.package == 'devtools'
+    uses: ./.github/workflows/purge-devtools-jsdelivr.yml
+    with:
+      wait_for_npm: true
