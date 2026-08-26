@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  turbopack: {},
+  turbopack: { root: process.cwd() },
   transpilePackages: ["@openuidev/react-ui", "@openuidev/react-headless"],
 };
 

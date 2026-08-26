@@ -3,21 +3,22 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "generate": "pnpm --filter @openuidev/cli build && node ../../../packages/openui-cli/dist/index.js generate src/library.ts --out src/generated/system-prompt.txt",
-    "generate:prompt": "pnpm generate",
-    "predev": "pnpm generate",
+    "generate": "openui generate src/library.ts --out src/generated/system-prompt.txt",
+    "generate:prompt": "openui generate src/library.ts --out src/generated/system-prompt.txt",
+    "predev": "openui generate src/library.ts --out src/generated/system-prompt.txt",
     "dev": "next dev",
-    "prebuild": "pnpm generate",
+    "prebuild": "openui generate src/library.ts --out src/generated/system-prompt.txt",
     "build": "next build",
-    "preverify": "pnpm generate",
+    "preverify": "openui generate src/library.ts --out src/generated/system-prompt.txt",
     "verify": "next build",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
-    "@openuidev/react-headless": "workspace:*",
-    "@openuidev/react-lang": "workspace:*",
-    "@openuidev/react-ui": "workspace:*",
+    "@openuidev/react-headless": "0.9.12",
+    "@openuidev/react-lang": "0.2.15",
+    "@openuidev/react-ui": "0.13.9",
+    "ai": "^6.0.0",
     "@radix-ui/react-accordion": "^1.2.3",
     "@radix-ui/react-alert-dialog": "^1.1.15",
     "@radix-ui/react-aspect-ratio": "^1.1.1",
@@ -57,11 +58,13 @@
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.3.0",
     "vaul": "^1.1.2",
-    "zod": "^4.0.0"
+    "zod": "^4.0.0",
+    "zustand": "^4.5.5"
   },
   "devDependencies": {
+    "@openuidev/cli": "0.2.11",
     "@tailwindcss/postcss": "^4",
-    "@types/node": "catalog:",
+    "@types/node": "^22.15.32",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
@@ -69,5 +72,10 @@
     "tailwindcss": "^4",
     "tsx": "^4.19.2",
     "typescript": "^5"
+  },
+  "pnpm": {
+    "overrides": {
+      "postcss@<8.5.10": ">=8.5.10"
+    }
   }
 }

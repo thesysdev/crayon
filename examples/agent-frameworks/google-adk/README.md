@@ -26,10 +26,10 @@ frontend renders as live generative UI (cards, tables, forms, charts…).
    echo "GEMINI_API_KEY=your-key-here" > .env.local
    ```
 
-2. Install dependencies from the monorepo root:
+2. Install dependencies from this example directory:
 
    ```bash
-   pnpm install
+   pnpm install --ignore-workspace
    ```
 
 3. Run the dev server from this directory:
