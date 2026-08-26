@@ -17,10 +17,7 @@ tbl = Table([Col("Product"), Col("Revenue", "number")], [["Widget", 1200]])
 On the client, `<AgentInterface />` from `@openuidev/react-ui` provides the artifact chat interface — thread history, streaming, input, and rendering. It requires an `llm` object whose `send()` calls the backend and whose `streamProtocol` parses the incoming SSE stream with `openAIAdapter()`, and a `componentLibrary` (`muiChatLibrary` — the custom component library defined in `src/lib/mui-genui/`) used to render each OpenUI Lang node. `storage` is optional — threads live in memory by default and reset on reload.
 
 ```tsx
-<AgentInterface
-  llm={{ send, streamProtocol: openAIAdapter() }}
-  componentLibrary={muiChatLibrary}
-/>
+<AgentInterface llm={{ send, streamProtocol: openAIAdapter() }} componentLibrary={muiChatLibrary} />
 ```
 
 ## Architecture
@@ -73,17 +70,17 @@ material-ui/
 
 The library exposes a representative subset of Material UI components mapped to OpenUI Lang:
 
-| Category   | Components |
-| ---------- | ---------- |
+| Category   | Components                                                                                    |
+| ---------- | --------------------------------------------------------------------------------------------- |
 | Content    | `CardHeader`, `TextContent`, `Heading`, `Alert`, `List` / `ListItem`, `Separator`, `Progress` |
-| Tables     | `Table` / `Col` |
-| Charts     | `BarChart`, `LineChart`, `PieChart` (via `@mui/x-charts`) with `Series` / `Slice` |
-| Forms      | `Form`, `FormControl`, `Input`, `Select` / `SelectItem`, `SwitchGroup` / `SwitchItem` |
-| Buttons    | `Button`, `Buttons` |
-| Layout     | `Tabs` / `TabItem`, `Accordion` / `AccordionItem` |
-| Follow-ups | `FollowUpBlock` / `FollowUpItem` |
+| Tables     | `Table` / `Col`                                                                               |
+| Charts     | `BarChart`, `LineChart`, `PieChart` (via `@mui/x-charts`) with `Series` / `Slice`             |
+| Forms      | `Form`, `FormControl`, `Input`, `Select` / `SelectItem`, `SwitchGroup` / `SwitchItem`         |
+| Buttons    | `Button`, `Buttons`                                                                           |
+| Layout     | `Tabs` / `TabItem`, `Accordion` / `AccordionItem`                                             |
+| Follow-ups | `FollowUpBlock` / `FollowUpItem`                                                              |
 
-Each component is defined with `defineComponent({ name, props, description, component })` where `props` is a Zod schema. The schema and description are serialized into the system prompt by `pnpm generate:prompt` (the OpenUI CLI reads `src/library.ts`), and `component` renders the node with Material UI primitives.
+Each component is defined with `defineComponent({ name, props, description, component })` where `props` is a Zod schema. The schema and description are serialized into the system prompt by `npm run generate:prompt` (the OpenUI CLI reads `src/library.ts`), and `component` renders the node with Material UI primitives.
 
 ## Theming
 
@@ -94,21 +91,21 @@ The app wraps everything in MUI's `ThemeProvider` + `CssBaseline` via `ColorMode
 ### Prerequisites
 
 - Node.js 20.x
-- pnpm 9+
+- npm, pnpm, or Bun
 - An OpenAI API key
 
 ### Setup
 
-From the monorepo root, install dependencies (this example is part of the pnpm workspace):
+Enter this standalone example and install its dependencies:
 
 ```bash
-pnpm install
+cd examples/design-systems/material-ui
+npm install
 ```
 
 Provide your API key:
 
 ```bash
-cd examples/design-systems/material-ui
 cp .env.example .env.local
 # edit .env.local and set OPENAI_API_KEY
 ```
@@ -116,23 +113,23 @@ cp .env.example .env.local
 ### Develop
 
 ```bash
-pnpm dev
+npm run dev
 ```
 
-`pnpm dev` first runs `generate:prompt` to (re)generate `src/generated/system-prompt.txt` from the library, then starts Next.js on http://localhost:3000.
+`npm run dev` first runs `generate:prompt` to (re)generate `src/generated/system-prompt.txt` from the library, then starts Next.js on http://localhost:3000.
 
 ### Regenerate the system prompt
 
 Whenever you add or change a component, regenerate the prompt:
 
 ```bash
-pnpm generate:prompt
+npm run generate:prompt
 ```
 
 ### Build
 
 ```bash
-pnpm build
+npm run build
 ```
 
 ## Adding a Component
@@ -140,10 +137,10 @@ pnpm build
 1. Create `src/lib/mui-genui/components/<name>.tsx` and export a `defineComponent({ ... })`.
 2. If it can appear inside other containers, add its `.ref` to `ContentChildUnion` in `unions.ts`.
 3. Register it in the `components` array (and a `componentGroups` entry) in `index.tsx`.
-4. Run `pnpm generate:prompt` so the LLM learns about it.
+4. Run `npm run generate:prompt` so the LLM learns about it.
 
 ## Verify
 
 ```bash
-pnpm verify
+npm run verify
 ```

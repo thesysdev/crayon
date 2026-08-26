@@ -9,7 +9,7 @@ import { getStockPrice, getWeather, searchWeb } from "./tools";
 
 /**
  * The OpenUI system prompt is generated from `src/library.ts` by the OpenUI
- * CLI (`pnpm generate:prompt`). It teaches the model to answer in OpenUI Lang
+ * CLI (`npm run generate:prompt`). It teaches the model to answer in OpenUI Lang
  * so the renderer can turn each reply into live React components.
  *
  * It is loaded with `readFileSync` rather than a `with { type: "text" }`
@@ -27,7 +27,7 @@ function loadSystemPrompt(): string {
     if (existsSync(path)) return readFileSync(path, "utf-8");
   }
   throw new Error(
-    "OpenUI system prompt not found. Run `pnpm generate:prompt` before starting the graph.",
+    "OpenUI system prompt not found. Run `npm run generate:prompt` before starting the graph.",
   );
 }
 

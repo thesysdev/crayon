@@ -108,6 +108,8 @@ Identical to the one scaffolded by `npx @openuidev/cli create`. Uses `openAIRead
 
 ## Verify
 
+From `frontend/`, the verification script builds the client and syntax-checks the Python backend:
+
 ```bash
-pnpm verify
+npm run verify
 ```

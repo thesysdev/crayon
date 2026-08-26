@@ -12,7 +12,7 @@ Demonstrates:
 
 ## Prerequisites
 
-- Node.js 18+ and [pnpm](https://pnpm.io)
+- Node.js 18+ and npm, pnpm, or Bun
 - A [Supabase](https://supabase.com) project (free tier is fine)
 - An [OpenRouter](https://openrouter.ai) API key, or any OpenAI-compatible LLM provider
 
@@ -20,7 +20,7 @@ Demonstrates:
 
 ### 1. Create a Supabase project
 
-Sign up at [supabase.com](https://supabase.com) and create a new project.  Make a note of your **Project URL** and **anon/public key** (Settings → API).
+Sign up at [supabase.com](https://supabase.com) and create a new project. Make a note of your **Project URL** and **anon/public key** (Settings → API).
 
 ### 2. Enable anonymous sign-in
 
@@ -48,13 +48,13 @@ npx supabase db push
 
 The migration creates:
 
-| Object | Purpose |
-|---|---|
-| `threads` table | One row per chat conversation |
-| `messages` table | One row per message, linked to a thread |
-| RLS policies | Users can only read/write their own rows |
-| `update_updated_at` trigger | Keeps `threads.updated_at` fresh |
-| Realtime publication | Enables the `postgres_changes` subscription in the UI |
+| Object                      | Purpose                                               |
+| --------------------------- | ----------------------------------------------------- |
+| `threads` table             | One row per chat conversation                         |
+| `messages` table            | One row per message, linked to a thread               |
+| RLS policies                | Users can only read/write their own rows              |
+| `update_updated_at` trigger | Keeps `threads.updated_at` fresh                      |
+| Realtime publication        | Enables the `postgres_changes` subscription in the UI |
 
 ### 4. Configure environment variables
 
@@ -62,27 +62,21 @@ The migration creates:
 cp .env.local.example .env.local
 ```
 
-| Variable | Where to find it |
-|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase dashboard → Settings → API → Project URL |
+| Variable                        | Where to find it                                      |
+| ------------------------------- | ----------------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Supabase dashboard → Settings → API → Project URL     |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase dashboard → Settings → API → anon/public key |
-| `OPENROUTER_API_KEY` | [openrouter.ai/keys](https://openrouter.ai/keys) |
-| `OPENROUTER_MODEL` _(optional)_ | Defaults to `openai/gpt-5.5` |
+| `OPENROUTER_API_KEY`            | [openrouter.ai/keys](https://openrouter.ai/keys)      |
+| `OPENROUTER_MODEL` _(optional)_ | Defaults to `openai/gpt-5.5`                          |
 
 ### 5. Install and run
 
-From the repository root:
+Enter this standalone example:
 
 ```bash
-pnpm install
-pnpm --filter @openuidev/example-supabase dev
-```
-
-Or from this directory:
-
-```bash
-pnpm install
-pnpm dev
+cd examples/miscellaneous/supabase
+npm install
+npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
@@ -93,21 +87,21 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ### Authentication
 
-On first visit `supabase.auth.signInAnonymously()` creates a stable anonymous user ID stored in a browser cookie.  Every thread is scoped to this ID via Row Level Security — even anonymous users' data is fully isolated.
+On first visit `supabase.auth.signInAnonymously()` creates a stable anonymous user ID stored in a browser cookie. Every thread is scoped to this ID via Row Level Security — even anonymous users' data is fully isolated.
 
-When you want to add traditional sign-in, call `supabase.auth.updateUser({ email, password })` to upgrade the anonymous session to a permanent account.  All existing threads transfer automatically.
+When you want to add traditional sign-in, call `supabase.auth.updateUser({ email, password })` to upgrade the anonymous session to a permanent account. All existing threads transfer automatically.
 
 ### Thread persistence
 
 `threadApiUrl="/api/threads"` tells OpenUI to use the default endpoint contract:
 
-| Hook | Method | Route | Purpose |
-|---|---|---|---|
-| `fetchThreadList` | `GET` | `/api/threads/get` | Sidebar thread list |
-| `createThread` | `POST` | `/api/threads/create` | New thread on first message |
-| `loadThread` | `GET` | `/api/threads/get/:id` | Restore message history |
-| `updateThread` | `PATCH` | `/api/threads/update/:id` | Rename thread |
-| `deleteThread` | `DELETE` | `/api/threads/delete/:id` | Remove thread |
+| Hook              | Method   | Route                     | Purpose                     |
+| ----------------- | -------- | ------------------------- | --------------------------- |
+| `fetchThreadList` | `GET`    | `/api/threads/get`        | Sidebar thread list         |
+| `createThread`    | `POST`   | `/api/threads/create`     | New thread on first message |
+| `loadThread`      | `GET`    | `/api/threads/get/:id`    | Restore message history     |
+| `updateThread`    | `PATCH`  | `/api/threads/update/:id` | Rename thread               |
+| `deleteThread`    | `DELETE` | `/api/threads/delete/:id` | Remove thread               |
 
 ### Message format alignment
 
@@ -135,7 +129,7 @@ User types message
 
 ### Real-time updates
 
-A Supabase Realtime channel subscribes to `postgres_changes` on the `threads` table.  When the thread list changes in another tab or device, the subscription fires and remounts `ChatProvider` (via a React `key` change) so the sidebar refreshes automatically.
+A Supabase Realtime channel subscribes to `postgres_changes` on the `threads` table. When the thread list changes in another tab or device, the subscription fires and remounts `ChatProvider` (via a React `key` change) so the sidebar refreshes automatically.
 
 > **Note:** remounting resets any in-progress conversation in the current tab.
 > For a smoother experience, replace the `key` trick with a fine-grained state merge.
@@ -192,5 +186,5 @@ examples/miscellaneous/supabase/
 ## Verify
 
 ```bash
-pnpm verify
+npm run verify
 ```

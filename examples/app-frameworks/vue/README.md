@@ -14,15 +14,15 @@ A chat application built with [Nuxt 3](https://nuxt.com), [Vercel AI SDK](https:
 ### Prerequisites
 
 - Node.js 18+
-- [pnpm](https://pnpm.io/)
+- npm, pnpm, or Bun
 - An OpenAI API key
 
 ### Install dependencies
 
-From the monorepo root:
+From this example directory:
 
 ```bash
-pnpm install
+npm install
 ```
 
 ### Configure environment
@@ -40,7 +40,7 @@ OPENAI_API_KEY=sk-...
 ### Generate the system prompt (optional)
 
 ```bash
-pnpm --filter @openuidev/example-vue generate:prompt
+npm run generate:prompt
 ```
 
 The generated prompt lives at the ignored path `generated/system-prompt.txt`. The dev and build commands regenerate it automatically, so this step is only needed when you want to inspect the generated artifacts without starting the app.
@@ -48,7 +48,7 @@ The generated prompt lives at the ignored path `generated/system-prompt.txt`. Th
 ### Run
 
 ```bash
-pnpm --filter @openuidev/example-vue dev
+npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
@@ -88,12 +88,12 @@ assets/
 
 1. Create a Vue component in `components/openui/`
 2. Define it with `defineComponent()` in `lib/library.ts`
-3. Restart the dev server, or run `pnpm --filter @openuidev/example-vue generate:prompt`, to update `generated/system-prompt.txt`
+3. Restart the dev server, or run `npm run generate:prompt`, to update `generated/system-prompt.txt`
 
 See the [`@openuidev/vue-lang` README](../../../packages/vue-lang/README.md) for the full API.
 
 ## Verify
 
 ```bash
-pnpm verify
+npm run verify
 ```

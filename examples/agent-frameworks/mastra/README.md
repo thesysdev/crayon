@@ -16,16 +16,16 @@ An [OpenUI](https://openui.com) example showing how to wire a [Mastra](https://m
 echo "OPENAI_API_KEY=sk-..." > .env.local
 ```
 
-2. Install dependencies from the monorepo root:
+2. Install dependencies from this example directory:
 
 ```bash
-pnpm install
+npm install
 ```
 
 3. Run the dev server from this directory:
 
 ```bash
-pnpm dev
+npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) to see the chat interface.
@@ -47,5 +47,5 @@ To add more tools, define them with `createTool` in `src/app/api/chat/route.ts` 
 ## Verify
 
 ```bash
-pnpm verify
+npm run verify
 ```

@@ -29,32 +29,36 @@ A full-stack example that demonstrates using `@openuidev/react-lang` in a React 
 
 ```
 react-native/
-├── package.json              # Root workspace scripts
 ├── backend/                  # Next.js API server
-    ├── src/
-    │   ├── library.ts        # Component library definition (Node-compatible)
-    │   ├── generated/
-    │   │   └── system-prompt.txt # Generated locally from library.ts
-    │   └── app/api/chat/
-    │       └── route.ts      # Streaming chat endpoint
-    └── env.example
-└── chat-app/                 # Expo application
+│   ├── package.json          # Standalone backend dependencies and scripts
+│   ├── src/
+│   │   ├── library.ts        # Component library definition (Node-compatible)
+│   │   ├── generated/
+│   │   │   └── system-prompt.txt # Generated locally from library.ts
+│   │   └── app/api/chat/
+│   │       └── route.ts      # Streaming chat endpoint
+│   └── env.example
+└── chat-app/                 # Standalone Expo application
+    └── package.json
 ```
 
-The root `package.json` wires the checked-in `backend/` and `chat-app/` workspaces together.
+The backend and mobile client are separate install units, so either can be installed, verified, or copied without a workspace.
 
 ## Getting Started
 
 ### Prerequisites
 
 - Node.js 18+
-- pnpm
+- npm, pnpm, or Bun
 - An OpenAI API key
 
 ### 1. Install dependencies
 
+From the `react-native/` example directory, install each standalone application:
+
 ```bash
-pnpm install
+(cd backend && npm install)
+(cd chat-app && npm install)
 ```
 
 ### 2. Configure the backend
@@ -74,13 +78,13 @@ OPENAI_API_KEY=sk-...
 The [Prompt Generator](https://www.openui.com/docs/openui-lang/overview) compiles `library.ts` into an ignored `generated/system-prompt.txt` containing component signatures, syntax rules, and streaming guidelines for the LLM. The backend dev and build commands run this step automatically; run it directly when you only want to refresh the generated artifacts:
 
 ```bash
-pnpm generate:prompt
+(cd backend && npm run generate:prompt)
 ```
 
 ### 4. Start the backend
 
 ```bash
-pnpm dev:backend
+(cd backend && npm run dev)
 ```
 
 The API will be available at `http://localhost:3000`.
@@ -88,7 +92,7 @@ The API will be available at `http://localhost:3000`.
 ### 5. Start the mobile app
 
 ```bash
-pnpm dev:mobile
+(cd chat-app && npm run start)
 ```
 
 ## What's in This Example
@@ -121,11 +125,11 @@ Uses the [`<Renderer />`](https://www.openui.com/docs/openui-lang/overview) comp
 
 ## Scripts
 
-| Script                 | Description                                      |
-| ---------------------- | ------------------------------------------------ |
-| `pnpm dev:backend`     | Start the Next.js API server                     |
-| `pnpm dev:mobile`      | Start the Expo dev server                        |
-| `pnpm generate:prompt` | Regenerate `system-prompt.txt` from `library.ts` |
+| Directory   | Script                    | Description                                      |
+| ----------- | ------------------------- | ------------------------------------------------ |
+| `backend/`  | `npm run dev`             | Start the Next.js API server                     |
+| `backend/`  | `npm run generate:prompt` | Regenerate `system-prompt.txt` from `library.ts` |
+| `chat-app/` | `npm run start`           | Start the Expo dev server                        |
 
 ## Learn More
 
@@ -135,5 +139,6 @@ Uses the [`<Renderer />`](https://www.openui.com/docs/openui-lang/overview) comp
 ## Verify
 
 ```bash
-pnpm verify
+(cd backend && npm run verify)
+(cd chat-app && npm run verify)
 ```

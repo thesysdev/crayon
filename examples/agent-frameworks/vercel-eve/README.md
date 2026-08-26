@@ -7,24 +7,19 @@ translates Eve events into AG-UI events that OpenUI renders as live React compon
 ## Prerequisites
 
 - Node.js 24
-- pnpm 9
+- npm, pnpm, or Bun
 - An API key for an OpenAI-compatible model provider
 
 ## Run locally
 
-1. Install the monorepo dependencies from the repository root:
-
-   ```bash
-   pnpm install
-   ```
-
-2. Enter the example directory:
+1. Enter the standalone example and install its dependencies:
 
    ```bash
    cd examples/agent-frameworks/vercel-eve
+   npm install
    ```
 
-3. Copy the example environment file and add your provider configuration:
+2. Copy the example environment file and add your provider configuration:
 
    ```bash
    cp .env.example .env
@@ -34,13 +29,13 @@ translates Eve events into AG-UI events that OpenUI renders as live React compon
    OpenAI-compatible endpoint. `OPENAI_API_KEY`, `OPENAI_MODEL`, and `OPENAI_BASE_URL` are
    accepted as aliases.
 
-4. Start the Next.js application and embedded Eve development server:
+3. Start the Next.js application and embedded Eve development server:
 
    ```bash
-   pnpm dev
+   npm run dev
    ```
 
-5. Open [http://localhost:3000](http://localhost:3000) and start a conversation.
+4. Open [http://localhost:3000](http://localhost:3000) and start a conversation.
 
 ## How it works
 
@@ -76,19 +71,19 @@ Eve session events ──► AG-UI adapter ──► OpenUI renderer
 
 ## Eve commands
 
-The normal development command is `pnpm dev`. The package also exposes Eve directly:
+The normal development command is `npm run dev`. The package also exposes Eve directly:
 
 ```bash
-pnpm eve:dev
-pnpm eve:build
-pnpm eve:start
+npm run eve:dev
+npm run eve:build
+npm run eve:start
 ```
 
 For a production-style Next.js run:
 
 ```bash
-pnpm build
-pnpm start
+npm run build
+npm run start
 ```
 
 ## Project layout
@@ -115,5 +110,5 @@ the provider and tool permissions appropriate for your deployment.
 ## Verify
 
 ```bash
-pnpm verify
+npm run verify
 ```

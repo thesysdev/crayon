@@ -25,7 +25,7 @@ browser ──fetch /api/chat──▶ Next.js route ──protocol v2──▶ 
 | Graph             | `src/agent/agent.ts`        | `createDeepAgent` with the generated OpenUI system prompt, the mock tools, and `openUIStreamTransformer`.                                                                        |
 | Integration       | `@openuidev/langchain`      | Maps LangGraph protocol `messages` and `tools` into AG-UI events, adds run lifecycle events, starts stateless runs, and relays `custom:openui`.                                  |
 | Tools             | `src/agent/tools.ts`        | Mock `get_weather` / `get_stock_price` / `search_web` (no external keys needed).                                                                                                 |
-| Component library | `src/library.ts`            | The OpenUI components the model is allowed to render. `pnpm generate:prompt` turns it into `src/generated/system-prompt.txt`.                                                    |
+| Component library | `src/library.ts`            | The OpenUI components the model is allowed to render. `npm run generate:prompt` turns it into `src/generated/system-prompt.txt`.                                                 |
 
 The shared integration package uses Web-standard requests, responses, fetch,
 and streams. It does not depend on Next.js or DeepAgents.
@@ -54,7 +54,7 @@ the Next.js app (serves the UI). The default dev script starts both.
 2. Start the LangGraph server and Next.js app together:
 
    ```bash
-   pnpm dev
+   npm run dev
    ```
 
    This generates the OpenUI prompt once, starts the LangGraph server on
@@ -63,9 +63,9 @@ the Next.js app (serves the UI). The default dev script starts both.
    If you prefer separate terminals, run:
 
    ```bash
-   pnpm langgraph:dev
+   npm run langgraph:dev
    # in another terminal
-   pnpm exec next dev
+   npx next dev
    ```
 
 Open [http://localhost:3000](http://localhost:3000) and try a starter such as
@@ -88,7 +88,7 @@ LANGSMITH_API_KEY=lsv2-...          # auth for the deployment
 ```
 
 `LANGSMITH_API_KEY` is sent as `x-api-key` from the server side only.
-Restart `pnpm dev` after changing `.env`.
+Restart `npm run dev` after changing `.env`.
 
 ## Customizing
 
@@ -97,7 +97,7 @@ Restart `pnpm dev` after changing `.env`.
 - **Use real tools:** replace the mock bodies in `src/agent/tools.ts` with real
   API calls.
 - **Change what the model can render:** edit `src/library.ts`, then re-run
-  `pnpm generate:prompt` (the dev scripts do this for you).
+  `npm run generate:prompt` (the dev scripts do this for you).
 
 ## Learn more
 
@@ -107,5 +107,5 @@ Restart `pnpm dev` after changing `.env`.
 ## Verify
 
 ```bash
-pnpm verify
+npm run verify
 ```

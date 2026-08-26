@@ -58,23 +58,23 @@ If neither resolves, the chat still streams but opens with the SDK's "no models 
 
 ## Run
 
-From the repo root, install workspace deps once:
+Enter this standalone example and install its dependencies:
 
 ```bash
-pnpm install
+cd examples/harnesses/pi
+npm install
 ```
 
 Then, from this example, set a provider key and point the agent at a project to work on:
 
 ```bash
-cd examples/harnesses/pi
 cp .env.example .env   # set a provider API key (skip if using an existing Pi login)
 
 # Point the agent at the project you want it to work on:
-pnpm dev -- /path/to/your/project
+npm run dev -- /path/to/your/project
 ```
 
-`pnpm dev` (no path) prompts you for the workspace; `PI_AGENT_CWD=/path pnpm dev` sets it without a
+`npm run dev` (no path) prompts you for the workspace; `PI_AGENT_CWD=/path npm run dev` sets it without a
 prompt. The launcher prints the resolved workspace before the server starts. (`build` doesn't need
 a workspace — the agent only runs at request time, i.e. under `dev`/`start`.)
 
@@ -86,7 +86,7 @@ Then open the printed URL (default http://localhost:3000). Try:
 Production:
 
 ```bash
-pnpm build && pnpm start
+npm run build && npm run start
 ```
 
 ## Configuration
@@ -141,5 +141,5 @@ ability to reach this port as remote code execution.
 ## Verify
 
 ```bash
-pnpm verify
+npm run verify
 ```

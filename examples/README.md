@@ -62,7 +62,19 @@ Each example has one primary home based on the integration seam it is intended t
 
 ## Run and verify
 
-Examples use their own workspace and lockfile, so installing the repository root does not install example dependencies. To install every example from the repository root, run:
+Every JavaScript application under `examples/` is standalone: it has its own manifest, dependencies, scripts, and canonical pnpm lockfile. Installing the repository root does not install any example dependencies.
+
+Enter the application directory you want to run, then use your preferred package manager:
+
+```bash
+pnpm install --ignore-workspace
+# or: npm install
+# or: bun install
+```
+
+The pnpm flag prevents the command from climbing to this repository's ancestor workspace; it is not needed after copying an example elsewhere. The scripts do not invoke pnpm internally, so the corresponding `pnpm dev`, `npm run dev`, and `bun run dev` commands are equivalent. FastAPI's JavaScript application is in `app-frameworks/fastapi/frontend`; React Native has separate applications in `app-frameworks/react-native/backend` and `app-frameworks/react-native/chat-app`.
+
+Repository maintainers can install every application from the repository root with:
 
 ```bash
 pnpm examples:install
@@ -72,6 +84,8 @@ Follow an example's README for its environment variables and development command
 
 ```bash
 pnpm verify
+# or: npm run verify
+# or: bun run verify
 ```
 
 To verify all examples sequentially against the pinned published OpenUI packages, run:
@@ -82,7 +96,9 @@ pnpm examples:verify
 
 Examples that use static system prompts generate them locally before `dev`, `build`, and `verify`. Generated prompt and spec files are ignored by Git and should not be committed.
 
-All `@openuidev/*` dependencies are exact published versions rather than links to packages in this repository. The manually triggered `Update example OpenUI packages` workflow updates them together, refreshes `examples/pnpm-lock.yaml`, verifies every example, and opens or updates one pull request when versions change.
+All `@openuidev/*` dependencies are exact published versions rather than links to packages in this repository. The manually triggered `Update example OpenUI packages` workflow updates them together, refreshes every application's `pnpm-lock.yaml`, verifies every example, and opens or updates one pull request when versions change.
+
+pnpm lockfiles are the reproducibility contract for repository CI; npm and Bun users can generate their native local lockfiles, which are ignored under `examples/` to avoid maintaining three lock formats for every application.
 
 ## Maintenance contract
 
@@ -91,7 +107,7 @@ Every retained example should:
 - showcase a distinct OpenUI capability or maintained integration;
 - remain runnable without depending on another example;
 - document its purpose, stack, prerequisites, run command, architecture, key files, verification command, and extension points;
-- expose a credential-free `pnpm verify` command that checks the example's relevant build, types, and local tests;
+- expose a credential-free `verify` script that checks the example's relevant build, types, and local tests;
 - generate derived prompts and specs locally rather than store them in the repository;
 - depend on exact published `@openuidev/*` versions rather than root workspace packages;
 - use a normalized `@openuidev/example-*` package name and keep repository links current.
