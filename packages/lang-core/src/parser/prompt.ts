@@ -406,7 +406,7 @@ WRONG — you called a tool and got data back, but you inlined the results:
 openCount = 2
 item1 = SomeComp("first item title")
 item2 = SomeComp("second item title")
-list = SomeComp([item1, item2])
+list = SomeList([item1, item2])
 chart = SomeChart(["A", "B"], [12, 8])
 \`\`\`
 This is static — it shows stale data and won't update. Creating item1, item2, item3... manually is ALWAYS wrong when a tool exists.
