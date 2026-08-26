@@ -79,6 +79,7 @@ export function CompletionByModel({
     >
       <MarketingTable
         compact
+        edgeToEdgeMobile
         className={`${s.benchmarkTable} ${s.tableWide} ${flatTable ? s.tableFlat : ""}`}
       >
         <caption className={s.tableCaption}>
@@ -478,7 +479,11 @@ export function CostPerPass({
           a priced model to the filter.
         </p>
       ) : (
-        <MarketingTable compact className={`${s.benchmarkTable} ${flatTable ? s.tableFlat : ""}`}>
+        <MarketingTable
+          compact
+          edgeToEdgeMobile
+          className={`${s.benchmarkTable} ${flatTable ? s.tableFlat : ""}`}
+        >
           <caption className={s.tableCaption}>
             Cost in USD for one 46-screen benchmark pass by model and generative UI format
           </caption>
