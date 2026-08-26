@@ -42,12 +42,7 @@ const applications = findManifests(examplesRoot)
   })
   .sort((left, right) => left.path.localeCompare(right.path));
 
-const dependencyFields = [
-  "dependencies",
-  "devDependencies",
-  "optionalDependencies",
-  "peerDependencies",
-];
+const dependencyFields = ["dependencies", "devDependencies"];
 
 function openUIDependencyNames(manifest) {
   return dependencyFields.flatMap((field) =>
