@@ -591,6 +591,16 @@
     padding: 16px 18px;
     gap: 20px;
   }
+  /* The table bleeds out to the card's edges and pads itself back in, so a
+     wide table scrolls the full width of the phone and its last column can
+     reach the screen edge, instead of sliding inside an inset window that
+     looks like it is cutting the table off on both sides. */
+  .dataScroller {
+    width: calc(100% + 36px);
+    margin-inline: -18px;
+    padding-inline: 18px;
+    scroll-padding-inline: 18px;
+  }
   .rowName {
     width: 120px;
   }
@@ -903,10 +913,33 @@
   font-weight: 450;
   opacity: 0.62;
   cursor: pointer;
-  list-style-position: inside;
+  list-style: none;
   transition:
     color 140ms ease,
     opacity 140ms ease;
+}
+
+/* a chevron, drawn from two borders so it inherits the summary's colour and
+   needs no asset: pointing down while collapsed, up once open */
+.dataDisclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.dataDisclosure > summary::before {
+  content: "";
+  flex: none;
+  width: 7px;
+  height: 7px;
+  margin-top: -3px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 180ms ease;
+}
+
+.dataDisclosure[open] > summary::before {
+  margin-top: 3px;
+  transform: rotate(-135deg);
 }
 
 .dataDisclosure > summary:hover,
@@ -916,21 +949,32 @@
   opacity: 0.9;
 }
 
+/* The body no longer scrolls: each table carries its own scroller, so a wide
+   table slides under headings that stay put. Spacing steps down from here —
+   disclosure 22, section 34, heading 14, note 12 — so the nesting is legible
+   without rules or indentation. */
 .dataDisclosureBody {
   max-width: 100%;
-  overflow-x: auto;
-  padding: 8px 0 2px;
+  padding: 22px 0 2px;
 }
 
 .dataSection + .dataSection {
-  margin-top: 24px;
+  margin-top: 34px;
 }
 
 .dataSectionHeading {
-  margin: 0 0 8px;
+  margin: 0 0 14px;
+  padding-left: 4px;
   color: var(--ink);
   font-size: 0.8125rem;
   font-weight: 550;
+}
+
+/* one table, one scroller */
+.dataScroller {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
 }
 
 /* Same frame as the marketing tables on the page — rounded outline, ruled
@@ -1016,10 +1060,16 @@
 }
 
 .dataNote {
-  margin: 10px 0 0;
+  margin: 12px 0 0;
+  padding-left: 4px;
   color: var(--ink-muted);
   font-size: 0.75rem;
   line-height: 1.5;
+}
+
+/* a second legend row sits closer to the one above it than to the chart */
+.legendTight {
+  margin-top: -14px;
 }
 
 /* vivid repair funnel */

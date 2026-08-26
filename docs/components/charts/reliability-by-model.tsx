@@ -19,14 +19,12 @@ import {
 } from "@/lib/benchmark-data";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { BRAND_COLORS, BRAND_MARKS, GEMINI_GRADIENT, markViewBox } from "./brand-marks";
-import { Chart, ChartDataDisclosure, Mark, styles as s } from "./primitives";
+import { Chart, ChartDataDisclosure, DataTable, Mark, styles as s } from "./primitives";
 
-/* Both tabs share a plot box so switching views does not resize the hero.
-   PH is derived from the board's plot height for the same reason. */
+/* Both tabs share one plot box so switching views does not resize the hero.
+   The box is measured inside the component because its height depends on the
+   available width: a 720px plot on a phone is a canyon, not a chart. */
 const PAD = { top: 44, bottom: 68 };
-const FORMAT_PLOT_HEIGHT = 720;
-const H = FORMAT_PLOT_HEIGHT + PAD.top + PAD.bottom;
-const PH = FORMAT_PLOT_HEIGHT;
 type View = "board" | "formats";
 
 const FORMAT_HUE: Record<FormatId, string> = {
@@ -136,13 +134,20 @@ export function ReliabilityByModel({
   const [boardHover, setBoardHover] = useState<string | null>(null);
   const [formatHover, setFormatHover] = useState<{ m: ModelId; f: FormatId } | null>(null);
   const [urlReady, setUrlReady] = useState(false);
+  /* How much page there is to the left of the plot. The hanging-label layout
+     spends this space, so it has to be measured rather than assumed: at tablet
+     widths the page padding shrinks well before the chart does, and labels
+     that hang 72px into a 40px gutter end up off the side of the window. */
+  const [pageGutter, setPageGutter] = useState(999);
 
   useEffect(() => {
     const element = holder.current;
     if (!element) return;
-    const observer = new ResizeObserver(([entry]) =>
-      setWidth(Math.max(320, Math.round(entry.contentRect.width))),
-    );
+    const measure = (entry: ResizeObserverEntry) => {
+      setWidth(Math.max(240, Math.round(entry.contentRect.width)));
+      setPageGutter(Math.round(entry.target.getBoundingClientRect().left));
+    };
+    const observer = new ResizeObserver(([entry]) => measure(entry));
     observer.observe(element);
     return () => observer.disconnect();
   }, []);
@@ -178,14 +183,25 @@ export function ReliabilityByModel({
   }, [selectedBoardIds, urlReady, view]);
 
   const narrow = width < 620;
-  const boardPlotHeight = narrow ? 820 : 720;
-  /* The grid stays flush with the control row (PL = 0). Axis labels sit at
-     negative x and would be clipped, so the viewBox is extended left by
-     GUTTER and the svg is pulled back by the same amount: x = 0 still lands
-     on the container's left edge, and the labels hang into the page gutter. */
-  const PL = 0;
+  /* Wide: one tall plot, because there is room to separate 20 models.
+     Narrow: shorter, or the same points stretch into a vertical smear. */
+  const plotHeight = narrow ? 440 : 720;
+  const boardPlotHeight = plotHeight;
+  const PH = plotHeight;
+  const H = plotHeight + PAD.top + PAD.bottom;
+  /* Two ways to place the vertical axis, chosen by whether the page can pay
+     for the first one:
+     hanging — the grid stays flush with the control row (PL = 0) and the
+       labels hang into the page gutter. The viewBox is extended left by
+       GUTTER and the svg pulled back by the same amount, so x = 0 still lands
+       on the container's left edge.
+     inset — the labels move inside the canvas. Used whenever the gutter is
+       too thin to hang into, which is every phone and also the tablet range,
+       where page padding shrinks long before the chart does. */
+  const hanging = pageGutter >= 76;
+  const PL = hanging ? 0 : 52;
   const PR = 0;
-  const GUTTER = narrow ? 44 : 72;
+  const GUTTER = hanging ? 72 : 0;
   const PW = width - PL - PR;
   const boardTop = PAD.top;
   const boardBottom = boardTop + boardPlotHeight;
@@ -218,6 +234,11 @@ export function ReliabilityByModel({
   };
   const boardY = (score: number) =>
     boardTop + (1 - (score - boardYMin) / (100 - boardYMin)) * boardPlotHeight;
+  /* A tick centred on the first or last gridline hangs half its width off the
+     canvas. On a wide screen that spills into whitespace; on a phone it is cut
+     off. Both edges align inward instead. */
+  const edgeAnchor = (x: number): "start" | "middle" | "end" =>
+    x <= PL + 1 ? "start" : x >= PL + PW - 1 ? "end" : "middle";
   const formatX = (cost: number) => PL + ((9 - cost) / 9) * PW;
   const formatY = (score: number) => PAD.top + (1 - (score - 60) / 40) * PH;
   const visibleProviders = PROVIDERS.filter((provider) =>
@@ -264,10 +285,15 @@ export function ReliabilityByModel({
     .sort((a, b) => modelBoardCostPerTask(b) - modelBoardCostPerTask(a));
   const competitivePareto = visiblePareto.filter((point) => point.score >= 80);
   const competitiveParetoIds = new Set(competitivePareto.map((point) => point.id));
-  /* Every visible point is named, as on the Artificial Analysis reference.
-     The collision pass below shifts and re-anchors labels rather than hiding
-     them, so no model is silently unlabelled. */
-  const labelledBoardIds = new Set<string>(visibleBoardPoints.map((point) => point.id));
+  /* Wide: every visible point is named, as on the Artificial Analysis
+     reference. The collision pass below shifts and re-anchors labels rather
+     than hiding them, so no model is silently unlabelled.
+     Narrow: 20 names cannot fit beside 20 dots on a 390px screen without
+     running off the edge, so only the frontier is named. Every other model
+     keeps its name in its tap card, its accessible label and the table. */
+  const labelledBoardIds = new Set<string>(
+    (narrow ? visiblePareto : visibleBoardPoints).map((point) => point.id),
+  );
   const labelFontSize = narrow ? 10 : 11.5;
   /* Labels sit beside their dot on the same centre line, as on the Artificial
      Analysis reference. Candidates are tried nearest-first: right of the dot,
@@ -340,30 +366,27 @@ export function ReliabilityByModel({
           }
         }
 
-        /* every slot in range was taken: stack below the plot floor rather than
-           printing one label over another */
+        /* Every slot in range was taken. Climb from the plot floor looking for
+           one last gap, measuring the box on the side the text actually runs. */
         const anchor = preferred;
         const lx = px + (anchor === "start" ? gap + dotRadius : -(gap + dotRadius));
-        let ly = boardBottom - 4;
-        while (
-          overlaps({
-            left: lx - 4,
-            right: lx + labelWidth + 4,
-            top: ly - labelFontSize - 3,
-            bottom: ly + 4,
-          }) &&
-          ly > boardTop + labelFontSize
-        ) {
-          ly -= 13;
-        }
-        placed.push({
-          left: lx - 4,
-          right: lx + labelWidth + 4,
-          top: ly - labelFontSize - 3,
-          bottom: ly + 4,
+        const boxAt = (y: number) => ({
+          left: (anchor === "start" ? lx : lx - labelWidth) - 4,
+          right: (anchor === "start" ? lx + labelWidth : lx) + 4,
+          top: y - labelFontSize - 3,
+          bottom: y + 4,
         });
+        let ly = boardBottom - 4;
+        while (overlaps(boxAt(ly)) && ly > boardTop + labelFontSize) ly -= 13;
+        /* Still nowhere to put it: leave this one unlabelled rather than print
+           it over a neighbour. It keeps its name in the tap card, its
+           accessible label and the table. Only reachable on the narrowest
+           phones, where the plot is a few hundred pixels wide. */
+        if (overlaps(boxAt(ly))) return null;
+        placed.push(boxAt(ly));
         return { point, lx, ly, anchor, offset: ly - py };
-      });
+      })
+      .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
   })();
 
   const toggleBoardModel = (id: string) => {
@@ -573,7 +596,7 @@ export function ReliabilityByModel({
                 <text
                   x={boardX(tick)}
                   y={boardBottom + 26}
-                  textAnchor="middle"
+                  textAnchor={edgeAnchor(boardX(tick))}
                   fontSize="12.5"
                   fill="var(--ink-muted)"
                 >
@@ -582,15 +605,17 @@ export function ReliabilityByModel({
               </g>
             ))}
             <text x={PL + 4} y={boardTop - 15} fontSize="13.5" fill="var(--ink)">
-              Structural validity vs cost, by model
+              {narrow ? "Structural validity vs cost" : "Structural validity vs cost, by model"}
             </text>
-            <text
-              className={s.axisTitle}
-              transform={`translate(${PL - GUTTER + 16}, ${boardTop + boardPlotHeight / 2}) rotate(-90)`}
-              textAnchor="middle"
-            >
-              Structural validity
-            </text>
+            {hanging ? (
+              <text
+                className={s.axisTitle}
+                transform={`translate(${PL - GUTTER + 16}, ${boardTop + boardPlotHeight / 2}) rotate(-90)`}
+                textAnchor="middle"
+              >
+                Structural validity
+              </text>
+            ) : null}
             <text x={PL + PW} y={boardTop - 15} textAnchor="end" fontSize="12.5" fill="var(--ink)">
               better ↗
             </text>
@@ -708,7 +733,7 @@ export function ReliabilityByModel({
                 <text
                   x={formatX(tick)}
                   y={PAD.top + PH + 28}
-                  textAnchor="middle"
+                  textAnchor={edgeAnchor(formatX(tick))}
                   fontSize="12.5"
                   fill="var(--ink-muted)"
                 >
@@ -735,15 +760,17 @@ export function ReliabilityByModel({
               </linearGradient>
             </defs>
             <text x={PL + 4} y={formatY(100) - 14} fontSize="13.5" fill="var(--ink)">
-              Structural validity vs cost, by format
+              {narrow ? "Structural validity vs cost" : "Structural validity vs cost, by format"}
             </text>
-            <text
-              className={s.axisTitle}
-              transform={`translate(${PL - GUTTER + 16}, ${PAD.top + PH / 2}) rotate(-90)`}
-              textAnchor="middle"
-            >
-              Structural validity
-            </text>
+            {hanging ? (
+              <text
+                className={s.axisTitle}
+                transform={`translate(${PL - GUTTER + 16}, ${PAD.top + PH / 2}) rotate(-90)`}
+                textAnchor="middle"
+              >
+                Structural validity
+              </text>
+            ) : null}
             <text
               x={PL + PW}
               y={formatY(100) - 14}
@@ -754,7 +781,7 @@ export function ReliabilityByModel({
               better ↗
             </text>
             <text className={s.axisTitle} x={PL + PW / 2} y={H - 10} textAnchor="middle">
-              Cost of one benchmark pass · 46 screens
+              {narrow ? "Cost per pass · 46 screens" : "Cost of one benchmark pass · 46 screens"}
             </text>
             {[...formatSeries].reverse().map(({ format, points }) => {
               const stroke = FORMAT_HUE[format];
@@ -815,29 +842,29 @@ export function ReliabilityByModel({
                 </g>
               );
             })}
-            {!narrow &&
-              formatSeries.flatMap(({ format, points }) =>
-                points.map((point) => {
-                  const model = MODELS.find((item) => item.id === point.model)!;
-                  const vb = Number(markViewBox(model.mark).split(" ")[2]);
-                  const above = formatY(point.score) - 27;
-                  const gy =
-                    format === "jsonRender" || above < PAD.top ? formatY(point.score) + 12 : above;
-                  return (
-                    <path
-                      key={`${format}-${point.model}-mark`}
-                      className={s.fadeLate}
-                      d={BRAND_MARKS[model.mark]}
-                      transform={`translate(${formatX(point.cost) - 8}, ${gy}) scale(${16 / vb})`}
-                      fill={
-                        model.mark === "gemini"
-                          ? "url(#chart-gemini-gradient)"
-                          : (BRAND_COLORS[model.mark] ?? "var(--ink-muted)")
-                      }
-                    />
-                  );
-                }),
-              )}
+            {formatSeries.flatMap(({ format, points }) =>
+              points.map((point) => {
+                const model = MODELS.find((item) => item.id === point.model)!;
+                const vb = Number(markViewBox(model.mark).split(" ")[2]);
+                const above = formatY(point.score) - (narrow ? 21 : 27);
+                const gy =
+                  format === "jsonRender" || above < PAD.top ? formatY(point.score) + 12 : above;
+                const size = narrow ? 12 : 16;
+                return (
+                  <path
+                    key={`${format}-${point.model}-mark`}
+                    className={s.fadeLate}
+                    d={BRAND_MARKS[model.mark]}
+                    transform={`translate(${formatX(point.cost) - size / 2}, ${gy}) scale(${size / vb})`}
+                    fill={
+                      model.mark === "gemini"
+                        ? "url(#chart-gemini-gradient)"
+                        : (BRAND_COLORS[model.mark] ?? "var(--ink-muted)")
+                    }
+                  />
+                );
+              }),
+            )}
           </svg>
         )}
 
@@ -905,14 +932,27 @@ export function ReliabilityByModel({
           ))}
         </div>
       ) : narrow ? (
-        <div className={`${s.legend} ${s.legendCenter} ${s.frontier}`} aria-label="Format key">
-          {FORMATS.filter((f) => activeFormats.includes(f.id)).map((f) => (
-            <span key={f.id} className={s.key}>
-              <span className={s.dot} style={{ background: FORMAT_HUE[f.id] }} aria-hidden />
-              {f.label}
-            </span>
-          ))}
-        </div>
+        /* The in-chart format labels do not fit at this width, so the formats
+           are keyed here; the models are keyed too, because their marks are on
+           the plot and nothing else names them. */
+        <>
+          <div className={`${s.legend} ${s.legendCenter} ${s.frontier}`} aria-label="Format key">
+            {FORMATS.filter((f) => activeFormats.includes(f.id)).map((f) => (
+              <span key={f.id} className={s.key}>
+                <span className={s.dot} style={{ background: FORMAT_HUE[f.id] }} aria-hidden />
+                {f.label}
+              </span>
+            ))}
+          </div>
+          <div className={`${s.legend} ${s.legendCenter} ${s.legendTight}`} aria-label="Model key">
+            {MODELS.filter((m) => pricedModels.includes(m.id)).map((m) => (
+              <span key={m.id} className={s.key}>
+                <Mark id={m.mark} brand />
+                {MODEL_NAME[m.id]}
+              </span>
+            ))}
+          </div>
+        </>
       ) : (
         <div className={`${s.legend} ${s.legendCenter}`} aria-label="Model key">
           {MODELS.filter((m) => pricedModels.includes(m.id)).map((m) => (
@@ -929,7 +969,7 @@ export function ReliabilityByModel({
           <h3 id="benchmark-model-data-heading" className={s.dataSectionHeading}>
             Model comparison data
           </h3>
-          <table className={s.dataTable}>
+          <DataTable>
             <caption>
               OpenUI model-board structural validity and measured cost for all models
             </caption>
@@ -976,7 +1016,7 @@ export function ReliabilityByModel({
                 );
               })}
             </tbody>
-          </table>
+          </DataTable>
           <p className={s.dataNote}>
             All 30 models remain in this table and the downloads, including models hidden by the
             chart&rsquo;s default filter. Frontier membership here is computed over all 30, so it
@@ -992,7 +1032,7 @@ export function ReliabilityByModel({
           <h3 id="benchmark-format-data-heading" className={s.dataSectionHeading}>
             Format comparison data
           </h3>
-          <table className={s.dataTable}>
+          <DataTable>
             <caption>
               Structural validity and cost per 46-screen pass for each model and format
             </caption>
@@ -1020,7 +1060,7 @@ export function ReliabilityByModel({
                 )),
               )}
             </tbody>
-          </table>
+          </DataTable>
           <p className={s.dataNote}>
             Focused benchmark: <a href="/benchmarks/framework">framework comparison</a>. Download
             this comparison as <a href="/benchmarks/framework/data.json">JSON</a>,{" "}

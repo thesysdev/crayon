@@ -10,7 +10,7 @@ import {
   formatLabel,
   runCounts,
 } from "@/lib/benchmark-data";
-import { Chart, ChartDataDisclosure, Chip, styles as s, slotClass } from "./primitives";
+import { Chart, ChartDataDisclosure, Chip, DataTable, styles as s, slotClass } from "./primitives";
 
 /* Every run ends complete, partial, or blank. Each column keeps its natural
    direction — a long "complete" bar is good, a long "blank" bar is not — and
@@ -131,7 +131,7 @@ export function RenderSplit({
         })}
       </div>
       <ChartDataDisclosure label="View validity and render data">
-        <table className={s.dataTable}>
+        <DataTable>
           <caption>Structural validity and render success by format</caption>
           <thead>
             <tr>
@@ -168,7 +168,7 @@ export function RenderSplit({
               );
             })}
           </tbody>
-        </table>
+        </DataTable>
       </ChartDataDisclosure>
     </Chart>
   );

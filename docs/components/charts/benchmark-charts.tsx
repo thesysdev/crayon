@@ -25,6 +25,7 @@ import {
   Chart,
   ChartDataDisclosure,
   Chip,
+  DataTable,
   Row,
   styles as s,
   slotClass,
@@ -400,7 +401,7 @@ export function TokenMatrix({
         })}
       </div>
       <ChartDataDisclosure label="View token data">
-        <table className={s.dataTable}>
+        <DataTable>
           <caption>System prompt and mean output tokens per screen by format</caption>
           <thead>
             <tr>
@@ -428,7 +429,7 @@ export function TokenMatrix({
               </tr>
             ))}
           </tbody>
-        </table>
+        </DataTable>
       </ChartDataDisclosure>
     </Chart>
   );

@@ -10,7 +10,14 @@ import {
   completionByDensityFor,
 } from "@/lib/benchmark-data";
 import { useEffect, useRef, useState } from "react";
-import { Chart, ChartDataDisclosure, styles as s, slotClass, useVizSkin } from "./primitives";
+import {
+  Chart,
+  ChartDataDisclosure,
+  DataTable,
+  styles as s,
+  slotClass,
+  useVizSkin,
+} from "./primitives";
 
 /* Drawn at the container's real pixel width. the SVG never scales, so text
    is always its true size and the plot always fills the card. */
@@ -255,7 +262,7 @@ export function CompletionByDensity({
         ))}
       </div>
       <ChartDataDisclosure label="View complexity data">
-        <table className={s.dataTable}>
+        <DataTable>
           <caption>Structural validity by brief requirement count and generative UI format</caption>
           <thead>
             <tr>
@@ -283,7 +290,7 @@ export function CompletionByDensity({
               </tr>
             ))}
           </tbody>
-        </table>
+        </DataTable>
       </ChartDataDisclosure>
     </Chart>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { FORMATS, FORMAT_ORDER, type FormatId, tokens } from "@/lib/benchmark-data";
-import { Chart, ChartDataDisclosure, Row, styles as s, slotClass } from "./primitives";
+import { Chart, ChartDataDisclosure, DataTable, Row, styles as s, slotClass } from "./primitives";
 
 /* Streaming speed, derived from the current benchmark: the mean output per
    screen over all 1,104 scored runs, decoded at a fixed 50 tokens per second. */
@@ -71,7 +71,7 @@ export function SpeedTokens({ note }: { note?: React.ReactNode | null } = {}) {
         })}
       </div>
       <ChartDataDisclosure label="View streaming data">
-        <table className={s.dataTable}>
+        <DataTable>
           <caption>
             Estimated streaming time from mean output tokens at 50 tokens per second
           </caption>
@@ -99,7 +99,7 @@ export function SpeedTokens({ note }: { note?: React.ReactNode | null } = {}) {
               </tr>
             ))}
           </tbody>
-        </table>
+        </DataTable>
       </ChartDataDisclosure>
     </Chart>
   );

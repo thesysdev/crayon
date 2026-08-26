@@ -10,7 +10,15 @@ import {
   formatLabel,
   runsFor,
 } from "@/lib/benchmark-data";
-import { Chart, ChartDataDisclosure, Chip, Mark, styles as s, slotClass } from "./primitives";
+import {
+  Chart,
+  ChartDataDisclosure,
+  Chip,
+  DataTable,
+  Mark,
+  styles as s,
+  slotClass,
+} from "./primitives";
 
 /* Render rate per model, one panel per format. Framed as the share of runs
    that put a screen in front of the user, so OpenUI's near-perfect
@@ -134,7 +142,7 @@ export function BlankScreensPanels({
         ))}
       </div>
       <ChartDataDisclosure label="View render data">
-        <table className={s.dataTable}>
+        <DataTable>
           <caption>Rendered and blank runs for every model and generative UI format</caption>
           <thead>
             <tr>
@@ -168,7 +176,7 @@ export function BlankScreensPanels({
               }),
             )}
           </tbody>
-        </table>
+        </DataTable>
       </ChartDataDisclosure>
     </Chart>
   );

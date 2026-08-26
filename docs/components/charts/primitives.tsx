@@ -175,6 +175,20 @@ export function Chart({
 }
 
 /**
+ * A disclosure table together with its own horizontal scroller. The scroller
+ * wraps the table and nothing else, so a wide table slides sideways while the
+ * heading and note above it stay where they are, and two tables inside one
+ * disclosure scroll independently instead of moving as one sheet.
+ */
+export function DataTable({ children }: { children: ReactNode }) {
+  return (
+    <div className={s.dataScroller}>
+      <table className={s.dataTable}>{children}</table>
+    </div>
+  );
+}
+
+/**
  * A visible-on-demand semantic equivalent for a chart. It stays in the
  * server-rendered document, so crawlers and assistive technology can recover
  * exact values without executing hover interactions or interpreting pixels.

@@ -2,7 +2,7 @@
 
 import { production, repairFunnel } from "@/lib/benchmark-data";
 import { useEffect, useRef, useState } from "react";
-import { Chart, ChartDataDisclosure, styles as s } from "./primitives";
+import { Chart, ChartDataDisclosure, DataTable, styles as s } from "./primitives";
 
 /* Production repair as a step funnel: every stage shows how many screens are
    still broken, and the caption under each step says what fixed the rest.
@@ -127,7 +127,7 @@ export function RepairFunnelFlow() {
         ))}
       </div>
       <ChartDataDisclosure label="View repair data">
-        <table className={s.dataTable}>
+        <DataTable>
           <caption>Production repair funnel as a share of all streaming generations</caption>
           <thead>
             <tr>
@@ -149,7 +149,7 @@ export function RepairFunnelFlow() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </DataTable>
         <p className={s.dataNote}>Production traffic, not benchmark runs.</p>
       </ChartDataDisclosure>
     </Chart>
