@@ -27,5 +27,10 @@ export function jsx(type: unknown, allProps: Record<string, unknown>, key?: stri
 
 export function jsxs(type: unknown, allProps: Record<string, unknown>, key?: string) {
   const { children, props } = split(allProps, key);
-  return react.createElement(type as never, props, ...(children as never[]));
+  if (Array.isArray(children)) {
+    return react.createElement(type as never, props, ...(children as never[]));
+  }
+  return children === undefined
+    ? react.createElement(type as never, props)
+    : react.createElement(type as never, props, children as never);
 }
