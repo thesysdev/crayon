@@ -1,3 +1,4 @@
+import type { EvaluationContext, Store } from "@openuidev/lang-core";
 import type { InjectionKey, Ref } from "vue";
 import { inject, provide, watchEffect } from "vue";
 import type { Library, RenderNodeResult } from "./library.js";
@@ -34,6 +35,15 @@ export interface OpenUIContextValue {
 
   /** Whether the LLM is currently streaming content. */
   isStreaming: Ref<boolean>;
+
+  /** Whether any Query is currently fetching data. */
+  isQueryLoading: Ref<boolean>;
+
+  /** Reactive binding store for $variables and form data. */
+  store: Store;
+
+  /** AST evaluation context used by runtime expression evaluation. */
+  evaluationContext: EvaluationContext;
 
   /** Get a form field value. Returns undefined if not set. */
   getFieldValue: (formName: string | undefined, name: string) => any;
@@ -104,6 +114,13 @@ export function useTriggerAction() {
  */
 export function useIsStreaming(): Ref<boolean> {
   return useOpenUI().isStreaming;
+}
+
+/**
+ * Whether any Query is currently fetching data.
+ */
+export function useIsQueryLoading(): Ref<boolean> {
+  return useOpenUI().isQueryLoading;
 }
 
 /**

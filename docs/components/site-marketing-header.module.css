@@ -65,9 +65,19 @@
 
 .mobileTray {
   pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  /* Everything below the header, so the tray is the whole screen rather than a
+     panel hanging off the top of it. dvh rather than vh: on mobile the browser's
+     own chrome moves, and vh would put the footer under it.
+
+     The offset mirrors --site-header-row-min-height in site-header.module.css.
+     It is copied rather than referenced because the tray renders outside
+     .surface and so does not inherit it; keep the two in step by hand. */
+  height: calc(100dvh - 4rem);
+  max-height: calc(100dvh - 4rem);
+  overflow-y: auto;
   border-top: 1px solid var(--openui-border-default);
-  border-bottom-left-radius: 28px;
-  border-bottom-right-radius: 28px;
   background: var(--openui-foreground);
   box-shadow: var(--openui-shadow-xl);
 }
@@ -84,10 +94,13 @@
 
 .mobileTrayInner {
   display: flex;
+  width: 100%;
+  min-height: 100%;
   max-width: 75rem;
   margin-inline: auto;
   flex-direction: column;
-  gap: 1.5rem;
+  /* The filled title bars separate the sections now, so they can sit close. */
+  gap: 0.375rem;
   padding: 0.5rem 1.25rem 1rem;
 }
 
@@ -95,32 +108,58 @@
   display: flex;
   flex-direction: column;
   gap: 0.125rem;
-  padding-block: 0.5rem;
+  padding-block: 0.125rem;
+}
+
+/* A filled bar rather than a bare label, so a collapsed section still reads as
+   something you can open. The same element serves both kinds: Product renders it
+   as a div with no chevron, the rest as a button with one. */
+.mobileTraySectionHeading {
+  position: relative;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+  padding: 0.8125rem 0.75rem;
+  border: 0;
+  border-radius: 0.625rem;
+  background: rgba(10, 10, 10, 0.04);
+  font-family: "Inter", sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1.2;
+  text-align: left;
+  text-transform: none;
+  color: var(--openui-text-neutral-secondary);
+}
+
+[data-theme="dark"] .mobileTraySectionHeading {
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .mobileTraySectionHeading {
-  position: relative;
-  padding: 0.25rem 0.625rem 0.375rem;
-  font-family: var(--font-geist-mono), ui-monospace, monospace;
-  font-size: 0.6875rem;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  line-height: 1;
-  text-transform: none;
-  color: var(--openui-text-neutral-tertiary, var(--openui-text-neutral-secondary));
+  cursor: pointer;
 }
 
-/* Separator below each section title: runs to the right edge, fades left. Sits
-   centered in the gap (same -1.5px offset as the inter-tab separators) so the first
-   tab in each section has the same spacing above it as the tabs below. */
-.mobileTraySectionHeading::after {
-  content: "";
-  position: absolute;
-  bottom: calc(-0.0625rem - 0.5px);
-  left: 0.625rem;
-  right: -1.25rem;
-  height: 1px;
-  background: linear-gradient(to right, transparent, var(--openui-border-default) 14%);
+.mobileTrayChevron {
+  flex: none;
+  opacity: 0.7;
+  transition: transform 0.26s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.mobileTrayChevronOpen {
+  transform: rotate(180deg);
+}
+
+/* Clipped so the height animation has something to reveal. */
+.mobileTraySectionItems {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  overflow: hidden;
 }
 
 .mobileTrayDivider {
@@ -133,10 +172,10 @@
   position: relative;
   display: flex;
   width: 100%;
-  min-height: 2.25rem;
+  min-height: 3rem;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.375rem 0.625rem;
+  padding: 0.6875rem 0.625rem;
   border-radius: 0.375rem;
   color: var(--openui-text-neutral-primary);
   text-align: left;
@@ -149,33 +188,58 @@
   letter-spacing: -0.01em;
 }
 
-/* Separator between every tab within a section: runs to the right edge, fades left. */
+/* Matches .badge in the primary nav: same job, same neutral, same dark rule. */
+/* A hairline between adjacent items only. Not under the section titles and not
+   below the last item: the filled title bars already divide the sections, so a
+   rule there would be saying it twice. Sits in the 2px gap between rows, inset
+   to the item's own padding so it lines up with the text. */
 .mobileTrayLink + .mobileTrayLink::before {
   content: "";
   position: absolute;
-  top: calc(-0.0625rem - 0.5px);
+  top: -1px;
+  right: 0.625rem;
   left: 0.625rem;
-  right: -1.25rem;
   height: 1px;
-  background: linear-gradient(to right, transparent, var(--openui-border-default) 14%);
+  background: rgba(10, 10, 10, 0.07);
 }
 
-/* Separator below the last tab in each section too (mirrors the inter-tab one). */
-.mobileTrayLink:last-child::after {
-  content: "";
-  position: absolute;
-  bottom: calc(-0.0625rem - 0.5px);
-  left: 0.625rem;
-  right: -1.25rem;
-  height: 1px;
-  background: linear-gradient(to right, transparent, var(--openui-border-default) 14%);
+[data-theme="dark"] .mobileTrayLink + .mobileTrayLink::before {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Same chip as .mobileTrayBadge below: solid and inverted. */
+.mobileTrayComingSoon {
+  padding: 0.125rem 0.375rem;
+  border-radius: 4px;
+  background: #0a0a0a;
+  color: #ffffff;
+  font-family: "Inter", sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+[data-theme="dark"] .mobileTrayComingSoon {
+  background: #f3f3f4;
+  color: #0d0d0f;
+}
+
+.mobileTrayLinkMuted {
+  cursor: default;
+}
+
+.mobileTrayLinkMuted > span:first-child {
+  opacity: 0.55;
 }
 
 .mobileTrayBadge {
   padding: 0.125rem 0.375rem;
   border-radius: 4px;
-  background: rgba(124, 58, 237, 0.12);
-  color: #7c3aed;
+  background: #0a0a0a;
+  color: #ffffff;
   font-size: 9px;
   font-weight: 600;
   line-height: 1;
@@ -183,11 +247,19 @@
   text-transform: uppercase;
 }
 
+[data-theme="dark"] .mobileTrayBadge {
+  background: #f3f3f4;
+  color: #0d0d0f;
+}
+
 /* GitHub button pinned to the bottom of the mobile tray, separated like a section. */
 .mobileTrayFooter {
   display: flex;
   flex-direction: column;
   gap: 0.625rem;
+  /* Takes up the slack, so the button sits at the bottom of the screen when the
+     sections are collapsed and is simply pushed down when they are not. */
+  margin-top: auto;
   padding-top: 1.5rem;
 }
 

@@ -1,4 +1,6 @@
 .nav {
+  /* Positioning context for the shared dropdown viewport. */
+  position: relative;
   display: none;
   align-items: center;
   gap: 0.5rem;
@@ -29,12 +31,16 @@
   background: var(--openui-highlight-strong);
 }
 
+/* Solid and inverted rather than tinted: black chip on light, white on dark.
+   Same pair the list tile fills to on hover, so the one filled marker in the
+   header and the one in the menus are the same two colours. Neutral, not the
+   accent: "New" is a note about age, not a state. */
 .badge {
   margin-left: 0.375rem;
   padding: 0.125rem 0.375rem;
   border-radius: 4px;
-  background: rgba(124, 58, 237, 0.12);
-  color: #7c3aed;
+  background: #0a0a0a;
+  color: #ffffff;
   font-size: 10px;
   font-weight: 600;
   line-height: 1;
@@ -64,61 +70,468 @@
   color: inherit;
 }
 
-.dropdownPanel {
+/* The single shared panel. Its width/height/offset are set inline from the
+   measured content, so moving between menus morphs this one box rather than
+   swapping two. `left: 0` + `translate` keeps the animated offset independent
+   of the -50% centring a `transform` shorthand would otherwise fight over. */
+.viewport {
   position: absolute;
   top: calc(100% + 0.5rem);
-  left: 50%;
+  left: 0;
   z-index: 60;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  min-width: 24rem;
-  padding: 0.625rem;
+  overflow: hidden;
   border: 1px solid var(--openui-border-default);
-  border-radius: 14px;
+  border-radius: 20px;
   background: var(--openui-foreground);
-  box-shadow: var(--openui-shadow-l);
+  /* A wide, diffuse cast so the panel reads as lifted off the page — the large
+     blur spreads it out while the low opacity keeps it from drawing attention. */
+  box-shadow:
+    0 8px 48px -12px rgb(0 0 0 / 0.12),
+    0 4px 12px -6px rgb(0 0 0 / 0.06);
   opacity: 0;
   pointer-events: none;
-  transform: translate(-50%, -4px);
   transition:
     opacity 0.18s ease,
-    transform 0.18s ease;
+    visibility 0s linear 0.18s;
+  visibility: hidden;
 }
 
-.dropdown:hover .dropdownPanel,
-.dropdown:focus-within .dropdownPanel {
+/* Bridges the 0.5rem gap between the trigger row and the panel so the pointer
+   can travel down into the menu without leaving the nav and closing it. */
+.viewport::before {
+  content: "";
+  position: absolute;
+  top: -0.5rem;
+  right: 0;
+  left: 0;
+  height: 0.5rem;
+}
+
+.viewport[data-open="true"] {
   opacity: 1;
   pointer-events: auto;
-  transform: translate(-50%, 0);
+  transition:
+    opacity 0.18s ease,
+    visibility 0s,
+    width 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    /* Slower than the rest: this is what the hover banner rides on, and the
+       panel growing is meant to read as unhurried rather than as a snap. */
+    height 0.5s cubic-bezier(0.32, 0.72, 0, 1),
+    translate 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  visibility: visible;
 }
 
-/* While the dropdown is open, keep its trigger tab in the hover state — even
-   once the pointer moves down into the panel. */
-.dropdown:hover .dropdownTrigger,
-.dropdown:focus-within .dropdownTrigger {
-  background: var(--openui-highlight-strong);
+/* Size/offset only animate once the box is already on screen — opening from
+   closed snaps straight to the right dimensions. */
+.viewport:not(.viewportMorph) {
+  transition:
+    opacity 0.18s ease,
+    visibility 0s;
 }
 
-.dropdownItem {
-  position: relative;
+/* Pinned to the left edge, not centred. The viewport is sized to exactly the
+   active menu's width, so left:0 lines them up — whereas centring re-resolves
+   the offset on every frame of the width animation, which makes the labels
+   visibly slide while the box morphs. The outgoing menu is wider and simply
+   gets clipped on the right as it fades. */
+/* Width is written inline by the nav: the natural size at full width, or the
+   viewport minus a margin once that no longer fits. Columns then share whatever
+   that width is, so the cards shrink together rather than the panel clipping.
+   The hover fill sits on the text alone, so the card itself needs no padding and
+   the panel's own padding and gap set the spacing directly — 20px from the panel
+   edge to the artwork, 20px between artwork edges:
+     track  232      panel  20*2 + 232*4 + 20*3 = 1028
+   Only the artwork scales — it holds its aspect ratio — while the label and
+   description keep their size and re-wrap into the narrower column. */
+.viewportContent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* A column of groups. */
   display: flex;
-  padding: 1rem;
-  border-radius: 9px;
+  flex-direction: column;
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.16s ease;
+}
+
+/* A row of groups, each sized by how many cards it holds. An ungrouped menu is
+   one group spanning the row, which lands on the same tracks the plain grid used
+   to produce. */
+.columns {
+  display: flex;
+  gap: 24px;
+}
+
+/* A column of the panel. Usually one group, but two short ones can share it.
+   flex-grow and flex-basis are set inline: see the note at the JSX. */
+.column {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.group {
+  min-width: 0;
+  /* Fills its column, so a group holding one card is as tall as a group holding
+     two and every card in the menu comes out the same size. */
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Names the division, and nothing more: sentence case rather than a letterspaced
+   caps label. A fill does the separating instead of a rule under it, so there is
+   no stroke anywhere on this.
+
+   The inline padding is the same 0.5rem .dropdownText insets the card copy by,
+   so the label's text lands on the card titles' left edge while the fill itself
+   spans the card track exactly. */
+.groupLabel {
+  margin: 0;
+  padding: 6px 0.5rem;
+  border-radius: 10px;
+  background: rgba(10, 10, 10, 0.03);
+  font-family: "Inter", sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--openui-text-neutral-secondary);
+}
+
+/* Tuned for the dark panel rather than mirrored from the light value: white at
+   3% barely registers on it. */
+[data-theme="dark"] .groupLabel {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .badge {
+  background: #f3f3f4;
+  color: #0d0d0f;
+}
+
+/* A list row's title starts past its tile, so the label wants a touch more
+   inset than the card menus need. Not the tile's full 38px: the label is naming
+   the column, not lining up with a row. */
+.groupInList .groupLabel {
+  padding-left: 12px;
+}
+
+.groupCards {
+  /* Takes the height the group just gained; the cards then stretch to the grid
+     row, which is what actually equalises them across groups. */
+  flex: 1 1 auto;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 20px;
+}
+
+/* The stacked variant: one column of rows rather than a row of cards. */
+.groupList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* A row is a tile and a title on one line. No copy under it: at five columns
+   the name is doing the work, and a second line each would triple the height. */
+/* Sits in the space the panel grows into. The panel's own height animation does
+   the expanding; this fades and settles in behind it, a touch slower again so it
+   arrives after the room has been made rather than racing it. */
+.banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  margin: 16px -20px -20px;
+  padding: 12px 20px;
+  font-family: "Inter", sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--openui-text-neutral-secondary);
+  animation: bannerIn 0.45s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+/* A hairline rather than a fill: the panel is already a surface, and a second
+   one inside it read as a separate object. Drawn as a pseudo-element so it can
+   be inset to the panel's 20px padding, where a border would have run the full
+   bleed width along with the rest of the banner. */
+.banner::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 20px;
+  left: 20px;
+  height: 1px;
+  background: rgba(10, 10, 10, 0.05);
+}
+
+[data-theme="dark"] .banner::before {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.bannerIcon {
+  flex: none;
+  color: var(--openui-text-neutral-secondary);
+  opacity: 0.7;
+}
+
+@keyframes bannerIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* The banner is an aside; anyone who has asked for less motion still gets it,
+   just without the slide. */
+@media (prefers-reduced-motion: reduce) {
+  .banner {
+    animation: none;
+  }
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 6px;
+  border-radius: 10px;
   color: var(--openui-text-neutral-primary);
   text-decoration: none;
   transition: background-color 0.15s ease;
 }
 
-.dropdownItem:hover {
-  background: var(--openui-highlight);
+.listItem:hover {
+  background: rgba(10, 10, 10, 0.03);
+}
+
+[data-theme="dark"] .listItem:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Round, on the 24px tile step. Muted and holding its glyph at rest; under the
+   pointer it fills and turns into an arrow, which is the row saying where the
+   click goes rather than merely that it is clickable. */
+.listIcon {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(10, 10, 10, 0.04);
+  color: var(--openui-text-neutral-secondary);
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+/* Stacked in one cell so neither one moves as they trade places. */
+.listGlyph,
+.listArrow {
+  grid-area: 1 / 1;
+  display: grid;
+  place-items: center;
+  transition: opacity 0.15s ease;
+}
+
+.listArrow {
+  opacity: 0;
+}
+
+.listItem:hover .listGlyph {
+  opacity: 0;
+}
+
+.listItem:hover .listArrow {
+  opacity: 1;
+}
+
+.listItem:hover .listIcon {
+  background: #0a0a0a;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .listIcon {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* Tuned for the dark panel rather than inverted from the light rule: black on
+   dark would vanish, so the fill flips to near-white with a dark arrow. */
+[data-theme="dark"] .listItem:hover .listIcon {
+  background: #f3f3f4;
+  color: #0d0d0f;
+}
+
+/* The row's title reuses the card's own type step, so it reads the same weight
+   and size whichever menu it is in. */
+.listItem .dropdownText {
+  padding: 0;
+  gap: 0;
+}
+
+.viewportContent[data-active="true"] {
+  opacity: 1;
+}
+
+/* While a dropdown is open, keep its trigger tab in the hover state — even once
+   the pointer moves down into the panel. */
+.dropdownTriggerOpen,
+.dropdown:hover .dropdownTrigger {
+  background: var(--openui-highlight-strong);
+}
+
+/* Same chip as the header's New badge: solid and inverted, so every status in
+   the nav reads as one kind of thing. Shared by "Coming soon" and "Early
+   access"; the text is uppercased here rather than in the data. */
+.itemTag {
+  /* Hugs its text instead of stretching, now that it sits on its own line in the
+     card's text column. */
+  flex: none;
+  align-self: flex-start;
+  margin-top: 8px;
+  padding: 0.125rem 0.375rem;
+  border-radius: 4px;
+  background: #0a0a0a;
+  color: #ffffff;
+  font-family: "Inter", sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+[data-theme="dark"] .itemTag {
+  background: #f3f3f4;
+  color: #0d0d0f;
+}
+
+/* The row itself: still legible, plainly not clickable. No hover fill, because
+   the fill is the thing that says "this goes somewhere". */
+.itemMuted {
+  cursor: default;
+}
+
+.itemMuted .dropdownTitle,
+.itemMuted .listIcon {
+  opacity: 0.55;
+}
+
+.itemMuted:hover {
+  background: none;
+}
+
+.dropdownItem {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  /* Separates the artwork from the text block below it. */
+  gap: 0.5rem;
+  color: var(--openui-text-neutral-primary);
+  text-decoration: none;
+}
+
+/* The same fill, radius and timing the list rows use, so a hovered card and a
+   hovered row are the same gesture in two shapes. */
+.dropdownItemPlain {
+  border-radius: 10px;
+  transition: background-color 0.15s ease;
+}
+
+.dropdownItemPlain:hover {
+  background: rgba(10, 10, 10, 0.03);
+}
+
+[data-theme="dark"] .dropdownItemPlain:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* 284x160 preview slot. The art is decorative, so it sits behind the label and
+   is cropped to fill rather than letterboxed. The artwork is oversized by 1px and
+   clipped (see the image rule) to shave off its own baked edge stroke; the
+   ::after below then draws a single, consistent stroke on top. */
+.dropdownPreview {
+  --nav-preview-stroke: rgb(0 0 0 / 0.08);
+
+  position: relative;
+  display: block;
+  aspect-ratio: 284 / 160;
+  /* Also clips the hover zoom to the corners. The art's 12px corners are authored
+     at the 284px slot width, so at the rendered card width they land at ~10px. */
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+[data-theme="dark"] .dropdownPreview {
+  --nav-preview-stroke: rgb(255 255 255 / 0.08);
+}
+
+/* Very subtle stroke over the cropped artwork. Lives on the container, not the
+   image, so it stays crisp and put while the image zooms on hover. */
+.dropdownPreview::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px var(--nav-preview-stroke);
+  pointer-events: none;
+}
+
+/* The art is authored at the slot's exact 284:160 ratio, so it is drawn whole
+   rather than cropped — object-fit: cover would silently trim a mismatched
+   export instead of making the mismatch obvious. */
+.dropdownPreviewImage {
+  /* Oversized by 1px on every side and clipped by the container, cropping off the
+     artwork's own baked edge stroke so the container's ::after stroke is the only
+     one. Zoom stays on transform so it composes with this sizing. */
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: calc(100% + 2px);
+  height: calc(100% + 2px);
+  /* Global reset caps img at max-width:100%, which would clamp the width back to
+     the container and undo the horizontal crop — opt out. */
+  max-width: none;
+  object-fit: fill;
+  transition: transform 0.25s ease;
+}
+
+.dropdownItem:hover .dropdownPreviewImage {
+  transform: scale(1.05);
+}
+
+/* Per-theme artwork: render both variants, reveal the one matching the theme. */
+.dropdownPreviewDark {
+  display: none;
+}
+
+[data-theme="dark"] .dropdownPreviewLight {
+  display: none;
+}
+
+[data-theme="dark"] .dropdownPreviewDark {
+  display: block;
 }
 
 .dropdownText {
   display: flex;
   min-width: 0;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.375rem;
+  padding: 0.625rem 0.5rem 0.5rem;
 }
 
 .dropdownTitleRow {
@@ -127,25 +540,30 @@
   gap: 0.5rem;
 }
 
+/* One step down in both size and weight, on the 14px step the rest of the menu
+   sits on. The title still leads because it is the darker of the two, not
+   because it is the heavier: hierarchy comes off colour here, not weight. */
 .dropdownTitle {
   font-family: "Inter Display", sans-serif;
-  font-size: 1.25rem;
-  font-weight: 500;
-  line-height: 1.15;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
   color: var(--openui-text-neutral-primary);
 }
 
-/* Arrow-in-circle revealed next to the title on hover (mirrors the menu reference). */
+/* Filled circle sitting right after the title, revealed on hover. Uses the
+   primary-text token for the disc and the surface token for the glyph, so it's a
+   black circle with a white arrow in light mode and inverts cleanly in dark. */
 .dropdownArrow {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 1.25rem;
-  height: 1.25rem;
-  border-radius: 9999px;
-  background: var(--openui-inverted-background);
-  color: var(--openui-background);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--openui-text-neutral-primary);
+  color: var(--openui-foreground);
   opacity: 0;
   transform: translateX(-0.25rem);
   transition:
@@ -160,10 +578,30 @@
 
 .dropdownDescription {
   font-family: "Inter", sans-serif;
-  font-size: 14px;
-  line-height: 1.3;
+  font-size: 12px;
+  line-height: 1.5;
   color: var(--openui-text-neutral-secondary);
   opacity: 0.8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dropdownPreviewImage,
+  .dropdownArrow,
+  .viewportContent {
+    transition: none;
+  }
+
+  .dropdownItem:hover .dropdownPreviewImage {
+    transform: none;
+  }
+
+  /* Keep the open/close fade, drop the morph. */
+  .viewport,
+  .viewport[data-open="true"] {
+    transition:
+      opacity 0.18s ease,
+      visibility 0s;
+  }
 }
 
 @media (min-width: 1024px) {

@@ -1,0 +1,85 @@
+.section {
+  margin-top: 2.5rem;
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  max-width: 75rem;
+  margin-inline: auto;
+}
+
+.marquee {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  padding-block: 0.25rem;
+  mask-image: linear-gradient(to right, transparent, #000 15%, #000 85%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 15%, #000 85%, transparent);
+}
+
+.track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  animation: scroll 35s linear infinite;
+}
+
+.marquee:hover .track,
+.marquee:focus-within .track {
+  animation-play-state: paused;
+}
+
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    animation: none;
+  }
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.625rem 0.875rem;
+  margin-inline: 0.25rem;
+}
+
+/* Flattened to the page's ink so the strip reads as one row of marks rather
+   than a spread of brand colours. Both pages share the treatment. */
+.logo {
+  height: 2.5rem;
+  width: auto;
+  flex: 0 0 auto;
+  opacity: 0.5;
+  filter: brightness(0);
+  transition: opacity 0.15s ease;
+}
+
+[data-theme="dark"] .logo {
+  filter: brightness(0) invert(1);
+}
+
+.card:hover .logo,
+.card:focus-visible .logo {
+  opacity: 1;
+}
+
+@media (min-width: 768px) {
+  .section {
+    margin-top: 3rem;
+  }
+
+  .logo {
+    height: 3rem;
+  }
+}

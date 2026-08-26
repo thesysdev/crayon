@@ -35,5 +35,5 @@ export function makeStore(overrides: MakeStoreOverrides = {}) {
     streamProtocol: streamProtocol ?? { parse: async function* () {} },
   };
 
-  return createChatStore({ storage, llm });
+  return createChatStore({ current: { storage, llm } });
 }

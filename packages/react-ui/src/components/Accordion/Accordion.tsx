@@ -6,8 +6,7 @@ import React, { forwardRef } from "react";
 type AccordionVariant = "clear" | "card" | "sunk";
 
 export type AccordionProps = (
-  | AccordionPrimitive.AccordionSingleProps
-  | AccordionPrimitive.AccordionMultipleProps
+  AccordionPrimitive.AccordionSingleProps | AccordionPrimitive.AccordionMultipleProps
 ) & {
   variant?: AccordionVariant;
 };
@@ -30,8 +29,9 @@ export const Accordion = forwardRef<
   />
 ));
 
-export interface AccordionItemProps
-  extends React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item> {
+export interface AccordionItemProps extends React.ComponentPropsWithoutRef<
+  typeof AccordionPrimitive.Item
+> {
   className?: string;
   style?: React.CSSProperties;
   value: string;
@@ -50,8 +50,9 @@ export const AccordionItem = forwardRef<
   />
 ));
 
-export interface AccordionTriggerProps
-  extends React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger> {
+export interface AccordionTriggerProps extends React.ComponentPropsWithoutRef<
+  typeof AccordionPrimitive.Trigger
+> {
   className?: string;
   style?: React.CSSProperties;
   icon?: React.ReactNode;
@@ -77,8 +78,9 @@ export const AccordionTrigger = forwardRef<
   </AccordionPrimitive.Header>
 ));
 
-export interface AccordionContentProps
-  extends React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content> {
+export interface AccordionContentProps extends React.ComponentPropsWithoutRef<
+  typeof AccordionPrimitive.Content
+> {
   className?: string;
   style?: React.CSSProperties;
   children?: React.ReactNode;

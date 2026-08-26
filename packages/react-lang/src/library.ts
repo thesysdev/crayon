@@ -9,6 +9,7 @@ import {
 import type { ReactNode } from "react";
 import type { z } from "zod/v4";
 import type { $ZodObject } from "zod/v4/core";
+import { publishLibrary } from "./publishLibrary";
 
 // Re-export framework-agnostic types unchanged
 export type {
@@ -21,8 +22,10 @@ export type {
 
 // ─── React-specific types ───────────────────────────────────────────────────
 
-export interface ComponentRenderProps<P = Record<string, unknown>>
-  extends CoreRenderProps<P, ReactNode> {}
+export interface ComponentRenderProps<P = Record<string, unknown>> extends CoreRenderProps<
+  P,
+  ReactNode
+> {}
 
 export type ComponentRenderer<P = Record<string, unknown>> = React.FC<ComponentRenderProps<P>>;
 
@@ -49,5 +52,9 @@ export function defineComponent<T extends $ZodObject>(config: {
 // ─── createLibrary (React) ──────────────────────────────────────────────────
 
 export function createLibrary(input: LibraryDefinition): Library {
-  return coreCreateLibrary<ComponentRenderer<any>>(input) as Library;
+  const library = coreCreateLibrary<ComponentRenderer<any>>(input) as Library;
+  if (process.env["NODE_ENV"] !== "production") {
+    publishLibrary(library);
+  }
+  return library;
 }

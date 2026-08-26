@@ -1,0 +1,485 @@
+@import "tailwindcss";
+
+html,
+body {
+  margin: 0;
+}
+
+.app-shell {
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  width: 100vw;
+}
+
+.grok-interaction-backdrop {
+  align-items: center;
+  backdrop-filter: blur(6px);
+  background: rgb(0 0 0 / 58%);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 24px;
+  position: fixed;
+  z-index: 100;
+}
+
+.grok-interaction-backdrop,
+.grok-interaction-backdrop * {
+  box-sizing: border-box;
+}
+
+.grok-interaction-card {
+  background: var(--openui-popover-background, white);
+  border: 1px solid var(--openui-border-interactive, rgb(0 0 0 / 12%));
+  border-radius: 18px;
+  box-shadow: 0 28px 90px rgb(0 0 0 / 34%);
+  color: var(--openui-text-neutral-primary, #18181b);
+  display: flex;
+  flex-direction: column;
+  max-height: min(820px, calc(100vh - 48px));
+  max-width: 720px;
+  overflow: hidden;
+  outline: none;
+  width: 100%;
+}
+
+.grok-interaction-heading {
+  align-items: flex-start;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 16px;
+  justify-content: space-between;
+  padding: 22px 24px 18px;
+}
+
+.grok-interaction-heading h2,
+.grok-interaction-heading p {
+  margin: 0;
+}
+
+.grok-interaction-heading h2 {
+  font: var(--openui-text-heading-sm, 650 20px/1.25 Inter, sans-serif);
+  letter-spacing: -0.015em;
+}
+
+.grok-interaction-eyebrow {
+  color: var(--openui-text-neutral-secondary, rgb(0 0 0 / 55%));
+  font: var(--openui-text-label-sm-heavy, 500 14px/1.25 Inter, sans-serif);
+  margin-bottom: 5px !important;
+}
+
+.grok-interaction-close {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  color: var(--openui-text-neutral-secondary, currentColor);
+  cursor: pointer;
+  display: flex;
+  font-size: 24px;
+  height: 32px;
+  justify-content: center;
+  line-height: 1;
+  width: 32px;
+}
+
+.grok-interaction-close:hover {
+  background: var(--openui-sunk, rgb(0 0 0 / 5%));
+}
+
+.grok-interaction-close:focus-visible,
+.grok-button-primary:focus-visible,
+.grok-button-secondary:focus-visible,
+.grok-question-option:focus-within {
+  outline: 2px solid var(--openui-interactive-accent-default, #2563eb);
+  outline-offset: 2px;
+}
+
+.grok-question-list {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 22px;
+  min-height: 0;
+  overscroll-behavior: contain;
+  overflow: auto;
+  padding: 4px 24px 28px;
+  scrollbar-gutter: stable;
+}
+
+.grok-question-list::-webkit-scrollbar,
+.grok-plan-content::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.grok-question-list::-webkit-scrollbar-thumb,
+.grok-plan-content::-webkit-scrollbar-thumb {
+  background: var(--openui-border-interactive, rgb(127 127 127 / 35%));
+  border-radius: 999px;
+}
+
+.grok-question {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.grok-question legend {
+  display: flex;
+  flex-direction: column;
+  font: var(--openui-text-body-sm-heavy, 600 14px/1.5 Inter, sans-serif);
+  gap: 2px;
+  margin-bottom: 10px;
+  padding: 0;
+  width: 100%;
+}
+
+.grok-question legend small {
+  color: var(--openui-text-neutral-secondary, rgb(0 0 0 / 55%));
+  font: var(--openui-text-body-xs, 400 12px/1.5 Inter, sans-serif);
+}
+
+.grok-question-options {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.grok-question-option {
+  align-items: flex-start;
+  background: var(--openui-foreground, white);
+  border: 1px solid var(--openui-border-interactive, rgb(0 0 0 / 12%));
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  gap: 10px;
+  min-height: 62px;
+  padding: 12px;
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.grok-question-option:has(input:checked) {
+  background: color-mix(
+    in srgb,
+    var(--openui-interactive-accent-default, #2563eb) 10%,
+    var(--openui-foreground, white)
+  );
+  border-color: var(--openui-interactive-accent-default, #2563eb);
+  box-shadow: 0 0 0 1px var(--openui-interactive-accent-default, #2563eb);
+}
+
+.grok-question-option:hover {
+  border-color: var(--openui-border-accent-emphasis, rgb(37 99 235 / 45%));
+}
+
+.grok-question-option > input {
+  accent-color: var(--openui-interactive-accent-default, #2563eb);
+  margin: 3px 0 0;
+}
+
+.grok-question-option > span {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.grok-question-option strong {
+  font: var(--openui-text-label-sm-heavy, 500 14px/1.25 Inter, sans-serif);
+}
+
+.grok-question-option small {
+  color: var(--openui-text-neutral-secondary, rgb(0 0 0 / 55%));
+  font: var(--openui-text-body-xs, 400 12px/1.5 Inter, sans-serif);
+}
+
+.grok-question-other {
+  display: grid;
+  gap: 8px;
+  grid-column: 1 / -1;
+  grid-template-columns: auto minmax(0, 1fr);
+  min-height: 0;
+}
+
+.grok-question-other-choice {
+  align-items: flex-start;
+  cursor: pointer;
+  display: flex;
+  gap: 10px;
+  padding-top: 8px;
+}
+
+.grok-question-other-choice input {
+  accent-color: var(--openui-interactive-accent-default, #2563eb);
+  margin: 2px 0 0;
+}
+
+.grok-question-other-input,
+.grok-plan-feedback textarea {
+  background: var(--openui-background, #f4f4f5);
+  border: 1px solid var(--openui-border-interactive, rgb(0 0 0 / 12%));
+  border-radius: 8px;
+  color: var(--openui-text-neutral-primary, currentColor);
+  font: var(--openui-text-body-sm, 400 14px/1.5 Inter, sans-serif);
+  outline: none;
+}
+
+.grok-question-other-input {
+  padding: 9px 11px;
+  width: 100%;
+}
+
+.grok-question-other-input:focus,
+.grok-plan-feedback textarea:focus {
+  border-color: var(--openui-interactive-accent-default, #2563eb);
+  box-shadow: 0 0 0 2px var(--openui-border-accent-emphasis, rgb(37 99 235 / 30%));
+}
+
+.grok-question-preview {
+  background: var(--openui-sunk, rgb(0 0 0 / 4%));
+  border: 1px solid var(--openui-border-default, rgb(0 0 0 / 6%));
+  border-radius: 10px;
+  color: var(--openui-text-neutral-primary, currentColor);
+  margin: 8px 0 0;
+  padding: 12px;
+}
+
+.grok-question-preview > span {
+  color: var(--openui-text-neutral-secondary, rgb(0 0 0 / 55%));
+  display: block;
+  font: var(--openui-text-label-xs-heavy, 600 11px/1.4 Inter, sans-serif);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.grok-question-preview pre {
+  font: var(--openui-text-code-sm, 400 12px/1.5 monospace);
+  margin: 0;
+  overflow: auto;
+  white-space: pre-wrap;
+}
+
+.grok-plan-card {
+  max-width: 800px;
+}
+
+.grok-plan-document {
+  border: 1px solid var(--openui-border-default, rgb(0 0 0 / 8%));
+  border-radius: 12px;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  margin: 0 24px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.grok-plan-document-heading {
+  align-items: center;
+  background: var(--openui-sunk, rgb(0 0 0 / 4%));
+  border-bottom: 1px solid var(--openui-border-default, rgb(0 0 0 / 8%));
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: space-between;
+  padding: 10px 12px;
+}
+
+.grok-plan-document-heading span {
+  font: var(--openui-text-label-sm-heavy, 600 13px/1.4 Inter, sans-serif);
+}
+
+.grok-plan-document-heading small {
+  color: var(--openui-text-neutral-secondary, rgb(0 0 0 / 55%));
+  font: var(--openui-text-body-xs, 400 12px/1.4 Inter, sans-serif);
+}
+
+.grok-plan-content {
+  background: var(--openui-sunk, rgb(0 0 0 / 4%));
+  color: var(--openui-text-neutral-primary, currentColor);
+  flex: 1 1 auto;
+  font: var(--openui-text-code-sm, 400 12px/1.55 monospace);
+  margin: 0;
+  min-height: 160px;
+  overflow: auto;
+  padding: 14px;
+  white-space: pre-wrap;
+}
+
+.grok-plan-feedback {
+  display: flex;
+  flex-direction: column;
+  font: var(--openui-text-label-sm-heavy, 500 14px/1.25 Inter, sans-serif);
+  gap: 6px;
+  margin: 18px 24px 0;
+}
+
+.grok-plan-feedback textarea {
+  padding: 10px 12px;
+  resize: vertical;
+}
+
+.grok-interaction-actions {
+  align-items: center;
+  background: var(--openui-popover-background, white);
+  border-top: 1px solid var(--openui-border-default, rgb(0 0 0 / 8%));
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+  padding: 14px 24px 18px;
+}
+
+.grok-button-primary,
+.grok-button-secondary {
+  border-radius: 9px;
+  cursor: pointer;
+  font: var(--openui-text-label-sm-heavy, 500 14px/1.25 Inter, sans-serif);
+  min-height: 38px;
+  padding: 9px 14px;
+}
+
+.grok-button-primary {
+  background: var(--openui-interactive-accent-default, #2563eb);
+  border: 1px solid transparent;
+  color: var(--openui-text-accent-primary, white);
+}
+
+.grok-button-primary:hover:not(:disabled) {
+  background: var(--openui-interactive-accent-hover, #1d4ed8);
+}
+
+.grok-button-secondary {
+  background: var(--openui-foreground, white);
+  border: 1px solid var(--openui-border-interactive, rgb(0 0 0 / 12%));
+  color: var(--openui-text-neutral-primary, currentColor);
+}
+
+.grok-button-secondary:hover:not(:disabled) {
+  background: var(--openui-sunk, rgb(0 0 0 / 4%));
+}
+
+.grok-button-primary:disabled,
+.grok-button-secondary:disabled,
+.grok-interaction-close:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.grok-interaction-error,
+.grok-interaction-poll-error {
+  background: var(--openui-danger-background, rgb(220 38 38 / 10%));
+  color: var(--openui-text-danger-primary, #b91c1c);
+  font: var(--openui-text-body-xs, 400 12px/1.5 Inter, sans-serif);
+  margin: 0;
+  padding: 8px 10px;
+}
+
+.grok-interaction-error {
+  border-radius: 8px;
+  margin: 0 24px 12px;
+}
+
+.grok-interaction-poll-error {
+  border-radius: 8px;
+  bottom: 16px;
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%);
+  z-index: 90;
+}
+
+@media (max-width: 640px) {
+  .grok-interaction-backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .grok-interaction-card {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    max-height: calc(100dvh - max(16px, env(safe-area-inset-top)));
+  }
+
+  .grok-interaction-heading {
+    padding: 18px 18px 14px;
+  }
+
+  .grok-interaction-heading h2 {
+    font-size: 18px;
+  }
+
+  .grok-question-list {
+    gap: 20px;
+    padding: 4px 18px 24px;
+  }
+
+  .grok-question-options {
+    grid-template-columns: 1fr;
+  }
+
+  .grok-question-other {
+    grid-column: auto;
+  }
+
+  .grok-plan-document {
+    margin: 0 18px;
+  }
+
+  .grok-plan-document-heading small {
+    display: none;
+  }
+
+  .grok-plan-feedback {
+    margin: 16px 18px 0;
+  }
+
+  .grok-interaction-error {
+    margin: 0 18px 12px;
+  }
+
+  .grok-interaction-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 12px 18px calc(14px + env(safe-area-inset-bottom));
+  }
+
+  .grok-interaction-actions button {
+    width: 100%;
+  }
+
+  .grok-question-submit,
+  .grok-plan-actions .grok-button-primary {
+    grid-column: 1 / -1;
+    order: -1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .grok-interaction-backdrop {
+    animation: grok-backdrop-in 140ms ease-out;
+  }
+
+  .grok-interaction-card {
+    animation: grok-dialog-in 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+}
+
+@keyframes grok-backdrop-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes grok-dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+}

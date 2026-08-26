@@ -18,11 +18,10 @@ const formatNumber = (num: number | undefined): string => {
   return String(num);
 };
 
-export interface SliderProps
-  extends Omit<
-    React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>,
-    "value" | "defaultValue"
-  > {
+export interface SliderProps extends Omit<
+  React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>,
+  "value" | "defaultValue"
+> {
   variant: "continuous" | "discrete";
   min: number;
   max: number;

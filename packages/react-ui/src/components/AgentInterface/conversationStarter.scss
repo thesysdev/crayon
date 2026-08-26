@@ -3,9 +3,12 @@
 // Container styles
 .openui-agent-conversation-starter {
   width: 100%;
-  max-width: 880px;
+  // Starters sit above the composer input, so track the composer's 768px
+  // column (see components/composer.scss), not the 880px thread column —
+  // otherwise the row starts left of the input once both hit max-width.
+  max-width: calc(768px + cssUtils.$space-m-l * 2);
   margin: 0 auto;
-  padding: 0 0 cssUtils.$space-m;
+  padding: 0 cssUtils.$space-m-l cssUtils.$space-m;
   box-sizing: border-box;
   max-height: 480px;
   overflow: hidden;
@@ -16,7 +19,6 @@
     transform 0.2s ease,
     max-height 0.2s ease,
     padding-bottom 0.2s ease;
-
   // Short variant - horizontal pill buttons
   &--short {
     display: block;
@@ -26,12 +28,20 @@
   &--long {
     display: flex;
     flex-direction: column;
-    gap: cssUtils.$space-2xs;
+    gap: 0;
     margin-bottom: cssUtils.$space-m;
   }
 
   &__carousel-content {
     gap: cssUtils.$space-xs;
+  }
+
+  &__separator {
+    width: 100%;
+    height: 1px;
+    margin: cssUtils.$space-2xs 0;
+    background-color: cssUtils.$border-default;
+    flex-shrink: 0;
   }
 
   // Mobile adjustments
@@ -109,7 +119,7 @@
   cursor: pointer;
   transition: background-color 0.15s ease;
   @include cssUtils.typography(body, default);
-  color: cssUtils.$text-neutral-primary;
+  color: cssUtils.$text-neutral-secondary;
   text-align: left;
   overflow: hidden;
 
@@ -129,7 +139,7 @@
     justify-content: center;
     flex-shrink: 0;
     padding-top: cssUtils.$space-2xs;
-    color: cssUtils.$text-neutral-primary;
+    color: cssUtils.$text-neutral-secondary;
   }
 
   // Text - allows wrapping for long content
@@ -150,14 +160,17 @@
     padding-top: cssUtils.$space-2xs;
     opacity: 0;
     transition: opacity 0.15s ease;
-    color: cssUtils.$text-neutral-primary;
+    color: cssUtils.$text-neutral-secondary;
   }
 
   // Hover state
   &:not(:disabled):hover {
     background-color: cssUtils.$sunk;
+    color: cssUtils.$text-neutral-primary;
 
+    .openui-agent-conversation-starter-item-long__icon,
     .openui-agent-conversation-starter-item-long__arrow {
+      color: cssUtils.$text-neutral-primary;
       opacity: 1;
     }
   }

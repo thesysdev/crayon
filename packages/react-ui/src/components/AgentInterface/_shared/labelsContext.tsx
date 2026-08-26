@@ -19,7 +19,7 @@ export interface AgentInterfaceLabels {
    * `"Artifacts"`.
    */
   defaultCategory?: string;
-  /** Tooltip on the workspace toggle button. Default `"Apps & Artifacts"`. */
+  /** Title for the workspace rail and its toggle tooltip. Default `"Thread workspace"`. */
   workspaceToggle?: string;
   /** Labels for the workspace rail tabs. Defaults: `All` / `Artifacts` / `Apps`. */
   tabs?: WorkspaceTabLabels;
@@ -34,7 +34,7 @@ export interface ResolvedLabels {
 
 const DEFAULT_LABELS: ResolvedLabels = {
   defaultCategory: "Artifacts",
-  workspaceToggle: "Apps & Artifacts",
+  workspaceToggle: "Thread workspace",
   tabs: { all: "All", artifacts: "Artifacts", apps: "Apps" },
 };
 

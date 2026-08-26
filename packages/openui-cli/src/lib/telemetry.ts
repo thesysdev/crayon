@@ -10,11 +10,18 @@ const POSTHOG_HOST = process.env["OPENUI_POSTHOG_HOST"] ?? "https://us.i.posthog
 const SHUTDOWN_TIMEOUT_MS = 2000;
 
 const isTruthyEnv = (v?: string) => v === "1" || v?.toLowerCase() === "true";
+const isTelemetryDebug = () => process.env["OPENUI_TELEMETRY_DEBUG"] === "1";
 const configDir = () =>
   path.join(process.env["XDG_CONFIG_HOME"] ?? path.join(os.homedir(), ".config"), "openui");
 const isCi = () => {
   const e = process.env;
   return isTruthyEnv(e["CI"]) || !!e["GITHUB_ACTIONS"] || !!e["GITLAB_CI"] || !!e["BUILDKITE"];
+};
+const isInteractiveTerminal = () => Boolean(process.stdin.isTTY && process.stdout.isTTY);
+const debugLogPostHogFailure = (stage: string, error: unknown) => {
+  if (!isTelemetryDebug()) return;
+  const message = error instanceof Error ? error.message : String(error);
+  console.warn(`[OpenUI telemetry] PostHog ${stage} failed: ${message}`);
 };
 
 type Stored = { distinctId: string; firstRunNoticeShown?: boolean };
@@ -48,13 +55,58 @@ function writeState(file: string, s: Stored) {
 }
 
 /** Thrown by command funnels so the index wrapper can attribute the failure stage + drain once. */
+export type CliErrorClass =
+  | "invalid_input"
+  | "filesystem"
+  | "authentication"
+  | "dependency"
+  | "peer_dependency"
+  | "registry_auth"
+  | "network"
+  | "package_compatibility"
+  | "workspace_config"
+  | "install_script"
+  | "process"
+  | "user_cancelled"
+  | "generation"
+  | "unknown";
+
+export type CliErrorMetadata = {
+  duration_ms?: number;
+  exit_code?: number;
+  failure_signal?: NodeJS.Signals;
+  http_status?: number;
+  cancellation_exit_code?: number;
+  auth_failure_stage?: string;
+};
+
 export class CreateError extends Error {
   constructor(
     public stage: string,
     message: string,
+    public errorClass: CliErrorClass = "unknown",
+    public errorCode = "UNKNOWN",
+    public errorMetadata: CliErrorMetadata = {},
   ) {
     super(message);
     this.name = "CreateError";
+  }
+}
+
+export class CliCancelledError extends CreateError {
+  constructor(
+    stage: string,
+    public exitCode = 0,
+    metadata: CliErrorMetadata = {},
+  ) {
+    super(
+      stage,
+      "Operation cancelled.",
+      "user_cancelled",
+      exitCode === 0 ? "USER_CANCELLED" : exitCode === 143 ? "TERMINATED" : "INTERRUPTED",
+      { ...metadata, cancellation_exit_code: exitCode },
+    );
+    this.name = "CliCancelledError";
   }
 }
 
@@ -72,6 +124,7 @@ export class Telemetry {
     if (optedOut) return; // enabled stays false → all capture() are no-ops
     const state = loadOrCreateState();
     this.distinctId = state.distinctId;
+    const interactiveTerminal = isInteractiveTerminal();
     this.superProps = {
       cli_version: opts.cliVersion,
       os: process.platform,
@@ -79,6 +132,9 @@ export class Telemetry {
       arch: process.arch,
       node_version: process.version,
       ci: isCi(),
+      stdin_is_tty: Boolean(process.stdin.isTTY),
+      stdout_is_tty: Boolean(process.stdout.isTTY),
+      is_interactive_terminal: interactiveTerminal,
     };
     try {
       this.client = new PostHog(POSTHOG_KEY, {
@@ -88,8 +144,9 @@ export class Telemetry {
       });
       // Telemetry is best-effort: swallow network/flush errors so an offline CLI
       // run never spams the user's console with PostHog stack traces.
-      this.client.on("error", () => {});
-    } catch {
+      this.client.on("error", (error) => debugLogPostHogFailure("request", error));
+    } catch (error) {
+      debugLogPostHogFailure("init", error);
       return;
     }
     this.enabled = true;
@@ -101,12 +158,11 @@ export class Telemetry {
       if (typeof args[0] === "string" && args[0].includes("flushing PostHog")) return;
       origError(...args);
     };
-    if (process.env["OPENUI_TELEMETRY_DEBUG"] === "1") this.client.debug();
+    if (isTelemetryDebug()) this.client.debug();
     if (state.isFirstRun) {
       process.stderr.write(
-        "\n◆ OpenUI CLI collects anonymous usage analytics to improve the tool.\n" +
-          "  No code, prompts, keys, or personal data are collected.\n" +
-          "  Opt out anytime: set DO_NOT_TRACK=1 or pass --no-telemetry.\n\n",
+        "\n◆ OpenUI CLI collects usage analytics; OAuth sign-ins may link usage to your OIDC account ID.\n" +
+          "  No code, prompts, API keys, email, or personal name are collected. Opt out: set DO_NOT_TRACK=1 or pass --no-telemetry.\n\n",
       );
       state.persist();
     }
@@ -124,9 +180,33 @@ export class Telemetry {
         event,
         properties: { ...this.superProps, ...properties },
       });
-    } catch {
-      /* telemetry must never throw */
+    } catch (error) {
+      debugLogPostHogFailure("capture", error);
     }
+  }
+
+  alias(distinctId: string, alias: string) {
+    if (!this.enabled || !this.client) return;
+    if (!distinctId || !alias || distinctId === alias) return;
+    try {
+      this.client.alias({ distinctId, alias });
+      this.client.setPersonProperties({
+        distinctId,
+        propertiesOnce: {
+          first_cli_auth_ts: new Date().toISOString(),
+        },
+      });
+    } catch (error) {
+      debugLogPostHogFailure("alias", error);
+    }
+  }
+
+  aliasOidcSubject(oidcSub: string) {
+    if (!this.enabled || !this.client || !oidcSub || oidcSub === this.distinctId) {
+      return;
+    }
+
+    this.alias(oidcSub, this.distinctId);
   }
 
   async shutdown() {
@@ -136,8 +216,8 @@ export class Telemetry {
         this.client.shutdown(),
         new Promise<void>((r) => setTimeout(r, SHUTDOWN_TIMEOUT_MS)),
       ]);
-    } catch {
-      /* swallow */
+    } catch (error) {
+      debugLogPostHogFailure("shutdown", error);
     }
   }
 }

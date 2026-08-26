@@ -1,0 +1,212 @@
+/* A row of what OpenUI Cloud adds, sitting between the customer logos and the
+   feature cards. Each card is an illustration panel over the feature name.
+   The row scrolls horizontally, driven by the arrows. */
+
+.section {
+  /* Shared so the arrows can centre on the square art panel without hard-coding
+     its height a second time. */
+  --card-w: clamp(13rem, 20vw, 18rem);
+  width: 100%;
+  padding-block: clamp(1.75rem, 3.5vw, 2.75rem);
+}
+
+.row {
+  position: relative;
+}
+
+/* Floating over the row's gutters, centred on the art rather than the whole
+   card, so the titles hanging below don't pull them off-centre. */
+.arrow {
+  position: absolute;
+  top: calc(var(--card-w) / 2);
+  transform: translateY(-50%);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 1px solid rgba(10, 10, 10, 0.1);
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(10, 10, 10, 0.08);
+  color: var(--openui-text-neutral-primary);
+  cursor: pointer;
+  transition:
+    box-shadow 150ms ease,
+    opacity 150ms ease;
+}
+
+.arrowPrev {
+  left: 1rem;
+}
+
+.arrowNext {
+  right: 1rem;
+}
+
+.arrow:hover:not(:disabled) {
+  box-shadow: 0 2px 8px rgba(10, 10, 10, 0.18);
+}
+
+.arrow:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+[data-theme="dark"] .arrow {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: #141414;
+  box-shadow: none;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+[data-theme="dark"] .arrow:hover:not(:disabled) {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.55);
+}
+
+/* Fades whichever end still has cards past it. The stops come from the
+   component, which knows where the scroll actually sits. */
+.scroller {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+  padding-inline: max(1.25rem, calc((100vw - 75rem) / 2));
+  /* No scroll-snap: the arrows already advance by whole card strides, and
+     mandatory snapping fought the programmatic scroll and reverted it. */
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 var(--fade-start, 0%),
+    #000 var(--fade-end, 100%),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 var(--fade-start, 0%),
+    #000 var(--fade-end, 100%),
+    transparent 100%
+  );
+}
+
+.scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.card {
+  flex: 0 0 auto;
+  width: var(--card-w);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Holds the illustration. Stays a tinted panel while artwork is pending, so
+   the row keeps its rhythm either way. */
+.art {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 1rem;
+  overflow: hidden;
+  background: rgba(10, 10, 10, 0.04);
+}
+
+[data-theme="dark"] .art {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.imageDark {
+  display: none;
+}
+
+[data-theme="dark"] .imageLight {
+  display: none;
+}
+
+[data-theme="dark"] .imageDark {
+  display: block;
+}
+
+/* Position in the row, pinned to the panel's top-left so it stays legible once
+   artwork fills the panel behind it. Decorative: the order is already visible,
+   so it is hidden from screen readers. */
+.badge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(6px);
+  font-family: var(--home-font-text);
+  font-size: var(--home-label-size);
+  font-weight: var(--home-label-weight);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--openui-text-neutral-secondary);
+}
+
+[data-theme="dark"] .badge {
+  background: rgba(20, 20, 20, 0.8);
+  color: rgba(255, 255, 255, 0.66);
+}
+
+/* The name carries the card alone, so it sits a step below the heading
+   size: large enough to lead, small enough not to wrap past two lines. */
+.title {
+  /* Held in from the panel's edges, and balanced, so a two-line name reads as
+     a tidy block rather than a full-width line with an orphan under it. */
+  max-width: 80%;
+  margin: 0.875rem 0 0;
+  font-family: var(--home-font-text);
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: var(--home-heading-tracking);
+  line-height: 1.35;
+  text-wrap: balance;
+  color: var(--openui-text-neutral-primary);
+}
+
+[data-theme="dark"] .title {
+  color: rgba(255, 255, 255, 0.94);
+}
+
+@media (max-width: 767px) {
+  .section {
+    --card-w: 11rem;
+  }
+
+  .arrow {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .arrowPrev {
+    left: 0.5rem;
+  }
+
+  .arrowNext {
+    right: 0.5rem;
+  }
+}

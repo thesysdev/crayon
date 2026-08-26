@@ -38,8 +38,9 @@ export const Select = ({ size = "md", ...props }: SelectProps) => {
   );
 };
 
-export interface SelectGroupProps
-  extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Group> {
+export interface SelectGroupProps extends React.ComponentPropsWithoutRef<
+  typeof SelectPrimitive.Group
+> {
   className?: string;
   style?: React.CSSProperties;
 }
@@ -58,8 +59,9 @@ export const SelectGroup = forwardRef<
 
 export const SelectValue = SelectPrimitive.Value;
 
-export interface SelectTriggerProps
-  extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger> {
+export interface SelectTriggerProps extends React.ComponentPropsWithoutRef<
+  typeof SelectPrimitive.Trigger
+> {
   className?: string;
   style?: React.CSSProperties;
   children?: React.ReactNode;
@@ -101,8 +103,9 @@ export const SelectTrigger = forwardRef<
   );
 });
 
-export interface SelectContentProps
-  extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content> {
+export interface SelectContentProps extends React.ComponentPropsWithoutRef<
+  typeof SelectPrimitive.Content
+> {
   className?: string;
   style?: React.CSSProperties;
   children?: React.ReactNode;
@@ -138,8 +141,9 @@ export const SelectContent = forwardRef<
   );
 });
 
-export interface SelectLabelProps
-  extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Label> {
+export interface SelectLabelProps extends React.ComponentPropsWithoutRef<
+  typeof SelectPrimitive.Label
+> {
   className?: string;
   style?: React.CSSProperties;
 }
@@ -156,8 +160,9 @@ export const SelectLabel = forwardRef<
   />
 ));
 
-export interface SelectItemProps
-  extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item> {
+export interface SelectItemProps extends React.ComponentPropsWithoutRef<
+  typeof SelectPrimitive.Item
+> {
   className?: string;
   style?: React.CSSProperties;
   children?: React.ReactNode;
@@ -193,8 +198,9 @@ export const SelectItem = forwardRef<
   </SelectPrimitive.Item>
 ));
 
-export interface SelectSeparatorProps
-  extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator> {
+export interface SelectSeparatorProps extends React.ComponentPropsWithoutRef<
+  typeof SelectPrimitive.Separator
+> {
   className?: string;
   style?: React.CSSProperties;
 }

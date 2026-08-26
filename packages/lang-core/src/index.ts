@@ -1,5 +1,5 @@
 // ── Library (framework-generic) ──
-export { createLibrary, defineComponent, tagSchemaId } from "./library";
+export { buildSignature, createLibrary, defineComponent, tagSchemaId } from "./library";
 export type {
   ComponentGroup,
   ComponentRenderProps,
@@ -15,8 +15,10 @@ export type {
 // ── Parser ──
 export { createParser, createStreamingParser, parse } from "./parser";
 export type { Parser, StreamParser } from "./parser";
-export { isASTNode, isRuntimeExpr } from "./parser/ast";
+export { isASTNode, isRuntimeExpr, walkAST } from "./parser/ast";
 export type { ASTNode, CallNode, RuntimeExprNode, Statement } from "./parser/ast";
+// Low-level parsing pipeline (tokenize → split → parseExpression) for consumers
+// that walk partial/streaming openui-lang source without a full parser.
 export {
   ACTION_NAMES,
   ACTION_STEPS,
@@ -28,11 +30,22 @@ export {
 } from "./parser/builtins";
 export type { BuiltinDef } from "./parser/builtins";
 export { enrichErrors } from "./parser/enrich-errors";
+export { parseExpression } from "./parser/expressions";
+export { tokenize } from "./parser/lexer";
 export { mergeStatements } from "./parser/merge";
-export { generatePrompt } from "./parser/prompt";
-export type { ComponentPromptSpec, PromptSpec, ToolSpec } from "./parser/prompt";
+export { generatePrompt, generateSystemPrompt } from "./parser/prompt";
+export type {
+  ComponentPromptSpec,
+  LibrarySpec,
+  PromptSpec,
+  SystemPromptOptions,
+  SystemPromptSpec,
+  ToolSpec,
+} from "./parser/prompt";
 export { jsonToOpenUI } from "./parser/serialize";
 export type { SerializeOptions } from "./parser/serialize";
+export { autoClose, split } from "./parser/statements";
+export type { Token } from "./parser/tokens";
 export { BuiltinActionType } from "./parser/types";
 export type {
   ActionEvent,

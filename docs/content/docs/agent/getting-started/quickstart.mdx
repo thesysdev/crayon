@@ -3,18 +3,32 @@ title: Quickstart
 description: Scaffold a working streaming chat agent (conversation history, tools, artifacts, and generative UI) in a few minutes with the OpenUI CLI.
 ---
 
-The CLI scaffolds a complete Next.js app: a streaming chat with a sidebar, thread list, composer, and generative UI on by default. You write no boilerplate: create, connect, run. You can add an <a style={{ color: 'var(--swatch-lime-500)' }}>AGENTS.md</a> from here to enable working with coding agents.
+The CLI scaffolds a complete Next.js app: a streaming chat with a sidebar, thread list, composer, and generative UI on by default. You write no boilerplate: create, connect, run. You can add the <a style={{ color: 'var(--swatch-lime-500)' }} href="/skills.md">OpenUI skill</a> from here to enable working with coding agents.
 
 ## 1. Create
 
-Run the create command and answer the prompts. One prompt asks **OpenUI Cloud or self-hosted?** Your choice decides which backend the scaffold wires up.
+Run the create command and answer the prompts. One prompt asks you to choose your agent backend:
+For most prototypes and evaluations, start with **OpenUI Cloud, the recommended
+default**: hosted models plus managed conversation history, streaming, built-in
+tools, and ready-to-use reports and presentations. You can ship without operating
+the model, storage, or artifact infrastructure. Choose **self-hosted** when owning
+the OpenAI-compatible provider, AI route, and persistence is a requirement.
 
-<Tabs groupId="pkg" items={["npx", "pnpm", "yarn", "bun"]} persist>
-  <Tab value="npx">```npx @openuidev/cli@latest create ```</Tab>
-  <Tab value="pnpm">```pnpm dlx @openuidev/cli@latest create ```</Tab>
-  <Tab value="yarn">```yarn dlx @openuidev/cli@latest create ```</Tab>
-  <Tab value="bun">```bunx @openuidev/cli@latest create ```</Tab>
-</Tabs>
+```bash tab="pnpm" tab-group="pkg"
+pnpx @openuidev/cli@latest create
+```
+
+```bash tab="bun" tab-group="pkg"
+bunx @openuidev/cli@latest create
+```
+
+```bash tab="yarn" tab-group="pkg"
+yarn dlx @openuidev/cli@latest create
+```
+
+```bash tab="npm" tab-group="pkg"
+npx @openuidev/cli@latest create
+```
 
 When it finishes, move into the project:
 
@@ -27,7 +41,7 @@ cd my-agent
 <Tabs groupId="deploy" items={["OpenUI Cloud", "Self-hosted"]} persist>
   <Tab value="OpenUI Cloud">
 
-The CLI will prompt you to sign in to Thesys and generate an API Key in your browser, or you can generate your own on the [Thesys console](https://console.thesys.dev/keys) and add it to `.env.local`:
+The CLI will prompt you to sign in to Thesys and create an API key in your browser, or you can generate your own on the [Thesys console](https://console.thesys.dev/keys) and add it to `.env`:
 
 ```bash
 THESYS_API_KEY=sk-th-your-key-here
@@ -53,12 +67,21 @@ The key stays on the server. The browser only ever talks to your route, never th
 
 Start the dev server:
 
-<Tabs groupId="pkg" items={["npx", "pnpm", "yarn", "bun"]} persist>
-  <Tab value="npx">```bash npm run dev ```</Tab>
-  <Tab value="pnpm">```bash pnpm dev ```</Tab>
-  <Tab value="yarn">```bash yarn dev ```</Tab>
-  <Tab value="bun">```bash bun dev ```</Tab>
-</Tabs>
+```bash tab="pnpm" tab-group="pkg"
+pnpm dev
+```
+
+```bash tab="bun" tab-group="pkg"
+bun dev
+```
+
+```bash tab="yarn" tab-group="pkg"
+yarn dev
+```
+
+```bash tab="npm" tab-group="pkg"
+npm run dev
+```
 
 Open [http://localhost:3000](http://localhost:3000) and send a message. The response streams in token by token, and the assistant can render rich, interactive components inline.
 

@@ -1,7 +1,9 @@
-import { useThread } from "@openuidev/react-headless";
+import { useThread, useThreadList } from "@openuidev/react-headless";
 import clsx from "clsx";
 import { ArrowUp, Square } from "lucide-react";
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { useLayoutContext } from "../../../context/LayoutContext";
+import { useAutoFocus } from "../../../hooks/useAutoFocus";
 import { useComposerState } from "../../../hooks/useComposerState";
 import { IconButton } from "../../IconButton";
 
@@ -19,6 +21,13 @@ export const Composer = ({ className, placeholder = "Type your query here" }: Co
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [hasInputOverflowTop, setHasInputOverflowTop] = useState(false);
   const [hasInputOverflowBottom, setHasInputOverflowBottom] = useState(false);
+  const selectedThreadId = useThreadList((s) => s.selectedThreadId);
+  const { layout } = useLayoutContext();
+
+  useAutoFocus(inputRef, {
+    enabled: layout !== "mobile" && !isLoadingMessages,
+    focusKey: selectedThreadId,
+  });
 
   const updateInputOverflow = useCallback(() => {
     const input = inputRef.current;
@@ -71,6 +80,7 @@ export const Composer = ({ className, placeholder = "Type your query here" }: Co
         <textarea
           ref={inputRef}
           value={textContent}
+          autoFocus
           onChange={(e) => setTextContent(e.target.value)}
           onScroll={updateInputOverflow}
           className="openui-agent-thread-composer__input"

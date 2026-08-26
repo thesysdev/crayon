@@ -1,5 +1,5 @@
 import { defaultLightTheme } from "./defaultTheme";
-import { Theme } from "./types";
+import { CHART_PALETTE_KEYS, Theme } from "./types";
 
 /**
  * Convert a camel case string to a kebab case string.
@@ -26,6 +26,19 @@ export function themeToCssVars(theme: Record<string, unknown>, prefix = "openui"
     .map(([key, value]) => `--${prefix}-${camelToKebab(key)}: ${value as string};`)
     .join("\n          ");
 }
+
+/**
+ * Every theme key accepted at runtime: all keys present in the default themes
+ * plus the chart palette keys, which are declared only on the type (a default
+ * palette would override the per-chart `theme` prop fallback in
+ * useChartPalette). `CHART_PALETTE_KEYS` in types.ts is the single source the
+ * `ChartColorPalette` type itself derives from. Shared by `createTheme()` and
+ * the ThemeProvider prop validator so the two allow-lists cannot drift apart.
+ */
+export const KNOWN_THEME_KEYS: ReadonlySet<string> = new Set([
+  ...Object.keys(defaultLightTheme),
+  ...CHART_PALETTE_KEYS,
+]);
 
 function levenshteinDistance(a: string, b: string): number {
   const m = a.length;
@@ -67,14 +80,13 @@ const _warnedKeys = new Set<string>();
  */
 export function createTheme(theme: Theme): Theme {
   if (typeof process !== "undefined" && process.env?.["NODE_ENV"] !== "production") {
-    const knownKeys = Object.keys(defaultLightTheme);
     for (const key of Object.keys(theme)) {
-      if (knownKeys.includes(key) || _warnedKeys.has(key)) continue;
+      if (KNOWN_THEME_KEYS.has(key) || _warnedKeys.has(key)) continue;
       _warnedKeys.add(key);
 
       let suggestion = "";
       let bestDist = Infinity;
-      for (const known of knownKeys) {
+      for (const known of KNOWN_THEME_KEYS) {
         const dist = levenshteinDistance(key, known);
         if (dist < bestDist) {
           bestDist = dist;

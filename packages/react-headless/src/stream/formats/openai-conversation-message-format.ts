@@ -212,6 +212,35 @@ function fromItems(items: ConversationItem[]): Message[] {
         break;
       }
 
+      case "mcp_call": {
+        if (!currentAssistant) {
+          currentAssistant = { id: crypto.randomUUID(), role: "assistant" };
+        }
+
+        currentAssistant = {
+          ...currentAssistant,
+          toolCalls: [
+            ...(currentAssistant.toolCalls ?? []),
+            {
+              id: item.id,
+              type: "function" as const,
+              function: { name: item.name, arguments: item.arguments },
+            },
+          ],
+        };
+
+        const errorText =
+          typeof item.error === "string" && item.error.length > 0 ? item.error : undefined;
+        pendingToolMsgs.push({
+          id: `${item.id}-output`,
+          role: "tool",
+          content: item.output ?? "",
+          toolCallId: item.id,
+          ...(errorText ? { error: errorText } : {}),
+        } as ToolMessage);
+        break;
+      }
+
       default:
         // file_search, web_search, computer_call, reasoning, etc. — skip
         break;

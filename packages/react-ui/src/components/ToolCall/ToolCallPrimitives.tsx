@@ -1,6 +1,6 @@
 import type { ToolActivity, ToolCallStatus } from "@openuidev/react-headless";
 import clsx from "clsx";
-import { AlertCircle, Loader2, SquareCode } from "lucide-react";
+import { AlertCircle, Blocks, Globe, ImageIcon, SquareCode } from "lucide-react";
 import { createContext, createElement, useContext, useId, useState, type ReactNode } from "react";
 
 /**
@@ -138,12 +138,17 @@ function resolveLegacyResponse(activity: ToolActivity): unknown {
   return value != null ? value : undefined;
 }
 
-const STATUS_ICON: Record<ToolCallStatus, typeof SquareCode> = {
-  streaming: Loader2,
-  executing: Loader2,
-  complete: SquareCode,
-  error: AlertCircle,
-};
+// Built-in tool families that get their own glyph. Matched on the name
+const TOOL_ICONS: { match: RegExp; icon: typeof SquareCode }[] = [
+  { match: /image[_-]?search/i, icon: ImageIcon },
+  { match: /web[_-]?search/i, icon: Globe },
+  { match: /artifact|generate[_-]?report/i, icon: Blocks },
+];
+
+export function toolIcon(toolName: string, status: ToolCallStatus): typeof SquareCode {
+  if (status === "error") return AlertCircle;
+  return TOOL_ICONS.find((entry) => entry.match.test(toolName))?.icon ?? SquareCode;
+}
 
 // ── Parts ──
 
@@ -189,7 +194,7 @@ function Root({
 const StatusIcon = ({ render, className }: PartProps<{ status: ToolCallStatus }>) => {
   const { activity, isLast, running } = useToolCall();
   const spin = isRunning(activity.status) && isLast && running;
-  const Icon = STATUS_ICON[activity.status];
+  const Icon = toolIcon(activity.toolName, activity.status);
   return renderPart(
     render,
     "span",

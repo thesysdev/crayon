@@ -4,7 +4,6 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { PageHero, PageHeroAccent } from "../(home)/components/PageHero/PageHero";
 import { Footer } from "../(home)/sections/Footer/Footer";
-import styles from "./page.module.css";
 
 type BlogCardData = {
   href: string;
@@ -30,6 +29,46 @@ const COMMUNITY_CARDS: BlogCardData[] = [
     tag: "Community",
     image: "/images/blog/community-japan.png",
   },
+  {
+    href: "https://note.com/quick_pipit7468/n/n89d6125725ca",
+    title: "AIの回答が「画面」で返ってくる — Generative UIの3つのアプローチ",
+    author: "Komugi",
+    date: "2026-07-08",
+    featured: false,
+    external: true,
+    tag: "Community",
+    image: "/images/blog/community-note.jpg",
+  },
+  {
+    href: "https://zenn.dev/sc30gsw/articles/d7320f1247b785",
+    title: "Generative UIにJSONは最適なのか？ OpenUIという選択肢",
+    author: "kaito",
+    date: "2026-06-26",
+    featured: false,
+    external: true,
+    tag: "Community",
+    image: "/images/blog/community-zenn.jpg",
+  },
+  {
+    href: "https://ai-heartland.com/tool/openui-generative-ui/",
+    title: "OpenUI徹底解説 — LLMがUIを生成するオープン標準OSS",
+    author: "AI Heartland",
+    date: "2026-06-25",
+    featured: false,
+    external: true,
+    tag: "Community",
+    image: "/images/blog/community-ai-heartland.jpg",
+  },
+  {
+    href: "https://blog.oodle.ai/how-we-taught-our-ai-to-draw/",
+    title: "How we taught our AI to draw",
+    author: "Gaurav Maheshwari",
+    date: "2026-06-12",
+    featured: false,
+    external: true,
+    tag: "Community",
+    image: "/images/blog/community-oodle.jpg",
+  },
 ];
 
 function formatDate(date: string | Date) {
@@ -46,7 +85,8 @@ function formatDate(date: string | Date) {
 const TITLE_CLASS =
   "text-[length:var(--home-heading-size)] font-[family-name:var(--home-font-display)] font-medium leading-[var(--home-heading-leading)] tracking-[var(--home-heading-tracking)] text-[color:var(--openui-text-neutral-primary)]";
 
-const CARD_CLASS = `group flex flex-col overflow-hidden rounded-[var(--openui-radius-4xl)] border border-[var(--home-hairline)] bg-[var(--openui-foreground)] p-2 no-underline shadow-[var(--home-card-lift)] ${styles.card}`;
+const CARD_CLASS =
+  "group flex flex-col overflow-hidden rounded-[var(--openui-radius-4xl)] border border-[var(--home-hairline)] bg-[var(--openui-foreground)] p-2 no-underline shadow-[var(--home-card-lift)]";
 
 function TagChip({ children }: { children: ReactNode }) {
   return (
@@ -86,7 +126,12 @@ function FeaturedCard({ card }: { card: BlogCardData }) {
     <Link href={card.href} className={`${CARD_CLASS} md:min-h-[24rem] md:flex-row`}>
       <div className="relative flex h-44 w-full shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[var(--openui-highlight)] md:h-auto md:w-1/2">
         {card.image ? (
-          <img src={card.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          <img
+            src={card.image}
+            alt=""
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
         ) : (
           <ImagePlaceholder size="large" />
         )}
@@ -111,14 +156,21 @@ function FeaturedCard({ card }: { card: BlogCardData }) {
 
 // Regular: image on top, no description.
 function RegularCard({ card }: { card: BlogCardData }) {
-  const externalProps = card.external
-    ? { target: "_blank", rel: "noopener noreferrer" }
-    : {};
+  const externalProps = card.external ? { target: "_blank", rel: "noopener noreferrer" } : {};
   return (
-    <Link href={card.href} {...externalProps} className={`${CARD_CLASS} min-h-[15rem] max-md:min-h-0`}>
+    <Link
+      href={card.href}
+      {...externalProps}
+      className={`${CARD_CLASS} min-h-[15rem] max-md:min-h-0`}
+    >
       <div className="relative flex h-44 w-full shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[var(--openui-highlight)] md:h-60">
         {card.image ? (
-          <img src={card.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          <img
+            src={card.image}
+            alt=""
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
         ) : (
           <ImagePlaceholder />
         )}
@@ -157,11 +209,13 @@ export default function BlogIndex() {
     };
   });
 
-  const allCards = [...localCards, ...COMMUNITY_CARDS].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-  );
-  const featuredCards = allCards.filter((card) => card.featured);
-  const regularCards = allCards.filter((card) => !card.featured);
+  const byDateDesc = (a: BlogCardData, b: BlogCardData) =>
+    new Date(b.date).getTime() - new Date(a.date).getTime();
+
+  const sortedLocal = [...localCards].sort(byDateDesc);
+  const featuredCards = sortedLocal.filter((card) => card.featured);
+  const regularCards = sortedLocal.filter((card) => !card.featured);
+  const communityCards = [...COMMUNITY_CARDS].sort(byDateDesc);
 
   return (
     <div className="flex min-h-screen flex-col bg-[var(--openui-foreground)] [[data-theme=dark]_&]:bg-black">
@@ -189,6 +243,13 @@ export default function BlogIndex() {
                   <RegularCard key={card.href} card={card} />
                 ))}
               </div>
+            </div>
+
+            <h2 className={`${TITLE_CLASS} mt-20 mb-6 max-md:mt-12`}>From the community</h2>
+            <div className="grid grid-cols-1 gap-5 auto-rows-fr md:grid-cols-2">
+              {communityCards.map((card) => (
+                <RegularCard key={card.href} card={card} />
+              ))}
             </div>
           </div>
         </section>

@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
-import { ThemeProvider } from "@/hooks/use-system-theme";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
+const inter = Inter({
+  weight: ["400", "500", "600"],
+});
+
 export const metadata: Metadata = {
-  title: "OpenUI Chat",
-  description: "Generative UI Chat with OpenAI SDK",
+  title: "OpenUI Cloud",
+  description: "Managed OpenUI Cloud Chat with web, image & artifact tools",
 };
 
 export default function RootLayout({
@@ -13,10 +17,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body>
-        <ThemeProvider>{children}</ThemeProvider>
-      </body>
+    <html lang="en" suppressHydrationWarning>
+      <body className={inter.className}>{children}</body>
     </html>
   );
 }

@@ -1,0 +1,69 @@
+---
+title: "@openuidev/devtools"
+description: API reference for the development-only devtools widget.
+---
+
+Development-only UI widget for OpenUI apps. Renders a floating button that opens a left side drawer listing the events captured by [`@openuidev/observability`](https://github.com/thesysdev/openui/blob/HEAD/packages/observability) — level, a one-line summary, and a drill-in stack trace per entry. Development only visibility is controlled by the environment flag.
+
+<img
+  src="/images/api-reference/devtools.gif"
+  alt="OpenUI DevTools drawer displaying captured events in an OpenUI app"
+  className="w-full rounded-lg border"
+/>
+
+## Installation
+
+### CDN (via `react-lang`)
+
+If your app uses [`@openuidev/react-lang`](/docs/api-reference/react-lang), the widget shows up automatically in development.
+
+### Package Installation
+
+Install the package and render `<OpenUIDevtools />` when you want custom props. A manually mounted instance always wins over the auto-mount:
+
+```bash tab="pnpm" tab-group="pkg"
+pnpm add -D @openuidev/devtools
+```
+
+```bash tab="bun" tab-group="pkg"
+bun add -d @openuidev/devtools
+```
+
+```bash tab="yarn" tab-group="pkg"
+yarn add -D @openuidev/devtools
+```
+
+```bash tab="npm" tab-group="pkg"
+npm install -D @openuidev/devtools
+```
+
+## `OpenUIDevtools`
+
+Mount it once, anywhere in your tree. It renders nothing in production builds (`NODE_ENV === "production"`) unless `enabled` is passed explicitly.
+
+```tsx
+import { OpenUIDevtools } from "@openuidev/devtools";
+
+function App() {
+  return (
+    <>
+      {/* your app */}
+      {process.env.NODE_ENV === "development" && (
+        <OpenUIDevtools theme="dark" position="bottom-left" maxEvents={100} />
+      )}
+    </>
+  );
+}
+```
+
+### Props
+
+| Prop              | Default          | Description                                                      |
+| ----------------- | ---------------- | ---------------------------------------------------------------- |
+| `enabled`         | dev-only         | Force the widget on/off.                                         |
+| `position`        | `"bottom-right"` | Corner for the toggle button: `top-left`/`top-right`/`bottom-*`. |
+| `maxEvents`       | `50`             | How many events to keep; oldest are dropped first.               |
+| `errorsOnly`      | `false`          | Initial state of the "errors only" display filter.               |
+| `autoOpenOnError` | `true`           | Initial state of the drawer's "auto-open on error" checkbox.     |
+| `theme`           | `"light"`        | `"light"` or `"dark"` theme for the drawer.                      |
+| `version`         | `@latest`        | CDN pin: `"0"` (major), `"0.1"` (minor), or `"0.1.0"` (exact).    |

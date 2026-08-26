@@ -13,16 +13,14 @@ export interface FetchLLMOptions {
   headers?: Record<string, string>;
   /** Override fetch implementation (for tests, custom auth wrappers, etc.). */
   fetch?: typeof fetch;
+  /** Extra fields merged into the request body (e.g. `model`) */
+  body?: Record<string, unknown>;
 }
 
 /**
  * Generic HTTP-based LLM adapter. POSTs an AG-UI `RunAgentInput`-shaped body
  * (`{ threadId, runId, messages, tools, context }`, messages in the chosen wire
  * format) to `url` and returns the streaming `Response` for downstream processing.
- *
- * The fields the {@link ChatLLM} `send` contract doesn't carry are defaulted
- * here so the body satisfies a spec-compliant AG-UI agent: a fresh `runId` is
- * generated per send, and `tools`/`context` default to `[]` (override via options).
  */
 export function fetchLLM({
   url,
@@ -30,11 +28,12 @@ export function fetchLLM({
   messageFormat = identityMessageFormat,
   headers,
   fetch: customFetch,
+  body,
 }: FetchLLMOptions): ChatLLM {
   const fetchImpl = customFetch ?? globalThis.fetch.bind(globalThis);
   return {
     send: ({ threadId, messages, signal }) => {
-      const wire = messageFormat.toApi(messages);
+      const runId = crypto.randomUUID();
       return fetchImpl(url, {
         method: "POST",
         headers: {
@@ -42,11 +41,12 @@ export function fetchLLM({
           ...headers,
         },
         body: JSON.stringify({
-          threadId,
-          runId: crypto.randomUUID(),
-          messages: wire,
+          ...body,
           tools: [],
           context: [],
+          threadId,
+          runId,
+          messages: messageFormat.toApi(messages),
         }),
         signal,
       });

@@ -105,6 +105,27 @@ const merged = mergeStatements(original, patch);
 
 **`ToolSpec`** describes a tool for prompt generation (name, description, inputSchema, outputSchema). Shape inspired by MCP's tool schema.
 
+## Telemetry
+
+Lang Core sends pseudonymous installation telemetry during `postinstall`.
+Runtime usage telemetry is opt-in: set `OPENUI_RUNTIME_TELEMETRY_ENABLED=1` to allow
+limited telemetry from 10% of eligible server-side `generateSystemPrompt()` and
+`createParser().parse()` calls. Parser events include only the outcome, incomplete/root
+booleans, structural counts, fixed validation error-code counts, runtime metadata, and
+an optional locally hashed project identifier. They do not include OpenUI Lang source,
+schemas, component/prop/statement names, validation messages or paths, unresolved or
+orphaned names, exception content, credentials, application-user identifiers, or chat
+data. Browser and worker runtimes do not send runtime telemetry. Direct low-level
+`parse()` and streaming-parser calls are not included in the parser event.
+
+Capture servers can observe standard network metadata such as source IP even though
+it is not included in event properties.
+
+Set `OPENUI_TELEMETRY_DISABLED=1` or `DO_NOT_TRACK=1` to disable telemetry
+(these also override `OPENUI_RUNTIME_TELEMETRY_ENABLED`). Set
+`OPENUI_TELEMETRY_DEBUG=1` to print the installation payload to stdout without
+sending it.
+
 ### Runtime
 
 | Export | Description |

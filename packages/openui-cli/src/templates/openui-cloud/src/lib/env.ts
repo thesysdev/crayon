@@ -7,3 +7,7 @@ export function requiredEnv(name: string): string {
 export function envOr(name: string, fallback: string): string {
   return process.env[name] || fallback;
 }
+
+export function isDevelopment() {
+  return process.env.NODE_ENV === "development";
+}

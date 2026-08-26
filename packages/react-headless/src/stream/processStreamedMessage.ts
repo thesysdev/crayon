@@ -42,6 +42,9 @@ export const processStreamedMessage = async ({
 
   let isFirst = true;
 
+  // The wire message-item id whose text currently streams into currentMessage.
+  let currentTextItemId: string | null = null;
+
   // Tool messages by toolCallId, so repeated TOOL_CALL_RESULTs for the same
   // call UPDATE one message in place instead of duplicating it.
   const toolMessagesByCallId = new Map<string, ToolMessage>();
@@ -59,18 +62,61 @@ export const processStreamedMessage = async ({
     });
   };
 
+  /** Flush the open assistant and start a fresh one (interleaved segments). */
+  const startNewAssistantSegment = () => {
+    if (rafId !== null) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+      if (!isFirst) updateMessage(currentMessage);
+    }
+    currentMessage = {
+      id: crypto.randomUUID(),
+      role: "assistant",
+      content: "",
+      toolCalls: [],
+    };
+    isFirst = true;
+    currentTextItemId = null;
+  };
+
+  const messageHasBody = (msg: AssistantMessage) =>
+    (msg.content?.length ?? 0) > 0 || (msg.toolCalls?.length ?? 0) > 0;
+
+  /** Publish the open assistant only once it has text or tool calls — never an empty shell. */
+  const commitCurrentMessage = () => {
+    if (isFirst) {
+      if (!messageHasBody(currentMessage)) return;
+      createMessage(currentMessage);
+      isFirst = false;
+    } else {
+      debouncedUpdate(currentMessage);
+    }
+  };
+
   for await (const event of adapter.parse(response)) {
     switch (event.type) {
       // TEXT_MESSAGE_CHUNK and TEXT_MESSAGE_CONTENT are very similar events but TEXT_MESSAGE_CHUNK
       // optionally allows for a role change. Since we don't support role changes in processMessage
       // right now, we treat both the same.
       case EventType.TEXT_MESSAGE_CHUNK:
-      case EventType.TEXT_MESSAGE_CONTENT:
+      case EventType.TEXT_MESSAGE_CONTENT: {
+        // Ignore empty deltas — a zero-length content event after tools would
+        // otherwise open a blank assistant segment that shadows the real answer
+        // (common around parallel tool calls when a new message item is opened).
+        if (!event.delta) break;
+        // Some adapters (LangGraph / ChatOpenAI Responses) keep one wire
+        // messageId for a whole model step even when Responses interleaved
+        // several message items. Text after tools means a new segment — same
+        // split Responses adapters express via a new TEXT_MESSAGE_START id.
+        if ((currentMessage.toolCalls?.length ?? 0) > 0) {
+          startNewAssistantSegment();
+        }
         currentMessage = {
           ...currentMessage,
           content: (currentMessage.content || "") + event.delta,
         };
         break;
+      }
 
       case EventType.TOOL_CALL_START:
         inFlightToolCallIds.add(event.toolCallId);
@@ -153,13 +199,21 @@ export const processStreamedMessage = async ({
         break;
       }
 
-      case EventType.TEXT_MESSAGE_START:
-        // The optimistic id is kept regardless of `event.messageId` — swapping
-        // ids mid-stream by deleting + re-creating the assistant message
-        // breaks ordering when tool messages have already been appended
-        // between the original create and this event (e.g. from
-        // TOOL_CALL_RESULT). Persistence layers should map ids on save.
+      case EventType.TEXT_MESSAGE_START: {
+        // A DIFFERENT item id after content/tool calls have accumulated means
+        // the model opened a new output message item — interleaving prose with
+        // tool calls (several sections in one run). Split into a fresh assistant
+        // message so the live structure matches what reload reconstructs from
+        // storage
+        const startId = (event as { messageId?: string }).messageId ?? null;
+        const hasBody =
+          (currentMessage.content?.length ?? 0) > 0 || (currentMessage.toolCalls?.length ?? 0) > 0;
+        if (hasBody && startId !== currentTextItemId) {
+          startNewAssistantSegment();
+        }
+        currentTextItemId = startId;
         break;
+      }
 
       case EventType.TOOL_CALL_RESULT: {
         // Result landed → no longer executing / in flight.
@@ -224,19 +278,16 @@ export const processStreamedMessage = async ({
       }
     }
 
-    if (isFirst) {
-      createMessage(currentMessage);
-      isFirst = false;
-    } else {
-      // debounce the message update using raf
-      debouncedUpdate(currentMessage);
-    }
+    commitCurrentMessage();
   }
 
   if (rafId !== null) {
     // flush any update
     cancelAnimationFrame(rafId);
     updateMessage(currentMessage);
+  } else if (isFirst && messageHasBody(currentMessage)) {
+    // Last event was a no-op (e.g. empty delta) after body landed in memory only.
+    createMessage(currentMessage);
   }
 
   return currentMessage;

@@ -56,18 +56,32 @@ Build order: **`react-headless`** → `react-lang` → `react-ui`. This package 
 1. Create a file in `src/stream/adapters/` implementing the `MessageFormat` interface (`toApi` + `fromApi`).
 2. Export it from `src/stream/adapters/index.ts` and `src/index.ts`.
 
-### ChatProviderProps config pattern
+### ChatProviderProps
 
-`ChatProviderProps` uses a **discriminated union** so TypeScript enforces "URL string OR custom functions, not both":
+```ts
+interface ChatProviderProps {
+  llm: ChatLLM; // required — drives message sending and stream parsing
+  storage?: ChatStorage; // default: internal in-memory storage (no persistence)
+  artifactRenderers?: ReadonlyArray<ArtifactRendererConfig<any>>; // captured at mount
+  artifactCategories?: ArtifactCategory[];
+  children: React.ReactNode;
+}
+```
 
-- `ThreadApiConfig`: provide `threadApiUrl` string **or** individual functions (`fetchThreadList`, `createThread`, etc.)
-- `ChatApiConfig`: provide `apiUrl` string **or** a `processMessage` function
+Typical wiring uses the built-in adapter factories:
 
-When `threadApiUrl` is given, `createChatStore` generates default REST implementations (`/get`, `/create`, `/delete/:id`, `/update/:id`, `/get/:id`).
+```tsx
+<ChatProvider
+  llm={fetchLLM({ url: "/api/chat", streamAdapter: openAIAdapter() })}
+  storage={restStorage({ baseUrl: "/api/threads" })}
+>
+```
+
+- **Stream adapters are factories** — pass `openAIAdapter()`, never the bare `openAIAdapter` function.
 
 ### How streaming works
 
-`processMessage()` in the store → `fetch(apiUrl)` → `StreamProtocolAdapter.parse(response)` → yields `AGUIEvent`s → `processStreamedMessage()` accumulates text deltas and tool calls into an `AssistantMessage`, calling `createMessage` on first event and `updateMessage` on subsequent events.
+`processMessage()` in the store → `llm.send({ threadId, messages, signal })` → `llm.streamProtocol.parse(response)` → yields `AGUIEvent`s → `processStreamedMessage()` accumulates text deltas and tool calls into an `AssistantMessage`, calling `createMessage` on first event and `updateMessage` on subsequent events.
 
 ### OpenAI adapter types
 

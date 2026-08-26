@@ -1,4 +1,6 @@
+import { recordSystemPromptGeneration } from "../telemetry/runtime";
 import { BUILTINS, LAZY_BUILTIN_DEFS } from "./builtins";
+import type { LibraryJSONSchema } from "./types";
 
 // ─── PromptSpec types (JSON-serializable, no Zod deps) ──────────────────────
 
@@ -25,10 +27,14 @@ export interface ComponentGroup {
   notes?: string[];
 }
 
-export interface PromptSpec {
+export interface BaseSpec {
+  id?: string;
   root?: string;
   components: Record<string, ComponentPromptSpec>;
   componentGroups?: ComponentGroup[];
+}
+
+export interface PromptSpec extends BaseSpec {
   tools?: (string | ToolSpec)[];
   editMode?: boolean;
   inlineMode?: boolean;
@@ -42,6 +48,10 @@ export interface PromptSpec {
   /** Tool-specific examples (Query/Mutation patterns). Both `examples` and `toolExamples` are included when present. */
   toolExamples?: string[];
   additionalRules?: string[];
+}
+
+export interface LibrarySpec extends BaseSpec {
+  schema?: LibraryJSONSchema;
 }
 
 // ─── JSON Schema → type string helper ───────────────────────────────────────
@@ -429,6 +439,9 @@ function importantRules(
       `${flags.toolCalls ? "4" : "3"}. Every $binding appears in at least one component or expression.`,
     );
   }
+  if (flags.toolCalls && flags.bindings) {
+    verifyLines.push("5. Every visible filter $binding appears in at least one Query args object.");
+  }
 
   return `## Important Rules
 - Choose components that best represent the content (tables for comparisons, charts for trends, forms for input, etc.)
@@ -444,8 +457,7 @@ function renderToolSignature(tool: ToolSpec): string {
   let args = "";
   if (tool.inputSchema) {
     const props = (tool.inputSchema as any).properties as
-      | Record<string, Record<string, unknown>>
-      | undefined;
+      Record<string, Record<string, unknown>> | undefined;
     const required = ((tool.inputSchema as any).required as string[]) ?? [];
     if (props && Object.keys(props).length > 0) {
       args = Object.entries(props)
@@ -583,6 +595,7 @@ function generateComponentSignatures(
 
 // ─── Prompt assembly ────────────────────────────────────────────────────────
 
+/** @deprecated Use {@link generateSystemPrompt}. */
 export function generatePrompt(spec: PromptSpec): string {
   const rootName = spec.root ?? "Root";
   const hasTools = !!spec.tools?.length;
@@ -680,4 +693,36 @@ export function generatePrompt(spec: PromptSpec): string {
   }
 
   return parts.join("\n");
+}
+
+// ─── System prompt (library + options + instructions) ───────────────────────
+
+/** Prompt options for {@link generateSystemPrompt} */
+export type SystemPromptOptions = Omit<PromptSpec, keyof BaseSpec>;
+
+/** Object input for {@link generateSystemPrompt}. */
+export interface SystemPromptSpec {
+  library: LibrarySpec;
+  promptOptions?: SystemPromptOptions;
+}
+
+/** Render the full system prompt for a library. */
+export function generateSystemPrompt(spec: SystemPromptSpec): string;
+/** @deprecated Pass `{ library, promptOptions, instructions }` instead. Removed at the next major. */
+export function generateSystemPrompt(spec: PromptSpec): string;
+export function generateSystemPrompt(spec: SystemPromptSpec | PromptSpec): string {
+  if (!isSystemPromptSpec(spec)) {
+    const prompt = generatePrompt(spec);
+    recordSystemPromptGeneration(spec, "legacy_prompt_spec");
+    return prompt;
+  }
+  const merged: PromptSpec = { ...spec.library, ...spec.promptOptions };
+  const prompt = generatePrompt(merged);
+  recordSystemPromptGeneration(merged, "library_spec");
+  return prompt;
+}
+
+// use `library` to discriminate SystemPromptSpec from the deprecated base-PromptSpec
+function isSystemPromptSpec(spec: SystemPromptSpec | PromptSpec): spec is SystemPromptSpec {
+  return "library" in spec && typeof (spec as SystemPromptSpec).library === "object";
 }

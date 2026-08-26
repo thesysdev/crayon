@@ -40,9 +40,7 @@ export interface RendererProps {
    * - MCP client: any object with `callTool({ name, arguments })` (e.g. from @modelcontextprotocol/sdk)
    */
   toolProvider?:
-    | Record<string, (args: Record<string, unknown>) => Promise<unknown>>
-    | McpClientLike
-    | null;
+    Record<string, (args: Record<string, unknown>) => Promise<unknown>> | McpClientLike | null;
   /** Custom loading indicator shown while queries are fetching. Defaults to a spinner. */
   queryLoader?: React.ReactNode;
   /**
@@ -52,6 +50,7 @@ export interface RendererProps {
    * Called with [] when all errors are resolved.
    */
   onError?: (errors: OpenUIError[]) => void;
+  publishObservability?: boolean;
 }
 
 // ─── Error boundary ───
@@ -209,6 +208,7 @@ export function Renderer({
   toolProvider,
   queryLoader,
   onError,
+  publishObservability,
 }: RendererProps) {
   useInsertionEffect(() => {
     ensureLoadingStyle();
@@ -255,6 +255,7 @@ export function Renderer({
       initialState,
       toolProvider: resolvedToolProvider,
       onError,
+      publishObservability,
     },
     renderDeep,
   );

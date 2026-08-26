@@ -4,12 +4,7 @@ import { ButtonHTMLAttributes, forwardRef, ReactNode } from "react";
 
 type IconButtonVariant = "primary" | "secondary" | "tertiary";
 type IconButtonSize =
-  | "3-extra-small"
-  | "2-extra-small"
-  | "extra-small"
-  | "small"
-  | "medium"
-  | "large";
+  "3-extra-small" | "2-extra-small" | "extra-small" | "small" | "medium" | "large";
 type IconButtonShape = "square" | "circle";
 type IconButtonAppearance = "normal" | "destructive";
 

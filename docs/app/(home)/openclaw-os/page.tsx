@@ -59,13 +59,13 @@ export default function OpenClawOSPage() {
             />
           }
           align="left"
-          desktopPreviewImage="/openclaw-os/hero-light.svg"
-          desktopPreviewImageDark="/openclaw-os/hero-dark.svg"
+          desktopPreviewImage="/openclaw-os/hero-light.webp"
+          desktopPreviewImageDark="/openclaw-os/hero-dark.webp"
           desktopPreviewImageAlt="OpenClaw OS workspace"
           desktopPreviewImageWidth={1568}
           desktopPreviewImageHeight={940}
-          mobilePreviewImage="/openclaw-os/hero-light.svg"
-          mobilePreviewImageDark="/openclaw-os/hero-dark.svg"
+          mobilePreviewImage="/openclaw-os/hero-light.webp"
+          mobilePreviewImageDark="/openclaw-os/hero-dark.webp"
           mobilePreviewImageAlt="OpenClaw OS workspace"
           mobilePreviewImageWidth={1568}
           mobilePreviewImageHeight={940}

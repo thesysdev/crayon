@@ -105,8 +105,7 @@ export const useScrollToBottom = <T extends HTMLElement | null, L extends { id: 
       }
     } else {
       const lastUserMessageDiv = Array.from(element.querySelectorAll(userMessageSelector)).pop() as
-        | HTMLElement
-        | undefined;
+        HTMLElement | undefined;
       const lastUserMessageNextSibling = lastUserMessageDiv?.nextElementSibling;
       if (
         lastUserMessageDiv &&

@@ -9,6 +9,7 @@ import {
 import { ArrowLeft, MessageSquare } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "../Button";
+import { DotMatrixLoader } from "../DotMatrixLoader";
 import { IconButton } from "../IconButton";
 import { artifactListPath } from "./_shared/artifactPaths";
 import { useNav } from "./_shared/navContext";
@@ -99,7 +100,11 @@ export const ArtifactViewPage = ({
       </div>
     );
   } else if (!artifact) {
-    body = <div className="openui-agent-artifact-view__loading">Loading…</div>;
+    body = (
+      <div className="openui-agent-artifact-view__loading">
+        <DotMatrixLoader />
+      </div>
+    );
   } else if (!renderer) {
     body = (
       <div className="openui-agent-artifact-view__error">

@@ -1,8 +1,8 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
-import { CLOUD_SECTION_ID } from "../CloudSection/CloudSection";
 import styles from "./CloudBanner.module.css";
 
 export function CloudBanner() {
@@ -10,16 +10,10 @@ export function CloudBanner() {
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
 
-  // Show once past the first screen, but hide near the top and once the OpenUI
-  // Cloud section has been reached (and stay hidden through and past it).
+  // Appear as soon as the hero is scrolled past, and stay for the rest of the page.
   useEffect(() => {
     const update = () => {
-      const vh = window.innerHeight;
-      const past = window.scrollY > vh * 0.6;
-      const el = document.getElementById(CLOUD_SECTION_ID);
-      const rect = el?.getBoundingClientRect();
-      const reachedCloud = rect ? rect.top <= vh * 0.75 : false;
-      setShouldShow(past && !reachedCloud);
+      setShouldShow(window.scrollY > window.innerHeight * 0.6);
     };
     update();
     window.addEventListener("scroll", update, { passive: true });
@@ -32,39 +26,40 @@ export function CloudBanner() {
 
   // Mount, then open just after paint. On hide, play the exit before unmounting.
   useEffect(() => {
+    const timers: number[] = [];
+    const schedule = (callback: () => void, delay: number) => {
+      timers.push(window.setTimeout(callback, delay));
+    };
+
     if (shouldShow) {
-      setMounted(true);
-      const id = setTimeout(() => setOpen(true), 20);
-      return () => clearTimeout(id);
+      schedule(() => setMounted(true), 0);
+      schedule(() => setOpen(true), 20);
+    } else {
+      schedule(() => setOpen(false), 0);
+      schedule(() => setMounted(false), 550);
     }
-    setOpen(false);
-    const id = setTimeout(() => setMounted(false), 550);
-    return () => clearTimeout(id);
+
+    return () => timers.forEach(window.clearTimeout);
   }, [shouldShow]);
 
   if (!mounted) return null;
 
-  const scrollToCloud = () => {
-    document.getElementById(CLOUD_SECTION_ID)?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
   return (
-    <button
-      type="button"
-      onClick={scrollToCloud}
+    <Link
+      href="/benchmarks"
       className={`${styles.banner} ${open ? styles.open : ""}`.trim()}
-      aria-label="Introducing OpenUI Cloud. Generative UI, ready for production. Jump to section."
+      aria-label="OpenUI Benchmarks: Compare Generative UI frameworks across models. View the results."
     >
       <span className={styles.content}>
         <span className={styles.text}>
           <span className={styles.lead}>
-            Introducing OpenUI <span className={styles.tag}>Cloud</span>
+            OpenUI Benchmarks
             <span className={styles.colon}> :</span>
           </span>{" "}
-          <span className={styles.rest}>Production-ready Generative UI</span>
+          <span className={styles.rest}>Compare Generative UI frameworks across models</span>
         </span>
-        <ChevronDown className={styles.chevron} size={18} strokeWidth={2.25} aria-hidden="true" />
+        <ArrowRight className={styles.chevron} size={18} strokeWidth={2.25} aria-hidden="true" />
       </span>
-    </button>
+    </Link>
   );
 }

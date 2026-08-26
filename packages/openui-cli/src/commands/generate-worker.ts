@@ -1,10 +1,12 @@
 /**
  * Worker script that bundles a user's library file and outputs the system
- * prompt or JSON schema. Asset imports are stubbed during bundling so React
- * component modules can be evaluated without CSS/image/font loaders.
+ * prompt, JSON schema, or serialized library spec. Asset imports are stubbed
+ * during bundling so React component modules can be evaluated without
+ * CSS/image/font loaders.
  *
- * argv: [entryPath, exportName?, "--json-schema"?, "--prompt-options", name?]
- * stdout: the prompt string or JSON schema
+ * argv: [entryPath, exportName?, "--json-schema"?, "--spec"?, "--prompt-options", name?]
+ * stdout: one artifact for the mode flags; default emits BOTH the prompt and
+ * the spec JSON, joined by SEPARATION_DELIMITER (generate.ts splits them).
  */
 
 import * as fs from "fs";
@@ -12,6 +14,7 @@ import * as os from "os";
 import * as path from "path";
 
 import * as esbuild from "esbuild";
+import { SEPARATION_DELIMITER } from "../lib/utils";
 
 // ── Main ──
 
@@ -130,9 +133,10 @@ async function main(): Promise<void> {
   }
 
   const jsonSchema = args.includes("--json-schema");
+  const spec = args.includes("--spec");
   const promptOptionsIdx = args.indexOf("--prompt-options");
   const promptOptionsName = promptOptionsIdx !== -1 ? args[promptOptionsIdx + 1] : undefined;
-  const reserved = new Set(["--json-schema", "--prompt-options"]);
+  const reserved = new Set(["--json-schema", "--spec", "--prompt-options"]);
   if (promptOptionsName) reserved.add(promptOptionsName);
   const exportName = args.find(
     (a, i) => a !== entryPath && !reserved.has(a) && !(i > 0 && args[i - 1] === "--prompt-options"),
@@ -183,12 +187,19 @@ async function main(): Promise<void> {
   }
 
   let output: string;
-  if (jsonSchema) {
+  if (spec) {
+    output = JSON.stringify({ ...library.toSpec(), schema: library.toJSONSchema() }, null, 2);
+  } else if (jsonSchema) {
     // Output a PromptSpec-compatible JSON with component signatures, groups, and JSON schema.
-    output = JSON.stringify(library.toSpec(), null, 2);
+    output = JSON.stringify(library.toJSONSchema(), null, 2);
   } else {
+    // This behaviour will be deprecated in next major release
+    // and only export standardised payloads
     const promptOptions = findPromptOptions(mod, promptOptionsName);
-    output = library.prompt(promptOptions);
+    output = [
+      library.prompt(promptOptions),
+      JSON.stringify({ ...library.toSpec(), schema: library.toJSONSchema() }, null, 2),
+    ].join(SEPARATION_DELIMITER); // record-separator-joined so generate.ts can split multi-artifact payloads
   }
 
   process.stdout.write(output);

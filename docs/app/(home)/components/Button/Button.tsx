@@ -1,5 +1,6 @@
 "use client";
 
+import { copyText } from "@/lib/copy-text";
 import { Check, Copy } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from "react";
@@ -49,37 +50,6 @@ function CopyStatusIcon({
   );
 }
 
-export async function copyText(text: string): Promise<boolean> {
-  if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
-    try {
-      await navigator.clipboard.writeText(text);
-      return true;
-    } catch {
-      // fall through to execCommand fallback
-    }
-  }
-
-  if (typeof document === "undefined") return false;
-
-  try {
-    const textarea = document.createElement("textarea");
-    textarea.value = text;
-    textarea.setAttribute("readonly", "");
-    textarea.style.position = "fixed";
-    textarea.style.top = "0";
-    textarea.style.left = "0";
-    textarea.style.opacity = "0";
-    textarea.style.pointerEvents = "none";
-    document.body.appendChild(textarea);
-    textarea.select();
-    const ok = document.execCommand("copy");
-    document.body.removeChild(textarea);
-    return ok;
-  } catch {
-    return false;
-  }
-}
-
 interface ClipboardCommandButtonProps {
   command: string;
   children: ReactNode;
@@ -90,6 +60,7 @@ interface ClipboardCommandButtonProps {
   copyIconColor?: string;
   type?: ButtonType;
   onCopyChange?: (copied: boolean) => void;
+  onCopySuccess?: (command: string) => void;
 }
 
 export function ClipboardCommandButton({
@@ -102,6 +73,7 @@ export function ClipboardCommandButton({
   copyIconColor = "white",
   type = "button",
   onCopyChange,
+  onCopySuccess,
 }: ClipboardCommandButtonProps) {
   const [copied, setCopied] = useState(false);
   const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -122,6 +94,7 @@ export function ClipboardCommandButton({
     }
     setCopied(true);
     onCopyChange?.(true);
+    onCopySuccess?.(command);
     if (resetTimeoutRef.current) {
       clearTimeout(resetTimeoutRef.current);
     }

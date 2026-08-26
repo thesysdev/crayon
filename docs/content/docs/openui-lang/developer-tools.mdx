@@ -1,0 +1,65 @@
+---
+title: Developer Tools
+description: Use Inspect and Debug in development to watch streams, catch errors, and try OpenUI Lang against your own components.
+---
+
+OpenUI Developer Tools sit on your running app in development. They do not change production behavior. Two trays share a floating button: **Inspect** shows what the runtime is doing, and **Debug** lets you try OpenUI Lang against the same library the user sees.
+
+See the [`@openuidev/devtools` API reference](/docs/api-reference/devtools) for install, props, and a walkthrough of the widget.
+
+## Installation
+
+Apps created with `@openuidev/cli` already mount the widget. If you use `@openuidev/react-lang`, it also auto-mounts in development — look for the OpenUI Logo in the bottom-right corner.
+
+To add it to an existing app, install the package as a dev dependency:
+
+```bash tab="pnpm" tab-group="pkg"
+pnpm add -D @openuidev/devtools
+```
+
+```bash tab="bun" tab-group="pkg"
+bun add -d @openuidev/devtools
+```
+
+```bash tab="yarn" tab-group="pkg"
+yarn add -D @openuidev/devtools
+```
+
+```bash tab="npm" tab-group="pkg"
+npm install -D @openuidev/devtools
+```
+
+Then mount it once, anywhere in the tree. A manual instance replaces the auto-mounted one, so you can set the corner, theme, or other props:
+
+```tsx
+import { OpenUIDevtools } from "@openuidev/devtools";
+
+export function App() {
+  return (
+    <>
+      {/* your app */}
+      <OpenUIDevtools position="bottom-right" theme="light" />
+    </>
+  );
+}
+```
+
+The widget is omitted from production builds unless you pass `enabled`. See [`OpenUIDevtools` props](/docs/api-reference/devtools) for the full list.
+
+## Inspect
+
+Use Inspect when a stream misbehaves and you want the live record, not a guess from the console.
+
+Each OpenUI Lang render publishes events as it streams and when it settles: the response text, parser issues, errors, and timing. Inspect lists those events in the app. Expand a stream to read the Lang, copy it, or open it in Debug.
+
+The header settings control auto-open on error, an errors-only filter, and light or dark theme. Close the tray with the X or Escape; the page behind stays usable.
+
+## Debug
+
+Use Debug when you already have a response and want to see how _this app_ parses, validates, and renders it.
+
+Expand a settled stream in Inspect and click **Debug**. The editor loads that response. Render uses the `createLibrary()` instance that produced the stream, including your components and CSS. `Query()` and `Mutation()` run against mocked tools so you can iterate without hitting a backend.
+
+The other panels are for diagnosis: Validation groups parse errors, Tree and JSON show the parsed result, and Stream replays the editor chunk by chunk as if the model were still generating. Eject Debug into its own window when you need more space.
+
+[Try Debug here](/debug).

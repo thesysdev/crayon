@@ -54,8 +54,14 @@ export {
 // Shared Collapsible primitive + built-in web-search renderer.
 export { Collapsible } from "./components/_shared/Collapsible";
 
-// Detailed-view exports (DetailedViewPanel/DetailedViewPortalTarget)
+// Detailed-view exports
 export { useActiveDetailedView, useDetailedView } from "@openuidev/react-headless";
+export {
+  DetailedViewPanel,
+  DetailedViewPortalTarget,
+  type DetailedViewPanelProps,
+  type DetailedViewPortalTargetProps,
+} from "./components/AgentInterface/_shared/detailed-view";
 
 export * from "./components/Button";
 export * from "./components/Buttons";
@@ -70,6 +76,7 @@ export * from "./components/CheckBoxGroup";
 export * from "./components/CheckBoxItem";
 export * from "./components/CodeBlock";
 export * from "./components/DatePicker";
+export * from "./components/DotMatrixLoader";
 export * from "./components/FollowUpBlock";
 export * from "./components/FollowUpItem";
 export * from "./components/FormControl";
@@ -82,7 +89,7 @@ export * from "./components/Label";
 export * from "./components/ListBlock";
 export * from "./components/ListItem";
 export * from "./components/MarkDownRenderer";
-export * from "./components/MessageLoading";
+export * from "./components/ModelSwitcher";
 export * from "./components/OpenUIChat";
 export * from "./components/RadioGroup";
 export * from "./components/RadioItem";
@@ -131,3 +138,4 @@ export type {
   ConversationStarterIcon,
   ConversationStarterProps,
 } from "./types/ConversationStarter";
+export type { PromptTemplate } from "./types/PromptTemplate";

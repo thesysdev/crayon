@@ -2,7 +2,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { rimrafSync } = require("rimraf");
 
-const TEMPLATES = ["openui-chat", "openui-cloud"];
+const TEMPLATES = ["openui-self-hosted", "openui-cloud"];
 
 for (const template of TEMPLATES) {
   const srcDir = path.resolve(__dirname, "../src/templates", template);

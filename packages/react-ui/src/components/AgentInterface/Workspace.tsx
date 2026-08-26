@@ -1,4 +1,5 @@
 import {
+  artifactViewId,
   useActiveDetailedView,
   useArtifactCategories,
   useArtifactList,
@@ -14,6 +15,7 @@ import {
   useArtifactIcon,
   useArtifactTypeLabel,
 } from "./ArtifactBrowserPage";
+import { useAgentInterfaceLabels } from "./_shared/labelsContext";
 import { useAgentInterfaceStore } from "./_shared/store";
 
 export interface WorkspaceProps {
@@ -56,6 +58,7 @@ const DefaultWorkspace = ({ className }: { className?: string }) => {
   const { layout } = useLayoutContext();
   const categories = useArtifactCategories();
   const all = useArtifactList();
+  const { workspaceToggle } = useAgentInterfaceLabels();
   const entries = latestPerId(all);
   const shouldShowWorkspace = isWorkspaceOpen && !isDetailedViewActive;
 
@@ -85,7 +88,9 @@ const DefaultWorkspace = ({ className }: { className?: string }) => {
           className,
         )}
       >
-        {/* No top bar / tabs for now — the rail shows every section. */}
+        <div className="openui-agent-workspace-sidebar__header">
+          <h2 className="openui-agent-workspace-sidebar__title">{workspaceToggle}</h2>
+        </div>
         <div className="openui-agent-workspace-sidebar__content">
           {categories.length > 0 ? (
             <WorkspaceSections categories={categories} entries={entries} />
@@ -152,7 +157,7 @@ const WorkspaceSection = ({
 };
 
 const WorkspaceItem = ({ entry }: { entry: ArtifactEntry }) => {
-  const viewId = `${entry.id}:${entry.version}`;
+  const viewId = artifactViewId(entry.id, entry.version);
   const { isActive } = useDetailedView(viewId);
   const store = useDetailedViewStore();
   const onClick = () => store.getState().setActiveDetailedView(viewId);

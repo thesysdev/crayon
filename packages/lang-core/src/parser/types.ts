@@ -1,18 +1,22 @@
 import type { ASTNode } from "./ast";
 
+export type JSONSchemaProperty = Record<string, unknown>;
+export type JSONSchemaDef = {
+  properties?: JSONSchemaProperty;
+  required?: string[];
+  description?: string;
+};
+
 /**
  * The JSON Schema document produced by `library.toJSONSchema()`.
  * All component schemas live in `$defs`, keyed by component name.
  */
 export interface LibraryJSONSchema {
-  $defs?: Record<
-    string,
-    {
-      properties?: Record<string, unknown>;
-      required?: string[];
-    }
-  >;
+  $defs?: Record<string, JSONSchemaDef>;
 }
+
+/** Scalar JSON Schema types we can reliably check a positional literal against. */
+export type ScalarParamType = "string" | "number" | "boolean";
 
 export interface ParamDef {
   /** Parameter name, e.g. "title", "columns". */
@@ -21,6 +25,8 @@ export interface ParamDef {
   required: boolean;
   /** Default value from JSON Schema — used when the required field is missing/null. */
   defaultValue?: unknown;
+  /** The raw JSON Schema fragment for this param. */
+  schema?: unknown;
 }
 
 /** Internal parameter map for positional-arg to named-prop mapping. */
@@ -73,7 +79,8 @@ export type ValidationErrorCode =
   | "null-required"
   | "unknown-component"
   | "inline-reserved"
-  | "excess-args";
+  | "excess-args"
+  | "type-mismatch";
 
 /**
  * A prop validation error. Components with missing required props are
@@ -90,6 +97,19 @@ export interface ValidationError {
   message: string;
   /** Statement name that triggered the error (e.g. "header", "chart"). */
   statementId?: string;
+}
+
+export interface MaterializeCtx {
+  syms: Map<string, ASTNode>;
+  cat: ParamMap | undefined;
+  errors: ValidationError[];
+  unres: string[];
+  visited: Set<string>;
+  partial: boolean;
+  /** Tracks which statement is currently being materialized (for error attribution). */
+  currentStatementId?: string;
+  /** Statement IDs not yet reached — delete as they're touched. Remaining = orphaned. */
+  unreached?: Set<string>;
 }
 
 /**

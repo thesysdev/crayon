@@ -50,6 +50,7 @@ export const Slider = defineComponent({
           }
         }}
         disabled={isStreaming}
+        isStreaming={isStreaming}
       />
     );
   },

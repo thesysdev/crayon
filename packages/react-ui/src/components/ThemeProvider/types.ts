@@ -4,17 +4,25 @@ export type ThemeMode = "light" | "dark";
 /**
  * Optional color arrays used by chart components.
  * Each palette overrides the default for its specific chart type.
+ *
+ * Single source of truth for palette keys: the `ChartColorPalette` type is
+ * derived from this array and the runtime theme-key validators consume it,
+ * so a new palette is added in exactly one place.
  */
-export interface ChartColorPalette {
-  defaultChartPalette?: string[];
-  barChartPalette?: string[];
-  lineChartPalette?: string[];
-  areaChartPalette?: string[];
-  pieChartPalette?: string[];
-  radarChartPalette?: string[];
-  radialChartPalette?: string[];
-  horizontalBarChartPalette?: string[];
-}
+export const CHART_PALETTE_KEYS = [
+  "defaultChartPalette",
+  "barChartPalette",
+  "lineChartPalette",
+  "areaChartPalette",
+  "pieChartPalette",
+  "radarChartPalette",
+  "radialChartPalette",
+  "horizontalBarChartPalette",
+] as const;
+
+export type ChartPaletteKey = (typeof CHART_PALETTE_KEYS)[number];
+
+export type ChartColorPalette = { [K in ChartPaletteKey]?: string[] };
 
 /**
  * Color-related design tokens: surfaces, text, interactive states, borders,

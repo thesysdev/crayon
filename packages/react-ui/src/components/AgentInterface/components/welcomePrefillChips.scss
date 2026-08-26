@@ -1,0 +1,80 @@
+@use "../../../cssUtils" as cssUtils;
+
+// Prefill-chips welcome: grid-stacked starters layers (chips mode only).
+// Layer 1 = chip row + default starters; layer 2 = the selected chip's
+// contextual starters. Layers overlap via grid-area so swapping them never
+// shifts the composer above.
+.openui-agent-welcome-screen__starters-layers {
+  display: grid;
+  align-items: start;
+  width: 100%;
+}
+
+.openui-agent-welcome-screen__starters-layer {
+  display: flex;
+  grid-area: 1 / 1;
+  flex-direction: column;
+  align-items: center;
+  gap: cssUtils.$space-2xl;
+  width: 100%;
+
+  &[data-hidden] {
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+
+.openui-agent-welcome-screen__chip-row {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: cssUtils.$space-s;
+  width: 100%;
+  max-width: 768px;
+}
+
+.openui-agent-prefill-chip {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: cssUtils.$space-xs;
+  padding: cssUtils.$space-s cssUtils.$space-m;
+  border: 1px solid cssUtils.$border-interactive;
+  border-radius: cssUtils.$radius-full;
+  background: cssUtils.$highlight-subtle;
+  color: cssUtils.$text-neutral-secondary;
+  @include cssUtils.typography(label, small);
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    color 0.15s ease;
+
+  &:not(:disabled):hover {
+    background: cssUtils.$highlight;
+    border-color: cssUtils.$border-interactive-emphasis;
+    color: cssUtils.$text-neutral-primary;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2.5px cssUtils.$border-default;
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.5;
+  }
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__label {
+    white-space: nowrap;
+  }
+}

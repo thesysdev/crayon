@@ -20,8 +20,9 @@ export const FoldableSectionRoot = forwardRef<
 ));
 FoldableSectionRoot.displayName = "FoldableSectionRoot";
 
-export interface FoldableSectionItemProps
-  extends React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item> {
+export interface FoldableSectionItemProps extends React.ComponentPropsWithoutRef<
+  typeof AccordionPrimitive.Item
+> {
   className?: string;
   style?: React.CSSProperties;
   value: string;
@@ -41,8 +42,9 @@ export const FoldableSectionItem = forwardRef<
 ));
 FoldableSectionItem.displayName = "FoldableSectionItem";
 
-export interface FoldableSectionTriggerProps
-  extends React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger> {
+export interface FoldableSectionTriggerProps extends React.ComponentPropsWithoutRef<
+  typeof AccordionPrimitive.Trigger
+> {
   className?: string;
   style?: React.CSSProperties;
   text: React.ReactNode;
@@ -81,8 +83,9 @@ export const FoldableSectionTrigger = forwardRef<
 ));
 FoldableSectionTrigger.displayName = "FoldableSectionTrigger";
 
-export interface FoldableSectionContentProps
-  extends React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content> {
+export interface FoldableSectionContentProps extends React.ComponentPropsWithoutRef<
+  typeof AccordionPrimitive.Content
+> {
   className?: string;
   style?: React.CSSProperties;
   children?: React.ReactNode;

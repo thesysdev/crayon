@@ -1,3 +1,5 @@
+import { CliCancelledError, CreateError } from "./telemetry";
+
 type InputPromptConfig = {
   type: "input";
   message: string;
@@ -17,6 +19,16 @@ export type ArgDef<T> = { value: T } | { prompt: PromptConfig; required: true };
 type ResolvedArgs<T extends Record<string, ArgDef<unknown>>> = {
   [K in keyof T]: T[K] extends { value: infer V } ? V : string;
 };
+
+export function rejectConflictingImmediateFlags(args: string[]): void {
+  const separatorIndex = args.indexOf("--");
+  const optionArgs = separatorIndex === -1 ? args : args.slice(0, separatorIndex);
+  const hasImmediate = optionArgs.some((arg) => arg === "--immediate" || arg === "-i");
+  const hasNoImmediate = optionArgs.includes("--no-immediate");
+  if (hasImmediate && hasNoImmediate) {
+    throw new CreateError("bad_args", "--immediate and --no-immediate cannot be used together.");
+  }
+}
 
 async function resolveOne(prompt: PromptConfig): Promise<string> {
   const { input, select } = await import("@inquirer/prompts");
@@ -39,8 +51,12 @@ export async function resolveArgs<T extends Record<string, ArgDef<unknown>>>(
     }
 
     if (!interactive) {
-      console.error(`Error: Missing required argument --${key}`);
-      process.exit(1);
+      throw new CreateError(
+        "args_resolution",
+        `Missing required argument --${key}`,
+        "invalid_input",
+        "MISSING_REQUIRED_ARG",
+      );
     }
 
     try {
@@ -48,7 +64,7 @@ export async function resolveArgs<T extends Record<string, ArgDef<unknown>>>(
     } catch (err) {
       const { ExitPromptError } = await import("@inquirer/core");
       if (err instanceof ExitPromptError) {
-        process.exit(0);
+        throw new CliCancelledError("args_resolution");
       }
       throw err;
     }
