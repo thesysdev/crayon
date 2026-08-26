@@ -22,6 +22,7 @@ Each example has one primary home based on the integration seam it is intended t
 
 | Example                                           | Demonstrates                                                            |
 | ------------------------------------------------- | ----------------------------------------------------------------------- |
+| [Agno](./agent-frameworks/agno)                   | An AgentOS agent streamed into OpenUI with shared session persistence   |
 | [Google ADK](./agent-frameworks/google-adk)       | A Google ADK TypeScript agent streaming OpenUI Lang to a Next.js client |
 | [LangChain](./agent-frameworks/langchain)         | LangGraph/DeepAgents integration through the OpenUI LangChain adapter   |
 | [Mastra](./agent-frameworks/mastra)               | A Mastra agent connected to OpenUI through AG-UI                        |

@@ -178,6 +178,7 @@ Defined as `AgentInterfaceProps` in `AgentInterface.tsx`. It `extends Omit<ChatP
 | `agentName`            | `string`                              | `""`    | Agent display name                                                                                        |
 | `starters`             | `ConversationStarterProps[]`          | —       | Global starters inherited by Welcome (if active) or the Composer                                          |
 | `starterVariant`       | `"short" \| "long"`                   | —       | Layout variant for inherited starters                                                                     |
+| `getThreadMenuActions` | `GetThreadMenuActions`                | —       | Add link or callback actions to each thread's overflow menu                                               |
 | `path`                 | `string`                              | —       | **Controlled** current path (pair with `onNavigate`); `undefined` = thread view                           |
 | `defaultPath`          | `string`                              | —       | **Uncontrolled** initial path (ignored when `onNavigate` is set)                                          |
 | `onNavigate`           | `(next: string \| undefined) => void` | —       | Presence selects controlled mode                                                                          |
@@ -199,16 +200,17 @@ and avatar). Resolution order, per message kind:
 
 ### Named exports (from `index.ts`)
 
-| Export                                            | Kind             | Purpose                                    |
-| ------------------------------------------------- | ---------------- | ------------------------------------------ |
-| `AgentInterface`                                  | component        | The compound root                          |
-| `AgentInterfaceProps`, `AgentInterfaceComponents` | types            | Root props / override map                  |
-| `SidebarItem`, `SidebarItemProps`                 | component + type | Standalone nav row                         |
-| `ArtifactNav`, `ArtifactNavProps`                 | component + type | Artifact-category nav                      |
-| `useNav`, `NavContextValue`                       | hook + type      | Read/drive navigation from inside the tree |
-| `RouteProps`                                      | type             | `<AgentInterface.Route>` props             |
-| `WorkspaceProps`                                  | type             | `<AgentInterface.Workspace>` props         |
-| `artifactListPath`, `artifactViewPath`            | functions        | Build reserved `artifacts/…` paths         |
+| Export                                                          | Kind             | Purpose                                    |
+| --------------------------------------------------------------- | ---------------- | ------------------------------------------ |
+| `AgentInterface`                                                | component        | The compound root                          |
+| `AgentInterfaceProps`, `AgentInterfaceComponents`               | types            | Root props / override map                  |
+| `SidebarItem`, `SidebarItemProps`                               | component + type | Standalone nav row                         |
+| `ArtifactNav`, `ArtifactNavProps`                               | component + type | Artifact-category nav                      |
+| `useNav`, `NavContextValue`                                     | hook + type      | Read/drive navigation from inside the tree |
+| `RouteProps`                                                    | type             | `<AgentInterface.Route>` props             |
+| `WorkspaceProps`                                                | type             | `<AgentInterface.Workspace>` props         |
+| `GetThreadMenuActions`, `ThreadMenuAction`, `ThreadMenuContext` | types            | Custom thread overflow-menu actions        |
+| `artifactListPath`, `artifactViewPath`                          | functions        | Build reserved `artifacts/…` paths         |
 
 ---
 

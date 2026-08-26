@@ -1,0 +1,116 @@
+# Agno × OpenUI
+
+This example demonstrates the complementary boundary:
+
+```text
+AgentOS: agents · teams · tools · memory · knowledge · sessions · auth · execution
+                                      │
+                                    AG-UI
+                                      │
+OpenUI: component contract · streaming parser · renderer · interactions · chat UI
+```
+
+The browser uses `@openuidev/agno` for both channels expected by
+`AgentInterface`:
+
+- `createAgnoLLM()` streams an AgentOS AG-UI run and marks it as an OpenUI client.
+- `agnoStorage()` stores the sidebar and message history in AgentOS sessions.
+- `agnoAGUIAdapter()` incrementally unwraps fenced assistant OpenUI Lang while
+  AgentOS retains the same payload as readable Markdown source.
+- `agnoOpenUIPromptRenderer` renders the true paused `prompt_openui` HITL call.
+
+## Run without a model key
+
+The Vite development server includes a deterministic AgentOS-compatible
+harness. It exercises session CRUD, Agno's empty tool-parent envelope, a backend
+tool result, multi-delta assistant-text streaming, follow-ups, history reload,
+and a true paused/resumed `prompt_openui` form.
+
+```bash
+pnpm dev
+```
+
+Open `http://127.0.0.1:4173` and try both starters.
+
+## Run with AgentOS
+
+Configure the required model credential outside the repository, then:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+pnpm generate:prompt
+python server.py
+```
+
+In another terminal, point the Vite proxy at AgentOS:
+
+```bash
+AGNO_API_URL=http://127.0.0.1:7777 pnpm dev
+```
+
+The React application does not change.
+
+The **Open in AgentOS** action defaults to the hosted AgentOS session page. To
+point it at another AgentOS web interface, provide an absolute URL template with
+the `{session_id}` placeholder:
+
+```bash
+VITE_AGENT_OS_SESSION_URL_TEMPLATE='https://os.agno.com/sessions/{session_id}' pnpm dev
+```
+
+This configures the operational web-interface link, not the AgentOS backend API.
+The example adds the current session-list query parameters after replacing the
+placeholder.
+
+The proxy is development plumbing only: the browser calls same-origin `/agui`
+and `/sessions`, while Vite forwards those paths to port 7777 and avoids local
+CORS configuration. A production app can use its normal reverse proxy or pass
+an already same-origin AgentOS endpoint.
+
+The Python server is deliberately ordinary Agno code: it owns the model, tool,
+database, history, and AG-UI interface. The component library and all rendering
+remain in the OpenUI frontend.
+
+The same agent remains usable from native AgentOS chat. OpenUI requests carry a
+transient `openui_client` context dependency and receive the generated component
+prompt. Requests without that marker are instructed to answer in normal
+text/Markdown and not call the UI tool.
+
+Complete visual answers are one fenced assistant-text payload. AgentOS stores
+and shows the exact OpenUI Lang inside a Markdown code block. AG-UI streams that
+text as `TEXT_MESSAGE_CONTENT` events; `@openuidev/agno` removes only the fence
+and OpenUI renders the inner language as it arrives. The same normalization is
+applied when the session is reloaded.
+
+`prompt_openui` is used only when a form or choice must pause execution. The
+first request persists the pending run, the OpenUI form submission is sent back
+as a tool result, and AgentOS resumes the same run and `session_id`. Current
+AgentOS sends the completed prompt tool arguments as one event, so the form
+itself appears after the tool call closes; the resumed assistant answer streams
+normally.
+
+## Key files
+
+- `server.py` configures the Agno agent, tools, session database, and AG-UI
+  interface.
+- `src/App.tsx` connects Agent Interface to AgentOS streaming and storage.
+- `src/library.ts` defines the OpenUI component library used by the model.
+- `src/mock-agentos.ts` provides the credential-free local verification
+  harness.
+
+## Extend the example
+
+Add backend capabilities as ordinary Agno tools in `server.py`. Add or replace
+frontend components in `src/library.ts`, then regenerate the prompt before
+running the real AgentOS server. Production applications can also replace the
+development proxy and hosted session URL template with their own endpoints.
+
+## Verify
+
+From this directory, run the credential-free verification contract:
+
+```bash
+pnpm verify
+```
