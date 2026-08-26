@@ -1,4 +1,5 @@
 import { CSSProperties, useState } from "react";
+import { withDevtoolsAttribution } from "../lib/links";
 import { ColorMode, FONT, theme, ThemeTokens } from "../theme";
 
 export default function ReliabilityBanner({ themeMode }: { themeMode: ColorMode }) {
@@ -10,7 +11,10 @@ export default function ReliabilityBanner({ themeMode }: { themeMode: ColorMode 
       <span style={styles.fade} aria-hidden />
       <a
         style={styles.banner}
-        href="https://www.openui.com/docs/openui-lang/reliability"
+        href={withDevtoolsAttribution(
+          "https://www.openui.com/docs/openui-lang/reliability",
+          "reliability_banner_learn_more",
+        )}
         target="_blank"
         rel="noreferrer"
         title="Learn how to track and fix errors in production"
