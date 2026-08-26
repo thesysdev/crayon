@@ -7,6 +7,7 @@ import * as path from "node:path";
 import { Command } from "commander";
 
 import { runCreateApp } from "./commands/create-app";
+import { runDeploy } from "./commands/deploy";
 import { GenerateOptions, runGenerate } from "./commands/generate";
 import { detectAgent, UNKNOWN_AGENT_NAME } from "./lib/detect-agent";
 import { rejectConflictingImmediateFlags, resolveArgs } from "./lib/resolve-args";
@@ -119,6 +120,66 @@ Backend frameworks:
         });
       } catch (e) {
         handleCliError(e, "cli_create_failed");
+      } finally {
+        await telemetry.shutdown();
+      }
+    },
+  );
+
+program
+  .command("deploy")
+  .description("Deploy an OpenUI project")
+  .argument("[target-or-dir]", "Deploy target (default: vercel) or project directory")
+  .argument("[dir]", "Project directory when the first argument is a target")
+  .option("--target <target>", "Deploy target: vercel (default)")
+  .option("--prod", "Deploy to production")
+  .option("-y, --yes", "Skip confirmation prompts")
+  .option("--skip-env", "Do not pass local .env values to this deployment")
+  .option("--no-interactive", "Skip prompts (implies --yes)")
+  .allowUnknownOption()
+  .allowExcessArguments()
+  .addHelpText(
+    "after",
+    `
+Targets:
+  vercel  Default. Runs the Vercel CLI (local install, PATH, or package-manager dlx)
+          and passes allowlisted keys from .env / .env.local via --env.
+
+Extra flags after deploy are forwarded to the target CLI (for example --force).
+
+Examples:
+  $ openui deploy
+  $ openui deploy vercel --prod --yes
+  $ openui deploy --target vercel ./my-app --prod
+  $ openui deploy -- --archive=tgz
+`,
+  )
+  .action(
+    async (
+      targetOrDir: string | undefined,
+      dir: string | undefined,
+      options: {
+        target?: string;
+        prod?: boolean;
+        yes?: boolean;
+        skipEnv?: boolean;
+        interactive: boolean;
+      },
+      command: Command,
+    ) => {
+      try {
+        await runDeploy({
+          targetOrDir,
+          dir,
+          target: options.target,
+          prod: options.prod,
+          yes: options.yes,
+          skipEnv: options.skipEnv,
+          noInteractive: !options.interactive,
+          extraArgs: command.args,
+        });
+      } catch (e) {
+        handleCliError(e, "cli_deploy_failed");
       } finally {
         await telemetry.shutdown();
       }

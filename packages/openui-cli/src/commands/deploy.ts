@@ -1,0 +1,437 @@
+import * as fs from "node:fs";
+import * as path from "node:path";
+
+import {
+  resolveDlxInvocation,
+  resolveInstallPackageManager,
+  type PackageManager,
+} from "../lib/detect-package-manager";
+import { runCommand } from "../lib/process-runner";
+import { CliCancelledError, CreateError, telemetry } from "../lib/telemetry";
+import {
+  DEFAULT_DEPLOY_TARGET,
+  DEPLOY_TARGETS,
+  isDeployTarget,
+  normalizeDeployTarget,
+  processErrorProperties,
+  type DeployTarget,
+} from "../lib/utils";
+
+/** Known OpenUI template env keys. Values are never logged or sent to telemetry. */
+const ENV_ALLOWLIST = [
+  "THESYS_API_KEY",
+  "OPENAI_API_KEY",
+  "OPENAI_BASE_URL",
+  "OPENAI_MODEL",
+  "APP_ID",
+  "DEMO_USER_ID",
+  "LANGGRAPH_API_URL",
+  "LANGGRAPH_ASSISTANT_ID",
+  "LANGSMITH_API_KEY",
+] as const;
+
+const OWN_FLAGS = new Set(["--prod", "-y", "--yes", "--skip-env", "--no-interactive", "--target"]);
+
+export type DeployOptions = {
+  targetOrDir?: string;
+  dir?: string;
+  target?: string;
+  prod?: boolean;
+  yes?: boolean;
+  skipEnv?: boolean;
+  noInteractive?: boolean;
+  extraArgs?: string[];
+};
+
+type TargetInvocation = {
+  command: string;
+  prefixArgs: string[];
+  source: "local" | "path" | "dlx";
+};
+
+type ResolvedDeploy = {
+  target: DeployTarget;
+  projectDir?: string;
+  extraArgs: string[];
+};
+
+export async function runDeploy(options: DeployOptions): Promise<void> {
+  const resolved = resolveDeployInvocation(options);
+  const projectDir = resolveProjectDir(resolved.projectDir);
+  const extraArgs = resolved.extraArgs;
+  const prod = Boolean(options.prod) || extraArgs.includes("--prod");
+  const yes =
+    Boolean(options.yes) ||
+    Boolean(options.noInteractive) ||
+    extraArgs.includes("--yes") ||
+    extraArgs.includes("-y");
+  const skipEnv = Boolean(options.skipEnv);
+  const fileEnv = loadAllowlistedEnv(projectDir);
+
+  telemetry.register({ package_manager: resolveInstallPackageManager().name });
+  telemetry.capture("cli_deploy_started", {
+    target: resolved.target,
+    prod,
+    yes,
+    skip_env: skipEnv,
+    has_dir_arg: Boolean(resolved.projectDir),
+  });
+
+  warnMissingRequiredEnv(projectDir, fileEnv, resolved.target);
+
+  switch (resolved.target) {
+    case "vercel":
+      await deployToVercel({
+        projectDir,
+        extraArgs,
+        prod,
+        yes,
+        skipEnv,
+        localEnv: skipEnv ? {} : fileEnv,
+      });
+      return;
+    default: {
+      const unexpected: never = resolved.target;
+      throw new CreateError(
+        "args_resolution",
+        `unsupported deploy target "${String(unexpected)}". Use: ${DEPLOY_TARGETS.join(" | ")}.`,
+        "invalid_input",
+        "INVALID_DEPLOY_TARGET",
+      );
+    }
+  }
+}
+
+function resolveDeployInvocation(options: DeployOptions): ResolvedDeploy {
+  const first = unsetIfFlag(options.targetOrDir);
+  const second = unsetIfFlag(options.dir);
+  let positionalTarget: string | undefined;
+  let projectDir: string | undefined;
+
+  if (first && isDeployTarget(first)) {
+    positionalTarget = first;
+    projectDir = second;
+  } else if (first && !looksLikeProjectDir(first)) {
+    throw new CreateError(
+      "args_resolution",
+      `unknown deploy target "${first}". Use: ${DEPLOY_TARGETS.join(" | ")}.`,
+      "invalid_input",
+      "INVALID_DEPLOY_TARGET",
+    );
+  } else {
+    projectDir = first;
+  }
+
+  const target = resolveTarget(positionalTarget, options.target);
+  const extraArgs = extraDeployArgs(options.extraArgs ?? [], {
+    dir: projectDir,
+    target,
+    targetOrDir: options.targetOrDir,
+  });
+  if (options.targetOrDir?.startsWith("-") && !extraArgs.includes(options.targetOrDir)) {
+    extraArgs.unshift(options.targetOrDir);
+  }
+  if (options.dir?.startsWith("-") && !extraArgs.includes(options.dir)) {
+    extraArgs.unshift(options.dir);
+  }
+  return { target, projectDir, extraArgs };
+}
+
+function resolveTarget(positional?: string, flag?: string): DeployTarget {
+  const fromPositional = positional ? normalizeDeployTarget(positional) : undefined;
+  const fromFlag = flag ? normalizeDeployTarget(flag) : undefined;
+  if (fromPositional && fromFlag && fromPositional !== fromFlag) {
+    throw new CreateError(
+      "args_resolution",
+      `--target ${flag} conflicts with positional target "${positional}".`,
+      "invalid_input",
+      "CONFLICTING_DEPLOY_TARGET",
+    );
+  }
+  return fromPositional ?? fromFlag ?? DEFAULT_DEPLOY_TARGET;
+}
+
+function extraDeployArgs(
+  args: string[],
+  consumed: { dir?: string; target: string; targetOrDir?: string },
+): string[] {
+  const skip = new Set(
+    [consumed.dir, consumed.target, consumed.targetOrDir].filter((value): value is string =>
+      Boolean(value && !value.startsWith("-")),
+    ),
+  );
+  const out: string[] = [];
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i]!;
+    if (arg === "--target") {
+      i += 1;
+      continue;
+    }
+    if (arg.startsWith("--target=") || skip.has(arg) || OWN_FLAGS.has(arg)) continue;
+    out.push(arg);
+  }
+  return out;
+}
+
+function unsetIfFlag(value?: string): string | undefined {
+  return value?.startsWith("-") ? undefined : value;
+}
+
+function looksLikeProjectDir(value: string): boolean {
+  if (value === "." || value === "..") return true;
+  if (value.startsWith(".") || path.isAbsolute(value) || value.includes(path.sep)) return true;
+  const resolved = path.resolve(process.cwd(), value);
+  try {
+    return fs.existsSync(resolved) && fs.statSync(resolved).isDirectory();
+  } catch {
+    return false;
+  }
+}
+
+async function deployToVercel(opts: {
+  projectDir: string;
+  extraArgs: string[];
+  prod: boolean;
+  yes: boolean;
+  skipEnv: boolean;
+  localEnv: Record<string, string>;
+}): Promise<void> {
+  const t0 = Date.now();
+  const packageManager = resolveInstallPackageManager();
+  const hasLangGraph = fs.existsSync(path.join(opts.projectDir, "langgraph.json"));
+  if (hasLangGraph) {
+    console.info(
+      "This project has a LangGraph Agent Server (langgraph.json).\n" +
+        "`openui deploy` publishes the Next.js app. Deploy the Agent Server separately " +
+        "and set LANGGRAPH_API_URL on Vercel to that URL.\n",
+    );
+  }
+
+  const vercel = resolveTargetCli(opts.projectDir, packageManager, "vercel");
+  const vercelArgs = buildVercelArgs({
+    extraArgs: opts.extraArgs,
+    prod: opts.prod,
+    yes: opts.yes,
+    localEnv: opts.localEnv,
+  });
+  const publicArgs = vercelArgs.filter((_, i, args) => !isVercelEnvFlag(args, i));
+
+  console.info(
+    `Deploying to Vercel (${vercel.source}): ${formatDisplayedCommand(vercel, publicArgs)}`,
+  );
+  if (Object.keys(opts.localEnv).length > 0) {
+    console.info(
+      `Passing local env to this deployment: ${Object.keys(opts.localEnv).sort().join(", ")}`,
+    );
+  }
+  console.info("");
+
+  const result = await runCommand(
+    vercel.command,
+    [...vercel.prefixArgs, ...vercelArgs],
+    opts.projectDir,
+  );
+  if (!result.error && result.status === 0) {
+    telemetry.capture("cli_deploy_succeeded", {
+      target: "vercel",
+      prod: opts.prod,
+      yes: opts.yes,
+      skip_env: opts.skipEnv,
+      has_langgraph: hasLangGraph,
+      cli_source: vercel.source,
+      env_key_count: Object.keys(opts.localEnv).length,
+      duration_ms: Date.now() - t0,
+    });
+    return;
+  }
+
+  const properties = processErrorProperties(result, "vercel_deploy", {
+    error_class: "process",
+    error_code: "NONZERO_EXIT",
+  });
+  if (properties.error_class === "user_cancelled") {
+    throw new CliCancelledError(
+      "vercel_deploy",
+      properties.cancellation_exit_code ?? 0,
+      properties,
+    );
+  }
+  const { failure_stage, error_class, error_code, ...metadata } = properties;
+  throw new CreateError(failure_stage, "Vercel deploy failed", error_class, error_code, metadata);
+}
+
+function resolveProjectDir(dir?: string): string {
+  const projectDir = path.resolve(process.cwd(), dir ?? ".");
+  if (!fs.existsSync(projectDir)) {
+    throw new CreateError(
+      "args_resolution",
+      `Directory not found: ${projectDir}`,
+      "invalid_input",
+      "NOT_FOUND",
+    );
+  }
+  if (!fs.statSync(projectDir).isDirectory()) {
+    throw new CreateError(
+      "args_resolution",
+      `Not a directory: ${projectDir}`,
+      "invalid_input",
+      "NOT_A_DIRECTORY",
+    );
+  }
+  if (!fs.existsSync(path.join(projectDir, "package.json"))) {
+    throw new CreateError(
+      "args_resolution",
+      `No package.json in ${projectDir}. Run this from an OpenUI project, or pass its directory.`,
+      "invalid_input",
+      "PROJECT_NOT_FOUND",
+    );
+  }
+  return projectDir;
+}
+
+function resolveTargetCli(
+  projectDir: string,
+  packageManager: PackageManager,
+  bin: string,
+): TargetInvocation {
+  const localUnix = path.join(projectDir, "node_modules", ".bin", bin);
+  const localWin = `${localUnix}.cmd`;
+  if (fs.existsSync(localWin)) return { command: localWin, prefixArgs: [], source: "local" };
+  if (fs.existsSync(localUnix)) return { command: localUnix, prefixArgs: [], source: "local" };
+
+  const fromPath = findExecutableOnPath(bin);
+  if (fromPath) return { command: fromPath, prefixArgs: [], source: "path" };
+
+  const dlx = resolveDlxInvocation(packageManager, bin);
+  return { command: dlx.command, prefixArgs: dlx.args, source: "dlx" };
+}
+
+function findExecutableOnPath(bin: string): string | undefined {
+  const pathEnv = process.env["PATH"] ?? "";
+  const extensions = process.platform === "win32" ? [".cmd", ".exe", ".bat", ""] : [""];
+  for (const dir of pathEnv.split(path.delimiter)) {
+    if (!dir) continue;
+    for (const ext of extensions) {
+      const candidate = path.join(dir, bin + ext);
+      try {
+        fs.accessSync(candidate, fs.constants.X_OK);
+        return candidate;
+      } catch {
+        /* not executable / missing */
+      }
+    }
+  }
+  return undefined;
+}
+
+function buildVercelArgs(opts: {
+  extraArgs: string[];
+  prod: boolean;
+  yes: boolean;
+  localEnv: Record<string, string>;
+}): string[] {
+  const args = [...opts.extraArgs];
+  if (opts.prod && !args.includes("--prod")) args.unshift("--prod");
+  if (opts.yes && !args.includes("--yes") && !args.includes("-y")) args.unshift("--yes");
+
+  const alreadySet = vercelEnvKeysInArgs(args);
+  for (const key of Object.keys(opts.localEnv).sort()) {
+    if (alreadySet.has(key)) continue;
+    const value = opts.localEnv[key];
+    if (value === undefined) continue;
+    args.push("--env", `${key}=${value}`);
+  }
+  return args;
+}
+
+function vercelEnvKeysInArgs(args: string[]): Set<string> {
+  const keys = new Set<string>();
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i]!;
+    if (arg === "--env" || arg === "-e" || arg === "--build-env" || arg === "-b") {
+      const assignment = args[i + 1];
+      const key = assignment?.split("=")[0];
+      if (key) keys.add(key);
+      i += 1;
+      continue;
+    }
+    const prefixed = arg.match(/^(?:--env|-e|--build-env|-b)=(.+)$/);
+    if (prefixed?.[1]) keys.add(prefixed[1].split("=")[0]!);
+  }
+  return keys;
+}
+
+function isVercelEnvFlag(args: string[], index: number): boolean {
+  const arg = args[index]!;
+  if (arg === "--env" || arg === "-e" || arg === "--build-env" || arg === "-b") return true;
+  if (/^(?:--env|-e|--build-env|-b)=/.test(arg)) return true;
+  const prev = args[index - 1];
+  return prev === "--env" || prev === "-e" || prev === "--build-env" || prev === "-b";
+}
+
+function loadAllowlistedEnv(projectDir: string): Record<string, string> {
+  const merged = {
+    ...parseEnvFile(path.join(projectDir, ".env")),
+    ...parseEnvFile(path.join(projectDir, ".env.local")),
+  };
+  const allowlisted: Record<string, string> = {};
+  for (const key of ENV_ALLOWLIST) {
+    const value = merged[key]?.trim();
+    if (value) allowlisted[key] = value;
+  }
+  return allowlisted;
+}
+
+function parseEnvFile(filePath: string): Record<string, string> {
+  if (!fs.existsSync(filePath)) return {};
+  const out: Record<string, string> = {};
+  for (const line of fs.readFileSync(filePath, "utf8").split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const eq = trimmed.indexOf("=");
+    if (eq <= 0) continue;
+    const key = trimmed.slice(0, eq).trim();
+    let value = trimmed.slice(eq + 1).trim();
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    }
+    out[key] = value;
+  }
+  return out;
+}
+
+function warnMissingRequiredEnv(
+  projectDir: string,
+  localEnv: Record<string, string>,
+  target: DeployTarget,
+): void {
+  const host = target === "vercel" ? "Vercel" : target;
+  for (const key of detectRequiredEnvNames(projectDir)) {
+    if (localEnv[key] || process.env[key]?.trim()) continue;
+    console.info(
+      `⚠ ${key} is not set locally. This deployment will fail at runtime unless ${key} is already configured on ${host}.\n`,
+    );
+  }
+}
+
+function detectRequiredEnvNames(projectDir: string): string[] {
+  const pkgPath = path.join(projectDir, "package.json");
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8")) as {
+    dependencies?: Record<string, string>;
+    devDependencies?: Record<string, string>;
+  };
+  const deps = { ...pkg.dependencies, ...pkg.devDependencies };
+  if (deps["@openuidev/thesys-server"] || deps["@openuidev/thesys"]) return ["THESYS_API_KEY"];
+  if (deps["openai"] || deps["ai"] || deps["@ai-sdk/openai"]) return ["OPENAI_API_KEY"];
+  return [];
+}
+
+function formatDisplayedCommand(invocation: TargetInvocation, publicArgs: string[]): string {
+  const binName = path.basename(invocation.command).replace(/\.cmd$/i, "");
+  const head =
+    invocation.source === "dlx" ? [invocation.command, ...invocation.prefixArgs] : [binName];
+  return [...head, ...publicArgs].join(" ");
+}
