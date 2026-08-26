@@ -18,10 +18,14 @@ export function normalizeCdnVersion(version?: string): string | null {
  * Omit `version` → `@latest`. Otherwise major (`"0"`), minor (`"0.1"`),
  * or exact (`"0.1.0"`) npm tags.
  */
+const ALIAS_CACHE_MS = 5 * 60 * 1000;
+
 export function browserBundleUrl(version?: string): string | null {
   const tag = normalizeCdnVersion(version);
   if (tag === null) return null;
-  return `https://cdn.jsdelivr.net/npm/@openuidev/devtools@${tag}/dist/devtools.browser.js`;
+  const url = `https://cdn.jsdelivr.net/npm/@openuidev/devtools@${tag}/dist/devtools.browser.js`;
+  if (/^\d+\.\d+\.\d+$/.test(tag)) return url;
+  return `${url}?t=${Math.floor(Date.now() / ALIAS_CACHE_MS)}`;
 }
 
 export type MountFromCdnOptions = OpenUIDevtoolsProps;
