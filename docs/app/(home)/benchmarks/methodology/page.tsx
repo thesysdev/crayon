@@ -73,32 +73,34 @@ export default function BenchmarkMethodologyPage() {
           </aside>
 
           <div className="min-w-0 flex-1">
-            <h1 className="mb-2 text-[length:var(--home-title-size)] font-[family-name:var(--home-font-display)] font-medium leading-[var(--home-title-leading)] tracking-[var(--home-title-tracking)] text-[color:var(--openui-text-neutral-primary)]">
-              Methodology
-            </h1>
-            <p className="mb-6 max-w-2xl text-[length:var(--home-lead-size)] font-[family-name:var(--home-font-text)] leading-[var(--home-lead-leading)] text-[color:var(--openui-text-neutral-secondary)]">
-              One catalog, the same 46 interface briefs, and a shared scoring standard.
-            </p>
-            <nav
-              aria-label="Methodology actions"
-              className="flex flex-wrap items-center gap-3 border-b border-[color:var(--home-hairline)] pb-8"
-            >
-              <BevelButton
-                href="/benchmarks"
-                label="Back to benchmarks"
-                variant="primary"
-                badge={<ArrowLeft size={16} strokeWidth={2.25} />}
-              />
-              <BevelButton
-                href={BENCHMARK_REPOSITORY}
-                label="Source repository"
-                variant="secondary"
-                external
-                badge={<ArrowUpRight size={16} strokeWidth={2.25} />}
-              />
-            </nav>
+            <header className="max-w-3xl">
+              <h1 className="mb-2 text-[length:var(--home-title-size)] font-[family-name:var(--home-font-display)] font-medium leading-[var(--home-title-leading)] tracking-[var(--home-title-tracking)] text-[color:var(--openui-text-neutral-primary)]">
+                Methodology
+              </h1>
+              <p className="mb-6 text-[length:var(--home-lead-size)] font-[family-name:var(--home-font-text)] leading-[var(--home-lead-leading)] text-[color:var(--openui-text-neutral-secondary)]">
+                One catalog, the same 46 interface briefs, and a shared scoring standard.
+              </p>
+              <nav
+                aria-label="Methodology actions"
+                className="flex flex-wrap items-center gap-3 border-b border-[color:var(--home-hairline)] pb-8"
+              >
+                <BevelButton
+                  href="/benchmarks"
+                  label="Back to benchmarks"
+                  variant="primary"
+                  badge={<ArrowLeft size={16} strokeWidth={2.25} />}
+                />
+                <BevelButton
+                  href={BENCHMARK_REPOSITORY}
+                  label="Source repository"
+                  variant="secondary"
+                  external
+                  badge={<ArrowUpRight size={16} strokeWidth={2.25} />}
+                />
+              </nav>
+            </header>
 
-            <article className="prose mt-10 min-w-0 max-w-3xl">
+            <article className="prose mt-10 min-w-0 max-w-2xl">
               <section id="setup" aria-labelledby="setup-heading">
                 <h2 id="setup-heading">Benchmark setup</h2>
                 <p>
