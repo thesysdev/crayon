@@ -945,7 +945,7 @@ export function ReliabilityByModel({
                   Cost per task
                 </th>
                 <th scope="col">Pricing</th>
-                <th scope="col">Pareto frontier</th>
+                <th scope="col">Frontier (all 30)</th>
                 <th scope="col">Shown in chart</th>
               </tr>
             </thead>
@@ -979,8 +979,10 @@ export function ReliabilityByModel({
           </table>
           <p className={s.dataNote}>
             All 30 models remain in this table and the downloads, including models hidden by the
-            chart&rsquo;s default filter. Self-hosted cost is unknown, not zero. Filter state is
-            preserved in this page&rsquo;s URL. Focused benchmark:{" "}
+            chart&rsquo;s default filter. Frontier membership here is computed over all 30, so it
+            does not shift with the chart&rsquo;s selection; the drawn line is the frontier of the
+            models currently shown. Self-hosted cost is unknown, not zero. Filter state is preserved
+            in this page&rsquo;s URL. Focused benchmark:{" "}
             <a href="/benchmarks/language">language and model results</a>. Full dataset:{" "}
             <a href="/benchmarks/data.json">JSON</a>, <a href="/benchmarks/data.csv">CSV</a>, or{" "}
             <a href="/benchmarks/agent.md">agent Markdown</a>.
