@@ -321,8 +321,7 @@ The runtime merges by statement name: same name = replace, new name = append.
 Output ONLY statements that changed or are new. Everything else is kept automatically.
 
 ### Delete
-To remove a component, update the parent to exclude it from its children array. Orphaned statements are automatically garbage-collected.
-Example — remove chart: \`root = Stack([header, kpiRow, table])\` — chart is no longer in the children list, so it and any statements only it referenced are auto-deleted.
+To remove a component, re-declare its parent without that component in the parent's children array. The removed component and any statements only it referenced are automatically garbage-collected.
 
 ### Patch size guide
 - Changing a title or label: 1 statement
@@ -407,7 +406,6 @@ WRONG — you called a tool and got data back, but you inlined the results:
 openCount = 2
 item1 = SomeComp("first item title")
 item2 = SomeComp("second item title")
-list = Stack([item1, item2])
 chart = SomeChart(["A", "B"], [12, 8])
 \`\`\`
 This is static — it shows stale data and won't update. Creating item1, item2, item3... manually is ALWAYS wrong when a tool exists.
