@@ -14,7 +14,7 @@ It currently supports:
   - **Self-hosted** — bring an OpenAI-compatible model key and own the AI route and persistence
 - keeping the default minimal SDK route or adding a LangGraph or Vercel AI SDK backend to either template
 - generating a system prompt or JSON Schema from a `createLibrary()` export
-- deploying a project with `openui deploy` (Vercel today; more targets later)
+- deploying a project with `openui deploy`
 
 ## Install
 
@@ -62,7 +62,7 @@ Generate JSON Schema instead:
 npx @openuidev/cli@latest generate ./src/library.ts --json-schema
 ```
 
-Deploy the current project to Vercel (preview by default):
+Deploy the current project:
 
 ```bash
 npx @openuidev/cli@latest deploy
@@ -167,7 +167,7 @@ openui create --no-interactive --name my-app --template openui-cloud --api-key t
 
 ### `openui deploy`
 
-Deploys an OpenUI project to **Vercel**.
+Deploys an OpenUI project. The default platform supported is **Vercel**.
 
 ```bash
 openui deploy [dir] [options]
@@ -184,17 +184,7 @@ Options:
 - `--no-interactive`: Skip prompts (implies `--yes`)
 - `--agent-name <name>`: Declare the invoking coding agent as a lowercase kebab-case product slug (default: `unknown`)
 
-Extra flags after `deploy` are forwarded as-is to the Vercel CLI, which validates them (for example `--prod` or `--force`). `--skip-env` is OpenUI-specific so it does not collide with Vercel's `--env KEY=value`.
-
-What it does:
-
-- resolves the project directory and requires a `package.json`
-- runs the Vercel CLI (local binary, `PATH`, or package-manager `dlx`/`npx`)
-- checks login with `vercel whoami` (non-interactive). If logged in, deploys as usual. If not, skips `vercel login` and uses Vercel's temporary/anonymous deploy (claim URL comes from Vercel)
-- when using `dlx`/`npx`, fetches the Vercel CLI behind a single `Preparing Vercel CLI...` line instead of streaming install logs
-- passes allowlisted keys from `.env` then `.env.local` via `--env` for this deployment (`THESYS_API_KEY`, `OPENAI_API_KEY`, `APP_ID`, `DEMO_USER_ID`, and related template vars)
-- warns when a required API key is missing locally
-- warns when `langgraph.json` is present: only the Next.js app is deployed; set `LANGGRAPH_API_URL` to the separately deployed Agent Server
+Extra flags after `deploy` are forwarded as-is to the target deployment platform, which validates them (for example `--prod` or `--force`). `--skip-env` is OpenUI-specific so it does not collide with Vercel's `--env KEY=value`.
 
 Examples:
 

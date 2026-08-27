@@ -128,7 +128,7 @@ Backend frameworks:
 
 program
   .command("deploy")
-  .description("Deploy an OpenUI project to Vercel")
+  .description("Deploy an OpenUI project")
   .usage("[dir] [options]")
   .argument("[dir]", "Project directory (default: current directory)")
   .option("-y, --yes", "Skip confirmation prompts")
@@ -139,12 +139,10 @@ program
   .addHelpText(
     "after",
     `
-Runs the Vercel CLI (local install, PATH, or package-manager dlx) and passes
-allowlisted keys from .env / .env.local via --env. Logged-out deploys use
-Vercel's temporary path instead of vercel login.
+Deploys an OpenUI project to Vercel. Passes allowlisted keys from .env / .env.local via --env.
 
-Extra flags after deploy are forwarded as-is to the Vercel CLI, which validates
-them (for example --prod or --force).
+Extra flags after deploy are forwarded as-is to the target deployment platform,
+which validates them (for example --prod or --force).
 
 Examples:
   $ openui deploy

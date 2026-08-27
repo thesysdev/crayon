@@ -36,9 +36,9 @@ npx @openuidev/cli@latest deploy
 npx @openuidev/cli@latest deploy --prod
 ```
 
-This runs the Vercel CLI. Allowlisted keys from `.env` / `.env.local` (including `OPENAI_API_KEY`)
-are passed to that deployment unless you use `--skip-env`. Persist them on the Vercel project for
-later deploys.
+Deploys to Vercel. Allowlisted keys from `.env` / `.env.local` (including `OPENAI_API_KEY`) are
+passed to that deployment unless you use `--skip-env`. Persist them on the Vercel project for later
+deploys.
 
 ## Framework deployments
 
