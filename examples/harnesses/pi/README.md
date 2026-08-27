@@ -138,6 +138,22 @@ ability to reach this port as remote code execution.
 
 `PI_AGENT_CWD` is a discovery root, **not** a security boundary — `bash` can escape it.
 
+## Reliability monitoring (optional)
+
+Generated interfaces occasionally contain errors an LLM introduced. `@openuidev/observability-cloud`
+forwards the render events OpenUI already emits to the Thesys console, so those errors are visible on
+the [reliability dashboard](https://console.thesys.dev/reliability).
+
+Create a client API key at [console.thesys.dev/client-api-keys](https://console.thesys.dev/client-api-keys)
+and set it before starting the app:
+
+```bash
+NEXT_PUBLIC_THESYS_CLIENT_API_KEY=pk-th-...
+```
+
+`<Reliability />` in `src/app/layout.tsx` initialises the SDK. With no key set it does nothing, so the
+example runs unchanged without one.
+
 ## Verify
 
 ```bash

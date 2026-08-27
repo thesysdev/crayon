@@ -100,6 +100,22 @@ A FastAPI endpoint that:
 
 Identical to the one scaffolded by `npx @openuidev/cli create`. Uses `openAIReadableStreamAdapter()` to parse the NDJSON stream from the backend — no frontend changes were needed to switch from Next.js to FastAPI.
 
+## Reliability monitoring (optional)
+
+Generated interfaces occasionally contain errors an LLM introduced. `@openuidev/observability-cloud`
+forwards the render events OpenUI already emits to the Thesys console, so those errors are visible on
+the [reliability dashboard](https://console.thesys.dev/reliability).
+
+Create a client API key at [console.thesys.dev/client-api-keys](https://console.thesys.dev/client-api-keys)
+and put it in `frontend/.env`:
+
+```bash
+VITE_THESYS_CLIENT_API_KEY=pk-th-...
+```
+
+`frontend/src/main.jsx` initialises the SDK when that key is present, and skips it otherwise, so the
+example runs unchanged without one.
+
 ## Learn More
 
 - [OpenUI Lang overview](https://www.openui.com/docs/openui-lang/overview) — core building blocks: Library, Prompt Generator, Parser, Renderer

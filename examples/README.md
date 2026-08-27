@@ -2,6 +2,10 @@
 
 These projects showcase what OpenUI can do with different runtimes, application frameworks, design systems, coding harnesses, and specialized libraries. They are standalone reference implementations, not starter templates; use the [OpenUI CLI](https://www.openui.com/docs/agent/getting-started/quickstart) to scaffold a new application.
 
+The Next.js examples and the FastAPI frontend also wire up `@openuidev/observability-cloud`, which reports
+generation errors to the [Thesys reliability dashboard](https://console.thesys.dev/reliability). It stays
+inert until you set a client API key — see the "Reliability monitoring" section in each example's README.
+
 Each example has one primary home based on the integration seam it is intended to teach. Cross-cutting technologies belong in that example's README rather than in duplicate directory trees.
 
 ## Categories

@@ -261,6 +261,22 @@ Returns mock search results for any query.
 - [Vercel AI SDK docs](https://ai-sdk.dev/) — `streamText`, `useChat`, `tool()`
 - [`@openuidev/react-lang` package](../../../packages/react-lang)
 
+## Reliability monitoring (optional)
+
+Generated interfaces occasionally contain errors an LLM introduced. `@openuidev/observability-cloud`
+forwards the render events OpenUI already emits to the Thesys console, so those errors are visible on
+the [reliability dashboard](https://console.thesys.dev/reliability).
+
+Create a client API key at [console.thesys.dev/client-api-keys](https://console.thesys.dev/client-api-keys)
+and set it before starting the app:
+
+```bash
+NEXT_PUBLIC_THESYS_CLIENT_API_KEY=pk-th-...
+```
+
+`<Reliability />` in `src/app/layout.tsx` initialises the SDK. With no key set it does nothing, so the
+example runs unchanged without one.
+
 ## Verify
 
 ```bash
