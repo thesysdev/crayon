@@ -128,10 +128,9 @@ Backend frameworks:
 
 program
   .command("deploy")
-  .description("Deploy an OpenUI project")
-  .argument("[target]", "Deploy target (default: vercel)")
+  .description("Deploy an OpenUI project to Vercel")
+  .usage("[dir] [options]")
   .argument("[dir]", "Project directory (default: current directory)")
-  .option("--target <target>", "Deploy target: vercel (default)")
   .option("-y, --yes", "Skip confirmation prompts")
   .option("--skip-env", "Do not pass local .env values to this deployment")
   .option("--no-interactive", "Skip prompts (implies --yes)")
@@ -140,27 +139,24 @@ program
   .addHelpText(
     "after",
     `
-Targets:
-  vercel  Default. Runs the Vercel CLI (local install, PATH, or package-manager dlx)
-          and passes allowlisted keys from .env / .env.local via --env.
-          Logged-out deploys use Vercel's temporary path instead of vercel login.
+Runs the Vercel CLI (local install, PATH, or package-manager dlx) and passes
+allowlisted keys from .env / .env.local via --env. Logged-out deploys use
+Vercel's temporary path instead of vercel login.
 
-Extra flags after deploy are forwarded as-is to the target CLI, which validates them
-(for example --prod or --force).
+Extra flags after deploy are forwarded as-is to the Vercel CLI, which validates
+them (for example --prod or --force).
 
 Examples:
   $ openui deploy
-  $ openui deploy vercel --prod --yes
-  $ openui deploy vercel ./my-app --prod
+  $ openui deploy ./my-app
+  $ openui deploy ./my-app --prod
   $ openui deploy -- --archive=tgz
 `,
   )
   .action(
     async (
-      target: string | undefined,
       dir: string | undefined,
       options: {
-        target?: string;
         yes?: boolean;
         skipEnv?: boolean;
         interactive: boolean;
@@ -169,9 +165,7 @@ Examples:
     ) => {
       try {
         await runDeploy({
-          positionalTarget: target,
           dir,
-          target: options.target,
           yes: options.yes,
           skipEnv: options.skipEnv,
           noInteractive: !options.interactive,

@@ -203,32 +203,30 @@ npx @openuidev/cli@latest create --name my-app --no-skill
 
 ## `openui deploy`
 
-Deploys an OpenUI project. The default target is **Vercel**; pass `--target` or a positional target name to choose one. Vercel is currently the only target.
+Deploys an OpenUI project to **Vercel**.
 
 ```
-openui deploy [target] [dir] [options]
+openui deploy [dir] [options]
 ```
 
 **Arguments**
 
-| Argument  | Description                                        |
-| --------- | -------------------------------------------------- |
-| `[target]`| Deploy target (`vercel`, the default)              |
-| `[dir]`   | Project directory (default: current directory)     |
+| Argument | Description                                    |
+| -------- | ---------------------------------------------- |
+| `[dir]`  | Project directory (default: current directory) |
 
 **Options**
 
 | Flag                  | Description                                                       |
 | --------------------- | ----------------------------------------------------------------- |
-| `--target <target>`   | Deploy target: `vercel` (default; currently the only target)      |
 | `-y, --yes`           | Skip confirmation prompts                                         |
 | `--skip-env`          | Do not pass local `.env` / `.env.local` values to this deployment |
 | `--no-interactive`    | Skip prompts (implies `--yes`)                                    |
 | `--agent-name <name>` | Declare the invoking coding-agent slug (default: `unknown`)       |
 
-Extra flags after `deploy` are forwarded as-is to the target CLI, which validates them (for example `--prod` or `--force` for Vercel). `--skip-env` is OpenUI-specific so it does not collide with Vercel's `--env KEY=value`.
+Extra flags after `deploy` are forwarded as-is to the Vercel CLI, which validates them (for example `--prod` or `--force`). `--skip-env` is OpenUI-specific so it does not collide with Vercel's `--env KEY=value`.
 
-**Vercel target**
+**What it does**
 
 1. Resolves the project directory and requires a `package.json`
 2. Runs the [Vercel CLI](https://vercel.com/docs/cli) (local `node_modules/.bin/vercel`, a `vercel` binary on `PATH`, or the detected package manager's `dlx`/`npx` runner). `dlx`/`npx` installs are collapsed into a `Preparing Vercel CLI...` line
@@ -249,7 +247,7 @@ pnpx @openuidev/cli@latest deploy
 pnpx @openuidev/cli@latest deploy --prod --yes
 
 # Deploy a specific directory without forwarding local env
-pnpx @openuidev/cli@latest deploy vercel ./my-app --skip-env
+pnpx @openuidev/cli@latest deploy ./my-app --skip-env
 ```
 
 ```bash tab="bun" tab-group="pkg"
@@ -260,7 +258,7 @@ bunx @openuidev/cli@latest deploy
 bunx @openuidev/cli@latest deploy --prod --yes
 
 # Deploy a specific directory without forwarding local env
-bunx @openuidev/cli@latest deploy vercel ./my-app --skip-env
+bunx @openuidev/cli@latest deploy ./my-app --skip-env
 ```
 
 ```bash tab="yarn" tab-group="pkg"
@@ -271,18 +269,18 @@ yarn dlx @openuidev/cli@latest deploy
 yarn dlx @openuidev/cli@latest deploy --prod --yes
 
 # Deploy a specific directory without forwarding local env
-yarn dlx @openuidev/cli@latest deploy vercel ./my-app --skip-env
+yarn dlx @openuidev/cli@latest deploy ./my-app --skip-env
 ```
 
 ```bash tab="npm" tab-group="pkg"
 # Preview deploy from the project directory
 npx @openuidev/cli@latest deploy
 
-# Same target, spelled out
-npx @openuidev/cli@latest deploy vercel --prod --yes
+# Production deploy
+npx @openuidev/cli@latest deploy --prod --yes
 
 # Deploy a specific directory without forwarding local env
-npx @openuidev/cli@latest deploy vercel ./my-app --skip-env
+npx @openuidev/cli@latest deploy ./my-app --skip-env
 ```
 
 ## `openui generate`

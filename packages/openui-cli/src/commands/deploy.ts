@@ -8,14 +8,7 @@ import {
 } from "../lib/detect-package-manager";
 import { runCommand, type CommandResult } from "../lib/process-runner";
 import { CliCancelledError, CreateError, telemetry } from "../lib/telemetry";
-import {
-  DEFAULT_DEPLOY_TARGET,
-  DEPLOY_TARGETS,
-  isDeployTarget,
-  normalizeDeployTarget,
-  processErrorProperties,
-  type DeployTarget,
-} from "../lib/utils";
+import { processErrorProperties } from "../lib/utils";
 
 /** Known OpenUI template env keys. Values are never logged or sent to telemetry. */
 const ENV_ALLOWLIST = [
@@ -30,13 +23,11 @@ const ENV_ALLOWLIST = [
   "LANGSMITH_API_KEY",
 ] as const;
 
-/** OpenUI-only flags. Everything else is forwarded for the target CLI to validate. */
+/** OpenUI-only flags. Everything else is forwarded for the Vercel CLI to validate. */
 const OWN_FLAGS = new Set(["--skip-env", "--no-interactive"]);
 
 export type DeployOptions = {
-  positionalTarget?: string;
   dir?: string;
-  target?: string;
   yes?: boolean;
   skipEnv?: boolean;
   noInteractive?: boolean;
@@ -51,7 +42,6 @@ type TargetInvocation = {
 };
 
 type ResolvedDeploy = {
-  target: DeployTarget;
   projectDir?: string;
   extraArgs: string[];
 };
@@ -71,101 +61,38 @@ export async function runDeploy(options: DeployOptions): Promise<void> {
 
   telemetry.register({ package_manager: resolveInstallPackageManager().name });
   telemetry.capture("cli_deploy_started", {
-    target: resolved.target,
+    target: "vercel",
     prod,
     yes,
     skip_env: skipEnv,
     has_dir_arg: Boolean(resolved.projectDir),
   });
 
-  warnMissingRequiredEnv(projectDir, fileEnv, resolved.target);
+  warnMissingRequiredEnv(projectDir, fileEnv);
 
-  switch (resolved.target) {
-    case "vercel":
-      await deployToVercel({
-        projectDir,
-        extraArgs,
-        prod,
-        yes,
-        skipEnv,
-        localEnv: skipEnv ? {} : fileEnv,
-      });
-      return;
-    default: {
-      const unexpected: never = resolved.target;
-      throw new CreateError(
-        "args_resolution",
-        `unsupported deploy target "${String(unexpected)}". Use: ${DEPLOY_TARGETS.join(" | ")}.`,
-        "invalid_input",
-        "INVALID_DEPLOY_TARGET",
-      );
-    }
-  }
+  // Vercel is the only platform today. Add a branch here when more deploy targets land.
+  await deployToVercel({
+    projectDir,
+    extraArgs,
+    prod,
+    yes,
+    skipEnv,
+    localEnv: skipEnv ? {} : fileEnv,
+  });
 }
 
 function resolveDeployInvocation(options: DeployOptions): ResolvedDeploy {
-  const first = unsetIfFlag(options.positionalTarget);
-  const second = unsetIfFlag(options.dir);
-  let positionalTarget: string | undefined;
-  let projectDir: string | undefined;
-
-  if (first && isDeployTarget(first)) {
-    positionalTarget = first;
-    projectDir = second;
-  } else if (first && options.target && !second) {
-    // `--target` already chose the platform; the leftover positional is [dir].
-    projectDir = first;
-  } else if (first) {
-    throw new CreateError(
-      "args_resolution",
-      `unknown deploy target "${first}". Use: ${DEPLOY_TARGETS.join(" | ")}.` +
-        (looksLikeProjectDir(first)
-          ? ` To deploy a directory, pass the target first: openui deploy ${DEFAULT_DEPLOY_TARGET} ${first}`
-          : ""),
-      "invalid_input",
-      "INVALID_DEPLOY_TARGET",
-    );
-  } else {
-    projectDir = second;
-  }
-
-  const target = resolveTarget(positionalTarget, options.target);
-  const extraArgs = extraDeployArgs(options.extraArgs ?? [], {
-    dir: projectDir,
-    target,
-    positionalTarget: options.positionalTarget,
-  });
-  if (options.positionalTarget?.startsWith("-") && !extraArgs.includes(options.positionalTarget)) {
-    extraArgs.unshift(options.positionalTarget);
-  }
+  const projectDir = unsetIfFlag(options.dir);
+  const extraArgs = extraDeployArgs(options.extraArgs ?? [], { dir: projectDir });
   if (options.dir?.startsWith("-") && !extraArgs.includes(options.dir)) {
     extraArgs.unshift(options.dir);
   }
-  return { target, projectDir, extraArgs };
+  return { projectDir, extraArgs };
 }
 
-function resolveTarget(positional?: string, flag?: string): DeployTarget {
-  const fromPositional = positional ? normalizeDeployTarget(positional) : undefined;
-  const fromFlag = flag ? normalizeDeployTarget(flag) : undefined;
-  if (fromPositional && fromFlag && fromPositional !== fromFlag) {
-    throw new CreateError(
-      "args_resolution",
-      `--target ${flag} conflicts with positional target "${positional}".`,
-      "invalid_input",
-      "CONFLICTING_DEPLOY_TARGET",
-    );
-  }
-  return fromPositional ?? fromFlag ?? DEFAULT_DEPLOY_TARGET;
-}
-
-function extraDeployArgs(
-  args: string[],
-  consumed: { dir?: string; target: string; positionalTarget?: string },
-): string[] {
+function extraDeployArgs(args: string[], consumed: { dir?: string }): string[] {
   const skip = new Set(
-    [consumed.dir, consumed.target, consumed.positionalTarget].filter((value): value is string =>
-      Boolean(value && !value.startsWith("-")),
-    ),
+    [consumed.dir].filter((value): value is string => Boolean(value && !value.startsWith("-"))),
   );
   const out: string[] = [];
   for (const arg of args) {
@@ -177,17 +104,6 @@ function extraDeployArgs(
 
 function unsetIfFlag(value?: string): string | undefined {
   return value?.startsWith("-") ? undefined : value;
-}
-
-function looksLikeProjectDir(value: string): boolean {
-  if (value === "." || value === "..") return true;
-  if (value.startsWith(".") || path.isAbsolute(value) || value.includes(path.sep)) return true;
-  const resolved = path.resolve(process.cwd(), value);
-  try {
-    return fs.existsSync(resolved) && fs.statSync(resolved).isDirectory();
-  } catch {
-    return false;
-  }
 }
 
 async function deployToVercel(opts: {
@@ -462,16 +378,11 @@ function parseEnvFile(filePath: string): Record<string, string> {
   return out;
 }
 
-function warnMissingRequiredEnv(
-  projectDir: string,
-  localEnv: Record<string, string>,
-  target: DeployTarget,
-): void {
-  const host = target === "vercel" ? "Vercel" : target;
+function warnMissingRequiredEnv(projectDir: string, localEnv: Record<string, string>): void {
   for (const key of detectRequiredEnvNames(projectDir)) {
     if (localEnv[key] || process.env[key]?.trim()) continue;
     console.info(
-      `⚠ ${key} is not set locally. This deployment will fail at runtime unless ${key} is already configured on ${host}.\n`,
+      `⚠ ${key} is not set locally. This deployment will fail at runtime unless ${key} is already configured on Vercel.\n`,
     );
   }
 }

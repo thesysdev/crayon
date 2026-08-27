@@ -269,23 +269,3 @@ export function normalizeBackendFramework(framework?: string): OverlayName | und
       );
   }
 }
-
-export const DEPLOY_TARGETS = ["vercel"] as const;
-export type DeployTarget = (typeof DEPLOY_TARGETS)[number];
-export const DEFAULT_DEPLOY_TARGET: DeployTarget = "vercel";
-
-export function isDeployTarget(value: string): value is DeployTarget {
-  return (DEPLOY_TARGETS as readonly string[]).includes(value.toLowerCase());
-}
-
-export function normalizeDeployTarget(target?: string): DeployTarget {
-  if (!target) return DEFAULT_DEPLOY_TARGET;
-  const v = target.toLowerCase();
-  if (isDeployTarget(v)) return v;
-  throw new CreateError(
-    "args_resolution",
-    `unknown deploy target "${target}". Use: ${DEPLOY_TARGETS.join(" | ")}.`,
-    "invalid_input",
-    "INVALID_DEPLOY_TARGET",
-  );
-}

@@ -167,28 +167,26 @@ openui create --no-interactive --name my-app --template openui-cloud --api-key t
 
 ### `openui deploy`
 
-Deploys an OpenUI project. The default target is **Vercel**; more targets can be added later.
+Deploys an OpenUI project to **Vercel**.
 
 ```bash
-openui deploy [target] [dir] [options]
+openui deploy [dir] [options]
 ```
 
 Arguments:
 
-- `target`: Deploy target (`vercel`, the default)
 - `dir`: Project directory (default: current directory)
 
 Options:
 
-- `--target <target>`: Deploy target (default: `vercel`; currently the only target)
 - `-y, --yes`: Skip confirmation prompts
 - `--skip-env`: Do not pass local `.env` / `.env.local` values to this deployment
 - `--no-interactive`: Skip prompts (implies `--yes`)
 - `--agent-name <name>`: Declare the invoking coding agent as a lowercase kebab-case product slug (default: `unknown`)
 
-Extra flags after `deploy` are forwarded as-is to the target CLI, which validates them (for example `--prod` or `--force` for Vercel). `--skip-env` is OpenUI-specific so it does not collide with Vercel's `--env KEY=value`.
+Extra flags after `deploy` are forwarded as-is to the Vercel CLI, which validates them (for example `--prod` or `--force`). `--skip-env` is OpenUI-specific so it does not collide with Vercel's `--env KEY=value`.
 
-What the Vercel target does:
+What it does:
 
 - resolves the project directory and requires a `package.json`
 - runs the Vercel CLI (local binary, `PATH`, or package-manager `dlx`/`npx`)
@@ -202,8 +200,8 @@ Examples:
 
 ```bash
 openui deploy
-openui deploy vercel --prod --yes
-openui deploy vercel ./my-app --prod
+openui deploy ./my-app
+openui deploy ./my-app --prod
 openui deploy --skip-env -- --force
 ```
 
